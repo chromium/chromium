@@ -828,6 +828,150 @@ void CSSAnimations::SnapshotCompositorKeyframes(
     snapshot(new_transition.value->effect.Get());
 }
 
+namespace {
+
+bool AffectsBackgroundColor(const AnimationEffect& effect) {
+  return effect.Affects(PropertyHandle(GetCSSPropertyBackgroundColor()));
+}
+
+void UpdateAnimationFlagsForEffect(const AnimationEffect& effect,
+                                   ComputedStyle& style) {
+  if (effect.Affects(PropertyHandle(GetCSSPropertyOpacity())))
+    style.SetHasCurrentOpacityAnimation(true);
+  if (effect.Affects(PropertyHandle(GetCSSPropertyTransform())) ||
+      effect.Affects(PropertyHandle(GetCSSPropertyRotate())) ||
+      effect.Affects(PropertyHandle(GetCSSPropertyScale())) ||
+      effect.Affects(PropertyHandle(GetCSSPropertyTranslate()))) {
+    style.SetHasCurrentTransformAnimation(true);
+  }
+  if (effect.Affects(PropertyHandle(GetCSSPropertyFilter())))
+    style.SetHasCurrentFilterAnimation(true);
+  if (effect.Affects(PropertyHandle(GetCSSPropertyBackdropFilter())))
+    style.SetHasCurrentBackdropFilterAnimation(true);
+  if (AffectsBackgroundColor(effect))
+    style.SetHasCurrentBackgroundColorAnimation(true);
+  if (effect.Affects(PropertyHandle(GetCSSPropertyClipPath())))
+    style.SetHasCurrentClipPathAnimation(true);
+}
+
+void SetCompositablePaintAnimationChangedIfAffected(
+    const AnimationEffect& effect,
+    ComputedStyle& style) {
+  if (RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
+      AffectsBackgroundColor(effect)) {
+    style.SetCompositablePaintAnimationChanged(true);
+  }
+}
+
+// Called for animations that are newly created or updated.
+void UpdateAnimationFlagsForInertEffect(const InertEffect& effect,
+                                        ComputedStyle& style) {
+  if (!effect.IsCurrent())
+    return;
+
+  UpdateAnimationFlagsForEffect(effect, style);
+
+  // We defensively assume that any update to an existing animation
+  // would result in CompositorPending()==true.
+  SetCompositablePaintAnimationChangedIfAffected(effect, style);
+}
+
+// Called for existing animations that are not modified in this update.
+void UpdateAnimationFlagsForAnimation(const Animation& animation,
+                                      ComputedStyle& style) {
+  const AnimationEffect& effect = *animation.effect();
+
+  if (!effect.IsCurrent())
+    return;
+
+  UpdateAnimationFlagsForEffect(effect, style);
+
+  if (animation.CalculateAnimationPlayState() != Animation::kIdle &&
+      animation.CompositorPending()) {
+    // If something about the animation changed since the last frame (e.g. the
+    // effect was modified), we may need to repaint. We use the
+    // CompositorPending flag to detect such changes, and conditionally set
+    // the CompositablePaintAnimationChanged on ComputedStyle which ultimately
+    // invalidates paint.
+    //
+    // See ComputedStyle::UpdatePropertySpecificDifferences for how this flag
+    // is used.
+    SetCompositablePaintAnimationChangedIfAffected(effect, style);
+  }
+}
+
+}  // namespace
+
+void CSSAnimations::UpdateAnimationFlags(Element& element,
+                                         CSSAnimationUpdate& update,
+                                         ComputedStyle& style) {
+  for (const auto& new_animation : update.NewAnimations())
+    UpdateAnimationFlagsForInertEffect(*new_animation.effect, style);
+
+  for (const auto& updated_animation : update.AnimationsWithUpdates())
+    UpdateAnimationFlagsForInertEffect(*updated_animation.effect, style);
+
+  for (const auto& entry : update.NewTransitions())
+    UpdateAnimationFlagsForInertEffect(*entry.value->effect, style);
+
+  if (auto* element_animations = element.GetElementAnimations()) {
+    HeapHashSet<Member<const Animation>> cancelled_transitions =
+        CreateCancelledTransitionsSet(element_animations, update);
+    const HeapHashSet<Member<const Animation>>& suppressed_animations =
+        update.SuppressedAnimations();
+
+    auto is_suppressed = [&cancelled_transitions, &suppressed_animations](
+                             const Animation& animation) -> bool {
+      return suppressed_animations.Contains(&animation) ||
+             cancelled_transitions.Contains(&animation);
+    };
+
+    for (auto& entry : element_animations->Animations()) {
+      if (!is_suppressed(*entry.key))
+        UpdateAnimationFlagsForAnimation(*entry.key, style);
+    }
+
+    for (auto& entry : element_animations->GetWorkletAnimations()) {
+      // TODO(majidvp): we should check the effect's phase before updating the
+      // style once the timing of effect is ready to use.
+      // https://crbug.com/814851.
+      UpdateAnimationFlagsForEffect(*entry->GetEffect(), style);
+    }
+
+    // All Animations in this list will get SetCompositorPending(true)
+    // during MaybeApplyPendingUpdate.
+    for (const Animation* animation : update.UpdatedCompositorKeyframes()) {
+      if (!is_suppressed(*animation)) {
+        SetCompositablePaintAnimationChangedIfAffected(*animation->effect(),
+                                                       style);
+      }
+    }
+
+    EffectStack& effect_stack = element_animations->GetEffectStack();
+
+    if (style.HasCurrentOpacityAnimation()) {
+      style.SetIsRunningOpacityAnimationOnCompositor(
+          effect_stack.HasActiveAnimationsOnCompositor(
+              PropertyHandle(GetCSSPropertyOpacity())));
+    }
+    if (style.HasCurrentTransformAnimation()) {
+      style.SetIsRunningTransformAnimationOnCompositor(
+          effect_stack.HasActiveAnimationsOnCompositor(
+              PropertyHandle(GetCSSPropertyTransform())));
+    }
+    if (style.HasCurrentFilterAnimation()) {
+      style.SetIsRunningFilterAnimationOnCompositor(
+          effect_stack.HasActiveAnimationsOnCompositor(
+              PropertyHandle(GetCSSPropertyFilter())));
+    }
+    if (style.HasCurrentBackdropFilterAnimation()) {
+      style.SetIsRunningBackdropFilterAnimationOnCompositor(
+          effect_stack.HasActiveAnimationsOnCompositor(
+              PropertyHandle(GetCSSPropertyBackdropFilter())));
+    }
+  }
+}
+
 void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
   previous_active_interpolations_for_animations_.clear();
   if (pending_update_.IsEmpty())
@@ -876,14 +1020,7 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
     }
 
     running_animations_[entry.index]->Update(entry);
-
-    if (RuntimeEnabledFeatures::CSSIsolatedAnimationUpdatesEnabled()) {
-      // If the timing was updated, we need to update the animation to get the
-      // correct result the next time we resolve style. This is not needed
-      // if CSSIsolatedAnimationUpdates is disabled, since we're "faking" an
-      // updated animation with InertEffect.
-      entry.animation->Update(kTimingUpdateOnDemand);
-    }
+    entry.animation->Update(kTimingUpdateOnDemand);
   }
 
   const Vector<wtf_size_t>& cancelled_indices =
@@ -1025,6 +1162,24 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
     transitions_.Set(property, running_transition);
   }
   ClearPendingUpdate();
+}
+
+HeapHashSet<Member<const Animation>>
+CSSAnimations::CreateCancelledTransitionsSet(
+    ElementAnimations* element_animations,
+    CSSAnimationUpdate& update) {
+  HeapHashSet<Member<const Animation>> cancelled_transitions;
+  if (!update.CancelledTransitions().IsEmpty()) {
+    DCHECK(element_animations);
+    const TransitionMap& transition_map =
+        element_animations->CssAnimations().transitions_;
+    for (const PropertyHandle& property : update.CancelledTransitions()) {
+      DCHECK(transition_map.Contains(property));
+      cancelled_transitions.insert(
+          transition_map.at(property)->animation.Get());
+    }
+  }
+  return cancelled_transitions;
 }
 
 bool CSSAnimations::CanCalculateTransitionUpdateForProperty(
@@ -1543,17 +1698,8 @@ void CSSAnimations::CalculateTransitionActiveInterpolations(
     for (const auto& entry : update.NewTransitions())
       new_transitions.push_back(entry.value->effect.Get());
 
-    HeapHashSet<Member<const Animation>> cancelled_animations;
-    if (!update.CancelledTransitions().IsEmpty()) {
-      DCHECK(element_animations);
-      const TransitionMap& transition_map =
-          element_animations->CssAnimations().transitions_;
-      for (const PropertyHandle& property : update.CancelledTransitions()) {
-        DCHECK(transition_map.Contains(property));
-        cancelled_animations.insert(
-            transition_map.at(property)->animation.Get());
-      }
-    }
+    HeapHashSet<Member<const Animation>> cancelled_animations =
+        CreateCancelledTransitionsSet(element_animations, update);
 
     if (RuntimeEnabledFeatures::CSSIsolatedAnimationUpdatesEnabled()) {
       // Eventually we should avoid building these in the first place,

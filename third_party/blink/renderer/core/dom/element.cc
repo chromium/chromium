@@ -2864,7 +2864,6 @@ scoped_refptr<ComputedStyle> Element::StyleForLayoutObject(
     // Document::UpdateStyle.
     if (!RuntimeEnabledFeatures::CSSIsolatedAnimationUpdatesEnabled())
       element_animations->CssAnimations().MaybeApplyPendingUpdate(this);
-    element_animations->UpdateAnimationFlags(*style);
   }
 
   style->UpdateIsStackingContextWithoutContainment(

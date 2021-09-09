@@ -154,15 +154,19 @@ TEST_F(WorkletAnimationTest, SetCurrentTimeInfNotCrash) {
 }
 
 TEST_F(WorkletAnimationTest, StyleHasCurrentAnimation) {
-  scoped_refptr<ComputedStyle> style =
+  scoped_refptr<ComputedStyle> style1 =
       GetDocument()
           .GetStyleResolver()
           .ResolveStyle(element_, StyleRecalcContext())
           .get();
-  EXPECT_EQ(false, style->HasCurrentOpacityAnimation());
+  EXPECT_FALSE(style1->HasCurrentOpacityAnimation());
   worklet_animation_->play(ASSERT_NO_EXCEPTION);
-  element_->EnsureElementAnimations().UpdateAnimationFlags(*style);
-  EXPECT_EQ(true, style->HasCurrentOpacityAnimation());
+  scoped_refptr<ComputedStyle> style2 =
+      GetDocument()
+          .GetStyleResolver()
+          .ResolveStyle(element_, StyleRecalcContext())
+          .get();
+  EXPECT_TRUE(style2->HasCurrentOpacityAnimation());
 }
 
 TEST_F(WorkletAnimationTest,

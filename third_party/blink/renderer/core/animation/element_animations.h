@@ -78,7 +78,6 @@ class CORE_EXPORT ElementAnimations final
 
   void RestartAnimationOnCompositor();
 
-  void UpdateAnimationFlags(ComputedStyle&);
   void SetAnimationStyleChange(bool animation_style_change) {
     animation_style_change_ = animation_style_change;
   }

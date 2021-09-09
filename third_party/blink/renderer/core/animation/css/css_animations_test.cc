@@ -8,15 +8,18 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
+#include "third_party/blink/renderer/core/animation/animation_test_helpers.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/css/cssom/css_numeric_value.h"
+#include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_delegate.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace {
 
@@ -196,6 +199,421 @@ TEST_P(CSSAnimationsTest, CompositedBackgroundColorSnapshot) {
 
   ASSERT_EQ(1u, update.UpdatedCompositorKeyframes().size());
   EXPECT_EQ(animation, update.UpdatedCompositorKeyframes()[0].Get());
+}
+
+// Verifies that newly created/cancelled transitions are both taken into
+// account when setting the flags. (The filter property is an
+// arbitrarily chosen sample).
+TEST_P(CSSAnimationsTest, AnimationFlags_Transitions) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #test {
+        filter: contrast(20%);
+        transition: filter 1s;
+      }
+      #test.contrast30 { filter: contrast(30%); }
+      #test.unrelated { color: green; }
+      #test.cancel { transition: none; }
+    </style>
+    <div id=test></div>
+  )HTML");
+  Element* element = GetDocument().getElementById("test");
+  EXPECT_FALSE(element->ComputedStyleRef().HasCurrentFilterAnimation());
+
+  // Newly created transition:
+  element->setAttribute(html_names::kClassAttr, "contrast30");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(element->ComputedStyleRef().HasCurrentFilterAnimation());
+
+  // Already running (and unmodified) transition:
+  element->setAttribute(html_names::kClassAttr, "contrast30 unrelated");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(element->ComputedStyleRef().HasCurrentFilterAnimation());
+
+  // Cancelled transition:
+  element->setAttribute(html_names::kClassAttr, "cancel");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(element->ComputedStyleRef().HasCurrentFilterAnimation());
+}
+
+// Verifies that newly created/updated CSS/JS animations are all taken into
+// account when setting the flags. (The filter/opacity/transform properties are
+// arbitrarily chosen samples).
+TEST_P(CSSAnimationsTest, AnimationFlags_Animations) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes anim {
+        from { opacity: 1; }
+        to { opacity: 0; }
+      }
+      #test.animate { animation: anim 1s; }
+      #test.newtiming { animation-duration: 2s; }
+      #test.unrelated { color: green; }
+      #test.cancel { animation: none; }
+    </style>
+    <div id=test></div>
+  )HTML");
+  Element* element = GetDocument().getElementById("test");
+  EXPECT_FALSE(element->ComputedStyleRef().HasCurrentOpacityAnimation());
+  EXPECT_FALSE(element->ComputedStyleRef().HasCurrentTransformAnimation());
+
+  // Newly created animation:
+  element->setAttribute(html_names::kClassAttr, "animate");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(element->ComputedStyleRef().HasCurrentOpacityAnimation());
+  EXPECT_FALSE(element->ComputedStyleRef().HasCurrentTransformAnimation());
+
+  // Already running (and unmodified) animation:
+  element->setAttribute(html_names::kClassAttr, "animate unrelated");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(element->ComputedStyleRef().HasCurrentOpacityAnimation());
+  EXPECT_FALSE(element->ComputedStyleRef().HasCurrentTransformAnimation());
+
+  // Add a JS animation:
+  auto* effect = animation_test_helpers::CreateSimpleKeyframeEffectForTest(
+      element, CSSPropertyID::kTransform, "scale(1)", "scale(2)");
+  GetDocument().Timeline().Play(effect);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(element->ComputedStyleRef().HasCurrentOpacityAnimation());
+  EXPECT_TRUE(element->ComputedStyleRef().HasCurrentTransformAnimation());
+
+  // Update CSS animation:
+  element->setAttribute(html_names::kClassAttr, "animate newtiming");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(element->ComputedStyleRef().HasCurrentOpacityAnimation());
+  EXPECT_TRUE(element->ComputedStyleRef().HasCurrentTransformAnimation());
+
+  // Cancel CSS animation:
+  element->setAttribute(html_names::kClassAttr, "cancel");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(element->ComputedStyleRef().HasCurrentOpacityAnimation());
+  EXPECT_TRUE(element->ComputedStyleRef().HasCurrentTransformAnimation());
+}
+
+namespace {
+
+bool OpacityFlag(const ComputedStyle& style) {
+  return style.HasCurrentOpacityAnimation();
+}
+bool TransformFlag(const ComputedStyle& style) {
+  return style.HasCurrentTransformAnimation();
+}
+bool FilterFlag(const ComputedStyle& style) {
+  return style.HasCurrentFilterAnimation();
+}
+bool BackdropFilterFlag(const ComputedStyle& style) {
+  return style.HasCurrentBackdropFilterAnimation();
+}
+bool BackgroundColorFlag(const ComputedStyle& style) {
+  return style.HasCurrentBackgroundColorAnimation();
+}
+bool ClipPathFlag(const ComputedStyle& style) {
+  return style.HasCurrentClipPathAnimation();
+}
+
+bool CompositedOpacityFlag(const ComputedStyle& style) {
+  return style.IsRunningOpacityAnimationOnCompositor();
+}
+bool CompositedTransformFlag(const ComputedStyle& style) {
+  return style.IsRunningTransformAnimationOnCompositor();
+}
+bool CompositedFilterFlag(const ComputedStyle& style) {
+  return style.IsRunningFilterAnimationOnCompositor();
+}
+bool CompositedBackdropFilterFlag(const ComputedStyle& style) {
+  return style.IsRunningBackdropFilterAnimationOnCompositor();
+}
+
+using FlagFunction = bool (*)(const ComputedStyle&);
+
+struct FlagData {
+  const char* property;
+  const char* before;
+  const char* after;
+  FlagFunction get_flag;
+};
+
+FlagData flag_data[] = {
+    {"opacity", "0", "1", OpacityFlag},
+    {"transform", "scale(1)", "scale(2)", TransformFlag},
+    {"rotate", "10deg", "20deg", TransformFlag},
+    {"scale", "1", "2", TransformFlag},
+    {"translate", "10px", "20px", TransformFlag},
+    {"filter", "contrast(10%)", "contrast(20%)", FilterFlag},
+    {"backdrop-filter", "blur(10px)", "blur(20px)", BackdropFilterFlag},
+    {"background-color", "red", "blue", BackgroundColorFlag},
+    {"clip-path", "circle(10%)", "circle(20%)", ClipPathFlag},
+};
+
+FlagData compositor_flag_data[] = {
+    {"opacity", "0", "1", CompositedOpacityFlag},
+    {"transform", "scale(1)", "scale(2)", CompositedTransformFlag},
+    {"filter", "contrast(10%)", "contrast(20%)", CompositedFilterFlag},
+    {"backdrop-filter", "blur(10px)", "blur(20px)",
+     CompositedBackdropFilterFlag},
+};
+
+String GenerateTransitionHTMLFrom(const FlagData& data) {
+  const char* property = data.property;
+  const char* before = data.before;
+  const char* after = data.after;
+
+  StringBuilder builder;
+  builder.Append("<style>");
+  builder.Append(String::Format("#test { transition:%s 1s; }", property));
+  builder.Append(String::Format("#test.before { %s:%s; }", property, before));
+  builder.Append(String::Format("#test.after { %s:%s; }", property, after));
+  builder.Append("</style>");
+  builder.Append("<div id=test class=before>Test</div>");
+  return builder.ToString();
+}
+
+String GenerateCSSAnimationHTMLFrom(const FlagData& data) {
+  const char* property = data.property;
+  const char* before = data.before;
+  const char* after = data.after;
+
+  StringBuilder builder;
+  builder.Append("<style>");
+  builder.Append("@keyframes anim {");
+  builder.Append(String::Format("from { %s:%s; }", property, before));
+  builder.Append(String::Format("to { %s:%s; }", property, after));
+  builder.Append("}");
+  builder.Append("#test.after { animation:anim 1s; }");
+  builder.Append("</style>");
+  builder.Append("<div id=test>Test</div>");
+  return builder.ToString();
+}
+
+}  // namespace
+
+// Verify that HasCurrent*Animation flags are set for transitions.
+TEST_P(CSSAnimationsTest, AllAnimationFlags_Transitions) {
+  for (FlagData data : flag_data) {
+    String html = GenerateTransitionHTMLFrom(data);
+    SCOPED_TRACE(html);
+
+    SetBodyInnerHTML(html);
+    Element* element = GetDocument().getElementById("test");
+    ASSERT_TRUE(element);
+    EXPECT_FALSE(data.get_flag(element->ComputedStyleRef()));
+
+    element->setAttribute(html_names::kClassAttr, "after");
+    UpdateAllLifecyclePhasesForTest();
+    EXPECT_TRUE(data.get_flag(element->ComputedStyleRef()));
+  }
+}
+
+// Verify that IsRunning*AnimationOnCompositor flags are set for transitions.
+TEST_P(CSSAnimationsTest, AllAnimationFlags_Transitions_Compositor) {
+  for (FlagData data : compositor_flag_data) {
+    String html = GenerateTransitionHTMLFrom(data);
+    SCOPED_TRACE(html);
+
+    SetBodyInnerHTML(html);
+    Element* element = GetDocument().getElementById("test");
+    ASSERT_TRUE(element);
+    EXPECT_FALSE(data.get_flag(element->ComputedStyleRef()));
+
+    element->setAttribute(html_names::kClassAttr, "after");
+    UpdateAllLifecyclePhasesForTest();
+    EXPECT_FALSE(data.get_flag(element->ComputedStyleRef()));
+
+    ElementAnimations* animations = element->GetElementAnimations();
+    ASSERT_EQ(1u, animations->Animations().size());
+    Animation* animation = (*animations->Animations().begin()).key;
+    StartAnimationOnCompositor(animation);
+    AdvanceClockSeconds(0.1);
+    UpdateAllLifecyclePhasesForTest();
+    EXPECT_TRUE(data.get_flag(element->ComputedStyleRef()));
+  }
+}
+
+// Verify that HasCurrent*Animation flags are set for CSS animations.
+TEST_P(CSSAnimationsTest, AllAnimationFlags_CSSAnimations) {
+  for (FlagData data : flag_data) {
+    String html = GenerateCSSAnimationHTMLFrom(data);
+    SCOPED_TRACE(html);
+
+    SetBodyInnerHTML(html);
+    Element* element = GetDocument().getElementById("test");
+    ASSERT_TRUE(element);
+    EXPECT_FALSE(data.get_flag(element->ComputedStyleRef()));
+
+    element->setAttribute(html_names::kClassAttr, "after");
+    UpdateAllLifecyclePhasesForTest();
+    EXPECT_TRUE(data.get_flag(element->ComputedStyleRef()));
+  }
+}
+
+// Verify that IsRunning*AnimationOnCompositor flags are set for CSS animations.
+TEST_P(CSSAnimationsTest, AllAnimationFlags_CSSAnimations_Compositor) {
+  for (FlagData data : compositor_flag_data) {
+    String html = GenerateCSSAnimationHTMLFrom(data);
+    SCOPED_TRACE(html);
+
+    SetBodyInnerHTML(html);
+    Element* element = GetDocument().getElementById("test");
+    ASSERT_TRUE(element);
+    EXPECT_FALSE(data.get_flag(element->ComputedStyleRef()));
+
+    element->setAttribute(html_names::kClassAttr, "after");
+    UpdateAllLifecyclePhasesForTest();
+    EXPECT_FALSE(data.get_flag(element->ComputedStyleRef()));
+
+    ElementAnimations* animations = element->GetElementAnimations();
+    ASSERT_EQ(1u, animations->Animations().size());
+    Animation* animation = (*animations->Animations().begin()).key;
+    StartAnimationOnCompositor(animation);
+    AdvanceClockSeconds(0.1);
+    UpdateAllLifecyclePhasesForTest();
+    EXPECT_TRUE(data.get_flag(element->ComputedStyleRef()));
+  }
+}
+
+// Verify that HasCurrent*Animation flags are set for JS animations.
+TEST_P(CSSAnimationsTest, AllAnimationFlags_JSAnimations) {
+  for (FlagData data : flag_data) {
+    SCOPED_TRACE(data.property);
+
+    SetBodyInnerHTML("<div id=test>Test</div>");
+    Element* element = GetDocument().getElementById("test");
+    ASSERT_TRUE(element);
+    EXPECT_FALSE(data.get_flag(element->ComputedStyleRef()));
+
+    CSSPropertyID property_id =
+        CssPropertyID(GetDocument().GetExecutionContext(), data.property);
+    ASSERT_TRUE(IsValidCSSPropertyID(property_id));
+    auto* effect = animation_test_helpers::CreateSimpleKeyframeEffectForTest(
+        element, property_id, data.before, data.after);
+    GetDocument().Timeline().Play(effect);
+
+    UpdateAllLifecyclePhasesForTest();
+    EXPECT_TRUE(data.get_flag(element->ComputedStyleRef()));
+  }
+}
+
+// Verify that IsRunning*AnimationOnCompositor flags are set for JS animations.
+TEST_P(CSSAnimationsTest, AllAnimationFlags_JSAnimations_Compositor) {
+  for (FlagData data : compositor_flag_data) {
+    SCOPED_TRACE(data.property);
+
+    SetBodyInnerHTML("<div id=test>Test</div>");
+    Element* element = GetDocument().getElementById("test");
+    ASSERT_TRUE(element);
+    EXPECT_FALSE(data.get_flag(element->ComputedStyleRef()));
+
+    CSSPropertyID property_id =
+        CssPropertyID(GetDocument().GetExecutionContext(), data.property);
+    ASSERT_TRUE(IsValidCSSPropertyID(property_id));
+    auto* effect = animation_test_helpers::CreateSimpleKeyframeEffectForTest(
+        element, property_id, data.before, data.after);
+    Animation* animation = GetDocument().Timeline().Play(effect);
+    UpdateAllLifecyclePhasesForTest();
+    EXPECT_FALSE(data.get_flag(element->ComputedStyleRef()));
+
+    StartAnimationOnCompositor(animation);
+    AdvanceClockSeconds(0.1);
+    UpdateAllLifecyclePhasesForTest();
+    EXPECT_TRUE(data.get_flag(element->ComputedStyleRef()));
+  }
+}
+
+TEST_P(CSSAnimationsTest, AnimationFlags_CompositablePaintAnimationChanged) {
+  ScopedCompositeBGColorAnimationForTest scoped_feature(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes anim {
+        from { background-color: green; }
+        to { background-color: red; }
+      }
+      #test { background-color: black; }
+      #test.animate { animation: anim 1s; }
+      #test.newtiming { animation-duration: 2s; }
+      #test.unrelated { --unrelated:1; }
+    </style>
+    <div id=test>Test</div>
+  )HTML");
+
+  Element* element = GetDocument().getElementById("test");
+  ASSERT_TRUE(element);
+
+  // Not animating yet:
+  EXPECT_FALSE(
+      element->ComputedStyleRef().HasCurrentBackgroundColorAnimation());
+  EXPECT_FALSE(element->ComputedStyleRef().CompositablePaintAnimationChanged());
+
+  // Newly created CSS animation:
+  element->classList().Add("animate");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(element->ComputedStyleRef().HasCurrentBackgroundColorAnimation());
+  EXPECT_TRUE(element->ComputedStyleRef().CompositablePaintAnimationChanged());
+
+  // Do an unrelated change to clear the flag.
+  element->classList().toggle("unrelated", ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(element->ComputedStyleRef().HasCurrentBackgroundColorAnimation());
+  EXPECT_FALSE(element->ComputedStyleRef().CompositablePaintAnimationChanged());
+
+  // Updated CSS animation:
+  element->classList().Add("newtiming");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(element->ComputedStyleRef().HasCurrentBackgroundColorAnimation());
+  EXPECT_TRUE(element->ComputedStyleRef().CompositablePaintAnimationChanged());
+
+  // Do an unrelated change to clear the flag.
+  element->classList().toggle("unrelated", ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(element->ComputedStyleRef().HasCurrentBackgroundColorAnimation());
+  EXPECT_FALSE(element->ComputedStyleRef().CompositablePaintAnimationChanged());
+
+  // Modify the animation outside of a style resolve:
+  ElementAnimations* animations = element->GetElementAnimations();
+  ASSERT_EQ(1u, animations->Animations().size());
+  Animation* animation = (*animations->Animations().begin()).key;
+  animation->setStartTime(MakeGarbageCollected<V8CSSNumberish>(0.5),
+                          ASSERT_NO_EXCEPTION);
+  EXPECT_TRUE(animation->CompositorPending());
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(element->ComputedStyleRef().HasCurrentBackgroundColorAnimation());
+  EXPECT_TRUE(element->ComputedStyleRef().CompositablePaintAnimationChanged());
+  EXPECT_FALSE(animation->CompositorPending());
+
+  // Do an unrelated change to clear the flag.
+  element->classList().toggle("unrelated", ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(element->ComputedStyleRef().HasCurrentBackgroundColorAnimation());
+  EXPECT_FALSE(element->ComputedStyleRef().CompositablePaintAnimationChanged());
+
+  // Change compositor snapshot values:
+  //
+  // TODO(crbug.com/1245806): We could invalidate the keyframes by using e.g.
+  // var()-references, and changing them in the base style, but it does
+  // currently not work for composited animations, hence the snapshot is
+  // invalidated artificially.
+  InvalidateCompositorKeyframesSnapshot(animation);
+  // Also do an "unrelated" change, to avoid IsAnimationStyleChange()==true.
+  element->classList().toggle("unrelated", ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(element->ComputedStyleRef().HasCurrentBackgroundColorAnimation());
+  EXPECT_TRUE(element->ComputedStyleRef().CompositablePaintAnimationChanged());
+
+  // Do an unrelated change to clear the flag.
+  element->classList().toggle("unrelated", ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(element->ComputedStyleRef().HasCurrentBackgroundColorAnimation());
+  EXPECT_FALSE(element->ComputedStyleRef().CompositablePaintAnimationChanged());
+
+  // Verify that paint is invalidated by a forced style resolve.
+  ASSERT_TRUE(element->GetLayoutObject());
+  EXPECT_FALSE(element->GetLayoutObject()->ShouldCheckForPaintInvalidation());
+  element->classList().toggle("newtiming", ASSERT_NO_EXCEPTION);
+  GetDocument().UpdateStyleAndLayoutTree();
+  EXPECT_TRUE(element->ComputedStyleRef().HasCurrentBackgroundColorAnimation());
+  EXPECT_TRUE(element->ComputedStyleRef().CompositablePaintAnimationChanged());
+  ASSERT_TRUE(element->GetLayoutObject());
+  EXPECT_TRUE(element->GetLayoutObject()->ShouldCheckForPaintInvalidation());
 }
 
 // The following group of tests verify that composited CSS animations are

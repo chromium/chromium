@@ -302,7 +302,8 @@ TEST_F(BackgroundColorPaintDefinitionTest,
   animation1->play();
   ASSERT_TRUE(element->GetElementAnimations());
   EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
-  element->GetElementAnimations()->UpdateAnimationFlags(*style);
+  style = GetDocument().GetStyleResolver().ResolveStyle(element,
+                                                        StyleRecalcContext());
   // Previously no background-color animation, now it has. This should trigger
   // a repaint, see ComputedStyle::UpdatePropertySpecificDifferences().
   EXPECT_TRUE(style->HasCurrentBackgroundColorAnimation());
@@ -325,7 +326,8 @@ TEST_F(BackgroundColorPaintDefinitionTest,
 
   ASSERT_TRUE(element->GetElementAnimations());
   EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 2u);
-  element->GetElementAnimations()->UpdateAnimationFlags(*style);
+  style = GetDocument().GetStyleResolver().ResolveStyle(element,
+                                                        StyleRecalcContext());
   EXPECT_TRUE(style->HasCurrentBackgroundColorAnimation());
   // CompositablePaintAnimationChanged() being true will trigger a repaint. See
   // ComputedStyle::UpdatePropertySpecificDifferences().
@@ -375,7 +377,8 @@ TEST_F(BackgroundColorPaintDefinitionTest, TriggerRepaintChangedKeyframe) {
   animation->play();
   ASSERT_TRUE(element->GetElementAnimations());
   EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
-  element->GetElementAnimations()->UpdateAnimationFlags(*style);
+  style = GetDocument().GetStyleResolver().ResolveStyle(element,
+                                                        StyleRecalcContext());
   // Previously no background-color animation, now it has. This should trigger
   // a repaint, see ComputedStyle::UpdatePropertySpecificDifferences().
   EXPECT_TRUE(style->HasCurrentBackgroundColorAnimation());
@@ -393,7 +396,8 @@ TEST_F(BackgroundColorPaintDefinitionTest, TriggerRepaintChangedKeyframe) {
 
   ASSERT_TRUE(element->GetElementAnimations());
   EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
-  element->GetElementAnimations()->UpdateAnimationFlags(*style);
+  style = GetDocument().GetStyleResolver().ResolveStyle(element,
+                                                        StyleRecalcContext());
   EXPECT_TRUE(style->HasCurrentBackgroundColorAnimation());
   // CompositablePaintAnimationChanged() being true will trigger a repaint. See
   // ComputedStyle::UpdatePropertySpecificDifferences().

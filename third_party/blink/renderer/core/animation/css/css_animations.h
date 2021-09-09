@@ -101,6 +101,10 @@ class CORE_EXPORT CSSAnimations final {
                                           const ComputedStyle&,
                                           const ComputedStyle* parent_style);
 
+  static void UpdateAnimationFlags(Element&,
+                                   CSSAnimationUpdate&,
+                                   ComputedStyle& style);
+
   void SetPendingUpdate(const CSSAnimationUpdate& update) {
     ClearPendingUpdate();
     pending_update_.Copy(update);
@@ -187,6 +191,10 @@ class CORE_EXPORT CSSAnimations final {
     HashSet<PropertyHandle>& listed_properties;
     const CSSTransitionData* transition_data;
   };
+
+  static HeapHashSet<Member<const Animation>> CreateCancelledTransitionsSet(
+      ElementAnimations*,
+      CSSAnimationUpdate&);
 
   static void CalculateTransitionUpdateForProperty(
       TransitionUpdateState&,

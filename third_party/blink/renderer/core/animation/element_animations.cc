@@ -36,83 +36,9 @@
 
 namespace blink {
 
-namespace {
-
-void UpdateAnimationFlagsForEffect(const KeyframeEffect& effect,
-                                   ComputedStyle& style) {
-  if (effect.Affects(PropertyHandle(GetCSSPropertyOpacity())))
-    style.SetHasCurrentOpacityAnimation(true);
-  if (effect.Affects(PropertyHandle(GetCSSPropertyTransform())) ||
-      effect.Affects(PropertyHandle(GetCSSPropertyRotate())) ||
-      effect.Affects(PropertyHandle(GetCSSPropertyScale())) ||
-      effect.Affects(PropertyHandle(GetCSSPropertyTranslate())))
-    style.SetHasCurrentTransformAnimation(true);
-  if (effect.Affects(PropertyHandle(GetCSSPropertyFilter())))
-    style.SetHasCurrentFilterAnimation(true);
-  if (effect.Affects(PropertyHandle(GetCSSPropertyBackdropFilter())))
-    style.SetHasCurrentBackdropFilterAnimation(true);
-  if (effect.Affects(PropertyHandle(GetCSSPropertyBackgroundColor())))
-    style.SetHasCurrentBackgroundColorAnimation(true);
-  if (effect.Affects(PropertyHandle(GetCSSPropertyClipPath())))
-    style.SetHasCurrentClipPathAnimation(true);
-}
-
-}  // namespace
-
 ElementAnimations::ElementAnimations() : animation_style_change_(false) {}
 
 ElementAnimations::~ElementAnimations() = default;
-
-void ElementAnimations::UpdateAnimationFlags(ComputedStyle& style) {
-  for (const auto& entry : animations_) {
-    const Animation& animation = *entry.key;
-    DCHECK(animation.effect());
-    // FIXME: Needs to consider AnimationGroup once added.
-    DCHECK(IsA<KeyframeEffect>(animation.effect()));
-    const auto& effect = *To<KeyframeEffect>(animation.effect());
-    if (!effect.IsCurrent())
-      continue;
-    UpdateAnimationFlagsForEffect(effect, style);
-
-    // This animation animates background-color and some input of the animation
-    // is changed compared with the previous frame, so trigger a repaint.
-    if (RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
-        animation.CalculateAnimationPlayState() != Animation::kIdle &&
-        effect.Affects(PropertyHandle(GetCSSPropertyBackgroundColor())) &&
-        animation.CompositorPending()) {
-      style.SetCompositablePaintAnimationChanged(true);
-    }
-  }
-
-  for (const auto& entry : worklet_animations_) {
-    const KeyframeEffect& effect = *entry->GetEffect();
-    // TODO(majidvp): we should check the effect's phase before updating the
-    // style once the timing of effect is ready to use.
-    // https://crbug.com/814851.
-    UpdateAnimationFlagsForEffect(effect, style);
-  }
-
-  if (style.HasCurrentOpacityAnimation()) {
-    style.SetIsRunningOpacityAnimationOnCompositor(
-        effect_stack_.HasActiveAnimationsOnCompositor(
-            PropertyHandle(GetCSSPropertyOpacity())));
-  }
-  if (style.HasCurrentTransformAnimation()) {
-    style.SetIsRunningTransformAnimationOnCompositor(
-        effect_stack_.HasActiveAnimationsOnCompositor(
-            PropertyHandle(GetCSSPropertyTransform())));
-  }
-  if (style.HasCurrentFilterAnimation()) {
-    style.SetIsRunningFilterAnimationOnCompositor(
-        effect_stack_.HasActiveAnimationsOnCompositor(
-            PropertyHandle(GetCSSPropertyFilter())));
-  }
-  if (style.HasCurrentBackdropFilterAnimation()) {
-    style.SetIsRunningBackdropFilterAnimationOnCompositor(
-        effect_stack_.HasActiveAnimationsOnCompositor(
-            PropertyHandle(GetCSSPropertyBackdropFilter())));
-  }
-}
 
 void ElementAnimations::RestartAnimationOnCompositor() {
   for (const auto& entry : animations_)
