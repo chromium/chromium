@@ -20,13 +20,13 @@ class AppFetcherManager;
 class AppDiscoveryService : public KeyedService {
  public:
   explicit AppDiscoveryService(Profile* profile);
-  ~AppDiscoveryService() override;
   AppDiscoveryService(const AppDiscoveryService&) = delete;
   AppDiscoveryService& operator=(const AppDiscoveryService&) = delete;
+  ~AppDiscoveryService() override;
 
   // Queries for apps of the requested |result_type|.
   // |callback| is called when a response to the request is ready.
-  void GetApps(const ResultType& result_type, ResultCallback callback);
+  void GetApps(ResultType result_type, ResultCallback callback);
 
  private:
   std::unique_ptr<AppFetcherManager> app_fetcher_manager_;

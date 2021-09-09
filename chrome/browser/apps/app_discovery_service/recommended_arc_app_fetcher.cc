@@ -4,13 +4,13 @@
 
 #include "chrome/browser/apps/app_discovery_service/recommended_arc_app_fetcher.h"
 
-#include "base/values.h"
+#include <utility>
 
 namespace apps {
 
 void RecommendedArcAppFetcher::GetApps(ResultCallback callback) {
   // TODO(crbug.com/1223321) : Implement.
-  std::move(callback).Run(base::Value());
+  std::move(callback).Run({});
 }
 
 }  // namespace apps

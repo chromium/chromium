@@ -12,6 +12,9 @@
 
 namespace apps {
 
+// static
+AppFetcher* AppFetcherManager::g_test_fetcher_ = nullptr;
+
 AppFetcherManager::AppFetcherManager(Profile* profile)
     : recommended_arc_app_fetcher_(
           std::make_unique<RecommendedArcAppFetcher>()),
@@ -19,9 +22,14 @@ AppFetcherManager::AppFetcherManager(Profile* profile)
 
 AppFetcherManager::~AppFetcherManager() = default;
 
-void AppFetcherManager::GetApps(const ResultType& app_list_type,
+void AppFetcherManager::GetApps(ResultType result_type,
                                 ResultCallback callback) {
-  switch (app_list_type) {
+  if (g_test_fetcher_) {
+    g_test_fetcher_->GetApps(std::move(callback));
+    return;
+  }
+
+  switch (result_type) {
     case ResultType::kRecommendedArcApps:
       recommended_arc_app_fetcher_->GetApps(std::move(callback));
       return;
@@ -29,6 +37,11 @@ void AppFetcherManager::GetApps(const ResultType& app_list_type,
       remote_url_fetcher_->GetApps(std::move(callback));
       return;
   }
+}
+
+// static
+void AppFetcherManager::SetOverrideFetcherForTesting(AppFetcher* fetcher) {
+  g_test_fetcher_ = fetcher;
 }
 
 }  // namespace apps

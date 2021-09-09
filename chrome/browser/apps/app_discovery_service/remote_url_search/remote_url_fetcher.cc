@@ -13,12 +13,12 @@ RemoteUrlFetcher::RemoteUrlFetcher(Profile* profile) {}
 
 void RemoteUrlFetcher::GetApps(ResultCallback callback) {
   if (!IsRemoteUrlSearchEnabled()) {
-    std::move(callback).Run(base::Value());
+    std::move(callback).Run({});
     return;
   }
 
   // TODO(crbug.com/1244221): Unimplemented.
-  std::move(callback).Run(base::Value());
+  std::move(callback).Run({});
 }
 
 }  // namespace apps

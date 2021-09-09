@@ -13,9 +13,9 @@ namespace apps {
 class RecommendedArcAppFetcher : public AppFetcher {
  public:
   RecommendedArcAppFetcher() = default;
-  ~RecommendedArcAppFetcher() override = default;
   RecommendedArcAppFetcher(const RecommendedArcAppFetcher&) = delete;
   RecommendedArcAppFetcher& operator=(const RecommendedArcAppFetcher&) = delete;
+  ~RecommendedArcAppFetcher() override = default;
 
   // AppFetcher:
   void GetApps(ResultCallback callback) override;

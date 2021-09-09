@@ -5,11 +5,10 @@
 #ifndef CHROME_BROWSER_APPS_APP_DISCOVERY_SERVICE_APP_DISCOVERY_UTIL_H_
 #define CHROME_BROWSER_APPS_APP_DISCOVERY_SERVICE_APP_DISCOVERY_UTIL_H_
 
-#include "base/callback.h"
+#include <vector>
 
-namespace base {
-class Value;
-}  // namespace base
+#include "base/callback.h"
+#include "chrome/browser/apps/app_discovery_service/result.h"
 
 namespace apps {
 
@@ -18,13 +17,14 @@ enum class ResultType {
   kRemoteUrlSearch,
 };
 
-// TODO(crbug.com/1243545): Define an App struct instead of returning
-// base::Value.
-//
+enum class AppSource {
+  kPlay,
+};
+
 // TODO(crbug.com/1243546): Define error management. The ResultCallback
 // should have an error response to inform the consumer whether the request
 // was successful.
-using ResultCallback = base::OnceCallback<void(const base::Value& result)>;
+using ResultCallback = base::OnceCallback<void(std::vector<Result> results)>;
 
 }  // namespace apps
 

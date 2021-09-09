@@ -15,7 +15,7 @@ AppDiscoveryService::AppDiscoveryService(Profile* profile)
 
 AppDiscoveryService::~AppDiscoveryService() = default;
 
-void AppDiscoveryService::GetApps(const ResultType& result_type,
+void AppDiscoveryService::GetApps(ResultType result_type,
                                   ResultCallback callback) {
   app_fetcher_manager_->GetApps(result_type, std::move(callback));
 }

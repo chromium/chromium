@@ -13,8 +13,6 @@ class Profile;
 
 namespace apps {
 
-class RemoteUrlFetcher;
-
 // Interface implemented by app providers.
 class AppFetcher {
  public:
@@ -27,15 +25,19 @@ class AppFetcher {
 class AppFetcherManager {
  public:
   explicit AppFetcherManager(Profile* profile);
-  ~AppFetcherManager();
   AppFetcherManager(const AppFetcherManager&) = delete;
   AppFetcherManager& operator=(const AppFetcherManager&) = delete;
+  ~AppFetcherManager();
 
-  void GetApps(const ResultType& result_type, ResultCallback callback);
+  void GetApps(ResultType result_type, ResultCallback callback);
+
+  static void SetOverrideFetcherForTesting(AppFetcher* fetcher);
 
  private:
   std::unique_ptr<AppFetcher> recommended_arc_app_fetcher_;
-  std::unique_ptr<RemoteUrlFetcher> remote_url_fetcher_;
+  std::unique_ptr<AppFetcher> remote_url_fetcher_;
+
+  static AppFetcher* g_test_fetcher_;
 };
 
 }  // namespace apps
