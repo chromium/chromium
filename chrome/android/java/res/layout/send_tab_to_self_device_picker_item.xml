@@ -10,8 +10,8 @@
     android:minHeight="70dp"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:paddingStart="10dp"
-    android:paddingEnd="10dp">
+    android:paddingStart="29dp"
+    android:paddingEnd="34dp">
         <org.chromium.ui.widget.ChromeImageView
             android:id="@+id/device_icon"
             android:layout_width="wrap_content"
