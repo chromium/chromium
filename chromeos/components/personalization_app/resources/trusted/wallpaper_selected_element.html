@@ -3,28 +3,50 @@
     border-bottom: 1px solid var(--cros-separator-color);
     box-sizing: border-box;
     display: grid;
-    grid-template-columns: 224px 20px minmax(0, 1fr);
+    grid-template-columns: 224px 32px minmax(0, 1fr);
     grid-template-rows: 1fr 16px 34px 20px;
-    grid-template-areas: "image . text"
-                         "image . ."
-                         "image . buttons"
-                         ".     . .";
     height: 100%;
     margin: 0 8px;
   }
 
+  #container:not(.loading) {
+    grid-template-areas: "image . text"
+      "image . ."
+      "image . buttons"
+      ".     . .";
+  }
+
+  #container.loading {
+    grid-template-areas: "image . text"
+      "image . text"
+      "image . text"
+      ".     . .";
+  }
+
   #imageContainer,
   #imagePlaceholder {
+    --animation-delay: 1s;
     grid-area: image;
   }
 
   #textContainer,
   #textPlaceholder {
+    align-items: flex-start;
+    display: flex;
+    flex-flow: column nowrap;
     grid-area: text;
+    margin: 0;
   }
 
-  #buttonContainer,
-  #buttonPlaceholder {
+  #textContainer {
+    justify-content: flex-end;
+  }
+
+  #textPlaceholder {
+    justify-content: center;
+  }
+
+  #buttonContainer {
     grid-area: buttons;
   }
 
@@ -45,15 +67,8 @@
     width: 100%;
   }
 
-  #textContainer {
-    align-items: flex-start;
-    display: flex;
-    flex-flow: column nowrap;
-    justify-content: flex-end;
-    margin: 0;
-  }
-
-  #textContainer > * {
+  #textContainer > *,
+  #textPlaceholder > * {
     margin: 0;
     overflow: hidden;
     max-width: 100%;
@@ -65,14 +80,31 @@
     margin-top: 4px;
   }
 
+  #textPlaceholder > * + * {
+    margin-top: 8px;
+  }
+
   #textContainer > span:first-child {
     color: var(--cros-text-color-secondary);
     font: var(--cros-body-2-font);
   }
 
+  #textPlaceholder > .placeholder:first-child {
+    /* Each row is 83 ms after the prior element. */
+    --animation-delay: calc(1s + 83ms);
+    width: 20%;
+    height: 20px;
+  }
+
   #textContainer > span:nth-child(2) {
     color: var(--cros-text-color-primary);
     font: var(--cros-display-6-font);
+  }
+
+  #textPlaceholder > .placeholder:nth-child(2) {
+    --animation-delay: calc(1s + 83ms * 2);
+    width: 75%;
+    height: 24px;
   }
 
   #textContainer > span:nth-child(n+3) {
@@ -81,6 +113,12 @@
     font-size: 14px;
     font-weight: 400;
     line-height: 20px;
+  }
+
+  #textPlaceholder > .placeholder:nth-child(n+3) {
+    --animation-delay: calc(1s + 83ms * 3);
+    width: 33%;
+    height: 20px;
   }
 
   #wallpaperOptions .text,
@@ -106,12 +144,14 @@
     --iron-icon-width: 20px;
   }
 </style>
-<header id="container">
-  <template is="dom-if"
-      if="[[showPlaceholders_(isLoading_, showImage_)]]">
+<header id="container" class$="[[getContainerClass_(isLoading_, showImage_)]]">
+  <template is="dom-if" if="[[showPlaceholders_(isLoading_, showImage_)]]">
     <div id="imagePlaceholder" class="placeholder"></div>
-    <div id="textPlaceholder" class="placeholder"></div>
-    <div id="buttonPlaceholder" class="placeholder"></div>
+    <div id="textPlaceholder">
+      <div class="placeholder"></div>
+      <div class="placeholder"></div>
+      <div class="placeholder"></div>
+    </div>
   </template>
   <template is="dom-if" if="[[showImage_]]">
     <div id="imageContainer">

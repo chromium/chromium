@@ -540,6 +540,17 @@ export class WallpaperSelected extends WithPersonalizationStore {
         return WallpaperLayout.kCenter;
     }
   }
+
+  /**
+   * Return a container class depending on loading state.
+   * @param {boolean} isLoading
+   * @param {boolean} showImage
+   * @return {string}
+   * @private
+   */
+  getContainerClass_(isLoading, showImage) {
+    return this.showPlaceholders_(isLoading, showImage) ? 'loading' : '';
+  }
 }
 
 customElements.define(WallpaperSelected.is, WallpaperSelected);
