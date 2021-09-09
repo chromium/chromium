@@ -184,6 +184,15 @@ class GpuMemoryBufferVideoFramePool::PoolImpl
                                  scoped_refptr<VideoFrame> video_frame,
                                  FrameResources* frame_resources);
 
+  static void CopyRowsToBuffer(
+      GpuVideoAcceleratorFactories::OutputFormat output_format,
+      const size_t plane,
+      const size_t row,
+      const size_t rows_to_copy,
+      const gfx::Size coded_size,
+      const VideoFrame* video_frame,
+      FrameResources* frame_resources,
+      base::OnceClosure done);
   // Prepares GL resources, mailboxes and allocates the new VideoFrame. This has
   // to be run on `media_task_runner_`. On failure, this will release
   // `frame_resources` and return nullptr.
@@ -431,9 +440,7 @@ void CopyRowsToI420Buffer(int first_row,
                           const uint8_t* source,
                           int source_stride,
                           uint8_t* output,
-                          int dest_stride,
-                          base::OnceClosure done) {
-  base::ScopedClosureRunner done_runner(std::move(done));
+                          int dest_stride) {
   TRACE_EVENT2("media", "CopyRowsToI420Buffer", "bytes_per_row", bytes_per_row,
                "rows", rows);
 
@@ -465,9 +472,7 @@ void CopyRowsToP010Buffer(int first_row,
                           uint8_t* dest_y,
                           int dest_stride_y,
                           uint8_t* dest_uv,
-                          int dest_stride_uv,
-                          base::OnceClosure done) {
-  base::ScopedClosureRunner done_runner(std::move(done));
+                          int dest_stride_uv) {
   TRACE_EVENT2("media", "CopyRowsToP010Buffer", "width", width, "rows", rows);
 
   if (!dest_y || !dest_uv)
@@ -507,9 +512,7 @@ void CopyRowsToNV12Buffer(int first_row,
                           uint8_t* dest_y,
                           int dest_stride_y,
                           uint8_t* dest_uv,
-                          int dest_stride_uv,
-                          base::OnceClosure done) {
-  base::ScopedClosureRunner done_runner(std::move(done));
+                          int dest_stride_uv) {
   TRACE_EVENT2("media", "CopyRowsToNV12Buffer", "bytes_per_row", bytes_per_row,
                "rows", rows);
 
@@ -560,9 +563,7 @@ void CopyRowsToRGB10Buffer(bool is_argb,
                            int width,
                            const VideoFrame* source_frame,
                            uint8_t* output,
-                           int dest_stride,
-                           base::OnceClosure done) {
-  base::ScopedClosureRunner done_runner(std::move(done));
+                           int dest_stride) {
   TRACE_EVENT2("media", "CopyRowsToXR30Buffer", "bytes_per_row", width * 2,
                "rows", rows);
   if (!output)
@@ -629,9 +630,7 @@ void CopyRowsToRGBABuffer(bool is_rgba,
                           int width,
                           const VideoFrame* source_frame,
                           uint8_t* output,
-                          int dest_stride,
-                          base::OnceClosure done) {
-  base::ScopedClosureRunner done_runner(std::move(done));
+                          int dest_stride) {
   TRACE_EVENT2("media", "CopyRowsToRGBABuffer", "bytes_per_row", width * 2,
                "rows", rows);
 
@@ -948,8 +947,6 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CopyVideoFrameToGpuMemoryBuffers(
                           video_frame->timestamp().InNanoseconds()));
   // Post all the async tasks.
   for (size_t i = 0; i < num_planes; i += planes_per_copy) {
-    gfx::GpuMemoryBuffer* buffer =
-        frame_resources->plane_resources[i].gpu_memory_buffer.get();
     const int rows =
         VideoFrame::Rows(i, VideoFormat(output_format_), coded_size.height());
     const int rows_per_copy =
@@ -957,96 +954,82 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CopyVideoFrameToGpuMemoryBuffers(
 
     for (int row = 0; row < rows; row += rows_per_copy) {
       const int rows_to_copy = std::min(rows_per_copy, rows - row);
-      switch (output_format_) {
-        case GpuVideoAcceleratorFactories::OutputFormat::I420: {
-          const int bytes_per_row = VideoFrame::RowBytes(
-              i, VideoFormat(output_format_), coded_size.width());
-          worker_task_runner_->PostTask(
-              FROM_HERE,
-              base::BindOnce(&CopyRowsToI420Buffer, row, rows_to_copy,
-                             bytes_per_row, video_frame->BitDepth(),
-                             video_frame->visible_data(i),
-                             video_frame->stride(i),
-                             static_cast<uint8_t*>(buffer->memory(0)),
-                             buffer->stride(0), barrier));
-          break;
-        }
-        case GpuVideoAcceleratorFactories::OutputFormat::P010:
-          // Using base::Unretained(video_frame) here is safe because |barrier|
-          // keeps refptr of |video_frame| until all copy tasks are done.
-          worker_task_runner_->PostTask(
-              FROM_HERE,
-              base::BindOnce(
-                  &CopyRowsToP010Buffer, row, rows_to_copy, coded_size.width(),
-                  base::Unretained(video_frame.get()),
-                  static_cast<uint8_t*>(buffer->memory(0)), buffer->stride(0),
-                  static_cast<uint8_t*>(buffer->memory(1)), buffer->stride(1),
-                  barrier));
-          break;
-        case GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB:
-          // Using base::Unretained(video_frame) here is safe because |barrier|
-          // keeps refptr of |video_frame| until all copy tasks are done.
-          worker_task_runner_->PostTask(
-              FROM_HERE,
-              base::BindOnce(
-                  &CopyRowsToNV12Buffer, row, rows_to_copy, coded_size.width(),
-                  base::Unretained(video_frame.get()),
-                  static_cast<uint8_t*>(buffer->memory(0)), buffer->stride(0),
-                  static_cast<uint8_t*>(buffer->memory(1)), buffer->stride(1),
-                  barrier));
-          break;
-        case GpuVideoAcceleratorFactories::OutputFormat::NV12_DUAL_GMB: {
-          gfx::GpuMemoryBuffer* buffer2 =
-              frame_resources->plane_resources[1].gpu_memory_buffer.get();
-          // Using base::Unretained(video_frame) here is safe because |barrier|
-          // keeps refptr of |video_frame| until all copy tasks are done.
-          worker_task_runner_->PostTask(
-              FROM_HERE,
-              base::BindOnce(
-                  &CopyRowsToNV12Buffer, row, rows_to_copy, coded_size.width(),
-                  base::Unretained(video_frame.get()),
-                  static_cast<uint8_t*>(buffer->memory(0)), buffer->stride(0),
-                  static_cast<uint8_t*>(buffer2->memory(0)), buffer2->stride(0),
-                  barrier));
-          break;
-        }
-
-        case GpuVideoAcceleratorFactories::OutputFormat::XR30:
-        case GpuVideoAcceleratorFactories::OutputFormat::XB30: {
-          const bool is_argb = output_format_ ==
-                               GpuVideoAcceleratorFactories::OutputFormat::XR30;
-          // Using base::Unretained(video_frame) here is safe because |barrier|
-          // keeps refptr of |video_frame| until all copy tasks are done.
-          worker_task_runner_->PostTask(
-              FROM_HERE,
-              base::BindOnce(&CopyRowsToRGB10Buffer, is_argb, row, rows_to_copy,
-                             coded_size.width(),
-                             base::Unretained(video_frame.get()),
-                             static_cast<uint8_t*>(buffer->memory(0)),
-                             buffer->stride(0), barrier));
-          break;
-        }
-
-        case GpuVideoAcceleratorFactories::OutputFormat::RGBA:
-        case GpuVideoAcceleratorFactories::OutputFormat::BGRA: {
-          const bool is_rgba = output_format_ ==
-                               GpuVideoAcceleratorFactories::OutputFormat::RGBA;
-          // Using base::Unretained(video_frame) here is safe because |barrier|
-          // keeps refptr of |video_frame| until all copy tasks are done.
-          worker_task_runner_->PostTask(
-              FROM_HERE,
-              base::BindOnce(&CopyRowsToRGBABuffer, is_rgba, row, rows_to_copy,
-                             coded_size.width(),
-                             base::Unretained(video_frame.get()),
-                             static_cast<uint8_t*>(buffer->memory(0)),
-                             buffer->stride(0), barrier));
-          break;
-        }
-
-        case GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED:
-          NOTREACHED();
-      }
+      worker_task_runner_->PostTask(
+          FROM_HERE, base::BindOnce(&CopyRowsToBuffer, output_format_, i, row,
+                                    rows_to_copy, coded_size,
+                                    base::Unretained(video_frame.get()),
+                                    frame_resources, barrier));
     }
+  }
+}
+
+// static
+void GpuMemoryBufferVideoFramePool::PoolImpl::CopyRowsToBuffer(
+    GpuVideoAcceleratorFactories::OutputFormat output_format,
+    const size_t plane,
+    const size_t row,
+    const size_t rows_to_copy,
+    const gfx::Size coded_size,
+    const VideoFrame* video_frame,
+    FrameResources* frame_resources,
+    base::OnceClosure done) {
+  base::ScopedClosureRunner done_runner(std::move(done));
+  gfx::GpuMemoryBuffer* buffer =
+      frame_resources->plane_resources[plane].gpu_memory_buffer.get();
+  switch (output_format) {
+    case GpuVideoAcceleratorFactories::OutputFormat::I420: {
+      const int bytes_per_row = VideoFrame::RowBytes(
+          plane, VideoFormat(output_format), coded_size.width());
+      CopyRowsToI420Buffer(
+          row, rows_to_copy, bytes_per_row, video_frame->BitDepth(),
+          video_frame->visible_data(plane), video_frame->stride(plane),
+          static_cast<uint8_t*>(buffer->memory(0)), buffer->stride(0));
+      break;
+    }
+    case GpuVideoAcceleratorFactories::OutputFormat::P010:
+      CopyRowsToP010Buffer(
+          row, rows_to_copy, coded_size.width(), video_frame,
+          static_cast<uint8_t*>(buffer->memory(0)), buffer->stride(0),
+          static_cast<uint8_t*>(buffer->memory(1)), buffer->stride(1));
+      break;
+    case GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB:
+      CopyRowsToNV12Buffer(
+          row, rows_to_copy, coded_size.width(), video_frame,
+          static_cast<uint8_t*>(buffer->memory(0)), buffer->stride(0),
+          static_cast<uint8_t*>(buffer->memory(1)), buffer->stride(1));
+      break;
+    case GpuVideoAcceleratorFactories::OutputFormat::NV12_DUAL_GMB: {
+      gfx::GpuMemoryBuffer* buffer2 =
+          frame_resources->plane_resources[1].gpu_memory_buffer.get();
+      CopyRowsToNV12Buffer(
+          row, rows_to_copy, coded_size.width(), video_frame,
+          static_cast<uint8_t*>(buffer->memory(0)), buffer->stride(0),
+          static_cast<uint8_t*>(buffer2->memory(0)), buffer2->stride(0));
+      break;
+    }
+
+    case GpuVideoAcceleratorFactories::OutputFormat::XR30:
+    case GpuVideoAcceleratorFactories::OutputFormat::XB30: {
+      const bool is_argb =
+          output_format == GpuVideoAcceleratorFactories::OutputFormat::XR30;
+      CopyRowsToRGB10Buffer(
+          is_argb, row, rows_to_copy, coded_size.width(), video_frame,
+          static_cast<uint8_t*>(buffer->memory(0)), buffer->stride(0));
+      break;
+    }
+
+    case GpuVideoAcceleratorFactories::OutputFormat::RGBA:
+    case GpuVideoAcceleratorFactories::OutputFormat::BGRA: {
+      const bool is_rgba =
+          output_format == GpuVideoAcceleratorFactories::OutputFormat::RGBA;
+      CopyRowsToRGBABuffer(
+          is_rgba, row, rows_to_copy, coded_size.width(), video_frame,
+          static_cast<uint8_t*>(buffer->memory(0)), buffer->stride(0));
+      break;
+    }
+
+    case GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED:
+      NOTREACHED();
   }
 }
 
