@@ -21,6 +21,10 @@ namespace views {
 class Button;
 }  // namespace views
 
+namespace sharesheet {
+class SharesheetController;
+}  // namespace sharesheet
+
 namespace sharing_hub {
 
 class SharingHubBubbleView;
@@ -80,6 +84,7 @@ class SharingHubBubbleController
   void OnSharesheetClosed(views::Widget::ClosedReason reason);
 
   views::ViewTracker highlighted_button_tracker_;
+  sharesheet::SharesheetController* sharesheet_controller_ = nullptr;
 #endif
 
   // The web_contents associated with this controller.

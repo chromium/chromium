@@ -85,6 +85,14 @@ SharingHubBubbleController::~SharingHubBubbleController() {
   if (sharing_hub_bubble_view_) {
     sharing_hub_bubble_view_->Hide();
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (base::FeatureList::IsEnabled(features::kSharesheet) &&
+      base::FeatureList::IsEnabled(features::kChromeOSSharingHub) &&
+      sharesheet_controller_) {
+    sharesheet_controller_->CloseBubble(sharesheet::SharesheetResult::kCancel);
+  }
+#endif
 }
 
 // static
@@ -228,6 +236,10 @@ void SharingHubBubbleController::ShowSharesheet(
                      base::Unretained(this)),
       base::BindOnce(&SharingHubBubbleController::OnSharesheetClosed,
                      base::Unretained(this)));
+
+  // Save the controller in order to close the sharesheet if the tab is closed.
+  sharesheet_controller_ = sharesheet_service->GetSharesheetController(
+      web_contents_->GetTopLevelNativeWindow());
 }
 
 void SharingHubBubbleController::OnShareDelivered(
@@ -242,6 +254,8 @@ void SharingHubBubbleController::OnSharesheetClosed(
       views::Button::AsButton(highlighted_button_tracker_.view());
   if (button)
     button->SetHighlighted(false);
+
+  sharesheet_controller_ = nullptr;
 }
 #endif
 
