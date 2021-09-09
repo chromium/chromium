@@ -109,7 +109,6 @@ public class ChromeSurveyControllerIntegrationTest {
 
     @Test
     @MediumTest
-    @Features.DisableFeatures(ChromeFeatureList.MESSAGES_FOR_ANDROID_CHROME_SURVEY)
     public void testInfoBarClicked() throws TimeoutException {
         SurveyInfoBar surveyInfoBar = (SurveyInfoBar) getSurveyInfoBar();
         Assert.assertNotNull("SurveyInfoBar should not be null.", surveyInfoBar);
@@ -126,7 +125,6 @@ public class ChromeSurveyControllerIntegrationTest {
 
     @Test
     @MediumTest
-    @Features.DisableFeatures(ChromeFeatureList.MESSAGES_FOR_ANDROID_CHROME_SURVEY)
     public void testInfoBarClose() throws TimeoutException {
         InfoBar surveyInfoBar = getSurveyInfoBar();
         Assert.assertNotNull("SurveyInfoBar should not be null.", surveyInfoBar);
@@ -140,7 +138,6 @@ public class ChromeSurveyControllerIntegrationTest {
 
     @Test
     @MediumTest
-    @Features.DisableFeatures(ChromeFeatureList.MESSAGES_FOR_ANDROID_CHROME_SURVEY)
     public void testNoInfoBarInNewTab() throws InterruptedException {
         waitUntilInfoBarStateRecorded();
 

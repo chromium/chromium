@@ -175,13 +175,15 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithMessages_20210831",
+                    "name": "EnabledWithInfobars_20210803",
                     "params": {
                         "max-number": "10",
                         "site-id": "78FakAwAN0tK1KeaPYj0PoiAHrrQ"
                     },
                     "enable_features": [
-                        "ChromeSurveyNextAndroid",
+                        "ChromeSurveyNextAndroid"
+                    ],
+                    "disable_features": [
                         "MessagesForAndroidChromeSurvey"
                     ]
                 }
