@@ -624,7 +624,7 @@ class Driver(object):
         if error_line.startswith('#LEAK - '):
             self._leaked = True
             match = re.match(r'#LEAK - (\S+) pid (\d+) (.+)\n', error_line)
-            self._leak_log = match.group(3)
+            self._leak_log = (match.group(3)).encode('utf-8')
         return self._leaked
 
     def _command_from_driver_input(self, driver_input):
