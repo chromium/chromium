@@ -13,6 +13,9 @@ namespace whats_new {
 const char kChromeWhatsNewURL[] = "https://www.google.com/chrome/whats-new/";
 const char kChromeWhatsNewURLShort[] = "google.com/chrome/whats-new/";
 
+// The latest version of What's New.
+const int kMaxWhatsNewVersion = 94;
+
 bool g_force_enable_for_tests = false;
 
 bool ShouldShowForState(PrefService* local_state) {
@@ -23,7 +26,11 @@ bool ShouldShowForState(PrefService* local_state) {
     return false;
 
   int last_version = local_state->GetInteger(prefs::kLastWhatsNewVersion);
-  return CHROME_VERSION_MAJOR > last_version;
+
+  // Show What's New if the current version is the user has updated since last
+  // seeing What's New and has not yet seen the latest version of the page.
+  return CHROME_VERSION_MAJOR > last_version &&
+         kMaxWhatsNewVersion > last_version;
 }
 
 void SetLastVersion(PrefService* local_state) {

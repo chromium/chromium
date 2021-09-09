@@ -10,6 +10,7 @@ class PrefService;
 namespace whats_new {
 extern const char kChromeWhatsNewURL[];
 extern const char kChromeWhatsNewURLShort[];
+extern const int kMaxWhatsNewVersion;
 
 // Allows tests to force What's New to stay open even if loading remote content
 // doesn't succeed, since this does not work in tests.
