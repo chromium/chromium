@@ -123,8 +123,6 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 @property(nonatomic, assign) BOOL needsSectionCleanupAfterEditing;
 // Handler for URL drag interactions.
 @property(nonatomic, strong) TableViewURLDragDropHandler* dragDropHandler;
-// The toggle setting of showing the Reading List Messages prompt.
-@property(nonatomic, strong) SyncSwitchItem* messagesPromptToggleSwitchItem;
 @end
 
 @implementation ReadingListTableViewController
@@ -280,6 +278,27 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 
 #pragma mark - UITableViewDataSource
 
+- (UITableViewCell*)tableView:(UITableView*)tableView
+        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
+  UITableViewCell* cell = [super tableView:tableView
+                     cellForRowAtIndexPath:indexPath];
+  if ([cell isKindOfClass:[SettingsSwitchCell class]]) {
+    DCHECK(IsReadingListMessagesEnabled());
+    SettingsSwitchCell* switchCell =
+        base::mac::ObjCCastStrict<SettingsSwitchCell>(cell);
+    PrefService* user_prefs = self.browser->GetBrowserState()->GetPrefs();
+    BOOL neverShowPrefSet =
+        user_prefs->GetBoolean(kPrefReadingListMessagesNeverShow);
+    switchCell.switchView.on = !neverShowPrefSet;
+    [switchCell.switchView addTarget:self
+                              action:@selector(switchAction:)
+                    forControlEvents:UIControlEventValueChanged];
+    TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
+    switchCell.switchView.tag = item.type;
+  }
+  return cell;
+}
+
 - (UIView*)tableView:(UITableView*)tableView
     viewForFooterInSection:(NSInteger)section {
   UIView* footer = [super tableView:tableView viewForFooterInSection:section];
@@ -329,9 +348,6 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
   DCHECK(IsReadingListMessagesEnabled());
   if (preferenceName == kPrefReadingListMessagesNeverShow) {
-    PrefService* user_prefs = self.browser->GetBrowserState()->GetPrefs();
-    self.messagesPromptToggleSwitchItem.on =
-        !user_prefs->GetBoolean(kPrefReadingListMessagesNeverShow);
     NSIndexPath* indexPath = [self.tableViewModel
         indexPathForItemType:SwitchItemType
            sectionIdentifier:SectionIdentifierMessagesSwitch];
@@ -720,15 +736,12 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 - (void)addPromptToggleItemAndSection {
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:SectionIdentifierMessagesSwitch];
-  self.messagesPromptToggleSwitchItem =
+  SyncSwitchItem* switchItem =
       [[SyncSwitchItem alloc] initWithType:SwitchItemType];
-  self.messagesPromptToggleSwitchItem.text =
+  switchItem.text =
       l10n_util::GetNSString(IDS_IOS_READING_LIST_MESSAGES_SETTING_TITLE);
-  self.messagesPromptToggleSwitchItem.enabled = YES;
-  PrefService* user_prefs = self.browser->GetBrowserState()->GetPrefs();
-  self.messagesPromptToggleSwitchItem.on =
-      !user_prefs->GetBoolean(kPrefReadingListMessagesNeverShow);
-  [model addItem:self.messagesPromptToggleSwitchItem
+  switchItem.enabled = YES;
+  [model addItem:switchItem
       toSectionWithIdentifier:SectionIdentifierMessagesSwitch];
   TableViewLinkHeaderFooterItem* footerItem =
       [[TableViewLinkHeaderFooterItem alloc] initWithType:SwitchItemFooterType];
