@@ -996,6 +996,17 @@ void NGLineBreaker::SplitTextIntoSegements(const NGInlineItem& item,
   DCHECK_EQ(offset_, item.StartOffset());
 
   const ShapeResult& shape = *item.TextShapeResult();
+  if (shape.NumGlyphs() == 0) {
+    NGInlineItemResult* result = AddItem(item, line_info);
+    result->shape_result = ShapeResultView::Create(&shape);
+    result->inline_size = shape.SnappedWidth();
+    offset_ = item.EndOffset();
+    position_ += result->inline_size;
+    trailing_whitespace_ = WhitespaceState::kUnknown;
+    MoveToNextOf(item);
+    return;
+  }
+
   Vector<unsigned> index_list;
   index_list.ReserveCapacity(shape.NumGlyphs());
   shape.ForEachGlyph(0, CollectCharIndex, &index_list);

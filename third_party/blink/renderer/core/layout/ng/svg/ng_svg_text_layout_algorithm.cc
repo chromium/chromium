@@ -277,6 +277,9 @@ void NGSvgTextLayoutAlgorithm::ResolveTextLength(
 
   float shift;
   if (length_adjust == kSVGLengthAdjustSpacingAndGlyphs) {
+    // If the target range contains no glyphs, we do nothing.
+    if (min_position >= max_position)
+      return;
     float length_adjust_scale = text_length / (max_position - min_position);
     for (wtf_size_t k = i; k < j_plus_1; ++k) {
       SvgPerCharacterInfo& info = result_[k];
