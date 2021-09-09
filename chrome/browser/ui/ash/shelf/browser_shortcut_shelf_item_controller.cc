@@ -11,6 +11,8 @@
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/wm/desks/desks_util.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/ash/full_restore/full_restore_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/ash_util.h"
@@ -166,6 +168,8 @@ BrowserShortcutShelfItemController::GetAppMenuItems(
     if (browser->is_type_normal())
       found_tabbed_browser = true;
     if (!(event_flags & ui::EF_SHIFT_DOWN)) {
+      base::RecordAction(base::UserMetricsAction(
+          "Shelf_BrowserShortcutShelfItem_ShowWindows"));
       app_menu_items.push_back({browser, kNoTab});
       auto* tab = tab_strip->GetActiveWebContents();
       const gfx::Image& icon =
@@ -176,6 +180,8 @@ BrowserShortcutShelfItemController::GetAppMenuItems(
       items.push_back({static_cast<int>(app_menu_items.size() - 1),
                        controller->GetAppMenuTitle(tab), icon.AsImageSkia()});
     } else {
+      base::RecordAction(
+          base::UserMetricsAction("Shelf_BrowserShortcutShelfItem_ShowTabs"));
       for (int i = 0; i < tab_strip->count(); ++i) {
         auto* tab = tab_strip->GetWebContentsAt(i);
         app_menu_items.push_back({browser, i});
