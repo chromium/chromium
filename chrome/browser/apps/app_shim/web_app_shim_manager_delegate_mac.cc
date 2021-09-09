@@ -198,11 +198,12 @@ void WebAppShimManagerDelegate::LaunchApp(
              ->registrar()
              .IsApprovedLaunchProtocol(app_id, protocol_url.scheme())) {
       auto launch_callback = base::BindOnce(
-          [](apps::AppLaunchParams params, Profile* profile, bool accepted) {
-            if (accepted) {
-              web_app::WebAppProvider* provider =
-                  web_app::WebAppProvider::GetForWebApps(profile);
-              {
+          [](apps::AppLaunchParams params, Profile* profile, bool allowed,
+             bool remember_user_choice) {
+            if (allowed) {
+              if (remember_user_choice) {
+                web_app::WebAppProvider* provider =
+                    web_app::WebAppProvider::GetForWebApps(profile);
                 web_app::ScopedRegistryUpdate update(&provider->sync_bridge());
                 web_app::WebApp* app_to_update =
                     update->UpdateApp(params.app_id);

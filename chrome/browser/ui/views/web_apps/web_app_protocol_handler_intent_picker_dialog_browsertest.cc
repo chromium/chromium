@@ -56,8 +56,10 @@ IN_PROC_BROWSER_TEST_F(
   GURL protocol_url("web+test://test");
   web_app::AppId test_app_id = InstallTestWebApp(browser()->profile());
 
-  base::MockCallback<base::OnceCallback<void(bool)>> show_dialog;
-  EXPECT_CALL(show_dialog, Run(false));
+  base::MockCallback<chrome::WebAppProtocolHandlerAcceptanceCallback>
+      show_dialog;
+  EXPECT_CALL(show_dialog,
+              Run(/*allowed=*/false, /*remember_user_choice=*/false));
 
   auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
       browser()->profile(),
@@ -80,8 +82,10 @@ IN_PROC_BROWSER_TEST_F(
   GURL protocol_url("web+test://test");
   web_app::AppId test_app_id = InstallTestWebApp(browser()->profile());
 
-  base::MockCallback<base::OnceCallback<void(bool)>> show_dialog;
-  EXPECT_CALL(show_dialog, Run(true));
+  base::MockCallback<chrome::WebAppProtocolHandlerAcceptanceCallback>
+      show_dialog;
+  EXPECT_CALL(show_dialog,
+              Run(/*allowed=*/true, /*remember_user_choice=*/true));
 
   auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
       browser()->profile(),

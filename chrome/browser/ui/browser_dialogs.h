@@ -160,9 +160,10 @@ void SetAutoAcceptAppIdentityUpdateForTesting(bool auto_accept);
 
 #if !defined(OS_ANDROID)
 // Callback used to indicate whether a user has accepted the launch of a
-// web app. The boolean parameter is true when the user accepts the dialog.
+// web app. The |allowed| is true when the user allows the app to launch.
+// |remember_user_choice| is true if the user wants to persist the decision.
 using WebAppProtocolHandlerAcceptanceCallback =
-    base::OnceCallback<void(bool accepted)>;
+    base::OnceCallback<void(bool allowed, bool remember_user_choice)>;
 
 // Shows the Web App Protocol Handler Intent Picker view.
 // |profile| is kept alive throughout the processing and running of

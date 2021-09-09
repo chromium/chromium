@@ -74,12 +74,13 @@ void OnProtocolHandlerDialogCompleted(
     std::unique_ptr<ScopedKeepAlive> keep_alive,
     std::vector<std::unique_ptr<ScopedProfileKeepAlive>> profile_keep_alives,
     web_app::startup::FinalizeWebAppLaunchCallback app_launched_callback,
-    bool accepted) {
+    bool allowed,
+    bool remember_user_choice) {
   // Allow the process to exit without opening a browser.
-  if (!accepted)
+  if (!allowed)
     return;
 
-  {
+  if (remember_user_choice) {
     web_app::WebAppProvider* const provider =
         web_app::WebAppProvider::GetForWebApps(profile);
     DCHECK(provider);

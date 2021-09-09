@@ -60,7 +60,7 @@ class WebAppProtocolHandlerIntentPickerView : public views::DialogDelegateView {
   void Initialize();
 
   // Runs the close_callback_ provided during Show() if it exists.
-  void RunCloseCallback(bool accepted);
+  void RunCloseCallback(bool allowed, bool remember_user_choice);
 
   const GURL url_;
   Profile* const profile_;

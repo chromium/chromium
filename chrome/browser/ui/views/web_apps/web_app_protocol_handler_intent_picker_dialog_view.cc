@@ -125,13 +125,12 @@ gfx::Size WebAppProtocolHandlerIntentPickerView::CalculatePreferredSize()
                    GetHeightForWidth(kMaxIntentPickerWidth));
 }
 
-
 void WebAppProtocolHandlerIntentPickerView::OnAccepted() {
-  RunCloseCallback(/*accepted=*/true);
+  RunCloseCallback(/*allowed=*/true, /*remember_user_choice=*/true);
 }
 
 void WebAppProtocolHandlerIntentPickerView::OnCanceled() {
-  RunCloseCallback(/*accepted=*/false);
+  RunCloseCallback(/*allowed=*/false, /*remember_user_choice=*/false);
 }
 
 void WebAppProtocolHandlerIntentPickerView::OnClosed() {
@@ -184,9 +183,11 @@ void WebAppProtocolHandlerIntentPickerView::Initialize() {
   layout->AddPaddingRow(views::GridLayout::kFixedSize, kRowHeight);
 }
 
-void WebAppProtocolHandlerIntentPickerView::RunCloseCallback(bool accepted) {
+void WebAppProtocolHandlerIntentPickerView::RunCloseCallback(
+    bool allowed,
+    bool remember_user_choice) {
   if (close_callback_) {
-    std::move(close_callback_).Run(accepted);
+    std::move(close_callback_).Run(allowed, remember_user_choice);
   }
 }
 
