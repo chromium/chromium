@@ -217,6 +217,7 @@ BlockListedFeatures GetDisallowedFeatures(
       WebSchedulerTrackedFeature::kBroadcastChannel,
       WebSchedulerTrackedFeature::kContainsPlugins,
       WebSchedulerTrackedFeature::kDedicatedWorkerOrWorklet,
+      WebSchedulerTrackedFeature::kDummy,
       WebSchedulerTrackedFeature::kIdleManager,
       WebSchedulerTrackedFeature::kIndexedDBConnection,
       WebSchedulerTrackedFeature::kKeyboardLock,

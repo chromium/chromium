@@ -1523,6 +1523,10 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
       return Page::BackForwardCacheNotRestoredReasonEnum::InjectedJavascript;
     case WebSchedulerTrackedFeature::kInjectedStyleSheet:
       return Page::BackForwardCacheNotRestoredReasonEnum::InjectedStyleSheet;
+    case WebSchedulerTrackedFeature::kDummy:
+      // This is a test only reason and should never be called.
+      NOTREACHED();
+      return Page::BackForwardCacheNotRestoredReasonEnum::Dummy;
   }
 }
 
@@ -1738,6 +1742,7 @@ Page::BackForwardCacheNotRestoredReasonType MapBlocklistedFeatureToType(
     case WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoCache:
     case WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoStore:
     case WebSchedulerTrackedFeature::kDocumentLoaded:
+    case WebSchedulerTrackedFeature::kDummy:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::Circumstantial;
   }
 }

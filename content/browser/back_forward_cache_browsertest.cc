@@ -2826,6 +2826,33 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       FROM_HERE);
 }
 
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       DoesNotCacheWithDummyStickyFeature) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // 1) Navigate to a page and start using the dummy sticky feature.
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  RenderFrameDeletedObserver rfh_a_deleted(rfh_a.get());
+  rfh_a->UseDummyStickySchedulerTrackedFeatureForTesting();
+
+  // 2) Navigate away.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
+
+  // The page uses the dummy sticky feature so it should be deleted.
+  rfh_a_deleted.WaitUntilDeleted();
+
+  // 3) Go back and make sure the dummy sticky feature page wasn't in the cache.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectNotRestored(
+      {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
+      {blink::scheduler::WebSchedulerTrackedFeature::kDummy}, {}, {},
+      FROM_HERE);
+}
+
 // Tests which blocklisted features are tracked in the metrics when we used
 // blocklisted features (sticky and non-sticky) and do a browser-initiated
 // cross-site navigation.
@@ -2843,15 +2870,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       static_cast<SiteInstanceImpl*>(rfh_a->GetSiteInstance());
   RenderFrameDeletedObserver rfh_a_deleted(rfh_a);
 
-  // 2) Use BroadcastChannel (non-sticky) and KeyboardLock (sticky) blocklisted
+  // 2) Use BroadcastChannel (non-sticky) and a dummy sticky blocklisted
   // features.
   EXPECT_TRUE(ExecJs(rfh_a, "window.foo = new BroadcastChannel('foo');"));
-  EXPECT_TRUE(ExecJs(rfh_a, R"(
-    new Promise(resolve => {
-      navigator.keyboard.lock();
-      resolve();
-    });
-  )"));
+  rfh_a->UseDummyStickySchedulerTrackedFeatureForTesting();
 
   // 3) Navigate cross-site, browser-initiated.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
@@ -2873,7 +2895,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // RenderFrameHostManager::UnloadOldFrame.
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
-      {blink::scheduler::WebSchedulerTrackedFeature::kKeyboardLock}, {}, {},
+      {blink::scheduler::WebSchedulerTrackedFeature::kDummy}, {}, {},
       FROM_HERE);
 }
 
@@ -2895,15 +2917,10 @@ IN_PROC_BROWSER_TEST_F(
   scoped_refptr<SiteInstanceImpl> site_instance_a =
       static_cast<SiteInstanceImpl*>(rfh_a->GetSiteInstance());
 
-  // 2) Use BroadcastChannel (non-sticky) and KeyboardLock (sticky) blocklisted
+  // 2) Use BroadcastChannel (non-sticky) and Dummy sticky blocklisted
   // features.
   EXPECT_TRUE(ExecJs(rfh_a, "window.foo = new BroadcastChannel('foo');"));
-  EXPECT_TRUE(ExecJs(rfh_a, R"(
-    new Promise(resolve => {
-      navigator.keyboard.lock();
-      resolve();
-    });
-  )"));
+  rfh_a->UseDummyStickySchedulerTrackedFeatureForTesting();
 
   // 3) Navigate cross-site, renderer-inititated.
   EXPECT_TRUE(ExecJs(shell(), JsReplace("location = $1;", url_b.spec())));
@@ -2927,7 +2944,7 @@ IN_PROC_BROWSER_TEST_F(
          BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures,
          BackForwardCacheMetrics::NotRestoredReason::
              kBrowsingInstanceNotSwapped},
-        {blink::scheduler::WebSchedulerTrackedFeature::kKeyboardLock},
+        {blink::scheduler::WebSchedulerTrackedFeature::kDummy},
         {ShouldSwapBrowsingInstance::kNo_NotNeededForBackForwardCache}, {},
         FROM_HERE);
 
@@ -2952,7 +2969,7 @@ IN_PROC_BROWSER_TEST_F(
             BackForwardCacheMetrics::NotRestoredReason::
                 kBrowsingInstanceNotSwapped,
         },
-        {blink::scheduler::WebSchedulerTrackedFeature::kKeyboardLock},
+        {blink::scheduler::WebSchedulerTrackedFeature::kDummy},
         {ShouldSwapBrowsingInstance::kNo_NotNeededForBackForwardCache}, {},
         FROM_HERE);
   }
@@ -2976,15 +2993,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   scoped_refptr<SiteInstanceImpl> site_instance_1 =
       static_cast<SiteInstanceImpl*>(rfh_1->GetSiteInstance());
 
-  // 2) Use BroadcastChannel (non-sticky) and KeyboardLock (sticky) blocklisted
-  // features.
+  // 2) Use BroadcastChannel (non-sticky) and dummy sticky blocklisted features.
   EXPECT_TRUE(ExecJs(rfh_1, "window.foo = new BroadcastChannel('foo');"));
-  EXPECT_TRUE(ExecJs(rfh_1, R"(
-    new Promise(resolve => {
-      navigator.keyboard.lock();
-      resolve();
-    });
-  )"));
+  rfh_1->UseDummyStickySchedulerTrackedFeatureForTesting();
 
   // 3) Navigate same-site.
   EXPECT_TRUE(NavigateToURL(shell(), url_2));
@@ -3006,7 +3017,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
           BackForwardCacheMetrics::NotRestoredReason::
               kBrowsingInstanceNotSwapped,
       },
-      {blink::scheduler::WebSchedulerTrackedFeature::kKeyboardLock},
+      {blink::scheduler::WebSchedulerTrackedFeature::kDummy},
       {ShouldSwapBrowsingInstance::kNo_NotNeededForBackForwardCache}, {},
       FROM_HERE);
 }
@@ -3951,15 +3962,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url_1));
   RenderFrameHostImpl* rfh_1 = current_frame_host();
   RenderFrameDeletedObserver delete_observer_rfh_1(rfh_1);
-  // 2) Use keyboard lock (a sticky blocklisted feature), so that the page is
-  // known to be ineligible for bfcache at commit time, before we dispatch the
-  // pagehide event.
-  EXPECT_TRUE(ExecJs(rfh_1, R"(
-    new Promise(resolve => {
-      navigator.keyboard.lock();
-      resolve();
-    });
-  )"));
+  // 2) Use a dummy sticky blocklisted feature, so that the page is known to be
+  // ineligible for bfcache at commit time, before we dispatch pagehide event.
+  rfh_1->UseDummyStickySchedulerTrackedFeatureForTesting();
 
   EXPECT_TRUE(ExecJs(rfh_1, R"(
     window.onpagehide = (e) => {

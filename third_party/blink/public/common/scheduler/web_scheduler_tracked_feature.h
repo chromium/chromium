@@ -109,9 +109,11 @@ enum class WebSchedulerTrackedFeature : uint32_t {
   // kMediaSessionImplOnServiceCreated = 56, Removed after implementing
   // MediaSessionImplOnServiceCreated support in back/forward cache.
   kWebTransport = 57,
+  // This should be used only for testing.
+  kDummy = 58,
 
   // NB: This enum is used in a bitmask, so kMaxValue must be less than 64.
-  kMaxValue = kWebTransport,
+  kMaxValue = kDummy,
 };
 
 using WebSchedulerTrackedFeatures =

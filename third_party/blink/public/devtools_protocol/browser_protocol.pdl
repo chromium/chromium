@@ -7926,6 +7926,7 @@ domain Page
       OutstandingNetworkRequestDirectSocket
       InjectedJavascript
       InjectedStyleSheet
+      Dummy
       # Disabled for render frame host reasons
       ContentSecurityHandler
       ContentWebAuthenticationAPI

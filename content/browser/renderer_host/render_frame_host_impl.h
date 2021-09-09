@@ -453,6 +453,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void EvictFromBackForwardCacheWithReasons(
       const BackForwardCacheCanStoreDocumentResult& can_store);
 
+  // Only for testing sticky WebSchedulerTrackedFeature.
+  void UseDummyStickySchedulerTrackedFeatureForTesting();
+
   // Returns the current WebPreferences for the WebContents associated with this
   // RenderFrameHost. Will create one if it does not exist (and update all the
   // renderers with the newly computed value).

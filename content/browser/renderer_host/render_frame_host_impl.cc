@@ -5831,6 +5831,11 @@ void RenderFrameHostImpl::EvictFromBackForwardCacheWithReasons(
       .PostTaskToDestroyEvictedFrames();
 }
 
+void RenderFrameHostImpl::UseDummyStickySchedulerTrackedFeatureForTesting() {
+  OnSchedulerTrackedFeatureUsed(
+      blink::scheduler::WebSchedulerTrackedFeature::kDummy);
+}
+
 bool RenderFrameHostImpl::HasSeenRecentXrOverlaySetup() {
   static constexpr base::TimeDelta kMaxInterval =
       base::TimeDelta::FromSeconds(1);
