@@ -11,7 +11,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/android/send_tab_to_self/android_notification_handler.h"
 #include "chrome/browser/android/send_tab_to_self/send_tab_to_self_entry_bridge.h"
-#include "chrome/browser/android/send_tab_to_self/send_tab_to_self_infobar.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/send_tab_to_self/receiving_ui_handler_registry.h"
@@ -21,7 +20,6 @@
 #include "chrome/browser/share/android/jni_headers/TargetDeviceInfo_jni.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
-#include "components/send_tab_to_self/send_tab_to_self_infobar_delegate.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/send_tab_to_self/target_device_info.h"
@@ -203,34 +201,6 @@ static jboolean JNI_SendTabToSelfAndroidBridge_IsFeatureAvailable(
       content::WebContents::FromJavaWebContents(j_web_contents);
 
   return ShouldOfferFeature(web_contents);
-}
-
-static void JNI_SendTabToSelfAndroidBridge_ShowInfoBar(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& j_web_contents,
-    const JavaParamRef<jstring>& j_guid,
-    const JavaParamRef<jstring>& j_url,
-    const JavaParamRef<jstring>& j_target_device_sync_cache_guid) {
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(j_web_contents);
-  const std::string guid = ConvertJavaStringToUTF8(env, j_guid);
-  const std::string url = ConvertJavaStringToUTF8(env, j_url);
-  const std::string target_device_sync_cache_guid =
-      ConvertJavaStringToUTF8(env, j_target_device_sync_cache_guid);
-
-  std::unique_ptr<SendTabToSelfEntry> entry =
-      SendTabToSelfEntry::FromRequiredFields(guid, GURL(url),
-                                             target_device_sync_cache_guid);
-
-  // The entry fields were malformed so don't show an infobar. Theoretically,
-  // this should never happen because a malformed entry can not be synced
-  // to the server but it doesn't hurt to check.
-  if (!entry) {
-    return;
-  }
-  std::unique_ptr<SendTabToSelfInfoBarDelegate> delegate =
-      SendTabToSelfInfoBarDelegate::Create(web_contents, entry.release());
-  SendTabToSelfInfoBar::ShowInfoBar(web_contents, std::move(delegate));
 }
 
 static void JNI_SendTabToSelfAndroidBridge_UpdateActiveWebContents(

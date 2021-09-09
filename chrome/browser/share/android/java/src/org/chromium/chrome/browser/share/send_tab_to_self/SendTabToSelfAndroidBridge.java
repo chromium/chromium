@@ -129,17 +129,6 @@ public class SendTabToSelfAndroidBridge {
     }
 
     /**
-     * Shows an infobar for the webcontents passed in.
-     *
-     * @param entry Contains the URL to open when the user taps on the infobar.
-     * @param webContents Where to create the infobar.
-     */
-    public static void showInfoBar(SendTabToSelfEntry entry, WebContents webContents) {
-        SendTabToSelfAndroidBridgeJni.get().showInfoBar(
-                webContents, entry.guid, entry.url, entry.targetDeviceSyncCacheGuid);
-    }
-
-    /**
      * @param profile Profile of the user for whom to retrieve the targetDeviceInfos.
      * @returns All {@link TargetDeviceInfo} for the user.
      */
@@ -189,9 +178,6 @@ public class SendTabToSelfAndroidBridge {
         SendTabToSelfEntry getEntryByGUID(Profile profile, String guid);
 
         boolean isFeatureAvailable(WebContents webContents);
-
-        void showInfoBar(
-                WebContents webContents, String guid, String url, String targetDeviceSyncCacheGuid);
 
         void getAllTargetDeviceInfos(Profile profile, List<TargetDeviceInfo> guids);
 

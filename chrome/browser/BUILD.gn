@@ -2886,8 +2886,6 @@ static_library("browser") {
       "android/send_tab_to_self/send_tab_to_self_android_bridge.cc",
       "android/send_tab_to_self/send_tab_to_self_entry_bridge.cc",
       "android/send_tab_to_self/send_tab_to_self_entry_bridge.h",
-      "android/send_tab_to_self/send_tab_to_self_infobar.cc",
-      "android/send_tab_to_self/send_tab_to_self_infobar.h",
       "android/send_tab_to_self/send_tab_to_self_model_observer_bridge.cc",
       "android/send_tab_to_self/send_tab_to_self_model_observer_bridge.h",
       "android/service_tab_launcher.cc",
