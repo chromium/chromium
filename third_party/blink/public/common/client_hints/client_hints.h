@@ -19,19 +19,11 @@ namespace blink {
 
 class PermissionsPolicy;
 
-// Mapping from WebClientHintsType to the hint's outgoing header
-// (e.g. kLang => "lang"). The ordering matches the ordering of enums in
-// services/network/public/mojom/web_client_hints_types.mojom
-BLINK_COMMON_EXPORT extern const char* const kClientHintsHeaderMapping[];
-
 // Mapping from WebClientHintsType to the corresponding Permissions-Policy (e.g.
 // kDpr => kClientHintsDPR). The order matches the header mapping and the enum
 // order in services/network/public/mojom/web_client_hints_types.mojom
 BLINK_COMMON_EXPORT extern const mojom::PermissionsPolicyFeature
     kClientHintsPermissionsPolicyMapping[];
-
-// The size of the mapping arrays.
-BLINK_COMMON_EXPORT extern const size_t kClientHintsMappingsCount;
 
 // Mapping from WebEffectiveConnectionType to the header value. This value is
 // sent to the origins and is returned by the JavaScript API. The ordering

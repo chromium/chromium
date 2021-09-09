@@ -39,6 +39,7 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/http/structured_headers.h"
+#include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-blink.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -376,7 +377,7 @@ void FrameFetchContext::PrepareRequest(
 
   const bool ua_reduced =
       request.HttpHeaderField(
-          blink::kClientHintsHeaderMapping[static_cast<size_t>(
+          network::kClientHintsNameMapping[static_cast<size_t>(
               network::mojom::blink::WebClientHintsType::kUAReduced)]) == "?1";
   String user_agent = ua_reduced ? GetReducedUserAgent() : GetUserAgent();
   base::UmaHistogramBoolean("Blink.Fetch.ReducedUserAgent", ua_reduced);

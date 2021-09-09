@@ -20,7 +20,7 @@ namespace blink {
 ClientHintsPreferences::ClientHintsPreferences() {
   DCHECK_EQ(
       static_cast<size_t>(network::mojom::WebClientHintsType::kMaxValue) + 1,
-      kClientHintsMappingsCount);
+      network::kClientHintsNameMappingCount);
 }
 
 void ClientHintsPreferences::UpdateFrom(

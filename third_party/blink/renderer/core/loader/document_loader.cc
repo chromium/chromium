@@ -36,6 +36,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_tick_clock.h"
 #include "build/chromeos_buildflags.h"
+#include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
@@ -2595,7 +2596,7 @@ void DocumentLoader::RecordUseCountersForCommit() {
     CountUse(WebFeature::kRequiredDocumentPolicy);
 
   FrameClientHintsPreferencesContext hints_context(frame_);
-  for (size_t i = 0; i < kClientHintsMappingsCount; ++i) {
+  for (size_t i = 0; i < network::kClientHintsNameMappingCount; ++i) {
     auto type = static_cast<network::mojom::WebClientHintsType>(i);
     if (client_hints_preferences_.ShouldSend(type))
       hints_context.CountClientHints(type);

@@ -26,10 +26,10 @@ const char* const kClientHintsNameMapping[] = {
     "sec-ch-ua-platform-version", "sec-ch-prefers-color-scheme",
     "sec-ch-ua-bitness", "sec-ch-ua-reduced", "sec-ch-viewport-height"};
 
-const size_t kClientHintsMappingsCount = base::size(kClientHintsNameMapping);
+const size_t kClientHintsNameMappingCount = base::size(kClientHintsNameMapping);
 
 static_assert(
-    base::size(kClientHintsNameMapping) ==
+    kClientHintsNameMappingCount ==
         (static_cast<int>(network::mojom::WebClientHintsType::kMaxValue) + 1),
     "Client Hint name table size must match network::mojom::WebClientHintsType "
     "range");

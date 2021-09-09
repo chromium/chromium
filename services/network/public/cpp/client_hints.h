@@ -20,7 +20,7 @@ namespace network {
 // services/network/public/mojom/web_client_hints_types.mojom
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const char* const kClientHintsNameMapping[];
-COMPONENT_EXPORT(NETWORK_CPP) extern const size_t kClientHintsMappingsCount;
+COMPONENT_EXPORT(NETWORK_CPP) extern const size_t kClientHintsNameMappingCount;
 
 // Tries to parse an Accept-CH header. Returns absl::nullopt if parsing
 // failed and the header should be ignored; otherwise returns a (possibly

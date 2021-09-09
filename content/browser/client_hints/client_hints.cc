@@ -206,7 +206,7 @@ void SetHeaderToDouble(net::HttpRequestHeaders* headers,
                        WebClientHintsType client_hint_type,
                        double value) {
   headers->SetHeader(
-      blink::kClientHintsHeaderMapping[static_cast<int>(client_hint_type)],
+      network::kClientHintsNameMapping[static_cast<int>(client_hint_type)],
       DoubleToSpecCompliantString(value));
 }
 
@@ -214,7 +214,7 @@ void SetHeaderToInt(net::HttpRequestHeaders* headers,
                     WebClientHintsType client_hint_type,
                     double value) {
   headers->SetHeader(
-      blink::kClientHintsHeaderMapping[static_cast<int>(client_hint_type)],
+      network::kClientHintsNameMapping[static_cast<int>(client_hint_type)],
       base::NumberToString(std::round(value)));
 }
 
@@ -222,14 +222,14 @@ void SetHeaderToString(net::HttpRequestHeaders* headers,
                        WebClientHintsType client_hint_type,
                        const std::string& value) {
   headers->SetHeader(
-      blink::kClientHintsHeaderMapping[static_cast<int>(client_hint_type)],
+      network::kClientHintsNameMapping[static_cast<int>(client_hint_type)],
       value);
 }
 
 void RemoveClientHintHeader(WebClientHintsType client_hint_type,
                             net::HttpRequestHeaders* headers) {
   headers->RemoveHeader(
-      blink::kClientHintsHeaderMapping[static_cast<int>(client_hint_type)]);
+      network::kClientHintsNameMapping[static_cast<int>(client_hint_type)]);
 }
 
 void AddDeviceMemoryHeader(net::HttpRequestHeaders* headers) {

@@ -25,6 +25,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
@@ -473,15 +474,15 @@ void PrefetchProxyProxyingURLLoaderFactory::OnEligibilityResult(
   isolated_request.headers.RemoveHeader("Accept-Language");
 
   // Strip out all Client Hints.
-  for (size_t i = 0; i < blink::kClientHintsMappingsCount; ++i) {
+  for (size_t i = 0; i < network::kClientHintsNameMappingCount; ++i) {
     // UA Client Hint and UA Mobile are ok to send.
-    if (std::string(blink::kClientHintsHeaderMapping[i]) ==
+    if (std::string(network::kClientHintsNameMapping[i]) ==
             kAllowedUAClientHint ||
-        std::string(blink::kClientHintsHeaderMapping[i]) ==
+        std::string(network::kClientHintsNameMapping[i]) ==
             kAllowedUAMobileClientHint) {
       continue;
     }
-    isolated_request.headers.RemoveHeader(blink::kClientHintsHeaderMapping[i]);
+    isolated_request.headers.RemoveHeader(network::kClientHintsNameMapping[i]);
   }
 
   ResourceLoadSuccessfulCallback resource_load_successful_callback =

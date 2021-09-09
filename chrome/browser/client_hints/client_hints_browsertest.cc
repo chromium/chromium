@@ -98,9 +98,9 @@ class ThirdPartyURLLoaderInterceptor {
       return false;
 
     request_count_seen_++;
-    for (size_t i = 0; i < blink::kClientHintsMappingsCount; ++i) {
+    for (size_t i = 0; i < network::kClientHintsNameMappingCount; ++i) {
       if (params->url_request.headers.HasHeader(
-              blink::kClientHintsHeaderMapping[i])) {
+              network::kClientHintsNameMapping[i])) {
         client_hints_count_seen_++;
       }
     }
@@ -676,17 +676,17 @@ class ClientHintsBrowserTest : public InProcessBrowserTest,
       }
     }
 
-    for (size_t i = 0; i < blink::kClientHintsMappingsCount; ++i) {
+    for (size_t i = 0; i < network::kClientHintsNameMappingCount; ++i) {
       if (base::Contains(request.headers,
-                         blink::kClientHintsHeaderMapping[i])) {
+                         network::kClientHintsNameMapping[i])) {
         base::AutoLock lock(count_headers_lock_);
         // The user agent hint is special:
-        if (std::string(blink::kClientHintsHeaderMapping[i]) == "sec-ch-ua") {
+        if (std::string(network::kClientHintsNameMapping[i]) == "sec-ch-ua") {
           count_user_agent_hint_headers_seen_++;
-        } else if (std::string(blink::kClientHintsHeaderMapping[i]) ==
+        } else if (std::string(network::kClientHintsNameMapping[i]) ==
                    "sec-ch-ua-mobile") {
           count_ua_mobile_client_hints_headers_seen_++;
-        } else if (std::string(blink::kClientHintsHeaderMapping[i]) ==
+        } else if (std::string(network::kClientHintsNameMapping[i]) ==
                    "sec-ch-ua-platform") {
           count_ua_platform_client_hints_headers_seen_++;
         } else {
@@ -698,20 +698,20 @@ class ClientHintsBrowserTest : public InProcessBrowserTest,
 
   void VerifyClientHintsReceived(bool expect_client_hints,
                                  const net::test_server::HttpRequest& request) {
-    for (size_t i = 0; i < blink::kClientHintsMappingsCount; ++i) {
+    for (size_t i = 0; i < network::kClientHintsNameMappingCount; ++i) {
       SCOPED_TRACE(testing::Message()
-                   << std::string(blink::kClientHintsHeaderMapping[i]));
+                   << std::string(network::kClientHintsNameMapping[i]));
       // Resource width client hint is only attached on image subresources.
-      if (std::string(blink::kClientHintsHeaderMapping[i]) == "width") {
+      if (std::string(network::kClientHintsNameMapping[i]) == "width") {
         continue;
       }
 
       // `Sec-CH-UA`, `Sec-CH-UA-Mobile`, and `Sec-CH-UA-Platform` is attached
       // on all requests.
-      if (std::string(blink::kClientHintsHeaderMapping[i]) == "sec-ch-ua" ||
-          std::string(blink::kClientHintsHeaderMapping[i]) ==
+      if (std::string(network::kClientHintsNameMapping[i]) == "sec-ch-ua" ||
+          std::string(network::kClientHintsNameMapping[i]) ==
               "sec-ch-ua-mobile" ||
-          std::string(blink::kClientHintsHeaderMapping[i]) ==
+          std::string(network::kClientHintsNameMapping[i]) ==
               "sec-ch-ua-platform") {
         continue;
       }
@@ -720,14 +720,14 @@ class ClientHintsBrowserTest : public InProcessBrowserTest,
       // in the presence of a valid "UserAgentReduction" Origin Trial token.
       // `Sec-CH-UA-Reduced` is tested via UaReducedOriginTrialBrowserTest
       // below.
-      if (std::string(blink::kClientHintsHeaderMapping[i]) ==
+      if (std::string(network::kClientHintsNameMapping[i]) ==
           "sec-ch-ua-reduced") {
         continue;
       }
 
       EXPECT_EQ(
           expect_client_hints,
-          base::Contains(request.headers, blink::kClientHintsHeaderMapping[i]));
+          base::Contains(request.headers, network::kClientHintsNameMapping[i]));
     }
   }
 
@@ -873,16 +873,16 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Bool());
 
 IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, CorsChecks) {
-  for (size_t i = 0; i < blink::kClientHintsMappingsCount; ++i) {
+  for (size_t i = 0; i < network::kClientHintsNameMappingCount; ++i) {
     // Do not test for headers that have not been enabled on the blink "stable"
     // yet.
-    if (std::string(blink::kClientHintsHeaderMapping[i]) == "rtt" ||
-        std::string(blink::kClientHintsHeaderMapping[i]) == "downlink" ||
-        std::string(blink::kClientHintsHeaderMapping[i]) == "ect") {
+    if (std::string(network::kClientHintsNameMapping[i]) == "rtt" ||
+        std::string(network::kClientHintsNameMapping[i]) == "downlink" ||
+        std::string(network::kClientHintsNameMapping[i]) == "ect") {
       continue;
     }
     EXPECT_TRUE(network::cors::IsCorsSafelistedHeader(
-        blink::kClientHintsHeaderMapping[i], "42" /* value */));
+        network::kClientHintsNameMapping[i], "42" /* value */));
   }
   EXPECT_FALSE(network::cors::IsCorsSafelistedHeader("not-a-client-hint-header",
                                                      "" /* value */));
@@ -2266,7 +2266,7 @@ class ClientHintsAcceptCHFrameObserverBrowserTest
 
   std::vector<network::mojom::WebClientHintsType> all_client_hints_types() {
     std::vector<network::mojom::WebClientHintsType> hints;
-    for (size_t i = 0; i < blink::kClientHintsMappingsCount; i++) {
+    for (size_t i = 0; i < network::kClientHintsNameMappingCount; i++) {
       hints.push_back(static_cast<network::mojom::WebClientHintsType>(i));
     }
 

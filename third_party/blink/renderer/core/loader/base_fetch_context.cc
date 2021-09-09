@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/loader/base_fetch_context.h"
 
 #include "net/http/structured_headers.h"
+#include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/request_mode.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/device_memory/approximated_device_memory.h"
@@ -158,7 +159,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
                              network::mojom::blink::WebClientHintsType::kUA,
                              hints_preferences)) {
       request.SetHttpHeaderField(
-          blink::kClientHintsHeaderMapping[static_cast<size_t>(
+          network::kClientHintsNameMapping[static_cast<size_t>(
               network::mojom::blink::WebClientHintsType::kUA)],
           ua->SerializeBrandVersionList().c_str());
     }
@@ -172,7 +173,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
             network::mojom::blink::WebClientHintsType::kUAMobile,
             hints_preferences)) {
       request.SetHttpHeaderField(
-          blink::kClientHintsHeaderMapping[static_cast<size_t>(
+          network::kClientHintsNameMapping[static_cast<size_t>(
               network::mojom::blink::WebClientHintsType::kUAMobile)],
           SerializeBoolHeader(ua->mobile));
     }
@@ -228,7 +229,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
             hints_preferences) &&
         image_info->viewport_height) {
       request.SetHttpHeaderField(
-          blink::kClientHintsHeaderMapping[static_cast<size_t>(
+          network::kClientHintsNameMapping[static_cast<size_t>(
               network::mojom::blink::WebClientHintsType::kViewportHeight)],
           AtomicString(String::Number(image_info->viewport_height.value())));
     }
@@ -260,7 +261,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
     uint32_t rtt =
         GetNetworkStateNotifier().RoundRtt(request.Url().Host(), http_rtt);
     request.SetHttpHeaderField(
-        blink::kClientHintsHeaderMapping[static_cast<size_t>(
+        network::kClientHintsNameMapping[static_cast<size_t>(
             network::mojom::blink::WebClientHintsType::kRtt_DEPRECATED)],
         AtomicString(String::Number(rtt)));
   }
@@ -278,7 +279,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
     double mbps = GetNetworkStateNotifier().RoundMbps(request.Url().Host(),
                                                       throughput_mbps);
     request.SetHttpHeaderField(
-        blink::kClientHintsHeaderMapping[static_cast<size_t>(
+        network::kClientHintsNameMapping[static_cast<size_t>(
             network::mojom::blink::WebClientHintsType::kDownlink_DEPRECATED)],
         AtomicString(String::Number(mbps)));
   }
@@ -293,7 +294,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
       holdback_ect = GetNetworkStateNotifier().EffectiveType();
 
     request.SetHttpHeaderField(
-        blink::kClientHintsHeaderMapping[static_cast<size_t>(
+        network::kClientHintsNameMapping[static_cast<size_t>(
             network::mojom::blink::WebClientHintsType::kEct_DEPRECATED)],
         AtomicString(NetworkStateNotifier::EffectiveConnectionTypeToString(
             holdback_ect.value())));
@@ -305,7 +306,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
                            hints_preferences) &&
       lang) {
     request.SetHttpHeaderField(
-        blink::kClientHintsHeaderMapping[static_cast<size_t>(
+        network::kClientHintsNameMapping[static_cast<size_t>(
             network::mojom::blink::WebClientHintsType::kLang)],
         lang.value());
   }
@@ -317,7 +318,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
                              network::mojom::blink::WebClientHintsType::kUAArch,
                              hints_preferences)) {
       request.SetHttpHeaderField(
-          blink::kClientHintsHeaderMapping[static_cast<size_t>(
+          network::kClientHintsNameMapping[static_cast<size_t>(
               network::mojom::blink::WebClientHintsType::kUAArch)],
           SerializeStringHeader(ua->architecture));
     }
@@ -327,7 +328,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
             network::mojom::blink::WebClientHintsType::kUAPlatform,
             hints_preferences)) {
       request.SetHttpHeaderField(
-          blink::kClientHintsHeaderMapping[static_cast<size_t>(
+          network::kClientHintsNameMapping[static_cast<size_t>(
               network::mojom::blink::WebClientHintsType::kUAPlatform)],
           SerializeStringHeader(ua->platform));
     }
@@ -337,7 +338,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
             network::mojom::blink::WebClientHintsType::kUAPlatformVersion,
             hints_preferences)) {
       request.SetHttpHeaderField(
-          blink::kClientHintsHeaderMapping[static_cast<size_t>(
+          network::kClientHintsNameMapping[static_cast<size_t>(
               network::mojom::blink::WebClientHintsType::kUAPlatformVersion)],
           SerializeStringHeader(ua->platform_version));
     }
@@ -347,7 +348,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
             network::mojom::blink::WebClientHintsType::kUAModel,
             hints_preferences)) {
       request.SetHttpHeaderField(
-          blink::kClientHintsHeaderMapping[static_cast<size_t>(
+          network::kClientHintsNameMapping[static_cast<size_t>(
               network::mojom::blink::WebClientHintsType::kUAModel)],
           SerializeStringHeader(ua->model));
     }
@@ -357,7 +358,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
             network::mojom::blink::WebClientHintsType::kUAFullVersion,
             hints_preferences)) {
       request.SetHttpHeaderField(
-          blink::kClientHintsHeaderMapping[static_cast<size_t>(
+          network::kClientHintsNameMapping[static_cast<size_t>(
               network::mojom::blink::WebClientHintsType::kUAFullVersion)],
           SerializeStringHeader(ua->full_version));
     }
@@ -367,7 +368,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
             network::mojom::blink::WebClientHintsType::kUABitness,
             hints_preferences)) {
       request.SetHttpHeaderField(
-          blink::kClientHintsHeaderMapping[static_cast<size_t>(
+          network::kClientHintsNameMapping[static_cast<size_t>(
               network::mojom::blink::WebClientHintsType::kUABitness)],
           SerializeStringHeader(ua->bitness));
     }
@@ -380,7 +381,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
       // preferences, it means the Origin Trial token for User-Agent Reduction
       // has already been validated.
       request.SetHttpHeaderField(
-          blink::kClientHintsHeaderMapping[static_cast<size_t>(
+          network::kClientHintsNameMapping[static_cast<size_t>(
               network::mojom::blink::WebClientHintsType::kUAReduced)],
           SerializeBoolHeader(true));
     }
@@ -392,7 +393,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
           hints_preferences) &&
       prefers_color_scheme) {
     request.SetHttpHeaderField(
-        blink::kClientHintsHeaderMapping[static_cast<size_t>(
+        network::kClientHintsNameMapping[static_cast<size_t>(
             network::mojom::blink::WebClientHintsType::kPrefersColorScheme)],
         prefers_color_scheme.value());
   }

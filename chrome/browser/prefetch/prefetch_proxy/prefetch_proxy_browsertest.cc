@@ -117,6 +117,7 @@
 #include "net/test/test_data_directory.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
+#include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -627,26 +628,26 @@ class PrefetchProxyBrowserTest
   }
 
   bool RequestHasClientHints(const net::test_server::HttpRequest& request) {
-    for (size_t i = 0; i < blink::kClientHintsMappingsCount; ++i) {
+    for (size_t i = 0; i < network::kClientHintsNameMappingCount; ++i) {
       // The UA {mobile} Client Hint is whitelisted so we don't check it.
-      if (std::string(blink::kClientHintsHeaderMapping[i]) ==
+      if (std::string(network::kClientHintsNameMapping[i]) ==
           std::string(kAllowedUAClientHint)) {
         continue;
       }
 
-      if (std::string(blink::kClientHintsHeaderMapping[i]) ==
+      if (std::string(network::kClientHintsNameMapping[i]) ==
           std::string(kAllowedUAMobileClientHint)) {
         continue;
       }
 
-      if (std::string(blink::kClientHintsHeaderMapping[i]) ==
+      if (std::string(network::kClientHintsNameMapping[i]) ==
           std::string(kAllowedUAPlatformClientHint)) {
         continue;
       }
 
       if (base::Contains(request.headers,
-                         blink::kClientHintsHeaderMapping[i])) {
-        LOG(WARNING) << "request has " << blink::kClientHintsHeaderMapping[i];
+                         network::kClientHintsNameMapping[i])) {
+        LOG(WARNING) << "request has " << network::kClientHintsNameMapping[i];
 
         return true;
       }

@@ -12,19 +12,12 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
+#include "services/network/public/cpp/client_hints.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "url/origin.h"
 
 namespace blink {
-
-const char* const kClientHintsHeaderMapping[] = {
-    "device-memory", "dpr", "width", "viewport-width", "rtt", "downlink", "ect",
-    // TODO(https://https://crbug.com/1227043) Remove lang client hint.
-    "lang", "sec-ch-ua", "sec-ch-ua-arch", "sec-ch-ua-platform",
-    "sec-ch-ua-model", "sec-ch-ua-mobile", "sec-ch-ua-full-version",
-    "sec-ch-ua-platform-version", "sec-ch-prefers-color-scheme",
-    "sec-ch-ua-bitness", "sec-ch-ua-reduced", "sec-ch-viewport-height"};
 
 const unsigned kClientHintsNumberOfLegacyHints = 4;
 
@@ -53,18 +46,11 @@ const mojom::PermissionsPolicyFeature kClientHintsPermissionsPolicyMapping[] = {
     mojom::PermissionsPolicyFeature::kClientHintViewportHeight,
 };
 
-const size_t kClientHintsMappingsCount = base::size(kClientHintsHeaderMapping);
-
 static_assert(
-    base::size(kClientHintsHeaderMapping) ==
-        (static_cast<int>(network::mojom::WebClientHintsType::kMaxValue) + 1),
-    "Client Hint name table size must match network::mojom::WebClientHintsType "
-    "range");
-
-static_assert(base::size(kClientHintsPermissionsPolicyMapping) ==
-                  kClientHintsMappingsCount,
-              "Client Hint table sizes must be identical between names and "
-              "feature policies");
+    base::size(kClientHintsPermissionsPolicyMapping) ==
+        static_cast<int>(network::mojom::WebClientHintsType::kMaxValue) + 1,
+    "Client Hint table sizes must be identical between types and feature "
+    "policies");
 
 const char* const kWebEffectiveConnectionTypeMapping[] = {
     "4g" /* Unknown */, "4g" /* Offline */, "slow-2g" /* Slow 2G */,
@@ -110,7 +96,7 @@ void FindClientHintsToRemove(const PermissionsPolicy* permissions_policy,
     // Do not remove any legacy Client Hints
     startHint = kClientHintsNumberOfLegacyHints;
   }
-  for (size_t i = startHint; i < blink::kClientHintsMappingsCount; ++i) {
+  for (size_t i = startHint; i < network::kClientHintsNameMappingCount; ++i) {
     // Remove the hint if any is true:
     // * Permissions policy is null (we're in a sync XHR case) and the hint is
     // not sent by default.
@@ -121,7 +107,7 @@ void FindClientHintsToRemove(const PermissionsPolicy* permissions_policy,
         (permissions_policy &&
          !permissions_policy->IsFeatureEnabledForOrigin(
              blink::kClientHintsPermissionsPolicyMapping[i], origin))) {
-      removed_headers->push_back(blink::kClientHintsHeaderMapping[i]);
+      removed_headers->push_back(network::kClientHintsNameMapping[i]);
     }
   }
 }

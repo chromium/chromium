@@ -13,3 +13,6 @@ specific_include_rules = {
         "+services/network/public/cpp/resource_request.h"
     ],
 }
+include_rules = [
+  "+services/network/public/cpp/client_hints.h",
+]

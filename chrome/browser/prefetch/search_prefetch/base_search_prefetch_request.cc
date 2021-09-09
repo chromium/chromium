@@ -25,6 +25,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
@@ -90,7 +91,7 @@ std::string GetUserAgentValue(const net::HttpRequestHeaders& headers) {
   // If Sec-CH-UA-Reduced is set on the headers, it means that the token for the
   // UserAgentReduction Origin Trial has been validated and we should send a
   // reduced UA string on the request.
-  std::string header = blink::kClientHintsHeaderMapping[static_cast<int>(
+  std::string header = network::kClientHintsNameMapping[static_cast<int>(
       network::mojom::WebClientHintsType::kUAReduced)];
   std::string value;
   return headers.GetHeader(header, &value) && value == "?1"

@@ -85,6 +85,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -2555,7 +2556,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestClientHintsEnabled,
       "<html>");
   http_response.Done();
   const std::string mobile_id =
-      blink::kClientHintsHeaderMapping[static_cast<int>(
+      network::kClientHintsNameMapping[static_cast<int>(
           network::mojom::WebClientHintsType::kUAMobile)];
   ASSERT_TRUE(base::Contains(http_response.http_request()->headers, mobile_id));
   // "?!" corresponds to "mobile=true".
