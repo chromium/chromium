@@ -142,18 +142,9 @@ void ContentIndexDatabase::AddEntry(
     blink::mojom::ContentIndexService::AddCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  auto wrapped_callback = base::BindOnce(
-      [](blink::mojom::ContentIndexService::AddCallback callback,
-         blink::mojom::ContentIndexError error) {
-        GetUIThreadTaskRunner({})->PostTask(
-            FROM_HERE, base::BindOnce(std::move(callback), error));
-      },
-      std::move(callback));
-
   if (blocked_origins_.count(origin)) {
     // TODO(crbug.com/973844): Does this need a more specific error?
-    std::move(wrapped_callback)
-        .Run(blink::mojom::ContentIndexError::STORAGE_ERROR);
+    std::move(callback).Run(blink::mojom::ContentIndexError::STORAGE_ERROR);
     content_index::RecordRegistrationBlocked(description->category);
     return;
   }
@@ -163,14 +154,12 @@ void ContentIndexDatabase::AddEntry(
           service_worker_registration_id);
   if (!service_worker_registration ||
       !service_worker_registration->active_version()) {
-    std::move(wrapped_callback)
-        .Run(blink::mojom::ContentIndexError::NO_SERVICE_WORKER);
+    std::move(callback).Run(blink::mojom::ContentIndexError::NO_SERVICE_WORKER);
     return;
   }
 
   if (!service_worker_registration->key().origin().IsSameOriginWith(origin)) {
-    std::move(wrapped_callback)
-        .Run(blink::mojom::ContentIndexError::STORAGE_ERROR);
+    std::move(callback).Run(blink::mojom::ContentIndexError::STORAGE_ERROR);
     return;
   }
 
@@ -183,7 +172,7 @@ void ContentIndexDatabase::AddEntry(
                      weak_ptr_factory_.GetWeakPtr(),
                      service_worker_registration_id, origin,
                      std::move(description), launch_url,
-                     std::move(serialized_icons), std::move(wrapped_callback)));
+                     std::move(serialized_icons), std::move(callback)));
 
   for (const auto& icon : icons) {
     SerializeIcon(icon,
@@ -239,10 +228,7 @@ void ContentIndexDatabase::DidAddEntry(
 
   std::vector<ContentIndexEntry> entries;
   entries.push_back(std::move(entry));
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ContentIndexDatabase::NotifyProviderContentAdded,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(entries)));
+  NotifyProviderContentAdded(std::move(entries));
 }
 
 void ContentIndexDatabase::DeleteEntry(
@@ -252,16 +238,8 @@ void ContentIndexDatabase::DeleteEntry(
     blink::mojom::ContentIndexService::DeleteCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  auto wrapped_callback = base::BindOnce(
-      [](blink::mojom::ContentIndexService::DeleteCallback callback,
-         blink::mojom::ContentIndexError error) {
-        GetUIThreadTaskRunner({})->PostTask(
-            FROM_HERE, base::BindOnce(std::move(callback), error));
-      },
-      std::move(callback));
-
   DeleteEntryImpl(service_worker_registration_id, origin, entry_id,
-                  std::move(wrapped_callback));
+                  std::move(callback));
 }
 
 void ContentIndexDatabase::DeleteEntryImpl(
@@ -303,11 +281,8 @@ void ContentIndexDatabase::DidDeleteEntry(
 
   std::move(callback).Run(blink::mojom::ContentIndexError::NONE);
 
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ContentIndexDatabase::NotifyProviderContentDeleted,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     service_worker_registration_id, origin, entry_id));
+  NotifyProviderContentDeleted(service_worker_registration_id, origin,
+                               entry_id);
 }
 
 void ContentIndexDatabase::GetDescriptions(
@@ -316,24 +291,13 @@ void ContentIndexDatabase::GetDescriptions(
     blink::mojom::ContentIndexService::GetDescriptionsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  auto wrapped_callback = base::BindOnce(
-      [](blink::mojom::ContentIndexService::GetDescriptionsCallback callback,
-         blink::mojom::ContentIndexError error,
-         std::vector<blink::mojom::ContentDescriptionPtr> descriptions) {
-        GetUIThreadTaskRunner({})->PostTask(
-            FROM_HERE, base::BindOnce(std::move(callback), error,
-                                      std::move(descriptions)));
-      },
-      std::move(callback));
-
   scoped_refptr<ServiceWorkerRegistration> service_worker_registration =
       service_worker_context_->GetLiveRegistration(
           service_worker_registration_id);
   if (!service_worker_registration ||
       !service_worker_registration->key().origin().IsSameOriginWith(origin)) {
-    std::move(wrapped_callback)
-        .Run(blink::mojom::ContentIndexError::STORAGE_ERROR,
-             /* descriptions= */ {});
+    std::move(callback).Run(blink::mojom::ContentIndexError::STORAGE_ERROR,
+                            /* descriptions= */ {});
     return;
   }
 
@@ -341,8 +305,7 @@ void ContentIndexDatabase::GetDescriptions(
       service_worker_registration_id, kEntryPrefix,
       base::BindOnce(&ContentIndexDatabase::DidGetDescriptions,
                      weak_ptr_factory_.GetWeakPtr(),
-                     service_worker_registration_id,
-                     std::move(wrapped_callback)));
+                     service_worker_registration_id, std::move(callback)));
 }
 
 void ContentIndexDatabase::DidGetDescriptions(
@@ -399,20 +362,11 @@ void ContentIndexDatabase::GetIcons(
     ContentIndexContext::GetIconsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  auto wrapped_callback = base::BindOnce(
-      [](ContentIndexContext::GetIconsCallback callback,
-         std::vector<SkBitmap> icons) {
-        GetUIThreadTaskRunner({})->PostTask(
-            FROM_HERE, base::BindOnce(std::move(callback), std::move(icons)));
-      },
-      std::move(callback));
-
   service_worker_context_->GetRegistrationUserData(
       service_worker_registration_id, {IconsKey(description_id)},
       base::BindOnce(&ContentIndexDatabase::DidGetSerializedIcons,
                      weak_ptr_factory_.GetWeakPtr(),
-                     service_worker_registration_id,
-                     std::move(wrapped_callback)));
+                     service_worker_registration_id, std::move(callback)));
 }
 
 void ContentIndexDatabase::DidGetSerializedIcons(
@@ -475,20 +429,10 @@ void ContentIndexDatabase::GetAllEntries(
     ContentIndexContext::GetAllEntriesCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  auto wrapped_callback = base::BindOnce(
-      [](ContentIndexContext::GetAllEntriesCallback callback,
-         blink::mojom::ContentIndexError error,
-         std::vector<ContentIndexEntry> entries) {
-        GetUIThreadTaskRunner({})->PostTask(
-            FROM_HERE,
-            base::BindOnce(std::move(callback), error, std::move(entries)));
-      },
-      std::move(callback));
-
   service_worker_context_->GetUserDataForAllRegistrationsByKeyPrefix(
-      kEntryPrefix, base::BindOnce(&ContentIndexDatabase::DidGetEntries,
-                                   weak_ptr_factory_.GetWeakPtr(),
-                                   std::move(wrapped_callback)));
+      kEntryPrefix,
+      base::BindOnce(&ContentIndexDatabase::DidGetEntries,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ContentIndexDatabase::DidGetEntries(
@@ -543,18 +487,11 @@ void ContentIndexDatabase::GetEntry(
     ContentIndexContext::GetEntryCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  auto wrapped_callback = base::BindOnce(
-      [](ContentIndexContext::GetEntryCallback callback,
-         absl::optional<ContentIndexEntry> entry) {
-        GetUIThreadTaskRunner({})->PostTask(
-            FROM_HERE, base::BindOnce(std::move(callback), std::move(entry)));
-      },
-      std::move(callback));
   service_worker_context_->GetRegistrationUserData(
       service_worker_registration_id, {EntryKey(description_id)},
-      base::BindOnce(
-          &ContentIndexDatabase::DidGetEntry, weak_ptr_factory_.GetWeakPtr(),
-          service_worker_registration_id, std::move(wrapped_callback)));
+      base::BindOnce(&ContentIndexDatabase::DidGetEntry,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     service_worker_registration_id, std::move(callback)));
 }
 
 void ContentIndexDatabase::DidGetEntry(
