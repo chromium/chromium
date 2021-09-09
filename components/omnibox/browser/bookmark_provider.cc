@@ -94,11 +94,10 @@ void BookmarkProvider::DoAutocomplete(const AutocompleteInput& input) {
   //    for separately.
   //  - Term matches are always performed against the start of a word. 'def'
   //    will match against 'define' but not against 'indefinite'.
-  //  - Terms must be at least three characters in length in order to perform
-  //    partial word matches. Any term of lesser length will only be used as an
-  //    exact match. 'def' will match against 'define' but 'de' will not match.
-  //    (Unless either `IsShortBookmarkSuggestionsEnabled()` or
-  //    `IsShortBookmarkSuggestionsByTotalInputLengthEnabled()` is true.)
+  //  - The input must be at least 3 characters in length in order to perform
+  //    partial word matches. Otherwise, terms will only exact match. E.g., the
+  //    input 'xy' won't match bookmark text 'abc xyz', but the input 'xy '
+  //    will.
   //  - A search containing multiple terms will return results with those words
   //    occurring in any order.
   //  - Terms enclosed in quotes comprises a phrase that must match exactly.
@@ -108,8 +107,15 @@ void BookmarkProvider::DoAutocomplete(const AutocompleteInput& input) {
   // Please refer to the code for TitledUrlIndex::GetResultsMatching for
   // complete details of how searches are performed against the user's
   // bookmarks.
+
+  query_parser::MatchingAlgorithm matching_algorithm =
+      input.text().length() >=
+              OmniboxFieldTrial::
+                  ShortBookmarkSuggestionsByTotalInputLengthThreshold()
+          ? query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH
+          : query_parser::MatchingAlgorithm::DEFAULT;
   std::vector<TitledUrlMatch> matches = bookmark_model_->GetBookmarksMatching(
-      input.text(), kMaxBookmarkMatches, GetMatchingAlgorithm(input),
+      input.text(), kMaxBookmarkMatches, matching_algorithm,
       /*match_ancestor_titles=*/true);
   if (matches.empty())
     return;  // There were no matches.
@@ -136,29 +142,6 @@ void BookmarkProvider::DoAutocomplete(const AutocompleteInput& input) {
   std::partial_sort(matches_.begin(), matches_.begin() + num_matches,
                     matches_.end(), AutocompleteMatch::MoreRelevant);
   matches_.resize(num_matches);
-}
-
-query_parser::MatchingAlgorithm BookmarkProvider::GetMatchingAlgorithm(
-    AutocompleteInput input) {
-  if (OmniboxFieldTrial::IsShortBookmarkSuggestionsEnabled())
-    return query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH;
-
-  if (OmniboxFieldTrial::
-          IsShortBookmarkSuggestionsByTotalInputLengthEnabled() &&
-      input.text().length() >=
-          OmniboxFieldTrial::
-              ShortBookmarkSuggestionsByTotalInputLengthThreshold()) {
-    client_->GetOmniboxTriggeredFeatureService()->TriggerFeature(
-        OmniboxTriggeredFeatureService::Feature::
-            kShortBookmarkSuggestionsByTotalInputLength);
-    return OmniboxFieldTrial::
-                   kShortBookmarkSuggestionsByTotalInputLengthCounterfactual
-                       .Get()
-               ? query_parser::MatchingAlgorithm::DEFAULT
-               : query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH;
-  }
-
-  return query_parser::MatchingAlgorithm::DEFAULT;
 }
 
 int BookmarkProvider::CalculateBookmarkMatchRelevance(

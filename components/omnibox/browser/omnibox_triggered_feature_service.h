@@ -18,8 +18,8 @@ class OmniboxTriggeredFeatureService {
   enum class Feature {
     kRichAutocompletion = 0,
     kBookmarkPathsDeprecated = 1,
-    kShortBookmarkSuggestionsByTotalInputLength = 2,
-    kMaxValue = kShortBookmarkSuggestionsByTotalInputLength,
+    kShortBookmarkSuggestionsByTotalInputLengthDeprecated = 2,
+    kMaxValue = kShortBookmarkSuggestionsByTotalInputLengthDeprecated,
   };
   using Features = std::set<Feature>;
 
