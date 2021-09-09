@@ -134,6 +134,7 @@ void StartServerOnIOThread(
     bool allow_remote,
     const std::string& url_base,
     const std::vector<net::IPAddress>& allowed_ips,
+    const std::vector<std::string>& allowed_origins,
     const HttpRequestHandlerFunc& handle_request_func,
     base::WeakPtr<HttpHandler> handler,
     const scoped_refptr<base::SingleThreadTaskRunner>& cmd_task_runner) {
@@ -152,7 +153,8 @@ void StartServerOnIOThread(
 
 #if defined(OS_MAC)
   temp_server = std::make_unique<HttpServer>(
-      url_base, allowed_ips, handle_request_func, handler, cmd_task_runner);
+      url_base, allowed_ips, allowed_origins, handle_request_func, handler,
+      cmd_task_runner);
   int ipv4_status = temp_server->Start(port, allow_remote, true);
   if (ipv4_status == net::OK) {
     lazy_tls_server_ipv4.Pointer()->Set(temp_server.release());
@@ -169,7 +171,8 @@ void StartServerOnIOThread(
 #endif
 
   temp_server = std::make_unique<HttpServer>(
-      url_base, allowed_ips, handle_request_func, handler, cmd_task_runner);
+      url_base, allowed_ips, allowed_origins, handle_request_func, handler,
+      cmd_task_runner);
   int ipv6_status = temp_server->Start(port, allow_remote, false);
   if (ipv6_status == net::OK) {
     lazy_tls_server_ipv6.Pointer()->Set(temp_server.release());
@@ -220,7 +223,8 @@ void StartServerOnIOThread(
     ipv4_status = ipv6_status;
   } else {
     temp_server = std::make_unique<HttpServer>(
-        url_base, allowed_ips, handle_request_func, handler, cmd_task_runner);
+        url_base, allowed_ips, allowed_origins, handle_request_func, handler,
+        cmd_task_runner);
     ipv4_status = temp_server->Start(port, allow_remote, true);
     if (ipv4_status == net::OK) {
       lazy_tls_server_ipv4.Pointer()->Set(temp_server.release());
@@ -246,6 +250,7 @@ void StartServerOnIOThread(
 void RunServer(uint16_t port,
                bool allow_remote,
                const std::vector<net::IPAddress>& allowed_ips,
+               const std::vector<std::string>& allowed_origins,
                const std::string& url_base,
                int adb_port) {
   base::Thread io_thread(
@@ -263,7 +268,7 @@ void RunServer(uint16_t port,
   io_thread.task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&StartServerOnIOThread, port, allow_remote, url_base,
-                     allowed_ips,
+                     allowed_ips, allowed_origins,
                      base::BindRepeating(&HandleRequestOnIOThread,
                                          main_task_executor.task_runner(),
                                          handle_request_func),
@@ -298,7 +303,9 @@ int main(int argc, char *argv[]) {
   int adb_port = 5037;
   bool allow_remote = false;
   std::vector<net::IPAddress> allowed_ips;
-  std::string allowlist;
+  std::vector<std::string> allowed_origins;
+  std::string allowlist_ips;
+  std::string allowlist_origins;
   std::string url_base;
   if (cmd_line->HasSwitch("h") || cmd_line->HasSwitch("help")) {
     std::string options;
@@ -343,12 +350,17 @@ int main(int argc, char *argv[]) {
           kOptionAndDescriptions[i], kOptionAndDescriptions[i + 1]);
     }
 
-    // Add helper info for allowed-ips since the product name may be
-    // different.
+    // Add helper info for `allowed-ips` and `allowed-origins` since the product
+    // name may be different.
     options += base::StringPrintf(
         "  --%-30scomma-separated allowlist of remote IP addresses which are "
         "allowed to connect to %s\n",
-        "allowed-ips", kChromeDriverProductShortName);
+        "allowed-ips=LIST", kChromeDriverProductShortName);
+    options += base::StringPrintf(
+        "  --%-30scomma-separated allowlist of request origins which are "
+        "allowed to connect to %s. Using `*` to allow any host origin is "
+        "dangerous!\n",
+        "allowed-origins=LIST", kChromeDriverProductShortName);
 
     printf("Usage: %s [OPTIONS]\n\nOptions\n%s", argv[0], options.c_str());
     return 0;
@@ -387,12 +399,12 @@ int main(int argc, char *argv[]) {
       cmd_line->HasSwitch("whitelisted-ips")) {
     allow_remote = true;
     if (cmd_line->HasSwitch("allowed-ips"))
-      allowlist = cmd_line->GetSwitchValueASCII("allowed-ips");
+      allowlist_ips = cmd_line->GetSwitchValueASCII("allowed-ips");
     else
-      allowlist = cmd_line->GetSwitchValueASCII("whitelisted-ips");
+      allowlist_ips = cmd_line->GetSwitchValueASCII("whitelisted-ips");
 
     std::vector<std::string> allowlist_ip_strs = base::SplitString(
-        allowlist, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+        allowlist_ips, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     if (!allowlist_ip_strs.empty()) {
       // Convert IP address strings into net::IPAddress objects.
       for (const auto& ip_str : allowlist_ip_strs) {
@@ -420,6 +432,13 @@ int main(int argc, char *argv[]) {
           net::ConvertIPv4ToIPv4MappedIPv6(net::IPAddress::IPv4Localhost()));
     }
   }
+
+  if (cmd_line->HasSwitch("allowed-origins")) {
+    allowlist_origins = cmd_line->GetSwitchValueASCII("allowed-origins");
+    allowed_origins = base::SplitString(
+        allowlist_origins, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  }
+
   if (!cmd_line->HasSwitch("silent") &&
       cmd_line->GetSwitchValueASCII("log-level") != "OFF") {
     printf("Starting %s %s on port %u\n", kChromeDriverProductShortName,
@@ -428,7 +447,7 @@ int main(int argc, char *argv[]) {
       printf("Only local connections are allowed.\n");
     } else if (!allowed_ips.empty()) {
       printf("Remote connections are allowed by an allowlist (%s).\n",
-             allowlist.c_str());
+             allowlist_ips.c_str());
     } else {
       printf("All remote connections are allowed. Use an allowlist instead!\n");
     }
@@ -452,7 +471,8 @@ int main(int argc, char *argv[]) {
   base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
       kChromeDriverProductShortName);
 
-  RunServer(port, allow_remote, allowed_ips, url_base, adb_port);
+  RunServer(port, allow_remote, allowed_ips, allowed_origins, url_base,
+            adb_port);
 
   // clean up
   base::ThreadPoolInstance::Get()->Shutdown();
