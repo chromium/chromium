@@ -164,11 +164,13 @@ export class BookmarksDragManager {
     this.eventTracker_.add(
         this.delegate_, 'drop', e => this.onDrop_(e as DragEvent));
 
-    chrome.bookmarkManagerPrivate.onDragEnter.addListener(
-        (dragData: chrome.bookmarkManagerPrivate.DragData) =>
-            this.onChromeDragEnter_(dragData));
-    chrome.bookmarkManagerPrivate.onDragLeave.addListener(
-        () => this.cancelDrag_());
+    if (loadTimeData.getBoolean('bookmarksDragAndDropEnabled')) {
+      chrome.bookmarkManagerPrivate.onDragEnter.addListener(
+          (dragData: chrome.bookmarkManagerPrivate.DragData) =>
+              this.onChromeDragEnter_(dragData));
+      chrome.bookmarkManagerPrivate.onDragLeave.addListener(
+          () => this.cancelDrag_());
+    }
   }
 
   stopObserving() {
