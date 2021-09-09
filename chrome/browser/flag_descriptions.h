@@ -1776,9 +1776,6 @@ extern const char kEnableDangerousDownloadDialogDescription[];
 extern const char kEnableDuplicateDownloadDialogName[];
 extern const char kEnableDuplicateDownloadDialogDescription[];
 
-extern const char kEnableUseAaudioDriverName[];
-extern const char kEnableUseAaudioDriverDescription[];
-
 extern const char kExploreSitesName[];
 extern const char kExploreSitesDescription[];
 

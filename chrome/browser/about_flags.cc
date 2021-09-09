@@ -5309,12 +5309,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kCCTIncognitoAvailableToThirdParty)},
 #endif
 
-#if defined(OS_ANDROID)
-    {"enable-use-aaudio-driver", flag_descriptions::kEnableUseAaudioDriverName,
-     flag_descriptions::kEnableUseAaudioDriverDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kUseAAudioDriver)},
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enforce-system-aec", flag_descriptions::kCrOSEnforceSystemAecName,
      flag_descriptions::kCrOSEnforceSystemAecDescription, kOsCrOS,
