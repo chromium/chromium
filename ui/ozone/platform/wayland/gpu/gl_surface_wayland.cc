@@ -45,6 +45,7 @@ bool GLSurfaceWayland::Resize(const gfx::Size& size,
     return true;
   wl_egl_window_resize(egl_window_.get(), size.width(), size.height(), 0, 0);
   size_ = size;
+  scale_factor_ = scale_factor;
   return true;
 }
 
@@ -76,6 +77,7 @@ gfx::SwapResult GLSurfaceWayland::SwapBuffers(PresentationCallback callback) {
     std::move(callback).Run(gfx::PresentationFeedback::Failure());
     return gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS;
   }
+  window_->root_surface()->SetSurfaceBufferScale(scale_factor_);
   return gl::NativeViewGLSurfaceEGL::SwapBuffers(std::move(callback));
 }
 
@@ -89,6 +91,7 @@ gfx::SwapResult GLSurfaceWayland::PostSubBuffer(int x,
     std::move(callback).Run(gfx::PresentationFeedback::Failure());
     return gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS;
   }
+  window_->root_surface()->SetSurfaceBufferScale(scale_factor_);
   return gl::NativeViewGLSurfaceEGL::PostSubBuffer(x, y, width, height,
                                                    std::move(callback));
 }

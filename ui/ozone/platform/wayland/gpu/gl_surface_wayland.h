@@ -52,6 +52,8 @@ class GLSurfaceWayland : public gl::NativeViewGLSurfaceEGL {
   WaylandEglWindowPtr egl_window_;
   WaylandWindow* const window_;
 
+  float scale_factor_ = 1.f;
+
   DISALLOW_COPY_AND_ASSIGN(GLSurfaceWayland);
 };
 

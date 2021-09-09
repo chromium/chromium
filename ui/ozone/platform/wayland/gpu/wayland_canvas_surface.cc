@@ -92,9 +92,9 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
     return true;
   }
 
-  void CommitBuffer(const gfx::Rect& damage) {
+  void CommitBuffer(const gfx::Rect& damage, float buffer_scale) {
     buffer_manager_->CommitBuffer(widget_, buffer_id_, gfx::Rect(size_),
-                                  damage);
+                                  buffer_scale, damage);
   }
 
   void OnUse() {
@@ -221,6 +221,7 @@ void WaylandCanvasSurface::ResizeCanvas(const gfx::Size& viewport_size,
   pending_buffer_ = nullptr;
   unsubmitted_buffers_.clear();
   size_ = viewport_size;
+  viewport_scale_ = scale;
 }
 
 void WaylandCanvasSurface::PresentCanvas(const gfx::Rect& damage) {
@@ -272,7 +273,7 @@ void WaylandCanvasSurface::ProcessUnsubmittedBuffers() {
       buffer->UpdateDirtyRegion(damage, SkRegion::kUnion_Op);
   }
 
-  current_buffer_->CommitBuffer(damage);
+  current_buffer_->CommitBuffer(damage, viewport_scale_);
 }
 
 void WaylandCanvasSurface::OnSubmission(uint32_t buffer_id,

@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 
+#include <bits/stdint-intn.h>
 #include <wayland-cursor.h>
 #include <algorithm>
 #include <memory>
@@ -266,9 +267,6 @@ void WaylandWindow::SetBounds(const gfx::Rect& bounds_px) {
   if (bounds_px_ == adjusted_bounds_px)
     return;
   bounds_px_ = adjusted_bounds_px;
-
-  pending_buffer_scale_.emplace_back(
-      std::make_pair(bounds_px_.size(), window_scale()));
 
   if (update_visual_size_immediately_)
     UpdateVisualSize(bounds_px.size());
@@ -770,20 +768,8 @@ bool WaylandWindow::CommitOverlays(
     auto main_overlay = split;
     if (split == overlays.end() && overlays.front()->z_order == INT32_MIN)
       main_overlay = overlays.begin();
-
-    // Either use current scale of the window or pending scale whenever visual
-    // size updates. window_scale() won't be used if we are in process of
-    // changing bounds.
-    int32_t buffer_scale = window_scale();
-    auto result =
-        std::find_if(pending_buffer_scale_.begin(), pending_buffer_scale_.end(),
-                     [&visual_size = (*main_overlay)->bounds_rect.size()](
-                         auto& item) { return visual_size == item.first; });
-    if (result != pending_buffer_scale_.end()) {
-      buffer_scale = result->second;
-      pending_buffer_scale_.erase(pending_buffer_scale_.begin(), ++result);
-    }
-    root_surface()->SetSurfaceBufferScale(buffer_scale);
+    root_surface()->SetSurfaceBufferScale(
+        (*main_overlay)->surface_scale_factor);
   }
 
   {
