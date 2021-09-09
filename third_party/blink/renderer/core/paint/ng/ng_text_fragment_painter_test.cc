@@ -88,4 +88,14 @@ TEST_P(NGTextFragmentPainterTest, SvgTextWithFirstLineTextDecoration) {
   // Test passes if no crashes.
 }
 
+TEST_P(NGTextFragmentPainterTest, SvgTextWithTextDecorationNotInFirstLine) {
+  SetBodyInnerHTML(R"HTML(
+    <style>text:first-line { fill: lime; }</style>
+    <svg xmlns="http://www.w3.org/2000/svg">
+    <text text-decoration="overline">foo</text>
+    </svg>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  // Test passes if no crashes.
+}
+
 }  // namespace blink

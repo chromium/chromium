@@ -567,8 +567,13 @@ const LayoutObject& NGTextPainter::SvgTextPaintState::TextDecorationObject()
   // set.
   const LayoutObject* result = InlineText().Parent();
   while (result) {
-    if (const ComputedStyle* style =
-            result->Style(style_variant_ == NGStyleVariant::kFirstLine)) {
+    if (style_variant_ == NGStyleVariant::kFirstLine) {
+      if (const ComputedStyle* style = result->FirstLineStyle()) {
+        if (style->GetTextDecoration() != TextDecoration::kNone)
+          break;
+      }
+    }
+    if (const ComputedStyle* style = result->Style()) {
       if (style->GetTextDecoration() != TextDecoration::kNone)
         break;
     }
