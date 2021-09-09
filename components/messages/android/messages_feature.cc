@@ -14,11 +14,14 @@ const base::Feature kMessagesForAndroidAdsBlocked{
 const base::Feature kMessagesForAndroidChromeSurvey{
     "MessagesForAndroidChromeSurvey", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kMessagesForAndroidNotificationBlocked{
-    "MessagesForAndroidNotificationBlocked", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kMessagesForAndroidInfrastructure{
     "MessagesForAndroidInfrastructure", base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kMessagesForAndroidNearOomReduction{
+    "MessagesForAndroidNearOomReduction", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kMessagesForAndroidNotificationBlocked{
+    "MessagesForAndroidNotificationBlocked", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kMessagesForAndroidPasswords{
     "MessagesForAndroidPasswords", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -67,6 +70,11 @@ const base::Feature kMessagesForAndroidReduceLayoutChanges{
 bool IsAdsBlockedMessagesUiEnabled() {
   return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
          base::FeatureList::IsEnabled(kMessagesForAndroidAdsBlocked);
+}
+
+bool IsNearOomReductionMessagesUiEnabled() {
+  return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
+         base::FeatureList::IsEnabled(kMessagesForAndroidNearOomReduction);
 }
 
 bool IsPasswordMessagesUiEnabled() {

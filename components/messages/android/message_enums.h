@@ -89,6 +89,7 @@ enum class MessageIdentifier {
   DOWNLOAD_PROGRESS = 16,
   SYNC_ERROR = 17,
   SHARED_HIGHLIGHTING = 18,
+  NEAR_OOM_REDUCTION = 19,
 
   // Insert new values before this line.
   COUNT

@@ -3168,6 +3168,11 @@ const char kMessagesForAndroidInfrastructureName[] = "Messages infrastructure";
 const char kMessagesForAndroidInfrastructureDescription[] =
     "When enabled, will initialize Messages UI infrastructure";
 
+const char kMessagesForAndroidNearOomReductionName[] =
+    "Near OOM Reduction Messages UI";
+const char kMessagesForAndroidNearOomReductionDescription[] =
+    "When enabled, near OOM reduction message will use the new Messages UI.";
+
 const char kMessagesForAndroidNotificationBlockedName[] =
     "Notification Blocked Messages UI";
 const char kMessagesForAndroidNotificationBlockedDescription[] =

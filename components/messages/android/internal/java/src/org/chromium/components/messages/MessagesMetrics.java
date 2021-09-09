@@ -103,6 +103,8 @@ public class MessagesMetrics {
                 return "SyncError";
             case MessageIdentifier.SHARED_HIGHLIGHTING:
                 return "SharedHighlighting";
+            case MessageIdentifier.NEAR_OOM_REDUCTION:
+                return "NearOomReduction";
             default:
                 return "Unknown";
         }

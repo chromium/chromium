@@ -48552,6 +48552,7 @@ from previous Chrome versions.
   <int value="-1027124889" label="NtlmV2Enabled:enabled"/>
   <int value="-1026192558" label="OopRasterizationDDL:enabled"/>
   <int value="-1025125875" label="AssistantTimersV2:disabled"/>
+  <int value="-1024731815" label="MessagesForAndroidNearOomReduction:enabled"/>
   <int value="-1024065253" label="EnableWireGuard:disabled"/>
   <int value="-1022971520" label="enable-search-button-in-omnibox-for-str"/>
   <int value="-1022281869" label="ArcRtVcpuDualCore:enabled"/>
@@ -51562,6 +51563,7 @@ from previous Chrome versions.
   <int value="1376437124" label="show-cert-link"/>
   <int value="1377056573" label="browser-side-navigation:enabled"/>
   <int value="1378310092" label="disable-suggestions-service"/>
+  <int value="1379182781" label="MessagesForAndroidNearOomReduction:disabled"/>
   <int value="1379571437" label="ExoPointerLock:disabled"/>
   <int value="1379944457" label="EnableMessagesWebPush:disabled"/>
   <int value="1381746642" label="enable-automatic-password-saving"/>
@@ -55567,6 +55569,7 @@ Called by update_use_counter_css.py.-->
   <int value="16" label="DownloadProgress"/>
   <int value="17" label="SyncError"/>
   <int value="18" label="SharedHighlighting"/>
+  <int value="19" label="NearOomReduction"/>
 </enum>
 
 <enum name="MessageLoopProblems">

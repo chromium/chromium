@@ -22,6 +22,10 @@ extern const base::Feature kMessagesForAndroidChromeSurvey;
 // implementations also fallback to Infobar implementations.
 extern const base::Feature kMessagesForAndroidInfrastructure;
 
+// Feature that controls whether "near OOM reduction" messages use Messages or
+// Infobars infrastructure.
+extern const base::Feature kMessagesForAndroidNearOomReduction;
+
 // Feature that controls whether notifiation blocked prompts use Messages or
 // Infobars infrastructure.
 extern const base::Feature kMessagesForAndroidNotificationBlocked;
@@ -63,6 +67,8 @@ extern const base::Feature kMessagesForAndroidUpdatePassword;
 extern const base::Feature kMessagesForAndroidReduceLayoutChanges;
 
 bool IsAdsBlockedMessagesUiEnabled();
+
+bool IsNearOomReductionMessagesUiEnabled();
 
 bool IsNotificationBlockedMessagesUiEnabled();
 
