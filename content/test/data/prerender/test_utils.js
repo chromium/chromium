@@ -38,3 +38,25 @@ async function open_window(url) {
     win.onload = e => resolve('LOADED');
   });
 }
+
+// Returns <iframe> element upon load.
+// TODO(nhiroki): Merge this into add_iframe().
+function create_iframe(url) {
+  return new Promise(resolve => {
+      const frame = document.createElement('iframe');
+      frame.src = url;
+      frame.onload = () => resolve(frame);
+      document.body.appendChild(frame);
+    });
+}
+
+// Returns <img> element upon load.
+function create_img(url) {
+  return new Promise(resolve => {
+      const img = document.createElement('img');
+      img.src = url;
+      img.onload = () => resolve(img);
+      img.onerror = () => resolve(img);
+      document.body.appendChild(img);
+    });
+}

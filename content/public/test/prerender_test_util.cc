@@ -405,7 +405,9 @@ net::test_server::HttpRequest::HeaderMap PrerenderTestHelper::GetRequestHeaders(
     const GURL& url) {
   EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
   base::AutoLock auto_lock(lock_);
-  return request_headers_by_path_[url.PathForRequest()];
+  std::string path = url.PathForRequest();
+  DCHECK(base::Contains(request_headers_by_path_, path)) << path;
+  return request_headers_by_path_[path];
 }
 
 void PrerenderTestHelper::WaitForRequest(const GURL& url, int count) {

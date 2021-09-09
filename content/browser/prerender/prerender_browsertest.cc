@@ -343,6 +343,9 @@ class PrerenderBrowserTest : public ContentBrowserTest {
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
   }
 
+ protected:
+  net::test_server::EmbeddedTestServer& ssl_server() { return ssl_server_; }
+
  private:
   net::test_server::EmbeddedTestServer ssl_server_{
       net::test_server::EmbeddedTestServer::TYPE_HTTPS};
@@ -4670,58 +4673,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ActivateWhileReloadingSubframe) {
   nav_observer.WaitForNavigationFinished();
 }
 
-// Tests that the request for the initial prerender navigation has the
-// "Purpose: prefetch" header.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PurposePrefetchHeader) {
-  // Navigate to an initial page.
-  ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
-
-  // Start prerendering `kPrerenderingUrl`.
-  const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
-  AddPrerender(kPrerenderingUrl);
-
-  // The prerender request should have the "Purpose: prefetch" header.
-  net::test_server::HttpRequest::HeaderMap headers =
-      GetRequestHeaders(kPrerenderingUrl);
-  auto it = headers.find("Purpose");
-  ASSERT_NE(headers.end(), it);
-  EXPECT_EQ("prefetch", it->second);
-}
-
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
-                       PurposePrefetchHeaderOnRedirection) {
-  // Navigate to an initial page.
-  ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
-
-  // Start prerendering a URL that causes same-origin redirection.
-  const GURL kRedirectedUrl = GetUrl("/empty.html?prerender");
-  const GURL kPrerenderingUrl =
-      GetUrl("/server-redirect?" + kRedirectedUrl.spec());
-  RedirectChainObserver redirect_chain_observer(*shell()->web_contents(),
-                                                kRedirectedUrl);
-  AddPrerender(kPrerenderingUrl);
-  ASSERT_EQ(2u, redirect_chain_observer.redirect_chain().size());
-  EXPECT_EQ(kPrerenderingUrl, redirect_chain_observer.redirect_chain()[0]);
-  EXPECT_EQ(kRedirectedUrl, redirect_chain_observer.redirect_chain()[1]);
-
-  // Both the initial request and the redirected request should have the
-  // "Purpose: prefetch" header.
-  {
-    net::test_server::HttpRequest::HeaderMap headers =
-        GetRequestHeaders(kPrerenderingUrl);
-    auto it = headers.find("Purpose");
-    ASSERT_NE(headers.end(), it);
-    EXPECT_EQ("prefetch", it->second);
-  }
-  {
-    net::test_server::HttpRequest::HeaderMap headers =
-        GetRequestHeaders(kRedirectedUrl);
-    auto it = headers.find("Purpose");
-    ASSERT_NE(headers.end(), it);
-    EXPECT_EQ("prefetch", it->second);
-  }
-}
-
 // Check that the inactive RFH shouldn't update UserActivation.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DoNotUpdateUserActivationState) {
   const GURL kInitialUrl = GetUrl("/empty.html");
@@ -4791,6 +4742,165 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MixedContent) {
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus",
       PrerenderHost::FinalStatus::kMixedContent, 1);
+}
+
+class PrerenderPurposePrefetchBrowserTest : public PrerenderBrowserTest {
+ public:
+  PrerenderPurposePrefetchBrowserTest() = default;
+  ~PrerenderPurposePrefetchBrowserTest() override = default;
+
+  void SetUp() override {
+    ssl_server().RegisterRequestHandler(
+        base::BindRepeating(&HandleCorsRequest));
+    PrerenderBrowserTest::SetUp();
+  }
+
+  static std::unique_ptr<net::test_server::HttpResponse> HandleCorsRequest(
+      const net::test_server::HttpRequest& request) {
+    // The "Purpose: prefetch" header shouldn't cause CORS preflights.
+    EXPECT_NE(request.method_string, "OPTIONS");
+
+    // Ignore if the request is not cross origin.
+    //
+    // Note: Checking the origin of `request.GetURL()` doesn't work here because
+    // the host part of the URL is translated (e.g., "a.test" to "127.0.0.1")
+    // based on the host resolver rule before this point.
+    if (request.relative_url.find("cors") == std::string::npos)
+      return nullptr;
+
+    // Serves a fake response with the ACAO header.
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    response->AddCustomHeader("Access-Control-Allow-Origin", "*");
+    response->set_code(net::HTTP_OK);
+    response->set_content("");
+    response->set_content_type("text/plain");
+    return response;
+  }
+
+  bool TestPurposePrefetchHeader(const GURL& url) {
+    net::test_server::HttpRequest::HeaderMap headers = GetRequestHeaders(url);
+    auto it = headers.find("Purpose");
+    if (it == headers.end())
+      return false;
+    EXPECT_EQ("prefetch", it->second);
+    return true;
+  }
+};
+
+// Tests that a request for the initial prerender navigation has the
+// "Purpose: prefetch" header.
+// TODO(nhiroki): Move this test to WPT.
+IN_PROC_BROWSER_TEST_F(PrerenderPurposePrefetchBrowserTest, InitialNavigation) {
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
+
+  // Start prerendering.
+  const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
+  AddPrerender(kPrerenderingUrl);
+
+  // The prerender request should have the header.
+  EXPECT_TRUE(TestPurposePrefetchHeader(kPrerenderingUrl));
+}
+
+// Tests that a redirected request for the initial prerender navigation has the
+// "Purpose: prefetch" header.
+// TODO(nhiroki): Move this test to WPT.
+IN_PROC_BROWSER_TEST_F(PrerenderPurposePrefetchBrowserTest,
+                       RedirectionOnInitialNavigation) {
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
+
+  // Start prerendering a URL that causes same-origin redirection.
+  const GURL kRedirectedUrl = GetUrl("/empty.html?prerender");
+  const GURL kPrerenderingUrl =
+      GetUrl("/server-redirect?" + kRedirectedUrl.spec());
+  RedirectChainObserver redirect_chain_observer(*shell()->web_contents(),
+                                                kRedirectedUrl);
+  AddPrerender(kPrerenderingUrl);
+  ASSERT_EQ(2u, redirect_chain_observer.redirect_chain().size());
+  EXPECT_EQ(kPrerenderingUrl, redirect_chain_observer.redirect_chain()[0]);
+  EXPECT_EQ(kRedirectedUrl, redirect_chain_observer.redirect_chain()[1]);
+
+  // Both the initial request and the redirected request should have the
+  // "Purpose: prefetch" header.
+  EXPECT_TRUE(TestPurposePrefetchHeader(kPrerenderingUrl));
+  EXPECT_TRUE(TestPurposePrefetchHeader(kRedirectedUrl));
+}
+
+// Tests that requests from a prerendered page have the "Purpose: prefetch"
+// header.
+// TODO(nhiroki): Move this test to WPT.
+IN_PROC_BROWSER_TEST_F(PrerenderPurposePrefetchBrowserTest, ResourceRequests) {
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
+
+  // Start prerendering.
+  const GURL kPrerenderingUrl =
+      GetUrl("/prerender/purpose_prefetch_header.html");
+  int host_id = AddPrerender(kPrerenderingUrl);
+  RenderFrameHostWrapper prerender_main_frame(
+      GetPrerenderedMainFrameHost(host_id));
+
+  // The prerender request should have the "Purpose: prefetch" header.
+  TestPurposePrefetchHeader(kPrerenderingUrl);
+
+  // Issue iframe and subresource requests in the prerendered page.
+  EXPECT_TRUE(ExecJs(prerender_main_frame.get(), "run('before');",
+                     EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  // Requests from the prerenderered page should have the header.
+  EXPECT_TRUE(TestPurposePrefetchHeader(
+      GetUrl("/prerender/purpose_prefetch_header_iframe.html?before")));
+  EXPECT_TRUE(
+      TestPurposePrefetchHeader(GetUrl("/prerender/missing.jpg?before")));
+  EXPECT_TRUE(
+      TestPurposePrefetchHeader(GetUrl("/prerender/missing.txt?before")));
+  EXPECT_TRUE(TestPurposePrefetchHeader(GetUrl("/empty.html?before")));
+  EXPECT_TRUE(TestPurposePrefetchHeader(
+      GetUrl("/prerender/iframe-missing.jpg?before")));
+  EXPECT_TRUE(TestPurposePrefetchHeader(
+      GetUrl("/prerender/iframe-missing.txt?before")));
+
+  // Issue a cross-origin subresource request in the prerendered page. The
+  // request should have the header.
+  GURL cross_origin_url1 =
+      GetCrossOriginUrl("/prerender/cors-missing.txt?before");
+  EXPECT_TRUE(ExecJs(prerender_main_frame.get(),
+                     "request('" + cross_origin_url1.spec() + "');",
+                     EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_TRUE(TestPurposePrefetchHeader(cross_origin_url1));
+
+  // Activate the prerendered page.
+  TestNavigationManager activation_manager(web_contents(), kPrerenderingUrl);
+  NavigatePrimaryPage(kPrerenderingUrl);
+  activation_manager.WaitForNavigationFinished();
+  EXPECT_TRUE(activation_manager.was_prerendered_page_activation());
+
+  // Issue iframe and subresource requests in the activated page.
+  EXPECT_TRUE(ExecJs(prerender_main_frame.get(), "run('after');",
+                     EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  // Requests from the activated page should not have the header.
+  EXPECT_FALSE(TestPurposePrefetchHeader(
+      GetUrl("/prerender/purpose_prefetch_header_iframe.html?after")));
+  EXPECT_FALSE(
+      TestPurposePrefetchHeader(GetUrl("/prerender/missing.jpg?after")));
+  EXPECT_FALSE(
+      TestPurposePrefetchHeader(GetUrl("/prerender/missing.txt?after")));
+  EXPECT_FALSE(TestPurposePrefetchHeader(GetUrl("/empty.html?after")));
+  EXPECT_FALSE(
+      TestPurposePrefetchHeader(GetUrl("/prerender/iframe-missing.jpg?after")));
+  EXPECT_FALSE(
+      TestPurposePrefetchHeader(GetUrl("/prerender/iframe-missing.txt?after")));
+
+  // Issue a cross-origin subresource request in the activated page. The request
+  // should not have the header.
+  GURL cross_origin_url2 =
+      GetCrossOriginUrl("/prerender/cors-missing.txt?after");
+  EXPECT_TRUE(ExecJs(prerender_main_frame.get(),
+                     "request('" + cross_origin_url2.spec() + "');",
+                     EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_FALSE(TestPurposePrefetchHeader(cross_origin_url2));
 }
 
 }  // namespace

@@ -134,14 +134,3 @@ function createFrame(url) {
       document.body.appendChild(frame);
     });
 }
-
-// Returns <img> element upon load.
-function createImg(url) {
-  return new Promise(resolve => {
-      const img = document.createElement('img');
-      img.src = url;
-      img.onload = () => resolve(img);
-      img.onerror = () => resolve(img);
-      document.body.appendChild(img);
-    });
-}

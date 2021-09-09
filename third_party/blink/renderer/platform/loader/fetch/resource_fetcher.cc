@@ -895,8 +895,13 @@ absl::optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
     resource_request.SetRequestDestination(
         DetermineRequestDestination(resource_type));
   }
-  if (resource_type == ResourceType::kLinkPrefetch)
+
+  // Add the "Purpose: prefetch" header to requests for prefetch or issued from
+  // prerendered pages.
+  if (resource_type == ResourceType::kLinkPrefetch ||
+      Context().IsPrerendering()) {
     resource_request.SetPurposeHeader("prefetch");
+  }
 
   // Indicate whether the network stack can return a stale resource. If a
   // stale resource is returned a StaleRevalidation request will be scheduled.
