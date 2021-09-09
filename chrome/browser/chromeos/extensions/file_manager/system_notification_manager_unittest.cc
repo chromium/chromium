@@ -248,6 +248,30 @@ TEST_F(SystemNotificationManagerTest, FormatFail) {
   EXPECT_EQ(notification_strings.message, kFormatFailedMesssage);
 }
 
+constexpr char kPartitionLabel[] = "OEM";
+std::u16string kPartitionTitle = u"Format OEM";
+
+TEST_F(SystemNotificationManagerTest, PartitionFail) {
+  GetDeviceEventRouter()->OnPartitionCompleted(kDevicePath, kPartitionLabel,
+                                               /*success=*/false);
+  // Get the number of notifications from the NotificationDisplayService.
+  NotificationDisplayServiceFactory::GetForProfile(GetProfile())
+      ->GetDisplayed(base::BindOnce(
+          &SystemNotificationManagerTest::GetNotificationsCallback,
+          weak_ptr_factory_.GetWeakPtr()));
+  // Check: We have one notification.
+  ASSERT_EQ(1, notification_count);
+  // Get the strings for the displayed notification.
+  TestNotificationStrings notification_strings;
+  notification_strings =
+      notification_platform_bridge->GetNotificationStringsById(
+          "partition_fail");
+  // Check: the expected strings match.
+  std::u16string kPartitionFailMesssage = u"Could not format OEM";
+  EXPECT_EQ(notification_strings.title, kPartitionTitle);
+  EXPECT_EQ(notification_strings.message, kPartitionFailMesssage);
+}
+
 TEST_F(SystemNotificationManagerTest, TestCopyEvents) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(ash::features::kFilesSWA);
