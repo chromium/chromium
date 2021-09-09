@@ -49,9 +49,9 @@ js_library("os_apps_page.m") {
     "../../controls:settings_dropdown_menu",
     "../../prefs:prefs_behavior",
     "../../settings_page:settings_animated_pages",
-    "../localized_link:localized_link",
     "./app_management_page:constants.m",
     "./app_management_page:store_client.m",
+    "//ui/webui/resources/cr_components/chromeos/localized_link:localized_link",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]

@@ -16,7 +16,7 @@ import '../../settings_page_css.js';
 import '../../settings_shared_css.js';
 import '../os_icons.m.js';
 import '../os_reset_page/os_powerwash_dialog.js';
-import '../localized_link/localized_link.js';
+import '//resources/cr_components/chromeos/localized_link/localized_link.js';
 import './detailed_build_info.js';
 import './update_warning_dialog.js';
 import '//resources/cr_elements/cr_button/cr_button.m.js';

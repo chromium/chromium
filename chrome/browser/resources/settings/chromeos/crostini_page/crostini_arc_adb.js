@@ -10,7 +10,7 @@
 import '//resources/cr_elements/cr_button/cr_button.m.js';
 import '//resources/cr_elements/policy/cr_policy_indicator.m.js';
 import './crostini_arc_adb_confirmation_dialog.js';
-import '../localized_link/localized_link.js';
+import '//resources/cr_components/chromeos/localized_link/localized_link.js';
 import '../../settings_shared_css.js';
 
 import {CrPolicyIndicatorType} from '//resources/cr_elements/policy/cr_policy_indicator_behavior.m.js';

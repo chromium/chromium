@@ -11,7 +11,7 @@ import '//resources/cr_elements/cr_button/cr_button.m.js';
 import '//resources/cr_elements/policy/cr_policy_indicator.m.js';
 import '//resources/cr_elements/policy/cr_tooltip_icon.m.js';
 import '../../settings_shared_css.js';
-import '../localized_link/localized_link.js';
+import '//resources/cr_components/chromeos/localized_link/localized_link.js';
 import './channel_switcher_dialog.js';
 import './edit_hostname_dialog.js';
 

@@ -17,7 +17,7 @@ import '../../settings_page/settings_subpage.js';
 import '../../settings_shared_css.js';
 import '../guest_os/guest_os_shared_paths.js';
 import '../guest_os/guest_os_shared_usb_devices.js';
-import '../localized_link/localized_link.js';
+import '//resources/cr_components/chromeos/localized_link/localized_link.js';
 import './crostini_arc_adb.js';
 import './crostini_export_import.js';
 import './crostini_port_forwarding.js';

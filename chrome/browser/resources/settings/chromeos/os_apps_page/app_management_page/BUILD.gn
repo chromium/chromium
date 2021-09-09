@@ -308,7 +308,7 @@ js_library("supported_links_item.m") {
     ":supported_links_dialog.m",
     ":types.m",
     ":util.m",
-    "../../localized_link:localized_link",
+    "//ui/webui/resources/cr_components/chromeos/localized_link:localized_link",
     "//ui/webui/resources/cr_elements/cr_radio_button:cr_radio_button.m",
     "//ui/webui/resources/cr_elements/cr_radio_group:cr_radio_group.m",
     "//ui/webui/resources/js/cr/ui:focus_without_ink.m",

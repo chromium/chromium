@@ -131,7 +131,7 @@ js_library("pointers.m") {
     "..:os_route.m",
     "../..:router",
     "../../controls:settings_toggle_button",
-    "../localized_link:localized_link",
+    "//ui/webui/resources/cr_components/chromeos/localized_link:localized_link",
   ]
   extra_deps = [ ":pointers_module" ]
 }
@@ -158,7 +158,7 @@ js_library("storage.m") {
     "..:os_route.m",
     "..:route_origin_behavior.m",
     "../..:router",
-    "../localized_link:localized_link",
+    "//ui/webui/resources/cr_components/chromeos/localized_link:localized_link",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",

@@ -1,4 +1,4 @@
-<style include="settings-shared">
+<style include="cr-shared-style">
   :host {
     --cr-localized-link-display: inline;
     --cr-subsequent-anchors-of-span-margin: 0;
@@ -6,6 +6,19 @@
 
   a {
     display: var(--cr-localized-link-display);
+  }
+
+  a[href] {
+    color: var(--cr-link-color);
+    text-decoration: none;
+  }
+
+  /**
+   * Prevent action-links from being selected to avoid accidental
+   * selection when trying to click it.
+   */
+  a[is=action-link] {
+    user-select: none;
   }
 
   :host([link-disabled]) #container {

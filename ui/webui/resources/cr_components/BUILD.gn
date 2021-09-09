@@ -149,6 +149,7 @@ preprocess_if_expr("preprocess_generated") {
       "chromeos/cellular_setup/setup_loading_page.m.js",
       "chromeos/cellular_setup/subflow_behavior.m.js",
       "chromeos/cellular_setup/webview_post_util.m.js",
+      "chromeos/localized_link/localized_link.js",
       "chromeos/multidevice_setup/mojo_api.m.js",
       "chromeos/multidevice_setup/fake_mojo_service.m.js",
       "chromeos/multidevice_setup/button_bar.m.js",

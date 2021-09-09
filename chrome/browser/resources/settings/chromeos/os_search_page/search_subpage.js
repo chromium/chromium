@@ -17,7 +17,7 @@ import '../../prefs/prefs.js';
 import '../../prefs/pref_util.js';
 import '../../settings_shared_css.js';
 import '../../settings_vars_css.js';
-import '../localized_link/localized_link.js';
+import '//resources/cr_components/chromeos/localized_link/localized_link.js';
 import './search_engine.js';
 
 import {assert, assertNotReached} from '//resources/js/assert.m.js';

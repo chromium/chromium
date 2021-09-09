@@ -34,7 +34,6 @@ import './internet_page/network_summary_item.js';
 import './internet_page/tether_connection_dialog.js';
 import './kerberos_page/kerberos_accounts.m.js';
 import './kerberos_page/kerberos_page.m.js';
-import './localized_link/localized_link.js';
 import './multidevice_page/multidevice_page.m.js';
 import './nearby_share_page/nearby_share_receive_dialog.m.js';
 import './nearby_share_page/nearby_share_subpage.m.js';

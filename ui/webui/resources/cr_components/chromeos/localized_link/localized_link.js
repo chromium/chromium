@@ -20,7 +20,8 @@
  * string with a link and sometimes returns a normal string.
  */
 
-import '../../settings_shared_css.js';
+import '../../../cr_elements/shared_vars_css.m.js';
+import '../../../cr_elements/shared_style_css.m.js';
 
 import {assert, assertNotReached} from '//resources/js/assert.m.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -134,7 +135,8 @@ Polymer({
     this.$.container.innerHTML = this.containerInnerHTML_;
     const anchorTag = this.$$('a');
     if (anchorTag) {
-      anchorTag.addEventListener('click', this.onAnchorTagClick_.bind(this));
+      anchorTag.addEventListener(
+          'click', (event) => this.onAnchorTagClick_(event));
     }
   },
 
