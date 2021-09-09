@@ -1293,7 +1293,7 @@
       {
         "args": [],
         "cros_board": "atlas",
-        "cros_img": "atlas-release/R94-14150.12.0",
+        "cros_img": "atlas-release/R94-14150.17.0",
         "name": "lacros_fyi_tast_tests_ATLAS_TOT-1",
         "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
@@ -1304,7 +1304,7 @@
       {
         "args": [],
         "cros_board": "atlas",
-        "cros_img": "atlas-release/R93-14092.35.0",
+        "cros_img": "atlas-release/R93-14092.46.0",
         "name": "lacros_fyi_tast_tests_ATLAS_TOT-2",
         "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
@@ -1326,7 +1326,7 @@
       {
         "args": [],
         "cros_board": "eve",
-        "cros_img": "eve-release/R94-14150.12.0",
+        "cros_img": "eve-release/R94-14150.17.0",
         "name": "lacros_fyi_tast_tests_EVE_TOT-1",
         "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
@@ -1337,7 +1337,7 @@
       {
         "args": [],
         "cros_board": "eve",
-        "cros_img": "eve-release/R93-14092.42.0",
+        "cros_img": "eve-release/R93-14092.46.0",
         "name": "lacros_fyi_tast_tests_EVE_TOT-2",
         "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
@@ -1358,7 +1358,7 @@
       {
         "args": [],
         "cros_board": "atlas",
-        "cros_img": "atlas-release/R94-14150.12.0",
+        "cros_img": "atlas-release/R94-14150.17.0",
         "name": "ozone_unittests_ATLAS_TOT-1",
         "swarming": {},
         "test": "ozone_unittests",
@@ -1368,7 +1368,7 @@
       {
         "args": [],
         "cros_board": "atlas",
-        "cros_img": "atlas-release/R93-14092.35.0",
+        "cros_img": "atlas-release/R93-14092.46.0",
         "name": "ozone_unittests_ATLAS_TOT-2",
         "swarming": {},
         "test": "ozone_unittests",
@@ -1388,7 +1388,7 @@
       {
         "args": [],
         "cros_board": "eve",
-        "cros_img": "eve-release/R94-14150.12.0",
+        "cros_img": "eve-release/R94-14150.17.0",
         "name": "ozone_unittests_EVE_TOT-1",
         "swarming": {},
         "test": "ozone_unittests",
@@ -1398,7 +1398,7 @@
       {
         "args": [],
         "cros_board": "eve",
-        "cros_img": "eve-release/R93-14092.42.0",
+        "cros_img": "eve-release/R93-14092.46.0",
         "name": "ozone_unittests_EVE_TOT-2",
         "swarming": {},
         "test": "ozone_unittests",
