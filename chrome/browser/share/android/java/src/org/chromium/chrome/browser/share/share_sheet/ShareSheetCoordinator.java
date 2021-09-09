@@ -439,7 +439,10 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         // In 'fix more' mode, ask for as many tiles as can fit; this will probably end up looking a
         // bit strange since there will likely be an uneven amount of padding on the right edge.
         // When not in that mode, the default is 10 tiles.
-        return (screenWidth - (2 * tileMargin)) / (tileWidth + tileMargin);
+        //
+        // Each tile has margin on both sides, so:
+        int tileVisualWidth = (2 * tileMargin) + tileWidth;
+        return (screenWidth - (2 * tileMargin)) / tileVisualWidth;
     }
 
     private String contentTypesToTypeForRanking(Set<Integer> contentTypes) {
