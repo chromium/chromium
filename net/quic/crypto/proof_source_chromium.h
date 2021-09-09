@@ -44,7 +44,8 @@ class NET_EXPORT_PRIVATE ProofSourceChromium : public quic::ProofSource {
   quic::QuicReferenceCountedPointer<Chain> GetCertChain(
       const quic::QuicSocketAddress& server_address,
       const quic::QuicSocketAddress& client_address,
-      const std::string& hostname) override;
+      const std::string& hostname,
+      bool* cert_matched_sni) override;
 
   void ComputeTlsSignature(
       const quic::QuicSocketAddress& server_address,
@@ -71,6 +72,7 @@ class NET_EXPORT_PRIVATE ProofSourceChromium : public quic::ProofSource {
       quic::QuicCryptoProof* proof);
 
   std::unique_ptr<crypto::RSAPrivateKey> private_key_;
+  CertificateList certs_in_file_;
   quic::QuicReferenceCountedPointer<quic::ProofSource::Chain> chain_;
   std::string signed_certificate_timestamp_;
   std::unique_ptr<TicketCrypter> ticket_crypter_;

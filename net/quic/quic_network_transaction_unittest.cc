@@ -319,6 +319,7 @@ class QuicNetworkTransactionTest
         http_server_properties_(std::make_unique<HttpServerProperties>()),
         ssl_data_(ASYNC, OK) {
     FLAGS_quic_enable_http3_grease_randomness = false;
+    FLAGS_quic_enable_chaos_protection = false;
     request_.method = "GET";
     std::string url("https://");
     url.append(kDefaultServerHostName);

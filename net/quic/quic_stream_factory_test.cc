@@ -233,6 +233,7 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
         failed_on_default_network_(false),
         quic_params_(context_.params()) {
     FLAGS_quic_enable_http3_grease_randomness = false;
+    FLAGS_quic_enable_chaos_protection = false;
     FLAGS_quic_reloadable_flag_quic_ack_cid_frames = true;
     quic_params_->headers_include_h2_stream_dependency =
         client_headers_include_h2_stream_dependency;

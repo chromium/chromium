@@ -31,18 +31,16 @@ bool ProofSourceChromium::Initialize(const base::FilePath& cert_path,
     return false;
   }
 
-  CertificateList certs_in_file =
-      X509Certificate::CreateCertificateListFromBytes(
-          base::as_bytes(base::make_span(cert_data)),
-          X509Certificate::FORMAT_AUTO);
+  certs_in_file_ = X509Certificate::CreateCertificateListFromBytes(
+      base::as_bytes(base::make_span(cert_data)), X509Certificate::FORMAT_AUTO);
 
-  if (certs_in_file.empty()) {
+  if (certs_in_file_.empty()) {
     DLOG(FATAL) << "No certificates.";
     return false;
   }
 
   std::vector<string> certs;
-  for (const scoped_refptr<X509Certificate>& cert : certs_in_file) {
+  for (const scoped_refptr<X509Certificate>& cert : certs_in_file_) {
     certs.emplace_back(
         x509_util::CryptoBufferAsStringPiece(cert->cert_buffer()));
   }
@@ -152,7 +150,17 @@ void ProofSourceChromium::GetProof(const quic::QuicSocketAddress& server_addr,
 quic::QuicReferenceCountedPointer<quic::ProofSource::Chain>
 ProofSourceChromium::GetCertChain(const quic::QuicSocketAddress& server_address,
                                   const quic::QuicSocketAddress& client_address,
-                                  const std::string& hostname) {
+                                  const std::string& hostname,
+                                  bool* cert_matched_sni) {
+  *cert_matched_sni = false;
+  if (!hostname.empty()) {
+    for (const scoped_refptr<X509Certificate>& cert : certs_in_file_) {
+      if (cert->VerifyNameMatch(hostname)) {
+        *cert_matched_sni = true;
+        break;
+      }
+    }
+  }
   return chain_;
 }
 
