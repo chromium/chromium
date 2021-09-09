@@ -628,10 +628,23 @@ void X11Window::ToggleFullscreen() {
     else
       SetRestoredBoundsInPixels({});
   }
+
   // Do not go through SetBounds as long as it adjusts bounds and sets them to X
   // Server. Instead, we just store the bounds and notify the client that the
   // window occupies the entire screen.
   bounds_in_pixels_ = new_bounds_px;
+
+  // If there is a restore in flight, then set a flag to ignore the single
+  // configure event (hopefully) coming from that restore.  This prevents any
+  // in-flight restore requests from changing the bounds in a way that conflicts
+  // with the `bounds_in_pixels_` setting above.  This is not perfect, and if
+  // there is some other in-flight bounds change for some reason, or if the
+  // ordering of events from the WM behaves differently, this will not prevent
+  // the issue.  See: http://crbug.com/1227451
+  ignore_next_configure_ = restore_in_flight_;
+
+  // This must be the final call in this function, as `this` may be deleted
+  // during the observation of this event.
   platform_window_delegate_->OnBoundsChanged(new_bounds_px);
 }
 
@@ -675,6 +688,7 @@ void X11Window::Minimize() {
 
 void X11Window::Restore() {
   should_maximize_after_map_ = false;
+  restore_in_flight_ = true;
   SetWMSpecState(false, x11::GetAtom("_NET_WM_STATE_MAXIMIZED_VERT"),
                  x11::GetAtom("_NET_WM_STATE_MAXIMIZED_HORZ"));
   SetWMSpecState(false, x11::GetAtom("_NET_WM_STATE_HIDDEN"), x11::Atom::None);
@@ -1272,6 +1286,10 @@ void X11Window::OnXWindowStateChanged() {
     new_state = PlatformWindowState::kFullScreen;
   else if (IsMaximized())
     new_state = PlatformWindowState::kMaximized;
+
+  if (restore_in_flight_ && !IsMaximized()) {
+    restore_in_flight_ = false;
+  }
 
   // fullscreen state is set syschronously at ToggleFullscreen() and must be
   // kept and propagated to the client only when explicitly requested by upper
@@ -2143,6 +2161,15 @@ void X11Window::OnConfigureEvent(const x11::ConfigureNotifyEvent& configure) {
     configure_counter_value_is_extended_ = pending_counter_value_is_extended_;
     pending_counter_value_is_extended_ = false;
     pending_counter_value_ = 0;
+  }
+
+  // During a Restore() -> ToggleFullscreen() sequence, ignore the configure
+  // event from the restore if we're waiting on fullscreen.  After
+  // OnXWindowStateChanged unsets this flag, there will be a configuration event
+  // that will set the bounds to the final fullscreen bounds.
+  if (ignore_next_configure_) {
+    ignore_next_configure_ = false;
+    return;
   }
 
   // It's possible that the X window may be resized by some other means than

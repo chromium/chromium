@@ -474,6 +474,15 @@ class X11_WINDOW_EXPORT X11Window : public PlatformWindow,
   bool pending_counter_value_is_extended_ = false;
   bool configure_counter_value_is_extended_ = false;
 
+  // Used for ignoring bounds changes during the fullscreening process.  For
+  // cross-display fullscreening, there is a Restore() (called by BrowserView)
+  // that may cause configuration bounds updates that make this window appear to
+  // temporarily be on a different screen than its destination screen.  This
+  // restore only happens if the window is maximized.
+  bool ignore_next_configure_ = false;
+  // True between Restore() and the next OnXWindowStateChanged().
+  bool restore_in_flight_ = false;
+
   base::CancelableOnceClosure delayed_resize_task_;
 
   // Keep track of barriers to confine cursor.
