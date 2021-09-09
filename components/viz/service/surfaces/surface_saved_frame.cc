@@ -34,6 +34,24 @@ SurfaceSavedFrame::RenderPassDrawData GetRootRenderPassDrawData(
   return {*root_render_pass, 1.f};
 }
 
+// Returns the index of |render_pass_id| in |shared_elements| if the id
+// corresponds to an element in the given list. Otherwise returns the size of
+// |shared_elements| vector.
+size_t GetSharedPassIndex(
+    const std::vector<CompositorFrameTransitionDirective::SharedElement>&
+        shared_elements,
+    CompositorRenderPassId render_pass_id) {
+  size_t shared_element_index = 0;
+  for (; shared_element_index < shared_elements.size();
+       ++shared_element_index) {
+    if (shared_elements[shared_element_index].render_pass_id ==
+        render_pass_id) {
+      break;
+    }
+  }
+  return shared_element_index;
+}
+
 }  // namespace
 
 SurfaceSavedFrame::SurfaceSavedFrame(
@@ -141,21 +159,18 @@ void SurfaceSavedFrame::RequestCopyOfOutput(Surface* surface) {
       pass_for_clean_copy = duplicate_pass.get();
     interpolated_frame.render_pass_list.push_back(std::move(duplicate_pass));
 
-    const auto& shared_pass_ids = directive_.shared_render_pass_ids();
-    auto shared_pass_it =
-        std::find(shared_pass_ids.begin(), shared_pass_ids.end(),
-                  original_render_pass_id);
-    if (shared_pass_it != shared_pass_ids.end()) {
+    auto shared_pass_index = GetSharedPassIndex(directive_.shared_elements(),
+                                                original_render_pass_id);
+    if (shared_pass_index < directive_.shared_elements().size()) {
       RenderPassDrawData draw_data(
           *render_pass,
           TransitionUtils::ComputeAccumulatedOpacity(
               active_frame.render_pass_list, original_render_pass_id));
-      int index = std::distance(shared_pass_ids.begin(), shared_pass_it);
       auto request = std::make_unique<CopyOutputRequest>(
           result_format, result_destination,
           base::BindOnce(&SurfaceSavedFrame::NotifyCopyOfOutputComplete,
-                         weak_factory_.GetWeakPtr(), ResultType::kShared, index,
-                         draw_data));
+                         weak_factory_.GetWeakPtr(), ResultType::kShared,
+                         shared_pass_index, draw_data));
       request->set_result_task_runner(base::ThreadTaskRunnerHandle::Get());
       pass_for_clean_copy->copy_requests.push_back(std::move(request));
       copy_request_count_++;
@@ -226,16 +241,15 @@ bool SurfaceSavedFrame::FilterSharedElementAndTaintedQuads(
 
 bool SurfaceSavedFrame::IsSharedElementRenderPass(
     CompositorRenderPassId pass_id) const {
-  const auto& shared_pass_ids = directive_.shared_render_pass_ids();
-  return std::find(shared_pass_ids.begin(), shared_pass_ids.end(), pass_id) !=
-         shared_pass_ids.end();
+  const auto& shared_elements = directive_.shared_elements();
+  return GetSharedPassIndex(shared_elements, pass_id) < shared_elements.size();
 }
 
 size_t SurfaceSavedFrame::ExpectedResultCount() const {
   // Start with 1 for the root render pass.
   size_t count = 1;
-  for (auto& pass_id : directive_.shared_render_pass_ids())
-    count += !pass_id.is_null();
+  for (auto& shared_element : directive_.shared_elements())
+    count += !shared_element.render_pass_id.is_null();
   return count;
 }
 
@@ -261,8 +275,7 @@ void SurfaceSavedFrame::NotifyCopyOfOutputComplete(
   if (!frame_result_) {
     frame_result_.emplace();
     // Resize to the number of shared elements, even if some will be nullopts.
-    frame_result_->shared_results.resize(
-        directive_.shared_render_pass_ids().size());
+    frame_result_->shared_results.resize(directive_.shared_elements().size());
   }
 
   OutputCopyResult* slot = nullptr;
@@ -315,8 +328,7 @@ void SurfaceSavedFrame::CompleteSavedFrameForTesting() {
   frame_result_->root_result.draw_data.opacity = 1.f;
   frame_result_->root_result.is_software = true;
 
-  frame_result_->shared_results.resize(
-      directive_.shared_render_pass_ids().size());
+  frame_result_->shared_results.resize(directive_.shared_elements().size());
   copy_request_count_ = 0;
   valid_result_count_ = ExpectedResultCount();
   weak_factory_.InvalidateWeakPtrs();

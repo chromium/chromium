@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/time/time.h"
 #include "components/viz/common/quads/compositor_frame_transition_directive.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_transition_directive.mojom-shared.h"
@@ -36,6 +37,44 @@ struct EnumTraits<viz::mojom::CompositorFrameTransitionDirectiveEffect,
 };
 
 template <>
+struct StructTraits<
+    viz::mojom::CompositorFrameTransitionDirectiveConfigDataView,
+    viz::CompositorFrameTransitionDirective::TransitionConfig> {
+  static base::TimeDelta duration(
+      const viz::CompositorFrameTransitionDirective::TransitionConfig& config) {
+    return config.duration;
+  }
+
+  static base::TimeDelta delay(
+      const viz::CompositorFrameTransitionDirective::TransitionConfig& config) {
+    return config.delay;
+  }
+
+  static bool Read(
+      viz::mojom::CompositorFrameTransitionDirectiveConfigDataView data,
+      viz::CompositorFrameTransitionDirective::TransitionConfig* out);
+};
+
+template <>
+struct StructTraits<
+    viz::mojom::CompositorFrameTransitionDirectiveSharedElementDataView,
+    viz::CompositorFrameTransitionDirective::SharedElement> {
+  static viz::CompositorRenderPassId render_pass_id(
+      const viz::CompositorFrameTransitionDirective::SharedElement& element) {
+    return element.render_pass_id;
+  }
+
+  static viz::CompositorFrameTransitionDirective::TransitionConfig config(
+      const viz::CompositorFrameTransitionDirective::SharedElement& element) {
+    return element.config;
+  }
+
+  static bool Read(
+      viz::mojom::CompositorFrameTransitionDirectiveSharedElementDataView data,
+      viz::CompositorFrameTransitionDirective::SharedElement* out);
+};
+
+template <>
 struct StructTraits<viz::mojom::CompositorFrameTransitionDirectiveDataView,
                     viz::CompositorFrameTransitionDirective> {
   static uint32_t sequence_id(
@@ -53,9 +92,14 @@ struct StructTraits<viz::mojom::CompositorFrameTransitionDirectiveDataView,
     return directive.effect();
   }
 
-  static std::vector<viz::CompositorRenderPassId> shared_render_pass_ids(
-      const viz::CompositorFrameTransitionDirective& directive) {
-    return directive.shared_render_pass_ids();
+  static const viz::CompositorFrameTransitionDirective::TransitionConfig&
+  root_config(const viz::CompositorFrameTransitionDirective& directive) {
+    return directive.root_config();
+  }
+
+  static std::vector<viz::CompositorFrameTransitionDirective::SharedElement>
+  shared_elements(const viz::CompositorFrameTransitionDirective& directive) {
+    return directive.shared_elements();
   }
 
   static bool Read(viz::mojom::CompositorFrameTransitionDirectiveDataView data,

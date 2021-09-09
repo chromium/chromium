@@ -3,11 +3,14 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/document_transition/document_transition.h"
+#include <vector>
 
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/document_transition/document_transition_request.h"
 #include "cc/trees/paint_holding_reason.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_document_transition_config.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_document_transition_prepare_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_document_transition_start_options.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
@@ -24,6 +27,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 namespace {
@@ -63,6 +67,22 @@ DocumentTransition::Request::Effect ParseRootTransition(
 uint32_t NextDocumentTag() {
   static uint32_t next_document_tag = 1u;
   return next_document_tag++;
+}
+
+DocumentTransition::Request::TransitionConfig ParseTransitionConfig(
+    const DocumentTransitionConfig& config) {
+  DocumentTransition::Request::TransitionConfig transition_config;
+
+  if (config.hasDuration()) {
+    transition_config.duration =
+        base::TimeDelta::FromMilliseconds(config.duration());
+  }
+
+  if (config.hasDelay()) {
+    transition_config.delay = base::TimeDelta::FromMilliseconds(config.delay());
+  }
+
+  return transition_config;
 }
 
 }  // namespace
@@ -125,12 +145,53 @@ ScriptPromise DocumentTransition::prepare(
         "The document must be connected to a window.");
     return ScriptPromise();
   }
+
   // We also reject the promise if we're in any state other than idle.
   if (state_ != State::kIdle) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "The document is already executing a transition.");
     return ScriptPromise();
+  }
+
+  std::string error;
+  DocumentTransition::Request::TransitionConfig root_config;
+  if (options->hasRootConfig())
+    root_config = ParseTransitionConfig(*options->rootConfig());
+  if (!root_config.IsValid(&error)) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      String(error.data(), error.size()));
+    return ScriptPromise();
+  }
+
+  std::vector<DocumentTransition::Request::TransitionConfig>
+      shared_elements_config;
+  if (options->hasSharedElements()) {
+    shared_elements_config.resize(options->sharedElements().size());
+
+    if (options->hasSharedElementsConfig()) {
+      const auto& shared_elements_config_options =
+          options->sharedElementsConfig();
+
+      if (shared_elements_config_options.size() !=
+          shared_elements_config.size()) {
+        exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                          "The sharedElementsConfig size must "
+                                          "match the list of shared elements");
+        return ScriptPromise();
+      }
+
+      for (wtf_size_t i = 0; i < shared_elements_config_options.size(); i++) {
+        shared_elements_config[i] =
+            ParseTransitionConfig(*shared_elements_config_options[i]);
+        if (!shared_elements_config[i].IsValid(&error)) {
+          exception_state.ThrowDOMException(
+              DOMExceptionCode::kInvalidStateError,
+              String(error.data(), error.size()));
+          return ScriptPromise();
+        }
+      }
+    }
   }
 
   if (options->hasAbortSignal()) {
@@ -157,7 +218,7 @@ ScriptPromise DocumentTransition::prepare(
 
   state_ = State::kPreparing;
   pending_request_ = Request::CreatePrepare(
-      effect, document_tag_, prepare_shared_element_count_,
+      effect, document_tag_, root_config, std::move(shared_elements_config),
       ConvertToBaseOnceCallback(CrossThreadBindOnce(
           &DocumentTransition::NotifyPrepareFinished,
           WrapCrossThreadWeakPersistent(this), last_prepare_sequence_id_)));

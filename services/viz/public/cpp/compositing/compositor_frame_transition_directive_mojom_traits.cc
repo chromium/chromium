@@ -7,6 +7,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/time/time.h"
+#include "components/viz/common/quads/compositor_frame_transition_directive.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/compositor_render_pass_id_mojom_traits.h"
@@ -127,6 +129,26 @@ bool EnumTraits<viz::mojom::CompositorFrameTransitionDirectiveEffect,
 }
 
 // static
+bool StructTraits<viz::mojom::CompositorFrameTransitionDirectiveConfigDataView,
+                  viz::CompositorFrameTransitionDirective::TransitionConfig>::
+    Read(viz::mojom::CompositorFrameTransitionDirectiveConfigDataView data,
+         viz::CompositorFrameTransitionDirective::TransitionConfig* out) {
+  return data.ReadDuration(&out->duration) && data.ReadDelay(&out->delay) &&
+         out->IsValid();
+}
+
+// static
+bool StructTraits<
+    viz::mojom::CompositorFrameTransitionDirectiveSharedElementDataView,
+    viz::CompositorFrameTransitionDirective::SharedElement>::
+    Read(viz::mojom::CompositorFrameTransitionDirectiveSharedElementDataView
+             data,
+         viz::CompositorFrameTransitionDirective::SharedElement* out) {
+  return data.ReadConfig(&out->config) &&
+         data.ReadRenderPassId(&out->render_pass_id);
+}
+
+// static
 bool StructTraits<viz::mojom::CompositorFrameTransitionDirectiveDataView,
                   viz::CompositorFrameTransitionDirective>::
     Read(viz::mojom::CompositorFrameTransitionDirectiveDataView data,
@@ -135,14 +157,17 @@ bool StructTraits<viz::mojom::CompositorFrameTransitionDirectiveDataView,
 
   viz::CompositorFrameTransitionDirective::Type type;
   viz::CompositorFrameTransitionDirective::Effect effect;
-  std::vector<viz::CompositorRenderPassId> shared_render_pass_ids;
+  viz::CompositorFrameTransitionDirective::TransitionConfig root_config;
+  std::vector<viz::CompositorFrameTransitionDirective::SharedElement>
+      shared_elements;
   if (!data.ReadType(&type) || !data.ReadEffect(&effect) ||
-      !data.ReadSharedRenderPassIds(&shared_render_pass_ids)) {
+      !data.ReadRootConfig(&root_config) ||
+      !data.ReadSharedElements(&shared_elements)) {
     return false;
   }
 
   *out = viz::CompositorFrameTransitionDirective(
-      sequence_id, type, effect, std::move(shared_render_pass_ids));
+      sequence_id, type, effect, root_config, std::move(shared_elements));
   return true;
 }
 

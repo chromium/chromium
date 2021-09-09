@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/callback.h"
 #include "cc/cc_export.h"
@@ -24,12 +25,15 @@ namespace cc {
 class CC_EXPORT DocumentTransitionRequest {
  public:
   using Effect = viz::CompositorFrameTransitionDirective::Effect;
+  using TransitionConfig =
+      viz::CompositorFrameTransitionDirective::TransitionConfig;
 
   // Creates a Type::kPrepare type of request.
   static std::unique_ptr<DocumentTransitionRequest> CreatePrepare(
       Effect effect,
       uint32_t document_tag,
-      uint32_t shared_element_count,
+      TransitionConfig root_config,
+      std::vector<TransitionConfig> shared_element_config,
       base::OnceClosure commit_callback);
 
   // Creates a Type::kSave type of request.
@@ -70,7 +74,8 @@ class CC_EXPORT DocumentTransitionRequest {
 
   DocumentTransitionRequest(Effect effect,
                             uint32_t document_tag,
-                            uint32_t shared_element_count,
+                            TransitionConfig root_config,
+                            std::vector<TransitionConfig> shared_element_config,
                             base::OnceClosure commit_callback);
   explicit DocumentTransitionRequest(uint32_t document_tag,
                                      uint32_t shared_element_count,
@@ -78,8 +83,10 @@ class CC_EXPORT DocumentTransitionRequest {
 
   const Type type_;
   const Effect effect_ = Effect::kNone;
+  const TransitionConfig root_config_;
   const uint32_t document_tag_;
   const uint32_t shared_element_count_;
+  const std::vector<TransitionConfig> shared_element_config_;
   base::OnceClosure commit_callback_;
   const uint32_t sequence_id_;
 

@@ -9731,7 +9731,8 @@ class LayerTreeHostTestDocumentTransitionsPropagatedToMetadata
     layer_tree_host()->AddDocumentTransitionRequest(
         DocumentTransitionRequest::CreatePrepare(
             DocumentTransitionRequest::Effect::kExplode,
-            /*document_tag=*/0, /*shared_element_count=*/0,
+            /*document_tag=*/0, DocumentTransitionRequest::TransitionConfig(),
+            /*shared_elements=*/{},
             base::BindLambdaForTesting([this]() { CommitLambdaCalled(); })));
     layer_tree_host()->AddDocumentTransitionRequest(
         DocumentTransitionRequest::CreateStart(
