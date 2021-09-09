@@ -35,12 +35,6 @@ void NGBoxFragmentBuilder::AddBreakBeforeChild(
     DCHECK(!appeal || *appeal == kBreakAppealPerfect);
   } else if (appeal) {
     ClampBreakAppeal(*appeal);
-    // If we're violating any orphans / widows or
-    // break-{after,before,inside}:avoid requests, or if we're inserting a
-    // last-resort break, remember this. If we're balancing columns, we may be
-    // able to stretch the columns to resolve the situation.
-    if (*appeal < kBreakAppealPerfect)
-      has_violating_descendant_break_ = true;
   }
 
   DCHECK(has_block_fragmentation_);
@@ -379,9 +373,6 @@ void NGBoxFragmentBuilder::PropagateBreak(
   } else {
     PropagateSpaceShortage(child_layout_result.MinimalSpaceShortage());
   }
-
-  if (!is_fragmentation_context_root_)
-    has_violating_descendant_break_ |= child_layout_result.HasViolatingBreak();
 
   // If a spanner was found inside the child, we need to finish up and propagate
   // the spanner to the column layout algorithm, so that it can take care of it.

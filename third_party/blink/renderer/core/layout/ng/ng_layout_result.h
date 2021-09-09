@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_margin_strut.h"
 #include "third_party/blink/renderer/core/layout/ng/grid/layout_ng_grid.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_break_appeal.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_early_break.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_floats_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragment.h"
@@ -223,11 +224,25 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
     return rare_data_->tallest_unbreakable_block_size;
   }
 
-  // Return true if we weren't able to honor all break avoidance hints requested
-  // by break-{after,before,inside}:avoid or orphans / widows, or if we had to
-  // break at an invalid breakpoint (e.g. before/after the first/last
-  // child). This is used for column balancing.
-  bool HasViolatingBreak() const { return bitfields_.has_violating_break; }
+  // Return the (lowest) appeal among any unforced breaks inside the resulting
+  // fragment (or kBreakAppealPerfect if there are no such breaks).
+  //
+  // A higher value is better. Violating breaking rules decreases appeal. Forced
+  // breaks always have perfect appeal.
+  //
+  // If a node breaks, the resulting fragment usually carries an outgoing break
+  // token, but this isn't necessarily the case if the break happened inside an
+  // inner fragmentation context. The block-size of an inner multicol is
+  // constrained by the available block-size in the outer fragmentation
+  // context. This may cause suboptimal column breaks inside. The entire inner
+  // multicol container may fit in the outer fragmentation context, but we may
+  // also need to consider the inner column breaks (in an inner fragmentation
+  // context). If there are any suboptimal breaks, we may want to push the
+  // entire multicol container to the next outer fragmentainer, if it's likely
+  // that we'll avoid suboptimal column breaks inside that way.
+  NGBreakAppeal BreakAppeal() const {
+    return static_cast<NGBreakAppeal>(bitfields_.break_appeal);
+  }
 
   SerializedScriptValue* CustomLayoutData() const {
     return HasRareData() ? rare_data_->custom_layout_data.get() : nullptr;
@@ -528,7 +543,7 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
           can_use_out_of_flow_positioned_first_tier_cache(false),
           is_bfc_block_offset_nullopt(false),
           has_forced_break(false),
-          has_violating_break(false),
+          break_appeal(kBreakAppealPerfect),
           is_empty_spanner_parent(false),
           is_self_collapsing(is_self_collapsing),
           is_pushed_by_floats(is_pushed_by_floats),
@@ -548,7 +563,7 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
     unsigned is_bfc_block_offset_nullopt : 1;
 
     unsigned has_forced_break : 1;
-    unsigned has_violating_break : 1;
+    unsigned break_appeal : kNGBreakAppealBitsNeeded;
     unsigned is_empty_spanner_parent : 1;
 
     unsigned is_self_collapsing : 1;

@@ -74,9 +74,14 @@ NGBreakAppeal CalculateBreakAppealBefore(const NGConstraintSpace&,
                                          const NGBoxFragmentBuilder&,
                                          bool has_container_separation);
 
-// Calculate the appeal of breaking inside this child.
-NGBreakAppeal CalculateBreakAppealInside(const NGConstraintSpace& space,
-                                         const NGLayoutResult&);
+// Calculate the appeal of breaking inside this child. The appeal is based on
+// the one stored in the layout result, unless hypothetical_appeal is specified.
+// hypothetical_appeal is used to assess the appeal at breakpoints where we
+// didn't break, but still need to consider (see NGEarlyBreak).
+NGBreakAppeal CalculateBreakAppealInside(
+    const NGConstraintSpace& space,
+    const NGLayoutResult&,
+    absl::optional<NGBreakAppeal> hypothetical_appeal = absl::nullopt);
 
 // To ensure content progression, we need fragmentainers to hold something
 // larger than 0. The spec says that fragmentainers have to accept at least 1px

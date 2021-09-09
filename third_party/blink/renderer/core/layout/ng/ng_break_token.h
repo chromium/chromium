@@ -7,7 +7,6 @@
 
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_break_appeal.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_input_node.h"
 
 namespace blink {
@@ -47,10 +46,6 @@ class CORE_EXPORT NGBreakToken : public GarbageCollected<NGBreakToken> {
         box_, static_cast<NGLayoutInputNode::NGLayoutInputNodeType>(type_));
   }
 
-  NGBreakAppeal BreakAppeal() const {
-    return static_cast<NGBreakAppeal>(break_appeal_);
-  }
-
 #if DCHECK_IS_ON()
   virtual String ToString() const;
   void ShowBreakTokenTree() const;
@@ -69,7 +64,6 @@ class CORE_EXPORT NGBreakToken : public GarbageCollected<NGBreakToken> {
         is_forced_break_(false),
         is_caused_by_column_spanner_(false),
         is_at_block_end_(false),
-        break_appeal_(kBreakAppealPerfect),
         has_seen_all_children_(false) {
     DCHECK_EQ(type, static_cast<NGBreakTokenType>(node.Type()));
   }
@@ -101,11 +95,6 @@ class CORE_EXPORT NGBreakToken : public GarbageCollected<NGBreakToken> {
   // in this state, it means that something is overflowing, and thus establishes
   // a parallel flow.
   unsigned is_at_block_end_ : 1;
-
-  // If the break is unforced, this is the appeal of the break. Higher is
-  // better. Violating breaking rules decreases appeal. Forced breaks always
-  // have perfect appeal.
-  unsigned break_appeal_ : kNGBreakAppealBitsNeeded;  // NGBreakAppeal
 
   // All children of this container have been "seen" at this point. This means
   // that all children have been fully laid out, or have break tokens. No more

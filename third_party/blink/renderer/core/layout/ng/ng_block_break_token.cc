@@ -42,7 +42,6 @@ NGBlockBreakToken::NGBlockBreakToken(PassKey key,
           builder.consumed_block_size_legacy_adjustment_),
       sequence_number_(builder.sequence_number_),
       const_num_children_(builder.child_break_tokens_.size()) {
-  break_appeal_ = builder.break_appeal_;
   has_seen_all_children_ = builder.has_seen_all_children_;
   is_caused_by_column_spanner_ = builder.FoundColumnSpanner();
   is_at_block_end_ = builder.is_at_block_end_;

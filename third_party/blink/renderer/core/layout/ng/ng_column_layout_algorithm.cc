@@ -464,9 +464,14 @@ NGBreakStatus NGColumnLayoutAlgorithm::LayoutChildren() {
           // children, but "continue" layout, so that we produce a
           // fragment. Note that we normally don't want to break right after
           // initial border/padding, but will do so as a last resort. It's up to
-          // our containing block to decide what's best. In case there is no
-          // break token inside, we need to manually mark that we broke.
-          container_builder_.SetDidBreakSelf();
+          // our containing block to decide what's best. If there's no incoming
+          // break token, it means that we're at the very start of column
+          // layout, and we need to create a break token before the first
+          // column.
+          if (!child_break_token) {
+            container_builder_.AddBreakBeforeChild(
+                Node(), kBreakAppealLastResort, /* is_forced_break */ false);
+          }
 
           break;
         }
@@ -732,7 +737,7 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
         break;
       }
 
-      has_violating_break |= result->HasViolatingBreak();
+      has_violating_break |= result->BreakAppeal() != kBreakAppealPerfect;
       column_inline_offset += column_inline_progression_;
 
       if (result->HasForcedBreak())
@@ -762,11 +767,9 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
         // lower appeal than what we've seen so far. Anything that would cause
         // "too severe" breaking violations will be pushed to the next outer
         // fragmentainer.
-        if (column_break_token) {
-          min_break_appeal =
-              std::min(min_break_appeal.value_or(kBreakAppealPerfect),
-                       column_break_token->BreakAppeal());
-        }
+        min_break_appeal =
+            std::min(min_break_appeal.value_or(kBreakAppealPerfect),
+                     result->BreakAppeal());
 
         // Avoid creating rows that are too short to hold monolithic content.
         // Bail, discarding all columns. Note that this is safe to do even if
@@ -1233,6 +1236,9 @@ LayoutUnit NGColumnLayoutAlgorithm::CalculateBalancedColumnBlockSize(
 LayoutUnit NGColumnLayoutAlgorithm::ConstrainColumnBlockSize(
     LayoutUnit size,
     LayoutUnit row_offset) const {
+  // Avoid becoming shorter than the tallest piece of unbreakable content.
+  size = std::max(size, tallest_unbreakable_block_size_);
+
   if (is_constrained_by_outer_fragmentation_context_) {
     // Don't become too tall to fit in the outer fragmentation context.
     LayoutUnit available_outer_space =
@@ -1240,9 +1246,6 @@ LayoutUnit NGColumnLayoutAlgorithm::ConstrainColumnBlockSize(
     DCHECK_GE(available_outer_space, LayoutUnit());
     size = std::min(size, available_outer_space);
   }
-
-  // But avoid becoming shorter than the tallest piece of unbreakable content.
-  size = std::max(size, tallest_unbreakable_block_size_);
 
   // The {,min-,max-}block-size properties are specified on the multicol
   // container, but here we're calculating the column block sizes inside the

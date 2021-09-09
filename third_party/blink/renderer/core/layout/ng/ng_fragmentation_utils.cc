@@ -207,23 +207,26 @@ NGBreakAppeal CalculateBreakAppealBefore(const NGConstraintSpace& space,
   return break_appeal;
 }
 
-NGBreakAppeal CalculateBreakAppealInside(const NGConstraintSpace& space,
-                                         const NGLayoutResult& layout_result) {
+NGBreakAppeal CalculateBreakAppealInside(
+    const NGConstraintSpace& space,
+    const NGLayoutResult& layout_result,
+    absl::optional<NGBreakAppeal> hypothetical_appeal) {
   if (layout_result.HasForcedBreak())
     return kBreakAppealPerfect;
   const auto& physical_fragment = layout_result.PhysicalFragment();
-  NGBreakAppeal appeal = kBreakAppealLastResort;
-  // If we actually broke, get the appeal from the break token. Otherwise, get
-  // the early break appeal.
-  if (const auto* block_break_token =
-          DynamicTo<NGBlockBreakToken>(physical_fragment.BreakToken())) {
-    appeal = block_break_token->BreakAppeal();
-  } else if (const NGEarlyBreak* early_break = layout_result.GetEarlyBreak()) {
-    appeal = early_break->BreakAppeal();
+  const auto* break_token =
+      DynamicTo<NGBlockBreakToken>(physical_fragment.BreakToken());
+  NGBreakAppeal appeal;
+  bool consider_break_inside_avoidance;
+  if (hypothetical_appeal) {
+    // The hypothetical appeal of breaking inside should only be considered if
+    // we haven't actually broken.
+    DCHECK(!break_token);
+    appeal = *hypothetical_appeal;
+    consider_break_inside_avoidance = true;
   } else {
-    // If we have neither a break token nor an early-break object, we shouldn't
-    // really be here.
-    NOTREACHED();
+    appeal = layout_result.BreakAppeal();
+    consider_break_inside_avoidance = break_token;
   }
 
   // We don't let break-inside:avoid affect the child's stored break appeal, but
@@ -233,7 +236,8 @@ NGBreakAppeal CalculateBreakAppealInside(const NGConstraintSpace& space,
   // rule on the child itself. This prevents us from violating more rules than
   // necessary: if we need to break inside the child (even if it should be
   // avoided), we'll at least break at the most appealing location inside.
-  if (appeal > kBreakAppealViolatingBreakAvoid &&
+  if (consider_break_inside_avoidance &&
+      appeal > kBreakAppealViolatingBreakAvoid &&
       IsAvoidBreakValue(space, physical_fragment.Style().BreakInside()))
     appeal = kBreakAppealViolatingBreakAvoid;
   return appeal;
@@ -781,14 +785,14 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
     return false;
   }
 
-  if (break_token) {
-    // The block child broke inside. We now need to decide whether to keep that
-    // break, or if it would be better to break before it.
-    NGBreakAppeal appeal_inside =
-        CalculateBreakAppealInside(space, layout_result);
-    // Allow breaking inside if it has the same appeal or higher than breaking
-    // before or breaking earlier. Also, if breaking before is impossible, break
-    // inside regardless of appeal.
+  NGBreakAppeal appeal_inside =
+      CalculateBreakAppealInside(space, layout_result);
+  if (break_token || appeal_inside < kBreakAppealPerfect) {
+    // The block child broke inside, either in this fragmentation context, or in
+    // an inner one. We now need to decide whether to keep that break, or if it
+    // would be better to break before it. Allow breaking inside if it has the
+    // same appeal or higher than breaking before or breaking earlier. Also, if
+    // breaking before is impossible, break inside regardless of appeal.
     if (refuse_break_before)
       return true;
     if (appeal_inside >= appeal_before &&
@@ -828,7 +832,8 @@ void UpdateEarlyBreakAtBlockChild(const NGConstraintSpace& space,
   // See if there's a good breakpoint inside the child.
   NGBreakAppeal appeal_inside = kBreakAppealLastResort;
   if (const NGEarlyBreak* breakpoint = layout_result.GetEarlyBreak()) {
-    appeal_inside = CalculateBreakAppealInside(space, layout_result);
+    appeal_inside = CalculateBreakAppealInside(space, layout_result,
+                                               breakpoint->BreakAppeal());
     if (!builder->HasEarlyBreak() ||
         builder->EarlyBreak().BreakAppeal() <= breakpoint->BreakAppeal()) {
       // Found a good breakpoint inside the child. Add the child to the early
@@ -1030,7 +1035,13 @@ wtf_size_t PreviousInnerFragmentainerIndex(
         // Not a fragmentainer (probably a spanner)
         continue;
       }
-      idx = To<NGBlockBreakToken>(child_token.Get())->SequenceNumber() + 1;
+      const auto& block_child_token = To<NGBlockBreakToken>(*child_token);
+      // There may be a break before the first column, if we had to break
+      // between the block-start border/padding of the multicol container and
+      // its contents due to space shortage.
+      if (block_child_token.IsBreakBefore())
+        continue;
+      idx = block_child_token.SequenceNumber() + 1;
       break;
     }
   }
