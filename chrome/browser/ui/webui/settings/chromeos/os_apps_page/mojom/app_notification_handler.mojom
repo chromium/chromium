@@ -34,12 +34,18 @@ interface AppNotificationsHandler {
 
   // Binds remote and notifies receiver in OsSettings app notifications page UI.
   AddObserver(pending_remote<AppNotificationsObserver> observer);
+
+  // Updates the permission of the specified app (via app_id).
+  SetNotificationPermission(string app_id, apps.mojom.Permission permission);
 };
 
 // Frontend interface.
 // Observer interface that sends remote updates to the App notifications
 // subpage in OSSettings.
 interface AppNotificationsObserver {
+  // Notifies clients when apps are added, removed, or notification permission
+  // changes.
+  OnNotificationAppListChanged(array<App> apps);
   // Notifies client when the DoNotDisturb (QuietMode) state changes.
   OnQuietModeChanged(bool enabled);
 };

@@ -37,6 +37,16 @@ app_notification::mojom::AppPtr CreateAppPtr(const apps::AppUpdate& update) {
 
   return app;
 }
+
+std::vector<app_notification::mojom::AppPtr> Clone(
+    const std::vector<app_notification::mojom::AppPtr>& apps) {
+  std::vector<app_notification::mojom::AppPtr> cloned_apps;
+  for (const auto& app : apps) {
+    cloned_apps.push_back(app.Clone());
+  }
+  return cloned_apps;
+}
+
 }  // namespace
 
 using app_notification::mojom::AppNotificationsHandler;
@@ -48,7 +58,6 @@ AppNotificationHandler::AppNotificationHandler(
   if (ash::MessageCenterAsh::Get()) {
     ash::MessageCenterAsh::Get()->AddObserver(this);
   }
-  // app_service_proxy_ = apps::AppServiceProxyFactory::GetForProfile(profile_);
   Observe(&app_service_proxy_->AppRegistryCache());
 }
 
@@ -83,12 +92,19 @@ void AppNotificationHandler::SetQuietMode(bool in_quiet_mode) {
   ash::MessageCenterAsh::Get()->SetQuietMode(in_quiet_mode);
 }
 
+void AppNotificationHandler::SetNotificationPermission(
+    const std::string& app_id,
+    apps::mojom::PermissionPtr permission) {
+  app_service_proxy_->SetPermission(app_id, std::move(permission));
+}
+
 void AppNotificationHandler::GetApps() {
-  std::vector<app_notification::mojom::AppPtr> apps;
+  apps_.clear();
   app_service_proxy_->AppRegistryCache().ForEachApp(
-      [&apps](const apps::AppUpdate& update) {
+      [this](const apps::AppUpdate& update) {
         if (update.ShowInManagement() != apps::mojom::OptionalBool::kTrue ||
             !apps_util::IsInstalled(update.Readiness())) {
+          // Do not add this app to the list.
           return;
         }
 
@@ -99,7 +115,7 @@ void AppNotificationHandler::GetApps() {
             if (static_cast<app_management::mojom::ArcPermissionType>(
                     permission->permission_id) ==
                 app_management::mojom::ArcPermissionType::NOTIFICATIONS) {
-              apps.push_back(CreateAppPtr(update));
+              apps_.push_back(CreateAppPtr(update));
               break;
             }
           }
@@ -108,20 +124,22 @@ void AppNotificationHandler::GetApps() {
             if (static_cast<app_management::mojom::PwaPermissionType>(
                     permission->permission_id) ==
                 app_management::mojom::PwaPermissionType::NOTIFICATIONS) {
-              apps.push_back(CreateAppPtr(update));
+              apps_.push_back(CreateAppPtr(update));
               break;
             }
           }
         }
       });
-  apps_ = std::move(apps);
+
+  for (const auto& observer : observer_list_) {
+    observer->OnNotificationAppListChanged(Clone(apps_));
+  }
 }
 
 void AppNotificationHandler::OnAppUpdate(const apps::AppUpdate& update) {
   // Each time an update is observed the entire list of apps is refetched.
   // 'update' is a required parameter from the AppRegistryCache::Observer,
   // but is not used in this implementation.
-  apps_.clear();
   GetApps();
 }
 
@@ -132,6 +150,7 @@ void AppNotificationHandler::OnAppRegistryCacheWillBeDestroyed(
 
 void AppNotificationHandler::NotifyPageReady() {
   OnQuietModeChanged(ash::MessageCenterAsh::Get()->IsQuietMode());
+  GetApps();
 }
 
 }  // namespace settings

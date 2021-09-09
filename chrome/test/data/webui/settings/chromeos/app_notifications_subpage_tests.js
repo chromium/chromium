@@ -24,6 +24,10 @@ class FakeAppNotificationHandler {
 
     this.isQuietModeEnabled_ = false;
 
+    this.lastUpdatedAppId_ = -1;
+
+    this.lastUpdatedAppPermission_ = {};
+
     this.resetForTest();
   }
 
@@ -34,6 +38,7 @@ class FakeAppNotificationHandler {
 
     this.resolverMap_.set('addObserver', new PromiseResolver());
     this.resolverMap_.set('setQuietMode', new PromiseResolver());
+    this.resolverMap_.set('setNotificationPermission', new PromiseResolver());
     this.resolverMap_.set('notifyPageReady', new PromiseResolver());
   }
 
@@ -83,6 +88,20 @@ class FakeAppNotificationHandler {
     return this.isQuietModeEnabled_;
   }
 
+  /**
+   * @return {number}
+   */
+  getLastUpdatedAppId() {
+    return this.lastUpdatedAppId_;
+  }
+
+  /**
+   * @return {!apps.mojom.Permission}
+   */
+  getLastUpdatedPermission() {
+    return this.lastUpdatedAppPermission_;
+  }
+
   // appNotificationHandler methods
 
   /**
@@ -104,6 +123,19 @@ class FakeAppNotificationHandler {
     this.isQuietModeEnabled_ = enabled;
     return new Promise(resolve => {
       this.methodCalled('setQuietMode');
+      resolve({success: true});
+    });
+  }
+
+  /**
+   * @param {string} id
+   * @param {!apps.mojom.Permission} permission
+   */
+  setNotificationPermission(id, permission) {
+    return new Promise(resolve => {
+      this.lastUpdatedAppId_ = id;
+      this.lastUpdatedAppPermission_ = permission;
+      this.methodCalled('setNotificationPermission');
       resolve({success: true});
     });
   }
@@ -162,9 +194,98 @@ suite('AppNotificationsSubpageTests', function() {
     mojoApi_.getObserverRemote().onQuietModeChanged(enable);
   }
 
+  /** @param {!Array<!chromeos.settings.appNotification.mojom.App>} */
+  function simulateNotificationAppListChanged(apps) {
+    mojoApi_.getObserverRemote().onNotificationAppListChanged(apps);
+  }
+
+  /**
+   * @param {number} id
+   * @param {!apps.mojom.PermissionValueType} value_type
+   * @param {number} value
+   * @param {boolean} is_managed
+   * @return {!apps.mojom.Permission}
+   */
+  function createPermission(id, value_type, value, is_managed) {
+    return {
+      permissionId: id,
+      valueType: value_type,
+      value: value,
+      isManaged: is_managed
+    };
+  }
+
+  /**
+   * @param {string} id
+   * @param {string} title
+   * @param {!apps.mojom.Permission} permission
+   * @return {!chromeos.settings.appNotification.mojom.App}
+   */
+  function createApp(id, title, permission) {
+    return {id: id, title: title, notificationPermission: permission};
+  }
+
+  test('loadAppListAndClickToggle', async () => {
+    const permission1 = createPermission(
+        /**id=*/ 1, /**value_type=*/ 0,
+        /**value=*/ 0, /**is_managed=*/ false);
+    const permission2 = createPermission(
+        /**id=*/ 2, /**value_type=*/ 0,
+        /**value=*/ 1, /**is_managed=*/ false);
+    const app1 = createApp('1', 'App1', permission1);
+    const app2 = createApp('2', 'App2', permission2);
+    const expectedApps = [app1, app2];
+
+    await initializeObserver;
+    simulateNotificationAppListChanged(expectedApps);
+    await flushTasks();
+
+    // Expect 2 apps to be loaded.
+    const appRowList =
+        page.$.appNotificationsList.querySelectorAll('app-notification-row');
+    assertEquals(2, appRowList.length);
+
+    const appRow1 = appRowList[0];
+    assertFalse(appRow1.$.appToggle.checked);
+    assertFalse(appRow1.$.appToggle.disabled);
+    assertEquals('App1', appRow1.$.appTitle.textContent.trim());
+
+    const appRow2 = appRowList[1];
+    assertTrue(appRow2.$.appToggle.checked);
+    assertFalse(appRow2.$.appToggle.disabled);
+    assertEquals('App2', appRow2.$.appTitle.textContent.trim());
+
+    // Click on the first app's toggle.
+    appRow1.$.appToggle.click();
+
+    await mojoApi_.whenCalled('setNotificationPermission');
+
+    // Verify that the sent message matches the app it was clicked from.
+    assertEquals('1', mojoApi_.getLastUpdatedAppId());
+    const lastUpdatedPermission = mojoApi_.getLastUpdatedPermission();
+    assertEquals(1, lastUpdatedPermission.permissionId);
+    assertEquals(0, lastUpdatedPermission.valueType);
+    assertEquals(false, lastUpdatedPermission.isManaged);
+    assertEquals(1, lastUpdatedPermission.value);
+  });
+
   // TODO(crbug/1240175): Ensure that CrToggle is disabled correctly and
   // CrPolicyIndicator is hidden correctly.
-  test('Each app-notification-row displays correctly', function() {
+  test('Each app-notification-row displays correctly', async () => {
+    const permission1 = createPermission(
+        /**id=*/ 1, /**value_type=*/ 0,
+        /**value=*/ 0, /**is_managed=*/ true);
+    const permission2 = createPermission(
+        /**id=*/ 2, /**value_type=*/ 0,
+        /**value=*/ 1, /**is_managed=*/ false);
+    const app1 = createApp('1', 'Chrome', permission1);
+    const app2 = createApp('2', 'Files', permission2);
+    const expectedApps = [app1, app2];
+
+    await initializeObserver;
+    simulateNotificationAppListChanged(expectedApps);
+    await flushTasks();
+
     const chromeRow = page.$.appNotificationsList.children[0];
     const filesRow = page.$.appNotificationsList.children[1];
 

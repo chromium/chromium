@@ -36,5 +36,7 @@
 <template is="dom-if" if="[[app.notificationPermission.isManaged]]">
   <cr-policy-indicator indicator-type="devicePolicy"></cr-policy-indicator>
 </template>
-<cr-toggle id="appToggle" disabled="[[app.notificationPermission.isManaged]]">
+<cr-toggle id="appToggle" disabled="[[app.notificationPermission.isManaged]]"
+    checked="[[checked_]]"
+    on-click="onNotificationRowClicked_">
 </cr-toggle>

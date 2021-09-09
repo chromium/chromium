@@ -65,20 +65,7 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
        */
       appList_: {
         type: Array,
-        // TODO(ethanimooney): Replace placeholders with proper implementation
-        // for apps
-        value: [
-          {
-            title: 'Chrome',
-            id: 'mgndgikekgjfcpckkfioiadnlibdjbkf',
-            notificationPermission: {isManaged: true}
-          },
-          {
-            title: 'Files',
-            id: 'hhaomjibdihmijegdhdafkllkbggdgoj',
-            notificationPermission: {isManaged: false}
-          },
-        ],
+        value: [],
       },
 
       /**
@@ -152,6 +139,11 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
   /** Override chromeos.settings.appNotification.onQuietModeChanged */
   onQuietModeChanged(enabled) {
     this.isDndEnabled_ = enabled;
+  }
+
+  /** Override chromeos.settings.appNotification.onNotificationAppListChanged */
+  onNotificationAppListChanged(apps) {
+    this.appList_ = apps;
   }
 
   /** @private */
