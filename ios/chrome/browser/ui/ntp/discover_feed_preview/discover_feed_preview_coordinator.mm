@@ -54,14 +54,12 @@
   [self configureWebState];
 
   // Get the origin of the preview.
-  NSString* URL =
+  NSString* origin =
       base::SysUTF16ToNSString(url_formatter::FormatUrl(self.URL.GetOrigin()));
-
-  // TODO(crbug.com/1242296): Monitor the URL changes in case of redirection.
 
   self.viewController = [[DiscoverFeedPreviewViewController alloc]
       initWithView:_feedPreviewWebState->GetView()
-               URL:URL];
+            origin:origin];
   self.mediator = [[DiscoverFeedPreviewMediator alloc]
       initWithWebState:_feedPreviewWebState.get()
             previewURL:self.URL];

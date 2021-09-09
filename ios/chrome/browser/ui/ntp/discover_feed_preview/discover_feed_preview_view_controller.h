@@ -13,10 +13,10 @@
 @interface DiscoverFeedPreviewViewController
     : UIViewController <DiscoverFeedPreviewConsumer>
 
-// Inits the view controller with the |webStateView| and the |URL| of the
+// Inits the view controller with the |webStateView| and the |origin| of the
 // preview.
 - (instancetype)initWithView:(UIView*)webStateView
-                         URL:(NSString*)URL NS_DESIGNATED_INITIALIZER;
+                      origin:(NSString*)origin NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;

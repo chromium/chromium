@@ -13,6 +13,9 @@
 // Updates the consumer with the current progress of the WebState.
 - (void)setLoadingProgressFraction:(double)progress;
 
+// Updates the consumer with the current origin.
+- (void)setPreviewOrigin:(NSString*)origin;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_DISCOVER_FEED_PREVIEW_DISCOVER_FEED_PREVIEW_CONSUMER_H_

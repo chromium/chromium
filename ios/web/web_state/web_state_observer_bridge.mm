@@ -147,4 +147,13 @@ void WebStateObserverBridge::WebStateDestroyed(web::WebState* web_state) {
   }
 }
 
+void WebStateObserverBridge::DidRedirectNavigation(
+    web::WebState* web_state,
+    web::NavigationContext* navigation_context) {
+  SEL selector = @selector(webState:didRedirectNavigation:);
+  if ([observer_ respondsToSelector:selector]) {
+    [observer_ webState:web_state didRedirectNavigation:navigation_context];
+  }
+}
+
 }  // namespace web

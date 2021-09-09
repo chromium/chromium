@@ -12,7 +12,11 @@
 #include "base/macros.h"
 #include "ios/web/public/web_state_observer.h"
 
-// Observes page lifecyle events from Objective-C. To use as a
+namespace web {
+class NavigationContext;
+}
+
+// Observes page lifecycle events from Objective-C. To use as a
 // web::WebStateObserver, wrap in a web::WebStateObserverBridge.
 @protocol CRWWebStateObserver <NSObject>
 @optional
@@ -73,6 +77,10 @@
 // Invoked by WebStateObserverBridge::DidStartLoading.
 - (void)webStateDidStartLoading:(web::WebState*)webState;
 
+// Invoked by WebStateObserverBridge::DidRedirectNavigation.
+- (void)webState:(web::WebState*)webState
+    didRedirectNavigation:(web::NavigationContext*)navigation_context;
+
 @end
 
 namespace web {
@@ -109,6 +117,9 @@ class WebStateObserverBridge : public web::WebStateObserver {
   void WebStateDestroyed(web::WebState* web_state) override;
   void DidStartLoading(web::WebState* web_state) override;
   void DidStopLoading(web::WebState* web_state) override;
+  void DidRedirectNavigation(
+      web::WebState* web_state,
+      web::NavigationContext* navigation_context) override;
 
  private:
   __weak id<CRWWebStateObserver> observer_ = nil;

@@ -26,8 +26,11 @@ const CGFloat kProgressBarHeight = 2.0f;
 // The view of the loaded webState.
 @property(nonatomic, strong) UIView* webStateView;
 
-// The preview url.
-@property(nonatomic, copy) NSString* URL;
+// The NSString that indicates the origin of the preview url.
+@property(nonatomic, copy) NSString* origin;
+
+// The URL bar label.
+@property(nonatomic, strong) UILabel* URLBarLabel;
 
 // Progress bar displayed below the URL bar.
 @property(nonatomic, strong) MDCProgressView* progressBar;
@@ -39,11 +42,11 @@ const CGFloat kProgressBarHeight = 2.0f;
 
 @implementation DiscoverFeedPreviewViewController
 
-- (instancetype)initWithView:(UIView*)webStateView URL:(NSString*)URL {
+- (instancetype)initWithView:(UIView*)webStateView origin:(NSString*)origin {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _webStateView = webStateView;
-    _URL = URL;
+    _origin = origin;
   }
   return self;
 }
@@ -51,25 +54,28 @@ const CGFloat kProgressBarHeight = 2.0f;
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  UILabel* URLBarLabel = [[UILabel alloc] init];
-  URLBarLabel.text = self.URL;
-  URLBarLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
-  URLBarLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-  URLBarLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  self.URLBarLabel = [[UILabel alloc] init];
+  self.URLBarLabel.text = self.origin;
+  self.URLBarLabel.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+  self.URLBarLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  self.URLBarLabel.translatesAutoresizingMaskIntoConstraints = NO;
 
   UIView* URLBarView = [[UIView alloc] init];
   URLBarView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
   URLBarView.translatesAutoresizingMaskIntoConstraints = NO;
 
-  [URLBarView addSubview:URLBarLabel];
+  [URLBarView addSubview:self.URLBarLabel];
   [NSLayoutConstraint activateConstraints:@[
-    [URLBarLabel.topAnchor constraintEqualToAnchor:URLBarView.topAnchor
-                                          constant:kURLBarMarginVertical],
-    [URLBarLabel.bottomAnchor constraintEqualToAnchor:URLBarView.bottomAnchor
-                                             constant:-kURLBarMarginVertical],
-    [URLBarLabel.leadingAnchor constraintEqualToAnchor:URLBarView.leadingAnchor
-                                              constant:kURLBarMarginHorizontal],
-    [URLBarLabel.trailingAnchor
+    [self.URLBarLabel.topAnchor constraintEqualToAnchor:URLBarView.topAnchor
+                                               constant:kURLBarMarginVertical],
+    [self.URLBarLabel.bottomAnchor
+        constraintEqualToAnchor:URLBarView.bottomAnchor
+                       constant:-kURLBarMarginVertical],
+    [self.URLBarLabel.leadingAnchor
+        constraintEqualToAnchor:URLBarView.leadingAnchor
+                       constant:kURLBarMarginHorizontal],
+    [self.URLBarLabel.trailingAnchor
         constraintEqualToAnchor:URLBarView.trailingAnchor
                        constant:-kURLBarMarginHorizontal],
 
@@ -137,6 +143,11 @@ const CGFloat kProgressBarHeight = 2.0f;
 
 - (void)setLoadingProgressFraction:(double)progress {
   [self.progressBar setProgress:progress animated:YES completion:nil];
+}
+
+- (void)setPreviewOrigin:(NSString*)origin {
+  self.origin = origin;
+  self.URLBarLabel.text = origin;
 }
 
 #pragma mark - Private

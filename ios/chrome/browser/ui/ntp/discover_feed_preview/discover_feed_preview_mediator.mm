@@ -6,9 +6,12 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/sys_string_conversions.h"
+#include "components/url_formatter/url_formatter.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_constants.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_preview/discover_feed_preview_consumer.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
+#import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
@@ -106,6 +109,18 @@
   [self.consumer setLoadingState:NO];
 }
 
+- (void)webState:(web::WebState*)webState
+    didRedirectNavigation:(web::NavigationContext*)navigation_context {
+  GURL redirectURL = navigation_context->GetUrl();
+  NSString* redirectOrigin = base::SysUTF16ToNSString(
+      url_formatter::FormatUrl(redirectURL.GetOrigin()));
+  if (base::SysUTF16ToNSString(
+          url_formatter::FormatUrl(self.URL.GetOrigin())) != redirectOrigin) {
+    [self updateOrigin:redirectOrigin];
+  }
+  self.URL = redirectURL;
+}
+
 #pragma mark - private
 
 // Updates the consumer to match the current loading state.
@@ -121,6 +136,11 @@
     [self.consumer
         setLoadingProgressFraction:self.webState->GetLoadingProgress()];
   }
+}
+
+// Updates the consumer to show the current origin.
+- (void)updateOrigin:(NSString*)origin {
+  [self.consumer setPreviewOrigin:origin];
 }
 
 @end
