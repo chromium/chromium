@@ -17,6 +17,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
@@ -534,9 +535,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                         + fraction * (Color.blue(finalColor) - Color.blue(initialColor)));
                 int color = Color.rgb(red, green, blue);
                 background.setColor(color);
-                if (mHandleView != null) {
-                    mHandleView.getBackground().setTint(color);
-                }
+                setHandleViewBackgroundColor(color);
             }
         });
         mBrandColorTransitionAnimation.addListener(new AnimatorListenerAdapter() {
@@ -575,7 +574,13 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     public void setHandleView(ImageView view) {
         mHandleView = view;
-        mHandleView.getBackground().setTint(getBackground().getColor());
+        setHandleViewBackgroundColor(getBackground().getColor());
+    }
+
+    private void setHandleViewBackgroundColor(int color) {
+        if (mHandleView == null) return;
+        GradientDrawable drawable = (GradientDrawable) mHandleView.getBackground();
+        ((GradientDrawable) drawable.mutate()).setColor(color);
     }
 
     @Override

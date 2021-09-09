@@ -1626,6 +1626,17 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 ApiCompatibilityUtils.getColor(getResources(), R.color.light_background_color));
     }
 
+    /**
+     * Change the Window background color that will be used as the resizing background color on
+     * Android N+ multi-window mode. Note that subclasses can override this behavior accordingly in
+     * case there is already a Window background Drawable and don't want it to be replaced with the
+     * ColorDrawable.
+     */
+    protected void changeBackgroundColorForResizing() {
+        getWindow().setBackgroundDrawable(new ColorDrawable(
+                ApiCompatibilityUtils.getColor(getResources(), R.color.resizing_background_color)));
+    }
+
     private void maybeRemoveWindowBackground() {
         // Only need to do this logic once.
         if (mRemoveWindowBackgroundDone) return;
@@ -1638,8 +1649,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         // The window background color is used as the resizing background color in Android N+
         // multi-window mode. See crbug.com/602366.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            getWindow().setBackgroundDrawable(new ColorDrawable(ApiCompatibilityUtils.getColor(
-                    getResources(), R.color.resizing_background_color)));
+            changeBackgroundColorForResizing();
         } else {
             // Post the removeWindowBackground() call as a separate task, as doing it synchronously
             // here can cause redrawing glitches. See crbug.com/686662 for an example problem.

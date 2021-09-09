@@ -21,4 +21,11 @@ public class CustomTabHeightStrategy {
         }
         return new PartialCustomTabHeightStrategy(activity, initialHeight, lifecycleDispatcher);
     }
+
+    /**
+     * Returns false if we didn't change the Window background color, true otherwise.
+     */
+    public boolean changeBackgroundColorForResizing() {
+        return false;
+    }
 }

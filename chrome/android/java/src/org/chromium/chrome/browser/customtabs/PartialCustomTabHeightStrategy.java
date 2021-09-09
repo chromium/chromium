@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.customtabs;
 
 import android.app.Activity;
-import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.View;
@@ -16,6 +16,7 @@ import android.widget.ImageView;
 
 import androidx.annotation.Px;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
@@ -42,6 +43,20 @@ public class PartialCustomTabHeightStrategy
         lifecycleDispatcher.register(this);
 
         initializeHeight();
+    }
+
+    @Override
+    public boolean changeBackgroundColorForResizing() {
+        GradientDrawable background =
+                (GradientDrawable) mActivity.getWindow().getDecorView().getBackground();
+        if (background == null) {
+            return false;
+        }
+
+        final int color = ApiCompatibilityUtils.getColor(
+                mActivity.getResources(), R.color.resizing_background_color);
+        ((GradientDrawable) background.mutate()).setColor(color);
+        return true;
     }
 
     @Override
@@ -75,8 +90,8 @@ public class PartialCustomTabHeightStrategy
         mlp.setMargins(0, Math.round(radius), 0, 0);
         coordinator.requestLayout();
 
-        // Force the window transparent.
-        mActivity.getWindow().getDecorView().setBackgroundColor(Color.TRANSPARENT);
+        mActivity.getWindow().setBackgroundDrawableResource(
+                R.drawable.custom_tabs_handle_view_shape);
     }
 
     private void initializeHeight() {
