@@ -48,6 +48,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
 import org.chromium.base.DiscardableReferencePool;
+import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.JniMocker;
@@ -145,7 +146,7 @@ public class DownloadActivityV2Test extends DummyUiChromeActivityTestCase {
         Map<String, Boolean> features = new HashMap<>();
         features.put(ChromeFeatureList.OFFLINE_PAGES_PREFETCHING, true);
         features.put(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER, false);
-        ChromeFeatureList.setTestFeatures(features);
+        FeatureList.setTestFeatures(features);
 
         mStubbedOfflineContentProvider = new StubbedOfflineContentProvider() {
             @Override

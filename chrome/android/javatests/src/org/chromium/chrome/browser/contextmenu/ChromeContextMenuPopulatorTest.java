@@ -32,6 +32,7 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
@@ -110,7 +111,7 @@ public class ChromeContextMenuPopulatorTest {
         features.put(ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS, false);
         features.put(ChromeFeatureList.READ_LATER, false);
 
-        ChromeFeatureList.setTestFeatures(features);
+        FeatureList.setTestFeatures(features);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
@@ -231,7 +232,7 @@ public class ChromeContextMenuPopulatorTest {
 
         HashMap<String, Boolean> features = new HashMap<String, Boolean>();
         features.put(ChromeFeatureList.READ_LATER, false);
-        ChromeFeatureList.setTestFeatures(features);
+        FeatureList.setTestFeatures(features);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
         int[] expected1 = {R.id.contextmenu_open_in_new_tab, R.id.contextmenu_open_in_incognito_tab,
@@ -478,7 +479,7 @@ public class ChromeContextMenuPopulatorTest {
 
         HashMap<String, Boolean> features = new HashMap<String, Boolean>();
         features.put(ChromeFeatureList.READ_LATER, true);
-        ChromeFeatureList.setTestFeatures(features);
+        FeatureList.setTestFeatures(features);
 
         ContextMenuParams params = new ContextMenuParams(0, 0, new GURL(PAGE_URL),
                 new GURL(LINK_URL), LINK_TEXT, GURL.emptyGURL(), GURL.emptyGURL(), "", null, false,
@@ -525,7 +526,7 @@ public class ChromeContextMenuPopulatorTest {
 
         HashMap<String, Boolean> features = new HashMap<String, Boolean>();
         features.put(ChromeFeatureList.READ_LATER, true);
-        ChromeFeatureList.setTestFeatures(features);
+        FeatureList.setTestFeatures(features);
 
         ContextMenuParams params = new ContextMenuParams(0, 0, new GURL(PAGE_URL),
                 new GURL(LINK_URL), LINK_TEXT, GURL.emptyGURL(), GURL.emptyGURL(), "", null, false,
@@ -548,7 +549,7 @@ public class ChromeContextMenuPopulatorTest {
 
         HashMap<String, Boolean> features = new HashMap<String, Boolean>();
         features.put(ChromeFeatureList.READ_LATER, false);
-        ChromeFeatureList.setTestFeatures(features);
+        FeatureList.setTestFeatures(features);
 
         ContextMenuParams params = new ContextMenuParams(0, 0, new GURL(PAGE_URL),
                 new GURL(LINK_URL), LINK_TEXT, GURL.emptyGURL(), GURL.emptyGURL(), "", null, false,
@@ -572,7 +573,7 @@ public class ChromeContextMenuPopulatorTest {
 
         HashMap<String, Boolean> features = new HashMap<String, Boolean>();
         features.put(ChromeFeatureList.READ_LATER, false);
-        ChromeFeatureList.setTestFeatures(features);
+        FeatureList.setTestFeatures(features);
 
         ContextMenuParams params = new ContextMenuParams(0, 0, new GURL(PAGE_URL),
                 new GURL(LINK_URL), LINK_TEXT, GURL.emptyGURL(), GURL.emptyGURL(), "", null, false,

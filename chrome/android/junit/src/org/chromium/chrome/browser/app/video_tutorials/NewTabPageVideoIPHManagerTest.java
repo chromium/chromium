@@ -20,6 +20,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
+import org.chromium.base.FeatureList;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -105,7 +106,7 @@ public class NewTabPageVideoIPHManagerTest {
 
         Map<String, Boolean> features = new HashMap<>();
         features.put(ChromeFeatureList.VIDEO_TUTORIALS, true);
-        ChromeFeatureList.setTestFeatures(features);
+        FeatureList.setTestFeatures(features);
 
         mTestVideoTutorialService = new TestVideoTutorialService();
         VideoTutorialServiceFactory.setVideoTutorialServiceForTesting(mTestVideoTutorialService);

@@ -49,24 +49,6 @@ public abstract class ChromeFeatureList {
     }
 
     /**
-     * @see FeatureList#setTestFeatures
-     * Sets the feature flags to use in JUnit tests, since native calls are not available there.
-     * Do not use directly, prefer using the {@link Features} annotation.
-     *
-     * @see Features
-     * @see Features.Processor
-     *
-     * @deprecated
-     * https://crbug.com/1058993
-     */
-    // TODO(crbug.com/1060097): Migrate callers to the FeatureList equivalent function.
-    @VisibleForTesting
-    @Deprecated
-    public static void setTestFeatures(Map<String, Boolean> features) {
-        FeatureList.setTestFeatures(features);
-    }
-
-    /**
      * @return Whether the native FeatureList has been initialized. If this method returns false,
      *         none of the methods in this class that require native access should be called (except
      *         in tests if test features have been set).
@@ -99,7 +81,7 @@ public abstract class ChromeFeatureList {
      *
      * Should be called only after native is loaded. If {@link #isInitialized()} return true, this
      * method is safe to call.  In tests, this will return any values set through
-     * {@link #setTestFeatures(Map)}, even before native is loaded.
+     * {@link FeatureList#setTestFeatures(Map)}, even before native is loaded.
      *
      * @param featureName The name of the feature to query.
      * @return Whether the feature is enabled or not.

@@ -31,6 +31,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
@@ -77,7 +78,7 @@ public class UrlBarTest extends DummyUiChromeActivityTestCase {
     public UrlBarTest(boolean enableSpannableInline) {
         Map<String, Boolean> featureList = new HashMap<>();
         featureList.put(ChromeFeatureList.SPANNABLE_INLINE_AUTOCOMPLETE, enableSpannableInline);
-        ChromeFeatureList.setTestFeatures(featureList);
+        FeatureList.setTestFeatures(featureList);
     }
 
     @Override

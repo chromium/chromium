@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.CommandLine;
+import org.chromium.base.FeatureList;
 import org.chromium.base.test.util.AnnotationRule;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -89,7 +90,7 @@ public class Features {
     }
 
     private void applyForJUnit() {
-        ChromeFeatureList.setTestFeatures(mRegisteredState);
+        FeatureList.setTestFeatures(mRegisteredState);
         CachedFeatureFlags.setFeaturesForTesting(mRegisteredState);
     }
 
@@ -126,7 +127,7 @@ public class Features {
     /** Resets Features-related state that might persist in between tests. */
     private static void reset() {
         sInstance = null;
-        ChromeFeatureList.setTestFeatures(null);
+        FeatureList.setTestFeatures(null);
         ChromeFeatureList.resetTestCanUseDefaultsForTesting();
         CachedFeatureFlags.resetFlagsForTesting();
         FieldTrials.getInstance().reset();

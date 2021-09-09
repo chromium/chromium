@@ -17,6 +17,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -65,12 +66,12 @@ public class ChromeFeatureListInstrumentationTest {
         Map<String, Boolean> overrides = new ArrayMap<>();
         overrides.put(ChromeFeatureList.TEST_DEFAULT_DISABLED, true);
         overrides.put(ChromeFeatureList.TEST_DEFAULT_ENABLED, false);
-        ChromeFeatureList.setTestFeatures(overrides);
+        FeatureList.setTestFeatures(overrides);
 
         assertTrue(ChromeFeatureList.isEnabled(ChromeFeatureList.TEST_DEFAULT_DISABLED));
         assertFalse(ChromeFeatureList.isEnabled(ChromeFeatureList.TEST_DEFAULT_ENABLED));
 
-        ChromeFeatureList.setTestFeatures(null);
+        FeatureList.setTestFeatures(null);
     }
 
     @Test

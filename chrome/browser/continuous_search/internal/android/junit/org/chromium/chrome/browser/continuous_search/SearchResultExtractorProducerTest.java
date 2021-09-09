@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -64,7 +65,7 @@ public class SearchResultExtractorProducerTest {
         mJniMocker.mock(
                 SearchResultExtractorProducerJni.TEST_HOOKS, mSearchResultExtractorProducerJniMock);
         when(mSearchResultExtractorProducerJniMock.create(any())).thenReturn(FAKE_NATIVE_ADDRESS);
-        ChromeFeatureList.setTestFeatures(
+        FeatureList.setTestFeatures(
                 Collections.singletonMap(ChromeFeatureList.CONTINUOUS_SEARCH, true));
 
         mSearchResultProducer = new SearchResultExtractorProducer(mTabMock, mListenerMock);

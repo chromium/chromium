@@ -26,6 +26,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.JniMocker;
@@ -101,7 +102,7 @@ public class DownloadLocationDialogTest extends DummyUiChromeActivityTestCase {
         });
         Map<String, Boolean> features = new HashMap<>();
         features.put(ChromeFeatureList.SMART_SUGGESTION_FOR_LARGE_DOWNLOADS, false);
-        ChromeFeatureList.setTestFeatures(features);
+        FeatureList.setTestFeatures(features);
 
         setDownloadPromptStatus(DownloadPromptStatus.SHOW_INITIAL);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
