@@ -54,6 +54,7 @@
 #include "base/allocator/partition_allocator/partition_ref_count.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
+#include "base/allocator/partition_allocator/starscan/state_bitmap.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
@@ -974,7 +975,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* ptr) {
   if (UNLIKELY(root->IsQuarantineEnabled())) {
     // PCScan safepoint. Call before potentially scheduling scanning task.
     PCScan::JoinScanIfNeeded();
-    if (LIKELY(!root->IsDirectMappedBucket(slot_span->bucket))) {
+    if (LIKELY(internal::IsManagedByNormalBuckets(ptr))) {
       PCScan::MoveToQuarantine(ptr, slot_span->GetUsableSize(root),
                                slot_span->bucket->slot_size);
       return;
@@ -1030,6 +1031,16 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
     internal::PartitionCookieCheckValue(char_ptr + usable_size);
   }
 #endif
+
+  // TODO(bikineev): Change the condition to LIKELY once PCScan is enabled by
+  // default.
+  if (UNLIKELY(IsQuarantineEnabled())) {
+    if (LIKELY(internal::IsManagedByNormalBuckets(ptr))) {
+      // Mark the state in the state bitmap as freed.
+      internal::StateBitmapFromPointer(ptr)->Free(
+          reinterpret_cast<uintptr_t>(ptr));
+    }
+  }
 
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
   if (allow_ref_count) {
@@ -1367,8 +1378,9 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   void* slot_start = nullptr;
   size_t slot_size;
 
+  const bool is_quarantine_enabled = IsQuarantineEnabled();
   // PCScan safepoint. Call before trying to allocate from cache.
-  if (IsQuarantineEnabled())
+  if (is_quarantine_enabled)
     PCScan::JoinScanIfNeeded();
 
   // !thread_safe => !with_thread_cache, but adding the condition allows the
@@ -1510,6 +1522,16 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
         internal::PartitionRefCount();
   }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
+
+  // TODO(bikineev): Change the condition to LIKELY once PCScan is enabled by
+  // default.
+  if (UNLIKELY(is_quarantine_enabled)) {
+    if (LIKELY(internal::IsManagedByNormalBuckets(ret))) {
+      // Mark the corresponding bits in the state bitmap as allocated.
+      internal::StateBitmapFromPointer(ret)->Allocate(
+          reinterpret_cast<uintptr_t>(ret));
+    }
+  }
 
   return ret;
 }

@@ -19,7 +19,7 @@
 #include "base/allocator/partition_allocator/partition_bucket.h"
 #include "base/allocator/partition_allocator/partition_freelist_entry.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
-#include "base/allocator/partition_allocator/starscan/object_bitmap.h"
+#include "base/allocator/partition_allocator/starscan/state_bitmap.h"
 #include "base/base_export.h"
 #include "base/bits.h"
 #include "base/compiler_specific.h"
@@ -77,8 +77,8 @@ ALWAYS_INLINE char* SuperPagesEndFromExtent(
          (extent->number_of_consecutive_super_pages * kSuperPageSize);
 }
 
-using QuarantineBitmap =
-    ObjectBitmap<kSuperPageSize, kSuperPageAlignment, kAlignment>;
+using AllocationStateMap =
+    StateBitmap<kSuperPageSize, kSuperPageAlignment, kAlignment>;
 
 // Metadata of the slot span.
 //
@@ -339,32 +339,28 @@ PartitionSuperPageToExtent(char* ptr) {
       PartitionSuperPageToMetadataArea(ptr));
 }
 
-// Size that should be reserved for 2 back-to-back quarantine bitmaps (if
-// present) inside a super page. Elements of a super page are
-// partition-page-aligned, hence the returned size is a multiple of partition
-// page size.
+// Size that should be reserved for state bitmap (if present) inside a super
+// page. Elements of a super page are partition-page-aligned, hence the returned
+// size is a multiple of partition page size.
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
-ReservedQuarantineBitmapsSize() {
-  return (2 * sizeof(QuarantineBitmap) + PartitionPageSize() - 1) &
-         PartitionPageBaseMask();
+ReservedStateBitmapSize() {
+  return bits::AlignUp(sizeof(AllocationStateMap), PartitionPageSize());
 }
 
-// Size that should be committed for 2 back-to-back quarantine bitmaps (if
-// present) inside a super page. It is a multiple of system page size.
+// Size that should be committed for state bitmap (if present) inside a super
+// page. It is a multiple of system page size.
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
-CommittedQuarantineBitmapsSize() {
-  return (2 * sizeof(QuarantineBitmap) + SystemPageSize() - 1) &
-         SystemPageBaseMask();
+CommittedStateBitmapSize() {
+  return bits::AlignUp(sizeof(AllocationStateMap), SystemPageSize());
 }
 
-// Returns the pointer to the first, of two, quarantine bitmap in the super
-// page. It's the caller's responsibility to ensure that the bitmaps even exist.
-ALWAYS_INLINE QuarantineBitmap* SuperPageQuarantineBitmaps(
-    char* super_page_base) {
+// Returns the pointer to the state bitmap in the super page. It's the caller's
+// responsibility to ensure that the bitmaps even exist.
+ALWAYS_INLINE AllocationStateMap* SuperPageStateBitmap(char* super_page_base) {
   PA_DCHECK(
       !(reinterpret_cast<uintptr_t>(super_page_base) % kSuperPageAlignment));
-  return reinterpret_cast<QuarantineBitmap*>(super_page_base +
-                                             PartitionPageSize());
+  return reinterpret_cast<AllocationStateMap*>(super_page_base +
+                                               PartitionPageSize());
 }
 
 ALWAYS_INLINE char* SuperPagePayloadBegin(char* super_page_base,
@@ -372,7 +368,7 @@ ALWAYS_INLINE char* SuperPagePayloadBegin(char* super_page_base,
   PA_DCHECK(
       !(reinterpret_cast<uintptr_t>(super_page_base) % kSuperPageAlignment));
   return super_page_base + PartitionPageSize() +
-         (with_quarantine ? ReservedQuarantineBitmapsSize() : 0);
+         (with_quarantine ? ReservedStateBitmapSize() : 0);
 }
 
 ALWAYS_INLINE char* SuperPagePayloadEnd(char* super_page_base) {
@@ -702,23 +698,13 @@ ALWAYS_INLINE void SlotSpanMetadata<thread_safe>::Reset() {
   next_slot_span = nullptr;
 }
 
-enum class QuarantineBitmapType { kMutator, kScanner };
-
-// Returns a quarantine bitmap from a pointer within a normal-bucket super page.
-ALWAYS_INLINE QuarantineBitmap* QuarantineBitmapFromPointer(
-    QuarantineBitmapType type,
-    size_t pcscan_epoch,
-    void* ptr) {
+// Returns the state bitmap from a pointer within a normal-bucket super page.
+// It's the caller's responsibility to ensure that the bitmap exists.
+ALWAYS_INLINE AllocationStateMap* StateBitmapFromPointer(void* ptr) {
   PA_DCHECK(IsManagedByNormalBuckets(ptr));
   auto* super_page_base = reinterpret_cast<char*>(
       reinterpret_cast<uintptr_t>(ptr) & kSuperPageBaseMask);
-  auto* first_bitmap = SuperPageQuarantineBitmaps(super_page_base);
-  auto* second_bitmap = first_bitmap + 1;
-
-  if (type == QuarantineBitmapType::kScanner)
-    std::swap(first_bitmap, second_bitmap);
-
-  return (pcscan_epoch & 1) ? second_bitmap : first_bitmap;
+  return SuperPageStateBitmap(super_page_base);
 }
 
 // Iterates over all slot spans in a super-page. |Callback| must return true if

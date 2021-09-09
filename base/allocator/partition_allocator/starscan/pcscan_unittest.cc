@@ -76,9 +76,8 @@ class PartitionAllocPCScanTest : public testing::Test {
   void FinishPCScanAsScanner() { PCScan::FinishScanForTesting(); }
 
   bool IsInQuarantine(void* ptr) const {
-    return QuarantineBitmapFromPointer(QuarantineBitmapType::kMutator,
-                                       PCScan::Instance().epoch(), ptr)
-        ->CheckBit(reinterpret_cast<uintptr_t>(ptr));
+    return StateBitmapFromPointer(ptr)->IsQuarantined(
+        reinterpret_cast<uintptr_t>(ptr));
   }
 
   ThreadSafePartitionRoot& root() { return *allocator_.root(); }
@@ -561,12 +560,12 @@ void TestDanglingReferenceWithSafepoint(PartitionAllocPCScanTest& test,
     test.SchedulePCScan();
     // Enter safepoint and scan from mutator.
     test.JoinPCScanAsMutator();
-    // Check that the object is no longer in the quarantine.
-    EXPECT_FALSE(test.IsInQuarantine(value));
     // Check that |value| is not in the freelist yet, since sweeper didn't run.
     EXPECT_FALSE(
         IsInFreeList(test.root().AdjustPointerForExtrasSubtract(value)));
     test.FinishPCScanAsScanner();
+    // Check that the object is no longer in the quarantine.
+    EXPECT_FALSE(test.IsInQuarantine(value));
     // Check that |value| is in the freelist now.
     EXPECT_TRUE(
         IsInFreeList(test.root().AdjustPointerForExtrasSubtract(value)));

@@ -57,7 +57,7 @@ class PartitionAllocStateBitmapTest : public ::testing::Test {
   }
 
   void MarkQuarantinedObject(size_t object_position) {
-    page.bitmap().MarkQuarantined(ObjectAddress(object_position));
+    page.bitmap().MarkQuarantinedAsReachable(ObjectAddress(object_position));
   }
 
   bool IsAllocated(size_t object_position) const {

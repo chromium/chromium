@@ -18,7 +18,7 @@
 #include "base/allocator/partition_allocator/partition_oom.h"
 #include "base/allocator/partition_allocator/partition_page.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
-#include "base/allocator/partition_allocator/starscan/object_bitmap.h"
+#include "base/allocator/partition_allocator/starscan/state_bitmap.h"
 #include "base/bits.h"
 #include "base/check.h"
 #include "base/debug/alias.h"
@@ -562,16 +562,17 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSuperPage(
                                             std::memory_order_relaxed);
 
   root->next_super_page = super_page + kSuperPageSize;
-  char* quarantine_bitmaps = super_page + PartitionPageSize();
-  const size_t quarantine_bitmaps_reservation_size =
-      root->IsQuarantineAllowed() ? ReservedQuarantineBitmapsSize() : 0;
-  const size_t quarantine_bitmaps_size_to_commit =
-      root->IsQuarantineAllowed() ? CommittedQuarantineBitmapsSize() : 0;
-  PA_DCHECK(quarantine_bitmaps_reservation_size % PartitionPageSize() == 0);
-  PA_DCHECK(quarantine_bitmaps_size_to_commit % SystemPageSize() == 0);
-  PA_DCHECK(quarantine_bitmaps_size_to_commit <=
-            quarantine_bitmaps_reservation_size);
-  char* ret = quarantine_bitmaps + quarantine_bitmaps_reservation_size;
+  char* state_bitmap = super_page + PartitionPageSize();
+  PA_DCHECK(reinterpret_cast<char*>(SuperPageStateBitmap(super_page)) ==
+            state_bitmap);
+  const size_t state_bitmap_reservation_size =
+      root->IsQuarantineAllowed() ? ReservedStateBitmapSize() : 0;
+  const size_t state_bitmap_size_to_commit =
+      root->IsQuarantineAllowed() ? CommittedStateBitmapSize() : 0;
+  PA_DCHECK(state_bitmap_reservation_size % PartitionPageSize() == 0);
+  PA_DCHECK(state_bitmap_size_to_commit % SystemPageSize() == 0);
+  PA_DCHECK(state_bitmap_size_to_commit <= state_bitmap_reservation_size);
+  char* ret = state_bitmap + state_bitmap_reservation_size;
   root->next_partition_page = ret;
   root->next_partition_page_end = root->next_super_page - PartitionPageSize();
   PA_DCHECK(ret ==
@@ -596,7 +597,7 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSuperPage(
   // If PCScan is used, commit the quarantine bitmap. Otherwise, leave it
   // uncommitted and let PartitionRoot::EnablePCScan commit it when needed.
   if (root->IsQuarantineEnabled()) {
-    RecommitSystemPages(quarantine_bitmaps, quarantine_bitmaps_size_to_commit,
+    RecommitSystemPages(state_bitmap, state_bitmap_size_to_commit,
                         PageReadWrite, PageUpdatePermissions);
     PCScan::RegisterNewSuperPage(root, reinterpret_cast<uintptr_t>(super_page));
   }

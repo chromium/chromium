@@ -203,17 +203,17 @@ ALWAYS_INLINE void PCScan::MoveToQuarantine(void* ptr,
     // - usable_size is safe as it doesn't cover extras as opposed to slot_size.
     // TODO(bikineev): If we start protecting quarantine memory, we can lose
     // double-free coverage (the check below). Consider performing the
-    // double-free check before protecting if eager sweeping becomes default.
+    // double-free check before protecting if eager clearing becomes default.
     SecureMemset(ptr, 0, usable_size);
   }
 
-  auto* quarantine = QuarantineBitmapFromPointer(QuarantineBitmapType::kMutator,
-                                                 instance.epoch(), ptr);
-  // Mark the bit in the quarantine bitmap. Make sure to do it after the
-  // clearing to avoid the race with *Scan Sweeper.
-  const bool is_double_freed =
-      quarantine->SetBit(reinterpret_cast<uintptr_t>(ptr));
-  if (UNLIKELY(is_double_freed))
+  auto* state_bitmap = StateBitmapFromPointer(ptr);
+
+  // Mark the state in the state bitmap as quarantined. Make sure to do it after
+  // the clearing to avoid racing with *Scan Sweeper.
+  const bool succeeded = state_bitmap->Quarantine(
+      reinterpret_cast<uintptr_t>(ptr), instance.epoch());
+  if (UNLIKELY(!succeeded))
     DoubleFreeAttempt();
 
   const bool is_limit_reached = instance.scheduler_.AccountFreed(slot_size);

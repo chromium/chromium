@@ -120,7 +120,7 @@ MaxRegularSlotSpanSize() {
 //     | Guard page (4 KiB)    |
 //     | Metadata page (4 KiB) |
 //     | Guard pages (8 KiB)   |
-//     | QuarantineBitmaps     |
+//     | *Scan State Bitmap    |
 //     | Slot span             |
 //     | Slot span             |
 //     | ...                   |
@@ -128,7 +128,7 @@ MaxRegularSlotSpanSize() {
 //     | Guard pages (16 KiB)  |
 //     +-----------------------+
 //
-// QuarantineBitmaps are inserted for partitions that may have PCScan enabled.
+// State Bitmap is inserted for partitions that may have quarantine enabled.
 //
 // If refcount_at_end_allocation is enabled, RefcountBitmap(4KiB) is inserted
 // after the Metadata page for BackupRefPtr. The guard pages after the bitmap
