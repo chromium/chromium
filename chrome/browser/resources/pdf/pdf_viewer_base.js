@@ -193,6 +193,18 @@ export class PDFViewerBaseElement extends PolymerElement {
       plugin.toggleAttribute('pdf-viewer-update-enabled', true);
     }
 
+    // Pass the attributes for loading PDF plugin through the
+    // `mimeHandlerPrivate` API.
+    const attributesForLoading =
+        /** @type {!chrome.mimeHandlerPrivate.PdfPluginAttributes} */ ({
+          backgroundColor: this.getBackgroundColor(),
+          allowJavascript: javascript === 'allow'
+        });
+    if (chrome.mimeHandlerPrivate &&
+        chrome.mimeHandlerPrivate.setPdfPluginAttributes) {
+      chrome.mimeHandlerPrivate.setPdfPluginAttributes(attributesForLoading);
+    }
+
     return plugin;
   }
 

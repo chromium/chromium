@@ -29,6 +29,8 @@ class MimeHandlerServiceImpl : public mime_handler::MimeHandlerService {
 
   // mime_handler::MimeHandlerService overrides.
   void GetStreamInfo(GetStreamInfoCallback callback) override;
+  void SetPdfPluginAttributes(
+      mime_handler::PdfPluginAttributesPtr pdf_plugin_attributes) override;
 
   // A handle to the stream being handled by the MimeHandlerViewGuest.
   base::WeakPtr<StreamContainer> stream_;

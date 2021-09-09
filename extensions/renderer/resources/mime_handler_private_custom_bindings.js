@@ -68,6 +68,11 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
     return streamInfoPromise.then(constructStreamInfoDict);
   });
 
+  apiFunctions.setHandleRequest(
+      'setPdfPluginAttributes', function(pdfPluginAttributes) {
+        servicePtr.setPdfPluginAttributes(pdfPluginAttributes);
+      });
+
   utils.handleRequestWithPromiseDoNotUse(
       apiFunctions, 'mimeHandlerPrivate', 'setShowBeforeUnloadDialog',
       function(showDialog) {

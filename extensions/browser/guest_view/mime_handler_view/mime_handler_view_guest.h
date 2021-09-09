@@ -53,6 +53,14 @@ class StreamContainer {
     return response_headers_.get();
   }
 
+  const mime_handler::PdfPluginAttributesPtr& pdf_plugin_attributes() const {
+    return pdf_plugin_attributes_;
+  }
+  void set_pdf_plugin_attributes(
+      mime_handler::PdfPluginAttributesPtr pdf_plugin_attributes) {
+    pdf_plugin_attributes_ = std::move(pdf_plugin_attributes);
+  }
+
  private:
   const bool embedded_;
   const int tab_id_;
@@ -64,6 +72,7 @@ class StreamContainer {
   GURL original_url_;
   GURL stream_url_;
   scoped_refptr<net::HttpResponseHeaders> response_headers_;
+  mime_handler::PdfPluginAttributesPtr pdf_plugin_attributes_;
 
   base::WeakPtrFactory<StreamContainer> weak_factory_{this};
 
