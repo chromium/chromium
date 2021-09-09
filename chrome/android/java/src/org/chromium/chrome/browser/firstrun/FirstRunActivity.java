@@ -189,6 +189,14 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         mFirstRunFlowSequencer.onNativeAndPoliciesInitialized(mFreProperties);
 
         boolean notifyAdapter = false;
+        // An optional sign-in page.
+        if (FREMobileIdentityConsistencyFieldTrial.isEnabled()
+                && mFreProperties.getBoolean(SHOW_SIGNIN_PAGE)) {
+            mPages.add(SyncConsentFirstRunFragment::new);
+            mFreProgressStates.add(FRE_PROGRESS_SIGNIN_SHOWN);
+            notifyAdapter = true;
+        }
+
         // An optional Data Saver page.
         if (mFreProperties.getBoolean(SHOW_DATA_REDUCTION_PAGE)) {
             mPages.add(new DataReductionProxyFirstRunFragment.Page());
@@ -204,7 +212,8 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         }
 
         // An optional sign-in page.
-        if (mFreProperties.getBoolean(SHOW_SIGNIN_PAGE)) {
+        if (!FREMobileIdentityConsistencyFieldTrial.isEnabled()
+                && mFreProperties.getBoolean(SHOW_SIGNIN_PAGE)) {
             mPages.add(SyncConsentFirstRunFragment::new);
             mFreProgressStates.add(FRE_PROGRESS_SIGNIN_SHOWN);
             notifyAdapter = true;
