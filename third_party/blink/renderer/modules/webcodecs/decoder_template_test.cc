@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
@@ -163,8 +164,14 @@ TYPED_TEST(DecoderTemplateTest, ResetDuringFlush) {
   }
 }
 
+#if defined(OS_LINUX) && defined(THREAD_SANITIZER)
+// https://crbug.com/1247967
+#define MAYBE_CodecReclamation DISABLED_CodecReclamation
+#else
+#define MAYBE_CodecReclamation CodecReclamation
+#endif
 // Ensures codecs can be reclaimed in a configured or unconfigured state.
-TYPED_TEST(DecoderTemplateTest, CodecReclamation) {
+TYPED_TEST(DecoderTemplateTest, MAYBE_CodecReclamation) {
   V8TestingScope v8_scope;
 
   // Create a decoder.
