@@ -32,6 +32,7 @@
 
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_value_factory.h"
+#include "third_party/blink/renderer/core/animation/css/css_animation_update_scope.h"
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
@@ -116,8 +117,8 @@ namespace {
 void SetAnimationUpdateIfNeeded(StyleResolverState& state, Element& element) {
   auto& document_animations = state.GetDocument().GetDocumentAnimations();
 
-  if (RuntimeEnabledFeatures::CSSIsolatedAnimationUpdatesEnabled()) {
-    if (document_animations.AnimationUpdatesAllowed()) {
+  if (RuntimeEnabledFeatures::CSSDelayedAnimationUpdatesEnabled()) {
+    if (CSSAnimationUpdateScope::HasCurrent()) {
       // TODO(crbug.com/1180159): We currently do this for all elements
       // participating in the recalc. Reduce it to only the elements that can
       // be affected by CSS animations/transitions.
@@ -135,8 +136,8 @@ void SetAnimationUpdateIfNeeded(StyleResolverState& state, Element& element) {
 
   element_animations.CssAnimations().SetPendingUpdate(state.AnimationUpdate());
 
-  if (RuntimeEnabledFeatures::CSSIsolatedAnimationUpdatesEnabled()) {
-    if (document_animations.AnimationUpdatesAllowed()) {
+  if (RuntimeEnabledFeatures::CSSDelayedAnimationUpdatesEnabled()) {
+    if (CSSAnimationUpdateScope::HasCurrent()) {
       state.GetDocument()
           .GetDocumentAnimations()
           .AddElementWithPendingAnimationUpdate(element);

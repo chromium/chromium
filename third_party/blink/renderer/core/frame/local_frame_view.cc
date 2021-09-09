@@ -49,6 +49,7 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
+#include "third_party/blink/renderer/core/animation/css/css_animation_update_scope.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/css/font_face_set_document.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
@@ -3310,7 +3311,6 @@ void LocalFrameView::UpdateStyleAndLayout() {
     if (did_layout)
       GetLayoutView()->AssertSubtreeIsLaidOut();
   }
-  frame_->GetDocument()->GetDocumentAnimations().AssertNoPendingUpdates();
 #endif
 
   if (did_layout) {
@@ -3330,23 +3330,8 @@ void LocalFrameView::UpdateStyleAndLayout() {
 }
 
 bool LocalFrameView::UpdateStyleAndLayoutInternal() {
-  bool did_layout = UpdateStyleAndLayoutOnce();
+  CSSAnimationUpdateScope animation_update_scope(*frame_->GetDocument());
 
-  if (RuntimeEnabledFeatures::CSSIsolatedAnimationUpdatesEnabled()) {
-    DCHECK_GE(Lifecycle().GetState(), DocumentLifecycle::kStyleClean);
-    auto& document_animations = frame_->GetDocument()->GetDocumentAnimations();
-    document_animations.ApplyPendingElementUpdates();
-    if (Lifecycle().GetState() < DocumentLifecycle::kStyleClean) {
-      DocumentAnimations::AllowAnimationUpdatesScope allow_updates(
-          document_animations, false);
-      did_layout |= UpdateStyleAndLayoutOnce();
-    }
-  }
-
-  return did_layout;
-}
-
-bool LocalFrameView::UpdateStyleAndLayoutOnce() {
   {
     frame_->GetDocument()->UpdateStyleAndLayoutTreeForThisDocument();
 

@@ -2859,10 +2859,8 @@ scoped_refptr<ComputedStyle> Element::StyleForLayoutObject(
   }
 
   if (ElementAnimations* element_animations = GetElementAnimations()) {
-    // With CSSIsolatedAnimationUpdates enabled, animation updates are not
-    // applied during an Element's style recalc, but during
-    // Document::UpdateStyle.
-    if (!RuntimeEnabledFeatures::CSSIsolatedAnimationUpdatesEnabled())
+    // See also CSSAnimationUpdateScope.
+    if (!RuntimeEnabledFeatures::CSSDelayedAnimationUpdatesEnabled())
       element_animations->CssAnimations().MaybeApplyPendingUpdate(this);
   }
 
@@ -3511,6 +3509,8 @@ void Element::SetAnimationStyleChange(bool animation_style_change) {
 
 void Element::SetNeedsAnimationStyleRecalc() {
   if (GetDocument().InStyleRecalc())
+    return;
+  if (GetDocument().GetStyleEngine().InApplyAnimationUpdate())
     return;
   if (GetStyleChangeType() != kNoStyleChange)
     return;

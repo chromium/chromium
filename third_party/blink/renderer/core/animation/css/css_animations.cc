@@ -985,9 +985,6 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
     return;
   }
 
-  if (RuntimeEnabledFeatures::CSSIsolatedAnimationUpdatesEnabled())
-    element->SetNeedsAnimationStyleRecalc();
-
   for (wtf_size_t paused_index :
        pending_update_.AnimationIndicesWithPauseToggled()) {
     CSSAnimation* animation = DynamicTo<CSSAnimation>(
@@ -1100,23 +1097,6 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
     element->GetDocument()
         .GetDocumentAnimations()
         .IncrementTrasitionGeneration();
-
-    if (RuntimeEnabledFeatures::CSSIsolatedAnimationUpdatesEnabled()) {
-      // We generally do not start transitions if there's an animation
-      // running for the same property. This is mainly handled by
-      // CanCalculateTransitionUpdateForProperty. However, that function
-      // will not take into account newly started or newly updated animations,
-      // hence we need to check against an updated set of affected properties
-      // from the EffectStack whenever an animation is created/updated.
-      if (auto* element_animations = element->GetElementAnimations()) {
-        if (!pending_update_.NewAnimations().IsEmpty() ||
-            !pending_update_.AnimationsWithUpdates().IsEmpty()) {
-          suppressed_transitions =
-              element_animations->GetEffectStack().AffectedProperties(
-                  KeyframeEffect::kDefaultPriority);
-        }
-      }
-    }
   }
 
   for (const auto& entry : pending_update_.NewTransitions()) {
@@ -1470,7 +1450,7 @@ void CSSAnimations::CalculateTransitionUpdate(CSSAnimationUpdate& update,
   bool any_transition_had_transition_all = false;
   const ComputedStyle* old_style = animating_element.GetComputedStyle();
 
-  if (RuntimeEnabledFeatures::CSSIsolatedAnimationUpdatesEnabled()) {
+  if (RuntimeEnabledFeatures::CSSDelayedAnimationUpdatesEnabled()) {
     old_style = animating_element.GetDocument()
                     .GetDocumentAnimations()
                     .GetPendingOldStyle(animating_element)
@@ -1636,15 +1616,6 @@ void AdoptActiveAnimationInterpolations(
     CSSAnimationUpdate& update,
     const HeapVector<Member<const InertEffect>>* new_animations,
     const HeapHashSet<Member<const Animation>>* suppressed_animations) {
-  if (RuntimeEnabledFeatures::CSSIsolatedAnimationUpdatesEnabled()) {
-    // The new/suppressed animations options are not used by
-    // CSSIsolatedAnimationUpdates. Eventually we want to avoid setting
-    // that up in the first place, but while this is behind a flag, the least
-    // intrusive approach is to just nullify here.
-    new_animations = nullptr;
-    suppressed_animations = nullptr;
-  }
-
   ActiveInterpolationsMap interpolations(EffectStack::ActiveInterpolations(
       effect_stack, new_animations, suppressed_animations,
       KeyframeEffect::kDefaultPriority, IsCSSPropertyHandle));
@@ -1700,13 +1671,6 @@ void CSSAnimations::CalculateTransitionActiveInterpolations(
 
     HeapHashSet<Member<const Animation>> cancelled_animations =
         CreateCancelledTransitionsSet(element_animations, update);
-
-    if (RuntimeEnabledFeatures::CSSIsolatedAnimationUpdatesEnabled()) {
-      // Eventually we should avoid building these in the first place,
-      // but for now it's less intrusive to clear them after-the-fact.
-      new_transitions.clear();
-      cancelled_animations.clear();
-    }
 
     active_interpolations_for_transitions = EffectStack::ActiveInterpolations(
         effect_stack, &new_transitions, &cancelled_animations,

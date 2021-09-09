@@ -2120,9 +2120,6 @@ void StyleEngine::RecalcStyle(StyleRecalcChange change,
   Element& root_element = style_recalc_root_.RootElement();
   Element* parent = FlatTreeTraversal::ParentElement(root_element);
 
-  DocumentAnimations::AllowAnimationUpdatesScope allow_updates(
-      GetDocument().GetDocumentAnimations(), true);
-
   SelectorFilterRootScope filter_scope(parent);
   root_element.RecalcStyle(change, style_recalc_context);
 

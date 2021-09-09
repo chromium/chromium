@@ -679,16 +679,16 @@
               "inspector-protocol/css/container-queries",
               "inspector-protocol/dom/container-queries",
               "inspector-protocol/overlay/overlay-container-query.js"],
-    "args": ["--enable-blink-features=CSSContainerQueries,CSSIsolatedAnimationUpdates"]
+    "args": ["--enable-blink-features=CSSContainerQueries,CSSDelayedAnimationUpdates"]
   },
   {
-    "prefix": "isolated-animation-updates",
+    "prefix": "delayed-animation-updates",
     "bases": ["external/wpt/css/css-animations",
               "external/wpt/css/css-transitions",
               "external/wpt/scroll-animations",
               "external/wpt/web-animations",
               "animations"],
-    "args": ["--enable-blink-features=CSSIsolatedAnimationUpdates"]
+    "args": ["--enable-blink-features=CSSDelayedAnimationUpdates"]
   },
   {
     "prefix": "force-eager",

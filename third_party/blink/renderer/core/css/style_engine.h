@@ -286,6 +286,19 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
                 .IsEmpty();
   }
 
+  class InApplyAnimationUpdateScope {
+    STACK_ALLOCATED();
+
+   public:
+    explicit InApplyAnimationUpdateScope(StyleEngine& engine)
+        : auto_reset_(&engine.in_apply_animation_update_, true) {}
+
+   private:
+    base::AutoReset<bool> auto_reset_;
+  };
+
+  bool InApplyAnimationUpdate() const { return in_apply_animation_update_; }
+
   void UpdateStyleInvalidationRoot(ContainerNode* ancestor, Node* dirty_node);
   void UpdateStyleRecalcRoot(ContainerNode* ancestor, Node* dirty_node);
   void UpdateLayoutTreeRebuildRoot(ContainerNode* ancestor, Node* dirty_node);
@@ -642,6 +655,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   bool in_layout_tree_rebuild_{false};
   bool in_container_query_style_recalc_{false};
   bool in_dom_removal_{false};
+  bool in_apply_animation_update_{false};
   bool viewport_style_dirty_{false};
   bool fonts_need_update_{false};
   bool counter_styles_need_update_{false};

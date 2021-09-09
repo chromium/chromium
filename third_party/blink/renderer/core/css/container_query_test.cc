@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/css/container_query.h"
 
+#include "third_party/blink/renderer/core/animation/css/css_animation_update_scope.h"
+#include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
@@ -68,6 +70,14 @@ class ContainerQueryTest : public PageTestBase,
     if (const CSSValue* value = ComputedValue(element, property_name))
       return value->CssText();
     return g_null_atom;
+  }
+
+  // Get animations count for a specific element without force-updating
+  // style and layout-tree.
+  size_t GetAnimationsCount(Element* element) {
+    if (auto* element_animations = element->GetElementAnimations())
+      return element_animations->Animations().size();
+    return 0;
   }
 };
 
@@ -351,7 +361,9 @@ TEST_F(ContainerQueryTest, ContainerUnitsViewportFallback) {
 }
 
 TEST_F(ContainerQueryTest, OldStyleForTransitions) {
-  ScopedCSSIsolatedAnimationUpdatesForTest scoped(true);
+  ScopedCSSDelayedAnimationUpdatesForTest scoped(true);
+
+  Element* target = nullptr;
 
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -380,34 +392,49 @@ TEST_F(ContainerQueryTest, OldStyleForTransitions) {
   )HTML");
 
   Element* container = GetDocument().getElementById("container");
-  Element* target = GetDocument().getElementById("target");
+  target = GetDocument().getElementById("target");
   ASSERT_TRUE(target);
   ASSERT_TRUE(container);
 
   EXPECT_EQ("10px", ComputedValueString(target, "height"));
+  EXPECT_EQ(0u, GetAnimationsCount(target));
 
   LogicalAxes contained_axes(kLogicalAxisInline);
 
-  // Simulate multiple layout passes (intermediate):
-  GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
-      *container, LogicalSize(120, -1), contained_axes);
-  EXPECT_EQ("20px", ComputedValueString(target, "height"));
+  // Simulate a style and layout pass with multiple rounds of style recalc.
+  {
+    CSSAnimationUpdateScope animation_update_scope(GetDocument());
 
-  GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
-      *container, LogicalSize(130, -1), contained_axes);
-  EXPECT_EQ("30px", ComputedValueString(target, "height"));
+    // Should transition between [10px, 20px]. (Intermediate round).
+    GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
+        *container, LogicalSize(120, -1), contained_axes);
+    EXPECT_EQ("15px", ComputedValueString(target, "height"));
+    EXPECT_EQ(0u, GetAnimationsCount(target));
 
-  // Simulate the final layout pass:
-  container->SetInlineStyleProperty(CSSPropertyID::kWidth, "140px");
+    // Should transition between [10px, 30px]. (Intermediate round).
+    GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
+        *container, LogicalSize(130, -1), contained_axes);
+    EXPECT_EQ("20px", ComputedValueString(target, "height"));
+    EXPECT_EQ(0u, GetAnimationsCount(target));
+
+    // Should transition between [10px, 40px]. (Final round).
+    container->SetInlineStyleProperty(CSSPropertyID::kWidth, "140px");
+    UpdateAllLifecyclePhasesForTest();
+    EXPECT_EQ("25px", ComputedValueString(target, "height"));
+    EXPECT_EQ(0u, GetAnimationsCount(target));
+  }
+
+  // CSSAnimationUpdateScope going out of scope applies the update.
+  EXPECT_EQ(1u, GetAnimationsCount(target));
+
+  // Verify that the newly-updated Animation produces the correct value.
+  target->SetNeedsAnimationStyleRecalc();
   UpdateAllLifecyclePhasesForTest();
-
-  // Intermediate results should not have any effect on the transition,
-  // hence we should be halfway between 10px and 40px.
   EXPECT_EQ("25px", ComputedValueString(target, "height"));
 }
 
 TEST_F(ContainerQueryTest, TransitionAppearingInFinalPass) {
-  ScopedCSSIsolatedAnimationUpdatesForTest scoped(true);
+  ScopedCSSDelayedAnimationUpdatesForTest scoped(true);
 
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -443,30 +470,44 @@ TEST_F(ContainerQueryTest, TransitionAppearingInFinalPass) {
   ASSERT_TRUE(container);
 
   EXPECT_EQ("10px", ComputedValueString(target, "height"));
+  EXPECT_EQ(0u, GetAnimationsCount(target));
 
   LogicalAxes contained_axes(kLogicalAxisInline);
 
-  // Simulate multiple layout passes (intermediate):
-  GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
-      *container, LogicalSize(120, -1), contained_axes);
-  EXPECT_EQ("20px", ComputedValueString(target, "height"));
+  // Simulate a style and layout pass with multiple rounds of style recalc.
+  {
+    CSSAnimationUpdateScope animation_update_scope(GetDocument());
 
-  GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
-      *container, LogicalSize(130, -1), contained_axes);
-  EXPECT_EQ("30px", ComputedValueString(target, "height"));
+    // No transition property present. (Intermediate round).
+    GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
+        *container, LogicalSize(120, -1), contained_axes);
+    EXPECT_EQ("20px", ComputedValueString(target, "height"));
+    EXPECT_EQ(0u, GetAnimationsCount(target));
 
-  // Simulate the final layout pass. This pass, the actual transition property
-  // appears.
-  container->SetInlineStyleProperty(CSSPropertyID::kWidth, "140px");
+    // Still no transition property present. (Intermediate round).
+    GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
+        *container, LogicalSize(130, -1), contained_axes);
+    EXPECT_EQ("30px", ComputedValueString(target, "height"));
+    EXPECT_EQ(0u, GetAnimationsCount(target));
+
+    // Now the transition property appears for the first time. (Final round).
+    container->SetInlineStyleProperty(CSSPropertyID::kWidth, "140px");
+    UpdateAllLifecyclePhasesForTest();
+    EXPECT_EQ("25px", ComputedValueString(target, "height"));
+    EXPECT_EQ(0u, GetAnimationsCount(target));
+  }
+
+  // CSSAnimationUpdateScope going out of scope applies the update.
+  EXPECT_EQ(1u, GetAnimationsCount(target));
+
+  // Verify that the newly-updated Animation produces the correct value.
+  target->SetNeedsAnimationStyleRecalc();
   UpdateAllLifecyclePhasesForTest();
-
-  // Intermediate results should not have any effect on the transition,
-  // hence we should be halfway between 10px and 40px.
   EXPECT_EQ("25px", ComputedValueString(target, "height"));
 }
 
 TEST_F(ContainerQueryTest, TransitionTemporarilyAppearing) {
-  ScopedCSSIsolatedAnimationUpdatesForTest scoped(true);
+  ScopedCSSDelayedAnimationUpdatesForTest scoped(true);
 
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -482,7 +523,7 @@ TEST_F(ContainerQueryTest, TransitionTemporarilyAppearing) {
       }
       @container (width: 130px) {
         #target {
-          height: 30px;
+          height: 90px;
           transition: height steps(2, start) 100s;
         }
       }
@@ -502,29 +543,41 @@ TEST_F(ContainerQueryTest, TransitionTemporarilyAppearing) {
   ASSERT_TRUE(container);
 
   EXPECT_EQ("10px", ComputedValueString(target, "height"));
+  EXPECT_EQ(0u, GetAnimationsCount(target));
 
   LogicalAxes contained_axes(kLogicalAxisInline);
 
-  // Simulate multiple layout passes (intermediate):
-  GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
-      *container, LogicalSize(120, -1), contained_axes);
-  EXPECT_EQ("20px", ComputedValueString(target, "height"));
+  // Simulate a style and layout pass with multiple rounds of style recalc.
+  {
+    CSSAnimationUpdateScope animation_update_scope(GetDocument());
 
-  GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
-      *container, LogicalSize(130, -1), contained_axes);
-  EXPECT_EQ("30px", ComputedValueString(target, "height"));
+    // No transition property present yet. (Intermediate round).
+    GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
+        *container, LogicalSize(120, -1), contained_axes);
+    EXPECT_EQ("20px", ComputedValueString(target, "height"));
+    EXPECT_EQ(0u, GetAnimationsCount(target));
 
-  // Simulate the final layout pass.
-  container->SetInlineStyleProperty(CSSPropertyID::kWidth, "140px");
-  UpdateAllLifecyclePhasesForTest();
+    // Transition between [10px, 90px]. (Intermediate round).
+    GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
+        *container, LogicalSize(130, -1), contained_axes);
+    EXPECT_EQ("50px", ComputedValueString(target, "height"));
+    EXPECT_EQ(0u, GetAnimationsCount(target));
 
-  // An intermediate style recalc had a transition, but it ultimately
-  // disappeared, so we should not be transitioning.
-  EXPECT_EQ("40px", ComputedValueString(target, "height"));
+    // The transition property disappeared again. (Final round).
+    container->SetInlineStyleProperty(CSSPropertyID::kWidth, "140px");
+    UpdateAllLifecyclePhasesForTest();
+    EXPECT_EQ("40px", ComputedValueString(target, "height"));
+    EXPECT_EQ(0u, GetAnimationsCount(target));
+  }
+
+  // CSSAnimationUpdateScope going out of scope applies the update.
+  // We ultimately ended up with no transition, hence we should have no
+  // Animations on the element.
+  EXPECT_EQ(0u, GetAnimationsCount(target));
 }
 
 TEST_F(ContainerQueryTest, RedefiningAnimations) {
-  ScopedCSSIsolatedAnimationUpdatesForTest scoped(true);
+  ScopedCSSDelayedAnimationUpdatesForTest scoped(true);
 
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -567,24 +620,40 @@ TEST_F(ContainerQueryTest, RedefiningAnimations) {
 
   LogicalAxes contained_axes(kLogicalAxisInline);
 
-  // Simulate multiple layout passes (intermediate). Intermediate passes
-  // should not apply any animation updates.
-  GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
-      *container, LogicalSize(120, -1), contained_axes);
-  EXPECT_EQ("auto", ComputedValueString(target, "height"));
+  // Simulate a style and layout pass with multiple rounds of style recalc.
+  {
+    CSSAnimationUpdateScope animation_update_scope(GetDocument());
 
-  GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
-      *container, LogicalSize(130, -1), contained_axes);
-  EXPECT_EQ("auto", ComputedValueString(target, "height"));
+    // Animation at 20%. (Intermediate round).
+    GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
+        *container, LogicalSize(120, -1), contained_axes);
+    EXPECT_EQ("20px", ComputedValueString(target, "height"));
+    EXPECT_EQ(0u, GetAnimationsCount(target));
 
-  // Only the final pass should have any effect:
-  container->SetInlineStyleProperty(CSSPropertyID::kWidth, "140px");
+    // Animation at 30%. (Intermediate round).
+    GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
+        *container, LogicalSize(130, -1), contained_axes);
+    EXPECT_EQ("30px", ComputedValueString(target, "height"));
+    EXPECT_EQ(0u, GetAnimationsCount(target));
+
+    // Animation at 40%. (Final round).
+    container->SetInlineStyleProperty(CSSPropertyID::kWidth, "140px");
+    UpdateAllLifecyclePhasesForTest();
+    EXPECT_EQ("40px", ComputedValueString(target, "height"));
+    EXPECT_EQ(0u, GetAnimationsCount(target));
+  }
+
+  // CSSAnimationUpdateScope going out of scope applies the update.
+  EXPECT_EQ(1u, GetAnimationsCount(target));
+
+  // Verify that the newly-updated Animation produces the correct value.
+  target->SetNeedsAnimationStyleRecalc();
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ("40px", ComputedValueString(target, "height"));
 }
 
 TEST_F(ContainerQueryTest, UnsetAnimation) {
-  ScopedCSSIsolatedAnimationUpdatesForTest scoped(true);
+  ScopedCSSDelayedAnimationUpdatesForTest scoped(true);
 
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -617,25 +686,49 @@ TEST_F(ContainerQueryTest, UnsetAnimation) {
   ASSERT_TRUE(container);
 
   EXPECT_EQ("20px", ComputedValueString(target, "height"));
+  ASSERT_EQ(1u, target->getAnimations().size());
+  Animation* animation_before = target->getAnimations()[0].Get();
 
   LogicalAxes contained_axes(kLogicalAxisInline);
 
-  // Simulate an intermediate layout pass. It should not cancel the animation.
-  GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
-      *container, LogicalSize(130, -1), contained_axes);
-  EXPECT_EQ("20px", ComputedValueString(target, "height"));
+  // Simulate a style and layout pass with multiple rounds of style recalc.
+  {
+    CSSAnimationUpdateScope animation_update_scope(GetDocument());
 
-  // Non-intermediate pass. The animation should still not be canceled, since
-  // the CQ no longer matches.
-  container->SetInlineStyleProperty(CSSPropertyID::kWidth, "140px");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ("20px", ComputedValueString(target, "height"));
+    // Animation should appear to be canceled. (Intermediate round).
+    GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
+        *container, LogicalSize(130, -1), contained_axes);
+    EXPECT_EQ("auto", ComputedValueString(target, "height"));
+    EXPECT_EQ(1u, GetAnimationsCount(target));
 
-  // Another non-intermdiate pass. Now the CQ matches, animation:unset
-  // stands, and the animation should be canceled.
+    // Animation should not be canceled after all. (Final round).
+    container->SetInlineStyleProperty(CSSPropertyID::kWidth, "140px");
+    UpdateAllLifecyclePhasesForTest();
+    EXPECT_EQ("20px", ComputedValueString(target, "height"));
+    EXPECT_EQ(1u, GetAnimationsCount(target));
+  }
+
+  // CSSAnimationUpdateScope going out of scope applies the update.
+  // (Although since we didn't cancel, there is nothing to update).
+  EXPECT_EQ(1u, GetAnimationsCount(target));
+
+  // Verify that the same Animation object is still there.
+  ASSERT_EQ(1u, target->getAnimations().size());
+  EXPECT_EQ(animation_before, target->getAnimations()[0].Get());
+
+  // Animation should not be canceled.
+  EXPECT_TRUE(animation_before->CurrentTimeInternal());
+
+  // Change width such that container query matches, and cancel the animation
+  // for real this time. Note that since we no longer have a
+  // CSSAnimationUpdateScope above us, the CSSAnimationUpdateScope within
+  // UpdateAllLifecyclePhasesForTest will apply the update.
   container->SetInlineStyleProperty(CSSPropertyID::kWidth, "130px");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ("auto", ComputedValueString(target, "height"));
+
+  // *Now* animation should be canceled.
+  EXPECT_FALSE(animation_before->CurrentTimeInternal());
 }
 
 }  // namespace blink

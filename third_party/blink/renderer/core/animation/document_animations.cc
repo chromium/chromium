@@ -33,11 +33,13 @@
 #include "cc/animation/animation_host.h"
 #include "third_party/blink/renderer/core/animation/animation_clock.h"
 #include "third_party/blink/renderer/core/animation/animation_timeline.h"
+#include "third_party/blink/renderer/core/animation/css/css_animation_update_scope.h"
 #include "third_party/blink/renderer/core/animation/css/css_scroll_timeline.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/pending_animations.h"
 #include "third_party/blink/renderer/core/animation/worklet_animation_controller.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -184,20 +186,16 @@ void DocumentAnimations::ValidateTimelines() {
   unvalidated_timelines_.clear();
 }
 
-DocumentAnimations::AllowAnimationUpdatesScope::AllowAnimationUpdatesScope(
-    DocumentAnimations& document_animations,
-    bool value)
-    : allow_(&document_animations.allow_animation_updates_,
-             document_animations.allow_animation_updates_.value_or(true) &&
-                 value) {}
-
 void DocumentAnimations::AddElementWithPendingAnimationUpdate(
     Element& element) {
-  DCHECK(AnimationUpdatesAllowed());
+  DCHECK(CSSAnimationUpdateScope::HasCurrent());
   elements_with_pending_updates_.insert(&element);
 }
 
 void DocumentAnimations::ApplyPendingElementUpdates() {
+  StyleEngine::InApplyAnimationUpdateScope in_apply_animation_update_scope(
+      document_->GetStyleEngine());
+
   HeapHashSet<WeakMember<Element>> pending;
   std::swap(pending, elements_with_pending_updates_);
 
@@ -215,6 +213,7 @@ void DocumentAnimations::ApplyPendingElementUpdates() {
 }
 
 void DocumentAnimations::AddPendingOldStyleForElement(Element& element) {
+  DCHECK(CSSAnimationUpdateScope::HasCurrent());
   pending_old_styles_.insert(
       &element, scoped_refptr<const ComputedStyle>(element.GetComputedStyle()));
 }

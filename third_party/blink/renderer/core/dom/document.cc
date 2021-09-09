@@ -85,6 +85,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy.h"
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
+#include "third_party/blink/renderer/core/animation/css/css_animation_update_scope.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/animation/pending_animations.h"
@@ -2057,6 +2058,8 @@ void Document::UpdateStyleAndLayoutTree() {
     }
   }
 
+  CSSAnimationUpdateScope animation_update_scope(*this);
+
   UpdateStyleAndLayoutTreeForThisDocument();
 
   if (GetStyleEngine().UsesContainerQueries()) {
@@ -2190,23 +2193,6 @@ void Document::InvalidateStyleAndLayoutForFontUpdates() {
 }
 
 void Document::UpdateStyle() {
-  UpdateStyleInternal();
-  DCHECK_EQ(lifecycle_.GetState(), DocumentLifecycle::kStyleClean);
-
-  // If we're using container queries, the second pass must be handled
-  // higher up such that style *and* layout can run twice (if needed).
-  if (RuntimeEnabledFeatures::CSSIsolatedAnimationUpdatesEnabled() &&
-      !GetStyleEngine().UsesContainerQueries()) {
-    GetDocumentAnimations().ApplyPendingElementUpdates();
-    if (lifecycle_.GetState() < DocumentLifecycle::kStyleClean) {
-      DocumentAnimations::AllowAnimationUpdatesScope allow_updates(
-          GetDocumentAnimations(), false);
-      UpdateStyleInternal();
-    }
-  }
-}
-
-void Document::UpdateStyleInternal() {
   DCHECK(!View()->ShouldThrottleRendering());
   TRACE_EVENT_BEGIN0("blink,blink_style", "Document::updateStyle");
   RUNTIME_CALL_TIMER_SCOPE(V8PerIsolateData::MainThreadIsolate(),
