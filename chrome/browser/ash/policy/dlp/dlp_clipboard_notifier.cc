@@ -165,7 +165,7 @@ void DlpClipboardNotifier::WarnOnPaste(
                           base::Unretained(this), CloneEndpoint(data_dst));
 
   ShowWarningBubble(l10n_util::GetStringFUTF16(
-                        IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_PASTE, host_name),
+                        IDS_POLICY_DLP_CLIPBOARD_WARN_ON_PASTE, host_name),
                     std::move(proceed_cb), std::move(cancel_cb));
 }
 
@@ -193,7 +193,7 @@ void DlpClipboardNotifier::WarnOnBlinkPaste(
                           base::Unretained(this), CloneEndpoint(data_dst));
 
   ShowWarningBubble(l10n_util::GetStringFUTF16(
-                        IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_PASTE, host_name),
+                        IDS_POLICY_DLP_CLIPBOARD_WARN_ON_PASTE, host_name),
                     std::move(proceed_cb), std::move(cancel_cb));
 }
 
