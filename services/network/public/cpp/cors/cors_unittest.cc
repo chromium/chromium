@@ -417,9 +417,9 @@ TEST_F(CorsTest, SafelistedSecCHPrefersColorScheme) {
 }
 
 TEST_F(CorsTest, SafelistedSecCHLang) {
-  EXPECT_TRUE(IsCorsSafelistedHeader("Sec-CH-Lang", "\"en\", \"de\""));
+  EXPECT_TRUE(IsCorsSafelistedHeader("Lang", "\"en\", \"de\""));
 
-  // TODO(mkwst): Validate that `Sec-CH-Lang` is a structured header.
+  // TODO(mkwst): Validate that `Lang` is a structured header.
   // https://crbug.com/924969
 }
 

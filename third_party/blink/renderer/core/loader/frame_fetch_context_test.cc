@@ -727,30 +727,27 @@ TEST_F(FrameFetchContextHintsTest, MonitorViewportWidthHints) {
 }
 
 TEST_F(FrameFetchContextHintsTest, MonitorLangHint) {
-  ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Lang", false, "");
-  ExpectHeader("http://www.example.com/1.gif", "Sec-CH-Lang", false, "");
+  ExpectHeader("https://www.example.com/1.gif", "Lang", false, "");
+  ExpectHeader("http://www.example.com/1.gif", "Lang", false, "");
 
   ClientHintsPreferences preferences;
   preferences.SetShouldSend(network::mojom::WebClientHintsType::kLang);
   document->GetFrame()->GetClientHintsPreferences().UpdateFrom(preferences);
 
   document->domWindow()->navigator()->SetLanguagesForTesting("en-US");
-  ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Lang", true,
-               "\"en-US\"");
-  ExpectHeader("http://www.example.com/1.gif", "Sec-CH-Lang", false, "");
+  ExpectHeader("https://www.example.com/1.gif", "Lang", true, "\"en-US\"");
+  ExpectHeader("http://www.example.com/1.gif", "Lang", false, "");
 
   // TODO(crbug.com/924969): A refactoring exposed a bug in the languages
-  // override that effects the `Sec-CH-Lang` hint.
+  // override that effects the `Lang` hint.
   document->domWindow()->navigator()->SetLanguagesForTesting("en,de,fr");
-  ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Lang", true,
-               "\"en-US\"");
-  ExpectHeader("http://www.example.com/1.gif", "Sec-CH-Lang", false, "");
+  ExpectHeader("https://www.example.com/1.gif", "Lang", true, "\"en-US\"");
+  ExpectHeader("http://www.example.com/1.gif", "Lang", false, "");
 
   document->domWindow()->navigator()->SetLanguagesForTesting(
       "en-US,fr_FR,de-DE,es");
-  ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Lang", true,
-               "\"en-US\"");
-  ExpectHeader("http://www.example.com/1.gif", "Sec-CH-Lang", false, "");
+  ExpectHeader("https://www.example.com/1.gif", "Lang", true, "\"en-US\"");
+  ExpectHeader("http://www.example.com/1.gif", "Lang", false, "");
 }
 
 TEST_F(FrameFetchContextHintsTest, MonitorUAHints) {
@@ -867,7 +864,7 @@ TEST_F(FrameFetchContextHintsTest, MonitorAllHints) {
   ExpectHeader("https://www.example.com/1.gif", "rtt", false, "");
   ExpectHeader("https://www.example.com/1.gif", "downlink", false, "");
   ExpectHeader("https://www.example.com/1.gif", "ect", false, "");
-  ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Lang", false, "");
+  ExpectHeader("https://www.example.com/1.gif", "Lang", false, "");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Arch", false, "");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Platform-Version",
                false, "");
@@ -909,10 +906,9 @@ TEST_F(FrameFetchContextHintsTest, MonitorAllHints) {
   ExpectHeader("https://www.example.com/1.gif", "Viewport-Width", true, "500");
 
   // TODO(crbug.com/924969): A refactoring exposed a bug in the languages
-  // override setup that effects the `Sec-CH-Lang` hint.
+  // override setup that effects the `Lang` hint.
   document->domWindow()->navigator()->SetLanguagesForTesting("en,de,fr");
-  ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Lang", true,
-               "\"en-US\"");
+  ExpectHeader("https://www.example.com/1.gif", "Lang", true, "\"en-US\"");
 
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA", true, "");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Arch", true, "");
@@ -985,10 +981,9 @@ TEST_F(FrameFetchContextHintsTest, MonitorAllHintsPermissionsPolicy) {
   ExpectHeader("https://www.example.net/1.gif", "Device-Memory", true, "4");
 
   // TODO(crbug.com/924969): A refactoring exposed a bug in the languages
-  // override setup that effects the `Sec-CH-Lang` hint.
+  // override setup that effects the `Lang` hint.
   document->domWindow()->navigator()->SetLanguagesForTesting("en,de,fr");
-  ExpectHeader("https://www.example.net/1.gif", "Sec-CH-Lang", true,
-               "\"en-US\"");
+  ExpectHeader("https://www.example.net/1.gif", "Lang", true, "\"en-US\"");
   ExpectHeader("https://www.example.net/1.gif", "Sec-CH-UA", true, "");
   ExpectHeader("https://www.example.net/1.gif", "Sec-CH-UA-Arch", true, "");
   ExpectHeader("https://www.example.net/1.gif", "Sec-CH-UA-Platform", true, "");
@@ -1057,7 +1052,7 @@ TEST_F(FrameFetchContextHintsTest, MonitorSomeHintsPermissionsPolicy) {
 #else
   ExpectHeader("https://www.example.net/1.gif", "DPR", false, "");
 #endif
-  ExpectHeader("https://www.example.net/1.gif", "Sec-CH-Lang", false, "");
+  ExpectHeader("https://www.example.net/1.gif", "Lang", false, "");
   ExpectHeader("https://www.example.net/1.gif", "Sec-CH-UA-Arch", false, "");
   ExpectHeader("https://www.example.net/1.gif", "Sec-CH-UA-Platform-Version",
                false, "");

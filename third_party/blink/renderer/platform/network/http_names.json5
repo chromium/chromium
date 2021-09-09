@@ -61,7 +61,7 @@
     "Resource-Freshness",
     "Require-Document-Policy",
     "Save-Data",
-    "Sec-CH-Lang",
+    "Lang",
     "Server-Timing",
     "SourceMap",
     "Timing-Allow-Origin",

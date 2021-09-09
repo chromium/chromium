@@ -18,25 +18,13 @@
 
 namespace network {
 
-const char* const kClientHintsNameMapping[] = {"device-memory",
-                                               "dpr",
-                                               "width",
-                                               "viewport-width",
-                                               "rtt",
-                                               "downlink",
-                                               "ect",
-                                               "lang",
-                                               "sec-ch-ua",
-                                               "sec-ch-ua-arch",
-                                               "sec-ch-ua-platform",
-                                               "sec-ch-ua-model",
-                                               "sec-ch-ua-mobile",
-                                               "sec-ch-ua-full-version",
-                                               "sec-ch-ua-platform-version",
-                                               "sec-ch-prefers-color-scheme",
-                                               "sec-ch-ua-bitness",
-                                               "sec-ch-ua-reduced",
-                                               "sec-ch-viewport-height"};
+const char* const kClientHintsNameMapping[] = {
+    "device-memory", "dpr", "width", "viewport-width", "rtt", "downlink", "ect",
+    // TODO(https://https://crbug.com/1227043) Remove lang client hint.
+    "lang", "sec-ch-ua", "sec-ch-ua-arch", "sec-ch-ua-platform",
+    "sec-ch-ua-model", "sec-ch-ua-mobile", "sec-ch-ua-full-version",
+    "sec-ch-ua-platform-version", "sec-ch-prefers-color-scheme",
+    "sec-ch-ua-bitness", "sec-ch-ua-reduced", "sec-ch-viewport-height"};
 
 const size_t kClientHintsMappingsCount = base::size(kClientHintsNameMapping);
 

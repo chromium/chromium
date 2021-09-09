@@ -20,7 +20,7 @@ namespace blink {
 class PermissionsPolicy;
 
 // Mapping from WebClientHintsType to the hint's outgoing header
-// (e.g. kLang => "sec-ch-lang"). The ordering matches the ordering of enums in
+// (e.g. kLang => "lang"). The ordering matches the ordering of enums in
 // services/network/public/mojom/web_client_hints_types.mojom
 BLINK_COMMON_EXPORT extern const char* const kClientHintsHeaderMapping[];
 

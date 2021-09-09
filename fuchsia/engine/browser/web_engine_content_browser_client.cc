@@ -207,7 +207,7 @@ std::string WebEngineContentBrowserClient::GetApplicationLocale() {
 std::string WebEngineContentBrowserClient::GetAcceptLangs(
     content::BrowserContext* context) {
   // Returns a comma-separated list of language codes, in preference order.
-  // This is suitable for direct use setting the "sec-ch-lang" header, or
+  // This is suitable for direct use setting the "lang" header, or
   // passed to net::HttpUtil::GenerateAcceptLanguageHeader() to generate a
   // legacy "accept-language" header value.
   return l10n_util::GetStringUTF8(IDS_ACCEPT_LANGUAGES);

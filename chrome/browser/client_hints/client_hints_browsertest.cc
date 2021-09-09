@@ -2340,7 +2340,7 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
     std::unique_ptr<base::FeatureList> feature_list =
         std::make_unique<base::FeatureList>();
     // Don't include LangClientHintHeader in the enabled features; we will
-    // verify that the Sec-CH-Lang header is not included.
+    // verify that the Lang header is not included.
     feature_list->InitializeFromCommandLine(
         "UserAgentClientHint,CriticalClientHint,AcceptCHFrame,"
         "PrefersColorSchemeClientHintHeader",
@@ -2379,8 +2379,8 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
         request.headers.end()) {
       SetChUaFullVersion(request.headers.at("sec-ch-ua-full-version"));
     }
-    if (request.headers.find("sec-ch-lang") != request.headers.end()) {
-      SetChLang(request.headers.at("sec-ch-lang"));
+    if (request.headers.find("lang") != request.headers.end()) {
+      SetChLang(request.headers.at("lang"));
     }
   }
 
