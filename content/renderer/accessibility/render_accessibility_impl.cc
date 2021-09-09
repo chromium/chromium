@@ -455,8 +455,6 @@ void RenderAccessibilityImpl::MarkWebAXObjectDirty(
     ax::mojom::Action event_from_action,
     std::vector<ui::AXEventIntent> event_intents,
     ax::mojom::Event event_type) {
-  DCHECK(obj.AccessibilityIsIncludedInTree())
-      << "Cannot serialize unincluded object: " << obj.ToString(true).Utf8();
   EnqueueDirtyObject(obj, ax::mojom::EventFrom::kAction, event_from_action,
                      event_intents, dirty_objects_.end());
 
@@ -864,22 +862,76 @@ bool RenderAccessibilityImpl::SerializeUpdatesAndEvents(
     if (!obj.MaybeUpdateLayoutAndCheckValidity())
       continue;
 
-    // Cannot serialize unincluded object.
-    // Only included objects are marked dirty, but this can happen if the object
-    // becomes unincluded after it was originally marked dirty, in which case a
-    // children changed will also be fired on the included ancestor. The
-    // children changed event on the ancestor means that attempting to serialize
-    // this unincluded object is not necessary.
-    if (!obj.AccessibilityIsIncludedInTree())
+    // If the object in question is not included in the tree, get the
+    // nearest ancestor that is (ParentObject() will do this for us).
+    // Otherwise this can lead to the serializer doing extra work because
+    // the object won't be in |already_serialized_ids|.
+    if (!obj.AccessibilityIsIncludedInTree()) {
+      obj = obj.ParentObject();
+      if (obj.IsDetached())
+        continue;
+    }
+
+    if (already_serialized_ids.find(obj.AxID()) != already_serialized_ids.end())
       continue;
 
-    // Further down this loop, we update |already_serialized_ids| with all IDs
+    // Further down the page, we update |already_serialized_ids| with all IDs
     // actually serialized. However, add this object's ID first because there's
     // a chance that we try to serialize this object but the serializer ends up
     // skipping it. That's probably a Blink bug if that happens, but still we
     // need to make sure we don't keep trying the same object over again.
-    if (!already_serialized_ids.insert(obj.AxID()).second)
-      continue;  // No insertion, was already present.
+    already_serialized_ids.insert(obj.AxID());
+
+    // If it's ignored, find the first ancestor that's not ignored and
+    // mark all ancestors along the way as dirty.
+    if (obj.AccessibilityIsIgnored()) {
+      WebAXObject ancestor = obj;
+      std::list<std::unique_ptr<AXDirtyObject>>::iterator insertion_point =
+          std::next(dirty_objects_.begin());
+      for (; !ancestor.IsDetached() && ancestor.AccessibilityIsIgnored();
+           ancestor = ancestor.ParentObject()) {
+        // There are 3 states of nodes that we care about here.
+        // (x) Unignored, included in tree
+        // [x] Ignored, included in tree
+        // <x> Ignored, excluded from tree
+        //
+        // Consider the following tree :
+        // ++(0) Role::kRootWebArea
+        // ++++<1> Role::kNone
+        // ++++++[2] Role::kGenericContainer <body>
+        // ++++++++[3] Role::kGenericContainer with 'visibility: hidden'
+        //
+        // If we modify [3] to be 'visibility: visible', we will receive
+        // Event::kChildrenChanged here for the Ignored parent [2].
+        // We must re-serialize the Unignored parent node (0) due to this
+        // change, but we must also re-serialize [2] since its children
+        // have changed. <1> was never part of the ax tree, and therefore
+        // does not need to be serialized.
+        // Note that [3] will be serialized to (3) during :
+        // |AXTreeSerializer<>::SerializeChangedNodes| when node [2] is
+        // being serialized, since it will detect the Ignored state had
+        // changed.
+        //
+        // Similarly, during Event::kTextChanged, if any Ignored,
+        // but included in tree ancestor uses NameFrom::kContents,
+        // they must also be re-serialized in case the name changed.
+        //
+        // Insert just after the object currently being serialized.
+        insertion_point = EnqueueDirtyObject(
+            ancestor, current_dirty_object->event_from,
+            current_dirty_object->event_from_action,
+            current_dirty_object->event_intents, insertion_point);
+        // Increment remaining objects to serialize to ensure that it's
+        // serialized now, not in a subsequent message.
+        ++num_remaining_objects_to_serialize;
+      }
+      EnqueueDirtyObject(ancestor, current_dirty_object->event_from,
+                         current_dirty_object->event_from_action,
+                         current_dirty_object->event_intents, insertion_point);
+      // Increment remaining objects to serialize to ensure that it's
+      // serialized now, not in a subsequent message.
+      ++num_remaining_objects_to_serialize;
+    }
 
     ui::AXTreeUpdate update;
     update.event_from = current_dirty_object->event_from;

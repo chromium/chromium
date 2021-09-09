@@ -2558,6 +2558,9 @@ void AXObjectCacheImpl::FireAXEventImmediately(
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION(*obj->GetDocument());
 #endif  // DCHECK_IS_ON()
 
+  PostPlatformNotification(obj, event_type, event_from, event_from_action,
+                           event_intents);
+
   if (event_type == ax::mojom::blink::Event::kChildrenChanged &&
       obj->CachedParentObject()) {
     const bool was_ignored = obj->LastKnownIsIgnoredValue();
@@ -2569,9 +2572,6 @@ void AXObjectCacheImpl::FireAXEventImmediately(
     if (is_ignored != was_ignored || was_in_tree != is_in_tree)
       ChildrenChangedWithCleanLayout(obj->CachedParentObject());
   }
-
-  PostPlatformNotification(obj, event_type, event_from, event_from_action,
-                           event_intents);
 }
 
 bool AXObjectCacheImpl::IsAriaOwned(const AXObject* object) const {
@@ -3329,7 +3329,7 @@ AXObject* AXObjectCacheImpl::GetSerializationTarget(AXObject* obj) {
   }
 
   // Return included in tree object.
-  if (obj->AccessibilityIsIncludedInTree())
+  if (obj->LastKnownIsIncludedInTreeValue())
     return obj;
 
   return obj->ParentObjectIncludedInTree();
