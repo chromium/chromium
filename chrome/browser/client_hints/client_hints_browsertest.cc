@@ -3001,6 +3001,20 @@ IN_PROC_BROWSER_TEST_F(SameOriginUaReducedOriginTrialBrowserTest,
                           /*ch_ua_reduced_expected=*/false);
 }
 
+IN_PROC_BROWSER_TEST_F(
+    SameOriginUaReducedOriginTrialBrowserTest,
+    MissingAcceptCHInIframeResponseHeaderDoesNotRemoveChUaReduced) {
+  // The first navigation sets Sec-CH-UA-Reduced in the client hints storage for
+  // the origin.  The iframe subresource request does not contain Accept-CH in
+  // the response, but because it's not a top-level navigation, it should not
+  // remove Sec-CH-UA-Reduced from the Accept-CH cache.
+  NavigateAndCheckHeaders(accept_ch_ua_reduced_iframe_request_url(),
+                          /*ch_ua_reduced_expected=*/true);
+  // The second navigation still finds Sec-CH-UA-Reduced in the Accept-CH cache.
+  NavigateAndCheckHeaders(ua_reduced_with_valid_origin_trial_token_url(),
+                          /*ch_ua_reduced_expected=*/true);
+}
+
 // Tests that the Sec-CH-UA-Reduced client hint and the reduced User-Agent
 // string are sent on request headers for third-party embedded resources if the
 // Origin Trial token from the top-level frame is valid and the permissions

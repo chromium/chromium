@@ -4286,7 +4286,8 @@ void NavigationRequest::CommitNavigation() {
     commit_params_->enabled_client_hints = LookupAcceptCHForCommit(
         common_params_->url, client_hints_delegate, frame_tree_node_);
 
-    if (response() && !response()->parsed_headers->accept_ch &&
+    if (frame_tree_node_->IsMainFrame() && response() &&
+        !response()->parsed_headers->accept_ch &&
         base::Contains(commit_params_->enabled_client_hints,
                        network::mojom::WebClientHintsType::kUAReduced)) {
       // For Chrome to continue to send Sec-CH-UA-Reduced, the server must
