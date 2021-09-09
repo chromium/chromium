@@ -36,6 +36,7 @@ class IdentityExtraSetUp : public ChromeBrowserMainExtraParts {
 
 void IdentityBrowserTestBase::CreatedBrowserMainParts(
     content::BrowserMainParts* parts) {
+  InProcessBrowserTest::CreatedBrowserMainParts(parts);
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   static_cast<ChromeBrowserMainParts*>(parts)->AddParts(
       std::make_unique<IdentityExtraSetUp>());
