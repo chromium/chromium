@@ -50,6 +50,8 @@ class SerialTracker final {
   // Returns the most recent serial matching the given |types|, if any.
   absl::optional<Serial> GetSerial(const std::vector<SerialType>& types) const;
 
+  void ClearForTesting();
+
  private:
   const base::TimeTicks base_time_;
 

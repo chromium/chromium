@@ -54,4 +54,11 @@ absl::optional<Serial> SerialTracker::GetSerial(
   return most_recent;
 }
 
+void SerialTracker::ClearForTesting() {
+  ResetSerial(SerialType::kMouseEnter);
+  ResetSerial(SerialType::kMousePress);
+  ResetSerial(SerialType::kTouchPress);
+  ResetSerial(SerialType::kKeyPress);
+}
+
 }  // namespace wl

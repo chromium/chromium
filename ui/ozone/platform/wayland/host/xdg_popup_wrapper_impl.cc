@@ -172,8 +172,7 @@ bool XDGPopupWrapperImpl::Initialize(const ShellPopupParams& params) {
 
   xdg_positioner_destroy(positioner);
 
-  if (auto serial = GetSerialForGrab(connection_))
-    xdg_popup_grab(xdg_popup_.get(), connection_->seat(), serial->value);
+  GrabIfPossible(connection_, wayland_window_->parent_window());
 
   xdg_popup_add_listener(xdg_popup_.get(), &xdg_popup_listener, this);
 
@@ -217,6 +216,10 @@ void XDGPopupWrapperImpl::SetWindowGeometry(const gfx::Rect& bounds) {
   xdg_surface_set_window_geometry(xdg_surface_wrapper_->xdg_surface(),
                                   bounds.x(), bounds.y(), bounds.width(),
                                   bounds.height());
+}
+
+void XDGPopupWrapperImpl::Grab(uint32_t serial) {
+  xdg_popup_grab(xdg_popup_.get(), connection_->seat(), serial);
 }
 
 struct xdg_positioner* XDGPopupWrapperImpl::CreatePositioner(

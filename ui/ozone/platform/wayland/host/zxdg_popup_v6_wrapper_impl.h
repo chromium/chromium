@@ -30,6 +30,7 @@ class ZXDGPopupV6WrapperImpl : public ShellPopupWrapper {
   bool IsConfigured() override;
   bool SetBounds(const gfx::Rect& new_bounds) override;
   void SetWindowGeometry(const gfx::Rect& bounds) override;
+  void Grab(uint32_t serial) override;
 
  private:
   struct zxdg_positioner_v6* CreatePositioner(WaylandWindow* parent_window);

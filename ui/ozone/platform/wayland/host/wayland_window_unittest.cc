@@ -2838,6 +2838,68 @@ TEST_P(WaylandWindowTest, DoesNotGrabPopupIfNoSeat) {
   EXPECT_EQ(test_popup->grab_serial(), 0u);
 }
 
+// Regression test for https://crbug.com/1247799.
+TEST_P(WaylandWindowTest, DoesNotGrabPopupUnlessParentHasGrab) {
+  wl_seat_send_capabilities(server_.seat()->resource(),
+                            WL_SEAT_CAPABILITY_POINTER);
+  Sync();
+  ASSERT_TRUE(connection_->pointer());
+  window_->SetPointerFocus(true);
+
+  // Emulate a root menu creation with no serial available and ensure
+  // ozone/wayland does not attempt to grab it.
+  connection_->serial_tracker().ClearForTesting();
+
+  MockPlatformWindowDelegate delegate;
+  std::unique_ptr<WaylandWindow> root_menu;
+  EXPECT_CALL(delegate, GetMenuType()).WillOnce(Return(MenuType::kRootMenu));
+  root_menu = CreateWaylandWindowWithParams(PlatformWindowType::kMenu,
+                                            window_->GetWidget(),
+                                            gfx::Rect(50, 50), &delegate);
+  Sync();
+  VerifyAndClearExpectations();
+  Mock::VerifyAndClearExpectations(&delegate);
+  ASSERT_TRUE(root_menu);
+
+  auto* server_root_menu = GetTestXdgPopupByWindow(root_menu.get());
+  ASSERT_TRUE(server_root_menu);
+  EXPECT_EQ(server_root_menu->grab_serial(), 0u);
+
+  // Emulate a nested menu creation triggered by a mouse button event and ensure
+  // ozone/wayland does not attempt to grab it, as its parent also has not grab.
+  auto* server_root_menu_surface = server_.GetObject<wl::MockSurface>(
+      root_menu->root_surface()->GetSurfaceId());
+  ASSERT_TRUE(server_root_menu_surface);
+
+  auto* pointer_resource = server_.seat()->pointer()->resource();
+  wl_pointer_send_enter(pointer_resource, 3u /*serial*/,
+                        server_root_menu_surface->resource(), 0, 0);
+  wl_pointer_send_button(pointer_resource, 4u /*serial*/, 1, BTN_LEFT,
+                         WL_POINTER_BUTTON_STATE_PRESSED);
+  EXPECT_CALL(delegate, DispatchEvent(_)).Times(2);
+  Sync();
+  Mock::VerifyAndClearExpectations(&delegate);
+
+  MockPlatformWindowDelegate delegate_2;
+  std::unique_ptr<WaylandWindow> child_menu;
+  EXPECT_CALL(delegate_2, GetMenuType()).WillOnce(Return(MenuType::kChildMenu));
+  child_menu = CreateWaylandWindowWithParams(PlatformWindowType::kMenu,
+                                             root_menu->GetWidget(),
+                                             gfx::Rect(10, 10), &delegate_2);
+  Sync();
+  VerifyAndClearExpectations();
+  Mock::VerifyAndClearExpectations(&delegate_2);
+  ASSERT_TRUE(child_menu);
+
+  auto* server_child_menu = GetTestXdgPopupByWindow(child_menu.get());
+  ASSERT_TRUE(server_child_menu);
+  EXPECT_EQ(server_child_menu->grab_serial(), 0u);
+
+  wl_pointer_send_leave(pointer_resource, 5u /*serial*/,
+                        server_root_menu_surface->resource());
+  Sync();
+}
+
 TEST_P(WaylandWindowTest, OneWaylandSubsurface) {
   VerifyAndClearExpectations();
 

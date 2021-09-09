@@ -171,10 +171,8 @@ bool ZXDGPopupV6WrapperImpl::Initialize(const ShellPopupParams& params) {
 
   zxdg_positioner_v6_destroy(positioner);
 
-  if (auto serial = GetSerialForGrab(connection_)) {
-    zxdg_popup_v6_grab(zxdg_popup_v6_.get(), connection_->seat(),
-                       serial->value);
-  }
+  GrabIfPossible(connection_, wayland_window_->parent_window());
+
   zxdg_popup_v6_add_listener(zxdg_popup_v6_.get(), &zxdg_popup_v6_listener,
                              this);
 
@@ -202,6 +200,10 @@ void ZXDGPopupV6WrapperImpl::SetWindowGeometry(const gfx::Rect& bounds) {
   zxdg_surface_v6_set_window_geometry(zxdg_surface_v6_wrapper_->zxdg_surface(),
                                       bounds.x(), bounds.y(), bounds.width(),
                                       bounds.height());
+}
+
+void ZXDGPopupV6WrapperImpl::Grab(uint32_t serial) {
+  zxdg_popup_v6_grab(zxdg_popup_v6_.get(), connection_->seat(), serial);
 }
 
 zxdg_positioner_v6* ZXDGPopupV6WrapperImpl::CreatePositioner(

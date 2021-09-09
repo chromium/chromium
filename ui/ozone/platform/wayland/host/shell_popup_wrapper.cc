@@ -5,38 +5,40 @@
 #include "ui/ozone/platform/wayland/host/shell_popup_wrapper.h"
 
 #include "base/check_op.h"
+#include "base/debug/stack_trace.h"
+#include "base/environment.h"
+#include "base/logging.h"
+#include "base/nix/xdg_util.h"
 #include "base/notreached.h"
+#include "build/chromeos_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_popup.h"
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
+#include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
 namespace ui {
+
+namespace {
+
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+bool IsGnomeShell() {
+  auto env = base::Environment::Create();
+  return base::nix::GetDesktopEnvironment(env.get()) ==
+         base::nix::DESKTOP_ENVIRONMENT_GNOME;
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
+
+}  // namespace
 
 ShellPopupParams::ShellPopupParams() = default;
 ShellPopupParams::ShellPopupParams(const ShellPopupParams&) = default;
 ShellPopupParams& ShellPopupParams::operator=(const ShellPopupParams&) =
     default;
 ShellPopupParams::~ShellPopupParams() = default;
-
-absl::optional<wl::Serial> ShellPopupWrapper::GetSerialForGrab(
-    WaylandConnection* connection) const {
-  // When drag process starts, as described the protocol -
-  // https://goo.gl/1Mskq3, the client must have an active implicit grab. If
-  // we try to create a popup and grab it, it will be immediately dismissed.
-  // Thus, do not take explicit grab during drag process.
-  if (connection->IsDragInProgress() || !connection->seat())
-    return absl::nullopt;
-
-  // According to the definition of the xdg protocol, the grab request must be
-  // used in response to some sort of user action like a button press, key
-  // press, or touch down event.
-  return connection->serial_tracker().GetSerial({wl::SerialType::kTouchPress,
-                                                 wl::SerialType::kMousePress,
-                                                 wl::SerialType::kKeyPress});
-}
 
 void ShellPopupWrapper::FillAnchorData(
     const ShellPopupParams& params,
@@ -59,6 +61,41 @@ void ShellPopupWrapper::FillAnchorData(
   *anchor_position = OwnedWindowAnchorPosition::kTopLeft;
   *anchor_gravity = OwnedWindowAnchorGravity::kBottomRight;
   *constraints = OwnedWindowConstraintAdjustment::kAdjustmentFlipY;
+}
+
+void ShellPopupWrapper::GrabIfPossible(WaylandConnection* connection,
+                                       WaylandWindow* parent_window) {
+  // When drag process starts, as described the protocol -
+  // https://goo.gl/1Mskq3, the client must have an active implicit grab. If
+  // we try to create a popup and grab it, it will be immediately dismissed.
+  // Thus, do not take explicit grab during drag process.
+  if (connection->IsDragInProgress() || !connection->seat())
+    return;
+
+  // According to the definition of the xdg protocol, the grab request must be
+  // used in response to some sort of user action like a button press, key
+  // press, or touch down event.
+  auto serial = connection->serial_tracker().GetSerial(
+      {wl::SerialType::kTouchPress, wl::SerialType::kMousePress,
+       wl::SerialType::kKeyPress});
+  if (!serial.has_value())
+    return;
+
+  // The parent of a grabbing popup must either be an xdg_toplevel surface or
+  // another xdg_popup with an explicit grab. If it is a popup that did not take
+  // an explicit grab, an error will be raised, so early out if that's the case.
+  auto* parent_popup = parent_window->AsWaylandPopup();
+  if (parent_popup && !parent_popup->shell_popup()->has_grab_) {
+    return;
+  }
+
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (serial->type == wl::SerialType::kTouchPress && IsGnomeShell())
+    return;
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  Grab(serial->value);
+  has_grab_ = true;
 }
 
 }  // namespace ui
