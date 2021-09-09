@@ -63,9 +63,20 @@ EventBase::Metric::Metric(uint64_t name_hash, MetricType type)
 EventBase::Metric::~Metric() = default;
 
 bool EventBase::Metric::operator==(const EventBase::Metric& other) const {
-  return name_hash == other.name_hash && type == other.type &&
-         hmac_value == other.hmac_value && int_value == other.int_value &&
-         string_value == other.string_value;
+  // Terminate early to avoid accessing irrelevant values.
+  if (name_hash != other.name_hash || type != other.type)
+    return false;
+
+  switch (type) {
+    case MetricType::kHmac:
+      return hmac_value == other.hmac_value;
+    case MetricType::kInt:
+      return int_value == other.int_value;
+    case MetricType::kRawString:
+      return string_value == other.string_value;
+  }
+
+  NOTREACHED();
 }
 
 // static
@@ -85,17 +96,17 @@ absl::optional<EventBase> EventBase::FromEvent(const Event& event) {
                        project_validator.value()->id_scope(),
                        project_validator.value()->event_type());
 
-  for (const auto& metric : event.metric_values()) {
+  for (const auto& metric_value : event.metric_values()) {
     // Validate that both name and metric type are valid structured metrics.
-    auto metric_metadata =
-        event_validator.value()->GetMetricMetadata(metric.first);
+    absl::optional<EventValidator::MetricMetadata> metric_metadata =
+        event_validator.value()->GetMetricMetadata(metric_value.first);
     if (!metric_metadata.has_value() ||
-        metric_metadata.value().metric_type != metric.second.type) {
+        metric_metadata.value().metric_type != metric_value.second.type) {
       return absl::nullopt;
     }
 
-    const auto& value = metric.second.value;
-    switch (metric.second.type) {
+    const auto& value = metric_value.second.value;
+    switch (metric_value.second.type) {
       case Event::MetricType::kHmac:
         event_base.AddHmacMetric(metric_metadata.value().metric_name_hash,
                                  value.GetString());
