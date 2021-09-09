@@ -22,16 +22,6 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantScrollView
     // Invoked when the scrollable contents' preferred size has changed.
     virtual void OnContentsPreferredSizeChanged(views::View* content_view) {}
 
-    // Invoked when the specified |scroll_bar| has been updated.
-    virtual void OnScrollBarUpdated(views::ScrollBar* scroll_bar,
-                                    int viewport_size,
-                                    int content_size,
-                                    int content_scroll_offset) {}
-
-    // Invoked when the visibility for the specified |scroll_bar| has changed.
-    virtual void OnScrollBarVisibilityChanged(views::ScrollBar* scroll_bar,
-                                              bool is_visible) {}
-
    protected:
     Observer() = default;
     ~Observer() override = default;
