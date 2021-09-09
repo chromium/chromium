@@ -21,12 +21,14 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_shortcut.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -471,6 +473,9 @@ TEST(ShellIntegrationTest, GetDesktopFileContents) {
 }
 
 TEST(ShellIntegrationTest, GetDesktopFileContentsForApps) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kDesktopPWAsAppIconShortcutsMenuUI);
   const base::FilePath kChromeExePath("/opt/google/chrome/google-chrome");
   const struct {
     const char* const url;
