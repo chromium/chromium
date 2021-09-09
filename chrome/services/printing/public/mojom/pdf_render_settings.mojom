@@ -23,7 +23,9 @@ struct PdfRenderSettings {
     [EnableIf=is_win]
     EMF_WITH_REDUCED_RASTERIZATION,
     [EnableIf=is_win]
-    EMF_WITH_REDUCED_RASTERIZATION_AND_GDI_TEXT
+    EMF_WITH_REDUCED_RASTERIZATION_AND_GDI_TEXT,
+    [EnableIf=is_win]
+    POSTSCRIPT_LEVEL3_WITH_TYPE42_FONTS,
   };
 
   gfx.mojom.Rect area;

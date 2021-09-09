@@ -23,6 +23,8 @@ extern const base::Feature kCupsIppPrintingBackend;
 
 #if defined(OS_WIN)
 COMPONENT_EXPORT(PRINTING_BASE)
+extern const base::Feature kPrintWithPostScriptType42Fonts;
+COMPONENT_EXPORT(PRINTING_BASE)
 extern const base::Feature kPrintWithReducedRasterization;
 COMPONENT_EXPORT(PRINTING_BASE)
 extern const base::Feature kUseXpsForPrinting;

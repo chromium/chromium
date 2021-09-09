@@ -82,6 +82,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Printing.ConversionSize.PostScript3WithType42Fonts" units="KB"
+    expires_after="2022-09-30">
+  <owner>thestig@chromium.org</owner>
+  <owner>awscreen@chromium.org</owner>
+  <summary>
+    On Windows, the average size of a printed page after converting to level 3
+    PostScript with Type 42 fonts. Recorded after conversion.
+  </summary>
+</histogram>
+
 <histogram name="Printing.ConversionSize.Pwg" units="KB"
     expires_after="2021-09-30">
   <owner>thestig@chromium.org</owner>

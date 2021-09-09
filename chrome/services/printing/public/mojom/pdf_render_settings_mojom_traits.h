@@ -34,6 +34,8 @@ struct EnumTraits<printing::mojom::PdfRenderSettings_Mode,
         return MojomMode::EMF_WITH_REDUCED_RASTERIZATION;
       case PrintMode::EMF_WITH_REDUCED_RASTERIZATION_AND_GDI_TEXT:
         return MojomMode::EMF_WITH_REDUCED_RASTERIZATION_AND_GDI_TEXT;
+      case PrintMode::POSTSCRIPT_LEVEL3_WITH_TYPE42_FONTS:
+        return MojomMode::POSTSCRIPT_LEVEL3_WITH_TYPE42_FONTS;
 #endif
     }
     NOTREACHED() << "Unknown mode " << static_cast<int>(mode);
@@ -66,6 +68,9 @@ struct EnumTraits<printing::mojom::PdfRenderSettings_Mode,
         return true;
       case MojomMode::EMF_WITH_REDUCED_RASTERIZATION_AND_GDI_TEXT:
         *output = PrintMode::EMF_WITH_REDUCED_RASTERIZATION_AND_GDI_TEXT;
+        return true;
+      case MojomMode::POSTSCRIPT_LEVEL3_WITH_TYPE42_FONTS:
+        *output = PrintMode::POSTSCRIPT_LEVEL3_WITH_TYPE42_FONTS;
         return true;
 #endif
     }

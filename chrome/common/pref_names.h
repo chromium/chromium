@@ -451,6 +451,7 @@ extern const char kPrintRasterizePdfDpi[];
 #endif
 
 #if defined(OS_WIN) && BUILDFLAG(ENABLE_PRINTING)
+extern const char kPrintPostScriptMode[];
 extern const char kPrintRasterizationMode[];
 #endif
 

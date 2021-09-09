@@ -22,6 +22,11 @@ const base::Feature kCupsIppPrintingBackend{"CupsIppPrintingBackend",
 #endif  // defined(OS_MAC)
 
 #if defined(OS_WIN)
+// When using PostScript level 3 printing, render text with Type 42 fonts if
+// possible.
+const base::Feature kPrintWithPostScriptType42Fonts{
+    "PrintWithPostScriptType42Fonts", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // When using GDI printing, avoid rasterization if possible.
 const base::Feature kPrintWithReducedRasterization{
     "PrintWithReducedRasterization", base::FEATURE_DISABLED_BY_DEFAULT};

@@ -2192,6 +2192,9 @@ extern const char kUseWinrtMidiApiDescription[];
 extern const char kGdiTextPrinting[];
 extern const char kGdiTextPrintingDescription[];
 
+extern const char kPrintWithPostScriptType42FontsName[];
+extern const char kPrintWithPostScriptType42FontsDescription[];
+
 extern const char kPrintWithReducedRasterizationName[];
 extern const char kPrintWithReducedRasterizationDescription[];
 

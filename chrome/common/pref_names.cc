@@ -1375,6 +1375,9 @@ const char kPrintRasterizePdfDpi[] = "printing.rasterize_pdf_dpi";
 #endif
 
 #if defined(OS_WIN) && BUILDFLAG(ENABLE_PRINTING)
+// An integer pref that holds the PostScript mode to use when printing.
+const char kPrintPostScriptMode[] = "printing.postscript_mode";
+
 // An integer pref that holds the rasterization mode to use when printing.
 const char kPrintRasterizationMode[] = "printing.rasterization_mode";
 #endif

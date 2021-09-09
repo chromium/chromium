@@ -4570,6 +4570,11 @@
     "expiry_milestone": 96
   },
   {
+    "name": "print-with-postscript-type42-fonts",
+    "owners": [ "thestig" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "print-with-reduced-rasterization",
     "owners": [ "thestig" ],
     "expiry_milestone": 96

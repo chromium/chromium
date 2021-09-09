@@ -437,6 +437,7 @@ void ProfileImpl::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kPrintPdfAsImageAvailability, false);
 #endif
 #if defined(OS_WIN) && BUILDFLAG(ENABLE_PRINTING)
+  registry->RegisterIntegerPref(prefs::kPrintPostScriptMode, 0);
   registry->RegisterIntegerPref(prefs::kPrintRasterizationMode, 0);
 #endif
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)

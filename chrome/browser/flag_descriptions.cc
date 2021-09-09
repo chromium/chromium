@@ -3829,6 +3829,12 @@ const char kGdiTextPrinting[] = "GDI Text Printing";
 const char kGdiTextPrintingDescription[] =
     "Use GDI to print text as simply text";
 
+const char kPrintWithPostScriptType42FontsName[] =
+    "Print with PostScript Type 42 fonts";
+const char kPrintWithPostScriptType42FontsDescription[] =
+    "When using PostScript level 3 printing, render text with Type 42 fonts if "
+    "possible.";
+
 const char kPrintWithReducedRasterizationName[] =
     "Print with reduced rasterization";
 const char kPrintWithReducedRasterizationDescription[] =

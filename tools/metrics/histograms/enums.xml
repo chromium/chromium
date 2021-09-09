@@ -26272,6 +26272,7 @@ Called by update_document_policy_enum.py.-->
   <int value="892" label="ChromeAppsEnabled"/>
   <int value="893" label="BrowserLegacyExtensionPointsBlocked"/>
   <int value="894" label="DeviceRestrictedManagedGuestSessionEnabled"/>
+  <int value="895" label="PrintPostScriptMode"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">
@@ -48558,6 +48559,7 @@ from previous Chrome versions.
   <int value="-1021097344" label="PolicyAtomicGroup:disabled"/>
   <int value="-1020450980" label="gesture-deletion"/>
   <int value="-1019967332" label="VrBrowsing:enabled"/>
+  <int value="-1019760093" label="PrintWithPostScriptType42Fonts:enabled"/>
   <int value="-1019492310"
       label="OmniboxUIExperimentJogTextfieldOnPopup:enabled"/>
   <int value="-1018454657" label="SharingPeerConnectionReceiver:enabled"/>
@@ -49180,6 +49182,7 @@ from previous Chrome versions.
   <int value="-519960638" label="enable-site-engagement-service"/>
   <int value="-519844731" label="SignInProfileCreationFlow:enabled"/>
   <int value="-519345823" label="CrOSEnforceSystemAecNsAgc:enabled"/>
+  <int value="-519342886" label="PrintWithPostScriptType42Fonts:disabled"/>
   <int value="-518104091" label="NewAudioRenderingMixingStrategy:enabled"/>
   <int value="-516845951" label="enable-embedded-extension-options"/>
   <int value="-515913489" label="EphemeralTabUsingBottomSheet:disabled"/>

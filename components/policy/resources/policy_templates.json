@@ -1137,6 +1137,7 @@
         'PrintRasterizePdfDpi',
         'DeletePrintJobHistoryAllowed',
         'CloudPrintWarningsSuppressed',
+        'PrintPostScriptMode',
       ]
     },
     {
@@ -24543,6 +24544,46 @@
       Local printers are also known as native printing destinations, and include destinations available to the local machine and shared network printers.'''
     },
     {
+      'name': 'PrintPostScriptMode',
+      'owners': ['thestig@chromium.org', 'file://printing/OWNERS'],
+      'type': 'int-enum',
+      'schema': {
+        'type': 'integer',
+        'enum': [ 0, 1 ],
+      },
+      'items': [
+        {
+          'name': 'Default',
+          'value': 0,
+          'caption': '''Default''',
+        },
+        {
+          'name': 'Type42',
+          'value': 1,
+          'caption': '''Type42''',
+        },
+      ],
+      'supported_on': ['chrome.win:95-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'example_value': 1,
+      'default': 0,
+      'id': 895,
+      'caption': '''Print PostScript Mode''',
+      'tags': [],
+      'desc': '''Controls how <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> prints on <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>.
+
+      When printing to a PostScript printer on <ph name="MS_WIN_NAME">Microsoft® Windows®</ph> different PostScript generation methods can affect printing performance.
+
+      When this policy is set to Default, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will use a set of default options when generating PostScript. For text in particular, text will always be rendered using Type 3 fonts.
+
+      When this policy is set to Type42, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will render text using Type 42 fonts if possible. This should increase printing speed for some PostScript printers.
+
+      When this policy is not set, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will be in Default mode.'''
+    },
+    {
       'name': 'PrintRasterizationMode',
       'owners': ['thestig@chromium.org', 'file://printing/OWNERS'],
       'type': 'int-enum',
@@ -24572,9 +24613,9 @@
       'id': 706,
       'caption': '''Print Rasterization Mode''',
       'tags': [],
-      'desc': '''Controls how <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> prints on Windows.
+      'desc': '''Controls how <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> prints on <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>.
 
-      When printing to a non-PostScript printer on Windows, sometimes print jobs need to be rasterized to print correctly.
+      When printing to a non-PostScript printer on <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, sometimes print jobs need to be rasterized to print correctly.
 
       When this policy is set to Full, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will do full page rasterization if necessary.
 
@@ -28627,6 +28668,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 894,
+  'highest_id_currently_used': 895,
   'highest_atomic_group_id_currently_used': 41
 }

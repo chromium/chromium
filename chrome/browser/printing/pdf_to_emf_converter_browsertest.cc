@@ -339,6 +339,33 @@ IN_PROC_BROWSER_TEST_F(PdfToEmfConverterBrowserTest, PostScriptLevel3Basic) {
   }
 }
 
+IN_PROC_BROWSER_TEST_F(PdfToEmfConverterBrowserTest,
+                       PostScriptLevel3WithType42FontsBasic) {
+  const PdfRenderSettings pdf_settings(
+      kLetter200DpiRect, gfx::Point(0, 0), k200DpiSize,
+      /*autorotate=*/false, /*use_color=*/true,
+      PdfRenderSettings::Mode::POSTSCRIPT_LEVEL3_WITH_TYPE42_FONTS);
+  constexpr int kNumberOfPages = 3;
+
+  ASSERT_TRUE(GetTestInput("pdf_converter_basic.pdf"));
+  ASSERT_TRUE(StartPdfConverter(pdf_settings, kNumberOfPages));
+  for (int i = 0; i < kNumberOfPages; ++i) {
+    ASSERT_TRUE(GetPage(i));
+    // The output is PS encapsulated in EMF.
+    // TODO(thestig): Update test expectations once PDFium generates PostScript
+    // with Type 42 fonts.
+#ifdef NTDDI_WIN10_VB  // Windows 10.0.19041
+    ASSERT_TRUE(GetPageExpectedEmfData(
+        GetFileNameForPageNumber("pdf_converter_basic_ps_new_page_", i)));
+#else
+    ASSERT_TRUE(GetPageExpectedEmfData(
+        GetFileNameForPageNumber("pdf_converter_basic_ps_page_", i)));
+#endif
+    ComparePageEmfHeader();
+    ComparePageEmfPayload();
+  }
+}
+
 IN_PROC_BROWSER_TEST_F(PdfToEmfConverterBrowserTest, PostScriptLevel2Mono) {
   const PdfRenderSettings pdf_settings(
       kLetter200DpiRect, gfx::Point(0, 0), k200DpiSize,

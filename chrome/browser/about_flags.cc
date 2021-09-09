@@ -5066,6 +5066,11 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // defined(OS_MAC)
 
 #if defined(OS_WIN)
+    {"print-with-postscript-type42-fonts",
+     flag_descriptions::kPrintWithPostScriptType42FontsName,
+     flag_descriptions::kPrintWithPostScriptType42FontsDescription, kOsWin,
+     FEATURE_VALUE_TYPE(printing::features::kPrintWithPostScriptType42Fonts)},
+
     {"print-with-reduced-rasterization",
      flag_descriptions::kPrintWithReducedRasterizationName,
      flag_descriptions::kPrintWithReducedRasterizationDescription, kOsWin,
