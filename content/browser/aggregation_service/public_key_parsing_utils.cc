@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 #include "base/base64.h"
@@ -55,11 +56,17 @@ std::vector<PublicKey> GetPublicKeys(base::Value& value) {
     return {};
 
   std::vector<PublicKey> keys_vec;
+  std::unordered_set<std::string> key_ids_set;
+
   for (auto& key_json : keys_json.value().GetList()) {
     absl::optional<PublicKey> key = GetPublicKey(key_json);
 
     // Return error (i.e. empty vector) if any of the keys are invalid.
     if (!key.has_value())
+      return {};
+
+    // Return error (i.e. empty vector) if there's duplicate key id.
+    if (!key_ids_set.insert(key.value().id).second)
       return {};
 
     keys_vec.push_back(key.value());

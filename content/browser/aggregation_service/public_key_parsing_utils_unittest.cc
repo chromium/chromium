@@ -149,4 +149,29 @@ TEST(PublicKeyParsingUtilsTest, WellFormedAndMalformedKeys_EmptyResult) {
   EXPECT_TRUE(keys.empty());
 }
 
+TEST(PublicKeyParsingUtilsTest, MalformedKeyDuplicateKeyId_EmptyResult) {
+  std::string json_string = R"(
+        {
+            "version" : "",
+            "keys" : [
+                {
+                    "id" : "abcd",
+                    "key" : "ABCD1234"
+                },
+                {
+                    "id" : "abcd",
+                    "key" : "EFGH5678"
+                }
+            ]
+        }
+    )";
+
+  absl::optional<base::Value> json_object = base::JSONReader::Read(json_string);
+  ASSERT_TRUE(json_object) << "Incorrectly formatted JSON string.";
+
+  std::vector<PublicKey> keys =
+      aggregation_service::GetPublicKeys(json_object.value());
+  EXPECT_TRUE(keys.empty());
+}
+
 }  // namespace content
