@@ -40,13 +40,14 @@
 #include "chrome/browser/ui/app_list/reorder/app_list_reorder_delegate.h"
 #include "chrome/browser/ui/app_list/reorder/app_list_reorder_util.h"
 #include "chrome/browser/web_applications/components/web_app_id_constants.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_update.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/model/sync_change_processor.h"
 #include "components/sync/model/sync_data.h"
@@ -1389,12 +1390,15 @@ syncer::StringOrdinal AppListSyncableService::GetPreferredOemFolderPos() {
 }
 
 bool AppListSyncableService::AppIsOem(const std::string& id) {
-  const ArcAppListPrefs* arc_prefs = ArcAppListPrefs::Get(profile_);
-  if (arc_prefs && arc_prefs->IsOem(id))
-    return true;
-
-  auto* provider = web_app::WebAppProvider::GetDeprecated(profile_);
-  if (provider && provider->registrar().WasInstalledByOem(id))
+  // For Arc and web apps, it is sufficient to check the install source.
+  apps::mojom::InstallSource install_source =
+      apps::mojom::InstallSource::kUnknown;
+  apps::AppServiceProxyFactory::GetForProfile(profile_)
+      ->AppRegistryCache()
+      .ForOneApp(id, [&install_source](const apps::AppUpdate& update) {
+        install_source = update.InstallSource();
+      });
+  if (install_source == apps::mojom::InstallSource::kOem)
     return true;
 
   if (!extension_system_->extension_service())
