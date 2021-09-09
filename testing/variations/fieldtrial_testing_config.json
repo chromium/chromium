@@ -2056,6 +2056,7 @@
                         "omnibox_focused_on_new_tab": "true",
                         "start_surface_variation": "single",
                         "support_accessibility": "false",
+                        "tab_count_button_on_start_surface": "true",
                         "tab_switcher_on_return_time_ms": "3600000"
                     },
                     "enable_features": [
@@ -2073,6 +2074,7 @@
                         "show_last_active_tab_only": "true",
                         "start_surface_variation": "single",
                         "support_accessibility": "false",
+                        "tab_count_button_on_start_surface": "true",
                         "tab_switcher_on_return_time_ms": "3600000"
                     },
                     "enable_features": [
