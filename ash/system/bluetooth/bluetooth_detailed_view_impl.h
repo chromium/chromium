@@ -42,6 +42,7 @@ class ASH_EXPORT BluetoothDetailedViewImpl : public BluetoothDetailedView,
   // Used for testing. Starts at 1 because view IDs should not be 0.
   enum class BluetoothDetailedViewChildId {
     kToggleButton = 1,
+    kDisabledView = 2,
   };
 
   // BluetoothDetailedView:
@@ -58,6 +59,9 @@ class ASH_EXPORT BluetoothDetailedViewImpl : public BluetoothDetailedView,
 
   // Creates and configures the Bluetooth toggle button and the settings button.
   void CreateTitleRowButtons();
+
+  // Creates and configures the Bluetooth disabled view.
+  void CreateDisabledView();
 
   // Propagates user interaction with the Bluetooth toggle button.
   void OnToggleClicked();

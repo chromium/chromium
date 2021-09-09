@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/bluetooth/bluetooth_detailed_view_impl.h"
+#include "ash/system/bluetooth/bluetooth_disabled_detailed_view.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
@@ -117,6 +118,13 @@ class BluetoothDetailedViewTest : public AshTestBase {
                                  BluetoothDetailedViewChildId::kToggleButton)));
   }
 
+  BluetoothDisabledDetailedView* FindBluetoothDisabledView() {
+    return static_cast<BluetoothDisabledDetailedView*>(
+        bluetooth_detailed_view_->GetAsView()->GetViewByID(
+            static_cast<int>(BluetoothDetailedViewImpl::
+                                 BluetoothDetailedViewChildId::kDisabledView)));
+  }
+
   BluetoothDetailedView* bluetooth_detailed_view() {
     return bluetooth_detailed_view_;
   }
@@ -133,15 +141,23 @@ class BluetoothDetailedViewTest : public AshTestBase {
   FakeBluetoothDetailedViewDelegate fake_bluetooth_detailed_view_delegate_;
 };
 
-TEST_F(BluetoothDetailedViewTest, BluetoothEnabledStateChangesUpdateToggle) {
+TEST_F(BluetoothDetailedViewTest,
+       BluetoothEnabledStateChangesUpdateChildrenViewState) {
   views::ToggleButton* toggle_button = FindBluetoothToggleButton();
+  BluetoothDisabledDetailedView* disabled_view = FindBluetoothDisabledView();
+
   EXPECT_FALSE(toggle_button->GetIsOn());
+  EXPECT_TRUE(disabled_view->GetVisible());
 
   bluetooth_detailed_view()->UpdateBluetoothEnabledState(true);
+
   EXPECT_TRUE(toggle_button->GetIsOn());
+  EXPECT_FALSE(disabled_view->GetVisible());
 
   bluetooth_detailed_view()->UpdateBluetoothEnabledState(false);
+
   EXPECT_FALSE(toggle_button->GetIsOn());
+  EXPECT_TRUE(disabled_view->GetVisible());
 }
 
 TEST_F(BluetoothDetailedViewTest, PressingToggleNotifiesDelegate) {

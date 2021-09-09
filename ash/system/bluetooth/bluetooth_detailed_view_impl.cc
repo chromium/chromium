@@ -17,6 +17,7 @@
 #include "base/check.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -33,8 +34,7 @@ BluetoothDetailedViewImpl::BluetoothDetailedViewImpl(
   CreateScrollableList();
   AddScrollListSubHeader(kSystemMenuBluetoothPlusIcon,
                          IDS_ASH_STATUS_TRAY_BLUETOOTH_PAIR_NEW_DEVICE);
-  disabled_view_ =
-      AddChildViewAt(new BluetoothDisabledDetailedView, GetIndexOf(scroller()));
+  CreateDisabledView();
   UpdateBluetoothEnabledState(/*enabled=*/false);
 }
 
@@ -46,7 +46,7 @@ views::View* BluetoothDetailedViewImpl::GetAsView() {
 
 void BluetoothDetailedViewImpl::UpdateBluetoothEnabledState(bool enabled) {
   disabled_view_->SetVisible(!enabled);
-  device_list()->SetVisible(enabled);
+  scroller()->SetVisible(enabled);
 
   const std::u16string toggle_tooltip =
       enabled ? l10n_util::GetStringUTF16(
@@ -106,6 +106,24 @@ void BluetoothDetailedViewImpl::CreateTitleRowButtons() {
   toggle_ = toggle.get();
 
   tri_view()->AddView(TriView::Container::END, toggle.release());
+}
+
+void BluetoothDetailedViewImpl::CreateDisabledView() {
+  DCHECK(!disabled_view_);
+
+  // Check that the views::ScrollView has already been created and insert the
+  // disabled view before it to avoid the unnecessary bottom border spacing of
+  // views::ScrollView when it is not the last child.
+  DCHECK(scroller());
+
+  disabled_view_ =
+      AddChildViewAt(new BluetoothDisabledDetailedView, GetIndexOf(scroller()));
+  disabled_view_->SetID(
+      static_cast<int>(BluetoothDetailedViewChildId::kDisabledView));
+
+  // Make |disabled_panel_| fill the entire space below the title row so that
+  // the inner contents can be placed correctly.
+  box_layout()->SetFlexForView(disabled_view_, 1);
 }
 
 void BluetoothDetailedViewImpl::OnToggleClicked() {
