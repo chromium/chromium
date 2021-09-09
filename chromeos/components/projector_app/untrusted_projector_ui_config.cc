@@ -39,6 +39,10 @@ content::WebUIDataSource* CreateProjectorHTMLSource() {
       // Prod index.html.
       "'sha256-yTOCd/3yFekoT/PpJwcLz8Hkw89nnlVBtq7cgEag574=';");
 
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ConnectSrc,
+      "connect-src 'self' https://www.googleapis.com;");
+
   // TODO(b/197120695): re-enable trusted type after fixing the issue that icon
   // template is setting innerHTML.
   source->DisableTrustedTypesCSP();

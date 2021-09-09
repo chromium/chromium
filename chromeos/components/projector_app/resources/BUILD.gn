@@ -12,6 +12,7 @@ js_type_check("closure_compile") {
   is_polymer3 = true
   deps = [
     ":annotator_embedder_impl",
+    ":embedder",
     ":projector_browser_proxy",
     ":selfie_cam",
   ]
@@ -25,14 +26,16 @@ js_library("annotator_embedder_impl") {
   ]
 }
 
+js_library("embedder") {
+  sources = [ "embedder.js" ]
+}
+
 js_library("projector_browser_proxy") {
   sources = [ "communication/projector_browser_proxy.js" ]
-  deps = []
 }
 
 js_library("selfie_cam") {
   sources = [ "selfie_cam/selfie_cam.js" ]
-  deps = []
 }
 
 generate_grd("build_untrusted_grd") {
@@ -50,9 +53,10 @@ generate_grd("build_trusted_grd") {
     "communication/projector_browser_proxy.js",
     "embedder.html",
     "embedder.css",
+    "embedder.js",
     "selfie_cam/selfie_cam.html",
-    "selfie_cam/selfie_cam.js",
     "selfie_cam/selfie_cam.css",
+    "selfie_cam/selfie_cam.js",
   ]
   input_files_base_dir = rebase_path(".", "//")
   grd_prefix = "chromeos_projector_app_trusted"
