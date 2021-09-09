@@ -286,8 +286,6 @@ static_library("common") {
       "extensions/extension_constants.h",
       "extensions/extension_metrics.cc",
       "extensions/extension_metrics.h",
-      "extensions/manifest_handlers/app_display_mode_info.cc",
-      "extensions/manifest_handlers/app_display_mode_info.h",
       "extensions/manifest_handlers/app_icon_color_info.cc",
       "extensions/manifest_handlers/app_icon_color_info.h",
       "extensions/manifest_handlers/app_launch_info.cc",

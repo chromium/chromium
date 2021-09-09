@@ -18,7 +18,6 @@ const char kActionDefaultPopup[] = "default_popup";
 const char kActionDefaultState[] = "default_state";
 const char kActionDefaultTitle[] = "default_title";
 const char kApp[] = "app";
-const char kAppDisplayMode[] = "app.display_mode";
 const char kAppIconColor[] = "app.icon_color";
 const char kAppThemeColor[] = "app.theme_color";
 const char kAutomation[] = "automation";
@@ -292,7 +291,6 @@ const char kInvalidActionDefaultIcon[] = "Invalid value for 'default_icon'.";
 const char kInvalidActionDefaultPopup[] = "Invalid type for 'default_popup'.";
 const char kInvalidActionDefaultState[] = "Invalid value for 'default_state'.";
 const char kInvalidActionDefaultTitle[] = "Invalid value for 'default_title'.";
-const char kInvalidAppDisplayMode[] = "Invalid value for app.display_mode.";
 const char kInvalidAppIconColor[] = "Invalid value for app.icon_color.";
 const char kInvalidAppThemeColor[] = "Invalid value for app.theme_color.";
 const char kInvalidBackground[] =
@@ -352,8 +350,6 @@ const char kInvalidDisplayInLauncher[] =
     "Invalid value for 'display_in_launcher'.";
 const char kInvalidDisplayInNewTabPage[] =
     "Invalid value for 'display_in_new_tab_page'.";
-const char kInvalidDisplayModeAppType[] =
-    "Only bookmark apps are allowed to use app.display_mode";
 const char kInvalidEmptyDictionary[] = "Empty dictionary for '*'.";
 const char kInvalidExcludeMatch[] =
     "Invalid value for 'content_scripts[*].exclude_matches[*]': *";
