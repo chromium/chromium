@@ -21523,6 +21523,30 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="QuickActionSearchWidget.LensQuery">
+  <owner>ender@google.com</owner>
+  <owner>fgorski@chromium.org</owner>
+  <description>
+    The user triggered a Lens query from the Quick Actions Search Widget.
+  </description>
+</action>
+
+<action name="QuickActionSearchWidget.TextQuery">
+  <owner>ender@google.com</owner>
+  <owner>fgorski@chromium.org</owner>
+  <description>
+    The user triggered a text query from the Quick Actions Search Widget.
+  </description>
+</action>
+
+<action name="QuickActionSearchWidget.VoiceQuery">
+  <owner>ender@google.com</owner>
+  <owner>fgorski@chromium.org</owner>
+  <description>
+    The user triggered a voice query from the Quick Actions Search Widget.
+  </description>
+</action>
+
 <action name="ReadingList.Dialog.AddCurrentPage">
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>

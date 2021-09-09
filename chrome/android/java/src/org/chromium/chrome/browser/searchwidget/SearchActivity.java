@@ -319,8 +319,12 @@ public class SearchActivity extends AsyncInitializationActivity
         CustomTabsConnection.getInstance().warmup(0);
         VoiceRecognitionHandler voiceRecognitionHandler =
                 mLocationBarCoordinator.getVoiceRecognitionHandler();
-        mSearchBox.onDeferredStartup(getSearchType(getIntent().getAction()),
-                voiceRecognitionHandler, getWindowAndroid());
+        @SearchType
+        int searchType = getSearchType(getIntent().getAction());
+        if (isFromQuickActionSearchWidget()) {
+            recordQuickActionSearchType(searchType);
+        }
+        mSearchBox.onDeferredStartup(searchType, voiceRecognitionHandler, getWindowAndroid());
         RecordUserAction.record("SearchWidget.WidgetSelected");
 
         getActivityDelegate().onFinishDeferredInitialization();
@@ -369,7 +373,12 @@ public class SearchActivity extends AsyncInitializationActivity
     }
 
     private void beginQuery() {
-        mSearchBox.beginQuery(getSearchType(getIntent().getAction()), getOptionalIntentQuery(),
+        @SearchType
+        int searchType = getSearchType(getIntent().getAction());
+        if (isFromQuickActionSearchWidget()) {
+            recordQuickActionSearchType(searchType);
+        }
+        mSearchBox.beginQuery(searchType, getOptionalIntentQuery(),
                 mLocationBarCoordinator.getVoiceRecognitionHandler(), getWindowAndroid());
     }
 
@@ -470,6 +479,16 @@ public class SearchActivity extends AsyncInitializationActivity
     private void cancelSearch() {
         finish();
         overridePendingTransition(0, R.anim.activity_close_exit);
+    }
+
+    private static void recordQuickActionSearchType(@SearchType int searchType) {
+        if (searchType == SearchType.VOICE) {
+            RecordUserAction.record("QuickActionSearchWidget.VoiceQuery");
+        } else if (searchType == SearchType.LENS) {
+            RecordUserAction.record("QuickActionSearchWidget.LensQuery");
+        } else if (searchType == SearchType.TEXT) {
+            RecordUserAction.record("QuickActionSearchWidget.TextQuery");
+        }
     }
 
     @Override
