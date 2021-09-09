@@ -9707,11 +9707,16 @@ if (is_chromeos_ash) {
   }
 }
 
-if (is_linux || is_win) {
+if (is_linux || is_mac || is_win) {
   script_test("variations_smoke_tests") {
     run_under_python2 = true
 
-    script = "//testing/xvfb.py"
+    if (is_linux) {
+      script = "//testing/xvfb.py"
+    } else {
+      script = "//testing/test_env.py"
+    }
+
     args = [ "@WrappedPath(" +
              rebase_path("//testing/scripts/run_variations_smoke_tests.py",
                          root_build_dir) + ")" ]

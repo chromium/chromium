@@ -192,7 +192,7 @@
           'mac_10.15',
         ],
         'test_suites': {
-          'isolated_scripts': 'chrome_sizes',
+          'isolated_scripts': 'chrome_isolated_script_tests',
         },
       },
       'win-chrome': {

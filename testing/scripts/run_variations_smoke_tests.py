@@ -50,6 +50,24 @@ _TEST_CASES = [
 ]
 
 
+def _get_platform():
+  """Returns the host platform.
+
+  Returns:
+    One of 'linux', 'win' and 'mac'.
+  """
+  if sys.platform == 'win32' or sys.platform == 'cygwin':
+    return 'win'
+  if sys.platform.startswith('linux'):
+    return 'linux'
+  if sys.platform == 'darwin':
+    return 'mac'
+
+  raise RuntimeError(
+    'Unsupported platform: %s. Only Linux (linux*) and Mac (darwin) and '
+    'Windows (win32 or cygwin) are supported' % sys.platform)
+
+
 def _parse_test_seed():
   """Reads and parses the test variations seed.
 
@@ -69,9 +87,10 @@ def _parse_test_seed():
   path_seed = os.path.join(_SRC_DIR, 'variations_seed.json')
   if not os.path.isfile(path_seed):
     path_seed = os.path.join(_THIS_DIR, 'variations_smoke_test_data',
-                             'variations_seed_beta_mac.json')
+                             'variations_seed_beta_%s.json' % _get_platform())
 
   logging.info('Parsing test seed from "%s"', path_seed)
+
   with open(path_seed, 'r') as f:
     seed_json = json.load(f)
 
@@ -113,13 +132,30 @@ def _inject_test_seed(seed, signature, user_data_dir):
     json.dump(local_state, f)
 
 
+def _find_chrome_binary():
+  """Finds and returns the relative path to the Chrome binary.
+
+  This function assumes that the CWD is the build directory.
+
+  Returns:
+    A relative path to the Chrome binary.
+  """
+  platform = _get_platform()
+  if platform == 'linux':
+    return os.path.join('.', 'chrome')
+  elif platform == 'mac':
+    chrome_name = 'Google Chrome'
+    return os.path.join('.', chrome_name + '.app', 'Contents', 'MacOS',
+                            chrome_name)
+
+
 def _run_tests():
   """Runs the smoke tests.
 
   Returns:
     0 if tests passed, otherwise 1.
   """
-  path_chrome = os.path.join('.', 'chrome')
+  path_chrome = _find_chrome_binary()
   path_chromedriver = os.path.join('.', 'chromedriver')
 
   user_data_dir = tempfile.mkdtemp()
