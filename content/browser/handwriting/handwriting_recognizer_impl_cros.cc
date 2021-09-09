@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -25,6 +24,44 @@ static constexpr char kLanguageTagGesture[] = "zxx-x-Gesture";
 // Supported model identifiers. This is passed to mlservice.
 static constexpr char kModelEn[] = "en";
 static constexpr char kModelGesture[] = "gesture_in_context";
+
+// Model descriptors.
+handwriting::mojom::QueryHandwritingRecognizerResultPtr
+CreateEnglishModelDescriptor() {
+  handwriting::mojom::QueryHandwritingRecognizerResultPtr desc;
+  desc->text_alternatives = true;
+  desc->text_segmentation = true;
+  desc->hints = handwriting::mojom::HandwritingHintsQueryResult::New();
+  desc->hints->alternatives = true;
+  desc->hints->text_context = true;
+  desc->hints->recognition_type = {
+      handwriting::mojom::HandwritingRecognitionType::kText};
+  desc->hints->input_type = {
+      handwriting::mojom::HandwritingInputType::kMouse,
+      handwriting::mojom::HandwritingInputType::kStylus,
+      handwriting::mojom::HandwritingInputType::kTouch,
+  };
+
+  return desc;
+}
+
+handwriting::mojom::QueryHandwritingRecognizerResultPtr
+CreateGestureModelDescriptor() {
+  auto desc = handwriting::mojom::QueryHandwritingRecognizerResult::New();
+  desc->text_alternatives = true;
+  desc->text_segmentation = false;
+  desc->hints = handwriting::mojom::HandwritingHintsQueryResult::New();
+  desc->hints->alternatives = true;
+  desc->hints->text_context = true;
+  desc->hints->recognition_type = {
+      handwriting::mojom::HandwritingRecognitionType::kText};
+  desc->hints->input_type = {
+      handwriting::mojom::HandwritingInputType::kMouse,
+      handwriting::mojom::HandwritingInputType::kStylus,
+      handwriting::mojom::HandwritingInputType::kTouch,
+  };
+  return desc;
+}
 
 // Returns whether the two language tags are semantically the same.
 // TODO(https://crbug.com/1166910): We may need a better language tag matching
@@ -219,35 +256,9 @@ CrOSHandwritingRecognizerImpl::GetModelDescriptor(
   // returning hard-coded values.
   const auto& model_identifier = GetModelIdentifier(constraint->languages[0]);
   if (model_identifier == kModelEn) {
-    auto desc = handwriting::mojom::QueryHandwritingRecognizerResult::New();
-    desc->text_alternatives = true;
-    desc->text_segmentation = true;
-    desc->hints = handwriting::mojom::HandwritingHintsQueryResult::New();
-    desc->hints->alternatives = true;
-    desc->hints->text_context = true;
-    desc->hints->recognition_type = {
-        handwriting::mojom::HandwritingRecognitionType::kText};
-    desc->hints->input_type = {
-        handwriting::mojom::HandwritingInputType::kMouse,
-        handwriting::mojom::HandwritingInputType::kStylus,
-        handwriting::mojom::HandwritingInputType::kTouch,
-    };
-    return desc;
+    return CreateEnglishModelDescriptor();
   } else if (model_identifier == kModelGesture) {
-    auto desc = handwriting::mojom::QueryHandwritingRecognizerResult::New();
-    desc->text_alternatives = true;
-    desc->text_segmentation = false;
-    desc->hints = handwriting::mojom::HandwritingHintsQueryResult::New();
-    desc->hints->alternatives = true;
-    desc->hints->text_context = true;
-    desc->hints->recognition_type = {
-        handwriting::mojom::HandwritingRecognitionType::kText};
-    desc->hints->input_type = {
-        handwriting::mojom::HandwritingInputType::kMouse,
-        handwriting::mojom::HandwritingInputType::kStylus,
-        handwriting::mojom::HandwritingInputType::kTouch,
-    };
-    return desc;
+    return CreateGestureModelDescriptor();
   } else {
     return nullptr;
   }
