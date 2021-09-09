@@ -204,7 +204,6 @@
               "http/tests/inspector-protocol/issues",
               "http/tests/websocket",
               "storage/indexeddb",
-              "platform/android/fast/workers",
               "webaudio"],
     "args": ["--enable-features=SharedArrayBuffer"]
   },
