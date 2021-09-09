@@ -4,9 +4,12 @@
 
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_forward.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
@@ -35,13 +38,14 @@
 #include "net/socket/ssl_server_socket.h"
 #include "net/socket/stream_socket.h"
 #include "net/socket/tcp_server_socket.h"
+#include "net/spdy/spdy_test_util_common.h"
 #include "net/ssl/ssl_info.h"
 #include "net/ssl/ssl_server_config.h"
 #include "net/test/cert_builder.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server_connection_listener.h"
-#include "net/test/embedded_test_server/http_connection.h"
+#include "net/test/embedded_test_server/http1_connection.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
@@ -640,13 +644,6 @@ void EmbeddedTestServer::HandleRequest(HttpConnection* connection,
   DCHECK(io_thread_->task_runner()->BelongsToCurrentThread());
   request->base_url = base_url_;
 
-  SSLInfo ssl_info;
-  if (connection->socket_->GetSSLInfo(&ssl_info)) {
-    request->ssl_info = ssl_info;
-    if (ssl_info.early_data_received)
-      request->headers["Early-Data"] = "1";
-  }
-
   for (const auto& monitor : request_monitors_)
     monitor.Run(*request);
 
@@ -690,9 +687,8 @@ GURL EmbeddedTestServer::GetURL(const std::string& relative_url) const {
   return base_url_.Resolve(relative_url);
 }
 
-GURL EmbeddedTestServer::GetURL(
-    const std::string& hostname,
-    const std::string& relative_url) const {
+GURL EmbeddedTestServer::GetURL(const std::string& hostname,
+                                const std::string& relative_url) const {
   GURL local_url = GetURL(relative_url);
   GURL::Replacements replace_host;
   replace_host.SetHostStr(hostname);
@@ -870,7 +866,7 @@ void EmbeddedTestServer::RegisterDefaultHandler(
   default_request_handlers_.push_back(callback);
 }
 
-std::unique_ptr<StreamSocket> EmbeddedTestServer::DoSSLUpgrade(
+std::unique_ptr<SSLServerSocket> EmbeddedTestServer::DoSSLUpgrade(
     std::unique_ptr<StreamSocket> connection) {
   DCHECK(io_thread_->task_runner()->BelongsToCurrentThread());
 
@@ -878,10 +874,14 @@ std::unique_ptr<StreamSocket> EmbeddedTestServer::DoSSLUpgrade(
 }
 
 void EmbeddedTestServer::DoAcceptLoop() {
-  while (listen_socket_->Accept(
-             &accepted_socket_,
-             base::BindOnce(&EmbeddedTestServer::OnAcceptCompleted,
-                            base::Unretained(this))) == OK) {
+  while (true) {
+    int rv = listen_socket_->Accept(
+        &accepted_socket_,
+        base::BindOnce(&EmbeddedTestServer::OnAcceptCompleted,
+                       base::Unretained(this)));
+    if (rv != OK)
+      return;
+
     HandleAcceptResult(std::move(accepted_socket_));
   }
 }
@@ -903,111 +903,78 @@ void EmbeddedTestServer::OnAcceptCompleted(int rv) {
 }
 
 void EmbeddedTestServer::OnHandshakeDone(HttpConnection* connection, int rv) {
-  if (connection->socket_->IsConnected())
-    ReadData(connection);
-  else
-    DidClose(connection);
+  if (connection->Socket().IsConnected()) {
+    connection->OnSocketReady();
+  } else {
+    RemoveConnection(connection);
+  }
 }
 
 void EmbeddedTestServer::HandleAcceptResult(
-    std::unique_ptr<StreamSocket> socket) {
+    std::unique_ptr<StreamSocket> socket_ptr) {
   DCHECK(io_thread_->task_runner()->BelongsToCurrentThread());
   if (connection_listener_)
-    socket = connection_listener_->AcceptedSocket(std::move(socket));
+    socket_ptr = connection_listener_->AcceptedSocket(std::move(socket_ptr));
 
-  if (is_using_ssl_)
-    socket = DoSSLUpgrade(std::move(socket));
-
-  std::unique_ptr<HttpConnection> http_connection_ptr =
-      std::make_unique<HttpConnection>(
-          std::move(socket),
-          base::BindRepeating(&EmbeddedTestServer::HandleRequest,
-                              base::Unretained(this)));
-  HttpConnection* http_connection = http_connection_ptr.get();
-  connections_[http_connection->socket_.get()] = std::move(http_connection_ptr);
-
-  if (is_using_ssl_) {
-    SSLServerSocket* ssl_socket =
-        static_cast<SSLServerSocket*>(http_connection->socket_.get());
-    int rv = ssl_socket->Handshake(
-        base::BindOnce(&EmbeddedTestServer::OnHandshakeDone,
-                       base::Unretained(this), http_connection));
-    if (rv != ERR_IO_PENDING)
-      OnHandshakeDone(http_connection, rv);
-  } else {
-    ReadData(http_connection);
-  }
-}
-
-void EmbeddedTestServer::ReadData(HttpConnection* connection) {
-  while (true) {
-    int rv = connection->ReadData(
-        base::BindOnce(&EmbeddedTestServer::OnReadCompleted,
-                       base::Unretained(this), connection));
-    if (rv == ERR_IO_PENDING)
-      return;
-    if (!HandleReadResult(connection, rv))
-      return;
-  }
-}
-
-void EmbeddedTestServer::OnReadCompleted(HttpConnection* connection, int rv) {
-  DCHECK_NE(ERR_IO_PENDING, rv);
-  if (HandleReadResult(connection, rv))
-    ReadData(connection);
-}
-
-bool EmbeddedTestServer::HandleReadResult(HttpConnection* connection, int rv) {
-  DCHECK(io_thread_->task_runner()->BelongsToCurrentThread());
-  if (connection_listener_)
-    connection_listener_->ReadFromSocket(*connection->socket_, rv);
-  if (rv <= 0) {
-    DidClose(connection);
-    return false;
+  if (!is_using_ssl_) {
+    AddConnection(std::move(socket_ptr))->OnSocketReady();
+    return;
   }
 
-  // Once a single complete request has been received, there is no further need
-  // for the connection and it may be destroyed once the response has been sent.
-  if (connection->ConsumeData(rv))
-    return false;
+  socket_ptr = DoSSLUpgrade(std::move(socket_ptr));
 
-  return true;
+  StreamSocket* socket = socket_ptr.get();
+  HttpConnection* connection = AddConnection(std::move(socket_ptr));
+
+  int rv = static_cast<SSLServerSocket*>(socket)->Handshake(
+      base::BindOnce(&EmbeddedTestServer::OnHandshakeDone,
+                     base::Unretained(this), connection));
+  if (rv != ERR_IO_PENDING)
+    OnHandshakeDone(connection, rv);
+}
+
+HttpConnection* EmbeddedTestServer::AddConnection(
+    std::unique_ptr<StreamSocket> socket_ptr) {
+  StreamSocket* socket = socket_ptr.get();
+  std::unique_ptr<HttpConnection> connection_ptr =
+      std::make_unique<Http1Connection>(std::move(socket_ptr),
+                                        connection_listener_, this);
+  HttpConnection* connection = connection_ptr.get();
+
+  connections_[socket] = std::move(connection_ptr);
+
+  return connection;
 }
 
 void EmbeddedTestServer::OnResponseCompleted(
     HttpConnection* connection,
     std::unique_ptr<HttpResponse> response) {
+  // TODO(crbug.com/1232482): This is here to ensure the response lives until
+  // after the connection sends it. Factor this out with re-factor of response
+  // API.
   DCHECK(io_thread_->task_runner()->BelongsToCurrentThread());
   DCHECK(connection);
-  DCHECK_EQ(1u, connections_.count(connection->socket_.get()));
+  DCHECK_EQ(1u, connections_.count(&connection->Socket()));
 
-  std::unique_ptr<StreamSocket> socket = std::move(connection->socket_);
+  std::unique_ptr<StreamSocket> socket = connection->TakeSocket();
   connections_.erase(socket.get());
 
-  // |connection| is now invalid, don't use it again.
-
-  // Only allow the connection listener to take the socket if it is still open.
-  if (socket->IsConnected() && connection_listener_) {
+  if (connection_listener_ && socket->IsConnected())
     connection_listener_->OnResponseCompletedSuccessfully(std::move(socket));
-  }
 }
 
-void EmbeddedTestServer::DidClose(HttpConnection* connection) {
+void EmbeddedTestServer::RemoveConnection(
+    HttpConnection* connection,
+    EmbeddedTestServerConnectionListener* listener) {
   DCHECK(io_thread_->task_runner()->BelongsToCurrentThread());
   DCHECK(connection);
-  DCHECK_EQ(1u, connections_.count(connection->socket_.get()));
+  DCHECK_EQ(1u, connections_.count(&connection->Socket()));
 
-  connections_.erase(connection->socket_.get());
-}
+  std::unique_ptr<StreamSocket> socket = connection->TakeSocket();
+  connections_.erase(socket.get());
 
-HttpConnection* EmbeddedTestServer::FindConnection(StreamSocket* socket) {
-  DCHECK(io_thread_->task_runner()->BelongsToCurrentThread());
-
-  auto it = connections_.find(socket);
-  if (it == connections_.end()) {
-    return nullptr;
-  }
-  return it->second.get();
+  if (listener && socket->IsConnected())
+    listener->OnResponseCompletedSuccessfully(std::move(socket));
 }
 
 bool EmbeddedTestServer::PostTaskToIOThreadAndWait(base::OnceClosure closure) {

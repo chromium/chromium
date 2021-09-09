@@ -6,14 +6,10 @@
 #define NET_TEST_EMBEDDED_TEST_SERVER_HTTP_CONNECTION_H_
 
 #include <memory>
-
-#include "base/callback.h"
-#include "base/macros.h"
-#include "base/memory/ref_counted.h"
+#include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "net/base/completion_once_callback.h"
-#include "net/base/io_buffer.h"
+#include "net/test/embedded_test_server/embedded_test_server_connection_listener.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 
@@ -23,52 +19,29 @@ class StreamSocket;
 
 namespace test_server {
 
-class HttpConnection;
-
-// Calblack called when a request is parsed. Response should be sent
-// using HttpConnection::SendResponse() on the |connection| argument.
-typedef base::RepeatingCallback<void(HttpConnection* connection,
-                                     std::unique_ptr<HttpRequest> request)>
-    HandleRequestCallback;
-
 // Wraps the connection socket. Accepts incoming data and sends responses.
 // If a valid request is parsed, then |callback_| is invoked.
 class HttpConnection {
  public:
-  HttpConnection(std::unique_ptr<StreamSocket> socket,
-                 const HandleRequestCallback& callback);
-  ~HttpConnection();
+  HttpConnection() = default;
+  virtual ~HttpConnection() = default;
+  HttpConnection(HttpConnection&) = delete;
+  virtual HttpConnection& operator=(HttpConnection&) = delete;
 
   // Sends the |response_string| to the client and calls |callback| once done.
-  void SendResponseBytes(const std::string& response_string,
-                         SendCompleteCallback callback);
+  virtual void SendResponseBytes(const std::string& response_string,
+                                 SendCompleteCallback callback) = 0;
 
-  // Accepts raw chunk of data from the client. Internally, passes it to the
-  // HttpRequestParser class. If a request is parsed, then |callback_| is
-  // called.
-  int ReadData(CompletionOnceCallback callback);
+  // Notify that the socket is ready to receive data (which may not be
+  // immediately, due to SSL handshake). May call the delegate's HandleRequest()
+  // or CloseConnection() methods, and may call them asynchronously.
+  virtual void OnSocketReady() = 0;
 
-  bool ConsumeData(int size);
+  // Pass ownership of the socket. This will likely invalidate the connection.
+  virtual std::unique_ptr<StreamSocket> TakeSocket() = 0;
 
- private:
-  friend class EmbeddedTestServer;
-
-  void SendInternal(base::OnceClosure callback,
-                    scoped_refptr<DrainableIOBuffer> buffer);
-  void OnSendInternalDone(base::OnceClosure callback,
-                          scoped_refptr<DrainableIOBuffer> buffer,
-                          int rv);
-
-  base::WeakPtr<HttpConnection> GetWeakPtr();
-
-  std::unique_ptr<StreamSocket> socket_;
-  const HandleRequestCallback callback_;
-  HttpRequestParser request_parser_;
-  scoped_refptr<IOBufferWithSize> read_buf_;
-
-  base::WeakPtrFactory<HttpConnection> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HttpConnection);
+  virtual const StreamSocket& Socket() = 0;
+  virtual base::WeakPtr<HttpConnection> GetWeakPtr() = 0;
 };
 
 }  // namespace test_server

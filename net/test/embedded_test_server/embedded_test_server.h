@@ -29,6 +29,7 @@
 #include "net/socket/stream_socket.h"
 #include "net/socket/tcp_server_socket.h"
 #include "net/ssl/ssl_server_config.h"
+#include "net/test/embedded_test_server/http_connection.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -321,6 +322,20 @@ class EmbeddedTestServer {
   explicit EmbeddedTestServer(Type type);
   ~EmbeddedTestServer();
 
+  //  Send a request to the server to be handled. If a response is created,
+  //  SendResponseBytes() should be called on the provided HttpConnection.
+  void HandleRequest(HttpConnection* connection,
+                     std::unique_ptr<HttpRequest> request);
+
+  // Notify the server that a connection is no longer usable and is safe to
+  // destroy. For H/1 connections, this means a single request/response
+  // interaction, as keep-alive connections are not supported. If the
+  // connection listener is present and the socket is still connected, the
+  // listener will be notified.
+  void RemoveConnection(
+      HttpConnection* connection,
+      EmbeddedTestServerConnectionListener* listener = nullptr);
+
   // Registers the EmbeddedTestServer's certs for the current process. See
   // constructor documentation for more information.
   static void RegisterTestCerts();
@@ -482,10 +497,12 @@ class EmbeddedTestServer {
                                 const SSLServerConfig& ssl_config);
 
   // Upgrade the TCP connection to one over SSL.
-  std::unique_ptr<StreamSocket> DoSSLUpgrade(
+  std::unique_ptr<SSLServerSocket> DoSSLUpgrade(
       std::unique_ptr<StreamSocket> connection);
   // Handles async callback when the SSL handshake has been completed.
-  void OnHandshakeDone(HttpConnection* connection, int rv);
+  void OnHandshakeDone(HttpConnection* http_connection, int rv);
+  // Begins new connection if handshake resulted in a connection
+  void HandleHandshakeResults();
 
   // Begins accepting new client connections.
   void DoAcceptLoop();
@@ -494,29 +511,20 @@ class EmbeddedTestServer {
   void OnAcceptCompleted(int rv);
   // Adds the new |socket| to the list of clients and begins the reading
   // data.
-  void HandleAcceptResult(std::unique_ptr<StreamSocket> socket);
+  void HandleAcceptResult(std::unique_ptr<StreamSocket> socket_ptr);
 
-  // Attempts to read data from the |connection|'s socket.
-  void ReadData(HttpConnection* connection);
+  // Create a connection with a socket, add it to the map, and return pointers
+  // to both.
+  HttpConnection* AddConnection(std::unique_ptr<StreamSocket> socket_ptr);
+
   // Handles async callback when new data has been read from the |connection|.
   void OnReadCompleted(HttpConnection* connection, int rv);
-  // Parses the data read from the |connection| and returns true if the entire
-  // request has been received.
-  bool HandleReadResult(HttpConnection* connection, int rv);
 
   // Called when |connection| is finished writing the response and the socket
   // can be closed, allowing for |connnection_listener_| to take it if the
   // socket is still open.
   void OnResponseCompleted(HttpConnection* connection,
                            std::unique_ptr<HttpResponse> response);
-
-  // Closes and removes the connection upon error or completion.
-  void DidClose(HttpConnection* connection);
-
-  // Handles a request when it is parsed. It passes the request to registered
-  // request handlers and sends a http response.
-  void HandleRequest(HttpConnection* connection,
-                     std::unique_ptr<HttpRequest> request);
 
   // Returns true if the current |cert_| configuration uses a static
   // pre-generated cert loaded from the filesystem.
@@ -533,8 +541,6 @@ class EmbeddedTestServer {
   // Initializes the SSLServerContext so that SSLServerSocket connections may
   // share the same cache
   bool InitializeSSLServerContext() WARN_UNUSED_RESULT;
-
-  HttpConnection* FindConnection(StreamSocket* socket);
 
   // Posts a task to the |io_thread_| and waits for a reply.
   bool PostTaskToIOThreadAndWait(base::OnceClosure closure) WARN_UNUSED_RESULT;
@@ -556,7 +562,7 @@ class EmbeddedTestServer {
   GURL base_url_;
   IPEndPoint local_endpoint_;
 
-  std::map<StreamSocket*, std::unique_ptr<HttpConnection>> connections_;
+  std::map<const StreamSocket*, std::unique_ptr<HttpConnection>> connections_;
 
   // Vector of registered and default request handlers and monitors.
   std::vector<HandleRequestCallback> request_handlers_;
@@ -577,8 +583,6 @@ class EmbeddedTestServer {
   std::unique_ptr<EmbeddedTestServer> aia_http_server_;
 
   base::WeakPtrFactory<EmbeddedTestServer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EmbeddedTestServer);
 };
 
 }  // namespace test_server
