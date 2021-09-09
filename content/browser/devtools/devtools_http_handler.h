@@ -16,7 +16,6 @@
 #include "net/http/http_status_code.h"
 
 namespace base {
-class DictionaryValue;
 class Thread;
 class Value;
 }
@@ -101,9 +100,8 @@ class DevToolsHttpHandler {
       const std::string& target_id,
       const std::string& host);
 
-  std::unique_ptr<base::DictionaryValue> SerializeDescriptor(
-      scoped_refptr<DevToolsAgentHost> agent_host,
-      const std::string& host);
+  base::Value SerializeDescriptor(scoped_refptr<DevToolsAgentHost> agent_host,
+                                  const std::string& host);
 
   // The thread used by the devtools handler to run server socket.
   std::unique_ptr<base::Thread> thread_;
