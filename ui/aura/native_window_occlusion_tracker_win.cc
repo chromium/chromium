@@ -660,6 +660,10 @@ bool NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
     if (num_root_windows_with_unknown_occlusion_state_ == 0)
       return true;
 
+    // Ignore moving windows when deciding if windows under it are occluded.
+    if (hwnd == moving_window_)
+      return true;
+
     SkRegion window_region(SkIRect::MakeLTRB(window_rect.x(), window_rect.y(),
                                              window_rect.right(),
                                              window_rect.bottom()));
@@ -668,11 +672,10 @@ bool NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
     // This window can't occlude other windows, but we've determined the
     // occlusion state of all root windows, so we can return.
     return true;
-  }
-
-  // Ignore moving windows when deciding if windows under it are occluded.
-  if (hwnd == moving_window_)
+  } else if (hwnd == moving_window_) {
+    // Ignore moving windows when deciding if windows under it are occluded.
     return true;
+  }
 
   // Check if |hwnd| is a root window; if so, we're done figuring out
   // if it's occluded because we've seen all the windows "over" it.
