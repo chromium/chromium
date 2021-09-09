@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.offlinepages.downloads.OfflinePageDownloadBri
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
@@ -201,8 +202,14 @@ public class DownloadUtils {
      * @return The boolean to state whether the profile exists or not.
      */
     public static boolean doesProfileExistFromIntent(Intent intent) {
+        boolean isProfileManagerInitialized = ProfileManager.isInitialized();
+        if (!isProfileManagerInitialized) {
+            return false;
+        }
+
         String serializedId = IntentUtils.safeGetString(intent.getExtras(), EXTRA_OTR_PROFILE_ID);
         OTRProfileID otrProfileID = OTRProfileID.deserializeWithoutVerify(serializedId);
+
         return otrProfileID == null
                 || Profile.getLastUsedRegularProfile().hasOffTheRecordProfile(otrProfileID);
     }
