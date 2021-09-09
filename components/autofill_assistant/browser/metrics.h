@@ -95,6 +95,22 @@ class Metrics {
     kMaxValue = ENABLE_BUTTON_AND_PLAY_TTS
   };
 
+  // The different TTS engine events that are received by the autofill
+  // assistant TTS controller.
+  //
+  // This enum is used in histograms, do not remove/renumber entries. Only add
+  // at the end and update kMaxValue. Also remember to update the
+  // AutofillAssistantTextToSpeechEngineEvent enum listing in
+  // tools/metrics/histograms/enums.xml.
+  enum class TtsEngineEvent {
+    TTS_EVENT_START = 0,
+    TTS_EVENT_END = 1,
+    TTS_EVENT_ERROR = 2,
+    TTS_EVENT_OTHER = 3,
+
+    kMaxValue = TTS_EVENT_OTHER
+  };
+
   // The different ways for payment request to succeed or fail, broken down by
   // whether the PR initially presented to the user was completely pre-filled
   // or not.
@@ -417,6 +433,7 @@ class Metrics {
                                           InChromeTriggerAction event);
   static void RecordOnboardingResult(OnBoarding event);
   static void RecordTtsButtonAction(TtsButtonAction action);
+  static void RecordTtsEngineEvent(TtsEngineEvent event);
   static void RecordFeatureModuleInstallation(FeatureModuleInstallation event);
   static void RecordTriggerConditionEvaluationTime(
       ukm::UkmRecorder* ukm_recorder,

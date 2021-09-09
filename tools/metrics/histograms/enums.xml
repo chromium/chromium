@@ -5444,6 +5444,13 @@ others/histograms.xml -->
   <int value="2" label="Enable button and play TTS"/>
 </enum>
 
+<enum name="AutofillAssistantTextToSpeechEngineEvent">
+  <int value="0" label="TTS_EVENT_START"/>
+  <int value="1" label="TTS_EVENT_END"/>
+  <int value="2" label="TTS_EVENT_ERROR"/>
+  <int value="3" label="TTS_EVENT_OTHER"/>
+</enum>
+
 <enum name="AutofillAssistantTriggerUIType">
   <int value="0" label="UNSPECIFIED_TRIGGER_UI_TYPE"/>
   <int value="1" label="(External) Shopping cart, first time user"/>

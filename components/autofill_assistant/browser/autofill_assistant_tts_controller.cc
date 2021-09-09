@@ -5,6 +5,7 @@
 #include "components/autofill_assistant/browser/autofill_assistant_tts_controller.h"
 
 #include "base/logging.h"
+#include "components/autofill_assistant/browser/metrics.h"
 
 namespace autofill_assistant {
 namespace {
@@ -59,13 +60,16 @@ void AutofillAssistantTtsController::OnTtsEvent(
   switch (event_type) {
     case content::TTS_EVENT_START:
       tts_event_delegate_->OnTtsEvent(TTS_START);
+      Metrics::RecordTtsEngineEvent(Metrics::TtsEngineEvent::TTS_EVENT_START);
       break;
     case content::TTS_EVENT_END:
       tts_event_delegate_->OnTtsEvent(TTS_END);
+      Metrics::RecordTtsEngineEvent(Metrics::TtsEngineEvent::TTS_EVENT_END);
       break;
     case content::TTS_EVENT_ERROR:
       VLOG(1) << __func__ << ": " << error_message;
       tts_event_delegate_->OnTtsEvent(TTS_ERROR);
+      Metrics::RecordTtsEngineEvent(Metrics::TtsEngineEvent::TTS_EVENT_ERROR);
       break;
     case content::TTS_EVENT_INTERRUPTED:
     case content::TTS_EVENT_CANCELLED:
@@ -76,6 +80,7 @@ void AutofillAssistantTtsController::OnTtsEvent(
     case content::TTS_EVENT_RESUME:
       // Do not care about these events. Android does not send back these
       // events anyways.
+      Metrics::RecordTtsEngineEvent(Metrics::TtsEngineEvent::TTS_EVENT_OTHER);
       break;
   }
 }

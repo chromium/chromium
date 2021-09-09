@@ -23,6 +23,8 @@ const char kDropOutEnumName[] = "Android.AutofillAssistant.DropOutReason";
 const char kOnboardingEnumName[] = "Android.AutofillAssistant.OnBoarding";
 const char kTtsButtonActionEnumName[] =
     "Android.AutofillAssistant.TextToSpeech.ButtonAction";
+const char kTtsEngineEventEnumName[] =
+    "Android.AutofillAssistant.TextToSpeech.EngineEvent";
 const char kFeatureModuleInstallationEnumName[] =
     "Android.AutofillAssistant.FeatureModuleInstallation";
 const char kPaymentRequestPrefilledName[] =
@@ -223,6 +225,12 @@ void Metrics::RecordOnboardingResult(OnBoarding event) {
 void Metrics::RecordTtsButtonAction(TtsButtonAction action) {
   DCHECK_LE(action, TtsButtonAction::kMaxValue);
   base::UmaHistogramEnumeration(kTtsButtonActionEnumName, action);
+}
+
+// static
+void Metrics::RecordTtsEngineEvent(TtsEngineEvent event) {
+  DCHECK_LE(event, TtsEngineEvent::kMaxValue);
+  base::UmaHistogramEnumeration(kTtsEngineEventEnumName, event);
 }
 
 // static
