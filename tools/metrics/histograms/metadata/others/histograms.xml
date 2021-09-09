@@ -10140,6 +10140,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     <variant name="SmartDimModel"/>
     <variant name="TestModel"/>
     <variant name="TextClassifier"/>
+    <variant name="TextSuggester"/>
   </token>
 </histogram>
 
