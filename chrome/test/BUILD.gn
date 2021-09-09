@@ -3843,7 +3843,10 @@ if (!is_android && !is_fuchsia) {
         "../browser/supervised_user/supervised_user_service_browsertest.cc",
         "../browser/supervised_user/supervised_user_url_filter_browsertest.cc",
       ]
-      deps += [ "//chrome/browser/supervised_user:test_support" ]
+      deps += [
+        "//chrome/browser/supervised_user:test_support",
+        "//chrome/browser/supervised_user/supervised_user_features",
+      ]
       if (enable_extensions) {
         sources += [
           "../browser/supervised_user/supervised_user_extension_browsertest.cc",

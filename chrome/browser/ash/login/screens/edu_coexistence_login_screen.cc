@@ -15,7 +15,7 @@
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/supervised_user/supervised_user_features.h"
+#include "chrome/browser/supervised_user/supervised_user_features/supervised_user_features.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos_onboarding.h"
 #include "ui/aura/window.h"

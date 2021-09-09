@@ -3459,7 +3459,10 @@ static_library("browser") {
         "supervised_user/child_accounts/child_account_service_android.cc",
         "supervised_user/child_accounts/child_account_service_android.h",
       ]
-      deps += [ "//chrome/browser/supervised_user/supervised_user_error_page" ]
+      deps += [
+        "//chrome/browser/supervised_user/supervised_user_error_page",
+        "//chrome/browser/supervised_user/supervised_user_features",
+      ]
     }
 
     if (dfmify_dev_ui) {
@@ -6740,8 +6743,6 @@ static_library("browser") {
       "supervised_user/supervised_user_constants.h",
       "supervised_user/supervised_user_denylist.cc",
       "supervised_user/supervised_user_denylist.h",
-      "supervised_user/supervised_user_features.cc",
-      "supervised_user/supervised_user_features.h",
       "supervised_user/supervised_user_google_auth_navigation_throttle.cc",
       "supervised_user/supervised_user_google_auth_navigation_throttle.h",
       "supervised_user/supervised_user_interstitial.cc",
@@ -6770,6 +6771,7 @@ static_library("browser") {
     deps += [
       "//chrome/browser/supervised_user/kids_chrome_management:proto",
       "//chrome/browser/supervised_user/supervised_user_error_page",
+      "//chrome/browser/supervised_user/supervised_user_features",
       "//chrome/common:supervised_user_commands_mojom",
       "//components/pref_registry",
     ]

@@ -16,6 +16,7 @@ static_library("supervised_user_error_page") {
     "//base",
     "//chrome/app:generated_resources",
     "//chrome/browser:resources_grit",
+    "//chrome/browser/supervised_user/supervised_user_features",
     "//components/signin/public/base",
     "//ui/base",
     "//url",
