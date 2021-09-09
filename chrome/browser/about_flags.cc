@@ -6576,15 +6576,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kPlatformProvidedTrustTokensVariations,
                                     "TrustTokenOriginTrial")},
 
-#if defined(OS_ANDROID)
-    {"android-partner-customization-phenotype",
-     flag_descriptions::kAndroidPartnerCustomizationPhenotypeName,
-     flag_descriptions::kAndroidPartnerCustomizationPhenotypeDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         chrome::android::kAndroidPartnerCustomizationPhenotype)},
-#endif  // defined(OS_ANDROID)
-
     {"media-history", flag_descriptions::kMediaHistoryName,
      flag_descriptions::kMediaHistoryDescription, kOsAll,
      FEATURE_VALUE_TYPE(media::kUseMediaHistoryStore)},

@@ -3234,12 +3234,6 @@ const char kOfflinePagesLivePageSharingDescription[] =
     "Enables to share current loaded page as offline page by saving as MHTML "
     "first.";
 
-const char kAndroidPartnerCustomizationPhenotypeName[] =
-    "Use homepage and bookmarks from partner customization";
-const char kAndroidPartnerCustomizationPhenotypeDescription[] =
-    "This flag loads a new configuration source of the default homepage and "
-    "bookmarks.";
-
 const char kPageInfoDiscoverabilityName[] = "Page info discoverability";
 const char kPageInfoDiscoverabilityDescription[] =
     "Improve discoverability of permission controls in the page info bubble. "

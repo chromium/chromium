@@ -1657,9 +1657,6 @@ extern const char kAndroidForceAppLanguagePromptDescription[];
 extern const char kAndroidLayoutChangeTabReparentingName[];
 extern const char kAndroidLayoutChangeTabReparentingDescription[];
 
-extern const char kAndroidPartnerCustomizationPhenotypeName[];
-extern const char kAndroidPartnerCustomizationPhenotypeDescription[];
-
 extern const char kAndroidSurfaceControlName[];
 extern const char kAndroidSurfaceControlDescription[];
 

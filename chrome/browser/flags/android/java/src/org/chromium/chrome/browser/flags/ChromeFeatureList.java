@@ -218,8 +218,6 @@ public abstract class ChromeFeatureList {
             "AutofillEnableSupportForMoreStructureInNames";
     public static final String ANDROID_LAYOUT_CHANGE_TAB_REPARENT =
             "AndroidLayoutChangeTabReparenting";
-    public static final String ANDROID_PARTNER_CUSTOMIZATION_PHENOTYPE =
-            "AndroidPartnerCustomizationPhenotype";
     public static final String ANDROID_SEARCH_ENGINE_CHOICE_NOTIFICATION =
             "AndroidSearchEngineChoiceNotification";
     public static final String APP_LANGUAGE_PROMPT = "AppLanguagePrompt";

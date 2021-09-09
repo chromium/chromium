@@ -48,7 +48,6 @@ public class CachedFeatureFlags {
      */
     private static Map<String, Boolean> sDefaults =
             ImmutableMap.<String, Boolean>builder()
-                    .put(ChromeFeatureList.ANDROID_PARTNER_CUSTOMIZATION_PHENOTYPE, true)
                     .put(ChromeFeatureList.BOOKMARK_BOTTOM_SHEET, false)
                     .put(ChromeFeatureList.CONDITIONAL_TAB_STRIP_ANDROID, false)
                     .put(ChromeFeatureList.LENS_CAMERA_ASSISTED_SEARCH, false)

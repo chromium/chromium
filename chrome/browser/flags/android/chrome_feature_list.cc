@@ -152,7 +152,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAddToHomescreenIPH,
     &kAllowNewIncognitoTabIntents,
     &kAndroidLayoutChangeTabReparenting,
-    &kAndroidPartnerCustomizationPhenotype,
     &kAndroidSearchEngineChoiceNotification,
     &kAssistantConsentV2,
     &kAssistantIntentExperimentId,
@@ -384,9 +383,6 @@ const base::Feature kAllowNewIncognitoTabIntents{
 
 const base::Feature kFocusOmniboxInIncognitoTabIntents{
     "FocusOmniboxInIncognitoTabIntents", base::FEATURE_ENABLED_BY_DEFAULT};
-
-const base::Feature kAndroidPartnerCustomizationPhenotype{
-    "AndroidPartnerCustomizationPhenotype", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kAndroidSearchEngineChoiceNotification{
     "AndroidSearchEngineChoiceNotification", base::FEATURE_ENABLED_BY_DEFAULT};

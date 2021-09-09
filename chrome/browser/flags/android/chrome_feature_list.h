@@ -18,7 +18,6 @@ extern const base::Feature kAdaptiveButtonInTopToolbarCustomizationV2;
 extern const base::Feature kAddToHomescreenIPH;
 extern const base::Feature kAllowNewIncognitoTabIntents;
 extern const base::Feature kAndroidLayoutChangeTabReparenting;
-extern const base::Feature kAndroidPartnerCustomizationPhenotype;
 extern const base::Feature kAndroidSearchEngineChoiceNotification;
 extern const base::Feature kAssistantConsentV2;
 extern const base::Feature kAssistantIntentExperimentId;
