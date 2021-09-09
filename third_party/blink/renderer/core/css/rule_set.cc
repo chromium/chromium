@@ -422,6 +422,7 @@ void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
       AddPropertyRule(property_rule);
     } else if (auto* counter_style_rule =
                    DynamicTo<StyleRuleCounterStyle>(rule)) {
+      counter_style_rule->SetCascadeLayer(cascade_layer);
       AddCounterStyleRule(counter_style_rule);
     } else if (auto* scroll_timeline_rule =
                    DynamicTo<StyleRuleScrollTimeline>(rule)) {

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/counter_style_map.h"
 
+#include "third_party/blink/renderer/core/css/cascade_layer_map.h"
 #include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 #include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
@@ -13,6 +14,23 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
 namespace blink {
+
+namespace {
+
+bool CounterStyleShouldOverride(Document& document,
+                                const TreeScope* tree_scope,
+                                const StyleRuleCounterStyle& new_rule,
+                                const StyleRuleCounterStyle& existing_rule) {
+  const CascadeLayerMap* cascade_layer_map =
+      tree_scope ? tree_scope->GetScopedStyleResolver()->GetCascadeLayerMap()
+                 : document.GetStyleEngine().GetUserCascadeLayerMap();
+  if (!cascade_layer_map)
+    return true;
+  return cascade_layer_map->CompareLayerOrder(existing_rule.GetCascadeLayer(),
+                                              new_rule.GetCascadeLayer()) <= 0;
+}
+
+}  // namespace
 
 // static
 CounterStyleMap* CounterStyleMap::GetUserCounterStyleMap(Document& document) {
@@ -55,11 +73,17 @@ void CounterStyleMap::AddCounterStyles(const RuleSet& rule_set) {
     return;
 
   for (StyleRuleCounterStyle* rule : rule_set.CounterStyleRules()) {
+    AtomicString name = rule->GetName();
+    auto replaced_iter = counter_styles_.find(name);
+    if (replaced_iter != counter_styles_.end()) {
+      if (!CounterStyleShouldOverride(*owner_document_, tree_scope_, *rule,
+                                      replaced_iter->value->GetStyleRule())) {
+        continue;
+      }
+    }
     CounterStyle* counter_style = CounterStyle::Create(*rule);
     if (!counter_style)
       continue;
-    AtomicString name = rule->GetName();
-    auto replaced_iter = counter_styles_.find(name);
     if (replaced_iter != counter_styles_.end())
       replaced_iter->value->SetIsDirty();
     counter_styles_.Set(rule->GetName(), counter_style);
