@@ -9,8 +9,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "components/infobars/android/infobar_android.h"
-#include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/messages/android/message_enums.h"
 #include "components/messages/android/message_wrapper.h"
 #include "components/subresource_filter/android/ads_blocked_dialog.h"
@@ -34,21 +32,50 @@ class AdsBlockedMessageDelegate
   using AdsBlockedDialogFactory =
       base::RepeatingCallback<std::unique_ptr<AdsBlockedDialogBase>(
           content::WebContents*,
-          AdsBlockedDialogBase::AllowAdsClickedCallback,
-          AdsBlockedDialogBase::LearnMoreClickedCallback)>;
+          base::OnceClosure,
+          base::OnceClosure,
+          base::OnceClosure)>;
 
   ~AdsBlockedMessageDelegate() override;
 
   void ShowMessage();
+  void DismissMessage(messages::DismissReason dismiss_reason);
 
   messages::MessageWrapper* message_for_testing() { return message_.get(); }
 
  private:
   friend class content::WebContentsUserData<AdsBlockedMessageDelegate>;
-  AdsBlockedMessageDelegate(content::WebContents* web_contents);
 
-  void HandleClick();
-  void HandleDismissCallback(messages::DismissReason dismiss_reason);
+  AdsBlockedMessageDelegate(content::WebContents* web_contents);
+  AdsBlockedMessageDelegate(content::WebContents* web_contents,
+                            AdsBlockedDialogFactory ads_blocked_dialog_factory);
+
+  // Invoked when the user clicks on "OK" as an acknowledgement of the
+  // ads blocked message. This action simply dismisses the message.
+  void HandleMessageOkClicked();
+
+  // Invoked when the user clicks on the secondary button (settings icon)
+  // to get more details and manage site ads settings. This action
+  // dismisses the message and opens the ads blocked dialog.
+  void HandleMessageManageClicked();
+
+  // Invoked when the message is dismissed, whether by the user, explicitly
+  // in the code or automatically.
+  void HandleMessageDismissed(messages::DismissReason dismiss_reason);
+
+  // Invoked when the user clicks on the ads blocked dialog button to
+  // update site ads settings.
+  void HandleDialogAllowAdsClicked();
+
+  // Invoked when the user clicks on the ads blocked dialog button to
+  // learn more about blocked ads on sites.
+  void HandleDialogLearnMoreClicked();
+
+  // Invoked when the dialog is dismissed, whether by user action,
+  // explicitly in the code or automatically.
+  void HandleDialogDismissed();
+
+  void ShowDialog();
 
   content::WebContents* web_contents_ = nullptr;
   std::unique_ptr<messages::MessageWrapper> message_;
@@ -61,4 +88,4 @@ class AdsBlockedMessageDelegate
 
 }  // namespace subresource_filter
 
-#endif  // COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_ADS_BLOCKED_INFOBAR_DELEGATE_H_
+#endif  // COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_ADS_BLOCKED_MESSAGE_DELEGATE_H_

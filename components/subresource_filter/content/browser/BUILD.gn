@@ -194,4 +194,12 @@ source_set("unit_tests") {
     "//ui/base:test_support",
   ]
   public_deps = [ "//components/subresource_filter/content/mojom" ]
+  if (is_android) {
+    sources += [ "ads_blocked_message_delegate_unittest.cc" ]
+    deps += [
+      "//components/messages/android:test_support",
+      "//components/resources:android_resources",
+      "//components/strings:components_strings_grit",
+    ]
+  }
 }

@@ -48,9 +48,6 @@ class WebContents;
 // tests. AdsBlockedDialog contains the implementation.
 class AdsBlockedDialogBase {
  public:
-  using AllowAdsClickedCallback = base::OnceClosure;
-  using LearnMoreClickedCallback = base::OnceClosure;
-
   virtual ~AdsBlockedDialogBase();
 
   // Calls Java side of the dialog to display ads blocked modal dialog.
@@ -71,8 +68,9 @@ class AdsBlockedDialog : public AdsBlockedDialogBase {
   // Returns nullptr if |web_contents| is not attached to a window.
   static std::unique_ptr<AdsBlockedDialogBase> Create(
       content::WebContents* web_contents,
-      AllowAdsClickedCallback allow_ads_clicked_callback,
-      LearnMoreClickedCallback learn_more_clicked_callback);
+      base::OnceClosure allow_ads_clicked_callback,
+      base::OnceClosure learn_more_clicked_callback,
+      base::OnceClosure dialog_dismissed_callback);
 
   // Disallow copy and assign.
   AdsBlockedDialog(const AdsBlockedDialog&) = delete;
@@ -98,12 +96,14 @@ class AdsBlockedDialog : public AdsBlockedDialogBase {
 
  private:
   AdsBlockedDialog(base::android::ScopedJavaLocalRef<jobject> jwindow_android,
-                   AllowAdsClickedCallback allow_ads_clicked_callback,
-                   LearnMoreClickedCallback learn_more_clicked_callback);
+                   base::OnceClosure allow_ads_clicked_callback,
+                   base::OnceClosure learn_more_clicked_callback,
+                   base::OnceClosure dialog_dismissed_callback);
 
   base::android::ScopedJavaGlobalRef<jobject> java_ads_blocked_dialog_;
-  AllowAdsClickedCallback allow_ads_clicked_callback_;
-  LearnMoreClickedCallback learn_more_clicked_callback_;
+  base::OnceClosure allow_ads_clicked_callback_;
+  base::OnceClosure learn_more_clicked_callback_;
+  base::OnceClosure dialog_dismissed_callback_;
 };
 
 #endif  // COMPONENTS_SUBRESOURCE_FILTER_ANDROID_ADS_BLOCKED_DIALOG_H_

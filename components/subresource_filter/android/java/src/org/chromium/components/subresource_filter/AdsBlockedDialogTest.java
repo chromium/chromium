@@ -7,6 +7,11 @@ package org.chromium.components.subresource_filter;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.never;
 
+import android.content.res.Resources;
+
+import androidx.test.core.app.ApplicationProvider;
+
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -50,11 +55,29 @@ public class AdsBlockedDialogTest {
     }
 
     /**
-     * Tests that the modal dialog is displayed as a TAB dialog.
+     * Tests the modal dialog properties (title, message, button text, cancel-on-touch-outside
+     * setting) and verifies that the dialog is displayed as a TAB dialog.
      */
     @Test
     public void testDialogType() {
         createAndShowDialog();
+        Resources resources = ApplicationProvider.getApplicationContext().getResources();
+
+        Assert.assertEquals("Dialog title should match.",
+                resources.getString(R.string.blocked_ads_dialog_title),
+                mModalDialogModel.get(ModalDialogProperties.TITLE));
+        Assert.assertEquals("Dialog message should match.",
+                resources.getString(R.string.blocked_ads_dialog_message),
+                mModalDialogModel.get(ModalDialogProperties.MESSAGE));
+        Assert.assertEquals("Dialog positive button text should match.",
+                resources.getString(R.string.blocked_ads_dialog_always_allow),
+                mModalDialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
+        Assert.assertEquals("Dialog negative button text should match.",
+                resources.getString(R.string.blocked_ads_dialog_learn_more),
+                mModalDialogModel.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
+        Assert.assertTrue("Dialog should be dismissed on touch outside.",
+                mModalDialogModel.get(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE));
+
         Mockito.verify(mModalDialogManagerMock)
                 .showDialog(mModalDialogModel, ModalDialogManager.ModalDialogType.TAB);
     }

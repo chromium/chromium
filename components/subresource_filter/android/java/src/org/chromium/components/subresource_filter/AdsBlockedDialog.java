@@ -75,6 +75,7 @@ public class AdsBlockedDialog implements ModalDialogProperties.Controller {
                                        R.string.blocked_ads_dialog_always_allow)
                                .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
                                        R.string.blocked_ads_dialog_learn_more)
+                               .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
                                .build();
         mModalDialogManager.showDialog(mDialogModel, ModalDialogType.TAB);
     }

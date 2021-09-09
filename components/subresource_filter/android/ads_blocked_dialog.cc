@@ -8,6 +8,7 @@
 
 #include <utility>
 
+#include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
@@ -20,8 +21,9 @@ AdsBlockedDialogBase::~AdsBlockedDialogBase() = default;
 // static
 std::unique_ptr<AdsBlockedDialogBase> AdsBlockedDialog::Create(
     content::WebContents* web_contents,
-    AllowAdsClickedCallback allow_ads_clicked_callback,
-    LearnMoreClickedCallback learn_more_clicked_callback) {
+    base::OnceClosure allow_ads_clicked_callback,
+    base::OnceClosure learn_more_clicked_callback,
+    base::OnceClosure dialog_dismissed_callback) {
   DCHECK(web_contents);
 
   ui::WindowAndroid* window_android = web_contents->GetTopLevelNativeWindow();
@@ -29,15 +31,18 @@ std::unique_ptr<AdsBlockedDialogBase> AdsBlockedDialog::Create(
     return nullptr;
   return base::WrapUnique(new AdsBlockedDialog(
       window_android->GetJavaObject(), std::move(allow_ads_clicked_callback),
-      std::move(learn_more_clicked_callback)));
+      std::move(learn_more_clicked_callback),
+      std::move(dialog_dismissed_callback)));
 }
 
 AdsBlockedDialog::AdsBlockedDialog(
     base::android::ScopedJavaLocalRef<jobject> j_window_android,
-    AllowAdsClickedCallback allow_ads_clicked_callback,
-    LearnMoreClickedCallback learn_more_clicked_callback)
+    base::OnceClosure allow_ads_clicked_callback,
+    base::OnceClosure learn_more_clicked_callback,
+    base::OnceClosure dialog_dismissed_callback)
     : allow_ads_clicked_callback_(std::move(allow_ads_clicked_callback)),
-      learn_more_clicked_callback_(std::move(learn_more_clicked_callback)) {
+      learn_more_clicked_callback_(std::move(learn_more_clicked_callback)),
+      dialog_dismissed_callback_(std::move(dialog_dismissed_callback)) {
   JNIEnv* env = base::android::AttachCurrentThread();
   java_ads_blocked_dialog_ = Java_AdsBlockedDialog_create(
       env, reinterpret_cast<intptr_t>(this), j_window_android);
@@ -66,5 +71,6 @@ void AdsBlockedDialog::OnLearnMoreClicked(JNIEnv* env) {
 }
 
 void AdsBlockedDialog::OnDismissed(JNIEnv* env) {
-  // TODO(aishwaryarj): destroy the dialog instance on dismissal.
+  java_ads_blocked_dialog_.Reset();
+  std::move(dialog_dismissed_callback_).Run();
 }

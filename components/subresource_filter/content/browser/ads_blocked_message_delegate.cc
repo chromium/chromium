@@ -17,20 +17,18 @@
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/gurl.h"
 
 namespace subresource_filter {
 
 AdsBlockedMessageDelegate::~AdsBlockedMessageDelegate() {
-  if (message_) {
-    // Do not use message_ after this.
-    messages::MessageDispatcherBridge::Get()->DismissMessage(
-        message_.get(), messages::DismissReason::UNKNOWN);
-  }
+  // Do not use message_ after this.
+  DismissMessage(messages::DismissReason::UNKNOWN);
 }
 
 void AdsBlockedMessageDelegate::ShowMessage() {
-  if (message_) {
-    // There is already an active "ads blocked" message.
+  if (message_ || ads_blocked_dialog_) {
+    // There is already an active ads blocked message or dialog.
     return;
   }
 
@@ -38,42 +36,110 @@ void AdsBlockedMessageDelegate::ShowMessage() {
   // the callback.
   auto message = std::make_unique<messages::MessageWrapper>(
       messages::MessageIdentifier::ADS_BLOCKED,
-      base::BindOnce(&AdsBlockedMessageDelegate::HandleClick,
+      base::BindOnce(&AdsBlockedMessageDelegate::HandleMessageOkClicked,
                      base::Unretained(this)),
-      base::BindOnce(&AdsBlockedMessageDelegate::HandleDismissCallback,
+      base::BindOnce(&AdsBlockedMessageDelegate::HandleMessageDismissed,
                      base::Unretained(this)));
 
   message->SetTitle(
       l10n_util::GetStringUTF16(IDS_BLOCKED_ADS_MESSAGE_PRIMARY_TEXT));
   message->SetPrimaryButtonText(l10n_util::GetStringUTF16(IDS_OK));
+  messages::MessageDispatcherBridge* message_dispatcher_bridge =
+      messages::MessageDispatcherBridge::Get();
+  message->SetIconResourceId(message_dispatcher_bridge->MapToJavaDrawableId(
+      IDR_ANDROID_INFOBAR_BLOCKED_POPUPS));
 
-  // TODO: Set primary and secondary resource icons.
-  // message->SetIconResourceId();
-  // message->SetSecondaryIconResourceId();
+  message->SetSecondaryIconResourceId(
+      message_dispatcher_bridge->MapToJavaDrawableId(IDR_ANDROID_SETTINGS));
+  message->SetSecondaryActionCallback(
+      base::BindOnce(&AdsBlockedMessageDelegate::HandleMessageManageClicked,
+                     base::Unretained(this)));
 
   // TODO(crbug.com/1223078): On rare occasions, such as the moment when
   // activity is being recreated or destroyed, ads blocked message will not be
   // displayed.
-  messages::MessageDispatcherBridge::Get()->EnqueueMessage(
+  message_dispatcher_bridge->EnqueueMessage(
       message.get(), web_contents_, messages::MessageScopeType::WEB_CONTENTS,
       messages::MessagePriority::kNormal);
 
   message_ = std::move(message);
 }
 
-AdsBlockedMessageDelegate::AdsBlockedMessageDelegate(
-    content::WebContents* web_contents)
-    : web_contents_(web_contents) {
-  ads_blocked_dialog_factory_ = base::BindRepeating(AdsBlockedDialog::Create);
+void AdsBlockedMessageDelegate::DismissMessage(
+    messages::DismissReason dismiss_reason) {
+  if (message_) {
+    messages::MessageDispatcherBridge::Get()->DismissMessage(message_.get(),
+                                                             dismiss_reason);
+  }
 }
 
-void AdsBlockedMessageDelegate::HandleDismissCallback(
+AdsBlockedMessageDelegate::AdsBlockedMessageDelegate(
+    content::WebContents* web_contents)
+    : AdsBlockedMessageDelegate(web_contents,
+                                base::BindRepeating(AdsBlockedDialog::Create)) {
+}
+
+AdsBlockedMessageDelegate::AdsBlockedMessageDelegate(
+    content::WebContents* web_contents,
+    AdsBlockedDialogFactory ads_blocked_dialog_factory)
+    : web_contents_(web_contents),
+      ads_blocked_dialog_factory_(std::move(ads_blocked_dialog_factory)) {}
+
+void AdsBlockedMessageDelegate::HandleMessageOkClicked() {}
+
+void AdsBlockedMessageDelegate::HandleMessageManageClicked() {
+  DismissMessage(messages::DismissReason::SECONDARY_ACTION);
+  ShowDialog();
+  subresource_filter::ContentSubresourceFilterThrottleManager::LogAction(
+      subresource_filter::SubresourceFilterAction::kDetailsShown);
+}
+
+void AdsBlockedMessageDelegate::HandleMessageDismissed(
     messages::DismissReason dismiss_reason) {
+  DCHECK(message_);
   message_.reset();
 }
 
-void AdsBlockedMessageDelegate::HandleClick() {
-  // TODO: Add implementation.
+void AdsBlockedMessageDelegate::HandleDialogAllowAdsClicked() {
+  subresource_filter::ContentSubresourceFilterThrottleManager::FromPage(
+      web_contents_->GetPrimaryPage())
+      ->OnReloadRequested();
+}
+
+void AdsBlockedMessageDelegate::HandleDialogLearnMoreClicked() {
+  // TODO(aishwaryarj): The dialog should be restored once the user
+  // navigates back from the Learn More link tab.
+  subresource_filter::ContentSubresourceFilterThrottleManager::LogAction(
+      subresource_filter::SubresourceFilterAction::kClickedLearnMore);
+  web_contents_->OpenURL(content::OpenURLParams(
+      GURL(subresource_filter::kLearnMoreLink), content::Referrer(),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
+      false));
+}
+
+void AdsBlockedMessageDelegate::HandleDialogDismissed() {
+  DCHECK(ads_blocked_dialog_);
+  ads_blocked_dialog_.reset();
+}
+
+void AdsBlockedMessageDelegate::ShowDialog() {
+  // Binding with base::Unretained(this) is safe here because
+  // AdsBlockedMessageDelegate owns ads_blocked_dialog_. Callbacks won't be
+  // called after the AdsBlockedMessageDelegate object is destroyed.
+  ads_blocked_dialog_ = ads_blocked_dialog_factory_.Run(
+      web_contents_,
+      base::BindOnce(&AdsBlockedMessageDelegate::HandleDialogAllowAdsClicked,
+                     base::Unretained(this)),
+      base::BindOnce(&AdsBlockedMessageDelegate::HandleDialogLearnMoreClicked,
+                     base::Unretained(this)),
+      base::BindOnce(&AdsBlockedMessageDelegate::HandleDialogDismissed,
+                     base::Unretained(this)));
+
+  // Ads blocked dialog factory method can return nullptr when web_contents_
+  // is not attached to a window. See crbug.com/1049090 for details.
+  if (!ads_blocked_dialog_)
+    return;
+  ads_blocked_dialog_->Show();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AdsBlockedMessageDelegate)
