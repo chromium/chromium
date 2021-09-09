@@ -36,6 +36,11 @@ class TestableLaunchAppHelper : public LaunchAppHelper {
 
   // LaunchAppHelper:
   bool IsAppLaunchAllowed() const override { return true; }
+  void ShowNotification(const absl::optional<std::u16string>& title,
+                        const absl::optional<std::u16string>& message,
+                        std::unique_ptr<NotificationInfo> info) const override {
+    // Do nothing.
+  }
 };
 
 class EcheRecentAppClickHandlerTest : public testing::Test {
@@ -76,12 +81,15 @@ class EcheRecentAppClickHandlerTest : public testing::Test {
     handler_.reset();
   }
 
-  void FakeLaunchEcheAppFunction(absl::optional<int64_t> notification_id,
+  void FakeLaunchEcheAppFunction(const absl::optional<int64_t>& notification_id,
                                  const std::string& package_name) {
     package_name_ = package_name;
   }
 
-  void FakeLaunchNotificationFunction(LaunchAppHelper::NotificationType type) {
+  void FakeLaunchNotificationFunction(
+      const absl::optional<std::u16string>& title,
+      const absl::optional<std::u16string>& message,
+      std::unique_ptr<LaunchAppHelper::NotificationInfo> info) {
     // Do nothing.
   }
 

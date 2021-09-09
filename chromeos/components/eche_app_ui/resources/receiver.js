@@ -77,6 +77,11 @@ const EcheApiBindingImpl = new class {
   onReceivedNotification(callback) {
     notificationCallback = callback;
   }
+
+  showNotification(title, message, notificationType) {
+    parentMessagePipe.sendMessage(
+        Message.SHOW_NOTIFICATION, {title, message, notificationType});
+  }
 };
 
 // Declare module echeapi and bind the implementation to echeapi.d.ts
@@ -101,4 +106,6 @@ echeapi.system.registerTabletModeChangedReceiver =
     EcheApiBindingImpl.onReceivedTabletModeChanged.bind(EcheApiBindingImpl);
 echeapi.system.registerNotificationReceiver =
     EcheApiBindingImpl.onReceivedNotification.bind(EcheApiBindingImpl);
+echeapi.system.showCrOSNotification =
+    EcheApiBindingImpl.showNotification.bind(EcheApiBindingImpl);
 window['echeapi'] = echeapi;

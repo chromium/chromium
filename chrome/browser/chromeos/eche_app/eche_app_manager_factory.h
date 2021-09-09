@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/eche_app_ui/launch_app_helper.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -19,13 +20,17 @@ class SystemInfo;
 class EcheAppManager;
 class EcheAppNotificationController;
 
+// Factory to create a single EcheAppManager.
 class EcheAppManagerFactory : public BrowserContextKeyedServiceFactory {
  public:
   static EcheAppManager* GetForProfile(Profile* profile);
   static EcheAppManagerFactory* GetInstance();
-  static void ShowNotification(base::WeakPtr<EcheAppManagerFactory> weak_ptr,
-                               Profile* profile,
-                               LaunchAppHelper::NotificationType type);
+  static void ShowNotification(
+      base::WeakPtr<EcheAppManagerFactory> weak_ptr,
+      Profile* profile,
+      const absl::optional<std::u16string>& title,
+      const absl::optional<std::u16string>& message,
+      std::unique_ptr<LaunchAppHelper::NotificationInfo> info);
 
   EcheAppManagerFactory(const EcheAppManagerFactory&) = delete;
   EcheAppManagerFactory& operator=(const EcheAppManagerFactory&) = delete;

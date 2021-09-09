@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/components/multidevice/logging/logging.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/message_center/message_center.h"
@@ -18,6 +19,13 @@ namespace eche_app {
 
 const char kEcheAppScreenLockNotifierId[] =
     "eche_app_notification_ids.screen_lock";
+// The notification type from WebUI is CONNECTION_FAILED or CONNECTION_LOST
+// allow users to retry.
+const char kEcheAppRetryConnectionNotifierId[] =
+    "eche_app_notification_ids.retry_connection";
+// The notification type from WebUI without any actions need to do.
+const char kEcheAppFromWebWithoudButtonNotifierId[] =
+    "eche_app_notification_ids.from_web_without_button";
 
 // TODO(crbug.com/1241352): This should probably have a ?p=<FEATURE_NAME> at
 // some point.
@@ -61,6 +69,53 @@ void EcheAppNotificationController::LaunchLearnMore() {
       /* from_user_interaction= */ true);
 }
 
+void EcheAppNotificationController::LaunchTryAgain() {
+  // TODO(crbug.com/1241352): Wait for UX confirm.
+}
+
+void EcheAppNotificationController::LaunchHelp() {
+  // TODO(crbug.com/1241352): Wait for UX confirm.
+}
+
+void EcheAppNotificationController::ShowNotificationFromWebUI(
+    const absl::optional<std::u16string>& title,
+    const absl::optional<std::u16string>& message,
+    absl::variant<LaunchAppHelper::NotificationInfo::NotificationType,
+                  chromeos::eche_app::mojom::WebNotificationType> type) {
+  chromeos::eche_app::mojom::WebNotificationType web_type =
+      absl::get<chromeos::eche_app::mojom::WebNotificationType>(type);
+  if (title && message) {
+    if (web_type ==
+            chromeos::eche_app::mojom::WebNotificationType::CONNECTION_FAILED ||
+        web_type ==
+            chromeos::eche_app::mojom::WebNotificationType::CONNECTION_LOST) {
+      // Need to try again based if users clicked button.
+      message_center::RichNotificationData rich_notification_data;
+      rich_notification_data.buttons.push_back(
+          message_center::ButtonInfo(l10n_util::GetStringUTF16(
+              IDS_ECHE_APP_NOTIFICATION_TRY_AGAIN_BUTTON)));
+      rich_notification_data.buttons.push_back(message_center::ButtonInfo(
+          l10n_util::GetStringUTF16(IDS_ECHE_APP_NOTIFICATION_HELP_BUTTON)));
+
+      ShowNotification(CreateNotification(
+          kEcheAppRetryConnectionNotifierId, title.value(), message.value(),
+          gfx::Image(), rich_notification_data,
+          new NotificationDelegate(kEcheAppRetryConnectionNotifierId,
+                                   weak_ptr_factory_.GetWeakPtr())));
+    } else {
+      // No need to take the action.
+      ShowNotification(CreateNotification(
+          kEcheAppFromWebWithoudButtonNotifierId, title.value(),
+          message.value(), gfx::Image(), message_center::RichNotificationData(),
+          new NotificationDelegate(kEcheAppFromWebWithoudButtonNotifierId,
+                                   weak_ptr_factory_.GetWeakPtr())));
+    }
+  } else {
+    PA_LOG(ERROR)
+        << "Cannot find the title or message to show the notification.";
+  }
+}
+
 void EcheAppNotificationController::ShowScreenLockNotification() {
   message_center::RichNotificationData rich_notification_data;
   rich_notification_data.buttons.push_back(message_center::ButtonInfo(
@@ -98,11 +153,20 @@ void EcheAppNotificationController::NotificationDelegate::Click(
   if (!button_index)
     return;
 
-  if (*button_index == 0) {
-    notification_controller_->LaunchSettings();
-  } else {
-    DCHECK_EQ(1, *button_index);
-    notification_controller_->LaunchLearnMore();
+  if (notification_id_ == kEcheAppScreenLockNotifierId) {
+    if (*button_index == 0) {
+      notification_controller_->LaunchSettings();
+    } else {
+      DCHECK_EQ(1, *button_index);
+      notification_controller_->LaunchLearnMore();
+    }
+  } else if (notification_id_ == kEcheAppRetryConnectionNotifierId) {
+    if (*button_index == 0) {
+      notification_controller_->LaunchTryAgain();
+    } else {
+      DCHECK_EQ(1, *button_index);
+      notification_controller_->LaunchHelp();
+    }
   }
 }
 

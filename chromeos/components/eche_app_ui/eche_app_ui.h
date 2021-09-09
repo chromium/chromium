@@ -21,11 +21,14 @@ class EcheAppUI : public ui::MojoWebUIController {
       mojo::PendingReceiver<mojom::SystemInfoProvider>)>;
   using BindUidGeneratorCallback =
       base::RepeatingCallback<void(mojo::PendingReceiver<mojom::UidGenerator>)>;
+  using BindNotificationGeneratorCallback = base::RepeatingCallback<void(
+      mojo::PendingReceiver<mojom::NotificationGenerator>)>;
 
   EcheAppUI(content::WebUI* web_ui,
             BindSignalingMessageExchangerCallback exchanger_callback,
             BindSystemInfoProviderCallback system_info_callback,
-            BindUidGeneratorCallback generator_callback);
+            BindUidGeneratorCallback generator_callback,
+            BindNotificationGeneratorCallback notification_callback);
   EcheAppUI(const EcheAppUI&) = delete;
   EcheAppUI& operator=(const EcheAppUI&) = delete;
   ~EcheAppUI() override;
@@ -37,10 +40,14 @@ class EcheAppUI : public ui::MojoWebUIController {
 
   void BindInterface(mojo::PendingReceiver<mojom::UidGenerator> receiver);
 
+  void BindInterface(
+      mojo::PendingReceiver<mojom::NotificationGenerator> receiver);
+
  private:
   const BindSignalingMessageExchangerCallback bind_exchanger_callback_;
   const BindSystemInfoProviderCallback bind_system_info_callback_;
   const BindUidGeneratorCallback bind_generator_callback_;
+  const BindNotificationGeneratorCallback bind_notification_callback_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

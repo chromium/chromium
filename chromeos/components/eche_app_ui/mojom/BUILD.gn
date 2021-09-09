@@ -6,7 +6,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   sources = [ "eche_app.mojom" ]
-
+  public_deps = [ "//mojo/public/mojom/base" ]
   cpp_typemaps = [
     {
       types = [

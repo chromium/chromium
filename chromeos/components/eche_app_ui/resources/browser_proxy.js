@@ -40,6 +40,9 @@ const systemInfoObserverRouter =
 systemInfo.setSystemInfoObserver(
     systemInfoObserverRouter.$.bindNewPipeAndPassRemote());
 
+const notificationGenerator =
+    chromeos.echeApp.mojom.NotificationGenerator.getRemote();
+
 /**
  * A pipe through which we can send messages to the guest frame.
  * Use an undefined `target` to find the <iframe> automatically.
@@ -97,6 +100,16 @@ systemInfoObserverRouter.onReceivedTabletModeChanged.addListener(
       guestMessagePipe.sendMessage(
           Message.TABLET_MODE, {/** @type {boolean} */isTabletMode});
 });
+
+guestMessagePipe.registerHandler(Message.SHOW_NOTIFICATION, async (message) => {
+  // The C++ layer uses std::u16string, which use 16 bit characters. JS
+  // strings support either 8 or 16 bit characters, and must be converted
+  // to an array of 16 bit character codes that match std::u16string.
+  const titleArray = {data: Array.from(message.title, c => c.charCodeAt())};
+  const messageArray = {data: Array.from(message.message, c => c.charCodeAt())};
+  notificationGenerator.showNotification(
+      titleArray, messageArray, message.notificationType);
+})
 
 // We can't access hash change event inside iframe so parse the notification
 // info from the anchor part of the url when hash is changed and send them to

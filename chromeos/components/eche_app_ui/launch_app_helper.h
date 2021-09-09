@@ -6,7 +6,9 @@
 #define CHROMEOS_COMPONENTS_ECHE_APP_UI_LAUNCH_APP_HELPER_H_
 
 #include "base/callback.h"
+#include "chromeos/components/eche_app_ui/mojom/eche_app.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace chromeos {
 
@@ -19,18 +21,50 @@ namespace eche_app {
 // A helper class for launching/closing the app or show a notification.
 class LaunchAppHelper {
  public:
-  // Enum representing potential type for the notification.
-  enum class NotificationType {
-    // Remind users to enable screen lock.
-    kScreenLock = 0,
+  class NotificationInfo {
+   public:
+    // Enum representing the notification was generated from where.
+    enum Category {
+      // The notification was generated from native layer,
+      kNative,
+      // THe notification was generated from webUI,
+      kWebUI,
+    };
+
+    // Enum representing potential type for the notification.
+    enum class NotificationType {
+      // Remind users to enable screen lock.
+      kScreenLock = 0,
+    };
+
+    NotificationInfo(
+        Category category,
+        absl::variant<NotificationType,
+                      chromeos::eche_app::mojom::WebNotificationType> type);
+    ~NotificationInfo();
+
+    Category category() const { return category_; }
+    absl::variant<NotificationType,
+                  chromeos::eche_app::mojom::WebNotificationType>
+    type() const {
+      return type_;
+    }
+
+   private:
+    Category category_;
+    absl::variant<NotificationType,
+                  chromeos::eche_app::mojom::WebNotificationType>
+        type_;
   };
 
-  using LaunchNotificationFunction =
-      base::RepeatingCallback<void(NotificationType type)>;
+  using LaunchNotificationFunction = base::RepeatingCallback<void(
+      const absl::optional<std::u16string>& title,
+      const absl::optional<std::u16string>& message,
+      std::unique_ptr<NotificationInfo> info)>;
 
-  using LaunchEcheAppFunction =
-      base::RepeatingCallback<void(absl::optional<int64_t> notification_id,
-                                   const std::string& package_name)>;
+  using LaunchEcheAppFunction = base::RepeatingCallback<void(
+      const absl::optional<int64_t>& notification_id,
+      const std::string& package_name)>;
 
   using CloseEcheAppFunction = base::RepeatingCallback<void()>;
 
@@ -46,7 +80,12 @@ class LaunchAppHelper {
   // Exposed virtual for testing.
   virtual bool IsAppLaunchAllowed() const;
 
-  void ShowNotification(NotificationType type) const;
+  // Exposed virtual for testing.
+  // The notification could be generated from webUI or native layer, for the
+  // latter it doesn't carry title and message.
+  virtual void ShowNotification(const absl::optional<std::u16string>& title,
+                                const absl::optional<std::u16string>& message,
+                                std::unique_ptr<NotificationInfo> info) const;
 
   void LaunchEcheApp(absl::optional<int64_t> notification_id,
                      const std::string& package_name) const;

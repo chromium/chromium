@@ -39,6 +39,7 @@ class SystemInfo;
 class EcheSignaler;
 class SystemInfoProvider;
 class EcheUidProvider;
+class EcheNotificationGenerator;
 
 // Implements the core logic of the EcheApp and exposes interfaces via its
 // public API. Implemented as a KeyedService since it depends on other
@@ -61,11 +62,15 @@ class EcheAppManager : public KeyedService {
 
   void BindSignalingMessageExchangerInterface(
       mojo::PendingReceiver<mojom::SignalingMessageExchanger> receiver);
+
   void BindUidGeneratorInterface(
       mojo::PendingReceiver<mojom::UidGenerator> receiver);
 
   void BindSystemInfoProviderInterface(
       mojo::PendingReceiver<mojom::SystemInfoProvider> receiver);
+
+  void BindNotificationGeneratorInterface(
+      mojo::PendingReceiver<mojom::NotificationGenerator> receiver);
 
   // KeyedService:
   void Shutdown() override;
@@ -81,6 +86,7 @@ class EcheAppManager : public KeyedService {
   std::unique_ptr<SystemInfoProvider> system_info_provider_;
   std::unique_ptr<EcheUidProvider> uid_;
   std::unique_ptr<EcheRecentAppClickHandler> eche_recent_app_click_handler_;
+  std::unique_ptr<EcheNotificationGenerator> notification_generator_;
 };
 
 }  // namespace eche_app

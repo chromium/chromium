@@ -7,7 +7,6 @@
 #include "chromeos/components/eche_app_ui/launch_app_helper.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/phonehub/phone_hub_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace eche_app {
@@ -55,7 +54,10 @@ void EcheRecentAppClickHandler::OnRecentAppClicked(
                                       recent_app_package_name);
   } else {
     launch_app_helper_->ShowNotification(
-        LaunchAppHelper::NotificationType::kScreenLock);
+        /* title= */ absl::nullopt, /* message= */ absl::nullopt,
+        std::make_unique<LaunchAppHelper::NotificationInfo>(
+            LaunchAppHelper::NotificationInfo::Category::kNative,
+            LaunchAppHelper::NotificationInfo::NotificationType::kScreenLock));
   }
 }
 

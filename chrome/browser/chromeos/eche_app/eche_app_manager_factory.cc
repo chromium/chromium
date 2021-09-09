@@ -67,8 +67,8 @@ enum class NotificationInteraction {
 };
 
 void LaunchSystemWebApp(Profile* profile,
-                        std::string package_name,
-                        absl::optional<int64_t> notification_id) {
+                        const std::string& package_name,
+                        const absl::optional<int64_t>& notification_id) {
   std::string url;
   // Use hash mark(#) to send params to webui so we don't need to reload the
   // whole eche window.
@@ -92,7 +92,7 @@ void LaunchSystemWebApp(Profile* profile,
 }
 
 void LaunchEcheApp(Profile* profile,
-                   absl::optional<int64_t> notification_id,
+                   const absl::optional<int64_t>& notification_id,
                    const std::string& package_name) {
   LaunchSystemWebApp(profile, package_name, notification_id);
   base::UmaHistogramEnumeration("Eche.NotificationClicked",
@@ -117,14 +117,25 @@ EcheAppManagerFactory* EcheAppManagerFactory::GetInstance() {
 void EcheAppManagerFactory::ShowNotification(
     base::WeakPtr<EcheAppManagerFactory> weak_ptr,
     Profile* profile,
-    LaunchAppHelper::NotificationType type) {
+    const absl::optional<std::u16string>& title,
+    const absl::optional<std::u16string>& message,
+    std::unique_ptr<LaunchAppHelper::NotificationInfo> info) {
   if (!weak_ptr->notification_controller_) {
     weak_ptr->notification_controller_ =
         std::make_unique<EcheAppNotificationController>(profile);
   }
 
-  if (type == LaunchAppHelper::NotificationType::kScreenLock) {
-    weak_ptr->notification_controller_->ShowScreenLockNotification();
+  if (info->category() ==
+      LaunchAppHelper::NotificationInfo::Category::kNative) {
+    if (absl::get<LaunchAppHelper::NotificationInfo::NotificationType>(
+            info->type()) ==
+        LaunchAppHelper::NotificationInfo::NotificationType::kScreenLock) {
+      weak_ptr->notification_controller_->ShowScreenLockNotification();
+    }
+  } else if (info->category() ==
+             LaunchAppHelper::NotificationInfo::Category::kWebUI) {
+    weak_ptr->notification_controller_->ShowNotificationFromWebUI(
+        title, message, info->type());
   }
 }
 

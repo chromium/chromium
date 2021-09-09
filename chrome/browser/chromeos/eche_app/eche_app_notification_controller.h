@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_CHROMEOS_ECHE_APP_ECHE_APP_NOTIFICATION_CONTROLLER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "chromeos/components/eche_app_ui/launch_app_helper.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -15,8 +17,10 @@ namespace chromeos {
 namespace eche_app {
 
 extern const char kEcheAppScreenLockNotifierId[];
+extern const char kEcheAppRetryConnectionNotifierId[];
+extern const char kEcheAppFromWebWithoudButtonNotifierId[];
 
-// Controller class to manage screen lock notification.
+// Controller class to show notifications.
 class EcheAppNotificationController {
  public:
   explicit EcheAppNotificationController(Profile* profile);
@@ -29,11 +33,20 @@ class EcheAppNotificationController {
   // Shows the notification when screen lock is already enabled on the phone,
   // but the ChromeOS is not enabled.
   void ShowScreenLockNotification();
+  // Shows the notification which was generated from WebUI and carry title and
+  // message.
+  void ShowNotificationFromWebUI(
+      const absl::optional<std::u16string>& title,
+      const absl::optional<std::u16string>& message,
+      absl::variant<LaunchAppHelper::NotificationInfo::NotificationType,
+                    chromeos::eche_app::mojom::WebNotificationType> type);
 
  protected:
   // Exposed for testing.
   virtual void LaunchSettings();
   virtual void LaunchLearnMore();
+  virtual void LaunchTryAgain();
+  virtual void LaunchHelp();
 
  private:
   // NotificationDelegate implementation for handling click events.

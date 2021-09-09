@@ -12,6 +12,20 @@
 namespace chromeos {
 namespace eche_app {
 
+LaunchAppHelper::NotificationInfo::NotificationInfo(
+    Category category,
+    absl::variant<NotificationType,
+                  chromeos::eche_app::mojom::WebNotificationType> type)
+    : category_(category), type_(type) {
+  DCHECK(category == Category::kNative || category == Category::kWebUI);
+  DCHECK(
+      nullptr !=
+          absl::get_if<chromeos::eche_app::mojom::WebNotificationType>(&type) ||
+      nullptr != absl::get_if<NotificationType>(&type));
+}
+
+LaunchAppHelper::NotificationInfo::~NotificationInfo() = default;
+
 LaunchAppHelper::LaunchAppHelper(
     phonehub::PhoneHubManager* phone_hub_manager,
     LaunchEcheAppFunction launch_eche_app_function,
@@ -38,8 +52,11 @@ bool LaunchAppHelper::IsAppLaunchAllowed() const {
   return !should_lock;
 }
 
-void LaunchAppHelper::ShowNotification(NotificationType type) const {
-  launch_notification_function_.Run(type);
+void LaunchAppHelper::ShowNotification(
+    const absl::optional<std::u16string>& title,
+    const absl::optional<std::u16string>& message,
+    std::unique_ptr<NotificationInfo> info) const {
+  launch_notification_function_.Run(title, message, std::move(info));
 }
 
 void LaunchAppHelper::LaunchEcheApp(absl::optional<int64_t> notification_id,

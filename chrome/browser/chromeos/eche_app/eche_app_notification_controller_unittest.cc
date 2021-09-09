@@ -24,6 +24,8 @@ class TestableNotificationController : public EcheAppNotificationController {
   // EcheAppNotificationController:
   MOCK_METHOD0(LaunchSettings, void());
   MOCK_METHOD0(LaunchLearnMore, void());
+  MOCK_METHOD0(LaunchTryAgain, void());
+  MOCK_METHOD0(LaunchHelp, void());
 };
 
 class EcheAppNotificationControllerTest : public BrowserWithTestWindowTest {
@@ -48,6 +50,27 @@ class EcheAppNotificationControllerTest : public BrowserWithTestWindowTest {
   std::unique_ptr<testing::StrictMock<TestableNotificationController>>
       notification_controller_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
+
+  void Initialize(chromeos::eche_app::mojom::WebNotificationType type) {
+    absl::optional<std::u16string> title = u"title";
+    absl::optional<std::u16string> message = u"message";
+    notification_controller_->ShowNotificationFromWebUI(title, message, type);
+  }
+
+  void VerifyNotificationHasAction(
+      absl::optional<message_center::Notification>& notification) {
+    ASSERT_TRUE(notification);
+    ASSERT_EQ(2u, notification->buttons().size());
+    EXPECT_EQ(message_center::SYSTEM_PRIORITY, notification->priority());
+
+    // Clicking the first notification button should launch try again.
+    EXPECT_CALL(*notification_controller_, LaunchTryAgain());
+    notification->delegate()->Click(0, absl::nullopt);
+
+    // Clicking the second notification button should launch help.
+    EXPECT_CALL(*notification_controller_, LaunchHelp());
+    notification->delegate()->Click(1, absl::nullopt);
+  }
 };
 
 TEST_F(EcheAppNotificationControllerTest, ShowScreenLockNotification) {
@@ -65,6 +88,24 @@ TEST_F(EcheAppNotificationControllerTest, ShowScreenLockNotification) {
   // Clicking the second notification button should launch learn more.
   EXPECT_CALL(*notification_controller_, LaunchLearnMore());
   notification->delegate()->Click(1, absl::nullopt);
+}
+
+TEST_F(EcheAppNotificationControllerTest,
+       ShowConnectionFailedNotificationHasAction) {
+  Initialize(chromeos::eche_app::mojom::WebNotificationType::CONNECTION_FAILED);
+  absl::optional<message_center::Notification> notification =
+      display_service_->GetNotification(kEcheAppRetryConnectionNotifierId);
+
+  VerifyNotificationHasAction(notification);
+}
+
+TEST_F(EcheAppNotificationControllerTest,
+       ShowConnectionLostNotificationHasAction) {
+  Initialize(chromeos::eche_app::mojom::WebNotificationType::CONNECTION_LOST);
+  absl::optional<message_center::Notification> notification =
+      display_service_->GetNotification(kEcheAppRetryConnectionNotifierId);
+
+  VerifyNotificationHasAction(notification);
 }
 
 }  // namespace eche_app

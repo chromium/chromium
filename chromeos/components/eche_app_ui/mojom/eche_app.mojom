@@ -4,6 +4,8 @@
 
 module chromeos.eche_app.mojom;
 
+import "mojo/public/mojom/base/string16.mojom";
+
 // Interface for sending signal messages from the SWA to the browser. The
 // signals are used to bootstrap a full WebRTC connection between a Nearby
 // endpoint and the SWA. Any further data exchange happens directly over the
@@ -63,4 +65,26 @@ interface SystemInfoObserver {
 interface UidGenerator {
   // Get the uid.
   GetUid() => (string local_uid);
+};
+
+// Enum representing notifications from webUI. Numerical values should not
+// be changed because they must stay in sync with value on google3
+enum WebNotificationType {
+    APP_CRAHSED,
+    AUTHORIZATION_NEEDED,
+    CONNECTION_FAILED,
+    CONNECTION_LOST,
+    DEVICE_IDLE,
+    INITIALIZATION_ERROR,
+    INVALID_NOTIFICATION,
+    NOTIFICATION_ACTION_NOT_LAUNCHED,
+    LAUNCH_NOTIFICATION_FAILED,
+    TABLET_MODE,
+};
+
+// Interface for showing a native notification which was generated from WebUI.
+interface NotificationGenerator {
+  // Show a native notification, title and message are from WebUI.
+  ShowNotification(mojo_base.mojom.String16 title,
+          mojo_base.mojom.String16 message, WebNotificationType type);
 };

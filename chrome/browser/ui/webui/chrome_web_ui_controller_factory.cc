@@ -436,6 +436,15 @@ void BindEcheUidGenerator(
   }
 }
 
+void BindEcheNotificationGenerator(
+    chromeos::eche_app::EcheAppManager* manager,
+    mojo::PendingReceiver<chromeos::eche_app::mojom::NotificationGenerator>
+        receiver) {
+  if (manager) {
+    manager->BindNotificationGeneratorInterface(std::move(receiver));
+  }
+}
+
 template <>
 WebUIController* NewWebUI<chromeos::eche_app::EcheAppUI>(WebUI* web_ui,
                                                          const GURL& url) {
@@ -445,7 +454,8 @@ WebUIController* NewWebUI<chromeos::eche_app::EcheAppUI>(WebUI* web_ui,
   return new chromeos::eche_app::EcheAppUI(
       web_ui, base::BindRepeating(&BindEcheSignalingMessageExchanger, manager),
       base::BindRepeating(&BindSystemInfoProvider, manager),
-      base::BindRepeating(&BindEcheUidGenerator, manager));
+      base::BindRepeating(&BindEcheUidGenerator, manager),
+      base::BindRepeating(&BindEcheNotificationGenerator, manager));
 }
 
 void BindScanService(

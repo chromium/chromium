@@ -23,11 +23,13 @@ namespace eche_app {
 EcheAppUI::EcheAppUI(content::WebUI* web_ui,
                      BindSignalingMessageExchangerCallback exchanger_callback,
                      BindSystemInfoProviderCallback system_info_callback,
-                     BindUidGeneratorCallback generator_callback)
+                     BindUidGeneratorCallback generator_callback,
+                     BindNotificationGeneratorCallback notification_callback)
     : ui::MojoWebUIController(web_ui),
       bind_exchanger_callback_(std::move(exchanger_callback)),
       bind_system_info_callback_(std::move(system_info_callback)),
-      bind_generator_callback_(std::move(generator_callback)) {
+      bind_generator_callback_(std::move(generator_callback)),
+      bind_notification_callback_(std::move(notification_callback)) {
   auto html_source =
       base::WrapUnique(content::WebUIDataSource::Create(kChromeUIEcheAppHost));
 
@@ -40,6 +42,10 @@ EcheAppUI::EcheAppUI(content::WebUI* web_ui,
                                IDR_CHROMEOS_ECHE_APP_BUNDLE_JS);
   html_source->AddResourcePath("assets/app_bundle.css",
                                IDR_CHROMEOS_ECHE_APP_BUNDLE_CSS);
+  html_source->AddResourcePath("big_buffer.mojom-lite.js",
+                               IDR_MOJO_BIG_BUFFER_MOJOM_LITE_JS);
+  html_source->AddResourcePath("string16.mojom-lite.js",
+                               IDR_MOJO_STRING16_MOJOM_LITE_JS);
   html_source->AddResourcePath(
       "eche_app.mojom-lite.js",
       IDR_CHROMEOS_ECHE_APP_CHROMEOS_COMPONENTS_ECHE_APP_UI_MOJOM_ECHE_APP_MOJOM_LITE_JS);
@@ -50,7 +56,6 @@ EcheAppUI::EcheAppUI(content::WebUI* web_ui,
                                IDR_CHROMEOS_ECHE_APP_MESSAGE_TYPES_JS);
   html_source->AddResourcePath("browser_proxy.js",
                                IDR_CHROMEOS_ECHE_APP_BROWSER_PROXY_JS);
-
   html_source->AddResourcePath("mojo_bindings_lite.js",
                                IDR_MOJO_MOJO_BINDINGS_LITE_JS);
 
@@ -100,6 +105,11 @@ void EcheAppUI::BindInterface(
 void EcheAppUI::BindInterface(
     mojo::PendingReceiver<mojom::UidGenerator> receiver) {
   bind_generator_callback_.Run(std::move(receiver));
+}
+
+void EcheAppUI::BindInterface(
+    mojo::PendingReceiver<mojom::NotificationGenerator> receiver) {
+  bind_notification_callback_.Run(std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(EcheAppUI)

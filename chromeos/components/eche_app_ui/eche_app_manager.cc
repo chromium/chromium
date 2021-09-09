@@ -5,6 +5,7 @@
 #include "chromeos/components/eche_app_ui/eche_app_manager.h"
 
 #include "base/system/sys_info.h"
+#include "chromeos/components/eche_app_ui/eche_notification_generator.h"
 #include "chromeos/components/eche_app_ui/eche_signaler.h"
 #include "chromeos/components/eche_app_ui/eche_uid_provider.h"
 #include "chromeos/components/eche_app_ui/launch_app_helper.h"
@@ -68,7 +69,9 @@ EcheAppManager::EcheAppManager(
           std::make_unique<EcheRecentAppClickHandler>(
               phone_hub_manager,
               feature_status_provider_.get(),
-              launch_app_helper_.get())) {}
+              launch_app_helper_.get())),
+      notification_generator_(std::make_unique<EcheNotificationGenerator>(
+          launch_app_helper_.get())) {}
 
 EcheAppManager::~EcheAppManager() = default;
 
@@ -87,9 +90,15 @@ void EcheAppManager::BindUidGeneratorInterface(
   uid_->Bind(std::move(receiver));
 }
 
+void EcheAppManager::BindNotificationGeneratorInterface(
+    mojo::PendingReceiver<mojom::NotificationGenerator> receiver) {
+  notification_generator_->Bind(std::move(receiver));
+}
+
 // NOTE: These should be destroyed in the opposite order of how these objects
 // are initialized in the constructor.
 void EcheAppManager::Shutdown() {
+  notification_generator_.reset();
   eche_recent_app_click_handler_.reset();
   uid_.reset();
   system_info_provider_.reset();

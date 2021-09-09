@@ -42,7 +42,10 @@ void EcheNotificationClickHandler::HandleNotificationClick(
                                       app_metadata.package_name);
   } else {
     launch_app_helper_->ShowNotification(
-        LaunchAppHelper::NotificationType::kScreenLock);
+        /* title= */ absl::nullopt, /* message= */ absl::nullopt,
+        std::make_unique<LaunchAppHelper::NotificationInfo>(
+            LaunchAppHelper::NotificationInfo::Category::kNative,
+            LaunchAppHelper::NotificationInfo::NotificationType::kScreenLock));
   }
 }
 
