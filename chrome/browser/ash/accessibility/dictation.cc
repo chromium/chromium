@@ -240,6 +240,7 @@ Dictation::Dictation(Profile* profile)
     : current_state_(SPEECH_RECOGNIZER_OFF),
       composition_(std::make_unique<ui::CompositionText>()),
       profile_(profile) {
+  DCHECK(!switches::IsExperimentalAccessibilityDictationExtensionEnabled());
   if (GetInputContext() && GetInputContext()->GetInputMethod())
     GetInputContext()->GetInputMethod()->AddObserver(this);
 }
@@ -255,10 +256,6 @@ bool Dictation::OnToggleDictation() {
     return false;
   }
   is_started_ = true;
-  if (switches::IsExperimentalAccessibilityDictationExtensionEnabled()) {
-    NotifyDictationToggled(true);
-    return true;
-  }
   has_committed_text_ = false;
   const std::string locale = GetUserLocale(profile_);
   // Log the locale used with LocaleCodeISO639 values.
@@ -375,7 +372,6 @@ void Dictation::OnTextInputStateChanged(const ui::TextInputClient* client) {
 
 void Dictation::DictationOff() {
   is_started_ = false;
-  NotifyDictationToggled(false);
   AccessibilityStatusEventDetails details(
       AccessibilityNotificationType::kToggleDictation, false /* enabled */);
   AccessibilityManager::Get()->NotifyAccessibilityStatusChanged(details);
@@ -436,20 +432,6 @@ void Dictation::StopSpeechTimeout() {
 
 void Dictation::OnSpeechTimeout() {
   DictationOff();
-}
-
-void Dictation::NotifyDictationToggled(bool toggled_on) {
-  // Send a message to the Dictation extension.
-  extensions::EventRouter* event_router =
-      extensions::EventRouter::Get(profile_);
-  auto event_args = std::vector<base::Value>();
-  event_args.emplace_back(toggled_on);
-  auto event = std::make_unique<extensions::Event>(
-      extensions::events::ACCESSIBILITY_PRIVATE_ON_TOGGLE_DICTATION,
-      extensions::api::accessibility_private::OnToggleDictation::kEventName,
-      std::move(event_args));
-  event_router->DispatchEventWithLazyListener(
-      extension_misc::kAccessibilityCommonExtensionId, std::move(event));
 }
 
 }  // namespace ash
