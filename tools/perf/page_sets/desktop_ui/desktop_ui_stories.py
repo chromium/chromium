@@ -4,7 +4,8 @@
 
 from telemetry import story
 from page_sets.desktop_ui import \
-    download_shelf_story, omnibox_story, tab_search_story, webui_tab_strip_story
+    download_shelf_story, new_tab_page_story, omnibox_story, \
+    tab_search_story, webui_tab_strip_story
 from page_sets.desktop_ui.ui_devtools_utils import IsMac
 
 
@@ -56,6 +57,10 @@ class DesktopUIStorySet(story.StorySet):
       omnibox_story.OmniboxStorySearch,
   ]
 
+  NEW_TAB_PAGE_STORIES = [
+      new_tab_page_story.NewTabPageStoryLoading,
+  ]
+
   def __init__(self):
     super(DesktopUIStorySet,
           self).__init__(archive_data_file=('../data/desktop_ui.json'),
@@ -91,3 +96,11 @@ class DesktopUIStorySet(story.StorySet):
 
     for cls in self.OMNIBOX_STORIES:
       self.AddStory(cls(self, ['--enable-ui-devtools=0']))
+
+    for cls in self.NEW_TAB_PAGE_STORIES:
+      self.AddStory(
+          cls(self, [
+              '--enable-features=NtpModules,\
+              NtpRecipeTasksModule:NtpRecipeTasksModuleDataParam/fake',
+              '--enable-ui-devtools=0',
+          ]))

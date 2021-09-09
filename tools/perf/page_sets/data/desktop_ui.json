@@ -24,6 +24,9 @@
         "download_shelf_webui:top10:loading": {
             "DEFAULT": "desktop_ui_1d73c3e9ef.wprgo"
         },
+        "new_tab_page:loading": {
+            "DEFAULT": "desktop_ui_9eb4b2f805.wprgo"
+        },
         "omnibox:pedal": {
             "DEFAULT": "desktop_ui_43a34671bf.wprgo"
         },
