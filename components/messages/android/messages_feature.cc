@@ -41,7 +41,7 @@ const base::Feature kMessagesForAndroidReaderMode{
     "MessagesForAndroidReaderMode", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kMessagesForAndroidSafetyTip{
-    "MessagesForAndroidSafetyTip", base::FEATURE_DISABLED_BY_DEFAULT};
+    "MessagesForAndroidSafetyTip", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kMessagesForAndroidSaveCard{
     "MessagesForAndroidSaveCard", base::FEATURE_DISABLED_BY_DEFAULT};

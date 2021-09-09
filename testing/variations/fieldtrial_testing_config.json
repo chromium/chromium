@@ -574,21 +574,6 @@
             ]
         }
     ],
-    "AndroidMessagesSafetyTip": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MessagesForAndroidSafetyTip"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidMessagesSavePassword": [
         {
             "platforms": [
