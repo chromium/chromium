@@ -283,7 +283,7 @@ class SiteDetailsElement extends SiteDetailsElementBase {
    */
   onConfirmClearStorage_(e) {
     e.preventDefault();
-    this.$.confirmClearStorageNew.showModal();
+    this.$.confirmClearStorage.showModal();
   }
 
   /**

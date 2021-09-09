@@ -491,12 +491,11 @@ suite('AllSites', function() {
     assertTrue(overflowMenu.open);
 
     // Open the clear data dialog and tap the |buttonType| button.
-    assertFalse(testElement.$.confirmClearDataNew.get().open);
+    assertFalse(testElement.$.confirmClearData.get().open);
     menuItems[1].click();
-    assertTrue(testElement.$.confirmClearDataNew.get().open);
+    assertTrue(testElement.$.confirmClearData.get().open);
     const actionButtonList =
-        testElement.$.confirmClearDataNew.get().getElementsByClassName(
-            buttonType);
+        testElement.$.confirmClearData.get().getElementsByClassName(buttonType);
     assertEquals(1, actionButtonList.length);
     testElement.actionMenuModel_ = {
       index: 0,
@@ -505,7 +504,7 @@ suite('AllSites', function() {
     actionButtonList[0].click();
 
     // Check the dialog and overflow menu are now both closed.
-    assertFalse(testElement.$.confirmClearDataNew.get().open);
+    assertFalse(testElement.$.confirmClearData.get().open);
     assertFalse(overflowMenu.open);
   }
 
@@ -679,12 +678,11 @@ suite('AllSites', function() {
     const menuItems = overflowMenu.querySelectorAll('.dropdown-item');
 
     // Open the clear data dialog and tap the |buttonType| button.
-    assertFalse(testElement.$.confirmClearDataNew.get().open);
+    assertFalse(testElement.$.confirmClearData.get().open);
     menuItems[1].click();
-    assertTrue(testElement.$.confirmClearDataNew.get().open);
+    assertTrue(testElement.$.confirmClearData.get().open);
     const actionButtonList =
-        testElement.$.confirmClearDataNew.get().getElementsByClassName(
-            buttonType);
+        testElement.$.confirmClearData.get().getElementsByClassName(buttonType);
     assertEquals(1, actionButtonList.length);
     testElement.actionMenuModel_ = {
       index: 0,
@@ -695,7 +693,7 @@ suite('AllSites', function() {
     actionButtonList[0].click();
 
     // Check the dialog and overflow menu are now both closed.
-    assertFalse(testElement.$.confirmClearDataNew.get().open);
+    assertFalse(testElement.$.confirmClearData.get().open);
     assertFalse(overflowMenu.open);
   }
 

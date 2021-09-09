@@ -240,7 +240,7 @@ suite('SiteDetails', function() {
           assertTrue(testElement.$$('#noStorage').hidden);
           assertFalse(testElement.$$('#storage').hidden);
 
-          testElement.$$('#confirmClearStorageNew .action-button').click();
+          testElement.$$('#confirmClearStorage .action-button').click();
           return websiteUsageProxy.whenCalled('clearUsage');
         })
         .then(originCleared => {
@@ -271,7 +271,7 @@ suite('SiteDetails', function() {
           assertTrue(testElement.$$('#noStorage').hidden);
           assertFalse(testElement.$$('#storage').hidden);
 
-          testElement.$$('#confirmClearStorageNew .action-button').click();
+          testElement.$$('#confirmClearStorage .action-button').click();
           return websiteUsageProxy.whenCalled('clearUsage');
         })
         .then(originCleared => {
@@ -397,14 +397,13 @@ suite('SiteDetails', function() {
     // Check both cancelling and accepting the dialog closes it.
     ['cancel-button', 'action-button'].forEach(buttonType => {
       testElement.$$('#usage cr-button').click();
-      assertTrue(testElement.$.confirmClearStorageNew.open);
+      assertTrue(testElement.$.confirmClearStorage.open);
       const actionButtonList =
-          testElement.$.confirmClearStorageNew.getElementsByClassName(
-              buttonType);
+          testElement.$.confirmClearStorage.getElementsByClassName(buttonType);
       assertEquals(1, actionButtonList.length);
       testElement.storedData_ = '';
       actionButtonList[0].click();
-      assertFalse(testElement.$.confirmClearStorageNew.open);
+      assertFalse(testElement.$.confirmClearStorage.open);
     });
   });
 

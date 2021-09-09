@@ -499,7 +499,7 @@ class AllSitesElement extends AllSitesElementBase {
     const scopes =
         [ALL_SITES_DIALOG.CLEAR_DATA, scope, installed, 'DialogOpened'];
     this.recordUserAction_(scopes);
-    this.$.confirmClearDataNew.get().showModal();
+    this.$.confirmClearData.get().showModal();
   }
 
   /**
