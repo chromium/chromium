@@ -1525,6 +1525,9 @@ extern const char kWalletServiceUseSandboxDescription[];
 extern const char kWallpaperWebUIName[];
 extern const char kWallpaperWebUIDescription[];
 
+extern const char kWallpaperFullScreenPreviewName[];
+extern const char kWallpaperFullScreenPreviewDescription[];
+
 extern const char kWebBluetoothNewPermissionsBackendName[];
 extern const char kWebBluetoothNewPermissionsBackendDescription[];
 

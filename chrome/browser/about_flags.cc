@@ -2642,6 +2642,8 @@ constexpr FeatureEntry::FeatureVariation
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kWallpaperWebUIInternalName[] = "wallpaper-webui";
+constexpr char kWallpaperFullScreenPreviewInternalName[] =
+    "wallpaper-fullscreen-preview";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_PAINT_PREVIEW) && defined(OS_ANDROID)
@@ -7201,6 +7203,10 @@ const FeatureEntry kFeatureEntries[] = {
     {kWallpaperWebUIInternalName, flag_descriptions::kWallpaperWebUIName,
      flag_descriptions::kWallpaperWebUIDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kWallpaperWebUI)},
+    {kWallpaperFullScreenPreviewInternalName,
+     flag_descriptions::kWallpaperFullScreenPreviewName,
+     flag_descriptions::kWallpaperFullScreenPreviewDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kWallpaperFullScreenPreview)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_CHROMEOS)
@@ -7788,6 +7794,10 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   if (!strcmp(kBorealisDiskManagementInternalName, entry.internal_name)) {
     return !base::FeatureList::IsEnabled(features::kBorealis);
   }
+
+  // Only show full screen preview flag if wallpaper flag is enabled.
+  if (!strcmp(kWallpaperFullScreenPreviewInternalName, entry.internal_name))
+    return !ash::features::IsWallpaperWebUIEnabled();
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

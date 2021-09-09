@@ -2682,6 +2682,12 @@ const char kWallpaperWebUIDescription[] =
     "Enables the wallpaper picker "
     "in ChromeOS Settings";
 
+const char kWallpaperFullScreenPreviewName[] =
+    "Enable wallpaper full screen preview UI";
+const char kWallpaperFullScreenPreviewDescription[] =
+    "Allows users to minimize all active windows to preview their current "
+    "wallpaper";
+
 const char kWebBluetoothNewPermissionsBackendName[] =
     "Use the new permissions backend for Web Bluetooth";
 const char kWebBluetoothNewPermissionsBackendDescription[] =

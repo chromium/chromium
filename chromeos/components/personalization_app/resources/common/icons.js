@@ -15,9 +15,9 @@
  * @see https://github.com/PolymerElements/iron-iconset-svg/blob/v3.0.1/demo/svg-sample-icons.js
  */
 
- const template = document.createElement('template');
+const template = document.createElement('template');
 
- template.innerHTML = `
+template.innerHTML = `
  <iron-iconset-svg name="personalization" size="20">
    <svg>
      <defs>
@@ -95,6 +95,36 @@
        </g>
      </defs>
    </svg>
+ </iron-iconset-svg>
+ <iron-iconset-svg name="personalization36" size="36">
+  <svg>
+    <defs>
+      <g id="preview">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+          <g filter="url(#filter0_b)">
+            <rect width="36" height="36" rx="18" fill="white"
+                fill-opacity="0.8" />
+            <path d="M16 11.7715H11V16.7715H13V13.7715H16V11.7715Z" fill="#5F6368" />
+            <path d="M13 20.7715H11V25.7715H16V23.7715H13V20.7715Z" fill="#5F6368" />
+            <path d="M23 20.7715H25V25.7715H20V23.7715H23V20.7715Z" fill="#5F6368" />
+            <path d="M25 16.7715V11.7715H20V13.7715H23V16.7715H25Z" fill="#5F6368" />
+          </g>
+          <defs>
+            <filter id="filter0_b" x="-30" y="-29.2285" width="96" height="96"
+                filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+              <feFlood flood-opacity="0" result="BackgroundImageFix" />
+              <feGaussianBlur in="BackgroundImage" stdDeviation="15" />
+              <feComposite in2="SourceAlpha" operator="in"
+                  result="effect1_backgroundBlur" />
+              <feBlend mode="normal" in="SourceGraphic"
+                  in2="effect1_backgroundBlur" result="shape" />
+            </filter>
+          </defs>
+        </svg>
+      </g>
+    </defs>
+  </svg>
  </iron-iconset-svg>`;
 
- document.head.appendChild(template.content);
+document.head.appendChild(template.content);

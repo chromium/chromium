@@ -1160,6 +1160,11 @@ const base::Feature kWakeOnWifiAllowed{"WakeOnWifiAllowed",
 const base::Feature kWallpaperWebUI{"WallpaperWebUI",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable full screen wallpaper preview in new wallpaper experience. Requires
+// |kWallpaperWebUI| to also be enabled.
+const base::Feature kWallpaperFullScreenPreview{
+    "WallpaperFullScreenPreview", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Generates WebAPKs representing installed PWAs and installs them inside ARC.
 const base::Feature kWebApkGenerator{"WebApkGenerator",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
@@ -1672,6 +1677,11 @@ bool IsVerticalSnapStateEnabled() {
 
 bool IsWallpaperWebUIEnabled() {
   return base::FeatureList::IsEnabled(kWallpaperWebUI);
+}
+
+bool IsWallpaperFullScreenPreviewEnabled() {
+  return IsWallpaperWebUIEnabled() &&
+         base::FeatureList::IsEnabled(kWallpaperFullScreenPreview);
 }
 
 bool IsWebUITabStripTabDragIntegrationEnabled() {

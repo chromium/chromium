@@ -12,6 +12,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import '../common/icons.js';
 import {assert} from 'chrome://resources/js/assert.m.js'
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {isNonEmptyArray} from '../common/utils.js';
 import {getWallpaperProvider} from './mojo_interface_provider.js';
@@ -188,6 +189,13 @@ export class WallpaperSelected extends WithPersonalizationStore {
         type: String,
         value: null,
       },
+
+      showPreviewButton_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('fullScreenPreviewEnabled');
+        }
+      }
     };
   }
 
@@ -550,6 +558,11 @@ export class WallpaperSelected extends WithPersonalizationStore {
    */
   getContainerClass_(isLoading, showImage) {
     return this.showPlaceholders_(isLoading, showImage) ? 'loading' : '';
+  }
+
+  /** @private */
+  onClickPreview_() {
+    console.log('Full screen preview not implemented yet');
   }
 }
 

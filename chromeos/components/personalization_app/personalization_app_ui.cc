@@ -4,6 +4,7 @@
 
 #include "chromeos/components/personalization_app/personalization_app_ui.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/strings/strcat.h"
 #include "chromeos/components/personalization_app/personalization_app_ui_delegate.h"
 #include "chromeos/components/personalization_app/personalization_app_url_constants.h"
@@ -76,7 +77,9 @@ void AddStrings(content::WebUIDataSource* source) {
       // Using old wallpaper app error string pending final revision.
       // TODO(b/195609442)
       {"setWallpaperError", IDS_PERSONALIZATION_APP_SET_WALLPAPER_ERROR},
-      {"dismiss", IDS_PERSONALIZATION_APP_DISMISS}};
+      {"dismiss", IDS_PERSONALIZATION_APP_DISMISS},
+      {"ariaLabelViewFullScreen",
+       IDS_PERSONALIZATION_APP_ARIA_LABEL_VIEW_FULL_SCREEN}};
   source->AddLocalizedStrings(kLocalizedStrings);
   source->UseStringsJs();
 }
@@ -109,6 +112,8 @@ PersonalizationAppUI::PersonalizationAppUI(
 
   AddResources(source.get());
   AddStrings(source.get());
+  source->AddBoolean("fullScreenPreviewEnabled",
+                     ash::features::IsWallpaperFullScreenPreviewEnabled());
 
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource::Add(browser_context, source.release());
