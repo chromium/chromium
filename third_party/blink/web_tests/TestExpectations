@@ -5874,6 +5874,8 @@ crbug.com/1222114 http/tests/devtools/console/console-format-es6.js [ Failure Pa
 crbug.com/1222114 http/tests/devtools/console/console-functions.js [ Failure Pass ]
 crbug.com/1222114 http/tests/devtools/sources/debugger/properties-special.js [ Failure Pass ]
 
+crbug.com/1247844 external/wpt/css/css-contain/content-visibility/content-visibility-input-image.html [ Timeout ]
+
 # Expected to fail with SuppressDifferentOriginSubframeJSDialogs feature disabled, tested in VirtualTestSuite
 crbug.com/1065085 external/wpt/html/webappapis/user-prompts/cannot-show-simple-dialogs/confirm-different-origin-frame.sub.html [ Failure ]
 crbug.com/1065085 external/wpt/html/webappapis/user-prompts/cannot-show-simple-dialogs/prompt-different-origin-frame.sub.html [ Failure ]
