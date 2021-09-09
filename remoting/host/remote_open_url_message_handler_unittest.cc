@@ -13,7 +13,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/base/io_buffer.h"
 #include "remoting/base/compound_buffer.h"
-#include "remoting/host/fake_ipc_server.h"
+#include "remoting/host/mojo_ipc/fake_ipc_server.h"
 #include "remoting/host/mojom/remote_url_opener.mojom.h"
 #include "remoting/proto/remote_open_url.pb.h"
 #include "remoting/protocol/fake_message_pipe.h"

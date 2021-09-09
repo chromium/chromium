@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_MOJO_IPC_SERVER_H_
-#define REMOTING_HOST_MOJO_IPC_SERVER_H_
+#ifndef REMOTING_HOST_MOJO_IPC_MOJO_IPC_SERVER_H_
+#define REMOTING_HOST_MOJO_IPC_MOJO_IPC_SERVER_H_
 
 #include <memory>
 
@@ -18,7 +18,7 @@
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
-#include "remoting/host/ipc_server.h"
+#include "remoting/host/mojo_ipc/ipc_server.h"
 
 namespace mojo {
 class IsolatedConnection;
@@ -162,4 +162,4 @@ class MojoIpcServer final : public MojoIpcServerBase {
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_MOJO_IPC_SERVER_H_
+#endif  // REMOTING_HOST_MOJO_IPC_MOJO_IPC_SERVER_H_

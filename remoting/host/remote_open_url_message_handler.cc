@@ -8,7 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "remoting/base/compound_buffer.h"
-#include "remoting/host/mojo_ipc_server.h"
+#include "remoting/host/mojo_ipc/mojo_ipc_server.h"
 #include "remoting/host/remote_open_url_constants.h"
 #include "remoting/protocol/message_serialization.h"
 #include "url/gurl.h"

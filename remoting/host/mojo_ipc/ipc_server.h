@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_IPC_SERVER_H_
-#define REMOTING_HOST_IPC_SERVER_H_
+#ifndef REMOTING_HOST_MOJO_IPC_IPC_SERVER_H_
+#define REMOTING_HOST_MOJO_IPC_IPC_SERVER_H_
 
 #include "base/callback.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -39,4 +39,4 @@ class IpcServer {
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_IPC_SERVER_H_
+#endif  // REMOTING_HOST_MOJO_IPC_IPC_SERVER_H_

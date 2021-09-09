@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/mojo_ipc_server.h"
+#include "remoting/host/mojo_ipc/mojo_ipc_server.h"
 
 #include <memory>
 #include <string>
@@ -25,7 +25,7 @@
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/system/isolated_connection.h"
 #include "mojo/public/cpp/system/message_pipe.h"
-#include "remoting/host/mojo_ipc_test_util.h"
+#include "remoting/host/mojo_ipc/mojo_ipc_test_util.h"
 #include "remoting/host/mojom/testing.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/mojo_ipc_server.h"
+#include "remoting/host/mojo_ipc/mojo_ipc_server.h"
 
 #include <memory>
 
