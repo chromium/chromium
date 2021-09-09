@@ -21,6 +21,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/skia_util.h"
 #include "url/gurl.h"
@@ -761,6 +762,54 @@ TEST(WebAppInstallUtils, PopulateProductIconsNoWebAppIconData_WithShortcuts) {
   EXPECT_EQ(SizesToGenerate().size(), web_app_info.icon_bitmaps.any.size());
   for (const auto& icon_bitmap : web_app_info.icon_bitmaps.any) {
     EXPECT_EQ(SK_ColorWHITE, icon_bitmap.second.getColor(0, 0));
+  }
+}
+
+TEST(WebAppInstallUtils, PopulateProductIcons_IsGeneratedIcon) {
+  {
+    WebApplicationInfo web_app_info;
+    web_app_info.title = u"App Name";
+
+    IconsMap icons_map;
+    PopulateProductIcons(&web_app_info, &icons_map);
+
+    EXPECT_TRUE(web_app_info.is_generated_icon);
+
+    EXPECT_TRUE(ContainsOneIconOfEachSize(web_app_info.icon_bitmaps.any));
+  }
+  {
+    WebApplicationInfo web_app_info;
+    web_app_info.title = u"App Name";
+
+    IconsMap icons_map;
+    AddIconToIconsMap(GURL("http://www.example.org/icon32.png"), icon_size::k32,
+                      SK_ColorCYAN, &icons_map);
+
+    // Does upsizing of the smallest icon.
+    PopulateProductIcons(&web_app_info, &icons_map);
+
+    EXPECT_FALSE(web_app_info.is_generated_icon);
+
+    EXPECT_TRUE(ContainsOneIconOfEachSize(web_app_info.icon_bitmaps.any));
+    for (const auto& bitmap_any : web_app_info.icon_bitmaps.any)
+      EXPECT_EQ(SK_ColorCYAN, bitmap_any.second.getColor(0, 0));
+  }
+  {
+    WebApplicationInfo web_app_info;
+    web_app_info.title = u"App Name";
+
+    IconsMap icons_map;
+    AddIconToIconsMap(GURL("http://www.example.org/icon512.png"),
+                      icon_size::k512, SK_ColorMAGENTA, &icons_map);
+
+    // Does downsizing of the biggest icon which is not in `SizesToGenerate()`.
+    PopulateProductIcons(&web_app_info, &icons_map);
+
+    EXPECT_FALSE(web_app_info.is_generated_icon);
+
+    EXPECT_TRUE(ContainsOneIconOfEachSize(web_app_info.icon_bitmaps.any));
+    for (const auto& bitmap_any : web_app_info.icon_bitmaps.any)
+      EXPECT_EQ(SK_ColorMAGENTA, bitmap_any.second.getColor(0, 0));
   }
 }
 
