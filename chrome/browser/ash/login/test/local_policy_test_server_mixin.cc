@@ -4,9 +4,12 @@
 
 #include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
 
+#include <string>
 #include <utility>
 
 #include "base/guid.h"
+#include "base/json/values_util.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/device_cloud_policy_initializer.h"
@@ -17,6 +20,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/policy_switches.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -149,6 +153,26 @@ void LocalPolicyTestServerMixin::SetFakeAttestationFlow() {
       ->browser_policy_connector_ash()
       ->SetAttestationFlowForTesting(
           std::make_unique<chromeos::attestation::FakeAttestationFlow>());
+}
+
+void LocalPolicyTestServerMixin::SetExpectedPsmParamsInDeviceRegisterRequest(
+    const std::string& device_brand_code,
+    const std::string& device_serial_number,
+    int psm_execution_result,
+    const absl::optional<int64_t> psm_determination_timestamp) {
+  base::Value psm_entry(base::Value::Type::DICTIONARY);
+
+  psm_entry.SetIntKey("psm_execution_result", psm_execution_result);
+
+  if (psm_determination_timestamp.has_value()) {
+    psm_entry.SetKey("psm_determination_timestamp_ms",
+                     base::Int64ToValue(psm_determination_timestamp.value()));
+  }
+
+  const std::string brand_serial_id =
+      device_brand_code + "_" + device_serial_number;
+  server_config_.SetPath("psm_result." + brand_serial_id, std::move(psm_entry));
+  policy_test_server_->SetConfig(server_config_);
 }
 
 bool LocalPolicyTestServerMixin::SetDeviceStateRetrievalResponse(

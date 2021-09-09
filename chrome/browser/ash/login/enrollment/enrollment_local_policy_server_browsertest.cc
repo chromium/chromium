@@ -2,9 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/bind.h"
+#include "base/check.h"
+#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -40,6 +44,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/attestation/attestation_flow_utils.h"
 #include "chromeos/attestation/mock_attestation_flow.h"
@@ -48,13 +53,17 @@
 #include "chromeos/system/fake_statistics_provider.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "components/policy/core/common/policy_switches.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "components/policy/test_support/local_policy_test_server.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace {
+
+namespace em = enterprise_management;
 
 // TODO(https://crbug.com/1164001): remove when migrated to ash::
 using ::chromeos::InstallAttributes;
@@ -271,6 +280,58 @@ class InitialEnrollmentTest : public EnrollmentLocalPolicyServerBase {
     command_line->AppendSwitchASCII(
         switches::kEnterpriseEnableInitialEnrollment,
         AutoEnrollmentController::kInitialEnrollmentAlways);
+  }
+
+  int GetPsmExecutionResultPref() const {
+    const PrefService& local_state = *g_browser_process->local_state();
+    const PrefService::Preference* has_psm_execution_result_pref =
+        local_state.FindPreference(prefs::kEnrollmentPsmResult);
+
+    // Verify the existence of an integer pref value
+    // `prefs::kEnrollmentPsmResult`.
+    if (!has_psm_execution_result_pref) {
+      ADD_FAILURE() << "kEnrollmentPsmResult pref not found";
+      return -1;
+    }
+    if (!has_psm_execution_result_pref->GetValue()->is_int()) {
+      ADD_FAILURE()
+          << "kEnrollmentPsmResult pref does not have an integer value";
+      return -1;
+    }
+    EXPECT_FALSE(has_psm_execution_result_pref->IsDefaultValue());
+
+    int psm_execution_result =
+        has_psm_execution_result_pref->GetValue()->GetInt();
+
+    // Verify that `psm_execution_result` has a valid value of
+    // em::DeviceRegisterRequest::PsmExecutionResult enum.
+    EXPECT_TRUE(em::DeviceRegisterRequest::PsmExecutionResult_IsValid(
+        psm_execution_result));
+
+    return psm_execution_result;
+  }
+
+  int64_t GetPsmDeterminationTimestampPref() const {
+    const PrefService& local_state = *g_browser_process->local_state();
+    const PrefService::Preference* has_psm_determination_timestamp_pref =
+        local_state.FindPreference(prefs::kEnrollmentPsmDeterminationTime);
+
+    // Verify the existence of non-default value pref
+    // `prefs::kEnrollmentPsmDeterminationTime`.
+    if (!has_psm_determination_timestamp_pref) {
+      ADD_FAILURE() << "kEnrollmentPsmDeterminationTime pref not found";
+      return -1;
+    }
+    EXPECT_FALSE(has_psm_determination_timestamp_pref->IsDefaultValue());
+
+    const base::Time psm_determination_timestamp =
+        local_state.GetTime(prefs::kEnrollmentPsmDeterminationTime);
+
+    // The PSM determination timestamp should exist at this stage. Because
+    // we already checked the existence of the pref with non-default value.
+    EXPECT_FALSE(psm_determination_timestamp.is_null());
+
+    return psm_determination_timestamp.ToJavaTime();
   }
 
  private:
@@ -839,6 +900,11 @@ IN_PROC_BROWSER_TEST_F(InitialEnrollmentTest, EnrollmentForced) {
 
   host()->StartWizard(AutoEnrollmentCheckScreenView::kScreenId);
   OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
+
+  // Expect PSM fields in DeviceRegisterRequest.
+  policy_server_.SetExpectedPsmParamsInDeviceRegisterRequest(
+      test::kTestRlzBrandCodeKey, test::kTestSerialNumber,
+      GetPsmExecutionResultPref(), GetPsmDeterminationTimestampPref());
 
   // User can't skip.
   enrollment_ui_.SetExitHandler();

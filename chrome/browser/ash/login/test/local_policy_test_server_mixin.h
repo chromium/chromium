@@ -16,6 +16,7 @@
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/policy/test_support/local_policy_test_server.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -76,6 +77,17 @@ class LocalPolicyTestServerMixin : public InProcessBrowserTestMixin {
   void SetExpectedDeviceEnrollmentError(int net_error_code);
   void SetExpectedDeviceAttributeUpdateError(int net_error_code);
   void SetExpectedPolicyFetchError(int net_error_code);
+
+  // Configures server to expect these optional PSM (private set membership)
+  // execution values (i.e. `psm_execution_result` and
+  // `psm_determination_timestamp`) as part of DeviceRegisterRequest.
+  // Note: `device_brand_code` and `device_serial_number` values will be used on
+  // the server as a key to retrieve the PSM execution values.
+  void SetExpectedPsmParamsInDeviceRegisterRequest(
+      const std::string& device_brand_code,
+      const std::string& device_serial_number,
+      int psm_execution_result,
+      const absl::optional<int64_t> psm_determination_timestamp);
 
   // Set response for DeviceStateRetrievalRequest. Returns that if finds state
   // key passed in the request. State keys could be set by RegisterClient call
