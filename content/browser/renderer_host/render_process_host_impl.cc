@@ -3219,6 +3219,10 @@ void RenderProcessHostImpl::DiscardSpareRenderProcessHostForTesting() {
 
 // static
 bool RenderProcessHostImpl::IsSpareProcessKeptAtAllTimes() {
+#if defined(OS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kSpareRenderer))
+    return true;
+#endif
   if (!SiteIsolationPolicy::UseDedicatedProcessesForAllSites())
     return false;
 

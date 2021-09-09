@@ -810,6 +810,13 @@ const base::FeatureParam<base::TimeDelta>
 const base::Feature kDisableProcessReuse{"DisableProcessReuse",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+#if defined(OS_ANDROID)
+// Controls whether Android tries to always have a warm spare renderer process
+// around for the most recently requested BrowserContext.
+const base::Feature kSpareRenderer{"SpareRenderer",
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 // Controls whether SpareRenderProcessHostManager tries to always have a warm
 // spare renderer process around for the most recently requested BrowserContext.
 // This feature is only consulted in site-per-process mode.
