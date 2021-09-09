@@ -261,6 +261,10 @@ void InProgressDownloadManager::DownloadUrl(
   if (!CanDownload(params.get()))
     return;
 
+  download::RecordDownloadCountWithSource(
+      download::DownloadCountTypes::DOWNLOAD_TRIGGERED_COUNT,
+      params->download_source());
+
   // Start the new download, the download should be saved to the file path
   // specifcied in the |params|.
   BeginDownload(std::move(params), url_loader_factory_->Clone(),
