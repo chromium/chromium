@@ -2770,18 +2770,19 @@ bool VaapiWrapper::BlitSurface(const VASurface& va_surface_src,
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::ScopedClosureRunner protected_session_detacher;
+  std::unique_ptr<base::ScopedClosureRunner> protected_session_detacher;
   if (va_protected_session_id != VA_INVALID_ID) {
     VA_SUCCESS_OR_RETURN(vaAttachProtectedSession(va_display_, va_context_id_,
                                                   va_protected_session_id),
                          VaapiFunctions::kVAAttachProtectedSession, false);
     // Note that we use a lambda expression to wrap vaDetachProtectedSession()
     // because the function in |protected_session_detacher| must return void.
-    protected_session_detacher.ReplaceClosure(base::BindOnce(
-        [](VADisplay va_display, VAContextID va_context_id) {
-          vaDetachProtectedSession(va_display, va_context_id);
-        },
-        va_display_, va_context_id_));
+    protected_session_detacher =
+        std::make_unique<base::ScopedClosureRunner>(base::BindOnce(
+            [](VADisplay va_display, VAContextID va_context_id) {
+              vaDetachProtectedSession(va_display, va_context_id);
+            },
+            va_display_, va_context_id_));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
