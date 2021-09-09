@@ -9,16 +9,20 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/location.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "content/browser/font_access/font_enumeration_cache.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"
 
 namespace content {
 
@@ -151,27 +155,19 @@ FontEnumerationCacheFontconfig::FontEnumerationCacheFontconfig(
     base::PassKey<FontEnumerationCache>)
     : FontEnumerationCache(std::move(locale_override)) {}
 
-FontEnumerationCacheFontconfig::~FontEnumerationCacheFontconfig() = default;
-
-void FontEnumerationCacheFontconfig::SchedulePrepareFontEnumerationCache() {
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kFontAccess));
-
-  scoped_refptr<base::SequencedTaskRunner> results_task_runner =
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
-
-  results_task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &FontEnumerationCacheFontconfig::PrepareFontEnumerationCache,
-          // Safe because this is an initialized singleton.
-          base::Unretained(this)));
+FontEnumerationCacheFontconfig::~FontEnumerationCacheFontconfig() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void FontEnumerationCacheFontconfig::PrepareFontEnumerationCache() {
-  DCHECK(!enumeration_cache_built_->IsSet());
+blink::FontEnumerationTable
+FontEnumerationCacheFontconfig::ComputeFontEnumerationData(
+    const std::string& locale) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto font_enumeration_table = std::make_unique<blink::FontEnumerationTable>();
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
+  blink::FontEnumerationTable font_enumeration_table;
 
   std::unique_ptr<FcObjectSet, decltype(&FcObjectSetDestroy)> object_set(
       FcObjectSetBuild(FC_POSTSCRIPT_NAME, FC_FULLNAME, FC_FAMILY, FC_STYLE,
@@ -237,7 +233,7 @@ void FontEnumerationCacheFontconfig::PrepareFontEnumerationCache() {
         FC_WIDTH_NORMAL);  // Maps to width: 100% (normal).
 
     blink::FontEnumerationTable_FontMetadata* metadata =
-        font_enumeration_table->add_fonts();
+        font_enumeration_table.add_fonts();
     metadata->set_postscript_name(postscript_name);
     metadata->set_full_name(full_name);
     metadata->set_family(family);
@@ -247,10 +243,7 @@ void FontEnumerationCacheFontconfig::PrepareFontEnumerationCache() {
     metadata->set_stretch(FCWidthToWebStretch(width));
   }
 
-  BuildEnumerationCache(std::move(font_enumeration_table));
-
-  // Respond to pending and future requests.
-  StartCallbacksTaskQueue();
+  return font_enumeration_table;
 }
 
 }  // namespace content

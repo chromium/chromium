@@ -7,19 +7,20 @@
 #include <dwrite.h>
 #include <wrl/client.h>
 
+#include <limits>
 #include <string>
 #include <vector>
 
-#include "base/feature_list.h"
-#include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/sequence_checker.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/threading/thread_checker.h"
 #include "content/browser/font_access/font_enumeration_cache.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"
 #include "ui/gfx/win/direct_write.h"
 
 namespace content {
@@ -236,24 +237,11 @@ FontEnumerationCacheWin::~FontEnumerationCacheWin() = default;
 FontEnumerationCacheWin::FamilyDataResult::~FamilyDataResult() = default;
 FontEnumerationCacheWin::FamilyDataResult::FamilyDataResult() = default;
 
-void FontEnumerationCacheWin::SchedulePrepareFontEnumerationCache() {
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kFontAccess));
+blink::FontEnumerationTable FontEnumerationCacheWin::ComputeFontEnumerationData(
+    const std::string& locale) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  scoped_refptr<base::SequencedTaskRunner> results_task_runner =
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
-
-  results_task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(&FontEnumerationCacheWin::PrepareFontEnumerationCache,
-                     // Safe because this is an initialized singleton.
-                     base::Unretained(this)));
-}
-
-void FontEnumerationCacheWin::PrepareFontEnumerationCache() {
-  DCHECK(!enumeration_cache_built_->IsSet());
-
-  auto font_enumeration_table = std::make_unique<blink::FontEnumerationTable>();
+  blink::FontEnumerationTable font_enumeration_table;
 
   Microsoft::WRL::ComPtr<IDWriteFontCollection> collection = GetSystemFonts();
   uint32_t family_count;
@@ -263,9 +251,6 @@ void FontEnumerationCacheWin::PrepareFontEnumerationCache() {
 
     family_count = collection->GetFontFamilyCount();
   }
-
-  std::string locale =
-      locale_override_.value_or(base::i18n::GetConfiguredLocale());
 
   // Used to filter duplicates.
   std::set<std::string> fonts_seen;
@@ -315,7 +300,7 @@ void FontEnumerationCacheWin::PrepareFontEnumerationCache() {
         continue;
 
       blink::FontEnumerationTable_FontMetadata* metadata =
-          font_enumeration_table->add_fonts();
+          font_enumeration_table.add_fonts();
       metadata->set_postscript_name(std::move(postscript_name).value());
       metadata->set_full_name(std::move(localized_full_name).value());
       metadata->set_family(family_name.value());
@@ -327,10 +312,7 @@ void FontEnumerationCacheWin::PrepareFontEnumerationCache() {
     }
   }
 
-  BuildEnumerationCache(std::move(font_enumeration_table));
-
-  // Respond to pending and future requests.
-  StartCallbacksTaskQueue();
+  return font_enumeration_table;
 }
 
 }  // namespace content

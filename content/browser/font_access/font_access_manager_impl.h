@@ -26,6 +26,7 @@
 namespace content {
 
 class FontEnumerationCache;
+struct FontEnumerationData;
 
 // The ownership hierarchy for this class is:
 //
@@ -100,9 +101,7 @@ class CONTENT_EXPORT FontAccessManagerImpl
 
   void DidRequestPermission(EnumerateLocalFontsCallback callback,
                             blink::mojom::PermissionStatus status);
-  void DidFindAllFonts(FindAllFontsCallback callback,
-                       blink::mojom::FontEnumerationStatus,
-                       base::ReadOnlySharedMemoryRegion);
+  void DidFindAllFonts(FindAllFontsCallback callback, FontEnumerationData data);
   void DidChooseLocalFonts(GlobalRenderFrameHostId frame_id,
                            ChooseLocalFontsCallback callback,
                            blink::mojom::FontEnumerationStatus status,

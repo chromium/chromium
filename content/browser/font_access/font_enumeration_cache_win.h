@@ -13,9 +13,10 @@
 #include <memory>
 #include <string>
 
-#include "base/deferred_sequenced_task_runner.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/sequence_checker.h"
 #include "base/synchronization/atomic_flag.h"
+#include "base/thread_annotations.h"
 #include "base/types/pass_key.h"
 #include "content/browser/font_access/font_enumeration_cache.h"
 #include "content/common/content_export.h"
@@ -51,10 +52,13 @@ class CONTENT_EXPORT FontEnumerationCacheWin : public FontEnumerationCache {
 
  protected:
   // FontEnumerationCache:
-  void SchedulePrepareFontEnumerationCache() override;
+  blink::FontEnumerationTable ComputeFontEnumerationData(
+      const std::string& locale) override;
 
  private:
   void PrepareFontEnumerationCache();
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace content

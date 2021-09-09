@@ -7,10 +7,12 @@
 
 #include <string>
 
+#include "base/sequence_checker.h"
 #include "base/types/pass_key.h"
 #include "content/browser/font_access/font_enumeration_cache.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"
 
 namespace content {
 
@@ -34,10 +36,11 @@ class CONTENT_EXPORT FontEnumerationCacheFontconfig
 
  protected:
   // FontEnumerationCache:
-  void SchedulePrepareFontEnumerationCache() override;
+  blink::FontEnumerationTable ComputeFontEnumerationData(
+      const std::string& locale) override;
 
  private:
-  void PrepareFontEnumerationCache();
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace content

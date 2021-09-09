@@ -8,7 +8,9 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/i18n/rtl.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/sequence_checker.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/types/pass_key.h"
@@ -16,6 +18,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"
 
 namespace content {
 
@@ -41,97 +44,60 @@ FontEnumerationCache::CreateForTesting(
 
 FontEnumerationCache::FontEnumerationCache(
     absl::optional<std::string> locale_override)
-    : locale_override_(std::move(locale_override)),
-      enumeration_cache_built_(std::make_unique<base::AtomicFlag>()),
-      enumeration_cache_build_started_(std::make_unique<base::AtomicFlag>()) {}
+    : locale_override_(std::move(locale_override)) {}
 
-FontEnumerationCache::~FontEnumerationCache() = default;
+FontEnumerationCache::~FontEnumerationCache() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
-void FontEnumerationCache::QueueShareMemoryRegionWhenReady(
-    scoped_refptr<base::TaskRunner> task_runner,
-    CacheTaskCallback callback) {
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kFontAccess));
+FontEnumerationData FontEnumerationCache::GetFontEnumerationData() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  callbacks_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &FontEnumerationCache::RunPendingCallback,
-          // Safe because this is an initialized singleton.
-          base::Unretained(this),
-          CallbackOnTaskRunner(std::move(task_runner), std::move(callback))));
+  if (!initialized_) {
+    std::string locale =
+        locale_override_.value_or(base::i18n::GetConfiguredLocale());
 
-  if (!enumeration_cache_build_started_->IsSet()) {
-    enumeration_cache_build_started_->Set();
-
-    SchedulePrepareFontEnumerationCache();
+    blink::FontEnumerationTable font_data = ComputeFontEnumerationData(locale);
+    BuildEnumerationCache(font_data);
+    initialized_ = true;
   }
-}
 
-bool FontEnumerationCache::IsFontEnumerationCacheReady() {
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kFontAccess));
-
-  return enumeration_cache_built_->IsSet() && IsFontEnumerationCacheValid();
-}
-
-base::ReadOnlySharedMemoryRegion FontEnumerationCache::DuplicateMemoryRegion() {
-  DCHECK(IsFontEnumerationCacheReady());
-  return enumeration_cache_memory_.region.Duplicate();
-}
-
-FontEnumerationCache::CallbackOnTaskRunner::CallbackOnTaskRunner(
-    scoped_refptr<base::TaskRunner> runner,
-    CacheTaskCallback callback)
-    : task_runner(std::move(runner)), callback(std::move(callback)) {}
-
-FontEnumerationCache::CallbackOnTaskRunner::CallbackOnTaskRunner(
-    CallbackOnTaskRunner&& other) = default;
-
-FontEnumerationCache::CallbackOnTaskRunner::~CallbackOnTaskRunner() = default;
-
-void FontEnumerationCache::RunPendingCallback(
-    CallbackOnTaskRunner pending_callback) {
-  DCHECK(callbacks_task_runner_->RunsTasksInCurrentSequence());
-
-  pending_callback.task_runner->PostTask(
-      FROM_HERE, base::BindOnce(std::move(pending_callback.callback), status_,
-                                DuplicateMemoryRegion()));
-}
-
-void FontEnumerationCache::StartCallbacksTaskQueue() {
-  callbacks_task_runner_->StartWithTaskRunner(
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::TaskPriority::BEST_EFFORT}));
-}
-
-bool FontEnumerationCache::IsFontEnumerationCacheValid() const {
-  return enumeration_cache_memory_.IsValid() &&
-         enumeration_cache_memory_.mapping.size();
+  DCHECK(initialized_);
+  return {.status = data_.status, .font_data = data_.font_data.Duplicate()};
 }
 
 void FontEnumerationCache::BuildEnumerationCache(
-    std::unique_ptr<blink::FontEnumerationTable> table) {
-  DCHECK(!enumeration_cache_built_->IsSet());
+    blink::FontEnumerationTable& table) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Postscript names, according to spec, are expected to be encoded in a subset
   // of ASCII. See:
   // https://docs.microsoft.com/en-us/typography/opentype/spec/name This is why
   // a "simple" byte-wise comparison is used.
-  std::sort(table->mutable_fonts()->begin(), table->mutable_fonts()->end(),
+  std::sort(table.mutable_fonts()->begin(), table.mutable_fonts()->end(),
             [](const blink::FontEnumerationTable_FontMetadata& a,
                const blink::FontEnumerationTable_FontMetadata& b) {
               return a.postscript_name() < b.postscript_name();
             });
 
-  enumeration_cache_memory_ =
-      base::ReadOnlySharedMemoryRegion::Create(table->ByteSizeLong());
+  base::MappedReadOnlyRegion font_data_region =
+      base::ReadOnlySharedMemoryRegion::Create(table.ByteSizeLong());
 
-  if (!IsFontEnumerationCacheValid() ||
-      !table->SerializeToArray(enumeration_cache_memory_.mapping.memory(),
-                               enumeration_cache_memory_.mapping.size())) {
-    enumeration_cache_memory_ = base::MappedReadOnlyRegion();
+  if (!font_data_region.mapping.IsValid()) {
+    data_.status = blink::mojom::FontEnumerationStatus::kUnexpectedError;
+    return;
   }
 
-  enumeration_cache_built_->Set();
+  DCHECK_GE(font_data_region.mapping.size(), table.ByteSizeLong());
+  if (!table.SerializeToArray(font_data_region.mapping.memory(),
+                              font_data_region.mapping.size())) {
+    data_.status = blink::mojom::FontEnumerationStatus::kUnexpectedError;
+    return;
+  }
+
+  data_.status = blink::mojom::FontEnumerationStatus::kOk;
+  data_.font_data = std::move(font_data_region.region);
+  return;
 }
 
 }  // namespace content
