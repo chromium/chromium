@@ -374,15 +374,6 @@ class WebLocalFrame : public WebFrame {
       v8::Isolate* isolate,
       int world_id) const = 0;
 
-  // Executes script in the context of the current page and returns the value
-  // that the script evaluated to with callback. Script execution can be
-  // suspend.
-  // DEPRECATED: Prefer RequestExecuteScript().
-  virtual void RequestExecuteScriptAndReturnValue(
-      const WebScriptSource&,
-      bool user_gesture,
-      WebScriptExecutionCallback*) = 0;
-
   // Requests execution of the given function, but allowing for script
   // suspension and asynchronous execution.
   virtual void RequestExecuteV8Function(v8::Local<v8::Context>,

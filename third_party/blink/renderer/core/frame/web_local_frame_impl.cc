@@ -959,17 +959,6 @@ v8::Local<v8::Value> WebLocalFrameImpl::ExecuteScriptAndReturnValue(
       ->RunScriptAndReturnValue(GetFrame()->DomWindow());
 }
 
-void WebLocalFrameImpl::RequestExecuteScriptAndReturnValue(
-    const WebScriptSource& source,
-    bool user_gesture,
-    WebScriptExecutionCallback* callback) {
-  DCHECK(GetFrame());
-
-  RequestExecuteScript(DOMWrapperWorld::kMainWorldId,
-                       base::make_span(&source, 1), user_gesture, kSynchronous,
-                       callback, BackForwardCacheAware::kAllow);
-}
-
 void WebLocalFrameImpl::RequestExecuteV8Function(
     v8::Local<v8::Context> context,
     v8::Local<v8::Function> function,

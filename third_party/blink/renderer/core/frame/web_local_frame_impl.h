@@ -175,9 +175,6 @@ class CORE_EXPORT WebLocalFrameImpl final
   v8::Local<v8::Context> GetScriptContextFromWorldId(
       v8::Isolate* isolate,
       int world_id) const override;
-  void RequestExecuteScriptAndReturnValue(const WebScriptSource&,
-                                          bool user_gesture,
-                                          WebScriptExecutionCallback*) override;
   void RequestExecuteV8Function(v8::Local<v8::Context>,
                                 v8::Local<v8::Function>,
                                 v8::Local<v8::Value> receiver,

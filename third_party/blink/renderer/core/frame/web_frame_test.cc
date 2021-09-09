@@ -258,6 +258,19 @@ std::string GetHTMLStringForReferrerPolicy(const std::string& meta_policy,
       "</script>",
       meta_tag.c_str(), referrer_policy_attr.c_str());
 }
+
+// A helper function to execute the given `script` in the main world of the
+// specified `frame`.
+void ExecuteScriptInMainWorld(WebLocalFrame* frame,
+                              String script_string,
+                              WebScriptExecutionCallback* callback,
+                              bool user_gesture = false) {
+  WebScriptSource source(script_string);
+  frame->RequestExecuteScript(
+      DOMWrapperWorld::kMainWorldId, base::make_span(&source, 1), user_gesture,
+      WebLocalFrame::kSynchronous, callback, BackForwardCacheAware::kAllow);
+}
+
 }  // namespace
 
 const int kTouchPointPadding = 32;
@@ -542,10 +555,8 @@ TEST_F(WebFrameTest, RequestExecuteScript) {
   v8::HandleScope scope(v8::Isolate::GetCurrent());
   ScriptExecutionCallbackHelper callback_helper(
       web_view_helper.LocalMainFrame()->MainWorldScriptContext());
-  web_view_helper.GetWebView()
-      ->MainFrameImpl()
-      ->RequestExecuteScriptAndReturnValue(
-          WebScriptSource(WebString("'hello';")), false, &callback_helper);
+  ExecuteScriptInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
+                           "'hello';", &callback_helper);
   RunPendingTasks();
   EXPECT_TRUE(callback_helper.DidComplete());
   EXPECT_EQ("hello", callback_helper.StringValue());
@@ -563,10 +574,8 @@ TEST_F(WebFrameTest, SuspendedRequestExecuteScript) {
 
   // Suspend scheduled tasks so the script doesn't run.
   web_view_helper.GetWebView()->GetPage()->SetPaused(true);
-  web_view_helper.GetWebView()
-      ->MainFrameImpl()
-      ->RequestExecuteScriptAndReturnValue(
-          WebScriptSource(WebString("'hello';")), false, &callback_helper);
+  ExecuteScriptInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
+                           "'hello';", &callback_helper);
   RunPendingTasks();
   EXPECT_FALSE(callback_helper.DidComplete());
 
@@ -656,11 +665,9 @@ TEST_F(WebFrameTest, RequestExecuteV8FunctionWhileSuspendedWithUserGesture) {
       mojom::UserActivationNotificationType::kTest);
   ScriptExecutionCallbackHelper callback_helper(
       web_view_helper.LocalMainFrame()->MainWorldScriptContext());
-  WebScriptSource script_source("navigator.userActivation.isActive;");
-  web_view_helper.GetWebView()
-      ->MainFrameImpl()
-      ->RequestExecuteScriptAndReturnValue(script_source, false,
-                                           &callback_helper);
+  ExecuteScriptInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
+                           "navigator.userActivation.isActive;",
+                           &callback_helper);
   RunPendingTasks();
   EXPECT_FALSE(callback_helper.DidComplete());
 
@@ -680,16 +687,14 @@ TEST_F(WebFrameTest, IframeScriptRemovesSelf) {
   v8::HandleScope scope(v8::Isolate::GetCurrent());
   ScriptExecutionCallbackHelper callback_helper(
       web_view_helper.LocalMainFrame()->MainWorldScriptContext());
-  web_view_helper.GetWebView()
-      ->MainFrame()
-      ->FirstChild()
-      ->ToWebLocalFrame()
-      ->RequestExecuteScriptAndReturnValue(
-          WebScriptSource(WebString(
-              "var iframe = "
-              "window.top.document.getElementsByTagName('iframe')[0]; "
-              "window.top.document.body.removeChild(iframe); 'hello';")),
-          false, &callback_helper);
+  ExecuteScriptInMainWorld(
+      web_view_helper.GetWebView()
+          ->MainFrame()
+          ->FirstChild()
+          ->ToWebLocalFrame(),
+      "var iframe = window.top.document.getElementsByTagName('iframe')[0]; "
+      "window.top.document.body.removeChild(iframe); 'hello';",
+      &callback_helper);
   RunPendingTasks();
   EXPECT_TRUE(callback_helper.DidComplete());
   EXPECT_EQ(String(), callback_helper.StringValue());
@@ -740,48 +745,42 @@ TEST_F(WebFrameTest, CapabilityDelegationMessageEventTest) {
   ScriptExecutionCallbackHelper callback_helper(
       web_view_helper.LocalMainFrame()->MainWorldScriptContext());
 
-  WebScriptSource post_message_wo_payment_request(
-      WebString("window.frames[0].postMessage('0', {targetOrigin: '*'});"));
-  WebScriptSource post_message_w_payment_request(
-      WebString("window.frames[0].postMessage("
-                "'1', {targetOrigin: '*', delegate: 'paymentrequest'});"));
+  String post_message_wo_payment_request(
+      "window.frames[0].postMessage('0', {targetOrigin: '*'});");
+  String post_message_w_payment_request(
+      "window.frames[0].postMessage("
+      "'1', {targetOrigin: '*', delegate: 'paymentrequest'});");
 
   // The delegation info is not passed through a postMessage that is sent
   // without either user activation or the delegation option.
-  web_view_helper.GetWebView()
-      ->MainFrameImpl()
-      ->RequestExecuteScriptAndReturnValue(post_message_wo_payment_request,
-                                           false, &callback_helper);
+  ExecuteScriptInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
+                           post_message_wo_payment_request, &callback_helper);
   RunPendingTasks();
   EXPECT_TRUE(callback_helper.DidComplete());
   EXPECT_FALSE(message_event_listener->DelegatePaymentRequest());
 
   // The delegation info is not passed through a postMessage that is sent
   // without user activation but with the delegation option.
-  web_view_helper.GetWebView()
-      ->MainFrameImpl()
-      ->RequestExecuteScriptAndReturnValue(post_message_w_payment_request,
-                                           false, &callback_helper);
+  ExecuteScriptInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
+                           post_message_w_payment_request, &callback_helper);
   RunPendingTasks();
   EXPECT_TRUE(callback_helper.DidComplete());
   EXPECT_FALSE(message_event_listener->DelegatePaymentRequest());
 
   // The delegation info is not passed through a postMessage that is sent with
   // user activation but without the delegation option.
-  web_view_helper.GetWebView()
-      ->MainFrameImpl()
-      ->RequestExecuteScriptAndReturnValue(post_message_wo_payment_request,
-                                           true, &callback_helper);
+  ExecuteScriptInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
+                           post_message_wo_payment_request, &callback_helper,
+                           true);
   RunPendingTasks();
   EXPECT_TRUE(callback_helper.DidComplete());
   EXPECT_FALSE(message_event_listener->DelegatePaymentRequest());
 
   // The delegation info is passed through a postMessage that is sent with both
   // user activation and the delegation option.
-  web_view_helper.GetWebView()
-      ->MainFrameImpl()
-      ->RequestExecuteScriptAndReturnValue(post_message_w_payment_request, true,
-                                           &callback_helper);
+  ExecuteScriptInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
+                           post_message_w_payment_request, &callback_helper,
+                           true);
   RunPendingTasks();
   EXPECT_TRUE(callback_helper.DidComplete());
   EXPECT_TRUE(message_event_listener->DelegatePaymentRequest());
@@ -9994,10 +9993,8 @@ class DeviceEmulationTest : public WebFrameTest {
     v8::HandleScope scope(v8::Isolate::GetCurrent());
     ScriptExecutionCallbackHelper callback_helper(
         web_view_helper_.LocalMainFrame()->MainWorldScriptContext());
-    web_view_helper_.GetWebView()
-        ->MainFrameImpl()
-        ->RequestExecuteScriptAndReturnValue(WebScriptSource(WebString(code)),
-                                             false, &callback_helper);
+    ExecuteScriptInMainWorld(web_view_helper_.GetWebView()->MainFrameImpl(),
+                             code, &callback_helper);
     RunPendingTasks();
     EXPECT_TRUE(callback_helper.DidComplete());
     return callback_helper.StringValue();
