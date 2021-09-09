@@ -189,6 +189,12 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
 
   void SetIsInColumnBfc() { space_.EnsureRareData()->is_in_column_bfc = true; }
 
+  void SetMinBreakAppeal(NGBreakAppeal min_break_appeal) {
+    if (!space_.HasRareData() && min_break_appeal == kBreakAppealLastResort)
+      return;
+    space_.EnsureRareData()->min_break_appeal = min_break_appeal;
+  }
+
   void SetIsTableCell(bool is_table_cell, bool is_legacy_table_cell) {
 #if DCHECK_IS_ON()
     DCHECK(!is_table_cell_set_);

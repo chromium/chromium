@@ -1745,12 +1745,19 @@ NGConstraintSpace NGOutOfFlowLayoutPart::GetFragmentainerConstraintSpace(
       LogicalSize(column_size.inline_size,
                   container_builder_->ChildAvailableSize().block_size);
 
+  // In the current implementation it doesn't make sense to restrict imperfect
+  // breaks inside OOFs, since we never break and resume OOFs in a subsequent
+  // outer fragmentainer anyway (we'll always stay in the current outer
+  // fragmentainer and just create overflowing columns in the current row,
+  // rather than moving to the next one).
+  NGBreakAppeal min_break_appeal = kBreakAppealLastResort;
+
   // TODO(bebeaudr): Need to handle different fragmentation types. It won't
   // always be multi-column.
   return CreateConstraintSpaceForColumns(
       *container_builder_->ConstraintSpace(), column_size,
       percentage_resolution_size, allow_discard_start_margin,
-      /* balance_columns */ false);
+      /* balance_columns */ false, min_break_appeal);
 }
 
 // Compute in which fragmentainer the OOF element will start its layout and

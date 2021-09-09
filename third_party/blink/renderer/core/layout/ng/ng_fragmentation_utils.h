@@ -325,7 +325,8 @@ NGConstraintSpace CreateConstraintSpaceForColumns(
     LogicalSize column_size,
     LogicalSize percentage_resolution_size,
     bool allow_discard_start_margin,
-    bool balance_columns);
+    bool balance_columns,
+    NGBreakAppeal min_break_appeal);
 
 // Calculate the container builder and constraint space for a multicol.
 NGBoxFragmentBuilder CreateContainerBuilderForMulticol(

@@ -595,7 +595,6 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
   }
 
   bool may_resume_in_next_outer_fragmentainer = false;
-  bool zero_outer_space_left = false;
   LayoutUnit available_outer_space = kIndefiniteSize;
   if (is_constrained_by_outer_fragmentation_context_) {
     available_outer_space =
@@ -611,7 +610,6 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
       // We are out of space, but we're exactly at the end of the outer
       // fragmentainer. If none of our contents take up space, we're going to
       // fit, otherwise not. Lay out and find out.
-      zero_outer_space_left = true;
     }
 
     // Determine if we should resume layout in the next outer fragmentation
@@ -666,7 +664,20 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
   Vector<ResultWithOffset, 16> new_columns;
   bool is_empty_spanner_parent = false;
 
+  // Avoid suboptimal breaks (and overflow from monolithic content) inside a
+  // nested multicol container if we can. If this multicol container may
+  // continue in the next outer fragmentainer, and we have already made some
+  // progress (either inside the multicol container itself (spanners or
+  // block-start border/padding), or in the outer fragmentation context), it may
+  // be better to push some of the content to the next outer fragmentainer and
+  // retry there.
+  bool may_have_more_space_in_next_outer_fragmentainer =
+      may_resume_in_next_outer_fragmentainer &&
+      (intrinsic_block_size_ ||
+       ConstraintSpace().FragmentainerOffsetAtBfc() > LayoutUnit());
+
   scoped_refptr<const NGLayoutResult> result;
+  absl::optional<NGBreakAppeal> min_break_appeal;
 
   do {
     const NGBlockBreakToken* column_break_token = next_column_token;
@@ -685,11 +696,14 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
     // balancing).
     LayoutUnit minimal_space_shortage(LayoutUnit::Max());
 
+    min_break_appeal = absl::nullopt;
+
     do {
       // Lay out one column. Each column will become a fragment.
       NGConstraintSpace child_space = CreateConstraintSpaceForColumns(
           ConstraintSpace(), column_size, ColumnPercentageResolutionSize(),
-          allow_discard_start_margin, balance_columns);
+          allow_discard_start_margin, balance_columns,
+          min_break_appeal.value_or(kBreakAppealLastResort));
 
       NGFragmentGeometry fragment_geometry =
           CalculateInitialFragmentGeometry(child_space, Node());
@@ -698,7 +712,8 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
           {Node(), fragment_geometry, child_space, column_break_token});
       child_algorithm.SetBoxType(NGPhysicalFragment::kColumnBox);
       result = child_algorithm.Layout();
-      const auto& column = result->PhysicalFragment();
+      const auto& column =
+          To<NGPhysicalBoxFragment>(result->PhysicalFragment());
 
       // Add the new column fragment to the list, but don't commit anything to
       // the fragment builder until we know whether these are the final columns.
@@ -734,16 +749,35 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
       // overflow in the inline direction, if necessary). We're not going to
       // progress into a next outer fragmentainer if the (remaining part of the)
       // multicol container fits block-wise in the current outer fragmentainer.
-      if (ConstraintSpace().HasBlockFragmentation() && column_break_token &&
-          actual_column_count >= used_column_count_ &&
-          may_resume_in_next_outer_fragmentainer) {
-        // We cannot keep any of this if we have zero space left. Then we need
-        // to resume in the next outer fragmentainer.
-        if (zero_outer_space_left)
-          return nullptr;
+      if (may_resume_in_next_outer_fragmentainer && column_break_token &&
+          actual_column_count >= used_column_count_)
         break;
-      }
 
+      if (may_have_more_space_in_next_outer_fragmentainer) {
+        // If the outer fragmentainer already has content progress (before this
+        // row), we are in a situation where there may be more space for us
+        // (block-size) in the next outer fragmentainer. This means that it may
+        // be possible to avoid suboptimal breaks if we push content to a column
+        // row in the next outer fragmentainer. Therefore, avoid breaks with
+        // lower appeal than what we've seen so far. Anything that would cause
+        // "too severe" breaking violations will be pushed to the next outer
+        // fragmentainer.
+        if (column_break_token) {
+          min_break_appeal =
+              std::min(min_break_appeal.value_or(kBreakAppealPerfect),
+                       column_break_token->BreakAppeal());
+        }
+
+        // Avoid creating rows that are too short to hold monolithic content.
+        // Bail, discarding all columns. Note that this is safe to do even if
+        // we're column-balancing, because we attempt to make room for all
+        // monolithic content already in the initial column balancing pass (and
+        // if that fails, there's no way it's going to fit), by checking
+        // TallestUnbreakableBlockSize() from the layout results.
+        if (NGBoxFragment(ConstraintSpace().GetWritingDirection(), column)
+                .HasBlockLayoutOverflow())
+          return nullptr;
+      }
       allow_discard_start_margin = true;
     } while (column_break_token);
 
@@ -870,18 +904,10 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
     container_builder_.AddChild(column, result_with_offset.offset);
     Node().AddColumnResult(result_with_offset.result, incoming_column_token);
     incoming_column_token = To<NGBlockBreakToken>(column.BreakToken());
-
-    if (incoming_column_token)
-      container_builder_.ClampBreakAppeal(incoming_column_token->BreakAppeal());
-    if (ConstraintSpace().HasBlockFragmentation()) {
-      // If we're nested inside another fragmentation context, try to avoid
-      // creating rows that are too short to hold monolithic content. Better to
-      // retry in the next outer fragmentainer.
-      if (NGBoxFragment(ConstraintSpace().GetWritingDirection(), column)
-              .HasBlockLayoutOverflow())
-        container_builder_.ClampBreakAppeal(kBreakAppealLastResort);
-    }
   }
+
+  if (min_break_appeal)
+    container_builder_.ClampBreakAppeal(*min_break_appeal);
 
   return result;
 }

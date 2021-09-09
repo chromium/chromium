@@ -519,6 +519,24 @@ class CORE_EXPORT NGConstraintSpace final {
     return HasRareData() && rare_data_->is_in_column_bfc;
   }
 
+  // Return the minimum break appeal allowed. This is used by multicol nested
+  // inside another fragmentation context, if we're at a column row when there's
+  // already content progress in the outer fragmentainer. The idea is that we
+  // might avoid imperfect breaks, if we push content to the next column row in
+  // the next outer fragmentainer (where there might be more space). In this
+  // mode we'll set a high break appeal before the first child inside a resumed
+  // container, so that any subsequent imperfect break will be weighed against
+  // this. When a minimum is set, the code needs to guarantee that there will be
+  // a column further ahead (in the next outer fragmentainer) where any break
+  // appeal will be allowed (as usual), or we might get stuck in an infinite
+  // loop, pushing the same content ahead of us, while creating columns with
+  // nothing in them.
+  NGBreakAppeal MinBreakAppeal() const {
+    if (!HasRareData())
+      return kBreakAppealLastResort;
+    return static_cast<NGBreakAppeal>(rare_data_->min_break_appeal);
+  }
+
   // Return true if the block size of the table-cell should be considered
   // restricted (e.g. height of the cell or its table is non-auto).
   bool IsRestrictedBlockSizeTableCell() const {
@@ -767,7 +785,8 @@ class CORE_EXPORT NGConstraintSpace final {
           block_direction_fragmentation_type(
               static_cast<unsigned>(kFragmentNone)),
           is_inside_balanced_columns(false),
-          is_in_column_bfc(false) {}
+          is_in_column_bfc(false),
+          min_break_appeal(kBreakAppealLastResort) {}
     RareData(const RareData& other)
         : percentage_resolution_size(other.percentage_resolution_size),
           replaced_percentage_resolution_block_size(
@@ -785,7 +804,8 @@ class CORE_EXPORT NGConstraintSpace final {
           block_direction_fragmentation_type(
               other.block_direction_fragmentation_type),
           is_inside_balanced_columns(other.is_inside_balanced_columns),
-          is_in_column_bfc(other.is_in_column_bfc) {
+          is_in_column_bfc(other.is_in_column_bfc),
+          min_break_appeal(other.min_break_appeal) {
       switch (data_union_type) {
         case kNone:
           break;
@@ -851,7 +871,8 @@ class CORE_EXPORT NGConstraintSpace final {
           block_direction_fragmentation_type !=
               other.block_direction_fragmentation_type ||
           is_inside_balanced_columns != other.is_inside_balanced_columns ||
-          is_in_column_bfc != other.is_in_column_bfc)
+          is_in_column_bfc != other.is_in_column_bfc ||
+          min_break_appeal != other.min_break_appeal)
         return false;
 
       switch (data_union_type) {
@@ -881,7 +902,8 @@ class CORE_EXPORT NGConstraintSpace final {
           is_legacy_table_cell || is_restricted_block_size_table_cell ||
           hide_table_cell_if_empty ||
           block_direction_fragmentation_type != kFragmentNone ||
-          is_inside_balanced_columns || is_in_column_bfc)
+          is_inside_balanced_columns || is_in_column_bfc ||
+          min_break_appeal != kBreakAppealLastResort)
         return false;
 
       switch (data_union_type) {
@@ -1123,6 +1145,8 @@ class CORE_EXPORT NGConstraintSpace final {
     unsigned block_direction_fragmentation_type : 2;
     unsigned is_inside_balanced_columns : 1;
     unsigned is_in_column_bfc : 1;
+    unsigned min_break_appeal : kNGBreakAppealBitsNeeded;
+
    private:
     struct BlockData {
       bool MaySkipLayout(const BlockData& other) const {
