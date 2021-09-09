@@ -436,15 +436,15 @@ std::vector<GURL> ComputeCookieURLs(RenderFrameHostImpl* frame_host,
     for (const std::string& url : *protocol_urls.fromJust())
       urls.emplace_back(url);
   } else {
-    base::queue<FrameTreeNode*> queue;
-    queue.push(frame_host->frame_tree_node());
+    base::queue<RenderFrameHostImpl*> queue;
+    queue.push(frame_host);
     while (!queue.empty()) {
-      FrameTreeNode* node = queue.front();
+      RenderFrameHostImpl* node = queue.front();
       queue.pop();
 
-      urls.push_back(node->current_url());
+      urls.push_back(node->GetLastCommittedURL());
       for (size_t i = 0; i < node->child_count(); ++i)
-        queue.push(node->child_at(i));
+        queue.push(node->child_at(i)->current_frame_host());
     }
   }
 
