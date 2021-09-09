@@ -40797,6 +40797,29 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2147480259" label="Sqlite.Vfs_Fetch"/>
 </enum>
 
+<enum name="HistoryClustersFinalState">
+  <summary>
+    The final state, or outcome, of an interaction on the HistoryClusters, or
+    Journeys, UI.
+  </summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="kLinkClick">Link Clicked from UI</int>
+  <int value="2" label="kCloseTab">
+    The UI interaction ended without opening anything on the page.
+  </int>
+</enum>
+
+<enum name="HistoryClustersInitialState">
+  <summary>
+    The intial state that describes how an interaction with the HistoryClusters,
+    or Journeys, UI was started.
+  </summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="kDirectNavigation">
+    The UI was reached via direct navigation, not through any dedicated surface.
+  </int>
+</enum>
+
 <enum name="HistoryFaviconsRecoveryEnum">
   <obsolete>
     History.FaviconsRecovery no longer tracked as of March 2017.

@@ -11,8 +11,10 @@
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/history_clusters/history_clusters_metrics_logger.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_database.h"
@@ -20,6 +22,7 @@
 #include "components/history/core/browser/url_row.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
 #if defined(OS_ANDROID)
@@ -104,6 +107,14 @@ base::TimeDelta TimeElapsedBetweenVisits(const history::VisitRow& visit1,
   // Clamp to 30 days maximum to match the UKM retention period.
   const base::TimeDelta kMaxDurationClamp = base::TimeDelta::FromDays(30);
   return delta < kMaxDurationClamp ? delta : kMaxDurationClamp;
+}
+
+// Returns with the provided `url` matches the provided `history_url`
+// which must be either the basic history URL or history_clusters URL.
+bool IsHistoryPage(GURL url, GURL history_url) {
+  GURL::Replacements replacements;
+  replacements.ClearQuery();
+  return url.ReplaceComponents(replacements) == history_url;
 }
 
 }  // namespace
@@ -340,6 +351,74 @@ history::HistoryService* HistoryClustersTabHelper::GetHistoryService() {
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   return HistoryServiceFactory::GetForProfileIfExists(
       profile, ServiceAccessType::IMPLICIT_ACCESS);
+}
+
+void HistoryClustersTabHelper::DidStartNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame()) {
+    return;
+  }
+
+  // We only care if the previously committed navigation was on the
+  // HistoryClusters UI.
+  if (!IsHistoryPage(navigation_handle->GetWebContents()->GetLastCommittedURL(),
+                     GURL(chrome::kChromeUIHistoryClustersURL))) {
+    return;
+  }
+
+  if (navigation_handle->IsSameDocument()) {
+    if (IsHistoryPage(navigation_handle->GetURL(),
+                      GURL(chrome::kChromeUIHistoryURL))) {
+      history_clusters::HistoryClustersMetricsLogger::GetOrCreateForPage(
+          navigation_handle->GetWebContents()->GetPrimaryPage())
+          ->increment_toggles_to_basic_history();
+    }
+    return;
+  }
+
+  if (!IsHistoryPage(navigation_handle->GetURL(),
+                     GURL(chrome::kChromeUIHistoryClustersURL)) &&
+      PageTransitionCoreTypeIs(navigation_handle->GetPageTransition(),
+                               ui::PAGE_TRANSITION_LINK)) {
+    // If the previously committed navigation was on the history clusters page,
+    // the current navigation is not on the history clusters UI and the
+    // transition type is a link click, then we know the user clicked on a
+    // result on the clusters page.
+    history_clusters::HistoryClustersMetricsLogger::GetOrCreateForPage(
+        navigation_handle->GetWebContents()->GetPrimaryPage())
+        ->set_final_state(
+            history_clusters::HistoryClustersFinalState::kLinkClick);
+  }
+}
+
+void HistoryClustersTabHelper::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame()) {
+    return;
+  }
+  if (navigation_handle->IsSameDocument()) {
+    return;
+  }
+
+  if (!IsHistoryPage(navigation_handle->GetURL(),
+                     GURL(chrome::kChromeUIHistoryClustersURL))) {
+    return;
+  }
+  // If the transition type is typed (meaning directly entered into the
+  // address bar), PAGE_TRANSITION_TYPED, or is partially typed and selected
+  // from the omnibox history, which results in PAGE_TRANSITION_RELOADS, this
+  // usage of the history clusters UI is considered a "direct" navigation.
+  if (PageTransitionCoreTypeIs(navigation_handle->GetPageTransition(),
+                               ui::PAGE_TRANSITION_TYPED) ||
+      PageTransitionCoreTypeIs(navigation_handle->GetPageTransition(),
+                               ui::PAGE_TRANSITION_RELOAD)) {
+    auto* logger =
+        history_clusters::HistoryClustersMetricsLogger::GetOrCreateForPage(
+            navigation_handle->GetWebContents()->GetPrimaryPage());
+    logger->set_navigation_id(navigation_handle->GetNavigationId());
+    logger->set_initial_state(
+        history_clusters::HistoryClustersInitialState::kDirectNavigation);
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(HistoryClustersTabHelper)

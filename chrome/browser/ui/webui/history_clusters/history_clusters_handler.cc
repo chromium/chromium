@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/history_clusters/history_clusters_metrics_logger.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -208,6 +209,15 @@ void HistoryClustersHandler::QueryClusters(mojom::QueryParamsPtr query_params) {
         << "Page called handler with non-null but invalid end_time.";
     end_time = *(query_params->end_time);
   }
+
+  if (!query.empty()) {
+    // If the query string is not empty, we assume that this clusters query
+    // is user generated.
+    HistoryClustersMetricsLogger::GetOrCreateForPage(
+        web_contents_->GetPrimaryPage())
+        ->increment_query_count();
+  }
+
   auto result_callback =
       base::BindOnce(&HistoryClustersHandler::OnClustersQueryResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(query_params));

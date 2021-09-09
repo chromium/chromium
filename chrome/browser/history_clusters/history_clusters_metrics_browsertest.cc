@@ -1,0 +1,156 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include <memory>
+
+#include "base/base64.h"
+#include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/history/history_test_utils.h"
+#include "chrome/browser/history_clusters/history_clusters_metrics_logger.h"
+#include "chrome/browser/history_clusters/history_clusters_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/webui/history/history_ui.h"
+#include "chrome/browser/ui/webui/history_clusters/history_clusters.mojom.h"
+#include "chrome/browser/ui/webui/history_clusters/history_clusters_handler.h"
+#include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "components/history_clusters/core/memories_features.h"
+#include "components/ukm/test_ukm_recorder.h"
+#include "components/variations/active_field_trials.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_source.h"
+
+namespace history_clusters {
+
+namespace {
+
+void ValidateHistoryClustersUKMEntry(const ukm::mojom::UkmEntry* entry,
+                                     HistoryClustersInitialState init_state,
+                                     HistoryClustersFinalState final_state,
+                                     int num_queries,
+                                     int num_toggles_to_basic_history) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  EXPECT_TRUE(ukm_recorder.EntryHasMetric(
+      entry, ukm::builders::HistoryClusters::kInitialStateName));
+  ukm_recorder.ExpectEntryMetric(
+      entry, ukm::builders::HistoryClusters::kInitialStateName,
+      static_cast<int>(init_state));
+  EXPECT_TRUE(ukm_recorder.EntryHasMetric(
+      entry, ukm::builders::HistoryClusters::kFinalStateName));
+  ukm_recorder.ExpectEntryMetric(
+      entry, ukm::builders::HistoryClusters::kFinalStateName,
+      static_cast<int>(final_state));
+  EXPECT_TRUE(ukm_recorder.EntryHasMetric(
+      entry, ukm::builders::HistoryClusters::kNumQueriesName));
+  ukm_recorder.ExpectEntryMetric(
+      entry, ukm::builders::HistoryClusters::kNumQueriesName, num_queries);
+  EXPECT_TRUE(ukm_recorder.EntryHasMetric(
+      entry, ukm::builders::HistoryClusters::kNumTogglesToBasicHistoryName));
+  ukm_recorder.ExpectEntryMetric(
+      entry, ukm::builders::HistoryClusters::kNumTogglesToBasicHistoryName,
+      num_toggles_to_basic_history);
+}
+
+}  // namespace
+
+class HistoryClustersMetricsBrowserTest : public InProcessBrowserTest {
+ public:
+  HistoryClustersMetricsBrowserTest() {
+    feature_list_.InitWithFeatures({history_clusters::kMemories}, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
+                       NoUKMEventOnOtherPages) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("https://foo.com")));
+  auto entries =
+      ukm_recorder.GetEntriesByName(ukm::builders::HistoryClusters::kEntryName);
+  EXPECT_EQ(0u, entries.size());
+}
+
+IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
+                       DirectNavigationNoInteraction) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIHistoryClustersURL)));
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("https://foo.com")));
+  auto entries =
+      ukm_recorder.GetEntriesByName(ukm::builders::HistoryClusters::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  auto* entry = entries[0];
+  ValidateHistoryClustersUKMEntry(
+      entry, HistoryClustersInitialState::kDirectNavigation,
+      HistoryClustersFinalState::kCloseTab, 0, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
+                       DirectNavigationWithQuery) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIHistoryClustersURL)));
+  EXPECT_TRUE(content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents()));
+  history_clusters::HistoryClustersHandler* page_handler =
+      browser()
+          ->tab_strip_model()
+          ->GetActiveWebContents()
+          ->GetWebUI()
+          ->GetController()
+          ->template GetAs<HistoryUI>()
+          ->GetHistoryClustersHandlerForTesting();
+
+  auto query_params = history_clusters::mojom::QueryParams::New();
+  query_params->query = "cat";
+  page_handler->QueryClusters(std::move(query_params));
+  query_params = history_clusters::mojom::QueryParams::New();
+  query_params->query = "dog";
+  page_handler->QueryClusters(std::move(query_params));
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("https://foo.com")));
+  auto entries =
+      ukm_recorder.GetEntriesByName(ukm::builders::HistoryClusters::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  auto* entry = entries[0];
+  ValidateHistoryClustersUKMEntry(
+      entry, HistoryClustersInitialState::kDirectNavigation,
+      HistoryClustersFinalState::kCloseTab, 2, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
+                       DirectNavigationWithToggleToBasic) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIHistoryClustersURL)));
+  EXPECT_TRUE(content::ExecJs(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      "document.querySelector('#history-app').shadowRoot.querySelector('#"
+      "content-side-bar').shadowRoot.querySelector('#history').click()",
+      content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1 /* world_id */));
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("https://foo.com")));
+  auto entries =
+      ukm_recorder.GetEntriesByName(ukm::builders::HistoryClusters::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  auto* ukm_entry = entries[0];
+  ValidateHistoryClustersUKMEntry(
+      ukm_entry, HistoryClustersInitialState::kDirectNavigation,
+      HistoryClustersFinalState::kCloseTab, 0, 1);
+}
+
+}  // namespace history_clusters

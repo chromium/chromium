@@ -38,6 +38,12 @@ class HistoryUI : public ui::MojoWebUIController {
   void BindInterface(mojo::PendingReceiver<history_clusters::mojom::PageHandler>
                          pending_page_handler);
 
+  // For testing only.
+  history_clusters::HistoryClustersHandler*
+  GetHistoryClustersHandlerForTesting() {
+    return history_clusters_handler_.get();
+  }
+
  private:
   std::unique_ptr<history_clusters::HistoryClustersHandler>
       history_clusters_handler_;

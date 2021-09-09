@@ -7538,6 +7538,40 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="HistoryClusters" singular="True">
+  <owner>chrome-memories@google.com</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Metrics that capture the iteractions with HistoryClusters, or Journeys, This
+    will be recorded once per visit to the HistoryClusters UI and logged when
+    the UI is closed or navigated away from.
+  </summary>
+  <metric name="FinalState" enum="HistoryClustersFinalState">
+    <summary>
+      The final state, or outcome, of an interaction on the HistoryClusters UI.
+    </summary>
+  </metric>
+  <metric name="InitialState" enum="HistoryClustersInitialState">
+    <summary>
+      The initial state that describes how an interaction with the
+      HistoryClusters UI was started.
+    </summary>
+  </metric>
+  <metric name="NumQueries">
+    <summary>
+      The number of times the user performed a query on the HistoryClusters UI
+      during this interaction. This can include partial queries that occur due
+      to the UI's query timing.
+    </summary>
+  </metric>
+  <metric name="NumTogglesToBasicHistory">
+    <summary>
+      The number of times the user toggled to the basic history page during this
+      interaction with the HistoryClusters UI.
+    </summary>
+  </metric>
+</event>
+
 <event name="HistoryManipulationIntervention">
   <owner>shivanisha@chromium.org</owner>
   <summary>
