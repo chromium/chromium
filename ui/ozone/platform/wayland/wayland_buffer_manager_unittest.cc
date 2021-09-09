@@ -1808,6 +1808,87 @@ TEST_P(WaylandBufferManagerTest, FencedRelease) {
   DestroyBufferAndSetTerminateExpectation(widget, kBufferId3, false /*fail*/);
 }
 
+// Tests that destroying a channel doesn't result in resetting surface state
+// and buffers can be attached after the channel has been reinitialized.
+TEST_P(WaylandBufferManagerTest,
+       CanSubmitBufferAfterChannelDestroyedAndInitialized) {
+  constexpr uint32_t kBufferId1 = 1;
+
+  const gfx::AcceleratedWidget widget = window_->GetWidget();
+  const gfx::Rect bounds = window_->GetBounds();
+
+  auto* mock_surface = server_.GetObject<wl::MockSurface>(
+      window_->root_surface()->GetSurfaceId());
+
+  EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(1);
+  EXPECT_CALL(*mock_surface, Frame(_)).Times(1);
+  EXPECT_CALL(*mock_surface, Commit()).Times(1);
+
+  auto mock_surface_gpu =
+      std::make_unique<MockSurfaceGpu>(buffer_manager_gpu_.get(), widget);
+
+  auto* linux_dmabuf = server_.zwp_linux_dmabuf_v1();
+  EXPECT_CALL(*linux_dmabuf, CreateParams(_, _, _)).Times(1);
+  CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/, kBufferId1);
+
+  Sync();
+
+  ProcessCreatedBufferResourcesWithExpectation(1u /* expected size */,
+                                               false /* fail */);
+
+  EXPECT_CALL(*mock_surface_gpu.get(),
+              OnSubmission(kBufferId1, gfx::SwapResult::SWAP_ACK, _))
+      .Times(1);
+  EXPECT_CALL(*mock_surface_gpu.get(), OnPresentation(kBufferId1, _)).Times(1);
+
+  buffer_manager_gpu_->CommitBuffer(widget, kBufferId1, bounds, kDefaultScale,
+                                    bounds);
+  Sync();
+
+  // Null buffer shall be attached when channel is destroyed.
+  EXPECT_CALL(*mock_surface, Attach(nullptr, _, _)).Times(1);
+  EXPECT_CALL(*mock_surface, Commit()).Times(1);
+
+  mock_surface->SendFrameCallback();
+
+  // After the channel has been destroyed and surface state has been reset, the
+  // interface should bind again and it still should be possible to attach
+  // buffers as WaylandBufferManagerHost::Surface::ResetSurfaceContents mustn't
+  // reset the state of |configured|.
+  manager_host_->OnChannelDestroyed();
+  manager_host_ = connection_->buffer_manager_host();
+
+  Sync();
+
+  auto interface_ptr = manager_host_->BindInterface();
+  buffer_manager_gpu_->Initialize(std::move(interface_ptr), {}, false, true,
+                                  false);
+
+  EXPECT_CALL(*linux_dmabuf, CreateParams(_, _, _)).Times(1);
+  CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/, kBufferId1);
+
+  Sync();
+
+  ProcessCreatedBufferResourcesWithExpectation(1u /* expected size */,
+                                               false /* fail */);
+
+  // The buffer must be attached.
+  EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(1);
+  EXPECT_CALL(*mock_surface, Frame(_)).Times(1);
+  EXPECT_CALL(*mock_surface, Commit()).Times(1);
+
+  EXPECT_CALL(*mock_surface_gpu.get(),
+              OnSubmission(kBufferId1, gfx::SwapResult::SWAP_ACK, _))
+      .Times(1);
+  EXPECT_CALL(*mock_surface_gpu.get(), OnPresentation(kBufferId1, _)).Times(1);
+
+  buffer_manager_gpu_->CommitBuffer(widget, kBufferId1, bounds, kDefaultScale,
+                                    bounds);
+  Sync();
+
+  DestroyBufferAndSetTerminateExpectation(widget, kBufferId1, false /*fail*/);
+}
+
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandBufferManagerTest,
                          Values(wl::ServerConfig{

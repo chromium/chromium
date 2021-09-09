@@ -244,11 +244,14 @@ class WaylandBufferManagerHost::Surface {
     }
     MaybeProcessSubmittedBuffers();
 
-    // ResetSurfaceContents happens upon WaylandWindow::Hide call, which
+    // 1) ResetSurfaceContents happens upon WaylandWindow::Hide call, which
     // destroys xdg_surface, xdg_popup, etc. They are going to be reinitialized
     // once WaylandWindow::Show is called. Thus, they will have to be configured
     // once again before buffers can be attached.
-    configured_ = false;
+    // 2) ResetSurfaceContents can also be called if gpu crashed and a channel
+    // has been destroyed. Thus, the surface's configure state has to be
+    // verified at this point.
+    configured_ = wayland_surface_->root_window()->IsSurfaceConfigured();
 
     connection_->ScheduleFlush();
   }
