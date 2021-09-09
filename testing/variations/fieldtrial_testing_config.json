@@ -2430,7 +2430,19 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledWithoutObservers",
+                    "params": {
+                        "disable_observers": "true"
+                    },
+                    "enable_features": [
+                        "ContentLanguagesInLanguagePicker"
+                    ]
+                },
+                {
+                    "name": "EnabledWithObservers",
+                    "params": {
+                        "disable_observers": "false"
+                    },
                     "enable_features": [
                         "ContentLanguagesInLanguagePicker"
                     ]
