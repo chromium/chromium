@@ -3948,9 +3948,14 @@ void RenderProcessHostImpl::Cleanup() {
         });
     return;
   } else if (worker_ref_count_ != 0) {
-    TRACE_EVENT2(
+    TRACE_EVENT(
         "shutdown", "RenderProcessHostImpl::Cleanup : Have worker_ref.",
-        "render_process_host", this, "worker_ref_count_", worker_ref_count_);
+        ChromeTrackEvent::kRenderProcessHost, *this,
+        [&](perfetto::EventContext ctx) {
+          auto* proto =
+              ctx.event<ChromeTrackEvent>()->set_render_process_host_cleanup();
+          proto->set_worker_ref_count(worker_ref_count_);
+        });
     return;
   }
 
