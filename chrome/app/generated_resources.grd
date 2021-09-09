@@ -6663,6 +6663,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <message name="IDS_PASSWORD_MANAGER_ACCESSORY_GENERATE_PASSWORD_BUTTON_TITLE" desc="Text for the button used to generate a password.">
           Suggest strong password
         </message>
+        <message name="IDS_PASSWORD_GENERATION_DIALOG_DESCRIPTION" desc="Text for password generation dialog, explaining that the password will be saved in Google Account.">
+          Password will be saved in your Google Account, <ph name="ACCOUNT">$1<ex>user@gmail.com</ex></ph>. You won’t have to remember it.
+        </message>
         <message name="IDS_CONFIRM_USERNAME_DIALOG_TITLE" desc="The title of the confirm username dialog." formatter_data="android_java">
           Confirm your username
         </message>
