@@ -130,6 +130,8 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("update", {Param("app_id", app_id)});
   }
 
+  void UpdateAll() const override { RunCommand("update_all", {}); }
+
   void RegisterApp(const std::string& app_id) const override {
     RunCommand("register_app", {Param("app_id", app_id)});
   }

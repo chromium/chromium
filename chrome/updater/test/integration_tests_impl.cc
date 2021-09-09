@@ -146,6 +146,17 @@ void Update(const std::string& app_id) {
   loop.Run();
 }
 
+void UpdateAll() {
+  // CreateUpdateService implicitly relies on GetUpdaterScope.
+  scoped_refptr<UpdateService> update_service = CreateUpdateService();
+  base::RunLoop loop;
+  update_service->UpdateAll(
+      base::DoNothing(),
+      base::BindOnce(base::BindLambdaForTesting(
+          [&loop](UpdateService::Result result_unused) { loop.Quit(); })));
+  loop.Run();
+}
+
 void SetupFakeUpdaterPrefs(const base::Version& version) {
   scoped_refptr<GlobalPrefs> global_prefs =
       CreateGlobalPrefs(GetUpdaterScope());

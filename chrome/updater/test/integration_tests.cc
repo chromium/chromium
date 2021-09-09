@@ -260,6 +260,8 @@ class IntegrationTest : public ::testing::Test {
 
   void Update(const std::string& app_id) { test_commands_->Update(app_id); }
 
+  void UpdateAll() { test_commands_->UpdateAll(); }
+
   base::FilePath GetDifferentUserPath() {
     return test_commands_->GetDifferentUserPath();
   }
@@ -434,6 +436,19 @@ TEST_F(IntegrationTest, MultipleWakesOneNetRequest) {
   ExpectNoUpdateSequence(&test_server, kUpdaterAppId);
   RunWake(0);
   RunWake(0);
+
+  Uninstall();
+  Clean();
+}
+
+TEST_F(IntegrationTest, MultipleUpdateAllsMultipleNetRequests) {
+  ScopedServer test_server(test_commands_);
+  Install();
+
+  ExpectNoUpdateSequence(&test_server, kUpdaterAppId);
+  UpdateAll();
+  ExpectNoUpdateSequence(&test_server, kUpdaterAppId);
+  UpdateAll();
 
   Uninstall();
   Clean();

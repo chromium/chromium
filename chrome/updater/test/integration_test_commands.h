@@ -45,6 +45,7 @@ class IntegrationTestCommands
                                 const base::Version& version) const = 0;
   virtual void RunWake(int exit_code) const = 0;
   virtual void Update(const std::string& app_id) const = 0;
+  virtual void UpdateAll() const = 0;
   virtual void PrintLog() const = 0;
   virtual base::FilePath GetDifferentUserPath() const = 0;
   virtual void WaitForServerExit() const = 0;

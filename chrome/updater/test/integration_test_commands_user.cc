@@ -116,6 +116,8 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::Update(app_id);
   }
 
+  void UpdateAll() const override { updater::test::UpdateAll(); }
+
   void RegisterApp(const std::string& app_id) const override {
     updater::test::RegisterApp(app_id);
   }

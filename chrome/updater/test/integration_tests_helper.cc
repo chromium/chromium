@@ -203,6 +203,7 @@ void AppTestHelper::FirstTaskRun() {
     {"print_log", WithSystemScope(Wrap(&PrintLog))},
     {"run_wake", WithSwitch("exit_code", WithSystemScope(Wrap(&RunWake)))},
     {"update", WithSwitch("app_id", Wrap(&Update))},
+    {"update_all", Wrap(&UpdateAll)},
     {"register_app", WithSwitch("app_id", Wrap(&RegisterApp))},
     {"set_existence_checker_path",
      WithSwitch("path", WithSwitch("app_id", Wrap(&SetExistenceCheckerPath)))},

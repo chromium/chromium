@@ -82,6 +82,9 @@ void RunWake(UpdaterScope scope, int exit_code);
 // Invokes the active instance's UpdateService::Update (via RPC) for an app.
 void Update(const std::string& app_id);
 
+// Invokes the active instance's UpdateService::UpdateAll (via RPC).
+void UpdateAll();
+
 // Runs the command and waits for it to exit or time out.
 bool Run(UpdaterScope scope, base::CommandLine command_line, int* exit_code);
 
