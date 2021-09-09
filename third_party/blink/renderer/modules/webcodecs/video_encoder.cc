@@ -214,6 +214,9 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
       return nullptr;
     }
     result->options.framerate = config->framerate();
+  } else {
+    result->options.framerate =
+        media::VideoEncodeAccelerator::kDefaultFramerate;
   }
 
   // https://w3c.github.io/webrtc-svc/
