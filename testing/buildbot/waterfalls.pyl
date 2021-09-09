@@ -1484,7 +1484,7 @@
           'all',
         ],
         'test_suites': {
-          'gtest_tests': 'linux_chromeos_gtests',
+          'gtest_tests': 'linux_chromeos_specific_and_lacros_dependent_gtests',
         },
       },
       'linux-lacros-dbg': {

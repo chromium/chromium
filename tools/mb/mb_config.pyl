@@ -147,7 +147,7 @@
       'lacros-amd64-generic-rel': 'chromeos_amd64-generic_lacros_rel',
       'lacros-arm-generic-rel': 'chromeos_arm-generic_lacros_rel',
       'linux-ash-chromium-generator-rel': 'chromeos_with_codecs_release_bot',
-      'linux-chromeos-rel': 'chromeos_with_codecs_release_bot',
+      'linux-chromeos-rel': 'chromeos_with_codecs_with_lacros_release_bot',
       'linux-chromeos-dbg': 'chromeos_with_codecs_debug_bot',
       'linux-lacros-builder-rel': 'lacros_on_linux_release_bot',
       'linux-lacros-dbg': 'lacros_on_linux_debug_bot',
@@ -1894,6 +1894,10 @@
       'chromeos_with_codecs', 'release_bot',
     ],
 
+    'chromeos_with_codecs_with_lacros_release_bot': [
+      'chromeos_with_codecs', 'release_bot', 'also_build_lacros_chrome'
+    ],
+
     'chromeos_with_codecs_release_bot_coverage': [
       'chromeos_with_codecs', 'release_bot', 'use_clang_coverage',
     ],
@@ -1908,7 +1912,7 @@
 
     # Keep in sync with chromeos_with_codecs_release_trybot.
     'chromeos_with_codecs_release_trybot_code_coverage': [
-      'chromeos_with_codecs', 'release_trybot', 'no_symbols',
+      'chromeos_with_codecs', 'release_trybot', 'no_symbols', 'also_build_lacros_chrome',
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
     ],
 
@@ -3443,6 +3447,10 @@
 
     'also_build_ash_chrome': {
       'gn_args': 'also_build_ash_chrome=true',
+    },
+
+    'also_build_lacros_chrome': {
+      'gn_args': 'also_build_lacros_chrome=true',
     },
 
     'libfuzzer': { 'gn_args': 'use_libfuzzer=true' },

@@ -4368,6 +4368,19 @@
       'unit_tests': {},
     },
 
+    'linux_chromeos_browser_tests_require_lacros': {
+      'browser_tests_require_lacros': {
+        'name': 'browser_tests_require_lacros',
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-chromeos.browser_tests.require_lacros.filter',
+          '--lacros-chrome-path=lacros_clang_x64',
+        ],
+        # TODO(crbug.com/1195974): Remove experiment after verify it's stable.
+        'experiment_percentage': 100,
+        'test': 'browser_tests',
+      },
+    },
+
     'linux_chromeos_lacros_gtests': {
       # Chrome OS (Ash) and Lacros only.
       'chromeos_unittests': {},
@@ -6889,6 +6902,23 @@
       'linux_chromeos_oobe_specific_tests',
       'linux_chromeos_skia_renderer_specific_gtests',
       'linux_chromeos_specific_gtests',
+      'linux_flavor_specific_chromium_gtests',
+      'non_android_chromium_gtests',
+    ],
+
+    'linux_chromeos_specific_and_lacros_dependent_gtests': [
+      # This is:
+      #   linux_chromeos_gtests
+      #   + 'linux_chromeos_browser_tests_require_lacros'
+      'aura_gtests',
+      'chromium_gtests',
+      'chromium_gtests_for_devices_with_graphical_output',
+      'chromium_gtests_for_linux_and_chromeos_only',
+      'chromium_gtests_for_win_and_linux_only',
+      'linux_chromeos_lacros_gtests',
+      'linux_chromeos_skia_renderer_specific_gtests',
+      'linux_chromeos_specific_gtests',
+      'linux_chromeos_browser_tests_require_lacros',
       'linux_flavor_specific_chromium_gtests',
       'non_android_chromium_gtests',
     ],

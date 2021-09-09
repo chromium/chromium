@@ -65,6 +65,7 @@ source_set("browser_tests_filters") {
     "//testing/buildbot/filters/chromeos.msan.browser_tests.oobe_negative.filter",
     "//testing/buildbot/filters/chromeos.msan.browser_tests.oobe_positive.filter",
     "//testing/buildbot/filters/code_coverage.browser_tests.filter",
+    "//testing/buildbot/filters/linux-chromeos.browser_tests.require_lacros.filter",
     "//testing/buildbot/filters/linux-lacros.browser_tests.filter",
     "//testing/buildbot/filters/mac.mac-rel.browser_tests.filter",
     "//testing/buildbot/filters/ozone-linux.wayland_browser_tests.filter",
