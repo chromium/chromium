@@ -478,6 +478,8 @@ public class StartSurfaceTest {
     @Feature({"StartSurface"})
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/single"})
+    @DisableIf.
+        Build(sdk_is_less_than = Build.VERSION_CODES.N, message = "Flaky, see crbug.com/1246457")
     public void testShow_SingleAsHomepage_FromResumeShowStart() throws Exception {
         // clang-format on
         if (!mImmediateReturn) {
@@ -1026,8 +1028,12 @@ public class StartSurfaceTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
+    // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/single"})
+    @DisableIf.
+        Build(sdk_is_less_than = Build.VERSION_CODES.N, message = "Flaky, see crbug.com/1246457")
     public void testShow_SingleAsHomepage_BackButtonWithTabSwitcher() {
+        // clang-format on
         singleAsHomepage_BackButtonWithTabSwitcher();
     }
 
@@ -1036,6 +1042,8 @@ public class StartSurfaceTest {
     @Feature({"StartSurface"})
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/single/show_last_active_tab_only/true"})
+    @DisableIf.
+        Build(sdk_is_less_than = Build.VERSION_CODES.N, message = "Flaky, see crbug.com/1246457")
     public void testShow_SingleAsHomepageV2_BackButtonWithTabSwitcher() {
         // clang-format on
         singleAsHomepage_BackButtonWithTabSwitcher();
@@ -1145,6 +1153,8 @@ public class StartSurfaceTest {
     @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/single"})
+    @DisableIf.
+        Build(sdk_is_less_than = Build.VERSION_CODES.N, message = "Flaky, see crbug.com/1246457")
     public void testShow_SingleAsHomepage_BackButtonOnCarouselTabSwitcher() {
         // clang-format on
         if (!mImmediateReturn) {
@@ -1800,8 +1810,12 @@ public class StartSurfaceTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
+    // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/single"})
+    @DisableIf.
+        Build(sdk_is_less_than = Build.VERSION_CODES.N, message = "Flaky, see crbug.com/1246457")
     public void testSwipeBackOnStartSurfaceHomePage() throws ExecutionException {
+        // clang-format on
         // TODO(https://crbug.com/1093632): Requires 2 back press/gesture events now. Make this
         // work with a single event.
         Assume.assumeFalse(mImmediateReturn);
