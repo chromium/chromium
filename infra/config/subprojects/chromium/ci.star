@@ -5419,7 +5419,7 @@ ci.linux_builder(
     ),
     cores = 32,
     executable = "recipe:swarming/deterministic_build",
-    execution_timeout = 6 * time.hour,
+    execution_timeout = 7 * time.hour,
     main_console_view = "main",
 )
 
@@ -6125,6 +6125,7 @@ ci.memory_builder(
         category = "cros|msan",
         short_name = "tst",
     ),
+    execution_timeout = 4 * time.hour,
     triggered_by = ["Linux ChromiumOS MSan Builder"],
     main_console_view = "main",
 )
