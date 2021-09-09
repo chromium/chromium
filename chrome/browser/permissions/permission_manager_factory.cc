@@ -41,7 +41,7 @@
 #if defined(OS_ANDROID)
 #include "chrome/browser/geolocation/geolocation_permission_context_delegate_android.h"
 #else
-#include "chrome/browser/web_applications/components/file_handling_permission_context.h"
+#include "chrome/browser/web_applications/file_handling_permission_context.h"
 #endif  // defined(OS_ANDROID)
 
 #if defined(OS_MAC)

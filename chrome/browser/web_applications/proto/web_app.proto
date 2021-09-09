@@ -166,7 +166,7 @@ message WebAppProto {
   repeated int32 downloaded_icon_sizes_purpose_maskable = 23;
 
   // Run on OS Login modes for web app.
-  // See chrome/browser/web_applications/components/web_app_constants.h
+  // See chrome/browser/web_applications/web_app_constants.h
   // for web_app::RunOnOsLoginMode definition, which this enum should be in sync
   // with.
   enum RunOnOsLoginMode {

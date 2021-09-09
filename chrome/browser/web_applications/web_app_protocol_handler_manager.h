@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_PROTOCOL_HANDLER_MANAGER_H_
 
 #include "base/bind.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "content/public/common/custom_handlers/protocol_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

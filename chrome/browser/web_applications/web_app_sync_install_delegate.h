@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "chrome/browser/web_applications/components/web_app_constants.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 
 namespace web_app {
 

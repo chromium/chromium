@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 #include "chromeos/components/connectivity_diagnostics/url_constants.h"
 #include "chromeos/grit/connectivity_diagnostics_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"

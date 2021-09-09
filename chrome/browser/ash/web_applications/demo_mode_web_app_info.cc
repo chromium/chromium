@@ -9,7 +9,7 @@
 #include "ash/webui/demo_mode_app_ui/url_constants.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 
 std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForDemoModeApp() {
   std::unique_ptr<WebApplicationInfo> info =

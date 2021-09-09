@@ -19,7 +19,7 @@
 #include "chrome/browser/apps/app_shim/app_shim_host_mac.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/avatar_menu.h"
-#include "chrome/browser/web_applications/components/app_shim_registry_mac.h"
+#include "chrome/browser/web_applications/app_shim_registry_mac.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/mac/app_shim.mojom.h"

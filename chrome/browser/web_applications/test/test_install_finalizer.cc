@@ -12,10 +12,10 @@
 #include "base/notreached.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/web_applications/components/web_app_constants.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 #include "components/crx_file/id_util.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 

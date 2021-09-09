@@ -186,7 +186,7 @@ This is where web apps are created, updated and removed. The install manager
 spawns [`WebAppInstallTask`](web_app_install_task.h)s for each "job".
 
 Installation comes in many different forms from a simple "here's all the
-[info](components/web_application_info.h) necessary please install it" to
+[info](web_application_info.h) necessary please install it" to
 "please install the site currently loaded in this web contents and fetch all the
 manifest data it specifies" with a few inbetweens.
 
@@ -198,7 +198,7 @@ This is for all installs that are not initiated by the user. This includes
 [policy installed apps](policy/web_app_policy_manager.h) and
 [system web apps](system_web_apps/system_web_app_manager.h).
 
-These all specify a set of [install URLs](components/external_install_options.h)
+These all specify a set of [install URLs](external_install_options.h)
 which the `ExternallyManagedAppManager` synchronises the set of currently
 installed web apps with.
 
@@ -207,7 +207,7 @@ installed web apps with.
 
 This is the tail end of the installation process where we write all our web app
 metadata to [disk](web_app_database.h) and deploy OS integrations (like
-[desktop shortcuts](components/web_app_shortcut.h) and
+[desktop shortcuts](web_app_shortcut.h) and
 [file handlers](web_app_file_handler_manager.h)) using the
 [`OsIntegrationManager`](os_integration_manager.h).
 

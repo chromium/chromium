@@ -383,7 +383,7 @@
 #if defined(OS_MAC)
 #include "chrome/browser/ui/cocoa/apps/quit_with_apps_controller_mac.h"
 #include "chrome/browser/ui/cocoa/confirm_quit.h"
-#include "chrome/browser/web_applications/components/app_shim_registry_mac.h"
+#include "chrome/browser/web_applications/app_shim_registry_mac.h"
 #endif
 
 #if defined(OS_WIN)
@@ -405,7 +405,7 @@
 
 #if defined(OS_WIN) || defined(OS_MAC) || \
     (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
-#include "chrome/browser/web_applications/components/url_handler_prefs.h"
+#include "chrome/browser/web_applications/url_handler_prefs.h"
 #endif
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch

@@ -7,8 +7,8 @@
 #include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/components/web_app_protocol_handler_registration.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_protocol_handler_registration.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 

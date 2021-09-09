@@ -7,9 +7,9 @@
 
 #include <memory>
 
-#include "chrome/browser/web_applications/components/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 
 struct WebApplicationInfo;
 class GURL;

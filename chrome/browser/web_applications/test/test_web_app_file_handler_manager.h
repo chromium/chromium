@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_file_handler_manager.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "url/gurl.h"
 
 class Profile;

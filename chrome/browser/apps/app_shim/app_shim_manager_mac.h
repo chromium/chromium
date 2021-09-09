@@ -21,7 +21,7 @@
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list_observer.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 
 class Profile;
 class ProfileManager;

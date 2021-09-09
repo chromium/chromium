@@ -10,7 +10,7 @@
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/device_api/device_attribute_api.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/components/policy/web_app_policy_constants.h"
+#include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"

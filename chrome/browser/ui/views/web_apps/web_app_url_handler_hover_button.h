@@ -9,7 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/web_apps/web_app_hover_button.h"
-#include "chrome/browser/web_applications/components/url_handler_launch_params.h"
+#include "chrome/browser/web_applications/url_handler_launch_params.h"
 #include "ui/views/controls/button/button.h"
 
 class GURL;

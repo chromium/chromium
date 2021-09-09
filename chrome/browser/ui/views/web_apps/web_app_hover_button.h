@@ -10,8 +10,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/hover_button.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/button.h"

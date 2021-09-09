@@ -9,7 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/common/buildflags.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "url/gurl.h"

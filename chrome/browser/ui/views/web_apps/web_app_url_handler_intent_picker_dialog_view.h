@@ -10,7 +10,7 @@
 
 #include "base/containers/flat_set.h"
 #include "chrome/browser/ui/browser_dialogs.h"
-#include "chrome/browser/web_applications/components/url_handler_launch_params.h"
+#include "chrome/browser/web_applications/url_handler_launch_params.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"

@@ -7,7 +7,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/cxx17_backports.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/web_applications/components/web_app_id_constants.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "extensions/common/constants.h"

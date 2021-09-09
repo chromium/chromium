@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
 class Browser;

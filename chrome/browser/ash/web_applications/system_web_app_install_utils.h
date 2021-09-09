@@ -8,7 +8,7 @@
 #include <initializer_list>
 #include <string>
 
-#include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 
 class GURL;
 

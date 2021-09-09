@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/components/web_app_file_handler_registration.h"
+#include "chrome/browser/web_applications/web_app_file_handler_registration.h"
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -13,10 +13,10 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration_linux.h"
-#include "chrome/browser/web_applications/components/web_app_shortcut.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_shortcut.h"
 
 namespace web_app {
 

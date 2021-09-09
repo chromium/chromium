@@ -23,7 +23,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/services/app_service/public/cpp/instance_update.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"

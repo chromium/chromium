@@ -8,7 +8,7 @@
 #include <string>
 
 #include "chrome/browser/ui/browser_dialogs.h"
-#include "chrome/browser/web_applications/components/web_app_callback_app_identity.h"
+#include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 

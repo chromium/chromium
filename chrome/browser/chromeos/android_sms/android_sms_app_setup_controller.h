@@ -7,7 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 

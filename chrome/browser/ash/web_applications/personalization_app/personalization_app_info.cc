@@ -8,7 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 #include "chromeos/components/personalization_app/personalization_app_url_constants.h"
 #include "chromeos/grit/chromeos_personalization_app_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"

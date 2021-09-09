@@ -22,7 +22,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
-#include "chrome/browser/web_applications/components/url_handler_launch_params.h"
+#include "chrome/browser/web_applications/url_handler_launch_params.h"
 #include "chrome/browser/web_applications/url_handler_manager_impl.h"
 #include "chrome/common/chrome_switches.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

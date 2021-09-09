@@ -43,7 +43,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/shell_integration.h"
-#include "chrome/browser/web_applications/components/web_app_shortcut.h"
+#include "chrome/browser/web_applications/web_app_shortcut.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
