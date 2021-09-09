@@ -81,6 +81,20 @@ class Metrics {
     kMaxValue = OB_NO_ANSWER
   };
 
+  // The different actions that can be performed on TTS button click.
+  //
+  // This enum is used in histograms, do not remove/renumber entries. Only add
+  // at the end and update kMaxValue. Also remember to update the
+  // AutofillAssistantTextToSpeechButtonAction enum listing in
+  // tools/metrics/histograms/enums.xml.
+  enum class TtsButtonAction {
+    PLAY_TTS = 0,
+    DISABLE_BUTTON = 1,
+    ENABLE_BUTTON_AND_PLAY_TTS = 2,
+
+    kMaxValue = ENABLE_BUTTON_AND_PLAY_TTS
+  };
+
   // The different ways for payment request to succeed or fail, broken down by
   // whether the PR initially presented to the user was completely pre-filled
   // or not.
@@ -402,6 +416,7 @@ class Metrics {
                                           ukm::SourceId source_id,
                                           InChromeTriggerAction event);
   static void RecordOnboardingResult(OnBoarding event);
+  static void RecordTtsButtonAction(TtsButtonAction action);
   static void RecordFeatureModuleInstallation(FeatureModuleInstallation event);
   static void RecordTriggerConditionEvaluationTime(
       ukm::UkmRecorder* ukm_recorder,

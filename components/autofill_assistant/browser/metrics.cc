@@ -21,6 +21,8 @@ const char* const kIntentNotSet = "NotSet";
 namespace {
 const char kDropOutEnumName[] = "Android.AutofillAssistant.DropOutReason";
 const char kOnboardingEnumName[] = "Android.AutofillAssistant.OnBoarding";
+const char kTtsButtonActionEnumName[] =
+    "Android.AutofillAssistant.TextToSpeech.ButtonAction";
 const char kFeatureModuleInstallationEnumName[] =
     "Android.AutofillAssistant.FeatureModuleInstallation";
 const char kPaymentRequestPrefilledName[] =
@@ -215,6 +217,12 @@ void Metrics::RecordInChromeTriggerAction(ukm::UkmRecorder* ukm_recorder,
 void Metrics::RecordOnboardingResult(OnBoarding event) {
   DCHECK_LE(event, OnBoarding::kMaxValue);
   base::UmaHistogramEnumeration(kOnboardingEnumName, event);
+}
+
+// static
+void Metrics::RecordTtsButtonAction(TtsButtonAction action) {
+  DCHECK_LE(action, TtsButtonAction::kMaxValue);
+  base::UmaHistogramEnumeration(kTtsButtonActionEnumName, action);
 }
 
 // static

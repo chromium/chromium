@@ -1469,16 +1469,20 @@ void Controller::OnTtsButtonClicked() {
     case TtsButtonState::DEFAULT:
       // Will fire a TTS_START event.
       tts_controller_->Speak(tts_message_, GetDisplayStringsLocale());
+      Metrics::RecordTtsButtonAction(Metrics::TtsButtonAction::PLAY_TTS);
       break;
     case TtsButtonState::PLAYING:
       // Will not cause any TTS event.
       tts_controller_->Stop();
       SetTtsButtonState(TtsButtonState::DISABLED);
+      Metrics::RecordTtsButtonAction(Metrics::TtsButtonAction::DISABLE_BUTTON);
       break;
     case TtsButtonState::DISABLED:
       SetTtsButtonState(TtsButtonState::DEFAULT);
       // Will fire a TTS_START event.
       tts_controller_->Speak(tts_message_, GetDisplayStringsLocale());
+      Metrics::RecordTtsButtonAction(
+          Metrics::TtsButtonAction::ENABLE_BUTTON_AND_PLAY_TTS);
       break;
   }
 }

@@ -5438,6 +5438,12 @@ others/histograms.xml -->
   <int value="3" label="Initially incomplete &amp; Failure"/>
 </enum>
 
+<enum name="AutofillAssistantTextToSpeechButtonAction">
+  <int value="0" label="Play TTS"/>
+  <int value="1" label="Disable button"/>
+  <int value="2" label="Enable button and play TTS"/>
+</enum>
+
 <enum name="AutofillAssistantTriggerUIType">
   <int value="0" label="UNSPECIFIED_TRIGGER_UI_TYPE"/>
   <int value="1" label="(External) Shopping cart, first time user"/>
