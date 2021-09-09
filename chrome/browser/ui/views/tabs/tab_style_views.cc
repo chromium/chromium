@@ -504,7 +504,10 @@ void GM2TabStyle::PaintTab(gfx::Canvas* canvas) const {
 }
 
 void GM2TabStyle::SetHoverLocation(const gfx::Point& location) {
-  if (hover_controller_)
+  // There's a "glow" that gets drawn over inactive tabs based on the mouse's
+  // location. There is no glow for the active tab so don't update the hover
+  // controller and incur a redraw.
+  if (hover_controller_ && !tab_->IsActive())
     hover_controller_->SetLocation(location);
 }
 
