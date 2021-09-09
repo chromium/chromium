@@ -397,7 +397,7 @@ void RmadClient::Initialize(dbus::Bus* bus) {
 // static
 void RmadClient::InitializeFake() {
   FakeRmadClient* fake = new FakeRmadClient();
-  // Set up fake state.
+  // Set up fake component repair state.
   rmad::GetStateReply components_repair_state =
       CreateStateReply(rmad::RmadState::kComponentsRepair, rmad::RMAD_ERROR_OK);
   rmad::ComponentsRepairState::ComponentRepairStatus* component =
@@ -411,6 +411,7 @@ void RmadClient::InitializeFake() {
 
   std::vector<rmad::GetStateReply> fake_states = {
       CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK),
+      components_repair_state,
       CreateStateReply(rmad::RmadState::kDeviceDestination,
                        rmad::RMAD_ERROR_OK),
       CreateStateReply(rmad::RmadState::kWpDisableMethod, rmad::RMAD_ERROR_OK),
