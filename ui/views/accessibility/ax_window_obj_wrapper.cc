@@ -80,6 +80,26 @@ std::string GetWindowName(aura::Window* window) {
   return class_name;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+std::string GetPlatformWindowId(aura::Window* window) {
+  // This is a top level root window.
+  if (window->IsRootWindow() && !window->parent()) {
+    // On desktop aura there is one WindowTreeHost per top-level window.
+    aura::WindowTreeHost* window_tree_host = window->GetHost();
+    if (window_tree_host) {
+      // Lacros is based on Ozone/Wayland, which uses PlatformWindow and
+      // aura::WindowTreeHostPlatform.
+      aura::WindowTreeHostPlatform* window_tree_host_platform =
+          static_cast<aura::WindowTreeHostPlatform*>(window_tree_host);
+
+      return window_tree_host_platform->platform_window()->GetWindowUniqueId();
+    }
+  }
+
+  return std::string();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 }  // namespace
 
 AXWindowObjWrapper::AXWindowObjWrapper(AXAuraObjCache* aura_obj_cache,
@@ -113,6 +133,15 @@ bool AXWindowObjWrapper::HandleAccessibleAction(
 }
 
 AXAuraObjWrapper* AXWindowObjWrapper::GetParent() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  const std::string& window_id = GetPlatformWindowId(window_);
+
+  // In Lacros, the presence of a platform window id means it is parented to the
+  // Ash tree via the app id.
+  if (!window_id.empty())
+    return nullptr;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   aura::Window* parent = window_->parent();
   if (!parent)
     return nullptr;
@@ -139,8 +168,16 @@ void AXWindowObjWrapper::GetChildren(
   if (window_->GetProperty(ui::kAXConsiderInvisibleAndIgnoreChildren))
     return;
 
-  for (auto* child : window_->children())
+  for (auto* child : window_->children()) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // Ignore children that are rooting an app. Those nodes are already
+    // connected to Ash via app ids.
+    const std::string& window_id = GetPlatformWindowId(child);
+    if (!window_id.empty())
+      continue;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     out_children->push_back(aura_obj_cache_->GetOrCreate(child));
+  }
 
   // Also consider any associated widgets as children.
   Widget* widget = GetWidgetForWindow(window_);
@@ -150,25 +187,14 @@ void AXWindowObjWrapper::GetChildren(
 
 void AXWindowObjWrapper::Serialize(ui::AXNodeData* out_node_data) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // This is a top level root window.
-  if (window_->IsRootWindow() && !window_->parent()) {
-    // On desktop aura there is one WindowTreeHost per top-level window.
-    aura::WindowTreeHost* window_tree_host = window_->GetHost();
-    if (window_tree_host) {
-      // Lacros is based on Ozone/Wayland, which uses PlatformWindow and
-      // aura::WindowTreeHostPlatform.
-      aura::WindowTreeHostPlatform* window_tree_host_platform =
-          static_cast<aura::WindowTreeHostPlatform*>(window_tree_host);
-
-      const std::string window_id =
-          window_tree_host_platform->platform_window()->GetWindowUniqueId();
-
-      if (!window_id.empty())
-        out_node_data->AddStringAttribute(ax::mojom::StringAttribute::kAppId,
-                                          window_id);
-    }
-  }
+  // This app id connects this node with a node in the Ash tree (an
+  // components/exo shell surface).
+  const std::string& window_id = GetPlatformWindowId(window_);
+  if (!window_id.empty())
+    out_node_data->AddStringAttribute(ax::mojom::StringAttribute::kAppId,
+                                      window_id);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   if (window_->IsRootWindow() && !window_->parent() && window_->GetHost()) {
     ui::TextInputClient* client =
         window_->GetHost()->GetInputMethod()->GetTextInputClient();
