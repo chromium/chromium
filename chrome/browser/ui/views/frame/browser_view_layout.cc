@@ -564,13 +564,11 @@ void BrowserViewLayout::LayoutSidePanelView(
   if (!side_panel->GetVisible())
     return;
 
-  // Side panels should not exceed 1/3 the browser window's width.
-  const int side_panel_max_width = browser_view_->GetLocalBounds().width() / 3;
-
-  // Side panel occupies some of the container's space.
+  // Side panel occupies some of the container's space. The side panel should
+  // never occupy more space than is available in the content window.
   gfx::Rect side_panel_bounds = contents_container_bounds;
-  side_panel_bounds.set_width(
-      std::min(side_panel->GetPreferredSize().width(), side_panel_max_width));
+  side_panel_bounds.set_width(std::min(side_panel->GetPreferredSize().width(),
+                                       contents_container_bounds.width()));
 
   constexpr int kSidePanelSeparatorWidth = 1;
 
