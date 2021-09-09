@@ -242,8 +242,8 @@ CounterNode* CounterNode::AncestorNodeAcrossStyleContainment(
     if (!crossed_style_containment)
       continue;
     if (CounterMap* node_map = LayoutCounter::GetCounterMap(ancestor)) {
-      if (CounterNode* node = node_map->at(identifier))
-        return node;
+      if (node_map->Contains(identifier))
+        return node_map->at(identifier);
     }
   }
   return nullptr;
