@@ -29,6 +29,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "printing/backend/ipp_handler_map.h"
+#include "printing/backend/ipp_handlers.h"
 #include "printing/printing_features.h"
 #endif  // defined(OS_CHROMEOS)
 
@@ -304,10 +305,23 @@ size_t AddAttributes(const CupsOptionProvider& printer,
   return attr_count;
 }
 
+// Adds the "Input Tray" option to Advanced Attributes.
+size_t AddInputTray(const CupsOptionProvider& printer,
+                    AdvancedCapabilities* caps) {
+  size_t previous_size = caps->size();
+  // b/151324273: CUPS doesn't implement media-source in media-col-database like
+  // it should according to the IPP specs. However, it does implement a naked
+  // media-source attribute which we can use until the proper changes can be
+  // made to media-col-database.
+  KeywordHandler(printer, "media-source", caps);
+  return caps->size() - previous_size;
+}
+
 void ExtractAdvancedCapabilities(const CupsOptionProvider& printer,
                                  PrinterSemanticCapsAndDefaults* printer_info) {
   AdvancedCapabilities* options = &printer_info->advanced_capabilities;
-  size_t attr_count = AddAttributes(printer, kIppJobAttributes, options);
+  size_t attr_count = AddInputTray(printer, options);
+  attr_count += AddAttributes(printer, kIppJobAttributes, options);
   attr_count += AddAttributes(printer, kIppDocumentAttributes, options);
   base::UmaHistogramCounts1000("Printing.CUPS.IppAttributesCount", attr_count);
 }
