@@ -102,21 +102,7 @@ class CORE_EXPORT DocumentAnimations final
   // WithPendingAnimationUpdate.
   void ApplyPendingElementUpdates();
 
-  // When calculating transition updates, we need the old style of the element
-  // to set up the transition correctly. Container queries can cause the style
-  // to be calculated (and replaced on Element) multiple times before we have
-  // the final after-change ComputedStyle, hence we need to store the "original"
-  // old style for affected elements in order to avoid triggering transitions
-  // based on some abandoned and intermediate ComputedStyle.
-  //
-  // This function takes the current ComputedStyle of the element, and stores
-  // it as the old style. If an old style was already stored for this Element,
-  // this function does nothing.
-  //
-  // The old styles are cleared when ApplyPendingElementUpdates is called.
   void AddPendingOldStyleForElement(Element&);
-
-  absl::optional<const ComputedStyle*> GetPendingOldStyle(Element&) const;
 
   const HeapHashSet<WeakMember<AnimationTimeline>>& GetTimelinesForTesting()
       const {
@@ -125,10 +111,6 @@ class CORE_EXPORT DocumentAnimations final
   const HeapHashSet<WeakMember<AnimationTimeline>>&
   GetUnvalidatedTimelinesForTesting() const {
     return unvalidated_timelines_;
-  }
-  const HeapHashMap<Member<Element>, scoped_refptr<const ComputedStyle>>&
-  GetPendingOldStylesForTest() const {
-    return pending_old_styles_;
   }
   uint64_t current_transition_generation_;
   void Trace(Visitor*) const;
@@ -145,9 +127,6 @@ class CORE_EXPORT DocumentAnimations final
   Member<Document> document_;
   HeapHashSet<WeakMember<AnimationTimeline>> timelines_;
   HeapHashSet<WeakMember<AnimationTimeline>> unvalidated_timelines_;
-  HeapHashSet<WeakMember<Element>> elements_with_pending_updates_;
-  HeapHashMap<Member<Element>, scoped_refptr<const ComputedStyle>>
-      pending_old_styles_;
 };
 
 }  // namespace blink

@@ -86,10 +86,8 @@ class ContainerQueryTest : public PageTestBase,
     // cleared until this function completes.
     CSSAnimationUpdateScope animation_update_scope(GetDocument());
     SetBodyInnerHTML(html);
-    return GetDocument()
-        .GetDocumentAnimations()
-        .GetPendingOldStylesForTest()
-        .size();
+    DCHECK(CSSAnimationUpdateScope::CurrentData());
+    return CSSAnimationUpdateScope::CurrentData()->old_styles_.size();
   }
 };
 

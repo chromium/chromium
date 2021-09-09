@@ -129,12 +129,10 @@ bool ShouldStoreOldStyle(const StyleRecalcContext& style_recalc_context,
 void SetAnimationUpdateIfNeeded(const StyleRecalcContext& style_recalc_context,
                                 StyleResolverState& state,
                                 Element& element) {
-  auto& document_animations = state.GetDocument().GetDocumentAnimations();
-
   if (RuntimeEnabledFeatures::CSSDelayedAnimationUpdatesEnabled()) {
-    if (CSSAnimationUpdateScope::HasCurrent() &&
-        ShouldStoreOldStyle(style_recalc_context, state)) {
-      document_animations.AddPendingOldStyleForElement(element);
+    if (auto* data = CSSAnimationUpdateScope::CurrentData()) {
+      if (ShouldStoreOldStyle(style_recalc_context, state))
+        data->StoreOldStyleIfNeeded(element);
     }
   }
 
@@ -144,16 +142,12 @@ void SetAnimationUpdateIfNeeded(const StyleRecalcContext& style_recalc_context,
   if (state.AnimationUpdate().IsEmpty())
     return;
 
-  auto& element_animations = element.EnsureElementAnimations();
-
-  element_animations.CssAnimations().SetPendingUpdate(state.AnimationUpdate());
-
   if (RuntimeEnabledFeatures::CSSDelayedAnimationUpdatesEnabled()) {
-    if (CSSAnimationUpdateScope::HasCurrent()) {
-      state.GetDocument()
-          .GetDocumentAnimations()
-          .AddElementWithPendingAnimationUpdate(element);
-    }
+    if (auto* data = CSSAnimationUpdateScope::CurrentData())
+      data->SetPendingUpdate(element, state.AnimationUpdate());
+  } else {
+    element.EnsureElementAnimations().CssAnimations().SetPendingUpdate(
+        state.AnimationUpdate());
   }
 }
 

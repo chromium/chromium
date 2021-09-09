@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/animation/compositor_animations.h"
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_value_factory.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation.h"
+#include "third_party/blink/renderer/core/animation/css/css_animation_update_scope.h"
 #include "third_party/blink/renderer/core/animation/css/css_keyframe_effect_model.h"
 #include "third_party/blink/renderer/core/animation/css/css_scroll_timeline.h"
 #include "third_party/blink/renderer/core/animation/css/css_transition.h"
@@ -1451,10 +1452,8 @@ void CSSAnimations::CalculateTransitionUpdate(CSSAnimationUpdate& update,
   const ComputedStyle* old_style = animating_element.GetComputedStyle();
 
   if (RuntimeEnabledFeatures::CSSDelayedAnimationUpdatesEnabled()) {
-    old_style = animating_element.GetDocument()
-                    .GetDocumentAnimations()
-                    .GetPendingOldStyle(animating_element)
-                    .value_or(old_style);
+    if (auto* data = CSSAnimationUpdateScope::CurrentData())
+      old_style = data->GetOldStyle(animating_element);
   }
 
   if (!animation_style_recalc && style.Display() != EDisplay::kNone &&
