@@ -32,7 +32,6 @@ static_library("android") {
 
 android_resources("java_resources") {
   sources = [
-    "java/res/drawable/ic_tune_24dp.xml",
     "java/res/drawable/page_info_bg.xml",
     "java/res/layout/connection_info.xml",
     "java/res/layout/page_info.xml",
@@ -83,6 +82,7 @@ android_library("java") {
     "//base:base_java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/site_settings/android:java",
+    "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/widget/android:java",
     "//components/content_settings/android:content_settings_enums_java",
     "//components/content_settings/android:java",

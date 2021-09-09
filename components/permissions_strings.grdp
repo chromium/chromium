@@ -66,7 +66,23 @@
       <message name="IDS_MULTI_DOWNLOAD_WARNING" desc="Warning invoked if multiple downloads are attempted without user interaction.">
       <ph name="ORIGIN">$1<ex>https://backgroundfetch.com</ex></ph> wants to download multiple files
     </message>
-  </if>
+
+    <message name="IDS_MESSAGE_MISSING_CAMERA_PERMISSION_TITLE" desc="Title text shown in a prompt ui to ask whether user agrees to grant Android camera permission when a website has requested access to camera, but Chrome is missing the Android camera permission.">
+      Allow camera?
+    </message>
+    <message name="IDS_MESSAGE_MISSING_STORAGE_ACCESS_PERMISSION_TITLE" desc="Title text shown in a prompt ui to ask whether user agrees to grant Android storage access permission when a website has requested access to storage access, but Chrome is missing the Android storage access permission.">
+      Allow storage access?
+    </message>
+    <message name="IDS_MESSAGE_MISSING_MICROPHONE_PERMISSION_TITLE" desc="Title text shown in a prompt ui to ask whether user agrees to grant Android microphone permission when a website has requested access to microphone, but Chrome is missing the Android microphone permission.">
+      Allow microphone?
+    </message>
+    <message name="IDS_MESSAGE_MISSING_LOCATION_PERMISSION_TITLE" desc="Title text shown in a prompt ui to ask whether user agrees to grant Android location permission when a website has requested access to location, but Chrome is missing the Android location permission.">
+      Allow location?
+    </message>
+    <message name="IDS_MESSAGE_MISSING_MICROPHONE_CAMERA_PERMISSION_TITLE" desc="Title text shown in a prompt ui to ask whether user agrees to grant Android microphone and camera permission when a website has requested access to microphone and camera, but Chrome is missing the Android microphone and camera permission.">
+      Allow 2 permissions?
+    </message>
+</if>
   <if expr="is_android or chromeos or lacros or is_win">
     <message name="IDS_PROTECTED_MEDIA_IDENTIFIER_PERMISSION_FRAGMENT" desc="Permission fragment shown in the permissions bubble when a web page requests access to the computer's protected media identifier.">
       Know your unique device identifier

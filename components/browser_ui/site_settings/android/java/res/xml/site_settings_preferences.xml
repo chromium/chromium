@@ -71,7 +71,7 @@
         android:fragment="org.chromium.components.browser_ui.site_settings.AllSiteSettings"
         android:key="use_storage"
         android:title="@string/website_settings_storage"
-        android:icon="@drawable/settings_storage"
+        android:icon="@drawable/ic_storage"
         app:iconTint="@color/default_icon_color" />
     <!-- NFC -->
     <org.chromium.components.browser_ui.settings.ChromeBasePreference

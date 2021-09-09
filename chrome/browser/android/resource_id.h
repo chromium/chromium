@@ -44,6 +44,14 @@ DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_TRANSLATE, R.drawable.infobar_translate)
 LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY_WITH_DIVIDER,
                  R.drawable.google_pay_with_divider)
 
+// Android only messages (an alternative ui to infobars)
+DECLARE_RESOURCE_ID(IDR_ANDORID_MESSAGE_PERMISSION_MULTIPLE,
+                    R.drawable.ic_tune_24dp)
+DECLARE_RESOURCE_ID(IDR_ANDORID_MESSAGE_PERMISSION_STORAGE,
+                    R.drawable.ic_storage)
+DECLARE_RESOURCE_ID(IDR_ANDORID_MESSAGE_PERMISSION_CAMERA,
+                    R.drawable.ic_photo_camera_black)
+
 // Autofill popup and keyboard accessory images.
 // We use Android's |VectorDrawableCompat| for the following images that are
 // displayed using |DropdownAdapter|.
