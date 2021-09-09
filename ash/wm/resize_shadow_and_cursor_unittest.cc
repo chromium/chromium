@@ -7,7 +7,6 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_window_builder.h"
-#include "ash/wm/cursor_manager_test_api.h"
 #include "ash/wm/resize_shadow.h"
 #include "ash/wm/resize_shadow_controller.h"
 #include "ash/wm/window_state.h"
@@ -23,6 +22,7 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
+#include "ui/wm/core/cursor_manager.h"
 
 using chromeos::kResizeInsideBoundsSize;
 using chromeos::kResizeOutsideBoundsSize;
@@ -112,8 +112,7 @@ class ResizeShadowAndCursorTest : public AshTestBase {
 
   // Returns the current cursor type.
   ui::mojom::CursorType GetCurrentCursorType() const {
-    CursorManagerTestApi test_api(Shell::Get()->cursor_manager());
-    return test_api.GetCurrentCursor().type();
+    return Shell::Get()->cursor_manager()->GetCursor().type();
   }
 
   // Called for each step of a scroll sequence initiated at the bottom right

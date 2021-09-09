@@ -6,13 +6,14 @@
 
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/wm/cursor_manager_test_api.h"
 #include "ui/aura/env.h"
 #include "ui/aura/test/test_windows.h"
+#include "ui/base/cursor/cursor.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/wm/core/cursor_manager.h"
 
 namespace ash {
 
@@ -146,13 +147,13 @@ TEST_F(MouseCursorEventFilterTest, CursorDeviceScaleFactor) {
   display_manager()->SetLayoutForCurrentDisplays(
       display::test::CreateDisplayLayout(display_manager(),
                                          display::DisplayPlacement::RIGHT, 0));
-  CursorManagerTestApi cursor_test_api(Shell::Get()->cursor_manager());
+  auto* cursor_manager = Shell::Get()->cursor_manager();
 
-  EXPECT_EQ(1.0f, cursor_test_api.GetCurrentCursor().image_scale_factor());
+  EXPECT_EQ(1.0f, cursor_manager->GetCursor().image_scale_factor());
   TestIfMouseWarpsAt(gfx::Point(399, 200));
-  EXPECT_EQ(2.0f, cursor_test_api.GetCurrentCursor().image_scale_factor());
+  EXPECT_EQ(2.0f, cursor_manager->GetCursor().image_scale_factor());
   TestIfMouseWarpsAt(gfx::Point(400, 200));
-  EXPECT_EQ(1.0f, cursor_test_api.GetCurrentCursor().image_scale_factor());
+  EXPECT_EQ(1.0f, cursor_manager->GetCursor().image_scale_factor());
 }
 
 // Verifies that pressing the key repeatedly will not hide the cursor.

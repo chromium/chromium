@@ -11,7 +11,6 @@
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/wm/cursor_manager_test_api.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/drag_window_controller.h"
 #include "ash/wm/window_positioning_utils.h"
@@ -23,6 +22,7 @@
 #include "ui/aura/env.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
+#include "ui/base/cursor/cursor.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer.h"
@@ -34,6 +34,7 @@
 #include "ui/display/manager/display_manager.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/core/cursor_manager.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -717,7 +718,7 @@ TEST_F(DragWindowResizerTest, CursorDeviceScaleFactor) {
   const display::Display display1 =
       display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[1]);
 
-  CursorManagerTestApi cursor_test_api(Shell::Get()->cursor_manager());
+  auto* cursor_manager = Shell::Get()->cursor_manager();
   // Move window from the root window with 1.0 device scale factor to the root
   // window with 2.0 device scale factor.
   {
@@ -726,16 +727,16 @@ TEST_F(DragWindowResizerTest, CursorDeviceScaleFactor) {
     // Grab (0, 0) of the window.
     std::unique_ptr<WindowResizer> resizer(
         CreateDragWindowResizer(window_.get(), gfx::Point(), HTCAPTION));
-    EXPECT_EQ(1.0f, cursor_test_api.GetCurrentCursor().image_scale_factor());
+    EXPECT_EQ(1.0f, cursor_manager->GetCursor().image_scale_factor());
     ASSERT_TRUE(resizer.get());
     // TODO(crbug.com/990589): Unit tests should be able to simulate mouse input
     // without having to call |CursorManager::SetDisplay|.
-    Shell::Get()->cursor_manager()->SetDisplay(display1);
+    cursor_manager->SetDisplay(display1);
     resizer->Drag(CalculateDragPoint(*resizer, 399, 200), 0);
     TestIfMouseWarpsAt(gfx::Point(399, 200));
-    EXPECT_EQ(2.0f, cursor_test_api.GetCurrentCursor().image_scale_factor());
+    EXPECT_EQ(2.0f, cursor_manager->GetCursor().image_scale_factor());
     resizer->CompleteDrag();
-    EXPECT_EQ(2.0f, cursor_test_api.GetCurrentCursor().image_scale_factor());
+    EXPECT_EQ(2.0f, cursor_manager->GetCursor().image_scale_factor());
   }
 
   // Move window from the root window with 2.0 device scale factor to the root
@@ -746,16 +747,16 @@ TEST_F(DragWindowResizerTest, CursorDeviceScaleFactor) {
     // Grab (0, 0) of the window.
     std::unique_ptr<WindowResizer> resizer(
         CreateDragWindowResizer(window_.get(), gfx::Point(), HTCAPTION));
-    EXPECT_EQ(2.0f, cursor_test_api.GetCurrentCursor().image_scale_factor());
+    EXPECT_EQ(2.0f, cursor_manager->GetCursor().image_scale_factor());
     ASSERT_TRUE(resizer.get());
     // TODO(crbug.com/990589): Unit tests should be able to simulate mouse input
     // without having to call |CursorManager::SetDisplay|.
-    Shell::Get()->cursor_manager()->SetDisplay(display0);
+    cursor_manager->SetDisplay(display0);
     resizer->Drag(CalculateDragPoint(*resizer, -200, 200), 0);
     TestIfMouseWarpsAt(gfx::Point(400, 200));
-    EXPECT_EQ(1.0f, cursor_test_api.GetCurrentCursor().image_scale_factor());
+    EXPECT_EQ(1.0f, cursor_manager->GetCursor().image_scale_factor());
     resizer->CompleteDrag();
-    EXPECT_EQ(1.0f, cursor_test_api.GetCurrentCursor().image_scale_factor());
+    EXPECT_EQ(1.0f, cursor_manager->GetCursor().image_scale_factor());
   }
 }
 

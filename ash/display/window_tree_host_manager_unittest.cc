@@ -26,6 +26,7 @@
 #include "ui/aura/window_observer.h"
 #include "ui/aura/window_tracker.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/base/cursor/cursor.h"
 #include "ui/display/display.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/display_layout_builder.h"
@@ -43,6 +44,7 @@
 #include "ui/views/mouse_watcher_view_host.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/core/cursor_manager.h"
 #include "ui/wm/public/activation_change_observer.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -1590,19 +1592,20 @@ TEST_F(WindowTreeHostManagerTest,
   Shell* shell = Shell::Get();
   WindowTreeHostManager* window_tree_host_manager =
       shell->window_tree_host_manager();
-  CursorManagerTestApi test_api(shell->cursor_manager());
+  auto* cursor_manager = shell->cursor_manager();
+  CursorManagerTestApi test_api;
 
   window_tree_host_manager->GetPrimaryRootWindow()->MoveCursorTo(
       gfx::Point(20, 50));
 
   EXPECT_EQ("20,50", env->last_mouse_location().ToString());
-  EXPECT_EQ(1.0f, test_api.GetCurrentCursor().image_scale_factor());
+  EXPECT_EQ(1.0f, cursor_manager->GetCursor().image_scale_factor());
   EXPECT_EQ(display::Display::ROTATE_0, test_api.GetCurrentCursorRotation());
 
   SwapPrimaryDisplay();
 
   EXPECT_EQ("20,50", env->last_mouse_location().ToString());
-  EXPECT_EQ(2.0f, test_api.GetCurrentCursor().image_scale_factor());
+  EXPECT_EQ(2.0f, cursor_manager->GetCursor().image_scale_factor());
   EXPECT_EQ(display::Display::ROTATE_90, test_api.GetCurrentCursorRotation());
 }
 
@@ -1614,7 +1617,8 @@ TEST_F(WindowTreeHostManagerTest,
   Shell* shell = Shell::Get();
   WindowTreeHostManager* window_tree_host_manager =
       shell->window_tree_host_manager();
-  CursorManagerTestApi test_api(shell->cursor_manager());
+  auto* cursor_manager = shell->cursor_manager();
+  CursorManagerTestApi test_api;
 
   UpdateDisplay("300x300*2/r,200x200");
   // Swap the primary display to make it possible to remove the primary display
@@ -1626,7 +1630,7 @@ TEST_F(WindowTreeHostManagerTest,
       gfx::Point(20, 50));
 
   EXPECT_EQ("20,50", env->last_mouse_location().ToString());
-  EXPECT_EQ(1.0f, test_api.GetCurrentCursor().image_scale_factor());
+  EXPECT_EQ(1.0f, cursor_manager->GetCursor().image_scale_factor());
   EXPECT_EQ(display::Display::ROTATE_0, test_api.GetCurrentCursorRotation());
 
   UpdateDisplay("300x300*2/r");
@@ -1635,7 +1639,7 @@ TEST_F(WindowTreeHostManagerTest,
 
   // Cursor should be centered on the remaining display.
   EXPECT_EQ("75,75", env->last_mouse_location().ToString());
-  EXPECT_EQ(2.0f, test_api.GetCurrentCursor().image_scale_factor());
+  EXPECT_EQ(2.0f, cursor_manager->GetCursor().image_scale_factor());
   EXPECT_EQ(display::Display::ROTATE_90, test_api.GetCurrentCursorRotation());
 }
 
@@ -1645,7 +1649,8 @@ TEST_F(WindowTreeHostManagerTest,
   Shell* shell = Shell::Get();
   WindowTreeHostManager* window_tree_host_manager =
       shell->window_tree_host_manager();
-  CursorManagerTestApi test_api(shell->cursor_manager());
+  auto* cursor_manager = shell->cursor_manager();
+  CursorManagerTestApi test_api;
 
   UpdateDisplay("300x300*2/r,200x200");
   // Swap the primary display to make it possible to remove the primary display
@@ -1658,10 +1663,10 @@ TEST_F(WindowTreeHostManagerTest,
       cursor_location);
 
   // Hide cursor before disconnecting the display.
-  shell->cursor_manager()->HideCursor();
+  cursor_manager->HideCursor();
 
   EXPECT_EQ(cursor_location, env->last_mouse_location());
-  EXPECT_EQ(1.0f, test_api.GetCurrentCursor().image_scale_factor());
+  EXPECT_EQ(1.0f, cursor_manager->GetCursor().image_scale_factor());
   EXPECT_EQ(display::Display::ROTATE_0, test_api.GetCurrentCursorRotation());
 
   UpdateDisplay("300x300*2/r");
@@ -1670,14 +1675,14 @@ TEST_F(WindowTreeHostManagerTest,
 
   // Show the mouse cursor before checking properties which should be as if the
   // mouse cursor was never hidden.
-  shell->cursor_manager()->ShowCursor();
+  cursor_manager->ShowCursor();
 
   // The cursor will not be centered since it was hidden when the display list
   // was updated.
   EXPECT_EQ(gfx::Point(20, 50), env->last_mouse_location());
 
   // The cursor scale and rotation should be updated.
-  EXPECT_EQ(2.0f, test_api.GetCurrentCursor().image_scale_factor());
+  EXPECT_EQ(2.0f, cursor_manager->GetCursor().image_scale_factor());
   EXPECT_EQ(display::Display::ROTATE_90, test_api.GetCurrentCursorRotation());
 }
 

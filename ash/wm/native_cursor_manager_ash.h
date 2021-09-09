@@ -28,8 +28,7 @@ class ASH_EXPORT NativeCursorManagerAsh : public ::wm::NativeCursorManager {
   // the cursor.
   void SetNativeCursorEnabled(bool enabled);
 
-  // Returns the scale and rotation of the currently loaded cursor.
-  float GetScale() const;
+  // Returns the rotation of the currently loaded cursor.
   display::Display::Rotation GetRotation() const;
 
   // Overridden from ::wm::NativeCursorManager:
