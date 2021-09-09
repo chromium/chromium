@@ -217,7 +217,7 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
 
   ClientStatus FindElementAndGetString(
       const Selector& selector,
-      element_action_util::ElementActionGetCallback<std::string>
+      element_action_util::ElementActionGetCallback<const std::string&>
           perform_and_get,
       std::string* get_output) {
     base::RunLoop run_loop;

@@ -666,6 +666,15 @@ message TriggerScriptProto {
 }
 
 message TriggerScriptConditionProto {
+  message DocumentReadyStateCondition {
+    // The minimum document ready state for the condition to be true.
+    optional DocumentReadyState min_document_ready_state = 1;
+
+    // If specified, check the document in the given frame, instead
+    // of the main document.
+    optional SelectorProto frame = 2;
+  }
+
   oneof type {
     // The condition matches if all of these conditions match.
     TriggerScriptConditionsProto all_of = 1;
@@ -692,6 +701,9 @@ message TriggerScriptConditionProto {
     // Domain (exact match), including the scheme (e.g.
     // "https://www.example.com").
     string domain_with_scheme = 12;
+    // The condition matches if the DOM state of the specified frame matches
+    // |document_ready_state|.
+    DocumentReadyStateCondition document_ready_state = 13;
   }
 
   reserved 4;

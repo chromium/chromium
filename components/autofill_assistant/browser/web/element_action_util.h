@@ -36,9 +36,9 @@ using ElementActionCallback =
 using ElementActionVector = std::vector<ElementActionCallback>;
 
 template <typename T>
-using ElementActionGetCallback = base::OnceCallback<void(
-    const ElementFinder::Result&,
-    base::OnceCallback<void(const ClientStatus&, const T&)>)>;
+using ElementActionGetCallback =
+    base::OnceCallback<void(const ElementFinder::Result&,
+                            base::OnceCallback<void(const ClientStatus&, T)>)>;
 
 // Run all |perform_actions| sequentially. Breaks the execution on any error
 // and executes the |done| callback with the final status.

@@ -602,6 +602,7 @@ bool ProtocolUtils::ValidateTriggerCondition(
     case TriggerScriptConditionProto::kKeyboardHidden:
     case TriggerScriptConditionProto::kScriptParameterMatch:
     case TriggerScriptConditionProto::kSelector:
+    case TriggerScriptConditionProto::kDocumentReadyState:
     case TriggerScriptConditionProto::TYPE_NOT_SET:
       return true;
   }

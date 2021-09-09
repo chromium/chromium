@@ -450,9 +450,9 @@ void TriggerScriptCoordinator::WebContentsDestroyed() {
 
 void TriggerScriptCoordinator::StartCheckingTriggerConditions() {
   is_checking_trigger_conditions_ = true;
-  dynamic_trigger_conditions_->ClearSelectors();
+  dynamic_trigger_conditions_->ClearConditions();
   for (const auto& trigger_script : trigger_scripts_) {
-    dynamic_trigger_conditions_->AddSelectorsFromTriggerScript(
+    dynamic_trigger_conditions_->AddConditionsFromTriggerScript(
         trigger_script->AsProto());
   }
   static_trigger_conditions_->Update(

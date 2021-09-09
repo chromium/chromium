@@ -29,8 +29,11 @@ class DynamicTriggerConditionsTest : public testing::Test {
   ~DynamicTriggerConditionsTest() override = default;
 
  protected:
-  std::set<Selector>* GetSelectorsForTest() {
+  base::flat_set<Selector>* GetSelectorsForTest() {
     return &dynamic_trigger_conditions_.selectors_;
+  }
+  base::flat_set<Selector>* GetDomReadyStateSelectorsForTest() {
+    return &dynamic_trigger_conditions_.dom_ready_state_selectors_;
   }
 
   base::MockCallback<base::OnceCallback<void(void)>> mock_callback_;
@@ -51,14 +54,20 @@ TEST_F(DynamicTriggerConditionsTest, LookupInvalidSelectorsFails) {
             absl::nullopt);
 }
 
-TEST_F(DynamicTriggerConditionsTest, AddSelectorsFromTriggerScript) {
+TEST_F(DynamicTriggerConditionsTest, AddConditionsFromTriggerScript) {
   TriggerScriptProto proto_1;
   auto* all_of = proto_1.mutable_trigger_condition()->mutable_all_of();
   *all_of->add_conditions()->mutable_selector() = ToSelectorProto("a");
+  *all_of->add_conditions()->mutable_document_ready_state()->mutable_frame() =
+      ToSelectorProto("frame_1");
   auto* any_of = all_of->add_conditions()->mutable_any_of();
   *any_of->add_conditions()->mutable_selector() = ToSelectorProto("b");
+  *any_of->add_conditions()->mutable_document_ready_state()->mutable_frame() =
+      ToSelectorProto("frame_2");
   auto* none_of = any_of->add_conditions()->mutable_none_of();
   *none_of->add_conditions()->mutable_selector() = ToSelectorProto("c");
+  *none_of->add_conditions()->mutable_document_ready_state()->mutable_frame() =
+      ToSelectorProto("frame_3");
 
   TriggerScriptProto proto_2;
   *proto_2.mutable_trigger_condition()->mutable_selector() =
@@ -69,16 +78,22 @@ TEST_F(DynamicTriggerConditionsTest, AddSelectorsFromTriggerScript) {
   *all_of->add_conditions()->mutable_selector() = ToSelectorProto("a");
   *all_of->add_conditions()->mutable_selector() = ToSelectorProto("e");
   *all_of->add_conditions()->mutable_selector() = ToSelectorProto("f");
+  *all_of->add_conditions()->mutable_document_ready_state()->mutable_frame() =
+      ToSelectorProto("frame_1");
 
-  dynamic_trigger_conditions_.AddSelectorsFromTriggerScript(proto_1);
-  dynamic_trigger_conditions_.AddSelectorsFromTriggerScript(proto_2);
-  dynamic_trigger_conditions_.AddSelectorsFromTriggerScript(proto_3);
+  dynamic_trigger_conditions_.AddConditionsFromTriggerScript(proto_1);
+  dynamic_trigger_conditions_.AddConditionsFromTriggerScript(proto_2);
+  dynamic_trigger_conditions_.AddConditionsFromTriggerScript(proto_3);
   EXPECT_THAT(
       *GetSelectorsForTest(),
       UnorderedElementsAre(
           Selector(ToSelectorProto("a")), Selector(ToSelectorProto("b")),
           Selector(ToSelectorProto("c")), Selector(ToSelectorProto("d")),
           Selector(ToSelectorProto("e")), Selector(ToSelectorProto("f"))));
+  EXPECT_THAT(*GetDomReadyStateSelectorsForTest(),
+              UnorderedElementsAre(Selector(ToSelectorProto("frame_1")),
+                                   Selector(ToSelectorProto("frame_2")),
+                                   Selector(ToSelectorProto("frame_3"))));
 }
 
 TEST_F(DynamicTriggerConditionsTest, Update) {
@@ -87,6 +102,19 @@ TEST_F(DynamicTriggerConditionsTest, Update) {
   *all_of->add_conditions()->mutable_selector() = ToSelectorProto("a");
   *all_of->add_conditions()->mutable_selector() = ToSelectorProto("b");
   *all_of->add_conditions()->mutable_selector() = ToSelectorProto("c");
+  auto* main_dom_ready_state_condition =
+      all_of->add_conditions()->mutable_document_ready_state();
+  main_dom_ready_state_condition->set_min_document_ready_state(
+      DocumentReadyState::DOCUMENT_INTERACTIVE);
+  auto* frame_dom_ready_state_condition =
+      all_of->add_conditions()->mutable_document_ready_state();
+  frame_dom_ready_state_condition->set_min_document_ready_state(
+      DocumentReadyState::DOCUMENT_COMPLETE);
+  *frame_dom_ready_state_condition->mutable_frame() = ToSelectorProto("frame");
+
+  std::unique_ptr<ElementFinder::Result> frame_fake_element =
+      std::make_unique<ElementFinder::Result>();
+  auto* frame_fake_element_ptr = frame_fake_element.get();
 
   EXPECT_CALL(mock_web_controller_,
               OnFindElement(Selector(ToSelectorProto("a")), _))
@@ -98,9 +126,25 @@ TEST_F(DynamicTriggerConditionsTest, Update) {
   EXPECT_CALL(mock_web_controller_,
               OnFindElement(Selector(ToSelectorProto("c")), _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), nullptr));
+  // The empty selector is invalid and used as a stand-in for the main frame.
+  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector(), _)).Times(0);
+  EXPECT_CALL(mock_web_controller_,
+              OnFindElement(Selector(ToSelectorProto("frame")), _))
+      .WillOnce(
+          RunOnceCallback<1>(OkClientStatus(), std::move(frame_fake_element)));
+  EXPECT_CALL(
+      mock_web_controller_,
+      GetDocumentReadyState(testing::Address(frame_fake_element_ptr), _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(),
+                                   DocumentReadyState::DOCUMENT_COMPLETE));
+  EXPECT_CALL(mock_web_controller_,
+              GetDocumentReadyState(
+                  testing::Not(testing::Address(frame_fake_element_ptr)), _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(),
+                                   DocumentReadyState::DOCUMENT_INTERACTIVE));
 
   EXPECT_CALL(mock_callback_, Run).Times(1);
-  dynamic_trigger_conditions_.AddSelectorsFromTriggerScript(proto);
+  dynamic_trigger_conditions_.AddConditionsFromTriggerScript(proto);
   dynamic_trigger_conditions_.Update(&mock_web_controller_,
                                      mock_callback_.Get());
 
@@ -113,15 +157,29 @@ TEST_F(DynamicTriggerConditionsTest, Update) {
   EXPECT_EQ(dynamic_trigger_conditions_.GetSelectorMatches(
                 Selector(ToSelectorProto("c"))),
             absl::make_optional(true));
+  EXPECT_EQ(dynamic_trigger_conditions_.GetDocumentReadyState(Selector()),
+            DocumentReadyState::DOCUMENT_INTERACTIVE);
+  EXPECT_EQ(dynamic_trigger_conditions_.GetDocumentReadyState(
+                Selector(ToSelectorProto("frame"))),
+            DocumentReadyState::DOCUMENT_COMPLETE);
+  EXPECT_EQ(dynamic_trigger_conditions_.GetDocumentReadyState(
+                Selector(ToSelectorProto("invalid"))),
+            absl::nullopt);
 }
 
-TEST_F(DynamicTriggerConditionsTest, ClearSelectors) {
+TEST_F(DynamicTriggerConditionsTest, ClearConditions) {
   TriggerScriptProto proto;
-  *proto.mutable_trigger_condition()->mutable_selector() = ToSelectorProto("a");
-  dynamic_trigger_conditions_.AddSelectorsFromTriggerScript(proto);
+  auto* all_of = proto.mutable_trigger_condition()->mutable_all_of();
+  *all_of->add_conditions()->mutable_selector() = ToSelectorProto("a");
+  all_of->add_conditions()
+      ->mutable_document_ready_state()
+      ->set_min_document_ready_state(DocumentReadyState::DOCUMENT_COMPLETE);
+  dynamic_trigger_conditions_.AddConditionsFromTriggerScript(proto);
   EXPECT_EQ(GetSelectorsForTest()->size(), 1u);
-  dynamic_trigger_conditions_.ClearSelectors();
+  EXPECT_EQ(GetDomReadyStateSelectorsForTest()->size(), 1u);
+  dynamic_trigger_conditions_.ClearConditions();
   EXPECT_EQ(GetSelectorsForTest()->size(), 0u);
+  EXPECT_EQ(GetDomReadyStateSelectorsForTest()->size(), 0u);
 }
 
 TEST_F(DynamicTriggerConditionsTest, HasResults) {
@@ -130,7 +188,7 @@ TEST_F(DynamicTriggerConditionsTest, HasResults) {
 
   TriggerScriptProto proto;
   *proto.mutable_trigger_condition()->mutable_selector() = ToSelectorProto("a");
-  dynamic_trigger_conditions_.AddSelectorsFromTriggerScript(proto);
+  dynamic_trigger_conditions_.AddConditionsFromTriggerScript(proto);
   EXPECT_FALSE(dynamic_trigger_conditions_.HasResults());
 
   EXPECT_CALL(mock_web_controller_,

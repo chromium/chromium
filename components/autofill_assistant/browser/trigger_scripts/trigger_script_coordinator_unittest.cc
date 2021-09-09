@@ -264,9 +264,9 @@ TEST_F(TriggerScriptCoordinatorTest, StartChecksStaticAndDynamicConditions) {
 
   EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
       .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
-  EXPECT_CALL(*mock_dynamic_trigger_conditions_, ClearSelectors).Times(1);
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_, ClearConditions).Times(1);
   EXPECT_CALL(*mock_dynamic_trigger_conditions_,
-              AddSelectorsFromTriggerScript(response.trigger_scripts(0)))
+              AddConditionsFromTriggerScript(response.trigger_scripts(0)))
       .Times(1);
   ON_CALL(*mock_dynamic_trigger_conditions_, OnUpdate(mock_web_controller_, _))
       .WillByDefault(RunOnceCallback<1>());
