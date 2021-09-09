@@ -119,11 +119,9 @@ void FrameTaskQueueController::TaskQueueCreated(
   all_task_queues_and_voters_.push_back(
       TaskQueueAndEnabledVoterPair(task_queue.get(), voter.get()));
 
-  if (voter) {
-    DCHECK(task_queue_enabled_voters_.find(task_queue) ==
-           task_queue_enabled_voters_.end());
-    task_queue_enabled_voters_.insert(task_queue, std::move(voter));
-  }
+  DCHECK(task_queue_enabled_voters_.find(task_queue) ==
+         task_queue_enabled_voters_.end());
+  task_queue_enabled_voters_.insert(task_queue, std::move(voter));
 }
 
 void FrameTaskQueueController::RemoveTaskQueueAndVoter(

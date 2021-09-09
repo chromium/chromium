@@ -138,8 +138,7 @@ class PLATFORM_EXPORT FrameTaskQueueController {
       scoped_refptr<MainThreadTaskQueue>,
       std::unique_ptr<base::sequence_manager::TaskQueue::QueueEnabledVoter>>;
 
-  // QueueEnabledVoters for the task queues we've created. Note: Some task
-  // queues do not have an associated voter.
+  // QueueEnabledVoters for the task queues we've created.
   TaskQueueEnabledVoterMap task_queue_enabled_voters_;
 
   // The list of all task queue and voter pairs for all QueueTypeInternal queue

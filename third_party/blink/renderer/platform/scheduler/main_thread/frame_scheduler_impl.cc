@@ -892,8 +892,8 @@ void FrameSchedulerImpl::UpdateQueuePolicy(
     TaskQueue::QueueEnabledVoter* voter) {
   DCHECK(queue);
   UpdatePriority(queue);
-  if (!voter)
-    return;
+
+  DCHECK(voter);
   DCHECK(parent_page_scheduler_);
   bool queue_disabled = false;
   queue_disabled |= frame_paused_ && queue->CanBePaused();
