@@ -197,13 +197,6 @@ void DisplayItemList::Finalize() {
   paired_begin_stack_.shrink_to_fit();
 }
 
-size_t DisplayItemList::BytesUsed() const {
-  // TODO(jbroman): Does anything else owned by this class substantially
-  // contribute to memory usage?
-  // TODO(vmpstr): Probably DiscardableImageMap is worth counting here.
-  return sizeof(*this) + paint_op_buffer_.bytes_used();
-}
-
 void DisplayItemList::EmitTraceSnapshot() const {
   bool include_items;
   TRACE_EVENT_CATEGORY_GROUP_ENABLED(

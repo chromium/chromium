@@ -78,6 +78,19 @@ class PLATFORM_EXPORT CanvasResourceProvider
     kMaxValue = kSkiaDawnSharedImage,
   };
 
+  // The following parameters attempt to reach a compromise between not flushing
+  // too often, and not accumulating an unreasonable backlog.  Flushing too
+  // often will hurt performance due to overhead costs. Accumulating large
+  // backlogs, in the case of OOPR-Canvas, results in poor parellelism and
+  // janky UI. With OOPR-Canvas disabled, it is still desirable to flush
+  // periodically to guard against run-away memory consumption caused by
+  // PaintOpBuffers that grow indefinitely. The OOPr-related jank is caused by
+  // long-running RasterCHROMIUM calls that monopolize the main thread
+  // of the GPU process.  By flushing periodically, we allow the rasterization
+  // of canvas contents to be interleaved with other compositing and UI work.
+  static constexpr size_t kMaxRecordedOpsPerCanvas = 1024;
+  static constexpr size_t kMaxRecordedBytesPerCanvas = 4 * 1024 * 1024;
+
   using RestoreMatrixClipStackCb =
       base::RepeatingCallback<void(cc::PaintCanvas*)>;
 
@@ -239,6 +252,12 @@ class PLATFORM_EXPORT CanvasResourceProvider
   virtual void OnDestroyRecyclableCanvasResource(
       const gpu::SyncToken& sync_token) {}
 
+  void FlushIfRecordingLimitExceeded();
+
+  size_t TotalOpCount() const {
+    return recorder_ ? recorder_->TotalOpCount() : 0;
+  }
+
  protected:
   class CanvasImageProvider;
 
@@ -340,6 +359,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
   static constexpr int kMaxRecycledCanvasResources = 2;
   // The maximum number of draw ops executed on the canvas, after which the
   // underlying GrContext is flushed.
+  // Note: This parameter does not affect the flushing of recorded PaintOps.
+  // See kMaxRecordedOpsPerCanvas above
   static constexpr int kMaxDrawsBeforeContextFlush = 50;
 
   int num_inflight_resources_ = 0;
@@ -349,6 +370,13 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   base::WeakPtrFactory<CanvasResourceProvider> weak_ptr_factory_{this};
 };
+
+ALWAYS_INLINE void CanvasResourceProvider::FlushIfRecordingLimitExceeded() {
+  if (recorder_ && (recorder_->TotalOpCount() > kMaxRecordedOpsPerCanvas ||
+                    recorder_->BytesUsed() > kMaxRecordedBytesPerCanvas)) {
+    FlushCanvas();
+  }
+}
 
 }  // namespace blink
 

@@ -1116,6 +1116,51 @@ TEST_P(CanvasRenderingContext2DTest, RemainAcceleratedAfterGetImageData) {
   EXPECT_TRUE(CanvasElement().GetCanvas2DLayerBridge()->IsAccelerated());
 }
 
+TEST_P(CanvasRenderingContext2DTest, AutoFlush) {
+  ScopedNewCanvas2DAPIForTest new_api(true);
+  CreateContext(kNonOpaque);
+  IntSize size(10, 10);
+  auto fake_accelerate_surface = std::make_unique<FakeCanvas2DLayerBridge>(
+      size, CanvasColorParams(), RasterModeHint::kPreferGPU);
+  CanvasElement().SetResourceProviderForTesting(
+      nullptr, std::move(fake_accelerate_surface), size);
+  Context2D()->fillRect(0, 0, 1,
+                        1);  // Ensure the resource provider is created.
+  const size_t initial_op_count =
+      CanvasElement().ResourceProvider()->TotalOpCount();
+  for (size_t i = initial_op_count;
+       i <= CanvasResourceProvider::kMaxRecordedOpsPerCanvas; i++) {
+    Context2D()->fillRect(0, 0, 1, 1);
+    ASSERT_EQ(CanvasElement().ResourceProvider()->TotalOpCount(), i + 1);
+  }
+  Context2D()->fillRect(0, 0, 1, 1);
+  ASSERT_EQ(CanvasElement().ResourceProvider()->TotalOpCount(),
+            initial_op_count);
+}
+
+TEST_P(CanvasRenderingContext2DTest, AutoFlushDelayedByLayer) {
+  ScopedNewCanvas2DAPIForTest new_api(true);
+  CreateContext(kNonOpaque);
+  IntSize size(10, 10);
+  auto fake_accelerate_surface = std::make_unique<FakeCanvas2DLayerBridge>(
+      size, CanvasColorParams(), RasterModeHint::kPreferGPU);
+  CanvasElement().SetResourceProviderForTesting(
+      nullptr, std::move(fake_accelerate_surface), size);
+  Context2D()->beginLayer();
+  const size_t initial_op_count =
+      CanvasElement().ResourceProvider()->TotalOpCount();
+  for (size_t i = initial_op_count;
+       i <= CanvasResourceProvider::kMaxRecordedOpsPerCanvas + 10; i++) {
+    Context2D()->fillRect(0, 0, 1, 1);
+    ASSERT_EQ(CanvasElement().ResourceProvider()->TotalOpCount(), i + 1);
+  }
+  // Closing the layer means next op can trigger auto flush
+  Context2D()->endLayer();
+  Context2D()->fillRect(0, 0, 1, 1);
+  ASSERT_EQ(CanvasElement().ResourceProvider()->TotalOpCount(),
+            initial_op_count);
+}
+
 class CanvasRenderingContext2DTestAccelerated
     : public CanvasRenderingContext2DTest {
  protected:
