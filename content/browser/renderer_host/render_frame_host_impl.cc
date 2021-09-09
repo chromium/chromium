@@ -3406,6 +3406,7 @@ void RenderFrameHostImpl::OnCreateChildFrame(
     // is invalid.
     bad_message::ReceivedBadMessage(
         GetProcess(), bad_message::RFH_CHILD_FRAME_NEEDS_OWNER_ELEMENT_TYPE);
+    return;
   }
 
   DCHECK(devtools_frame_token);
