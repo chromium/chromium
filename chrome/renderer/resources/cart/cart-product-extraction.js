@@ -17,12 +17,14 @@ var priceRegex = new RegExp(priceRegexTemplate, 'i');
 var priceCleanupRegex = new RegExp(
     '^((' + priceCleanupPrefix + ')\\s+)|' + priceCleanupPostfix + '$', 'i');
 var cartItemHTMLRegex = new RegExp(
-    '(cart|basket|bundle)[-_]?(item|product)', 'i');
-var cartItemTextContentRegex = new RegExp(
-    'remove|delete|save for later|move to (favo(u?)rite|list|wish( ?)list)s?',
-    'i');
-var moveToCartRegex = new RegExp('move to (cart|bag)', 'i');
-var addToCartRegex = new RegExp('add to cart', 'i');
+    '(cart|basket|bundle)[-_]?((\\w+)[-_])?(item|product)', 'i');
+var cartItemTextRegex = new RegExp(
+    '(remove|delete|save for later|move to (favo(u?)rite|list|wish( ?)list)s?)'+
+    '|(qty)', 'i');
+var moveToCartTextRegex = new RegExp('move to (cart|bag)', 'i');
+var addToCartTextRegex = new RegExp('add to cart', 'i');
+var cartPriceTextRegex = new RegExp('estimated (sales )?tax', 'i');
+var minicartHTMLRegex = new RegExp('mini-cart-product', 'i');
 var productIdHTMLRegex = new RegExp('<a href="#modal-(\\w+)', 'i');
 var productIdURLRegex = new RegExp(
     '((\\w+)-\\d+-medium)|(images.cymax.com/Images/\\d+/(\\w+)-)', 'i');
@@ -491,7 +493,7 @@ function extractPrice(item) {
   }
   // Generic heuristic to search for price elements.
   let captured_prices = [];
-  for (const price of item.querySelectorAll('span, b, p, div, h3')) {
+  for (const price of item.querySelectorAll('span, b, p, div, h3, td, li')) {
     const candidate = price.innerText.trim();
     if (!candidate.match(priceRegexFull))
       continue;
@@ -545,7 +547,8 @@ function getProductIdFromMatches(productIdMatches, matchIndex = undefined) {
 
 function extractProductId(url, imageUrl, item) {
   const hostname = window.location.hostname;
-  if (idExtractionMap === undefined) {
+  if (typeof idExtractionMap === 'undefined' ||
+      idExtractionMap === undefined) {
     return null;
   }
   const source_map = {"product_url": url,
@@ -631,24 +634,28 @@ function hasOverlap(target, list) {
   return false;
 }
 
-function matchNonCartPattern(item, pattern) {
-  if (item.parentElement) {
-    // Walmart has 'move to cart' outside of the div.cart-item.
-    if (item.parentElement.textContent.toLowerCase().match(pattern))
-      return true;
-  }
-  return item.textContent.toLowerCase().match(pattern);
+function matchPattern(item, pattern, matchText) {
+  if (item === null) return false;
+  const textToMatch = matchText ? item.textContent : item.outerHTML;
+  return textToMatch.toLowerCase().match(pattern);
 }
 
 function isCartItem(item) {
   // TODO: Improve the heuristic here to accommodate more formats of cart item.
-  if (matchNonCartPattern(item, moveToCartRegex)) return false;
+  if (matchPattern(item, moveToCartTextRegex, true)) return false;
+  // Walmart has 'move to cart' outside of the div.cart-item.
+  if (matchPattern(item.parentElement, moveToCartTextRegex, true)) return false;
+  if (matchPattern(item, cartPriceTextRegex, true)) return false;
   // Item element in bestbuy.com contains "add to cart" for things
   // like protection plans.
   if (!document.URL.includes("bestbuy.com")
-    && matchNonCartPattern(item, addToCartRegex)) return false;
-  return item.textContent.toLowerCase().match(cartItemTextContentRegex) ||
-      item.outerHTML.toLowerCase().match(cartItemHTMLRegex);
+      && !document.URL.includes("orientaltrading.com")
+      && matchPattern(item, addToCartTextRegex, true)) return false;
+  if ((document.URL.includes("ashleyfurniture.com")
+      || document.URL.includes("gnc.com"))
+      && matchPattern(item, minicartHTMLRegex, false)) return false;
+  return matchPattern(item, cartItemTextRegex, true) ||
+    matchPattern(item, cartItemHTMLRegex, false);
 }
 
 function extractOneItem(item, extracted_items, processed, output,
