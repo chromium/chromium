@@ -10,20 +10,42 @@
 
 'use strict';
 
+import {afterNextRender, Polymer, html, flush, Templatizer, TemplateInstanceBase} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import '//resources/cr_elements/cr_toast/cr_toast.js';
+import '//resources/cr_elements/policy/cr_policy_indicator.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {getImage} from '//resources/js/icon.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import {loadTimeData} from '../../i18n_setup.js';
+import {AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl, Account} from '../../people_page/account_manager_browser_proxy.js';
+import {Router, Route, RouteObserverBehavior} from '../../router.js';
+import '../../settings_shared_css.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {recordSettingChange, recordSearch, setUserActionRecorderForTesting, recordPageFocus, recordPageBlur, recordClick, recordNavigation} from '../metrics_recorder.m.js';
+import {routes} from '../os_route.m.js';
+import {KerberosAccount, KerberosAccountsBrowserProxyImpl, KerberosAccountsBrowserProxy, KerberosErrorType, KerberosConfigErrorCode, ValidateKerberosConfigResult} from './kerberos_accounts_browser_proxy.js';
+import './kerberos_add_account_dialog.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-kerberos-accounts',
 
   behaviors: [
     DeepLinkingBehavior,
     I18nBehavior,
-    settings.RouteObserverBehavior,
+    RouteObserverBehavior,
     WebUIListenerBehavior,
   ],
 
   properties: {
     /**
      * List of Accounts.
-     * @private {!Array<!settings.KerberosAccount>}
+     * @private {!Array<!KerberosAccount>}
      */
     accounts_: {
       type: Array,
@@ -34,7 +56,7 @@ Polymer({
 
     /**
      * The targeted account for menu and other operations.
-     * @private {?settings.KerberosAccount}
+     * @private {?KerberosAccount}
      */
     selectedAccount_: Object,
 
@@ -69,7 +91,7 @@ Polymer({
     },
   },
 
-  /** @private {?settings.KerberosAccountsBrowserProxy} */
+  /** @private {?KerberosAccountsBrowserProxy} */
   browserProxy_: null,
 
   /** @override */
@@ -80,13 +102,12 @@ Polymer({
 
   /** @override */
   ready() {
-    this.browserProxy_ =
-        settings.KerberosAccountsBrowserProxyImpl.getInstance();
+    this.browserProxy_ = KerberosAccountsBrowserProxyImpl.getInstance();
 
     // Grab account list and - when done - pop up the reauthentication dialog if
     // there is a kerberos_reauth param.
     this.refreshAccounts_().then(() => {
-      const queryParams = settings.Router.getInstance().getQueryParameters();
+      const queryParams = Router.getInstance().getQueryParameters();
       const reauthPrincipal = queryParams.get('kerberos_reauth');
       const reauthAccount = this.accounts_.find(account => {
         return account.principalName === reauthPrincipal;
@@ -99,14 +120,14 @@ Polymer({
   },
 
   /**
-   * settings.RouteObserverBehavior
-   * @param {!settings.Route} route
-   * @param {!settings.Route} oldRoute
+   * RouteObserverBehavior
+   * @param {!Route} route
+   * @param {!Route} oldRoute
    * @protected
    */
   currentRouteChanged(route, oldRoute) {
     // Does not apply to this page.
-    if (route !== settings.routes.KERBEROS_ACCOUNTS_V2) {
+    if (route !== routes.KERBEROS_ACCOUNTS_V2) {
       return;
     }
 
@@ -119,7 +140,7 @@ Polymer({
    * @private
    */
   getIconImageSet_(iconUrl) {
-    return cr.icon.getImage(iconUrl);
+    return getImage(iconUrl);
   },
 
   /**
@@ -132,7 +153,7 @@ Polymer({
   },
 
   /**
-   * @param {!CustomEvent<!{model: !{item: !settings.Account}}>} event
+   * @param {!CustomEvent<!{model: !{item: !Account}}>} event
    * @private
    */
   onReauthenticationClick_(event) {
@@ -164,7 +185,7 @@ Polymer({
 
   /**
    * Opens the Account actions menu.
-   * @param {!{model: !{item: !settings.KerberosAccount}, target: !Element}}
+   * @param {!{model: !{item: !KerberosAccount}, target: !Element}}
    *      event
    * @private
    */
@@ -190,15 +211,15 @@ Polymer({
   onRemoveAccountClick_() {
     this.browserProxy_
         .removeAccount(
-            /** @type {!settings.KerberosAccount} */ (this.selectedAccount_))
+            /** @type {!KerberosAccount} */ (this.selectedAccount_))
         .then(error => {
-          if (error === settings.KerberosErrorType.kNone) {
+          if (error === KerberosErrorType.kNone) {
             this.showToast_('kerberosAccountsAccountRemovedTip');
           } else {
             console.error('Unexpected error removing account: ' + error);
           }
         });
-    settings.recordSettingChange();
+    recordSettingChange();
     this.closeActionMenu_();
   },
 
@@ -208,8 +229,8 @@ Polymer({
    */
   onSetAsActiveAccountClick_() {
     this.browserProxy_.setAsActiveAccount(
-        /** @type {!settings.KerberosAccount} */ (this.selectedAccount_));
-    settings.recordSettingChange();
+        /** @type {!KerberosAccount} */ (this.selectedAccount_));
+    recordSettingChange();
     this.closeActionMenu_();
   },
 

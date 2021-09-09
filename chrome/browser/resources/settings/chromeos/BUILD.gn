@@ -230,6 +230,7 @@ preprocess_if_expr("preprocess_v3") {
     "chromeos/guest_os/guest_os_browser_proxy.js",
     "chromeos/internet_page/cellular_setup_settings_delegate.js",
     "chromeos/internet_page/internet_page_browser_proxy.js",
+    "chromeos/kerberos_page/kerberos_accounts_browser_proxy.js",
     "chromeos/os_apps_page/app_management_page/plugin_vm_page/plugin_vm_browser_proxy.js",
     "chromeos/os_apps_page/app_notifications_page/mojo_interface_provider.js",
     "chromeos/os_languages_page/input_method_settings.js",
@@ -361,10 +362,9 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/internet_page/network_summary.js",
     "chromeos/internet_page/network_summary_item.js",
     "chromeos/internet_page/tether_connection_dialog.js",
-    "chromeos/kerberos_page/kerberos_accounts.m.js",
-    "chromeos/kerberos_page/kerberos_accounts_browser_proxy.m.js",
-    "chromeos/kerberos_page/kerberos_add_account_dialog.m.js",
-    "chromeos/kerberos_page/kerberos_page.m.js",
+    "chromeos/kerberos_page/kerberos_accounts.js",
+    "chromeos/kerberos_page/kerberos_add_account_dialog.js",
+    "chromeos/kerberos_page/kerberos_page.js",
     "chromeos/keyboard_shortcut_banner/keyboard_shortcut_banner.js",
     "chromeos/metrics_recorder.m.js",
     "chromeos/multidevice_page/multidevice_browser_proxy.m.js",
@@ -727,7 +727,7 @@ group("polymer3_elements") {
     "google_assistant_page:web_components",
     "guest_os:web_components",
     "internet_page:web_components",
-    "kerberos_page:polymer3_elements",
+    "kerberos_page:web_components",
     "keyboard_shortcut_banner:web_components",
     "multidevice_page:polymer3_elements",
     "nearby_share_page:polymer3_elements",
@@ -765,6 +765,7 @@ group("polymer3_elements") {
     # Shared with browser settings
     "..:web_components_local",
     "../a11y_page:web_components",
+    "../people_page:web_components",
     "../settings_page:web_components",
   ]
 }

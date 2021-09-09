@@ -1,40 +1,18 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
-<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_indicator.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/html/util.html">
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="../os_route.html">
-<link rel="import" href="../../router.html">
-<link rel="import" href="../../settings_page/settings_animated_pages.html">
-<link rel="import" href="../../settings_page/settings_subpage.html">
-<link rel="import" href="../../settings_shared_css.html">
-<link rel="import" href="kerberos_accounts.html">
-
-<dom-module id="settings-kerberos-page">
-  <template>
-    <style include="settings-shared iron-flex"></style>
-    <settings-animated-pages id="pages" section="kerberos"
-        focus-config="[[focusConfig_]]">
-      <div route-path="default">
-        <cr-link-row id="kerberos-accounts-subpage-trigger"
-            on-click="onKerberosAccountsTap_"
-            label="$i18n{kerberosAccountsSubMenuLabel}"
-            role-description="$i18n{subpageArrowRoleDescription}">
-          <cr-policy-indicator indicator-type="userPolicy">
-          </cr-policy-indicator>
-        </cr-link-row>
-      </div>
-      <template is="dom-if" route-path="/kerberos/kerberosAccounts">
-        <settings-subpage page-title="$i18n{kerberosAccountsPageTitle}">
-          <settings-kerberos-accounts></settings-kerberos-accounts>
-        </settings-subpage>
-      </template>
-    </settings-animated-pages>
+<style include="settings-shared iron-flex"></style>
+<settings-animated-pages id="pages" section="kerberos"
+    focus-config="[[focusConfig_]]">
+  <div route-path="default">
+    <cr-link-row id="kerberos-accounts-subpage-trigger"
+        on-click="onKerberosAccountsTap_"
+        label="$i18n{kerberosAccountsSubMenuLabel}"
+        role-description="$i18n{subpageArrowRoleDescription}">
+      <cr-policy-indicator indicator-type="userPolicy">
+      </cr-policy-indicator>
+    </cr-link-row>
+  </div>
+  <template is="dom-if" route-path="/kerberos/kerberosAccounts">
+    <settings-subpage page-title="$i18n{kerberosAccountsPageTitle}">
+      <settings-kerberos-accounts></settings-kerberos-accounts>
+    </settings-subpage>
   </template>
-  <script src="kerberos_page.js"></script>
-</dom-module>
+</settings-animated-pages>

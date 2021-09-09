@@ -24,7 +24,7 @@ import '../../settings_page_css.js';
 import '../bluetooth_page/bluetooth_page.js';
 import '../device_page/device_page.m.js';
 import '../internet_page/internet_page.js';
-import '../kerberos_page/kerberos_page.m.js';
+import '../kerberos_page/kerberos_page.js';
 import '../multidevice_page/multidevice_page.m.js';
 import '../os_bluetooth_page/os_bluetooth_page.js';
 

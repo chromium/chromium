@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
 // clang-format on
 
 /**
@@ -12,7 +12,6 @@
  * only.
  */
 
-cr.define('settings', function() {
   /**
    * Information for a Chrome OS Kerberos account.
    * @typedef {{
@@ -26,154 +25,142 @@ cr.define('settings', function() {
    *   validForDuration: string
    * }}
    */
-  /* #export */ let KerberosAccount;
+export let KerberosAccount;
+
+/**
+ * @typedef {{
+ *   error: !KerberosErrorType,
+ *   errorInfo: !{
+ *     code: !KerberosConfigErrorCode,
+ *     lineIndex: (number|undefined)
+ *   }
+ * }}
+ */
+export let ValidateKerberosConfigResult;
+
+/**
+ *  @enum {number}
+ *  These values must be kept in sync with the ErrorType enum in
+ *  third_party/cros_system_api/dbus/kerberos/kerberos_service.proto.
+ */
+export const KerberosErrorType = {
+  kNone: 0,
+  kUnknown: 1,
+  kDBusFailure: 2,
+  kNetworkProblem: 3,
+  kUnknownKrb5Error: 4,
+  kBadPrincipal: 5,
+  kBadPassword: 6,
+  kPasswordExpired: 7,
+  kPasswordRejected: 8,
+  kNoCredentialsCacheFound: 9,
+  kKerberosTicketExpired: 10,
+  kKdcDoesNotSupportEncryptionType: 11,
+  kContactingKdcFailed: 12,
+  kParseRequestFailed: 13,
+  kLocalIo: 14,
+  kUnknownPrincipalName: 15,
+  kDuplicatePrincipalName: 16,
+  kInProgress: 17,
+  kParsePrincipalFailed: 18,
+  kBadConfig: 19,
+  kJailFailure: 20,
+  kKerberosDisabled: 21,
+};
+
+/**
+ *  @enum {number}
+ *  Error codes for config validation.
+ *  These values must be kept in sync with the KerberosConfigErrorCode enum in
+ *  third_party/cros_system_api/dbus/kerberos/kerberos_service.proto.
+ */
+export const KerberosConfigErrorCode = {
+  kNone: 0,
+  kSectionNestedInGroup: 1,
+  kSectionSyntax: 2,
+  kExpectedOpeningCurlyBrace: 3,
+  kExtraCurlyBrace: 4,
+  kRelationSyntax: 5,
+  kKeyNotSupported: 6,
+  kSectionNotSupported: 7,
+  kKrb5FailedToParse: 8,
+  kTooManyNestedGroups: 9,
+};
+
+/** @interface */
+export class KerberosAccountsBrowserProxy {
+  /**
+   * Returns a Promise for the list of Kerberos accounts held in the kerberosd
+   * system daemon.
+   * @return {!Promise<!Array<!KerberosAccount>>}
+   */
+  getAccounts() {}
 
   /**
-   * @typedef {{
-   *   error: !settings.KerberosErrorType,
-   *   errorInfo: !{
-   *     code: !settings.KerberosConfigErrorCode,
-   *     lineIndex: (number|undefined)
-   *   }
-   * }}
+   * Attempts to add a new (or update an existing) Kerberos account.
+   * @param {string} principalName Kerberos principal (user@realm.com).
+   * @param {string} password Account password.
+   * @param {boolean} rememberPassword Whether to store the password.
+   * @param {string} config Kerberos configuration.
+   * @param {boolean} allowExisting Whether existing accounts may be updated.
+   * @return {!Promise<!KerberosErrorType>}
    */
-  /* #export */ let ValidateKerberosConfigResult;
-
-  /**
-   *  @enum {number}
-   *  These values must be kept in sync with the ErrorType enum in
-   *  third_party/cros_system_api/dbus/kerberos/kerberos_service.proto.
-   */
-  /* #export */ const KerberosErrorType = {
-    kNone: 0,
-    kUnknown: 1,
-    kDBusFailure: 2,
-    kNetworkProblem: 3,
-    kUnknownKrb5Error: 4,
-    kBadPrincipal: 5,
-    kBadPassword: 6,
-    kPasswordExpired: 7,
-    kPasswordRejected: 8,
-    kNoCredentialsCacheFound: 9,
-    kKerberosTicketExpired: 10,
-    kKdcDoesNotSupportEncryptionType: 11,
-    kContactingKdcFailed: 12,
-    kParseRequestFailed: 13,
-    kLocalIo: 14,
-    kUnknownPrincipalName: 15,
-    kDuplicatePrincipalName: 16,
-    kInProgress: 17,
-    kParsePrincipalFailed: 18,
-    kBadConfig: 19,
-    kJailFailure: 20,
-    kKerberosDisabled: 21,
-  };
-
-  /**
-   *  @enum {number}
-   *  Error codes for config validation.
-   *  These values must be kept in sync with the KerberosConfigErrorCode enum in
-   *  third_party/cros_system_api/dbus/kerberos/kerberos_service.proto.
-   */
-  /* #export */ const KerberosConfigErrorCode = {
-    kNone: 0,
-    kSectionNestedInGroup: 1,
-    kSectionSyntax: 2,
-    kExpectedOpeningCurlyBrace: 3,
-    kExtraCurlyBrace: 4,
-    kRelationSyntax: 5,
-    kKeyNotSupported: 6,
-    kSectionNotSupported: 7,
-    kKrb5FailedToParse: 8,
-    kTooManyNestedGroups: 9,
-  };
-
-  /** @interface */
-  /* #export */ class KerberosAccountsBrowserProxy {
-    /**
-     * Returns a Promise for the list of Kerberos accounts held in the kerberosd
-     * system daemon.
-     * @return {!Promise<!Array<!settings.KerberosAccount>>}
-     */
-    getAccounts() {}
-
-    /**
-     * Attempts to add a new (or update an existing) Kerberos account.
-     * @param {string} principalName Kerberos principal (user@realm.com).
-     * @param {string} password Account password.
-     * @param {boolean} rememberPassword Whether to store the password.
-     * @param {string} config Kerberos configuration.
-     * @param {boolean} allowExisting Whether existing accounts may be updated.
-     * @return {!Promise<!settings.KerberosErrorType>}
-     */
-    addAccount(
-        principalName, password, rememberPassword, config, allowExisting) {}
-
-    /**
-     * Removes |account| from the set of Kerberos accounts.
-     * @param {!settings.KerberosAccount} account
-     * @return {!Promise<!settings.KerberosErrorType>}
-     */
-    removeAccount(account) {}
-
-    /**
-     * Validates |krb5conf| by making sure that it does not contain syntax
-     *     errors or disallowed configuration options.
-     * @param {string} krb5Conf Kerberos configuration data (krb5.conf)
-     * @return {!Promise<!settings.ValidateKerberosConfigResult>}
-     */
-    validateConfig(krb5Conf) {}
-
-    /**
-     * Sets |account| as currently active account. Kerberos credentials are
-     * consumed from this account.
-     * @param {!settings.KerberosAccount} account
-     */
-    setAsActiveAccount(account) {}
+  addAccount(principalName, password, rememberPassword, config, allowExisting) {
   }
 
   /**
-   * @implements {settings.KerberosAccountsBrowserProxy}
+   * Removes |account| from the set of Kerberos accounts.
+   * @param {!KerberosAccount} account
+   * @return {!Promise<!KerberosErrorType>}
    */
-  /* #export */ class KerberosAccountsBrowserProxyImpl {
-    /** @override */
-    getAccounts() {
-      return cr.sendWithPromise('getKerberosAccounts');
-    }
+  removeAccount(account) {}
 
-    /** @override */
-    addAccount(
-        principalName, password, rememberPassword, config, allowExisting) {
-      return cr.sendWithPromise(
-          'addKerberosAccount', principalName, password, rememberPassword,
-          config, allowExisting);
-    }
+  /**
+   * Validates |krb5conf| by making sure that it does not contain syntax
+   *     errors or disallowed configuration options.
+   * @param {string} krb5Conf Kerberos configuration data (krb5.conf)
+   * @return {!Promise<!ValidateKerberosConfigResult>}
+   */
+  validateConfig(krb5Conf) {}
 
-    /** @override */
-    removeAccount(account) {
-      return cr.sendWithPromise('removeKerberosAccount', account.principalName);
-    }
+  /**
+   * Sets |account| as currently active account. Kerberos credentials are
+   * consumed from this account.
+   * @param {!KerberosAccount} account
+   */
+  setAsActiveAccount(account) {}
+}
 
-    /** @override */
-    validateConfig(krb5conf) {
-      return cr.sendWithPromise('validateKerberosConfig', krb5conf);
-    }
-
-    /** @override */
-    setAsActiveAccount(account) {
-      chrome.send('setAsActiveKerberosAccount', [account.principalName]);
-    }
+/**
+ * @implements {KerberosAccountsBrowserProxy}
+ */
+export class KerberosAccountsBrowserProxyImpl {
+  /** @override */
+  getAccounts() {
+    return sendWithPromise('getKerberosAccounts');
   }
 
-  cr.addSingletonGetter(KerberosAccountsBrowserProxyImpl);
+  /** @override */
+  addAccount(principalName, password, rememberPassword, config, allowExisting) {
+    return sendWithPromise(
+        'addKerberosAccount', principalName, password, rememberPassword, config,
+        allowExisting);
+  }
 
-  // #cr_define_end
-  return {
-    KerberosAccount,
-    KerberosErrorType,
-    KerberosConfigErrorCode,
-    KerberosAccountsBrowserProxy,
-    KerberosAccountsBrowserProxyImpl,
-    ValidateKerberosConfigResult,
-  };
-});
+  /** @override */
+  removeAccount(account) {
+    return sendWithPromise('removeKerberosAccount', account.principalName);
+  }
+
+  /** @override */
+  validateConfig(krb5conf) {
+    return sendWithPromise('validateKerberosConfig', krb5conf);
+  }
+
+  /** @override */
+  setAsActiveAccount(account) {
+    chrome.send('setAsActiveKerberosAccount', [account.principalName]);
+  }
+}
+
+addSingletonGetter(KerberosAccountsBrowserProxyImpl);
