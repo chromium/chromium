@@ -188,6 +188,7 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
   # Minidump symbolization doesn't work in ChromeOS local mode if the rootfs is
   # still read-only, so skip the test in that case.
   @decorators.Disabled(
+      'chromeos',  # https://crbug.com/1247948
       'chromeos-local',
       'win7'  # https://crbug.com/1084931
   )
