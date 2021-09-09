@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
+#include "base/unguessable_token.h"
 #include "content/browser/appcache/chrome_appcache_service.h"
 #include "content/browser/navigation_subresource_loader_params.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
@@ -33,6 +34,7 @@
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/not_implemented_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/messaging/message_port_descriptor.h"
@@ -347,6 +349,36 @@ TEST_F(SharedWorkerHostTest, OnContextClosed) {
 
   // The host should no longer exist.
   EXPECT_FALSE(host);
+}
+
+TEST_F(SharedWorkerHostTest, CreateNetworkFactoryParamsForSubresources) {
+  base::WeakPtr<SharedWorkerHost> host = CreateHost();
+  network::mojom::URLLoaderFactoryParamsPtr params =
+      host->CreateNetworkFactoryParamsForSubresources();
+  EXPECT_EQ(host->GetStorageKey().origin(),
+            params->isolation_info.frame_origin());
+  EXPECT_FALSE(params->isolation_info.nonce().has_value());
+}
+
+TEST_F(SharedWorkerHostTest,
+       CreateNetworkFactoryParamsForSubresourcesWithNonce) {
+  base::UnguessableToken nonce = base::UnguessableToken::Create();
+  SharedWorkerInstance instance(
+      kWorkerUrl, blink::mojom::ScriptType::kClassic,
+      network::mojom::CredentialsMode::kSameOrigin, "name",
+      blink::StorageKey::CreateWithNonce(url::Origin::Create(kWorkerUrl),
+                                         nonce),
+      network::mojom::IPAddressSpace::kPublic,
+      blink::mojom::SharedWorkerCreationContextType::kSecure);
+  auto host = std::make_unique<SharedWorkerHost>(
+      &service_, instance, site_instance_,
+      std::vector<network::mojom::ContentSecurityPolicyPtr>(),
+      network::CrossOriginEmbedderPolicy());
+  network::mojom::URLLoaderFactoryParamsPtr params =
+      host->CreateNetworkFactoryParamsForSubresources();
+  EXPECT_EQ(url::Origin::Create(kWorkerUrl),
+            params->isolation_info.frame_origin());
+  EXPECT_THAT(params->isolation_info.nonce(), testing::Optional(nonce));
 }
 
 }  // namespace content
