@@ -297,6 +297,10 @@ class StyleBuilderConverter {
   static AtomicString ConvertContainerName(StyleResolverState&,
                                            const CSSValue&);
 
+  static absl::optional<StyleIntrinsicLength> ConvertIntrinsicDimension(
+      const StyleResolverState&,
+      const CSSValue&);
+
   static void CountSystemColorComputeToSelfUsage(
       const StyleResolverState& state);
 };

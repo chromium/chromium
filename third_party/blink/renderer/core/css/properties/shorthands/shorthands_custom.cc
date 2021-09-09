@@ -881,14 +881,15 @@ const CSSValue* ContainIntrinsicSize::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject* layout_object,
     bool allow_visited_style) const {
-  const Length& width = style.ContainIntrinsicWidth();
-  const Length& height = style.ContainIntrinsicHeight();
+  const StylePropertyShorthand& shorthand = containIntrinsicSizeShorthand();
+  const auto& width = style.ContainIntrinsicWidth();
+  const auto& height = style.ContainIntrinsicHeight();
   if (width != height) {
     return ComputedStyleUtils::ValuesForShorthandProperty(
-        containIntrinsicSizeShorthand(), style, layout_object,
-        allow_visited_style);
+        shorthand, style, layout_object, allow_visited_style);
   }
-  return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(width, style);
+  return shorthand.properties()[0]->CSSValueFromComputedStyle(
+      style, layout_object, allow_visited_style);
 }
 
 bool Container::ParseShorthand(

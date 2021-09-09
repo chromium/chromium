@@ -1945,8 +1945,8 @@ const CSSValue* ContainIntrinsicWidth::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject* layout_object,
     bool allow_visited_style) const {
-  return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
-      style.ContainIntrinsicWidth(), style);
+  return ComputedStyleUtils::ValueForIntrinsicLength(
+      style, style.ContainIntrinsicWidth());
 }
 
 const CSSValue* ContainIntrinsicHeight::ParseSingleValue(
@@ -1960,8 +1960,8 @@ const CSSValue* ContainIntrinsicHeight::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject* layout_object,
     bool allow_visited_style) const {
-  return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
-      style.ContainIntrinsicHeight(), style);
+  return ComputedStyleUtils::ValueForIntrinsicLength(
+      style, style.ContainIntrinsicHeight());
 }
 
 const CSSValue* ContainIntrinsicInlineSize::ParseSingleValue(

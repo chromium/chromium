@@ -60,6 +60,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/core/style/style_intrinsic_length.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
@@ -248,8 +249,8 @@ void StyleAdjuster::AdjustStyleForTextCombine(ComputedStyle& style) {
   const auto line_height = style.GetFontHeight().LineHeight();
   const auto size =
       LengthSize(Length::Fixed(line_height), Length::Fixed(one_em));
-  style.SetContainIntrinsicWidth(size.Width());
-  style.SetContainIntrinsicHeight(size.Height());
+  style.SetContainIntrinsicWidth(StyleIntrinsicLength(false, size.Width()));
+  style.SetContainIntrinsicHeight(StyleIntrinsicLength(false, size.Height()));
   style.SetHeight(size.Height());
   style.SetLineHeight(size.Height());
   style.SetMaxHeight(size.Height());

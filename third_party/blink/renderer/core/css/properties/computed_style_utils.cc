@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/layout/ng/grid/layout_ng_grid_interface.h"
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/core/style/style_intrinsic_length.h"
 #include "third_party/blink/renderer/core/style/style_svg_resource.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/core/svg_element_type_helpers.h"
@@ -2795,6 +2796,29 @@ const CSSValue* ComputedStyleUtils::ValueForStyleAutoColor(
   }
   return ComputedStyleUtils::CurrentColorOrValidColor(
       style, color.ToStyleColor(), value_phase);
+}
+
+CSSValue* ComputedStyleUtils::ValueForIntrinsicLength(
+    const ComputedStyle& style,
+    const absl::optional<StyleIntrinsicLength>& intrinsic_length) {
+  CSSValue* length = nullptr;
+  if (intrinsic_length) {
+    length = ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
+        intrinsic_length->GetLength(), style);
+  }
+
+  if (RuntimeEnabledFeatures::ContainIntrinsicSizeAutoEnabled()) {
+    if (!intrinsic_length)
+      return CSSIdentifierValue::Create(CSSValueID::kNone);
+    CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+    if (intrinsic_length->HasAuto())
+      list->Append(*CSSIdentifierValue::Create(CSSValueID::kAuto));
+    list->Append(*length);
+    return list;
+  }
+  if (!intrinsic_length)
+    return CSSIdentifierValue::Create(CSSValueID::kAuto);
+  return length;
 }
 
 std::unique_ptr<CrossThreadStyleValue>

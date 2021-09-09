@@ -143,11 +143,11 @@ column-rule-style: none
 column-rule-width: 0px
 column-span: none
 column-width: auto
-contain-intrinsic-block-size: auto
-contain-intrinsic-height: auto
-contain-intrinsic-inline-size: auto
-contain-intrinsic-size: auto
-contain-intrinsic-width: auto
+contain-intrinsic-block-size: none
+contain-intrinsic-height: none
+contain-intrinsic-inline-size: none
+contain-intrinsic-size: none
+contain-intrinsic-width: none
 content: normal
 cursor: auto
 cx: 0px

@@ -112,6 +112,8 @@ blink_core_sources("animation") {
     "css_interpolation_type.h",
     "css_interpolation_types_map.cc",
     "css_interpolation_types_map.h",
+    "css_intrinsic_length_interpolation_type.cc",
+    "css_intrinsic_length_interpolation_type.h",
     "css_length_interpolation_type.cc",
     "css_length_interpolation_type.h",
     "css_length_list_interpolation_type.cc",

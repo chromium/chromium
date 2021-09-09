@@ -1243,8 +1243,7 @@ bool LayoutBox::HasOverrideIntrinsicContentWidth() const {
   if (!ShouldApplySizeContainment())
     return false;
 
-  const Length& intrinsic_length = StyleRef().ContainIntrinsicWidth();
-  return !intrinsic_length.IsAuto();
+  return StyleRef().ContainIntrinsicWidth().has_value();
 }
 
 bool LayoutBox::HasOverrideIntrinsicContentHeight() const {
@@ -1252,30 +1251,31 @@ bool LayoutBox::HasOverrideIntrinsicContentHeight() const {
   if (!ShouldApplySizeContainment())
     return false;
 
-  const Length& intrinsic_length = StyleRef().ContainIntrinsicHeight();
-  return !intrinsic_length.IsAuto();
+  return StyleRef().ContainIntrinsicHeight().has_value();
 }
 
 LayoutUnit LayoutBox::OverrideIntrinsicContentWidth() const {
   NOT_DESTROYED();
   DCHECK(HasOverrideIntrinsicContentWidth());
   const auto& style = StyleRef();
-  const Length& intrinsic_length = style.ContainIntrinsicWidth();
-  DCHECK(!intrinsic_length.IsAuto());
-  DCHECK(intrinsic_length.IsFixed());
-  DCHECK_GE(intrinsic_length.Value(), 0.f);
-  return LayoutUnit(intrinsic_length.Value());
+  const absl::optional<StyleIntrinsicLength>& intrinsic_length =
+      style.ContainIntrinsicWidth();
+  DCHECK(intrinsic_length);
+  DCHECK(intrinsic_length->GetLength().IsFixed());
+  DCHECK_GE(intrinsic_length->GetLength().Value(), 0.f);
+  return LayoutUnit(intrinsic_length->GetLength().Value());
 }
 
 LayoutUnit LayoutBox::OverrideIntrinsicContentHeight() const {
   NOT_DESTROYED();
   DCHECK(HasOverrideIntrinsicContentHeight());
   const auto& style = StyleRef();
-  const Length& intrinsic_length = style.ContainIntrinsicHeight();
-  DCHECK(!intrinsic_length.IsAuto());
-  DCHECK(intrinsic_length.IsFixed());
-  DCHECK_GE(intrinsic_length.Value(), 0.f);
-  return LayoutUnit(intrinsic_length.Value());
+  const absl::optional<StyleIntrinsicLength>& intrinsic_length =
+      style.ContainIntrinsicHeight();
+  DCHECK(intrinsic_length);
+  DCHECK(intrinsic_length->GetLength().IsFixed());
+  DCHECK_GE(intrinsic_length->GetLength().Value(), 0.f);
+  return LayoutUnit(intrinsic_length->GetLength().Value());
 }
 
 LayoutUnit LayoutBox::DefaultIntrinsicContentInlineSize() const {

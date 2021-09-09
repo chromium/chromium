@@ -14,8 +14,6 @@ ValueRange LengthPropertyFunctions::GetValueRange(const CSSProperty& property) {
     case CSSPropertyID::kBorderLeftWidth:
     case CSSPropertyID::kBorderRightWidth:
     case CSSPropertyID::kBorderTopWidth:
-    case CSSPropertyID::kContainIntrinsicWidth:
-    case CSSPropertyID::kContainIntrinsicHeight:
     case CSSPropertyID::kFlexBasis:
     case CSSPropertyID::kHeight:
     case CSSPropertyID::kLineHeight:
@@ -138,12 +136,6 @@ bool LengthPropertyFunctions::GetLength(const CSSProperty& property,
       return true;
     case CSSPropertyID::kCy:
       result = style.Cy();
-      return true;
-    case CSSPropertyID::kContainIntrinsicWidth:
-      result = style.ContainIntrinsicWidth();
-      return true;
-    case CSSPropertyID::kContainIntrinsicHeight:
-      result = style.ContainIntrinsicHeight();
       return true;
     case CSSPropertyID::kFlexBasis:
       result = style.FlexBasis();
@@ -343,12 +335,6 @@ bool LengthPropertyFunctions::SetLength(const CSSProperty& property,
       return true;
     case CSSPropertyID::kCy:
       style.SetCy(value);
-      return true;
-    case CSSPropertyID::kContainIntrinsicWidth:
-      style.SetContainIntrinsicWidth(value);
-      return true;
-    case CSSPropertyID::kContainIntrinsicHeight:
-      style.SetContainIntrinsicHeight(value);
       return true;
     case CSSPropertyID::kFlexBasis:
       style.SetFlexBasis(value);

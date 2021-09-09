@@ -26,6 +26,7 @@ class CSSValue;
 class ComputedStyle;
 class FontFamily;
 class StyleColor;
+class StyleIntrinsicLength;
 class StylePropertyShorthand;
 
 enum class CSSValuePhase { kComputedValue, kUsedValue };
@@ -258,6 +259,9 @@ class CORE_EXPORT ComputedStyleUtils {
   static const CSSValue* ValueForStyleAutoColor(const ComputedStyle&,
                                                 const StyleAutoColor&,
                                                 CSSValuePhase);
+  static CSSValue* ValueForIntrinsicLength(
+      const ComputedStyle&,
+      const absl::optional<StyleIntrinsicLength>&);
   static std::unique_ptr<CrossThreadStyleValue>
   CrossThreadStyleValueFromCSSStyleValue(CSSStyleValue* style_value);
 

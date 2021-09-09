@@ -2105,12 +2105,34 @@ CSSValue* ConsumeAxis(CSSParserTokenRange& range,
   return MakeGarbageCollected<cssvalue::CSSAxisValue>(x, y, z);
 }
 
-CSSValue* ConsumeIntrinsicSizeLonghand(CSSParserTokenRange& range,
-                                       const CSSParserContext& context) {
+CSSValue* ConsumeIntrinsicSizeLonghandOld(CSSParserTokenRange& range,
+                                          const CSSParserContext& context) {
   if (css_parsing_utils::IdentMatches<CSSValueID::kAuto>(range.Peek().Id()))
     return css_parsing_utils::ConsumeIdent(range);
   return css_parsing_utils::ConsumeLength(range, context,
                                           kValueRangeNonNegative);
+}
+
+CSSValue* ConsumeIntrinsicSizeLonghandNew(CSSParserTokenRange& range,
+                                          const CSSParserContext& context) {
+  if (css_parsing_utils::IdentMatches<CSSValueID::kNone>(range.Peek().Id()))
+    return css_parsing_utils::ConsumeIdent(range);
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  if (css_parsing_utils::IdentMatches<CSSValueID::kAuto>(range.Peek().Id()))
+    list->Append(*css_parsing_utils::ConsumeIdent(range));
+  CSSValue* length =
+      css_parsing_utils::ConsumeLength(range, context, kValueRangeNonNegative);
+  if (!length)
+    return nullptr;
+  list->Append(*length);
+  return list;
+}
+
+CSSValue* ConsumeIntrinsicSizeLonghand(CSSParserTokenRange& range,
+                                       const CSSParserContext& context) {
+  if (RuntimeEnabledFeatures::ContainIntrinsicSizeAutoEnabled())
+    return ConsumeIntrinsicSizeLonghandNew(range, context);
+  return ConsumeIntrinsicSizeLonghandOld(range, context);
 }
 
 static CSSValue* ConsumeCrossFade(CSSParserTokenRange& args,
