@@ -62,7 +62,8 @@ class ProfilePickerSignedInFlowController
 
   // Finishes the creation flow by marking `profile_being_created_` as fully
   // created, opening a browser window for this profile and calling
-  // `callback`.
+  // `callback`. If empty `callback` is provided, the default action is
+  // performed: showing the profile customization bubble and/or profile IPH.
   void FinishAndOpenBrowser(BrowserOpenedCallback callback);
 
   // Finishes the sign-in process by moving to the sync confirmation screen.
@@ -104,8 +105,7 @@ class ProfilePickerSignedInFlowController
   // Returns the profile color, taking into account current policies.
   absl::optional<SkColor> GetProfileColor() const;
 
-  void FinishAndOpenBrowserImpl(BrowserOpenedCallback callback,
-                                bool enterprise_sync_consent_needed);
+  void FinishAndOpenBrowserImpl(BrowserOpenedCallback callback);
 
   // Finishes the flow by finalizing the profile and continuing the SAML
   // sign-in in a browser window.
@@ -132,7 +132,6 @@ class ProfilePickerSignedInFlowController
   // sign-in flow.
   std::unique_ptr<content::WebContents> contents_;
 
-  // TODO(crbug.com/1227029): This can be now set on init, removing this field.
   // Set for the profile at the very end to avoid coloring the simple toolbar
   // for GAIA sign-in (that uses the ThemeProvider of the current profile).
   // absl::nullopt if the profile should use the default theme.
