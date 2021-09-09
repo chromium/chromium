@@ -13,8 +13,4 @@ typedef [EnforceRange] unsigned long GPUTextureUsageFlags;
     const unsigned long TEXTURE_BINDING = 4;
     const unsigned long STORAGE_BINDING = 8;
     const unsigned long RENDER_ATTACHMENT = 16;
-
-    // Deprecated names. Use TEXTURE_BINDING and STORAGE_BINDING instead.
-    [CallWith=ExecutionContext] static readonly attribute unsigned long SAMPLED; // 4
-    [CallWith=ExecutionContext] static readonly attribute unsigned long STORAGE; // 8
 };

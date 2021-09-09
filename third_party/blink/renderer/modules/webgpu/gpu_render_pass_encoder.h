@@ -58,7 +58,6 @@ class GPURenderPassEncoder : public DawnObject<WGPURenderPassEncoder>,
 
   void setBlendConstant(const V8GPUColor* color,
                         ExceptionState& exception_state);
-  void setBlendColor(const V8GPUColor* color, ExceptionState& exception_state);
   void setStencilReference(uint32_t reference) {
     GetProcs().renderPassEncoderSetStencilReference(GetHandle(), reference);
   }

@@ -10,8 +10,6 @@
 
 namespace blink {
 
-class ExecutionContext;
-
 class GPUTextureUsage : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -22,9 +20,6 @@ class GPUTextureUsage : public ScriptWrappable {
   static constexpr uint32_t kTextureBinding = 4;
   static constexpr uint32_t kStorageBinding = 8;
   static constexpr uint32_t kRenderAttachment = 16;
-
-  static unsigned SAMPLED(ExecutionContext* execution_context);
-  static unsigned STORAGE(ExecutionContext* execution_context);
 
  private:
   DISALLOW_COPY_AND_ASSIGN(GPUTextureUsage);

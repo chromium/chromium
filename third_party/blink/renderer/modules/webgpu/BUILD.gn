@@ -76,7 +76,6 @@ blink_modules_sources("webgpu") {
     "gpu_swap_chain.h",
     "gpu_texture.cc",
     "gpu_texture.h",
-    "gpu_texture_usage.cc",
     "gpu_texture_usage.h",
     "gpu_texture_view.cc",
     "gpu_texture_view.h",

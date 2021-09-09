@@ -91,13 +91,6 @@ GPUSupportedFeatures* GPUAdapter::features() const {
   return features_;
 }
 
-bool GPUAdapter::isSoftware(ExecutionContext* execution_context) {
-  this->AddConsoleWarning(
-      execution_context,
-      "isSoftware is deprecated. Use isFallbackAdapter instead.");
-  return this->isFallbackAdapter();
-}
-
 void GPUAdapter::OnRequestDeviceCallback(ScriptState* script_state,
                                          ScriptPromiseResolver* resolver,
                                          const GPUDeviceDescriptor* descriptor,
@@ -142,20 +135,6 @@ ScriptPromise GPUAdapter::requestDevice(ScriptState* script_state,
                                         GPUDeviceDescriptor* descriptor) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
-
-  // Normalize the device descriptor to avoid using the deprecated fields.
-  if (descriptor->nonGuaranteedFeatures().size() > 0) {
-    AddConsoleWarning(
-        resolver->GetExecutionContext(),
-        "nonGuaranteedFeatures is deprecated. Use requiredFeatures instead.");
-    descriptor->setRequiredFeatures(descriptor->nonGuaranteedFeatures());
-  }
-  if (descriptor->hasNonGuaranteedLimits()) {
-    AddConsoleWarning(
-        resolver->GetExecutionContext(),
-        "nonGuaranteedLimits is deprecated. Use requiredLimits instead.");
-    descriptor->setRequiredLimits(descriptor->nonGuaranteedLimits());
-  }
 
   // Validation of the limits could happen in Dawn, but until that's
   // implemented we can do it here to preserve the spec behavior.

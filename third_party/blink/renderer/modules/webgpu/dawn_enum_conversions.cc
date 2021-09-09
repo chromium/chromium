@@ -68,9 +68,6 @@ WGPUTextureSampleType AsDawnEnum<WGPUTextureSampleType>(
 template <>
 WGPUStorageTextureAccess AsDawnEnum<WGPUStorageTextureAccess>(
     const WTF::String& webgpu_enum) {
-  if (webgpu_enum == "read-only") {
-    return WGPUStorageTextureAccess_ReadOnly;
-  }
   if (webgpu_enum == "write-only") {
     return WGPUStorageTextureAccess_WriteOnly;
   }

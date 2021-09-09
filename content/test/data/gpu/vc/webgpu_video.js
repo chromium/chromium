@@ -380,7 +380,7 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
           depthOrArrayLayers: 1,
         },
         format: 'rgba8unorm',
-        usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.SAMPLED |
+        usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.TEXTURE_BINDING |
             GPUTextureUsage.RENDER_ATTACHMENT,
       });
 
