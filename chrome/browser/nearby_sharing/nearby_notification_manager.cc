@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -992,12 +993,11 @@ void NearbyNotificationManager::OnOnboardingClicked() {
 
   if (base::FeatureList::IsEnabled(
           features::kNearbySharingBackgroundScanning)) {
-    std::string timestamp_string = base::NumberToString(
-        base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
-    std::string sub_page =
-        "multidevice/nearbyshare?receive&timeout=300&time=" + timestamp_string;
+    std::string path =
+        std::string(chromeos::settings::mojom::kNearbyShareSubpagePath) +
+        "?receive";
     chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(profile_,
-                                                                 sub_page);
+                                                                 path);
   }
 }
 
