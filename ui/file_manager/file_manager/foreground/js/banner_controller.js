@@ -248,8 +248,16 @@ export class BannerController extends EventTarget {
    * not. If shown, picks the highest priority banner.
    */
   async reconcile() {
+    const previousVolume = this.currentVolume_;
     this.currentVolume_ = this.directoryModel_.getCurrentVolumeInfo();
     this.currentRootType_ = this.directoryModel_.getCurrentRootType();
+
+    // When navigating to a different volume, refresh the volume size stats
+    // when first navigating. A listener will keep this in sync.
+    if (previousVolume !== this.currentVolume_ && this.currentVolume_ &&
+        this.volumeSizeObservers_[this.currentVolume_.volumeType]) {
+      await this.updateVolumeSizeStats_(this.currentVolume_);
+    }
 
     /** @type {?Banner} */
     let bannerToShow = null;
@@ -592,14 +600,7 @@ export class BannerController extends EventTarget {
     }
     const eventVolumeInfo =
         this.volumeManager_.getVolumeInfo(/** @type{!Entry} */ (event.entry));
-    if (!eventVolumeInfo || !eventVolumeInfo.volumeId) {
-      return;
-    }
-    const sizeStats = await getSizeStats(eventVolumeInfo.volumeId);
-    if (!sizeStats || sizeStats.totalSize === 0) {
-      return;
-    }
-    this.volumeSizeStats_[eventVolumeInfo.volumeId] = sizeStats;
+    await this.updateVolumeSizeStats_(eventVolumeInfo);
     await this.reconcile();
   }
 
@@ -627,6 +628,22 @@ export class BannerController extends EventTarget {
     if (!this.shouldShowBanner_(banner)) {
       await this.reconcile();
     }
+  }
+
+  /**
+   * Refresh the volume size stats for the specific volumeInfo.
+   * @param {?VolumeInfo} volumeInfo
+   * @private
+   */
+  async updateVolumeSizeStats_(volumeInfo) {
+    if (!volumeInfo || !volumeInfo.volumeId) {
+      return;
+    }
+    const sizeStats = await getSizeStats(volumeInfo.volumeId);
+    if (!sizeStats || sizeStats.totalSize === 0) {
+      return;
+    }
+    this.volumeSizeStats_[volumeInfo.volumeId] = sizeStats;
   }
 
   /**

@@ -619,8 +619,15 @@ export async function testVolumeSizeChangeShowsBanner() {
     minSize: 1 * 1024 * 1024 * 1024,  // 1 GB
   });
 
-  await controller.initialize();
+  // When a volume is first navigated to it retrieves the size of the disk at
+  // first. Ensure the first size it retrieves is above the threshold.
   changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS, 'downloads');
+  changeCurrentVolumeDiskSpace({
+    totalSize: 20 * 1024 * 1024 * 1024,      // 20 GB
+    remainingSize: 20 * 1024 * 1024 * 1024,  // 10 GB
+  });
+
+  await controller.initialize();
   await waitUntil(isAllBannersHidden);
 
   // Change remaining size in the current volume to 512 KB (less than 1 GB)
@@ -643,8 +650,15 @@ export async function testVolumeSizeBelowShowsBannerAndAboveHidesBanner() {
     minSize: 1 * 1024 * 1024 * 1024,  // 1 GB
   });
 
-  await controller.initialize();
+  // When a volume is first navigated to it retrieves the size of the disk at
+  // first. Ensure the first size it retrieves is above the threshold.
   changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS, 'downloads');
+  changeCurrentVolumeDiskSpace({
+    totalSize: 20 * 1024 * 1024 * 1024,      // 20 GB
+    remainingSize: 20 * 1024 * 1024 * 1024,  // 10 GB
+  });
+
+  await controller.initialize();
   await waitUntil(isAllBannersHidden);
 
   // Verify banner is shown when disk space goes below threshold.
@@ -687,8 +701,20 @@ export async function testTwoVolumeBannersShowOnWatchedVolumeTypes() {
     minRatio: 0.1,
   });
 
-  await controller.initialize();
+  // When a volume is first navigated to it retrieves the size of the disk at
+  // first. Ensure the first size it retrieves is above the threshold.
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DRIVE, 'drive-hash');
+  changeCurrentVolumeDiskSpace({
+    totalSize: 20 * 1024 * 1024 * 1024,      // 20 GB
+    remainingSize: 20 * 1024 * 1024 * 1024,  // 10 GB
+  });
   changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS, 'downloads');
+  changeCurrentVolumeDiskSpace({
+    totalSize: 20 * 1024 * 1024 * 1024,      // 20 GB
+    remainingSize: 20 * 1024 * 1024 * 1024,  // 10 GB
+  });
+
+  await controller.initialize();
   await waitUntil(isAllBannersHidden);
 
   // Verify well below threshold, banner is triggered for minSize.
@@ -743,10 +769,17 @@ export async function testChangingDirectoryMidSizeUpdateHidesBanner() {
     minRatio: 0.1,
   });
 
+  // When a volume is first navigated to it retrieves the size of the disk at
+  // first. Ensure the first size it retrieves is above the threshold.
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS, 'downloads');
+  changeCurrentVolumeDiskSpace({
+    totalSize: 20 * 1024 * 1024 * 1024,      // 20 GB
+    remainingSize: 20 * 1024 * 1024 * 1024,  // 10 GB
+  });
+
   // Change volume to downloads to ensure the appropriate event listener is
   // attached to the volume.
   await controller.initialize();
-  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS, 'downloads');
   await waitUntil(isAllBannersHidden);
 
   // Change the underlying disk space to breach the threshold, but don't
