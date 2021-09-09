@@ -1254,6 +1254,19 @@ class FocusControllerMouseEnterEventTest
     EXPECT_EQ(children_before, root_window()->children());
   }
 
+  void MouseEnteredWithActiveParent() {
+    aura::Window* w2 = root_window()->GetChildById(2);
+    aura::Window* w21 = root_window()->GetChildById(21);
+
+    ActivateWindow(w2);
+
+    // The enter event should not focus the window.
+    ui::test::EventGenerator generator(root_window(), w21);
+    generator.SendMouseEnter();
+
+    EXPECT_EQ(w2, GetFocusedWindow());
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -1641,5 +1654,9 @@ FOCUS_CONTROLLER_TEST(FocusControllerMouseEventTest, IgnoreHandledEvent)
 
 // Mouse over window should activate it.
 FOCUS_CONTROLLER_TEST(FocusControllerMouseEnterEventTest, MouseEnteredEvent)
+
+// Mouse over window with active parent should not focus it.
+FOCUS_CONTROLLER_TEST(FocusControllerMouseEnterEventTest,
+                      MouseEnteredWithActiveParent)
 
 }  // namespace wm
