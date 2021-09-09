@@ -383,13 +383,45 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // net::URLRequest.
   bool ShouldForceIgnoreTopFramePartyForCookies() const;
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class PrivateNetworkAccessCheckResult {
+    // Request is allowed because it is missing a client security state.
+    kAllowedMissingClientSecurityState = 0,
+
+    // Not a private network request: the resource address space is no less
+    // public than the client's.
+    kAllowedNoLessPublic = 1,
+
+    // Private network request: allowed because policy is `kAllow`.
+    kAllowedByPolicyAllow = 2,
+
+    // Private network request: allowed because policy is `kWarn`.
+    kAllowedByPolicyWarn = 3,
+
+    // URL loader options include `kURLLoadOptionBlockLocalRequest` and the
+    // resource address space is not `kPublic`.
+    kBlockedByLoadOption = 4,
+
+    // Private network request: blocked because policy is `kBlock`.
+    kBlockedByPolicyBlock = 5,
+
+    // Required for UMA histogram logging.
+    kMaxValue = kBlockedByPolicyBlock,
+  };
+
+  // Returns whether |result| indicates the request should be allowed.
+  static bool PrivateNetworkAccessCheckResultIsAllowed(
+      PrivateNetworkAccessCheckResult result);
+
   // Returns whether the request initiator should be allowed to make requests to
   // an endpoint in |resource_address_space|.
   //
-  // See the CORS-RFC1918 spec: https://wicg.github.io/cors-rfc1918.
+  // Implements the following spec:
+  // https://wicg.github.io/private-network-access/#private-network-access-check
   //
   // Helper for OnConnected().
-  bool CanConnectToAddressSpace(
+  PrivateNetworkAccessCheckResult PrivateNetworkAccessCheck(
       mojom::IPAddressSpace resource_address_space) const;
 
   mojom::DevToolsObserver* GetDevToolsObserver() const;

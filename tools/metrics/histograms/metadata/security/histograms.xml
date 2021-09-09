@@ -293,6 +293,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Security.PrivateNetworkAccess.CheckResult"
+    enum="PrivateNetworkAccessCheckResult" expires_after="M107">
+  <owner>titouan@chromium.org</owner>
+  <owner>clamy@chromium.org</owner>
+  <owner>mkwst@chromium.org</owner>
+  <summary>
+    Result of the Private Network Access Check on a new connection. Recorded
+    once per call to network::URLLoader::OnConnected(), which may be more than
+    once per URL request.
+  </summary>
+</histogram>
+
 <histogram name="Security.SafetyTips.DownloadStarted" enum="SafetyTipStatus"
     expires_after="2021-12-26">
   <owner>jdeblasio@chromium.org</owner>

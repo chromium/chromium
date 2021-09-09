@@ -67870,6 +67870,15 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="ToastButton"/>
 </enum>
 
+<enum name="PrivateNetworkAccessCheckResult">
+  <int value="0" label="kAllowedMissingClientSecurityState"/>
+  <int value="1" label="kAllowedNoLessPublic"/>
+  <int value="2" label="kAllowedByPolicyAllow"/>
+  <int value="3" label="kAllowedByPolicyWarn"/>
+  <int value="4" label="kBlockedByLoadOption"/>
+  <int value="5" label="kBlockedByPolicyBlock"/>
+</enum>
+
 <enum name="PrivateSetMembershipHashDanceComparison">
   <int value="0" label="Equal Results"/>
   <int value="1" label="Different Results"/>

@@ -1002,14 +1002,27 @@ void URLLoader::ResumeReadingBodyFromNet() {
   }
 }
 
-bool URLLoader::CanConnectToAddressSpace(
+// static.
+bool URLLoader::PrivateNetworkAccessCheckResultIsAllowed(
+    PrivateNetworkAccessCheckResult result) {
+  switch (result) {
+    case PrivateNetworkAccessCheckResult::kAllowedMissingClientSecurityState:
+    case PrivateNetworkAccessCheckResult::kAllowedNoLessPublic:
+    case PrivateNetworkAccessCheckResult::kAllowedByPolicyAllow:
+    case PrivateNetworkAccessCheckResult::kAllowedByPolicyWarn:
+      return true;
+    case PrivateNetworkAccessCheckResult::kBlockedByLoadOption:
+    case PrivateNetworkAccessCheckResult::kBlockedByPolicyBlock:
+      return false;
+  }
+}
+
+URLLoader::PrivateNetworkAccessCheckResult URLLoader::PrivateNetworkAccessCheck(
     mojom::IPAddressSpace resource_address_space) const {
   if (options_ & mojom::kURLLoadOptionBlockLocalRequest &&
       IsLessPublicAddressSpace(resource_address_space,
                                network::mojom::IPAddressSpace::kPublic)) {
-    // Unconditionally block requests to non-public address spaces when the URL
-    // loader options say so.
-    return false;
+    return PrivateNetworkAccessCheckResult::kBlockedByLoadOption;
   }
 
   // Depending on the type of URL request, we source the client security state
@@ -1022,15 +1035,13 @@ bool URLLoader::CanConnectToAddressSpace(
           ? factory_params_->client_security_state
           : request_client_security_state_;
 
-  if (!security_state) {
-    // Missing security state: allow all requests.
-    return true;
-  }
+  if (!security_state)
+    return PrivateNetworkAccessCheckResult::kAllowedMissingClientSecurityState;
 
   if (!IsLessPublicAddressSpace(resource_address_space,
                                 security_state->ip_address_space)) {
     // Resource is no less public than the initiator.
-    return true;
+    return PrivateNetworkAccessCheckResult::kAllowedNoLessPublic;
   }
 
   bool is_warning = false;
@@ -1038,8 +1049,7 @@ bool URLLoader::CanConnectToAddressSpace(
   // added to the PrivateNetworkRequestPolicy enum.
   switch (security_state->private_network_request_policy) {
     case mojom::PrivateNetworkRequestPolicy::kAllow:
-      // Policy tells us to allow all.
-      return true;
+      return PrivateNetworkAccessCheckResult::kAllowedByPolicyAllow;
     case mojom::PrivateNetworkRequestPolicy::kWarn:
       is_warning = true;
       break;
@@ -1053,7 +1063,11 @@ bool URLLoader::CanConnectToAddressSpace(
         devtools_request_id(), url_request_->url(), is_warning,
         resource_address_space, security_state->Clone());
   }
-  return is_warning;
+
+  if (is_warning)
+    return PrivateNetworkAccessCheckResult::kAllowedByPolicyWarn;
+
+  return PrivateNetworkAccessCheckResult::kBlockedByPolicyBlock;
 }
 
 int URLLoader::OnConnected(net::URLRequest* url_request,
@@ -1065,10 +1079,14 @@ int URLLoader::OnConnected(net::URLRequest* url_request,
            << ": " << info;
 
   // Now that the request endpoint's address has been resolved, check if
-  // this request should be blocked by CORS-RFC1918 rules.
+  // this request should be blocked per Private Network Access.
   mojom::IPAddressSpace resource_address_space =
       IPEndPointToIPAddressSpace(info.endpoint);
-  if (!CanConnectToAddressSpace(resource_address_space)) {
+  PrivateNetworkAccessCheckResult result =
+      PrivateNetworkAccessCheck(resource_address_space);
+  base::UmaHistogramEnumeration("Security.PrivateNetworkAccess.CheckResult",
+                                result);
+  if (!PrivateNetworkAccessCheckResultIsAllowed(result)) {
     // Remember the CORS error so we can annotate the URLLoaderCompletionStatus
     // with it later, then fail the request with the same net error code as
     // other CORS errors.

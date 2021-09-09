@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_piece.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/dom_distiller/tab_utils.h"
 #include "chrome/browser/dom_distiller/test_distillation_observers.h"
@@ -25,6 +26,7 @@
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/embedder_support/switches.h"
 #include "components/error_page/content/browser/net_error_auto_reloader.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
@@ -591,15 +593,19 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
       feature_histogram_tester.GetNonZeroCounts(AllAddressSpaceFeatures()),
       IsEmpty());
 
+  base::HistogramTester base_histogram_tester;
+
   EXPECT_EQ(true, content::EvalJs(web_contents(), R"(
     fetch("/defaultresponse").catch(() => true)
   )"));
 
-  feature_histogram_tester.ExpectCounts(AddFeatureCounts(
-      AllZeroFeatureCounts(AllAddressSpaceFeatures()),
-      {
-          {WebFeature::kAddressSpacePublicNonSecureContextEmbeddedLocal, 1},
-      }));
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  base_histogram_tester.ExpectBucketCount(
+      "Security.PrivateNetworkAccess.CheckResult", 5, 1);
+
+  EXPECT_THAT(
+      feature_histogram_tester.GetNonZeroCounts(AllAddressSpaceFeatures()),
+      IsEmpty());
 }
 
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
