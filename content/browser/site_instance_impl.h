@@ -208,8 +208,7 @@ class CONTENT_EXPORT UrlInfoInit {
 class CONTENT_EXPORT SiteInfo {
  public:
   static SiteInfo CreateForErrorPage(
-      const StoragePartitionConfig storage_partition_config,
-      const WebExposedIsolationInfo& web_exposed_isolation_info);
+      const StoragePartitionConfig storage_partition_config);
   static SiteInfo CreateForDefaultSiteInstance(
       BrowserContext* browser_context,
       const StoragePartitionConfig storage_partition_config,

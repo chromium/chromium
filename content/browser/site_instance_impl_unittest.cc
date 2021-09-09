@@ -697,9 +697,8 @@ TEST_F(SiteInstanceTest, GetSiteForURL) {
   EXPECT_EQ(GURL("http://google.com"), site_url);
 
   // Error page URLs.
-  auto error_site_info = SiteInfo::CreateForErrorPage(
-      CreateStoragePartitionConfigForTesting(),
-      WebExposedIsolationInfo::CreateNonIsolated());
+  auto error_site_info =
+      SiteInfo::CreateForErrorPage(CreateStoragePartitionConfigForTesting());
   test_url = GURL(kUnreachableWebDataURL);
   site_url = GetSiteForURL(test_url);
   EXPECT_EQ(error_site_info.site_url(), site_url);
@@ -1898,77 +1897,36 @@ TEST_F(SiteInstanceTest, ErrorPage) {
   const GURL non_error_page_url("http://foo.com");
   const GURL error_page_url(kUnreachableWebDataURL);
 
-  const auto non_isolated_coi = WebExposedIsolationInfo::CreateNonIsolated();
-  const auto isolated_coi = WebExposedIsolationInfo::CreateIsolated(
-      url::Origin::Create(non_error_page_url));
+  // Verify that error SiteInfos are marked by is_error_page() set to true and
+  // are not cross origin isolated.
+  const auto error_site_info =
+      SiteInfo::CreateForErrorPage(CreateStoragePartitionConfigForTesting());
+  EXPECT_TRUE(error_site_info.is_error_page());
+  EXPECT_FALSE(error_site_info.web_exposed_isolation_info().is_isolated());
 
-  const auto non_isolated_error_site_info = SiteInfo::CreateForErrorPage(
-      CreateStoragePartitionConfigForTesting(), non_isolated_coi);
-  const auto isolated_error_site_info = SiteInfo::CreateForErrorPage(
-      CreateStoragePartitionConfigForTesting(), isolated_coi);
-
-  // Verify that non-isolated and isolated error page SiteInfos are not
-  // equal, but indicate they are both for error pages.
-  EXPECT_NE(non_isolated_error_site_info, isolated_error_site_info);
-  EXPECT_TRUE(non_isolated_error_site_info.is_error_page());
-  EXPECT_EQ(non_isolated_coi,
-            non_isolated_error_site_info.web_exposed_isolation_info());
-  EXPECT_TRUE(isolated_error_site_info.is_error_page());
-  EXPECT_EQ(isolated_coi,
-            isolated_error_site_info.web_exposed_isolation_info());
-
-  // Verify that non-error URLs don't generate error page SiteInfos and
-  // non-isolated and isolated SiteInfos do not match even though the URL is
-  // the same.
-  const auto non_isolated_instance = SiteInstanceImpl::CreateForUrlInfo(
+  // Verify that non-error URLs don't generate error page SiteInfos.
+  const auto instance = SiteInstanceImpl::CreateForUrlInfo(
       context(), UrlInfo::CreateForTesting(non_error_page_url));
-  UrlInfo isolated_url_info = UrlInfo::CreateForTesting(non_error_page_url);
-  isolated_url_info.web_exposed_isolation_info = isolated_coi;
-  const auto isolated_instance =
-      SiteInstanceImpl::CreateForUrlInfo(context(), isolated_url_info);
-  EXPECT_NE(non_isolated_error_site_info, non_isolated_instance->GetSiteInfo());
-  EXPECT_NE(isolated_error_site_info, isolated_instance->GetSiteInfo());
-  EXPECT_NE(non_isolated_instance->GetSiteInfo(),
-            isolated_instance->GetSiteInfo());
+  EXPECT_NE(instance->GetSiteInfo(), error_site_info);
 
-  // Verify that an error page URL results in error page SiteInfos that match
-  // the corresponding isolation info.
-  const auto non_isolated_error_instance = SiteInstanceImpl::CreateForUrlInfo(
+  // Verify that an error page URL results in error page SiteInfos.
+  const auto error_instance = SiteInstanceImpl::CreateForUrlInfo(
       context(), UrlInfo::CreateForTesting(error_page_url));
-  UrlInfo isolated_error_url_info = UrlInfo::CreateForTesting(error_page_url);
-  isolated_error_url_info.web_exposed_isolation_info = isolated_coi;
-  const auto isolated_error_instance =
-      SiteInstanceImpl::CreateForUrlInfo(context(), isolated_error_url_info);
-  EXPECT_EQ(non_isolated_error_site_info,
-            non_isolated_error_instance->GetSiteInfo());
-  EXPECT_EQ(non_isolated_coi,
-            non_isolated_error_instance->GetWebExposedIsolationInfo());
-
-  EXPECT_EQ(isolated_error_site_info, isolated_error_instance->GetSiteInfo());
-  EXPECT_EQ(isolated_coi,
-            isolated_error_instance->GetWebExposedIsolationInfo());
+  EXPECT_EQ(error_instance->GetSiteInfo(), error_site_info);
+  EXPECT_FALSE(error_instance->IsCrossOriginIsolated());
 
   // Verify that deriving a SiteInfo for an error page URL always returns
-  // an error page SiteInfo with the correct isolation info.
-  EXPECT_EQ(non_isolated_error_site_info,
-            non_isolated_instance->DeriveSiteInfo(
-                UrlInfo::CreateForTesting(error_page_url)));
-  EXPECT_EQ(isolated_error_site_info,
-            isolated_instance->DeriveSiteInfo(
-                UrlInfo::CreateForTesting(error_page_url)));
+  // an error page SiteInfo.
+  EXPECT_EQ(error_site_info, instance->DeriveSiteInfo(
+                                 UrlInfo::CreateForTesting(error_page_url)));
 
   // Verify GetRelatedSiteInstance() called with an error page URL always
-  // returns an error page SiteInfo with the correct isolation info.
-  const auto non_isolated_related_instance =
-      non_isolated_instance->GetRelatedSiteInstance(error_page_url);
-  const auto isolated_related_instance =
-      isolated_instance->GetRelatedSiteInstance(error_page_url);
-  EXPECT_EQ(non_isolated_error_site_info,
-            static_cast<SiteInstanceImpl*>(non_isolated_related_instance.get())
-                ->GetSiteInfo());
-  EXPECT_EQ(isolated_error_site_info,
-            static_cast<SiteInstanceImpl*>(isolated_related_instance.get())
-                ->GetSiteInfo());
+  // returns an error page SiteInfo.
+  const auto related_instance =
+      instance->GetRelatedSiteInstance(error_page_url);
+  EXPECT_EQ(
+      error_site_info,
+      static_cast<SiteInstanceImpl*>(related_instance.get())->GetSiteInfo());
 }
 
 TEST_F(SiteInstanceTest, RelatedSitesInheritStoragePartitionConfig) {

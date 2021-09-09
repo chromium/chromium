@@ -195,11 +195,11 @@ const GURL& SiteInstanceImpl::GetDefaultSiteURL() {
 
 // static
 SiteInfo SiteInfo::CreateForErrorPage(
-    const StoragePartitionConfig storage_partition_config,
-    const WebExposedIsolationInfo& web_exposed_isolation_info) {
+    const StoragePartitionConfig storage_partition_config) {
   return SiteInfo(GetErrorPageSiteAndLockURL(), GetErrorPageSiteAndLockURL(),
                   false /* is_origin_keyed */, storage_partition_config,
-                  web_exposed_isolation_info, false /* is_guest */,
+                  WebExposedIsolationInfo::CreateNonIsolated(),
+                  false /* is_guest */,
                   false /* does_site_request_dedicated_process_for_coop */,
                   false /* is_jit_disabled */, false /* is_pdf */);
 }
@@ -291,8 +291,9 @@ SiteInfo SiteInfo::CreateInternal(
   DCHECK(storage_partition_config.has_value());
 
   if (url_info.url.SchemeIs(kChromeErrorScheme)) {
-    return CreateForErrorPage(storage_partition_config.value(),
-                              url_info.web_exposed_isolation_info);
+    // Error pages should never be cross origin isolated.
+    DCHECK(!url_info.web_exposed_isolation_info.is_isolated());
+    return CreateForErrorPage(storage_partition_config.value());
   }
   // We should only set |is_origin_keyed| if we are actually creating separate
   // SiteInstances for OAC isolation. When we do same-process OAC, we don't do
