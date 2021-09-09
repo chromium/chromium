@@ -50,7 +50,7 @@ class EventBase {
     // here. If |raw_string_value| is set (with |type| as MetricType::kString),
     // the unprocessed string will be reported.
     std::string hmac_value;
-    int64_t int_value;
+    int64_t int_value = 0;
     std::string string_value;
 
     bool operator==(const Metric& other) const;
