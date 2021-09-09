@@ -55545,6 +55545,7 @@ Called by update_use_counter_css.py.-->
   <int value="15" label="AdsBlocked"/>
   <int value="16" label="DownloadProgress"/>
   <int value="17" label="SyncError"/>
+  <int value="18" label="SharedHighlighting"/>
 </enum>
 
 <enum name="MessageLoopProblems">

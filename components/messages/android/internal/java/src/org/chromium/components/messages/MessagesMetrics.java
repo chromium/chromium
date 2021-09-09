@@ -101,6 +101,8 @@ public class MessagesMetrics {
                 return "DownloadProgress";
             case MessageIdentifier.SYNC_ERROR:
                 return "SyncError";
+            case MessageIdentifier.SHARED_HIGHLIGHTING:
+                return "SharedHighlighting";
             default:
                 return "Unknown";
         }

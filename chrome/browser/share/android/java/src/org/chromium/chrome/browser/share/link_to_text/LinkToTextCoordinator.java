@@ -39,9 +39,11 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         int FAILURE = 2;
         int MAX = 3;
     }
+    public static final String SHARED_HIGHLIGHTING_SUPPORT_URL =
+            "https://support.google.com/chrome?p=shared_highlighting";
+    public static final String TEXT_FRAGMENT_PREFIX = ":~:text=";
 
     private static final String SHARE_TEXT_TEMPLATE = "\"%s\"\n";
-    private static final String TEXT_FRAGMENT_PREFIX = ":~:text=";
     private static final String INVALID_SELECTOR = "";
     private static final long TIMEOUT_MS = 100;
     private static final long AMP_TIMEOUT_MS = 200;
@@ -169,17 +171,19 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
                     @Override
                     public void call(String[] matches) {
                         mSelectedText = String.join(",", matches);
-                        onGetExistingSelectors();
+                        getExistingSelectors(
+                                mProducer, (text) -> { onSelectorReady(String.join("", text)); });
                     }
                 });
     }
 
     // Request text fragment selectors for existing highlights
-    public void onGetExistingSelectors() {
-        mProducer.getExistingSelectors(new TextFragmentReceiver.GetExistingSelectorsResponse() {
+    public static void getExistingSelectors(
+            TextFragmentReceiver producer, Callback<String[]> callback) {
+        producer.getExistingSelectors(new TextFragmentReceiver.GetExistingSelectorsResponse() {
             @Override
             public void call(String[] text) {
-                onSelectorReady(String.join("", text));
+                callback.onResult(text);
             }
         });
     }

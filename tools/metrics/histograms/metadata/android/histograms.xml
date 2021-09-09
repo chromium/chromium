@@ -94,6 +94,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name=".SaveCard"/>
   <variant name=".SavePassword"/>
   <variant name=".SendTabToSelf"/>
+  <variant name=".SharedHighlighting"/>
   <variant name=".SyncError"/>
   <variant name=".UpdatePassword"/>
 </variants>
