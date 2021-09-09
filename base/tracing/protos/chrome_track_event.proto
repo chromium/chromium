@@ -231,9 +231,68 @@ message ChromeExtensionId {
   optional uint32 pseudonymized_extension_id = 2;
 }
 
+message SiteInstance {
+  // The ID of the SiteInstance.
+  optional int32 site_instance_id = 1;
+
+  // The ID of the BrowsingInstance that the SiteInstance belongs to.
+  optional int32 browsing_instance_id = 2;
+
+  // Whether the SiteInstance is the "default SiteInstance" or not. Non-isolated
+  // sites on Android are not assigned to their own specific per-site process,
+  // and shares SiteInstances with each other (the default SiteInstance).
+  optional bool is_default = 3;
+
+  // Whether this SiteInstance has a running process associated with it.
+  optional bool has_process = 4;
+
+  // Returns the total active WebContents count for this SiteInstance and all
+  // related SiteInstances in the same BrowsingInstance.
+  optional int32 related_active_contents_count = 5;
+
+  // The number of active RenderFrameHosts which belong to this SiteInstance.
+  optional int32 active_rfh_count = 6;
+}
+
+message RenderViewHost {
+  // The RenderViewHostMapId for the RenderViewHost.
+  optional int32 rvh_map_id = 1;
+
+  // The routing ID for the RenderViewHost.
+  optional int32 routing_id = 2;
+
+  // The process ID of the RenderViewHost.
+  optional int32 process_id = 3;
+
+  // Whether the RenderViewHost is in back/forward cache or not.
+  optional bool is_in_back_forward_cache = 4;
+
+  // Whether the renderer-side RenderView is created.
+  optional bool renderer_view_created = 5;
+}
+
+message RenderFrameProxyHost {
+  // The routing ID for the RenderFrameProxyHost.
+  optional int32 routing_id = 1;
+
+  // The process ID of the RenderFrameProxyHost.
+  optional int32 process_id = 2;
+
+  // The RenderViewHostMapId of the RenderViewHost associated with the
+  // RenderFrameProxyHost.
+  optional int32 rvh_map_id = 3;
+
+  // The SiteInstanceId of the SiteInstance associated with the
+  // RenderFrameProxyHost.
+  optional int32 site_instance_id = 4;
+
+  // Whether the renderer-side RenderFrameProxy is live or not.
+  optional bool is_render_frame_proxy_live = 5;
+}
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1019
+  // Next ID: 1022
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -274,5 +333,11 @@ message ChromeTrackEvent {
     optional ChromeWebAppBadNavigate chrome_web_app_bad_navigate = 1017;
 
     optional ChromeExtensionId chrome_extension_id = 1018;
+
+    optional SiteInstance site_instance = 1019;
+
+    optional RenderViewHost render_view_host = 1020;
+
+    optional RenderFrameProxyHost render_frame_proxy_host = 1021;
   }
 }

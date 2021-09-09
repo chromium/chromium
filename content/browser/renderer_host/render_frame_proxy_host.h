@@ -31,6 +31,14 @@ namespace gfx {
 class Rect;
 }
 
+namespace perfetto {
+namespace protos {
+namespace pbzero {
+class RenderFrameProxyHost;
+}
+}  // namespace protos
+}  // namespace perfetto
+
 namespace content {
 
 class CrossProcessFrameConnector;
@@ -250,6 +258,11 @@ class CONTENT_EXPORT RenderFrameProxyHost
   // - undoing a `CommitNavigation()` that has already been sent to a
   //   speculative RenderFrameHost by swapping it back to a RenderFrameProxy.
   void InvalidateMojoConnection();
+
+  // Write a representation of this object into a trace.
+  void WriteIntoTrace(
+      perfetto::TracedProto<perfetto::protos::pbzero::RenderFrameProxyHost>
+          proto);
 
  private:
   // These interceptor need access to frame_host_receiver_for_testing().

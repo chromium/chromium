@@ -807,6 +807,14 @@ void FrameTreeNode::WriteIntoTrace(perfetto::TracedValue context) const {
   dict.Add("is_main_frame", IsMainFrame());
 }
 
+void FrameTreeNode::WriteIntoTrace(
+    perfetto::TracedProto<perfetto::protos::pbzero::FrameTreeNodeInfo> proto) {
+  proto->set_is_main_frame(IsMainFrame());
+  proto->set_frame_tree_node_id(frame_tree_node_id());
+  proto->set_has_speculative_render_frame_host(
+      !!render_manager()->speculative_frame_host());
+}
+
 bool FrameTreeNode::HasNavigation() {
   if (navigation_request())
     return true;

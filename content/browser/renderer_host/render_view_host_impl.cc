@@ -30,6 +30,7 @@
 #include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
@@ -120,6 +121,8 @@ using blink::WebInputEvent;
 
 namespace content {
 namespace {
+
+using perfetto::protos::pbzero::ChromeTrackEvent;
 
 // <process id, routing id>
 using RenderViewHostID = std::pair<int32_t, int32_t>;
@@ -295,6 +298,8 @@ RenderViewHostImpl::RenderViewHostImpl(
       routing_id_(routing_id),
       main_frame_routing_id_(main_frame_routing_id),
       frame_tree_(frame_tree) {
+  TRACE_EVENT("navigation", "RenderViewHostImpl::RenderViewHostImpl",
+              ChromeTrackEvent::kRenderViewHost, *this);
   DCHECK(delegate_);
   DCHECK_NE(GetRoutingID(), render_widget_host_->GetRoutingID());
 
@@ -337,6 +342,8 @@ RenderViewHostImpl::RenderViewHostImpl(
 }
 
 RenderViewHostImpl::~RenderViewHostImpl() {
+  TRACE_EVENT_INSTANT("navigation", "~RenderViewHostImpl()",
+                      ChromeTrackEvent::kRenderViewHost, *this);
   PerProcessRenderViewHostSet::GetOrCreateForProcess(GetProcess())->Erase(this);
 
   // Destroy the RenderWidgetHost.
@@ -512,6 +519,8 @@ void RenderViewHostImpl::SetMainFrameRoutingId(int routing_id) {
 }
 
 void RenderViewHostImpl::SetFrameTree(FrameTree& frame_tree) {
+  TRACE_EVENT("navigation", "RenderViewHostImpl::SetFrameTree",
+              ChromeTrackEvent::kRenderViewHost, *this);
   frame_tree_->UnregisterRenderViewHost(render_view_host_map_id_, this);
   frame_tree_ = &frame_tree;
   frame_tree_->RegisterRenderViewHost(render_view_host_map_id_, this);
@@ -521,7 +530,8 @@ void RenderViewHostImpl::EnterBackForwardCache() {
   if (!will_enter_back_forward_cache_callback_for_testing_.is_null())
     will_enter_back_forward_cache_callback_for_testing_.Run();
 
-  TRACE_EVENT0("navigation", "RenderViewHostImpl::EnterBackForwardCache");
+  TRACE_EVENT("navigation", "RenderViewHostImpl::EnterBackForwardCache",
+              ChromeTrackEvent::kRenderViewHost, *this);
   frame_tree_->UnregisterRenderViewHost(render_view_host_map_id_, this);
   is_in_back_forward_cache_ = true;
   page_lifecycle_state_manager_->SetIsInBackForwardCache(
@@ -536,7 +546,8 @@ void RenderViewHostImpl::PrepareToLeaveBackForwardCache(
 
 void RenderViewHostImpl::LeaveBackForwardCache(
     blink::mojom::PageRestoreParamsPtr page_restore_params) {
-  TRACE_EVENT0("navigation", "RenderViewHostImpl::LeaveBackForwardCache");
+  TRACE_EVENT("navigation", "RenderViewHostImpl::LeaveBackForwardCache",
+              ChromeTrackEvent::kRenderViewHost, *this);
   // At this point, the frames |this| RenderViewHostImpl belongs to are
   // guaranteed to be committed, so it should be reused going forward.
   frame_tree_->RegisterRenderViewHost(render_view_host_map_id_, this);
@@ -917,6 +928,15 @@ void RenderViewHostImpl::WriteIntoTrace(perfetto::TracedValue context) {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("routing_id", GetRoutingID());
   dict.Add("process", GetProcess());
+}
+
+void RenderViewHostImpl::WriteIntoTrace(
+    perfetto::TracedProto<perfetto::protos::pbzero::RenderViewHost> proto) {
+  proto->set_rvh_map_id(render_view_host_map_id_.value());
+  proto->set_routing_id(GetRoutingID());
+  proto->set_process_id(GetProcess()->GetID());
+  proto->set_is_in_back_forward_cache(is_in_back_forward_cache_);
+  proto->set_renderer_view_created(renderer_view_created_);
 }
 
 }  // namespace content

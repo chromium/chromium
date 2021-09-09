@@ -84,6 +84,8 @@ using LifecycleStateImpl = RenderFrameHostImpl::LifecycleStateImpl;
 
 namespace {
 
+using perfetto::protos::pbzero::ChromeTrackEvent;
+
 bool IsDataOrAbout(const GURL& url) {
   return url.IsAboutSrcdoc() || url.IsAboutBlank() ||
          url.scheme() == url::kDataScheme;
@@ -213,16 +215,6 @@ void AppendReason(std::string* reason, const char* value) {
 
   DCHECK_LT(reason->size(),
             static_cast<size_t>(base::debug::CrashKeySize::Size256));
-}
-
-void WriteFrameTreeNodeInfo(perfetto::EventContext& ctx,
-                            FrameTreeNode* frame_tree_node) {
-  auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
-  auto* ftn_info = event->set_frame_tree_node_info();
-  ftn_info->set_is_main_frame(frame_tree_node->IsMainFrame());
-  ftn_info->set_frame_tree_node_id(frame_tree_node->frame_tree_node_id());
-  ftn_info->set_has_speculative_render_frame_host(
-      !!frame_tree_node->render_manager()->speculative_frame_host());
 }
 
 perfetto::protos::pbzero::ShouldSwapBrowsingInstance
@@ -795,9 +787,7 @@ void RenderFrameHostManager::ActivatePrerender(
 void RenderFrameHostManager::RestorePage(
     std::unique_ptr<StoredPage> stored_page) {
   TRACE_EVENT("navigation", "RenderFrameHostManager::RestorePage",
-              [&](perfetto::EventContext ctx) {
-                WriteFrameTreeNodeInfo(ctx, frame_tree_node_);
-              });
+              ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_);
   // Matched in CommitPending().
   stored_page->render_frame_host->GetProcess()->AddPendingView();
 
@@ -851,9 +841,7 @@ void RenderFrameHostManager::DidCreateNavigationRequest(
     NavigationRequest* request) {
   TRACE_EVENT("navigation",
               "RenderFrameHostManager::DidCreateNavigationRequest",
-              [&](perfetto::EventContext ctx) {
-                WriteFrameTreeNodeInfo(ctx, frame_tree_node_);
-              });
+              ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_);
   const bool force_use_current_render_frame_host =
       // Since the frame from the back-forward cache is being committed to the
       // SiteInstance we already have, it is treated as current.
@@ -901,9 +889,7 @@ RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
     NavigationRequest* request,
     std::string* reason) {
   TRACE_EVENT("navigation", "RenderFrameHostManager::GetFrameHostForNavigation",
-              [&](perfetto::EventContext ctx) {
-                WriteFrameTreeNodeInfo(ctx, frame_tree_node_);
-              });
+              ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_);
 
   DCHECK(!request->common_params().url.SchemeIs(url::kJavaScriptScheme))
       << "Don't call this method for JavaScript URLs as those create a "
@@ -1216,9 +1202,7 @@ void RenderFrameHostManager::MaybeCleanUpNavigation() {
 
 void RenderFrameHostManager::CleanUpNavigation() {
   TRACE_EVENT("navigation", "RenderFrameHostManager::CleanUpNavigation",
-              [&](perfetto::EventContext ctx) {
-                WriteFrameTreeNodeInfo(ctx, frame_tree_node_);
-              });
+              ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_);
   if (speculative_render_frame_host_) {
     bool was_loading = speculative_render_frame_host_->is_loading();
     DiscardUnusedFrame(UnsetSpeculativeRenderFrameHost());
@@ -1241,9 +1225,7 @@ std::unique_ptr<RenderFrameHostImpl>
 RenderFrameHostManager::UnsetSpeculativeRenderFrameHost() {
   TRACE_EVENT("navigation",
               "RenderFrameHostManager::UnsetSpeculativeRenderFrameHost",
-              [&](perfetto::EventContext ctx) {
-                WriteFrameTreeNodeInfo(ctx, frame_tree_node_);
-              });
+              ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_);
   speculative_render_frame_host_->GetProcess()->RemovePendingView();
   if (speculative_render_frame_host_->lifecycle_state() ==
       LifecycleStateImpl::kSpeculative) {
@@ -1280,9 +1262,7 @@ void RenderFrameHostManager::DiscardSpeculativeRenderFrameHostForShutdown() {
   TRACE_EVENT(
       "navigation",
       "RenderFrameHostManager::DiscardSpeculativeRenderFrameHostForShutdown",
-      [&](perfetto::EventContext ctx) {
-        WriteFrameTreeNodeInfo(ctx, frame_tree_node_);
-      });
+      ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_);
 
   DCHECK(speculative_render_frame_host_);
 
@@ -1500,6 +1480,10 @@ RenderFrameProxyHost* RenderFrameHostManager::CreateRenderFrameProxyHost(
       new RenderFrameProxyHost(site_instance, std::move(rvh), frame_tree_node_);
   proxy_hosts_[site_instance_id] = base::WrapUnique(proxy_host);
   static_cast<SiteInstanceImpl*>(site_instance)->AddObserver(this);
+
+  TRACE_EVENT_INSTANT("navigation",
+                      "RenderFrameHostManager::CreateRenderFrameProxyHost",
+                      ChromeTrackEvent::kRenderFrameProxyHost, *proxy_host);
   return proxy_host;
 }
 
@@ -2712,9 +2696,7 @@ RenderFrameHostManager::CreateSpeculativeRenderFrame(
     bool recovering_without_early_commit) {
   TRACE_EVENT("navigation",
               "RenderFrameHostManager::CreateSpeculativeRenderFrame",
-              [&](perfetto::EventContext ctx) {
-                WriteFrameTreeNodeInfo(ctx, frame_tree_node_);
-              });
+              ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_);
 
   CHECK(instance);
   // This DCHECK is going to be fully removed as part of RenderDocument [1].
@@ -2795,6 +2777,11 @@ RenderFrameHostManager::CreateSpeculativeRenderFrame(
 
 void RenderFrameHostManager::CreateRenderFrameProxy(SiteInstance* instance) {
   CHECK(instance);
+  TRACE_EVENT_INSTANT("navigation",
+                      "RenderFrameHostManager::CreateRenderFrameProxy",
+                      ChromeTrackEvent::kSiteInstance,
+                      *static_cast<SiteInstanceImpl*>(instance),
+                      ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_);
   // If we are creating a proxy to recover from a crash and skipping the early
   // CommitPending then it could be in the same SiteInstance. In all other
   // cases we should be creating it in a different one.
@@ -2830,6 +2817,10 @@ void RenderFrameHostManager::CreateRenderFrameProxy(SiteInstance* instance) {
       render_view_host = frame_tree_node_->frame_tree()->CreateRenderViewHost(
           instance, /*main_frame_routing_id=*/MSG_ROUTING_NONE,
           /*swapped_out=*/true, /*renderer_initiated_creation=*/false);
+    } else {
+      TRACE_EVENT_INSTANT("navigation",
+                          "RenderFrameHostManager::CreateRenderFrameProxy_RVH",
+                          ChromeTrackEvent::kRenderViewHost, *render_view_host);
     }
     proxy = CreateRenderFrameProxyHost(instance, std::move(render_view_host));
   }
@@ -2843,9 +2834,19 @@ void RenderFrameHostManager::CreateRenderFrameProxy(SiteInstance* instance) {
 }
 
 void RenderFrameHostManager::CreateProxiesForChildFrame(FrameTreeNode* child) {
+  TRACE_EVENT_INSTANT(
+      "navigation", "RenderFrameHostManager::CreateProxiesForChildFrame_Parent",
+      ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_);
+  TRACE_EVENT_INSTANT(
+      "navigation", "RenderFrameHostManager::CreateProxiesForChildFrame_Child",
+      ChromeTrackEvent::kFrameTreeNodeInfo, *child);
   RenderFrameProxyHost* outer_delegate_proxy =
       IsMainFrameForInnerDelegate() ? GetProxyToOuterDelegate() : nullptr;
   for (const auto& pair : proxy_hosts_) {
+    TRACE_EVENT_INSTANT(
+        "navigation",
+        "RenderFrameHostManager::CreateProxiesForChildFrame_ProxyHost",
+        ChromeTrackEvent::kRenderFrameProxyHost, *pair.second);
     // Do not create proxies for subframes in the outer delegate's process,
     // since the outer delegate does not need to interact with them.
     if (pair.second.get() == outer_delegate_proxy)
@@ -3010,6 +3011,20 @@ RenderFrameHostManager::GetSiteInstanceForNavigationRequest(
                              WILL_REDIRECT_REQUEST /* is_speculative */,
       reason);
 
+  TRACE_EVENT_INSTANT(
+      "navigation",
+      "RenderFrameHostManager::GetSiteInstanceForNavigationRequest_Result",
+      ChromeTrackEvent::kSiteInstance,
+      *static_cast<SiteInstanceImpl*>(dest_site_instance.get()),
+      ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_,
+      [&](perfetto::EventContext ctx) {
+        auto rvh = frame_tree_node_->frame_tree()->GetRenderViewHost(
+            dest_site_instance.get());
+        if (rvh) {
+          auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+          rvh->WriteIntoTrace(ctx.Wrap(event->set_render_view_host()));
+        }
+      });
   // If the NavigationRequest's dest_site_instance was present but incorrect,
   // then ensure no sensitive state is kept on the request. This can happen for
   // cross-process redirects, error pages, etc.
@@ -3263,6 +3278,9 @@ void RenderFrameHostManager::CommitPending(
                             proxy.second->GetSiteInstance()->GetId()));
       static_cast<SiteInstanceImpl*>(proxy.second->GetSiteInstance())
           ->AddObserver(this);
+      TRACE_EVENT_INSTANT(
+          "navigation", "RenderFrameHostManager::CommitPending_RestoreProxy",
+          ChromeTrackEvent::kRenderFrameProxyHost, *proxy.second);
       proxy_hosts_.insert(std::move(proxy));
     }
 
@@ -3725,9 +3743,7 @@ void RenderFrameHostManager::CreateNewFrameForInnerDelegateAttachIfNecessary() {
   TRACE_EVENT(
       "navigation",
       "RenderFrameHostManager::CreateNewFrameForInnerDelegateAttachIfNecessary",
-      [&](perfetto::EventContext ctx) {
-        WriteFrameTreeNodeInfo(ctx, frame_tree_node_);
-      });
+      ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_);
   DCHECK(is_attaching_inner_delegate());
   // Remove all navigations and any speculative frames which might interfere
   // with the loading state.

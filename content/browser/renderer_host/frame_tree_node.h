@@ -479,6 +479,8 @@ class CONTENT_EXPORT FrameTreeNode {
 
   // Write a representation of this object into a trace.
   void WriteIntoTrace(perfetto::TracedValue context) const;
+  void WriteIntoTrace(
+      perfetto::TracedProto<perfetto::protos::pbzero::FrameTreeNodeInfo> proto);
 
   // Returns true the node is navigating, i.e. it has an associated
   // NavigationRequest.

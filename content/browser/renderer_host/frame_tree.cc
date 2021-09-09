@@ -16,6 +16,7 @@
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "base/trace_event/optional_trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "base/unguessable_token.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
@@ -40,6 +41,8 @@
 namespace content {
 
 namespace {
+
+using perfetto::protos::pbzero::ChromeTrackEvent;
 
 // Helper function to collect SiteInstances involved in rendering a single
 // FrameTree (which is a subset of SiteInstances in main frame's proxy_hosts_
@@ -544,12 +547,16 @@ FrameTree::RenderViewHostMapId FrameTree::GetRenderViewHostMapId(
 
 void FrameTree::RegisterRenderViewHost(RenderViewHostMapId id,
                                        RenderViewHostImpl* rvh) {
+  TRACE_EVENT_INSTANT("navigation", "FrameTree::RegisterRenderViewHost",
+                      ChromeTrackEvent::kRenderViewHost, *rvh);
   CHECK(!base::Contains(render_view_host_map_, id));
   render_view_host_map_[id] = rvh;
 }
 
 void FrameTree::UnregisterRenderViewHost(RenderViewHostMapId id,
                                          RenderViewHostImpl* rvh) {
+  TRACE_EVENT_INSTANT("navigation", "FrameTree::UnregisterRenderViewHost",
+                      ChromeTrackEvent::kRenderViewHost, *rvh);
   auto it = render_view_host_map_.find(id);
   CHECK(it != render_view_host_map_.end());
   CHECK_EQ(it->second, rvh);

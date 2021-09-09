@@ -319,6 +319,8 @@ class RenderFrameHostOrProxy {
 
 namespace {
 
+using perfetto::protos::pbzero::ChromeTrackEvent;
+
 constexpr int kSubframeProcessShutdownLongDelayInMSec = 8 * 1000;
 static_assert(kSubframeProcessShutdownLongDelayInMSec +
                       RenderViewHostImpl::kUnloadTimeoutInMSec <
@@ -3467,6 +3469,11 @@ void RenderFrameHostImpl::OnCreateChildFrame(
     SCOPED_CRASH_KEY_BOOL("NoRVH", "proxy_live",
                           proxy->is_render_frame_proxy_live());
     base::debug::DumpWithoutCrashing();
+
+    TRACE_EVENT_INSTANT("navigation", "RenderFrameHostImpl::OnCreateChildFrame",
+                        ChromeTrackEvent::kRenderFrameProxyHost, *proxy);
+    CaptureTraceForNavigationDebugScenario(
+        DebugScenario::kDebugSubframeProxyCreationWithNoRVH);
     return;
   }
 
