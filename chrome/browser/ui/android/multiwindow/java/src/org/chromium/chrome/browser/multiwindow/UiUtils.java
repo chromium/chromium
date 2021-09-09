@@ -16,6 +16,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -178,5 +179,16 @@ class UiUtils {
      */
     private boolean isBeforeFirstTabLoad(InstanceInfo item, int totalTabCount) {
         return totalTabCount == 1 && TextUtils.isEmpty(item.url) && TextUtils.isEmpty(item.title);
+    }
+
+    static void closeOpenDialogs() {
+        if (InstanceSwitcherCoordinator.sPrevInstance != null) {
+            InstanceSwitcherCoordinator.sPrevInstance.dismissDialog(
+                    DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
+        }
+        if (TargetSelectorCoordinator.sPrevInstance != null) {
+            TargetSelectorCoordinator.sPrevInstance.dismissDialog(
+                    DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
+        }
     }
 }

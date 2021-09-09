@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.multiwindow;
 
 import static org.chromium.components.browser_ui.widget.listmenu.BasicListMenu.buildMenuListItem;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.view.LayoutInflater;
@@ -41,6 +42,11 @@ import java.util.List;
  * TODO: Resolve various inconsistencies that can be caused by Ui from multiple instances.
  */
 public class InstanceSwitcherCoordinator {
+    // Last switcher dialog instance. This is used to prevent the user from interacting with
+    // multiple instances of switcher UI.
+    @SuppressLint("StaticFieldLeak")
+    static InstanceSwitcherCoordinator sPrevInstance;
+
     /**
      * Type of the entries shown on the dialog.
      */
@@ -114,6 +120,8 @@ public class InstanceSwitcherCoordinator {
     }
 
     private void showDialog(List<InstanceInfo> items, boolean newWindowEnabled) {
+        UiUtils.closeOpenDialogs();
+        sPrevInstance = this;
         for (int i = 0; i < items.size(); ++i) {
             PropertyModel itemModel = generateListItem(items.get(i));
             mModelList.add(new ModelListAdapter.ListItem(EntryType.INSTANCE, itemModel));
@@ -130,7 +138,10 @@ public class InstanceSwitcherCoordinator {
             View dialogView, ModelList modelList, List<InstanceInfo> items) {
         ModalDialogProperties.Controller controller = new ModalDialogProperties.Controller() {
             @Override
-            public void onDismiss(PropertyModel model, @DialogDismissalCause int dismissalCause) {}
+            public void onDismiss(PropertyModel model, @DialogDismissalCause int dismissalCause) {
+                InstanceSwitcherItemViewBinder.sMoreMenu = null;
+                sPrevInstance = null;
+            }
 
             @Override
             public void onClick(PropertyModel model, int buttonType) {
@@ -226,7 +237,7 @@ public class InstanceSwitcherCoordinator {
         mOpenCallback.onResult(item);
     }
 
-    private void dismissDialog(@DialogDismissalCause int cause) {
+    void dismissDialog(@DialogDismissalCause int cause) {
         mModalDialogManager.dismissDialog(mDialog, cause);
     }
 
