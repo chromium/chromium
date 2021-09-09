@@ -183,6 +183,9 @@
         "GSShop_3g": {
             "DEFAULT": "loading_mobile_000.wprgo"
         },
+        "Google": {
+            "DEFAULT": "loading_mobile_7ad81717fc.wprgo"
+        },
         "GoogleBrazil": {
             "DEFAULT": "loading_mobile_000.wprgo"
         },
@@ -206,6 +209,9 @@
         },
         "GoogleRedirectToGoogleJapan_3g": {
             "DEFAULT": "loading_mobile_000.wprgo"
+        },
+        "Google_3g": {
+            "DEFAULT": "loading_mobile_7ad81717fc.wprgo"
         },
         "Hongkiat": {
             "DEFAULT": "loading_mobile_000.wprgo"
