@@ -5,7 +5,6 @@
 #include "chrome/browser/extensions/api/tabs/tabs_util.h"
 
 #include "ash/public/cpp/assistant/assistant_state.h"
-#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
@@ -27,8 +26,6 @@ namespace extensions {
 namespace tabs_util {
 
 void SetLockedFullscreenState(Browser* browser, bool locked) {
-  UMA_HISTOGRAM_BOOLEAN("Extensions.LockedFullscreenStateRequest", locked);
-
   aura::Window* window = browser->window()->GetNativeWindow();
   // TRUSTED_PINNED is used here because that one locks the window fullscreen
   // without allowing the user to exit (as opposed to regular PINNED).

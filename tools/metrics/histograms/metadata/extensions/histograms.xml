@@ -2827,6 +2827,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Extensions.LockedFullscreenStateRequest"
     enum="LockedFullscreenState" expires_after="2020-01-01">
+  <obsolete>
+    2021.09.07 - Removed.
+  </obsolete>
   <owner>isandrk@chromium.org</owner>
   <owner>jhastings@chromium.org</owner>
   <summary>
