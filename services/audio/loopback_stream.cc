@@ -142,7 +142,7 @@ void LoopbackStream::SetVolume(double volume) {
                        TRACE_EVENT_SCOPE_THREAD, "volume", volume);
 
   if (!std::isfinite(volume) || volume < 0.0) {
-    mojo::ReportBadMessage("Invalid volume");
+    receiver_.ReportBadMessage("Invalid volume");
     OnError();
     return;
   }

@@ -194,7 +194,7 @@ void InputStream::SetVolume(double volume) {
                                       volume);
 
   if (volume < 0 || volume > 1) {
-    mojo::ReportBadMessage("Invalid volume");
+    receiver_.ReportBadMessage("Invalid volume");
     OnStreamPlatformError();
     return;
   }
