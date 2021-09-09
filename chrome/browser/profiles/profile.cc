@@ -351,6 +351,11 @@ void Profile::RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
                                std::string());
 #endif
 
+#if defined(OS_ANDROID)
+  registry->RegisterStringPref(prefs::kCommerceMerchantViewerMessagesShownTime,
+                               std::string());
+#endif
+
 #if !defined(OS_ANDROID)
   registry->RegisterBooleanPref(
       media_router::prefs::kMediaRouterCloudServicesPrefSet, false,

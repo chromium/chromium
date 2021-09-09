@@ -29,6 +29,12 @@ public class MerchantViewerConfig {
     @VisibleForTesting
     public static final String TRUST_SIGNALS_SITE_ENGAGEMENT_THRESHOLD_PARAM =
             "trust_signals_site_engagement_threshold";
+    @VisibleForTesting
+    public static final String TRUST_SIGNALS_MAX_ALLOWED_NUMBER_IN_GIVEN_WINDOW_PARAM =
+            "trust_signals_max_allowed_number_in_given_window";
+    @VisibleForTesting
+    public static final String TRUST_SIGNALS_NUMBER_CHECK_WINDOW_DURATION_PARAM =
+            "trust_signals_number_check_window_duration_ms";
 
     public static int getDefaultTrustSignalsMessageDelay() {
         int defaultDelay = (int) TimeUnit.SECONDS.toMillis(30);
@@ -85,5 +91,26 @@ public class MerchantViewerConfig {
                     TRUST_SIGNALS_SITE_ENGAGEMENT_THRESHOLD_PARAM, defaultThreshold);
         }
         return defaultThreshold;
+    }
+
+    public static int getTrustSignalsMaxAllowedNumberInGivenWindow() {
+        int defaultMaxAllowedNumber = 3;
+        if (FeatureList.isInitialized()) {
+            return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                    ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
+                    TRUST_SIGNALS_MAX_ALLOWED_NUMBER_IN_GIVEN_WINDOW_PARAM,
+                    defaultMaxAllowedNumber);
+        }
+        return defaultMaxAllowedNumber;
+    }
+
+    public static int getTrustSignalsNumberCheckWindowDuration() {
+        int defaultDuration = (int) TimeUnit.HOURS.toMillis(1);
+        if (FeatureList.isInitialized()) {
+            return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                    ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
+                    TRUST_SIGNALS_NUMBER_CHECK_WINDOW_DURATION_PARAM, defaultDuration);
+        }
+        return defaultDuration;
     }
 }

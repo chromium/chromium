@@ -14,13 +14,16 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics.MessageClearReason;
 import org.chromium.chrome.browser.merchant_viewer.proto.MerchantTrustSignalsOuterClass.MerchantTrustSignals;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageDispatcher;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.site_engagement.SiteEngagementService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
@@ -131,6 +134,7 @@ public class MerchantTrustSignalsCoordinator {
             return;
         }
 
+        updateShownMessagesTimestamp();
         storage.save(new MerchantTrustSignalsEvent(
                 messageContext.getHostName(), System.currentTimeMillis()));
     }
@@ -139,7 +143,8 @@ public class MerchantTrustSignalsCoordinator {
             NavigationHandle navigationHandle, Callback<MerchantTrustSignals> callback) {
         MerchantTrustSignalsEventStorage storage = mStorageFactory.getForLastUsedProfile();
         if (storage == null || navigationHandle == null || navigationHandle.getUrl() == null
-                || isFamiliarMerchant(navigationHandle.getUrl().getSpec())) {
+                || isFamiliarMerchant(navigationHandle.getUrl().getSpec())
+                || hasReachedMaxAllowedMessageNumberInGivenTime()) {
             return;
         }
 
@@ -171,5 +176,65 @@ public class MerchantTrustSignalsCoordinator {
     private void launchDetailsPage(GURL url) {
         mDetailsTabCoordinator.requestOpenSheet(url,
                 mContext.getResources().getString(R.string.merchant_viewer_preview_sheet_title));
+    }
+
+    /**
+     * Assuming that we only allow 3 messages in 1 hour, we store the serialized timestamps of the
+     * last 3 shown messages. Before showing a message, we look up the persisted data and
+     * deserialize it to 3 timestamps, then check whether the earliest timestamp is more than 1 hour
+     * from now. If yes, the message can be shown thus returning false.
+     */
+    @VisibleForTesting
+    boolean hasReachedMaxAllowedMessageNumberInGivenTime() {
+        PrefService prefService = getPrefService();
+        if (prefService == null) return true;
+        String serializedTimestamps =
+                prefService.getString(Pref.COMMERCE_MERCHANT_VIEWER_MESSAGES_SHOWN_TIME);
+        if (TextUtils.isEmpty(serializedTimestamps)) return false;
+        String[] timestamps = serializedTimestamps.split("_");
+        int maxAllowedNumber = MerchantViewerConfig.getTrustSignalsMaxAllowedNumberInGivenWindow();
+        if (timestamps.length < maxAllowedNumber) return false;
+        assert timestamps.length == maxAllowedNumber;
+        return System.currentTimeMillis() - Long.parseLong(timestamps[0])
+                < MerchantViewerConfig.getTrustSignalsNumberCheckWindowDuration();
+    }
+
+    /**
+     * Every time showing a message, we need to update the serialized timestamps.
+     */
+    @VisibleForTesting
+    void updateShownMessagesTimestamp() {
+        PrefService prefService = getPrefService();
+        if (prefService == null) return;
+        String currentTimestamp = Long.toString(System.currentTimeMillis());
+        String serializedTimestamps =
+                prefService.getString(Pref.COMMERCE_MERCHANT_VIEWER_MESSAGES_SHOWN_TIME);
+        if (TextUtils.isEmpty(serializedTimestamps)) {
+            prefService.setString(
+                    Pref.COMMERCE_MERCHANT_VIEWER_MESSAGES_SHOWN_TIME, currentTimestamp);
+        } else {
+            serializedTimestamps += "_" + currentTimestamp;
+            String[] timestamps = serializedTimestamps.split("_");
+            int maxAllowedNumber =
+                    MerchantViewerConfig.getTrustSignalsMaxAllowedNumberInGivenWindow();
+            if (timestamps.length <= maxAllowedNumber) {
+                prefService.setString(
+                        Pref.COMMERCE_MERCHANT_VIEWER_MESSAGES_SHOWN_TIME, serializedTimestamps);
+            } else {
+                assert timestamps.length == maxAllowedNumber + 1;
+                // Remove the earliest timestamp.
+                prefService.setString(Pref.COMMERCE_MERCHANT_VIEWER_MESSAGES_SHOWN_TIME,
+                        serializedTimestamps.substring(timestamps[0].length() + 1));
+            }
+        }
+    }
+
+    @VisibleForTesting
+    PrefService getPrefService() {
+        Profile profile = mProfileSupplier.get();
+        if (profile == null || profile.isOffTheRecord()) {
+            return null;
+        }
+        return UserPrefs.get(profile);
     }
 }

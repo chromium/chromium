@@ -979,6 +979,10 @@ extern const char kClickedUpdateMenuItem[];
 extern const char kLatestVersionWhenClickedUpdateMenuItem[];
 #endif
 
+#if defined(OS_ANDROID)
+extern const char kCommerceMerchantViewerMessagesShownTime[];
+#endif
+
 extern const char kComponentUpdatesEnabled[];
 
 #if defined(OS_ANDROID)

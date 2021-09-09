@@ -19,6 +19,7 @@ import android.content.res.Resources;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -37,10 +38,12 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics.MessageClearReason;
 import org.chromium.chrome.browser.merchant_viewer.proto.MerchantTrustSignalsOuterClass.MerchantTrustSignals;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.messages.DismissReason;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -108,6 +111,9 @@ public class MerchantTrustSignalsCoordinatorTest {
     @Mock
     private NavigationHandle mMockNavigationHandle2;
 
+    @Mock
+    private PrefService mMockPrefService;
+
     private static final String FAKE_HOST = "fake_host";
     private static final String DIFFERENT_HOST = "different_host";
 
@@ -118,6 +124,7 @@ public class MerchantTrustSignalsCoordinatorTest {
                                                                       .build();
     private MerchantTrustSignalsCoordinator mCoordinator;
     private FeatureList.TestValues mTestValues;
+    private String mSerializedTimestamps;
 
     @Before
     public void setUp() {
@@ -141,6 +148,16 @@ public class MerchantTrustSignalsCoordinatorTest {
         doReturn(mMockProfile).when(mMockProfileSupplier).get();
         doReturn(false).when(mMockProfile).isOffTheRecord();
         doReturn(FAKE_HOST).when(mMockGurl).getSpec();
+        doAnswer((Answer<String>) invocation -> mSerializedTimestamps)
+                .when(mMockPrefService)
+                .getString(eq(Pref.COMMERCE_MERCHANT_VIEWER_MESSAGES_SHOWN_TIME));
+        doAnswer((Answer<Void>) invocation -> {
+            mSerializedTimestamps = (String) invocation.getArguments()[1];
+            return null;
+        })
+                .when(mMockPrefService)
+                .setString(
+                        eq(Pref.COMMERCE_MERCHANT_VIEWER_MESSAGES_SHOWN_TIME), any(String.class));
 
         setMockTrustSignalsData(mDummyMerchantTrustSignals);
         setMockTrustSignalsEventData(FAKE_HOST, mMockMerchantTrustSignalsEvent);
@@ -157,6 +174,7 @@ public class MerchantTrustSignalsCoordinatorTest {
         doReturn(0.0)
                 .when(mCoordinator)
                 .getSiteEngagementScore(any(Profile.class), any(String.class));
+        doReturn(mMockPrefService).when(mCoordinator).getPrefService();
     }
 
     @After
@@ -333,6 +351,25 @@ public class MerchantTrustSignalsCoordinatorTest {
 
     @SmallTest
     @Test
+    public void testMaybeDisplayMessage_AlreadyReachedMaxAllowedNumber() {
+        doReturn(true).when(mCoordinator).hasReachedMaxAllowedMessageNumberInGivenTime();
+
+        mCoordinator.maybeDisplayMessage(
+                new MerchantTrustMessageContext(mMockNavigationHandle, mMockWebContents));
+
+        verify(mMockMerchantMessageScheduler, times(1))
+                .clear(eq(MessageClearReason.NAVIGATE_TO_DIFFERENT_DOMAIN));
+        verify(mMockMerchantTrustStorage, times(0)).delete(eq(mMockMerchantTrustSignalsEvent));
+        verify(mMockMerchantTrustDataProvider, times(0))
+                .getDataForNavigationHandle(eq(mMockNavigationHandle), any(Callback.class));
+        verify(mMockMerchantMessageScheduler, times(0))
+                .schedule(any(PropertyModel.class), any(MerchantTrustMessageContext.class),
+                        eq((long) MerchantViewerConfig.getDefaultTrustSignalsMessageDelay()),
+                        any(Callback.class));
+    }
+
+    @SmallTest
+    @Test
     public void testMaybeDisplayMessage_WithScheduledMessage() {
         doReturn(FAKE_HOST).when(mMockGurl2).getHost();
         doReturn(DIFFERENT_HOST).when(mMockGurl2).getSpec();
@@ -384,6 +421,7 @@ public class MerchantTrustSignalsCoordinatorTest {
 
         mCoordinator.onMessageEnqueued(
                 new MerchantTrustMessageContext(mMockNavigationHandle, mMockWebContents));
+        verify(mCoordinator, times(1)).updateShownMessagesTimestamp();
         verify(mMockMerchantTrustStorage, times(1)).save(any(MerchantTrustSignalsEvent.class));
     }
 
@@ -401,6 +439,39 @@ public class MerchantTrustSignalsCoordinatorTest {
         verify(mMockMetrics, times(1)).recordMetricsForMessageTapped();
         verify(mMockDetailsTabCoordinator, times(1))
                 .requestOpenSheet(any(GURL.class), any(String.class));
+    }
+
+    @SmallTest
+    @Test
+    public void testOnlyAbleToShowThreeMessagesInGivenTime() {
+        mTestValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
+                MerchantViewerConfig.TRUST_SIGNALS_MAX_ALLOWED_NUMBER_IN_GIVEN_WINDOW_PARAM, "3");
+        mTestValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
+                MerchantViewerConfig.TRUST_SIGNALS_NUMBER_CHECK_WINDOW_DURATION_PARAM, "60000");
+
+        // We won't reach the max allowed number until we show three messages.
+        Assert.assertFalse(mCoordinator.hasReachedMaxAllowedMessageNumberInGivenTime());
+        mCoordinator.updateShownMessagesTimestamp();
+        Assert.assertFalse(mCoordinator.hasReachedMaxAllowedMessageNumberInGivenTime());
+        mCoordinator.updateShownMessagesTimestamp();
+        Assert.assertFalse(mCoordinator.hasReachedMaxAllowedMessageNumberInGivenTime());
+        mCoordinator.updateShownMessagesTimestamp();
+        Assert.assertTrue(mCoordinator.hasReachedMaxAllowedMessageNumberInGivenTime());
+
+        // Update the first stored timestamp to beyond the set window then we won't reach the max
+        // allowed number.
+        String[] timestamps = mSerializedTimestamps.split("_");
+        Assert.assertEquals(3, timestamps.length);
+        String firstTimestamp = Long.toString(System.currentTimeMillis() - 60001);
+        mSerializedTimestamps =
+                firstTimestamp + mSerializedTimestamps.substring(timestamps[0].length());
+        Assert.assertFalse(mCoordinator.hasReachedMaxAllowedMessageNumberInGivenTime());
+
+        // Show another message and we will drop the first stored timestamp.
+        mCoordinator.updateShownMessagesTimestamp();
+        timestamps = mSerializedTimestamps.split("_");
+        Assert.assertEquals(3, timestamps.length);
+        Assert.assertTrue(mCoordinator.hasReachedMaxAllowedMessageNumberInGivenTime());
     }
 
     private void setMockTrustSignalsData(MerchantTrustSignals trustSignalsData) {

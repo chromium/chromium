@@ -2848,6 +2848,12 @@ const char kLatestVersionWhenClickedUpdateMenuItem[] =
     "omaha.latest_version_when_clicked_upate_menu_item";
 #endif
 
+#if defined(OS_ANDROID)
+// The serialized timestamps of latest shown merchant viewer messages.
+const char kCommerceMerchantViewerMessagesShownTime[] =
+    "commerce_merchant_viewer_messages_shown_time";
+#endif
+
 // Policy that indicates the state of updates for the binary components.
 const char kComponentUpdatesEnabled[] =
     "component_updates.component_updates_enabled";
