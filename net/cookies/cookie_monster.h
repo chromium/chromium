@@ -191,9 +191,6 @@ class NET_EXPORT CookieMonster : public CookieStore {
   static const char* const kDefaultCookieableSchemes[];
   static const int kDefaultCookieableSchemesCount;
 
-  void DumpMemoryStats(base::trace_event::ProcessMemoryDump* pmd,
-                       const std::string& parent_absolute_name) const override;
-
   // Find a key based on the given domain, which will be used to find all
   // cookies potentially relevant to it. This is used for lookup in cookies_ as
   // well as for PersistentCookieStore::LoadCookiesForKey. See comment on keys

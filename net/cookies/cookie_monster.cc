@@ -64,7 +64,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/trace_event/process_memory_dump.h"
 #include "net/base/features.h"
 #include "net/base/isolation_info.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -523,32 +522,6 @@ const int CookieMonster::kDefaultCookieableSchemesCount =
 
 CookieChangeDispatcher& CookieMonster::GetChangeDispatcher() {
   return change_dispatcher_;
-}
-
-void CookieMonster::DumpMemoryStats(
-    base::trace_event::ProcessMemoryDump* pmd,
-    const std::string& parent_absolute_name) const {
-  const char kRelPath[] = "/cookie_monster";
-
-  pmd->CreateAllocatorDump(parent_absolute_name + kRelPath + "/cookies")
-      ->AddScalar(base::trace_event::MemoryAllocatorDump::kNameObjectCount,
-                  base::trace_event::MemoryAllocatorDump::kUnitsObjects,
-                  cookies_.size());
-
-  pmd->CreateAllocatorDump(parent_absolute_name + kRelPath +
-                           "/tasks_pending_global")
-      ->AddScalar(base::trace_event::MemoryAllocatorDump::kNameObjectCount,
-                  base::trace_event::MemoryAllocatorDump::kUnitsObjects,
-                  tasks_pending_.size());
-
-  size_t total_pending_for_key = 0;
-  for (const auto& kv : tasks_pending_for_key_)
-    total_pending_for_key += kv.second.size();
-  pmd->CreateAllocatorDump(parent_absolute_name + kRelPath +
-                           "/tasks_pending_for_key")
-      ->AddScalar(base::trace_event::MemoryAllocatorDump::kNameObjectCount,
-                  base::trace_event::MemoryAllocatorDump::kUnitsObjects,
-                  total_pending_for_key);
 }
 
 CookieMonster::~CookieMonster() {

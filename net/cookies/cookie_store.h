@@ -23,12 +23,6 @@
 
 class GURL;
 
-namespace base {
-namespace trace_event {
-class ProcessMemoryDump;
-}
-}  // namespace base
-
 namespace net {
 
 class CookieChangeDispatcher;
@@ -154,10 +148,6 @@ class NET_EXPORT CookieStore {
 
   // Transfer ownership of a CookieAccessDelegate.
   void SetCookieAccessDelegate(std::unique_ptr<CookieAccessDelegate> delegate);
-
-  // Reports the estimate of dynamically allocated memory in bytes.
-  virtual void DumpMemoryStats(base::trace_event::ProcessMemoryDump* pmd,
-                               const std::string& parent_absolute_name) const;
 
   // This may be null if no delegate has been set yet, or the delegate has been
   // reset to null.

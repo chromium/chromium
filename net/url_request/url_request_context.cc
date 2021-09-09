@@ -150,9 +150,6 @@ bool URLRequestContext::OnMemoryDump(
     if (http_cache)
       http_cache->DumpMemoryStats(pmd, dump->absolute_name());
   }
-  if (cookie_store_) {
-    cookie_store_->DumpMemoryStats(pmd, dump->absolute_name());
-  }
   return true;
 }
 
