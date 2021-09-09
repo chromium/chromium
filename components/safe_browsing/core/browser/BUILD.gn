@@ -134,3 +134,7 @@ source_set("token_fetcher_unit_tests") {
     "//testing/gtest",
   ]
 }
+
+source_set("download_check_result") {
+  sources = [ "download_check_result.h" ]
+}

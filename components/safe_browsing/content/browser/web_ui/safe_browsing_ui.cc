@@ -78,6 +78,16 @@ bool WebUIInfoSingleton::HasListener() {
          !GetInstance()->webui_instances_.empty();
 }
 
+void WebUIInfoSingleton::AddToDownloadUrlsChecked(const std::vector<GURL>& urls,
+                                                  DownloadCheckResult result) {
+  if (!HasListener())
+    return;
+
+  for (auto* webui_listener : webui_instances_)
+    webui_listener->NotifyDownloadUrlCheckedJsListener(urls, result);
+  download_urls_checked_.emplace_back(urls, result);
+}
+
 void WebUIInfoSingleton::AddToClientDownloadRequestsSent(
     std::unique_ptr<ClientDownloadRequest> client_download_request) {
   if (!HasListener())
@@ -87,6 +97,11 @@ void WebUIInfoSingleton::AddToClientDownloadRequestsSent(
     webui_listener->NotifyClientDownloadRequestJsListener(
         client_download_request.get());
   client_download_requests_sent_.push_back(std::move(client_download_request));
+}
+
+void WebUIInfoSingleton::ClearDownloadUrlsChecked() {
+  std::vector<std::pair<std::vector<GURL>, DownloadCheckResult>>().swap(
+      download_urls_checked_);
 }
 
 void WebUIInfoSingleton::ClearClientDownloadRequestsSent() {
@@ -384,6 +399,7 @@ void WebUIInfoSingleton::ClearListenerForTesting() {
 void WebUIInfoSingleton::MaybeClearData() {
   if (!HasListener()) {
     ClearCSBRRsSent();
+    ClearDownloadUrlsChecked();
     ClearClientDownloadRequestsSent();
     ClearClientDownloadResponsesReceived();
     ClearClientPhishingRequestsSent();
@@ -2089,6 +2105,91 @@ void SafeBrowsingUIHandler::GetDatabaseManagerInfo(
   ResolveJavascriptCallback(base::Value(callback_id), database_manager_info);
 }
 
+std::string SerializeDownloadUrlChecked(const std::vector<GURL>& urls,
+                                        DownloadCheckResult result) {
+  base::DictionaryValue url_and_result;
+  auto urls_value = std::make_unique<base::ListValue>();
+  for (const GURL& url : urls) {
+    urls_value->Append(url.spec());
+  }
+  url_and_result.Set("download_url_chain", std::move(urls_value));
+
+  switch (result) {
+    case DownloadCheckResult::UNKNOWN:
+      url_and_result.SetString("result", "UNKNOWN");
+      break;
+    case DownloadCheckResult::SAFE:
+      url_and_result.SetString("result", "SAFE");
+      break;
+    case DownloadCheckResult::DANGEROUS:
+      url_and_result.SetString("result", "DANGEROUS");
+      break;
+    case DownloadCheckResult::UNCOMMON:
+      url_and_result.SetString("result", "UNCOMMON");
+      break;
+    case DownloadCheckResult::DANGEROUS_HOST:
+      url_and_result.SetString("result", "DANGEROUS_HOST");
+      break;
+    case DownloadCheckResult::POTENTIALLY_UNWANTED:
+      url_and_result.SetString("result", "POTENTIALLY_UNWANTED");
+      break;
+    case DownloadCheckResult::ALLOWLISTED_BY_POLICY:
+      url_and_result.SetString("result", "ALLOWLISTED_BY_POLICY");
+      break;
+    case DownloadCheckResult::ASYNC_SCANNING:
+      url_and_result.SetString("result", "ASYNC_SCANNING");
+      break;
+    case DownloadCheckResult::BLOCKED_PASSWORD_PROTECTED:
+      url_and_result.SetString("result", "BLOCKED_PASSWORD_PROTECTED");
+      break;
+    case DownloadCheckResult::BLOCKED_TOO_LARGE:
+      url_and_result.SetString("result", "BLOCKED_TOO_LARGE");
+      break;
+    case DownloadCheckResult::SENSITIVE_CONTENT_WARNING:
+      url_and_result.SetString("result", "SENSITIVE_CONTENT_WARNING");
+      break;
+    case DownloadCheckResult::SENSITIVE_CONTENT_BLOCK:
+      url_and_result.SetString("result", "SENSITIVE_CONTENT_BLOCK");
+      break;
+    case DownloadCheckResult::DEEP_SCANNED_SAFE:
+      url_and_result.SetString("result", "DEEP_SCANNED_SAFE");
+      break;
+    case DownloadCheckResult::PROMPT_FOR_SCANNING:
+      url_and_result.SetString("result", "PROMPT_FOR_SCANNING");
+      break;
+    case DownloadCheckResult::BLOCKED_UNSUPPORTED_FILE_TYPE:
+      url_and_result.SetString("result", "BLOCKED_UNSUPPORTED_FILE_TYPE");
+      break;
+    case DownloadCheckResult::DANGEROUS_ACCOUNT_COMPROMISE:
+      url_and_result.SetString("result", "DANGEROUS_ACCOUNT_COMPROMISE");
+      break;
+  }
+
+  std::string request_serialized;
+  JSONStringValueSerializer serializer(&request_serialized);
+  serializer.set_pretty_print(true);
+  serializer.Serialize(url_and_result);
+  return request_serialized;
+}
+
+void SafeBrowsingUIHandler::GetDownloadUrlsChecked(
+    const base::ListValue* args) {
+  const std::vector<std::pair<std::vector<GURL>, DownloadCheckResult>>&
+      urls_checked = WebUIInfoSingleton::GetInstance()->download_urls_checked();
+
+  base::ListValue urls_checked_value;
+  for (const auto& url_and_result : urls_checked) {
+    const std::vector<GURL>& urls = url_and_result.first;
+    DownloadCheckResult result = url_and_result.second;
+    urls_checked_value.Append(SerializeDownloadUrlChecked(urls, result));
+  }
+
+  AllowJavascript();
+  std::string callback_id;
+  args->GetString(0, &callback_id);
+  ResolveJavascriptCallback(base::Value(callback_id), urls_checked_value);
+}
+
 void SafeBrowsingUIHandler::GetSentClientDownloadRequests(
     const base::ListValue* args) {
   const std::vector<std::unique_ptr<ClientDownloadRequest>>& cdrs =
@@ -2381,6 +2482,14 @@ void SafeBrowsingUIHandler::GetDeepScans(const base::ListValue* args) {
   ResolveJavascriptCallback(base::Value(callback_id), pings_sent);
 }
 
+void SafeBrowsingUIHandler::NotifyDownloadUrlCheckedJsListener(
+    const std::vector<GURL>& urls,
+    DownloadCheckResult result) {
+  AllowJavascript();
+  FireWebUIListener("download-url-checked-update",
+                    base::Value(SerializeDownloadUrlChecked(urls, result)));
+}
+
 void SafeBrowsingUIHandler::NotifyClientDownloadRequestJsListener(
     ClientDownloadRequest* client_download_request) {
   AllowJavascript();
@@ -2520,6 +2629,10 @@ void SafeBrowsingUIHandler::RegisterMessages() {
   web_ui()->RegisterDeprecatedMessageCallback(
       "getDatabaseManagerInfo",
       base::BindRepeating(&SafeBrowsingUIHandler::GetDatabaseManagerInfo,
+                          base::Unretained(this)));
+  web_ui()->RegisterDeprecatedMessageCallback(
+      "getDownloadUrlsChecked",
+      base::BindRepeating(&SafeBrowsingUIHandler::GetDownloadUrlsChecked,
                           base::Unretained(this)));
   web_ui()->RegisterDeprecatedMessageCallback(
       "getSentClientDownloadRequests",

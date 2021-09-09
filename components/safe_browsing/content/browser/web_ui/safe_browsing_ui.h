@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/safe_browsing_service_interface.h"
+#include "components/safe_browsing/core/browser/download_check_result.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
@@ -110,6 +111,10 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
   // cache.
   void GetDatabaseManagerInfo(const base::ListValue* args);
 
+  // Get the download URLs that have been checked since the oldest currently
+  // open chrome://safe-browsing tab was opened.
+  void GetDownloadUrlsChecked(const base::ListValue* args);
+
   // Get the ClientDownloadRequests that have been collected since the oldest
   // currently open chrome://safe-browsing tab was opened.
   void GetSentClientDownloadRequests(const base::ListValue* args);
@@ -181,6 +186,11 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
 
  private:
   friend class WebUIInfoSingleton;
+
+  // Called when a new download URL is checked while one or more WebUI tabs are
+  // open.
+  void NotifyDownloadUrlCheckedJsListener(const std::vector<GURL>& gurl,
+                                          DownloadCheckResult result);
 
   // Called when any new ClientDownloadRequest messages are sent while one or
   // more WebUI tabs are open.
@@ -284,6 +294,14 @@ class WebUIInfoSingleton : public SafeBrowsingUrlCheckerImpl::WebUIDelegate {
 
   // Returns true when there is a listening chrome://safe-browsing tab.
   static bool HasListener();
+
+  // Add the new message in |download_urls_checked_| and send it to all
+  // the open chrome://safe-browsing tabs.
+  void AddToDownloadUrlsChecked(const std::vector<GURL>& urls,
+                                DownloadCheckResult result);
+
+  // Clear the list of the download URLs checked.
+  void ClearDownloadUrlsChecked();
 
   // Add the new message in |client_download_requests_sent_| and send it to all
   // the open chrome://safe-browsing tabs.
@@ -407,6 +425,13 @@ class WebUIInfoSingleton : public SafeBrowsingUrlCheckerImpl::WebUIDelegate {
   // this is last listener.
   void UnregisterWebUIInstance(SafeBrowsingUIHandler* webui);
 
+  // Get the list of download URLs checked since the oldest currently open
+  // chrome://safe-browsing tab was opened.
+  const std::vector<std::pair<std::vector<GURL>, DownloadCheckResult>>&
+  download_urls_checked() const {
+    return download_urls_checked_;
+  }
+
   // Get the list of the sent ClientDownloadRequests that have been collected
   // since the oldest currently open chrome://safe-browsing tab was opened.
   const std::vector<std::unique_ptr<ClientDownloadRequest>>&
@@ -528,6 +553,11 @@ class WebUIInfoSingleton : public SafeBrowsingUrlCheckerImpl::WebUIDelegate {
   void MaybeClearData();
 
   friend struct base::DefaultSingletonTraits<WebUIInfoSingleton>;
+
+  // List of download URLs checked since the oldest currently open
+  // chrome://safe-browsing tab was opened.
+  std::vector<std::pair<std::vector<GURL>, DownloadCheckResult>>
+      download_urls_checked_;
 
   // List of ClientDownloadRequests sent since since the oldest currently open
   // chrome://safe-browsing tab was opened.

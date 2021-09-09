@@ -70,6 +70,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/download/download_stats.h"
+#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
 #include "components/services/quarantine/public/mojom/quarantine.mojom.h"
 #include "components/services/quarantine/quarantine_impl.h"
@@ -174,8 +175,11 @@ base::FilePath GetPlatformDownloadPath(Profile* profile,
 //   * NOT_DANGEROUS.
 void CheckDownloadUrlDone(
     DownloadTargetDeterminerDelegate::CheckDownloadUrlCallback callback,
+    const std::vector<GURL>& download_urls,
     bool is_content_check_supported,
     safe_browsing::DownloadCheckResult result) {
+  safe_browsing::WebUIInfoSingleton::GetInstance()->AddToDownloadUrlsChecked(
+      download_urls, result);
   download::DownloadDangerType danger_type;
   if (result == safe_browsing::DownloadCheckResult::SAFE ||
       result == safe_browsing::DownloadCheckResult::UNKNOWN) {
@@ -1210,8 +1214,9 @@ void ChromeDownloadManagerDelegate::CheckDownloadUrl(
              << download->DebugString(false);
     if (service->ShouldCheckDownloadUrl(download)) {
       service->CheckDownloadUrl(
-          download, base::BindOnce(&CheckDownloadUrlDone, std::move(callback),
-                                   is_content_check_supported));
+          download,
+          base::BindOnce(&CheckDownloadUrlDone, std::move(callback),
+                         download->GetUrlChain(), is_content_check_supported));
       return;
     }
   }
