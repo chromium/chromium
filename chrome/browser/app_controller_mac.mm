@@ -464,10 +464,8 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
 
   // ProfileManager::Observer implementation:
   void OnProfileAdded(Profile* profile) override {
-    // If regular profiles are not observed, then do not add observer.
-    if (!ObserveRegularProfiles()) {
+    if (!ObserveRegularProfiles() && !ObserveOTRProfiles())
       return;
-    }
     profile->AddObserver(this);
   }
 
