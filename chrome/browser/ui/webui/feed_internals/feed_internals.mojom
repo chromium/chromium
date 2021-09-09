@@ -87,6 +87,9 @@ interface PageHandler {
   // Trigger a refresh of the Following Feed.
   RefreshFollowingFeed();
 
+  // Trigger a refresh of the Web Feed suggestions.
+  RefreshWebFeedSuggestions();
+
   // Internal state dump of the Feed library's process scope. Human-readable.
   GetFeedProcessScopeDump() => (string dump);
 

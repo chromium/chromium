@@ -39,6 +39,7 @@ class FeedV2InternalsPageHandler : public feed_internals::mojom::PageHandler {
   void GetLastFetchProperties(GetLastFetchPropertiesCallback) override;
   void RefreshForYouFeed() override;
   void RefreshFollowingFeed() override;
+  void RefreshWebFeedSuggestions() override;
   void GetFeedProcessScopeDump(GetFeedProcessScopeDumpCallback) override;
   void GetFeedHistograms(GetFeedHistogramsCallback) override;
   void OverrideFeedHost(const GURL& host) override;

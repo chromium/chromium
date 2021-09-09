@@ -105,6 +105,10 @@ function setupEventListeners() {
     pageHandler.refreshFollowingFeed();
   });
 
+  $('refresh-webfeed-suggestions').addEventListener('click', () => {
+    pageHandler.refreshWebFeedSuggestions();
+  });
+
   $('dump-feed-process-scope').addEventListener('click', function() {
     pageHandler.getFeedProcessScopeDump().then(response => {
       $('feed-process-scope-dump').textContent = response.dump;

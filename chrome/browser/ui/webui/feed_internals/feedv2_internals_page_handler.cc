@@ -18,6 +18,7 @@
 #include "components/feed/core/v2/public/feed_service.h"
 #include "components/feed/core/v2/public/stream_type.h"
 #include "components/feed/core/v2/public/types.h"
+#include "components/feed/core/v2/public/web_feed_subscriptions.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/offline_pages/core/prefetch/prefetch_prefs.h"
 #include "components/offline_pages/core/prefetch/suggestions_provider.h"
@@ -102,6 +103,10 @@ void FeedV2InternalsPageHandler::RefreshForYouFeed() {
 
 void FeedV2InternalsPageHandler::RefreshFollowingFeed() {
   feed_stream_->ForceRefreshForDebugging(feed::kWebFeedStream);
+}
+
+void FeedV2InternalsPageHandler::RefreshWebFeedSuggestions() {
+  feed_stream_->subscriptions().RefreshRecommendedFeeds();
 }
 
 void FeedV2InternalsPageHandler::GetFeedProcessScopeDump(

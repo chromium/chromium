@@ -624,6 +624,12 @@ SubscriptionInfo WebFeedSubscriptionCoordinator::FindSubscriptionInfoById(
   return model_->GetSubscriptionInfo(web_feed_id);
 }
 
+void WebFeedSubscriptionCoordinator::RefreshRecommendedFeeds() {
+  WithModel(base::BindOnce(
+      &WebFeedSubscriptionCoordinator::FetchRecommendedWebFeedsStart,
+      base::Unretained(this)));
+}
+
 void WebFeedSubscriptionCoordinator::FetchRecommendedWebFeedsIfStale() {
   if (!IsSignedInAndWebFeedsEnabled())
     return;
@@ -632,9 +638,7 @@ void WebFeedSubscriptionCoordinator::FetchRecommendedWebFeedsIfStale() {
       base::Time::Now() - index_.GetRecommendedFeedsUpdateTime();
   if (staleness > GetFeedConfig().recommended_feeds_staleness_threshold ||
       staleness < -base::TimeDelta::FromHours(1)) {
-    WithModel(base::BindOnce(
-        &WebFeedSubscriptionCoordinator::FetchRecommendedWebFeedsStart,
-        base::Unretained(this)));
+    RefreshRecommendedFeeds();
   }
 }
 
