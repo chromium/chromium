@@ -62,6 +62,7 @@ TEST(ChromeNetworkDelegateStaticTest, IsAccessAllowed) {
   EXPECT_TRUE(IsAccessAllowed("/home/chronos/user/WebRTC Logs", ""));
   EXPECT_TRUE(
       IsAccessAllowed("/home/chronos/user/google-assistant-library/log", ""));
+  EXPECT_TRUE(IsAccessAllowed("/home/chronos/user/lacros/lacros.log", ""));
   EXPECT_TRUE(IsAccessAllowed("/home/chronos/user/log", ""));
   EXPECT_TRUE(IsAccessAllowed("/media", ""));
   EXPECT_TRUE(IsAccessAllowed("/opt/oem", ""));
@@ -74,7 +75,12 @@ TEST(ChromeNetworkDelegateStaticTest, IsAccessAllowed) {
   EXPECT_FALSE(IsAccessAllowed("/home/chronos/user/log.txt", ""));
   EXPECT_FALSE(IsAccessAllowed("/home/chronos/user", ""));
   EXPECT_FALSE(IsAccessAllowed("/home/chronos", ""));
-
+  EXPECT_FALSE(IsAccessAllowed("/home/chronos/user/lacros/lacros.txt", ""));
+  EXPECT_FALSE(IsAccessAllowed("/home/chronos/user/lacros/lacros", ""));
+  EXPECT_FALSE(IsAccessAllowed("/home/chronos/user/lacros/*", ""));
+  EXPECT_FALSE(IsAccessAllowed("/home/chronos/user/lacros", ""));
+  EXPECT_FALSE(
+      IsAccessAllowed("/home/chronos/user/lacros/subdir/lacros.log", ""));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // If profile path is given, the following additional paths are allowed.
   EXPECT_TRUE(IsAccessAllowed("/profile/Downloads", "/profile"));
