@@ -4216,7 +4216,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="6276624383311206185">
       Especifica si los módulos de WebAssembly se pueden enviar a otra ventana o
       trabajador de origen cruzado. El uso compartido de módulos de WebAssembly entre orígenes cruzados
-      dejará de estar disponible como parte de los esfuerzos para dar de baja document.domain; consulta
+      dejará de estar disponible como parte de las medidas para dar de baja document.domain; consulta
       https://github.com/mikewest/deprecating-document-domain. Esta política
       permite volver a habilitar el uso compartido de módulos de WebAssembly entre orígenes cruzados para ofrecer
       un período de transición más largo en el proceso hasta lograr que se dé de baja.
