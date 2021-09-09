@@ -64,7 +64,7 @@ const CGFloat kFaviconToTextMargin = 14;
       [_title.topAnchor constraintEqualToAnchor:self.topAnchor
                                        constant:kTopMargin],
       [_title.trailingAnchor constraintEqualToAnchor:self.trailingAnchor
-                                            constant:kTrailingMargin],
+                                            constant:-kTrailingMargin],
 
       [_title.bottomAnchor constraintEqualToAnchor:_subtitle.topAnchor],
 

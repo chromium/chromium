@@ -5,8 +5,10 @@
 #import "ios/chrome/browser/ui/context_menu/context_menu_utils.h"
 
 #include "base/strings/sys_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/url_formatter/url_formatter.h"
+#include "ios/web/common/features.h"
 #include "ios/web/common/referrer_util.h"
 #import "ios/web/public/ui/context_menu_params.h"
 #import "net/base/mac/url_conversions.h"
@@ -21,7 +23,7 @@
 namespace {
 const char kJavaScriptLinkUrl[] = "javascript://src.url/";
 const char kDataUrl[] = "data://foo.bar/";
-const char kLinkUrl[] = "http://link.url/";
+const char kLinkUrl[] = "http://www.link.url/test";
 const char kSrcUrl[] = "http://src.url/";
 const char kTitle[] = "title";
 const char kAltText[] = "alt text";
@@ -92,4 +94,84 @@ TEST_F(ContextMenuUtilsTest, TitlePrependAltForImageWithTitle) {
   EXPECT_TRUE([GetContextMenuTitle(params) hasPrefix:@(kAltText)]);
   EXPECT_TRUE([GetContextMenuTitle(params) hasSuffix:@(kTitle)]);
   EXPECT_TRUE(IsImageTitle(params));
+}
+
+// Tests that a link with HTTP scheme returns the simplified domain as title.
+TEST_F(ContextMenuUtilsTest, TitleForHTTPLink) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      web::features::kWebViewNativeContextMenuPhase2);
+
+  web::ContextMenuParams params;
+  params.link_url = GURL(kLinkUrl);
+  params.title_attribute = @(kTitle);
+
+  EXPECT_NSEQ(@"link.url", GetContextMenuTitle(params));
+}
+
+// Tests that a link with a JavaScript scheme returns the scheme.
+TEST_F(ContextMenuUtilsTest, TitleForJavaScript) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      web::features::kWebViewNativeContextMenuPhase2);
+
+  web::ContextMenuParams params;
+  params.link_url = GURL(kJavaScriptLinkUrl);
+  params.title_attribute = @(kTitle);
+
+  EXPECT_NSEQ(@"javascript", GetContextMenuTitle(params));
+}
+
+// Tests that a link with a data scheme returns the scheme.
+TEST_F(ContextMenuUtilsTest, TitleForData) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      web::features::kWebViewNativeContextMenuPhase2);
+
+  web::ContextMenuParams params;
+  params.link_url = GURL(kDataUrl);
+  params.title_attribute = @(kTitle);
+
+  EXPECT_NSEQ(@"data", GetContextMenuTitle(params));
+}
+
+// Tests that the title is returned when there is no alt text.
+TEST_F(ContextMenuUtilsTest, TitleForTitle) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      web::features::kWebViewNativeContextMenuPhase2);
+
+  web::ContextMenuParams params;
+  params.src_url = GURL(kSrcUrl);
+  params.title_attribute = @(kTitle);
+
+  EXPECT_NSEQ(@(kTitle), GetContextMenuTitle(params));
+}
+
+// Tests that the alt text is returned when there is no title.
+TEST_F(ContextMenuUtilsTest, TitleForAlt) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      web::features::kWebViewNativeContextMenuPhase2);
+
+  web::ContextMenuParams params;
+  params.src_url = GURL(kSrcUrl);
+  params.alt_text = @(kAltText);
+
+  EXPECT_NSEQ(@(kAltText), GetContextMenuTitle(params));
+}
+
+// Tests that the title and the alt text are returned.
+TEST_F(ContextMenuUtilsTest, TitleForTitleAndAlt) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      web::features::kWebViewNativeContextMenuPhase2);
+
+  web::ContextMenuParams params;
+  params.src_url = GURL(kSrcUrl);
+  params.title_attribute = @(kTitle);
+  params.alt_text = @(kAltText);
+
+  NSString* expected = [NSString stringWithFormat:@"%s – %s", kAltText, kTitle];
+  EXPECT_NSEQ(expected, GetContextMenuTitle(params));
 }
