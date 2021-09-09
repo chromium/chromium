@@ -62,6 +62,7 @@ message DownloadFileType {
     ZIP = 1;
     RAR = 2;
     DMG = 3;
+    OFFICE_DOCUMENT = 4;
   }
   optional InspectionType inspection_type = 6;
 };

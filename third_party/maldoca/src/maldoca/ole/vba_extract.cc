@@ -25,7 +25,9 @@
 #include "absl/base/casts.h"
 #include "absl/container/flat_hash_set.h"
 #include "absl/container/node_hash_map.h"
-#include "absl/flags/flag.h"
+#ifndef MALDOCA_IN_CHROMIUM
+#include "absl/flags/flag.h"  // nogncheck
+#endif
 #include "absl/status/status.h"
 #include "absl/strings/match.h"
 #include "absl/strings/str_cat.h"

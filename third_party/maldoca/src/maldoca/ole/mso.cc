@@ -17,10 +17,13 @@
 #include "maldoca/ole/mso.h"
 
 #include <iomanip>
+#include <map>
 #include <memory>
 #include <string>
 
-#include "absl/flags/flag.h"
+#ifndef MALDOCA_IN_CHROMIUM
+#include "absl/flags/flag.h"  // nogncheck
+#endif
 #include "absl/strings/escaping.h"
 #include "absl/strings/string_view.h"
 #include "libxml/tree.h"

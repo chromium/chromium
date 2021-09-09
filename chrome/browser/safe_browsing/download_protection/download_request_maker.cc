@@ -180,6 +180,7 @@ void DownloadRequestMaker::OnFileFeatureExtractionDone(
   request_->mutable_image_headers()->CopyFrom(results.image_headers);
   request_->set_archive_file_count(results.file_count);
   request_->set_archive_directory_count(results.directory_count);
+  request_->mutable_document_summary()->CopyFrom(results.document_summary);
 
 #if defined(OS_MAC)
   if (!results.disk_image_signature.empty()) {

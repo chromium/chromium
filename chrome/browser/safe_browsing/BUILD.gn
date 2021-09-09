@@ -334,6 +334,8 @@ static_library("safe_browsing") {
           "//chrome/browser/safe_browsing/incident_reporting:state_store_data_proto",
           "//chrome/common:version_header",
         ]
+      } else if (is_linux) {
+        deps += [ "//chrome/common/safe_browsing:document_analyzer_results" ]
       }
     } else if (safe_browsing_mode == 2) {
       if (is_android) {

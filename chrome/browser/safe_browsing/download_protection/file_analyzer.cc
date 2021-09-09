@@ -8,11 +8,13 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/file_util_service.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
+#include "chrome/common/safe_browsing/document_analyzer_results.h"
 #include "chrome/common/safe_browsing/download_type_util.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -94,6 +96,12 @@ void FileAnalyzer::Start(const base::FilePath& target_path,
 #if defined(OS_MAC)
   } else if (inspection_type == DownloadFileType::DMG) {
     StartExtractDmgFeatures();
+#endif
+#if defined(OS_LINUX)
+  } else if (base::FeatureList::IsEnabled(
+                 safe_browsing::kClientSideDetectionDocumentScanning) &&
+             inspection_type == DownloadFileType::OFFICE_DOCUMENT) {
+    StartExtractDocumentFeatures();
 #endif
   } else {
 #if defined(OS_MAC)
@@ -281,4 +289,42 @@ void FileAnalyzer::OnDmgAnalysisFinished(
 }
 #endif  // defined(OS_MAC)
 
+#if defined(OS_LINUX)
+void FileAnalyzer::StartExtractDocumentFeatures() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  document_analysis_start_time_ = base::TimeTicks::Now();
+  NOTIMPLEMENTED();
+}
+
+void FileAnalyzer::OnDocumentAnalysisFinished(
+    const DocumentAnalyzerResults& document_results) {
+  NOTREACHED();
+  // Log metrics for Document Analysis
+  UMA_HISTOGRAM_BOOLEAN("SBClientDownload.DocumentAnalysisSuccess",
+                        document_results.success);
+  UMA_HISTOGRAM_MEDIUM_TIMES(
+      "SBClientDownload.ExtractDocumentFeaturesTimeMedium",
+      base::TimeTicks::Now() - document_analysis_start_time_);
+
+  ClientDownloadRequest::DocumentSummary document_summary;
+  ClientDownloadRequest::DocumentInfo* document_info =
+      document_summary.mutable_metadata();
+  document_info->set_contains_macros(document_results.has_macros);
+
+  ClientDownloadRequest::DocumentProcessingInfo* processing_info =
+      document_summary.mutable_processing_info();
+  processing_info->set_processing_successful(document_results.success);
+
+  processing_info->set_maldoca_error_type(document_results.error_code);
+  if (!document_results.error_message.empty()) {
+    processing_info->set_maldoca_error_message(document_results.error_message);
+  }
+  results_.document_summary.CopyFrom(document_summary);
+
+  results_.type = ClientDownloadRequest::DOCUMENT;
+
+  std::move(callback_).Run(std::move(results_));
+}
+#endif
 }  // namespace safe_browsing
