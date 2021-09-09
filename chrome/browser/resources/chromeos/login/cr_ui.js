@@ -355,7 +355,6 @@ cr.define('cr.ui', function() {
      */
     static initialize() {
       Oobe.getInstance().initialize();
-
       chrome.send('screenStateInitialize');
     }
 

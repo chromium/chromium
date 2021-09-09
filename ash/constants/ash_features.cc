@@ -448,6 +448,10 @@ const base::Feature kEnableOAuthIpp{"EnableOAuthIpp",
 const base::Feature kEnableOobeChromeVoxHint{"EnableOobeChromeVoxHint",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables Polymer3 for OOBE
+const base::Feature kEnableOobePolymer3{"EnableOobePolymer3",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables toggling Pciguard settings through Settings UI.
 const base::Feature kEnablePciguardUi{"EnablePciguardUi",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
@@ -1492,6 +1496,10 @@ bool IsNotificationsRefreshEnabled() {
 
 bool IsOobeChromeVoxHintEnabled() {
   return base::FeatureList::IsEnabled(kEnableOobeChromeVoxHint);
+}
+
+bool IsOobePolymer3Enabled() {
+  return base::FeatureList::IsEnabled(kEnableOobePolymer3);
 }
 
 bool IsPciguardUiEnabled() {

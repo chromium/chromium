@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="google" value="notranslate">
+  <title>$i18n{title}</title>
+  <base href="chrome://oobe">
+
+  <link rel="import" href="chrome://resources/html/polymer.html">
+
+  <link rel="stylesheet" href="md_top_header_bar.css">
+  <link rel="stylesheet" href="oobe.css">
+  <link rel="stylesheet" href="oobe_popup_overlay.css">
+  <link rel="stylesheet" href="oobe_screen.css">
+  <link rel="stylesheet" href="md_screen_container.css">
+  <link rel="stylesheet" href="api_keys_notice.css">
+
+  <script type="module" src="oobe_polymer3.js"></script>
+</head>
+
+<body class="oobe-display chromeos" i18n-values=".style.fontFamily:fontfamily;">
+  <div id="api-keys-notice-container" hidden>
+    <div id="api-keys-notice" i18n-content="missingAPIKeysNotice"></div>
+  </div>
+  <div id="scroll-container">
+    <div id="outer-container" class="layout vertical">
+      <div class="oobe-vertical-margin"></div>
+      <div id="oobe" class="faded">
+        <div id="inner-container" class="down">
+          <marketing-opt-in-element id="marketing-opt-in" class="step hidden" hidden>
+          </marketing-opt-in-element>
+        </div>
+      </div>
+      <div class="oobe-vertical-margin"></div>
+    </div>
+  </div>
+</body>
+</html>
+
+
