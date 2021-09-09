@@ -316,15 +316,12 @@ void ServiceWorkerDevToolsManager::NavigationPreloadRequestSent(
   if (it == live_hosts_.end())
     return;
   auto timestamp = base::TimeTicks::Now();
-  network::mojom::URLRequestDevToolsInfo request_info(
-      request.method, request.url, request.priority, request.referrer_policy,
-      request.trust_token_params ? request.trust_token_params->Clone()
-                                 : nullptr,
-      request.has_user_gesture);
+  network::mojom::URLRequestDevToolsInfoPtr request_info =
+      network::ExtractDevToolsInfo(request);
   for (auto* network :
        protocol::NetworkHandler::ForAgentHost(it->second.get())) {
     network->RequestSent(request_id, std::string(), request.headers,
-                         request_info,
+                         *request_info,
                          protocol::Network::Initiator::TypeEnum::Preload,
                          /*initiator_url=*/absl::nullopt,
                          /*initiator_devtools_request_id=*/"", timestamp);

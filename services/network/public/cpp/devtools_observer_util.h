@@ -9,6 +9,7 @@
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 
 namespace network {
+struct ResourceRequest;
 
 namespace mojom {
 class URLResponseHead;
@@ -17,6 +18,9 @@ class URLResponseHead;
 COMPONENT_EXPORT(NETWORK_CPP)
 mojom::URLResponseHeadDevToolsInfoPtr ExtractDevToolsInfo(
     const mojom::URLResponseHead& head);
+COMPONENT_EXPORT(NETWORK_CPP)
+mojom::URLRequestDevToolsInfoPtr ExtractDevToolsInfo(
+    const ResourceRequest& request);
 
 }  // namespace network
 

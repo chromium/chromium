@@ -7,9 +7,13 @@
 #include "base/time/time.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
+#include "net/base/request_priority.h"
 #include "net/http/http_response_headers.h"
 #include "net/ssl/ssl_info.h"
+#include "net/url_request/referrer_policy.h"
 #include "services/network/public/cpp/devtools_observer_util.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -55,6 +59,28 @@ TEST(DevToolsObserverUtilTest, ExtractURLResponseHead) {
             head.service_worker_response_source);
   EXPECT_EQ(head_info->ssl_info.has_value(), head.ssl_info.has_value());
   EXPECT_EQ(head_info->remote_endpoint, head.remote_endpoint);
+}
+
+TEST(DevToolsObserverUtilTest, ExtractResourceRequest) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+
+  GURL url("http://example.org");
+  ResourceRequest request;
+  request.method = "method";
+  request.url = url;
+  request.priority = net::RequestPriority::MAXIMUM_PRIORITY;
+  request.referrer_policy =
+      net::ReferrerPolicy::CLEAR_ON_TRANSITION_CROSS_ORIGIN;
+  request.trust_token_params = mojom::TrustTokenParams();
+
+  mojom::URLRequestDevToolsInfoPtr request_info = ExtractDevToolsInfo(request);
+
+  EXPECT_EQ(request_info->method, request.method);
+  EXPECT_EQ(request_info->url, request.url);
+  EXPECT_EQ(request_info->priority, request.priority);
+  EXPECT_EQ(request_info->referrer_policy, request.referrer_policy);
+  EXPECT_EQ(*request_info->trust_token_params,
+            request.trust_token_params.value());
 }
 
 }  // namespace network
