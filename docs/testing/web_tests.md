@@ -209,7 +209,7 @@ on this.
 
 There are two ways to run web tests with additional command-line arguments:
 
-### `--flag-specific` or `--additional-driver-flag`:
+### --flag-specific or --additional-driver-flag:
 
 ```bash
 # Actually we prefer --flag-specific in some cases. See below for details.
@@ -253,6 +253,13 @@ of `--additional-driver-flag=--blocking-repaint --additional-driver-flag=--anoth
 For example, when at least `--additional-driver-flag=--blocking-repaint` and
 `--additional-driver-flag=--another-flag` are specified, `short-name` will
 be used as name of the flag specific expectation file and the baseline directory.
+
+*** note
+[BUILD.gn](../../BUILD.gn) assumes flag-specific builders always runs on linux bots, so
+flag-specific test expectations and baselines are only downloaded to linux bots.
+If you need run flag-specific builders on other platforms, please update
+BUILD.gn to download flag-specific related data to that platform.
+***
 
 ### Virtual test suites
 
