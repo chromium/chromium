@@ -14,6 +14,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/disks/disk.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -141,6 +142,22 @@ class SystemNotificationManagerTest : public ::testing::Test {
     notification_count = displayed_notifications.size();
   }
 
+  // Creates a disk instance with |device_path| and |mount_path| for testing.
+  std::unique_ptr<chromeos::disks::Disk> CreateTestDisk(
+      const std::string& device_path,
+      const std::string& mount_path,
+      bool is_read_only_hardware,
+      bool is_mounted) {
+    return chromeos::disks::Disk::Builder()
+        .SetDevicePath(device_path)
+        .SetMountPath(mount_path)
+        .SetStorageDevicePath(device_path)
+        .SetIsReadOnlyHardware(is_read_only_hardware)
+        .SetFileSystemType("vfat")
+        .SetIsMounted(is_mounted)
+        .Build();
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
@@ -159,7 +176,8 @@ class SystemNotificationManagerTest : public ::testing::Test {
   base::WeakPtrFactory<SystemNotificationManagerTest> weak_ptr_factory_{this};
 };
 
-constexpr char kDevicePath[] = "/mnt/media/sda1";
+constexpr char kDevicePath[] = "/device/test";
+constexpr char kMountPath[] = "/mnt/media/sda1";
 std::u16string kRemovableDeviceTitle = u"Removable device detected";
 
 TEST_F(SystemNotificationManagerTest, ExternalStorageDisabled) {
@@ -290,6 +308,30 @@ TEST_F(SystemNotificationManagerTest, RenameFail) {
   EXPECT_EQ(notification_strings.title, u"Renaming failed");
   EXPECT_EQ(notification_strings.message,
             u"Aw, Snap! There was an error during renaming.");
+}
+
+TEST_F(SystemNotificationManagerTest, DeviceHardUnplugged) {
+  std::unique_ptr<chromeos::disks::Disk> disk =
+      CreateTestDisk(kDevicePath, kMountPath, /*is_read_only_hardware=*/false,
+                     /*is_mounted=*/true);
+  GetDeviceEventRouter()->OnDiskRemoved(*disk);
+  // Get the number of notifications from the NotificationDisplayService.
+  NotificationDisplayServiceFactory::GetForProfile(GetProfile())
+      ->GetDisplayed(base::BindOnce(
+          &SystemNotificationManagerTest::GetNotificationsCallback,
+          weak_ptr_factory_.GetWeakPtr()));
+  // Check: We have one notification.
+  ASSERT_EQ(1, notification_count);
+  // Get the strings for the displayed notification.
+  TestNotificationStrings notification_strings;
+  notification_strings =
+      notification_platform_bridge->GetNotificationStringsById(
+          "hard_unplugged");
+  // Check: the expected strings match.
+  EXPECT_EQ(notification_strings.title, u"Whoa, there. Be careful.");
+  EXPECT_EQ(notification_strings.message,
+            u"In the future, be sure to eject your removable device in the "
+            u"Files app before unplugging it. Otherwise, you might lose data.");
 }
 
 TEST_F(SystemNotificationManagerTest, TestCopyEvents) {
