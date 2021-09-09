@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -1054,6 +1055,10 @@ bool IsAXSetter(SEL selector) {
 }
 
 - (BOOL)isAccessibilitySelectorAllowed:(SEL)selector {
+  TRACE_EVENT1(
+      "accessibility", "AXPlatformNodeCocoa::isAccessibilitySelectorAllowed",
+      "selector=", base::SysNSStringToUTF8(NSStringFromSelector(selector)));
+
   if (!_node)
     return NO;
 

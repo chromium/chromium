@@ -3861,17 +3861,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
       ui::AXCoordinateSystem::kScreenDIPs, ui::AXClippingBehavior::kClipped));
 }
 
-- (BOOL)isAccessibilitySelectorAllowed:(SEL)selector {
-  if (![self instanceActive])
-    return NO;
-
-  // BrowserAccessibilityCocoa doesn't yet implement other methods. Remove
-  // this implementation when BrowserAccessibilityCocoa is merged with
-  // AXPlatformNodeCocoa.
-  return selector == @selector(isAccessibilityEnabled) ||
-         selector == @selector(isAccessibilityElement);
-}
-
 - (BOOL)isCheckable {
   if (![self instanceActive])
     return NO;
