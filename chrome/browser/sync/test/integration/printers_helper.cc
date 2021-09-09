@@ -13,8 +13,8 @@
 
 #include "base/bind.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/chromeos/printing/synced_printers_manager.h"
-#include "chrome/browser/chromeos/printing/synced_printers_manager_factory.h"
+#include "chrome/browser/ash/printing/synced_printers_manager.h"
+#include "chrome/browser/ash/printing/synced_printers_manager_factory.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "content/public/test/test_utils.h"

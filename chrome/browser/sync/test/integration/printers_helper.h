@@ -9,7 +9,7 @@
 #include <memory>
 #include <string>
 
-#include "chrome/browser/chromeos/printing/synced_printers_manager.h"
+#include "chrome/browser/ash/printing/synced_printers_manager.h"
 #include "chrome/browser/sync/test/integration/await_match_status_change_checker.h"
 #include "chromeos/printing/printer_configuration.h"
 

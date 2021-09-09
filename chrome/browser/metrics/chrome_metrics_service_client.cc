@@ -146,8 +146,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/feature_list.h"
+#include "chrome/browser/ash/printing/printer_metrics_provider.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/printing/printer_metrics_provider.h"
 #include "chrome/browser/metrics/ambient_mode_metrics_provider.h"
 #include "chrome/browser/metrics/assistant_service_metrics_provider.h"
 #include "chrome/browser/metrics/chromeos_metrics_provider.h"

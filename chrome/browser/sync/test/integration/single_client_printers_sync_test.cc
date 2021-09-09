@@ -5,7 +5,7 @@
 #include <stddef.h>
 
 #include "base/macros.h"
-#include "chrome/browser/chromeos/printing/printers_sync_bridge.h"
+#include "chrome/browser/ash/printing/printers_sync_bridge.h"
 #include "chrome/browser/sync/test/integration/printers_helper.h"
 #include "chrome/browser/sync/test/integration/sync_consent_optional_sync_test.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
