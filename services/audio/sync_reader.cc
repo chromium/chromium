@@ -45,6 +45,9 @@ namespace audio {
     !BUILDFLAG(IS_CHROMEOS_LACROS)
 const base::Feature kDynamicAudioTimeout{"DynamicAudioTimeout",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::FeatureParam<double> kBufferDurationPercent{
+    &kDynamicAudioTimeout, "buffer_duration_percent", 0.5};
 #endif
 
 SyncReader::SyncReader(
@@ -67,7 +70,8 @@ SyncReader::SyncReader(
   maximum_wait_time_ = params.GetBufferDuration() / 2;
 #else
   if (base::FeatureList::IsEnabled(kDynamicAudioTimeout)) {
-    maximum_wait_time_ = params.GetBufferDuration() / 2;
+    maximum_wait_time_ =
+        params.GetBufferDuration() * kBufferDurationPercent.Get();
   } else {
     maximum_wait_time_ = base::TimeDelta::FromMilliseconds(20);
   }
