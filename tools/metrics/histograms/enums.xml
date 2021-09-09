@@ -34491,6 +34491,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4017" label="V8FileSystemSyncAccessHandle_Flush_Method"/>
   <int value="4018" label="V8FileSystemSyncAccessHandle_GetSize_Method"/>
   <int value="4019" label="V8FileSystemSyncAccessHandle_Truncate_Method"/>
+  <int value="4020"
+      label="V8SharedArrayBufferConstructedInExtensionWithoutIsolation"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

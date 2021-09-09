@@ -602,6 +602,13 @@ DeprecationInfo GetDeprecationInfo(WebFeature feature) {
           "interpreted as an attempt to use the deprecated \"SDES\" key "
           "negotiation method. This functionality will be removed; use a "
           "service that supports DTLS key negotiation instead."};
+    case WebFeature::kV8SharedArrayBufferConstructedInExtensionWithoutIsolation:
+      return {"V8SharedArrayBufferConstructedInExtensionWithoutIsolation", kM96,
+              "Extensions should opt into cross-origin isolation to continue "
+              "using SharedArrayBuffer. See "
+              "https://developer.chrome.com/docs/extensions/mv3/"
+              "cross-origin-isolation/."};
+
     // Features that aren't deprecated don't have a deprecation message.
     default:
       return {"NotDeprecated", kUnknown, ""};

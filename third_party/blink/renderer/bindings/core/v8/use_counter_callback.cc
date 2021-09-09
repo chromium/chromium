@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/use_counter_callback.h"
 
+#include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
@@ -241,12 +242,26 @@ void UseCounterCallback(v8::Isolate* isolate,
     case v8::Isolate::kSharedArrayBufferConstructed: {
       ExecutionContext* current_execution_context =
           CurrentExecutionContext(isolate);
-      bool file_issue =
-          !current_execution_context->CrossOriginIsolatedCapability() &&
-          !SchemeRegistry::ShouldTreatURLSchemeAsAllowingSharedArrayBuffers(
-              current_execution_context->GetSecurityOrigin()->Protocol());
-      if (file_issue) {
-        // It is performance critical to only file the issue once per context.
+      bool is_cross_origin_isolated =
+          current_execution_context->CrossOriginIsolatedCapability();
+      String protocol =
+          current_execution_context->GetSecurityOrigin()->Protocol();
+      bool scheme_allows_sab =
+          SchemeRegistry::ShouldTreatURLSchemeAsAllowingSharedArrayBuffers(
+              protocol);
+      bool is_extension_scheme =
+          CommonSchemeRegistry::IsExtensionScheme(protocol.Ascii());
+
+      if (!is_cross_origin_isolated && is_extension_scheme) {
+        DCHECK(scheme_allows_sab);
+        blink_feature = WebFeature::
+            kV8SharedArrayBufferConstructedInExtensionWithoutIsolation;
+        deprecated = true;
+      } else if (is_cross_origin_isolated || scheme_allows_sab) {
+        blink_feature = WebFeature::kV8SharedArrayBufferConstructed;
+      } else {
+        // File an issue. It is performance critical to only file the issue once
+        // per context.
         if (!current_execution_context
                  ->has_filed_shared_array_buffer_creation_issue()) {
           current_execution_context->FileSharedArrayBufferCreationIssue();
@@ -254,8 +269,6 @@ void UseCounterCallback(v8::Isolate* isolate,
         blink_feature =
             WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation;
         deprecated = true;
-      } else {
-        blink_feature = WebFeature::kV8SharedArrayBufferConstructed;
       }
       break;
     }
