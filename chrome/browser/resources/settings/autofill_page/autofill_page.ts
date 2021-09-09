@@ -24,16 +24,10 @@ import {Router} from '../router.js';
 import {PasswordCheckMixin, PasswordCheckMixinInterface} from './password_check_mixin.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 
-
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {PasswordCheckMixinInterface}
- */
 const SettingsAutofillPageElementBase =
-    mixinBehaviors([PrefsBehavior], PasswordCheckMixin(PolymerElement));
+    mixinBehaviors([PrefsBehavior], PasswordCheckMixin(PolymerElement)) as
+    {new (): PolymerElement & PasswordCheckMixinInterface};
 
-/** @polymer */
 class SettingsAutofillPageElement extends SettingsAutofillPageElementBase {
   static get is() {
     return 'settings-autofill-page';
@@ -45,10 +39,8 @@ class SettingsAutofillPageElement extends SettingsAutofillPageElementBase {
 
   static get properties() {
     return {
-      /** @private Filter applied to passwords and password exceptions. */
       passwordFilter_: String,
 
-      /** @private {!Map<string, string>} */
       focusConfig_: {
         type: Object,
         value() {
@@ -67,49 +59,43 @@ class SettingsAutofillPageElement extends SettingsAutofillPageElementBase {
         },
       },
 
-      /** @private */
       passwordManagerSubLabel_: {
         type: String,
         computed: 'computePasswordManagerSubLabel_(compromisedPasswordsCount)',
       },
-
     };
   }
 
-
+  private passwordFilter_: string;
+  private focusConfig_: Map<string, string>;
+  private passwordManagerSubLabel_: string;
 
   /**
    * Shows the manage addresses sub page.
-   * @param {!Event} event
-   * @private
    */
-  onAddressesClick_(event) {
+  private onAddressesClick_() {
     Router.getInstance().navigateTo(routes.ADDRESSES);
   }
 
   /**
    * Shows the manage payment methods sub page.
-   * @private
    */
-  onPaymentsClick_() {
+  private onPaymentsClick_() {
     Router.getInstance().navigateTo(routes.PAYMENTS);
   }
 
   /**
    * Shows a page to manage passwords.
-   * @private
    */
-  onPasswordsClick_() {
+  private onPasswordsClick_() {
     PasswordManagerImpl.getInstance().recordPasswordsPageAccessInSettings();
     Router.getInstance().navigateTo(routes.PASSWORDS);
   }
 
   /**
-   * @return {string} The sub-title message indicating the result of password
-   *     check.
-   * @private
+   * @return The sub-title message indicating the result of password check.
    */
-  computePasswordManagerSubLabel_() {
+  private computePasswordManagerSubLabel_(): string {
     return this.leakedPasswords.length > 0 ? this.compromisedPasswordsCount :
                                              '';
   }

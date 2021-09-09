@@ -14,6 +14,7 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import './avatar_icon.js';
 import '../site_favicon.js';
 
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -25,17 +26,21 @@ import {PasswordManagerImpl} from './password_manager_proxy.js';
  * components/password_manager/core/browser/password_manager_metrics_util.h.
  * These values are persisted to logs. Entries should not be renumbered and
  * numeric values should never be reused.
- * @enum {number}
  */
-export const MoveToAccountStoreTrigger = {
-  SUCCESSFUL_LOGIN_WITH_PROFILE_STORE_PASSWORD: 0,
-  EXPLICITLY_TRIGGERED_IN_SETTINGS: 1,
-  EXPLICITLY_TRIGGERED_FOR_MULTIPLE_PASSWORDS_IN_SETTINGS: 2,
-  USER_OPTED_IN_AFTER_SAVING_LOCALLY: 3,
-  COUNT: 4,
-};
+export enum MoveToAccountStoreTrigger {
+  SUCCESSFUL_LOGIN_WITH_PROFILE_STORE_PASSWORD = 0,
+  EXPLICITLY_TRIGGERED_IN_SETTINGS = 1,
+  EXPLICITLY_TRIGGERED_FOR_MULTIPLE_PASSWORDS_IN_SETTINGS = 2,
+  USER_OPTED_IN_AFTER_SAVING_LOCALLY = 3,
+  COUNT = 4,
+}
 
-/** @polymer */
+interface PasswordMoveToAccountDialogElement {
+  $: {
+    dialog: CrDialogElement,
+  };
+}
+
 class PasswordMoveToAccountDialogElement extends PolymerElement {
   static get is() {
     return 'password-move-to-account-dialog';
@@ -47,12 +52,12 @@ class PasswordMoveToAccountDialogElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {!MultiStorePasswordUiEntry} */
       passwordToMove: Object,
     };
   }
 
-  /** @override */
+  passwordToMove: MultiStorePasswordUiEntry;
+
   connectedCallback() {
     super.connectedCallback();
 
@@ -65,16 +70,14 @@ class PasswordMoveToAccountDialogElement extends PolymerElement {
     this.$.dialog.showModal();
   }
 
-  /** @private */
-  onMoveButtonClick_() {
+  private onMoveButtonClick_() {
     assert(this.passwordToMove.isPresentOnDevice());
     PasswordManagerImpl.getInstance().movePasswordsToAccount(
-        [this.passwordToMove.deviceId]);
+        [this.passwordToMove.deviceId!]);
     this.$.dialog.close();
   }
 
-  /** @private */
-  onCancelButtonClick_() {
+  private onCancelButtonClick_() {
     this.$.dialog.close();
   }
 }

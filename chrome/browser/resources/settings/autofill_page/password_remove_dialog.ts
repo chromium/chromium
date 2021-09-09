@@ -16,8 +16,9 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import './avatar_icon.js';
 
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SyncBrowserProxyImpl} from '../people_page/sync_browser_proxy.js';
@@ -25,20 +26,19 @@ import {SyncBrowserProxyImpl} from '../people_page/sync_browser_proxy.js';
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 
-/**
- * @typedef {!Event<!{removedFromAccount:boolean, removedFromDevice: boolean}>}
- */
-export let PasswordRemoveDialogPasswordsRemovedEvent;
+export type PasswordRemoveDialogPasswordsRemovedEvent =
+    CustomEvent<{removedFromAccount: boolean, removedFromDevice: boolean}>;
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
+interface PasswordRemoveDialogElement {
+  $: {
+    dialog: CrDialogElement,
+  };
+}
+
 const PasswordRemoveDialogElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+    mixinBehaviors([I18nBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior};
 
-/** @polymer */
 class PasswordRemoveDialogElement extends PasswordRemoveDialogElementBase {
   static get is() {
     return 'password-remove-dialog';
@@ -52,11 +52,9 @@ class PasswordRemoveDialogElement extends PasswordRemoveDialogElementBase {
     return {
       /**
        * The password whose copies are to be removed.
-       * @type {!MultiStorePasswordUiEntry}
        */
       duplicatedPassword: Object,
 
-      /** @private */
       removeFromAccountChecked_: {
         type: Boolean,
         // Both checkboxes are selected by default (see
@@ -65,13 +63,11 @@ class PasswordRemoveDialogElement extends PasswordRemoveDialogElementBase {
         value: true,
       },
 
-      /** @private */
       removeFromDeviceChecked_: {
         type: Boolean,
         value: true,
       },
 
-      /** @private */
       accountEmail_: {
         type: String,
         value: '',
@@ -79,7 +75,11 @@ class PasswordRemoveDialogElement extends PasswordRemoveDialogElementBase {
     };
   }
 
-  /** @override */
+  duplicatedPassword: MultiStorePasswordUiEntry;
+  private removeFromAccountChecked_: boolean;
+  private removeFromDeviceChecked_: boolean;
+  private accountEmail_: string;
+
   connectedCallback() {
     super.connectedCallback();
 
@@ -99,15 +99,13 @@ class PasswordRemoveDialogElement extends PasswordRemoveDialogElementBase {
     });
   }
 
-  /** @private */
-  onRemoveButtonClick_() {
-    /** @type{!Array<number>} */
-    const idsToRemove = [];
+  private onRemoveButtonClick_() {
+    const idsToRemove: Array<number> = [];
     if (this.removeFromAccountChecked_) {
-      idsToRemove.push(this.duplicatedPassword.accountId);
+      idsToRemove.push(this.duplicatedPassword.accountId!);
     }
     if (this.removeFromDeviceChecked_) {
-      idsToRemove.push(this.duplicatedPassword.deviceId);
+      idsToRemove.push(this.duplicatedPassword.deviceId!);
     }
     PasswordManagerImpl.getInstance().removeSavedPasswords(idsToRemove);
 
@@ -123,24 +121,15 @@ class PasswordRemoveDialogElement extends PasswordRemoveDialogElementBase {
         }));
   }
 
-  /** @private */
-  onCancelButtonClick_() {
+  private onCancelButtonClick_() {
     this.$.dialog.close();
   }
 
-  /**
-   * @private
-   * @return {boolean}
-   */
-  shouldDisableRemoveButton_() {
+  private shouldDisableRemoveButton_(): boolean {
     return !this.removeFromAccountChecked_ && !this.removeFromDeviceChecked_;
   }
 
-  /**
-   * @private
-   * @return {string}
-   */
-  getDialogBodyMessage_() {
+  private getDialogBodyMessage_(): string {
     return this.i18nAdvanced(
         'passwordRemoveDialogBody',
         {substitutions: [this.duplicatedPassword.urls.shown], tags: ['b']});

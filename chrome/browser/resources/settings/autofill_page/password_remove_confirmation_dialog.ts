@@ -6,22 +6,23 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import '../i18n_setup.js';
 
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PasswordCheckInteraction, PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
 
+interface SettingsPasswordRemoveConfirmationDialogElement {
+  $: {
+    dialog: CrDialogElement,
+  };
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
 const SettingsPasswordRemoveConfirmationDialogElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+    mixinBehaviors([I18nBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior};
 
-/** @polymer */
 class SettingsPasswordRemoveConfirmationDialogElement extends
     SettingsPasswordRemoveConfirmationDialogElementBase {
   static get is() {
@@ -36,44 +37,33 @@ class SettingsPasswordRemoveConfirmationDialogElement extends
     return {
       /**
        * The password that is being displayed.
-       * @private {?chrome.passwordsPrivate.InsecureCredential}
        */
       item: Object,
     };
   }
 
-  constructor() {
-    super();
+  item: chrome.passwordsPrivate.InsecureCredential;
+  private passwordManager_: PasswordManagerProxy =
+      PasswordManagerImpl.getInstance();
 
-    /** @private {!PasswordManagerProxy} */
-    this.passwordManager_ = PasswordManagerImpl.getInstance();
-  }
-
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
     this.$.dialog.showModal();
   }
 
-  /** @private */
-  onRemoveClick_() {
+  private onRemoveClick_() {
     this.passwordManager_.recordPasswordCheckInteraction(
         PasswordCheckInteraction.REMOVE_PASSWORD);
     this.passwordManager_.removeInsecureCredential(assert(this.item));
     this.$.dialog.close();
   }
 
-  /** @private */
-  onCancelClick_() {
+  private onCancelClick_() {
     this.$.dialog.close();
   }
 
-  /**
-   * @private
-   * @return {boolean}
-   */
-  hasSecureChangePasswordUrl_() {
+  private hasSecureChangePasswordUrl_(): boolean {
     const url = this.item.changePasswordUrl;
     return !!url && (url.startsWith('https://') || url.startsWith('chrome://'));
   }
@@ -81,10 +71,8 @@ class SettingsPasswordRemoveConfirmationDialogElement extends
   /**
    * Returns the remove password description with a linkified change password
    * URL. Requires the change password URL to be present and secure.
-   * @private
-   * @return {string}
    */
-  getRemovePasswordDescriptionHtml_() {
+  private getRemovePasswordDescriptionHtml_(): string {
     if (!this.hasSecureChangePasswordUrl_()) {
       return '';
     }
@@ -101,10 +89,8 @@ class SettingsPasswordRemoveConfirmationDialogElement extends
   /**
    * Returns the remove password description as a plain text.
    * Used when the change password URL is not present or insecure.
-   * @private
-   * @return {string}
    */
-  getRemovePasswordDescriptionText_() {
+  private getRemovePasswordDescriptionText_(): string {
     const origin = this.item.formattedOrigin;
     return this.i18n(
         'removeCompromisedPasswordConfirmationDescription', origin, origin);

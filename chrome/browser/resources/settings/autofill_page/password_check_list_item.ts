@@ -26,8 +26,7 @@ import {BlockingRequestManager} from './blocking_request_manager.js';
 import {PasswordCheckInteraction, PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
 
 
-/** @polymer */
-class PasswordCheckListItemElement extends PolymerElement {
+export class PasswordCheckListItemElement extends PolymerElement {
   static get is() {
     return 'password-check-list-item';
   }
@@ -39,23 +38,19 @@ class PasswordCheckListItemElement extends PolymerElement {
   static get properties() {
     return {
       // <if expr="chromeos">
-      /** @type {BlockingRequestManager} */
       tokenRequestManager: Object,
       // </if>
 
       /**
        * The password that is being displayed.
-       * @type {!chrome.passwordsPrivate.InsecureCredential}
        */
       item: Object,
 
-      /** @private */
-      isPasswordVisible_: {
+      isPasswordVisible: {
         type: Boolean,
         computed: 'computePasswordVisibility_(item.password)',
       },
 
-      /** @private */
       password_: {
         type: String,
         computed: 'computePassword_(item.password)',
@@ -66,13 +61,11 @@ class PasswordCheckListItemElement extends PolymerElement {
         value: false,
       },
 
-      /** @private */
       buttonClass_: {
         type: String,
         computed: 'computeButtonClass_(item.compromisedInfo)',
       },
 
-      /** @private */
       iconClass_: {
         type: String,
         computed: 'computeIconClass_(item.compromisedInfo)',
@@ -80,28 +73,28 @@ class PasswordCheckListItemElement extends PolymerElement {
     };
   }
 
-  constructor() {
-    super();
+  // <if expr="chromeos">
+  tokenRequestManager: BlockingRequestManager;
+  // </if>
 
-    /** @private {!PasswordManagerProxy} */
-    this.passwordManager_ = PasswordManagerImpl.getInstance();
-  }
+  item: chrome.passwordsPrivate.InsecureCredential;
+  isPasswordVisible: boolean;
+  private password_: string;
+  clickedChangePassword: boolean;
+  private buttonClass_: string;
+  private iconClass_: string;
+  private passwordManager_: PasswordManagerProxy =
+      PasswordManagerImpl.getInstance();
 
   /**
-   * Returns true if |item| is compromised credential, otherwise returns false.
-   * @return {boolean}
-   * @private
+   * @return Whether |item| is compromised credential.
    */
-  isCompromisedItem_() {
+  private isCompromisedItem_(): boolean {
     return !!this.item.compromisedInfo;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getCompromiseType_() {
-    switch (this.item.compromisedInfo.compromiseType) {
+  private getCompromiseType_(): string {
+    switch (this.item.compromisedInfo!.compromiseType) {
       case chrome.passwordsPrivate.CompromiseType.PHISHED:
         return loadTimeData.getString('phishedPassword');
       case chrome.passwordsPrivate.CompromiseType.LEAKED:
@@ -112,59 +105,38 @@ class PasswordCheckListItemElement extends PolymerElement {
 
     assertNotReached(
         'Can\'t find a string for type: ' +
-        this.item.compromisedInfo.compromiseType);
+        this.item.compromisedInfo!.compromiseType);
+    return '';
   }
 
-  /**
-   * @param {string} eventName
-   * @param {*=} detail
-   * @private
-   */
-  fire_(eventName, detail) {
+  private fire_(eventName: string, detail?: any) {
     this.dispatchEvent(
         new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
   }
 
-  /** @private */
-  onChangePasswordClick_() {
+  private onChangePasswordClick_() {
     this.fire_('change-password-clicked', {id: this.item.id});
 
-    const url = assert(this.item.changePasswordUrl);
+    const url = assert(this.item.changePasswordUrl!);
     OpenWindowProxyImpl.getInstance().openURL(url);
 
     PasswordManagerImpl.getInstance().recordPasswordCheckInteraction(
         PasswordCheckInteraction.CHANGE_PASSWORD);
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onMoreClick_(event) {
+  private onMoreClick_(event: Event) {
     this.fire_('more-actions-click', {moreActionsButton: event.target});
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getInputType_() {
-    return this.isPasswordVisible_ ? 'text' : 'password';
+  private getInputType_(): string {
+    return this.isPasswordVisible ? 'text' : 'password';
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computePasswordVisibility_() {
+  private computePasswordVisibility_(): boolean {
     return !!this.item.password;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeButtonClass_() {
+  private computeButtonClass_(): string {
     if (this.item.compromisedInfo) {
       // Strong CTA.
       return 'action-button';
@@ -173,11 +145,7 @@ class PasswordCheckListItemElement extends PolymerElement {
     return '';
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeIconClass_() {
+  private computeIconClass_(): string {
     if (this.item.compromisedInfo) {
       // Strong CTA, white icon.
       return '';
@@ -186,25 +154,15 @@ class PasswordCheckListItemElement extends PolymerElement {
     return 'icon-weak-cta';
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computePassword_() {
+  private computePassword_(): string {
     const NUM_PLACEHOLDERS = 10;
     return this.item.password || ' '.repeat(NUM_PLACEHOLDERS);
   }
 
-  /**
-   * @public
-   */
   hidePassword() {
     this.set('item.password', null);
   }
 
-  /**
-   * @public
-   */
   showPassword() {
     this.passwordManager_.recordPasswordCheckInteraction(
         PasswordCheckInteraction.SHOW_PASSWORD);
@@ -215,28 +173,22 @@ class PasswordCheckListItemElement extends PolymerElement {
             insecureCredential => {
               this.set('item', insecureCredential);
             },
-            error => {
+            _error => {
               // <if expr="chromeos">
               // If no password was found, refresh auth token and retry.
-              this.tokenRequestManager.request(this.showPassword.bind(this));
+              this.tokenRequestManager.request(() => this.showPassword());
               // </if>
             });
   }
 
-  /**
-   * @private
-   */
-  onReadonlyInputTap_() {
-    if (this.isPasswordVisible_) {
-      this.shadowRoot.querySelector('#leakedPassword').select();
+  private onReadonlyInputTap_() {
+    if (this.isPasswordVisible) {
+      (this.shadowRoot!.querySelector('#leakedPassword') as HTMLInputElement)
+          .select();
     }
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onAlreadyChangedClick_(event) {
+  private onAlreadyChangedClick_(event: Event) {
     event.preventDefault();
     this.fire_('already-changed-password-click', event.target);
   }

@@ -12,7 +12,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {OpenWindowProxyImpl, PasswordCheckInteraction, PasswordManagerImpl, PasswordManagerProxy, Router, routes, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {OpenWindowProxyImpl, PasswordCheckInteraction, PasswordManagerImpl, Router, routes, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {makeCompromisedCredential, makeInsecureCredential, makePasswordCheckStatus} from 'chrome://test/settings/passwords_and_autofill_fake_data.js';
 import {getSyncAllPrefs,simulateSyncStatus} from 'chrome://test/settings/sync_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://test/settings/test_open_window_proxy.js';

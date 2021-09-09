@@ -7,21 +7,15 @@
  * the placeholder avatar if the user is not signed-in.
  */
 
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {StoredAccount, SyncBrowserProxyImpl} from '../people_page/sync_browser_proxy.js';
 
-
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {WebUIListenerBehaviorInterface}
- */
 const SettingsAvatarIconElementBase =
-    mixinBehaviors([WebUIListenerBehavior], PolymerElement);
+    mixinBehaviors([WebUIListenerBehavior], PolymerElement) as
+    {new (): PolymerElement & WebUIListenerBehavior};
 
-/** @polymer */
 class SettingsAvatarIconElement extends SettingsAvatarIconElementBase {
   static get is() {
     return 'settings-avatar-icon';
@@ -35,7 +29,6 @@ class SettingsAvatarIconElement extends SettingsAvatarIconElementBase {
     return {
       /**
        * The URL for the currently selected profile icon.
-       * @private
        */
       avatarUrl_: {
         type: String,
@@ -44,14 +37,14 @@ class SettingsAvatarIconElement extends SettingsAvatarIconElementBase {
     };
   }
 
-  /** @override */
+  private avatarUrl_: string;
+
   connectedCallback() {
     super.connectedCallback();
 
-    /** @param {!Array<!StoredAccount>} accounts */
-    const setAvatarUrl = accounts => {
+    const setAvatarUrl = (accounts: Array<StoredAccount>) => {
       this.avatarUrl_ = (accounts.length > 0 && !!accounts[0].avatarImage) ?
-          /** @type {string} */ (accounts[0].avatarImage) :
+          accounts[0].avatarImage :
           'chrome://theme/IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE';
     };
     SyncBrowserProxyImpl.getInstance().getStoredAccounts().then(setAvatarUrl);

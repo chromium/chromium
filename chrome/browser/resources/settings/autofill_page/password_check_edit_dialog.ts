@@ -18,24 +18,27 @@ import '../settings_shared_css.js';
 import '../settings_vars_css.js';
 import './passwords_shared_css.js';
 
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PasswordCheckInteraction, PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
 
+interface SettingsPasswordCheckEditDialogElement {
+  $: {
+    dialog: CrDialogElement,
+    cancel: HTMLElement,
+    passwordInput: CrInputElement,
+  };
+}
 
-
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
 const SettingsPasswordCheckEditDialogElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+    mixinBehaviors([I18nBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior};
 
-/** @polymer */
 class SettingsPasswordCheckEditDialogElement extends
     SettingsPasswordCheckEditDialogElementBase {
   static get is() {
@@ -50,13 +53,11 @@ class SettingsPasswordCheckEditDialogElement extends
     return {
       /**
        * The password that the user is interacting with now.
-       * @type {?chrome.passwordsPrivate.InsecureCredential}
        */
       item: Object,
 
       /**
        * Whether the password is visible or obfuscated.
-       * @private
        */
       visible: {
         type: Boolean,
@@ -65,21 +66,17 @@ class SettingsPasswordCheckEditDialogElement extends
 
       /**
        * Whether the input is invalid.
-       * @private
        */
       inputInvalid_: Boolean,
-
     };
   }
 
-  constructor() {
-    super();
+  item: chrome.passwordsPrivate.InsecureCredential|null;
+  private visible: boolean;
+  private inputInvalid_: boolean;
+  private passwordManager_: PasswordManagerProxy =
+      PasswordManagerImpl.getInstance();
 
-    /** @private {!PasswordManagerProxy} */
-    this.passwordManager_ = PasswordManagerImpl.getInstance();
-  }
-
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
@@ -94,77 +91,70 @@ class SettingsPasswordCheckEditDialogElement extends
 
   /**
    * Handler for tapping the 'cancel' button. Should just dismiss the dialog.
-   * @private
    */
-  onCancel_() {
+  private onCancel_() {
     this.close();
   }
 
   /**
    * Handler for tapping the 'save' button. Should just dismiss the dialog.
-   * @private
    */
-  onSave_() {
+  private onSave_() {
     this.passwordManager_.recordPasswordCheckInteraction(
         PasswordCheckInteraction.EDIT_PASSWORD);
     this.passwordManager_
-        .changeInsecureCredential(assert(this.item), this.$.passwordInput.value)
+        .changeInsecureCredential(
+            assert(this.item!), this.$.passwordInput.value)
         .finally(() => {
           this.close();
         });
   }
 
   /**
-   * @private
-   * @return {string} The title text for the show/hide icon.
+   * @return The title text for the show/hide icon.
    */
-  showPasswordTitle_() {
+  private showPasswordTitle_(): string {
     return this.i18n(this.visible ? 'hidePassword' : 'showPassword');
   }
 
   /**
-   * @private
-   * @return {string} The visibility icon class, depending on whether the
-   *     password is already visible.
+   * @return The visibility icon class, depending on whether the password is
+   *     already visible.
    */
-  showPasswordIcon_() {
+  private showPasswordIcon_(): string {
     return this.visible ? 'icon-visibility-off' : 'icon-visibility';
   }
 
   /**
-   * @private
-   * @return {string} The type of the password input field (text or password),
+   * @return The type of the password input field (text or password),
    *     depending on whether the password should be obfuscated.
    */
-  getPasswordInputType_() {
+  private getPasswordInputType_(): string {
     return this.visible ? 'text' : 'password';
   }
 
   /**
    * Handler for tapping the show/hide button.
-   * @private
    */
-  onShowPasswordButtonClick_() {
+  private onShowPasswordButtonClick_() {
     this.visible = !this.visible;
   }
 
   /**
-   * @private
-   * @return {string} The text to be displayed as the dialog's footnote.
+   * @return The text to be displayed as the dialog's footnote.
    */
-  getFootnote_() {
-    return this.i18n('editPasswordFootnote', this.item.formattedOrigin);
+  private getFootnote_(): string {
+    return this.i18n('editPasswordFootnote', this.item!.formattedOrigin);
   }
 
   /**
-   * @private
-   * @return {string} The label for the origin, depending on the whether it's a
-   *     site or an app.
+   * @return The label for the origin, depending on the whether it's a site or
+   *     an app.
    */
-  getSiteOrApp_() {
+  private getSiteOrApp_(): string {
     return this.i18n(
-        this.item.isAndroidCredential ? 'editCompromisedPasswordApp' :
-                                        'editCompromisedPasswordSite');
+        this.item!.isAndroidCredential ? 'editCompromisedPasswordApp' :
+                                         'editCompromisedPasswordSite');
   }
 }
 

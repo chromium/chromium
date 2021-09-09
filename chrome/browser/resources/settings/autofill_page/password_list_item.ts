@@ -22,20 +22,20 @@ import {loadTimeData} from '../i18n_setup.js';
 
 import {ShowPasswordMixin, ShowPasswordMixinInterface} from './show_password_mixin.js';
 
-/**
- * @typedef {!Event<!{target: !HTMLElement, listItem:
- *     !PasswordListItemElement}>}
- */
-export let PasswordMoreActionsClickedEvent;
+export type PasswordMoreActionsClickedEvent = CustomEvent<{
+  target: HTMLElement,
+  listItem: PasswordListItemElement,
+}>;
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {ShowPasswordMixinInterface}
- */
-const PasswordListItemElementBase = ShowPasswordMixin(PolymerElement);
+export interface PasswordListItemElement {
+  $: {
+    moreActionsButton: HTMLElement,
+  };
+}
 
-/** @polymer */
+const PasswordListItemElementBase = ShowPasswordMixin(PolymerElement) as
+    {new (): PolymerElement & ShowPasswordMixinInterface};
+
 export class PasswordListItemElement extends PasswordListItemElementBase {
   static get is() {
     return 'password-list-item';
@@ -59,16 +59,15 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
 
   /**
    * Selects the password on tap if revealed.
-   * @private
    */
-  onReadonlyInputTap_() {
+  private onReadonlyInputTap_() {
     if (this.entry.password) {
-      this.shadowRoot.querySelector('#password').select();
+      (this.shadowRoot!.querySelector('#password') as HTMLInputElement)
+          .select();
     }
   }
 
-  /** @private */
-  onPasswordMoreActionsButtonTap_() {
+  private onPasswordMoreActionsButtonTap_() {
     this.dispatchEvent(new CustomEvent('password-more-actions-clicked', {
       bubbles: true,
       composed: true,
@@ -81,9 +80,8 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
 
   /**
    * Get the aria label for the More Actions button on this row.
-   * @private
    */
-  getMoreActionsLabel_() {
+  private getMoreActionsLabel_(): string {
     // Avoid using I18nBehavior.i18n, because it will filter sequences, which
     // are otherwise not illegal for usernames. Polymer still protects against
     // XSS injection.

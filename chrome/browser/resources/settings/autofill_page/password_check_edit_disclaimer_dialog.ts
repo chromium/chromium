@@ -5,19 +5,20 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+interface SettingsPasswordEditDisclaimerDialogElement {
+  $: {
+    dialog: CrDialogElement,
+  };
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
 const SettingsPasswordEditDisclaimerDialogElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+    mixinBehaviors([I18nBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior};
 
-/** @polymer */
 class SettingsPasswordEditDisclaimerDialogElement extends
     SettingsPasswordEditDisclaimerDialogElementBase {
   static get is() {
@@ -37,30 +38,25 @@ class SettingsPasswordEditDisclaimerDialogElement extends
     };
   }
 
-  /** @override */
+  origin: string;
+
   connectedCallback() {
     super.connectedCallback();
 
     this.$.dialog.showModal();
   }
 
-  /** @private */
-  onEditClick_() {
+  private onEditClick_() {
     this.dispatchEvent(new CustomEvent(
         'edit-password-click', {bubbles: true, composed: true}));
     this.$.dialog.close();
   }
 
-  /** @private */
-  onCancel_() {
+  private onCancel_() {
     this.$.dialog.close();
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getDisclaimerTitle_() {
+  private getDisclaimerTitle_(): string {
     return this.i18n('editDisclaimerTitle', this.origin);
   }
 }

@@ -5,8 +5,6 @@
 /** @fileoverview Test implementation of PasswordManagerProxy. */
 
 // clang-format off
-import {PasswordManagerProxy} from 'chrome://settings/settings.js';
-
 import {assertEquals} from '../chai_assert.js';
 import {TestBrowserProxy} from '../test_browser_proxy.js';
 

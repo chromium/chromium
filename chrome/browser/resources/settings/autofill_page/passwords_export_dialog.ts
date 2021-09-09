@@ -14,50 +14,42 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 import '../settings_shared_css.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 // <if expr="chromeos">
 import {BlockingRequestManager} from './blocking_request_manager.js';
 // </if>
-import {PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
+import {PasswordManagerImpl, PasswordManagerProxy, PasswordsFileExportProgressListener} from './password_manager_proxy.js';
 
 
 /**
  * The states of the export passwords dialog.
- * @enum {string}
  */
-const States = {
-  START: 'START',
-  IN_PROGRESS: 'IN_PROGRESS',
-  ERROR: 'ERROR',
-};
+enum States {
+  START = 'START',
+  IN_PROGRESS = 'IN_PROGRESS',
+  ERROR = 'ERROR',
+}
 
 const ProgressStatus = chrome.passwordsPrivate.ExportProgressStatus;
 
 /**
  * The amount of time (ms) between the start of the export and the moment we
  * start showing the progress bar.
- * @type {number}
  */
-const progressBarDelayMs = 100;
+const progressBarDelayMs: number = 100;
 
 /**
  * The minimum amount of time (ms) that the progress bar will be visible.
- * @type {number}
  */
-const progressBarBlockMs = 1000;
+const progressBarBlockMs: number = 1000;
 
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
 const PasswordsExportDialogElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+    mixinBehaviors([I18nBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior};
 
-/** @polymer */
 class PasswordsExportDialogElement extends PasswordsExportDialogElementBase {
   static get is() {
     return 'passwords-export-dialog';
@@ -72,42 +64,38 @@ class PasswordsExportDialogElement extends PasswordsExportDialogElementBase {
       /** The error that occurred while exporting. */
       exportErrorMessage: String,
 
-      /** @private */
       showStartDialog_: Boolean,
-
-      /** @private */
       showProgressDialog_: Boolean,
-
-      /** @private */
       showErrorDialog_: Boolean,
 
       // <if expr="chromeos">
-      /** @type BlockingRequestManager */
       tokenRequestManager: Object
       // </if>
-
     };
   }
+
+  exportErrorMessage: string;
+  private showStartDialog_: boolean;
+  private showProgressDialog_: boolean;
+  private showErrorDialog_: boolean;
+  private passwordManager_: PasswordManagerProxy =
+      PasswordManagerImpl.getInstance();
+  private onPasswordsFileExportProgressListener_:
+      PasswordsFileExportProgressListener|null = null;
+  private progressTaskToken_: number|null;
+  private delayedCompletionToken_: number|null;
+  private delayedProgress_: chrome.passwordsPrivate.PasswordExportProgress|null;
+
+  // <if expr="chromeos">
+  tokenRequestManager: BlockingRequestManager;
+  // </if>
 
   constructor() {
     super();
 
     /**
-     * The interface for callbacks to the browser.
-     * Defined in passwords_section.js
-     * @private {PasswordManagerProxy}
-     */
-    this.passwordManager_ = null;
-
-    /**
-     * @private {?function(!chrome.passwordsPrivate.PasswordExportProgress):void}
-     */
-    this.onPasswordsFileExportProgressListener_ = null;
-
-    /**
      * The task that will display the progress bar; if the export doesn't finish
      * quickly. This is null; unless the task is currently scheduled.
-     * @private {?number}
      */
     this.progressTaskToken_ = null;
 
@@ -117,7 +105,6 @@ class PasswordsExportDialogElement extends PasswordsExportDialogElementBase {
      * export finishes earlier; we cache the result in |delayedProgress_| and
      * this task will consume it. This is null; unless the task is currently
      * scheduled.
-     * @private {?number}
      */
     this.delayedCompletionToken_ = null;
 
@@ -125,27 +112,23 @@ class PasswordsExportDialogElement extends PasswordsExportDialogElementBase {
      * We display the progress bar for at least |progressBarBlockMs|. If
      * progress is achieved earlier; we store the update here and consume it
      * later.
-     * @private {?chrome.passwordsPrivate.PasswordExportProgress}
      */
     this.delayedProgress_ = null;
   }
 
-  /** @override */
   ready() {
     super.ready();
     this.addEventListener('cancel', this.close);
   }
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
-
-    this.passwordManager_ = PasswordManagerImpl.getInstance();
 
     this.switchToDialog_(States.START);
 
     this.onPasswordsFileExportProgressListener_ =
-        this.onPasswordsFileExportProgress_.bind(this);
+        (progress: chrome.passwordsPrivate.PasswordExportProgress) =>
+            this.onPasswordsFileExportProgress_(progress);
 
     // If export started on a different tab and is still in progress, display a
     // busy UI.
@@ -162,10 +145,9 @@ class PasswordsExportDialogElement extends PasswordsExportDialogElementBase {
   /**
    * Handles an export progress event by changing the visible dialog or caching
    * the event for later consumption.
-   * @param {!chrome.passwordsPrivate.PasswordExportProgress} progress
-   * @private
    */
-  onPasswordsFileExportProgress_(progress) {
+  private onPasswordsFileExportProgress_(
+      progress: chrome.passwordsPrivate.PasswordExportProgress) {
     // If Chrome has already started displaying the progress bar
     // (|progressTaskToken_ is null) and hasn't completed its minimum display
     // time (|delayedCompletionToken_| is not null) progress should be cached
@@ -173,7 +155,7 @@ class PasswordsExportDialogElement extends PasswordsExportDialogElementBase {
     const progressBlocked =
         !this.progressTaskToken_ && this.delayedCompletionToken_;
     if (!progressBlocked) {
-      clearTimeout(this.progressTaskToken_);
+      clearTimeout(this.progressTaskToken_!);
       this.progressTaskToken_ = null;
       this.processProgress_(progress);
     } else {
@@ -184,20 +166,18 @@ class PasswordsExportDialogElement extends PasswordsExportDialogElementBase {
   /**
    * Displays the progress bar and suspends further UI updates for
    * |progressBarBlockMs|.
-   * @private
    */
   progressTask_() {
     this.progressTaskToken_ = null;
     this.switchToDialog_(States.IN_PROGRESS);
 
     this.delayedCompletionToken_ =
-        setTimeout(this.delayedCompletionTask_.bind(this), progressBarBlockMs);
+        setTimeout(() => this.delayedCompletionTask_(), progressBarBlockMs);
   }
 
   /**
    * Unblocks progress after showing the progress bar for |progressBarBlock|ms
    * and processes any progress that was delayed.
-   * @private
    */
   delayedCompletionTask_() {
     this.delayedCompletionToken_ = null;
@@ -209,16 +189,12 @@ class PasswordsExportDialogElement extends PasswordsExportDialogElementBase {
 
   /** Closes the dialog. */
   close() {
-    clearTimeout(this.progressTaskToken_);
-    clearTimeout(this.delayedCompletionToken_);
+    clearTimeout(this.progressTaskToken_!);
+    clearTimeout(this.delayedCompletionToken_!);
     this.progressTaskToken_ = null;
     this.delayedCompletionToken_ = null;
     this.passwordManager_.removePasswordsFileExportProgressListener(
-        /**
-         * @type {function(!chrome.passwordsPrivate.PasswordExportProgress):
-         *             void}
-         */
-        (this.onPasswordsFileExportProgressListener_));
+        this.onPasswordsFileExportProgressListener_!);
     this.showStartDialog_ = false;
     this.showProgressDialog_ = false;
     this.showErrorDialog_ = false;
@@ -229,10 +205,9 @@ class PasswordsExportDialogElement extends PasswordsExportDialogElementBase {
             'passwords-export-dialog-close', {bubbles: true, composed: true})));
   }
 
-  /** @private */
   onExportTap_() {
     // <if expr="chromeos">
-    this.tokenRequestManager.request(this.exportPasswords_.bind(this));
+    this.tokenRequestManager.request(() => this.exportPasswords_());
     // </if>
     // <if expr="not chromeos">
     this.exportPasswords_();
@@ -242,9 +217,8 @@ class PasswordsExportDialogElement extends PasswordsExportDialogElementBase {
   /**
    * Tells the PasswordsPrivate API to export saved passwords in a .csv pending
    * security checks.
-   * @private
    */
-  exportPasswords_() {
+  private exportPasswords_() {
     this.passwordManager_.exportPasswords(() => {
       if (chrome.runtime.lastError &&
           chrome.runtime.lastError.message === 'in-progress') {
@@ -258,13 +232,12 @@ class PasswordsExportDialogElement extends PasswordsExportDialogElementBase {
 
   /**
    * Prepares and displays the appropriate view (with delay, if necessary).
-   * @param {!chrome.passwordsPrivate.PasswordExportProgress} progress
-   * @private
    */
-  processProgress_(progress) {
+  private processProgress_(progress:
+                               chrome.passwordsPrivate.PasswordExportProgress) {
     if (progress.status === ProgressStatus.IN_PROGRESS) {
       this.progressTaskToken_ =
-          setTimeout(this.progressTask_.bind(this), progressBarDelayMs);
+          setTimeout(() => this.progressTask_(), progressBarDelayMs);
       return;
     }
     if (progress.status === ProgressStatus.SUCCEEDED) {
@@ -272,9 +245,8 @@ class PasswordsExportDialogElement extends PasswordsExportDialogElementBase {
       return;
     }
     if (progress.status === ProgressStatus.FAILED_WRITE_FAILED) {
-      this.exportErrorMessage = this.i18n(
-          'exportPasswordsFailTitle',
-          /** @type {string} */ (progress.folderName));
+      this.exportErrorMessage =
+          this.i18n('exportPasswordsFailTitle', progress.folderName!);
       this.switchToDialog_(States.ERROR);
       return;
     }
@@ -282,10 +254,9 @@ class PasswordsExportDialogElement extends PasswordsExportDialogElementBase {
 
   /**
    * Opens the specified dialog and hides the others.
-   * @param {!States} state the dialog to open.
-   * @private
+   * @param state the dialog to open.
    */
-  switchToDialog_(state) {
+  private switchToDialog_(state: States) {
     this.showStartDialog_ = state === States.START;
     this.showProgressDialog_ = state === States.IN_PROGRESS;
     this.showErrorDialog_ = state === States.ERROR;
@@ -293,18 +264,16 @@ class PasswordsExportDialogElement extends PasswordsExportDialogElementBase {
 
   /**
    * Handler for tapping the 'cancel' button. Should just dismiss the dialog.
-   * @private
    */
-  onCancelButtonTap_() {
+  private onCancelButtonTap_() {
     this.close();
   }
 
   /**
    * Handler for tapping the 'cancel' button on the progress dialog. It should
    * cancel the export and dismiss the dialog.
-   * @private
    */
-  onCancelProgressButtonTap_() {
+  private onCancelProgressButtonTap_() {
     this.passwordManager_.cancelExportPasswords();
     this.close();
   }

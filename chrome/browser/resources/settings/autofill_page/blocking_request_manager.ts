@@ -7,32 +7,34 @@
  * elsewhere in the DOM.
  */
 export class BlockingRequestManager {
+  private makeRequest_: () => void;
+  private callback_: (() => void)|null;
+
   /**
-   * @param {Function=} makeRequest Function to initiate flow for request. If
+   * @param makeRequest Function to initiate flow for request. If
    *     no function is provided, it defaults to this.resolve, i.e. it
    *     immediately resolves all requests.
    */
-  constructor(makeRequest) {
+  constructor(makeRequest?: () => void) {
     this.makeRequest_ = makeRequest || this.resolve;
     /**
-     * @private {Function} callback Provided in requests and called when the
-     *     request is resolved.
+     * Callback Provided in requests and called when the request is resolved.
      */
     this.callback_ = null;
   }
 
   /**
    * Make a blocking request.
-   * @param {Function} callback Function to be called if/when the request is
-   *     successfully resolved.
+   * @param callback Function to be called if/when the request issuccessfully
+   *     resolved.
    */
-  request(callback) {
+  request(callback: () => void) {
     this.callback_ = callback;
     this.makeRequest_();
   }
 
   /** Called if/when request is resolved successfully. */
   resolve() {
-    this.callback_();
+    this.callback_!();
   }
 }

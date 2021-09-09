@@ -18,25 +18,29 @@ import '../settings_shared_css.js';
 import '../settings_vars_css.js';
 import './passwords_shared_css.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 
+import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {ShowPasswordMixin, ShowPasswordMixinInterface} from './show_password_mixin.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {ShowPasswordMixinInterface}
- * @implements {I18nBehaviorInterface}
- */
-const PasswordEditDialogElementBase =
-    mixinBehaviors([I18nBehavior], ShowPasswordMixin(PolymerElement));
+interface PasswordEditDialogElement {
+  $: {
+    dialog: CrDialogElement,
+    usernameInput: CrInputElement,
+    passwordInput: CrInputElement,
+  };
+}
 
-/** @polymer */
+const PasswordEditDialogElementBase =
+    mixinBehaviors([I18nBehavior], ShowPasswordMixin(PolymerElement)) as
+    {new (): PolymerElement & I18nBehavior & ShowPasswordMixinInterface};
+
 class PasswordEditDialogElement extends PasswordEditDialogElementBase {
   static get is() {
     return 'password-edit-dialog';
@@ -53,7 +57,6 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
       /**
        * Saved passwords after deduplicating versions that are repeated in the
        * account and on the device.
-       * @type {!Array<!MultiStorePasswordUiEntry>}
        */
       savedPasswords: {
         type: Array,
@@ -63,7 +66,6 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
       /**
        * Usernames for the same website. Used for the fast check whether edited
        * username is already used.
-       * @private {?Set<string>}
        */
       usernamesForSameOrigin: {
         type: Object,
@@ -72,7 +74,6 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
 
       /**
        * Check if entry isn't federation credential.
-       * @private
        */
       isEditDialog_: {
         type: Boolean,
@@ -81,7 +82,6 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
 
       /**
        * Whether the password is visible or obfuscated.
-       * @private
        */
       isPasswordVisible_: {
         type: Boolean,
@@ -90,20 +90,17 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
 
       /**
        * Whether the username input is invalid.
-       * @private
        */
       usernameInputInvalid_: Boolean,
 
       /**
        * Whether the password input is invalid.
-       * @private
        */
       passwordInputInvalid_: Boolean,
 
       /**
        * If either username or password entered incorrectly the save button will
        * be disabled.
-       * @private
        * */
       isSaveButtonDisabled_: {
         type: Boolean,
@@ -114,9 +111,15 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
     };
   }
 
+  shouldShowStorageDetails: boolean;
+  savedPasswords: Array<MultiStorePasswordUiEntry>;
+  private usernamesForSameOrigin: Set<string>|null;
+  private isEditDialog_: boolean;
+  private isPasswordVisible_: boolean;
+  private usernameInputInvalid_: boolean;
+  private passwordInputInvalid_: boolean;
+  private isSaveButtonDisabled_: boolean;
 
-
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
@@ -139,28 +142,23 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
 
   /**
    * Helper function that checks entry isn't federation credential.
-   * @return {boolean}
-   * @private
    */
-  computeIsEditDialog_() {
+  private computeIsEditDialog_(): boolean {
     return !this.entry.federationText;
   }
 
   /**
    * Handler for tapping the 'cancel' button. Should just dismiss the dialog.
-   * @private
    */
-  onCancel_() {
+  private onCancel_() {
     this.close();
   }
 
   /**
    * Gets the password input's type. Should be 'text' when password is visible
    * or when there's federated text otherwise 'password'.
-   * @return {string}
-   * @private
    */
-  getPasswordInputType_() {
+  private getPasswordInputType_(): string {
     if (this.isEditDialog_) {
       return this.isPasswordVisible_ || this.entry.federationText ? 'text' :
                                                                     'password';
@@ -171,13 +169,12 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
 
   /**
    * Gets the title text for the show/hide icon.
-   * @param {string} password
-   * @param {boolean} isPasswordVisible
-   * @param {string} hide The i18n text to use for 'Hide'
-   * @param {string} show The i18n text to use for 'Show'
-   * @private
+   * @param hide The i18n text to use for 'Hide'
+   * @param show The i18n text to use for 'Show'
    */
-  showPasswordTitle_(password, isPasswordVisible, hide, show) {
+  private showPasswordTitle_(
+      password: string, isPasswordVisible: boolean, hide: string,
+      show: string): string {
     if (this.isEditDialog_) {
       return isPasswordVisible ? hide : show;
     } else {
@@ -187,10 +184,8 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
 
   /**
    * Get the right icon to display when hiding/showing a password.
-   * @return {string}
-   * @private
    */
-  getIconClass_() {
+  private getIconClass_(): string {
     if (this.isEditDialog_) {
       return this.isPasswordVisible_ ? 'icon-visibility-off' :
                                        'icon-visibility';
@@ -203,10 +198,8 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
    * Gets the text of the password. Will use the value of |entry.password|
    * unless it cannot be shown, in which case it will be a fixed number of
    * spaces. It can also be the federated text.
-   * @return {string}
-   * @private
    */
-  getPassword_() {
+  private getPassword_(): string {
     if (this.isEditDialog_) {
       return this.entry.password;
     } else {
@@ -216,9 +209,8 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
 
   /**
    * Handler for tapping the show/hide button.
-   * @private
    */
-  onShowPasswordButtonTap_() {
+  private onShowPasswordButtonTap_() {
     if (this.isEditDialog_) {
       this.isPasswordVisible_ = !this.isPasswordVisible_;
     } else {
@@ -230,9 +222,8 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
    * Handler for tapping the 'done' or 'save' button depending on isEditDialog_.
    * For 'save' button it should save new password. After pressing action button
    * the edit dialog should be closed.
-   * @private
    */
-  onActionButtonTap_() {
+  private onActionButtonTap_() {
     if (this.isEditDialog_) {
       const idsToChange = [];
       const accountId = this.entry.accountId;
@@ -256,28 +247,22 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
     }
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getActionButtonName_() {
+  private getActionButtonName_(): string {
     return this.isEditDialog_ ? this.i18n('save') : this.i18n('done');
   }
 
   /**
    * Manually de-select texts for readonly inputs.
-   * @private
    */
-  onInputBlur_() {
-    this.shadowRoot.getSelection().removeAllRanges();
+  private onInputBlur_() {
+    this.shadowRoot!.getSelection()!.removeAllRanges();
   }
 
   /**
    * Gets the HTML-formatted message to indicate in which locations the password
    * is stored.
-   * @private
    */
-  getStorageDetailsMessage_() {
+  private getStorageDetailsMessage_() {
     if (this.entry.isPresentInAccount() && this.entry.isPresentOnDevice()) {
       return this.i18n('passwordStoredInAccountAndOnDevice');
     }
@@ -286,41 +271,33 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
         this.i18n('passwordStoredOnDevice');
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getTitle_() {
+  private getTitle_(): string {
     return this.isEditDialog_ ? this.i18n('editPasswordTitle') :
                                 this.i18n('passwordDetailsTitle');
   }
 
   /**
-   * @return {string} The text to be displayed as the dialog's footnote.
-   * @private
+   * @return The text to be displayed as the dialog's footnote.
    */
-  getFootnote_() {
+  private getFootnote_(): string {
     return this.i18n('editPasswordFootnote', this.entry.urls.shown);
   }
 
   /**
    * Helper function that checks if save button should be disabled.
-   * @return {boolean}
-   * @private
    */
-  computeIsSaveButtonDisabled_() {
+  private computeIsSaveButtonDisabled_(): boolean {
     return this.usernameInputInvalid_ || this.passwordInputInvalid_;
   }
 
   /**
    * Helper function that checks whether edited username is not used for the
    * same website.
-   * @private
    */
-  validateUsername_() {
+  private validateUsername_() {
     if (this.entry.username !== this.$.usernameInput.value) {
       this.usernameInputInvalid_ =
-          this.usernamesForSameOrigin.has(this.$.usernameInput.value);
+          this.usernamesForSameOrigin!.has(this.$.usernameInput.value);
     } else {
       this.usernameInputInvalid_ = false;
     }

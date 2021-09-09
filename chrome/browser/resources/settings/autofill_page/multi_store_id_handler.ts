@@ -10,19 +10,14 @@
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 
 export class MultiStoreIdHandler {
-  constructor() {
-    /** @type {number?} */
-    this.deviceId_ = null;
-    /** @type {number?} */
-    this.accountId_ = null;
-  }
+  private deviceId_: number|null = null;
+  private accountId_: number|null = null;
 
   /**
    * Get any of the present ids. At least one of the ids must have been set
    * before this method is invoked.
-   * @return {number}
    */
-  getAnyId() {
+  getAnyId(): number {
     if (this.deviceId_ !== null) {
       return this.deviceId_;
     }
@@ -34,18 +29,16 @@ export class MultiStoreIdHandler {
   }
 
   /**
-   * Whether one of the ids is from the account.
-   * @return {boolean}
+   * @return Whether one of the ids is from the account.
    */
-  isPresentInAccount() {
+  isPresentInAccount(): boolean {
     return this.accountId_ !== null;
   }
 
   /**
-   * Whether one of the ids is from the device.
-   * @return {boolean}
+   * @return Whether one of the ids is from the device.
    */
-  isPresentOnDevice() {
+  isPresentOnDevice(): boolean {
     return this.deviceId_ !== null;
   }
 
@@ -56,12 +49,7 @@ export class MultiStoreIdHandler {
     return this.accountId_;
   }
 
-  /**
-   * @protected
-   * @param {number} id
-   * @param {boolean} fromAccountStore
-   */
-  setId(id, fromAccountStore) {
+  protected setId(id: number, fromAccountStore: boolean) {
     if (fromAccountStore) {
       this.accountId_ = id;
     } else {
