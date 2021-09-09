@@ -4218,6 +4218,7 @@ ci.fyi_builder(
     kitchen_emulate_gce = True,
     os = os.LINUX_BIONIC_REMOVE,
     reclient_rewrapper_env = {"RBE_compare": "true"},
+    reclient_ensure_verified = True,
     description_html = "verify artifacts. removed after the migration. crbug.com/1235218",
 )
 

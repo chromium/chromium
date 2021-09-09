@@ -1,5 +1,6 @@
 {
   "$build/reclient": {
+    "ensure_verified": true,
     "instance": "rbe-chromium-trusted",
     "metrics_project": "chromium-reclient-metrics",
     "rewrapper_env": {

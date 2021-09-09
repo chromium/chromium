@@ -289,7 +289,7 @@ def _isolated_property(*, isolated_server):
 
     return isolated or None
 
-def _reclient_property(*, instance, service, jobs, rewrapper_env, profiler_service, publish_trace, cache_silo):
+def _reclient_property(*, instance, service, jobs, rewrapper_env, profiler_service, publish_trace, cache_silo, ensure_verified):
     reclient = {}
     instance = defaults.get_value("reclient_instance", instance)
     if instance:
@@ -316,6 +316,9 @@ def _reclient_property(*, instance, service, jobs, rewrapper_env, profiler_servi
         reclient["publish_trace"] = True
     if cache_silo:
         reclient["cache_silo"] = cache_silo
+    ensure_verified = defaults.get_value("reclient_ensure_verified", ensure_verified)
+    if ensure_verified:
+        reclient["ensure_verified"] = True
     return reclient or None
 
 ################################################################################
@@ -362,6 +365,7 @@ defaults = args.defaults(
     reclient_profiler_service = None,
     reclient_publish_trace = None,
     reclient_cache_silo = None,
+    reclient_ensure_verified = None,
 
     # Provide vars for bucket and executable so users don't have to
     # unnecessarily make wrapper functions
@@ -414,6 +418,7 @@ def builder(
         reclient_profiler_service = args.DEFAULT,
         reclient_publish_trace = args.DEFAULT,
         reclient_cache_silo = None,
+        reclient_ensure_verified = None,
         **kwargs):
     """Define a builder.
 
@@ -564,6 +569,7 @@ def builder(
       * reclient_publish_trace - If True, it publish trace by rpl2cloudtrace.
       * reclient_cache_silo - A string indicating a cache siling key to use for
         remote caching.
+      * reclient_ensure_verified - If True, it verifies build artifacts.
       * kwargs - Additional keyword arguments to forward on to `luci.builder`.
     """
 
@@ -713,6 +719,7 @@ def builder(
         profiler_service = reclient_profiler_service,
         publish_trace = reclient_publish_trace,
         cache_silo = reclient_cache_silo,
+        ensure_verified = reclient_ensure_verified,
     )
     if reclient != None:
         properties["$build/reclient"] = reclient
