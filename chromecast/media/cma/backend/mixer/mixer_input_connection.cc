@@ -1133,6 +1133,12 @@ int MixerInputConnection::FillAudio(int num_frames,
     return 0;
   }
 
+  if (in_underrun_ &&
+      (queued_frames_ < num_frames + mixer_read_size_ + fill_size_)) {
+    // Allow buffer to refill a bit to prevent continuous underrun.
+    return 0;
+  }
+
   int num_filled = 0;
   int frames_left = num_frames;
   while (frames_left && !queue_.empty()) {
