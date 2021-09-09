@@ -160,16 +160,6 @@ class CORE_EXPORT ScriptValue final {
   WorldSafeV8Reference<v8::Value> value_;
 };
 
-template <>
-struct NativeValueTraits<ScriptValue>
-    : public NativeValueTraitsBase<ScriptValue> {
-  static inline ScriptValue NativeValue(v8::Isolate* isolate,
-                                        v8::Local<v8::Value> value,
-                                        ExceptionState& exception_state) {
-    return ScriptValue(isolate, value);
-  }
-};
-
 }  // namespace blink
 
 namespace WTF {

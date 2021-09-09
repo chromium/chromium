@@ -249,7 +249,7 @@ TEST(NativeValueTraitsImplTest, IDLSequence) {
 
     NonThrowableExceptionState exception_state;
     HeapVector<ScriptValue> script_value_vector =
-        NativeValueTraits<IDLSequence<ScriptValue>>::NativeValue(
+        NativeValueTraits<IDLSequence<IDLAny>>::NativeValue(
             scope.GetIsolate(), v8_array, exception_state);
     EXPECT_EQ(3U, script_value_vector.size());
     String report_on_zela;
