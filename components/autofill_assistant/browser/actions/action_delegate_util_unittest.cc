@@ -240,19 +240,22 @@ TEST_F(ActionDelegateUtilTest, PerformWithPasswordManagerValue) {
 
 TEST_F(ActionDelegateUtilTest, PerformWithFailingPasswordManagerValue) {
   auto element = std::make_unique<ElementFinder::Result>();
-  content::WebContentsTester::For(web_contents_.get())
-      ->NavigateAndCommit(GURL("https://www.other.com"));
+
   element->container_frame_host = web_contents_->GetMainFrame();
 
   user_data_.selected_login_ = absl::make_optional<WebsiteLoginManager::Login>(
       GURL("https://www.example.com"), "username");
 
-  EXPECT_CALL(*this, MockValueAction("username", _, _)).Times(0);
-  EXPECT_CALL(*this, MockDone(_));
+  EXPECT_CALL(mock_website_login_manager_, GetPasswordForLogin(_, _))
+      .WillOnce(RunOnceCallback<1>(false, std::string()));
+
+  EXPECT_CALL(*this, MockValueAction(_, _, _)).Times(0);
+  EXPECT_CALL(
+      *this, MockDone(EqualsStatus(ClientStatus(AUTOFILL_INFO_NOT_AVAILABLE))));
 
   TextValue text_value;
   auto* password_manager_value = text_value.mutable_password_manager_value();
-  password_manager_value->set_credential_type(PasswordManagerValue::USERNAME);
+  password_manager_value->set_credential_type(PasswordManagerValue::PASSWORD);
 
   PerformWithTextValue(&mock_action_delegate_, text_value,
                        base::BindOnce(&ActionDelegateUtilTest::MockValueAction,

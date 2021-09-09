@@ -533,21 +533,23 @@ void GetPasswordManagerValue(
     std::move(callback).Run(ClientStatus(PRECONDITION_FAILED), std::string());
     return;
   }
-  if (!target_element.container_frame_host ||
-      !url_utils::IsSamePublicSuffixDomain(
-          target_element.container_frame_host->GetLastCommittedURL(),
-          user_data->selected_login_->origin)) {
+  if (!target_element.container_frame_host) {
     std::move(callback).Run(ClientStatus(PASSWORD_ORIGIN_MISMATCH),
                             std::string());
     return;
   }
 
   switch (password_manager_value.credential_type()) {
-    case PasswordManagerValue::PASSWORD:
+    case PasswordManagerValue::PASSWORD: {
+      auto login = *user_data->selected_login_;
+      // Origin check is done in PWM based on the
+      // |target_element.container_frame_host->GetLastCommittedURL()|
+      login.origin = target_element.container_frame_host->GetLastCommittedURL()
+                         .GetOrigin();
       website_login_manager->GetPasswordForLogin(
-          *user_data->selected_login_,
-          base::BindOnce(&OnGetStoredPassword, std::move(callback)));
+          login, base::BindOnce(&OnGetStoredPassword, std::move(callback)));
       return;
+    }
     case PasswordManagerValue::USERNAME:
       std::move(callback).Run(OkClientStatus(),
                               user_data->selected_login_->username);

@@ -1226,44 +1226,11 @@ TEST_F(UserDataUtilTextValueTest,
   EXPECT_EQ(result, "01 January");
 }
 
-TEST_F(UserDataUtilTextValueTest, GetCredentialsFromDifferentDomainFails) {
+TEST_F(UserDataUtilTextValueTest, GetUsername) {
   user_data_.selected_login_ = absl::make_optional<WebsiteLoginManager::Login>(
       GURL("https://www.example.com"), "username");
 
   ElementFinder::Result element;
-  content::WebContentsTester::For(web_contents_.get())
-      ->NavigateAndCommit(GURL("https://www.other.com"));
-  element.container_frame_host = web_contents_->GetMainFrame();
-
-  EXPECT_CALL(*this,
-              OnResult(EqualsStatus(ClientStatus(PASSWORD_ORIGIN_MISMATCH)),
-                       std::string()))
-      .Times(2);
-
-  PasswordManagerValue password_value;
-  password_value.set_credential_type(PasswordManagerValue::PASSWORD);
-
-  GetPasswordManagerValue(password_value, element, &user_data_,
-                          &mock_website_login_manager_,
-                          base::BindOnce(&UserDataUtilTextValueTest::OnResult,
-                                         base::Unretained(this)));
-
-  PasswordManagerValue username_value;
-  username_value.set_credential_type(PasswordManagerValue::USERNAME);
-
-  GetPasswordManagerValue(username_value, element, &user_data_,
-                          &mock_website_login_manager_,
-                          base::BindOnce(&UserDataUtilTextValueTest::OnResult,
-                                         base::Unretained(this)));
-}
-
-TEST_F(UserDataUtilTextValueTest, GetUsernameFromSameDomain) {
-  user_data_.selected_login_ = absl::make_optional<WebsiteLoginManager::Login>(
-      GURL("https://www.example.com"), "username");
-
-  ElementFinder::Result element;
-  content::WebContentsTester::For(web_contents_.get())
-      ->NavigateAndCommit(GURL("https://www.example.com"));
   element.container_frame_host = web_contents_->GetMainFrame();
 
   PasswordManagerValue password_manager_value;
@@ -1277,13 +1244,11 @@ TEST_F(UserDataUtilTextValueTest, GetUsernameFromSameDomain) {
                                          base::Unretained(this)));
 }
 
-TEST_F(UserDataUtilTextValueTest, GetStoredPasswordFromSameDomain) {
+TEST_F(UserDataUtilTextValueTest, GetStoredPassword) {
   user_data_.selected_login_ = absl::make_optional<WebsiteLoginManager::Login>(
       GURL("https://www.example.com"), "username");
 
   ElementFinder::Result element;
-  content::WebContentsTester::For(web_contents_.get())
-      ->NavigateAndCommit(GURL("https://www.example.com"));
   element.container_frame_host = web_contents_->GetMainFrame();
 
   PasswordManagerValue password_manager_value;
