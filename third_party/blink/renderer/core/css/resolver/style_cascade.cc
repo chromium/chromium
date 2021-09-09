@@ -215,6 +215,9 @@ void StyleCascade::Apply(CascadeFilter filter) {
     if (resolver.AuthorFlags() & CSSProperty::kBorderRadius)
       state_.Style()->SetHasAuthorBorderRadius();
   }
+
+  if (resolver.Flags() & CSSProperty::kAnimation)
+    state_.SetCanAffectAnimations();
 }
 
 std::unique_ptr<CSSBitset> StyleCascade::GetImportantSet() {
@@ -634,7 +637,7 @@ const CSSValue* StyleCascade::Resolve(const CSSProperty& property,
   DCHECK(!property.IsSurrogate());
   if (IsRevert(value))
     return ResolveRevert(property, value, origin, resolver);
-  resolver.CollectAuthorFlags(property, origin);
+  resolver.CollectFlags(property, origin);
   if (const auto* v = DynamicTo<CSSCustomPropertyDeclaration>(value))
     return ResolveCustomProperty(property, *v, resolver);
   if (const auto* v = DynamicTo<CSSVariableReferenceValue>(value))

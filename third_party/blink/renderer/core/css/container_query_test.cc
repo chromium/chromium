@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/container_query.h"
 
 #include "third_party/blink/renderer/core/animation/css/css_animation_update_scope.h"
+#include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
@@ -78,6 +79,17 @@ class ContainerQueryTest : public PageTestBase,
     if (auto* element_animations = element->GetElementAnimations())
       return element_animations->Animations().size();
     return 0;
+  }
+
+  size_t GetOldStylesCount(String html) {
+    // Creating a CSSAnimationUpdateScope prevents old styles from being
+    // cleared until this function completes.
+    CSSAnimationUpdateScope animation_update_scope(GetDocument());
+    SetBodyInnerHTML(html);
+    return GetDocument()
+        .GetDocumentAnimations()
+        .GetPendingOldStylesForTest()
+        .size();
   }
 };
 
@@ -729,6 +741,192 @@ TEST_F(ContainerQueryTest, UnsetAnimation) {
 
   // *Now* animation should be canceled.
   EXPECT_FALSE(animation_before->CurrentTimeInternal());
+}
+
+TEST_F(ContainerQueryTest, OldStylesCount) {
+  ScopedCSSDelayedAnimationUpdatesForTest scoped(true);
+
+  // No container, no animation properties.
+  EXPECT_EQ(0u, GetOldStylesCount(R"HTML(
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+  )HTML"));
+
+  // Animation properties, but no container.
+  EXPECT_EQ(0u, GetOldStylesCount(R"HTML(
+    <div style="animation: anim 1s linear"></div>
+  )HTML"));
+
+  // A container, but no animation properties.
+  EXPECT_EQ(0u, GetOldStylesCount(R"HTML(
+    <style>
+      #container {
+        container-type: inline-size;
+      }
+    </style>
+    <div id=container>
+      <div></div>
+      <div></div>
+    </div>
+  )HTML"));
+
+  // A container and a matching container query with no animations.
+  EXPECT_EQ(0u, GetOldStylesCount(R"HTML(
+    <style>
+      #container {
+        container-type: inline-size;
+        width: 100px;
+      }
+      @container (width: 100px) {
+        #target {
+          color: green;
+        }
+      }
+    </style>
+    <div id=container>
+      <div id=target></div>
+      <div></div>
+    </div>
+  )HTML"));
+
+  // A container and a non-matching container query with no animations.
+  EXPECT_EQ(0u, GetOldStylesCount(R"HTML(
+    <style>
+      #container {
+        container-type: inline-size;
+        width: 100px;
+      }
+      @container (width: 200px) {
+        #target {
+          color: green;
+        }
+      }
+    </style>
+    <div id=container>
+      <div id=target></div>
+      <div></div>
+    </div>
+  )HTML"));
+
+  // #target uses animations, and depends on container query.
+  //
+  // In theory we could understand that the animation is not inside an
+  // @container rule, but we don't do this currently.
+  EXPECT_EQ(1u, GetOldStylesCount(R"HTML(
+    <style>
+      #container {
+        container-type: inline-size;
+      }
+      #target {
+        animation: anim 1s linear;
+      }
+    </style>
+    <div id=container>
+      <div id=target></div>
+      <div></div>
+    </div>
+  )HTML"));
+
+  // #target uses animations in a matching container query.
+  EXPECT_EQ(1u, GetOldStylesCount(R"HTML(
+    <style>
+      #container {
+        width: 100px;
+        container-type: inline-size;
+      }
+      @container (width: 100px) {
+        #target {
+          animation: anim 1s linear;
+        }
+      }
+    </style>
+    <div id=container>
+      <div id=target></div>
+      <div></div>
+    </div>
+  )HTML"));
+
+  // #target uses animations in a non-matching container query.
+  EXPECT_EQ(1u, GetOldStylesCount(R"HTML(
+    <style>
+      #container {
+        width: 100px;
+        container-type: inline-size;
+      }
+      @container (width: 200px) {
+        #target {
+          animation: anim 1s linear;
+        }
+      }
+    </style>
+    <div id=container>
+      <div id=target></div>
+      <div></div>
+    </div>
+  )HTML"));
+}
+
+TEST_F(ContainerQueryTest, AllAnimationAffectingPropertiesInConditional) {
+  ScopedCSSDelayedAnimationUpdatesForTest scoped(true);
+
+  CSSPropertyID animation_affecting[] = {
+      CSSPropertyID::kAll,
+      CSSPropertyID::kAnimation,
+      CSSPropertyID::kAnimationDelay,
+      CSSPropertyID::kAnimationDirection,
+      CSSPropertyID::kAnimationDuration,
+      CSSPropertyID::kAnimationFillMode,
+      CSSPropertyID::kAnimationIterationCount,
+      CSSPropertyID::kAnimationName,
+      CSSPropertyID::kAnimationPlayState,
+      CSSPropertyID::kAnimationTimeline,
+      CSSPropertyID::kAnimationTimingFunction,
+      CSSPropertyID::kTransition,
+      CSSPropertyID::kTransitionDelay,
+      CSSPropertyID::kTransitionDuration,
+      CSSPropertyID::kTransitionProperty,
+      CSSPropertyID::kTransitionTimingFunction,
+  };
+
+  CSSPropertyID non_animation_affecting_examples[] = {
+      CSSPropertyID::kColor,
+      CSSPropertyID::kTop,
+      CSSPropertyID::kWidth,
+  };
+
+  // Generate a snippet which which specifies property:initial in a non-
+  // matching media query.
+  auto generate_html = [](const CSSProperty& property) -> String {
+    StringBuilder builder;
+    builder.Append("<style>");
+    builder.Append("#container { container-type: inline-size; }");
+    builder.Append("@container (width: 100px) {");
+    builder.Append("  #target {");
+    builder.Append(String::Format(
+        "%s:unset;", property.GetPropertyNameString().Utf8().c_str()));
+    builder.Append("  }");
+    builder.Append("}");
+    builder.Append("</style>");
+    builder.Append("<div id=container>");
+    builder.Append("  <div id=target></div>");
+    builder.Append("  <div></div>");
+    builder.Append("</div>");
+    return builder.ToString();
+  };
+
+  for (CSSPropertyID id : animation_affecting) {
+    String html = generate_html(CSSProperty::Get(id));
+    SCOPED_TRACE(testing::Message() << html);
+    EXPECT_EQ(1u, GetOldStylesCount(html));
+  }
+
+  for (CSSPropertyID id : non_animation_affecting_examples) {
+    String html = generate_html(CSSProperty::Get(id));
+    SCOPED_TRACE(testing::Message() << html);
+    EXPECT_EQ(0u, GetOldStylesCount(html));
+  }
 }
 
 }  // namespace blink

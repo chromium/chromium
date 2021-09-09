@@ -164,6 +164,15 @@ class CORE_EXPORT StyleResolverState {
   bool HadNoMatchedProperties() const { return had_no_matched_properties_; }
   void SetHadNoMatchedProperties() { had_no_matched_properties_ = true; }
 
+  // True if the cascade observed any  "animation" or "transition" properties,
+  // or when such properties were found within non-matching container queries.
+  //
+  // The flag is supposed to represent whether or not animations can be
+  // affected by at least one of the style variations produced by evaluating
+  // @container rules differently.
+  bool CanAffectAnimations() const { return can_affect_animations_; }
+  void SetCanAffectAnimations() { can_affect_animations_ = true; }
+
  private:
   CSSToLengthConversionData UnzoomedLengthConversionData(
       const ComputedStyle* font_style) const;
@@ -201,6 +210,10 @@ class CORE_EXPORT StyleResolverState {
   // Set to true if a given style resolve produced an empty MatchResult.
   // This is used to return a nullptr style for pseudo-element style resolves.
   bool had_no_matched_properties_ = false;
+
+  // True whenever a matching rule in a non-matching container query contains
+  // any properties that can affect animations or transitions.
+  bool can_affect_animations_ = false;
 };
 
 }  // namespace blink

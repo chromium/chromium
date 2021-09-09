@@ -126,6 +126,10 @@ class CORE_EXPORT DocumentAnimations final
   GetUnvalidatedTimelinesForTesting() const {
     return unvalidated_timelines_;
   }
+  const HeapHashMap<Member<Element>, scoped_refptr<const ComputedStyle>>&
+  GetPendingOldStylesForTest() const {
+    return pending_old_styles_;
+  }
   uint64_t current_transition_generation_;
   void Trace(Visitor*) const;
 

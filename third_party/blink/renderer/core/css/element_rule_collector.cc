@@ -73,6 +73,22 @@ ContainerQueryEvaluator* FindContainerQueryEvaluator(
   return nullptr;
 }
 
+bool AffectsAnimations(const RuleData& rule_data) {
+  const CSSPropertyValueSet& properties = rule_data.Rule()->Properties();
+  unsigned count = properties.PropertyCount();
+  for (unsigned i = 0; i < count; ++i) {
+    auto reference = properties.PropertyAt(i);
+    CSSPropertyID id = reference.Id();
+    if (id == CSSPropertyID::kAll)
+      return true;
+    if (id == CSSPropertyID::kVariable)
+      continue;
+    if (CSSProperty::Get(id).IsAnimationProperty())
+      return true;
+  }
+  return false;
+}
+
 // Sequentially scans a sorted list of RuleSet::LayerInterval and seeks for the
 // cascade layer for a rule (given by its position). SeekLayerOrder() must be
 // called with non-decreasing rule positions, so that we only need to go through
@@ -274,6 +290,8 @@ void ElementRuleCollector::CollectMatchingRulesForList(
 
       if (!evaluator || !evaluator->EvalAndAdd(*container_query)) {
         rejected++;
+        if (AffectsAnimations(*rule_data))
+          result_.SetConditionallyAffectsAnimations();
         continue;
       }
     }

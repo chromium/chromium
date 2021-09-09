@@ -518,6 +518,13 @@
       valid_type: "bool",
     },
 
+    // - is_animation_property
+    // The property is a longhand of the 'animation' or 'transition' shorthands.
+    is_animation_property: {
+      default: false,
+      valid_type: "bool",
+    },
+
     // - tree_scoped_value: true
     // Whether the property takes a tree-scoped reference as its value.
     // https://drafts.csswg.org/css-scoping/#css-tree-scoped-reference
@@ -544,6 +551,7 @@
       typedom_types: ["Time"],
       separator: ",",
       valid_for_marker: true,
+      is_animation_property: true,
     },
     {
       name: "animation-direction",
@@ -557,6 +565,7 @@
       },
       separator: ",",
       valid_for_marker: true,
+      is_animation_property: true,
     },
     {
       name: "animation-duration",
@@ -569,6 +578,7 @@
       typedom_types: ["Time"],
       separator: ",",
       valid_for_marker: true,
+      is_animation_property: true,
     },
     {
       name: "animation-fill-mode",
@@ -581,6 +591,7 @@
       typedom_types: ["Keyword"],
       separator: ",",
       valid_for_marker: true,
+      is_animation_property: true,
     },
     {
       name: "animation-iteration-count",
@@ -595,6 +606,7 @@
       typedom_types: ["Keyword", "Number"],
       separator: ",",
       valid_for_marker: true,
+      is_animation_property: true,
     },
     {
       name: "animation-name",
@@ -608,6 +620,7 @@
       separator: ",",
       valid_for_marker: true,
       tree_scoped_value: true,
+      is_animation_property: true,
     },
     {
       name: "animation-play-state",
@@ -620,6 +633,7 @@
       typedom_types: ["Keyword"],
       separator: ",",
       valid_for_marker: true,
+      is_animation_property: true,
     },
     {
       name: "animation-timeline",
@@ -633,6 +647,7 @@
       separator: ",",
       valid_for_marker: true,
       runtime_flag: "CSSScrollTimeline",
+      is_animation_property: true,
     },
     {
       name: "animation-timing-function",
@@ -657,6 +672,7 @@
       typedom_types: ["Keyword"],
       separator: ",",
       valid_for_marker: true,
+      is_animation_property: true,
     },
     {
       name: "transition-delay",
@@ -668,6 +684,7 @@
       typedom_types: ["Time"],
       separator: ",",
       valid_for_marker: true,
+      is_animation_property: true,
     },
     {
       name: "transition-duration",
@@ -679,6 +696,7 @@
         attribute: "Duration",
       },
       valid_for_marker: true,
+      is_animation_property: true,
     },
     {
       name: "transition-property",
@@ -690,6 +708,7 @@
       keywords: ["none"],
       typedom_types: ["Keyword"],
       valid_for_marker: true,
+      is_animation_property: true,
     },
     {
       name: "transition-timing-function",
@@ -713,6 +732,7 @@
       typedom_types: ["Keyword"],
       separator: ",",
       valid_for_marker: true,
+      is_animation_property: true,
     },
 
     // High Priority and all other font properties.

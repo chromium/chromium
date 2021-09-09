@@ -53,6 +53,7 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
   bool IsInherited() const { return flags_ & kInherited; }
   bool IsVisited() const { return flags_ & kVisited; }
   bool IsInternal() const { return flags_ & kInternal; }
+  bool IsAnimationProperty() const { return flags_ & kAnimation; }
   bool IsValidForFirstLetter() const { return flags_ & kValidForFirstLetter; }
   bool IsValidForFirstLine() const { return flags_ & kValidForFirstLine; }
   bool IsValidForCue() const { return flags_ & kValidForCue; }

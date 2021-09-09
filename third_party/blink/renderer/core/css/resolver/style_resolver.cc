@@ -114,14 +114,26 @@ namespace blink {
 
 namespace {
 
-void SetAnimationUpdateIfNeeded(StyleResolverState& state, Element& element) {
+bool ShouldStoreOldStyle(const StyleRecalcContext& style_recalc_context,
+                         StyleResolverState& state) {
+  // Storing the old style is only relevant if we risk computing the style
+  // more than once for the same element. This is only possible if we are
+  // currently inside a container.
+  //
+  // If we are not inside a container, we can fall back to the default
+  // behavior (in CSSAnimations) of using the current style on Element
+  // as the old style.
+  return style_recalc_context.container && state.CanAffectAnimations();
+}
+
+void SetAnimationUpdateIfNeeded(const StyleRecalcContext& style_recalc_context,
+                                StyleResolverState& state,
+                                Element& element) {
   auto& document_animations = state.GetDocument().GetDocumentAnimations();
 
   if (RuntimeEnabledFeatures::CSSDelayedAnimationUpdatesEnabled()) {
-    if (CSSAnimationUpdateScope::HasCurrent()) {
-      // TODO(crbug.com/1180159): We currently do this for all elements
-      // participating in the recalc. Reduce it to only the elements that can
-      // be affected by CSS animations/transitions.
+    if (CSSAnimationUpdateScope::HasCurrent() &&
+        ShouldStoreOldStyle(style_recalc_context, state)) {
       document_animations.AddPendingOldStyleForElement(element);
     }
   }
@@ -827,7 +839,7 @@ scoped_refptr<ComputedStyle> StyleResolver::ResolveStyle(
   }
 
   if (Element* animating_element = state.GetAnimatingElement())
-    SetAnimationUpdateIfNeeded(state, *animating_element);
+    SetAnimationUpdateIfNeeded(style_recalc_context, state, *animating_element);
 
   if (state.Style()->HasViewportUnits())
     GetDocument().SetHasViewportUnits();
@@ -1010,6 +1022,8 @@ void StyleResolver::ApplyBaseStyle(
 
     if (collector.MatchedResult().DependsOnContainerQueries())
       state.Style()->SetDependsOnContainerQueries(true);
+    if (collector.MatchedResult().ConditionallyAffectsAnimations())
+      state.SetCanAffectAnimations();
 
     ApplyCallbackSelectors(state);
 
