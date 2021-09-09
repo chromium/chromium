@@ -222,6 +222,26 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.AccountType.SigninConsent" enum="SigninAccountType"
+    expires_after="2022-04-01">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@chromium.org</owner>
+  <summary>
+    Records the sign-in consent by regular Gmail account or managed account.
+    Recorded when the user signs in (iOS only).
+  </summary>
+</histogram>
+
+<histogram name="Signin.AccountType.SyncConsent" enum="SigninAccountType"
+    expires_after="2022-04-01">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@chromium.org</owner>
+  <summary>
+    Records the sync consent done by regular Gmail account or managed account.
+    Recorded when the user signs in (iOS only).
+  </summary>
+</histogram>
+
 <histogram name="Signin.AndroidAccountInfoFetchTime" units="ms"
     expires_after="2021-12-19">
   <owner>aliceywang@chromium.org</owner>

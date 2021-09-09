@@ -345,6 +345,17 @@ enum class AccountEquality : int {
   HISTOGRAM_COUNT,
 };
 
+// Values of Signin.AccountType histogram. This histogram records if the user
+// uses a gmail account or a managed account when signing in.
+enum class SigninAccountType : int {
+  // Gmail account.
+  kRegular = 0,
+  // Managed account.
+  kManaged = 1,
+  // Always the last enumerated type.
+  kMaxValue = kManaged,
+};
+
 // When the user is give a choice of deleting their profile or not when signing
 // out, the |kDeleted| or |kKeeping| metric should be used. If the user is not
 // given any option, then use the |kIgnoreMetric| value should be used.
@@ -547,6 +558,9 @@ void RecordRefreshTokenUpdatedFromSource(bool refresh_token_is_valid,
 
 // Records the source that revoked a refresh token.
 void RecordRefreshTokenRevokedFromSource(SourceForRefreshTokenOperation source);
+
+// Records the account type when the user signs in.
+void RecordSigninAccountType(bool is_signin_and_sync, bool is_managed_account);
 
 // -----------------------------------------------------------------------------
 // User actions

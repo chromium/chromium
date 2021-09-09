@@ -10,6 +10,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/consent_auditor/consent_auditor.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/unified_consent/unified_consent_service.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
@@ -143,6 +144,14 @@
     self.syncSetupService->SetFirstSetupComplete(
         syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
     self.syncSetupService->CommitSyncChanges();
+    bool isManagedAccount =
+        self.authenticationService->HasPrimaryIdentityManaged(
+            signin::ConsentLevel::kSync);
+    // AuthenticationFlow doesn't record sync since it is triggered
+    // POST_SIGNIN_ACTION_NONE. We need to record here the sync metrics.
+    // TODO(crbug.com/1247230): UsersSigninCoordinator needs to start the flow
+    // with POST_SIGNIN_ACTION_START_SYNC.
+    signin_metrics::RecordSigninAccountType(true, isManagedAccount);
   }
 
   [self.delegate userSigninMediatorSigninFinishedWithResult:

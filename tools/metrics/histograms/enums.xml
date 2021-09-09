@@ -75580,6 +75580,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   </int>
 </enum>
 
+<enum name="SigninAccountType">
+  <int value="0" label="Regular gmail account"/>
+  <int value="1" label="Managed account"/>
+</enum>
+
 <enum name="SigninChoice">
   <obsolete>
     Removed in M91 since the data is not monitored.
