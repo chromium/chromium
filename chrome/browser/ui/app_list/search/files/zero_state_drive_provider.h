@@ -16,7 +16,6 @@
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ui/app_list/search/files/file_result.h"
 #include "chrome/browser/ui/app_list/search/files/item_suggest_cache.h"
-#include "chrome/browser/ui/app_list/search/score_normalizer/score_normalizer.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
 #include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -72,8 +71,7 @@ class ZeroStateDriveProvider : public SearchProvider,
   // enabled, and the suggested content toggle is enabled.
   const bool suggested_files_enabled_;
 
-  // The normalizer normalizes the relevance scores of Results
-  absl::optional<ScoreNormalizer> normalizer_;
+  // TODO(crbug.com/1247475): Score normalizers removed due to stability issues.
 
   // Whether we have sent at least one request to ItemSuggest to warm up the
   // results cache.

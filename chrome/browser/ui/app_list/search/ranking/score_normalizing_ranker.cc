@@ -12,9 +12,6 @@
 namespace app_list {
 namespace {
 
-// How many bins to use for score normalization.
-constexpr int kNormalizationBins = 20;
-
 // Prefix added to the name of each score normalizer, which is used for prefs
 // storage.
 constexpr char kNormalizerPrefix[] = "categorical_search_normalizer_";
@@ -57,30 +54,12 @@ ScoreNormalizingRanker::ScoreNormalizingRanker(Profile* profile) {
 
     const std::string name =
         base::StrCat({kNormalizerPrefix, base::NumberToString(provider_int)});
-    normalizers_[provider] =
-        std::make_unique<ScoreNormalizer>(name, profile, kNormalizationBins);
   }
 }
 
 ScoreNormalizingRanker::~ScoreNormalizingRanker() {}
 
 void ScoreNormalizingRanker::Rank(ResultsMap& results, ProviderType provider) {
-  const auto it = normalizers_.find(provider);
-
-  // Early exit if this isn't a provider that we normalize.
-  if (it == normalizers_.end())
-    return;
-
-  // First update the provider's normalizer with the new scores, then normalize
-  // the scores themselves. This is normalizing all results from a provider,
-  // including those that will be shown in different UI surfaces. In particular,
-  // this also normalizes suggestion chips. This has no effect because the
-  // ranking of the suggestion chips is fixed regardless of inter-provider
-  // score.
-  const auto provider_results = results.find(provider);
-  DCHECK(provider_results != results.end());
-  it->second->RecordResults(provider_results->second);
-  it->second->NormalizeResults(&provider_results->second);
 }
 
 }  // namespace app_list
