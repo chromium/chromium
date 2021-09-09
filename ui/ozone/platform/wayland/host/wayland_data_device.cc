@@ -12,12 +12,12 @@
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "ui/gfx/geometry/point_f.h"
-#include "ui/ozone/platform/wayland/common/data_util.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_offer.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
+#include "ui/ozone/platform/wayland/host/wayland_exchange_data_provider.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 
 namespace ui {
@@ -57,7 +57,7 @@ void WaylandDataDevice::RequestData(WaylandDataOffer* offer,
                                     const std::string& mime_type,
                                     RequestDataCallback callback) {
   DCHECK(offer);
-  DCHECK(wl::IsMimeTypeSupported(mime_type));
+  DCHECK(IsMimeTypeSupported(mime_type));
 
   base::ScopedFD fd = offer->Receive(mime_type);
   if (!fd.is_valid()) {

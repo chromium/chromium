@@ -13,10 +13,12 @@
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
+#include "ui/base/dragdrop/os_exchange_data_provider.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
+#include "ui/ozone/platform/wayland/host/wayland_exchange_data_provider.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_touch.h"
@@ -122,7 +124,6 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   // WaylandWindowObserver:
   void OnWindowRemoved(WaylandWindow* window) override;
 
-  void Offer(const OSExchangeData& data, int operation);
   void HandleUnprocessedMimeTypes(base::TimeTicks start_time);
   void OnMimeTypeDataTransferred(base::TimeTicks start_time,
                                  PlatformClipboard::Data contents);
@@ -138,6 +139,9 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   absl::optional<wl::Serial> GetAndValidateSerialForDrag(
       mojom::DragEventSource source);
 
+  void SetOfferedExchangeDataProvider(const OSExchangeData& data);
+  const WaylandExchangeDataProvider* GetOfferedExchangeDataProvider() const;
+
   WaylandConnection* const connection_;
   WaylandDataDeviceManager* const data_device_manager_;
   WaylandDataDevice* const data_device_;
@@ -150,9 +154,9 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   // Data offered by us to the other side.
   std::unique_ptr<WaylandDataSource> data_source_;
 
-  // When dragging is started from Chromium, |offered_data_| holds the data to
-  // be sent through wl_data_device instance.
-  std::unique_ptr<ui::OSExchangeData> offered_data_;
+  // When dragging is started from Chromium, |offered_exchange_data_provider_|
+  // holds the provider for the data to be sent through Wayland protocol.
+  std::unique_ptr<OSExchangeDataProvider> offered_exchange_data_provider_;
 
   // Offer to receive data from another process via drag-and-drop, or null if
   // no drag-and-drop from another process is in progress.
@@ -175,8 +179,8 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   // The most recent location received while dragging the data.
   gfx::PointF last_drag_location_;
 
-  // The data delivered from Wayland
-  std::unique_ptr<ui::OSExchangeData> received_data_;
+  // The provider for the dnd data received from another Wayland client.
+  std::unique_ptr<WaylandExchangeDataProvider> received_exchange_data_provider_;
 
   // Set when 'leave' event is fired while data is being transferred.
   bool is_leave_pending_ = false;
