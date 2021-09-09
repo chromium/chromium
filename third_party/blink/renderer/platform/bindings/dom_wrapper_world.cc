@@ -33,6 +33,7 @@
 #include <memory>
 #include <utility>
 
+#include "third_party/blink/public/platform/web_isolated_world_info.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -41,6 +42,10 @@
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
+
+static_assert(kMainDOMWorldId == DOMWrapperWorld::kMainWorldId,
+              "The publicly-exposed kMainWorldId constant must match "
+              "the internal blink value.");
 
 unsigned DOMWrapperWorld::number_of_non_main_worlds_in_main_thread_ = 0;
 

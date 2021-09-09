@@ -46,6 +46,9 @@ struct WebIsolatedWorldInfo {
   WebString stable_id;
 };
 
+// The ID of the "main" execution world for a document.
+static constexpr int32_t kMainDOMWorldId = 0;
+
 // Sets up an isolated world by associating a |world_id| with |info|.
 // worldID must be > 0 (as 0 represents the main world).
 // worldID must be < kEmbedderWorldIdLimit, high number used internally.

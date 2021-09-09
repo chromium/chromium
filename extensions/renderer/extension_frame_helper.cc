@@ -26,6 +26,7 @@
 #include "extensions/renderer/script_context_set.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
+#include "third_party/blink/public/platform/web_isolated_world_info.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/web/web_console_message.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -37,8 +38,6 @@
 namespace extensions {
 
 namespace {
-
-constexpr int kMainWorldId = 0;
 
 base::LazyInstance<std::set<const ExtensionFrameHelper*>>::DestructorAtExit
     g_frame_helpers = LAZY_INSTANCE_INITIALIZER;
@@ -349,8 +348,8 @@ void ExtensionFrameHelper::ReadyToCommitNavigation(
   // are many callers which will have to pass nullptr.
   ScriptContext::ScopedFrameDocumentLoader scoped_document_loader(
       render_frame()->GetWebFrame(), document_loader);
-  extension_dispatcher_->DidCreateScriptContext(render_frame()->GetWebFrame(),
-                                                context, kMainWorldId);
+  extension_dispatcher_->DidCreateScriptContext(
+      render_frame()->GetWebFrame(), context, blink::kMainDOMWorldId);
   // TODO(devlin): Add constants for main world id, no extension group.
 }
 
@@ -366,7 +365,7 @@ void ExtensionFrameHelper::DidCommitProvisionalLoad(
 void ExtensionFrameHelper::DidCreateScriptContext(
     v8::Local<v8::Context> context,
     int32_t world_id) {
-  if (world_id == kMainWorldId) {
+  if (world_id == blink::kMainDOMWorldId) {
     if (render_frame()->IsBrowserSideNavigationPending()) {
       // Defer initializing the extensions script context now because it depends
       // on having the URL of the provisional load which isn't available at this
