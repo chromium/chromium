@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_FILE_HANDLE_IMPL_H_
 
 #include "base/files/file.h"
+#include "base/files/file_error_or.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/file_system_access/file_system_access_handle_base.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
@@ -102,12 +103,15 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
   void DoOpenFile(
       scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
       OpenAccessHandleCallback callback);
-
-  void DidOpenFile(
+  void DoGetLengthAfterOpenFile(
       OpenAccessHandleCallback callback,
       scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
       base::File file,
       base::OnceClosure on_close_callback);
+  void DidOpenFileAndGetLength(
+      OpenAccessHandleCallback callback,
+      scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
+      std::pair<base::File, base::FileErrorOr<int>> file_and_length);
 
   void IsSameEntryImpl(IsSameEntryCallback callback,
                        FileSystemAccessTransferTokenImpl* other);

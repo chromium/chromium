@@ -21,7 +21,7 @@ namespace content {
 class CONTENT_EXPORT FileSystemAccessCapacityAllocationHostImpl
     : public blink::mojom::FileSystemAccessCapacityAllocationHost {
  public:
-  // Crates a FileSystemAccessCapacityAllocationHost that manages capacity
+  // Creates a FileSystemAccessCapacityAllocationHost that manages capacity
   // reservations for the file. CapacityAllocationHosts should only be created
   // via the FileSystemAccessHandleHost.
   FileSystemAccessCapacityAllocationHostImpl(

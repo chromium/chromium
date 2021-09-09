@@ -39,9 +39,9 @@ void FileSystemAccessCapacityAllocationHostImpl::OnReceiverDisconnect() {
 void FileSystemAccessCapacityAllocationHostImpl::RequestCapacityChange(
     int64_t capacity_delta,
     RequestCapacityChangeCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(https://crbug.com/1240056): Complete implementation of the quota
   // integration for Access Handles.
-  NOTIMPLEMENTED();
   std::move(callback).Run(capacity_delta);
 }
 }  // namespace content

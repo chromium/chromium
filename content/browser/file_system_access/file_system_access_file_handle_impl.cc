@@ -6,10 +6,12 @@
 
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
+#include "base/files/file_error_or.h"
 #include "base/files/file_util.h"
 #include "base/guid.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "content/browser/file_system_access/file_system_access_access_handle_host_impl.h"
@@ -77,6 +79,14 @@ void CreateBlobOnIOThread(
   DCHECK(!blob_handle->IsBroken());
 
   BlobImpl::Create(std::move(blob_handle), std::move(blob_receiver));
+}
+
+std::pair<base::File, base::FileErrorOr<int>> GetFileLengthOnBlockingThread(
+    base::File file) {
+  int64_t file_length = file.GetLength();
+  if (file_length < 0)
+    return {std::move(file), base::File::GetLastFileError()};
+  return {std::move(file), file_length};
 }
 
 bool HasWritePermission(const base::FilePath& path) {
@@ -283,14 +293,14 @@ void FileSystemAccessFileHandleImpl::DoOpenFile(
 
   DoFileSystemOperation(
       FROM_HERE, &FileSystemOperationRunner::OpenFile,
-      base::BindOnce(&FileSystemAccessFileHandleImpl::DidOpenFile,
+      base::BindOnce(&FileSystemAccessFileHandleImpl::DoGetLengthAfterOpenFile,
                      weak_factory_.GetWeakPtr(), std::move(callback),
                      std::move(lock)),
       url(),
       base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_WRITE);
 }
 
-void FileSystemAccessFileHandleImpl::DidOpenFile(
+void FileSystemAccessFileHandleImpl::DoGetLengthAfterOpenFile(
     OpenAccessHandleCallback callback,
     scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
     base::File file,
@@ -306,6 +316,44 @@ void FileSystemAccessFileHandleImpl::DidOpenFile(
     return;
   }
 
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {
+          // Needed for file I/O.
+          base::MayBlock(),
+
+          // Reasonable compromise, given that applications may block on file
+          // operations.
+          base::TaskPriority::USER_VISIBLE,
+
+          // BLOCK_SHUTDOWN is definitely not appropriate. We might be able to
+          // move to CONTINUE_ON_SHUTDOWN after very careful analysis.
+          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
+      },
+      base::BindOnce(&GetFileLengthOnBlockingThread, std::move(file)),
+      base::BindOnce(&FileSystemAccessFileHandleImpl::DidOpenFileAndGetLength,
+                     weak_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(lock)));
+}
+
+void FileSystemAccessFileHandleImpl::DidOpenFileAndGetLength(
+    OpenAccessHandleCallback callback,
+    scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
+    std::pair<base::File, base::FileErrorOr<int>> file_and_length) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::File file = std::move(file_and_length.first);
+  base::FileErrorOr<int> length_or_error = std::move(file_and_length.second);
+
+  if (length_or_error.is_error()) {
+    std::move(callback).Run(
+        file_system_access_error::FromFileError(length_or_error.error()),
+        blink::mojom::FileSystemAccessAccessHandleFilePtr(),
+        mojo::NullRemote());
+    return;
+  }
+  DCHECK_GE(length_or_error.value(), 0);
+
   mojo::PendingRemote<blink::mojom::FileSystemAccessCapacityAllocationHost>
       capacity_allocation_host_remote;
   mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>
@@ -315,10 +363,11 @@ void FileSystemAccessFileHandleImpl::DidOpenFile(
           std::move(lock));
 
   std::move(callback).Run(
-      std::move(result),
+      file_system_access_error::Ok(),
       blink::mojom::FileSystemAccessAccessHandleFile::NewRegularFile(
           blink::mojom::FileSystemAccessRegularFile::New(
-              std::move(file), std::move(capacity_allocation_host_remote))),
+              std::move(file), length_or_error.value(),
+              std::move(capacity_allocation_host_remote))),
       std::move(access_handle_host_remote));
 }
 

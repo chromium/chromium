@@ -131,8 +131,7 @@ ScriptPromise FileSystemFileHandle::createSyncAccessHandle(
           mojom::blink::FileSystemAccessRegularFilePtr regular_file =
               std::move(file->get_regular_file());
           file_delegate = FileSystemAccessFileDelegate::Create(
-              context, std::move(regular_file->os_file),
-              std::move(regular_file->capacity_allocation_host));
+              context, std::move(regular_file));
         } else if (file->is_incognito_file_delegate()) {
           file_delegate = FileSystemAccessFileDelegate::CreateForIncognito(
               context, std::move(file->get_incognito_file_delegate()));

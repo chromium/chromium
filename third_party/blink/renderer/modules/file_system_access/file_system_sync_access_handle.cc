@@ -314,6 +314,14 @@ uint64_t FileSystemSyncAccessHandle::write(
   base::FileErrorOr<int> result =
       file_delegate()->Write(file_offset, {write_data, write_size});
   if (result.is_error()) {
+    base::File::Error file_error = result.error();
+    DCHECK_NE(file_error, base::File::FILE_OK);
+    if (file_error == base::File::FILE_ERROR_NO_SPACE) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kQuotaExceededError,
+          "No space available for this operation");
+      return 0;
+    }
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Failed to write to the access handle");
     return 0;

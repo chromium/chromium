@@ -29,9 +29,7 @@ class FileSystemAccessFileDelegate
 
   static FileSystemAccessFileDelegate* Create(
       ExecutionContext* context,
-      base::File backing_file,
-      mojo::PendingRemote<mojom::blink::FileSystemAccessCapacityAllocationHost>
-          capacity_allocation_host_remote);
+      mojom::blink::FileSystemAccessRegularFilePtr regular_file);
   static FileSystemAccessFileDelegate* CreateForIncognito(
       ExecutionContext* context,
       mojo::PendingRemote<mojom::blink::FileSystemAccessFileDelegateHost>
