@@ -118,6 +118,7 @@ class AssistantClient {
   // Sets the current media status of media playing outside of libassistant.
   // Setting external state will stop any internally playing media.
   virtual void SetExternalPlaybackState(const MediaStatus& status_proto) = 0;
+
   virtual void AddDeviceStateEventObserver(
       GrpcServicesObserver<OnDeviceStateEventRequest>* observer) = 0;
 

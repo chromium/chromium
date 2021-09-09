@@ -7,9 +7,11 @@
 #include "base/strings/string_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_interface.pb.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/device_state_event.pb.h"
 #include "chromeos/assistant/internal/util_headers.h"
 #include "chromeos/services/assistant/public/shared/utils.h"
 #include "chromeos/services/libassistant/grpc/assistant_client.h"
+#include "chromeos/services/libassistant/grpc/external_services/grpc_services_observer.h"
 #include "chromeos/services/libassistant/grpc/utils/media_status_utils.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
 #include "libassistant/shared/public/assistant_manager.h"
@@ -95,23 +97,30 @@ std::string GetWebUrlFromMediaArgs(const std::string& play_media_args_proto) {
 
 }  // namespace
 
-class MediaController::DeviceStateObserver
+class MediaController::DeviceStateEventObserver
     : public GrpcServicesObserver<::assistant::api::OnDeviceStateEventRequest> {
  public:
-  explicit DeviceStateObserver(MediaController* parent) : parent_(parent) {}
-  DeviceStateObserver(const DeviceStateObserver&) = delete;
-  DeviceStateObserver& operator=(const DeviceStateObserver&) = delete;
-  ~DeviceStateObserver() override = default;
+  explicit DeviceStateEventObserver(MediaController* parent)
+      : parent_(parent) {}
+  DeviceStateEventObserver(const DeviceStateEventObserver&) = delete;
+  DeviceStateEventObserver& operator=(const DeviceStateEventObserver&) = delete;
+  ~DeviceStateEventObserver() override = default;
 
   // GrpcServicesObserver:
   // Invoked when a device state event has been received.
   void OnGrpcMessage(
       const ::assistant::api::OnDeviceStateEventRequest& request) override {
     VLOG(1) << "Sending playback state update";
-    const auto& media_status =
-        request.event().on_state_changed().new_state().media_status();
+
+    if (!request.event().has_on_state_changed())
+      return;
+
+    const auto& new_state = request.event().on_state_changed().new_state();
+    if (!new_state.has_media_status())
+      return;
+
     delegate().OnPlaybackStateChanged(
-        ConvertMediaStatusToMojomFromV2(media_status));
+        ConvertMediaStatusToMojomFromV2(new_state.media_status()));
   }
 
  private:
@@ -223,7 +232,8 @@ class MediaController::LibassistantMediaHandler {
 };
 
 MediaController::MediaController()
-    : device_state_observer_(std::make_unique<DeviceStateObserver>(this)) {}
+    : device_state_event_observer_(
+          std::make_unique<DeviceStateEventObserver>(this)) {}
 
 MediaController::~MediaController() = default;
 
@@ -263,8 +273,9 @@ void MediaController::OnAssistantClientRunning(
   handler_ = std::make_unique<LibassistantMediaHandler>(
       this, assistant_client->assistant_manager_internal());
 
-  // |device_state_observer_| outlives |assistant_client_|.
-  assistant_client->AddDeviceStateEventObserver(device_state_observer_.get());
+  // |device_state_event_observer_| outlives |assistant_client_|.
+  assistant_client->AddDeviceStateEventObserver(
+      device_state_event_observer_.get());
 }
 
 void MediaController::OnDestroyingAssistantClient(

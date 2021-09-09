@@ -56,18 +56,26 @@ class AssistantClientV1 : public AssistantClient {
       GrpcServicesObserver<OnDeviceStateEventRequest>* observer) override;
 
  private:
+  class DeviceStateListener;
   class DisplayConnectionImpl;
   class MediaManagerListener;
+
+  void AddMediaManagerListener();
+
+  void NofifyDeviceStateEvent(const OnDeviceStateEventRequest& request);
 
   void OnSpeakerIdEnrollmentUpdate(
       const assistant_client::SpeakerIdEnrollmentUpdate& update);
 
+  std::unique_ptr<DeviceStateListener> device_state_listener_;
   std::unique_ptr<DisplayConnectionImpl> display_connection_;
+  std::unique_ptr<MediaManagerListener> media_manager_listener_;
 
   base::ObserverList<GrpcServicesObserver<OnSpeakerIdEnrollmentEventRequest>>
       speaker_event_observer_list_;
 
-  std::unique_ptr<MediaManagerListener> media_manager_listener_;
+  base::ObserverList<GrpcServicesObserver<OnDeviceStateEventRequest>>
+      device_state_event_observer_list_;
 
   base::WeakPtrFactory<AssistantClientV1> weak_factory_{this};
 };

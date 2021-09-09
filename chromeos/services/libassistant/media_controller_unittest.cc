@@ -12,6 +12,7 @@
 #include "chromeos/services/libassistant/test_support/fake_assistant_client.h"
 #include "chromeos/services/libassistant/test_support/libassistant_service_tester.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
+#include "libassistant/shared/public/device_state_listener.h"
 #include "libassistant/shared/public/media_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -122,6 +123,9 @@ class AssistantMediaControllerTest : public testing::Test {
   void SetUp() override {
     service_tester_.Start();
     service_tester_.assistant_manager().SetMediaManager(&media_manager_);
+    service_tester_.assistant_manager()
+        .device_state_listener()
+        ->OnStartFinished();
     media_controller_->OnAssistantClientRunning(&assistant_client());
   }
 

@@ -69,13 +69,13 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
   assistant_client::AssistantManagerInternal* assistant_manager_internal();
 
  private:
-  class DeviceStateListener;
+  class DeviceStateEventObserver;
 
   void OnStartFinished();
 
   void SetStateAndInformObservers(mojom::ServiceState new_state);
 
-  void CreateAndRegisterDeviceStateListener();
+  void CreateAndRegisterDeviceStateEventObserver();
   void CreateAndRegisterChromiumApiDelegate(
       mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory);
   void CreateChromiumApiDelegate(
@@ -90,7 +90,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
 
   std::unique_ptr<AssistantClient> assistant_client_;
   std::unique_ptr<ChromiumApiDelegate> chromium_api_delegate_;
-  std::unique_ptr<DeviceStateListener> device_state_listener_;
+  std::unique_ptr<DeviceStateEventObserver> device_state_event_observer_;
 
   mojo::Receiver<mojom::ServiceController> receiver_{this};
   mojo::RemoteSet<mojom::StateObserver> state_observers_;

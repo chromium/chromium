@@ -23,6 +23,7 @@
 #include "libassistant/shared/internal_api/display_connection.h"
 #include "libassistant/shared/internal_api/fuchsia_api_helper.h"
 #include "libassistant/shared/internal_api/speaker_id_enrollment.h"
+#include "libassistant/shared/public/device_state_listener.h"
 #include "libassistant/shared/public/media_manager.h"
 
 namespace chromeos {
@@ -88,6 +89,47 @@ OnSpeakerIdEnrollmentEventRequest ConvertToGrpcEventRequest(
 
 }  // namespace
 
+////////////////////////////////////////////////////////////////////////////////
+//   AssistantClientV1::DeviceStateListener
+////////////////////////////////////////////////////////////////////////////////
+
+class AssistantClientV1::DeviceStateListener
+    : public assistant_client::DeviceStateListener {
+ public:
+  explicit DeviceStateListener(AssistantClientV1* assistant_client)
+      : assistant_client_(assistant_client),
+        task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+  DeviceStateListener(const DeviceStateListener&) = delete;
+  DeviceStateListener& operator=(const DeviceStateListener&) = delete;
+  ~DeviceStateListener() override = default;
+
+  // assistant_client::DeviceStateListener:
+  // Called from the Libassistant thread.
+  void OnStartFinished() override {
+    ENSURE_CALLING_SEQUENCE(&DeviceStateListener::OnStartFinished);
+
+    OnDeviceStateEventRequest request;
+    request.mutable_event()
+        ->mutable_on_state_changed()
+        ->mutable_new_state()
+        ->mutable_startup_state()
+        ->set_finished(true);
+    assistant_client_->NofifyDeviceStateEvent(request);
+
+    // AssistantManager Start() has completed, add media manager listener.
+    assistant_client_->AddMediaManagerListener();
+  }
+
+ private:
+  AssistantClientV1* assistant_client_ = nullptr;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  base::WeakPtrFactory<DeviceStateListener> weak_factory_{this};
+};
+
+////////////////////////////////////////////////////////////////////////////////
+//   AssistantClientV1::DisplayConnectionImpl
+////////////////////////////////////////////////////////////////////////////////
+
 class AssistantClientV1::DisplayConnectionImpl
     : public assistant_client::DisplayConnection {
  public:
@@ -142,11 +184,16 @@ class AssistantClientV1::DisplayConnectionImpl
   base::WeakPtrFactory<DisplayConnectionImpl> weak_factory_{this};
 };
 
+////////////////////////////////////////////////////////////////////////////////
+//   AssistantClientV1::MediaManagerListener
+////////////////////////////////////////////////////////////////////////////////
+
 class AssistantClientV1::MediaManagerListener
     : public assistant_client::MediaManager::Listener {
  public:
-  MediaManagerListener()
-      : task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+  explicit MediaManagerListener(AssistantClientV1* assistant_client)
+      : assistant_client_(assistant_client),
+        task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
   MediaManagerListener(const MediaManagerListener&) = delete;
   MediaManagerListener& operator=(const MediaManagerListener&) = delete;
   ~MediaManagerListener() override = default;
@@ -158,35 +205,34 @@ class AssistantClientV1::MediaManagerListener
     ENSURE_CALLING_SEQUENCE(&MediaManagerListener::OnPlaybackStateChange,
                             media_status);
 
-    DCHECK(observer_);
-
     OnDeviceStateEventRequest request;
     auto* status = request.mutable_event()
                        ->mutable_on_state_changed()
                        ->mutable_new_state()
                        ->mutable_media_status();
     ConvertMediaStatusToV2FromV1(media_status, status);
-    observer_->OnGrpcMessage(request);
-  }
-
-  void SetObserver(GrpcServicesObserver<OnDeviceStateEventRequest>* observer) {
-    DCHECK(!observer_);
-    observer_ = observer;
+    assistant_client_->NofifyDeviceStateEvent(request);
   }
 
  private:
-  GrpcServicesObserver<OnDeviceStateEventRequest>* observer_ = nullptr;
-
+  AssistantClientV1* assistant_client_ = nullptr;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<MediaManagerListener> weak_factory_{this};
 };
 
+////////////////////////////////////////////////////////////////////////////////
+//   AssistantClientV1
+////////////////////////////////////////////////////////////////////////////////
+
 AssistantClientV1::AssistantClientV1(
-    std::unique_ptr<assistant_client::AssistantManager> assistant_manager,
+    std::unique_ptr<assistant_client::AssistantManager> manager,
     assistant_client::AssistantManagerInternal* assistant_manager_internal)
-    : AssistantClient(std::move(assistant_manager), assistant_manager_internal),
+    : AssistantClient(std::move(manager), assistant_manager_internal),
+      device_state_listener_(std::make_unique<DeviceStateListener>(this)),
       display_connection_(std::make_unique<DisplayConnectionImpl>()),
-      media_manager_listener_(std::make_unique<MediaManagerListener>()) {}
+      media_manager_listener_(std::make_unique<MediaManagerListener>(this)) {
+  assistant_manager()->AddDeviceStateListener(device_state_listener_.get());
+}
 
 AssistantClientV1::~AssistantClientV1() = default;
 
@@ -300,6 +346,23 @@ void AssistantClientV1::SetExternalPlaybackState(
       media_status);
 }
 
+void AssistantClientV1::AddDeviceStateEventObserver(
+    GrpcServicesObserver<OnDeviceStateEventRequest>* observer) {
+  device_state_event_observer_list_.AddObserver(observer);
+}
+
+void AssistantClientV1::AddMediaManagerListener() {
+  assistant_manager()->GetMediaManager()->AddListener(
+      media_manager_listener_.get());
+}
+
+void AssistantClientV1::NofifyDeviceStateEvent(
+    const OnDeviceStateEventRequest& request) {
+  for (auto& observer : device_state_event_observer_list_) {
+    observer.OnGrpcMessage(request);
+  }
+}
+
 void AssistantClientV1::OnSpeakerIdEnrollmentUpdate(
     const SpeakerIdEnrollmentUpdate& update) {
   auto event_request = ConvertToGrpcEventRequest(update.state);
@@ -308,11 +371,5 @@ void AssistantClientV1::OnSpeakerIdEnrollmentUpdate(
   }
 }
 
-void AssistantClientV1::AddDeviceStateEventObserver(
-    GrpcServicesObserver<OnDeviceStateEventRequest>* observer) {
-  media_manager_listener_->SetObserver(observer);
-  assistant_manager()->GetMediaManager()->AddListener(
-      media_manager_listener_.get());
-}
 }  // namespace libassistant
 }  // namespace chromeos

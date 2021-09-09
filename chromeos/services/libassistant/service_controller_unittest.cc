@@ -21,6 +21,7 @@
 #include "chromeos/services/libassistant/test_support/fake_libassistant_factory.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
 #include "libassistant/shared/public/device_state_listener.h"
+#include "libassistant/shared/public/media_manager.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -121,6 +122,26 @@ class SettingsControllerMock : public mojom::SettingsController {
               (const std::string& settings, UpdateSettingsCallback callback));
 };
 
+class MediaManagerMock : public assistant_client::MediaManager {
+ public:
+  MediaManagerMock() = default;
+  MediaManagerMock(const MediaManagerMock&) = delete;
+  MediaManagerMock& operator=(const MediaManagerMock&) = delete;
+  ~MediaManagerMock() override = default;
+
+  // assistant_client::MediaManager:
+  MOCK_METHOD(void, AddListener, (Listener * listener));
+  MOCK_METHOD(void, Next, ());
+  MOCK_METHOD(void, Previous, ());
+  MOCK_METHOD(void, Resume, ());
+  MOCK_METHOD(void, Pause, ());
+  MOCK_METHOD(void, PlayPause, ());
+  MOCK_METHOD(void, StopAndClearPlaylist, ());
+  MOCK_METHOD(void,
+              SetExternalPlaybackState,
+              (const assistant_client::MediaStatus& new_status));
+};
+
 class AssistantServiceControllerTest : public testing::Test {
  public:
   AssistantServiceControllerTest()
@@ -167,6 +188,7 @@ class AssistantServiceControllerTest : public testing::Test {
 
   void Start() {
     service_controller().Start();
+    libassistant_factory_.assistant_manager().SetMediaManager(&media_manager_);
     RunUntilIdle();
   }
 
@@ -209,6 +231,7 @@ class AssistantServiceControllerTest : public testing::Test {
   testing::NiceMock<SettingsControllerMock> settings_controller_;
   mojo::Remote<mojom::ServiceController> client_;
   std::unique_ptr<ServiceController> service_controller_;
+  MediaManagerMock media_manager_;
 };
 
 }  // namespace
