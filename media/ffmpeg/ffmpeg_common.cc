@@ -467,7 +467,10 @@ void AudioDecoderConfigToAVCodecContext(const AudioDecoderConfig& config,
   codec_context->channels = config.channels();
   codec_context->sample_rate = config.samples_per_second();
 
-  if (config.extra_data().empty()) {
+  // TODO(crbug.com/1245123): Some existing AAC streams have wrong AAC extra
+  // data (ASC) that could cause failure. For backward compatibility, not using
+  // extra data for AAC for now. See the bug for more details.
+  if (config.extra_data().empty() || config.codec() == AudioCodec::kAAC) {
     codec_context->extradata = nullptr;
     codec_context->extradata_size = 0;
   } else {
