@@ -360,7 +360,6 @@ void ImageDecoderExternal::close() {
   auto* exception = MakeGarbageCollected<DOMException>(
       DOMExceptionCode::kAbortError,
       failed_ ? "Aborted by close." : "Aborted by failure.");
-  reset(exception);
 
   // Failure cases should have already rejected the tracks ready promise.
   if (!failed_ && decoder_ && tracks_->IsEmpty())
@@ -371,7 +370,11 @@ void ImageDecoderExternal::close() {
 
   if (consumer_)
     consumer_->Cancel();
+  CloseInternal(exception);
+}
 
+void ImageDecoderExternal::CloseInternal(DOMException* exception) {
+  reset(exception);
   weak_factory_.InvalidateWeakPtrs();
   pending_metadata_requests_ = 0;
   consumer_ = nullptr;
@@ -439,9 +442,11 @@ void ImageDecoderExternal::ContextDestroyed() {
   // WeakPtrs need special consideration when used with a garbage collected
   // type; they must be invalidated ahead of finalization.
   //
-  // We also need to ensure that no further WeakPtrs are created, so close() the
+  // We also need to ensure that no further WeakPtrs are created, so close the
   // decoder at this point to prevent further operation.
-  close();
+  auto* exception = MakeGarbageCollected<DOMException>(
+      DOMExceptionCode::kAbortError, "Aborted by close.");
+  CloseInternal(exception);
 
   DCHECK(!weak_factory_.HasWeakPtrs());
   DCHECK(!decode_weak_factory_.HasWeakPtrs());

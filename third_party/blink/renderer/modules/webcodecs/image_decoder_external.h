@@ -84,6 +84,7 @@ class MODULES_EXPORT ImageDecoderExternal final
   void OnMetadata(ImageDecoderCore::ImageMetadata metadata);
 
   void SetFailed();
+  void CloseInternal(DOMException*);
 
   Member<ScriptState> script_state_;
 

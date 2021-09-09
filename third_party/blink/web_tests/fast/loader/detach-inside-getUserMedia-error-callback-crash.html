@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<script src='../../resources/testharness.js'></script>
+<script src='../../resources/testharnessreport.js'></script>
+<body>
+<script>
+test(() => {
+  let child = document.createElement('iframe');
+  document.body.appendChild(child);
+  let grandchild = document.createElement('iframe');
+  child.contentDocument.body.appendChild(grandchild);
+  grandchild.contentWindow.navigator.getUserMedia({video:undefined, audio:true}, () => {}, () => grandchild.remove());
+  child.remove();
+  assert_true(true, 'Pass if no crash.');
+}, "Regression test for https://crbug.com/1244148");
+</script>
+</body>

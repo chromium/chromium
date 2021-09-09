@@ -194,6 +194,8 @@ void GPUDevice::OnLogging(WGPULoggingType loggingType, const char* message) {
 }
 
 void GPUDevice::OnDeviceLostError(const char* message) {
+  if (!GetExecutionContext())
+    return;
   AddConsoleWarning(message);
 
   if (lost_property_->GetState() == LostProperty::kPending) {
