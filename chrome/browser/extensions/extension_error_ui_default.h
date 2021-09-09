@@ -16,6 +16,7 @@ class Profile;
 
 namespace extensions {
 
+class ManagementPolicy;
 class ExtensionGlobalError;
 
 class ExtensionErrorUIDefault : public ExtensionErrorUI {
@@ -28,6 +29,7 @@ class ExtensionErrorUIDefault : public ExtensionErrorUI {
   void Close() override;
 
   GlobalErrorWithStandardBubble* GetErrorForTesting();
+  void SetManagementPolicyForTesting(ManagementPolicy* management_policy);
 
  private:
   // The profile associated with this error.

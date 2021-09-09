@@ -5,11 +5,15 @@
 #include "chrome/browser/extensions/extension_error_ui_default.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_error_ui.h"
+#include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_system.h"
+#include "extensions/browser/management_policy.h"
+#include "extensions/browser/mock_extension_system.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_set.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -39,6 +43,26 @@ class TestErrorUIDelegate : public extensions::ExtensionErrorUI::Delegate {
   extensions::ExtensionSet forbidden_;
 };
 
+class ManagementPolicyMock : public extensions::ManagementPolicy::Provider {
+ public:
+  ManagementPolicyMock(const extensions::Extension* extension, bool may_load)
+      : extension_(extension), may_load_(may_load) {}
+
+  std::string GetDebugPolicyProviderName() const override {
+    return "ManagementPolicyMock";
+  }
+
+  bool UserMayLoad(const extensions::Extension* extension,
+                   std::u16string* error) const override {
+    EXPECT_EQ(extension_, extension);
+    return may_load_;
+  }
+
+ private:
+  const extensions::Extension* extension_;
+  bool may_load_;
+};
+
 }  // namespace
 
 TEST(ExtensionErrorUIDefaultTest, BubbleTitleAndMessageMentionsExtension) {
@@ -58,10 +82,12 @@ TEST(ExtensionErrorUIDefaultTest, BubbleTitleAndMessageMentionsExtension) {
 
   EXPECT_THAT(messages,
               testing::ElementsAre(
+                  l10n_util::GetStringUTF16(
+                      IDS_EXTENSIONS_ALERT_ITEM_BLOCKLISTED_MALWARE_TITLE),
                   l10n_util::GetStringFUTF16(
-                      IDS_EXTENSION_ALERT_ITEM_BLOCKLISTED_OTHER, u"Bar"),
+                      IDS_BLOCKLISTED_EXTENSIONS_ALERT_ITEM, u"Bar"),
                   l10n_util::GetStringFUTF16(
-                      IDS_EXTENSION_ALERT_ITEM_BLOCKLISTED_OTHER, u"Baz")));
+                      IDS_BLOCKLISTED_EXTENSIONS_ALERT_ITEM, u"Baz")));
 }
 
 TEST(ExtensionErrorUIDefaultTest, BubbleTitleAndMessageMentionsApp) {
@@ -80,8 +106,9 @@ TEST(ExtensionErrorUIDefaultTest, BubbleTitleAndMessageMentionsApp) {
 
   std::vector<std::u16string> messages = bubble->GetBubbleViewMessages();
 
-  EXPECT_THAT(messages, testing::ElementsAre(l10n_util::GetStringFUTF16(
-                            IDS_APP_ALERT_ITEM_BLOCKLISTED_OTHER, u"Bar")));
+  EXPECT_THAT(messages,
+              testing::ElementsAre(l10n_util::GetStringFUTF16(
+                  IDS_EXTENSION_ALERT_ITEM_BLOCKLISTED_MALWARE, u"Bar")));
 }
 
 TEST(ExtensionErrorUIDefaultTest, BubbleMessageMentionsMalware) {
@@ -107,4 +134,29 @@ TEST(ExtensionErrorUIDefaultTest, BubbleMessageMentionsMalware) {
   EXPECT_THAT(messages, testing::ElementsAre(l10n_util::GetStringFUTF16(
                             IDS_EXTENSION_ALERT_ITEM_BLOCKLISTED_MALWARE,
                             base::UTF8ToUTF16(extension->name()))));
+}
+
+TEST(ExtensionErrorUIDefaultTest, BubbleTitleForEnterpriseBlockedExtensions) {
+  TestErrorUIDelegate delegate;
+
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ExtensionBuilder("Bar").Build();
+  delegate.InsertForbidden(extension);
+
+  extensions::ExtensionErrorUIDefault ui(&delegate);
+  ManagementPolicyMock provider(extension.get(), false);
+  std::unique_ptr<extensions::ManagementPolicy> management_policy =
+      std::make_unique<extensions::ManagementPolicy>();
+  management_policy->RegisterProvider(&provider);
+  ui.SetManagementPolicyForTesting(management_policy.get());
+  GlobalErrorWithStandardBubble* bubble = ui.GetErrorForTesting();
+  std::u16string title = bubble->GetBubbleViewTitle();
+  EXPECT_THAT(title, l10n_util::GetPluralStringFUTF16(
+                         IDS_POLICY_BLOCKED_EXTENSION_ALERT_TITLE, 1));
+
+  std::vector<std::u16string> messages = bubble->GetBubbleViewMessages();
+
+  EXPECT_THAT(messages,
+              testing::ElementsAre(l10n_util::GetStringFUTF16(
+                  IDS_POLICY_BLOCKED_EXTENSION_ALERT_ITEM_DETAIL, u"Bar")));
 }
