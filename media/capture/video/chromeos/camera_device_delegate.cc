@@ -1438,10 +1438,15 @@ void CameraDeviceDelegate::OnResultMetadataAvailable(
   if (ae_compensation.size() == 1)
     result_metadata_.ae_compensation = ae_compensation[0];
 
+  auto lens_state = GetMetadataEntryAsSpan<uint8_t>(
+      result_metadata, cros::mojom::CameraMetadataTag::ANDROID_LENS_STATE);
   result_metadata_frame_number_ = frame_number;
   // We need to wait the new result metadata for new settings.
   if (result_metadata_frame_number_ >
-      result_metadata_frame_number_for_photo_state_) {
+          result_metadata_frame_number_for_photo_state_ &&
+      lens_state.size() == 1 &&
+      static_cast<cros::mojom::AndroidLensState>(lens_state[0]) ==
+          cros::mojom::AndroidLensState::ANDROID_LENS_STATE_STATIONARY) {
     for (auto& request : get_photo_state_queue_)
       ipc_task_runner_->PostTask(FROM_HERE, std::move(request));
     get_photo_state_queue_.clear();
