@@ -545,6 +545,11 @@ class IdentityManager : public KeyedService,
       const std::string& locale,
       const std::string& picture_url);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  friend account_manager::AccountManager* GetAccountManager(
+      IdentityManager* identity_manager);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   // Temporary access to getters (e.g. GetTokenService()).
   // TODO(https://crbug.com/944127): Remove this friendship by
   // extending identity_test_utils.h as needed.

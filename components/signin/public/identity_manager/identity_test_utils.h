@@ -16,6 +16,12 @@ namespace network {
 class TestURLLoaderFactory;
 }
 
+#if defined(OS_CHROMEOS)
+namespace account_manager {
+class AccountManager;
+}
+#endif
+
 class GoogleServiceAuthError;
 
 // Test-related utilities that don't fit in either IdentityTestEnvironment or
@@ -198,6 +204,11 @@ void SimulateSuccessfulFetchOfAccountInfo(IdentityManager* identity_manager,
                                           const std::string& given_name,
                                           const std::string& locale,
                                           const std::string& picture_url);
+
+#if defined(OS_CHROMEOS)
+account_manager::AccountManager* GetAccountManager(
+    IdentityManager* identity_manager);
+#endif
 }  // namespace signin
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_IDENTITY_TEST_UTILS_H_

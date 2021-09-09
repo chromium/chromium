@@ -646,7 +646,9 @@ void AccountManager::UpsertAccountInternal(
   auto it = accounts_.find(account_key);
   if (it == accounts_.end()) {
     // This is a new account. Insert it.
-
+    // Note: AccountManager may be used on Lacros in tests. Don't check pref
+    // service in this case.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // New account insertions can only happen through a user action, which
     // implies that |Profile| must have been fully initialized at this point.
     // |ProfileImpl|'s constructor guarantees that
@@ -659,6 +661,7 @@ void AccountManager::UpsertAccountInternal(
       // adding a Secondary Account are already blocked.
       CHECK(accounts_.empty());
     }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     accounts_.emplace(account_key, account);
     PersistAccountsAsync();
     NotifyTokenObservers(

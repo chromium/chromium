@@ -23,10 +23,14 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if defined(OS_ANDROID)
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate_android.h"
@@ -37,6 +41,22 @@ namespace signin {
 
 namespace {
 
+#if defined(OS_CHROMEOS)
+// Whether identity_test_utils uses `AccountManager` or
+// `ProfileOAuth2TokenService` for managing credentials.
+bool ShouldUseAccountManager(IdentityManager* identity_manager) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If account consistency is `kMirror` - use `AccountManager` for managing
+  // credentials, otherwise use `ProfileOAuth2TokenService`.
+  return identity_manager->GetAccountConsistency() ==
+         AccountConsistencyMethod::kMirror;
+#else
+  // In Ash - always use `AccountManager` for managing credentials.
+  return true;
+#endif
+}
+#endif  // defined(OS_CHROMEOS)
+
 // Helper function that updates the refresh token for |account_id| to
 // |new_token|. Before updating the refresh token, blocks until refresh tokens
 // are loaded. After updating the token, blocks until the update is processed by
@@ -44,7 +64,7 @@ namespace {
 void UpdateRefreshTokenForAccount(
     ProfileOAuth2TokenService* token_service,
     AccountTrackerService* account_tracker_service,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
     account_manager::AccountManager* account_manager,
 #endif
     IdentityManager* identity_manager,
@@ -66,18 +86,23 @@ void UpdateRefreshTokenForAccount(
   token_updated_observer.SetOnRefreshTokenUpdatedCallback(
       run_loop.QuitClosure());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  const AccountInfo& account_info =
-      account_tracker_service->GetAccountInfo(account_id);
-
-  DCHECK(account_manager);
-  account_manager->UpsertAccount(
-      account_manager::AccountKey{account_info.gaia,
-                                  account_manager::AccountType::kGaia},
-      account_info.email, new_token);
-#else
-  token_service->UpdateCredentials(account_id, new_token);
-#endif
+  // TODO(crbug.com/1226041): simplify this when all Lacros Profiles use Mirror.
+#if defined(OS_CHROMEOS)
+  if (ShouldUseAccountManager(identity_manager)) {
+    const AccountInfo& account_info =
+        account_tracker_service->GetAccountInfo(account_id);
+    DCHECK(account_manager)
+        << "AccountManager is not created. In Lacros browser tests use "
+           "`IdentityBrowserTestBase` instead of `InProcessBrowserTest`";
+    account_manager->UpsertAccount(
+        account_manager::AccountKey{account_info.gaia,
+                                    account_manager::AccountType::kGaia},
+        account_info.email, new_token);
+  } else
+#endif  // defined(OS_CHROMEOS)
+  {
+    token_service->UpdateCredentials(account_id, new_token);
+  }
 
   run_loop.Run();
 }
@@ -228,6 +253,12 @@ void ClearPrimaryAccount(IdentityManager* identity_manager) {
   // synchronously with IdentityManager.
   NOTREACHED();
 #else
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  DCHECK_NE(identity_manager->GetAccountConsistency(),
+            AccountConsistencyMethod::kMirror);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   if (!identity_manager->HasPrimaryAccount(ConsentLevel::kSignin))
     return;
 
@@ -312,8 +343,8 @@ void SetRefreshTokenForAccount(IdentityManager* identity_manager,
   UpdateRefreshTokenForAccount(
       identity_manager->GetTokenService(),
       identity_manager->GetAccountTrackerService(),
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      identity_manager->GetAshAccountManager(),
+#if defined(OS_CHROMEOS)
+      GetAccountManager(identity_manager),
 #endif
       identity_manager, account_id,
       token_value.empty() ? "refresh_token_for_" + account_id.ToString() + "_" +
@@ -326,8 +357,8 @@ void SetInvalidRefreshTokenForAccount(IdentityManager* identity_manager,
   UpdateRefreshTokenForAccount(identity_manager->GetTokenService(),
 
                                identity_manager->GetAccountTrackerService(),
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-                               identity_manager->GetAshAccountManager(),
+#if defined(OS_CHROMEOS)
+                               GetAccountManager(identity_manager),
 #endif
                                identity_manager, account_id,
                                GaiaConstants::kInvalidRefreshToken);
@@ -343,16 +374,23 @@ void RemoveRefreshTokenForAccount(IdentityManager* identity_manager,
   token_updated_observer.SetOnRefreshTokenRemovedCallback(
       run_loop.QuitClosure());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  const AccountInfo& account_info =
-      identity_manager->GetAccountTrackerService()->GetAccountInfo(account_id);
+  // TODO(crbug.com/1226041): simplify this when all Lacros Profiles use Mirror.
+#if defined(OS_CHROMEOS)
+  if (ShouldUseAccountManager(identity_manager)) {
+    account_manager::AccountManager* account_manager =
+        GetAccountManager(identity_manager);
 
-  identity_manager->GetAshAccountManager()->RemoveAccount(
-      account_manager::AccountKey{account_info.gaia,
-                                  account_manager::AccountType::kGaia});
-#else
-  identity_manager->GetTokenService()->RevokeCredentials(account_id);
-#endif
+    const AccountInfo& account_info =
+        identity_manager->GetAccountTrackerService()->GetAccountInfo(
+            account_id);
+    DCHECK(account_manager);
+    account_manager->RemoveAccount(account_manager::AccountKey{
+        account_info.gaia, account_manager::AccountType::kGaia});
+  } else
+#endif  // defined(OS_CHROMEOS)
+  {
+    identity_manager->GetTokenService()->RevokeCredentials(account_id);
+  }
 
   run_loop.Run();
 }
@@ -495,5 +533,16 @@ void SimulateSuccessfulFetchOfAccountInfo(IdentityManager* identity_manager,
       identity_manager->GetAccountTrackerService();
   account_tracker_service->SetAccountInfoFromUserInfo(account_id, &user_info);
 }
+
+#if defined(OS_CHROMEOS)
+account_manager::AccountManager* GetAccountManager(
+    IdentityManager* identity_manager) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return MaybeGetAshAccountManagerForTests();
+#else
+  return identity_manager->GetAshAccountManager();
+#endif
+}
+#endif  // defined(OS_CHROMEOS)
 
 }  // namespace signin

@@ -7271,7 +7271,14 @@ static_library("test_support") {
   ]
 
   if (!is_android) {
-    deps += [ "//components/policy/test_support" ]
+    sources += [
+      "signin/identity_browser_test_base.cc",
+      "signin/identity_browser_test_base.h",
+    ]
+    deps += [
+      "//chrome/test:test_support_ui",
+      "//components/policy/test_support",
+    ]
   }
 
   if (is_android) {

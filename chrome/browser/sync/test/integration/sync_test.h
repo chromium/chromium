@@ -40,7 +40,7 @@
 #include "chrome/test/base/android/android_browser_test.h"
 #else
 #include "chrome/browser/extensions/install_verifier.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/browser/signin/identity_browser_test_base.h"
 #endif
 
 // The E2E tests are designed to run against real backend servers. To identify
@@ -105,7 +105,7 @@ extern const char kSyncPasswordForTest[];
 //    username and password are ignored if this is set.
 // Other switches may modify the behavior of helper classes frequently used in
 // sync integration tests, see StatusChangeChecker for example.
-class SyncTest : public PlatformBrowserTest {
+class SyncTest : public IdentityPlatformBrowserTest {
  public:
   // The different types of live sync tests that can be implemented.
   enum TestType {

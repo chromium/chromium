@@ -52,4 +52,8 @@ class AndroidBrowserTest : public content::BrowserTestBase {
 // depending on the platform, use this type alias as the test base class.
 using PlatformBrowserTest = AndroidBrowserTest;
 
+// When including either identity_browser_test_base.h or android_browser_test.h
+// depending on the platform, use this type alias as the test base class.
+using IdentityPlatformBrowserTest = AndroidBrowserTest;
+
 #endif  // CHROME_TEST_BASE_ANDROID_ANDROID_BROWSER_TEST_H_
