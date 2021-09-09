@@ -16,7 +16,7 @@
 namespace chromeos {
 
 using TelemetryExtensionTelemetryApiBrowserTest =
-    BaseTelemetryExtensionBrowserTest;
+    BaseTelemetryExtensionApiAllowedBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetVpdInfoError) {

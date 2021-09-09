@@ -7,13 +7,15 @@
 
 #include "ash/webui/telemetry_extension_ui/mojom/diagnostics_service.mojom.h"
 #include "ash/webui/telemetry_extension_ui/services/diagnostics_service.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/base_telemetry_extension_api_guard_function.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
 
-class DiagnosticsApiFunctionBase : public ExtensionFunction {
+class DiagnosticsApiFunctionBase
+    : public BaseTelemetryExtensionApiGuardFunction {
  public:
   DiagnosticsApiFunctionBase();
 
@@ -46,8 +48,8 @@ class OsDiagnosticsGetAvailableRoutinesFunction
  private:
   ~OsDiagnosticsGetAvailableRoutinesFunction() override;
 
-  // ExtensionFunction:
-  ResponseAction Run() override;
+  // BaseTelemetryExtensionApiGuardFunction:
+  ResponseAction RunIfAllowed() override;
 
   void OnResult(
       const std::vector<ash::health::mojom::DiagnosticRoutineEnum>& routines);
@@ -68,8 +70,8 @@ class OsDiagnosticsGetRoutineUpdateFunction
  private:
   ~OsDiagnosticsGetRoutineUpdateFunction() override;
 
-  // ExtensionFunction:
-  ResponseAction Run() override;
+  // BaseTelemetryExtensionApiGuardFunction:
+  ResponseAction RunIfAllowed() override;
 
   void OnResult(ash::health::mojom::RoutineUpdatePtr ptr);
 };
@@ -104,8 +106,8 @@ class OsDiagnosticsRunBatteryCapacityRoutineFunction
  private:
   ~OsDiagnosticsRunBatteryCapacityRoutineFunction() override;
 
-  // ExtensionFunction:
-  ResponseAction Run() override;
+  // BaseTelemetryExtensionApiGuardFunction:
+  ResponseAction RunIfAllowed() override;
 };
 
 class OsDiagnosticsRunBatteryChargeRoutineFunction
@@ -123,8 +125,8 @@ class OsDiagnosticsRunBatteryChargeRoutineFunction
  private:
   ~OsDiagnosticsRunBatteryChargeRoutineFunction() override;
 
-  // ExtensionFunction:
-  ResponseAction Run() override;
+  // BaseTelemetryExtensionApiGuardFunction:
+  ResponseAction RunIfAllowed() override;
 };
 
 class OsDiagnosticsRunBatteryDischargeRoutineFunction
@@ -142,8 +144,8 @@ class OsDiagnosticsRunBatteryDischargeRoutineFunction
  private:
   ~OsDiagnosticsRunBatteryDischargeRoutineFunction() override;
 
-  // ExtensionFunction:
-  ResponseAction Run() override;
+  // BaseTelemetryExtensionApiGuardFunction:
+  ResponseAction RunIfAllowed() override;
 };
 
 class OsDiagnosticsRunBatteryHealthRoutineFunction
@@ -161,8 +163,8 @@ class OsDiagnosticsRunBatteryHealthRoutineFunction
  private:
   ~OsDiagnosticsRunBatteryHealthRoutineFunction() override;
 
-  // ExtensionFunction:
-  ResponseAction Run() override;
+  // BaseTelemetryExtensionApiGuardFunction:
+  ResponseAction RunIfAllowed() override;
 };
 
 class OsDiagnosticsRunCpuCacheRoutineFunction
@@ -180,8 +182,8 @@ class OsDiagnosticsRunCpuCacheRoutineFunction
  private:
   ~OsDiagnosticsRunCpuCacheRoutineFunction() override;
 
-  // ExtensionFunction:
-  ResponseAction Run() override;
+  // BaseTelemetryExtensionApiGuardFunction:
+  ResponseAction RunIfAllowed() override;
 };
 
 class OsDiagnosticsRunCpuStressRoutineFunction
@@ -199,8 +201,8 @@ class OsDiagnosticsRunCpuStressRoutineFunction
  private:
   ~OsDiagnosticsRunCpuStressRoutineFunction() override;
 
-  // ExtensionFunction:
-  ResponseAction Run() override;
+  // BaseTelemetryExtensionApiGuardFunction:
+  ResponseAction RunIfAllowed() override;
 };
 
 class OsDiagnosticsRunMemoryRoutineFunction
@@ -218,8 +220,8 @@ class OsDiagnosticsRunMemoryRoutineFunction
  private:
   ~OsDiagnosticsRunMemoryRoutineFunction() override;
 
-  // ExtensionFunction:
-  ResponseAction Run() override;
+  // BaseTelemetryExtensionApiGuardFunction:
+  ResponseAction RunIfAllowed() override;
 };
 
 }  // namespace chromeos

@@ -7,13 +7,14 @@
 
 #include "ash/webui/telemetry_extension_ui/mojom/probe_service.mojom.h"
 #include "ash/webui/telemetry_extension_ui/services/probe_service.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/base_telemetry_extension_api_guard_function.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
 
-class TelemetryApiFunctionBase : public ExtensionFunction {
+class TelemetryApiFunctionBase : public BaseTelemetryExtensionApiGuardFunction {
  public:
   TelemetryApiFunctionBase();
 
@@ -41,8 +42,8 @@ class OsTelemetryGetVpdInfoFunction : public TelemetryApiFunctionBase {
  private:
   ~OsTelemetryGetVpdInfoFunction() override;
 
-  // ExtensionFunction:
-  ResponseAction Run() override;
+  // BaseTelemetryExtensionApiGuardFunction:
+  ResponseAction RunIfAllowed() override;
 
   void OnResult(ash::health::mojom::TelemetryInfoPtr ptr);
 };
@@ -59,8 +60,8 @@ class OsTelemetryGetOemDataFunction : public TelemetryApiFunctionBase {
  private:
   ~OsTelemetryGetOemDataFunction() override;
 
-  // ExtensionFunction:
-  ResponseAction Run() override;
+  // BaseTelemetryExtensionApiGuardFunction:
+  ResponseAction RunIfAllowed() override;
 
   void OnResult(ash::health::mojom::OemDataPtr ptr);
 };

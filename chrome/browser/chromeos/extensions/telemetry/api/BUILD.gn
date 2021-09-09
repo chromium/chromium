@@ -12,6 +12,8 @@ assert(enable_extensions,
 
 source_set("api") {
   sources = [
+    "base_telemetry_extension_api_guard_function.cc",
+    "base_telemetry_extension_api_guard_function.h",
     "diagnostics_api.cc",
     "diagnostics_api.h",
     "diagnostics_api_converters.cc",
@@ -25,6 +27,7 @@ source_set("api") {
     "//ash/webui/telemetry_extension_ui/services:telemetry_services",
     "//base",
     "//chrome/common/chromeos/extensions/api",
+    "//components/user_manager",
     "//extensions/browser",
     "//extensions/common",
   ]
@@ -49,6 +52,7 @@ source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
+    "base_telemetry_extension_api_guard_function_browsertest.cc",
     "base_telemetry_extension_browser_test.cc",
     "base_telemetry_extension_browser_test.h",
     "diagnostics_api_browsertest.cc",

@@ -22,9 +22,27 @@ class BaseTelemetryExtensionBrowserTest
   BaseTelemetryExtensionBrowserTest& operator=(
       const BaseTelemetryExtensionBrowserTest&) = delete;
 
+  // BrowserTestBase:
+  void SetUpOnMainThread() override;
+
  protected:
   void CreateExtensionAndRunServiceWorker(
       const std::string& service_worker_content);
+};
+
+class BaseTelemetryExtensionApiAllowedBrowserTest
+    : public BaseTelemetryExtensionBrowserTest {
+ public:
+  BaseTelemetryExtensionApiAllowedBrowserTest();
+  ~BaseTelemetryExtensionApiAllowedBrowserTest() override;
+
+  BaseTelemetryExtensionApiAllowedBrowserTest(
+      const BaseTelemetryExtensionApiAllowedBrowserTest&) = delete;
+  BaseTelemetryExtensionApiAllowedBrowserTest& operator=(
+      const BaseTelemetryExtensionApiAllowedBrowserTest&) = delete;
+
+  // BrowserTestBase:
+  void SetUpOnMainThread() override;
 };
 
 }  // namespace chromeos

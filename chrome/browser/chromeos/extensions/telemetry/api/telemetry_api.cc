@@ -23,7 +23,8 @@ TelemetryApiFunctionBase::~TelemetryApiFunctionBase() = default;
 OsTelemetryGetVpdInfoFunction::OsTelemetryGetVpdInfoFunction() = default;
 OsTelemetryGetVpdInfoFunction::~OsTelemetryGetVpdInfoFunction() = default;
 
-ExtensionFunction::ResponseAction OsTelemetryGetVpdInfoFunction::Run() {
+ExtensionFunction::ResponseAction
+OsTelemetryGetVpdInfoFunction::RunIfAllowed() {
   auto cb = base::BindOnce(&OsTelemetryGetVpdInfoFunction::OnResult, this);
 
   remote_probe_service_->ProbeTelemetryInfo(
@@ -67,7 +68,8 @@ void OsTelemetryGetVpdInfoFunction::OnResult(
 OsTelemetryGetOemDataFunction::OsTelemetryGetOemDataFunction() = default;
 OsTelemetryGetOemDataFunction::~OsTelemetryGetOemDataFunction() = default;
 
-ExtensionFunction::ResponseAction OsTelemetryGetOemDataFunction::Run() {
+ExtensionFunction::ResponseAction
+OsTelemetryGetOemDataFunction::RunIfAllowed() {
   auto cb = base::BindOnce(&OsTelemetryGetOemDataFunction::OnResult, this);
 
   remote_probe_service_->GetOemData(std::move(cb));

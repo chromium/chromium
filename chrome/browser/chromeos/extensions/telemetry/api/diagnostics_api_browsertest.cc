@@ -14,7 +14,7 @@
 namespace chromeos {
 
 using TelemetryExtensionDiagnosticsApiBrowserTest =
-    BaseTelemetryExtensionBrowserTest;
+    BaseTelemetryExtensionApiAllowedBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        GetAvailableRoutinesSuccess) {

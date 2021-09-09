@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/extensions/telemetry/api/base_telemetry_extension_browser_test.h"
 
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "components/user_manager/user_manager.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -14,6 +16,17 @@ BaseTelemetryExtensionBrowserTest::BaseTelemetryExtensionBrowserTest() =
     default;
 BaseTelemetryExtensionBrowserTest::~BaseTelemetryExtensionBrowserTest() =
     default;
+
+void BaseTelemetryExtensionBrowserTest::SetUpOnMainThread() {
+  extensions::ExtensionBrowserTest::SetUpOnMainThread();
+
+  // Make sure that current user is not a device owner.
+  auto* const user_manager =
+      static_cast<FakeChromeUserManager*>(user_manager::UserManager::Get());
+  const AccountId regular_user = AccountId::FromUserEmail("regular@gmail.com");
+  user_manager->AddUser(regular_user);
+  user_manager->SetOwnerId(regular_user);
+}
 
 void BaseTelemetryExtensionBrowserTest::CreateExtensionAndRunServiceWorker(
     const std::string& service_worker_content) {
@@ -43,6 +56,21 @@ void BaseTelemetryExtensionBrowserTest::CreateExtensionAndRunServiceWorker(
   ASSERT_TRUE(extension);
 
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+BaseTelemetryExtensionApiAllowedBrowserTest::
+    BaseTelemetryExtensionApiAllowedBrowserTest() = default;
+BaseTelemetryExtensionApiAllowedBrowserTest::
+    ~BaseTelemetryExtensionApiAllowedBrowserTest() = default;
+
+void BaseTelemetryExtensionApiAllowedBrowserTest::SetUpOnMainThread() {
+  BaseTelemetryExtensionBrowserTest::SetUpOnMainThread();
+
+  // Make sure that current user is a device owner.
+  auto* const user_manager =
+      static_cast<FakeChromeUserManager*>(user_manager::UserManager::Get());
+  user_manager->SetOwnerId(
+      user_manager::UserManager::Get()->GetActiveUser()->GetAccountId());
 }
 
 }  // namespace chromeos
