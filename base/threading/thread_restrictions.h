@@ -107,6 +107,7 @@ class KeyStorageLinux;
 class NativeBackendKWallet;
 class NativeDesktopMediaList;
 class Profile;
+class StartupTabProviderImpl;
 class WebEngineBrowserMainParts;
 
 Profile* GetLastProfileMac();
@@ -415,6 +416,7 @@ class BASE_EXPORT ScopedAllowBlocking {
 
   // This can only be instantiated by friends. Use ScopedAllowBlockingForTesting
   // in unit tests to avoid the friend requirement.
+  friend class ::StartupTabProviderImpl;
   friend class AdjustOOMScoreHelper;
   friend class StackSamplingProfiler;
   friend class android_webview::ScopedAllowInitGLBindings;

@@ -101,51 +101,6 @@ bool ValidateUrl(const GURL& url) {
          url.spec() == url::kAboutBlankURL;
 }
 
-// Returns the list of URLs to open from the command line.
-std::vector<GURL> GetURLsFromCommandLine(const base::CommandLine& command_line,
-                                         const base::FilePath& cur_dir,
-                                         Profile* profile) {
-  std::vector<GURL> urls;
-
-  for (const auto& arg : command_line.GetArgs()) {
-    // Note: Type/encoding of |arg| matches with the one of FilePath.
-    // So, we use them for encoding conversions.
-
-    // Handle Vista way of searching - "? <search-term>"
-    if (base::StartsWith(arg, FILE_PATH_LITERAL("? "))) {
-      GURL url(GetDefaultSearchURLForSearchTerms(
-          TemplateURLServiceFactory::GetForProfile(profile),
-          base::FilePath(arg).LossyDisplayName().substr(/* remove "? " */ 2)));
-      if (url.is_valid()) {
-        urls.push_back(std::move(url));
-        continue;
-      }
-    }
-
-    // Otherwise, fall through to treating it as a URL.
-
-    // This will create a file URL or a regular URL.
-    // This call can (in rare circumstances) block the UI thread.
-    // Allow it until this bug is fixed.
-    //  http://code.google.com/p/chromium/issues/detail?id=60641
-    GURL url(base::FilePath(arg).MaybeAsASCII());
-
-    // http://crbug.com/371030: Only use URLFixerUpper if we don't have a valid
-    // URL, otherwise we will look in the current directory for a file named
-    // 'about' if the browser was started with a about:foo argument.
-    // http://crbug.com/424991: Always use URLFixerUpper on file:// URLs,
-    // otherwise we wouldn't correctly handle '#' in a file name.
-    if (!url.is_valid() || url.SchemeIsFile()) {
-      base::ThreadRestrictions::ScopedAllowIO allow_io;
-      url = url_formatter::FixupRelativeFile(cur_dir, base::FilePath(arg));
-    }
-
-    if (ValidateUrl(url))
-      urls.push_back(std::move(url));
-  }
-  return urls;
-}
-
 }  // namespace
 
 StartupTabs StartupTabProviderImpl::GetOnboardingTabs(Profile* profile) const {
@@ -245,8 +200,43 @@ StartupTabs StartupTabProviderImpl::GetCommandLineTabs(
     const base::FilePath& cur_dir,
     Profile* profile) const {
   StartupTabs result;
-  for (const GURL& url : GetURLsFromCommandLine(command_line, cur_dir, profile))
-    result.push_back(StartupTab(url, false));
+
+  for (const auto& arg : command_line.GetArgs()) {
+    // Note: Type/encoding of |arg| matches with the one of FilePath.
+    // So, we use them for encoding conversions.
+
+    // Handle Vista way of searching - "? <search-term>"
+    if (base::StartsWith(arg, FILE_PATH_LITERAL("? "))) {
+      GURL url(GetDefaultSearchURLForSearchTerms(
+          TemplateURLServiceFactory::GetForProfile(profile),
+          base::FilePath(arg).LossyDisplayName().substr(/* remove "? " */ 2)));
+      if (url.is_valid()) {
+        result.emplace_back(std::move(url), false);
+        continue;
+      }
+    }
+
+    // Otherwise, fall through to treating it as a URL.
+    // This will create a file URL or a regular URL.
+    GURL url(base::FilePath(arg).MaybeAsASCII());
+
+    // This call can (in rare circumstances) block the UI thread.
+    // FixupRelativeFile may access to current working directory, which is a
+    // blocking API. http://crbug.com/60641
+    // http://crbug.com/371030: Only use URLFixerUpper if we don't have a valid
+    // URL, otherwise we will look in the current directory for a file named
+    // 'about' if the browser was started with a about:foo argument.
+    // http://crbug.com/424991: Always use URLFixerUpper on file:// URLs,
+    // otherwise we wouldn't correctly handle '#' in a file name.
+    if (!url.is_valid() || url.SchemeIsFile()) {
+      base::ScopedAllowBlocking allow_blocking;
+      url = url_formatter::FixupRelativeFile(cur_dir, base::FilePath(arg));
+    }
+
+    if (ValidateUrl(url))
+      result.emplace_back(std::move(url), false);
+  }
+
   return result;
 }
 
