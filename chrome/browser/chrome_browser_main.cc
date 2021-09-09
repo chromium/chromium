@@ -373,10 +373,11 @@ StartupProfileInfo CreatePrimaryProfile(
 // notification, the profile id encoded in the notification launch id should
 // be chosen over all others.
 #if defined(OS_WIN)
-  std::string last_used_profile_id =
-      NotificationLaunchId::GetNotificationLaunchProfileId(parsed_command_line);
-  if (!last_used_profile_id.empty()) {
-    profiles::SetLastUsedProfile(last_used_profile_id);
+  base::FilePath profile_basename =
+      NotificationLaunchId::GetNotificationLaunchProfileBaseName(
+          parsed_command_line);
+  if (!profile_basename.empty()) {
+    profiles::SetLastUsedProfile(profile_basename);
     last_used_profile_set = true;
   }
 #endif  // defined(OS_WIN)
@@ -386,7 +387,7 @@ StartupProfileInfo CreatePrimaryProfile(
       parsed_command_line.HasSwitch(switches::kProfileDirectory);
   if (!last_used_profile_set && profile_dir_specified) {
     profiles::SetLastUsedProfile(
-        parsed_command_line.GetSwitchValueASCII(switches::kProfileDirectory));
+        parsed_command_line.GetSwitchValuePath(switches::kProfileDirectory));
     last_used_profile_set = true;
   }
 

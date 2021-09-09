@@ -136,7 +136,7 @@ class ProfileManager : public Profile::Delegate {
   // already exist on disk
   // Returns true if the profile exists, but the final loaded profile will come
   // as part of the callback.
-  bool LoadProfile(const std::string& profile_base_name,
+  bool LoadProfile(const base::FilePath& profile_base_name,
                    bool incognito,
                    ProfileLoadedCallback callback);
   bool LoadProfileByPath(const base::FilePath& profile_path,

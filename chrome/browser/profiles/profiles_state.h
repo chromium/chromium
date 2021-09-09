@@ -46,7 +46,7 @@ void RegisterPrefs(PrefRegistrySimple* registry);
 
 // Sets the last used profile pref to |profile_dir|, unless |profile_dir| is the
 // System Profile directory, which is an invalid last used profile.
-void SetLastUsedProfile(const std::string& profile_dir);
+void SetLastUsedProfile(const base::FilePath& profile_dir);
 
 #if !defined(OS_ANDROID)
 // Returns the display name of the specified on-the-record profile (or guest),

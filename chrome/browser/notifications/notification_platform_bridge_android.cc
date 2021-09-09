@@ -189,7 +189,7 @@ void NotificationPlatformBridgeAndroid::OnNotificationClicked(
       JavaToNotificationType(java_notification_type);
 
   profile_manager->LoadProfile(
-      profile_id, incognito,
+      GetProfileBaseNameFromProfileId(profile_id), incognito,
       base::BindOnce(&NotificationDisplayServiceImpl::ProfileLoadedCallback,
                      NotificationOperation::kClick, notification_type, origin,
                      notification_id, std::move(action_index), std::move(reply),
@@ -238,7 +238,7 @@ void NotificationPlatformBridgeAndroid::OnNotificationClosed(
       JavaToNotificationType(java_notification_type);
 
   profile_manager->LoadProfile(
-      profile_id, incognito,
+      GetProfileBaseNameFromProfileId(profile_id), incognito,
       base::BindOnce(&NotificationDisplayServiceImpl::ProfileLoadedCallback,
                      NotificationOperation::kClose, notification_type,
                      GURL(ConvertJavaStringToUTF8(env, java_origin)),

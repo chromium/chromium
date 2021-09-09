@@ -5,6 +5,7 @@
 #include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
 
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/i18n/number_formatting.h"
 #include "base/process/process_handle.h"
 #include "base/strings/utf_string_conversions.h"
@@ -41,7 +42,9 @@ void DoProcessMacNotificationResponse(
     action_index = info->button_index;
 
   profile_manager->LoadProfile(
-      info->meta->id->profile->id, info->meta->id->profile->incognito,
+      NotificationPlatformBridge::GetProfileBaseNameFromProfileId(
+          info->meta->id->profile->id),
+      info->meta->id->profile->incognito,
       base::BindOnce(&NotificationDisplayServiceImpl::ProfileLoadedCallback,
                      static_cast<NotificationOperation>(info->operation),
                      static_cast<NotificationHandler::Type>(info->meta->type),

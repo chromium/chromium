@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -114,7 +115,8 @@ void ForwardNotificationOperationOnUiThread(
   DCHECK(!profile_id.empty());
 
   g_browser_process->profile_manager()->LoadProfile(
-      profile_id, incognito,
+      NotificationPlatformBridge::GetProfileBaseNameFromProfileId(profile_id),
+      incognito,
       base::BindOnce(&NotificationDisplayServiceImpl::ProfileLoadedCallback,
                      operation, notification_type, origin, notification_id,
                      action_index, reply, by_user));

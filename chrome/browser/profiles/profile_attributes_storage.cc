@@ -760,7 +760,7 @@ void ProfileAttributesStorage::NotifyProfileUserManagementAcceptanceChanged(
 std::string ProfileAttributesStorage::StorageKeyFromProfilePath(
     const base::FilePath& profile_path) const {
   DCHECK(user_data_dir_ == profile_path.DirName());
-  return profile_path.BaseName().MaybeAsASCII();
+  return profile_path.BaseName().AsUTF8Unsafe();
 }
 
 void ProfileAttributesStorage::DisableProfileMetricsForTesting() {
@@ -855,7 +855,9 @@ void ProfileAttributesStorage::SaveAvatarImageAtPath(
 ProfileAttributesEntry* ProfileAttributesStorage::InitEntryWithKey(
     const std::string& key,
     bool is_omitted) {
-  base::FilePath path = user_data_dir_.AppendASCII(key);
+  base::FilePath path =
+      user_data_dir_.Append(base::FilePath::FromUTF8Unsafe(key));
+
   DCHECK(!base::Contains(profile_attributes_entries_, path.value()));
   ProfileAttributesEntry* new_entry =
       &profile_attributes_entries_[path.value()];

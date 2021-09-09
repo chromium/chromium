@@ -457,7 +457,7 @@ TEST_F(ProfileManagerTest, CreateAndUseTwoProfiles) {
 }
 
 TEST_F(ProfileManagerTest, LoadNonExistingProfile) {
-  const std::string profile_name = "NonExistingProfile";
+  base::FilePath profile_name(FILE_PATH_LITERAL("NonExistingProfile"));
   base::RunLoop run_loop_1;
   base::RunLoop run_loop_2;
 
@@ -474,10 +474,9 @@ TEST_F(ProfileManagerTest, LoadNonExistingProfile) {
 }
 
 TEST_F(ProfileManagerTest, LoadExistingProfile) {
-  const std::string profile_basename = "MyProfile";
-  base::FilePath profile_path =
-      temp_dir_.GetPath().AppendASCII(profile_basename);
-  const std::string other_basename = "SomeOtherProfile";
+  base::FilePath profile_basename(FILE_PATH_LITERAL("MyProfile"));
+  base::FilePath profile_path = temp_dir_.GetPath().Append(profile_basename);
+  const base::FilePath other_basename(FILE_PATH_LITERAL("SomeOtherProfile"));
   MockObserver mock_observer1;
   EXPECT_CALL(mock_observer1, OnProfileCreated(SameNotNull(), NotFail()))
       .Times(testing::AtLeast(1));
@@ -492,16 +491,16 @@ TEST_F(ProfileManagerTest, LoadExistingProfile) {
   bool incognito = false;
   profile_manager->LoadProfile(
       profile_basename, incognito,
-      base::BindOnce(&ExpectProfileWithName, profile_basename, incognito,
-                     load_profile.QuitClosure()));
+      base::BindOnce(&ExpectProfileWithName, profile_basename.AsUTF8Unsafe(),
+                     incognito, load_profile.QuitClosure()));
   load_profile.Run();
 
   base::RunLoop load_profile_incognito;
   incognito = true;
   profile_manager->LoadProfile(
       profile_basename, incognito,
-      base::BindOnce(&ExpectProfileWithName, profile_basename, incognito,
-                     load_profile_incognito.QuitClosure()));
+      base::BindOnce(&ExpectProfileWithName, profile_basename.AsUTF8Unsafe(),
+                     incognito, load_profile_incognito.QuitClosure()));
   load_profile_incognito.Run();
 
   // Loading some other non existing profile should still return null.

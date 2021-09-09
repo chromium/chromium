@@ -331,9 +331,9 @@ bool ShouldShowProfilePickerAtProcessLaunch(
 // the profile id encoded in the notification launch id should be chosen over
 // the profile picker.
 #if defined(OS_WIN)
-  std::string profile_id =
-      NotificationLaunchId::GetNotificationLaunchProfileId(command_line);
-  if (!profile_id.empty()) {
+  base::FilePath profile_basename =
+      NotificationLaunchId::GetNotificationLaunchProfileBaseName(command_line);
+  if (!profile_basename.empty()) {
     return false;
   }
 #endif  // defined(OS_WIN)
@@ -1396,10 +1396,10 @@ StartupProfilePathInfo GetStartupProfilePath(
 // the profile id encoded in the notification launch id should be chosen over
 // all others.
 #if defined(OS_WIN)
-  std::string profile_id =
-      NotificationLaunchId::GetNotificationLaunchProfileId(command_line);
-  if (!profile_id.empty()) {
-    return {user_data_dir.Append(base::FilePath(base::UTF8ToWide(profile_id))),
+  base::FilePath profile_basename =
+      NotificationLaunchId::GetNotificationLaunchProfileBaseName(command_line);
+  if (!profile_basename.empty()) {
+    return {user_data_dir.Append(profile_basename),
             StartupProfileMode::kBrowserWindow};
   }
 #endif  // defined(OS_WIN)

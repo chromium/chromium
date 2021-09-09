@@ -89,15 +89,15 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
 #endif  // defined(OS_CHROMEOS)
 }
 
-void SetLastUsedProfile(const std::string& profile_dir) {
+void SetLastUsedProfile(const base::FilePath& profile_dir) {
   // We should never be saving the System Profile as the last one used since it
   // shouldn't have a browser.
-  if (profile_dir == base::FilePath(chrome::kSystemProfileDir).AsUTF8Unsafe())
+  if (profile_dir == base::FilePath(chrome::kSystemProfileDir))
     return;
 
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
-  local_state->SetString(prefs::kProfileLastUsed, profile_dir);
+  local_state->SetFilePath(prefs::kProfileLastUsed, profile_dir);
 }
 
 #if !defined(OS_ANDROID)

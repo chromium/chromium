@@ -18,6 +18,7 @@
 #include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
 #include "base/environment.h"
+#include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
 #include "base/i18n/number_formatting.h"
@@ -217,7 +218,8 @@ void ForwardNotificationOperationOnUiThread(
   DCHECK(!profile_id.empty());
 
   g_browser_process->profile_manager()->LoadProfile(
-      profile_id, is_incognito,
+      NotificationPlatformBridge::GetProfileBaseNameFromProfileId(profile_id),
+      is_incognito,
       base::BindOnce(&NotificationDisplayServiceImpl::ProfileLoadedCallback,
                      operation, notification_type, origin, notification_id,
                      action_index, reply, by_user));

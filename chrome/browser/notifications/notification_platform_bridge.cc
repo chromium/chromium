@@ -4,23 +4,23 @@
 
 #include "chrome/browser/notifications/notification_platform_bridge.h"
 
+#include "base/check.h"
 #include "base/files/file_path.h"
-#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-
-#if defined(OS_WIN)
-#include "base/strings/utf_string_conversions.h"
-#endif
 
 // static
 std::string NotificationPlatformBridge::GetProfileId(Profile* profile) {
   if (!profile)
-    return "";
-#if defined(OS_WIN)
-  return base::WideToUTF8(profile->GetBaseName().value());
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
-  return profile->GetBaseName().value();
-#else
-#error "Not implemented for !OS_WIN && !OS_POSIX."
-#endif
+    return std::string();
+  const base::FilePath basename = profile->GetBaseName();
+  const std::string profile_id = basename.AsUTF8Unsafe();
+  // The conversion must be reversible.
+  DCHECK_EQ(basename, GetProfileBaseNameFromProfileId(profile_id));
+  return profile_id;
+}
+
+// static
+base::FilePath NotificationPlatformBridge::GetProfileBaseNameFromProfileId(
+    const std::string& profile_id) {
+  return base::FilePath::FromUTF8Unsafe(profile_id);
 }
