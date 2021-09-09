@@ -3321,6 +3321,13 @@ enum WebFeature {
   kHTMLParamElementURLParameter = 4010,
   kV8HTMLScriptElement_Supports_Method = 4011,
   kHandwritingRecognitionQueryRecognizer = 4012,
+  kV8FileSystemFileHandle_CreateSyncAccessHandle_Method = 4013,
+  kV8FileSystemSyncAccessHandle_Read_Method = 4014,
+  kV8FileSystemSyncAccessHandle_Write_Method = 4015,
+  kV8FileSystemSyncAccessHandle_Close_Method = 4016,
+  kV8FileSystemSyncAccessHandle_Flush_Method = 4017,
+  kV8FileSystemSyncAccessHandle_GetSize_Method = 4018,
+  kV8FileSystemSyncAccessHandle_Truncate_Method = 4019,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

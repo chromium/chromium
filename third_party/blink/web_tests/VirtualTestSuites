@@ -618,14 +618,9 @@
     "args": ["--enable-features=ReduceUserAgent"]
   },
   {
-    "prefix": "file-system-access-access-handle",
-    "bases": ["external/wpt/file-system-access"],
-    "args": ["--enable-features=FileSystemAccessAccessHandle"]
-  },
-  {
     "prefix": "file-system-access-access-handle-incognito",
     "bases": ["external/wpt/file-system-access"],
-    "args": ["--enable-features=FileSystemAccessAccessHandle,IncognitoFileSystemContextForTesting"]
+    "args": ["--enable-features=IncognitoFileSystemContextForTesting"]
   },
   {
     "prefix": "file-handling",

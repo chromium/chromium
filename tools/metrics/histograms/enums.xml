@@ -31131,9 +31131,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="832" label="V8TextEvent_InitTextEvent_Method"/>
   <int value="833" label="V8SVGSVGElement_UseCurrentView_AttributeGetter"/>
   <int value="834" label="V8SVGSVGElement_CurrentView_AttributeGetter"/>
-  <int value="835" label="ClientHintsDPR"/>
-  <int value="836" label="ClientHintsResourceWidth"/>
-  <int value="837" label="ClientHintsViewportWidth"/>
+  <int value="835" label="ClientHintsDPR_DEPRECATED"/>
+  <int value="836" label="ClientHintsResourceWidth_DEPRECATED"/>
+  <int value="837" label="ClientHintsViewportWidth_DEPRECATED"/>
   <int value="838" label="SRIElementIntegrityAttributeButIneligible"/>
   <int value="839" label="FormDataAppendFile"/>
   <int value="840" label="FormDataAppendFileWithFilename"/>
@@ -32350,7 +32350,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2014" label="V8SpeechRecognition_Start_Method"/>
   <int value="2015" label="TableRowDirectionDifferentFromTable"/>
   <int value="2016" label="TableSectionDirectionDifferentFromTable"/>
-  <int value="2017" label="ClientHintsDeviceMemory"/>
+  <int value="2017" label="ClientHintsDeviceMemory_DEPRECATED"/>
   <int value="2018" label="CSSRegisterProperty"/>
   <int value="2019" label="RelativeOrientationSensorConstructor"/>
   <int value="2020" label="SmoothScrollJSInterventionActivated"/>
@@ -32750,9 +32750,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2401" label="TransformStreamConstructor"/>
   <int value="2402" label="NegativeBackgroundSize"/>
   <int value="2403" label="NegativeMaskSize"/>
-  <int value="2404" label="ClientHintsRtt"/>
-  <int value="2405" label="ClientHintsDownlink"/>
-  <int value="2406" label="ClientHintsEct"/>
+  <int value="2404" label="ClientHintsRtt_DEPRECATED"/>
+  <int value="2405" label="ClientHintsDownlink_DEPRECATED"/>
+  <int value="2406" label="ClientHintsEct_DEPRECATED"/>
   <int value="2407" label="CrossOriginHTMLIFrameElementContentDocument"/>
   <int value="2408" label="CrossOriginHTMLIFrameElementGetSVGDocument"/>
   <int value="2409" label="CrossOriginHTMLEmbedElementGetSVGDocument"/>
@@ -34456,6 +34456,14 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4010" label="HTMLParamElementURLParameter"/>
   <int value="4011" label="V8HTMLScriptElement_Supports_Method"/>
   <int value="4012" label="HandwritingRecognitionQueryRecognizer"/>
+  <int value="4013"
+      label="V8FileSystemFileHandle_CreateSyncAccessHandle_Method"/>
+  <int value="4014" label="V8FileSystemSyncAccessHandle_Read_Method"/>
+  <int value="4015" label="V8FileSystemSyncAccessHandle_Write_Method"/>
+  <int value="4016" label="V8FileSystemSyncAccessHandle_Close_Method"/>
+  <int value="4017" label="V8FileSystemSyncAccessHandle_Flush_Method"/>
+  <int value="4018" label="V8FileSystemSyncAccessHandle_GetSize_Method"/>
+  <int value="4019" label="V8FileSystemSyncAccessHandle_Truncate_Method"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

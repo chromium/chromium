@@ -10,26 +10,26 @@
   RuntimeEnabled=FileSystemAccessAccessHandle,
   SecureContext
 ] interface FileSystemSyncAccessHandle {
-  [CallWith=ScriptState] Promise<void> close();
+  [CallWith=ScriptState, Measure] Promise<void> close();
 
 [
-  CallWith=ScriptState, RaisesException
+  CallWith=ScriptState, RaisesException, Measure
 ] Promise<void> flush();
 
 [
-  CallWith=ScriptState, RaisesException
+  CallWith=ScriptState, RaisesException, Measure
 ] Promise<unsigned long long> getSize();
 
 [
-  CallWith = ScriptState, RaisesException
+  CallWith = ScriptState, RaisesException, Measure
 ] Promise<void> truncate([EnforceRange] unsigned long long size);
 
 [
-  RaisesException
+  RaisesException, Measure
 ] unsigned long long read([AllowShared] ArrayBufferView buffer,
                            FileSystemReadWriteOptions options);
 [
-  RaisesException
+  RaisesException, Measure
 ] unsigned long long write([AllowShared] ArrayBufferView buffer,
                            FileSystemReadWriteOptions options);
 };

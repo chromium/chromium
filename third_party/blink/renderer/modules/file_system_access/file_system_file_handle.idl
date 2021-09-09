@@ -18,6 +18,7 @@
         CallWith=ScriptState,
         RaisesException,
         Exposed=DedicatedWorker,
-        RuntimeEnabled=FileSystemAccessAccessHandle
+        RuntimeEnabled=FileSystemAccessAccessHandle,
+        Measure
     ] Promise<FileSystemSyncAccessHandle> createSyncAccessHandle();
 };

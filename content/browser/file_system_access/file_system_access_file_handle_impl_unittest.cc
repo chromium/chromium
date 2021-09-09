@@ -153,18 +153,10 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
 class FileSystemAccessAccessHandleTest
     : public FileSystemAccessFileHandleImplTest {
  public:
-  FileSystemAccessAccessHandleTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kFileSystemAccessAccessHandle);
-  }
-
   void SetUp() override {
     // AccessHandles are only allowed for temporary file systems.
     SetupHelper(storage::kFileSystemTypeTemporary, /*is_incognito=*/false);
   }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class FileSystemAccessAccessHandleIncognitoTest

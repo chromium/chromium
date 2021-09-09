@@ -325,11 +325,6 @@ const base::Feature kExtraSafelistedRequestHeadersForOutOfBlinkCors{
 const base::Feature kFeaturePolicyForClientHints{
     "FeaturePolicyForClientHints", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables the AccessHandle surface for File System Access API's Origin Private
-// File System. Tracking bug: https://crbug.com/1218431.
-const base::Feature kFileSystemAccessAccessHandle{
-    "FileSystemAccessAccessHandle", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables fixes for matching src: local() for web fonts correctly against full
 // font name or postscript name. Rolling out behind a flag, as enabling this
 // enables a font indexer on Android which we need to test in the field first.

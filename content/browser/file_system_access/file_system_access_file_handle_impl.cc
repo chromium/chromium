@@ -79,10 +79,6 @@ void CreateBlobOnIOThread(
   BlobImpl::Create(std::move(blob_handle), std::move(blob_receiver));
 }
 
-bool IsAccessHandleEnabled() {
-  return base::FeatureList::IsEnabled(features::kFileSystemAccessAccessHandle);
-}
-
 bool HasWritePermission(const base::FilePath& path) {
   if (!base::PathExists(path))
     return true;
@@ -183,16 +179,6 @@ void FileSystemAccessFileHandleImpl::Remove(RemoveCallback callback) {
 void FileSystemAccessFileHandleImpl::OpenAccessHandle(
     OpenAccessHandleCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!IsAccessHandleEnabled()) {
-    mojo::ReportBadMessage("File System Access Access Handle not enabled");
-    std::move(callback).Run(file_system_access_error::FromStatus(
-                                FileSystemAccessStatus::kInvalidState,
-                                "File System Access Access Handle not enabled"),
-                            blink::mojom::FileSystemAccessAccessHandleFilePtr(),
-                            mojo::NullRemote());
-    return;
-  }
 
   if (url().type() != storage::kFileSystemTypeTemporary) {
     std::move(callback).Run(
