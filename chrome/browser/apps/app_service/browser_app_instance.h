@@ -46,8 +46,10 @@ struct BrowserAppInstance {
   aura::Window* window;
   // Set for apps of type kAppTab or kAppWindow, nil for kChromeWindow.
   absl::optional<std::string> title;
-  bool visible;
-  bool active;
+  bool is_browser_visible;
+  bool is_browser_active;
+  // Set for apps of type kAppTab or kAppWindow, nil for kChromeWindow.
+  absl::optional<bool> is_web_contents_active;
 };
 
 }  // namespace apps

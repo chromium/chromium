@@ -83,9 +83,8 @@ bool IsBrowserActive(Browser* browser) {
   return activation_client->GetActiveWindow() == aura_window;
 }
 
-bool IsAppActive(Browser* browser, content::WebContents* contents) {
-  return IsBrowserActive(browser) &&
-         browser->tab_strip_model()->GetActiveWebContents() == contents;
+bool IsWebContentsActive(Browser* browser, content::WebContents* contents) {
+  return browser->tab_strip_model()->GetActiveWebContents() == contents;
 }
 
 }  // namespace
@@ -526,17 +525,15 @@ void BrowserAppInstanceTracker::CreateAppInstance(
     Browser* browser,
     content::WebContents* contents) {
   app_instances_.AddInstance(
-      contents, base::WrapUnique(new BrowserAppInstance{
-                    GenerateId(),
-                    (browser->is_type_app() || browser->is_type_app_popup())
-                        ? BrowserAppInstance::Type::kAppWindow
-                        : BrowserAppInstance::Type::kAppTab,
-                    std::move(app_id),
-                    browser->window()->GetNativeWindow(),
-                    base::UTF16ToUTF8(contents->GetTitle()),
-                    IsBrowserVisible(browser),
-                    IsAppActive(browser, contents),
-                }));
+      contents,
+      base::WrapUnique(new BrowserAppInstance{
+          GenerateId(),
+          (browser->is_type_app() || browser->is_type_app_popup())
+              ? BrowserAppInstance::Type::kAppWindow
+              : BrowserAppInstance::Type::kAppTab,
+          std::move(app_id), browser->window()->GetNativeWindow(),
+          base::UTF16ToUTF8(contents->GetTitle()), IsBrowserVisible(browser),
+          IsBrowserActive(browser), IsWebContentsActive(browser, contents)}));
 }
 
 void BrowserAppInstanceTracker::MaybeUpdateAppInstance(
@@ -546,7 +543,7 @@ void BrowserAppInstanceTracker::MaybeUpdateAppInstance(
   app_instances_.MaybeUpdateInstance(
       instance, browser->window()->GetNativeWindow(),
       base::UTF16ToUTF8(contents->GetTitle()), IsBrowserVisible(browser),
-      IsAppActive(browser, contents));
+      IsBrowserActive(browser), IsWebContentsActive(browser, contents));
 }
 
 void BrowserAppInstanceTracker::RemoveAppInstanceIfExists(
@@ -555,16 +552,14 @@ void BrowserAppInstanceTracker::RemoveAppInstanceIfExists(
 }
 
 void BrowserAppInstanceTracker::CreateChromeInstance(Browser* browser) {
-  chrome_instances_.AddInstance(browser,
-                                base::WrapUnique(new BrowserAppInstance{
-                                    GenerateId(),
-                                    BrowserAppInstance::Type::kChromeWindow,
-                                    extension_misc::kChromeAppId,
-                                    browser->window()->GetNativeWindow(),
-                                    /* title= */ "",
-                                    IsBrowserVisible(browser),
-                                    IsBrowserActive(browser),
-                                }));
+  chrome_instances_.AddInstance(
+      browser,
+      base::WrapUnique(new BrowserAppInstance{
+          GenerateId(), BrowserAppInstance::Type::kChromeWindow,
+          extension_misc::kChromeAppId, browser->window()->GetNativeWindow(),
+          /* title= */ absl::nullopt, IsBrowserVisible(browser),
+          IsBrowserActive(browser),
+          /* is_web_contents_active= */ absl::nullopt}));
 }
 
 void BrowserAppInstanceTracker::MaybeUpdateChromeInstance(
@@ -573,8 +568,10 @@ void BrowserAppInstanceTracker::MaybeUpdateChromeInstance(
   // Browser window does not change for Chrome instances, but other attributes
   // may change.
   chrome_instances_.MaybeUpdateInstance(
-      instance, browser->window()->GetNativeWindow(), /* title= */ "",
-      IsBrowserVisible(browser), IsBrowserActive(browser));
+      instance, browser->window()->GetNativeWindow(),
+      /* title= */ absl::nullopt, IsBrowserVisible(browser),
+      IsBrowserActive(browser),
+      /* is_web_contents_active= */ absl::nullopt);
 }
 
 void BrowserAppInstanceTracker::RemoveChromeInstanceIfExists(Browser* browser) {
