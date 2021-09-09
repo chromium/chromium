@@ -28,6 +28,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/task_features.h"
 #include "base/task/thread_pool/delayed_task_manager.h"
+#include "base/task/thread_pool/environment_config.h"
 #include "base/task/thread_pool/pooled_task_runner_delegate.h"
 #include "base/task/thread_pool/sequence.h"
 #include "base/task/thread_pool/task_source_sort_key.h"
@@ -87,13 +88,13 @@ class ThreadGroupImplImplTestBase : public ThreadGroup::Delegate {
     thread_group_.reset();
   }
 
-  void CreateThreadGroup() {
+  void CreateThreadGroup(ThreadPriority priority = ThreadPriority::NORMAL) {
     ASSERT_FALSE(thread_group_);
     service_thread_.Start();
     delayed_task_manager_.Start(service_thread_.task_runner());
     thread_group_ = std::make_unique<ThreadGroupImpl>(
-        "TestThreadGroup", "A", ThreadPriority::NORMAL,
-        task_tracker_.GetTrackedRef(), tracked_ref_factory_.GetTrackedRef());
+        "TestThreadGroup", "A", priority, task_tracker_.GetTrackedRef(),
+        tracked_ref_factory_.GetTrackedRef());
     ASSERT_TRUE(thread_group_);
 
     mock_pooled_task_runner_delegate_.SetThreadGroup(thread_group_.get());
@@ -520,6 +521,74 @@ TEST_F(ThreadGroupImplImplStartInBodyTest, PostManyTasks) {
   EXPECT_EQ(thread_group_->NumberOfWorkersForTesting(),
             thread_group_->GetMaxTasksForTesting());
   threads_continue.Signal();
+  task_tracker_.FlushForTesting();
+}
+
+namespace {
+
+class BackgroundThreadGroupImplTest : public ThreadGroupImplImplTest {
+ public:
+  void CreateAndStartThreadGroup(
+      TimeDelta suggested_reclaim_time = TimeDelta::Max(),
+      size_t max_tasks = kMaxTasks,
+      absl::optional<int> max_best_effort_tasks = absl::nullopt,
+      WorkerThreadObserver* worker_observer = nullptr,
+      absl::optional<TimeDelta> may_block_threshold = absl::nullopt) {
+    if (!CanUseBackgroundPriorityForWorkerThread())
+      return;
+    CreateThreadGroup(ThreadPriority::BACKGROUND);
+    StartThreadGroup(suggested_reclaim_time, max_tasks, max_best_effort_tasks,
+                     worker_observer, may_block_threshold);
+  }
+
+  void SetUp() override { CreateAndStartThreadGroup(); }
+};
+
+}  // namespace
+
+// Verify that ScopedBlockingCall updates thread priority when necessary per
+// shutdown state.
+TEST_F(BackgroundThreadGroupImplTest, UpdatePriorityBlockingStarted) {
+  if (!CanUseBackgroundPriorityForWorkerThread())
+    return;
+
+  const scoped_refptr<TaskRunner> task_runner = test::CreatePooledTaskRunner(
+      {MayBlock(), WithBaseSyncPrimitives(), TaskPriority::BEST_EFFORT},
+      &mock_pooled_task_runner_delegate_);
+
+  TestWaitableEvent threads_running;
+  RepeatingClosure threads_running_barrier = BarrierClosure(
+      kMaxTasks,
+      BindOnce(&TestWaitableEvent::Signal, Unretained(&threads_running)));
+
+  TestWaitableEvent blocking_threads_continue;
+
+  for (size_t i = 0; i < kMaxTasks; ++i) {
+    task_runner->PostTask(
+        FROM_HERE, BindLambdaForTesting([&]() {
+          EXPECT_EQ(ThreadPriority::BACKGROUND,
+                    PlatformThread::GetCurrentThreadPriority());
+          {
+            // ScopedBlockingCall before shutdown doesn't affect priority.
+            ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                    BlockingType::MAY_BLOCK);
+            EXPECT_EQ(ThreadPriority::BACKGROUND,
+                      PlatformThread::GetCurrentThreadPriority());
+          }
+          threads_running_barrier.Run();
+          blocking_threads_continue.Wait();
+          // This is reached after StartShutdown(), at which point we expect
+          // ScopedBlockingCall to update thread priority.
+          ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                  BlockingType::MAY_BLOCK);
+          EXPECT_EQ(ThreadPriority::NORMAL,
+                    PlatformThread::GetCurrentThreadPriority());
+        }));
+  }
+  threads_running.Wait();
+
+  task_tracker_.StartShutdown();
+  blocking_threads_continue.Signal();
   task_tracker_.FlushForTesting();
 }
 

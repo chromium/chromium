@@ -233,7 +233,7 @@ class ThreadGroupImpl::WorkerThreadDelegateImpl : public WorkerThread::Delegate,
 
   // WorkerThread::Delegate:
   WorkerThread::ThreadLabel GetThreadLabel() const override;
-  void OnMainEntry(const WorkerThread* worker) override;
+  void OnMainEntry(WorkerThread* worker) override;
   RegisteredTaskSource GetWork(WorkerThread* worker) override;
   void DidProcessTask(RegisteredTaskSource task_source) override;
   TimeDelta GetSleepTimeout() override;
@@ -293,6 +293,9 @@ class ThreadGroupImpl::WorkerThreadDelegateImpl : public WorkerThread::Delegate,
     // returned a non-empty task source and DidProcessTask() hasn't been called
     // yet).
     bool is_running_task = false;
+
+    // Associated WorkerThread, if any, initialized in OnMainEntry().
+    WorkerThread* worker_thread_;
 
 #if defined(OS_WIN)
     std::unique_ptr<win::ScopedWindowsThreadEnvironment> win_thread_environment;
@@ -550,7 +553,7 @@ ThreadGroupImpl::WorkerThreadDelegateImpl::GetThreadLabel() const {
 }
 
 void ThreadGroupImpl::WorkerThreadDelegateImpl::OnMainEntry(
-    const WorkerThread* worker) {
+    WorkerThread* worker) {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
 
   {
@@ -569,6 +572,7 @@ void ThreadGroupImpl::WorkerThreadDelegateImpl::OnMainEntry(
       StringPrintf("ThreadPool%sWorker", outer_->thread_group_label_.c_str()));
 
   outer_->BindToCurrentThread();
+  worker_only().worker_thread_ = worker;
   SetBlockingObserverForCurrentThread(this);
 
   if (outer_->worker_started_for_testing_) {
@@ -795,6 +799,9 @@ void ThreadGroupImpl::WorkerThreadDelegateImpl::BlockingStarted(
     BlockingType blocking_type) {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
   DCHECK(worker_only().is_running_task);
+  DCHECK(worker_only().worker_thread_);
+
+  worker_only().worker_thread_->MaybeUpdateThreadPriority();
 
   // MayBlock with no delay reuses WillBlock implementation.
   // WillBlock is always used when time overrides is active. crbug.com/1038867

@@ -63,7 +63,7 @@ class WorkerThreadDefaultDelegate : public WorkerThread::Delegate {
   WorkerThread::ThreadLabel GetThreadLabel() const override {
     return WorkerThread::ThreadLabel::DEDICATED;
   }
-  void OnMainEntry(const WorkerThread* worker) override {}
+  void OnMainEntry(WorkerThread* worker) override {}
   RegisteredTaskSource GetWork(WorkerThread* worker) override {
     return nullptr;
   }
@@ -151,7 +151,7 @@ class ThreadPoolWorkerTest : public testing::TestWithParam<int> {
     }
 
     // WorkerThread::Delegate:
-    void OnMainEntry(const WorkerThread* worker) override {
+    void OnMainEntry(WorkerThread* worker) override {
       outer_->worker_set_.Wait();
       EXPECT_EQ(outer_->worker_.get(), worker);
       EXPECT_FALSE(IsCallToDidProcessTaskExpected());
@@ -523,7 +523,7 @@ class MockedControllableCleanupDelegate : public ControllableCleanupDelegate {
   ~MockedControllableCleanupDelegate() override = default;
 
   // WorkerThread::Delegate:
-  MOCK_METHOD1(OnMainEntry, void(const WorkerThread* worker));
+  MOCK_METHOD1(OnMainEntry, void(WorkerThread* worker));
 };
 
 }  // namespace
@@ -729,9 +729,7 @@ class ExpectThreadPriorityDelegate : public WorkerThreadDefaultDelegate {
   }
 
   // WorkerThread::Delegate:
-  void OnMainEntry(const WorkerThread* worker) override {
-    VerifyThreadPriority();
-  }
+  void OnMainEntry(WorkerThread* worker) override { VerifyThreadPriority(); }
   RegisteredTaskSource GetWork(WorkerThread* worker) override {
     VerifyThreadPriority();
     priority_verified_in_get_work_event_.Signal();
@@ -806,7 +804,7 @@ class VerifyCallsToObserverDelegate : public WorkerThreadDefaultDelegate {
       const VerifyCallsToObserverDelegate&) = delete;
 
   // WorkerThread::Delegate:
-  void OnMainEntry(const WorkerThread* worker) override {
+  void OnMainEntry(WorkerThread* worker) override {
     Mock::VerifyAndClear(observer_);
   }
 

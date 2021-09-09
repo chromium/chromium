@@ -107,7 +107,7 @@ class WorkerThreadDelegate : public WorkerThread::Delegate {
     return thread_label_;
   }
 
-  void OnMainEntry(const WorkerThread* /* worker */) override {
+  void OnMainEntry(WorkerThread* /* worker */) override {
     thread_ref_checker_.Set();
     PlatformThread::SetName(thread_name_);
   }
@@ -256,7 +256,7 @@ class WorkerThreadCOMDelegate : public WorkerThreadDelegate {
   ~WorkerThreadCOMDelegate() override { DCHECK(!scoped_com_initializer_); }
 
   // WorkerThread::Delegate:
-  void OnMainEntry(const WorkerThread* worker) override {
+  void OnMainEntry(WorkerThread* worker) override {
     WorkerThreadDelegate::OnMainEntry(worker);
 
     scoped_com_initializer_ = std::make_unique<win::ScopedCOMInitializer>();

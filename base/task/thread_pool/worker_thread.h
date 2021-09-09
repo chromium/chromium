@@ -65,7 +65,7 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
     virtual ThreadLabel GetThreadLabel() const = 0;
 
     // Called by |worker|'s thread when it enters its main function.
-    virtual void OnMainEntry(const WorkerThread* worker) = 0;
+    virtual void OnMainEntry(WorkerThread* worker) = 0;
 
     // Called by |worker|'s thread to get a TaskSource from which to run a Task.
     virtual RegisteredTaskSource GetWork(WorkerThread* worker) = 0;
@@ -151,6 +151,11 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
   //   worker_->Cleanup();
   //   worker_ = nullptr;
   void Cleanup();
+
+  // Possibly updates the thread priority to the appropriate priority based on
+  // the priority hint, current shutdown state, and platform capabilities. Must
+  // be called on the thread managed by |this|.
+  void MaybeUpdateThreadPriority();
 
   // Informs this WorkerThread about periods during which it is not being
   // used. Thread-safe.

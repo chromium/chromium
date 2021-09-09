@@ -171,6 +171,10 @@ void WorkerThread::Cleanup() {
   wake_up_event_.Signal();
 }
 
+void WorkerThread::MaybeUpdateThreadPriority() {
+  UpdateThreadPriority(GetDesiredThreadPriority());
+}
+
 void WorkerThread::BeginUnusedPeriod() {
   CheckedAutoLock auto_lock(thread_lock_);
   DCHECK(last_used_time_.is_null());
