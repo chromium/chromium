@@ -11,13 +11,13 @@ namespace extensions_features {
 // by the Omaha attribute.
 const base::Feature kDisablePolicyViolationExtensionsRemotely{
     "DisablePolicyViolationExtensionsRemotely",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether we disable extensions that are marked as potentially
 // unwanted by the Omaha attribute.
 const base::Feature kDisablePotentiallyUwsExtensionsRemotely{
     "DisablePotentiallyUwsExtensionsRemotely",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether we show an install friction dialog when an Enhanced Safe
 // Browsing user tries to install an extension that is not included in the
