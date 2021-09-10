@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/language/translate_frame_binder.h"
+#include "chrome/browser/translate/translate_frame_binder.h"
 
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 
-namespace language {
+namespace translate {
 
 void BindContentTranslateDriver(
     content::RenderFrameHost* render_frame_host,
@@ -31,4 +31,4 @@ void BindContentTranslateDriver(
   translate_client->translate_driver()->AddReceiver(std::move(receiver));
 }
 
-}  // namespace language
+}  // namespace translate

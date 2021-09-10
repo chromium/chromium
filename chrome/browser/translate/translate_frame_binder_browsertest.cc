@@ -5,7 +5,7 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "chrome/browser/chrome_content_browser_client.h"
-#include "chrome/browser/language/translate_frame_binder.h"
+#include "chrome/browser/translate/translate_frame_binder.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -18,7 +18,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace language {
+namespace translate {
 
 namespace {
 
@@ -46,8 +46,8 @@ class TestTranslateDriverBindingContentBrowserClient
     ASSERT_EQ(render_frame_host->GetLifecycleState(),
               content::RenderFrameHost::LifecycleState::kActive);
 
-    language::BindContentTranslateDriver(render_frame_host,
-                                         std::move(receiver));
+    translate::BindContentTranslateDriver(render_frame_host,
+                                          std::move(receiver));
     render_frame_binding_map_[render_frame_host] = true;
     if (quit_on_binding_)
       std::move(quit_on_binding_).Run();
@@ -138,4 +138,4 @@ IN_PROC_BROWSER_TEST_F(TranslateFrameBinderBrowserTest,
   content::SetBrowserClientForTesting(old_browser_client);
 }
 
-}  // namespace language
+}  // namespace translate
