@@ -716,7 +716,10 @@ TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearch) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(lens::features::kLensRegionSearch);
   SetUserSelectedDefaultSearchProvider("https://www.google.com");
-  std::unique_ptr<TestRenderViewContextMenu> menu(CreateContextMenu());
+  content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      web_contents()->GetMainFrame(), params);
+  menu->Init();
 
   EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
 }
@@ -730,7 +733,10 @@ TEST_F(RenderViewContextMenuPrefsTest,
   SetUserSelectedDefaultSearchProvider("https://www.google.com");
   // Set enterprise policy to false.
   profile()->GetPrefs()->SetBoolean(prefs::kLensRegionSearchEnabled, false);
-  std::unique_ptr<TestRenderViewContextMenu> menu(CreateContextMenu());
+  content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      web_contents()->GetMainFrame(), params);
+  menu->Init();
 
   EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
 }
@@ -757,7 +763,10 @@ TEST_F(RenderViewContextMenuPrefsTest,
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(lens::features::kLensRegionSearch);
   SetUserSelectedDefaultSearchProvider("https://www.search.com");
-  std::unique_ptr<TestRenderViewContextMenu> menu(CreateContextMenu());
+  content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      web_contents()->GetMainFrame(), params);
+  menu->Init();
 
   EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
 }
@@ -768,7 +777,10 @@ TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearchExperimentDisabled) {
   base::test::ScopedFeatureList features;
   features.InitAndDisableFeature(lens::features::kLensRegionSearch);
   SetUserSelectedDefaultSearchProvider("https://www.google.com");
-  std::unique_ptr<TestRenderViewContextMenu> menu(CreateContextMenu());
+  content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      web_contents()->GetMainFrame(), params);
+  menu->Init();
 
   EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
 }

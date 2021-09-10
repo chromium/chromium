@@ -274,6 +274,8 @@ using extensions::MenuManager;
 
 namespace {
 
+constexpr char16_t kGoogleLens[] = u"Google Lens";
+
 base::OnceCallback<void(RenderViewContextMenu*)>* GetMenuShownCallback() {
   static base::NoDestructor<base::OnceCallback<void(RenderViewContextMenu*)>>
       callback;
@@ -983,16 +985,6 @@ void RenderViewContextMenu::InitMenu() {
     AppendCurrentExtensionItems();
   }
 
-#if defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_LINUX)
-  if (content_type_->SupportsGroup(
-          ContextMenuContentType::ITEM_GROUP_LENS_REGION_SEARCH)) {
-    if (IsLensRegionSearchEnabled()) {
-      menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
-      AppendLensRegionSearchItem();
-    }
-  }
-#endif
-
   // Accessibility label items are appended to all menus when a screen reader
   // is enabled. It can be difficult to open a specific context menu with a
   // screen reader, so this is a UX approved solution.
@@ -1661,6 +1653,11 @@ void RenderViewContextMenu::AppendPageItems() {
                                   IDS_CONTENT_CONTEXT_SAVEPAGEAS);
   menu_model_.AddItemWithStringId(IDC_PRINT, IDS_CONTENT_CONTEXT_PRINT);
   AppendMediaRouterItem();
+#if defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_LINUX)
+  if (IsLensRegionSearchEnabled()) {
+    AppendLensRegionSearchItem();
+  }
+#endif
 
   if (ShouldUseShareMenu()) {
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
@@ -2124,9 +2121,15 @@ void RenderViewContextMenu::AppendLensRegionSearchItem() {
     resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT2;
   } else if (lens::features::kRegionSearchUseMenuItemAltText3.Get()) {
     resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT3;
+  } else if (lens::features::kRegionSearchUseMenuItemAltText4.Get()) {
+    resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT4;
   }
-  menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH,
-                                  resource_id);
+
+  // TODO(crbug.com/1234592): When support is added for non-Google default
+  // search providers, set the name here using the provider |short_name|.
+  menu_model_.AddItem(
+      IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH,
+      l10n_util::GetStringFUTF16(resource_id, std::u16string(kGoogleLens)));
 }
 
 // Menu delegate functions -----------------------------------------------------

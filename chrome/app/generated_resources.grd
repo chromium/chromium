@@ -757,16 +757,19 @@ are declared in tools/grit/grit_rule.gni.
             Search image with Google Lens
           </message>
           <message name="IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH" desc="The name of the Lens Region Search command in the content area context menu">
-            Search part of the page with Google Lens
+            Search part of the page with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google Lens</ex></ph>
           </message>
           <message name="IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT1" desc="The name of the Lens Region Search command in the content area context menu">
-            Drag to search images with Google Lens
+            Drag to search images with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google Lens</ex></ph>
           </message>
           <message name="IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT2" desc="The name of the Lens Region Search command in the content area context menu">
-            Drag over images to search with Google Lens
+            Drag over images to search with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google Lens</ex></ph>
           </message>
           <message name="IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT3" desc="The name of the Lens Region Search command in the content area context menu">
-            Search your screen with Google Lens
+            Search your screen with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google Lens</ex></ph>
+          </message>
+          <message name="IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT4" desc="The name of the Lens Region Search command in the content area context menu">
+            Search images with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google Lens</ex></ph>
           </message>
           <message name="IDS_CONTENT_CONTEXT_GOTOURL" desc="The name of the Go to 'url' command in the content area context menu">
             &amp;Go to <ph name="URL">$1<ex>http://www.google.com/</ex></ph>
@@ -1010,16 +1013,19 @@ are declared in tools/grit/grit_rule.gni.
             Search Image with Google Lens
           </message>
           <message name="IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH" desc="In Title Case: The name of the Lens Region Search command in the content area context menu">
-            Search Part of the Page with Google Lens
+            Search Part of the Page with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google Lens</ex></ph>
           </message>
           <message name="IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT1" desc="In Title Case: The name of the Lens Region Search command in the content area context menu">
-            Drag to Search Images with Google Lens
+            Drag to Search Images with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google Lens</ex></ph>
           </message>
           <message name="IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT2" desc="In Title Case: The name of the Lens Region Search command in the content area context menu">
-            Drag over Images to Search with Google Lens
+            Drag over Images to Search with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google Lens</ex></ph>
           </message>
           <message name="IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT3" desc="In Title Case: The name of the Lens Region Search command in the content area context menu">
-            Search Your Screen with Google Lens
+            Search Your Screen with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google Lens</ex></ph>
+          </message>
+          <message name="IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT4" desc="In Title Case: The name of the Lens Region Search command in the content area context menu">
+            Search Images with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google Lens</ex></ph>
           </message>
           <message name="IDS_CONTENT_CONTEXT_GOTOURL" desc="In Title Case: The name of the Go to url for 'string' command in the content area context menu">
             &amp;Go to <ph name="URL">$1<ex>http://www.google.com/</ex></ph>
