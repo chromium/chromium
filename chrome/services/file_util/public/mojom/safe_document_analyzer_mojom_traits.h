@@ -14,8 +14,8 @@
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 
-#if !BUILDFLAG(FULL_SAFE_BROWSING) || !defined(OS_LINUX)
-#error BUILDFLAG(FULL_SAFE_BROWSING) should be set and OS_LINUX defined.
+#if !BUILDFLAG(FULL_SAFE_BROWSING) || (!defined(OS_LINUX) && !defined(OS_WIN))
+#error BUILDFLAG(FULL_SAFE_BROWSING) should be set and either OS_LINUX or OS_WIN defined.
 #endif
 
 namespace mojo {
@@ -144,6 +144,8 @@ struct StructTraits<chrome::mojom::SafeDocumentAnalyzerResultsDataView,
         return MojomMaldocaErrorType::kNotImplementedForChrome;
       case DocumentProcessingInfo::NOT_IMPLEMENTED:
         return MojomMaldocaErrorType::kNotImplemented;
+      case DocumentProcessingInfo::MISSING_ENCODING:
+        return MojomMaldocaErrorType::kMissingEncoding;
       default:
         return MojomMaldocaErrorType::kUnknown;
     }

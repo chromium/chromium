@@ -19,12 +19,14 @@
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "maldoca/base/file.h"
-#include "maldoca/base/get_runfiles_dir.h"
+#include "maldoca/base/logging.h"
 #include "maldoca/base/parse_text_proto.h"
 #include "maldoca/base/status.h"
 #include "maldoca/base/testing/status_matchers.h"
+#include "maldoca/base/testing/test_utils.h"
 
 using ::maldoca::ParsedDocument;
+using ::maldoca::testing::ServiceTestFilename;
 using ::testing::ElementsAre;
 using ::testing::Pair;
 
@@ -33,14 +35,10 @@ namespace utils {
 namespace {
 
 #ifndef MALDOCA_CHROME
-std::string TestFilename(absl::string_view filename) {
-  return file::JoinPath(GetRunfilesDir(),
-                        absl::StrCat("maldoca/service/testdata/", filename));
-}
-
 std::string GetTestContent(absl::string_view filename) {
   std::string content;
-  auto status = maldoca::file::GetContents(TestFilename(filename), &content);
+  auto status =
+      maldoca::file::GetContents(ServiceTestFilename(filename), &content);
   MALDOCA_CHECK_OK(status) << status;
   return content;
 }
@@ -118,3 +116,12 @@ TEST(DocumentResponseHasVbaScript, ProcessDocumentResponseNoVba) {
 }  // namespace
 }  // namespace utils
 }  // namespace maldoca
+
+int main(int argc, char **argv) {
+  ::testing::InitGoogleTest(&argc, argv);
+#ifdef MALDOCA_CHROME
+  // mini_chromium needs InitLogging
+  maldoca::InitLogging();
+#endif
+  return RUN_ALL_TESTS();
+}

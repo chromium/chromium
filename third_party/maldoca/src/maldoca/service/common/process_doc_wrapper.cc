@@ -4,37 +4,57 @@
 
 #include "maldoca/service/common/process_doc_wrapper.h"
 
+#include "build/build_config.h"
+
 #include "base/files/file_util.h"
+#if defined(OS_LINUX)
+#include "base/strings/string_util.h"
+#else
+#include "base/strings/string_util_win.h"
+#endif
+#include "base/strings/utf_string_conversions.h"
 #include "maldoca/base/status.h"
 #include "maldoca/base/status_proto.pb.h"
 #include "maldoca/service/common/process_doc.h"
 
 namespace third_party_maldoca {
 
+
+bool ExtensionEqualInCaseSensitive(base::FilePath file_path, std::string extension){
+  #if defined(OS_LINUX)
+  std::string file_extension = file_path.FinalExtension();
+  return base::CompareCaseInsensitiveASCII(file_extension, extension) == 0;
+  #else
+  std::wstring file_extension = file_path.FinalExtension();
+  return base::CompareCaseInsensitiveASCII(file_extension, base::UTF8ToWide(extension)) == 0;
+  #endif
+}
+
 maldoca::DocType GetDocType(base::FilePath file_path) {
-  if (file_path.MatchesExtension(FILE_PATH_LITERAL(".doc"))) {
+
+  if (ExtensionEqualInCaseSensitive(file_path, ".doc")) {
     return maldoca::DocType::DOC;
-  } else if (file_path.MatchesExtension(FILE_PATH_LITERAL(".docm"))) {
+  } else if (ExtensionEqualInCaseSensitive(file_path, ".docm")) {
     return maldoca::DocType::DOCM;
-  } else if (file_path.MatchesExtension(FILE_PATH_LITERAL(".docx"))) {
+  } else if (ExtensionEqualInCaseSensitive(file_path, ".docx")) {
     return maldoca::DocType::DOCX;
-  } else if (file_path.MatchesExtension(FILE_PATH_LITERAL(".pps"))) {
+  } else if (ExtensionEqualInCaseSensitive(file_path, ".pps")) {
     return maldoca::DocType::PPS;
-  } else if (file_path.MatchesExtension(FILE_PATH_LITERAL(".ppsx"))) {
+  } else if (ExtensionEqualInCaseSensitive(file_path, ".ppsx")) {
     return maldoca::DocType::PPSX;
-  } else if (file_path.MatchesExtension(FILE_PATH_LITERAL(".ppt"))) {
-    return maldoca::DocType::PPSX;
-  } else if (file_path.MatchesExtension(FILE_PATH_LITERAL(".pptx"))) {
-    return maldoca::DocType::PPSX;
-  } else if (file_path.MatchesExtension(FILE_PATH_LITERAL(".xla"))) {
+  } else if (ExtensionEqualInCaseSensitive(file_path, ".ppt")){
+    return maldoca::DocType::PPT;
+  } else if (ExtensionEqualInCaseSensitive(file_path, ".pptx")) {
+    return maldoca::DocType::PPTX;
+  } else if (ExtensionEqualInCaseSensitive(file_path, ".xla"))  {
     return maldoca::DocType::XLA;
-  } else if (file_path.MatchesExtension(FILE_PATH_LITERAL(".xls"))) {
+  } else if (ExtensionEqualInCaseSensitive(file_path, ".xls"))  {
     return maldoca::DocType::XLS;
-  } else if (file_path.MatchesExtension(FILE_PATH_LITERAL(".xlsb"))) {
+  } else if (ExtensionEqualInCaseSensitive(file_path, ".xlsb"))  {
     return maldoca::DocType::XLSB;
-  } else if (file_path.MatchesExtension(FILE_PATH_LITERAL(".xlsm"))) {
+  } else if (ExtensionEqualInCaseSensitive(file_path, ".xlsm"))  {
     return maldoca::DocType::XLSM;
-  } else if (file_path.MatchesExtension(FILE_PATH_LITERAL(".xlsx"))) {
+  } else if (ExtensionEqualInCaseSensitive(file_path, ".xlsx"))  {
     return maldoca::DocType::XLSX;
   } else {
     return maldoca::DocType::UNKNOWN_TYPE;
@@ -54,7 +74,10 @@ void AnalyzeOfficeDocument(base::File office_file,
   maldoca::DocProcessor doc_processor(processor_config);
 
   maldoca::ProcessDocumentRequest process_doc_request;
+  #if defined(OS_LINUX)
   const std::string file_name = file_path.BaseName().value().c_str();
+  process_doc_request.set_file_name(file_name);
+  #endif
 
   std::string office_file_content;
   base::ScopedFILE scoped_office_file(
@@ -67,7 +90,7 @@ void AnalyzeOfficeDocument(base::File office_file,
     error_message = "Could not convert file contents to string";
   }
 
-  process_doc_request.set_file_name(file_name);
+
   process_doc_request.set_doc_content(office_file_content);
   process_doc_request.set_doc_type(GetDocType(file_path));
 

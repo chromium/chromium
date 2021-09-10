@@ -2,6 +2,7 @@ include_rules = [
   "+absl",
   "+base",
   "+benchmark",
+  "+build",
   "+maldoca",
   "+src",
   "+gmock",

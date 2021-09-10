@@ -119,6 +119,7 @@ static_library("maldoca-base") {
   sources = [
     "src/maldoca/base/cleanup.h",
     "src/maldoca/base/digest.h",
+    "src/maldoca/base/encoding_error.h",
     "src/maldoca/base/endian.h",
     "src/maldoca/base/enum_utils.h",
     "src/maldoca/base/file.cc",
@@ -279,6 +280,7 @@ static_library("maldoca") {
     "//third_party/boringssl",
     "//third_party/libxml",
     "//third_party/protobuf:protobuf_lite",
+    "//third_party/re2"
   ]
 
   public_deps = [

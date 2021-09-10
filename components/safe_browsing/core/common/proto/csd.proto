@@ -903,6 +903,7 @@ message ClientDownloadRequest {
       MISSING_PROPERTIES = 1029;
       NOT_IMPLEMENTED_FOR_CHROME = 1030;
       NOT_IMPLEMENTED = 1031;
+      MISSING_ENCODING = 1032;
     }
     optional MaldocaErrorType maldoca_error_type = 2;
     optional string maldoca_error_message = 3;

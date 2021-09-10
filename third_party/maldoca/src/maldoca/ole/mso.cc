@@ -149,10 +149,10 @@ bool MSOContent::GetOLE2Data(absl::string_view mso, std::string *ole2) {
   offsets.insert(std::pair<uint16_t, bool>(0x32, true));
   offsets.insert(std::pair<uint16_t, bool>(0x22a, true));
 
-// We don't know beforehand the size of the output and we can't
-// easily compute with the kind of zlib stream we're going to
-// process, so we arbitrarily set it to a large enough limit - we
-// will declare an error if that limit is insufficient.
+  // We don't know beforehand the size of the output and we can't
+  // easily compute with the kind of zlib stream we're going to
+  // process, so we arbitrarily set it to a large enough limit - we
+  // will declare an error if that limit is insufficient.
 #ifdef MALDOCA_IN_CHROMIUM
   uLongf dest_length = mso_deflated_max_file_size;
 #else

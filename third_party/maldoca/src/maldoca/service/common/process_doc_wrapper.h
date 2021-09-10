@@ -43,4 +43,10 @@ void BuildProcessorConfig(maldoca::ProcessorConfig* processor_config);
 void ProcessStatusPayload(absl::Status status, bool& success,
                           std::string& error_code, std::string& error_message);
 
+// Determines whether or not the final extension of |file_path| is equal
+// to |extension|. Using this instead of MatchesExtension because it is
+// not allowed when the sandbox type is kService.
+bool ExtensionEqualInCaseSensitive(base::FilePath file_path,
+                                   std::string extension);
+
 }  // namespace third_party_maldoca

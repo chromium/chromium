@@ -68,9 +68,9 @@ ABSL_FLAG(bool, print_code, false,
           "When set to true, print the code of each VBA code chunk to "
           "stdout.");
 
-using maldoca::ExtractVBAFromString;
-using maldoca::VBACodeChunk;
-using maldoca::VBACodeChunks;
+using ::maldoca::ExtractVBAFromString;
+using ::maldoca::VBACodeChunk;
+using ::maldoca::VBACodeChunks;
 
 int main(int argc, char** argv) {
   absl::ParseCommandLine(argc, argv);

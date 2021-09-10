@@ -31,8 +31,11 @@ void AnalyzeDocument(base::File office_file,
       std::move(office_file), file_path, results->has_macros, results->success,
       str_error_code, results->error_message);
 
-  ClientDownloadRequest::DocumentProcessingInfo::MaldocaErrorType_Parse(
-      std::move(str_error_code), &results->error_code);
+  if (!ClientDownloadRequest::DocumentProcessingInfo::MaldocaErrorType_Parse(
+          std::move(str_error_code), &results->error_code)) {
+    results->error_code =
+        ClientDownloadRequest::DocumentProcessingInfo::UNKNOWN;
+  }
 }
 }  // namespace document_analyzer
 }  // namespace safe_browsing

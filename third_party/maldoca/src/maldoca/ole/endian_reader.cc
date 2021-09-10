@@ -42,3 +42,4 @@ void DecodeUTF16(absl::string_view input, std::string *output) {
 }
 
 }  // namespace maldoca
+

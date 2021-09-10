@@ -22,20 +22,18 @@
 #include "benchmark/benchmark.h"
 #include "gtest/gtest.h"
 #include "maldoca/base/file.h"
-#include "maldoca/base/get_runfiles_dir.h"
 #include "maldoca/base/testing/status_matchers.h"
+#include "maldoca/base/testing/test_utils.h"
 #include "maldoca/ole/fat.h"
 
-using maldoca::DirectoryStorageType;
-using maldoca::FAT;
-using maldoca::OLEDirectoryEntry;
-using maldoca::OLEHeader;
+using ::maldoca::DirectoryStorageType;
+using ::maldoca::FAT;
+using ::maldoca::OLEDirectoryEntry;
+using ::maldoca::OLEHeader;
 
 namespace {
 std::string TestFilename(absl::string_view filename) {
-  return maldoca::file::JoinPath(
-      maldoca::GetRunfilesDir(),
-      absl::StrCat("maldoca/ole/testdata/", filename));
+  return maldoca::testing::OleTestFilename(filename);
 }
 
 std::string GetTestContent(absl::string_view filename) {
@@ -95,7 +93,7 @@ TEST(OLEDirectoryEntryTest, TreeTest) {
   EXPECT_FALSE(not_initialized.IsInitialized());
   ASSERT_DEATH(parent.AddChild(nullptr), "child");
   ASSERT_DEATH(parent.AddChild(&not_initialized),
-               "Check failed: child->IsInitialized[(][)]");
+               "Check failed: child->IsInitialized");
   // The child is now owned by its parent.
   EXPECT_TRUE(parent.AddChild(child));
   // Can't add a child that already has a parent.
@@ -212,7 +210,7 @@ TEST_F(OLEDirectoryEntryTestFull, EarlyErrors) {
   std::string directory_stream;
   ASSERT_DEATH(OLEDirectoryEntry::ReadDirectory(
                    content, empty, fat, &root, &dir_entries, &directory_stream),
-               "Check failed: header[.]IsInitialized[(][)]");
+               "Check failed: header\\.IsInitialized");
   CHECK_EQ(dir_entries.size(), 0);
 
   // Can't use an empty FAT
@@ -222,7 +220,7 @@ TEST_F(OLEDirectoryEntryTestFull, EarlyErrors) {
   ASSERT_DEATH(
       OLEDirectoryEntry::ReadDirectory(content, header, no_fat, &root,
                                        &dir_entries, &directory_stream),
-      "Check failed: !fat[.]empty[(][)]");
+      "Check failed: !fat\\.empty");
   CHECK_EQ(dir_entries.size(), 0);
 
   // You get a failure if you can't read the input as a stream
@@ -245,7 +243,7 @@ TEST_F(OLEDirectoryEntryTestFull, EarlyErrors) {
   ASSERT_DEATH(
       OLEDirectoryEntry::ReadDirectory(content, header, fat, &root,
                                        &dir_entries, &directory_stream),
-      "Check failed: !directory->IsInitialized[(][)]");
+      "Check failed: !directory->IsInitialized");
   CHECK_EQ(dir_entries.size(), 0);
 }
 
@@ -345,3 +343,12 @@ TEST_F(OLEDirectoryEntryTestFull, ChildrenAccess) {
 }
 
 }  // namespace
+
+int main(int argc, char **argv) {
+  ::testing::InitGoogleTest(&argc, argv);
+#ifdef MALDOCA_CHROME
+  // mini_chromium needs InitLogging 
+  maldoca::InitLogging();
+#endif
+  return RUN_ALL_TESTS();
+}

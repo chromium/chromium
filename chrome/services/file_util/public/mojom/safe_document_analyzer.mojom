@@ -60,6 +60,7 @@ enum MaldocaErrorType {
   kMissingProperties = 1029,
   kNotImplementedForChrome = 1030,
   kNotImplemented = 1031,
+  kMissingEncoding = 1032
 };
 
 // This struct encapsulates the results from using maldoca to analyze

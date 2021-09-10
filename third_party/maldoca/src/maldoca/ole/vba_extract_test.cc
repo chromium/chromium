@@ -68,18 +68,18 @@
 #include "gtest/gtest.h"
 #include "maldoca/base/digest.h"
 #include "maldoca/base/file.h"
-#include "maldoca/base/get_runfiles_dir.h"
+#include "maldoca/base/testing/test_utils.h"
 #include "maldoca/ole/proto/extract_vba_settings.pb.h"
 #include "maldoca/base/logging.h"
 #include "maldoca/base/status.h"
 #include "maldoca/ole/oss_utils.h"
 #include "maldoca/ole/vba_extract.h"
 
-using maldoca::ExtractVBAFromFile;
-using maldoca::LikelyOLE2WithVBAContent;
-using maldoca::OLEDirectoryMessage;
-using maldoca::VBACodeChunks;
-using maldoca::ExtractVBAFromStringWithSettings;
+using ::maldoca::ExtractVBAFromFile;
+using ::maldoca::LikelyOLE2WithVBAContent;
+using ::maldoca::OLEDirectoryMessage;
+using ::maldoca::VBACodeChunks;
+using ::maldoca::ExtractVBAFromStringWithSettings;
 
 ABSL_FLAG(std::string, input_file, "",
               "A file to extract VBA code chunks from");
@@ -98,9 +98,7 @@ ABSL_FLAG(std::string, save_code_to, "",
 
 namespace {
 std::string TestFilename(absl::string_view filename) {
-  return maldoca::file::JoinPath(
-      maldoca::GetRunfilesDir(),
-      absl::StrCat("maldoca/ole/testdata/ole/", filename));
+  return maldoca::testing::OleTestFilename(filename, "ole/");
 }
 
 std::string GetTestContent(absl::string_view filename) {
@@ -418,6 +416,7 @@ TEST(DirectoryExtraction, DirectoryExtractionTest) {
 #ifndef MALDOCA_CHROME
 int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);
+  maldoca::InitLogging();
   if (!absl::GetFlag(FLAGS_input_files_list).empty() ||
       !absl::GetFlag(FLAGS_input_file).empty() ||
       !absl::GetFlag(FLAGS_input_files).empty()) {
@@ -453,5 +452,10 @@ int main(int argc, char** argv) {
     ::benchmark::RunSpecifiedBenchmarks();
     return RUN_ALL_TESTS();
   }
+}
+#else
+int main(int argc, char** argv) {
+  ::testing::InitGoogleTest(&argc, argv);
+   return RUN_ALL_TESTS();
 }
 #endif  // MALDOCA_CHROME

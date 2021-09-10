@@ -31,6 +31,10 @@ namespace maldoca {
 
 inline bool InitLogging() {
   ::logging::LoggingSettings setting;
+#if defined(_WIN32)
+  // Required to make "ASSERT_DEATH" statements in unit tests on Windows work.
+  setting.logging_dest = logging::LOG_TO_STDERR;
+#endif
   return ::logging::InitLogging(setting);
 }
 }  // namespace maldoca
@@ -47,5 +51,5 @@ using ::zetasql_base::get_vlog_level;
 using ::zetasql_base::InitLogging;
 }  // namespace maldoca
 
-#endif
+#endif  // MALDOCA_CHROME
 #endif  // MALDOCA_BASE_LOGGING_H_

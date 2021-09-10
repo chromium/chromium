@@ -48,7 +48,7 @@ source_set("file_util") {
       "safe_archive_analyzer.h",
     ]
 
-    if (is_linux) {
+    if (is_linux || is_win) {
       sources += [
         "document_analysis_service.cc",
         "document_analysis_service.h",
@@ -63,7 +63,7 @@ source_set("file_util") {
       "//chrome/common/safe_browsing:rar_analyzer",
     ]
 
-    if (is_linux) {
+    if (is_linux || is_win) {
       deps += [
         "//chrome/common/safe_browsing:document_analyzer",
         "//chrome/common/safe_browsing:document_analyzer_results",

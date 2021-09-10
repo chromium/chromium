@@ -54,8 +54,8 @@ typedef enum : uint32_t {
 class FAT {
  public:
   // Disallow copy and assign.
-  FAT(const FAT &) = delete;
-  FAT &operator=(const FAT &) = delete;
+  FAT(const FAT&) = delete;
+  FAT& operator=(const FAT&) = delete;
   // Consume all the uint32_t in a string piece that represents a sector
   // and store them into an array.
   static void SectorToArrayOfIndexes(absl::string_view sector,

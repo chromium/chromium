@@ -11,5 +11,5 @@ declare_args() {
   enable_xz_extractor = enable_extensions
 
   # Enables analysis of Office documents for malicious macros
-  enable_maldoca = is_linux
+  enable_maldoca = is_linux || is_win
 }

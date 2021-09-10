@@ -111,6 +111,8 @@ EnumTraits<MojomMaldocaErrorType, DocumentProcessingInfo::MaldocaErrorType>::
       return MojomMaldocaErrorType::kNotImplementedForChrome;
     case DocumentProcessingInfo::NOT_IMPLEMENTED:
       return MojomMaldocaErrorType::kNotImplemented;
+    case DocumentProcessingInfo::MISSING_ENCODING:
+      return MojomMaldocaErrorType::kMissingEncoding;
     default:
       return MojomMaldocaErrorType::kUnknown;
   }
@@ -269,6 +271,9 @@ bool EnumTraits<MojomMaldocaErrorType,
       return true;
     case MojomMaldocaErrorType::kNotImplemented:
       *output = DocumentProcessingInfo::NOT_IMPLEMENTED;
+      return true;
+    case MojomMaldocaErrorType::kMissingEncoding:
+      *output = DocumentProcessingInfo::MISSING_ENCODING;
       return true;
   }
   NOTREACHED();

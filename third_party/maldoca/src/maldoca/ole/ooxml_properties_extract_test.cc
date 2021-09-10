@@ -18,10 +18,10 @@
 #include <memory>
 #include <string>
 
-#include "absl/strings/str_cat.h"
-#include "absl/strings/string_view.h"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
+#include "absl/strings/str_cat.h"
+#include "absl/strings/string_view.h"
 #include "libxml/parser.h"
 #include "libxml/tree.h"
 #include "libxml/xpath.h"
@@ -351,5 +351,9 @@ TEST(OOXMLPropertiesTest, DocumentSummaryInformationIsParsed) {
 
 int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);
+#ifdef MALDOCA_CHROME
+  // mini_chromium needs InitLogging
+  maldoca::InitLogging();
+#endif
   return RUN_ALL_TESTS();
 }
