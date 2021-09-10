@@ -300,16 +300,14 @@ void NearbyShareSessionImpl::ShowNearbyShareBubbleInArcWindow(
     return;
   }
 
-  // If the progress bar is visible at this point, hide it and stop the update
-  // interval timer so that we can show the Nearby Share bubble.
+  // If the progress bar is visible at this point, stop the update interval
+  // timer so that we can show the Nearby Share bubble.
   if (progress_bar_update_timer_.IsRunning()) {
     progress_bar_update_timer_.Stop();
   }
-  if (progress_bar_view_) {
-    progress_bar_view_->SetVisible(false);
-  }
 
-  // Close any overlay views that may still be shown.
+  // Close any overlay and respective child views that may still be shown.
+  progress_bar_view_.reset();
   NearbyShareOverlayView::CloseOverlayOn(arc_window);
 
   backend_task_runner_->PostTaskAndReplyWithResult(

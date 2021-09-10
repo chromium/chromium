@@ -21,9 +21,9 @@ namespace arc {
 class ProgressBarDialogView : public views::BoxLayoutView {
  public:
   ProgressBarDialogView();
-  ~ProgressBarDialogView() override;
   ProgressBarDialogView(const ProgressBarDialogView&) = delete;
   ProgressBarDialogView& operator=(const ProgressBarDialogView&) = delete;
+  ~ProgressBarDialogView() override;
 
   static void Show(aura::Window* parent, ProgressBarDialogView* view);
 

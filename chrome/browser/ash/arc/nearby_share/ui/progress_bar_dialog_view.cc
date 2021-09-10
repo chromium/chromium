@@ -63,7 +63,10 @@ ProgressBarDialogView::ProgressBarDialogView() {
   progress_bar_->SizeToPreferredSize();
 }
 
-ProgressBarDialogView::~ProgressBarDialogView() = default;
+ProgressBarDialogView::~ProgressBarDialogView() {
+  // Destroy child views before the base overlay where they live is destroyed.
+  RemoveAllChildViews();
+}
 
 gfx::Size ProgressBarDialogView::CalculatePreferredSize() const {
   views::LayoutProvider* provider = views::LayoutProvider::Get();
