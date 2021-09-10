@@ -1026,7 +1026,7 @@ export async function testEducationalBannerDismissedForever() {
  * Test that banners are reconciled after every dismiss click that is made.
  */
 export async function testBannersAreUpdatedOnDismissClick() {
-  // Add 1 educational banner and 1 warning banner.
+  // Add 3 educational banner and 1 warning banner.
   controller.setEducationalBannersInOrder([
     testEducationalBanners[0].tagName, testEducationalBanners[1].tagName,
     testEducationalBanners[2].tagName
@@ -1061,5 +1061,108 @@ export async function testBannersAreUpdatedOnDismissClick() {
   // Dismiss the last educational banner and ensure no banners are shown (again
   // without navigating directories).
   clickDismissForeverButton(testEducationalBanners[2]);
+  await waitUntil(isAllBannersHidden);
+}
+
+/**
+ * Test that custom filters can be attached to banners in the event specific
+ * logic needs to be ran for individual banners.
+ * @suppress {accessControls} to call registerCustomBannerFilter_.
+ */
+export async function testCustomFiltersCanBeAttached() {
+  // Add 1 educational banner and 1 warning banner.
+  controller.setEducationalBannersInOrder([testEducationalBanners[0].tagName]);
+  controller.setWarningBannersInOrder([testWarningBanners[0].tagName]);
+
+  testEducationalBanners[0].setAllowedVolumes([downloadsAllowedVolumeType]);
+  testWarningBanners[0].setAllowedVolumes([downloadsAllowedVolumeType]);
+
+  let educationalBannerCustomFilterResponse = false;
+  let warningBannerCustomFilterResponse = false;
+
+  controller.registerCustomBannerFilter_(
+      testEducationalBanners[0].tagName, () => {
+        return educationalBannerCustomFilterResponse;
+      });
+  controller.registerCustomBannerFilter_(testWarningBanners[0].tagName, () => {
+    return warningBannerCustomFilterResponse;
+  });
+
+  // Verify that the warning banner is shown first.
+  await controller.initialize();
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
+  await waitUntil(isOnlyBannerVisible(testWarningBanners[0]));
+
+  // Verify that explicitly making the custom filter return true reconciles
+  // the banners and does not show the warning banner.
+  warningBannerCustomFilterResponse = true;
+  await startNewFilesAppSession();
+  await waitUntil(isOnlyBannerVisible(testEducationalBanners[0]));
+
+  // Ensure no banners are shown when both custom filters return true.
+  educationalBannerCustomFilterResponse = true;
+  await startNewFilesAppSession();
+  await waitUntil(isAllBannersHidden);
+}
+
+/**
+ * Test that custom filters interact with other configuration elements.
+ * @suppress {accessControls} to call registerCustomBannerFilter_.
+ */
+export async function testCustomFiltersInteract() {
+  // Add 2 educational banners and 1 warning banner.
+  controller.setEducationalBannersInOrder([
+    testEducationalBanners[0].tagName,
+    testEducationalBanners[1].tagName,
+  ]);
+  controller.setWarningBannersInOrder([
+    testWarningBanners[0].tagName,
+  ]);
+
+  testEducationalBanners[0].setAllowedVolumes([downloadsAllowedVolumeType]);
+  testEducationalBanners[0].setShowLimit(2);
+  testEducationalBanners[1].setAllowedVolumes([driveAllowedVolumeType]);
+  testWarningBanners[0].setAllowedVolumes([downloadsAllowedVolumeType]);
+
+  let warningBannerCustomFilterResponse = false;
+
+  controller.registerCustomBannerFilter_(testWarningBanners[0].tagName, () => {
+    return warningBannerCustomFilterResponse;
+  });
+
+  // Verify that the warning banner is shown first.
+  await controller.initialize();
+
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
+  await waitUntil(isOnlyBannerVisible(testWarningBanners[0]));
+
+  // Changing directory to Drive should show the lowest priority educational
+  // banner.
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DRIVE);
+  await waitUntil(isOnlyBannerVisible(testEducationalBanners[1]));
+
+  // Making the custom filter return false and navigating back to the Downloads
+  // directory should show the highest priority educational banner.
+  warningBannerCustomFilterResponse = true;
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
+  await waitUntil(isOnlyBannerVisible(testEducationalBanners[0]));
+
+  // Starting a fresh Files app twice should hide the educational banner as it
+  // has hit the show limit. This should nicely interact with the custom filter
+  // (i.e. no banner should show).
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DRIVE);
+  await waitUntil(isOnlyBannerVisible(testEducationalBanners[1]));
+
+  // Reset the current volume to Downloads so the new Files app session is
+  // already navigated to Downloads.
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
+  await waitUntil(isOnlyBannerVisible(testEducationalBanners[0]));
+
+  // This should be the final Files app session, should not show on the next
+  // session.
+  await startNewFilesAppSession();
+  await waitUntil(isOnlyBannerVisible(testEducationalBanners[0]));
+
+  await startNewFilesAppSession();
   await waitUntil(isAllBannersHidden);
 }
