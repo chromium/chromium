@@ -6,9 +6,12 @@ package org.chromium.chrome.browser;
 
 import static org.chromium.chrome.browser.base.SplitCompatUtils.CHROME_SPLIT_NAME;
 
+import android.app.ActivityManager.TaskDescription;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -81,6 +84,8 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
 
         // Activity level locale overrides must be done in onCreate.
         GlobalAppLocaleController.getInstance().maybeOverrideContextConfig(this);
+
+        setDefaultTaskDescription();
     }
 
     @Override
@@ -206,6 +211,18 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
      */
     protected boolean supportsDynamicColors() {
         return ThemeUtils.ENABLE_FULL_DYNAMIC_COLORS.getValue();
+    }
+
+    /**
+     * Sets the default task description that will appear in the recents UI.
+     */
+    protected void setDefaultTaskDescription() {
+        final Resources res = getResources();
+        final TaskDescription taskDescription =
+                new TaskDescription(res.getString(R.string.app_name),
+                        BitmapFactory.decodeResource(res, R.mipmap.app_icon),
+                        res.getColor(R.color.default_task_description_color));
+        setTaskDescription(taskDescription);
     }
 
     // NightModeStateProvider.Observer implementation.

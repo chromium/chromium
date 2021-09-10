@@ -5,12 +5,9 @@
 package org.chromium.chrome.browser.settings;
 
 import android.annotation.SuppressLint;
-import android.app.ActivityManager;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.res.Resources;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -134,12 +131,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             Fragment fragment = Fragment.instantiate(this, initialFragment, initialArguments);
             getSupportFragmentManager().beginTransaction().replace(R.id.content, fragment).commit();
         }
-
-        Resources res = getResources();
-
-        setTaskDescription(new ActivityManager.TaskDescription(res.getString(R.string.app_name),
-                BitmapFactory.decodeResource(res, R.mipmap.app_icon),
-                ApiCompatibilityUtils.getColor(res, R.color.default_primary_color)));
 
         setStatusBarColor();
     }

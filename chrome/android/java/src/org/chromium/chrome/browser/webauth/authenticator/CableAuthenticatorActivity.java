@@ -4,10 +4,7 @@
 
 package org.chromium.chrome.browser.webauth.authenticator;
 
-import android.app.ActivityManager;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.BitmapFactory;
 import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
@@ -15,9 +12,7 @@ import android.util.Base64;
 
 import androidx.fragment.app.Fragment;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.webauthn.CableAuthenticatorModuleProvider;
@@ -97,10 +92,5 @@ public class CableAuthenticatorActivity extends ChromeBaseAppCompatActivity {
                 .beginTransaction()
                 .replace(android.R.id.content, fragment)
                 .commit();
-
-        Resources res = getResources();
-        setTaskDescription(new ActivityManager.TaskDescription(res.getString(R.string.app_name),
-                BitmapFactory.decodeResource(res, R.mipmap.app_icon),
-                ApiCompatibilityUtils.getColor(res, R.color.default_primary_color)));
     }
 }

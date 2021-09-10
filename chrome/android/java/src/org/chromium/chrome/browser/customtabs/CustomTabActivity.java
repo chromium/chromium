@@ -302,4 +302,10 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     public NightModeStateProvider getNightModeStateProviderForTesting() {
         return super.getNightModeStateProvider();
     }
+
+    @Override
+    protected void setDefaultTaskDescription() {
+        // mIntentDataProvider is not ready when the super calls this method. So, we skip setting
+        // the task description here, and do it in #performPostInflationStartup();
+    }
 }
