@@ -55,7 +55,6 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_cache.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/text_rendering_mode.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/web_memory_allocator_dump.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/web_process_memory_dump.h"
 #include "third_party/blink/renderer/platform/text/layout_locale.h"
@@ -396,9 +395,6 @@ void FontCache::PurgeFallbackListShaperCache() {
     items += iter->value->size();
   }
   fallback_list_shaper_cache_.clear();
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(CustomCountHistogram, shape_cache_histogram,
-                                  ("Blink.Fonts.ShapeCache", 1, 1000000, 50));
-  shape_cache_histogram.Count(items);
 }
 
 void FontCache::InvalidateShapeCache() {
