@@ -10,7 +10,7 @@ In the case that they are not allowed, the administrator can set a template that
 device name or may prefer to not set a template in which case the default name (“ChromeOS”) is used.
 
 ## Architecture
-<img src="images/device_name_architecture_overview.png" alt="Device Name Architecture Overview" width="600px"/>
+<img src="images/device_name_architecture_overview.png" alt="Device Name Architecture Overview" width="600"/>
 
 ### Backend
 The backend logic is mainly implemented in the following classes:
@@ -91,20 +91,19 @@ Dialog.
 #### Detailed Build Info page
 * Contains the device name setting option.
 
-<img src="images/device_name_setting_option.png" alt="Device Name Setting Option" width="600px"/>
+<img src="images/device_name_setting_option.png" alt="Device Name Setting Option" width="600"/>
 
 * If the device name cannot be changed because of forbidden policies (either because the
 administrator set a template name or set policy that prohibits the user from changing the name), an
 enterprise icon shows up on the side and the edit button is disabled.
 
-<img src="images/device_name_administrator_restrictions.png" alt="Device Name Administrator Restrictions" width="400px"/>
+<img src="images/device_name_administrator_restrictions.png" alt="Device Name Administrator Restrictions" width="400"/>
 
 
 * If the device name cannot be changed because the active user is not the device owner, an owner
 icon shows up on the side and the edit button is disabled.
 
-<img src="images/device_name_owner_restrictions.png" alt="Device Name Owner Restrictions"
-width="400px"/>
+<img src="images/device_name_owner_restrictions.png" alt="Device Name Owner Restrictions" width="400"/>
 
 
 #### Edit Hostname Dialog
@@ -112,13 +111,13 @@ width="400px"/>
 an input info box informing the user what type of input is valid and the current count of the name (
 e.g. 5/15).
 
-<img src="images/device_name_valid_input.png" alt="Device Name Valid Input" width="400px"/>
+<img src="images/device_name_valid_input.png" alt="Device Name Valid Input" width="400"/>
 
 * If the input contains any invalid characters or the minimum/maximum number of characters is not
 respected, the input info box turns red and the done button is disabled. If the user attempts to
 enter more than the maximum limit, the input is truncated.
 
-<img src="images/device_name_invalid_input.png" alt="Device Name Invalid Input" width="400px"/>
+<img src="images/device_name_invalid_input.png" alt="Device Name Invalid Input" width="400"/>
 
 * Note: if the user types an emoji, it is removed from the input and does not appear in the text
 field.
