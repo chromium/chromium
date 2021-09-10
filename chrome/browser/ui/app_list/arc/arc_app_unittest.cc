@@ -2857,7 +2857,7 @@ TEST_P(ArcAppModelIconTest, IconInvalidation) {
   // AppServiceAppItem is added to UI but there is no UI in unit tests.
   FlushMojoCallsForAppService();
   model_updater()->LoadAppIcon(app_id);
-  content::RunAllTasksUntilIdle();
+  WaitForIconUpdate();
 
   EnsureIconsUpdated();
 
