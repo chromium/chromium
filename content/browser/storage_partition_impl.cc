@@ -1138,9 +1138,6 @@ StoragePartitionImpl::~StoragePartitionImpl() {
   if (GetBackgroundSyncContext())
     GetBackgroundSyncContext()->Shutdown();
 
-  if (GetPaymentAppContext())
-    GetPaymentAppContext()->Shutdown();
-
   if (GetBackgroundFetchContext())
     GetBackgroundFetchContext()->Shutdown();
 
