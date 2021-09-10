@@ -437,7 +437,7 @@ void ProxyImpl::RenewTreePriority() {
         user_interaction_in_progress);
   }
 
-  if (host_impl_->CurrentScrollDidCheckerboardLargeArea() &&
+  if (host_impl_->CurrentScrollCheckerboardsDueToNoRecording() &&
       base::FeatureList::IsEnabled(
           features::kPreferNewContentForCheckerboardedScrolls)) {
     prefer_new_content = true;

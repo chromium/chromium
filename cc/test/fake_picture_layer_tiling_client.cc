@@ -91,7 +91,7 @@ bool FakePictureLayerTilingClient::IsDirectlyCompositedImage() const {
 bool FakePictureLayerTilingClient::ScrollInteractionInProgress() const {
   return false;
 }
-bool FakePictureLayerTilingClient::CurrentScrollDidCheckerboardLargeArea()
+bool FakePictureLayerTilingClient::CurrentScrollCheckerboardsDueToNoRecording()
     const {
   return false;
 }

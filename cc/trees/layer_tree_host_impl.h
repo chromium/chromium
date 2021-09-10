@@ -663,10 +663,10 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // See comment in equivalent ThreadedInputHandler method for what this means.
   ActivelyScrollingType GetActivelyScrollingType() const;
   bool ScrollAffectsScrollHandler() const;
-  bool CurrentScrollDidCheckerboardLargeArea() const {
+  bool CurrentScrollCheckerboardsDueToNoRecording() const {
     return current_scroll_did_checkerboard_large_area_;
   }
-  void SetCurrentScrollDidCheckerboardLargeArea() {
+  void SetCurrentScrollCheckerboardsDueToNoRecording() {
     current_scroll_did_checkerboard_large_area_ = true;
   }
   void SetExternalPinchGestureActive(bool active);

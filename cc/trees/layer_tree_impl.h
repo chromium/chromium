@@ -735,8 +735,8 @@ class CC_EXPORT LayerTreeImpl {
     return host_impl_->GetActivelyScrollingType();
   }
 
-  bool CurrentScrollDidCheckerboardLargeArea() {
-    return host_impl_->CurrentScrollDidCheckerboardLargeArea();
+  bool CurrentScrollCheckerboardsDueToNoRecording() {
+    return host_impl_->CurrentScrollCheckerboardsDueToNoRecording();
   }
 
   // These functions are used for plumbing DelegatedInkMetadata from blink

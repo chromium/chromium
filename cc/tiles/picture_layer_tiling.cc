@@ -914,7 +914,7 @@ PrioritizedTile PictureLayerTiling::MakePrioritizedTile(
   if (tile_priority.distance_to_visible <
           max_skewport_extent_in_screen_space_ &&
       client_->ScrollInteractionInProgress() &&
-      client_->CurrentScrollDidCheckerboardLargeArea())
+      client_->CurrentScrollCheckerboardsDueToNoRecording())
     process_for_images_only = false;
   return PrioritizedTile(tile, this, tile_priority, IsTileOccluded(tile),
                          process_for_images_only,

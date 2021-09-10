@@ -1007,8 +1007,8 @@ bool PictureLayerImpl::ScrollInteractionInProgress() const {
          ActivelyScrollingType::kNone;
 }
 
-bool PictureLayerImpl::CurrentScrollDidCheckerboardLargeArea() const {
-  return layer_tree_impl()->CurrentScrollDidCheckerboardLargeArea();
+bool PictureLayerImpl::CurrentScrollCheckerboardsDueToNoRecording() const {
+  return layer_tree_impl()->CurrentScrollCheckerboardsDueToNoRecording();
 }
 
 gfx::Rect PictureLayerImpl::GetEnclosingVisibleRectInTargetSpace() const {

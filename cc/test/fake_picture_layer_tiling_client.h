@@ -42,7 +42,7 @@ class FakePictureLayerTilingClient : public PictureLayerTilingClient {
   const PaintWorkletRecordMap& GetPaintWorkletRecords() const override;
   bool IsDirectlyCompositedImage() const override;
   bool ScrollInteractionInProgress() const override;
-  bool CurrentScrollDidCheckerboardLargeArea() const override;
+  bool CurrentScrollCheckerboardsDueToNoRecording() const override;
 
   void set_twin_tiling_set(PictureLayerTilingSet* set) {
     twin_set_ = set;

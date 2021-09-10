@@ -3491,7 +3491,7 @@ class MissingTilesLayer : public LayerImpl {
 };
 
 TEST_P(ScrollUnifiedLayerTreeHostImplTest,
-       CurrentScrollDidCheckerboardLargeArea) {
+       CurrentScrollCheckerboardsDueToNoRecording) {
   LayerTreeSettings settings = DefaultSettings();
   CreateHostImpl(settings, CreateLayerTreeFrameSink());
   host_impl_->active_tree()->PushPageScaleFromMainThread(1, 0.25f, 4);
@@ -3518,7 +3518,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
   DrawFrame();
 
   // No scroll has taken place so this should be false.
-  EXPECT_FALSE(host_impl_->CurrentScrollDidCheckerboardLargeArea());
+  EXPECT_FALSE(host_impl_->CurrentScrollCheckerboardsDueToNoRecording());
 
   // Send scroll begin.
   GetInputHandler().ScrollBegin(
@@ -3531,7 +3531,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
 
   // Even though a ScrollBegin has been processed, we still don't consider the
   // interaction to be "actively scrolling". Expect this to be false.
-  EXPECT_FALSE(host_impl_->CurrentScrollDidCheckerboardLargeArea());
+  EXPECT_FALSE(host_impl_->CurrentScrollCheckerboardsDueToNoRecording());
 
   gfx::ScrollOffset scroll_delta(0, 10);
 
@@ -3548,12 +3548,12 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
   // Now that a scroll update has been processed and the latest
   // CalculateRenderPasses run has computed significant visible checkerboarding,
   // expect this flag to be true.
-  EXPECT_TRUE(host_impl_->CurrentScrollDidCheckerboardLargeArea());
+  EXPECT_TRUE(host_impl_->CurrentScrollCheckerboardsDueToNoRecording());
 
   GetInputHandler().ScrollEnd();
 
   // Expect state to be reset after a scroll end.
-  EXPECT_FALSE(host_impl_->CurrentScrollDidCheckerboardLargeArea());
+  EXPECT_FALSE(host_impl_->CurrentScrollCheckerboardsDueToNoRecording());
 }
 
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, ImplPinchZoom) {
