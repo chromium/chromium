@@ -33,6 +33,7 @@ const device::BluetoothUUID kAccountKeyCharacteristicUuidV2(
 constexpr uint8_t kProviderAddressStartIndex = 2;
 constexpr uint8_t kSeekerAddressStartIndex = 8;
 constexpr uint8_t kSeekerPasskey = 0x02;
+constexpr uint8_t kAccountKeyStartByte = 0x04;
 
 constexpr base::TimeDelta kGattOperationTimeout =
     base::TimeDelta::FromSeconds(5);
@@ -171,6 +172,12 @@ void FastPairGattServiceClientImpl::NotifyWritePasskeyError(
   DCHECK(passkey_write_response_callback_);
   std::move(passkey_write_response_callback_)
       .Run(/*response_data=*/{}, failure);
+}
+
+void FastPairGattServiceClientImpl::NotifyWriteAccountKeyError(
+    device::BluetoothGattService::GattErrorCode error) {
+  DCHECK(write_account_key_callback_);
+  std::move(write_account_key_callback_).Run(error);
 }
 
 void FastPairGattServiceClientImpl::GattDiscoveryCompleteForService(
@@ -432,6 +439,28 @@ void FastPairGattServiceClientImpl::WritePasskeyAsync(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void FastPairGattServiceClientImpl::WriteAccountKey(
+    std::array<uint8_t, 16> account_key,
+    FastPairDataEncryptor* fast_pair_data_encryptor,
+    base::OnceCallback<
+        void(absl::optional<device::BluetoothGattService::GattErrorCode>)>
+        write_account_key_callback) {
+  DCHECK(account_key[0] == kAccountKeyStartByte);
+  DCHECK(is_initialized_);
+  write_account_key_callback_ = std::move(write_account_key_callback);
+
+  const std::array<uint8_t, kBlockSizeBytes> data_to_write =
+      fast_pair_data_encryptor->EncryptBytes(account_key);
+
+  account_key_characteristic_->WriteRemoteCharacteristic(
+      std::vector<uint8_t>(data_to_write.begin(), data_to_write.end()),
+      device::BluetoothRemoteGattCharacteristic::WriteType::kWithResponse,
+      base::BindOnce(&FastPairGattServiceClientImpl::OnWriteAccountKey,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&FastPairGattServiceClientImpl::OnWriteAccountKeyError,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
 void FastPairGattServiceClientImpl::GattCharacteristicValueChanged(
     device::BluetoothAdapter* adapter,
     device::BluetoothRemoteGattCharacteristic* characteristic,
@@ -480,6 +509,21 @@ void FastPairGattServiceClientImpl::OnWritePasskeyError(
                      "characteristic failed due to GATT error: "
                   << ToString(error);
   NotifyWritePasskeyError(PairFailure::kPasskeyPairingCharacteristicWrite);
+}
+
+void FastPairGattServiceClientImpl::OnWriteAccountKey() {
+  QP_LOG(VERBOSE)
+      << "WriteRemoteCharacteristic to account key characteristic successful.";
+  DCHECK(write_account_key_callback_);
+  std::move(write_account_key_callback_).Run(absl::nullopt);
+}
+
+void FastPairGattServiceClientImpl::OnWriteAccountKeyError(
+    device::BluetoothGattService::GattErrorCode error) {
+  QP_LOG(WARNING) << "WriteRemoteCharacteristic to account key characteristic "
+                     "failed due to GATT error: "
+                  << ToString(error);
+  NotifyWriteAccountKeyError(error);
 }
 
 }  // namespace quick_pair

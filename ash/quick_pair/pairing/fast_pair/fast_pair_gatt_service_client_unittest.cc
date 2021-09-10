@@ -64,6 +64,9 @@ const std::string kSeekersAddress = "abcde";
 const std::vector<uint8_t>& kTestWriteResponse{0x01, 0x03, 0x02, 0x01, 0x02};
 const uint8_t kSeekerPasskey = 0x02;
 const uint32_t kPasskey = 13;
+const std::array<uint8_t, 16> kAccountKey = {0x04, 0x01, 0x01, 0x01, 0x01, 0x01,
+                                             0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+                                             0x01, 0x01, 0x01, 0x01};
 
 const std::array<uint8_t, 64> kPublicKey = {
     0x01, 0x5E, 0x3F, 0x45, 0x61, 0xC3, 0x32, 0x1D, 0x01, 0x5E, 0x3F,
@@ -401,6 +404,10 @@ class FastPairGattServiceClientTest : public testing::Test {
         std::make_unique<FakeBluetoothGattCharacteristic>(
             gatt_service_.get(), kUUIDString3, kAccountKeyCharacteristicUuid1,
             kProperties, kPermissions);
+    if (account_key_write_error_) {
+      fake_account_key_characteristic->SetWriteError(true);
+    }
+
     gatt_service_->AddMockCharacteristic(
         std::move(fake_account_key_characteristic));
     adapter_->NotifyGattDiscoveryCompleteForService(gatt_service_.get());
@@ -418,6 +425,10 @@ class FastPairGattServiceClientTest : public testing::Test {
 
   void SetKeybasedCharacteristicError(bool keybased_char_error) {
     keybased_char_error_ = keybased_char_error;
+  }
+
+  void SetAccountKeyCharacteristicWriteError(bool account_key_write_error) {
+    account_key_write_error_ = account_key_write_error;
   }
 
   void SetPasskeyNotifySessionError(bool passkey_notify_session_error) {
@@ -439,6 +450,16 @@ class FastPairGattServiceClientTest : public testing::Test {
   void WriteTestCallback(std::vector<uint8_t> response,
                          absl::optional<PairFailure> failure) {
     write_failure_ = failure;
+  }
+
+  void AccountKeyCallback(
+      absl::optional<device::BluetoothGattService::GattErrorCode> error) {
+    gatt_error_ = error;
+  }
+
+  absl::optional<device::BluetoothGattService::GattErrorCode>
+  GetAccountKeyCallback() {
+    return gatt_error_;
   }
 
   absl::optional<PairFailure> GetWriteCallbackResult() {
@@ -474,6 +495,14 @@ class FastPairGattServiceClientTest : public testing::Test {
                             weak_ptr_factory_.GetWeakPtr()));
   }
 
+  void WriteAccountKey() {
+    gatt_service_client_->WriteAccountKey(
+        kAccountKey, fast_pair_data_encryptor_.get(),
+        base::BindRepeating(&::ash::quick_pair::FastPairGattServiceClientTest::
+                                AccountKeyCallback,
+                            weak_ptr_factory_.GetWeakPtr()));
+  }
+
   void TriggerKeyBasedGattChanged() {
     adapter_->NotifyGattCharacteristicValueChanged(
         temp_fake_key_based_characteristic_);
@@ -501,8 +530,11 @@ class FastPairGattServiceClientTest : public testing::Test {
   // move the unique pointers when we notify the session.
   FakeBluetoothGattCharacteristic* temp_fake_key_based_characteristic_;
   FakeBluetoothGattCharacteristic* temp_passkey_based_characteristic_;
+  absl::optional<device::BluetoothGattService::GattErrorCode> gatt_error_ =
+      absl::nullopt;
   bool passkey_char_error_ = false;
   bool keybased_char_error_ = false;
+  bool account_key_write_error_ = false;
   bool passkey_notify_session_error_ = false;
   bool keybased_notify_session_error_ = false;
   bool passkey_notify_session_timeout_ = false;
@@ -676,6 +708,31 @@ TEST_F(FastPairGattServiceClientTest, WritePasskeyRequestTimeout) {
   WriteRequestToPasskey();
   TriggerKeyBasedGattChanged();
   EXPECT_EQ(GetWriteCallbackResult(), PairFailure::kPasskeyResponseTimeout);
+}
+
+TEST_F(FastPairGattServiceClientTest, WriteAccountKey) {
+  SuccessfulGattConnectionSetUp();
+  NotifyGattDiscoveryCompleteForService();
+  EXPECT_EQ(GetInitializedCallbackResult(), absl::nullopt);
+  EXPECT_TRUE(ServiceIsSet());
+  WriteRequestToKeyBased();
+  TriggerKeyBasedGattChanged();
+  EXPECT_EQ(GetWriteCallbackResult(), absl::nullopt);
+  WriteAccountKey();
+  EXPECT_EQ(GetAccountKeyCallback(), absl::nullopt);
+}
+
+TEST_F(FastPairGattServiceClientTest, WriteAccountKeyFailure) {
+  SetAccountKeyCharacteristicWriteError(true);
+  SuccessfulGattConnectionSetUp();
+  NotifyGattDiscoveryCompleteForService();
+  EXPECT_EQ(GetInitializedCallbackResult(), absl::nullopt);
+  EXPECT_TRUE(ServiceIsSet());
+  WriteRequestToKeyBased();
+  TriggerKeyBasedGattChanged();
+  EXPECT_EQ(GetWriteCallbackResult(), absl::nullopt);
+  WriteAccountKey();
+  EXPECT_NE(GetAccountKeyCallback(), absl::nullopt);
 }
 
 }  // namespace quick_pair

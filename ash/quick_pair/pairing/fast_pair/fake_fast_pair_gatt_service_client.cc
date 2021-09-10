@@ -63,5 +63,14 @@ void FakeFastPairGattServiceClient::WritePasskeyAsync(
   passkey_write_response_callback_ = std::move(write_response_callback);
 }
 
+void FakeFastPairGattServiceClient::WriteAccountKey(
+    std::array<uint8_t, 16> account_key,
+    FastPairDataEncryptor* fast_pair_data_encryptor,
+    base::OnceCallback<
+        void(absl::optional<device::BluetoothGattService::GattErrorCode>)>
+        write_account_key_callback) {
+  write_account_key_callback_ = std::move(write_account_key_callback);
+}
+
 }  // namespace quick_pair
 }  // namespace ash

@@ -51,6 +51,13 @@ class FakeFastPairGattServiceClient : public FastPairGattServiceClient {
                                                  absl::optional<PairFailure>)>
                              write_response_callback) override;
 
+  void WriteAccountKey(
+      std::array<uint8_t, 16> account_key,
+      FastPairDataEncryptor* fast_pair_data_encryptor,
+      base::OnceCallback<
+          void(absl::optional<device::BluetoothGattService::GattErrorCode>)>
+          write_account_key_callback) override;
+
   void RunOnGattClientInitializedCallback(
       absl::optional<PairFailure> failure = absl::nullopt);
 
@@ -69,6 +76,9 @@ class FakeFastPairGattServiceClient : public FastPairGattServiceClient {
       key_based_write_response_callback_;
   base::OnceCallback<void(std::vector<uint8_t>, absl::optional<PairFailure>)>
       passkey_write_response_callback_;
+  base::OnceCallback<void(
+      absl::optional<device::BluetoothGattService::GattErrorCode>)>
+      write_account_key_callback_;
 };
 
 }  // namespace quick_pair

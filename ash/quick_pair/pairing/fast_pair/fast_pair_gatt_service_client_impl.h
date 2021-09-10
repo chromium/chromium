@@ -87,6 +87,13 @@ class FastPairGattServiceClientImpl : public FastPairGattServiceClient {
                                                  absl::optional<PairFailure>)>
                              write_response_callback) override;
 
+  void WriteAccountKey(
+      std::array<uint8_t, 16> account_key,
+      FastPairDataEncryptor* fast_pair_data_encryptor,
+      base::OnceCallback<
+          void(absl::optional<device::BluetoothGattService::GattErrorCode>)>
+          write_account_key_callback) override;
+
  private:
   FastPairGattServiceClientImpl(
       device::BluetoothDevice* device,
@@ -120,6 +127,8 @@ class FastPairGattServiceClientImpl : public FastPairGattServiceClient {
   // write error.
   void NotifyWriteRequestError(PairFailure failure);
   void NotifyWritePasskeyError(PairFailure failure);
+  void NotifyWriteAccountKeyError(
+      device::BluetoothGattService::GattErrorCode error);
 
   void ClearCurrentState();
 
@@ -149,6 +158,9 @@ class FastPairGattServiceClientImpl : public FastPairGattServiceClient {
   void OnWriteRequestError(device::BluetoothGattService::GattErrorCode error);
   void OnWritePasskey();
   void OnWritePasskeyError(device::BluetoothGattService::GattErrorCode error);
+  void OnWriteAccountKey();
+  void OnWriteAccountKeyError(
+      device::BluetoothGattService::GattErrorCode error);
 
   base::OneShotTimer gatt_service_discovery_timer_;
   base::OneShotTimer passkey_notify_session_timer_;
@@ -162,6 +174,9 @@ class FastPairGattServiceClientImpl : public FastPairGattServiceClient {
       key_based_write_response_callback_;
   base::OnceCallback<void(std::vector<uint8_t>, absl::optional<PairFailure>)>
       passkey_write_response_callback_;
+  base::OnceCallback<void(
+      absl::optional<device::BluetoothGattService::GattErrorCode>)>
+      write_account_key_callback_;
 
   std::string device_address_;
   bool is_initialized_ = false;
