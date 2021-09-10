@@ -13787,6 +13787,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Number of read entries in reading list.</summary>
 </histogram>
 
+<histogram name="ReadingList.SyncStateMatchesBookmarks" enum="BooleanMatched"
+    expires_after="2022-02-20">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Records whether the reading list and bookmarks sync states match on startup
+    when not in Incognito or guest mode (Desktop only).
+  </summary>
+</histogram>
+
 <histogram name="ReadingList.Unread.AgeOnDeletion" units="hours"
     expires_after="2022-03-15">
   <owner>gambard@chromium.org</owner>
