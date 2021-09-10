@@ -24,6 +24,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/paint/svg_object_painter.h"
@@ -210,8 +211,20 @@ sk_sp<PaintRecord> LayoutSVGResourcePattern::AsPaintRecord(
     content_transform = tile_transform;
 
   FloatRect bounds(FloatPoint(), size);
+  PaintRecorder paint_recorder;
+  cc::PaintCanvas* canvas = paint_recorder.beginRecording(bounds);
+
+  auto* pattern_content_element = Attributes().PatternContentElement();
+  DCHECK(pattern_content_element);
+  // If the element or some of its ancestor prevents us from doing paint, we can
+  // early out. Note that any locked ancestor would prevent paint.
+  if (DisplayLockUtilities::NearestLockedInclusiveAncestor(
+          *pattern_content_element)) {
+    return paint_recorder.finishRecordingAsPicture();
+  }
+
   const auto* pattern_layout_object = To<LayoutSVGResourceContainer>(
-      Attributes().PatternContentElement()->GetLayoutObject());
+      pattern_content_element->GetLayoutObject());
   DCHECK(pattern_layout_object);
   DCHECK(!pattern_layout_object->NeedsLayout());
 
@@ -221,8 +234,6 @@ sk_sp<PaintRecord> LayoutSVGResourcePattern::AsPaintRecord(
   for (LayoutObject* child = pattern_layout_object->FirstChild(); child;
        child = child->NextSibling())
     SVGObjectPainter(*child).PaintResourceSubtree(builder.Context());
-  PaintRecorder paint_recorder;
-  cc::PaintCanvas* canvas = paint_recorder.beginRecording(bounds);
   canvas->save();
   canvas->concat(AffineTransformToSkMatrix(tile_transform));
   builder.EndRecording(*canvas);

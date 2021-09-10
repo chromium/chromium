@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
 
 #include "third_party/blink/renderer/core/css/clip_path_paint_image_generator.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
@@ -43,10 +44,14 @@ LayoutSVGResourceClipper* ResolveElementReference(
     return nullptr;
   LayoutSVGResourceClipper* resource_clipper =
       GetSVGResourceAsType(*client, reference_clip_path_operation);
-  if (resource_clipper) {
-    SECURITY_DCHECK(!resource_clipper->NeedsLayout());
-    resource_clipper->ClearInvalidationMask();
-  }
+  if (!resource_clipper)
+    return nullptr;
+
+  resource_clipper->ClearInvalidationMask();
+  if (DisplayLockUtilities::LockedAncestorPreventingLayout(*resource_clipper))
+    return nullptr;
+
+  SECURITY_DCHECK(!resource_clipper->SelfNeedsLayout());
   return resource_clipper;
 }
 

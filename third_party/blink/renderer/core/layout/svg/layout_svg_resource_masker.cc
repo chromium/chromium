@@ -19,6 +19,7 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_masker.h"
 
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/paint/svg_object_painter.h"
@@ -64,7 +65,9 @@ sk_sp<const PaintRecord> LayoutSVGResourceMasker::CreatePaintRecord(
   for (const SVGElement& child_element :
        Traversal<SVGElement>::ChildrenOf(*GetElement())) {
     const LayoutObject* layout_object = child_element.GetLayoutObject();
-    if (!layout_object ||
+    if (!layout_object)
+      continue;
+    if (DisplayLockUtilities::LockedAncestorPreventingLayout(*layout_object) ||
         layout_object->StyleRef().Display() == EDisplay::kNone)
       continue;
     SVGObjectPainter(*layout_object).PaintResourceSubtree(builder.Context());
@@ -90,7 +93,7 @@ FloatRect LayoutSVGResourceMasker::ResourceBoundingBox(
     const FloatRect& reference_box,
     float reference_box_zoom) {
   NOT_DESTROYED();
-  DCHECK(!NeedsLayout());
+  DCHECK(!SelfNeedsLayout());
   auto* mask_element = To<SVGMaskElement>(GetElement());
   DCHECK(mask_element);
 
