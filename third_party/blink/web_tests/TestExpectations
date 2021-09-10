@@ -1236,6 +1236,7 @@ virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-nested-017.h
 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-nested-018.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-nested-022.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-nested-023.html [ Pass ]
+virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-oof-inline-cb-001.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-rule-nested-balancing-004.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-scroll-content.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-span-all-006.html [ Pass ]
@@ -1287,6 +1288,7 @@ virtual/layout_ng_block_frag/fast/multicol/vertical-rl/nested-columns.html [ Pas
 
 ### Tests failing with LayoutNGBlockFragmentation enabled:
 crbug.com/1225630 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/large-actual-column-count.html [ Skip ]
+crbug.com/1246602 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-oof-inline-cb-002.html [ Crash ]
 crbug.com/1066629 virtual/layout_ng_block_frag/fast/multicol/hit-test-translate-z.html [ Failure ]
 crbug.com/1225630 virtual/layout_ng_block_frag/fast/multicol/infinite-height-causing-fractional-row-height-crash.html [ Skip ]
 crbug.com/1225630 virtual/layout_ng_block_frag/fast/multicol/infinitely-tall-content-in-outer-crash.html [ Skip ]
@@ -3775,6 +3777,8 @@ crbug.com/829028 external/wpt/css/css-multicol/multicol-nested-017.html [ Failur
 crbug.com/829028 external/wpt/css/css-multicol/multicol-nested-018.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-multicol/multicol-nested-022.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-multicol/multicol-nested-023.html [ Failure ]
+crbug.com/1246602 external/wpt/css/css-multicol/multicol-oof-inline-cb-001.html [ Failure ]
+crbug.com/1246602 external/wpt/css/css-multicol/multicol-oof-inline-cb-002.html [ Failure ]
 crbug.com/792435 external/wpt/css/css-multicol/multicol-rule-004.xht [ Failure ]
 crbug.com/792437 external/wpt/css/css-multicol/multicol-rule-inset-000.xht [ Failure ]
 crbug.com/990240 external/wpt/css/css-multicol/multicol-rule-nested-balancing-001.html [ Failure ]
