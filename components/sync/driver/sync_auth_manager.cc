@@ -421,6 +421,10 @@ void SyncAuthManager::OnRefreshTokenRemovedForAccount(
       sync_account_.account_info.account_id,
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
 
+  // Note: It's possible that we're in the middle of a signout, and the "refresh
+  // token removed" event just arrived before the "signout" event. In that case,
+  // OnPrimaryAccountChanged() will get called momentarily and stop sync.
+
   // TODO(crbug.com/839834): REQUEST_CANCELED doesn't seem like the right auth
   // error to use here. Maybe INVALID_GAIA_CREDENTIALS?
   SetLastAuthError(
