@@ -100,7 +100,7 @@ DeviceCloudPolicyManagerAsh::DeviceCloudPolicyManagerAsh(
       task_runner_(task_runner),
       local_state_(nullptr) {}
 
-DeviceCloudPolicyManagerAsh::~DeviceCloudPolicyManagerAsh() {}
+DeviceCloudPolicyManagerAsh::~DeviceCloudPolicyManagerAsh() = default;
 
 void DeviceCloudPolicyManagerAsh::Initialize(PrefService* local_state) {
   CHECK(local_state);

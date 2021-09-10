@@ -394,7 +394,7 @@ UserCloudPolicyStatusProvider::UserCloudPolicyStatusProvider(
     Profile* profile)
     : CloudPolicyCoreStatusProvider(core), profile_(profile) {}
 
-UserCloudPolicyStatusProvider::~UserCloudPolicyStatusProvider() {}
+UserCloudPolicyStatusProvider::~UserCloudPolicyStatusProvider() = default;
 
 void UserCloudPolicyStatusProvider::GetStatus(base::DictionaryValue* dict) {
   if (!core_->store()->is_managed())
@@ -413,7 +413,7 @@ UserCloudPolicyStatusProviderChromeOS::UserCloudPolicyStatusProviderChromeOS(
 }
 
 UserCloudPolicyStatusProviderChromeOS::
-    ~UserCloudPolicyStatusProviderChromeOS() {}
+    ~UserCloudPolicyStatusProviderChromeOS() = default;
 
 void UserCloudPolicyStatusProviderChromeOS::GetStatus(
     base::DictionaryValue* dict) {
@@ -611,7 +611,7 @@ void UpdaterStatusProvider::OnDomainReceived(std::string domain) {
 
 #endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-PolicyUIHandler::PolicyUIHandler() {}
+PolicyUIHandler::PolicyUIHandler() = default;
 
 PolicyUIHandler::~PolicyUIHandler() {
   GetPolicyService()->RemoveObserver(policy::POLICY_DOMAIN_CHROME, this);

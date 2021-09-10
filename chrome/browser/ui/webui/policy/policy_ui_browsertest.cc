@@ -129,7 +129,7 @@ std::vector<std::string> PopulateExpectedPolicy(
             ? IDS_POLICY_SCOPE_DEVICE
             : IDS_POLICY_SCOPE_USER));
   } else {
-    expected_policy.push_back(std::string());
+    expected_policy.emplace_back();
   }
 
   // Populate expected level.
@@ -139,7 +139,7 @@ std::vector<std::string> PopulateExpectedPolicy(
             ? IDS_POLICY_LEVEL_RECOMMENDED
             : IDS_POLICY_LEVEL_MANDATORY));
   } else {
-    expected_policy.push_back(std::string());
+    expected_policy.emplace_back();
   }
 
   // Populate expected status.
@@ -249,7 +249,7 @@ class TestSelectFileDialog : public ui::SelectFileDialog {
   bool HasMultipleFileTypeChoicesImpl() override { return false; }
 
  private:
-  ~TestSelectFileDialog() override {}
+  ~TestSelectFileDialog() override = default;
 };
 
 // A factory associated with the artificial file picker.
@@ -262,9 +262,9 @@ class TestSelectFileDialogFactory : public ui::SelectFileDialogFactory {
   }
 };
 
-PolicyUITest::PolicyUITest() {}
+PolicyUITest::PolicyUITest() = default;
 
-PolicyUITest::~PolicyUITest() {}
+PolicyUITest::~PolicyUITest() = default;
 
 void PolicyUITest::SetUpInProcessBrowserTestFixture() {
   provider_.SetDefaultReturns(/*is_initialization_complete_return=*/true,
@@ -605,7 +605,7 @@ IN_PROC_BROWSER_TEST_F(PolicyUITest, SendPolicyValues) {
 class ExtensionPolicyUITest : public PolicyUITest,
                               public ::testing::WithParamInterface<bool> {
  public:
-  ExtensionPolicyUITest() {}
+  ExtensionPolicyUITest() = default;
 
   bool UseSigninProfile() const { return GetParam(); }
 
