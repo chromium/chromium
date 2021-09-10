@@ -38,6 +38,22 @@ mojom("mojom") {
           cpp = "::rmad::RmadErrorCode"
         },
         {
+          mojom = "ash.shimless_rma.mojom.CalibrationSetupInstruction"
+          cpp = "::rmad::CalibrationSetupInstruction"
+        },
+        {
+          mojom = "ash.shimless_rma.mojom.CalibrationOverallStatus"
+          cpp = "::rmad::CalibrationOverallStatus"
+        },
+        {
+          mojom = "ash.shimless_rma.mojom.CalibrationStatus"
+          cpp = "::rmad::CalibrationComponentStatus_CalibrationStatus"
+        },
+        {
+          mojom = "ash.shimless_rma.mojom.CalibrationComponentStatus"
+          cpp = "::rmad::CalibrationComponentStatus"
+        },
+        {
           mojom = "media.mojom.CdmKeyInformation"
           cpp = "::std::unique_ptr<::media::CdmKeyInformation>"
           move_only = true

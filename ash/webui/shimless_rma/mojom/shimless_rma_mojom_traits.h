@@ -90,6 +90,62 @@ class StructTraits<ash::shimless_rma::mojom::ComponentDataView,
                    rmad::ComponentsRepairState_ComponentRepairStatus* out);
 };
 
+template <>
+struct EnumTraits<ash::shimless_rma::mojom::CalibrationSetupInstruction,
+                  rmad::CalibrationSetupInstruction> {
+  static ash::shimless_rma::mojom::CalibrationSetupInstruction ToMojom(
+      rmad::CalibrationSetupInstruction key_status);
+
+  static bool FromMojom(
+      ash::shimless_rma::mojom::CalibrationSetupInstruction input,
+      rmad::CalibrationSetupInstruction* out);
+};
+
+template <>
+struct EnumTraits<ash::shimless_rma::mojom::CalibrationOverallStatus,
+                  rmad::CalibrationOverallStatus> {
+  static ash::shimless_rma::mojom::CalibrationOverallStatus ToMojom(
+      rmad::CalibrationOverallStatus key_status);
+
+  static bool FromMojom(
+      ash::shimless_rma::mojom::CalibrationOverallStatus input,
+      rmad::CalibrationOverallStatus* out);
+};
+
+template <>
+struct EnumTraits<ash::shimless_rma::mojom::CalibrationStatus,
+                  rmad::CalibrationComponentStatus_CalibrationStatus> {
+  static ash::shimless_rma::mojom::CalibrationStatus ToMojom(
+      rmad::CalibrationComponentStatus_CalibrationStatus key_status);
+
+  static bool FromMojom(
+      ash::shimless_rma::mojom::CalibrationStatus input,
+      rmad::CalibrationComponentStatus_CalibrationStatus* out);
+};
+
+template <>
+class StructTraits<ash::shimless_rma::mojom::CalibrationComponentStatusDataView,
+                   rmad::CalibrationComponentStatus> {
+ public:
+  static rmad::RmadComponent component(
+      const rmad::CalibrationComponentStatus& component) {
+    return component.component();
+  }
+
+  static rmad::CalibrationComponentStatus_CalibrationStatus status(
+      const rmad::CalibrationComponentStatus& component) {
+    return component.status();
+  }
+
+  static double progress(const rmad::CalibrationComponentStatus& component) {
+    return component.progress();
+  }
+
+  static bool Read(
+      ash::shimless_rma::mojom::CalibrationComponentStatusDataView data,
+      rmad::CalibrationComponentStatus* out);
+};
+
 }  // namespace mojo
 
 #endif  // ASH_WEBUI_SHIMLESS_RMA_MOJOM_SHIMLESS_RMA_MOJOM_TRAITS_H_
