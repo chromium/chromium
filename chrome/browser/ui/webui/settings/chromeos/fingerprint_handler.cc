@@ -263,7 +263,8 @@ void FingerprintHandler::HandleGetEnrollmentLabel(const base::ListValue* args) {
   CHECK_EQ(2U, list.size());
   std::string callback_id = list[0].GetString();
   int index = list[1].GetInt();
-  DCHECK_LT(index, static_cast<int>(fingerprints_labels_.size()));
+  CHECK_GE(index, 0);
+  CHECK_LT(index, static_cast<int>(fingerprints_paths_.size()));
 
   AllowJavascript();
   fp_service_->RequestRecordLabel(
@@ -282,7 +283,8 @@ void FingerprintHandler::HandleRemoveEnrollment(const base::ListValue* args) {
   CHECK_EQ(2U, list.size());
   std::string callback_id = list[0].GetString();
   int index = list[1].GetInt();
-  DCHECK_LT(index, static_cast<int>(fingerprints_paths_.size()));
+  CHECK_GE(index, 0);
+  CHECK_LT(index, static_cast<int>(fingerprints_paths_.size()));
 
   AllowJavascript();
   fp_service_->RemoveRecord(
@@ -305,6 +307,9 @@ void FingerprintHandler::HandleChangeEnrollmentLabel(
 
   std::string callback_id = list[0].GetString();
   int index = list[1].GetInt();
+  CHECK_GE(index, 0);
+  CHECK_LT(index, static_cast<int>(fingerprints_paths_.size()));
+
   std::string new_label = list[2].GetString();
 
   AllowJavascript();
