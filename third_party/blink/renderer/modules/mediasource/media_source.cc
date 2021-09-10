@@ -144,7 +144,8 @@ MediaSource::MediaSource(ExecutionContext* context)
       live_seekable_range_end_(0.0) {
   DVLOG(1) << __func__ << " this=" << this;
 
-  DCHECK(RuntimeEnabledFeatures::MediaSourceInWorkersEnabled() ||
+  DCHECK(RuntimeEnabledFeatures::MediaSourceInWorkersEnabled(
+             GetExecutionContext()) ||
          IsMainThread());
 
   MseExecutionContext type = MseExecutionContext::kWindow;
@@ -641,10 +642,10 @@ bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
 }
 
 // static
-bool MediaSource::canConstructInDedicatedWorker() {
+bool MediaSource::canConstructInDedicatedWorker(ExecutionContext* context) {
   // This method's visibility in IDL is restricted to MSE-in-Workers feature
   // being enabled.
-  DCHECK(RuntimeEnabledFeatures::MediaSourceInWorkersEnabled());
+  DCHECK(RuntimeEnabledFeatures::MediaSourceInWorkersEnabled(context));
   return true;
 }
 

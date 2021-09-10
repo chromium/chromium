@@ -79,5 +79,5 @@ enum EndOfStreamError {
     // support usage of the MSE API from dedicated worker contexts. See also
     // https://github.com/w3c/media-source/issues/175 and
     // https://crbug.com/878133.
-    [RuntimeEnabled=MediaSourceInWorkers] static readonly attribute boolean canConstructInDedicatedWorker;
+    [RuntimeEnabled=MediaSourceInWorkers, CallWith=ExecutionContext] static readonly attribute boolean canConstructInDedicatedWorker;
 };
