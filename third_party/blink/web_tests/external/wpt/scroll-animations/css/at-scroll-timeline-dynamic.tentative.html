@@ -60,8 +60,6 @@
       options.name = 'timeline';
     if (typeof(options.source) == 'undefined')
       options.source = 'selector(#scroller1)';
-    if (typeof(options.timeRange) == 'undefined')
-      options.timeRange = '1e10s';
     if (typeof(options.start) == 'undefined')
       options.start = '0px';
     if (typeof(options.end) == 'undefined')
@@ -69,7 +67,6 @@
     return insertSheet(`
       @scroll-timeline ${options.name} {
         source: ${options.source};
-        time-range: ${options.timeRange};
         start: ${options.start};
         end: ${options.end};
       }
@@ -107,7 +104,13 @@
       scroller1.scrollTop = scroller1.scrollTop - 1;
       scroller2.scrollTop = scroller2.scrollTop - 1;
       await waitForNextFrame();
-      assert_equals(getComputedStyle(element).width, expected);
+      assert_approx_equals(
+          parseFloat(getComputedStyle(element).width),
+          parseFloat(expected),
+          // converting between progress based scroll timelines and document
+          // timelines has some margin of rounding error, this check makes sure
+          // values are within 1/10th of a pixel.
+          0.1);
     }, description + ' [scroll]');
   }
 
@@ -206,20 +209,6 @@
     insertScrollTimeline({source: 'selector(#scroller2)'});
     await assert_width(element, '140px');
   }, 'Changing the source descriptor switches effective timeline');
-
-  dynamic_rule_test(async (t, assert_width) => {
-    let element = insertElement();
-    insertSheet('#element { animation-timeline: timeline; }');
-
-    // Unknown animation-timeline, current time held at zero.
-    await assert_width(element, '100px');
-
-    insertScrollTimeline({timeRange: '1e10s'});
-    await assert_width(element, '120px');
-
-    insertScrollTimeline({timeRange: '1e9s'});
-    await assert_width(element, '102px');
-  }, 'Changing the time-range descriptor switches effective timeline');
 
   dynamic_rule_test(async (t, assert_width) => {
     let element = insertElement();

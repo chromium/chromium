@@ -243,7 +243,6 @@ class CORE_EXPORT StyleRuleScrollTimeline : public StyleRuleBase {
   const CSSValue* GetOrientation() const { return orientation_; }
   const CSSValue* GetStart() const { return start_; }
   const CSSValue* GetEnd() const { return end_; }
-  const CSSValue* GetTimeRange() const { return time_range_; }
 
  private:
   AtomicString name_;
@@ -251,7 +250,6 @@ class CORE_EXPORT StyleRuleScrollTimeline : public StyleRuleBase {
   Member<const CSSValue> orientation_;
   Member<const CSSValue> start_;
   Member<const CSSValue> end_;
-  Member<const CSSValue> time_range_;
 };
 
 class CORE_EXPORT StyleRuleGroup : public StyleRuleBase {

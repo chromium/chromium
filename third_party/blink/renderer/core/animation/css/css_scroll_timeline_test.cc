@@ -51,7 +51,6 @@ TEST_F(CSSScrollTimelineTest, IdObserverElementRemoval) {
       }
       @scroll-timeline timeline {
         source: selector(#scroller);
-        time-range: 10s;
       }
       div {
         animation: anim 10s;
@@ -98,11 +97,9 @@ TEST_F(CSSScrollTimelineTest, IdObserverRuleInsertion) {
       }
       @scroll-timeline timeline1 {
         source: selector(#scroller1);
-        time-range: 10s;
       }
       @scroll-timeline timeline2 {
         source: selector(#scroller2);
-        time-range: 10s;
         start: selector(#offset1);
       }
       div {
@@ -136,12 +133,10 @@ TEST_F(CSSScrollTimelineTest, IdObserverRuleInsertion) {
   style_element->setTextContent(R"CSS(
       @scroll-timeline timeline2 {
         source: selector(#redefined);
-        time-range: 10s;
         start: selector(#offset2);
       }
       @scroll-timeline timeline3 {
         source: selector(#scroller3);
-        time-range: 10s;
       }
       #element3 {
         animation-timeline: timeline3;
@@ -177,11 +172,9 @@ TEST_F(CSSScrollTimelineTest, SharedTimelines) {
       @keyframes anim3 { to { right: 200px; } }
       @scroll-timeline timeline1 {
         source: selector(#scroller);
-        time-range: 10s;
       }
       @scroll-timeline timeline2 {
         source: selector(#scroller);
-        time-range: 10s;
       }
       #scroller {
         height: 100px;
@@ -244,7 +237,6 @@ TEST_F(CSSScrollTimelineTest, MultipleLifecyclePasses) {
       }
       @scroll-timeline timeline {
         source: selector(#scroller);
-        time-range: 10s;
         start: auto;
         end: auto;
       }
@@ -298,7 +290,6 @@ class AnimationTriggeringDelegate : public ResizeObserver::Delegate {
     style_element_->setTextContent(R"CSS(
       @scroll-timeline timeline {
         source: selector(#scroller);
-        time-range: 10s;
       }
     )CSS");
   }
@@ -375,7 +366,6 @@ TEST_F(CSSScrollTimelineTest, DocumentScrollerInQuirksMode) {
       to { z-index: 100; }
     }
     @scroll-timeline timeline {
-      time-range: 10s;
       source: auto;
     }
     #element {

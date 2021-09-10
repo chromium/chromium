@@ -927,7 +927,6 @@ interface CSSScrollTimelineRule : CSSRule
     getter orientation
     getter source
     getter start
-    getter timeRange
     method constructor
 interface CSSSkew : CSSTransformComponent
     attribute @@toStringTag

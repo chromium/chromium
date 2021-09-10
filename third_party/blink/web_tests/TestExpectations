@@ -6711,10 +6711,11 @@ crbug.com/1234057 [ Mac ] external/wpt/css/css-paint-api/no-op-animation.https.h
 crbug.com/1234302 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint2d-image.https.html [ Crash Failure Pass ]
 
 # Temporarily disabling progress based worklet animation tests.
-crbug.com/1238130 virtual/threaded/external/wpt/animation-worklet/inactive-timeline.https.html [ Timeout ]
-crbug.com/1238130 virtual/threaded/external/wpt/animation-worklet/scroll-timeline-writing-modes.https.html [ Failure ]
-crbug.com/1238130 virtual/threaded/external/wpt/animation-worklet/worklet-animation-with-scroll-timeline-root-scroller.https.html [ Timeout ]
-crbug.com/1238130 virtual/threaded-no-composited-antialiasing/animations/animationworklet/playback-rate-scroll-timeline-accelerated-property.html [ Timeout ]
+crbug.com/1238130 virtual/threaded/external/wpt/animation-worklet/inactive-timeline.https.html [ Timeout Pass ]
+crbug.com/1238130 virtual/threaded/external/wpt/animation-worklet/scroll-timeline-writing-modes.https.html [ Failure Pass ]
+crbug.com/1238130 virtual/threaded/external/wpt/animation-worklet/worklet-animation-with-scroll-timeline-root-scroller.https.html [ Timeout Pass ]
+crbug.com/1233826 virtual/threaded/external/wpt/animation-worklet/worklet-animation-with-scroll-timeline.https.html [ Crash Pass Failure ]
+crbug.com/1238130 virtual/threaded-no-composited-antialiasing/animations/animationworklet/playback-rate-scroll-timeline-accelerated-property.html [ Timeout Pass ]
 
 # Sheriff 2021-07-29
 crbug.com/626703 http/tests/security/cross-frame-access-put.html [ Failure Pass ]
@@ -6809,8 +6810,6 @@ crbug.com/1246351 http/tests/misc/scroll-cross-origin-iframes-scrollbar.html [ P
 # DCHECK(!snapshot.drawsNothing()) failing on Macs:
 # Also reported as failing via crbug.com/1233766
 crbug.com/1233826 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-with-scroll-timeline-and-display-none.https.html [ Crash Pass Failure ]
-# Previously reported as failing on all platforms via crbug.com/1238130:
-crbug.com/1233826 virtual/threaded/external/wpt/animation-worklet/worklet-animation-with-scroll-timeline.https.html [ Crash Pass Failure ]
 # Previously reported as failing via crbug.com/626703:
 crbug.com/1233826 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-set-keyframes.https.html [ Crash Pass Failure ]
 # Previously reported as fialing via crbug.com/626703:

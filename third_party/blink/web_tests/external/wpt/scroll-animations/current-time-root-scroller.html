@@ -29,6 +29,9 @@ promise_test(async t => {
   const inlineScrollTimeline = new ScrollTimeline(
       { scrollSource: scroller, timeRange: scrollerWidth, orientation: 'inline' });
 
+  // Wait for new animation frame which allows the timeline to fully initialize
+  await waitForNextFrame();
+
   // Unscrolled, both timelines should read a currentTime of 0.
   assert_equals(blockScrollTimeline.currentTime, 0);
   assert_equals(inlineScrollTimeline.currentTime, 0);

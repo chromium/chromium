@@ -654,6 +654,14 @@ void KeyframeEffect::DetachTarget(Animation* animation) {
   ClearEffects();
 }
 
+AnimationTimeDelta KeyframeEffect::IntrinsicIterationDuration() const {
+  if (GetAnimation() && GetAnimation()->timeline()) {
+    return GetAnimation()->timeline()->CalculateIntrinsicIterationDuration(
+        timing_);
+  }
+  return AnimationTimeDelta();
+}
+
 AnimationTimeDelta KeyframeEffect::CalculateTimeToEffectChange(
     bool forwards,
     absl::optional<AnimationTimeDelta> local_time,
@@ -704,6 +712,13 @@ AnimationTimeDelta KeyframeEffect::CalculateTimeToEffectChange(
       NOTREACHED();
       return AnimationTimeDelta::Max();
   }
+}
+
+absl::optional<AnimationTimeDelta> KeyframeEffect::TimelineDuration() const {
+  if (GetAnimation() && GetAnimation()->timeline()) {
+    return GetAnimation()->timeline()->GetDuration();
+  }
+  return absl::nullopt;
 }
 
 // Returns true if transform, translate, rotate or scale is composited

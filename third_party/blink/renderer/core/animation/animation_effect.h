@@ -178,6 +178,8 @@ class CORE_EXPORT AnimationEffect : public ScriptWrappable {
   const Animation* GetAnimation() const;
   Animation* GetAnimation();
 
+  virtual absl::optional<AnimationTimeDelta> TimelineDuration() const = 0;
+
   Member<AnimationEffectOwner> owner_;
   Timing timing_;
   Member<EventDelegate> event_delegate_;
