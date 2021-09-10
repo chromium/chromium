@@ -500,6 +500,14 @@ class PageContentAnnotationsModelManagerMultipleModelsTest
 
 TEST_F(PageContentAnnotationsModelManagerMultipleModelsTest,
        AnnotateRequestBothModels) {
+  SetPageEntitiesModelExecutor({{"sometext",
+                                 {{"entity1", 0.1},
+                                  {"entity2", 0.2},
+                                  {"entity3", 0.3},
+                                  {"entity4", 0.4},
+                                  {"entity5", 0.5},
+                                  {"entity6", 0.6}}}});
+
   Annotate("sometext");
 
   histogram_tester()->ExpectUniqueSample(
