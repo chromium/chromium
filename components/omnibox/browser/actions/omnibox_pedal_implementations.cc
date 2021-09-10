@@ -1119,24 +1119,6 @@ class OmniboxPedalManageGooglePrivacy : public OmniboxPedal {
 
 // =============================================================================
 
-class OmniboxPedalManageGoogleAdSettings : public OmniboxPedal {
- public:
-  OmniboxPedalManageGoogleAdSettings()
-      : OmniboxPedal(
-            OmniboxPedalId::MANAGE_GOOGLE_AD_SETTINGS,
-            LabelStrings(
-                IDS_OMNIBOX_PEDAL_MANAGE_GOOGLE_AD_SETTINGS_HINT,
-                IDS_OMNIBOX_PEDAL_MANAGE_GOOGLE_AD_SETTINGS_SUGGESTION_CONTENTS,
-                IDS_ACC_OMNIBOX_PEDAL_MANAGE_GOOGLE_AD_SETTINGS_SUFFIX,
-                IDS_ACC_OMNIBOX_PEDAL_MANAGE_GOOGLE_AD_SETTINGS),
-            GURL()) {}
-
- protected:
-  ~OmniboxPedalManageGoogleAdSettings() override = default;
-};
-
-// =============================================================================
-
 class OmniboxPedalManageChromeSettings : public OmniboxPedal {
  public:
   OmniboxPedalManageChromeSettings()
@@ -1351,7 +1333,6 @@ GetPedalImplementations(bool with_branding, bool incognito) {
     add(new OmniboxPedalPlayChromeDinoGame());
     add(new OmniboxPedalFindMyPhone());
     add(new OmniboxPedalManageGooglePrivacy());
-    add(new OmniboxPedalManageGoogleAdSettings());
     add(new OmniboxPedalManageChromeSettings());
     add(new OmniboxPedalManageChromeDownloads());
     add(new OmniboxPedalViewChromeHistory());

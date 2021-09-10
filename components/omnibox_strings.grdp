@@ -465,19 +465,6 @@
     Manage my privacy on Google
   </message>
 
-  <message name="IDS_OMNIBOX_PEDAL_MANAGE_GOOGLE_AD_SETTINGS_HINT" desc="The button text contents to suggest pedal action, MANAGE_GOOGLE_AD_SETTINGS">
-    Manage my Google Ad Settings
-  </message>
-  <message name="IDS_OMNIBOX_PEDAL_MANAGE_GOOGLE_AD_SETTINGS_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe pedal action, MANAGE_GOOGLE_AD_SETTINGS">
-    Manage my Google Ad Settings
-  </message>
-  <message name="IDS_ACC_OMNIBOX_PEDAL_MANAGE_GOOGLE_AD_SETTINGS_SUFFIX" desc="Suffix for spoken suggestion description with pedal action button, to explain keystroke used to MANAGE_GOOGLE_AD_SETTINGS.">
-    <ph name="MANAGE_GOOGLE_AD_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, Manage my Google Ad Settings
-  </message>
-  <message name="IDS_ACC_OMNIBOX_PEDAL_MANAGE_GOOGLE_AD_SETTINGS" desc="Announcement when pedal action button is focused, MANAGE_GOOGLE_AD_SETTINGS">
-    Manage my Google Ad Settings
-  </message>
-
   <message name="IDS_OMNIBOX_PEDAL_MANAGE_CHROME_SETTINGS_HINT" desc="The button text contents to suggest pedal action, MANAGE_CHROME_SETTINGS">
     Manage Chrome settings
   </message>
