@@ -12,11 +12,18 @@ extern const char kChromeWhatsNewURL[];
 extern const char kChromeWhatsNewURLShort[];
 extern const int kMaxWhatsNewVersion;
 
-// Allows tests to force What's New to stay open even if loading remote content
-// doesn't succeed, since this does not work in tests.
-extern bool g_force_enable_for_tests;
+// Disables loading remote content for tests, because this can lead to a
+// redirect if it fails. Most tests don't expect redirects to occur.
+void DisableRemoteContentForTests();
 
+// Whether loading remote content has been disabled via
+// DisableRemoteContentForTests().
+bool IsRemoteContentDisabled();
+
+// Whether the What's New page should be shown, based on |local_state|.
 bool ShouldShowForState(PrefService* local_state);
+
+// Sets the last What's New version in |local_state| to the current version.
 void SetLastVersion(PrefService* local_state);
 }  // namespace whats_new
 

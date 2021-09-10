@@ -16,7 +16,15 @@ const char kChromeWhatsNewURLShort[] = "google.com/chrome/whats-new/";
 // The latest version of What's New.
 const int kMaxWhatsNewVersion = 94;
 
-bool g_force_enable_for_tests = false;
+bool g_is_remote_content_disabled = false;
+
+void DisableRemoteContentForTests() {
+  g_is_remote_content_disabled = true;
+}
+
+bool IsRemoteContentDisabled() {
+  return g_is_remote_content_disabled;
+}
 
 bool ShouldShowForState(PrefService* local_state) {
   if (!local_state)

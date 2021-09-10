@@ -93,6 +93,7 @@
 #endif
 
 #if !defined(OS_ANDROID)
+#include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "components/storage_monitor/test_storage_monitor.h"
 #endif
 
@@ -392,6 +393,10 @@ void InProcessBrowserTest::SetUp() {
   // to fail. See crbug.com/1050012.
   Tab::SetShowHoverCardOnMouseHoverForTesting(false);
 #endif  // defined(TOOLKIT_VIEWS)
+
+  // Auto-redirect to the NTP, which can happen if remote content is enabled on
+  // What's New for tests that simulate first run, is unexpected by most tests.
+  whats_new::DisableRemoteContentForTests();
 
   BrowserTestBase::SetUp();
 }

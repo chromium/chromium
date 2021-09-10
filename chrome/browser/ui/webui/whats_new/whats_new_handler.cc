@@ -73,7 +73,7 @@ void WhatsNewHandler::HandleInitialize(const base::ListValue* args) {
   CHECK(args->GetBoolean(1, &is_auto));
 
   AllowJavascript();
-  if (whats_new::g_force_enable_for_tests) {
+  if (whats_new::IsRemoteContentDisabled()) {
     // Just resolve with failure. This shows the error page which is all local
     // content, so that we don't trigger potentially flaky network requests in
     // tests.

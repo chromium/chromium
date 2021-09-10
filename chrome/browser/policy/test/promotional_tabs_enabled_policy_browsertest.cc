@@ -64,7 +64,6 @@ class PromotionalTabsEnabledPolicyTest
       welcome::kForceEnabled,
 #endif
     };
-    whats_new::g_force_enable_for_tests = true;
     scoped_feature_list_.InitWithFeatures(kEnabledFeatures, {});
   }
   ~PromotionalTabsEnabledPolicyTest() override = default;
