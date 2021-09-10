@@ -12,6 +12,7 @@ import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {DirectoryModel} from './directory_model.js';
+import {TAG_NAME as DriveOfflinePinningBannerTagName} from './ui/banners/drive_offline_pinning_banner.js';
 import {TAG_NAME as DriveWelcomeBannerTagName} from './ui/banners/drive_welcome_banner.js';
 import {TAG_NAME as HoldingSpaceWelcomeBannerTagName} from './ui/banners/holding_space_welcome_banner.js';
 import {TAG_NAME as LocalDiskLowSpaceBannerTagName} from './ui/banners/local_disk_low_space_banner.js';
@@ -207,6 +208,7 @@ export class BannerController extends EventTarget {
       this.setEducationalBannersInOrder([
         DriveWelcomeBannerTagName,
         HoldingSpaceWelcomeBannerTagName,
+        DriveOfflinePinningBannerTagName,
         PhotosWelcomeBannerTagName,
       ]);
       this.setStateBannersInOrder([TrashBannerTagName]);
