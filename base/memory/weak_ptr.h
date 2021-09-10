@@ -75,6 +75,7 @@
 
 #include "base/base_export.h"
 #include "base/check.h"
+#include "base/dcheck_is_on.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
@@ -102,7 +103,9 @@ class BASE_EXPORT WeakReference {
 
     bool MaybeValid() const;
 
+#if DCHECK_IS_ON()
     void DetachFromSequence();
+#endif
 
    private:
     friend class base::RefCountedThreadSafe<Flag>;
