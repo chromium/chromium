@@ -346,6 +346,8 @@ void ScanService::RescanPage(const base::UnguessableToken& scanner_id,
 
 void ScanService::CompleteMultiPageScan() {
   OnScanCompleted(lorgnette::SCAN_FAILURE_MODE_NO_FAILURE);
+  base::UmaHistogramCounts100("Scanning.MultiPageScan.NumPagesScanned",
+                              num_pages_scanned_);
   multi_page_controller_receiver_.reset();
 }
 

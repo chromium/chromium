@@ -854,6 +854,8 @@ TEST_F(ScanServiceTest, MultiPageScan) {
   EXPECT_TRUE(fake_scan_job_observer_.scan_success());
   EXPECT_EQ(saved_scan_paths, fake_scan_job_observer_.scanned_file_paths());
   histogram_tester.ExpectUniqueSample("Scanning.NumPagesScanned", 2, 1);
+  histogram_tester.ExpectUniqueSample("Scanning.MultiPageScan.NumPagesScanned",
+                                      2, 1);
 }
 
 // Test that when a multi-page scan fails, the scan job is marked as failed.
@@ -957,6 +959,8 @@ TEST_F(ScanServiceTest, MultiPageScanRemoveWithTwoPages) {
   // Expect 1 record of the Scanning.NumPagesScanned metric in the 1 pages
   // scanned bucket.
   histogram_tester.ExpectUniqueSample("Scanning.NumPagesScanned", 1, 1);
+  histogram_tester.ExpectUniqueSample("Scanning.MultiPageScan.NumPagesScanned",
+                                      1, 1);
 }
 
 // Test that a page can be removed from a multi-page scan with three scanned
@@ -1006,6 +1010,8 @@ TEST_F(ScanServiceTest, MultiPageScanRemoveWithThreePages) {
   // Expect 1 record of the Scanning.NumPagesScanned metric in the 2 pages
   // scanned bucket.
   histogram_tester.ExpectUniqueSample("Scanning.NumPagesScanned", 2, 1);
+  histogram_tester.ExpectUniqueSample("Scanning.MultiPageScan.NumPagesScanned",
+                                      2, 1);
 }
 
 // Test that if there's only one page available, the page is removed and the
@@ -1046,6 +1052,8 @@ TEST_F(ScanServiceTest, MultiPageScanRemoveLastPage) {
   // Expect 1 record of the Scanning.NumPagesScanned metric in the 1 page
   // scanned bucket.
   histogram_tester.ExpectUniqueSample("Scanning.NumPagesScanned", 1, 1);
+  histogram_tester.ExpectUniqueSample("Scanning.MultiPageScan.NumPagesScanned",
+                                      1, 1);
 }
 
 // Test that a page can be rescanned and replaced from a multi-page scan with
@@ -1087,6 +1095,8 @@ TEST_F(ScanServiceTest, MultiPageScanRescanWithOnePage) {
   // Expect 1 record of the Scanning.NumPagesScanned metric in the 1 pages
   // scanned bucket.
   histogram_tester.ExpectUniqueSample("Scanning.NumPagesScanned", 1, 1);
+  histogram_tester.ExpectUniqueSample("Scanning.MultiPageScan.NumPagesScanned",
+                                      1, 1);
 }
 
 // Test that a page can be rescanned and replaced from a multi-page scan with
@@ -1142,6 +1152,8 @@ TEST_F(ScanServiceTest, MultiPageScanRescanWithThreePages) {
   // Expect 1 record of the Scanning.NumPagesScanned metric in the 3 pages
   // scanned bucket.
   histogram_tester.ExpectUniqueSample("Scanning.NumPagesScanned", 3, 1);
+  histogram_tester.ExpectUniqueSample("Scanning.MultiPageScan.NumPagesScanned",
+                                      3, 1);
 }
 
 }  // namespace ash

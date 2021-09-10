@@ -21,6 +21,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<histogram name="Scanning.MultiPageScan.NumPagesScanned" units="pages"
+    expires_after="2022-09-03">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the number of pages scanned in a saved multi-page scan session.
+  </summary>
+</histogram>
+
 <histogram name="Scanning.NumCompletedScansInSession" units="scans"
     expires_after="2022-06-15">
   <owner>gavinwill@chromium.org</owner>
