@@ -1,0 +1,156 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/views/lens/lens_side_panel_view.h"
+
+#include "base/bind.h"
+#include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/web_contents.h"
+#include "ui/base/theme_provider.h"
+#include "ui/gfx/color_palette.h"
+#include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/vector_icon_utils.h"
+#include "ui/native_theme/native_theme.h"
+#include "ui/views/background.h"
+#include "ui/views/border.h"
+#include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/button/image_button_factory.h"
+#include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/controls/separator.h"
+#include "ui/views/controls/webview/webview.h"
+#include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/layout/layout_provider.h"
+#include "ui/views/vector_icons.h"
+
+namespace {
+
+std::unique_ptr<views::WebView> CreateWebView(
+    content::BrowserContext* browser_context) {
+  auto webview = std::make_unique<views::WebView>(browser_context);
+  // Set a flex behavior for the WebView to always fill out the extra space in
+  // the parent view. In the minimum case, it will scale down to 0.
+  webview->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded));
+  return webview;
+}
+
+std::unique_ptr<views::ImageButton> CreateControlButton(
+    views::View* host,
+    base::RepeatingClosure pressed_callback,
+    const gfx::VectorIcon& icon,
+    const gfx::Insets& margin_insets,
+    int dip_size) {
+  auto button = views::CreateVectorImageButtonWithNativeTheme(pressed_callback,
+                                                              icon, dip_size);
+  button->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
+  button->SetBackground(views::CreateThemedSolidBackground(
+      host, ui::NativeTheme::kColorId_WindowBackground));
+  button->SetProperty(views::kMarginsKey, margin_insets);
+  return button;
+}
+
+}  // namespace
+
+namespace lens {
+
+constexpr int kDefaultSidePanelHeaderHeight = 40;
+constexpr int kGoogleLensLogoWidth = 87;
+constexpr int kGoogleLensLogoHeight = 16;
+
+LensSidePanelView::LensSidePanelView(content::BrowserContext* browser_context,
+                                     base::RepeatingClosure close_callback,
+                                     base::RepeatingClosure launch_callback) {
+  // Align views vertically top to bottom.
+  SetOrientation(views::LayoutOrientation::kVertical);
+  SetMainAxisAlignment(views::LayoutAlignment::kStart);
+  // Stretch views to fill horizontal bounds.
+  SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
+  CreateAndInstallHeader(close_callback, launch_callback);
+  separator_ = AddChildView(std::make_unique<views::Separator>());
+  web_view_ = AddChildView(CreateWebView(browser_context));
+}
+
+content::WebContents* LensSidePanelView::GetWebContents() {
+  return web_view_->GetWebContents();
+}
+
+void LensSidePanelView::OnThemeChanged() {
+  views::FlexLayoutView::OnThemeChanged();
+  separator_->SetColor(GetNativeTheme()->GetSystemColor(
+      ui::NativeTheme::kColorId_MenuSeparatorColor));
+
+  const SkColor color = GetNativeTheme()->GetSystemColor(
+      ui::NativeTheme::kColorId_DefaultIconColor);
+  // kGoogleLensFullLogoIcon is rectangular. We should create a tiled image so
+  // that the coordinates and scale are correct. The vector icon should have its
+  // own fill color.
+  gfx::ImageSkia image = gfx::ImageSkiaOperations::CreateTiledImage(
+      gfx::CreateVectorIcon(kGoogleLensFullLogoIcon, color), 0, 0,
+      kGoogleLensLogoWidth, kGoogleLensLogoHeight);
+  branding_->SetImage(image);
+}
+
+void LensSidePanelView::CreateAndInstallHeader(
+    base::RepeatingClosure close_callback,
+    base::RepeatingClosure launch_callback) {
+  auto header = std::make_unique<views::FlexLayoutView>();
+  // LayoutProvider for providing margins.
+  views::LayoutProvider* const layout_provider = views::LayoutProvider::Get();
+
+  // Set the interior margins of the header on the left and right sides.
+  header->SetInteriorMargin(gfx::Insets(
+      0, layout_provider->GetDistanceMetric(
+             views::DistanceMetric::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
+  // Set alignments for horizontal (main) and vertical (cross) axes.
+  header->SetMainAxisAlignment(views::LayoutAlignment::kStart);
+  header->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+
+  // The minimum cross axis size should the expected height of the header.
+  header->SetMinimumCrossAxisSize(kDefaultSidePanelHeaderHeight);
+  header->SetBackground(views::CreateThemedSolidBackground(
+      this, ui::NativeTheme::kColorId_WindowBackground));
+
+  // Create Google Lens Logo branding.
+  branding_ = header->AddChildView(std::make_unique<views::ImageView>());
+
+  // Create an empty view between branding and buttons to align branding on left
+  // without hardcoding margins. This view fills up the empty space between the
+  // branding and the control buttons.
+  auto container = std::make_unique<views::View>();
+  container->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded));
+  header->AddChildView(std::move(container));
+
+  launch_button_ = header->AddChildView(CreateControlButton(
+      this, launch_callback, views::kLaunchIcon,
+      gfx::Insets(
+          0, 0, 0,
+          layout_provider->GetDistanceMetric(
+              views::DistanceMetric::DISTANCE_RELATED_CONTROL_HORIZONTAL)),
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          ChromeDistanceMetric::DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE)));
+  close_button_ = header->AddChildView(CreateControlButton(
+      this, close_callback, views::kIcCloseIcon, gfx::Insets(),
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          ChromeDistanceMetric::DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE)));
+
+  // Install header.
+  AddChildView(std::move(header));
+}
+
+LensSidePanelView::~LensSidePanelView() = default;
+
+}  // namespace lens
