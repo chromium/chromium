@@ -766,6 +766,33 @@
             ]
         }
     ],
+    "ArcVmMemorySize": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "RAM",
+                    "params": {
+                        "shift_mib": "0"
+                    },
+                    "enable_features": [
+                        "ArcVmMemorySize"
+                    ]
+                },
+                {
+                    "name": "RAM - 512",
+                    "params": {
+                        "shift_mib": "-512"
+                    },
+                    "enable_features": [
+                        "ArcVmMemorySize"
+                    ]
+                }
+            ]
+        }
+    ],
     "AssistAutocorrect": [
         {
             "platforms": [
