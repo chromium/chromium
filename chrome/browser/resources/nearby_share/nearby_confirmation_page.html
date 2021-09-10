@@ -14,7 +14,6 @@
   }
 
   #confirmationToken {
-    border-top: 1px dashed var(--google-grey-600);
     color: var(--google-grey-600);
     flex-grow: 1;
     font-size: 9px;
@@ -23,6 +22,15 @@
     margin-top: 46px;
     padding-top: 6px;
     text-align: center;
+  }
+
+  cr-lottie {
+    bottom: 0;
+    height: 100%;
+    left: 0;
+    pointer-events: none;
+    position: absolute;
+    right: 0;
   }
 
   nearby-progress {
@@ -106,6 +114,12 @@
         </nearby-progress>
       </div>
     </div>
+
+    <template is="dom-if" if="[[!errorTitle_]]">
+      <cr-lottie animation-url="nearby_share_progress_bar.json"
+        autoplay="true">
+      </cr-lottie>
+    </template>
 
     <template is="dom-if" if="[[contactName_(shareTarget, errorTitle_)]]">
       <cr-checkbox id="addContacts" aria-labelledby="addContactsLabel"
