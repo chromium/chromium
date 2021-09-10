@@ -466,7 +466,25 @@ void LayoutObject::AssertFragmentTree(bool display_locked) const {
 
 void LayoutObject::AssertClearedPaintInvalidationFlags() const {
   NOT_DESTROYED();
-  if (!PaintInvalidationStateIsDirty() || ChildPrePaintBlockedByDisplayLock())
+  if (ChildPrePaintBlockedByDisplayLock())
+    return;
+
+  // Assert that the number of FragmentData and NGPhysicalBoxFragment objects
+  // are identical. Make an exception for table columns (unless they establish a
+  // layer, which would be dangerous (but hopefully also impossible)), since
+  // they don't produce fragments.
+  //
+  // This was added as part of investigating crbug.com/1244130
+  if (CanTraversePhysicalFragments() && IsBox() &&
+      (!IsLayoutTableCol() || HasLayer())) {
+    wtf_size_t fragment_count = 0;
+    for (const FragmentData* walker = &FirstFragment(); walker;
+         walker = walker->NextFragment())
+      fragment_count++;
+    DCHECK_EQ(fragment_count, To<LayoutBox>(this)->PhysicalFragmentCount());
+  }
+
+  if (!PaintInvalidationStateIsDirty())
     return;
   ShowLayoutTreeForThis();
   NOTREACHED();
