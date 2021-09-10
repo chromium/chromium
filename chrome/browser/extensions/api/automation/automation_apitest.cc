@@ -161,7 +161,13 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, ImageLabels) {
   EXPECT_EQ(expected_mode, web_contents->GetAccessibilityMode());
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, GetTreeByTabId) {
+// Flaky on Mac: crbug.com/1248445
+#if defined(OS_MAC)
+#define MAYBE_GetTreeByTabId DISABLED_GetTreeByTabId
+#else
+#define MAYBE_GetTreeByTabId GetTreeByTabId
+#endif
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, MAYBE_GetTreeByTabId) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(
       RunExtensionTest("automation/tests/tabs", {.page_url = "tab_id.html"}))
