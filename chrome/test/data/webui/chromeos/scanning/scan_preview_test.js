@@ -10,7 +10,7 @@ import {AppState} from 'chrome://scanning/scanning_app_types.js';
 import {ScanningBrowserProxyImpl} from 'chrome://scanning/scanning_browser_proxy.js';
 
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
-import {flushTasks, isVisible} from '../../test_util.js';
+import {flushTasks, isVisible, waitAfterNextRender} from '../../test_util.js';
 
 import {TestScanningBrowserProxy} from './test_scanning_browser_proxy.js';
 
@@ -164,6 +164,8 @@ export function scanPreviewTest() {
 
   // Tests that the toolbar will get repositioned after subsequent scans.
   test('positionActionToolbarOnSubsequentScans', () => {
+    const scannedImagesDiv =
+        /** @type {!HTMLElement} */ (scanPreview.$$('#scannedImages'));
     scanPreview.multiPageScanChecked = true;
     scanPreview.appState = AppState.MULTI_PAGE_SCANNING;
     return flushTasks()
@@ -176,7 +178,7 @@ export function scanPreviewTest() {
 
           scanPreview.objectUrls = ['svg/ready_to_scan.svg'];
           scanPreview.appState = AppState.MULTI_PAGE_NEXT_ACTION;
-          return flushTasks();
+          return waitAfterNextRender(scannedImagesDiv);
         })
         .then(() => {
           // After the image loads we expect the CSS variables to be set.
@@ -200,7 +202,7 @@ export function scanPreviewTest() {
         .then(() => {
           scanPreview.objectUrls = ['svg/ready_to_scan.svg'];
           scanPreview.appState = AppState.MULTI_PAGE_NEXT_ACTION;
-          return flushTasks();
+          return waitAfterNextRender(scannedImagesDiv);
         })
         .then(() => {
           // We expect the CSS variables to be set again.
@@ -287,13 +289,15 @@ export function scanPreviewTest() {
   test('scrollToExpectedPageForMultiPageScans', () => {
     let imageHeight;
     const previewDiv = scanPreview.$$('#previewDiv');
+    const scannedImagesDiv =
+        /** @type {!HTMLElement} */ (scanPreview.$$('#scannedImages'));
 
     scanPreview.multiPageScanChecked = true;
     return flushTasks()
         .then(() => {
           scanPreview.objectUrls = ['svg/ready_to_scan.svg'];
           scanPreview.appState = AppState.MULTI_PAGE_NEXT_ACTION;
-          return flushTasks();
+          return waitAfterNextRender(scannedImagesDiv);
         })
         .then(() => {
           scanPreview.appState = AppState.MULTI_PAGE_SCANNING;
@@ -302,7 +306,7 @@ export function scanPreviewTest() {
         .then(() => {
           scanPreview.push('objectUrls', 'svg/ready_to_scan.svg');
           scanPreview.appState = AppState.MULTI_PAGE_NEXT_ACTION;
-          return flushTasks();
+          return waitAfterNextRender(scannedImagesDiv);
         })
         .then(() => {
           imageHeight = scanPreview.$$('#scannedImages')
@@ -322,7 +326,7 @@ export function scanPreviewTest() {
           previewDiv.scrollTop = 0;
           scanPreview.push('objectUrls', 'svg/ready_to_scan.svg');
           scanPreview.appState = AppState.MULTI_PAGE_NEXT_ACTION;
-          return flushTasks();
+          return waitAfterNextRender(scannedImagesDiv);
         })
         .then(() => {
           // Verify it scrolls down to the third page.
@@ -335,7 +339,7 @@ export function scanPreviewTest() {
           // Simulate rescanning and replacing the second page.
           scanPreview.splice('objectUrls', 1, 1, 'svg/no_scanners.svg');
           scanPreview.appState = AppState.MULTI_PAGE_NEXT_ACTION;
-          return flushTasks();
+          return waitAfterNextRender(scannedImagesDiv);
         })
         .then(() => {
           // Verify it scrolls back to the second page.
@@ -346,13 +350,15 @@ export function scanPreviewTest() {
   // Tests that for multi-page scans, resizing the app window triggers the
   // repositioning of the action toolbar.
   test('resizingWindowRepositionsActionToolbar', () => {
+    const scannedImagesDiv =
+        /** @type {!HTMLElement} */ (scanPreview.$$('#scannedImages'));
     scanPreview.multiPageScanChecked = true;
     scanPreview.appState = AppState.MULTI_PAGE_SCANNING;
     return flushTasks()
         .then(() => {
           scanPreview.objectUrls = ['svg/ready_to_scan.svg'];
           scanPreview.appState = AppState.MULTI_PAGE_NEXT_ACTION;
-          return flushTasks();
+          return waitAfterNextRender(scannedImagesDiv);
         })
         .then(() => {
           // After the image loads we expect the CSS variables to be set.
