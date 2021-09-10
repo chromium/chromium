@@ -138,6 +138,8 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
                             new ShareParams.Builder(mTab.getWindowAndroid(), sheetTitle, mShareUrl)
                                     .setFileUris(
                                             new ArrayList<>(Collections.singletonList(imageUri)))
+                                    .setFileAltTexts(new ArrayList<>(
+                                            Collections.singletonList(mSelectedText)))
                                     .setFileContentType(PNG_MIME_TYPE)
                                     .setCallback(new ShareParams.TargetChosenCallback() {
                                         @Override

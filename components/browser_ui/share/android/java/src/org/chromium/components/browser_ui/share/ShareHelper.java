@@ -73,6 +73,9 @@ public class ShareHelper {
 
     private static final String EXTRA_SHARE_SCREENSHOT_AS_STREAM = "share_screenshot_as_stream";
 
+    /** The string identifier used as a key to set the extra stream's alt text */
+    private static final String EXTRA_STREAM_ALT_TEXT = "android.intent.extra.STREAM_ALT_TEXT";
+
     /** Force the use of a Chrome-specific intent chooser, not the system chooser. */
     private static boolean sForceCustomChooserForTesting;
 
@@ -386,8 +389,15 @@ public class ShareHelper {
 
                 if (isMultipleFileShare) {
                     intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, params.getFileUris());
+                    if (!params.getFileAltTexts().isEmpty()) {
+                        intent.putStringArrayListExtra(
+                                EXTRA_STREAM_ALT_TEXT, params.getFileAltTexts());
+                    }
                 } else {
                     intent.putExtra(Intent.EXTRA_STREAM, params.getFileUris().get(0));
+                    if (!params.getFileAltTexts().isEmpty()) {
+                        intent.putExtra(EXTRA_STREAM_ALT_TEXT, params.getFileAltTexts().get(0));
+                    }
                 }
             } else {
                 intent.setType("text/plain");
