@@ -257,7 +257,6 @@ TEST_P(PaintPreviewBaseServiceTest, CaptureMainFrame) {
                 base::FilePath name(base::StrCat({token.ToString(), ".skp"}));
 #endif
                 EXPECT_EQ(path.DirName(), expected_path);
-                LOG(ERROR) << expected_path;
                 EXPECT_EQ(path.BaseName(), name);
               } break;
 

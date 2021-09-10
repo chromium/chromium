@@ -55,8 +55,10 @@ PaintPreviewCaptureResponseToPaintPreviewFrameProto(
     PaintPreviewFrameProto* proto) {
   proto->set_embedding_token_high(frame_guid.GetHighForSerialization());
   proto->set_embedding_token_low(frame_guid.GetLowForSerialization());
-  proto->set_scroll_offset_x(response->scroll_offsets.width());
-  proto->set_scroll_offset_y(response->scroll_offsets.height());
+  proto->set_scroll_offset_x(response->scroll_offsets.x());
+  proto->set_scroll_offset_y(response->scroll_offsets.y());
+  proto->set_frame_offset_x(response->frame_offsets.x());
+  proto->set_frame_offset_y(response->frame_offsets.y());
 
   std::vector<base::UnguessableToken> frame_guids;
   for (const auto& id_pair : response->content_id_to_embedding_token) {

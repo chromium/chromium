@@ -36,6 +36,8 @@ class PlayerCompositorDelegateAndroid : public PlayerCompositorDelegate {
   void OnMemoryPressure(base::MemoryPressureListener::MemoryPressureLevel
                             memory_pressure_level) override;
 
+  base::android::ScopedJavaLocalRef<jintArray> GetRootFrameOffsets(JNIEnv* env);
+
   // Called from Java when there is a request for a new bitmap. When the bitmap
   // is ready, it will be passed to j_bitmap_callback. In case of any failure,
   // j_error_callback will be called.

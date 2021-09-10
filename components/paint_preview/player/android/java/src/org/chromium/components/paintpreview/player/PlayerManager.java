@@ -148,11 +148,15 @@ public class PlayerManager {
         mPlayerGestureListener = new PlayerGestureListener(
                 mListener::onLinkClick, mListener::onUserInteraction, mListener::onUserFrustration);
 
-        // Set up the HostView to avoid partial loads looking choppy.
+        // Set up the HostView to avoid partial loads looking choppy. Ensure it draws so that the
+        // container has a defined height immediately. Otherwise on emulators onDraw might not be
+        // called successfully.
         mHostView = new FrameLayout(mContext);
         mHostView.setLayoutParams(
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         mHostView.setBackgroundColor(backgroundColor);
+        mHostView.setWillNotDraw(false);
+        mHostView.postInvalidate();
 
         TraceEvent.end("PlayerManager");
     }
@@ -169,7 +173,10 @@ public class PlayerManager {
     public Point getScrollPosition() {
         if (mRootFrameCoordinator == null) return null;
 
-        return mRootFrameCoordinator.getScrollPosition();
+        Point rootScrollPosition = mRootFrameCoordinator.getScrollPosition();
+        Point rootOffset = mDelegate.getRootFrameOffsets();
+        rootOffset.offset(rootScrollPosition.x, rootScrollPosition.y);
+        return rootOffset;
     }
 
     /**

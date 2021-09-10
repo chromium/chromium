@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.paint_preview;
 
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Parcel;
@@ -375,6 +376,11 @@ public class TabbedPaintPreviewTest {
         @Override
         public GURL onClick(UnguessableToken frameGuid, int x, int y) {
             return null;
+        }
+
+        @Override
+        public Point getRootFrameOffsets() {
+            return new Point();
         }
 
         @Override

@@ -5,6 +5,7 @@
 package org.chromium.components.paintpreview.player;
 
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.text.TextUtils;
 
@@ -126,6 +127,17 @@ public class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
     }
 
     @Override
+    public Point getRootFrameOffsets() {
+        if (mNativePlayerCompositorDelegate == 0) {
+            return new Point();
+        }
+
+        int[] offsets = PlayerCompositorDelegateImplJni.get().getRootFrameOffsets(
+                mNativePlayerCompositorDelegate);
+        return new Point(offsets[0], offsets[1]);
+    }
+
+    @Override
     public void setCompressOnClose(boolean compressOnClose) {
         if (mNativePlayerCompositorDelegate == 0) {
             return;
@@ -158,6 +170,7 @@ public class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
         void cancelAllBitmapRequests(long nativePlayerCompositorDelegateAndroid);
         String onClick(long nativePlayerCompositorDelegateAndroid, UnguessableToken frameGuid,
                 int x, int y);
+        int[] getRootFrameOffsets(long nativePlayerCompositorDelegateAndroid);
         void setCompressOnClose(
                 long nativePlayerCompositorDelegateAndroid, boolean compressOnClose);
     }

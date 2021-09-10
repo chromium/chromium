@@ -192,6 +192,14 @@ void PlayerCompositorDelegateAndroid::OnCompositorReady(
       reinterpret_cast<intptr_t>(ax_tree.release()));
 }
 
+ScopedJavaLocalRef<jintArray>
+PlayerCompositorDelegateAndroid::GetRootFrameOffsets(JNIEnv* env) {
+  auto offsets = PlayerCompositorDelegate::GetRootFrameOffsets();
+  ScopedJavaLocalRef<jintArray> j_offsets = base::android::ToJavaIntArray(
+      env, std::vector<int>({offsets.x(), offsets.y()}));
+  return j_offsets;
+}
+
 void PlayerCompositorDelegateAndroid::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
   // Don't handle the critical case leave that to the base class implementation
