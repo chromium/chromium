@@ -3533,7 +3533,7 @@
     },
 
     'updater_on_win_mac': {
-      'gn_args': 'is_google_branded=true',
+      'gn_args': 'is_chrome_branded=true',
     },
 
     'optimize_for_fuzzing': {
