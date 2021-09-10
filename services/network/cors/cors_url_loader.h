@@ -89,20 +89,21 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
       mojo::ScopedDataPipeConsumerHandle body) override;
   void OnComplete(const URLLoaderCompletionStatus& status) override;
 
-  // Public for testing.
-  //
-  // Returns the response tainting value
-  // (https://fetch.spec.whatwg.org/#concept-request-response-tainting) for a
-  // request and the CORS flag, as specified in
-  // https://fetch.spec.whatwg.org/#main-fetch.
-  static network::mojom::FetchResponseType CalculateResponseTainting(
+  static network::mojom::FetchResponseType CalculateResponseTaintingForTesting(
       const GURL& url,
       mojom::RequestMode request_mode,
       const absl::optional<url::Origin>& origin,
       const absl::optional<url::Origin>& isolated_world_origin,
       bool cors_flag,
       bool tainted_origin,
-      const OriginAccessList* origin_access_list);
+      const OriginAccessList& origin_access_list);
+
+  static absl::optional<CorsErrorStatus> CheckRedirectLocationForTesting(
+      const GURL& url,
+      mojom::RequestMode request_mode,
+      const absl::optional<url::Origin>& origin,
+      bool cors_flag,
+      bool tainted);
 
  private:
   void StartRequest();

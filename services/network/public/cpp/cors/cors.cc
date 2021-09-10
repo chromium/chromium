@@ -264,37 +264,6 @@ bool ShouldCheckCors(const GURL& request_url,
   return true;
 }
 
-absl::optional<CorsErrorStatus> CheckRedirectLocation(
-    const GURL& url,
-    mojom::RequestMode request_mode,
-    const absl::optional<url::Origin>& origin,
-    bool cors_flag,
-    bool tainted) {
-  // If |actualResponse|’s location URL’s scheme is not an HTTP(S) scheme,
-  // then return a network error.
-  // This should be addressed in //net.
-
-  // Note: The redirect count check is done elsewhere.
-
-  const bool url_has_credentials = url.has_username() || url.has_password();
-  // If |request|’s mode is "cors", |actualResponse|’s location URL includes
-  // credentials, and either |request|’s tainted origin flag is set or
-  // |request|’s origin is not same origin with |actualResponse|’s location
-  // URL’s origin, then return a network error.
-  DCHECK(!IsCorsEnabledRequestMode(request_mode) || origin);
-  if (IsCorsEnabledRequestMode(request_mode) && url_has_credentials &&
-      (tainted || !origin->IsSameOriginWith(url::Origin::Create(url)))) {
-    return CorsErrorStatus(mojom::CorsError::kRedirectContainsCredentials);
-  }
-
-  // If CORS flag is set and |actualResponse|’s location URL includes
-  // credentials, then return a network error.
-  if (cors_flag && url_has_credentials)
-    return CorsErrorStatus(mojom::CorsError::kRedirectContainsCredentials);
-
-  return absl::nullopt;
-}
-
 // https://wicg.github.io/cors-rfc1918/#http-headerdef-access-control-allow-external
 absl::optional<CorsErrorStatus> CheckExternalPreflight(
     const absl::optional<std::string>& allow_external) {

@@ -87,18 +87,6 @@ bool ShouldCheckCors(const GURL& request_url,
                      const absl::optional<url::Origin>& request_initiator,
                      mojom::RequestMode request_mode);
 
-// Given a redirected-to URL, checks if the location is allowed
-// according to CORS. That is:
-// - the URL has a CORS supported scheme and
-// - the URL does not contain the userinfo production.
-COMPONENT_EXPORT(NETWORK_CPP)
-absl::optional<CorsErrorStatus> CheckRedirectLocation(
-    const GURL& url,
-    mojom::RequestMode request_mode,
-    const absl::optional<url::Origin>& origin,
-    bool cors_flag,
-    bool tainted);
-
 // Checks errors for the currently experimental "Access-Control-Allow-External:"
 // header. Shares error conditions with standard preflight checking.
 // See https://crbug.com/590714.

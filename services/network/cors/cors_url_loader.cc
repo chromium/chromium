@@ -117,6 +117,96 @@ base::Value NetLogPreflightRequiredParams(
   return dict;
 }
 
+// Returns the response tainting value
+// (https://fetch.spec.whatwg.org/#concept-request-response-tainting) for a
+// request and the CORS flag, as specified in
+// https://fetch.spec.whatwg.org/#main-fetch.
+// Keep this in sync with the identical function
+// blink::cors::CalculateResponseTainting.
+mojom::FetchResponseType CalculateResponseTainting(
+    const GURL& url,
+    mojom::RequestMode request_mode,
+    const absl::optional<url::Origin>& origin,
+    const absl::optional<url::Origin>& isolated_world_origin,
+    bool cors_flag,
+    bool tainted_origin,
+    const OriginAccessList& origin_access_list) {
+  if (url.SchemeIs(url::kDataScheme))
+    return mojom::FetchResponseType::kBasic;
+
+  if (cors_flag) {
+    DCHECK(IsCorsEnabledRequestMode(request_mode));
+    return mojom::FetchResponseType::kCors;
+  }
+
+  if (!origin) {
+    // This is actually not defined in the fetch spec, but in this case CORS
+    // is disabled so no one should care this value.
+    return mojom::FetchResponseType::kBasic;
+  }
+
+  // OriginAccessList is in practice used to disable CORS for Chrome Extensions.
+  // The extension origin can be found in either:
+  // 1) |isolated_world_origin| (if this is a request from a content
+  //    script;  in this case there is no point looking at (2) below.
+  // 2) |origin| (if this is a request from an extension
+  //    background page or from other extension frames).
+  //
+  // Note that similar code is present in OriginAccessList::CheckAccessState.
+  //
+  // TODO(lukasza): https://crbug.com/936310 and https://crbug.com/920638:
+  // Once 1) there is no global OriginAccessList and 2) per-factory
+  // OriginAccessList is only populated for URLLoaderFactory used by allowlisted
+  // content scripts, then 3) there should no longer be a need to use origins as
+  // a key in an OriginAccessList.
+  const url::Origin& source_origin = isolated_world_origin.value_or(*origin);
+
+  if (request_mode == mojom::RequestMode::kNoCors) {
+    if (tainted_origin ||
+        (!origin->IsSameOriginWith(url::Origin::Create(url)) &&
+         origin_access_list.CheckAccessState(source_origin, url) !=
+             OriginAccessList::AccessState::kAllowed)) {
+      return mojom::FetchResponseType::kOpaque;
+    }
+  }
+  return mojom::FetchResponseType::kBasic;
+}
+
+// Given a redirected-to URL, checks if the location is allowed
+// according to CORS. That is:
+// - the URL has a CORS supported scheme and
+// - the URL does not contain the userinfo production.
+absl::optional<CorsErrorStatus> CheckRedirectLocation(
+    const GURL& url,
+    mojom::RequestMode request_mode,
+    const absl::optional<url::Origin>& origin,
+    bool cors_flag,
+    bool tainted) {
+  // If |actualResponse|’s location URL’s scheme is not an HTTP(S) scheme,
+  // then return a network error.
+  // This should be addressed in //net.
+
+  // Note: The redirect count check is done elsewhere.
+
+  const bool url_has_credentials = url.has_username() || url.has_password();
+  // If |request|’s mode is "cors", |actualResponse|’s location URL includes
+  // credentials, and either |request|’s tainted origin flag is set or
+  // |request|’s origin is not same origin with |actualResponse|’s location
+  // URL’s origin, then return a network error.
+  DCHECK(!IsCorsEnabledRequestMode(request_mode) || origin);
+  if (IsCorsEnabledRequestMode(request_mode) && url_has_credentials &&
+      (tainted || !origin->IsSameOriginWith(url::Origin::Create(url)))) {
+    return CorsErrorStatus(mojom::CorsError::kRedirectContainsCredentials);
+  }
+
+  // If CORS flag is set and |actualResponse|’s location URL includes
+  // credentials, then return a network error.
+  if (cors_flag && url_has_credentials)
+    return CorsErrorStatus(mojom::CorsError::kRedirectContainsCredentials);
+
+  return absl::nullopt;
+}
+
 constexpr const char kTimingAllowOrigin[] = "Timing-Allow-Origin";
 
 }  // namespace
@@ -301,7 +391,7 @@ void CorsURLLoader::FollowRedirect(
   response_tainting_ = CalculateResponseTainting(
       request_.url, request_.mode, request_.request_initiator,
       request_.isolated_world_origin, fetch_cors_flag_, tainted_,
-      origin_access_list_);
+      *origin_access_list_);
   network_loader_->FollowRedirect(removed_headers, modified_headers,
                                   modified_cors_exempt_headers, new_url);
 }
@@ -547,7 +637,7 @@ void CorsURLLoader::StartRequest() {
   response_tainting_ = CalculateResponseTainting(
       request_.url, request_.mode, request_.request_initiator,
       request_.isolated_world_origin, fetch_cors_flag_, tainted_,
-      origin_access_list_);
+      *origin_access_list_);
 
   // Note that even when |NeedsPreflight(request_)| holds we don't make a
   // preflight request when |fetch_cors_flag_| is false (e.g., when the origin
@@ -687,57 +777,28 @@ bool CorsURLLoader::HasSpecialAccessToDestination() const {
   }
 }
 
-// Keep this in sync with the identical function
-// blink::cors::CalculateResponseTainting.
-//
 // static
-mojom::FetchResponseType CorsURLLoader::CalculateResponseTainting(
+mojom::FetchResponseType CorsURLLoader::CalculateResponseTaintingForTesting(
     const GURL& url,
     mojom::RequestMode request_mode,
     const absl::optional<url::Origin>& origin,
     const absl::optional<url::Origin>& isolated_world_origin,
     bool cors_flag,
     bool tainted_origin,
-    const OriginAccessList* origin_access_list) {
-  if (url.SchemeIs(url::kDataScheme))
-    return mojom::FetchResponseType::kBasic;
+    const OriginAccessList& origin_access_list) {
+  return CalculateResponseTainting(url, request_mode, origin,
+                                   isolated_world_origin, cors_flag,
+                                   tainted_origin, origin_access_list);
+}
 
-  if (cors_flag) {
-    DCHECK(IsCorsEnabledRequestMode(request_mode));
-    return mojom::FetchResponseType::kCors;
-  }
-
-  if (!origin) {
-    // This is actually not defined in the fetch spec, but in this case CORS
-    // is disabled so no one should care this value.
-    return mojom::FetchResponseType::kBasic;
-  }
-
-  // OriginAccessList is in practice used to disable CORS for Chrome Extensions.
-  // The extension origin can be found in either:
-  // 1) |isolated_world_origin| (if this is a request from a content
-  //    script;  in this case there is no point looking at (2) below.
-  // 2) |origin| (if this is a request from an extension
-  //    background page or from other extension frames).
-  //
-  // Note that similar code is present in OriginAccessList::CheckAccessState.
-  //
-  // TODO(lukasza): https://crbug.com/936310 and https://crbug.com/920638:
-  // Once 1) there is no global OriginAccessList and 2) per-factory
-  // OriginAccessList is only populated for URLLoaderFactory used by allowlisted
-  // content scripts, then 3) there should no longer be a need to use origins as
-  // a key in an OriginAccessList.
-  const url::Origin& source_origin = isolated_world_origin.value_or(*origin);
-
-  if (request_mode == mojom::RequestMode::kNoCors) {
-    if (tainted_origin ||
-        (!origin->IsSameOriginWith(url::Origin::Create(url)) &&
-         origin_access_list->CheckAccessState(source_origin, url) !=
-             OriginAccessList::AccessState::kAllowed)) {
-      return mojom::FetchResponseType::kOpaque;
-    }
-  }
-  return mojom::FetchResponseType::kBasic;
+// static
+absl::optional<CorsErrorStatus> CorsURLLoader::CheckRedirectLocationForTesting(
+    const GURL& url,
+    mojom::RequestMode request_mode,
+    const absl::optional<url::Origin>& origin,
+    bool cors_flag,
+    bool tainted) {
+  return CheckRedirectLocation(url, request_mode, origin, cors_flag, tainted);
 }
 
 bool CorsURLLoader::PassesTimingAllowOriginCheck(
