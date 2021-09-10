@@ -1471,7 +1471,10 @@ class LayerTreeHostScrollTestImplOnlyMultipleScrollSnap
   ElementId snap_area_b_id_;
 };
 
+// TODO(crbug.com/1243814): Test is flaky on Chrome OS (both Ash and Lacros).
+#if !defined(OS_CHROMEOS)
 MULTI_THREAD_TEST_F(LayerTreeHostScrollTestImplOnlyMultipleScrollSnap);
+#endif
 
 class LayerTreeHostScrollTestScrollZeroMaxScrollOffset
     : public LayerTreeHostScrollTest {
