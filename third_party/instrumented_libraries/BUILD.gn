@@ -80,6 +80,13 @@ if (use_locally_built_instrumented_libraries) {
   assert(instrumented_libraries_platform == "trusty" ||
              instrumented_libraries_platform == "xenial",
          "Currently, the only supported platforms are Trusty and Xenial.")
+
+  if (instrumented_libraries_platform == "trusty") {
+    libgcrypt_package_ = "libgcrypt11"
+  } else {
+    libgcrypt_package_ = "libgcrypt20"
+  }
+
   group("locally_built") {
     visibility = [ ":deps" ]
     deps = [
@@ -104,7 +111,6 @@ if (use_locally_built_instrumented_libraries) {
       ":libexpat1",
       ":libffi6",
       ":libfontconfig1",
-      ":libgcrypt11",
       ":libgdk-pixbuf2.0-0",
       ":libglib2.0-0",
       ":libgnome-keyring0",
@@ -149,6 +155,7 @@ if (use_locally_built_instrumented_libraries) {
       ":pulseaudio",
       ":udev",
       ":zlib1g",
+      ":" + libgcrypt_package_,
     ]
     if (is_msan) {
       deps += [
@@ -448,7 +455,6 @@ if (use_locally_built_instrumented_libraries) {
 
       # From debian/rules.
       "--disable-libaudit",
-      "--enable-apparmor",
       "--enable-systemd",
       "--libexecdir=/lib/dbus-1.0",
       "--with-systemdsystemunitdir=/lib/systemd/system",
@@ -459,6 +465,12 @@ if (use_locally_built_instrumented_libraries) {
       "--prefix=/usr",
       "--localstatedir=/var",
     ]
+    if (instrumented_libraries_platform == "trusty") {
+      extra_configure_flags += [ "--enable-apparmor" ]
+    } else {
+      # This is required for building with clang.
+      extra_configure_flags += [ "--disable-apparmor" ]
+    }
   }
 
   instrumented_library("libdbus-glib-1-2") {
@@ -525,7 +537,7 @@ if (use_locally_built_instrumented_libraries) {
     }
   }
 
-  instrumented_library("libgcrypt11") {
+  target("instrumented_library", libgcrypt_package_) {
     package_ldflags = [ "-Wl,-z,muldefs" ]
     extra_configure_flags = [
       # From debian/rules.
@@ -539,21 +551,7 @@ if (use_locally_built_instrumented_libraries) {
   }
 
   instrumented_library("libgdk-pixbuf2.0-0") {
-    extra_configure_flags = [
-      "--disable-static",
-
-      # From debian/rules.
-      "--with-libjasper",
-      "--with-x11",
-
-      # Make the build less problematic.
-      "--disable-introspection",
-
-      # Do not use loadable modules. Same as with Pango, there's no easy way
-      # to make gdk-pixbuf pick instrumented versions over system-installed
-      # ones.
-      "--disable-modules",
-    ]
+    build_method = "debian"
     pre_build = "scripts/pre-build/libgdk-pixbuf2.0-0.sh"
   }
 
