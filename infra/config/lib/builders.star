@@ -280,6 +280,15 @@ def _code_coverage_property(
 
     return code_coverage or None
 
+def _isolated_property(*, isolated_server):
+    isolated = {}
+
+    isolated_server = defaults.get_value("isolated_server", isolated_server)
+    if isolated_server:
+        isolated["server"] = isolated_server
+
+    return isolated or None
+
 def _reclient_property(*, instance, service, jobs, rewrapper_env, profiler_service, publish_trace, cache_silo, ensure_verified):
     reclient = {}
     instance = defaults.get_value("reclient_instance", instance)
@@ -348,6 +357,7 @@ defaults = args.defaults(
     coverage_reference_commit = None,
     resultdb_bigquery_exports = [],
     resultdb_index_by_timestamp = False,
+    isolated_server = "https://isolateserver.appspot.com",
     reclient_instance = None,
     reclient_service = None,
     reclient_jobs = None,
@@ -400,6 +410,7 @@ def builder(
         coverage_reference_commit = args.DEFAULT,
         resultdb_bigquery_exports = args.DEFAULT,
         resultdb_index_by_timestamp = args.DEFAULT,
+        isolated_server = args.DEFAULT,
         reclient_instance = args.DEFAULT,
         reclient_service = args.DEFAULT,
         reclient_jobs = args.DEFAULT,
@@ -541,6 +552,9 @@ def builder(
         index the results of the tests run on this builder by timestamp, i.e.
         for purposes of retrieving a test's history. If false, the results will not
         be searchable by timestamp on ResultDB's test history api.
+      * isolated_server - a string indicating the host of the isolated server.
+        Will be incorporated into the '$recipe_engine/isolated' property. By
+        default, this is "https://isolateserver.appspot.com".
       * reclient_instance - a string indicating the GCP project hosting the RBE
         instance for re-client to use.
       * reclient_service - a string indicating the RBE service to dial via gRPC.
@@ -582,6 +596,9 @@ def builder(
              "use use_clang_coverage, use_java_coverage, use_javascript_coverage " +
              " coverage_exclude_sources, coverage_test_types" +
              " and/or coverage_reference_commit instead")
+    if "$recipe_engine/isolated" in properties:
+        fail('Setting "$recipe_engine/isolated" property is not supported: ' +
+             "use isolated_server instead")
     if "$build/reclient" in properties:
         fail('Setting "$build/reclient" property is not supported: ' +
              "use reclient_instance and reclient_rewrapper_env instead")
@@ -687,6 +704,12 @@ def builder(
     )
     if code_coverage != None:
         properties["$build/code_coverage"] = code_coverage
+
+    isolated = _isolated_property(
+        isolated_server = isolated_server,
+    )
+    if isolated != None:
+        properties["$recipe_engine/isolated"] = isolated
 
     reclient = _reclient_property(
         instance = reclient_instance,
