@@ -837,8 +837,8 @@ void PopulateChromeWebUIFrameBinders(
       chromeos::LockScreenNetworkUI, ash::ShimlessRMADialogUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
-      chromeos::printing::printing_manager::mojom::PrintingMetadataProvider,
-      chromeos::printing::printing_manager::PrintManagementUI>(map);
+      ash::printing::printing_manager::mojom::PrintingMetadataProvider,
+      ash::printing::printing_manager::PrintManagementUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<cros::mojom::CameraAppDeviceProvider,
                                          chromeos::CameraAppUI>(map);

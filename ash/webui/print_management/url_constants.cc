@@ -4,9 +4,9 @@
 
 #include "ash/webui/print_management/url_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 const char kChromeUIPrintManagementHost[] = "print-management";
 const char kChromeUIPrintManagementAppUrl[] = "chrome://print-management";
 
-}  // namespace chromeos
+}  // namespace ash

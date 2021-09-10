@@ -22,12 +22,12 @@ namespace chromeos {
 namespace printing {
 namespace print_management {
 
-using chromeos::printing::proto::PrintJobInfo;
-using history::DeletionInfo;
-using history::HistoryService;
-using printing_manager::mojom::PrintingMetadataProvider;
-using printing_manager::mojom::PrintJobInfoPtr;
-using printing_manager::mojom::PrintJobsObserver;
+using ::ash::printing::printing_manager::mojom::PrintingMetadataProvider;
+using ::ash::printing::printing_manager::mojom::PrintJobInfoPtr;
+using ::ash::printing::printing_manager::mojom::PrintJobsObserver;
+using ::chromeos::printing::proto::PrintJobInfo;
+using ::history::DeletionInfo;
+using ::history::HistoryService;
 
 PrintingManager::PrintingManager(
     PrintJobHistoryService* print_job_history_service,

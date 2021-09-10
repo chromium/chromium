@@ -10,9 +10,6 @@
 namespace chromeos {
 class CupsPrintJob;
 namespace printing {
-
-namespace mojom = printing_manager::mojom;
-
 namespace proto {
 class PrintJobInfo;
 }  //  namespace proto
@@ -20,11 +17,12 @@ class PrintJobInfo;
 namespace print_management {
 
 // Converts proto::PrintJobInfo into mojom::PrintJobInfoPtr.
-mojom::PrintJobInfoPtr PrintJobProtoToMojom(
+ash::printing::printing_manager::mojom::PrintJobInfoPtr PrintJobProtoToMojom(
     const proto::PrintJobInfo& print_job_info_proto);
 
 // Convert CupsPrintJob into mojom::PrintJobInfoPtr.
-mojom::PrintJobInfoPtr CupsPrintJobToMojom(const CupsPrintJob& job);
+ash::printing::printing_manager::mojom::PrintJobInfoPtr CupsPrintJobToMojom(
+    const CupsPrintJob& job);
 
 }  // namespace print_management
 }  // namespace printing

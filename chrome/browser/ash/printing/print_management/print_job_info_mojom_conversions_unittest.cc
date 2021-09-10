@@ -19,7 +19,7 @@
 namespace chromeos {
 
 namespace proto = printing::proto;
-namespace mojom = printing::printing_manager::mojom;
+namespace mojom = ::ash::printing::printing_manager::mojom;
 
 namespace {
 

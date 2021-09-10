@@ -9,7 +9,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
-namespace chromeos {
+namespace ash {
 namespace printing {
 namespace printing_manager {
 
@@ -41,6 +41,6 @@ class PrintManagementUI : public ui::MojoWebUIController {
 
 }  // namespace printing_manager
 }  // namespace printing
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_PRINT_MANAGEMENT_PRINT_MANAGEMENT_UI_H_

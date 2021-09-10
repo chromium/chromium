@@ -18,6 +18,8 @@ namespace printing {
 namespace print_management {
 namespace {
 
+namespace mojom = ::ash::printing::printing_manager::mojom;
+
 mojom::PrintJobCompletionStatus PrintJobStatusProtoToMojom(
     proto::PrintJobInfo_PrintJobStatus print_job_status_proto) {
   switch (print_job_status_proto) {

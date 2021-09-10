@@ -11,14 +11,14 @@ import './printing_manager.mojom-lite.js';
 
 /**
  * @type {
- *    ?chromeos.printing.printingManager.mojom.PrintingMetadataProviderInterface
+ *    ?ash.printing.printingManager.mojom.PrintingMetadataProviderInterface
  * }
  */
 let metadataProvider = null;
 
 /**
  * @param {
- *    !chromeos.printing.printingManager.mojom.PrintingMetadataProviderInterface
+ *    !ash.printing.printingManager.mojom.PrintingMetadataProviderInterface
  * } testProvider
  */
 export function setMetadataProviderForTesting(testProvider) {
@@ -27,14 +27,14 @@ export function setMetadataProviderForTesting(testProvider) {
 
 /**
  * @return {
- *    !chromeos.printing.printingManager.mojom.PrintingMetadataProviderInterface
+ *    !ash.printing.printingManager.mojom.PrintingMetadataProviderInterface
  * }
  */
 export function getMetadataProvider() {
   if (metadataProvider) {
     return metadataProvider;
   }
-  metadataProvider = chromeos.printing.printingManager.mojom
-      .PrintingMetadataProvider.getRemote();
+  metadataProvider =
+      ash.printing.printingManager.mojom.PrintingMetadataProvider.getRemote();
   return metadataProvider;
 }

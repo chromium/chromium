@@ -31,13 +31,13 @@ const METADATA_STORED_FOR_ONE_DAY = 1;
 const METADATA_NOT_STORED = 0;
 
 /**
- * @typedef {Array<!chromeos.printing.printingManager.mojom.PrintJobInfo>}
+ * @typedef {Array<!ash.printing.printingManager.mojom.PrintJobInfo>}
  */
 let PrintJobInfoArr;
 
 /**
- * @param {!chromeos.printing.printingManager.mojom.PrintJobInfo} first
- * @param {!chromeos.printing.printingManager.mojom.PrintJobInfo} second
+ * @param {!ash.printing.printingManager.mojom.PrintJobInfo} first
+ * @param {!ash.printing.printingManager.mojom.PrintJobInfo} second
  * @return {number}
  */
 function comparePrintJobsReverseChronologically(first, second) {
@@ -45,8 +45,8 @@ function comparePrintJobsReverseChronologically(first, second) {
 }
 
 /**
- * @param {!chromeos.printing.printingManager.mojom.PrintJobInfo} first
- * @param {!chromeos.printing.printingManager.mojom.PrintJobInfo} second
+ * @param {!ash.printing.printingManager.mojom.PrintJobInfo} first
+ * @param {!ash.printing.printingManager.mojom.PrintJobInfo} second
  * @return {number}
  */
 function comparePrintJobsChronologically(first, second) {
@@ -67,15 +67,13 @@ Polymer({
 
   /**
    * @private {
-   *  ?chromeos.printing.printingManager.mojom.PrintingMetadataProviderInterface
-   * }
+   *  ?ash.printing.printingManager.mojom.PrintingMetadataProviderInterface}
    */
   mojoInterfaceProvider_: null,
 
   /**
    * Receiver responsible for observing print job updates notification events.
-   * @private {
-   *  ?chromeos.printing.printingManager.mojom.PrintJobsObserverReceiver}
+   * @private {?ash.printing.printingManager.mojom.PrintJobsObserverReceiver}
    */
   printJobsObserverReceiver_: null,
 
@@ -187,13 +185,12 @@ Polymer({
   /** @private */
   startObservingPrintJobs_() {
     this.printJobsObserverReceiver_ =
-        new chromeos.printing.printingManager.mojom.PrintJobsObserverReceiver
-        (
-          /**
-           * @type {!chromeos.printing.printingManager.mojom.
-           *        PrintJobsObserverInterface}
-           */
-          (this));
+        new ash.printing.printingManager.mojom.PrintJobsObserverReceiver(
+            /**
+             * @type {!ash.printing.printingManager.mojom.
+             *        PrintJobsObserverInterface}
+             */
+            (this));
     this.mojoInterfaceProvider_.observePrintJobs(
         this.printJobsObserverReceiver_.$.bindNewPipeAndPassRemote())
         .then(() => {
@@ -219,17 +216,15 @@ Polymer({
   },
 
   /**
-   * Overrides chromeos.printing.printingManager.mojom.
-   *           PrintJobsObserverInterface
+   * Overrides ash.printing.printingManager.mojom.PrintJobsObserverInterface
    */
   onAllPrintJobsDeleted() {
     this.getPrintJobs_();
   },
 
   /**
-   * Overrides chromeos.printing.printingManager.mojom.
-   *           PrintJobsObserverInterface
-   * @param {!chromeos.printing.printingManager.mojom.PrintJobInfo} job
+   * Overrides ash.printing.printingManager.mojom.PrintJobsObserverInterface
+   * @param {!ash.printing.printingManager.mojom.PrintJobInfo} job
    */
   onPrintJobUpdate(job) {
     // Only update ongoing print jobs.
@@ -248,8 +243,7 @@ Polymer({
     }
 
     if (job.activePrintJobInfo.activeState ===
-        chromeos.printing.printingManager.mojom.ActivePrintJobState
-            .kDocumentDone) {
+        ash.printing.printingManager.mojom.ActivePrintJobState.kDocumentDone) {
       // This print job is now completed, next step is to update the history
       // list with the recently stored print job.
       this.getPrintJobs_();

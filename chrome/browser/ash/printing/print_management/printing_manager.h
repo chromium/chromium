@@ -28,7 +28,7 @@ namespace printing {
 namespace print_management {
 
 class PrintingManager
-    : public printing_manager::mojom::PrintingMetadataProvider,
+    : public ash::printing::printing_manager::mojom::PrintingMetadataProvider,
       public KeyedService,
       public history::HistoryServiceObserver,
       public CupsPrintJobManager::Observer {
@@ -49,7 +49,8 @@ class PrintingManager
       GetPrintJobHistoryExpirationPeriodCallback callback) override;
   void DeleteAllPrintJobs(DeleteAllPrintJobsCallback callback) override;
   void ObservePrintJobs(
-      mojo::PendingRemote<printing_manager::mojom::PrintJobsObserver> observer,
+      mojo::PendingRemote<
+          ash::printing::printing_manager::mojom::PrintJobsObserver> observer,
       ObservePrintJobsCallback callback) override;
   void CancelPrintJob(const std::string& id,
                       CancelPrintJobCallback callback) override;
@@ -57,7 +58,8 @@ class PrintingManager
       GetDeletePrintJobHistoryAllowedByPolicyCallback callback) override;
 
   void BindInterface(
-      mojo::PendingReceiver<printing_manager::mojom::PrintingMetadataProvider>
+      mojo::PendingReceiver<
+          ash::printing::printing_manager::mojom::PrintingMetadataProvider>
           pending_receiver);
 
  private:
@@ -108,11 +110,12 @@ class PrintingManager
   // Set of PrintJobsObserver mojom::remotes, each remote is bound to a
   // renderer process receiver. Automatically handles removing disconnected
   // receivers.
-  mojo::RemoteSet<printing_manager::mojom::PrintJobsObserver>
+  mojo::RemoteSet<ash::printing::printing_manager::mojom::PrintJobsObserver>
       print_job_observers_;
 
-  mojo::Receiver<printing_manager::mojom::PrintingMetadataProvider> receiver_{
-      this};
+  mojo::Receiver<
+      ash::printing::printing_manager::mojom::PrintingMetadataProvider>
+      receiver_{this};
 
   // Policy-controlled pref that determines whether print job history can be
   // deleted.

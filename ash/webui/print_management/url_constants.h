@@ -5,11 +5,11 @@
 #ifndef ASH_WEBUI_PRINT_MANAGEMENT_URL_CONSTANTS_H_
 #define ASH_WEBUI_PRINT_MANAGEMENT_URL_CONSTANTS_H_
 
-namespace chromeos {
+namespace ash {
 
 extern const char kChromeUIPrintManagementHost[];
 extern const char kChromeUIPrintManagementAppUrl[];
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_PRINT_MANAGEMENT_URL_CONSTANTS_H_

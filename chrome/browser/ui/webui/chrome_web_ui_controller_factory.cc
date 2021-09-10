@@ -391,7 +391,7 @@ WebUIController* NewWebUI<chromeos::TrustedProjectorUI>(WebUI* web_ui,
 void BindPrintManagement(
     Profile* profile,
     mojo::PendingReceiver<
-        chromeos::printing::printing_manager::mojom::PrintingMetadataProvider>
+        ash::printing::printing_manager::mojom::PrintingMetadataProvider>
         receiver) {
   chromeos::printing::print_management::PrintingManager* handler =
       chromeos::printing::print_management::PrintingManagerFactory::
@@ -401,11 +401,10 @@ void BindPrintManagement(
 }
 
 template <>
-WebUIController*
-NewWebUI<chromeos::printing::printing_manager::PrintManagementUI>(
+WebUIController* NewWebUI<ash::printing::printing_manager::PrintManagementUI>(
     WebUI* web_ui,
     const GURL& url) {
-  return new chromeos::printing::printing_manager::PrintManagementUI(
+  return new ash::printing::printing_manager::PrintManagementUI(
       web_ui,
       base::BindRepeating(&BindPrintManagement, Profile::FromWebUI(web_ui)));
 }
@@ -841,8 +840,8 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       url.host_piece() == ash::kChromeUIDiagnosticsAppHost) {
     return &NewWebUI<ash::DiagnosticsDialogUI>;
   }
-  if (url.host_piece() == chromeos::kChromeUIPrintManagementHost)
-    return &NewWebUI<chromeos::printing::printing_manager::PrintManagementUI>;
+  if (url.host_piece() == ash::kChromeUIPrintManagementHost)
+    return &NewWebUI<ash::printing::printing_manager::PrintManagementUI>;
   if (url.host_piece() == ash::kChromeUIScanningAppHost)
     return &NewWebUI<ash::ScanningUI>;
   if (ash::features::IsShimlessRMAFlowEnabled() &&

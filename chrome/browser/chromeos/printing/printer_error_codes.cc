@@ -20,37 +20,38 @@ namespace {
 
 STATIC_ASSERT_ENUM(
     PrinterErrorCode::NO_ERROR,
-    printing::printing_manager::mojom::PrinterErrorCode::kNoError);
+    ash::printing::printing_manager::mojom::PrinterErrorCode::kNoError);
 STATIC_ASSERT_ENUM(
     PrinterErrorCode::PAPER_JAM,
-    printing::printing_manager::mojom::PrinterErrorCode::kPaperJam);
+    ash::printing::printing_manager::mojom::PrinterErrorCode::kPaperJam);
 STATIC_ASSERT_ENUM(
     PrinterErrorCode::OUT_OF_PAPER,
-    printing::printing_manager::mojom::PrinterErrorCode::kOutOfPaper);
+    ash::printing::printing_manager::mojom::PrinterErrorCode::kOutOfPaper);
 STATIC_ASSERT_ENUM(
     PrinterErrorCode::OUT_OF_INK,
-    printing::printing_manager::mojom::PrinterErrorCode::kOutOfInk);
+    ash::printing::printing_manager::mojom::PrinterErrorCode::kOutOfInk);
 STATIC_ASSERT_ENUM(
     PrinterErrorCode::DOOR_OPEN,
-    printing::printing_manager::mojom::PrinterErrorCode::kDoorOpen);
-STATIC_ASSERT_ENUM(
-    PrinterErrorCode::PRINTER_UNREACHABLE,
-    printing::printing_manager::mojom::PrinterErrorCode::kPrinterUnreachable);
+    ash::printing::printing_manager::mojom::PrinterErrorCode::kDoorOpen);
+STATIC_ASSERT_ENUM(PrinterErrorCode::PRINTER_UNREACHABLE,
+                   ash::printing::printing_manager::mojom::PrinterErrorCode::
+                       kPrinterUnreachable);
 STATIC_ASSERT_ENUM(
     PrinterErrorCode::TRAY_MISSING,
-    printing::printing_manager::mojom::PrinterErrorCode::kTrayMissing);
+    ash::printing::printing_manager::mojom::PrinterErrorCode::kTrayMissing);
 STATIC_ASSERT_ENUM(
     PrinterErrorCode::OUTPUT_FULL,
-    printing::printing_manager::mojom::PrinterErrorCode::kOutputFull);
+    ash::printing::printing_manager::mojom::PrinterErrorCode::kOutputFull);
 STATIC_ASSERT_ENUM(
     PrinterErrorCode::STOPPED,
-    printing::printing_manager::mojom::PrinterErrorCode::kStopped);
+    ash::printing::printing_manager::mojom::PrinterErrorCode::kStopped);
 STATIC_ASSERT_ENUM(
     PrinterErrorCode::FILTER_FAILED,
-    printing::printing_manager::mojom::PrinterErrorCode::kFilterFailed);
+    ash::printing::printing_manager::mojom::PrinterErrorCode::kFilterFailed);
 STATIC_ASSERT_ENUM(
     PrinterErrorCode::UNKNOWN_ERROR,
-    printing::printing_manager::mojom::PrinterErrorCode::kUnknownError);
+    ash::printing::printing_manager::mojom::PrinterErrorCode::kUnknownError);
+
 }  // namespace
 
 using PrinterReason = ::printing::PrinterStatus::PrinterReason;

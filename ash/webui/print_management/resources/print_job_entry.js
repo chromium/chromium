@@ -161,13 +161,13 @@ Polymer({
 
   /**
    * @private {
-   *  ?chromeos.printing.printingManager.mojom.PrintingMetadataProviderInterface
+   *  ?ash.printing.printingManager.mojom.PrintingMetadataProviderInterface
    * }
    */
   mojoInterfaceProvider_: null,
 
   properties: {
-    /** @type {!chromeos.printing.printingManager.mojom.PrintJobInfo} */
+    /** @type {!ash.printing.printingManager.mojom.PrintJobInfo} */
     jobEntry: {
       type: Object,
     },
@@ -361,22 +361,20 @@ Polymer({
 
   /**
    * Returns the corresponding completion status from |mojoCompletionStatus|.
-   * @param {!chromeos.printing.printingManager.mojom.PrintJobCompletionStatus}
+   * @param {!ash.printing.printingManager.mojom.PrintJobCompletionStatus}
    *     mojoCompletionStatus
    * @return {string}
    * @private
    */
   convertStatusToString_(mojoCompletionStatus) {
     switch (mojoCompletionStatus) {
-      case chromeos.printing.printingManager.mojom.PrintJobCompletionStatus
-           .kFailed:
+      case ash.printing.printingManager.mojom.PrintJobCompletionStatus.kFailed:
         return this.getFailedStatusString_(
             this.jobEntry.printerErrorCode);
-      case chromeos.printing.printingManager.mojom.PrintJobCompletionStatus
-           .kCanceled:
+      case ash.printing.printingManager.mojom.PrintJobCompletionStatus
+          .kCanceled:
         return loadTimeData.getString('completionStatusCanceled');
-      case chromeos.printing.printingManager.mojom.PrintJobCompletionStatus
-           .kPrinted:
+      case ash.printing.printingManager.mojom.PrintJobCompletionStatus.kPrinted:
         return loadTimeData.getString('completionStatusPrinted');
       default:
         assertNotReached();
@@ -467,38 +465,35 @@ Polymer({
   },
 
   /**
-   * @param {!chromeos.printing.printingManager.mojom.PrinterErrorCode}
+   * @param {!ash.printing.printingManager.mojom.PrinterErrorCode}
    *     mojoPrinterErrorCode
    * @return {string}
    * @private
    */
   getFailedStatusString_(mojoPrinterErrorCode) {
     switch (mojoPrinterErrorCode) {
-      case chromeos.printing.printingManager.mojom.PrinterErrorCode.kNoError:
+      case ash.printing.printingManager.mojom.PrinterErrorCode.kNoError:
         return loadTimeData.getString('completionStatusPrinted');
-      case chromeos.printing.printingManager.mojom.PrinterErrorCode.kPaperJam:
+      case ash.printing.printingManager.mojom.PrinterErrorCode.kPaperJam:
         return loadTimeData.getString('paperJam');
-      case chromeos.printing.printingManager.mojom.PrinterErrorCode.kOutOfPaper:
+      case ash.printing.printingManager.mojom.PrinterErrorCode.kOutOfPaper:
         return loadTimeData.getString('outOfPaper');
-      case chromeos.printing.printingManager.mojom.PrinterErrorCode.kOutOfInk:
+      case ash.printing.printingManager.mojom.PrinterErrorCode.kOutOfInk:
         return loadTimeData.getString('outOfInk');
-      case chromeos.printing.printingManager.mojom.PrinterErrorCode.kDoorOpen:
+      case ash.printing.printingManager.mojom.PrinterErrorCode.kDoorOpen:
         return loadTimeData.getString('doorOpen');
-      case chromeos.printing.printingManager.mojom.PrinterErrorCode
+      case ash.printing.printingManager.mojom.PrinterErrorCode
           .kPrinterUnreachable:
         return loadTimeData.getString('printerUnreachable');
-      case chromeos.printing.printingManager.mojom.PrinterErrorCode
-          .kTrayMissing:
+      case ash.printing.printingManager.mojom.PrinterErrorCode.kTrayMissing:
         return loadTimeData.getString('trayMissing');
-      case chromeos.printing.printingManager.mojom.PrinterErrorCode.kOutputFull:
+      case ash.printing.printingManager.mojom.PrinterErrorCode.kOutputFull:
         return loadTimeData.getString('outputFull');
-      case chromeos.printing.printingManager.mojom.PrinterErrorCode.kStopped:
+      case ash.printing.printingManager.mojom.PrinterErrorCode.kStopped:
         return loadTimeData.getString('stopped');
-      case chromeos.printing.printingManager.mojom.PrinterErrorCode
-          .kFilterFailed:
+      case ash.printing.printingManager.mojom.PrinterErrorCode.kFilterFailed:
         return loadTimeData.getString('filterFailed');
-      case chromeos.printing.printingManager.mojom.PrinterErrorCode
-          .kUnknownError:
+      case ash.printing.printingManager.mojom.PrinterErrorCode.kUnknownError:
         return loadTimeData.getString('unknownPrinterError');
       default:
         assertNotReached();
@@ -507,7 +502,7 @@ Polymer({
   },
 
   /**
-   * @param {!chromeos.printing.printingManager.mojom.PrinterErrorCode}
+   * @param {!ash.printing.printingManager.mojom.PrinterErrorCode}
    *     mojoPrinterErrorCode
    * @return {string}
    * @private
@@ -518,30 +513,27 @@ Polymer({
     }
 
     switch (mojoPrinterErrorCode) {
-      case chromeos.printing.printingManager.mojom.PrinterErrorCode.kNoError:
+      case ash.printing.printingManager.mojom.PrinterErrorCode.kNoError:
         return '';
-      case chromeos.printing.printingManager.mojom.PrinterErrorCode.kPaperJam:
+      case ash.printing.printingManager.mojom.PrinterErrorCode.kPaperJam:
         return loadTimeData.getString('paperJamStopped');
-      case chromeos.printing.printingManager.mojom.PrinterErrorCode.kOutOfPaper:
+      case ash.printing.printingManager.mojom.PrinterErrorCode.kOutOfPaper:
         return loadTimeData.getString('outOfPaperStopped');
-      case chromeos.printing.printingManager.mojom.PrinterErrorCode.kOutOfInk:
+      case ash.printing.printingManager.mojom.PrinterErrorCode.kOutOfInk:
         return loadTimeData.getString('outOfInkStopped');
-      case chromeos.printing.printingManager.mojom.PrinterErrorCode.kDoorOpen:
+      case ash.printing.printingManager.mojom.PrinterErrorCode.kDoorOpen:
         return loadTimeData.getString('doorOpenStopped');
-      case chromeos.printing.printingManager.mojom.PrinterErrorCode
-          .kTrayMissing:
+      case ash.printing.printingManager.mojom.PrinterErrorCode.kTrayMissing:
         return loadTimeData.getString('trayMissingStopped');
-      case chromeos.printing.printingManager.mojom.PrinterErrorCode.kOutputFull:
+      case ash.printing.printingManager.mojom.PrinterErrorCode.kOutputFull:
         return loadTimeData.getString('outputFullStopped');
-      case chromeos.printing.printingManager.mojom.PrinterErrorCode.kStopped:
+      case ash.printing.printingManager.mojom.PrinterErrorCode.kStopped:
         return loadTimeData.getString('stoppedGeneric');
-      case chromeos.printing.printingManager.mojom.PrinterErrorCode
-          .kFilterFailed:
+      case ash.printing.printingManager.mojom.PrinterErrorCode.kFilterFailed:
         return loadTimeData.getString('filterFailed');
-      case chromeos.printing.printingManager.mojom.PrinterErrorCode
-          .kUnknownError:
+      case ash.printing.printingManager.mojom.PrinterErrorCode.kUnknownError:
         return loadTimeData.getString('unknownPrinterErrorStopped');
-      case chromeos.printing.printingManager.mojom.PrinterErrorCode
+      case ash.printing.printingManager.mojom.PrinterErrorCode
           .kPrinterUnreachable:
         assertNotReached();
         return loadTimeData.getString('unknownPrinterErrorStopped');

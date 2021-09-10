@@ -30,19 +30,19 @@ namespace printing {
 namespace print_management {
 namespace {
 
+using ::ash::printing::printing_manager::mojom::PrintJobInfoPtr;
+
 constexpr char kTitle[] = "title";
 const int kPagesNumber = 3;
 
-void VerifyPrintJobIsOngoing(
-    const printing_manager::mojom::PrintJobInfoPtr& jobInfo) {
+void VerifyPrintJobIsOngoing(const PrintJobInfoPtr& jobInfo) {
   // An ongoing print job has a null |completed_info| and a non-null
   // |active_print_job_info|.
   EXPECT_FALSE(jobInfo->completed_info);
   EXPECT_TRUE(jobInfo->active_print_job_info);
 }
 
-void VerifyPrintJobIsCompleted(
-    const printing_manager::mojom::PrintJobInfoPtr& jobInfo) {
+void VerifyPrintJobIsCompleted(const PrintJobInfoPtr& jobInfo) {
   // A completed print job has a non-null |completed_info| and a null
   // |active_print_job_info|.
   EXPECT_TRUE(jobInfo->completed_info);
@@ -79,8 +79,6 @@ void WaitForURLsDeletedNotification(history::HistoryService* history_service) {
   runner.Run();
 }
 }  // namespace
-
-using printing_manager::mojom::PrintJobInfoPtr;
 
 class PrintingManagerTest : public ::testing::Test {
  public:

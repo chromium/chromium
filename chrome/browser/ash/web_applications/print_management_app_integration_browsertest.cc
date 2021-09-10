@@ -14,7 +14,7 @@ using PrintManagementAppIntegrationTest = SystemWebAppIntegrationTest;
 // spot checks on the manifest.
 IN_PROC_BROWSER_TEST_P(PrintManagementAppIntegrationTest,
                        PrintManagementAppInLauncher) {
-  const GURL url(chromeos::kChromeUIPrintManagementAppUrl);
+  const GURL url(ash::kChromeUIPrintManagementAppUrl);
   EXPECT_NO_FATAL_FAILURE(ExpectSystemWebAppValid(
       web_app::SystemAppType::PRINT_MANAGEMENT, url, "Print jobs"));
 }

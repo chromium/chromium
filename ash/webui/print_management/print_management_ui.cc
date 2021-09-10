@@ -18,7 +18,7 @@
 #include "ui/resources/grit/webui_generated_resources.h"
 #include "ui/resources/grit/webui_resources.h"
 
-namespace chromeos {
+namespace ash {
 namespace printing {
 namespace printing_manager {
 namespace {
@@ -142,4 +142,4 @@ WEB_UI_CONTROLLER_TYPE_IMPL(PrintManagementUI)
 
 }  // namespace printing_manager
 }  // namespace printing
-}  // namespace chromeos
+}  // namespace ash
