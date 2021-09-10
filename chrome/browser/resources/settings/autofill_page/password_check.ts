@@ -178,7 +178,7 @@ class SettingsPasswordCheckElement extends SettingsPasswordCheckElementBase {
 
   private activeDialogAnchorStack_: Array<HTMLElement>|null;
   private activeListItem_: PasswordCheckListItemElement|null;
-  private startCheckAutomaticallySucceeded: boolean = false;
+  startCheckAutomaticallySucceeded: boolean = false;
   private setSavedPasswordsListener_: SavedPasswordListChangedListener|null;
 
   constructor() {

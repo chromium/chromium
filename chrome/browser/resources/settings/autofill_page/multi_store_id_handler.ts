@@ -42,10 +42,10 @@ export class MultiStoreIdHandler {
     return this.deviceId_ !== null;
   }
 
-  get deviceId() {
+  get deviceId(): number|null {
     return this.deviceId_;
   }
-  get accountId() {
+  get accountId(): number|null {
     return this.accountId_;
   }
 

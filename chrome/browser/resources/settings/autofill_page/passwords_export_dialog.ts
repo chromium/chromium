@@ -167,7 +167,7 @@ class PasswordsExportDialogElement extends PasswordsExportDialogElementBase {
    * Displays the progress bar and suspends further UI updates for
    * |progressBarBlockMs|.
    */
-  progressTask_() {
+  private progressTask_() {
     this.progressTaskToken_ = null;
     this.switchToDialog_(States.IN_PROGRESS);
 
@@ -179,7 +179,7 @@ class PasswordsExportDialogElement extends PasswordsExportDialogElementBase {
    * Unblocks progress after showing the progress bar for |progressBarBlock|ms
    * and processes any progress that was delayed.
    */
-  delayedCompletionTask_() {
+  private delayedCompletionTask_() {
     this.delayedCompletionToken_ = null;
     if (this.delayedProgress_) {
       this.processProgress_(this.delayedProgress_);
@@ -205,7 +205,7 @@ class PasswordsExportDialogElement extends PasswordsExportDialogElementBase {
             'passwords-export-dialog-close', {bubbles: true, composed: true})));
   }
 
-  onExportTap_() {
+  private onExportTap_() {
     // <if expr="chromeos">
     this.tokenRequestManager.request(() => this.exportPasswords_());
     // </if>
