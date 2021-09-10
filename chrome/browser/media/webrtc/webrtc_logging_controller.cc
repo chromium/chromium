@@ -363,7 +363,7 @@ void WebRtcLoggingController::OnStopped() {
     // and must not be invoked.
     DLOG(ERROR) << "OnStopped invoked in state "
                 << text_log_handler_->GetState();
-    mojo::ReportBadMessage("WRLHH: OnStopped invoked in unexpected state.");
+    receiver_.ReportBadMessage("WRLHH: OnStopped invoked in unexpected state.");
     return;
   }
   text_log_handler_->StopDone();
