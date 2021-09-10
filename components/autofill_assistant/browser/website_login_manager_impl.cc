@@ -270,8 +270,9 @@ class WebsiteLoginManagerImpl::UpdatePasswordRequest
         form_data_(form_data),
         client_(client),
         presaving_completed_callback_(std::move(presaving_completed_callback)),
-        password_save_manager_(password_manager::PasswordSaveManagerImpl::
-                                   CreatePasswordSaveManagerImpl(client)),
+        password_save_manager_(
+            std::make_unique<password_manager::PasswordSaveManagerImpl>(
+                client)),
         metrics_recorder_(
             base::MakeRefCounted<password_manager::PasswordFormMetricsRecorder>(
                 client->IsCommittedMainFrameSecure(),

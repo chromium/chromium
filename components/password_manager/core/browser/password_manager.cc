@@ -626,8 +626,7 @@ PasswordFormManager* PasswordManager::CreateFormManager(
   form_managers_.push_back(std::make_unique<PasswordFormManager>(
       client_,
       driver ? driver->AsWeakPtr() : base::WeakPtr<PasswordManagerDriver>(),
-      form, nullptr,
-      PasswordSaveManagerImpl::CreatePasswordSaveManagerImpl(client_),
+      form, nullptr, std::make_unique<PasswordSaveManagerImpl>(client_),
       nullptr));
   form_managers_.back()->ProcessServerPredictions(predictions_);
   return form_managers_.back().get();

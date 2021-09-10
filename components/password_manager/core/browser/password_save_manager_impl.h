@@ -21,16 +21,12 @@ enum class PendingCredentialsState {
 
 class PasswordSaveManagerImpl : public PasswordSaveManager {
  public:
-  explicit PasswordSaveManagerImpl(
-      std::unique_ptr<FormSaver> profile_form_saver,
-      std::unique_ptr<FormSaver> account_form_saver);
+  PasswordSaveManagerImpl(std::unique_ptr<FormSaver> profile_form_saver,
+                          std::unique_ptr<FormSaver> account_form_saver);
+  // Convenience constructor that builds FormSavers corresponding to the
+  // profile and (if it exists) account store grabbed from |client|.
+  explicit PasswordSaveManagerImpl(const PasswordManagerClient* client);
   ~PasswordSaveManagerImpl() override;
-
-  // Creates a PasswordSaveManagerImpl instance.
-  // TODO(crbug.com/1108738): Remove this factory method and update call sites
-  // to use the constructor directly.
-  static std::unique_ptr<PasswordSaveManagerImpl> CreatePasswordSaveManagerImpl(
-      const PasswordManagerClient* client);
 
   const PasswordForm& GetPendingCredentials() const override;
   const std::u16string& GetGeneratedPassword() const override;

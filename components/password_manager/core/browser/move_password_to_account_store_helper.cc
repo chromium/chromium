@@ -35,8 +35,7 @@ MovePasswordToAccountStoreHelper::~MovePasswordToAccountStoreHelper() {
 }
 
 void MovePasswordToAccountStoreHelper::OnFetchCompleted() {
-  std::unique_ptr<PasswordSaveManagerImpl> save_manager =
-      PasswordSaveManagerImpl::CreatePasswordSaveManagerImpl(client_);
+  auto save_manager = std::make_unique<PasswordSaveManagerImpl>(client_);
   save_manager->Init(client_, form_fetcher_.get(), /*metrics_recorder=*/nullptr,
                      /*votes_uploader=*/nullptr);
   save_manager->CreatePendingCredentials(form_, {}, {}, /*is_http_auth=*/false,

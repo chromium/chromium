@@ -29,11 +29,10 @@ CredentialManagerPasswordFormManager::CredentialManagerPasswordFormManager(
           client,
           std::move(saved_form),
           std::move(form_fetcher),
-          form_saver
-              ? std::make_unique<PasswordSaveManagerImpl>(
-                    /*profile_form_saver=*/std::move(form_saver),
-                    /*account_form_saver=*/nullptr)
-              : PasswordSaveManagerImpl::CreatePasswordSaveManagerImpl(client)),
+          form_saver ? std::make_unique<PasswordSaveManagerImpl>(
+                           /*profile_form_saver=*/std::move(form_saver),
+                           /*account_form_saver=*/nullptr)
+                     : std::make_unique<PasswordSaveManagerImpl>(client)),
       delegate_(delegate) {}
 
 CredentialManagerPasswordFormManager::~CredentialManagerPasswordFormManager() =

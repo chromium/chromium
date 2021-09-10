@@ -194,25 +194,21 @@ PasswordForm UpdateFormPreservingDifferentFieldsAcrossStores(
 
 }  // namespace
 
-// static
-std::unique_ptr<PasswordSaveManagerImpl>
-PasswordSaveManagerImpl::CreatePasswordSaveManagerImpl(
-    const PasswordManagerClient* client) {
-  PasswordStoreInterface* profile_store =
-      client->GetProfilePasswordStoreInterface();
-  PasswordStoreInterface* account_store =
-      client->GetAccountPasswordStoreInterface();
-
-  return std::make_unique<PasswordSaveManagerImpl>(
-      std::make_unique<FormSaverImpl>(profile_store),
-      account_store ? std::make_unique<FormSaverImpl>(account_store) : nullptr);
-}
-
 PasswordSaveManagerImpl::PasswordSaveManagerImpl(
     std::unique_ptr<FormSaver> profile_form_saver,
     std::unique_ptr<FormSaver> account_form_saver)
     : profile_store_form_saver_(std::move(profile_form_saver)),
       account_store_form_saver_(std::move(account_form_saver)) {}
+
+PasswordSaveManagerImpl::PasswordSaveManagerImpl(
+    const PasswordManagerClient* client)
+    : PasswordSaveManagerImpl(
+          std::make_unique<FormSaverImpl>(
+              client->GetProfilePasswordStoreInterface()),
+          client->GetAccountPasswordStoreInterface()
+              ? std::make_unique<FormSaverImpl>(
+                    client->GetAccountPasswordStoreInterface())
+              : nullptr) {}
 
 PasswordSaveManagerImpl::~PasswordSaveManagerImpl() = default;
 
