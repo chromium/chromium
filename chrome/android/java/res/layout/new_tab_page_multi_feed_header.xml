@@ -34,7 +34,7 @@
         android:visibility="invisible"
         android:layout_marginEnd="@dimen/feed_header_icon_margin"
         app:tint="?attr/default_icon_color_disabled"
-        android:tintMode="multiply"
+        android:tintMode="src_in"
         tools:ignore="contentDescription" />
 
     <com.google.android.material.tabs.TabLayout
