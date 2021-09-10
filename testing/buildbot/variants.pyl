@@ -588,7 +588,7 @@
   'CROS_ATLAS_TOT-1': {
     'skylab': {
       'cros_board': 'atlas',
-      'cros_img': 'atlas-release/R94-14150.17.0',
+      'cros_img': 'atlas-release/R94-14150.23.0',
     },
     'identifier': 'ATLAS_TOT-1',
   },
