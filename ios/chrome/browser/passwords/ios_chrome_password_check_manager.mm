@@ -150,10 +150,10 @@ IOSChromePasswordCheckManager::GetSavedPasswordsFor(
 
 bool IOSChromePasswordCheckManager::EditPasswordForm(
     const password_manager::PasswordForm& form,
-    base::StringPiece new_username,
-    base::StringPiece new_password) {
-  return saved_passwords_presenter_.EditSavedPasswords(
-      form, base::UTF8ToUTF16(new_username), base::UTF8ToUTF16(new_password));
+    const std::u16string& new_username,
+    const std::u16string& new_password) {
+  return saved_passwords_presenter_.EditSavedPasswords(form, new_username,
+                                                       new_password);
 }
 
 bool IOSChromePasswordCheckManager::AddPasswordForm(

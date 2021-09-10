@@ -22,6 +22,13 @@
                              username:(NSString*)username
                              password:(NSString*)password;
 
+// Called when the user cancels the add password view.
+- (void)didCancelAddPasswordDetails;
+
+// Called when the user is validated and confirmed to replace the existing
+// credential from the add password view.
+- (void)didConfirmReplaceExistingCredential;
+
 // Checks if the username is reused for the same domain.
 - (BOOL)isUsernameReused:(NSString*)newUsername;
 

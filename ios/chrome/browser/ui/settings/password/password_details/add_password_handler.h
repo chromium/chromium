@@ -1,4 +1,3 @@
-
 // Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -9,8 +8,9 @@
 // Presenter which handles commands from |PasswordDetailsViewController|.
 @protocol AddPasswordHandler
 
-// Called when the password details view controller is to be dismissed.
-- (void)dismissPasswordDetailsTableViewController;
+// Called when the reauthentication protocol is not ready for the
+// authentication.
+- (void)showPasscodeDialog;
 
 @end
 

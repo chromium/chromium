@@ -76,9 +76,6 @@ constexpr char kPassword[] = "test";
   self.editingCalled = YES;
 }
 
-- (void)dismissPasswordDetailsTableViewController {
-}
-
 @end
 
 // Test class that conforms to PasswordDetailsViewControllerDelegate in order to
@@ -107,6 +104,12 @@ constexpr char kPassword[] = "test";
         didAddPasswordDetailsWithSite:(NSString*)website
                              username:(NSString*)username
                              password:(NSString*)password {
+}
+
+- (void)didConfirmReplaceExistingCredential {
+}
+
+- (void)didCancelAddPasswordDetails {
 }
 
 @end

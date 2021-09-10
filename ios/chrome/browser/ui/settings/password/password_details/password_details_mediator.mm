@@ -15,6 +15,7 @@
 #error "This file requires ARC support."
 #endif
 
+using base::SysNSStringToUTF16;
 using InsecureCredentialsView =
     password_manager::InsecureCredentialsManager::CredentialsView;
 
@@ -76,11 +77,11 @@ using InsecureCredentialsView =
             (PasswordDetailsTableViewController*)viewController
                didEditPasswordDetails:(PasswordDetails*)password {
   if ([password.password length] != 0) {
-    if (_manager->EditPasswordForm(
-            _password, base::SysNSStringToUTF8(password.username),
-            base::SysNSStringToUTF8(password.password))) {
-      _password.username_value = base::SysNSStringToUTF16(password.username);
-      _password.password_value = base::SysNSStringToUTF16(password.password);
+    if (_manager->EditPasswordForm(_password,
+                                   SysNSStringToUTF16(password.username),
+                                   SysNSStringToUTF16(password.password))) {
+      _password.username_value = SysNSStringToUTF16(password.username);
+      _password.password_value = SysNSStringToUTF16(password.password);
       return;
     }
   }
@@ -92,6 +93,14 @@ using InsecureCredentialsView =
         didAddPasswordDetailsWithSite:(NSString*)website
                              username:(NSString*)username
                              password:(NSString*)password {
+  NOTREACHED();
+}
+
+- (void)didCancelAddPasswordDetails {
+  NOTREACHED();
+}
+
+- (void)didConfirmReplaceExistingCredential {
   NOTREACHED();
 }
 

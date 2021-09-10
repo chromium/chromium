@@ -45,6 +45,7 @@ constexpr char kExampleCom[] = "https://example.com";
 constexpr char kUsername1[] = "alice";
 constexpr char16_t kUsername116[] = u"alice";
 constexpr char kUsername2[] = "bob";
+constexpr char16_t kUsername216[] = u"bob";
 
 constexpr char kPassword1[] = "s3cre3t";
 constexpr char16_t kPassword116[] = u"s3cre3t";
@@ -368,8 +369,8 @@ TEST_F(IOSChromePasswordCheckManagerTest, EditPassword) {
   RunUntilIdle();
 
   EXPECT_TRUE(manager().EditPasswordForm(
-      store().stored_passwords().at(kExampleCom).at(0), kUsername1,
-      kPassword2));
+      store().stored_passwords().at(kExampleCom).at(0), kUsername116,
+      kPassword216));
   RunUntilIdle();
 
   EXPECT_THAT(
@@ -383,8 +384,8 @@ TEST_F(IOSChromePasswordCheckManagerTest, EditUsername) {
   RunUntilIdle();
 
   EXPECT_TRUE(manager().EditPasswordForm(
-      store().stored_passwords().at(kExampleCom).at(0), kUsername2,
-      kPassword1));
+      store().stored_passwords().at(kExampleCom).at(0), kUsername216,
+      kPassword116));
   RunUntilIdle();
 
   EXPECT_THAT(
@@ -398,8 +399,8 @@ TEST_F(IOSChromePasswordCheckManagerTest, EditUsernameAndPassword) {
   RunUntilIdle();
 
   EXPECT_TRUE(manager().EditPasswordForm(
-      store().stored_passwords().at(kExampleCom).at(0), kUsername2,
-      kPassword2));
+      store().stored_passwords().at(kExampleCom).at(0), kUsername216,
+      kPassword216));
   RunUntilIdle();
 
   EXPECT_THAT(

@@ -10,6 +10,7 @@ source_set("password_details") {
     "add_password_coordinator_delegate.h",
     "add_password_mediator.h",
     "add_password_mediator.mm",
+    "add_password_mediator_delegate.h",
     "password_details_coordinator.h",
     "password_details_coordinator.mm",
     "password_details_coordinator_delegate.h",

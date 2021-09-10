@@ -221,6 +221,14 @@ id<GREYMatcher> EditConfirmationButton() {
                     grey_interactable(), nullptr);
 }
 
+// Matcher for the Replace button in Confirmation Alert for adding duplicated
+// credential.
+id<GREYMatcher> ReplacePasswordButton() {
+  // TODO(crbug.com/1226006): Use i18n string.
+  return grey_allOf(ButtonWithAccessibilityLabel(@"Replace"),
+                    grey_interactable(), nullptr);
+}
+
 // Matches the pop-up (call-out) menu item with accessibility label equal to the
 // translated string identified by |label|.
 id<GREYMatcher> PopUpMenuItemWithLabel(int label) {
@@ -353,7 +361,8 @@ void CopyPasswordDetailWithID(int detail_id) {
 
   if ([self isRunningTest:@selector(testToolbarAddPasswordButton)] ||
       [self isRunningTest:@selector(testNoAddButtonInEditMode)] ||
-      [self isRunningTest:@selector(testAddNewPasswordCredential)]) {
+      [self isRunningTest:@selector(testAddNewPasswordCredential)] ||
+      [self isRunningTest:@selector(testAddNewDuplicatedPasswordCredential)]) {
     config.features_enabled.push_back(
         password_manager::features::kSupportForAddPasswordsInSettings);
   }
@@ -1781,6 +1790,68 @@ void CopyPasswordDetailWithID(int detail_id) {
       performAction:grey_tap()];
 
   [GetInteractionForPasswordEntry(@"example.com, new username")
+      performAction:grey_tap()];
+
+  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+
+  TapEdit();
+
+  [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
+      assertWithMatcher:grey_textFieldValue(@"new password")];
+}
+
+// Tests that adding a new password details where the username and website
+// matches with an existing password profile results in replacing the password
+// of the existing profile.
+- (void)testAddNewDuplicatedPasswordCredential {
+  SaveExamplePasswordForm();
+
+  OpenPasswordSettings();
+
+  BOOL isSwitchEnabled =
+      [PasswordSettingsAppInterface isCredentialsServiceEnabled];
+
+  // Enable switch if it is disabled.
+  if (!isSwitchEnabled) {
+    [GetInteractionForListItem(
+        chrome_test_util::SettingsSwitchCell(kSavePasswordSwitchTableViewId,
+                                             isSwitchEnabled),
+        kGREYDirectionUp) performAction:TurnSettingsSwitchOn(!isSwitchEnabled)];
+
+    // Check that the switch has been modified.
+    [GetInteractionForListItem(
+        chrome_test_util::SettingsSwitchCell(kSavePasswordSwitchTableViewId,
+                                             !isSwitchEnabled),
+        kGREYDirectionUp) assertWithMatcher:grey_sufficientlyVisible()];
+  }
+
+  // Press "Add".
+  [[EarlGrey selectElementWithMatcher:AddPasswordButton()]
+      performAction:grey_tap()];
+
+  // Fill form.
+  [[EarlGrey selectElementWithMatcher:PasswordDetailWebsite()]
+      performAction:grey_replaceText(@"https://example.com")];
+
+  [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
+      performAction:grey_replaceText(@"concrete username")];
+
+  [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
+      performAction:grey_replaceText(@"new password")];
+
+  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+
+  [[EarlGrey selectElementWithMatcher:AddPasswordSaveButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:ReplacePasswordButton()]
+      performAction:grey_tap()];
+
+  [GetInteractionForPasswordEntry(@"example.com, concrete username")
       performAction:grey_tap()];
 
   [PasswordSettingsAppInterface setUpMockReauthenticationModule];

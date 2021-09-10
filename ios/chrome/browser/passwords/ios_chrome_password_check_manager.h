@@ -75,8 +75,8 @@ class IOSChromePasswordCheckManager
 
   // Edits |username| and |password| for |form| and its duplicates.
   bool EditPasswordForm(const password_manager::PasswordForm& form,
-                        base::StringPiece new_username,
-                        base::StringPiece new_password);
+                        const std::u16string& new_username,
+                        const std::u16string& new_password);
 
   // Adds new password credentials |form| to the store.
   bool AddPasswordForm(const password_manager::PasswordForm& form);

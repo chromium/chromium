@@ -50,12 +50,12 @@ MockReauthenticationModule* SetUpAndReturnMockReauthenticationModule() {
   MockReauthenticationModule* mock_reauthentication_module =
       [[MockReauthenticationModule alloc] init];
   // TODO(crbug.com/754642): Stop using TopPresentedViewController();
-  SettingsNavigationController* settings_navigation_controller =
-      base::mac::ObjCCastStrict<SettingsNavigationController>(
+  UINavigationController* ui_navigation_controller =
+      base::mac::ObjCCastStrict<UINavigationController>(
           top_view_controller::TopPresentedViewController());
   PasswordDetailsTableViewController* password_details_table_view_controller =
       base::mac::ObjCCastStrict<PasswordDetailsTableViewController>(
-          settings_navigation_controller.topViewController);
+          ui_navigation_controller.topViewController);
   password_details_table_view_controller.reauthModule =
       mock_reauthentication_module;
   return mock_reauthentication_module;
