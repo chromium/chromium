@@ -996,6 +996,12 @@ try_.chromium_dawn_builderless_builder(
     pool = "luci.chromium.gpu.mac.retina.amd.try",
 )
 
+try_.chromium_dawn_builderless_builder(
+    name = "dawn-try-mac-intel-exp",
+    os = os.MAC_ANY,
+    pool = "luci.chromium.gpu.mac.mini.intel.uhd630.try",
+)
+
 try_.chromium_dawn_builder(
     name = "win-dawn-rel",
     os = os.WINDOWS_ANY,

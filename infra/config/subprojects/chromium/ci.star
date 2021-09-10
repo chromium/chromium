@@ -2600,6 +2600,15 @@ ci.dawn_thin_tester(
 )
 
 ci.dawn_thin_tester(
+    name = "Dawn Mac x64 Experimental Release (Intel)",
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT|Mac|Intel",
+        short_name = "exp",
+    ),
+    triggered_by = ["Dawn Mac x64 Builder"],
+)
+
+ci.dawn_thin_tester(
     name = "Dawn Mac x64 Release (AMD)",
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Mac|AMD",

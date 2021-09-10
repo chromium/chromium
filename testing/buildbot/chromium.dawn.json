@@ -1853,6 +1853,7 @@
       }
     ]
   },
+  "Dawn Mac x64 Experimental Release (Intel)": {},
   "Dawn Mac x64 Release (AMD)": {
     "gtest_tests": [
       {

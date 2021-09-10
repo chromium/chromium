@@ -2113,6 +2113,14 @@
           'isolated_scripts': 'gpu_dawn_isolated_scripts',
         },
       },
+      'Dawn Mac x64 Experimental Release (Intel)': {
+        'os_type': 'mac',
+        'browser_config': 'release',
+        'mixins': [
+          'limited_capacity_bot',
+          'mac_mini_intel_uhd_630_gpu_stable',
+        ],
+      },
       'Dawn Mac x64 Release (AMD)': {
         'os_type': 'mac',
         'browser_config': 'release',
