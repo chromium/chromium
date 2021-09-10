@@ -741,7 +741,12 @@ void AppListFolderView::Layout() {
     page_switcher_->SetBoundsRect(gfx::Rect(
         gfx::Point(page_switcher_x, page_switcher_y), page_switcher_size));
   }
-  background_view_->layer()->SetClipRect(background_view_->GetLocalBounds());
+  // `BackgroundAnimation` animates the clip rect during open/close.
+  if (!IsAnimationRunning()) {
+    // The folder view can change size due to app install/uninstall. Ensure the
+    // rounded corners have the correct position. https://crbug.com/993282
+    background_view_->layer()->SetClipRect(background_view_->GetLocalBounds());
+  }
 }
 
 void AppListFolderView::ChildPreferredSizeChanged(views::View* child) {
