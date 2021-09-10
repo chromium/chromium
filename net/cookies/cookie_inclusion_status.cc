@@ -222,6 +222,10 @@ std::string CookieInclusionStatus::GetDebugString() const {
            {EXCLUDE_INVALID_PREFIX, "EXCLUDE_INVALID_PREFIX"},
            {EXCLUDE_INVALID_SAMEPARTY, "EXCLUDE_INVALID_SAMEPARTY"},
            {EXCLUDE_INVALID_PARTITIONED, "EXCLUDE_INVALID_PARTITIONED"},
+           {EXCLUDE_NAME_VALUE_PAIR_EXCEEDS_MAX_SIZE,
+            "EXCLUDE_NAME_VALUE_PAIR_EXCEEDS_MAX_SIZE"},
+           {EXCLUDE_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE,
+            "EXCLUDE_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE"},
        }) {
     if (HasExclusionReason(reason.first))
       base::StrAppend(&out, {reason.second, ", "});

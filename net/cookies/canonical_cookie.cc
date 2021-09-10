@@ -474,9 +474,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
   if (!parsed_cookie.IsValid()) {
     DVLOG(net::cookie_util::kVlogSetCookies)
         << "WARNING: Couldn't parse cookie";
-    // TODO(crbug.com/1228815): Apply more specific exclusion reasons.
-    DCHECK(status->HasExclusionReason(
-        CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE));
+    DCHECK(!status->IsInclude());
     // Don't continue, because an invalid ParsedCookie doesn't have any
     // attributes.
     // TODO(chlily): Log metrics.
@@ -634,10 +632,14 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
   }
 
   if (base::FeatureList::IsEnabled(features::kExtraCookieValidityChecks)) {
-    if (!ParsedCookie::CookieAttributeValueHasValidCharSet(domain) ||
-        !ParsedCookie::CookieAttributeValueHasValidSize(domain)) {
+    if (!ParsedCookie::CookieAttributeValueHasValidCharSet(domain)) {
       status->AddExclusionReason(
           net::CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN);
+      domain_is_valid = false;
+    }
+    if (!ParsedCookie::CookieAttributeValueHasValidSize(domain)) {
+      status->AddExclusionReason(
+          net::CookieInclusionStatus::EXCLUDE_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE);
       domain_is_valid = false;
     }
   }
@@ -694,7 +696,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
       // The path attribute was specified and encodes into a value that's longer
       // than the length limit, so record an error.
       status->AddExclusionReason(
-          net::CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
+          net::CookieInclusionStatus::EXCLUDE_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE);
     }
   }
 

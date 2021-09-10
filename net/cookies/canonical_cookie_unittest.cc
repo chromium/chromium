@@ -163,6 +163,23 @@ TEST(CanonicalCookieTest, CreationCornerCases) {
   EXPECT_FALSE(cookie.get());
   EXPECT_TRUE(status.HasExclusionReason(
       CookieInclusionStatus::ExclusionReason::EXCLUDE_FAILURE_TO_STORE));
+
+  // The ParsedCookie constructor unit tests cover many edge cases related to
+  // invalid sizes when parsing a cookie line, and since CanonicalCookie::Create
+  // creates a ParsedCookie immediately, there's no point in replicating all
+  // of those tests here.  We should test that the corresponding ExclusionReason
+  // gets passed back correctly, though.
+  std::string too_long_value(ParsedCookie::kMaxCookieNamePlusValueSize + 1,
+                             'a');
+
+  cookie = CanonicalCookie::Create(GURL("http://www.example.com/test/foo.html"),
+                                   too_long_value, creation_time, server_time,
+                                   absl::nullopt /* cookie_partition_key */,
+                                   &status);
+  EXPECT_FALSE(cookie.get());
+  EXPECT_TRUE(
+      status.HasExclusionReason(CookieInclusionStatus::ExclusionReason::
+                                    EXCLUDE_NAME_VALUE_PAIR_EXCEEDS_MAX_SIZE));
 }
 
 TEST(CanonicalCookieTest, Create) {
@@ -3407,7 +3424,7 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
     if (base::FeatureList::IsEnabled(features::kExtraCookieValidityChecks)) {
       EXPECT_FALSE(cc);
       EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-          {CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE}));
+          {CookieInclusionStatus::EXCLUDE_NAME_VALUE_PAIR_EXCEEDS_MAX_SIZE}));
     } else {
       EXPECT_TRUE(cc);
       EXPECT_TRUE(status.IsInclude());
@@ -3421,7 +3438,7 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
     if (base::FeatureList::IsEnabled(features::kExtraCookieValidityChecks)) {
       EXPECT_FALSE(cc);
       EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-          {CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE}));
+          {CookieInclusionStatus::EXCLUDE_NAME_VALUE_PAIR_EXCEEDS_MAX_SIZE}));
     } else {
       EXPECT_TRUE(cc);
       EXPECT_TRUE(status.IsInclude());
@@ -3458,7 +3475,7 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
     if (base::FeatureList::IsEnabled(features::kExtraCookieValidityChecks)) {
       EXPECT_FALSE(cc);
       EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-          {CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE}));
+          {CookieInclusionStatus::EXCLUDE_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE}));
     } else {
       EXPECT_TRUE(cc);
       EXPECT_EQ(too_long_path, cc->Path());
@@ -3499,7 +3516,7 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
     if (base::FeatureList::IsEnabled(features::kExtraCookieValidityChecks)) {
       EXPECT_FALSE(cc);
       EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-          {CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE}));
+          {CookieInclusionStatus::EXCLUDE_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE}));
     } else {
       EXPECT_TRUE(cc);
       // "#" expands into "%23"; -2 because '/' doesn't expand
@@ -3531,7 +3548,7 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
       absl::nullopt /*partition_key*/, &status);
   EXPECT_FALSE(cc);
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN}));
+      {CookieInclusionStatus::EXCLUDE_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE}));
   // Check that length limits on the Domain attribute value are not enforced in
   // the case where no Domain attribute is specified and the domain value is
   // implicitly set from the URL.

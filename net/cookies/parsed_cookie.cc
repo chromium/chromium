@@ -166,13 +166,13 @@ ParsedCookie::ParsedCookie(const std::string& cookie_line,
   if (status_out == nullptr) {
     status_out = &blank_status;
   }
+  *status_out = CookieInclusionStatus();
 
   if ((!base::FeatureList::IsEnabled(features::kExtraCookieValidityChecks)) &&
       cookie_line.size() > kMaxCookieSize) {
     DVLOG(1) << "Not parsing cookie, too large: " << cookie_line.size();
-    // TODO(crbug.com/1228815): Apply more specific exclusion reasons.
     status_out->AddExclusionReason(
-        CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
+        CookieInclusionStatus::EXCLUDE_NAME_VALUE_PAIR_EXCEEDS_MAX_SIZE);
     return;
   }
 
@@ -563,9 +563,8 @@ bool ParsedCookie::IsValidCookieNameValuePair(
   if (!name_value_pair_size.IsValid() ||
       (name_value_pair_size.ValueOrDie() > kMaxCookieNamePlusValueSize)) {
     if (status_out != nullptr) {
-      // TODO(crbug.com/1228815): Apply more specific exclusion reasons.
       status_out->AddExclusionReason(
-          CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
+          CookieInclusionStatus::EXCLUDE_NAME_VALUE_PAIR_EXCEEDS_MAX_SIZE);
     }
     return false;
   }

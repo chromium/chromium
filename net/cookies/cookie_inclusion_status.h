@@ -84,6 +84,16 @@ class NET_EXPORT CookieInclusionStatus {
     // valid if the cookie has a __Host- prefix and does not have the SameParty
     // attribute.
     EXCLUDE_INVALID_PARTITIONED = 18,
+    // Cookie exceeded the name/value pair size limit.
+    EXCLUDE_NAME_VALUE_PAIR_EXCEEDS_MAX_SIZE = 19,
+    // Cookie exceeded the attribute size limit. Note that this exclusion value
+    // won't be used by code that parses cookie lines since RFC6265bis
+    // indicates that large attributes should be ignored instead of causing the
+    // whole cookie to be rejected. There will be a corresponding WarningReason
+    // to notify users that an attribute value was ignored in that case.
+    // TODO(crbug.com/1243783): Implement that WarningReason and then update
+    // this comment.
+    EXCLUDE_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE = 20,
 
     // This should be kept last.
     NUM_EXCLUSION_REASONS

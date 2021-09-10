@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "net/base/features.h"
 #include "net/cookies/cookie_constants.h"
+#include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/parsed_cookie.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -375,15 +376,20 @@ TEST(ParsedCookieTest, EnforceSizeConstraintsLegacy) {
   base::test::ScopedFeatureList scope_feature_list;
   scope_feature_list.InitWithFeatureState(features::kExtraCookieValidityChecks,
                                           false);
+  CookieInclusionStatus status;
 
   std::string maxstr;
   maxstr.resize(ParsedCookie::kMaxCookieSize, 'a');
 
-  ParsedCookie pc1(maxstr);
+  ParsedCookie pc1(maxstr, &status);
   EXPECT_TRUE(pc1.IsValid());
+  EXPECT_TRUE(status.IsInclude());
 
-  ParsedCookie pc2(maxstr + "A");
+  ParsedCookie pc2(maxstr + "A", &status);
   EXPECT_FALSE(pc2.IsValid());
+  EXPECT_TRUE(status.HasOnlyExclusionReason(
+      CookieInclusionStatus::ExclusionReason::
+          EXCLUDE_NAME_VALUE_PAIR_EXCEEDS_MAX_SIZE));
 }
 
 TEST(ParsedCookieTest, EnforceSizeConstraints) {
@@ -392,6 +398,7 @@ TEST(ParsedCookieTest, EnforceSizeConstraints) {
   base::test::ScopedFeatureList scope_feature_list;
   scope_feature_list.InitWithFeatureState(features::kExtraCookieValidityChecks,
                                           true);
+  CookieInclusionStatus status;
 
   // Create maximum size and one-less-than-maximum size name and value
   // strings for testing.
@@ -409,8 +416,11 @@ TEST(ParsedCookieTest, EnforceSizeConstraints) {
   EXPECT_TRUE(pc2.IsValid());
   EXPECT_EQ(max_name, pc2.Name());
 
-  ParsedCookie pc3(max_name + "X=");
+  ParsedCookie pc3(max_name + "X=", &status);
   EXPECT_FALSE(pc3.IsValid());
+  EXPECT_TRUE(status.HasOnlyExclusionReason(
+      CookieInclusionStatus::ExclusionReason::
+          EXCLUDE_NAME_VALUE_PAIR_EXCEEDS_MAX_SIZE));
 
   ParsedCookie pc4("=" + max_value);
   EXPECT_TRUE(pc4.IsValid());
@@ -420,8 +430,11 @@ TEST(ParsedCookieTest, EnforceSizeConstraints) {
   EXPECT_TRUE(pc5.IsValid());
   EXPECT_EQ(max_value, pc5.Value());
 
-  ParsedCookie pc6("=" + max_value + "X");
+  ParsedCookie pc6("=" + max_value + "X", &status);
   EXPECT_FALSE(pc6.IsValid());
+  EXPECT_TRUE(status.HasOnlyExclusionReason(
+      CookieInclusionStatus::ExclusionReason::
+          EXCLUDE_NAME_VALUE_PAIR_EXCEEDS_MAX_SIZE));
 
   ParsedCookie pc7(almost_max_name + "=x");
   EXPECT_TRUE(pc7.IsValid());
@@ -433,8 +446,11 @@ TEST(ParsedCookieTest, EnforceSizeConstraints) {
   EXPECT_EQ(almost_max_name, pc8.Name());
   EXPECT_EQ("x", pc8.Value());
 
-  ParsedCookie pc9(almost_max_name + "=xX");
+  ParsedCookie pc9(almost_max_name + "=xX", &status);
   EXPECT_FALSE(pc9.IsValid());
+  EXPECT_TRUE(status.HasOnlyExclusionReason(
+      CookieInclusionStatus::ExclusionReason::
+          EXCLUDE_NAME_VALUE_PAIR_EXCEEDS_MAX_SIZE));
 
   ParsedCookie pc10("x=" + almost_max_value);
   EXPECT_TRUE(pc10.IsValid());
@@ -446,8 +462,11 @@ TEST(ParsedCookieTest, EnforceSizeConstraints) {
   EXPECT_EQ("x", pc11.Name());
   EXPECT_EQ(almost_max_value, pc11.Value());
 
-  ParsedCookie pc12("xX=" + almost_max_value);
+  ParsedCookie pc12("xX=" + almost_max_value, &status);
   EXPECT_FALSE(pc12.IsValid());
+  EXPECT_TRUE(status.HasOnlyExclusionReason(
+      CookieInclusionStatus::ExclusionReason::
+          EXCLUDE_NAME_VALUE_PAIR_EXCEEDS_MAX_SIZE));
 
   // Test attribute value size limits enforced by the constructor.
   std::string almost_max_path(ParsedCookie::kMaxCookieAttributeValueSize - 1,
