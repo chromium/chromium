@@ -45,6 +45,7 @@ group("closure_compile_module") {
     ":display_manager_types.m",
     ":hd_iron_icon.m",
     ":oobe_icons.m",
+    ":oobe_network_icons.m",
     ":oobe_types.m",
   ]
 }
@@ -60,6 +61,7 @@ group("polymer3_elements") {
     # Local targets
     ":hd_iron_icon_module",
     ":oobe_icons_module",
+    ":oobe_network_icons_module",
     ":modulize",
   ]
 }
@@ -140,6 +142,12 @@ js_library("oobe_icons.m") {
   extra_deps = [ ":oobe_icons_module" ]
 }
 
+js_library("oobe_network_icons.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_network_icons.m.js" ]
+  deps = []
+  extra_deps = [ ":oobe_network_icons_module" ]
+}
+
 js_library("oobe_types.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_types.m.js" ]
   deps = []
@@ -155,6 +163,12 @@ polymer_modulizer("hd_iron_icon") {
 polymer_modulizer("oobe_icons") {
   js_file = "oobe_icons.m.js"
   html_file = "oobe_icons.html"
+  html_type = "iron-iconset"
+}
+
+polymer_modulizer("oobe_network_icons") {
+  js_file = "oobe_network_icons.m.js"
+  html_file = "oobe_network_icons.html"
   html_type = "iron-iconset"
 }
 
