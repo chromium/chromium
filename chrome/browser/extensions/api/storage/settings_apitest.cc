@@ -637,6 +637,15 @@ class ExtensionSettingsManagedStorageApiTest
       const ExtensionSettingsManagedStorageApiTest& other) = delete;
   ExtensionSettingsManagedStorageApiTest& operator=(
       const ExtensionSettingsManagedStorageApiTest& other) = delete;
+
+  // TODO(crbug.com/1247323): Remove this.
+  // The ManagedStorageEvents test has a PRE_ step loads an extension which
+  // then runs in the main step. Since the extension immediately starts
+  // running the tests, constructing a ResultCatcher in the body of the
+  // fixture will occasionally miss the result from the JS test, leading
+  // to a flaky result. This ResultCatcher will be always be constructed
+  // before the test starts running.
+  ResultCatcher events_result_catcher_;
 };
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
@@ -732,6 +741,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
   EXPECT_EQ(base::Value::Type::INTEGER, dict.GetProperty("anything").type());
 }
 
+// TODO(crbug.com/1247323): This test should be rewritten. See the bug for more
+// details.
 IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest, ManagedStorage) {
   // Set policies for the test extension.
   std::unique_ptr<base::DictionaryValue> policy =
@@ -766,12 +777,10 @@ IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest, ManagedStorage) {
   ASSERT_TRUE(RunExtensionTest("settings/managed_storage")) << message_;
 }
 
-// TODO(crbug.com/1241501): Somewhat flaky on all bots, but worse on the Linux
-// and ChromeOS bots.
+// TODO(crbug.com/1247323): This test should be rewritten. See the bug for more
+// details.
 IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
-                       DISABLED_PRE_ManagedStorageEvents) {
-  ResultCatcher catcher;
-
+                       PRE_ManagedStorageEvents) {
   // This test starts without any test extensions installed.
   EXPECT_FALSE(GetSingleLoadedExtension());
   message_.clear();
@@ -804,19 +813,16 @@ IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
       .Set("new-policy", "eee")
       .Build();
   SetPolicies(*policy);
-  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
+  EXPECT_TRUE(events_result_catcher_.GetNextResult())
+      << events_result_catcher_.message();
 }
 
-// TODO(crbug.com/1241501): Somewhat flaky on all bots, but worse on the Linux
-// and ChromeOS bots.
 IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
-                       DISABLED_ManagedStorageEvents) {
+                       ManagedStorageEvents) {
   // This test runs after PRE_ManagedStorageEvents without having deleted the
   // profile, so the extension is still around. While the browser restarted the
   // policy went back to the empty default, and so the extension should receive
   // the corresponding change events.
-
-  ResultCatcher catcher;
 
   // Verify that the test extension is still installed.
   const Extension* extension = GetSingleLoadedExtension();
@@ -825,7 +831,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
 
   // Running the test again skips the onInstalled callback, and just triggers
   // the onChanged notification.
-  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
+  EXPECT_TRUE(events_result_catcher_.GetNextResult())
+      << events_result_catcher_.message();
 }
 
 IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
