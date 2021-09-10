@@ -708,7 +708,8 @@
     "prefix": "css-calc-infinity-and-nan-disabled",
     "bases": ["external/wpt/html/rendering/non-replaced-elements/the-page/crashtests/",
               "external/wpt/css/css-values/",
-              "external/wpt/css/css-transforms/parsing/"],
+              "external/wpt/css/css-transforms/parsing/",
+              "external/wpt/css/css-transforms/crashtests/"],
     "args": ["--disable-blink-features=CSSCalcInfinityAndNaN"]
   },
   {

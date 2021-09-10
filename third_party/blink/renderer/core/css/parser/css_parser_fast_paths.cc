@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_revert_value.h"
 #include "third_party/blink/renderer/core/css/css_unset_value.h"
+#include "third_party/blink/renderer/core/css/css_value_clamping_utils.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_idioms.h"
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
@@ -1211,7 +1212,8 @@ static bool ParseTransformNumberArguments(CharType*& pos,
       return false;
     unsigned argument_length = static_cast<unsigned>(delimiter);
     bool ok;
-    double number = CharactersToDouble(pos, argument_length, &ok);
+    double number = CSSValueClampingUtils::ClampDouble(
+        CharactersToDouble(pos, argument_length, &ok));
     if (!ok)
       return false;
     transform_value->Append(*CSSNumericLiteralValue::Create(
