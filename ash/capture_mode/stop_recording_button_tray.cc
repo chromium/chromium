@@ -20,17 +20,13 @@
 namespace ash {
 
 StopRecordingButtonTray::StopRecordingButtonTray(Shelf* shelf)
-    : TrayBackgroundView(shelf) {
-  auto image_view = std::make_unique<views::ImageView>();
-  image_view->SetImage(gfx::CreateVectorIcon(
-      kCaptureModeCircleStopIcon,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorAlert)));
-  image_view->SetTooltipText(GetAccessibleNameForTray());
-  image_view->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
-  image_view->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
-  image_view->SetPreferredSize(gfx::Size(kTrayItemSize, kTrayItemSize));
-  tray_container()->AddChildView(std::move(image_view));
+    : TrayBackgroundView(shelf),
+      image_view_(tray_container()->AddChildView(
+          std::make_unique<views::ImageView>())) {
+  image_view_->SetTooltipText(GetAccessibleNameForTray());
+  image_view_->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
+  image_view_->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
+  image_view_->SetPreferredSize(gfx::Size(kTrayItemSize, kTrayItemSize));
 }
 
 StopRecordingButtonTray::~StopRecordingButtonTray() = default;
@@ -49,6 +45,14 @@ bool StopRecordingButtonTray::PerformAction(const ui::Event& event) {
 std::u16string StopRecordingButtonTray::GetAccessibleNameForTray() {
   return l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_AREA_STOP_RECORDING_BUTTON_ACCESSIBLE_NAME);
+}
+
+void StopRecordingButtonTray::OnThemeChanged() {
+  TrayBackgroundView::OnThemeChanged();
+  image_view_->SetImage(gfx::CreateVectorIcon(
+      kCaptureModeCircleStopIcon,
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kIconColorAlert)));
 }
 
 }  // namespace ash
