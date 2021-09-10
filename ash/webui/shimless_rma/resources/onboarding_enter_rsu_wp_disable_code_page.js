@@ -46,8 +46,14 @@ export class OnboardingEnterRsuWpDisableCodePageElement extends PolymerElement {
         value: 0,
       },
 
-      /** @protected {string} */
+      /** @protected {!Array<string>} */
       rsuChallenge_: {
+        type: Array,
+        value: () => [],
+      },
+
+      /** @protected {string} */
+      rsuHwid_: {
         type: String,
         value: '',
       },
@@ -65,14 +71,18 @@ export class OnboardingEnterRsuWpDisableCodePageElement extends PolymerElement {
   ready() {
     super.ready();
     this.shimlessRmaService_ = getShimlessRmaService();
-    this.getRsuChallenge_();
+    this.getRsuChallengeAndHwid_();
   }
 
   /** @private */
-  getRsuChallenge_() {
+  getRsuChallengeAndHwid_() {
     this.shimlessRmaService_.getRsuDisableWriteProtectChallenge().then(
         (result) => {
-          this.rsuChallenge_ = result.challenge;
+          this.rsuChallenge_ = result.challenge.match(/.{1,4}/g) || [];
+        });
+    this.shimlessRmaService_.getRsuDisableWriteProtectHwid().then(
+        (result) => {
+          this.rsuHwid_ = result.hwid;
         });
     this.shimlessRmaService_.getRsuDisableWriteProtectChallengeQrCode().then(
         this.updateQrCode_.bind(this));

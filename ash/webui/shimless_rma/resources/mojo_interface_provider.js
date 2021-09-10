@@ -53,7 +53,8 @@ function setupFakeShimlessRmaService_() {
   service.automaticallyTriggerProvisioningObservation();
   service.automaticallyTriggerCalibrationObservation();
 
-  service.setGetRsuDisableWriteProtectChallengeResult('##challenge code##')
+  service.setGetRsuDisableWriteProtectChallengeResult('###challenge-code###')
+  service.setGetRsuDisableWriteProtectHwidResult('### hwid ###')
   service.setGetRsuDisableWriteProtectChallengeQrCodeResponse(
       fakeRsuChallengeQrCode);
 

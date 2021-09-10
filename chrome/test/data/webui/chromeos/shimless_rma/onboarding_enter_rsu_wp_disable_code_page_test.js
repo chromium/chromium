@@ -44,13 +44,15 @@ export function onboardingEnterRsuWpDisableCodePageTest() {
 
   /**
    * @param {string} challenge
+   * @param {string} hwid
    * @return {!Promise}
    */
-  function initializeEnterRsuWpDisableCodePage(challenge) {
+  function initializeEnterRsuWpDisableCodePage(challenge, hwid) {
     assertFalse(!!component);
 
     // Initialize the fake data.
     service.setGetRsuDisableWriteProtectChallengeResult(challenge);
+    service.setGetRsuDisableWriteProtectHwidResult(hwid);
     service.setGetRsuDisableWriteProtectChallengeQrCodeResponse(
         fakeRsuChallengeQrCode);
 
@@ -63,20 +65,34 @@ export function onboardingEnterRsuWpDisableCodePageTest() {
   }
 
   test('EnterRsuWpDisableCodePageInitializes', async () => {
-    await initializeEnterRsuWpDisableCodePage('rsu challenge');
+    await initializeEnterRsuWpDisableCodePage('rsu challenge', '');
     const rsuCodeComponent = component.shadowRoot.querySelector('#rsuCode');
     assertFalse(rsuCodeComponent.hidden);
   });
 
   test('EnterRsuWpDisableCodePageDisplaysChallenge', async () => {
-    await initializeEnterRsuWpDisableCodePage('rsu challenge');
-    const rsChallengeComponent =
+    let expectedParts = ['rsu &nbsp;', 'chal&nbsp;', 'leng&nbsp;', 'e&nbsp;'];
+    await initializeEnterRsuWpDisableCodePage('rsu challenge', '');
+    const rsuChallengeComponent =
         component.shadowRoot.querySelector('#rsuChallenge');
-    assertEquals(rsChallengeComponent.innerHTML, 'rsu challenge');
+    assertEquals(5, rsuChallengeComponent.childElementCount);
+
+    // Confirm all the parts match the expected challenge.
+    let parts = component.shadowRoot.querySelector('#rsuChallengeParts')
+                    .querySelectorAll('span');
+    for (let i = 0; i < parts.length; i++) {
+      assertEquals(expectedParts[i], parts[i].innerHTML);
+    }
+  });
+
+  test('EnterRsuWpDisableCodePageDisplaysHwid', async () => {
+    await initializeEnterRsuWpDisableCodePage('', 'device hwid');
+    const rsuHwidComponent = component.shadowRoot.querySelector('#rsuHwid');
+    assertEquals('device hwid', rsuHwidComponent.innerHTML);
   });
 
   test('EnterRsuWpDisableCodePageRendersQrCode', async () => {
-    await initializeEnterRsuWpDisableCodePage('rsu challenge');
+    await initializeEnterRsuWpDisableCodePage('', '');
 
     const expectedCanvasSize = 60;
 
@@ -95,7 +111,7 @@ export function onboardingEnterRsuWpDisableCodePageTest() {
       'EnterRsuWpDisableCodePageSetCodeOnNextCallsSetRsuDisableWriteProtectCode',
       async () => {
         const resolver = new PromiseResolver();
-        await initializeEnterRsuWpDisableCodePage('rsu challenge');
+        await initializeEnterRsuWpDisableCodePage('', '');
         let expectedCode = 'rsu code';
         let savedCode = '';
         service.setRsuDisableWriteProtectCode = (code) => {
