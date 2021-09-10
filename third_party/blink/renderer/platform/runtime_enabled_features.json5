@@ -2118,6 +2118,7 @@
     },
     {
       name: "SVGTextNG",
+      depends_on: ["LayoutNG"],
       status: "experimental"
     },
     {
