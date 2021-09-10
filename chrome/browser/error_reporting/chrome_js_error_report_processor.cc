@@ -33,6 +33,10 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/build_time.h"
+#endif
+
 namespace {
 
 constexpr char kNoBrowserNoWindow[] = "NO_BROWSER";
@@ -183,6 +187,12 @@ void ChromeJsErrorReportProcessor::OnConsentCheckCompleted(
   params["browser"] = "Chrome";
   params["browser_version"] = platform.version;
   params["channel"] = platform.channel;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  int64_t build_time =
+      (base::GetBuildTime() - base::Time::UnixEpoch()).InMilliseconds();
+  params["build_time_millis"] = base::NumberToString(build_time);
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // base::SysInfo::OperatingSystemName() returns "Linux" on ChromeOS devices.
   params["os"] = "ChromeOS";

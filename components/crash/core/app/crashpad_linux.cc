@@ -26,6 +26,10 @@
 #include "sandbox/linux/services/namespace_sandbox.h"
 #include "third_party/crashpad/crashpad/client/crashpad_client.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/build_time.h"
+#endif
+
 namespace crash_reporter {
 
 namespace {
@@ -152,6 +156,14 @@ base::FilePath PlatformCrashpadInitialization(
 
     annotations["plat"] = std::string("Linux");
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // "build_time_millis" is used on LaCros chrome to determine when to stop
+    // sending crash reports (from outdated versions of the browser).
+    int64_t build_time =
+        (base::GetBuildTime() - base::Time::UnixEpoch()).InMilliseconds();
+    annotations["build_time_millis"] = base::NumberToString(build_time);
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     // Chromium OS: save board and builder path for 'tast symbolize'.
     annotations["chromeos-board"] = base::SysInfo::GetLsbReleaseBoard();
@@ -160,6 +172,7 @@ base::FilePath PlatformCrashpadInitialization(
                                           &builder_path)) {
       annotations["chromeos-builder-path"] = builder_path;
     }
+
 #else
     // Other Linux: save lsb-release. This isn't needed on Chromium OS,
     // where crash_reporter provides it's own values for lsb-release.
