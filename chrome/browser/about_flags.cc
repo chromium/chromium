@@ -230,7 +230,7 @@
 #include "components/arc/arc_features.h"
 #include "components/arc/arc_util.h"
 #include "components/full_restore/features.h"
-#include "components/metrics/structured/structured_metrics_features.h"
+#include "components/metrics/structured/structured_metrics_features.h"  // nogncheck
 #include "media/capture/video/chromeos/video_capture_features_chromeos.h"
 #include "third_party/cros_system_api/switches/chrome_switches.h"
 #include "ui/events/ozone/features.h"

@@ -43,6 +43,7 @@ mojom("mojom") {
     "resource_manager.mojom",
     "screen_manager.mojom",
     "select_file.mojom",
+    "structured_metrics_service.mojom",
     "system_display.mojom",
     "task_manager.mojom",
     "test_controller.mojom",
@@ -55,6 +56,7 @@ mojom("mojom") {
   public_deps = [
     "//chromeos/components/sensors/mojom",
     "//chromeos/services/machine_learning/public/mojom",
+    "//components/metrics/structured/mojom",
     "//components/services/app_service/public/mojom:mojom",
     "//media/capture/mojom:image_capture",
     "//media/capture/mojom:video_capture_types",

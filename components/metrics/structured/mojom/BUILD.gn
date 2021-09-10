@@ -20,8 +20,6 @@ mojom("mojom") {
       traits_public_deps = [ "//components/metrics/structured:events" ]
     },
   ]
-
-  cpp_only = true
 }
 
 source_set("unit_tests") {

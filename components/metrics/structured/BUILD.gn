@@ -24,11 +24,11 @@ static_library("structured") {
 
   public_deps = [
     ":common",
+    ":events",
     "//third_party/metrics_proto",
   ]
 
   deps = [
-    ":neutrino_logging",
     ":storage",
     ":structured_events",
     "//base",
@@ -78,10 +78,12 @@ source_set("common") {
     "recorder.h",
   ]
 
-  public_deps = [ "//base" ]
+  public_deps = [
+    ":events",
+    "//base",
+  ]
 
   deps = [
-    ":events",
     ":storage",
     ":structured_metrics_validator",
     "//components/prefs",

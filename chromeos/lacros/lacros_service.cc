@@ -288,6 +288,10 @@ LacrosService::LacrosService()
   ConstructRemote<crosapi::mojom::SelectFile,
                   &crosapi::mojom::Crosapi::BindSelectFile,
                   Crosapi::MethodMinVersions::kBindSelectFileMinVersion>();
+  ConstructRemote<
+      crosapi::mojom::StructuredMetricsService,
+      &crosapi::mojom::Crosapi::BindStructuredMetricsService,
+      Crosapi::MethodMinVersions::kBindStructuredMetricsServiceMinVersion>();
   ConstructRemote<crosapi::mojom::SystemDisplay, &Crosapi::BindSystemDisplay,
                   Crosapi::MethodMinVersions::kBindSystemDisplayMinVersion>();
   ConstructRemote<crosapi::mojom::TaskManager,

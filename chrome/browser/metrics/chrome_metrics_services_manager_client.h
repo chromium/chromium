@@ -14,7 +14,7 @@
 #include "components/metrics_services_manager/metrics_services_manager_client.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/settings/stats_reporting_controller.h"
+#include "chrome/browser/ash/settings/stats_reporting_controller.h"  // nogncheck
 #endif
 
 class PrefService;

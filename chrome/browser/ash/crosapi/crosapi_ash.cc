@@ -47,6 +47,7 @@
 #include "chrome/browser/ash/crosapi/resource_manager_ash.h"
 #include "chrome/browser/ash/crosapi/screen_manager_ash.h"
 #include "chrome/browser/ash/crosapi/select_file_ash.h"
+#include "chrome/browser/ash/crosapi/structured_metrics_service_ash.h"
 #include "chrome/browser/ash/crosapi/system_display_ash.h"
 #include "chrome/browser/ash/crosapi/task_manager_ash.h"
 #include "chrome/browser/ash/crosapi/test_controller_ash.h"
@@ -140,6 +141,8 @@ CrosapiAsh::CrosapiAsh()
       resource_manager_ash_(std::make_unique<ResourceManagerAsh>()),
       screen_manager_ash_(std::make_unique<ScreenManagerAsh>()),
       select_file_ash_(std::make_unique<SelectFileAsh>()),
+      structured_metrics_service_ash_(
+          std::make_unique<StructuredMetricsServiceAsh>()),
       system_display_ash_(std::make_unique<SystemDisplayAsh>()),
       web_page_info_factory_ash_(std::make_unique<WebPageInfoFactoryAsh>()),
       task_manager_ash_(std::make_unique<TaskManagerAsh>()),
@@ -437,6 +440,11 @@ void CrosapiAsh::BindNetworkSettingsService(
 void CrosapiAsh::BindDriveIntegrationService(
     mojo::PendingReceiver<crosapi::mojom::DriveIntegrationService> receiver) {
   drive_integration_service_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindStructuredMetricsService(
+    mojo::PendingReceiver<crosapi::mojom::StructuredMetricsService> receiver) {
+  structured_metrics_service_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::OnBrowserStartup(mojom::BrowserInfoPtr browser_info) {
