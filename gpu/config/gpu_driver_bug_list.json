@@ -3777,6 +3777,26 @@
       "features": [
         "disable_accelerated_vp9_encode"
       ]
-    }
+    },
+    {
+      "id": 380,
+      "cr_bugs": [1245835],
+      "description": "Intel GPUs do not promote downscaled overlays",
+      "os": {
+        "type": "win",
+        "version": {
+          "op": ">=",
+          "value": "10.0"
+        }
+      },
+      "vendor_id": "0x8086", 
+      "intel_gpu_generation": {
+        "op": ">=",
+        "value": "9"
+      },
+      "features": [
+        "no_downscaled_overlay_promotion"
+      ]
+    }    
   ]
 }

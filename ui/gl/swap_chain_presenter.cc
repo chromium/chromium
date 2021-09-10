@@ -542,6 +542,8 @@ gfx::Size SwapChainPresenter::CalculateSwapChainSize(
   // to read the minimal amount of data. DWM is also less likely to promote a
   // surface to an overlay if it's much larger than its area on-screen.
   gfx::Size swap_chain_size = params.content_rect.size();
+  if (swap_chain_size.IsEmpty())
+    return gfx::Size();
   gfx::RectF bounds(params.quad_rect);
   params.transform.TransformRect(&bounds);
   gfx::Rect overlay_onscreen_rect = gfx::ToEnclosingRect(bounds);
@@ -551,16 +553,13 @@ gfx::Size SwapChainPresenter::CalculateSwapChainSize(
   // after the video rotation fix (crbug.com/904035), using rotated size for
   // swap chain size will cause stretching since there's no squashing factor in
   // the transform to counteract.
+  // Downscaling doesn't work on Intel display HW, and so DWM will perform an
+  // extra BLT to avoid HW downscaling. This prevents the use of hardware
+  // overlays especially for protected video. Use the onscreen size (scale==1)
+  // for overlay can avoid this problem.
   // TODO(sunnyps): Support 90/180/270 deg rotations using video context.
   if (params.transform.IsScaleOrTranslation()) {
     swap_chain_size = overlay_onscreen_rect.size();
-  }
-  if (DirectCompositionSurfaceWin::AreScaledOverlaysSupported() &&
-      !ShouldUseVideoProcessorScaling()) {
-    // Downscaling doesn't work on Intel display HW, and so DWM will perform an
-    // extra BLT to avoid HW downscaling. This prevents the use of hardware
-    // overlays especially for protected video.
-    swap_chain_size.SetToMin(params.content_rect.size());
   }
 
   // 4:2:2 subsampled formats like YUY2 must have an even width, and 4:2:0
@@ -691,7 +690,7 @@ bool SwapChainPresenter::TryPresentToDecodeSwapChain(
     // Rotated videos are not promoted to overlays.  We plan to implement
     // rotation using video processor instead of via direct composition.  Also
     // check for skew and any downscaling specified to direct composition.
-    bool is_overlay_supported_transform =
+    bool compatible_transform =
         visual_info_.transform.IsPositiveScaleOrTranslation();
 
     // Downscaled video isn't promoted to hardware overlays.  We prefer to
@@ -702,12 +701,19 @@ bool SwapChainPresenter::TryPresentToDecodeSwapChain(
     float swap_chain_scale_y =
         swap_chain_size.height() * 1.0f / content_rect.height();
 
-    is_overlay_supported_transform = is_overlay_supported_transform &&
-                                     (swap_chain_scale_x >= 1.0f) &&
-                                     (swap_chain_scale_y >= 1.0f);
+    if (layer_tree_->no_downscaled_overlay_promotion()) {
+      compatible_transform = compatible_transform &&
+                             (swap_chain_scale_x >= 1.0f) &&
+                             (swap_chain_scale_y >= 1.0f);
+    }
+    if (!DirectCompositionSurfaceWin::AreScaledOverlaysSupported()) {
+      compatible_transform = compatible_transform &&
+                             (swap_chain_scale_x == 1.0f) &&
+                             (swap_chain_scale_y == 1.0f);
+    }
 
     if (is_decoder_texture && !is_shared_texture && !is_unitary_texture_array &&
-        is_overlay_supported_transform) {
+        compatible_transform) {
       if (PresentToDecodeSwapChain(texture, array_slice, color_space,
                                    content_rect, swap_chain_size)) {
         return true;
@@ -723,7 +729,7 @@ bool SwapChainPresenter::TryPresentToDecodeSwapChain(
       not_used_reason = DecodeSwapChainNotUsedReason::kSharedTexture;
     } else if (is_unitary_texture_array) {
       not_used_reason = DecodeSwapChainNotUsedReason::kUnitaryTextureArray;
-    } else if (!is_overlay_supported_transform) {
+    } else if (!compatible_transform) {
       not_used_reason = DecodeSwapChainNotUsedReason::kIncompatibleTransform;
     }
   } else if (!texture) {

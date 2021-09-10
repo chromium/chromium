@@ -69,7 +69,9 @@ class DCLayerTree {
                                    IDCompositionDelegatedInkTrail,
                                    DCompositionInkTrailPoint>;
 
-  DCLayerTree(bool disable_nv12_dynamic_textures, bool disable_vp_scaling);
+  DCLayerTree(bool disable_nv12_dynamic_textures,
+              bool disable_vp_scaling,
+              bool no_downscaled_overlay_promotion);
 
   ~DCLayerTree();
 
@@ -101,6 +103,10 @@ class DCLayerTree {
   }
 
   bool disable_vp_scaling() const { return disable_vp_scaling_; }
+
+  bool no_downscaled_overlay_promotion() const {
+    return no_downscaled_overlay_promotion_;
+  }
 
   VideoProcessorWrapper& GetOrCreateVideoProcessor(bool is_hdr);
 
@@ -146,6 +152,7 @@ class DCLayerTree {
 
   const bool disable_nv12_dynamic_textures_;
   const bool disable_vp_scaling_;
+  const bool no_downscaled_overlay_promotion_;
 
   HWND window_;
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;

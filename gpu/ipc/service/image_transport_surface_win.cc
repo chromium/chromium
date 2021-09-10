@@ -27,6 +27,8 @@ gl::DirectCompositionSurfaceWin::Settings
 CreateDirectCompositionSurfaceSettings(
     const GpuDriverBugWorkarounds& workarounds) {
   gl::DirectCompositionSurfaceWin::Settings settings;
+  settings.no_downscaled_overlay_promotion =
+      workarounds.no_downscaled_overlay_promotion;
   settings.disable_nv12_dynamic_textures =
       workarounds.disable_nv12_dynamic_textures;
   settings.disable_vp_scaling = workarounds.disable_vp_scaling;

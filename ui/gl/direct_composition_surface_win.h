@@ -45,6 +45,7 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
     bool use_angle_texture_offset = false;
     bool force_root_surface_full_damage = false;
     bool force_root_surface_full_damage_always = false;
+    bool no_downscaled_overlay_promotion = false;
   };
 
   DirectCompositionSurfaceWin(

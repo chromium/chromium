@@ -396,9 +396,10 @@ DirectCompositionSurfaceWin::DirectCompositionSurfaceWin(
           settings.max_pending_frames,
           settings.force_root_surface_full_damage,
           settings.force_root_surface_full_damage_always)),
-      layer_tree_(
-          std::make_unique<DCLayerTree>(settings.disable_nv12_dynamic_textures,
-                                        settings.disable_vp_scaling)) {
+      layer_tree_(std::make_unique<DCLayerTree>(
+          settings.disable_nv12_dynamic_textures,
+          settings.disable_vp_scaling,
+          settings.no_downscaled_overlay_promotion)) {
   ui::GpuSwitchingManager::GetInstance()->AddObserver(this);
 }
 
