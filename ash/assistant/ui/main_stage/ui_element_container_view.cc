@@ -25,8 +25,6 @@
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/aura/window.h"
-#include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -48,46 +46,6 @@ SkColor GetOverflowIndicatorBackgroundColor() {
 
   return gfx::kGoogleGrey300;
 }
-
-// ObservableOverflowIndicator allows a caller to observe visibility change of
-// an overflow indicator. Note that we are using this view with setting
-// thickness to 0 with ScrollView::SetCustomOverflowIndicator. This view is not
-// visible.
-class ObservableOverflowIndicator : public views::View {
- public:
-  METADATA_HEADER(ObservableOverflowIndicator);
-
-  explicit ObservableOverflowIndicator(
-      UiElementContainerView* ui_element_container_view)
-      : ui_element_container_view_(ui_element_container_view) {}
-
- protected:
-  void VisibilityChanged(views::View* starting_from, bool is_visible) override {
-    if (starting_from != this)
-      return;
-
-    ui_element_container_view_->OnOverflowIndicatorVisibilityChanged(
-        is_visible);
-  }
-
- private:
-  UiElementContainerView* ui_element_container_view_ = nullptr;
-};
-
-BEGIN_METADATA(ObservableOverflowIndicator, views::View)
-END_METADATA
-
-// This is views::View. We define InvisibleOverflowIndicator as we can add
-// METADATA to this view. We set thickness of this view to 0 with
-// ScrollView::SetCustomOverflowIndicator. The background of this view is NOT
-// transparent, i.e. it becomes visible if you set thickness larger than 0.
-class InvisibleOverflowIndicator : public views::View {
- public:
-  METADATA_HEADER(InvisibleOverflowIndicator);
-};
-
-BEGIN_METADATA(InvisibleOverflowIndicator, views::View)
-END_METADATA
 
 }  // namespace
 
@@ -170,26 +128,6 @@ void UiElementContainerView::InitLayout() {
   // of margin to the bottom of the content. Otherwise, |scroll_indicator_| will
   // occupy this space.
   SetBorder(views::CreateEmptyBorder(0, 0, kScrollIndicatorHeightDip, 0));
-
-  // We set invisible overflow indicators with thickness=0. But we observe
-  // visibility change of the bottom indicator.
-  SetDrawOverflowIndicator(true);
-  SetCustomOverflowIndicator(
-      views::OverflowIndicatorAlignment::kBottom,
-      std::make_unique<ObservableOverflowIndicator>(this),
-      /*thickness=*/0, /*fills_opaquely=*/true);
-  SetCustomOverflowIndicator(views::OverflowIndicatorAlignment::kTop,
-                             std::make_unique<InvisibleOverflowIndicator>(),
-                             /*thickness=*/0,
-                             /*fills_opaquely=*/true);
-  SetCustomOverflowIndicator(views::OverflowIndicatorAlignment::kLeft,
-                             std::make_unique<InvisibleOverflowIndicator>(),
-                             /*thickness=*/0,
-                             /*fills_opaquely=*/true);
-  SetCustomOverflowIndicator(views::OverflowIndicatorAlignment::kRight,
-                             std::make_unique<InvisibleOverflowIndicator>(),
-                             /*thickness=*/0,
-                             /*fills_opaquely=*/true);
 }
 
 void UiElementContainerView::OnCommittedQueryChanged(
@@ -242,9 +180,30 @@ void UiElementContainerView::OnAllViewsAnimatedIn() {
     NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
 }
 
-void UiElementContainerView::OnOverflowIndicatorVisibilityChanged(
+void UiElementContainerView::OnScrollBarUpdated(views::ScrollBar* scroll_bar,
+                                                int viewport_size,
+                                                int content_size,
+                                                int content_scroll_offset) {
+  if (scroll_bar != vertical_scroll_bar())
+    return;
+
+  // When the vertical scroll bar is updated, we update our |scroll_indicator_|.
+  bool can_scroll = content_size > (content_scroll_offset + viewport_size);
+  UpdateScrollIndicator(can_scroll);
+}
+
+void UiElementContainerView::OnScrollBarVisibilityChanged(
+    views::ScrollBar* scroll_bar,
     bool is_visible) {
-  const float target_opacity = is_visible ? 1.f : 0.f;
+  // When the vertical scroll bar is hidden, we need to update our
+  // |scroll_indicator_|. This may occur during a layout pass when the new
+  // content no longer requires a vertical scroll bar while the old content did.
+  if (scroll_bar == vertical_scroll_bar() && !is_visible)
+    UpdateScrollIndicator(/*can_scroll=*/false);
+}
+
+void UiElementContainerView::UpdateScrollIndicator(bool can_scroll) {
+  const float target_opacity = can_scroll ? 1.f : 0.f;
 
   ui::Layer* layer = scroll_indicator_->layer();
   if (!cc::MathUtil::IsWithinEpsilon(layer->GetTargetOpacity(), target_opacity))
