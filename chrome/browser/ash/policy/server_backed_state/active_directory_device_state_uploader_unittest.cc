@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/server_backed_state/device_cloud_state_keys_uploader.h"
+#include "chrome/browser/ash/policy/server_backed_state/active_directory_device_state_uploader.h"
 
 #include <string>
 #include <utility>
@@ -69,9 +69,9 @@ class FakeDMTokenStorage : public DMTokenStorageBase {
 
 }  // namespace
 
-class DeviceCloudStateKeysUploaderTest : public testing::Test {
+class ActiveDirectoryDeviceStateUploaderTest : public testing::Test {
  public:
-  DeviceCloudStateKeysUploaderTest()
+  ActiveDirectoryDeviceStateUploaderTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         client_id_(kClientId),
         broker_(&fake_session_manager_client_) {}
@@ -92,14 +92,14 @@ class DeviceCloudStateKeysUploaderTest : public testing::Test {
   // Set expectations for a success of the state keys uploading task.
   void ExpectSuccess(bool expect_success) {
     uploader_->SetStatusCallbackForTesting(
-        base::BindOnce(&DeviceCloudStateKeysUploaderTest::TestStatus,
+        base::BindOnce(&ActiveDirectoryDeviceStateUploaderTest::TestStatus,
                        base::Unretained(this), expect_success));
   }
 
   void InitUploader(
       const std::string& dm_token,
       base::TimeDelta dm_token_retrieval_delay = base::TimeDelta()) {
-    uploader_ = std::make_unique<DeviceCloudStateKeysUploader>(
+    uploader_ = std::make_unique<ActiveDirectoryDeviceStateUploader>(
         client_id_, &service_, &broker_, shared_url_loader_factory_,
         std::make_unique<FakeDMTokenStorage>(dm_token,
                                              dm_token_retrieval_delay));
@@ -121,13 +121,13 @@ class DeviceCloudStateKeysUploaderTest : public testing::Test {
   ServerBackedStateKeysBroker broker_;
   testing::StrictMock<MockJobCreationHandler> job_creation_handler_;
   FakeDeviceManagementService service_{&job_creation_handler_};
-  std::unique_ptr<DeviceCloudStateKeysUploader> uploader_;
+  std::unique_ptr<ActiveDirectoryDeviceStateUploader> uploader_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   network::TestURLLoaderFactory url_loader_factory_;
 };
 
 // Expects to successfully upload state keys.
-TEST_F(DeviceCloudStateKeysUploaderTest, UploadStateKeys) {
+TEST_F(ActiveDirectoryDeviceStateUploaderTest, UploadStateKeys) {
   SetStateKeys(1);
   InitUploader("test-dm-token");
 
@@ -147,7 +147,7 @@ TEST_F(DeviceCloudStateKeysUploaderTest, UploadStateKeys) {
 // Expects to successfully upload state keys with unrealistically delayed DM
 // Token retrieval, so another state keys update happen before DM Token is
 // available.
-TEST_F(DeviceCloudStateKeysUploaderTest,
+TEST_F(ActiveDirectoryDeviceStateUploaderTest,
        UploadStateKeysWithDelayedDMTokenRetrieval) {
   SetStateKeys(1);
   InitUploader("test-dm-token",
@@ -186,7 +186,7 @@ TEST_F(DeviceCloudStateKeysUploaderTest,
 }
 
 // Expects to trigger state keys uploads after state key updates multiple times.
-TEST_F(DeviceCloudStateKeysUploaderTest, UploadStateKeysMultipleTimes) {
+TEST_F(ActiveDirectoryDeviceStateUploaderTest, UploadStateKeysMultipleTimes) {
   SetStateKeys(1);
   InitUploader("test-dm-token");
 
@@ -225,7 +225,8 @@ TEST_F(DeviceCloudStateKeysUploaderTest, UploadStateKeysMultipleTimes) {
 }
 
 // Expects to fail when uploading state keys with empty DM Token.
-TEST_F(DeviceCloudStateKeysUploaderTest, UploadStateKeysEmptyTokenFailure) {
+TEST_F(ActiveDirectoryDeviceStateUploaderTest,
+       UploadStateKeysEmptyTokenFailure) {
   SetStateKeys(1);
   InitUploader(/*dm_token=*/"");
   ExpectSuccess(false);
@@ -236,7 +237,8 @@ TEST_F(DeviceCloudStateKeysUploaderTest, UploadStateKeysEmptyTokenFailure) {
 }
 
 // Expect to fail when uploading state keys without initializing them first.
-TEST_F(DeviceCloudStateKeysUploaderTest, UploadStateKeysEmptyStateKeysFailure) {
+TEST_F(ActiveDirectoryDeviceStateUploaderTest,
+       UploadStateKeysEmptyStateKeysFailure) {
   InitUploader("test-dm-token");
   ExpectSuccess(false);
   run_loop_.Run();

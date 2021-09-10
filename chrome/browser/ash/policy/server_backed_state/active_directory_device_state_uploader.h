@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_SERVER_BACKED_STATE_DEVICE_CLOUD_STATE_KEYS_UPLOADER_H_
-#define CHROME_BROWSER_ASH_POLICY_SERVER_BACKED_STATE_DEVICE_CLOUD_STATE_KEYS_UPLOADER_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_SERVER_BACKED_STATE_ACTIVE_DIRECTORY_DEVICE_STATE_UPLOADER_H_
+#define CHROME_BROWSER_ASH_POLICY_SERVER_BACKED_STATE_ACTIVE_DIRECTORY_DEVICE_STATE_UPLOADER_H_
 
 #include <memory>
 #include <string>
@@ -27,16 +27,16 @@ class DeviceManagementService;
 class ServerBackedStateKeysBroker;
 
 // Uploads state keys to DMServer for Active Directory mode.
-class DeviceCloudStateKeysUploader : public CloudPolicyClient::Observer {
+class ActiveDirectoryDeviceStateUploader : public CloudPolicyClient::Observer {
  public:
-  DeviceCloudStateKeysUploader(
+  ActiveDirectoryDeviceStateUploader(
       const std::string& client_id,
       DeviceManagementService* dm_service,
       ServerBackedStateKeysBroker* state_keys_broker,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<DMTokenStorageBase> dm_token_storage);
 
-  ~DeviceCloudStateKeysUploader() override;
+  ~ActiveDirectoryDeviceStateUploader() override;
 
   // Subscribes to state keys update signal to trigger state keys upload
   // whenever state keys are updated.
@@ -110,14 +110,16 @@ class DeviceCloudStateKeysUploader : public CloudPolicyClient::Observer {
   StatusCallback status_callback_for_testing_;
 
   // Must be last member.
-  base::WeakPtrFactory<DeviceCloudStateKeysUploader> weak_ptr_factory_{this};
+  base::WeakPtrFactory<ActiveDirectoryDeviceStateUploader> weak_ptr_factory_{
+      this};
 
   // Disallow copying.
-  DeviceCloudStateKeysUploader(const DeviceCloudStateKeysUploader&) = delete;
-  DeviceCloudStateKeysUploader& operator=(const DeviceCloudStateKeysUploader&) =
-      delete;
+  ActiveDirectoryDeviceStateUploader(
+      const ActiveDirectoryDeviceStateUploader&) = delete;
+  ActiveDirectoryDeviceStateUploader& operator=(
+      const ActiveDirectoryDeviceStateUploader&) = delete;
 };
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_ASH_POLICY_SERVER_BACKED_STATE_DEVICE_CLOUD_STATE_KEYS_UPLOADER_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_SERVER_BACKED_STATE_ACTIVE_DIRECTORY_DEVICE_STATE_UPLOADER_H_

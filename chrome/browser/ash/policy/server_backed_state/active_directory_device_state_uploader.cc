@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/server_backed_state/device_cloud_state_keys_uploader.h"
+#include "chrome/browser/ash/policy/server_backed_state/active_directory_device_state_uploader.h"
 
 #include <string>
 #include <utility>
@@ -21,7 +21,7 @@ namespace em = enterprise_management;
 
 namespace policy {
 
-DeviceCloudStateKeysUploader::DeviceCloudStateKeysUploader(
+ActiveDirectoryDeviceStateUploader::ActiveDirectoryDeviceStateUploader(
     const std::string& client_id,
     DeviceManagementService* dm_service,
     ServerBackedStateKeysBroker* state_keys_broker,
@@ -33,28 +33,28 @@ DeviceCloudStateKeysUploader::DeviceCloudStateKeysUploader(
       url_loader_factory_(url_loader_factory),
       dm_token_storage_(std::move(dm_token_storage)) {}
 
-DeviceCloudStateKeysUploader::~DeviceCloudStateKeysUploader() {
+ActiveDirectoryDeviceStateUploader::~ActiveDirectoryDeviceStateUploader() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (cloud_policy_client_) {
     Shutdown();
   }
 }
 
-void DeviceCloudStateKeysUploader::SetStatusCallbackForTesting(
+void ActiveDirectoryDeviceStateUploader::SetStatusCallbackForTesting(
     StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   status_callback_for_testing_ = std::move(callback);
 }
 
-bool DeviceCloudStateKeysUploader::IsClientRegisteredForTesting() const {
+bool ActiveDirectoryDeviceStateUploader::IsClientRegisteredForTesting() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CHECK(cloud_policy_client_);
   return cloud_policy_client_->is_registered();
 }
 
-void DeviceCloudStateKeysUploader::Init() {
+void ActiveDirectoryDeviceStateUploader::Init() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CHECK(!cloud_policy_client_);
@@ -67,12 +67,13 @@ void DeviceCloudStateKeysUploader::Init() {
       /*settings_entity_id=*/std::string());
 
   DCHECK(!state_keys_update_subscription_);
-  state_keys_update_subscription_ = state_keys_broker_->RegisterUpdateCallback(
-      base::BindRepeating(&DeviceCloudStateKeysUploader::OnStateKeysUpdated,
-                          weak_ptr_factory_.GetWeakPtr()));
+  state_keys_update_subscription_ =
+      state_keys_broker_->RegisterUpdateCallback(base::BindRepeating(
+          &ActiveDirectoryDeviceStateUploader::OnStateKeysUpdated,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
-void DeviceCloudStateKeysUploader::Shutdown() {
+void ActiveDirectoryDeviceStateUploader::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CHECK(cloud_policy_client_);
@@ -81,7 +82,7 @@ void DeviceCloudStateKeysUploader::Shutdown() {
   state_keys_update_subscription_ = {};
 }
 
-void DeviceCloudStateKeysUploader::OnStateKeysUpdated() {
+void ActiveDirectoryDeviceStateUploader::OnStateKeysUpdated() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   state_keys_to_upload_ = state_keys_broker_->state_keys();
@@ -107,9 +108,9 @@ void DeviceCloudStateKeysUploader::OnStateKeysUpdated() {
       // needs to be handled for correctness.
       dm_token_requested_ = true;
       CHECK(dm_token_storage_);
-      dm_token_storage_->RetrieveDMToken(
-          base::BindOnce(&DeviceCloudStateKeysUploader::OnDMTokenAvailable,
-                         weak_ptr_factory_.GetWeakPtr()));
+      dm_token_storage_->RetrieveDMToken(base::BindOnce(
+          &ActiveDirectoryDeviceStateUploader::OnDMTokenAvailable,
+          weak_ptr_factory_.GetWeakPtr()));
     } else {
       LOG(WARNING) << "State keys updated during DM Token retrieval";
     }
@@ -118,7 +119,7 @@ void DeviceCloudStateKeysUploader::OnStateKeysUpdated() {
   }
 }
 
-void DeviceCloudStateKeysUploader::OnDMTokenAvailable(
+void ActiveDirectoryDeviceStateUploader::OnDMTokenAvailable(
     const std::string& dm_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -137,14 +138,14 @@ void DeviceCloudStateKeysUploader::OnDMTokenAvailable(
   RegisterClient();
 }
 
-void DeviceCloudStateKeysUploader::RegisterClient() {
+void ActiveDirectoryDeviceStateUploader::RegisterClient() {
   DCHECK(!cloud_policy_client_->is_registered());
   cloud_policy_client_->SetupRegistration(
       dm_token_, client_id_,
       /*user_affiliation_ids=*/std::vector<std::string>());
 }
 
-void DeviceCloudStateKeysUploader::OnRegistrationStateChanged(
+void ActiveDirectoryDeviceStateUploader::OnRegistrationStateChanged(
     CloudPolicyClient* client) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -153,7 +154,7 @@ void DeviceCloudStateKeysUploader::OnRegistrationStateChanged(
   }
 }
 
-void DeviceCloudStateKeysUploader::FetchPolicyToUploadStateKeys() {
+void ActiveDirectoryDeviceStateUploader::FetchPolicyToUploadStateKeys() {
   DCHECK(!dm_token_.empty());
   DCHECK(!state_keys_to_upload_.empty());
   DCHECK(cloud_policy_client_->is_registered());
@@ -166,7 +167,8 @@ void DeviceCloudStateKeysUploader::FetchPolicyToUploadStateKeys() {
   cloud_policy_client_->FetchPolicy();
 }
 
-void DeviceCloudStateKeysUploader::OnPolicyFetched(CloudPolicyClient* client) {
+void ActiveDirectoryDeviceStateUploader::OnPolicyFetched(
+    CloudPolicyClient* client) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   VLOG(1) << "Cloud policy fetched. Status = " << client->status();
@@ -181,7 +183,8 @@ void DeviceCloudStateKeysUploader::OnPolicyFetched(CloudPolicyClient* client) {
   }
 }
 
-void DeviceCloudStateKeysUploader::OnClientError(CloudPolicyClient* client) {
+void ActiveDirectoryDeviceStateUploader::OnClientError(
+    CloudPolicyClient* client) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   LOG(ERROR) << "Failed to upload state keys. Status = " << client->status();

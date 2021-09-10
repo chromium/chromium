@@ -57,7 +57,7 @@
 #include "chrome/browser/ash/policy/scheduled_task_handler/device_scheduled_reboot_handler.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/device_scheduled_update_checker.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/scheduled_task_executor_impl.h"
-#include "chrome/browser/ash/policy/server_backed_state/device_cloud_state_keys_uploader.h"
+#include "chrome/browser/ash/policy/server_backed_state/active_directory_device_state_uploader.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/ash/printing/bulk_printers_calculator_factory.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
@@ -220,12 +220,12 @@ void BrowserPolicyConnectorAsh::Init(
     // mode.
     state_keys_broker_ = std::make_unique<ServerBackedStateKeysBroker>(
         chromeos::SessionManagerClient::Get());
-    state_keys_uploader_for_active_directory_ =
-        std::make_unique<DeviceCloudStateKeysUploader>(
+    active_directory_device_state_uploader_ =
+        std::make_unique<ActiveDirectoryDeviceStateUploader>(
             /*client_id=*/GetInstallAttributes()->GetDeviceId(),
             device_management_service(), state_keys_broker_.get(),
             url_loader_factory, std::make_unique<DMTokenStorage>(local_state));
-    state_keys_uploader_for_active_directory_->Init();
+    active_directory_device_state_uploader_->Init();
   }
 
   if (device_cloud_policy_manager_) {
@@ -349,8 +349,8 @@ void BrowserPolicyConnectorAsh::Shutdown() {
   if (device_local_account_policy_service_)
     device_local_account_policy_service_->Shutdown();
 
-  if (state_keys_uploader_for_active_directory_)
-    state_keys_uploader_for_active_directory_->Shutdown();
+  if (active_directory_device_state_uploader_)
+    active_directory_device_state_uploader_->Shutdown();
 
   if (device_cloud_policy_initializer_)
     device_cloud_policy_initializer_->Shutdown();

@@ -45,7 +45,7 @@ class AffiliatedRemoteCommandsInvalidator;
 class BluetoothPolicyHandler;
 class DeviceActiveDirectoryPolicyManager;
 class DeviceCloudPolicyInitializer;
-class DeviceCloudStateKeysUploader;
+class ActiveDirectoryDeviceStateUploader;
 class DeviceDockMacAddressHandler;
 class DeviceLocalAccountPolicyService;
 class DeviceNamePolicyHandler;
@@ -276,8 +276,8 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   DeviceCloudPolicyManagerAsh* device_cloud_policy_manager_ = nullptr;
   DeviceActiveDirectoryPolicyManager* device_active_directory_policy_manager_ =
       nullptr;
-  std::unique_ptr<DeviceCloudStateKeysUploader>
-      state_keys_uploader_for_active_directory_;
+  std::unique_ptr<ActiveDirectoryDeviceStateUploader>
+      active_directory_device_state_uploader_;
   PrefService* local_state_ = nullptr;
   std::unique_ptr<DeviceCloudPolicyInitializer>
       device_cloud_policy_initializer_;
