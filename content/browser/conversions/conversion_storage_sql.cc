@@ -95,11 +95,17 @@ const base::FilePath::CharType kDatabasePath[] =
 //
 // Version 12 adds the rate_limits.bucket and rate_limits.value columns and
 // makes rate_limits.rate_limit_id NOT NULL.
-const int kCurrentVersionNumber = 12;
+//
+// Version 13 - 2021/09/08 - https://crrev.com/c/3149550
+//
+// Version 13 makes the impressions.impression_id and conversions.conversion_id
+// columns NOT NULL and AUTOINCREMENT, the latter to prevent ID reuse, which is
+// prone to race conditions with the queuing logic vs deletions.
+const int kCurrentVersionNumber = 13;
 
 // Earliest version which can use a |kCurrentVersionNumber| database
 // without failing.
-const int kCompatibleVersionNumber = 12;
+const int kCompatibleVersionNumber = 13;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database. No versions are
@@ -1324,11 +1330,12 @@ bool ConversionStorageSql::CreateSchema() {
   // |StorableImpression::AttributionLogic| enum.
   // |impression_site| is used to optimize the lookup of impressions;
   // |StorableImpression::ImpressionSite| is always derived from the origin.
-  // TODO(apaseltiner): Make impression_id NOT NULL during the next migration
-  // affecting this table.
+  //
+  // |impression_id| uses AUTOINCREMENT to ensure that IDs aren't reused over
+  // the lifetime of the DB.
   static constexpr char kImpressionTableSql[] =
       "CREATE TABLE IF NOT EXISTS impressions"
-      "(impression_id INTEGER PRIMARY KEY,"
+      "(impression_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
       "impression_data INTEGER NOT NULL,"
       "impression_origin TEXT NOT NULL,"
       "conversion_origin TEXT NOT NULL,"
@@ -1389,11 +1396,12 @@ bool ConversionStorageSql::CreateSchema() {
   // should be used for clearing site data. |report_time| is the time a
   // <conversion, impression> pair should be reported, and is specified by
   // |delegate_|.
-  // TODO(apaseltiner): Make conversion_id NOT NULL during the next migration
-  // affecting this table.
+  //
+  // |conversion_id| uses AUTOINCREMENT to ensure that IDs aren't reused over
+  // the lifetime of the DB.
   static constexpr char kConversionTableSql[] =
       "CREATE TABLE IF NOT EXISTS conversions"
-      "(conversion_id INTEGER PRIMARY KEY,"
+      "(conversion_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
       "impression_id INTEGER NOT NULL,"
       "conversion_data INTEGER NOT NULL,"
       "conversion_time INTEGER NOT NULL,"

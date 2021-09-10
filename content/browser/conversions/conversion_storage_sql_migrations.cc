@@ -913,6 +913,130 @@ bool MigrateToVersion12(sql::Database* db, sql::MetaTable* meta_table) {
   return transaction.Commit();
 }
 
+bool MigrateToVersion13(sql::Database* db, sql::MetaTable* meta_table) {
+  // Wrap each migration in its own transaction. See comment in
+  // |MigrateToVersion2|.
+  sql::Transaction transaction(db);
+  if (!transaction.Begin())
+    return false;
+
+  // Create the new impressions table with impression_id `NOT NULL` and
+  // `AUTOINCREMENT`.
+  static constexpr char kNewImpressionTableSql[] =
+      "CREATE TABLE IF NOT EXISTS new_impressions"
+      "(impression_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+      "impression_data INTEGER NOT NULL,"
+      "impression_origin TEXT NOT NULL,"
+      "conversion_origin TEXT NOT NULL,"
+      "reporting_origin TEXT NOT NULL,"
+      "impression_time INTEGER NOT NULL,"
+      "expiry_time INTEGER NOT NULL,"
+      "num_conversions INTEGER DEFAULT 0,"
+      "active INTEGER DEFAULT 1,"
+      "conversion_destination TEXT NOT NULL,"
+      "source_type INTEGER NOT NULL,"
+      "attributed_truthfully INTEGER NOT NULL,"
+      "priority INTEGER NOT NULL,"
+      "impression_site TEXT NOT NULL)";
+  if (!db->Execute(kNewImpressionTableSql))
+    return false;
+
+  // Transfer the existing rows to the new table.
+  static constexpr char kPopulateNewImpressionTableSql[] =
+      "INSERT INTO new_impressions SELECT "
+      "impression_id,impression_data,impression_origin,"
+      "conversion_origin,reporting_origin,impression_time,"
+      "expiry_time,num_conversions,active,conversion_destination,"
+      "source_type,attributed_truthfully,priority,impression_site "
+      "FROM impressions";
+  if (!db->Execute(kPopulateNewImpressionTableSql))
+    return false;
+
+  static constexpr char kDropOldImpressionTableSql[] = "DROP TABLE impressions";
+  if (!db->Execute(kDropOldImpressionTableSql))
+    return false;
+
+  static constexpr char kRenameImpressionTableSql[] =
+      "ALTER TABLE new_impressions RENAME TO impressions";
+  if (!db->Execute(kRenameImpressionTableSql))
+    return false;
+
+  // Create the pre-existing impression table indices on the new table.
+
+  static constexpr char kConversionDestinationIndexSql[] =
+      "CREATE INDEX IF NOT EXISTS conversion_destination_idx "
+      "ON impressions(active,conversion_destination,reporting_origin)";
+  if (!db->Execute(kConversionDestinationIndexSql))
+    return false;
+
+  static constexpr char kImpressionExpiryIndexSql[] =
+      "CREATE INDEX IF NOT EXISTS impression_expiry_idx "
+      "ON impressions(expiry_time)";
+  if (!db->Execute(kImpressionExpiryIndexSql))
+    return false;
+
+  static constexpr char kImpressionOriginIndexSql[] =
+      "CREATE INDEX IF NOT EXISTS impression_origin_idx "
+      "ON impressions(impression_origin)";
+  if (!db->Execute(kImpressionOriginIndexSql))
+    return false;
+
+  static constexpr char kEventSourceImpressionSiteIndexSql[] =
+      "CREATE INDEX IF NOT EXISTS event_source_impression_site_idx "
+      "ON impressions(impression_site)"
+      "WHERE active = 1 AND num_conversions = 0 AND source_type = 1";
+  if (!db->Execute(kEventSourceImpressionSiteIndexSql))
+    return false;
+
+  // Create the new conversions table with conversion_id `NOT NULL` and
+  // `AUTOINCREMENT`.
+  static constexpr char kNewConversionTableSql[] =
+      "CREATE TABLE IF NOT EXISTS new_conversions"
+      "(conversion_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+      "impression_id INTEGER NOT NULL,"
+      "conversion_data INTEGER NOT NULL,"
+      "conversion_time INTEGER NOT NULL,"
+      "report_time INTEGER NOT NULL,"
+      "priority INTEGER NOT NULL)";
+  if (!db->Execute(kNewConversionTableSql))
+    return false;
+
+  // Transfer the existing rows to the new table.
+  static constexpr char kPopulateNewConversionTableSql[] =
+      "INSERT INTO new_conversions SELECT "
+      "conversion_id,impression_id,conversion_data,conversion_time,"
+      "report_time,priority "
+      "FROM conversions";
+  if (!db->Execute(kPopulateNewConversionTableSql))
+    return false;
+
+  static constexpr char kDropOldConversionTableSql[] = "DROP TABLE conversions";
+  if (!db->Execute(kDropOldConversionTableSql))
+    return false;
+
+  static constexpr char kRenameConversionTableSql[] =
+      "ALTER TABLE new_conversions RENAME TO conversions";
+  if (!db->Execute(kRenameConversionTableSql))
+    return false;
+
+  // Create the pre-existing conversion table indices on the new table.
+
+  static constexpr char kConversionReportTimeIndexSql[] =
+      "CREATE INDEX IF NOT EXISTS conversion_report_idx "
+      "ON conversions(report_time)";
+  if (!db->Execute(kConversionReportTimeIndexSql))
+    return false;
+
+  static constexpr char kConversionImpressionIdIndexSql[] =
+      "CREATE INDEX IF NOT EXISTS conversion_impression_id_idx "
+      "ON conversions(impression_id)";
+  if (!db->Execute(kConversionImpressionIdIndexSql))
+    return false;
+
+  meta_table->SetVersionNumber(13);
+  return transaction.Commit();
+}
+
 }  // namespace
 
 bool UpgradeConversionStorageSqlSchema(sql::Database* db,
@@ -961,6 +1085,10 @@ bool UpgradeConversionStorageSqlSchema(sql::Database* db,
   }
   if (meta_table->GetVersionNumber() == 11) {
     if (!MigrateToVersion12(db, meta_table))
+      return false;
+  }
+  if (meta_table->GetVersionNumber() == 12) {
+    if (!MigrateToVersion13(db, meta_table))
       return false;
   }
   // Add similar if () blocks for new versions here.

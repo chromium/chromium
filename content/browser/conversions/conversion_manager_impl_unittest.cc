@@ -62,16 +62,26 @@ class TestConversionReporter
     num_reports_ += reports.size();
     last_report_time_ = reports.back().report_time;
 
-    if (should_run_report_sent_callbacks_) {
-      for (auto& report : reports) {
-        report_sent_callback_.Run(SentReportInfo(std::move(report),
-                                                 sent_report_info_status_,
-                                                 /*http_response_code=*/0));
+    for (auto& report : reports) {
+      SentReportInfo info(std::move(report), sent_report_info_status_,
+                          /*http_response_code=*/0);
+
+      if (should_run_report_sent_callbacks_) {
+        report_sent_callback_.Run(std::move(info));
+      } else {
+        deferred_callbacks_.push_back(std::move(info));
       }
     }
 
     if (quit_closure_ && num_reports_ >= expected_num_reports_)
       std::move(quit_closure_).Run();
+  }
+
+  void RunDeferredCallbacks() {
+    for (auto& info : deferred_callbacks_) {
+      report_sent_callback_.Run(std::move(info));
+    }
+    deferred_callbacks_.clear();
   }
 
   void ShouldRunReportSentCallbacks(bool should_run_report_sent_callbacks) {
@@ -110,6 +120,8 @@ class TestConversionReporter
   size_t num_reports_ = 0u;
   base::Time last_report_time_;
   base::OnceClosure quit_closure_;
+
+  std::vector<SentReportInfo> deferred_callbacks_;
 };
 
 // Time after impression that a conversion can first be sent. See
@@ -693,6 +705,52 @@ TEST_F(ConversionManagerImplTest, OnReportSent_RecordsDeleteEventMetric) {
                                ConversionManagerImpl::DeleteEvent::kStarted, 1);
   histograms.ExpectBucketCount(
       kMetric, ConversionManagerImpl::DeleteEvent::kSucceeded, 1);
+}
+
+TEST_F(ConversionManagerImplTest, NoIDReuse_ViaClearData) {
+  test_reporter_->ShouldRunReportSentCallbacks(false);
+
+  conversion_manager_->HandleImpression(
+      ImpressionBuilder(clock().Now()).Build());
+  conversion_manager_->HandleConversion(
+      ConversionBuilder().SetConversionData(5).Build());
+  ExpectNumStoredReports(1);
+
+  task_environment_.FastForwardBy(kFirstReportingWindow -
+                                  kConversionManagerQueueReportsInterval);
+  ExpectNumStoredReports(1);
+  EXPECT_EQ(1u, test_reporter_->num_reports());
+  EXPECT_EQ(0u, conversion_manager_->GetSentReportsForWebUI().size());
+  // The above report with `conversion_data == 5` has been sent, and the manager
+  // is waiting for its callback to be invoked.
+
+  // Delete the report and store a new one to ensure that IDs aren't reused.
+  {
+    base::RunLoop delete_loop;
+    conversion_manager_->ClearData(
+        base::Time::Min(), base::Time::Max(), base::NullCallback(),
+        base::BindLambdaForTesting([&]() { delete_loop.Quit(); }));
+    delete_loop.Run();
+    ExpectNumStoredReports(0);
+
+    conversion_manager_->HandleImpression(
+        ImpressionBuilder(clock().Now()).Build());
+    conversion_manager_->HandleConversion(
+        ConversionBuilder().SetConversionData(6).Build());
+    ExpectNumStoredReports(1);
+    EXPECT_EQ(1u, test_reporter_->num_reports());
+    EXPECT_EQ(0u, conversion_manager_->GetSentReportsForWebUI().size());
+  }
+
+  // The manager's `OnReportSent` callback is invoked, and the new conversion
+  // with `conversion_data == 6` would be erroneously deleted if it had been
+  // given the same ID.
+  test_reporter_->RunDeferredCallbacks();
+  ExpectNumStoredReports(1);
+  EXPECT_EQ(1u, test_reporter_->num_reports());
+  const auto& sent_reports = conversion_manager_->GetSentReportsForWebUI();
+  EXPECT_EQ(1u, sent_reports.size());
+  EXPECT_EQ(5u, sent_reports[0].report.conversion_data);
 }
 
 }  // namespace content

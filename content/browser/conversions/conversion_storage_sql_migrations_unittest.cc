@@ -30,7 +30,7 @@ std::string RemoveQuotes(std::string input) {
   return output;
 }
 
-const int kCurrentVersionNumber = 12;
+const int kCurrentVersionNumber = 13;
 
 }  // namespace
 
@@ -59,7 +59,7 @@ class ConversionStorageSqlMigrationsTest : public testing::Test {
   std::string GetCurrentSchema() {
     base::FilePath current_version_path = temp_directory_.GetPath().Append(
         FILE_PATH_LITERAL("TestCurrentVersion.db"));
-    LoadDatabase(FILE_PATH_LITERAL("version_12.sql"), current_version_path);
+    LoadDatabase(FILE_PATH_LITERAL("version_13.sql"), current_version_path);
     sql::Database db;
     EXPECT_TRUE(db.Open(current_version_path));
     return db.GetSchema();
@@ -700,6 +700,69 @@ TEST_F(ConversionStorageSqlMigrationsTest, MigrateVersion11ToCurrent) {
     ASSERT_EQ(0, s.ColumnInt64(8));
     ASSERT_EQ(1, s.ColumnInt64(9));
     ASSERT_FALSE(s.Step());
+  }
+
+  // DB migration histograms should be recorded.
+  histograms.ExpectTotalCount("Conversions.Storage.CreationTime", 0);
+  histograms.ExpectTotalCount("Conversions.Storage.MigrationTime", 1);
+}
+
+TEST_F(ConversionStorageSqlMigrationsTest, MigrateVersion12ToCurrent) {
+  base::HistogramTester histograms;
+  LoadDatabase(FILE_PATH_LITERAL("version_12.sql"), DbPath());
+
+  auto check_data = [](sql::Database& db) {
+    sql::Statement s(db.GetUniqueStatement("SELECT * FROM impressions"));
+    ASSERT_TRUE(s.Step());
+    ASSERT_EQ(1, s.ColumnInt(0));
+    ASSERT_EQ(2, s.ColumnInt(1));
+    ASSERT_EQ("a", s.ColumnString(2));
+    ASSERT_EQ("b", s.ColumnString(3));
+    ASSERT_EQ("c", s.ColumnString(4));
+    ASSERT_EQ(3, s.ColumnInt(5));
+    ASSERT_EQ(4, s.ColumnInt(6));
+    ASSERT_EQ(5, s.ColumnInt(7));
+    ASSERT_EQ(6, s.ColumnInt(8));
+    ASSERT_EQ("d", s.ColumnString(9));
+    ASSERT_EQ(7, s.ColumnInt(10));
+    ASSERT_EQ(8, s.ColumnInt(11));
+    ASSERT_EQ(9, s.ColumnInt(12));
+    ASSERT_EQ("e", s.ColumnString(13));
+    ASSERT_FALSE(s.Step());
+
+    sql::Statement t(db.GetUniqueStatement("SELECT * FROM conversions"));
+    ASSERT_TRUE(t.Step());
+    ASSERT_EQ(10, t.ColumnInt(0));
+    ASSERT_EQ(11, t.ColumnInt(1));
+    ASSERT_EQ(12, t.ColumnInt(2));
+    ASSERT_EQ(13, t.ColumnInt(3));
+    ASSERT_EQ(14, t.ColumnInt(4));
+    ASSERT_EQ(15, t.ColumnInt(5));
+    ASSERT_FALSE(t.Step());
+  };
+
+  // Verify pre-conditions.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+    check_data(db);
+  }
+
+  MigrateDatabase();
+
+  // Verify schema is current.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+
+    // Check version.
+    EXPECT_EQ(kCurrentVersionNumber, VersionFromDatabase(&db));
+
+    // Compare without quotes as sometimes migrations cause table names to be
+    // string literals.
+    EXPECT_EQ(RemoveQuotes(GetCurrentSchema()), RemoveQuotes(db.GetSchema()));
+
+    check_data(db);
   }
 
   // DB migration histograms should be recorded.

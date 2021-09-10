@@ -132,8 +132,9 @@ TEST_F(ConversionStorageSqlTest,
     sql::Database raw_db;
     EXPECT_TRUE(raw_db.Open(db_path()));
 
-    // [impressions], [conversions], [meta], [rate_limits], [dedup_keys].
-    EXPECT_EQ(5u, sql::test::CountSQLTables(&raw_db));
+    // [impressions], [conversions], [meta], [rate_limits], [dedup_keys],
+    // [sqlite_sequence] (for AUTOINCREMENT support).
+    EXPECT_EQ(6u, sql::test::CountSQLTables(&raw_db));
 
     // [conversion_domain_idx], [impression_expiry_idx],
     // [impression_origin_idx], [impression_site_idx],

@@ -1536,4 +1536,50 @@ TEST_F(ConversionStorageTest, GetConversionsToReport_SetsPriority) {
   EXPECT_EQ(13, actual_reports[0].priority);
 }
 
+TEST_F(ConversionStorageTest, NoIDReuse_Impression) {
+  storage()->StoreImpression(ImpressionBuilder(clock()->Now()).Build());
+  auto impressions = storage()->GetActiveImpressions();
+  EXPECT_EQ(1u, impressions.size());
+  EXPECT_TRUE(impressions[0].impression_id().has_value());
+  const StorableImpression::Id id1 = *impressions[0].impression_id();
+
+  storage()->ClearData(base::Time::Min(), base::Time::Max(),
+                       base::NullCallback());
+  EXPECT_TRUE(storage()->GetActiveImpressions().empty());
+
+  storage()->StoreImpression(ImpressionBuilder(clock()->Now()).Build());
+  impressions = storage()->GetActiveImpressions();
+  EXPECT_EQ(1u, impressions.size());
+  EXPECT_TRUE(impressions[0].impression_id().has_value());
+  const StorableImpression::Id id2 = *impressions[0].impression_id();
+
+  EXPECT_NE(id1, id2);
+}
+
+TEST_F(ConversionStorageTest, NoIDReuse_Conversion) {
+  storage()->StoreImpression(ImpressionBuilder(clock()->Now()).Build());
+  EXPECT_EQ(
+      CreateReportStatus::kSuccess,
+      storage()->MaybeCreateAndStoreConversionReport(DefaultConversion()));
+  auto reports = storage()->GetConversionsToReport(base::Time::Max());
+  EXPECT_EQ(1u, reports.size());
+  EXPECT_TRUE(reports[0].conversion_id.has_value());
+  const ConversionReport::Id id1 = *reports[0].conversion_id;
+
+  storage()->ClearData(base::Time::Min(), base::Time::Max(),
+                       base::NullCallback());
+  EXPECT_TRUE(storage()->GetConversionsToReport(base::Time::Max()).empty());
+
+  storage()->StoreImpression(ImpressionBuilder(clock()->Now()).Build());
+  EXPECT_EQ(
+      CreateReportStatus::kSuccess,
+      storage()->MaybeCreateAndStoreConversionReport(DefaultConversion()));
+  reports = storage()->GetConversionsToReport(base::Time::Max());
+  EXPECT_EQ(1u, reports.size());
+  EXPECT_TRUE(reports[0].conversion_id.has_value());
+  const ConversionReport::Id id2 = *reports[0].conversion_id;
+
+  EXPECT_NE(id1, id2);
+}
+
 }  // namespace content
