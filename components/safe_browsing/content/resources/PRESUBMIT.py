@@ -8,32 +8,44 @@
 USE_PYTHON3 = True
 
 def CheckVersionUpdatedInDownloadFileTypeList(input_api, output_api):
-    def IsDownloadFileTypeList(x):
-        return (input_api.os_path.basename(
-            x.LocalPath()) == 'download_file_types.asciipb')
 
-    download_file_types = input_api.AffectedFiles(
+    download_file_type_names = [
+        'download_file_types.asciipb', 'download_file_types_experiment.asciipb'
+    ]
+
+    def IsDownloadFileTypeList(x):
+        return input_api.os_path.basename(
+            x.LocalPath()) in download_file_type_names
+
+    download_file_types_files = input_api.AffectedFiles(
         file_filter=IsDownloadFileTypeList)
-    if not download_file_types:
+    if not download_file_types_files:
         return []
 
-    for _, line in download_file_types[0].ChangedContents():
-        if line.strip().startswith('version_id: '):
-            return []
+    results = []
+    for download_file_types_file in download_file_types_files:
+        has_changed_version = False
+        for _, line in download_file_types_file.ChangedContents():
+            if line.strip().startswith('version_id: '):
+                has_changed_version = True
+                break
 
-    # It's enticing to do something fancy like checking whether the ID was in
-    # fact incremented or whether this is a whitespace-only or comment-only
-    # change. However, currently deleted lines don't show up in
-    # ChangedContents() and attempting to parse the asciipb file any more than
-    # we are doing above is likely not worth the trouble.
-    #
-    # At worst, the submitter can skip the presubmit check on upload if it isn't
-    # correct.
-    return [
-        output_api.PresubmitError(
-            'Increment |version_id| in download_file_types.asciipb if you are '
-            'updating the file types proto.')
-    ]
+        # It's enticing to do something fancy like checking whether the ID was
+        # in fact incremented or whether this is a whitespace-only or
+        # comment-only change. However, currently deleted lines don't show up in
+        # ChangedContents() and attempting to parse the asciipb file any more
+        # than we are doing above is likely not worth the trouble.
+        #
+        # At worst, the submitter can skip the presubmit check on upload if it
+        # isn't correct.
+        if not has_changed_version:
+            results.append(
+                output_api.PresubmitError(
+                    'Increment |version_id| in ' +
+                    download_file_types_file.LocalPath() + ' if you are '
+                    'updating the file types proto.'))
+
+    return results
 
 
 def CheckChangeOnUpload(input_api, output_api):
