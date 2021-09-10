@@ -120,6 +120,63 @@ bool CopyBundle(const base::FilePath& dest_path, UpdaterScope scope) {
   return true;
 }
 
+bool CopyKeystoneBundle(UpdaterScope scope) {
+  // The Keystone Bundle is in
+  // GoogleUpdater.app/Contents/Frameworks/GoogleSoftwareUpdate.bundle.
+  base::FilePath keystone_bundle_path =
+      base::mac::OuterBundlePath()
+          .Append(FILE_PATH_LITERAL("Contents"))
+          .Append(FILE_PATH_LITERAL("Frameworks"))
+          .Append(FILE_PATH_LITERAL(KEYSTONE_NAME ".bundle"));
+
+  if (!base::PathExists(keystone_bundle_path)) {
+    LOG(ERROR) << "Path to the Keystone bundle does not exist! "
+               << keystone_bundle_path;
+    return false;
+  }
+
+  const absl::optional<base::FilePath> dest_folder_path =
+      GetKeystoneFolderPath(scope);
+  if (!dest_folder_path)
+    return false;
+  const base::FilePath dest_path = *dest_folder_path;
+  if (!base::PathExists(dest_path)) {
+    base::File::Error error;
+    if (!base::CreateDirectoryAndGetError(dest_path, &error)) {
+      LOG(ERROR) << "Failed to create '" << dest_path.value().c_str()
+                 << "' directory: " << base::File::ErrorToString(error);
+      return false;
+    }
+  }
+
+  // For system installs, set file permissions to be drwxr-xr-x
+  if (scope == UpdaterScope::kSystem) {
+    constexpr int kPermissionsMask = base::FILE_PERMISSION_USER_MASK |
+                                     base::FILE_PERMISSION_READ_BY_GROUP |
+                                     base::FILE_PERMISSION_EXECUTE_BY_GROUP |
+                                     base::FILE_PERMISSION_READ_BY_OTHERS |
+                                     base::FILE_PERMISSION_EXECUTE_BY_OTHERS;
+    if (!base::SetPosixFilePermissions(
+            GetLibraryFolderPath(scope)->Append(COMPANY_SHORTNAME_STRING),
+            kPermissionsMask) ||
+        !base::SetPosixFilePermissions(*GetUpdaterFolderPath(scope),
+                                       kPermissionsMask) ||
+        !base::SetPosixFilePermissions(*GetVersionedUpdaterFolderPath(scope),
+                                       kPermissionsMask)) {
+      LOG(ERROR) << "Failed to set permissions to drwxr-xr-x at "
+                 << dest_path.value().c_str();
+      return false;
+    }
+  }
+
+  if (!base::CopyDirectory(keystone_bundle_path, dest_path, true)) {
+    LOG(ERROR) << "Copying keystone bundle '" << keystone_bundle_path
+               << "' to '" << dest_path.value().c_str() << "' failed.";
+    return false;
+  }
+  return true;
+}
+
 NSString* MakeProgramArgument(const char* argument) {
   return base::SysUTF8ToNSString(base::StrCat({"--", argument}));
 }
@@ -329,6 +386,10 @@ bool DeleteDataFolder(UpdaterScope scope) {
   return DeleteFolder(GetBaseDirectory(scope));
 }
 
+bool DeleteKeystoneFolder(UpdaterScope scope) {
+  return DeleteFolder(GetKeystoneFolderPath(scope));
+}
+
 void CleanAfterInstallFailure(UpdaterScope scope) {
   // If install fails at any point, attempt to clean the install.
   DeleteCandidateInstallFolder(scope);
@@ -360,6 +421,8 @@ int DoSetup(UpdaterScope scope) {
     return setup_exit_codes::kFailedToGetVersionedUpdaterFolderPath;
   if (!CopyBundle(*dest_path, scope))
     return setup_exit_codes::kFailedToCopyBundle;
+  if (!CopyKeystoneBundle(scope))
+    return setup_exit_codes::kFailedToCopyKeystoneBundle;
 
   const base::FilePath updater_executable_path =
       dest_path->Append(GetExecutableRelativePath());
@@ -452,6 +515,8 @@ int Uninstall(UpdaterScope scope) {
 
   if (!DeleteInstallFolder(scope))
     return setup_exit_codes::kFailedToDeleteFolder;
+
+  DeleteKeystoneFolder(scope);
 
   // Deleting the data folder is best-effort. Current running processes such as
   // the crash handler process may still write to the updater log file, thus

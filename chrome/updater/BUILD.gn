@@ -354,6 +354,8 @@ if (is_win || is_mac) {
       "-e",
       "PRODUCT_FULLNAME=\"$updater_product_full_name\"",
       "-e",
+      "KEYSTONE_NAME=\"$keystone_app_name\"",
+      "-e",
       "COPYRIGHT=\"updater_copyright\"",
       "-e",
       "MAC_BUNDLE_IDENTIFIER=\"$mac_updater_bundle_identifier\"",

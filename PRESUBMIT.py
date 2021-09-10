@@ -15,7 +15,7 @@ USE_PYTHON3 = True
 
 _EXCLUDED_PATHS = (
     # File needs to write to stdout to emulate a tool it's replacing.
-    r"chrome[\\/]updater[\\/]mac[\\/]ks_admin[\\/]ks_admin.mm",
+    r"chrome[\\/]updater[\\/]mac[\\/]keystone[\\/]ksadmin.mm",
     # Generated file.
     (r"^components[\\/]variations[\\/]proto[\\/]devtools[\\/]"
      r"client_variations.js"),

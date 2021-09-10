@@ -29,6 +29,9 @@ constexpr int kFailedToGetVersionedUpdaterFolderPath = 13;
 // Failed to get the installed app bundle path.
 constexpr int kFailedToGetAppBundlePath = 14;
 
+// Failed to copy the keystone bundle.
+constexpr int kFailedToCopyKeystoneBundle = 15;
+
 // Failed to remove the active(unversioned) update service job from Launchd.
 constexpr int kFailedToRemoveActiveUpdateServiceJobFromLaunchd = 20;
 

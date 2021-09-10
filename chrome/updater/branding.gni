@@ -14,6 +14,7 @@ if (is_chrome_branded) {
       "Copyright 2020 The Chromium Authors. All rights reserved."
   mac_updater_bundle_identifier = "com.google.GoogleUpdater"
   mac_browser_bundle_identifier = "com.google.Chrome"
+  keystone_app_name = "GoogleSoftwareUpdate"
 } else {
   updater_company_full_name = "Chromium Authors"
   updater_company_short_name = "Chromium"
@@ -24,6 +25,7 @@ if (is_chrome_branded) {
       "Copyright 2020 The Chromium Authors. All rights reserved."
   mac_updater_bundle_identifier = "org.chromium.ChromiumUpdater"
   mac_browser_bundle_identifier = "org.chromium.Chromium"
+  keystone_app_name = "ChromiumSoftwareUpdate"
 }
 
 # Chrome and Chromium share the same endpoints for now.

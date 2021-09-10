@@ -11,7 +11,6 @@ import("//chrome/updater/branding.gni")
 group("mac") {
   deps = [
     ":browser_install_script",
-    ":ks_admin",
     ":updater_bundle",
     ":updater_install_script",
     "//chrome/updater/mac/signing",
@@ -22,24 +21,6 @@ tweak_info_plist("updater_plist") {
   info_plist = "Info.plist"
 }
 
-executable("ks_admin") {
-  output_name = "ksadmin"
-  sources = [
-    "ks_admin/ks_admin.h",
-    "ks_admin/ks_admin.mm",
-    "ks_admin/main.cc",
-  ]
-
-  deps = [
-    "//base",
-    "//chrome/updater:base",
-    "//chrome/updater:constants_prod",
-    "//chrome/updater:version_header",
-  ]
-
-  frameworks = [ "CoreFoundation.framework" ]
-}
-
 mac_app_bundle("updater_bundle") {
   info_plist_target = ":updater_plist"
   output_name = updater_product_full_name
@@ -48,6 +29,7 @@ mac_app_bundle("updater_bundle") {
 
   sources = [ "main.cc" ]
   deps = [
+    ":updater_bundle_frameworks",
     "//chrome/updater:base",
     "//chrome/updater:constants_prod",
   ]
@@ -61,6 +43,7 @@ mac_app_bundle("updater_bundle_test") {
 
   sources = [ "main.cc" ]
   deps = [
+    ":updater_bundle_frameworks",
     "//chrome/updater:base",
     "//chrome/updater:constants_test",
   ]
@@ -105,4 +88,45 @@ action("browser_install_script") {
     "-v",
     chrome_version_full,
   ]
+}
+
+executable("ksadmin") {
+  output_name = "ksadmin"
+  sources = [
+    "keystone/ksadmin.h",
+    "keystone/ksadmin.mm",
+    "keystone/ksadmin_main.cc",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/updater:base",
+    "//chrome/updater:constants_prod",
+    "//chrome/updater:version_header",
+  ]
+
+  frameworks = [ "CoreFoundation.framework" ]
+}
+
+bundle_data("keystone_helpers") {
+  sources = [ "$root_out_dir/ksadmin" ]
+
+  outputs = [ "{{bundle_contents_dir}}/Helpers/{{source_file_part}}" ]
+  public_deps = [ ":ksadmin" ]
+}
+
+mac_app_bundle("keystone_bundle") {
+  info_plist = "keystone/Info.plist"
+  sources = [ "keystone/keystone_main.cc" ]
+  output_name = keystone_app_name
+  package_type = "bundle"
+  extra_substitutions = [ "MAC_BUNDLE_IDENTIFIER=$keystone_app_name" ]
+  public_deps = [ ":keystone_helpers" ]
+}
+
+bundle_data("updater_bundle_frameworks") {
+  sources = [ "$root_out_dir/$keystone_app_name.bundle" ]
+  outputs = [ "{{bundle_contents_dir}}/Frameworks/{{source_file_part}}" ]
+
+  public_deps = [ ":keystone_bundle" ]
 }

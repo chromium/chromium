@@ -145,6 +145,11 @@ void Clean(UpdaterScope scope) {
   if (path)
     EXPECT_TRUE(base::DeletePathRecursively(*path));
 
+  absl::optional<base::FilePath> keystone_path = GetKeystoneFolderPath(scope);
+  EXPECT_TRUE(keystone_path);
+  if (keystone_path)
+    EXPECT_TRUE(base::DeletePathRecursively(*keystone_path));
+
   @autoreleasepool {
     RemoveJobFromLaunchd(scope, launchd_domain, launchd_type,
                          CopyWakeLaunchdName());
@@ -181,6 +186,12 @@ void ExpectClean(UpdaterScope scope) {
     if (count == 1)
       EXPECT_TRUE(base::PathExists(path->AppendASCII("updater.log")));
   }
+  // Keystone must not exist on the file system.
+  absl::optional<base::FilePath> keystone_path = GetKeystoneFolderPath(scope);
+  EXPECT_TRUE(keystone_path);
+  if (keystone_path)
+    EXPECT_FALSE(base::PathExists(*keystone_path));
+
   ExpectServiceAbsent(scope, GetUpdateServiceLaunchdName());
   ExpectServiceAbsent(scope, GetUpdateServiceInternalLaunchdName());
 }

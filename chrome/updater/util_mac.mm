@@ -99,4 +99,12 @@ base::FilePath GetExecutableRelativePath() {
       base::StrCat({PRODUCT_FULLNAME_STRING, kExecutableSuffix}));
 }
 
+absl::optional<base::FilePath> GetKeystoneFolderPath(UpdaterScope scope) {
+  absl::optional<base::FilePath> path = GetLibraryFolderPath(scope);
+  if (!path)
+    return absl::nullopt;
+  return path->Append(FILE_PATH_LITERAL(COMPANY_SHORTNAME_STRING))
+      .Append(FILE_PATH_LITERAL(KEYSTONE_NAME));
+}
+
 }  // namespace updater

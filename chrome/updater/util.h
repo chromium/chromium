@@ -142,6 +142,8 @@ GURL AppendQueryParameter(const GURL& url,
 // differentials, use UnzipWithExe.
 bool UnzipWithExe(const base::FilePath& src_path,
                   const base::FilePath& dest_path);
+
+absl::optional<base::FilePath> GetKeystoneFolderPath(UpdaterScope scope);
 #endif  // defined(OS_MAC)
 
 }  // namespace updater
