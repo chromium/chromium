@@ -279,6 +279,7 @@ source_set("tflite_kernels") {
     "src/tensorflow/lite/kernels/cpu_backend_gemm_eigen.h",
     "src/tensorflow/lite/kernels/cpu_backend_gemm_gemmlowp.h",
     "src/tensorflow/lite/kernels/cpu_backend_gemm_ruy.h",
+    "src/tensorflow/lite/kernels/cumsum.cc",
     "src/tensorflow/lite/kernels/densify.cc",
     "src/tensorflow/lite/kernels/depth_to_space.cc",
     "src/tensorflow/lite/kernels/depthwise_conv.cc",
