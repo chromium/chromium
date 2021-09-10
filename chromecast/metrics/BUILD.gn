@@ -58,14 +58,43 @@ cast_source_set("cast_event_builder_simple") {
   ]
 }
 
+cast_source_set("metrics_util") {
+  sources = [
+    "metrics_util.cc",
+    "metrics_util.h",
+  ]
+
+  public_deps = [ "//net:net" ]
+
+  deps = [ "//base" ]
+}
+
+cast_source_set("cast_event_builder_impl") {
+  sources = [
+    "cast_event_builder_impl.cc",
+    "cast_event_builder_impl.h",
+  ]
+
+  public_deps = [ ":cast_event_builder_interface" ]
+
+  deps = [
+    ":metrics_util",
+    "//base",
+    "//chromecast/base",
+    "//third_party/metrics_proto",
+  ]
+}
+
 test("cast_metrics_unittest") {
   sources = [
+    "cast_event_builder_impl_unittest.cc",
     "cast_metrics_service_client_unittest.cc",
     "mock_cast_sys_info_util.cc",
     "mock_cast_sys_info_util.h",
   ]
 
   deps = [
+    ":cast_event_builder_impl",
     ":metrics",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
