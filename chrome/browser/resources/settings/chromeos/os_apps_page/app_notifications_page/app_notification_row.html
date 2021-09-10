@@ -38,5 +38,6 @@
 </template>
 <cr-toggle id="appToggle" disabled="[[app.notificationPermission.isManaged]]"
     checked="[[checked_]]"
-    on-click="onNotificationRowClicked_">
+    on-click="onNotificationRowClicked_"
+    aria-labelledby="appTitle">
 </cr-toggle>
