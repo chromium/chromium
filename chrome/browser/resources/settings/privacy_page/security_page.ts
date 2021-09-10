@@ -16,7 +16,7 @@ import './disable_safebrowsing_dialog.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -33,25 +33,46 @@ import {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from './privacy_pa
  * Enumeration of all safe browsing modes. Must be kept in sync with the enum
  * of the same name located in:
  * chrome/browser/safe_browsing/generated_safe_browsing_pref.h
- * @enum {number}
  */
-export const SafeBrowsingSetting = {
-  ENHANCED: 0,
-  STANDARD: 1,
-  DISABLED: 2,
-};
+export enum SafeBrowsingSetting {
+  ENHANCED = 0,
+  STANDARD = 1,
+  DISABLED = 2,
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {PrefsBehaviorInterface}
- * @implements {RouteObserverMixinInterface}
- */
-const SettingsSecurityPageElementBase = mixinBehaviors(
-    [I18nBehavior, PrefsBehavior], RouteObserverMixin(PolymerElement));
+// TODO(crbug.com/1234307): Remove when collapse_radio_button.js is migrated to
+// TypeScript.
+interface SettingsCollapseRadioButtonElement extends HTMLElement {
+  expanded: boolean;
+  updateCollapsed(): void;
+}
 
-/** @polymer */
+// TODO(crbug.com/1234307): Remove when settings_radio_group.js is migrated to
+// TypeScript.
+interface SettingsRadioGroupElement extends HTMLElement {
+  selected: string;
+  sendPrefChange(): void;
+  resetToPrefValue(): void;
+}
+
+type FocusConfig = Map<string, (string|(() => void))>;
+
+export interface SettingsSecurityPageElement {
+  $: {
+    safeBrowsingRadioGroup: SettingsRadioGroupElement,
+    safeBrowsingEnhanced: SettingsCollapseRadioButtonElement,
+    safeBrowsingStandard: SettingsCollapseRadioButtonElement,
+    safeBrowsingDisabled: SettingsCollapseRadioButtonElement,
+  };
+}
+
+const SettingsSecurityPageElementBase =
+    mixinBehaviors(
+        [I18nBehavior, PrefsBehavior], RouteObserverMixin(PolymerElement)) as {
+      new (): PolymerElement & I18nBehavior & RouteObserverMixinInterface &
+      PrefsBehaviorInterface
+    };
+
 export class SettingsSecurityPageElement extends
     SettingsSecurityPageElementBase {
   static get is() {
@@ -74,7 +95,6 @@ export class SettingsSecurityPageElement extends
 
       /**
        * Whether the HTTPS-Only Mode setting should be displayed.
-       * @private
        */
       showHttpsOnlyModeSetting_: {
         type: Boolean,
@@ -86,7 +106,6 @@ export class SettingsSecurityPageElement extends
 
       /**
        * Whether the secure DNS setting should be displayed.
-       * @private
        */
       showSecureDnsSetting_: {
         type: Boolean,
@@ -99,7 +118,6 @@ export class SettingsSecurityPageElement extends
       // <if expr="chromeos or lacros">
       /**
        * Whether a link to secure DNS OS setting should be displayed.
-       * @private
        */
       showSecureDnsSettingLink_: {
         type: Boolean,
@@ -112,14 +130,12 @@ export class SettingsSecurityPageElement extends
 
       /**
        * Valid safe browsing states.
-       * @private
        */
       safeBrowsingSettingEnum_: {
         type: Object,
         value: SafeBrowsingSetting,
       },
 
-      /** @private */
       enableSecurityKeysSubpage_: {
         type: Boolean,
         readOnly: true,
@@ -128,29 +144,38 @@ export class SettingsSecurityPageElement extends
         }
       },
 
-      /** @type {!Map<string, (string|Function)>} */
       focusConfig: {
         type: Object,
         observer: 'focusConfigChanged_',
       },
 
-      /** @private */
       showDisableSafebrowsingDialog_: Boolean,
     };
   }
 
-  /*
-   * @param {!Map<string, string>} newConfig
-   * @param {?Map<string, string>} oldConfig
-   * @private
-   */
-  focusConfigChanged_(newConfig, oldConfig) {
+  private showHttpsOnlyModeSetting_: boolean;
+  private showSecureDnsSetting_: boolean;
+
+  // <if expr="chromeos or lacros">
+  private showSecureDnsSettingLink_: boolean;
+  // </if>
+
+  private enableSecurityKeysSubpage_: boolean;
+  focusConfig: FocusConfig;
+  private showDisableSafebrowsingDialog_: boolean;
+
+  private browserProxy_: PrivacyPageBrowserProxy =
+      PrivacyPageBrowserProxyImpl.getInstance();
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
+
+  private focusConfigChanged_(_newConfig: FocusConfig, oldConfig: FocusConfig) {
     assert(!oldConfig);
     // <if expr="use_nss_certs">
     if (routes.CERTIFICATES) {
       this.focusConfig.set(routes.CERTIFICATES.path, () => {
         focusWithoutInk(
-            assert(this.shadowRoot.querySelector('#manageCertificates')));
+            assert(this.shadowRoot!.querySelector('#manageCertificates')!));
       });
     }
     // </if>
@@ -158,21 +183,11 @@ export class SettingsSecurityPageElement extends
     if (routes.SECURITY_KEYS) {
       this.focusConfig.set(routes.SECURITY_KEYS.path, () => {
         focusWithoutInk(assert(
-            this.shadowRoot.querySelector('#security-keys-subpage-trigger')));
+            this.shadowRoot!.querySelector('#security-keys-subpage-trigger')!));
       });
     }
   }
 
-  constructor() {
-    super();
-    /** @private {!PrivacyPageBrowserProxy} */
-    this.browserProxy_ = PrivacyPageBrowserProxyImpl.getInstance();
-
-    /** @private {!MetricsBrowserProxy} */
-    this.metricsBrowserProxy_ = MetricsBrowserProxyImpl.getInstance();
-  }
-
-  /** @override */
   ready() {
     super.ready();
 
@@ -188,9 +203,8 @@ export class SettingsSecurityPageElement extends
 
   /**
    * RouteObserverMixin
-   * @override
    */
-  currentRouteChanged(route) {
+  currentRouteChanged(route: Route) {
     if (route === routes.SECURITY) {
       this.metricsBrowserProxy_.recordSafeBrowsingInteractionHistogram(
           SafeBrowsingInteractions.SAFE_BROWSING_SHOWED);
@@ -206,9 +220,8 @@ export class SettingsSecurityPageElement extends
   /**
    * Updates the buttons' expanded status by propagating previous click
    * events
-   * @private
    */
-  updateCollapsedButtons_() {
+  private updateCollapsedButtons_() {
     this.$.safeBrowsingEnhanced.updateCollapsed();
     this.$.safeBrowsingStandard.updateCollapsed();
   }
@@ -216,17 +229,14 @@ export class SettingsSecurityPageElement extends
   /**
    * Possibly displays the Safe Browsing disable dialog based on the users
    * selection.
-   * @private
    */
-  onSafeBrowsingRadioChange_() {
+  private onSafeBrowsingRadioChange_() {
     const selected =
         Number.parseInt(this.$.safeBrowsingRadioGroup.selected, 10);
     const prefValue = this.getPref('generated.safe_browsing').value;
     if (prefValue !== selected) {
-      this.recordInteractionHistogramOnRadioChange_(
-          /** @type {!SafeBrowsingSetting} */ (selected));
-      this.recordActionOnRadioChange_(
-          /** @type {!SafeBrowsingSetting} */ (selected));
+      this.recordInteractionHistogramOnRadioChange_(selected);
+      this.recordActionOnRadioChange_(selected);
     }
     if (selected === SafeBrowsingSetting.DISABLED) {
       this.showDisableSafebrowsingDialog_ = true;
@@ -236,20 +246,12 @@ export class SettingsSecurityPageElement extends
     }
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  getDisabledExtendedSafeBrowsing_() {
+  private getDisabledExtendedSafeBrowsing_(): boolean {
     return this.getPref('generated.safe_browsing').value !==
         SafeBrowsingSetting.STANDARD;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getPasswordsLeakToggleSubLabel_() {
+  private getPasswordsLeakToggleSubLabel_(): string {
     let subLabel = this.i18n('passwordsLeakDetectionGeneralDescription');
     // If the backing password leak detection preference is enabled, but the
     // generated preference is off and user control is disabled, then additional
@@ -265,8 +267,7 @@ export class SettingsSecurityPageElement extends
     return subLabel;
   }
 
-  /** @private */
-  onManageCertificatesClick_() {
+  private onManageCertificatesClick_() {
     // <if expr="use_nss_certs">
     Router.getInstance().navigateTo(routes.CERTIFICATES);
     // </if>
@@ -277,18 +278,15 @@ export class SettingsSecurityPageElement extends
         PrivacyElementInteractions.MANAGE_CERTIFICATES);
   }
 
-  /** @private */
-  onAdvancedProtectionProgramLinkClick_() {
+  private onAdvancedProtectionProgramLinkClick_() {
     window.open(loadTimeData.getString('advancedProtectionURL'));
   }
 
-  /** @private */
-  onSecurityKeysClick_() {
+  private onSecurityKeysClick_() {
     Router.getInstance().navigateTo(routes.SECURITY_KEYS);
   }
 
-  /** @private */
-  onSafeBrowsingExtendedReportingChange_() {
+  private onSafeBrowsingExtendedReportingChange_() {
     this.metricsBrowserProxy_.recordSettingsPageHistogram(
         PrivacyElementInteractions.IMPROVE_SECURITY);
   }
@@ -297,13 +295,10 @@ export class SettingsSecurityPageElement extends
    * Handles the closure of the disable safebrowsing dialog, reselects the
    * appropriate radio button if the user cancels the dialog, and puts focus on
    * the disable safebrowsing button.
-   * @private
    */
-  onDisableSafebrowsingDialogClose_() {
+  private onDisableSafebrowsingDialogClose_() {
     const confirmed =
-        /** @type {!SettingsDisableSafebrowsingDialogElement} */ (
-            this.shadowRoot.querySelector(
-                'settings-disable-safebrowsing-dialog'))
+        this.shadowRoot!.querySelector('settings-disable-safebrowsing-dialog')!
             .wasConfirmed();
     this.recordInteractionHistogramOnSafeBrowsingDialogClose_(confirmed);
     this.recordActionOnSafeBrowsingDialogClose_(confirmed);
@@ -322,34 +317,28 @@ export class SettingsSecurityPageElement extends
     focusWithoutInk(assert(this.$.safeBrowsingDisabled));
   }
 
-  /** @private */
-  onEnhancedProtectionExpandButtonClicked_() {
+  private onEnhancedProtectionExpandButtonClicked_() {
     this.recordInteractionHistogramOnExpandButtonClicked_(
         SafeBrowsingSetting.ENHANCED);
     this.recordActionOnExpandButtonClicked_(SafeBrowsingSetting.ENHANCED);
   }
 
-  /** @private */
-  onStandardProtectionExpandButtonClicked_() {
+  private onStandardProtectionExpandButtonClicked_() {
     this.recordInteractionHistogramOnExpandButtonClicked_(
         SafeBrowsingSetting.STANDARD);
     this.recordActionOnExpandButtonClicked_(SafeBrowsingSetting.STANDARD);
   }
 
   // <if expr="chromeos or lacros">
-  /** @private */
-  onOpenChromeOSSecureDnsSettingsClicked_() {
+  private onOpenChromeOSSecureDnsSettingsClicked_() {
     const path =
         loadTimeData.getString('chromeOSPrivacyAndSecuritySectionPath');
     OpenWindowProxyImpl.getInstance().openURL(`chrome://os-settings/${path}`);
   }
   // </if>
 
-  /**
-   * @param {!SafeBrowsingSetting} safeBrowsingSetting
-   * @private
-   */
-  recordInteractionHistogramOnRadioChange_(safeBrowsingSetting) {
+  private recordInteractionHistogramOnRadioChange_(safeBrowsingSetting:
+                                                       SafeBrowsingSetting) {
     let action;
     if (safeBrowsingSetting === SafeBrowsingSetting.ENHANCED) {
       action =
@@ -364,11 +353,8 @@ export class SettingsSecurityPageElement extends
     this.metricsBrowserProxy_.recordSafeBrowsingInteractionHistogram(action);
   }
 
-  /**
-   * @param {!SafeBrowsingSetting} safeBrowsingSetting
-   * @private
-   */
-  recordInteractionHistogramOnExpandButtonClicked_(safeBrowsingSetting) {
+  private recordInteractionHistogramOnExpandButtonClicked_(
+      safeBrowsingSetting: SafeBrowsingSetting) {
     this.metricsBrowserProxy_.recordSafeBrowsingInteractionHistogram(
         safeBrowsingSetting === SafeBrowsingSetting.ENHANCED ?
             SafeBrowsingInteractions
@@ -377,11 +363,8 @@ export class SettingsSecurityPageElement extends
                 .SAFE_BROWSING_STANDARD_PROTECTION_EXPAND_ARROW_CLICKED);
   }
 
-  /**
-   * @param {boolean} confirmed
-   * @private
-   */
-  recordInteractionHistogramOnSafeBrowsingDialogClose_(confirmed) {
+  private recordInteractionHistogramOnSafeBrowsingDialogClose_(confirmed:
+                                                                   boolean) {
     this.metricsBrowserProxy_.recordSafeBrowsingInteractionHistogram(
         confirmed ? SafeBrowsingInteractions
                         .SAFE_BROWSING_DISABLE_SAFE_BROWSING_DIALOG_CONFIRMED :
@@ -389,11 +372,7 @@ export class SettingsSecurityPageElement extends
                         .SAFE_BROWSING_DISABLE_SAFE_BROWSING_DIALOG_DENIED);
   }
 
-  /**
-   * @param {!SafeBrowsingSetting} safeBrowsingSetting
-   * @private
-   */
-  recordActionOnRadioChange_(safeBrowsingSetting) {
+  private recordActionOnRadioChange_(safeBrowsingSetting: SafeBrowsingSetting) {
     let actionName;
     if (safeBrowsingSetting === SafeBrowsingSetting.ENHANCED) {
       actionName = 'SafeBrowsing.Settings.EnhancedProtectionClicked';
@@ -405,22 +384,15 @@ export class SettingsSecurityPageElement extends
     this.metricsBrowserProxy_.recordAction(actionName);
   }
 
-  /**
-   * @param {!SafeBrowsingSetting} safeBrowsingSetting
-   * @private
-   */
-  recordActionOnExpandButtonClicked_(safeBrowsingSetting) {
+  private recordActionOnExpandButtonClicked_(safeBrowsingSetting:
+                                                 SafeBrowsingSetting) {
     this.metricsBrowserProxy_.recordAction(
         safeBrowsingSetting === SafeBrowsingSetting.ENHANCED ?
             'SafeBrowsing.Settings.EnhancedProtectionExpandArrowClicked' :
             'SafeBrowsing.Settings.StandardProtectionExpandArrowClicked');
   }
 
-  /**
-   * @param {boolean} confirmed
-   * @private
-   */
-  recordActionOnSafeBrowsingDialogClose_(confirmed) {
+  private recordActionOnSafeBrowsingDialogClose_(confirmed: boolean) {
     this.metricsBrowserProxy_.recordAction(
         confirmed ? 'SafeBrowsing.Settings.DisableSafeBrowsingDialogConfirmed' :
                     'SafeBrowsing.Settings.DisableSafeBrowsingDialogDenied');

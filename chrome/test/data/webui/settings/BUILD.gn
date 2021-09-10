@@ -89,7 +89,6 @@ js_type_check("closure_compile") {
     #":pref_util_tests",
     #":prefs_test_cases",
     #":prefs_tests",
-    ":privacy_page_test",
     ":privacy_review_page_test",
     ":privacy_sandbox_test",
 
@@ -108,7 +107,6 @@ js_type_check("closure_compile") {
     #":secure_dns_interactive_test",
     #":secure_dns_test",
     #":security_keys_subpage_test",
-    ":security_page_test",
 
     #":settings_animated_pages_test",
     ":settings_category_default_radio_group_tests",
@@ -255,23 +253,6 @@ js_library("languages_page_metrics_test_browser") {
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
-js_library("privacy_page_test") {
-  deps = [
-    ":test_hats_browser_proxy",
-    ":test_metrics_browser_proxy",
-    ":test_privacy_page_browser_proxy",
-    ":test_site_settings_prefs_browser_proxy",
-    ":test_sync_browser_proxy",
-    "..:chai_assert",
-    "..:test_util",
-    "//chrome/browser/resources/settings:lazy_load",
-    "//chrome/browser/resources/settings:settings",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
 js_library("privacy_review_page_test") {
   deps = [
     "..:chai_assert",
@@ -366,20 +347,6 @@ js_library("settings_menu_interactive_ui_test") {
   deps = [
     "..:chai_assert",
     "//chrome/browser/resources/settings:settings",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("security_page_test") {
-  deps = [
-    ":test_metrics_browser_proxy",
-    ":test_privacy_page_browser_proxy",
-    ":test_sync_browser_proxy",
-    "..:chai_assert",
-    "..:test_util",
-    "//chrome/browser/resources/settings:lazy_load",
-    "//chrome/browser/resources/settings:settings",
-    "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

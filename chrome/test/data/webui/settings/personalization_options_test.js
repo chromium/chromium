@@ -49,7 +49,7 @@ suite('PersonalizationOptionsTests_AllBuilds', function() {
 
   setup(function() {
     testBrowserProxy = new TestPrivacyPageBrowserProxy();
-    PrivacyPageBrowserProxyImpl.instance_ = testBrowserProxy;
+    PrivacyPageBrowserProxyImpl.setInstance(testBrowserProxy);
     syncBrowserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
     buildTestElement();
@@ -194,7 +194,7 @@ suite('PersonalizationOptionsTests_OfficialBuild', function() {
 
   setup(function() {
     testBrowserProxy = new TestPrivacyPageBrowserProxy();
-    PrivacyPageBrowserProxyImpl.instance_ = testBrowserProxy;
+    PrivacyPageBrowserProxyImpl.setInstance(testBrowserProxy);
     PolymerTest.clearBody();
     testElement = document.createElement('settings-personalization-options');
     document.body.appendChild(testElement);

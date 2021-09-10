@@ -87,7 +87,7 @@ suite('PrivacyPage', function() {
     ClearBrowsingDataBrowserProxyImpl.setInstance(
         testClearBrowsingDataBrowserProxy);
     const testBrowserProxy = new TestPrivacyPageBrowserProxy();
-    PrivacyPageBrowserProxyImpl.instance_ = testBrowserProxy;
+    PrivacyPageBrowserProxyImpl.setInstance(testBrowserProxy);
     siteSettingsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
     SiteSettingsPrefsBrowserProxyImpl.instance_ = siteSettingsBrowserProxy;
     siteSettingsBrowserProxy.setCookieSettingDescription(testLabels[0]);
@@ -260,7 +260,7 @@ suite('PrivacyPageSound', function() {
     loadTimeData.overrideValues({enableBlockAutoplayContentSetting: true});
 
     testBrowserProxy = new TestPrivacyPageBrowserProxy();
-    PrivacyPageBrowserProxyImpl.instance_ = testBrowserProxy;
+    PrivacyPageBrowserProxyImpl.setInstance(testBrowserProxy);
 
     Router.getInstance().navigateTo(routes.SITE_SETTINGS_SOUND);
     document.body.innerHTML = '';

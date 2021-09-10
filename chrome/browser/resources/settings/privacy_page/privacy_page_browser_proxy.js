@@ -5,7 +5,7 @@
 /** @fileoverview Handles interprocess communication for the privacy page. */
 
 // clang-format off
-import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 // clang-format on
 
   /** @typedef {{enabled: boolean, managed: boolean}} */
@@ -147,6 +147,17 @@ export class PrivacyPageBrowserProxyImpl {
   recordUserDropdownInteraction(oldSelection, newSelection) {
     chrome.send('recordUserDropdownInteraction', [oldSelection, newSelection]);
   }
+
+  /** @return {!PrivacyPageBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new PrivacyPageBrowserProxyImpl());
+  }
+
+  /** @param {!PrivacyPageBrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(PrivacyPageBrowserProxyImpl);
+/** @type {?PrivacyPageBrowserProxy} */
+let instance = null;

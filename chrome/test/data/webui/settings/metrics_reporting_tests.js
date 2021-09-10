@@ -22,7 +22,7 @@ suite('metrics reporting', function() {
 
   setup(function() {
     testBrowserProxy = new TestPrivacyPageBrowserProxy();
-    PrivacyPageBrowserProxyImpl.instance_ = testBrowserProxy;
+    PrivacyPageBrowserProxyImpl.setInstance(testBrowserProxy);
     PolymerTest.clearBody();
     page = document.createElement('settings-personalization-options');
     document.body.appendChild(page);

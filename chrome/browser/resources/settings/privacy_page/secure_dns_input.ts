@@ -15,8 +15,12 @@ import {loadTimeData} from '../i18n_setup.js';
 
 import {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from './privacy_page_browser_proxy.js';
 
+interface SecureDnsInputElement {
+  $: {
+    input: HTMLElement,
+  };
+}
 
-/** @polymer */
 class SecureDnsInputElement extends PolymerElement {
   static get is() {
     return 'secure-dns-input';
@@ -35,33 +39,28 @@ class SecureDnsInputElement extends PolymerElement {
 
       /*
        * Whether |errorText| should be displayed beneath the input field.
-       * @private
        */
       showError_: Boolean,
 
       /**
        * The error text to display beneath the input field when |showError_| is
        * true.
-       * @private
        */
       errorText_: String,
-
     };
   }
 
-  constructor() {
-    super();
-
-    /** @private {!PrivacyPageBrowserProxy} */
-    this.browserProxy_ = PrivacyPageBrowserProxyImpl.getInstance();
-  }
+  value: string;
+  private showError_: boolean;
+  private errorText_: string;
+  private browserProxy_: PrivacyPageBrowserProxy =
+      PrivacyPageBrowserProxyImpl.getInstance();
 
   /**
    * This function ensures that while the user is entering input, especially
    * after pressing Enter, the input is not prematurely marked as invalid.
-   * @private
    */
-  onInput_() {
+  private onInput_() {
     this.showError_ = false;
   }
 
@@ -71,9 +70,8 @@ class SecureDnsInputElement extends PolymerElement {
    * test query. Show an error message if the tested value is still the most
    * recent value, is non-empty, and was either invalid or failed the test
    * query.
-   * @private
    */
-  async validate() {
+  private async validate() {
     this.showError_ = false;
     const valueToValidate = this.value;
     const templates =
@@ -111,10 +109,9 @@ class SecureDnsInputElement extends PolymerElement {
   }
 
   /**
-   * Returns whether an error is being shown.
-   * @return {boolean}
+   * @return whether an error is being shown.
    */
-  isInvalid() {
+  isInvalid(): boolean {
     return !!this.showError_;
   }
 }

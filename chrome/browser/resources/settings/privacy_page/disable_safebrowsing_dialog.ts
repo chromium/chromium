@@ -9,10 +9,15 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+export interface SettingsDisableSafebrowsingDialogElement {
+  $: {
+    dialog: CrDialogElement,
+  };
+}
 
-/** @polymer */
 export class SettingsDisableSafebrowsingDialogElement extends PolymerElement {
   static get is() {
     return 'settings-disable-safebrowsing-dialog';
@@ -22,9 +27,6 @@ export class SettingsDisableSafebrowsingDialogElement extends PolymerElement {
     return html`{__html_template__}`;
   }
 
-
-
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
@@ -32,20 +34,23 @@ export class SettingsDisableSafebrowsingDialogElement extends PolymerElement {
   }
 
   /** @return {boolean} Whether the user confirmed the dialog. */
-  wasConfirmed() {
-    return /** @type {!CrDialogElement} */ (this.$.dialog)
-               .getNative()
-               .returnValue === 'success';
+  wasConfirmed(): boolean {
+    return this.$.dialog.getNative().returnValue === 'success';
   }
 
-  /** @private */
-  onDialogCancel_() {
+  private onDialogCancel_() {
     this.$.dialog.cancel();
   }
 
-  /** @private */
-  onDialogConfirm_() {
+  private onDialogConfirm_() {
     this.$.dialog.close();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-disable-safebrowsing-dialog':
+        SettingsDisableSafebrowsingDialogElement;
   }
 }
 

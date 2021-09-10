@@ -37,7 +37,7 @@ suite('CrSettingsSecurityPageTest', function() {
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
     testPrivacyBrowserProxy = new TestPrivacyPageBrowserProxy();
-    PrivacyPageBrowserProxyImpl.instance_ = testPrivacyBrowserProxy;
+    PrivacyPageBrowserProxyImpl.setInstance(testPrivacyBrowserProxy);
     document.body.innerHTML = '';
     page = /** @type {!SettingsSecurityPageElement} */ (
         document.createElement('settings-security-page'));
