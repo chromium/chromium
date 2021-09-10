@@ -10,6 +10,7 @@ import argparse
 import os
 import runner_logs
 import sys
+import tempfile
 
 from common_args import AddCommonArgs, AddTargetSpecificArgs, \
                         ConfigureLogging, GetDeploymentTargetForArgs
@@ -70,8 +71,8 @@ def AddTestExecutionArgs(arg_parser):
   test_args.add_argument(
       '--test-launcher-filter-file',
       default=None,
-      help='Override default filter file passed to target test '
-      'process. Set an empty path to disable filtering.')
+      help='Filter file(s) passed to target test process. Use ";" to separate '
+      'multiple filter files ')
   test_args.add_argument('--test-launcher-jobs',
                          type=int,
                          help='Sets the number of parallel test jobs.')
@@ -201,11 +202,17 @@ def main():
         system_logger.Start(target, args.package, args.system_log_file)
 
       if args.test_launcher_filter_file:
-        target.PutFile(args.test_launcher_filter_file,
-                       TEST_FILTER_PATH,
-                       for_package=args.package_name,
-                       for_realms=test_realms)
-        child_args.append('--test-launcher-filter-file=' + TEST_FILTER_PATH)
+        test_launcher_filter_files = args.test_launcher_filter_file.split(';')
+        with tempfile.NamedTemporaryFile('a+b') as combined_filter_file:
+          for filter_file in test_launcher_filter_files:
+            with open(filter_file, 'r') as f:
+              combined_filter_file.write(f.read())
+          combined_filter_file.seek(0)
+          target.PutFile(combined_filter_file.name,
+                         TEST_FILTER_PATH,
+                         for_package=args.package_name,
+                         for_realms=test_realms)
+          child_args.append('--test-launcher-filter-file=' + TEST_FILTER_PATH)
 
       test_server = None
       if args.enable_test_server:

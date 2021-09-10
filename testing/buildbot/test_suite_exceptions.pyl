@@ -3024,6 +3024,11 @@
   },
   'views_unittests': {
     'modifications': {
+      'fuchsia-fyi-arm64-dbg': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.debug.views_unittests.filter',
+        ],
+      },
       # https://crbug.com/1111979,
       'linux-lacros-code-coverage': {
         'args': [
@@ -3055,13 +3060,6 @@
           'TooltipControllerTest*:'
           'TooltipStateManagerTest*'
         ],
-      },
-    },
-    'replacements': {
-      'fuchsia-fyi-arm64-dbg': {
-        'args': {
-          '--test-launcher-filter-file': '../../testing/buildbot/filters/fuchsia.debug.views_unittests.filter',
-        },
       },
     },
   },
@@ -3098,12 +3096,10 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.viz_unittests.filter',
         ],
       },
-    },
-    'replacements': {
       'fuchsia-fyi-arm64-dbg': {
-        'args': {
-          '--test-launcher-filter-file': '../../testing/buildbot/filters/fuchsia.debug.viz_unittests.filter',
-        },
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.debug.viz_unittests.filter',
+        ],
       },
     },
   },
