@@ -34,6 +34,7 @@
 #include "chrome/browser/ash/policy/rsu/lookup_key_uploader.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/ash/policy/status_collector/device_status_collector.h"
+#include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
 #include "chrome/browser/ash/policy/uploading/heartbeat_scheduler.h"
 #include "chrome/browser/ash/policy/uploading/status_uploader.h"
 #include "chrome/browser/ash/policy/uploading/system_log_uploader.h"
@@ -128,6 +129,7 @@ void DeviceCloudPolicyManagerAsh::Shutdown() {
   heartbeat_scheduler_.reset();
   syslog_uploader_.reset();
   status_uploader_.reset();
+  managed_session_service_.reset();
   external_data_manager_->Disconnect();
   state_keys_update_subscription_ = {};
   CloudPolicyManager::Shutdown();
@@ -233,14 +235,18 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
   // themselves track the current state of the monitoring settings and only
   // perform monitoring if it is active.
   if (install_attributes->IsCloudManaged()) {
+    managed_session_service_ =
+        std::make_unique<policy::ManagedSessionService>();
+    // TODO(b/199169968):: Pass managed_session_service_ to
+    // DeviceStatusCollector instance.
     CreateStatusUploader();
     syslog_uploader_ =
         std::make_unique<SystemLogUploader>(nullptr, task_runner_);
     heartbeat_scheduler_ = std::make_unique<HeartbeatScheduler>(
         g_browser_process->gcm_driver(), client(), device_store_.get(),
         install_attributes->GetDeviceId(), task_runner_);
-    login_logout_reporter_ =
-        std::make_unique<chromeos::reporting::LoginLogoutReporter>();
+    login_logout_reporter_ = chromeos::reporting::LoginLogoutReporter::Create(
+        managed_session_service_.get());
     user_added_removed_reporter_ =
         std::make_unique<::reporting::UserAddedRemovedReporter>();
   }

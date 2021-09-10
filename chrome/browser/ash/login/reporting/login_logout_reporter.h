@@ -14,6 +14,12 @@
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/reporting/client/report_queue_provider.h"
 
+namespace reporting {
+
+class UserEventReporterHelper;
+
+}  // namespace reporting
+
 namespace chromeos {
 namespace reporting {
 
@@ -21,39 +27,18 @@ class LoginLogoutReporter : public policy::ManagedSessionService::Observer {
  public:
   class Delegate {
    public:
-    Delegate();
+    Delegate() = default;
 
     Delegate(const Delegate& other) = delete;
     Delegate& operator=(const Delegate& other) = delete;
     Delegate(const Delegate&& other) = delete;
     Delegate& operator=(const Delegate&& other) = delete;
 
-    virtual ~Delegate();
-
-    // Return whether the login/logout event reporting is allowed by policy.
-    virtual bool ShouldReportEvent() const;
-
-    // Return whether the user email can be included the login/logout report,
-    // only affiliated user emails are included. Function can accept
-    // canonicalized and non canonicalized user_email.
-    virtual bool ShouldReportUser(base::StringPiece user_email) const;
-
-    // Return the device DM token.
-    virtual policy::DMToken GetDMToken() const;
-
-    // Create a new reporting pipeline queue to be used for reporting the
-    // login/logout event.
-    virtual void CreateReportingQueue(
-        std::unique_ptr<::reporting::ReportQueueConfiguration> config,
-        ::reporting::ReportQueueProvider::CreateReportQueueCallback
-            create_queue_cb);
+    virtual ~Delegate() = default;
 
     // Get account id used in last login attempt, return empty account id if
     // unable to get it.
     virtual AccountId GetLastLoginAttemptAccountId() const;
-
-   private:
-    scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
   };
 
   LoginLogoutReporter(const LoginLogoutReporter& other) = delete;
@@ -61,11 +46,14 @@ class LoginLogoutReporter : public policy::ManagedSessionService::Observer {
   LoginLogoutReporter(const LoginLogoutReporter&& other) = delete;
   LoginLogoutReporter& operator=(const LoginLogoutReporter&& other) = delete;
 
-  // Default parameter value used in production, and set in testing.
-  explicit LoginLogoutReporter(
-      std::unique_ptr<Delegate> delegate = std::make_unique<Delegate>());
-
   ~LoginLogoutReporter() override;
+
+  static std::unique_ptr<LoginLogoutReporter> Create(
+      policy::ManagedSessionService* managed_session_service);
+
+  static std::unique_ptr<LoginLogoutReporter> CreateForTest(
+      std::unique_ptr<::reporting::UserEventReporterHelper> reporter_helper,
+      std::unique_ptr<Delegate> delegate);
 
   // Report user device failed login attempt.
   void OnLoginFailure(const chromeos::AuthFailure& error) override;
@@ -77,38 +65,20 @@ class LoginLogoutReporter : public policy::ManagedSessionService::Observer {
   void OnSessionTerminationStarted(const user_manager::User* user) override;
 
  private:
-  static LoginFailureReason GetLoginFailureReasonForReport(
-      const chromeos::AuthFailure& error);
+  LoginLogoutReporter(
+      std::unique_ptr<::reporting::UserEventReporterHelper> reporter_helper,
+      std::unique_ptr<Delegate> delegate,
+      policy::ManagedSessionService* managed_session_service);
 
-  void OnReportQueueCreated(
-      ::reporting::StatusOr<std::unique_ptr<::reporting::ReportQueue>>
-          report_queue_result);
+  void MaybeReportEvent(LoginLogoutRecord record, const AccountId& account_id);
 
-  void EnqueueRecord(const LoginLogoutRecord& record);
-
-  static void OnRecordEnqueued(::reporting::Status status);
-
-  void Init();
-
-  void MaybeReportEvent(LoginLogoutRecord record,
-                        base::StringPiece user_email,
-                        bool is_guest);
+  std::unique_ptr<::reporting::UserEventReporterHelper> reporter_helper_;
 
   std::unique_ptr<Delegate> delegate_;
-
-  std::unique_ptr<::reporting::ReportQueue> report_queue_;
-
-  base::queue<LoginLogoutRecord> pending_events_;
-
-  bool is_initialized_ = false;
-
-  policy::ManagedSessionService managed_session_service_;
 
   base::ScopedObservation<policy::ManagedSessionService,
                           policy::ManagedSessionService::Observer>
       managed_session_observation_{this};
-
-  base::WeakPtrFactory<LoginLogoutReporter> weak_ptr_factory_{this};
 };
 }  // namespace reporting
 }  // namespace chromeos

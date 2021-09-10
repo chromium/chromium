@@ -35,7 +35,7 @@ UserEventReporterHelper::UserEventReporterHelper(
 UserEventReporterHelper::~UserEventReporterHelper() = default;
 
 bool UserEventReporterHelper::ShouldReportUser(const std::string& email) const {
-  return ash::ChromeUserManager::Get()->ShouldReportUser(std::string(email));
+  return ash::ChromeUserManager::Get()->ShouldReportUser(email);
 }
 
 bool UserEventReporterHelper::ReportingEnabled(

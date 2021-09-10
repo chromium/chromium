@@ -53,6 +53,7 @@ namespace policy {
 class DeviceCloudPolicyStoreAsh;
 class ForwardingSchemaRegistry;
 class HeartbeatScheduler;
+class ManagedSessionService;
 class SchemaRegistry;
 class StatusUploader;
 class SystemLogUploader;
@@ -178,6 +179,10 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager {
   // Helper object that handles sending heartbeats over the GCM channel to
   // the server, to monitor connectivity.
   std::unique_ptr<HeartbeatScheduler> heartbeat_scheduler_;
+
+  // Object that monitors managed session related events used by reporting
+  // services.
+  std::unique_ptr<policy::ManagedSessionService> managed_session_service_;
 
   // Object that reports login/logout events to the server.
   std::unique_ptr<chromeos::reporting::LoginLogoutReporter>
