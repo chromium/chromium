@@ -128,8 +128,7 @@ void FontAccessManagerImpl::EnumerateLocalFonts(
           PermissionType::FONT_ACCESS, rfh, context.origin.GetURL(),
           /*user_gesture=*/true,
           base::BindOnce(&FontAccessManagerImpl::DidRequestPermission,
-                         // Safe because this is an initialized singleton.
-                         base::Unretained(this), std::move(callback)));
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 #else
   std::move(callback).Run(blink::mojom::FontEnumerationStatus::kUnimplemented,
                           base::ReadOnlySharedMemoryRegion());
@@ -174,10 +173,13 @@ void FontAccessManagerImpl::ChooseLocalFonts(
 
   FontAccessDelegate* delegate =
       GetContentClient()->browser()->GetFontAccessDelegate();
+  // TODO(pwnall): It may be possible to replace the WeakPtr below with
+  //               base::Unretained(), if the FontAccessChooser guarantees that
+  //               the callback isn't run after the chooser is destroyed.
   choosers_[context.frame_id] = delegate->RunChooser(
       rfh, selection,
       base::BindOnce(&FontAccessManagerImpl::DidChooseLocalFonts,
-                     base::Unretained(this), context.frame_id,
+                     weak_ptr_factory_.GetWeakPtr(), context.frame_id,
                      std::move(callback)));
 #endif
 }
@@ -189,11 +191,11 @@ void FontAccessManagerImpl::FindAllFonts(FindAllFontsCallback callback) {
   std::move(callback).Run(blink::mojom::FontEnumerationStatus::kUnimplemented,
                           {});
 #else
-  // TODO(pwnall): base::Unretained is unsafe. Introduce a WeakPtrFactory.
   font_enumeration_cache_
       .AsyncCall(&FontEnumerationCache::GetFontEnumerationData)
       .Then(base::BindOnce(&FontAccessManagerImpl::DidFindAllFonts,
-                           base::Unretained(this), std::move(callback)));
+                           weak_ptr_factory_.GetWeakPtr(),
+                           std::move(callback)));
 #endif
 }
 
