@@ -6859,5 +6859,8 @@ crbug.com/1233826 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css
 crbug.com/1247758 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-shadow-part4.html [ Pass Crash ]
 crbug.com/1247758 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-color-over-pattern.html [ Pass Crash ]
 
+# Skip external/wpt/WebIDL to unblock wpt-importer, will revert this later
+external/wpt/WebIDL/* [ Skip ]
+
 # Sheriff 2021-09-10
 crbug.com/1248437 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/one-custom-property-animation-half-opaque.https.html [ Pass Failure ]
