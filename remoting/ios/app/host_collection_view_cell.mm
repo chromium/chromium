@@ -93,7 +93,14 @@ static NSDictionary<NSString*, NSNumber*>* const kOfflineReasonL10nId = @{
 
   _titleLabel = [[UILabel alloc] init];
   _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  _titleLabel.font = [MDCTypography boldFontFromFont:MDCTypography.subheadFont];
+  UIFont* subheadFont = MDCTypography.subheadFont;
+  UIFontDescriptor* subheadFontDescriptor = [subheadFont.fontDescriptor
+      fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
+  subheadFontDescriptor = subheadFontDescriptor ?: subheadFont.fontDescriptor;
+  UIFont* boldSubheadFont = [UIFont fontWithDescriptor:subheadFontDescriptor
+                                                  size:subheadFont.pointSize];
+
+  _titleLabel.font = boldSubheadFont;
   _titleLabel.alpha = kTitleOpacity;
   _titleLabel.textColor = RemotingTheme.hostCellTitleColor;
   [_labelView addSubview:_titleLabel];
