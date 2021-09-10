@@ -148,7 +148,7 @@ std::string GetProfileCategoryForLogging(Profile* profile) {
 }
 
 bool IsChromeOsDataMandatory() {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
   return true;
 #else
   return false;

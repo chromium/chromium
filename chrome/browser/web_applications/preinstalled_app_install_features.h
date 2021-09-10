@@ -8,7 +8,7 @@
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/strings/string_piece_forward.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 
 class Profile;
 
@@ -20,9 +20,9 @@ extern const base::Feature kMigrateDefaultChromeAppToWebAppsNonGSuite;
 
 extern const base::Feature kDefaultCalculatorWebApp;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
 extern const base::Feature kAllowDefaultWebAppMigrationForChromeOsManagedUsers;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // defined(OS_CHROMEOS)
 
 // Returns the base::Feature in |kPreinstalledAppInstallFeatures| that
 // corresponds to |feature_name|. Used by external app install configs to gate

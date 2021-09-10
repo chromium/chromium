@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/types/id_type.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/icon_key_util.h"
@@ -26,7 +26,7 @@
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
 #include "chrome/browser/apps/app_service/app_notifications.h"
 #include "chrome/browser/apps/app_service/app_web_contents_data.h"
 #include "chrome/browser/apps/app_service/media_requests.h"
@@ -56,7 +56,7 @@ struct ShortcutIdTypeMarker {};
 typedef base::IdTypeU32<ShortcutIdTypeMarker> ShortcutId;
 
 class WebAppPublisherHelper : public AppRegistrarObserver,
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
                               public NotificationDisplayService::Observer,
                               public MediaCaptureDevicesDispatcher::Observer,
                               public apps::AppWebContentsData::Client,
@@ -209,7 +209,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   WebAppRegistrar& registrar() const;
 
  private:
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
   class BadgeManagerDelegate : public badging::BadgeManagerDelegate {
    public:
     explicit BadgeManagerDelegate(
@@ -237,7 +237,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
       const base::Time& last_launch_time) override;
   void OnWebAppUserDisplayModeChanged(const AppId& app_id,
                                       DisplayMode user_display_mode) override;
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
   void OnWebAppDisabledStateChanged(const AppId& app_id,
                                     bool is_disabled) override;
   void OnWebAppsDisabledModeChanged() override;
@@ -251,7 +251,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
       NotificationDisplayService* service) override;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
   // MediaCaptureDevicesDispatcher::Observer:
   void OnRequestUpdate(int render_process_id,
                        int render_frame_id,
@@ -280,7 +280,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
       apps::mojom::LaunchSource launch_source,
       int64_t display_id);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
   // Updates app visibility.
   void UpdateAppDisabledMode(apps::mojom::AppPtr& app);
 
@@ -318,7 +318,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
 
   apps::PausedApps paused_apps_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
   base::ScopedObservation<NotificationDisplayService,
                           NotificationDisplayService::Observer>
       notification_display_service_{this};

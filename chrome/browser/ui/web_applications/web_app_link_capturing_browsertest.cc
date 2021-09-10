@@ -593,7 +593,7 @@ IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingOriginTrialBrowserTest,
   AppId app_id =
       web_app::InstallWebAppFromPage(browser(), GURL(kTestWebAppUrl));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
   // Origin trial should grant the app access.
   EXPECT_EQ(provider.registrar().GetAppCaptureLinks(app_id),
             blink::mojom::CaptureLinks::kNewClient);
@@ -622,7 +622,7 @@ IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingOriginTrialBrowserTest,
             blink::mojom::CaptureLinks::kUndefined);
 
   ALLOW_UNUSED_LOCAL(app_web_contents);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // defined(OS_CHROMEOS)
 }
 
 }  // namespace web_app

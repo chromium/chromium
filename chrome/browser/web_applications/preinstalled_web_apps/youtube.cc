@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_app_definition_utils.h"
 #include "chrome/browser/web_applications/web_application_info.h"
@@ -18,11 +18,11 @@ ExternalInstallOptions GetConfigForYouTube() {
   ExternalInstallOptions options(
       /*install_url=*/GURL(
           "https://www.youtube.com/s/notifications/manifest/cr_install.html"),
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
       /*user_display_mode=*/DisplayMode::kStandalone,
 #else
       /*user_display_mode=*/DisplayMode::kBrowser,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // defined(OS_CHROMEOS)
       /*install_source=*/ExternalInstallSource::kExternalDefault);
 
   options.user_type_allowlist = {"unmanaged", "managed"};

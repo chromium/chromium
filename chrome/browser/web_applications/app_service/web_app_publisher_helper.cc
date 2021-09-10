@@ -10,6 +10,7 @@
 #include "base/containers/extend.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -40,7 +41,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
 #include "chrome/browser/apps/app_service/app_service_metrics.h"
 #include "chrome/browser/badging/badge_manager_factory.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
@@ -104,7 +105,7 @@ WebAppPublisherHelper::Delegate::Delegate() = default;
 
 WebAppPublisherHelper::Delegate::~Delegate() = default;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
 WebAppPublisherHelper::BadgeManagerDelegate::BadgeManagerDelegate(
     const base::WeakPtr<WebAppPublisherHelper>& publisher_helper)
     : badging::BadgeManagerDelegate(publisher_helper->profile(),
@@ -250,7 +251,7 @@ void WebAppPublisherHelper::PopulateWebAppPermissions(
 apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
     const WebApp* web_app) {
   bool is_disabled = false;
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
   DCHECK(web_app->chromeos_data().has_value());
   is_disabled = web_app->chromeos_data()->is_disabled;
 #endif
@@ -292,7 +293,7 @@ apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
   app->paused = paused ? apps::mojom::OptionalBool::kTrue
                        : apps::mojom::OptionalBool::kFalse;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
   if (is_disabled) {
     UpdateAppDisabledMode(app);
   }
@@ -755,7 +756,7 @@ void WebAppPublisherHelper::OnWebAppWillBeUninstalled(const AppId& app_id) {
 
   paused_apps_.MaybeRemoveApp(app_id);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
   app_notifications_.RemoveNotificationsForApp(app_id);
 
   auto result = media_requests_.RemoveRequests(app_id);
@@ -802,7 +803,7 @@ void WebAppPublisherHelper::OnWebAppUserDisplayModeChanged(
   PublishWindowModeUpdate(app_id, user_display_mode);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
 // If is_disabled is set, the app backed by |app_id| is published with readiness
 // kDisabledByPolicy, otherwise it's published with readiness kReady.
 void WebAppPublisherHelper::OnWebAppDisabledStateChanged(const AppId& app_id,
@@ -849,7 +850,7 @@ void WebAppPublisherHelper::OnWebAppsDisabledModeChanged() {
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
 void WebAppPublisherHelper::OnNotificationDisplayed(
     const message_center::Notification& notification,
     const NotificationCommon::Metadata* const metadata) {
@@ -974,7 +975,7 @@ void WebAppPublisherHelper::Init(bool observe_media_requests) {
   content_settings_observation_.Observe(
       HostContentSettingsMapFactory::GetForProfile(profile_));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
   notification_display_service_.Observe(
       NotificationDisplayServiceFactory::GetForProfile(profile()));
 
@@ -989,7 +990,7 @@ void WebAppPublisherHelper::Init(bool observe_media_requests) {
 
   web_app_launch_manager_ = std::make_unique<WebAppLaunchManager>(profile_);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
   if (observe_media_requests) {
     media_dispatcher_.Observe(MediaCaptureDevicesDispatcher::GetInstance());
   }
@@ -1002,7 +1003,7 @@ IconEffects WebAppPublisherHelper::GetIconEffects(const WebApp* web_app) {
     icon_effects |= IconEffects::kBlocked;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
   icon_effects |= web_app->is_generated_icon() ? IconEffects::kCrOsStandardMask
                                                : IconEffects::kCrOsStandardIcon;
 #endif
@@ -1060,7 +1061,7 @@ content::WebContents* WebAppPublisherHelper::LaunchAppWithIntentImpl(
   return LaunchAppWithParams(std::move(params));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
 void WebAppPublisherHelper::UpdateAppDisabledMode(apps::mojom::AppPtr& app) {
   if (provider_->policy_manager().IsDisabledAppsModeHidden()) {
     app->show_in_launcher = apps::mojom::OptionalBool::kFalse;

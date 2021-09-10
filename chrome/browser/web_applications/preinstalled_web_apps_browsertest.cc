@@ -6,6 +6,7 @@
 
 #include "base/test/bind.h"
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
@@ -60,13 +61,13 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
     const char* launch_url;
   } kOfflineOnlyExpectations[] = {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
     {
         kGoogleCalendarAppId,
         "https://calendar.google.com/calendar/installwebapp?usp=chrome_default",
         "https://calendar.google.com/calendar/r?usp=installed_webapp",
     },
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // defined(OS_CHROMEOS)
     {
         kGoogleDocsAppId,
         "https://docs.google.com/document/installwebapp?usp=chrome_default",
@@ -106,14 +107,14 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
     const char* install_url;
   } kOnlineOnlyExpectations[] = {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
     {
         "https://mail.google.com/chat/download?usp=chrome_default",
     },
     {
         "https://meet.google.com/download/webapp?usp=chrome_default",
     },
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // defined(OS_CHROMEOS)
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   };
   size_t kOnlineOnlyExpectedCount =
