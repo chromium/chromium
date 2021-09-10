@@ -45,10 +45,8 @@ void OnIconFetched(
 
   if (bitmap.drawsNothing()) {
     if (icons.empty()) {
-      BrowserThread::GetTaskRunnerForThread(
-          ServiceWorkerContext::GetCoreThreadId())
-          ->PostTask(FROM_HERE,
-                     base::BindOnce(std::move(callback), std::string()));
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), std::string()));
     } else {
       // If could not download or decode the chosen image(e.g. not supported,
       // invalid), try it again with remaining icons.
@@ -66,8 +64,8 @@ void OnIconFetched(
       base::StringPiece(reinterpret_cast<const char*>(&bitmap_data[0]),
                         bitmap_data.size()),
       &encoded_data);
-  BrowserThread::GetTaskRunnerForThread(ServiceWorkerContext::GetCoreThreadId())
-      ->PostTask(FROM_HERE, base::BindOnce(std::move(callback), encoded_data));
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), encoded_data));
 }
 
 void DownloadBestMatchingIcon(
@@ -81,10 +79,8 @@ void DownloadBestMatchingIcon(
   WebContents* web_contents =
       GetWebContentsFromFrameRoutingIds(scope, *frame_routing_ids);
   if (web_contents == nullptr) {
-    BrowserThread::GetTaskRunnerForThread(
-        ServiceWorkerContext::GetCoreThreadId())
-        ->PostTask(FROM_HERE,
-                   base::BindOnce(std::move(callback), std::string()));
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::string()));
     return;
   }
 
@@ -99,10 +95,8 @@ void DownloadBestMatchingIcon(
     // developers in advance unlike when fetching or decoding fails. We already
     // checked whether they are valid in renderer side. So, if the icon url is
     // invalid, it's something wrong.
-    BrowserThread::GetTaskRunnerForThread(
-        ServiceWorkerContext::GetCoreThreadId())
-        ->PostTask(FROM_HERE,
-                   base::BindOnce(std::move(callback), std::string()));
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::string()));
     return;
   }
 
@@ -147,18 +141,6 @@ WebContents* GetWebContentsFromFrameRoutingIds(
   return nullptr;
 }
 
-void StartOnUI(
-    const GURL& scope,
-    std::unique_ptr<std::vector<GlobalRenderFrameHostId>> frame_routing_ids,
-    const std::vector<blink::Manifest::ImageResource>& icons,
-    PaymentInstrumentIconFetcher::PaymentInstrumentIconFetcherCallback
-        callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  DownloadBestMatchingIcon(scope, std::move(frame_routing_ids), icons,
-                           std::move(callback));
-}
-
 }  // namespace
 
 // static
@@ -167,12 +149,10 @@ void PaymentInstrumentIconFetcher::Start(
     std::unique_ptr<std::vector<GlobalRenderFrameHostId>> provider_hosts,
     const std::vector<blink::Manifest::ImageResource>& icons,
     PaymentInstrumentIconFetcherCallback callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  RunOrPostTaskOnThread(
-      FROM_HERE, BrowserThread::UI,
-      base::BindOnce(&StartOnUI, scope, std::move(provider_hosts), icons,
-                     std::move(callback)));
+  DownloadBestMatchingIcon(scope, std::move(provider_hosts), icons,
+                           std::move(callback));
 }
 
 }  // namespace content
