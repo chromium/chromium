@@ -249,6 +249,7 @@ group("gn_all") {
 
   if (!is_ios && !is_fuchsia) {
     deps += [
+      "//chrome/test:telemetry_perf_unittests",
       "//chrome/test:unit_tests",
       "//components:components_browsertests",
       "//device:device_unittests",
@@ -257,9 +258,7 @@ group("gn_all") {
       "//media/cast:cast_unittests",
       "//third_party/catapult/telemetry:bitmaptools($host_toolchain)",
     ]
-    if (!is_android) {
-      deps += [ "//chrome/test:telemetry_perf_unittests" ]
-    } else {
+    if (is_android) {
       import("//tools/perf/chrome_telemetry_build/android_browser_types.gni")
       foreach(_target_suffix, telemetry_android_browser_target_suffixes) {
         deps += [ "//chrome/test:telemetry_perf_unittests${_target_suffix}" ]
@@ -830,10 +829,9 @@ group("gn_all") {
       "//chrome/browser/vr:vr_common_perftests",
       "//chrome/browser/vr:vr_common_unittests",
       "//chrome/browser/vr:vr_pixeltests",
+      "//tools/perf/contrib/vr_benchmarks:vr_perf_tests",
     ]
-    if (!is_android) {
-      deps += [ "//tools/perf/contrib/vr_benchmarks:vr_perf_tests" ]
-    } else {
+    if (is_android) {
       deps += [ "//chrome/browser/android/vr:vr_android_unittests" ]
       import("//tools/perf/chrome_telemetry_build/android_browser_types.gni")
       foreach(_target_suffix, telemetry_android_browser_target_suffixes) {
