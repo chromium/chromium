@@ -23,23 +23,25 @@ class TestControllerAsh : public mojom::TestController {
   void BindReceiver(mojo::PendingReceiver<mojom::TestController> receiver);
 
   // crosapi::mojom::TestController:
+  void ClickWindow(const std::string& window_id) override;
+  void DoesItemExistInShelf(const std::string& item_id,
+                            DoesItemExistInShelfCallback callback) override;
   void DoesWindowExist(const std::string& window_id,
                        DoesWindowExistCallback callback) override;
-  void ClickWindow(const std::string& window_id) override;
   void EnterOverviewMode(EnterOverviewModeCallback callback) override;
   void ExitOverviewMode(ExitOverviewModeCallback callback) override;
   void EnterTabletMode(EnterTabletModeCallback callback) override;
   void ExitTabletMode(ExitTabletModeCallback callback) override;
+  void GetMinimizeOnBackKeyWindowProperty(
+      const std::string& window_id,
+      GetMinimizeOnBackKeyWindowPropertyCallback cb) override;
+  void GetWindowPositionInScreen(const std::string& window_id,
+                                 GetWindowPositionInScreenCallback cb) override;
   void SendTouchEvent(const std::string& window_id,
                       mojom::TouchEventType type,
                       uint8_t pointer_id,
                       const gfx::PointF& location_in_window,
                       SendTouchEventCallback cb) override;
-  void GetWindowPositionInScreen(const std::string& window_id,
-                                 GetWindowPositionInScreenCallback cb) override;
-  void GetMinimizeOnBackKeyWindowProperty(
-      const std::string& window_id,
-      GetMinimizeOnBackKeyWindowPropertyCallback cb) override;
 
  private:
   class OverviewWaiter;

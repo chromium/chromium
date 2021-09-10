@@ -4,18 +4,28 @@
 
 #include "chrome/browser/lacros/lacros_extension_apps_controller.h"
 
+#include <utility>
+
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/apps/app_service/publishers/extension_apps_enable_flow.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps_util.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/lacros/lacros_extension_apps_utility.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/extensions/application_launch.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
+#include "ui/events/event_constants.h"
 
 LacrosExtensionAppsController::LacrosExtensionAppsController()
     : controller_{this} {}
@@ -140,7 +150,49 @@ void LacrosExtensionAppsController::SetWindowMode(
 void LacrosExtensionAppsController::Launch(
     crosapi::mojom::LaunchParamsPtr launch_params,
     LaunchCallback callback) {
-  NOTIMPLEMENTED();
+  Profile* profile = nullptr;
+  const extensions::Extension* extension = nullptr;
+  bool success = lacros_extension_apps_utility::DemuxId(launch_params->app_id,
+                                                        &profile, &extension);
+  crosapi::mojom::LaunchResultPtr result = crosapi::mojom::LaunchResult::New();
+  if (!success) {
+    std::move(callback).Run(std::move(result));
+    return;
+  }
+
+  if (!extensions::util::IsAppLaunchableWithoutEnabling(extension->id(),
+                                                        profile)) {
+    auto enable_flow = std::make_unique<apps::ExtensionAppsEnableFlow>(
+        profile, extension->id());
+    void* key = enable_flow.get();
+    enable_flows_[key] = std::move(enable_flow);
+
+    // Calling Run() can result in a synchronous callback. It must be the last
+    // thing we do before returning.
+    enable_flows_[key]->Run(
+        base::BindOnce(&LacrosExtensionAppsController::FinishedEnableFlow,
+                       weak_factory_.GetWeakPtr(), std::move(launch_params),
+                       std::move(callback), key));
+    return;
+  }
+
+  apps::mojom::IntentPtr intent;
+  if (launch_params->intent) {
+    intent = std::move(launch_params->intent.value());
+  }
+
+  extensions::LaunchContainer launch_container = extensions::GetLaunchContainer(
+      extensions::ExtensionPrefs::Get(profile), extension);
+  auto params = apps::CreateAppLaunchParamsForIntent(
+      extension->id(), ui::EF_NONE,
+      apps::GetAppLaunchSource(launch_params->launch_source),
+      display::kInvalidDisplayId, launch_container, std::move(intent));
+  OpenApplication(profile, std::move(params));
+
+  // TODO(https://crbug.com/1225848): Store the resulting instance token, which
+  // will be used to close the instance at a later point in time.
+  result->instance_id = base::UnguessableToken::Create();
+  std::move(callback).Run(std::move(result));
 }
 
 void LacrosExtensionAppsController::ExecuteContextMenuCommand(
@@ -148,4 +200,23 @@ void LacrosExtensionAppsController::ExecuteContextMenuCommand(
     const std::string& id,
     ExecuteContextMenuCommandCallback callback) {
   NOTIMPLEMENTED();
+}
+
+void LacrosExtensionAppsController::FinishedEnableFlow(
+    crosapi::mojom::LaunchParamsPtr launch_params,
+    LaunchCallback callback,
+    void* key,
+    bool success) {
+  DCHECK(enable_flows_.find(key) != enable_flows_.end());
+  enable_flows_.erase(key);
+
+  if (!success) {
+    crosapi::mojom::LaunchResultPtr result =
+        crosapi::mojom::LaunchResult::New();
+    std::move(callback).Run(std::move(result));
+    return;
+  }
+
+  // The extension was successfully enabled. Try to launch it again.
+  Launch(std::move(launch_params), std::move(callback));
 }

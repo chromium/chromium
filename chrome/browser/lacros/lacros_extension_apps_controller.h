@@ -5,9 +5,17 @@
 #ifndef CHROME_BROWSER_LACROS_LACROS_EXTENSION_APPS_CONTROLLER_H_
 #define CHROME_BROWSER_LACROS_LACROS_EXTENSION_APPS_CONTROLLER_H_
 
+#include <map>
+#include <memory>
+
+#include "base/memory/weak_ptr.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+
+namespace apps {
+class ExtensionAppsEnableFlow;
+}
 
 // This class is responsible for receiving AppController events from Ash, and
 // implementing their effects.
@@ -54,8 +62,26 @@ class LacrosExtensionAppsController : public crosapi::mojom::AppController {
       ExecuteContextMenuCommandCallback callback) override;
 
  private:
+  // Called when the enable flow has finished. |success| indicates whether the
+  // extension was enabled.
+  void FinishedEnableFlow(crosapi::mojom::LaunchParamsPtr launch_params,
+                          LaunchCallback callback,
+                          void* key,
+                          bool success);
+
+  // Tracks instances of ExtensionAppsEnableFlow. This class constructs one
+  // instance of ExtensionAppsEnableFlow for each attempt to launch a disabled
+  // application. There is no deduplication by app_id -- that means that if ash
+  // attempts to launch the same disabled app multiple times, there will be
+  // multiple instances of ExtensionAppsEnableFlow, and eventually each one will
+  // result in a callback to FinishedEnableFlow.
+  // The key is the raw pointer to the ExtensionAppsEnableFlow.
+  std::map<void*, std::unique_ptr<apps::ExtensionAppsEnableFlow>> enable_flows_;
+
   // Mojo endpoint that's responsible for receiving messages from Ash.
   mojo::Receiver<crosapi::mojom::AppController> controller_;
+
+  base::WeakPtrFactory<LacrosExtensionAppsController> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_LACROS_LACROS_EXTENSION_APPS_CONTROLLER_H_

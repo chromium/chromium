@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/crosapi/test_controller_ash.h"
 
+#include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
@@ -69,12 +70,6 @@ void TestControllerAsh::BindReceiver(
 #endif
 }
 
-void TestControllerAsh::DoesWindowExist(const std::string& window_id,
-                                        DoesWindowExistCallback callback) {
-  aura::Window* window = GetShellSurfaceWindow(window_id);
-  std::move(callback).Run(window != nullptr);
-}
-
 void TestControllerAsh::ClickWindow(const std::string& window_id) {
   aura::Window* window = GetShellSurfaceWindow(window_id);
   if (!window)
@@ -83,6 +78,19 @@ void TestControllerAsh::ClickWindow(const std::string& window_id) {
   if (!destroyed) {
     DispatchMouseEvent(window, ui::ET_MOUSE_RELEASED);
   }
+}
+
+void TestControllerAsh::DoesItemExistInShelf(
+    const std::string& item_id,
+    DoesItemExistInShelfCallback callback) {
+  bool exists = ash::ShelfModel::Get()->ItemIndexByAppID(item_id) != -1;
+  std::move(callback).Run(exists);
+}
+
+void TestControllerAsh::DoesWindowExist(const std::string& window_id,
+                                        DoesWindowExistCallback callback) {
+  aura::Window* window = GetShellSurfaceWindow(window_id);
+  std::move(callback).Run(window != nullptr);
 }
 
 void TestControllerAsh::EnterOverviewMode(EnterOverviewModeCallback callback) {
@@ -107,6 +115,34 @@ void TestControllerAsh::EnterTabletMode(EnterTabletModeCallback callback) {
 void TestControllerAsh::ExitTabletMode(ExitTabletModeCallback callback) {
   SetTabletModeEnabled(false);
   std::move(callback).Run();
+}
+
+void TestControllerAsh::GetMinimizeOnBackKeyWindowProperty(
+    const std::string& window_id,
+    GetMinimizeOnBackKeyWindowPropertyCallback cb) {
+  aura::Window* window = GetShellSurfaceWindow(window_id);
+  if (!window) {
+    std::move(cb).Run(mojom::OptionalBoolean::kUnknown);
+    return;
+  }
+  bool* value = window->GetProperty(ash::kMinimizeOnBackKey);
+  if (!value) {
+    std::move(cb).Run(mojom::OptionalBoolean::kUnknown);
+    return;
+  }
+  std::move(cb).Run(*value ? mojom::OptionalBoolean::kTrue
+                           : mojom::OptionalBoolean::kFalse);
+}
+
+void TestControllerAsh::GetWindowPositionInScreen(
+    const std::string& window_id,
+    GetWindowPositionInScreenCallback cb) {
+  aura::Window* window = GetShellSurfaceWindow(window_id);
+  if (!window) {
+    std::move(cb).Run(absl::nullopt);
+    return;
+  }
+  std::move(cb).Run(window->GetBoundsInScreen().origin());
 }
 
 void TestControllerAsh::SendTouchEvent(const std::string& window_id,
@@ -154,34 +190,6 @@ void TestControllerAsh::SendTouchEvent(const std::string& window_id,
                              ui::EventTimeForNow(), details);
   Dispatch(window->GetHost(), &touch_event);
   std::move(cb).Run();
-}
-
-void TestControllerAsh::GetWindowPositionInScreen(
-    const std::string& window_id,
-    GetWindowPositionInScreenCallback cb) {
-  aura::Window* window = GetShellSurfaceWindow(window_id);
-  if (!window) {
-    std::move(cb).Run(absl::nullopt);
-    return;
-  }
-  std::move(cb).Run(window->GetBoundsInScreen().origin());
-}
-
-void TestControllerAsh::GetMinimizeOnBackKeyWindowProperty(
-    const std::string& window_id,
-    GetMinimizeOnBackKeyWindowPropertyCallback cb) {
-  aura::Window* window = GetShellSurfaceWindow(window_id);
-  if (!window) {
-    std::move(cb).Run(mojom::OptionalBoolean::kUnknown);
-    return;
-  }
-  bool* value = window->GetProperty(ash::kMinimizeOnBackKey);
-  if (!value) {
-    std::move(cb).Run(mojom::OptionalBoolean::kUnknown);
-    return;
-  }
-  std::move(cb).Run(*value ? mojom::OptionalBoolean::kTrue
-                           : mojom::OptionalBoolean::kFalse);
 }
 
 void TestControllerAsh::WaiterFinished(OverviewWaiter* waiter) {
