@@ -238,6 +238,9 @@ TEST_F(MetricsReporterTest, InteractedWithBothFeeds) {
       {FeedEngagementType::kFeedScrolled, 1},
   });
   EXPECT_EQ(want_1c, ReportedEngagementType(kCombinedStreams));
+  histogram_.ExpectUniqueSample(
+      "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged", kSubscriptionCount,
+      1);
 
   task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(5) + kEpsilon);
   reporter_->OpenAction(kForYouStream, 0);
@@ -260,6 +263,9 @@ TEST_F(MetricsReporterTest, InteractedWithBothFeeds) {
       {FeedEngagementType::kFeedScrolled, 2},
   });
   EXPECT_EQ(want_2c, ReportedEngagementType(kCombinedStreams));
+  histogram_.ExpectUniqueSample(
+      "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged", kSubscriptionCount,
+      2);
 }
 
 TEST_F(MetricsReporterTest, ReportsLoadStreamStatus) {
@@ -490,6 +496,9 @@ TEST_F(MetricsReporterTest, OpenAction) {
   histogram_.ExpectUniqueSample("ContentSuggestions.Feed.UserActions",
                                 FeedUserActionType::kTappedOnCard, 1);
   histogram_.ExpectUniqueSample("NewTabPage.ContentSuggestions.Opened", 5, 1);
+  histogram_.ExpectUniqueSample(
+      "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged", kSubscriptionCount,
+      1);
 }
 
 TEST_F(MetricsReporterTest, OpenActionWebFeed) {
@@ -507,6 +516,9 @@ TEST_F(MetricsReporterTest, OpenActionWebFeed) {
   histogram_.ExpectUniqueSample("ContentSuggestions.Feed.UserActions",
                                 FeedUserActionType::kTappedOnCard, 1);
   histogram_.ExpectUniqueSample("ContentSuggestions.Feed.WebFeed.Opened", 5, 1);
+  histogram_.ExpectUniqueSample(
+      "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged", kSubscriptionCount,
+      1);
 }
 
 TEST_F(MetricsReporterTest, OpenInNewTabAction) {
