@@ -994,7 +994,7 @@ def main():
     # TODO(thakis): Now that the NDK uses clang, try to build all archs in
     # one LLVM build instead of building 3 times.
     toolchain_dir = ANDROID_NDK_DIR + '/toolchains/llvm/prebuilt/linux-x86_64'
-    for target_arch in ['aarch64', 'arm', 'i686']:
+    for target_arch in ['aarch64', 'arm', 'i686', 'x86_64']:
       # Build compiler-rt runtimes needed for Android in a separate build tree.
       build_dir = os.path.join(LLVM_BUILD_DIR, 'android-' + target_arch)
       if not os.path.exists(build_dir):
@@ -1003,7 +1003,9 @@ def main():
       target_triple = target_arch
       if target_arch == 'arm':
         target_triple = 'armv7'
-      api_level = '21' if target_arch == 'aarch64' else '19'
+      api_level = '19'
+      if target_arch == 'aarch64' or target_arch == 'x86_64':
+        api_level = '21'
       target_triple += '-linux-android' + api_level
       cflags = [
           '--target=' + target_triple,
@@ -1013,10 +1015,11 @@ def main():
           # depends on a newer version of libxml2.so than what's available on
           # the bots. To make things work, use our just-built lld as linker.
           '-fuse-ld=lld',
-          # Clang defaults to compiler-rt when targeting android after
-          # a478b0a199f4. Stick with libgcc for now. (crbug.com/1184398).
+          # The compiler we're building with (just-built clang) doesn't have the
+          # compiler-rt builtins; use libgcc to get past the CMake checks.
           '--rtlib=libgcc',
       ]
+
       android_args = base_cmake_args + [
         '-DCMAKE_C_COMPILER=' + os.path.join(LLVM_BUILD_DIR, 'bin/clang'),
         '-DCMAKE_CXX_COMPILER=' + os.path.join(LLVM_BUILD_DIR, 'bin/clang++'),
@@ -1024,7 +1027,7 @@ def main():
         '-DCMAKE_C_FLAGS=' + ' '.join(cflags),
         '-DCMAKE_CXX_FLAGS=' + ' '.join(cflags),
         '-DCMAKE_ASM_FLAGS=' + ' '.join(cflags),
-        '-DCOMPILER_RT_BUILD_BUILTINS=OFF',
+        '-DCOMPILER_RT_BUILD_BUILTINS=ON',
         '-DCOMPILER_RT_BUILD_CRT=OFF',
         '-DCOMPILER_RT_BUILD_LIBFUZZER=OFF',
         '-DCOMPILER_RT_BUILD_MEMPROF=OFF',
@@ -1037,13 +1040,13 @@ def main():
         '-DANDROID=1']
       RunCommand(['cmake'] + android_args + [COMPILER_RT_DIR])
 
-      # We use ASan, UBSan, coverage, and PGO on the various Android targets.
-      # Only build HWASan for AArch64.
       libs_want = [
           'lib/linux/libclang_rt.asan-{0}-android.so',
+          'lib/linux/libclang_rt.builtins-{0}-android.a',
           'lib/linux/libclang_rt.ubsan_standalone-{0}-android.so',
           'lib/linux/libclang_rt.profile-{0}-android.a',
       ]
+      # Only build HWASan for AArch64.
       if target_arch == 'aarch64':
         libs_want += ['lib/linux/libclang_rt.hwasan-{0}-android.so']
       libs_want = [lib.format(target_arch) for lib in libs_want]
