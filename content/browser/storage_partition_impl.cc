@@ -1123,6 +1123,9 @@ StoragePartitionImpl::~StoragePartitionImpl() {
                                   std::move(database_tracker)));
   }
 
+  if (GetFileSystemAccessManager())
+    GetFileSystemAccessManager()->Shutdown();
+
   if (GetFileSystemContext())
     GetFileSystemContext()->Shutdown();
 
