@@ -1912,7 +1912,7 @@ TEST_F(URLRequestTest, DoNotSendCookies_ViaPolicy) {
 #else
 #define MAYBE_DoNotSaveCookies_ViaPolicy DoNotSaveCookies_ViaPolicy
 #endif
-TEST_F(URLRequestTest, DoNotSaveCookies_ViaPolicy) {
+TEST_F(URLRequestTest, MAYBE_DoNotSaveCookies_ViaPolicy) {
   HttpTestServer test_server;
   ASSERT_TRUE(test_server.Start());
 
