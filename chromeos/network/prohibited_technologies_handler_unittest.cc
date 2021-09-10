@@ -49,8 +49,9 @@ class ProhibitedTechnologiesHandlerTest : public testing::Test {
     prohibited_technologies_handler_.reset(new ProhibitedTechnologiesHandler());
 
     managed_config_handler_->Init(
-        helper_.network_state_handler(), network_profile_handler_.get(),
-        network_config_handler_.get(), nullptr /* network_device_handler */,
+        /*cellular_policy_handler=*/nullptr, helper_.network_state_handler(),
+        network_profile_handler_.get(), network_config_handler_.get(),
+        nullptr /* network_device_handler */,
         prohibited_technologies_handler_.get());
 
     prohibited_technologies_handler_->Init(managed_config_handler_.get(),

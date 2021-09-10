@@ -188,8 +188,9 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
 
     managed_config_handler_.reset(new ManagedNetworkConfigurationHandlerImpl());
     managed_config_handler_->Init(
-        helper_.network_state_handler(), network_profile_handler_.get(),
-        network_config_handler_.get(), nullptr /* network_device_handler */,
+        /*cellular_policy_handler=*/nullptr, helper_.network_state_handler(),
+        network_profile_handler_.get(), network_config_handler_.get(),
+        nullptr /* network_device_handler */,
         nullptr /* prohibited_tecnologies_handler */);
 
     cellular_inhibitor_ = std::make_unique<CellularInhibitor>();

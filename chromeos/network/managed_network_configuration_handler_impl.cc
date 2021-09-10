@@ -593,7 +593,7 @@ bool ManagedNetworkConfigurationHandlerImpl::ApplyOrQueuePolicies(
 
   PolicyApplicator* applicator = new PolicyApplicator(
       *profile, policies->per_network_config, policies->global_network_config,
-      this, modified_policies);
+      this, cellular_policy_handler_, modified_policies);
   policy_applicators_[userhash] = base::WrapUnique(applicator);
   applicator->Run();
   return true;
@@ -907,11 +907,13 @@ ManagedNetworkConfigurationHandlerImpl::
 }
 
 void ManagedNetworkConfigurationHandlerImpl::Init(
+    CellularPolicyHandler* cellular_policy_handler,
     NetworkStateHandler* network_state_handler,
     NetworkProfileHandler* network_profile_handler,
     NetworkConfigurationHandler* network_configuration_handler,
     NetworkDeviceHandler* network_device_handler,
     ProhibitedTechnologiesHandler* prohibited_technologies_handler) {
+  cellular_policy_handler_ = cellular_policy_handler;
   network_state_handler_ = network_state_handler;
   network_profile_handler_ = network_profile_handler;
   network_configuration_handler_ = network_configuration_handler;

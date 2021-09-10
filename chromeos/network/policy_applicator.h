@@ -19,6 +19,8 @@
 #include "chromeos/network/network_profile.h"
 
 namespace chromeos {
+
+class CellularPolicyHandler;
 class NetworkUIData;
 
 // This class compares (entry point is Run()) |modified_policies| with the
@@ -64,6 +66,7 @@ class PolicyApplicator {
                    const GuidToPolicyMap& all_policies,
                    const base::DictionaryValue& global_network_config,
                    ConfigurationHandler* handler,
+                   CellularPolicyHandler* cellular_policy_handler,
                    std::set<std::string>* modified_policy_guids);
 
   ~PolicyApplicator();
@@ -140,6 +143,8 @@ class PolicyApplicator {
 
   std::set<std::string> remaining_policy_guids_;
   std::set<std::string> pending_get_entry_calls_;
+
+  CellularPolicyHandler* cellular_policy_handler_ = nullptr;
   ConfigurationHandler* handler_;
   NetworkProfile profile_;
   GuidToPolicyMap all_policies_;
