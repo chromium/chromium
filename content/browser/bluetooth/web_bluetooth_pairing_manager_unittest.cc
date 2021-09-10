@@ -15,16 +15,19 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-using blink::WebBluetoothDeviceId;
-using blink::mojom::WebBluetoothResult;
-using blink::mojom::WebBluetoothService;
-using blink::mojom::WebBluetoothWriteType;
-using device::BluetoothDevice;
-
 namespace content {
 
 namespace {
+
+using ::base::test::SingleThreadTaskEnvironment;
+using ::blink::WebBluetoothDeviceId;
+using ::blink::mojom::WebBluetoothResult;
+using ::blink::mojom::WebBluetoothService;
+using ::blink::mojom::WebBluetoothWriteType;
+using ::device::BluetoothDevice;
+
 constexpr char kValidDeviceID[] = "000000000000000000000A==";
+
 }  // namespace
 
 class BluetoothPairingManagerTest : public testing::Test,
@@ -63,7 +66,7 @@ class BluetoothPairingManagerTest : public testing::Test,
   }
 
   void PairDevice(const WebBluetoothDeviceId& device_id,
-                  device::BluetoothDevice::PairingDelegate* pairing_delegate,
+                  BluetoothDevice::PairingDelegate* pairing_delegate,
                   BluetoothDevice::ConnectCallback callback) override {
     ASSERT_TRUE(device_id.IsValid());
     EXPECT_EQ(device_id, valid_device_id);
@@ -250,7 +253,7 @@ class BluetoothPairingManagerTest : public testing::Test,
 };
 
 TEST_F(BluetoothPairingManagerTest, ReadSuccessfulAuthFirstSuccess) {
-  base::test::SingleThreadTaskEnvironment task_environment;
+  SingleThreadTaskEnvironment task_environment;
   SetAuthBehavior(AuthBehavior::kSucceedFirst);
 
   const std::vector<uint8_t> expected_value = characteristic_value();
@@ -272,7 +275,7 @@ TEST_F(BluetoothPairingManagerTest, ReadSuccessfulAuthFirstSuccess) {
 }
 
 TEST_F(BluetoothPairingManagerTest, ReadSuccessfulAuthSecondSuccess) {
-  base::test::SingleThreadTaskEnvironment task_environment;
+  SingleThreadTaskEnvironment task_environment;
   SetAuthBehavior(AuthBehavior::kSucceedSecond);
 
   const std::vector<uint8_t> expected_value = characteristic_value();
@@ -294,7 +297,7 @@ TEST_F(BluetoothPairingManagerTest, ReadSuccessfulAuthSecondSuccess) {
 }
 
 TEST_F(BluetoothPairingManagerTest, ReadFailAllAuthsFail) {
-  base::test::SingleThreadTaskEnvironment task_environment;
+  SingleThreadTaskEnvironment task_environment;
   SetAuthBehavior(AuthBehavior::kFailAll);
 
   base::RunLoop loop;
@@ -313,7 +316,7 @@ TEST_F(BluetoothPairingManagerTest, ReadFailAllAuthsFail) {
 }
 
 TEST_F(BluetoothPairingManagerTest, ReadInvalidCharacteristicId) {
-  base::test::SingleThreadTaskEnvironment task_environment;
+  SingleThreadTaskEnvironment task_environment;
   SetAuthBehavior(AuthBehavior::kFailAll);
 
   base::RunLoop loop;
@@ -540,7 +543,7 @@ TEST_F(BluetoothPairingManagerTest, WriteCharacteristicDoublePair) {
 }
 
 TEST_F(BluetoothPairingManagerTest, DescriptorReadSuccessfulAuthFirstSuccess) {
-  base::test::SingleThreadTaskEnvironment task_environment;
+  SingleThreadTaskEnvironment task_environment;
   SetAuthBehavior(AuthBehavior::kSucceedFirst);
 
   const std::vector<uint8_t> expected_value = descriptor_value();
@@ -561,7 +564,7 @@ TEST_F(BluetoothPairingManagerTest, DescriptorReadSuccessfulAuthFirstSuccess) {
 }
 
 TEST_F(BluetoothPairingManagerTest, DescriptorReadSuccessfulAuthSecondSuccess) {
-  base::test::SingleThreadTaskEnvironment task_environment;
+  SingleThreadTaskEnvironment task_environment;
   SetAuthBehavior(AuthBehavior::kSucceedSecond);
 
   const std::vector<uint8_t> expected_value = descriptor_value();
@@ -582,7 +585,7 @@ TEST_F(BluetoothPairingManagerTest, DescriptorReadSuccessfulAuthSecondSuccess) {
 }
 
 TEST_F(BluetoothPairingManagerTest, DescriptorReadFailAllAuthsFail) {
-  base::test::SingleThreadTaskEnvironment task_environment;
+  SingleThreadTaskEnvironment task_environment;
   SetAuthBehavior(AuthBehavior::kFailAll);
 
   base::RunLoop loop;
@@ -601,7 +604,7 @@ TEST_F(BluetoothPairingManagerTest, DescriptorReadFailAllAuthsFail) {
 }
 
 TEST_F(BluetoothPairingManagerTest, DescriptorReadInvalidDescriptorId) {
-  base::test::SingleThreadTaskEnvironment task_environment;
+  SingleThreadTaskEnvironment task_environment;
   SetAuthBehavior(AuthBehavior::kFailAll);
 
   base::RunLoop loop;
@@ -619,7 +622,7 @@ TEST_F(BluetoothPairingManagerTest, DescriptorReadInvalidDescriptorId) {
 }
 
 TEST_F(BluetoothPairingManagerTest, ReadDescriptorDeleteDelegate) {
-  base::test::SingleThreadTaskEnvironment task_environment;
+  SingleThreadTaskEnvironment task_environment;
   SetAuthBehavior(AuthBehavior::kSuspend);
 
   base::RunLoop loop;
@@ -640,7 +643,7 @@ TEST_F(BluetoothPairingManagerTest, ReadDescriptorDeleteDelegate) {
 }
 
 TEST_F(BluetoothPairingManagerTest, ReadDescriptorDoublePair) {
-  base::test::SingleThreadTaskEnvironment task_environment;
+  SingleThreadTaskEnvironment task_environment;
   SetAuthBehavior(AuthBehavior::kFirstSuspend);
 
   const std::vector<uint8_t> expected_value = descriptor_value();

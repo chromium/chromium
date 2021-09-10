@@ -29,44 +29,44 @@
 #include "device/bluetooth/test/mock_bluetooth_gatt_notify_session.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-using base::StringPiece;
-using base::test::RunOnceCallback;
-using device::BluetoothAdapter;
-using device::BluetoothDevice;
-using device::BluetoothGattCharacteristic;
-using device::BluetoothGattService;
-using device::BluetoothRemoteGattCharacteristic;
-using device::BluetoothRemoteGattDescriptor;
-using device::BluetoothRemoteGattService;
-using device::BluetoothUUID;
-using device::MockBluetoothAdapter;
-using device::MockBluetoothDevice;
-using device::MockBluetoothGattCharacteristic;
-using device::MockBluetoothGattConnection;
-using device::MockBluetoothGattDescriptor;
-using device::MockBluetoothGattNotifySession;
-using device::MockBluetoothGattService;
-using testing::_;
-using testing::ElementsAre;
-using testing::Invoke;
-using testing::InvokeWithoutArgs;
-using testing::ResultOf;
-using testing::Return;
-
-typedef testing::NiceMock<MockBluetoothAdapter> NiceMockBluetoothAdapter;
-typedef testing::NiceMock<MockBluetoothDevice> NiceMockBluetoothDevice;
-typedef testing::NiceMock<MockBluetoothGattDescriptor>
-    NiceMockBluetoothGattDescriptor;
-typedef testing::NiceMock<MockBluetoothGattCharacteristic>
-    NiceMockBluetoothGattCharacteristic;
-typedef testing::NiceMock<MockBluetoothGattConnection>
-    NiceMockBluetoothGattConnection;
-typedef testing::NiceMock<MockBluetoothGattService>
-    NiceMockBluetoothGattService;
-typedef testing::NiceMock<MockBluetoothGattNotifySession>
-    NiceMockBluetoothGattNotifySession;
-
 namespace {
+
+using ::base::StringPiece;
+using ::base::test::RunOnceCallback;
+using ::device::BluetoothAdapter;
+using ::device::BluetoothDevice;
+using ::device::BluetoothGattCharacteristic;
+using ::device::BluetoothGattService;
+using ::device::BluetoothRemoteGattCharacteristic;
+using ::device::BluetoothRemoteGattDescriptor;
+using ::device::BluetoothRemoteGattService;
+using ::device::BluetoothUUID;
+using ::device::MockBluetoothAdapter;
+using ::device::MockBluetoothDevice;
+using ::device::MockBluetoothGattCharacteristic;
+using ::device::MockBluetoothGattConnection;
+using ::device::MockBluetoothGattDescriptor;
+using ::device::MockBluetoothGattNotifySession;
+using ::device::MockBluetoothGattService;
+using ::testing::_;
+using ::testing::ElementsAre;
+using ::testing::Invoke;
+using ::testing::InvokeWithoutArgs;
+using ::testing::ResultOf;
+using ::testing::Return;
+using NiceMockBluetoothAdapter = ::testing::NiceMock<MockBluetoothAdapter>;
+using NiceMockBluetoothDevice = ::testing::NiceMock<MockBluetoothDevice>;
+using NiceMockBluetoothGattDescriptor =
+    ::testing::NiceMock<MockBluetoothGattDescriptor>;
+using NiceMockBluetoothGattCharacteristic =
+    ::testing::NiceMock<MockBluetoothGattCharacteristic>;
+using NiceMockBluetoothGattConnection =
+    ::testing::NiceMock<MockBluetoothGattConnection>;
+using NiceMockBluetoothGattService =
+    ::testing::NiceMock<MockBluetoothGattService>;
+using NiceMockBluetoothGattNotifySession =
+    ::testing::NiceMock<MockBluetoothGattNotifySession>;
+
 // Bluetooth UUIDs suitable to pass to BluetoothUUID():
 // Services:
 const char kBatteryServiceUUID[] = "180f";

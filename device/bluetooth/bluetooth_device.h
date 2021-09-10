@@ -221,7 +221,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   // Returns the identifier of the bluetooth device.
   virtual std::string GetIdentifier() const;
 
-  // Returns the Bluetooth of address the device. This should be used as
+  // Returns the Bluetooth address of the device. This should be used as
   // a unique key to identify the device and copied where needed.
   virtual std::string GetAddress() const = 0;
 

@@ -56,21 +56,23 @@
 #include "third_party/blink/public/common/bluetooth/web_bluetooth_device_id.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
 
-using device::BluetoothAdapter;
-using device::BluetoothDevice;
-using device::BluetoothDiscoverySession;
-using device::BluetoothGattCharacteristic;
-using device::BluetoothGattConnection;
-using device::BluetoothGattNotifySession;
-using device::BluetoothGattService;
-using device::BluetoothRemoteGattCharacteristic;
-using device::BluetoothRemoteGattDescriptor;
-using device::BluetoothRemoteGattService;
-using device::BluetoothUUID;
 
 namespace content {
 
 namespace {
+
+using ::device::BluetoothAdapter;
+using ::device::BluetoothDevice;
+using ::device::BluetoothDiscoverySession;
+using ::device::BluetoothGattCharacteristic;
+using ::device::BluetoothGattConnection;
+using ::device::BluetoothGattNotifySession;
+using ::device::BluetoothGattService;
+using ::device::BluetoothRemoteGattCharacteristic;
+using ::device::BluetoothRemoteGattDescriptor;
+using ::device::BluetoothRemoteGattService;
+using ::device::BluetoothUUID;
+using GattErrorCode = ::device::BluetoothGattService::GattErrorCode;
 
 // Client names for logging in BLE scanning.
 constexpr char kScanClientNameWatchAdvertisements[] =
@@ -78,7 +80,7 @@ constexpr char kScanClientNameWatchAdvertisements[] =
 constexpr char kScanClientNameRequestLeScan[] = "Web Bluetooth requestLeScan()";
 
 blink::mojom::WebBluetoothResult TranslateGATTErrorAndRecord(
-    device::BluetoothRemoteGattService::GattErrorCode error_code,
+    GattErrorCode error_code,
     UMAGATTOperation operation) {
   switch (error_code) {
     case device::BluetoothRemoteGattService::GATT_ERROR_UNKNOWN:
@@ -1934,7 +1936,7 @@ void WebBluetoothServiceImpl::OnCreateGATTConnection(
     mojo::AssociatedRemote<blink::mojom::WebBluetoothServerClient> client,
     RemoteServerConnectCallback callback,
     std::unique_ptr<BluetoothGattConnection> connection,
-    absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code) {
+    absl::optional<BluetoothDevice::ConnectErrorCode> error_code) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (error_code.has_value()) {
     RecordConnectGATTTimeFailed(base::TimeTicks::Now() - start_time);
@@ -1957,7 +1959,7 @@ void WebBluetoothServiceImpl::OnCreateGATTConnection(
 
 void WebBluetoothServiceImpl::OnCharacteristicReadValue(
     RemoteCharacteristicReadValueCallback callback,
-    absl::optional<BluetoothGattService::GattErrorCode> error_code,
+    absl::optional<GattErrorCode> error_code,
     const std::vector<uint8_t>& value) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (error_code.has_value()) {
@@ -1980,7 +1982,7 @@ void WebBluetoothServiceImpl::OnCharacteristicWriteValueSuccess(
 
 void WebBluetoothServiceImpl::OnCharacteristicWriteValueFailed(
     RemoteCharacteristicWriteValueCallback callback,
-    BluetoothGattService::GattErrorCode error_code) {
+    GattErrorCode error_code) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::move(callback).Run(TranslateGATTErrorAndRecord(
       error_code, UMAGATTOperation::kCharacteristicWrite));
@@ -2018,7 +2020,7 @@ void WebBluetoothServiceImpl::OnStartNotifySessionSuccess(
 void WebBluetoothServiceImpl::OnStartNotifySessionFailed(
     RemoteCharacteristicStartNotificationsCallback callback,
     const std::string& characteristic_instance_id,
-    BluetoothGattService::GattErrorCode error_code) {
+    GattErrorCode error_code) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto iter =
       characteristic_id_to_notify_session_.find(characteristic_instance_id);
@@ -2054,7 +2056,7 @@ void WebBluetoothServiceImpl::OnStopNotifySessionComplete(
 
 void WebBluetoothServiceImpl::OnDescriptorReadValue(
     RemoteDescriptorReadValueCallback callback,
-    absl::optional<BluetoothGattService::GattErrorCode> error_code,
+    absl::optional<GattErrorCode> error_code,
     const std::vector<uint8_t>& value) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (error_code.has_value()) {
@@ -2075,7 +2077,7 @@ void WebBluetoothServiceImpl::OnDescriptorWriteValueSuccess(
 
 void WebBluetoothServiceImpl::OnDescriptorWriteValueFailed(
     RemoteDescriptorWriteValueCallback callback,
-    BluetoothGattService::GattErrorCode error_code) {
+    GattErrorCode error_code) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::move(callback).Run(TranslateGATTErrorAndRecord(
       error_code, UMAGATTOperation::kDescriptorWriteObsolete));

@@ -57,7 +57,8 @@ using PromptEventCallback =
 
 class FakeBluetoothScanningPrompt : public BluetoothScanningPrompt {
  public:
-  FakeBluetoothScanningPrompt(PromptEventCallback prompt_event_callback)
+  explicit FakeBluetoothScanningPrompt(
+      PromptEventCallback prompt_event_callback)
       : prompt_event_callback_(std::move(prompt_event_callback)) {}
   ~FakeBluetoothScanningPrompt() override = default;
 

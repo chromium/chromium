@@ -13,10 +13,11 @@
 
 namespace content {
 
+namespace {
+
 using ::blink::mojom::WebBluetoothService;
 using ::device::BluetoothDevice;
 
-namespace {
 void OnPairForReadCharacteristicCallback(
     std::string characteristic_instance_id,
     WebBluetoothPairingManagerDelegate* pairing_manager_delegate,
