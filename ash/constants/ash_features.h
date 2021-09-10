@@ -79,7 +79,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kAutoNightLight;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kAutoScreenBrightness;
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kAvatarToolbarButton;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kBentoBar;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kBluetoothAdvertisementMonitoring;

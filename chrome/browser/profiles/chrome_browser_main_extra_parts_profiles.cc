@@ -71,7 +71,6 @@
 #include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/prefs/pref_metrics_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
-#include "chrome/browser/profiles/gaia_info_update_service_factory.h"
 #include "chrome/browser/profiles/renderer_updater_factory.h"
 #include "chrome/browser/safe_browsing/certificate_reporting_service_factory.h"
 #include "chrome/browser/search_engines/template_url_fetcher_factory.h"
@@ -150,9 +149,14 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/login/security_token_session_controller_factory.h"
+#include "chrome/browser/ash/system_extensions/system_extensions_provider_factory.h"
 #include "chrome/browser/chromeos/browser_context_keyed_service_factories.h"
+#include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
+#include "chrome/browser/policy/messaging_layer/util/heartbeat_event_factory.h"
 #else
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
+#include "chrome/browser/profiles/gaia_info_update_service_factory.h"
 #endif
 
 #if defined(OS_WIN)
@@ -196,13 +200,6 @@
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/login/security_token_session_controller_factory.h"
-#include "chrome/browser/ash/system_extensions/system_extensions_provider_factory.h"
-#include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
-#include "chrome/browser/policy/messaging_layer/util/heartbeat_event_factory.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -322,7 +319,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   feedback::FeedbackUploaderFactoryChrome::GetInstance();
 #endif
   FindBarStateFactory::GetInstance();
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   GAIAInfoUpdateServiceFactory::GetInstance();
+#endif
 #if !defined(OS_ANDROID)
   GlobalErrorServiceFactory::GetInstance();
 #endif

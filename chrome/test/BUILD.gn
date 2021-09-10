@@ -5031,14 +5031,9 @@ test("unit_tests") {
 
   if (is_chromeos_ash) {
     sources += [
-      "../browser/speech/cros_speech_recognition_service_factory_unittest.cc",
-    ]
-  }
-
-  if (is_chromeos_ash) {
-    sources += [
       "../browser/device_identity/chromeos/device_oauth2_token_store_chromeos_unittest.cc",
       "../browser/nearby_sharing/nearby_share_delegate_impl_unittest.cc",
+      "../browser/speech/cros_speech_recognition_service_factory_unittest.cc",
       "../browser/ui/web_applications/file_stream_data_pipe_getter_unittest.cc",
       "../browser/ui/webui/certificate_provisioning_ui_handler_unittest.cc",
       "../browser/ui/webui/chromeos/add_supervision/add_supervision_handler_utils_unittest.cc",
@@ -6269,6 +6264,7 @@ test("unit_tests") {
 
   if (is_chromeos_ash) {
     sources -= [
+      "../browser/profiles/gaia_info_update_service_unittest.cc",
       "../browser/signin/chrome_signin_status_metrics_provider_delegate_unittest.cc",
       "../browser/ui/webui/settings/settings_manage_profile_handler_unittest.cc",
       "../browser/ui/webui/signin/profile_picker_handler_unittest.cc",

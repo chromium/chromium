@@ -29,7 +29,6 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/hover_button.h"
 #include "chrome/browser/ui/views/profiles/incognito_menu_view.h"
-#include "chrome/browser/ui/views/profiles/profile_menu_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -60,6 +59,7 @@
 #include "ui/views/view_class_properties.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ui/views/profiles/profile_menu_view.h"
 #include "chrome/browser/ui/views/sync/dice_signin_button_view.h"
 #endif
 
@@ -514,8 +514,14 @@ void ProfileMenuViewBase::ShowBubble(profiles::BubbleViewMode view_mode,
     DCHECK(browser->profile()->IsIncognitoProfile());
     bubble = new IncognitoMenuView(anchor_button, browser);
   } else {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Note: on Ash, Guest Sessions have incognito profiles, and use
+    // BUBBLE_VIEW_MODE_INCOGNITO.
+    NOTREACHED() << "The profile menu is not implemented on Ash.";
+#else
     DCHECK_EQ(profiles::BUBBLE_VIEW_MODE_PROFILE_CHOOSER, view_mode);
     bubble = new ProfileMenuView(anchor_button, browser);
+#endif
   }
 
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(bubble);

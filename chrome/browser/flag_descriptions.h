@@ -227,9 +227,6 @@ extern const char kAutofillUseImprovedLabelDisambiguationDescription[];
 extern const char kAutoScreenBrightnessName[];
 extern const char kAutoScreenBrightnessDescription[];
 
-extern const char kAvatarToolbarButtonName[];
-extern const char kAvatarToolbarButtonDescription[];
-
 extern const char kBackForwardCacheName[];
 extern const char kBackForwardCacheDescription[];
 

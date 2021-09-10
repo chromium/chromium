@@ -16,8 +16,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
-class Profile;
-
 // This service kicks off a download of the user's name and profile picture.
 // The results are saved in the profile info cache.
 class GAIAInfoUpdateService : public KeyedService,
@@ -31,9 +29,6 @@ class GAIAInfoUpdateService : public KeyedService,
 
   // Updates the GAIA info for the profile associated with this instance.
   virtual void UpdatePrimaryAccount();
-
-  // Checks if downloading GAIA info for the given profile is allowed.
-  static bool ShouldUseGAIAProfileInfo(Profile* profile);
 
   // Overridden from KeyedService:
   void Shutdown() override;

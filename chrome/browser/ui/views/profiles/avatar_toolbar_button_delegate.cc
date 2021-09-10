@@ -21,10 +21,6 @@
 #include "components/sync/driver/sync_service.h"
 #include "ui/base/resource/resource_bundle.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#endif
-
 namespace {
 
 constexpr base::TimeDelta kIdentityAnimationDuration =
@@ -68,13 +64,11 @@ AvatarToolbarButtonDelegate::AvatarToolbarButtonDelegate(
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!base::FeatureList::IsEnabled(chromeos::features::kAvatarToolbarButton)) {
-    // On CrOS this button should only show as badging for Incognito and Guest
-    // sessions. It's only enabled for Incognito where a menu is available for
-    // closing all Incognito windows.
-    avatar_toolbar_button_->SetEnabled(
-        state == AvatarToolbarButton::State::kIncognitoProfile);
-  }
+  // On CrOS this button should only show as badging for Incognito and Guest
+  // sessions. It's only enabled for Incognito where a menu is available for
+  // closing all Incognito windows.
+  avatar_toolbar_button_->SetEnabled(
+      state == AvatarToolbarButton::State::kIncognitoProfile);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 

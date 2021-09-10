@@ -6534,9 +6534,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"scan-app-sticky-settings", flag_descriptions::kScanAppStickySettingsName,
      flag_descriptions::kScanAppStickySettingsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kScanAppStickySettings)},
-    {"avatar-toolbar-button", flag_descriptions::kAvatarToolbarButtonName,
-     flag_descriptions::kAvatarToolbarButtonDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kAvatarToolbarButton)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"color-provider-redirection",

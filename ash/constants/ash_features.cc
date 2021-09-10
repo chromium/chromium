@@ -174,11 +174,6 @@ const base::Feature kAutoNightLight{"AutoNightLight",
 const base::Feature kAutoScreenBrightness{"AutoScreenBrightness",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Displays the avatar toolbar button and the profile menu.
-// https://crbug.com/1041472
-extern const base::Feature kAvatarToolbarButton{
-    "AvatarToolbarButton", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables the persistent desks bar at the top of the screen in clamshell mode
 // when there are more than one desk.
 const base::Feature kBentoBar{"BentoBar", base::FEATURE_DISABLED_BY_DEFAULT};

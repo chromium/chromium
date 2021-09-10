@@ -388,10 +388,6 @@ const char kAutoScreenBrightnessDescription[] =
     "will be controlled by the heuristic model provided by powerd (and only "
     "on devices that have ambient light sensors).";
 
-const char kAvatarToolbarButtonName[] = "Avatar Toolbar Button";
-const char kAvatarToolbarButtonDescription[] =
-    "Enables the avatar toolbar button and the associated menu";
-
 const char kBackForwardCacheName[] = "Back-forward cache";
 const char kBackForwardCacheDescription[] =
     "If enabled, caches eligible pages after cross-site navigations."

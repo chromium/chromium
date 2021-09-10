@@ -108,9 +108,7 @@
 #include "chrome/browser/ui/views/critical_notification_bubble_view.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#else
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/signin/signin_global_error_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bubble_sign_in_delegate.h"
 #include "chrome/browser/ui/views/outdated_upgrade_bubble_view.h"
@@ -270,11 +268,9 @@ void ToolbarView::Init() {
       toolbar_account_icon_container;
   bool show_avatar_toolbar_button = true;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!base::FeatureList::IsEnabled(chromeos::features::kAvatarToolbarButton)) {
-    // ChromeOS only badges Incognito and Guest icons in the browser window.
-    show_avatar_toolbar_button = browser_->profile()->IsOffTheRecord() ||
-                                 browser_->profile()->IsGuestSession();
-  }
+  // ChromeOS only badges Incognito and Guest icons in the browser window.
+  show_avatar_toolbar_button = browser_->profile()->IsOffTheRecord() ||
+                               browser_->profile()->IsGuestSession();
 #endif
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableToolbarStatusChip)) {

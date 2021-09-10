@@ -13,7 +13,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -41,7 +40,6 @@ using ::testing::Return;
 
 namespace {
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
 AccountInfo GetValidAccountInfo(std::string email,
                                 CoreAccountId account_id,
                                 std::string given_name,
@@ -62,8 +60,6 @@ AccountInfo GetValidAccountInfo(std::string email,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 const char kChromiumOrgDomain[] = "chromium.org";
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 class GAIAInfoUpdateServiceTestBase : public testing::Test {
  protected:
@@ -145,12 +141,6 @@ class GAIAInfoUpdateServiceTest : public GAIAInfoUpdateServiceTestBase {
 
 }  // namespace
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// This feature should never be enabled on ChromeOS.
-TEST_F(GAIAInfoUpdateServiceTest, ShouldUseGAIAProfileInfo) {
-  EXPECT_FALSE(GAIAInfoUpdateService::ShouldUseGAIAProfileInfo(profile()));
-}
-#else  // BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(GAIAInfoUpdateServiceTest, SyncOnSyncOff) {
   AccountInfo info =
       identity_test_env()->MakeAccountAvailable("pat@example.com");
@@ -410,5 +400,3 @@ TEST_F(GAIAInfoUpdateServiceTest, ClearGaiaInfoOnStartup) {
   EXPECT_FALSE(entry->GetGAIAPicture());
   EXPECT_TRUE(entry->GetHostedDomain().empty());
 }
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
