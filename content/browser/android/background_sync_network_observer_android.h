@@ -20,6 +20,8 @@ namespace content {
 // standard NetworkConnectionTracker. This ensures that sync events can be fired
 // even when the browser is backgrounded, and other network observers are
 // disabled.
+//
+// Lives on the UI thread.
 class BackgroundSyncNetworkObserverAndroid
     : public BackgroundSyncNetworkObserver {
  public:
@@ -33,12 +35,11 @@ class BackgroundSyncNetworkObserverAndroid
   // Creates and initializes the Observer (below) instance.
   void Init() override;
 
-  // This class lives on the UI thread and mediates all access to the Java
-  // BackgroundSyncNetworkObserver, which it creates and owns. It is in turn
-  // owned by the BackgroundSyncNetworkObserverAndroid.
-  class Observer : public base::RefCountedThreadSafe<
-                       BackgroundSyncNetworkObserverAndroid::Observer,
-                       content::BrowserThread::DeleteOnUIThread> {
+  // This class mediates all access to the Java BackgroundSyncNetworkObserver,
+  // which it creates and owns. It is in turn owned by the
+  // BackgroundSyncNetworkObserverAndroid.
+  class Observer : public base::RefCounted<
+                       BackgroundSyncNetworkObserverAndroid::Observer> {
    public:
     static scoped_refptr<BackgroundSyncNetworkObserverAndroid::Observer> Create(
         base::RepeatingCallback<void(network::mojom::ConnectionType)> callback);
@@ -47,23 +48,21 @@ class BackgroundSyncNetworkObserverAndroid
     // Called from BackgroundSyncNetworkObserver.java over JNI whenever the
     // connection type changes. This updates the current connection type seen by
     // this class and calls the |network_changed_callback| provided to the
-    // constructor, on the IO thread, with the new connection type.
+    // constructor with the new connection type.
     void NotifyConnectionTypeChanged(
         JNIEnv* env,
         const base::android::JavaParamRef<jobject>& jcaller,
         jint new_connection_type);
 
    private:
-    friend struct BrowserThread::DeleteOnThread<BrowserThread::UI>;
-    friend class base::DeleteHelper<
+    friend class base::RefCounted<
         BackgroundSyncNetworkObserverAndroid::Observer>;
 
     explicit Observer(
         base::RepeatingCallback<void(network::mojom::ConnectionType)> callback);
     ~Observer();
 
-    // This callback is to be run on the IO thread whenever the connection type
-    // changes.
+    // This callback is run whenever the connection type changes.
     base::RepeatingCallback<void(network::mojom::ConnectionType)> callback_;
     base::android::ScopedJavaGlobalRef<jobject> j_observer_;
 
@@ -74,7 +73,6 @@ class BackgroundSyncNetworkObserverAndroid
   void RegisterWithNetworkConnectionTracker(
       network::NetworkConnectionTracker* network_connection_tracker) override;
 
-  // Accessed on UI Thread.
   // Null until Init() is called.
   scoped_refptr<Observer> observer_;
 

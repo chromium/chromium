@@ -23,23 +23,6 @@ namespace background_sync_test_util {
 
 namespace {
 
-void SetOnlineOnCoreThread(
-    const scoped_refptr<BackgroundSyncContextImpl>& sync_context,
-    bool online) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
-
-  BackgroundSyncManager* sync_manager = sync_context->background_sync_manager();
-  BackgroundSyncNetworkObserver* network_observer =
-      sync_manager->GetNetworkObserverForTesting();
-  if (online) {
-    network_observer->NotifyManagerIfConnectionChangedForTesting(
-        network::mojom::ConnectionType::CONNECTION_WIFI);
-  } else {
-    network_observer->NotifyManagerIfConnectionChangedForTesting(
-        network::mojom::ConnectionType::CONNECTION_NONE);
-  }
-}
-
 StoragePartitionImpl* GetStoragePartition(WebContents* web_contents) {
   return static_cast<StoragePartitionImpl*>(
       web_contents->GetBrowserContext()->GetStoragePartition(
@@ -55,13 +38,21 @@ void SetIgnoreNetworkChanges(bool ignore) {
 
 // static
 void SetOnline(WebContents* web_contents, bool online) {
-  RunOrPostTaskOnThread(
-      FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-      base::BindOnce(
-          &SetOnlineOnCoreThread,
-          base::Unretained(
-              GetStoragePartition(web_contents)->GetBackgroundSyncContext()),
-          online));
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  BackgroundSyncContextImpl* sync_context =
+      GetStoragePartition(web_contents)->GetBackgroundSyncContext();
+  BackgroundSyncManager* sync_manager = sync_context->background_sync_manager();
+  BackgroundSyncNetworkObserver* network_observer =
+      sync_manager->GetNetworkObserverForTesting();
+  if (online) {
+    network_observer->NotifyManagerIfConnectionChangedForTesting(
+        network::mojom::ConnectionType::CONNECTION_WIFI);
+  } else {
+    network_observer->NotifyManagerIfConnectionChangedForTesting(
+        network::mojom::ConnectionType::CONNECTION_NONE);
+  }
+
   base::RunLoop().RunUntilIdle();
 }
 
