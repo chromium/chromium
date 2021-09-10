@@ -9,9 +9,14 @@ const ServerOriginURLFilter = 'chrome://chrome-signin/';
 
 class TestRequestHandler extends RequestHandler {
   constructor() {
-    super();
+    super(null, ServerOriginURLFilter, ServerOriginURLFilter);
     this.registerMethod('isTestFinalized', this.isTestFinalized_.bind(this));
     this.isTestFinalized_ = false;
+  }
+
+  /** @override */
+  targetWindow() {
+    return window.parent;
   }
 
   // Called by client when the test cases are satisfied.
@@ -29,7 +34,7 @@ class TestRequestHandler extends RequestHandler {
 class TestPostMessageAPIClient extends PostMessageAPIClient {
   constructor(requestHandler) {
     super(ServerOriginURLFilter, null);
-    this.setHandler(requestHandler);
+    this.requestHandler_ = requestHandler;
   }
 
   setX(x) {
@@ -92,6 +97,6 @@ class TestPostMessageAPIClient extends PostMessageAPIClient {
 
 document.addEventListener('DOMContentLoaded', function() {
   // Construct the PostMessageAPIClient so that it can run the tests.
-  const post_message_listener =
+  const postMessageClient =
       new TestPostMessageAPIClient(new TestRequestHandler());
 });

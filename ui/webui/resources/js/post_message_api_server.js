@@ -23,33 +23,7 @@ const MAX_INITIALIZATION_ATTEMPTS = 8;
  */
 export class PostMessageAPIServer extends RequestHandler {
   constructor(clientElement, targetURL, messageOriginURLFilter) {
-    super();
-
-    /**
-     * The Window type element to which this server will listen for messages,
-     * probably a <webview>, but also could be an <iframe> or a browser window
-     * object.
-     * @private @const {!Element}
-     */
-    this.clientElement_ = clientElement;
-
-    /**
-     * The guest URL embedded in the element above. Used for message targeting.
-     * This should be same as the URL loaded in the clientElement, i.e. the
-     * "src" attribute of a <webview>.
-     * @private @const {!URL}
-     */
-    this.targetURL_ = new URL(targetURL);
-
-    /**
-     * Incoming messages received from origin URLs without this prefix
-     * will not be accepted. This should be used to restrict the API access
-     * to the intended guest content.
-     * @private @const {!URL}
-     */
-    this.messageOriginURLFilter_ = new URL(messageOriginURLFilter);
-
-
+    super(clientElement, messageOriginURLFilter, targetURL);
     /**
      *  The ID of the timeout set before checking whether initialization has
      * taken place yet.
@@ -70,12 +44,12 @@ export class PostMessageAPIServer extends RequestHandler {
      */
     this.isInitialized_ = false;
 
-    if (this.clientElement_.tagName === 'IFRAME') {
-      this.clientElement_.onload = () => {
+    if (this.clientElement().tagName === 'IFRAME') {
+      this.clientElement().onload = () => {
         this.onLoad_();
       };
     } else {
-      this.clientElement_.addEventListener('contentload', () => {
+      this.clientElement().addEventListener('contentload', () => {
         this.onLoad_();
       });
     }
@@ -91,7 +65,7 @@ export class PostMessageAPIServer extends RequestHandler {
    */
   initialize() {
     if (this.isInitialized_ ||
-        !this.originMatchesFilter(this.clientElement_.src)) {
+        !this.originMatchesFilter(this.clientElement().src)) {
       return;
     }
 
@@ -103,8 +77,7 @@ export class PostMessageAPIServer extends RequestHandler {
           'Sending init message to guest content,  attempt # :' +
           this.numInitializationAttempts_);
 
-      this.clientElement_.contentWindow.postMessage(
-          'init', this.targetURL_.toString());
+      this.targetWindow().postMessage('init', this.targetURL().toString());
 
       // Set timeout to check if initialization message has been received using
       // exponential backoff.
@@ -120,14 +93,14 @@ export class PostMessageAPIServer extends RequestHandler {
       this.numInitializationAttempts_++;
     } else {
       // Exponential backoff has maxed out. Show error page if present.
-      this.onInitializationError(this.clientElement_.src);
+      this.onInitializationError(this.clientElement().src);
     }
   }
 
   /**
    *  Virtual method to be overridden by implementations of this class to notify
    * them that we were unable to initialize communication channel with the
-   * `clientElement_`.
+   * `this.clientElement()`.
    *
    * @param {!string} origin The origin URL that was not able to initialize
    *     communication.
@@ -140,21 +113,6 @@ export class PostMessageAPIServer extends RequestHandler {
    * element.
    */
   onInitializationComplete() {}
-
-  /**
-   * Determines if the specified origin matches the origin filter.
-   * @param {!string} origin The origin URL to match with the filter.
-   * @return {boolean}  whether the specified origin matches the filter.
-   */
-  originMatchesFilter(origin) {
-    const originURL = new URL(origin);
-
-    // We allow the pathname portion of the URL to be a prefix filter,
-    // to permit for different paths communicating with this server.
-    return originURL.protocol === this.messageOriginURLFilter_.protocol &&
-        originURL.host === this.messageOriginURLFilter_.host &&
-        originURL.pathname.startsWith(this.messageOriginURLFilter_.pathname);
-  }
 
   /**
    * Handles postMessage events from the client.
@@ -180,35 +138,6 @@ export class PostMessageAPIServer extends RequestHandler {
       this.onInitializationComplete();
       return;
     }
-    // If we have gotten this far, we have received a message from a trusted
-    // origin, and we should try to process it.  We can't gate this on whether
-    // the channel is initialized, because we can receive events out of order,
-    // and method calls can be received before the init event. Essentially, we
-    // should treat the channel as being potentially as soon as we send 'init'
-    // to the guest content.
-    const methodId = event.data.methodId;
-    const fn = event.data.fn;
-    const args = event.data.args || [];
-
-    if (!this.canHandle(fn)) {
-      console.log('Unknown function requested: ' + fn);
-      return;
-    }
-
-
-    const sendMessage = (methodId, result) => {
-      this.clientElement_.contentWindow.postMessage(
-          {
-            methodId: methodId,
-            result: result,
-          },
-          this.targetURL_.toString());
-    };
-
-    // Some methods return a promise and some don't. If we have a promise,
-    // we resolve it first, otherwise we send the result directly (e.g., for
-    // void functions we send 'undefined').
-    sendMessage(methodId, await this.handle(fn, args));
   }
 
   /**

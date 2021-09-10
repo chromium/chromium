@@ -93,14 +93,6 @@ export class PostMessageAPIClient {
     return this.targetWindow_ !== null;
   }
 
-  /**
-   * Adds a handler object to the client so that it could handle calls received.
-   * @param {RequestHandler} handler
-   */
-  setHandler(handler) {
-    this.requestHandler_ = handler;
-  }
-
   //
   // Private implementation:
   //
@@ -155,11 +147,10 @@ export class PostMessageAPIClient {
       return;
     }
 
-    if (this.requestHandler_ !== null && event.data.fn !== null &&
-        this.requestHandler_.canHandle(event.data.fn)) {
-      this.sendResponse_(
-          event.data.methodId,
-          await this.requestHandler_.handle(event.data.fn, event.data.args));
+    // If there is a function call associated with the message being received,
+    // then it is intended for the RequestHandler. Therefore, return early.
+    if (event.data.fn) {
+      return;
     }
 
     if (!this.methodsAwaitingResponse_.has(event.data.methodId)) {
@@ -196,19 +187,5 @@ export class PostMessageAPIClient {
       this.methodsAwaitingResponse_.set(newMethodId, resolve);
     });
     return promise;
-  }
-
-  /**
-   * Method that returns a response to a request that had been received.
-   * @param {number} methodId, The callback method id provided in the request.
-   * @param {Object} result, The result of the callback.
-   */
-  sendResponse_(methodId, result) {
-    this.targetWindow_.postMessage(
-        {
-          methodId: methodId,
-          result: result,
-        },
-        this.serverOriginURLFilter_);
   }
 }
