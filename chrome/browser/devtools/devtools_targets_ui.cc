@@ -146,7 +146,7 @@ void LocalTargetsUIHandler::UpdateTargets() {
   }
 
   SendSerializedTargets(
-      SerializeHostDescriptions(std::move(hosts), kGuestList));
+      base::Value(SerializeHostDescriptions(std::move(hosts), kGuestList)));
 }
 
 bool LocalTargetsUIHandler::AllowDevToolsFor(DevToolsAgentHost* host) {
@@ -340,8 +340,7 @@ std::unique_ptr<base::DictionaryValue> DevToolsTargetsUIHandler::Serialize(
   return target_data;
 }
 
-void DevToolsTargetsUIHandler::SendSerializedTargets(
-    const base::ListValue& list) {
+void DevToolsTargetsUIHandler::SendSerializedTargets(const base::Value& list) {
   callback_.Run(source_id_, list);
 }
 

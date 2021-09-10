@@ -1388,9 +1388,8 @@ void DevToolsUIBindings::DeviceCountChanged(int count) {
   CallClientMethod("DevToolsAPI", "deviceCountUpdated", base::Value(count));
 }
 
-void DevToolsUIBindings::DevicesUpdated(
-    const std::string& source,
-    const base::ListValue& targets) {
+void DevToolsUIBindings::DevicesUpdated(const std::string& source,
+                                        const base::Value& targets) {
   CallClientMethod("DevToolsAPI", "devicesUpdated", targets.Clone());
 }
 

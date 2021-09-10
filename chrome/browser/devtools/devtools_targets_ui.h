@@ -14,8 +14,8 @@
 #include "chrome/browser/devtools/device/devtools_android_bridge.h"
 
 namespace base {
-class ListValue;
 class DictionaryValue;
+class Value;
 }
 
 class Profile;
@@ -23,7 +23,7 @@ class Profile;
 class DevToolsTargetsUIHandler {
  public:
   using Callback =
-      base::RepeatingCallback<void(const std::string&, const base::ListValue&)>;
+      base::RepeatingCallback<void(const std::string&, const base::Value&)>;
 
   DevToolsTargetsUIHandler(const std::string& source_id, Callback callback);
   virtual ~DevToolsTargetsUIHandler();
@@ -51,7 +51,7 @@ class DevToolsTargetsUIHandler {
  protected:
   std::unique_ptr<base::DictionaryValue> Serialize(
       content::DevToolsAgentHost* host);
-  void SendSerializedTargets(const base::ListValue& list);
+  void SendSerializedTargets(const base::Value& list);
 
   using TargetMap =
       std::map<std::string, scoped_refptr<content::DevToolsAgentHost>>;

@@ -193,7 +193,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
 
   // Forwards discovered devices to frontend.
   virtual void DevicesUpdated(const std::string& source,
-                              const base::ListValue& targets);
+                              const base::Value& targets);
 
   void ReadyToCommitNavigation(content::NavigationHandle* navigation_handle);
   void DocumentOnLoadCompletedInMainFrame();

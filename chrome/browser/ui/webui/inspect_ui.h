@@ -19,7 +19,6 @@
 
 namespace base {
 class Value;
-class ListValue;
 }
 
 namespace content {
@@ -87,7 +86,7 @@ class InspectUI : public content::WebUIController,
       const std::string& target_id);
 
   void PopulateTargets(const std::string& source_id,
-                       const base::ListValue& targets);
+                       const base::Value& targets);
 
   void PopulatePortStatus(base::Value status);
 
