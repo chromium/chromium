@@ -328,6 +328,10 @@ const char kArcPrivacyPolicyURLPath[] = "arc/privacy_policy";
 
 const char kArcTermsURLPath[] = "arc/terms";
 
+// TODO(crbug.com/1248270): Use real link to Bluetooth pairing learn more.
+const char kBluetoothPairingLearnMoreUrl[] =
+    "https://support.google.com/chromebook/?p=bluetooth_pairing";
+
 const char kChromeAccessibilityHelpURL[] =
     "https://support.google.com/chromebook/topic/6323347";
 

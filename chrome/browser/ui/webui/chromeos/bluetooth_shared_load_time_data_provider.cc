@@ -5,10 +5,13 @@
 #include "chrome/browser/ui/webui/chromeos/bluetooth_shared_load_time_data_provider.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 
 namespace chromeos {
@@ -72,6 +75,11 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_BLUETOOTH_CONNECT_WRITE_NOT_PERMITTED},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+  html_source->AddString(
+      "bluetoothPairingLearnMoreLabel",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_BLUETOOTH_PAIRING_LEARN_MORE,
+          base::ASCIIToUTF16(chrome::kBluetoothPairingLearnMoreUrl)));
 }
 
 void AddLoadTimeData(content::WebUIDataSource* html_source) {

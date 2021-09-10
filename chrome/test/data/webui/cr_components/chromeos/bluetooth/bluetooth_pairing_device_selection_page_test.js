@@ -8,7 +8,7 @@ import 'chrome://bluetooth-pairing/strings.m.js';
 import {SettingsBluetoothPairingDeviceSelectionPageElement} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_pairing_device_selection_page.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import { assertEquals, assertFalse,assertTrue} from '../../../chai_assert.js';
+import { assertEquals, assertFalse, assertTrue} from '../../../chai_assert.js';
 
 import {createDefaultBluetoothDevice} from './fake_bluetooth_config.js';
 
@@ -39,6 +39,12 @@ suite('CrComponentsBluetoothPairingDeviceSelectionPageTest', function() {
     const getDeviceListTitle = () =>
         deviceSelectionPage.shadowRoot.querySelector('#deviceListTitle');
 
+    const learnMoreLink =
+        deviceSelectionPage.shadowRoot.querySelector('localized-link');
+    assertTrue(!!learnMoreLink);
+    assertEquals(
+        learnMoreLink.localizedString,
+        deviceSelectionPage.i18nAdvanced('bluetoothPairingLearnMoreLabel'));
     // No lists should be showing at first.
     assertFalse(!!getDeviceList());
     assertTrue(!!getDeviceListTitle());

@@ -3,9 +3,16 @@
     height: 210px;
     margin-top: 12px;
   }
+
+  #deviceListTitle {
+    margin-top: 24px;
+  }
 </style>
 <bluetooth-base-page>
   <div slot="page-body" id="pageBody">
+    <localized-link
+        localized-string="[[i18nAdvanced('bluetoothPairingLearnMoreLabel')]]">
+    </localized-link>
     <div id="deviceListTitle">[[getDeviceListTitle_(devices.*)]]</div>
     <!-- TODO(crbug.com/1010321): Fix item focus. -->
     <template  is="dom-if" if="[[shouldShowDeviceList_(devices.*)]]">

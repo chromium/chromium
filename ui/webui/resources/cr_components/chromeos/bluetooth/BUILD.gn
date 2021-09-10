@@ -74,6 +74,7 @@ js_library("bluetooth_dialog") {
 js_library("bluetooth_pairing_device_selection_page") {
   deps = [
     ":bluetooth_pairing_device_item",
+    "../localized_link:localized_link",
     "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements:cr_scrollable_behavior.m",
