@@ -126,6 +126,7 @@ class DeviceCommandStartCRDSessionJob : public RemoteCommandJob {
   std::string GetRobotAccountUserName() const;
 
   bool ShouldShowConfirmationDialog() const;
+  bool ShouldTerminateUponInput() const;
   bool ShouldUseEnterpriseUserDialog() const;
 
   DeviceOAuth2TokenService* oauth_service() const;

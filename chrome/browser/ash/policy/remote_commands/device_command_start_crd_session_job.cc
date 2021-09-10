@@ -405,7 +405,7 @@ void DeviceCommandStartCRDSessionJob::OnOAuthTokenReceived(
   Delegate::SessionParameters parameters{
       /*oauth_token=*/token,
       /*user_name=*/GetRobotAccountUserName(),
-      /*terminate_upon_input=*/terminate_upon_input_,
+      /*terminate_upon_input=*/ShouldTerminateUponInput(),
       /*show_confirmation_dialog=*/ShouldShowConfirmationDialog()};
   delegate_->StartCRDHostAndGetCode(
       parameters,
@@ -444,6 +444,32 @@ bool DeviceCommandStartCRDSessionJob::ShouldShowConfirmationDialog() const {
     case UserType::kNoUser:
     case UserType::kNonAutoLaunchedKiosk:
     case UserType::kOther:
+      return false;
+  }
+  NOTREACHED();
+  return false;
+}
+
+bool DeviceCommandStartCRDSessionJob::ShouldTerminateUponInput() const {
+  switch (GetUserType()) {
+    case UserType::kAffiliatedUser:
+    case UserType::kManagedGuestSession:
+      // We never terminate upon input for the user-session scenarios, because:
+      //   1. There is no risk of the admin spying on the users, as they need to
+      //       explicitly accept the connection request.
+      //   2. If we terminate upon input the session will immediately be
+      //      terminated as soon as the user accepts the connection request,
+      //      as pressing the button to accept the connection request counts as
+      //      user input.
+      return false;
+    case UserType::kAutoLaunchedKiosk:
+      return terminate_upon_input_;
+    case UserType::kNoUser:
+    case UserType::kNonAutoLaunchedKiosk:
+    case UserType::kOther:
+      // This method will only be called for user types for which we support
+      // CRD sessions.
+      NOTREACHED();
       return false;
   }
   NOTREACHED();

@@ -633,7 +633,7 @@ TEST_F(DeviceCommandStartCRDSessionJobTest,
 }
 
 TEST_F(DeviceCommandStartCRDSessionJobTest,
-       ShouldPassTerminateUponInputTrueToDelegate) {
+       ShouldPassTerminateUponInputTrueToDelegateForKioskUsers) {
   LogInAsAutoLaunchedKioskAppUser();
   SetOAuthToken(kTestOAuthToken);
 
@@ -776,6 +776,34 @@ TEST_F(DeviceCommandStartCRDSessionJobWithCRDForUserSessionsFeatureTest,
 
   EXPECT_EQ(true,
             crd_host_delegate().session_parameters().show_confirmation_dialog);
+}
+
+TEST_F(DeviceCommandStartCRDSessionJobWithCRDForUserSessionsFeatureTest,
+       ShouldPassTerminateUponInputFalseToDelegateForAffiliatedUser) {
+  LogInAsAffiliatedUser();
+  SetOAuthToken(kTestOAuthToken);
+
+  SetTerminateUponInput(true);
+
+  Result result = RunJobAndWaitForResult();
+  EXPECT_SUCCESS(result);
+
+  EXPECT_EQ(false,
+            crd_host_delegate().session_parameters().terminate_upon_input);
+}
+
+TEST_F(DeviceCommandStartCRDSessionJobWithCRDForUserSessionsFeatureTest,
+       ShouldPassTerminateUponInputFalseToDelegateForManagedGuestUser) {
+  LogInAsManagedGuestSessionUser();
+  SetOAuthToken(kTestOAuthToken);
+
+  SetTerminateUponInput(true);
+
+  Result result = RunJobAndWaitForResult();
+  EXPECT_SUCCESS(result);
+
+  EXPECT_EQ(false,
+            crd_host_delegate().session_parameters().terminate_upon_input);
 }
 
 }  // namespace policy
