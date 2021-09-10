@@ -223,6 +223,10 @@ SearchEnginesHandler::CreateDictionaryForEngine(int index, bool is_default) {
                    list_controller_.CanMakeDefault(template_url));
   dict->SetBoolean("default", is_default);
   dict->SetBoolean("canBeEdited", list_controller_.CanEdit(template_url));
+  dict->SetBoolean("canBeActivated",
+                   list_controller_.CanActivate(template_url));
+  dict->SetBoolean("canBeDeactivated",
+                   list_controller_.CanDeactivate(template_url));
   TemplateURL::Type type = template_url->type();
   dict->SetBoolean("isOmniboxExtension",
                    type == TemplateURL::OMNIBOX_API_EXTENSION);

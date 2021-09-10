@@ -43,6 +43,15 @@ class KeywordEditorController {
   // Return true if the given |url| can be removed.
   bool CanRemove(const TemplateURL* url) const;
 
+  // Return true if the given `url` can be activated. A `url` can be activated
+  // if it is currently inactive and is not a prepopulated engine.
+  bool CanActivate(const TemplateURL* url) const;
+
+  // Return true if the given `url` can be deactivated. A `url` can be
+  // deactivated if it is currently active and is not a prepopulated or default
+  // search engine.
+  bool CanDeactivate(const TemplateURL* url) const;
+
   // Remove the TemplateURL at the specified index in the TableModel.
   void RemoveTemplateURL(int index);
 

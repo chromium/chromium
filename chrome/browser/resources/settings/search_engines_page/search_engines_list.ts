@@ -32,7 +32,7 @@ export class SettingsSearchEnginesListElement extends PolymerElement {
       /**
        * Whether the active search engines feature flag is enabled.
        */
-      showActiveSearchEngines: Boolean,
+      isActiveSearchEnginesFlagEnabled: Boolean,
 
       /**
        * The scroll target that this list should use.

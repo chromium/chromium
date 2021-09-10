@@ -33,6 +33,12 @@
       </div>
       <div id="keyword-column"><div>[[engine.keyword]]</div></div>
       <div id="url-column" class="text-elide">[[engine.url]]</div>
+      <template is="dom-if" if="[[isActiveSearchEnginesFlagEnabled]]">
+        <cr-button class="secondary-button" on-click="onActivateTap_"
+             hidden="[[!engine.canBeActivated]]" id="activate">
+          $i18n{searchEnginesActivate}
+        </cr-button>
+      </template>
       <cr-icon-button class="icon-more-vert" on-click="onDotsTap_"
           title="$i18n{moreActions}" focus-row-control
           focus-type="cr-menu-button"></cr-icon-button>
@@ -41,14 +47,12 @@
             disabled$="[[!engine.canBeDefault]]" id="makeDefault">
           $i18n{searchEnginesMakeDefault}
         </button>
-        <button class="dropdown-item" on-click="onActivateTap_"
-                hidden="[[!showActiveSearchEngines]]" id="activate">
-          $i18n{searchEnginesActivate}
-        </button>
-        <button class="dropdown-item" on-click="onDeactivateTap_"
-                hidden="[[!showActiveSearchEngines]]" id="deactivate">
-          $i18n{searchEnginesDeactivate}
-        </button>
+        <template is="dom-if" if="[[isActiveSearchEnginesFlagEnabled]]">
+          <button class="dropdown-item" on-click="onDeactivateTap_"
+                  hidden="[[!engine.canBeDeactivated]]" id="deactivate">
+            $i18n{searchEnginesDeactivate}
+          </button>
+        </template>
         <button class="dropdown-item" on-click="onEditTap_"
             disabled$="[[!engine.canBeEdited]]" id="edit">
           $i18n{edit}

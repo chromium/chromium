@@ -137,9 +137,10 @@ class SettingsSearchEnginesPageElement extends
         value: () => loadTimeData.getBoolean('showKeywordTriggerSetting'),
       },
 
-      showActiveSearchEngines_: {
+      isActiveSearchEnginesFlagEnabled_: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('showActiveSearchEngines'),
+        value: () =>
+            loadTimeData.getBoolean('isActiveSearchEnginesFlagEnabled'),
       },
     };
   }
@@ -164,7 +165,7 @@ class SettingsSearchEnginesPageElement extends
   private dialogAnchorElement_: HTMLElement|null;
   private showDialog_: boolean;
   private showKeywordTriggerSetting_: boolean;
-  private showActiveSearchEngines_: boolean;
+  private isActiveSearchEnginesFlagEnabled_: boolean;
 
   ready() {
     super.ready();

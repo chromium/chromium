@@ -38,7 +38,7 @@ class SettingsSearchEngineEntryElement extends
     return {
       engine: Object,
 
-      showActiveSearchEngines: Boolean,
+      isActiveSearchEnginesFlagEnabled: Boolean,
 
       isDefault: {
         reflectToAttribute: true,
@@ -50,6 +50,7 @@ class SettingsSearchEngineEntryElement extends
   }
 
   engine: SearchEngine;
+  isActiveSearchEnginesFlagEnabled: boolean;
   isDefault: boolean;
   private browserProxy_: SearchEnginesBrowserProxy =
       SearchEnginesBrowserProxyImpl.getInstance();

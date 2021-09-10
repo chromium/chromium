@@ -71,6 +71,17 @@ bool KeywordEditorController::CanRemove(const TemplateURL* url) const {
       (url != url_model_->GetDefaultSearchProvider());
 }
 
+bool KeywordEditorController::CanActivate(const TemplateURL* url) const {
+  return (url->is_active() != TemplateURLData::ActiveStatus::kTrue) &&
+         (url->prepopulate_id() == 0);
+}
+
+bool KeywordEditorController::CanDeactivate(const TemplateURL* url) const {
+  return (url->is_active() == TemplateURLData::ActiveStatus::kTrue &&
+          url != url_model_->GetDefaultSearchProvider() &&
+          url->prepopulate_id() == 0);
+}
+
 void KeywordEditorController::RemoveTemplateURL(int index) {
   table_model_->Remove(index);
   base::RecordAction(UserMetricsAction("KeywordEditor_RemoveKeyword"));

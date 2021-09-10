@@ -37,7 +37,8 @@
     <settings-search-engines-list fixed-height
         hidden="[[!matchingDefaultEngines_.length]]"
         engines="[[matchingDefaultEngines_]]"
-        show-active-search-engines="[[showActiveSearchEngines_]]">
+        is-active-search-engines-flag-enabled=
+          "[[isActiveSearchEnginesFlagEnabled_]]">
     </settings-search-engines-list>
     <template is="dom-if" if="[[showDialog_]]" restamp>
       <settings-search-engine-dialog model="[[dialogModel_]]"
@@ -45,7 +46,7 @@
       </settings-search-engine-dialog>
     </template>
 
-    <template is="dom-if" if="[[showActiveSearchEngines_]]">
+    <template is="dom-if" if="[[isActiveSearchEnginesFlagEnabled_]]">
       <div class="cr-row first">
         <h2 class="flex">$i18n{searchEnginesActive}</h2>
         <cr-button class="secondary-button header-aligned-button"
@@ -61,14 +62,15 @@
           hidden="[[!matchingActiveEngines_.length]]"
           engines="[[matchingActiveEngines_]]"
           scroll-target="[[subpageScrollTarget]]"
-          show-active-search-engines="[[showActiveSearchEngines_]]">
+          is-active-search-engines-flag-enabled=
+                "[[isActiveSearchEnginesFlagEnabled_]]">
       </settings-search-engines-list>
     </template>
 
     <div class="cr-row first">
       <h2 class="flex">$i18n{searchEnginesOther}</h2>
       <cr-button class="secondary-button header-aligned-button"
-                 hidden="[[showActiveSearchEngines_]]"
+                 hidden="[[isActiveSearchEnginesFlagEnabled_]]"
                  on-click="onAddSearchEngineTap_" id="addSearchEngine">
         $i18n{add}
       </cr-button>
@@ -86,7 +88,8 @@
         hidden="[[!matchingOtherEngines_.length]]"
         engines="[[matchingOtherEngines_]]"
         scroll-target="[[subpageScrollTarget]]"
-        show-active-search-engines="[[showActiveSearchEngines_]]">
+        is-active-search-engines-flag-enabled=
+              "[[isActiveSearchEnginesFlagEnabled_]]">
     </settings-search-engines-list>
     <template is="dom-if" if="[[showExtensionsList_]]">
       <div class="cr-row first">

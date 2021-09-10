@@ -12,12 +12,14 @@ import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
  */
 
 /**
- * @see chrome/browser/ui/webui/settings/search_engine_manager_handler.cc
+ * @see chrome/browser/ui/webui/settings/search_engines_handler.cc
  */
 export type SearchEngine = {
   canBeDefault: boolean,
   canBeEdited: boolean,
   canBeRemoved: boolean,
+  canBeActivated: boolean,
+  canBeDeactivated: boolean,
   default: boolean,
   displayName: string,
   extension?: {id: string, name: string, canBeDisabled: boolean, icon: string},
