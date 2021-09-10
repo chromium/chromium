@@ -17,6 +17,11 @@ It will attempt to upload the image anyways.
 """
 
 from __future__ import print_function
+try:
+  # In Python2, override input with raw_input for compatibility.
+  input = raw_input  # pylint: disable=redefined-builtin
+except NameError:
+  pass
 
 import argparse
 import sys
@@ -58,7 +63,7 @@ else:
 
 
 def query_yes_no(question, default='no'):
-  """Ask a yes/no question via raw_input() and return their answer.
+  """Ask a yes/no question via input() and return their answer.
 
   "question" is a string that is presented to the user.
   "default" is the presumed answer if the user just hits <Enter>.
@@ -79,7 +84,7 @@ def query_yes_no(question, default='no'):
   valid = {'yes': True, 'y': True, 'ye': True, 'no': False, 'n': False}
   while True:
     print(question, prompt)
-    choice = raw_input().lower()
+    choice = input().lower()
     if default is not None and choice == '':
       return valid[default]
     if choice in valid:
