@@ -33,6 +33,11 @@ DictationE2ETest = class extends E2ETestBase {
     this.dictationEngineId =
         '_ext_ime_egfdjlfmgnehecnclamagfafdccgfndpdictation';
 
+    this.commandStrings = [
+      'delete', 'move left', 'move right', 'copy', 'paste', 'cut', 'undo',
+      'redo'
+    ];
+
     this.lastSetTimeoutCallback = null;
     this.lastSetDelay = -1;
 
@@ -55,6 +60,7 @@ import('/accessibility_common/accessibility_common_loader.js').then(reinit);
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "content/public/test/browser_test.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
     `);
   }
@@ -71,6 +77,11 @@ import('/accessibility_common/accessibility_common_loader.js').then(reinit);
         true);
     `);
     super.testGenPreambleCommon('kAccessibilityCommonExtensionId');
+  }
+
+  /** @override */
+  get featureList() {
+    return {enabled: ['features::kExperimentalAccessibilityDictationCommands']};
   }
 
   /**
@@ -177,6 +188,13 @@ import('/accessibility_common/accessibility_common_loader.js').then(reinit);
       this.lastSetTimeoutCallback = callback;
       this.lastSetDelay = delay;
     };
+  }
+
+  setCommandsEnabledForTest(enabled) {
+    this.mockAccessibilityPrivate.enableFeatureForTest(
+        this.mockAccessibilityPrivate.AccessibilityFeature.DICTATION_COMMANDS,
+        enabled);
+    accessibilityCommon.dictation_.initialize_();
   }
 
   /**
@@ -498,3 +516,41 @@ SYNC_TEST_F('DictationE2ETest', 'TimesOutAfterFinalResults', async function() {
   assertFalse(!!this.mockInputIme.getLastCommittedParameters());
   assertFalse(!!this.mockInputIme.getLastCompositionParameters());
 });
+
+SYNC_TEST_F(
+    'DictationE2ETest', 'CommandsCommitWithoutFlagEnabled', async function() {
+      await this.toggleDictationAndStartListening(8);
+      for (const command of this.commandStrings) {
+        mockSpeechRecognition.callOnResult(command, false);
+        this.assertImeCompositionParameters(command, 8);
+
+        // On final result, composition is committed as usual.
+        mockSpeechRecognition.callOnResult(command, true);
+        this.assertImeCommitParameters(command, 8);
+      }
+    });
+
+SYNC_TEST_F(
+    'DictationE2ETest', 'CommandsDoNotCommitThemselves', async function() {
+      this.setCommandsEnabledForTest(true);
+      await this.toggleDictationAndStartListening(8);
+      for (const command of this.commandStrings) {
+        mockSpeechRecognition.callOnResult(command, false);
+        this.assertImeCompositionParameters(command, 8);
+
+        // On final result, composition is cleared, nothing is committed
+        // (instead, an action is taken).
+        mockSpeechRecognition.callOnResult(command, true);
+        assertFalse(!!this.mockInputIme.getLastCommittedParameters());
+        // TODO(crbug.com/1247299): Check that some action was taken. This will
+        // probably need to be done with full integration testing, which will be
+        // easiest after changing to the SpeechRecognitionPrivate API.
+
+        // Try a command to "type delete", etc.
+        mockSpeechRecognition.callOnResult('type ' + command, true);
+        // The command should be entered but not the word "type".
+        this.mockInputIme.getLastCommittedParameters(command, 8);
+
+        this.mockInputIme.clearLastParameters();
+      }
+    });

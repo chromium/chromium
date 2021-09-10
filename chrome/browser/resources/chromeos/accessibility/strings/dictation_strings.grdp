@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grit-part>
+  <message name="DICTATION_COMMAND_DELETE_ONCE" desc="A spoken text-editing command to delete one character." is_accessibility_with_no_ui="true">
+    delete
+  </message>
+  <message name="DICTATION_COMMAND_MOVE_LEFT_ONCE" desc="A spoken text-editing command to move the cursor left one character." is_accessibility_with_no_ui="true">
+    move left
+  </message>
+  <message name="DICTATION_COMMAND_MOVE_RIGHT_ONCE" desc="A spoken text-editing command move the cursor right one character." is_accessibility_with_no_ui="true">
+    move right
+  </message>
+  <message name="DICTATION_COMMAND_COPY" desc="A spoken text-editing command to copy selected text." is_accessibility_with_no_ui="true">
+    copy
+  </message>
+  <message name="DICTATION_COMMAND_PASTE" desc="A spoken text-editing command to paste clipboard contents." is_accessibility_with_no_ui="true">
+    paste
+  </message>
+  <message name="DICTATION_COMMAND_CUT" desc="A spoken text-editing command to cut (copy and delete) selected text." is_accessibility_with_no_ui="true">
+    cut
+  </message>
+  <message name="DICTATION_COMMAND_UNDO" desc="A spoken text-editing command to undo the last text edit." is_accessibility_with_no_ui="true">
+    undo
+  </message>
+  <message name="DICTATION_COMMAND_REDO" desc="A spoken text-editing command to redo the last text edit." is_accessibility_with_no_ui="true">
+    redo
+  </message>
+  <message name="DICTATION_COMMAND_TYPE_TEXT" desc="A spoken text-editing command to type another command's keyword. For example, 'type delete' is a command to type the word 'delete'." is_accessibility_with_no_ui="true">
+    type <ph name="text">$1<ex>delete</ex></ph>
+  </message>
+</grit-part>

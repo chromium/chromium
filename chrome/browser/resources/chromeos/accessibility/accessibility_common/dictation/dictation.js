@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {Command, CommandParser} from './commands.js';
+import {InputController} from './input_controller.js';
+
 /**
  * Main class for the Chrome OS dictation feature.
  * Please note: this is being developed behind the flag
@@ -11,21 +14,11 @@
 // functionality.
 export class Dictation {
   constructor() {
-    /** @private {number} */
-    this.activeImeContextId_ = Dictation.NO_ACTIVE_IME_CONTEXT_ID_;
+    /** @private {InputController} */
+    this.inputController_ = null;
 
-    /**
-     * The engine ID of the previously active IME input method. Used to
-     * restore the previous IME after Dictation is deactivated.
-     * @private {string}
-     */
-    this.previousImeEngineId_ = '';
-
-    /**
-     * The current composition text, if any.
-     * @private {string}
-     */
-    this.currentComposition_ = '';
+    /** @private {CommandParser} */
+    this.commandParser_ = null;
 
     /**
      * The state of Dictation.
@@ -57,6 +50,9 @@ export class Dictation {
    * @private
    */
   initialize_() {
+    this.inputController_ = new InputController(() => this.stopDictation_());
+    this.commandParser_ = new CommandParser();
+
     this.speechRecognizer_.interimResults = true;
     this.speechRecognizer_.continuous = true;
     this.speechRecognizer_.onresult = event => this.onResult_(event);
@@ -68,11 +64,6 @@ export class Dictation {
     chrome.settingsPrivate.getAllPrefs(prefs => this.updateFromPrefs_(prefs));
     chrome.settingsPrivate.onPrefsChanged.addListener(
         prefs => this.updateFromPrefs_(prefs));
-
-    // Listen for IME focus changes.
-    chrome.input.ime.onFocus.addListener(context => this.onImeFocus_(context));
-    chrome.input.ime.onBlur.addListener(
-        contextId => this.onImeBlur_(contextId));
 
     // Listen for Dictation toggles (activated / deactivated) from the Ash
     // Browser process.
@@ -89,30 +80,10 @@ export class Dictation {
     if (activated && this.state_ === Dictation.DictationState.OFF) {
       this.state_ = Dictation.DictationState.STARTING;
       this.startTone_.play();
-      chrome.inputMethodPrivate.getCurrentInputMethod(
-          method => this.maybeSaveCurrentInputMethodAndStart_(method));
+      this.inputController_.connect(() => this.maybeStartSpeechRecognition_());
     } else {
       this.onDictationStopped_();
     }
-  }
-
-  /**
-   * Called when Dictation has received the current input method. We save the
-   * current method to reset when Dictation toggles up, then continue with
-   * starting up Dictation. Because this is async, checks that startup state
-   * is still correct before proceeding to the next step.
-   * @param {string} method
-   * @private
-   */
-  maybeSaveCurrentInputMethodAndStart_(method) {
-    if (this.state_ !== Dictation.DictationState.STARTING) {
-      return;
-    }
-    this.previousImeEngineId_ = method;
-    // Add AccessibilityCommon as an input method and active it.
-    chrome.languageSettingsPrivate.addInputMethod(Dictation.IME_ENGINE_ID);
-    chrome.inputMethodPrivate.setCurrentInputMethod(
-        Dictation.IME_ENGINE_ID, () => this.maybeStartSpeechRecognition_());
   }
 
   /**
@@ -129,8 +100,8 @@ export class Dictation {
     } else {
       // We are no longer starting up - perhaps a stop came
       // through during the async callbacks. Ensure cleanup
-      // by calling onDictationStopped_.
-      this.onDictationStopped_();
+      // by calling stopDictation_().
+      this.stopDictation_();
     }
   }
 
@@ -160,10 +131,7 @@ export class Dictation {
       return;
     }
     this.state_ = Dictation.DictationState.OFF;
-    // Commit composition text, if any.
-    if (this.currentComposition_.length > 0) {
-      this.processSpeechRecognitionResult_(
-          this.currentComposition_, /*isFinal=*/ true);
+    if (this.inputController_.hasCompositionText()) {
       this.endTone_.play();
     } else {
       this.cancelTone_.play();
@@ -177,34 +145,8 @@ export class Dictation {
       this.timeoutId_ = null;
     }
 
-    // Clean up IME state and reset to the previous IME method.
-    this.activeImeContextId_ = Dictation.NO_ACTIVE_IME_CONTEXT_ID_;
-    chrome.inputMethodPrivate.setCurrentInputMethod(this.previousImeEngineId_);
-    this.previousImeEngineId_ = '';
+    this.inputController_.disconnect();
     Dictation.removeAsInputMethod();
-  }
-
-  /**
-   * chrome.input.ime.onFocus callback. Save the active context ID.
-   * @param {chrome.input.ime.InputContext} context Input field context.
-   * @private
-   */
-  onImeFocus_(context) {
-    this.activeImeContextId_ = context.contextID;
-  }
-
-  /**
-   * chrome.input.ime.onFocus callback. Stops Dictation if the active
-   * context ID lost focus.
-   * @param {number} contextId
-   * @private
-   */
-  onImeBlur_(contextId) {
-    if (contextId === this.activeImeContextId_) {
-      // Clean up context ID immediately. We can no longer use this context.
-      this.activeImeContextId_ = Dictation.NO_ACTIVE_IME_CONTEXT_ID_;
-      this.stopDictation_();
-    }
   }
 
   /**
@@ -236,24 +178,14 @@ export class Dictation {
    * @private
    */
   processSpeechRecognitionResult_(transcript, isFinal) {
-    if (this.activeImeContextId_ === Dictation.NO_ACTIVE_IME_CONTEXT_ID_) {
-      return;
-    }
     if (isFinal) {
-      chrome.input.ime.commitText(
-          {contextID: this.activeImeContextId_, text: transcript});
-      this.currentComposition_ = '';
+      const command = this.commandParser_.parse(transcript);
+      this.inputController_.clearCompositionText(() => command.execute());
+      if (command.isTextInput()) {
+        this.inputController_.commitText(command.getText());
+      }
     } else if (this.speechRecognizer_.interimResults) {
-      // Set the composition text for interim results.
-      // Later we will do this in a bubble so that if the
-      // result will become a command it will not appear and
-      // disappear from the composition text.
-      chrome.input.ime.setComposition({
-        contextID: this.activeImeContextId_,
-        cursor: transcript.length,
-        text: transcript
-      });
-      this.currentComposition_ = transcript;
+      this.inputController_.setCompositionText(transcript);
     }
   }
 
@@ -322,7 +254,8 @@ export class Dictation {
    * the shelf input method picker UI.
    */
   static removeAsInputMethod() {
-    chrome.languageSettingsPrivate.removeInputMethod(Dictation.IME_ENGINE_ID);
+    chrome.languageSettingsPrivate.removeInputMethod(
+        InputController.IME_ENGINE_ID);
   }
 }
 
@@ -336,19 +269,6 @@ Dictation.DictationState = {
   LISTENING: 3,
   STOPPING: 4,
 };
-
-/**
- * The IME engine ID for AccessibilityCommon.
- * @private {string}
- * @const
- */
-Dictation.IME_ENGINE_ID = '_ext_ime_egfdjlfmgnehecnclamagfafdccgfndpdictation';
-
-/**
- * @private {number}
- * @const
- */
-Dictation.NO_ACTIVE_IME_CONTEXT_ID_ = -1;
 
 /**
  * Dictation locale pref.
