@@ -692,7 +692,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OptimizationGuide.PredictionModelExpired"
-    units="BooleanExpired" expires_after="M106">
+    units="BooleanExpired" expires_after="M96">
+  <obsolete>
+    Deprecated in favor of OptimizationTarget variant as of 09/2021.
+  </obsolete>
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -700,6 +703,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     within the last 30 days by default, but can change subject to Finch
     configuration.
   </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.PredictionModelExpired.{OptimizationTarget}"
+    enum="BooleanExpired" expires_after="M106">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records whether a prediction model for an OptimizationTarget expired if it
+    was not updated or used within the configured expiration time, but can
+    change subject to Finch or server configuration. Recorded once per browser
+    startup.
+  </summary>
+  <token key="OptimizationTarget" variants="OptimizationTarget"/>
 </histogram>
 
 <histogram

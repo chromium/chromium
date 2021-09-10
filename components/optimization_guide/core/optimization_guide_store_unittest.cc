@@ -2703,7 +2703,9 @@ TEST_F(OptimizationGuideStoreTest, PurgeInactiveModels) {
       proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION, &entry_key));
 
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PredictionModelExpired", true, 1);
+      "OptimizationGuide.PredictionModelExpired.PainfulPageLoad", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionModelExpired.LanguageDetection", 0);
 }
 
 }  // namespace optimization_guide

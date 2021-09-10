@@ -326,6 +326,11 @@ class OptimizationGuideStore {
   // Returns prefix of the key of every host model features entry: "5_".
   static EntryKeyPrefix GetHostModelFeaturesEntryKeyPrefix();
 
+  // Returns the OptimizationTarget from |prediction_model_entry_key|.
+  static proto::OptimizationTarget
+  GetOptimizationTargetFromPredictionModelEntryKey(
+      const EntryKey& prediction_model_entry_key);
+
   // Updates the status of the store to the specified value, validates the
   // transition, and destroys the database in the case where the status
   // transitions to Status::kFailed.

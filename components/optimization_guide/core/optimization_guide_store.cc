@@ -513,6 +513,25 @@ OptimizationGuideStore::GetPredictionModelEntryKeyPrefix() {
 }
 
 // static
+proto::OptimizationTarget
+OptimizationGuideStore::GetOptimizationTargetFromPredictionModelEntryKey(
+    const EntryKey& prediction_model_entry_key) {
+  base::StringPiece optimization_target_number_string =
+      base::TrimString(base::StringPiece(prediction_model_entry_key),
+                       base::StringPiece(GetPredictionModelEntryKeyPrefix()),
+                       base::TRIM_LEADING);
+  int optimization_target_number;
+  if (!base::StringToInt(optimization_target_number_string,
+                         &optimization_target_number)) {
+    return proto::OPTIMIZATION_TARGET_UNKNOWN;
+  }
+  if (!proto::OptimizationTarget_IsValid(optimization_target_number)) {
+    return proto::OPTIMIZATION_TARGET_UNKNOWN;
+  }
+  return static_cast<proto::OptimizationTarget>(optimization_target_number);
+}
+
+// static
 OptimizationGuideStore::EntryKeyPrefix
 OptimizationGuideStore::GetHostModelFeaturesEntryKeyPrefix() {
   return base::NumberToString(static_cast<int>(
@@ -955,8 +974,12 @@ void OptimizationGuideStore::OnLoadModelsToBeUpdated(
         if (entry.second.expiry_time_secs() <= now_since_epoch) {
           remove_vector->push_back(entry.first);
           should_delete_download_file = true;
-          base::UmaHistogramBoolean("OptimizationGuide.PredictionModelExpired",
-                                    true);
+          proto::OptimizationTarget optimization_target =
+              GetOptimizationTargetFromPredictionModelEntryKey(entry.first);
+          base::UmaHistogramBoolean(
+              "OptimizationGuide.PredictionModelExpired." +
+                  GetStringNameForOptimizationTarget(optimization_target),
+              true);
         }
       } else {
         // If we were checking expiry and the entry did not have an expiration
