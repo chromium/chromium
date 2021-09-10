@@ -140,8 +140,6 @@ std::vector<std::string> PrivilegedNoCorsHeaderNames();
 
 // Checks forbidden method in the fetch spec.
 // See https://fetch.spec.whatwg.org/#forbidden-method.
-// TODO(toyoshim): Move Blink FetchUtils::IsForbiddenMethod to cors:: and use
-// this implementation internally.
 COMPONENT_EXPORT(NETWORK_CPP) bool IsForbiddenMethod(const std::string& name);
 
 // https://fetch.spec.whatwg.org/#ok-status aka a successful 2xx status code,
