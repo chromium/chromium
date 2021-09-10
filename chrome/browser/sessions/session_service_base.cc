@@ -642,6 +642,7 @@ void SessionServiceBase::ScheduleCommand(
       !is_closing_command) {
     ScheduleResetCommands();
   }
+  DidScheduleCommand();
 }
 
 bool SessionServiceBase::ShouldTrackChangesToWindow(

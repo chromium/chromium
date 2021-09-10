@@ -66,6 +66,13 @@ struct ExitData {
 
   // The total number of tabs open at the time of exit.
   int tab_count;
+
+  // True if this the first SessionService created for the Profile. False
+  // means the first SessionService was destroyed and a new one created.
+  bool is_first_session_service;
+
+  // True if at least one command was scheduled
+  bool did_schedule_command;
 };
 
 struct WriteErrorData {
@@ -97,7 +104,9 @@ std::list<SessionServiceEvent> GetSessionServiceEvents(Profile* profile);
 void LogSessionServiceStartEvent(Profile* profile, bool after_crash);
 void LogSessionServiceExitEvent(Profile* profile,
                                 int window_count,
-                                int tab_count);
+                                int tab_count,
+                                bool is_first_session_service,
+                                bool did_schedule_command);
 void LogSessionServiceRestoreEvent(Profile* profile,
                                    int window_count,
                                    int tab_count,
