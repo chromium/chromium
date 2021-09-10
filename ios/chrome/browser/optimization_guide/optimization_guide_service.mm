@@ -154,3 +154,8 @@ void OptimizationGuideService::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   hints_manager_->Shutdown();
 }
+
+void OptimizationGuideService::OnBrowsingDataRemoved() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  hints_manager_->ClearFetchedHints();
+}

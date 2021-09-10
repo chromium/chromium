@@ -49,6 +49,8 @@
 #include "ios/chrome/browser/history/web_history_service_factory.h"
 #include "ios/chrome/browser/ios_chrome_io_thread.h"
 #include "ios/chrome/browser/language/url_language_histogram_factory.h"
+#import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
+#import "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #include "ios/chrome/browser/reading_list/reading_list_remover_helper.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_service.h"
@@ -622,6 +624,10 @@ void BrowsingDataRemoverImpl::NotifyRemovalComplete() {
           ios::AccountConsistencyServiceFactory::GetForBrowserState(
               browser_state_)) {
     account_consistency_service->OnBrowsingDataRemoved();
+  }
+  if (OptimizationGuideService* optimization_guide_service =
+          OptimizationGuideServiceFactory::GetForBrowserState(browser_state_)) {
+    optimization_guide_service->OnBrowsingDataRemoved();
   }
 
   {
