@@ -1199,6 +1199,8 @@ void LocalDOMWindow::alert(ScriptState* script_state, const String& message) {
     CountUse(WebFeature::kSameOriginIframeWindowAlert);
   }
   CountUseOnlyInCrossOriginIframe(WebFeature::kCrossOriginWindowAlert);
+  Deprecation::CountDeprecationCrossOriginIframe(
+      this, WebFeature::kCrossOriginWindowAlert);
 
   page->GetChromeClient().OpenJavaScriptAlert(GetFrame(), message);
 }
@@ -1231,6 +1233,8 @@ bool LocalDOMWindow::confirm(ScriptState* script_state, const String& message) {
     CountUse(WebFeature::kSameOriginIframeWindowConfirm);
   }
   CountUseOnlyInCrossOriginIframe(WebFeature::kCrossOriginWindowConfirm);
+  Deprecation::CountDeprecationCrossOriginIframe(
+      this, WebFeature::kCrossOriginWindowConfirm);
 
   return page->GetChromeClient().OpenJavaScriptConfirm(GetFrame(), message);
 }
@@ -1270,6 +1274,8 @@ String LocalDOMWindow::prompt(ScriptState* script_state,
     CountUse(WebFeature::kSameOriginIframeWindowPrompt);
   }
   CountUseOnlyInCrossOriginIframe(WebFeature::kCrossOriginWindowPrompt);
+  Deprecation::CountDeprecationCrossOriginIframe(
+      this, WebFeature::kCrossOriginWindowAlert);
 
   return String();
 }

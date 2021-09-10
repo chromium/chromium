@@ -609,6 +609,19 @@ DeprecationInfo GetDeprecationInfo(WebFeature feature) {
               "https://developer.chrome.com/docs/extensions/mv3/"
               "cross-origin-isolation/."};
 
+    case WebFeature::kCrossOriginWindowAlert:
+      return {"CrossOriginWindowAlert", kUnknown,
+              "Triggering window.alert from cross origin iframes has been "
+              "deprecated and will be removed in the future."};
+    case WebFeature::kCrossOriginWindowPrompt:
+      return {"CrossOriginWindowPrompt", kUnknown,
+              "Triggering window.prompt from cross origin iframes has been "
+              "deprecated and will be removed in the future."};
+    case WebFeature::kCrossOriginWindowConfirm:
+      return {"CrossOriginWindowConfirm", kUnknown,
+              "Triggering window.confirm from cross origin iframes has been "
+              "deprecated and will be removed in the future."};
+
     // Features that aren't deprecated don't have a deprecation message.
     default:
       return {"NotDeprecated", kUnknown, ""};
