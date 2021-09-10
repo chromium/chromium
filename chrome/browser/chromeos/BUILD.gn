@@ -4219,7 +4219,6 @@ source_set("unit_tests") {
     "../ash/printing/print_management/print_job_info_mojom_conversions_unittest.cc",
     "../ash/printing/print_management/printing_manager_factory_unittest.cc",
     "../ash/printing/print_management/printing_manager_unittest.cc",
-    "../ash/printing/printer_detector_test_util.h",
     "../ash/printing/printer_event_tracker_unittest.cc",
     "../ash/printing/printers_sync_bridge_unittest.cc",
     "../ash/printing/server_printers_provider_unittest.cc",
