@@ -1503,6 +1503,19 @@ void StyleEngine::ApplyUserRuleSetChanges(
   global_rule_set_->MarkDirty();
 
   unsigned changed_rule_flags = GetRuleSetFlags(changed_rule_sets);
+
+  // Cascade layer map must be built before adding other at-rules, because other
+  // at-rules rely on layer order to resolve name conflicts.
+  if (changed_rule_flags & kLayerRules) {
+    // Rebuild cascade layer map in all cases, because a newly inserted
+    // sub-layer can precede an original layer in the final ordering.
+    user_cascade_layer_map_ =
+        MakeGarbageCollected<CascadeLayerMap>(new_style_sheets);
+
+    if (resolver_)
+      resolver_->InvalidateMatchedPropertiesCache();
+  }
+
   bool has_rebuilt_font_face_cache = false;
   if (changed_rule_flags & kFontFaceRules) {
     if (ScopedStyleResolver* scoped_resolver =
@@ -1543,16 +1556,6 @@ void StyleEngine::ApplyUserRuleSetChanges(
     }
 
     MarkCounterStylesNeedUpdate();
-  }
-
-  if (changed_rule_flags & kLayerRules) {
-    // Rebuild cascade layer map in all cases, because a newly inserted
-    // sub-layer can precede an original layer in the final ordering.
-    user_cascade_layer_map_ =
-        MakeGarbageCollected<CascadeLayerMap>(new_style_sheets);
-
-    if (resolver_)
-      resolver_->InvalidateMatchedPropertiesCache();
   }
 
   if (changed_rule_flags & (kPropertyRules | kScrollTimelineRules)) {

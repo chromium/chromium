@@ -4333,4 +4333,84 @@ TEST_F(StyleEngineTest, CascadeLayerUseCount) {
   }
 }
 
+TEST_F(StyleEngineTest, UserKeyframesOverrideWithCascadeLayers) {
+  ScopedCSSCascadeLayersForTest enabled_scope(true);
+
+  auto* user_sheet = MakeGarbageCollected<StyleSheetContents>(
+      MakeGarbageCollected<CSSParserContext>(GetDocument()));
+  user_sheet->ParseString(R"CSS(
+    @layer base, override;
+
+    #target {
+      animation: anim 1s paused;
+    }
+
+    @layer override {
+      @keyframes anim {
+        from { width: 100px; }
+      }
+    }
+
+    @layer base {
+      @keyframes anim {
+        from { width: 50px; }
+      }
+    }
+  )CSS");
+  StyleSheetKey key("user");
+  GetStyleEngine().InjectSheet(key, user_sheet, WebDocument::kUserOrigin);
+
+  GetDocument().body()->setInnerHTML(
+      "<div id=target style='height: 100px'></div>");
+
+  UpdateAllLifecyclePhases();
+
+  Element* target = GetDocument().getElementById("target");
+  EXPECT_EQ(100, target->OffsetWidth());
+}
+
+TEST_F(StyleEngineTest, UserCounterStyleOverrideWithCascadeLayers) {
+  ScopedCSSCascadeLayersForTest enabled_scope(true);
+
+  PageTestBase::LoadAhem(*GetDocument().GetFrame());
+
+  auto* user_sheet = MakeGarbageCollected<StyleSheetContents>(
+      MakeGarbageCollected<CSSParserContext>(GetDocument()));
+  user_sheet->ParseString(R"CSS(
+    @layer base, override;
+
+    #target {
+      width: min-content;
+      font: 10px/1 Ahem;
+    }
+
+    #target::before {
+      content: counter(dont-care, cnt-style);
+    }
+
+    @layer override {
+      @counter-style cnt-style {
+        system: cyclic;
+        symbols: '0000';
+      }
+    }
+
+    @layer base {
+      @counter-style cnt-style {
+        system: cyclic;
+        symbols: '000';
+      }
+    }
+  )CSS");
+  StyleSheetKey key("user");
+  GetStyleEngine().InjectSheet(key, user_sheet, WebDocument::kUserOrigin);
+
+  GetDocument().body()->setInnerHTML("<div id=target></div>");
+
+  UpdateAllLifecyclePhases();
+
+  Element* target = GetDocument().getElementById("target");
+  EXPECT_EQ(40, target->OffsetWidth());
+}
+
 }  // namespace blink
