@@ -96,6 +96,8 @@ public class DownloadNotificationService {
 
     private static final int MAX_RESUMPTION_ATTEMPT_LEFT = 5;
 
+    private static DownloadNotificationService sInstanceForTests;
+
     @VisibleForTesting
     final List<ContentId> mDownloadsInProgress = new ArrayList<ContentId>();
 
@@ -113,7 +115,12 @@ public class DownloadNotificationService {
      * Creates DownloadNotificationService.
      */
     public static DownloadNotificationService getInstance() {
-        return LazyHolder.INSTANCE;
+        return sInstanceForTests == null ? LazyHolder.INSTANCE : sInstanceForTests;
+    }
+
+    @VisibleForTesting
+    static void setInstanceForTests(DownloadNotificationService service) {
+        sInstanceForTests = service;
     }
 
     @VisibleForTesting

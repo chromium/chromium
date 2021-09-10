@@ -4,8 +4,12 @@
 
 package org.chromium.chrome.browser.download;
 
+import android.app.Notification;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Looper;
 import android.support.test.InstrumentationRegistry;
 import android.util.Pair;
 import android.view.View;
@@ -36,6 +40,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.infobar.DuplicateDownloadInfoBar;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
+import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -47,6 +52,10 @@ import org.chromium.chrome.test.util.InfoBarUtil;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.download.DownloadState;
 import org.chromium.components.infobars.InfoBar;
+import org.chromium.components.offline_items_collection.ContentId;
+import org.chromium.components.offline_items_collection.FailState;
+import org.chromium.components.offline_items_collection.OfflineItem.Progress;
+import org.chromium.components.offline_items_collection.PendingState;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -121,6 +130,47 @@ import java.util.List;
         }
     }
 
+    private static class MockNotificationService extends DownloadNotificationService {
+        @Override
+        void updateNotification(int id, Notification notification) {}
+
+        @Override
+        public void cancelNotification(int notificationId, ContentId id) {}
+
+        @Override
+        public int notifyDownloadSuccessful(final ContentId id, final String filePath,
+                final String fileName, final long systemDownloadId, final OTRProfileID otrProfileID,
+                final boolean isSupportedMimeType, final boolean isOpenable, final Bitmap icon,
+                final String originalUrl, final boolean shouldPromoteOrigin, final String referrer,
+                final long totalBytes) {
+            return 0;
+        }
+
+        @Override
+        public void notifyDownloadProgress(final ContentId id, final String fileName,
+                final Progress progress, final long bytesReceived, final long timeRemainingInMillis,
+                final long startTime, final OTRProfileID otrProfileID,
+                final boolean canDownloadWhileMetered, final boolean isTransient, final Bitmap icon,
+                final String originalUrl, final boolean shouldPromoteOrigin) {}
+
+        @Override
+        void notifyDownloadPaused(ContentId id, String fileName, boolean isResumable,
+                boolean isAutoResumable, OTRProfileID otrProfileID, boolean isTransient,
+                Bitmap icon, final String originalUrl, final boolean shouldPromoteOrigin,
+                boolean hasUserGesture, boolean forceRebuild, @PendingState int pendingState) {}
+
+        @Override
+        public void notifyDownloadFailed(final ContentId id, final String fileName,
+                final Bitmap icon, final String originalUrl, final boolean shouldPromoteOrigin,
+                OTRProfileID otrProfileID, @FailState int failState) {}
+
+        @Override
+        public void notifyDownloadCanceled(final ContentId id, boolean hasUserGesture) {}
+
+        @Override
+        void resumeDownload(Intent intent) {}
+    }
+
     public DownloadTest(boolean useDownloadOfflineContentProvider) {
         mUseDownloadOfflineContentProvider = useDownloadOfflineContentProvider;
     }
@@ -128,13 +178,16 @@ import java.util.List;
     @Before
     public void setUp() {
         deleteTestFiles();
+        Looper.prepare();
         mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        DownloadNotificationService.setInstanceForTests(new MockNotificationService());
     }
 
     @After
     public void tearDown() {
         mTestServer.stopAndDestroyServer();
         deleteTestFiles();
+        DownloadNotificationService.setInstanceForTests(null);
     }
 
     @Override
