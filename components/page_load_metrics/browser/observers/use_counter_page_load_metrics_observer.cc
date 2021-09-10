@@ -219,7 +219,7 @@ void UseCounterPageLoadMetricsObserver::RecordUseCounterFeature(
 void UseCounterPageLoadMetricsObserver::RecordMainFrameWebFeature(
     content::RenderFrameHost* rfh,
     blink::mojom::WebFeature web_feature) {
-  if (rfh->GetParent() != nullptr)
+  if (rfh->GetParentOrOuterDocument() != nullptr)
     return;
 
   if (TestAndSet(main_frame_features_recorded_,

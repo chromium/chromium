@@ -1571,7 +1571,7 @@ class AXTreeSnapshotCombiner : public base::RefCounted<AXTreeSnapshotCombiner> {
   void AXTreeSnapshotOnFrame(RenderFrameHostImpl* rfhi) {
     OPTIONAL_TRACE_EVENT0("content",
                           "AXTreeSnapshotCombiner::AXTreeSnapshotOnFrame");
-    bool is_root = !rfhi->ParentOrOuterDelegateFrame();
+    bool is_root = !rfhi->GetParentOrOuterDocumentOrEmbedder();
     rfhi->RequestAXTreeSnapshot(AddFrame(is_root), params_.Clone());
   }
 
@@ -2391,7 +2391,7 @@ std::unique_ptr<WebContents> WebContentsImpl::DetachFromOuterWebContents() {
   auto* outer_web_contents = GetOuterWebContents();
   DCHECK(outer_web_contents);
   GetMainFrame()
-      ->ParentOrOuterDelegateFrame()
+      ->GetParentOrOuterDocumentOrEmbedder()
       ->set_inner_tree_main_frame_tree_node_id(
           FrameTreeNode::kFrameTreeNodeInvalidId);
 

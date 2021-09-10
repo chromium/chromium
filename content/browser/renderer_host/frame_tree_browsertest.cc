@@ -881,7 +881,7 @@ class FencedFrameTreeBrowserTest
     // communicated by nested FrameTrees.
     FencedFrame* fenced_frame = GetMatchingFencedFrameInOuterFrameTree(rfh);
     EXPECT_EQ(url.spec(),
-              EvalJs(rfh->ParentOrOuterDelegateFrame(), navigate_script));
+              EvalJs(rfh->GetParentOrOuterDocument(), navigate_script));
     fenced_frame->WaitForDidStopLoadingForTesting();
   }
 
@@ -949,7 +949,7 @@ class FencedFrameTreeBrowserTest
     EXPECT_TRUE(rfh->frame_tree_node()->IsInFencedFrameTree());
 
     RenderFrameHostImpl* outer_delegate_frame =
-        rfh->GetMainFrame()->ParentOrOuterDelegateFrame();
+        rfh->GetMainFrame()->GetParentOrOuterDocument();
 
     std::vector<FencedFrame*> fenced_frames =
         outer_delegate_frame->GetFencedFrames();

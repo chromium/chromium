@@ -47,12 +47,6 @@ bool HeadersContainFrameAncestorsCSP(
       });
 }
 
-// Returns the parent, including outer delegates in the case of portals.
-RenderFrameHostImpl* ParentOrOuterDelegate(RenderFrameHostImpl* frame) {
-  return frame->InsidePortal() ? frame->ParentOrOuterDelegateFrame()
-                               : frame->GetParent();
-}
-
 }  // namespace
 
 // static
@@ -244,8 +238,11 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateXFrameOptions(
 
     case network::mojom::XFrameOptionsValue::kSameOrigin: {
       // Block the request when any ancestor is not same-origin.
-      RenderFrameHostImpl* parent = ParentOrOuterDelegate(
-          request->frame_tree_node()->current_frame_host());
+      // We enforce XFrameOptions in the outer documents, but not for
+      // embedders/GuestViews.
+      RenderFrameHostImpl* parent = request->frame_tree_node()
+                                        ->current_frame_host()
+                                        ->GetParentOrOuterDocument();
       url::Origin current_origin =
           url::Origin::Create(navigation_handle()->GetURL());
       while (parent) {
@@ -255,7 +252,7 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateXFrameOptions(
             ConsoleErrorXFrameOptions(disposition);
           return CheckResult::BLOCK;
         }
-        parent = ParentOrOuterDelegate(parent);
+        parent = parent->GetParentOrOuterDocument();
       }
       return CheckResult::PROCEED;
     }
@@ -273,12 +270,15 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateEmbeddingOptIn(
   // enabled, a response will be blocked unless it's explicitly opted-into
   // being embeddable via 'X-Frame-Options'/'frame-ancestors', or is same-origin
   // with its ancestors.
+  // We enforce frame-ancestors in the outer documents, but not for
+  // embedders/GuestViews.
   NavigationRequest* request = NavigationRequest::From(navigation_handle());
   if (request->response()->parsed_headers->xfo ==
           network::mojom::XFrameOptionsValue::kNone &&
       !HeadersContainFrameAncestorsCSP(request->response()->parsed_headers)) {
-    RenderFrameHostImpl* parent =
-        ParentOrOuterDelegate(request->frame_tree_node()->current_frame_host());
+    RenderFrameHostImpl* parent = request->frame_tree_node()
+                                      ->current_frame_host()
+                                      ->GetParentOrOuterDocument();
     url::Origin current_origin =
         url::Origin::Create(navigation_handle()->GetURL());
     while (parent) {
@@ -295,7 +295,7 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateEmbeddingOptIn(
 
         return CheckResult::BLOCK;
       }
-      parent = ParentOrOuterDelegate(parent);
+      parent = parent->GetParentOrOuterDocument();
     }
   }
   return CheckResult::PROCEED;
@@ -310,11 +310,11 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateFrameAncestors(
   auto empty_source_location = network::mojom::SourceLocation::New();
 
   // Check CSP frame-ancestors against every parent.
-  // We enforce frame-ancestors in the outer delegate for portals, but not
-  // for other uses of inner/outer WebContents (GuestViews).
-  RenderFrameHostImpl* parent =
-      ParentOrOuterDelegate(static_cast<RenderFrameHostImpl*>(
-          navigation_handle()->GetRenderFrameHost()));
+  // We enforce frame-ancestors in the outer documents, but not for
+  // embedders/GuestViews.
+  RenderFrameHostImpl* parent = static_cast<RenderFrameHostImpl*>(
+                                    navigation_handle()->GetRenderFrameHost())
+                                    ->GetParentOrOuterDocument();
   while (parent) {
     // CSP violations (if any) are reported via the disallowed ancestor of the
     // navigated frame (because while the throttle runs the navigation hasn't
@@ -332,7 +332,7 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateFrameAncestors(
             navigation_handle()->IsFormSubmission())) {
       return CheckResult::BLOCK;
     }
-    parent = ParentOrOuterDelegate(parent);
+    parent = parent->GetParentOrOuterDocument();
   }
 
   return CheckResult::PROCEED;

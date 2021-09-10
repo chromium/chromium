@@ -8940,7 +8940,7 @@ RenderFrameHost* RenderFrameHost::FromPlaceholderToken(
 }
 
 ui::AXTreeID RenderFrameHostImpl::GetParentAXTreeID() {
-  auto* parent = ParentOrOuterDelegateFrame();
+  auto* parent = GetParentOrOuterDocumentOrEmbedder();
   if (!parent)
     return ui::AXTreeIDUnknown();
   return parent->GetAXTreeID();
@@ -12127,10 +12127,26 @@ void RenderFrameHostImpl::IsClipboardPasteContentAllowed(
                                             data, std::move(callback));
 }
 
-RenderFrameHostImpl* RenderFrameHostImpl::ParentOrOuterDelegateFrame() {
+RenderFrameHostImpl* RenderFrameHostImpl::GetParentOrOuterDocument() {
+  return GetParentOrOuterDocumentHelper(/*escape_guest_view=*/false);
+}
+
+RenderFrameHostImpl* RenderFrameHostImpl::GetParentOrOuterDocumentOrEmbedder() {
+  return GetParentOrOuterDocumentHelper(/*escape_guest_view=*/true);
+}
+
+RenderFrameHostImpl* RenderFrameHostImpl::GetParentOrOuterDocumentHelper(
+    bool escape_guest_view) {
   // Find the parent in the FrameTree (iframe).
   if (parent_)
     return parent_;
+
+  if (!escape_guest_view) {
+    // If we are not a FF root nor inside a portal then return early.
+    // This code does not escape GuestViews.
+    if (!IsFencedFrameRoot() && !InsidePortal())
+      return nullptr;
+  }
 
   // Find the parent in the outer embedder (GuestView, Portal, or Fenced Frame).
   FrameTreeNode* frame_in_embedder =
@@ -12145,7 +12161,7 @@ RenderFrameHostImpl* RenderFrameHostImpl::ParentOrOuterDelegateFrame() {
 RenderFrameHostImpl* RenderFrameHostImpl::GetOutermostMainFrame() {
   RenderFrameHostImpl* current = this;
   while (true) {
-    RenderFrameHostImpl* parent = current->ParentOrOuterDelegateFrame();
+    RenderFrameHostImpl* parent = current->GetParentOrOuterDocumentOrEmbedder();
     if (!parent)
       return current;
     current = parent;

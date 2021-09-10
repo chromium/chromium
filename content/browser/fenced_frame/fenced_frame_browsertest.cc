@@ -101,7 +101,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, CreateFromScriptAndDestroy) {
       testing::ElementsAre(primary_rfh.get(), inner_fenced_frame_rfh.get()));
 
   // Test that the inner => outer delegate mechanism works correctly.
-  EXPECT_EQ(inner_fenced_frame_rfh->ParentOrOuterDelegateFrame(),
+  EXPECT_EQ(nullptr, inner_fenced_frame_rfh->GetParent());
+  EXPECT_EQ(inner_fenced_frame_rfh->GetParentOrOuterDocument(),
             primary_rfh.get());
 
   // Test `FrameTreeNode::IsFencedFrameRoot()`.

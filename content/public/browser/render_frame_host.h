@@ -246,6 +246,29 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // current RenderFrameHost.
   virtual RenderFrameHost* GetParent() = 0;
 
+  // Returns the document owning the frame this RenderFrameHost is located
+  // in, which will either be a parent (for <iframe>s) or outer document (for
+  // <fencedframe> and <portal>). Note that the returned RenderFrameHost may
+  // not be considered a descendant (`IsDescendantOf`). This will return the
+  // outer document in cases of fenced frames and portals but will not cross
+  // a browsing session boundary (ie. it will not escape a GuestView). See
+  // `RenderFrameHostImpl::GetParentOrOuterDocumentOrEmbedder` for the
+  // version of this API that will cross a browsing session boundary.
+  // This method typically will be used for permissions and policy decisions
+  // based on checking origins.
+  // Example:
+  //  A
+  //   B (iframe)
+  //   C (fenced frame - placeholder frame)
+  //    C* (main frame in fenced frame).
+  //
+  //  C* GetParent returns null.
+  //  C* GetParentOrOuterDocument returns A.
+  //  C GetParent & GetParentOrOuterDocument returns A.
+  //  B GetParent & GetParentOrOuterDocument returns A.
+  //  A GetParent & GetParentOrOuterDocument returns nullptr.
+  virtual RenderFrameHost* GetParentOrOuterDocument() = 0;
+
   // Returns the eldest parent of this RenderFrameHost.
   // Always non-null, but might be equal to |this|.
   // The result may be in a different process that the current RenderFrameHost.

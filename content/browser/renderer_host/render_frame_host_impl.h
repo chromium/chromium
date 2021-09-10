@@ -313,6 +313,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   RenderWidgetHostImpl* GetRenderWidgetHost() override;
   RenderWidgetHostView* GetView() override;
   RenderFrameHostImpl* GetParent() override;
+  RenderFrameHostImpl* GetParentOrOuterDocument() override;
   RenderFrameHostImpl* GetMainFrame() override;
   PageImpl& GetPage() override;
   std::vector<RenderFrameHost*> GetFramesInSubtree() override;
@@ -1903,11 +1904,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
     return media_device_id_salt_base_;
   }
 
-  // Returns the parent RenderFrameHost, potentially going through nested
-  // WebContents. Returns nullptr for top-level RenderFrameHosts in topmost
-  // WebContents.
-  RenderFrameHostImpl* ParentOrOuterDelegateFrame();
-
   // Returns the global root RenderFrameHostImpl in the outermost WebContents.
   RenderFrameHostImpl* GetOutermostMainFrame();
 
@@ -2335,6 +2331,28 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void MaybeDispatchDOMContentLoadedOnPrerenderActivation();
   void MaybeDispatchDidFinishLoadOnPrerenderActivation();
 
+  // Returns the document owning the frame this RenderFrameHost is located
+  // in, which will either be a parent (for <iframe>s) or outer document (for
+  // <fencedframe>, <portal> or an embedder (e.g. GuestViews)). Note that the
+  // returned RenderFrameHost may not be considered a descendant
+  // (`IsDescendantOf`). See `RenderFrameHost::GetParentOrOuterDocument` for the
+  // version of this API that does not cross a browsing session boundary (ie.
+  // Not escaping a GuestView). This method typically will be used for input,
+  // compositing, and focus related functionality where the physical arrangement
+  // of frames, as opposed to their semantics is required. Example:
+  //  A (GuestView embedder)
+  //   B (<webview> - placeholder frame)
+  //    B* (embedded document main frame)
+  //     C (iframe)
+  //
+  //  C GetParent & GetParentOrOuterDocumentOrEmbedder returns B*.
+  //  B* GetParent & GetParentOrOuterDocument returns null.
+  //  B* GetParentOrOuterDocumentOrEmbedder returns A.
+  //  B GetParent & GetParentOrOuterDocumentOrEmbedder returns A.
+  //  A GetParent & GetParentOrOuterDocumentOrEmbedder returns
+  //  nullptr.
+  RenderFrameHostImpl* GetParentOrOuterDocumentOrEmbedder();
+
  protected:
   friend class RenderFrameHostFactory;
 
@@ -2517,6 +2535,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const url::Origin& frame_origin,
       net::IsolationInfo::RequestType request_type,
       bool anonymous);
+
+  // Helper for GetParentOrOuterDocument/GetParentOrOuterDocumentOrEmbedder.
+  // Do not use directly.
+  RenderFrameHostImpl* GetParentOrOuterDocumentHelper(bool escape_guest_view);
 
   // mojom::FrameHost:
   void CreateNewWindow(mojom::CreateNewWindowParamsPtr params,

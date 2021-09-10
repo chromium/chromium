@@ -453,9 +453,11 @@ CrossProcessFrameConnector::GetRootRenderWidgetHostView() {
 
 RenderWidgetHostViewBase*
 CrossProcessFrameConnector::GetParentRenderWidgetHostView() {
+  // Input always hits the parent view if there is one so we should
+  // escape to an embedder.
   RenderFrameHostImpl* parent =
       current_child_frame_host()
-          ? current_child_frame_host()->ParentOrOuterDelegateFrame()
+          ? current_child_frame_host()->GetParentOrOuterDocumentOrEmbedder()
           : nullptr;
   return parent ? static_cast<RenderWidgetHostViewBase*>(parent->GetView())
                 : nullptr;
