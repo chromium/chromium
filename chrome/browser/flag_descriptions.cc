@@ -262,6 +262,12 @@ const char kAutofillAutoTriggerManualFallbackForCardsDescription[] =
     "When enabled, manual fallback will be auto-triggered on form interaction "
     "in the case where autofill failed to fill a credit card form accurately.";
 
+const char kAutofillCenterAligngedSuggestionsName[] =
+    "Center-aligned Autofill suggestions.";
+const char kAutofillCenterAligngedSuggestionsDescription[] =
+    "When enabled, the Autofill suggestion popup will be aligned to the center "
+    "of the initiating field and not to its border.";
+
 const char kAutofillEnableGoogleIssuedCardName[] =
     "Enable Autofill Google-issued card";
 const char kAutofillEnableGoogleIssuedCardDescription[] =

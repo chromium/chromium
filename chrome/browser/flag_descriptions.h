@@ -163,6 +163,9 @@ extern const char kAutofillAlwaysReturnCloudTokenizedCardDescription[];
 extern const char kAutofillAutoTriggerManualFallbackForCardsName[];
 extern const char kAutofillAutoTriggerManualFallbackForCardsDescription[];
 
+extern const char kAutofillCenterAligngedSuggestionsName[];
+extern const char kAutofillCenterAligngedSuggestionsDescription[];
+
 extern const char kAutofillEnableGoogleIssuedCardName[];
 extern const char kAutofillEnableGoogleIssuedCardDescription[];
 

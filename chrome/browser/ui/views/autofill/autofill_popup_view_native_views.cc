@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -24,6 +25,7 @@
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -1421,8 +1423,16 @@ bool AutofillPopupViewNativeViews::DoUpdateBoundsAndRedrawPopup() {
   }
   preferred_size.set_width(AdjustWidth(preferred_size.width() + scroll_width));
 
-  CalculatePopupXAndWidth(preferred_size.width(), content_area_bounds,
-                          element_bounds, controller_->IsRTL(), &popup_bounds);
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillCenterAlignedSuggestions)) {
+    CalculatePopupXAndWidthHorizontallyCentered(
+        preferred_size.width(), content_area_bounds, element_bounds,
+        controller_->IsRTL(), &popup_bounds);
+  } else {
+    CalculatePopupXAndWidth(preferred_size.width(), content_area_bounds,
+                            element_bounds, controller_->IsRTL(),
+                            &popup_bounds);
+  }
 
   if (BoundsOverlapWithAnyOpenPrompt(popup_bounds,
                                      controller_->GetWebContents())) {

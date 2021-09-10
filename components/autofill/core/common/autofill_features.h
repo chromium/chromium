@@ -103,6 +103,8 @@ COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillKeyboardAccessory;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillLabelAffixRemoval;
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature kAutofillCenterAlignedSuggestions;
 COMPONENT_EXPORT(AUTOFILL) extern const base::Feature kAutofillPruneSuggestions;
 COMPONENT_EXPORT(AUTOFILL) extern const base::Feature kAutofillMetadataUploads;
 COMPONENT_EXPORT(AUTOFILL)

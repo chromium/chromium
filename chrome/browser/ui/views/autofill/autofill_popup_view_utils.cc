@@ -11,6 +11,51 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/views/widget/widget.h"
 
+void CalculatePopupXAndWidthHorizontallyCentered(
+    int popup_preferred_width,
+    const gfx::Rect& content_area_bounds,
+    const gfx::Rect& element_bounds,
+    bool is_rtl,
+    gfx::Rect* popup_bounds) {
+  // The preferred horizontal starting point for the pop-up is at the horizontal
+  // center of the field.
+  int preferred_starting_point =
+      base::clamp(element_bounds.x() + (element_bounds.size().width() / 2),
+                  content_area_bounds.x(), content_area_bounds.right());
+
+  // The space available to the left and to the right.
+  int space_to_right = content_area_bounds.right() - preferred_starting_point;
+  int space_to_left = preferred_starting_point - content_area_bounds.x();
+
+  // Calculate the pop-up width. This is either the preferred pop-up width, or
+  // alternatively the maximum space available if there is not sufficient space
+  // for the preferred width.
+  int popup_width =
+      std::min(popup_preferred_width, space_to_left + space_to_right);
+
+  // Calculates the space that is available to grow into the preferred
+  // direction. In RTL, this is the space to the right side of the content
+  // area, in LTR this is the space to the left side of the content area.
+  int space_to_grow_in_preferred_direction =
+      is_rtl ? space_to_left : space_to_right;
+
+  // Calculate how much the pop-up needs to grow into the non-preferred
+  // direction.
+  int amount_to_grow_in_unpreffered_direction =
+      std::max(0, popup_width - space_to_grow_in_preferred_direction);
+
+  popup_bounds->set_width(popup_width);
+  if (is_rtl) {
+    // Note, in RTL the |pop_up_width| must be subtracted to achieve
+    // right-alignment of the pop-up with the element.
+    popup_bounds->set_x(preferred_starting_point - popup_width +
+                        amount_to_grow_in_unpreffered_direction);
+  } else {
+    popup_bounds->set_x(preferred_starting_point -
+                        amount_to_grow_in_unpreffered_direction);
+  }
+}
+
 void CalculatePopupXAndWidth(int popup_preferred_width,
                              const gfx::Rect& content_area_bounds,
                              const gfx::Rect& element_bounds,
@@ -76,11 +121,18 @@ void CalculatePopupYAndHeight(int popup_preferred_height,
 gfx::Rect CalculatePopupBounds(const gfx::Size& desired_size,
                                const gfx::Rect& content_area_bounds,
                                const gfx::Rect& element_bounds,
-                               bool is_rtl) {
+                               bool is_rtl,
+                               bool horizontally_centered) {
   gfx::Rect popup_bounds;
 
-  CalculatePopupXAndWidth(desired_size.width(), content_area_bounds,
-                          element_bounds, is_rtl, &popup_bounds);
+  if (horizontally_centered) {
+    CalculatePopupXAndWidthHorizontallyCentered(
+        desired_size.width(), content_area_bounds, element_bounds, is_rtl,
+        &popup_bounds);
+  } else {
+    CalculatePopupXAndWidth(desired_size.width(), content_area_bounds,
+                            element_bounds, is_rtl, &popup_bounds);
+  }
   CalculatePopupYAndHeight(desired_size.height(), content_area_bounds,
                            element_bounds, &popup_bounds);
 

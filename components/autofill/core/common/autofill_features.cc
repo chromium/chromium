@@ -264,6 +264,11 @@ const base::Feature kAutofillKeyboardAccessory{
 extern const base::Feature kAutofillLabelAffixRemoval{
     "AutofillLabelAffixRemoval", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enabled a suggestion menu that is aligned to the center of the field.
+// TODO(crbug/1248339): Remove once experiment is finished.
+extern const base::Feature kAutofillCenterAlignedSuggestions{
+    "AutofillCenterAlignedSuggestions", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kAutofillPruneSuggestions{
     "AutofillPruneSuggestions", base::FEATURE_DISABLED_BY_DEFAULT};
 

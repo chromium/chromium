@@ -373,6 +373,11 @@
     "expiry_milestone": 98
   },
   {
+    "name": "autofill-center-aligned-suggestions",
+    "owners": [ "koerber", "mamir" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "autofill-enable-google-issued-card",
     "owners": [ "siashah" ],
     "expiry_milestone": 92
