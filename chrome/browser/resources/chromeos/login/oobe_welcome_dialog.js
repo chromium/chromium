@@ -129,30 +129,30 @@
 
     onLanguageClicked_(e) {
       this.focusedElement_ = 'languageSelectionButton';
-      this.fire('language-button-clicked');
+      this.dispatchEvent(new CustomEvent('language-button-clicked', { bubbles: true, composed: true }));
     },
 
     onAccessibilityClicked_() {
       this.focusedElement_ = 'accessibilitySettingsButton';
-      this.fire('accessibility-button-clicked');
+      this.dispatchEvent(new CustomEvent('accessibility-button-clicked', { bubbles: true, composed: true }));
     },
 
     onTimezoneClicked_() {
       this.focusedElement_ = 'timezoneSettingsButton';
-      this.fire('timezone-button-clicked');
+      this.dispatchEvent(new CustomEvent('timezone-button-clicked', { bubbles: true, composed: true }));
     },
 
     onNextClicked_() {
       this.focusedElement_ = 'getStarted';
-      this.fire('next-button-clicked');
+      this.dispatchEvent(new CustomEvent('next-button-clicked', { bubbles: true, composed: true }));
     },
 
     onOsInstallClicked_() {
-      this.fire('os-install-clicked');
+      this.dispatchEvent(new CustomEvent('os-install-clicked', { bubbles: true, composed: true }));
     },
 
     onDebuggingLinkClicked_() {
-      this.fire('enable-debugging-clicked');
+      this.dispatchEvent(new CustomEvent('enable-debugging-clicked', { bubbles: true, composed: true }));
     },
 
     /*
@@ -161,7 +161,7 @@
      * @private
      */
     onTitleLongTouch_() {
-      this.fire('launch-advanced-options');
+      this.dispatchEvent(new CustomEvent('launch-advanced-options', { bubbles: true, composed: true }));
     },
 
     attached() {
@@ -246,14 +246,14 @@
      * @private
      */
     dismissChromeVoxHint_() {
-      this.fire('chromevox-hint-dismissed');
+      this.dispatchEvent(new CustomEvent('chromevox-hint-dismissed', { bubbles: true, composed: true }));
       this.closeChromeVoxHint();
     },
 
     /** @private */
     activateChromeVox_() {
       this.closeChromeVoxHint();
-      this.fire('chromevox-hint-accepted');
+      this.dispatchEvent(new CustomEvent('chromevox-hint-accepted', { bubbles: true, composed: true }));
     }
   });
 }
