@@ -418,32 +418,6 @@ class PCScanTask final : public base::RefCountedThreadSafe<PCScanTask>,
   using Root = PCScan::Root;
   using SlotSpan = SlotSpanMetadata<ThreadSafe>;
 
-  // TODO(bikineev): Move these checks to StarScanScanLoop.
-  struct GigaCageLookupPolicy {
-    ALWAYS_INLINE bool TestOnHeapPointer(uintptr_t maybe_ptr) const {
-      PA_DCHECK(IsManagedByPartitionAllocNonBRPPool(
-          reinterpret_cast<void*>(maybe_ptr)));
-#if defined(PA_HAS_64_BITS_POINTERS)
-#if PA_STARSCAN_USE_CARD_TABLE
-      return QuarantineCardTable::GetFrom(maybe_ptr).IsQuarantined(maybe_ptr);
-#else
-      // Without the card table, use the reservation offset table. It's not as
-      // precise (meaning that we may have hit the slow path more frequently),
-      // but reduces the memory overhead.  Since we are certain here, that
-      // |maybe_ptr| refers to the non-BRP pool, it's okay to use non-checking
-      // version of ReservationOffsetPointer().
-      const uintptr_t offset =
-          maybe_ptr & ~PartitionAddressSpace::NonBRPPoolBaseMask();
-      return *ReservationOffsetPointer(kNonBRPPoolHandle, offset) ==
-             kOffsetTagNormalBuckets;
-#endif
-#else   // defined(PA_HAS_64_BITS_POINTERS)
-      return IsManagedByPartitionAllocNonBRPPool(
-          reinterpret_cast<void*>(maybe_ptr));
-#endif  // defined(PA_HAS_64_BITS_POINTERS)
-    }
-  };
-
   // This is used:
   // - to synchronize all scanning threads (mutators and the scanner);
   // - for the scanner, to transition through the state machine
@@ -510,13 +484,11 @@ class PCScanTask final : public base::RefCountedThreadSafe<PCScanTask>,
   friend class base::RefCountedThreadSafe<PCScanTask>;
   ~PCScanTask() = default;
 
-  template <typename LookupPolicy>
   ALWAYS_INLINE AllocationStateMap* TryFindScannerBitmapForPointer(
       uintptr_t maybe_ptr) const;
 
   // Lookup and marking functions. Return size of the object if marked or zero
   // otherwise.
-  template <typename LookupPolicy>
   ALWAYS_INLINE size_t TryMarkObjectInNormalBuckets(uintptr_t maybe_ptr) const;
 
   // Scans stack, only called from safepoints.
@@ -564,19 +536,37 @@ class PCScanTask final : public base::RefCountedThreadSafe<PCScanTask>,
   PCScan& pcscan_;
 };
 
-template <typename LookupPolicy>
 ALWAYS_INLINE AllocationStateMap* PCScanTask::TryFindScannerBitmapForPointer(
     uintptr_t maybe_ptr) const {
+  PA_DCHECK(
+      IsManagedByPartitionAllocNonBRPPool(reinterpret_cast<void*>(maybe_ptr)));
   // First, check if |maybe_ptr| points to a valid super page or a quarantined
   // card.
-  LookupPolicy lookup;
-  if (LIKELY(!lookup.TestOnHeapPointer(maybe_ptr)))
+#if defined(PA_HAS_64_BITS_POINTERS)
+#if PA_STARSCAN_USE_CARD_TABLE
+  // Check if |maybe_ptr| points to a quarantined card.
+  if (LIKELY(!QuarantineCardTable::GetFrom(maybe_ptr).IsQuarantined(maybe_ptr)))
     return nullptr;
-  // Check if we are not pointing to metadata/guard pages.
-  if (!IsWithinSuperPagePayload(reinterpret_cast<char*>(maybe_ptr),
-                                true /*with quarantine*/))
+#else
+  // Without the card table, use the reservation offset table to check if
+  // |maybe_ptr| points to a valid super-page. It's not as precise (meaning that
+  // we may have hit the slow path more frequently), but reduces the memory
+  // overhead.  Since we are certain here, that |maybe_ptr| refers to the
+  // non-BRP pool, it's okay to use non-checking version of
+  // ReservationOffsetPointer().
+  const uintptr_t offset =
+      maybe_ptr & ~PartitionAddressSpace::NonBRPPoolBaseMask();
+  if (LIKELY(*ReservationOffsetPointer(kNonBRPPoolHandle, offset) !=
+             kOffsetTagNormalBuckets))
     return nullptr;
-  // We are certain here that |maybe_ptr| points to the super page payload.
+#endif
+#else   // defined(PA_HAS_64_BITS_POINTERS)
+  if (LIKELY(!IsManagedByPartitionAllocNonBRPPool(
+          reinterpret_cast<void*>(maybe_ptr))))
+    return nullptr;
+#endif  // defined(PA_HAS_64_BITS_POINTERS)
+
+  // We are certain here that |maybe_ptr| points to an allocated super-page.
   return StateBitmapFromPointer(reinterpret_cast<char*>(maybe_ptr));
 }
 
@@ -590,11 +580,10 @@ ALWAYS_INLINE AllocationStateMap* PCScanTask::TryFindScannerBitmapForPointer(
 // TryMarkObjectInNormalBuckets() marks it again in the bitmap and clears
 // from the scanner bitmap. This way, when scanning is done, all uncleared
 // entries in the scanner bitmap correspond to unreachable objects.
-template <typename LookupPolicy>
 ALWAYS_INLINE size_t
 PCScanTask::TryMarkObjectInNormalBuckets(uintptr_t maybe_ptr) const {
   // Check if |maybe_ptr| points somewhere to the heap.
-  auto* state_map = TryFindScannerBitmapForPointer<LookupPolicy>(maybe_ptr);
+  auto* state_map = TryFindScannerBitmapForPointer(maybe_ptr);
   if (!state_map)
     return 0;
 
@@ -715,9 +704,7 @@ class PCScanScanLoop final : public ScanLoop<PCScanScanLoop> {
   }
 
   ALWAYS_INLINE void CheckPointer(uintptr_t maybe_ptr) {
-    quarantine_size_ +=
-        task_.TryMarkObjectInNormalBuckets<PCScanTask::GigaCageLookupPolicy>(
-            maybe_ptr);
+    quarantine_size_ += task_.TryMarkObjectInNormalBuckets(maybe_ptr);
   }
 
   const uintptr_t giga_cage_base_ = 0;

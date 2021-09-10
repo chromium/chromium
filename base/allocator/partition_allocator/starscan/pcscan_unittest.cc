@@ -653,6 +653,33 @@ TEST_F(PartitionAllocPCScanTest, DontScanUnusedRawSize) {
   TestDanglingReferenceNotVisited(*this, value);
 }
 
+TEST_F(PartitionAllocPCScanTest, PointersToGuardPages) {
+  struct Pointers {
+    void* super_page_base;
+    void* metadata_page;
+    void* guard_page1;
+    void* scan_bitmap;
+    void* guard_page2;
+  };
+
+  auto* const pointers = static_cast<Pointers*>(
+      root().AllocFlagsNoHooks(0, sizeof(Pointers), PartitionPageSize()));
+
+  char* const super_page = reinterpret_cast<char*>(
+      reinterpret_cast<uintptr_t>(pointers) & kSuperPageBaseMask);
+
+  // Initialize scannable pointers with addresses of guard pages and metadata.
+  pointers->super_page_base = super_page;
+  pointers->metadata_page = PartitionSuperPageToMetadataArea(super_page);
+  pointers->guard_page1 =
+      static_cast<char*>(pointers->metadata_page) + SystemPageSize();
+  pointers->scan_bitmap = SuperPageStateBitmap(super_page);
+  pointers->guard_page1 = super_page + kSuperPageSize - PartitionPageSize();
+
+  // Simply run PCScan and expect no crashes.
+  RunPCScan();
+}
+
 }  // namespace internal
 }  // namespace base
 

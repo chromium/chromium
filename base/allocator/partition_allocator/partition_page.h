@@ -421,23 +421,29 @@ ALWAYS_INLINE bool IsWithinSuperPagePayload(void* ptr, bool with_quarantine) {
 // inside a decommitted or free slot span, it's the caller responsibility to
 // check if memory is actually allocated.
 //
-// |maybe_inner_ptr| must be within a normal-bucket super page, and more
-// specifically within the payload area (i.e. area devoted to slot spans).
+// |maybe_inner_ptr| must be within a normal-bucket super page and can also
+// point to guard pages or slot-span metadata.
 template <bool thread_safe>
 ALWAYS_INLINE char* GetSlotStartInSuperPage(char* maybe_inner_ptr) {
-#if DCHECK_IS_ON()
   PA_DCHECK(IsManagedByNormalBuckets(maybe_inner_ptr));
-  char* super_page_ptr = reinterpret_cast<char*>(
-      reinterpret_cast<uintptr_t>(maybe_inner_ptr) & kSuperPageBaseMask);
-  auto* extent = reinterpret_cast<PartitionSuperPageExtentEntry<thread_safe>*>(
-      PartitionSuperPageToMetadataArea(super_page_ptr));
-  PA_DCHECK(IsWithinSuperPagePayload(maybe_inner_ptr,
-                                     extent->root->IsQuarantineAllowed()));
-#endif
-  // Don't use FromSlotInnerPtr() because |is_valid| DCHECKs can fail there.
-  auto* page = PartitionPage<thread_safe>::FromPtr(maybe_inner_ptr);
+
+  // Don't use FromSlotInnerPtr() or FromPtr() because they expect a pointer to
+  // a valid slot span.
+  const uintptr_t pointer_as_uint =
+      reinterpret_cast<uintptr_t>(maybe_inner_ptr);
+  char* const super_page_ptr =
+      reinterpret_cast<char*>(pointer_as_uint & kSuperPageBaseMask);
+
+  const uintptr_t partition_page_index =
+      (pointer_as_uint & kSuperPageOffsetMask) >> PartitionPageShift();
+  auto* page = reinterpret_cast<PartitionPage<thread_safe>*>(
+      PartitionSuperPageToMetadataArea(super_page_ptr) +
+      (partition_page_index << kPageMetadataShift));
+  // Check if page is valid. The check also works for the guard pages and the
+  // metadata page.
   if (!page->is_valid)
     return nullptr;
+
   page -= page->slot_span_metadata_offset;
   PA_DCHECK(page->is_valid);
   PA_DCHECK(!page->slot_span_metadata_offset);
