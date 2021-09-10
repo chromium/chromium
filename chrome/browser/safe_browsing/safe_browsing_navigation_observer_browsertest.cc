@@ -2993,8 +2993,9 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
                            referrer_chain.Get(0));
 }
 
+// TODO(crbug.com/1247228): Test is flaky across multiple platforms.
 IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
-                       AllowlistDomainsRemoved_RecentNavigation) {
+                       DISABLED_AllowlistDomainsRemoved_RecentNavigation) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(kSingleFrameTestURL)));
   GURL initial_url = embedded_test_server()->GetURL(kSingleFrameTestURL);
