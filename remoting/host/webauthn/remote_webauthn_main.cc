@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "remoting/host/webauthn/remote_webauthn_main.h"
+
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/files/file.h"
@@ -15,15 +17,17 @@
 #include "remoting/host/logging.h"
 #include "remoting/host/native_messaging/native_messaging_pipe.h"
 #include "remoting/host/native_messaging/pipe_messaging_channel.h"
-#include "remoting/host/remote_auth_native_messaging_host.h"
+#include "remoting/host/webauthn/remote_webauthn_native_messaging_host.h"
 
-int main(int argc, char** argv) {
+namespace remoting {
+
+int RemoteWebAuthnMain(int argc, char** argv) {
   base::AtExitManager exit_manager;
   base::SingleThreadTaskExecutor task_executor(base::MessagePumpType::IO);
   auto task_runner = base::ThreadTaskRunnerHandle::Get();
 
   base::CommandLine::Init(argc, argv);
-  remoting::InitHostLogging();
+  InitHostLogging();
 
   mojo::core::Init();
   mojo::core::ScopedIPCSupport ipc_support(
@@ -41,16 +45,16 @@ int main(int argc, char** argv) {
 
   base::RunLoop run_loop;
 
-  remoting::NativeMessagingPipe native_messaging_pipe;
-  auto channel = std::make_unique<remoting::PipeMessagingChannel>(
-      std::move(read_file), std::move(write_file));
+  NativeMessagingPipe native_messaging_pipe;
+  auto channel = std::make_unique<PipeMessagingChannel>(std::move(read_file),
+                                                        std::move(write_file));
 
 #if defined(OS_POSIX)
-  remoting::PipeMessagingChannel::ReopenStdinStdout();
+  PipeMessagingChannel::ReopenStdinStdout();
 #endif  // defined(OS_POSIX)
 
   auto native_messaging_host =
-      std::make_unique<remoting::RemoteAuthNativeMessagingHost>(task_runner);
+      std::make_unique<RemoteWebAuthnNativeMessagingHost>(task_runner);
   native_messaging_host->Start(&native_messaging_pipe);
   native_messaging_pipe.Start(std::move(native_messaging_host),
                               std::move(channel));
@@ -59,3 +63,5 @@ int main(int argc, char** argv) {
 
   return 0;
 }
+
+}  // namespace remoting

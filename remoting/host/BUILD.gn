@@ -18,10 +18,7 @@ group("all") {
 
   deps = [ ":host" ]
   if (enable_me2me_host) {
-    deps += [
-      ":remote_auth",
-      "//remoting/host:remoting_me2me_host",
-    ]
+    deps += [ "//remoting/host:remoting_me2me_host" ]
   }
 
   if (is_chrome_branded) {
@@ -34,6 +31,7 @@ group("all") {
       "//remoting/host:remoting_native_messaging_manifests",
       "//remoting/host:remoting_start_host",
       "//remoting/host/it2me:remote_assistance_host",
+      "//remoting/host/webauthn:remote_webauthn",
     ]
 
     if (enable_me2me_host && (is_linux || is_win)) {
@@ -87,6 +85,7 @@ source_set("host_main_headers") {
     "//remoting/host/mac:remoting_native_messaging_host",
     "//remoting/host/mac:remoting_native_messaging_host_executable",
     "//remoting/host/security_key:remote_security_key_main_headers",
+    "//remoting/host/webauthn:remote_webauthn_main_headers",
     "//remoting/host/win:remoting_console",
     "//remoting/host/win:remoting_core",
     "//remoting/host/win:remoting_desktop",
@@ -451,6 +450,7 @@ static_library("common") {
     "//remoting/host/mojo_ipc",
     "//remoting/host/mojom",
     "//remoting/host/security_key",
+    "//remoting/host/webauthn",
     "//remoting/proto/ftl/v1:ftl_messages",
     "//remoting/proto/remoting/v1:remote_support_host_messages",
     "//remoting/protocol",
@@ -1147,23 +1147,5 @@ if (enable_me2me_host && (is_linux || is_win)) {
         "//url",
       ]
     }
-  }
-}
-
-if (enable_me2me_host) {
-  executable("remote_auth") {
-    sources = [
-      "remote_auth_main.cc",
-      "remote_auth_native_messaging_host.cc",
-      "remote_auth_native_messaging_host.h",
-    ]
-
-    deps = [
-      ":logging",
-      "//base",
-      "//extensions/browser/api/messaging:native_messaging",
-      "//mojo/core/embedder:embedder",
-      "//remoting/host/native_messaging",
-    ]
   }
 }

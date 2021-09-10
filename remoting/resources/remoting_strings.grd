@@ -794,6 +794,9 @@
       <message name="IDS_REMOTING_START_HOST_DESCRIPTION" desc="The file description specified in the version information of remoting_start_host.exe.">
         Host Provisioning Utility
       </message>
+      <message name="IDS_REMOTING_REMOTE_WEBAUTHN_DESCRIPTION" desc="The file description specified in the version information of remote_webauthn.exe.">
+        Web Authentication Remoting Process
+      </message>
       <message name="IDS_HOST_CATEGORY" desc="Name of the message category assigned to all messages written to the EventLog by Chromoting Host.">
         Host
       </message>

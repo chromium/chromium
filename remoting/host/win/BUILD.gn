@@ -463,6 +463,7 @@ shared_library("remoting_core") {
     "//remoting/host/native_messaging",
     "//remoting/host/security_key:main",
     "//remoting/host/setup",
+    "//remoting/host/webauthn:main",
     "//remoting/protocol",
     "//sandbox/win:sandbox",  # Should always use Windows version
     "//services/network:network_service",

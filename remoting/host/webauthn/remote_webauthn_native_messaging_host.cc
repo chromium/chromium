@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/remote_auth_native_messaging_host.h"
+#include "remoting/host/webauthn/remote_webauthn_native_messaging_host.h"
 
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -11,15 +11,15 @@
 
 namespace remoting {
 
-RemoteAuthNativeMessagingHost::RemoteAuthNativeMessagingHost(
+RemoteWebAuthnNativeMessagingHost::RemoteWebAuthnNativeMessagingHost(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : task_runner_(task_runner) {}
 
-RemoteAuthNativeMessagingHost::~RemoteAuthNativeMessagingHost() {
+RemoteWebAuthnNativeMessagingHost::~RemoteWebAuthnNativeMessagingHost() {
   DCHECK(task_runner_->BelongsToCurrentThread());
 }
 
-void RemoteAuthNativeMessagingHost::OnMessage(const std::string& message) {
+void RemoteWebAuthnNativeMessagingHost::OnMessage(const std::string& message) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
   std::string type;
@@ -40,18 +40,18 @@ void RemoteAuthNativeMessagingHost::OnMessage(const std::string& message) {
   }
 }
 
-void RemoteAuthNativeMessagingHost::Start(
+void RemoteWebAuthnNativeMessagingHost::Start(
     extensions::NativeMessageHost::Client* client) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   client_ = client;
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
-RemoteAuthNativeMessagingHost::task_runner() const {
+RemoteWebAuthnNativeMessagingHost::task_runner() const {
   return task_runner_;
 }
 
-void RemoteAuthNativeMessagingHost::ProcessHello(base::Value response) {
+void RemoteWebAuthnNativeMessagingHost::ProcessHello(base::Value response) {
   // Hello request: {id: string, type: 'hello'}
   // Hello response: {id: string, type: 'helloResponse', hostVersion: string}
 
@@ -61,7 +61,8 @@ void RemoteAuthNativeMessagingHost::ProcessHello(base::Value response) {
   SendMessageToClient(std::move(response));
 }
 
-void RemoteAuthNativeMessagingHost::SendMessageToClient(base::Value message) {
+void RemoteWebAuthnNativeMessagingHost::SendMessageToClient(
+    base::Value message) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(!message.is_none());
 
