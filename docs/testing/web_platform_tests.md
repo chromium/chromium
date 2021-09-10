@@ -134,7 +134,7 @@ WPT testing infrastructure (e.g. uses wptserve, etc), but which is not
 upstreamed to WPT.
 
 Please see the `wpt_internal`
-[README](../../third_party/blink/web_tests/wpt_internal/README) for more details.
+[README](../../third_party/blink/web_tests/wpt_internal/README.md) for more details.
 
 **Note**: A significant downside of `wpt_internal` is that your tests may be
 broken by upstream changes to the resources scripts (e.g. `testharness.js`), as
