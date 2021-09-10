@@ -69,5 +69,8 @@ void FakeAssistantClient::SetExternalPlaybackState(
 void FakeAssistantClient::AddDeviceStateEventObserver(
     GrpcServicesObserver<OnDeviceStateEventRequest>* observer) {}
 
+void FakeAssistantClient::RegisterActionModule(
+    assistant_client::ActionModule* action_module) {}
+
 }  // namespace libassistant
 }  // namespace chromeos

@@ -351,6 +351,11 @@ void AssistantClientV1::AddDeviceStateEventObserver(
   device_state_event_observer_list_.AddObserver(observer);
 }
 
+void AssistantClientV1::RegisterActionModule(
+    assistant_client::ActionModule* action_module) {
+  assistant_manager_internal()->RegisterActionModule(action_module);
+}
+
 void AssistantClientV1::AddMediaManagerListener() {
   assistant_manager()->GetMediaManager()->AddListener(
       media_manager_listener_.get());

@@ -54,6 +54,8 @@ class AssistantClientV1 : public AssistantClient {
   void SetExternalPlaybackState(const MediaStatus& status_proto) override;
   void AddDeviceStateEventObserver(
       GrpcServicesObserver<OnDeviceStateEventRequest>* observer) override;
+  void RegisterActionModule(
+      assistant_client::ActionModule* action_module) override;
 
  private:
   class DeviceStateListener;

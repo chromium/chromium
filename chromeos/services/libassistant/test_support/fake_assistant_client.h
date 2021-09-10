@@ -61,6 +61,8 @@ class FakeAssistantClient : public AssistantClient {
   void SetExternalPlaybackState(const MediaStatus& status_proto) override;
   void AddDeviceStateEventObserver(
       GrpcServicesObserver<OnDeviceStateEventRequest>* observer) override;
+  void RegisterActionModule(
+      assistant_client::ActionModule* action_module) override;
 };
 
 }  // namespace libassistant

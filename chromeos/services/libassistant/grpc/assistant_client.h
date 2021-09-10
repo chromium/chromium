@@ -30,6 +30,7 @@ class SpeakerIdEnrollmentEvent;
 }  // namespace assistant
 
 namespace assistant_client {
+class ActionModule;
 class AssistantManager;
 class AssistantManagerInternal;
 class ChromeOSApiDelegate;
@@ -121,6 +122,10 @@ class AssistantClient {
 
   virtual void AddDeviceStateEventObserver(
       GrpcServicesObserver<OnDeviceStateEventRequest>* observer) = 0;
+
+  // Conversation methods.
+  virtual void RegisterActionModule(
+      assistant_client::ActionModule* action_module) = 0;
 
   // Will not return nullptr.
   assistant_client::AssistantManager* assistant_manager() {
