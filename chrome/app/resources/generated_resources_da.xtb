@@ -365,7 +365,7 @@
 <translation id="1397500194120344683">Der er ingen kvalificerede enheder. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="1398853756734560583">Maksimér</translation>
 <translation id="139911022479327130">Lås din telefon op, og bekræft din identitet</translation>
-<translation id="1401308693935339022">Brug placering. Tillad, at apps og tjenester med placeringstilladelse kan bruge denne enheds placering. Google kan jævnligt indsamle lokationsdata og bruge disse data på en anonym måde for at forbedre placeringers nøjagtighed og placeringsbaserede tjenester.</translation>
+<translation id="1401308693935339022">Brug placering. Tillad, at apps og tjenester med placeringstilladelse kan bruge denne enheds lokation. Google kan jævnligt indsamle lokationsdata og bruge disse data på en anonym måde for at forbedre lokationernes nøjagtighed og placeringsbaserede tjenester.</translation>
 <translation id="1403222014593521787">Der kunne ikke oprettes forbindelse til proxyserveren</translation>
 <translation id="1405779994569073824">Gået ned.</translation>
 <translation id="1406500794671479665">Bekræfter...</translation>
@@ -1425,7 +1425,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="247051149076336810">Webadresse til fildeling</translation>
 <translation id="2470702053775288986">Understøttede udvidelser er blevet deaktiveret</translation>
 <translation id="2471469610750100598">Sort (standard)</translation>
-<translation id="2471506181342525583">Placeringsadgang blev tilladt</translation>
+<translation id="2471506181342525583">Lokationsadgang blev tilladt</translation>
 <translation id="2473195200299095979">Oversæt denne side</translation>
 <translation id="2475982808118771221">Der opstod en fejl</translation>
 <translation id="2476578072172137802">Indstillinger for website</translation>
@@ -3871,7 +3871,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5143712164865402236">Åbn Fuld skærm</translation>
 <translation id="514575469079499857">Brug din IP-adresse til at fastslå placeringen (standard)</translation>
 <translation id="5147103632304200977">Spørg, når et website vil have adgang til HID-enheder (anbefales)</translation>
-<translation id="5148277445782867161">Googles lokationstjeneste bruger kilder som f.eks. Wi-Fi, mobilnetværk og sensorer for at hjælpe med at estimere din enheds placering.</translation>
+<translation id="5148277445782867161">Googles lokationstjeneste bruger kilder som f.eks. Wi-Fi, mobilnetværk og sensorer for at hjælpe med at estimere din enheds lokation.</translation>
 <translation id="5150070631291639005">Privatlivsindstillinger</translation>
 <translation id="5150254825601720210">SSL-servernavn for Netscape-certifikat</translation>
 <translation id="5151354047782775295">Hvis du ikke frigør diskplads, slettes udvalgte data muligvis automatisk</translation>
@@ -6168,7 +6168,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="767147716926917172">Diagnostik og brugsdata sendes automatisk til Google</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" /> på <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">Deaktiver alle porte, som viderestilles i Linux</translation>
-<translation id="7674542105240814168">Placeringsadgang blev nægtet</translation>
+<translation id="7674542105240814168">Lokationsadgang blev nægtet</translation>
 <translation id="7676119992609591770">Der blev fundet <ph name="NUM" /> fane for "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="7676867886086876795">Send din stemme til Google, så du kan diktere i ethvert tekstfelt.</translation>
 <translation id="7679171213002716280">Der er <ph name="PRINTER_COUNT" /> administrerede printere.</translation>
@@ -7445,7 +7445,7 @@ Tryk på en tildelt kontakt for fjerne en tildeling</translation>
 <translation id="9018218886431812662">Installationen er fuldført</translation>
 <translation id="901834265349196618">mail</translation>
 <translation id="9019062154811256702">Læse og redigere indstillinger for autofyld</translation>
-<translation id="9019894137004772119">Brug placering. Tillad, at apps og tjenester med adgangstilladelse til lokation kan bruge din enheds placering. Google kan jævnligt indsamle lokationsdata og bruge disse data på en anonym måde for at forbedre placeringers nøjagtighed og placeringsbaserede tjenester.</translation>
+<translation id="9019894137004772119">Brug placering. Tillad, at apps og tjenester med adgangstilladelse til lokation kan bruge din enheds lokation. Google kan jævnligt indsamle lokationsdata og bruge disse data på en anonym måde for at forbedre lokationernes nøjagtighed og placeringsbaserede tjenester.</translation>
 <translation id="9019956081903586892">Ordbogen til stavekontrollen kunne ikke downloades</translation>
 <translation id="9020362265352758658">4x</translation>
 <translation id="9021662811137657072">Der er fundet en virus</translation>
