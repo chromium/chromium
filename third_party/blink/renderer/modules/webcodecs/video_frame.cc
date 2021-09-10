@@ -301,6 +301,19 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
       auto wrapped_frame = media::VideoFrame::WrapVideoFrame(
           source_frame, wrapped_format, parsed_init.visible_rect,
           parsed_init.display_size);
+      if (!wrapped_frame) {
+        exception_state.ThrowDOMException(
+            DOMExceptionCode::kOperationError,
+            String::Format("Failed to create a VideoFrame from "
+                           "CanvasImageSource with format: %s, "
+                           "coded size: %s, visibleRect: %s, display size: %s.",
+                           VideoPixelFormatToString(wrapped_format).c_str(),
+                           source_frame->coded_size().ToString().c_str(),
+                           parsed_init.visible_rect.ToString().c_str(),
+                           parsed_init.display_size.ToString().c_str()));
+        return nullptr;
+      }
+
       wrapped_frame->set_color_space(source_frame->ColorSpace());
       if (init->hasTimestamp()) {
         wrapped_frame->set_timestamp(
