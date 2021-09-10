@@ -73,7 +73,7 @@ bool FederatedCredential::IsFederatedCredential() const {
 
 ScriptPromise FederatedCredential::logout(
     ScriptState* script_state,
-    const Vector<String>& logout_endpoints) {
+    const HeapVector<Member<WebIdLogoutRequest>>&) {
   // TODO(goto): actually implement this.
   return ScriptPromise::RejectWithDOMException(
       script_state,

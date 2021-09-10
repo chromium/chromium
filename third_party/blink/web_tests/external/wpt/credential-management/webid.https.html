@@ -25,4 +25,14 @@ promise_test(function(t) {
   );
 }, "navigator.credentials.revoke() basic.");
 
+promise_test(function(t) {
+  // Logout API not supported yet.
+  return promise_rejects_dom(t, "NotSupportedError",
+    FederatedCredential.logout([{
+      account_id: "1234",
+      endpoint: "https://rp.example/logout.php"
+    }])
+  );
+}, "navigator.credentials.logout() basic.");
+
 </script>
