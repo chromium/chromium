@@ -449,8 +449,7 @@ class HintsFetcherBrowserTest : public HintsFetcherDisabledBrowserTest {
         {
             {optimization_guide::features::kOptimizationHints, {}},
             {optimization_guide::features::kRemoteOptimizationGuideFetching,
-             {{"max_concurrent_page_navigation_fetches", "2"},
-              {"onload_delay_for_hints_fetching_ms", "200"}}},
+             {{"max_concurrent_page_navigation_fetches", "2"}}},
             {optimization_guide::features::kOptimizationHintsFieldTrials,
              {{"allowed_field_trial_names",
                "scoped_feature_list_trial_for_OptimizationHintsFetching"}}},
@@ -684,6 +683,7 @@ IN_PROC_BROWSER_TEST_F(
 
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("https://hung.com/1")));
+  WaitUntilHintsFetcherRequestReceived();
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("https://hung.com/2")));
   ASSERT_TRUE(
@@ -1240,7 +1240,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherSearchPagePrerenderingBrowserTest,
   // Load a page in the prerender.
   GURL prerender_url = search_results_page_url();
   ResetCountHintsRequestsReceived();
-  prerender_helper()->AddPrerender(prerender_url);
+  int host_id = prerender_helper()->AddPrerender(prerender_url);
   EXPECT_EQ(0u, count_hints_requests_received());
   histogram_tester->ExpectBucketCount(
       "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 0, 0);
@@ -1248,7 +1248,9 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherSearchPagePrerenderingBrowserTest,
       optimization_guide::kLoadedHintLocalHistogramString, 1);
 
   // Activate the page from the prerendering.
+  content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
   prerender_helper()->NavigatePrimaryPage(prerender_url);
+  EXPECT_TRUE(host_observer.was_activated());
   WaitUntilHintsFetcherRequestReceived();
   EXPECT_EQ(1u, count_hints_requests_received());
   optimization_guide::RetryForHistogramUntilCountReached(

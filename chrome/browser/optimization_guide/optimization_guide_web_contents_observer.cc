@@ -121,31 +121,22 @@ void OptimizationGuideWebContentsObserver::DidFinishNavigation(
           navigation_handle->GetRedirectChain()));
 }
 
-void OptimizationGuideWebContentsObserver::DocumentOnLoadCompletedInMainFrame(
+void OptimizationGuideWebContentsObserver::PostFetchHintsUsingManager(
     content::RenderFrameHost* render_frame_host) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!render_frame_host->GetLastCommittedURL().SchemeIsHTTPOrHTTPS()) {
+  if (!render_frame_host->GetLastCommittedURL().SchemeIsHTTPOrHTTPS())
     return;
-  }
-  if (web_contents() !=
-      content::WebContents::FromRenderFrameHost(render_frame_host)) {
-    // The current web contents isn't for the main frame that reached onload.
-    return;
-  }
 
   if (!optimization_guide_keyed_service_)
     return;
 
-  // Give the renderer some time to send us predictions that might have come
-  // at onload.
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &OptimizationGuideWebContentsObserver::FetchHintsUsingManager,
           weak_factory_.GetWeakPtr(),
           optimization_guide_keyed_service_->GetHintsManager(),
-          web_contents()->GetPrimaryPage().GetWeakPtr()),
-      optimization_guide::features::GetOnloadDelayForHintsFetching());
+          web_contents()->GetPrimaryPage().GetWeakPtr()));
 }
 
 void OptimizationGuideWebContentsObserver::FetchHintsUsingManager(
@@ -199,6 +190,8 @@ void OptimizationGuideWebContentsObserver::AddURLsToBatchFetchBasedOnPrediction(
   if (page_data.is_sent_batched_hints_request())
     return;
   page_data.InsertHintTargetUrls(urls);
+
+  PostFetchHintsUsingManager(web_contents->GetMainFrame());
 }
 
 OptimizationGuideWebContentsObserver::PageData&

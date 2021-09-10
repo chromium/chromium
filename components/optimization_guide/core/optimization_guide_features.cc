@@ -408,11 +408,5 @@ bool LoadModelFileForEachExecution() {
   return base::FeatureList::IsEnabled(kLoadModelFileForEachExecution);
 }
 
-base::TimeDelta GetOnloadDelayForHintsFetching() {
-  return base::TimeDelta::FromMilliseconds(GetFieldTrialParamByFeatureAsInt(
-      kRemoteOptimizationGuideFetching, "onload_delay_for_hints_fetching_ms",
-      0));
-}
-
 }  // namespace features
 }  // namespace optimization_guide

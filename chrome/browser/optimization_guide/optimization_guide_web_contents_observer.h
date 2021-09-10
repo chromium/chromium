@@ -67,8 +67,8 @@ class OptimizationGuideWebContentsObserver
       content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void DocumentOnLoadCompletedInMainFrame(
-      content::RenderFrameHost* render_frame_host) override;
+
+  void PostFetchHintsUsingManager(content::RenderFrameHost* render_frame_host);
 
   // Ask |hints_manager| to fetch hints for navigations that were predicted for
   // the current page load.
