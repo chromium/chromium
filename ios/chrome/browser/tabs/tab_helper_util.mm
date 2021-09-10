@@ -63,7 +63,6 @@
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/u2f/u2f_tab_helper.h"
 #import "ios/chrome/browser/ui/download/features.h"
-#import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/voice/voice_search_navigations_tab_helper.h"
 #import "ios/chrome/browser/web/blocked_popup_tab_helper.h"
@@ -122,11 +121,9 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
 
   InvalidUrlTabHelper::CreateForWebState(web_state);
 
-  if (base::FeatureList::IsEnabled(kInfobarOverlayUI)) {
     InfobarOverlayRequestInserter::CreateForWebState(web_state);
     InfobarOverlayTabHelper::CreateForWebState(web_state);
     TranslateOverlayTabHelper::CreateForWebState(web_state);
-  }
 
   if (ios::provider::IsTextZoomEnabled()) {
     FontSizeTabHelper::CreateForWebState(web_state);

@@ -70,7 +70,6 @@
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/download/features.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
-#import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_features.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
@@ -492,9 +491,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"mobile-google-srp", flag_descriptions::kMobileGoogleSRPName,
      flag_descriptions::kMobileGoogleSRPDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::kMobileGoogleSRP)},
-    {"infobar-overlay-ui", flag_descriptions::kInfobarOverlayUIName,
-     flag_descriptions::kInfobarOverlayUIDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kInfobarOverlayUI)},
     {"url-blocklist-ios", flag_descriptions::kURLBlocklistIOSName,
      flag_descriptions::kURLBlocklistIOSDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kURLBlocklistIOS)},

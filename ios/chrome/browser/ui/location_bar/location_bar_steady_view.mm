@@ -4,9 +4,10 @@
 
 #import "ios/chrome/browser/ui/location_bar/location_bar_steady_view.h"
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/elements/extended_touch_target_button.h"
-#import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/util/dynamic_type_util.h"

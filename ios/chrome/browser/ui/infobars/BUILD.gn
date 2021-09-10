@@ -14,19 +14,6 @@ source_set("constants") {
   ]
 }
 
-source_set("feature_flags") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "infobar_feature.h",
-    "infobar_feature.mm",
-  ]
-  public_deps = [ "//base" ]
-  deps = [
-    "//components/version_info",
-    "//ios/chrome/common",
-  ]
-}
-
 source_set("eg2_tests") {
   defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
@@ -50,7 +37,6 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/translate:eg_test_support+eg2",
     "//ios/chrome/browser/ui/badges:public",
     "//ios/chrome/browser/ui/infobars:constants",
-    "//ios/chrome/browser/ui/infobars:feature_flags",
     "//ios/chrome/browser/ui/infobars/banners:public",
     "//ios/chrome/browser/ui/infobars/modals:public",
     "//ios/chrome/browser/ui/popup_menu:constants",

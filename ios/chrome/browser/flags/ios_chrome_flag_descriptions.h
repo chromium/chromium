@@ -230,11 +230,6 @@ extern const char kIncognitoBrandConsistencyForIOSDescription[];
 extern const char kIncognitoNtpRevampName[];
 extern const char kIncognitoNtpRevampDescription[];
 
-// Title and description for the flag to present the new UI Reboot on Infobars
-// using OverlayPresenter.
-extern const char kInfobarOverlayUIName[];
-extern const char kInfobarOverlayUIDescription[];
-
 // Title and description for the flag to auto-dismiss the privacy notice card.
 extern const char kInterestFeedNoticeCardAutoDismissName[];
 extern const char kInterestFeedNoticeCardAutoDismissDescription[];

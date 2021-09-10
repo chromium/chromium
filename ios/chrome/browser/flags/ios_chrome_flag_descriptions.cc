@@ -258,11 +258,6 @@ const char kIncognitoNtpRevampName[] = "Revamped Incognito New Tab Page";
 const char kIncognitoNtpRevampDescription[] =
     "When enabled, Incognito new tab page will have an updated UI.";
 
-const char kInfobarOverlayUIName[] = "Use OverlayPresenter for infobars";
-const char kInfobarOverlayUIDescription[] =
-    "When enabled alongside the Infobar UI Reboot, infobars will be presented "
-    "using OverlayPresenter.";
-
 const char kInterestFeedNoticeCardAutoDismissName[] =
     "New Content Suggestions notice card auto-dismiss";
 const char kInterestFeedNoticeCardAutoDismissDescription[] =

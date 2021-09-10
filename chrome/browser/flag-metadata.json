@@ -3496,11 +3496,6 @@
     "expiry_milestone": 97
   },
   {
-    "name": "infobar-overlay-ui",
-    "owners": [ "sczs", "bling-flags@google.com" ],
-    "expiry_milestone": 85
-  },
-  {
     "name": "inherit-native-theme-from-parent-widget",
     "owners": [ "roagarwal", "rhalavati", "chrome-incognito@google.com" ],
     "expiry_milestone": 95

@@ -27,7 +27,6 @@
 #include "ios/chrome/browser/ui/badges/badge_type_util.h"
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/commands/infobar_commands.h"
-#import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
@@ -409,7 +408,6 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 // Shows the modal UI when |button| is tapped.
 - (void)handleTappedBadgeButton:(BadgeButton*)button {
   InfobarType infobarType = InfobarTypeForBadgeType(button.badgeType);
-  if (base::FeatureList::IsEnabled(kInfobarOverlayUI)) {
     DCHECK(self.webState);
     InfoBarIOS* infobar = [self infobarWithType:infobarType];
     if (infobar) {
@@ -424,9 +422,6 @@ const char kInfobarOverflowBadgeShownUserAction[] =
       InfobarOverlayRequestInserter::FromWebState(self.webState)
           ->InsertOverlayRequest(params);
     }
-  } else {
-    [self.dispatcher displayModalInfobar:infobarType];
-  }
   [self recordMetricsForBadgeButton:button infobarType:infobarType];
 }
 

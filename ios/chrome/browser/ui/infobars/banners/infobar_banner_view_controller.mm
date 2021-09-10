@@ -10,7 +10,6 @@
 #include "ios/chrome/browser/infobars/infobar_metrics_recorder.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_delegate.h"
-#import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"

@@ -83,7 +83,6 @@ source_set("passwords") {
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/elements",
     "//ios/chrome/browser/ui/elements:selector_coordinator",
-    "//ios/chrome/browser/ui/infobars:feature_flags",
     "//ios/chrome/browser/ui/infobars/coordinators",
     "//ios/chrome/browser/ui/ntp:logo",
     "//ios/chrome/browser/ui/util",
@@ -164,7 +163,6 @@ source_set("infobar_delegates") {
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/app/theme",
-    "//ios/chrome/browser/ui/infobars:feature_flags",
     "//ui/base",
   ]
 }
