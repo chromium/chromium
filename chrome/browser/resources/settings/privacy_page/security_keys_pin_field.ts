@@ -11,7 +11,7 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import '../settings_shared_css.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -21,21 +21,19 @@ import {loadTimeData} from '../i18n_setup.js';
  * A function that submits a PIN to a security key. It returns a Promise which
  * resolves with null if the PIN was correct, or with the number of retries
  * remaining otherwise.
- * @typedef function(string): Promise<?number>
  */
-let PINFieldSubmitFunc;
+type PINFieldSubmitFunc = (pin: string) => Promise<number|null>;
 
+export interface SettingsSecurityKeysPinFieldElement {
+  $: {
+    pin: HTMLElement,
+  };
+}
 
-
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
 const SettingsSecurityKeysPinFieldElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+    mixinBehaviors([I18nBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior};
 
-/** @polymer */
 export class SettingsSecurityKeysPinFieldElement extends
     SettingsSecurityKeysPinFieldElementBase {
   static get is() {
@@ -53,27 +51,25 @@ export class SettingsSecurityKeysPinFieldElement extends
         type: Number,
       },
 
-      /* @private */
       error_: {
         type: String,
         observer: 'errorChanged_',
       },
 
-      /* @private */
       value_: String,
 
-      /* @private */
       inputVisible_: {
         type: Boolean,
         value: false,
       },
-
     };
   }
 
+  minPinLength: number;
+  private error_: string;
+  private value_: string;
+  private inputVisible_: boolean;
 
-
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
@@ -89,10 +85,9 @@ export class SettingsSecurityKeysPinFieldElement extends
 
   /**
    * Validates the PIN and sets the validation error if it is not valid.
-   * @return {boolean} True iff the PIN is valid.
-   * @private
+   * @return True iff the PIN is valid.
    */
-  validate_() {
+  private validate_(): boolean {
     const error = this.isValidPIN_(this.value_);
     if (error !== '') {
       this.error_ = error;
@@ -104,10 +99,9 @@ export class SettingsSecurityKeysPinFieldElement extends
   /**
    * Attempts submission of the PIN by invoking |submitFunc|. Updates the UI
    * to show an error if the PIN was incorrect.
-   * @param {!PINFieldSubmitFunc} submitFunc
-   * @return {!Promise} resolves if the PIN was correct, else rejects
+   * @return A Promise that resolves if the PIN was correct, else rejects.
    */
-  trySubmit(submitFunc) {
+  trySubmit(submitFunc: PINFieldSubmitFunc): Promise<void> {
     if (!this.validate_()) {
       this.focus();
       return Promise.reject();
@@ -118,15 +112,15 @@ export class SettingsSecurityKeysPinFieldElement extends
         this.focus();
         return Promise.reject();
       }
+      return;
     });
   }
 
   /**
    * Sets the validation error to indicate the PIN was incorrect.
-   * @param {number} retries The number of retries remaining.
-   * @private
+   * @param retries The number of retries remaining.
    */
-  showIncorrectPINError_(retries) {
+  private showIncorrectPINError_(retries: number) {
     // Warn the user if the number of retries is getting low.
     let error;
     if (1 < retries && retries <= 3) {
@@ -140,8 +134,7 @@ export class SettingsSecurityKeysPinFieldElement extends
     this.error_ = error;
   }
 
-  /** @private */
-  onPINInput_() {
+  private onPINInput_() {
     // Typing in the PIN box after an error makes the error message
     // disappear.
     this.error_ = '';
@@ -149,53 +142,46 @@ export class SettingsSecurityKeysPinFieldElement extends
 
   /**
    * Polymer helper function to detect when an error string is empty.
-   * @param {string} s Arbitrary string
-   * @return {boolean} True iff |s| is non-empty.
-   * @private
+   * @return True iff |s| is non-empty.
    */
-  isNonEmpty_(s) {
+  private isNonEmpty_(s: string): boolean {
     return s !== '';
   }
 
   /**
-   * @return {string} The PIN-input element type.
-   * @private
+   * @return The PIN-input element type.
    */
-  inputType_() {
+  private inputType_(): string {
     return this.inputVisible_ ? 'text' : 'password';
   }
 
   /**
-   * @return {string} The class (and thus icon) to be displayed.
-   * @private
+   * @return The class (and thus icon) to be displayed.
    */
-  showButtonClass_() {
+  private showButtonClass_(): string {
     return 'icon-visibility' + (this.inputVisible_ ? '-off' : '');
   }
 
   /**
-   * @return {string} The tooltip for the icon.
-   * @private
+   * @return The tooltip for the icon.
    */
-  showButtonTitle_() {
+  private showButtonTitle_(): string {
     return this.i18n(
         this.inputVisible_ ? 'securityKeysHidePINs' : 'securityKeysShowPINs');
   }
 
   /**
    * onClick handler for the show/hide icon.
-   * @private
    */
-  showButtonClick_() {
+  private showButtonClick_() {
     this.inputVisible_ = !this.inputVisible_;
   }
 
   /**
-   * @param {string} pin A candidate PIN.
-   * @return {string} An error string or else '' to indicate validity.
-   * @private
+   * @param pin A candidate PIN.
+   * @return An error string or else '' to indicate validity.
    */
-  isValidPIN_(pin) {
+  private isValidPIN_(pin: string): string {
     // The UTF-8 encoding of the PIN must be between minPinLength
     // and 63 bytes, and the final byte cannot be zero.
     const utf8Encoded = new TextEncoder().encode(pin);
@@ -228,8 +214,7 @@ export class SettingsSecurityKeysPinFieldElement extends
     return '';
   }
 
-  /** @private */
-  errorChanged_() {
+  private errorChanged_() {
     // Make screen readers announce changes to the PIN validation error
     // label.
     this.dispatchEvent(new CustomEvent(

@@ -17,9 +17,12 @@ import '../settings_shared_css.js';
 import '../site_favicon.js';
 import './security_keys_pin_field.js';
 
+import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -27,25 +30,25 @@ import {loadTimeData} from '../i18n_setup.js';
 import {Credential, SecurityKeysCredentialBrowserProxy, SecurityKeysCredentialBrowserProxyImpl} from './security_keys_browser_proxy.js';
 import {SettingsSecurityKeysPinFieldElement} from './security_keys_pin_field.js';
 
-/** @enum {string} */
-export const CredentialManagementDialogPage = {
-  INITIAL: 'initial',
-  PIN_PROMPT: 'pinPrompt',
-  CREDENTIALS: 'credentials',
-  ERROR: 'error',
-};
+export enum CredentialManagementDialogPage {
+  INITIAL = 'initial',
+  PIN_PROMPT = 'pinPrompt',
+  CREDENTIALS = 'credentials',
+  ERROR = 'error',
+}
 
+interface SettingsSecurityKeysCredentialManagementDialogElement {
+  $: {
+    dialog: CrDialogElement,
+    pin: SettingsSecurityKeysPinFieldElement,
+    credentialList: IronListElement,
+  };
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
 const SettingsSecurityKeysCredentialManagementDialogElementBase =
-    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement);
+    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior & WebUIListenerBehavior};
 
-/** @polymer */
 class SettingsSecurityKeysCredentialManagementDialogElement extends
     SettingsSecurityKeysCredentialManagementDialogElementBase {
   static get is() {
@@ -60,7 +63,6 @@ class SettingsSecurityKeysCredentialManagementDialogElement extends
     return {
       /**
        * The ID of the element currently shown in the dialog.
-       * @private {!CredentialManagementDialogPage}
        */
       dialogPage_: {
         type: String,
@@ -70,61 +72,48 @@ class SettingsSecurityKeysCredentialManagementDialogElement extends
 
       /**
        * The list of credentials displayed in the dialog.
-       * @private {!Array<!Credential>}
        */
       credentials_: Array,
 
       /**
        * The message displayed on the "error" dialog page.
-       * @private
        */
       errorMsg_: String,
 
-      /** @private */
       cancelButtonVisible_: Boolean,
-
-      /** @private */
       confirmButtonVisible_: Boolean,
-
-      /** @private */
       confirmButtonDisabled_: Boolean,
-
-      /** @private */
       confirmButtonLabel_: String,
-
-      /** @private */
       closeButtonVisible_: Boolean,
-
-      /** @private */
       deleteInProgress_: Boolean,
-
-      /** @private */
       minPinLength_: Number,
-
     };
   }
 
-  constructor() {
-    super();
+  private dialogPage_: CredentialManagementDialogPage;
+  private credentials_: Array<Credential>;
+  private errorMsg_: string;
+  private cancelButtonVisible_: boolean;
+  private confirmButtonVisible_: boolean;
+  private confirmButtonDisabled_: boolean;
+  private confirmButtonLabel_: string;
+  private closeButtonVisible_: boolean;
+  private deleteInProgress_: boolean;
+  private minPinLength_: number;
 
-    /** @private {!SecurityKeysCredentialBrowserProxy} */
-    this.browserProxy_ = SecurityKeysCredentialBrowserProxyImpl.getInstance();
+  private browserProxy_: SecurityKeysCredentialBrowserProxy =
+      SecurityKeysCredentialBrowserProxyImpl.getInstance();
+  private checkedCredentialIds_: Set<string>|null = null;
+  private showSetPINButton_: boolean = false;
 
-    /** @private {?Set<string>} */
-    this.checkedCredentialIds_ = null;
-
-    /** @private {boolean} */
-    this.showSetPINButton_ = false;
-  }
-
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
     this.$.dialog.showModal();
     this.addWebUIListener(
         'security-keys-credential-management-finished',
-        this.onError_.bind(this));
+        (error: string, requiresPINChange = false) =>
+            this.onError_(error, requiresPINChange));
     this.checkedCredentialIds_ = new Set();
     this.browserProxy_.startCredentialManagement().then(([minPinLength]) => {
       this.minPinLength_ = minPinLength;
@@ -132,29 +121,23 @@ class SettingsSecurityKeysCredentialManagementDialogElement extends
     });
   }
 
-  /**
-   * @private
-   * @param {string} error
-   * @param {boolean=} requiresPINChange
-   */
-  onError_(error, requiresPINChange = false) {
+  private onError_(error: string, requiresPINChange = false) {
     this.errorMsg_ = error;
     this.showSetPINButton_ = requiresPINChange;
     this.dialogPage_ = CredentialManagementDialogPage.ERROR;
   }
 
-  /** @private */
-  submitPIN_() {
+  private submitPIN_() {
     // Disable the confirm button to prevent concurrent submissions.
     this.confirmButtonDisabled_ = true;
 
-    /** @type {!SettingsSecurityKeysPinFieldElement} */ (this.$.pin)
-        .trySubmit(pin => this.browserProxy_.providePIN(pin))
+    this.$.pin.trySubmit(pin => this.browserProxy_.providePIN(pin))
         .then(
             () => {
               // Leave confirm button disabled while enumerating credentials.
               this.browserProxy_.enumerateCredentials().then(
-                  this.onCredentials_.bind(this));
+                  (credentials: Array<Credential>) =>
+                      this.onCredentials_(credentials));
             },
             () => {
               // Wrong PIN.
@@ -162,11 +145,7 @@ class SettingsSecurityKeysCredentialManagementDialogElement extends
             });
   }
 
-  /**
-   * @private
-   * @param {!Array<!Credential>} credentials
-   */
-  onCredentials_(credentials) {
+  private onCredentials_(credentials: Array<Credential>) {
     if (!credentials.length) {
       this.onError_(this.i18n('securityKeysCredentialManagementNoCredentials'));
       return;
@@ -176,8 +155,7 @@ class SettingsSecurityKeysCredentialManagementDialogElement extends
     this.dialogPage_ = CredentialManagementDialogPage.CREDENTIALS;
   }
 
-  /** @private */
-  dialogPageChanged_() {
+  private dialogPageChanged_() {
     switch (this.dialogPage_) {
       case CredentialManagementDialogPage.INITIAL:
         this.cancelButtonVisible_ = true;
@@ -213,8 +191,7 @@ class SettingsSecurityKeysCredentialManagementDialogElement extends
         {bubbles: true, composed: true}));
   }
 
-  /** @private */
-  confirmButtonClick_() {
+  private confirmButtonClick_() {
     switch (this.dialogPage_) {
       case CredentialManagementDialogPage.PIN_PROMPT:
         this.submitPIN_();
@@ -232,43 +209,29 @@ class SettingsSecurityKeysCredentialManagementDialogElement extends
     }
   }
 
-  /** @private */
-  close_() {
+  private close_() {
     this.$.dialog.close();
   }
 
   /**
    * Stringifies the user entity of a Credential for display in the dialog.
-   * @private
-   * @param {!Credential} credential
-   * @return {string}
    */
-  formatUser_(credential) {
+  private formatUser_(credential: Credential): string {
     if (this.isEmpty_(credential.userDisplayName)) {
       return credential.userName;
     }
     return `${credential.userDisplayName} (${credential.userName})`;
   }
 
-  /** @private */
-  onDialogClosed_() {
+  private onDialogClosed_() {
     this.browserProxy_.close();
   }
 
-  /**
-   * @private
-   * @param {?string} str
-   * @return {boolean} Whether this credential has been selected for removal.
-   */
-  isEmpty_(str) {
+  private isEmpty_(str: string|null): boolean {
     return !str || str.length === 0;
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onIronSelect_(e) {
+  private onIronSelect_(e: Event) {
     // Prevent this event from bubbling since it is unnecessarily triggering
     // the listener within settings-animated-pages.
     e.stopPropagation();
@@ -276,37 +239,34 @@ class SettingsSecurityKeysCredentialManagementDialogElement extends
 
   /**
    * Handler for checking or unchecking a credential.
-   * @param {!Event} e
-   * @private
    */
-  checkedCredentialsChanged_(e) {
-    const credentialId = e.target.dataset.id;
-    if (e.target.checked) {
-      this.checkedCredentialIds_.add(credentialId);
+  private checkedCredentialsChanged_(e: Event) {
+    const target = e.target as CrCheckboxElement;
+    const credentialId = target.dataset['id']!;
+    if (target.checked) {
+      this.checkedCredentialIds_!.add(credentialId);
     } else {
-      this.checkedCredentialIds_.delete(credentialId);
+      this.checkedCredentialIds_!.delete(credentialId);
     }
-    this.confirmButtonDisabled_ = this.checkedCredentialIds_.size === 0;
+    this.confirmButtonDisabled_ = this.checkedCredentialIds_!.size === 0;
   }
 
   /**
-   * @private
-   * @param {string} credentialId
-   * @return {boolean} true if the checkbox for |credentialId| is checked
+   * @return true if the checkbox for |credentialId| is checked.
    */
-  credentialIsChecked_(credentialId) {
-    return this.checkedCredentialIds_.has(credentialId);
+  private credentialIsChecked_(credentialId: string): boolean {
+    return this.checkedCredentialIds_!.has(credentialId);
   }
 
-  /** @private */
-  deleteSelectedCredentials_() {
+  private deleteSelectedCredentials_() {
     assert(this.dialogPage_ === CredentialManagementDialogPage.CREDENTIALS);
     assert(this.credentials_ && this.credentials_.length > 0);
-    assert(this.checkedCredentialIds_.size > 0);
+    assert(this.checkedCredentialIds_!.size > 0);
 
     this.confirmButtonDisabled_ = true;
     this.deleteInProgress_ = true;
-    this.browserProxy_.deleteCredentials(Array.from(this.checkedCredentialIds_))
+    this.browserProxy_
+        .deleteCredentials(Array.from(this.checkedCredentialIds_!))
         .then((error) => {
           this.confirmButtonDisabled_ = false;
           this.deleteInProgress_ = false;

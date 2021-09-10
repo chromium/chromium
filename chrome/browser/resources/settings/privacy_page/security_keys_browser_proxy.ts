@@ -3,20 +3,19 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 // clang-format on
 
 /**
  * Ctap2Status contains a subset of CTAP2 status codes. See
  * device::CtapDeviceResponseCode for the full list.
- * @enum {number}
  */
-export const Ctap2Status = {
-  OK: 0x0,
-  ERR_FP_DATABASE_FULL: 0x17,
-  ERR_INVALID_OPTION: 0x2C,
-  ERR_KEEPALIVE_CANCEL: 0x2D,
-};
+export enum Ctap2Status {
+  OK = 0x0,
+  ERR_FP_DATABASE_FULL = 0x17,
+  ERR_INVALID_OPTION = 0x2C,
+  ERR_KEEPALIVE_CANCEL = 0x2D,
+}
 
 /**
  * Credential represents a CTAP2 resident credential enumerated from a
@@ -32,75 +31,78 @@ export const Ctap2Status = {
  *
  * userDisplayName: (required) The PublicKeyCredentialUserEntity.display_name
  *
- * @typedef {{id: string,
- *            relyingPartyId: string,
- *            userName: string,
- *            userDisplayName: string}}
  * @see chrome/browser/ui/webui/settings/settings_security_key_handler.cc
  */
-export let Credential;
+export type Credential = {
+  id: string,
+  relyingPartyId: string,
+  userName: string,
+  userDisplayName: string,
+};
 
 /**
  * Encapsulates information about an authenticator's biometric sensor.
- *
- * @typedef {{maxTemplateFriendlyName: number,
- *            maxSamplesForEnroll: ?number}}
  */
-export let SensorInfo;
+export type SensorInfo = {
+  maxTemplateFriendlyName: number,
+  maxSamplesForEnroll: number|null,
+};
 
 /**
  * SampleStatus is the result for reading an individual sample ("touch")
  * during a fingerprint enrollment. This is a subset of the
  * lastEnrollSampleStatus enum defined in the CTAP spec.
- * @enum {number}
  */
-export const SampleStatus = {
-  OK: 0x0,
-};
+export enum SampleStatus {
+  OK = 0x0,
+}
 
 /**
  * SampleResponse indicates the result of an individual sample (sensor touch)
  * for an enrollment suboperation.
  *
- * @typedef {{status: SampleStatus,
- *            remaining: number}}
  * @see chrome/browser/ui/webui/settings/settings_security_key_handler.cc
  */
-export let SampleResponse;
+export type SampleResponse = {
+  status: SampleStatus,
+  remaining: number,
+};
 
 /**
  * EnrollmentResponse is the final response to an enrollment suboperation,
  *
- * @typedef {{code: Ctap2Status,
- *            enrollment: ?Enrollment}}
  * @see chrome/browser/ui/webui/settings/settings_security_key_handler.cc
  */
-export let EnrollmentResponse;
+export type EnrollmentResponse = {
+  code: Ctap2Status,
+  enrollment: Enrollment|null,
+};
 
 /**
  * Enrollment represents a valid fingerprint template stored on a security
  * key, which can be used in a user verification request.
  *
- * @typedef {{name: string,
- *            id: string}}
  * @see chrome/browser/ui/webui/settings/settings_security_key_handler.cc
  */
-export let Enrollment;
+export type Enrollment = {
+  name: string,
+  id: string,
+};
 
 /**
  * SetPINResponse represents the response to startSetPIN and setPIN requests.
  *
- * @typedef {{done: boolean,
- *            error: (number|undefined),
- *            currentMinPinLength: (number|undefined),
- *            newMinPinLength: (number|undefined),
- *            retries: (number|undefined)}}
  * @see chrome/browser/ui/webui/settings/settings_security_key_handler.cc
  */
-export let SetPINResponse;
+export type SetPINResponse = {
+  done: boolean,
+  error?: number,
+  currentMinPinLength?: number,
+  newMinPinLength?: number,
+  retries?: number,
+};
 
-/** @interface */
-export class SecurityKeysPINBrowserProxy {
+export interface SecurityKeysPINBrowserProxy {
   /**
    * Starts a PIN set/change operation by flashing all security keys. Resolves
    * with a pair of numbers. The first is one if the process has immediately
@@ -109,25 +111,22 @@ export class SecurityKeysPINBrowserProxy {
    * |setPIN|. In this case the second number is either the number of tries
    * remaining to correctly specify the current PIN, or else null to indicate
    * that no PIN is currently set.
-   * @return {!Promise<!SetPINResponse>}
    */
-  startSetPIN() {}
+  startSetPIN(): Promise<SetPINResponse>;
 
   /**
    * Attempts a PIN set/change operation. Resolves with a pair of numbers
    * whose meaning is the same as with |startSetPIN|. The first number will
    * always be 1 to indicate that the process has completed and thus the
    * second will be the CTAP error code.
-   * @return {!Promise<!SetPINResponse>}
    */
-  setPIN(oldPIN, newPIN) {}
+  setPIN(oldPIN: string, newPIN: string): Promise<SetPINResponse>;
 
   /** Cancels all outstanding operations. */
-  close() {}
+  close(): void;
 }
 
-/** @interface */
-export class SecurityKeysCredentialBrowserProxy {
+export interface SecurityKeysCredentialBrowserProxy {
   /**
    * Starts a credential management operation.
    *
@@ -136,62 +135,56 @@ export class SecurityKeysCredentialBrowserProxy {
    * via this listener are localized error strings. When the
    * WebListener fires, the operation must be considered terminated.
    *
-   * @return {!Promise} a promise that resolves when the handler is ready for
+   * @return A promise that resolves when the handler is ready for
    *     the authenticator PIN to be provided.
    */
-  startCredentialManagement() {}
+  startCredentialManagement(): Promise<Array<number>>;
 
   /**
    * Provides a PIN for a credential management operation. The
    * startCredentialManagement() promise must have resolved before this method
    * may be called.
-   * @return {!Promise<?number>} a promise that resolves with null if the PIN
+   * @return A promise that resolves with null if the PIN
    *     was correct or the number of retries remaining otherwise.
    */
-  providePIN(pin) {}
+  providePIN(pin: string): Promise<number|null>;
 
   /**
    * Enumerates credentials on the authenticator. A correct PIN must have
    * previously been supplied via providePIN() before this
    * method may be called.
-   * @return {!Promise<!Array<!Credential>>}
    */
-  enumerateCredentials() {}
+  enumerateCredentials(): Promise<Array<Credential>>;
 
   /**
    * Deletes the credentials with the given IDs from the security key.
-   * @param {!Array<string>} ids
-   * @return {!Promise<string>} a localized response message to display to
+   * @return A localized response message to display to
    *     the user (on either success or error)
    */
-  deleteCredentials(ids) {}
+  deleteCredentials(ids: Array<string>): Promise<string>;
 
   /** Cancels all outstanding operations. */
-  close() {}
+  close(): void;
 }
 
-/** @interface */
-export class SecurityKeysResetBrowserProxy {
+export interface SecurityKeysResetBrowserProxy {
   /**
    * Starts a reset operation by flashing all security keys and sending a
    * reset command to the one that the user activates. Resolves with a CTAP
    * error code.
-   * @return {!Promise<number>}
    */
-  reset() {}
+  reset(): Promise<number>;
 
   /**
    * Waits for a reset operation to complete. Resolves with a CTAP error code.
-   * @return {!Promise<number>}
    */
-  completeReset() {}
+  completeReset(): Promise<number>;
 
   /** Cancels all outstanding operations. */
-  close() {}
+  close(): void;
 }
 
-/** @interface */
-export class SecurityKeysBioEnrollProxy {
+export interface SecurityKeysBioEnrollProxy {
   /**
    * Starts a biometric enrollment operation.
    *
@@ -201,35 +194,31 @@ export class SecurityKeysBioEnrollProxy {
    * any point during the operation (enrolling, deleting, etc) and when it
    * fires, the operation must be considered terminated.
    *
-   * @return {!Promise} resolves when the handler is ready for the
+   * @return Resolves when the handler is ready for the
    *     authentcation PIN to be provided.
    */
-  startBioEnroll() {}
+  startBioEnroll(): Promise<Array<number>>;
 
   /**
    * Provides a PIN for a biometric enrollment operation. The startBioEnroll()
    * Promise must have resolved before this method may be called.
    *
-   * @return {!Promise<?number>} Resolves with null if the PIN was correct, or
+   * @return Resolves with null if the PIN was correct, or
    *     with the number of retries remaining otherwise.
    */
-  providePIN(pin) {}
+  providePIN(pin: string): Promise<number|null>;
 
   /**
    * Obtains the |SensorInfo| for the authenticator. A correct PIN must have
    * previously been supplied via providePIN() before this method may be called.
-   *
-   * @return {!Promise<!SensorInfo>}
    */
-  getSensorInfo() {}
+  getSensorInfo(): Promise<SensorInfo>;
 
   /**
    * Enumerates enrollments on the authenticator. A correct PIN must have
    * previously been supplied via providePIN() before this method may be called.
-   *
-   * @return {!Promise<!Array<!Enrollment>>}
    */
-  enumerateEnrollments() {}
+  enumerateEnrollments(): Promise<Array<Enrollment>>;
 
   /**
    * Move the operation into enrolling mode, which instructs the authenticator
@@ -242,156 +231,169 @@ export class SecurityKeysBioEnrollProxy {
    * out waiting for a touch, or has successfully processed a touch. Any
    * errors will fire the 'security-keys-bio-enrollment-error' WebListener.
    *
-   * @return {!Promise<!EnrollmentResponse>} resolves when the
-   *     enrollment operation is finished successfully.
+   * @return Resolves when the enrollment operation is finished successfully.
    */
-  startEnrolling() {}
+  startEnrolling(): Promise<EnrollmentResponse>;
 
   /**
    * Cancel an ongoing enrollment suboperation. This can safely be called at
    * any time and only has an impact when the authenticator is currently
    * sampling.
    */
-  cancelEnrollment() {}
+  cancelEnrollment(): void;
 
   /**
    * Deletes the enrollment with the given ID.
    *
-   * @param {string} id
-   * @return {!Promise<!Array<!Enrollment>>} The remaining
-   *     enrollments.
+   * @return The remaining enrollments.
    */
-  deleteEnrollment(id) {}
+  deleteEnrollment(id: string): Promise<Array<Enrollment>>;
 
   /**
    * Renames the enrollment with the given ID.
    *
-   * @param {string} id
-   * @param {string} name
-   * @return {!Promise<!Array<!Enrollment>>} The updated list of
-   *     enrollments.
+   * @return The updated list of enrollments.
    */
-  renameEnrollment(id, name) {}
+  renameEnrollment(id: string, name: string): Promise<Array<Enrollment>>;
 
   /** Cancels all outstanding operations. */
-  close() {}
+  close(): void;
 }
 
-/** @implements {SecurityKeysPINBrowserProxy} */
-export class SecurityKeysPINBrowserProxyImpl {
-  /** @override */
+export class SecurityKeysPINBrowserProxyImpl implements
+    SecurityKeysPINBrowserProxy {
   startSetPIN() {
     return sendWithPromise('securityKeyStartSetPIN');
   }
 
-  /** @override */
-  setPIN(oldPIN, newPIN) {
+  setPIN(oldPIN: string, newPIN: string) {
     return sendWithPromise('securityKeySetPIN', oldPIN, newPIN);
   }
 
-  /** @override */
   close() {
     return chrome.send('securityKeyPINClose');
   }
+
+  static getInstance(): SecurityKeysPINBrowserProxy {
+    return pinBrowserProxyInstance ||
+        (pinBrowserProxyInstance = new SecurityKeysPINBrowserProxyImpl());
+  }
+
+  static setInstance(obj: SecurityKeysPINBrowserProxy) {
+    pinBrowserProxyInstance = obj;
+  }
 }
 
-/** @implements {SecurityKeysCredentialBrowserProxy} */
-export class SecurityKeysCredentialBrowserProxyImpl {
-  /** @override */
+let pinBrowserProxyInstance: SecurityKeysPINBrowserProxy|null = null;
+
+export class SecurityKeysCredentialBrowserProxyImpl implements
+    SecurityKeysCredentialBrowserProxy {
   startCredentialManagement() {
     return sendWithPromise('securityKeyCredentialManagementStart');
   }
 
-  /** @override */
-  providePIN(pin) {
+  providePIN(pin: string) {
     return sendWithPromise('securityKeyCredentialManagementPIN', pin);
   }
 
-  /** @override */
   enumerateCredentials() {
     return sendWithPromise('securityKeyCredentialManagementEnumerate');
   }
 
-  /** @override */
-  deleteCredentials(ids) {
+  deleteCredentials(ids: Array<string>) {
     return sendWithPromise('securityKeyCredentialManagementDelete', ids);
   }
 
-  /** @override */
   close() {
     return chrome.send('securityKeyCredentialManagementClose');
   }
+
+  static getInstance(): SecurityKeysCredentialBrowserProxy {
+    return credentialBrowserProxyInstance ||
+        (credentialBrowserProxyInstance =
+             new SecurityKeysCredentialBrowserProxyImpl());
+  }
+
+  static setInstance(obj: SecurityKeysCredentialBrowserProxy) {
+    credentialBrowserProxyInstance = obj;
+  }
 }
 
-/** @implements {SecurityKeysResetBrowserProxy} */
-export class SecurityKeysResetBrowserProxyImpl {
-  /** @override */
+let credentialBrowserProxyInstance: SecurityKeysCredentialBrowserProxy|null =
+    null;
+
+export class SecurityKeysResetBrowserProxyImpl implements
+    SecurityKeysResetBrowserProxy {
   reset() {
     return sendWithPromise('securityKeyReset');
   }
 
-  /** @override */
   completeReset() {
     return sendWithPromise('securityKeyCompleteReset');
   }
 
-  /** @override */
   close() {
     return chrome.send('securityKeyResetClose');
   }
+
+  static getInstance(): SecurityKeysResetBrowserProxy {
+    return resetBrowserProxyInstance ||
+        (resetBrowserProxyInstance = new SecurityKeysResetBrowserProxyImpl());
+  }
+
+  static setInstance(obj: SecurityKeysResetBrowserProxy) {
+    resetBrowserProxyInstance = obj;
+  }
 }
 
-/** @implements {SecurityKeysBioEnrollProxy} */
-export class SecurityKeysBioEnrollProxyImpl {
-  /** @override */
+let resetBrowserProxyInstance: SecurityKeysResetBrowserProxy|null = null;
+
+export class SecurityKeysBioEnrollProxyImpl implements
+    SecurityKeysBioEnrollProxy {
   startBioEnroll() {
     return sendWithPromise('securityKeyBioEnrollStart');
   }
 
-  /** @override */
-  providePIN(pin) {
+  providePIN(pin: string) {
     return sendWithPromise('securityKeyBioEnrollProvidePIN', pin);
   }
 
-  /** @override */
   getSensorInfo() {
     return sendWithPromise('securityKeyBioEnrollGetSensorInfo');
   }
 
-  /** @override */
   enumerateEnrollments() {
     return sendWithPromise('securityKeyBioEnrollEnumerate');
   }
 
-  /** @override */
   startEnrolling() {
     return sendWithPromise('securityKeyBioEnrollStartEnrolling');
   }
 
-  /** @override */
   cancelEnrollment() {
     return chrome.send('securityKeyBioEnrollCancel');
   }
 
-  /** @override */
-  deleteEnrollment(id) {
+  deleteEnrollment(id: string) {
     return sendWithPromise('securityKeyBioEnrollDelete', id);
   }
 
-  /** @override */
-  renameEnrollment(id, name) {
+  renameEnrollment(id: string, name: string) {
     return sendWithPromise('securityKeyBioEnrollRename', id, name);
   }
 
-  /** @override */
   close() {
     return chrome.send('securityKeyBioEnrollClose');
   }
+
+  static getInstance(): SecurityKeysBioEnrollProxy {
+    return bioEnrollProxyInstance ||
+        (bioEnrollProxyInstance = new SecurityKeysBioEnrollProxyImpl());
+  }
+
+  static setInstance(obj: SecurityKeysBioEnrollProxy) {
+    bioEnrollProxyInstance = obj;
+  }
 }
 
-// The singleton instance_ is replaced with a test version of this wrapper
-// during testing.
-addSingletonGetter(SecurityKeysPINBrowserProxyImpl);
-addSingletonGetter(SecurityKeysCredentialBrowserProxyImpl);
-addSingletonGetter(SecurityKeysResetBrowserProxyImpl);
-addSingletonGetter(SecurityKeysBioEnrollProxyImpl);
+let bioEnrollProxyInstance: SecurityKeysBioEnrollProxy|null = null;

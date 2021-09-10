@@ -230,7 +230,7 @@ suite('SecurityKeysResetDialog', function() {
 
   setup(function() {
     browserProxy = new TestSecurityKeysResetBrowserProxy();
-    SecurityKeysResetBrowserProxyImpl.instance_ = browserProxy;
+    SecurityKeysResetBrowserProxyImpl.setInstance(browserProxy);
     PolymerTest.clearBody();
     dialog = document.createElement('settings-security-keys-reset-dialog');
     allDivs = Object.values(ResetDialogPage);
@@ -345,7 +345,7 @@ suite('SecurityKeysSetPINDialog', function() {
 
   setup(function() {
     browserProxy = new TestSecurityKeysPINBrowserProxy();
-    SecurityKeysPINBrowserProxyImpl.instance_ = browserProxy;
+    SecurityKeysPINBrowserProxyImpl.setInstance(browserProxy);
     PolymerTest.clearBody();
     dialog = document.createElement('settings-security-keys-set-pin-dialog');
     allDivs = Object.values(SetPINDialogPage);
@@ -611,7 +611,7 @@ suite('SecurityKeysCredentialManagement', function() {
 
   setup(function() {
     browserProxy = new TestSecurityKeysCredentialBrowserProxy();
-    SecurityKeysCredentialBrowserProxyImpl.instance_ = browserProxy;
+    SecurityKeysCredentialBrowserProxyImpl.setInstance(browserProxy);
     PolymerTest.clearBody();
     dialog = document.createElement(
         'settings-security-keys-credential-management-dialog');
@@ -762,7 +762,7 @@ suite('SecurityKeysBioEnrollment', function() {
 
   setup(function() {
     browserProxy = new TestSecurityKeysBioEnrollProxy();
-    SecurityKeysBioEnrollProxyImpl.instance_ = browserProxy;
+    SecurityKeysBioEnrollProxyImpl.setInstance(browserProxy);
     PolymerTest.clearBody();
     dialog = document.createElement('settings-security-keys-bio-enroll-dialog');
     allDivs = Object.values(BioEnrollDialogPage);

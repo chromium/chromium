@@ -20,13 +20,6 @@ js_type_check("closure_compile") {
     ":privacy_review_promo",
     ":secure_dns",
     ":secure_dns_input",
-    ":security_keys_bio_enroll_dialog",
-    ":security_keys_browser_proxy",
-    ":security_keys_credential_management_dialog",
-    ":security_keys_pin_field",
-    ":security_keys_reset_dialog",
-    ":security_keys_set_pin_dialog",
-    ":security_keys_subpage",
     ":security_page",
   ]
 }
@@ -142,68 +135,6 @@ js_library("privacy_review_promo") {
   ]
 }
 
-js_library("security_keys_bio_enroll_dialog") {
-  deps = [
-    ":security_keys_browser_proxy",
-    ":security_keys_pin_field",
-    "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_fingerprint:cr_fingerprint_progress_arc.m",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-  ]
-}
-
-js_library("security_keys_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-}
-
-js_library("security_keys_credential_management_dialog") {
-  deps = [
-    ":security_keys_browser_proxy",
-    ":security_keys_pin_field",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-  ]
-}
-
-js_library("security_keys_pin_field") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:i18n_behavior.m",
-  ]
-}
-
-js_library("security_keys_reset_dialog") {
-  deps = [
-    ":security_keys_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:i18n_behavior.m",
-  ]
-}
-
-js_library("security_keys_set_pin_dialog") {
-  deps = [
-    ":security_keys_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:plural_string_proxy",
-  ]
-}
-
-js_library("security_keys_subpage") {
-  deps = [
-    "..:i18n_setup",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
-  ]
-}
-
 js_library("security_page") {
   deps = [
     ":disable_safebrowsing_dialog",
@@ -231,12 +162,12 @@ html_to_js("polymer3_elements") {
     "privacy_review_promo.js",
     "secure_dns.js",
     "secure_dns_input.js",
-    "security_keys_bio_enroll_dialog.js",
-    "security_keys_credential_management_dialog.js",
-    "security_keys_pin_field.js",
-    "security_keys_reset_dialog.js",
-    "security_keys_set_pin_dialog.js",
-    "security_keys_subpage.js",
+    "security_keys_bio_enroll_dialog.ts",
+    "security_keys_credential_management_dialog.ts",
+    "security_keys_pin_field.ts",
+    "security_keys_reset_dialog.ts",
+    "security_keys_set_pin_dialog.ts",
+    "security_keys_subpage.ts",
     "security_page.js",
   ]
 }
