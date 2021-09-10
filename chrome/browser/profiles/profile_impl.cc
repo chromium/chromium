@@ -83,7 +83,6 @@
 #include "chrome/browser/prefs/profile_pref_store_manager.h"
 #include "chrome/browser/profiles/bookmark_model_loaded_observer.h"
 #include "chrome/browser/profiles/chrome_version_service.h"
-#include "chrome/browser/profiles/gaia_info_update_service_factory.h"
 #include "chrome/browser/profiles/pref_service_builder_utils.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -750,7 +749,6 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
   // Initialize components that depend on the current value.
   UpdateSupervisedUserIdInStorage();
   UpdateIsEphemeralInStorage();
-  GAIAInfoUpdateServiceFactory::GetForProfile(this);
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
   // Initialize the BackgroundModeManager - this has to be done here before

@@ -53,3 +53,7 @@ KeyedService* GAIAInfoUpdateServiceFactory::BuildServiceInstanceFor(
 bool GAIAInfoUpdateServiceFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }
+
+bool GAIAInfoUpdateServiceFactory::ServiceIsCreatedWithBrowserContext() const {
+  return true;
+}
