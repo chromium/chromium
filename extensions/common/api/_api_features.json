@@ -440,7 +440,8 @@
       "extension",
       "legacy_packaged_app",
       "platform_app",
-      "login_screen_extension"
+      "login_screen_extension",
+      "chromeos_system_extension"
     ],
     "contexts": [
       "blessed_extension",
