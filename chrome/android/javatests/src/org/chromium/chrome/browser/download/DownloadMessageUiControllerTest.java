@@ -75,7 +75,7 @@ public class DownloadMessageUiControllerTest {
         private DownloadProgressMessageUiData mInfo;
 
         public TestDownloadMessageUiController() {
-            super(InstrumentationRegistry.getTargetContext(),
+            super(InstrumentationRegistry.getTargetContext(), /*otrProfileID*/ null,
                     /*messageDispatcher=*/null, /*modalDialogManager=*/null,
                     new ActivityTabProvider());
         }

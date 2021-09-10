@@ -148,6 +148,7 @@ public class DownloadManagerService implements DownloadController.Observer,
     private HashMap<OTRProfileID, DownloadInfoBarController> mIncognitoInfoBarControllerMap =
             new HashMap<>();
     private DownloadMessageUiController mMessageUiController;
+    private DownloadMessageUiController mIncognitoMessageUiController;
     private long mNativeDownloadManagerService;
     private NetworkChangeNotifierAutoDetect mNetworkChangeNotifier;
     // Flag to track if we need to post a task to update download notifications.
@@ -298,7 +299,7 @@ public class DownloadManagerService implements DownloadController.Observer,
         }
 
         // TODO(shaktisahu, sideyilmaz): If we have multiple OTR profiles, will this be ever null?
-        return showMessageUi ? mMessageUiController
+        return showMessageUi ? mIncognitoMessageUiController
                              : mIncognitoInfoBarControllerMap.get(otrProfileID);
     }
 
@@ -416,7 +417,10 @@ public class DownloadManagerService implements DownloadController.Observer,
             // activity is launched.
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_PROGRESS_MESSAGE)) {
                 mMessageUiController = new DownloadMessageUiControllerImpl(
-                        activity, messageDispatcher, modalDialogManager, activityTabProvider);
+                        activity, null, messageDispatcher, modalDialogManager, activityTabProvider);
+                mIncognitoMessageUiController =
+                        new DownloadMessageUiControllerImpl(activity, primaryOTRProfileID,
+                                messageDispatcher, modalDialogManager, activityTabProvider);
             } else {
                 mInfoBarController = new DownloadInfoBarController(/*otrProfileID=*/null);
                 mIncognitoInfoBarControllerMap.put(
@@ -428,6 +432,13 @@ public class DownloadManagerService implements DownloadController.Observer,
             DownloadManagerService.getDownloadManagerService().checkForExternallyRemovedDownloads(
                     ProfileKey.getLastUsedRegularProfileKey());
             mActivityLaunched = true;
+        } else {
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_PROGRESS_MESSAGE)) {
+                mMessageUiController.onConfigurationChanged(
+                        activity, messageDispatcher, modalDialogManager, activityTabProvider);
+                mIncognitoMessageUiController.onConfigurationChanged(
+                        activity, messageDispatcher, modalDialogManager, activityTabProvider);
+            }
         }
     }
 
