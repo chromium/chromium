@@ -481,6 +481,13 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   void SetWakeUpBudgetPool(WakeUpBudgetPool* wake_up_budget_pool);
   WakeUpBudgetPool* GetWakeUpBudgetPool() const { return wake_up_budget_pool_; }
 
+  void SetQueuePriority(TaskQueue::QueuePriority priority) {
+    task_queue_->SetQueuePriority(priority);
+  }
+  TaskQueue::QueuePriority GetQueuePriority() const {
+    return task_queue_->GetQueuePriority();
+  }
+
   base::WeakPtr<MainThreadTaskQueue> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }

@@ -207,7 +207,7 @@ void MainThreadMetricsHelper::RecordTaskMetrics(
 
     UMA_HISTOGRAM_ENUMERATION(
         "RendererScheduler.ResourceLoadingTaskCountPerPriority",
-        queue->GetTaskQueue()->GetQueuePriority(),
+        queue->GetQueuePriority(),
         base::sequence_manager::TaskQueue::QueuePriority::kQueuePriorityCount);
   }
 }

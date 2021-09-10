@@ -322,7 +322,7 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
 
   // Explicitly set the priority of this queue since it is not managed by
   // the main thread scheduler.
-  memory_purge_task_queue_->GetTaskQueue()->SetQueuePriority(
+  memory_purge_task_queue_->SetQueuePriority(
       ComputePriority(memory_purge_task_queue_.get()));
 }
 
@@ -1670,7 +1670,7 @@ void MainThreadSchedulerImpl::UpdateTaskQueueState(
     const Policy& new_policy,
     bool should_update_priority) const {
   if (should_update_priority)
-    task_queue->GetTaskQueue()->SetQueuePriority(ComputePriority(task_queue));
+    task_queue->SetQueuePriority(ComputePriority(task_queue));
 
   if (task_queue_enabled_voter) {
     task_queue_enabled_voter->SetVoteToEnable(
@@ -1824,7 +1824,7 @@ base::TimeTicks MainThreadSchedulerImpl::EnableVirtualTime() {
   virtual_time_control_task_queue_ =
       helper_.NewTaskQueue(MainThreadTaskQueue::QueueCreationParams(
           MainThreadTaskQueue::QueueType::kControl));
-  virtual_time_control_task_queue_->GetTaskQueue()->SetQueuePriority(
+  virtual_time_control_task_queue_->SetQueuePriority(
       TaskQueue::kControlPriority);
   virtual_time_control_task_queue_->GetTaskQueue()->SetTimeDomain(
       virtual_time_domain_.get());
@@ -2552,9 +2552,9 @@ void MainThreadSchedulerImpl::OnTaskStarted(
           : absl::nullopt};
 
   main_thread_only().task_priority_for_tracing =
-      queue ? absl::optional<TaskQueue::QueuePriority>(
-                  queue->GetTaskQueue()->GetQueuePriority())
-            : absl::nullopt;
+      queue
+          ? absl::optional<TaskQueue::QueuePriority>(queue->GetQueuePriority())
+          : absl::nullopt;
 }
 
 void MainThreadSchedulerImpl::OnTaskCompleted(
@@ -2840,8 +2840,7 @@ void MainThreadSchedulerImpl::UpdateCompositorTaskQueuePriority() {
     if (pair.first->GetPrioritisationType() !=
         MainThreadTaskQueue::QueueTraits::PrioritisationType::kCompositor)
       continue;
-    pair.first->GetTaskQueue()->SetQueuePriority(
-        ComputePriority(pair.first.get()));
+    pair.first->SetQueuePriority(ComputePriority(pair.first.get()));
   }
 }
 

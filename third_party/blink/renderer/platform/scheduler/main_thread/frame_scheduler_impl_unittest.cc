@@ -1418,19 +1418,19 @@ class InputHighPriorityFrameSchedulerImplTest : public FrameSchedulerImplTest {
 TEST_F(InputHighPriorityFrameSchedulerImplTest,
        NormalPriorityInputBlockingTaskQueue) {
   page_scheduler_->SetPageVisible(false);
-  EXPECT_EQ(InputBlockingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(InputBlockingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
   page_scheduler_->SetPageVisible(true);
-  EXPECT_EQ(InputBlockingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(InputBlockingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
 }
 
 TEST_F(FrameSchedulerImplTest, HighestPriorityInputBlockingTaskQueue) {
   page_scheduler_->SetPageVisible(false);
-  EXPECT_EQ(InputBlockingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(InputBlockingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kHighestPriority);
   page_scheduler_->SetPageVisible(true);
-  EXPECT_EQ(InputBlockingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(InputBlockingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kHighestPriority);
 }
 
@@ -1442,46 +1442,46 @@ class LowPriorityBackgroundPageExperimentTest : public FrameSchedulerImplTest {
 
 TEST_F(LowPriorityBackgroundPageExperimentTest, FrameQueuesPriorities) {
   page_scheduler_->SetPageVisible(false);
-  EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
 
   page_scheduler_->AudioStateChanged(true);
-  EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kHighPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
 
   page_scheduler_->AudioStateChanged(false);
   page_scheduler_->SetPageVisible(true);
-  EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kHighPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
 }
 
@@ -1494,46 +1494,46 @@ class BestEffortPriorityBackgroundPageExperimentTest
 
 TEST_F(BestEffortPriorityBackgroundPageExperimentTest, FrameQueuesPriorities) {
   page_scheduler_->SetPageVisible(false);
-  EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kBestEffortPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kBestEffortPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kBestEffortPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kBestEffortPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kBestEffortPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kBestEffortPriority);
 
   page_scheduler_->AudioStateChanged(true);
-  EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kHighPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
 
   page_scheduler_->AudioStateChanged(false);
   page_scheduler_->SetPageVisible(true);
-  EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kHighPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
 }
 
@@ -1547,32 +1547,32 @@ class LowPriorityHiddenFrameExperimentTest : public FrameSchedulerImplTest {
 TEST_F(LowPriorityHiddenFrameExperimentTest, FrameQueuesPriorities) {
   // Hidden Frame Task Queues.
   frame_scheduler_->SetFrameVisible(false);
-  EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
 
   // Visible Frame Task Queues.
   frame_scheduler_->SetFrameVisible(true);
-  EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kHighPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
 }
 
@@ -1597,17 +1597,17 @@ TEST_F(LowPriorityHiddenFrameDuringLoadingExperimentTest,
 
   // Hidden Frame Task Queues.
   frame_scheduler_->SetFrameVisible(false);
-  EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
 
   // Main thread scheduler is no longer in loading use case.
@@ -1615,17 +1615,17 @@ TEST_F(LowPriorityHiddenFrameDuringLoadingExperimentTest,
   ASSERT_EQ(scheduler_->current_use_case(), UseCase::kNone);
   EXPECT_FALSE(page_scheduler_->IsLoading());
 
-  EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kHighPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
 }
 
@@ -1638,17 +1638,17 @@ class LowPrioritySubFrameExperimentTest : public FrameSchedulerImplTest {
 
 TEST_F(LowPrioritySubFrameExperimentTest, FrameQueuesPriorities) {
   // Sub-Frame Task Queues.
-  EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
 
   frame_scheduler_ =
@@ -1656,17 +1656,17 @@ TEST_F(LowPrioritySubFrameExperimentTest, FrameQueuesPriorities) {
                            FrameScheduler::FrameType::kMainFrame);
 
   // Main Frame Task Queues.
-  EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kHighPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
 }
 
@@ -1689,17 +1689,17 @@ TEST_F(LowPrioritySubFrameDuringLoadingExperimentTest, FrameQueuesPriorities) {
   ASSERT_EQ(scheduler_->current_use_case(), UseCase::kLoading);
 
   // Sub-Frame Task Queues.
-  EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
 
   // Main thread scheduler is no longer in loading use case.
@@ -1708,17 +1708,17 @@ TEST_F(LowPrioritySubFrameDuringLoadingExperimentTest, FrameQueuesPriorities) {
   EXPECT_FALSE(page_scheduler_->IsLoading());
 
   // Sub-Frame Task Queues.
-  EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kHighPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
 }
 
@@ -1733,17 +1733,17 @@ class LowPrioritySubFrameThrottleableTaskExperimentTest
 TEST_F(LowPrioritySubFrameThrottleableTaskExperimentTest,
        FrameQueuesPriorities) {
   // Sub-Frame Task Queues.
-  EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kHighPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
 
   frame_scheduler_ =
@@ -1751,17 +1751,17 @@ TEST_F(LowPrioritySubFrameThrottleableTaskExperimentTest,
                            FrameScheduler::FrameType::kMainFrame);
 
   // Main Frame Task Queues.
-  EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kHighPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
 }
 
@@ -1785,17 +1785,17 @@ TEST_F(LowPrioritySubFrameThrottleableTaskDuringLoadingExperimentTest,
   ASSERT_EQ(scheduler_->current_use_case(), UseCase::kLoading);
 
   // Sub-Frame Task Queues.
-  EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kHighPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
 
   // Main thread scheduler is no longer in loading use case.
@@ -1804,17 +1804,17 @@ TEST_F(LowPrioritySubFrameThrottleableTaskDuringLoadingExperimentTest,
   EXPECT_FALSE(page_scheduler_->IsLoading());
 
   // Sub-Frame Task Queues.
-  EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kHighPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
 }
 
@@ -1828,17 +1828,17 @@ class LowPriorityThrottleableTaskExperimentTest
 
 TEST_F(LowPriorityThrottleableTaskExperimentTest, FrameQueuesPriorities) {
   // Sub-Frame Task Queues.
-  EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kHighPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
 
   frame_scheduler_ =
@@ -1846,17 +1846,17 @@ TEST_F(LowPriorityThrottleableTaskExperimentTest, FrameQueuesPriorities) {
                            FrameScheduler::FrameType::kMainFrame);
 
   // Main Frame Task Queues.
-  EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kHighPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
 }
 
@@ -1879,17 +1879,17 @@ TEST_F(LowPriorityThrottleableTaskDuringLoadingExperimentTest,
   main_frame_scheduler->OnFirstContentfulPaintInMainFrame();
   ASSERT_EQ(scheduler_->current_use_case(), UseCase::kLoading);
 
-  EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kHighPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
 
   // Main thread is no longer in loading use case.
@@ -1898,17 +1898,17 @@ TEST_F(LowPriorityThrottleableTaskDuringLoadingExperimentTest,
 
   EXPECT_FALSE(page_scheduler_->IsLoading());
 
-  EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kHighPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
 }
 
@@ -1924,17 +1924,17 @@ TEST_F(LowPriorityThrottleableTaskDuringLoadingExperimentTest,
   frame_scheduler_->OnFirstContentfulPaintInMainFrame();
 
   // Main Frame Task Queues.
-  EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kHighPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
 
   // Main thread is no longer in loading use case.
@@ -1942,17 +1942,17 @@ TEST_F(LowPriorityThrottleableTaskDuringLoadingExperimentTest,
   EXPECT_FALSE(page_scheduler_->IsLoading());
 
   // Main Frame Task Queues.
-  EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kHighPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
 }
 
@@ -1966,51 +1966,51 @@ class LowPriorityAdFrameExperimentTest : public FrameSchedulerImplTest {
 TEST_F(LowPriorityAdFrameExperimentTest, FrameQueuesPriorities) {
   EXPECT_FALSE(frame_scheduler_->IsAdFrame());
 
-  EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kHighPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
 
   frame_scheduler_->SetIsAdFrame(true);
 
   EXPECT_TRUE(frame_scheduler_->IsAdFrame());
 
-  EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
 
   frame_scheduler_->SetIsAdFrame(false);
 
   EXPECT_FALSE(frame_scheduler_->IsAdFrame());
 
-  EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kHighPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
 }
 
@@ -2036,17 +2036,17 @@ TEST_F(LowPriorityAdFrameDuringLoadingExperimentTest, FrameQueuesPriorities) {
   main_frame_scheduler->OnFirstContentfulPaintInMainFrame();
   ASSERT_EQ(scheduler_->current_use_case(), UseCase::kLoading);
 
-  EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
 
   // Main thread scheduler is no longer in loading use case.
@@ -2055,17 +2055,17 @@ TEST_F(LowPriorityAdFrameDuringLoadingExperimentTest, FrameQueuesPriorities) {
 
   EXPECT_FALSE(page_scheduler_->IsLoading());
 
-  EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kHighPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
 }
 
@@ -2079,50 +2079,50 @@ class BestEffortPriorityAdFrameExperimentTest : public FrameSchedulerImplTest {
 TEST_F(BestEffortPriorityAdFrameExperimentTest, FrameQueuesPriorities) {
   EXPECT_FALSE(frame_scheduler_->IsAdFrame());
 
-  EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kHighPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
 
   frame_scheduler_->SetIsAdFrame(true);
 
   EXPECT_TRUE(frame_scheduler_->IsAdFrame());
 
-  EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kBestEffortPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kBestEffortPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kBestEffortPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kBestEffortPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kBestEffortPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kBestEffortPriority);
 
   frame_scheduler_->SetIsAdFrame(false);
   EXPECT_FALSE(frame_scheduler_->IsAdFrame());
 
-  EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kHighPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
 }
 
@@ -2149,17 +2149,17 @@ TEST_F(BestEffortPriorityAdFrameDuringLoadingExperimentTest,
   main_frame_scheduler->OnFirstContentfulPaintInMainFrame();
   ASSERT_EQ(scheduler_->current_use_case(), UseCase::kLoading);
 
-  EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kBestEffortPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kBestEffortPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kBestEffortPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kBestEffortPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kBestEffortPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kBestEffortPriority);
 
   // Main thread scheduler is no longer in loading use case.
@@ -2168,17 +2168,17 @@ TEST_F(BestEffortPriorityAdFrameDuringLoadingExperimentTest,
 
   EXPECT_FALSE(page_scheduler_->IsLoading());
 
-  EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kHighPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
 }
 
@@ -2203,16 +2203,15 @@ TEST_F(ResourceFetchPriorityExperimentTest, DidChangePriority) {
       GetResourceLoadingTaskRunnerHandleImpl();
   scoped_refptr<MainThreadTaskQueue> task_queue = handle->task_queue();
 
-  TaskQueue::QueuePriority priority =
-      task_queue->GetTaskQueue()->GetQueuePriority();
+  TaskQueue::QueuePriority priority = task_queue->GetQueuePriority();
   EXPECT_EQ(priority, TaskQueue::QueuePriority::kNormalPriority);
 
   DidChangeResourceLoadingPriority(task_queue, net::RequestPriority::LOWEST);
-  EXPECT_EQ(task_queue->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(task_queue->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
 
   DidChangeResourceLoadingPriority(task_queue, net::RequestPriority::HIGHEST);
-  EXPECT_EQ(task_queue->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(task_queue->GetQueuePriority(),
             TaskQueue::QueuePriority::kHighPriority);
 }
 
@@ -2243,12 +2242,12 @@ TEST_F(ResourceFetchPriorityExperimentOnlyWhenLoadingTest, DidChangePriority) {
       GetResourceLoadingTaskRunnerHandleImpl();
   scoped_refptr<MainThreadTaskQueue> task_queue = handle->task_queue();
 
-  EXPECT_EQ(task_queue->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(task_queue->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
 
   // Experiment is only enabled during the loading phase.
   DidChangeResourceLoadingPriority(task_queue, net::RequestPriority::LOWEST);
-  EXPECT_EQ(task_queue->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(task_queue->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
 
   // Main thread scheduler is in the loading use case.
@@ -2259,11 +2258,11 @@ TEST_F(ResourceFetchPriorityExperimentOnlyWhenLoadingTest, DidChangePriority) {
   task_queue = handle->task_queue();
 
   DidChangeResourceLoadingPriority(task_queue, net::RequestPriority::LOWEST);
-  EXPECT_EQ(task_queue->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(task_queue->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
 
   DidChangeResourceLoadingPriority(task_queue, net::RequestPriority::HIGHEST);
-  EXPECT_EQ(task_queue->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(task_queue->GetQueuePriority(),
             TaskQueue::QueuePriority::kHighPriority);
 }
 
@@ -2277,14 +2276,13 @@ TEST_F(
       GetResourceLoadingTaskRunnerHandleImpl();
   scoped_refptr<MainThreadTaskQueue> task_queue = handle->task_queue();
 
-  TaskQueue::QueuePriority priority =
-      task_queue->GetTaskQueue()->GetQueuePriority();
+  TaskQueue::QueuePriority priority = task_queue->GetQueuePriority();
 
   DidChangeResourceLoadingPriority(task_queue, net::RequestPriority::LOW);
-  EXPECT_EQ(task_queue->GetTaskQueue()->GetQueuePriority(), priority);
+  EXPECT_EQ(task_queue->GetQueuePriority(), priority);
 
   DidChangeResourceLoadingPriority(task_queue, net::RequestPriority::HIGHEST);
-  EXPECT_EQ(task_queue->GetTaskQueue()->GetQueuePriority(), priority);
+  EXPECT_EQ(task_queue->GetQueuePriority(), priority);
 }
 
 class LowPriorityCrossOriginTaskExperimentTest : public FrameSchedulerImplTest {
@@ -2297,33 +2295,33 @@ TEST_F(LowPriorityCrossOriginTaskExperimentTest, FrameQueuesPriorities) {
   EXPECT_FALSE(frame_scheduler_->IsCrossOriginToMainFrame());
 
   // Same Origin Task Queues.
-  EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kHighPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
 
   frame_scheduler_->SetCrossOriginToMainFrame(true);
   EXPECT_TRUE(frame_scheduler_->IsCrossOriginToMainFrame());
 
-  EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
 }
 
@@ -2346,33 +2344,33 @@ TEST_F(LowPriorityCrossOriginTaskDuringLoadingExperimentTest,
   main_frame_scheduler->OnFirstContentfulPaintInMainFrame();
   ASSERT_EQ(scheduler_->current_use_case(), UseCase::kLoading);
 
-  EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kHighPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
 
   frame_scheduler_->SetCrossOriginToMainFrame(true);
   EXPECT_TRUE(frame_scheduler_->IsCrossOriginToMainFrame());
 
-  EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
 
   // Main thread is no longer in loading use case.
@@ -2380,17 +2378,17 @@ TEST_F(LowPriorityCrossOriginTaskDuringLoadingExperimentTest,
   ASSERT_EQ(scheduler_->current_use_case(), UseCase::kNone);
   EXPECT_FALSE(page_scheduler_->IsLoading());
 
-  EXPECT_EQ(LoadingTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kHighPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
 }
 
@@ -2451,7 +2449,7 @@ TEST_F(FrameSchedulerImplDatabaseAccessWithoutHighPriority, QueueTraits) {
   auto da_queue = GetTaskQueue(TaskType::kDatabaseAccess);
   EXPECT_EQ(da_queue->GetQueueTraits().prioritisation_type,
             MainThreadTaskQueue::QueueTraits::PrioritisationType::kRegular);
-  EXPECT_EQ(da_queue->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(da_queue->GetQueuePriority(),
             TaskQueue::QueuePriority::kNormalPriority);
 }
 
@@ -2467,7 +2465,7 @@ TEST_F(FrameSchedulerImplDatabaseAccessWithHighPriority, QueueTraits) {
   EXPECT_EQ(da_queue->GetQueueTraits().prioritisation_type,
             MainThreadTaskQueue::QueueTraits::PrioritisationType::
                 kExperimentalDatabase);
-  EXPECT_EQ(da_queue->GetTaskQueue()->GetQueuePriority(),
+  EXPECT_EQ(da_queue->GetQueuePriority(),
             TaskQueue::QueuePriority::kHighPriority);
 }
 
@@ -2494,7 +2492,7 @@ TEST_F(FrameSchedulerImplTest, ContentCaptureHasIdleTaskQueue) {
   auto task_queue = GetTaskQueue(TaskType::kInternalContentCapture);
 
   EXPECT_EQ(TaskQueue::QueuePriority::kBestEffortPriority,
-            task_queue->GetTaskQueue()->GetQueuePriority());
+            task_queue->GetQueuePriority());
 }
 
 TEST_F(FrameSchedulerImplTest, ComputePriorityForDetachedFrame) {
@@ -4074,7 +4072,7 @@ TEST_F(FrameSchedulerImplTest, PostMessageForwardingHasControlPriority) {
   auto task_queue = GetTaskQueue(TaskType::kInternalPostMessageForwarding);
 
   EXPECT_EQ(TaskQueue::QueuePriority::kVeryHighPriority,
-            task_queue->GetTaskQueue()->GetQueuePriority());
+            task_queue->GetQueuePriority());
 }
 
 TEST_F(FrameSchedulerImplDisablePrioritizedPostMessageForwarding,
@@ -4082,7 +4080,7 @@ TEST_F(FrameSchedulerImplDisablePrioritizedPostMessageForwarding,
   auto task_queue = GetTaskQueue(TaskType::kInternalPostMessageForwarding);
 
   EXPECT_EQ(TaskQueue::QueuePriority::kNormalPriority,
-            task_queue->GetTaskQueue()->GetQueuePriority());
+            task_queue->GetQueuePriority());
 }
 
 }  // namespace frame_scheduler_impl_unittest

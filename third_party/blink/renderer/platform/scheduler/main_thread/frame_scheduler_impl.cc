@@ -79,8 +79,7 @@ void UpdatePriority(MainThreadTaskQueue* task_queue) {
 
   FrameSchedulerImpl* frame_scheduler = task_queue->GetFrameScheduler();
   DCHECK(frame_scheduler);
-  task_queue->GetTaskQueue()->SetQueuePriority(
-      frame_scheduler->ComputePriority(task_queue));
+  task_queue->SetQueuePriority(frame_scheduler->ComputePriority(task_queue));
 }
 
 }  // namespace

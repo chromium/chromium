@@ -2891,7 +2891,7 @@ TEST_F(MainThreadSchedulerImplTest, SYNCHRONIZED_GESTURE_CompositingExpensive) {
   // Throttleable tasks should not have been starved by the expensive compositor
   // tasks.
   EXPECT_EQ(TaskQueue::kNormalPriority,
-            compositor_task_queue()->GetTaskQueue()->GetQueuePriority());
+            compositor_task_queue()->GetQueuePriority());
   EXPECT_EQ(1000u, run_order.size());
 }
 
@@ -2933,7 +2933,7 @@ TEST_F(MainThreadSchedulerImplTest, MAIN_THREAD_CUSTOM_INPUT_HANDLING) {
   // Throttleable tasks should not have been starved by the expensive compositor
   // tasks.
   EXPECT_EQ(TaskQueue::kNormalPriority,
-            compositor_task_queue()->GetTaskQueue()->GetQueuePriority());
+            compositor_task_queue()->GetQueuePriority());
   EXPECT_EQ(1000u, run_order.size());
 }
 
@@ -2973,7 +2973,7 @@ TEST_F(MainThreadSchedulerImplTest, MAIN_THREAD_GESTURE) {
   }
 
   EXPECT_EQ(TaskQueue::kHighestPriority,
-            compositor_task_queue()->GetTaskQueue()->GetQueuePriority());
+            compositor_task_queue()->GetQueuePriority());
   EXPECT_EQ(279u, run_order.size());
 }
 
