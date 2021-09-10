@@ -98,6 +98,16 @@ struct WebBundleTokenParams {
   int32 render_process_id;
 };
 
+// Options that may be set when URLRequests need to take over NetLog related
+// parameters from CorsURLLoader. The URLRequest will reuse these parameters
+// on logging. If set, contains parameters to construct a NetLogWithSource for
+// the request. If not set, URLRequest constructs a NetLogWitSource with
+// default parameters.
+struct NetLogParams {
+  // The ID of NetLogSource.
+  uint32 source_id;
+};
+
 // Typemapped to network::ResourceRequest.
 struct URLRequest {
   // The request method: GET, POST, etc.
@@ -420,6 +430,16 @@ struct URLRequest {
   // (via Accept-Encoding) that are not listed. Also, it will not attempt
   // decoding any non-listed stream types.
   array<SourceType>? devtools_accepted_stream_types;
+
+  // This field is set within the network service, more concretely by
+  // CorsURLLoader, and solely used there unless the loader factory is
+  // overridden. Setting this field by the process outside the network service
+  // is currently not expected and is invalid.
+  // If set correctly, it contains NetLog related parameters. This value is
+  // filled and used when network service creates a new request for preflights
+  // (which happens in CorsURLLoader). See the comment of NetLogParams for
+  // details.
+  NetLogParams? net_log_params;
 };
 
 // URLRequestBody represents body (i.e. upload data) of a HTTP request.

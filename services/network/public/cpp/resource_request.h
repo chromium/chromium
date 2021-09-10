@@ -100,6 +100,15 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
     int32_t render_process_id = -1;
   };
 
+  // Typemapped to network.mojom.NetLogParams, see comments there for
+  // details of each field.
+  struct COMPONENT_EXPORT(NETWORK_CPP_BASE) NetLogParams {
+    NetLogParams();
+    ~NetLogParams();
+
+    uint32_t source_id;
+  };
+
   ResourceRequest();
   ResourceRequest(const ResourceRequest& request);
   ~ResourceRequest();
@@ -175,6 +184,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   // decoding any non-listed stream types.
   absl::optional<std::vector<net::SourceStream::SourceType>>
       devtools_accepted_stream_types;
+  absl::optional<NetLogParams> net_log_params;
 };
 
 // This does not accept |kDefault| referrer policy.

@@ -354,6 +354,10 @@ mojom("url_loader_base") {
           cpp = "::network::ResourceRequest::WebBundleTokenParams"
         },
         {
+          mojom = "network.mojom.NetLogParams"
+          cpp = "::network::ResourceRequest::NetLogParams"
+        },
+        {
           mojom = "network.mojom.URLRequest"
           cpp = "::network::ResourceRequest"
           forward_declaration = "namespace network { struct ResourceRequest; }"

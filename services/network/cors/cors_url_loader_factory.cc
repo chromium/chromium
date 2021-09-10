@@ -507,6 +507,12 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
     return false;
   }
 
+  // |net_log_params| field is expected to be used within network service.
+  if (request.net_log_params.has_value()) {
+    mojo::ReportBadMessage(
+        "CorsURLLoaderFactory: net_log_params field is not expected.");
+  }
+
   // TODO(yhirano): If the request mode is "no-cors", the redirect mode should
   // be "follow".
   return true;

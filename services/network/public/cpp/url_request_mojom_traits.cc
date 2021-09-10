@@ -114,6 +114,14 @@ bool StructTraits<network::mojom::WebBundleTokenParamsDataView,
   return true;
 }
 
+bool StructTraits<network::mojom::NetLogParamsDataView,
+                  network::ResourceRequest::NetLogParams>::
+    Read(network::mojom::NetLogParamsDataView data,
+         network::ResourceRequest::NetLogParams* out) {
+  out->source_id = data.source_id();
+  return true;
+}
+
 bool StructTraits<
     network::mojom::URLRequestDataView,
     network::ResourceRequest>::Read(network::mojom::URLRequestDataView data,
@@ -158,7 +166,8 @@ bool StructTraits<
       !data.ReadRecursivePrefetchToken(&out->recursive_prefetch_token) ||
       !data.ReadWebBundleTokenParams(&out->web_bundle_token_params) ||
       !data.ReadDevtoolsAcceptedStreamTypes(
-          &out->devtools_accepted_stream_types)) {
+          &out->devtools_accepted_stream_types) ||
+      !data.ReadNetLogParams(&out->net_log_params)) {
     // Note that data.ReadTrustTokenParams is temporarily handled below.
     return false;
   }

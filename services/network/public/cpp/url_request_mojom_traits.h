@@ -140,6 +140,19 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
 
 template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
+    StructTraits<network::mojom::NetLogParamsDataView,
+                 network::ResourceRequest::NetLogParams> {
+  static uint32_t source_id(
+      const network::ResourceRequest::NetLogParams& params) {
+    return params.source_id;
+  }
+
+  static bool Read(network::mojom::NetLogParamsDataView data,
+                   network::ResourceRequest::NetLogParams* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     StructTraits<network::mojom::URLRequestDataView, network::ResourceRequest> {
   static const std::string& method(const network::ResourceRequest& request) {
     return request.method;
@@ -318,6 +331,10 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static const absl::optional<network::ResourceRequest::WebBundleTokenParams>&
   web_bundle_token_params(const network::ResourceRequest& request) {
     return request.web_bundle_token_params;
+  }
+  static const absl::optional<network::ResourceRequest::NetLogParams>&
+  net_log_params(const network::ResourceRequest& request) {
+    return request.net_log_params;
   }
 
   static bool Read(network::mojom::URLRequestDataView data,

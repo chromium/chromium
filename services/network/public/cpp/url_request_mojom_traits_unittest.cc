@@ -111,6 +111,8 @@ TEST(URLRequestMojomTraitsTest, Roundtrips_ResourceRequest) {
       absl::make_optional(ResourceRequest::WebBundleTokenParams(
           GURL("https://bundle.test/"), base::UnguessableToken::Create(),
           mojo::PendingRemote<network::mojom::WebBundleHandle>()));
+  original.net_log_params =
+      absl::make_optional(ResourceRequest::NetLogParams());
   original.devtools_accepted_stream_types =
       std::vector<net::SourceStream::SourceType>(
           {net::SourceStream::SourceType::TYPE_BROTLI,
