@@ -142,18 +142,6 @@ using ::ui::AXTreeFormatter;
 
 const int kNumberLoadTestParts = 10;
 
-// `base::test::WithFeatureOverride` for `chrome_pdf::features::kPdfUnseasoned`.
-// This should be the first class a test fixture inherits from.
-//
-// This class should be used only for tests that are identical or substantially
-// identical in Pepper and Pepper-free modes. Otherwise, it makes more sense to
-// define separate test fixtures for each mode.
-class WithUnseasonedOverride : public base::test::WithFeatureOverride {
- public:
-  WithUnseasonedOverride()
-      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfUnseasoned) {}
-};
-
 #if defined(OS_MAC)
 const int kDefaultKeyModifier = blink::WebInputEvent::kMetaKey;
 #else
@@ -441,8 +429,12 @@ class PDFExtensionTestWithoutUnseasonedOverride
   base::test::ScopedFeatureList feature_list_;
 };
 
-class PDFExtensionTest : public WithUnseasonedOverride,
-                         public PDFExtensionTestWithoutUnseasonedOverride {};
+class PDFExtensionTest : public base::test::WithFeatureOverride,
+                         public PDFExtensionTestWithoutUnseasonedOverride {
+ public:
+  PDFExtensionTest()
+      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfUnseasoned) {}
+};
 
 class PDFExtensionTestWithPartialLoading : public PDFExtensionTest {
  protected:
@@ -894,11 +886,7 @@ IN_PROC_BROWSER_TEST_P(PDFPluginDisabledTest,
   ValidateSingleSuccessfulDownloadAndNoPDFPluginLaunch();
 }
 
-class PDFExtensionJSTestWithoutUnseasonedOverride
-    : public PDFExtensionTestWithoutUnseasonedOverride {
- public:
-  ~PDFExtensionJSTestWithoutUnseasonedOverride() override = default;
-
+class PDFExtensionJSTest : public PDFExtensionTest {
  protected:
   void RunTestsInJsModule(const std::string& filename,
                           const std::string& pdf_filename) {
@@ -943,10 +931,6 @@ class PDFExtensionJSTestWithoutUnseasonedOverride
     if (!catcher.GetNextResult())
       FAIL() << catcher.message();
   }
-};
-
-class PDFExtensionJSTest : public WithUnseasonedOverride,
-                           public PDFExtensionJSTestWithoutUnseasonedOverride {
 };
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Basic) {
@@ -1183,12 +1167,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerToolbarDropdown) {
 }
 #endif  // BUILDFLAG(ENABLE_INK)
 
-class PDFExtensionContentSettingJSTestWithoutUnseasonedOverride
-    : public PDFExtensionJSTestWithoutUnseasonedOverride {
- public:
-  ~PDFExtensionContentSettingJSTestWithoutUnseasonedOverride() override =
-      default;
-
+class PDFExtensionContentSettingJSTest : public PDFExtensionJSTest {
  protected:
   // When blocking JavaScript, block the exact query from pdf/main.js while
   // still allowing enough JavaScript to run in the extension for the test
@@ -1205,24 +1184,16 @@ class PDFExtensionContentSettingJSTestWithoutUnseasonedOverride
   }
 };
 
-class PDFExtensionContentSettingJSTest
-    : public WithUnseasonedOverride,
-      public PDFExtensionContentSettingJSTestWithoutUnseasonedOverride {};
-
 IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTest, Beep) {
   RunTestsInJsModule("beep_test.js", "test-beep.pdf");
 }
 
-IN_PROC_BROWSER_TEST_F(
-    PDFExtensionContentSettingJSTestWithoutUnseasonedOverride,
-    NoBeep) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTest, NoBeep) {
   SetPdfJavaScript(/*enabled=*/false);
   RunTestsInJsModule("nobeep_test.js", "test-beep.pdf");
 }
 
-IN_PROC_BROWSER_TEST_F(
-    PDFExtensionContentSettingJSTestWithoutUnseasonedOverride,
-    BeepThenNoBeep) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTest, BeepThenNoBeep) {
   RunTestsInJsModule("beep_test.js", "test-beep.pdf");
   SetPdfJavaScript(/*enabled=*/false);
   RunTestsInJsModuleNewTab("nobeep_test.js", "test-beep.pdf");
@@ -1233,9 +1204,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(1, CountPDFProcesses());
 }
 
-IN_PROC_BROWSER_TEST_F(
-    PDFExtensionContentSettingJSTestWithoutUnseasonedOverride,
-    NoBeepThenBeep) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTest, NoBeepThenBeep) {
   SetPdfJavaScript(/*enabled=*/false);
   RunTestsInJsModule("nobeep_test.js", "test-beep.pdf");
   SetPdfJavaScript(/*enabled=*/true);
