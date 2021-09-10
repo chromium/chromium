@@ -1,7 +1,7 @@
 @@include@@variables.include
 
-APT_GET="`which apt-get 2> /dev/null`"
-APT_CONFIG="`which apt-config 2> /dev/null`"
+APT_GET="`command -v apt-get 2> /dev/null`"
+APT_CONFIG="`command -v apt-config 2> /dev/null`"
 
 SOURCES_PREAMBLE="### THIS FILE IS AUTOMATICALLY CONFIGURED ###
 # You may comment out this entry, but any other modifications may be lost.\n"
@@ -279,7 +279,7 @@ handle_distro_upgrade() {
     if [ $? -eq 0 ]; then
       sed -i -e "s,^[[:space:]]*#[[:space:]]*\(.*\)[[:space:]]*# disabled on upgrade to .*,\1," \
         "$SOURCELIST"
-      LOGGER=$(which logger 2> /dev/null)
+      LOGGER=$(command -v logger 2> /dev/null)
       if [ "$LOGGER" ]; then
         "$LOGGER" -t "$0" "Reverted repository modification: $REPOLINE."
       fi
