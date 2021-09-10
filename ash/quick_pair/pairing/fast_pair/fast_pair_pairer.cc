@@ -15,6 +15,7 @@
 #include "base/callback.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
+#include "third_party/boringssl/src/include/openssl/rand.h"
 
 namespace {
 
@@ -29,6 +30,31 @@ std::string MessageTypeToString(
       return "Seeker's Passkey";
     case ash::quick_pair::FastPairMessageType::kProvidersPasskey:
       return "Providers' Passkey";
+  }
+}
+
+std::string GattErrorToString(
+    device::BluetoothGattService::GattErrorCode error_code) {
+  switch (error_code) {
+    case device::BluetoothGattService::GATT_ERROR_UNKNOWN:
+      return "[GATT_ERROR_UNKNOWN]";
+    case device::BluetoothGattService::GATT_ERROR_FAILED:
+      return "[GATT_ERROR_FAILED]";
+    case device::BluetoothGattService::GATT_ERROR_IN_PROGRESS:
+      return "[GATT_ERROR_IN_PROGRESS]";
+    case device::BluetoothGattService::GATT_ERROR_INVALID_LENGTH:
+      return "[GATT_ERROR_INVALID_LENGTH]";
+    case device::BluetoothGattService::GATT_ERROR_NOT_PERMITTED:
+      return "[GATT_ERROR_NOT_PERMITTED]";
+    case device::BluetoothGattService::GATT_ERROR_NOT_AUTHORIZED:
+      return "[GATT_ERROR_NOT_AUTHORIZED]";
+    case device::BluetoothGattService::GATT_ERROR_NOT_PAIRED:
+      return "[GATT_ERROR_NOT_PAIRED]";
+    case device::BluetoothGattService::GATT_ERROR_NOT_SUPPORTED:
+      return "[GATT_ERROR_NOT_SUPPORTED]";
+    default:
+      NOTREACHED();
+      return "";
   }
 }
 
@@ -236,6 +262,37 @@ void FastPairPairer::OnParseDecryptedPasskey(
   pairing_device->ConfirmPairing();
   std::move(paired_callback_).Run(device_);
   adapter_->RemovePairingDelegate(this);
+  SendAccountKey();
+}
+
+void FastPairPairer::SendAccountKey() {
+  if (fast_pair_data_encryptor_->GetPublicKey()) {
+    return;
+  }
+
+  std::array<uint8_t, 16> account_key;
+  RAND_bytes(account_key.data(), account_key.size());
+  account_key[0] = 0x04;
+
+  fast_pair_gatt_service_client_->WriteAccountKey(
+      std::move(account_key), fast_pair_data_encryptor_.get(),
+      base::BindOnce(&FastPairPairer::OnWriteAccountKey,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FastPairPairer::OnWriteAccountKey(
+    absl::optional<device::BluetoothGattService::GattErrorCode> error) {
+  if (error) {
+    QP_LOG(WARNING)
+        << "Failed to write account key to device due to Gatt Error: "
+        << GattErrorToString(error.value());
+    std::move(account_key_failure_callback_)
+        .Run(device_, AccountKeyFailure::kAccountKeyCharacteristicWrite);
+    return;
+  }
+
+  QP_LOG(INFO) << "Account key written to device. Pairing procedure complete.";
+  std::move(pairing_procedure_complete_).Run(device_);
 }
 
 void FastPairPairer::RequestPinCode(device::BluetoothDevice* device) {

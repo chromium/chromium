@@ -7,6 +7,12 @@
 
 #include "device/bluetooth/bluetooth_adapter.h"
 
+namespace {
+
+constexpr int kBlockByteSize = 16;
+
+}  // namespace
+
 namespace ash {
 namespace quick_pair {
 

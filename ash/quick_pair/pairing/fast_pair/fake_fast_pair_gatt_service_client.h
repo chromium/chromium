@@ -69,6 +69,10 @@ class FakeFastPairGattServiceClient : public FastPairGattServiceClient {
       std::vector<uint8_t> data,
       absl::optional<PairFailure> failure = absl::nullopt);
 
+  void RunWriteAccountKeyCallback(
+      absl::optional<device::BluetoothGattService::GattErrorCode> error =
+          absl::nullopt);
+
  private:
   base::OnceCallback<void(absl::optional<PairFailure>)>
       on_initialized_callback_;

@@ -94,6 +94,14 @@ class FastPairPairer : public device::BluetoothDevice::PairingDelegate {
   // FastPairDataEncryptor::ParseDecryptedPasskey callback
   void OnParseDecryptedPasskey(const absl::optional<DecryptedPasskey>& passkey);
 
+  // Creates a 16-byte array of random bytes with a first byte of 0x04 to
+  // signal Fast Pair account key, and then writes to the device.
+  void SendAccountKey();
+
+  // FastPairDataEncryptor::WriteAccountKey callback
+  void OnWriteAccountKey(
+      absl::optional<device::BluetoothGattService::GattErrorCode> error);
+
   uint32_t expected_passkey_;
   scoped_refptr<device::BluetoothAdapter> adapter_;
   scoped_refptr<Device> device_;

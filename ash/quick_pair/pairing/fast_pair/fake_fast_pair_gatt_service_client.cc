@@ -72,5 +72,10 @@ void FakeFastPairGattServiceClient::WriteAccountKey(
   write_account_key_callback_ = std::move(write_account_key_callback);
 }
 
+void FakeFastPairGattServiceClient::RunWriteAccountKeyCallback(
+    absl::optional<device::BluetoothGattService::GattErrorCode> error) {
+  std::move(write_account_key_callback_).Run(error);
+}
+
 }  // namespace quick_pair
 }  // namespace ash
