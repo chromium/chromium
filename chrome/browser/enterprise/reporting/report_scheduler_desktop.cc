@@ -46,7 +46,7 @@ bool IsRealTimePipielineEnabled() {
   return reporting::ReportQueueProvider::
              IsEncryptedReportingPipelineEnabled() &&
          base::GetFieldTrialParamByFeatureAsBool(
-             features::kEnterpriseRealtimeExtensionRequest, "with_erp", false);
+             features::kEnterpriseRealtimeExtensionRequest, "with_erp", true);
 }
 
 }  // namespace

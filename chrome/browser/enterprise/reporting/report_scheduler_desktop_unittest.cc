@@ -653,6 +653,12 @@ TEST_P(ReportSchedulerFeatureTest, OnNewVersionRegularReport) {
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(ReportSchedulerTest, OnExtensionRequest) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features*/ {{features::kEnterpriseRealtimeExtensionRequest,
+                             {{"with_erp", "false"}}}},
+      /*disabled_features=*/{});
+
   SetLastUploadInHour(base::TimeDelta::FromHours(1));
 
   EXPECT_CALL_SetupRegistration();
@@ -675,6 +681,11 @@ TEST_F(ReportSchedulerTest, OnExtensionRequest) {
 }
 
 TEST_F(ReportSchedulerTest, OnExtensionRequestWithPersistentError) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features*/ {{features::kEnterpriseRealtimeExtensionRequest,
+                             {{"with_erp", "false"}}}},
+      /*disabled_features=*/{});
   base::TimeDelta last_report = base::TimeDelta::FromHours(23);
   SetLastUploadInHour(last_report);
 
@@ -708,8 +719,13 @@ TEST_F(ReportSchedulerTest, OnExtensionRequestWithPersistentError) {
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-
+// Skip the test on Chrome OS as there is no update report for it.
 TEST_F(ReportSchedulerTest, OnExtensionRequestAndUpdate) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features*/ {{features::kEnterpriseRealtimeExtensionRequest,
+                             {{"with_erp", "false"}}}},
+      /*disabled_features=*/{});
   SetLastUploadInHour(base::TimeDelta::FromHours(1));
 
   ReportUploader::ReportCallback saved_callback;
@@ -754,16 +770,9 @@ TEST_F(ReportSchedulerTest, OnExtensionRequestAndUpdate) {
   histogram_tester_.ExpectBucketCount(kUploadTriggerMetricName, 4, 1);
 }
 
-TEST_F(ReportSchedulerTest, ExtensionRequestWithRealTimePipeline) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features*/ {{features::kEnterpriseRealtimeExtensionRequest,
-                             {{"with_erp", "true"}}},
-                            {reporting::ReportQueueProvider::
-                                 kEncryptedReportingPipeline,
-                             {{}}}},
-      /*disabled_features=*/{});
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
+TEST_F(ReportSchedulerTest, ExtensionRequestWithRealTimePipeline) {
   EXPECT_CALL_SetupRegistration();
   EXPECT_CALL(*generator_, OnGenerate(_, _)).Times(0);
   EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _)).Times(0);
@@ -786,7 +795,5 @@ TEST_F(ReportSchedulerTest, ExtensionRequestWithRealTimePipeline) {
 
   histogram_tester_.ExpectUniqueSample(kUploadTriggerMetricName, 5, 1);
 }
-
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace enterprise_reporting
