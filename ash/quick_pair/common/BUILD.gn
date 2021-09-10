@@ -21,6 +21,8 @@ component("common") {
     "device.h",
     "fast_pair/fast_pair_decoder.cc",
     "fast_pair/fast_pair_decoder.h",
+    "fast_pair/fast_pair_service_data_creator.cc",
+    "fast_pair/fast_pair_service_data_creator.h",
     "log_buffer.cc",
     "log_buffer.h",
     "logging.cc",
@@ -44,6 +46,8 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "fast_pair/fast_pair_service_data_creator.cc",
+    "fast_pair/fast_pair_service_data_creator.h",
     "mock_quick_pair_browser_delegate.cc",
     "mock_quick_pair_browser_delegate.h",
     "quick_pair_browser_delegate.h",
