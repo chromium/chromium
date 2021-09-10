@@ -2182,8 +2182,6 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   builder.set_http_user_agent_settings(std::move(user_agent_settings));
 
   builder.set_enable_brotli(params_->enable_brotli);
-  if (params_->context_name)
-    builder.set_name(*params_->context_name);
 
   if (params_->proxy_resolver_factory) {
     builder.SetMojoProxyResolverFactory(

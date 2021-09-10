@@ -637,16 +637,6 @@ TEST_F(NetworkContextTest, EnableBrotli) {
   }
 }
 
-TEST_F(NetworkContextTest, ContextName) {
-  const char kContextName[] = "Jim";
-  mojom::NetworkContextParamsPtr context_params =
-      CreateNetworkContextParamsForTesting();
-  context_params->context_name = std::string(kContextName);
-  std::unique_ptr<NetworkContext> network_context =
-      CreateContextWithParams(std::move(context_params));
-  EXPECT_EQ(kContextName, network_context->url_request_context()->name());
-}
-
 TEST_F(NetworkContextTest, QuicUserAgentId) {
   const char kQuicUserAgentId[] = "007";
   mojom::NetworkContextParamsPtr context_params =

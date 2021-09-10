@@ -252,6 +252,7 @@ struct NetworkContextParams {
   // Name used by memory tools to identify the context.
   // WARNING: Please add new context names to kAllocatorDumpNameAllowlist in
   // base/trace_event/memory_infra_background_allowlist.cc.
+  // TODO(crbug.com/1239513): Remove. This is not used any longer.
   string? context_name;
 
   // The user agent string.

@@ -14,10 +14,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/trace_event/memory_allocator_dump.h"
-#include "base/trace_event/memory_dump_manager.h"
-#include "base/trace_event/memory_dump_request_args.h"
-#include "base/trace_event/process_memory_dump.h"
 #include "build/chromeos_buildflags.h"
 #include "net/base/http_user_agent_settings.h"
 #include "net/cookies/cookie_store.h"
@@ -57,17 +53,12 @@ URLRequestContext::URLRequestContext()
       url_requests_(std::make_unique<std::set<const URLRequest*>>()),
       enable_brotli_(false),
       check_cleartext_permitted_(false),
-      require_network_isolation_key_(false),
-      name_("unknown") {
-  base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
-      this, "URLRequestContext", base::ThreadTaskRunnerHandle::Get());
+      require_network_isolation_key_(false) {
 }
 
 URLRequestContext::~URLRequestContext() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   AssertNoURLRequests();
-  base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
-      this);
 }
 
 const HttpNetworkSessionParams* URLRequestContext::GetNetworkSessionParams()
@@ -131,26 +122,6 @@ void URLRequestContext::AssertNoURLRequests() const {
     CHECK(false) << "Leaked " << num_requests << " URLRequest(s). First URL: "
                  << request->url().spec().c_str() << ".";
   }
-}
-
-bool URLRequestContext::OnMemoryDump(
-    const base::trace_event::MemoryDumpArgs& args,
-    base::trace_event::ProcessMemoryDump* pmd) {
-  std::string dump_name =
-      base::StringPrintf("net/url_request_context/%s/0x%" PRIxPTR,
-                         name_.c_str(), reinterpret_cast<uintptr_t>(this));
-  base::trace_event::MemoryAllocatorDump* dump =
-      pmd->CreateAllocatorDump(dump_name);
-  dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameObjectCount,
-                  base::trace_event::MemoryAllocatorDump::kUnitsObjects,
-                  url_requests_->size());
-  HttpTransactionFactory* transaction_factory = http_transaction_factory();
-  if (transaction_factory) {
-    HttpCache* http_cache = transaction_factory->GetCache();
-    if (http_cache)
-      http_cache->DumpMemoryStats(pmd, dump->absolute_name());
-  }
-  return true;
 }
 
 }  // namespace net

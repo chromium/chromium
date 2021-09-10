@@ -16,7 +16,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
-#include "base/trace_event/memory_dump_provider.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "net/base/net_export.h"
@@ -24,12 +23,6 @@
 #include "net/net_buildflags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request.h"
-
-namespace base {
-namespace trace_event {
-class ProcessMemoryDump;
-}
-}
 
 namespace net {
 class CertVerifier;
@@ -66,11 +59,10 @@ class ReportingService;
 // automatic lifetime management. Most callers should use an existing
 // URLRequestContext rather than creating a new one, as guaranteeing that the
 // URLRequestContext is destroyed before its members can be difficult.
-class NET_EXPORT URLRequestContext
-    : public base::trace_event::MemoryDumpProvider {
+class NET_EXPORT URLRequestContext {
  public:
   URLRequestContext();
-  ~URLRequestContext() override;
+  virtual ~URLRequestContext();
 
   // May return nullptr if this context doesn't have an associated network
   // session.
@@ -296,18 +288,6 @@ class NET_EXPORT URLRequestContext
     return require_network_isolation_key_;
   }
 
-  // Sets a name for this URLRequestContext. Currently the name is used in
-  // MemoryDumpProvier to annotate memory usage. The name does not need to be
-  // unique.
-  void set_name(const std::string& name) { name_ = name; }
-  const std::string& name() const { return name_; }
-
-  // MemoryDumpProvider implementation:
-  // This is reported as
-  // "memory:chrome:all_processes:reported_by_chrome:net:effective_size_avg."
-  bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
-                    base::trace_event::ProcessMemoryDump* pmd) override;
-
   void AssertCalledOnValidThread() {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   }
@@ -350,11 +330,6 @@ class NET_EXPORT URLRequestContext
   // Triggers a DCHECK if a NetworkIsolationKey/IsolationInfo is not provided to
   // a request when true.
   bool require_network_isolation_key_;
-
-  // An optional name which can be set to describe this URLRequestContext.
-  // Used in MemoryDumpProvier to annotate memory usage. The name does not need
-  // to be unique.
-  std::string name_;
 
   THREAD_CHECKER(thread_checker_);
 

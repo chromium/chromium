@@ -129,11 +129,6 @@ class NET_EXPORT URLRequestContextBuilder {
   URLRequestContextBuilder();
   virtual ~URLRequestContextBuilder();
 
-  // Sets a name for this URLRequestContext. Currently the name is used in
-  // MemoryDumpProvier to annotate memory usage. The name does not need to be
-  // unique.
-  void set_name(const std::string& name) { name_ = name; }
-
   // Sets whether Brotli compression is enabled.  Disabled by default;
   void set_enable_brotli(bool enable_brotli) { enable_brotli_ = enable_brotli; }
 
@@ -333,7 +328,6 @@ class NET_EXPORT URLRequestContextBuilder {
       bool pac_quick_check_enabled);
 
  private:
-  std::string name_;
   bool enable_brotli_ = false;
   NetworkQualityEstimator* network_quality_estimator_ = nullptr;
 

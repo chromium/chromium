@@ -29,9 +29,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
-#include "base/trace_event/memory_allocator_dump.h"
-#include "base/trace_event/memory_usage_estimator.h"
-#include "base/trace_event/process_memory_dump.h"
 #include "net/base/cache_type.h"
 #include "net/base/features.h"
 #include "net/base/io_buffer.h"
@@ -416,11 +413,6 @@ HttpCache::SetHttpNetworkTransactionFactoryForTesting(
       std::move(network_layer_));
   network_layer_ = std::move(new_network_layer);
   return old_network_layer;
-}
-
-// TODO(crbug.com/1239513): Remove this method.
-void HttpCache::DumpMemoryStats(base::trace_event::ProcessMemoryDump* pmd,
-                                const std::string& parent_absolute_name) const {
 }
 
 // static

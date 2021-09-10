@@ -38,10 +38,6 @@
 class GURL;
 
 namespace base {
-namespace trace_event {
-class ProcessMemoryDump;
-}
-
 namespace android {
 class ApplicationStatusListener;
 }  // namespace android
@@ -265,11 +261,6 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   std::unique_ptr<HttpTransactionFactory>
   SetHttpNetworkTransactionFactoryForTesting(
       std::unique_ptr<HttpTransactionFactory> new_network_layer);
-
-  // Dumps memory allocation stats. |parent_dump_absolute_name| is the name
-  // used by the parent MemoryAllocatorDump in the memory dump hierarchy.
-  void DumpMemoryStats(base::trace_event::ProcessMemoryDump* pmd,
-                       const std::string& parent_absolute_name) const;
 
   // Get the URL from the entry's cache key.
   static std::string GetResourceURLFromHttpCacheKey(const std::string& key);

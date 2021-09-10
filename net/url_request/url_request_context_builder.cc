@@ -294,8 +294,6 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
       new ContainerURLRequestContext());
   URLRequestContextStorage* storage = context->storage();
 
-  if (!name_.empty())
-    context->set_name(name_);
   context->set_enable_brotli(enable_brotli_);
   context->set_network_quality_estimator(network_quality_estimator_);
 
