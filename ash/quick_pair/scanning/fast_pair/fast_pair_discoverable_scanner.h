@@ -75,4 +75,4 @@ class FastPairDiscoverableScanner final : public FastPairScanner::Observer {
 }  // namespace quick_pair
 }  // namespace ash
 
-#endif
+#endif  // ASH_QUICK_PAIR_SCANNING_FAST_PAIR_FAST_PAIR_DISCOVERABLE_SCANNER_H_
