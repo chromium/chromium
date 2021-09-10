@@ -31,7 +31,7 @@ _NON_BRANCHED_TESTERS = {
     # This tester is triggered by 'mac-arm64-rel', but it is an FYI builder and
     # not mirrored by any branched try builders and we have limited test
     # capacity, so we do not need to run it on the branches
-    "mac-arm64-rel-tests": branches.STANDARD_MILESTONE,
+    "mac11-arm64-rel-tests": branches.STANDARD_MILESTONE,
 
     # This tester is triggered by 'Win x64 Builder', but it is an FYI builder
     # and not mirrored by any branched try builders, so we do not need to run it

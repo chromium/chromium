@@ -5522,7 +5522,7 @@ ci.mac_builder(
 # branch_selector branches.STANDARD_RELEASES, then remove the entry for this
 # builder from //generators/scheduler-noop-jobs.star
 ci.mac_thin_tester(
-    name = "mac-arm64-rel-tests",
+    name = "mac11-arm64-rel-tests",
     console_view_entry = consoles.console_view_entry(
         category = "mac",
         short_name = "a64",

@@ -3223,15 +3223,6 @@
           'isolated_scripts': 'wpt_web_tests_input',
         },
       },
-      'mac-arm64-rel-tests': {
-        'mixins': [
-            'mac_arm64_apple_dtk_experimental',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_mac_gtests_no_nacl_no_nocompile',
-          'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
-        },
-      },
       'mac-code-coverage': {
         'mixins': [
           'isolate_profile_data',
@@ -3342,6 +3333,15 @@
         },
         'test_suites': {
           'isolated_scripts': 'chromium_webkit_isolated_scripts',
+        },
+      },
+      'mac11-arm64-rel-tests': {
+        'mixins': [
+            'mac_arm64_apple_dtk_experimental',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromium_mac_gtests_no_nacl_no_nocompile',
+          'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
         },
       },
       'mac11.0-blink-rel-dummy': {
