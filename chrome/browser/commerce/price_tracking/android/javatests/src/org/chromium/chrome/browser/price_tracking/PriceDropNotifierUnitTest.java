@@ -176,6 +176,7 @@ public class PriceDropNotifierUnitTest {
                 TITLE, TEXT, /*iconUrl=*/null, DESTINATION_URL, OFFER_ID, null);
         mPriceDropNotifier.showNotification(data);
         verify(mNotificationBuilder, times(0)).setLargeIcon(any());
+        verify(mNotificationBuilder, times(0)).setBigPictureStyle(any(), any());
         verify(mNotificationManagerProxy).notify(any());
     }
 
@@ -184,6 +185,7 @@ public class PriceDropNotifierUnitTest {
         showNotification();
         invokeImageFetcherCallback(Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888));
         verify(mNotificationBuilder).setLargeIcon(any());
+        verify(mNotificationBuilder).setBigPictureStyle(any(), eq(TEXT));
         verify(mNotificationManagerProxy).notify(any());
     }
 

@@ -145,7 +145,11 @@ public class PriceDropNotifier {
     }
 
     private void showWithIcon(NotificationData notificationData, @Nullable Bitmap icon) {
-        if (icon != null) mNotificationBuilder.setLargeIcon(icon);
+        if (icon != null) {
+            // Both the large icon and the expanded view use the bitmap fetched from icon URL.
+            mNotificationBuilder.setLargeIcon(icon);
+            mNotificationBuilder.setBigPictureStyle(icon, notificationData.text);
+        }
         mNotificationBuilder.setContentTitle(notificationData.title);
         mNotificationBuilder.setContentText(notificationData.text);
         mNotificationBuilder.setContentIntent(createContentIntent(notificationData.destinationUrl));
