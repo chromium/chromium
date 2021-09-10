@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import {$$, driveDescriptor, DriveProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
 import {installMock} from 'chrome://test/new_tab_page/test_support.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 import {isVisible} from 'chrome://test/test_util.js';
@@ -12,7 +14,7 @@ suite('NewTabPageModulesDriveModuleTest', () => {
   let handler;
 
   setup(() => {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     handler =
         installMock(drive.mojom.DriveHandlerRemote, DriveProxy.setHandler);
   });
@@ -45,10 +47,10 @@ suite('NewTabPageModulesDriveModuleTest', () => {
     };
     handler.setResultFor('getFiles', Promise.resolve(data));
 
-    const module = await driveDescriptor.initialize();
+    const module = assert(await driveDescriptor.initialize(0));
     document.body.append(module);
     await handler.whenCalled('getFiles');
-    module.$.fileRepeat.render();
+    $$(module, '#fileRepeat').render();
 
     const items = Array.from(module.shadowRoot.querySelectorAll('.file'));
     assertTrue(!!module);
@@ -76,7 +78,7 @@ suite('NewTabPageModulesDriveModuleTest', () => {
   test('documents do not show without data', async () => {
     handler.setResultFor('getFiles', Promise.resolve({files: []}));
 
-    const module = await driveDescriptor.initialize();
+    const module = await driveDescriptor.initialize(0);
     await handler.whenCalled('getFiles');
     assertFalse(!!module);
   });
@@ -95,7 +97,7 @@ suite('NewTabPageModulesDriveModuleTest', () => {
       ]
     };
     handler.setResultFor('getFiles', Promise.resolve(data));
-    const moduleElement = await driveDescriptor.initialize();
+    const moduleElement = assert(await driveDescriptor.initialize(0));
     document.body.append(moduleElement);
 
     // Act.
@@ -129,7 +131,7 @@ suite('NewTabPageModulesDriveModuleTest', () => {
       ]
     };
     handler.setResultFor('getFiles', Promise.resolve(data));
-    const module = await driveDescriptor.initialize();
+    const module = assert(await driveDescriptor.initialize(0));
     document.body.append(module);
 
     // Act.
