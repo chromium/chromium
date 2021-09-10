@@ -21,6 +21,7 @@
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "url/gurl.h"
 
@@ -56,6 +57,7 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
   // class is created.
   void MaybeCreateLoader(
       const network::ResourceRequest& tentative_request,
+      const blink::StorageKey& storage_key,
       BrowserContext* browser_context,
       NavigationLoaderInterceptor::LoaderCallback loader_callback,
       NavigationLoaderInterceptor::FallbackCallback fallback_callback);
@@ -71,7 +73,8 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
 
   // Does all initialization of |container_host_| for a request.
   void InitializeContainerHost(
-      const network::ResourceRequest& tentative_request);
+      const network::ResourceRequest& tentative_request,
+      const blink::StorageKey& storage_key);
 
   void ContinueWithRegistration(
       blink::ServiceWorkerStatusCode status,
@@ -106,6 +109,7 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
   std::unique_ptr<ServiceWorkerMainResourceLoaderWrapper> loader_wrapper_;
   BrowserContext* browser_context_;
   GURL stripped_url_;
+  blink::StorageKey storage_key_;
   bool force_update_started_;
   base::TimeTicks registration_lookup_start_time_;
 

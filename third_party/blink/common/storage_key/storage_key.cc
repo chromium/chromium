@@ -10,7 +10,9 @@
 
 #include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
+#include "base/stl_util.h"
 #include "base/strings/strcat.h"
+#include "net/base/isolation_info.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
@@ -42,6 +44,17 @@ StorageKey StorageKey::CreateWithNonce(const url::Origin& origin,
                                        const base::UnguessableToken& nonce) {
   DCHECK(!nonce.is_empty());
   return StorageKey(origin, net::SchemefulSite(origin), &nonce);
+}
+
+// static
+blink::StorageKey StorageKey::FromNetIsolationInfo(
+    const net::IsolationInfo& isolation_info) {
+  DCHECK(isolation_info.frame_origin().has_value());
+  DCHECK(isolation_info.top_frame_origin().has_value());
+  return StorageKey(
+      isolation_info.frame_origin().value(),
+      net::SchemefulSite(isolation_info.top_frame_origin().value()),
+      base::OptionalOrNullptr(isolation_info.nonce()));
 }
 
 std::string StorageKey::Serialize() const {

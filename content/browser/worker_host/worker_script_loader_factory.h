@@ -11,6 +11,7 @@
 #include "content/public/browser/service_worker_client_info.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/base/isolation_info.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -47,6 +48,7 @@ class CONTENT_EXPORT WorkerScriptLoaderFactory
   WorkerScriptLoaderFactory(
       int process_id,
       const DedicatedOrSharedWorkerToken& worker_token,
+      const net::IsolationInfo& isolation_info,
       ServiceWorkerMainResourceHandle* service_worker_handle,
       base::WeakPtr<AppCacheHost> appcache_host,
       const BrowserContextGetter& browser_context_getter,
@@ -71,6 +73,7 @@ class CONTENT_EXPORT WorkerScriptLoaderFactory
  private:
   const int process_id_;
   const DedicatedOrSharedWorkerToken worker_token_;
+  const net::IsolationInfo isolation_info_;
   base::WeakPtr<ServiceWorkerMainResourceHandle> service_worker_handle_;
   base::WeakPtr<AppCacheHost> appcache_host_;
   BrowserContextGetter browser_context_getter_;

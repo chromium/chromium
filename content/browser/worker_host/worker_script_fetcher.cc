@@ -413,9 +413,10 @@ void WorkerScriptFetcher::CreateScriptLoader(
   // This fetcher will delete itself. See the class level comment.
   auto* script_fetcher = new WorkerScriptFetcher(
       std::make_unique<WorkerScriptLoaderFactory>(
-          worker_process_id, worker_token, service_worker_handle,
-          std::move(appcache_host), browser_context_getter,
-          std::move(url_loader_factory), worker_source_id),
+          worker_process_id, worker_token, trusted_isolation_info,
+          service_worker_handle, std::move(appcache_host),
+          browser_context_getter, std::move(url_loader_factory),
+          worker_source_id),
       std::move(resource_request),
       base::BindOnce(DidCreateScriptLoader, std::move(callback),
                      std::move(subresource_loader_factories),

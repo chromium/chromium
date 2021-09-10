@@ -286,11 +286,13 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
       const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
       ukm::SourceId worker_ukm_source_id);
 
-  // Sets |url_|, |site_for_cookies_| and |top_frame_origin_|. For service
-  // worker clients, updates the client uuid if it's a cross-origin transition.
+  // Sets `url_`, `site_for_cookies_`, `top_frame_origin_` and `key_`. For
+  // service worker clients, updates the client uuid if it's a cross-origin
+  // transition.
   void UpdateUrls(const GURL& url,
                   const net::SiteForCookies& site_for_cookies,
-                  const absl::optional<url::Origin>& top_frame_origin);
+                  const absl::optional<url::Origin>& top_frame_origin,
+                  const blink::StorageKey& storage_key);
 
   // For service worker clients. Makes this client be controlled by
   // |registration|'s active worker, or makes this client be not

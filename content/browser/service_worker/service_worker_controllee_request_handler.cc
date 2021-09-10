@@ -116,6 +116,7 @@ void ServiceWorkerControlleeRequestHandler::MaybeScheduleUpdate() {
 
 void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
     const network::ResourceRequest& tentative_resource_request,
+    const blink::StorageKey& storage_key,
     BrowserContext* browser_context,
     NavigationLoaderInterceptor::LoaderCallback loader_callback,
     NavigationLoaderInterceptor::FallbackCallback fallback_callback) {
@@ -128,7 +129,7 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
   // Update the host. This is important to do before falling back to network
   // below, so service worker APIs still work even if the service worker is
   // bypassed for request interception.
-  InitializeContainerHost(tentative_resource_request);
+  InitializeContainerHost(tentative_resource_request, storage_key);
 
   // Fall back to network if we were instructed to bypass the service worker for
   // request interception, or if the context is gone so we have to bypass
@@ -170,25 +171,33 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
 
   // Look up a registration.
   context_->registry()->FindRegistrationForClientUrl(
-      stripped_url_, blink::StorageKey(url::Origin::Create(stripped_url_)),
+      stripped_url_, storage_key_,
       base::BindOnce(
           &ServiceWorkerControlleeRequestHandler::ContinueWithRegistration,
           weak_factory_.GetWeakPtr()));
 }
 
 void ServiceWorkerControlleeRequestHandler::InitializeContainerHost(
-    const network::ResourceRequest& tentative_resource_request) {
+    const network::ResourceRequest& tentative_resource_request,
+    const blink::StorageKey& storage_key) {
   // Update the container host with this request, clearing old controller state
   // if this is a redirect.
   container_host_->SetControllerRegistration(nullptr,
                                              /*notify_controllerchange=*/false);
   stripped_url_ = net::SimplifyUrlForRequest(tentative_resource_request.url);
+
+  storage_key_ = storage_key;
+
   container_host_->UpdateUrls(stripped_url_,
                               tentative_resource_request.site_for_cookies,
+                              // TODO(1199077): Use top_frame_origin from
+                              // `storage_key_` instead, since that is populated
+                              // also for workers.
                               tentative_resource_request.trusted_params
                                   ? tentative_resource_request.trusted_params
                                         ->isolation_info.top_frame_origin()
-                                  : absl::nullopt);
+                                  : absl::nullopt,
+                              storage_key_);
 }
 
 void ServiceWorkerControlleeRequestHandler::ContinueWithRegistration(
@@ -447,7 +456,7 @@ void ServiceWorkerControlleeRequestHandler::DidUpdateRegistration(
     // Update failed. Look up the registration again since the original
     // registration was possibly unregistered in the meantime.
     context_->registry()->FindRegistrationForClientUrl(
-        stripped_url_, blink::StorageKey(url::Origin::Create(stripped_url_)),
+        stripped_url_, storage_key_,
         base::BindOnce(
             &ServiceWorkerControlleeRequestHandler::ContinueWithRegistration,
             weak_factory_.GetWeakPtr()));
@@ -503,7 +512,7 @@ void ServiceWorkerControlleeRequestHandler::OnUpdatedVersionStatusChanged(
     // continue with the incumbent version.
     // In case unregister job may have run, look up the registration again.
     context_->registry()->FindRegistrationForClientUrl(
-        stripped_url_, blink::StorageKey(url::Origin::Create(stripped_url_)),
+        stripped_url_, storage_key_,
         base::BindOnce(
             &ServiceWorkerControlleeRequestHandler::ContinueWithRegistration,
             weak_factory_.GetWeakPtr()));

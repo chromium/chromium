@@ -15,6 +15,10 @@
 #include "third_party/blink/public/common/common_export.h"
 #include "url/origin.h"
 
+namespace net {
+class IsolationInfo;
+}
+
 namespace blink {
 
 // A class representing the key that Storage APIs use to key their storage on.
@@ -60,6 +64,10 @@ class BLINK_COMMON_EXPORT StorageKey {
   StorageKey& operator=(StorageKey&& other) noexcept = default;
 
   ~StorageKey() = default;
+
+  // Constructs a StorageKey from a `net::IsolationInfo`.
+  static StorageKey FromNetIsolationInfo(
+      const net::IsolationInfo& isolation_info);
 
   // Returns a newly constructed StorageKey from, a previously serialized, `in`.
   // If `in` is invalid then the return value will be nullopt. If this returns a

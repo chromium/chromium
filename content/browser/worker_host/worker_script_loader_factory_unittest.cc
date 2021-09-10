@@ -94,14 +94,17 @@ class WorkerScriptLoaderFactoryTest : public testing::Test {
 };
 
 TEST_F(WorkerScriptLoaderFactoryTest, ServiceWorkerContainerHost) {
+  GURL url("https://www.example.com/worker.js");
+
   // Make the factory.
   auto factory = std::make_unique<WorkerScriptLoaderFactory>(
-      kProcessId, DedicatedOrSharedWorkerToken(), service_worker_handle_.get(),
+      kProcessId, DedicatedOrSharedWorkerToken(),
+      net::IsolationInfo::CreateForInternalRequest(url::Origin::Create(url)),
+      service_worker_handle_.get(),
       /*appcache_host=*/nullptr, browser_context_getter_,
       network_loader_factory_, ukm::kInvalidSourceId);
 
   // Load the script.
-  GURL url("https://www.example.com/worker.js");
   network::TestURLLoaderClient client;
   mojo::PendingRemote<network::mojom::URLLoader> loader =
       CreateTestLoaderAndStart(url, factory.get(), &client);
@@ -119,11 +122,14 @@ TEST_F(WorkerScriptLoaderFactoryTest, ServiceWorkerContainerHost) {
 // Test a null service worker handle. This typically only happens during
 // shutdown or after a fatal error occurred in the service worker system.
 TEST_F(WorkerScriptLoaderFactoryTest, NullServiceWorkerHandle) {
+  GURL url("https://www.example.com/worker.js");
+
   // Make the factory.
   auto factory = std::make_unique<WorkerScriptLoaderFactory>(
-      kProcessId, DedicatedOrSharedWorkerToken(), service_worker_handle_.get(),
-      nullptr /* appcache_host */, browser_context_getter_,
-      network_loader_factory_, ukm::kInvalidSourceId);
+      kProcessId, DedicatedOrSharedWorkerToken(),
+      net::IsolationInfo::CreateForInternalRequest(url::Origin::Create(url)),
+      service_worker_handle_.get(), nullptr /* appcache_host */,
+      browser_context_getter_, network_loader_factory_, ukm::kInvalidSourceId);
 
   // Destroy the handle.
   service_worker_handle_.reset();
@@ -131,7 +137,6 @@ TEST_F(WorkerScriptLoaderFactoryTest, NullServiceWorkerHandle) {
   base::RunLoop().RunUntilIdle();
 
   // Load the script.
-  GURL url("https://www.example.com/worker.js");
   network::TestURLLoaderClient client;
   mojo::PendingRemote<network::mojom::URLLoader> loader =
       CreateTestLoaderAndStart(url, factory.get(), &client);
@@ -143,17 +148,19 @@ TEST_F(WorkerScriptLoaderFactoryTest, NullServiceWorkerHandle) {
 // shutdown starts between the constructor and when CreateLoaderAndStart is
 // invoked.
 TEST_F(WorkerScriptLoaderFactoryTest, NullBrowserContext) {
+  GURL url("https://www.example.com/worker.js");
+
   // Make the factory.
   auto factory = std::make_unique<WorkerScriptLoaderFactory>(
-      kProcessId, DedicatedOrSharedWorkerToken(), service_worker_handle_.get(),
-      nullptr /* appcache_host */, browser_context_getter_,
-      network_loader_factory_, ukm::kInvalidSourceId);
+      kProcessId, DedicatedOrSharedWorkerToken(),
+      net::IsolationInfo::CreateForInternalRequest(url::Origin::Create(url)),
+      service_worker_handle_.get(), nullptr /* appcache_host */,
+      browser_context_getter_, network_loader_factory_, ukm::kInvalidSourceId);
 
   // Set a null browser context.
   helper_->context_wrapper()->Shutdown();
 
   // Load the script.
-  GURL url("https://www.example.com/worker.js");
   network::TestURLLoaderClient client;
   mojo::PendingRemote<network::mojom::URLLoader> loader =
       CreateTestLoaderAndStart(url, factory.get(), &client);

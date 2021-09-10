@@ -29,6 +29,10 @@ namespace blink {
 class ThrottlingURLLoader;
 }  // namespace blink
 
+namespace net {
+class IsolationInfo;
+}  // namespace net
+
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
@@ -69,6 +73,7 @@ class WorkerScriptLoader : public network::mojom::URLLoader,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& resource_request,
+      const net::IsolationInfo& isolation_info,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       base::WeakPtr<ServiceWorkerMainResourceHandle> service_worker_handle,
       base::WeakPtr<AppCacheHost> appcache_host,

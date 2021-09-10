@@ -188,7 +188,8 @@ class ServiceWorkerVersionTest : public testing::Test {
     container_host->UpdateUrls(
         registration_->scope(),
         net::SiteForCookies::FromUrl(registration_->scope()),
-        url::Origin::Create(registration_->scope()));
+        url::Origin::Create(registration_->scope()),
+        blink::StorageKey(url::Origin::Create(registration_->scope())));
     container_host->SetControllerRegistration(
         registration_, false /* notify_controllerchange */);
     EXPECT_TRUE(version_->HasControllee());
@@ -444,7 +445,8 @@ TEST_F(ServiceWorkerVersionTest, Doom) {
   container_host->UpdateUrls(
       registration_->scope(),
       net::SiteForCookies::FromUrl(registration_->scope()),
-      url::Origin::Create(registration_->scope()));
+      url::Origin::Create(registration_->scope()),
+      blink::StorageKey(url::Origin::Create(registration_->scope())));
   container_host->SetControllerRegistration(registration_, false);
   EXPECT_TRUE(version_->HasControllee());
   EXPECT_TRUE(container_host->controller());
@@ -1238,7 +1240,8 @@ TEST_F(ServiceWorkerVersionTest,
   container_host->UpdateUrls(
       registration_->scope(),
       net::SiteForCookies::FromUrl(registration_->scope()),
-      url::Origin::Create(registration_->scope()));
+      url::Origin::Create(registration_->scope()),
+      blink::StorageKey(url::Origin::Create(registration_->scope())));
   container_host->SetControllerRegistration(
       registration_, false /* notify_controllerchange */);
   EXPECT_TRUE(version_->HasControllee());

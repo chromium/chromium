@@ -1029,8 +1029,9 @@ bool NavigationURLLoaderImpl::MaybeCreateLoaderForResponse(
         // Currently we don't support Service Worker in Signed Exchange
         // pages. The page will not be controlled by service workers. And
         // Service Worker related APIs will fail with NoDocumentURL error.
-        // TODO(crbug/898733): Support SignedExchange loading and Service
-        // Worker integration.
+        // TODO(crbug/898733): Support SignedExchange loading and Service Worker
+        // integration. Properly populate all params below, and storage key in
+        // particular, when we want to support it.
         if (service_worker_handle_) {
           base::WeakPtr<ServiceWorkerContainerHost> container_host =
               service_worker_handle_->container_host();
@@ -1038,7 +1039,7 @@ bool NavigationURLLoaderImpl::MaybeCreateLoaderForResponse(
             container_host->SetControllerRegistration(
                 nullptr, false /* notify_controllerchange */);
             container_host->UpdateUrls(GURL(), net::SiteForCookies(),
-                                       absl::nullopt);
+                                       absl::nullopt, blink::StorageKey());
           }
         }
       }

@@ -67,8 +67,10 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
       resource_request.url = request_->url();
       resource_request.destination = destination_;
       resource_request.headers = request()->extra_request_headers();
-      handler_->MaybeCreateLoader(resource_request, nullptr, base::DoNothing(),
-                                  base::DoNothing());
+      handler_->MaybeCreateLoader(
+          resource_request,
+          blink::StorageKey(url::Origin::Create(resource_request.url)), nullptr,
+          base::DoNothing(), base::DoNothing());
     }
 
     ServiceWorkerMainResourceLoader* loader() { return handler_->loader(); }

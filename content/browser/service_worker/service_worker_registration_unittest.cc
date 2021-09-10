@@ -430,7 +430,7 @@ class ServiceWorkerActivationTest : public ServiceWorkerRegistrationTest,
     DCHECK(remote_endpoint_.client_receiver()->is_valid());
     DCHECK(remote_endpoint_.host_remote()->is_bound());
     container_host_->UpdateUrls(kUrl, net::SiteForCookies::FromUrl(kUrl),
-                                url::Origin::Create(kUrl));
+                                url::Origin::Create(kUrl), kKey);
     container_host_->SetControllerRegistration(
         registration_, false /* notify_controllerchange */);
 
@@ -940,9 +940,10 @@ class ServiceWorkerRegistrationObjectHostTest
                                     /*mock frame_routing_id=*/1),
             /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),
             &remote_endpoint);
-    container_host->UpdateUrls(document_url,
-                               net::SiteForCookies::FromUrl(document_url),
-                               url::Origin::Create(document_url));
+    container_host->UpdateUrls(
+        document_url, net::SiteForCookies::FromUrl(document_url),
+        url::Origin::Create(document_url),
+        blink::StorageKey(url::Origin::Create(document_url)));
     if (out_container_host)
       *out_container_host = container_host;
     return remote_endpoint;
@@ -1047,7 +1048,8 @@ TEST_P(ServiceWorkerRegistrationObjectHostUpdateTest,
   ASSERT_TRUE(bad_messages_.empty());
   GURL url("https://does.not.exist/");
   container_host->UpdateUrls(url, net::SiteForCookies::FromUrl(url),
-                             url::Origin::Create(url));
+                             url::Origin::Create(url),
+                             blink::StorageKey(url::Origin::Create(url)));
   CallUpdate(registration_host.get(), /*out_error_msg=*/nullptr);
   EXPECT_EQ(1u, bad_messages_.size());
 }
@@ -1159,7 +1161,8 @@ TEST_P(ServiceWorkerRegistrationObjectHostUpdateTest,
           /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),
           &remote_endpoint);
   container_host->UpdateUrls(kScope, net::SiteForCookies::FromUrl(kScope),
-                             url::Origin::Create(kScope));
+                             url::Origin::Create(kScope),
+                             blink::StorageKey(url::Origin::Create(kScope)));
   version->AddControllee(container_host.get());
 
   // Initially set |self_update_delay| to zero.
@@ -1230,7 +1233,8 @@ TEST_F(ServiceWorkerRegistrationObjectHostTest,
   container_host->UpdateUrls(
       GURL("https://does.not.exist/"),
       net::SiteForCookies::FromUrl(GURL("https://does.not.exist/")),
-      url::Origin::Create(GURL("https://does.not.exist/")));
+      url::Origin::Create(GURL("https://does.not.exist/")),
+      blink::StorageKey(url::Origin::Create(GURL("https://does.not.exist/"))));
   CallUnregister(registration_host.get());
   EXPECT_EQ(1u, bad_messages_.size());
 }

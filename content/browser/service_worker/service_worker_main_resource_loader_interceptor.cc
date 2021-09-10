@@ -22,7 +22,10 @@
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "net/base/isolation_info.h"
+#include "net/cookies/site_for_cookies.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 namespace content {
@@ -81,12 +84,14 @@ ServiceWorkerMainResourceLoaderInterceptor::CreateForNavigation(
                                  : network::mojom::RequestDestination::kIframe,
       request_info.begin_params->skip_service_worker,
       request_info.are_ancestors_secure, request_info.frame_tree_node_id,
-      ChildProcessHost::kInvalidUniqueID, /* worker_token = */ nullptr));
+      ChildProcessHost::kInvalidUniqueID, /* worker_token = */ nullptr,
+      request_info.isolation_info));
 }
 
 std::unique_ptr<NavigationLoaderInterceptor>
 ServiceWorkerMainResourceLoaderInterceptor::CreateForWorker(
     const network::ResourceRequest& resource_request,
+    const net::IsolationInfo& isolation_info,
     int process_id,
     const DedicatedOrSharedWorkerToken& worker_token,
     base::WeakPtr<ServiceWorkerMainResourceHandle> navigation_handle) {
@@ -105,7 +110,8 @@ ServiceWorkerMainResourceLoaderInterceptor::CreateForWorker(
   return base::WrapUnique(new ServiceWorkerMainResourceLoaderInterceptor(
       std::move(navigation_handle), resource_request.destination,
       resource_request.skip_service_worker, /*are_ancestors_secure=*/false,
-      FrameTreeNode::kFrameTreeNodeInvalidId, process_id, &worker_token));
+      FrameTreeNode::kFrameTreeNodeInvalidId, process_id, &worker_token,
+      isolation_info));
 }
 
 ServiceWorkerMainResourceLoaderInterceptor::
@@ -206,9 +212,38 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
       context_core->AsWeakPtr(), handle_->container_host(),
       request_destination_, skip_service_worker,
       handle_->service_worker_accessed_callback());
+
+  // Update `isolation_info_` in case a redirect has occurred.
+  url::Origin new_origin = url::Origin::Create(tentative_resource_request.url);
+  switch (isolation_info_.request_type()) {
+    case net::IsolationInfo::RequestType::kMainFrame:
+    case net::IsolationInfo::RequestType::kSubFrame:
+      isolation_info_ = isolation_info_.CreateForRedirect(new_origin);
+      break;
+    case net::IsolationInfo::RequestType::kOther:
+      net::SiteForCookies new_site_for_cookies =
+          isolation_info_.site_for_cookies();
+      new_site_for_cookies.CompareWithFrameTreeOriginAndRevise(new_origin);
+      // This is a request for a worker. Loading cross-origin workers is not
+      // allowed, so it does not really matter what we put here (if this is
+      // cross-origin redirect, it will be blocked later on), but we need to
+      // update the storage key anyway so that following DCHECKs pass.
+      //
+      // TODO(https://crbug/1147281): If we will have a custom
+      // `net::IsolationInfo::RequestType` for workers, it might become possible
+      // to simplify this and move the logic into
+      // `net::IsolationInfo::CreateForRedirect`.
+      isolation_info_ =
+          net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                     isolation_info_.top_frame_origin().value(),
+                                     new_origin, new_site_for_cookies);
+      break;
+  }
+
   request_handler_->MaybeCreateLoader(
-      tentative_resource_request, browser_context, std::move(loader_callback),
-      std::move(fallback_callback));
+      tentative_resource_request,
+      blink::StorageKey::FromNetIsolationInfo(isolation_info_), browser_context,
+      std::move(loader_callback), std::move(fallback_callback));
 }
 
 absl::optional<SubresourceLoaderParams>
@@ -269,10 +304,12 @@ ServiceWorkerMainResourceLoaderInterceptor::
         bool are_ancestors_secure,
         int frame_tree_node_id,
         int process_id,
-        const DedicatedOrSharedWorkerToken* worker_token)
+        const DedicatedOrSharedWorkerToken* worker_token,
+        const net::IsolationInfo& isolation_info)
     : handle_(std::move(handle)),
       request_destination_(request_destination),
       skip_service_worker_(skip_service_worker),
+      isolation_info_(isolation_info),
       are_ancestors_secure_(are_ancestors_secure),
       frame_tree_node_id_(frame_tree_node_id),
       process_id_(process_id),

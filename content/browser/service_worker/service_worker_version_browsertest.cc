@@ -445,7 +445,8 @@ class ServiceWorkerVersionBrowserTest : public ContentBrowserTest {
             &remote_endpoints_.back());
     const GURL url = embedded_test_server()->GetURL("/service_worker/host");
     container_host->UpdateUrls(url, net::SiteForCookies::FromUrl(url),
-                               url::Origin::Create(url));
+                               url::Origin::Create(url),
+                               blink::StorageKey(url::Origin::Create(url)));
     container_host->SetControllerRegistration(
         registration_, false /* notify_controllerchange */);
   }

@@ -2752,6 +2752,7 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 
 # unblock roll wpt
 crbug.com/626703 external/wpt/service-workers/service-worker/worker-interception.https.html [ Failure ]
+crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/worker-interception.https.html [ Pass ]
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 [ Mac10.14 ] external/wpt/pointerevents/pointerevent_contextmenu_is_a_pointerevent.html?touch [ Timeout ]
@@ -2853,13 +2854,7 @@ crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/RTCPeerConnection-mandatory-get
 crbug.com/626703 [ Mac11.0 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-yes-child1-yes-subdomain-child2-yes-subdomainport.sub.https.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11.0 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/popups/opener-no-openee-yes-same.sub.https.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11.0 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-yes-child1-yes-subdomain-child2-no-port.sub.https.html [ Failure Timeout ]
-crbug.com/626703 external/wpt/fetch/api/request/request-bad-port.any.worker.html [ Timeout ]
-crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/api/request/request-bad-port.any.worker.html [ Timeout ]
-crbug.com/626703 external/wpt/fetch/api/request/request-bad-port.any.sharedworker.html [ Timeout ]
 crbug.com/626703 [ Win ] external/wpt/websockets/Create-blocked-port.any.worker.html?wpt_flags=h2 [ Failure Timeout ]
-crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/api/request/request-bad-port.any.sharedworker.html [ Timeout ]
-crbug.com/626703 external/wpt/fetch/api/request/request-bad-port.any.html [ Timeout ]
-crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/api/request/request-bad-port.any.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webauthn/createcredential-getpublickey.https.html [ Crash Skip Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webauthn/credblob-not-supported.https.html [ Crash Skip Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webauthn/createcredential-badargs-authnrselection.https.html [ Crash Skip Timeout ]
