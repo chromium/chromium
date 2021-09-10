@@ -189,12 +189,9 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
   // successful, false otherwise.
   bool PostKeyEvent(ui::KeyEvent* key_event);
 
-  // Returns all active web_contents.
-  std::vector<content::WebContents*> GetAllWebContents();
-
-  // Maps the app_id to WebContents* for all launched SWA apps. NOTE: if the
-  // window is closed in the JS the WebContents* will remain invalid here.
-  std::map<std::string, content::WebContents*> swa_web_contents_;
+  // A list of pairs <id, WebContents*> for all launched SWA apps. The active
+  // app is always at the end of the vector.
+  std::vector<std::pair<std::string, content::WebContents*>> swa_list_;
 
   std::unique_ptr<base::test::ScopedFeatureList> feature_list_;
   crostini::FakeCrostiniFeatures crostini_features_;

@@ -417,7 +417,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("keyboardDisableCopyWhenDialogDisplayed"),
         TestCase("keyboardOpenNewWindow"),
         TestCase("keyboardOpenNewWindow").InGuestMode(),
-        TestCase("keyboardOpenNewWindow").FilesSwa(),
         TestCase("renameFileDownloads").InGuestMode(),
         TestCase("renameFileDownloads"),
         TestCase("renameFileDrive"),
@@ -904,11 +903,10 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openFileDialogAriaMultipleSelect").WithBrowser(),
         TestCase("saveFileDialogAriaSingleSelect").WithBrowser(),
         TestCase("saveFileDialogDownloads").WithBrowser(),
-        TestCase("saveFileDialogDownloads").WithBrowser().FilesSwa(),
         TestCase("saveFileDialogDownloads").WithBrowser().InGuestMode(),
         TestCase("saveFileDialogDownloads").WithBrowser().InIncognito(),
-        // TODO(crbug.com/1236842): Remove flakiness and enable this test.
-        // TestCase("saveFileDialogDownloadsNewFolderButton").WithBrowser(),
+// TODO(crbug.com/1236842): Remove flakiness and enable this test.
+//        TestCase("saveFileDialogDownloadsNewFolderButton").WithBrowser(),
         TestCase("saveFileDialogPanelsDisabled").WithBrowser(),
         TestCase("openFileDialogCancelDownloads").WithBrowser(),
         TestCase("openFileDialogEscapeDownloads").WithBrowser(),

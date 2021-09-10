@@ -99,9 +99,6 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/render_view_host.h"
-#include "content/public/browser/render_widget_host.h"
-#include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
@@ -1918,7 +1915,9 @@ void FileManagerBrowserTestBase::SetUpOnMainThread() {
 }
 
 void FileManagerBrowserTestBase::TearDownOnMainThread() {
-  swa_web_contents_.clear();
+  for (const auto& p : swa_list_) {
+    p.second->Close();
+  }
 
   file_tasks_observer_.reset();
   select_factory_ = nullptr;
@@ -2091,20 +2090,24 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
 
     const std::string app_id = GetSwaAppId(observer.web_contents());
 
-    swa_web_contents_.insert({app_id, observer.web_contents()});
+    swa_list_.push_back(std::make_pair(app_id, observer.web_contents()));
     *output = app_id;
+    return;
+  }
+
+  if (name == "loadSwaTestUtils") {
+    content::WebContents* web_contents = GetLastOpenWindowWebContents();
+    LoadSwaTestUtils(web_contents);
+    *output = GetSwaAppId(web_contents);
     return;
   }
 
   if (name == "findSwaWindow") {
     const Options& options = GetOptions();
     if (options.files_swa) {
-      // Only search for unknown windows.
       content::WebContents* web_contents = GetLastOpenWindowWebContents();
       if (web_contents) {
-        const std::string app_id = GetSwaAppId(web_contents);
-        swa_web_contents_.insert({app_id, web_contents});
-        *output = app_id;
+        *output = GetSwaAppId(web_contents);
       } else {
         *output = "none";
       }
@@ -2120,64 +2123,15 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     // short-circuit sending messages by directly invoking dedicated function in
     // Files SWA.
     std::string data;
-    std::string app_id;
     ASSERT_TRUE(value.GetString("data", &data));
-    value.GetString("appId", &app_id);
-
-    content::WebContents* web_contents;
-    if (!app_id.empty()) {
-      web_contents = swa_web_contents_[app_id];
-      CHECK(web_contents) << "Couldn't find the SWA WebContents for appId: "
-                          << app_id << " command data: " << data;
-    } else {
-      // Commands for the background page might send to a WebContents which is
-      // in swa_web_contents_.
-      web_contents = GetLastOpenWindowWebContents();
-      if (!web_contents) {
-        // If can't find any unknown WebContents, try the last known:
-        web_contents = std::prev(swa_web_contents_.end())->second;
-      }
-      CHECK(web_contents) << "Couldn't find the SWA WebContents without appId"
-                          << " command data: " << data;
-    }
+    // FIXME: determine WebContents based on |appId| from |value|. Currently we
+    // only launch one window so this works. Once multiple windows are enabled
+    // for SWAs, this code needs to map |appId| to specific SWA's WebContents.
+    content::WebContents* web_contents = GetLastOpenWindowWebContents();
+    CHECK(web_contents);
     CHECK(ExecuteScriptAndExtractString(
         web_contents, base::StrCat({"test.swaTestMessageListener(", data, ")"}),
         output));
-    return;
-  }
-
-  if (name == "getWindowsSWA") {
-    bool is_swa = false;
-    ASSERT_TRUE(value.GetBoolean("isSWA", &is_swa));
-    ASSERT_TRUE(is_swa);
-
-    base::DictionaryValue dictionary;
-
-    int counter = 0;
-    for (auto* web_contents : GetAllWebContents()) {
-      const std::string& url = web_contents->GetVisibleURL().spec();
-      if (base::StartsWith(url, ash::file_manager::kChromeUIFileManagerURL)) {
-        std::string app_id;
-        bool found = false;
-
-        for (const auto& pair : swa_web_contents_) {
-          if (pair.second == web_contents) {
-            app_id = pair.first;
-            dictionary.SetStringPath(app_id, app_id);
-            found = true;
-            break;
-          }
-        }
-
-        if (!found) {
-          app_id =
-              base::StrCat({"unknow-id-", base::NumberToString(counter++)});
-          dictionary.SetStringPath(app_id, app_id);
-        }
-      }
-    }
-
-    base::JSONWriter::Write(dictionary, output);
     return;
   }
 
@@ -2591,20 +2545,11 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   if (name == "simulateClick") {
     int click_x;
     int click_y;
-    std::string app_id;
     ASSERT_TRUE(value.GetInteger("clickX", &click_x));
     ASSERT_TRUE(value.GetInteger("clickY", &click_y));
-    ASSERT_TRUE(value.GetString("appId", &app_id));
 
-    const Options& options = GetOptions();
-    content::WebContents* web_contents;
-    if (options.files_swa) {
-      web_contents = swa_web_contents_[app_id];
-      CHECK(web_contents) << "Couldn't find the SWA WebContents for appId: "
-                          << app_id;
-    } else {
-      web_contents = GetLastOpenWindowWebContents();
-    }
+    content::WebContents* web_contents = GetLastOpenWindowWebContents();
+    CHECK(web_contents);
     SimulateMouseClickAt(web_contents, 0 /* modifiers */,
                          blink::WebMouseEvent::Button::kLeft,
                          gfx::Point(click_x, click_y));
@@ -2893,62 +2838,43 @@ std::string FileManagerBrowserTestBase::GetSwaAppId(
     content::WebContents* web_contents) {
   CHECK(web_contents);
 
-  std::string app_id;
-  CHECK(content::ExecuteScriptAndExtractString(web_contents,
-                                               "test.getSwaAppId()", &app_id));
-  return app_id;
-}
+  // FIXME: Implement proper appId instead of emulating with current directory.
+  std::string current_directory_url;
+  CHECK(content::ExecuteScriptAndExtractString(
+      web_contents, "test.getSwaAppId()", &current_directory_url));
+  swa_list_.push_back(std::make_pair(current_directory_url, web_contents));
 
-std::vector<content::WebContents*>
-FileManagerBrowserTestBase::GetAllWebContents() {
-  // Code borrowed from WebContentsImpl.
-  std::vector<content::WebContents*> result;
-
-  std::unique_ptr<content::RenderWidgetHostIterator> widgets(
-      content::RenderWidgetHost::GetRenderWidgetHosts());
-  while (content::RenderWidgetHost* rwh = widgets->GetNextHost()) {
-    content::RenderViewHost* rvh = content::RenderViewHost::From(rwh);
-    if (!rvh)
-      continue;
-    content::WebContents* web_contents =
-        content::WebContents::FromRenderViewHost(rvh);
-    if (!web_contents)
-      continue;
-    if (web_contents->GetMainFrame()->GetRenderViewHost() != rvh)
-      continue;
-    // Because a WebContents can only have one current RVH at a time, there will
-    // be no duplicate WebContents here.
-    result.push_back(web_contents);
-  }
-  return result;
+  return current_directory_url;
 }
 
 content::WebContents*
 FileManagerBrowserTestBase::GetLastOpenWindowWebContents() {
   const Options& options = GetOptions();
   if (options.files_swa) {
-    for (auto* web_contents : GetAllWebContents()) {
+    if (!swa_list_.empty()) {
+      return swa_list_.back().second;
+    }
+
+    BrowserList* browser_list = BrowserList::GetInstance();
+
+    for (auto browser_iterator =
+             browser_list->begin_browsers_ordered_by_activation();
+         browser_iterator != browser_list->end_browsers_ordered_by_activation();
+         ++browser_iterator) {
+      Browser* browser = *browser_iterator;
+
+      content::WebContents* web_contents =
+          browser->tab_strip_model()->GetActiveWebContents();
+
       const std::string& url = web_contents->GetVisibleURL().spec();
-      if (base::StartsWith(url, ash::file_manager::kChromeUIFileManagerURL) &&
+      if (!!browser && browser->is_trusted_source() && web_contents &&
+          base::StartsWith(url, ash::file_manager::kChromeUIFileManagerURL) &&
           !web_contents->IsLoading()) {
-        if (swa_web_contents_.size() == 0) {
-          return web_contents;
-        }
-
-        // Ignore known WebContents.
-        bool found =
-            std::find_if(swa_web_contents_.begin(), swa_web_contents_.end(),
-                         [web_contents](const auto& pair) {
-                           return pair.second == web_contents;
-                         }) != swa_web_contents_.end();
-
-        if (!found) {
-          return web_contents;
-        }
+        web_contents = browser->tab_strip_model()->GetActiveWebContents();
+        return web_contents;
       }
     }
   }
-
   // Assuming legacy Chrome App.
   const auto& app_windows =
       extensions::AppWindowRegistry::Get(profile())->app_windows();
@@ -2964,10 +2890,6 @@ bool FileManagerBrowserTestBase::PostKeyEvent(ui::KeyEvent* key_event) {
   gfx::NativeWindow native_window = nullptr;
 
   content::WebContents* web_contents = GetLastOpenWindowWebContents();
-  if (!web_contents) {
-    // If can't find any unknown WebContents, try the last known:
-    web_contents = std::prev(swa_web_contents_.end())->second;
-  }
   if (web_contents) {
     const Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
     if (browser) {

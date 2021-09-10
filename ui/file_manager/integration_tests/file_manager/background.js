@@ -165,7 +165,7 @@ export async function openAndWaitForClosingDialog(
       appId, TestEntryInfo.getExpectedRows(expectedSet));
   await closeDialog(appId);
   await repeatUntil(async () => {
-    const windows = await remoteCall.getWindows();
+    const windows = await remoteCall.callRemoteTestUtil('getWindows', null, []);
     if (windows[appId]) {
       return pending(caller, 'Waiting for Window %s to hide.', appId);
     }
@@ -256,8 +256,7 @@ export async function awaitAsyncTestResult(resultPromise) {
 
   try {
     const result = await resultPromise;
-    // SWA doesn't have background page so we can't always check for errors.
-    if (result !== IGNORE_APP_ERRORS && !remoteCall.isSwaMode()) {
+    if (result !== IGNORE_APP_ERRORS) {
       await checkIfNoErrorsOccuredOnApp(remoteCall);
     }
   } catch (error) {

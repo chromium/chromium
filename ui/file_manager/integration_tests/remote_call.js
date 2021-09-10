@@ -436,8 +436,7 @@ export class RemoteCall {
     const y =
         Math.floor(element['renderedTop'] + (element['renderedHeight'] / 2));
 
-    return sendTestMessage(
-        {appId, name: 'simulateClick', 'clickX': x, 'clickY': y});
+    return sendTestMessage({name: 'simulateClick', 'clickX': x, 'clickY': y});
   }
 }
 
@@ -491,15 +490,17 @@ export class RemoteCallFilesApp extends RemoteCall {
       return super.waitForWindow(windowIdPrefix);
     }
 
-    return this.waitForSwaWindow();
+    return this.waitForSwaWindowAndLoadTestUtils();
   }
 
-  async getWindows() {
-    if (!this.isSwaMode()) {
-      return this.callRemoteTestUtil('getWindows', null, []);
-    }
-
-    return await sendTestMessage({name: 'getWindowsSWA', isSWA: true});
+  /**
+   * Wait for a SWA window to be open and load the test utils to allow running
+   * test commands in the window.
+   * @return {!Promise<string>}
+   */
+  async waitForSwaWindowAndLoadTestUtils() {
+    await this.waitForSwaWindow();
+    return await sendTestMessage({name: 'loadSwaTestUtils'});
   }
 
   /**
@@ -516,6 +517,7 @@ export class RemoteCallFilesApp extends RemoteCall {
       return ret;
     });
 
+    // FIXME: SWA currently doesn't have appId.
     return appId;
   }
 
