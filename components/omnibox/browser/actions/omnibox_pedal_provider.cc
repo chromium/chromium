@@ -37,6 +37,11 @@ typedef base::StringTokenizerT<std::u16string, std::u16string::const_iterator>
 // of |max_tokens_| which may be set smaller to speed up matching.
 constexpr size_t kMaximumMaxTokens = 64;
 
+// All characters in this string get removed from text before processing.
+// U+200F is a RTL marker punctuation character that seems to throw
+// off some triggers in 'ar'.
+const char16_t kRemoveChars[] = {0x200F, 0};
+
 }  // namespace
 
 size_t EstimateMemoryUsage(scoped_refptr<OmniboxPedal> pedal) {
@@ -156,6 +161,7 @@ void OmniboxPedalProvider::Tokenize(OmniboxPedal::TokenSequence& out_tokens,
   //  FoldCase is equivalent to lower-casing for ASCII/English, but provides
   //  more consistent (canonical) handling in other languages as well.
   std::u16string reduced_text = base::i18n::ToLower(text);
+  base::RemoveChars(reduced_text, kRemoveChars, &reduced_text);
   out_tokens.Clear();
   if (tokenize_characters_.empty()) {
     // Tokenize on Unicode character boundaries when we have no delimiters.
@@ -243,7 +249,7 @@ void OmniboxPedalProvider::TokenizeAndExpandDictionary(
         out_tokens.Clear();
         break;
       }
-      const std::u16string raw_token = tokenizer.token();
+      std::u16string raw_token = tokenizer.token();
       base::StringPiece16 trimmed_token =
           base::TrimWhitespace(raw_token, base::TrimPositions::TRIM_ALL);
       std::u16string token = base::i18n::FoldCase(trimmed_token);
@@ -391,6 +397,7 @@ OmniboxPedal::SynonymGroup OmniboxPedalProvider::LoadSynonymGroupString(
     bool required,
     bool match_once,
     std::u16string synonyms_csv) {
+  base::RemoveChars(synonyms_csv, kRemoveChars, &synonyms_csv);
   OmniboxPedal::SynonymGroup group(required, match_once, 0);
   // Note, 'ar' language uses '،' instead of ',' to delimit synonyms.
   StringTokenizer16 tokenizer(synonyms_csv, u",،");
