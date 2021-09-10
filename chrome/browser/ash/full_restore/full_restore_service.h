@@ -102,8 +102,14 @@ class FullRestoreService : public KeyedService,
       std::unique_ptr<FullRestoreAppLaunchHandler> app_launch_handler);
 
  private:
+  friend class FullRestoreServiceMultipleUsersTest;
+
   // KeyedService overrides.
   void Shutdown() override;
+
+  // Returns true if `Init` can be called to show the notification or restore
+  // apps. Otherwise, returns false.
+  bool CanBeInited();
 
   // Show the restore notification on startup.
   void MaybeShowRestoreNotification(const std::string& id);

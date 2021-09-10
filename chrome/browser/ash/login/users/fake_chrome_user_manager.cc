@@ -423,6 +423,10 @@ user_manager::UserList FakeChromeUserManager::GetUnlockUsers() const {
   return logged_in_users_;
 }
 
+const AccountId& FakeChromeUserManager::GetLastSessionActiveAccountId() const {
+  return last_session_active_account_id_;
+}
+
 void FakeChromeUserManager::UserLoggedIn(const AccountId& account_id,
                                          const std::string& username_hash,
                                          bool browser_restart,

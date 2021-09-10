@@ -156,6 +156,9 @@ class USER_MANAGER_EXPORT UserManager {
   // no owner for the device.
   virtual const AccountId& GetOwnerAccountId() const = 0;
 
+  // Returns account Id of the user that was active in the previous session.
+  virtual const AccountId& GetLastSessionActiveAccountId() const = 0;
+
   // Indicates that a user with the given |account_id| has just logged in. The
   // persistent list is updated accordingly if the user is not ephemeral.
   // |browser_restart| is true when reloading Chrome after crash to distinguish

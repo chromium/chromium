@@ -125,6 +125,11 @@ void FullRestoreAppLaunchHandler::OnAppTypeInitialized(
 
   are_web_apps_initialized_ = true;
 
+  // `are_web_apps_initialized_` is checked in MaybeStartSaveTimer to decide
+  // whether start the save timer. So if web apps are ready, call
+  // MaybeStartSaveTimer to start the save timer if possbile.
+  MaybeStartSaveTimer();
+
   if (first_run_full_restore_) {
     LaunchBrowserForFirstRunFullRestore();
     return;

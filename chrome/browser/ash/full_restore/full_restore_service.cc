@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/full_restore/full_restore_service.h"
 
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
@@ -105,7 +106,7 @@ FullRestoreService::FullRestoreService(Profile* profile)
     // active profile path is set when switch users.
     ::full_restore::SetActiveProfilePath(profile_->GetPath());
 
-    can_be_inited_ = true;
+    can_be_inited_ = CanBeInited();
   }
 
   if (!HasRestorePref(prefs) && HasSessionStartupPref(prefs)) {
@@ -137,6 +138,9 @@ void FullRestoreService::Init() {
 
   // If the restore ddata has not been loaded, wait for it.
   if (!app_launch_handler_->IsRestoreDataLoaded())
+    return;
+
+  if (is_shut_down_)
     return;
 
   PrefService* prefs = profile_->GetPrefs();
@@ -304,6 +308,46 @@ void FullRestoreService::SetAppLaunchHanlderForTesting(
 
 void FullRestoreService::Shutdown() {
   is_shut_down_ = true;
+}
+
+bool FullRestoreService::CanBeInited() {
+  auto* user_manager = user_manager::UserManager::Get();
+  DCHECK(user_manager);
+  DCHECK(user_manager->GetActiveUser());
+
+  // For non-primary user, wait for `OnTransitionedToNewActiveUser`.
+  if (ProfileHelper::Get()->GetUserByProfile(profile_) !=
+      user_manager->GetPrimaryUser()) {
+    VLOG(1) << "Can't init full restore service for non_primary user."
+            << profile_->GetPath();
+    return false;
+  }
+
+  // Check the command line to decide whether this is the restart case.
+  // `kLoginManager` means starting Chrome with login/oobe screen, not the
+  // restart process. For the restart process, `kLoginUser` should be in the
+  // command line.
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  DCHECK(command_line);
+  if (command_line->HasSwitch(switches::kLoginManager) ||
+      !command_line->HasSwitch(switches::kLoginUser)) {
+    return true;
+  }
+
+  // When the system restarts, and the active user in the previous session is
+  // not the primary user, don't init, but wait for the transition to the last
+  // active user.
+  const auto& last_session_active_account_id =
+      user_manager->GetLastSessionActiveAccountId();
+  if (last_session_active_account_id.is_valid() &&
+      AccountId::FromUserEmail(profile_->GetProfileUserName()) !=
+          last_session_active_account_id) {
+    VLOG(1) << "Can't init full restore service for non-active primary user."
+            << profile_->GetPath();
+    return false;
+  }
+
+  return true;
 }
 
 void FullRestoreService::MaybeShowRestoreNotification(const std::string& id) {

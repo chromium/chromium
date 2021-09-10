@@ -73,6 +73,7 @@ class FakeChromeUserManager : public ChromeUserManager {
   const user_manager::UserList& GetLoggedInUsers() const override;
   const user_manager::UserList& GetLRULoggedInUsers() const override;
   user_manager::UserList GetUnlockUsers() const override;
+  const AccountId& GetLastSessionActiveAccountId() const override;
   void UserLoggedIn(const AccountId& account_id,
                     const std::string& user_id_hash,
                     bool browser_restart,
@@ -204,6 +205,11 @@ class FakeChromeUserManager : public ChromeUserManager {
     current_user_can_lock_ = current_user_can_lock;
   }
 
+  void set_last_session_active_account_id(
+      const AccountId& last_session_active_account_id) {
+    last_session_active_account_id_ = last_session_active_account_id;
+  }
+
  private:
   using UserImageManagerMap =
       std::map<AccountId, std::unique_ptr<UserImageManager>>;
@@ -225,6 +231,8 @@ class FakeChromeUserManager : public ChromeUserManager {
   // If set this is the active user. If empty, the first created user is the
   // active user.
   AccountId active_account_id_ = EmptyAccountId();
+
+  AccountId last_session_active_account_id_ = EmptyAccountId();
 
   // Lazy-initialized default flow.
   mutable std::unique_ptr<UserFlow> default_flow_;

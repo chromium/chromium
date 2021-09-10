@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/full_restore/full_restore_service.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/ash/full_restore/full_restore_prefs.h"
 #include "chrome/browser/ash/full_restore/full_restore_service_factory.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
@@ -94,8 +96,10 @@ class FullRestoreServiceTest : public testing::Test {
 
     account_id_ = AccountId::FromUserEmailGaiaId(profile_->GetProfileUserName(),
                                                  "1234567890");
-    GetFakeUserManager()->AddUser(account_id_);
+    const auto* user = GetFakeUserManager()->AddUser(account_id_);
     GetFakeUserManager()->LoginUser(account_id_);
+    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
+        user, profile_.get());
 
     // Reset the restore flag and pref as the default value.
     ::full_restore::FullRestoreInfo::GetInstance()->SetRestoreFlag(account_id_,
@@ -237,7 +241,8 @@ class FullRestoreServiceTestHavingFullRestoreFile
   void SetUp() override {
     FullRestoreServiceTest::SetUp();
 
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kNoFirstRun);
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        ::switches::kNoFirstRun);
 
     CreateRestoreData(profile());
   }
@@ -337,7 +342,7 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, ExsitingUserReImage) {
 
   first_run::ResetCachedSentinelDataForTesting();
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kForceFirstRun);
+      ::switches::kForceFirstRun);
 
   CreateFullRestoreServiceForTesting();
 
@@ -348,7 +353,7 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, ExsitingUserReImage) {
   EXPECT_TRUE(allow_save());
 
   base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-      switches::kForceFirstRun);
+      ::switches::kForceFirstRun);
   first_run::ResetCachedSentinelDataForTesting();
 }
 
@@ -717,8 +722,10 @@ class FullRestoreServiceMultipleUsersTest
 
     account_id2_ = AccountId::FromUserEmailGaiaId(
         profile2_->GetProfileUserName(), "111111");
-    GetFakeUserManager()->AddUser(account_id2_);
+    const auto* user = GetFakeUserManager()->AddUser(account_id2_);
     GetFakeUserManager()->LoginUser(account_id2_);
+    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
+        user, profile2_.get());
 
     // Reset the restore flag and pref as the default value.
     ::full_restore::FullRestoreInfo::GetInstance()->SetRestoreFlag(account_id2_,
@@ -783,6 +790,8 @@ class FullRestoreServiceMultipleUsersTest
 
   TestingProfile* profile2() const { return profile2_.get(); }
 
+  const AccountId& account_id2() const { return account_id2_; }
+
  private:
   std::unique_ptr<TestingProfile> profile2_;
   base::ScopedTempDir temp_dir2_;
@@ -793,6 +802,13 @@ class FullRestoreServiceMultipleUsersTest
 // Verify the full restore init process when 2 users login at the same time,
 // e.g. after the system reatart or upgrading.
 TEST_F(FullRestoreServiceMultipleUsersTest, TwoUsersLoginAtTheSameTime) {
+  // Add `switches::kLoginUser` to the command line to simulate the system
+  // restart.
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kLoginUser, account_id().GetUserEmail());
+  // Set the first user as the last session active user.
+  GetFakeUserManager()->set_last_session_active_account_id(account_id());
+
   profile()->GetPrefs()->SetInteger(
       kRestoreAppsAndPagesPrefName,
       static_cast<int>(RestoreOption::kAskEveryTime));
@@ -898,6 +914,66 @@ TEST_F(FullRestoreServiceMultipleUsersTest, TwoUsersLoginOneByOne) {
 
   VerifyNotificationForProfile2(false /* has_crash_notification */,
                                 false /* has_restore_notification */);
+}
+
+// Verify the full restore init process when the system restarts.
+TEST_F(FullRestoreServiceMultipleUsersTest, TwoUsersLoginWithActiveUserLogin) {
+  // Add `switches::kLoginUser` to the command line to simulate the system
+  // restart.
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kLoginUser, account_id().GetUserEmail());
+  // Set the second user as the last session active user.
+  GetFakeUserManager()->set_last_session_active_account_id(account_id2());
+
+  profile()->GetPrefs()->SetInteger(
+      kRestoreAppsAndPagesPrefName,
+      static_cast<int>(RestoreOption::kAskEveryTime));
+  profile2()->GetPrefs()->SetInteger(
+      kRestoreAppsAndPagesPrefName,
+      static_cast<int>(RestoreOption::kAskEveryTime));
+  CreateFullRestoreServiceForTesting();
+  CreateFullRestoreService2ForTesting();
+  content::RunAllTasksUntilIdle();
+
+  VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 0);
+  VerifyNotification(false /* has_crash_notification */,
+                     false /* has_restore_notification */);
+
+  // Simulate switch to the second user.
+  auto* full_restore_service2 = FullRestoreService::GetForProfile(profile2());
+  full_restore_service2->OnTransitionedToNewActiveUser(profile2());
+
+  // The notification for the second user should be displayed.
+  VerifyNotificationForProfile2(false /* has_crash_notification */,
+                                true /* has_restore_notification */);
+  VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 1);
+
+  SimulateClickForProfile2(kRestoreNotificationId,
+                           RestoreNotificationButtonIndex::kRestore);
+  EXPECT_TRUE(::full_restore::ShouldRestore(account_id2()));
+  EXPECT_TRUE(::full_restore::CanPerformRestore(account_id2()));
+
+  // Simulate switch to the first user.
+  auto* full_restore_service = FullRestoreService::GetForProfile(profile());
+  full_restore_service->OnTransitionedToNewActiveUser(profile());
+
+  // The notification for the first user should be displayed.
+  VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 2);
+  VerifyNotification(false /* has_crash_notification */,
+                     true /* has_restore_notification */);
+
+  SimulateClick(kRestoreNotificationId,
+                RestoreNotificationButtonIndex::kRestore);
+  EXPECT_TRUE(::full_restore::ShouldRestore(account_id()));
+  EXPECT_TRUE(::full_restore::CanPerformRestore(account_id()));
+
+  // Simulate switch to the second user, and verify no more init process.
+  full_restore_service2->OnTransitionedToNewActiveUser(profile2());
+  VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 2);
+
+  // Simulate switch to the first user, and verify no more init process.
+  full_restore_service->OnTransitionedToNewActiveUser(profile());
+  VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 2);
 }
 
 }  // namespace full_restore

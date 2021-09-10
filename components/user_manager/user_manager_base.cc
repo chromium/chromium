@@ -149,6 +149,10 @@ const AccountId& UserManagerBase::GetOwnerAccountId() const {
   return owner_account_id_;
 }
 
+const AccountId& UserManagerBase::GetLastSessionActiveAccountId() const {
+  return last_session_active_account_id_;
+}
+
 void UserManagerBase::UserLoggedIn(const AccountId& account_id,
                                    const std::string& username_hash,
                                    bool browser_restart,
