@@ -213,7 +213,7 @@ void ChromeUnitTestSuite::InitializeResourceBundle() {
       resources_pack_path, ui::kScaleFactorNone);
 
   base::FilePath unit_tests_pack_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_MODULE, &unit_tests_pack_path));
+  ASSERT_TRUE(base::PathService::Get(base::DIR_ASSETS, &unit_tests_pack_path));
   unit_tests_pack_path = unit_tests_pack_path.AppendASCII("unit_tests.pak");
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
       unit_tests_pack_path, ui::kScaleFactorNone);
