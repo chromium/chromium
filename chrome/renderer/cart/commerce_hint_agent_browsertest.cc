@@ -425,7 +425,22 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, ExtractCart) {
   WaitForProductCount(kExpectedExampleWithProducts);
 }
 
-IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, CartPriority) {
+class CommerceHintNoRateControlTest : public CommerceHintAgentTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{ntp_features::kNtpChromeCartModule,
+          {{"cart-extraction-gap-time", "0s"}}}},
+        {optimization_guide::features::kOptimizationHints});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// TODO(crbug.com/1241582): Add the rate control back for this test after
+// figuring out why rate control makes this test flaky.
+IN_PROC_BROWSER_TEST_F(CommerceHintNoRateControlTest, CartPriority) {
   NavigateToURL("https://www.guitarcenter.com/");
   NavigateToURL("https://www.guitarcenter.com/add-to-cart?product=1");
   WaitForCartCount(kExpectedExampleFallbackCart);
