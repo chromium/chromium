@@ -120,7 +120,7 @@ public class PageInfoTest {
             }
         });
         onViewWaiting(withText(CONNECTION_IS_NOT_SECURE_TEXT)).perform(click());
-        onViewWaiting(withText("The identity of this website has not been verified."));
+        onViewWaiting(withText("The identity of this website isn't verified."));
     }
 
     @Test

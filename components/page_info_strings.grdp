@@ -123,7 +123,7 @@
 
   <!-- Identity detail strings shared with iOS -->
   <message name="IDS_PAGE_INFO_SECURITY_TAB_INSECURE_IDENTITY" desc="The text of the identity section when the page is not secure.">
-    The identity of this website has not been verified.
+    The identity of this website isn't verified.
   </message>
 
   <!-- Password Protection strings shared with iOS -->
@@ -175,10 +175,10 @@
     <!-- Certificate exception decision UI (after clicking through an SSL certificate error) -->
     <!-- TODO(crbug.com/502473): Support revoking certificate overrides on iOS Page Info. -->
     <message name="IDS_PAGE_INFO_INVALID_CERTIFICATE_DESCRIPTION" desc="A short paragraph to the user that security warnings are disabled. This is the case when the user has encountered a certificate error for the current site and chosen to override it.">
-      You have chosen to disable security warnings for this site.
+      You have chosen to turn off security warnings for this site.
     </message>
     <message name="IDS_PAGE_INFO_RESET_INVALID_CERTIFICATE_DECISIONS_BUTTON" desc="Text of button in the page info that resets allow/deny decisions of invalid certificates, which will start showing security warnings for the page again.">
-      Re-enable warnings
+      Turn on warnings
     </message>
 
     <!-- Old connection info UI. Only used on Android, but still compiled on desktop. -->

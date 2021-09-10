@@ -452,9 +452,9 @@ public class PageInfoViewTest {
         mTestServerRule.setServerUsesHttps(false);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         onView(withId(R.id.page_info_connection_row)).perform(click());
-        onViewWaiting(allOf(
-                withText(containsString("The identity of this website has not been verified.")),
-                isDisplayed()));
+        onViewWaiting(
+                allOf(withText(containsString("The identity of this website isn't verified.")),
+                        isDisplayed()));
         mRenderTestRule.render(getPageInfoView(), "PageInfo_ConnectionInfoSubpageInsecure");
     }
 
