@@ -59,7 +59,8 @@ enum EndOfStreamError {
         RaisesException,
         RuntimeEnabled=MediaSourceExtensionsForWebCodecs,
         ImplementedAs=AddSourceBufferUsingConfig,
-        MeasureAs=AddSourceBufferUsingConfig
+        MeasureAs=AddSourceBufferUsingConfig,
+        CallWith=ExecutionContext
     ] SourceBuffer addSourceBuffer(SourceBufferConfig config);
 
     [RaisesException] void removeSourceBuffer(SourceBuffer buffer);

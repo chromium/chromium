@@ -73,7 +73,8 @@ class MediaSource final : public EventTargetWithInlineData,
   }
   SourceBuffer* addSourceBuffer(const String& type, ExceptionState&)
       LOCKS_EXCLUDED(attachment_link_lock_);
-  SourceBuffer* AddSourceBufferUsingConfig(const SourceBufferConfig*,
+  SourceBuffer* AddSourceBufferUsingConfig(ExecutionContext* execution_context,
+                                           const SourceBufferConfig*,
                                            ExceptionState&)
       LOCKS_EXCLUDED(attachment_link_lock_);
   void removeSourceBuffer(SourceBuffer*, ExceptionState&)

@@ -34493,6 +34493,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4019" label="V8FileSystemSyncAccessHandle_Truncate_Method"/>
   <int value="4020"
       label="V8SharedArrayBufferConstructedInExtensionWithoutIsolation"/>
+  <int value="4021" label="MediaSourceExtensionsForWebCodecs"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
