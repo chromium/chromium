@@ -1426,7 +1426,7 @@ TEST_F(ShimlessRmaServiceTest, GetOriginalSerialNumber) {
   run_loop.Run();
 }
 
-TEST_F(ShimlessRmaServiceTest, GetOriginalSerialNumberFromWrongStateTrue) {
+TEST_F(ShimlessRmaServiceTest, GetOriginalSerialNumberFromWrongStateEmpty) {
   std::vector<rmad::GetStateReply> fake_states = {CreateStateReply(
       rmad::RmadState::kDeviceDestination, rmad::RMAD_ERROR_OK)};
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
@@ -1476,7 +1476,7 @@ TEST_F(ShimlessRmaServiceTest, GetOriginalRegion) {
   run_loop.Run();
 }
 
-TEST_F(ShimlessRmaServiceTest, GetOriginalRegionFromWrongStateTrue) {
+TEST_F(ShimlessRmaServiceTest, GetOriginalRegionFromWrongStateEmpty) {
   std::vector<rmad::GetStateReply> fake_states = {CreateStateReply(
       rmad::RmadState::kDeviceDestination, rmad::RMAD_ERROR_OK)};
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
@@ -1526,7 +1526,7 @@ TEST_F(ShimlessRmaServiceTest, GetOriginalSku) {
   run_loop.Run();
 }
 
-TEST_F(ShimlessRmaServiceTest, GetOriginalSkuFromWrongStateTrue) {
+TEST_F(ShimlessRmaServiceTest, GetOriginalSkuFromWrongStateEmpty) {
   std::vector<rmad::GetStateReply> fake_states = {CreateStateReply(
       rmad::RmadState::kDeviceDestination, rmad::RMAD_ERROR_OK)};
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
