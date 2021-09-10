@@ -90,7 +90,7 @@ There should also be a new feature policy created:
 
 *   Define the permission policy in [/third_party/blink/renderer/core/permissions_policy/permissions_policy_features.json5].
 *   Add an enum to [/third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom].
-*   Add the same enum to `kClientHintsPermissionsPolicyMapping` in [/third_party/blink/common/client_hints/client_hints.cc].
+*   Add the same enum to the map in `MakeClientHintToPolicyFeatureMap` in [/third_party/blink/common/client_hints/client_hints.cc].
 *   Add the permission policy token to the `PermissionsPolicyFeature` enum in [/third_party/blink/public/devtools_protocol/browser_protocol.pdl], [/third_party/devtools-frontend/src/third_party/blink/public/devtools_protocol/browser_protocol.pdl], and [/third_party/devtools-frontend/src/third_party/blink/public/devtools_protocol/browser_protocol.json].
 *   Add the permission policy token to [/third_party/blink/web_tests/webexposed/feature-policy-features-expected.txt] and [/third_party/blink/web_tests/virtual/stable/webexposed/feature-policy-features-expected.txt].
 

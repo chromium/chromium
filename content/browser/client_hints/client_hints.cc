@@ -466,8 +466,7 @@ bool IsClientHintAllowed(const ClientHintsExtendedData& data,
     return data.is_1p_origin;
   return data.permissions_policy &&
          data.permissions_policy->IsFeatureEnabledForOrigin(
-             blink::kClientHintsPermissionsPolicyMapping[static_cast<int>(
-                 type)],
+             blink::GetClientHintToPolicyFeatureMap().at(type),
              data.resource_origin);
 }
 
