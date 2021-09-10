@@ -40,12 +40,12 @@ CSSMathMin* CSSMathMin::Create(CSSNumericValueVector values) {
 
 absl::optional<CSSNumericSumValue> CSSMathMin::SumValue() const {
   auto cur_min = NumericValues()[0]->SumValue();
-  if (!cur_min || cur_min->terms.size() != 1)
+  if (!cur_min.has_value() || cur_min->terms.size() != 1)
     return absl::nullopt;
 
   for (const auto& value : NumericValues()) {
     const auto child_sum = value->SumValue();
-    if (!child_sum || child_sum->terms.size() != 1 ||
+    if (!child_sum.has_value() || child_sum->terms.size() != 1 ||
         child_sum->terms[0].units != cur_min->terms[0].units)
       return absl::nullopt;
 

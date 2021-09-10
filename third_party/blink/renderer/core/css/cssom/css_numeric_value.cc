@@ -319,7 +319,7 @@ CSSUnitValue* CSSNumericValue::to(const String& unit_string,
 
 CSSUnitValue* CSSNumericValue::to(CSSPrimitiveValue::UnitType unit) const {
   const auto sum = SumValue();
-  if (!sum || sum->terms.size() != 1)
+  if (!sum.has_value() || sum->terms.size() != 1)
     return nullptr;
 
   CSSUnitValue* value = CSSNumericSumValueEntryToUnitValue(sum->terms[0]);
@@ -339,7 +339,7 @@ CSSMathSum* CSSNumericValue::toSum(const Vector<String>& unit_strings,
   }
 
   const absl::optional<CSSNumericSumValue> sum = SumValue();
-  if (!sum) {
+  if (!sum.has_value()) {
     exception_state.ThrowTypeError("Invalid value for conversion");
     return nullptr;
   }

@@ -18,7 +18,7 @@ V8CSSNumberish* CSSMathInvert::value() {
 
 absl::optional<CSSNumericSumValue> CSSMathInvert::SumValue() const {
   auto sum = value_->SumValue();
-  if (!sum || sum->terms.size() != 1 ||
+  if (!sum.has_value() || sum->terms.size() != 1 ||
       (!RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled() &&
        sum->terms[0].value == 0))
     return absl::nullopt;

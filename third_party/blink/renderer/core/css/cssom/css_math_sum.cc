@@ -87,7 +87,7 @@ absl::optional<CSSNumericSumValue> CSSMathSum::SumValue() const {
   CSSNumericSumValue sum;
   for (const auto& value : NumericValues()) {
     const auto child_sum = value->SumValue();
-    if (!child_sum)
+    if (!child_sum.has_value())
       return absl::nullopt;
 
     // Collect like-terms
