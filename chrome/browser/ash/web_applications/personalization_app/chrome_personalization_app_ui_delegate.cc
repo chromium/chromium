@@ -264,7 +264,8 @@ void ChromePersonalizationAppUiDelegate::SelectWallpaper(
           GetAccountId(), absl::make_optional(image_asset_id),
           GURL(it->second.image_url.spec()), it->second.collection_id,
           ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
-          /*preview_mode=*/false, /*from_user=*/true),
+          /*preview_mode=*/false, /*from_user=*/true,
+          /*daily_refresh_enabled=*/false),
       base::BindOnce(
           &ChromePersonalizationAppUiDelegate::OnOnlineWallpaperSelected,
           backend_weak_ptr_factory_.GetWeakPtr()));
@@ -306,7 +307,8 @@ void ChromePersonalizationAppUiDelegate::SetDailyRefreshCollectionId(
 void ChromePersonalizationAppUiDelegate::GetDailyRefreshCollectionId(
     GetDailyRefreshCollectionIdCallback callback) {
   auto* controller = WallpaperController::Get();
-  std::move(callback).Run(controller->GetDailyRefreshCollectionId());
+  std::move(callback).Run(
+      controller->GetDailyRefreshCollectionId(GetAccountId()));
 }
 
 void ChromePersonalizationAppUiDelegate::UpdateDailyRefreshWallpaper(

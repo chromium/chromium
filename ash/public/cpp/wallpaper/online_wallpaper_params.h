@@ -34,6 +34,9 @@ struct ASH_PUBLIC_EXPORT OnlineWallpaperParams {
   // Indicate the params is a result of a user's request. i.e clicking on an
   // image.
   bool from_user = false;
+  // If the |WallpaperInfo| generated from these params should have type
+  // |WallpaperType::DAILY|.
+  bool daily_refresh_enabled = false;
 
   OnlineWallpaperParams(const AccountId& account_id,
                         const absl::optional<uint64_t>& asset_id,
@@ -41,7 +44,8 @@ struct ASH_PUBLIC_EXPORT OnlineWallpaperParams {
                         const std::string& collection_id,
                         WallpaperLayout layout,
                         bool preview_mode,
-                        bool from_user);
+                        bool from_user,
+                        bool daily_refresh_enabled);
 
   OnlineWallpaperParams(const OnlineWallpaperParams& other);
 

@@ -645,10 +645,6 @@ const char kSyncableWallpaperInfo[] = "syncable_wallpaper_info";
 // A dictionary pref that maps wallpaper file paths to their prominent colors.
 const char kWallpaperColors[] = "ash.wallpaper.prominent_colors";
 
-// String pref storing the collection_id used to query for new wallpapers when
-// daily refresh is enabled.
-const char kWallpaperCollectionId[] = "ash.wallpaper.collection_id";
-
 // Boolean pref indicating whether a user has enabled the bluetooth adapter.
 const char kUserBluetoothAdapterEnabled[] =
     "ash.user.bluetooth.adapter_enabled";

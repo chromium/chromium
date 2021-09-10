@@ -282,7 +282,8 @@ class ASH_PUBLIC_EXPORT WallpaperController {
       const std::string& collection_id) = 0;
 
   // Get the daily refresh collection id. Empty if daily refresh is not enabled;
-  virtual std::string GetDailyRefreshCollectionId() const = 0;
+  virtual std::string GetDailyRefreshCollectionId(
+      const AccountId& account_id) const = 0;
 
   // With daily refresh enabled, this updates the wallpaper by asking for a
   // wallpaper from within the user specified collection.
