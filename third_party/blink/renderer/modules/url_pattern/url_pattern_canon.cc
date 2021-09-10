@@ -39,6 +39,22 @@ std::string StdStringFromCanonOutput(const url::CanonOutput& output,
   return std::string(output.data() + component.begin, component.len);
 }
 
+bool ContainsForbiddenHostnameCodePoint(absl::string_view input) {
+  for (auto c : input) {
+    // The full list of forbidden code points is defined at:
+    //
+    //  https://url.spec.whatwg.org/#forbidden-host-code-point
+    //
+    // We only check the code points the chromium URL parser incorrectly
+    // permits.  See: crbug.com/1065667#c18
+    if (c == ' ' || c == '#' || c == ':' || c == '<' || c == '>' || c == '@' ||
+        c == '[' || c == ']' || c == '|') {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // anonymous namespace
 
 absl::StatusOr<std::string> ProtocolEncodeCallback(absl::string_view input) {
@@ -105,6 +121,18 @@ absl::StatusOr<std::string> PasswordEncodeCallback(absl::string_view input) {
 absl::StatusOr<std::string> HostnameEncodeCallback(absl::string_view input) {
   if (input.empty())
     return std::string();
+
+  // Due to crbug.com/1065667 the url::CanonicalizeHost() call below will
+  // permit and possibly encode some illegal code points.  Since we want
+  // to ultimately fix that in the future we don't want to encourage more
+  // use of these characters in URLPattern.  Therefore we apply an additional
+  // restrictive check for these forbidden code points.
+  //
+  // TODO(crbug.com/1065667): Remove this check after the URL parser is fixed.
+  if (ContainsForbiddenHostnameCodePoint(input)) {
+    return absl::InvalidArgumentError("Invalid hostname pattern '" +
+                                      std::string(input) + "'.");
+  }
 
   url::RawCanonOutputT<char> canon_output;
   url::Component component;
