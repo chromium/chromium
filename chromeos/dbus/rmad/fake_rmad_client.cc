@@ -137,9 +137,14 @@ void FakeRmadClient::TriggerErrorObservation(rmad::RmadErrorCode error) {
 
 void FakeRmadClient::TriggerCalibrationProgressObservation(
     rmad::RmadComponent component,
+    rmad::CalibrationComponentStatus::CalibrationStatus status,
     double progress) {
+  rmad::CalibrationComponentStatus componentStatus;
+  componentStatus.set_component(component);
+  componentStatus.set_status(status);
+  componentStatus.set_progress(progress);
   for (auto& observer : observers_)
-    observer.CalibrationProgress(component, progress);
+    observer.CalibrationProgress(componentStatus);
 }
 
 void FakeRmadClient::TriggerProvisioningProgressObservation(

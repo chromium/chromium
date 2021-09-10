@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
-import {CalibrationObserverRemote, ComponentRepairStatus, ComponentType, ErrorObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStep, RmadErrorCode, RmaState} from 'chrome://shimless-rma/shimless_rma_types.js';
+import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationStatus, ComponentRepairStatus, ComponentType, ErrorObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStep, RmadErrorCode, RmaState} from 'chrome://shimless-rma/shimless_rma_types.js';
 
 import {assertDeepEquals, assertEquals} from '../../chai_assert.js';
 
@@ -736,17 +736,25 @@ export function fakeShimlessRmaServiceTestSuite() {
     const calibrationObserver = /** @type {!CalibrationObserverRemote} */ ({
       /**
        * Implements CalibrationObserverRemote.onCalibrationUpdated()
-       * @param {!ComponentType} component
-       * @param {number} progress
+       * @param {!CalibrationComponentStatus} calibrationStatus
        */
-      onCalibrationUpdated(component, progress) {
-        assertEquals(component, ComponentType.kBaseAccelerometer);
-        assertEquals(progress, 0.5);
+      onCalibrationUpdated(calibrationStatus) {
+        assertEquals(
+            calibrationStatus.component, ComponentType.kBaseAccelerometer);
+        assertEquals(
+            calibrationStatus.status, CalibrationStatus.kCalibrationComplete);
+        assertEquals(calibrationStatus.progress, 0.5);
       }
     });
     service.observeCalibrationProgress(calibrationObserver);
     return service.triggerCalibrationObserver(
-        ComponentType.kBaseAccelerometer, 0.5, 0);
+        /** @type {!CalibrationComponentStatus} */
+        ({
+          component: ComponentType.kBaseAccelerometer,
+          status: CalibrationStatus.kCalibrationComplete,
+          progress: 0.5
+        }),
+        0);
   });
 
   test('ObserveProvisioningUpdated', () => {

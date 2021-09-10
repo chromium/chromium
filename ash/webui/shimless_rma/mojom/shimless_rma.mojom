@@ -321,7 +321,7 @@ interface OsUpdateObserver {
 interface CalibrationObserver {
   // OnCalibrationUpdated is called whenever there is an update in the progress
   // of component calibration.
-  OnCalibrationUpdated(ComponentType component, float progress);
+  OnCalibrationUpdated(CalibrationComponentStatus componentStatus);
 };
 
 // Implemented by clients to track the progress of device provisioning.

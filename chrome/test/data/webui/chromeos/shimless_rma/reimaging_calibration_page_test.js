@@ -6,7 +6,7 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {ReimagingCalibrationPageElement} from 'chrome://shimless-rma/reimaging_calibration_page.js';
-import {ComponentType} from 'chrome://shimless-rma/shimless_rma_types.js';
+import {CalibrationComponentStatus, CalibrationStatus, ComponentType} from 'chrome://shimless-rma/shimless_rma_types.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';
@@ -74,7 +74,14 @@ export function reimagingCalibrationPageTest() {
     component.onNextButtonClick().catch((err) => void 0);
     await flushTasks();
 
-    service.triggerCalibrationObserver(ComponentType.kLidAccelerometer, 100, 0);
+    service.triggerCalibrationObserver(
+        /** @type {!CalibrationComponentStatus} */
+        ({
+          component: ComponentType.kLidAccelerometer,
+          status: CalibrationStatus.kCalibrationComplete,
+          progress: 1.0
+        }),
+        0);
     await flushTasks();
 
     let savedResult;

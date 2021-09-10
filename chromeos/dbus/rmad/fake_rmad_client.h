@@ -43,8 +43,10 @@ class COMPONENT_EXPORT(RMAD) FakeRmadClient : public RmadClient {
   void SetAbortable(bool abortable);
 
   void TriggerErrorObservation(rmad::RmadErrorCode error);
-  void TriggerCalibrationProgressObservation(rmad::RmadComponent component,
-                                             double progress);
+  void TriggerCalibrationProgressObservation(
+      rmad::RmadComponent component,
+      rmad::CalibrationComponentStatus::CalibrationStatus status,
+      double progress);
   void TriggerProvisioningProgressObservation(
       rmad::ProvisionDeviceState::ProvisioningStep step,
       double progress);

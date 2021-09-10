@@ -36,8 +36,8 @@ class RmadObserver : chromeos::RmadClient::Observer {
   void Error(rmad::RmadErrorCode error) override {}
 
   // Called when calibration progress is updated.
-  void CalibrationProgress(rmad::RmadComponent component,
-                           double progress) override {}
+  void CalibrationProgress(
+      const rmad::CalibrationComponentStatus& componentStatus) override {}
 
   // Called when provisioning progress is updated.
   void ProvisioningProgress(rmad::ProvisionDeviceState::ProvisioningStep step,
@@ -530,10 +530,10 @@ void ShimlessRmaService::OsUpdateProgress(update_engine::Operation operation,
   }
 }
 
-void ShimlessRmaService::CalibrationProgress(rmad::RmadComponent component,
-                                             double progress) {
+void ShimlessRmaService::CalibrationProgress(
+    const rmad::CalibrationComponentStatus& componentStatus) {
   if (calibration_observer_.is_bound()) {
-    calibration_observer_->OnCalibrationUpdated(component, progress);
+    calibration_observer_->OnCalibrationUpdated(componentStatus);
   }
 }
 

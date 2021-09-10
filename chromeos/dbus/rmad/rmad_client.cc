@@ -189,8 +189,7 @@ void RmadClientImpl::CalibrationProgressReceived(dbus::Signal* signal) {
     return;
   }
   for (auto& observer : observers_) {
-    observer.CalibrationProgress(signal_proto.component(),
-                                 signal_proto.progress());
+    observer.CalibrationProgress(signal_proto);
   }
 }
 
