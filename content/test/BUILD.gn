@@ -1652,7 +1652,6 @@ test("content_browsertests") {
     sources += [
       "../browser/direct_sockets/direct_sockets_open_browsertest.cc",
       "../browser/direct_sockets/direct_sockets_tcp_browsertest.cc",
-      "../browser/file_system_access/file_system_access_capacity_allocation_host_impl_browsertest.cc",
       "../browser/file_system_access/file_system_access_clipboard_browsertest.cc",
       "../browser/file_system_access/file_system_access_drag_drop_browsertest.cc",
       "../browser/file_system_access/file_system_access_file_writer_impl_browsertest.cc",
@@ -1978,7 +1977,6 @@ test("content_unittests") {
     "../browser/fenced_frame/fenced_frame_url_mapping_unittest.cc",
     "../browser/file_system/browser_file_system_helper_unittest.cc",
     "../browser/file_system/file_system_operation_runner_unittest.cc",
-    "../browser/file_system_access/file_system_access_capacity_allocation_host_impl_unittest.cc",
     "../browser/file_system_access/file_system_access_directory_handle_impl_unittest.cc",
     "../browser/file_system_access/file_system_access_file_handle_impl_unittest.cc",
     "../browser/file_system_access/file_system_access_file_writer_impl_unittest.cc",

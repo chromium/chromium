@@ -38,8 +38,7 @@ class CONTENT_EXPORT FileSystemAccessAccessHandleHostImpl
           file_delegate_receiver,
       mojo::PendingReceiver<
           blink::mojom::FileSystemAccessCapacityAllocationHost>
-          capacity_allocation_host_receiver,
-      int64_t file_size);
+          capacity_allocation_host_receiver);
   FileSystemAccessAccessHandleHostImpl(
       const FileSystemAccessAccessHandleHostImpl&) = delete;
   FileSystemAccessAccessHandleHostImpl& operator=(
@@ -48,16 +47,6 @@ class CONTENT_EXPORT FileSystemAccessAccessHandleHostImpl
 
   // blink::mojom::FileSystemAccessFileHandleHost:
   void Close(CloseCallback callback) override;
-
-  // Returns the the total capacity allocated for the file whose capacity is
-  // managed through this host.
-  int64_t granted_capacity() const {
-    DCHECK(capacity_allocation_host_)
-        << "Capacity allocation requires a CapacityAllocationHost";
-    return capacity_allocation_host_->granted_capacity();
-  }
-
-  storage::FileSystemURL url() const { return url_; }
 
  private:
   // If the mojo pipe is severed before Close() is invoked, the lock will be
@@ -74,24 +63,8 @@ class CONTENT_EXPORT FileSystemAccessAccessHandleHostImpl
 
   std::unique_ptr<FileSystemAccessFileDelegateHostImpl> incognito_host_;
 
-  // Manages capacity allocations for the file managed through this host.
-  // This variable is only initialized for non-incognito contexts.
-  //
-  // Non-incognito file I/O operations on Access Handles are performed in the
-  // renderer process. Before increasing a file's size, the renderer must
-  // request additional capacity from the
-  // FileSystemAccessCapacityAllocationHostImpl. The host grants capacity if the
-  // quota management system allows it. From the browser's perspective, all
-  // granted capacity is fully used by the file.
-  //
-  // When the Access Handle closes, the browser must clean up the discrepancy
-  // between the perceived file size, as reported by `granted_capacity()`, and
-  // the actual file size on disk. This step is
-  // performed by the FileSystemAccessManagerImpl owning this host.
   std::unique_ptr<FileSystemAccessCapacityAllocationHostImpl>
       capacity_allocation_host_;
-
-  const storage::FileSystemURL url_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

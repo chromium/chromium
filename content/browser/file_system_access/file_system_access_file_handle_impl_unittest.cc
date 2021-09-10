@@ -271,7 +271,6 @@ TEST_F(FileSystemAccessAccessHandleTest, OpenAccessHandle) {
             blink::mojom::FileSystemAccessRegularFilePtr regular_file =
                 std::move(file->get_regular_file());
             EXPECT_TRUE(regular_file->os_file.IsValid());
-            EXPECT_EQ(regular_file->file_size, 0);
             EXPECT_TRUE(regular_file->capacity_allocation_host.is_valid());
             EXPECT_TRUE(access_handle_remote.is_valid());
           })
