@@ -16,8 +16,6 @@ class AdapterStateController;
 
 // Caches known Bluetooth devices, providing getters and an observer interface
 // for receiving updates when devices change.
-//
-// TODO(khorimoto): Also add support for tracking non-paired devices.
 class DeviceCache {
  public:
   class Observer : public base::CheckedObserver {

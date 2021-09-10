@@ -115,6 +115,80 @@ interface SystemPropertiesObserver {
   OnPropertiesUpdated(BluetoothSystemProperties properties);
 };
 
+// Provided to the pairing UI to handle keys that have been entered
+// on the user's keyboard during a pairing attempt which requires
+// that the user types in a PIN or passkey.
+//
+// Not all keyboard support providing "key entered" events, so it
+// is possible that KeyEnteredHandlers never have their functions
+// invoked.
+interface KeyEnteredHandler {
+  // Invoked when the user has typed a portion of the PIN or
+  // passkey. For example, if the PIN is "987654" and the user types
+  // "9" and "8", HandleKeyEntered(1) and HandleKeyEntered(2) would
+  // be called.
+  HandleKeyEntered(uint8 num_keys_entered);
+};
+
+// Provided by the pairing UI to handle pairing requests of
+// different types.
+interface DevicePairingDelegate {
+  // Requests that a PIN be provided to complete pairing.
+  RequestPinCode() => (string pin_code);
+
+  // Requests that a passkey be provided to complete pairing.
+  RequestPasskey() => (string passkey);
+
+  // Requests that |pin_code| be displayed to the user, who should
+  // enter the PIN via a Bluetooth keyboard.
+  DisplayPinCode(string pin_code,
+                 pending_receiver<KeyEnteredHandler> handler);
+
+  // Requests that |passkey| be displayed to the user, who should
+  // enter the passkey via a Bluetooth keyboard.
+  DisplayPasskey(string passkey,
+                 pending_receiver<KeyEnteredHandler> handler);
+
+  // Requests that |passkey| be displayed to the user, who should
+  // confirm or reject a pairing request. Returns whether or not the
+  // user confirmed the passkey.
+  ConfirmPasskey(string passkey) => (bool confirmed);
+
+  // Requests that the user is asked to confirm or reject a pairing
+  // request. Returns whether or not the user confirmed the pairing.
+  AuthorizePairing() => (bool confirmed);
+};
+
+// Result of a pairing attempt.
+enum PairingResult {
+  // Pairing succeeded.
+  kSuccess,
+
+  // Authentication failed, either due to an incorrect PIN/passkey or
+  // due to the remote device canceling authentication.
+  kAuthFailed,
+
+  // Pairing failed due to a reason other than authentication issues.
+  kNonAuthFailure
+};
+
+// Handles requests to pair to a device.
+interface DevicePairingHandler {
+  // Attempts to pair to the device with ID |device_id|. Pairing often
+  // requires additional interaction from the user, so callers must
+  // provide a |delegate| which handles requests for these interactions.
+  // For example, pairing a Bluetooth keyboard usually requires that
+  // users type in a PIN.
+  //
+  // |result| is returned when the pairing attempt completes. It is
+  // possible that |result| is returned before any delegate function
+  // is invoked.
+  PairDevice(
+      string device_id,
+      pending_remote<DevicePairingDelegate> delegate) =>
+          (PairingResult result);
+};
+
 // Allows clients of Bluetooth discovery to be notified of the progress of a
 // discovery session.
 interface BluetoothDiscoveryDelegate {
