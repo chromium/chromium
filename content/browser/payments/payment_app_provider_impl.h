@@ -6,7 +6,7 @@
 #define CONTENT_BROWSER_PAYMENTS_PAYMENT_APP_PROVIDER_IMPL_H_
 
 #include "content/browser/payments/payment_app_context_impl.h"
-#include "content/browser/payments/service_worker_core_thread_event_dispatcher.h"
+#include "content/browser/payments/payment_event_dispatcher.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/payment_app_provider.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -14,6 +14,7 @@
 
 namespace content {
 
+// Lives on the UI thread.
 class CONTENT_EXPORT PaymentAppProviderImpl
     : public PaymentAppProvider,
       public WebContentsUserData<PaymentAppProviderImpl> {
@@ -28,7 +29,6 @@ class CONTENT_EXPORT PaymentAppProviderImpl
       delete;
 
   // PaymentAppProvider implementation:
-  // Should be accessed only on the UI thread.
   void InvokePaymentApp(int64_t registration_id,
                         const url::Origin& sw_origin,
                         payments::mojom::PaymentRequestEventDataPtr event_data,
@@ -74,8 +74,7 @@ class CONTENT_EXPORT PaymentAppProviderImpl
       const url::Origin& sw_origin);
   void StartServiceWorkerForDispatch(
       int64_t registration_id,
-      ServiceWorkerCoreThreadEventDispatcher::ServiceWorkerStartCallback
-          callback);
+      PaymentEventDispatcher::ServiceWorkerStartCallback callback);
   void OnInstallPaymentApp(
       const url::Origin& sw_origin,
       payments::mojom::PaymentRequestEventDataPtr event_data,
@@ -89,8 +88,7 @@ class CONTENT_EXPORT PaymentAppProviderImpl
   // Owns this object.
   WebContents* payment_request_web_contents_;
 
-  // It should be accessed only on the service worker core thread.
-  std::unique_ptr<ServiceWorkerCoreThreadEventDispatcher> event_dispatcher_;
+  std::unique_ptr<PaymentEventDispatcher> event_dispatcher_;
 
   base::WeakPtrFactory<PaymentAppProviderImpl> weak_ptr_factory_{this};
 };

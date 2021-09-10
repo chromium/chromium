@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/payments/service_worker_core_thread_event_dispatcher.h"
+#include "content/browser/payments/payment_event_dispatcher.h"
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -27,11 +27,11 @@ using payments::mojom::PaymentRequestEventDataPtr;
 
 namespace {
 
-void DidFindRegistrationOnCoreThread(
-    ServiceWorkerCoreThreadEventDispatcher::ServiceWorkerStartCallback callback,
+void DidFindRegistration(
+    PaymentEventDispatcher::ServiceWorkerStartCallback callback,
     blink::ServiceWorkerStatusCode service_worker_status,
     scoped_refptr<ServiceWorkerRegistration> service_worker_registration) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (service_worker_status != blink::ServiceWorkerStatusCode::kOk) {
     std::move(callback).Run(nullptr, service_worker_status);
@@ -47,7 +47,7 @@ void DidFindRegistrationOnCoreThread(
                      base::WrapRefCounted(active_version)));
 }
 
-void OnResponseForPaymentRequestOnUiThread(
+void OnResponseForPaymentRequest(
     scoped_refptr<DevToolsBackgroundServicesContextImpl> dev_tools,
     int64_t registration_id,
     const url::Origin& sw_origin,
@@ -69,7 +69,7 @@ void OnResponseForPaymentRequestOnUiThread(
   std::move(callback).Run(std::move(response));
 }
 
-void OnResponseForCanMakePaymentOnUiThread(
+void OnResponseForCanMakePayment(
     scoped_refptr<DevToolsBackgroundServicesContextImpl> dev_tools,
     int64_t registration_id,
     const url::Origin& sw_origin,
@@ -108,7 +108,7 @@ void OnResponseForCanMakePaymentOnUiThread(
   std::move(callback).Run(std::move(response));
 }
 
-void OnResponseForAbortPaymentOnUiThread(
+void OnResponseForAbortPayment(
     scoped_refptr<DevToolsBackgroundServicesContextImpl> dev_tools,
     int64_t registration_id,
     const url::Origin& sw_origin,
@@ -128,18 +128,16 @@ void OnResponseForAbortPaymentOnUiThread(
 
 }  // namespace
 
-ServiceWorkerCoreThreadEventDispatcher::
-    ServiceWorkerCoreThreadEventDispatcher() = default;
-ServiceWorkerCoreThreadEventDispatcher::
-    ~ServiceWorkerCoreThreadEventDispatcher() {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+PaymentEventDispatcher::PaymentEventDispatcher() = default;
+PaymentEventDispatcher::~PaymentEventDispatcher() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
-void ServiceWorkerCoreThreadEventDispatcher::DispatchAbortPaymentEvent(
+void PaymentEventDispatcher::DispatchAbortPaymentEvent(
     PaymentAppProvider::AbortCallback callback,
     scoped_refptr<ServiceWorkerVersion> active_version,
     blink::ServiceWorkerStatusCode service_worker_status) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (service_worker_status != blink::ServiceWorkerStatusCode::kOk) {
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
@@ -161,34 +159,33 @@ void ServiceWorkerCoreThreadEventDispatcher::DispatchAbortPaymentEvent(
       active_version->CreateSimpleEventCallback(event_finish_id));
 }
 
-void ServiceWorkerCoreThreadEventDispatcher::AbortPaymentOnCoreThread(
+void PaymentEventDispatcher::AbortPayment(
     int64_t registration_id,
     const url::Origin& sw_origin,
     const std::string& payment_request_id,
     scoped_refptr<DevToolsBackgroundServicesContextImpl> dev_tools,
     scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
     PaymentAppProvider::AbortCallback callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   service_worker_context->FindReadyRegistrationForIdOnly(
       registration_id,
       base::BindOnce(
-          &DidFindRegistrationOnCoreThread,
+          &DidFindRegistration,
           base::BindOnce(
-              &ServiceWorkerCoreThreadEventDispatcher::
-                  DispatchAbortPaymentEvent,
+              &PaymentEventDispatcher::DispatchAbortPaymentEvent,
               weak_ptr_factory_.GetWeakPtr(),
-              base::BindOnce(&OnResponseForAbortPaymentOnUiThread, dev_tools,
+              base::BindOnce(&OnResponseForAbortPayment, dev_tools,
                              registration_id, sw_origin, payment_request_id,
                              std::move(callback)))));
 }
 
-void ServiceWorkerCoreThreadEventDispatcher::DispatchCanMakePaymentEvent(
+void PaymentEventDispatcher::DispatchCanMakePaymentEvent(
     CanMakePaymentEventDataPtr event_data,
     PaymentAppProvider::CanMakePaymentCallback callback,
     scoped_refptr<ServiceWorkerVersion> active_version,
     blink::ServiceWorkerStatusCode service_worker_status) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (service_worker_status != blink::ServiceWorkerStatusCode::kOk) {
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
@@ -215,7 +212,7 @@ void ServiceWorkerCoreThreadEventDispatcher::DispatchCanMakePaymentEvent(
       active_version->CreateSimpleEventCallback(event_finish_id));
 }
 
-void ServiceWorkerCoreThreadEventDispatcher::CanMakePaymentOnCoreThread(
+void PaymentEventDispatcher::CanMakePayment(
     int64_t registration_id,
     const url::Origin& sw_origin,
     const std::string& payment_request_id,
@@ -223,27 +220,26 @@ void ServiceWorkerCoreThreadEventDispatcher::CanMakePaymentOnCoreThread(
     scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
     CanMakePaymentEventDataPtr event_data,
     PaymentAppProvider::CanMakePaymentCallback callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   service_worker_context->FindReadyRegistrationForIdOnly(
       registration_id,
       base::BindOnce(
-          &DidFindRegistrationOnCoreThread,
+          &DidFindRegistration,
           base::BindOnce(
-              &ServiceWorkerCoreThreadEventDispatcher::
-                  DispatchCanMakePaymentEvent,
+              &PaymentEventDispatcher::DispatchCanMakePaymentEvent,
               weak_ptr_factory_.GetWeakPtr(), std::move(event_data),
-              base::BindOnce(&OnResponseForCanMakePaymentOnUiThread, dev_tools,
+              base::BindOnce(&OnResponseForCanMakePayment, dev_tools,
                              registration_id, sw_origin, payment_request_id,
                              std::move(callback)))));
 }
 
-void ServiceWorkerCoreThreadEventDispatcher::DispatchPaymentRequestEvent(
+void PaymentEventDispatcher::DispatchPaymentRequestEvent(
     PaymentRequestEventDataPtr event_data,
     PaymentAppProvider::InvokePaymentAppCallback callback,
     scoped_refptr<ServiceWorkerVersion> active_version,
     blink::ServiceWorkerStatusCode service_worker_status) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (service_worker_status != blink::ServiceWorkerStatusCode::kOk) {
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
@@ -268,43 +264,41 @@ void ServiceWorkerCoreThreadEventDispatcher::DispatchPaymentRequestEvent(
       active_version->CreateSimpleEventCallback(event_finish_id));
 }
 
-void ServiceWorkerCoreThreadEventDispatcher::InvokePaymentOnCoreThread(
+void PaymentEventDispatcher::InvokePayment(
     int64_t registration_id,
     const url::Origin& sw_origin,
     scoped_refptr<DevToolsBackgroundServicesContextImpl> dev_tools,
     scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
     PaymentRequestEventDataPtr event_data,
     PaymentAppProvider::InvokePaymentAppCallback callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   service_worker_context->FindReadyRegistrationForIdOnly(
       registration_id,
       base::BindOnce(
-          &DidFindRegistrationOnCoreThread,
-          base::BindOnce(&ServiceWorkerCoreThreadEventDispatcher::
-                             DispatchPaymentRequestEvent,
+          &DidFindRegistration,
+          base::BindOnce(&PaymentEventDispatcher::DispatchPaymentRequestEvent,
                          weak_ptr_factory_.GetWeakPtr(), std::move(event_data),
-                         base::BindOnce(&OnResponseForPaymentRequestOnUiThread,
-                                        dev_tools, registration_id, sw_origin,
+                         base::BindOnce(&OnResponseForPaymentRequest, dev_tools,
+                                        registration_id, sw_origin,
                                         event_data->payment_request_id,
                                         std::move(callback)))));
 }
 
-void ServiceWorkerCoreThreadEventDispatcher::FindRegistrationOnCoreThread(
+void PaymentEventDispatcher::FindRegistration(
     scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
     int64_t registration_id,
-    ServiceWorkerCoreThreadEventDispatcher::ServiceWorkerStartCallback
-        callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+    PaymentEventDispatcher::ServiceWorkerStartCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   service_worker_context->FindReadyRegistrationForIdOnly(
       registration_id,
-      base::BindOnce(&DidFindRegistrationOnCoreThread, std::move(callback)));
+      base::BindOnce(&DidFindRegistration, std::move(callback)));
 }
 
-void ServiceWorkerCoreThreadEventDispatcher::OnClosingOpenedWindowOnCoreThread(
+void PaymentEventDispatcher::OnClosingOpenedWindow(
     PaymentEventResponseType reason) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   InvokeRespondWithCallback* callback = invoke_respond_with_callback_.get();
 
@@ -312,22 +306,11 @@ void ServiceWorkerCoreThreadEventDispatcher::OnClosingOpenedWindowOnCoreThread(
     callback->AbortPaymentSinceOpennedWindowClosing(reason);
 }
 
-void ServiceWorkerCoreThreadEventDispatcher::ResetRespondWithCallback() {
-  RunOrPostTaskOnThread(FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-                        base::BindOnce(&ServiceWorkerCoreThreadEventDispatcher::
-                                           ResetRespondWithCallbackCoreThread,
-                                       weak_ptr_factory_.GetWeakPtr()));
-}
-
-void ServiceWorkerCoreThreadEventDispatcher::
-    ResetRespondWithCallbackCoreThread() {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
-
+void PaymentEventDispatcher::ResetRespondWithCallback() {
   invoke_respond_with_callback_.reset();
 }
 
-base::WeakPtr<ServiceWorkerCoreThreadEventDispatcher>
-ServiceWorkerCoreThreadEventDispatcher::GetWeakPtr() {
+base::WeakPtr<PaymentEventDispatcher> PaymentEventDispatcher::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 

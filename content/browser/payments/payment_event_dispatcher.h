@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_PAYMENTS_SERVICE_WORKER_CORE_THREAD_EVENT_DISPATCHER_H_
-#define CONTENT_BROWSER_PAYMENTS_SERVICE_WORKER_CORE_THREAD_EVENT_DISPATCHER_H_
+#ifndef CONTENT_BROWSER_PAYMENTS_PAYMENT_EVENT_DISPATCHER_H_
+#define CONTENT_BROWSER_PAYMENTS_PAYMENT_EVENT_DISPATCHER_H_
 
 #include <memory>
 
@@ -18,12 +18,11 @@ namespace content {
 
 class PaymentAppProviderImpl;
 
-// All of the methods and the destructor should be running on the
-// service worker core thread.
-class ServiceWorkerCoreThreadEventDispatcher {
+// Lives on the UI thread.
+class PaymentEventDispatcher {
  public:
-  ServiceWorkerCoreThreadEventDispatcher();
-  ~ServiceWorkerCoreThreadEventDispatcher();
+  PaymentEventDispatcher();
+  ~PaymentEventDispatcher();
 
   using ServiceWorkerStartCallback =
       base::OnceCallback<void(scoped_refptr<ServiceWorkerVersion>,
@@ -38,7 +37,7 @@ class ServiceWorkerCoreThreadEventDispatcher {
     return payment_app_provider_;
   }
 
-  void AbortPaymentOnCoreThread(
+  void AbortPayment(
       int64_t registration_id,
       const url::Origin& sw_origin,
       const std::string& payment_request_id,
@@ -46,7 +45,7 @@ class ServiceWorkerCoreThreadEventDispatcher {
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
       PaymentAppProvider::AbortCallback callback);
 
-  void CanMakePaymentOnCoreThread(
+  void CanMakePayment(
       int64_t registration_id,
       const url::Origin& sw_origin,
       const std::string& payment_request_id,
@@ -55,7 +54,7 @@ class ServiceWorkerCoreThreadEventDispatcher {
       payments::mojom::CanMakePaymentEventDataPtr event_data,
       PaymentAppProvider::CanMakePaymentCallback callback);
 
-  void InvokePaymentOnCoreThread(
+  void InvokePayment(
       int64_t registration_id,
       const url::Origin& sw_origin,
       scoped_refptr<DevToolsBackgroundServicesContextImpl> dev_tools,
@@ -63,51 +62,42 @@ class ServiceWorkerCoreThreadEventDispatcher {
       payments::mojom::PaymentRequestEventDataPtr event_data,
       PaymentAppProvider::InvokePaymentAppCallback callback);
 
-  void FindRegistrationOnCoreThread(
+  void FindRegistration(
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
       int64_t registration_id,
-      ServiceWorkerCoreThreadEventDispatcher::ServiceWorkerStartCallback
-          callback);
+      PaymentEventDispatcher::ServiceWorkerStartCallback callback);
 
-  void OnClosingOpenedWindowOnCoreThread(
-      payments::mojom::PaymentEventResponseType reason);
+  void OnClosingOpenedWindow(payments::mojom::PaymentEventResponseType reason);
 
   void ResetRespondWithCallback();
 
-  base::WeakPtr<ServiceWorkerCoreThreadEventDispatcher> GetWeakPtr();
+  base::WeakPtr<PaymentEventDispatcher> GetWeakPtr();
 
  private:
-  // AbortCallback require to be run on the UI thread.
   void DispatchAbortPaymentEvent(
       PaymentAppProvider::AbortCallback callback,
       scoped_refptr<ServiceWorkerVersion> active_version,
       blink::ServiceWorkerStatusCode service_worker_status);
 
-  // CanMakePaymentCallback require to be run on the UI thread.
   void DispatchCanMakePaymentEvent(
       payments::mojom::CanMakePaymentEventDataPtr event_data,
       PaymentAppProvider::CanMakePaymentCallback callback,
       scoped_refptr<ServiceWorkerVersion> active_version,
       blink::ServiceWorkerStatusCode service_worker_status);
 
-  // InvokePaymentAppCallback require to be run on the UI thread.
   void DispatchPaymentRequestEvent(
       payments::mojom::PaymentRequestEventDataPtr event_data,
       PaymentAppProvider::InvokePaymentAppCallback callback,
       scoped_refptr<ServiceWorkerVersion> active_version,
       blink::ServiceWorkerStatusCode service_worker_status);
 
-  void ResetRespondWithCallbackCoreThread();
-
   std::unique_ptr<InvokeRespondWithCallback> invoke_respond_with_callback_;
 
-  // payment_app_provider_ require to be run on the UI thread.
   base::WeakPtr<PaymentAppProviderImpl> payment_app_provider_;
 
-  base::WeakPtrFactory<ServiceWorkerCoreThreadEventDispatcher>
-      weak_ptr_factory_{this};
+  base::WeakPtrFactory<PaymentEventDispatcher> weak_ptr_factory_{this};
 };
 
-}  // namespace content.
+}  // namespace content
 
-#endif  // CONTENT_BROWSER_PAYMENTS_SERVICE_WORKER_CORE_THREAD_EVENT_DISPATCHER_H_
+#endif  // CONTENT_BROWSER_PAYMENTS_PAYMENT_EVENT_DISPATCHER_H_

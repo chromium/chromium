@@ -65,8 +65,7 @@ class SelfDeleteInstaller
 
     use_cache_ = use_cache;
 
-    content::BrowserContext* browser_context =
-        web_contents->GetBrowserContext();
+    BrowserContext* browser_context = web_contents->GetBrowserContext();
     service_worker_context_ =
         base::WrapRefCounted(static_cast<ServiceWorkerContextWrapper*>(
             browser_context->GetDefaultStoragePartition()
@@ -182,39 +181,19 @@ class SelfDeleteInstaller
     scoped_refptr<PaymentAppContextImpl> payment_app_context =
         partition->GetPaymentAppContext();
 
-    RunOrPostTaskOnThread(
-        FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-        base::BindOnce(&SelfDeleteInstaller::SetPaymentAppInfoOnCoreThread,
-                       this, payment_app_context, registration_id_,
-                       scope_.spec(), app_name_, app_icon_, method_,
-                       supported_delegations_));
-  }
-
-  void SetPaymentAppInfoOnCoreThread(
-      scoped_refptr<PaymentAppContextImpl> payment_app_context,
-      int64_t registration_id,
-      const std::string& instrument_key,
-      const std::string& name,
-      const std::string& app_icon,
-      const std::string& method,
-      const SupportedDelegations& supported_delegations) {
-    DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
     payment_app_context->payment_app_database()
         ->SetPaymentAppInfoForRegisteredServiceWorker(
-            registration_id, instrument_key, name, app_icon, method,
-            supported_delegations,
+            registration_id_, scope_.spec(), app_name_, app_icon_, method_,
+            supported_delegations_,
             base::BindOnce(&SelfDeleteInstaller::OnSetPaymentAppInfo, this));
   }
 
   void OnSetPaymentAppInfo(payments::mojom::PaymentHandlerStatus status) {
-    DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-    RunOrPostTaskOnThread(
-        FROM_HERE, BrowserThread::UI,
-        base::BindOnce(&SelfDeleteInstaller::FinishInstallation, this,
-                       status == payments::mojom::PaymentHandlerStatus::SUCCESS
+    FinishInstallation(status == payments::mojom::PaymentHandlerStatus::SUCCESS
                            ? true
-                           : false));
+                           : false);
   }
 
   void FinishInstallation(bool success) {
@@ -238,7 +217,7 @@ class SelfDeleteInstaller
     Release();  // Balanced by AddRef() in the constructor.
   }
 
-  base::WeakPtr<content::WebContents> web_contents_;
+  base::WeakPtr<WebContents> web_contents_;
   std::string app_name_;
   std::string app_icon_;
   GURL sw_url_;

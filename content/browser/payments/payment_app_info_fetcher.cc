@@ -38,24 +38,11 @@ void PaymentAppInfoFetcher::Start(
     const GURL& context_url,
     scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
     PaymentAppInfoFetchCallback callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   std::unique_ptr<std::vector<GlobalRenderFrameHostId>> frame_routing_ids =
       service_worker_context->GetWindowClientFrameRoutingIds(
           blink::StorageKey(url::Origin::Create(context_url)));
-
-  RunOrPostTaskOnThread(
-      FROM_HERE, BrowserThread::UI,
-      base::BindOnce(&PaymentAppInfoFetcher::StartOnUI, context_url,
-                     std::move(frame_routing_ids), std::move(callback)));
-}
-
-void PaymentAppInfoFetcher::StartOnUI(
-    const GURL& context_url,
-    const std::unique_ptr<std::vector<GlobalRenderFrameHostId>>&
-        frame_routing_ids,
-    PaymentAppInfoFetchCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   SelfDeleteFetcher* fetcher = new SelfDeleteFetcher(std::move(callback));
   fetcher->Start(context_url, std::move(frame_routing_ids));
@@ -174,9 +161,8 @@ void PaymentAppInfoFetcher::SelfDeleteFetcher::Start(
 void PaymentAppInfoFetcher::SelfDeleteFetcher::RunCallbackAndDestroy() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  BrowserThread::GetTaskRunnerForThread(ServiceWorkerContext::GetCoreThreadId())
-      ->PostTask(FROM_HERE,
-                 base::BindOnce(std::move(callback_),
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback_),
                                 std::move(fetched_payment_app_info_)));
   delete this;
 }
