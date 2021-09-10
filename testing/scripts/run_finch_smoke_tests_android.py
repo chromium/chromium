@@ -112,23 +112,10 @@ def install_seed(device, options):
 
   # We need to make the WebView shell package an owner of the seeds,
   # see crbug.com/1191169#c19
-  user_id = GetUidForPackage(device, shell_pkg_name)
+  user_id = device.GetUidForPackage(shell_pkg_name)
   logger.info('Setting owner of seed files to %r', user_id)
   device.RunShellCommand(['chown', user_id, seed_path], as_root=True)
   device.RunShellCommand(['chown', user_id, seed_new_path], as_root=True)
-
-
-def GetUidForPackage(device, package_name):
-  """Get user id for package name on device
-
-  Args:
-    package_name: Package name installed on device"""
-  # TODO(rmhasan): Move this method to devil
-  dumpsys_output = device._GetDumpsysOutput(
-      ['package', package_name], 'userId=')
-  assert dumpsys_output, 'No output was recieved from dumpsys'
-  user_id = re.sub('.*userId=', '', dumpsys_output[0])
-  return user_id
 
 
 def run_tests(device, options, test_suffix, webview_flags):
