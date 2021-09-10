@@ -21,15 +21,25 @@ let InfoItem;
  */
 let DisplaySelectEvent;
 
-(function() {
+import {afterNextRender, Polymer, html, flush, Templatizer, TemplateInstanceBase} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {IronResizableBehavior} from '//resources/polymer/v3_0/iron-resizable-behavior/iron-resizable-behavior.js';
+import '//resources/polymer/v3_0/paper-styles/shadow.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {DragBehavior, DragPosition} from './drag_behavior.js';
+import {LayoutBehavior} from './layout_behavior.js';
+import {BatteryStatus, DevicePageBrowserProxy, DevicePageBrowserProxyImpl, ExternalStorage, IdleBehavior, LidClosedBehavior, NoteAppInfo, NoteAppLockScreenSupport, PowerManagementSettings, PowerSource, getDisplayApi, StorageSpaceState} from './device_page_browser_proxy.js';
+import '../../settings_shared_css.js';
+
 
 /** @type {number} */ const MIN_VISUAL_SCALE = .01;
 
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'display-layout',
 
   behaviors: [
-    Polymer.IronResizableBehavior,
+    IronResizableBehavior,
     DragBehavior,
     LayoutBehavior,
   ],
@@ -72,7 +82,7 @@ Polymer({
    */
   lastDragCoordinates_: null,
 
-  /** @private {?settings.DevicePageBrowserProxy} */
+  /** @private {?DevicePageBrowserProxy} */
   browserProxy_: null,
 
   /** @private {boolean} */
@@ -88,7 +98,7 @@ Polymer({
 
   /** @override */
   created() {
-    this.browserProxy_ = settings.DevicePageBrowserProxyImpl.getInstance();
+    this.browserProxy_ = DevicePageBrowserProxyImpl.getInstance();
   },
 
   /** @override */
@@ -346,4 +356,3 @@ Polymer({
   },
 
 });
-})();

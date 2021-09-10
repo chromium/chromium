@@ -1,137 +1,112 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="settings-shared md-select">
+  .settings-box > .secondary {
+    align-items: center;
+    display: flex;
+    /* 'secondary' class applies a top margin. This breaks centering. */
+    margin-top: 0;
+  }
 
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_toggle/cr_toggle.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/html/action_link.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
-<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_indicator_behavior.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/html/load_time_data.html">
-<link rel="import" href="device_page_browser_proxy.html">
-<link rel="import" href="../../controls/settings_toggle_button.html">
-<link rel="import" href="../../settings_shared_css.html">
-<link rel="import" href="../../router.html">
-<link rel="import" href="../os_route.html">
-<link rel="import" href="../metrics_recorder.html">
-<link rel="import" href="../deep_linking_behavior.html">
+  paper-spinner-lite {
+    height: var(--cr-icon-size);
+    margin-inline-start: 12px;
+    width: var(--cr-icon-size);
+  }
 
-<dom-module id="settings-stylus">
-  <template>
-    <style include="settings-shared md-select">
-      .settings-box > .secondary {
-        align-items: center;
-        display: flex;
-        /* 'secondary' class applies a top margin. This breaks centering. */
-        margin-top: 0;
-      }
+  cr-policy-indicator {
+    padding: 0 var(--cr-controlled-by-spacing);
+  }
 
-      paper-spinner-lite {
-        height: var(--cr-icon-size);
-        margin-inline-start: 12px;
-        width: var(--cr-icon-size);
-      }
+  #selectApp {
+    width: 400px;
+  }
 
-      cr-policy-indicator {
-        padding: 0 var(--cr-controlled-by-spacing);
-      }
+  #note-taking-app-lock-screen-settings {
+    padding: 0 var(--cr-section-padding);
+  }
+</style>
 
-      #selectApp {
-        width: 400px;
-      }
+<settings-toggle-button id="enableStylusToolsToggle"
+    pref="{{prefs.settings.enable_stylus_tools}}"
+    label="$i18n{stylusEnableStylusTools}"
+    deep-link-focus-id$="[[Setting.kStylusToolsInShelf]]">
+</settings-toggle-button>
 
-      #note-taking-app-lock-screen-settings {
-        padding: 0 var(--cr-section-padding);
-      }
-    </style>
+<template is="dom-if" if="[[hasInternalStylus_]]">
+  <settings-toggle-button
+      id ="launchPaletteOnEjectEventToggle"
+      class="hr"
+      pref="{{prefs.settings.launch_palette_on_eject_event}}"
+      label="$i18n{stylusAutoOpenStylusTools}"
+      disabled="[[!prefs.settings.enable_stylus_tools.value]]">
+  </settings-toggle-button>
+</template>
 
-    <settings-toggle-button id="enableStylusToolsToggle"
-        pref="{{prefs.settings.enable_stylus_tools}}"
-        label="$i18n{stylusEnableStylusTools}"
-        deep-link-focus-id$="[[Setting.kStylusToolsInShelf]]">
-    </settings-toggle-button>
+<div class="settings-box">
+  <div id="stylusNoteTakingAppLabel" class="start">
+    $i18n{stylusNoteTakingApp}
+  </div>
 
-    <template is="dom-if" if="[[hasInternalStylus_]]">
-      <settings-toggle-button
-          id ="launchPaletteOnEjectEventToggle"
-          class="hr"
-          pref="{{prefs.settings.launch_palette_on_eject_event}}"
-          label="$i18n{stylusAutoOpenStylusTools}"
-          disabled="[[!prefs.settings.enable_stylus_tools.value]]">
-      </settings-toggle-button>
+  <div id="no-apps" class="secondary"
+      hidden$="[[!showNoApps_(appChoices_, waitingForAndroid_)]]">
+    $i18n{stylusNoteTakingAppNoneAvailable}
+  </div>
+
+  <div id="waiting" class="secondary" hidden$="[[!waitingForAndroid_]]">
+    $i18n{stylusNoteTakingAppWaitingForAndroid}
+    <paper-spinner-lite active></paper-spinner-lite>
+  </div>
+
+  <select id="selectApp" class="md-select"
+      on-change="onSelectedAppChanged_"
+      aria-labelledby="stylusNoteTakingAppLabel"
+      hidden$="[[!showApps_(appChoices_, waitingForAndroid_)]]"
+      deep-link-focus-id$="[[Setting.kStylusNoteTakingApp]]">
+    <template is="dom-repeat" items="[[appChoices_]]">
+      <option value="[[item.value]]" selected="[[item.preferred]]">
+        [[item.name]]
+      </option>
     </template>
+  </select>
+</div>
 
-    <div class="settings-box">
-      <div id="stylusNoteTakingAppLabel" class="start">
-        $i18n{stylusNoteTakingApp}
+<cr-link-row class="hr" on-click="onFindAppsTap_"
+    hidden$="[[!prefs.arc.enabled.value]]"
+    label="$i18n{stylusFindMoreAppsPrimary}"
+    sub-label="$i18n{stylusFindMoreAppsSecondary}" external></cr-link-row>
+
+<template is="dom-if" if="[[supportsLockScreen_(selectedApp_)]]">
+  <div id="note-taking-app-lock-screen-settings">
+    <h2>$i18n{stylusNoteTakingAppLockScreenSettingsHeader}</h2>
+
+    <div class="settings-box first">
+      <div id="lock-screen-toggle-label" class="start"
+          actionable$="[[!disallowedOnLockScreenByPolicy_(selectedApp_)]]"
+          on-click="toggleLockScreenSupport_">
+        $i18n{stylusNoteTakingAppEnabledOnLockScreen}
       </div>
-
-      <div id="no-apps" class="secondary"
-          hidden$="[[!showNoApps_(appChoices_, waitingForAndroid_)]]">
-        $i18n{stylusNoteTakingAppNoneAvailable}
-      </div>
-
-      <div id="waiting" class="secondary" hidden$="[[!waitingForAndroid_]]">
-        $i18n{stylusNoteTakingAppWaitingForAndroid}
-        <paper-spinner-lite active></paper-spinner-lite>
-      </div>
-
-      <select id="selectApp" class="md-select"
-          on-change="onSelectedAppChanged_"
-          aria-labelledby="stylusNoteTakingAppLabel"
-          hidden$="[[!showApps_(appChoices_, waitingForAndroid_)]]"
-          deep-link-focus-id$="[[Setting.kStylusNoteTakingApp]]">
-        <template is="dom-repeat" items="[[appChoices_]]">
-          <option value="[[item.value]]" selected="[[item.preferred]]">
-            [[item.name]]
-          </option>
-        </template>
-      </select>
+      <template is="dom-if"
+          if="[[disallowedOnLockScreenByPolicy_(selectedApp_)]]">
+        <cr-policy-indicator
+            id="enable-app-on-lock-screen-policy-indicator"
+            indicator-type="[[userPolicyIndicator_]]">
+        </cr-policy-indicator>
+      </template>
+      <cr-toggle id="enable-app-on-lock-screen-toggle"
+          aria-labelledby="lock-screen-toggle-label"
+          disabled="[[disallowedOnLockScreenByPolicy_(selectedApp_)]]"
+          checked="[[lockScreenSupportEnabled_(selectedApp_)]]"
+          on-change="toggleLockScreenSupport_"
+          deep-link-focus-id$="[[Setting.kStylusNoteTakingFromLockScreen]]">
+      </cr-toggle>
     </div>
 
-    <cr-link-row class="hr" on-click="onFindAppsTap_"
-        hidden$="[[!prefs.arc.enabled.value]]"
-        label="$i18n{stylusFindMoreAppsPrimary}"
-        sub-label="$i18n{stylusFindMoreAppsSecondary}" external></cr-link-row>
-
-    <template is="dom-if" if="[[supportsLockScreen_(selectedApp_)]]">
-      <div id="note-taking-app-lock-screen-settings">
-        <h2>$i18n{stylusNoteTakingAppLockScreenSettingsHeader}</h2>
-
-        <div class="settings-box first">
-          <div id="lock-screen-toggle-label" class="start"
-              actionable$="[[!disallowedOnLockScreenByPolicy_(selectedApp_)]]"
-              on-click="toggleLockScreenSupport_">
-            $i18n{stylusNoteTakingAppEnabledOnLockScreen}
-          </div>
-          <template is="dom-if"
-              if="[[disallowedOnLockScreenByPolicy_(selectedApp_)]]">
-            <cr-policy-indicator
-                id="enable-app-on-lock-screen-policy-indicator"
-                indicator-type="[[userPolicyIndicator_]]">
-            </cr-policy-indicator>
-          </template>
-          <cr-toggle id="enable-app-on-lock-screen-toggle"
-              aria-labelledby="lock-screen-toggle-label"
-              disabled="[[disallowedOnLockScreenByPolicy_(selectedApp_)]]"
-              checked="[[lockScreenSupportEnabled_(selectedApp_)]]"
-              on-change="toggleLockScreenSupport_"
-              deep-link-focus-id$="[[Setting.kStylusNoteTakingFromLockScreen]]">
-          </cr-toggle>
-        </div>
-
-        <template is="dom-if" if="[[lockScreenSupportEnabled_(selectedApp_)]]">
-          <settings-toggle-button id="keep-last-note-on-lock-screen-toggle"
-              class="hr"
-              pref="{{prefs.settings.restore_last_lock_screen_note}}"
-              label="$i18n{stylusNoteTakingAppKeepsLastNoteOnLockScreen}"
-              deep-link-focus-id$="[[Setting.kStylusLatestNoteOnLockScreen]]">
-          </settings-toggle-button>
-        </template>
-      </div>
+    <template is="dom-if" if="[[lockScreenSupportEnabled_(selectedApp_)]]">
+      <settings-toggle-button id="keep-last-note-on-lock-screen-toggle"
+          class="hr"
+          pref="{{prefs.settings.restore_last_lock_screen_note}}"
+          label="$i18n{stylusNoteTakingAppKeepsLastNoteOnLockScreen}"
+          deep-link-focus-id$="[[Setting.kStylusLatestNoteOnLockScreen]]">
+      </settings-toggle-button>
     </template>
-
-  </template>
-  <script src="stylus.js"></script>
-</dom-module>
+  </div>
+</template>

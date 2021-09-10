@@ -1,106 +1,80 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/html/load_time_data.html">
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="device_page_browser_proxy.html">
-<link rel="import" href="display.html">
-<link rel="import" href="keyboard.html">
-<link rel="import" href="pointers.html">
-<link rel="import" href="power.html">
-<link rel="import" href="storage.html">
-<link rel="import" href="storage_external.html">
-<link rel="import" href="stylus.html">
-<link rel="import" href="../../prefs/prefs.html">
-<link rel="import" href="../os_route.html">
-<link rel="import" href="../../router.html">
-<link rel="import" href="../../settings_page/settings_animated_pages.html">
-<link rel="import" href="../../settings_page/settings_subpage.html">
-<link rel="import" href="../../settings_shared_css.html">
-
-<dom-module id="settings-device-page">
-  <template>
-    <style include="settings-shared"></style>
-    <settings-animated-pages id="pages" section="device"
-        focus-config="[[focusConfig_]]">
-      <div id="main" route-path="default">
-        <cr-link-row id="pointersRow"
-            label="[[getPointersTitle_(hasMouse_, hasPointingStick_,
-                                       hasTouchpad_)]]"
-            on-click="onPointersTap_"
-            role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
-        <cr-link-row class="hr" id="keyboardRow" label="$i18n{keyboardTitle}"
-            on-click="onKeyboardTap_"
-            role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
-        <template is="dom-if" if="[[hasStylus_]]">
-          <cr-link-row class="hr" id="stylusRow" label="$i18n{stylusTitle}"
-              on-click="onStylusTap_"
-              role-description="$i18n{subpageArrowRoleDescription}">
-          </cr-link-row>
-        </template>
-        <cr-link-row class="hr" id="displayRow" label="$i18n{displayTitle}"
-            on-click="onDisplayTap_"
-            role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
-        <cr-link-row class="hr" hidden="[[hideStorageInfo_]]" id="storageRow"
-            label="$i18n{storageTitle}" on-click="onStorageTap_"
-            role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
-        <cr-link-row class="hr" id="powerRow" label="$i18n{powerTitle}"
-            on-click="onPowerTap_"
-            role-description="$i18n{subpageArrowRoleDescription}">
-        </cr-link-row>
-      </div>
-      <template is="dom-if" route-path="/pointer-overlay">
-        <settings-subpage
-            page-title="[[getPointersTitle_(hasMouse_, hasPointingStick_,
-                                            hasTouchpad_)]]">
-          <settings-pointers prefs="{{prefs}}"
-              has-mouse="[[hasMouse_]]"
-              has-pointing-stick="[[hasPointingStick_]]"
-              has-touchpad="[[hasTouchpad_]]">
-          </settings-pointers>
-        </settings-subpage>
-      </template>
-      <template is="dom-if" route-path="/keyboard-overlay">
-        <settings-subpage page-title="$i18n{keyboardTitle}">
-          <settings-keyboard prefs="{{prefs}}" focus-config="[[focusConfig_]]">
-          </settings-keyboard>
-        </settings-subpage>
-      </template>
-      <template is="dom-if" route-path="/stylus">
-        <settings-subpage page-title="$i18n{stylusTitle}">
-          <settings-stylus prefs="{{prefs}}"></settings-stylus>
-        </settings-subpage>
-      </template>
-      <template is="dom-if" route-path="/display">
-        <settings-subpage page-title="$i18n{displayTitle}">
-          <settings-display prefs="{{prefs}}"></settings-display>
-        </settings-subpage>
-      </template>
-      <template is="dom-if" route-path="/storage">
-        <settings-subpage page-title="$i18n{storageTitle}">
-          <settings-storage prefs="{{prefs}}"
-              show-crostini="[[showCrostini]]"
-              android-enabled="[[androidEnabled_]]">
-          </settings-storage>
-        </settings-subpage>
-      </template>
-      <template is="dom-if" if="[[androidEnabled_]]">
-        <template is="dom-if" route-path="/storage/externalStoragePreferences">
-          <settings-subpage
-              page-title="$i18n{storageExternal}">
-            <settings-storage-external prefs="{{prefs}}">
-            </settings-storage-external>
-          </settings-subpage>
-        </template>
-      </template>
-      <template is="dom-if" route-path="/power">
-        <settings-subpage
-            page-title="$i18n{powerTitle}">
-          <settings-power></settings-power>
-        </settings-subpage>
-      </template>
-    </settings-animated-pages>
+<style include="settings-shared"></style>
+<settings-animated-pages id="pages" section="device"
+    focus-config="[[focusConfig_]]">
+  <div id="main" route-path="default">
+    <cr-link-row id="pointersRow"
+        label="[[getPointersTitle_(hasMouse_, hasPointingStick_,
+                                   hasTouchpad_)]]"
+        on-click="onPointersTap_"
+        role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
+    <cr-link-row class="hr" id="keyboardRow" label="$i18n{keyboardTitle}"
+        on-click="onKeyboardTap_"
+        role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
+    <template is="dom-if" if="[[hasStylus_]]">
+      <cr-link-row class="hr" id="stylusRow" label="$i18n{stylusTitle}"
+          on-click="onStylusTap_"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+    </template>
+    <cr-link-row class="hr" id="displayRow" label="$i18n{displayTitle}"
+        on-click="onDisplayTap_"
+        role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
+    <cr-link-row class="hr" hidden="[[hideStorageInfo_]]" id="storageRow"
+        label="$i18n{storageTitle}" on-click="onStorageTap_"
+        role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
+    <cr-link-row class="hr" id="powerRow" label="$i18n{powerTitle}"
+        on-click="onPowerTap_"
+        role-description="$i18n{subpageArrowRoleDescription}">
+    </cr-link-row>
+  </div>
+  <template is="dom-if" route-path="/pointer-overlay">
+    <settings-subpage
+        page-title="[[getPointersTitle_(hasMouse_, hasPointingStick_,
+                                        hasTouchpad_)]]">
+      <settings-pointers prefs="{{prefs}}"
+          has-mouse="[[hasMouse_]]"
+          has-pointing-stick="[[hasPointingStick_]]"
+          has-touchpad="[[hasTouchpad_]]">
+      </settings-pointers>
+    </settings-subpage>
   </template>
-  <script src="device_page.js"></script>
-</dom-module>
+  <template is="dom-if" route-path="/keyboard-overlay">
+    <settings-subpage page-title="$i18n{keyboardTitle}">
+      <settings-keyboard prefs="{{prefs}}" focus-config="[[focusConfig_]]">
+      </settings-keyboard>
+    </settings-subpage>
+  </template>
+  <template is="dom-if" route-path="/stylus">
+    <settings-subpage page-title="$i18n{stylusTitle}">
+      <settings-stylus prefs="{{prefs}}"></settings-stylus>
+    </settings-subpage>
+  </template>
+  <template is="dom-if" route-path="/display">
+    <settings-subpage page-title="$i18n{displayTitle}">
+      <settings-display prefs="{{prefs}}"></settings-display>
+    </settings-subpage>
+  </template>
+  <template is="dom-if" route-path="/storage">
+    <settings-subpage page-title="$i18n{storageTitle}">
+      <settings-storage prefs="{{prefs}}"
+          show-crostini="[[showCrostini]]"
+          android-enabled="[[androidEnabled_]]">
+      </settings-storage>
+    </settings-subpage>
+  </template>
+  <template is="dom-if" if="[[androidEnabled_]]">
+    <template is="dom-if" route-path="/storage/externalStoragePreferences">
+      <settings-subpage
+          page-title="$i18n{storageExternal}">
+        <settings-storage-external prefs="{{prefs}}">
+        </settings-storage-external>
+      </settings-subpage>
+    </template>
+  </template>
+  <template is="dom-if" route-path="/power">
+    <settings-subpage
+        page-title="$i18n{powerTitle}">
+      <settings-power></settings-power>
+    </settings-subpage>
+  </template>
+</settings-animated-pages>

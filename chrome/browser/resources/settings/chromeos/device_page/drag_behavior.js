@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
+import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
 // clang-format on
 
 /**
@@ -17,7 +17,7 @@
  *   y: number
  * }}
  */
-/* #export */ let DragPosition;
+export let DragPosition;
 
 /**
  * Type of an ongoing drag.
@@ -31,7 +31,7 @@ const DragType = {
 };
 
 /** @polymerBehavior */
-/* #export */ const DragBehavior = {
+export const DragBehavior = {
   properties: {
     /** Whether or not drag is enabled (e.g. not mirrored). */
     dragEnabled: Boolean,

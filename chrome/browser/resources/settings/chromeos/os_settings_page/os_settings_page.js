@@ -22,7 +22,7 @@ import '../personalization_page/personalization_page.m.js';
 import '../../settings_page/settings_section.js';
 import '../../settings_page_css.js';
 import '../bluetooth_page/bluetooth_page.js';
-import '../device_page/device_page.m.js';
+import '../device_page/device_page.js';
 import '../internet_page/internet_page.js';
 import '../kerberos_page/kerberos_page.js';
 import '../multidevice_page/multidevice_page.m.js';

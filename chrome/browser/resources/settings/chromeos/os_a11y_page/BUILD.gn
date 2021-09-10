@@ -58,7 +58,7 @@ js_library("manage_a11y_page.m") {
     "//chrome/browser/resources/settings/chromeos:deep_linking_behavior.m",
     "//chrome/browser/resources/settings/chromeos:os_route.m",
     "//chrome/browser/resources/settings/chromeos:route_origin_behavior.m",
-    "//chrome/browser/resources/settings/chromeos/device_page:device_page_browser_proxy.m",
+    "//chrome/browser/resources/settings/chromeos/device_page:device_page_browser_proxy",
     "//chrome/browser/resources/settings/controls:settings_slider",
     "//chrome/browser/resources/settings/controls:settings_toggle_button",
     "//ui/webui/resources/js:i18n_behavior.m",

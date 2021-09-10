@@ -4,54 +4,48 @@
 
 import("//chrome/browser/resources/settings/chromeos/os_settings.gni")
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/polymer.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
+import("//tools/polymer/html_to_js.gni")
 import("../os_settings.gni")
 
 js_type_check("closure_compile_module") {
   closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [
-    ":device_page.m",
-    ":device_page_browser_proxy.m",
-    ":display.m",
-    ":display_layout.m",
-    ":display_overscan_dialog.m",
-    ":drag_behavior.m",
-    ":keyboard.m",
-    ":layout_behavior.m",
-    ":pointers.m",
-    ":power.m",
-    ":storage.m",
-    ":storage_external.m",
-    ":storage_external_entry.m",
-    ":stylus.m",
+    ":device_page",
+    ":device_page_browser_proxy",
+    ":display",
+    ":display_layout",
+    ":display_overscan_dialog",
+    ":drag_behavior",
+    ":keyboard",
+    ":layout_behavior",
+    ":pointers",
+    ":power",
+    ":storage",
+    ":storage_external",
+    ":storage_external_entry",
+    ":stylus",
   ]
 }
 
-js_library("device_page.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/device_page/device_page.m.js" ]
+js_library("device_page") {
   deps = [
-    ":device_page_browser_proxy.m",
+    ":device_page_browser_proxy",
     "..:os_route.m",
     "../..:router",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
-  extra_deps = [ ":device_page_module" ]
 }
 
-js_library("device_page_browser_proxy.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/device_page/device_page_browser_proxy.m.js" ]
+js_library("device_page_browser_proxy") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
   externs_list = [
     "$externs_path/chrome_send.js",
     "$externs_path/system_display.js",
   ]
-  extra_deps = [ ":modulize" ]
 }
 
-js_library("display.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/device_page/display.m.js" ]
+js_library("display") {
   deps = [
     "..:os_route.m",
     "../..:router",
@@ -61,44 +55,36 @@ js_library("display.m") {
     "//ui/webui/resources/cr_elements/cr_slider:cr_slider",
     "//ui/webui/resources/js:cr.m",
   ]
-  extra_deps = [ ":display_module" ]
   externs_list = chrome_extension_public_externs + [
                    "$externs_path/settings_private.js",
                    "$externs_path/system_display.js",
                  ]
 }
 
-js_library("display_layout.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/device_page/display_layout.m.js" ]
+js_library("display_layout") {
   deps = [
-    ":drag_behavior.m",
-    ":layout_behavior.m",
+    ":drag_behavior",
+    ":layout_behavior",
   ]
-  extra_deps = [ ":display_layout_module" ]
 }
 
-js_library("display_overscan_dialog.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/device_page/display_overscan_dialog.m.js" ]
+js_library("display_overscan_dialog") {
   deps = [
-    ":display.m",
+    ":display",
     "//ui/webui/resources/js:cr.m",
   ]
-  extra_deps = [ ":display_overscan_dialog_module" ]
 }
 
-js_library("drag_behavior.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/device_page/drag_behavior.m.js" ]
+js_library("drag_behavior") {
   deps = [
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
   ]
-  extra_deps = [ ":modulize" ]
 }
 
-js_library("keyboard.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/device_page/keyboard.m.js" ]
+js_library("keyboard") {
   deps = [
-    ":device_page_browser_proxy.m",
+    ":device_page_browser_proxy",
     "..:deep_linking_behavior.m",
     "..:os_route.m",
     "../..:i18n_setup",
@@ -107,39 +93,33 @@ js_library("keyboard.m") {
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
   ]
-  extra_deps = [ ":keyboard_module" ]
 }
 
-js_library("layout_behavior.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/device_page/layout_behavior.m.js" ]
+js_library("layout_behavior") {
   deps = [
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
   ]
-  extra_deps = [ ":modulize" ]
   externs_list = [
     "$externs_path/system_display.js",
     "$externs_path/runtime.js",
   ]
 }
 
-js_library("pointers.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/device_page/pointers.m.js" ]
+js_library("pointers") {
   deps = [
-    ":device_page_browser_proxy.m",
+    ":device_page_browser_proxy",
     "..:deep_linking_behavior.m",
     "..:os_route.m",
     "../..:router",
     "../../controls:settings_toggle_button",
     "//ui/webui/resources/cr_components/chromeos/localized_link:localized_link",
   ]
-  extra_deps = [ ":pointers_module" ]
 }
 
-js_library("power.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/device_page/power.m.js" ]
+js_library("power") {
   deps = [
-    ":device_page_browser_proxy.m",
+    ":device_page_browser_proxy",
     "..:deep_linking_behavior.m",
     "..:metrics_recorder.m",
     "..:os_route.m",
@@ -148,13 +128,11 @@ js_library("power.m") {
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
-  extra_deps = [ ":power_module" ]
 }
 
-js_library("storage.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/device_page/storage.m.js" ]
+js_library("storage") {
   deps = [
-    ":device_page_browser_proxy.m",
+    ":device_page_browser_proxy",
     "..:os_route.m",
     "..:route_origin_behavior.m",
     "../..:router",
@@ -164,32 +142,26 @@ js_library("storage.m") {
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
     "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
   ]
-  extra_deps = [ ":storage_module" ]
 }
 
-js_library("storage_external.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/device_page/storage_external.m.js" ]
+js_library("storage_external") {
   deps = [
-    ":device_page_browser_proxy.m",
+    ":device_page_browser_proxy",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
-  extra_deps = [ ":storage_external_module" ]
 }
 
-js_library("storage_external_entry.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/device_page/storage_external_entry.m.js" ]
+js_library("storage_external_entry") {
   deps = [
     "../../prefs:prefs_behavior",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
-  extra_deps = [ ":storage_external_entry_module" ]
 }
 
-js_library("stylus.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/device_page/stylus.m.js" ]
+js_library("stylus") {
   deps = [
-    ":device_page_browser_proxy.m",
+    ":device_page_browser_proxy",
     "..:deep_linking_behavior.m",
     "..:metrics_recorder.m",
     "..:os_route.m",
@@ -200,130 +172,20 @@ js_library("stylus.m") {
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
-  extra_deps = [ ":stylus_module" ]
 }
 
-group("polymer3_elements") {
-  public_deps = [
-    ":device_page_module",
-    ":display_layout_module",
-    ":display_module",
-    ":display_overscan_dialog_module",
-    ":keyboard_module",
-    ":modulize",
-    ":pointers_module",
-    ":power_module",
-    ":storage_external_entry_module",
-    ":storage_external_module",
-    ":storage_module",
-    ":stylus_module",
+html_to_js("web_components") {
+  js_files = [
+    "device_page.js",
+    "display_layout.js",
+    "display.js",
+    "display_overscan_dialog.js",
+    "keyboard.js",
+    "pointers.js",
+    "power.js",
+    "storage_external_entry.js",
+    "storage_external.js",
+    "storage.js",
+    "stylus.js",
   ]
-}
-
-polymer_modulizer("device_page") {
-  js_file = "device_page.js"
-  html_file = "device_page.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  auto_imports = os_settings_auto_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-}
-
-polymer_modulizer("display") {
-  js_file = "display.js"
-  html_file = "display.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  auto_imports = os_settings_auto_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-}
-
-polymer_modulizer("display_layout") {
-  js_file = "display_layout.js"
-  html_file = "display_layout.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  auto_imports = os_settings_auto_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-}
-
-polymer_modulizer("display_overscan_dialog") {
-  js_file = "display_overscan_dialog.js"
-  html_file = "display_overscan_dialog.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  auto_imports = os_settings_auto_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-}
-
-polymer_modulizer("keyboard") {
-  js_file = "keyboard.js"
-  html_file = "keyboard.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  auto_imports = os_settings_auto_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-}
-
-polymer_modulizer("pointers") {
-  js_file = "pointers.js"
-  html_file = "pointers.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  auto_imports = os_settings_auto_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-}
-
-polymer_modulizer("power") {
-  js_file = "power.js"
-  html_file = "power.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  auto_imports = os_settings_auto_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-}
-
-polymer_modulizer("storage") {
-  js_file = "storage.js"
-  html_file = "storage.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  auto_imports = os_settings_auto_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-}
-
-polymer_modulizer("storage_external") {
-  js_file = "storage_external.js"
-  html_file = "storage_external.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  auto_imports = os_settings_auto_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-}
-
-polymer_modulizer("storage_external_entry") {
-  js_file = "storage_external_entry.js"
-  html_file = "storage_external_entry.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  auto_imports = os_settings_auto_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-}
-
-polymer_modulizer("stylus") {
-  js_file = "stylus.js"
-  html_file = "stylus.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  auto_imports = os_settings_auto_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-}
-
-js_modulizer("modulize") {
-  input_files = [
-    "device_page_browser_proxy.js",
-    "drag_behavior.js",
-    "layout_behavior.js",
-  ]
-  namespace_rewrites = os_settings_namespace_rewrites
 }

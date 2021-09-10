@@ -8,7 +8,20 @@
  * adjustments.
  */
 
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import '//resources/cr_elements/icons.m.js';
+import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../os_icons.m.js';
+import '../../settings_shared_css.js';
+
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {BatteryStatus, DevicePageBrowserProxy, DevicePageBrowserProxyImpl, ExternalStorage, getDisplayApi, IdleBehavior, LidClosedBehavior, NoteAppInfo, NoteAppLockScreenSupport, PowerManagementSettings, PowerSource, StorageSpaceState} from './device_page_browser_proxy.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-display-overscan-dialog',
 
   properties: {
@@ -54,24 +67,24 @@ Polymer({
   /** @private */
   displayIdChanged_(newValue, oldValue) {
     if (oldValue && !this.committed_) {
-      settings.getDisplayApi().overscanCalibrationReset(oldValue);
-      settings.getDisplayApi().overscanCalibrationComplete(oldValue);
+      getDisplayApi().overscanCalibrationReset(oldValue);
+      getDisplayApi().overscanCalibrationComplete(oldValue);
     }
     if (!newValue) {
       return;
     }
     this.committed_ = false;
-    settings.getDisplayApi().overscanCalibrationStart(newValue);
+    getDisplayApi().overscanCalibrationStart(newValue);
   },
 
   /** @private */
   onResetTap_() {
-    settings.getDisplayApi().overscanCalibrationReset(this.displayId);
+    getDisplayApi().overscanCalibrationReset(this.displayId);
   },
 
   /** @private */
   onSaveTap_() {
-    settings.getDisplayApi().overscanCalibrationComplete(this.displayId);
+    getDisplayApi().overscanCalibrationComplete(this.displayId);
     this.committed_ = true;
     this.close();
   },
@@ -132,7 +145,7 @@ Polymer({
       right: x ? -x : 0,  // negating 0 will produce a double.
       bottom: y ? -y : 0,
     };
-    settings.getDisplayApi().overscanCalibrationAdjust(this.displayId, delta);
+    getDisplayApi().overscanCalibrationAdjust(this.displayId, delta);
   },
 
   /**
@@ -147,6 +160,6 @@ Polymer({
       right: x,
       bottom: y,
     };
-    settings.getDisplayApi().overscanCalibrationAdjust(this.displayId, delta);
+    getDisplayApi().overscanCalibrationAdjust(this.displayId, delta);
   }
 });

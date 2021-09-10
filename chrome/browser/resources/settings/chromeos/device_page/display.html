@@ -1,384 +1,351 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="settings-shared md-select iron-flex iron-flex-alignment">
+  .indented {
+    align-self: stretch;
+    margin-inline-start: var(--cr-section-indent-padding);
+    padding: 0;
+  }
 
-<link rel="import" href="chrome://resources/cr_elements/cr_slider/cr_slider.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_checkbox/cr_checkbox.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_tabs/cr_tabs.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_toggle/cr_toggle.html">
-<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_pref_indicator.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/cr_elements/md_select_css.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="chrome://resources/html/load_time_data.html">
-<link rel="import" href="device_page_browser_proxy.html">
-<link rel="import" href="display_layout.html">
-<link rel="import" href="display_overscan_dialog.html">
-<link rel="import" href="../os_route.html">
-<link rel="import" href="../deep_linking_behavior.html">
-<link rel="import" href="../settings_scheduler_slider/settings_scheduler_slider.html">
-<link rel="import" href="../../controls/settings_dropdown_menu.html">
-<link rel="import" href="../../controls/settings_slider.html">
-<link rel="import" href="../../prefs/prefs_behavior.html">
-<link rel="import" href="../../router.html">
-<link rel="import" href="../../settings_shared_css.html">
-<link rel="import" href="../../settings_vars_css.html">
+  #nightLightTemperatureDiv[disabled] {
+    opacity: 0.38;
+    pointer-events: none;
+  }
 
-<dom-module id="settings-display">
-  <template>
-    <style include="settings-shared md-select iron-flex iron-flex-alignment">
-      .indented {
-        align-self: stretch;
-        margin-inline-start: var(--cr-section-indent-padding);
-        padding: 0;
-      }
+  .display-tabs {
+    width: 100%;
+  }
 
-      #nightLightTemperatureDiv[disabled] {
-        opacity: 0.38;
-        pointer-events: none;
-      }
+  display-layout {
+    align-self: stretch;
+    flex: 1 1;
+    height: 300px;
+    margin: 10px;
+    min-height: 300px;
+  }
 
-      .display-tabs {
-        width: 100%;
-      }
+  .text-area {
+    margin: 10px 0;
+  }
 
-      display-layout {
-        align-self: stretch;
-        flex: 1 1;
-        height: 300px;
-        margin: 10px;
-        min-height: 300px;
-      }
+  .settings-box > cr-button:first-child {
+    padding-inline-start: 0
+  }
 
-      .text-area {
-        margin: 10px 0;
-      }
+  .settings-box > cr-policy-pref-indicator {
+    margin-inline-end: var(--cr-controlled-by-spacing);
+  }
 
-      .settings-box > cr-button:first-child {
-        padding-inline-start: 0
-      }
+  .underbar {
+    border-bottom: var(--cr-separator-line);
+  }
 
-      .settings-box > cr-policy-pref-indicator {
-        margin-inline-end: var(--cr-controlled-by-spacing);
-      }
+  #controlsDiv > .settings-box:first-of-type {
+    border-top: none;
+  }
 
-      .underbar {
-        border-bottom: var(--cr-separator-line);
-      }
+  #nightLightSlider {
+    flex-grow: 1;
+    margin-top: 20px;
+  }
 
-      #controlsDiv > .settings-box:first-of-type {
-        border-top: none;
-      }
+  iron-collapse {
+   width: 100%;
+  }
+</style>
 
-      #nightLightSlider {
-        flex-grow: 1;
-        margin-top: 20px;
-      }
+<!-- Arrangement section -->
+<template is="dom-if"
+    if="[[shouldShowArrangementSection_(displays)]]" restamp>
+  <div class="settings-box first layout vertical self-stretch underbar"
+      id="arrangement-section">
+    <h2 class="layout self-start">
+      $i18n{displayArrangementTitle}
+    </h2>
+    <div class="secondary layout self-start"
+        hidden="[[isMirrored_(displays)]]">
+      $i18n{displayArrangementText}
+    </div>
+    <display-layout id="displayLayout"
+        selected-display="[[selectedDisplay]]"
+        on-select-display="onSelectDisplay_"
+        deep-link-focus-id$="[[Setting.kDisplayArrangement]]">
+    </display-layout>
 
-      iron-collapse {
-       width: 100%;
-      }
-    </style>
-
-    <!-- Arrangement section -->
     <template is="dom-if"
-        if="[[shouldShowArrangementSection_(displays)]]" restamp>
-      <div class="settings-box first layout vertical self-stretch underbar"
-          id="arrangement-section">
-        <h2 class="layout self-start">
-          $i18n{displayArrangementTitle}
-        </h2>
-        <div class="secondary layout self-start"
-            hidden="[[isMirrored_(displays)]]">
-          $i18n{displayArrangementText}
-        </div>
-        <display-layout id="displayLayout"
-            selected-display="[[selectedDisplay]]"
-            on-select-display="onSelectDisplay_"
-            deep-link-focus-id$="[[Setting.kDisplayArrangement]]">
-        </display-layout>
-
-        <template is="dom-if"
-            if="[[showMirror_(unifiedDesktopMode_, displays)]]" restamp>
-          <div class="secondary self-start">
-            <cr-checkbox id="displayMirrorCheckbox"
-                checked="[[isMirrored_(displays)]]"
-                on-click="onMirroredTap_"
-                aria-label="[[getDisplayMirrorText_(displays)]]"
-                deep-link-focus-id$="[[Setting.kDisplayMirroring]]">
-              <div class="text-area">[[getDisplayMirrorText_(displays)]]</div>
-            </cr-checkbox>
-          </div>
-        </template>
+        if="[[showMirror_(unifiedDesktopMode_, displays)]]" restamp>
+      <div class="secondary self-start">
+        <cr-checkbox id="displayMirrorCheckbox"
+            checked="[[isMirrored_(displays)]]"
+            on-click="onMirroredTap_"
+            aria-label="[[getDisplayMirrorText_(displays)]]"
+            deep-link-focus-id$="[[Setting.kDisplayMirroring]]">
+          <div class="text-area">[[getDisplayMirrorText_(displays)]]</div>
+        </cr-checkbox>
       </div>
     </template>
+  </div>
+</template>
 
-    <!-- Display tabs -->
-    <div hidden="[[!hasMultipleDisplays_(displays)]]"
-        class="settings-box first">
-      <cr-tabs selected="[[selectedTab_]]" class="display-tabs"
-          on-selected-changed="onSelectDisplayTab_"
-          tab-names="[[displayTabNames_]]"></cr-tabs>
-    </div>
+<!-- Display tabs -->
+<div hidden="[[!hasMultipleDisplays_(displays)]]"
+    class="settings-box first">
+  <cr-tabs selected="[[selectedTab_]]" class="display-tabs"
+      on-selected-changed="onSelectDisplayTab_"
+      tab-names="[[displayTabNames_]]"></cr-tabs>
+</div>
 
-    <div id="controlsDiv" class="settings-box layout vertical first">
-      <h2>[[selectedDisplay.name]]</h2>
-      <template is="dom-if" if="[[showUnifiedDesktop_(unifiedDesktopAvailable_,
-          unifiedDesktopMode_, displays)]]" restamp>
-        <div class="settings-box indented two-line">
-          <div class="start">
-            <div id="displayUnifiedDesktopCheckboxLabel">
-              $i18n{displayUnifiedDesktop}
-            </div>
-            <div class="secondary">
-              [[getUnifiedDesktopText_(unifiedDesktopMode_)]]
-            </div>
-          </div>
-          <cr-toggle checked="[[unifiedDesktopMode_]]"
-              on-click="onUnifiedDesktopTap_"
-              aria-labelledby="displayUnifiedDesktopCheckboxLabel"
-              deep-link-focus-id$="[[Setting.kAllowWindowsToSpanDisplays]]">
-          </cr-toggle>
+<div id="controlsDiv" class="settings-box layout vertical first">
+  <h2>[[selectedDisplay.name]]</h2>
+  <template is="dom-if" if="[[showUnifiedDesktop_(unifiedDesktopAvailable_,
+      unifiedDesktopMode_, displays)]]" restamp>
+    <div class="settings-box indented two-line">
+      <div class="start">
+        <div id="displayUnifiedDesktopCheckboxLabel">
+          $i18n{displayUnifiedDesktop}
         </div>
-      </template>
-
-      <template is="dom-if" restamp
-          if="[[showDisplaySelectMenu_(displays, selectedDisplay)]]">
-        <div class="settings-box indented">
-          <div id="displayScreenTitle" class="start" aria-hidden="true">
-            $i18n{displayScreenTitle}
-          </div>
-          <select class="md-select" on-change="updatePrimaryDisplay_"
-              aria-labelledby="displayScreenTitle"
-              value="[[getDisplaySelectMenuIndex_(
-                  selectedDisplay, primaryDisplayId)]]">
-            <option value="0">$i18n{displayScreenPrimary}</option>
-            <option value="1">$i18n{displayScreenExtended}</option>
-          </select>
+        <div class="secondary">
+          [[getUnifiedDesktopText_(unifiedDesktopMode_)]]
         </div>
-      </template>
-
-      <!-- Display zoom selection slider -->
-      <div class="settings-box indented two-line first">
-        <div class="start text-area layout vertical">
-          <div id="displayZoomTitle" aria-hidden="true">
-            $i18n{displayZoomTitle}
-          </div>
-          <div id="displayZoomSublabel" class="secondary self-start"
-              aria-hidden="true">
-            $i18n{displayZoomSublabel}
-          </div>
-          <div id="logicalResolutionText" class="secondary self-start"
-              hidden$="[[!logicalResolutionText_]]" aria-hidden="true">
-            [[logicalResolutionText_]]
-          </div>
-        </div>
-        <template is="dom-if" if="[[isDisplayScaleManagedByPolicy_(
-            selectedDisplay, prefs.cros.device_display_resolution)]]">
-          <cr-policy-pref-indicator
-              pref="[[prefs.cros.device_display_resolution]]"
-              icon-aria-label="$i18n{displayZoomTitle}">
-          </cr-policy-pref-indicator>
-        </template>
-        <settings-slider id="displaySizeSlider"
-            ticks="[[zoomValues_]]" pref="{{selectedZoomPref_}}"
-            label-aria="$i18n{displayZoomTitle}"
-            label-min="$i18n{displaySizeSliderMinLabel}"
-            label-max="$i18n{displaySizeSliderMaxLabel}"
-            disabled="[[isDisplayScaleMandatory_(
-                selectedDisplay,
-                prefs.cros.device_display_resolution)]]"
-            on-cr-slider-value-changed="onDisplaySizeSliderDrag_"
-            aria-describedby="displayZoomSublabel logicalResolutionText"
-            deep-link-focus-id$="[[Setting.kDisplaySize]]">
-        </settings-slider>
       </div>
-
-      <!-- Drop down select menu for resolution -->
-      <template is="dom-if"
-          if="[[showDropDownResolutionSetting_(selectedDisplay)]]" restamp>
-        <div class="settings-box indented two-line">
-          <div class="start text-area layout vertical" aria-hidden="true">
-            <div>$i18n{displayResolutionTitle}</div>
-            <div class="secondary self-start" id="displayResolutionSublabel">
-              $i18n{displayResolutionSublabel}
-            </div>
-          </div>
-          <template is="dom-if" if="[[isDisplayResolutionManagedByPolicy_(
-              prefs.cros.device_display_resolution)]]">
-            <cr-policy-pref-indicator
-                pref="[[prefs.cros.device_display_resolution]]"
-                icon-aria-label="$i18n{displayResolutionTitle}">
-            </cr-policy-pref-indicator>
-          </template>
-          <settings-dropdown-menu id="displayModeSelector"
-              pref="{{selectedParentModePref_}}"
-              disabled="[[isDisplayResolutionMandatory_(
-                  prefs.cros.device_display_resolution)]]"
-              label="$i18n{displayResolutionTitle}"
-              aria-describedby="displayResolutionSublabel"
-              menu-options="[[displayModeList_]]"
-              deep-link-focus-id$="[[Setting.kDisplayResolution]]">
-          </settings-dropdown-menu>
-        </div>
-      </template>
-
-      <!-- Drop down select menu for refresh rate -->
-      <template is="dom-if" if="[[showRefreshRateSetting_(selectedDisplay)]]"
-          restamp>
-        <div class="settings-box indented two-line">
-          <div class="start text-area layout vertical" aria-hidden="true">
-            <div>$i18n{displayRefreshRateTitle}</div>
-            <div class="secondary self-start" id="displayRefreshRateSublabel">
-              $i18n{displayRefreshRateSublabel}
-            </div>
-          </div>
-          <template is="dom-if" if="[[isDisplayResolutionManagedByPolicy_(
-              prefs.cros.devicte_display_resolution)]]">
-            <cr-policy-pref-indicator
-                pref="[[prefs.cros.device_display_resolution]]"
-                icon-aria-label="$i18n{displayResolutionText}">
-            </cr-policy-pref-indicator>
-          </template>
-          <settings-dropdown-menu id="refreshRateSelector"
-              pref="{{selectedModePref_}}"
-              disabled="[[isDisplayResolutionMandatory_(
-                  prefs.cros.device_display_resolution)]]"
-              label="Refresh Rate Menu"
-              aria-describedby="displayRefreshRateSublabel"
-              menu-options="[[refreshRateList_]]"
-              deep-link-focus-id$="[[Setting.kDisplayRefreshRate]]">
-          </settings-dropdown-menu>
-        </div>
-      </template>
-
-
-      <template is="dom-if" if="[[!unifiedDesktopMode_]]" restamp>
-        <div class="settings-box indented">
-          <div id="displayOrientation" class="start text-area"
-              aria-hidden="true">
-            $i18n{displayOrientation}
-          </div>
-          <template is="dom-if" if="[[isDevicePolicyEnabled_(
-              prefs.cros.display_rotation_default)]]">
-            <cr-policy-pref-indicator
-                pref="[[prefs.cros.display_rotation_default]]"
-                icon-aria-label="$i18n{displayOrientation}">
-            </cr-policy-pref-indicator>
-          </template>
-          <select class="md-select"
-              value="[[selectedDisplay.rotation]]"
-              aria-labelledby="displayOrientation"
-              on-change="onOrientationChange_"
-              deep-link-focus-id$="[[Setting.kDisplayOrientation]]">
-            <option value="-1"
-                hidden$="[[!showAutoRotateOption_(selectedDisplay)]]">
-              $i18n{displayOrientationAutoRotate}
-            </option>
-            <option value="0">$i18n{displayOrientationStandard}</option>
-            <option value="90">90&deg;</option>
-            <option value="180">180&deg;</option>
-            <option value="270">270&deg;</option>
-          </select>
-        </div>
-      </template>
-
-      <template is="dom-if" if="[[showAmbientColorSetting_(
-          ambientColorAvailable_, selectedDisplay)]]">
-        <settings-toggle-button id="ambientColor"
-            class="indented hr"
-            pref="{{prefs.ash.ambient_color.enabled}}"
-            label="$i18n{displayAmbientColorTitle}"
-            sub-label="$i18n{displayAmbientColorSubtitle}"
-            deep-link-focus-id$="[[Setting.kAmbientColors]]">
-        </settings-toggle-button>
-      </template>
-
-      <cr-link-row class="indented hr" id="overscan"
-          label="$i18n{displayOverscanPageTitle}"
-          sub-label="$i18n{displayOverscanPageText}" on-click="onOverscanTap_"
-          hidden$="[[!showOverscanSetting_(selectedDisplay)]]" embedded
-          deep-link-focus-id$="[[Setting.kDisplayOverscan]]">
-      </cr-link-row>
-
-      <settings-display-overscan-dialog id="displayOverscan"
-          display-id="{{overscanDisplayId}}"
-          on-close="onCloseOverscanDialog_">
-      </settings-display-overscan-dialog>
-
-      <!-- Link row to touch calibration -->
-      <cr-link-row class="indented hr" id="touchCalibration"
-          label="$i18n{displayTouchCalibrationTitle}"
-          sub-label="$i18n{displayTouchCalibrationText}"
-          on-click="onTouchCalibrationTap_"
-          hidden$="[[!showTouchCalibrationSetting_(selectedDisplay)]]" embedded
-          deep-link-focus-id$="[[Setting.kTouchscreenCalibration]]">
-      </cr-link-row>
+      <cr-toggle checked="[[unifiedDesktopMode_]]"
+          on-click="onUnifiedDesktopTap_"
+          aria-labelledby="displayUnifiedDesktopCheckboxLabel"
+          deep-link-focus-id$="[[Setting.kAllowWindowsToSpanDisplays]]">
+      </cr-toggle>
     </div>
-
-    <!-- Night Light Settings -->
-    <settings-toggle-button
-        id="nightLightToggleButton"
-        class="hr"
-        label="$i18n{displayNightLightLabel}"
-        pref="{{prefs.ash.night_light.enabled}}"
-        sub-label="$i18n{displayNightLightText}"
-        deep-link-focus-id$="[[Setting.kNightLight]]">
-    </settings-toggle-button>
-
-    <div id="nightLightSettingsDiv"
-        class="settings-box continuation start layout vertical">
-      <!-- Color temperature slider -->
-      <div id="nightLightTemperatureDiv"
-          class="settings-box indented continuation"
-          hidden$="[[!prefs.ash.night_light.enabled.value]]">
-        <div class="start text-area" id="colorTemperatureLabel">
-          $i18n{displayNightLightTemperatureLabel}
-        </div>
-        <settings-slider id="colorTemperatureSlider"
-            aria-labelledby="colorTemperatureLabel" min="0" max="100"
-            scale="100" label-min="$i18n{displayNightLightTempSliderMinLabel}"
-            label-max="$i18n{displayNightLightTempSliderMaxLabel}"
-            pref="{{prefs.ash.night_light.color_temperature}}"
-            deep-link-focus-id$="[[Setting.kNightLightColorTemperature]]">
-        </settings-slider>
-      </div>
-      <!-- Schedule settings -->
-      <div class="settings-box indented">
-        <div class="start text-area" aria-hidden="true">
-          <div id="nightLightScheduleLabel" class="label">
-            $i18n{displayNightLightScheduleLabel}
-          </div>
-          <div id="nightLightScheduleSubLabel" class="secondary label"
-              hidden$="[[!nightLightScheduleSubLabel_]]">
-            [[nightLightScheduleSubLabel_]]
-          </div>
-        </div>
-        <settings-dropdown-menu
-            id="nightLightScheduleTypeDropDown"
-            label="$i18n{displayNightLightScheduleLabel}"
-            aria-describedby="nightLightScheduleSubLabel"
-            pref="{{prefs.ash.night_light.schedule_type}}"
-            menu-options="[[scheduleTypesList_]]">
-        </settings-dropdown-menu>
-      </div>
-      <!-- Custom schedule slider -->
-      <iron-collapse id="nightLightCustomScheduleCollapse"
-          opened="[[shouldOpenCustomScheduleCollapse_]]">
-        <div class="settings-box indented continuation">
-          <div class="start text-area layout vertical">
-            <div class="settings-box continuation self-stretch">
-              <settings-scheduler-slider id="nightLightSlider" prefs="{{prefs}}"
-                  pref-start-time="{{prefs.ash.night_light.custom_start_time}}"
-                  pref-end-time="{{prefs.ash.night_light.custom_end_time}}">
-              </settings-scheduler-slider>
-            </div>
-          </div>
-        </div>
-      </iron-collapse>
-    </div>
-
   </template>
-  <script src="display.js"></script>
-</dom-module>
+
+  <template is="dom-if" restamp
+      if="[[showDisplaySelectMenu_(displays, selectedDisplay)]]">
+    <div class="settings-box indented">
+      <div id="displayScreenTitle" class="start" aria-hidden="true">
+        $i18n{displayScreenTitle}
+      </div>
+      <select class="md-select" on-change="updatePrimaryDisplay_"
+          aria-labelledby="displayScreenTitle"
+          value="[[getDisplaySelectMenuIndex_(
+              selectedDisplay, primaryDisplayId)]]">
+        <option value="0">$i18n{displayScreenPrimary}</option>
+        <option value="1">$i18n{displayScreenExtended}</option>
+      </select>
+    </div>
+  </template>
+
+  <!-- Display zoom selection slider -->
+  <div class="settings-box indented two-line first">
+    <div class="start text-area layout vertical">
+      <div id="displayZoomTitle" aria-hidden="true">
+        $i18n{displayZoomTitle}
+      </div>
+      <div id="displayZoomSublabel" class="secondary self-start"
+          aria-hidden="true">
+        $i18n{displayZoomSublabel}
+      </div>
+      <div id="logicalResolutionText" class="secondary self-start"
+          hidden$="[[!logicalResolutionText_]]" aria-hidden="true">
+        [[logicalResolutionText_]]
+      </div>
+    </div>
+    <template is="dom-if" if="[[isDisplayScaleManagedByPolicy_(
+        selectedDisplay, prefs.cros.device_display_resolution)]]">
+      <cr-policy-pref-indicator
+          pref="[[prefs.cros.device_display_resolution]]"
+          icon-aria-label="$i18n{displayZoomTitle}">
+      </cr-policy-pref-indicator>
+    </template>
+    <settings-slider id="displaySizeSlider"
+        ticks="[[zoomValues_]]" pref="{{selectedZoomPref_}}"
+        label-aria="$i18n{displayZoomTitle}"
+        label-min="$i18n{displaySizeSliderMinLabel}"
+        label-max="$i18n{displaySizeSliderMaxLabel}"
+        disabled="[[isDisplayScaleMandatory_(
+            selectedDisplay,
+            prefs.cros.device_display_resolution)]]"
+        on-cr-slider-value-changed="onDisplaySizeSliderDrag_"
+        aria-describedby="displayZoomSublabel logicalResolutionText"
+        deep-link-focus-id$="[[Setting.kDisplaySize]]">
+    </settings-slider>
+  </div>
+
+  <!-- Drop down select menu for resolution -->
+  <template is="dom-if"
+      if="[[showDropDownResolutionSetting_(selectedDisplay)]]" restamp>
+    <div class="settings-box indented two-line">
+      <div class="start text-area layout vertical" aria-hidden="true">
+        <div>$i18n{displayResolutionTitle}</div>
+        <div class="secondary self-start" id="displayResolutionSublabel">
+          $i18n{displayResolutionSublabel}
+        </div>
+      </div>
+      <template is="dom-if" if="[[isDisplayResolutionManagedByPolicy_(
+          prefs.cros.device_display_resolution)]]">
+        <cr-policy-pref-indicator
+            pref="[[prefs.cros.device_display_resolution]]"
+            icon-aria-label="$i18n{displayResolutionTitle}">
+        </cr-policy-pref-indicator>
+      </template>
+      <settings-dropdown-menu id="displayModeSelector"
+          pref="{{selectedParentModePref_}}"
+          disabled="[[isDisplayResolutionMandatory_(
+              prefs.cros.device_display_resolution)]]"
+          label="$i18n{displayResolutionTitle}"
+          aria-describedby="displayResolutionSublabel"
+          menu-options="[[displayModeList_]]"
+          deep-link-focus-id$="[[Setting.kDisplayResolution]]">
+      </settings-dropdown-menu>
+    </div>
+  </template>
+
+  <!-- Drop down select menu for refresh rate -->
+  <template is="dom-if" if="[[showRefreshRateSetting_(selectedDisplay)]]"
+      restamp>
+    <div class="settings-box indented two-line">
+      <div class="start text-area layout vertical" aria-hidden="true">
+        <div>$i18n{displayRefreshRateTitle}</div>
+        <div class="secondary self-start" id="displayRefreshRateSublabel">
+          $i18n{displayRefreshRateSublabel}
+        </div>
+      </div>
+      <template is="dom-if" if="[[isDisplayResolutionManagedByPolicy_(
+          prefs.cros.devicte_display_resolution)]]">
+        <cr-policy-pref-indicator
+            pref="[[prefs.cros.device_display_resolution]]"
+            icon-aria-label="$i18n{displayResolutionText}">
+        </cr-policy-pref-indicator>
+      </template>
+      <settings-dropdown-menu id="refreshRateSelector"
+          pref="{{selectedModePref_}}"
+          disabled="[[isDisplayResolutionMandatory_(
+              prefs.cros.device_display_resolution)]]"
+          label="Refresh Rate Menu"
+          aria-describedby="displayRefreshRateSublabel"
+          menu-options="[[refreshRateList_]]"
+          deep-link-focus-id$="[[Setting.kDisplayRefreshRate]]">
+      </settings-dropdown-menu>
+    </div>
+  </template>
+
+
+  <template is="dom-if" if="[[!unifiedDesktopMode_]]" restamp>
+    <div class="settings-box indented">
+      <div id="displayOrientation" class="start text-area"
+          aria-hidden="true">
+        $i18n{displayOrientation}
+      </div>
+      <template is="dom-if" if="[[isDevicePolicyEnabled_(
+          prefs.cros.display_rotation_default)]]">
+        <cr-policy-pref-indicator
+            pref="[[prefs.cros.display_rotation_default]]"
+            icon-aria-label="$i18n{displayOrientation}">
+        </cr-policy-pref-indicator>
+      </template>
+      <select class="md-select"
+          value="[[selectedDisplay.rotation]]"
+          aria-labelledby="displayOrientation"
+          on-change="onOrientationChange_"
+          deep-link-focus-id$="[[Setting.kDisplayOrientation]]">
+        <option value="-1"
+            hidden$="[[!showAutoRotateOption_(selectedDisplay)]]">
+          $i18n{displayOrientationAutoRotate}
+        </option>
+        <option value="0">$i18n{displayOrientationStandard}</option>
+        <option value="90">90&deg;</option>
+        <option value="180">180&deg;</option>
+        <option value="270">270&deg;</option>
+      </select>
+    </div>
+  </template>
+
+  <template is="dom-if" if="[[showAmbientColorSetting_(
+      ambientColorAvailable_, selectedDisplay)]]">
+    <settings-toggle-button id="ambientColor"
+        class="indented hr"
+        pref="{{prefs.ash.ambient_color.enabled}}"
+        label="$i18n{displayAmbientColorTitle}"
+        sub-label="$i18n{displayAmbientColorSubtitle}"
+        deep-link-focus-id$="[[Setting.kAmbientColors]]">
+    </settings-toggle-button>
+  </template>
+
+  <cr-link-row class="indented hr" id="overscan"
+      label="$i18n{displayOverscanPageTitle}"
+      sub-label="$i18n{displayOverscanPageText}" on-click="onOverscanTap_"
+      hidden$="[[!showOverscanSetting_(selectedDisplay)]]" embedded
+      deep-link-focus-id$="[[Setting.kDisplayOverscan]]">
+  </cr-link-row>
+
+  <settings-display-overscan-dialog id="displayOverscan"
+      display-id="{{overscanDisplayId}}"
+      on-close="onCloseOverscanDialog_">
+  </settings-display-overscan-dialog>
+
+  <!-- Link row to touch calibration -->
+  <cr-link-row class="indented hr" id="touchCalibration"
+      label="$i18n{displayTouchCalibrationTitle}"
+      sub-label="$i18n{displayTouchCalibrationText}"
+      on-click="onTouchCalibrationTap_"
+      hidden$="[[!showTouchCalibrationSetting_(selectedDisplay)]]" embedded
+      deep-link-focus-id$="[[Setting.kTouchscreenCalibration]]">
+  </cr-link-row>
+</div>
+
+<!-- Night Light Settings -->
+<settings-toggle-button
+    id="nightLightToggleButton"
+    class="hr"
+    label="$i18n{displayNightLightLabel}"
+    pref="{{prefs.ash.night_light.enabled}}"
+    sub-label="$i18n{displayNightLightText}"
+    deep-link-focus-id$="[[Setting.kNightLight]]">
+</settings-toggle-button>
+
+<div id="nightLightSettingsDiv"
+    class="settings-box continuation start layout vertical">
+  <!-- Color temperature slider -->
+  <div id="nightLightTemperatureDiv"
+      class="settings-box indented continuation"
+      hidden$="[[!prefs.ash.night_light.enabled.value]]">
+    <div class="start text-area" id="colorTemperatureLabel">
+      $i18n{displayNightLightTemperatureLabel}
+    </div>
+    <settings-slider id="colorTemperatureSlider"
+        aria-labelledby="colorTemperatureLabel" min="0" max="100"
+        scale="100" label-min="$i18n{displayNightLightTempSliderMinLabel}"
+        label-max="$i18n{displayNightLightTempSliderMaxLabel}"
+        pref="{{prefs.ash.night_light.color_temperature}}"
+        deep-link-focus-id$="[[Setting.kNightLightColorTemperature]]">
+    </settings-slider>
+  </div>
+  <!-- Schedule settings -->
+  <div class="settings-box indented">
+    <div class="start text-area" aria-hidden="true">
+      <div id="nightLightScheduleLabel" class="label">
+        $i18n{displayNightLightScheduleLabel}
+      </div>
+      <div id="nightLightScheduleSubLabel" class="secondary label"
+          hidden$="[[!nightLightScheduleSubLabel_]]">
+        [[nightLightScheduleSubLabel_]]
+      </div>
+    </div>
+    <settings-dropdown-menu
+        id="nightLightScheduleTypeDropDown"
+        label="$i18n{displayNightLightScheduleLabel}"
+        aria-describedby="nightLightScheduleSubLabel"
+        pref="{{prefs.ash.night_light.schedule_type}}"
+        menu-options="[[scheduleTypesList_]]">
+    </settings-dropdown-menu>
+  </div>
+  <!-- Custom schedule slider -->
+  <iron-collapse id="nightLightCustomScheduleCollapse"
+      opened="[[shouldOpenCustomScheduleCollapse_]]">
+    <div class="settings-box indented continuation">
+      <div class="start text-area layout vertical">
+        <div class="settings-box continuation self-stretch">
+          <settings-scheduler-slider id="nightLightSlider" prefs="{{prefs}}"
+              pref-start-time="{{prefs.ash.night_light.custom_start_time}}"
+              pref-end-time="{{prefs.ash.night_light.custom_end_time}}">
+          </settings-scheduler-slider>
+        </div>
+      </div>
+    </div>
+  </iron-collapse>
+</div>

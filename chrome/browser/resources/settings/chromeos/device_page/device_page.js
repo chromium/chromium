@@ -6,13 +6,37 @@
  * @fileoverview 'settings-device-page' is the settings page for device and
  * peripheral settings.
  */
+import '//resources/cr_elements/cr_link_row/cr_link_row.js';
+import './display.js';
+import './keyboard.js';
+import './pointers.js';
+import './power.js';
+import './storage.js';
+import './storage_external.js';
+import './stylus.js';
+import '../../prefs/prefs.js';
+import '../../settings_page/settings_animated_pages.js';
+import '../../settings_page/settings_subpage.js';
+import '../../settings_shared_css.js';
+
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Route, RouteObserverBehavior, Router} from '../../router.js';
+import {routes} from '../os_route.m.js';
+
+import {BatteryStatus, DevicePageBrowserProxy, DevicePageBrowserProxyImpl, ExternalStorage, getDisplayApi, IdleBehavior, LidClosedBehavior, NoteAppInfo, NoteAppLockScreenSupport, PowerManagementSettings, PowerSource, StorageSpaceState} from './device_page_browser_proxy.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-device-page',
 
   behaviors: [
     I18nBehavior,
     WebUIListenerBehavior,
-    settings.RouteObserverBehavior,
+    RouteObserverBehavior,
   ],
 
   properties: {
@@ -67,28 +91,28 @@ Polymer({
       type: Object,
       value() {
         const map = new Map();
-        if (settings.routes.POINTERS) {
-          map.set(settings.routes.POINTERS.path, '#pointersRow');
+        if (routes.POINTERS) {
+          map.set(routes.POINTERS.path, '#pointersRow');
         }
-        if (settings.routes.KEYBOARD) {
-          map.set(settings.routes.KEYBOARD.path, '#keyboardRow');
+        if (routes.KEYBOARD) {
+          map.set(routes.KEYBOARD.path, '#keyboardRow');
         }
-        if (settings.routes.STYLUS) {
-          map.set(settings.routes.STYLUS.path, '#stylusRow');
+        if (routes.STYLUS) {
+          map.set(routes.STYLUS.path, '#stylusRow');
         }
-        if (settings.routes.DISPLAY) {
-          map.set(settings.routes.DISPLAY.path, '#displayRow');
+        if (routes.DISPLAY) {
+          map.set(routes.DISPLAY.path, '#displayRow');
         }
-        if (settings.routes.STORAGE) {
-          map.set(settings.routes.STORAGE.path, '#storageRow');
+        if (routes.STORAGE) {
+          map.set(routes.STORAGE.path, '#storageRow');
         }
-        if (settings.routes.EXTERNAL_STORAGE_PREFERENCES) {
+        if (routes.EXTERNAL_STORAGE_PREFERENCES) {
           map.set(
-              settings.routes.EXTERNAL_STORAGE_PREFERENCES.path,
+              routes.EXTERNAL_STORAGE_PREFERENCES.path,
               '#externalStoragePreferencesRow');
         }
-        if (settings.routes.POWER) {
-          map.set(settings.routes.POWER.path, '#powerRow');
+        if (routes.POWER) {
+          map.set(routes.POWER.path, '#powerRow');
         }
         return map;
       },
@@ -115,16 +139,16 @@ Polymer({
         'has-pointing-stick-changed', this.set.bind(this, 'hasPointingStick_'));
     this.addWebUIListener(
         'has-touchpad-changed', this.set.bind(this, 'hasTouchpad_'));
-    settings.DevicePageBrowserProxyImpl.getInstance().initializePointers();
+    DevicePageBrowserProxyImpl.getInstance().initializePointers();
 
     this.addWebUIListener(
         'has-stylus-changed', this.set.bind(this, 'hasStylus_'));
-    settings.DevicePageBrowserProxyImpl.getInstance().initializeStylus();
+    DevicePageBrowserProxyImpl.getInstance().initializeStylus();
 
     this.addWebUIListener(
         'storage-android-enabled-changed',
         this.set.bind(this, 'androidEnabled_'));
-    settings.DevicePageBrowserProxyImpl.getInstance().updateAndroidEnabled();
+    DevicePageBrowserProxyImpl.getInstance().updateAndroidEnabled();
   },
 
   /**
@@ -152,7 +176,7 @@ Polymer({
    * @private
    */
   onPointersTap_() {
-    settings.Router.getInstance().navigateTo(settings.routes.POINTERS);
+    Router.getInstance().navigateTo(routes.POINTERS);
   },
 
   /**
@@ -160,7 +184,7 @@ Polymer({
    * @private
    */
   onKeyboardTap_() {
-    settings.Router.getInstance().navigateTo(settings.routes.KEYBOARD);
+    Router.getInstance().navigateTo(routes.KEYBOARD);
   },
 
   /**
@@ -168,7 +192,7 @@ Polymer({
    * @private
    */
   onStylusTap_() {
-    settings.Router.getInstance().navigateTo(settings.routes.STYLUS);
+    Router.getInstance().navigateTo(routes.STYLUS);
   },
 
   /**
@@ -176,7 +200,7 @@ Polymer({
    * @private
    */
   onDisplayTap_() {
-    settings.Router.getInstance().navigateTo(settings.routes.DISPLAY);
+    Router.getInstance().navigateTo(routes.DISPLAY);
   },
 
   /**
@@ -184,7 +208,7 @@ Polymer({
    * @private
    */
   onStorageTap_() {
-    settings.Router.getInstance().navigateTo(settings.routes.STORAGE);
+    Router.getInstance().navigateTo(routes.STORAGE);
   },
 
   /**
@@ -192,7 +216,7 @@ Polymer({
    * @private
    */
   onPowerTap_() {
-    settings.Router.getInstance().navigateTo(settings.routes.POWER);
+    Router.getInstance().navigateTo(routes.POWER);
   },
 
   /** @protected */
@@ -219,9 +243,8 @@ Polymer({
     // Check that the properties have explicitly been set to false.
     if (this.hasMouse_ === false && this.hasPointingStick_ === false &&
         this.hasTouchpad_ === false &&
-        settings.Router.getInstance().getCurrentRoute() ===
-            settings.routes.POINTERS) {
-      settings.Router.getInstance().navigateTo(settings.routes.DEVICE);
+        Router.getInstance().getCurrentRoute() === routes.POINTERS) {
+      Router.getInstance().navigateTo(routes.DEVICE);
     }
   },
 });
