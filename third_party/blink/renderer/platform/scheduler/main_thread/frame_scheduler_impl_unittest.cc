@@ -660,7 +660,7 @@ class FrameSchedulerImplTestWithIntensiveWakeUpThrottling
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
       FrameSchedulerImpl* frame_scheduler) {
     const TaskType task_type = GetTaskType();
-    if (task_type == TaskType::kExperimentalWebScheduling) {
+    if (task_type == TaskType::kWebSchedulingPostedTask) {
       test_web_scheduling_task_queues_.push_back(
           frame_scheduler->CreateWebSchedulingTaskQueue(
               WebSchedulingPriority::kUserVisiblePriority));
@@ -2829,7 +2829,7 @@ TEST_F(FrameSchedulerImplTest, ThrottledJSTimerTasksRunTime) {
   constexpr TaskType kJavaScriptTimerTaskTypes[] = {
       TaskType::kJavascriptTimerDelayedLowNesting,
       TaskType::kJavascriptTimerDelayedHighNesting,
-      TaskType::kExperimentalWebScheduling};
+      TaskType::kWebSchedulingPostedTask};
 
   // Snap the time to a multiple of 1 second. Otherwise, the exact run time
   // of throttled tasks after hiding the page will vary.
@@ -2852,7 +2852,7 @@ TEST_F(FrameSchedulerImplTest, ThrottledJSTimerTasksRunTime) {
   // WebSchedulingTaskQueue.
   for (TaskType task_type : kJavaScriptTimerTaskTypes) {
     const scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-        task_type == TaskType::kExperimentalWebScheduling
+        task_type == TaskType::kWebSchedulingPostedTask
             ? web_scheduling_task_queue->GetTaskRunner()
             : frame_scheduler_->GetTaskRunner(task_type);
 
@@ -3599,7 +3599,7 @@ INSTANTIATE_TEST_SUITE_P(
             /* task_type=*/TaskType::kJavascriptTimerDelayedHighNesting,
             /* is_intensive_throttling_expected=*/true},
         IntensiveWakeUpThrottlingTestParam{
-            /* task_type=*/TaskType::kExperimentalWebScheduling,
+            /* task_type=*/TaskType::kWebSchedulingPostedTask,
             /* is_intensive_throttling_expected=*/true}),
     [](const testing::TestParamInfo<IntensiveWakeUpThrottlingTestParam>& info) {
       return TaskTypeNames::TaskTypeToString(info.param.task_type);
@@ -3862,7 +3862,7 @@ TEST_F(DeprioritizeDOMTimerUntilLoadedTest, MainAndNonMainFrameLoadAndReload) {
   }
 }
 
-// Verify that non-delayed kExperimentalWebScheduling tasks are not throttled.
+// Verify that non-delayed kWebSchedulingPostedTask tasks are not throttled.
 TEST_F(FrameSchedulerImplTest, ImmediateWebSchedulingTasksAreNotThrottled) {
   std::vector<base::TimeTicks> run_times;
 

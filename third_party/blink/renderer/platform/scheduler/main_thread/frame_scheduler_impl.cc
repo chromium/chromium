@@ -522,7 +522,7 @@ QueueTraits FrameSchedulerImpl::CreateQueueTraitsForTaskType(TaskType type) {
     // The web scheduling API task types are used by WebSchedulingTaskQueues.
     // The associated TaskRunner should be obtained by creating a
     // WebSchedulingTaskQueue with CreateWebSchedulingTaskQueue().
-    case TaskType::kExperimentalWebScheduling:
+    case TaskType::kWebSchedulingPostedTask:
       // Not a valid frame-level TaskType.
       NOTREACHED();
       return QueueTraits();

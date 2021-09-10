@@ -51,9 +51,9 @@ MainThreadWebSchedulingTaskQueueImpl::MainThreadWebSchedulingTaskQueueImpl(
     base::WeakPtr<MainThreadTaskQueue> delayed_task_queue)
     : task_runner_(base::MakeRefCounted<WebSchedulingTaskRunner>(
           immediate_task_queue->CreateTaskRunner(
-              TaskType::kExperimentalWebScheduling),
+              TaskType::kWebSchedulingPostedTask),
           delayed_task_queue->CreateTaskRunner(
-              TaskType::kExperimentalWebScheduling))),
+              TaskType::kWebSchedulingPostedTask))),
       immediate_task_queue_(std::move(immediate_task_queue)),
       delayed_task_queue_(std::move(delayed_task_queue)) {}
 

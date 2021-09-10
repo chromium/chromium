@@ -211,7 +211,7 @@ scoped_refptr<base::SingleThreadTaskRunner> WorkerScheduler::GetTaskRunner(
     case TaskType::kInternalTranslation:
     case TaskType::kServiceWorkerClientMessage:
     case TaskType::kInternalContentCapture:
-    case TaskType::kExperimentalWebScheduling:
+    case TaskType::kWebSchedulingPostedTask:
     case TaskType::kInternalFrameLifecycleControl:
     case TaskType::kInternalFindInPage:
     case TaskType::kInternalHighPriorityLocalFrame:

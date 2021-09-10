@@ -164,6 +164,13 @@ enum class TaskType : unsigned char {
   // https://wicg.github.io/web-locks/#web-locks-tasks-source
   kWebLocks = 66,
 
+  // Task type used for the Prioritized Task Scheduling API
+  // (https://wicg.github.io/scheduling-apis/#the-posted-task-task-source).
+  // This task type should not be passed directly to
+  // FrameScheduler::GetTaskRunner(); it is used indirectly by
+  // WebSchedulingTaskQueues.
+  kWebSchedulingPostedTask = 67,
+
   // https://w3c.github.io/screen-wake-lock/#dfn-screen-wake-lock-task-source
   kWakeLock = 76,
 
@@ -237,13 +244,6 @@ enum class TaskType : unsigned char {
 
   // Task used to split a script loading task for cooperative scheduling
   kInternalContinueScriptLoading = 65,
-
-  // Experimental tasks types used for main thread scheduling postTask API
-  // (https://github.com/WICG/main-thread-scheduling).
-  // These task types should not be passed directly to
-  // FrameScheduler::GetTaskRunner(); they are used indirectly by
-  // WebSchedulingTaskQueues.
-  kExperimentalWebScheduling = 67,
 
   // Tasks used to control frame lifecycle - they should run even when the frame
   // is frozen.

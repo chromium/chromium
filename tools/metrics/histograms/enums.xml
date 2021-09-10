@@ -71462,7 +71462,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="64" label="InternalFreezableIPC"/>
   <int value="65" label="InternalContinueScriptLoading"/>
   <int value="66" label="kWebLocks"/>
-  <int value="67" label="ExperimentalWebScheduling"/>
+  <int value="67" label="WebSchedulingPostedTask"/>
   <int value="68" label="InternalFrameLifecycleControl"/>
   <int value="69" label="MainThreadTaskQueueNonWaking"/>
   <int value="70" label="InternalFindInPage"/>
