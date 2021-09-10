@@ -1773,8 +1773,6 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_supported_features.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_supported_limits.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_supported_limits.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_swap_chain.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_swap_chain.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_usage.cc",

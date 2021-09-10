@@ -302,15 +302,6 @@ CanvasRenderingContext* OffscreenCanvas::GetCanvasRenderingContext(
     return nullptr;
   }
 
-  // TODO(crbug.com/1229274): Remove 'gpupresent' type after deprecation period.
-  if (id == "gpupresent") {
-    auto* console_message = MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kRendering,
-        mojom::blink::ConsoleMessageLevel::kWarning,
-        "The context type 'gpupresent' is deprecated. Use 'webgpu' instead.");
-    execution_context->AddConsoleMessage(console_message);
-  }
-
   if (auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext())) {
     if (attributes.color_space != kSRGBCanvasColorSpaceName ||
         attributes.pixel_format != kUint8CanvasPixelFormatName) {

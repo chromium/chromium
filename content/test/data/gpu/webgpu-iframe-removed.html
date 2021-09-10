@@ -81,20 +81,20 @@
         const device = await adapter.requestDevice();
 
         const canvas = document.createElement('canvas');
-        const context = canvas.getContext('gpupresent');
-        const sc = context.configureSwapChain({
+        const context = canvas.getContext('webgpu');
+        context.configure({
           device,
           format: 'bgra8unorm'
         });
 
         parent.removeIframe();
-        const texture = sc.getCurrentTexture();
+        const texture = context.getCurrentTexture();
       });
 
       // Test reconfiguring the swapchain after the iframe is removed.
       // This may interact with the shared image interfaces.
       // The expecation is that reconfiguring after removal does not crash, but
-      // does throw an exception. It is invalid to call |configureSwapChain| after
+      // does throw an exception. It is invalid to call |configure| after
       // the canvas is destroyed.
       await runTestCase(async () => {
         const adapter = navigator.gpu && await navigator.gpu.requestAdapter();
@@ -106,17 +106,17 @@
         const device = await adapter.requestDevice();
 
         const canvas = document.createElement('canvas');
-        const context = canvas.getContext('gpupresent');
-        const sc = context.configureSwapChain({
+        const context = canvas.getContext('webgpu');
+        context.configure({
           device,
           format: 'bgra8unorm'
         });
-        const texture = sc.getCurrentTexture();
+        const texture = context.getCurrentTexture();
 
         parent.removeIframe();
         try {
           /* Throws an exception since the canvas is destroyed */
-          context.configureSwapChain({
+          context.configure({
             device,
             format: 'bgra8unorm'
           });

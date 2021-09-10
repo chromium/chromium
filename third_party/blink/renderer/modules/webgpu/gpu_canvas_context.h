@@ -44,7 +44,6 @@ class GPUCanvasContext : public CanvasRenderingContext {
   ~GPUCanvasContext() override;
 
   void Trace(Visitor*) const override;
-  const IntSize& CanvasSize() const;
 
   // CanvasRenderingContext implementation
   ContextType GetContextType() const override;
@@ -84,18 +83,8 @@ class GPUCanvasContext : public CanvasRenderingContext {
   String getPreferredFormat(const GPUAdapter* adapter);
   GPUTexture* getCurrentTexture(ExceptionState&);
 
-  // gpu_canvas_context.idl (Deprecated)
-  GPUSwapChain* configureSwapChain(const GPUCanvasConfiguration* descriptor,
-                                   ExceptionState&);
-  String getSwapChainPreferredFormat(ExecutionContext* execution_context,
-                                     GPUAdapter* adapter);
-
  private:
   DISALLOW_COPY_AND_ASSIGN(GPUCanvasContext);
-
-  void ConfigureInternal(const GPUCanvasConfiguration* descriptor,
-                         ExceptionState&,
-                         bool deprecated_resize_behavior = false);
 
   cc::PaintFlags::FilterQuality filter_quality_ =
       cc::PaintFlags::FilterQuality::kLow;

@@ -330,15 +330,6 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContextInternal(
     return nullptr;
   }
 
-  // TODO(crbug.com/1229274): Remove 'gpupresent' type after deprecation period.
-  if (type == "gpupresent") {
-    auto* console_message = MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kRendering,
-        mojom::blink::ConsoleMessageLevel::kWarning,
-        "The context type 'gpupresent' is deprecated. Use 'webgpu' instead.");
-    GetExecutionContext()->AddConsoleMessage(console_message);
-  }
-
   // Log the aliased context type used.
   if (!context_) {
     UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.ContextType", context_type);

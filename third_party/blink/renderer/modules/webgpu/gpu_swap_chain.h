@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_swap_buffer_provider.h"
+#include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace cc {
 class Layer;
@@ -20,10 +21,9 @@ class GPUDevice;
 class GPUTexture;
 class StaticBitmapImage;
 
-class GPUSwapChain : public DawnObjectImpl,
-                     public WebGPUSwapBufferProvider::Client {
-  DEFINE_WRAPPERTYPEINFO();
-
+class GPUSwapChain final : public GarbageCollected<GPUSwapChain>,
+                           public DawnObjectBase,
+                           public WebGPUSwapBufferProvider::Client {
  public:
   explicit GPUSwapChain(GPUCanvasContext*,
                         GPUDevice*,
@@ -31,9 +31,9 @@ class GPUSwapChain : public DawnObjectImpl,
                         WGPUTextureFormat,
                         cc::PaintFlags::FilterQuality,
                         IntSize);
-  ~GPUSwapChain() override;
+  virtual ~GPUSwapChain();
 
-  void Trace(Visitor* visitor) const override;
+  void Trace(Visitor* visitor) const;
 
   void Neuter();
   cc::Layer* CcLayer();
@@ -57,7 +57,6 @@ class GPUSwapChain : public DawnObjectImpl,
   // be webgpu compatible. Returns true on success.
   bool CopyToResourceProvider(CanvasResourceProvider*);
 
-  // gpu_swap_chain.idl
   GPUTexture* getCurrentTexture();
 
   // WebGPUSwapBufferProvider::Client implementation
@@ -68,6 +67,7 @@ class GPUSwapChain : public DawnObjectImpl,
 
   scoped_refptr<WebGPUSwapBufferProvider> swap_buffers_;
 
+  Member<GPUDevice> device_;
   Member<GPUCanvasContext> context_;
   WGPUTextureUsage usage_;
   WGPUTextureFormat format_;

@@ -9,7 +9,7 @@ typedef (OffscreenCanvasRenderingContext2D or
          WebGL2RenderingContext or
          ImageBitmapRenderingContext or
          GPUCanvasContext) OffscreenRenderingContext;
-enum OffscreenRenderingContextType { "2d", "webgl", "webgl2", "bitmaprenderer", "gpupresent", "webgpu" };
+enum OffscreenRenderingContextType { "2d", "webgl", "webgl2", "bitmaprenderer", "webgpu" };
 
 [
     ImplementedAs=OffscreenCanvasModule

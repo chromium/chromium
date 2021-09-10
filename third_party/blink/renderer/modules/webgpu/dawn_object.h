@@ -35,7 +35,6 @@
   X(Sampler, sampler)                         \
   X(ShaderModule, shaderModule)               \
   X(Surface, surface)                         \
-  X(SwapChain, swapChain)                     \
   X(Texture, texture)                         \
   X(TextureView, textureView)
 

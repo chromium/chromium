@@ -22,7 +22,7 @@ async function webGpuInit(canvasWidth, canvasHeight) {
 
   const context = canvas.getContext('webgpu');
   if (!context) {
-    console.warn('Webgpu not supported. canvas.getContext(gpupresent) fails!');
+    console.warn('Webgpu not supported. canvas.getContext("webgpu") fails!');
     return null;
   }
 
