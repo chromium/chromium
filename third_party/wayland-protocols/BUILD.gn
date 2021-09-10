@@ -113,6 +113,10 @@ wayland_protocol("text_input_protocol") {
   sources = [ "src/unstable/text-input/text-input-unstable-v1.xml" ]
 }
 
+wayland_protocol("text_input_extension_protocol") {
+  sources = [ "unstable/text-input/text-input-extension-unstable-v1.xml" ]
+}
+
 wayland_protocol("notification_shell_protocol") {
   sources = [ "unstable/notification-shell/notification-shell-unstable-v1.xml" ]
 }

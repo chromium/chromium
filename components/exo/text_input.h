@@ -76,6 +76,17 @@ class TextInput : public ui::TextInputClient,
     // Called when the text direction has changed.
     virtual void OnTextDirectionChanged(
         base::i18n::TextDirection direction) = 0;
+
+    // Sets composition from the current surrounding text offsets.
+    // Offsets in |cursor| and |range| is relative to the beginning of
+    // |surrounding_text|. Offsets in |ui_ime_text_spans| is relative to the new
+    // composition, i.e. relative to |range|'s start. All offsets are in UTF16,
+    // and must be valid.
+    virtual void SetCompositionFromExistingText(
+        base::StringPiece16 surrounding_text,
+        const gfx::Range& cursor,
+        const gfx::Range& range,
+        const std::vector<ui::ImeTextSpan>& ui_ime_text_spans) = 0;
   };
 
   explicit TextInput(std::unique_ptr<Delegate> delegate);

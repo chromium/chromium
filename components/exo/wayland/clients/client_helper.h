@@ -26,6 +26,7 @@
 #include <secure-output-unstable-v1-client-protocol.h>
 #include <stylus-tools-unstable-v1-client-protocol.h>
 #include <stylus-unstable-v2-client-protocol.h>
+#include <text-input-extension-unstable-v1-client-protocol.h>
 #include <text-input-unstable-v1-client-protocol.h>
 #include <viewporter-client-protocol.h>
 #include <vsync-feedback-unstable-v1-client-protocol.h>
@@ -101,6 +102,7 @@ DEFAULT_DELETER_FDECL(zcr_keyboard_extension_v1)
 DEFAULT_DELETER_FDECL(zcr_notification_shell_v1)
 DEFAULT_DELETER_FDECL(zcr_remote_shell_v1)
 DEFAULT_DELETER_FDECL(zcr_stylus_tools_v1)
+DEFAULT_DELETER_FDECL(zcr_text_input_extension_v1)
 DEFAULT_DELETER_FDECL(zwp_pointer_gestures_v1)
 DEFAULT_DELETER_FDECL(zwp_pointer_constraints_v1)
 DEFAULT_DELETER_FDECL(zwp_relative_pointer_manager_v1)

@@ -24,6 +24,7 @@
 #include <secure-output-unstable-v1-server-protocol.h>
 #include <stylus-tools-unstable-v1-server-protocol.h>
 #include <stylus-unstable-v2-server-protocol.h>
+#include <text-input-extension-unstable-v1-server-protocol.h>
 #include <text-input-unstable-v1-server-protocol.h>
 #include <viewporter-server-protocol.h>
 #include <vsync-feedback-unstable-v1-server-protocol.h>
@@ -261,6 +262,12 @@ Server::Server(Display* display) : display_(display) {
       display_->seat()->xkb_tracker(), serial_tracker_.get());
   wl_global_create(wl_display_.get(), &zwp_text_input_manager_v1_interface, 1,
                    zwp_text_manager_data_.get(), bind_text_input_manager);
+
+  zcr_text_input_extension_data_ =
+      std::make_unique<WaylandTextInputExtension>();
+  wl_global_create(wl_display_.get(), &zcr_text_input_extension_v1_interface, 1,
+                   zcr_text_input_extension_data_.get(),
+                   bind_text_input_extension);
 
   zxdg_shell_data_ =
       std::make_unique<WaylandZxdgShell>(display_, serial_tracker_.get());

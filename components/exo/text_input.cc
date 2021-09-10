@@ -334,9 +334,20 @@ bool TextInput::ShouldDoLearning() {
 bool TextInput::SetCompositionFromExistingText(
     const gfx::Range& range,
     const std::vector<ui::ImeTextSpan>& ui_ime_text_spans) {
-  // TODO(https://crbug.com/952757): Implement this method.
-  NOTIMPLEMENTED_LOG_ONCE();
-  return false;
+  if (!cursor_pos_.IsValid())
+    return false;
+  if (surrounding_text_.size() < range.GetMax())
+    return false;
+
+  const auto composition_length = range.length();
+  for (const auto& span : ui_ime_text_spans) {
+    if (composition_length < std::max(span.start_offset, span.end_offset))
+      return false;
+  }
+
+  delegate_->SetCompositionFromExistingText(surrounding_text_, cursor_pos_,
+                                            range, ui_ime_text_spans);
+  return true;
 }
 
 gfx::Range TextInput::GetAutocorrectRange() const {

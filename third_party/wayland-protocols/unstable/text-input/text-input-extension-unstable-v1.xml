@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<protocol name="text_input_extension_unstable_v1">
+
+  <copyright>
+    Copyright 2021 The Chromium Authors.
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice (including the next
+    paragraph) shall be included in all copies or substantial portions of the
+    Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+  </copyright>
+
+  <interface name="zcr_text_input_extension_v1" version="1">
+    <description summary="extends text_input to support richer operations">
+      Allows a text_input to sends more variation of operations to support
+      richer features, such as set_preedit_region.
+
+      Warning! The protocol described in this file is experimental and
+      backward incompatible changes may be made. Backward compatible changes
+      may be added together with the corresponding uinterface version bump.
+      Backward incompatible changes are done by bumping the version number in
+      the protocol and interface names and resetting the interface version.
+      Once the protocol is to be declared stable, the 'z' prefix and the
+      version number in the protocol and interface names are removed and the
+      interface version number is reset.
+    </description>
+
+    <enum name="error">
+      <entry name="extended_text_input_exists" value="0"
+             summary="the text_input already has an extended_text_input object associated"/>
+    </enum>
+
+    <request name="get_extended_text_input">
+      <description summary="get extended_text_input for a text_input">
+        Create extended_text_input object.
+        See zcr_extended_text_input interface for details.
+        If the given text_input object already has a extended_text_input object
+        associated, the extended_text_input_exists protocol error is raised.
+      </description>
+      <arg name="id" type="new_id" interface="zcr_extended_text_input_v1"/>
+      <arg name="text_input" type="object" interface="zwp_text_input_v1"/>
+    </request>
+  </interface>
+
+  <interface name="zcr_extended_text_input_v1" version="1">
+    <description summary="extension of text_input protocol">
+      The zcr_extended_text_input_v1 interface extends the text_input interface
+      to support more rich operations on text_input.
+    </description>
+
+    <request name="destroy" type="destructor">
+      <description summary="destroy extended_text_input object"/>
+    </request>
+
+    <event name="set_preedit_region">
+      <description summary="set preedit from the surrounding text">
+        IME requests to update text_input client to set the preedit
+        from the surrounding text.
+
+        index is the starting point of the preedit, relative to the current
+        cursor position in utf-8 byte-offset.
+        length is the length of the preedit region in utf-8 byte length.
+
+        Following the convention we have in text_input::preedit_string,
+        text_input::preedit_styling sent just before this will be applied.
+      </description>
+      <arg name="index" type="int" />
+      <arg name="length" type="uint" />
+    </event>
+
+  </interface>
+</protocol>

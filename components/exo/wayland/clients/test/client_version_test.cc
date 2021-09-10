@@ -18,6 +18,7 @@
 #include <secure-output-unstable-v1-server-protocol.h>
 #include <stylus-tools-unstable-v1-server-protocol.h>
 #include <stylus-unstable-v2-server-protocol.h>
+#include <text-input-extension-unstable-v1-server-protocol.h>
 #include <text-input-unstable-v1-server-protocol.h>
 #include <viewporter-client-protocol.h>
 #include <wayland-client-core.h>
@@ -75,6 +76,7 @@ struct Globals {
   std::unique_ptr<zcr_stylus_v2> zcr_stylus_v2;
   std::unique_ptr<zcr_cursor_shapes_v1> zcr_cursor_shapes_v1;
   std::unique_ptr<zcr_gaming_input_v2> zcr_gaming_input_v2;
+  std::unique_ptr<zcr_text_input_extension_v1> zcr_text_input_extension_v1;
   std::unique_ptr<zcr_keyboard_configuration_v1> zcr_keyboard_configuration_v1;
   std::unique_ptr<zcr_keyboard_extension_v1> zcr_keyboard_extension_v1;
   std::unique_ptr<zcr_notification_shell_v1> zcr_notification_shell_v1;
@@ -169,6 +171,8 @@ void RegistryHandler(void* data,
                             zcr_notification_shell_v1),
           REGISTRY_CALLBACK(zcr_remote_shell_v1, zcr_remote_shell_v1),
           REGISTRY_CALLBACK(zcr_stylus_tools_v1, zcr_stylus_tools_v1),
+          REGISTRY_CALLBACK(zcr_text_input_extension_v1,
+                            zcr_text_input_extension_v1),
           REGISTRY_CALLBACK(zwp_pointer_gestures_v1, zwp_pointer_gestures_v1),
           REGISTRY_CALLBACK(zwp_pointer_constraints_v1,
                             zwp_pointer_constraints_v1),
