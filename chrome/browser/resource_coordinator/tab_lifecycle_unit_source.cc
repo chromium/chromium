@@ -306,6 +306,13 @@ void TabLifecycleUnitSource::TabChangedAt(content::WebContents* contents,
   lifecycle_unit->SetRecentlyAudible(audible_helper->WasRecentlyAudible());
 }
 
+
+void TabLifecycleUnitSource::OnBrowserRemoved(Browser* browser) {
+  // An active browser may be removed without OnBrowserNoLongerActive() being
+  // invoked. crbug.com/1206458
+  UpdateFocusedTab();
+}
+
 void TabLifecycleUnitSource::OnBrowserSetLastActive(Browser* browser) {
   UpdateFocusedTab();
 }
