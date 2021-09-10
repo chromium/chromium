@@ -2427,5 +2427,33 @@
   {
     "pattern": [{ "hostname": "bad\thostname" }],
     "expected_obj": "error"
+  },
+  {
+    "pattern": [{}],
+    "inputs": ["https://example.com/"],
+    "expected_match": {
+      "protocol": { "input": "https", "groups": { "0": "https" }},
+      "hostname": { "input": "example.com", "groups": { "0": "example.com" }},
+      "pathname": { "input": "/", "groups": { "0": "/" }}
+    }
+  },
+  {
+    "pattern": [],
+    "inputs": ["https://example.com/"],
+    "expected_match": {
+      "protocol": { "input": "https", "groups": { "0": "https" }},
+      "hostname": { "input": "example.com", "groups": { "0": "example.com" }},
+      "pathname": { "input": "/", "groups": { "0": "/" }}
+    }
+  },
+  {
+    "pattern": [],
+    "inputs": [{}],
+    "expected_match": {}
+  },
+  {
+    "pattern": [],
+    "inputs": [],
+    "expected_match": { "inputs": [{}] }
   }
 ]

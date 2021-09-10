@@ -13,13 +13,13 @@ enum URLPatternComponent { "protocol", "username", "password", "hostname",
   RuntimeEnabled=URLPattern
 ] interface URLPattern {
   [RaisesException, Measure]
-  constructor(URLPatternInput input, optional USVString baseURL);
+  constructor(optional URLPatternInput input = {}, optional USVString baseURL);
 
   [RaisesException, Measure]
-  boolean test(URLPatternInput input, optional USVString baseURL);
+  boolean test(optional URLPatternInput input = {}, optional USVString baseURL);
 
   [RaisesException, Measure]
-  URLPatternResult? exec(URLPatternInput input, optional USVString baseURL);
+  URLPatternResult? exec(optional URLPatternInput input = {}, optional USVString baseURL);
 
   readonly attribute USVString protocol;
   readonly attribute USVString username;

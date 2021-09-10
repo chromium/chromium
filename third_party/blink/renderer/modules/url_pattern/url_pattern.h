@@ -75,9 +75,9 @@ class MODULES_EXPORT URLPattern : public ScriptWrappable {
   void Trace(Visitor* visitor) const override;
 
  private:
-  // A utility function to determine if a given |input| matches the pattern
-  // or not.  Returns |true| if there is a match and |false| otherwise.  If
-  // |result| is not nullptr then the URLPatternResult contents will be filled.
+  // A utility function to determine if a given `input` matches the pattern or
+  // not.  Returns `true` if there is a match and `false` otherwise.  If
+  // `result` is not nullptr then the URLPatternResult contents will be filled.
   bool Match(const V8URLPatternInput* input,
              const String& base_url,
              URLPatternResult* result,

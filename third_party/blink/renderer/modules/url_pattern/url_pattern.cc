@@ -441,11 +441,10 @@ void URLPattern::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
-bool URLPattern::Match(
-    const V8URLPatternInput* input,
-    const String& base_url,
-    URLPatternResult* result,
-    ExceptionState& exception_state) const {
+bool URLPattern::Match(const V8URLPatternInput* input,
+                       const String& base_url,
+                       URLPatternResult* result,
+                       ExceptionState& exception_state) const {
   // By default each URL component value starts with an empty string.  The
   // given input is then layered on top of these defaults.
   String protocol(g_empty_string);
