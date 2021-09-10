@@ -430,6 +430,9 @@ interface ShimlessRmaService {
   // Get the RSU challenge code.
   // Returns the challenge as a string.
   GetRsuDisableWriteProtectChallenge() => (string challenge);
+  // Get the device hardware ID (HWID) to display during RSU.
+  // Returns the HWID as a string.
+  GetRsuDisableWriteProtectHwid() => (string hwid);
   // Returns a QR Code image representing the URL to generate the RSU unlock
   // code. A null value is returned if the QR Code could not be generated.
   GetRsuDisableWriteProtectChallengeQrCode() => (QrCode? qr_code);

@@ -240,14 +240,31 @@ void ShimlessRmaService::GetRsuDisableWriteProtectChallenge(
   std::move(callback).Run(state_proto_.wp_disable_rsu().challenge_code());
 }
 
+void ShimlessRmaService::GetRsuDisableWriteProtectHwid(
+    GetRsuDisableWriteProtectHwidCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kWpDisableRsu) {
+    LOG(ERROR) << "GetRsuDisableWriteProtectHwid called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run("");
+    return;
+  }
+  std::move(callback).Run(state_proto_.wp_disable_rsu().hwid());
+}
+
 void ShimlessRmaService::GetRsuDisableWriteProtectChallengeQrCode(
     GetRsuDisableWriteProtectChallengeQrCodeCallback callback) {
-  // TODO(gavindodd): Get URL from proto when available.
-  std::string challenge_url_string = "https://www.google.com";
+  if (state_proto_.state_case() != rmad::RmadState::kWpDisableRsu) {
+    LOG(ERROR) << "GetRsuDisableWriteProtectChallengeQrCode called from "
+                  "incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run(nullptr);
+    return;
+  }
   QRCodeGenerator qr_generator;
   absl::optional<QRCodeGenerator::GeneratedCode> qr_data =
       qr_generator.Generate(base::as_bytes(base::make_span(
-          challenge_url_string.data(), challenge_url_string.size())));
+          state_proto_.wp_disable_rsu().challenge_url().data(),
+          state_proto_.wp_disable_rsu().challenge_url().size())));
   if (!qr_data || qr_data->data.data() == nullptr ||
       qr_data->data.size() == 0) {
     std::move(callback).Run(nullptr);
@@ -291,8 +308,6 @@ void ShimlessRmaService::GetComponentList(GetComponentListCallback callback) {
   } else {
     components.reserve(state_proto_.components_repair().components_size());
     for (auto component : state_proto_.components_repair().components()) {
-      int component_id = component.component();
-      LOG(ERROR) << "Component: " << component_id;
       components.push_back(component);
     }
   }

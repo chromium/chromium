@@ -750,6 +750,57 @@ TEST_F(ShimlessRmaServiceTest, GetRsuDisableWriteProtectChallenge) {
   run_loop.Run();
 }
 
+TEST_F(ShimlessRmaServiceTest, GetRsuDisableWriteProtectHwid) {
+  rmad::GetStateReply write_protect_disable_rsu_state =
+      CreateStateReply(rmad::RmadState::kWpDisableRsu, rmad::RMAD_ERROR_OK);
+  write_protect_disable_rsu_state.mutable_state()
+      ->mutable_wp_disable_rsu()
+      ->set_hwid("rsu write protect hwid");
+  std::vector<rmad::GetStateReply> fake_states = {
+      write_protect_disable_rsu_state};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kEnterRSUWPDisableCode);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->GetRsuDisableWriteProtectHwid(
+      base::BindLambdaForTesting([&](const std::string& hwid) {
+        EXPECT_EQ("rsu write protect hwid", hwid);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest, GetRsuDisableWriteProtectChallengeQrCode) {
+  rmad::GetStateReply write_protect_disable_rsu_state =
+      CreateStateReply(rmad::RmadState::kWpDisableRsu, rmad::RMAD_ERROR_OK);
+  write_protect_disable_rsu_state.mutable_state()
+      ->mutable_wp_disable_rsu()
+      ->set_challenge_url("https://challenge/url");
+  std::vector<rmad::GetStateReply> fake_states = {
+      write_protect_disable_rsu_state};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kEnterRSUWPDisableCode);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->GetRsuDisableWriteProtectChallengeQrCode(
+      base::BindLambdaForTesting([&](mojom::QrCodePtr qrcode) {
+        // TODO(gavindodd): Add test of data in QR code.
+        EXPECT_FALSE(qrcode.is_null());
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
 TEST_F(ShimlessRmaServiceTest, SetRsuDisableWriteProtectCode) {
   std::vector<rmad::GetStateReply> fake_states = {
       CreateStateReply(rmad::RmadState::kWpDisableRsu, rmad::RMAD_ERROR_OK),

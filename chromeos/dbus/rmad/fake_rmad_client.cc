@@ -8,6 +8,147 @@
 #include "base/threading/thread_task_runner_handle.h"
 
 namespace chromeos {
+namespace {
+constexpr char rsu_challenge_code[] =
+    "HRBXHV84NSTHT25WJECYQKB8SARWFTMSWNGFT2FVEEPX69VE99USV3QFBEANDVXGQVL93QK2M6"
+    "P3DNV4";
+constexpr char rsu_hwid[] = "SAMUSTEST_2082";
+constexpr char rsu_challenge_url[] =
+    "https://chromeos.google.com/partner/console/"
+    "cr50reset?challenge="
+    "HRBXHV84NSTHT25WJECYQKB8SARWFTMSWNGFT2FVEEPX69VE99USV3QFBEANDVXGQVL93QK2M6"
+    "P3DNV4&hwid=SAMUSTEST_2082";
+
+rmad::RmadState* CreateState(rmad::RmadState::StateCase state_case) {
+  rmad::RmadState* state = new rmad::RmadState();
+  switch (state_case) {
+    case rmad::RmadState::kWelcome:
+      state->set_allocated_welcome(new rmad::WelcomeState());
+      break;
+    case rmad::RmadState::kComponentsRepair:
+      state->set_allocated_components_repair(new rmad::ComponentsRepairState());
+      break;
+    case rmad::RmadState::kDeviceDestination:
+      state->set_allocated_device_destination(
+          new rmad::DeviceDestinationState());
+      break;
+    case rmad::RmadState::kWpDisableMethod:
+      state->set_allocated_wp_disable_method(
+          new rmad::WriteProtectDisableMethodState());
+      break;
+    case rmad::RmadState::kWpDisableRsu:
+      state->set_allocated_wp_disable_rsu(
+          new rmad::WriteProtectDisableRsuState());
+      break;
+    case rmad::RmadState::kWpDisablePhysical:
+      state->set_allocated_wp_disable_physical(
+          new rmad::WriteProtectDisablePhysicalState());
+      break;
+    case rmad::RmadState::kWpDisableComplete:
+      state->set_allocated_wp_disable_complete(
+          new rmad::WriteProtectDisableCompleteState());
+      break;
+    case rmad::RmadState::kVerifyRsu:
+      state->set_allocated_verify_rsu(new rmad::VerifyRsuState());
+      break;
+    case rmad::RmadState::kUpdateRoFirmware:
+      state->set_allocated_update_ro_firmware(
+          new rmad::UpdateRoFirmwareState());
+      break;
+    case rmad::RmadState::kRestock:
+      state->set_allocated_restock(new rmad::RestockState());
+      break;
+    case rmad::RmadState::kUpdateDeviceInfo:
+      state->set_allocated_update_device_info(
+          new rmad::UpdateDeviceInfoState());
+      break;
+    case rmad::RmadState::kCheckCalibration:
+      state->set_allocated_check_calibration(new rmad::CheckCalibrationState());
+      break;
+    case rmad::RmadState::kSetupCalibration:
+      state->set_allocated_setup_calibration(new rmad::SetupCalibrationState());
+      break;
+    case rmad::RmadState::kRunCalibration:
+      state->set_allocated_run_calibration(new rmad::RunCalibrationState());
+      break;
+    case rmad::RmadState::kProvisionDevice:
+      state->set_allocated_provision_device(new rmad::ProvisionDeviceState());
+      break;
+    case rmad::RmadState::kWpEnablePhysical:
+      state->set_allocated_wp_enable_physical(
+          new rmad::WriteProtectEnablePhysicalState());
+      break;
+    case rmad::RmadState::kFinalize:
+      state->set_allocated_finalize(new rmad::FinalizeState());
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+  return state;
+}
+
+rmad::GetStateReply CreateStateReply(rmad::RmadState::StateCase state,
+                                     rmad::RmadErrorCode error) {
+  rmad::GetStateReply reply;
+  reply.set_allocated_state(CreateState(state));
+  reply.set_error(error);
+  return reply;
+}
+}  // namespace
+
+/* static */
+void FakeRmadClient::CreateWithState() {
+  FakeRmadClient* fake = new FakeRmadClient();
+  // Set up fake component repair state.
+  rmad::GetStateReply components_repair_state =
+      CreateStateReply(rmad::RmadState::kComponentsRepair, rmad::RMAD_ERROR_OK);
+  rmad::ComponentsRepairState::ComponentRepairStatus* component =
+      components_repair_state.mutable_state()
+          ->mutable_components_repair()
+          ->add_components();
+  component->set_component(rmad::RmadComponent::RMAD_COMPONENT_CAMERA);
+  component->set_repair_status(
+      rmad::ComponentsRepairState::ComponentRepairStatus::
+          RMAD_REPAIR_STATUS_UNKNOWN);
+  // Set up fake disable RSU state.
+  rmad::GetStateReply wp_disable_rsu_state =
+      CreateStateReply(rmad::RmadState::kWpDisableRsu, rmad::RMAD_ERROR_OK);
+  wp_disable_rsu_state.mutable_state()
+      ->mutable_wp_disable_rsu()
+      ->set_allocated_challenge_code(new std::string(rsu_challenge_code));
+  wp_disable_rsu_state.mutable_state()
+      ->mutable_wp_disable_rsu()
+      ->set_allocated_hwid(new std::string(rsu_hwid));
+  wp_disable_rsu_state.mutable_state()
+      ->mutable_wp_disable_rsu()
+      ->set_allocated_challenge_url(new std::string(rsu_challenge_url));
+
+  std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK),
+      components_repair_state,
+      CreateStateReply(rmad::RmadState::kDeviceDestination,
+                       rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kWpDisableMethod, rmad::RMAD_ERROR_OK),
+      wp_disable_rsu_state,
+      CreateStateReply(rmad::RmadState::kVerifyRsu, rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kWpDisablePhysical,
+                       rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kWpDisableComplete,
+                       rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kUpdateRoFirmware, rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kRestock, rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kUpdateDeviceInfo, rmad::RMAD_ERROR_OK),
+      // TODO(gavindodd): Add calibration states when implemented.
+      // rmad::RmadState::kCheckCalibration
+      // rmad::RmadState::kSetupCalibration
+      // rmad::RmadState::kRunCalibration
+      CreateStateReply(rmad::RmadState::kProvisionDevice, rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kWpEnablePhysical, rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kFinalize, rmad::RMAD_ERROR_OK),
+  };
+  fake->SetFakeStateReplies(fake_states);
+}
 
 FakeRmadClient::FakeRmadClient() {
   abort_rma_reply_.set_error(rmad::RMAD_ERROR_OK);

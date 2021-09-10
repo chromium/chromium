@@ -302,6 +302,21 @@ export class FakeShimlessRmaService {
   }
 
   /**
+   * @return {!Promise<!{hwid: string}>}
+   */
+   getRsuDisableWriteProtectHwid() {
+    return this.methods_.resolveMethod('getRsuDisableWriteProtectHwid');
+  }
+
+  /**
+   * @param {string} hwid
+   */
+  setGetRsuDisableWriteProtectHwidResult(hwid) {
+    this.methods_.setResult(
+        'getRsuDisableWriteProtectHwid', {hwid: hwid});
+  }
+
+  /**
    * @return {!Promise<!{qrCode: QrCode}>}
    */
   getRsuDisableWriteProtectChallengeQrCode() {
@@ -775,6 +790,7 @@ export class FakeShimlessRmaService {
     this.methods_.register('chooseManuallyDisableWriteProtect');
     this.methods_.register('chooseRsuDisableWriteProtect');
     this.methods_.register('getRsuDisableWriteProtectChallenge');
+    this.methods_.register('getRsuDisableWriteProtectHwid');
     this.methods_.register('getRsuDisableWriteProtectChallengeQrCode');
     this.methods_.register('setRsuDisableWriteProtectCode');
 

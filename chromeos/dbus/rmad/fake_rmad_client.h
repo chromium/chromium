@@ -17,6 +17,8 @@ namespace chromeos {
 
 class COMPONENT_EXPORT(RMAD) FakeRmadClient : public RmadClient {
  public:
+  static void CreateWithState();
+
   FakeRmadClient();
   FakeRmadClient(const FakeRmadClient&) = delete;
   FakeRmadClient& operator=(const FakeRmadClient&) = delete;
