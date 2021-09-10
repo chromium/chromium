@@ -68,20 +68,16 @@ class DesktopUIStorySet(story.StorySet):
     for cls in self.TAB_SEARCH_STORIES:
       self.AddStory(
           cls(self, [
-              '--enable-ui-devtools=0',
               '--top-chrome-touch-ui=disabled',
           ]))
 
     for cls in self.DOWNLOAD_SHELF_STORIES:
-      self.AddStory(cls(self, [
-          '--enable-ui-devtools=0',
-      ]))
+      self.AddStory(cls(self))
 
     for cls in self.DOWNLOAD_SHELF_WEBUI_STORIES:
       self.AddStory(
           cls(self, [
               '--enable-features=WebUIDownloadShelf',
-              '--enable-ui-devtools=0',
           ]))
 
     # WebUI Tab Strip is not available on Mac.
@@ -90,17 +86,15 @@ class DesktopUIStorySet(story.StorySet):
         self.AddStory(
             cls(self, [
                 '--enable-features=WebUITabStrip',
-                '--enable-ui-devtools=0',
                 '--top-chrome-touch-ui=enabled',
             ]))
 
     for cls in self.OMNIBOX_STORIES:
-      self.AddStory(cls(self, ['--enable-ui-devtools=0']))
+      self.AddStory(cls(self))
 
     for cls in self.NEW_TAB_PAGE_STORIES:
       self.AddStory(
           cls(self, [
               '--enable-features=NtpModules,\
               NtpRecipeTasksModule:NtpRecipeTasksModuleDataParam/fake',
-              '--enable-ui-devtools=0',
           ]))
