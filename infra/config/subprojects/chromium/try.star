@@ -205,13 +205,6 @@ try_.blink_builder(
 )
 
 try_.blink_builder(
-    name = "win10-blink-rel",
-    goma_backend = goma.backend.RBE_PROD,
-    os = os.WINDOWS_ANY,
-    builderless = True,
-)
-
-try_.blink_builder(
     name = "win7-blink-rel",
     goma_backend = goma.backend.RBE_PROD,
     os = os.WINDOWS_ANY,

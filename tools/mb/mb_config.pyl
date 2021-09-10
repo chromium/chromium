@@ -777,7 +777,6 @@
       'mac11.0-blink-rel': 'release_bot_blink_minimal_symbols',
       'mac11.0.arm64-blink-rel': 'release_bot_blink_minimal_symbols',
       'win7-blink-rel': 'release_bot_blink_x86_minimal_symbols',
-      'win10-blink-rel': 'release_bot_blink_x86_minimal_symbols',
       'win10.20h2-blink-rel': 'release_bot_blink_x86_minimal_symbols',
     },
 

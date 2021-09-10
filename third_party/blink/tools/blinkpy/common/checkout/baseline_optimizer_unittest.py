@@ -59,10 +59,6 @@ class BaselineOptimizerTest(unittest.TestCase):
         # configured ports and their fallback order. Ideally, we should improve
         # MockPortFactory and use it.
         self.host.builders = BuilderList({
-            'Fake Test Win10': {
-                'port_name': 'win-win10.1909',
-                'specifiers': ['Win10.1909', 'Release']
-            },
             'Fake Test Win10.20h2': {
                 'port_name': 'win-win10.20h2',
                 'specifiers': ['Win10.20h2', 'Release']
@@ -97,7 +93,7 @@ class BaselineOptimizerTest(unittest.TestCase):
         # tests need to be adjusted accordingly.
         self.assertEqual(sorted(self.host.port_factory.all_port_names()), [
             'linux-trusty', 'mac-mac10.12', 'mac-mac10.13', 'mac-mac10.14',
-            'mac-mac10.15', 'mac-mac11.0', 'win-win10.1909', 'win-win10.20h2'
+            'mac-mac10.15', 'mac-mac11.0', 'win-win10.20h2'
         ])
 
     def _assert_optimization(self,

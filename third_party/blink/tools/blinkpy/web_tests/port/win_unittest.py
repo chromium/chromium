@@ -71,20 +71,15 @@ class WinPortTest(port_testcase.PortTestCase):
         self.assert_name(None, 'win7', 'win-win7')
         self.assert_name('win', 'win7', 'win-win7')
 
-        self.assert_name(None, '10.1909', 'win-win10.1909')
-        self.assert_name('win', '10.1909', 'win-win10.1909')
-        self.assert_name('win-win10.1909', '10.1909', 'win-win10.1909')
-        self.assert_name('win-win10.1909', 'win7', 'win-win10.1909')
-
         self.assert_name(None, '10.20h2', 'win-win10.20h2')
         self.assert_name('win', '10.20h2', 'win-win10.20h2')
         self.assert_name('win-win10.20h2', '10.20h2', 'win-win10.20h2')
         self.assert_name('win-win10.20h2', 'win7', 'win-win10.20h2')
 
-        self.assert_name(None, '8', 'win-win10.1909')
-        self.assert_name(None, '8.1', 'win-win10.1909')
-        self.assert_name('win', '8', 'win-win10.1909')
-        self.assert_name('win', '8.1', 'win-win10.1909')
+        self.assert_name(None, '8', 'win-win10.20h2')
+        self.assert_name(None, '8.1', 'win-win10.20h2')
+        self.assert_name('win', '8', 'win-win10.20h2')
+        self.assert_name('win', '8.1', 'win-win10.20h2')
 
         self.assert_name(None, '7sp1', 'win-win7')
         self.assert_name(None, '7sp0', 'win-win7')
@@ -112,8 +107,7 @@ class WinPortTest(port_testcase.PortTestCase):
             self.assertTrue(port.baseline_search_path()[i].endswith(path))
 
     def test_baseline_path(self):
-        self.assert_baseline_paths('win-win7', 'win7', 'win10.1909', '/win')
-        self.assert_baseline_paths('win-win10.1909', 'win10.1909', 'win')
+        self.assert_baseline_paths('win-win7', 'win7', '/win')
         self.assert_baseline_paths('win-win10.20h2', 'win')
 
     def test_operating_system(self):

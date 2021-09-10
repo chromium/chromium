@@ -3488,17 +3488,6 @@
         },
         'use_swarming': False,
       },
-      'win10-blink-rel-dummy': {
-        'mixins': [
-            'win10',
-        ],
-        'swarming': {
-          'hard_timeout': 900,
-        },
-        'test_suites': {
-          'isolated_scripts': 'chromium_webkit_isolated_scripts',
-        },
-      },
       'win10-code-coverage': {
         'mixins': [
           'isolate_profile_data',

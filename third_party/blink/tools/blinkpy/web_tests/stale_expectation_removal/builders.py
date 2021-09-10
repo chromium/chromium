@@ -56,9 +56,6 @@ class WebTestBuilders(builders.Builders):
             'win7-blink-rel-dummy': {
                 'win7-blink-rel',
             },
-            'win10-blink-rel-dummy': {
-                'win10-blink-rel',
-            },
             'win10.20h2-blink-rel-dummy': {
                 'win10.20h2-blink-rel',
             },
