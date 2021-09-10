@@ -264,15 +264,6 @@ public class PriceDropNotificationManager {
     }
 
     /**
-     * See {@link #getNotificationActionClickIntent(String, String)}, without an offer id.
-     */
-    @Deprecated
-    public Intent getNotificationActionClickIntent(String actionId, String url) {
-        // TODO(xingliu): Make changes in downstream and delete this function. OfferId is needed.
-        return getNotificationActionClickIntent(actionId, url, /*offerId=*/null);
-    }
-
-    /**
      * @return Whether app notifications are enabled.
      */
     public boolean areAppNotificationsEnabled() {
