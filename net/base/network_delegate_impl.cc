@@ -16,8 +16,8 @@ int NetworkDelegateImpl::OnBeforeURLRequest(URLRequest* request,
 
 int NetworkDelegateImpl::OnBeforeStartTransaction(
     URLRequest* request,
-    CompletionOnceCallback callback,
-    HttpRequestHeaders* headers) {
+    const HttpRequestHeaders& headers,
+    OnBeforeStartTransactionCallback callback) {
   return OK;
 }
 

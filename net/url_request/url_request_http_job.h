@@ -121,7 +121,9 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   void OnHeadersReceivedCallback(int result);
   void OnStartCompleted(int result);
   void OnReadCompleted(int result);
-  void NotifyBeforeStartTransactionCallback(int result);
+  void NotifyBeforeStartTransactionCallback(
+      int result,
+      const base::Optional<HttpRequestHeaders>& headers);
   // This just forwards the call to URLRequestJob::NotifyConnected().
   // We need it because that method is protected and cannot be bound in a
   // callback in this class.

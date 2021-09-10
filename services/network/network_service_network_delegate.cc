@@ -104,16 +104,16 @@ int NetworkServiceNetworkDelegate::OnBeforeURLRequest(
 
 int NetworkServiceNetworkDelegate::OnBeforeStartTransaction(
     net::URLRequest* request,
-    net::CompletionOnceCallback callback,
-    net::HttpRequestHeaders* headers) {
+    const net::HttpRequestHeaders& headers,
+    OnBeforeStartTransactionCallback callback) {
   URLLoader* url_loader = URLLoader::ForRequest(*request);
   if (url_loader)
-    return url_loader->OnBeforeStartTransaction(std::move(callback), headers);
+    return url_loader->OnBeforeStartTransaction(headers, std::move(callback));
 
 #if !defined(OS_IOS)
   WebSocket* web_socket = WebSocket::ForRequest(*request);
   if (web_socket)
-    return web_socket->OnBeforeStartTransaction(std::move(callback), headers);
+    return web_socket->OnBeforeStartTransaction(headers, std::move(callback));
 #endif  // !defined(OS_IOS)
 
   return net::OK;

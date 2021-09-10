@@ -539,13 +539,14 @@ bool WebSocket::AllowCookies(const GURL& url) const {
              url, site_for_cookies_) == net::OK;
 }
 
-int WebSocket::OnBeforeStartTransaction(net::CompletionOnceCallback callback,
-                                        net::HttpRequestHeaders* headers) {
+int WebSocket::OnBeforeStartTransaction(
+    const net::HttpRequestHeaders& headers,
+    net::NetworkDelegate::OnBeforeStartTransactionCallback callback) {
   if (header_client_) {
     header_client_->OnBeforeSendHeaders(
-        *headers, base::BindOnce(&WebSocket::OnBeforeSendHeadersComplete,
-                                 weak_ptr_factory_.GetWeakPtr(),
-                                 std::move(callback), headers));
+        headers,
+        base::BindOnce(&WebSocket::OnBeforeSendHeadersComplete,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
     return net::ERR_IO_PENDING;
   }
   return net::OK;
@@ -842,17 +843,14 @@ void WebSocket::OnAuthRequiredComplete(
 }
 
 void WebSocket::OnBeforeSendHeadersComplete(
-    net::CompletionOnceCallback callback,
-    net::HttpRequestHeaders* out_headers,
+    net::NetworkDelegate::OnBeforeStartTransactionCallback callback,
     int result,
     const base::Optional<net::HttpRequestHeaders>& headers) {
   if (!channel_) {
     // Something happened before the OnBeforeSendHeaders response arrives.
     return;
   }
-  if (headers)
-    *out_headers = headers.value();
-  std::move(callback).Run(result);
+  std::move(callback).Run(result, headers);
 }
 
 void WebSocket::OnHeadersReceivedComplete(

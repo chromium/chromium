@@ -38,9 +38,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceNetworkDelegate
   int OnBeforeURLRequest(net::URLRequest* request,
                          net::CompletionOnceCallback callback,
                          GURL* new_url) override;
-  int OnBeforeStartTransaction(net::URLRequest* request,
-                               net::CompletionOnceCallback callback,
-                               net::HttpRequestHeaders* headers) override;
+  int OnBeforeStartTransaction(
+      net::URLRequest* request,
+      const net::HttpRequestHeaders& headers,
+      OnBeforeStartTransactionCallback callback) override;
   int OnHeadersReceived(
       net::URLRequest* request,
       net::CompletionOnceCallback callback,

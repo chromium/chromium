@@ -35,14 +35,13 @@ int NetworkDelegate::NotifyBeforeURLRequest(URLRequest* request,
 
 int NetworkDelegate::NotifyBeforeStartTransaction(
     URLRequest* request,
-    CompletionOnceCallback callback,
-    HttpRequestHeaders* headers) {
+    const HttpRequestHeaders& headers,
+    OnBeforeStartTransactionCallback callback) {
   TRACE_EVENT0(NetTracingCategory(),
                "NetworkDelegate::NotifyBeforeStartTransation");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(headers);
   DCHECK(!callback.is_null());
-  return OnBeforeStartTransaction(request, std::move(callback), headers);
+  return OnBeforeStartTransaction(request, headers, std::move(callback));
 }
 
 int NetworkDelegate::NotifyHeadersReceived(

@@ -146,9 +146,10 @@ class BasicNetworkDelegate : public NetworkDelegateImpl {
     return OK;
   }
 
-  int OnBeforeStartTransaction(URLRequest* request,
-                               CompletionOnceCallback callback,
-                               HttpRequestHeaders* headers) override {
+  int OnBeforeStartTransaction(
+      URLRequest* request,
+      const HttpRequestHeaders& headers,
+      OnBeforeStartTransactionCallback callback) override {
     return OK;
   }
 

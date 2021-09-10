@@ -440,8 +440,8 @@ int TestNetworkDelegate::OnBeforeURLRequest(URLRequest* request,
 
 int TestNetworkDelegate::OnBeforeStartTransaction(
     URLRequest* request,
-    CompletionOnceCallback callback,
-    HttpRequestHeaders* headers) {
+    const HttpRequestHeaders& headers,
+    OnBeforeStartTransactionCallback callback) {
   if (before_start_transaction_fails_)
     return ERR_FAILED;
 

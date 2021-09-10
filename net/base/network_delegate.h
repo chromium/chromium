@@ -56,9 +56,11 @@ class NET_EXPORT NetworkDelegate {
   int NotifyBeforeURLRequest(URLRequest* request,
                              CompletionOnceCallback callback,
                              GURL* new_url);
+  using OnBeforeStartTransactionCallback =
+      base::OnceCallback<void(int, const base::Optional<HttpRequestHeaders>&)>;
   int NotifyBeforeStartTransaction(URLRequest* request,
-                                   CompletionOnceCallback callback,
-                                   HttpRequestHeaders* headers);
+                                   const HttpRequestHeaders& headers,
+                                   OnBeforeStartTransactionCallback callback);
   int NotifyHeadersReceived(
       URLRequest* request,
       CompletionOnceCallback callback,
@@ -133,7 +135,8 @@ class NET_EXPORT NetworkDelegate {
                                  GURL* new_url) = 0;
 
   // Called right before the network transaction starts. Allows the delegate to
-  // read/write |headers| before they get sent out.
+  // read |headers| and modify them by passing a new copy to |callback| before
+  // they get sent out.
   //
   // Returns OK to continue with the request, ERR_IO_PENDING if the result is
   // not ready yet, and any other status code to cancel the request. If
@@ -142,11 +145,11 @@ class NET_EXPORT NetworkDelegate {
   // or OnCompleted. Once cancelled, |request| and |headers| become invalid and
   // |callback| may not be called.
   //
-  // The default implementation returns OK (continue with request) without
-  // modifying |headers|.
-  virtual int OnBeforeStartTransaction(URLRequest* request,
-                                       CompletionOnceCallback callback,
-                                       HttpRequestHeaders* headers) = 0;
+  // The default implementation returns OK (continue with request).
+  virtual int OnBeforeStartTransaction(
+      URLRequest* request,
+      const HttpRequestHeaders& headers,
+      OnBeforeStartTransactionCallback callback) = 0;
 
   // Called for HTTP requests when the headers have been received.
   // |original_response_headers| contains the headers as received over the
