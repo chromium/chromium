@@ -233,7 +233,8 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, FullscreenEvents) {
 
 // Make sure tabCapture API can be granted for Chrome:// pages.
 // Disabled due to flakes on macOS; see https://crbug.com/1134562.
-#if defined(OS_MAC)
+// Also flaky on Windows.
+#if defined(OS_MAC) || defined(OS_WIN)
 #define MAYBE_GrantForChromePages DISABLED_GrantForChromePages
 #else
 #define MAYBE_GrantForChromePages GrantForChromePages
