@@ -70,7 +70,6 @@ int LookupNamespacedName(Dwarf_Die* scope,
     if (res)
       return res;
   }
-  return res;
 }
 
 uintptr_t GetDieAddress(Dwarf_Die* die, unsigned long cu_bias) {
