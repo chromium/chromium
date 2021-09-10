@@ -502,6 +502,38 @@ interface ShimlessRmaService {
           => (RmaState state, RmadErrorCode error);
 
   ///////////////////////////////////////
+  // Methods for kCheckCalibration state.
+  // Calibration is a little more complicated than other states because it can
+  // loop to handle setup for calibrating different components.
+  // It goes:
+  //   kCheckCalibration ←                  ←
+  //           ↓                             ↑
+  //   kSetupCalibration ←            ←
+  //           ↓                       ↑
+  //    kRunCalibration  → [success]  →
+  //           ↓                             ↑
+  //        [failure]    →                  →
+  //
+  // Get the list of components being calibrated.
+  GetCalibrationComponentList()
+      => (array<CalibrationComponentStatus> components);
+  // Get the enum of the instructions to display.
+  GetCalibrationSetupInstructions()
+      => (CalibrationSetupInstruction instructions);
+  // Request transition to the begin calibration.
+  // Next state will be kSetupCalibration if setup is required, or
+  // kRunCalibration if not.
+  StartCalibration() => (RmaState state, RmadErrorCode error);
+  // Request transition from kSetupCalibration to run this calibration step.
+  RunCalibrationStep() => (RmaState state, RmadErrorCode error);
+  // Request transition from kRunCalibration to the next setup state.
+  ContinueCalibration() => (RmaState state, RmadErrorCode error);
+  // Request transition from kRunCalibratoin to the next RMA state.
+  // This can only be called after kCalibrationOverallComplete has been
+  // observed.
+  CalibrationComplete() => (RmaState state, RmadErrorCode error);
+
+  ///////////////////////////////////////
   // Methods for kRepairComplete state.
   //
   // Complete RMA and reboot.

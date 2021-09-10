@@ -490,6 +490,81 @@ void ShimlessRmaService::SetDeviceInformation(
   TransitionNextStateGeneric(std::move(callback));
 }
 
+void ShimlessRmaService::GetCalibrationComponentList(
+    GetCalibrationComponentListCallback callback) {
+  std::vector<::rmad::CalibrationComponentStatus> components;
+  if (state_proto_.state_case() != rmad::RmadState::kCheckCalibration) {
+    LOG(ERROR) << "GetCalibrationComponentList called from incorrect state "
+               << state_proto_.state_case();
+  } else {
+    components.reserve(state_proto_.check_calibration().components_size());
+    components.assign(state_proto_.check_calibration().components().begin(),
+                      state_proto_.check_calibration().components().end());
+  }
+  std::move(callback).Run(std::move(components));
+}
+
+void ShimlessRmaService::GetCalibrationSetupInstructions(
+    GetCalibrationSetupInstructionsCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kSetupCalibration) {
+    LOG(ERROR) << "GetCalibrationSetupInstructions called from incorrect state "
+               << state_proto_.state_case();
+    // TODO(gavindodd): Is RMAD_CALIBRATION_INSTRUCTION_UNKNOWN the correct
+    // error value? Confirm with rmad team that this is not overloaded.
+    std::move(callback).Run(rmad::CalibrationSetupInstruction::
+                                RMAD_CALIBRATION_INSTRUCTION_UNKNOWN);
+    return;
+  }
+  std::move(callback).Run(state_proto_.setup_calibration().instruction());
+}
+
+void ShimlessRmaService::StartCalibration(StartCalibrationCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kCheckCalibration) {
+    LOG(ERROR) << "StartCalibration called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run(RmadStateToMojo(state_proto_.state_case()),
+                            rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
+    return;
+  }
+  TransitionNextStateGeneric(std::move(callback));
+}
+
+void ShimlessRmaService::RunCalibrationStep(
+    RunCalibrationStepCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kSetupCalibration) {
+    LOG(ERROR) << "RunCalibrationStep called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run(RmadStateToMojo(state_proto_.state_case()),
+                            rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
+    return;
+  }
+  TransitionNextStateGeneric(std::move(callback));
+}
+
+void ShimlessRmaService::ContinueCalibration(
+    ContinueCalibrationCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kRunCalibration) {
+    LOG(ERROR) << "ContinueCalibration called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run(RmadStateToMojo(state_proto_.state_case()),
+                            rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
+    return;
+  }
+  TransitionNextStateGeneric(std::move(callback));
+}
+
+void ShimlessRmaService::CalibrationComplete(
+    CalibrationCompleteCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kRunCalibration) {
+    LOG(ERROR) << "CalibrationComplete called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run(RmadStateToMojo(state_proto_.state_case()),
+                            rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
+    return;
+  }
+  TransitionNextStateGeneric(std::move(callback));
+}
+
 void ShimlessRmaService::FinalizeAndReboot(FinalizeAndRebootCallback callback) {
   if (state_proto_.state_case() != rmad::RmadState::kFinalize) {
     LOG(ERROR) << "FinalizeAndReboot called from incorrect state "

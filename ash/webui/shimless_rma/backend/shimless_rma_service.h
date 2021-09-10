@@ -92,6 +92,15 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
                             uint8_t sku_index,
                             SetDeviceInformationCallback callback) override;
 
+  void GetCalibrationComponentList(
+      GetCalibrationComponentListCallback callback) override;
+  void GetCalibrationSetupInstructions(
+      GetCalibrationSetupInstructionsCallback callback) override;
+  void StartCalibration(StartCalibrationCallback callback) override;
+  void RunCalibrationStep(RunCalibrationStepCallback callback) override;
+  void ContinueCalibration(ContinueCalibrationCallback callback) override;
+  void CalibrationComplete(CalibrationCompleteCallback callback) override;
+
   void FinalizeAndReboot(FinalizeAndRebootCallback callback) override;
   void FinalizeAndShutdown(FinalizeAndShutdownCallback callback) override;
   void CutoffBattery(CutoffBatteryCallback callback) override;

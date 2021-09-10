@@ -7,7 +7,7 @@ import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
-import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationStatus, Component, ComponentRepairStatus, ComponentType, ErrorObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStep, QrCode, RmadErrorCode, RmaState, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationSetupInstruction, CalibrationStatus, Component, ComponentRepairStatus, ComponentType, ErrorObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStep, QrCode, RmadErrorCode, RmaState, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
 
 /** @implements {ShimlessRmaServiceInterface} */
 export class FakeShimlessRmaService {
@@ -511,6 +511,68 @@ export class FakeShimlessRmaService {
   }
 
   /**
+   * @return {!Promise<!{components: !Array<!CalibrationComponentStatus>}>}
+   */
+  getCalibrationComponentList() {
+    return this.methods_.resolveMethod('getCalibrationComponentList');
+  }
+
+  /**
+   * @param {!Array<!CalibrationComponentStatus>} components
+   */
+  setGetCalibrationComponentListResult(components) {
+    this.methods_.setResult(
+        'getCalibrationComponentList', {components: components});
+  }
+
+  /**
+   * @return {!Promise<!{instructions: CalibrationSetupInstruction}>}
+   */
+  getCalibrationSetupInstructions() {
+    return this.methods_.resolveMethod('getCalibrationSetupInstructions');
+  }
+
+  /**
+   * @param {CalibrationSetupInstruction} instructions
+   */
+  setGetCalibrationSetupInstructionsResult(instructions) {
+    this.methods_.setResult(
+        'getCalibrationSetupInstructions', {instructions: instructions});
+  }
+
+  /**
+   * @return {!Promise<!StateResult>}
+   */
+  startCalibration() {
+    return this.getNextStateForMethod_(
+        'startCalibration', RmaState.kCheckCalibration);
+  }
+
+  /**
+   * @return {!Promise<!StateResult>}
+   */
+  runCalibrationStep() {
+    return this.getNextStateForMethod_(
+        'runCalibrationStep', RmaState.kSetupCalibration);
+  }
+
+  /**
+   * @return {!Promise<!StateResult>}
+   */
+  continueCalibration() {
+    return this.getNextStateForMethod_(
+        'continueCalibration', RmaState.kRunCalibration);
+  }
+
+  /**
+   * @return {!Promise<!StateResult>}
+   */
+  calibrationComplete() {
+    return this.getNextStateForMethod_(
+        'calibrationComplete', RmaState.kRunCalibration);
+  }
+
+  /**
    * @return {!Promise<!StateResult>}
    */
   finalizeAndReboot() {
@@ -812,6 +874,13 @@ export class FakeShimlessRmaService {
     this.methods_.register('getOriginalRegion');
     this.methods_.register('getOriginalSku');
     this.methods_.register('setDeviceInformation');
+
+    this.methods_.register('getCalibrationComponentList');
+    this.methods_.register('getCalibrationSetupInstructions');
+    this.methods_.register('startCalibration');
+    this.methods_.register('runCalibrationStep');
+    this.methods_.register('continueCalibration');
+    this.methods_.register('calibrationComplete');
 
     this.methods_.register('finalizeAndReboot');
     this.methods_.register('finalizeAndShutdown');

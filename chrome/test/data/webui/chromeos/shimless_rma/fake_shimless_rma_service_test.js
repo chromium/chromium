@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
-import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationStatus, ComponentRepairStatus, ComponentType, ErrorObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStep, RmadErrorCode, RmaState} from 'chrome://shimless-rma/shimless_rma_types.js';
+import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationSetupInstruction, CalibrationStatus, ComponentRepairStatus, ComponentType, ErrorObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStep, RmadErrorCode, RmaState} from 'chrome://shimless-rma/shimless_rma_types.js';
 
 import {assertDeepEquals, assertEquals} from '../../chai_assert.js';
 
@@ -594,6 +594,106 @@ export function fakeShimlessRmaServiceTestSuite() {
     service.setStates(states);
 
     return service.setDeviceInformation('serial number', 1, 2).then((state) => {
+      assertEquals(state.state, RmaState.kChooseDestination);
+      assertEquals(state.error, RmadErrorCode.kOk);
+    });
+  });
+
+  test('GetCalibrationComponentList', () => {
+    let states = [
+      {state: RmaState.kCheckCalibration, error: RmadErrorCode.kOk},
+      {state: RmaState.kChooseDestination, error: RmadErrorCode.kOk},
+    ];
+    service.setStates(states);
+    let expectedCalibrationComponents = [
+      /** @type {!CalibrationComponentStatus} */
+      ({
+        component: ComponentType.kLidAccelerometer,
+        status: CalibrationStatus.kCalibrationInProgress,
+        progress: 0.5
+      }),
+      /** @type {!CalibrationComponentStatus} */
+      ({
+        component: ComponentType.kBaseAccelerometer,
+        status: CalibrationStatus.kCalibrationComplete,
+        progress: 1.0
+      }),
+    ];
+    service.setGetCalibrationComponentListResult(expectedCalibrationComponents);
+
+    return service.getCalibrationComponentList().then((result) => {
+      assertDeepEquals(expectedCalibrationComponents, result.components);
+    });
+  });
+
+  test('GetCalibrationInstructions', () => {
+    let states = [
+      {state: RmaState.kCheckCalibration, error: RmadErrorCode.kOk},
+      {state: RmaState.kChooseDestination, error: RmadErrorCode.kOk},
+    ];
+    service.setStates(states);
+    service.setGetCalibrationSetupInstructionsResult(
+        CalibrationSetupInstruction
+            .kCalibrationInstructionPlaceBaseOnFlatSurface);
+
+    return service.getCalibrationSetupInstructions().then((result) => {
+      assertDeepEquals(
+          CalibrationSetupInstruction
+              .kCalibrationInstructionPlaceBaseOnFlatSurface,
+          result.instructions);
+    });
+  });
+
+  test('StartCalibrationOk', () => {
+    let states = [
+      {state: RmaState.kCheckCalibration, error: RmadErrorCode.kOk},
+      {state: RmaState.kChooseDestination, error: RmadErrorCode.kOk},
+    ];
+    service.setStates(states);
+    service.setGetCalibrationSetupInstructionsResult(
+        CalibrationSetupInstruction
+            .kCalibrationInstructionPlaceBaseOnFlatSurface);
+
+    return service.startCalibration().then((state) => {
+      assertEquals(state.state, RmaState.kChooseDestination);
+      assertEquals(state.error, RmadErrorCode.kOk);
+    });
+  });
+
+  test('RunCalibrationStepOk', () => {
+    let states = [
+      {state: RmaState.kSetupCalibration, error: RmadErrorCode.kOk},
+      {state: RmaState.kChooseDestination, error: RmadErrorCode.kOk},
+    ];
+    service.setStates(states);
+
+    return service.runCalibrationStep().then((state) => {
+      assertEquals(state.state, RmaState.kChooseDestination);
+      assertEquals(state.error, RmadErrorCode.kOk);
+    });
+  });
+
+  test('ContinueCalibrationOk', () => {
+    let states = [
+      {state: RmaState.kRunCalibration, error: RmadErrorCode.kOk},
+      {state: RmaState.kChooseDestination, error: RmadErrorCode.kOk},
+    ];
+    service.setStates(states);
+
+    return service.continueCalibration().then((state) => {
+      assertEquals(state.state, RmaState.kChooseDestination);
+      assertEquals(state.error, RmadErrorCode.kOk);
+    });
+  });
+
+  test('CalibrationCompleteOk', () => {
+    let states = [
+      {state: RmaState.kRunCalibration, error: RmadErrorCode.kOk},
+      {state: RmaState.kChooseDestination, error: RmadErrorCode.kOk},
+    ];
+    service.setStates(states);
+
+    return service.calibrationComplete().then((state) => {
       assertEquals(state.state, RmaState.kChooseDestination);
       assertEquals(state.error, RmadErrorCode.kOk);
     });
