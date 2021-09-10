@@ -46,6 +46,22 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
     <owner>nohle@chromium.org</owner>
     <owner>nearby-share-chromeos-eng@google.com</owner>
   </variant>
+  <variant name="StylusDetachedFromDockSession"
+      summary="Time spent from stylus being undocked, to being re-docked">
+    <owner>kenalba@google.com</owner>
+    <owner>chromeos-tango@google.com</owner>
+  </variant>
+  <variant name="StylusDetachedFromGarageOrDockSession"
+      summary="Time spent while either out of garage or un-docked">
+    <owner>kenalba@google.com</owner>
+    <owner>chromeos-tango@google.com</owner>
+  </variant>
+  <variant name="StylusDetachedFromGarageSession"
+      summary="Time spent from stylus being removed from garage, to being
+               replaced into garage">
+    <owner>kenalba@google.com</owner>
+    <owner>chromeos-tango@google.com</owner>
+  </variant>
 </variants>
 
 <histogram name="ChromeOS.Apps.ExternalProtocolDialog"
