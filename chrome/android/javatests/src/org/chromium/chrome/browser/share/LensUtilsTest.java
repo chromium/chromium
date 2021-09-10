@@ -301,6 +301,37 @@ public class LensUtilsTest {
     }
 
     /**
+     * Test {@link LensUtils#isGoogleLensFeatureEnabledOnTablet()} method when search with Google
+     * Lens is enabled.
+     */
+    @CommandLineFlags.Add({"enable-features="
+                    + ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS + "<FakeStudyName",
+            "force-fieldtrials=FakeStudyName/Enabled"})
+    @Test
+    @SmallTest
+    public void
+    isGoogleLensFeatureEnabled_tabletDisabled() {
+        Assert.assertFalse("Feature incorrectly enabled when Lens on tablet was disabled",
+                isGoogleLensFeatureEnabledOnTabletOnUiThread());
+    }
+
+    /**
+     * Test {@link LensUtils#isGoogleLensFeatureEnabledOnTablet()} method when search with Google
+     * Lens is enabled.
+     */
+    @CommandLineFlags.Add({"enable-features="
+                    + ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS + "<FakeStudyName",
+            "force-fieldtrials=FakeStudyName/Enabled",
+            "force-fieldtrial-params=FakeStudyName.Enabled:enableContextMenuSearchOnTablet/true"})
+    @Test
+    @SmallTest
+    public void
+    isGoogleLensFeatureEnabled_tabletEnabled() {
+        Assert.assertTrue("Feature incorrectly disabled when Lens on tablet was enabled",
+                isGoogleLensFeatureEnabledOnTabletOnUiThread());
+    }
+
+    /**
      * Test {@link LensUtils#isInShoppingAllowlist(url)} method for url with default shopping url
      * patterns.
      */
@@ -333,5 +364,10 @@ public class LensUtilsTest {
     private boolean shouldLogUkmOnUiThread(String featureName) {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> LensUtils.shouldLogUkmByFeature(featureName));
+    }
+
+    private boolean isGoogleLensFeatureEnabledOnTabletOnUiThread() {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> LensUtils.isGoogleLensFeatureEnabledOnTablet());
     }
 }

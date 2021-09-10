@@ -1036,6 +1036,20 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 }
             });
         }
+
+        if (isTabletScreen() && !LensUtils.isGoogleLensFeatureEnabledOnTablet()) {
+            LensMetrics.recordLensSupportStatus(LENS_SUPPORT_STATUS_HISTOGRAM_NAME,
+                    LensMetrics.LensSupportStatus.DISABLED_ON_TABLET);
+
+            return Collections.unmodifiableMap(new HashMap<String, Boolean>() {
+                {
+                    put(LENS_SEARCH_MENU_ITEM_KEY, false);
+                    put(LENS_SHOP_MENU_ITEM_KEY, false);
+                    put(SEARCH_BY_IMAGE_MENU_ITEM_KEY, true);
+                }
+            });
+        }
+
         final TemplateUrlService templateUrlServiceInstance = getTemplateUrlService();
         String versionName = LensUtils.getLensActivityVersionNameIfAvailable(mContext);
         if (!templateUrlServiceInstance.isDefaultSearchEngineGoogle()) {

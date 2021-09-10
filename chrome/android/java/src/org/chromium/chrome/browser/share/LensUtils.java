@@ -32,6 +32,7 @@ public class LensUtils {
     private static final String LOG_UKM_PARAM_NAME = "logUkm";
     private static final String USE_SEARCH_IMAGE_WITH_GOOGLE_LENS_ITEM_NAME_PARAM_NAME =
             "useSearchImageWithGoogleLensItemName";
+    private static final String ENABLE_ON_TABLET_PARAM_NAME = "enableContextMenuSearchOnTablet";
     private static final String DISABLE_ON_INCOGNITO_PARAM_NAME = "disableOnIncognito";
     private static final String ORDER_SHARE_IMAGE_BEFORE_LENS_PARAM_NAME =
             "orderShareImageBeforeLens";
@@ -227,6 +228,12 @@ public class LensUtils {
                         && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                                 ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS,
                                 DISABLE_ON_INCOGNITO_PARAM_NAME, true));
+    }
+
+    public static boolean isGoogleLensFeatureEnabledOnTablet() {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS, ENABLE_ON_TABLET_PARAM_NAME,
+                false);
     }
 
     public static boolean isGoogleLensShoppingFeatureEnabled(boolean isIncognito) {
