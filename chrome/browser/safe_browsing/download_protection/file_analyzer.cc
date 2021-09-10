@@ -8,7 +8,6 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/notreached.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -19,6 +18,10 @@
 #include "components/safe_browsing/content/common/file_type_policies.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_thread.h"
+
+#if defined(OS_LINUX)
+#include "chrome/browser/safe_browsing/download_protection/document_analysis_service.h"
+#endif
 
 namespace safe_browsing {
 
@@ -294,12 +297,20 @@ void FileAnalyzer::StartExtractDocumentFeatures() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   document_analysis_start_time_ = base::TimeTicks::Now();
-  NOTIMPLEMENTED();
+
+  document_analyzer_ = new SandboxedDocumentAnalyzer(
+      target_path_, tmp_path_,
+      base::BindOnce(&FileAnalyzer::OnDocumentAnalysisFinished,
+                     weakptr_factory_.GetWeakPtr()),
+      LaunchDocumentAnalysisService());
+
+  document_analyzer_->Start();
 }
 
 void FileAnalyzer::OnDocumentAnalysisFinished(
     const DocumentAnalyzerResults& document_results) {
-  NOTREACHED();
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
   // Log metrics for Document Analysis
   UMA_HISTOGRAM_BOOLEAN("SBClientDownload.DocumentAnalysisSuccess",
                         document_results.success);

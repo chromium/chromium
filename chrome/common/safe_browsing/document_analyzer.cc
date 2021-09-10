@@ -1,10 +1,14 @@
 // Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+//
+// This file contains the document analyzer analysis implementation for download
+// protection, which runs in a sandboxed utility process.
 
 #include "chrome/common/safe_browsing/document_analyzer.h"
 
 #include <memory>
+#include <string>
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -24,7 +28,7 @@
 namespace safe_browsing {
 namespace document_analyzer {
 
-void AnalyzeDocument(const std::string& office_file,
+void AnalyzeDocument(base::File office_file,
                      const base::FilePath& file_path,
                      DocumentAnalyzerResults* results) {
   NOTIMPLEMENTED();

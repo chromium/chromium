@@ -194,10 +194,7 @@ source_set("safe_browsing") {
     ]
 
     if (is_linux) {
-      deps += [
-        ":document_analyzer",
-        ":document_analyzer_results",
-      ]
+      deps += [ ":document_analyzer" ]
     }
 
     public_deps = [
@@ -209,5 +206,11 @@ source_set("safe_browsing") {
       "//ipc",
       "//third_party/zlib/google:zip",
     ]
+
+    if (is_linux) {
+      public_deps += [
+        ":document_analyzer_results",
+      ]
+    }
   }
 }

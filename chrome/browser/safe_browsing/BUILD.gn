@@ -295,6 +295,11 @@ static_library("safe_browsing") {
           "incident_reporting/module_integrity_verifier_win.h",
           "incident_reporting/platform_state_store_win.cc",
         ]
+      } else if (is_linux) {
+          sources += [
+          "download_protection/document_analysis_service.cc",
+          "download_protection/document_analysis_service.h",
+        ]
       }
       deps += [
         ":advanced_protection",
@@ -336,7 +341,10 @@ static_library("safe_browsing") {
           "//chrome/common:version_header",
         ]
       } else if (is_linux) {
-        deps += [ "//chrome/common/safe_browsing:document_analyzer_results" ]
+        deps += [
+          "//chrome/common/safe_browsing:document_analyzer_results",
+          "//chrome/services/file_util/public/mojom",
+        ]
       }
     } else if (safe_browsing_mode == 2) {
       if (is_android) {

@@ -11,11 +11,14 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/common/safe_browsing/binary_feature_extractor.h"
-#include "chrome/common/safe_browsing/document_analyzer_results.h"
 #include "chrome/services/file_util/public/cpp/sandboxed_rar_analyzer.h"
 #include "chrome/services/file_util/public/cpp/sandboxed_zip_analyzer.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
+
+#if defined(OS_LINUX)
+#include "chrome/services/file_util/public/cpp/sandboxed_document_analyzer.h"
+#endif
 
 #if defined(OS_MAC)
 #include "chrome/common/safe_browsing/disk_image_type_sniffer_mac.h"
@@ -130,6 +133,7 @@ class FileAnalyzer {
 #endif
 
 #if defined(OS_LINUX)
+  scoped_refptr<SandboxedDocumentAnalyzer> document_analyzer_;
   base::TimeTicks document_analysis_start_time_;
 #endif
 

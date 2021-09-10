@@ -64,6 +64,10 @@
 #include "chrome/services/file_util/file_util_service.h"  // nogncheck
 #endif
 
+#if BUILDFLAG(FULL_SAFE_BROWSING) && defined(OS_LINUX)
+#include "chrome/services/file_util/document_analysis_service.h"  // nogncheck
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/services/removable_storage_writer/public/mojom/removable_storage_writer.mojom.h"
 #include "chrome/services/removable_storage_writer/removable_storage_writer.h"
@@ -205,6 +209,13 @@ auto RunSpeechRecognitionService(
 auto RunCupsIppParser(
     mojo::PendingReceiver<ipp_parser::mojom::IppParser> receiver) {
   return std::make_unique<ipp_parser::IppParser>(std::move(receiver));
+}
+#endif
+
+#if BUILDFLAG(FULL_SAFE_BROWSING) && defined(OS_LINUX)
+auto RunDocumentAnalysis(
+    mojo::PendingReceiver<chrome::mojom::DocumentAnalysisService> receiver) {
+  return std::make_unique<DocumentAnalysisService>(std::move(receiver));
 }
 #endif
 
@@ -357,6 +368,10 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
 
 #if BUILDFLAG(FULL_SAFE_BROWSING) || BUILDFLAG(IS_CHROMEOS_ASH)
   services.Add(RunFileUtil);
+#endif
+
+#if BUILDFLAG(FULL_SAFE_BROWSING) && defined(OS_LINUX)
+  services.Add(RunDocumentAnalysis);
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS) && !defined(OS_WIN)
