@@ -27,13 +27,16 @@ crbug.com/1239032 [ client_lte_94 ] org.chromium.weblayer.test.TabListCallbackTe
 crbug.com/1191751 [ client_lte_94 ] org.chromium.weblayer.test.TabListCallbackTest#testMoveToDifferentFragment [ Skip ]
 crbug.com/1191751 [ client_lte_94 ] org.chromium.weblayer.test.TabListCallbackTest#testDestroyTab [ Skip ]
 crbug.com/1191751 [ client_lte_94 ] org.chromium.weblayer.test.TabListCallbackTest#testActiveTabChanged [ Skip ]
-crbug.com/1191751 [ client_lte_94 ] org.chromium.weblayer.test.FindInPageTest#testHideOnNewTab [ Skip ]
 crbug.com/1239034 [ client_lte_94 ] org.chromium.weblayer.test.TabCallbackTest#testTabModalOverlay [ Skip ]
 crbug.com/1239026 [ client_lte_94 ] org.chromium.weblayer.test.TabCallbackTest#testDismissTransientUi [ Skip ]
 crbug.com/1191751 [ client_lte_94 ] org.chromium.weblayer.test.NavigationTest#testRepostConfirmation [ Skip ]
 crbug.com/1225662 [ client_lte_94 ] org.chromium.weblayer.test.NavigationTest#testDestroyTabWithModalDialog [ Skip ]
-crbug.com/1238481 [ client_lte_94 ] org.chromium.weblayer.test.TabTest#testRotationDoesntChangeVisibility [ Skip ]
 crbug.com/1239028 [ client_lte_94 ] org.chromium.weblayer.test.MediaSessionTest#basic [ Skip ]
+
+crbug.com/1248183 [ all ] org.chromium.weblayer.test.TabTest#testRotationDoesntChangeVisibility [ Skip ]
+crbug.com/1248187 [ all ] org.chromium.weblayer.test.FindInPageTest#testHideOnNewTab [ Skip ]
+
+
 
 # Bulk disable to get bot green.
 crbug.com/1191751 [ all ] org.chromium.weblayer.test.InputTypesTest* [ Skip ]
