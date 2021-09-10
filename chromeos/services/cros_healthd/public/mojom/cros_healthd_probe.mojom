@@ -39,6 +39,7 @@ enum ProbeCategoryEnum {
   kAudio,
   kBootPerformance,
   kBus,
+  kTpm,
 
   // TODO(b/190459636): Rename it to kSystem after migration.
   kSystem2 = 0x10000,
@@ -776,6 +777,88 @@ struct UsbBusInterfaceInfo {
   string? driver;
 };
 
+// TPM probe result. Can either be populated with the TpmInfo or an error
+// retrieving the information.
+union TpmResult {
+  // Valid TpmInfo.
+  TpmInfo tpm_info;
+  // The error that occurred attempting to retrieve the TpmInfo.
+  ProbeError error;
+};
+
+// Information of the Trusted Platform Module(TPM).
+struct TpmInfo {
+  // TPM version related information.
+  TpmVersion version;
+  // TPM status related information.
+  TpmStatus status;
+  // TPM dictionary attack (DA) related information.
+  TpmDictionaryAttack dictionary_attack;
+  // TPM attestation related information.
+  TpmAttestation attestation;
+};
+
+// The version of Google security chip(GSC).
+[Extensible]
+enum TpmGSCVersion {
+  // For the devices which cannot be classified.
+  kNotGSC = 0,
+  // Devices with Cr50 firmware.
+  kCr50,
+  // Devices with Ti50 firmware.
+  kTi50,
+};
+
+// TPM version related information.
+struct TpmVersion {
+  // GSC version.
+  TpmGSCVersion gsc_version;
+  // TPM family. We use the TPM 2.0 style encoding, e.g.:
+  //  * TPM 1.2: "1.2" -> 0x312e3200
+  //  * TPM 2.0: "2.0" -> 0x322e3000
+  uint32 family;
+  // TPM spec level.
+  uint64 spec_level;
+  // Manufacturer code.
+  uint32 manufacturer;
+  // TPM model number.
+  uint32 tpm_model;
+  // Firmware version.
+  uint64 firmware_version;
+  // Vendor specific information.
+  string? vendor_specific;
+};
+
+// TPM status related information.
+struct TpmStatus {
+  // Whether a TPM is enabled on the system.
+  bool enabled;
+  // Whether the TPM has been owned.
+  bool owned;
+  // Whether the owner password is still retained.
+  bool owner_password_is_present;
+};
+
+// TPM dictionary attack (DA) related information.
+struct TpmDictionaryAttack {
+  // The current dictionary attack counter value.
+  uint32 counter;
+  // The current dictionary attack counter threshold.
+  uint32 threshold;
+  // Whether the TPM is in some form of dictionary attack lockout.
+  bool lockout_in_effect;
+  // The number of seconds remaining in the lockout.
+  uint32 lockout_seconds_remaining;
+};
+
+// TPM attestation related information.
+struct TpmAttestation {
+  // Is prepared for enrollment? True if prepared for *any* CA.
+  bool prepared_for_enrollment;
+  // Is enrolled (AIK certificate created)? True if enrolled with *any* CA.
+  bool enrolled;
+};
+
 // A collection of all the device's telemetry information that cros_healthd is
 // capable of reporting. Note that every field in TelemetryInfo is nullable, and
 // the response for a particular ProbeTelemetryInfo request will only contain
@@ -833,4 +916,7 @@ struct TelemetryInfo {
   // Information about the system. Only present when kSystem2 was included in
   // the categories input to ProbeTelemetryInfo.
   SystemResultV2? system_result_v2;
+  // Information about the tpm. Only present when kTpm was included in
+  // the categories input to ProbeTelemetryInfo.
+  TpmResult? tpm_result;
 };
