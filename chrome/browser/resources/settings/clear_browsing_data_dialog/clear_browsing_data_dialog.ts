@@ -29,7 +29,9 @@ import {IronPagesElement} from 'chrome://resources/polymer/v3_0/iron-pages/iron-
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PrefControlBehaviorInterface} from '../controls/pref_control_behavior.js';
+import {SettingsCheckboxElement} from '../controls/settings_checkbox_ts.js';
 import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
+import {SettingsDropdownMenuElement} from '../controls/settings_dropdown_menu_ts.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '../people_page/sync_browser_proxy.js';
 import {routes} from '../route.js';
@@ -83,14 +85,6 @@ type UpdateSyncStateEvent = {
   isNonGoogleDse: boolean,
   nonGoogleSearchHistoryString: string,
 };
-
-// TODO(crbug.com/1234307): Remove when settings_checkbox.js is migrated to
-// TypeScript.
-interface SettingsCheckboxElement extends HTMLElement {
-  checked: boolean;
-  pref: chrome.settingsPrivate.PrefObject;
-  sendPrefChange(): void;
-}
 
 interface SettingsClearBrowsingDataDialogElement {
   $: {
@@ -436,7 +430,7 @@ class SettingsClearBrowsingDataDialogElement extends
     const dataTypes: Array<string> = [];
     checkboxes.forEach((checkbox) => {
       if (checkbox.checked && !checkbox.hidden) {
-        dataTypes.push(checkbox.pref.key);
+        dataTypes.push(checkbox.pref!.key);
       }
     });
     return dataTypes;
@@ -450,11 +444,8 @@ class SettingsClearBrowsingDataDialogElement extends
    */
   private async getInstalledApps_() {
     const tab = this.$.tabs.selectedItem as HTMLElement;
-    // TODO(crbug.com/1234307): Cast to SettingsDropdownMenuElement when
-    // settings_dropdown_menu.js is migrated to TypeScript.
-    const timePeriod = (tab.querySelector('.time-range-select') as unknown as
-                        PrefControlBehaviorInterface)
-                           .pref!.value;
+    const timePeriod = tab.querySelector<SettingsDropdownMenuElement>(
+                              '.time-range-select')!.pref!.value;
     this.installedApps_ = await this.browserProxy_.getInstalledApps(timePeriod);
   }
 

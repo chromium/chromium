@@ -138,7 +138,6 @@ preprocess_if_expr("preprocess") {
     "people_page/sync_browser_proxy.js",
     "people_page/profile_info_browser_proxy.js",
     "prefs/prefs_behavior.js",
-    "prefs/prefs_behavior_ts.ts",
     "prefs/prefs.js",
     "prefs/prefs_types.js",
     "prefs/pref_util.js",
@@ -160,6 +159,17 @@ preprocess_if_expr("preprocess") {
     "site_settings/site_settings_mixin.js",
     "site_settings/site_settings_prefs_browser_proxy.js",
     "site_settings/website_usage_browser_proxy.js",
+
+    # Files holding TypeScript types, necessary only during the migration. These
+    # files are purposefully *not* listed in the :build_ts target's |in_files|
+    # list, so that they don't end-up in the generated grd file.
+    # TODO(crbug.com/1234307): Delete these files once no longer necessary.
+    "controls/pref_control_behavior_ts.ts",
+    "controls/settings_boolean_control_behavior_ts.ts",
+    "controls/settings_checkbox_ts.ts",
+    "controls/settings_dropdown_menu_ts.ts",
+    "controls/settings_radio_group_ts.ts",
+    "controls/settings_toggle_button_ts.ts",
   ]
 
   if (is_chromeos_ash) {
@@ -716,7 +726,6 @@ ts_library("build_ts") {
     "people_page/sync_encryption_options.js",
     "people_page/sync_page.js",
     "prefs/prefs_behavior.js",
-    "prefs/prefs_behavior_ts.ts",
     "prefs/prefs.js",
     "prefs/prefs_types.js",
     "prefs/pref_util.js",

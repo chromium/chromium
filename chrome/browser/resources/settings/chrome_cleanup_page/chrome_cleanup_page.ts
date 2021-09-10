@@ -21,6 +21,7 @@ import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SettingsCheckboxElement} from '../controls/settings_checkbox_ts.js';
 import {ChromeCleanupProxy, ChromeCleanupProxyImpl} from './chrome_cleanup_proxy.js';
 import {ChromeCleanupRemovalListItem} from './items_to_remove_list.js';
 
@@ -114,12 +115,6 @@ type ChromeCleanerScannerResults = {
  *      ... other pages ...
  *    </iron-animated-pages>
  */
-
-// TODO(crbug.com/1234307): Remove when settings_checkbox.js is migrated to
-// TypeScript.
-interface SettingsCheckboxElement extends HTMLElement {
-  checked: boolean;
-}
 
 interface SettingsChromeCleanupPageElement {
   $: {
