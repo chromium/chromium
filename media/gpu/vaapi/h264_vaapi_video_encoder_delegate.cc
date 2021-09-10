@@ -456,7 +456,14 @@ bool H264VaapiVideoEncoderDelegate::UpdateRates(
 
   curr_params_.bitrate_allocation = bitrate_allocation;
   curr_params_.framerate = framerate;
-  curr_params_.cpb_size_bits = bitrate * curr_params_.cpb_window_size_ms / 1000;
+
+  base::CheckedNumeric<uint32_t> cpb_size_bits(bitrate);
+  cpb_size_bits /= 1000;
+  cpb_size_bits *= curr_params_.cpb_window_size_ms;
+  if (!cpb_size_bits.AssignIfValid(&curr_params_.cpb_size_bits)) {
+    VLOGF(1) << "Too large bitrate: " << bitrate_allocation.GetSumBps();
+    return false;
+  }
 
   bool previous_encoding_parameters_changed = encoding_parameters_changed_;
 
