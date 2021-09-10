@@ -337,7 +337,8 @@ void MemoryDumpPartitionStatsDumper::PartitionsDumpBucketStats(
   if (memory_stats->is_direct_map) {
     dump_name.append(base::StringPrintf("/buckets/directMap_%" PRIu64, ++uid_));
   } else {
-    dump_name.append(base::StringPrintf("/buckets/bucket_%" PRIu32,
+    // Normal buckets go up to ~1MiB, 7 digits.
+    dump_name.append(base::StringPrintf("/buckets/bucket_%07" PRIu32,
                                         memory_stats->bucket_slot_size));
   }
 
@@ -406,8 +407,10 @@ void ReportPartitionAllocThreadCacheStats(ProcessMemoryDump* pmd,
         size_t bucket_size = lookup.bucket_sizes()[i];
         if (bucket_size == kInvalidBucketSize)
           continue;
-        std::string dump_name = base::StringPrintf(
-            "%s/buckets_alloc/%d", name.c_str(), static_cast<int>(bucket_size));
+        // Covers all normal buckets, that is up to ~1MiB, so 7 digits.
+        std::string dump_name =
+            base::StringPrintf("%s/buckets_alloc/%07d", name.c_str(),
+                               static_cast<int>(bucket_size));
         auto* buckets_alloc_dump = pmd->CreateAllocatorDump(dump_name);
         buckets_alloc_dump->AddScalar("count", "objects",
                                       stats.allocs_per_bucket_[i]);
