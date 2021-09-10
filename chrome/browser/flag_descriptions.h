@@ -2049,6 +2049,9 @@ extern const char kWalletRequiresFirstSyncSetupCompleteDescription[];
 extern const char kWebFeedName[];
 extern const char kWebFeedDescription[];
 
+extern const char kWebFeedSortName[];
+extern const char kWebFeedSortDescription[];
+
 extern const char kWebNotesStylizeName[];
 extern const char kWebNotesStylizeDescription[];
 

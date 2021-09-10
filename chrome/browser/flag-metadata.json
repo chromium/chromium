@@ -5708,6 +5708,11 @@
     "expiry_milestone": 99
   },
   {
+    "name": "web-feed-sort",
+    "owners": ["//chrome/android/feed/OWNERS", "feed@chromium.org" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "web-otp-backend",
     "owners": [ "yigu", "majidvp" ],
     "expiry_milestone": 96

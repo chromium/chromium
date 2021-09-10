@@ -70,6 +70,9 @@ extern const base::Feature kFeedBackToTop;
 // Feature that enables StAMP cards in the feed.
 extern const base::Feature kFeedStamp;
 
+// Feature that enables sorting by different heuristics in the web feed.
+extern const base::Feature kWebFeedSort;
+
 std::string GetFeedReferrerUrl();
 
 }  // namespace feed

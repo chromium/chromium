@@ -3594,6 +3594,11 @@ const char kWebFeedName[] = "Web Feed";
 const char kWebFeedDescription[] =
     "Allows users to keep up with and consume web content.";
 
+const char kWebFeedSortName[] = "Web Feed Sort";
+const char kWebFeedSortDescription[] =
+    "Allows users to sort their web content in the web feed. "
+    "Only works if Web Feed is also enabled.";
+
 const char kWebNotesStylizeName[] = "WebNotes Stylize";
 const char kWebNotesStylizeDescription[] =
     "Allows users to create and share stylized webnotes.";

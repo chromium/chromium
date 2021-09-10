@@ -49872,6 +49872,7 @@ from previous Chrome versions.
   <int value="5654819" label="CrostiniGpuSupport:disabled"/>
   <int value="6041813" label="PermissionChipGestureSensitive:disabled"/>
   <int value="6523501" label="lacros-availability-ignore"/>
+  <int value="7310536" label="WebFeedSort:enabled"/>
   <int value="7444737" label="NTPSuggestionsStandaloneUI:disabled"/>
   <int value="7533886" label="disable-offer-store-unmasked-wallet-cards"/>
   <int value="7642326" label="hdrnet-override"/>
@@ -50279,6 +50280,7 @@ from previous Chrome versions.
   <int value="345664265" label="BlinkHeapIncrementalMarking:disabled"/>
   <int value="346430505" label="SidePanel:enabled"/>
   <int value="346711293" label="enable-save-password-bubble"/>
+  <int value="347948074" label="WebFeedSort:disabled"/>
   <int value="347981012" label="TabToGTSAnimation:disabled"/>
   <int value="348449023"
       label="DesktopPWAsLocalUpdatingThrottlePersistence:enabled"/>

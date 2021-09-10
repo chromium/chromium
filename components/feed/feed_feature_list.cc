@@ -72,6 +72,9 @@ const base::Feature kFeedStamp{"FeedStamp", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const char kDefaultReferrerUrl[] = "https://www.google.com/";
 
+const base::Feature kWebFeedSort{"WebFeedSort",
+                                 base::FEATURE_DISABLED_BY_DEFAULT};
+
 std::string GetFeedReferrerUrl() {
   const base::Feature* feature = base::FeatureList::IsEnabled(kInterestFeedV2)
                                      ? &kInterestFeedV2
