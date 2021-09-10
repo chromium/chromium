@@ -433,44 +433,6 @@ class AppsGridViewTest : public AshTestBase {
       app_list_view_->Layout();
   }
 
-  // May be a PagedAppsGridView or a ScrollableAppsGridView depending on the
-  // AppListBubble flag and tablet mode.
-  AppsGridView* apps_grid_view_ = nullptr;
-
-  // May be owned by different parent views depending on the AppListBubble flag
-  // and tablet mode.
-  AppListFolderView* app_list_folder_view_ = nullptr;
-  SearchBoxView* search_box_view_ = nullptr;
-
-  // These views exist in tablet mode and when AppListBubble is disabled.
-  PagedAppsGridView* paged_apps_grid_view_ = nullptr;
-  AppListView* app_list_view_ = nullptr;  // Owned by native widget.
-  SearchResultContainerView* suggestions_container_ =
-      nullptr;                                    // Owned by |apps_grid_view_|.
-  ExpandArrowView* expand_arrow_view_ = nullptr;  // Owned by |apps_grid_view_|.
-
-  AppListTestModel* model_ = nullptr;
-  SearchModel* search_model_ = nullptr;
-  std::unique_ptr<AppsGridViewTestApi> test_api_;
-
-  // True if the test screen is configured to work with RTL locale.
-  bool is_rtl_ = false;
-  // True if feature AppListBubble should be enabled.
-  bool is_app_list_bubble_enabled_ = false;
-  // True if we set the test on tablet mode.
-  bool create_as_tablet_mode_ = false;
-
-  std::unique_ptr<PageFlipWaiter> page_flip_waiter_;
-
- private:
-  // Restores the locale to default when destructor is called.
-  base::test::ScopedRestoreICUDefaultLocale restore_locale_;
-
-  base::test::ScopedFeatureList feature_list_;
-
- protected:
-  // TODO(jamescook): This is intentionally out of order to make code review
-  // easier. Move code above after submitting.
   AppListItemView* InitiateDragForItemAtCurrentPageAt(
       AppsGridView::Pointer pointer,
       int row,
@@ -581,7 +543,41 @@ class AppsGridViewTest : public AshTestBase {
     return test_api_->GetDragIconBoundsInAppsGridView().CenterPoint();
   }
 
+  // May be a PagedAppsGridView or a ScrollableAppsGridView depending on the
+  // AppListBubble flag and tablet mode.
+  AppsGridView* apps_grid_view_ = nullptr;
+
+  // May be owned by different parent views depending on the AppListBubble flag
+  // and tablet mode.
+  AppListFolderView* app_list_folder_view_ = nullptr;
+  SearchBoxView* search_box_view_ = nullptr;
+
+  // These views exist in tablet mode and when AppListBubble is disabled.
+  PagedAppsGridView* paged_apps_grid_view_ = nullptr;
+  AppListView* app_list_view_ = nullptr;  // Owned by native widget.
+  SearchResultContainerView* suggestions_container_ =
+      nullptr;                                    // Owned by |apps_grid_view_|.
+  ExpandArrowView* expand_arrow_view_ = nullptr;  // Owned by |apps_grid_view_|.
+
+  AppListTestModel* model_ = nullptr;
+  SearchModel* search_model_ = nullptr;
+  std::unique_ptr<AppsGridViewTestApi> test_api_;
+
+  // True if the test screen is configured to work with RTL locale.
+  bool is_rtl_ = false;
+  // True if feature AppListBubble should be enabled.
+  bool is_app_list_bubble_enabled_ = false;
+  // True if we set the test on tablet mode.
+  bool create_as_tablet_mode_ = false;
+
+  std::unique_ptr<PageFlipWaiter> page_flip_waiter_;
+
  private:
+  // Restores the locale to default when destructor is called.
+  base::test::ScopedRestoreICUDefaultLocale restore_locale_;
+
+  base::test::ScopedFeatureList feature_list_;
+
   absl::optional<gfx::Point> current_drag_location_;
 };
 
