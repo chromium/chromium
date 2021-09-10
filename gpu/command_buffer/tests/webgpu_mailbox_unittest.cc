@@ -117,8 +117,8 @@ TEST_F(WebGPUMailboxTest, AssociateMailboxCmd) {
           AssociateMailboxCmdStorage cmd;
           cmd.cmd.Init(reservation.deviceId, reservation.deviceGeneration,
                        reservation.id, reservation.generation,
-                       WGPUTextureUsage_Sampled, webgpu::WEBGPU_MAILBOX_NONE,
-                       bad_mailbox.name);
+                       WGPUTextureUsage_TextureBinding,
+                       webgpu::WEBGPU_MAILBOX_NONE, bad_mailbox.name);
           EXPECT_EQ(
               error::kInvalidArguments,
               ExecuteImmediateCmd(decoder, cmd.cmd, sizeof(bad_mailbox.name)));
@@ -129,8 +129,8 @@ TEST_F(WebGPUMailboxTest, AssociateMailboxCmd) {
           AssociateMailboxCmdStorage cmd;
           cmd.cmd.Init(reservation.deviceId + 1, reservation.deviceGeneration,
                        reservation.id, reservation.generation,
-                       WGPUTextureUsage_Sampled, webgpu::WEBGPU_MAILBOX_NONE,
-                       mailbox.name);
+                       WGPUTextureUsage_TextureBinding,
+                       webgpu::WEBGPU_MAILBOX_NONE, mailbox.name);
           EXPECT_EQ(
               error::kInvalidArguments,
               ExecuteImmediateCmd(decoder, cmd.cmd, sizeof(mailbox.name)));
@@ -141,8 +141,8 @@ TEST_F(WebGPUMailboxTest, AssociateMailboxCmd) {
           AssociateMailboxCmdStorage cmd;
           cmd.cmd.Init(reservation.deviceId, reservation.deviceGeneration + 1,
                        reservation.id, reservation.generation,
-                       WGPUTextureUsage_Sampled, webgpu::WEBGPU_MAILBOX_NONE,
-                       mailbox.name);
+                       WGPUTextureUsage_TextureBinding,
+                       webgpu::WEBGPU_MAILBOX_NONE, mailbox.name);
           EXPECT_EQ(
               error::kInvalidArguments,
               ExecuteImmediateCmd(decoder, cmd.cmd, sizeof(mailbox.name)));
@@ -153,8 +153,8 @@ TEST_F(WebGPUMailboxTest, AssociateMailboxCmd) {
           AssociateMailboxCmdStorage cmd;
           cmd.cmd.Init(reservation.deviceId, reservation.deviceGeneration,
                        reservation.id + 1, reservation.generation,
-                       WGPUTextureUsage_Sampled, webgpu::WEBGPU_MAILBOX_NONE,
-                       mailbox.name);
+                       WGPUTextureUsage_TextureBinding,
+                       webgpu::WEBGPU_MAILBOX_NONE, mailbox.name);
           EXPECT_EQ(
               error::kInvalidArguments,
               ExecuteImmediateCmd(decoder, cmd.cmd, sizeof(mailbox.name)));
@@ -180,8 +180,8 @@ TEST_F(WebGPUMailboxTest, AssociateMailboxCmd) {
           AssociateMailboxCmdStorage cmd;
           cmd.cmd.Init(reservation.deviceId, reservation.deviceGeneration,
                        reservation.id, reservation.generation,
-                       WGPUTextureUsage_Sampled, webgpu::WEBGPU_MAILBOX_NONE,
-                       mailbox.name);
+                       WGPUTextureUsage_TextureBinding,
+                       webgpu::WEBGPU_MAILBOX_NONE, mailbox.name);
           EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(decoder, cmd.cmd,
                                                          sizeof(mailbox.name)));
         }
@@ -191,8 +191,8 @@ TEST_F(WebGPUMailboxTest, AssociateMailboxCmd) {
           AssociateMailboxCmdStorage cmd;
           cmd.cmd.Init(reservation.deviceId, reservation.deviceGeneration,
                        reservation.id, reservation.generation,
-                       WGPUTextureUsage_Sampled, webgpu::WEBGPU_MAILBOX_NONE,
-                       mailbox.name);
+                       WGPUTextureUsage_TextureBinding,
+                       webgpu::WEBGPU_MAILBOX_NONE, mailbox.name);
           EXPECT_EQ(
               error::kInvalidArguments,
               ExecuteImmediateCmd(decoder, cmd.cmd, sizeof(mailbox.name)));
@@ -238,8 +238,8 @@ TEST_F(WebGPUMailboxTest, DissociateMailboxCmd) {
           AssociateMailboxCmdStorage cmd;
           cmd.cmd.Init(reservation.deviceId, reservation.deviceGeneration,
                        reservation.id, reservation.generation,
-                       WGPUTextureUsage_Sampled, webgpu::WEBGPU_MAILBOX_NONE,
-                       mailbox.name);
+                       WGPUTextureUsage_TextureBinding,
+                       webgpu::WEBGPU_MAILBOX_NONE, mailbox.name);
           EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(decoder, cmd.cmd,
                                                          sizeof(mailbox.name)));
         }

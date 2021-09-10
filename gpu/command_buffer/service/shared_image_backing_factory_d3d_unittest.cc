@@ -751,7 +751,7 @@ TEST_F(SharedImageBackingFactoryD3DTest, GL_Dawn_Skia_UnclearTexture) {
 }
 
 // 1. Draw  a color to texture through Dawn
-// 2. Set the renderpass storeOp = Clear
+// 2. Set the renderpass storeOp = Discard
 // 3. Texture in Dawn will stay as uninitialized
 // 3. Expect skia to fail to access the texture because texture is not
 // initialized
@@ -813,7 +813,7 @@ TEST_F(SharedImageBackingFactoryD3DTest, UnclearDawn_SkiaFails) {
     color_desc.view = texture.CreateView();
     color_desc.resolveTarget = nullptr;
     color_desc.loadOp = wgpu::LoadOp::Clear;
-    color_desc.storeOp = wgpu::StoreOp::Clear;
+    color_desc.storeOp = wgpu::StoreOp::Discard;
     color_desc.clearColor = {0, 255, 0, 255};
 
     wgpu::RenderPassDescriptor renderPassDesc = {};
