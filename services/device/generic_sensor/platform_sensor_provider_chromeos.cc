@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -17,6 +18,8 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chromeos/components/sensors/sensor_util.h"
 #include "services/device/generic_sensor/platform_sensor_chromeos.h"
+
+using chromeos::sensors::mojom::SensorDeviceDisconnectReason;
 
 namespace device {
 namespace {
@@ -147,8 +150,10 @@ void PlatformSensorProviderChromeOS::CreateSensorInternal(
 
   auto sensor_device_remote = GetSensorDeviceRemote(id);
   std::move(callback).Run(base::MakeRefCounted<PlatformSensorChromeOS>(
-      id, type, reading_buffer, this, sensor.scale.value(),
-      std::move(sensor_device_remote)));
+      id, type, reading_buffer, this,
+      base::BindOnce(&PlatformSensorProviderChromeOS::OnSensorDeviceDisconnect,
+                     weak_ptr_factory_.GetWeakPtr(), id),
+      sensor.scale.value(), std::move(sensor_device_remote)));
 }
 
 void PlatformSensorProviderChromeOS::FreeResources() {
@@ -267,6 +272,10 @@ void PlatformSensorProviderChromeOS::ResetSensorService() {
     sensor.second.remote.reset();
   }
 
+  // Reset the existing PlatformSensors as well.
+  for (const auto& type_id : sensor_id_by_type_)
+    ReplaceAndRemoveSensor(type_id.first);
+
   new_devices_observer_.reset();
   sensor_service_remote_.reset();
 }
@@ -325,7 +334,7 @@ void PlatformSensorProviderChromeOS::RegisterDevice(
   // Add a temporary disconnect handler to catch failures during sensor
   // enumeration. PlatformSensorChromeOS will handle disconnection during
   // normal operation.
-  sensor.remote.set_disconnect_handler(
+  sensor.remote.set_disconnect_with_reason_handler(
       base::BindOnce(&PlatformSensorProviderChromeOS::OnSensorDeviceDisconnect,
                      weak_ptr_factory_.GetWeakPtr(), id));
 
@@ -413,13 +422,54 @@ bool PlatformSensorProviderChromeOS::AreAllSensorsReady() const {
   });
 }
 
-void PlatformSensorProviderChromeOS::OnSensorDeviceDisconnect(int32_t id) {
+void PlatformSensorProviderChromeOS::OnSensorDeviceDisconnect(
+    int32_t id,
+    uint32_t custom_reason_code,
+    const std::string& description) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  LOG(ERROR) << "OnSensorDeviceDisconnect: " << id;
+  auto reason =
+      static_cast<chromeos::sensors::mojom::SensorDeviceDisconnectReason>(
+          custom_reason_code);
+  LOG(ERROR) << "OnSensorDeviceDisconnect: " << id << ", reason: " << reason
+             << ", description: " << description;
 
-  // Assumes IIO Service has crashed and waits for its relaunch.
-  ResetSensorService();
+  switch (reason) {
+    case SensorDeviceDisconnectReason::IIOSERVICE_CRASHED:
+      ResetSensorService();
+      break;
+
+    case SensorDeviceDisconnectReason::DEVICE_REMOVED:
+      // Hot-pluggable sensors should be HID-stack sensors and shouldn't have
+      // the location attribute.
+      if (sensors_[id].location.has_value()) {
+        LOG(WARNING) << "Device being removed has location: "
+                     << static_cast<int>(sensors_[id].location.value());
+      }
+
+      base::EraseIf(sensor_id_by_type_, [this, &id](const auto& entry) {
+        if (entry.second == id) {
+          ReplaceAndRemoveSensor(entry.first);
+          return true;
+        }
+        return false;
+      });
+
+      sensors_.erase(id);
+      ProcessSensorsIfPossible();
+      break;
+  }
+}
+
+void PlatformSensorProviderChromeOS::ReplaceAndRemoveSensor(
+    mojom::SensorType type) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  auto* platform_sensor = GetSensor(type).get();
+  if (platform_sensor)
+    platform_sensor->SensorReplaced();
+
+  RemoveSensor(type, platform_sensor);
 }
 
 void PlatformSensorProviderChromeOS::ProcessSensorsIfPossible() {
@@ -518,13 +568,8 @@ void PlatformSensorProviderChromeOS::UpdateSensorIdMapping(
     int32_t id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto it = sensor_id_by_type_.find(type);
-  if (it != sensor_id_by_type_.end() && it->second != id) {
-    auto* sensor = GetSensor(type).get();
-    if (sensor)
-      sensor->SensorReplaced();
-
-    RemoveSensor(type, sensor);
-  }
+  if (it != sensor_id_by_type_.end() && it->second != id)
+    ReplaceAndRemoveSensor(type);
 
   sensor_id_by_type_[type] = id;
 }
@@ -574,8 +619,11 @@ void PlatformSensorProviderChromeOS::ProcessStoredRequests() {
     auto sensor_device_remote = GetSensorDeviceRemote(id);
     NotifySensorCreated(
         type, base::MakeRefCounted<PlatformSensorChromeOS>(
-                  id, type, reading_buffer, this, sensor.scale.value(),
-                  std::move(sensor_device_remote)));
+                  id, type, reading_buffer, this,
+                  base::BindOnce(
+                      &PlatformSensorProviderChromeOS::OnSensorDeviceDisconnect,
+                      weak_ptr_factory_.GetWeakPtr(), id),
+                  sensor.scale.value(), std::move(sensor_device_remote)));
   }
 }
 
