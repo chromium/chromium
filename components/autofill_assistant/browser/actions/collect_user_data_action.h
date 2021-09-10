@@ -110,7 +110,7 @@ class CollectUserDataAction : public Action,
                               UserData::FieldChange* field_change = nullptr);
 
   bool shown_to_user_ = false;
-  bool initially_prefilled = false;
+  bool initially_prefilled_ = false;
   bool personal_data_changed_ = false;
   bool action_successful_ = false;
   std::unique_ptr<CollectUserDataOptions> collect_user_data_options_;
