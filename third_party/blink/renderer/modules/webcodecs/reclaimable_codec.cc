@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webcodecs/reclaimable_codec.h"
 
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"

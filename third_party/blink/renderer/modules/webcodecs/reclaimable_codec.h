@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_RECLAIMABLE_CODEC_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_RECLAIMABLE_CODEC_H_
 
-#include "base/feature_list.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/timer.h"
@@ -52,8 +51,6 @@ class MODULES_EXPORT ReclaimableCodec : public GarbageCollectedMixin {
   base::TimeTicks last_activity_;
   HeapTaskRunnerTimer<ReclaimableCodec> activity_timer_;
 };
-
-extern MODULES_EXPORT const base::Feature kReclaimInactiveWebCodecs;
 
 }  // namespace blink
 
