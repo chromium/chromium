@@ -50,7 +50,11 @@ class UnitTest(unittest.TestCase):
     short_log = 'Some logs.'
     # Tests a test result with log_path.
     test_result = result_sink_util._compose_test_result(
-        'TestCase/testSomething', 'PASS', True, short_log)
+        'TestCase/testSomething',
+        'PASS',
+        True,
+        short_log,
+        file_artifacts={'name': '/path/to/name'})
     expected = {
         'testId': 'TestCase/testSomething',
         'status': 'PASS',
@@ -59,6 +63,9 @@ class UnitTest(unittest.TestCase):
         'artifacts': {
             'Test Log': {
                 'contents': base64.b64encode(short_log)
+            },
+            'name': {
+                'filePath': '/path/to/name'
             },
         },
         'tags': [],

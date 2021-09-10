@@ -10,7 +10,8 @@ import time
 from result_sink_util import ResultSinkClient
 
 _VALID_RESULT_COLLECTION_INIT_KWARGS = set(['test_results', 'crashed'])
-_VALID_TEST_RESULT_INIT_KWARGS = set(['expected_status', 'test_log'])
+_VALID_TEST_RESULT_INIT_KWARGS = set(
+    ['attachments', 'expected_status', 'test_log'])
 _VALID_TEST_STATUSES = set(['PASS', 'FAIL', 'CRASH', 'ABORT', 'SKIP'])
 
 
@@ -62,6 +63,7 @@ class TestResult(object):
       name: (str) Name of a test. Typically includes
       status: (str) Outcome of the test.
       (Following are possible arguments in **kwargs):
+      attachments: (dict): Dict of unique attachment name to abs path mapping.
       expected_status: (str) Expected test outcome for the run.
       test_log: (str) Logs of the test.
     """
@@ -70,6 +72,7 @@ class TestResult(object):
     _validate_test_status(status)
     self.status = status
 
+    self.attachments = kwargs.get('attachments', {})
     self.expected_status = kwargs.get('expected_status', TestStatus.PASS)
     self.test_log = kwargs.get('test_log', '')
 
@@ -79,8 +82,8 @@ class TestResult(object):
   def _compose_result_sink_tags(self):
     """Composes tags received by Result Sink from test result info."""
     tags = [('test_name', self.name)]
-    # Only SKIP results have tags, to distinguish whether the SKIP is expected
-    # (disabled test) or not.
+    # Only SKIP results have tags other than test name, to distinguish whether
+    # the SKIP is expected (disabled test) or not.
     if self.status == TestStatus.SKIP:
       if self.disabled():
         tags.append(('disabled_test', 'true'))
@@ -109,7 +112,8 @@ class TestResult(object):
           self.status,
           self.expected(),
           test_log=self.test_log,
-          tags=self._compose_result_sink_tags())
+          tags=self._compose_result_sink_tags(),
+          file_artifacts=self.attachments)
       self._reported_to_result_sink = True
 
 

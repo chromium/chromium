@@ -473,17 +473,40 @@ class XCode11LogParserTest(test_runner_test.TestCase):
         json.loads(XCRESULT_ROOT), excluded=excluded)
     self.assertEqual(set([]), results.all_test_names())
 
+  @mock.patch('xcode_log_parser.Xcode11LogParser._export_data')
   @mock.patch('xcode_log_parser.Xcode11LogParser._xcresulttool_get')
-  def testXcresulttoolListPassedTests(self, mock_xcresult):
+  def testGetTestStatuses(self, mock_xcresult, mock_export):
     mock_xcresult.side_effect = _xcresulttool_get_side_effect
-    expected = set(
+    #   self.assertEqual(test_result.test_log, lo
+    expected_failure_log = (
+        'Logs from "failureSummaries" in .xcresult:\n'
+        'file: /../../ios/web/shell/test/page_state_egtest.mm, line: 131\n'
+        'Some logs.\n'
+        'file: , line: \n'
+        'Immediately halt execution of testcase '
+        '(EarlGreyInternalTestInterruptException)\n')
+    expected_expected_tests = set(
         ['PageStateTestCase/testMethod1', 'PageStateTestCase/testMethod2'])
     results = xcode_log_parser.Xcode11LogParser()._get_test_statuses(
         OUTPUT_PATH)
-    self.assertEqual(expected, results.expected_tests())
+    self.assertEqual(expected_expected_tests, results.expected_tests())
+    seen_failed_test = False
+    for test_result in results.test_results:
+      if (test_result.name == 'PageStateTestCase/testZeroContentOffsetAfterLoad'
+         ):
+        seen_failed_test = True
+        self.assertEqual(test_result.test_log, expected_failure_log)
+        crash_file_name = 'attempt_0_PageStateTestCase_testZeroContentOffsetAfterLoad_1.crash'
+        jpeg_file_name = 'attempt_0_PageStateTestCase_testZeroContentOffsetAfterLoad_2.jpeg'
+        self.assertDictEqual(
+            {
+                crash_file_name: '/tmp/%s' % crash_file_name,
+                jpeg_file_name: '/tmp/%s' % jpeg_file_name,
+            }, test_result.attachments)
+    self.assertTrue(seen_failed_test)
 
   @mock.patch('file_util.zip_and_remove_folder')
-  @mock.patch('xcode_log_parser.Xcode11LogParser.copy_artifacts')
+  @mock.patch('xcode_log_parser.Xcode11LogParser._extract_artifacts_for_test')
   @mock.patch('xcode_log_parser.Xcode11LogParser.export_diagnostic_data')
   @mock.patch('os.path.exists', autospec=True)
   @mock.patch('xcode_log_parser.Xcode11LogParser._xcresulttool_get')
@@ -491,12 +514,6 @@ class XCode11LogParserTest(test_runner_test.TestCase):
     expected_passed = set(
         ['PageStateTestCase/testMethod1', 'PageStateTestCase/testMethod2'])
     expected_failed = set(['PageStateTestCase/testZeroContentOffsetAfterLoad'])
-    log = ('Logs from "failureSummaries" in .xcresult:\n'
-           'file: /../../ios/web/shell/test/page_state_egtest.mm, line: 131\n'
-           'Some logs.\n'
-           'file: , line: \n'
-           'Immediately halt execution of testcase '
-           '(EarlGreyInternalTestInterruptException)\n')
 
     mock_root.side_effect = _xcresulttool_get_side_effect
     mock_exist_file.return_value = True
@@ -508,12 +525,7 @@ class XCode11LogParserTest(test_runner_test.TestCase):
     self.assertEqual(len(results.test_results), 3)
     self.assertEqual(expected_passed, results.expected_tests())
     self.assertEqual(expected_failed, results.unexpected_tests())
-    for test_result in results.test_results:
-      # if test_result.name == 'WebUITestCase/testBackForwardFromWebURL':
-      #   self.assertEqual(test_result.test_log, lo
-      if (test_result.name == 'PageStateTestCase/testZeroContentOffsetAfterLoad'
-         ):
-        self.assertEqual(test_result.test_log, log)
+    # Ensure format.
     for test in results.test_results:
       self.assertTrue(isinstance(test.name, str))
       if test.status == TestStatus.FAIL:
@@ -649,19 +661,19 @@ class XCode11LogParserTest(test_runner_test.TestCase):
         set(['TestCase1/method1', 'TestCase2/method1']), res.expected_tests())
 
   @mock.patch('file_util.zip_and_remove_folder')
-  @mock.patch('xcode_log_parser.Xcode11LogParser.copy_artifacts')
+  @mock.patch('xcode_log_parser.Xcode11LogParser._extract_artifacts_for_test')
   @mock.patch('xcode_log_parser.Xcode11LogParser.export_diagnostic_data')
   @mock.patch('os.path.exists', autospec=True)
   @mock.patch('xcode_log_parser.Xcode11LogParser._xcresulttool_get')
   @mock.patch('xcode_log_parser.Xcode11LogParser._list_of_failed_tests')
   def testArtifactsDiagnosticLogsExportedInCollectTestTesults(
       self, mock_get_failed_tests, mock_root, mock_exist_file,
-      mock_export_diagnostic_data, mock_copy_artifacts, mock_zip):
+      mock_export_diagnostic_data, mock_extract_artifacts, mock_zip):
     mock_root.side_effect = _xcresulttool_get_side_effect
     mock_exist_file.return_value = True
     xcode_log_parser.Xcode11LogParser().collect_test_results(OUTPUT_PATH, [])
     mock_export_diagnostic_data.assert_called_with(OUTPUT_PATH)
-    mock_copy_artifacts.assert_called_with(OUTPUT_PATH)
+    mock_extract_artifacts.assert_called()
 
 
 if __name__ == '__main__':
