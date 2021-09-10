@@ -83,9 +83,6 @@ struct CONTENT_EXPORT MediaStreamRequest {
 
   // Flag to indicate whether the request is for PTZ use.
   bool request_pan_tilt_zoom_permission;
-
-  // True if all ancestors of the requesting frame have the same origin.
-  bool all_ancestors_have_same_origin;
 };
 
 // Interface used by the content layer to notify chrome about changes in the
