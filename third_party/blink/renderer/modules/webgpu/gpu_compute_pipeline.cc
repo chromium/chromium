@@ -33,7 +33,7 @@ WGPUComputePipelineDescriptor AsDawnType(
   }
 
   *computeStageDescriptor = AsDawnType(webgpu_desc->compute());
-  dawn_desc.computeStage = std::get<0>(*computeStageDescriptor);
+  dawn_desc.compute = std::get<0>(*computeStageDescriptor);
 
   return dawn_desc;
 }
