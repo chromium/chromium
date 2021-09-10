@@ -1426,7 +1426,7 @@ bool AutofillPopupViewNativeViews::DoUpdateBoundsAndRedrawPopup() {
 
   if (BoundsOverlapWithAnyOpenPrompt(popup_bounds,
                                      controller_->GetWebContents())) {
-    controller_->Hide(PopupHidingReason::kInsufficientSpace);
+    controller_->Hide(PopupHidingReason::kOverlappingWithAnotherPrompt);
     return false;
   }
 
