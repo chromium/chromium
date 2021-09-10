@@ -3933,6 +3933,12 @@ const char kAllowScrollSettingsDescription[] =
     "Shows settings to enable/disable scroll acceleration and to adjust the "
     "sensitivity for scrolling.";
 
+extern const char kAmbientModeNewUrlName[] =
+    "Use new backend URL format for ChromeOS Screensaver";
+extern const char kAmbientModeNewUrlDescription[] =
+    "Use new backend URL format for ChromeOS Screensaver.  This helps with "
+    "testing new backend migration.";
+
 extern const char kAppDiscoveryForOobeName[] =
     "OOBE app recommendations with App Discovery Service.";
 extern const char kAppDiscoveryForOobeDescription[] =

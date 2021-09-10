@@ -124,6 +124,11 @@
     "expiry_milestone": 93
   },
   {
+    "name": "ambient-mode-new-url",
+    "owners": [ "xiaohuic", "assistive-eng@google.com" ],
+    "expiry_milestone": 101
+  },
+  {
     "name": "android-detailed-language-settings",
     "owners": [ "perrier", "chrome-language@google.com" ],
     "expiry_milestone": 97

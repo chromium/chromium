@@ -7700,6 +7700,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kAppDiscoveryForOobe)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"ambient-mode-new-url", flag_descriptions::kAmbientModeNewUrlName,
+     flag_descriptions::kAmbientModeNewUrlDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kAmbientModeNewUrl)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
