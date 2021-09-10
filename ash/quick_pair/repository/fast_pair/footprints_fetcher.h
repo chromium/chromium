@@ -1,0 +1,53 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_FOOTPRINTS_FETCHER_H_
+#define ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_FOOTPRINTS_FETCHER_H_
+
+#include "ash/quick_pair/proto/fastpair.pb.h"
+#include "base/callback.h"
+#include "base/memory/weak_ptr.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace nearby {
+namespace fastpair {
+class UserReadDevicesResponse;
+}  // namespace fastpair
+}  // namespace nearby
+
+namespace ash {
+namespace quick_pair {
+
+class HttpFetcher;
+
+using UserReadDevicesCallback = base::OnceCallback<void(
+    absl::optional<nearby::fastpair::UserReadDevicesResponse>)>;
+
+class FootprintsFetcher {
+ public:
+  FootprintsFetcher();
+
+  // For testing.
+  explicit FootprintsFetcher(std::unique_ptr<HttpFetcher> http_fetcher);
+
+  FootprintsFetcher(const FootprintsFetcher&) = delete;
+  FootprintsFetcher& operator=(const FootprintsFetcher&) = delete;
+  virtual ~FootprintsFetcher();
+
+  void GetUserDevices(UserReadDevicesCallback callback);
+
+ private:
+  void OnFetchComplete(UserReadDevicesCallback callback,
+                       std::unique_ptr<std::string> response_body);
+
+  std::unique_ptr<HttpFetcher> http_fetcher_;
+
+  base::WeakPtrFactory<FootprintsFetcher> weak_ptr_factory_{this};
+};
+
+}  // namespace quick_pair
+}  // namespace ash
+
+#endif  // ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_FOOTPRINTS_FETCHER_H_

@@ -1,0 +1,104 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ash/quick_pair/repository/fast_pair/footprints_fetcher.h"
+
+#include "ash/quick_pair/common/logging.h"
+#include "ash/quick_pair/proto/fastpair.pb.h"
+#include "ash/quick_pair/proto/fastpair_data.pb.h"
+#include "ash/quick_pair/repository/oauth_http_fetcher.h"
+#include "base/base64.h"
+#include "base/json/json_reader.h"
+#include "base/strings/stringprintf.h"
+#include "google_apis/gaia/gaia_constants.h"
+#include "google_apis/google_api_keys.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
+#include "url/gurl.h"
+
+namespace {
+
+const char kUserReadDevicesUrl[] =
+    "https://nearbydevices-pa.googleapis.com/v1/user/devices"
+    "?key=%s&alt=proto";
+
+// TODO(crbug/1226117): Update annotation with policy details when available.
+const net::PartialNetworkTrafficAnnotationTag kTrafficAnnotation =
+    net::DefinePartialNetworkTrafficAnnotation("fast_pair_footprints_request",
+                                               "oauth2_api_call_flow",
+                                               R"(
+      semantics {
+          sender: "Fast Pair repository access"
+        description:
+            "Retrieves details about bluetooth devices which have been paired "
+            "with a user's account."
+        trigger:
+          "This request is sent at the start of a session."
+        data: "List of paired devices with metadata."
+        destination: GOOGLE_OWNED_SERVICE
+      }
+      policy {
+          cookies_allowed: NO
+          setting: "There is a toggle in OS Settings under Bluetooth."
+          policy_exception_justification:
+            "Not yet created, feature disabled by flag"
+      })");
+
+}  // namespace
+
+namespace ash {
+namespace quick_pair {
+
+FootprintsFetcher::FootprintsFetcher()
+    : http_fetcher_(std::make_unique<OAuthHttpFetcher>(
+          kTrafficAnnotation,
+          GaiaConstants::kCloudPlatformProjectsOAuth2Scope)) {}
+
+FootprintsFetcher::FootprintsFetcher(std::unique_ptr<HttpFetcher> http_fetcher)
+    : http_fetcher_(std::move(http_fetcher)) {}
+
+FootprintsFetcher::~FootprintsFetcher() = default;
+
+void FootprintsFetcher::GetUserDevices(UserReadDevicesCallback callback) {
+  GURL url = GURL(base::StringPrintf(kUserReadDevicesUrl,
+                                     google_apis::GetAPIKey().c_str()));
+  http_fetcher_->ExecuteGetRequest(
+      url, base::BindOnce(&FootprintsFetcher::OnFetchComplete,
+                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void FootprintsFetcher::OnFetchComplete(
+    UserReadDevicesCallback callback,
+    std::unique_ptr<std::string> response_body) {
+  QP_LOG(VERBOSE) << __func__;
+
+  if (!response_body) {
+    QP_LOG(WARNING) << __func__ << ": No response.";
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  nearby::fastpair::UserReadDevicesResponse devices;
+  if (!devices.ParseFromString(*response_body)) {
+    QP_LOG(WARNING) << __func__ << ": Failed to parse.";
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  QP_LOG(VERBOSE)
+      << __func__
+      << ": Successfully retrived footprints data.  Paired devices:";
+  for (const auto& info : devices.fast_pair_info()) {
+    if (info.has_device()) {
+      nearby::fastpair::StoredDiscoveryItem device;
+      if (device.ParseFromString(info.device().discovery_item_bytes())) {
+        QP_LOG(VERBOSE) << device.title();
+      }
+    }
+  }
+
+  std::move(callback).Run(devices);
+}
+
+}  // namespace quick_pair
+}  // namespace ash
