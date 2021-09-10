@@ -274,7 +274,7 @@ Polymer({
     // Note: Can't use |this.$|, since it returns cached references to elements
     // originally present in DOM, while the signin-frame is  dynamically
     // recreated (see Authenticator.setWebviewPartition()).
-    return this.$$('#signin-frame');
+    return this.shadowRoot.querySelector('#signin-frame');
   },
 
   clickPrimaryButtonForTesting() {

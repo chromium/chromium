@@ -71,7 +71,7 @@ class PolymerElementApi extends TestElementApi {
   /** @override */
   element() {
     assert(this.parent.element());
-    return this.parent.element().$$(this.query);
+    return this.parent.element().shadowRoot.querySelector(this.query);
   }
 
   /**

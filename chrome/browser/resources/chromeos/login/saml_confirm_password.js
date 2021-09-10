@@ -86,8 +86,8 @@ Polymer({
     this.$.passwordInput.invalid = false;
     this.$.passwordInput.value = '';
     if (this.isManualInput) {
-      this.$$('#confirmPasswordInput').invalid = false;
-      this.$$('#confirmPasswordInput').value = '';
+      this.shadowRoot.querySelector('#confirmPasswordInput').invalid = false;
+      this.shadowRoot.querySelector('#confirmPasswordInput').value = '';
     }
   },
 
@@ -119,7 +119,7 @@ Polymer({
       return;
     if (this.isManualInput) {
       // When using manual password entry, both passwords must match.
-      var confirmPasswordInput = this.$$('#confirmPasswordInput');
+      var confirmPasswordInput = this.shadowRoot.querySelector('#confirmPasswordInput');
       if (!confirmPasswordInput.validate())
         return;
 

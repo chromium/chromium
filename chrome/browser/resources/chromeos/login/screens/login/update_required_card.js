@@ -224,10 +224,10 @@ Polymer({
    * @private
    */
   updateEolDeleteUsersDataMessage_() {
-    this.$$('#deleteUsersDataMessage').innerHTML = this.i18nAdvanced(
+    this.shadowRoot.querySelector('#deleteUsersDataMessage').innerHTML = this.i18nAdvanced(
         'eolDeleteUsersDataMessage',
         {substitutions: [loadTimeData.getString('deviceType')], attrs: ['id']});
-    const linkElement = this.$$('#deleteDataLink');
+    const linkElement = this.shadowRoot.querySelector('#deleteDataLink');
     linkElement.setAttribute('is', 'action-link');
     linkElement.classList.add('oobe-local-link');
     linkElement.addEventListener('click', () => this.showConfirmationDialog_());

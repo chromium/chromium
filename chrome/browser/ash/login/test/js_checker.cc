@@ -538,15 +538,14 @@ void ExecuteOobeJSAsync(const std::string& script) {
 
 std::string GetOobeElementPath(
     std::initializer_list<base::StringPiece> element_ids) {
-  std::string result;
+  const char kGetElement[] = "document.getElementById('%s')";
+  const char kShadowRoot[] = ".shadowRoot.querySelector('#%s')";
   CHECK(element_ids.size() > 0);
   std::initializer_list<base::StringPiece>::const_iterator it =
       element_ids.begin();
-  result.append("document.getElementById('")
-      .append(std::string(*it))
-      .append("')");
+  auto result = base::StringPrintf(kGetElement, std::string(*it).c_str());
   for (it++; it < element_ids.end(); it++) {
-    result.append(".$$('#").append(std::string(*it)).append("')");
+      result.append(base::StringPrintf(kShadowRoot, std::string(*it).c_str()));
   }
   return result;
 }
