@@ -335,6 +335,16 @@
       light:"$google_grey_100",
       dark:"$google_grey_900",
     },
+
+    /* shortcut */
+    shortcut_background_color: {
+      light:"$google_grey_200",
+      dark:"$google_grey_900",
+    },
+    shortcut_background_gradient_color: {
+      light:"rgba($white_rgb, 0)",
+      dark:"rgba($white_rgb, 0.12)"
+    }
   },
   opacities: {
     disabled_opacity: 0.38,
