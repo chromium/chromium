@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import {assert} from '../chrome_util.js';
+// eslint-disable-next-line no-unused-vars
+import {VideoType} from '../type.js';
 import {WaitableEvent} from '../waitable_event.js';
 
 import {
@@ -147,11 +149,12 @@ export async function saveBlob(blob, name) {
 
 /**
  * Creates a file for saving video recording result.
+ * @param {!VideoType} videoType
  * @return {!Promise<!FileAccessEntry>} Newly created video file.
  * @throws {!Error} If failed to create video file.
  */
-export async function createVideoFile() {
-  const name = new Filenamer().newVideoName();
+export async function createVideoFile(videoType) {
+  const name = new Filenamer().newVideoName(videoType);
   const file = await cameraDir.createFile(name);
   if (file === null) {
     throw new Error('Failed to create video temp file.');

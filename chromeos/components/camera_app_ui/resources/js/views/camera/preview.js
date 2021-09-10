@@ -148,18 +148,18 @@ export class Preview {
   }
 
   /**
-   * @return {!HTMLVideoElement}
-   */
-  get video() {
-    return this.video_;
-  }
-
-  /**
    * Current active stream.
    * @return {!MediaStream}
    */
   get stream() {
     return assertInstanceof(this.stream_, MediaStream);
+  }
+
+  /**
+   * @return {!HTMLVideoElement}
+   */
+  getVideoElement() {
+    return this.video_;
   }
 
   /**

@@ -18,6 +18,7 @@ import {scaleImage, scalePdfImage, scaleVideo} from './thumbnailer.js';
 import {
   ErrorLevel,
   ErrorType,
+  VideoType,
 } from './type.js';
 
 /**
@@ -226,8 +227,16 @@ export class GalleryButton {
    * @override
    */
   async startSaveVideo(videoRotation) {
-    const file = await filesystem.createVideoFile();
+    const file = await filesystem.createVideoFile(VideoType.MP4);
     return VideoSaver.createForFile(file, videoRotation);
+  }
+
+  /**
+   * @override
+   */
+  async startSaveGIF(width, height) {
+    const file = await filesystem.createVideoFile(VideoType.GIF);
+    return VideoSaver.createForGIFFile(file, width, height);
   }
 
   /**
@@ -240,5 +249,14 @@ export class GalleryButton {
     ChromeHelper.getInstance().sendNewCaptureBroadcast(
         {isVideo: true, name: file.name});
     await this.updateCover_(file);
+  }
+
+  /**
+   * @override
+   */
+  async finishSaveGIF(gifVideo) {
+    const file = await gifVideo.endWrite();
+    assert(file !== null);
+    // TODO(b:191950622): Update gif thumbnail to gallery button cover.
   }
 }

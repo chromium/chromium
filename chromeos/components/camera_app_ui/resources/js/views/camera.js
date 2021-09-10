@@ -686,7 +686,7 @@ export class Camera extends View {
    * @return {number}
    */
   getPreviewAspectRatio() {
-    const {videoWidth, videoHeight} = this.preview_.video;
+    const {videoWidth, videoHeight} = this.preview_.getVideoElement();
     return videoWidth / videoHeight;
   }
 
@@ -766,7 +766,7 @@ export class Camera extends View {
     await this.preview_.open(this.constraints_);
     const scanMode = assertInstanceof(this.modes_.current, Scan);
     scanMode.updatePreview(this.preview_.stream);
-    await this.scanOptions_.attachPreview(this.preview_.video);
+    await this.scanOptions_.attachPreview(this.preview_.getVideoElement());
   }
 
   /**
@@ -803,9 +803,25 @@ export class Camera extends View {
   /**
    * @override
    */
+  createGIFSaver(width, height) {
+    return this.resultSaver_.startSaveGIF(width, height);
+  }
+
+  /**
+   * @override
+   */
+  getPreviewVideo() {
+    const video = this.preview_.getVideoElement();
+    assertInstanceof(video, HTMLVideoElement);
+    return video;
+  }
+
+  /**
+   * @override
+   */
   playShutterEffect() {
     sound.play(dom.get('#sound-shutter', HTMLAudioElement));
-    animate.play(this.preview_.video);
+    animate.play(this.preview_.getVideoElement());
   }
 
   /**
@@ -847,6 +863,13 @@ export class Camera extends View {
       toast.show(I18nString.ERROR_MSG_SAVE_FILE_FAILED);
       throw e;
     }
+  }
+
+  /**
+   * @override
+   */
+  async handleResultGIF(gifSaver) {
+    await this.resultSaver_.finishSaveGIF(gifSaver);
   }
 
   /**
@@ -966,7 +989,8 @@ export class Camera extends View {
           await this.modes_.updateModeSelectionUI(deviceId);
           await this.modes_.updateMode(
               mode, factory, stream, this.facingMode_, deviceId, captureR);
-          await this.scanOptions_.attachPreview(this.preview_.video);
+          await this.scanOptions_.attachPreview(
+              this.preview_.getVideoElement());
           for (const l of this.configureCompleteListener_) {
             l();
           }

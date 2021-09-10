@@ -135,6 +135,15 @@ export const ViewName = {
   WARNING: 'view-warning',
 };
 
+/**
+ * @enum {string}
+ */
+export const VideoType = {
+  MP4: 'mp4',
+  GIF: 'gif',
+};
+
+
 // The types here are used only in jsdoc and are required to be explicitly
 // exported in order to be referenced by closure compiler.
 // TODO(inker): Exports/Imports these jsdoc only types by closure compiler

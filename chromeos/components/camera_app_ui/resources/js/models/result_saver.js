@@ -28,10 +28,26 @@ export class ResultSaver {
   async startSaveVideo(videoRotation) {}
 
   /**
+   * Returns a gif saver to save captured result gif.
+   * @param {number} width
+   * @param {number} height
+   * @return {!Promise<!VideoSaver>}
+   */
+  async startSaveGIF(width, height) {}
+
+  /**
    * Saves captured video result.
    * @param {!VideoSaver} video Contains the video result to be
    *     saved.
    * @return {!Promise}
    */
   async finishSaveVideo(video) {}
+
+  /**
+   * Saves captured gif result.
+   * @param {!VideoSaver} gifVideo Contains the gif result to be
+   *     saved.
+   * @return {!Promise}
+   */
+  async finishSaveGIF(gifVideo) {}
 }

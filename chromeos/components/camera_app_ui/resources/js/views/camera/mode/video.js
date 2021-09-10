@@ -34,6 +34,7 @@ import {
   Resolution,
 } from '../../../type.js';
 import {WaitableEvent} from '../../../waitable_event.js';
+
 import {ModeBase, ModeFactory} from './mode_base.js';
 import {PhotoResult} from './photo.js';  // eslint-disable-line no-unused-vars
 import {RecordTime} from './record_time.js';
@@ -54,8 +55,30 @@ const encoderPreference = new Map([
  */
 let avc1Parameters = null;
 
-// The minimum duration of videos captured via cca.
+/**
+ * The minimum duration of videos captured via cca.
+ */
 const MINIMUM_VIDEO_DURATION_IN_MILLISECONDS = 500;
+
+/**
+ * The width of the generated gif file.
+ */
+export const GIF_FRAME_WIDTH = 640;
+
+/**
+ * The height of the generated gif file.
+ */
+export const GIF_FRAME_HEIGHT = 360;
+
+/**
+ * Maximum recording time for GIF animation mode.
+ */
+const MAX_GIF_DURATION_MS = 5000;
+
+/**
+ * Sample ratio of grabbing gif frame to be encoded.
+ */
+const GRAB_GIF_FRAME_RATIO = 2;
 
 /**
  * Sets avc1 parameter used in video recording.
@@ -143,12 +166,29 @@ export class VideoHandler {
   createVideoSaver() {}
 
   /**
+   * Creates VideoSaver to save video capture result.
+   * @param {number} width
+   * @param {number} height
+   * @return {!Promise<!VideoSaver>}
+   * @abstract
+   */
+  createGIFSaver(width, height) {}
+
+  /**
    * Handles the result video.
    * @param {!VideoResult} video Captured video result.
    * @return {!Promise}
    * @abstract
    */
   handleResultVideo(video) {}
+
+  /**
+   * Handles the result gif video.
+   * @param {!VideoSaver} gifSaver Captured gif video result.
+   * @return {!Promise}
+   * @abstract
+   */
+  handleResultGIF(gifSaver) {}
 
   /**
    * Handles the result video snapshot.
@@ -163,6 +203,13 @@ export class VideoHandler {
    * Plays UI effect when doing video snapshot.
    */
   playShutterEffect() {}
+
+  /**
+   * Gets preview video element.
+   * @return {!HTMLVideoElement}
+   * @abstract
+   */
+  getPreviewVideo() {}
 }
 
 /**
@@ -248,6 +295,11 @@ export class Video extends ModeBase {
      * Whether current recording ever paused/resumed before it ended.
      */
     this.everPaused_ = false;
+
+    /**
+     * Whether the user press the stop button while recording GIF.
+     */
+    this.isRecordingGIF_ = false;
   }
 
   /**
@@ -412,8 +464,10 @@ export class Video extends ModeBase {
       throw e;
     }
 
+
     if (state.get(state.State.ENABLE_GIF_RECORDING)) {
-      // TODO(b:191950622): Capture frames for GIF encoding.
+      const gifSaver = await this.captureGIF_();
+      await this.handler_.handleResultGIF(gifSaver);
     } else {
       this.recordTime_.start({resume: false});
       let /** ?VideoSaver */ videoSaver = null;
@@ -471,7 +525,7 @@ export class Video extends ModeBase {
    */
   stop_() {
     if (state.get(state.State.ENABLE_GIF_RECORDING)) {
-      // TODO(b:191950622): Stop Capture GIF Frames.
+      this.isRecordingGIF_ = false;
     } else {
       sound.cancel(dom.get('#sound-rec-start', HTMLAudioElement));
 
@@ -482,6 +536,47 @@ export class Video extends ModeBase {
         window.removeEventListener('beforeunload', beforeUnloadListener);
       }
     }
+  }
+
+  /**
+   * Starts recording gif animation and waits for stop recording event triggered
+   * by stop shutter or time out over 5 seconds.
+   * @return {!Promise<!VideoSaver>} Saves recorded video.
+   * @private
+   */
+  async captureGIF_() {
+    const gifSaver =
+        await this.handler_.createGIFSaver(GIF_FRAME_WIDTH, GIF_FRAME_HEIGHT);
+
+    const video = this.handler_.getPreviewVideo();
+    const canvas = new OffscreenCanvas(GIF_FRAME_WIDTH, GIF_FRAME_HEIGHT);
+    const context = assertInstanceof(
+        canvas.getContext('2d'), OffscreenCanvasRenderingContext2D);
+    this.isRecordingGIF_ = true;
+
+    await new Promise((resolve) => {
+      let encodedFrames = 0;
+      let start = 0.0;
+      const updateCanvas = (now) => {
+        if (start === 0.0) {
+          start = now;
+        }
+        if (!this.isRecordingGIF_ || now - start > MAX_GIF_DURATION_MS) {
+          resolve();
+          return;
+        }
+        encodedFrames++;
+        if (encodedFrames % GRAB_GIF_FRAME_RATIO === 0) {
+          context.drawImage(video, 0, 0, GIF_FRAME_WIDTH, GIF_FRAME_HEIGHT);
+          gifSaver.write(new Blob([
+            context.getImageData(0, 0, GIF_FRAME_WIDTH, GIF_FRAME_HEIGHT).data,
+          ]));
+        }
+        video.requestVideoFrameCallback(updateCanvas);
+      };
+      video.requestVideoFrameCallback(updateCanvas);
+    });
+    return gifSaver;
   }
 
   /**
@@ -503,6 +598,7 @@ export class Video extends ModeBase {
             saver.write(event.data);
           }
         };
+
         const onstop = async (event) => {
           state.set(state.State.RECORDING, false);
           state.set(state.State.RECORDING_PAUSED, false);

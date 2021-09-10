@@ -13,6 +13,8 @@ import {createPrivateTempVideoFile} from './file_system.js';
 // eslint-disable-next-line no-unused-vars
 import {FileAccessEntry} from './file_system_access_entry.js';
 // eslint-disable-next-line no-unused-vars
+import {GIFVideoProcessor} from './gif_video_processor.js';
+// eslint-disable-next-line no-unused-vars
 import {VideoProcessor} from './video_processor_interface.js';
 
 const Mp4VideoProcessor = (async () => {
@@ -35,6 +37,16 @@ async function createVideoProcessor(output, videoRotation) {
   return new (await Mp4VideoProcessor)(
       Comlink.proxy(output),
       {seekable: output.seekable(), rotate: videoRotation});
+}
+
+/**
+ * @param {!AsyncWriter} output
+ * @param {number} width
+ * @param {number} height
+ * @return {!VideoProcessor}
+ */
+function createGIFVideoProcessor(output, width, height) {
+  return new GIFVideoProcessor(output, width, height);
 }
 
 /**
@@ -71,7 +83,7 @@ export class VideoSaver {
 
   /**
    * Writes video data to result video.
-   * @param {!Blob} blob Video data to be written.
+   * @param {!Blob} blob
    */
   write(blob) {
     this.processor_.write(blob);
@@ -104,6 +116,19 @@ export class VideoSaver {
   static async createForFile(file, videoRotation) {
     const writer = await file.getWriter();
     const processor = await createVideoProcessor(writer, videoRotation);
+    return new VideoSaver(file, processor);
+  }
+
+  /**
+   * Creates video saver for the given file.
+   * @param {!FileAccessEntry} file
+   * @param {number} width
+   * @param {number} height
+   * @return {!Promise<!VideoSaver>}
+   */
+  static async createForGIFFile(file, width, height) {
+    const writer = await file.getWriter();
+    const processor = createGIFVideoProcessor(writer, width, height);
     return new VideoSaver(file, processor);
   }
 

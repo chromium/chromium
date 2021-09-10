@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {MimeType} from '../type.js';
+import {
+  MimeType,
+  VideoType,  // eslint-disable-line no-unused-vars
+} from '../type.js';
 
 /**
  * The prefix of image files.
@@ -87,10 +90,12 @@ export class Filenamer {
 
   /**
    * Creates new filename for video.
+   * @param {VideoType} videoType
    * @return {string} New filename.
    */
-  newVideoName() {
-    return VIDEO_PREFIX + timestampToDatetimeName(this.timestamp_) + '.mp4';
+  newVideoName(videoType) {
+    return VIDEO_PREFIX + timestampToDatetimeName(this.timestamp_) + '.' +
+        videoType;
   }
 
   /**
