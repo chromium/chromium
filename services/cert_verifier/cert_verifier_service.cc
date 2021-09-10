@@ -149,7 +149,7 @@ void CertVerifierServiceImpl::Verify(
     // the netlog_source_id passed through mojo will be kInvalidId and the
     // NetLogWithSource::Make below will in turn create an unbound
     // NetLogWithSource.
-    mojo::ReportBadMessage("invalid NetLogSource");
+    receiver_.ReportBadMessage("invalid NetLogSource");
     return;
   }
   int net_err = verifier_->Verify(
