@@ -78,17 +78,12 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
                            const ui::DataTransferEndpoint* const data_dst,
                            base::TimeTicks curr_time);
 
-  template <typename T>
   void ReportEvent(const ui::DataTransferEndpoint* const data_src,
                    const ui::DataTransferEndpoint* const data_dst,
                    const std::string& src_pattern,
-                   const T& dst,
-                   DlpRulesManager::Level level);
-
-  DlpRulesManager::Level IsDataTransferAllowed(
-      const ui::DataTransferEndpoint* const data_src,
-      const ui::DataTransferEndpoint* const data_dst,
-      const absl::optional<size_t> size);
+                   const std::string& dst_pattern,
+                   DlpRulesManager::Level level,
+                   bool is_clipboard_event);
 
   // The solution for the issue of sending multiple reporting events for a
   // single user action. When a user triggers a paste (for instance by pressing

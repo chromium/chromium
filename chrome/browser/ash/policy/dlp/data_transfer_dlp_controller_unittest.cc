@@ -334,7 +334,7 @@ TEST_P(DlpControllerTest, Block_IsDragDropAllowed) {
                                                      /*is_drop=*/do_notify_));
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
 
-  if (!data_dst_ || do_notify_) {
+  if (do_notify_) {
     EXPECT_EQ(events_.size(), 1u);
     EXPECT_THAT(events_[0],
                 IsDlpPolicyEvent(CreateDlpPolicyEvent(
@@ -375,7 +375,7 @@ TEST_P(DlpControllerTest, Report_IsDragDropAllowed) {
                                                     /*is_drop=*/do_notify_));
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
 
-  if (!data_dst_ || do_notify_) {
+  if (do_notify_) {
     EXPECT_EQ(events_.size(), 1u);
     EXPECT_THAT(events_[0],
                 IsDlpPolicyEvent(CreateDlpPolicyEvent(

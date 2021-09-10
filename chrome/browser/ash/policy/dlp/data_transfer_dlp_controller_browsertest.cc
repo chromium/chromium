@@ -822,10 +822,13 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_Reporting) {
               IsDlpPolicyEvent(CreateDlpPolicyEvent(
                   kMailUrl, "*", DlpRulesManager::Restriction::kClipboard,
                   DlpRulesManager::Level::kReport)));
+  // The histogram sum may not have any samples when the time difference is very
+  // small (almost 0), because UmaHistogramTimes requires the time difference to
+  // be >= 1.
   EXPECT_GE(
       histogram_tester.GetTotalSum(GetDlpHistogramPrefix() +
                                    dlp::kDataTransferReportingTimeDiffUMA),
-      1);
+      0);
 }
 
 }  // namespace policy

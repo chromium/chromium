@@ -62,6 +62,81 @@ bool ShouldNotifyOnPaste(const ui::DataTransferEndpoint* const data_dst) {
 
   return notify_on_paste;
 }
+
+DlpRulesManager::Level IsDataTransferAllowed(
+    const DlpRulesManager& dlp_rules_manager,
+    const ui::DataTransferEndpoint* const data_src,
+    const ui::DataTransferEndpoint* const data_dst,
+    const absl::optional<size_t> size,
+    std::string* src_pattern,
+    std::string* dst_pattern) {
+  if (size.has_value() &&
+      *size < dlp_rules_manager.GetClipboardCheckSizeLimitInBytes()) {
+    return DlpRulesManager::Level::kAllow;
+  }
+
+  if (!data_src || !data_src->IsUrlType()) {  // Currently we only handle URLs.
+    return DlpRulesManager::Level::kAllow;
+  }
+
+  const GURL src_url = data_src->origin()->GetURL();
+  ui::EndpointType dst_type =
+      data_dst ? data_dst->type() : ui::EndpointType::kDefault;
+
+  DlpRulesManager::Level level = DlpRulesManager::Level::kAllow;
+
+  switch (dst_type) {
+    case ui::EndpointType::kDefault:
+    case ui::EndpointType::kUnknownVm:
+    case ui::EndpointType::kBorealis: {
+      // Passing empty URL will return restricted if there's a rule restricting
+      // the src against any dst (*), otherwise it will return ALLOW.
+      level = dlp_rules_manager.IsRestrictedDestination(
+          src_url, GURL(), DlpRulesManager::Restriction::kClipboard,
+          src_pattern, dst_pattern);
+      break;
+    }
+
+    case ui::EndpointType::kUrl: {
+      GURL dst_url = data_dst->origin()->GetURL();
+      level = dlp_rules_manager.IsRestrictedDestination(
+          src_url, dst_url, DlpRulesManager::Restriction::kClipboard,
+          src_pattern, dst_pattern);
+      break;
+    }
+
+    case ui::EndpointType::kCrostini: {
+      level = dlp_rules_manager.IsRestrictedComponent(
+          src_url, DlpRulesManager::Component::kCrostini,
+          DlpRulesManager::Restriction::kClipboard, src_pattern);
+      break;
+    }
+
+    case ui::EndpointType::kPluginVm: {
+      level = dlp_rules_manager.IsRestrictedComponent(
+          src_url, DlpRulesManager::Component::kPluginVm,
+          DlpRulesManager::Restriction::kClipboard, src_pattern);
+      break;
+    }
+
+    case ui::EndpointType::kArc: {
+      level = dlp_rules_manager.IsRestrictedComponent(
+          src_url, DlpRulesManager::Component::kArc,
+          DlpRulesManager::Restriction::kClipboard, src_pattern);
+      break;
+    }
+
+    case ui::EndpointType::kClipboardHistory: {
+      level = DlpRulesManager::Level::kAllow;
+      break;
+    }
+
+    default:
+      NOTREACHED();
+  }
+
+  return level;
+}
 }  // namespace
 
 // static
@@ -76,8 +151,13 @@ bool DataTransferDlpController::IsClipboardReadAllowed(
     const ui::DataTransferEndpoint* const data_src,
     const ui::DataTransferEndpoint* const data_dst,
     const absl::optional<size_t> size) {
-  DlpRulesManager::Level level =
-      IsDataTransferAllowed(data_src, data_dst, size);
+  std::string src_pattern;
+  std::string dst_pattern;
+  DlpRulesManager::Level level = IsDataTransferAllowed(
+      dlp_rules_manager_, data_src, data_dst, size, &src_pattern, &dst_pattern);
+
+  ReportEvent(data_src, data_dst, src_pattern, dst_pattern, level,
+              /*is_clipboard_event*/ true);
 
   bool notify_on_paste = ShouldNotifyOnPaste(data_dst);
 
@@ -134,8 +214,12 @@ void DataTransferDlpController::PasteIfAllowed(
     return;
   }
 
-  DlpRulesManager::Level level =
-      IsDataTransferAllowed(data_src, data_dst, size);
+  std::string src_pattern;
+  std::string dst_pattern;
+  DlpRulesManager::Level level = IsDataTransferAllowed(
+      dlp_rules_manager_, data_src, data_dst, size, &src_pattern, &dst_pattern);
+  // Reporting doesn't need to be added here because PasteIfAllowed is called
+  // after IsClipboardReadAllowed
 
   // If it's blocked, the data should be empty & PasteIfAllowed should not be
   // called.
@@ -165,8 +249,16 @@ bool DataTransferDlpController::IsDragDropAllowed(
     const ui::DataTransferEndpoint* const data_src,
     const ui::DataTransferEndpoint* const data_dst,
     const bool is_drop) {
+  std::string src_pattern;
+  std::string dst_pattern;
   DlpRulesManager::Level level =
-      IsDataTransferAllowed(data_src, data_dst, absl::nullopt);
+      IsDataTransferAllowed(dlp_rules_manager_, data_src, data_dst,
+                            absl::nullopt, &src_pattern, &dst_pattern);
+
+  if (is_drop) {
+    ReportEvent(data_src, data_dst, src_pattern, dst_pattern, level,
+                /*is_clipboard_event*/ false);
+  }
 
   if (level == DlpRulesManager::Level::kBlock && is_drop) {
     SYSLOG(INFO) << "DLP blocked drop of dragged data";
@@ -227,11 +319,9 @@ bool DataTransferDlpController::ShouldSkipReporting(
     const ui::DataTransferEndpoint* const data_src,
     const ui::DataTransferEndpoint* const data_dst,
     base::TimeTicks curr_time) {
-  // Skip reporting for destination endpoints that has |notify_if_restricted()|
-  // set to false as clipboard API calls for them either aren't triggered by a
-  // user action or come from some workarounds. However, allow reporting for
-  // unknown destinations (data_dst == nullptr).
-  if (data_dst && !data_dst->notify_if_restricted())
+  // Skip reporting for destination endpoints which don't notify the user
+  // because it's not originating from a user action.
+  if (!ShouldNotifyOnPaste(data_dst))
     return true;
 
   // In theory, there is no need to check for data source and destination if
@@ -250,13 +340,13 @@ bool DataTransferDlpController::ShouldSkipReporting(
   return false;
 }
 
-template <typename T>
 void DataTransferDlpController::ReportEvent(
     const ui::DataTransferEndpoint* const data_src,
     const ui::DataTransferEndpoint* const data_dst,
     const std::string& src_pattern,
-    const T& dst,
-    DlpRulesManager::Level level) {
+    const std::string& dst_pattern,
+    DlpRulesManager::Level level,
+    bool is_clipboard_event) {
   if (level != DlpRulesManager::Level::kReport &&
       level != DlpRulesManager::Level::kBlock)
     return;
@@ -265,105 +355,44 @@ void DataTransferDlpController::ReportEvent(
   if (!reporting_manager)
     return;
 
-  base::TimeTicks curr_time = base::TimeTicks::Now();
-  if (ShouldSkipReporting(data_src, data_dst, curr_time))
-    return;
-  last_reported_.data_src =
-      base::OptionalFromPtr<ui::DataTransferEndpoint>(data_src);
-  last_reported_.data_dst =
-      base::OptionalFromPtr<ui::DataTransferEndpoint>(data_dst);
-  last_reported_.time = curr_time;
-
-  reporting_manager->ReportEvent(
-      src_pattern, dst, DlpRulesManager::Restriction::kClipboard, level);
-}
-
-DlpRulesManager::Level DataTransferDlpController::IsDataTransferAllowed(
-    const ui::DataTransferEndpoint* const data_src,
-    const ui::DataTransferEndpoint* const data_dst,
-    const absl::optional<size_t> size) {
-  if (size.has_value() &&
-      *size < dlp_rules_manager_.GetClipboardCheckSizeLimitInBytes()) {
-    return DlpRulesManager::Level::kAllow;
+  if (is_clipboard_event) {
+    base::TimeTicks curr_time = base::TimeTicks::Now();
+    if (ShouldSkipReporting(data_src, data_dst, curr_time))
+      return;
+    last_reported_.data_src =
+        base::OptionalFromPtr<ui::DataTransferEndpoint>(data_src);
+    last_reported_.data_dst =
+        base::OptionalFromPtr<ui::DataTransferEndpoint>(data_dst);
+    last_reported_.time = curr_time;
   }
 
-  if (!data_src || !data_src->IsUrlType()) {  // Currently we only handle URLs.
-    return DlpRulesManager::Level::kAllow;
-  }
-
-  const GURL src_url = data_src->origin()->GetURL();
   ui::EndpointType dst_type =
       data_dst ? data_dst->type() : ui::EndpointType::kDefault;
-
-  DlpRulesManager::Level level = DlpRulesManager::Level::kAllow;
-
   switch (dst_type) {
-    case ui::EndpointType::kDefault:
-    case ui::EndpointType::kUnknownVm:
-    case ui::EndpointType::kBorealis: {
-      std::string src_pattern;
-      std::string dst_pattern;
-      // Passing empty URL will return restricted if there's a rule restricting
-      // the src against any dst (*), otherwise it will return ALLOW.
-      level = dlp_rules_manager_.IsRestrictedDestination(
-          src_url, GURL(), DlpRulesManager::Restriction::kClipboard,
-          &src_pattern, &dst_pattern);
-      ReportEvent(data_src, data_dst, src_pattern, dst_pattern, level);
+    case ui::EndpointType::kCrostini:
+      reporting_manager->ReportEvent(
+          src_pattern, DlpRulesManager::Component::kCrostini,
+          DlpRulesManager::Restriction::kClipboard, level);
       break;
-    }
 
-    case ui::EndpointType::kUrl: {
-      GURL dst_url = data_dst->origin()->GetURL();
-      std::string src_pattern;
-      std::string dst_pattern;
-      level = dlp_rules_manager_.IsRestrictedDestination(
-          src_url, dst_url, DlpRulesManager::Restriction::kClipboard,
-          &src_pattern, &dst_pattern);
-      if (!IsFilesApp(data_dst))
-        ReportEvent(data_src, data_dst, src_pattern, dst_pattern, level);
+    case ui::EndpointType::kPluginVm:
+      reporting_manager->ReportEvent(
+          src_pattern, DlpRulesManager::Component::kPluginVm,
+          DlpRulesManager::Restriction::kClipboard, level);
       break;
-    }
 
-    case ui::EndpointType::kCrostini: {
-      std::string src_pattern;
-      level = dlp_rules_manager_.IsRestrictedComponent(
-          src_url, DlpRulesManager::Component::kCrostini,
-          DlpRulesManager::Restriction::kClipboard, &src_pattern);
-      ReportEvent(data_src, data_dst, src_pattern,
-                  DlpRulesManager::Component::kCrostini, level);
+    case ui::EndpointType::kArc:
+      reporting_manager->ReportEvent(
+          src_pattern, DlpRulesManager::Component::kArc,
+          DlpRulesManager::Restriction::kClipboard, level);
       break;
-    }
-
-    case ui::EndpointType::kPluginVm: {
-      std::string src_pattern;
-      level = dlp_rules_manager_.IsRestrictedComponent(
-          src_url, DlpRulesManager::Component::kPluginVm,
-          DlpRulesManager::Restriction::kClipboard, &src_pattern);
-      ReportEvent(data_src, data_dst, src_pattern,
-                  DlpRulesManager::Component::kPluginVm, level);
-      break;
-    }
-
-    case ui::EndpointType::kArc: {
-      std::string src_pattern;
-      level = dlp_rules_manager_.IsRestrictedComponent(
-          src_url, DlpRulesManager::Component::kArc,
-          DlpRulesManager::Restriction::kClipboard, &src_pattern);
-      ReportEvent(data_src, data_dst, src_pattern,
-                  DlpRulesManager::Component::kArc, level);
-      break;
-    }
-
-    case ui::EndpointType::kClipboardHistory: {
-      level = DlpRulesManager::Level::kAllow;
-      break;
-    }
 
     default:
-      NOTREACHED();
+      reporting_manager->ReportEvent(src_pattern, dst_pattern,
+                                     DlpRulesManager::Restriction::kClipboard,
+                                     level);
+      break;
   }
-
-  return level;
 }
 
 DataTransferDlpController::LastReportedEndpoints::LastReportedEndpoints() =
