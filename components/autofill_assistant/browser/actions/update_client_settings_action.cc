@@ -28,7 +28,7 @@ void UpdateClientSettingsAction::InternalProcessAction(
   if (client_settings.display_strings().empty() &&
       !client_settings.display_strings_locale().empty()) {
     VLOG(1) << "Rejecting client settings update: Expected "
-            << ClientSettingsProto::DisplayStringId_MAX
+            << ClientSettingsProto::DisplayStringId_MAX + 1
             << "strings, but got none";
     EndAction(ClientStatus(INVALID_ACTION));
     return;
@@ -46,10 +46,11 @@ void UpdateClientSettingsAction::InternalProcessAction(
          client_settings.display_strings()) {
       incoming_string_ids.insert(display_string.id());
     }
-    if (incoming_string_ids.size() < ClientSettingsProto::DisplayStringId_MAX) {
+    if (incoming_string_ids.size() <=
+        ClientSettingsProto::DisplayStringId_MAX) {
       VLOG(1) << "Rejecting client settings update: Expected "
-              << ClientSettingsProto::DisplayStringId_MAX << "strings, but got "
-              << incoming_string_ids.size();
+              << ClientSettingsProto::DisplayStringId_MAX + 1
+              << "strings, but got " << incoming_string_ids.size();
       EndAction(ClientStatus(INVALID_ACTION));
       return;
     }

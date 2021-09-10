@@ -583,7 +583,7 @@ TEST_F(ControllerTest, UpdateClientSettings) {
   initial_client_settings_proto->set_periodic_script_check_interval_ms(1);
   initial_client_settings_proto->set_display_strings_locale("en-US");
   ClientSettingsProto::DisplayString* initial_display_string;
-  for (int i = 0; i < ClientSettingsProto::DisplayStringId_MAX; i++) {
+  for (int i = 0; i < ClientSettingsProto::DisplayStringId_MAX + 1; i++) {
     initial_display_string =
         initial_client_settings_proto->add_display_strings();
     initial_display_string->set_id(
@@ -605,7 +605,7 @@ TEST_F(ControllerTest, UpdateClientSettings) {
           ->mutable_client_settings();
   changed_client_settings_proto->set_display_strings_locale("fr-FR");
   ClientSettingsProto::DisplayString* changed_display_string;
-  for (int i = 0; i < ClientSettingsProto::DisplayStringId_MAX; i++) {
+  for (int i = 0; i < ClientSettingsProto::DisplayStringId_MAX + 1; i++) {
     changed_display_string =
         changed_client_settings_proto->add_display_strings();
     changed_display_string->set_id(
