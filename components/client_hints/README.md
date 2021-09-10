@@ -80,7 +80,7 @@ The canonical enum for client hint tokens is [network::mojom::WebClientHintsType
 
 *   Add the header name to `kClientHintsNameMapping` in [/services/network/public/cpp/client_hints.cc].
 *   Add an enum value to `WebFeature` in [/third_party/blink/public/mojom/web_feature/web_feature.mojom].
-*   Add the feature enum to `kWebFeatureMapping` in [/third_party/blink/renderer/core/loader/frame_client_hints_preferences_context.cc].
+*   Add the feature enum to the map in `MakeClientHintToWebFeatureMap` in [/third_party/blink/renderer/core/loader/frame_client_hints_preferences_context.cc].
 *   Add the client hint header to the `Accept-CH` header in the appropriate test files in [/chrome/test/data/client_hints/] and [/third_party/blink/web_tests/external/wpt/client-hints].
 *   Update `expected_client_hints_number` to the current value + 1 in [/chrome/browser/client_hints/client_hints_browsertest.cc].
 

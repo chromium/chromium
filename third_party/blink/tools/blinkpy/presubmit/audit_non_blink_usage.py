@@ -1501,6 +1501,14 @@ _CONFIG = [
         ],
         'allowed': ['ui::k200Percent'],
     },
+    {
+        'paths': [
+            'third_party/blink/renderer/core/loader/frame_client_hints_preferences_context.cc',
+        ],
+        'allowed': [
+            'base::NoDestructor',
+        ]
+    },
 ]
 
 

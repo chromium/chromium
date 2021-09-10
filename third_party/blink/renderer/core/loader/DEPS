@@ -14,5 +14,6 @@ specific_include_rules = {
     ],
 }
 include_rules = [
+  "+base/no_destructor.h",
   "+services/network/public/cpp/client_hints.h",
 ]
