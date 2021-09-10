@@ -547,11 +547,13 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
         ContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
                 mDownloadTestRule.getActivity(), tab, "testLink", R.id.contextmenu_open_in_new_tab);
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         int indexOfLinkPage = numOpenedTabs;
-        numOpenedTabs += 1;
-        Assert.assertEquals(
-                "Number of open tabs does not match", numOpenedTabs, tabModel.getCount());
+        final int expectedNumOpenedTabs = indexOfLinkPage + 1;
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat("Number of open tabs does not match", tabModel.getCount(),
+                    Matchers.is(expectedNumOpenedTabs));
+        });
+        numOpenedTabs = expectedNumOpenedTabs;
 
         // Wait for any new tab animation to finish if we're being driven by the compositor.
         final LayoutManagerImpl layoutDriver = mDownloadTestRule.getActivity()
@@ -564,11 +566,13 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
         ContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
                 mDownloadTestRule.getActivity(), tab, "testLink2",
                 R.id.contextmenu_open_in_new_tab);
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         int indexOfLinkPage2 = numOpenedTabs;
-        numOpenedTabs += 1;
-        Assert.assertEquals(
-                "Number of open tabs does not match", numOpenedTabs, tabModel.getCount());
+        final int expectedNumOpenedTabs2 = indexOfLinkPage2 + 1;
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat("Number of open tabs does not match", tabModel.getCount(),
+                    Matchers.is(expectedNumOpenedTabs2));
+        });
+        numOpenedTabs = expectedNumOpenedTabs2;
 
         // Verify the Url is still the same of Parent page.
         Assert.assertEquals(mTestUrl,
