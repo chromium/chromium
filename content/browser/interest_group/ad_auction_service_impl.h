@@ -81,6 +81,12 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
 
   mojo::Remote<network::mojom::URLLoaderFactory> frame_url_loader_factory_;
   mojo::Remote<network::mojom::URLLoaderFactory> trusted_url_loader_factory_;
+
+  // To avoid race conditions associated with top frame navigations (mentioned
+  // in document_service_base.h), we need to save the values of the main frame
+  // URL and origin in the constructor.
+  const url::Origin main_frame_origin_;
+  const GURL main_frame_url_;
 };
 
 }  // namespace content

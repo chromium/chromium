@@ -132,7 +132,11 @@ bool IsAuctionValid(const blink::mojom::AuctionAdConfig& config) {
 AdAuctionServiceImpl::AdAuctionServiceImpl(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::AdAuctionService> receiver)
-    : DocumentServiceBase(render_frame_host, std::move(receiver)) {}
+    : DocumentServiceBase(render_frame_host, std::move(receiver)),
+      main_frame_origin_(
+          render_frame_host->GetMainFrame()->GetLastCommittedOrigin()),
+      main_frame_url_(
+          render_frame_host->GetMainFrame()->GetLastCommittedURL()) {}
 
 AdAuctionServiceImpl::~AdAuctionServiceImpl() {
   while (!auctions_.empty()) {
@@ -160,7 +164,7 @@ void AdAuctionServiceImpl::JoinInterestGroup(
     const blink::InterestGroup& group) {
   // If the interest group API is not allowed for this origin do nothing.
   if (!GetContentClient()->browser()->IsInterestGroupAPIAllowed(
-          render_frame_host()->GetBrowserContext(), origin(),
+          render_frame_host()->GetBrowserContext(), main_frame_origin_,
           group.owner.GetURL())) {
     return;
   }
@@ -171,22 +175,20 @@ void AdAuctionServiceImpl::JoinInterestGroup(
   if (origin() != group.owner)
     return;
 
-  RenderFrameHost* main_frame = render_frame_host()->GetMainFrame();
-  GURL main_frame_url = main_frame->GetLastCommittedURL();
-
   blink::InterestGroup updated_group = group;
   base::Time max_expiry = base::Time::Now() + kMaxExpiry;
   if (updated_group.expiry > max_expiry)
     updated_group.expiry = max_expiry;
   GetInterestGroupManager().JoinInterestGroup(std::move(updated_group),
-                                              main_frame_url);
+                                              main_frame_url_);
 }
 
 void AdAuctionServiceImpl::LeaveInterestGroup(const url::Origin& owner,
                                               const std::string& name) {
   // If the interest group API is not allowed for this origin do nothing.
   if (!GetContentClient()->browser()->IsInterestGroupAPIAllowed(
-          render_frame_host()->GetBrowserContext(), origin(), owner.GetURL())) {
+          render_frame_host()->GetBrowserContext(), main_frame_origin_,
+          origin().GetURL())) {
     return;
   }
 
@@ -202,7 +204,7 @@ void AdAuctionServiceImpl::LeaveInterestGroup(const url::Origin& owner,
 void AdAuctionServiceImpl::UpdateAdInterestGroups() {
   // If the interest group API is not allowed for this origin do nothing.
   if (!GetContentClient()->browser()->IsInterestGroupAPIAllowed(
-          render_frame_host()->GetBrowserContext(), origin(),
+          render_frame_host()->GetBrowserContext(), main_frame_origin_,
           origin().GetURL())) {
     return;
   }

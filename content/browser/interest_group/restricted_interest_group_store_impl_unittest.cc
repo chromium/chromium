@@ -20,6 +20,7 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/content_client.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
@@ -55,9 +56,19 @@ class AllowInterestGroupContentBrowserClient : public TestContentBrowserClient {
   // ContentBrowserClient overrides:
   bool IsInterestGroupAPIAllowed(content::BrowserContext* browser_context,
                                  const url::Origin& top_frame_origin,
-                                 const GURL& api_url) override {
-    return top_frame_origin.host() == "a.test" ||
-           top_frame_origin.host() == "b.test";
+                                 const GURL& owner_url) override {
+    const url::Origin owner_origin = url::Origin::Create(owner_url);
+    // Can join A interest groups on A top frames, B interest groups on B top
+    // frames, C interest groups on C top frames, and C interest groups on A top
+    // frames.
+    return (top_frame_origin.host() == "a.test" &&
+            owner_origin.host() == "a.test") ||
+           (top_frame_origin.host() == "b.test" &&
+            owner_origin.host() == "b.test") ||
+           (top_frame_origin.host() == "c.test" &&
+            owner_origin.host() == "c.test") ||
+           (top_frame_origin.host() == "a.test" &&
+            owner_origin.host() == "c.test");
   }
 };
 
@@ -210,41 +221,60 @@ class RestrictedInterestGroupStoreImplTest : public RenderViewHostTestHarness {
   // Creates a new AdAuctionServiceImpl with each call so the RFH
   // can be navigated between different sites. And
   // AdAuctionServiceImpl only handles one site (cross site navs use
-  // different RestrictedInterestGroupStoreImpls, and generally use different
+  // different AdAuctionServices, and generally use different
   // RFHs as well).
-  void JoinInterestGroupAndFlush(const blink::InterestGroup& interest_group) {
+  void JoinInterestGroupAndFlushForFrame(
+      const blink::InterestGroup& interest_group,
+      RenderFrameHost* rfh) {
     mojo::Remote<blink::mojom::AdAuctionService> interest_service;
     AdAuctionServiceImpl::CreateMojoService(
-        web_contents()->GetMainFrame(),
-        interest_service.BindNewPipeAndPassReceiver());
+        rfh, interest_service.BindNewPipeAndPassReceiver());
 
     interest_service->JoinInterestGroup(interest_group);
     interest_service.FlushForTesting();
   }
 
-  // Analogous to JoinInterestGroupAndFlush(), but leaves an interest group
-  // instead of joining one.
-  void LeaveInterestGroupAndFlush(const url::Origin& owner,
-                                  const std::string& name) {
+  // Like JoinInterestGroupAndFlushForFrame, but uses the render frame host of
+  // the main frame.
+  void JoinInterestGroupAndFlush(const blink::InterestGroup& interest_group) {
+    JoinInterestGroupAndFlushForFrame(interest_group, main_rfh());
+  }
+
+  // Analogous to JoinInterestGroupAndFlushForFrame(), but leaves an interest
+  // group instead of joining one.
+  void LeaveInterestGroupAndFlushForFrame(const url::Origin& owner,
+                                          const std::string& name,
+                                          RenderFrameHost* rfh) {
     mojo::Remote<blink::mojom::AdAuctionService> interest_service;
     AdAuctionServiceImpl::CreateMojoService(
-        web_contents()->GetMainFrame(),
-        interest_service.BindNewPipeAndPassReceiver());
+        rfh, interest_service.BindNewPipeAndPassReceiver());
 
     interest_service->LeaveInterestGroup(owner, name);
     interest_service.FlushForTesting();
   }
 
+  // Like LeaveInterestGroupAndFlushForFrame, but uses the render frame host of
+  // the main frame.
+  void LeaveInterestGroupAndFlush(const url::Origin& owner,
+                                  const std::string& name) {
+    LeaveInterestGroupAndFlushForFrame(owner, name, main_rfh());
+  }
+
   // Updates registered interest groups according to their registered update
   // URL. Doesn't flush since the update operation requires a sequence of
   // asynchronous operations.
-  void UpdateInterestGroupNoFlush() {
+  void UpdateInterestGroupNoFlushForFrame(RenderFrameHost* rfh) {
     mojo::Remote<blink::mojom::AdAuctionService> interest_service;
     AdAuctionServiceImpl::CreateMojoService(
-        web_contents()->GetMainFrame(),
-        interest_service.BindNewPipeAndPassReceiver());
+        rfh, interest_service.BindNewPipeAndPassReceiver());
 
     interest_service->UpdateAdInterestGroups();
+  }
+
+  // Like LeaveInterestGroupAndFlushForFrame, but uses the render frame host of
+  // the main frame.
+  void UpdateInterestGroupNoFlush() {
+    UpdateInterestGroupNoFlushForFrame(main_rfh());
   }
 
   // Helper to create a valid interest group with only an origin and name. All
@@ -263,6 +293,8 @@ class RestrictedInterestGroupStoreImplTest : public RenderViewHostTestHarness {
   const url::Origin kOriginA = url::Origin::Create(kUrlA);
   const GURL kUrlB = GURL(kOriginStringB);
   const url::Origin kOriginB = url::Origin::Create(kUrlB);
+  const GURL kUrlC = GURL("https://c.test/");
+  const url::Origin kOriginC = url::Origin::Create(kUrlC);
 
   base::test::ScopedFeatureList feature_list_;
 
@@ -315,6 +347,38 @@ TEST_F(RestrictedInterestGroupStoreImplTest,
   EXPECT_EQ(0, GetJoinCount(kOriginB, kInterestGroupName));
 }
 
+// Test joining an interest group with a cross-site owner.
+TEST_F(RestrictedInterestGroupStoreImplTest, JoinInterestFromCrossSiteIFrame) {
+  // Create a subframe and use it to send the join request.
+  content::RenderFrameHostTester* rfh_tester =
+      content::RenderFrameHostTester::For(main_rfh());
+  content::RenderFrameHost* subframe = rfh_tester->AppendChild("subframe");
+  subframe =
+      NavigationSimulator::NavigateAndCommitFromDocument(kUrlC, subframe);
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.owner = kOriginC;
+  JoinInterestGroupAndFlushForFrame(interest_group, subframe);
+  JoinInterestGroupAndFlushForFrame(CreateInterestGroup(), subframe);
+
+  // Subframes from origin C with a top frame of A should be able to join groups
+  // with C as the owner, but the subframe from C should not be able to join
+  // groups for A.
+  EXPECT_EQ(1, GetJoinCount(kOriginC, kInterestGroupName));
+  EXPECT_EQ(0, GetJoinCount(kOriginA, kInterestGroupName));
+
+  subframe =
+      NavigationSimulator::NavigateAndCommitFromDocument(kUrlB, subframe);
+  interest_group = CreateInterestGroup();
+  interest_group.owner = kOriginB;
+  JoinInterestGroupAndFlushForFrame(interest_group, subframe);
+
+  // Subframes from origin B with a top frame of A should not (by policy) be
+  // allowed to join groups with B as the owner.
+  EXPECT_EQ(0, GetJoinCount(kOriginB, kInterestGroupName));
+  EXPECT_EQ(0, GetJoinCount(kOriginA, kInterestGroupName));
+}
+
 // Test joining an interest group with a disallowed cross-origin URL. Doesn't
 // exhaustively test all cases, as the validation function has its own unit
 // tests. This is just to make sure those are hooked up.
@@ -359,6 +423,50 @@ TEST_F(RestrictedInterestGroupStoreImplTest,
   NavigateAndCommit(GURL("https://a.test/"));
   LeaveInterestGroupAndFlush(kOriginA, kInterestGroupName);
   EXPECT_EQ(0, GetJoinCount(kOriginA, kInterestGroupName));
+}
+
+// Test leaving an interest group with a cross-site owner.
+TEST_F(RestrictedInterestGroupStoreImplTest, LeaveInterestFromCrossSiteIFrame) {
+  // Join interest group from c.
+  NavigateAndCommit(kUrlC);
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.owner = kOriginC;
+  JoinInterestGroupAndFlush(interest_group);
+
+  NavigateAndCommit(kUrlB);
+  interest_group.owner = kOriginB;
+  JoinInterestGroupAndFlush(interest_group);
+
+  NavigateAndCommit(kUrlA);
+  JoinInterestGroupAndFlush(CreateInterestGroup());
+
+  EXPECT_EQ(1, GetJoinCount(kOriginC, kInterestGroupName));
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  // Create a subframe and use it to send the leave request.
+  content::RenderFrameHostTester* rfh_tester =
+      content::RenderFrameHostTester::For(main_rfh());
+  content::RenderFrameHost* subframe = rfh_tester->AppendChild("subframe");
+  subframe =
+      NavigationSimulator::NavigateAndCommitFromDocument(kUrlC, subframe);
+
+  LeaveInterestGroupAndFlushForFrame(kOriginC, kInterestGroupName, subframe);
+  LeaveInterestGroupAndFlushForFrame(kOriginA, kInterestGroupName, subframe);
+
+  subframe = rfh_tester->AppendChild("subframe");
+  subframe =
+      NavigationSimulator::NavigateAndCommitFromDocument(kUrlB, subframe);
+
+  LeaveInterestGroupAndFlushForFrame(kOriginB, kInterestGroupName, subframe);
+
+  // Subframes from origin C with a top frame of A should be able to leave
+  // groups with C as the owner, but the subframe from C should not be able to
+  // leave groups for A. Pages with a top frame that is not B are not allowed
+  // to leave B's interest groups (controlled by IsInterestGroupAPIAllowed)
+  EXPECT_EQ(0, GetJoinCount(kOriginC, kInterestGroupName));
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+  EXPECT_EQ(1, GetJoinCount(kOriginB, kInterestGroupName));
 }
 
 // These tests validate the `dailyUpdateUrl` and
@@ -857,6 +965,135 @@ TEST_F(RestrictedInterestGroupStoreImplTest, UpdateOnlyOwnOrigin) {
   EXPECT_EQ(origin_a_group.ads.value()[0].render_url.spec(),
             "https://example.com/render");
   EXPECT_EQ(origin_a_group.ads.value()[0].metadata,
+            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+}
+
+// Test updating an interest group with a cross-site owner.
+TEST_F(RestrictedInterestGroupStoreImplTest, UpdateFromCrossSiteIFrame) {
+  // All interest groups can share the same update logic and path (they just
+  // use different origins).
+  constexpr char kDailyUpdateUrlPath[] =
+      "/interest_group/daily_update_partial.json";
+  update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
+                                            base::StringPrintf(R"({
+"ads": [{"renderUrl": "%s/new_ad_render_url",
+         "metadata": {"new_a": "b"}
+        }]
+})",
+                                                               kOriginStringA));
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.update_url = kUrlA.Resolve(kDailyUpdateUrlPath);
+  interest_group.bidding_url =
+      kUrlA.Resolve("/interest_group/bidding_logic.js");
+  interest_group.trusted_bidding_signals_url =
+      kUrlA.Resolve("/interest_group/trusted_bidding_signals.json");
+  interest_group.trusted_bidding_signals_keys.emplace();
+  interest_group.trusted_bidding_signals_keys->push_back("key1");
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad;
+  ad.render_url = GURL("https://example.com/render");
+  ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
+  interest_group.ads->push_back(std::move(ad));
+  JoinInterestGroupAndFlush(std::move(interest_group));
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  // Now, join the second interest group, belonging to `kOriginB`.
+  NavigateAndCommit(kUrlB);
+  blink::InterestGroup interest_group_b = CreateInterestGroup();
+  interest_group_b.owner = kOriginB;
+  interest_group_b.update_url = kUrlB.Resolve(kDailyUpdateUrlPath);
+  interest_group_b.bidding_url =
+      kUrlB.Resolve("/interest_group/bidding_logic.js");
+  interest_group_b.trusted_bidding_signals_url =
+      kUrlB.Resolve("/interest_group/trusted_bidding_signals.json");
+  interest_group_b.trusted_bidding_signals_keys.emplace();
+  interest_group_b.trusted_bidding_signals_keys->push_back("key1");
+  interest_group_b.ads.emplace();
+  ad = blink::InterestGroup::Ad();
+  ad.render_url = GURL("https://example.com/render");
+  ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
+  interest_group_b.ads->push_back(std::move(ad));
+  JoinInterestGroupAndFlush(std::move(interest_group_b));
+  EXPECT_EQ(1, GetJoinCount(kOriginB, kInterestGroupName));
+
+  // Now, join the third interest group, belonging to `kOriginC`.
+  NavigateAndCommit(kUrlC);
+  blink::InterestGroup interest_group_c = CreateInterestGroup();
+  interest_group_c.owner = kOriginC;
+  interest_group_c.update_url = kUrlC.Resolve(kDailyUpdateUrlPath);
+  interest_group_c.bidding_url =
+      kUrlC.Resolve("/interest_group/bidding_logic.js");
+  interest_group_c.trusted_bidding_signals_url =
+      kUrlC.Resolve("/interest_group/trusted_bidding_signals.json");
+  interest_group_c.trusted_bidding_signals_keys.emplace();
+  interest_group_c.trusted_bidding_signals_keys->push_back("key1");
+  interest_group_c.ads.emplace();
+  ad = blink::InterestGroup::Ad();
+  ad.render_url = GURL("https://example.com/render");
+  ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
+  interest_group_c.ads->push_back(std::move(ad));
+  JoinInterestGroupAndFlush(std::move(interest_group_c));
+  EXPECT_EQ(1, GetJoinCount(kOriginC, kInterestGroupName));
+
+  NavigateAndCommit(kUrlA);
+
+  // Create a subframe and use it to send the join request.
+  content::RenderFrameHostTester* rfh_tester =
+      content::RenderFrameHostTester::For(main_rfh());
+  content::RenderFrameHost* subframe = rfh_tester->AppendChild("subframe");
+  subframe =
+      NavigationSimulator::NavigateAndCommitFromDocument(kUrlC, subframe);
+
+  UpdateInterestGroupNoFlushForFrame(subframe);
+  task_environment()->RunUntilIdle();
+
+  // Subframes from origin C with a top frame of A should update groups
+  // with C as the owner, but the subframe from C should not be able to update
+  // groups for A.
+  // The `kOriginC` interest group should update...
+  std::vector<BiddingInterestGroup> origin_c_groups =
+      GetInterestGroupsForOwner(kOriginC);
+  ASSERT_EQ(origin_c_groups.size(), 1u);
+  const auto& origin_c_group = origin_c_groups[0].group->group;
+  EXPECT_EQ(origin_c_group.name, kInterestGroupName);
+  ASSERT_TRUE(origin_c_group.ads.has_value());
+  ASSERT_EQ(origin_c_group.ads->size(), 1u);
+  EXPECT_EQ(origin_c_group.ads.value()[0].render_url.spec(),
+            base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
+  EXPECT_EQ(origin_c_group.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+
+  // ...but the `kOriginA` interest group shouldn't change.
+  std::vector<BiddingInterestGroup> origin_a_groups =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(origin_a_groups.size(), 1u);
+  const auto& origin_a_group = origin_a_groups[0].group->group;
+  ASSERT_TRUE(origin_a_group.ads.has_value());
+  ASSERT_EQ(origin_a_group.ads->size(), 1u);
+  EXPECT_EQ(origin_a_group.ads.value()[0].render_url.spec(),
+            "https://example.com/render");
+  EXPECT_EQ(origin_a_group.ads.value()[0].metadata,
+            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+
+  // Now try on disallowed subframe from originB.
+  subframe =
+      NavigationSimulator::NavigateAndCommitFromDocument(kUrlB, subframe);
+  interest_group = CreateInterestGroup();
+  interest_group.owner = kOriginB;
+  UpdateInterestGroupNoFlushForFrame(subframe);
+  task_environment()->RunUntilIdle();
+
+  // Subframes from origin B with a top frame of A should not (by policy) be
+  // allowed to update groups with B as the owner.
+  std::vector<BiddingInterestGroup> origin_b_groups =
+      GetInterestGroupsForOwner(kOriginB);
+  ASSERT_EQ(origin_b_groups.size(), 1u);
+  const auto& origin_b_group = origin_b_groups[0].group->group;
+  ASSERT_TRUE(origin_b_group.ads.has_value());
+  ASSERT_EQ(origin_b_group.ads->size(), 1u);
+  EXPECT_EQ(origin_b_group.ads.value()[0].render_url.spec(),
+            "https://example.com/render");
+  EXPECT_EQ(origin_b_group.ads.value()[0].metadata,
             "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
 }
 
