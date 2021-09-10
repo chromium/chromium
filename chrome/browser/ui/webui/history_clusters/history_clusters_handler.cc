@@ -52,12 +52,20 @@ mojom::URLVisitPtr VisitToMojom(const Visit& visit) {
   auto& annotated_visit = visit.annotated_visit;
   visit_mojom->normalized_url = annotated_visit.url_row.url();
 
-  // TODO(tommycli): Use the `visit.duplicate_visits` to fully populate
-  // `visit_mojom->raw_urls`, `last_visit_time` and `first_visit_time`.
-  // Currently we only look at the canonical URL.
   visit_mojom->raw_urls.push_back(annotated_visit.url_row.url());
   visit_mojom->last_visit_time = annotated_visit.visit_row.visit_time;
   visit_mojom->first_visit_time = annotated_visit.visit_row.visit_time;
+
+  // Update the fields to reflect data held in the duplicate visits too.
+  for (const auto& duplicate : visit.duplicate_visits) {
+    visit_mojom->raw_urls.push_back(duplicate.annotated_visit.url_row.url());
+    visit_mojom->last_visit_time =
+        std::max(visit_mojom->last_visit_time,
+                 duplicate.annotated_visit.visit_row.visit_time);
+    visit_mojom->first_visit_time =
+        std::min(visit_mojom->first_visit_time,
+                 duplicate.annotated_visit.visit_row.visit_time);
+  }
 
   visit_mojom->page_title = base::UTF16ToUTF8(annotated_visit.url_row.title());
   visit_mojom->relative_date = base::UTF16ToUTF8(ui::TimeFormat::Simple(
