@@ -69,8 +69,10 @@ WebString MediaInspectorContextImpl::CreatePlayer() {
       String::FromUTF8(base::UnguessableToken::Create().ToString());
   players_.insert(next_player_id, MakeGarbageCollected<MediaPlayer>());
   probe::PlayersCreated(GetSupplementable(), {next_player_id});
-  if (!GetSupplementable()->GetProbeSink()->HasInspectorMediaAgents())
+  if (!GetSupplementable()->GetProbeSink() ||
+      !GetSupplementable()->GetProbeSink()->HasInspectorMediaAgents()) {
     unsent_players_.push_back(next_player_id);
+  }
   return next_player_id;
 }
 
