@@ -516,11 +516,14 @@ void V4L2StatelessVideoDecoderBackend::PumpOutputSurfaces() {
 
         {
           const int64_t flat_timestamp = request.timestamp.InMilliseconds();
-          DCHECK(base::Contains(encoding_timestamps_, flat_timestamp));
-          UMA_HISTOGRAM_TIMES(
-              "Media.PlatformVideoDecoding.Decode",
-              base::TimeTicks::Now() - encoding_timestamps_[flat_timestamp]);
-          encoding_timestamps_.erase(flat_timestamp);
+          // TODO(b/190615065) |flat_timestamp| might be repeated with H.264
+          // bitstreams, investigate why, and change the if() to DCHECK().
+          if (base::Contains(encoding_timestamps_, flat_timestamp)) {
+            UMA_HISTOGRAM_TIMES(
+                "Media.PlatformVideoDecoding.Decode",
+                base::TimeTicks::Now() - encoding_timestamps_[flat_timestamp]);
+            encoding_timestamps_.erase(flat_timestamp);
+          }
         }
 
         break;
