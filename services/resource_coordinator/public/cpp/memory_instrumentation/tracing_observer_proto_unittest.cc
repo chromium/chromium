@@ -130,8 +130,8 @@ memory_instrumentation::mojom::OSMemDump GetFakeOSMemDump(
   );
 }
 
-// crbug.com/1242040: flaky on linux, chromeos and lacros
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// crbug.com/1242040: flaky on linux, chromeos
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define MAYBE_AddChromeDumpToTraceIfEnabled_When_TraceLog_Disabled \
   DISABLED_AddChromeDumpToTraceIfEnabled_When_TraceLog_Disabled
 #else
