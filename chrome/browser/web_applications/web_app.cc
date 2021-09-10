@@ -250,7 +250,7 @@ void WebApp::SetProtocolHandlers(
 }
 
 void WebApp::SetApprovedLaunchProtocols(
-    std::vector<std::string> approved_launch_protocols) {
+    base::flat_set<std::string> approved_launch_protocols) {
   approved_launch_protocols_ = std::move(approved_launch_protocols);
 }
 

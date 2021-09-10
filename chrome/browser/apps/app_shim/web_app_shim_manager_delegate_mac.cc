@@ -207,9 +207,9 @@ void WebAppShimManagerDelegate::LaunchApp(
                 web_app::ScopedRegistryUpdate update(&provider->sync_bridge());
                 web_app::WebApp* app_to_update =
                     update->UpdateApp(params.app_id);
-                std::vector<std::string> protocol_handlers(
+                base::flat_set<std::string> protocol_handlers(
                     app_to_update->approved_launch_protocols());
-                protocol_handlers.push_back(
+                protocol_handlers.insert(
                     params.protocol_handler_launch_url.value().scheme());
                 app_to_update->SetApprovedLaunchProtocols(
                     std::move(protocol_handlers));

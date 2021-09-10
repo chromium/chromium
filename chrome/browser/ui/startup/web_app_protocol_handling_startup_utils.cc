@@ -86,11 +86,11 @@ void OnProtocolHandlerDialogCompleted(
     DCHECK(provider);
     web_app::ScopedRegistryUpdate update(&provider->sync_bridge());
     web_app::WebApp* app_to_update = update->UpdateApp(app_id);
-    std::vector<std::string> protocol_handlers(
+    base::flat_set<std::string> protocol_handlers(
         app_to_update->approved_launch_protocols());
 
     DCHECK(!base::Contains(protocol_handlers, protocol_url.scheme()));
-    protocol_handlers.push_back(protocol_url.scheme());
+    protocol_handlers.insert(protocol_url.scheme());
     app_to_update->SetApprovedLaunchProtocols(std::move(protocol_handlers));
   }
 
