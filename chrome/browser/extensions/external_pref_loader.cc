@@ -133,8 +133,8 @@ class ExternalPrefLoader::PrioritySyncReadyWaiter
     }
     DCHECK(!done_closure_);
     done_closure_ = std::move(done_closure);
-    if (chromeos::features::IsSplitSettingsSyncEnabled()) {
-      // SplitSettingsSync lets users opt-out of sync during OOBE.
+    if (chromeos::features::IsSyncConsentOptionalEnabled()) {
+      // SyncConsentOptional lets users opt-out of sync during OOBE.
       PrefService* prefs = profile_->GetPrefs();
       if (!prefs->GetBoolean(chromeos::prefs::kSyncOobeCompleted)) {
         // Need to wait for OOBE completion before checking if sync is enabled.
@@ -153,7 +153,7 @@ class ExternalPrefLoader::PrioritySyncReadyWaiter
 
  private:
   void OnSyncOobeCompleted() {
-    DCHECK(chromeos::features::IsSplitSettingsSyncEnabled());
+    DCHECK(chromeos::features::IsSyncConsentOptionalEnabled());
     DCHECK(
         profile_->GetPrefs()->GetBoolean(chromeos::prefs::kSyncOobeCompleted));
     pref_change_registrar_.reset();
@@ -203,9 +203,9 @@ class ExternalPrefLoader::PrioritySyncReadyWaiter
     sync_preferences::PrefServiceSyncable* prefs =
         PrefServiceSyncableFromProfile(profile_);
     DCHECK(prefs);
-    // SplitSettingsSync moves prefs like language and keyboard/mouse config to
-    // OS priority prefs.
-    return chromeos::features::IsSplitSettingsSyncEnabled()
+    // SyncSettingsCategorization moves prefs like language and keyboard/mouse
+    // config to OS priority prefs.
+    return chromeos::features::IsSyncSettingsCategorizationEnabled()
                ? prefs->AreOsPriorityPrefsSyncing()
                : prefs->IsPrioritySyncing();
   }
@@ -226,7 +226,7 @@ class ExternalPrefLoader::PrioritySyncReadyWaiter
 
   base::OnceClosure done_closure_;
 
-  // Used with SplitSettingsSync to wait for OOBE sync dialog completion.
+  // Used with SyncConsentOptional to wait for OOBE sync dialog completion.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   // Used for registering observer for sync_preferences::PrefServiceSyncable.

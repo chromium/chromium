@@ -148,7 +148,10 @@ TEST_F(ExternalPrefLoaderTest, PrefReadInitiatesCorrectly) {
 class ExternalPrefLoaderSplitSettingsSyncTest : public ExternalPrefLoaderTest {
  public:
   ExternalPrefLoaderSplitSettingsSyncTest() {
-    feature_list_.InitAndEnableFeature(chromeos::features::kSplitSettingsSync);
+    feature_list_.InitWithFeatures(
+        {chromeos::features::kSyncSettingsCategorization,
+         chromeos::features::kSyncConsentOptional},
+        {});
   }
   ~ExternalPrefLoaderSplitSettingsSyncTest() override = default;
 

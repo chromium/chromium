@@ -266,9 +266,10 @@ TEST_F(ExternalProviderImplChromeOSTest, DISABLED_PriorityCompleted) {
   // App sync will wait for priority sync to complete.
   service_->CheckForExternalUpdates();
 
-  // SplitSettingsSync makes ExternalPrefLoader wait for OS priority prefs.
+  // SyncSettingsCategorization makes ExternalPrefLoader wait for OS priority
+  // prefs.
   syncer::ModelType priority_pref_type =
-      chromeos::features::IsSplitSettingsSyncEnabled()
+      chromeos::features::IsSyncSettingsCategorizationEnabled()
           ? syncer::OS_PRIORITY_PREFERENCES
           : syncer::PRIORITY_PREFERENCES;
 
