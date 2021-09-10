@@ -12,11 +12,11 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
-#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/lens/lens_side_panel_helper.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
@@ -49,10 +49,6 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "components/guest_view/browser/guest_view_manager.h"
-#endif
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/browser/ui/lens/lens_side_panel_helper.h"
 #endif
 
 using content::WebContents;
@@ -389,12 +385,10 @@ void CoreTabHelper::PostContentToURL(TemplateURLRef::PostContent post_content,
         content_type.c_str());
   }
   if (use_side_panel) {
-#if !defined(OS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if !defined(OS_ANDROID)
     lens::OpenLensSidePanel(chrome::FindBrowserWithWebContents(web_contents()),
                             open_url_params);
-#else
-    web_contents()->OpenURL(open_url_params);
-#endif  // !defined(OS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // !defined(OS_ANDROID)
   } else {
     web_contents()->OpenURL(open_url_params);
   }
