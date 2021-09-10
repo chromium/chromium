@@ -46,15 +46,19 @@ namespace history_clusters {
 
 namespace {
 
-// Translate a `AnnotatedVisit` to `mojom::VisitPtr`.
-mojom::URLVisitPtr VisitToMojom(
-    const history::ClusterVisit& scored_annotated_visit) {
+// Convert a `history_clusters::Visit` to `mojom::VisitPtr`.
+mojom::URLVisitPtr VisitToMojom(const Visit& visit) {
   auto visit_mojom = mojom::URLVisit::New();
-  auto& annotated_visit = scored_annotated_visit.annotated_visit;
+  auto& annotated_visit = visit.annotated_visit;
   visit_mojom->normalized_url = annotated_visit.url_row.url();
+
+  // TODO(tommycli): Use the `visit.duplicate_visits` to fully populate
+  // `visit_mojom->raw_urls`, `last_visit_time` and `first_visit_time`.
+  // Currently we only look at the canonical URL.
   visit_mojom->raw_urls.push_back(annotated_visit.url_row.url());
   visit_mojom->last_visit_time = annotated_visit.visit_row.visit_time;
   visit_mojom->first_visit_time = annotated_visit.visit_row.visit_time;
+
   visit_mojom->page_title = base::UTF16ToUTF8(annotated_visit.url_row.title());
   visit_mojom->relative_date = base::UTF16ToUTF8(ui::TimeFormat::Simple(
       ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_SHORT,
@@ -67,13 +71,12 @@ mojom::URLVisitPtr VisitToMojom(
       annotated_visit.context_annotations.is_new_bookmark) {
     visit_mojom->annotations.push_back(mojom::Annotation::kBookmarked);
   }
-  visit_mojom->score = scored_annotated_visit.score;
+  visit_mojom->score = visit.score;
 
   if (base::FeatureList::IsEnabled(kDebug)) {
     visit_mojom->debug_info["score"] = base::NumberToString(visit_mojom->score);
-    visit_mojom->debug_info["visit_duration"] =
-        base::NumberToString(scored_annotated_visit.annotated_visit.visit_row
-                                 .visit_duration.InSecondsF());
+    visit_mojom->debug_info["visit_duration"] = base::NumberToString(
+        visit.annotated_visit.visit_row.visit_duration.InSecondsF());
   }
 
   return visit_mojom;
@@ -107,7 +110,7 @@ void ServiceResultToMojom(
     base::OnceCallback<
         void(const absl::optional<base::Time>& continuation_max_time,
              std::vector<mojom::ClusterPtr> cluster_mojoms)> callback,
-    HistoryClustersService::QueryClustersResult result) {
+    QueryClustersResult result) {
   const TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile);
   std::vector<mojom::ClusterPtr> clusters_mojoms;

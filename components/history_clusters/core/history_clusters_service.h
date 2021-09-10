@@ -19,7 +19,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/clustering_backend.h"
-#include "components/history_clusters/core/visit_data.h"
+#include "components/history_clusters/core/history_clusters_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/query_parser/query_parser.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -33,17 +33,6 @@ class HistoryClustersService : public KeyedService {
    public:
     virtual void OnMemoriesDebugMessage(const std::string& message) = 0;
   };
-
-  // The result data returned by `QueryClusters()`.
-  struct QueryClustersResult {
-    QueryClustersResult();
-    ~QueryClustersResult();
-    QueryClustersResult(const QueryClustersResult&);
-
-    std::vector<history::Cluster> clusters;
-    base::Time continuation_end_time;
-  };
-  using QueryClustersCallback = base::OnceCallback<void(QueryClustersResult)>;
 
   // Used to track incomplete, unpersisted visits.
   using IncompleteVisitMap =
@@ -111,6 +100,12 @@ class HistoryClustersService : public KeyedService {
   // request while immediately returning false. It's expected that on the next
   // keystroke, the cache may be ready and return true then.
   bool DoesQueryMatchAnyCluster(const std::string& query);
+
+  // Converts the vector of history::Cluster types to history_clusters::Cluster
+  // by collapsing all the duplicate visits into the canonical visits, thereby
+  // "unflattening" the output of the backend. Exposed for testing.
+  std::vector<Cluster> CollapseDuplicateVisits(
+      const std::vector<history::Cluster>& raw_clusters) const;
 
  private:
   friend class HistoryClustersServiceTestApi;

@@ -24,11 +24,12 @@ static_library("core") {
   sources = [
     "history_clusters_service.cc",
     "history_clusters_service.h",
+    "history_clusters_types.cc",
+    "history_clusters_types.h",
     "memories_features.cc",
     "memories_features.h",
     "remote_clustering_backend.cc",
     "remote_clustering_backend.h",
-    "visit_data.h",
   ]
   deps = [
     ":clustering_backend",

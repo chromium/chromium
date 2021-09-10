@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/json/json_writer.h"
@@ -258,8 +259,7 @@ std::vector<history::Cluster> FilterClustersMatchingQuery(
 
 // Enforces the reverse-chronological invariant of clusters, as well the
 // by-score sorting of visits within clusters.
-std::vector<history::Cluster> SortClusters(
-    std::vector<history::Cluster> clusters) {
+std::vector<Cluster> SortClusters(std::vector<Cluster> clusters) {
   // Within each cluster, sort visits from best to worst using score.
   // TODO(tommycli): Once cluster persistence is done, maybe we can eliminate
   //  this sort step, if they are stored in-order.
@@ -367,13 +367,6 @@ std::string GetDebugJSONForClusters(
 }
 
 }  // namespace
-
-HistoryClustersService::QueryClustersResult::QueryClustersResult() = default;
-
-HistoryClustersService::QueryClustersResult::~QueryClustersResult() = default;
-
-HistoryClustersService::QueryClustersResult::QueryClustersResult(
-    const QueryClustersResult&) = default;
 
 HistoryClustersService::HistoryClustersService(
     history::HistoryService* history_service,
@@ -546,6 +539,70 @@ bool HistoryClustersService::DoesQueryMatchAnyCluster(
                                                    /*exact=*/true);
 }
 
+std::vector<Cluster> HistoryClustersService::CollapseDuplicateVisits(
+    const std::vector<history::Cluster>& raw_clusters) const {
+  std::vector<Cluster> result_clusters;
+  for (const auto& raw_cluster : raw_clusters) {
+    Cluster cluster;
+    cluster.cluster_id = raw_cluster.cluster_id;
+    cluster.keywords = raw_cluster.keywords;
+
+    // First stash all visits within the cluster in a id-keyed map.
+    base::flat_map<int64_t, Visit> visits_map;
+    visits_map.reserve(raw_cluster.visits.size());
+    for (const auto& raw_visit : raw_cluster.visits) {
+      Visit visit;
+      visit.annotated_visit = raw_visit.annotated_visit;
+      visit.score = raw_visit.score;
+
+      visits_map[visit.annotated_visit.visit_row.visit_id] = std::move(visit);
+    }
+
+    // Now do the actual un-flattening in a second loop.
+    for (const auto& raw_visit : raw_cluster.visits) {
+      int64_t visit_id = raw_visit.annotated_visit.visit_row.visit_id;
+
+      // For every duplicate marked in the original raw visit, find the visit
+      // in the id-keyed map, move it to the canonical visit's vector, and
+      // erase it from the map.
+      for (auto& duplicate_id : raw_visit.duplicate_visit_ids) {
+        auto duplicate_visit = visits_map.find(duplicate_id);
+        if (duplicate_visit == visits_map.end()) {
+          NotifyDebugMessage(
+              base::StringPrintf("Visit id=%d has missing duplicate_id=%d",
+                                 int(visit_id), int(duplicate_id)));
+          continue;
+        }
+
+        // Move the duplicate visit into the vector of the canonical visit.
+        if (!duplicate_visit->second.duplicate_visits.empty()) {
+          NotifyDebugMessage(
+              "Duplicates shouldn't themselves have duplicates. "
+              "If they do, the output is undefined.");
+        }
+        visits_map[visit_id].duplicate_visits.push_back(
+            std::move(duplicate_visit->second));
+
+        // TODO(tommycli): Here we should also upgrade the canonical visit's
+        // annotations (i.e. is-bookmarked) with those of the duplicate visits.
+
+        visits_map.erase(duplicate_visit);
+      }
+    }
+
+    // Now move all our surviving visits, which should all be canonical visits,
+    // to the final cluster.
+    for (auto& visit_pair : visits_map) {
+      cluster.visits.push_back(std::move(visit_pair.second));
+    }
+
+    result_clusters.push_back(std::move(cluster));
+  }
+
+  DCHECK_EQ(result_clusters.size(), raw_clusters.size());
+  return result_clusters;
+}
+
 void HistoryClustersService::PopulateClusterKeywordCache(
     QueryClustersResult result) {
   all_keywords_cache_.clear();
@@ -590,9 +647,11 @@ void HistoryClustersService::OnGotClusters(
     QueryClustersCallback callback,
     const std::vector<history::Cluster>& clusters) const {
   NotifyDebugMessage("HistoryClustersService::OnGotClusters()");
-  HistoryClustersService::QueryClustersResult result;
+  QueryClustersResult result;
   result.continuation_end_time = continuation_end_time;
-  result.clusters = FilterClustersMatchingQuery(query, clusters);
+
+  auto filtered_raw_clusters = FilterClustersMatchingQuery(query, clusters);
+  result.clusters = CollapseDuplicateVisits(filtered_raw_clusters);
   result.clusters = SortClusters(result.clusters);
 
   NotifyDebugMessage("  Clusters JSON follows:");
