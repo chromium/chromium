@@ -37,6 +37,9 @@ enum class PopupHidingReason {
   kInsufficientSpace,  // Not enough space in content area to display an display
                        // at least one row of the popup within the bounds of the
                        // content area.
+  kOverlappingWithAnotherPrompt,  // If the popup will be drawn, it will overlap
+                                  // with another open prompt, and may hide
+                                  // sensitive information in the prompt.
 };
 
 }  // namespace autofill
