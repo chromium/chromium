@@ -119,7 +119,10 @@ class CORE_EXPORT ScriptResource final : public TextResource {
 
   // Used in DCHECKs
   bool HasStreamer() { return !!streamer_; }
-  bool HasRunningStreamer() { return streamer_ && !streamer_->IsFinished(); }
+  bool HasRunningStreamer() {
+    return streamer_ && streamer_->IsStreamingStarted() &&
+           !streamer_->IsFinished();
+  }
   bool HasFinishedStreamer() { return streamer_ && streamer_->IsFinished(); }
 
   // Gets the cache consumer from the ScriptResource, clearing it from the

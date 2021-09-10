@@ -123,10 +123,6 @@ class CORE_EXPORT ScriptStreamer final
     return script_resource_identifier_;
   }
 
-  static void SetSmallScriptThresholdForTesting(size_t threshold) {
-    small_script_threshold_ = threshold;
-  }
-
  private:
   friend class SourceStream;
 
@@ -155,8 +151,8 @@ class CORE_EXPORT ScriptStreamer final
   }
 
   // Scripts whose first data chunk is smaller than this constant won't be
-  // streamed. Non-const for testing.
-  static size_t small_script_threshold_;
+  // streamed, unless small script streaming is enabled.
+  static constexpr size_t kSmallScriptThreshold = 30 * 1024;
   // Maximum size of the BOM marker.
   static constexpr size_t kMaximumLengthOfBOM = 4;
 
