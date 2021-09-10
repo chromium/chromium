@@ -337,6 +337,7 @@ test("components_unittests") {
       "//components/translate/content/browser:unit_tests",
       "//components/translate/content/renderer:unit_tests",
       "//components/ukm/content:unit_tests",
+      "//components/value_store:unit_tests",
       "//components/visitedlink/test:unit_tests",
       "//components/web_cache/browser:unit_tests",
       "//components/web_package:unit_tests",

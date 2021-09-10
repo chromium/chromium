@@ -16,13 +16,13 @@
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
+#include "components/value_store/leveldb_value_store.h"
+#include "components/value_store/value_store_test_suite.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
 #include "extensions/browser/api/storage/settings_observer.h"
 #include "extensions/browser/api/storage/storage_area_namespace.h"
-#include "extensions/browser/value_store/leveldb_value_store.h"
-#include "extensions/browser/value_store/value_store_unittest.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -30,7 +30,7 @@ using testing::_;
 using testing::Mock;
 using testing::NiceMock;
 using value_store::ValueStore;
-using value_store::ValueStoreTest;
+using value_store::ValueStoreTestSuite;
 
 namespace extensions {
 
@@ -66,8 +66,8 @@ class MockSettingsObserver : public SettingsObserver {
 };
 
 // Extends PolicyValueStore by overriding the mutating methods, so that the
-// Get() base implementation can be tested with the ValueStoreTest parameterized
-// tests.
+// Get() base implementation can be tested with the ValueStoreTestSuite
+// parameterized tests.
 class MutablePolicyValueStore : public PolicyValueStore {
  public:
   explicit MutablePolicyValueStore(const base::FilePath& path)
@@ -110,7 +110,7 @@ ValueStore* Param(const base::FilePath& file_path) {
 }  // namespace
 
 INSTANTIATE_TEST_SUITE_P(PolicyValueStoreTest,
-                         ValueStoreTest,
+                         ValueStoreTestSuite,
                          testing::Values(&Param));
 
 class PolicyValueStoreTest : public testing::Test {

@@ -11,7 +11,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
-#include "extensions/browser/value_store/testing_value_store.h"
+#include "components/value_store/testing_value_store.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {

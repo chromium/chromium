@@ -10,9 +10,9 @@
 #include "base/values.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
+#include "components/value_store/value_store_change.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
 #include "extensions/browser/api/storage/storage_area_namespace.h"
-#include "extensions/browser/value_store/value_store_change.h"
 
 using value_store::ValueStore;
 

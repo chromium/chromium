@@ -11,9 +11,9 @@
 #include "base/location.h"
 #include "base/sequenced_task_runner.h"
 #include "base/values.h"
+#include "components/value_store/value_store.h"
 #include "extensions/browser/api/lock_screen_data/data_item.h"
 #include "extensions/browser/api/storage/local_value_store_cache.h"
-#include "extensions/browser/value_store/value_store.h"
 
 namespace extensions {
 namespace lock_screen_data {

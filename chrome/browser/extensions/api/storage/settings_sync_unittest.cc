@@ -23,6 +23,8 @@
 #include "components/sync/model/sync_error_factory.h"
 #include "components/sync/test/model/sync_change_processor_wrapper_for_test.h"
 #include "components/sync/test/model/sync_error_factory_mock.h"
+#include "components/value_store/test_value_store_factory.h"
+#include "components/value_store/testing_value_store.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
@@ -33,8 +35,6 @@
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/mock_extension_system.h"
-#include "extensions/browser/value_store/test_value_store_factory.h"
-#include "extensions/browser/value_store/testing_value_store.h"
 #include "extensions/common/manifest.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

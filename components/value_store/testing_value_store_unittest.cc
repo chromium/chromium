@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/value_store/value_store_unittest.h"
-
-#include "extensions/browser/value_store/testing_value_store.h"
+#include "components/value_store/testing_value_store.h"
+#include "components/value_store/value_store_test_suite.h"
 
 namespace value_store {
 
@@ -19,7 +18,7 @@ ValueStore* Param(const base::FilePath& file_path) {
 }  // namespace
 
 INSTANTIATE_TEST_SUITE_P(TestingValueStore,
-                         ValueStoreTest,
+                         ValueStoreTestSuite,
                          testing::Values(&Param));
 
 }  // namespace value_store

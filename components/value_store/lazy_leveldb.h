@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_BROWSER_VALUE_STORE_LAZY_LEVELDB_H_
-#define EXTENSIONS_BROWSER_VALUE_STORE_LAZY_LEVELDB_H_
+#ifndef COMPONENTS_VALUE_STORE_LAZY_LEVELDB_H_
+#define COMPONENTS_VALUE_STORE_LAZY_LEVELDB_H_
 
 #include <memory>
 #include <string>
@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "base/metrics/histogram_base.h"
 #include "base/values.h"
-#include "extensions/browser/value_store/value_store.h"
+#include "components/value_store/value_store.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
@@ -104,4 +104,4 @@ class LazyLevelDb {
 
 }  // namespace value_store
 
-#endif  // EXTENSIONS_BROWSER_VALUE_STORE_LAZY_LEVELDB_H_
+#endif  // COMPONENTS_VALUE_STORE_LAZY_LEVELDB_H_

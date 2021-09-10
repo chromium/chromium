@@ -14,9 +14,9 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/sync/model/syncable_service.h"
+#include "components/value_store/value_store_factory.h"
 #include "extensions/browser/api/storage/settings_observer.h"
 #include "extensions/browser/api/storage/settings_storage_quota_enforcer.h"
-#include "extensions/browser/value_store/value_store_factory.h"
 
 namespace syncer {
 class SyncErrorFactory;

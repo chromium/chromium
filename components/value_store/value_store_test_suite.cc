@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/value_store/value_store_unittest.h"
+#include "components/value_store/value_store_test_suite.h"
 
 #include <memory>
 #include <utility>
@@ -53,10 +53,10 @@ bool ValuesEqual(const base::Value* expected,
 
 // Returns whether the read result of a storage operation has the expected
 // settings.
-testing::AssertionResult SettingsEq(
-    const char* _1, const char* _2,
-    const base::DictionaryValue& expected,
-    ValueStore::ReadResult actual_result) {
+testing::AssertionResult SettingsEq(const char* _1,
+                                    const char* _2,
+                                    const base::DictionaryValue& expected,
+                                    ValueStore::ReadResult actual_result) {
   if (!actual_result.status().ok()) {
     return testing::AssertionFailure()
            << "Result has error: " << actual_result.status().message;
@@ -72,10 +72,10 @@ testing::AssertionResult SettingsEq(
 
 // Returns whether the write result of a storage operation has the expected
 // changes.
-testing::AssertionResult ChangesEq(
-    const char* _1, const char* _2,
-    const ValueStoreChangeList& expected,
-    ValueStore::WriteResult actual_result) {
+testing::AssertionResult ChangesEq(const char* _1,
+                                   const char* _2,
+                                   const ValueStoreChangeList& expected,
+                                   ValueStore::WriteResult actual_result) {
   if (!actual_result.status().ok()) {
     return testing::AssertionFailure()
            << "Result has error: " << actual_result.status().message;
@@ -83,9 +83,9 @@ testing::AssertionResult ChangesEq(
 
   const ValueStoreChangeList& actual = actual_result.changes();
   if (expected.size() != actual.size()) {
-    return testing::AssertionFailure() <<
-        "Actual has wrong size, expecting " << expected.size() <<
-        " but was " << actual.size();
+    return testing::AssertionFailure()
+           << "Actual has wrong size, expecting " << expected.size()
+           << " but was " << actual.size();
   }
 
   std::map<std::string, const ValueStoreChange*> expected_as_map;
@@ -121,7 +121,7 @@ testing::AssertionResult ChangesEq(
   return testing::AssertionSuccess();
 }
 
-ValueStoreTest::ValueStoreTest()
+ValueStoreTestSuite::ValueStoreTestSuite()
     : key1_("foo"),
       key2_("bar"),
       key3_("baz"),
@@ -161,31 +161,31 @@ ValueStoreTest::ValueStoreTest()
   dict123_->Set(key3_, val3_->CreateDeepCopy());
 }
 
-ValueStoreTest::~ValueStoreTest() = default;
+ValueStoreTestSuite::~ValueStoreTestSuite() = default;
 
-void ValueStoreTest::SetUp() {
+void ValueStoreTestSuite::SetUp() {
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
   storage_.reset((GetParam())(temp_dir_.GetPath().AppendASCII("dbName")));
   ASSERT_TRUE(storage_.get());
 }
 
-void ValueStoreTest::TearDown() {
+void ValueStoreTestSuite::TearDown() {
   storage_.reset();
 }
 
-TEST_P(ValueStoreTest, GetWhenEmpty) {
+TEST_P(ValueStoreTestSuite, GetWhenEmpty) {
   EXPECT_PRED_FORMAT2(SettingsEq, *empty_dict_, storage_->Get(key1_));
   EXPECT_PRED_FORMAT2(SettingsEq, *empty_dict_, storage_->Get(empty_list_));
   EXPECT_PRED_FORMAT2(SettingsEq, *empty_dict_, storage_->Get(list123_));
   EXPECT_PRED_FORMAT2(SettingsEq, *empty_dict_, storage_->Get());
 }
 
-TEST_P(ValueStoreTest, GetWithSingleValue) {
+TEST_P(ValueStoreTestSuite, GetWithSingleValue) {
   {
     ValueStoreChangeList changes;
     changes.push_back(ValueStoreChange(key1_, absl::nullopt, val1_->Clone()));
-    EXPECT_PRED_FORMAT2(ChangesEq,
-        changes, storage_->Set(DEFAULTS, key1_, *val1_));
+    EXPECT_PRED_FORMAT2(ChangesEq, changes,
+                        storage_->Set(DEFAULTS, key1_, *val1_));
   }
 
   EXPECT_PRED_FORMAT2(SettingsEq, *dict1_, storage_->Get(key1_));
@@ -196,7 +196,7 @@ TEST_P(ValueStoreTest, GetWithSingleValue) {
   EXPECT_PRED_FORMAT2(SettingsEq, *dict1_, storage_->Get());
 }
 
-TEST_P(ValueStoreTest, GetWithMultipleValues) {
+TEST_P(ValueStoreTestSuite, GetWithMultipleValues) {
   {
     ValueStoreChangeList changes;
     changes.push_back(ValueStoreChange(key1_, absl::nullopt, val1_->Clone()));
@@ -211,7 +211,7 @@ TEST_P(ValueStoreTest, GetWithMultipleValues) {
   EXPECT_PRED_FORMAT2(SettingsEq, *dict12_, storage_->Get());
 }
 
-TEST_P(ValueStoreTest, RemoveWhenEmpty) {
+TEST_P(ValueStoreTestSuite, RemoveWhenEmpty) {
   EXPECT_PRED_FORMAT2(ChangesEq, ValueStoreChangeList(),
                       storage_->Remove(key1_));
 
@@ -220,7 +220,7 @@ TEST_P(ValueStoreTest, RemoveWhenEmpty) {
   EXPECT_PRED_FORMAT2(SettingsEq, *empty_dict_, storage_->Get());
 }
 
-TEST_P(ValueStoreTest, RemoveWithSingleValue) {
+TEST_P(ValueStoreTestSuite, RemoveWithSingleValue) {
   storage_->Set(DEFAULTS, *dict1_);
   {
     ValueStoreChangeList changes;
@@ -235,7 +235,7 @@ TEST_P(ValueStoreTest, RemoveWithSingleValue) {
   EXPECT_PRED_FORMAT2(SettingsEq, *empty_dict_, storage_->Get());
 }
 
-TEST_P(ValueStoreTest, RemoveWithMultipleValues) {
+TEST_P(ValueStoreTestSuite, RemoveWithMultipleValues) {
   storage_->Set(DEFAULTS, *dict123_);
   {
     ValueStoreChangeList changes;
@@ -269,7 +269,7 @@ TEST_P(ValueStoreTest, RemoveWithMultipleValues) {
   EXPECT_PRED_FORMAT2(SettingsEq, *empty_dict_, storage_->Get());
 }
 
-TEST_P(ValueStoreTest, SetWhenOverwriting) {
+TEST_P(ValueStoreTestSuite, SetWhenOverwriting) {
   storage_->Set(DEFAULTS, key1_, *val2_);
   {
     ValueStoreChangeList changes;
@@ -288,7 +288,7 @@ TEST_P(ValueStoreTest, SetWhenOverwriting) {
   EXPECT_PRED_FORMAT2(SettingsEq, *dict12_, storage_->Get());
 }
 
-TEST_P(ValueStoreTest, ClearWhenEmpty) {
+TEST_P(ValueStoreTestSuite, ClearWhenEmpty) {
   EXPECT_PRED_FORMAT2(ChangesEq, ValueStoreChangeList(), storage_->Clear());
 
   EXPECT_PRED_FORMAT2(SettingsEq, *empty_dict_, storage_->Get(key1_));
@@ -297,7 +297,7 @@ TEST_P(ValueStoreTest, ClearWhenEmpty) {
   EXPECT_PRED_FORMAT2(SettingsEq, *empty_dict_, storage_->Get());
 }
 
-TEST_P(ValueStoreTest, ClearWhenNotEmpty) {
+TEST_P(ValueStoreTestSuite, ClearWhenNotEmpty) {
   storage_->Set(DEFAULTS, *dict12_);
   {
     ValueStoreChangeList changes;
@@ -314,7 +314,7 @@ TEST_P(ValueStoreTest, ClearWhenNotEmpty) {
 
 // Dots should be allowed in key names; they shouldn't be interpreted as
 // indexing into a dictionary.
-TEST_P(ValueStoreTest, DotsInKeyNames) {
+TEST_P(ValueStoreTestSuite, DotsInKeyNames) {
   std::string dot_key("foo.bar");
   base::Value dot_value("baz.qux");
   std::vector<std::string> dot_list;
@@ -329,11 +329,11 @@ TEST_P(ValueStoreTest, DotsInKeyNames) {
     ValueStoreChangeList changes;
     changes.push_back(
         ValueStoreChange(dot_key, absl::nullopt, dot_value.Clone()));
-    EXPECT_PRED_FORMAT2(ChangesEq,
-        changes, storage_->Set(DEFAULTS, dot_key, dot_value));
+    EXPECT_PRED_FORMAT2(ChangesEq, changes,
+                        storage_->Set(DEFAULTS, dot_key, dot_value));
   }
-  EXPECT_PRED_FORMAT2(ChangesEq,
-      ValueStoreChangeList(), storage_->Set(DEFAULTS, dot_key, dot_value));
+  EXPECT_PRED_FORMAT2(ChangesEq, ValueStoreChangeList(),
+                      storage_->Set(DEFAULTS, dot_key, dot_value));
 
   EXPECT_PRED_FORMAT2(SettingsEq, dot_dict, storage_->Get(dot_key));
 
@@ -343,8 +343,8 @@ TEST_P(ValueStoreTest, DotsInKeyNames) {
         ValueStoreChange(dot_key, dot_value.Clone(), absl::nullopt));
     EXPECT_PRED_FORMAT2(ChangesEq, changes, storage_->Remove(dot_key));
   }
-  EXPECT_PRED_FORMAT2(ChangesEq,
-      ValueStoreChangeList(), storage_->Remove(dot_key));
+  EXPECT_PRED_FORMAT2(ChangesEq, ValueStoreChangeList(),
+                      storage_->Remove(dot_key));
   {
     ValueStoreChangeList changes;
     changes.push_back(
@@ -366,7 +366,7 @@ TEST_P(ValueStoreTest, DotsInKeyNames) {
   EXPECT_PRED_FORMAT2(SettingsEq, *empty_dict_, storage_->Get());
 }
 
-TEST_P(ValueStoreTest, DotsInKeyNamesWithDicts) {
+TEST_P(ValueStoreTestSuite, DotsInKeyNamesWithDicts) {
   base::DictionaryValue outer_dict;
   base::DictionaryValue inner_dict;
   inner_dict.SetString("bar", "baz");
@@ -384,7 +384,7 @@ TEST_P(ValueStoreTest, DotsInKeyNamesWithDicts) {
   EXPECT_PRED_FORMAT2(SettingsEq, *empty_dict_, storage_->Get("foo.bar"));
 }
 
-TEST_P(ValueStoreTest, ComplexChangedKeysScenarios) {
+TEST_P(ValueStoreTestSuite, ComplexChangedKeysScenarios) {
   // Test:
   //   - Setting over missing/changed/same keys, combinations.
   //   - Removing over missing and present keys, combinations.
@@ -393,26 +393,26 @@ TEST_P(ValueStoreTest, ComplexChangedKeysScenarios) {
   base::DictionaryValue complex_changed_dict;
 
   storage_->Set(DEFAULTS, key1_, *val1_);
-  EXPECT_PRED_FORMAT2(ChangesEq,
-      ValueStoreChangeList(), storage_->Set(DEFAULTS, key1_, *val1_));
+  EXPECT_PRED_FORMAT2(ChangesEq, ValueStoreChangeList(),
+                      storage_->Set(DEFAULTS, key1_, *val1_));
   {
     ValueStoreChangeList changes;
     changes.push_back(ValueStoreChange(key1_, val1_->Clone(), val2_->Clone()));
-    EXPECT_PRED_FORMAT2(ChangesEq,
-        changes, storage_->Set(DEFAULTS, key1_, *val2_));
+    EXPECT_PRED_FORMAT2(ChangesEq, changes,
+                        storage_->Set(DEFAULTS, key1_, *val2_));
   }
   {
     ValueStoreChangeList changes;
     changes.push_back(ValueStoreChange(key1_, val2_->Clone(), absl::nullopt));
     EXPECT_PRED_FORMAT2(ChangesEq, changes, storage_->Remove(key1_));
-    EXPECT_PRED_FORMAT2(ChangesEq,
-        ValueStoreChangeList(), storage_->Remove(key1_));
+    EXPECT_PRED_FORMAT2(ChangesEq, ValueStoreChangeList(),
+                        storage_->Remove(key1_));
   }
   {
     ValueStoreChangeList changes;
     changes.push_back(ValueStoreChange(key1_, absl::nullopt, val1_->Clone()));
-    EXPECT_PRED_FORMAT2(ChangesEq,
-        changes, storage_->Set(DEFAULTS, key1_, *val1_));
+    EXPECT_PRED_FORMAT2(ChangesEq, changes,
+                        storage_->Set(DEFAULTS, key1_, *val1_));
   }
   {
     ValueStoreChangeList changes;
@@ -426,8 +426,8 @@ TEST_P(ValueStoreTest, ComplexChangedKeysScenarios) {
     changes.push_back(ValueStoreChange(key1_, absl::nullopt, val1_->Clone()));
     changes.push_back(ValueStoreChange(key2_, absl::nullopt, val2_->Clone()));
     EXPECT_PRED_FORMAT2(ChangesEq, changes, storage_->Set(DEFAULTS, *dict12_));
-    EXPECT_PRED_FORMAT2(ChangesEq,
-        ValueStoreChangeList(), storage_->Set(DEFAULTS, *dict12_));
+    EXPECT_PRED_FORMAT2(ChangesEq, ValueStoreChangeList(),
+                        storage_->Set(DEFAULTS, *dict12_));
   }
   {
     ValueStoreChangeList changes;
@@ -472,5 +472,8 @@ TEST_P(ValueStoreTest, ComplexChangedKeysScenarios) {
     EXPECT_PRED_FORMAT2(ChangesEq, ValueStoreChangeList(), storage_->Clear());
   }
 }
+
+// This test suite is instantiated by implementers of ValueStore.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(ValueStoreTestSuite);
 
 }  // namespace value_store

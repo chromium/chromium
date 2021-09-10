@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/value_store/value_store_unittest.h"
-
 #include <stddef.h>
 
 #include <memory>
@@ -13,8 +11,9 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
+#include "components/value_store/leveldb_value_store.h"
+#include "components/value_store/value_store_test_suite.h"
 #include "content/public/test/browser_task_environment.h"
-#include "extensions/browser/value_store/leveldb_value_store.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
@@ -32,7 +31,7 @@ ValueStore* Param(const base::FilePath& file_path) {
 }  // namespace
 
 INSTANTIATE_TEST_SUITE_P(LeveldbValueStore,
-                         ValueStoreTest,
+                         ValueStoreTestSuite,
                          testing::Values(&Param));
 
 class LeveldbValueStoreUnitTest : public testing::Test {
@@ -172,8 +171,8 @@ TEST_F(LeveldbValueStoreUnitTest, RestoreFullDatabase) {
 
   // Close it (so we remove the lock), and replace all files with LolCats.
   CloseStore();
-  base::FileEnumerator enumerator(
-      database_path(), true /* recursive */, base::FileEnumerator::FILES);
+  base::FileEnumerator enumerator(database_path(), true /* recursive */,
+                                  base::FileEnumerator::FILES);
   for (base::FilePath file = enumerator.Next(); !file.empty();
        file = enumerator.Next()) {
     // WriteFile() failure is a result of -1.

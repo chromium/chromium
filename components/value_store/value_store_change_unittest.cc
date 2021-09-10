@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/value_store/value_store_change.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
-#include "extensions/browser/value_store/value_store_change.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::DictionaryValue;

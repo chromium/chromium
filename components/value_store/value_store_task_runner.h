@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_BROWSER_VALUE_STORE_VALUE_STORE_TASK_RUNNER_H_
-#define EXTENSIONS_BROWSER_VALUE_STORE_VALUE_STORE_TASK_RUNNER_H_
+#ifndef COMPONENTS_VALUE_STORE_VALUE_STORE_TASK_RUNNER_H_
+#define COMPONENTS_VALUE_STORE_VALUE_STORE_TASK_RUNNER_H_
 
 #include "base/memory/ref_counted.h"
 
@@ -19,4 +19,4 @@ scoped_refptr<base::SequencedTaskRunner> GetValueStoreTaskRunner();
 
 }  // namespace value_store
 
-#endif  // EXTENSIONS_BROWSER_VALUE_STORE_VALUE_STORE_TASK_RUNNER_H_
+#endif  // COMPONENTS_VALUE_STORE_VALUE_STORE_TASK_RUNNER_H_

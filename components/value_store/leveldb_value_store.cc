@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/value_store/leveldb_value_store.h"
+#include "components/value_store/leveldb_value_store.h"
 
 #include <inttypes.h>
 #include <stdint.h>
@@ -59,8 +59,7 @@ size_t LeveldbValueStore::GetBytesInUse(const std::string& key) {
   return 0;
 }
 
-size_t LeveldbValueStore::GetBytesInUse(
-    const std::vector<std::string>& keys) {
+size_t LeveldbValueStore::GetBytesInUse(const std::vector<std::string>& keys) {
   // Let SettingsStorageQuotaEnforcer implement this.
   NOTREACHED() << "Not implemented";
   return 0;
@@ -153,8 +152,8 @@ ValueStore::WriteResult LeveldbValueStore::Set(
   leveldb::WriteBatch batch;
   ValueStoreChangeList changes;
 
-  for (base::DictionaryValue::Iterator it(settings);
-       !it.IsAtEnd(); it.Advance()) {
+  for (base::DictionaryValue::Iterator it(settings); !it.IsAtEnd();
+       it.Advance()) {
     status.Merge(AddToBatch(options, it.key(), it.value(), &batch, &changes));
     if (!status.ok())
       return WriteResult(std::move(status));

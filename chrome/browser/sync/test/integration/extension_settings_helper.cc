@@ -14,10 +14,10 @@
 #include "chrome/browser/sync/test/integration/extensions_helper.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_extension_helper.h"
+#include "components/value_store/value_store.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
 #include "extensions/browser/api/storage/storage_frontend.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/value_store/value_store.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 

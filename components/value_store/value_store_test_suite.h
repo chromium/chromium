@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_BROWSER_VALUE_STORE_VALUE_STORE_UNITTEST_H_
-#define EXTENSIONS_BROWSER_VALUE_STORE_VALUE_STORE_UNITTEST_H_
+#ifndef COMPONENTS_VALUE_STORE_VALUE_STORE_TEST_SUITE_H_
+#define COMPONENTS_VALUE_STORE_VALUE_STORE_TEST_SUITE_H_
 
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted.h"
+#include "components/value_store/value_store.h"
 #include "content/public/test/browser_task_environment.h"
-#include "extensions/browser/value_store/value_store.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace value_store {
@@ -18,13 +18,13 @@ namespace value_store {
 // Parameter type for the value-parameterized tests.
 typedef ValueStore* (*ValueStoreTestParam)(const base::FilePath& file_path);
 
-// Test fixture for ValueStore tests.  Tests are defined in
-// settings_storage_unittest.cc with configurations for both cached
+// Test fixture for ValueStore tests. Tests are defined in
+// value_store_test_suite.cc with configurations for both cached
 // and non-cached leveldb storage, and cached no-op storage.
-class ValueStoreTest : public testing::TestWithParam<ValueStoreTestParam> {
+class ValueStoreTestSuite : public testing::TestWithParam<ValueStoreTestParam> {
  public:
-  ValueStoreTest();
-  ~ValueStoreTest() override;
+  ValueStoreTestSuite();
+  ~ValueStoreTestSuite() override;
 
   void SetUp() override;
   void TearDown() override;
@@ -70,4 +70,4 @@ class ValueStoreTest : public testing::TestWithParam<ValueStoreTestParam> {
 
 }  // namespace value_store
 
-#endif  // EXTENSIONS_BROWSER_VALUE_STORE_VALUE_STORE_UNITTEST_H_
+#endif  // COMPONENTS_VALUE_STORE_VALUE_STORE_TEST_SUITE_H_

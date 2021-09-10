@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_BROWSER_VALUE_STORE_VALUE_STORE_FRONTEND_H_
-#define EXTENSIONS_BROWSER_VALUE_STORE_VALUE_STORE_FRONTEND_H_
+#ifndef COMPONENTS_VALUE_STORE_VALUE_STORE_FRONTEND_H_
+#define COMPONENTS_VALUE_STORE_VALUE_STORE_FRONTEND_H_
 
 #include <memory>
 #include <string>
@@ -16,7 +16,7 @@
 namespace base {
 class FilePath;
 class SequencedTaskRunner;
-}
+}  // namespace base
 
 namespace value_store {
 class ValueStoreFactory;
@@ -57,4 +57,4 @@ class ValueStoreFrontend {
 
 }  // namespace value_store
 
-#endif  // EXTENSIONS_BROWSER_VALUE_STORE_VALUE_STORE_FRONTEND_H_
+#endif  // COMPONENTS_VALUE_STORE_VALUE_STORE_FRONTEND_H_

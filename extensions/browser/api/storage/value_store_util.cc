@@ -5,8 +5,8 @@
 #include "extensions/browser/api/storage/value_store_util.h"
 
 #include "base/notreached.h"
+#include "components/value_store/value_store_factory.h"
 #include "extensions/browser/api/storage/settings_namespace.h"
-#include "extensions/browser/value_store/value_store_factory.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_id.h"
 

@@ -11,9 +11,9 @@
 
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/value_store/value_store.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_function.h"
-#include "extensions/browser/value_store/value_store.h"
 
 class PrefChangeRegistrar;
 

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/value_store/value_store_factory_impl.h"
+#include "components/value_store/value_store_factory_impl.h"
 
 #include <memory>
 #include <string>
 
 #include "base/files/file_util.h"
-#include "extensions/browser/value_store/leveldb_value_store.h"
+#include "components/value_store/leveldb_value_store.h"
 
 namespace value_store {
 

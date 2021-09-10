@@ -21,6 +21,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/services/unzip/content/unzip_service.h"
 #include "components/services/unzip/in_process_unzipper.h"
+#include "components/value_store/test_value_store_factory.h"
+#include "components/value_store/testing_value_store.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -32,8 +34,6 @@
 #include "extensions/browser/runtime_data.h"
 #include "extensions/browser/state_store.h"
 #include "extensions/browser/user_script_manager.h"
-#include "extensions/browser/value_store/test_value_store_factory.h"
-#include "extensions/browser/value_store/testing_value_store.h"
 #include "services/data_decoder/data_decoder_service.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/user_manager/user_manager.h"

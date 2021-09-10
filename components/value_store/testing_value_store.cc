@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/value_store/testing_value_store.h"
+#include "components/value_store/testing_value_store.h"
 
 #include <memory>
 #include <ostream>
@@ -37,8 +37,7 @@ size_t TestingValueStore::GetBytesInUse(const std::string& key) {
   return 0;
 }
 
-size_t TestingValueStore::GetBytesInUse(
-    const std::vector<std::string>& keys) {
+size_t TestingValueStore::GetBytesInUse(const std::vector<std::string>& keys) {
   // Let SettingsStorageQuotaEnforcer implement this.
   NOTREACHED() << "Not implemented";
   return 0;
@@ -77,22 +76,24 @@ ValueStore::ReadResult TestingValueStore::Get() {
   return ReadResult(storage_.CreateDeepCopy(), CreateStatusCopy(status_));
 }
 
-ValueStore::WriteResult TestingValueStore::Set(
-    WriteOptions options, const std::string& key, const base::Value& value) {
+ValueStore::WriteResult TestingValueStore::Set(WriteOptions options,
+                                               const std::string& key,
+                                               const base::Value& value) {
   base::DictionaryValue settings;
   settings.SetKey(key, value.Clone());
   return Set(options, settings);
 }
 
 ValueStore::WriteResult TestingValueStore::Set(
-    WriteOptions options, const base::DictionaryValue& settings) {
+    WriteOptions options,
+    const base::DictionaryValue& settings) {
   write_count_++;
   if (!status_.ok())
     return WriteResult(CreateStatusCopy(status_));
 
   ValueStoreChangeList changes;
-  for (base::DictionaryValue::Iterator it(settings);
-       !it.IsAtEnd(); it.Advance()) {
+  for (base::DictionaryValue::Iterator it(settings); !it.IsAtEnd();
+       it.Advance()) {
     base::Value* old_value = storage_.FindKey(it.key());
     if (!old_value || *old_value != it.value()) {
       changes.emplace_back(it.key(),
@@ -128,8 +129,8 @@ ValueStore::WriteResult TestingValueStore::Remove(
 
 ValueStore::WriteResult TestingValueStore::Clear() {
   std::vector<std::string> keys;
-  for (base::DictionaryValue::Iterator it(storage_);
-       !it.IsAtEnd(); it.Advance()) {
+  for (base::DictionaryValue::Iterator it(storage_); !it.IsAtEnd();
+       it.Advance()) {
     keys.push_back(it.key());
   }
   return Remove(keys);

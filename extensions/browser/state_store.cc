@@ -10,11 +10,11 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "components/value_store/value_store_factory.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_file_task_runner.h"
-#include "extensions/browser/value_store/value_store_factory.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 

@@ -42,6 +42,7 @@ include_rules = [
   "+components/storage_monitor",
   "+components/ui_devtools",
   "+components/user_prefs",
+  "+components/value_store",
   "+components/variations/net",
   "+components/version_info",
   "+components/viz/common/switches.h",

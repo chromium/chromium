@@ -18,8 +18,8 @@
 #include "chrome/browser/extensions/api/storage/setting_sync_data.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/syncable_service.h"
+#include "components/value_store/value_store.h"
 #include "extensions/browser/api/storage/settings_observer.h"
-#include "extensions/browser/value_store/value_store.h"
 
 namespace syncer {
 class SyncError;

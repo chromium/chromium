@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/value_store/test_value_store_factory.h"
+#include "components/value_store/test_value_store_factory.h"
 
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
-#include "extensions/browser/value_store/leveldb_value_store.h"
-#include "extensions/browser/value_store/testing_value_store.h"
+#include "components/value_store/leveldb_value_store.h"
+#include "components/value_store/testing_value_store.h"
 
 namespace {
 

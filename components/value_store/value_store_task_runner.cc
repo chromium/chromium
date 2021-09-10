@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/value_store/value_store_task_runner.h"
+#include "components/value_store/value_store_task_runner.h"
 
 #include "base/sequenced_task_runner.h"
 #include "base/task/lazy_thread_pool_task_runner.h"

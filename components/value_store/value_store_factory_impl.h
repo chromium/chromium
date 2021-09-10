@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_BROWSER_VALUE_STORE_VALUE_STORE_FACTORY_IMPL_H_
-#define EXTENSIONS_BROWSER_VALUE_STORE_VALUE_STORE_FACTORY_IMPL_H_
+#ifndef COMPONENTS_VALUE_STORE_VALUE_STORE_FACTORY_IMPL_H_
+#define COMPONENTS_VALUE_STORE_VALUE_STORE_FACTORY_IMPL_H_
 
 #include <memory>
 #include <string>
 
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
-#include "extensions/browser/value_store/value_store.h"
-#include "extensions/browser/value_store/value_store_factory.h"
+#include "components/value_store/value_store.h"
+#include "components/value_store/value_store_factory.h"
 
 namespace value_store {
 
@@ -39,4 +39,4 @@ class ValueStoreFactoryImpl : public ValueStoreFactory {
 
 }  // namespace value_store
 
-#endif  // EXTENSIONS_BROWSER_VALUE_STORE_VALUE_STORE_FACTORY_IMPL_H_
+#endif  // COMPONENTS_VALUE_STORE_VALUE_STORE_FACTORY_IMPL_H_

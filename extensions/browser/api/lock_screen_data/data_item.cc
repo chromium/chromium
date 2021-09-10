@@ -16,12 +16,12 @@
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
 #include "base/values.h"
+#include "components/value_store/value_store.h"
 #include "crypto/encryptor.h"
 #include "crypto/symmetric_key.h"
 #include "extensions/browser/api/lock_screen_data/operation_result.h"
 #include "extensions/browser/api/storage/local_value_store_cache.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/value_store/value_store.h"
 
 using value_store::ValueStore;
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/value_store/value_store_frontend.h"
+#include "components/value_store/value_store_frontend.h"
 
 #include <utility>
 
@@ -13,11 +13,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "components/value_store/leveldb_value_store.h"
+#include "components/value_store/value_store.h"
+#include "components/value_store/value_store_factory.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "extensions/browser/value_store/leveldb_value_store.h"
-#include "extensions/browser/value_store/value_store.h"
-#include "extensions/browser/value_store/value_store_factory.h"
 
 using content::BrowserThread;
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/value_store/value_store_frontend.h"
+#include "components/value_store/value_store_frontend.h"
 
 #include <memory>
 #include <utility>
@@ -11,10 +11,10 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
+#include "components/value_store/test_value_store_factory.h"
+#include "components/value_store/value_store_task_runner.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
-#include "extensions/browser/value_store/test_value_store_factory.h"
-#include "extensions/browser/value_store/value_store_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace value_store {
@@ -29,7 +29,7 @@ class ValueStoreFrontendTest : public testing::Test {
     base::FilePath test_data_dir;
     ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
     base::FilePath src_db(
-        test_data_dir.AppendASCII("extensions/test/data/value_store_db"));
+        test_data_dir.AppendASCII("components/test/data/value_store"));
     db_path_ = temp_dir_.GetPath().AppendASCII("temp_db");
     base::CopyDirectory(src_db, db_path_, true);
 

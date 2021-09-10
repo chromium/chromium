@@ -340,6 +340,7 @@ include_rules = [
   "+components/url_pattern_index/proto",
   "+components/user_manager",
   "+components/user_prefs",
+  "+components/value_store",
   "+components/vector_icons",
   "+components/version_info",
   "+components/version_ui",

@@ -10,8 +10,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
+#include "components/value_store/testing_value_store.h"
 #include "extensions/browser/api/storage/settings_storage_quota_enforcer.h"
-#include "extensions/browser/value_store/testing_value_store.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::DictionaryValue;

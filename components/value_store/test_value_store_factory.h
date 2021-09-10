@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_BROWSER_VALUE_STORE_TEST_VALUE_STORE_FACTORY_H_
-#define EXTENSIONS_BROWSER_VALUE_STORE_TEST_VALUE_STORE_FACTORY_H_
+#ifndef COMPONENTS_VALUE_STORE_TEST_VALUE_STORE_FACTORY_H_
+#define COMPONENTS_VALUE_STORE_TEST_VALUE_STORE_FACTORY_H_
 
 #include <map>
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "extensions/browser/value_store/value_store_factory.h"
+#include "components/value_store/value_store_factory.h"
 
 namespace value_store {
 
@@ -57,4 +57,4 @@ class TestValueStoreFactory : public ValueStoreFactory {
 
 }  // namespace value_store
 
-#endif  // EXTENSIONS_BROWSER_VALUE_STORE_TEST_VALUE_STORE_FACTORY_H_
+#endif  // COMPONENTS_VALUE_STORE_TEST_VALUE_STORE_FACTORY_H_

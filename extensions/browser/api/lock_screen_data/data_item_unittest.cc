@@ -16,6 +16,8 @@
 #include "base/sequenced_task_runner.h"
 #include "base/values.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/value_store/test_value_store_factory.h"
+#include "components/value_store/testing_value_store.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "crypto/symmetric_key.h"
@@ -25,8 +27,6 @@
 #include "extensions/browser/api/storage/value_store_util.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/test_extensions_browser_client.h"
-#include "extensions/browser/value_store/test_value_store_factory.h"
-#include "extensions/browser/value_store/testing_value_store.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

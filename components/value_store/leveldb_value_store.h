@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_BROWSER_VALUE_STORE_LEVELDB_VALUE_STORE_H_
-#define EXTENSIONS_BROWSER_VALUE_STORE_LEVELDB_VALUE_STORE_H_
+#ifndef COMPONENTS_VALUE_STORE_LEVELDB_VALUE_STORE_H_
+#define COMPONENTS_VALUE_STORE_LEVELDB_VALUE_STORE_H_
 
 #include <stddef.h>
 
@@ -15,8 +15,8 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/trace_event/memory_dump_provider.h"
-#include "extensions/browser/value_store/lazy_leveldb.h"
-#include "extensions/browser/value_store/value_store.h"
+#include "components/value_store/lazy_leveldb.h"
+#include "components/value_store/value_store.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 
 namespace value_store {
@@ -81,4 +81,4 @@ class LeveldbValueStore : public ValueStore,
 
 }  // namespace value_store
 
-#endif  // EXTENSIONS_BROWSER_VALUE_STORE_LEVELDB_VALUE_STORE_H_
+#endif  // COMPONENTS_VALUE_STORE_LEVELDB_VALUE_STORE_H_

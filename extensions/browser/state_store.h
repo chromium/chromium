@@ -13,9 +13,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "components/value_store/value_store_frontend.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
-#include "extensions/browser/value_store/value_store_frontend.h"
 
 namespace content {
 class BrowserContext;

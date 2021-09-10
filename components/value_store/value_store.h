@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_BROWSER_VALUE_STORE_VALUE_STORE_H_
-#define EXTENSIONS_BROWSER_VALUE_STORE_VALUE_STORE_H_
+#ifndef COMPONENTS_VALUE_STORE_VALUE_STORE_H_
+#define COMPONENTS_VALUE_STORE_VALUE_STORE_H_
 
 #include <stddef.h>
 
@@ -14,7 +14,7 @@
 
 #include "base/macros.h"
 #include "base/values.h"
-#include "extensions/browser/value_store/value_store_change.h"
+#include "components/value_store/value_store_change.h"
 
 namespace value_store {
 
@@ -185,8 +185,8 @@ class ValueStore {
                           const base::Value& value) = 0;
 
   // Sets multiple keys to new values.
-  virtual WriteResult Set(
-      WriteOptions options, const base::DictionaryValue& values) = 0;
+  virtual WriteResult Set(WriteOptions options,
+                          const base::DictionaryValue& values) = 0;
 
   // Removes a key from the storage.
   virtual WriteResult Remove(const std::string& key) = 0;
@@ -200,4 +200,4 @@ class ValueStore {
 
 }  // namespace value_store
 
-#endif  // EXTENSIONS_BROWSER_VALUE_STORE_VALUE_STORE_H_
+#endif  // COMPONENTS_VALUE_STORE_VALUE_STORE_H_

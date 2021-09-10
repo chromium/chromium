@@ -7,12 +7,12 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
+#include "components/value_store/value_store.h"
 #include "extensions/browser/api/storage/session_storage_manager.h"
 #include "extensions/browser/api/storage/settings_namespace.h"
 #include "extensions/browser/api/storage/settings_observer.h"
 #include "extensions/browser/api/storage/storage_area_namespace.h"
 #include "extensions/browser/extension_function.h"
-#include "extensions/browser/value_store/value_store.h"
 
 namespace extensions {
 

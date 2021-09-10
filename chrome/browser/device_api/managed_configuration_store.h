@@ -8,7 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/observer_list_threadsafe.h"
 #include "chrome/browser/device_api/managed_configuration_api.h"
-#include "extensions/browser/value_store/leveldb_value_store.h"
+#include "components/value_store/leveldb_value_store.h"
 #include "url/origin.h"
 
 namespace base {

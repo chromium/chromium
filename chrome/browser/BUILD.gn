@@ -7460,6 +7460,7 @@ static_library("test_support") {
       "//components/safe_browsing/core/browser/db:v4_test_util",
       "//components/services/unzip:in_process",
       "//components/storage_monitor:test_support",
+      "//components/value_store:test_support",
       "//extensions:test_support",
       "//extensions/browser",
       "//extensions/browser:test_support",

@@ -4,7 +4,7 @@
 
 #include "extensions/browser/mock_extension_system.h"
 
-#include "extensions/browser/value_store/value_store_factory.h"
+#include "components/value_store/value_store_factory.h"
 #include "extensions/common/extension_set.h"
 
 namespace extensions {
