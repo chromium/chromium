@@ -6022,7 +6022,8 @@ TEST_F(SSLClientSocketZeroRTTTest, EarlyDataReasonNoResume) {
 }
 
 // Test 0-RTT logging in the standard ConfirmHandshake-after-acceptance case.
-TEST_F(SSLClientSocketZeroRTTTest, EarlyDataReasonZeroRTT) {
+// Disabled due to flakiness across all platforms: https://crbug.com/1247914.
+TEST_F(SSLClientSocketZeroRTTTest, DISABLED_EarlyDataReasonZeroRTT) {
   const char kReasonHistogram[] = "Net.SSLHandshakeEarlyDataReason";
 
   ASSERT_TRUE(StartServer());
