@@ -18,6 +18,7 @@
 #include "base/values.h"
 #include "net/base/host_mapping_rules.h"
 #include "net/base/load_flags.h"
+#include "net/base/privacy_mode.h"
 #include "net/base/url_util.h"
 #include "net/http/bidirectional_stream_impl.h"
 #include "net/http/transport_security_state.h"
@@ -85,10 +86,14 @@ void ConvertWsToHttp(url::SchemeHostPort& input) {
 // the main job.
 const int kMaxDelayTimeForMainJobSecs = 3;
 
-base::Value NetLogJobControllerParams(const GURL& url, bool is_preconnect) {
+base::Value NetLogJobControllerParams(const HttpRequestInfo& request_info,
+                                      bool is_preconnect) {
   base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("url", url.possibly_invalid_spec());
+  dict.SetStringKey("url", request_info.url.possibly_invalid_spec());
   dict.SetBoolKey("is_preconnect", is_preconnect);
+  dict.SetStringKey("privacy_mode",
+                    PrivacyModeToDebugString(request_info.privacy_mode));
+
   return dict;
 }
 
@@ -149,7 +154,7 @@ HttpStreamFactory::JobController::JobController(
                                           url::kWssScheme));
 
   net_log_.BeginEvent(NetLogEventType::HTTP_STREAM_JOB_CONTROLLER, [&] {
-    return NetLogJobControllerParams(request_info.url, is_preconnect);
+    return NetLogJobControllerParams(request_info, is_preconnect);
   });
 }
 

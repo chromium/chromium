@@ -1184,7 +1184,8 @@ EVENT_TYPE(HTTP_STREAM_JOB_RESUMED)
 // The following parameters are attached:
 //   {
 //      "url": <String of request URL>,
-//      "is_preconnect": <True if controller is created for a preconnect.>,
+//      "is_preconnect": <True if controller is created for a preconnect>,
+//      "private_mode": <Privacy mode of the request>,
 //   }
 EVENT_TYPE(HTTP_STREAM_JOB_CONTROLLER)
 
