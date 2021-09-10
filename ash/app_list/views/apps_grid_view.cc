@@ -2129,9 +2129,11 @@ GridIndex AppsGridView::GetNearestTileIndexForPoint(
   bounds.Inset(GetTilePadding());
   const gfx::Size total_tile_size = GetTotalTileSize();
   const gfx::Vector2d grid_offset = GetGridCenteringOffset();
+  DCHECK_GT(total_tile_size.width(), 0);
   int col = base::clamp(
       (point.x() - bounds.x() - grid_offset.x()) / total_tile_size.width(), 0,
       cols_ - 1);
+  DCHECK_GT(total_tile_size.height(), 0);
   int row = base::clamp(
       (point.y() - bounds.y() - grid_offset.y()) / total_tile_size.height(), 0,
       rows_per_page_ - 1);

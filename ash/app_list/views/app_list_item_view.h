@@ -41,7 +41,7 @@ class AppListMenuModelAdapter;
 class AppListViewDelegate;
 
 namespace test {
-class AppsGridViewDragAndDropTestBase;
+class AppsGridViewTest;
 class AppListMainViewTest;
 }  // namespace test
 
@@ -208,7 +208,7 @@ class ASH_EXPORT AppListItemView : public views::Button,
   GridDelegate* grid_delegate_for_test() { return grid_delegate_; }
 
  private:
-  friend class test::AppsGridViewDragAndDropTestBase;
+  friend class test::AppsGridViewTest;
   friend class test::AppListMainViewTest;
 
   class IconImageView;
