@@ -285,10 +285,14 @@ class BorealisDiskManagerImpl::ResizeDisk
       }
       if (original_disk_info_.disk_size + space_delta_ <=
           original_disk_info_.min_size) {
-        Fail(Described<BorealisResizeDiskResult>(
-            BorealisResizeDiskResult::kViolatesMinimumSize,
-            "cannot shrink the disk below its minimum size"));
-        return;
+        if (original_disk_info_.disk_size < original_disk_info_.min_size) {
+          Fail(Described<BorealisResizeDiskResult>(
+              BorealisResizeDiskResult::kViolatesMinimumSize,
+              "cannot shrink the disk below its minimum size"));
+          return;
+        }
+        space_delta_ = original_disk_info_.min_size -
+                       original_disk_info_.disk_size + kDiskRoundingBytes;
       }
     }
     vm_tools::concierge::ResizeDiskImageRequest request;
