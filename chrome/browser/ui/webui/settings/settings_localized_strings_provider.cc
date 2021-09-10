@@ -1768,6 +1768,7 @@ void AddSearchEnginesStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_SEARCH_ENGINES_KEYBOARD_SHORTCUTS_SPACE_OR_TAB},
       {"searchEnginesKeyboardShortcutsTab",
        IDS_SETTINGS_SEARCH_ENGINES_KEYBOARD_SHORTCUTS_TAB},
+      {"searchEnginesShowAll", IDS_SETTINGS_SEARCH_ENGINES_SHOW_ALL},
 
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);

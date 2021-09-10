@@ -38,6 +38,7 @@
         <div class="icon-placeholder"></div>
       </div>
       <div id="container" class="scroll-container"
+          hidden="[[isActiveSearchEnginesFlagEnabled]]"
           scrollable$="[[fixedHeight]]">
         <iron-list items="[[engines]]" scroll-target="[[scrollTarget]]"
             scroll-offset="[[scrollOffset]]" preserve-focus risk-selection>
@@ -51,5 +52,42 @@
             </settings-search-engine-entry>
           </template>
         </iron-list>
+      </div>
+
+      <div id="containerWithCollapsibleSection" class="scroll-container"
+          hidden="[[!isActiveSearchEnginesFlagEnabled]]"
+          scrollable$="[[fixedHeight]]">
+        <iron-list items="[[visibleEngines]]" scroll-target="[[scrollTarget]]"
+            scroll-offset="[[scrollOffset]]" preserve-focus risk-selection>
+          <template>
+            <settings-search-engine-entry engine="[[item]]"
+                focus-row-index="[[index]]"
+                tabindex$="[[tabIndex]]" iron-list-tab-index="[[tabIndex]]"
+                last-focused="{{lastFocused_}}" list-blurred="{{listBlurred_}}"
+                is-active-search-engines-flag-enabled=
+                      "[[isActiveSearchEnginesFlagEnabled]]">
+            </settings-search-engine-entry>
+          </template>
+        </iron-list>
+        <cr-expand-button class="cr-row" hidden="[[!collapsedEngines.length]]"
+            expanded="{{enginesListExpanded_}}">
+          <div>$i18n{searchEnginesShowAll}</div>
+        </cr-expand-button>
+        <iron-collapse opened="[[enginesListExpanded_]]">
+          <iron-list items="[[collapsedEngines]]"
+              scroll-target="[[scrollTarget]]" scroll-offset="[[scrollOffset]]"
+              preserve-focus risk-selection>
+            <template>
+              <settings-search-engine-entry engine="[[item]]"
+                  focus-row-index="[[index]]"
+                  tabindex$="[[tabIndex]]" iron-list-tab-index="[[tabIndex]]"
+                  last-focused="{{lastFocused_}}"
+                  list-blurred="{{listBlurred_}}"
+                  is-active-search-engines-flag-enabled=
+                        "[[isActiveSearchEnginesFlagEnabled]]">
+              </settings-search-engine-entry>
+            </template>
+          </iron-list>
+        </iron-collapse>
       </div>
     </div>
