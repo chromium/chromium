@@ -165,8 +165,6 @@ void ImagePaintTimingDetector::OnPaintFinished() {
 void ImagePaintTimingDetector::NotifyImageRemoved(
     const LayoutObject& object,
     const ImageResourceContent* cached_image) {
-  if (!is_recording_)
-    return;
   RecordId record_id = std::make_pair(&object, cached_image);
   records_manager_.RemoveImageFinishedRecord(record_id);
   records_manager_.RemoveInvisibleRecordIfNeeded(record_id);
@@ -177,7 +175,9 @@ void ImagePaintTimingDetector::NotifyImageRemoved(
 }
 
 void ImagePaintTimingDetector::StopRecordEntries() {
-  is_recording_ = false;
+  // Clear the records queued for presentation callback to ensure no new updates
+  // occur.
+  records_manager_.ClearImagesQueuedForPaintTime();
   if (frame_view_->GetFrame().IsMainFrame()) {
     DCHECK(frame_view_->GetFrame().GetDocument());
     ukm::builders::Blink_PaintTiming(
@@ -192,20 +192,15 @@ void ImagePaintTimingDetector::RegisterNotifyPresentationTime() {
                             WrapCrossThreadWeakPersistent(this),
                             last_registered_frame_index_);
   callback_manager_->RegisterCallback(std::move(callback));
-  num_pending_presentation_callbacks_++;
 }
 
 void ImagePaintTimingDetector::ReportPresentationTime(
     unsigned last_queued_frame_index,
     base::TimeTicks timestamp) {
-  if (!is_recording_)
-    return;
   // The callback is safe from race-condition only when running on main-thread.
   DCHECK(ThreadState::Current()->IsMainThread());
   records_manager_.AssignPaintTimeToRegisteredQueuedRecords(
       timestamp, last_queued_frame_index);
-  num_pending_presentation_callbacks_--;
-  DCHECK_GE(num_pending_presentation_callbacks_, 0);
 }
 
 void ImageRecordsManager::AssignPaintTimeToRegisteredQueuedRecords(
@@ -281,7 +276,7 @@ void ImagePaintTimingDetector::RecordImage(
     return;
   }
 
-  if (is_recorded_visible_image || !is_recording_)
+  if (is_recorded_visible_image)
     return;
 
   FloatRect mapped_visual_rect =
@@ -453,6 +448,10 @@ ImageRecord* ImageRecordsManager::FindLargestPaintCandidate() const {
   if (size_ordered_set_.size() == 0)
     return nullptr;
   return size_ordered_set_.begin()->get();
+}
+
+void ImageRecordsManager::ClearImagesQueuedForPaintTime() {
+  images_queued_for_paint_time_.clear();
 }
 
 void ImageRecordsManager::Trace(Visitor* visitor) const {

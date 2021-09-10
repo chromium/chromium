@@ -92,8 +92,6 @@ void PaintTimingDetector::NotifyPaintFinished() {
   text_paint_timing_detector_->OnPaintFinished();
   if (image_paint_timing_detector_) {
     image_paint_timing_detector_->OnPaintFinished();
-    if (image_paint_timing_detector_->FinishedReportingImages())
-      image_paint_timing_detector_ = nullptr;
   }
   if (callback_manager_->CountCallbacks() > 0)
     callback_manager_->RegisterPaintTimeCallbackForCombinedCallbacks();
@@ -170,8 +168,11 @@ void PaintTimingDetector::NotifyImageRemoved(
 }
 
 void PaintTimingDetector::OnInputOrScroll() {
-  // If we have already stopped, then abort.
-  if (!is_recording_largest_contentful_paint_)
+  // If we have already stopped, then abort. |image_paint_timing_detector_|
+  // being nullptr is a reliable way to tell if we have already aborted or not
+  // because it is initialized on the constructor and only destroyed on this
+  // method.
+  if (!image_paint_timing_detector_)
     return;
 
   // TextPaintTimingDetector is used for both Largest Contentful Paint and for
@@ -180,14 +181,15 @@ void PaintTimingDetector::OnInputOrScroll() {
   text_paint_timing_detector_->StopRecordingLargestTextPaint();
   // ImagePaintTimingDetector is currently only being used for
   // LargestContentfulPaint.
-  if (image_paint_timing_detector_)
+  if (image_paint_timing_detector_) {
     image_paint_timing_detector_->StopRecordEntries();
+    image_paint_timing_detector_ = nullptr;
+  }
   largest_contentful_paint_calculator_ = nullptr;
 
   DCHECK_EQ(first_input_or_scroll_notified_timestamp_, base::TimeTicks());
   first_input_or_scroll_notified_timestamp_ = base::TimeTicks::Now();
   DidChangePerformanceTiming();
-  is_recording_largest_contentful_paint_ = false;
 }
 
 void PaintTimingDetector::NotifyInputEvent(WebInputEvent::Type type) {
@@ -213,8 +215,7 @@ void PaintTimingDetector::NotifyScroll(mojom::blink::ScrollType scroll_type) {
 bool PaintTimingDetector::NeedToNotifyInputOrScroll() const {
   DCHECK(text_paint_timing_detector_);
   return text_paint_timing_detector_->IsRecordingLargestTextPaint() ||
-         (image_paint_timing_detector_ &&
-          image_paint_timing_detector_->IsRecording());
+         image_paint_timing_detector_;
 }
 
 LargestContentfulPaintCalculator*

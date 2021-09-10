@@ -183,6 +183,8 @@ class CORE_EXPORT ImageRecordsManager {
     return largest_removed_image_paint_time_;
   }
 
+  void ClearImagesQueuedForPaintTime();
+
   void Trace(Visitor* visitor) const;
 
  private:
@@ -274,16 +276,13 @@ class CORE_EXPORT ImagePaintTimingDetector final
   void NotifyImageFinished(const LayoutObject&, const ImageResourceContent*);
   void OnPaintFinished();
   void NotifyImageRemoved(const LayoutObject&, const ImageResourceContent*);
-  // After the method being called, the detector stops to record new entries and
-  // node removal. But it still observe the loading status. In other words, if
-  // an image is recorded before stopping recording, and finish loading after
-  // stopping recording, the detector can still observe the loading being
-  // finished.
+  // After the method being called, the detector stops to recording new entries.
+  // We manually clean up the |images_queued_for_paint_time_| since those may be
+  // used in the presentation callbacks, and we do not want any new paint times
+  // to be assigned after this method is called. Essentially, this class should
+  // do nothing after this method is called, and is now just waiting to be
+  // GarbageCollected.
   void StopRecordEntries();
-  inline bool IsRecording() const { return is_recording_; }
-  inline bool FinishedReportingImages() const {
-    return !is_recording_ && num_pending_presentation_callbacks_ == 0;
-  }
   void ResetCallbackManager(PaintTimingCallbackManager* manager) {
     callback_manager_ = manager;
   }
@@ -324,15 +323,6 @@ class CORE_EXPORT ImagePaintTimingDetector final
   // Used to decide which frame a record belongs to, monotonically increasing.
   unsigned frame_index_ = 1;
   unsigned last_registered_frame_index_ = 0;
-
-  // Used to control if we record new image entries and image removal, but has
-  // no effect on recording the loading status.
-  bool is_recording_ = true;
-
-  // Used to determine how many presentation callbacks are pending. In
-  // combination with |is_recording|, helps determine whether this detector can
-  // be destroyed.
-  int num_pending_presentation_callbacks_ = 0;
 
   // This need to be set whenever changes that can affect the output of
   // |FindLargestPaintCandidate| occur during the paint tree walk.

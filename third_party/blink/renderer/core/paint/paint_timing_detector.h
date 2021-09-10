@@ -253,8 +253,6 @@ class CORE_EXPORT PaintTimingDetector
   uint64_t experimental_largest_image_paint_size_ = 0;
   base::TimeTicks experimental_largest_text_paint_time_;
   uint64_t experimental_largest_text_paint_size_ = 0;
-
-  bool is_recording_largest_contentful_paint_ = true;
 };
 
 // Largest Text Paint and Text Element Timing aggregate text nodes by these
