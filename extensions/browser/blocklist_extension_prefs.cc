@@ -99,6 +99,12 @@ BitMapBlocklistState GetExtensionBlocklistState(
   return BitMapBlocklistState::NOT_BLOCKLISTED;
 }
 
+bool IsExtensionBlocklisted(const std::string& extension_id,
+                            ExtensionPrefs* extension_prefs) {
+  return GetExtensionBlocklistState(extension_id, extension_prefs) ==
+         BitMapBlocklistState::BLOCKLISTED_MALWARE;
+}
+
 void AddOmahaBlocklistState(const std::string& extension_id,
                             BitMapBlocklistState state,
                             ExtensionPrefs* extension_prefs) {
@@ -234,13 +240,6 @@ BitMapBlocklistState GetSafeBrowsingExtensionBlocklistState(
   }
 
   return BitMapBlocklistState::NOT_BLOCKLISTED;
-}
-
-bool IsExtensionBlocklisted(const std::string& extension_id,
-                            ExtensionPrefs* extension_prefs) {
-  return GetSafeBrowsingExtensionBlocklistState(extension_id,
-                                                extension_prefs) ==
-         BitMapBlocklistState::BLOCKLISTED_MALWARE;
 }
 
 }  // namespace blocklist_prefs

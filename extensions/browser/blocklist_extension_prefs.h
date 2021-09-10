@@ -24,10 +24,14 @@ BitMapBlocklistState BlocklistStateToBitMapBlocklistState(
 // is defined as follow:
 // BLOCKLISTED_MALWARE > BLOCKLISTED_CWS_POLICY_VIOLATION >
 // BLOCKLISTED_POTENTIALLY_UNWANTED > BLOCKLISTED_SECURITY_VULNERABILITY.
-// TODO(crbug.com/1193695): Replace IsExtensionBlocklisted by this method.
 BitMapBlocklistState GetExtensionBlocklistState(
     const std::string& extension_id,
     ExtensionPrefs* extension_prefs);
+
+// Returns whether the extension with |extension_id| is blocklisted for malware
+// by the Safe Browsing blocklist or the Omaha attribute blocklist.
+bool IsExtensionBlocklisted(const std::string& extension_id,
+                            ExtensionPrefs* extension_prefs);
 
 // Adds the `state` to the Omaha blocklist state pref.
 void AddOmahaBlocklistState(const std::string& extension_id,
@@ -97,19 +101,6 @@ void SetSafeBrowsingExtensionBlocklistStateKeepAcknowledged(
 BitMapBlocklistState GetSafeBrowsingExtensionBlocklistState(
     const std::string& extension_id,
     ExtensionPrefs* extension_prefs);
-
-// Returns whether the extension with |extension_id| is blocklisted by the Safe
-// Browsing blocklist.
-//
-// WARNING: this only checks the extension's entry in prefs, so by definition
-// can only check extensions that prefs knows about. There may be other
-// sources of blocklist information, such as Omaha attributes. You probably want
-// to use GetExtensionBlocklistState rather than this method.
-// TODO(crbug.com/1232243): Call GetExtensionBlocklistState to take both Safe
-// Browsing and Omaha attribute blocklist states into account, since most
-// callers don't need to differentiate the source of the blocklist state.
-bool IsExtensionBlocklisted(const std::string& extension_id,
-                            ExtensionPrefs* extension_prefs);
 
 }  // namespace blocklist_prefs
 }  // namespace extensions

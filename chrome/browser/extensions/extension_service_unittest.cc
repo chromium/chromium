@@ -3549,8 +3549,7 @@ TEST_F(ExtensionServiceTest, RemoveExtensionFromBlocklist) {
   test_blocklist.SetBlocklistState(good0, BLOCKLISTED_MALWARE, true);
   observer.WaitForExtensionUnloaded();
 
-  // The extension should be disabled, both "blocklist" and "blocklist_state"
-  // prefs should be set.
+  // The extension should be disabled, "blocklist_state" prefs should be set.
   auto* prefs = ExtensionPrefs::Get(profile());
   EXPECT_FALSE(registry()->enabled_extensions().Contains(good0));
   EXPECT_TRUE(blocklist_prefs::IsExtensionBlocklisted(good0, prefs));
@@ -3562,8 +3561,7 @@ TEST_F(ExtensionServiceTest, RemoveExtensionFromBlocklist) {
   test_blocklist.SetBlocklistState(good0, NOT_BLOCKLISTED, true);
   observer.WaitForExtensionLoaded()->id();
 
-  // The extension should be enabled, both "blocklist" and "blocklist_state"
-  // should be cleared.
+  // The extension should be enabled, "blocklist_state" should be cleared.
   EXPECT_TRUE(registry()->enabled_extensions().Contains(good0));
   EXPECT_FALSE(blocklist_prefs::IsExtensionBlocklisted(good0, prefs));
   EXPECT_EQ(
