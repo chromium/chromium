@@ -1619,6 +1619,7 @@ TEST_F(APIBindingUnittest, TestSendingRequestsAndSilentRequestsWithHooks) {
          const APITypeReferenceMap& map) {
         handler->StartRequest(context, "test.handleAndSendRequest",
                               std::make_unique<base::ListValue>(),
+                              binding::AsyncResponseType::kNone,
                               v8::Local<v8::Function>(),
                               v8::Local<v8::Function>());
         return RequestResult(RequestResult::HANDLED);

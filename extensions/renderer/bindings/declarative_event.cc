@@ -198,9 +198,13 @@ void DeclarativeEvent::HandleFunction(const std::string& signature_name,
     return;
   }
 
-  request_handler_->StartRequest(
-      context, request_name, std::move(parse_result.arguments_list),
-      parse_result.callback, v8::Local<v8::Function>());
+  // We don't currently support promise based requests through DeclarativeEvent.
+  DCHECK_NE(binding::AsyncResponseType::kPromise, parse_result.async_type);
+
+  request_handler_->StartRequest(context, request_name,
+                                 std::move(parse_result.arguments_list),
+                                 parse_result.async_type, parse_result.callback,
+                                 v8::Local<v8::Function>());
 }
 
 }  // namespace extensions

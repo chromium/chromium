@@ -364,41 +364,54 @@ APIRequestHandler::APIRequestHandler(
 
 APIRequestHandler::~APIRequestHandler() {}
 
-int APIRequestHandler::StartRequest(v8::Local<v8::Context> context,
-                                    const std::string& method,
-                                    std::unique_ptr<base::Value> arguments_list,
-                                    v8::Local<v8::Function> callback,
-                                    v8::Local<v8::Function> custom_callback) {
+v8::Local<v8::Promise> APIRequestHandler::StartRequest(
+    v8::Local<v8::Context> context,
+    const std::string& method,
+    std::unique_ptr<base::Value> arguments_list,
+    binding::AsyncResponseType async_type,
+    v8::Local<v8::Function> callback,
+    v8::Local<v8::Function> custom_callback) {
   std::unique_ptr<AsyncResultHandler> async_handler;
-  int request_id = GetNextRequestId();
-  if (!custom_callback.IsEmpty() || !callback.IsEmpty()) {
-    v8::Isolate* isolate = context->GetIsolate();
+  v8::Local<v8::Promise> promise;
+  v8::Isolate* isolate = context->GetIsolate();
 
+  if (async_type == binding::AsyncResponseType::kPromise) {
+    DCHECK(callback.IsEmpty()) << "Promise based requests should never be "
+                                  "started with a callback being passed in.";
+    v8::Local<v8::Promise::Resolver> resolver =
+        v8::Promise::Resolver::New(context).ToLocalChecked();
+    async_handler = std::make_unique<AsyncResultHandler>(isolate, resolver,
+                                                         custom_callback);
+    promise = resolver->GetPromise();
+  } else if (!custom_callback.IsEmpty() || !callback.IsEmpty()) {
     async_handler = std::make_unique<AsyncResultHandler>(isolate, callback,
                                                          custom_callback);
   }
 
-  StartRequestImpl(context, request_id, method, std::move(arguments_list),
-                   std::move(async_handler));
-  return request_id;
-}
-
-std::pair<int, v8::Local<v8::Promise>>
-APIRequestHandler::StartPromiseBasedRequest(
-    v8::Local<v8::Context> context,
-    const std::string& method,
-    std::unique_ptr<base::Value> arguments_list,
-    v8::Local<v8::Function> custom_callback) {
-  v8::Isolate* isolate = context->GetIsolate();
   int request_id = GetNextRequestId();
-  v8::Local<v8::Promise::Resolver> resolver =
-      v8::Promise::Resolver::New(context).ToLocalChecked();
-  auto async_handler =
-      std::make_unique<AsyncResultHandler>(isolate, resolver, custom_callback);
-  StartRequestImpl(context, request_id, method, std::move(arguments_list),
-                   std::move(async_handler));
+  auto request = std::make_unique<Request>();
+  request->request_id = request_id;
 
-  return {request_id, resolver->GetPromise()};
+  std::unique_ptr<InteractionProvider::Token> user_gesture_token;
+  if (async_handler) {
+    user_gesture_token = interaction_provider_->GetCurrentToken(context);
+    request->has_async_response_handler = true;
+  }
+
+  pending_requests_.emplace(
+      request_id,
+      PendingRequest(isolate, context, method, std::move(async_handler),
+                     std::move(user_gesture_token)));
+
+  request->has_user_gesture =
+      interaction_provider_->HasActiveInteraction(context);
+  request->arguments_list = std::move(arguments_list);
+  request->method_name = method;
+
+  last_sent_request_id_ = request_id;
+  send_request_.Run(std::move(request), context);
+
+  return promise;
 }
 
 void APIRequestHandler::CompleteRequest(int request_id,
@@ -469,36 +482,6 @@ int APIRequestHandler::GetNextRequestId() {
   // (ExtensionHostMsg_Request).
   // base::UnguessableToken is another good option.
   return next_request_id_++;
-}
-
-void APIRequestHandler::StartRequestImpl(
-    v8::Local<v8::Context> context,
-    int request_id,
-    const std::string& method,
-    std::unique_ptr<base::Value> arguments_list,
-    std::unique_ptr<AsyncResultHandler> async_handler) {
-  auto request = std::make_unique<Request>();
-  request->request_id = request_id;
-
-  std::unique_ptr<InteractionProvider::Token> user_gesture_token;
-  if (async_handler) {
-    user_gesture_token = interaction_provider_->GetCurrentToken(context);
-    request->has_async_response_handler = true;
-  }
-
-  v8::Isolate* isolate = context->GetIsolate();
-  pending_requests_.emplace(
-      request_id,
-      PendingRequest(isolate, context, method, std::move(async_handler),
-                     std::move(user_gesture_token)));
-
-  request->has_user_gesture =
-      interaction_provider_->HasActiveInteraction(context);
-  request->arguments_list = std::move(arguments_list);
-  request->method_name = method;
-
-  last_sent_request_id_ = request_id;
-  send_request_.Run(std::move(request), context);
 }
 
 void APIRequestHandler::CompleteRequestImpl(int request_id,

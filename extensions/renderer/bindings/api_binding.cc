@@ -675,17 +675,11 @@ void APIBinding::HandleCall(const std::string& name,
     return;
   }
 
-  if (parse_result.async_type == binding::AsyncResponseType::kPromise) {
-    int request_id = 0;
-    v8::Local<v8::Promise> promise;
-    std::tie(request_id, promise) = request_handler_->StartPromiseBasedRequest(
-        context, name, std::move(parse_result.arguments_list), custom_callback);
+  v8::Local<v8::Promise> promise = request_handler_->StartRequest(
+      context, name, std::move(parse_result.arguments_list),
+      parse_result.async_type, parse_result.callback, custom_callback);
+  if (!promise.IsEmpty())
     arguments->Return(promise);
-  } else {
-    request_handler_->StartRequest(context, name,
-                                   std::move(parse_result.arguments_list),
-                                   parse_result.callback, custom_callback);
-  }
 }
 
 }  // namespace extensions
