@@ -1285,7 +1285,7 @@ try_.chromium_linux_builder(
 try_.chromium_linux_builder(
     name = "linux-rel-orchestrator",
     builderless = False,
-    cores = 2,
+    cores = None,
     executable = "recipe:chromium/orchestrator",
     main_list_view = "try",
     use_clang_coverage = True,
@@ -1876,7 +1876,7 @@ try_.chromium_win_builder(
 try_.chromium_win_builder(
     name = "win10-rel-orchestrator",
     builderless = False,
-    cores = 2,
+    cores = None,
     os = os.LINUX_BIONIC,
     executable = "recipe:chromium/orchestrator",
     use_clang_coverage = True,
