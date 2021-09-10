@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/safe_browsing_verdict_handler.h"
 
+#include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -79,7 +80,6 @@ void SafeBrowsingVerdictHandler::Partition(const ExtensionIdSet& before,
   *no_longer = base::STLSetDifference<ExtensionIdSet>(*no_longer, unchanged);
 }
 
-// TODO(crbug.com/1193695): UMA logging
 void SafeBrowsingVerdictHandler::UpdateGreylistedExtensions(
     const ExtensionIdSet& greylist,
     const ExtensionIdSet& unchanged,
@@ -103,6 +103,8 @@ void SafeBrowsingVerdictHandler::UpdateGreylistedExtensions(
         extension_prefs_);
     extension_service_->ClearGreylistedAcknowledgedStateAndMaybeReenable(
         extension->id());
+    UMA_HISTOGRAM_ENUMERATION("Extensions.Greylist.Enabled",
+                              extension->location());
   }
 
   // Iterate over `greylist` instead of `not_yet_greylisted`, because the
@@ -125,6 +127,8 @@ void SafeBrowsingVerdictHandler::UpdateGreylistedExtensions(
         extension->id(), bitmap_greylist_state, extension_prefs_);
     extension_service_->MaybeDisableGreylistedExtension(id,
                                                         bitmap_greylist_state);
+    UMA_HISTOGRAM_ENUMERATION("Extensions.Greylist.Disabled",
+                              extension->location());
   }
 }
 

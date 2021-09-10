@@ -2139,6 +2139,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Extensions.Greylist.Disabled" enum="ExtensionLocation"
+    expires_after="2022-09-07">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@chromium.org</owner>
+  <summary>
+    Emits the Extension::Location of a newly-disabled greylisted extension.
+    Logged when SafeBrowsingVerdictHandler greylists and disables an installed
+    extension.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.Greylist.Enabled" enum="ExtensionLocation"
+    expires_after="2022-09-07">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@chromium.org</owner>
+  <summary>
+    Emits the Extension::Location of an extension that was ungreylisted. Logged
+    when SafeBrowsingVerdictHandler ungreylists and enables an installed
+    extension.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.HasPermissions_AutoDisable3" enum="Boolean"
     expires_after="2018-08-30">
   <obsolete>
