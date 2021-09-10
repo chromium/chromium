@@ -21,7 +21,7 @@ WebLayerSafeBrowsingBlockingPageFactory::CreateSafeBrowsingPage(
     const safe_browsing::SafeBrowsingBlockingPage::UnsafeResourceList&
         unsafe_resources,
     bool should_trigger_reporting) {
-  // TODO(crbug.com/1231997): Is this adjusting of main_frame_url necessary?
+  // TODO(crbug.com/1248408): Is this adjusting of main_frame_url necessary?
   // //chrome doesn't seem to do it.
   content::NavigationEntry* entry =
       security_interstitials::GetNavigationEntryForResource(
