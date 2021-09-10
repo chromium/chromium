@@ -183,8 +183,17 @@ bool FeatureFlagsUpdate::DiffersFromCommandLine(
 }
 
 void FeatureFlagsUpdate::UpdateSessionManager() {
+  // TODO(crbug.com/832857): Introduce a CHECK to ensure primary user.
+  // Early out so that switches for secondary users are not applied to the whole
+  // session. This could be removed when things like flags UI of secondary users
+  // are fixed properly and TODO above to add CHECK() is done.
+  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
+  const user_manager::User* primary_user = user_manager->GetPrimaryUser();
+  if (!primary_user || primary_user != user_manager->GetActiveUser())
+    return;
+
   auto account_id = cryptohome::CreateAccountIdentifierFromAccountId(
-      user_manager::UserManager::Get()->GetActiveUser()->GetAccountId());
+      primary_user->GetAccountId());
   SessionManagerClient::Get()->SetFeatureFlagsForUser(
       account_id, {flags_.begin(), flags_.end()}, origin_list_flags_);
 }

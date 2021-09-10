@@ -337,6 +337,10 @@ void FakeSessionManagerClient::LoginScreenStorageDelete(
 void FakeSessionManagerClient::StartSession(
     const cryptohome::AccountIdentifier& cryptohome_id) {
   DCHECK_EQ(0UL, user_sessions_.count(cryptohome_id.account_id()));
+
+  if (!primary_user_id_.has_value())
+    primary_user_id_ = cryptohome_id.account_id();
+
   std::string user_id_hash =
       UserDataAuthClient::GetStubSanitizedUsername(cryptohome_id);
   user_sessions_[cryptohome_id.account_id()] = user_id_hash;
