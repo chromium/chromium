@@ -1156,6 +1156,59 @@ TEST_F(SingleOverlayOnTopTest, OpaqueOverlayDamageSubtract) {
   }
 }
 
+TEST_F(SingleOverlayOnTopTest, NonOpaquePureOverlayFirstFrameDamage) {
+  // This test makes sure that non-opaque pure overlays fully damage the overlay
+  // rect region. This allows for a final update of the primary plane on the
+  // frame of promotion. The example for where this is necessary is the laser
+  // pointing stylus effect. The laser is regularly updated and is non-opaque
+  // overlay. On the frame of promotion the old laser position can be cleared
+  // with a new one now updated in what will be the overlay. We must also damage
+  // the primary plane in this case to clear the previously composited laser
+  // stylus effect.
+  constexpr int kCandidateSmall = 64;
+  const gfx::Rect kOverlayDisplayRect(10, 10, kCandidateSmall, kCandidateSmall);
+
+  const gfx::Rect kExpectedDamage[] = {
+      kOverlayDisplayRect,
+      gfx::Rect(),
+      gfx::Rect(),
+  };
+
+  AddExpectedRectToOverlayProcessor(gfx::RectF(kOverlayDisplayRect));
+  for (size_t i = 0; i < base::size(kExpectedDamage); ++i) {
+    SCOPED_TRACE(i);
+
+    auto pass = CreateRenderPass();
+
+    auto* quad = CreateCandidateQuadAt(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+        kOverlayDisplayRect);
+
+    // We are intentionally testing a non-opaque overlay .
+    quad->needs_blending = true;
+
+    CreateFullscreenOpaqueQuad(resource_provider_.get(),
+                               pass->shared_quad_state_list.back(), pass.get());
+
+    // Check for potential candidates.
+    OverlayCandidateList candidate_list;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+    AggregatedRenderPassList pass_list;
+
+    pass_list.push_back(std::move(pass));
+    damage_rect_ = gfx::Rect();
+    SurfaceDamageRectList surface_damage_rect_list;
+    overlay_processor_->ProcessForOverlays(
+        resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+        render_pass_filters, render_pass_backdrop_filters,
+        std::move(surface_damage_rect_list), nullptr, &candidate_list,
+        &damage_rect_, &content_bounds_);
+    EXPECT_RECT_EQ(damage_rect_, kExpectedDamage[i]);
+  }
+}
+
 TEST_F(SingleOverlayOnTopTest, NonOpaquePureOverlayNonOccludingDamage) {
   // This tests a specific damage optimization where a pure overlay (aka not an
   // underlay) which is non opaque removes the damage associated with the
@@ -1213,7 +1266,6 @@ TEST_F(SingleOverlayOnTopTest, NonOpaquePureOverlayNonOccludingDamage) {
         render_pass_filters, render_pass_backdrop_filters,
         std::move(surface_damage_rect_list), nullptr, &candidate_list,
         &damage_rect_, &content_bounds_);
-    LOG(ERROR) << "iter=" << i << " damage =" << damage_rect_.ToString();
     EXPECT_RECT_EQ(damage_rect_, kExpectedDamage[i]);
   }
 }
