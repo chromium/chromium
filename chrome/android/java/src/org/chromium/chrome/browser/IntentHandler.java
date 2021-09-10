@@ -128,7 +128,7 @@ public class IntentHandler {
             "com.android.chrome.invoked_from_shortcut";
 
     /**
-     * An extra to indicate that the intent was triggered from am app widget.
+     * An extra to indicate that the intent was triggered from an app widget.
      */
     public static final String EXTRA_INVOKED_FROM_APP_WIDGET =
             "com.android.chrome.invoked_from_app_widget";

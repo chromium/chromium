@@ -124,6 +124,9 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
         ComponentName searchActivityComponent = new ComponentName(context, SearchActivity.class);
         Intent trustedIncognitoIntent =
                 IntentHandler.createTrustedOpenNewTabIntent(context, /*incognito=*/true);
+        trustedIncognitoIntent.putExtra(IntentHandler.EXTRA_INVOKED_FROM_APP_WIDGET, true);
+        trustedIncognitoIntent.addFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
 
         return new QuickActionSearchWidgetProviderDelegate(
                 layout, widgetReceiverComponent, searchActivityComponent, trustedIncognitoIntent);

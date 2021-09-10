@@ -1492,6 +1492,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             recordLauncherShortcutAction(true);
                             reportNewTabShortcutUsed(true);
                         } else if (fromAppWidget) {
+                            RecordUserAction.record("QuickActionSearchWidget.StartIncognito");
                             getTabCreator(true).launchUrl(
                                     UrlConstants.NTP_URL, TabLaunchType.FROM_APP_WIDGET);
                         } else if (IncognitoTabLauncher.didCreateIntent(intent)) {
