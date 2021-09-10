@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/bluetooth/bluetooth_detailed_view_impl.h"
 #include "ash/system/bluetooth/bluetooth_disabled_detailed_view.h"
@@ -69,6 +70,24 @@ class FakeBluetoothDetailedViewDelegate
   PairedBluetoothDevicePropertiesPtr last_device_list_item_selected_;
 };
 
+// This class removes the need to rely on multiple additional classes solely to
+// propagate the CloseBubble() call up to eventually result in the top-level
+// Widget being closed, resulting in simpler tests with less setup.
+class FakeDetailedViewDelegate : public DetailedViewDelegate {
+ public:
+  FakeDetailedViewDelegate()
+      : DetailedViewDelegate(/*tray_controller=*/nullptr) {}
+  ~FakeDetailedViewDelegate() override = default;
+
+  size_t close_bubble_call_count() const { return close_bubble_call_count_; }
+
+ private:
+  // DetailedViewDelegate:
+  void CloseBubble() override { close_bubble_call_count_++; }
+
+  size_t close_bubble_call_count_ = 0;
+};
+
 }  // namespace
 
 class BluetoothDetailedViewTest : public AshTestBase {
@@ -78,12 +97,9 @@ class BluetoothDetailedViewTest : public AshTestBase {
 
     feature_list_.InitAndEnableFeature(features::kBluetoothRevamp);
 
-    detailed_view_delegate_ =
-        std::make_unique<DetailedViewDelegate>(/*tray_controller=*/nullptr);
-
     std::unique_ptr<BluetoothDetailedView> bluetooth_detailed_view =
         BluetoothDetailedView::Factory::Create(
-            detailed_view_delegate_.get(),
+            &fake_detailed_view_delegate_,
             &fake_bluetooth_detailed_view_delegate_);
     bluetooth_detailed_view_ = bluetooth_detailed_view.get();
 
@@ -96,7 +112,6 @@ class BluetoothDetailedViewTest : public AshTestBase {
 
   void TearDown() override {
     widget_.reset();
-    detailed_view_delegate_.reset();
 
     AshTestBase::TearDown();
   }
@@ -121,12 +136,22 @@ class BluetoothDetailedViewTest : public AshTestBase {
         BluetoothDetailedViewImpl::BluetoothDetailedViewChildId::kDisabledView);
   }
 
+  views::Button* FindSettingsButton() {
+    return FindViewById<views::Button*>(
+        BluetoothDetailedViewImpl::BluetoothDetailedViewChildId::
+            kSettingsButton);
+  }
+
   BluetoothDetailedView* bluetooth_detailed_view() {
     return bluetooth_detailed_view_;
   }
 
   FakeBluetoothDetailedViewDelegate* bluetooth_detailed_view_delegate() {
     return &fake_bluetooth_detailed_view_delegate_;
+  }
+
+  FakeDetailedViewDelegate* fake_detailed_view_delegate() {
+    return &fake_detailed_view_delegate_;
   }
 
  private:
@@ -137,11 +162,27 @@ class BluetoothDetailedViewTest : public AshTestBase {
   }
 
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
   std::unique_ptr<views::Widget> widget_;
   BluetoothDetailedView* bluetooth_detailed_view_;
   FakeBluetoothDetailedViewDelegate fake_bluetooth_detailed_view_delegate_;
+  FakeDetailedViewDelegate fake_detailed_view_delegate_;
 };
+
+TEST_F(BluetoothDetailedViewTest, PressingSettingsButtonOpensSettings) {
+  views::Button* settings_button = FindSettingsButton();
+
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+  ClickOnAndWait(settings_button);
+  EXPECT_EQ(0, GetSystemTrayClient()->show_bluetooth_settings_count());
+  EXPECT_EQ(0u, fake_detailed_view_delegate()->close_bubble_call_count());
+
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::ACTIVE);
+  ClickOnAndWait(settings_button);
+  EXPECT_EQ(1, GetSystemTrayClient()->show_bluetooth_settings_count());
+  EXPECT_EQ(1u, fake_detailed_view_delegate()->close_bubble_call_count());
+}
 
 TEST_F(BluetoothDetailedViewTest,
        BluetoothEnabledStateChangesUpdateChildrenViewState) {

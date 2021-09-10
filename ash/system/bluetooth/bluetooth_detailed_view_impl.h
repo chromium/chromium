@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 
 namespace views {
+class Button;
 class ToggleButton;
 class View;
 }  // namespace views
@@ -43,6 +44,7 @@ class ASH_EXPORT BluetoothDetailedViewImpl : public BluetoothDetailedView,
   enum class BluetoothDetailedViewChildId {
     kToggleButton = 1,
     kDisabledView = 2,
+    kSettingsButton = 3,
   };
 
   // BluetoothDetailedView:
@@ -63,10 +65,14 @@ class ASH_EXPORT BluetoothDetailedViewImpl : public BluetoothDetailedView,
   // Creates and configures the Bluetooth disabled view.
   void CreateDisabledView();
 
+  // Attempts to close the quick settings and open the Bluetooth settings.
+  void OnSettingsClicked();
+
   // Propagates user interaction with the Bluetooth toggle button.
   void OnToggleClicked();
 
-  views::ToggleButton* toggle_ = nullptr;
+  views::Button* settings_button_ = nullptr;
+  views::ToggleButton* toggle_button_ = nullptr;
   BluetoothDisabledDetailedView* disabled_view_ = nullptr;
 
   base::WeakPtrFactory<BluetoothDetailedViewImpl> weak_factory_{this};
