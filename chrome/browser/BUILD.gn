@@ -4354,6 +4354,8 @@ static_library("browser") {
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/webui/tab_strip:mojo_bindings",
       "//chrome/browser/web_applications",
+      "//chrome/browser/web_applications",
+      "//chrome/browser/web_applications/app_service",
       "//chrome/common/apps/platform_apps",
       "//chrome/common/cart:mojo_bindings",
       "//chrome/common/importer:interfaces",
@@ -4393,6 +4395,11 @@ static_library("browser") {
     public_deps += [
       "//chrome/common:buildflags",
       "//extensions/buildflags",
+    ]
+    allow_circular_includes_from += [
+      # TODO(crbug.com/1200215): Remove cycles and simplify all dependencies.
+      "//chrome/browser/web_applications",
+      "//chrome/browser/web_applications/app_service",
     ]
 
     if (!is_chromeos_ash) {
@@ -6270,15 +6277,11 @@ static_library("browser") {
       "//chrome/browser/extensions",
 
       # TODO(crbug.com/1200215): Remove cycles and simplify all dependencies.
-      "//chrome/browser/web_applications",
-      "//chrome/browser/web_applications/app_service",
       "//chrome/browser/web_applications/extensions",
     ]
     deps += [
       "//apps",
       "//chrome/browser/sync_file_system/drive_backend:sync_file_system_drive_proto",
-      "//chrome/browser/web_applications",
-      "//chrome/browser/web_applications/app_service",
       "//chrome/browser/web_applications/extensions",
       "//chrome/common/extensions/api",
       "//chrome/common/extensions/api:extensions_features",
