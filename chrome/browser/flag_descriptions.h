@@ -2978,12 +2978,6 @@ extern const char
 
 extern const char kDefaultCalculatorWebAppName[];
 extern const char kDefaultCalculatorWebAppDescription[];
-
-extern const char kDefaultChatWebAppName[];
-extern const char kDefaultChatWebAppDescription[];
-
-extern const char kDefaultMeetWebAppName[];
-extern const char kDefaultMeetWebAppDescription[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if defined(OS_CHROMEOS)

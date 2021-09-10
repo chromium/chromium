@@ -5144,14 +5144,6 @@ const char kDefaultCalculatorWebAppName[] = "Default install Calculator PWA";
 const char kDefaultCalculatorWebAppDescription[] =
     "Enable default installing of the calculator PWA instead of the deprecated "
     "chrome app.";
-
-const char kDefaultChatWebAppName[] = "Default Chat web app";
-const char kDefaultChatWebAppDescription[] =
-    "Enables the Chat web app to be installed by default.";
-
-const char kDefaultMeetWebAppName[] = "Default Meet web app";
-const char kDefaultMeetWebAppDescription[] =
-    "Enables the Meet web app to be installed by default.";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if defined(OS_CHROMEOS)

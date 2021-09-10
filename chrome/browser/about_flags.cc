@@ -3669,12 +3669,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(
          web_app::kAllowDefaultWebAppMigrationForChromeOsManagedUsers)},
-    {"enable-default-chat-web-app", flag_descriptions::kDefaultChatWebAppName,
-     flag_descriptions::kDefaultChatWebAppDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(web_app::kDefaultChatWebApp)},
-    {"enable-default-meet-web-app", flag_descriptions::kDefaultMeetWebAppName,
-     flag_descriptions::kDefaultMeetWebAppDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(web_app::kDefaultMeetWebApp)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-desktop-pwas-attention-badging-cros",

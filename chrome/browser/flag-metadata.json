@@ -1745,22 +1745,6 @@
     "expiry_milestone": 99
   },
   {
-    "name": "enable-default-chat-web-app",
-    "owners": [
-      "alancutter@chromium.org",
-      "chromeos-web-apps-platform-syd@google.com"
-    ],
-    "expiry_milestone": 94
-  },
-  {
-    "name": "enable-default-meet-web-app",
-    "owners": [
-      "alancutter@chromium.org",
-      "chromeos-web-apps-platform-syd@google.com"
-    ],
-    "expiry_milestone": 94
-  },
-  {
     "name": "enable-defer-all-script",
     "owners": [ "//components/data_reduction_proxy/OWNERS" ],
     "expiry_milestone": 90
