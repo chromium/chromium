@@ -240,6 +240,12 @@ FloatRect LayoutNGSVGText::VisualRectInLocalSVGCoordinates() const {
   return SVGLayoutSupport::ComputeVisualRectForText(*this, box);
 }
 
+void LayoutNGSVGText::AbsoluteQuads(Vector<FloatQuad>& quads,
+                                    MapCoordinatesFlags mode) const {
+  NOT_DESTROYED();
+  quads.push_back(LocalToAbsoluteQuad(StrokeBoundingBox(), mode));
+}
+
 bool LayoutNGSVGText::NodeAtPoint(HitTestResult& result,
                                   const HitTestLocation& hit_test_location,
                                   const PhysicalOffset& accumulated_offset,

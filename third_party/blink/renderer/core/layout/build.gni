@@ -860,6 +860,7 @@ blink_core_tests_layout = [
   "ng/ng_physical_box_fragment_test.cc",
   "ng/ng_physical_fragment_test.cc",
   "ng/ng_relative_utils_test.cc",
+  "ng/svg/layout_ng_svg_text_test.cc",
   "ng/svg/ng_svg_text_layout_algorithm_test.cc",
   "ng/svg/ng_svg_text_layout_attributes_builder_test.cc",
   "ng/table/ng_table_layout_algorithm_helpers_test.cc",
