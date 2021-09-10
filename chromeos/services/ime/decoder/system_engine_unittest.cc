@@ -30,7 +30,8 @@ mojo::ScopedMessagePipeHandle MessagePipeHandleFromInt(uint32_t handle) {
 struct MockInputMethod : public mojom::InputMethod {
   MOCK_METHOD(void,
               OnFocus,
-              (chromeos::ime::mojom::InputFieldInfoPtr input_field_info),
+              (chromeos::ime::mojom::InputFieldInfoPtr input_field_info,
+               chromeos::ime::mojom::InputMethodSettingsPtr settings),
               (override));
   MOCK_METHOD(void, OnBlur, (), (override));
   MOCK_METHOD(void,

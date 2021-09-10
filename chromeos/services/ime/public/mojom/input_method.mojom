@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 4
+// Next MinVersion: 5
 
 module chromeos.ime.mojom;
 
@@ -245,6 +245,58 @@ struct InputFieldInfo {
   PersonalizationMode personalization@2;
 };
 
+// Next ordinal: 4
+// TODO(crbug/1201949): Note that the Extensible keyword is not supported for
+// union types. We may need to revisit this type in the future.
+[Stable, Extensible]
+union InputMethodSettings {
+  KoreanSettings korean_settings@0;
+  LatinSettings latin_settings@1;
+  PinyinSettings pinyin_settings@2;
+  ZhuyinSettings zhuyin_settings@3;
+};
+
+// Next ordinal: 9
+[Stable, Extensible]
+enum KoreanLayout {
+  [Default] kDubeolsik = 0,
+  kDubeolsikOldHangeul = 1,
+  kSebeolsik390 = 2,
+  kSebeolsikFinal = 3,
+  kSebeolsikNoShift = 4,
+  kSebeolsikOldHangeul = 5,
+  kSebeolsikDubeol = 6,
+  kRomaja = 7,
+  kAhnmatae = 8,
+};
+
+// Next ordinal: 2
+[Stable]
+struct KoreanSettings {
+  // Whether to allow users to type multiple syllables in one composition.
+  bool input_multiple_syllables@0;
+
+  // The keyboard layout used by the IME.
+  KoreanLayout layout@1;
+};
+
+// Next ordinal: 1
+[Stable]
+struct LatinSettings {
+  // Whether to enable autocorrect as the user is typing.
+  bool autocorrect@0;
+};
+
+// Next ordinal: 0
+[Stable]
+struct PinyinSettings {
+};
+
+// Next ordinal: 0
+[Stable]
+struct ZhuyinSettings {
+};
+
 // An input method that is provided natively by the IME Service.
 // The browser process uses this interface to communicate with IMEs hosted in
 // a Chrome utility process, and this interface uses the InputMethodHost
@@ -254,7 +306,8 @@ struct InputFieldInfo {
 [Stable]
 interface InputMethod {
   // Called when there's a new focused input field.
-  OnFocus@0(InputFieldInfo input_field_info);
+  OnFocus@0(InputFieldInfo input_field_info,
+            [MinVersion=4] InputMethodSettings? settings);
 
   // Called when the input field loses focus.
   OnBlur@1();
