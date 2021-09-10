@@ -9,10 +9,6 @@
 
 #include "chrome/browser/extensions/extension_browsertest.h"
 
-namespace extensions {
-class Extension;
-}  // namespace extensions
-
 namespace chromeos {
 
 class BaseTelemetryExtensionBrowserTest
@@ -30,11 +26,6 @@ class BaseTelemetryExtensionBrowserTest
   void SetUpOnMainThread() override;
 
  protected:
-  const extensions::Extension* LoadExtensionWithManifestAndServiceWorker(
-      const std::string& manifest_content,
-      const std::string& service_worker_content);
-  const extensions::Extension* LoadExtensionWithServiceWorker(
-      const std::string& service_worker_content);
   void CreateExtensionAndRunServiceWorker(
       const std::string& service_worker_content);
 };

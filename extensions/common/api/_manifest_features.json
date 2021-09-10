@@ -148,7 +148,7 @@
   "externally_connectable": {
     "channel": "stable",
     "extension_types": [
-      "extension", "hosted_app", "legacy_packaged_app", "platform_app", "chromeos_system_extension"
+      "extension", "hosted_app", "legacy_packaged_app", "platform_app"
     ]
   },
   "file_handlers": [
