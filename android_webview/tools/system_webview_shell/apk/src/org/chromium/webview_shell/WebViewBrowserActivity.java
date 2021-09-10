@@ -694,20 +694,16 @@ public class WebViewBrowserActivity extends AppCompatActivity {
     // but we still use it because we support api level 19 and up.
     @SuppressWarnings("deprecation")
     private void initializeSettings(WebSettings settings) {
-        File appcache = null;
         File geolocation = null;
         try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
-            appcache = getDir("appcache", 0);
             geolocation = getDir("geolocation", 0);
         }
 
         settings.setJavaScriptEnabled(true);
 
         // configure local storage apis and their database paths.
-        settings.setAppCachePath(appcache.getPath());
         settings.setGeolocationDatabasePath(geolocation.getPath());
 
-        settings.setAppCacheEnabled(true);
         settings.setGeolocationEnabled(true);
         settings.setDatabaseEnabled(true);
         settings.setDomStorageEnabled(true);
