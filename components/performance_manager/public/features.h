@@ -93,7 +93,15 @@ extern const base::Feature kBFCachePerformanceManagerPolicy;
 // |kBFCachePerformanceManagerPolicy|.
 class BFCachePerformanceManagerPolicyParams {
  public:
-  ~BFCachePerformanceManagerPolicyParams();
+  BFCachePerformanceManagerPolicyParams(
+      BFCachePerformanceManagerPolicyParams&&) = default;
+  BFCachePerformanceManagerPolicyParams& operator=(
+      BFCachePerformanceManagerPolicyParams&&) = default;
+  BFCachePerformanceManagerPolicyParams(
+      const BFCachePerformanceManagerPolicyParams&) = delete;
+  BFCachePerformanceManagerPolicyParams& operator=(
+      const BFCachePerformanceManagerPolicyParams&) = delete;
+  ~BFCachePerformanceManagerPolicyParams() = default;
 
   static BFCachePerformanceManagerPolicyParams GetParams();
 
@@ -104,16 +112,26 @@ class BFCachePerformanceManagerPolicyParams {
     return flush_on_moderate_pressure_;
   }
 
+  base::TimeDelta delay_to_flush_background_tab() const {
+    return delay_to_flush_background_tab_;
+  }
+
   static constexpr base::FeatureParam<bool> kFlushOnModeratePressure{
       &features::kBFCachePerformanceManagerPolicy, "flush_on_moderate_pressure",
-      true};
+      false};
+
+  // The back forward cache should be flushed after the tab goes to background
+  // and elapses this delay. If the value is minus (such as -1), the back
+  // forward cache in the background tabs will not be flushed.
+  static constexpr base::FeatureParam<int> kDelayToFlushBackgroundTabInSeconds{
+      &features::kBFCachePerformanceManagerPolicy,
+      "delay_to_flush_background_tab_in_seconds", -1};
 
  private:
-  BFCachePerformanceManagerPolicyParams();
-  BFCachePerformanceManagerPolicyParams(
-      const BFCachePerformanceManagerPolicyParams& rhs);
+  BFCachePerformanceManagerPolicyParams() = default;
 
-  bool flush_on_moderate_pressure_ = true;
+  bool flush_on_moderate_pressure_;
+  base::TimeDelta delay_to_flush_background_tab_;
 };
 
 }  // namespace features

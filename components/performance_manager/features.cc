@@ -90,22 +90,21 @@ const base::Feature kHighPMFDiscardPolicy{"HighPMFDiscardPolicy",
 const base::Feature kBFCachePerformanceManagerPolicy{
     "BFCachePerformanceManagerPolicy", base::FEATURE_DISABLED_BY_DEFAULT};
 
-BFCachePerformanceManagerPolicyParams::BFCachePerformanceManagerPolicyParams() =
-    default;
-BFCachePerformanceManagerPolicyParams::BFCachePerformanceManagerPolicyParams(
-    const BFCachePerformanceManagerPolicyParams& rhs) = default;
-BFCachePerformanceManagerPolicyParams::
-    ~BFCachePerformanceManagerPolicyParams() = default;
-
 constexpr base::FeatureParam<bool>
     BFCachePerformanceManagerPolicyParams::kFlushOnModeratePressure;
+
+constexpr base::FeatureParam<int>
+    BFCachePerformanceManagerPolicyParams::kDelayToFlushBackgroundTabInSeconds;
 
 // static
 BFCachePerformanceManagerPolicyParams
 BFCachePerformanceManagerPolicyParams::GetParams() {
-  BFCachePerformanceManagerPolicyParams params = {};
+  BFCachePerformanceManagerPolicyParams params;
   params.flush_on_moderate_pressure_ =
       BFCachePerformanceManagerPolicyParams::kFlushOnModeratePressure.Get();
+  params.delay_to_flush_background_tab_ = base::TimeDelta::FromSeconds(
+      BFCachePerformanceManagerPolicyParams::kDelayToFlushBackgroundTabInSeconds
+          .Get());
   return params;
 }
 
