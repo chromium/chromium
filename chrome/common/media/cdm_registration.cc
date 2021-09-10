@@ -266,6 +266,11 @@ void AddHardwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
 #endif
 #if BUILDFLAG(USE_CHROMEOS_PROTECTED_AV1)
   capability.video_codecs.emplace(media::VideoCodec::kAV1, kAllProfiles);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kLacrosUseChromeosProtectedAv1)) {
+    capability.video_codecs.emplace(media::VideoCodec::kAV1, kAllProfiles);
+  }
 #endif
 
   // Both encryption schemes are supported on ChromeOS.

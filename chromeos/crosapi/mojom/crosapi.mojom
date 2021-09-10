@@ -73,7 +73,7 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 47
+// Next version: 48
 // Next method id: 52
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
@@ -514,6 +514,7 @@ enum BuildFlag {
   kUseChromeosProtectedMedia = 1,
   kEnablePlatformEncryptedHevc = 2,
   kEnablePlatformHevc = 3,
+  [MinVersion=47] kUseChromeosProtectedAv1 = 4,
 };
 
 // Indicates whether a browser window is created successfully or not.

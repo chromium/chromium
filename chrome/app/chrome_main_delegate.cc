@@ -584,6 +584,10 @@ void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
             base::CommandLine::ForCurrentProcess()->AppendSwitch(
                 switches::kLacrosUseChromeosProtectedMedia);
             break;
+          case crosapi::mojom::BuildFlag::kUseChromeosProtectedAv1:
+            base::CommandLine::ForCurrentProcess()->AppendSwitch(
+                switches::kLacrosUseChromeosProtectedAv1);
+            break;
         }
       }
     }

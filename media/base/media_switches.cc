@@ -218,6 +218,8 @@ MEDIA_EXPORT extern const char kLacrosEnablePlatformHevc[] =
     "lacros-enable-platform-hevc";
 MEDIA_EXPORT extern const char kLacrosUseChromeosProtectedMedia[] =
     "lacros-use-chromeos-protected-media";
+MEDIA_EXPORT extern const char kLacrosUseChromeosProtectedAv1[] =
+    "lacros-use-chromeos-protected-av1";
 #endif  // defined(OS_CHROMEOS)
 
 namespace autoplay {

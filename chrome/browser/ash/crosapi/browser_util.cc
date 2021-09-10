@@ -798,6 +798,9 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
   build_flags.emplace_back(
       crosapi::mojom::BuildFlag::kUseChromeosProtectedMedia);
 #endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+#if BUILDFLAG(USE_CHROMEOS_PROTECTED_AV1)
+  build_flags.emplace_back(crosapi::mojom::BuildFlag::kUseChromeosProtectedAv1);
+#endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_AV1)
   params->build_flags = std::move(build_flags);
   return params;
 }

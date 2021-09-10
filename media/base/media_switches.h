@@ -95,6 +95,7 @@ MEDIA_EXPORT extern const char kEnableClearHevcForTesting[];
 MEDIA_EXPORT extern const char kLacrosEnablePlatformEncryptedHevc[];
 MEDIA_EXPORT extern const char kLacrosEnablePlatformHevc[];
 MEDIA_EXPORT extern const char kLacrosUseChromeosProtectedMedia[];
+MEDIA_EXPORT extern const char kLacrosUseChromeosProtectedAv1[];
 #endif  // defined(OS_CHROMEOS)
 
 namespace autoplay {

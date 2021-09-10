@@ -246,11 +246,16 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
       std::move(init_cb).Run(StatusCode::kDecoderMissingCdmForEncryptedContent);
       return;
     }
+    bool encrypted_av1_support = false;
+#if BUILDFLAG(USE_CHROMEOS_PROTECTED_AV1)
+    encrypted_av1_support = true;
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+    encrypted_av1_support = base::CommandLine::ForCurrentProcess()->HasSwitch(
+        switches::kLacrosUseChromeosProtectedAv1);
+#endif
     if (config.codec() != VideoCodec::kH264 &&
         config.codec() != VideoCodec::kVP9 &&
-#if BUILDFLAG(USE_CHROMEOS_PROTECTED_AV1)
-        config.codec() != VideoCodec::kAV1 &&
-#endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_AV1)
+        (config.codec() != VideoCodec::kAV1 || !encrypted_av1_support) &&
         config.codec() != VideoCodec::kHEVC) {
       SetErrorState(
           base::StringPrintf("%s is not supported for encrypted content",
