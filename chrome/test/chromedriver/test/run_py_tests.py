@@ -3059,6 +3059,39 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
         is_desktop,
         self._driver.capabilities['webauthn:extension:largeBlob'])
 
+  def testCanClickInIframesInShadow(self):
+    """Test that you can interact with a iframe within a shadow element.
+       See https://bugs.chromium.org/p/chromedriver/issues/detail?id=3445
+    """
+    self._driver.Load(self.GetHttpUrlForFile(
+        '/chromedriver/shadow_iframe.html'))
+    frame = self._driver.ExecuteScript(
+      '''return document.querySelector("#shadow")
+          .shadowRoot.querySelector("iframe")''')
+    self._driver.SwitchToFrame(frame)
+    message = self._driver.FindElement('css selector', '#message')
+    self.assertTrue('clicked' not in message.GetText())
+    button = self._driver.FindElement('tag name', 'button')
+    button.Click()
+    self.assertTrue('clicked' in message.GetText())
+
+  def testCanClickInIframesInShadowScrolled(self):
+    """Test that you can interact with a scrolled iframe
+       within a scrolled shadow element.
+       See https://bugs.chromium.org/p/chromedriver/issues/detail?id=3445
+    """
+    self._driver.Load(self.GetHttpUrlForFile(
+        '/chromedriver/shadow_iframe.html'))
+    frame = self._driver.ExecuteScript(
+      '''return document.querySelector("#shadow_scroll")
+          .shadowRoot.querySelector("iframe")''')
+    self._driver.SwitchToFrame(frame)
+    message = self._driver.FindElement('css selector', '#message')
+    self.assertTrue('clicked' not in message.GetText())
+    button = self._driver.FindElement('tag name', 'button')
+    button.Click()
+    self.assertTrue('clicked' in message.GetText())
+
 class ChromeDriverBackgroundTest(ChromeDriverBaseTestWithWebServer):
   def setUp(self):
     self._driver1 = self.CreateDriver()
