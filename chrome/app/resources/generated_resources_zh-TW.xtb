@@ -772,7 +772,6 @@
 <translation id="1794791083288629568">提供意見，協助我們修正這個問題。</translation>
 <translation id="1795214765651529549">使用傳統版</translation>
 <translation id="1796588414813960292">需要使用音訊的功能將無法運作</translation>
-<translation id="1799071797295057738">系統已自動停用「<ph name="EXTENSION_NAME" />」擴充功能。</translation>
 <translation id="1801418420130173017">停用深色主題</translation>
 <translation id="1802624026913571222">蓋上機蓋時進入休眠狀態</translation>
 <translation id="1802687198411089702">網頁無回應。你可以等待網頁回應，也可以離開網頁。</translation>
@@ -839,7 +838,6 @@
 <translation id="1861262398884155592">這個資料夾是空的</translation>
 <translation id="1862311223300693744">你是否安裝了任何特殊的 VPN、Proxy、防火牆或網路附加儲存 (NAS) 軟體？</translation>
 <translation id="1863182668524159459">找不到序列埠</translation>
-<translation id="1863316578636157783">「<ph name="EXTENSION_NAME" />」含有惡意軟體，因此已遭到停用</translation>
 <translation id="1864111464094315414">登入</translation>
 <translation id="1864400682872660285">冷色調</translation>
 <translation id="1864454756846565995">USB-C 裝置 (背面連接埠)</translation>
@@ -2286,7 +2284,6 @@
 <translation id="3406290648907941085">可以使用虛擬實境裝置和資料</translation>
 <translation id="3406396172897554194">依照語言或輸入法名稱搜尋</translation>
 <translation id="3406605057700382950">顯示書籤列(&amp;S)</translation>
-<translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{這個擴充功能可能不安全}other{這些擴充功能可能不安全}}</translation>
 <translation id="3409785640040772790">地圖</translation>
 <translation id="3410832398355316179">將這位使用者移除後，與這位使用者相關聯的所有檔案和本機資料都會遭到永久刪除。<ph name="USER_EMAIL" /> 日後仍然可以登入。</translation>
 <translation id="3412265149091626468">跳至所選範圍</translation>
@@ -2836,7 +2833,6 @@
 <translation id="3948116654032448504">透過 <ph name="SEARCH_ENGINE" /> 搜尋圖片(&amp;S)</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> 可以編輯下列資料夾中的檔案</translation>
 <translation id="394984172568887996">從 IE 匯入</translation>
-<translation id="3949981384795585075">{NUM_APPS,plural, =1{這個應用程式可能不安全}other{這些應用程式可能不安全}}</translation>
 <translation id="3950820424414687140">登入</translation>
 <translation id="3953834000574892725">我的帳戶</translation>
 <translation id="3954354850384043518">下載中</translation>
@@ -3971,7 +3967,6 @@
 <translation id="523505283826916779">無障礙設定</translation>
 <translation id="5235750401727657667">取代新分頁開啟時顯示的網頁</translation>
 <translation id="5236374273162681467">如想在所有裝置上輕鬆使用密碼，可以將這些密碼移至你的 Google 帳戶</translation>
-<translation id="5238278114306905396">「<ph name="EXTENSION_NAME" />」應用程式已自動移除。</translation>
 <translation id="5242724311594467048">啟用「<ph name="EXTENSION_NAME" />」？</translation>
 <translation id="5243522832766285132">請稍後再試</translation>
 <translation id="5244474230056479698">同步到 <ph name="EMAIL" /></translation>
@@ -6218,7 +6213,6 @@
 <translation id="7697166915480294040">分享螢幕畫面時會隱藏詳細資料</translation>
 <translation id="7701040980221191251">無</translation>
 <translation id="7701869757853594372">USER 控制代碼</translation>
-<translation id="7701928712056789451">這些項目可能有安全疑慮</translation>
 <translation id="7702574632857388784">從清單中移除 <ph name="FILE_NAME" /></translation>
 <translation id="7702907602086592255">網域</translation>
 <translation id="7704305437604973648">工作</translation>

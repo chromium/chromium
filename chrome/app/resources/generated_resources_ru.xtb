@@ -774,7 +774,6 @@
 <translation id="1794791083288629568">Отправить отзыв, чтобы помочь устранить ошибку</translation>
 <translation id="1795214765651529549">Использовать классическую тему</translation>
 <translation id="1796588414813960292">Функции, которые используют звук, не будут работать</translation>
-<translation id="1799071797295057738">Расширение "<ph name="EXTENSION_NAME" />" было автоматически отключено.</translation>
 <translation id="1801418420130173017">Отключить тёмную тему</translation>
 <translation id="1802624026913571222">Перейти в спящий режим, когда обложка закрыта</translation>
 <translation id="1802687198411089702">Страница не отвечает. Вы можете закрыть ее или дождаться ответа сервера.</translation>
@@ -841,7 +840,6 @@
 <translation id="1861262398884155592">Папка пуста</translation>
 <translation id="1862311223300693744">На вашем компьютере установлено специализированное ПО, например VPN-клиент, прокси-сервер, брандмауэр или NAS?</translation>
 <translation id="1863182668524159459">Последовательные порты не найдены.</translation>
-<translation id="1863316578636157783">Расширение "<ph name="EXTENSION_NAME" />" отключено, поскольку оно содержит вредоносное ПО.</translation>
 <translation id="1864111464094315414">Вход</translation>
 <translation id="1864400682872660285">Холоднее</translation>
 <translation id="1864454756846565995">Устройство USB-C (порт сзади)</translation>
@@ -2282,12 +2280,12 @@
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">Для этого сайта нет сохраненных паролей</translation>
 <translation id="3404249063913988450">Включить заставку</translation>
+<translation id="3404805962764077228">Получить на устройстве <ph name="DEVICE_TYPE" /> временный доступ к установленным на телефоне приложениям</translation>
 <translation id="3405664148539009465">Настроить шрифты</translation>
 <translation id="3405763860805964263">…</translation>
 <translation id="3406290648907941085">Разрешить сайтам использовать устройства и данные виртуальной реальности</translation>
 <translation id="3406396172897554194">Укажите язык или способ ввода</translation>
 <translation id="3406605057700382950">Показывать панель &amp;закладок</translation>
-<translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{Это расширение может быть опасным}one{Эти расширения могут быть опасными}few{Эти расширения могут быть опасными}many{Эти расширения могут быть опасными}other{Эти расширения могут быть опасными}}</translation>
 <translation id="3409785640040772790">Карты</translation>
 <translation id="3410832398355316179">После удаления пользователя все связанные с ним файлы и локальные данные будут также удалены. Пользователь <ph name="USER_EMAIL" /> сможет войти в аккаунт позже.</translation>
 <translation id="3412265149091626468">Перейти к выделенному</translation>
@@ -2838,7 +2836,6 @@
 <translation id="3948116654032448504">&amp;Найти картинку (<ph name="SEARCH_ENGINE" />)</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> может изменять файлы в указанных ниже папках.</translation>
 <translation id="394984172568887996">Импортированные из IE</translation>
-<translation id="3949981384795585075">{NUM_APPS,plural, =1{Это приложение может быть опасным}one{Эти приложения могут быть опасными}few{Эти приложения могут быть опасными}many{Эти приложения могут быть опасными}other{Эти приложения могут быть опасными}}</translation>
 <translation id="3950820424414687140">Вход</translation>
 <translation id="3953834000574892725">Мои аккаунты</translation>
 <translation id="3954354850384043518">Скачивание…</translation>
@@ -3973,7 +3970,6 @@
 <translation id="523505283826916779">Настройки специальных возможностей</translation>
 <translation id="5235750401727657667">Замена страницы, которая появляется на новой вкладке</translation>
 <translation id="5236374273162681467">Перенесите пароли в аккаунт Google, чтобы использовать их на всех своих устройствах.</translation>
-<translation id="5238278114306905396">Приложение "<ph name="EXTENSION_NAME" />" автоматически удалено.</translation>
 <translation id="5242724311594467048">Включить приложение "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5243522832766285132">Повторите попытку через несколько секунд</translation>
 <translation id="5244474230056479698">Синхронизация с <ph name="EMAIL" /></translation>
@@ -4254,6 +4250,7 @@
 <translation id="5543983818738093899">Проверка статуса…</translation>
 <translation id="554517701842997186">Отрисовщик</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Добавить вкладку в группу}one{Добавить вкладки в группу}few{Добавить вкладки в группу}many{Добавить вкладки в группу}other{Добавить вкладки в группу}}</translation>
+<translation id="5545693483061321551">Сайты не могут использовать файлы cookie, чтобы отслеживать ваши действия в браузере, например для показа персонализированной рекламы. Из-за этого функции некоторых сайтов могут стать недоступными.</translation>
 <translation id="5546865291508181392">Найти</translation>
 <translation id="5548075230008247516">Выбор всех объектов отменен, выполнен выход из режима выбора.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" и ещё 1 вкладка}one{"<ph name="TAB_TITLE" />" и ещё # вкладка}few{"<ph name="TAB_TITLE" />" и ещё # вкладки}many{"<ph name="TAB_TITLE" />" и ещё # вкладок}other{"<ph name="TAB_TITLE" />" и ещё # вкладки}}</translation>
@@ -5264,7 +5261,7 @@
 <translation id="6664774537677393800">Не удалось открыть профиль. Попробуйте выйти из аккаунта и войти снова.</translation>
 <translation id="666731172850799929">Открыть в <ph name="APP_NAME" /></translation>
 <translation id="6670142487971298264">Срок блокировки приложения "<ph name="APP_NAME" />" истек.</translation>
-<translation id="6670767097276846646">С помощью расширений можно добавлять поисковые системы в Chrome.</translation>
+<translation id="6670767097276846646">Некоторые расширения могут добавлять поисковые системы в Chrome.</translation>
 <translation id="6671320560732140690">{COUNT,plural, =1{адрес}one{# адрес}few{# адреса}many{# адресов}other{# адреса}}</translation>
 <translation id="6671497123040790595"><ph name="MANAGER" />: настройка управления</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
@@ -6220,7 +6217,6 @@
 <translation id="7697166915480294040">Во время демонстрации экрана содержимое уведомлений скрыто.</translation>
 <translation id="7701040980221191251">Нет</translation>
 <translation id="7701869757853594372">USER-дескрипторы</translation>
-<translation id="7701928712056789451">Эти объекты могут быть опасными</translation>
 <translation id="7702574632857388784">Удалить файл "<ph name="FILE_NAME" />" из списка</translation>
 <translation id="7702907602086592255">Домен</translation>
 <translation id="7704305437604973648">Задача</translation>
@@ -6681,6 +6677,7 @@
 <translation id="8149564499626272569">Подтвердить с помощью телефона, подключенного через USB-кабель</translation>
 <translation id="8151638057146502721">Настроить</translation>
 <translation id="8154790740888707867">Файлы отсутствуют</translation>
+<translation id="8154912474061769055">Функции многих сайтов могут стать недоступными</translation>
 <translation id="815491593104042026">Не удалось выполнить авторизацию, так как обнаружен небезопасный URL (<ph name="BLOCKED_URL" />). Обратитесь к администратору.</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{Нет раскрытых паролей}=1{{COUNT} раскрытый пароль}one{{COUNT} раскрытый пароль}few{{COUNT} раскрытых пароля}many{{COUNT} раскрытых паролей}other{{COUNT} раскрытого пароля}}</translation>
 <translation id="8157248655669507702">Чтобы установить профиль eSIM, включите мобильный интернет.</translation>
@@ -6857,6 +6854,7 @@
 <translation id="8342221978608739536">Не знаю</translation>
 <translation id="8342861492835240085">Выберите коллекцию</translation>
 <translation id="8347227221149377169">Задания печати</translation>
+<translation id="834785183489258869">В режиме инкогнито сайты не могут использовать файлы cookie, чтобы отслеживать ваши действия в браузере, например для показа персонализированной рекламы. Из-за этого функции некоторых сайтов могут стать недоступными.</translation>
 <translation id="8350789879725387295">Инструменты стилуса на панели Dock</translation>
 <translation id="8351316842353540018">Всегда показывать специальные возможности</translation>
 <translation id="8351419472474436977">Это расширение контролирует настройки прокси-сервера. Это значит, что оно может отследить или изменить передаваемые вами данные, а также оборвать интернет-соединение. Если вы не знали об этом, вам следует отключить расширение.</translation>

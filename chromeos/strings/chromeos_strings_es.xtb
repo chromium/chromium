@@ -58,9 +58,11 @@
 <translation id="1999615961760456652">Portal cautivo</translation>
 <translation id="2006864819935886708">Conectividad</translation>
 <translation id="2008685064673031089">Búsqueda principal</translation>
+<translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Más ajustes</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versión <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB de <ph name="TOTAL_MEMORY" /> GB disponibles.</translation>
+<translation id="2129264932216073062">ARC HTTP</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2157959690810728433">EN COLA</translation>
 <translation id="2161394479394250669">Cancelar trabajo de impresión</translation>
@@ -74,6 +76,7 @@
 <translation id="2364498172489649528">Aprobado</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Enviar informe de opinión</translation>
+<translation id="2407209115954268704">Estado de bloqueo de la SIM</translation>
 <translation id="2418150275289244458">Abrir en Ajustes</translation>
 <translation id="2446553403094072641">Precisión del punto flotante</translation>
 <translation id="2448312741937722512">Tipo</translation>
@@ -179,6 +182,7 @@
 <translation id="4536864596629708641">Configuración de IP</translation>
 <translation id="4548483925627140043">Señal no encontrada</translation>
 <translation id="455835558791489930">Batería de <ph name="CHARGE_VALUE" /> mAh</translation>
+<translation id="4561801978359312462">SIM desbloqueada</translation>
 <translation id="4562494484721939086">Sin servicio</translation>
 <translation id="458794348635939462">No se han podido resolver todos los hosts</translation>
 <translation id="4593212453765072419">Se requiere autenticación de proxy</translation>
@@ -218,6 +222,7 @@
 <translation id="4999333166442584738">Ocultar informe</translation>
 <translation id="500920857929044050">Detener prueba</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5049856988445523908">SIM bloqueada (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nombre del grupo</translation>
 <translation id="5088172560898466307">Nombre de host del servidor</translation>
 <translation id="5089810972385038852">Estado/provincia</translation>
@@ -311,6 +316,7 @@
 <translation id="6527081081771465939">Protocolo de seguridad Wi-Fi desconocido</translation>
 <translation id="65587193855025101">Escáner de superficie plana</translation>
 <translation id="6564646048574748301">No se ha podido imprimir - Impresora inaccesible</translation>
+<translation id="6566314079205407217">Escaneado multipágina</translation>
 <translation id="6574762126505704998">Rellenar</translation>
 <translation id="6575134580692778371">Sin configurar</translation>
 <translation id="6596816719288285829">Dirección IP</translation>

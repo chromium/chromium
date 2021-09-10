@@ -58,9 +58,11 @@
 <translation id="1999615961760456652">Iphothali yabathunjiweyo</translation>
 <translation id="2006864819935886708">Ukuxhumana</translation>
 <translation id="2008685064673031089">Usesho oluphakeme</translation>
+<translation id="202500043506723828">I-EID</translation>
 <translation id="2080070583977670716">Ezinye izilungiselelo</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, uhlobo lwe-<ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Kuno-<ph name="AVAILABLE_MEMORY" /> GB kokungu-<ph name="TOTAL_MEMORY" /> GB otholakalayo</translation>
+<translation id="2129264932216073062">I-ARC HTTP</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">KUSEMUGQENI</translation>
 <translation id="2161394479394250669">Khansela umsebenzi wokuphrinta</translation>
@@ -74,6 +76,7 @@
 <translation id="2364498172489649528">Kuphumelele</translation>
 <translation id="2380886658946992094">Ezomthetho</translation>
 <translation id="2391082728065870591">Thumela Umbiko Wempendulo</translation>
+<translation id="2407209115954268704">Isimo Sokukhiya i-SIM</translation>
 <translation id="2418150275289244458">Vula kumasethingi</translation>
 <translation id="2446553403094072641">Ukunemba kwephoyinti elintantayo</translation>
 <translation id="2448312741937722512">Uhlobo</translation>
@@ -179,6 +182,7 @@
 <translation id="4536864596629708641">Ukulungiselelwa kwe-IP</translation>
 <translation id="4548483925627140043">Isignali ayitholakalanga</translation>
 <translation id="455835558791489930">Ibhethri elingu-<ph name="CHARGE_VALUE" />2,770 mAh</translation>
+<translation id="4561801978359312462">I-SIM ivuliwe</translation>
 <translation id="4562494484721939086">Ayikho isevisi</translation>
 <translation id="458794348635939462">Yehlulekile ukulungisa bonke abasingathi</translation>
 <translation id="4593212453765072419">Kudingeka ukuqinisekisa kommeleli</translation>
@@ -218,6 +222,7 @@
 <translation id="4999333166442584738">Fihla umbiko</translation>
 <translation id="500920857929044050">Misa ukuhlola</translation>
 <translation id="5017508259293544172">I-LEAP</translation>
+<translation id="5049856988445523908">I-SIM Ikhiyiwe (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Igama leqembu</translation>
 <translation id="5088172560898466307">Igama lomethuli leseva</translation>
 <translation id="5089810972385038852">Izwe</translation>
@@ -312,6 +317,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="6527081081771465939">Iphrothokholi yokuvikeleka kwe-WiFi engaziwa</translation>
 <translation id="65587193855025101">I-Flatbed</translation>
 <translation id="6564646048574748301">Yehlulekile - Iphrinta ayifinyeleleki</translation>
+<translation id="6566314079205407217">Ukuskena amakhasi amaningi</translation>
 <translation id="6574762126505704998">Gcwalisa</translation>
 <translation id="6575134580692778371">Akulungiselelwe</translation>
 <translation id="6596816719288285829">Ikheli le-IP</translation>

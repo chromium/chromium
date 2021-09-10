@@ -8,6 +8,7 @@
 <translation id="1378979118429748177">Receba notificações quando os preços descerem.</translation>
 <translation id="1657719826150349398">Mover o separador para baixo</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> separador}other{<ph name="TABS_COUNT_MANY" /> separadores}}</translation>
+<translation id="2118649612461486615">Informações da loja</translation>
 <translation id="2277224997687551299">Editar nome do grupo</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Remova <ph name="TABS_COUNT_ONE" /> separador selecionado do grupo.}other{Remova <ph name="TABS_COUNT_MANY" /> separadores selecionados do grupo.}}</translation>
 <translation id="2479148705183875116">Aceder às Definições</translation>
@@ -50,13 +51,16 @@
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="6054741997831917303">O preço deste artigo desceu recentemente de <ph name="PREVIOUS_PRICE" /> para <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Selecione separadores</translation>
+<translation id="6228793724645064692">(classificação da loja)</translation>
 <translation id="6510648526783655549">Fechar Faixa de separadores</translation>
+<translation id="6549021453810473782">Veja as informações da loja</translation>
 <translation id="6562820390860419811">Mover o separador para a esquerda</translation>
 <translation id="6615455863669487791">Mostrar</translation>
 <translation id="6840760312327750441">Para agrupar separadores, toque sem soltar num separador. Em seguida, arraste-o para cima de outro separador.</translation>
 <translation id="6856809498882026482">Ocultar modo de seleção múltipla</translation>
 <translation id="7151209024774799310">Remover separadores do grupo</translation>
 <translation id="7204204600596740190">Modo de seleção múltipla</translation>
+<translation id="7326879924029668159">Veja a Política de Devolução e muito mais</translation>
 <translation id="7352298686197644113">Veja qual dos itens nos seus separadores abertos tem um preço mais baixo.</translation>
 <translation id="753732157349120914">Comutador de separadores</translation>
 <translation id="7559245342362162951">Mostrar os separadores do grupo numa grelha em ecrã inteiro</translation>

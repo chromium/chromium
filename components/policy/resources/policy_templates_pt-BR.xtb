@@ -6340,11 +6340,6 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="8854571659927427063">Se a política for definida como ativada, os favoritos serão importados do navegador padrão anterior durante a primeira execução. Se a política for definida como desativada ou não for definida, nenhum favorito será importado durante a primeira execução.
 
       O usuário pode acionar uma caixa de diálogo de importação em que a caixa de seleção dos favoritos estará marcada ou desmarcada de acordo com o valor da política.</translation>
-<translation id="8855986672497556389">Alerta: a compatibilidade com a supressão do alerta TLS 1.0/1.1 será removida do <ph name="PRODUCT_NAME" /> a partir da versão 91 (por volta de maio de 2021), e esta política só funcionará até essa data.
-
-      Se a política for definida com um valor válido, o <ph name="PRODUCT_NAME" /> não usará versões SSL/TLS anteriores à versão especificada. Valores não reconhecidos serão ignorados.
-
-      Se a política não for definida, o <ph name="PRODUCT_NAME" /> exibirá uma mensagem de erro para TLS 1.0 e TLS 1.1, mas o usuário poderá ignorá-la.</translation>
 <translation id="8858642179038618439">Forçar modo de segurança do YouTube</translation>
 <translation id="8860342862142842017">Desativar a aplicação da Transparência dos certificados para uma lista de hashes subjectPublicKeyInfo</translation>
 <translation id="8864975621965365890">Remove a solicitação de recusa que aparece quando um site é processado pelo <ph name="PRODUCT_FRAME_NAME" />.</translation>

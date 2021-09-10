@@ -783,7 +783,6 @@
 <translation id="1794791083288629568">இந்தச் சிக்கலைத் தீர்ப்பதற்கு உதவ, கருத்தை அனுப்பவும்.</translation>
 <translation id="1795214765651529549">கிளாசிக்கைப் பயன்படுத்து</translation>
 <translation id="1796588414813960292">ஒலியுடன் இயங்கும் அம்சங்கள் செயல்படாது</translation>
-<translation id="1799071797295057738">"<ph name="EXTENSION_NAME" />" நீட்டிப்பு தானாக முடக்கப்பட்டது.</translation>
 <translation id="1801418420130173017">டார்க் தீமினை முடக்குதல்</translation>
 <translation id="1802624026913571222">கவர் மூடப்பட்டிருக்கும்போது உறக்கநிலைக்குச் செல்</translation>
 <translation id="1802687198411089702">பக்கம் செயல்படவில்லை. காத்திருக்கவும் அல்லது வெளியேறவும்.</translation>
@@ -851,7 +850,6 @@
 <translation id="1862311223300693744">பிரத்தியேக VPN, ப்ராக்ஸி, ஃபயர்வால், NAS மென்பொருள் போன்றவற்றை
     நிறுவியுள்ளீர்களா?</translation>
 <translation id="1863182668524159459">சீரியல் போர்ட்டுகள் இல்லை</translation>
-<translation id="1863316578636157783">மால்வேர் இருப்பதால் "<ph name="EXTENSION_NAME" />" முடக்கப்பட்டது</translation>
 <translation id="1864111464094315414">உள்நுழைவு</translation>
 <translation id="1864400682872660285">அதிக நீலம்</translation>
 <translation id="1864454756846565995">USB-C சாதனம் (பின்பக்கப் போர்ட்)</translation>
@@ -2301,7 +2299,6 @@
 <translation id="3406290648907941085">விர்ச்சுவல் ரியாலிட்டியையும் தரவையும் பயன்படுத்த அனுமதிக்கப்பட்டுள்ள தளங்கள்</translation>
 <translation id="3406396172897554194">மொழி அல்லது உள்ளீட்டு முறையின் பெயர் மூலம் தேடலாம்</translation>
 <translation id="3406605057700382950">புக்மார்க்ஸ் பட்டியைக் &amp;காட்டு</translation>
-<translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{இந்த நீட்டிப்பு ஆபத்தானதாக இருக்கக்கூடும்}other{இந்த நீட்டிப்புகள் ஆபத்தானதாக இருக்கக்கூடும்}}</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3410832398355316179">இந்தப் பயனர் அகற்றப்பட்டவுடன் இவருடன் தொடர்புடைய அனைத்துக் கோப்புகளும் அகத் தரவும் நிரந்தரமாக அகற்றப்படும். அப்போதும் <ph name="USER_EMAIL" /> பின்னர் உள்நுழையலாம்.</translation>
 <translation id="3412265149091626468">தேர்வுக்கு செல்</translation>
@@ -2852,7 +2849,6 @@
 <translation id="3948116654032448504">படத்தைத் &amp;தேடு <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786">பின்வரும் ஃபோல்டர்களில் உள்ள கோப்புகளை <ph name="ORIGIN" /> தளத்தால் திருத்த முடியும்</translation>
 <translation id="394984172568887996">IE இலிருந்து இறக்குமதி செய்யப்பட்டது</translation>
-<translation id="3949981384795585075">{NUM_APPS,plural, =1{இந்த ஆப்ஸ் ஆபத்தானதாக இருக்கக்கூடும்}other{இந்த ஆப்ஸ் ஆபத்தானதாக இருக்கக்கூடும்}}</translation>
 <translation id="3950820424414687140">உள்நுழைக</translation>
 <translation id="3953834000574892725">என் கணக்குகள்</translation>
 <translation id="3954354850384043518">பதிவிறக்குகிறது</translation>
@@ -3988,7 +3984,6 @@
 <translation id="523505283826916779">அணுகல்தன்மை அமைப்புகள்</translation>
 <translation id="5235750401727657667">புதிய தாவலைத் திறக்கும் போது காண்பிக்கப்படும் பக்கத்தை மாற்று</translation>
 <translation id="5236374273162681467">அனைத்துச் சாதனங்களிலும் எளிதாகப் பயன்படுத்த இவற்றை உங்கள் Google கணக்கிற்கு நகர்த்தலாம்</translation>
-<translation id="5238278114306905396">ஆப்ஸின் "<ph name="EXTENSION_NAME" />" ஆனது தானாக அகற்றப்பட்டது.</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" ஐ இயக்கவா?</translation>
 <translation id="5243522832766285132">ஒரு சில வினாடிகளில் மீண்டும் முயலவும்</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" />க்கு ஒத்திசைக்கிறது</translation>
@@ -6236,7 +6231,6 @@
 <translation id="7697166915480294040">திரையைப் பகிரும்போது விவரங்கள் மறைக்கப்படும்</translation>
 <translation id="7701040980221191251">எதுவுமில்லை</translation>
 <translation id="7701869757853594372">USER ஹேண்டில்ஸ்</translation>
-<translation id="7701928712056789451">இவை ஆபத்தானவையாக இருக்கக்கூடும்</translation>
 <translation id="7702574632857388784">பட்டியலிலிருந்து <ph name="FILE_NAME" />ஐ அகற்று</translation>
 <translation id="7702907602086592255">டொமைன்</translation>
 <translation id="7704305437604973648">பணி</translation>

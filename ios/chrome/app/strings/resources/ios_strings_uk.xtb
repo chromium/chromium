@@ -454,6 +454,7 @@
 <translation id="5556459405103347317">Перезавантажити</translation>
 <translation id="5580834567471114021">Додати в список читання на пізніше?</translation>
 <translation id="5592679540098330836">Увімкнути синхронізацію для користувача <ph name="NAME" /></translation>
+<translation id="560322036295180549">Вимкнено адміністратором організації</translation>
 <translation id="5614553682702429503">Зберегти пароль?</translation>
 <translation id="5626245204502895507">Зараз неможливо завантажити цей файл.</translation>
 <translation id="5631164295104953411">Додати спосіб оплати</translation>
@@ -501,7 +502,6 @@
 <translation id="5984222099446776634">Нещодавно відвідані</translation>
 <translation id="5988851877894965432">Відкривати URL-адреси в Chrome</translation>
 <translation id="6012140227487808125">Шифрування…</translation>
-<translation id="6020800238007543967">Увімкнути попередній перегляд посилань</translation>
 <translation id="6021332621416007159">Відкрити в...</translation>
 <translation id="6036514205982097558">Усі ваші вкладки в одному веб-переглядачі</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
@@ -712,6 +712,7 @@
 <translation id="7856733331829174190">Не вдалося завантажити</translation>
 <translation id="7859704718976024901">Історія веб-перегляду</translation>
 <translation id="7887198238286927132">Щоб захистити вашу конфіденційність, Chrome не буде автоматично заповнювати це поле.</translation>
+<translation id="7911190106180361398">Адміністратор вашої організації не дозволяє синхронізувати всі дані.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Експортувати паролі…</translation>
 <translation id="794799177247607889">Припинити ведення журналів</translation>

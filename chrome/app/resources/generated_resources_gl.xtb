@@ -771,7 +771,6 @@
 <translation id="1794791083288629568">Enviar comentarios para axudar a solucionar este problema.</translation>
 <translation id="1795214765651529549">Usar tema clásico</translation>
 <translation id="1796588414813960292">As funcións que necesiten reproducir sons non estarán dispoñibles</translation>
-<translation id="1799071797295057738">A extensión <ph name="EXTENSION_NAME" /> desactivouse automaticamente.</translation>
 <translation id="1801418420130173017">Desactivar tema escuro</translation>
 <translation id="1802624026913571222">Activar suspensión cando se peche a tapa</translation>
 <translation id="1802687198411089702">A páxina non responde. Podes esperar ou saír da páxina.</translation>
@@ -838,7 +837,6 @@
 <translation id="1861262398884155592">Este cartafol está baleiro</translation>
 <translation id="1862311223300693744">Tes algún proxy, VPN, firewall ou software NAS especial instalado?</translation>
 <translation id="1863182668524159459">Non se encontrou ningún porto de serie</translation>
-<translation id="1863316578636157783">Desactivouse a extensión <ph name="EXTENSION_NAME" /> porque contén software malicioso</translation>
 <translation id="1864111464094315414">Inicio de sesión</translation>
 <translation id="1864400682872660285">Cores máis frías</translation>
 <translation id="1864454756846565995">Dispositivo USB‑C (porto posterior)</translation>
@@ -2284,7 +2282,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3406290648907941085">Sitios que poden usar datos e dispositivos de realidade virtual</translation>
 <translation id="3406396172897554194">Busca un idioma ou o nome dun método de introdución de texto</translation>
 <translation id="3406605057700382950">&amp;Mostrar a barra de marcadores</translation>
-<translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{Esta extensión pode ser perigosa}other{Estas extensións poden ser perigosas}}</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3410832398355316179">En canto se borre este usuario, eliminaranse permanentemente todos os ficheiros e os datos locais asociados con el. <ph name="USER_EMAIL" /> segue podendo iniciar sesión máis tarde.</translation>
 <translation id="3412265149091626468">Saltar á selección</translation>
@@ -2835,7 +2832,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3948116654032448504">&amp;Buscar imaxe en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> pode editar os ficheiros dos seguintes cartafoles</translation>
 <translation id="394984172568887996">Importados desde Internet Explorer</translation>
-<translation id="3949981384795585075">{NUM_APPS,plural, =1{Esta aplicación pode ser perigosa}other{Estas aplicacións poden ser perigosas}}</translation>
 <translation id="3950820424414687140">Iniciar sesión</translation>
 <translation id="3953834000574892725">As miñas contas</translation>
 <translation id="3954354850384043518">En curso</translation>
@@ -3970,7 +3966,6 @@ Obtén <ph name="BEGIN_LINK" />máis información<ph name="END_LINK" /> sobre os
 <translation id="523505283826916779">Configuración de accesibilidade</translation>
 <translation id="5235750401727657667">Substituír a páxina que ves ao abrir unha nova pestana</translation>
 <translation id="5236374273162681467">Para poder utilizalos con facilidade en todos os teus dispositivos, podes transferilos á túa Conta de Google</translation>
-<translation id="5238278114306905396">A aplicación "<ph name="EXTENSION_NAME" />" eliminouse automaticamente.</translation>
 <translation id="5242724311594467048">Queres activar <ph name="EXTENSION_NAME" />?</translation>
 <translation id="5243522832766285132">Téntao de novo nuns minutos</translation>
 <translation id="5244474230056479698">Sincronizando en <ph name="EMAIL" /></translation>
@@ -6217,7 +6212,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7697166915480294040">Os detalles ocúltanse mentres compartes a pantalla</translation>
 <translation id="7701040980221191251">Ningunha</translation>
 <translation id="7701869757853594372">Controladores de USUARIO</translation>
-<translation id="7701928712056789451">Estes elementos poden ser perigosos</translation>
 <translation id="7702574632857388784">Quitar <ph name="FILE_NAME" /> da lista</translation>
 <translation id="7702907602086592255">Dominio</translation>
 <translation id="7704305437604973648">Tarefa</translation>

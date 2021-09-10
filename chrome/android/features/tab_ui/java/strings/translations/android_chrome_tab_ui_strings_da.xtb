@@ -8,6 +8,7 @@
 <translation id="1378979118429748177">Få besked om prisfald</translation>
 <translation id="1657719826150349398">Flyt fane ned</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> fane}one{<ph name="TABS_COUNT_MANY" /> fane}other{<ph name="TABS_COUNT_MANY" /> faner}}</translation>
+<translation id="2118649612461486615">Butiksinfo</translation>
 <translation id="2277224997687551299">Rediger gruppenavn</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Fjern <ph name="TABS_COUNT_ONE" /> valgt fane fra gruppen.}one{Fjern <ph name="TABS_COUNT_MANY" /> valgt fane fra gruppen.}other{Fjern <ph name="TABS_COUNT_MANY" /> valgte faner fra gruppen.}}</translation>
 <translation id="2479148705183875116">Gå til Indstillinger</translation>
@@ -50,13 +51,16 @@
 <translation id="6040143037577758943">Luk</translation>
 <translation id="6054741997831917303">Prisen på denne vare er for nylig faldet fra <ph name="PREVIOUS_PRICE" /> til <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Vælg faner</translation>
+<translation id="6228793724645064692">(butiksanmeldelse)</translation>
 <translation id="6510648526783655549">Luk fanelinje</translation>
+<translation id="6549021453810473782">Se butiksinfo</translation>
 <translation id="6562820390860419811">Flyt fane til venstre</translation>
 <translation id="6615455863669487791">Lad mig se</translation>
 <translation id="6840760312327750441">Du kan gruppere faner ved at holde en fane nede. Træk den derefter oven på en anden fane.</translation>
 <translation id="6856809498882026482">Skjul tilstanden Valg af flere</translation>
 <translation id="7151209024774799310">Fjern faner fra gruppe</translation>
 <translation id="7204204600596740190">Tilstanden Valg af flere</translation>
+<translation id="7326879924029668159">Se returpolitikken m.m.</translation>
 <translation id="7352298686197644113">Se, hvilket produkt på dine åbne faner der har en lavere pris</translation>
 <translation id="753732157349120914">Faneskift</translation>
 <translation id="7559245342362162951">Vis gruppens faner i et fuldskærmsgitter</translation>

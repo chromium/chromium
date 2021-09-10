@@ -58,9 +58,11 @@
 <translation id="1999615961760456652">Innskráningarsíða</translation>
 <translation id="2006864819935886708">Tenging</translation>
 <translation id="2008685064673031089">Aðalleit</translation>
+<translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Fleiri stillingar</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, útgáfa <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB af <ph name="TOTAL_MEMORY" /> GB tiltæk</translation>
+<translation id="2129264932216073062">ARC HTTP</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">Í BIÐRÖÐ</translation>
 <translation id="2161394479394250669">Hætta við prentverk</translation>
@@ -74,6 +76,7 @@
 <translation id="2364498172489649528">Stóðst</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Senda ábendingaskýrslu</translation>
+<translation id="2407209115954268704">Staða SIM-láss</translation>
 <translation id="2418150275289244458">Opna í stillingum</translation>
 <translation id="2446553403094072641">Nákvæmni hlaupakommu</translation>
 <translation id="2448312741937722512">Gerð</translation>
@@ -179,6 +182,7 @@
 <translation id="4536864596629708641">IP-stilling</translation>
 <translation id="4548483925627140043">Merki fannst ekki</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh rafhlaða</translation>
+<translation id="4561801978359312462">SIM opið</translation>
 <translation id="4562494484721939086">Ekkert símasamband</translation>
 <translation id="458794348635939462">Ekki tókst að leysa úr öllum hýslum</translation>
 <translation id="4593212453765072419">Auðkenningar staðgengilsþjóns krafist</translation>
@@ -218,6 +222,7 @@
 <translation id="4999333166442584738">Fela skýrslu</translation>
 <translation id="500920857929044050">Stöðva próf</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5049856988445523908">SIM læst (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Heiti hóps</translation>
 <translation id="5088172560898466307">Hýsilheiti þjóns</translation>
 <translation id="5089810972385038852">Ríki</translation>
@@ -312,6 +317,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="6527081081771465939">Óþekkt Wi-Fi öryggisregla</translation>
 <translation id="65587193855025101">Flatur skanni</translation>
 <translation id="6564646048574748301">Mistókst – ekki næst í prentara</translation>
+<translation id="6566314079205407217">Fjölsíðuskönnun</translation>
 <translation id="6574762126505704998">Fylling</translation>
 <translation id="6575134580692778371">Ekki stillt</translation>
 <translation id="6596816719288285829">IP-tala</translation>

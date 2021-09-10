@@ -6351,11 +6351,6 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="8854571659927427063">Si cette règle est activée, les favoris enregistrés dans le précédent navigateur par défaut sont importés lors de la première exécution. Si cette règle est désactivée ou qu'elle n'est pas configurée, les favoris ne sont pas importés lors de la première exécution.
 
       Les utilisateurs peuvent ouvrir une boîte de dialogue d'importation. La case correspondant aux favoris sera ou ne sera pas cochée, suivant la configuration de cette règle.</translation>
-<translation id="8855986672497556389">Avertissement : L'avertissement concernant TLS 1.0/1.1 ne pourra plus être supprimé depuis <ph name="PRODUCT_NAME" /> à partir de la version 91 (autour de mai 2021), et cette règle cessera alors de fonctionner.
-
-      Si cette règle est définie sur une valeur valide, <ph name="PRODUCT_NAME" /> n'utilisera pas de versions SSL/TLS antérieures à la version spécifiée. Les valeurs non reconnues seront ignorées.
-
-      Si cette règle n'est pas configurée, un message d'erreur concernant TLS 1.0 et TLS 1.1 s'affichera dans <ph name="PRODUCT_NAME" />. Toutefois, l'utilisateur pourra contourner le processus.</translation>
 <translation id="8858642179038618439">Forcer le mode sécurisé de YouTube</translation>
 <translation id="8860342862142842017">Désactiver l'application des règles de transparence des certificats pour une liste de hachages subjectPublicKeyInfo</translation>
 <translation id="8864975621965365890">Supprime l'invite de fermeture qui s'affiche lors du rendu d'un site par <ph name="PRODUCT_FRAME_NAME" />.</translation>

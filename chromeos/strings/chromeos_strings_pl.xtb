@@ -58,9 +58,11 @@
 <translation id="1999615961760456652">Portal przechwytujący</translation>
 <translation id="2006864819935886708">Łączność</translation>
 <translation id="2008685064673031089">Znajdowanie liczb pierwszych</translation>
+<translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Więcej ustawień</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, wersja <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Dostępne: <ph name="AVAILABLE_MEMORY" /> GB z <ph name="TOTAL_MEMORY" /> GB</translation>
+<translation id="2129264932216073062">ARC HTTP</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">W KOLEJCE</translation>
 <translation id="2161394479394250669">Anuluj zadanie drukowania</translation>
@@ -74,6 +76,7 @@
 <translation id="2364498172489649528">Zaliczone</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Prześlij zgłoszenie opinii</translation>
+<translation id="2407209115954268704">Stan blokady karty SIM</translation>
 <translation id="2418150275289244458">Otwórz w ustawieniach</translation>
 <translation id="2446553403094072641">Precyzja obliczeń zmiennoprzecinkowych</translation>
 <translation id="2448312741937722512">Typ</translation>
@@ -179,6 +182,7 @@
 <translation id="4536864596629708641">Konfiguracja IP</translation>
 <translation id="4548483925627140043">Nie znaleziono sygnału</translation>
 <translation id="455835558791489930">Bateria <ph name="CHARGE_VALUE" /> mAh</translation>
+<translation id="4561801978359312462">Karta SIM odblokowana</translation>
 <translation id="4562494484721939086">Brak usługi</translation>
 <translation id="458794348635939462">Nie udało się znaleźć wszystkich hostów</translation>
 <translation id="4593212453765072419">Wymagane uwierzytelnienie na serwerze proxy</translation>
@@ -218,6 +222,7 @@
 <translation id="4999333166442584738">Ukryj raport</translation>
 <translation id="500920857929044050">Zatrzymaj test</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5049856988445523908">Karta SIM zablokowana (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nazwa grupy</translation>
 <translation id="5088172560898466307">Nazwa hosta serwera</translation>
 <translation id="5089810972385038852">Stan</translation>
@@ -312,6 +317,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="6527081081771465939">Nieznany protokół zabezpieczeń Wi-Fi</translation>
 <translation id="65587193855025101">Szyba</translation>
 <translation id="6564646048574748301">Niepowodzenie – drukarka jest nieosiągalna</translation>
+<translation id="6566314079205407217">Skanowanie wielu stron</translation>
 <translation id="6574762126505704998">Wypełnienie</translation>
 <translation id="6575134580692778371">Nie skonfigurowano</translation>
 <translation id="6596816719288285829">Adres IP</translation>

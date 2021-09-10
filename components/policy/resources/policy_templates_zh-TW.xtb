@@ -6235,11 +6235,6 @@
 <translation id="8854571659927427063">如果將這項政策設為啟用，瀏覽器會在首次執行時，從先前的預設瀏覽器中匯入書籤。如果將這項政策設為停用或不設定，瀏覽器首次執行時不會匯入任何書籤。
 
       使用者可以觸發匯入對話方塊，瀏覽器將根據這項政策的值，來勾選或取消勾選書籤的核取方塊。</translation>
-<translation id="8855986672497556389">警告：<ph name="PRODUCT_NAME" /> 將從第 91 版開始 (推出時間約為 2021 年五月)，停止支援隱藏傳輸層安全標準 (TLS) 1.0/1.1 警告的功能，屆時這項政策也會停止運作。
-
-      如果將這項政策設為有效值，<ph name="PRODUCT_NAME" /> 只會使用指定版本以上的 SSL/TLS 版本。系統會忽略無法辨識的值。
-
-      如果不設定這項政策，<ph name="PRODUCT_NAME" /> 會針對 TLS 1.0 和 TLS 1.1 顯示錯誤訊息，但使用者可略過該訊息。</translation>
 <translation id="8858642179038618439">強制採用 YouTube 安全模式</translation>
 <translation id="8860342862142842017">不針對列出的 subjectPublicKeyInfo 雜湊強制執行憑證透明化政策</translation>
 <translation id="8864975621965365890">瀏覽使用 <ph name="PRODUCT_FRAME_NAME" />轉譯的網站時，隱藏停止支援提示。</translation>

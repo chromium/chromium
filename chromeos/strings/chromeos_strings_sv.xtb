@@ -58,9 +58,11 @@
 <translation id="1999615961760456652">Infångstportal</translation>
 <translation id="2006864819935886708">Anslutning</translation>
 <translation id="2008685064673031089">Primtalssökning</translation>
+<translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Fler inställningar</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, version <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB av <ph name="TOTAL_MEMORY" /> GB är tillgängligt</translation>
+<translation id="2129264932216073062">ARC HTTP</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2157959690810728433">I KÖ</translation>
 <translation id="2161394479394250669">Avbryt utskriftsjobb</translation>
@@ -74,6 +76,7 @@
 <translation id="2364498172489649528">Godkänd</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Skicka feedbackrapport</translation>
+<translation id="2407209115954268704">Status för SIM-lås</translation>
 <translation id="2418150275289244458">Öppna i inställningarna</translation>
 <translation id="2446553403094072641">Flyttalsprecision</translation>
 <translation id="2448312741937722512">Typ</translation>
@@ -179,6 +182,7 @@
 <translation id="4536864596629708641">IP-konfiguration</translation>
 <translation id="4548483925627140043">Ingen signal hittades</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh-batteri</translation>
+<translation id="4561801978359312462">SIM-kortet är upplåst</translation>
 <translation id="4562494484721939086">Ingen täckning</translation>
 <translation id="458794348635939462">DNS-matchningen av alla värdar misslyckades</translation>
 <translation id="4593212453765072419">Proxyautentisering krävs</translation>
@@ -218,6 +222,7 @@
 <translation id="4999333166442584738">Dölj rapporten</translation>
 <translation id="500920857929044050">Avsluta testet</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5049856988445523908">SIM-kortet är låst (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Gruppnamn</translation>
 <translation id="5088172560898466307">Serverns värdnamn</translation>
 <translation id="5089810972385038852">Stat</translation>
@@ -312,6 +317,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="6527081081771465939">Okänt säkerhetsprotokoll för wifi</translation>
 <translation id="65587193855025101">Flatbädd</translation>
 <translation id="6564646048574748301">Misslyckades – skrivaren kan inte nås</translation>
+<translation id="6566314079205407217">Skanning av flera sidor</translation>
 <translation id="6574762126505704998">Fyll</translation>
 <translation id="6575134580692778371">Inte konfigurerat</translation>
 <translation id="6596816719288285829">IP-adress</translation>
