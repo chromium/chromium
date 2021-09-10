@@ -62,11 +62,10 @@ base::FilePath ScanningFilePathHelper::GetMyFilesPath() const {
 
 bool ScanningFilePathHelper::IsFilePathSupported(
     const base::FilePath& path_to_file) const {
-  DCHECK(!google_drive_path_.empty());
   DCHECK(!my_files_path_.empty());
 
   return path_to_file == my_files_path_ ||
-         (!path_to_file.ReferencesParent() &&
+         (!path_to_file.ReferencesParent() && !google_drive_path_.empty() &&
           (google_drive_path_.IsParent(path_to_file) ||
            my_files_path_.IsParent(path_to_file) ||
            removable_media_path_.IsParent(path_to_file)));
