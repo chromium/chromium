@@ -90,11 +90,9 @@ successfully resolve hosts.
 Tests whether a DNS resolver is available to the browser.
 
 Problems:
-* `kNoNameServersFound`: IP config has no list of name servers available.
+* `kNoNameServersFound`: IP config has an empty or default list of name servers available.
 * `kMalformedNameServers`: IP config has a list of at least one malformed name
    server.
-* `kEmptyNameServers`: IP config has an empty list of name servers.
-
 #### DnsLatency
 
 Tests whether the DNS latency is below an acceptable threshold.

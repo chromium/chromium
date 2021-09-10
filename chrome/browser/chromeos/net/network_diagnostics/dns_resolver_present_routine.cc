@@ -11,30 +11,52 @@
 #include "base/bind.h"
 #include "chromeos/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
+#include "components/onc/onc_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/ip_address.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace network_diagnostics {
 namespace {
 
-bool NameServersAreWellFormed(const std::vector<std::string>& name_servers) {
+// Filters the list of |name_servers| and returns those that are not
+// empty/default values.
+std::vector<std::string> GetNonEmptyNameServers(
+    const std::vector<std::string>& name_servers) {
+  std::vector<std::string> non_empty_name_servers;
   for (const auto& name_server : name_servers) {
-    if (name_server == "0.0.0.0" || name_server == "::/0") {
-      return false;
+    if (name_server.empty() || name_server == "0.0.0.0" ||
+        name_server == "::/0") {
+      continue;
     }
+    non_empty_name_servers.push_back(name_server);
   }
-  return true;
+  return non_empty_name_servers;
 }
 
-bool NameServersAreNonEmpty(const std::vector<std::string>& name_servers) {
+// Checks that at least one name server IP address is valid depending on the IP
+// config type. If the type is not set, IPv4 is assumed.
+bool NameServersHaveValidAddresses(const std::vector<std::string>& name_servers,
+                                   const absl::optional<std::string>& type) {
   for (const auto& name_server : name_servers) {
-    if (name_server.empty()) {
-      return false;
+    net::IPAddress ip_address;
+    if (!ip_address.AssignFromIPLiteral(name_server)) {
+      continue;
+    }
+
+    // TODO(crbug/1245700): Make ip_config's type field a non-optional enum
+    if (!type.has_value() || type.value() == ::onc::ipconfig::kIPv4) {
+      if (ip_address.IsIPv4())
+        return true;
+    } else if (type == ::onc::ipconfig::kIPv6) {
+      if (ip_address.IsIPv6() || ip_address.IsIPv4MappedIPv6())
+        return true;
     }
   }
-  return true;
+
+  return false;
 }
 
 }  // namespace
@@ -63,14 +85,11 @@ void DnsResolverPresentRoutine::Run() {
 void DnsResolverPresentRoutine::AnalyzeResultsAndExecuteCallback() {
   if (!connected_network_) {
     set_verdict(mojom::RoutineVerdict::kNotRun);
-  } else if (!name_servers_found_) {
+  } else if (!name_servers_are_found_) {
     set_verdict(mojom::RoutineVerdict::kProblem);
     problems_.emplace_back(
         mojom::DnsResolverPresentProblem::kNoNameServersFound);
-  } else if (!non_empty_name_servers_) {
-    set_verdict(mojom::RoutineVerdict::kProblem);
-    problems_.emplace_back(mojom::DnsResolverPresentProblem::kEmptyNameServers);
-  } else if (!well_formed_name_servers_) {
+  } else if (!name_servers_are_valid_) {
     set_verdict(mojom::RoutineVerdict::kProblem);
     problems_.emplace_back(
         mojom::DnsResolverPresentProblem::kMalformedNameServers);
@@ -112,12 +131,18 @@ void DnsResolverPresentRoutine::OnManagedPropertiesReceived(
   for (const auto& ip_config : managed_properties->ip_configs.value()) {
     if (ip_config->name_servers.has_value() &&
         ip_config->name_servers->size() != 0) {
-      name_servers_found_ = true;
-      if (NameServersAreNonEmpty(ip_config->name_servers.value())) {
-        non_empty_name_servers_ = true;
+      // Check that there are at least one set name server across the IPConfigs.
+      std::vector<std::string> non_empty_name_servers =
+          GetNonEmptyNameServers(ip_config->name_servers.value());
+      if (non_empty_name_servers.empty()) {
+        break;
       }
-      if (NameServersAreWellFormed(ip_config->name_servers.value())) {
-        well_formed_name_servers_ = true;
+      name_servers_are_found_ = true;
+
+      // Check that the name servers are valid
+      if (NameServersHaveValidAddresses(non_empty_name_servers,
+                                        ip_config->type)) {
+        name_servers_are_valid_ = true;
         break;
       }
     }

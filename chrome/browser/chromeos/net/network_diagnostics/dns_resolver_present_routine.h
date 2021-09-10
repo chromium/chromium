@@ -41,9 +41,8 @@ class DnsResolverPresentRoutine : public NetworkDiagnosticsRoutine {
           networks);
 
   bool connected_network_ = false;
-  bool name_servers_found_ = false;
-  bool non_empty_name_servers_ = false;
-  bool well_formed_name_servers_ = false;
+  bool name_servers_are_found_ = false;
+  bool name_servers_are_valid_ = false;
   std::vector<mojom::DnsResolverPresentProblem> problems_;
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
       remote_cros_network_config_;

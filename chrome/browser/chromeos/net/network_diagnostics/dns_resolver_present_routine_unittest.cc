@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/net/network_diagnostics/dns_resolver_present_routine.h"
 
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
@@ -33,16 +34,17 @@ namespace network_diagnostics {
 
 namespace {
 
-// The IP v4 config path specified here must match the IP v4 config path
-// specified in NetworkStateTestHelper::ResetDevicesAndServices(), which itself
-// is based on the IP v4 config path used to set up IP v4 configs in
+// The IP config path specified here must match the IP config path specified in
+// NetworkStateTestHelper::ResetDevicesAndServices(), which itself is based on
+// the IP config path used to set up IP configs in
 // FakeShillManagerClient::SetupDefaultEnvironment().
-const char kIPv4ConfigPath[] = "ipconfig_v4_path";
-const std::vector<std::string> kWellFormedDnsServers = {
-    "192.168.1.100", "192.168.1.101", "192.168.1.102"};
-const std::vector<std::string> kMalformedDnsServers = {"0.0.0.0",
-                                                       "192.168.1.100", "::/0"};
-const std::vector<std::string> kEmptyDnsServers = {"192.168.1.100", ""};
+constexpr char kIPConfigPath[] = "ipconfig_path";
+
+const std::vector<std::string>& GetWellFormedDnsServers() {
+  static const base::NoDestructor<std::vector<std::string>>
+      wellFormedDnsServers{{"192.168.1.100", "192.168.1.101", "192.168.1.102"}};
+  return *wellFormedDnsServers;
+}
 
 }  // namespace
 
@@ -108,7 +110,8 @@ class DnsResolverPresentRoutineTest : public ::testing::Test {
   // service by overwriting the initial IPConfigs that are set up in
   // FakeShillManagerClient::SetupDefaultEnvironment(). Attach name
   // servers to the IP config.
-  void SetUpNameServers(const std::vector<std::string>& name_servers) {
+  void SetUpNameServers(const std::vector<std::string>& name_servers,
+                        const std::string& type = shill::kTypeIPv4) {
     DCHECK(!wifi_path_.empty());
     // Set up the name servers
     base::ListValue dns_servers;
@@ -116,20 +119,21 @@ class DnsResolverPresentRoutineTest : public ::testing::Test {
       dns_servers.Append(name_server);
     }
 
-    // Set up the IP v4 config
-    base::DictionaryValue ip_config_v4_properties;
-    ip_config_v4_properties.SetKey(shill::kNameServersProperty,
-                                   base::Value(dns_servers.Clone()));
-    network_state_helper().ip_config_test()->AddIPConfig(
-        kIPv4ConfigPath, ip_config_v4_properties);
+    // Set up the IP config
+    base::DictionaryValue ip_config_properties;
+    ip_config_properties.SetKey(shill::kMethodProperty, base::Value(type));
+    ip_config_properties.SetKey(shill::kNameServersProperty,
+                                base::Value(dns_servers.Clone()));
+    network_state_helper().ip_config_test()->AddIPConfig(kIPConfigPath,
+                                                         ip_config_properties);
     std::string wifi_device_path =
         network_state_helper().device_test()->GetDevicePathForType(
             shill::kTypeWifi);
     network_state_helper().device_test()->SetDeviceProperty(
-        wifi_device_path, shill::kIPConfigsProperty, ip_config_v4_properties,
+        wifi_device_path, shill::kIPConfigsProperty, ip_config_properties,
         /*notify_changed=*/true);
     SetServiceProperty(wifi_path_, shill::kIPConfigProperty,
-                       base::Value(kIPv4ConfigPath));
+                       base::Value(kIPConfigPath));
 
     // Wait until the changed name servers have been notified (notification
     // triggered by call to SetDeviceProperty() above) and that the |wifi_path_|
@@ -229,9 +233,16 @@ class DnsResolverPresentRoutineTest : public ::testing::Test {
   base::WeakPtrFactory<DnsResolverPresentRoutineTest> weak_factory_{this};
 };
 
-TEST_F(DnsResolverPresentRoutineTest, TestResolverPresent) {
+TEST_F(DnsResolverPresentRoutineTest, TestValidNameServers) {
   SetUpWiFi(shill::kStateOnline);
-  SetUpNameServers(kWellFormedDnsServers);
+  SetUpNameServers(GetWellFormedDnsServers());
+  RunRoutine(mojom::RoutineVerdict::kNoProblem, {});
+}
+
+TEST_F(DnsResolverPresentRoutineTest, TestValidIpv6NameServers) {
+  SetUpWiFi(shill::kStateOnline);
+  SetUpNameServers({"2001:db8:3333:4444:5555:6666:7777:8888", "::1234:5678"},
+                   shill::kTypeIPv6);
   RunRoutine(mojom::RoutineVerdict::kNoProblem, {});
 }
 
@@ -241,23 +252,42 @@ TEST_F(DnsResolverPresentRoutineTest, TestNoResolverPresent) {
              {mojom::DnsResolverPresentProblem::kNoNameServersFound});
 }
 
-TEST_F(DnsResolverPresentRoutineTest, TestMalformedNameServers) {
+TEST_F(DnsResolverPresentRoutineTest, TestDefaultNameServers) {
   SetUpWiFi(shill::kStateOnline);
-  SetUpNameServers(kMalformedDnsServers);
+  SetUpNameServers({"0.0.0.0", "::/0"});
   RunRoutine(mojom::RoutineVerdict::kProblem,
-             {mojom::DnsResolverPresentProblem::kMalformedNameServers});
+             {mojom::DnsResolverPresentProblem::kNoNameServersFound});
 }
 
 TEST_F(DnsResolverPresentRoutineTest, TestEmptyNameServers) {
   SetUpWiFi(shill::kStateOnline);
-  SetUpNameServers(kEmptyDnsServers);
+  SetUpNameServers({"", ""});
   RunRoutine(mojom::RoutineVerdict::kProblem,
-             {mojom::DnsResolverPresentProblem::kEmptyNameServers});
+             {mojom::DnsResolverPresentProblem::kNoNameServersFound});
+}
+
+TEST_F(DnsResolverPresentRoutineTest, TestValidAndEmptyNameServers) {
+  SetUpWiFi(shill::kStateOnline);
+  SetUpNameServers({"192.168.1.100", ""});
+  RunRoutine(mojom::RoutineVerdict::kNoProblem, {});
+}
+
+TEST_F(DnsResolverPresentRoutineTest, TestMalformedNameServers) {
+  SetUpWiFi(shill::kStateOnline);
+  SetUpNameServers({"take.me.to.the.internets"});
+  RunRoutine(mojom::RoutineVerdict::kProblem,
+             {mojom::DnsResolverPresentProblem::kMalformedNameServers});
+}
+
+TEST_F(DnsResolverPresentRoutineTest, TestValidAndMalformedNameServers) {
+  SetUpWiFi(shill::kStateOnline);
+  SetUpNameServers({"192.168.1.100", "take.me.to.the.internets"});
+  RunRoutine(mojom::RoutineVerdict::kNoProblem, {});
 }
 
 TEST_F(DnsResolverPresentRoutineTest, TestNoActiveNetwork) {
   SetUpWiFi(shill::kStateDisconnect);
-  SetUpNameServers(kWellFormedDnsServers);
+  SetUpNameServers(GetWellFormedDnsServers());
   RunRoutine(mojom::RoutineVerdict::kNotRun, {});
 }
 

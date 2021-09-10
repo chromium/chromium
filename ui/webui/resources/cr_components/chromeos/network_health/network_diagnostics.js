@@ -392,10 +392,6 @@ Polymer({
               problemStrings.push(
                   getString('DnsResolverProblem_MalformedNameServers'));
               break;
-            case diagnosticsMojom.DnsResolverPresentProblem.kEmptyNameServers:
-              problemStrings.push(
-                  getString('DnsResolverProblem_EmptyNameServers'));
-              break;
           }
         }
         break;

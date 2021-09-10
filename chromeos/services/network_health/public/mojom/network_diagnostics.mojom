@@ -84,7 +84,7 @@ enum HasSecureWiFiConnectionProblem {
 enum DnsResolverPresentProblem {
   kNoNameServersFound,
   kMalformedNameServers,
-  kEmptyNameServers,
+  kEmptyNameServers, // DEPRECATED: Use kNoNameServersFound instead
 };
 
 // Problems related to the DnsLatencyProblem routine.
