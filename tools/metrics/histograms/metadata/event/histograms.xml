@@ -557,7 +557,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     name="Event.Latency.ScrollBegin.Scrollbar.BrowserNotifiedToBeforeGpuSwap2"
     units="microseconds" expires_after="2021-12-01">
   <owner>flackr@chromium.org</owner>
-  <owner>dlibby@microsoft.com</owner>
+  <owner>gerchiko@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Time between the display compositor receives the notification of the first
@@ -568,6 +568,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     in the browser process.
 
     Team: input-dev@chromium.org.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
   </summary>
 </histogram>
 
@@ -592,9 +598,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.Latency.ScrollBegin.Scrollbar.HandledToRendererSwap2"
-    units="microseconds" expires_after="2020-12-01">
+    units="microseconds" expires_after="2021-12-01">
   <owner>nzolghadr@chromium.org</owner>
-  <owner>dlibby@microsoft.com</owner>
+  <owner>gerchiko@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Time between the first ScrollUpdate gesture event in a given scroll gesture
@@ -613,9 +619,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Event.Latency.ScrollBegin.Scrollbar.RendererSwapToBrowserNotified2"
-    units="microseconds" expires_after="2020-12-01">
+    units="microseconds" expires_after="2021-12-01">
   <owner>nzolghadr@chromium.org</owner>
-  <owner>dlibby@microsoft.com</owner>
+  <owner>gerchiko@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Time between the renderer starts to swap a frame (generates compositor
@@ -626,13 +632,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     historically the display compositor lived in the browser process.
 
     Team: input-dev@chromium.org.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
   </summary>
 </histogram>
 
 <histogram name="Event.Latency.ScrollBegin.Scrollbar.TimeToHandled2"
-    units="microseconds" expires_after="2020-12-01">
+    units="microseconds" expires_after="2021-12-01">
   <owner>nzolghadr@chromium.org</owner>
-  <owner>dlibby@microsoft.com</owner>
+  <owner>gerchiko@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Time between initial creation of a scrollbar event and the first generated
@@ -654,7 +666,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     name="Event.Latency.ScrollBegin.Scrollbar.TimeToScrollUpdateSwapBegin4"
     units="microseconds" expires_after="2021-12-12">
   <owner>nzolghadr@chromium.org</owner>
-  <owner>dlibby@microsoft.com</owner>
+  <owner>gerchiko@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
