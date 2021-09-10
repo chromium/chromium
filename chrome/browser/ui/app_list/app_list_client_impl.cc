@@ -63,6 +63,12 @@ bool IsTabletMode() {
   return ash::TabletMode::IsInTabletMode();
 }
 
+// Returns whether the session is active.
+bool IsSessionActive() {
+  return session_manager::SessionManager::Get()->session_state() ==
+         session_manager::SessionState::ACTIVE;
+}
+
 }  // namespace
 
 AppListClientImpl::AppListClientImpl()
@@ -458,8 +464,7 @@ void AppListClientImpl::InitializeAsIfNewUserLoginForTest() {
 void AppListClientImpl::OnSessionStateChanged() {
   // Return early if the current user is not new or the session is not active.
   if (!user_manager::UserManager::Get()->IsCurrentUserNew() ||
-      session_manager::SessionManager::Get()->session_state() !=
-          session_manager::SessionState::ACTIVE) {
+      !IsSessionActive()) {
     return;
   }
 
@@ -597,6 +602,13 @@ void AppListClientImpl::MaybeRecordViewShown() {
     return;
   }
 
+  // Record launcher usage only when the session is active.
+  // TODO(https://crbug.com/1248250): handle ui events during OOBE in a more
+  // elegant way. For example, do not bother showing the app list when handling
+  // the app list toggling event because the app list is not visible in OOBE.
+  if (!IsSessionActive())
+    return;
+
   if (state_for_new_user_->showing_recorded) {
     // Showing launcher was recorded before so return early.
     return;
@@ -604,7 +616,7 @@ void AppListClientImpl::MaybeRecordViewShown() {
 
   state_for_new_user_->showing_recorded = true;
 
-  DCHECK(new_user_session_activation_time_.has_value());
+  CHECK(new_user_session_activation_time_.has_value());
   const base::TimeDelta opening_duration =
       base::Time::Now() - *new_user_session_activation_time_;
   if (opening_duration >= base::TimeDelta()) {
