@@ -10,7 +10,11 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
+import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerCoordinator;
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerDialogCoordinator;
 import org.chromium.chrome.browser.signin.ui.frebottomgroup.FREBottomGroupCoordinator.Listener;
@@ -62,6 +66,10 @@ class FREBottomGroupMediator implements AccountsChangeObserver, ProfileDataCache
         mAccountManagerFacade.removeObserver(this);
     }
 
+    void onNativeAndPolicyLoaded() {
+        mModel.set(FREBottomGroupProperties.ARE_NATIVE_AND_POLICY_LOADED, true);
+    }
+
     /**
      * Implements {@link ProfileDataCache.Observer}.
      */
@@ -101,14 +109,29 @@ class FREBottomGroupMediator implements AccountsChangeObserver, ProfileDataCache
     /**
      * Callback for the PropertyKey
      * {@link FREBottomGroupProperties#ON_CONTINUE_AS_CLICKED}.
-     * TODO(crbug/1227313): Implement sign-in without sync.
      */
     private void onContinueAsClicked() {
         if (mSelectedAccountName == null) {
             mListener.addAccount();
             return;
         }
-        mListener.advanceToNextPage();
+        assert mModel.get(FREBottomGroupProperties.ARE_NATIVE_AND_POLICY_LOADED)
+            : "The continue button shouldn't be visible before the native is not initialize!";
+        final SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
+                Profile.getLastUsedRegularProfile());
+        signinManager.onFirstRunCheckDone();
+        signinManager.signin(
+                AccountUtils.createAccountFromName(mSelectedAccountName), new SignInCallback() {
+                    @Override
+                    public void onSignInComplete() {
+                        mListener.advanceToNextPage();
+                    }
+
+                    @Override
+                    public void onSignInAborted() {
+                        // TODO(crbug/1248090): Handle the sign-in error here
+                    }
+                });
     }
 
     private void setSelectedAccountName(String accountName) {

@@ -9,6 +9,7 @@ import android.view.View;
 
 import androidx.annotation.MainThread;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -16,19 +17,14 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * The coordinator handles the update and interaction of the bottom group of the FRE sign-in
  * screen. It is composed of a selected account, a continue button and a dismiss button.
  */
+@MainThread
 public class FREBottomGroupCoordinator {
-    /**
-     * Listener for FREBottomGroup.
-     */
+    /** Listener for FREBottomGroup. */
     public interface Listener {
-        /**
-         * Notifies when the user clicked the "add account" button.
-         */
+        /** Notifies when the user clicked the "add account" button. */
         void addAccount();
 
-        /**
-         * Notifies when the user clicked the dismiss button.
-         */
+        /** Notifies when the user clicked the dismiss button. */
         void advanceToNextPage();
     }
 
@@ -36,8 +32,13 @@ public class FREBottomGroupCoordinator {
 
     /**
      * Constructs a coordinator instance.
+     *
+     * @param context is used to create the UI.
+     * @param view is the FRE bottom group view including the selected account, the continue/
+     *        dismiss buttons and other view components that change according to different state.
+     * @param modalDialogManager is used to open dialogs like account picker dialog and uma dialog.
+     * @param listener is invoked to interact with classes outside the module.
      */
-    @MainThread
     public FREBottomGroupCoordinator(
             Context context, View view, ModalDialogManager modalDialogManager, Listener listener) {
         mMediator = new FREBottomGroupMediator(context, modalDialogManager, listener);
@@ -48,12 +49,18 @@ public class FREBottomGroupCoordinator {
     /**
      * Releases the resources used by the coordinator.
      */
-    @MainThread
     public void destroy() {
         mMediator.destroy();
     }
 
-    @MainThread
+    /**
+     * Notifies that native is initialized.
+     */
+    public void onNativeAndPolicyLoaded() {
+        ThreadUtils.assertOnUiThread();
+        mMediator.onNativeAndPolicyLoaded();
+    }
+
     public void onAccountSelected(String accountName) {
         mMediator.onAccountSelected(accountName, false);
     }

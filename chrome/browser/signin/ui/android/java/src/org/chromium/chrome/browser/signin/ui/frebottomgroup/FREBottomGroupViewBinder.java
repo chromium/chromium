@@ -17,6 +17,7 @@ import org.chromium.ui.widget.ButtonCompat;
 
 /**
  * Stateless FREBottomGroup view binder.
+ * TODO(crbug/1248083): Create a customised view class for the view here
  */
 class FREBottomGroupViewBinder {
     static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
@@ -34,27 +35,52 @@ class FREBottomGroupViewBinder {
             final @Nullable DisplayableProfileData profileData =
                     model.get(FREBottomGroupProperties.SELECTED_ACCOUNT_DATA);
             if (profileData == null) {
-                view.findViewById(R.id.signin_fre_selected_account).setVisibility(View.INVISIBLE);
                 ButtonCompat button = view.findViewById(R.id.signin_fre_continue_button);
                 button.setText(R.string.signin_add_account_to_device);
             } else {
                 ExistingAccountRowViewBinder.bindAccountView(
                         profileData, view.findViewById(R.id.signin_fre_selected_account));
-                view.findViewById(R.id.signin_fre_selected_account).setVisibility(View.VISIBLE);
                 ButtonCompat button = view.findViewById(R.id.signin_fre_continue_button);
                 button.setText(view.getContext().getString(R.string.signin_promo_continue_as,
                         profileData.getGivenNameOrFullNameOrEmail()));
             }
+            updateVisibility(view, model);
         } else if (propertyKey == FREBottomGroupProperties.IS_SELECTED_ACCOUNT_SUPERVISED) {
             final boolean isSelectedAccountSupervised =
                     model.get(FREBottomGroupProperties.IS_SELECTED_ACCOUNT_SUPERVISED);
             view.findViewById(R.id.signin_fre_selected_account)
                     .setEnabled(!isSelectedAccountSupervised);
-            view.findViewById(R.id.signin_fre_dismiss_button)
-                    .setVisibility(isSelectedAccountSupervised ? View.GONE : View.VISIBLE);
+            updateVisibility(view, model);
+        } else if (propertyKey == FREBottomGroupProperties.ARE_NATIVE_AND_POLICY_LOADED) {
+            updateVisibility(view, model);
         } else {
             throw new IllegalArgumentException("Unknown property key:" + propertyKey);
         }
+    }
+
+    private static void updateVisibility(View view, PropertyModel model) {
+        final boolean areNativeAndPolicyLoaded =
+                model.get(FREBottomGroupProperties.ARE_NATIVE_AND_POLICY_LOADED);
+        view.findViewById(R.id.signin_fre_progress_spinner)
+                .setVisibility(areNativeAndPolicyLoaded ? View.GONE : View.VISIBLE);
+
+        if (areNativeAndPolicyLoaded) {
+            view.findViewById(R.id.signin_fre_selected_account)
+                    .setVisibility(model.get(FREBottomGroupProperties.SELECTED_ACCOUNT_DATA) == null
+                                    ? View.GONE
+                                    : View.VISIBLE);
+            view.findViewById(R.id.signin_fre_dismiss_button)
+                    .setVisibility(
+                            model.get(FREBottomGroupProperties.IS_SELECTED_ACCOUNT_SUPERVISED)
+                                    ? View.GONE
+                                    : View.VISIBLE);
+        } else {
+            view.findViewById(R.id.signin_fre_selected_account).setVisibility(View.GONE);
+            view.findViewById(R.id.signin_fre_dismiss_button).setVisibility(View.GONE);
+        }
+        final int otherElementsVisibility = areNativeAndPolicyLoaded ? View.VISIBLE : View.GONE;
+        view.findViewById(R.id.signin_fre_continue_button).setVisibility(otherElementsVisibility);
+        view.findViewById(R.id.signin_fre_footer).setVisibility(otherElementsVisibility);
     }
 
     private FREBottomGroupViewBinder() {}

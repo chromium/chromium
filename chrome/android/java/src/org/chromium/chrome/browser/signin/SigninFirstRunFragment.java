@@ -34,13 +34,17 @@ public class SigninFirstRunFragment
     static final int ADD_ACCOUNT_REQUEST_CODE = 1;
 
     private ModalDialogManager mModalDialogManager;
-    private FREBottomGroupCoordinator mFREBottomGroupCoordinator;
+    // TODO(crbug/1186595): Rename the class FREBottomGroupCoordinator to FreBottomGroupCoordinator
+    private @Nullable FREBottomGroupCoordinator mFREBottomGroupCoordinator;
+    private boolean mNativeInitialized;
 
     public SigninFirstRunFragment() {}
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        getPageDelegate().getPolicyLoadListener().onAvailable(
+                hasPolicies -> notifyCoordinatorWhenNativeAndPolicyAreLoaded());
         mModalDialogManager = ((ModalDialogManagerHolder) getActivity()).getModalDialogManager();
     }
 
@@ -50,6 +54,7 @@ public class SigninFirstRunFragment
         final View view = inflater.inflate(R.layout.signin_first_run_view, container, false);
         mFREBottomGroupCoordinator = new FREBottomGroupCoordinator(requireContext(),
                 view.findViewById(R.id.signin_fre_bottom_group), mModalDialogManager, this);
+        notifyCoordinatorWhenNativeAndPolicyAreLoaded();
         return view;
     }
 
@@ -64,6 +69,15 @@ public class SigninFirstRunFragment
      */
     @Override
     public void setInitialA11yFocus() {}
+
+    /**
+     * Implements {@link FirstRunFragment}.
+     */
+    @Override
+    public void onNativeInitialized() {
+        mNativeInitialized = true;
+        notifyCoordinatorWhenNativeAndPolicyAreLoaded();
+    }
 
     /**
      * Implements {@link FREBottomGroupCoordinator.Listener}.
@@ -100,5 +114,12 @@ public class SigninFirstRunFragment
     @Override
     public void advanceToNextPage() {
         getPageDelegate().acceptTermsOfService(true);
+    }
+
+    private void notifyCoordinatorWhenNativeAndPolicyAreLoaded() {
+        if (mFREBottomGroupCoordinator != null && mNativeInitialized
+                && getPageDelegate().getPolicyLoadListener().get() != null) {
+            mFREBottomGroupCoordinator.onNativeAndPolicyLoaded();
+        }
     }
 }

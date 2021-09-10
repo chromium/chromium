@@ -29,9 +29,17 @@ class FREBottomGroupProperties {
     static final ReadableObjectPropertyKey<OnClickListener> ON_DISMISS_CLICKED =
             new ReadableObjectPropertyKey<>("on_dismiss_clicked");
 
-    static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {ON_SELECTED_ACCOUNT_CLICKED, SELECTED_ACCOUNT_DATA,
-                    IS_SELECTED_ACCOUNT_SUPERVISED, ON_CONTINUE_AS_CLICKED, ON_DISMISS_CLICKED};
+    static final WritableBooleanPropertyKey ARE_NATIVE_AND_POLICY_LOADED =
+            new WritableBooleanPropertyKey("are_native_and_policy_loaded");
+
+    static final PropertyKey[] ALL_KEYS = new PropertyKey[] {
+            ON_SELECTED_ACCOUNT_CLICKED,
+            SELECTED_ACCOUNT_DATA,
+            IS_SELECTED_ACCOUNT_SUPERVISED,
+            ON_CONTINUE_AS_CLICKED,
+            ON_DISMISS_CLICKED,
+            ARE_NATIVE_AND_POLICY_LOADED,
+    };
 
     /**
      * Creates a default model for FRE bottom group.
@@ -44,6 +52,7 @@ class FREBottomGroupProperties {
                 .with(IS_SELECTED_ACCOUNT_SUPERVISED, false)
                 .with(ON_CONTINUE_AS_CLICKED, v -> onContinueAsClicked.run())
                 .with(ON_DISMISS_CLICKED, v -> onDismissClicked.run())
+                .with(ARE_NATIVE_AND_POLICY_LOADED, false)
                 .build();
     }
 

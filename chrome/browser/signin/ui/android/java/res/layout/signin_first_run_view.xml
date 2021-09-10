@@ -35,6 +35,14 @@
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
+        <ProgressBar
+            android:id="@+id/signin_fre_progress_spinner"
+            style="@style/Widget.AppCompat.ProgressBar"
+            android:layout_gravity="center"
+            android:layout_marginBottom="128dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"/>
+
         <LinearLayout
             android:id="@+id/signin_fre_selected_account"
             android:layout_width="match_parent"
@@ -72,6 +80,7 @@
 
         <!-- TODO(crbug/1228155): Use the correct string for the footer -->
         <org.chromium.ui.widget.TextViewWithLeading
+            android:id="@+id/signin_fre_footer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
