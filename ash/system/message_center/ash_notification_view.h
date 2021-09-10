@@ -32,6 +32,12 @@ class ASH_EXPORT AshNotificationView
   void ToggleExpand();
 
   // message_center::NotificationView:
+  void AddGroupNotification(const message_center::Notification& notification,
+                            bool newest_first) override;
+  void PopulateGroupNotifications(
+      const std::vector<const message_center::Notification*>& notifications)
+      override;
+  void RemoveGroupNotification(const std::string& notification_id) override;
   void UpdateWithNotification(
       const message_center::Notification& notification) override;
   void SetExpanded(bool expanded) override;
@@ -69,14 +75,23 @@ class ASH_EXPORT AshNotificationView
   void UpdateBackground(int top_radius, int bottom_radius);
 
   ExpandButton* expand_button_ = nullptr;
+  views::View* left_content_ = nullptr;
+  views::View* grouped_notifications_container_ = nullptr;
 
   // Corner radius of the notification view.
   int top_radius_ = 0;
   int bottom_radius_ = 0;
 
+  // Count of grouped notifications contained in this view. Used for
+  // modifying the visibility of the title and content views in the parent
+  // notification as well as showing the number of grouped notifications not
+  // shown in a collapsed grouped notification.
+  int total_grouped_notifications_ = 0;
+
   // Cached background color to avoid unnecessary update.
   SkColor background_color_ = SK_ColorTRANSPARENT;
-
+  // Used to disable the background color for grouped notification views.
+  bool show_background_color_ = true;
   // Whether this view is shown in a notification popup.
   bool shown_in_popup_ = false;
 };

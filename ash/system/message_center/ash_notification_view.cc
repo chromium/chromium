@@ -126,8 +126,8 @@ AshNotificationView::AshNotificationView(
   auto expand_button = std::make_unique<ExpandButton>(base::BindRepeating(
       &AshNotificationView::ToggleExpand, base::Unretained(this)));
 
-  header_left_content->AddChildView(CreateHeaderRow());
-  header_left_content->AddChildView(CreateLeftContentView());
+  auto* header_row = header_left_content->AddChildView(CreateHeaderRow());
+  left_content_ = header_left_content->AddChildView(CreateLeftContentView());
 
   auto* header_left_content_ptr =
       content_row->AddChildView(std::move(header_left_content));
@@ -147,12 +147,23 @@ AshNotificationView::AshNotificationView(
   AddChildView(CreateControlButtonsView());
   AddChildView(std::move(main_view));
 
+  if (notification.group_child()) {
+    header_row->SetVisible(false);
+    show_background_color_ = false;
+  }
+
+  grouped_notifications_container_ =
+      AddChildView(std::make_unique<views::View>());
+  grouped_notifications_container_->SetLayoutManager(
+      std::make_unique<views::BoxLayout>(Orientation::kVertical, gfx::Insets(),
+                                         0));
+
   CreateOrUpdateViews(notification);
   UpdateControlButtonsVisibilityWithNotification(notification);
 
   expand_button_->SetVisible(IsExpandable());
 
-  if (shown_in_popup_) {
+  if (shown_in_popup_ && !notification.group_child()) {
     layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   }
@@ -168,6 +179,51 @@ void AshNotificationView::UpdateWithNotification(
 
 void AshNotificationView::ToggleExpand() {
   SetExpanded(!IsExpanded());
+}
+
+void AshNotificationView::AddGroupNotification(
+    const message_center::Notification& notification,
+    bool newest_first) {
+  grouped_notifications_container_->AddChildViewAt(
+      std::make_unique<AshNotificationView>(notification,
+                                            /*shown_in_popup=*/false),
+      newest_first ? 0 : grouped_notifications_container_->children().size());
+
+  total_grouped_notifications_++;
+  left_content_->SetVisible(false);
+  PreferredSizeChanged();
+}
+
+void AshNotificationView::PopulateGroupNotifications(
+    const std::vector<const message_center::Notification*>& notifications) {
+  DCHECK(total_grouped_notifications_ == 0);
+  for (auto* notification : notifications) {
+    grouped_notifications_container_->AddChildViewAt(
+        std::make_unique<AshNotificationView>(*notification,
+                                              /*shown_in_popup=*/false),
+        0);
+  }
+  total_grouped_notifications_ = notifications.size();
+  left_content_->SetVisible(total_grouped_notifications_ == 0);
+}
+
+void AshNotificationView::RemoveGroupNotification(
+    const std::string& notification_id) {
+  AshNotificationView* to_be_deleted = nullptr;
+  for (auto* child : grouped_notifications_container_->children()) {
+    AshNotificationView* group_notification =
+        static_cast<AshNotificationView*>(child);
+    if (group_notification->notification_id() == notification_id) {
+      to_be_deleted = group_notification;
+      break;
+    }
+  }
+  if (to_be_deleted)
+    delete to_be_deleted;
+
+  total_grouped_notifications_--;
+  left_content_->SetVisible(total_grouped_notifications_ == 0);
+  PreferredSizeChanged();
 }
 
 void AshNotificationView::SetExpanded(bool expanded) {
@@ -207,7 +263,9 @@ void AshNotificationView::UpdateBackground(int top_radius, int bottom_radius) {
       bottom_radius_ == bottom_radius) {
     return;
   }
-  background_color_ = background_color;
+
+  if (show_background_color_)
+    background_color_ = background_color;
   top_radius_ = top_radius;
   bottom_radius_ = bottom_radius;
 

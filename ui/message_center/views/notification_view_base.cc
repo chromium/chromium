@@ -640,32 +640,6 @@ NotificationViewBase::~NotificationViewBase() {
   RemovePreTargetHandler(click_activator_.get());
 }
 
-void NotificationViewBase::AddGroupNotification(
-    const Notification& notification,
-    bool newest_first) {
-  if (newest_first) {
-    left_content_->AddChildViewAt(
-        std::make_unique<NotificationView>(notification), 0);
-  } else {
-    left_content_->AddChildView(
-        std::make_unique<NotificationView>(notification));
-  }
-  SetExpanded(true);
-}
-
-void NotificationViewBase::RemoveGroupNotification(
-    const std::string& notification_id) {
-  NotificationViewBase* to_be_deleted = nullptr;
-  for (auto* child : left_content_->children()) {
-    NotificationViewBase* group_notification =
-        static_cast<NotificationViewBase*>(child);
-    if (group_notification->notification_id() == notification_id)
-      to_be_deleted = group_notification;
-  }
-  if (to_be_deleted)
-    delete to_be_deleted;
-}
-
 void NotificationViewBase::AddLayerBeneathView(ui::Layer* layer) {
   for (auto* child : GetChildrenForLayerAdjustment()) {
     child->SetPaintToLayer();

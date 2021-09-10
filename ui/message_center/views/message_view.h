@@ -85,6 +85,13 @@ class MESSAGE_CENTER_EXPORT MessageView
   // the grouped notification state.
   virtual void AddGroupNotification(const Notification& notification,
                                     bool newest_first) {}
+
+  // Populates this view with a list of grouped notifications, this is intended
+  // to be used for initializing of grouped notifications so it does not
+  // explicitly update the size of the view unlike `AddGroupNotification`.
+  virtual void PopulateGroupNotifications(
+      const std::vector<const Notification*>& notifications) {}
+
   virtual void RemoveGroupNotification(const std::string& notification_id) {}
 
   // Updates this view with the new data contained in the notification.

@@ -133,14 +133,16 @@ void NotificationGroupingController::PopulateGroupParent(
       GetActiveNotificationViewController()->GetMessageViewForNotificationId(
           notification_id);
 
+  std::vector<const Notification*> notifications;
   for (const auto* notification : MessageCenter::Get()->GetNotifications()) {
     if (notification->notifier_id() == parent_view->notifier_id() &&
         notification->id() != parent_view->notification_id()) {
       grouped_notification_list_->AddGroupedNotification(notification->id(),
                                                          notification_id);
-      parent_view->AddGroupNotification(*notification, /*newest_first=*/true);
+      notifications.push_back(notification);
     }
   }
+  parent_view->PopulateGroupNotifications(notifications);
 }
 
 const std::string& NotificationGroupingController::GetParentIdForChildForTest(

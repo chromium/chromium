@@ -73,6 +73,7 @@ class AshNotificationViewTest : public AshTestBase, public views::ViewObserver {
   views::View* GetExpandButton() { return notification_view_->expand_button_; }
 
   AshNotificationView* notification_view() { return notification_view_.get(); }
+  views::View* left_content() { return notification_view_->left_content_; }
 
  private:
   std::unique_ptr<AshNotificationView> notification_view_;
@@ -89,4 +90,16 @@ TEST_F(AshNotificationViewTest, ExpandButtonVisibility) {
   EXPECT_TRUE(GetExpandButton()->GetVisible());
 }
 
+TEST_F(AshNotificationViewTest, LeftContentNotVisibleInGroupedNotifications) {
+  auto notification = CreateTestNotification();
+
+  EXPECT_TRUE(left_content()->GetVisible());
+
+  auto group_child = CreateTestNotification();
+  notification_view()->AddGroupNotification(*group_child.get(), false);
+  EXPECT_FALSE(left_content()->GetVisible());
+
+  notification_view()->RemoveGroupNotification(group_child->id());
+  EXPECT_TRUE(left_content()->GetVisible());
+}
 }  // namespace ash

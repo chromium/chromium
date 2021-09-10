@@ -217,6 +217,8 @@ TEST_F(NotificationGroupingControllerTest,
 
   id4 = AddNotificationWithNotifierId(group_id);
 
+  AnimateUntilIdle();
+
   message_center->RemoveNotification(id0, true);
   message_center->RemoveNotification(id1, true);
   message_center->RemoveNotification(id2, true);

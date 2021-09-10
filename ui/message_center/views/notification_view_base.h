@@ -188,9 +188,6 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   void RemoveBackgroundAnimation();
 
   // MessageView:
-  void AddGroupNotification(const Notification& notification,
-                            bool newest_first) override;
-  void RemoveGroupNotification(const std::string& notification_id) override;
   void AddLayerBeneathView(ui::Layer* layer) override;
   void RemoveLayerBeneathView(ui::Layer* layer) override;
   void Layout() override;
