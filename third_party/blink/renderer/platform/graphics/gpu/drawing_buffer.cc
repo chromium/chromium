@@ -1109,7 +1109,7 @@ cc::Layer* DrawingBuffer::CcLayer() {
     layer_->SetNearestNeighbor(filter_quality_ ==
                                cc::PaintFlags::FilterQuality::kNone);
 
-    if (opengl_flip_y_extension_)
+    if (opengl_flip_y_extension_ && IsUsingGpuCompositing())
       layer_->SetFlipped(false);
   }
 
