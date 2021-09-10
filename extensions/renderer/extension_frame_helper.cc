@@ -486,7 +486,8 @@ void ExtensionFrameHelper::ExecuteCode(mojom::ExecuteCodeParamsPtr param,
   // Sanity checks.
   if (param->injection->is_css()) {
     if (param->injection->get_css()->sources.empty()) {
-      mojo::ReportBadMessage("At least one CSS source must be specified.");
+      local_frame_receiver_.ReportBadMessage(
+          "At least one CSS source must be specified.");
       return;
     }
 
@@ -496,14 +497,15 @@ void ExtensionFrameHelper::ExecuteCode(mojom::ExecuteCodeParamsPtr param,
                               [](const mojom::CSSSourcePtr& source) {
                                 return source->key.has_value();
                               })) {
-      mojo::ReportBadMessage(
+      local_frame_receiver_.ReportBadMessage(
           "An injection key must be specified for CSS removal.");
       return;
     }
   } else {
     DCHECK(param->injection->is_js());  // Enforced by mojo.
     if (param->injection->get_js()->sources.empty()) {
-      mojo::ReportBadMessage("At least one JS source must be specified.");
+      local_frame_receiver_.ReportBadMessage(
+          "At least one JS source must be specified.");
       return;
     }
   }
