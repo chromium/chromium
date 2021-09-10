@@ -110,8 +110,6 @@ class RenderWidgetHostOwnerDelegate;
 class SyntheticGestureController;
 class TimeoutMonitor;
 class TouchEmulator;
-// TODO(https://crbug.com/82582): Remove this layering violation.
-class WebContents;
 
 // This implements the RenderWidgetHost interface that is exposed to
 // embedders of content, and adds things only visible to content.
@@ -859,6 +857,15 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   mojom::CreateFrameWidgetParamsPtr
   BindAndGenerateCreateFrameWidgetParamsForNewWindow();
 
+  // RenderFrameMetadataProvider::Observer implementation.
+  void OnRenderFrameMetadataChangedBeforeActivation(
+      const cc::RenderFrameMetadata& metadata) override;
+  void OnRenderFrameMetadataChangedAfterActivation(
+      base::TimeTicks activation_time) override;
+  void OnRenderFrameSubmission() override;
+  void OnLocalSurfaceIdChanged(
+      const cc::RenderFrameMetadata& metadata) override;
+
  protected:
   // |routing_id| must not be MSG_ROUTING_NONE.
   // If this object outlives |delegate|, DetachDelegate() must be called when
@@ -948,7 +955,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   friend class OverscrollNavigationOverlayTest;
   friend class RenderViewHostTester;
   friend class TestRenderViewHost;
-  friend bool TestGuestAutoresize(WebContents*, WebContents*);
 
   // Tell this object to destroy itself. If |also_delete| is specified, the
   // destructor is called as well.
@@ -1084,15 +1090,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 #if defined(OS_MAC)
   device::mojom::WakeLock* GetWakeLock();
 #endif
-
-  // RenderFrameMetadataProvider::Observer implementation.
-  void OnRenderFrameMetadataChangedBeforeActivation(
-      const cc::RenderFrameMetadata& metadata) override;
-  void OnRenderFrameMetadataChangedAfterActivation(
-      base::TimeTicks activation_time) override;
-  void OnRenderFrameSubmission() override {}
-  void OnLocalSurfaceIdChanged(
-      const cc::RenderFrameMetadata& metadata) override;
 
   // Returns a pointer to the touch emulator serving this host, but only if it
   // already exists; calling this function will not force creation of a
