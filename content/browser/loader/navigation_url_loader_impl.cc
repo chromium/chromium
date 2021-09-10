@@ -15,6 +15,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_stats.h"
@@ -311,6 +312,17 @@ uint32_t GetURLLoaderOptions(bool is_main_frame, bool is_in_fenced_frame_tree) {
   options |= network::mojom::kURLLoadOptionSendSSLInfoForCertificateError;
 
   return options;
+}
+
+void LogQueueTimeHistogram(base::StringPiece name, bool is_main_frame) {
+  auto* task = base::TaskAnnotator::CurrentTaskForThread();
+  // Only log for non-delayed tasks with a valid queue_time.
+  if (!task || task->queue_time.is_null() || !task->delayed_run_time.is_null())
+    return;
+
+  base::UmaHistogramTimes(
+      base::StrCat({name, is_main_frame ? ".MainFrame" : ".Subframe"}),
+      base::TimeTicks::Now() - task->queue_time);
 }
 
 }  // namespace
@@ -787,12 +799,16 @@ void NavigationURLLoaderImpl::OnReceiveEarlyHints(
 
 void NavigationURLLoaderImpl::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head) {
+  LogQueueTimeHistogram("Navigation.QueueTime.OnReceiveResponse",
+                        resource_request_->is_main_frame);
   head_ = std::move(head);
   on_receive_response_time_ = base::TimeTicks::Now();
 }
 
 void NavigationURLLoaderImpl::OnStartLoadingResponseBody(
     mojo::ScopedDataPipeConsumerHandle response_body) {
+  LogQueueTimeHistogram("Navigation.QueueTime.OnStartLoadingResponseBody",
+                        resource_request_->is_main_frame);
   if (!on_receive_response_time_.is_null()) {
     UMA_HISTOGRAM_TIMES(
         "Navigation.OnReceiveResponseToOnStartLoadingResponseBody",
@@ -905,6 +921,8 @@ void NavigationURLLoaderImpl::CallOnReceivedResponse(
 void NavigationURLLoaderImpl::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr head) {
+  LogQueueTimeHistogram("Navigation.QueueTime.OnReceiveRedirect",
+                        resource_request_->is_main_frame);
   net::Error error = net::OK;
   if (!bypass_redirect_checks_ &&
       !IsSafeRedirectTarget(url_, redirect_info.new_url)) {
