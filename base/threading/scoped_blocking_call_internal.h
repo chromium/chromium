@@ -84,7 +84,7 @@ class BASE_EXPORT IOJankMonitoringWindow
     void Cancel();
 
    private:
-    const TimeTicks call_start_;
+    TimeTicks call_start_;
     scoped_refptr<IOJankMonitoringWindow> assigned_jank_window_;
   };
 
