@@ -311,7 +311,7 @@ void FileAnalyzer::OnDocumentAnalysisFinished(
     const DocumentAnalyzerResults& document_results) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // Log metrics for Document Analysis
+  // Log metrics for Document Analysis.
   UMA_HISTOGRAM_BOOLEAN("SBClientDownload.DocumentAnalysisSuccess",
                         document_results.success);
   UMA_HISTOGRAM_MEDIUM_TIMES(

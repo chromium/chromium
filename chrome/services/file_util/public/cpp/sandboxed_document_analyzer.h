@@ -20,8 +20,8 @@ struct DocumentAnalyzerResults;
 }
 
 // This class is used to analyze office documents in a sandbox for download
-// proection. The class lives on the UI thread, which is where the result
-// callback will be involved
+// protection. The class lives on the UI thread, which is where the result
+// callback will be invoked
 
 class SandboxedDocumentAnalyzer
     : public base::RefCountedDeleteOnSequence<SandboxedDocumentAnalyzer> {
@@ -67,7 +67,7 @@ class SandboxedDocumentAnalyzer
   // The file path containing the contents of the document to analyze.
   base::FilePath tmp_file_path_;
 
-  // Callback involved on the UI thread with the document analysis results.
+  // Callback invoked on the UI thread with the document analysis results.
   ResultCallback callback_;
 
   // Remote interfaces to the document analysis service. Only used from the UI

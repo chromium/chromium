@@ -59,6 +59,10 @@ if (safe_browsing_mode == 1) {
       sources += [ "sandboxed_dmg_analyzer_mac_unittest.cc" ]
     }
 
+    if (is_linux) {
+      sources += [ "sandboxed_document_analyzer_unittest.cc" ]
+    }
+
     deps = [
       ":cpp",
       "//base/test:test_support",

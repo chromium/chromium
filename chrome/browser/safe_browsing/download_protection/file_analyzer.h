@@ -83,7 +83,7 @@ class FileAnalyzer {
     // For archive files, the number of contained directories.
     int directory_count = 0;
 
-    // For office documents, the features and metadata extracted from the file
+    // For office documents, the features and metadata extracted from the file.
     ClientDownloadRequest::DocumentSummary document_summary;
   };
 

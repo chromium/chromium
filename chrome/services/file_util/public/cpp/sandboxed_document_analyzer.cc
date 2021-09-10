@@ -52,10 +52,8 @@ void SandboxedDocumentAnalyzer::PrepareFileToAnalyze() {
   base::File file(tmp_file_path_,
                   base::File::FLAG_OPEN | base::File::FLAG_READ);
 
-  std::string file_error_message;
   if (!file.IsValid()) {
-    file_error_message = "Could not open file";
-    ReportFileFailure(file_error_message);
+    ReportFileFailure("Could not open file");
     return;
   }
 

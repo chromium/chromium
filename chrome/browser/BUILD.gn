@@ -2189,6 +2189,7 @@ static_library("browser") {
     "//components/safe_browsing/core/browser/realtime:url_lookup_service",
     "//components/safe_browsing/core/browser/sync",
     "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/safe_browsing/core/common:safe_browsing_policy_handler",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/safe_search_api",
