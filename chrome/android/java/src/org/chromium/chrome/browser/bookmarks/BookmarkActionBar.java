@@ -35,6 +35,9 @@ import java.util.List;
 public class BookmarkActionBar extends SelectableListToolbar<BookmarkId>
         implements BookmarkUIObserver, OnMenuItemClickListener, OnClickListener,
                    DragReorderableListAdapter.DragListener {
+    private final int[] mDisabledState = new int[] {-android.R.attr.state_enabled};
+    private final int[] mEnabledState = new int[] {android.R.attr.state_enabled};
+
     private BookmarkItem mCurrentFolder;
     private BookmarkDelegate mDelegate;
 
@@ -250,6 +253,12 @@ public class BookmarkActionBar extends SelectableListToolbar<BookmarkId>
         }
     }
 
+    private void setOverflowIconEnabled(boolean drag) {
+        mMenuButton.setState(drag ? mDisabledState : mEnabledState);
+        // Call invalidateSelf() to ensure overflow menu icon is redrawn.
+        mMenuButton.invalidateSelf();
+    }
+
     // DragListener implementation.
 
     /**
@@ -259,7 +268,13 @@ public class BookmarkActionBar extends SelectableListToolbar<BookmarkId>
      */
     @Override
     public void onDragStateChange(boolean drag) {
+        // Disable menu items while dragging.
         getMenu().setGroupEnabled(R.id.selection_mode_menu_group, !drag);
+
+        // Disable overflow menu item while dragging.
+        setOverflowIconEnabled(drag);
+
+        // Disable listeners while dragging.
         setNavigationOnClickListener(drag ? null : this);
         setOnMenuItemClickListener(drag ? null : this);
     }

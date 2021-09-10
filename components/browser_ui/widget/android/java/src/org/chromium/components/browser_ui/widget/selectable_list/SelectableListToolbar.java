@@ -106,7 +106,7 @@ public class SelectableListToolbar<E>
     private boolean mUpdateStatusBarColor;
 
     protected NumberRollView mNumberRollView;
-    private Drawable mMenuButton;
+    protected Drawable mMenuButton;
     private Drawable mNavigationIconDrawable;
 
     private int mNavigationButton;
