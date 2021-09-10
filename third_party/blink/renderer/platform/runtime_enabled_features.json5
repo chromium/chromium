@@ -937,7 +937,7 @@
     },
     {
       name: "EncryptedMediaSessionClosedReason",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "EnterKeyHintAttribute",
