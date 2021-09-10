@@ -4,6 +4,27 @@
 
 import("//chromecast/chromecast.gni")
 
+group("cast_core") {
+  deps = [
+    ":browser",
+    ":grpc_webui",
+    ":message_port",
+    ":metrics_recorder",
+    ":renderer",
+    ":runtime_service",
+    ":streaming_receiver_session_client",
+    ":url_rewrite",
+  ]
+
+  if (is_linux) {
+    deps += [ ":core_service" ]
+  }
+
+  if (enable_cast_media_runtime) {
+    deps += [ ":cast_runtime_content_client_factories" ]
+  }
+}
+
 cast_source_set("grpc_support") {
   sources = [
     "grpc_method.cc",
@@ -136,7 +157,7 @@ cast_source_set("grpc_webui") {
 }
 
 if (is_linux) {
-  cast_source_set("core_runtime_bindings") {
+  cast_source_set("core_service_bindings") {
     sources = [
       "bindings_manager_web_runtime.cc",
       "bindings_manager_web_runtime.h",
@@ -157,7 +178,7 @@ if (is_linux) {
     deps = [ "//chromecast/bindings:bindings_manager_cast" ]
   }
 
-  cast_source_set("core_runtime") {
+  cast_source_set("core_service") {
     sources = [
       "runtime_application_service.cc",
       "runtime_application_service.h",
@@ -183,7 +204,7 @@ if (is_linux) {
     ]
 
     deps = [
-      ":core_runtime_bindings",
+      ":core_service_bindings",
       ":url_rewrite",
       "//chromecast/browser:browser_base",
       "//content/public/browser",
@@ -278,7 +299,7 @@ cast_source_set("runtime_service") {
     ]
 
     public_deps += [
-      ":core_runtime",
+      ":core_service",
       ":metrics_recorder",
     ]
 
@@ -312,6 +333,7 @@ if (enable_cast_media_runtime) {
   }
 }
 
+# When built for use with Cast Core, enble_cast_media_runtime must be true.
 cast_executable("core_runtime_simple") {
   sources = [ "cast_runtime_main.cc" ]
 
@@ -360,27 +382,6 @@ cast_source_set("cast_core_test_utils") {
     "//third_party/metrics_proto",
     "//third_party/openscreen/src/cast/cast_core/api:metrics_recorder_proto",
   ]
-}
-
-group("cast_core") {
-  deps = [
-    ":browser",
-    ":grpc_webui",
-    ":message_port",
-    ":metrics_recorder",
-    ":renderer",
-    ":runtime_service",
-    ":streaming_receiver_session_client",
-    ":url_rewrite",
-  ]
-
-  if (is_linux) {
-    deps += [ ":core_runtime" ]
-  }
-
-  if (enable_cast_media_runtime) {
-    deps += [ ":cast_runtime_content_client_factories" ]
-  }
 }
 
 # TODO(b/194439829): Upstream additional metrics unit tests.
