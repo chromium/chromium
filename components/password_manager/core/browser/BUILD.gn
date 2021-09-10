@@ -189,8 +189,6 @@ static_library("browser") {
     "password_store_impl.cc",
     "password_store_impl.h",
     "password_store_interface.h",
-    "password_store_proxy_backend.cc",
-    "password_store_proxy_backend.h",
     "password_store_signin_notifier.h",
     "password_store_sync.cc",
     "password_store_sync.h",
@@ -319,6 +317,8 @@ static_library("browser") {
       "password_scripts_fetcher.h",
       "password_scripts_fetcher_impl.cc",
       "password_scripts_fetcher_impl.h",
+      "password_store_proxy_backend.cc",
+      "password_store_proxy_backend.h",
     ]
   }
 
@@ -671,7 +671,6 @@ source_set("unit_tests") {
     "password_reuse_manager_impl_unittest.cc",
     "password_save_manager_impl_unittest.cc",
     "password_store_impl_unittest.cc",
-    "password_store_proxy_backend_unittest.cc",
     "password_store_unittest.cc",
     "password_sync_util_unittest.cc",
     "password_ui_utils_unittest.cc",
@@ -697,7 +696,10 @@ source_set("unit_tests") {
     "well_known_change_password_util_unittest.cc",
   ]
   if (is_android) {
-    sources += [ "password_scripts_fetcher_impl_unittests.cc" ]
+    sources += [
+      "password_scripts_fetcher_impl_unittests.cc",
+      "password_store_proxy_backend_unittest.cc",
+    ]
   }
   if (is_ios) {
     sources += [ "login_database_ios_unittest.cc" ]
