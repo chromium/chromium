@@ -70,6 +70,7 @@ OpenInTabHelper::~OpenInTabHelper() {
   // In case that the destructor is called before WebStateDestroyed. stop
   // observing the WebState.
   if (web_state_) {
+    [delegate_ destroyOpenInForWebState:web_state_];
     web_state_->RemoveObserver(this);
     web_state_ = nullptr;
   }
