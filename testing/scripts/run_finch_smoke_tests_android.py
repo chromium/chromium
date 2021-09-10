@@ -219,6 +219,12 @@ def main(args):
                       required=True,
                       type=os.path.realpath,
                       help='Path to the WebView provider apk')
+  parser.add_argument('--write-full-results-to',
+                      '--isolated-script-test-output',
+                      action='store',
+                      type=os.path.realpath,
+                      default=os.path.join(os.getcwd(), 'output.json'),
+                      help='Path to output directory')
   add_emulator_args(parser)
   script_common.AddDeviceArguments(parser)
   script_common.AddEnvironmentArguments(parser)
@@ -255,7 +261,7 @@ def main(args):
 
     log_mon.Stop()
     json_results = get_json_results(w_seed_res, wo_seed_res)
-    with open(os.path.join(os.getcwd(), 'output.json'), 'w') as json_out:
+    with open(options.write_full_results_to, 'w') as json_out:
       json_out.write(json.dumps(json_results, indent=4))
   return ret
 
