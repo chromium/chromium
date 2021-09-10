@@ -151,7 +151,7 @@ void BackgroundFetchDelegateBase::ResumeDownload(const std::string& job_id) {
     std::move(job_details->on_resume).Run();
 }
 
-void BackgroundFetchDelegateBase::CancelDownload(const std::string& job_id) {
+void BackgroundFetchDelegateBase::CancelDownload(std::string job_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   JobDetails* job_details = GetJobDetails(job_id);
 
