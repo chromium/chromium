@@ -44,10 +44,10 @@ void SaveCardMessageConfirmController::ConfirmName(
           l10n_util::GetStringUTF16(
               IDS_AUTOFILL_MOBILE_SAVE_CARD_TO_CLOUD_CONFIRMATION_DIALOG_TITLE)),
       base::android::ConvertUTF16ToJavaString(env, inferred_cardholder_name),
+      base::android::ConvertUTF16ToJavaString(env, card_label),
       base::android::ConvertUTF16ToJavaString(
           env, l10n_util::GetStringUTF16(
-                   IDS_AUTOFILL_FIX_FLOW_PROMPT_SAVE_CARD_LABEL)),
-      base::android::ConvertUTF16ToJavaString(env, card_label));
+                   IDS_AUTOFILL_FIX_FLOW_PROMPT_SAVE_CARD_LABEL)));
 }
 
 void SaveCardMessageConfirmController::ConfirmDate(
@@ -65,10 +65,10 @@ void SaveCardMessageConfirmController::ConfirmDate(
           env,
           l10n_util::GetStringUTF16(
               IDS_AUTOFILL_MOBILE_SAVE_CARD_TO_CLOUD_CONFIRMATION_DIALOG_TITLE)),
+      base::android::ConvertUTF16ToJavaString(env, card_label),
       base::android::ConvertUTF16ToJavaString(
           env, l10n_util::GetStringUTF16(
-                   IDS_AUTOFILL_FIX_FLOW_PROMPT_SAVE_CARD_LABEL)),
-      base::android::ConvertUTF16ToJavaString(env, card_label));
+                   IDS_AUTOFILL_FIX_FLOW_PROMPT_SAVE_CARD_LABEL)));
 }
 
 void SaveCardMessageConfirmController::ConfirmDate(

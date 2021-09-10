@@ -51,13 +51,13 @@ public class AutofillMessageConfirmFlowBridge
     }
 
     @Override
-    public void onUserAccept(String name) {
+    public void onUserAcceptCardholderName(String name) {
         AutofillMessageConfirmFlowBridgeJni.get().onNameConfirmed(
                 mNativeSaveCardMessageConfirmDelegate, name);
     }
 
     @Override
-    public void onUserAccept(String month, String year) {
+    public void onUserAcceptExpirationDate(String month, String year) {
         AutofillMessageConfirmFlowBridgeJni.get().onDateConfirmed(
                 mNativeSaveCardMessageConfirmDelegate, month, year);
     }
@@ -81,7 +81,7 @@ public class AutofillMessageConfirmFlowBridge
 
     @CalledByNative
     private void confirmDate(
-            String month, String year, String title, String confirmButtonLabel, String cardLabel) {
+            String month, String year, String title, String cardLabel, String confirmButtonLabel) {
         Activity activity = mWindowAndroid.getActivity().get();
         if (activity == null) {
             // Clean up the native counterpart. Post the dismissal to allow the native
@@ -92,7 +92,7 @@ public class AutofillMessageConfirmFlowBridge
         if (mExpirationDateFixFlowPrompt == null) {
             mExpirationDateFixFlowPrompt =
                     AutofillExpirationDateFixFlowPrompt.createAsMessageFixFlowPrompt(
-                            activity, this, month, year, title, confirmButtonLabel, cardLabel);
+                            activity, this, month, year, title, cardLabel, confirmButtonLabel);
             mExpirationDateFixFlowPrompt.setLegalMessageLine(mLegalMessageLine);
         }
         mExpirationDateFixFlowPrompt.show(activity, mWindowAndroid.getModalDialogManager());
@@ -100,7 +100,7 @@ public class AutofillMessageConfirmFlowBridge
 
     @CalledByNative
     private void confirmName(
-            String title, String inferredName, String confirmButtonLabel, String cardLabel) {
+            String title, String inferredName, String cardLabel, String confirmButtonLabel) {
         Activity activity = mWindowAndroid.getActivity().get();
         if (activity == null) {
             // Clean up the native counterpart. Post the dismissal to allow the native
@@ -110,7 +110,7 @@ public class AutofillMessageConfirmFlowBridge
         }
         if (mCardholderNameFixFlowPrompt == null) {
             mCardholderNameFixFlowPrompt = AutofillNameFixFlowPrompt.createAsMessageFixFlowPrompt(
-                    activity, this, title, inferredName, confirmButtonLabel, cardLabel);
+                    activity, this, inferredName, title, cardLabel, confirmButtonLabel);
             mCardholderNameFixFlowPrompt.setLegalMessageLine(mLegalMessageLine);
         }
         mCardholderNameFixFlowPrompt.show(activity, mWindowAndroid.getModalDialogManager());
