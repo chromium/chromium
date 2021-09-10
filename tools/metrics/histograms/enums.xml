@@ -29835,6 +29835,7 @@ Called by update_extension_permission.py.-->
   <int value="231" label="kWmDesksPrivate"/>
   <int value="232" label="kWebAuthenticationProxy"/>
   <int value="233" label="kDeclarativeNetRequestWithHostAccess"/>
+  <int value="234" label="kChromeOSTelemetry"/>
 </enum>
 
 <enum name="ExtensionPointEnableState">

@@ -43,7 +43,8 @@ void BaseTelemetryExtensionBrowserTest::CreateExtensionAndRunServiceWorker(
         "chromeos_system_extension": {},
         "background": {
           "service_worker": "sw.js"
-        }
+        },
+        "permissions": [ "os.telemetry" ]
       }
     )");
   test_dir.WriteFile(FILE_PATH_LITERAL("sw.js"), service_worker_content);

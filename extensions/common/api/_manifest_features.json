@@ -305,7 +305,8 @@
       "legacy_packaged_app",
       "hosted_app",
       "platform_app",
-      "login_screen_extension"
+      "login_screen_extension",
+      "chromeos_system_extension"
     ]
   },
   "replacement_android_app": {

@@ -706,6 +706,11 @@ ChromePermissionMessageRule::GetAllRules() {
       {IDS_EXTENSION_PROMPT_WARNING_TRANSIENT_BACKGROUND,
        {APIPermissionID::kTransientBackground},
        {}},
+
+      // Telemetry System Extension permissions.
+      {IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_TELEMETRY,
+       {APIPermissionID::kChromeOSTelemetry},
+       {}},
   };
 
   return std::vector<ChromePermissionMessageRule>(

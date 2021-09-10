@@ -23,6 +23,7 @@ group("extensions_features") {
   public_deps = [
     ":api_features",
     ":manifest_features",
+    ":permission_features",
   ]
 }
 
@@ -61,5 +62,12 @@ json_features("manifest_features") {
   feature_type = "ManifestFeature"
   method_name = "AddChromeOSSystemExtensionsManifestFeatures"
   sources = [ "_manifest_features.json" ]
+  visibility = [ ":extensions_features" ]
+}
+
+json_features("permission_features") {
+  feature_type = "PermissionFeature"
+  method_name = "AddChromeOSSystemExtensionsPermissionFeatures"
+  sources = [ "_permission_features.json" ]
   visibility = [ ":extensions_features" ]
 }

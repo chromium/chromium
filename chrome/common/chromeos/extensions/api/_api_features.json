@@ -18,9 +18,7 @@
     "channel": "dev"
   },
   "os.telemetry": {
-    // TODO(lamzin): introduce a separate permission instead of manifest
-    // dependency.
-    "dependencies": [ "manifest:chromeos_system_extension" ],
+    "dependencies": [ "permission:os.telemetry" ],
     "contexts": [
       "blessed_extension"
     ],

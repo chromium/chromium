@@ -10,6 +10,8 @@
 #include "chrome/common/chromeos/extensions/api/api_features.h"
 #include "chrome/common/chromeos/extensions/api/generated_schemas.h"
 #include "chrome/common/chromeos/extensions/api/manifest_features.h"
+#include "chrome/common/chromeos/extensions/api/permission_features.h"
+#include "chrome/common/chromeos/extensions/chromeos_system_extensions_api_permissions.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extensions_manifest_handler.h"
 #include "chrome/common/chromeos/extensions/grit/chromeos_system_extensions_resources.h"
 #include "extensions/common/features/feature_provider.h"
@@ -36,7 +38,9 @@ void ChromeOSSystemExtensionsAPIProvider::AddManifestFeatures(
 }
 
 void ChromeOSSystemExtensionsAPIProvider::AddPermissionFeatures(
-    extensions::FeatureProvider* provider) {}
+    extensions::FeatureProvider* provider) {
+  AddChromeOSSystemExtensionsPermissionFeatures(provider);
+}
 
 void ChromeOSSystemExtensionsAPIProvider::AddBehaviorFeatures(
     extensions::FeatureProvider* provider) {
@@ -59,7 +63,11 @@ base::StringPiece ChromeOSSystemExtensionsAPIProvider::GetAPISchema(
 }
 
 void ChromeOSSystemExtensionsAPIProvider::RegisterPermissions(
-    extensions::PermissionsInfo* permissions_info) {}
+    extensions::PermissionsInfo* permissions_info) {
+  permissions_info->RegisterPermissions(
+      extensions_api_permissions::GetPermissionInfos(),
+      base::span<const extensions::Alias>());
+}
 
 void ChromeOSSystemExtensionsAPIProvider::RegisterManifestHandlers() {
   DCHECK(!extensions::ManifestHandler::IsRegistrationFinalized());
