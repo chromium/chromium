@@ -160,6 +160,11 @@ class ExtensionAppsBase : public apps::PublisherBase,
   bool RunExtensionEnableFlow(const std::string& app_id,
                               base::OnceClosure callback);
 
+  // Called when the extension enable flow has finished.
+  void ExtensionEnableFlowFinished(base::OnceClosure callback,
+                                   const std::string& app_id,
+                                   bool enabled);
+
   virtual bool ShouldShownInLauncher(
       const extensions::Extension* extension) = 0;
   static bool ShouldShow(const extensions::Extension* extension,

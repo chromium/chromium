@@ -3539,6 +3539,8 @@ static_library("browser") {
       "apps/app_service/publishers/extension_apps.h",
       "apps/app_service/publishers/extension_apps_base.cc",
       "apps/app_service/publishers/extension_apps_base.h",
+      "apps/app_service/publishers/extension_apps_enable_flow.cc",
+      "apps/app_service/publishers/extension_apps_enable_flow.h",
       "apps/app_service/publishers/extension_apps_util.cc",
       "apps/app_service/publishers/extension_apps_util.h",
       "apps/app_service/web_contents_app_id_utils.cc",

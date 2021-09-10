@@ -19,6 +19,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/extension_uninstaller.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/apps/app_service/publishers/extension_apps_enable_flow.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps_util.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
@@ -137,46 +138,6 @@ apps::mojom::InstallSource GetInstallSource(
 }  // namespace
 
 namespace apps {
-
-// Attempts to enable and launch an extension app.
-class ExtensionAppsEnableFlow : public ExtensionEnableFlowDelegate {
- public:
-  ExtensionAppsEnableFlow(Profile* profile, const std::string& app_id)
-      : profile_(profile), app_id_(app_id) {}
-
-  ~ExtensionAppsEnableFlow() override = default;
-
-  ExtensionAppsEnableFlow(const ExtensionAppsEnableFlow&) = delete;
-  ExtensionAppsEnableFlow& operator=(const ExtensionAppsEnableFlow&) = delete;
-
-  void Run(base::OnceClosure callback) {
-    callback_ = std::move(callback);
-
-    if (!flow_) {
-      flow_ = std::make_unique<ExtensionEnableFlow>(profile_, app_id_, this);
-      flow_->Start();
-    }
-  }
-
- private:
-  // ExtensionEnableFlowDelegate overrides.
-  void ExtensionEnableFlowFinished() override {
-    flow_.reset();
-    // Automatically launch app after enabling.
-    if (!callback_.is_null()) {
-      std::move(callback_).Run();
-    }
-  }
-
-  void ExtensionEnableFlowAborted(bool user_initiated) override {
-    flow_.reset();
-  }
-
-  Profile* const profile_;
-  const std::string app_id_;
-  base::OnceClosure callback_;
-  std::unique_ptr<ExtensionEnableFlow> flow_;
-};
 
 ExtensionAppsBase::ExtensionAppsBase(
     const mojo::Remote<apps::mojom::AppService>& app_service,
@@ -637,8 +598,21 @@ bool ExtensionAppsBase::RunExtensionEnableFlow(const std::string& app_id,
         std::make_unique<ExtensionAppsEnableFlow>(profile_, app_id);
   }
 
-  enable_flow_map_[app_id]->Run(std::move(callback));
+  enable_flow_map_[app_id]->Run(
+      base::BindOnce(&ExtensionAppsBase::ExtensionEnableFlowFinished,
+                     weak_factory_.GetWeakPtr(), std::move(callback), app_id));
   return true;
+}
+
+void ExtensionAppsBase::ExtensionEnableFlowFinished(base::OnceClosure callback,
+                                                    const std::string& app_id,
+                                                    bool enabled) {
+  // If the extension was not enabled, we intentionally drop the callback on the
+  // floor and do nothing with it.
+  if (enabled) {
+    std::move(callback).Run();
+  }
+  enable_flow_map_.erase(app_id);
 }
 
 // static
