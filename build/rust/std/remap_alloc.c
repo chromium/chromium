@@ -5,6 +5,8 @@
 #include <stddef.h>
 #include <stdlib.h>
 
+#include "build/rust/std/immediate_crash.h"
+
 // When linking a final binary, rustc has to pick between either:
 // * The default Rust allocator
 // * Any #[global_allocator] defined in *any rlib in its dependency tree*
@@ -64,5 +66,5 @@ void* __rust_alloc_zeroed(size_t a, size_t b) {
 }
 
 void __rust_alloc_error_handler(size_t a, size_t b) {
-  abort();
+  IMMEDIATE_CRASH();
 }
