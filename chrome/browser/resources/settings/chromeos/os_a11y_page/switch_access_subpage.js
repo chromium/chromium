@@ -7,7 +7,26 @@
  * Switch Access settings.
  */
 
-import {getLabelForAssignment} from './switch_access_action_assignment_pane.m.js';
+import {afterNextRender, Polymer, html, flush, Templatizer, TemplateInstanceBase} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import '//resources/cr_elements/md_select_css.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {SliderTick} from '//resources/cr_elements/cr_slider/cr_slider.js';
+import '../../controls/settings_slider.js';
+import '../../controls/settings_toggle_button.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {routes} from '../os_route.m.js';
+import {Router, Route, RouteObserverBehavior} from '../../router.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {PrefsBehavior} from '../../prefs/prefs_behavior.js';
+import '../../settings_shared_css.js';
+import './switch_access_action_assignment_dialog.js';
+import {actionToPref, AUTO_SCAN_SPEED_RANGE_MS, AssignmentContext, SwitchAccessCommand, SwitchAccessDeviceType} from './switch_access_constants.js';
+import {getLabelForAssignment} from './switch_access_action_assignment_pane.js';
+import './switch_access_setup_guide_dialog.js';
+import './switch_access_setup_guide_warning_dialog.js';
+import {SwitchAccessSubpageBrowserProxy, SwitchAccessSubpageBrowserProxyImpl} from './switch_access_subpage_browser_proxy.js';
 
 /**
  * The portion of the setting name common to all Switch Access preferences.
@@ -20,7 +39,7 @@ const POINT_SCAN_SPEED_RANGE_DIPS_PER_SECOND = [25, 50, 75, 100, 150, 200, 300];
 
 /**
  * @param {!Array<number>} ticksInMs
- * @return {!Array<!cr_slider.SliderTick>}
+ * @return {!Array<!SliderTick>}
  */
 function ticksWithLabelsInSec(ticksInMs) {
   // Dividing by 1000 to convert milliseconds to seconds for the label.
@@ -29,20 +48,21 @@ function ticksWithLabelsInSec(ticksInMs) {
 
 /**
  * @param {!Array<number>} ticks
- * @return {!Array<!cr_slider.SliderTick>}
+ * @return {!Array<!SliderTick>}
  */
 function ticksWithCountingLabels(ticks) {
   return ticks.map((x, i) => ({label: i + 1, value: x}));
 }
 
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-switch-access-subpage',
 
   behaviors: [
     DeepLinkingBehavior,
     I18nBehavior,
     PrefsBehavior,
-    settings.RouteObserverBehavior,
+    RouteObserverBehavior,
     WebUIListenerBehavior,
   ],
 
@@ -197,12 +217,12 @@ Polymer({
   },
 
   /**
-   * @param {!settings.Route} route
-   * @param {!settings.Route} oldRoute
+   * @param {!Route} route
+   * @param {!Route} oldRoute
    */
   currentRouteChanged(route, oldRoute) {
     // Does not apply to this page.
-    if (route !== settings.routes.MANAGE_SWITCH_ACCESS_SETTINGS) {
+    if (route !== routes.MANAGE_SWITCH_ACCESS_SETTINGS) {
       return;
     }
 

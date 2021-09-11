@@ -10,14 +10,35 @@ const DEFAULT_BLACK_CURSOR_COLOR = 0;
  * 'settings-manage-a11y-page' is the subpage with the accessibility
  * settings.
  */
+import {afterNextRender, Polymer, html, flush, Templatizer, TemplateInstanceBase} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import '//resources/cr_elements/cr_link_row/cr_link_row.js';
+import '//resources/cr_elements/icons.m.js';
+import '//resources/cr_elements/shared_vars_css.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import '../../controls/settings_slider.js';
+import '../../controls/settings_toggle_button.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {routes} from '../os_route.m.js';
+import {Router, Route, RouteObserverBehavior} from '../../router.js';
+import '../../settings_shared_css.js';
+import {BatteryStatus, DevicePageBrowserProxy, DevicePageBrowserProxyImpl, ExternalStorage, IdleBehavior, LidClosedBehavior, NoteAppInfo, NoteAppLockScreenSupport, PowerManagementSettings, PowerSource, getDisplayApi, StorageSpaceState} from '../device_page/device_page_browser_proxy.js';
+import '//resources/cr_components/chromeos/localized_link/localized_link.js';
+import {RouteOriginBehaviorImpl, RouteOriginBehavior} from '../route_origin_behavior.m.js';
+import {ManageA11yPageBrowserProxyImpl, ManageA11yPageBrowserProxy} from './manage_a11y_page_browser_proxy.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-manage-a11y-page',
 
   behaviors: [
     DeepLinkingBehavior,
     I18nBehavior,
-    settings.RouteObserverBehavior,
-    settings.RouteOriginBehavior,
+    RouteObserverBehavior,
+    RouteOriginBehavior,
     WebUIListenerBehavior,
   ],
 
@@ -357,20 +378,19 @@ Polymer({
         'isKioskModeActive_)',
   ],
 
-  /** settings.RouteOriginBehavior override */
-  route_: settings.routes.MANAGE_ACCESSIBILITY,
+  /** RouteOriginBehavior override */
+  route_: routes.MANAGE_ACCESSIBILITY,
 
   /** @private {?ManageA11yPageBrowserProxy} */
   manageBrowserProxy_: null,
 
-  /** @private {?settings.DevicePageBrowserProxy} */
+  /** @private {?DevicePageBrowserProxy} */
   deviceBrowserProxy_: null,
 
   /** @override */
   created() {
     this.manageBrowserProxy_ = ManageA11yPageBrowserProxyImpl.getInstance();
-    this.deviceBrowserProxy_ =
-        settings.DevicePageBrowserProxyImpl.getInstance();
+    this.deviceBrowserProxy_ = DevicePageBrowserProxyImpl.getInstance();
   },
 
   /** @override */
@@ -403,7 +423,7 @@ Polymer({
         (locales) => this.onDictationLocalesSet_(locales));
     this.manageBrowserProxy_.manageA11yPageReady();
 
-    const r = settings.routes;
+    const r = routes;
     this.addFocusConfig_(r.MANAGE_TTS_SETTINGS, '#ttsSubpageButton');
     this.addFocusConfig_(r.MANAGE_CAPTION_SETTINGS, '#captionsSubpageButton');
     this.addFocusConfig_(
@@ -414,12 +434,12 @@ Polymer({
   },
 
   /**
-   * @param {!settings.Route} route
-   * @param {!settings.Route} oldRoute
+   * @param {!Route} route
+   * @param {!Route} oldRoute
    */
   currentRouteChanged(route, oldRoute) {
     // Does not apply to this page.
-    if (route !== settings.routes.MANAGE_ACCESSIBILITY) {
+    if (route !== routes.MANAGE_ACCESSIBILITY) {
       return;
     }
 
@@ -466,8 +486,7 @@ Polymer({
 
   /** @private */
   onManageTtsSettingsTap_() {
-    settings.Router.getInstance().navigateTo(
-        settings.routes.MANAGE_TTS_SETTINGS);
+    Router.getInstance().navigateTo(routes.MANAGE_TTS_SETTINGS);
   },
 
   /** @private */
@@ -482,8 +501,7 @@ Polymer({
 
   /** @private */
   onCaptionsClick_() {
-    settings.Router.getInstance().navigateTo(
-        settings.routes.MANAGE_CAPTION_SETTINGS);
+    Router.getInstance().navigateTo(routes.MANAGE_CAPTION_SETTINGS);
   },
 
   /** @private */
@@ -493,14 +511,13 @@ Polymer({
 
   /** @private */
   onSwitchAccessSettingsTap_() {
-    settings.Router.getInstance().navigateTo(
-        settings.routes.MANAGE_SWITCH_ACCESS_SETTINGS);
+    Router.getInstance().navigateTo(routes.MANAGE_SWITCH_ACCESS_SETTINGS);
   },
 
   /** @private */
   onDisplayTap_() {
-    settings.Router.getInstance().navigateTo(
-        settings.routes.DISPLAY,
+    Router.getInstance().navigateTo(
+        routes.DISPLAY,
         /* dynamicParams */ null, /* removeSearch */ true);
   },
 
@@ -512,8 +529,8 @@ Polymer({
 
   /** @private */
   onKeyboardTap_() {
-    settings.Router.getInstance().navigateTo(
-        settings.routes.KEYBOARD,
+    Router.getInstance().navigateTo(
+        routes.KEYBOARD,
         /* dynamicParams */ null, /* removeSearch */ true);
   },
 
@@ -621,8 +638,8 @@ Polymer({
 
   /** @private */
   onMouseTap_() {
-    settings.Router.getInstance().navigateTo(
-        settings.routes.POINTERS,
+    Router.getInstance().navigateTo(
+        routes.POINTERS,
         /* dynamicParams */ null, /* removeSearch */ true);
   },
 

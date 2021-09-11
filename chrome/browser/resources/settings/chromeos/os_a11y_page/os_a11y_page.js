@@ -7,12 +7,33 @@
  * 'os-settings-a11y-page' is the small section of advanced settings containing
  * a subpage with Accessibility settings for ChromeOS.
  */
+import '//resources/cr_elements/cr_link_row/cr_link_row.js';
+import '../../a11y_page/captions_subpage.js';
+import '../../controls/settings_toggle_button.js';
+import '../../settings_page/settings_animated_pages.js';
+import '../../settings_page/settings_subpage.js';
+import '../../settings_shared_css.js';
+import './manage_a11y_page.js';
+import './switch_access_subpage.js';
+import './tts_subpage.js';
+
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Route, RouteObserverBehavior, Router} from '../../router.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {routes} from '../os_route.m.js';
+
+import {OsA11yPageBrowserProxy, OsA11yPageBrowserProxyImpl} from './os_a11y_page_browser_proxy.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'os-settings-a11y-page',
 
   behaviors: [
     DeepLinkingBehavior,
-    settings.RouteObserverBehavior,
+    RouteObserverBehavior,
     WebUIListenerBehavior,
   ],
 
@@ -46,9 +67,8 @@ Polymer({
       type: Object,
       value() {
         const map = new Map();
-        if (settings.routes.MANAGE_ACCESSIBILITY) {
-          map.set(
-              settings.routes.MANAGE_ACCESSIBILITY.path, '#subpage-trigger');
+        if (routes.MANAGE_ACCESSIBILITY) {
+          map.set(routes.MANAGE_ACCESSIBILITY.path, '#subpage-trigger');
         }
         return map;
       },
@@ -104,7 +124,7 @@ Polymer({
    */
   beforeDeepLinkAttempt(settingId) {
     if (settingId === chromeos.settings.mojom.Setting.kLiveCaption) {
-      Polymer.RenderStatus.afterNextRender(this, () => {
+      afterNextRender(this, () => {
         const captionsSubpage = this.$$('settings-captions');
         if (captionsSubpage && captionsSubpage.getLiveCaptionToggle()) {
           this.showDeepLinkElement(captionsSubpage.getLiveCaptionToggle());
@@ -122,12 +142,12 @@ Polymer({
   },
 
   /**
-   * @param {!settings.Route} route
-   * @param {!settings.Route} oldRoute
+   * @param {!Route} route
+   * @param {!Route} oldRoute
    */
   currentRouteChanged(route, oldRoute) {
-    if (route === settings.routes.OS_ACCESSIBILITY ||
-        route === settings.routes.MANAGE_CAPTION_SETTINGS) {
+    if (route === routes.OS_ACCESSIBILITY ||
+        route === routes.MANAGE_CAPTION_SETTINGS) {
       this.attemptDeepLink();
     }
   },
@@ -152,8 +172,7 @@ Polymer({
 
   /** @private */
   onManageAccessibilityFeaturesTap_() {
-    settings.Router.getInstance().navigateTo(
-        settings.routes.MANAGE_ACCESSIBILITY);
+    Router.getInstance().navigateTo(routes.MANAGE_ACCESSIBILITY);
   },
 
 });

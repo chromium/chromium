@@ -1,78 +1,55 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="settings-shared"></style>
+<settings-animated-pages id="pages" current-route="{{currentRoute}}"
+    section="osAccessibility" focus-config="[[focusConfig_]]">
+  <div route-path="default">
+    <template is="dom-if" if="[[showAccessibilityLabelsSetting_]]">
+      <settings-toggle-button
+          id="a11yImageLabels"
+          pref="{{prefs.settings.a11y.enable_accessibility_image_labels}}"
+          on-change="onToggleAccessibilityImageLabels_"
+          label="$i18n{accessibleImageLabelsTitle}"
+          sub-label="$i18n{accessibleImageLabelsSubtitle}"
+          deep-link-focus-id$="[[Setting.kGetImageDescriptionsFromGoogle]]">
+      </settings-toggle-button>
+      <div class="hr"></div>
+    </template>
+    <settings-toggle-button id="optionsInMenuToggle"
+        hidden="[[isKioskModeActive_]]"
+        label="$i18n{optionsInMenuLabel}"
+        pref="{{prefs.settings.a11y.enable_menu}}"
+        deep-link-focus-id$="[[Setting.kA11yQuickSettings]]">
+    </settings-toggle-button>
+    <div class="hr" hidden="[[isKioskModeActive_]]"></div>
+    <cr-link-row id="subpage-trigger"
+        label="$i18n{manageAccessibilityFeatures}"
+        on-click="onManageAccessibilityFeaturesTap_"
+        sub-label="$i18n{moreFeaturesLinkDescription}"
+        role-description="$i18n{subpageArrowRoleDescription}">
+    </cr-link-row>
+  </div>
 
-<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="../../a11y_page/captions_subpage.html">
-<link rel="import" href="../../controls/settings_toggle_button.html">
-<link rel="import" href="chrome://resources/html/load_time_data.html">
-<link rel="import" href="../deep_linking_behavior.html">
-<link rel="import" href="../os_route.html">
-<link rel="import" href="../../router.html">
-<link rel="import" href="../../settings_page/settings_animated_pages.html">
-<link rel="import" href="../../settings_page/settings_subpage.html">
-<link rel="import" href="../../settings_shared_css.html">
-<link rel="import" href="manage_a11y_page.html">
-<link rel="import" href="os_a11y_page_browser_proxy.html">
-<link rel="import" href="switch_access_subpage.html">
-<link rel="import" href="tts_subpage.html">
-
-<dom-module id="os-settings-a11y-page">
-  <template>
-    <style include="settings-shared"></style>
-    <settings-animated-pages id="pages" current-route="{{currentRoute}}"
-        section="osAccessibility" focus-config="[[focusConfig_]]">
-      <div route-path="default">
-        <template is="dom-if" if="[[showAccessibilityLabelsSetting_]]">
-          <settings-toggle-button
-              id="a11yImageLabels"
-              pref="{{prefs.settings.a11y.enable_accessibility_image_labels}}"
-              on-change="onToggleAccessibilityImageLabels_"
-              label="$i18n{accessibleImageLabelsTitle}"
-              sub-label="$i18n{accessibleImageLabelsSubtitle}"
-              deep-link-focus-id$="[[Setting.kGetImageDescriptionsFromGoogle]]">
-          </settings-toggle-button>
-          <div class="hr"></div>
-        </template>
-        <settings-toggle-button id="optionsInMenuToggle"
-            hidden="[[isKioskModeActive_]]"
-            label="$i18n{optionsInMenuLabel}"
-            pref="{{prefs.settings.a11y.enable_menu}}"
-            deep-link-focus-id$="[[Setting.kA11yQuickSettings]]">
-        </settings-toggle-button>
-        <div class="hr" hidden="[[isKioskModeActive_]]"></div>
-        <cr-link-row id="subpage-trigger"
-            label="$i18n{manageAccessibilityFeatures}"
-            on-click="onManageAccessibilityFeaturesTap_"
-            sub-label="$i18n{moreFeaturesLinkDescription}"
-            role-description="$i18n{subpageArrowRoleDescription}">
-        </cr-link-row>
-      </div>
-
-      <template is="dom-if" route-path="/manageAccessibility">
-        <settings-subpage page-title="$i18n{manageAccessibilityFeatures}"
-            hide-close-button="[[isKioskModeActive_]]">
-          <settings-manage-a11y-page prefs="{{prefs}}">
-          </settings-manage-a11y-page>
-        </settings-subpage>
-      </template>
-      <template is="dom-if" route-path="/manageAccessibility/tts">
-        <settings-subpage page-title="$i18n{manageTtsSettings}">
-          <settings-tts-subpage prefs="{{prefs}}">
-          </settings-tts-subpage>
-        </settings-subpage>
-      </template>
-      <template is="dom-if" route-path="/manageAccessibility/captions">
-        <settings-subpage page-title="$i18n{captionsTitle}">
-          <settings-captions prefs="{{prefs}}"></settings-captions>
-        </settings-subpage>
-      </template>
-      <template is="dom-if" route-path="/manageAccessibility/switchAccess">
-        <settings-subpage page-title="$i18n{manageSwitchAccessSettings}">
-          <settings-switch-access-subpage prefs="{{prefs}}">
-          </settings-switch-access-subpage>
-        </settings-subpage>
-      </template>
-    </settings-animated-pages>
+  <template is="dom-if" route-path="/manageAccessibility">
+    <settings-subpage page-title="$i18n{manageAccessibilityFeatures}"
+        hide-close-button="[[isKioskModeActive_]]">
+      <settings-manage-a11y-page prefs="{{prefs}}">
+      </settings-manage-a11y-page>
+    </settings-subpage>
   </template>
-  <script src="os_a11y_page.js"></script>
-</dom-module>
+  <template is="dom-if" route-path="/manageAccessibility/tts">
+    <settings-subpage page-title="$i18n{manageTtsSettings}">
+      <settings-tts-subpage prefs="{{prefs}}">
+      </settings-tts-subpage>
+    </settings-subpage>
+  </template>
+  <template is="dom-if" route-path="/manageAccessibility/captions">
+    <settings-subpage page-title="$i18n{captionsTitle}">
+      <settings-captions prefs="{{prefs}}"></settings-captions>
+    </settings-subpage>
+  </template>
+  <template is="dom-if" route-path="/manageAccessibility/switchAccess">
+    <settings-subpage page-title="$i18n{manageSwitchAccessSettings}">
+      <settings-switch-access-subpage prefs="{{prefs}}">
+      </settings-switch-access-subpage>
+    </settings-subpage>
+  </template>
+</settings-animated-pages>
