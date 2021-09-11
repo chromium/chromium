@@ -380,32 +380,70 @@ TEST_F(ComputedStyleTest, BorderStyle) {
   EXPECT_TRUE(style->BorderSizeEquals(*other));
 
   style->SetBorderLeftStyle(EBorderStyle::kHidden);
+  EXPECT_EQ(LayoutUnit(), style->BorderLeftWidth());
   EXPECT_FALSE(style->BorderSizeEquals(*other));
   style->SetBorderLeftStyle(EBorderStyle::kNone);
+  EXPECT_EQ(LayoutUnit(), style->BorderLeftWidth());
   EXPECT_FALSE(style->BorderSizeEquals(*other));
   style->SetBorderLeftStyle(EBorderStyle::kSolid);
+  EXPECT_EQ(LayoutUnit(1), style->BorderLeftWidth());
   EXPECT_TRUE(style->BorderSizeEquals(*other));
 
   style->SetBorderTopStyle(EBorderStyle::kHidden);
+  EXPECT_EQ(LayoutUnit(), style->BorderTopWidth());
   EXPECT_FALSE(style->BorderSizeEquals(*other));
   style->SetBorderTopStyle(EBorderStyle::kNone);
+  EXPECT_EQ(LayoutUnit(), style->BorderTopWidth());
   EXPECT_FALSE(style->BorderSizeEquals(*other));
   style->SetBorderTopStyle(EBorderStyle::kSolid);
+  EXPECT_EQ(LayoutUnit(1), style->BorderTopWidth());
   EXPECT_TRUE(style->BorderSizeEquals(*other));
 
   style->SetBorderRightStyle(EBorderStyle::kHidden);
+  EXPECT_EQ(LayoutUnit(), style->BorderRightWidth());
   EXPECT_FALSE(style->BorderSizeEquals(*other));
   style->SetBorderRightStyle(EBorderStyle::kNone);
+  EXPECT_EQ(LayoutUnit(), style->BorderRightWidth());
   EXPECT_FALSE(style->BorderSizeEquals(*other));
   style->SetBorderRightStyle(EBorderStyle::kSolid);
+  EXPECT_EQ(LayoutUnit(1), style->BorderRightWidth());
   EXPECT_TRUE(style->BorderSizeEquals(*other));
 
   style->SetBorderBottomStyle(EBorderStyle::kHidden);
+  EXPECT_EQ(LayoutUnit(), style->BorderBottomWidth());
   EXPECT_FALSE(style->BorderSizeEquals(*other));
   style->SetBorderBottomStyle(EBorderStyle::kNone);
+  EXPECT_EQ(LayoutUnit(), style->BorderBottomWidth());
   EXPECT_FALSE(style->BorderSizeEquals(*other));
   style->SetBorderBottomStyle(EBorderStyle::kSolid);
+  EXPECT_EQ(LayoutUnit(1), style->BorderBottomWidth());
   EXPECT_TRUE(style->BorderSizeEquals(*other));
+
+  EXPECT_TRUE(style->HasBorder());
+  style->SetBorderTopStyle(EBorderStyle::kHidden);
+  EXPECT_TRUE(style->HasBorder());
+  style->SetBorderRightStyle(EBorderStyle::kHidden);
+  EXPECT_TRUE(style->HasBorder());
+  style->SetBorderBottomStyle(EBorderStyle::kHidden);
+  EXPECT_TRUE(style->HasBorder());
+  style->SetBorderLeftStyle(EBorderStyle::kHidden);
+  EXPECT_FALSE(style->HasBorder());
+
+  style->SetBorderTopStyle(EBorderStyle::kSolid);
+  EXPECT_TRUE(style->HasBorder());
+  style->SetBorderRightStyle(EBorderStyle::kSolid);
+  style->SetBorderBottomStyle(EBorderStyle::kSolid);
+  style->SetBorderLeftStyle(EBorderStyle::kSolid);
+  EXPECT_TRUE(style->HasBorder());
+
+  style->SetBorderTopStyle(EBorderStyle::kNone);
+  EXPECT_TRUE(style->HasBorder());
+  style->SetBorderRightStyle(EBorderStyle::kNone);
+  EXPECT_TRUE(style->HasBorder());
+  style->SetBorderBottomStyle(EBorderStyle::kNone);
+  EXPECT_TRUE(style->HasBorder());
+  style->SetBorderLeftStyle(EBorderStyle::kNone);
+  EXPECT_FALSE(style->HasBorder());
 }
 
 #define TEST_ANIMATION_FLAG(flag, inherited)                               \

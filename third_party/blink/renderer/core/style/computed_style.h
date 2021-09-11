@@ -541,9 +541,6 @@ class ComputedStyle : public ComputedStyleBase,
     return BorderTopWidthInternal();
   }
   void SetBorderTopWidth(float v) { SetBorderTopWidthInternal(LayoutUnit(v)); }
-  bool BorderTopNonZero() const {
-    return BorderTopWidth() && (BorderTopStyle() != EBorderStyle::kNone);
-  }
 
   // border-bottom-width
   LayoutUnit BorderBottomWidth() const {
@@ -554,9 +551,6 @@ class ComputedStyle : public ComputedStyleBase,
   }
   void SetBorderBottomWidth(float v) {
     SetBorderBottomWidthInternal(LayoutUnit(v));
-  }
-  bool BorderBottomNonZero() const {
-    return BorderBottomWidth() && (BorderBottomStyle() != EBorderStyle::kNone);
   }
 
   // border-left-width
@@ -569,9 +563,6 @@ class ComputedStyle : public ComputedStyleBase,
   void SetBorderLeftWidth(float v) {
     SetBorderLeftWidthInternal(LayoutUnit(v));
   }
-  bool BorderLeftNonZero() const {
-    return BorderLeftWidth() && (BorderLeftStyle() != EBorderStyle::kNone);
-  }
 
   // border-right-width
   LayoutUnit BorderRightWidth() const {
@@ -582,9 +573,6 @@ class ComputedStyle : public ComputedStyleBase,
   }
   void SetBorderRightWidth(float v) {
     SetBorderRightWidthInternal(LayoutUnit(v));
-  }
-  bool BorderRightNonZero() const {
-    return BorderRightWidth() && (BorderRightStyle() != EBorderStyle::kNone);
   }
 
   // box-shadow (aka -webkit-box-shadow)
@@ -1716,8 +1704,8 @@ class ComputedStyle : public ComputedStyleBase,
     return BorderImage().HasImage() && BorderImage().Fill();
   }
   bool HasBorder() const {
-    return BorderLeftNonZero() || BorderRightNonZero() || BorderTopNonZero() ||
-           BorderBottomNonZero();
+    return BorderLeftWidth() || BorderRightWidth() || BorderTopWidth() ||
+           BorderBottomWidth();
   }
   bool HasBorderDecoration() const { return HasBorder() || HasBorderFill(); }
   bool HasBorderRadius() const {
@@ -1732,10 +1720,10 @@ class ComputedStyle : public ComputedStyleBase,
     return false;
   }
   bool HasBorderColorReferencingCurrentColor() const {
-    return (BorderLeftNonZero() && BorderLeftColor().IsCurrentColor()) ||
-           (BorderRightNonZero() && BorderRightColor().IsCurrentColor()) ||
-           (BorderTopNonZero() && BorderTopColor().IsCurrentColor()) ||
-           (BorderBottomNonZero() && BorderBottomColor().IsCurrentColor());
+    return (BorderLeftWidth() && BorderLeftColor().IsCurrentColor()) ||
+           (BorderRightWidth() && BorderRightColor().IsCurrentColor()) ||
+           (BorderTopWidth() && BorderTopColor().IsCurrentColor()) ||
+           (BorderBottomWidth() && BorderBottomColor().IsCurrentColor());
   }
 
   bool RadiiEqual(const ComputedStyle& o) const {
