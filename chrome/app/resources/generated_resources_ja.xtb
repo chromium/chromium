@@ -3500,7 +3500,6 @@
 <translation id="4699172675775169585">キャッシュされた画像とファイル</translation>
 <translation id="4699357559218762027">（自動起動済み）</translation>
 <translation id="4701025263201366865">保護者のログイン</translation>
-<translation id="4707582759326616943">ドラッグして Google レンズで画像を検索</translation>
 <translation id="4708794300267213770">スリープから復帰するときにロック画面を表示する</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> を終了</translation>
 <translation id="4711638718396952945">設定を復元</translation>
@@ -5143,7 +5142,6 @@
 <translation id="6532663472409656417">企業登録済み</translation>
 <translation id="6535331821390304775"><ph name="ORIGIN" /> でのこのタイプのリンクは常に関連付けられたアプリで開く</translation>
 <translation id="653659894138286600">ドキュメントと画像のスキャン</translation>
-<translation id="6537016096312202316">画像上をドラッグして Google レンズで検索</translation>
 <translation id="6537613839935722475">名前には文字、数字、ハイフン（-）を使用できます</translation>
 <translation id="6537880577641744343">コマンダー</translation>
 <translation id="6538098297809675636">コード検出エラー</translation>
@@ -5209,6 +5207,7 @@
 <translation id="6607831829715835317">その他のツール(&amp;L)</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> はすでに <ph name="DOMAIN" /> によって管理されています。別の Google アカウントで保護者による使用制限を設定するには、セットアップ後にログアウトしてから、ログイン画面で [ユーザーを追加] を選択します。</translation>
 <translation id="6609478180749378879">ログインデータはシークレット モードの終了後にこのデバイスに保存されます。今後、このデバイスからこのウェブサイトにログインできるようになります。</translation>
+<translation id="6610002944194042868">翻訳オプション</translation>
 <translation id="6611972847767394631">ここからタブを確認できます</translation>
 <translation id="6615455863669487791">表示</translation>
 <translation id="6618097958368085618">続行する</translation>
@@ -5324,7 +5323,6 @@
 <translation id="6745592621698551453">今すぐ更新</translation>
 <translation id="6746124502594467657">下に移動</translation>
 <translation id="674632704103926902">タップによるドラッグを有効にする</translation>
-<translation id="6748054820659621153">Google レンズで画面を検索</translation>
 <translation id="6748465660675848252">続行した場合、同期済みのデータと設定のみが復元され、ローカルデータはすべて失われます。</translation>
 <translation id="6750757184909117990">モバイルデータ通信を無効にする</translation>
 <translation id="6750946710563435348">他のユーザー名を使用</translation>
@@ -6382,14 +6380,12 @@
 <translation id="7853747251428735">その他のツール(&amp;L)</translation>
 <translation id="7855678561139483478">タブを新しいウィンドウに移動</translation>
 <translation id="7857093393627376423">テキスト候補</translation>
-<translation id="7857675386615530425">Google レンズでページの一部を検索</translation>
 <translation id="7857949311770343000">この新しいタブ ページでよろしいですか？</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" />（Windows）</translation>
 <translation id="786073089922909430">サービス: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">ダウンロード(&amp;D)</translation>
 <translation id="7861846108263890455">Google アカウントの言語</translation>
 <translation id="7864539943188674973">Bluetooth を無効にする</translation>
-<translation id="7866230141401327032">Google レンズでページの一部を検索</translation>
 <translation id="7869143217755017858">ダークモードを無効にする</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - ペア設定済み</translation>
 <translation id="7870730066603611552">設定後に同期オプションを確認する</translation>
@@ -7369,7 +7365,6 @@
 <translation id="8907787635362884532">パブリッシャー: <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">パソコン内の有害なソフトウェアを Chrome で確認できます</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> のアンインストールが完了しました</translation>
-<translation id="8909782404367982052">ドラッグして Google レンズで画像を検索</translation>
 <translation id="8909833622202089127">サイトで現在地が追跡されています</translation>
 <translation id="8910222113987937043">ブックマーク、履歴、パスワードなどの設定に行った変更は Google アカウントと同期されなくなります。ただし、既存のデータは Google アカウントに保存され、<ph name="BEGIN_LINK" />Google ダッシュボード<ph name="END_LINK" />で管理できます。</translation>
 <translation id="8910987510378294980">デバイスリストを非表示にする</translation>
@@ -7513,7 +7508,6 @@
 <translation id="9055636786322918818">RC4 暗号化を適用します。なお RC4 暗号は安全でないため、このオプションを使用するとリスクが高まります。</translation>
 <translation id="9056810968620647706">一致する項目が見つかりません。</translation>
 <translation id="9057354806206861646">更新スケジュール</translation>
-<translation id="9057599413476594385">画像上をドラッグして Google レンズで検索</translation>
 <translation id="9062468308252555888">14 倍</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" />～<ph name="ERROR_LINE_END" /> 行目にエラーがあります</translation>
 <translation id="9063800855227801443">機密コンテンツはキャプチャできません</translation>

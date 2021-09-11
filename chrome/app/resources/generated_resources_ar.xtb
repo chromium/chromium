@@ -3505,7 +3505,6 @@
 <translation id="4699172675775169585">الصور والملفات المخزنة مؤقتًا</translation>
 <translation id="4699357559218762027">(يتم تشغيله تلقائيًا)</translation>
 <translation id="4701025263201366865">تسجيل دخول أحد الوالدَين</translation>
-<translation id="4707582759326616943">‏السحب للبحث عن الصور باستخدام "عدسة Google"</translation>
 <translation id="4708794300267213770">عرض شاشة القفل عند التنبيه من وضع السكون</translation>
 <translation id="4708849949179781599">إنهاء <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">استعادة الإعدادات</translation>
@@ -5149,7 +5148,6 @@
 <translation id="6532663472409656417">المؤسسة المسجَّلة</translation>
 <translation id="6535331821390304775">السماح دائمًا لموقع <ph name="ORIGIN" /> بفتح روابط من هذا النوع في التطبيق المرتبط</translation>
 <translation id="653659894138286600">مسح المستندات والصور ضوئيًا</translation>
-<translation id="6537016096312202316">‏سحب الماوس فوق الصور للبحث عنها باستخدام "عدسة Google"</translation>
 <translation id="6537613839935722475">يمكن أن تحتوي الأسماء على الأحرف والأرقام والواصلات (-).</translation>
 <translation id="6537880577641744343">Commander</translation>
 <translation id="6538098297809675636">حدث خطأ أثناء التعرُّف على الرمز.</translation>
@@ -5215,6 +5213,7 @@
 <translation id="6607831829715835317">المزيد من &amp;الأدوات</translation>
 <translation id="6607890859198268021">‏تتم إدارة حساب <ph name="USER_EMAIL" /> حاليًا من خلال <ph name="DOMAIN" />. لاستخدام أدوات الرقابة الأبوية مع حساب آخر على Google، يجب تسجيل الخروج من الحساب بعد الانتهاء من الإعداد ثم اختيار "إضافة شخص" على شاشة تسجيل الدخول.</translation>
 <translation id="6609478180749378879">سيتم حفظ بيانات تسجيل الدخول على هذا الجهاز بعد الخروج من "وضع التصفُّح المتخفي". وستتمكّن من تسجيل الدخول إلى هذا الموقع الإلكتروني باستخدام جهازك مرة أخرى لاحقًا.</translation>
+<translation id="6610002944194042868">خيارات الترجمة</translation>
 <translation id="6611972847767394631">ستجد علامات التبويب هنا</translation>
 <translation id="6615455863669487791">عرض</translation>
 <translation id="6618097958368085618">الاحتفاظ به على أيّ حال</translation>
@@ -5330,7 +5329,6 @@
 <translation id="6745592621698551453">التحديث الآن</translation>
 <translation id="6746124502594467657">الانتقال إلى الأسفل</translation>
 <translation id="674632704103926902">تفعيل السحب بعد النقر</translation>
-<translation id="6748054820659621153">‏البحث عن محتوى شاشتك باستخدام "عدسة Google"</translation>
 <translation id="6748465660675848252">يمكنك المتابعة، ولكن لن تتم استعادة إلا البيانات والإعدادات المتزامنة فقط. وسيتم فقد جميع البيانات المحلية.</translation>
 <translation id="6750757184909117990">إيقاف شبكة الجوّال</translation>
 <translation id="6750946710563435348">يُرجى اختيار اسم مستخدِم آخر.</translation>
@@ -6388,14 +6386,12 @@
 <translation id="7853747251428735">المزيد من الأد&amp;وات</translation>
 <translation id="7855678561139483478">نقل علامة التبويب إلى نافذة جديدة</translation>
 <translation id="7857093393627376423">اقتراحات نصية</translation>
-<translation id="7857675386615530425">‏البحث في جزء من الصفحة باستخدام "عدسة Google"</translation>
 <translation id="7857949311770343000">هل هذه هي صفحة علامة التبويب الجديدة التي كنت تتوقع ظهورها؟</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">الخدمة: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">ال&amp;تنزيلات</translation>
 <translation id="7861846108263890455">‏لغة حساب Google</translation>
 <translation id="7864539943188674973">إيقاف البلوتوث</translation>
-<translation id="7866230141401327032">‏البحث في جزء من الصفحة باستخدام "عدسة Google"</translation>
 <translation id="7869143217755017858">إيقاف الوضع المُعتِم</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - تم الإقران</translation>
 <translation id="7870730066603611552">مراجعة خيارات المزامنة بعد الإعداد</translation>
@@ -7382,7 +7378,6 @@
 <translation id="8907787635362884532">الناشر: <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">‏يمكن لمتصفِّح Chrome التحقُّق من البرامج الضارّة على جهاز الكمبيوتر.</translation>
 <translation id="8909298138148012791">تم إلغاء تثبيت <ph name="APP_NAME" />.</translation>
-<translation id="8909782404367982052">‏السحب للبحث عن الصور باستخدام "عدسة Google"</translation>
 <translation id="8909833622202089127">تتبّع الموقع الإلكتروني موقعك الجغرافي.</translation>
 <translation id="8910222113987937043">‏لن تتم بعد الآن مزامنة التغييرات التي تطرأ على الإشارات المرجعية والسجلّ وكلمات المرور والإعدادات الأخرى مع حسابك على Google، ولكن ستظل بياناتك الحالية مخزّنة في حسابك على Google ويمكن إدارتها في <ph name="BEGIN_LINK" />لوحة تحكّم Google<ph name="END_LINK" />.</translation>
 <translation id="8910987510378294980">إخفاء قائمة الأجهزة</translation>
@@ -7526,7 +7521,6 @@
 <translation id="9055636786322918818">‏فرض ترميز RC4: يؤدي استخدام هذا الخيار إلى زيادة المخاطر، لأن رموز RC4 غير آمنة.</translation>
 <translation id="9056810968620647706">لم يتم العثور على نتائج مطابقة.</translation>
 <translation id="9057354806206861646">تعديل الجدول الزمني</translation>
-<translation id="9057599413476594385">‏سحب الماوس فوق الصور للبحث عنها باستخدام "عدسة Google"</translation>
 <translation id="9062468308252555888">14 ضعفًا</translation>
 <translation id="9063208415146866933">خطأ من السطر رقم <ph name="ERROR_LINE_START" /> إلى <ph name="ERROR_LINE_END" /></translation>
 <translation id="9063800855227801443">لا يمكن تصوير الشاشة بسبب المحتوى السري</translation>

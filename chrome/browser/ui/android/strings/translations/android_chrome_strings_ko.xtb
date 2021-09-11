@@ -700,7 +700,6 @@
 <translation id="5324858694974489420">자녀 보호 설정</translation>
 <translation id="5342314432463739672">권한 요청</translation>
 <translation id="5355191726083956201">향상된 보호 모드를 사용 중입니다.</translation>
-<translation id="5357811892247919462">탭 수신함</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{열려 있는 탭 <ph name="OPEN_TABS_ONE" />개, 탭 간에 전환하려면 탭하세요.}other{열려 있는 탭 <ph name="OPEN_TABS_MANY" />개, 탭 간에 전환하려면 탭하세요.}}</translation>
 <translation id="5375577065097716013">Google 렌즈로 이미지 검색 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">특정 사이트만 허용</translation>
@@ -1237,6 +1236,7 @@
 <translation id="8442258441309440798">사용할 수 있는 스토리 없음</translation>
 <translation id="8443209985646068659">Chrome을 업데이트할 수 없습니다.</translation>
 <translation id="8445448999790540984">비밀번호를 내보낼 수 없음</translation>
+<translation id="8446884382197647889">자세히 알아보기</translation>
 <translation id="8453310803815879010">공룡 게임 시작</translation>
 <translation id="8461694314515752532">나만의 동기화 암호로 동기화된 데이터 암호화</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" />이(가) 인터넷에 연결되어 있는지 확인하세요.</translation>

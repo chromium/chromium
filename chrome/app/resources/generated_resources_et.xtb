@@ -2285,6 +2285,7 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">Selle saidi jaoks ei ole salvestatud ühtki parooli</translation>
 <translation id="3404249063913988450">Ekraanisäästja lubamine</translation>
+<translation id="3404805962764077228">Voogesitage oma telefoni rakendusi ajutiselt otse seadmest <ph name="DEVICE_TYPE" /></translation>
 <translation id="3405664148539009465">Kohanda fonte</translation>
 <translation id="3405763860805964263">...</translation>
 <translation id="3406290648907941085">Lubatud kasutada VR-seadmeid ega -andmeid</translation>
@@ -3507,7 +3508,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4699172675775169585">Vahemällu salvestatud kujutised ja failid</translation>
 <translation id="4699357559218762027">(automaatselt käivitatud)</translation>
 <translation id="4701025263201366865">Lapsevanema sisselogimine</translation>
-<translation id="4707582759326616943">Pukseerige, et Google Lensi abil pilte otsida</translation>
 <translation id="4708794300267213770">Kuva unerežiimist ärgates lukustuskuva</translation>
 <translation id="4708849949179781599">Välju rakendusest <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Taasta seaded</translation>
@@ -4254,6 +4254,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="5543983818738093899">Oleku kontrollimine ...</translation>
 <translation id="554517701842997186">Renderdaja</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Vahelehe lisamine gruppi}other{Vahelehtede lisamine gruppi}}</translation>
+<translation id="5545693483061321551">Saidid ei saa reklaamide isikupärastamiseks küpsisefailide abil eri saitidel teie sirvimistegevust jälgida. Funktsioonid ei pruugi mõnel saidil toimida.</translation>
 <translation id="5546865291508181392">Otsi</translation>
 <translation id="5548075230008247516">Kõik üksused on valimata. Valikurežiimist väljuti.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />”}=1{„<ph name="TAB_TITLE" />” ja veel 1 vaheleht}other{„<ph name="TAB_TITLE" />” ja veel # vahelehte}}</translation>
@@ -5150,7 +5151,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="6532663472409656417">Ettevõttes registreeritud</translation>
 <translation id="6535331821390304775">Luba teenusel <ph name="ORIGIN" /> seda tüüpi linke alati avada seotud rakenduses</translation>
 <translation id="653659894138286600">Dokumentide ja piltide skannimine</translation>
-<translation id="6537016096312202316">Pukseerige piltide peale, et Google Lensi abil otsida</translation>
 <translation id="6537613839935722475">Nimi võib sisaldada tähemärke, numbreid ja sidekriipse (-)</translation>
 <translation id="6537880577641744343">Commander</translation>
 <translation id="6538098297809675636">Viga koodi tuvastamisel</translation>
@@ -5216,6 +5216,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="6607831829715835317">Rohkem töö&amp;riistu</translation>
 <translation id="6607890859198268021">Kontot <ph name="USER_EMAIL" /> haldab juba domeen <ph name="DOMAIN" />. Kui soovite vanemlikku järelevalvet kasutada mõne teise Google'i kontoga, logige pärast seadistamist välja ja tehke siis sisselogimiskuval valik „Lisa inimene”.</translation>
 <translation id="6609478180749378879">Sisselogimisandmed salvestatakse sellesse seadmesse pärast inkognito režiimist väljumist. Hiljem saate oma seadmega sellele veebisaidile uuesti sisse logida.</translation>
+<translation id="6610002944194042868">Tõlkimise valikud</translation>
 <translation id="6611972847767394631">Oma vahekaardid leiate siit</translation>
 <translation id="6615455863669487791">Kuva mulle</translation>
 <translation id="6618097958368085618">Säilita ikkagi</translation>
@@ -5331,7 +5332,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="6745592621698551453">Värskenda kohe</translation>
 <translation id="6746124502594467657">Liiguta alla</translation>
 <translation id="674632704103926902">Luba puutega lohistamine</translation>
-<translation id="6748054820659621153">Otsige Google Lensi abil ekraanikuvalt</translation>
 <translation id="6748465660675848252">Võite jätkata, kuid taastatakse ainult teie sünkroonitud andmed ja seaded. Kõik kohalikud andmed lähevad kaotsi.</translation>
 <translation id="6750757184909117990">Mobiilsidevõrgu keelamine</translation>
 <translation id="6750946710563435348">Kasuta teist kasutajanime</translation>
@@ -6389,14 +6389,12 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="7853747251428735">Rohkem töö&amp;riistu</translation>
 <translation id="7855678561139483478">Vahelehe teisaldamine uude aknasse</translation>
 <translation id="7857093393627376423">Teksti soovitused</translation>
-<translation id="7857675386615530425">Otsi Google'i Lensiga lehe piiratud osas</translation>
 <translation id="7857949311770343000">Kas see on uus vaheleht, mida ootasite?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">Teenus: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Allalaadimised</translation>
 <translation id="7861846108263890455">Google'i konto keel</translation>
 <translation id="7864539943188674973">Keela Bluetooth</translation>
-<translation id="7866230141401327032">Otsi Google'i Lensiga lehe piiratud osas</translation>
 <translation id="7869143217755017858">Tumeda režiimi keelamine</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – seotud</translation>
 <translation id="7870730066603611552">Vaata sünkroonimisvalikud pärast seadistust üle</translation>
@@ -6681,6 +6679,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8149564499626272569">Kinnita telefoniga USB-kaabli kaudu</translation>
 <translation id="8151638057146502721">Seadista</translation>
 <translation id="8154790740888707867">Fail puudub</translation>
+<translation id="8154912474061769055">Funktsioonid ei pruugi paljudel saitidel toimida</translation>
 <translation id="815491593104042026">Vabandust! Autentimine ebaõnnestus, sest see on konfigureeritud kasutama ebaturvalist URL-i (<ph name="BLOCKED_URL" />). Võtke ühendust administraatoriga.</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{Ohustatud paroole ei leitud}=1{{COUNT} parool on ohus}other{{COUNT} parooli on ohus}}</translation>
 <translation id="8157248655669507702">Lubage eSIM-i profiili installimiseks mobiilne andmeside</translation>
@@ -6857,6 +6856,7 @@ Määratud lüliti eemaldamiseks vajutage seda lülitit</translation>
 <translation id="8342221978608739536">Ei proovinud</translation>
 <translation id="8342861492835240085">Kogu valimine</translation>
 <translation id="8347227221149377169">Prinditööd</translation>
+<translation id="834785183489258869">Inkognito režiimis ei saa saidid eri saitidel küpsisefailide kaudu teie sirvimistegevusi jälgida, näiteks selleks, et reklaame isikupärastada. Funktsioonid ei pruugi mõnel saidil toimida.</translation>
 <translation id="8350789879725387295">Elektronpliiatsi tööriistad dokis</translation>
 <translation id="8351316842353540018">Kuva alati a11y valikud</translation>
 <translation id="8351419472474436977">Laiendus on hõivanud puhverserveri seaded, mis tähendab, et see saab muuta, lõhkuda või kuulata pealt kogu teie veebitegevust. Kui te pole kindel, miks see muudatus toimus, siis te tõenäoliselt ei taha seda.</translation>
@@ -7377,7 +7377,6 @@ Määratud lüliti eemaldamiseks vajutage seda lülitit</translation>
 <translation id="8907787635362884532">Väljaandja: <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">Chrome saab teie arvutist kahjulikku tarkvara otsida</translation>
 <translation id="8909298138148012791">Rakendus <ph name="APP_NAME" /> on desinstallitud</translation>
-<translation id="8909782404367982052">Pukseerige, et Google Lensi abil pilte otsida</translation>
 <translation id="8909833622202089127">Sait jälgib teie asukohta</translation>
 <translation id="8910222113987937043">Teie järjehoidjate, ajaloo, paroolide ja muude seadete muudatusi ei sünkroonita enam teie Google'i kontoga. Teie olemasolevad andmed jäävad aga teie Google'i kontole alles ja neid saab hallata <ph name="BEGIN_LINK" />Google'i juhtpaneelil<ph name="END_LINK" />.</translation>
 <translation id="8910987510378294980">Peida seadmete loend</translation>
@@ -7521,7 +7520,6 @@ Määratud lüliti eemaldamiseks vajutage seda lülitit</translation>
 <translation id="9055636786322918818">Jõustatakse RC4-krüpteerimine. Selle valiku kasutamine suurendab riski, kuna RC4-šifrid on ebaturvalised.</translation>
 <translation id="9056810968620647706">Vasteid ei leitud.</translation>
 <translation id="9057354806206861646">Ajakava värskendamine</translation>
-<translation id="9057599413476594385">Pukseerige piltide peale, et Google Lensi abil otsida</translation>
 <translation id="9062468308252555888">14-kordne</translation>
 <translation id="9063208415146866933">Viga ridadel <ph name="ERROR_LINE_START" /> kuni <ph name="ERROR_LINE_END" /></translation>
 <translation id="9063800855227801443">Konfidentsiaalset sisu ei saa jäädvustada</translation>

@@ -8,6 +8,7 @@
 <translation id="1378979118429748177">Maabisuhan kapag bumaba ang mga presyo</translation>
 <translation id="1657719826150349398">Ilipat ang tab sa ibaba</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}one{<ph name="TABS_COUNT_MANY" /> tab}other{<ph name="TABS_COUNT_MANY" /> na tab}}</translation>
+<translation id="2118649612461486615">Impormasyon ng store</translation>
 <translation id="2277224997687551299">I-edit ang pangalan ng grupo</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Alisin ang <ph name="TABS_COUNT_ONE" /> piniling tab sa grupo.}one{Alisin ang <ph name="TABS_COUNT_MANY" /> piniling tab sa grupo.}other{Alisin ang <ph name="TABS_COUNT_MANY" /> na piniling tab sa grupo.}}</translation>
 <translation id="2479148705183875116">Pumunta sa Mga Setting</translation>
@@ -50,13 +51,16 @@
 <translation id="6040143037577758943">Isara</translation>
 <translation id="6054741997831917303">Kamakailang bumaba ang presyo ng item na ito sa <ph name="NEW_PRICE" /> mula sa <ph name="PREVIOUS_PRICE" /></translation>
 <translation id="6193448654517602979">Pumili ng mga tab</translation>
+<translation id="6228793724645064692">(rating ng store)</translation>
 <translation id="6510648526783655549">Isara ang tab strip</translation>
+<translation id="6549021453810473782">Tingnan ang impormasyon ng store</translation>
 <translation id="6562820390860419811">Ilipat ang tab sa kaliwa</translation>
 <translation id="6615455863669487791">Ipakita sa akin</translation>
 <translation id="6840760312327750441">Sa mga tab ng grupo, pindutin nang matagal ang isang tab. Pagkatapos, i-drag ito sa isa pang tab.</translation>
 <translation id="6856809498882026482">Itago ang multi-select mode</translation>
 <translation id="7151209024774799310">Mag-alis ng mga tab sa grupo</translation>
 <translation id="7204204600596740190">Multi-select mode</translation>
+<translation id="7326879924029668159">Tingnan ang patakaran sa pagbabalik at higit pa</translation>
 <translation id="7352298686197644113">Tingnan kung aling item sa iyong mga nakabukas na tab ang may mas mababang presyo</translation>
 <translation id="753732157349120914">Tab Switcher</translation>
 <translation id="7559245342362162951">Ipakita ang mga tab ng grupo sa fullscreen grid</translation>

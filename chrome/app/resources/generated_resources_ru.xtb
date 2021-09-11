@@ -3503,7 +3503,6 @@
 <translation id="4699172675775169585">Изображения и другие файлы, сохраненные в кеше</translation>
 <translation id="4699357559218762027">(автозапуск)</translation>
 <translation id="4701025263201366865">Вход для родителя</translation>
-<translation id="4707582759326616943">Перетащить изображения и выполнить поиск с помощью Google Объектива</translation>
 <translation id="4708794300267213770">Показывать заблокированный экран при выходе из спящего режима</translation>
 <translation id="4708849949179781599">Выйти из <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Восстановить исходные настройки</translation>
@@ -5147,7 +5146,6 @@
 <translation id="6532663472409656417">Зарегистрировано в корпоративном домене</translation>
 <translation id="6535331821390304775">Всегда разрешать сайту <ph name="ORIGIN" /> открывать ссылки этого типа в связанном приложении</translation>
 <translation id="653659894138286600">Сканирование документов и изображений</translation>
-<translation id="6537016096312202316">Перетащить область и выполнить поиск по изображениям с помощью Google Объектива</translation>
 <translation id="6537613839935722475">Допускаются буквы, цифры и дефисы.</translation>
 <translation id="6537880577641744343">Commander</translation>
 <translation id="6538098297809675636">При распознавании кода произошла ошибка.</translation>
@@ -5213,6 +5211,7 @@
 <translation id="6607831829715835317">Дополнительные инстру&amp;менты</translation>
 <translation id="6607890859198268021">Аккаунт <ph name="USER_EMAIL" /> уже находится в домене <ph name="DOMAIN" />. Чтобы использовать родительский контроль в другом аккаунте Google, выйдите после настройки и на экране входа выберите "Добавить пользователя".</translation>
 <translation id="6609478180749378879">После выхода из режима инкогнито учетные данные сохранятся на устройстве. Вы сможете снова использовать их на этом сайте в будущем.</translation>
+<translation id="6610002944194042868">Параметры перевода</translation>
 <translation id="6611972847767394631">Здесь находятся ваши вкладки</translation>
 <translation id="6615455863669487791">Показать</translation>
 <translation id="6618097958368085618">Все равно сохранить</translation>
@@ -5328,7 +5327,6 @@
 <translation id="6745592621698551453">Обновить сейчас</translation>
 <translation id="6746124502594467657">Переместить вниз</translation>
 <translation id="674632704103926902">Включить перетаскивание нажатием</translation>
-<translation id="6748054820659621153">Искать содержимое экрана с помощью Google Объектива</translation>
 <translation id="6748465660675848252">Если вы продолжите сейчас, восстановлены будут только синхронизированные, но не локальные данные.</translation>
 <translation id="6750757184909117990">Отключить мобильную сеть</translation>
 <translation id="6750946710563435348">Использовать другое имя пользователя</translation>
@@ -6386,14 +6384,12 @@
 <translation id="7853747251428735">Дополнительные инструмен&amp;ты</translation>
 <translation id="7855678561139483478">Открыть вкладку в новом окне</translation>
 <translation id="7857093393627376423">Текстовые подсказки</translation>
-<translation id="7857675386615530425">Искать часть страницы с помощью Google Объектива</translation>
 <translation id="7857949311770343000">Другая страница быстрого доступа?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">Сервис: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Загрузки</translation>
 <translation id="7861846108263890455">Язык аккаунта Google</translation>
 <translation id="7864539943188674973">Отключить Bluetooth</translation>
-<translation id="7866230141401327032">Искать часть страницы с помощью Google Объектива</translation>
 <translation id="7869143217755017858">Отключить тёмную тему</translation>
 <translation id="786957569166715433">Подключено устройство: <ph name="DEVICE_NAME" /></translation>
 <translation id="7870730066603611552">Проверять параметры синхронизации после начала сеанса</translation>
@@ -7378,7 +7374,6 @@
 <translation id="8907787635362884532">Издатель: <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">Браузер Chrome может проверить компьютер на наличие вредоносного ПО.</translation>
 <translation id="8909298138148012791">Плагин <ph name="APP_NAME" /> удален.</translation>
-<translation id="8909782404367982052">Перетащить изображения и выполнить поиск с помощью Google Объектива</translation>
 <translation id="8909833622202089127">Сайт отслеживает ваше местоположение</translation>
 <translation id="8910222113987937043">Изменения, связанные с закладками, историей, паролями и настройками, больше не будут синхронизироваться с вашим аккаунтом Google. Тем не менее, данные в аккаунте Google сохранятся. Вы можете просмотреть и изменить их в <ph name="BEGIN_LINK" />Личном кабинете Google<ph name="END_LINK" />.</translation>
 <translation id="8910987510378294980">Скрыть список устройств</translation>
@@ -7522,7 +7517,6 @@
 <translation id="9055636786322918818">Использовать шифрование по алгоритму RC4. Этот вариант небезопасен, так как потоковый шифр RC4 ненадежен.</translation>
 <translation id="9056810968620647706">Ничего не найдено.</translation>
 <translation id="9057354806206861646">График обновлений</translation>
-<translation id="9057599413476594385">Перетащить область и выполнить поиск по изображениям с помощью Google Объектива</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Ошибка в строках <ph name="ERROR_LINE_START" />–<ph name="ERROR_LINE_END" /></translation>
 <translation id="9063800855227801443">Не удается сделать снимок конфиденциального контента</translation>

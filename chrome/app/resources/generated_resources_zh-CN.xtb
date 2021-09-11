@@ -2275,6 +2275,7 @@
 <translation id="340282674066624">已下载 <ph name="DOWNLOAD_RECEIVED" />，还需 <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">未保存任何用于登录此网站的密码</translation>
 <translation id="3404249063913988450">启用屏保功能</translation>
+<translation id="3404805962764077228">直接通过 <ph name="DEVICE_TYPE" /> 暂时流式传输手机应用中的内容</translation>
 <translation id="3405664148539009465">自定义字体</translation>
 <translation id="3405763860805964263">…</translation>
 <translation id="3406290648907941085">允许使用虚拟实境设备和数据</translation>
@@ -3496,7 +3497,6 @@
 <translation id="4699172675775169585">缓存的图片和文件</translation>
 <translation id="4699357559218762027">（自动启动）</translation>
 <translation id="4701025263201366865">家长登录</translation>
-<translation id="4707582759326616943">拖动即可使用 Google 智能镜头搜索图片</translation>
 <translation id="4708794300267213770">从休眠状态唤醒时显示锁定屏幕</translation>
 <translation id="4708849949179781599">退出<ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">恢复设置</translation>
@@ -4243,6 +4243,7 @@
 <translation id="5543983818738093899">正在检查状态…</translation>
 <translation id="554517701842997186">渲染程序</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{向群组中添加标签页}other{向群组中添加标签页}}</translation>
+<translation id="5545693483061321551">网站无法使用 Cookie 查看您在各个不同网站上的浏览活动，因而无法实现某些功能或目的（例如为您展示个性化广告）。某些网站上的功能可能无法正常运行。</translation>
 <translation id="5546865291508181392">查找</translation>
 <translation id="5548075230008247516">已取消选择所有内容，已退出选择模式。</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{“<ph name="TAB_TITLE" />”}=1{“<ph name="TAB_TITLE" />”和另外 1 个标签页}other{“<ph name="TAB_TITLE" />”和另外 # 个标签页}}</translation>
@@ -5139,7 +5140,6 @@
 <translation id="6532663472409656417">已向企业注册</translation>
 <translation id="6535331821390304775">始终允许 <ph name="ORIGIN" /> 在关联的应用中打开此类链接</translation>
 <translation id="653659894138286600">扫描文件和图片</translation>
-<translation id="6537016096312202316">在图片上拖动光标即可使用 Google 智能镜头搜索</translation>
 <translation id="6537613839935722475">名称可以使用字母、数字和连字符 (-)</translation>
 <translation id="6537880577641744343">Commander</translation>
 <translation id="6538098297809675636">检测代码时出错</translation>
@@ -5205,6 +5205,7 @@
 <translation id="6607831829715835317">更多工具(&amp;L)</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> 已由 <ph name="DOMAIN" /> 管理。若要通过另一 Google 帐号使用家长控制功能，请在完成设置后退出登录，然后在登录屏幕上选择“添加用户”。</translation>
 <translation id="6609478180749378879">当您退出无痕模式后，登录数据会存储在此设备中。日后您将能够使用此设备重新登录该网站。</translation>
+<translation id="6610002944194042868">翻译选项</translation>
 <translation id="6611972847767394631">您可在此处找到自己的标签页</translation>
 <translation id="6615455863669487791">演示一下</translation>
 <translation id="6618097958368085618">仍然保留</translation>
@@ -5320,7 +5321,6 @@
 <translation id="6745592621698551453">立即更新</translation>
 <translation id="6746124502594467657">下移</translation>
 <translation id="674632704103926902">启用点按拖动功能</translation>
-<translation id="6748054820659621153">使用 Google 智能镜头搜索您的屏幕上的内容</translation>
 <translation id="6748465660675848252">您可以继续，但系统将只恢复已同步的数据和设置。所有本地数据都将会丢失。</translation>
 <translation id="6750757184909117990">停用移动网络</translation>
 <translation id="6750946710563435348">使用其他用户名</translation>
@@ -6378,14 +6378,12 @@
 <translation id="7853747251428735">更多工具(&amp;L)</translation>
 <translation id="7855678561139483478">将标签页移至新窗口</translation>
 <translation id="7857093393627376423">文字建议</translation>
-<translation id="7857675386615530425">使用 Google 智能镜头搜索网页的某个部分</translation>
 <translation id="7857949311770343000">这是您想要的新标签页吗？</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">服务：<ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">下载内容(&amp;D)</translation>
 <translation id="7861846108263890455">Google 帐号语言</translation>
 <translation id="7864539943188674973">停用蓝牙</translation>
-<translation id="7866230141401327032">使用 Google 智能镜头搜索网页的某个部分</translation>
 <translation id="7869143217755017858">停用深色模式</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - 已配对</translation>
 <translation id="7870730066603611552">完成设置后查看同步选项</translation>
@@ -6669,6 +6667,7 @@
 <translation id="8149564499626272569">通过使用 USB 线连接手机进行验证</translation>
 <translation id="8151638057146502721">配置</translation>
 <translation id="8154790740888707867">未发现文件</translation>
+<translation id="8154912474061769055">很多网站上的功能可能无法正常运行</translation>
 <translation id="815491593104042026">糟糕！身份验证失败，因为它被配置为使用不安全的网址(<ph name="BLOCKED_URL" />)。请联系您的管理员。</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{未发现任何已泄露的密码}=1{有 {COUNT} 个密码已遭泄露}other{有 {COUNT} 个密码已遭泄露}}</translation>
 <translation id="8157248655669507702">请启用移动数据以安装 eSIM 卡配置文件</translation>
@@ -6845,6 +6844,7 @@
 <translation id="8342221978608739536">没试过</translation>
 <translation id="8342861492835240085">选择一个集合</translation>
 <translation id="8347227221149377169">打印任务</translation>
+<translation id="834785183489258869">不过，在无痕模式下，网站无法使用 Cookie 查看您在各个不同网站上的浏览活动，因而无法实现某些功能或目的（例如为您展示个性化广告）。某些网站上的功能可能无法正常运行。</translation>
 <translation id="8350789879725387295">在 Dock 中显示触控笔工具</translation>
 <translation id="8351316842353540018">始终显示无障碍设置选项</translation>
 <translation id="8351419472474436977">此扩展程序控制了您的代理设置，也就是说，它可以更改、破坏或窃听您在网上执行的任何操作。如果您不确定出现这种变化的原因，那么这种变化可能并不是您所希望的。</translation>
@@ -7365,7 +7365,6 @@
 <translation id="8907787635362884532">发布者：<ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">Chrome 可以检查您的计算机上是否存在有害软件</translation>
 <translation id="8909298138148012791">已卸载 <ph name="APP_NAME" /></translation>
-<translation id="8909782404367982052">拖动即可使用 Google 智能镜头搜索图片</translation>
 <translation id="8909833622202089127">该网站正在跟踪您的位置</translation>
 <translation id="8910222113987937043">对您的书签、历史记录、密码及其他设置所做的更改将不再同步到您的 Google 帐号。但是，您的现有数据依然会存储在您的 Google 帐号中，而且您可以通过 <ph name="BEGIN_LINK" />Google 信息中心<ph name="END_LINK" />管理这些数据。</translation>
 <translation id="8910987510378294980">隐藏设备列表</translation>
@@ -7509,7 +7508,6 @@
 <translation id="9055636786322918818">强制执行 RC4 加密。选中此选项会令您面临更大的风险，因为 RC4 加密不安全。</translation>
 <translation id="9056810968620647706">未找到匹配项。</translation>
 <translation id="9057354806206861646">更新时间表</translation>
-<translation id="9057599413476594385">在图片上拖动光标即可使用 Google 智能镜头搜索</translation>
 <translation id="9062468308252555888">14 倍</translation>
 <translation id="9063208415146866933">第 <ph name="ERROR_LINE_START" /> 行到第 <ph name="ERROR_LINE_END" /> 行存在错误</translation>
 <translation id="9063800855227801443">无法截取机密内容</translation>

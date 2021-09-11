@@ -8,6 +8,7 @@
 <translation id="1378979118429748177">விலைச் சரிவின்போது அறிவிப்பு அனுப்பப்படும்</translation>
 <translation id="1657719826150349398">தாவலைக் கீழே நகர்த்து</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> தாவல்}other{<ph name="TABS_COUNT_MANY" /> தாவல்கள்}}</translation>
+<translation id="2118649612461486615">ஸ்டோர் தகவல்</translation>
 <translation id="2277224997687551299">குழுவின் பெயரை மாற்று</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{தேர்ந்தெடுத்த <ph name="TABS_COUNT_ONE" /> தாவலைக் குழுவிலிருந்து அகற்றும்.}other{தேர்ந்தெடுத்த <ph name="TABS_COUNT_MANY" /> தாவல்களைக் குழுவிலிருந்து அகற்றும்.}}</translation>
 <translation id="2479148705183875116">அமைப்புகளுக்குச் செல்லவும்</translation>
@@ -50,13 +51,16 @@
 <translation id="6040143037577758943">மூடு</translation>
 <translation id="6054741997831917303">இந்தப் பொருளின் விலை சமீபத்தில் <ph name="PREVIOUS_PRICE" /> இல் இருந்து <ph name="NEW_PRICE" /> ஆகக் குறைந்துள்ளது</translation>
 <translation id="6193448654517602979">தாவல்களைத் தேர்ந்தெடுக்கவும்</translation>
+<translation id="6228793724645064692">(ஸ்டோர் ரேட்டிங்)</translation>
 <translation id="6510648526783655549">தாவல் பட்டையை மூடும்</translation>
+<translation id="6549021453810473782">ஸ்டோர் தகவலைக் காட்டும்</translation>
 <translation id="6562820390860419811">தாவலை இடப்புறம் நகர்த்து</translation>
 <translation id="6615455863669487791">எனக்கு காண்பி</translation>
 <translation id="6840760312327750441">தாவல்களைக் குழுவாக்க தாவலைத் தொட்டுப் பிடித்திருக்கவும். பிறகு அதை மற்றொரு தாவலுக்கு இழுத்துச்சென்று விடவும்.</translation>
 <translation id="6856809498882026482">பல தேர்வுப் பயன்முறையை மறைக்கும்</translation>
 <translation id="7151209024774799310">குழுவிலிருந்து தாவல்களை அகற்று</translation>
 <translation id="7204204600596740190">பல தேர்வுப் பயன்முறை</translation>
+<translation id="7326879924029668159">திருப்பியளித்தல் கொள்கை மற்றும் பலவற்றைப் பார்க்கலாம்</translation>
 <translation id="7352298686197644113">திறந்திருக்கும் தாவல்களில் எந்தப் பொருள் குறைவான விலையில் கிடைக்கிறது எனப் பார்க்கலாம்</translation>
 <translation id="753732157349120914">தாவல் மாற்றி</translation>
 <translation id="7559245342362162951">குழு தாவல்களை முழுத்திரை கட்டத்தில் காட்டு</translation>

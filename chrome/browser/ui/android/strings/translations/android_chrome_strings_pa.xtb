@@ -700,7 +700,6 @@
 <translation id="5324858694974489420">ਪੇਰੈਂਟਲ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="5342314432463739672">ਇਜਾਜ਼ਤ ਲਈ ਬੇਨਤੀਆਂ</translation>
 <translation id="5355191726083956201">ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਆ ਚਾਲੂ ਹੈ</translation>
-<translation id="5357811892247919462">ਟੈਬ ਪ੍ਰਾਪਤ ਹੋਈ</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> ਖੁੱਲ੍ਹੀ ਟੈਬ, ਟੈਬਾਂ ਬਦਲਣ ਲਈ ਟੈਪ ਕਰੋ}one{<ph name="OPEN_TABS_MANY" /> ਖੁੱਲ੍ਹੀ ਟੈਬ, ਟੈਬਾਂ ਬਦਲਣ ਲਈ ਟੈਪ ਕਰੋ}other{<ph name="OPEN_TABS_MANY" /> ਖੁੱਲ੍ਹੀਆਂ ਟੈਬਾਂ, ਟੈਬਾਂ ਬਦਲਣ ਲਈ ਟੈਪ ਕਰੋ}}</translation>
 <translation id="5375577065097716013">Google Lens ਨਾਲ ਚਿੱਤਰ ਖੋਜੋ <ph name="BEGIN_NEW" />ਨਵਾਂ<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">ਸਿਰਫ਼ ਕੁਝ ਸਾਈਟਾਂ ਦੀ ਮਨਜ਼ੂਰੀ ਦਿਓ</translation>
@@ -1237,6 +1236,7 @@
 <translation id="8442258441309440798">ਕੋਈ ਕਹਾਣੀ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="8443209985646068659">Chrome ਅੱਪਡੇਟ ਨਹੀਂ ਹੋਇਆ</translation>
 <translation id="8445448999790540984">ਪਾਸਵਰਡ ਨਿਰਯਾਤ ਨਹੀਂ ਕੀਤੇ ਜਾ ਸਕਦੇ</translation>
+<translation id="8446884382197647889">ਹੋਰ ਜਾਣੋ</translation>
 <translation id="8453310803815879010">Dino ਗੇਮ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="8461694314515752532">ਆਪਣੇ ਖੁਦ ਦੇ ਸਮਕਾਲੀਕਰਨ ਪਾਸਫਰੇਜ਼ ਨਾਲ ਸਮਕਾਲੀਕਿਰਤ ਡਾਟੇ ਨੂੰ ਇਨਕ੍ਰਿਪਟ ਕਰੋ</translation>
 <translation id="8466613982764129868">ਪੱਕਾ ਕਰੋ ਕਿ <ph name="TARGET_DEVICE_NAME" /> ਇੰਟਰਨੈੱਟ ਨਾਲ ਕਨੈਕਟ ਹੋਵੇ</translation>

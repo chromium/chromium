@@ -1125,15 +1125,6 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
 
       Giá trị mặc định cho chính sách này đã thay đổi từ false thành true trong <ph name="PRODUCT_NAME" /> 81. Theo dự kiến, các proxy bị ảnh hưởng sẽ gây ra sự cố kết nối với mã lỗi là ERR_TLS13_DOWNGRADE_DETECTED. Các quản trị viên cần thêm thời gian để nâng cấp những proxy bị ảnh hưởng có thể dùng chính sách này để tạm thời tắt tính năng bảo mật này. Chính sách này đã bị loại bỏ trong phiên bản 86.
       </translation>
-<translation id="2333763898098246468">Kiểm soát cách <ph name="PRODUCT_NAME" /> in trên Windows.
-
-      Khi in sang một máy in không phải PostScript trên Windows, đôi khi, bạn cần tạo điểm ảnh cho các lệnh in để in một cách chính xác.
-
-      Khi bạn đặt chính sách này thành Full, <ph name="PRODUCT_NAME" /> sẽ tạo điểm ảnh cho cả trang nếu cần.
-
-      Khi bạn đặt chính sách này thành Fast, <ph name="PRODUCT_NAME" /> sẽ tránh tạo điểm ảnh nếu có thể. Việc giảm khối lượng tạo điểm ảnh có thể giúp giảm dung lượng lệnh in và tăng tốc độ in.
-
-      Khi bạn không đặt chính sách này, <ph name="PRODUCT_NAME" /> sẽ ở chế độ Full.</translation>
 <translation id="2337859888277013371">Không cho phép sử dụng bộ nhớ đệm cho thao tác tiến/lùi</translation>
 <translation id="2341509917222115272">Nếu bạn đặt thành Bật hoặc không đặt chính sách này, thì người dùng có thể ghép nối máy khách và máy chủ tại thời điểm kết nối, nhờ đó, không cần nhập mã PIN mỗi lần kết nối.
 

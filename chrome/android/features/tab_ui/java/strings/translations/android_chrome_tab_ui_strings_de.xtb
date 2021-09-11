@@ -8,6 +8,7 @@
 <translation id="1378979118429748177">Benachrichtigt werden, wenn günstigere Preise verfügbar sind</translation>
 <translation id="1657719826150349398">Tab nach unten verschieben</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Tab}other{<ph name="TABS_COUNT_MANY" /> Tabs}}</translation>
+<translation id="2118649612461486615">Händlerinfo</translation>
 <translation id="2277224997687551299">Gruppenname bearbeiten</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ausgewählten Tab aus der Gruppe entfernen}other{<ph name="TABS_COUNT_MANY" /> ausgewählte Tabs aus der Gruppe entfernen}}</translation>
 <translation id="2479148705183875116">Zu den Einstellungen</translation>
@@ -50,13 +51,16 @@
 <translation id="6040143037577758943">Schließen</translation>
 <translation id="6054741997831917303">Der Preis dieses Artikels ist kürzlich von <ph name="PREVIOUS_PRICE" /> auf <ph name="NEW_PRICE" /> gefallen</translation>
 <translation id="6193448654517602979">Tabs auswählen</translation>
+<translation id="6228793724645064692">(Händlerbewertung)</translation>
 <translation id="6510648526783655549">Tableiste schließen</translation>
+<translation id="6549021453810473782">Händlerinfo anzeigen</translation>
 <translation id="6562820390860419811">Tab nach links bewegen</translation>
 <translation id="6615455863669487791">Zeigen</translation>
 <translation id="6840760312327750441">Wenn Sie Tabs gruppieren möchten, berühren und halten Sie einen Tab. Ziehen Sie ihn dann auf einen anderen Tab.</translation>
 <translation id="6856809498882026482">Modus für die Mehrfachauswahl ausblenden</translation>
 <translation id="7151209024774799310">Tabs aus der Gruppe verschieben</translation>
 <translation id="7204204600596740190">Mehrfachauswahl</translation>
+<translation id="7326879924029668159">Rückgabebedingungen und mehr</translation>
 <translation id="7352298686197644113">Sehen Sie nach, welcher Artikel auf Ihren geöffneten Tabs zu einem günstigeren Preis erhältlich ist</translation>
 <translation id="753732157349120914">Tab-Wechsler</translation>
 <translation id="7559245342362162951">Tabs der Gruppe in Vollbildraster anzeigen</translation>

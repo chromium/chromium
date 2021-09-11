@@ -58,9 +58,11 @@
 <translation id="1999615961760456652">แคพทีฟพอร์ทัล</translation>
 <translation id="2006864819935886708">การเชื่อมต่อ</translation>
 <translation id="2008685064673031089">Prime Search</translation>
+<translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">การตั้งค่าเพิ่มเติม</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" /> เวอร์ชัน <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">ใช้ได้ <ph name="AVAILABLE_MEMORY" /> GB จาก <ph name="TOTAL_MEMORY" /> GB</translation>
+<translation id="2129264932216073062">ARC HTTP</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">อยู่ในคิว</translation>
 <translation id="2161394479394250669">ยกเลิกงานพิมพ์</translation>
@@ -74,6 +76,7 @@
 <translation id="2364498172489649528">ผ่าน</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">ส่งรายงานความคิดเห็น</translation>
+<translation id="2407209115954268704">สถานะการล็อกซิม</translation>
 <translation id="2418150275289244458">เปิดในการตั้งค่า</translation>
 <translation id="2446553403094072641">ความแม่นยำของจุดลอยตัว</translation>
 <translation id="2448312741937722512">ประเภท</translation>
@@ -179,6 +182,7 @@
 <translation id="4536864596629708641">การกำหนดค่า IP</translation>
 <translation id="4548483925627140043">ไม่พบสัญญาณ</translation>
 <translation id="455835558791489930">แบตเตอรี่ <ph name="CHARGE_VALUE" />mAh</translation>
+<translation id="4561801978359312462">ปลดล็อกซิมแล้ว</translation>
 <translation id="4562494484721939086">ไม่มีบริการ</translation>
 <translation id="458794348635939462">แก้ไขทุกโฮสต์ไม่สำเร็จ</translation>
 <translation id="4593212453765072419">จำเป็นต้องมีการตรวจสอบสิทธิ์พร็อกซี</translation>
@@ -218,6 +222,7 @@
 <translation id="4999333166442584738">ซ่อนรายงาน</translation>
 <translation id="500920857929044050">หยุดการทดสอบ</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5049856988445523908">ล็อกซิมแล้ว (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">ชื่อกลุ่ม</translation>
 <translation id="5088172560898466307">ชื่อโฮสต์ของเซิร์ฟเวอร์</translation>
 <translation id="5089810972385038852">รัฐ</translation>
@@ -312,6 +317,7 @@
 <translation id="6527081081771465939">โปรโตคอลรักษาความปลอดภัย WiFi ที่ไม่รู้จัก</translation>
 <translation id="65587193855025101">แผ่นกระจกสำหรับสแกน</translation>
 <translation id="6564646048574748301">ไม่สำเร็จ - เข้าถึงเครื่องพิมพ์ไม่ได้</translation>
+<translation id="6566314079205407217">การสแกนหลายหน้า</translation>
 <translation id="6574762126505704998">เติม</translation>
 <translation id="6575134580692778371">ไม่ได้กำหนดค่า</translation>
 <translation id="6596816719288285829">ที่อยู่ IP</translation>

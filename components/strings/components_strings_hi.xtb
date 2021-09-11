@@ -91,6 +91,7 @@
 <translation id="1257553931232494454">ज़ूम लेवल</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग को मैनेज करने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="1263231323834454256">रीडिंग लिस्ट</translation>
+<translation id="1269096320618100013">सुलभता सेटिंग के बटन को मैनेज करें, Chrome OS की सेटिंग में सुलभता टूल अपने हिसाब से बनाने के लिए, Enter दबाएं</translation>
 <translation id="1269516672602708785">Google Sites में जल्दी से नई साइट बनाएं</translation>
 <translation id="1270502636509132238">पिकअप का तरीका</translation>
 <translation id="1281476433249504884">स्टैकर 1</translation>
@@ -194,7 +195,6 @@
       &lt;p&gt;कृपया तारीख और समय को &lt;strong&gt;सेटिंग&lt;/strong&gt; ऐप्लिकेशन के &lt;strong&gt;सामान्‍य&lt;/strong&gt; सेक्शन से एडजस्‍ट करें.&lt;/p&gt;</translation>
 <translation id="1567040042588613346">यह नीति उम्मीद के मुताबिक काम कर रही है. हालांकि, किसी दूसरी जगह ऐसा ही मान सेट किया गया है और उसकी जगह इस नीति को लागू कर दिया गया है.</translation>
 <translation id="1569487616857761740">खत्म होने की तारीख डालें</translation>
-<translation id="1578027765348898566">अपनी 'Google विज्ञापन सेटिंग' मैनेज करें</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583294866416602487">Plex</translation>
 <translation id="1583429793053364125">इस वेबपेज को दिखाने के दौरान कुछ गड़बड़ी हुई है.</translation>
@@ -507,6 +507,7 @@
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग में अपना ब्राउज़िंग इतिहास, कुकी, कैश मेमोरी वगैरह मिटाने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="2650446666397867134">फ़ाइल को एक्सेस नहीं दिया गया था</translation>
 <translation id="2653659639078652383">सबमिट करें</translation>
+<translation id="2659491813326907275">Chrome OS की सेटिंग में सुलभता टूल को अपने हिसाब से बनाएं</translation>
 <translation id="2660779039299703961">इवेंट</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{कोई पासवर्ड नहीं है}=1{(<ph name="DOMAIN_LIST" /> के लिए) 1 पासवर्ड}=2{(<ph name="DOMAIN_LIST" /> के लिए) 2 पासवर्ड}one{(<ph name="DOMAIN_LIST" /> के लिए) # पासवर्ड}other{(<ph name="DOMAIN_LIST" /> के लिए) # पासवर्ड}}</translation>
 <translation id="2666092431469916601">शीर्ष</translation>
@@ -1250,6 +1251,7 @@
 <translation id="5115216390227830982">यूरोपियन-ईडीपी</translation>
 <translation id="5115232566827194440">मैनेज किए गए प्रतिबंधित 'मेहमान के तौर पर ब्राउज़ करने का सेशन' बदलें</translation>
 <translation id="5115563688576182185">(64-बिट)</translation>
+<translation id="5116898824332672776"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome OS की सेटिंग में सुलभता टूल अपने हिसाब से बनाने के लिए, पहले Tab और फिर Enter दबाएं.</translation>
 <translation id="5123063207673082822">शनिवार और रविवार</translation>
 <translation id="5125394840236832993">बी-प्लस</translation>
 <translation id="5126510351761255129">कार्ड की पुष्टि करें</translation>
@@ -2212,7 +2214,6 @@
 <translation id="8457125768502047971">कोई तय अवधि नहीं</translation>
 <translation id="8461694314515752532">सिंक किए गए डेटा को अपने खुद के सिंक लंबे पासवर्ड से सुरक्षित करें</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 क्रेडिट कार्ड}one{# क्रेडिट कार्ड}other{# क्रेडिट कार्ड}}</translation>
-<translation id="8471007934814342455"><ph name="MANAGE_GOOGLE_AD_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, अपनी 'Google विज्ञापन सेटिंग' मैनेज करें</translation>
 <translation id="8473863474539038330">पते वगैरह</translation>
 <translation id="8474910779563686872">डेवलपर की जानकारी दिखाएं</translation>
 <translation id="8479754468255770962">नीचे बाईं ओर स्टेपल</translation>

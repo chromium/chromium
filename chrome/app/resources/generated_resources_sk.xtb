@@ -3504,7 +3504,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4699172675775169585">Obrázky a súbory vo vyrovnávacej pamäti</translation>
 <translation id="4699357559218762027">(automaticky spustené)</translation>
 <translation id="4701025263201366865">Prihlásenie rodiča</translation>
-<translation id="4707582759326616943">Presunutím vyhľadávať obrázky pomocou funkcie Google Lens</translation>
 <translation id="4708794300267213770">Pri prebúdzaní z režimu spánku spúšťať uzamknutú obrazovku</translation>
 <translation id="4708849949179781599">Ukončiť aplikáciu <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Obnoviť nastavenia</translation>
@@ -5148,7 +5147,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="6532663472409656417">Zaregistrované v rámci podniku</translation>
 <translation id="6535331821390304775">Vždy povoliť zdroju <ph name="ORIGIN" /> otvárať odkazy tohto typu v pridruženej aplikácii</translation>
 <translation id="653659894138286600">Skenovanie dokumentov a obrázkov</translation>
-<translation id="6537016096312202316">Presunutím cez obrázky spustiť vyhľadávanie pomocou funkcie Google Lens</translation>
 <translation id="6537613839935722475">Názov môže obsahovať písmená, čísla a spojovníky (-)</translation>
 <translation id="6537880577641744343">Commander</translation>
 <translation id="6538098297809675636">Pri rozpoznávaní kódu sa vyskytla chyba</translation>
@@ -5214,6 +5212,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="6607831829715835317">Ďalšie nástro&amp;je</translation>
 <translation id="6607890859198268021">Účet <ph name="USER_EMAIL" /> je už spravovaný doménou <ph name="DOMAIN" />. Ak chcete používať rodičovskú kontrolu s iným účtom Google, po nastavení sa odhláste a potom na prihlasovacej obrazovke vyberte Pridať osobu.</translation>
 <translation id="6609478180749378879">Keď opustíte anonymný režim, budú prihlasovacie údaje uložené v tomto zariadení. Neskôr sa budete môcť znova prihlásiť na tento web pomocou svojho zariadenia.</translation>
+<translation id="6610002944194042868">Možnosti prekladu</translation>
 <translation id="6611972847767394631">Tu nájdete svoje karty</translation>
 <translation id="6615455863669487791">Ukázať</translation>
 <translation id="6618097958368085618">Aj tak ponechať</translation>
@@ -5329,7 +5328,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="6745592621698551453">Aktualizovať</translation>
 <translation id="6746124502594467657">Presunúť nadol</translation>
 <translation id="674632704103926902">Povoliť presunutie klepnutím</translation>
-<translation id="6748054820659621153">Hľadať na obrazovke pomocou funkcie Google Lens</translation>
 <translation id="6748465660675848252">Môžete pokračovať, ale obnovia sa iba vaše synchronizované údaje a nastavenia. Všetky miestne údaje stratíte.</translation>
 <translation id="6750757184909117990">Zakázať mobilnú sieť</translation>
 <translation id="6750946710563435348">Použiť iné používateľské meno</translation>
@@ -6387,14 +6385,12 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="7853747251428735">Ďalšie nástro&amp;je</translation>
 <translation id="7855678561139483478">Presun karty do nového okna</translation>
 <translation id="7857093393627376423">Textové návrhy</translation>
-<translation id="7857675386615530425">Vyhľadať časť stránky pomocou funkcie Google Lens</translation>
 <translation id="7857949311770343000">Je toto stránka na novej karte, ktorú ste čakali?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">Služba: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Stiahnuté</translation>
 <translation id="7861846108263890455">Jazyk účtu Google</translation>
 <translation id="7864539943188674973">Zakázať rozhranie Bluetooth</translation>
-<translation id="7866230141401327032">Vyhľadať časť stránky pomocou funkcie Google Lens</translation>
 <translation id="7869143217755017858">Vypnúť tmavý režim</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – spárované</translation>
 <translation id="7870730066603611552">Po nastavení prezrieť možnosti synchronizácie</translation>
@@ -7378,7 +7374,6 @@ Ak chcete pridelenie odstrániť, stlačte pridelený prepínač</translation>
 <translation id="8907787635362884532">Vydavateľ: <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">Chrome môže skontrolovať, či máte v počítači škodlivý softvér</translation>
 <translation id="8909298138148012791">Aplikácia <ph name="APP_NAME" /> bola odinštalovaná</translation>
-<translation id="8909782404367982052">Presunutím vyhľadávať obrázky pomocou funkcie Google Lens</translation>
 <translation id="8909833622202089127">Web sleduje vašu polohu</translation>
 <translation id="8910222113987937043">Záložky, história, heslá a ďalšie nastavenia sa už nebudú ďalej synchronizovať do vášho účtu Google. Vaše existujúce údaje však zostanú uložené v účte Google a môžete ich spravovať pomocou panela <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
 <translation id="8910987510378294980">Skryť zoznam zariadení</translation>
@@ -7522,7 +7517,6 @@ Ak chcete pridelenie odstrániť, stlačte pridelený prepínač</translation>
 <translation id="9055636786322918818">Vynúťte šifrovanie RC4. Šifry RC4 sú nezabezpečené, takže použitím tejto možnosti zvýšite riziko.</translation>
 <translation id="9056810968620647706">Nenašli sa žiadne zhody.</translation>
 <translation id="9057354806206861646">Plán aktualizácií</translation>
-<translation id="9057599413476594385">Presunutím cez obrázky spustiť vyhľadávanie pomocou funkcie Google Lens</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Chyba od riadka <ph name="ERROR_LINE_START" /> po <ph name="ERROR_LINE_END" /></translation>
 <translation id="9063800855227801443">Nie je možné nasnímať dôverný obsah</translation>

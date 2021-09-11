@@ -2275,6 +2275,7 @@
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">Бұл сайт үшін ешқандай құпия сөз сақталмаған</translation>
 <translation id="3404249063913988450">Скринсейверді қосу</translation>
+<translation id="3404805962764077228">Тікелей <ph name="DEVICE_TYPE" /> құрылғысында телефон қолданбаларын уақытша пайдалану</translation>
 <translation id="3405664148539009465">Қаріптерді реттеу</translation>
 <translation id="3405763860805964263">...</translation>
 <translation id="3406290648907941085">Виртуалды шындық құрылғыларын мен деректерін пайдалануға рұқсаты барлар</translation>
@@ -3497,7 +3498,6 @@
 <translation id="4699172675775169585">Кэштелген кескіндер мен файлдар</translation>
 <translation id="4699357559218762027">(автоматты іске қосу)</translation>
 <translation id="4701025263201366865">Ата-ананың жүйеге кіруі</translation>
-<translation id="4707582759326616943">Google Lens арқылы кескіндер іздеу үшін сүйреу</translation>
 <translation id="4708794300267213770">Ұйқы режимінен шығарғанда құлып экранын көрсету</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> жүйесінен шығу</translation>
 <translation id="4711638718396952945">Параметрлерді қалпына келтіру</translation>
@@ -4244,6 +4244,7 @@
 <translation id="5543983818738093899">Күйі тексерілуде…</translation>
 <translation id="554517701842997186">Рендеринг құралы</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Топқа қойынды қосу}other{Топқа қойындылар қосу}}</translation>
+<translation id="5545693483061321551">Сайттар браузерді қолдану мәліметін көру (мысалы, жарнамаларды жекелендіру) үшін cookie файлдарын пайдалана алмайды. Кейбір сайттың функциялары жұмыс істемеуі мүмкін.</translation>
 <translation id="5546865291508181392">Табу</translation>
 <translation id="5548075230008247516">Барлық таңдалған элементтер алынып тасталды, таңдау режимі өшірілді.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" және тағы 1 қойынды}other{"<ph name="TAB_TITLE" />" және тағы # қойынды}}</translation>
@@ -5140,7 +5141,6 @@
 <translation id="6532663472409656417">Кәсіпорында тіркелген</translation>
 <translation id="6535331821390304775"><ph name="ORIGIN" /> бетіне осындай сілтемелерді байланыстырылған қолданбада әрдайым ашуға рұқсат етілсін</translation>
 <translation id="653659894138286600">Құжаттар мен суреттерді сканерлеу</translation>
-<translation id="6537016096312202316">Google Lens арқылы іздеу үшін кескіндерді сүйреу</translation>
 <translation id="6537613839935722475">Атауда әріптерді, сандарды және сызықшаларды (-) пайдалануға болады.</translation>
 <translation id="6537880577641744343">Commander</translation>
 <translation id="6538098297809675636">Кодты анықтау кезінде қате шықты</translation>
@@ -5206,6 +5206,7 @@
 <translation id="6607831829715835317">Қосымша құралд&amp;ар</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> электрондық мекенжайын <ph name="DOMAIN" /> домені басқарып жатыр. Ата-ана бақылауын басқа Google аккаунтымен пайдалану үшін реттеуден кейін аккаунттан шығып, есептік жазбаға кіру терезесінен "Адамды қосу" опциясын таңдаңыз.</translation>
 <translation id="6609478180749378879">Сіз инкогнито режимінен шыққаннан кейін де, есептік жазбаға кіру деректері осы құрылғыда сақталады. Кейінірек құрылғыңызбен бұл веб-сайтқа қайта кіре аласыз.</translation>
+<translation id="6610002944194042868">Аудару опциялары</translation>
 <translation id="6611972847767394631">Қойындыларыңыз осы жерде</translation>
 <translation id="6615455863669487791">Маған көрсету</translation>
 <translation id="6618097958368085618">Сақтала берсін</translation>
@@ -5321,7 +5322,6 @@
 <translation id="6745592621698551453">Қазір жаңарту</translation>
 <translation id="6746124502594467657">Төмен қарай жылжыту</translation>
 <translation id="674632704103926902">Түртіп сүйреуді қосу</translation>
-<translation id="6748054820659621153">Экраныңыздан Google Lens арқылы іздеу</translation>
 <translation id="6748465660675848252">Жалғастыруыңызға болады, бірақ тек синхрондалған деректер мен параметрлер қалпына келтіріледі. Барлық жергілікті деректер жойылады.</translation>
 <translation id="6750757184909117990">Ұялы байланыс желісін өшіру</translation>
 <translation id="6750946710563435348">Басқа пайдаланушы атын қолдану</translation>
@@ -6379,14 +6379,12 @@
 <translation id="7853747251428735">Қосымша құрал&amp;дар</translation>
 <translation id="7855678561139483478">Қойындыны жаңа терезеден ашу</translation>
 <translation id="7857093393627376423">Мәтіндік ұсыныстар</translation>
-<translation id="7857675386615530425">Бет бөлігін Google Lens арқылы іздеу</translation>
 <translation id="7857949311770343000">Бұл сіз күткен жаңа қойынды беті ме?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">Қызмет: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Жүктеулер</translation>
 <translation id="7861846108263890455">Google аккаунтының тілі</translation>
 <translation id="7864539943188674973">Bluetooth өшіру</translation>
-<translation id="7866230141401327032">Бет бөлігін Google Lens арқылы іздеу</translation>
 <translation id="7869143217755017858">Қараңғы режимді өшіру</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – жұпталды</translation>
 <translation id="7870730066603611552">Сеанс басталғаннан кейін, синхрондау опцияларын қарап шығу</translation>
@@ -6669,6 +6667,7 @@
 <translation id="8149564499626272569">USB кабелімен қосылған телефоныңыз арқылы растау</translation>
 <translation id="8151638057146502721">Конфигурациялау</translation>
 <translation id="8154790740888707867">Файл жоқ</translation>
+<translation id="8154912474061769055">Көптеген сайттың функциялары жұмыс істемеуі мүмкін.</translation>
 <translation id="815491593104042026">Аутентификация сәтсіз аяқталды, себебі ол қауіпсіз емес URL (<ph name="BLOCKED_URL" />) пайдалануға конфигурацияланған. Әкімшіңізге хабарласыңыз.</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{Ешқандай құпия сөз ұрланбаған.}=1{{COUNT} құпия сөз ұрланды.}other{{COUNT} құпия сөз ұрланды.}}</translation>
 <translation id="8157248655669507702">eSIM профилін орнату үшін мобильдік интернетті қосыңыз.</translation>
@@ -6845,6 +6844,7 @@
 <translation id="8342221978608739536">Қолданып көрмедім</translation>
 <translation id="8342861492835240085">Жинақ таңдау</translation>
 <translation id="8347227221149377169">Баспа жұмыстары</translation>
+<translation id="834785183489258869">Инкогнито режимінде болғанда, сайттар браузерді қолдану мәліметін көру (мысалы, жарнамаларды жекелендіру) үшін cookie файлдарын пайдалана алмайды. Кейбір сайттың функциялары жұмыс істемеуі мүмкін.</translation>
 <translation id="8350789879725387295">Қондырғыдағы стилус құралдары</translation>
 <translation id="8351316842353540018">a11y опцияларын әрқашан көрсету</translation>
 <translation id="8351419472474436977">Бұл кеңейтім прокси параметрлерін бақылауға алды, яғни сіздің онлайн орындайтын кез келген әрекетіңізді өзгерте, бұза немесе ұстап қала алады. Ондай бақылаудың жасалуын қаламасаңыз, кеңейтімді өшіргеніңіз жөн болар.</translation>
@@ -7365,7 +7365,6 @@
 <translation id="8907787635362884532">Жариялаушы: <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">Chrome компьютерде зиянды бағдарламалық құралдың бар-жоғын тексере алады.</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> жойылды.</translation>
-<translation id="8909782404367982052">Google Lens арқылы кескіндер іздеу үшін сүйреу</translation>
 <translation id="8909833622202089127">Сайт орналасқан жеріңізді бақылауда</translation>
 <translation id="8910222113987937043">Бетбелгілерге, тарихқа, құпия сөздерге және басқа параметрлерге енгізілген өзгертулер бұдан әрі Google аккаунтымен синхрондалмайды. Алайда бұрыннан бар деректер Google аккаунтында сақталады және <ph name="BEGIN_LINK" />Google бақылау тақтасында<ph name="END_LINK" /> басқарылады.</translation>
 <translation id="8910987510378294980">Құрылғылар тізімін жасыру</translation>
@@ -7509,7 +7508,6 @@
 <translation id="9055636786322918818">RC4 шифрлауын күшіне енгізу. RC4 шифрлары қауіпті болғандықтан, бұл параметрді пайдалану қауіпті арттырады.</translation>
 <translation id="9056810968620647706">Сәйкестіктер табылмады.</translation>
 <translation id="9057354806206861646">Кестені жаңарту</translation>
-<translation id="9057599413476594385">Google Lens арқылы іздеу үшін кескіндерді сүйреу</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" /> - <ph name="ERROR_LINE_END" /> аралығындағы жолдарда қате шықты</translation>
 <translation id="9063800855227801443">Құпия мазмұнды түсіру мүмкін емес</translation>

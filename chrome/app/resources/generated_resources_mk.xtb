@@ -3519,7 +3519,6 @@
 <translation id="4699172675775169585">Кеширани слики и датотеки</translation>
 <translation id="4699357559218762027">(автоматско стартување)</translation>
 <translation id="4701025263201366865">Најавување на родител</translation>
-<translation id="4707582759326616943">Повлечете за да пребарувате слики со Google Lens</translation>
 <translation id="4708794300267213770">Прикажи заклучен екран при будење од режим на мирување</translation>
 <translation id="4708849949179781599">Излези од <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Обнови поставки</translation>
@@ -5163,7 +5162,6 @@
 <translation id="6532663472409656417">Регистриран во компанија</translation>
 <translation id="6535331821390304775">Секогаш дозволувај <ph name="ORIGIN" /> да отвора линкови од овој тип во поврзаната апликација</translation>
 <translation id="653659894138286600">Скенирајте документи и слики</translation>
-<translation id="6537016096312202316">Повлекувајте преку слики за да пребарувате со Google Lens</translation>
 <translation id="6537613839935722475">Името може да содржи букви, бројки и цртички (-)</translation>
 <translation id="6537880577641744343">Commander</translation>
 <translation id="6538098297809675636">Грешка при откривањето на кодот</translation>
@@ -5229,6 +5227,7 @@
 <translation id="6607831829715835317">Повеќе алат&amp;ки</translation>
 <translation id="6607890859198268021"><ph name="DOMAIN" /> веќе управува со <ph name="USER_EMAIL" />. За да користите родителски контроли со друга сметка на Google, одјавете се по поставувањето, а потоа изберете „Додајте лице“ на екранот за најавување.</translation>
 <translation id="6609478180749378879">Податоците за најавување ќе се складираат во уредов откако ќе излезете од режимот „Инкогнито“. Подоцна ќе може повторно да се најавите на овој веб-сајт со уредот.</translation>
+<translation id="6610002944194042868">Опции за „Преведи“</translation>
 <translation id="6611972847767394631">Најдете ги вашите картички тука</translation>
 <translation id="6615455863669487791">Покажи ми</translation>
 <translation id="6618097958368085618">Сепак задржи</translation>
@@ -5344,7 +5343,6 @@
 <translation id="6745592621698551453">Ажурирај сега</translation>
 <translation id="6746124502594467657">Премести долу</translation>
 <translation id="674632704103926902">Овозможи влечење картичка</translation>
-<translation id="6748054820659621153">Пребарувајте на екранот со Google Lens</translation>
 <translation id="6748465660675848252">Може да продолжите, но ќе се обноват само синхронизираните податоци и поставки. Сите локални податоци ќе се загубат.</translation>
 <translation id="6750757184909117990">Оневозможување мобилна мрежа</translation>
 <translation id="6750946710563435348">Користете друго корисничко име</translation>
@@ -6402,14 +6400,12 @@
 <translation id="7853747251428735">&amp;Повеќе алатки</translation>
 <translation id="7855678561139483478">Преместете ја картичката во нов прозорец</translation>
 <translation id="7857093393627376423">Предлози за текст</translation>
-<translation id="7857675386615530425">Пребарај дел од страницата со Google Lens</translation>
 <translation id="7857949311770343000">Дали е ова страницата од новата картичка што ја очекувавте?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">Услуга: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Преземања</translation>
 <translation id="7861846108263890455">Јазик на сметката на Google</translation>
 <translation id="7864539943188674973">Оневозможи Bluetooth</translation>
-<translation id="7866230141401327032">Пребарај дел од страницата со Google Lens</translation>
 <translation id="7869143217755017858">Оневозможи темен режим</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - спарено</translation>
 <translation id="7870730066603611552">Прегледајте ги опциите за синхронизација по поставувањето</translation>
@@ -7395,7 +7391,6 @@
 <translation id="8907787635362884532">Издавач: <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">Chrome може да проверува дали има штетен софтвер на вашиот компјутер</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> е деинсталиран</translation>
-<translation id="8909782404367982052">Повлечете за да пребарувате слики со Google Lens</translation>
 <translation id="8909833622202089127">Сајтот ја следи вашата локација</translation>
 <translation id="8910222113987937043">Промените во обележувачите, историјата, лозинките и другите поставки нема веќе да се синхронизираат со вашата сметка на Google. Сепак, вашите податоци ќе останат складирани во сметката на Google и со нив може да управувате во <ph name="BEGIN_LINK" />„Контролната табла на Google“<ph name="END_LINK" />.</translation>
 <translation id="8910987510378294980">Сокријте го списокот со уреди</translation>
@@ -7539,7 +7534,6 @@
 <translation id="9055636786322918818">Наметнете RC4-шифрирање. Ако ја користите опцијава, ви се зголемува ризикот бидејќи RC4-шифрите се небезбедни.</translation>
 <translation id="9056810968620647706">Не се најдени совпаѓања.</translation>
 <translation id="9057354806206861646">Распоред за ажурирање</translation>
-<translation id="9057599413476594385">Повлекувајте преку слики за да пребарувате со Google Lens</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Грешка од ред <ph name="ERROR_LINE_START" /> до <ph name="ERROR_LINE_END" /></translation>
 <translation id="9063800855227801443">Не може да се сликаат доверливи содржини</translation>

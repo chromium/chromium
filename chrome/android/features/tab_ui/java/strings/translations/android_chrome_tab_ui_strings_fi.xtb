@@ -8,6 +8,7 @@
 <translation id="1378979118429748177">Saat ilmoituksia, kun hinnat laskevat</translation>
 <translation id="1657719826150349398">Siirrä välilehti alaspäin</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> välilehti}other{<ph name="TABS_COUNT_MANY" /> välilehteä}}</translation>
+<translation id="2118649612461486615">Kaupan tiedot</translation>
 <translation id="2277224997687551299">Muokkaa ryhmän nimeä</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Poista <ph name="TABS_COUNT_ONE" /> valittu välilehti ryhmästä.}other{Poista <ph name="TABS_COUNT_MANY" /> valittua välilehteä ryhmästä.}}</translation>
 <translation id="2479148705183875116">Avaa Asetukset</translation>
@@ -50,13 +51,16 @@
 <translation id="6040143037577758943">Sulje</translation>
 <translation id="6054741997831917303">Tämän tuotteen hinta on laskenut äskettäin: aiemmin <ph name="PREVIOUS_PRICE" />, nyt <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Valitse välilehdet</translation>
+<translation id="6228793724645064692">(kaupan arvio)</translation>
 <translation id="6510648526783655549">Sulje välilehtirivi</translation>
+<translation id="6549021453810473782">Katso kaupan tiedot</translation>
 <translation id="6562820390860419811">Siirrä välilehti vasemmalle</translation>
 <translation id="6615455863669487791">Näytä</translation>
 <translation id="6840760312327750441">Kun haluat ryhmitellä välilehtiä, kosketa yhtä pitkään. Vedä se sitten toisen välilehden päälle.</translation>
 <translation id="6856809498882026482">Piilota monivalintatila</translation>
 <translation id="7151209024774799310">Poista välilehtiä ryhmästä</translation>
 <translation id="7204204600596740190">Monivalintatila</translation>
+<translation id="7326879924029668159">Katso palautuskäytäntö ja muita</translation>
 <translation id="7352298686197644113">Katso, minkä avoimilta välilehdiltäsi löytyvän tuotteen voit saada edullisempaan hintaan</translation>
 <translation id="753732157349120914">Välilehtien vaihtaja</translation>
 <translation id="7559245342362162951">Näytä ryhmän välilehdet koko näytön ruudukossa</translation>

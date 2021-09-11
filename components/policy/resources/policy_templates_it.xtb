@@ -1116,15 +1116,6 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
 
       Il valore predefinito di questo criterio è stato modificato in <ph name="PRODUCT_NAME" /> 81 da Falso a Vero. Il codice di errore previsto per il problema di connessione dei proxy interessati è ERR_TLS13_DOWNGRADE_DETECTED. Gli amministratori a cui occorre più tempo per eseguire l'upgrade dei proxy interessati potrebbero usare questo criterio per disattivare temporaneamente questa funzionalità di sicurezza. Questo criterio è stato rimosso nella versione 86.
       </translation>
-<translation id="2333763898098246468">Controlla come <ph name="PRODUCT_NAME" /> stampa su Windows.
-
-      Quando stampi su una stampante non PostScript da Windows, a volte i processi di stampa devono essere rasterizzati per essere stampati correttamente.
-
-      Se il criterio è impostato su Full, <ph name="PRODUCT_NAME" /> effettua una rasterizzazione di pagina completa, se necessario.
-
-      Se il criterio è impostato su Fast, se possibile <ph name="PRODUCT_NAME" /> eviterà la rasterizzazione: ridurre la quantità di rasterizzazione può contribuire a diminuire le dimensioni dei processi di stampa e aumentare la velocità di stampa.
-
-      Se il criterio non è impostato, <ph name="PRODUCT_NAME" /> opererà in modalità Full.</translation>
 <translation id="2337859888277013371">Non consentire uso della cache back-forward</translation>
 <translation id="2341509917222115272">Se il criterio viene impostato su Attivato o se non viene configurato, gli utenti possono accoppiare client e host in fase di connessione, senza dover inserire un codice PIN ogni volta.
 

@@ -700,7 +700,6 @@
 <translation id="5324858694974489420">பெற்றோர் அமைப்புகள்</translation>
 <translation id="5342314432463739672">அனுமதிக் கோரிக்கைகள்</translation>
 <translation id="5355191726083956201">மேம்படுத்தப்பட்ட பாதுகாப்பு இயக்கப்பட்டுள்ளது</translation>
-<translation id="5357811892247919462">பகிர்ந்த தாவல் பெறப்பட்டது</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> திறந்துள்ள தாவல், தாவல்களை மாற்ற, தட்டவும்}other{<ph name="OPEN_TABS_MANY" /> திறந்துள்ள தாவல்கள், தாவல்களை மாற்ற, தட்டவும்}}</translation>
 <translation id="5375577065097716013">Google Lens மூலம் படத்தைத் தேடு <ph name="BEGIN_NEW" />புதிது<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">குறிப்பிட்ட தளங்களை மட்டும் அனுமதி</translation>
@@ -1237,6 +1236,7 @@
 <translation id="8442258441309440798">புதிய கட்டுரைகள் எதுவுமில்லை</translation>
 <translation id="8443209985646068659">Chrome புதுப்பிக்கவில்லை</translation>
 <translation id="8445448999790540984">கடவுச்சொற்களை ஏற்ற முடியவில்லை</translation>
+<translation id="8446884382197647889">மேலும் அறிக</translation>
 <translation id="8453310803815879010">டைனோசர் கேமைத் தொடங்கும்</translation>
 <translation id="8461694314515752532">ஒத்திசைக்கப்பட்ட தரவை எனது ஒத்திசைவுக் கடவுச்சொற்றொடர் மூலம் என்கிரிப்ட் செய்</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> சாதனம் இணையத்துடன் இணைக்கப்பட்டுள்ளதை உறுதி செய்யவும்</translation>

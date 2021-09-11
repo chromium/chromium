@@ -700,7 +700,6 @@
 <translation id="5324858694974489420">保護者設定</translation>
 <translation id="5342314432463739672">権限のリクエスト</translation>
 <translation id="5355191726083956201">保護強化機能がオンになっています</translation>
-<translation id="5357811892247919462">タブが共有されました</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> 個のタブが開いています。タブを切り替えるにはタップします}other{<ph name="OPEN_TABS_MANY" /> 個のタブが開いています。タブを切り替えるにはタップします}}</translation>
 <translation id="5375577065097716013">Google レンズで画像を検索 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">特定のサイトのみを許可</translation>
@@ -1237,6 +1236,7 @@
 <translation id="8442258441309440798">表示できる記事はありません</translation>
 <translation id="8443209985646068659">Chrome を更新できません</translation>
 <translation id="8445448999790540984">パスワードをエクスポートできません</translation>
+<translation id="8446884382197647889">詳細</translation>
 <translation id="8453310803815879010">Dino ゲームを開始</translation>
 <translation id="8461694314515752532">同期データを同期パスフレーズで暗号化する</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> がインターネットに接続していることを確認してください</translation>

@@ -2280,6 +2280,7 @@
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">Այս կայքի համար գաղտնաբառեր չեն պահվել</translation>
 <translation id="3404249063913988450">Միացնել էկրանապահը</translation>
+<translation id="3404805962764077228">Ստանալ ձեր հեռախոսի հավելվածների օգտագործման ժամանակավոր թույլտվություն <ph name="DEVICE_TYPE" /> սարքում</translation>
 <translation id="3405664148539009465">Հարմարեցնել տառատեսակները</translation>
 <translation id="3405763860805964263">...</translation>
 <translation id="3406290648907941085">Թույլատրվում է օգտագործել վիրտուալ իրականության սարքեր և տվյալներ</translation>
@@ -3502,7 +3503,6 @@
 <translation id="4699172675775169585">Քեշավորված պատկերներ և ֆայլեր</translation>
 <translation id="4699357559218762027">(ինքնագործարկում)</translation>
 <translation id="4701025263201366865">Մուտք ծնողի համար</translation>
-<translation id="4707582759326616943">Քաշել՝ Google Տեսապակու միջոցով պատկերներ որոնելու համար</translation>
 <translation id="4708794300267213770">Ցույց տալ կողպէկրանը քնի ռեժիմից դուրս գալիս</translation>
 <translation id="4708849949179781599">Quit <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Վերականգնել կարգավորումները</translation>
@@ -4252,6 +4252,7 @@
 <translation id="5543983818738093899">Կարգավիճակի ստուգում...</translation>
 <translation id="554517701842997186">Արտապատկերում</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Ավելացնել ներդիր խմբում}one{Ավելացնել ներդիրներ խմբում}other{Ավելացնել ներդիրներ խմբում}}</translation>
+<translation id="5545693483061321551">Կայքերը չեն կարող օգտագործել քուքիներ՝ դիտարկիչում ձեր գործողությունները տեսնելու համար, օրինակ, գովազդի անհատականացման նպատակով։ Որոշ կայքերում գործառույթները կարող են չաշխատել։</translation>
 <translation id="5546865291508181392">Find</translation>
 <translation id="5548075230008247516">Բոլոր տարրերի նշումը չեղարկվեց, և դուք դուրս եկաք նշման ռեժիմից։</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{«<ph name="TAB_TITLE" />»}=1{«<ph name="TAB_TITLE" />» ու ևս 1 ներդիր}one{«<ph name="TAB_TITLE" />» ու ևս # ներդիր}other{«<ph name="TAB_TITLE" />» ու ևս # ներդիր}}</translation>
@@ -5148,7 +5149,6 @@
 <translation id="6532663472409656417">Գրանցված է կորպորատիվ տիրույթում</translation>
 <translation id="6535331821390304775">Միշտ թույլատրել <ph name="ORIGIN" /> կայքին բացել նման տեսակի հղումները համապատասխան հավելվածում</translation>
 <translation id="653659894138286600">Սկանավորեք փաստաթղթեր և պատկերներ</translation>
-<translation id="6537016096312202316">Քաշել տարածքը և որոնել ըստ պատկերների Google Տեսապակու միջոցով</translation>
 <translation id="6537613839935722475">Անվանման մեջ կարող են օգտագործվել տառեր, թվեր և գծիկներ (-)</translation>
 <translation id="6537880577641744343">Commander</translation>
 <translation id="6538098297809675636">Կոդը հայտնաբերելիս սխալ առաջացավ</translation>
@@ -5214,6 +5214,7 @@
 <translation id="6607831829715835317">Լրացուցիչ գոր&amp;ծիքներ</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> հաշիվն արդեն կառավարվում է <ph name="DOMAIN" /> տիրույթի կողմից։ Այլ Google հաշվի միջոցով ծնողական վերահսկողությունն օգտագործելու համար կարգավորումն ավարտելուց հետո դուրս եկեք հաշվից, ապա մուտքի էկրանին ընտրեք «Ավելացնել օգտատեր»։</translation>
 <translation id="6609478180749378879">Մուտքի տվյալները կպահվեն այս սարքում, երբ դուք դուրս գաք ինկոգնիտո ռեժիմից։ Ձեր սարքով դուք նորից կկարողանաք մտնել հաշիվ այս կայքում։</translation>
+<translation id="6610002944194042868">Թարգմանության կարգավորումներ</translation>
 <translation id="6611972847767394631">Ձեր ներդիրներն այստեղ են</translation>
 <translation id="6615455863669487791">Ցույց տալ</translation>
 <translation id="6618097958368085618">Տեղադրել</translation>
@@ -5329,7 +5330,6 @@
 <translation id="6745592621698551453">Թարմացնել հիմա</translation>
 <translation id="6746124502594467657">Տեղափոխել վար</translation>
 <translation id="674632704103926902">Թույլ տալ հպումով քաշումը</translation>
-<translation id="6748054820659621153">Որոնել էկրանի բովանդակությունը Google Տեսապակու միջոցով</translation>
 <translation id="6748465660675848252">Դուք կարող եք շարունակել, սակայն կվերականգնվեն միայն ձեր համաժամացված տվյալները և կարգավորումները: Տեղական բոլոր տվյալները կկորչեն:</translation>
 <translation id="6750757184909117990">Անջատել բջջային ցանցը</translation>
 <translation id="6750946710563435348">Օգտագործել այլ օգտանուն</translation>
@@ -6386,14 +6386,12 @@
 <translation id="7853747251428735">Լրացուցիչ գործիքներ</translation>
 <translation id="7855678561139483478">Բացել ներդիրը նոր պատուհանում</translation>
 <translation id="7857093393627376423">Տեքստային հուշումներ</translation>
-<translation id="7857675386615530425">Որոնել էջի հատվածում Google Տեսապակու միջոցով</translation>
 <translation id="7857949311770343000">Սա՞ է ձեր ուզած նոր ներդիրի էջը:</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">Ծառայություն՝ <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Ներբեռնումներ</translation>
 <translation id="7861846108263890455">Google հաշվի լեզուն</translation>
 <translation id="7864539943188674973">Անջատել Bluetooth-ը</translation>
-<translation id="7866230141401327032">Որոնել էջի հատվածում Google Տեսապակու միջոցով</translation>
 <translation id="7869143217755017858">Անջատել մուգ ռեժիմը</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> սարք՝ զուգակցված է</translation>
 <translation id="7870730066603611552">Ստուգել համաժամացման պարամետրերը աշխատաշրջանի մեկնարկից հետո</translation>
@@ -6676,6 +6674,7 @@
 <translation id="8149564499626272569">Հաստատել USB մալուխով միացված հեռախոսի միջոցով</translation>
 <translation id="8151638057146502721">Կազմաձևել</translation>
 <translation id="8154790740888707867">Ֆայլ չի գտնվել</translation>
+<translation id="8154912474061769055">Շատ կայքերում գործառույթները կարող են չաշխատել</translation>
 <translation id="815491593104042026">Իսկորոշումը չհաջողվեց, քանի որ նրա կազմաձևումը թույլ է տալիս օգտագործել ոչ ապահով URL (<ph name="BLOCKED_URL" />): Կապվեք ձեր ադմինիստրատորի հետ:</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{Կոտրված գաղտնաբառեր չեն գտնվել}=1{{COUNT} կոտրված գաղտնաբառ}one{{COUNT} կոտրված գաղտնաբառ}other{{COUNT} կոտրված գաղտնաբառ}}</translation>
 <translation id="8157248655669507702">eSIM պրոֆիլ տեղադրելու համար միացրեք բջջային ինտերնետը</translation>
@@ -6852,6 +6851,7 @@
 <translation id="8342221978608739536">Չեմ փորձել</translation>
 <translation id="8342861492835240085">Ընտրել հավաքածու</translation>
 <translation id="8347227221149377169">Տպելու առաջադրանքներ</translation>
+<translation id="834785183489258869">Ինկոգնիտո ռեժիմում կայքերը չեն կարող օգտագործել քուքիներ՝ դիտարկիչում ձեր գործողությունները տեսնելու համար, օրինակ, գովազդի անհատականացման նպատակով։ Որոշ կայքերում գործառույթները կարող են չաշխատել։</translation>
 <translation id="8350789879725387295">Ստիլուսի գործիքներ դոկ-կայանում</translation>
 <translation id="8351316842353540018">Միշտ ցույց տալ հատուկ գործառույթները</translation>
 <translation id="8351419472474436977">Ձեր պրոքսիի կարգավորումները վերահսկվում են այս ընդլայնման կողմից: Դա նշանակում է, որ այն կարող է փոխել, խափանել կամ աննկատ գրառել այն ամենը, ինչ անում եք առցանց: Եթե չգիտեք, թե ինչու է այդ փոփոխությունը տեղի ունեցել, հավանաբար դուք դա չէիք ուզում:</translation>
@@ -7373,7 +7373,6 @@
 <translation id="8907787635362884532">Հրատարակիչ՝ <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">Chrome-ը կարող է ստուգել համակարգչում վնասաբեր ծրագրերի առկայությունը</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> հավելվածը հեռացվեց</translation>
-<translation id="8909782404367982052">Քաշել՝ Google Տեսապակու միջոցով պատկերներ որոնելու համար</translation>
 <translation id="8909833622202089127">Կայքին հայտնի է ձեր գտնվելու վայրը</translation>
 <translation id="8910222113987937043">Ձեր էջանիշների, այցելությունների պատմության, գաղտնաբառերի և այլ կարգավորումների փոփոխությունները չեն համաժամացվի ձեր Google հաշվի հետ: Այդուհանդերձ, ձեր առկա տվյալները կպահվեն Google հաշվում, և դրանք կարող եք կառավարել <ph name="BEGIN_LINK" />Google Dashboard-ում<ph name="END_LINK" />:</translation>
 <translation id="8910987510378294980">Թաքցնել սարքերի ցանկը</translation>
@@ -7517,7 +7516,6 @@
 <translation id="9055636786322918818">Օգտագործել RC4 գաղտնագրումը։ Այս տարբերակի օգտագործումն ապահով չէ, քանի որ RC4 գաղտնագրերը հուսալի չեն։</translation>
 <translation id="9056810968620647706">Համընկնումներ չեն գտնվել:</translation>
 <translation id="9057354806206861646">Ժամանակացույցի թարմացում</translation>
-<translation id="9057599413476594385">Քաշել տարածքը և որոնել ըստ պատկերների Google Տեսապակու միջոցով</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Սխալ <ph name="ERROR_LINE_START" />-<ph name="ERROR_LINE_END" /> տողերում</translation>
 <translation id="9063800855227801443">Հնարավոր չէ տեսագրել գաղտնի բովանդակությունը</translation>

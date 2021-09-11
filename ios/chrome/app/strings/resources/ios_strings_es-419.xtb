@@ -454,6 +454,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5556459405103347317">Cargar de nuevo</translation>
 <translation id="5580834567471114021">¿Deseas agregar la página a la Lista de lectura para retomarla más tarde?</translation>
 <translation id="5592679540098330836">Activa la sincronización para <ph name="NAME" /></translation>
+<translation id="560322036295180549">Tu organización desactivó la opción.</translation>
 <translation id="5614553682702429503">¿Quieres guardar la contraseña?</translation>
 <translation id="5626245204502895507">No se pudo descargar el archivo esta vez.</translation>
 <translation id="5631164295104953411">Agregar forma de pago</translation>
@@ -711,6 +712,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7856733331829174190">No se pudo descargar</translation>
 <translation id="7859704718976024901">Historial de navegación</translation>
 <translation id="7887198238286927132">Para proteger tu privacidad, Chrome no completará este campo de forma automática.</translation>
+<translation id="7911190106180361398">Tu organización no te permite sincronizar todo el contenido.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Exportar contraseñas…</translation>
 <translation id="794799177247607889">Detener registro</translation>

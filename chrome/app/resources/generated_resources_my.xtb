@@ -3515,7 +3515,6 @@
 <translation id="4699172675775169585">ကက်ရှ်လုပ်ထားသည့် ပုံများနှင့် ဖိုင်များ</translation>
 <translation id="4699357559218762027">(အလိုအလျောက်-စရန်)</translation>
 <translation id="4701025263201366865">မိဘ လက်မှတ်ထိုး ဝင်ရန်</translation>
-<translation id="4707582759326616943">Google Lens ဖြင့် ပုံများရှာရန် ဖိဆွဲပါ</translation>
 <translation id="4708794300267213770">မျက်နှာပြင်ကို ပိတ်ထားရာမှ ဖွင့်လိုက်သည့်အခါ လော့ခ်မျက်နှာပြင်ကို ပြပါ</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" />ကို ရပ်ပစ်ရန်</translation>
 <translation id="4711638718396952945">ဆက်တင်များအား ပြန်လည်သိုလှောင်ရန်</translation>
@@ -5157,7 +5156,6 @@
 <translation id="6532663472409656417">လုပ်ငန်း အမည်စာရင်းသွင်းထားသည်</translation>
 <translation id="6535331821390304775">ဆက်စပ်နေသည့် အက်ပ်တွင် ဤလင့်ခ်အမျိုးအစားများ ဖွင့်ရန်အတွက် <ph name="ORIGIN" /> ကို အမြဲခွင့်ပြုရန်</translation>
 <translation id="653659894138286600">စာရွက်စာတမ်းနှင့် ပုံများ စကင်ဖတ်ပေးသည်</translation>
-<translation id="6537016096312202316">Google Lens ဖြင့် ရှာရန် ပုံများပေါ်တွင် ဖိဆွဲပါ</translation>
 <translation id="6537613839935722475">အမည်တွင် စာလုံးများ၊ နံပါတ်များနှင့် တုံးတိုများ (-) သုံးနိုင်သည်</translation>
 <translation id="6537880577641744343">ကွန်မန်းပေးစနစ်</translation>
 <translation id="6538098297809675636">ကုဒ်ရှာဖွေရာတွင် အမှားဖြစ်သွားသည်</translation>
@@ -5223,6 +5221,7 @@
 <translation id="6607831829715835317">နောက်ထပ် ကိရိ&amp;ယာများ</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> ကို <ph name="DOMAIN" /> က စီမံနေပါသည်။ မတူညီသော Google Account ဖြင့် မိဘ အထိန်းအချုပ်များကိုသုံးရန် စနစ်ထည့်သွင်းပြီးပါက ထွက်ပါ၊ ထို့နောက် လက်မှတ်ထိုး ဝင်သည့်ဖန်သားပြင်ရှိ "လူထည့်ရန်" ကို ရွေးပါ။</translation>
 <translation id="6609478180749378879">'ရုပ်ဖျက်မုဒ်' မှထွက်ပြီးသောအခါ လက်မှတ်ထိုးဝင်ခြင်းဆိုင်ရာ ဒေတာကို ဤစက်တွင် သိမ်းထားပါမည်။ ဤဝဘ်ဆိုက်သို့ နောင်တွင် သင့်စက်ဖြင့် ထပ်မံလက်မှတ်ထိုးဝင်နိုင်ပါမည်။</translation>
+<translation id="6610002944194042868">ဘာသာပြန်ရန် ရွေးစရာများ</translation>
 <translation id="6611972847767394631">သင်၏ တဘ်များကို ဤနေရာတွင် ရှာယူပါ</translation>
 <translation id="6615455863669487791">ပြရန်</translation>
 <translation id="6618097958368085618">မည်သို့ပင်ဖြစ်စေ သိမ်းရန်</translation>
@@ -5338,7 +5337,6 @@
 <translation id="6745592621698551453">ယခု မွမ်းမံပါ</translation>
 <translation id="6746124502594467657">အောက်သို့ရွှေ့ပါ</translation>
 <translation id="674632704103926902">ထိပြီး ဆွဲရန် ခွင့်ပြုခြင်း။</translation>
-<translation id="6748054820659621153">Google Lens ဖြင့် သင့်ဖန်သားပြင်တွင် ရှာဖွေပါ</translation>
 <translation id="6748465660675848252">သင်ရှေ့ဆက်နိုင်ပါသည်၊ သို့သော် သင်ထပ်တူပြုထားသည့်ဒေတာများနှင့် ကြိုတင်ချိန်ညှိချက်များကိုသာလျှင် ပြန်လည်သိုလှောင်ပါမည်။ စက်တွင်းဒေတာများအားလုံး ပျောက်ဆုံးသွားပါမည်။</translation>
 <translation id="6750757184909117990">ဆယ်လူလာ ပိတ်ရန်</translation>
 <translation id="6750946710563435348">အခြား အသုံးပြုသူအမည် သုံးရန်</translation>
@@ -6396,14 +6394,12 @@
 <translation id="7853747251428735">ပိုမိုသော ကိရိ&amp;ယာများ</translation>
 <translation id="7855678561139483478">တဘ်ကို ဝင်းဒိုးအသစ်သို့ ရွှေ့ခြင်း</translation>
 <translation id="7857093393627376423">စာသား အကြံပြုချက်များ</translation>
-<translation id="7857675386615530425">Google Lens ဖြင့် စာမျက်နှာ တစ်စိတ်တစ်ဒေသကို ရှာပါ</translation>
 <translation id="7857949311770343000">သင့် စောင့်မျှော်နေခဲ့သည်မှာ ဒီတဲဘ် စာမျက်နှာ အသစ်လား?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">ဝန်ဆောင်မှု − <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;​ဒေါင်းလုဒ်များ</translation>
 <translation id="7861846108263890455">Google Account ဘာသာစကား</translation>
 <translation id="7864539943188674973">ဘလူးတုရှ် ပိတ်ရန်</translation>
-<translation id="7866230141401327032">Google Lens ဖြင့် စာမျက်နှာ တစ်စိတ်တစ်ဒေသကို ရှာပါ</translation>
 <translation id="7869143217755017858">အမှောင်မုဒ် ပိတ်ရန်</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - တွဲချိတ်ပြီးပါပြီ</translation>
 <translation id="7870730066603611552">စနစ်ထည့်သွင်းပြီးနောက် စင့်ခ်လုပ်ခြင်းနည်းလမ်းများကို သုံးသပ်ရန်</translation>
@@ -7385,7 +7381,6 @@
 <translation id="8907787635362884532">ထုတ်ဝေသူ- <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">Chrome သည် သင့်ကွန်ပျူတာတွင် အန္တရာယ်ဆော့ဖ်ဝဲကို ရှာဖွေနိုင်သည်</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> ကို ဖယ်ရှားပြီးပြီ</translation>
-<translation id="8909782404367982052">Google Lens ဖြင့် ပုံများရှာရန် ဖိဆွဲပါ</translation>
 <translation id="8909833622202089127">ဝဘ်ဆိုက်က သင့်တည်နေရာကို ရှာနေသည်</translation>
 <translation id="8910222113987937043">သင့်စာညှပ်များ၊ စကားဝှက်များနှင့် အခြားဆက်တင်များကို ပြောင်းလဲခြင်းများအား သင့် Google အကောင့်သို့ စင့်ခ်လုပ်တော့မည် မဟုတ်ပါ။ သို့သော် လက်ရှိဒေတာများကို သင့် Google အကောင့်တွင် ဆက်လက် သိမ်းဆည်းထားမည်ဖြစ်ပြီး <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" /> တွင် စီမံနိုင်ပါမည်။</translation>
 <translation id="8910987510378294980">စက်စာရင်းကို ဖျောက်ထားရန်</translation>
@@ -7529,7 +7524,6 @@
 <translation id="9055636786322918818">RC4 အသွင်ဝှက်ခြင်းကို သုံးရန်။ RC4 အသွင်ဝှက်ခြင်းသည် လုံခြုံမှုမရှိသည့်အတွက် အန္တရာယ်ပိုရှိစေနိုင်ပါသည်။</translation>
 <translation id="9056810968620647706">တိုက်ဆိုင်တာ မတွေ့ရပါ။</translation>
 <translation id="9057354806206861646">အစီအစဉ်ကို အပ်ဒိတ်လုပ်ခြင်း</translation>
-<translation id="9057599413476594385">Google Lens ဖြင့် ရှာရန် ပုံများပေါ်တွင် ဖိဆွဲပါ</translation>
 <translation id="9062468308252555888">၁၄ ဆ</translation>
 <translation id="9063208415146866933">စာကြောင်း <ph name="ERROR_LINE_START" /> မှ <ph name="ERROR_LINE_END" /> အထိ အမှားအယွင်း ရှိနေသည်</translation>
 <translation id="9063800855227801443">လျှို့ဝှက်အကြောင်းအရာကို ဖန်သားပြင်ဓာတ်ပုံရိုက်ယူ၍မရပါ</translation>

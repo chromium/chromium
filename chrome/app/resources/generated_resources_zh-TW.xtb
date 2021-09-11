@@ -2279,6 +2279,7 @@
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />，<ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">系統沒有儲存這個網站的密碼</translation>
 <translation id="3404249063913988450">啟用螢幕保護程式</translation>
+<translation id="3404805962764077228">暫時直接在 <ph name="DEVICE_TYPE" /> 上串流手機應用程式</translation>
 <translation id="3405664148539009465">自訂字型</translation>
 <translation id="3405763860805964263">...</translation>
 <translation id="3406290648907941085">可以使用虛擬實境裝置和資料</translation>
@@ -3500,7 +3501,6 @@
 <translation id="4699172675775169585">快取圖片和檔案</translation>
 <translation id="4699357559218762027">(自動啟動)</translation>
 <translation id="4701025263201366865">家長登入</translation>
-<translation id="4707582759326616943">藉由拖曳來使用 Google 智慧鏡頭搜尋圖片</translation>
 <translation id="4708794300267213770">從休眠狀態喚醒時顯示螢幕鎖定</translation>
 <translation id="4708849949179781599">離開 <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">還原設定</translation>
@@ -4247,6 +4247,7 @@
 <translation id="5543983818738093899">正在檢查狀態...</translation>
 <translation id="554517701842997186">轉譯器</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{將分頁加入群組}other{將分頁加入群組}}</translation>
+<translation id="5545693483061321551">網站無法使用 Cookie 查看你在各網站的瀏覽活動，也無法提供個人化廣告等服務。某些網站的功能可能無法運作。</translation>
 <translation id="5546865291508181392">尋找</translation>
 <translation id="5548075230008247516">已取消選取所有項目，並結束選取模式。</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{「<ph name="TAB_TITLE" />」}=1{「<ph name="TAB_TITLE" />」和另外 1 個分頁}other{「<ph name="TAB_TITLE" />」和另外 # 個分頁}}</translation>
@@ -5143,7 +5144,6 @@
 <translation id="6532663472409656417">已註冊企業</translation>
 <translation id="6535331821390304775">一律允許 <ph name="ORIGIN" /> 使用相關聯的應用程式開啟這類連結</translation>
 <translation id="653659894138286600">掃描文件和圖片</translation>
-<translation id="6537016096312202316">在圖片上拖曳以使用 Google 智慧鏡頭的搜尋功能</translation>
 <translation id="6537613839935722475">名稱可以包含字母、數字和連字號 (-)</translation>
 <translation id="6537880577641744343">指令工具</translation>
 <translation id="6538098297809675636">偵測代碼時發生錯誤</translation>
@@ -5209,6 +5209,7 @@
 <translation id="6607831829715835317">更多工具(&amp;L)</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> 已由 <ph name="DOMAIN" /> 管理。如要以其他 Google 帳戶使用家長監護功能，請在設定完成後登出帳戶，然後在登入畫面上選取 [新增使用者]。</translation>
 <translation id="6609478180749378879">系統會在無痕模式結束後將登入資料儲存在這部裝置上。你可以再次透過這部裝置登入這個網站。</translation>
+<translation id="6610002944194042868">翻譯選項</translation>
 <translation id="6611972847767394631">你可以在這裡找到已開啟的分頁</translation>
 <translation id="6615455863669487791">顯示</translation>
 <translation id="6618097958368085618">確定保留</translation>
@@ -5324,7 +5325,6 @@
 <translation id="6745592621698551453">立即更新</translation>
 <translation id="6746124502594467657">下移</translation>
 <translation id="674632704103926902">啟用輕觸拖曳</translation>
-<translation id="6748054820659621153">使用 Google 智慧鏡頭搜尋你的螢幕畫面</translation>
 <translation id="6748465660675848252">您可以繼續操作，但系統只會還原您已同步處理的資料和設定。所有本機資料都會遺失。</translation>
 <translation id="6750757184909117990">停用行動數據</translation>
 <translation id="6750946710563435348">使用其他的使用者名稱</translation>
@@ -6382,14 +6382,12 @@
 <translation id="7853747251428735">更多工具(&amp;L)</translation>
 <translation id="7855678561139483478">將分頁移到新視窗</translation>
 <translation id="7857093393627376423">文字建議</translation>
-<translation id="7857675386615530425">使用 Google 智慧鏡頭搜尋頁面上的部分內容</translation>
 <translation id="7857949311770343000">這是你想要的新分頁嗎？</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">服務：<ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">下載(&amp;D)</translation>
 <translation id="7861846108263890455">Google 帳戶語言</translation>
 <translation id="7864539943188674973">停用藍牙</translation>
-<translation id="7866230141401327032">使用 Google 智慧鏡頭搜尋頁面上的部分內容</translation>
 <translation id="7869143217755017858">停用深色模式</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - 已配對</translation>
 <translation id="7870730066603611552">設定後查看同步處理選項</translation>
@@ -6674,6 +6672,7 @@
 <translation id="8149564499626272569">透過接上 USB 傳輸線的手機進行驗證</translation>
 <translation id="8151638057146502721">設定</translation>
 <translation id="8154790740888707867">沒有檔案</translation>
+<translation id="8154912474061769055">許多網站的功能可能無法運作</translation>
 <translation id="815491593104042026">糟糕！由於設定使用的網址 (<ph name="BLOCKED_URL" />) 不安全，導致驗證失敗。請與你的管理員聯絡。</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{未發現任何外洩密碼}=1{有 {COUNT} 個密碼遭外洩}other{有 {COUNT} 個密碼遭外洩}}</translation>
 <translation id="8157248655669507702">如要安裝 eSIM 卡設定檔，請啟用行動數據</translation>
@@ -6850,6 +6849,7 @@
 <translation id="8342221978608739536">沒有試過</translation>
 <translation id="8342861492835240085">選取集合</translation>
 <translation id="8347227221149377169">列印工作</translation>
+<translation id="834785183489258869">在無痕模式中，網站無法使用 Cookie 查看你在各網站的瀏覽活動，也無法提供個人化廣告等服務。某些網站的功能可能無法運作。</translation>
 <translation id="8350789879725387295">Dock 中的觸控筆工具</translation>
 <translation id="8351316842353540018">一律顯示無障礙功能選項</translation>
 <translation id="8351419472474436977">你的 Proxy 設定已受到這個擴充功能控制，該擴充功能可變更、中斷、或監視你在網路上的行為。如果你不確定這項變更的發生原因，建議你停用該擴充功能。</translation>
@@ -7370,7 +7370,6 @@
 <translation id="8907787635362884532">發布者：<ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">Chrome 可對電腦進行有害軟體檢測</translation>
 <translation id="8909298138148012791">已解除安裝「<ph name="APP_NAME" />」</translation>
-<translation id="8909782404367982052">藉由拖曳來使用 Google 智慧鏡頭搜尋圖片</translation>
 <translation id="8909833622202089127">網站正在追蹤你的位置</translation>
 <translation id="8910222113987937043">你的書籤、歷史記錄、密碼和其他設定的變更將不會再同步到你的 Google 帳戶。不過，你的現有資料仍會儲存在你的 Google 帳戶中，並可透過 <ph name="BEGIN_LINK" />Google 資訊主頁<ph name="END_LINK" />管理。</translation>
 <translation id="8910987510378294980">隱藏裝置清單</translation>
@@ -7514,7 +7513,6 @@
 <translation id="9055636786322918818">強制執行 RC4 加密。由於 RC4 加密不安全，使用這個加密選項會提高風險。</translation>
 <translation id="9056810968620647706">找不到相符項目。</translation>
 <translation id="9057354806206861646">更新時間表</translation>
-<translation id="9057599413476594385">在圖片上拖曳以使用 Google 智慧鏡頭的搜尋功能</translation>
 <translation id="9062468308252555888">14 倍</translation>
 <translation id="9063208415146866933">第 <ph name="ERROR_LINE_START" /> 至第 <ph name="ERROR_LINE_END" /> 行有錯誤</translation>
 <translation id="9063800855227801443">無法擷取機密內容</translation>

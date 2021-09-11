@@ -8,6 +8,7 @@
 <translation id="1378979118429748177">Saņemiet paziņojumus par cenu kritumu.</translation>
 <translation id="1657719826150349398">Pārvietot cilni uz leju</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> cilne}zero{<ph name="TABS_COUNT_MANY" /> cilnes}one{<ph name="TABS_COUNT_MANY" /> cilne}other{<ph name="TABS_COUNT_MANY" /> cilnes}}</translation>
+<translation id="2118649612461486615">Veikala informācija</translation>
 <translation id="2277224997687551299">Rediģēt grupas nosaukumu</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Noņemt <ph name="TABS_COUNT_ONE" /> atlasīto cilni no grupas.}zero{Noņemt <ph name="TABS_COUNT_MANY" /> atlasītās cilnes no grupas.}one{Noņemt <ph name="TABS_COUNT_MANY" /> atlasīto cilni no grupas.}other{Noņemt <ph name="TABS_COUNT_MANY" /> atlasītās cilnes no grupas.}}</translation>
 <translation id="2479148705183875116">Atvērt iestatījumus</translation>
@@ -50,13 +51,16 @@
 <translation id="6040143037577758943">Aizvērt</translation>
 <translation id="6054741997831917303">Šai precei nesen tika pazemināta cena no <ph name="PREVIOUS_PRICE" /> uz <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Atlasiet cilnes</translation>
+<translation id="6228793724645064692">(veikala vērtējums)</translation>
 <translation id="6510648526783655549">Aizvērt ciļņu joslu</translation>
+<translation id="6549021453810473782">Skatīt veikala informāciju</translation>
 <translation id="6562820390860419811">Pārvietot cilni pa kreisi</translation>
 <translation id="6615455863669487791">Rādīt man</translation>
 <translation id="6840760312327750441">Lai sagrupētu cilnes, pieskarieties cilnei un turiet to. Pēc tam velciet to uz citas cilnes.</translation>
 <translation id="6856809498882026482">Paslēpt vairākatlases režīmu</translation>
 <translation id="7151209024774799310">Noņemt cilnes no grupas</translation>
 <translation id="7204204600596740190">Vairākatlases režīms</translation>
+<translation id="7326879924029668159">Skatiet atgriešanas politiku un citu informāciju.</translation>
 <translation id="7352298686197644113">Skatiet, kurai precei jūsu atvērtajās cilnēs ir zemāka cena.</translation>
 <translation id="753732157349120914">Ciļņu pārslēdzējs</translation>
 <translation id="7559245342362162951">Rādīt grupas cilnes pilnekrāna režģī</translation>

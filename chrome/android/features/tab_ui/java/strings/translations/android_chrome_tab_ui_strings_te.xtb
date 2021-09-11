@@ -8,6 +8,7 @@
 <translation id="1378979118429748177">ధరలు తగ్గినప్పుడు నోటిఫికేషన్‌ను పొందండి</translation>
 <translation id="1657719826150349398">ట్యాబ్‌ని కిందికి తరలించు</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ట్యాబ్}other{<ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లు}}</translation>
+<translation id="2118649612461486615">స్టోర్ సమాచారం</translation>
 <translation id="2277224997687551299">గ్రూప్ పేరును ఎడిట్ చేయండి</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{గ్రూప్ నుండి <ph name="TABS_COUNT_ONE" /> ఎంచుకున్న ట్యాబ్‌ను తీసివేయండి.}other{గ్రూప్ నుండి <ph name="TABS_COUNT_MANY" /> ఎంచుకున్న ట్యాబ్‌లను తీసివేయండి.}}</translation>
 <translation id="2479148705183875116">సెట్టింగ్‌లకు వెళ్లు</translation>
@@ -50,13 +51,16 @@
 <translation id="6040143037577758943">మూసివేయి</translation>
 <translation id="6054741997831917303">ఈ ఐటెమ్ ధర ఇటీవల <ph name="PREVIOUS_PRICE" /> నుండి <ph name="NEW_PRICE" />కు తగ్గింది</translation>
 <translation id="6193448654517602979">ట్యాబ్‌లను ఎంచుకోండి</translation>
+<translation id="6228793724645064692">(స్టోర్ రేటింగ్)</translation>
 <translation id="6510648526783655549">ట్యాబ్‌ స్ట్రిప్‌ను మూసివేస్తుంది</translation>
+<translation id="6549021453810473782">స్టోర్ సమాచారాన్ని చూడండి</translation>
 <translation id="6562820390860419811">ట్యాబ్‌ను ఎడమకు తరలించు</translation>
 <translation id="6615455863669487791">నాకు చూపించు</translation>
 <translation id="6840760312327750441">ట్యాబ్‌లను సమూహంగా చేయడానికి, ట్యాబ్‌ను తాకి &amp; అలాగే నొక్కి ఉంచండి. ట్యాబ్‌ను మరొక ట్యాబ్‌ మీదకు లాగండి.</translation>
 <translation id="6856809498882026482">బహుళ-ఎంపిక మోడ్‌ను దాచండి</translation>
 <translation id="7151209024774799310">గ్రూప్ నుండి ట్యాబ్‌లు తీసివేయి</translation>
 <translation id="7204204600596740190">బహుళ-ఎంపిక మోడ్</translation>
+<translation id="7326879924029668159">రిటర్న్ పాలసీ, ఇంకా మరిన్నింటిని చూడండి</translation>
 <translation id="7352298686197644113">మీరు ప్రస్తుతం తెరిచి ఉంచిన ట్యాబ్‌లలో ఏ ఐటెమ్ ధర తగ్గిందో చూడండి</translation>
 <translation id="753732157349120914">ట్యాబ్ స్విచర్</translation>
 <translation id="7559245342362162951">సమూహంలోని ట్యాబ్‌లను పూర్తి స్క్రీన్ గ్రిడ్‌లో చూపు</translation>

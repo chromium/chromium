@@ -3518,7 +3518,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4699172675775169585">Cached images and files</translation>
 <translation id="4699357559218762027">(auto-launched)</translation>
 <translation id="4701025263201366865">Parent sign-in</translation>
-<translation id="4707582759326616943">Drag to search images with Google Lens</translation>
 <translation id="4708794300267213770">Show lock screen when waking from sleep</translation>
 <translation id="4708849949179781599">Quit <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Restore settings</translation>
@@ -5162,7 +5161,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6532663472409656417">Enterprise enrolled</translation>
 <translation id="6535331821390304775">Always allow <ph name="ORIGIN" /> to open links of this type in the associated app</translation>
 <translation id="653659894138286600">Scan documents and images</translation>
-<translation id="6537016096312202316">Drag over images to search with Google Lens</translation>
 <translation id="6537613839935722475">The name can use letters, numbers and hyphens (-)</translation>
 <translation id="6537880577641744343">Commander</translation>
 <translation id="6538098297809675636">Error detecting code</translation>
@@ -5228,6 +5226,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6607831829715835317">More too&amp;ls</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> is already being managed by <ph name="DOMAIN" />. To use parental controls with a different Google Account, sign out after setup, then select 'Add person' on the sign-in screen.</translation>
 <translation id="6609478180749378879">Sign-in data will be stored on this device after you exit Incognito mode. You'll be able to sign in to this website with your device again later.</translation>
+<translation id="6610002944194042868">Translate Options</translation>
 <translation id="6611972847767394631">Find your tabs here</translation>
 <translation id="6615455863669487791">Show me</translation>
 <translation id="6618097958368085618">Keep Anyway</translation>
@@ -5343,7 +5342,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6745592621698551453">Update now</translation>
 <translation id="6746124502594467657">Move down</translation>
 <translation id="674632704103926902">Enable tap dragging</translation>
-<translation id="6748054820659621153">Search your screen with Google Lens</translation>
 <translation id="6748465660675848252">You may proceed, but only your synced data and settings will be restored. All local data will be lost.</translation>
 <translation id="6750757184909117990">Disable mobile</translation>
 <translation id="6750946710563435348">Use other username</translation>
@@ -6401,14 +6399,12 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7853747251428735">More Too&amp;ls</translation>
 <translation id="7855678561139483478">Move tab to new window</translation>
 <translation id="7857093393627376423">Text suggestions</translation>
-<translation id="7857675386615530425">Search part of the page with Google Lens</translation>
 <translation id="7857949311770343000">Is this the new tab page that you were expecting?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">Service: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Downloads</translation>
 <translation id="7861846108263890455">Google Account language</translation>
 <translation id="7864539943188674973">Disable Bluetooth</translation>
-<translation id="7866230141401327032">Search part of the page with Google Lens</translation>
 <translation id="7869143217755017858">Disable dark mode</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – Paired</translation>
 <translation id="7870730066603611552">Review sync options following setup</translation>
@@ -7391,7 +7387,6 @@ Press an assigned switch to remove assignment</translation>
 <translation id="8907787635362884532">Publisher: <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">Chrome can check your computer for harmful software</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> has been uninstalled</translation>
-<translation id="8909782404367982052">Drag to search images with Google Lens</translation>
 <translation id="8909833622202089127">Site is tracking your location</translation>
 <translation id="8910222113987937043">Changes to your bookmarks, history, passwords and other settings will no longer be synced to your Google Account. However, your existing data will remain stored in your Google Account and can be managed on <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
 <translation id="8910987510378294980">Hide device list</translation>
@@ -7535,7 +7530,6 @@ Press an assigned switch to remove assignment</translation>
 <translation id="9055636786322918818">Enforce RC4 encryption. Using this option increases your risk, as the RC4 ciphers are insecure.</translation>
 <translation id="9056810968620647706">No matches were found.</translation>
 <translation id="9057354806206861646">Update schedule</translation>
-<translation id="9057599413476594385">Drag over images to search with Google Lens</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Error from line <ph name="ERROR_LINE_START" /> to <ph name="ERROR_LINE_END" /></translation>
 <translation id="9063800855227801443">Can't capture confidential content</translation>

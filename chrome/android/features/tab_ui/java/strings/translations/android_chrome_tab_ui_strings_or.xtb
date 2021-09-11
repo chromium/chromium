@@ -8,6 +8,7 @@
 <translation id="1378979118429748177">ମୂଲ୍ୟରେ ହ୍ରାସ ହେଲେ ସୂଚିତ ହୁଅନ୍ତୁ</translation>
 <translation id="1657719826150349398">ଟାବ୍‍କୁ ତଳକୁ ମୁଭ୍ କରନ୍ତୁ</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />ଟି ଟାବ୍}other{<ph name="TABS_COUNT_MANY" />ଟି ଟାବ୍}}</translation>
+<translation id="2118649612461486615">ଷ୍ଟୋର୍ ସୂଚନା</translation>
 <translation id="2277224997687551299">ଗ୍ରୁପ ନାମ ଏଡିଟ୍ କରନ୍ତୁ</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{ଗ୍ରୁପରୁ <ph name="TABS_COUNT_ONE" />ଟି ଚୟନିତ ଟାବକୁ କାଢ଼ି ଦିଅନ୍ତୁ।}other{ଗ୍ରୁପରୁ <ph name="TABS_COUNT_MANY" />ଟି ଚୟନିତ ଟାବକୁ କାଢ଼ି ଦିଅନ୍ତୁ।}}</translation>
 <translation id="2479148705183875116">ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
@@ -50,13 +51,16 @@
 <translation id="6040143037577758943">ବନ୍ଦ</translation>
 <translation id="6054741997831917303">ଏହି ଆଇଟମର ମୂଲ୍ୟ ବର୍ତ୍ତମାନ <ph name="PREVIOUS_PRICE" />ରୁ <ph name="NEW_PRICE" />କୁ ହ୍ରାସ ପାଇଛି</translation>
 <translation id="6193448654517602979">ଟାବ୍‌ଗୁଡ଼ିକ ବାଛନ୍ତୁ</translation>
+<translation id="6228793724645064692">(ଷ୍ଟୋର୍ ରେଟିଂ)</translation>
 <translation id="6510648526783655549">ଟାବ୍ ଷ୍ଟ୍ରିପ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="6549021453810473782">ଷ୍ଟୋର୍ ସୂଚନା ଦେଖନ୍ତୁ</translation>
 <translation id="6562820390860419811">ଟାବ୍‍କୁ ବାମକୁ ମୁଭ୍ କରନ୍ତୁ</translation>
 <translation id="6615455863669487791">ମୋତେ ଦେଖାନ୍ତୁ</translation>
 <translation id="6840760312327750441">ଟାବ୍‌ଗୁଡ଼ିକର ଗୋଷ୍ଠୀ କରିବାକୁ, ଗୋଟିଏ ଟାବ୍ ଦାବି ଧରନ୍ତୁ। ଏହା ପରେ, ଏହାକୁ ଅନ୍ୟ ଏକ ଟାବ୍‍କୁ ଟାଣନ୍ତୁ</translation>
 <translation id="6856809498882026482">ଏକାଧିକ-ଚୟନ ମୋଡକୁ ଲୁଚାନ୍ତୁ</translation>
 <translation id="7151209024774799310">ଗୋଷ୍ଠୀରୁ ଟାବ୍‍ଗୁଡ଼ିକୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="7204204600596740190">ଏକାଧିକ-ଚୟନ ମୋଡ୍</translation>
+<translation id="7326879924029668159">ରିଟର୍ଣ୍ଣ ନୀତି ଏବଂ ଆହୁରି ଅନେକ କିଛି ଦେଖନ୍ତୁ</translation>
 <translation id="7352298686197644113">ଆପଣଙ୍କ ଖୋଲା ଥିବା ଟାବଗୁଡ଼ିକରେ କେଉଁ ଆଇଟମର ମୂଲ୍ୟ କମ୍ ତାହା ଦେଖନ୍ତୁ</translation>
 <translation id="753732157349120914">ଟାବ୍ ସ୍ୱିଚର୍</translation>
 <translation id="7559245342362162951">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍‌ ଗ୍ରୀଡ୍‌ରେ ଗୋଷ୍ଠୀର ଟାବ୍‌ଗୁଡ଼ିକ ଦେଖାନ୍ତୁ</translation>

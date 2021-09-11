@@ -3501,7 +3501,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="4699172675775169585">Gecachte afbeeldingen en bestanden</translation>
 <translation id="4699357559218762027">(automatisch gestart)</translation>
 <translation id="4701025263201366865">Inloggen voor ouders</translation>
-<translation id="4707582759326616943">Slepen om afbeeldingen te zoeken met Google Lens</translation>
 <translation id="4708794300267213770">Vergrendelscherm tonen bij activering vanuit de slaapstand</translation>
 <translation id="4708849949179781599">Stop <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Instellingen herstellen</translation>
@@ -5143,7 +5142,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="6532663472409656417">Ingeschreven voor Enterprise</translation>
 <translation id="6535331821390304775">Altijd toestaan dat <ph name="ORIGIN" /> links van dit type opent in de bijbehorende app</translation>
 <translation id="653659894138286600">Documenten en afbeeldingen scannen</translation>
-<translation id="6537016096312202316">Slepen over afbeeldingen om te zoeken met Google Lens</translation>
 <translation id="6537613839935722475">Voor de naam kunnen letters, cijfers en koppeltekens (-) worden gebruikt</translation>
 <translation id="6537880577641744343">Commander</translation>
 <translation id="6538098297809675636">Fout bij detecteren van code</translation>
@@ -5209,6 +5207,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="6607831829715835317">Meer hu&amp;lpprogramma's</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> wordt al beheerd door <ph name="DOMAIN" />. Als je ouderlijk toezicht wilt gebruiken met een ander Google-account, log je uit na het instellen en selecteer je 'Persoon toevoegen' op het inlogscherm.</translation>
 <translation id="6609478180749378879">Nadat je de incognitomodus hebt afgesloten, worden de inloggegevens opgeslagen op dit apparaat. Je kunt later weer inloggen bij deze website met je apparaat.</translation>
+<translation id="6610002944194042868">Opties voor vertalen</translation>
 <translation id="6611972847767394631">Hier vind je je tabbladen</translation>
 <translation id="6615455863669487791">Tonen</translation>
 <translation id="6618097958368085618">Toch behouden</translation>
@@ -5324,7 +5323,6 @@ Als <ph name="SUPERVISED_USER_NAME" /> hulp nodig heeft bij het lezen, laat je k
 <translation id="6745592621698551453">Nu updaten</translation>
 <translation id="6746124502594467657">Omlaag</translation>
 <translation id="674632704103926902">Tikken en slepen aanzetten</translation>
-<translation id="6748054820659621153">Zoeken op je scherm met Google Lens</translation>
 <translation id="6748465660675848252">Je kunt doorgaan, maar alleen je gesynchroniseerde gegevens en instellingen worden hersteld. Alle lokale gegevens gaan verloren.</translation>
 <translation id="6750757184909117990">Mobiel netwerk uitzetten</translation>
 <translation id="6750946710563435348">Andere gebruikersnaam gebruiken</translation>
@@ -6381,14 +6379,12 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="7853747251428735">Meer hu&amp;lpprogramma's</translation>
 <translation id="7855678561139483478">Tabblad verplaatsen naar nieuw venster</translation>
 <translation id="7857093393627376423">Tekstsuggesties</translation>
-<translation id="7857675386615530425">Deel van de pagina zoeken met Google Lens</translation>
 <translation id="7857949311770343000">Is dit de nieuwe pagina met tabbladen die je had verwacht?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">Service: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Downloads</translation>
 <translation id="7861846108263890455">Taal van Google-account</translation>
 <translation id="7864539943188674973">Bluetooth uitzetten</translation>
-<translation id="7866230141401327032">Deel van de pagina zoeken met Google Lens</translation>
 <translation id="7869143217755017858">Donkere modus uitzetten</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - gekoppeld</translation>
 <translation id="7870730066603611552">Synchronisatieopties bekijken na de installatie</translation>
@@ -7371,7 +7367,6 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen</translation>
 <translation id="8907787635362884532">Uitgever: <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">Chrome kan je computer checken op schadelijke software</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> is verwijderd</translation>
-<translation id="8909782404367982052">Slepen om afbeeldingen te zoeken met Google Lens</translation>
 <translation id="8909833622202089127">Site houdt je locatie bij</translation>
 <translation id="8910222113987937043">Wijzigingen in je bookmarks, geschiedenis, wachtwoorden en andere instellingen worden niet meer gesynchroniseerd met je Google-account. Je bestaande gegevens blijven echter opgeslagen in je Google-account en kunnen worden beheerd via <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
 <translation id="8910987510378294980">Apparaatlijst verbergen</translation>
@@ -7515,7 +7510,6 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen</translation>
 <translation id="9055636786322918818">RC4-versleuteling afdwingen. Als je deze optie gebruikt, loop je meer risico, aangezien RC4-codering onbeveiligd is.</translation>
 <translation id="9056810968620647706">Geen overeenkomsten gevonden.</translation>
 <translation id="9057354806206861646">Updateplanning</translation>
-<translation id="9057599413476594385">Slepen over afbeeldingen om te zoeken met Google Lens</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Fout van regel <ph name="ERROR_LINE_START" /> tot en met <ph name="ERROR_LINE_END" /></translation>
 <translation id="9063800855227801443">Kan geen opname van vertrouwelijke content maken</translation>

@@ -1126,15 +1126,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 
       La valeur par défaut "False" a été remplacée par "True" dans la version 81 de <ph name="PRODUCT_NAME" />. En principe, les proxys affectés provoqueront un échec de connexion avec le code d'erreur "ERR_TLS13_DOWNGRADE_DETECTED". Si des administrateurs ont besoin de plus de temps pour mettre à niveau les proxys concernés, ils peuvent utiliser cette règle pour désactiver provisoirement cette fonctionnalité de sécurité. Cette règle a été supprimée dans la version 86.
       </translation>
-<translation id="2333763898098246468">Permet de spécifier le mode d'impression de <ph name="PRODUCT_NAME" /> sous Windows.
-
-      Lorsqu'il s'agit d'une imprimante non compatible PostScript sous Windows, certaines tâches d'impression doivent être rastérisées pour être imprimées correctement.
-
-      Si cette règle est définie sur "Full", <ph name="PRODUCT_NAME" /> rastérise toute la page si nécessaire.
-
-      Si elle est définie sur "Fast", <ph name="PRODUCT_NAME" /> évite la rastérisation autant que possible, ce qui permet de réduire la taille des tâches d'impression et d'augmenter la vitesse d'impression.
-
-      Si cette règle n'est pas définie, <ph name="PRODUCT_NAME" /> fonctionne en mode "Full".</translation>
 <translation id="2337859888277013371">Ne pas autoriser l'utilisation du cache amélioré</translation>
 <translation id="2341509917222115272">Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs peuvent choisir d'associer les clients et les hôtes au moment de la connexion, ce qui évite d'avoir à saisir systématiquement un code.
 

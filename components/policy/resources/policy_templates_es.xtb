@@ -1124,15 +1124,6 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 
       El valor predeterminado de esta política ha cambiado de "False" a "True" en <ph name="PRODUCT_NAME" /> 81. La conexión de los proxies afectados debería fallar y debería aparecer el código de error ERR_TLS13_DOWNGRADE_DETECTED. Los administradores que necesiten más tiempo para actualizar los proxies afectados podrán usar esta política para inhabilitar temporalmente esta función de seguridad. Esta política se retiró en la versión 86.
       </translation>
-<translation id="2333763898098246468">Controla el modo en que <ph name="PRODUCT_NAME" /> imprime en Windows.
-
-      Cuando se imprime en una impresora que no utiliza PostScript en Windows, los trabajos de impresión a veces se tienen que rasterizar para que se impriman correctamente.
-
-      Si se le asigna el valor "full" a esta política, <ph name="PRODUCT_NAME" /> rasterizará la página completa si es necesario.
-
-      Si se le asigna el valor "fast", <ph name="PRODUCT_NAME" /> evita la rasterización si es posible. Reducir la cantidad de rasterización puede ayudar a reducir los tamaños de los trabajos de impresión y aumentar la velocidad de impresión.
-
-      Si no se le asigna ningún valor a esta política, <ph name="PRODUCT_NAME" /> tendrá activado el modo completo.</translation>
 <translation id="2337859888277013371">No permitir usar la caché de páginas completas</translation>
 <translation id="2341509917222115272">Si se habilita esta política o no se le asigna ningún valor, se permitirá que los usuarios sincronicen los clientes y los hosts en el momento de la conexión, y no será necesario introducir un PIN cada vez que los sincronicen.
 

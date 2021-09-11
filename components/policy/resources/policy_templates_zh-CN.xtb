@@ -1104,15 +1104,6 @@
 
       在 <ph name="PRODUCT_NAME" /> 81 版中，此政策的默认值从 false 改成了 true。受影响的代理预计会无法成功连接，并会返回错误代码 ERR_TLS13_DOWNGRADE_DETECTED。如果管理员需要更多时间来升级受影响的代理，则可以使用此政策暂时停用这项安全功能。此政策已在 86 版中移除。
       </translation>
-<translation id="2333763898098246468">控制 <ph name="PRODUCT_NAME" /> 在 Windows 上的打印方式。
-
-      当在 Windows 上通过非 PostScript 打印机进行打印时，有时需要将打印任务光栅化才能正确打印。
-
-      当此政策设为 Full 时，<ph name="PRODUCT_NAME" /> 将在必要时进行整页光栅化。
-
-      当此政策设为 Fast 时，<ph name="PRODUCT_NAME" /> 会尽量避免执行光栅化。减少光栅化操作有助于缩小打印任务的规模并提高打印速度。
-
-      如果您未设置此政策，<ph name="PRODUCT_NAME" /> 将处于 Full 模式。</translation>
 <translation id="2337859888277013371">不允许使用往返缓存</translation>
 <translation id="2341509917222115272">如果此政策已启用或未设置，用户便可让客户端和主机在连接时自动配对，无需每次都输入 PIN 码。
 

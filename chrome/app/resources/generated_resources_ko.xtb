@@ -2294,6 +2294,7 @@
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">이 사이트의 비밀번호가 저장되지 않음</translation>
 <translation id="3404249063913988450">화면 보호기 사용</translation>
+<translation id="3404805962764077228"><ph name="DEVICE_TYPE" />에서 휴대전화 앱을 바로 스트림</translation>
 <translation id="3405664148539009465">글꼴 맞춤설정</translation>
 <translation id="3405763860805964263">...</translation>
 <translation id="3406290648907941085">가상 현실 기기 및 데이터 사용이 허용됨</translation>
@@ -3514,7 +3515,6 @@
 <translation id="4699172675775169585">캐시된 이미지 및 파일</translation>
 <translation id="4699357559218762027">(자동 실행)</translation>
 <translation id="4701025263201366865">부모 로그인</translation>
-<translation id="4707582759326616943">드래그하여 Google 렌즈로 이미지 검색</translation>
 <translation id="4708794300267213770">절전 모드 해제 시 잠금 화면 표시</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> 종료</translation>
 <translation id="4711638718396952945">설정값 복원</translation>
@@ -4261,6 +4261,7 @@
 <translation id="5543983818738093899">상태 확인 중...</translation>
 <translation id="554517701842997186">렌더러</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{그룹에 탭 추가}other{그룹에 탭 추가}}</translation>
+<translation id="5545693483061321551">사이트에서 사용자의 다양한 사이트 탐색 활동 정보를 이용해 광고 맞춤설정 등의 작업을 하는 데 쿠키를 사용할 수 없습니다. 일부 사이트에서는 기능이 작동하지 않을 수 있습니다.</translation>
 <translation id="5546865291508181392">찾기</translation>
 <translation id="5548075230008247516">모든 항목이 선택 해제되었으며 선택 모드가 종료되었습니다.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{‘<ph name="TAB_TITLE" />’}=1{‘<ph name="TAB_TITLE" />’ 외 탭 1개}other{‘<ph name="TAB_TITLE" />’ 외 탭 #개}}</translation>
@@ -5157,7 +5158,6 @@
 <translation id="6532663472409656417">기업 등록됨</translation>
 <translation id="6535331821390304775">항상 <ph name="ORIGIN" />에서 연결된 앱에 있는 이 유형의 링크를 열도록 허용</translation>
 <translation id="653659894138286600">문서 및 이미지 스캔</translation>
-<translation id="6537016096312202316">이미지 위로 드래그하여 Google 렌즈로 검색</translation>
 <translation id="6537613839935722475">이름에는 문자, 숫자, 하이픈(-)을 사용할 수 있습니다.</translation>
 <translation id="6537880577641744343">Commander</translation>
 <translation id="6538098297809675636">코드를 감지하는 중 오류 발생</translation>
@@ -5223,6 +5223,7 @@
 <translation id="6607831829715835317">도구 더보기</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> 계정은 이미 <ph name="DOMAIN" />에서 관리하고 있습니다. 다른 Google 계정에 자녀 보호 기능을 사용하려면 설정이 완료된 후 로그아웃하고 로그인 화면에서 '사용자 추가'를 선택하세요.</translation>
 <translation id="6609478180749378879">시크릿 모드를 종료한 후 로그인 데이터가 기기에 저장됩니다. 나중에 다시 기기에서 이 웹사이트에 로그인할 수 있습니다.</translation>
+<translation id="6610002944194042868">번역 옵션</translation>
 <translation id="6611972847767394631">여기에서 탭 찾아보기</translation>
 <translation id="6615455863669487791">보기</translation>
 <translation id="6618097958368085618">보관</translation>
@@ -5338,7 +5339,6 @@
 <translation id="6745592621698551453">지금 업데이트</translation>
 <translation id="6746124502594467657">아래로 이동</translation>
 <translation id="674632704103926902">탭 드래그 사용</translation>
-<translation id="6748054820659621153">Google 렌즈로 화면 검색</translation>
 <translation id="6748465660675848252">계속 진행할 수 있지만 동기화된 데이터와 설정만 복원됩니다. 모든 로컬 데이터가 손실됩니다.</translation>
 <translation id="6750757184909117990">셀룰러 사용 중지</translation>
 <translation id="6750946710563435348">다른 사용자 이름 사용</translation>
@@ -6396,14 +6396,12 @@
 <translation id="7853747251428735">도구 더보기(&amp;L)</translation>
 <translation id="7855678561139483478">탭을 새 창으로 이동</translation>
 <translation id="7857093393627376423">텍스트 추천</translation>
-<translation id="7857675386615530425">Google 렌즈로 페이지 일부 검색</translation>
 <translation id="7857949311770343000">설정한 새 탭 페이지가 맞습니까?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" />(Windows)</translation>
 <translation id="786073089922909430">서비스: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">다운로드(&amp;D)</translation>
 <translation id="7861846108263890455">Google 계정 언어</translation>
 <translation id="7864539943188674973">블루투스 사용 안 함</translation>
-<translation id="7866230141401327032">Google 렌즈로 페이지 일부 검색</translation>
 <translation id="7869143217755017858">어두운 모드 사용 중지</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - 페어링됨</translation>
 <translation id="7870730066603611552">설정 후 동기화 옵션 검토</translation>
@@ -6688,6 +6686,7 @@
 <translation id="8149564499626272569">USB 케이블로 휴대전화를 연결하여 인증</translation>
 <translation id="8151638057146502721">구성</translation>
 <translation id="8154790740888707867">파일 없음</translation>
+<translation id="8154912474061769055">다수의 사이트에서 기능이 작동하지 않을 수 있음</translation>
 <translation id="815491593104042026">보안되지 않는 URL(<ph name="BLOCKED_URL" />)을 사용하도록 설정되었기 때문에 인증할 수 없습니다. 관리자에게 문의하세요.</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{유출된 비밀번호가 없습니다.}=1{유출된 비밀번호가 {COUNT}개 있습니다.}other{유출된 비밀번호가 {COUNT}개 있습니다.}}</translation>
 <translation id="8157248655669507702">eSIM 프로필을 설치하려면 모바일 데이터 사용 설정</translation>
@@ -6864,6 +6863,7 @@
 <translation id="8342221978608739536">사용해 보지 않음</translation>
 <translation id="8342861492835240085">컬렉션 선택</translation>
 <translation id="8347227221149377169">인쇄 작업</translation>
+<translation id="834785183489258869">시크릿 모드에 있는 동안에는 사이트에서 사용자의 다양한 사이트 탐색 활동 정보를 이용해 광고 맞춤설정 등의 작업을 하는 데 쿠키를 사용할 수 없습니다. 일부 사이트에서는 기능이 작동하지 않을 수 있습니다.</translation>
 <translation id="8350789879725387295">도크에 스타일러스 도구 표시</translation>
 <translation id="8351316842353540018">항상 접근성 옵션 표시</translation>
 <translation id="8351419472474436977">이 확장 프로그램이 프록시 설정을 제어할 수 있게 되었으며, 따라서 사용자가 온라인에서 수행하는 모든 작업을 변경 및 중단하고 엿볼 수 있게 되었음을 의미합니다. 이와 같이 변경된 이유가 확실하지 않다면 이 설정을 사용하지 않는 것이 좋습니다.</translation>
@@ -7384,7 +7384,6 @@
 <translation id="8907787635362884532">게시자: <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">Chrome에서 컴퓨터에 유해 소프트웨어가 있는지 확인할 수 있습니다.</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> 앱이 제거됨</translation>
-<translation id="8909782404367982052">드래그하여 Google 렌즈로 이미지 검색</translation>
 <translation id="8909833622202089127">사이트에서 내 위치를 추적하고 있습니다.</translation>
 <translation id="8910222113987937043">북마크, 방문 기록, 비밀번호 및 기타 설정을 변경하면 더 이상 Google 계정에 동기화되지 않습니다. 하지만 기존 데이터는 Google 계정에 계속 저장되며 <ph name="BEGIN_LINK" />Google 대시보드<ph name="END_LINK" />에서 관리할 수 있습니다.</translation>
 <translation id="8910987510378294980">기기 목록 숨기기</translation>
@@ -7528,7 +7527,6 @@
 <translation id="9055636786322918818">RC4 암호화를 적용합니다. RC4 암호화는 안전하지 않으므로 이 옵션을 사용하면 보안 위험도가 높아집니다.</translation>
 <translation id="9056810968620647706">일치하는 항목이 없습니다.</translation>
 <translation id="9057354806206861646">업데이트 일정</translation>
-<translation id="9057599413476594385">이미지 위로 드래그하여 Google 렌즈로 검색</translation>
 <translation id="9062468308252555888">14배</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" />행부터 <ph name="ERROR_LINE_END" />행까지에 오류가 있음</translation>
 <translation id="9063800855227801443">기밀 콘텐츠는 캡처할 수 없음</translation>

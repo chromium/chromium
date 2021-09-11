@@ -3520,7 +3520,6 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="4699172675775169585">Imagens e arquivos armazenados em cache</translation>
 <translation id="4699357559218762027">(aberto automaticamente)</translation>
 <translation id="4701025263201366865">Login do pai/mãe</translation>
-<translation id="4707582759326616943">Arrastar para pesquisar imagens usando o Google Lens</translation>
 <translation id="4708794300267213770">Mostrar tela de bloqueio ao sair do modo de suspensão</translation>
 <translation id="4708849949179781599">Encerrar o <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Restaurar configurações</translation>
@@ -5079,7 +5078,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> - Busca por Bluetooth ativada</translation>
 <translation id="6445450263907939268">Se você não deseja essas alterações, é possível restaurar as configurações anteriores.</translation>
 <translation id="6446213738085045933">Criar atalho na área de trabalho</translation>
-<translation id="6447210166804596538">Revisar os controles de privacidade e segurança mais importantes em um só lugar</translation>
+<translation id="6447210166804596538">Revise os controles de privacidade e segurança mais importantes em um só lugar</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6450876761651513209">Alterar configurações relacionadas a privacidade</translation>
 <translation id="6451344358166983408">Site ou página</translation>
@@ -5165,7 +5164,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6532663472409656417">Inscrito pela empresa</translation>
 <translation id="6535331821390304775">Sempre permitir que <ph name="ORIGIN" /> abra esse tipo de link no app associado</translation>
 <translation id="653659894138286600">Digitalizar documentos e imagens</translation>
-<translation id="6537016096312202316">Arrastar imagens para pesquisar usando o Google Lens</translation>
 <translation id="6537613839935722475">O nome pode conter letras, números e hifens (-)</translation>
 <translation id="6537880577641744343">Comandante</translation>
 <translation id="6538098297809675636">Erro ao detectar o código</translation>
@@ -5231,6 +5229,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6607831829715835317">Mais ferramen&amp;tas</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> já é gerenciado por <ph name="DOMAIN" />. Para usar o controle dos pais com uma Conta do Google diferente, saia da conta depois da configuração e selecione "Adicionar pessoa" na tela de login.</translation>
 <translation id="6609478180749378879">Depois que você sair do modo de navegação anônima, os dados de login serão armazenados no dispositivo. Você poderá usar o dispositivo para fazer login nesse site novamente mais tarde.</translation>
+<translation id="6610002944194042868">Opções de tradução</translation>
 <translation id="6611972847767394631">Veja suas guias aqui</translation>
 <translation id="6615455863669487791">Exibir</translation>
 <translation id="6618097958368085618">Manter assim mesmo</translation>
@@ -5346,7 +5345,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6745592621698551453">Atualizar agora</translation>
 <translation id="6746124502594467657">Mover para baixo</translation>
 <translation id="674632704103926902">Ativar gesto de arrastar com toque</translation>
-<translation id="6748054820659621153">Pesquisar na tela usando o Google Lens</translation>
 <translation id="6748465660675848252">É possível prosseguir, mas apenas seus dados e configurações sincronizados serão restaurados. Todos os dados locais serão perdidos.</translation>
 <translation id="6750757184909117990">Desativar rede celular</translation>
 <translation id="6750946710563435348">Usar outro nome de usuário</translation>
@@ -6404,14 +6402,12 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7853747251428735">Mais &amp;ferramentas</translation>
 <translation id="7855678561139483478">Mover guia para uma nova janela</translation>
 <translation id="7857093393627376423">Sugestões de texto</translation>
-<translation id="7857675386615530425">Pesquisar parte da página com o Google Lens</translation>
 <translation id="7857949311770343000">Esta é a página "Nova guia" que você esperava?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">Serviço: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Downloads</translation>
 <translation id="7861846108263890455">Idioma da Conta do Google</translation>
 <translation id="7864539943188674973">Desativar bluetooth</translation>
-<translation id="7866230141401327032">Pesquisar parte da página com o Google Lens</translation>
 <translation id="7869143217755017858">Desativar o modo escuro</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" />: pareado</translation>
 <translation id="7870730066603611552">Revisar as opções de sincronização após a configuração</translation>
@@ -7395,7 +7391,6 @@ Pressione um interruptor atribuído para remover a atribuição.</translation>
 <translation id="8907787635362884532">Editor: <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">O Chrome pode verificar o computador em busca de softwares nocivos</translation>
 <translation id="8909298138148012791">O app <ph name="APP_NAME" /> foi desinstalado</translation>
-<translation id="8909782404367982052">Arrastar para pesquisar imagens usando o Google Lens</translation>
 <translation id="8909833622202089127">O site está rastreando seu local</translation>
 <translation id="8910222113987937043">As alterações feitas nos seus favoritos, histórico, senhas e outras configurações não serão mais sincronizadas com sua Conta do Google. No entanto, os dados já existentes permanecerão armazenados na sua conta e será possível gerenciá-los no <ph name="BEGIN_LINK" />Painel do Google<ph name="END_LINK" />.</translation>
 <translation id="8910987510378294980">Ocultar lista de dispositivos</translation>
@@ -7539,7 +7534,6 @@ Pressione um interruptor atribuído para remover a atribuição.</translation>
 <translation id="9055636786322918818">Aplicar a codificação RC4. O uso dessa opção é mais arriscado, porque as criptografias RC4 não são seguras.</translation>
 <translation id="9056810968620647706">Nenhuma correspondência foi encontrada.</translation>
 <translation id="9057354806206861646">Atualizar programação</translation>
-<translation id="9057599413476594385">Arrastar imagens para pesquisar usando o Google Lens</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Erro da linha <ph name="ERROR_LINE_START" /> a <ph name="ERROR_LINE_END" /></translation>
 <translation id="9063800855227801443">Não é possível fazer a captura de conteúdo confidencial</translation>

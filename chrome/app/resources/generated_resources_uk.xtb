@@ -3521,7 +3521,6 @@
 <translation id="4699172675775169585">Кешовані зображення та файли</translation>
 <translation id="4699357559218762027">(автозапуск)</translation>
 <translation id="4701025263201366865">Вхід для батьків</translation>
-<translation id="4707582759326616943">Перетягувати зображення для пошуку через Google Об’єктив</translation>
 <translation id="4708794300267213770">Показувати заблокований екран, коли пристрій виходить із режиму сну</translation>
 <translation id="4708849949179781599">Вийти з <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Відновити налаштування</translation>
@@ -5165,7 +5164,6 @@
 <translation id="6532663472409656417">Зареєстровано підприємством</translation>
 <translation id="6535331821390304775">Завжди дозволяти сайту <ph name="ORIGIN" /> відкривати посилання цього типу у зв'язаному додатку</translation>
 <translation id="653659894138286600">Сканувати документи та зображення</translation>
-<translation id="6537016096312202316">Перетягувати на екрані зображення для пошуку через Google Об’єктив</translation>
 <translation id="6537613839935722475">Назва може містити літери, цифри та дефіси (-)</translation>
 <translation id="6537880577641744343">Командир</translation>
 <translation id="6538098297809675636">Помилка виявлення коду</translation>
@@ -5231,6 +5229,7 @@
 <translation id="6607831829715835317">Інші інстру&amp;менти</translation>
 <translation id="6607890859198268021">Обліковим записом <ph name="USER_EMAIL" /> уже керує домен <ph name="DOMAIN" />. Щоб увімкнути батьківський контроль для іншого облікового запису Google, після налаштування вийдіть, а тоді виберіть "Додати користувача" на екрані входу.</translation>
 <translation id="6609478180749378879">Дані для входу зберігатимуться на цьому пристрої після виходу з режиму анонімного перегляду. Ви зможете знову ввійти на цей сайт зі свого пристрою пізніше.</translation>
+<translation id="6610002944194042868">Параметри перекладу</translation>
 <translation id="6611972847767394631">Знайдіть свої вкладки тут</translation>
 <translation id="6615455863669487791">Показати</translation>
 <translation id="6618097958368085618">Усе одно завантажити</translation>
@@ -5346,7 +5345,6 @@
 <translation id="6745592621698551453">Оновити зараз</translation>
 <translation id="6746124502594467657">Вниз</translation>
 <translation id="674632704103926902">Увімкнути перетягування дотиком</translation>
-<translation id="6748054820659621153">Пошук об’єктів на екрані через Google Об’єктив</translation>
 <translation id="6748465660675848252">Ви можете продовжити, однак буде відновлено лише синхронізовані дані та налаштування. Усі локальні дані буде втрачено.</translation>
 <translation id="6750757184909117990">Вимкнути мобільну мережу</translation>
 <translation id="6750946710563435348">Використати інше ім'я користувача</translation>
@@ -6404,14 +6402,12 @@
 <translation id="7853747251428735">Інші інструменти</translation>
 <translation id="7855678561139483478">Перемістити вкладку в нове вікно</translation>
 <translation id="7857093393627376423">Підказки тексту</translation>
-<translation id="7857675386615530425">Шукати на сторінці за допомогою Google Об’єктива</translation>
 <translation id="7857949311770343000">Це сторінка нової вкладки, яку ви очікували?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">Сервіс: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Завантаження</translation>
 <translation id="7861846108263890455">Мова облікового запису Google</translation>
 <translation id="7864539943188674973">Вимкнути Bluetooth</translation>
-<translation id="7866230141401327032">Шукати на сторінці за допомогою Google Об’єктива</translation>
 <translation id="7869143217755017858">Вимкнути темний режим</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" />: підключено</translation>
 <translation id="7870730066603611552">Після налаштування перевірте параметри синхронізації</translation>
@@ -7397,7 +7393,6 @@
 <translation id="8907787635362884532">Видавець: <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">Chrome може перевірити, чи встановлено на вашому комп'ютері шкідливе програмне забезпечення</translation>
 <translation id="8909298138148012791">Додаток <ph name="APP_NAME" /> видалено</translation>
-<translation id="8909782404367982052">Перетягувати зображення для пошуку через Google Об’єктив</translation>
 <translation id="8909833622202089127">Сайт відстежує місцезнаходження</translation>
 <translation id="8910222113987937043">Зміни в закладках, історії, паролях та інших налаштуваннях більше не синхронізуватимуться з вашим обліковим записом Google. Дані, які зберігаються в обліковому записі Google, не буде видалено. Ними можна керувати на <ph name="BEGIN_LINK" />Інформаційній панелі Google<ph name="END_LINK" />.</translation>
 <translation id="8910987510378294980">Сховати список пристроїв</translation>
@@ -7541,7 +7536,6 @@
 <translation id="9055636786322918818">Застосовує шифрування RC4. Використання цієї опції підвищує ризик, оскільки шифри RC4 ненадійні.</translation>
 <translation id="9056810968620647706">Збігів не знайдено.</translation>
 <translation id="9057354806206861646">Оновити розклад</translation>
-<translation id="9057599413476594385">Перетягувати на екрані зображення для пошуку через Google Об’єктив</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Помилка в рядках <ph name="ERROR_LINE_START" />–<ph name="ERROR_LINE_END" /></translation>
 <translation id="9063800855227801443">Не вдається зробити знімок конфіденційного контенту</translation>

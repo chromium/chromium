@@ -8,6 +8,7 @@
 <translation id="1378979118429748177">Nhận thông báo khi có mặt hàng giảm giá</translation>
 <translation id="1657719826150349398">Chuyển thẻ xuống dưới</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
+<translation id="2118649612461486615">Thông tin cửa hàng</translation>
 <translation id="2277224997687551299">Chỉnh sửa tên nhóm</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Xóa <ph name="TABS_COUNT_ONE" /> thẻ đã chọn khỏi nhóm.}other{Xóa <ph name="TABS_COUNT_MANY" /> thẻ đã chọn khỏi nhóm.}}</translation>
 <translation id="2479148705183875116">Chuyển đến phần Cài đặt</translation>
@@ -50,13 +51,16 @@
 <translation id="6040143037577758943">Đóng</translation>
 <translation id="6054741997831917303">Mức giá của mặt hàng này gần đây đã giảm từ <ph name="PREVIOUS_PRICE" /> xuống còn <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Chọn các thẻ</translation>
+<translation id="6228793724645064692">(điểm xếp hạng cửa hàng)</translation>
 <translation id="6510648526783655549">Đóng dải thẻ</translation>
+<translation id="6549021453810473782">Xem thông tin cửa hàng</translation>
 <translation id="6562820390860419811">Chuyển thẻ sang trái</translation>
 <translation id="6615455863669487791">Hiển thị cho tôi</translation>
 <translation id="6840760312327750441">Để nhóm các thẻ, hãy chạm và giữ một thẻ. Sau đó, kéo thẻ đó lên một thẻ khác.</translation>
 <translation id="6856809498882026482">Ẩn chế độ chọn nhiều thẻ</translation>
 <translation id="7151209024774799310">Xóa thẻ khỏi nhóm</translation>
 <translation id="7204204600596740190">Chế độ chọn nhiều thẻ</translation>
+<translation id="7326879924029668159">Xem chính sách trả lại hàng và các thông tin khác</translation>
 <translation id="7352298686197644113">Xem mặt hàng giảm giá trong các thẻ mà bạn đang mở</translation>
 <translation id="753732157349120914">Trình chuyển đổi thẻ</translation>
 <translation id="7559245342362162951">Hiển thị các thẻ của nhóm trong lưới toàn màn hình</translation>

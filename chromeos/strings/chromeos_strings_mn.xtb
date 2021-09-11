@@ -58,9 +58,11 @@
 <translation id="1999615961760456652">Дамжих портал</translation>
 <translation id="2006864819935886708">Холболт</translation>
 <translation id="2008685064673031089">Үндсэн хайлт</translation>
+<translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Нэмэлт тохиргоо</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" />-р хувилбар</translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> ГБ-аас <ph name="AVAILABLE_MEMORY" /> ГБ боломжтой</translation>
+<translation id="2129264932216073062">ARC HTTP</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">ЖАГСААСАН</translation>
 <translation id="2161394479394250669">Хэвлэх ажлыг цуцлах</translation>
@@ -74,6 +76,7 @@
 <translation id="2364498172489649528">Давсан</translation>
 <translation id="2380886658946992094">Хууль ёсны</translation>
 <translation id="2391082728065870591">Санал хүсэлтийн тайлан илгээх</translation>
+<translation id="2407209115954268704">SIM-н түгжээний төлөв</translation>
 <translation id="2418150275289244458">Тохиргоонд нээх</translation>
 <translation id="2446553403094072641">Хөвөгч цэгийн нарийвчлал</translation>
 <translation id="2448312741937722512">Төрөл</translation>
@@ -179,6 +182,7 @@
 <translation id="4536864596629708641">IP тохируулга</translation>
 <translation id="4548483925627140043">Дохио илэрсэнгүй</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh батарей</translation>
+<translation id="4561801978359312462">SIM-н түгжээг тайлсан</translation>
 <translation id="4562494484721939086">Үйлчилгээ байхгүй</translation>
 <translation id="458794348635939462">Бүх хостыг шийдвэрлэж чадсангүй</translation>
 <translation id="4593212453765072419">Проксиг баталгаажуулах шаардлагатай</translation>
@@ -218,6 +222,7 @@
 <translation id="4999333166442584738">Тайланг нуух</translation>
 <translation id="500920857929044050">Туршилтыг зогсоох</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5049856988445523908">SIM-г түгжсэн (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Бүлгийн нэр</translation>
 <translation id="5088172560898466307">Серверийн хостын нэр</translation>
 <translation id="5089810972385038852">Муж</translation>
@@ -312,6 +317,7 @@
 <translation id="6527081081771465939">WiFi-н аюулгүй байдлын үл мэдэгдэх протокол</translation>
 <translation id="65587193855025101">Тавцант</translation>
 <translation id="6564646048574748301">Амжилтгүй болсон - Хэвлэгчид холбогдох боломжгүй</translation>
+<translation id="6566314079205407217">Олон хуудас скан хийх</translation>
 <translation id="6574762126505704998">Дүүргэх</translation>
 <translation id="6575134580692778371">Тохиргоо хийгээгүй</translation>
 <translation id="6596816719288285829">IP хаяг</translation>

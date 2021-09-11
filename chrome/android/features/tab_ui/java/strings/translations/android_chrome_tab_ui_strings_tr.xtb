@@ -8,6 +8,7 @@
 <translation id="1378979118429748177">Fiyatlar düştüğünde haberdar olun</translation>
 <translation id="1657719826150349398">Sekmeyi aşağı taşı</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> sekme}other{<ph name="TABS_COUNT_MANY" /> sekme}}</translation>
+<translation id="2118649612461486615">Mağaza bilgileri</translation>
 <translation id="2277224997687551299">Grup adını düzenle</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Seçilen <ph name="TABS_COUNT_ONE" /> sekmeyi gruptan kaldır.}other{Seçilen <ph name="TABS_COUNT_MANY" /> sekmeyi gruptan kaldır.}}</translation>
 <translation id="2479148705183875116">Ayarlar'a git</translation>
@@ -50,13 +51,16 @@
 <translation id="6040143037577758943">Kapat</translation>
 <translation id="6054741997831917303">Yakın zamanda bu ürünün <ph name="PREVIOUS_PRICE" /> olan fiyatı düştü ve <ph name="NEW_PRICE" /> oldu</translation>
 <translation id="6193448654517602979">Sekmeleri seçin</translation>
+<translation id="6228793724645064692">(mağaza puanı)</translation>
 <translation id="6510648526783655549">Sekme şeridini kapat</translation>
+<translation id="6549021453810473782">Mağaza bilgilerini görün</translation>
 <translation id="6562820390860419811">Sekmeyi sola taşı</translation>
 <translation id="6615455863669487791">Göster</translation>
 <translation id="6840760312327750441">Sekmeleri gruplamak için bir sekmeye dokunup basılı tutun. Ardından başka bir sekmenin üzerine sürükleyin.</translation>
 <translation id="6856809498882026482">Çoklu seçim modunu gizle</translation>
 <translation id="7151209024774799310">Sekmeleri gruptan kaldır</translation>
 <translation id="7204204600596740190">Çoklu seçim modu</translation>
+<translation id="7326879924029668159">İade politikasını ve daha fazlasını görün</translation>
 <translation id="7352298686197644113">Açık sekmelerinizdeki hangi öğenin fiyatının daha düşük olduğunu görün</translation>
 <translation id="753732157349120914">Sekme Değiştirici</translation>
 <translation id="7559245342362162951">Grubun sekmelerini tam ekran ızgarada gösterir</translation>

@@ -1108,15 +1108,6 @@
 
       這項政策的預設值在 <ph name="PRODUCT_NAME" /> 81 版中已從 False 變更為 True。受影響的 Proxy 將無法連線，錯誤代碼為 ERR_TLS13_DOWNGRADE_DETECTED。如果系統管理員需要更多時間升級受影響的 Proxy，可以使用此政策暫時停用這項安全性功能。這項政策已在第 86 版中遭到移除。
       </translation>
-<translation id="2333763898098246468">控管 <ph name="PRODUCT_NAME" /> 在 Windows 上的列印方式。
-
-      在 Windows 上透過非 PostScript 印表機進行列印時，有時需要將列印工作光柵化才能正確列印。
-
-      如果將這項政策設為 Full，<ph name="PRODUCT_NAME" /> 會視需要為整個頁面執行光柵化。
-
-      如果將這項政策設為 Fast，<ph name="PRODUCT_NAME" /> 會盡可能避免執行光柵化。減少光柵化的數量有助於降低列印工作大小並提高列印速度。
-
-      如果不設定這項政策，<ph name="PRODUCT_NAME" /> 會使用 Full 模式。</translation>
 <translation id="2337859888277013371">不允許使用往返快取</translation>
 <translation id="2341509917222115272">如果將這項政策設為啟用或不設定，使用者可在連線時將用戶端與主機配對，不必每次都輸入 PIN 碼。
 

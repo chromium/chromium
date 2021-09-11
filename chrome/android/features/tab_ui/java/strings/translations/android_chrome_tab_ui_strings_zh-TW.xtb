@@ -8,6 +8,7 @@
 <translation id="1378979118429748177">在降價時收到通知</translation>
 <translation id="1657719826150349398">將分頁向下移</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個分頁}other{<ph name="TABS_COUNT_MANY" /> 個分頁}}</translation>
+<translation id="2118649612461486615">商店資訊</translation>
 <translation id="2277224997687551299">編輯群組名稱</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{從群組中移除 <ph name="TABS_COUNT_ONE" /> 個已選取的分頁。}other{從群組中移除 <ph name="TABS_COUNT_MANY" /> 個已選取的分頁。}}</translation>
 <translation id="2479148705183875116">前往「設定」</translation>
@@ -50,13 +51,16 @@
 <translation id="6040143037577758943">關閉</translation>
 <translation id="6054741997831917303">這個商品的價格最近從 <ph name="PREVIOUS_PRICE" />降為 <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">選取分頁</translation>
+<translation id="6228793724645064692">(商店評分)</translation>
 <translation id="6510648526783655549">關閉分頁列</translation>
+<translation id="6549021453810473782">查看商店資訊</translation>
 <translation id="6562820390860419811">將分頁向左移</translation>
 <translation id="6615455863669487791">顯示</translation>
 <translation id="6840760312327750441">如要將分頁加入群組，請輕觸並按住分頁，然後將其拖曳到其他分頁上。</translation>
 <translation id="6856809498882026482">隱藏多選模式</translation>
 <translation id="7151209024774799310">從群組中移除分頁</translation>
 <translation id="7204204600596740190">多選模式</translation>
+<translation id="7326879924029668159">查看退貨政策等資訊</translation>
 <translation id="7352298686197644113">查看已開啟分頁中的降價商品</translation>
 <translation id="753732157349120914">分頁切換工具</translation>
 <translation id="7559245342362162951">以全螢幕格狀檢視顯示群組的分頁</translation>

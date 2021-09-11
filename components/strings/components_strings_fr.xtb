@@ -195,7 +195,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
       &lt;p&gt;Veuillez ajuster la date et l'heure dans la section &lt;strong&gt;Général&lt;/strong&gt; de l'application &lt;strong&gt;Réglages&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1567040042588613346">Cette règle fonctionne comme prévu, mais notez que la même valeur a été définie ailleurs et que cette règle la remplace.</translation>
 <translation id="1569487616857761740">Saisir la date d'expiration</translation>
-<translation id="1578027765348898566">Gérer les paramètres des annonces Google</translation>
 <translation id="1581080074034554886">Code CVC :</translation>
 <translation id="1583294866416602487">Plex</translation>
 <translation id="1583429793053364125">Une erreur s'est produite lors de l'affichage de la page Web.</translation>
@@ -2096,7 +2095,7 @@ Informations supplémentaires :
 <translation id="8070439594494267500">Icône de l'appli</translation>
 <translation id="8074253406171541171">10x13 (enveloppe)</translation>
 <translation id="8075736640322370409">Créer rapidement une feuille de calcul Google Sheets</translation>
-<translation id="8075898834294118863">Gérer les paramètres du site</translation>
+<translation id="8075898834294118863">Gérer les paramètres des sites</translation>
 <translation id="8078141288243656252">Impossible d'ajouter des annotations si le document a pivoté</translation>
 <translation id="8079031581361219619">Actualiser le site Web ?</translation>
 <translation id="8086971161893892807">Brouillon</translation>
@@ -2216,7 +2215,6 @@ Informations supplémentaires :
 <translation id="8457125768502047971">Indéfiniment</translation>
 <translation id="8461694314515752532">Chiffrer les données synchronisées avec votre propre phrase secrète de synchronisation</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 carte de paiement}one{# carte de paiement}other{# cartes de paiement}}</translation>
-<translation id="8471007934814342455"><ph name="MANAGE_GOOGLE_AD_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Gérer les paramètres des annonces Google</translation>
 <translation id="8473863474539038330">Adresses et autres</translation>
 <translation id="8474910779563686872">Afficher les informations destinées aux développeurs</translation>
 <translation id="8479754468255770962">Agrafe en bas à gauche</translation>

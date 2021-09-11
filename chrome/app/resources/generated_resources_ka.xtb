@@ -3502,7 +3502,6 @@
 <translation id="4699172675775169585">ქეშირებული სურათები და ფაილები</translation>
 <translation id="4699357559218762027">(ავტომატურად გაშვებული)</translation>
 <translation id="4701025263201366865">შესვლა მშობლისთვის</translation>
-<translation id="4707582759326616943">ჩავლებით გადატანა სურათების Google Lens-ის მეშვეობით ძიებისთვის</translation>
 <translation id="4708794300267213770">ძილიდან გამოღვიძებისას ჩაკეტილი ეკრანის ჩვენება</translation>
 <translation id="4708849949179781599">გასვლა <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">პარამეტრების აღდგენა</translation>
@@ -5146,7 +5145,6 @@
 <translation id="6532663472409656417">ორგანიზაციაში რეგისტრირებული</translation>
 <translation id="6535331821390304775">ამ ტიპის ბმულების ყოველთვის დაკავშირებულ აპში გახსნის დაშვება <ph name="ORIGIN" />-ისთვის</translation>
 <translation id="653659894138286600">დოკუმენტებისა და სურათების სკანირება</translation>
-<translation id="6537016096312202316">სურათების ჩავლებით გადმოტანა Google Lens-ით ძიებისთვის</translation>
 <translation id="6537613839935722475">სახელებში შეგიძლიათ გამოიყენოთ ასოები, ციფრები და დეფისები (-)</translation>
 <translation id="6537880577641744343">Commander</translation>
 <translation id="6538098297809675636">კოდის ამოცნობა ვერ მოხერხდა</translation>
@@ -5212,6 +5210,7 @@
 <translation id="6607831829715835317">დამატებითი ხე&amp;ლსაწყოები</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" />-ს უკვე მართავს <ph name="DOMAIN" />. მშობელთა მიერ კონტროლის სხვა Google ანგარიშისთვის გამოსაყენებლად გამოდით სისტემიდან დაყენების დასრულების შემდეგ, შესვლის ეკრანზე კი აირჩიეთ „ადამიანის დამატება“.</translation>
 <translation id="6609478180749378879">ინკოგნიტო რეჟიმიდან გასვლის შემდეგ სისტემაში შესვლის მონაცემები ამ მოწყობილობაზე შეინახება. მოგვიანებით თქვენი მოწყობილობის მეშვეობით ამ ვებსაიტზე შესვლას შეძლებთ.</translation>
+<translation id="6610002944194042868">თარგმნის ვარიანტები</translation>
 <translation id="6611972847767394631">იპოვეთ თქვენი ჩანართი აქ</translation>
 <translation id="6615455863669487791">მაჩვენე</translation>
 <translation id="6618097958368085618">მაინც შენარჩუნება</translation>
@@ -5327,7 +5326,6 @@
 <translation id="6745592621698551453">განახლება ახლა</translation>
 <translation id="6746124502594467657">გადაადგილება ქვემოთ</translation>
 <translation id="674632704103926902">შეხებით გადატანის ჩართვა</translation>
-<translation id="6748054820659621153">თქვენს ეკრანზე ძიება Google Lens-ით</translation>
 <translation id="6748465660675848252">შეგიძლიათ გააგრძელოთ, მაგრამ მოხდება მხოლოდ თქვენი სინქრონიზებული მონაცემებისა და პარამეტრების აღდგენა. მთელი ლოკალური მონაცემები დაიკარგება.</translation>
 <translation id="6750757184909117990">მობილური კავშირის გათიშვა</translation>
 <translation id="6750946710563435348">მომხმარებლის სხვა სახელის გამოყენება</translation>
@@ -6385,14 +6383,12 @@
 <translation id="7853747251428735">დამატებითი ხე&amp;ლსაწყოები</translation>
 <translation id="7855678561139483478">ჩანართის ახალ ფანჯარაში გადატანა</translation>
 <translation id="7857093393627376423">ტექსტური შემოთავაზებები</translation>
-<translation id="7857675386615530425">გვერდის ნაწილში ძიება Google Lens-ით</translation>
 <translation id="7857949311770343000">ეს ის ჩანართია, რომელსაც მოელოდით?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">სერვისი: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">ჩ&amp;ამოტვირთვები</translation>
 <translation id="7861846108263890455">Google ანგარიშის ენა</translation>
 <translation id="7864539943188674973">გამორთეთ Bluetooth</translation>
-<translation id="7866230141401327032">გვერდის ნაწილში ძიება Google Lens-ით</translation>
 <translation id="7869143217755017858">მუქი რეჟიმის გათიშვა</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> — დაწყვილებული</translation>
 <translation id="7870730066603611552">დაყენების შემდეგ სინქრონიზაციის ვარიანტების გადახედვა</translation>
@@ -7373,7 +7369,6 @@
 <translation id="8907787635362884532">გამომცემელი: <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">Chrome-ს შეუძლია თქვენს კომპიუტერში საზიანო პროგრამული უზრუნველყოფის შემოწმება</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> დეინსტალირებულია</translation>
-<translation id="8909782404367982052">ჩავლებით გადატანა სურათების Google Lens-ის მეშვეობით ძიებისთვის</translation>
 <translation id="8909833622202089127">საიტი თვალს ადევნებს თქვენს მდებარეობას</translation>
 <translation id="8910222113987937043">თქვენი სანიშნეების, ისტორიის, პაროლებისა და სხვა პარამეტრების ცვლილებების სინქრონიზაცია თქვენს Google ანგარიშთან აღარ მოხდება. თუმცა არსებული მონაცემები კვლავ შეინახება თქვენს Google ანგარიშში და მათ მართვას <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />-იდან შეძლებთ.</translation>
 <translation id="8910987510378294980">მოწყობილობების სიის დამალვა</translation>
@@ -7517,7 +7512,6 @@
 <translation id="9055636786322918818">RC4 დაშიფვრის იძულებით გააქტიურება. ამ ვარიანტის გამოყენება ზრდის საფრთხის წინაშე რისკს, ვინაიდან RC4 შიფრატორები დაუცველია.</translation>
 <translation id="9056810968620647706">შედეგები ვერ მოიძებნა.</translation>
 <translation id="9057354806206861646">განახლების განრიგი</translation>
-<translation id="9057599413476594385">სურათების ჩავლებით გადმოტანა Google Lens-ით ძიებისთვის</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">შეცდომა ხაზებში <ph name="ERROR_LINE_START" />-<ph name="ERROR_LINE_END" /></translation>
 <translation id="9063800855227801443">კონფიდენციალური კონტენტის აღბეჭდვა ვერ მოხერხდება</translation>

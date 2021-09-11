@@ -454,6 +454,7 @@
 <translation id="5556459405103347317">重新載入</translation>
 <translation id="5580834567471114021">要加入閱讀清單以便稍後瀏覽嗎？</translation>
 <translation id="5592679540098330836">開啟「<ph name="NAME" />」的同步功能</translation>
+<translation id="560322036295180549">已由貴機構停用</translation>
 <translation id="5614553682702429503">要儲存密碼嗎？</translation>
 <translation id="5626245204502895507">目前無法下載這個檔案。</translation>
 <translation id="5631164295104953411">新增付款方式</translation>
@@ -711,6 +712,7 @@
 <translation id="7856733331829174190">無法下載</translation>
 <translation id="7859704718976024901">瀏覽記錄</translation>
 <translation id="7887198238286927132">為保護個人隱私，Chrome 不會自動填入這個欄位。</translation>
+<translation id="7911190106180361398">貴機構不允許你同步處理任何內容。</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">匯出密碼...</translation>
 <translation id="794799177247607889">停止記錄</translation>
