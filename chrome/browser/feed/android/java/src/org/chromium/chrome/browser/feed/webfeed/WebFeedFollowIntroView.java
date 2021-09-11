@@ -137,10 +137,11 @@ class WebFeedFollowIntroView {
     }
 
     void showFollowingBubble() {
-        TextBubble followingBubble = new TextBubble(mActivity, mMenuButtonAnchorView,
-                R.string.menu_following, R.string.menu_following, /*showArrow=*/false,
-                createRectProvider(), R.drawable.ic_done_blue, /*isRoundBubble=*/true,
-                /*inverseColor=*/false, ChromeAccessibilityUtil.get().isAccessibilityEnabled());
+        TextBubble followingBubble = new ShadowedClickableTextBubble(mActivity,
+                mMenuButtonAnchorView, R.string.menu_following, R.string.menu_following,
+                createRectProvider(), R.drawable.ic_done_blue,
+                ChromeAccessibilityUtil.get().isAccessibilityEnabled(),
+                /* touchListener */ null, /* isInverseColor */ false);
         followingBubble.setDismissOnTouchInteraction(true);
         followingBubble.show();
     }
