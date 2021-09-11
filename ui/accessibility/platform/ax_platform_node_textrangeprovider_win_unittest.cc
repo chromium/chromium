@@ -6610,4 +6610,121 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   }
 }
 
+TEST_F(AXPlatformNodeTextRangeProviderTest, CaretAtEndOfTextFieldReadOnly) {
+  // This test places a degenerate range at end of text field, and it should not
+  // normalize to other positions, so we should expect the
+  // 'UIA_IsReadOnlyAttributeId' attribute queried at this position to return
+  // false.
+  // ++1 kRootWebArea
+  // ++++2 kTextField editable value="hello"
+  // ++++++3 kGenericContainer editable isLineBreakingObject=true
+  // ++++++++4 kStaticText editable name="hello"
+  // ++++++++++5 kInlineTextBox editable name="hello"
+  // ++++6 kStaticText name="abc"
+  // ++++++7 kInlineTextBox name="abc"
+  AXNodeData root_1;
+  AXNodeData text_field_2;
+  AXNodeData generic_container_3;
+  AXNodeData static_text_4;
+  AXNodeData inline_text_5;
+  AXNodeData static_text_6;
+  AXNodeData inline_text_7;
+
+  root_1.id = 1;
+  text_field_2.id = 2;
+  generic_container_3.id = 3;
+  static_text_4.id = 4;
+  inline_text_5.id = 5;
+  static_text_6.id = 6;
+  inline_text_7.id = 7;
+
+  root_1.role = ax::mojom::Role::kRootWebArea;
+  root_1.child_ids = {text_field_2.id, static_text_6.id};
+
+  text_field_2.role = ax::mojom::Role::kTextField;
+  text_field_2.AddState(ax::mojom::State::kEditable);
+  text_field_2.SetValue("hello");
+  text_field_2.child_ids = {generic_container_3.id};
+
+  generic_container_3.role = ax::mojom::Role::kGenericContainer;
+  generic_container_3.AddState(ax::mojom::State::kEditable);
+  generic_container_3.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+  generic_container_3.child_ids = {static_text_4.id};
+
+  static_text_4.role = ax::mojom::Role::kStaticText;
+  static_text_4.SetName("hello");
+  static_text_4.AddState(ax::mojom::State::kEditable);
+  static_text_4.child_ids = {inline_text_5.id};
+
+  inline_text_5.role = ax::mojom::Role::kInlineTextBox;
+  inline_text_5.SetName("hello");
+  inline_text_5.AddState(ax::mojom::State::kEditable);
+
+  static_text_6.role = ax::mojom::Role::kStaticText;
+  static_text_6.SetName("abc");
+  static_text_6.child_ids = {inline_text_7.id};
+
+  inline_text_7.role = ax::mojom::Role::kInlineTextBox;
+  inline_text_7.SetName("abc");
+
+  ui::AXTreeUpdate update;
+  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  update.root_id = root_1.id;
+  update.tree_data.tree_id = tree_id;
+  update.has_tree_data = true;
+  update.nodes = {root_1,        text_field_2,  generic_container_3,
+                  static_text_4, inline_text_5, static_text_6,
+                  inline_text_7};
+  Init(update);
+
+  // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
+  // will build the entire tree.
+  AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
+      AXPlatformNodeFromNode(GetNodeFromTree(tree_id, 1)));
+
+  ComPtr<AXPlatformNodeTextRangeProviderWin> range;
+  base::win::ScopedVariant expected_variant;
+
+  CreateTextRangeProviderWin(
+      range, owner, tree_id,
+      /*start_anchor_id*/ inline_text_5.id, /*start_offset*/ 3,
+      /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
+      /*end_anchor_id*/ inline_text_5.id, /*end_offset*/ 4,
+      /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+  EXPECT_UIA_TEXTRANGE_EQ(range, /*expected_text*/ L"l");
+
+  expected_variant.Set(false);
+  EXPECT_UIA_TEXTATTRIBUTE_EQ(range, UIA_IsReadOnlyAttributeId,
+                              expected_variant);
+
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(range, TextPatternRangeEndpoint_Start,
+                                   TextUnit_Character,
+                                   /*count*/ 1,
+                                   /*expected_text*/ L"",
+                                   /*expected_count*/ 1);
+  expected_variant.Set(false);
+  EXPECT_UIA_TEXTATTRIBUTE_EQ(range, UIA_IsReadOnlyAttributeId,
+                              expected_variant);
+
+  EXPECT_UIA_MOVE(range, TextUnit_Character,
+                  /*count*/ 1,
+                  /*expected_text*/
+                  L"",
+                  /*expected_count*/ 1);
+  expected_variant.Set(false);
+  EXPECT_UIA_TEXTATTRIBUTE_EQ(range, UIA_IsReadOnlyAttributeId,
+                              expected_variant);
+  const AXNodePosition::AXPositionInstance& start = GetStart(range.Get());
+  const AXNodePosition::AXPositionInstance& end = GetEnd(range.Get());
+  EXPECT_TRUE(start->AtEndOfAnchor());
+  EXPECT_EQ(5, start->anchor_id());
+  EXPECT_EQ(5, start->text_offset());
+
+  EXPECT_TRUE(end->AtEndOfAnchor());
+  EXPECT_EQ(5, end->anchor_id());
+  EXPECT_EQ(5, end->text_offset());
+}
+
 }  // namespace ui

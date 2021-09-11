@@ -1234,7 +1234,6 @@ AXPlatformNodeTextRangeProviderWin::MoveEndpointByUnitHelper(
   return current_endpoint;
 }
 
-// TODO(vicfei): Make static.
 void AXPlatformNodeTextRangeProviderWin::NormalizeTextRange(
     AXPositionInstance& start,
     AXPositionInstance& end) {
@@ -1245,14 +1244,12 @@ void AXPlatformNodeTextRangeProviderWin::NormalizeTextRange(
   // first snap them both to be unignored positions.
   NormalizeAsUnignoredTextRange(start, end);
 
-  // When carets are visible or selections are occurring, the precise state of
-  // the TextPattern must be preserved so that the UIA client can handle
-  // scenarios such as determining which characters were deleted. So
-  // normalization must be bypassed.
-  if (HasCaretOrSelectionInAtomicTextField(start) ||
-      HasCaretOrSelectionInAtomicTextField(end)) {
+  // When a text range or one end of AXTree::Selection is inside the atomic text
+  // field, the precise state of the TextPattern must be preserved so that the
+  // UIA client can handle scenarios such as determining which characters were
+  // deleted. So normalization must be bypassed.
+  if (HasTextRangeOrSelectionInAtomicTextField(start, end))
     return;
-  }
 
   AXPositionInstance normalized_start =
       start->AsLeafTextPositionBeforeCharacter();
@@ -1401,8 +1398,10 @@ AXPlatformNodeTextRangeProviderWin::GetLowestAccessibleCommonPlatformNode()
   return platform_node->GetLowestAccessibleElement();
 }
 
-bool AXPlatformNodeTextRangeProviderWin::HasCaretOrSelectionInAtomicTextField(
-    const AXPositionInstance& position) const {
+bool AXPlatformNodeTextRangeProviderWin::
+    HasTextRangeOrSelectionInAtomicTextField(
+        const AXPositionInstance& start_position,
+        const AXPositionInstance& end_position) const {
   // This condition fixes issues when the caret is inside an atomic text field,
   // but causes more issues when used inside of a non-atomic text field. An
   // atomic text field does not expose its internal implementation to assistive
@@ -1416,13 +1415,22 @@ bool AXPlatformNodeTextRangeProviderWin::HasCaretOrSelectionInAtomicTextField(
   // Note that "AXPlatformNodeDelegate::IsDescendantOfAtomicTextField()" also
   // returns true when this node is at the root of an atomic text field, i.e.
   // the node could either be a descendant or it could be equivalent to the
-  // field's root node. An atomic text field does not expose its internal
-  // implementation to assistive software, appearing as a single leaf node in
-  // the accessibility tree. It includes <input>, <textarea> and Views-based
-  // text fields.
-  AXPlatformNodeDelegate* delegate = GetDelegate(position.get());
-  return delegate && delegate->HasVisibleCaretOrSelection() &&
-         delegate->IsDescendantOfAtomicTextField();
+  // field's root node.
+  bool is_start_in_text_field =
+      start_position->GetAnchor()->IsDescendantOfAtomicTextField();
+  bool is_end_in_text_field =
+      end_position->GetAnchor()->IsDescendantOfAtomicTextField();
+  AXPlatformNodeDelegate* start_delegate = GetDelegate(start_position.get());
+  AXPlatformNodeDelegate* end_delegate = GetDelegate(start_position.get());
+
+  // Return true when both ends of a text range are inside the atomic
+  // text field (e.g. a caret perceived by the AT), or when either endpoint of
+  // the AXTree::Selection is inside the atomic text field.
+  return (is_start_in_text_field && is_end_in_text_field) ||
+         (is_start_in_text_field && start_delegate &&
+          start_delegate->HasVisibleCaretOrSelection()) ||
+         (is_end_in_text_field && end_delegate &&
+          end_delegate->HasVisibleCaretOrSelection());
 }
 
 // static
