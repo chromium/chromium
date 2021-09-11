@@ -5,6 +5,7 @@
 module printing.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/values.mojom";
 import "printing/backend/mojom/print_backend.mojom";
 import "printing/mojom/print.mojom";
 import "printing/mojom/printing_context.mojom";
@@ -46,6 +47,13 @@ union PrinterCapsAndInfoResult {
   ResultCode result_code;
 };
 
+// The print settings for a job, or the `ResultCode` if there was an error when
+// trying to update this data.
+union PrintSettingsResult {
+  PrintSettings settings;
+  ResultCode result_code;
+};
+
 // The type of printing interface to target.
 enum PrintTargetType {
   kDirectToDevice,
@@ -82,6 +90,13 @@ interface PrintBackendService {
   // for a specific printer.
   FetchCapabilities(string printer_name)
     => (PrinterCapsAndInfoResult printer_caps_and_info);
+
+  // Generates a print settings object based upon the job settings used with
+  // the device settings.  The driver to be used is expected to be identified
+  // in the `job_settings` map by an entry with key
+  // `printing::kSettingDeviceName`.
+  UpdatePrintSettings(map<string, mojo_base.mojom.Value> job_settings)
+    => (PrintSettingsResult settings);
 
   // Submit the document identified by `document_cookie` to be printed.
   // Starting the device initialization may be delayed if it needs to wait for

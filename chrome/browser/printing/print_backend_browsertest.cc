@@ -16,6 +16,8 @@
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/printing/print_backend_service_test_impl.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -27,6 +29,7 @@
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_job_constants.h"
 #include "printing/print_settings.h"
+#include "printing/print_settings_conversion.h"
 #include "printing/printing_context.h"
 #include "printing/printing_context_factory_for_test.h"
 #include "printing/test_printing_context.h"
@@ -44,13 +47,16 @@ constexpr char kAnotherPrinterName[] = "another-test-printer";
 constexpr char kInvalidPrinterName[] = "invalid-test-printer";
 constexpr char kAccessDeniedPrinterName[] = "access-denied-test-printer";
 
+const PrinterBasicInfoOptions kDefaultPrintInfoOptions{{"opt1", "123"},
+                                                       {"opt2", "456"}};
+
 const PrinterBasicInfo kDefaultPrinterInfo(
     /*printer_name=*/kDefaultPrinterName,
     /*display_name=*/"default test printer",
     /*printer_description=*/"Default printer for testing.",
     /*printer_status=*/0,
     /*is_default=*/true,
-    /*options=*/{});
+    kDefaultPrintInfoOptions);
 const PrinterBasicInfo kAnotherPrinterInfo(
     /*printer_name=*/kAnotherPrinterName,
     /*display_name=*/"another test printer",
@@ -60,6 +66,9 @@ const PrinterBasicInfo kAnotherPrinterInfo(
     /*options=*/{});
 
 constexpr int32_t kCopiesMax = 123;
+constexpr int kPrintSettingsCopies = 42;
+constexpr int kPrintSettingsDefaultDpi = 300;
+constexpr int kPrintSettingsOverrideDpi = 150;
 
 }  // namespace
 
@@ -149,6 +158,13 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
     CheckForQuit();
   }
 
+  void OnDidUpdatePrintSettings(
+      mojom::PrintSettingsResultPtr& capture_print_settings,
+      mojom::PrintSettingsResultPtr print_settings) {
+    capture_print_settings = std::move(print_settings);
+    CheckForQuit();
+  }
+
   void OnDidStartPrinting(mojom::ResultCode& capture_result,
                           mojom::ResultCode result) {
     capture_result = result;
@@ -190,6 +206,8 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
       auto context = std::make_unique<TestPrintingContext>(delegate);
 
       auto settings = std::make_unique<PrintSettings>();
+      settings->set_copies(kPrintSettingsCopies);
+      settings->set_dpi(kPrintSettingsDefaultDpi);
       settings->set_device_name(base::ASCIIToUTF16(printer_name_));
       context->SetDeviceSettings(printer_name_, std::move(settings));
 
@@ -374,6 +392,57 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, FetchCapabilitiesAccessDenied) {
   WaitUntilCallbackReceived();
   ASSERT_TRUE(caps_and_info->is_result_code());
   EXPECT_EQ(caps_and_info->get_result_code(), mojom::ResultCode::kAccessDenied);
+}
+
+IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, UpdatePrintSettings) {
+  LaunchService();
+  AddDefaultPrinter();
+  SetPrinterNameForSubsequentContexts(kDefaultPrinterName);
+
+  mojom::PrintSettingsResultPtr settings;
+
+  PrintSettings print_settings;
+  print_settings.set_device_name(
+      base::ASCIIToUTF16(base::StringPiece(kDefaultPrinterName)));
+  print_settings.set_dpi(kPrintSettingsOverrideDpi);
+  base::Value job_settings = PrintSettingsToJobSettingsDebug(print_settings);
+  job_settings.SetIntKey(kSettingPrinterType,
+                         static_cast<int>(mojom::PrinterType::kLocal));
+
+  // Safe to use base::Unretained(this) since waiting locally on the callback
+  // forces a shorter lifetime than `this`.
+  GetPrintBackendService()->UpdatePrintSettings(
+      std::move(job_settings).TakeDict(),
+      base::BindOnce(&PrintBackendBrowserTest::OnDidUpdatePrintSettings,
+                     base::Unretained(this), std::ref(settings)));
+  WaitUntilCallbackReceived();
+  ASSERT_TRUE(settings->is_settings());
+  EXPECT_EQ(settings->get_settings().copies(), kPrintSettingsCopies);
+  EXPECT_EQ(settings->get_settings().dpi(), kPrintSettingsOverrideDpi);
+#if defined(OS_LINUX) && defined(USE_CUPS)
+  const PrintSettings::AdvancedSettings& advanced_settings =
+      settings->get_settings().advanced_settings();
+  EXPECT_EQ(advanced_settings.size(), kDefaultPrintInfoOptions.size());
+  for (const auto& advanced_setting : advanced_settings) {
+    auto option = kDefaultPrintInfoOptions.find(advanced_setting.first);
+    ASSERT_NE(option, kDefaultPrintInfoOptions.end());
+    EXPECT_EQ(option->second, advanced_setting.second.GetString());
+  }
+#endif  // defined(OS_LINUX) && defined(USE_CUPS)
+
+  // Updating for an invalid printer should not return print settings.
+  print_settings.set_device_name(
+      base::ASCIIToUTF16(base::StringPiece(kInvalidPrinterName)));
+  job_settings = PrintSettingsToJobSettingsDebug(print_settings);
+  job_settings.SetIntKey(kSettingPrinterType,
+                         static_cast<int>(mojom::PrinterType::kLocal));
+  GetPrintBackendService()->UpdatePrintSettings(
+      std::move(job_settings).TakeDict(),
+      base::BindOnce(&PrintBackendBrowserTest::OnDidUpdatePrintSettings,
+                     base::Unretained(this), std::ref(settings)));
+  WaitUntilCallbackReceived();
+  ASSERT_TRUE(settings->is_result_code());
+  EXPECT_EQ(settings->get_result_code(), mojom::ResultCode::kFailed);
 }
 
 IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, StartPrintingValidPrinter) {
