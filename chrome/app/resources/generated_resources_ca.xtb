@@ -772,7 +772,6 @@
 <translation id="1794791083288629568">Envia suggeriments per ajudar-nos a solucionar el problema.</translation>
 <translation id="1795214765651529549">Utilitza el tema clàssic</translation>
 <translation id="1796588414813960292">Les funcions que necessitin so no funcionaran</translation>
-<translation id="1799071797295057738">L'extensió <ph name="EXTENSION_NAME" /> s'ha desactivat automàticament.</translation>
 <translation id="1801418420130173017">Desactiva el tema fosc</translation>
 <translation id="1802624026913571222">Posa en repòs quan es tanqui la tapa</translation>
 <translation id="1802687198411089702">La pàgina no respon. Pots esperar que respongui o pots sortir-ne.</translation>
@@ -839,7 +838,6 @@
 <translation id="1861262398884155592">Aquesta carpeta és buida</translation>
 <translation id="1862311223300693744">Tens instal·lat cap servidor intermediari, VPN, tallafoc o programari de NAS?</translation>
 <translation id="1863182668524159459">No s'ha trobat cap port en sèrie</translation>
-<translation id="1863316578636157783"><ph name="EXTENSION_NAME" /> s'ha desactivat perquè conté programari maliciós</translation>
 <translation id="1864111464094315414">Inicia la sessió</translation>
 <translation id="1864400682872660285">Més fred</translation>
 <translation id="1864454756846565995">Dispositiu USB-C (port posterior)</translation>
@@ -2280,12 +2278,12 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">No hi ha cap contrasenya desada per a aquest lloc web</translation>
 <translation id="3404249063913988450">Activa l'estalvi de pantalla</translation>
+<translation id="3404805962764077228">Consulta temporalment les aplicacions del teu telèfon directament des de: <ph name="DEVICE_TYPE" /></translation>
 <translation id="3405664148539009465">Personalitza els tipus de lletra</translation>
 <translation id="3405763860805964263">…</translation>
 <translation id="3406290648907941085">Amb permís per utilitzar dispositius i dades de realitat virtual</translation>
 <translation id="3406396172897554194">Cerca per idioma o per nom de l'entrada</translation>
 <translation id="3406605057700382950">&amp;Mostra la Barra d'adreces d'interès</translation>
-<translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{Aquesta extensió pot ser perillosa}other{Aquestes extensions poden ser perilloses}}</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3410832398355316179">Tots els fitxers i les dades locals associats amb aquest usuari se suprimiran definitivament quan aquest usuari se suprimeixi. <ph name="USER_EMAIL" /> pot iniciar la sessió més tard.</translation>
 <translation id="3412265149091626468">Ves directament a la selecció</translation>
@@ -2835,7 +2833,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3948116654032448504">&amp;Cerca la imatge a <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> pot editar els fitxers de les carpetes següents</translation>
 <translation id="394984172568887996">Importat d'IE</translation>
-<translation id="3949981384795585075">{NUM_APPS,plural, =1{Aquesta aplicació pot ser perillosa}other{Aquestes aplicacions poden ser perilloses}}</translation>
 <translation id="3950820424414687140">Inicia la sessió</translation>
 <translation id="3953834000574892725">Els meus comptes</translation>
 <translation id="3954354850384043518">En curs</translation>
@@ -3971,7 +3968,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="523505283826916779">Configuració d'accessibilitat</translation>
 <translation id="5235750401727657667">Substituir la pàgina que veus en obrir una pestanya nova</translation>
 <translation id="5236374273162681467">Per utilitzar-les fàcilment en tots els teus dispositius, les pots moure al teu Compte de Google</translation>
-<translation id="5238278114306905396">L'aplicació "<ph name="EXTENSION_NAME" />" s'ha eliminat automàticament.</translation>
 <translation id="5242724311594467048">Vols activar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5243522832766285132">Torna-ho a provar d'aquí a una estona</translation>
 <translation id="5244474230056479698">S'està sincronitzant amb <ph name="EMAIL" /></translation>
@@ -4252,6 +4248,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5543983818738093899">S'està comprovant l'estat...</translation>
 <translation id="554517701842997186">Renderitzador</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Afegeix una pestanya al grup}other{Afegeix pestanyes al grup}}</translation>
+<translation id="5545693483061321551">Els llocs web no poden fer servir les teves galetes per veure la teva activitat de navegació en diferents llocs web, per exemple, per personalitzar els anuncis. Pot ser que les funcions d'alguns llocs web no funcionin.</translation>
 <translation id="5546865291508181392">Cerca</translation>
 <translation id="5548075230008247516">S'han desseleccionat tots els elements; s'ha sortit del mode de selecció.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" i 1 pestanya més}other{"<ph name="TAB_TITLE" />" i # pestanyes més}}</translation>
@@ -5215,6 +5212,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6607831829715835317">Més eine&amp;s</translation>
 <translation id="6607890859198268021">El compte <ph name="USER_EMAIL" /> ja està gestionat per <ph name="DOMAIN" />. Per utilitzar controls parentals amb un Compte de Google diferent, has de tancar la sessió quan acabis la configuració i, a continuació, a la pantalla d'inici de sessió selecciona Afegeix una persona.</translation>
 <translation id="6609478180749378879">Les dades d'inici de sessió s'emmagatzemaran en aquest dispositiu quan surtis del mode d'incògnit. Podràs tornar a iniciar la sessió en aquest lloc web amb el teu dispositiu més endavant.</translation>
+<translation id="6610002944194042868">Opcions del Traductor</translation>
 <translation id="6611972847767394631">Aquí trobaràs les teves pestanyes</translation>
 <translation id="6615455863669487791">Mostra-m'ho</translation>
 <translation id="6618097958368085618">Desa de totes maneres</translation>
@@ -6219,7 +6217,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7697166915480294040">Els detalls estan amagats mentre comparteixes la pantalla</translation>
 <translation id="7701040980221191251">Cap</translation>
 <translation id="7701869757853594372">Controls d'USUARI</translation>
-<translation id="7701928712056789451">Aquests elements poden ser perillosos</translation>
 <translation id="7702574632857388784">Suprimeix <ph name="FILE_NAME" /> de la llista</translation>
 <translation id="7702907602086592255">Domini</translation>
 <translation id="7704305437604973648">Tasca</translation>
@@ -6681,6 +6678,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8149564499626272569">Verifica mitjançant el telèfon amb un cable USB</translation>
 <translation id="8151638057146502721">Configura</translation>
 <translation id="8154790740888707867">No hi ha cap fitxer</translation>
+<translation id="8154912474061769055">Pot ser que les funcions de molts llocs web no funcionin</translation>
 <translation id="815491593104042026">L'autenticació ha fallat perquè s'ha configurat per utilitzar un URL no segur (<ph name="BLOCKED_URL" />). Contacteu amb l'administrador.</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{No s'ha trobat cap contrasenya en perill}=1{{COUNT} contrasenya en perill}other{{COUNT} contrasenyes en perill}}</translation>
 <translation id="8157248655669507702">Activa les dades mòbils per instal·lar un perfil d'eSIM</translation>
@@ -6858,6 +6856,7 @@ Prem un interruptor assignat per suprimir l'assignació</translation>
 <translation id="8342221978608739536">No ho he provat</translation>
 <translation id="8342861492835240085">Selecciona una col·lecció</translation>
 <translation id="8347227221149377169">Tasques d'impressió</translation>
+<translation id="834785183489258869">En mode d'incògnit, els llocs web no poden fer servir les teves galetes per veure la teva activitat de navegació en diferents llocs web, per exemple, per personalitzar els anuncis. Pot ser que les funcions d'alguns llocs web no funcionin.</translation>
 <translation id="8350789879725387295">Eines del llapis òptic a la barra d'aplicacions</translation>
 <translation id="8351316842353540018">Mostra sempre les opcions d'accessibilitat</translation>
 <translation id="8351419472474436977">Aquesta extensió ha passat a controlar la configuració del servidor intermediari. Això vol dir que pot modificar, desfer o espiar qualsevol acció que feu en línia. Si no esteu segur del motiu d'aquest canvi, és possible que no el vulgueu aplicar.</translation>

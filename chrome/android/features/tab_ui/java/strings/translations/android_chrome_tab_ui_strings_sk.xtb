@@ -8,6 +8,7 @@
 <translation id="1378979118429748177">Dostávajte upozornenia pri poklesoch cien</translation>
 <translation id="1657719826150349398">Presunúť kartu nadol</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> karta}few{<ph name="TABS_COUNT_MANY" /> karty}many{<ph name="TABS_COUNT_MANY" /> tabs}other{<ph name="TABS_COUNT_MANY" /> kariet}}</translation>
+<translation id="2118649612461486615">Informácie o obchode</translation>
 <translation id="2277224997687551299">Upraviť názov skupiny</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Odstrániť <ph name="TABS_COUNT_ONE" /> vybranú kartu zo skupiny}few{Odstrániť <ph name="TABS_COUNT_MANY" /> vybrané karty zo skupiny}many{Remove <ph name="TABS_COUNT_MANY" /> selected tabs from group.}other{Odstrániť <ph name="TABS_COUNT_MANY" /> vybraných kariet zo skupiny}}</translation>
 <translation id="2479148705183875116">Prejsť do Nastavení</translation>
@@ -50,13 +51,16 @@
 <translation id="6040143037577758943">Zavrieť</translation>
 <translation id="6054741997831917303">Cena tejto položky nedávno klesla z <ph name="PREVIOUS_PRICE" /> na <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Vyberte karty</translation>
+<translation id="6228793724645064692">(hodnotenie obchodu)</translation>
 <translation id="6510648526783655549">Zavrieť panel kariet</translation>
+<translation id="6549021453810473782">Zobraziť informácie o obchode</translation>
 <translation id="6562820390860419811">Presunúť kartu doľava</translation>
 <translation id="6615455863669487791">Ukázať</translation>
 <translation id="6840760312327750441">Ak chcete zoskupiť karty, pridržte niektorú z nich. Potom ju presuňte na inú.</translation>
 <translation id="6856809498882026482">Skryť režim hromadného výberu</translation>
 <translation id="7151209024774799310">Odstrániť karty zo skupiny</translation>
 <translation id="7204204600596740190">Režim hromadného výberu</translation>
+<translation id="7326879924029668159">Prečítajte si pravidlá vrátenia tovaru a ďalšie dokumenty</translation>
 <translation id="7352298686197644113">Zistite, ktorá položka na vašich otvorených kartách má nižšiu cenu</translation>
 <translation id="753732157349120914">Prepínač kariet</translation>
 <translation id="7559245342362162951">Zobraziť karty skupiny v mriežke na celú obrazovku</translation>

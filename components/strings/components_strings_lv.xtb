@@ -91,6 +91,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1257553931232494454">tālummaiņas līmeņi</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, lai pārvaldītu Chrome iestatījumus, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter</translation>
 <translation id="1263231323834454256">Lasīšanas saraksts</translation>
+<translation id="1269096320618100013">Poga pieejamības iestatījumu pārvaldībai; lai Chrome OS iestatījumos personalizētu pieejamības rīkus, nospiediet taustiņu Enter.</translation>
 <translation id="1269516672602708785">Ātri izveidot jaunu vietni pakalpojumā Google vietnes</translation>
 <translation id="1270502636509132238">Saņemšanas veids</translation>
 <translation id="1281476433249504884">1. izvades vieta</translation>
@@ -506,6 +507,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai notīrītu jūsu pārlūkošanas vēsturi, sīkfailus, kešatmiņu un citus datus Chrome iestatījumos, nospiediet tabulēšanas taustiņu un pēc tam — ievadīšanas taustiņu.</translation>
 <translation id="2650446666397867134">Piekļuve failam tika noraidīta.</translation>
 <translation id="2653659639078652383">Iesniegt</translation>
+<translation id="2659491813326907275">Chrome OS iestatījumos personalizēt pieejamības rīkus</translation>
 <translation id="2660779039299703961">Notikums</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Nav}=1{1 parole (šādam domēnam: <ph name="DOMAIN_LIST" />)}=2{2 paroles (šādiem domēniem: <ph name="DOMAIN_LIST" />)}zero{# paroļu (šādiem domēniem: <ph name="DOMAIN_LIST" />)}one{# parole (šādiem domēniem: <ph name="DOMAIN_LIST" />)}other{# paroles (šādiem domēniem: <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Augša</translation>
@@ -1249,6 +1251,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5115216390227830982">European-Edp</translation>
 <translation id="5115232566827194440">Ierobežotas, pārvaldītas viesa sesijas ignorēšana</translation>
 <translation id="5115563688576182185">(64 bitu)</translation>
+<translation id="5116898824332672776"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />; lai Chrome OS iestatījumos personalizētu pieejamības rīkus, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
 <translation id="5123063207673082822">Nedēļas nogale</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Kartes verificēšana</translation>

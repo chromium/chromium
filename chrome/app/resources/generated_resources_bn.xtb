@@ -784,7 +784,6 @@
 <translation id="1794791083288629568">এই সমস্যা সমাধানে আমাদের সাহায্য করতে প্রতিবার্তা পাঠান।</translation>
 <translation id="1795214765651529549">ক্লাসিক ব্যবহার করুন</translation>
 <translation id="1796588414813960292">যেসব ফিচার ব্যবহার করার জন্য সাউন্ড প্রয়োজন সেগুলি কাজ করবে না</translation>
-<translation id="1799071797295057738">"<ph name="EXTENSION_NAME" />" এক্সটেনশনটি অটোমেটিক বন্ধ করা হয়েছে।</translation>
 <translation id="1801418420130173017">ডার্ক থিম বন্ধ করুন</translation>
 <translation id="1802624026913571222">ডিভাইসের কভার বন্ধ করলে স্লিপ মোডে চলে যাবে</translation>
 <translation id="1802687198411089702">পৃষ্ঠাটি সাড়া দিচ্ছে না। আপনি অপেক্ষা করতে পারেন অথবা পৃষ্ঠা ছেড়ে যেতে পারেন।</translation>
@@ -852,7 +851,6 @@
 <translation id="1862311223300693744">আপনি কি কোনও বিশেষ ভিপিএন, প্রক্সি, ফায়ারওয়াল বা NAS সফ্টওয়্যার
     ইনস্টল করে রেখেছেন?</translation>
 <translation id="1863182668524159459">কোনও সিরিয়াল পোর্ট পাওয়া যায়নি</translation>
-<translation id="1863316578636157783">ম্যালওয়্যার থাকার জন্য "<ph name="EXTENSION_NAME" />" বন্ধ করে দেওয়া হয়েছে</translation>
 <translation id="1864111464094315414">লগ-ইন করুন</translation>
 <translation id="1864400682872660285">কুলার</translation>
 <translation id="1864454756846565995">USB-C ডিভাইস (পিছনের পোর্ট)</translation>
@@ -2301,7 +2299,6 @@
 <translation id="3406290648907941085">ভার্চুয়াল রিয়েলিটি ডিভাইস ও ডেটা ব্যবহার করার অনুমতি দেওয়া হয়েছে</translation>
 <translation id="3406396172897554194">ভাষা বা ইনপুট নামের মাধ্যমে খুঁজুন</translation>
 <translation id="3406605057700382950">ও বুকমার্ক বার দেখান</translation>
-<translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{এই এক্সটেনশনটি বিপজ্জনক হতে পারে}one{এই এক্সটেনশনগুলি বিপজ্জনক হতে পারে}other{এই এক্সটেনশনগুলি বিপজ্জনক হতে পারে}}</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3410832398355316179">এই ব্যবহারকারীকে সরানো হলে তার সংশ্লিষ্ট সব ফাইল ও স্থানীয় ডেটা মুছে যাবে। তা সত্ত্বেও, <ph name="USER_EMAIL" /> পরে সাইন-ইন করতে পারবেন।</translation>
 <translation id="3412265149091626468">নির্বাচনে যান</translation>
@@ -2851,7 +2848,6 @@
 <translation id="3948116654032448504">&amp;ইমেজের জন্য <ph name="SEARCH_ENGINE" /> সার্চ করুন</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> নিচে উল্লেখ করা ফোল্ডারের ফাইলগুলি এডিট করতে পারবে</translation>
 <translation id="394984172568887996">IE থেকে আমাদানি করা</translation>
-<translation id="3949981384795585075">{NUM_APPS,plural, =1{এই অ্যাপটি বিপজ্জনক হতে পারে}one{এই অ্যাপগুলি বিপজ্জনক হতে পারে}other{এই অ্যাপগুলি বিপজ্জনক হতে পারে}}</translation>
 <translation id="3950820424414687140">সাইন-ইন করুন</translation>
 <translation id="3953834000574892725">আমার অ্যাকাউন্ট</translation>
 <translation id="3954354850384043518">প্রক্রিয়ায় আছে</translation>
@@ -3987,7 +3983,6 @@
 <translation id="523505283826916779">অ্যাক্সেসিবিলিটি সেটিংস</translation>
 <translation id="5235750401727657667">নতুন ট্যাব খোলার সময় যে পৃষ্ঠাটি আপনি দেখেন সেটি বদলে দিন</translation>
 <translation id="5236374273162681467">আপনি সেগুলি সব ডিভাইসে সহজে ব্যবহার করতে আপনার Google অ্যাকাউন্টে সরাতে পারবেন</translation>
-<translation id="5238278114306905396">"<ph name="EXTENSION_NAME" />" অ্যাপ্লিকেশন স্বয়ংক্রিয়ভাবে সরানো হয়েছে৷</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" সক্ষম করবেন?</translation>
 <translation id="5243522832766285132">কয়েক মুহূর্তের মধ্যে আবার চেষ্টা করুন</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> এ সিঙ্ক হচ্ছে</translation>
@@ -5231,6 +5226,7 @@
 <translation id="6607831829715835317">আরও সরঞ্জা&amp;ম</translation>
 <translation id="6607890859198268021"><ph name="DOMAIN" /> আগে থেকেই <ph name="USER_EMAIL" /> ম্যানেজ করছে। অন্য Google অ্যাকাউন্ট থেকে অভিভাবকীয় নিয়ন্ত্রণ ব্যবহার করতে চাইলে, সেট আপ করার পরে সাইন-আউট করুন এবং সাইন-ইন স্ক্রিনে "ব্যক্তিকে যোগ করুন" বিকল্প বেছে নিন।</translation>
 <translation id="6609478180749378879">আপনি 'ছদ্মবেশী মোড' থেকে বেরিয়ে আসার পরেই সাইন-ইন সংক্রান্ত ডেটা এই ডিভাইসে স্টোর করা হবে। আপনি আবার পরে এই ওয়েবসাইটে আপনার ডিভাইস দিয়ে সাইন-ইন করতে পারবেন।</translation>
+<translation id="6610002944194042868">অনুবাদের বিকল্প</translation>
 <translation id="6611972847767394631">এখানে আপনার ট্যাবগুলি দেখুন</translation>
 <translation id="6615455863669487791">আমাকে দেখান</translation>
 <translation id="6618097958368085618">তবুও রাখতে চাই</translation>
@@ -6235,7 +6231,6 @@
 <translation id="7697166915480294040">স্ক্রিন শেয়ার করার সময় বিজ্ঞপ্তির কন্টেন্ট লুকিয়ে রাখা হয়</translation>
 <translation id="7701040980221191251">কিছু নেই</translation>
 <translation id="7701869757853594372">ব্যবহারকারীর হ্যান্ডলগুলি</translation>
-<translation id="7701928712056789451">এই আইটেমগুলি বিপজ্জনক হতে পারে</translation>
 <translation id="7702574632857388784">তালিকা থেকে <ph name="FILE_NAME" /> সরান</translation>
 <translation id="7702907602086592255">ডোমেন</translation>
 <translation id="7704305437604973648">কার্য</translation>

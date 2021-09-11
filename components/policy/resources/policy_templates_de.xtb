@@ -1108,15 +1108,6 @@ Das Feld „<ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" />“ wurde zuguns
 
       Der Standardwert für diese Richtlinie wurde in <ph name="PRODUCT_NAME" /> 81 von "false" auf "true" geändert. Bei diesen Proxys sollte ein Verbindungsfehler mit dem Fehlercode ERR_TLS13_DOWNGRADE_DETECTED auftreten. Administratoren, die mehr Zeit zur Aktualisierung betroffener Proxys benötigen, können diese Richtlinie nutzen, um die Sicherheitsfunktion vorübergehend zu deaktivieren. Diese Richtlinie wurde in Version 86 entfernt.
       </translation>
-<translation id="2333763898098246468">Steuert, wie <ph name="PRODUCT_NAME" /> unter Windows druckt.
-
-      Beim Drucken mit einem Nicht-PostScript-Drucker unter Windows müssen Druckaufträge manchmal gerastert werden, damit sie ordnungsgemäß gedruckt werden.
-
-      Wenn Sie die Richtlinie auf "Full" setzen, rastert <ph name="PRODUCT_NAME" /> ganzseitig, falls nötig.
-
-      Wenn Sie die Richtlinie auf "Fast" setzen, vermeidet <ph name="PRODUCT_NAME" /> das Rastern, wenn möglich. Wenn weniger gerastert wird, können die Größe der Druckaufträge reduziert und die Druckgeschwindigkeit erhöht werden.
-
-      Wird sie nicht konfiguriert, befindet sich <ph name="PRODUCT_NAME" /> im Modus "Full".</translation>
 <translation id="2337859888277013371">Verwendung des Back-Forward-Cache nicht zulassen</translation>
 <translation id="2341509917222115272">Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer beim Herstellen der Verbindung Clients und Hosts koppeln. Es ist nicht erforderlich, jedes Mal eine PIN einzugeben.
 
@@ -6312,11 +6303,6 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 <translation id="8854571659927427063">Wenn die Richtlinie aktiviert ist, werden Lesezeichen bei der ersten Ausführung aus dem vorherigen Standardbrowser importiert. Ist die Richtlinie deaktiviert oder nicht konfiguriert, werden bei der ersten Ausführung keine Lesezeichen importiert.
 
       Nutzer können einen Importdialog öffnen. Das Kästchen für Lesezeichen wird je nach Konfiguration dieser Richtlinie aktiviert oder deaktiviert.</translation>
-<translation id="8855986672497556389">Achtung: Das Unterdrücken der TLS 1.0/1.1-Warnung wird in <ph name="PRODUCT_NAME" /> ab Version 91 (Mai 2021) nicht mehr unterstützt. Anschließend funktioniert diese Richtlinie nicht mehr.
-
-      Wenn die Richtlinie auf einen gültigen Wert festgelegt ist, nutzt <ph name="PRODUCT_NAME" /> keine SSL- oder TLS-Versionen, die niedriger als die vorgegebene Version sind. Nicht erkannte Werte werden ignoriert.
-
-      Wenn diese Richtlinie nicht konfiguriert ist, zeigt <ph name="PRODUCT_NAME" /> einen Fehler für TLS 1.0 und TLS 1.1 an, den der Nutzer jedoch umgehen kann.</translation>
 <translation id="8858642179038618439">YouTube-Sicherheitsmodus erzwingen</translation>
 <translation id="8860342862142842017">Erzwingung der Zertifikatstransparenz für eine Liste mit subjectPublicKeyInfo-Hashes deaktivieren</translation>
 <translation id="8864975621965365890">Unterdrückung des Hinweises auf Einstellung des Frames, der beim Rendern einer Website durch <ph name="PRODUCT_FRAME_NAME" /> erscheint</translation>

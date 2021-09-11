@@ -8,6 +8,7 @@
 <translation id="1378979118429748177">ਕੀਮਤਾਂ ਘਟਣ 'ਤੇ ਸੂਚਨਾ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="1657719826150349398">ਟੈਬ ਨੂੰ ਹੇਠਾਂ ਲਿਜਾਓ</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ਟੈਬ}one{<ph name="TABS_COUNT_MANY" /> ਟੈਬ}other{<ph name="TABS_COUNT_MANY" /> ਟੈਬਾਂ}}</translation>
+<translation id="2118649612461486615">ਸਟੋਰ ਜਾਣਕਾਰੀ</translation>
 <translation id="2277224997687551299">ਗਰੁੱਪ ਦੇ ਨਾਮ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{ਗਰੁੱਪ ਵਿੱਚੋਂ <ph name="TABS_COUNT_ONE" /> ਚੁਣੀ ਹੋਈ ਟੈਬ ਨੂੰ ਹਟਾਓ।}one{ਗਰੁੱਪ ਵਿੱਚੋਂ <ph name="TABS_COUNT_MANY" /> ਚੁਣੀ ਹੋਈ ਟੈਬ ਨੂੰ ਹਟਾਓ।}other{ਗਰੁੱਪ ਵਿੱਚੋਂ <ph name="TABS_COUNT_MANY" /> ਚੁਣੀਆਂ ਹੋਈਆਂ ਟੈਬਾਂ ਨੂੰ ਹਟਾਓ।}}</translation>
 <translation id="2479148705183875116">ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ</translation>
@@ -50,13 +51,16 @@
 <translation id="6040143037577758943">ਬੰਦ ਕਰੋ</translation>
 <translation id="6054741997831917303">ਇਸ ਆਈਟਮ ਦੀ ਕੀਮਤ ਹਾਲ ਹੀ ਵਿੱਚ <ph name="PREVIOUS_PRICE" /> ਤੋਂ ਘੱਟ ਕੇ <ph name="NEW_PRICE" /> ਹੋ ਗਈ ਹੈ</translation>
 <translation id="6193448654517602979">ਟੈਬਾਂ ਚੁਣੋ</translation>
+<translation id="6228793724645064692">(ਸਟੋਰ ਰੇਟਿੰਗ)</translation>
 <translation id="6510648526783655549">ਟੈਬ ਪੱਟੀ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
+<translation id="6549021453810473782">ਸਟੋਰ ਜਾਣਕਾਰੀ ਦੇਖੋ</translation>
 <translation id="6562820390860419811">ਟੈਬ ਨੂੰ ਖੱਬੇ ਪਾਸੇ ਲਿਜਾਓ</translation>
 <translation id="6615455863669487791">ਮੈਨੂੰ ਦਿਖਾਓ</translation>
 <translation id="6840760312327750441">ਟੈਬਾਂ ਦਾ ਗਰੁੱਪ ਬਣਾਉਣ ਲਈ, ਕਿਸੇ ਟੈਬ ਨੂੰ ਸਪਰਸ਼ ਕਰਕੇ ਰੱਖੋ। ਫਿਰ, ਇਸਨੂੰ ਕਿਸੇ ਹੋਰ ਟੈਬ 'ਤੇ ਘਸੀਟੋ।</translation>
 <translation id="6856809498882026482">ਬਹੁ-ਚੋਣ ਮੋਡ ਨੂੰ ਲੁਕਾਓ</translation>
 <translation id="7151209024774799310">ਟੈਬਾਂ ਨੂੰ ਗਰੁੱਪ ਵਿੱਚੋਂ ਹਟਾਓ</translation>
 <translation id="7204204600596740190">ਬਹੁ-ਚੋਣ ਮੋਡ</translation>
+<translation id="7326879924029668159">ਵਾਪਸੀ ਸੰਬੰਧੀ ਨੀਤੀ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਦੇਖੋ</translation>
 <translation id="7352298686197644113">ਦੇਖੋ ਕਿ ਤੁਹਾਡੇ ਖੁੱਲ੍ਹੇ ਟੈਬਾਂ ਵਿੱਚ ਕਿਹੜੀ ਆਈਟਮ ਦੀ ਕੀਮਤ ਘੱਟ ਹੈ</translation>
 <translation id="753732157349120914">ਟੈਬ ਸਵਿੱਚਰ</translation>
 <translation id="7559245342362162951">ਪੂਰੀ-ਸਕ੍ਰੀਨ ਗ੍ਰਿਡ ਵਿੱਚ ਗਰੁੱਪ ਦੀਆਂ ਟੈਬਾਂ ਦਿਖਾਓ</translation>

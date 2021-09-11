@@ -91,6 +91,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1257553931232494454">poziomy powiększenia</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby zarządzać ustawieniami Chrome, naciśnij Tab, a potem Enter</translation>
 <translation id="1263231323834454256">Do przeczytania</translation>
+<translation id="1269096320618100013">Przycisk zarządzania ustawieniami ułatwień dostępu; aby spersonalizować narzędzia ułatwień dostępu w ustawieniach Chrome OS, naciśnij Enter</translation>
 <translation id="1269516672602708785">Szybko utwórz nową witrynę w Witrynach Google</translation>
 <translation id="1270502636509132238">Metoda odbioru</translation>
 <translation id="1281476433249504884">Układarka 1</translation>
@@ -502,6 +503,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />. Naciśnij Tab, a potem Enter, by wyczyścić historię przeglądania, pliki cookie, pamięć podręczną i inne dane w ustawieniach Chrome.</translation>
 <translation id="2650446666397867134">Odmówiono dostępu do pliku</translation>
 <translation id="2653659639078652383">Prześlij</translation>
+<translation id="2659491813326907275">Spersonalizuj narzędzia ułatwień dostępu w ustawieniach Chrome OS</translation>
 <translation id="2660779039299703961">Wydarzenie</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Brak}=1{1 hasło (do <ph name="DOMAIN_LIST" />)}=2{2 hasła (do <ph name="DOMAIN_LIST" />)}few{# hasła (do <ph name="DOMAIN_LIST" />)}many{# haseł (do <ph name="DOMAIN_LIST" />)}other{# hasła (do <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Do góry</translation>
@@ -1092,7 +1094,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="4646534391647090355">Przejdź tam teraz</translation>
 <translation id="4652266463001779298">Nie zezwolono</translation>
 <translation id="4658638640878098064">Zszywka w lewym górnym rogu</translation>
-<translation id="4660119392514473465">Teraz możesz przeglądać prywatnie, a inne osoby korzystające z tego urządzenia nie zobaczą Twojej aktywności. Pobrane pliki, zakładki i elementy na liście do przeczytania zostaną jednak zapisane.</translation>
+<translation id="4660119392514473465">Teraz możesz przeglądać prywatnie, a inne osoby korzystające z tego urządzenia nie zobaczą Twojej aktywności. Pobrane pliki, zakładki i elementy na liście Do przeczytania zostaną jednak zapisane.</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Rzeczywistość wirtualna</translation>
 <translation id="4673460618347856347">Gra z dinozaurem, zagraj</translation>
@@ -1241,6 +1243,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="5115216390227830982">European-Edp</translation>
 <translation id="5115232566827194440">Zastąpienie zarządzanej sesji gościa z ograniczonym dostępem</translation>
 <translation id="5115563688576182185">(64-bitowa)</translation>
+<translation id="5116898824332672776"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby spersonalizować narzędzia ułatwień dostępu w ustawieniach Chrome OS, naciśnij Tab, a potem Enter</translation>
 <translation id="5123063207673082822">Weekend</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Zweryfikuj kartę</translation>

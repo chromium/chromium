@@ -8,6 +8,7 @@
 <translation id="1378979118429748177">ဈေးကျသည့်အခါ အကြောင်းကြားချက်ရယူနိုင်သည်</translation>
 <translation id="1657719826150349398">တဘ်ကို အောက်သို့ ရွှေ့ရန်</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{တဘ် <ph name="TABS_COUNT_ONE" /> ခု}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခု}}</translation>
+<translation id="2118649612461486615">ဆိုင်အချက်အလက်</translation>
 <translation id="2277224997687551299">အဖွဲ့အမည်ကို တည်းဖြတ်ရန်</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{ရွေးထားသော တဘ် <ph name="TABS_COUNT_ONE" /> ခုအား အုပ်စုမှ ဖယ်ရှားပါ။}other{ရွေးထားသော တဘ် <ph name="TABS_COUNT_MANY" /> ခုအား အုပ်စုမှ ဖယ်ရှားပါ။}}</translation>
 <translation id="2479148705183875116">'ဆက်တင်များ' သို့ သွားရန်</translation>
@@ -50,13 +51,16 @@
 <translation id="6040143037577758943">ပိတ်ရန်</translation>
 <translation id="6054741997831917303">ဤပစ္စည်းမှာ မကြာမီက <ph name="PREVIOUS_PRICE" /> မှ <ph name="NEW_PRICE" /> သို့ ဈေးကျသွားသည်</translation>
 <translation id="6193448654517602979">တဘ်ရွေးရန်</translation>
+<translation id="6228793724645064692">(ဆိုင်အဆင့်)</translation>
 <translation id="6510648526783655549">တဘ်ဘားတန်းကို ပိတ်ရန်</translation>
+<translation id="6549021453810473782">ဆိုင်အချက်အလက် ကြည့်ရန်</translation>
 <translation id="6562820390860419811">တဘ်ကို ဘယ်ဘက်သို့ ရွှေ့ရန်</translation>
 <translation id="6615455863669487791">ပြရန်</translation>
 <translation id="6840760312327750441">တဘ်များကို အုပ်စုဖွဲ့ရန် တဘ်တစ်ခုကို တို့ထိ၍ ဖိထားပါ။ ထို့နောက် ၎င်းကို နောက်တဘ်တစ်ခုပေါ်သို့ ဖိဆွဲပါ။</translation>
 <translation id="6856809498882026482">မျိုးစုံရွေးမုဒ်ကို ဝှက်ရန်</translation>
 <translation id="7151209024774799310">အုပ်စုမှ တဘ်များကို ဖယ်ရှားရန်</translation>
 <translation id="7204204600596740190">မျိုးစုံရွေးမုဒ်</translation>
+<translation id="7326879924029668159">ပြန်ပို့သည့်မူဝါဒနှင့် အခြားအရာများ ကြည့်နိုင်သည်</translation>
 <translation id="7352298686197644113">သင်ဖွင့်ထားသောတဘ်များတွင် မည်သည့်အရာက ဈေးကျသွားကြောင်း ကြည့်နိုင်သည်</translation>
 <translation id="753732157349120914">တဘ်ပြောင်းခလုတ်</translation>
 <translation id="7559245342362162951">မျက်နှာပြင်ပြည့် ဇယားကွက်အတွင်း အုပ်စု၏ တဘ်များကို ပြရန်</translation>

@@ -8,6 +8,7 @@
 <translation id="1378979118429748177">ទទួលបានការជូនដំណឹងនៅពេលធ្លាក់ថ្លៃ</translation>
 <translation id="1657719826150349398">ផ្លាស់ទី​ផ្ទាំង​ចុះក្រោម</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{ផ្ទាំង <ph name="TABS_COUNT_ONE" />}other{ផ្ទាំង <ph name="TABS_COUNT_MANY" />}}</translation>
+<translation id="2118649612461486615">ព័ត៌មានអំពីហាង</translation>
 <translation id="2277224997687551299">កែ​ឈ្មោះក្រុម</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{លុបផ្ទាំង <ph name="TABS_COUNT_ONE" /> ដែល​បានជ្រើសរើស​ពីក្រុម។}other{លុបផ្ទាំង <ph name="TABS_COUNT_MANY" /> ដែល​បានជ្រើសរើស​ពីក្រុម។}}</translation>
 <translation id="2479148705183875116">ចូលទៅកាន់ការកំណត់</translation>
@@ -50,13 +51,16 @@
 <translation id="6040143037577758943">បិទ</translation>
 <translation id="6054741997831917303">តម្លៃទំនិញនេះ​បានធ្លាក់ចុះ​ថ្មីៗនេះ​ពី <ph name="PREVIOUS_PRICE" /> ទៅ <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">ជ្រើសរើសផ្ទាំង</translation>
+<translation id="6228793724645064692">(ការវាយ​តម្លៃហាង)</translation>
 <translation id="6510648526783655549">បិទរបារផ្ទាំង</translation>
+<translation id="6549021453810473782">មើលព័ត៌មានអំពីហាង</translation>
 <translation id="6562820390860419811">ផ្លាស់ទី​ផ្ទាំង​ទៅ​ខាងឆ្វេង</translation>
 <translation id="6615455863669487791">បង្ហាញខ្ញុំ</translation>
 <translation id="6840760312327750441">ដើម្បីដាក់​ផ្ទាំង​ជាក្រុម សូម​ចុចផ្ទាំង​ឱ្យជាប់។ រួចអូស​ផ្ទាំងនោះ​ដាក់លើ​ផ្ទាំង​ផ្សេងទៀត។</translation>
 <translation id="6856809498882026482">លាក់មុខងារ​ជ្រើសរើសច្រើន</translation>
 <translation id="7151209024774799310">លុបផ្ទាំង​ចេញពីក្រុម</translation>
 <translation id="7204204600596740190">មុខងារ​ជ្រើសរើសច្រើន</translation>
+<translation id="7326879924029668159">មើលគោលការណ៍បញ្ជូនទំនិញមកវិញ និងអ្វីៗជាច្រើនទៀត</translation>
 <translation id="7352298686197644113">មើលថាតើ​ទំនិញមួយ​ណានៅក្នុងផ្ទាំងដែលអ្នក​កំពុង​បើក​មានតម្លៃ​ទាបជាងមុន</translation>
 <translation id="753732157349120914">មុខងារប្ដូរផ្ទាំង</translation>
 <translation id="7559245342362162951">បង្ហាញផ្ទាំង​របស់ក្រុមនៅក្នុងក្រឡា​ពេញ​អេក្រង់</translation>

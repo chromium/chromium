@@ -771,7 +771,6 @@
 <translation id="1794791083288629568">Šalji povratne informacije kao pomoć za rešavanje ovog problema.</translation>
 <translation id="1795214765651529549">Koristi klasičnu</translation>
 <translation id="1796588414813960292">Funkcije kojima treba zvuk neće raditi</translation>
-<translation id="1799071797295057738">Dodatak „<ph name="EXTENSION_NAME" />“ je automatski onemogućen.</translation>
 <translation id="1801418420130173017">Onemogućite tamnu temu</translation>
 <translation id="1802624026913571222">Pređi u stanje spavanja kada se poklopac zatvori</translation>
 <translation id="1802687198411089702">Stranica se ne odaziva. Možete da sačekate da počne da se odaziva ili da je zatvorite.</translation>
@@ -838,7 +837,6 @@
 <translation id="1861262398884155592">Ovaj direktorijum je prazan</translation>
 <translation id="1862311223300693744">Da li ste instalirali bilo kakav poseban softver za VPN, proksi, zaštitni zid ili NAS?</translation>
 <translation id="1863182668524159459">Nismo pronašli nijedan serijski port</translation>
-<translation id="1863316578636157783">Dodatak <ph name="EXTENSION_NAME" /> je onemogućen jer sadrži malver</translation>
 <translation id="1864111464094315414">Prijavljivanje</translation>
 <translation id="1864400682872660285">Hladnije</translation>
 <translation id="1864454756846565995">Uređaj sa USB priključkom tipa C (zadnji port)</translation>
@@ -2280,12 +2278,12 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">Nijedna lozinka nije sačuvana za ovaj sajt</translation>
 <translation id="3404249063913988450">Omogućite čuvar ekrana</translation>
+<translation id="3404805962764077228">Privremeni striming aplikacija na telefonu direktno sa uređaja <ph name="DEVICE_TYPE" /></translation>
 <translation id="3405664148539009465">Prilagodi fontove</translation>
 <translation id="3405763860805964263">...</translation>
 <translation id="3406290648907941085">Dozvoljeno im je da koriste uređaje i podatke virtuelne realnosti</translation>
 <translation id="3406396172897554194">Pretražite prema jeziku ili nazivu unosa</translation>
 <translation id="3406605057700382950">&amp;Prikaži traku sa obeleživačima</translation>
-<translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{Ovaj dodatak je možda opasan}one{Ovi dodaci su možda opasni}few{Ovi dodaci su možda opasni}other{Ovi dodaci su možda opasni}}</translation>
 <translation id="3409785640040772790">Mape</translation>
 <translation id="3410832398355316179">Sve datoteke i lokalni podaci povezani sa ovim korisnikom će biti trajno izbrisani kada uklonite ovog korisnika. <ph name="USER_EMAIL" /> će i dalje moći da se prijavi kasnije.</translation>
 <translation id="3412265149091626468">Pređi na izbor</translation>
@@ -2836,7 +2834,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3948116654032448504">&amp;Potraži sliku u pretraživaču <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> može da menja datoteke u direktorijumima u nastavku</translation>
 <translation id="394984172568887996">Uvezeno iz IE pregledača</translation>
-<translation id="3949981384795585075">{NUM_APPS,plural, =1{Ova aplikacija je možda opasna}one{Ove aplikacije su možda opasne}few{Ove aplikacije su možda opasne}other{Ove aplikacije su možda opasne}}</translation>
 <translation id="3950820424414687140">Prijavi me</translation>
 <translation id="3953834000574892725">Moji nalozi</translation>
 <translation id="3954354850384043518">U toku</translation>
@@ -3971,7 +3968,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="523505283826916779">Podešavanja pristupačnosti</translation>
 <translation id="5235750401727657667">Zamenite stranicu koja se prikaže kad otvorite novu karticu</translation>
 <translation id="5236374273162681467">Da biste ih lako koristili na svim uređajima, možete da ih premestite na Google nalog</translation>
-<translation id="5238278114306905396">Aplikacija „<ph name="EXTENSION_NAME" />“ je automatski uklonjena.</translation>
 <translation id="5242724311594467048">Želite li da omogućite „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="5243522832766285132">Probajte ponovo za nekoliko trenutaka</translation>
 <translation id="5244474230056479698">Sinhronizuje se sa <ph name="EMAIL" /></translation>
@@ -4252,6 +4248,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="5543983818738093899">Provera statusa...</translation>
 <translation id="554517701842997186">Prikazivač</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Dodaj karticu u grupu}one{Dodaj kartice u grupu}few{Dodaj kartice u grupu}other{Dodaj kartice u grupu}}</translation>
+<translation id="5545693483061321551">Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na različitim sajtovima, na primer, za personalizaciju oglasa. Funkcije na nekim sajtovima mogu da ne rade.</translation>
 <translation id="5546865291508181392">Pronađi</translation>
 <translation id="5548075230008247516">Poništen je izbor svih stavki. Napustili se režim izbora.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />“}=1{„<ph name="TAB_TITLE" />“ i još 1 kartica}one{„<ph name="TAB_TITLE" />“ i još # kartica}few{„<ph name="TAB_TITLE" />“ i još # kartice}other{„<ph name="TAB_TITLE" />“ i još # kartica}}</translation>
@@ -5215,6 +5212,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6607831829715835317">Još a&amp;latki</translation>
 <translation id="6607890859198268021"><ph name="DOMAIN" /> već upravlja nalogom <ph name="USER_EMAIL" />. Da biste koristili roditeljski nadzor pomoću drugog Google naloga odjavite se posle podešavanja, pa izaberite „Dodajte osobu“ na ekranu za prijavljivanje.</translation>
 <translation id="6609478180749378879">Podaci o prijavljivanju se čuvaju na ovom uređaju kada izađete iz režima bez arhiviranja. Kasnije ćete moći da se ponovo prijavite na ovaj veb-sajt pomoću svog uređaja.</translation>
+<translation id="6610002944194042868">Opcije prevoda</translation>
 <translation id="6611972847767394631">Pronađite kartice ovde</translation>
 <translation id="6615455863669487791">Pokaži mi</translation>
 <translation id="6618097958368085618">Ipak zadrži</translation>
@@ -6219,7 +6217,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7697166915480294040">Detalji su sakriveni dok delite ekran</translation>
 <translation id="7701040980221191251">Ništa</translation>
 <translation id="7701869757853594372">KORISNIČKI nadimci</translation>
-<translation id="7701928712056789451">Ove stavke su možda opasne</translation>
 <translation id="7702574632857388784">Uklonite datoteku <ph name="FILE_NAME" /> sa liste</translation>
 <translation id="7702907602086592255">Domen</translation>
 <translation id="7704305437604973648">Zadatak</translation>
@@ -6680,6 +6677,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8149564499626272569">Potvrdi pomoću telefona sa USB kablom</translation>
 <translation id="8151638057146502721">Konfiguriši</translation>
 <translation id="8154790740888707867">Nema datoteke</translation>
+<translation id="8154912474061769055">Funkcije na mnogim sajtovima mogu da ne rade</translation>
 <translation id="815491593104042026">Ups! Potvrda autentičnosti nije uspela jer je konfigurisana za korišćenje nebezbednog URL-a (<ph name="BLOCKED_URL" />). Kontaktirajte administratora.</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{Nije pronađena nijedna ugrožena lozinka}=1{{COUNT} ugrožena lozinka}one{{COUNT} ugrožena lozinka}few{{COUNT} ugrožene lozinke}other{{COUNT} ugroženih lozinki}}</translation>
 <translation id="8157248655669507702">Omogućite mobilne podatke da biste instalirali eSIM profil</translation>
@@ -6856,6 +6854,7 @@ Pritisnite dodeljeni prekidač da biste uklonili dodelu</translation>
 <translation id="8342221978608739536">Nisam pokušao/la</translation>
 <translation id="8342861492835240085">Izaberite kolekciju</translation>
 <translation id="8347227221149377169">Zadaci štampanja</translation>
+<translation id="834785183489258869">Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na različitim sajtovima, na primer, za personalizaciju oglasa. Funkcije na nekim sajtovima mogu da ne rade.</translation>
 <translation id="8350789879725387295">Alatke za pisaljku na polici</translation>
 <translation id="8351316842353540018">Uvek prikazuj opcije pristupačnosti</translation>
 <translation id="8351419472474436977">Ovaj dodatak je preuzeo kontrolu nad podešavanjima proksija, što znači da može da menja, prekida ili špijunira sve što radite onlajn. Ako niste sigurni zašto je došlo do ove promene, verovatno vam nije potrebna.</translation>

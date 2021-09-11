@@ -8,6 +8,7 @@
 <translation id="1378979118429748177">Merr njoftime kur bien çmimet</translation>
 <translation id="1657719826150349398">Lëviz skedën poshtë</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> skedë}other{<ph name="TABS_COUNT_MANY" /> skeda}}</translation>
+<translation id="2118649612461486615">Informacione për dyqanin</translation>
 <translation id="2277224997687551299">Redakto emrin e grupit</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Hiq <ph name="TABS_COUNT_ONE" /> skedë të zgjedhur nga grupi.}other{Hiq <ph name="TABS_COUNT_MANY" /> skeda të zgjedhura nga grupi.}}</translation>
 <translation id="2479148705183875116">Shko te "Cilësimet"</translation>
@@ -50,13 +51,16 @@
 <translation id="6040143037577758943">Mbyll</translation>
 <translation id="6054741997831917303">Çmimi i artikullit ra së fundi nga <ph name="PREVIOUS_PRICE" /> në <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Zgjidh skedat</translation>
+<translation id="6228793724645064692">(vlerësimi i dyqanit)</translation>
 <translation id="6510648526783655549">Mbyll shiritin e skedave</translation>
+<translation id="6549021453810473782">Shiko informacionet për dyqanin</translation>
 <translation id="6562820390860419811">Lëviz skedën majtas</translation>
 <translation id="6615455863669487791">Ma trego</translation>
 <translation id="6840760312327750441">Për t'i grupuar skedat, prek dhe mbaje të shtypur një skedë. Më pas zvarrite atë te një skedë tjetër.</translation>
 <translation id="6856809498882026482">Fshih modalitetin e zgjedhjes së shumëfishtë</translation>
 <translation id="7151209024774799310">Hiq skedat nga grupi</translation>
 <translation id="7204204600596740190">Modaliteti i zgjedhjes së shumëfishtë</translation>
+<translation id="7326879924029668159">Shiko politikën e kthimit etj.</translation>
 <translation id="7352298686197644113">Shiko se cili artikull në skedat e tua të hapura ka çmim më të ulët</translation>
 <translation id="753732157349120914">Ndërruesi i skedave</translation>
 <translation id="7559245342362162951">Shfaq skedat e grupit në rrjetën me ekran të plotë</translation>

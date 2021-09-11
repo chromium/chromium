@@ -700,7 +700,6 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5324858694974489420">Cài đặt dành cho cha mẹ</translation>
 <translation id="5342314432463739672">Yêu cầu cấp quyền</translation>
 <translation id="5355191726083956201">Tính năng Bảo vệ tăng cường đang bật</translation>
-<translation id="5357811892247919462">Đã nhận thẻ</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> thẻ đang mở, nhấn để chuyển thẻ}other{<ph name="OPEN_TABS_MANY" /> thẻ đang mở, nhấn để chuyển thẻ}}</translation>
 <translation id="5375577065097716013">Tìm hình ảnh bằng Google Ống kính <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Chỉ cho phép một số trang web</translation>
@@ -1237,6 +1236,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8442258441309440798">Không có tin bài nào</translation>
 <translation id="8443209985646068659">Chrome không thể cập nhật</translation>
 <translation id="8445448999790540984">Không xuất được mật khẩu</translation>
+<translation id="8446884382197647889">Tìm hiểu thêm</translation>
 <translation id="8453310803815879010">Bắt đầu Trò chơi Khủng long</translation>
 <translation id="8461694314515752532">Mã hóa dữ liệu đã đồng bộ hóa bằng cụm mật khẩu đồng bộ hóa của riêng bạn</translation>
 <translation id="8466613982764129868">Hãy đảm bảo <ph name="TARGET_DEVICE_NAME" /> có kết nối Internet</translation>

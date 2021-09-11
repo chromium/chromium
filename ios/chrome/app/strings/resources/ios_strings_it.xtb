@@ -385,7 +385,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="4826218269716039351">Blocca i cookie di terze parti</translation>
 <translation id="48274138579728272">Contrassegna come letto</translation>
 <translation id="4833686396768033263">Schede recenti non disponibili</translation>
-<translation id="4833786495304741580">Invia automaticamente a Google statistiche sull'utilizzo e rapporti sugli arresti anomali.</translation>
+<translation id="4833786495304741580">Invia automaticamente a Google statistiche sull'utilizzo e report sugli arresti anomali.</translation>
 <translation id="4840495572919996524">I preferiti, la cronologia, le password e altre impostazioni non verranno più sincronizzati con il tuo Account Google.</translation>
 <translation id="4854345657858711387">Imposta un passcode</translation>
 <translation id="4860895144060829044">Chiama</translation>
@@ -454,6 +454,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5556459405103347317">Ricarica</translation>
 <translation id="5580834567471114021">Aggiungere all'elenco di lettura per consultare la pagina in un secondo momento?</translation>
 <translation id="5592679540098330836">Attiva la sincronizzazione per <ph name="NAME" /></translation>
+<translation id="560322036295180549">Opzione disattivata dall'organizzazione</translation>
 <translation id="5614553682702429503">Salvare la password?</translation>
 <translation id="5626245204502895507">Il file non può essere scaricato in questo momento.</translation>
 <translation id="5631164295104953411">Aggiungi il metodo di pagamento</translation>
@@ -501,7 +502,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5984222099446776634">Visitati di recente</translation>
 <translation id="5988851877894965432">Apri URL in Chrome</translation>
 <translation id="6012140227487808125">Crittografia…</translation>
-<translation id="6020800238007543967">Mostra anteprime link</translation>
 <translation id="6021332621416007159">Apri in...</translation>
 <translation id="6036514205982097558">Tutte le tue schede in un unico browser</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
@@ -712,6 +712,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7856733331829174190">Download non riuscito</translation>
 <translation id="7859704718976024901">Cronologia di navigazione</translation>
 <translation id="7887198238286927132">Per tutelare la tua privacy, Chrome non compilerà automaticamente questo campo.</translation>
+<translation id="7911190106180361398">La tua organizzazione non ti consente di sincronizzare tutti i dati.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Esporta password...</translation>
 <translation id="794799177247607889">Interrompi logging</translation>

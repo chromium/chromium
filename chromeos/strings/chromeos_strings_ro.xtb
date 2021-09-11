@@ -58,9 +58,11 @@
 <translation id="1999615961760456652">Portal captiv</translation>
 <translation id="2006864819935886708">Conectivitate</translation>
 <translation id="2008685064673031089">Căutare de numere prime</translation>
+<translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Mai multe setări</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versiunea <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB din <ph name="TOTAL_MEMORY" /> GB disponibili</translation>
+<translation id="2129264932216073062">ARC HTTP</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2157959690810728433">ÎN COADĂ</translation>
 <translation id="2161394479394250669">Anulează sarcina de printare</translation>
@@ -74,6 +76,7 @@
 <translation id="2364498172489649528">Reușită</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Trimite un raport de feedback</translation>
+<translation id="2407209115954268704">Stare blocare card SIM</translation>
 <translation id="2418150275289244458">Deschide în setări</translation>
 <translation id="2446553403094072641">Precizia virgulei mobile</translation>
 <translation id="2448312741937722512">Tipul</translation>
@@ -179,6 +182,7 @@
 <translation id="4536864596629708641">Configurația adresei IP</translation>
 <translation id="4548483925627140043">Nu s-a detectat semnal</translation>
 <translation id="455835558791489930">Baterie de <ph name="CHARGE_VALUE" /> mAh</translation>
+<translation id="4561801978359312462">Card SIM deblocat</translation>
 <translation id="4562494484721939086">Fără semnal</translation>
 <translation id="458794348635939462">Nu s-au putut rezolva toate gazdele</translation>
 <translation id="4593212453765072419">Este necesară autentificarea la serverul proxy</translation>
@@ -218,6 +222,7 @@
 <translation id="4999333166442584738">Ascunde raportul</translation>
 <translation id="500920857929044050">Oprește testul</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5049856988445523908">Card SIM blocat (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Numele grupului</translation>
 <translation id="5088172560898466307">Nume de gazdă server</translation>
 <translation id="5089810972385038852">Stat</translation>
@@ -312,6 +317,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6527081081771465939">Protocol de securitate Wi-Fi necunoscut</translation>
 <translation id="65587193855025101">Suport plat</translation>
 <translation id="6564646048574748301">Nereușită – Imprimanta nu poate fi accesată</translation>
+<translation id="6566314079205407217">Scanare pentru mai multe pagini</translation>
 <translation id="6574762126505704998">Umplere</translation>
 <translation id="6575134580692778371">Nu este configurată</translation>
 <translation id="6596816719288285829">Adresă IP</translation>

@@ -769,7 +769,6 @@
 <translation id="1794791083288629568">发送反馈，以协助我们解决此问题。</translation>
 <translation id="1795214765651529549">使用经典主题背景</translation>
 <translation id="1796588414813960292">所有需要使用声音的功能都将无法正常运行</translation>
-<translation id="1799071797295057738">扩展程序“<ph name="EXTENSION_NAME" />”已被自动停用。</translation>
 <translation id="1801418420130173017">停用深色主题</translation>
 <translation id="1802624026913571222">合盖后休眠</translation>
 <translation id="1802687198411089702">该页面没有响应。您可以继续等待，也可以退出。</translation>
@@ -836,7 +835,6 @@
 <translation id="1861262398884155592">此文件夹中没有内容</translation>
 <translation id="1862311223300693744">您安装了任何特殊的 VPN、代理、防火墙或 NAS 软件吗？</translation>
 <translation id="1863182668524159459">未发现串行端口</translation>
-<translation id="1863316578636157783">“<ph name="EXTENSION_NAME" />”含有恶意软件，因此已被停用</translation>
 <translation id="1864111464094315414">登录</translation>
 <translation id="1864400682872660285">冷色调</translation>
 <translation id="1864454756846565995">USB-C 设备（背面端口）</translation>
@@ -2277,12 +2275,12 @@
 <translation id="340282674066624">已下载 <ph name="DOWNLOAD_RECEIVED" />，还需 <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">未保存任何用于登录此网站的密码</translation>
 <translation id="3404249063913988450">启用屏保功能</translation>
+<translation id="3404805962764077228">直接通过 <ph name="DEVICE_TYPE" /> 暂时流式传输手机应用中的内容</translation>
 <translation id="3405664148539009465">自定义字体</translation>
 <translation id="3405763860805964263">…</translation>
 <translation id="3406290648907941085">允许使用虚拟实境设备和数据</translation>
 <translation id="3406396172897554194">按语言或输入法名称搜索</translation>
 <translation id="3406605057700382950">显示书签栏(&amp;S)</translation>
-<translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{这个扩展程序可能含有危险因素}other{这些扩展程序可能含有危险因素}}</translation>
 <translation id="3409785640040772790">地图</translation>
 <translation id="3410832398355316179">一旦您移除了该用户，与其关联的所有文件和本地数据都会被永久删除。<ph name="USER_EMAIL" /> 日后仍能登录。</translation>
 <translation id="3412265149091626468">跳到所选部分</translation>
@@ -2832,7 +2830,6 @@
 <translation id="3948116654032448504">通过<ph name="SEARCH_ENGINE" />搜索图片(&amp;S)</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> 可修改以下文件夹内的文件</translation>
 <translation id="394984172568887996">从 IE 中导入</translation>
-<translation id="3949981384795585075">{NUM_APPS,plural, =1{这个应用可能含有危险因素}other{这些应用可能含有危险因素}}</translation>
 <translation id="3950820424414687140">登录</translation>
 <translation id="3953834000574892725">我的帐号</translation>
 <translation id="3954354850384043518">正在下载</translation>
@@ -3967,7 +3964,6 @@
 <translation id="523505283826916779">无障碍设置</translation>
 <translation id="5235750401727657667">替换您在打开新标签页时看到的页面</translation>
 <translation id="5236374273162681467">若要在您的所有设备上轻松使用这些密码，您可将它们移至您的 Google 帐号中</translation>
-<translation id="5238278114306905396">已自动删除应用“<ph name="EXTENSION_NAME" />”。</translation>
 <translation id="5242724311594467048">要启用“<ph name="EXTENSION_NAME" />”吗？</translation>
 <translation id="5243522832766285132">请稍后重试</translation>
 <translation id="5244474230056479698">同步到 <ph name="EMAIL" /></translation>
@@ -4248,6 +4244,7 @@
 <translation id="5543983818738093899">正在检查状态…</translation>
 <translation id="554517701842997186">渲染程序</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{向群组中添加标签页}other{向群组中添加标签页}}</translation>
+<translation id="5545693483061321551">网站无法使用 Cookie 查看您在各个不同网站上的浏览活动，因而无法实现某些功能或目的（例如为您展示个性化广告）。某些网站上的功能可能无法正常运行。</translation>
 <translation id="5546865291508181392">查找</translation>
 <translation id="5548075230008247516">已取消选择所有内容，已退出选择模式。</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{“<ph name="TAB_TITLE" />”}=1{“<ph name="TAB_TITLE" />”和另外 1 个标签页}other{“<ph name="TAB_TITLE" />”和另外 # 个标签页}}</translation>
@@ -5210,6 +5207,7 @@
 <translation id="6607831829715835317">更多工具(&amp;L)</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> 已由 <ph name="DOMAIN" /> 管理。若要通过另一 Google 帐号使用家长控制功能，请在完成设置后退出登录，然后在登录屏幕上选择“添加用户”。</translation>
 <translation id="6609478180749378879">当您退出无痕模式后，登录数据会存储在此设备中。日后您将能够使用此设备重新登录该网站。</translation>
+<translation id="6610002944194042868">翻译选项</translation>
 <translation id="6611972847767394631">您可在此处找到自己的标签页</translation>
 <translation id="6615455863669487791">演示一下</translation>
 <translation id="6618097958368085618">仍然保留</translation>
@@ -6214,7 +6212,6 @@
 <translation id="7697166915480294040">当您共享屏幕时，系统会隐藏详细信息</translation>
 <translation id="7701040980221191251">无</translation>
 <translation id="7701869757853594372">用户句柄</translation>
-<translation id="7701928712056789451">这些内容可能含有危险因素</translation>
 <translation id="7702574632857388784">从列表中移除 <ph name="FILE_NAME" /></translation>
 <translation id="7702907602086592255">域名</translation>
 <translation id="7704305437604973648">任务</translation>
@@ -6675,6 +6672,7 @@
 <translation id="8149564499626272569">通过使用 USB 线连接手机进行验证</translation>
 <translation id="8151638057146502721">配置</translation>
 <translation id="8154790740888707867">未发现文件</translation>
+<translation id="8154912474061769055">很多网站上的功能可能无法正常运行</translation>
 <translation id="815491593104042026">糟糕！身份验证失败，因为它被配置为使用不安全的网址(<ph name="BLOCKED_URL" />)。请联系您的管理员。</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{未发现任何已泄露的密码}=1{有 {COUNT} 个密码已遭泄露}other{有 {COUNT} 个密码已遭泄露}}</translation>
 <translation id="8157248655669507702">请启用移动数据以安装 eSIM 卡配置文件</translation>
@@ -6851,6 +6849,7 @@
 <translation id="8342221978608739536">没试过</translation>
 <translation id="8342861492835240085">选择一个集合</translation>
 <translation id="8347227221149377169">打印任务</translation>
+<translation id="834785183489258869">不过，在无痕模式下，网站无法使用 Cookie 查看您在各个不同网站上的浏览活动，因而无法实现某些功能或目的（例如为您展示个性化广告）。某些网站上的功能可能无法正常运行。</translation>
 <translation id="8350789879725387295">在 Dock 中显示触控笔工具</translation>
 <translation id="8351316842353540018">始终显示无障碍设置选项</translation>
 <translation id="8351419472474436977">此扩展程序控制了您的代理设置，也就是说，它可以更改、破坏或窃听您在网上执行的任何操作。如果您不确定出现这种变化的原因，那么这种变化可能并不是您所希望的。</translation>

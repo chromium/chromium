@@ -91,6 +91,7 @@
 <translation id="1257553931232494454">томруулалтын түвшин</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-н тохиргоогоо удирдахын тулд эхлээд Tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="1263231323834454256">Унших жагсаалт</translation>
+<translation id="1269096320618100013">Хандалтын тохиргоог удирдах товчлуур, Chrome үйлдлийн системийн тохиргоонд хандалтын хэрэгслээ хувийн болгохын тулд Enter дээр дарна уу.</translation>
 <translation id="1269516672602708785">Google Сайтуудад шинэ сайт шуурхай үүсгээрэй</translation>
 <translation id="1270502636509132238">Авах төрөл</translation>
 <translation id="1281476433249504884">Гарах цаасыг зэрэгцүүлэх тавцан 1</translation>
@@ -506,6 +507,7 @@
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-н тохиргоон дээр хөтчийн түүх, күүки, завсрын санах ой болон бусад зүйлийг арилгахын тулд эхлээд Таб дээр, дараа нь Enter дарна уу</translation>
 <translation id="2650446666397867134">Файл руу нэвтрэх үйлдэл таслагдсан.</translation>
 <translation id="2653659639078652383">Илгээх</translation>
+<translation id="2659491813326907275">Chrome үйлдлийн системийн тохиргоонд хандалтын хэрэгслээ хувийн болгоно уу</translation>
 <translation id="2660779039299703961">Үйл явдал</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Байхгүй}=1{(<ph name="DOMAIN_LIST" />-н) 1 нууц үг}=2{(<ph name="DOMAIN_LIST" />-н) 2 нууц үг}other{(<ph name="DOMAIN_LIST" />-н) # нууц үг}}</translation>
 <translation id="2666092431469916601">Дээд</translation>
@@ -1251,6 +1253,7 @@
 <translation id="5115216390227830982">Европ-Edp</translation>
 <translation id="5115232566827194440">Хязгаарласан хяналттай зочны сургалтыг дарах механизм</translation>
 <translation id="5115563688576182185">(64-бит)</translation>
+<translation id="5116898824332672776"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome үйлдлийн системийн тохиргоонд хандалтын хэрэгслээ хувийн болгохын тулд эхлээд tab, дараа нь Enter дээр дарна уу.</translation>
 <translation id="5123063207673082822">Амралтын өдөр</translation>
 <translation id="5125394840236832993">B-Нэмэх</translation>
 <translation id="5126510351761255129">Картаа баталгаажуулах</translation>

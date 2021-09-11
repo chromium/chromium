@@ -58,9 +58,11 @@
 <translation id="1999615961760456652">କ୍ୟାପ୍ଟିଭ୍ ପୋର୍ଟାଲ୍</translation>
 <translation id="2006864819935886708">ସଂଯୋଗ</translation>
 <translation id="2008685064673031089">ପ୍ରାଇମ୍ ସନ୍ଧାନ</translation>
+<translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">ଅଧିକ ସେଟିଂ</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, ସଂସ୍କରଣ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> GBରୁ <ph name="AVAILABLE_MEMORY" /> GB ଉପଲବ୍ଧ ଅଛି</translation>
+<translation id="2129264932216073062">ARC HTTP</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">ଧାଡ଼ିରେ ରଖାଯାଇଛି</translation>
 <translation id="2161394479394250669">ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟକୁ ବାତିଲ୍ କରନ୍ତୁ</translation>
@@ -74,6 +76,7 @@
 <translation id="2364498172489649528">ପାସ୍ କରିଛି</translation>
 <translation id="2380886658946992094">ଆଇନ</translation>
 <translation id="2391082728065870591">ମତାମତ ରିପୋର୍ଟ ପଠାନ୍ତୁ</translation>
+<translation id="2407209115954268704">SIM ଲକ୍ ସ୍ଥିତି</translation>
 <translation id="2418150275289244458">ସେଟିଂସରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="2446553403094072641">ଫ୍ଲୋଟିଂ ପଏଣ୍ଟର ସଠିକତା</translation>
 <translation id="2448312741937722512">ପ୍ରକାର</translation>
@@ -179,6 +182,7 @@
 <translation id="4536864596629708641">IP କନଫିଗର୍ କରନ୍ତୁ</translation>
 <translation id="4548483925627140043">ସିଗନାଲ୍ ମିଳିଲା ନାହିଁ</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh ବ୍ୟାଟେରୀ</translation>
+<translation id="4561801978359312462">SIM ଅନଲକ୍ କରାଯାଇଛି</translation>
 <translation id="4562494484721939086">କୌଣସି ସେବା ନାହିଁ</translation>
 <translation id="458794348635939462">ହୋଷ୍ଟ ସମ୍ବନ୍ଧିତ ସମସ୍ତ ସମସ୍ୟାର ସମାଧାନ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
 <translation id="4593212453765072419">ପ୍ରକ୍ସି ପ୍ରାମାଣିକତା ଆବଶ୍ୟକ</translation>
@@ -218,6 +222,7 @@
 <translation id="4999333166442584738">ରିପୋର୍ଟ ଲୁଚାନ୍ତୁ</translation>
 <translation id="500920857929044050">ଟେଷ୍ଟ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5049856988445523908">SIM ଲକ୍ କରାଯାଇଛି (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">ଗୋଷ୍ଠୀର ନାମ</translation>
 <translation id="5088172560898466307">ସର୍ଭର୍ ହୋଷ୍ଟନାମ</translation>
 <translation id="5089810972385038852">ରାଜ୍ୟ</translation>
@@ -312,6 +317,7 @@
 <translation id="6527081081771465939">ଅଜଣା ୱାଇଫାଇ ସୁରକ୍ଷା ପ୍ରୋଟୋକଲ୍</translation>
 <translation id="65587193855025101">ଫ୍ଲାଟବେଡ୍</translation>
 <translation id="6564646048574748301">ବିଫଳ ହୋଇଛି - ପ୍ରିଣ୍ଟର୍ ସହ ସଂଯୋଗ କରି ହେଉନାହିଁ</translation>
+<translation id="6566314079205407217">ଏକାଧିକ-ପୃଷ୍ଠା ସ୍କାନ୍</translation>
 <translation id="6574762126505704998">ସମ୍ପୂର୍ଣ୍ଣ ରୂପେ କ୍ରପ୍ କରନ୍ତୁ</translation>
 <translation id="6575134580692778371">କନଫିଗର୍ କରାଯାଇନାହିଁ</translation>
 <translation id="6596816719288285829">IP ଠିକଣା</translation>

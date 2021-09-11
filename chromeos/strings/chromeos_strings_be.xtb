@@ -58,9 +58,11 @@
 <translation id="1999615961760456652">Партал узаемадзеяння</translation>
 <translation id="2006864819935886708">Магчымасць падключэння</translation>
 <translation id="2008685064673031089">Пошук простых лікаў</translation>
+<translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Іншыя налады</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, версія <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Даступна: <ph name="AVAILABLE_MEMORY" /> з <ph name="TOTAL_MEMORY" /> ГБ</translation>
+<translation id="2129264932216073062">ARC HTTP</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">У ЧАРЗЕ</translation>
 <translation id="2161394479394250669">Скасаваць заданне друку</translation>
@@ -74,6 +76,7 @@
 <translation id="2364498172489649528">Пройдзена</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Адправіць справаздачу з водгукам</translation>
+<translation id="2407209115954268704">Стан блакіроўкі SIM-карты</translation>
 <translation id="2418150275289244458">Адкрыць у наладах</translation>
 <translation id="2446553403094072641">Дакладнасць выкарыстання нефіксаванай коскі</translation>
 <translation id="2448312741937722512">Тып</translation>
@@ -179,6 +182,7 @@
 <translation id="4536864596629708641">Канфігурацыя IP-адраса</translation>
 <translation id="4548483925627140043">Сігнал не знойдзены</translation>
 <translation id="455835558791489930">Магутнасць акумулятара: <ph name="CHARGE_VALUE" /> мА·г</translation>
+<translation id="4561801978359312462">SIM-карта разблакіравана</translation>
 <translation id="4562494484721939086">Не абслугоўваецца</translation>
 <translation id="458794348635939462">Не ўдалося супаставіць усе хосты</translation>
 <translation id="4593212453765072419">Патрабуецца аўтэнтыфікацыя проксі-сервера</translation>
@@ -218,6 +222,7 @@
 <translation id="4999333166442584738">Схаваць справаздачу</translation>
 <translation id="500920857929044050">Спыніць праверку</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5049856988445523908">SIM-карта заблакіравана (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Назва групы</translation>
 <translation id="5088172560898466307">Назва хоста сервера</translation>
 <translation id="5089810972385038852">Штат</translation>
@@ -312,6 +317,7 @@
 <translation id="6527081081771465939">Невядомы пратакол сістэмы бяспекі Wi-Fi</translation>
 <translation id="65587193855025101">Планшэтны сканер</translation>
 <translation id="6564646048574748301">Збой: прынтар недаступны</translation>
+<translation id="6566314079205407217">Шматстаронкавае сканіраванне</translation>
 <translation id="6574762126505704998">Запоўніць</translation>
 <translation id="6575134580692778371">Не наладжана</translation>
 <translation id="6596816719288285829">IP-адрас</translation>

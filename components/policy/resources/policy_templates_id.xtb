@@ -1124,15 +1124,6 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 
       Nilai default untuk kebijakan ini diubah dalam <ph name="PRODUCT_NAME" /> 81 dari salah (false) menjadi benar (true). Proxy yang terpengaruh akan menyebabkan kegagalan koneksi dengan kode error ERR_TLS13_DOWNGRADE_DETECTED. Administrator yang memerlukan waktu tambahan untuk mengupgrade proxy yang terpengaruh dapat menggunakan kebijakan ini untuk menonaktifkan sementara fitur keamanan ini. Kebijakan ini dihapus di versi 86.
       </translation>
-<translation id="2333763898098246468">Mengontrol cara <ph name="PRODUCT_NAME" /> mencetak di Windows.
-
-      Saat mencetak dengan printer non-PostScript di Windows, terkadang pekerjaan cetak harus dirasterisasi agar dapat tercetak dengan benar.
-
-      Jika kebijakan ini ditetapkan ke Penuh (Full), <ph name="PRODUCT_NAME" /> akan melakukan rasterisasi halaman penuh jika diperlukan.
-
-      Jika kebijakan ditetapkan ke Cepat (Fast), <ph name="PRODUCT_NAME" /> akan menghindari rasterisasi ketika memungkinkan. Dengan demikian, jumlah rasterisasi akan berkurang sehingga dapat membantu mengurangi ukuran pekerjaan cetak dan meningkatkan kecepatan cetak.
-
-      Jika kebijakan ini tidak ditetapkan, <ph name="PRODUCT_NAME" /> akan berada dalam mode Penuh.</translation>
 <translation id="2337859888277013371">Jangan izinkan penggunaan back-forward cache</translation>
 <translation id="2341509917222115272">Jika kebijakan disetel ke Aktif atau tidak disetel, pengguna akan dapat menyambungkan klien dan host pada waktu koneksi, tanpa perlu memasukkan PIN setiap waktu.
 
@@ -6364,11 +6355,6 @@ Kebijakan akan dihapus pada M75.</translation>
 <translation id="8854571659927427063">Jika kebijakan disetel ke Aktif, bookmark akan diimpor dari browser default sebelumnya saat pertama kali dijalankan. Jika kebijakan disetel ke Nonaktif atau tidak disetel, tidak ada bookmark yang akan diimpor saat pertama kali dijalankan.
 
       Pengguna dapat memicu dialog impor dan kotak centang bookmark akan dicentang atau dihapus centangnya agar cocok dengan nilai kebijakan ini.</translation>
-<translation id="8855986672497556389">Peringatan: Dukungan untuk menyembunyikan peringatan TLS 1.0/1.1 akan dihapus dari <ph name="PRODUCT_NAME" /> mulai versi 91 (sekitar Mei 2021) dan kebijakan ini akan berhenti berfungsi.
-
-      Jika kebijakan disetel ke nilai yang valid, <ph name="PRODUCT_NAME" /> tidak akan menggunakan versi SSL/TLS lebih rendah dari versi yang ditentukan. Nilai yang tidak dikenal akan diabaikan.
-
-      Jika kebijakan tidak disetel, <ph name="PRODUCT_NAME" /> akan menampilkan error untuk TLS 1.0 dan TLS 1.1, tetapi pengguna dapat mengabaikannya.</translation>
 <translation id="8858642179038618439">Memaksakan Mode Perlindungan YouTube</translation>
 <translation id="8860342862142842017">Nonaktifkan penerapan Transparansi Sertifikat untuk daftar hash subjectPublicKeyInfo</translation>
 <translation id="8864975621965365890">Menimpa permintaan penghentian yang muncul saat situs dirender oleh <ph name="PRODUCT_FRAME_NAME" />.</translation>

@@ -700,7 +700,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5324858694974489420">Parental Settings</translation>
 <translation id="5342314432463739672">Permission requests</translation>
 <translation id="5355191726083956201">Enhanced protection is on</translation>
-<translation id="5357811892247919462">Tab received</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> open tab, tap to switch tabs}other{<ph name="OPEN_TABS_MANY" /> open tabs, tap to switch tabs}}</translation>
 <translation id="5375577065097716013">Search image with Google Lens <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Only allow certain sites</translation>
@@ -1237,6 +1236,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8442258441309440798">No stories available</translation>
 <translation id="8443209985646068659">Chrome can’t update</translation>
 <translation id="8445448999790540984">Can’t export passwords</translation>
+<translation id="8446884382197647889">Learn More</translation>
 <translation id="8453310803815879010">Start Dino game</translation>
 <translation id="8461694314515752532">Encrypt synced data with your own sync passphrase</translation>
 <translation id="8466613982764129868">Make sure that <ph name="TARGET_DEVICE_NAME" /> is connected to the Internet</translation>

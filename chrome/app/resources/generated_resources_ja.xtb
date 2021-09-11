@@ -772,7 +772,6 @@
 <translation id="1794791083288629568">フィードバックを送信して問題解決に協力する。</translation>
 <translation id="1795214765651529549">クラシックを使用</translation>
 <translation id="1796588414813960292">音を使用する機能は動作しなくなります</translation>
-<translation id="1799071797295057738">拡張機能「<ph name="EXTENSION_NAME" />」を自動的に無効にしました。</translation>
 <translation id="1801418420130173017">ダークモードを無効にする</translation>
 <translation id="1802624026913571222">ディスプレイを閉じたときにスリープ状態にする</translation>
 <translation id="1802687198411089702">ページが応答していません。しばらくお待ちいただくか、終了してください。</translation>
@@ -839,7 +838,6 @@
 <translation id="1861262398884155592">このフォルダは空です</translation>
 <translation id="1862311223300693744">特殊な VPN、プロキシ、ファイアウォール、NAS ソフトウェアをインストールしていますか？</translation>
 <translation id="1863182668524159459">シリアルポートが見つかりません</translation>
-<translation id="1863316578636157783">「<ph name="EXTENSION_NAME" />」はマルウェアが含まれるため無効になっています</translation>
 <translation id="1864111464094315414">ログイン</translation>
 <translation id="1864400682872660285">寒色</translation>
 <translation id="1864454756846565995">USB-C デバイス（背面のポート）</translation>
@@ -2285,7 +2283,6 @@
 <translation id="3406290648907941085">バーチャル リアリティ デバイスとデータの使用を許可するサイト</translation>
 <translation id="3406396172897554194">言語または入力方法で検索</translation>
 <translation id="3406605057700382950">ブックマーク バーを表示(&amp;S)</translation>
-<translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{この拡張機能は安全でない可能性があります}other{これらの拡張機能は安全でない可能性があります}}</translation>
 <translation id="3409785640040772790">マップ</translation>
 <translation id="3410832398355316179">このユーザーを削除すると、このユーザーに関連付けられているファイルとローカルデータもすべて完全に削除されます。<ph name="USER_EMAIL" /> が後でログインすることは引き続き可能です。</translation>
 <translation id="3412265149091626468">選択部分へジャンプ</translation>
@@ -2836,7 +2833,6 @@
 <translation id="3948116654032448504"><ph name="SEARCH_ENGINE" /> で画像を検索(&amp;S)</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> は次のフォルダのファイルを編集できます</translation>
 <translation id="394984172568887996">IE ブックマーク</translation>
-<translation id="3949981384795585075">{NUM_APPS,plural, =1{このアプリは安全でない可能性があります}other{これらのアプリは安全でない可能性があります}}</translation>
 <translation id="3950820424414687140">ログイン</translation>
 <translation id="3953834000574892725">マイ アカウント</translation>
 <translation id="3954354850384043518">ダウンロード中</translation>
@@ -3971,7 +3967,6 @@
 <translation id="523505283826916779">ユーザー補助機能の設定</translation>
 <translation id="5235750401727657667">新しいタブを開いたときの表示ページを変更する</translation>
 <translation id="5236374273162681467">これらのパスワードを Google アカウントに移動すると、お持ちのすべてのデバイスで簡単に使用できるようになります</translation>
-<translation id="5238278114306905396">アプリ「<ph name="EXTENSION_NAME" />」は自動的に削除されました。</translation>
 <translation id="5242724311594467048">「<ph name="EXTENSION_NAME" />」を有効にしますか？</translation>
 <translation id="5243522832766285132">しばらくしてからもう一度お試しください</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> に同期しています</translation>
@@ -5214,6 +5209,7 @@
 <translation id="6607831829715835317">その他のツール(&amp;L)</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> はすでに <ph name="DOMAIN" /> によって管理されています。別の Google アカウントで保護者による使用制限を設定するには、セットアップ後にログアウトしてから、ログイン画面で [ユーザーを追加] を選択します。</translation>
 <translation id="6609478180749378879">ログインデータはシークレット モードの終了後にこのデバイスに保存されます。今後、このデバイスからこのウェブサイトにログインできるようになります。</translation>
+<translation id="6610002944194042868">翻訳オプション</translation>
 <translation id="6611972847767394631">ここからタブを確認できます</translation>
 <translation id="6615455863669487791">表示</translation>
 <translation id="6618097958368085618">続行する</translation>
@@ -6218,7 +6214,6 @@
 <translation id="7697166915480294040">画面の共有中は詳細が表示されません</translation>
 <translation id="7701040980221191251">なし</translation>
 <translation id="7701869757853594372">USER の操作</translation>
-<translation id="7701928712056789451">これらのアイテムは安全でない可能性があります</translation>
 <translation id="7702574632857388784"><ph name="FILE_NAME" /> をリストから削除</translation>
 <translation id="7702907602086592255">ドメイン</translation>
 <translation id="7704305437604973648">タスク</translation>

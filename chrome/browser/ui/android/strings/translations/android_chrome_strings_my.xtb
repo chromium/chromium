@@ -700,7 +700,6 @@
 <translation id="5324858694974489420">အုပ်ထိန်းမှု ချိန်ညှိချက်များ</translation>
 <translation id="5342314432463739672">ခွင့်ပြုချက် တောင်းဆိုမှုများ</translation>
 <translation id="5355191726083956201">'အဆင့်မြှင့်တင်ထားသော ကာကွယ်မှု' ကို ဖွင့်ထားသည်</translation>
-<translation id="5357811892247919462">တဘ် ရရှိထားသည်</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{ဖွင့်ထားသောတဘ် <ph name="OPEN_TABS_ONE" /> ခု၊ တဘ်များပြောင်းရန် တို့ပါ}other{ဖွင့်ထားသောတဘ် <ph name="OPEN_TABS_MANY" /> ခု၊ တဘ်များပြောင်းရန် တို့ပါ}}</translation>
 <translation id="5375577065097716013">Google Lens ဖြင့် ပုံရှာရန် <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">ဆိုက်အချို့ကိုသာ ခွင့်ပြုပါ</translation>
@@ -1236,6 +1235,7 @@
 <translation id="8442258441309440798">သတင်းဆောင်းပါးများ မရနိုင်ပါ</translation>
 <translation id="8443209985646068659">Chrome အပ်ဒိတ်လုပ်၍မရပါ</translation>
 <translation id="8445448999790540984">စကားဝှက်များကို တင်ပို့၍မရပါ</translation>
+<translation id="8446884382197647889">ပိုမို လေ့လာရန်</translation>
 <translation id="8453310803815879010">Dino ဂိမ်း စတင်ရန်</translation>
 <translation id="8461694314515752532">စင့်ခ်လုပ်ထားသော ဒေတာများကို သင့်ကိုယ်ပိုင် စင့်ခ်စကားဝှက်ဖြင့် အသွင်ဝှက်ရန်</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> ကို အင်တာနက် ချိတ်ဆက်ထားခြင်း ရှိမရှိ စစ်ဆေးပါ</translation>

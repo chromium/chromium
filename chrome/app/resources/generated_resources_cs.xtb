@@ -774,7 +774,6 @@
 <translation id="1794791083288629568">Odeslat zpětnou vazbu, která nám pomůže při řešení tohoto problému</translation>
 <translation id="1795214765651529549">Použít klasický motiv</translation>
 <translation id="1796588414813960292">Funkce vyžadující zvuk nebudou k dispozici</translation>
-<translation id="1799071797295057738">Rozšíření <ph name="EXTENSION_NAME" /> bylo automaticky deaktivováno.</translation>
 <translation id="1801418420130173017">Deaktivovat tmavý motiv</translation>
 <translation id="1802624026913571222">Při zavření víka přejít do režimu spánku</translation>
 <translation id="1802687198411089702">Stránka nereaguje. Můžete počkat nebo ji zavřít.</translation>
@@ -841,7 +840,6 @@ Na aplikace a obsah v jiných zařízeních tato akce nemá vliv.</translation
 <translation id="1861262398884155592">Tato složka je prázdná</translation>
 <translation id="1862311223300693744">Používáte zvláštní VPN, proxy, firewall nebo software NAS?</translation>
 <translation id="1863182668524159459">Nebyly nalezeny žádné sériové porty</translation>
-<translation id="1863316578636157783">Rozšíření <ph name="EXTENSION_NAME" /> bylo zakázáno, protože obsahuje malware.</translation>
 <translation id="1864111464094315414">Přihlásit</translation>
 <translation id="1864400682872660285">Studenější</translation>
 <translation id="1864454756846565995">Zařízení USB Type-C (zadní port)</translation>
@@ -2282,12 +2280,12 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">Pro tento web nejsou uložena žádná hesla</translation>
 <translation id="3404249063913988450">Aktivovat spořič obrazovky</translation>
+<translation id="3404805962764077228">Dočasně zobrazit aplikace z telefonu přímo v zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="3405664148539009465">Personalizovat písma</translation>
 <translation id="3405763860805964263">...</translation>
 <translation id="3406290648907941085">Povolení používat zařízení a data pro virtuální realitu</translation>
 <translation id="3406396172897554194">Vyhledávat podle jazyka nebo názvu metody zadávání</translation>
 <translation id="3406605057700382950">&amp;Zobrazit lištu záložek</translation>
-<translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{Toto rozšíření může být nebezpečné}few{Tato rozšíření mohou být nebezpečná}many{Tato rozšíření mohou být nebezpečná}other{Tato rozšíření mohou být nebezpečná}}</translation>
 <translation id="3409785640040772790">Mapy</translation>
 <translation id="3410832398355316179">Po odebrání tohoto uživatele budou trvale smazány všechny soubory a místní data, která jsou k němu přiřazena. <ph name="USER_EMAIL" /> se i nadále bude moci přihlásit.</translation>
 <translation id="3412265149091626468">Přejít na výběr</translation>
@@ -2837,7 +2835,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3948116654032448504">&amp;Vyhledat obrázek pomocí vyhledávače <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786">Web <ph name="ORIGIN" /> může upravovat soubory v následujících složkách</translation>
 <translation id="394984172568887996">Importováno z aplikace IE</translation>
-<translation id="3949981384795585075">{NUM_APPS,plural, =1{Tato aplikace může být nebezpečná}few{Tyto aplikace mohou být nebezpečné}many{Tyto aplikace mohou být nebezpečné}other{Tyto aplikace mohou být nebezpečné}}</translation>
 <translation id="3950820424414687140">Přihlaste se</translation>
 <translation id="3953834000574892725">Mé účty</translation>
 <translation id="3954354850384043518">Probíhá</translation>
@@ -3972,7 +3969,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="523505283826916779">Nastavení usnadnění přístupu</translation>
 <translation id="5235750401727657667">Nahradit stránku, která se zobrazí po otevření nové karty</translation>
 <translation id="5236374273162681467">Pokud chcete mít možnost snadno je používat na všech svých zařízeních, můžete si je přesunout do účtu Google</translation>
-<translation id="5238278114306905396">Aplikace <ph name="EXTENSION_NAME" /> byla automaticky odebrána.</translation>
 <translation id="5242724311594467048">Aktivovat rozšíření <ph name="EXTENSION_NAME" />?</translation>
 <translation id="5243522832766285132">Zkuste to znovu za okamžik</translation>
 <translation id="5244474230056479698">Údaje se synchronizují do účtu <ph name="EMAIL" /></translation>
@@ -4253,6 +4249,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5543983818738093899">Kontrola stavu...</translation>
 <translation id="554517701842997186">Vykreslovací proces</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Přidat kartu do skupiny}few{Přidat karty do skupiny}many{Přidat karty do skupiny}other{Přidat karty do skupiny}}</translation>
+<translation id="5545693483061321551">Weby nemohou pomocí souborů sledovat vaši aktivitu prohlížení na různých webech, například k personalizaci reklam. Některé weby mohou přestat fungovat.</translation>
 <translation id="5546865291508181392">Najít</translation>
 <translation id="5548075230008247516">Výběr všech položek byl zrušen. Režim výběru byl ukončen.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />“}=1{„<ph name="TAB_TITLE" />“ a 1 další karta}few{„<ph name="TAB_TITLE" />“ a # další karty}many{„<ph name="TAB_TITLE" />“ a # další karty}other{„<ph name="TAB_TITLE" />“ a # dalších karet}}</translation>
@@ -5215,6 +5212,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6607831829715835317">Další nástro&amp;je</translation>
 <translation id="6607890859198268021">Účet <ph name="USER_EMAIL" /> už spravuje doména <ph name="DOMAIN" />. Pokud chcete rodičovskou kontrolu použít s jiným účtem Google, po dokončení nastavení se odhlaste a potom na přihlašovací obrazovce vyberte Přidat uživatele.</translation>
 <translation id="6609478180749378879">Přihlašovací údaje zůstanou v tomto zařízení uložené i po ukončení anonymního režimu. Pomocí zařízení se k těmto webovým stránkám budete moci později opět přihlásit.</translation>
+<translation id="6610002944194042868">Možnosti Překladače</translation>
 <translation id="6611972847767394631">Zde naleznete své karty</translation>
 <translation id="6615455863669487791">Ukázat</translation>
 <translation id="6618097958368085618">Přesto ponechat</translation>
@@ -6219,7 +6217,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7697166915480294040">Podrobnosti jsou při sdílení obrazovky skryty</translation>
 <translation id="7701040980221191251">Žádné</translation>
 <translation id="7701869757853594372">Popisovače – UŽIVATEL</translation>
-<translation id="7701928712056789451">Tyto položky mohou být nebezpečné</translation>
 <translation id="7702574632857388784">Odstranit ze seznamu soubor <ph name="FILE_NAME" /></translation>
 <translation id="7702907602086592255">Doména</translation>
 <translation id="7704305437604973648">Úloha</translation>
@@ -6680,6 +6677,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8149564499626272569">Ověřit pomocí telefonu s kabelem USB</translation>
 <translation id="8151638057146502721">Konfigurovat</translation>
 <translation id="8154790740888707867">Žádný soubor</translation>
+<translation id="8154912474061769055">Mnoho webů může přestat fungovat</translation>
 <translation id="815491593104042026">Jejda, ověření se nezdařilo, protože bylo nakonfigurováno k použití nezabezpečené adresy URL (<ph name="BLOCKED_URL" />). Obraťte se na svého administrátora.</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{Nebylo nalezeno žádné prolomené heslo}=1{Bylo nalezeno {COUNT} prolomené heslo}few{Byla nalezena {COUNT} prolomená hesla}many{Bylo nalezeno {COUNT} prolomeného hesla}other{Bylo nalezeno {COUNT} prolomených hesel}}</translation>
 <translation id="8157248655669507702">Pokud chcete nainstalovat profil eSIM, povolte mobilní data</translation>
@@ -6856,6 +6854,7 @@ Stisknutím přiřazeného přepínače přiřazení odstraníte.</translation>
 <translation id="8342221978608739536">Nezkoušel(a) jsem to</translation>
 <translation id="8342861492835240085">Vyberte sbírku</translation>
 <translation id="8347227221149377169">Tiskové úlohy</translation>
+<translation id="834785183489258869">V anonymním režimu weby nemohou používat soubory cookie ke sledování vaší aktivity prohlížení na různých webech, například k personalizaci reklam. Některé weby mohou přestat fungovat.</translation>
 <translation id="8350789879725387295">Nástroje pro dotykové pero v doku</translation>
 <translation id="8351316842353540018">Vždy zobrazovat možnosti přístupnosti</translation>
 <translation id="8351419472474436977">Toto rozšíření převzalo kontrolu nad nastavením vašeho proxy serveru, což znamená, že může změnit, narušit nebo sledovat vše, co děláte na internetu. Pokud si nejste jisti, proč k tomu došlo, zřejmě se jedná o nežádoucí změnu.</translation>

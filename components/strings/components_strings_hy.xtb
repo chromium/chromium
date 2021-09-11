@@ -91,6 +91,7 @@
 <translation id="1257553931232494454">մասշտաբավորման մակարդակներ</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Սեղմեք Tab, ապա սեղմեք Enter՝ Chrome-ի ձեր կարգավորումները կառավարելու համար</translation>
 <translation id="1263231323834454256">Ընթերցանության ցանկ</translation>
+<translation id="1269096320618100013">«Կառավարել հատուկ գործառույթների կարգավորումները» կոճակ։ Սեղմեք Enter՝ Chrome OS-ի կարգավորումներում հատուկ գործառույթների գործիքներն անհատականացնելու համար։</translation>
 <translation id="1269516672602708785">Արագ ստեղծել կայք Google Կայքերում</translation>
 <translation id="1270502636509132238">Ստացման եղանակը</translation>
 <translation id="1281476433249504884">Շեղջիչ 1</translation>
@@ -506,6 +507,7 @@
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Chrome-ի կարգավորումներում այցելությունների պատմությունը, քուքիները, քեշը և այլ տվյալներ ջնջելու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="2650446666397867134">Ֆայլի մատչումն արգելված է</translation>
 <translation id="2653659639078652383">Ուղարկել</translation>
+<translation id="2659491813326907275">Անհատականացնել հատուկ գործառույթների գործիքները Chrome OS-ի կարգավորումներում</translation>
 <translation id="2660779039299703961">Իրադարձություն</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Չկա}=1{1 գաղտնաբառ (հետևյալ տիրույթների համար՝ <ph name="DOMAIN_LIST" />)}=2{2 գաղտնաբառ (հետևյալ տիրույթների համար՝ <ph name="DOMAIN_LIST" />)}one{# գաղտնաբառ (հետևյալ տիրույթների համար՝ <ph name="DOMAIN_LIST" />)}other{# գաղտնաբառ (հետևյալ տիրույթների համար՝ <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Վերին</translation>
@@ -1250,6 +1252,7 @@
 <translation id="5115216390227830982">European-Edp</translation>
 <translation id="5115232566827194440">Հյուրի կառավարվող աշխատաշրջան սահմանափակ հասանելիությամբ (փոխարինում)</translation>
 <translation id="5115563688576182185">(64 բիթանոց)</translation>
+<translation id="5116898824332672776"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Սեղմեք Tab, ապա սեղմեք Enter՝ Chrome OS-ի կարգավորումներում հատուկ գործառույթների գործիքներն անհատականացնելու համար։</translation>
 <translation id="5123063207673082822">Հանգստյան օրեր</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Հաստատեք ձեր քարտը</translation>

@@ -769,7 +769,6 @@
 <translation id="1794791083288629568">Enviar comentarios para ayudarnos a solucionar este problema</translation>
 <translation id="1795214765651529549">Usar el tema clásico</translation>
 <translation id="1796588414813960292">No se habilitarán las funciones que necesitan sonido.</translation>
-<translation id="1799071797295057738">La extensión "<ph name="EXTENSION_NAME" />" se inhabilitó automáticamente.</translation>
 <translation id="1801418420130173017">Inhabilitar el tema oscuro</translation>
 <translation id="1802624026913571222">Suspender cuando se cierra la tapa</translation>
 <translation id="1802687198411089702">La página no responde. Puedes esperar o salir.</translation>
@@ -836,7 +835,6 @@
 <translation id="1861262398884155592">Esta carpeta está vacía</translation>
 <translation id="1862311223300693744">¿Tienes instalado algún tipo especial de software NAS, firewall, proxy o red VPN?</translation>
 <translation id="1863182668524159459">No se encontraron puertos en serie</translation>
-<translation id="1863316578636157783">Se inhabilitó la extensión "<ph name="EXTENSION_NAME" />" porque contiene software malicioso</translation>
 <translation id="1864111464094315414">Acceder</translation>
 <translation id="1864400682872660285">Frío</translation>
 <translation id="1864454756846565995">Dispositivo USB-C (puerto trasero)</translation>
@@ -2278,12 +2276,12 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">No se guardó ninguna contraseña para este sitio</translation>
 <translation id="3404249063913988450">Habilitar el protector de pantalla</translation>
+<translation id="3404805962764077228">Transmite temporalmente las aplicaciones para teléfonos directamente desde tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3405664148539009465">Personalizar fuentes</translation>
 <translation id="3405763860805964263">...</translation>
 <translation id="3406290648907941085">Puede usar datos y dispositivos de realidad virtual</translation>
 <translation id="3406396172897554194">Buscar por idioma o nombre de método de entrada</translation>
 <translation id="3406605057700382950">Mo&amp;strar la barra de favoritos</translation>
-<translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{Es posible que esta extensión sea peligrosa}other{Es posible que estas extensiones sean peligrosas}}</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3410832398355316179">Todos los archivos y datos locales asociados a este usuario se borrarán de forma permanente una vez que se quite este usuario. <ph name="USER_EMAIL" /> podrá acceder más tarde.</translation>
 <translation id="3412265149091626468">Saltar a selección</translation>
@@ -2834,7 +2832,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3948116654032448504">Buscar imagen en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> puede editar archivos en las siguientes carpetas</translation>
 <translation id="394984172568887996">Importado de Internet Explorer</translation>
-<translation id="3949981384795585075">{NUM_APPS,plural, =1{Es posible que esta app sea peligrosa}other{Es posible que estas apps sean peligrosas}}</translation>
 <translation id="3950820424414687140">Acceder</translation>
 <translation id="3953834000574892725">Mis cuentas</translation>
 <translation id="3954354850384043518">En curso</translation>
@@ -3969,7 +3966,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="523505283826916779">Configuración de accesibilidad</translation>
 <translation id="5235750401727657667">Reemplazar la página que ves cuando abres una pestaña nueva</translation>
 <translation id="5236374273162681467">Para usarlas fácilmente en todos tus dispositivos, puedes moverlas a tu Cuenta de Google</translation>
-<translation id="5238278114306905396">Se eliminó automáticamente la aplicación "<ph name="EXTENSION_NAME" />".</translation>
 <translation id="5242724311594467048">¿Habilitar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5243522832766285132">Vuelve a intentarlo en unos minutos</translation>
 <translation id="5244474230056479698">Sincronizando con <ph name="EMAIL" /></translation>
@@ -4250,6 +4246,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="5543983818738093899">Comprobando estado…</translation>
 <translation id="554517701842997186">Renderizador</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Agregar pestaña al grupo}other{Agregar pestañas al grupo}}</translation>
+<translation id="5545693483061321551">Los sitios no pueden usar tus cookies para ver la actividad de navegación en diferentes sitios, por ejemplo, con el fin de personalizar anuncios. Es posible que algunas funciones no puedan utilizarse en algunos sitios.</translation>
 <translation id="5546865291508181392">Buscar</translation>
 <translation id="5548075230008247516">Se anuló la selección de todos los elementos; se salió del modo de selección.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" y 1 pestaña más}other{"<ph name="TAB_TITLE" />" y # pestañas más}}</translation>
@@ -5212,6 +5209,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="6607831829715835317">Más herramientas</translation>
 <translation id="6607890859198268021"><ph name="DOMAIN" /> ya administra <ph name="USER_EMAIL" />. Para usar los controles parentales con otra Cuenta de Google, sal de tu cuenta después de finalizar la configuración y, luego, selecciona "Agregar persona" en la pantalla de acceso.</translation>
 <translation id="6609478180749378879">Los datos de acceso se almacenarán en este dispositivo cuando salgas del modo Incógnito. Más tarde, podrás volver a acceder a este sitio web con tu dispositivo.</translation>
+<translation id="6610002944194042868">Opciones de traducción</translation>
 <translation id="6611972847767394631">Encuentra tus pestañas aquí</translation>
 <translation id="6615455863669487791">Mostrarme</translation>
 <translation id="6618097958368085618">Conservar de todos modos</translation>
@@ -6216,7 +6214,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="7697166915480294040">Cuando compartes la pantalla, se ocultan los detalles.</translation>
 <translation id="7701040980221191251">Ninguna</translation>
 <translation id="7701869757853594372">A cargo del USUARIO</translation>
-<translation id="7701928712056789451">Es posible que estos elementos sean peligrosos</translation>
 <translation id="7702574632857388784">Quitar <ph name="FILE_NAME" /> de la lista</translation>
 <translation id="7702907602086592255">Dominio</translation>
 <translation id="7704305437604973648">Tarea</translation>
@@ -6678,6 +6675,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8149564499626272569">Verificar por teléfono con un cable USB</translation>
 <translation id="8151638057146502721">Configurar</translation>
 <translation id="8154790740888707867">Sin archivos</translation>
+<translation id="8154912474061769055">Es posible que algunas funciones no puedan utilizarse en muchos sitios.</translation>
 <translation id="815491593104042026">Se produjo un error y no se pudo completar la autenticación porque está configurada para utilizar una URL no segura (<ph name="BLOCKED_URL" />). Comunícate con el administrador.</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{No se encontraron contraseñas hackeadas}=1{{COUNT} contraseña hackeada}other{{COUNT} contraseñas hackeadas}}</translation>
 <translation id="8157248655669507702">Habilitar los datos móviles para instalar un perfil de eSIM</translation>
@@ -6854,6 +6852,7 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="8342221978608739536">No lo intenté</translation>
 <translation id="8342861492835240085">Seleccionar una colección</translation>
 <translation id="8347227221149377169">Trabajos de impresión</translation>
+<translation id="834785183489258869">Cuando está activado el modo Incógnito, los sitios no pueden usar tus cookies para ver tu actividad de navegación en diferentes sitios, por ejemplo, para personalizar anuncios. Es posible que algunas funciones no puedan utilizarse en algunos sitios.</translation>
 <translation id="8350789879725387295">Herramientas de la pluma stylus en el panel</translation>
 <translation id="8351316842353540018">Mostrar siempre las opciones de accesibilidad</translation>
 <translation id="8351419472474436977">Esta extensión tomó control de tu configuración de proxy, lo que significa que puede cambiar, dañar o espiar cualquier actividad que realices en línea. Si sabes con certeza por qué se produjo este cambio, probablemente no lo desees.</translation>

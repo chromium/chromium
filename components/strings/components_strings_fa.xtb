@@ -91,6 +91,7 @@
 <translation id="1257553931232494454">سطوح بزرگ‌نمایی</translation>
 <translation id="1262388120645841613">‏<ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای مدیریت تنظیمات Chrome، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="1263231323834454256">فهرست خواندن</translation>
+<translation id="1269096320618100013">‏دکمه «مدیریت تنظیمات دسترس‌پذیری»؛ برای شخصی کردن ابزارهای دسترس‌پذیری در تنظیمات Chrome OS، کلید «ورود» را فشار دهید.</translation>
 <translation id="1269516672602708785">‏ایجاد سریع سایت جدید در Google Sites</translation>
 <translation id="1270502636509132238">روش تحویل گرفتن</translation>
 <translation id="1281476433249504884">پشته‌ساز ۱</translation>
@@ -506,6 +507,7 @@
 <translation id="2649259151839507861">‏<ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای پاک کردن سابقه مرور، کوکی‌ها، حافظه پنهان، و غیره در تنظیمات Chrome، کلید Tab (جهش) و سپس Enter (ورود) را فشار دهید</translation>
 <translation id="2650446666397867134">دسترسی به فایل رد شد</translation>
 <translation id="2653659639078652383">ارسال</translation>
+<translation id="2659491813326907275">‏شخصی کردن ابزارهای دسترس‌پذیری در تنظیمات Chrome OS</translation>
 <translation id="2660779039299703961">رویداد</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{هیچ‌کدام}=1{۱ گذرواژه (برای <ph name="DOMAIN_LIST" />)}=2{۲ گذرواژه (برای <ph name="DOMAIN_LIST" />)}one{# گذرواژه (برای <ph name="DOMAIN_LIST" />)}other{# گذرواژه (برای <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">بالا</translation>
@@ -1250,6 +1252,7 @@
 <translation id="5115216390227830982">European-Edp</translation>
 <translation id="5115232566827194440">ملغی کردن جلسه مهمان مدیریت‌شده محدود</translation>
 <translation id="5115563688576182185">(۶۴ بیت)</translation>
+<translation id="5116898824332672776">‏<ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای شخصی کردن ابزارهای دسترس‌پذیری در تنظیمات Chrome OS، کلید «جهش» و سپس «ورود» را فشار دهید.</translation>
 <translation id="5123063207673082822">آخر هفته</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">کارتتان را تأیید کنید</translation>

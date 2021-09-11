@@ -91,6 +91,7 @@
 <translation id="1257553931232494454">узроўні маштабавання</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб кіраваць наладамі Chrome, націсніце Tab, затым Enter</translation>
 <translation id="1263231323834454256">Спіс чытання</translation>
+<translation id="1269096320618100013">Кнопка "Кіраваць наладамі спецыяльных магчымасцей". Каб персаналізаваць адпаведныя інструменты ў наладах Chrome OS, націсніце Enter</translation>
 <translation id="1269516672602708785">Хутка стварыць новы сайт з дапамогай Google Сайтаў</translation>
 <translation id="1270502636509132238">Спосаб прыняцця</translation>
 <translation id="1281476433249504884">Укладчык 1</translation>
@@ -506,6 +507,7 @@
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб выдаліць даныя гісторыі праглядаў сайтаў, файлы cookie, кэшаванае змесціва і іншае праз налады Chrome, націсніце Tab, затым Enter</translation>
 <translation id="2650446666397867134">У доступе да файла адмоўлена</translation>
 <translation id="2653659639078652383">Адправіць</translation>
+<translation id="2659491813326907275">Персаналізаваць інструменты спецыяльных магчымасцей у наладах Chrome OS</translation>
 <translation id="2660779039299703961">Падзея</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Няма}=1{1 пароль (для даменаў <ph name="DOMAIN_LIST" />)}=2{2 паролі (для даменаў <ph name="DOMAIN_LIST" />)}one{# пароль (для даменаў <ph name="DOMAIN_LIST" />)}few{# паролі (для даменаў <ph name="DOMAIN_LIST" />)}many{# пароляў (для даменаў <ph name="DOMAIN_LIST" />)}other{# пароля (для даменаў <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Зверху</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5115216390227830982">European-Edp</translation>
 <translation id="5115232566827194440">Перавызначэнне для абмежаванага гасцявога сеанса пад кіраваннем</translation>
 <translation id="5115563688576182185">(64-бітная версія)</translation>
+<translation id="5116898824332672776"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб персаналізаваць інструменты спецыяльных магчымасцей у наладах Chrome OS, націсніце Tab, затым Enter.</translation>
 <translation id="5123063207673082822">Выхадныя</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Спраўджанне карткі</translation>

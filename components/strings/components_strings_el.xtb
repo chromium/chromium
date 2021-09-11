@@ -91,6 +91,7 @@
 <translation id="1257553931232494454">επίπεδα εστίασης</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να διαχειριστείτε τις ρυθμίσεις του Chrome.</translation>
 <translation id="1263231323834454256">Λίστα ανάγνωσης</translation>
+<translation id="1269096320618100013">Κουμπί Διαχείριση ρυθμίσεων προσβασιμότητας, πατήστε το πλήκτρο Enter για να εξατομικεύσετε τα εργαλεία προσβασιμότητάς σας στις ρυθμίσεις του Chrome OS.</translation>
 <translation id="1269516672602708785">Γρήγορη δημιουργία νέου ιστοτόπου στους Ιστοτόπους Google</translation>
 <translation id="1270502636509132238">Τρόπος παραλαβής</translation>
 <translation id="1281476433249504884">Μονάδα στοίβαξης 1</translation>
@@ -506,6 +507,7 @@
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab και έπειτα Enter για εκκαθάριση του ιστορικού περιήγησης, των cookie, της κρυφής μνήμης κ.α. στις ρυθμίσεις του Chrome.</translation>
 <translation id="2650446666397867134">Η πρόσβαση στο αρχείο απορρίφθηκε</translation>
 <translation id="2653659639078652383">Υποβολή</translation>
+<translation id="2659491813326907275">Εξατομίκευση εργαλείων προσβασιμότητας στις ρυθμίσεις του Chrome OS</translation>
 <translation id="2660779039299703961">Συμβάν</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Κανένας}=1{1 κωδικός πρόσβασης (για <ph name="DOMAIN_LIST" />)}=2{2 κωδικοί πρόσβασης (για <ph name="DOMAIN_LIST" />)}other{# κωδικοί πρόσβασης (για <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Κορυφή</translation>
@@ -1253,6 +1255,7 @@
 <translation id="5115216390227830982">European-Edp</translation>
 <translation id="5115232566827194440">Παράκαμψη περιορισμένης διαχειριζόμενης περιόδου σύνδεσης επισκέπτη</translation>
 <translation id="5115563688576182185">(64-bit)</translation>
+<translation id="5116898824332672776"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να εξατομικεύσετε τα εργαλεία προσβασιμότητάς σας στις ρυθμίσεις του Chrome OS.</translation>
 <translation id="5123063207673082822">Σαββατοκύριακο</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Επαλήθευση κάρτας</translation>

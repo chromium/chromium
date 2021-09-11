@@ -126,7 +126,7 @@
 <translation id="1877026089748256423">Chrome zaharkituta dago</translation>
 <translation id="1883903952484604915">Nire fitxategiak</translation>
 <translation id="189358972401248634">Beste hizkuntzak</translation>
-<translation id="1910950723001426294">Partekatzeko aukeren zerrenda itxita dago.</translation>
+<translation id="1910950723001426294">Itxi da partekatzeko aukeren zerrenda.</translation>
 <translation id="1918175104945982129">Altuera erdian ireki da ahozko bilaketa egite aldera Laguntzailea eginbideari baimena emateko erabiltzaile-interfazea</translation>
 <translation id="1919130412786645364">Baimendu Chrome-n saioa hastea</translation>
 <translation id="1922362554271624559">Iradokitako hizkuntzak</translation>
@@ -506,7 +506,7 @@ Privacy Sandbox garapen-prozesuan dago oraindik eta lurralde jakin batzuetan bai
 <translation id="4137746084635924146">Gailuak une honetan darabilen hizkuntza</translation>
 <translation id="4141536112466364990">Ikasi Chrome erabiltzen</translation>
 <translation id="4149994727733219643">Web-orrien ikuspegi sinplifikatua</translation>
-<translation id="4162867837470729563">Partekatzeko aukeren zerrenda altuera osoan irekita dago.</translation>
+<translation id="4162867837470729563">Ireki da partekatzeko aukeren zerrenda altuera osoan.</translation>
 <translation id="4165986682804962316">Webgunearen ezarpenak</translation>
 <translation id="4170011742729630528">Zerbitzua ez dago erabilgarri. Saiatu berriro geroago.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> erabili dira</translation>
@@ -700,7 +700,6 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5324858694974489420">Gurasoen ezarpenak</translation>
 <translation id="5342314432463739672">Baimen-eskaerak</translation>
 <translation id="5355191726083956201">Babes hobetua aktibatuta dago</translation>
-<translation id="5357811892247919462">Jaso da fitxa</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> fitxa dago irekita; sakatu beste fitxa batera joateko}other{<ph name="OPEN_TABS_MANY" /> fitxa daude irekita; sakatu beste fitxa batera joateko}}</translation>
 <translation id="5375577065097716013">Bilatu irudia Google Lens-ekin <ph name="BEGIN_NEW" />Berria<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Onartu webgune jakin batzuk bakarrik</translation>
@@ -899,7 +898,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6459045781120991510">Inkestak</translation>
 <translation id="6461962085415701688">Ezin da ireki fitxategia</translation>
 <translation id="6464977750820128603">Chrome-n irekitako webguneak ikus ditzakezu, eta haiek erabiltzeko tenporizadoreak ezarri.\n\nGoogle-k informazioa jasotzen du tenporizadoreak ezarri dizkiezun webguneei buruz eta haietan zenbat denbora eman duzun kalkulatzen du. Ongizate digitala programa hobetzeko erabiltzen da informazio hori.</translation>
-<translation id="6473086018775716761">Partekatzeko aukeren zerrenda altuera erdian irekita dago.</translation>
+<translation id="6473086018775716761">Ireki da partekatzeko aukeren zerrenda altuera erdian.</translation>
 <translation id="6475951671322991020">Deskargatu bideoa</translation>
 <translation id="6477928892249167417">Webgune hauek garrantzitsuak dira zuretzat:</translation>
 <translation id="6482749332252372425">Ezin izan da deskargatu <ph name="FILE_NAME" />, memoria beteta dagoelako.</translation>
@@ -1237,6 +1236,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="8442258441309440798">Ez dago istorio berririk</translation>
 <translation id="8443209985646068659">Ezin da eguneratu Chrome</translation>
 <translation id="8445448999790540984">Ezin dira esportatu pasahitzak</translation>
+<translation id="8446884382197647889">Lortu informazio gehiago</translation>
 <translation id="8453310803815879010">Abiarazi Dino jokoa</translation>
 <translation id="8461694314515752532">Enkriptatu sinkronizatutako datuak sinkronizazio-pasaesaldiarekin</translation>
 <translation id="8466613982764129868">Ziurtatu <ph name="TARGET_DEVICE_NAME" /> Internetera konektatuta dagoela</translation>

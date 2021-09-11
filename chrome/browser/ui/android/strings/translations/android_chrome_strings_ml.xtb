@@ -700,7 +700,6 @@
 <translation id="5324858694974489420">രക്ഷാകർതൃ ക്രമീകരണം</translation>
 <translation id="5342314432463739672">അനുമതി അഭ്യർത്ഥനകൾ</translation>
 <translation id="5355191726083956201">മെച്ചപ്പെടുത്തിയ പരിരക്ഷ ഓണാക്കിയിരിക്കുന്നു</translation>
-<translation id="5357811892247919462">ടാബ് സ്വീകരിച്ചു</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> ടാബ് തുറന്നിരിക്കുന്നു, ടാബുകൾ മാറാനായി ടാപ്പ് ചെയ്യുക}other{<ph name="OPEN_TABS_MANY" /> ടാബുകൾ തുറന്നിരിക്കുന്നു, മാറാനായി ടാപ്പ് ചെയ്യുക}}</translation>
 <translation id="5375577065097716013">Google Lens-ലൂടെ ചിത്രം തിരയൂ <ph name="BEGIN_NEW" />പുതിയവ<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">ചില സൈറ്റുകളെ മാത്രം അനുവദിക്കുക</translation>
@@ -1237,6 +1236,7 @@
 <translation id="8442258441309440798">സ്‌റ്റോറികളൊന്നും ലഭ്യമല്ല</translation>
 <translation id="8443209985646068659">Chrome അപ്‌ഡേറ്റ് ചെയ്യാനാവില്ല</translation>
 <translation id="8445448999790540984">പാസ്‌വേഡുകൾ എക്‌സ്‌പോർട്ട് ചെയ്യാനാവുന്നില്ല</translation>
+<translation id="8446884382197647889">കൂടുതലറിയുക</translation>
 <translation id="8453310803815879010">ദിനോസർ ഗെയിം ആരംഭിക്കുക</translation>
 <translation id="8461694314515752532">നിങ്ങളുടെ സമന്വയ പാസ്‌ഫ്രെയ്‌സ് ഉപയോഗിച്ച്, സമന്വയിപ്പിച്ച ഡാറ്റ എൻക്രി‌പ്‌റ്റ് ചെയ്യുക</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> ഉപകരണം ഇന്റർനെറ്റിലേക്ക് കണക്‌റ്റ് ചെയ്‌തിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക</translation>

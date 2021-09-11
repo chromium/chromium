@@ -774,7 +774,6 @@
 <translation id="1794791083288629568">Odoslať spätnú väzbu, ktorá nám pomôže pri riešení tohto problému</translation>
 <translation id="1795214765651529549">Použiť klasický</translation>
 <translation id="1796588414813960292">Funkcie vyžadujúce zvuk nebudú podporované</translation>
-<translation id="1799071797295057738">Rozšírenie <ph name="EXTENSION_NAME" /> bolo automaticky deaktivované.</translation>
 <translation id="1801418420130173017">Vypnúť tmavý motív</translation>
 <translation id="1802624026913571222">Po zavretí krytu prejsť do režimu spánku</translation>
 <translation id="1802687198411089702">Stránka nereaguje. Môžete na ňu počkať alebo rozhranie ukončiť.</translation>
@@ -841,7 +840,6 @@
 <translation id="1861262398884155592">Tento priečinok je prázdny</translation>
 <translation id="1862311223300693744">Máte nainštalované nejaké špeciálne pripojenie VPN, server proxy, bránu firewall alebo softvér NAS?</translation>
 <translation id="1863182668524159459">Nenašli sa žiadne sériové porty</translation>
-<translation id="1863316578636157783">Rozšírenie <ph name="EXTENSION_NAME" /> bolo zakázané, pretože obsahuje malvér</translation>
 <translation id="1864111464094315414">Prihlásiť sa</translation>
 <translation id="1864400682872660285">Chladnejšie</translation>
 <translation id="1864454756846565995">Zariadenie USB-C (port vzadu)</translation>
@@ -2283,12 +2281,12 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">Pre tento web neboli uložené žiadne heslá</translation>
 <translation id="3404249063913988450">Aktivovať šetrič obrazovky</translation>
+<translation id="3404805962764077228">Dočasne streamujte svoje telefónne aplikácie priamo zo svojho zariadenia <ph name="DEVICE_TYPE" /></translation>
 <translation id="3405664148539009465">Prispôsobiť písma</translation>
 <translation id="3405763860805964263">...</translation>
 <translation id="3406290648907941085">Môže používať zariadenia virtuálnej reality a údaje</translation>
 <translation id="3406396172897554194">Vyhľadávanie podľa jazyka alebo názvu vstupu</translation>
 <translation id="3406605057700382950">&amp;Zobraziť panel so záložkami</translation>
-<translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{Toto rozšírenie môže byť nebezpečné}few{Tieto rozšírenia môžu byť nebezpečné}many{Tieto rozšírenia môžu byť nebezpečné}other{Tieto rozšírenia môžu byť nebezpečné}}</translation>
 <translation id="3409785640040772790">Mapy</translation>
 <translation id="3410832398355316179">Všetky súbory a miestne údaje priradené k tomuto používateľovi budú po jeho odstránení natrvalo vymazané. <ph name="USER_EMAIL" /> sa bude môcť stále prihlásiť neskôr.</translation>
 <translation id="3412265149091626468">Prejsť na výber</translation>
@@ -2839,7 +2837,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3948116654032448504">&amp;Hľadať obrázok v službe <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786">Web <ph name="ORIGIN" /> môže upravovať súbory v nasledujúcich priečinkoch</translation>
 <translation id="394984172568887996">Importované z Internet Explorera</translation>
-<translation id="3949981384795585075">{NUM_APPS,plural, =1{Táto aplikácia môže byť nebezpečná}few{Tieto aplikácie môžu byť nebezpečné}many{Tieto aplikácie môžu byť nebezpečné}other{Tieto aplikácie môžu byť nebezpečné}}</translation>
 <translation id="3950820424414687140">Prihlásiť sa</translation>
 <translation id="3953834000574892725">Moje účty</translation>
 <translation id="3954354850384043518">Prebieha</translation>
@@ -3974,7 +3971,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="523505283826916779">Nastavenia zjednodušenia prístupu</translation>
 <translation id="5235750401727657667">Nahradiť stránku, ktorá sa zobrazí pri otvorení novej karty</translation>
 <translation id="5236374273162681467">Ak ich chcete ľahko používať vo všetkých svojich zariadeniach, môžete si ich presunúť do účtu Google</translation>
-<translation id="5238278114306905396">Aplikácia <ph name="EXTENSION_NAME" /> bola automaticky odstránená.</translation>
 <translation id="5242724311594467048">Povoliť rozšírenie <ph name="EXTENSION_NAME" />?</translation>
 <translation id="5243522832766285132">Skúste to znova o chvíľu</translation>
 <translation id="5244474230056479698">Synchronizácia do účtu <ph name="EMAIL" /></translation>
@@ -4255,6 +4251,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="5543983818738093899">Kontroluje sa stav...</translation>
 <translation id="554517701842997186">Vykresľovací modul</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Pridanie karty do skupiny}few{Pridanie kariet do skupiny}many{Pridanie kariet do skupiny}other{Pridanie kariet do skupiny}}</translation>
+<translation id="5545693483061321551">Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliadania v rámci rôznych webov (napríklad na prispôsobenie reklám). Funkcie na niektorých weboch nemusia fungovať.</translation>
 <translation id="5546865291508181392">Nájsť</translation>
 <translation id="5548075230008247516">Bol zrušený výber všetkých položiek a ukončený režim výberu.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />“}=1{„<ph name="TAB_TITLE" />“ a jedna ďalšia karta}few{„<ph name="TAB_TITLE" />“ a # ďalšie karty}many{"<ph name="TAB_TITLE" />" and # Other Tabs}other{„<ph name="TAB_TITLE" />“ a # ďalších kariet}}</translation>
@@ -5217,6 +5214,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="6607831829715835317">Ďalšie nástro&amp;je</translation>
 <translation id="6607890859198268021">Účet <ph name="USER_EMAIL" /> je už spravovaný doménou <ph name="DOMAIN" />. Ak chcete používať rodičovskú kontrolu s iným účtom Google, po nastavení sa odhláste a potom na prihlasovacej obrazovke vyberte Pridať osobu.</translation>
 <translation id="6609478180749378879">Keď opustíte anonymný režim, budú prihlasovacie údaje uložené v tomto zariadení. Neskôr sa budete môcť znova prihlásiť na tento web pomocou svojho zariadenia.</translation>
+<translation id="6610002944194042868">Možnosti prekladu</translation>
 <translation id="6611972847767394631">Tu nájdete svoje karty</translation>
 <translation id="6615455863669487791">Ukázať</translation>
 <translation id="6618097958368085618">Aj tak ponechať</translation>
@@ -6221,7 +6219,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="7697166915480294040">Podrobnosti sú počas zdieľania obrazovky skryté</translation>
 <translation id="7701040980221191251">Žiadne</translation>
 <translation id="7701869757853594372">POUŽÍVATEĽ – popisovače</translation>
-<translation id="7701928712056789451">Tieto položky môžu byť nebezpečné</translation>
 <translation id="7702574632857388784">Odstrániť súbor <ph name="FILE_NAME" /> zo zoznamu</translation>
 <translation id="7702907602086592255">Doména</translation>
 <translation id="7704305437604973648">Úloha</translation>
@@ -6682,6 +6679,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8149564499626272569">Overiť pomocou telefónu s káblom USB</translation>
 <translation id="8151638057146502721">Konfigurovať</translation>
 <translation id="8154790740888707867">Žiadny súbor</translation>
+<translation id="8154912474061769055">Funkcie na mnohých weboch nemusia fungovať</translation>
 <translation id="815491593104042026">Ojoj! Overenie zlyhalo, pretože bolo nakonfigurované tak, aby použilo nezabezpečenú webovú adresu (<ph name="BLOCKED_URL" />). Kontaktuje svojho správcu.</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{Neboli zistené žiadne prelomené heslá}=1{{COUNT} prelomené heslo}few{{COUNT} prelomené heslá}many{{COUNT} compromised passwords}other{{COUNT} prelomených hesiel}}</translation>
 <translation id="8157248655669507702">Ak chcete nainštalovať profil eSIM, zapnite mobilné dáta</translation>
@@ -6858,6 +6856,7 @@ Ak chcete pridelenie odstrániť, stlačte pridelený prepínač</translation>
 <translation id="8342221978608739536">Nepokúsil(a) som sa o to</translation>
 <translation id="8342861492835240085">Vybrať zbierku</translation>
 <translation id="8347227221149377169">Tlačové úlohy</translation>
+<translation id="834785183489258869">Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktivitu prehliadania v rámci rôznych webov (napríklad na prispôsobenie reklám). Funkcie na niektorých weboch nemusia fungovať.</translation>
 <translation id="8350789879725387295">Nástroje dotykového pera v doku</translation>
 <translation id="8351316842353540018">Vždy zobrazovať možnosti a11y</translation>
 <translation id="8351419472474436977">Vaše nastavenia servera proxy začalo ovládať toto rozšírenie, čo znamená, že dané rozšírenie môže zmeniť, prerušiť alebo zachytiť všetku vašu činnosť online. Ak neviete, prečo k tomu došlo, pravdepodobne si to neželáte.</translation>

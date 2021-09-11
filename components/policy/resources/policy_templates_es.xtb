@@ -1124,15 +1124,6 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 
       El valor predeterminado de esta política ha cambiado de "False" a "True" en <ph name="PRODUCT_NAME" /> 81. La conexión de los proxies afectados debería fallar y debería aparecer el código de error ERR_TLS13_DOWNGRADE_DETECTED. Los administradores que necesiten más tiempo para actualizar los proxies afectados podrán usar esta política para inhabilitar temporalmente esta función de seguridad. Esta política se retiró en la versión 86.
       </translation>
-<translation id="2333763898098246468">Controla el modo en que <ph name="PRODUCT_NAME" /> imprime en Windows.
-
-      Cuando se imprime en una impresora que no utiliza PostScript en Windows, los trabajos de impresión a veces se tienen que rasterizar para que se impriman correctamente.
-
-      Si se le asigna el valor "full" a esta política, <ph name="PRODUCT_NAME" /> rasterizará la página completa si es necesario.
-
-      Si se le asigna el valor "fast", <ph name="PRODUCT_NAME" /> evita la rasterización si es posible. Reducir la cantidad de rasterización puede ayudar a reducir los tamaños de los trabajos de impresión y aumentar la velocidad de impresión.
-
-      Si no se le asigna ningún valor a esta política, <ph name="PRODUCT_NAME" /> tendrá activado el modo completo.</translation>
 <translation id="2337859888277013371">No permitir usar la caché de páginas completas</translation>
 <translation id="2341509917222115272">Si se habilita esta política o no se le asigna ningún valor, se permitirá que los usuarios sincronicen los clientes y los hosts en el momento de la conexión, y no será necesario introducir un PIN cada vez que los sincronicen.
 
@@ -6374,11 +6365,6 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 <translation id="8854571659927427063">Si se asigna el valor "Habilitada" a esta política, se importarán los marcadores del navegador predeterminado anterior al ejecutarse por primera vez. Si se le asigna el valor "Inhabilitada" o no se le asigna ninguno, no se importará ningún marcador al ejecutarse por primera vez.
 
       Los usuarios pueden abrir un cuadro de diálogo de importación y la casilla de marcadores aparecerá marcada o desmarcada en función del valor de esta política.</translation>
-<translation id="8855986672497556389">Advertencia: La posibilidad de eliminar la advertencia TLS 1.0/1.1 se quitará de <ph name="PRODUCT_NAME" /> a partir de la versión 91 (sobre mayo del 2021), y esta política dejará de funcionar en ese momento.
-
-      Si se le asigna un valor válido a esta política, <ph name="PRODUCT_NAME" /> no podrá usar las versiones de SSL/TLS anteriores a la versión especificada. Los valores que no se reconozcan se ignorarán.
-
-      Si no se establece esta política, <ph name="PRODUCT_NAME" /> mostrará un error para las versiones TLS 1.0 y TLS 1.1, pero el usuario podrá evitarlo.</translation>
 <translation id="8858642179038618439">Forzar el modo de seguridad de YouTube</translation>
 <translation id="8860342862142842017">Inhabilitar los requisitos de la transparencia en los certificados en una lista de hashes subjectPublicKeyInfo</translation>
 <translation id="8864975621965365890">Elimina el mensaje de desactivación que aparece cuando <ph name="PRODUCT_FRAME_NAME" /> muestra un sitio.</translation>

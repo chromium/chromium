@@ -58,9 +58,11 @@
 <translation id="1999615961760456652">কেপ্টিভ প’ৰ্টেল</translation>
 <translation id="2006864819935886708">সংযোগ</translation>
 <translation id="2008685064673031089">প্ৰাইম সন্ধান</translation>
+<translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">অধিক ছেটিং</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, সংস্কৰণ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> জিবিৰ <ph name="AVAILABLE_MEMORY" /> জিবি উপলব্ধ আছে</translation>
+<translation id="2129264932216073062">ARC HTTP</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">শাৰীত ৰখা হৈছে</translation>
 <translation id="2161394479394250669">প্ৰিণ্টিঙৰ কাৰ্য বাতিল কৰক</translation>
@@ -74,6 +76,7 @@
 <translation id="2364498172489649528">পাছ কৰিছে</translation>
 <translation id="2380886658946992094">লিগেল</translation>
 <translation id="2391082728065870591">মতামত বিষয়ক ৰিপ’ৰ্টটো পঠিয়াওক</translation>
+<translation id="2407209115954268704">ছিম লকৰ স্থিতি</translation>
 <translation id="2418150275289244458">ছেটিঙত খোলক</translation>
 <translation id="2446553403094072641">ওপঙি থকা বিন্দুৰ সঠিকতা</translation>
 <translation id="2448312741937722512">প্রকাৰ</translation>
@@ -179,6 +182,7 @@
 <translation id="4536864596629708641">আইপি কনফিগাৰেশ্বন</translation>
 <translation id="4548483925627140043">ছিগনেল পোৱা নগ’ল</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh বেটাৰী</translation>
+<translation id="4561801978359312462">ছিম আনলক কৰা হ’ল</translation>
 <translation id="4562494484721939086">কোনো সেৱা নাই</translation>
 <translation id="458794348635939462">হ’ষ্ট সম্পৰ্কীয় সকলো সমস্যা সমাধান কৰাত বিফল হ'ল</translation>
 <translation id="4593212453765072419">প্ৰ’ক্সী বিশ্বাসযোগ্যতাৰ প্ৰমাণীকৰণৰ আৱশ্যক</translation>
@@ -218,6 +222,7 @@
 <translation id="4999333166442584738">ৰিপ’ৰ্ট লুকুৱাওক</translation>
 <translation id="500920857929044050">পৰীক্ষা কৰা বন্ধ কৰক</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5049856988445523908">ছিম লক কৰা হ’ল (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">গোটৰ নাম</translation>
 <translation id="5088172560898466307">ছার্ভাৰ হ‘ষ্টনে‘ম</translation>
 <translation id="5089810972385038852">ৰাজ্য</translation>
@@ -312,6 +317,7 @@
 <translation id="6527081081771465939">ৱাই-ফাইৰ অজ্ঞাত সুৰক্ষাৰ প্ৰ'টকল</translation>
 <translation id="65587193855025101">ফ্লে'টবেড</translation>
 <translation id="6564646048574748301">বিফল হৈছে - প্ৰিণ্টাৰৰ সৈতে সংযোগ কৰিব পৰা নাই</translation>
+<translation id="6566314079205407217">একাধিক পৃষ্ঠাৰ স্কেন</translation>
 <translation id="6574762126505704998">সম্পূৰ্ণ স্ক্ৰীনজুৰি</translation>
 <translation id="6575134580692778371">কনফিগাৰ কৰা হোৱা নাই</translation>
 <translation id="6596816719288285829">আইপি ঠিকনা</translation>

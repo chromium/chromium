@@ -8,6 +8,7 @@
 <translation id="1378979118429748177">Gaukite pranešimus, kai kainos bus sumažintos</translation>
 <translation id="1657719826150349398">Perkelti skirtuką į apačią</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> skirtukas}one{<ph name="TABS_COUNT_MANY" /> skirtukas}few{<ph name="TABS_COUNT_MANY" /> skirtukai}many{<ph name="TABS_COUNT_MANY" /> skirtuko}other{<ph name="TABS_COUNT_MANY" /> skirtukų}}</translation>
+<translation id="2118649612461486615">Parduotuvės informacija</translation>
 <translation id="2277224997687551299">Redaguoti grupės pavadinimą</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Pašalinti <ph name="TABS_COUNT_ONE" /> pasirinktą skirtuką iš grupės.}one{Pašalinti <ph name="TABS_COUNT_MANY" /> pasirinktą skirtuką iš grupės.}few{Pašalinti <ph name="TABS_COUNT_MANY" /> pasirinktus skirtukus iš grupės.}many{Pašalinti <ph name="TABS_COUNT_MANY" /> pasirinkto skirtuko iš grupės.}other{Pašalinti <ph name="TABS_COUNT_MANY" /> pasirinktų skirtukų iš grupės.}}</translation>
 <translation id="2479148705183875116">Eiti į nustatymus</translation>
@@ -50,13 +51,16 @@
 <translation id="6040143037577758943">Uždaryti</translation>
 <translation id="6054741997831917303">Šios prekės kaina neseniai sumažėjo nuo <ph name="PREVIOUS_PRICE" /> iki <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Pasirinkti skirtukus</translation>
+<translation id="6228793724645064692">(parduotuvės įvertinimas)</translation>
 <translation id="6510648526783655549">Uždaryti skirtuko juostelę</translation>
+<translation id="6549021453810473782">Peržiūrėti parduotuvės informaciją</translation>
 <translation id="6562820390860419811">Perkelti skirtuką į kairę</translation>
 <translation id="6615455863669487791">Rodyti</translation>
 <translation id="6840760312327750441">Norėdami grupuoti skirtukus, palieskite ir palaikykite skirtuką. Tada nuvilkite jį į kitą skirtuką.</translation>
 <translation id="6856809498882026482">Slėpti kelių elementų pasirinkimo režimą</translation>
 <translation id="7151209024774799310">Pašalinti skirtukus iš grupės</translation>
 <translation id="7204204600596740190">Kelių elementų pasirinkimo režimas</translation>
+<translation id="7326879924029668159">Peržiūrėkite grąžinimo politiką ir kt.</translation>
 <translation id="7352298686197644113">Žr., kurio elemento jūsų atidarytuose skirtukuose kaina žemesnė</translation>
 <translation id="753732157349120914">Skirtukų perjungiklis</translation>
 <translation id="7559245342362162951">Rodyti grupės skirtukus viso ekrano tinklelyje</translation>

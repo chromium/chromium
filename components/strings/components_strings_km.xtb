@@ -92,6 +92,7 @@
 <translation id="1257553931232494454">កម្រិត​ពង្រីកបង្រួម</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច "Tab" រួចចុច "Enter" ដើម្បីគ្រប់គ្រង​ការកំណត់ Chrome របស់អ្នក</translation>
 <translation id="1263231323834454256">បញ្ជី​អាន</translation>
+<translation id="1269096320618100013">គ្រប់គ្រងប៊ូតុងការកំណត់​ភាពងាយស្រួល ចុច "Enter" ដើម្បីកំណត់​ឧបករណ៍ភាពងាយស្រួល​ឱ្យស្របនឹងអ្នក​នៅក្នុងការកំណត់ Chrome OS។</translation>
 <translation id="1269516672602708785">បង្កើត​គេហទំព័រថ្មី​នៅក្នុង Google Sites បានរហ័ស</translation>
 <translation id="1270502636509132238">មធ្យោបាយ​ទៅយក</translation>
 <translation id="1281476433249504884">ទម្រគំនរ​ទី 1</translation>
@@ -509,6 +510,7 @@
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច "Tab" រួចចុច "Enter" ដើម្បីសម្អាតប្រវត្តិ​រុករក​តាមអ៊ីនធឺណិត ខូគី ឃ្លាំងផ្ទុកទិន្នន័យរបស់អ្នក និងអ្វីៗជាច្រើនទៀតនៅក្នុងការកំណត់ Chrome</translation>
 <translation id="2650446666397867134">ការចូលប្រើឯកសារត្រូវបានបដិសេធ</translation>
 <translation id="2653659639078652383">ដាក់ស្នើ</translation>
+<translation id="2659491813326907275">កំណត់ឧបករណ៍​ភាពងាយស្រួល​ឱ្យស្របនឹងអ្នក​នៅក្នុង​ការកំណត់ Chrome OS</translation>
 <translation id="2660779039299703961">ព្រឹត្តិការណ៍</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{គ្មាន}=1{ពាក្យ​សម្ងាត់ 1 (សម្រាប់ <ph name="DOMAIN_LIST" />)}=2{ពាក្យ​សម្ងាត់ 2 (សម្រាប់ <ph name="DOMAIN_LIST" />)}other{ពាក្យ​សម្ងាត់ # (សម្រាប់ <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">ខាងលើ</translation>
@@ -1254,6 +1256,7 @@
 <translation id="5115216390227830982">European-Edp</translation>
 <translation id="5115232566827194440">ការលុបពីលើ​វគ្គភ្ញៀវ​ដែលស្ថិតក្រោម​ការគ្រប់គ្រង ដែលត្រូវបាន​រឹតបន្តឹង</translation>
 <translation id="5115563688576182185">(64-ប៊ីត)</translation>
+<translation id="5116898824332672776"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច "tab" រួចចុច "Enter" ដើម្បីកំណត់​ឧបករណ៍ភាពងាយស្រួល​ឱ្យស្របនឹងអ្នកនៅក្នុង​ការកំណត់ Chrome OS។</translation>
 <translation id="5123063207673082822">ចុង​សប្ដាហ៍</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">ផ្ទៀងផ្ទាត់កាតរបស់អ្នក</translation>

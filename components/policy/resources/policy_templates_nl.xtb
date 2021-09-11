@@ -1107,15 +1107,6 @@ Als je het beleid niet instelt, zijn er geen extensies vrijgesteld van de resetp
       Als dit beleid is ingesteld op False, zet <ph name="PRODUCT_NAME" /> deze beveiligingsmaatregelen uit voor verbindingen die zijn geverifieerd met lokaal geïnstalleerde CA-certificaten. Deze beveiligingsmaatregelen worden altijd gebruikt voor verbindingen die zijn geverifieerd met openbaar vertrouwde CA-certificaten.
 
       De standaardwaarde voor dit beleid is in <ph name="PRODUCT_NAME" /> 81 gewijzigd van False in True. Van getroffen proxy's wordt verwacht dat ze verbindingen met de foutcode ERR_TLS13_DOWNGRADE_DETECTED niet tot stand kunnen brengen. Beheerders die meer tijd nodig hebben om getroffen proxy's te upgraden, kunnen dit beleid gebruiken om deze beveiligingsfunctie tijdelijk uit te zetten. Dit beleid is verwijderd in versie 86.</translation>
-<translation id="2333763898098246468">Beheert hoe <ph name="PRODUCT_NAME" /> afdrukt in Windows.
-
-      Als je in Windows afdrukt op een andere printer dan een PostScript-printer, moeten afdruktaken soms worden gerasterd om ze correct af te drukken.
-
-      Als dit beleid is ingesteld op Full, voert <ph name="PRODUCT_NAME" /> indien nodig rastering op de volledige pagina uit.
-
-      Als dit beleid is ingesteld op Fast, voorkomt <ph name="PRODUCT_NAME" /> rastering indien mogelijk. Het verminderen van de hoeveelheid rastering kan de grootte van de afdruktaken verminderen en de afdruksnelheid verhogen.
-
-      Als dit beleid niet is ingesteld, staat <ph name="PRODUCT_NAME" /> in de modus Full.</translation>
 <translation id="2337859888277013371">Niet toestaan dat de Back-Forward Cache wordt gebruikt</translation>
 <translation id="2341509917222115272">Als je dit beleid toepast of niet instelt, kunnen gebruikers clients en hosts koppelen op het moment dat verbinding wordt gemaakt, zodat er niet elke keer een pincode hoeft te worden opgegeven.
 
@@ -6275,11 +6266,6 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 <translation id="8854571659927427063">Als je het beleid toepast, worden de bookmarks van de vorige standaardbrowser geïmporteerd bij de eerste uitvoering. Als je het beleid niet toepast of niet instelt, worden de bookmarks niet geïmporteerd bij de eerste uitvoering.
 
       Als gebruikers het dialoogvenster voor importeren openen, is het selectievakje voor bookmarks aan- of uitgevinkt in overeenstemming met de waarde van dit beleid.</translation>
-<translation id="8855986672497556389">Waarschuwing: Ondersteuning voor het onderdrukken van de waarschuwing voor TLS 1.0/1.1 wordt verwijderd uit <ph name="PRODUCT_NAME" /> vanaf versie 91 (rond mei 2021). Dit beleid werkt dan niet meer.
-
-      Als je het beleid instelt op een geldige waarde, gebruikt <ph name="PRODUCT_NAME" /> geen SSL-/TLS-versies lager dan de opgegeven versie. Niet-herkende waarden worden genegeerd.
-
-      Als je dit beleid niet instelt, toont <ph name="PRODUCT_NAME" /> een fout voor TLS 1.0 en TLS 1.1. De gebruiker kan deze fout wel omzeilen.</translation>
 <translation id="8858642179038618439">Beperkte modus van YouTube afdwingen</translation>
 <translation id="8860342862142842017">Handhaving van Certificaattransparantie voor een lijst met subjectPublicKeyInfo-hashes</translation>
 <translation id="8864975621965365890">Hiermee onderdruk je de prompt die je ziet als een site wordt weergegeven door <ph name="PRODUCT_FRAME_NAME" />.</translation>

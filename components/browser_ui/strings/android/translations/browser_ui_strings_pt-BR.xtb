@@ -36,6 +36,7 @@
 <translation id="1984937141057606926">Permitidos, exceto de terceiros</translation>
 <translation id="1989112275319619282">Procurar</translation>
 <translation id="1994173015038366702">URL do site</translation>
+<translation id="2004697686368036666">Os recursos de alguns sites podem não funcionar</translation>
 <translation id="2025115093177348061">Realidade aumentada</translation>
 <translation id="2030769033451695672">Toque para voltar para <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Desfazer</translation>
@@ -268,6 +269,7 @@
 <translation id="8116925261070264013">Com som desativado</translation>
 <translation id="813082847718468539">Visualizar informações do site</translation>
 <translation id="8131740175452115882">Confirmar</translation>
+<translation id="8154912474061769055">Os recursos de vários sites podem não funcionar</translation>
 <translation id="8197286292360124385">Permitida: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Retomar</translation>
 <translation id="8206354486702514201">Esta configuração é aplicada por seu administrador.</translation>

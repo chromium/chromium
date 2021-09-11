@@ -91,6 +91,7 @@
 <translation id="1257553931232494454">ဇူးမ်အဆင့်များ</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Chrome ဆက်တင်များ စီမံရန် ‘တဘ်ခလုတ်’ ပြီးနောက် Enter နှိပ်ပါ</translation>
 <translation id="1263231323834454256">ဖတ်ရန် စာရင်း</translation>
+<translation id="1269096320618100013">အများသုံးစွဲနိုင်မှု ဆက်တင်များ စီမံရန် ခလုတ်၊Chrome OS ဆက်တင်များတွင် အများသုံးစွဲနိုင်မှု တူးလ်ကို ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ရန် Enter နှိပ်ပါ</translation>
 <translation id="1269516672602708785">Google Sites တွင် ဝဘ်ဆိုက်အသစ် အမြန်ပြုလုပ်ရန်</translation>
 <translation id="1270502636509132238">လာယူနည်း</translation>
 <translation id="1281476433249504884">စီထည့်သည့်ပုံး ၁</translation>
@@ -511,6 +512,7 @@
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Chrome ဆက်တင်များရှိ သင့်ကြည့်ရှုခြင်းမှတ်တမ်း၊ ကွတ်ကီးများ၊ ကက်ရှ်နှင့် အခြားအရာများကို ရှင်းရန် Tab နှိပ်ပြီးနောက် Enter နှိပ်ပါ</translation>
 <translation id="2650446666397867134">ဖိုင်အား ရယူမှု ငြင်းပယ်ခံခဲ့ရ</translation>
 <translation id="2653659639078652383">ပေးပို့ရန်</translation>
+<translation id="2659491813326907275">Chrome OS ဆက်တင်များတွင် အများသုံးစွဲနိုင်မှု တူးလ်များကို ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ပါ</translation>
 <translation id="2660779039299703961">ဖြစ်ရပ်</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{မရှိ}=1{စကားဝှက် ၁ ခု (<ph name="DOMAIN_LIST" /> အတွက်)}=2{စကားဝှက် ၂ ခု (<ph name="DOMAIN_LIST" /> အတွက်)}other{စကားဝှက် # ခု (<ph name="DOMAIN_LIST" /> အတွက်)}}</translation>
 <translation id="2666092431469916601">ထိပ်</translation>
@@ -1251,6 +1253,7 @@
 <translation id="5115216390227830982">European-Edp</translation>
 <translation id="5115232566827194440">ကြီးကြပ်ထားသော ဧည့်သည် စက်ရှင် အစားထိုးခြင်းကို ကန့်သတ်ထားသည်</translation>
 <translation id="5115563688576182185">(64-bit)</translation>
+<translation id="5116898824332672776"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Chrome OS ဆက်တင်များတွင် အများသုံးစွဲနိုင်မှု တူးလ်များကို ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ရန် ‘တဘ်ခလုတ်’ ပြီးနောက် Enter နှိပ်ပါ။</translation>
 <translation id="5123063207673082822">စနေ၊ တနင်္ဂနွေ</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">သင့်ကတ်ကို အတည်ပြုပါ</translation>

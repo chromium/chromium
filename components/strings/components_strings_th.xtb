@@ -91,6 +91,7 @@
 <translation id="1257553931232494454">ระดับการซูม</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อจัดการการตั้งค่า Chrome</translation>
 <translation id="1263231323834454256">เรื่องรออ่าน</translation>
+<translation id="1269096320618100013">ปุ่มจัดการการตั้งค่าการช่วยเหลือพิเศษ กด Enter เพื่อปรับเปลี่ยนเครื่องมือการช่วยเหลือพิเศษในแบบของคุณที่การตั้งค่า Chrome OS</translation>
 <translation id="1269516672602708785">สร้างเว็บไซต์แบบใหม่ใน Google Sites อย่างรวดเร็ว</translation>
 <translation id="1270502636509132238">วิธีการรับสินค้า</translation>
 <translation id="1281476433249504884">สแต็กเกอร์ 1</translation>
@@ -502,6 +503,7 @@
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อล้างประวัติการท่องเว็บ คุกกี้ แคช และอื่นๆ ในการตั้งค่า Chrome</translation>
 <translation id="2650446666397867134">การเข้าถึงไฟล์ถูกปฏิเสธ</translation>
 <translation id="2653659639078652383">ส่ง</translation>
+<translation id="2659491813326907275">ปรับเปลี่ยนเครื่องมือการช่วยเหลือพิเศษในแบบของคุณที่การตั้งค่า Chrome OS</translation>
 <translation id="2660779039299703961">กิจกรรม</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{ไม่มี}=1{มีรหัสผ่าน 1 รายการ (สำหรับ <ph name="DOMAIN_LIST" />)}=2{มีรหัสผ่าน 2 รายการ (สำหรับ <ph name="DOMAIN_LIST" />)}other{มีรหัสผ่าน # รายการ (สำหรับ <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">ด้านบน</translation>
@@ -1240,6 +1242,7 @@
 <translation id="5115216390227830982">Edp แบบยุโรป</translation>
 <translation id="5115232566827194440">ลบล้างเซสชันผู้เยี่ยมชมที่มีการจัดการและถูกจำกัด</translation>
 <translation id="5115563688576182185">(64 บิต)</translation>
+<translation id="5116898824332672776"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อปรับเปลี่ยนเครื่องมือการช่วยเหลือพิเศษในแบบของคุณที่การตั้งค่า Chrome OS</translation>
 <translation id="5123063207673082822">วันสุดสัปดาห์</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">ยืนยันบัตร</translation>

@@ -91,6 +91,7 @@
 <translation id="1257553931232494454">чоңойтуп/кичирейтүү деңгээлдери</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome жөндөөлөрүңүздү башкаруу үчүн Tab, андан кийин Enter баскычын басыңыз</translation>
 <translation id="1263231323834454256">Окуу тизмеси</translation>
+<translation id="1269096320618100013">"Атайын мүмкүнчүлүктөрдү тууралоону башкаруу" баскычы. Chrome OS жөндөөлөрүндө атайын мүмкүнчүлүктөр куралдарын жекелештирүү үчүн Enter баскычын басыңыз</translation>
 <translation id="1269516672602708785">Google Сайттарда жаңы сайтты тез түзүңүз</translation>
 <translation id="1270502636509132238">Алып кетүү ыкмасы</translation>
 <translation id="1281476433249504884">6-төшөгүч</translation>
@@ -506,6 +507,7 @@
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome жөндөөлөрүнөн көрүлгөн вебсайттарды, cookie файлдарын, кештерди жана башкаларды тазалоо үчүн, Tab, андан соң Enter баскычын басыңыз</translation>
 <translation id="2650446666397867134">Файлды колдонуу мүмкүнчүлүгү четке кагылды</translation>
 <translation id="2653659639078652383">Тапшыруу</translation>
+<translation id="2659491813326907275">Chrome OS жөндөөлөрүндө атайын мүмкүнчүлүктөр куралдарын жекелештирүү</translation>
 <translation id="2660779039299703961">Иш-чара</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Жок}=1{1 сырсөз (<ph name="DOMAIN_LIST" /> доменде)}=2{2 сырсөз (<ph name="DOMAIN_LIST" /> доменде)}other{# сырсөз (<ph name="DOMAIN_LIST" /> доменде)}}</translation>
 <translation id="2666092431469916601">Өйдө</translation>
@@ -1249,6 +1251,7 @@
 <translation id="5115216390227830982">European-Edp</translation>
 <translation id="5115232566827194440">Конок сеансын өзгөртүүнү башкаруу чектелди</translation>
 <translation id="5115563688576182185">(64 бит)</translation>
+<translation id="5116898824332672776"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome OS жөндөөлөрүндө атайын мүмкүнчүлүктөр куралдарын жекелештирүү үчүн Tab, андан кийин Enter баскычын басыңыз.</translation>
 <translation id="5123063207673082822">Дем алыш</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Картаны ырастаңыз</translation>

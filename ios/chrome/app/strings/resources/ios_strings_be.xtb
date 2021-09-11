@@ -454,6 +454,7 @@
 <translation id="5556459405103347317">Перазагрузіць</translation>
 <translation id="5580834567471114021">Дадаць старонку ў спіс на прагляд?</translation>
 <translation id="5592679540098330836">Уключыць сінхранізацыю для ўліковага запісу <ph name="NAME" /></translation>
+<translation id="560322036295180549">Ваша арганізацыя выключыла гэты параметр</translation>
 <translation id="5614553682702429503">Захаваць пароль?</translation>
 <translation id="5626245204502895507">Файл спампаваць не ўдалося.</translation>
 <translation id="5631164295104953411">Дадаванне спосабу аплаты</translation>
@@ -501,7 +502,6 @@
 <translation id="5984222099446776634">Нядаўна наведаныя</translation>
 <translation id="5988851877894965432">Адкрыць URL-адрасы ў Chrome</translation>
 <translation id="6012140227487808125">Ідзе шыфраванне…</translation>
-<translation id="6020800238007543967">Паказваць перадпрагляд спасылак</translation>
 <translation id="6021332621416007159">Адкрыць у праграме...</translation>
 <translation id="6036514205982097558">Усе вашы ўкладкі ў адным браўзеры</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
@@ -712,6 +712,7 @@
 <translation id="7856733331829174190">Не ўдалося спампаваць</translation>
 <translation id="7859704718976024901">Гісторыя прагляду сайтаў</translation>
 <translation id="7887198238286927132">У мэтах аховы вашай прыватнасці Chrome не будзе выкарыстоўваць аўтазапаўненне ў гэтым полі.</translation>
+<translation id="7911190106180361398">Ваша арганізацыя не дазваляе сінхранізаваць усё.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Экспарт пароляў...</translation>
 <translation id="794799177247607889">Спыніць вядзенне журнала</translation>

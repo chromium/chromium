@@ -700,7 +700,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5324858694974489420">Foreldreinnstillinger</translation>
 <translation id="5342314432463739672">Tillatelsesforespørsler</translation>
 <translation id="5355191726083956201">Økt beskyttelse er på</translation>
-<translation id="5357811892247919462">Fane er mottatt</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> åpen fane – trykk for å bytte fane}other{<ph name="OPEN_TABS_MANY" /> åpne faner – trykk for å bytte fane}}</translation>
 <translation id="5375577065097716013">Søk etter bildet med Google Lens <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Tillat bare visse nettsteder</translation>
@@ -1237,6 +1236,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8442258441309440798">Ingen nyhetssaker er tilgjengelige</translation>
 <translation id="8443209985646068659">Kan ikke oppdatere Chrome</translation>
 <translation id="8445448999790540984">Kan ikke eksportere passordene</translation>
+<translation id="8446884382197647889">Les mer</translation>
 <translation id="8453310803815879010">Start dinosaurspillet</translation>
 <translation id="8461694314515752532">Kryptér synkroniserte data med din egen passordfrase for synkronisering</translation>
 <translation id="8466613982764129868">Kontrollér at <ph name="TARGET_DEVICE_NAME" /> er koblet til internett</translation>

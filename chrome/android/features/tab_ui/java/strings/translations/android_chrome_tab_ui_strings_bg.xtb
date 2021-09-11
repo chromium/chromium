@@ -8,6 +8,7 @@
 <translation id="1378979118429748177">Получаване на известия при понижения на цени</translation>
 <translation id="1657719826150349398">Преместване на раздела надолу</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> раздел}other{<ph name="TABS_COUNT_MANY" /> раздела}}</translation>
+<translation id="2118649612461486615">Информация за магазина</translation>
 <translation id="2277224997687551299">Редактиране на името на групата</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Премахване на <ph name="TABS_COUNT_ONE" /> избран раздел от групата.}other{Премахване на <ph name="TABS_COUNT_MANY" /> избрани раздела от групата.}}</translation>
 <translation id="2479148705183875116">Към настройките</translation>
@@ -50,13 +51,16 @@
 <translation id="6040143037577758943">Затваряне</translation>
 <translation id="6054741997831917303">Цената на този артикул наскоро бе намалена от <ph name="PREVIOUS_PRICE" /> на <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Избиране на раздели</translation>
+<translation id="6228793724645064692">(оценка на магазина)</translation>
 <translation id="6510648526783655549">Затваряне на лентата с раздели</translation>
+<translation id="6549021453810473782">Преглед на информацията за магазина</translation>
 <translation id="6562820390860419811">Преместване на раздела наляво</translation>
 <translation id="6615455863669487791">Покажете ми</translation>
 <translation id="6840760312327750441">За да групирате раздели, докоснете и задръжте някой от тях. След това го преместете с плъзгане върху друг.</translation>
 <translation id="6856809498882026482">Изход от режима за избор на няколко раздела</translation>
 <translation id="7151209024774799310">Премахване на раздели</translation>
 <translation id="7204204600596740190">Режим за избор на няколко раздела</translation>
+<translation id="7326879924029668159">Вижте правилата за връщане и др.</translation>
 <translation id="7352298686197644113">Вижте кой артикул в отворените раздели е с по-ниска цена</translation>
 <translation id="753732157349120914">Превключвател на раздели</translation>
 <translation id="7559245342362162951">Показване на разделите от групата в решетка на цял екран</translation>

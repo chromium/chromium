@@ -8,6 +8,7 @@
 <translation id="1378979118429748177">Баға төмендеген кезде хабарландыру алыңыз.</translation>
 <translation id="1657719826150349398">Қойындыны төмен жылжыту</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> қойынды}other{<ph name="TABS_COUNT_MANY" /> қойынды}}</translation>
+<translation id="2118649612461486615">Дүкен туралы ақпарат</translation>
 <translation id="2277224997687551299">Топтың атауын өзгерту</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Таңдалған <ph name="TABS_COUNT_ONE" /> қойындыны топтан өшіру.}other{Таңдалған <ph name="TABS_COUNT_MANY" /> қойындыны топтан өшіру.}}</translation>
 <translation id="2479148705183875116">Параметрлерге өту</translation>
@@ -50,13 +51,16 @@
 <translation id="6040143037577758943">Жабу</translation>
 <translation id="6054741997831917303">Бұл тауардың бағасы жақында түсті. Ескі бағасы: <ph name="PREVIOUS_PRICE" />, жаңа бағасы: <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Қойындыларды таңдау</translation>
+<translation id="6228793724645064692">(дүкен рейтингісі)</translation>
 <translation id="6510648526783655549">Қойындылар жолағын жабу</translation>
+<translation id="6549021453810473782">Дүкен туралы ақпаратты көру</translation>
 <translation id="6562820390860419811">Қойындыны солға жылжыту</translation>
 <translation id="6615455863669487791">Маған көрсету</translation>
 <translation id="6840760312327750441">Қойындыларды топтау үшін қойындыны басып тұрыңыз. Одан кейін басқа қойындыға сүйреңіз.</translation>
 <translation id="6856809498882026482">Бірнеше нұсқа таңдау режимін жасыру</translation>
 <translation id="7151209024774799310">Қойындыларды топтан өшіру</translation>
 <translation id="7204204600596740190">Бірнеше нұсқа таңдау режимі</translation>
+<translation id="7326879924029668159">Қайтару саясаты мен басқа да ақпаратты көріңіз.</translation>
 <translation id="7352298686197644113">Ашық тұрған қойындылардағы қай тауардың бағасы арзан екенін көріңіз.</translation>
 <translation id="753732157349120914">Қойынды ауыстырғышы</translation>
 <translation id="7559245342362162951">Топ қойындыларын толық экранда тор түрінде көрсету</translation>

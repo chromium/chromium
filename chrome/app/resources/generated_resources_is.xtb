@@ -784,7 +784,6 @@
 <translation id="1794791083288629568">Sendu ábendingu til að hjálpa okkur að leysa þetta vandamál.</translation>
 <translation id="1795214765651529549">Nota hefðbundið þema</translation>
 <translation id="1796588414813960292">Eiginleikar sem þarfnast hljóðs munu ekki virka</translation>
-<translation id="1799071797295057738">Viðbótin „<ph name="EXTENSION_NAME" />“ var sjálfkrafa gerð óvirk.</translation>
 <translation id="1801418420130173017">Slökkva á dökku þema</translation>
 <translation id="1802624026913571222">Svefn þegar hulstrið er lokað</translation>
 <translation id="1802687198411089702">Síðan svarar ekki. Þú getur beðið eftir henni eða hætt.</translation>
@@ -852,7 +851,6 @@
 <translation id="1862311223300693744">Ertu með einhvern sérstakan VPN-, staðgengilsþjóns-, eldveggjar- eða NAS-hugbúnað
     uppsettan?</translation>
 <translation id="1863182668524159459">Engin raðtengi fundust</translation>
-<translation id="1863316578636157783">Slökkt var á „<ph name="EXTENSION_NAME" />“ vegna þess að það inniheldur spilliforrit</translation>
 <translation id="1864111464094315414">Innskráning</translation>
 <translation id="1864400682872660285">Kaldara</translation>
 <translation id="1864454756846565995">USB-C-tæki (tengi að aftan)</translation>
@@ -2296,12 +2294,12 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">Engin aðgangsorð hafa verið vistuð fyrir þetta vefsvæði</translation>
 <translation id="3404249063913988450">Virkja skjávara</translation>
+<translation id="3404805962764077228">Notaðu símaforritin tímabundið í <ph name="DEVICE_TYPE" /></translation>
 <translation id="3405664148539009465">Sérsníða letur</translation>
 <translation id="3405763860805964263">...</translation>
 <translation id="3406290648907941085">Mega nota sýndarveruleikatæki og -gögn</translation>
 <translation id="3406396172897554194">Leita eftir tungumáli eða innslegnu heiti</translation>
 <translation id="3406605057700382950">&amp;Sýna bókamerkjastiku</translation>
-<translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{Þessi viðbót gæti verið hættuleg}one{Þessar viðbætur gætu verið hættulegar}other{Þessar viðbætur gætu verið hættulegar}}</translation>
 <translation id="3409785640040772790">Kort</translation>
 <translation id="3410832398355316179">Öllum skrám og staðbundnum gögnum sem tengjast notandanum verður varanlega eytt þegar notandinn er fjarlægður. <ph name="USER_EMAIL" /> getur ennþá skráð sig inn síðar.</translation>
 <translation id="3412265149091626468">Fara í val</translation>
@@ -2852,7 +2850,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3948116654032448504">&amp;Leita að mynd á <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> getur breytt skrám í eftirfarandi möppum</translation>
 <translation id="394984172568887996">Flutt inn úr IE</translation>
-<translation id="3949981384795585075">{NUM_APPS,plural, =1{Þetta forrit gæti verið hættulegt}one{Þessi forrit gætu verið hættuleg}other{Þessi forrit gætu verið hættuleg}}</translation>
 <translation id="3950820424414687140">Skrá inn</translation>
 <translation id="3953834000574892725">Reikningarnir mínir</translation>
 <translation id="3954354850384043518">Stendur yfir</translation>
@@ -3988,7 +3985,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="523505283826916779">Aðgengisstillingar</translation>
 <translation id="5235750401727657667">Skipta út síðunni sem þú sérð þegar nýr flipi er opnaður</translation>
 <translation id="5236374273162681467">Þú getur flutt þau yfir á Google reikninginn svo þú getir notað þau í öllum tækjum</translation>
-<translation id="5238278114306905396">Forritið „<ph name="EXTENSION_NAME" />“ var sjálfkrafa fjarlægt.</translation>
 <translation id="5242724311594467048">Kveikja á „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="5243522832766285132">Reyndu aftur eftir smástund</translation>
 <translation id="5244474230056479698">Samstillir við <ph name="EMAIL" /></translation>
@@ -4269,6 +4265,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5543983818738093899">Kannar stöðu...</translation>
 <translation id="554517701842997186">Myndþýðandi</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Bæta flipa við hóp}one{Bæta flipum við hóp}other{Bæta flipum við hóp}}</translation>
+<translation id="5545693483061321551">Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á vefsvæðum, til dæmis til að sérsníða auglýsingar. Óvíst er að eiginleikar á sumum vefsvæðum virki.</translation>
 <translation id="5546865291508181392">Finna</translation>
 <translation id="5548075230008247516">Val allra atriða afturkallað. Valstillingu lokað.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />“}=1{„<ph name="TAB_TITLE" />“ og 1 flipi til viðbótar}one{„<ph name="TAB_TITLE" />“ og # flipi til viðbótar}other{„<ph name="TAB_TITLE" />“ og # flipar til viðbótar}}</translation>
@@ -5231,6 +5228,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6607831829715835317">F&amp;leiri verkfæri</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> er þegar stjórnað af <ph name="DOMAIN" />. Skráðu þig út eftir uppsetningu og veldu „Bæta notanda við“ á innskráningarskjánum til að nota barnalæsingar á öðrum Google reikningi.</translation>
 <translation id="6609478180749378879">Innskráningargögn verða geymd í þessu tæki eftir að þú lokar huliðsstillingu. Þú getur skráð þig aftur inn á þetta vefsvæði með tækinu þínu síðar.</translation>
+<translation id="6610002944194042868">Valkostir þýðinga</translation>
 <translation id="6611972847767394631">Finndu flipana þína hér</translation>
 <translation id="6615455863669487791">Sýndu mér</translation>
 <translation id="6618097958368085618">Halda samt</translation>
@@ -6235,7 +6233,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7697166915480294040">Upplýsingar eru faldar á meðan þú deilir skjánum</translation>
 <translation id="7701040980221191251">Ekkert</translation>
 <translation id="7701869757853594372">Notendanöfn</translation>
-<translation id="7701928712056789451">Þessi atriði gætu verið hættuleg</translation>
 <translation id="7702574632857388784">Fjarlægja <ph name="FILE_NAME" /> af lista</translation>
 <translation id="7702907602086592255">Lén</translation>
 <translation id="7704305437604973648">Verkefni</translation>
@@ -6696,6 +6693,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8149564499626272569">Staðfesta með símanum með USB-snúru</translation>
 <translation id="8151638057146502721">Grunnstilla</translation>
 <translation id="8154790740888707867">Engin skrá</translation>
+<translation id="8154912474061769055">Óvíst er að eiginleikar á mörgum vefsvæðum virki</translation>
 <translation id="815491593104042026">Úbbs! Auðkenning mistókst vegna þess að hún var stillt á að nota óörugga vefslóð (<ph name="BLOCKED_URL" />). Hafðu samband við stjórnanda.</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{Engin aðgangsorð í hættu fundust}=1{{COUNT} aðgangsorð í hættu}one{{COUNT} aðgangsorð í hættu}other{{COUNT} aðgangsorð í hættu}}</translation>
 <translation id="8157248655669507702">Kveiktu á farsímagögnum til að setja upp eSIM-prófíl</translation>
@@ -6872,6 +6870,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8342221978608739536">Prófaði ekki</translation>
 <translation id="8342861492835240085">Velja safn</translation>
 <translation id="8347227221149377169">Prentverk</translation>
+<translation id="834785183489258869">Þegar huliðsstilling er notuð geta vefsvæði ekki notað fótspor til að sjá vafranotkun þína á vefsvæðum, til dæmis til að sérsníða auglýsingar. Óvíst er að eiginleikar á sumum vefsvæðum virki.</translation>
 <translation id="8350789879725387295">Pennaverkfæri í dokku</translation>
 <translation id="8351316842353540018">Sýna alltaf a11y valkosti</translation>
 <translation id="8351419472474436977">Þessi viðbót hefur tekið að sér stjórn yfir proxy-stillingunum þínum, sem þýðir að hún getur breytt, slitið eða hlerað allt sem þú gerir á netinu. Ef þú veist ekki hvernig þetta gerðist er þetta líklega eitthvað sem þú vilt ekki.</translation>

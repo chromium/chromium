@@ -454,6 +454,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5556459405103347317">Znova naloži</translation>
 <translation id="5580834567471114021">Želite dodati na bralni seznam za pozneje?</translation>
 <translation id="5592679540098330836">Vklopite sinhronizacijo za uporabnika <ph name="NAME" /></translation>
+<translation id="560322036295180549">Izklopila organizacija.</translation>
 <translation id="5614553682702429503">Želite shraniti geslo?</translation>
 <translation id="5626245204502895507">Datoteke trenutno ni mogoče prenesti.</translation>
 <translation id="5631164295104953411">Dodajanje plačilnega sredstva</translation>
@@ -501,7 +502,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5984222099446776634">Nedavno obiskano</translation>
 <translation id="5988851877894965432">Odpiranje URL-jev v Chromu</translation>
 <translation id="6012140227487808125">Šifriranje ...</translation>
-<translation id="6020800238007543967">Prikaz predogledov povezav</translation>
 <translation id="6021332621416007159">Odpri v ...</translation>
 <translation id="6036514205982097558">Vsi zavihki v enem brskalniku</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
@@ -712,6 +712,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="7856733331829174190">Prenos ni uspel</translation>
 <translation id="7859704718976024901">Zgodovina brskanja</translation>
 <translation id="7887198238286927132">Chrome zaradi varovanja vaše zasebnosti ne bo samodejno izpolnil tega polja.</translation>
+<translation id="7911190106180361398">Vaša organizacija vam ne dovoli sinhronizirati vsega.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Izvozi gesla ...</translation>
 <translation id="794799177247607889">Ustavi pisanje dnevnika</translation>

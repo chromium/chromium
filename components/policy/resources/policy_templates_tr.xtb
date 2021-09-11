@@ -1114,15 +1114,6 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
 
       Önceden false (yanlış) olan bu politikanın varsayılan değeri, <ph name="PRODUCT_NAME" /> 81 sürümünde true (doğru) olarak değiştirildi. Etkilenen proxy'lerin ERR_TLS13_DOWNGRADE_DETECTED hata kodu göstererek bağlantı kuramaması beklenir. Etkilenen proxy'leri yeni sürüme geçirmek için daha fazla zamana ihtiyacı olan yöneticiler, bu politikayı kullanarak bu güvenlik özelliğini geçici olarak devre dışı bırakabilirler. Bu politika sürüm 86'da kaldırıldı.
       </translation>
-<translation id="2333763898098246468"><ph name="PRODUCT_NAME" /> öğesinin Windows üzerinde nasıl yazdırdığını kontrol eder.
-
-      Windows'da PostScript olmayan bir yazıcıya yazdırırken, bazen doğru yazdırmak için yazdırma işlerinin pikselleştirilmesi gerekir.
-
-      Bu politika Full (Tam) değerine ayarlanırsa <ph name="PRODUCT_NAME" /> öğesi, gerekirse tam sayfa pikselleştirme yapar.
-
-      Bu politika Fast (Hızlı) değerine ayarlanırsa <ph name="PRODUCT_NAME" /> öğesi, mümkünse pikselleştirmeden kaçınır. Pikselleştirme miktarını azaltmak, yazdırma işinin boyutunu azaltmaya ve yazdırma hızını artırmaya yardımcı olabilir.
-
-      Bu politika ayarlanmadığında, <ph name="PRODUCT_NAME" /> öğesi Full (Tam) modunda olur.</translation>
 <translation id="2337859888277013371">Geri-ileri önbelleğin kullanılmasına izin verme</translation>
 <translation id="2341509917222115272">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa kullanıcıların bağlantı zamanında istemcileri ve ana makineleri eşlemelerine izin verilir. Bu durumda, her defasında PIN girme gereği ortadan kalkar.
 
@@ -6303,11 +6294,6 @@ Bu politika "true" (doğru) olarak ayarlanırsa kullanıcının tarayıcıyı ku
 <translation id="8854571659927427063">Politika Etkin değerine ayarlanırsa önceki varsayılan tarayıcıdan yer işaretleri ilk çalıştırmada içe aktarılır. Politika Devre dışı değerine ayarlanır veya ayarlanmadan bırakılırsa yer işaretleri ilk çalıştırmada içe aktarılmaz.
 
       Kullanıcılar içe aktarma iletişim kutusunu tetikleyebilir ve yer işaretleri onay kutusu, bu politikanın değerine uyacak şekilde işaretlenir veya işareti kaldırılır.</translation>
-<translation id="8855986672497556389">Uyarı: TLS 1.0/1.1 uyarısını engelleme desteği, sürüm 91'den itibaren (Mayıs 2021 civarında) <ph name="PRODUCT_NAME" /> ürününden kaldırılacak ve bu politika bundan sonra çalışmayacak.
-
-      Politika geçerli bir değere ayarlanırsa <ph name="PRODUCT_NAME" />, belirtilen sürümden daha eski SSL/TLS sürümlerini kullanmaz. Tanınmayan değerler yok sayılır.
-
-      Bu politika ayarlanmazsa <ph name="PRODUCT_NAME" />; TLS 1.0 ve TLS 1.1 için hata gösterir, ancak kullanıcı bunu atlayabilir.</translation>
 <translation id="8858642179038618439">YouTube Güvenlik Modunu zorla</translation>
 <translation id="8860342862142842017">subjectPublicKeyInfo karma listesi için Sertifika Şeffaflığı uygulamasını devre dışı bırak</translation>
 <translation id="8864975621965365890">Bir site <ph name="PRODUCT_FRAME_NAME" /> tarafından oluşturulduğunda görülen reddetme sorusunu engeller.</translation>

@@ -770,7 +770,6 @@
 <translation id="1794791083288629568">Muammoni bartaraf etishga yordam beruvchi fikrlar yuborish.</translation>
 <translation id="1795214765651529549">Klassik mavzu ishlatilsin</translation>
 <translation id="1796588414813960292">Ovozdan foydalanadigan funksiyalar ishlamaydi</translation>
-<translation id="1799071797295057738">“<ph name="EXTENSION_NAME" />” kengaytmasi avtomatik o‘chirib qo‘yildi.</translation>
 <translation id="1801418420130173017">Tungi mavzuni faolsizlantirish</translation>
 <translation id="1802624026913571222">Muqova yopilganda uyqu rejimiga oʻtish</translation>
 <translation id="1802687198411089702">Sahifa javob bermayapti. Server javobini kutishingiz yoki sahifani tark etishingiz mumkin.</translation>
@@ -838,7 +837,6 @@
 <translation id="1862311223300693744">Kompyuteringizda VPN, proksi-server, himoya devori yoki NAS kabi maxsus dasturiy taʼminot
     oʻrnatilganmi?</translation>
 <translation id="1863182668524159459">Hech qanday ketma-ket port topilmadi</translation>
-<translation id="1863316578636157783">“<ph name="EXTENSION_NAME" />” kengaytmasi faolsizlantirildi, chunki unda zararli dastur bor</translation>
 <translation id="1864111464094315414">Kirish</translation>
 <translation id="1864400682872660285">Salqinroq</translation>
 <translation id="1864454756846565995">USB-C qurilma (orqa port)</translation>
@@ -2283,12 +2281,12 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">Bu sayt uchun hech qanday parol saqlanmagan</translation>
 <translation id="3404249063913988450">Ekran lavhasini faollashtirish</translation>
+<translation id="3404805962764077228">Telefondagi ilovalardan vaqtincha <ph name="DEVICE_TYPE" /> qurilmasida foydalanish</translation>
 <translation id="3405664148539009465">Shriftlarni sozlash</translation>
 <translation id="3405763860805964263">...</translation>
 <translation id="3406290648907941085">Virtual reallik qurilmalari va axborotidan foydalanishga ruxsat berilgan</translation>
 <translation id="3406396172897554194">Til yoki klaviatura nomi orqali qidirish</translation>
 <translation id="3406605057700382950">&amp;Xatcho‘plar panelini ko‘rsatish</translation>
-<translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{Bu kengaytma xavfli boʻlishi mumkin}other{Bu kengaytmalar xavfli boʻlishi mumkin}}</translation>
 <translation id="3409785640040772790">Xaritalar</translation>
 <translation id="3410832398355316179">Bu foydalanuvchiga tegishli barcha fayllar va mahalliy maʼlumotlar foydalanuvchi olib tashlanganda butunlay tozalanadi. <ph name="USER_EMAIL" /> keyinroq kira oladi.</translation>
 <translation id="3412265149091626468">Belgilanishga o‘tish</translation>
@@ -2839,7 +2837,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3948116654032448504">Tasvirni qidirish (<ph name="SEARCH_ENGINE" />)</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> quyidagi jildlardagi fayllarni tahrirlay oladi</translation>
 <translation id="394984172568887996">IE brauzeridan import qilinganlar</translation>
-<translation id="3949981384795585075">{NUM_APPS,plural, =1{Bu ilova xavfli boʻlishi mumkin}other{Bu ilovalar xavfli boʻlishi mumkin}}</translation>
 <translation id="3950820424414687140">Kirish</translation>
 <translation id="3953834000574892725">Hisoblarim</translation>
 <translation id="3954354850384043518">Davom etmoqda</translation>
@@ -3975,7 +3972,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="523505283826916779">Maxsus imkoniyatlar sozlamalari</translation>
 <translation id="5235750401727657667">Yangi varaqda chiqadigan sahifani almashtirish</translation>
 <translation id="5236374273162681467">Ulardan barcha qurilmalarda osongina foydalanish uchun ularni Google hisobingizga oling</translation>
-<translation id="5238278114306905396">“<ph name="EXTENSION_NAME" />” ilovasi avtomatik o‘chirildi.</translation>
 <translation id="5242724311594467048">“<ph name="EXTENSION_NAME" />” kengaytmasi ishga tushirilsinmi?</translation>
 <translation id="5243522832766285132">Bir necha daqiqadan keyin qayta urining</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> hisobiga sinxronlanmoqda</translation>
@@ -4256,6 +4252,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5543983818738093899">Holat tekshirilmoqda...</translation>
 <translation id="554517701842997186">Renderlash vositasi</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Varaqni guruhga kiritish}other{Varaqlarni guruhga kiritish}}</translation>
+<translation id="5545693483061321551">Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzata olmaydi Ayrim saytlardagi funksiyalar ishlamay qolishi mumkin.</translation>
 <translation id="5546865291508181392">Qidirish</translation>
 <translation id="5548075230008247516">Barchasi belgilanmagan, tanlash rejimi oʻchiq.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{“<ph name="TAB_TITLE" />”}=1{“<ph name="TAB_TITLE" />” va yana 1 ta varaq}other{“<ph name="TAB_TITLE" />” va yana # ta varaq}}</translation>
@@ -5219,6 +5216,7 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
 <translation id="6607831829715835317">Qo‘shimcha &amp;asboblar</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> <ph name="DOMAIN" /> tomonidan boshqariladi. Ota-ona nazoratini boshqa Google hisobidan boshqarishni istasangiz, sozlangandan keyin hisobdan chiqing va kirish oynasida “Foydalanuvchini kiritish” bandini tanlang.</translation>
 <translation id="6609478180749378879">Inkognito rejimini tark etganingizdan keyin kirish maʼlumotlari shu qurilmada saqlanadi. Bu saytga keyinchalik shu qurilma orqali yana kira olasiz.</translation>
+<translation id="6610002944194042868">Tarjima parametrlari</translation>
 <translation id="6611972847767394631">Varaqlarni bu yerdan toping</translation>
 <translation id="6615455863669487791">Ko‘rsatish</translation>
 <translation id="6618097958368085618">Baribir davom etsin</translation>
@@ -6223,7 +6221,6 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
 <translation id="7697166915480294040">Ekran namoyishida tafsilotlar berkitiladi</translation>
 <translation id="7701040980221191251">Hech qanday</translation>
 <translation id="7701869757853594372">USER deskriptorlari</translation>
-<translation id="7701928712056789451">Bu elementlar xavfli boʻlish mumkin</translation>
 <translation id="7702574632857388784"><ph name="FILE_NAME" /> faylini roʻyxatdan olib tashlash</translation>
 <translation id="7702907602086592255">Domen</translation>
 <translation id="7704305437604973648">Vazifa</translation>
@@ -6683,6 +6680,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8149564499626272569">Telefoningizni USB kabel orqali tasdiqlang</translation>
 <translation id="8151638057146502721">Sozlash</translation>
 <translation id="8154790740888707867">Fayl mavjud emas</translation>
+<translation id="8154912474061769055">Aksariyat saytlardagi funksiyalar ishalamay qolishi mumkin</translation>
 <translation id="815491593104042026">Havfsizligi himoyalanmagan URL mazil (<ph name="BLOCKED_URL" />) topilganligi sababli, tasdiqlash tekshiruvini bajarib bo‘lmadi. Administrator bilan bog‘laning.</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{Oshkor etilgan parollar topilmadi}=1{{COUNT} ta parol oshkor etilgan}other{{COUNT} ta parol oshkor etilgan}}</translation>
 <translation id="8157248655669507702">eSIM profilini oʻrnatish uchun mobil internetni yoqing</translation>
@@ -6859,6 +6857,7 @@ Tayinlovni bekor qilish uchun yangi belgilangan tugmani bosing</translation>
 <translation id="8342221978608739536">Sinab koʻrmadim</translation>
 <translation id="8342861492835240085">To‘plamni tanlang</translation>
 <translation id="8347227221149377169">Chop etish vazifalari</translation>
+<translation id="834785183489258869">Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzata olmaydi. Ayrim saytlardagi funksiyalar ishlamay qolishi mumkin.</translation>
 <translation id="8350789879725387295">Dokdagi stilus vositalari</translation>
 <translation id="8351316842353540018">Maxsus imkoniyatlar doimo koʻrsatilsin</translation>
 <translation id="8351419472474436977">Bu kengaytma proksi-server sozlamalarini boshqaradi. Demak siz uzatayotgan ma’lumotlarni kuzatishi yoki o‘zgartirishi, hamda internet aloqasini uzib qo‘yishi ham mumkin. Agar buni bilmagan bo‘lsangiz, kengaytmani o‘chirib qo‘yishingiz mumkin.</translation>

@@ -91,6 +91,7 @@
 <translation id="1257553931232494454">அளவுமாற்ற நிலைகள்</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome அமைப்புகளை நிர்வகிக்க, Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="1263231323834454256">வாசிப்புப் பட்டியல்</translation>
+<translation id="1269096320618100013">அணுகல்தன்மை அமைப்புகளை நிர்வகிக்கும் பட்டன். Chrome OS அமைப்புகளில் அணுகல்தன்மைக் கருவிகளைப் பிரத்தியேகமாக்க, Enter பட்டனை அழுத்துங்கள்.</translation>
 <translation id="1269516672602708785">Google Sitesஸில் புதிய தளத்தை விரைவாக உருவாக்கும்</translation>
 <translation id="1270502636509132238">பிக்அப் முறை</translation>
 <translation id="1281476433249504884">ஸ்டேக்கர் 1</translation>
@@ -506,6 +507,7 @@
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome அமைப்புகளில் உலாவல் வரலாறு, குக்கீகள், தற்காலிகச் சேமிப்பு மற்றும் பலவற்றை அழிக்க Tab விசையை அழுத்திய பிறகு Enter விசையை அழுத்துங்கள்</translation>
 <translation id="2650446666397867134">ஃபைலுக்கான அணுகல் மறுக்கப்பட்டது</translation>
 <translation id="2653659639078652383">சமர்ப்பி</translation>
+<translation id="2659491813326907275">Chrome OS அமைப்புகளில் உங்கள் அணுகல்தன்மைக் கருவிகளைப் பிரத்தியேகமாக்கலாம்</translation>
 <translation id="2660779039299703961">நிகழ்வு</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{எதுவுமில்லை}=1{ஒரு கடவுச்சொல் (டொமைன்கள்: <ph name="DOMAIN_LIST" />)}=2{2 கடவுச்சொற்கள் (டொமைன்கள்: <ph name="DOMAIN_LIST" />)}other{# கடவுச்சொற்கள் (டொமைன்கள்: <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">மேலே</translation>
@@ -1246,6 +1248,7 @@
 <translation id="5115216390227830982">European-Edp</translation>
 <translation id="5115232566827194440">கட்டுப்பாடுகளுடைய நிர்வகிக்கப்பட்ட கெஸ்ட் அமர்வுகளை மீறிச்செயல்படுதல்</translation>
 <translation id="5115563688576182185">(64-பிட்)</translation>
+<translation id="5116898824332672776"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome OS அமைப்புகளில் அணுகல்தன்மைக் கருவிகளைப் பிரத்தியேகமாக்க, Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்.</translation>
 <translation id="5123063207673082822">வாரயிறுதி</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">உங்கள் கார்டு விவரங்களைச் சரிபார்த்தல்</translation>

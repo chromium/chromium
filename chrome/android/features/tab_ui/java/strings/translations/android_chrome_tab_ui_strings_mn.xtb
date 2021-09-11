@@ -8,6 +8,7 @@
 <translation id="1378979118429748177">Үнэ буурсан тохиолдолд мэдэгдэл аваарай</translation>
 <translation id="1657719826150349398">Табыг доош зөөх</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> таб}other{<ph name="TABS_COUNT_MANY" /> таб}}</translation>
+<translation id="2118649612461486615">Дэлгүүрийн мэдээлэл</translation>
 <translation id="2277224997687551299">Бүлгийн нэрийг засах</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Сонгосон <ph name="TABS_COUNT_ONE" /> табыг бүлгээс хасах.}other{Сонгосон <ph name="TABS_COUNT_MANY" /> табыг бүлгээс хасах.}}</translation>
 <translation id="2479148705183875116">Тохиргоо руу очих</translation>
@@ -50,13 +51,16 @@
 <translation id="6040143037577758943">Хаах</translation>
 <translation id="6054741997831917303">Энэ зүйлийн үнэ саяхан <ph name="PREVIOUS_PRICE" />-с <ph name="NEW_PRICE" /> болж буурсан</translation>
 <translation id="6193448654517602979">Таб сонгох</translation>
+<translation id="6228793724645064692">(дэлгүүрийн үнэлгээ)</translation>
 <translation id="6510648526783655549">Tab мессежийг хаах</translation>
+<translation id="6549021453810473782">Дэлгүүрийн мэдээллийг үзэх</translation>
 <translation id="6562820390860419811">Табыг зүүн тийш зөөх</translation>
 <translation id="6615455863669487791">Надад үзүүлнэ үү</translation>
 <translation id="6840760312327750441">Табуудыг бүлэглэхийн тулд таб дээр хүрээд, удаан дарна уу. Тэгээд уг табыг нөгөө рүү нь чирж зөөнө үү.</translation>
 <translation id="6856809498882026482">Олон сонголттой горимыг нуух</translation>
 <translation id="7151209024774799310">Бүлгээс табыг хасах</translation>
 <translation id="7204204600596740190">Олон сонголттой горим</translation>
+<translation id="7326879924029668159">Буцаалтын бодлого болон илүү ихийг хараарай</translation>
 <translation id="7352298686197644113">Таны нээлттэй табд аль зүйл илүү хямд үнэтэй байгааг хараарай</translation>
 <translation id="753732157349120914">Таб хооронд шилжүүлэгч</translation>
 <translation id="7559245342362162951">Бүлгийн табуудыг бүтэн дэлгэцийн торонд харуулах</translation>

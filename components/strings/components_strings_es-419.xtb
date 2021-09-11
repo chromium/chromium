@@ -91,6 +91,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1257553931232494454">niveles de zoom</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para administrar tu configuración de Chrome</translation>
 <translation id="1263231323834454256">Lista de lectura</translation>
+<translation id="1269096320618100013">Botón Administrar la configuración de accesibilidad, presiona Intro para personalizar tus herramientas de accesibilidad en la configuración de Chrome OS.</translation>
 <translation id="1269516672602708785">Crear un sitio nuevo en Google Sites rápidamente</translation>
 <translation id="1270502636509132238">Método de retiro</translation>
 <translation id="1281476433249504884">Apilador 1</translation>
@@ -502,6 +503,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />: presiona Tab y, luego, Intro para borrar tu historial de navegación, cookies, memoria caché y más en la configuración de Chrome</translation>
 <translation id="2650446666397867134">Se denegó el acceso al archivo.</translation>
 <translation id="2653659639078652383">Enviar</translation>
+<translation id="2659491813326907275">Personaliza tus herramientas de accesibilidad en la configuración de Chrome OS.</translation>
 <translation id="2660779039299703961">Evento</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Ninguna}=1{1 contraseña (para <ph name="DOMAIN_LIST" />)}=2{2 contraseñas (para <ph name="DOMAIN_LIST" />)}other{# contraseñas (para <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Superior</translation>
@@ -1242,6 +1244,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5115216390227830982">European-Edp</translation>
 <translation id="5115232566827194440">Anulación de la sesión de invitado administrada y restringida</translation>
 <translation id="5115563688576182185">(64 bits)</translation>
+<translation id="5116898824332672776"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para personalizar tus herramientas de accesibilidad en la configuración de Chrome OS.</translation>
 <translation id="5123063207673082822">Fin de semana</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Verifica tu tarjeta</translation>

@@ -454,6 +454,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="5556459405103347317">ხელახლა ჩატვირთვა</translation>
 <translation id="5580834567471114021">გსურთ, დაამატოთ მოგვიანებით საკითხავთა სიას?</translation>
 <translation id="5592679540098330836">სინქრონიზაციის ჩართვა <ph name="NAME" />-ისთვის</translation>
+<translation id="560322036295180549">გამორთულია თქვენი ორგანიზაციის მიერ</translation>
 <translation id="5614553682702429503">გსურთ პაროლის შენახვა?</translation>
 <translation id="5626245204502895507">ფაილის ჩამოტვირთვა ამჯერად ვერ მოხერხდა.</translation>
 <translation id="5631164295104953411">გადახდის მეთოდის დამატება</translation>
@@ -501,7 +502,6 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="5984222099446776634">ახლახანს მონახულებული</translation>
 <translation id="5988851877894965432">URL-ების გახსნა Chrome-ში</translation>
 <translation id="6012140227487808125">მიმდინარეობს დაშიფვრა…</translation>
-<translation id="6020800238007543967">ბმულის გადახედვების ჩვენება</translation>
 <translation id="6021332621416007159">გახსნა…</translation>
 <translation id="6036514205982097558">თქვენი ყველა ჩანართი ერთ ბრაუზერში</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
@@ -712,6 +712,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="7856733331829174190">ჩამოტვირთვა ვერ მოხერხდა</translation>
 <translation id="7859704718976024901">დათვალიერების ისტორია</translation>
 <translation id="7887198238286927132">თქვენი კონფიდენციალურობის დაცვის მიზნით, Chrome არ შეავსებს ავტომატურად ამ ველს.</translation>
+<translation id="7911190106180361398">თქვენი ორგანიზაცია ყველაფრის სინქრონიზაციის უფლებას არ გაძლევთ.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">პაროლების ექსპორტი...</translation>
 <translation id="794799177247607889">ჟურნალირების შეწყვეტა</translation>

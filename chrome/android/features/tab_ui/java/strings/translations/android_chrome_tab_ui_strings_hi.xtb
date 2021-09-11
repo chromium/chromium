@@ -8,6 +8,7 @@
 <translation id="1378979118429748177">कीमत में कमी होने पर सूचना पाएं</translation>
 <translation id="1657719826150349398">टैब को नीचे ले जाएं</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टैब}one{<ph name="TABS_COUNT_MANY" /> टैब}other{<ph name="TABS_COUNT_MANY" /> टैब}}</translation>
+<translation id="2118649612461486615">स्टोर की जानकारी</translation>
 <translation id="2277224997687551299">ग्रुप के नाम में बदलाव करें</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{चुने गए <ph name="TABS_COUNT_ONE" /> टैब को ग्रुप से हटाएं.}one{चुने गए <ph name="TABS_COUNT_MANY" /> टैब को ग्रुप से हटाएं.}other{चुने गए <ph name="TABS_COUNT_MANY" /> टैब को ग्रुप से हटाएं.}}</translation>
 <translation id="2479148705183875116">सेटिंग पर जाएं</translation>
@@ -50,13 +51,16 @@
 <translation id="6040143037577758943">बंद करें</translation>
 <translation id="6054741997831917303">इस आइटम की कीमत <ph name="PREVIOUS_PRICE" /> से कम होकर <ph name="NEW_PRICE" /> हो गई है</translation>
 <translation id="6193448654517602979">टैब चुनें</translation>
+<translation id="6228793724645064692">(स्टोर की रेटिंग)</translation>
 <translation id="6510648526783655549">टैब बार को बंद करें</translation>
+<translation id="6549021453810473782">स्टोर की जानकारी देखें</translation>
 <translation id="6562820390860419811">टैब को बाईं ओर ले जाएं</translation>
 <translation id="6615455863669487791">मुझे दिखाएं</translation>
 <translation id="6840760312327750441">टैब को ग्रुप करने के लिए, टैब को दबाकर रखें. इसके बाद, इसे दूसरे टैब पर खींचें और छोड़ें.</translation>
 <translation id="6856809498882026482">एक साथ कई टैब चुनने का मोड छिपाएं</translation>
 <translation id="7151209024774799310">ग्रुप से टैब हटाएं</translation>
 <translation id="7204204600596740190">एक साथ कई टैब चुनने का मोड</translation>
+<translation id="7326879924029668159">सामान लौटाने की नीति वगैरह देखें</translation>
 <translation id="7352298686197644113">देखें कि आपके खोले गए टैब में मौजूद किस आइटम की कीमत कम हुई है</translation>
 <translation id="753732157349120914">टैब बदलने की सुविधा</translation>
 <translation id="7559245342362162951">समूह के टैब फ़ुलस्क्रीन ग्रिड में दिखाएं</translation>

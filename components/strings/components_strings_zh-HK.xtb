@@ -91,6 +91,7 @@
 <translation id="1257553931232494454">縮放等級</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以管理 Chrome 設定</translation>
 <translation id="1263231323834454256">閱讀清單</translation>
+<translation id="1269096320618100013">管理無障礙設定按鈕，㩒一下 Enter 鍵就可以喺 Chrome 作業系統設定度個人化無障礙工具</translation>
 <translation id="1269516672602708785">在「Google 協作平台」中快速建立新版網站</translation>
 <translation id="1270502636509132238">取貨方式</translation>
 <translation id="1281476433249504884">堆疊器 1</translation>
@@ -502,6 +503,7 @@
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Chrome 設定度清除瀏覽記錄、Cookie、快取同更多資料</translation>
 <translation id="2650446666397867134">存取檔案被拒</translation>
 <translation id="2653659639078652383">提交</translation>
+<translation id="2659491813326907275">在 Chrome 作業系統設定中個人化您的無障礙工具</translation>
 <translation id="2660779039299703961">活動</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{無}=1{有 1 個密碼 (<ph name="DOMAIN_LIST" />)}=2{有 2 個密碼 (<ph name="DOMAIN_LIST" />)}other{有 # 個密碼 (<ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">返回頁首</translation>
@@ -1240,6 +1242,7 @@
 <translation id="5115216390227830982">European-Edp</translation>
 <translation id="5115232566827194440">受限制的受管理訪客工作階段的覆寫值</translation>
 <translation id="5115563688576182185">(64 位元)</translation>
+<translation id="5116898824332672776"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Chrome 作業系統設定度個人化您嘅無障礙工具。</translation>
 <translation id="5123063207673082822">週末</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">驗證信用卡</translation>

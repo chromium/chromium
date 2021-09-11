@@ -783,7 +783,6 @@
 <translation id="1794791083288629568">이 문제를 해결하는 데 도움이 되도록 의견 전송</translation>
 <translation id="1795214765651529549">기본 테마 사용</translation>
 <translation id="1796588414813960292">소리가 필요한 기능이 작동하지 않습니다</translation>
-<translation id="1799071797295057738">'<ph name="EXTENSION_NAME" />' 확장 프로그램 자동으로 사용 중지되었습니다.</translation>
 <translation id="1801418420130173017">어두운 테마 사용 안함</translation>
 <translation id="1802624026913571222">커버를 닫으면 절전 모드 진입</translation>
 <translation id="1802687198411089702">페이지가 응답하지 않습니다. 페이지가 응답할 때까지 기다리거나 종료할 수 있습니다.</translation>
@@ -851,7 +850,6 @@
 <translation id="1862311223300693744">특별히 설치한 VPN, 프록시, 방화벽 또는 NAS 소프트웨어가
     있나요?</translation>
 <translation id="1863182668524159459">직렬 포트를 찾을 수 없음</translation>
-<translation id="1863316578636157783">‘<ph name="EXTENSION_NAME" />’ 확장 프로그램에 멀웨어가 포함되어 있어 사용 중지되었습니다.</translation>
 <translation id="1864111464094315414">로그인</translation>
 <translation id="1864400682872660285">시원함</translation>
 <translation id="1864454756846565995">USB-C 기기(후면 포트)</translation>
@@ -2296,12 +2294,12 @@
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">이 사이트의 비밀번호가 저장되지 않음</translation>
 <translation id="3404249063913988450">화면 보호기 사용</translation>
+<translation id="3404805962764077228"><ph name="DEVICE_TYPE" />에서 휴대전화 앱을 바로 스트림</translation>
 <translation id="3405664148539009465">글꼴 맞춤설정</translation>
 <translation id="3405763860805964263">...</translation>
 <translation id="3406290648907941085">가상 현실 기기 및 데이터 사용이 허용됨</translation>
 <translation id="3406396172897554194">언어 또는 입력 이름으로 검색</translation>
 <translation id="3406605057700382950">북마크바 표시(&amp;S)</translation>
-<translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{위험할 수 있는 확장 프로그램}other{위험할 수 있는 확장 프로그램}}</translation>
 <translation id="3409785640040772790">지도</translation>
 <translation id="3410832398355316179">이 사용자를 제거하면 해당 사용자와 연결된 모든 파일 및 로컬 데이터가 영구적으로 삭제됩니다. <ph name="USER_EMAIL" />님은 나중에도 로그인할 수 있습니다.</translation>
 <translation id="3412265149091626468">선택 부분으로 이동</translation>
@@ -2852,7 +2850,6 @@
 <translation id="3948116654032448504"><ph name="SEARCH_ENGINE" />에서 이미지 검색(&amp;S)</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" />에서 다음 폴더의 파일을 수정할 수 있습니다.</translation>
 <translation id="394984172568887996">IE에서 가져온 북마크</translation>
-<translation id="3949981384795585075">{NUM_APPS,plural, =1{위험할 수 있는 앱}other{위험할 수 있는 앱}}</translation>
 <translation id="3950820424414687140">로그인</translation>
 <translation id="3953834000574892725">내 계정</translation>
 <translation id="3954354850384043518">진행 중</translation>
@@ -3985,7 +3982,6 @@
 <translation id="523505283826916779">접근성 설정</translation>
 <translation id="5235750401727657667">새 탭을 열 때 표시되는 페이지 변경</translation>
 <translation id="5236374273162681467">모든 기기에서 비밀번호를 간편하게 사용하려면 비밀번호를 Google 계정으로 이동하세요.</translation>
-<translation id="5238278114306905396">'<ph name="EXTENSION_NAME" />' 앱이 자동으로 삭제되었습니다.</translation>
 <translation id="5242724311594467048">'<ph name="EXTENSION_NAME" />'을(를) 사용하시겠습니까?</translation>
 <translation id="5243522832766285132">잠시 후 다시 시도해 주세요.</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" />에 동기화</translation>
@@ -4266,6 +4262,7 @@
 <translation id="5543983818738093899">상태 확인 중...</translation>
 <translation id="554517701842997186">렌더러</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{그룹에 탭 추가}other{그룹에 탭 추가}}</translation>
+<translation id="5545693483061321551">사이트에서 사용자의 다양한 사이트 탐색 활동 정보를 이용해 광고 맞춤설정 등의 작업을 하는 데 쿠키를 사용할 수 없습니다. 일부 사이트에서는 기능이 작동하지 않을 수 있습니다.</translation>
 <translation id="5546865291508181392">찾기</translation>
 <translation id="5548075230008247516">모든 항목이 선택 해제되었으며 선택 모드가 종료되었습니다.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{‘<ph name="TAB_TITLE" />’}=1{‘<ph name="TAB_TITLE" />’ 외 탭 1개}other{‘<ph name="TAB_TITLE" />’ 외 탭 #개}}</translation>
@@ -5228,6 +5225,7 @@
 <translation id="6607831829715835317">도구 더보기</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> 계정은 이미 <ph name="DOMAIN" />에서 관리하고 있습니다. 다른 Google 계정에 자녀 보호 기능을 사용하려면 설정이 완료된 후 로그아웃하고 로그인 화면에서 '사용자 추가'를 선택하세요.</translation>
 <translation id="6609478180749378879">시크릿 모드를 종료한 후 로그인 데이터가 기기에 저장됩니다. 나중에 다시 기기에서 이 웹사이트에 로그인할 수 있습니다.</translation>
+<translation id="6610002944194042868">번역 옵션</translation>
 <translation id="6611972847767394631">여기에서 탭 찾아보기</translation>
 <translation id="6615455863669487791">보기</translation>
 <translation id="6618097958368085618">보관</translation>
@@ -6232,7 +6230,6 @@
 <translation id="7697166915480294040">화면을 공유하는 동안에는 세부정보가 표시되지 않습니다.</translation>
 <translation id="7701040980221191251">없음</translation>
 <translation id="7701869757853594372">사용자 처리</translation>
-<translation id="7701928712056789451">위험할 수 있는 항목</translation>
 <translation id="7702574632857388784">목록에서 <ph name="FILE_NAME" /> 삭제</translation>
 <translation id="7702907602086592255">도메인</translation>
 <translation id="7704305437604973648">작업</translation>
@@ -6694,6 +6691,7 @@
 <translation id="8149564499626272569">USB 케이블로 휴대전화를 연결하여 인증</translation>
 <translation id="8151638057146502721">구성</translation>
 <translation id="8154790740888707867">파일 없음</translation>
+<translation id="8154912474061769055">다수의 사이트에서 기능이 작동하지 않을 수 있음</translation>
 <translation id="815491593104042026">보안되지 않는 URL(<ph name="BLOCKED_URL" />)을 사용하도록 설정되었기 때문에 인증할 수 없습니다. 관리자에게 문의하세요.</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{유출된 비밀번호가 없습니다.}=1{유출된 비밀번호가 {COUNT}개 있습니다.}other{유출된 비밀번호가 {COUNT}개 있습니다.}}</translation>
 <translation id="8157248655669507702">eSIM 프로필을 설치하려면 모바일 데이터 사용 설정</translation>
@@ -6870,6 +6868,7 @@
 <translation id="8342221978608739536">사용해 보지 않음</translation>
 <translation id="8342861492835240085">컬렉션 선택</translation>
 <translation id="8347227221149377169">인쇄 작업</translation>
+<translation id="834785183489258869">시크릿 모드에 있는 동안에는 사이트에서 사용자의 다양한 사이트 탐색 활동 정보를 이용해 광고 맞춤설정 등의 작업을 하는 데 쿠키를 사용할 수 없습니다. 일부 사이트에서는 기능이 작동하지 않을 수 있습니다.</translation>
 <translation id="8350789879725387295">도크에 스타일러스 도구 표시</translation>
 <translation id="8351316842353540018">항상 접근성 옵션 표시</translation>
 <translation id="8351419472474436977">이 확장 프로그램이 프록시 설정을 제어할 수 있게 되었으며, 따라서 사용자가 온라인에서 수행하는 모든 작업을 변경 및 중단하고 엿볼 수 있게 되었음을 의미합니다. 이와 같이 변경된 이유가 확실하지 않다면 이 설정을 사용하지 않는 것이 좋습니다.</translation>

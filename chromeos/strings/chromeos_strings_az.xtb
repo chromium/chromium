@@ -58,9 +58,11 @@
 <translation id="1999615961760456652">Giriş Portalı</translation>
 <translation id="2006864819935886708">Bağlantı</translation>
 <translation id="2008685064673031089">Əsas axtarış</translation>
+<translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Digər ayarlar</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versiya <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" />/<ph name="TOTAL_MEMORY" /> GB əlçatandır</translation>
+<translation id="2129264932216073062">ARC HTTP</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">NÖVBƏDƏDİR</translation>
 <translation id="2161394479394250669">Çap işini ləğv edin</translation>
@@ -74,6 +76,7 @@
 <translation id="2364498172489649528">Keçdi</translation>
 <translation id="2380886658946992094">Hüquqi</translation>
 <translation id="2391082728065870591">Rəy Hesabatını Göndərin</translation>
+<translation id="2407209115954268704">SIM Kilid Statusu</translation>
 <translation id="2418150275289244458">Ayarlarda açın</translation>
 <translation id="2446553403094072641">Dəyişən nöqtə dəqiqliyi</translation>
 <translation id="2448312741937722512">Növ</translation>
@@ -179,6 +182,7 @@
 <translation id="4536864596629708641">İP Konfiqurasiyası</translation>
 <translation id="4548483925627140043">Siqnal tapılmadı</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh Batareya</translation>
+<translation id="4561801978359312462">SIM Kilidi Açılıb</translation>
 <translation id="4562494484721939086">Xidmət yoxdur</translation>
 <translation id="458794348635939462">Bütün hostları həll etmək alınmadı</translation>
 <translation id="4593212453765072419">Proksi doğrulama tələb olunur</translation>
@@ -218,6 +222,7 @@
 <translation id="4999333166442584738">Hesabatı gizlədin</translation>
 <translation id="500920857929044050">Testi dayandırın</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5049856988445523908">SIM Kilidlənib (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Qrup adı</translation>
 <translation id="5088172560898466307">Serverin host adı</translation>
 <translation id="5089810972385038852">Dövlət</translation>
@@ -311,6 +316,7 @@
 <translation id="6527081081771465939">Naməlum Wi-Fi güvənlik protokolu</translation>
 <translation id="65587193855025101">Yastı</translation>
 <translation id="6564646048574748301">Alınmadı - Printer əlçatan deyil</translation>
+<translation id="6566314079205407217">Bir neçə səhifənin skanlanması</translation>
 <translation id="6574762126505704998">Doldurma</translation>
 <translation id="6575134580692778371">Konfiqurasiya edilməyib</translation>
 <translation id="6596816719288285829">IP Ünvanı</translation>

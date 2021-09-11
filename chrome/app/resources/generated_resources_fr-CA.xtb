@@ -773,7 +773,6 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="1794791083288629568">Envoyer des commentaires pour nous aider à résoudre ce problème.</translation>
 <translation id="1795214765651529549">Utiliser le thème classique</translation>
 <translation id="1796588414813960292">Les fonctionnalités qui utilisent des sons ne fonctionneront pas</translation>
-<translation id="1799071797295057738">L'extension « <ph name="EXTENSION_NAME" /> » a été désactivée automatiquement.</translation>
 <translation id="1801418420130173017">Désactiver le thème sombre</translation>
 <translation id="1802624026913571222">Mettre en veille lorsque le couvercle est fermé</translation>
 <translation id="1802687198411089702">La page ne répond pas. Vous pouvez attendre qu'elle réponde ou la quitter.</translation>
@@ -840,7 +839,6 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="1861262398884155592">Ce dossier est vide</translation>
 <translation id="1862311223300693744">Avez-vous installé un RPV, un mandataire, un pare-feu ou un logiciel pour serveur de stockage NAS?</translation>
 <translation id="1863182668524159459">Aucun port série n'a été trouvé</translation>
-<translation id="1863316578636157783">L'extension « <ph name="EXTENSION_NAME" /> » a été désactivée parce qu'elle contient des logiciels malveillants</translation>
 <translation id="1864111464094315414">Connexion</translation>
 <translation id="1864400682872660285">Plus froid</translation>
 <translation id="1864454756846565995">Appareil USB-C (port arrière)</translation>
@@ -2288,7 +2286,6 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="3406290648907941085">Autorisés à utiliser des appareils et des données de réalité virtuelle</translation>
 <translation id="3406396172897554194">Faites une recherche par langue ou méthode d'entrée</translation>
 <translation id="3406605057700382950">&amp;Afficher la barre des favoris</translation>
-<translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{Cette extension pourrait être dangereuse}one{Cette extension pourrait être dangereuse}other{Ces extensions pourraient être dangereuses}}</translation>
 <translation id="3409785640040772790">Google Maps</translation>
 <translation id="3410832398355316179">Tous les fichiers et toutes les données locales associés à cet utilisateur seront définitivement supprimés en même temps que lui. <ph name="USER_EMAIL" /> peut toujours se connecter plus tard.</translation>
 <translation id="3412265149091626468">Aller à la sélection</translation>
@@ -2839,7 +2836,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3948116654032448504">&amp;Rechercher une image avec <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> peut modifier les fichiers dans les dossiers suivants</translation>
 <translation id="394984172568887996">Importés d'Internet Explorer</translation>
-<translation id="3949981384795585075">{NUM_APPS,plural, =1{Cette application pourrait être dangereuse}one{Cette application pourrait être dangereuse}other{Ces applications pourraient être dangereuses}}</translation>
 <translation id="3950820424414687140">Connexion</translation>
 <translation id="3953834000574892725">Mes comptes</translation>
 <translation id="3954354850384043518">En cours</translation>
@@ -3974,7 +3970,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="523505283826916779">Paramètres d'accessibilité</translation>
 <translation id="5235750401727657667">Remplacer la page qui s'affiche lors de l'ouverture d'un nouvel onglet</translation>
 <translation id="5236374273162681467">Pour les utiliser facilement sur tous vos appareils, vous pouvez les déplacer vers votre compte Google</translation>
-<translation id="5238278114306905396">L'application « <ph name="EXTENSION_NAME" /> » a été automatiquement supprimée.</translation>
 <translation id="5242724311594467048">Activer « <ph name="EXTENSION_NAME" /> »?</translation>
 <translation id="5243522832766285132">Veuillez réessayer dans quelques instants</translation>
 <translation id="5244474230056479698">Synchronisation avec <ph name="EMAIL" /></translation>
@@ -5217,6 +5212,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6607831829715835317">Autres outi&amp;ls</translation>
 <translation id="6607890859198268021">L'adresse <ph name="USER_EMAIL" /> est déjà gérée par <ph name="DOMAIN" />. Pour utiliser les contrôles parentaux avec un autre compte Google, déconnectez-vous après la configuration, puis sélectionnez « Ajouter une personne » à l'écran de connexion.</translation>
 <translation id="6609478180749378879">Les données de connexion seront stockées sur cet appareil lorsque vous quitterez le mode de navigation privée. Vous pourrez vous reconnecter à ce site Web avec votre appareil plus tard.</translation>
+<translation id="6610002944194042868">Options de traduction</translation>
 <translation id="6611972847767394631">Retrouvez vos onglets ici</translation>
 <translation id="6615455863669487791">Démonstration</translation>
 <translation id="6618097958368085618">Conserver quand même</translation>
@@ -6221,7 +6217,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7697166915480294040">Les renseignements sont masqués quand vous partagez votre écran</translation>
 <translation id="7701040980221191251">Aucun</translation>
 <translation id="7701869757853594372">Descripteurs de l'UTILISATEUR</translation>
-<translation id="7701928712056789451">Ces éléments pourraient être dangereux</translation>
 <translation id="7702574632857388784">Supprimer <ph name="FILE_NAME" /> de la liste</translation>
 <translation id="7702907602086592255">Domaine</translation>
 <translation id="7704305437604973648">Tâche</translation>

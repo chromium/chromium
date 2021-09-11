@@ -772,7 +772,6 @@
 <translation id="1794791083288629568">Bu sorunu düzeltmemize yardımcı olmak için geri bildirim gönderin.</translation>
 <translation id="1795214765651529549">Klasik Temayı Kullan</translation>
 <translation id="1796588414813960292">Ses kullanılmasını gerektiren özellikler çalışmaz</translation>
-<translation id="1799071797295057738">"<ph name="EXTENSION_NAME" />" uzantısı otomatik olarak devre dışı bırakıldı.</translation>
 <translation id="1801418420130173017">Koyu temayı devre dışı bırak</translation>
 <translation id="1802624026913571222">Kapak kapatıldığında uyku moduna geç</translation>
 <translation id="1802687198411089702">Sayfa yanıt vermiyor. Sayfanın yanıt vermesini bekleyebilir veya sayfadan çıkabilirsiniz.</translation>
@@ -839,7 +838,6 @@
 <translation id="1861262398884155592">Bu klasör boş</translation>
 <translation id="1862311223300693744">Herhangi bir özel VPN, proxy, güvenlik duvarı veya NAS yazılımı yüklü mü?</translation>
 <translation id="1863182668524159459">Seri bağlantı noktası bulunamadı</translation>
-<translation id="1863316578636157783">Kötü amaçlı yazılım içerdiğinden "<ph name="EXTENSION_NAME" />" uzantısı devre dışı bırakıldı</translation>
 <translation id="1864111464094315414">Oturum Aç</translation>
 <translation id="1864400682872660285">Daha Soğuk</translation>
 <translation id="1864454756846565995">USB-C cihaz (arka bağlantı noktası)</translation>
@@ -2279,12 +2277,12 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">Bu site için hiç şifre kaydedilmedi</translation>
 <translation id="3404249063913988450">Ekran koruyucuyu etkinleştir</translation>
+<translation id="3404805962764077228">Telefon uygulamalarınızı geçici olarak doğrudan <ph name="DEVICE_TYPE" /> cihazınızdan oynatın</translation>
 <translation id="3405664148539009465">Yazı tiplerini özelleştir</translation>
 <translation id="3405763860805964263">...</translation>
 <translation id="3406290648907941085">Sanal gerçeklik cihazları ve verileri kullanmasına izin verilen siteler</translation>
 <translation id="3406396172897554194">Dile veya giriş adına göre ara</translation>
 <translation id="3406605057700382950">Yer işaretleri ç&amp;ubuğunu göster</translation>
-<translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{Bu uzantı tehlikeli olabilir}other{Bu uzantılar tehlikeli olabilir}}</translation>
 <translation id="3409785640040772790">Haritalar</translation>
 <translation id="3410832398355316179">Bu kullanıcıyla ilişkilendirilen tüm dosyalar ve yerel veriler, bu kullanıcı kaldırıldıktan sonra kalıcı olarak silinir. <ph name="USER_EMAIL" /> daha sonra yine oturum açabilir.</translation>
 <translation id="3412265149091626468">Seçim'e Atla</translation>
@@ -2835,7 +2833,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3948116654032448504"><ph name="SEARCH_ENGINE" /> içinde Resim &amp;ara</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> sitesi şu klasörlerdeki dosyaları düzenleyebilir:</translation>
 <translation id="394984172568887996">IE'den Aktarıldı</translation>
-<translation id="3949981384795585075">{NUM_APPS,plural, =1{Bu uygulama tehlikeli olabilir}other{Bu uygulamalar tehlikeli olabilir}}</translation>
 <translation id="3950820424414687140">Oturum açın</translation>
 <translation id="3953834000574892725">Hesaplarım</translation>
 <translation id="3954354850384043518">Devam ediyor</translation>
@@ -3970,7 +3967,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="523505283826916779">Erişilebilirlik ayarları</translation>
 <translation id="5235750401727657667">Yeni bir sekme açarken gördüğünüz sayfayı değiştirme</translation>
 <translation id="5236374273162681467">Tüm cihazlarınızda kolayca kullanabilmek için şifrelerinizi Google hesabınıza taşıyabilirsiniz</translation>
-<translation id="5238278114306905396">"<ph name="EXTENSION_NAME" />" uygulaması otomatik olarak kaldırıldı.</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" etkinleştirilsin mi?</translation>
 <translation id="5243522832766285132">Lütfen kısa bir süre sonra tekrar deneyin</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> hesabıyla senkronize ediliyor</translation>
@@ -4251,6 +4247,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="5543983818738093899">Durum kontrol ediliyor...</translation>
 <translation id="554517701842997186">Oluşturucu</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Sekmeyi gruba ekle}other{Sekmeleri gruba ekle}}</translation>
+<translation id="5545693483061321551">Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde tarama etkinliğinizi görmek için çerezlerinizi kullanamaz. Bazı sitelerdeki özellikler çalışmayabilir.</translation>
 <translation id="5546865291508181392">Bul</translation>
 <translation id="5548075230008247516">Tüm öğelerin seçimi kaldırıldı, seçim modundan çıkıldı.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" ve 1 Diğer Sekme}other{"<ph name="TAB_TITLE" />" ve # Diğer Sekme}}</translation>
@@ -5214,6 +5211,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6607831829715835317">Diğer araç&amp;lar</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> zaten <ph name="DOMAIN" /> tarafından yönetiliyor. Ebeveyn denetimlerini farklı bir Google Hesabıyla kullanmak için kurulumdan sonra oturumu kapatıp oturum açma ekranında "Kişi ekle"yi seçin.</translation>
 <translation id="6609478180749378879">Gizli moddan çıktıktan sonra oturum açma verileriniz bu cihazda saklanır. Daha sonra cihazınızla bu web sitesinde tekrar oturum açabilirsiniz.</translation>
+<translation id="6610002944194042868">Çeviri Seçenekleri</translation>
 <translation id="6611972847767394631">Sekmelerinizi burada bulabilirsiniz</translation>
 <translation id="6615455863669487791">Göster</translation>
 <translation id="6618097958368085618">Yine de Tut</translation>
@@ -6218,7 +6216,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7697166915480294040">Ekranınızı paylaşırken ayrıntılar gizlenir</translation>
 <translation id="7701040980221191251">Yok</translation>
 <translation id="7701869757853594372">KULLANICI İşleyicileri</translation>
-<translation id="7701928712056789451">Bu öğeler tehlikeli olabilir</translation>
 <translation id="7702574632857388784"><ph name="FILE_NAME" /> dosyasını listeden kaldır</translation>
 <translation id="7702907602086592255">Alan adı</translation>
 <translation id="7704305437604973648">Görev</translation>
@@ -6678,6 +6675,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8149564499626272569">USB kablosuyla bağlı telefonumu kullanarak doğrula</translation>
 <translation id="8151638057146502721">Yapılandır</translation>
 <translation id="8154790740888707867">Dosya yok</translation>
+<translation id="8154912474061769055">Çoğu sitedeki özellikler çalışmayabilir</translation>
 <translation id="815491593104042026">Hata! Güvenli olmayan bir URL (<ph name="BLOCKED_URL" />) kullanmak üzere yapılandırıldığından kimlik doğrulama başarısız oldu. Lütfen yöneticinizle bağlantı kurun.</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{Güvenliği ihlal edilmiş şifre bulunmadı}=1{Güvenliği ihlal edilmiş {COUNT} şifre}other{Güvenliği ihlal edilmiş {COUNT} şifre}}</translation>
 <translation id="8157248655669507702">eSIM profili yüklemek için mobil veriyi etkinleştirin</translation>
@@ -6854,6 +6852,7 @@ Atamayı kaldırmak için atanmış bir anahtara basın</translation>
 <translation id="8342221978608739536">Denemedim</translation>
 <translation id="8342861492835240085">Koleksiyon seçin</translation>
 <translation id="8347227221149377169">Yazdırma işleri</translation>
+<translation id="834785183489258869">Gizli moddayken siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde tarama etkinliğinizi görmek için çerezlerinizi kullanamaz. Bazı sitelerdeki özellikler çalışmayabilir.</translation>
 <translation id="8350789879725387295">Yuvadayken ekran kalemi aracı</translation>
 <translation id="8351316842353540018">Her zaman a11y seçeneklerini göster</translation>
 <translation id="8351419472474436977">Bu uzantı proxy ayarlarınızın denetimini ele geçirdi. Bu, uzantının çevrimiçinde yaptıklarınızı değiştirebileceği, kesebileceği veya dinleyebileceği anlamına gelir. Bu değişikliğin neden olduğundan emin değilseniz muhtemelen bu değişikliği yapmayı istememişsinizdir.</translation>

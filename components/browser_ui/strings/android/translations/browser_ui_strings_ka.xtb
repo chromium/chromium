@@ -36,6 +36,7 @@
 <translation id="1984937141057606926">ნებადართულია, მესამე მხარის გარდა</translation>
 <translation id="1989112275319619282">დათვალიერება</translation>
 <translation id="1994173015038366702">საიტის URL</translation>
+<translation id="2004697686368036666">ფუნქციებმა, შესაძლოა, არ იმუშაოს ზოგიერთ საიტზე</translation>
 <translation id="2025115093177348061">აუგმენტური რეალობა</translation>
 <translation id="2030769033451695672">შეეხეთ <ph name="URL_OF_THE_CURRENT_TAB" />-ზე დასაბრუნებლად</translation>
 <translation id="2079545284768500474">მოქმედების გაუქმება</translation>
@@ -268,6 +269,7 @@
 <translation id="8116925261070264013">დადუმებული</translation>
 <translation id="813082847718468539">საიტის ინფორმაციის ნახვა</translation>
 <translation id="8131740175452115882">დაადასტურება</translation>
+<translation id="8154912474061769055">ფუნქციებმა, შესაძლოა, არ იმუშაოს მრავალ საიტზე</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> დაშვებულია</translation>
 <translation id="8200772114523450471">გაგრძელება</translation>
 <translation id="8206354486702514201">ეს პარამეტრი იძულებითაა დაყენებული თქვენი ადმინისტრატორის მიერ.</translation>

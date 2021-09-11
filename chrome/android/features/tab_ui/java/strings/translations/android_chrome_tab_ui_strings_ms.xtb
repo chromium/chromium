@@ -8,6 +8,7 @@
 <translation id="1378979118429748177">Dapatkan pemberitahuan apabila harga turun</translation>
 <translation id="1657719826150349398">Alihkan tab ke bawah</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
+<translation id="2118649612461486615">Maklumat kedai</translation>
 <translation id="2277224997687551299">Edit nama kumpulan</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Alih keluar <ph name="TABS_COUNT_ONE" /> tab yang dipilih daripada kumpulan.}other{Alih keluar <ph name="TABS_COUNT_MANY" /> tab yang dipilih daripada kumpulan.}}</translation>
 <translation id="2479148705183875116">Pergi ke Tetapan</translation>
@@ -50,13 +51,16 @@
 <translation id="6040143037577758943">Tutup</translation>
 <translation id="6054741997831917303">Baru-baru ini harga item ini jatuh daripada <ph name="PREVIOUS_PRICE" /> kepada <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Pilih tab</translation>
+<translation id="6228793724645064692">(rating kedai)</translation>
 <translation id="6510648526783655549">Tutup jalur tab</translation>
+<translation id="6549021453810473782">Lihat maklumat kedai</translation>
 <translation id="6562820390860419811">Alihkan tab ke kiri</translation>
 <translation id="6615455863669487791">Tunjukkan kepada saya</translation>
 <translation id="6840760312327750441">Untuk menghimpunkan tab, sentuh &amp; tahan tab. Kemudian, seret tab itu ke tab lain.</translation>
 <translation id="6856809498882026482">Sembunyikan mod berbilang pilihan</translation>
 <translation id="7151209024774799310">Alih keluar tab daripada kumpulan</translation>
 <translation id="7204204600596740190">Mod berbilang pilihan</translation>
+<translation id="7326879924029668159">Lihat dasar pemulangan dan pelbagai lagi</translation>
 <translation id="7352298686197644113">Lihat item yang lebih murah dalam tab yang terbuka</translation>
 <translation id="753732157349120914">Penukar Tab</translation>
 <translation id="7559245342362162951">Tunjukkan tab kumpulan dalam grid skrin penuh</translation>

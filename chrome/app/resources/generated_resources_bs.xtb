@@ -782,7 +782,6 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1794791083288629568">Šaljite nam povratne informacije kako bismo riješili ovaj problem.</translation>
 <translation id="1795214765651529549">Koristi klasičnu</translation>
 <translation id="1796588414813960292">Funkcije za koje je potreban zvuk neće funkcionirati</translation>
-<translation id="1799071797295057738">Ekstenzija "<ph name="EXTENSION_NAME" />" je automatski onemogućena.</translation>
 <translation id="1801418420130173017">Onemogući tamnu temu</translation>
 <translation id="1802624026913571222">Uključi stanje mirovanje kada se zatvori poklopac</translation>
 <translation id="1802687198411089702">Stranica ne reagira. Možete sačekati ili je zatvoriti.</translation>
@@ -850,7 +849,6 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1862311223300693744">Imate li instaliran neki poseban softver za VPN, proksi server, zaštitni zid
     ili NAS?</translation>
 <translation id="1863182668524159459">Nije pronađen nijedan serijski priključak</translation>
-<translation id="1863316578636157783">Ekstenzija "<ph name="EXTENSION_NAME" />" je onemogućena jer sadrži zlonamjerni softver</translation>
 <translation id="1864111464094315414">Prijava</translation>
 <translation id="1864400682872660285">Hladnije</translation>
 <translation id="1864454756846565995">USB-C uređaj (stražnji priključak)</translation>
@@ -2294,12 +2292,12 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">Lozinke nisu sačuvane za ovu web lokaciju</translation>
 <translation id="3404249063913988450">Omogućite čuvara ekrana</translation>
+<translation id="3404805962764077228">Privremeno aplikacije za telefon direktno s vašeg uređaja <ph name="DEVICE_TYPE" /></translation>
 <translation id="3405664148539009465">Prilagodi fontove</translation>
 <translation id="3405763860805964263">…</translation>
 <translation id="3406290648907941085">Dozvoljeno je korištenje uređaja i podataka virtuelne realnosti</translation>
 <translation id="3406396172897554194">Pretraživanje po jeziku ili nazivu unosa</translation>
 <translation id="3406605057700382950">&amp;Prikaži traku oznaka</translation>
-<translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{Ova ekstenzija može biti opasna}one{Ove ekstenzije mogu biti opasne}few{Ove ekstenzije mogu biti opasne}other{Ove ekstenzije mogu biti opasne}}</translation>
 <translation id="3409785640040772790">Mape</translation>
 <translation id="3410832398355316179">Nakon što se ukloni ovaj korisnik, trajno će se izbrisati svi fajlovi i lokalni podaci povezani s njim. Korisnik <ph name="USER_EMAIL" /> može se i dalje prijaviti kasnije.</translation>
 <translation id="3412265149091626468">Pređi na Odabir</translation>
@@ -2850,7 +2848,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3948116654032448504">Traženje slike koristeći <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> može uređivati fajlove u sljedećim folderima</translation>
 <translation id="394984172568887996">Uvezeno iz IE</translation>
-<translation id="3949981384795585075">{NUM_APPS,plural, =1{Ova aplikacija može biti opasna}one{Ove aplikacije mogu biti opasne}few{Ove aplikacije mogu biti opasne}other{Ove aplikacije mogu biti opasne}}</translation>
 <translation id="3950820424414687140">Prijava</translation>
 <translation id="3953834000574892725">Moji računi</translation>
 <translation id="3954354850384043518">U toku</translation>
@@ -3986,7 +3983,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="523505283826916779">Postavke pristupačnosti</translation>
 <translation id="5235750401727657667">Zamijeniti stranicu koja se prikazuje kad otvorite novu karticu</translation>
 <translation id="5236374273162681467">Da ih jednostavno koristite na svim svojim uređajima, možete ih premjestiti na Google račun</translation>
-<translation id="5238278114306905396">Aplikacija "<ph name="EXTENSION_NAME" />" je automatski uklonjena.</translation>
 <translation id="5242724311594467048">Omogućiti "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5243522832766285132">Pokušajte ponovo za nekoliko trenutaka</translation>
 <translation id="5244474230056479698">Sinhroniziranje s korisničkim računom <ph name="EMAIL" /></translation>
@@ -4267,6 +4263,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="5543983818738093899">Provjera statusa...</translation>
 <translation id="554517701842997186">Renderer</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Dodaj karticu u grupu}one{Dodaj kartice u grupu}few{Dodaj kartice u grupu}other{Dodaj kartice u grupu}}</translation>
+<translation id="5545693483061321551">Web lokacije ne mogu koristiti kolačiće da vide vašu aktivnost pregledanja na različitim web lokacijama, npr. radi personaliziranja oglasa. Moguće je da funkcije neće raditi na nekim web lokacijama.</translation>
 <translation id="5546865291508181392">Pronađi</translation>
 <translation id="5548075230008247516">Poništen je odabir svih stavki. Izašli ste iz načina rada za odabir.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" i još jedna kartica}one{"<ph name="TAB_TITLE" />" i još # kartica}few{"<ph name="TAB_TITLE" />" i još # kartice}other{"<ph name="TAB_TITLE" />" i još # kartica}}</translation>
@@ -5229,6 +5226,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6607831829715835317">Više ala&amp;ta</translation>
 <translation id="6607890859198268021">Adresom e-pošte <ph name="USER_EMAIL" /> već upravlja domena <ph name="DOMAIN" />. Da koristite roditeljski nadzor s drugim Google računom, odjavite se nakon postavljanja, a zatim odaberite "Dodaj osobu" na ekranu za prijavu.</translation>
 <translation id="6609478180749378879">Podaci za prijavu će se pohraniti na ovom uređaju nakon što izađete iz anonimnog načina rada. Moći ćete se ponovo prijaviti na ovu web lokaciju svojim uređajem kasnije.</translation>
+<translation id="6610002944194042868">Opcije za prevođenje</translation>
 <translation id="6611972847767394631">Ovdje pronađite svoje kartice</translation>
 <translation id="6615455863669487791">Pokaži mi</translation>
 <translation id="6618097958368085618">Ipak zadrži</translation>
@@ -6233,7 +6231,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="7697166915480294040">Detalji će biti skriveni tokom dijeljenja ekrana</translation>
 <translation id="7701040980221191251">Nema</translation>
 <translation id="7701869757853594372">Obrađuje KORISNIK</translation>
-<translation id="7701928712056789451">Ove stavke mogu biti opasne</translation>
 <translation id="7702574632857388784">Uklanjanje fajla <ph name="FILE_NAME" /> s liste</translation>
 <translation id="7702907602086592255">Domena</translation>
 <translation id="7704305437604973648">Zadatak</translation>
@@ -6695,6 +6692,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8149564499626272569">Potvrdite telefonom putem USB kabla</translation>
 <translation id="8151638057146502721">Konfiguriraj</translation>
 <translation id="8154790740888707867">Nema fajla</translation>
+<translation id="8154912474061769055">Moguće je da funkcije neće raditi na mnogim web lokacijama</translation>
 <translation id="815491593104042026">Ups!  Autentifikacija nije uspjela jer je konfigurirana da koristi nesigurni URL (<ph name="BLOCKED_URL" />). Obratite se svom administratoru.</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{Nisu pronađene ugrožene lozinke}=1{{COUNT} ugrožena lozinka}one{{COUNT} ugrožena lozinka}few{{COUNT} ugrožene lozinke}other{{COUNT} ugroženih lozinki}}</translation>
 <translation id="8157248655669507702">Omogućite prijenos podataka na mobilnoj mreži da instalirate eSIM profil</translation>
@@ -6871,6 +6869,7 @@ Pritisnite dodijeljeni prekidač da uklonite dodjeljivanje</translation>
 <translation id="8342221978608739536">Nisam probao/la</translation>
 <translation id="8342861492835240085">Odaberite kolekciju</translation>
 <translation id="8347227221149377169">Zadaci štampanja</translation>
+<translation id="834785183489258869">U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu aktivnost pregledanja na različitim web lokacijama, npr. radi personaliziranja oglasa. Moguće je da funkcije neće raditi na nekim web lokacijama.</translation>
 <translation id="8350789879725387295">Alati olovke na priključnoj traci</translation>
 <translation id="8351316842353540018">Uvijek prikaži opcije pristupačnosti</translation>
 <translation id="8351419472474436977">Ova ekstenzija je preuzela kontrolu nad postavkama vašeg proksi servera, što znači da može promijeniti, prekinuti ili prisluškivati sve što radite na mreži. Ako niste sigurni zašto je došlo do ove promjene, vjerovatno je i ne želite.</translation>

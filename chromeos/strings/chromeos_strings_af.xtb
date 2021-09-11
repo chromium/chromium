@@ -58,9 +58,11 @@
 <translation id="1999615961760456652">Kontroleringsportaal</translation>
 <translation id="2006864819935886708">Konnektiwiteit</translation>
 <translation id="2008685064673031089">Hoofsoektog</translation>
+<translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Nog instellings</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, weergawe <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB van <ph name="TOTAL_MEMORY" /> GB beskibaar</translation>
+<translation id="2129264932216073062">ARC HTTP</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">OP WAGLYS</translation>
 <translation id="2161394479394250669">Kanselleer druktaak</translation>
@@ -74,6 +76,7 @@
 <translation id="2364498172489649528">Geslaag</translation>
 <translation id="2380886658946992094">Wetlik</translation>
 <translation id="2391082728065870591">Stuur terugvoerverslag</translation>
+<translation id="2407209115954268704">SIM-slotstatus</translation>
 <translation id="2418150275289244458">Maak in Instellings oop</translation>
 <translation id="2446553403094072641">Akkuraatheid van wisselpunt</translation>
 <translation id="2448312741937722512">Soort</translation>
@@ -179,6 +182,7 @@
 <translation id="4536864596629708641">IP-opstelling</translation>
 <translation id="4548483925627140043">Kon nie sein kry nie</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh-battery</translation>
+<translation id="4561801978359312462">SIM is ontsluit</translation>
 <translation id="4562494484721939086">Geen diens nie</translation>
 <translation id="458794348635939462">Kon nie alle gashere bepaal nie</translation>
 <translation id="4593212453765072419">Instaanstawing word vereis</translation>
@@ -218,6 +222,7 @@
 <translation id="4999333166442584738">Versteek verslag</translation>
 <translation id="500920857929044050">Stop toets</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5049856988445523908">SIM is gesluit (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Groepnaam</translation>
 <translation id="5088172560898466307">Bediener se gasheernaam</translation>
 <translation id="5089810972385038852">Deelstaat</translation>
@@ -312,6 +317,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="6527081081771465939">Onbekende wi-fi-sekuriteitprotokol</translation>
 <translation id="65587193855025101">Plat oppervlak</translation>
 <translation id="6564646048574748301">Misluk – Kon nie drukker bereik nie</translation>
+<translation id="6566314079205407217">Skandering van veelvuldige bladsye</translation>
 <translation id="6574762126505704998">Vul</translation>
 <translation id="6575134580692778371">Nie opgestel nie</translation>
 <translation id="6596816719288285829">IP-adres</translation>

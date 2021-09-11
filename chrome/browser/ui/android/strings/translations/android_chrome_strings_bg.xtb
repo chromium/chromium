@@ -700,7 +700,6 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="5324858694974489420">Родителски настройки</translation>
 <translation id="5342314432463739672">Искания за разрешение</translation>
 <translation id="5355191726083956201">Режимът за подобрена защита е включен</translation>
-<translation id="5357811892247919462">Получихте раздел</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> отворен раздел. Докоснете за превключване между разделите}other{<ph name="OPEN_TABS_MANY" /> отворени раздела. Докоснете за превключване между тях}}</translation>
 <translation id="5375577065097716013">Търсене на изобр. с Обектив <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Разрешаване само на конкретни сайтове</translation>
@@ -1237,6 +1236,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="8442258441309440798">Няма налични истории</translation>
 <translation id="8443209985646068659">Не може да се актуализира</translation>
 <translation id="8445448999790540984">Паролите не могат да бъдат експортирани</translation>
+<translation id="8446884382197647889">Научете повече</translation>
 <translation id="8453310803815879010">Стартиране на играта с динозавъра</translation>
 <translation id="8461694314515752532">Шифроване на синхронизираните данни със собствения ви пропуск за синхронизиране</translation>
 <translation id="8466613982764129868">Уверете се, че устройството <ph name="TARGET_DEVICE_NAME" /> е свързано с интернет</translation>

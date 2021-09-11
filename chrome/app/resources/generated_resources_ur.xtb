@@ -772,7 +772,6 @@
 <translation id="1794791083288629568">اس مسئلے کو حل کرنے میں ہماری مدد کیلئے تاثرات بھیجیں۔</translation>
 <translation id="1795214765651529549">کلاسک استعمال کریں</translation>
 <translation id="1796588414813960292">وہ خصوصیات کام نہیں کریں گی جن کیلئے آواز کی ضرورت ہوتی ہے</translation>
-<translation id="1799071797295057738">ایکسٹینشن "<ph name="EXTENSION_NAME" />" کو خود کار طور پر غیر فعال کر دیا گیا۔</translation>
 <translation id="1801418420130173017">گہری تھیم غیر فعال کریں</translation>
 <translation id="1802624026913571222">کوَر بند ہونے پر سلیپ وضع میں بھیجیں</translation>
 <translation id="1802687198411089702">صفحہ کھل نہیں رہا ہے۔ آپ اس کے کھلنے انتظار کر سکتے ہیں یا باہر نکل سکتے ہیں۔</translation>
@@ -839,7 +838,6 @@
 <translation id="1861262398884155592">یہ فولڈر خالی ہے</translation>
 <translation id="1862311223300693744">‏کیا آپ نے کوئی خصوصی VPN، پراکسی، فائروال یا NAS سافٹ ویئر انسٹال کیا ہوا ہے؟</translation>
 <translation id="1863182668524159459">کوئی سیریل پورٹ نہیں ملا</translation>
-<translation id="1863316578636157783">"<ph name="EXTENSION_NAME" />" کو غیر فعال کر دیا گیا ہے کیونکہ یہ میلوئیر پر مشتمل ہے</translation>
 <translation id="1864111464094315414">لاگ ان</translation>
 <translation id="1864400682872660285">کولر</translation>
 <translation id="1864454756846565995">‏USB-C آلہ (پیچھے کا پورٹ)</translation>
@@ -2285,7 +2283,6 @@
 <translation id="3406290648907941085">ورچوئل رئیلٹی آلات اور ڈیٹا کو استعمال کرنے کی اجازت ہے</translation>
 <translation id="3406396172897554194">زبان یا ان پٹ نام سے تلاش کریں</translation>
 <translation id="3406605057700382950">بُک مارکس بار &amp;دکھائیں</translation>
-<translation id="340671561090997290">{NUM_EXTENSIONS,plural, =1{یہ ایکسٹینشن خطرناک ہو سکتی ہے}other{یہ ایکسٹینشنز خطرناک ہو سکتی ہیں}}</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3410832398355316179">اس صارف کو ہٹانے کے بعد، اس صارف کے ساتھ وابستہ تمام فائلوں اور مقامی ڈیٹا کو مستقل طور پر حذف کر دیا جائے گا۔ <ph name="USER_EMAIL" /> اب بھی بعد میں سائن ان کر سکتا ہے۔</translation>
 <translation id="3412265149091626468">انتخاب پر جائیں</translation>
@@ -2836,7 +2833,6 @@
 <translation id="3948116654032448504">تصویر کیلئے <ph name="SEARCH_ENGINE" /> میں &amp;تلاش کریں</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> مندرجہ ذیل فولڈرز کی فائلز میں ترمیم کر سکتا ہے</translation>
 <translation id="394984172568887996">‏IE سے درآمد کردہ</translation>
-<translation id="3949981384795585075">{NUM_APPS,plural, =1{یہ ایپ خطرناک ہو سکتی ہے}other{یہ ایپس خطرناک ہو سکتی ہیں}}</translation>
 <translation id="3950820424414687140">سائن ان کریں</translation>
 <translation id="3953834000574892725">میرے اکاؤنٹس</translation>
 <translation id="3954354850384043518">پیشرفت میں ہے</translation>
@@ -3971,7 +3967,6 @@
 <translation id="523505283826916779">ایکسیسبیلٹی کی ترتیبات</translation>
 <translation id="5235750401727657667">نیا ٹیب کھولنے کے دوران دکھائي دینے والا صفحہ تبدیل کریں</translation>
 <translation id="5236374273162681467">‏آسانی سے اپنے سبھی آلات پر ان کا استعمال کرنے کیلئے آپ انہیں اپنے Google اکاؤنٹ میں منتقل کر سکتے ہیں</translation>
-<translation id="5238278114306905396">ایپ "<ph name="EXTENSION_NAME" />" کو خود بخود ہٹا دیا گیا تھا۔</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" فعال کریں؟</translation>
 <translation id="5243522832766285132">براہ کرم کچھ دیر میں دوبارہ کوشش کریں</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> میں مطابقت پذیری کی جا رہی ہے</translation>
@@ -5214,6 +5209,7 @@
 <translation id="6607831829715835317">مزید &amp;ٹولز</translation>
 <translation id="6607890859198268021">‏<ph name="USER_EMAIL" /> پہلے سے ہی <ph name="DOMAIN" /> کے زیر انتظام ہے۔ مختلف Google اکاؤنٹ سے پیرنٹل کنٹرولز کو استعمال کرنے کے لیے، سیٹ اپ کے بعد سائن آؤٹ کریں، پھر سائن ان اسکرین پر "شخص شامل کریں" کو منتخب کریں۔</translation>
 <translation id="6609478180749378879">آپ کے پوشیدگی وضع سے باہر نکلنے کے بعد، سائن ان ڈیٹا اس آلے پر اسٹور کیا جائے گا۔ بعد میں، آپ اپنے آلے کی مدد سے اس ویب سائٹ پر دوبارہ سائن ان کر سکیں گے۔</translation>
+<translation id="6610002944194042868">ترجمہ کے اختیارات</translation>
 <translation id="6611972847767394631">یہاں اپنے ٹیبز تلاش کریں</translation>
 <translation id="6615455863669487791">مجھے دکھائیں</translation>
 <translation id="6618097958368085618">بہر حال رکھیں</translation>
@@ -6218,7 +6214,6 @@
 <translation id="7697166915480294040">آپ کی جانب سے اپنی اسکرین کے اشتراک کے دوران تفصیلات پوشیدہ ہوتی ہیں</translation>
 <translation id="7701040980221191251">کوئی نہیں</translation>
 <translation id="7701869757853594372">صارف کے ہینڈلز</translation>
-<translation id="7701928712056789451">یہ آئٹمز خطرناک ہو سکتے ہیں</translation>
 <translation id="7702574632857388784">فہرست سے <ph name="FILE_NAME" /> ہٹائيں</translation>
 <translation id="7702907602086592255">ڈومین</translation>
 <translation id="7704305437604973648">ٹاسک</translation>

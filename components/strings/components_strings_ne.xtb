@@ -91,6 +91,7 @@
 <translation id="1257553931232494454">जुमका स्तरहरू</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome मा आफूले तय गरेका सेटिङ मिलाउन Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="1263231323834454256">पाठ्य सूची</translation>
+<translation id="1269096320618100013">एस्सेसिबिलिटी सेटिङ मिलाउनुहोस् नामक बटन, Chrome OS का सेटिङमा गई एस्सेसिबिलिटी टुलहरू आफूले चाहेको जस्तो बनाउन Enter थिच्नुहोस्</translation>
 <translation id="1269516672602708785">Google Sites प्रयोग गरी तुरुन्तै नयाँ साइट बनाउनुहोस्</translation>
 <translation id="1270502636509132238">पिकअपको विधि</translation>
 <translation id="1281476433249504884">स्ट्याकर १</translation>
@@ -506,6 +507,7 @@
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome का सेटिङमा गई आफ्नो ब्राउजिङ इतिहास, कुकी, क्यास तथा अन्य डेटा हटाउन Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="2650446666397867134">फाइलमा पहुँच अस्वीकार गरियो</translation>
 <translation id="2653659639078652383">पेश गर्नुहोस्</translation>
+<translation id="2659491813326907275">Chrome OS का सेटिङमा गई एस्सेसिबिलिटी टुलहरू आफूले चाहेको जस्तो बनाउनुहोस्</translation>
 <translation id="2660779039299703961">घटना</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{कुनै पनि होइन}=1{<ph name="DOMAIN_LIST" /> को १ पासवर्ड}=2{<ph name="DOMAIN_LIST" /> का २ पासवर्डहरू}other{<ph name="DOMAIN_LIST" /> का # पासवर्डहरू}}</translation>
 <translation id="2666092431469916601">शीर्ष</translation>
@@ -1246,6 +1248,7 @@
 <translation id="5115216390227830982">European-Edp</translation>
 <translation id="5115232566827194440">व्यवस्थापन गरिएका प्रतिबन्धित अतिथिको सत्रको ओभरराइड</translation>
 <translation id="5115563688576182185">(64-बिट)</translation>
+<translation id="5116898824332672776"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome OS का सेटिङमा गई एस्सेसिबिलिटी टुलहरू आफूले चाहेको जस्तो बनाउन Tab थिच्नुहोस् अनि Enter थिच्नुहोस्।</translation>
 <translation id="5123063207673082822">सप्ताहान्त</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">आफ्नो कार्ड पुष्टि गर्नुहोस्</translation>

@@ -699,7 +699,6 @@
 <translation id="5324858694974489420">अभिभावक सेटिङहरू</translation>
 <translation id="5342314432463739672">अनुमतिसम्बन्धी अनुरोधहरू</translation>
 <translation id="5355191726083956201">'उन्नत सुरक्षा' सक्रिय छ</translation>
-<translation id="5357811892247919462">ट्याब प्राप्त भयो</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> ट्याब खोल्नुहोस्, एउटा ट्याबबाट अर्को ट्याबमा जान ट्याप गर्नुहोस्}other{<ph name="OPEN_TABS_MANY" /> ट्याबहरू खोल्नुहोस्, एउटा ट्याबबाट अर्को ट्याबमा जान ट्याप गर्नुहोस्}}</translation>
 <translation id="5375577065097716013">Google Lens मार्फत फोटो खोज्नुहोस् <ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">निश्चित साइटहरूलाई मात्र अनुमति दिनुहोस्</translation>
@@ -1236,6 +1235,7 @@
 <translation id="8442258441309440798">कुनै पनि समाचार उपलब्ध छैन</translation>
 <translation id="8443209985646068659">Chrome अद्यावधिक गर्न सकिँदैन</translation>
 <translation id="8445448999790540984">पासवर्डहरू निर्यात गर्न सकिएन</translation>
+<translation id="8446884382197647889">थप जान्नुहोस्</translation>
 <translation id="8453310803815879010">Dino गेम खेल्न थाल्नुहोस्</translation>
 <translation id="8461694314515752532">सिंक गरिएको डेटालाई तपाईंको आफ्नै सिंक पासफ्रेजमार्फत इन्क्रिप्ट गर्नुहोस्</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> इन्टरनेटमा जोडिएको कुरा सुनिश्चित गर्नुहोस्</translation>

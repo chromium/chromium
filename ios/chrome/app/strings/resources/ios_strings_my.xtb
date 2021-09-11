@@ -453,6 +453,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="5556459405103347317">ပြန်တင်ရန်</translation>
 <translation id="5580834567471114021">နောင်အတွက် ‘ဖတ်ရန် စာရင်း’ တွင် ထည့်မလား။</translation>
 <translation id="5592679540098330836"><ph name="NAME" /> အတွက် စင့်ခ်ဖွင့်ပါ</translation>
+<translation id="560322036295180549">သင်၏အဖွဲ့အစည်းက ပိတ်ထားသည်</translation>
 <translation id="5614553682702429503">စကားဝှက်ကို သိမ်းလိုပါသလား။</translation>
 <translation id="5626245204502895507">ဤဖိုင်ကို ယခုအချိန်တွင် ဒေါင်းလုဒ် လုပ်၍မရနိုင်ပါ။</translation>
 <translation id="5631164295104953411">ငွေပေးချေနည်းလမ်း ထည့်ရန်</translation>
@@ -500,7 +501,6 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="5984222099446776634">မကြာသေးခင်က လည်ပတ်ခဲ့သော</translation>
 <translation id="5988851877894965432">Chrome တွင် URL များ ဖွင့်ရန်</translation>
 <translation id="6012140227487808125">လျှို့ဝှက်သည့်အသွင်သို့ ပြောင်းနေသည်…</translation>
-<translation id="6020800238007543967">အကြိုဗားရှင်းလင့်ခ်ပြခြင်း</translation>
 <translation id="6021332621416007159">...တွင်ဖွင့်မည်</translation>
 <translation id="6036514205982097558">ဘရောင်ဇာတစ်ခုတည်းရှိ သင်၏တဘ်အားလုံး</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />၊ <ph name="PUBLISHER_INFORMATION" />၊ <ph name="PUBLICATION_DATE" /></translation>
@@ -711,6 +711,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="7856733331829174190">ဒေါင်းလုဒ် လုပ်၍မရပါ</translation>
 <translation id="7859704718976024901">ရှာဖွေမှု မှတ်တမ်း</translation>
 <translation id="7887198238286927132">သင်၏ ပုဂ္ဂိုလ်ရေးကို ကာကွယ်ရန် Chrome သည် ဤအကွက်တွင် အော်တိုဖြည့်မည် မဟုတ်ပါ။</translation>
+<translation id="7911190106180361398">သင့်အဖွဲ့အစည်းက အားလုံးကိုစင့်ခ်လုပ်ရန် ခွင့်မပြုပါ။</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">စကားဝှက်များကို တင်ပို့ခြင်း…</translation>
 <translation id="794799177247607889">မှတ်တမ်းရပ်ရန်</translation>

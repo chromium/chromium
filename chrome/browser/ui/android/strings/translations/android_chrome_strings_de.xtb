@@ -700,7 +700,6 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="5324858694974489420">Jugendschutzeinstellungen</translation>
 <translation id="5342314432463739672">Berechtigungsanfragen</translation>
 <translation id="5355191726083956201">Erweitertes Safe Browsing ist aktiviert</translation>
-<translation id="5357811892247919462">Tab erhalten</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> geöffneter Tab, zum Wechseln der Tabs tippen}other{<ph name="OPEN_TABS_MANY" /> geöffnete Tabs, zum Wechseln der Tabs tippen}}</translation>
 <translation id="5375577065097716013">Bild mit Google Lens suchen <ph name="BEGIN_NEW" />Neu<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Nur bestimmte Websites zulassen</translation>
@@ -1237,6 +1236,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="8442258441309440798">Keine Artikel verfügbar</translation>
 <translation id="8443209985646068659">Update nicht möglich</translation>
 <translation id="8445448999790540984">Passwörter können nicht exportiert werden</translation>
+<translation id="8446884382197647889">Weitere Informationen</translation>
 <translation id="8453310803815879010">Dino-Spiel starten</translation>
 <translation id="8461694314515752532">Synchronisierte Daten mit eigener Synchronisierungspassphrase verschlüsseln</translation>
 <translation id="8466613982764129868">Prüfen Sie, ob <ph name="TARGET_DEVICE_NAME" /> mit dem Internet verbunden ist</translation>

@@ -450,8 +450,9 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urządzenie musi używać tego samego konta iCloud.</translation>
 <translation id="5551897871312988470">Proponuj tłumaczenie</translation>
 <translation id="5556459405103347317">Odśwież</translation>
-<translation id="5580834567471114021">Dodać do listy Do przeczytania później?</translation>
+<translation id="5580834567471114021">Dodać do listy Do przeczytania?</translation>
 <translation id="5592679540098330836">Włącz synchronizację dla: <ph name="NAME" /></translation>
+<translation id="560322036295180549">Wyłączone przez organizację</translation>
 <translation id="5614553682702429503">Zapisać hasło?</translation>
 <translation id="5626245204502895507">Nie udało się pobrać teraz tego pliku.</translation>
 <translation id="5631164295104953411">Dodaj formę płatności</translation>
@@ -499,7 +500,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5984222099446776634">Ostatnio odwiedzone</translation>
 <translation id="5988851877894965432">Otwórz adresy URL w Chrome</translation>
 <translation id="6012140227487808125">Szyfruję…</translation>
-<translation id="6020800238007543967">Pokaż podglądy linków</translation>
 <translation id="6021332621416007159">Otwórz w...</translation>
 <translation id="6036514205982097558">Wszystkie Twoje karty w 1 przeglądarce</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
@@ -710,6 +710,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7856733331829174190">Nie udało się pobrać pliku</translation>
 <translation id="7859704718976024901">Historia przeglądania</translation>
 <translation id="7887198238286927132">Aby chronić Twoją prywatność, Chrome nie będzie automatycznie wypełniać tego pola.</translation>
+<translation id="7911190106180361398">Twoja organizacja nie pozwala Ci synchronizować wszystkich danych.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Eksportuj hasła…</translation>
 <translation id="794799177247607889">Zatrzymaj rejestrowanie</translation>

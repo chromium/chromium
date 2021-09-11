@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
-<translation id="102360288709523007">Aiutaci a migliorare Chromium inviando a Google statistiche sull'utilizzo e rapporti sugli arresti anomali.</translation>
+<translation id="102360288709523007">Aiutaci a migliorare Chromium inviando a Google statistiche sull'utilizzo e report sugli arresti anomali.</translation>
 <translation id="1185134272377778587">Informazioni su Chromium</translation>
 <translation id="1257458525759135959">Per salvare le immagini, tocca Impostazioni e consenti a Chromium di aggiungere le tue foto</translation>
 <translation id="1289216811211435351">Passa a Chromium</translation>
@@ -44,7 +44,7 @@
 <translation id="4585809515399340748">Ora puoi usare Chromium ogni volta che tocchi link in messaggi, documenti e altre app.</translation>
 <translation id="4681781466797808448">Attiva lo scanner di Chromium</translation>
 <translation id="4736424910885271643">Il tuo account è gestito da <ph name="HOSTED_DOMAIN" />, pertanto i tuoi dati di Chromium verranno cancellati da questo dispositivo</translation>
-<translation id="4806326830773390517">Contribuisci a migliorare Chromium inviando a Google statistiche sull'utilizzo e rapporti sugli arresti anomali</translation>
+<translation id="4806326830773390517">Contribuisci a migliorare Chromium inviando a Google statistiche sull'utilizzo e report sugli arresti anomali</translation>
 <translation id="4828317641996116749">Chromium non ha potuto controllare tutte le password. Riprova più tardi.</translation>
 <translation id="4985291216379576555">Offline. Chromium non può controllare la disponibilità di aggiornamenti.</translation>
 <translation id="4999538639245140991">Dal momento che stai per uscire da un account gestito da <ph name="SIGNOUT_MANAGED_DOMAIN" />, i dati di Chromium verranno eliminati da questo dispositivo, ma rimarranno memorizzati nel tuo Account Google.</translation>

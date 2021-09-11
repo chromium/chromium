@@ -36,6 +36,7 @@
 <translation id="1984937141057606926">Permitido (excepto cookies de terceros)</translation>
 <translation id="1989112275319619282">Examinar</translation>
 <translation id="1994173015038366702">URL del sitio</translation>
+<translation id="2004697686368036666">Es posible que las funciones de algunos sitios no funcionen</translation>
 <translation id="2025115093177348061">Realidad aumentada</translation>
 <translation id="2030769033451695672">Toca para volver a <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Deshacer</translation>
@@ -268,6 +269,7 @@
 <translation id="8116925261070264013">Silenciado</translation>
 <translation id="813082847718468539">Ver información del sitio</translation>
 <translation id="8131740175452115882">Confirmar</translation>
+<translation id="8154912474061769055">Es posible que las funciones de muchos sitios no funcionen</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> permitido</translation>
 <translation id="8200772114523450471">Reanudar</translation>
 <translation id="8206354486702514201">El administrador aplica esta opción.</translation>

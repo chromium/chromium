@@ -8,6 +8,7 @@
 <translation id="1378979118429748177">Отримуйте сповіщення, коли ціни знижуються</translation>
 <translation id="1657719826150349398">Перемістити вкладку вниз</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> вкладка}one{<ph name="TABS_COUNT_MANY" /> вкладка}few{<ph name="TABS_COUNT_MANY" /> вкладки}many{<ph name="TABS_COUNT_MANY" /> вкладок}other{<ph name="TABS_COUNT_MANY" /> вкладки}}</translation>
+<translation id="2118649612461486615">Про магазин</translation>
 <translation id="2277224997687551299">Змінити назву групи</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Видалити <ph name="TABS_COUNT_ONE" /> вибрану вкладку з групи}one{Видалити <ph name="TABS_COUNT_MANY" /> вибрану вкладку з групи}few{Видалити <ph name="TABS_COUNT_MANY" /> вибрані вкладки з групи}many{Видалити <ph name="TABS_COUNT_MANY" /> вибраних вкладок із групи}other{Видалити <ph name="TABS_COUNT_MANY" /> вибраної вкладки з групи}}</translation>
 <translation id="2479148705183875116">Перейти в налаштування</translation>
@@ -50,13 +51,16 @@
 <translation id="6040143037577758943">Закрити</translation>
 <translation id="6054741997831917303">Ціна на цей товар нещодавно знизилася з <ph name="PREVIOUS_PRICE" /> до <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Виберіть вкладки</translation>
+<translation id="6228793724645064692">(оцінка магазину)</translation>
 <translation id="6510648526783655549">Закрити панель вкладок</translation>
+<translation id="6549021453810473782">Переглянути інформацію про магазин</translation>
 <translation id="6562820390860419811">Перемістити вкладку ліворуч</translation>
 <translation id="6615455863669487791">Показати</translation>
 <translation id="6840760312327750441">Щоб згрупувати вкладки, натисніть і утримуйте вкладку, а потім перетягніть її на іншу.</translation>
 <translation id="6856809498882026482">Вийти з режиму вибору кількох вкладок</translation>
 <translation id="7151209024774799310">Видалити вкладки з групи</translation>
 <translation id="7204204600596740190">Режим вибору кількох вкладок</translation>
+<translation id="7326879924029668159">Переглянути правила повернення й інше</translation>
 <translation id="7352298686197644113">Дізнайтеся, який товар на відкритих вкладках дешевший</translation>
 <translation id="753732157349120914">Перемикач вкладок</translation>
 <translation id="7559245342362162951">Показувати вкладки групи в повноекранній сітці</translation>

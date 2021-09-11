@@ -1117,15 +1117,6 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 
       O valor padrão dessa política foi mudado no <ph name="PRODUCT_NAME" /> 81 de "falsa" a "verdadeira". Os proxies afetados causarão uma falha nas conexões, apresentando o código do erro ERR_TLS13_DOWNGRADE_DETECTED. Os administradores que precisarem de mais tempo para fazer upgrade dos proxies afetados poderão usar esta política para desativar temporariamente esse recurso de segurança. Esta política foi removida na versão 86.
       </translation>
-<translation id="2333763898098246468">Controlar como <ph name="PRODUCT_NAME" /> imprime no Windows.
-
-      Ao imprimir em uma impressora não PostScript no Windows, as vezes os trabalhos de impressão precisam de uma varredura para serem impressos corretamente.
-
-      Se esta política for definida como "completa", <ph name="PRODUCT_NAME" /> fará uma varredura completa da página, se necessário.
-
-      Se esta política for definida como "rápida", <ph name="PRODUCT_NAME" /> evitará a varredura se possível. Reduzir a quantidade de varreduras ajuda a reduzir os tamanhos dos trabalhos de impressão e aumenta a velocidade de impressão.
-
-      Se a política não for definida, <ph name="PRODUCT_NAME" /> ficará no modo de varredura completa.</translation>
 <translation id="2337859888277013371">Não permitir o uso do cache de avanço e retorno</translation>
 <translation id="2341509917222115272">Se a política for definida como "Ativada" ou deixada sem definição, o usuário poderá parear clientes e hosts durante a conexão, eliminando a necessidade de inserir um PIN todas as vezes.
 
@@ -3045,7 +3036,7 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
 
           Se esta política não for definida, o áudio mono ficará desativado inicialmente, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
 <translation id="4768446404233019970">Ativar pacotes de criptografia 3DES em TLS</translation>
-<translation id="4770334626033858263">Configuração usada para gerar e verificar o código de acesso de pai/mãe.</translation>
+<translation id="4770334626033858263">Configuração usada para gerar e verificar o código de acesso do familiar responsável.</translation>
 <translation id="4787763197941188108">Modifica o tamanho da página para impressão padrão.
 
       <ph name="PAGE_SIZE_NAME" /> precisa conter um dos formatos listados ou "personalizado" se o tamanho do papel exigido não estiver na lista. Se um valor "personalizado" for fornecido, a propriedade <ph name="PAGE_SIZE_CUSTOM_SIZE" /> precisará ser especificada. Ela descreve a altura e a largura desejadas em micrômetros. Caso contrário, a propriedade <ph name="PAGE_SIZE_CUSTOM_SIZE" /> não precisa ser especificada. A política que violar essas regras será ignorada.
@@ -3898,7 +3889,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 <translation id="5860010874344790473">Se a política for definida como "Ativada", logs do sistema serão enviados ao servidor de gerenciamento para permitir que os administradores os monitorem.
 
       Se a política for definida como "Desativada" ou não for definida, nenhum log do sistema será enviado.</translation>
-<translation id="5861856285460256766">Configuração do código de acesso dos pais</translation>
+<translation id="5861856285460256766">Configuração do código de acesso do familiar responsável</translation>
 <translation id="5868414965372171132">Configuração de rede em nível do usuário</translation>
 <translation id="587242272905978723">Permita que <ph name="PLUGIN_VM_NAME" /> colete dados de uso de <ph name="PLUGIN_VM_NAME" />.
 
@@ -5366,7 +5357,7 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 <translation id="7613115815080726221">O tempo, em milissegundos, sem entrada do usuário após o qual a ação de inatividade é tomada.</translation>
 <translation id="7614663184588396421">Lista dos esquemas de protocolo desativados</translation>
 <translation id="7616631530432070402">Os pacotes de criptografia 3DES serão ativados em TLS</translation>
-<translation id="7620869951155758729">Esta política especifica a configuração que é usada para gerar e verificar o código de acesso dos pais.
+<translation id="7620869951155758729">Esta política especifica a configuração que é usada para gerar e verificar o código de acesso do familiar responsável.
 
       A |current_config| sempre é usada para gerar o código de acesso e precisa ser usada para a validação dele apenas quando o código não pode ser validado com |future_config|.
       |future_config| é a configuração principal usada para validação do código de acesso.
@@ -5376,8 +5367,8 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
       tempo, o valor existente é movido para |current_config|. Os valores anteriores de |current_config| são movidos para |old_configs| e removidos depois que o ciclo de alternância é concluído.
 
       Esta política se aplica apenas a usuários menores de idade.
-      Quando esta política é definida, o código de acesso dos pais pode ser verificado no dispositivo da criança.
-      Quando esta política não é definida, não é possível verificar o código de acesso dos pais no dispositivo da criança.</translation>
+      Quando esta política é definida, o código de acesso do familiar responsável pode ser verificado no dispositivo da criança.
+      Quando esta política não é definida, não é possível verificar o código de acesso do familiar responsável no dispositivo da criança.</translation>
 <translation id="7629840767216985001">Se esta política for definida como verdadeira, o cursor grande será ativado na tela de login. Se esta política for definida como falsa, o cursor grande será desativado na tela de login.
 
       Se você definir a política, os usuários poderão ativar ou desativar o cursor grande temporariamente. Quando a tela de login for atualizada ou ficar inativa por um minuto, o cursor retornará ao estado original.
@@ -6340,11 +6331,6 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="8854571659927427063">Se a política for definida como ativada, os favoritos serão importados do navegador padrão anterior durante a primeira execução. Se a política for definida como desativada ou não for definida, nenhum favorito será importado durante a primeira execução.
 
       O usuário pode acionar uma caixa de diálogo de importação em que a caixa de seleção dos favoritos estará marcada ou desmarcada de acordo com o valor da política.</translation>
-<translation id="8855986672497556389">Alerta: a compatibilidade com a supressão do alerta TLS 1.0/1.1 será removida do <ph name="PRODUCT_NAME" /> a partir da versão 91 (por volta de maio de 2021), e esta política só funcionará até essa data.
-
-      Se a política for definida com um valor válido, o <ph name="PRODUCT_NAME" /> não usará versões SSL/TLS anteriores à versão especificada. Valores não reconhecidos serão ignorados.
-
-      Se a política não for definida, o <ph name="PRODUCT_NAME" /> exibirá uma mensagem de erro para TLS 1.0 e TLS 1.1, mas o usuário poderá ignorá-la.</translation>
 <translation id="8858642179038618439">Forçar modo de segurança do YouTube</translation>
 <translation id="8860342862142842017">Desativar a aplicação da Transparência dos certificados para uma lista de hashes subjectPublicKeyInfo</translation>
 <translation id="8864975621965365890">Remove a solicitação de recusa que aparece quando um site é processado pelo <ph name="PRODUCT_FRAME_NAME" />.</translation>

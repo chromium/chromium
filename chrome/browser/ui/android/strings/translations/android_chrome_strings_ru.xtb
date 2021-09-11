@@ -700,7 +700,6 @@
 <translation id="5324858694974489420">Родительские настройки</translation>
 <translation id="5342314432463739672">Запросы разрешений</translation>
 <translation id="5355191726083956201">Улучшенная защита включена.</translation>
-<translation id="5357811892247919462">Вкладка получена.</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{Открыта <ph name="OPEN_TABS_ONE" /> вкладка. Нажмите для переключения.}one{Открыта <ph name="OPEN_TABS_MANY" /> вкладка. Нажмите для переключения.}few{Открыто <ph name="OPEN_TABS_MANY" /> вкладки. Нажмите для переключения.}many{Открыто <ph name="OPEN_TABS_MANY" /> вкладок. Нажмите для переключения.}other{Открыто <ph name="OPEN_TABS_MANY" /> вкладки. Нажмите для переключения.}}</translation>
 <translation id="5375577065097716013">Найти через Google Объектив <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Разрешить доступ только к определенным сайтам</translation>
@@ -1237,6 +1236,7 @@
 <translation id="8442258441309440798">Нет рекомендаций</translation>
 <translation id="8443209985646068659">Не удалось обновить Chrome</translation>
 <translation id="8445448999790540984">Не удалось экспортировать пароли</translation>
+<translation id="8446884382197647889">Подробнее...</translation>
 <translation id="8453310803815879010">Запустить игру Dino</translation>
 <translation id="8461694314515752532">Задать кодовую фразу для шифрования синхронизированных данных</translation>
 <translation id="8466613982764129868">Проверьте, подключено ли устройство <ph name="TARGET_DEVICE_NAME" /> к Интернету.</translation>
