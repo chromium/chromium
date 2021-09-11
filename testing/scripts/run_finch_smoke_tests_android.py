@@ -73,6 +73,9 @@ def get_package_name(apk_path):
 
   Args:
     apk_path: Path to apk
+
+  Returns:
+    Package name of apk
   """
   return apk_helper.GetPackageName(apk_path)
 
@@ -84,6 +87,9 @@ def install_apks(device, options):
   Args:
     device: Interface for device
     options: Command line options
+
+  Returns:
+    None
   """
   device.Uninstall(get_package_name(options.webview_shell_apk))
   device.Install(options.webview_shell_apk, reinstall=True)
@@ -98,6 +104,9 @@ def install_seed(device, options):
   Args:
     device: Interface for device
     options: Command line options
+
+  Returns:
+    None
   """
   shell_pkg_name = get_package_name(options.webview_shell_apk)
   app_data_dir = posixpath.join(
@@ -129,6 +138,9 @@ def run_tests(device, options, test_suffix, webview_flags):
     options: Command line options
     test_suffix: Suffix for log output
     webview_flags: Flags for webview browser
+
+  Returns:
+    True if browser did not crash or False if the browser crashed
   """
   webview_flags.ReplaceFlags(['--webview-verbose-logging'])
   shell_pkg_name = get_package_name(options.webview_shell_apk)
@@ -149,15 +161,15 @@ def run_tests(device, options, test_suffix, webview_flags):
   time.sleep(10)
 
   # Check browser process
-  ret = check_browser(device, options)
-  if ret:
+  browser_runs = check_browser(device, options)
+  if browser_runs:
     logger.info('Browser is running ' + test_suffix)
   else:
     logger.error('Browser is not running ' + test_suffix)
 
   device.ForceStop(shell_pkg_name)
   device.ForceStop(get_package_name(options.webview_provider_apk))
-  return ret
+  return browser_runs
 
 
 def check_browser(device, options):
@@ -166,6 +178,9 @@ def check_browser(device, options):
   Args:
     device: Interface for device
     options: command line options
+
+  Returns:
+    True if browser is running or False if it is not
   """
   zygotes = device.ListProcesses('zygote')
   zygote_pids = set(p.pid for p in zygotes)
@@ -180,6 +195,9 @@ def get_json_results(w_seed_res, wo_seed_res):
   Args:
     w_seed_res: Test result with seed installed
     wo_seed_res: Test result with no seed installed
+
+  Returns:
+    JSON results dictionary
   """
   json_results = {'version': 3, 'interrupted': False}
   json_results['tests'] = {'webview_finch_smoke_tests': {}}
@@ -243,21 +261,23 @@ def main(args):
         ['pm', 'clear', get_package_name(options.webview_shell_apk)],
         check_return=True)
 
-    ret = False
+    tests_pass = False
     w_seed_res = 'FAIL'
     wo_seed_res = 'FAIL'
     if run_tests(device, options, 'without finch seed', webview_flags) != 0:
       install_seed(device, options)
-      ret = run_tests(device, options, 'with finch seed', webview_flags)
+      tests_pass = run_tests(device, options, 'with finch seed', webview_flags)
       wo_seed_res = 'PASS'
-      if ret:
+      if tests_pass:
         w_seed_res = 'PASS'
 
     log_mon.Stop()
     json_results = get_json_results(w_seed_res, wo_seed_res)
     with open(options.write_full_results_to, 'w') as json_out:
       json_out.write(json.dumps(json_results, indent=4))
-  return ret
+
+  # Return zero exit code if tests pass
+  return not tests_pass
 
 
 def main_compile_targets(args):
