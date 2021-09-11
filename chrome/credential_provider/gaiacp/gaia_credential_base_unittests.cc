@@ -694,9 +694,6 @@ TEST_P(GcpGaiaCredentialBaseInvalidDomainTest, Fail) {
     ASSERT_EQ(S_OK,
               StartLogonProcess(/*succeeds=*/false, IDS_EMAIL_MISMATCH_BASE));
   } else {
-    // Fail due to invalid domain.
-    ASSERT_EQ(S_OK, test->SetDefaultExitCode(kUiecInvalidEmailDomain));
-
     ASSERT_EQ(S_OK, StartLogonProcessAndWait());
 
     std::wstring expected_error_msg =
@@ -711,8 +708,8 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     GcpGaiaCredentialBaseInvalidDomainTest,
     ::testing::Combine(::testing::Values(L"ed", L"domains_allowed_to_login"),
-                       ::testing::Values(L"acme.com,acme2.com,acme3.com",
-                                         L"")));
+                       ::testing::Values(L"",
+                                         L"acme.com,acme2.com,acme3.com")));
 
 class GcpGaiaCredentialBasePermittedAccountTest
     : public GcpGaiaCredentialBaseTest,
@@ -746,9 +743,6 @@ TEST_P(GcpGaiaCredentialBasePermittedAccountTest, PermittedAccounts) {
   bool found_domain =
       restricted_domains.find(email_domain) != std::wstring::npos;
 
-  if (!found_domain)
-    ASSERT_EQ(S_OK, test->SetDefaultExitCode(kUiecInvalidEmailDomain));
-
   ASSERT_EQ(S_OK, StartLogonProcessAndWait());
 
   if (allowed_email && found_domain) {
@@ -777,6 +771,9 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_F(GcpGaiaCredentialBaseTest, StripEmailTLD) {
   USES_CONVERSION;
+
+  SetGlobalFlagForTesting(L"domains_allowed_to_login", L"imfl.info");
+
   // Create provider and start logon.
   Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
 
@@ -797,6 +794,9 @@ TEST_F(GcpGaiaCredentialBaseTest, StripEmailTLD) {
 
 TEST_F(GcpGaiaCredentialBaseTest, TrimPeriodAtTheEnd) {
   USES_CONVERSION;
+
+  SetGlobalFlagForTesting(L"domains_allowed_to_login", L"abcd.ef.info");
+
   // Create provider and start logon.
   Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
 
@@ -822,6 +822,9 @@ TEST_F(GcpGaiaCredentialBaseTest, TrimPeriodAtTheEnd) {
 
 TEST_F(GcpGaiaCredentialBaseTest, UseShorterFormForAccountName) {
   USES_CONVERSION;
+
+  SetGlobalFlagForTesting(L"domains_allowed_to_login", L"def.com");
+
   ASSERT_EQ(S_OK, SetGlobalFlagForTesting(kRegUseShorterAccountName, 1));
 
   // Create provider and start logon.
@@ -844,6 +847,9 @@ TEST_F(GcpGaiaCredentialBaseTest, UseShorterFormForAccountName) {
 
 TEST_F(GcpGaiaCredentialBaseTest, UseShorterFormForAccountNameWithConflict) {
   USES_CONVERSION;
+
+  SetGlobalFlagForTesting(L"domains_allowed_to_login", L"def.com");
+
   ASSERT_EQ(S_OK, SetGlobalFlagForTesting(kRegUseShorterAccountName, 1));
 
   const wchar_t user_name[] = L"abc";
@@ -1224,6 +1230,8 @@ TEST_F(GcpGaiaCredentialBaseTest,
 TEST_F(GcpGaiaCredentialBaseTest, StripEmailTLD_Gmail) {
   USES_CONVERSION;
 
+  SetGlobalFlagForTesting(L"domains_allowed_to_login", L"gmail.com");
+
   // Create provider and start logon.
   Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
 
@@ -1245,6 +1253,8 @@ TEST_F(GcpGaiaCredentialBaseTest, StripEmailTLD_Gmail) {
 TEST_F(GcpGaiaCredentialBaseTest, StripEmailTLD_Googlemail) {
   USES_CONVERSION;
 
+  SetGlobalFlagForTesting(L"domains_allowed_to_login", L"googlemail.com");
+
   // Create provider and start logon.
   Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
 
@@ -1265,6 +1275,9 @@ TEST_F(GcpGaiaCredentialBaseTest, StripEmailTLD_Googlemail) {
 
 TEST_F(GcpGaiaCredentialBaseTest, InvalidUsernameCharacters) {
   USES_CONVERSION;
+
+  SetGlobalFlagForTesting(L"domains_allowed_to_login", L"gmail.com");
+
   // Create provider and start logon.
   Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
 
@@ -1286,6 +1299,8 @@ TEST_F(GcpGaiaCredentialBaseTest, InvalidUsernameCharacters) {
 TEST_F(GcpGaiaCredentialBaseTest, EmailTooLong) {
   USES_CONVERSION;
 
+  SetGlobalFlagForTesting(L"domains_allowed_to_login", L"gmail.com");
+
   // Create provider and start logon.
   Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
 
@@ -1306,6 +1321,10 @@ TEST_F(GcpGaiaCredentialBaseTest, EmailTooLong) {
 
 TEST_F(GcpGaiaCredentialBaseTest, EmailTooLong2) {
   USES_CONVERSION;
+
+  SetGlobalFlagForTesting(L"domains_allowed_to_login",
+                          L"areallylongdomaindude.com");
+
   // Create provider and start logon.
   Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
 
@@ -1324,28 +1343,10 @@ TEST_F(GcpGaiaCredentialBaseTest, EmailTooLong2) {
   EXPECT_EQ(test->GetFinalEmail(), email);
 }
 
-TEST_F(GcpGaiaCredentialBaseTest, EmailIsNoAt) {
-  USES_CONVERSION;
-  constexpr char email[] = "foo";
-
-  // Create provider and start logon.
-  Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
-
-  ASSERT_EQ(S_OK, InitializeProviderAndGetCredential(0, &cred));
-
-  Microsoft::WRL::ComPtr<ITestCredential> test;
-  ASSERT_EQ(S_OK, cred.As(&test));
-
-  ASSERT_EQ(S_OK, test->SetGlsEmailAddress(email));
-
-  ASSERT_EQ(S_OK, StartLogonProcessAndWait());
-
-  ASSERT_STREQ(W2COLE(L"foo_gmail"), test->GetFinalUsername());
-  EXPECT_EQ(test->GetFinalEmail(), email);
-}
-
 TEST_F(GcpGaiaCredentialBaseTest, EmailIsAtCom) {
   USES_CONVERSION;
+
+  SetGlobalFlagForTesting(L"domains_allowed_to_login", L"com");
 
   constexpr char email[] = "@com";
 
@@ -1367,6 +1368,8 @@ TEST_F(GcpGaiaCredentialBaseTest, EmailIsAtCom) {
 
 TEST_F(GcpGaiaCredentialBaseTest, EmailIsAtDotCom) {
   USES_CONVERSION;
+
+  SetGlobalFlagForTesting(L"domains_allowed_to_login", L".com");
 
   constexpr char email[] = "@.com";
 
@@ -2734,6 +2737,14 @@ TEST_P(GcpGaiaCredentialBaseConsumerEmailTest, ConsumerEmailSignin) {
   const bool user_is_consumer = std::get<3>(GetParam());
   const bool cloud_policies_enabled = std::get<4>(GetParam());
 
+  if (user_is_consumer) {
+    ASSERT_EQ(S_OK, SetGlobalFlagForTesting(L"domains_allowed_to_login",
+                                            L"gmail.com"));
+  } else {
+    ASSERT_EQ(S_OK, SetGlobalFlagForTesting(L"domains_allowed_to_login",
+                                            L"imfl.info"));
+  }
+
   FakeAssociatedUserValidator validator;
   FakeInternetAvailabilityChecker internet_checker;
   GoogleMdmEnrollmentStatusForTesting force_success(true);
@@ -4024,8 +4035,11 @@ TEST_P(GcpGaiaCredentialBaseAllowedDomainsCloudPolicyTest, OmahaPolicyTest) {
 
   // Create provider and start logon.
   Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
-
   ASSERT_EQ(S_OK, InitializeProviderAndGetCredential(0, &cred));
+
+  Microsoft::WRL::ComPtr<ITestCredential> test;
+  ASSERT_EQ(S_OK, cred.As(&test));
+  ASSERT_EQ(S_OK, test->SetGlsEmailAddress("roadrunner@acme.com"));
 
   if (allowed_domains.empty()) {
     ASSERT_EQ(S_OK,
