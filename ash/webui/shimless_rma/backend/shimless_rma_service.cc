@@ -627,6 +627,13 @@ void ShimlessRmaService::CalibrationProgress(
   }
 }
 
+void ShimlessRmaService::CalibrationOverallProgress(
+    rmad::CalibrationOverallStatus status) {
+  if (calibration_observer_.is_bound()) {
+    calibration_observer_->OnCalibrationStepComplete(status);
+  }
+}
+
 void ShimlessRmaService::ProvisioningProgress(
     rmad::ProvisionDeviceState::ProvisioningStep step,
     double progress) {

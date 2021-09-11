@@ -71,6 +71,12 @@ class TestObserver : public RmadClient::Observer {
       const {
     return last_calibration_component_status_;
   }
+  int num_calibration_overall_progress() const {
+    return num_calibration_overall_progress_;
+  }
+  rmad::CalibrationOverallStatus last_calibration_overall_status() const {
+    return last_calibration_overall_status_;
+  }
   int num_provisioning_progress() const { return num_provisioning_progress_; }
   rmad::ProvisionDeviceState::ProvisioningStep last_provisioning_step() const {
     return last_provisioning_step_;
@@ -101,6 +107,13 @@ class TestObserver : public RmadClient::Observer {
     last_calibration_component_status_ = componentStatus;
   }
 
+  // Called when calibration progress is updated.
+  void CalibrationOverallProgress(
+      rmad::CalibrationOverallStatus status) override {
+    num_calibration_overall_progress_++;
+    last_calibration_overall_status_ = status;
+  }
+
   // Called when provisioning progress is updated.
   void ProvisioningProgress(rmad::ProvisionDeviceState::ProvisioningStep step,
                             double progress) override {
@@ -127,6 +140,9 @@ class TestObserver : public RmadClient::Observer {
   rmad::RmadErrorCode last_error_ = rmad::RmadErrorCode::RMAD_ERROR_NOT_SET;
   int num_calibration_progress_ = 0;
   rmad::CalibrationComponentStatus last_calibration_component_status_;
+  int num_calibration_overall_progress_ = 0;
+  rmad::CalibrationOverallStatus last_calibration_overall_status_ =
+      rmad::CalibrationOverallStatus::RMAD_CALIBRATION_OVERALL_UNKNOWN;
   int num_provisioning_progress_ = 0;
   rmad::ProvisionDeviceState::ProvisioningStep last_provisioning_step_ =
       rmad::ProvisionDeviceState::RMAD_PROVISIONING_STEP_UNKNOWN;
@@ -478,6 +494,20 @@ TEST_F(FakeRmadClientTest, CalibrationProgressObservation) {
   EXPECT_EQ(rmad::CalibrationComponentStatus::RMAD_CALIBRATION_IN_PROGRESS,
             observer_1.last_calibration_component_status().status());
   EXPECT_EQ(0.5, observer_1.last_calibration_component_status().progress());
+}
+
+// Tests that synchronous observers are notified about overall calibration
+// progress.
+TEST_F(FakeRmadClientTest, CalibrationOverallProgressObservation) {
+  TestObserver observer_1(client_);
+
+  fake_client_()->TriggerCalibrationOverallProgressObservation(
+      rmad::CalibrationOverallStatus::
+          RMAD_CALIBRATION_OVERALL_CURRENT_ROUND_COMPLETE);
+  EXPECT_EQ(1, observer_1.num_calibration_overall_progress());
+  EXPECT_EQ(rmad::CalibrationOverallStatus::
+                RMAD_CALIBRATION_OVERALL_CURRENT_ROUND_COMPLETE,
+            observer_1.last_calibration_overall_status());
 }
 
 // Tests that synchronous observers are notified about provisioning progress.

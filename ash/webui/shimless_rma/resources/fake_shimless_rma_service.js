@@ -7,7 +7,7 @@ import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
-import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationSetupInstruction, CalibrationStatus, Component, ComponentRepairStatus, ComponentType, ErrorObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStep, QrCode, RmadErrorCode, RmaState, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, Component, ComponentRepairStatus, ComponentType, ErrorObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStep, QrCode, RmadErrorCode, RmaState, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
 
 /** @implements {ShimlessRmaServiceInterface} */
 export class FakeShimlessRmaService {
@@ -630,6 +630,11 @@ export class FakeShimlessRmaService {
           remote.onCalibrationUpdated(
               /** @type {!CalibrationComponentStatus} */ (componentStatus));
         });
+    this.observables_.observe(
+        'CalibrationObserver_onCalibrationStepComplete', (status) => {
+          remote.onCalibrationStepComplete(
+              /** @type {!CalibrationOverallStatus} */ (status));
+        });
     if (this.automaticallyTriggerCalibrationObservation_) {
       this.triggerCalibrationObserver(
           {
@@ -638,6 +643,8 @@ export class FakeShimlessRmaService {
             progress: 1.0
           },
           1500);
+      this.triggerCalibrationOverallObserver(
+          CalibrationOverallStatus.kCalibrationOverallComplete, 3000);
     }
   }
 
@@ -748,6 +755,16 @@ export class FakeShimlessRmaService {
   triggerCalibrationObserver(componentStatus, delayMs) {
     return this.triggerObserverAfterMs(
         'CalibrationObserver_onCalibrationUpdated', componentStatus, delayMs);
+  }
+
+  /**
+   * Causes the calibration overall observer to fire after a delay.
+   * @param {!CalibrationOverallStatus} status
+   * @param {number} delayMs
+   */
+  triggerCalibrationOverallObserver(status, delayMs) {
+    return this.triggerObserverAfterMs(
+        'CalibrationObserver_onCalibrationStepComplete', status, delayMs);
   }
 
   /**
@@ -899,6 +916,7 @@ export class FakeShimlessRmaService {
     this.observables_.register('ErrorObserver_onError');
     this.observables_.register('OsUpdateObserver_onOsUpdateProgressUpdated');
     this.observables_.register('CalibrationObserver_onCalibrationUpdated');
+    this.observables_.register('CalibrationObserver_onCalibrationStepComplete');
     this.observables_.register('ProvisioningObserver_onProvisioningUpdated');
     this.observables_.register(
         'HardwareWriteProtectionStateObserver_onHardwareWriteProtectionStateChanged');

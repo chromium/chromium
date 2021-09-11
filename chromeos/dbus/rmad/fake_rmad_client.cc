@@ -288,6 +288,12 @@ void FakeRmadClient::TriggerCalibrationProgressObservation(
     observer.CalibrationProgress(componentStatus);
 }
 
+void FakeRmadClient::TriggerCalibrationOverallProgressObservation(
+    rmad::CalibrationOverallStatus status) {
+  for (auto& observer : observers_)
+    observer.CalibrationOverallProgress(status);
+}
+
 void FakeRmadClient::TriggerProvisioningProgressObservation(
     rmad::ProvisionDeviceState::ProvisioningStep step,
     double progress) {

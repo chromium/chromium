@@ -316,12 +316,12 @@ interface OsUpdateObserver {
 };
 
 // Implemented by clients to track the progress of component calibration.
-// The observer receives the current component being calibrated and the
-// progress of all calibration in a 0 - 1 range.
 interface CalibrationObserver {
   // OnCalibrationUpdated is called whenever there is an update in the progress
   // of component calibration.
   OnCalibrationUpdated(CalibrationComponentStatus componentStatus);
+  // OnCalibrationStepComplete is called whenever a step completes.
+  OnCalibrationStepComplete(CalibrationOverallStatus status);
 };
 
 // Implemented by clients to track the progress of device provisioning.

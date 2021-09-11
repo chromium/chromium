@@ -2130,10 +2130,16 @@ class FakeCalibrationObserver : public mojom::CalibrationObserver {
  public:
   void OnCalibrationUpdated(
       const rmad::CalibrationComponentStatus& componentStatus) override {
-    observations.push_back(componentStatus);
+    componentObservations.push_back(componentStatus);
   }
 
-  std::vector<rmad::CalibrationComponentStatus> observations;
+  void OnCalibrationStepComplete(
+      rmad::CalibrationOverallStatus status) override {
+    overallObservations.push_back(status);
+  }
+
+  std::vector<rmad::CalibrationComponentStatus> componentObservations;
+  std::vector<rmad::CalibrationOverallStatus> overallObservations;
   mojo::Receiver<mojom::CalibrationObserver> receiver{this};
 };
 
@@ -2146,12 +2152,27 @@ TEST_F(ShimlessRmaServiceTest, ObserveCalibration) {
       rmad::RmadComponent::RMAD_COMPONENT_BASE_ACCELEROMETER,
       rmad::CalibrationComponentStatus::RMAD_CALIBRATION_IN_PROGRESS, 0.25);
   run_loop.RunUntilIdle();
-  EXPECT_EQ(fake_observer.observations.size(), 1UL);
-  EXPECT_EQ(fake_observer.observations[0].component(),
+  EXPECT_EQ(fake_observer.componentObservations.size(), 1UL);
+  EXPECT_EQ(fake_observer.componentObservations[0].component(),
             rmad::RmadComponent::RMAD_COMPONENT_BASE_ACCELEROMETER);
-  EXPECT_EQ(fake_observer.observations[0].status(),
+  EXPECT_EQ(fake_observer.componentObservations[0].status(),
             rmad::CalibrationComponentStatus::RMAD_CALIBRATION_IN_PROGRESS);
-  EXPECT_EQ(fake_observer.observations[0].progress(), 0.25);
+  EXPECT_EQ(fake_observer.componentObservations[0].progress(), 0.25);
+}
+
+TEST_F(ShimlessRmaServiceTest, ObserveOverallCalibration) {
+  FakeCalibrationObserver fake_observer;
+  shimless_rma_provider_->ObserveCalibrationProgress(
+      fake_observer.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop run_loop;
+  fake_rmad_client_()->TriggerCalibrationOverallProgressObservation(
+      rmad::CalibrationOverallStatus::
+          RMAD_CALIBRATION_OVERALL_CURRENT_ROUND_COMPLETE);
+  run_loop.RunUntilIdle();
+  EXPECT_EQ(fake_observer.overallObservations.size(), 1UL);
+  EXPECT_EQ(fake_observer.overallObservations[0],
+            rmad::CalibrationOverallStatus::
+                RMAD_CALIBRATION_OVERALL_CURRENT_ROUND_COMPLETE);
 }
 
 class FakeProvisioningObserver : public mojom::ProvisioningObserver {

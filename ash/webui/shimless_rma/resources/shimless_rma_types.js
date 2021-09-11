@@ -53,6 +53,12 @@ export let CalibrationSetupInstruction =
     ash.shimlessRma.mojom.CalibrationSetupInstruction;
 
 /**
+ * @typedef {ash.shimlessRma.mojom.CalibrationOverallStatus}
+ */
+export let CalibrationOverallStatus =
+    ash.shimlessRma.mojom.CalibrationOverallStatus;
+
+/**
  * @typedef {ash.shimlessRma.mojom.CalibrationStatus}
  */
 export let CalibrationStatus = ash.shimlessRma.mojom.CalibrationStatus;

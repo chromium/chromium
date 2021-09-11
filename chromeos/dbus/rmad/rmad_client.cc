@@ -51,6 +51,7 @@ class RmadClientImpl : public RmadClient {
                          dbus::Response* response);
 
   void CalibrationProgressReceived(dbus::Signal* signal);
+  void CalibrationOverallProgressReceived(dbus::Signal* signal);
   void ErrorReceived(dbus::Signal* signal);
   void HardwareWriteProtectionStateReceived(dbus::Signal* signal);
   void PowerCableStateReceived(dbus::Signal* signal);
@@ -76,6 +77,8 @@ void RmadClientImpl::Init(dbus::Bus* bus) {
   const std::pair<const char*, SignalMethod> kSignalMethods[] = {
       {rmad::kCalibrationProgressSignal,
        &RmadClientImpl::CalibrationProgressReceived},
+      {rmad::kCalibrationOverallSignal,
+       &RmadClientImpl::CalibrationOverallProgressReceived},
       {rmad::kErrorSignal, &RmadClientImpl::ErrorReceived},
       {rmad::kHardwareWriteProtectionStateSignal,
        &RmadClientImpl::HardwareWriteProtectionStateReceived},
@@ -113,6 +116,21 @@ void RmadClientImpl::CalibrationProgressReceived(dbus::Signal* signal) {
   }
   for (auto& observer : observers_) {
     observer.CalibrationProgress(signal_proto);
+  }
+}
+
+void RmadClientImpl::CalibrationOverallProgressReceived(dbus::Signal* signal) {
+  DCHECK_EQ(signal->GetMember(), rmad::kCalibrationOverallSignal);
+  dbus::MessageReader reader(signal);
+  uint32_t overall_progress;
+  if (!reader.PopUint32(&overall_progress)) {
+    LOG(ERROR) << "Unable to decode overall progress uint32 from "
+               << signal->GetMember() << " signal";
+    return;
+  }
+  for (auto& observer : observers_) {
+    observer.CalibrationOverallProgress(
+        static_cast<rmad::CalibrationOverallStatus>(overall_progress));
   }
 }
 

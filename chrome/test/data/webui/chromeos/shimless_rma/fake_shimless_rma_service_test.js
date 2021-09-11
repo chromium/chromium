@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
-import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationSetupInstruction, CalibrationStatus, ComponentRepairStatus, ComponentType, ErrorObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStep, RmadErrorCode, RmaState} from 'chrome://shimless-rma/shimless_rma_types.js';
+import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, ComponentRepairStatus, ComponentType, ErrorObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStep, RmadErrorCode, RmaState} from 'chrome://shimless-rma/shimless_rma_types.js';
 
 import {assertDeepEquals, assertEquals} from '../../chai_assert.js';
 
@@ -855,6 +855,23 @@ export function fakeShimlessRmaServiceTestSuite() {
           progress: 0.5
         }),
         0);
+  });
+
+  test('ObserveCalibrationStepComplete', () => {
+    /** @type {!CalibrationObserverRemote} */
+    const calibrationObserver = /** @type {!CalibrationObserverRemote} */ ({
+      /**
+       * Implements CalibrationObserverRemote.onCalibrationUpdated()
+       * @param {!CalibrationOverallStatus} status
+       */
+      onCalibrationStepComplete(status) {
+        assertEquals(
+            status, CalibrationOverallStatus.kCalibrationOverallComplete);
+      }
+    });
+    service.observeCalibrationProgress(calibrationObserver);
+    return service.triggerCalibrationOverallObserver(
+        CalibrationOverallStatus.kCalibrationOverallComplete, 0);
   });
 
   test('ObserveProvisioningUpdated', () => {
