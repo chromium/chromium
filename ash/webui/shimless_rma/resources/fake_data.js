@@ -15,6 +15,7 @@ export const fakeStates = [
   {state: RmaState.kChooseDestination, error: RmadErrorCode.kOk},
   {state: RmaState.kChooseWriteProtectDisableMethod, error: RmadErrorCode.kOk},
   {state: RmaState.kEnterRSUWPDisableCode, error: RmadErrorCode.kOk},
+  {state: RmaState.kVerifyRsu, error: RmadErrorCode.kOk},
   {state: RmaState.kWaitForManualWPDisable, error: RmadErrorCode.kOk},
   {state: RmaState.kWPDisableComplete, error: RmadErrorCode.kOk},
   {state: RmaState.kChooseFirmwareReimageMethod, error: RmadErrorCode.kOk},

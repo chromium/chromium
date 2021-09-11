@@ -10,6 +10,7 @@ import './onboarding_network_page.js';
 import './onboarding_select_components_page.js';
 import './onboarding_update_page.js';
 import './onboarding_wait_for_manual_wp_disable_page.js';
+import './onboarding_verify_rsu_page.js';
 import './onboarding_wp_disable_complete_page.js';
 import './reimaging_calibration_page.js';
 import './reimaging_device_information_page.js';
@@ -95,6 +96,12 @@ const StateComponentMapping = {
   },
   [RmaState.kEnterRSUWPDisableCode]: {
     componentIs: 'onboarding-enter-rsu-wp-disable-code-page',
+    buttonNext: ButtonState.VISIBLE,
+    buttonCancel: ButtonState.HIDDEN,
+    buttonBack: ButtonState.VISIBLE,
+  },
+  [RmaState.kVerifyRsu]: {
+    componentIs: 'onboarding-verify-rsu-page',
     buttonNext: ButtonState.VISIBLE,
     buttonCancel: ButtonState.HIDDEN,
     buttonBack: ButtonState.VISIBLE,

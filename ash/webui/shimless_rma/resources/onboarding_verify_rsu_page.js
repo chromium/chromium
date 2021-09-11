@@ -9,17 +9,19 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 /**
  * @fileoverview
- * 'onboarding-wp-disable-complete-page' notifies the user that manual HWWP
- * disable was successful.
+ * 'onboarding-verify-rsu-page' notifies the user that RSU HWWP disable was
+ * successful.
  */
-export class OnboardingWpDisableCompletePage extends PolymerElement {
+export class OnboardingVerifyRsuPage extends PolymerElement {
   static get is() {
-    return 'onboarding-wp-disable-complete-page';
+    return 'onboarding-verify-rsu-page';
   }
 
   static get template() {
     return html`{__html_template__}`;
   }
+
+// TODO: show VerifyRsuState.success
 
   /** @override */
   ready() {
@@ -28,4 +30,4 @@ export class OnboardingWpDisableCompletePage extends PolymerElement {
 };
 
 customElements.define(
-    OnboardingWpDisableCompletePage.is, OnboardingWpDisableCompletePage);
+  OnboardingVerifyRsuPage.is, OnboardingVerifyRsuPage);
