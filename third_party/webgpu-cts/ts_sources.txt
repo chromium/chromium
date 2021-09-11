@@ -26,6 +26,7 @@ src/common/internal/test_suite_listing.ts
 src/common/internal/util.ts
 src/common/internal/tree.ts
 src/common/internal/file_loader.ts
+src/common/runtime/helper/sys.ts
 src/common/runtime/cmdline.ts
 src/common/runtime/helper/test_worker.ts
 src/common/runtime/standalone.ts
@@ -237,6 +238,8 @@ src/webgpu/idl/constants/flags.spec.ts
 src/webgpu/shader/types.ts
 src/webgpu/shader/execution/robust_access.spec.ts
 src/webgpu/shader/execution/robust_access_vertex.spec.ts
+src/webgpu/shader/execution/builtin/builtin.ts
+src/webgpu/shader/execution/builtin/abs.spec.ts
 src/webgpu/shader/execution/builtin/logical_built_in_functions.spec.ts
 src/webgpu/shader/validation/shader_validation_test.ts
 src/webgpu/shader/validation/variable_and_const.spec.ts

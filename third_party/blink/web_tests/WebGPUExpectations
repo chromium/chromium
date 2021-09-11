@@ -46,6 +46,17 @@ crbug.com/dawn/1046 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:shader,executi
 ### Untriaged failures. Please prefer to triage thoroughly and file a bug!
 ###
 
+# New tests that were blocking the CTS roller
+wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="private";access="read";containerType="vector";* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="storage";storageMode="read_write";access="read";containerType="vector";* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="storage";storageMode="read";access="read";containerType="vector";* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="uniform";access="read";containerType="vector";* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="workgroup";access="read";containerType="vector";* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="workgroup";access="write";containerType="vector";* [ Crash ]
+
+[ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,builtin,abs:abs_uint_hex:* [ Failure ]
+[ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="function";access="read";containerType="vector";* [ Failure ]
+
 ###
 ### Tests that might be passing now.
 ###
