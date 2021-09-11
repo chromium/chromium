@@ -70,6 +70,7 @@ export function diagnosticsUtilsTestSuite() {
       RoutineType.kLanConnectivity,
       RoutineType.kArcHttp,
       RoutineType.kArcPing,
+      RoutineType.kArcDnsResolution,
       // assertArrayEquals wants values in order, code appends values to end
       // of array.
       RoutineType.kHasSecureWiFiConnection,
@@ -89,6 +90,7 @@ export function diagnosticsUtilsTestSuite() {
       RoutineType.kLanConnectivity,
       RoutineType.kArcHttp,
       RoutineType.kArcPing,
+      RoutineType.kArcDnsResolution,
     ];
 
     assertArrayEquals(

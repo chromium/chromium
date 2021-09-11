@@ -55,6 +55,8 @@ const RoutineProperties kRoutineProperties[] = {
      /*duration_seconds=*/1, healthd::DiagnosticRoutineEnum::kArcHttp},
     {mojom::RoutineType::kArcPing, "ArcPingResult",
      /*duration_seconds=*/1, healthd::DiagnosticRoutineEnum::kArcPing},
+    {mojom::RoutineType::kArcDnsResolution, "ArcDnsResolutionResult",
+     /*duration_seconds=*/1, healthd::DiagnosticRoutineEnum::kArcDnsResolution},
 };
 
 const size_t kRoutinePropertiesLength = base::size(kRoutineProperties);

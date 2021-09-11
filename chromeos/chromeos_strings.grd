@@ -1639,6 +1639,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_NETWORK_DIAGNOSTICS_ARC_PING" desc="Label for Network diagnostics `ARC PING` test. This test ensures that there is a connection to the network gateway inside ARC.">
         ARC Ping
       </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_ARC_DNS_RESOLUTION" desc="Label for Network diagnostics `ARC DNS resolution` test. This test ensures that the Domain Name Server (DNS) can resolve network requests inside ARC.">
+        ARC DNS resolution
+      </message>
 
       <!-- Personalization App -->
       <message name="IDS_PERSONALIZATION_APP_TITLE" desc="Name of the system web app for personalizing ChromeOS.">

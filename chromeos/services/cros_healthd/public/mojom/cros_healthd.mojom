@@ -458,6 +458,16 @@ interface CrosHealthdDiagnosticsService {
   // * |response| - contains a unique identifier and status for the created
   //                routine.
   RunArcPingRoutine() => (RunRoutineResponse response);
+
+  // Requests that the ArcDnsResolution routine is created and started on the
+  // platform. This routine checks whether a DNS resolution can be completed
+  // successfully inside ARC. This routine is only available if
+  // GetAvailableRoutines returned kDnsResolution.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  RunArcDnsResolutionRoutine() => (RunRoutineResponse response);
 };
 
 // Event interface exposed by the cros_healthd daemon.

@@ -142,6 +142,9 @@ class ServiceConnectionImpl : public ServiceConnection {
   void RunArcPingRoutine(
       mojom::CrosHealthdDiagnosticsService::RunArcPingRoutineCallback callback)
       override;
+  void RunArcDnsResolutionRoutine(
+      mojom::CrosHealthdDiagnosticsService::RunArcDnsResolutionRoutineCallback
+          callback) override;
   void AddBluetoothObserver(
       mojo::PendingRemote<mojom::CrosHealthdBluetoothObserver> pending_observer)
       override;
@@ -527,6 +530,15 @@ void ServiceConnectionImpl::RunArcPingRoutine(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BindCrosHealthdDiagnosticsServiceIfNeeded();
   cros_healthd_diagnostics_service_->RunArcPingRoutine(std::move(callback));
+}
+
+void ServiceConnectionImpl::RunArcDnsResolutionRoutine(
+    mojom::CrosHealthdDiagnosticsService::RunArcDnsResolutionRoutineCallback
+        callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  BindCrosHealthdDiagnosticsServiceIfNeeded();
+  cros_healthd_diagnostics_service_->RunArcDnsResolutionRoutine(
+      std::move(callback));
 }
 
 void ServiceConnectionImpl::RunVideoConferencingRoutine(

@@ -343,6 +343,12 @@ void FakeCrosHealthdService::RunArcPingRoutine(
   std::move(callback).Run(run_routine_response_.Clone());
 }
 
+void FakeCrosHealthdService::RunArcDnsResolutionRoutine(
+    RunArcDnsResolutionRoutineCallback callback) {
+  last_run_routine_ = mojom::DiagnosticRoutineEnum::kArcDnsResolution;
+  std::move(callback).Run(run_routine_response_.Clone());
+}
+
 void FakeCrosHealthdService::AddBluetoothObserver(
     mojo::PendingRemote<mojom::CrosHealthdBluetoothObserver> observer) {
   bluetooth_observers_.Add(std::move(observer));

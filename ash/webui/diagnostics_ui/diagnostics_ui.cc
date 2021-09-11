@@ -57,6 +57,8 @@ std::unique_ptr<base::DictionaryValue> GetDataSourceUpdate() {
 
 void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"arcDnsResolutionRoutineText",
+       IDS_NETWORK_DIAGNOSTICS_ARC_DNS_RESOLUTION},
       {"arcHttpRoutineText", IDS_NETWORK_DIAGNOSTICS_ARC_HTTP},
       {"arcPingRoutineText", IDS_NETWORK_DIAGNOSTICS_ARC_PING},
       {"batteryCalculatingText", IDS_DIAGNOSTICS_BATTERY_CALCULATING_TEXT},

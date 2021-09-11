@@ -606,6 +606,15 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
               std::move(failed_callback)));
       break;
     }
+    case chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::
+        kArcDnsResolution: {
+      chromeos::cros_healthd::ServiceConnection::GetInstance()
+          ->RunArcDnsResolutionRoutine(base::BindOnce(
+              &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
+              weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
+              std::move(failed_callback)));
+      break;
+    }
   }
 }
 

@@ -250,6 +250,7 @@ export const fakeRoutineResults = new Map([
   [RoutineType.kSignalStrength, StandardRoutineResult.kTestPassed],
   [RoutineType.kArcHttp, StandardRoutineResult.kTestPassed],
   [RoutineType.kArcPing, StandardRoutineResult.kTestPassed],
+  [RoutineType.kArcDnsResolution, StandardRoutineResult.kTestPassed],
 ]);
 
 /** @type {!Map<!RoutineType, !PowerRoutineResult>} */
