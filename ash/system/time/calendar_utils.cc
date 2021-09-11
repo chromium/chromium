@@ -4,10 +4,12 @@
 
 #include "ash/system/time/calendar_utils.h"
 
+#include "ash/style/ash_color_provider.h"
 #include "base/i18n/unicodestring.h"
 #include "third_party/icu/source/i18n/unicode/datefmt.h"
 #include "third_party/icu/source/i18n/unicode/dtptngen.h"
 #include "third_party/icu/source/i18n/unicode/smpdtfmt.h"
+#include "ui/views/layout/grid_layout.h"
 
 namespace ash {
 
@@ -46,6 +48,26 @@ std::u16string GetMonthName(const base::Time date) {
   unicode_string = dfmt->format(unicode_date, unicode_string);
 
   return base::i18n::UnicodeStringToString16(unicode_string);
+}
+
+void SetUpWeekColumnSets(views::ColumnSet* column_set) {
+  for (int i = 0; i < calendar_utils::kDateInOneWeek; ++i) {
+    column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL, 1,
+                          views::GridLayout::ColumnSize::kFixed, 0, 0);
+    column_set->AddPaddingColumn(0, kColumnSetPadding);
+  }
+}
+
+SkColor GetPrimaryTextColor() {
+  const ash::AshColorProvider* color_provider = ash::AshColorProvider::Get();
+  return color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary);
+}
+
+SkColor GetSecondaryTextColor() {
+  const ash::AshColorProvider* color_provider = ash::AshColorProvider::Get();
+  return color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorSecondary);
 }
 
 }  // namespace calendar_utils

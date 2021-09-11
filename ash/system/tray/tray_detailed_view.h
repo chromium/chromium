@@ -109,8 +109,10 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   // Helper functions which create and return the settings and help buttons,
   // respectively, used in the material design top-most header row. The caller
   // assumes ownership of the returned buttons.
-  views::Button* CreateInfoButton(views::Button::PressedCallback callback,
-                                  int info_accessible_name_id);
+  virtual views::Button* CreateInfoButton(
+      views::Button::PressedCallback callback,
+      int info_accessible_name_id);
+
   views::Button* CreateSettingsButton(views::Button::PressedCallback callback,
                                       int setting_accessible_name_id);
   views::Button* CreateHelpButton(views::Button::PressedCallback callback);

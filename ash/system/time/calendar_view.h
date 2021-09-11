@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/system/time/calendar_view_controller.h"
 #include "ash/system/tray/tray_detailed_view.h"
+#include "ash/system/unified/unified_system_tray_controller.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/scroll_view.h"
 
@@ -29,6 +30,7 @@ class ASH_EXPORT CalendarView : public TrayDetailedView,
   METADATA_HEADER(CalendarView);
 
   CalendarView(DetailedViewDelegate* delegate,
+               UnifiedSystemTrayController* controller,
                CalendarViewController* calendar_view_controller);
   CalendarView(const CalendarView& other) = delete;
   CalendarView& operator=(const CalendarView& other) = delete;
@@ -42,6 +44,11 @@ class ASH_EXPORT CalendarView : public TrayDetailedView,
 
   // views::View:
   void OnThemeChanged() override;
+
+  // TrayDetailedView:
+  void CreateExtraTitleRowButtons() override;
+  views::Button* CreateInfoButton(views::Button::PressedCallback callback,
+                                  int info_accessible_name_id) override;
 
   // Inits the views and auto scroll to the current date.
   void Init();
@@ -71,23 +78,37 @@ class ASH_EXPORT CalendarView : public TrayDetailedView,
   // the `content_view_`.
   void ScrollDownOneMonth();
 
+  // Scrolls up one month then auto scroll to the current month's first row.
+  void ScrollUpOneMonthAndAutoScroll();
+
+  // Scrolls down one month then auto scroll to the current month's first row.
+  void ScrollDownOneMonthAndAutoScroll();
+
+  // Back to the landing view.
+  void ResetToToday();
+
+  // Unowned.
+  UnifiedSystemTrayController* controller_;
+
   // Owned by `UnifiedCalendarViewController`.
   CalendarViewController* const calendar_view_controller_;
-
-  // Owned by `CalendarView`.
-  views::ScrollView* scroll_view_ = nullptr;
 
   // The content of the `scroll_view_`, which carries months and month labels.
   // Owned by `CalendarView`.
   views::View* content_view_ = nullptr;
 
-  // The followings are owned by `CalendarView`.
+  // The following is owned by `CalendarView`.
+  views::ScrollView* scroll_view_ = nullptr;
   views::Label* current_label_ = nullptr;
   views::Label* previous_label_ = nullptr;
   views::Label* next_label_ = nullptr;
   CalendarMonthView* previous_month_ = nullptr;
   CalendarMonthView* current_month_ = nullptr;
   CalendarMonthView* next_month_ = nullptr;
+  views::Label* header_ = nullptr;
+  views::Label* header_year_ = nullptr;
+  views::Button* reset_to_today_button_ = nullptr;
+  views::Button* settings_button_ = nullptr;
 
   // If it `is_resetting_scroll_`, we don't calculate the scroll position and we
   // don't need to check if we need to update the month or not.

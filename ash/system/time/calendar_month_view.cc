@@ -18,18 +18,12 @@ namespace ash {
 
 namespace {
 
-// Number of days in one week.
-constexpr int kDateInOneWeek = 7;
-
 // The thickness of the today's circle line.
 constexpr int kLineThickness = 2;
 
 // The radius used to draw rounded today's circle
 constexpr float kTodayRoundedRadius = 20.f;
 
-// The padding in each date cell view.
-constexpr int kDateVerticalPadding = 13;
-constexpr int kDateHorizontalPadding = 2;
 }  // namespace
 
 using views::GridLayout;
@@ -50,9 +44,7 @@ class CalendarDateCellView : public views::LabelButton {
         date_(date),
         grayed_out_(is_grayed_out_date) {
     SetHorizontalAlignment(gfx::ALIGN_CENTER);
-    SetBorder(
-        views::CreateEmptyBorder(kDateVerticalPadding, kDateHorizontalPadding,
-                                 kDateVerticalPadding, kDateHorizontalPadding));
+    SetBorder(views::CreateEmptyBorder(calendar_utils::kDateCellInsets));
     label()->SetElideBehavior(gfx::NO_ELIDE);
     label()->SetSubpixelRenderingEnabled(false);
     label()->SetFontList(views::Label::GetDefaultFontList().Derive(
@@ -63,15 +55,10 @@ class CalendarDateCellView : public views::LabelButton {
 
   void OnThemeChanged() override {
     views::View::OnThemeChanged();
-    const AshColorProvider* color_provider = AshColorProvider::Get();
-    const SkColor primary_text_color = color_provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary);
-    const SkColor secondary_text_color = color_provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorSecondary);
 
     // Gray-out the date that is not in the current month.
-    SetEnabledTextColors(grayed_out_ ? primary_text_color
-                                     : secondary_text_color);
+    SetEnabledTextColors(grayed_out_ ? calendar_utils::GetPrimaryTextColor()
+                                     : calendar_utils::GetSecondaryTextColor());
   }
 
   // Draws the background for 'today'. If today is a grayed out date, which is
@@ -88,8 +75,9 @@ class CalendarDateCellView : public views::LabelButton {
 
     cc::PaintFlags highlight_background;
     const gfx::Rect content = GetContentsBounds();
-    gfx::Point center((content.width() + kDateHorizontalPadding * 2) / 2,
-                      (content.height() + kDateVerticalPadding * 2) / 2);
+    gfx::Point center(
+        (content.width() + calendar_utils::kDateHorizontalPadding * 2) / 2,
+        (content.height() + calendar_utils::kDateVerticalPadding * 2) / 2);
 
     highlight_background.setColor(bg_color);
     highlight_background.setStyle(cc::PaintFlags::kFill_Style);
@@ -115,12 +103,7 @@ CalendarMonthView::CalendarMonthView(const base::Time first_day_of_month) {
   GridLayout* layout = SetLayoutManager(std::make_unique<GridLayout>());
   views::ColumnSet* column_set = layout->AddColumnSet(0);
 
-  // Set up the `GridLayout` to have 7 columns, which is one week row (7 days).
-  for (int i = 0; i < kDateInOneWeek; i++) {
-    column_set->AddColumn(GridLayout::FILL, GridLayout::FILL, 1,
-                          GridLayout::ColumnSize::kFixed, 0, 0);
-    column_set->AddPaddingColumn(0, 2);
-  }
+  calendar_utils::SetUpWeekColumnSets(column_set);
 
   base::Time::Exploded first_day_of_month_exploded =
       calendar_utils::GetExploded(first_day_of_month);
@@ -188,7 +171,7 @@ int CalendarMonthView::AddDateCellToLayout(
       current_date_exploded,
       /*is_grayed_out_date=*/is_in_current_month));
 
-  return (column_set_id + 1) % kDateInOneWeek;
+  return (column_set_id + 1) % calendar_utils::kDateInOneWeek;
 }
 
 }  // namespace ash
