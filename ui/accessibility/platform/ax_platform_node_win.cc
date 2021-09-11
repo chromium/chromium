@@ -8256,10 +8256,10 @@ void AXPlatformNodeWin::NotifyAPIObserverForPropertyRequest(
     PROPERTYID property_id) const {
   bool probable_advanced_client_detected = false;
   bool probable_screen_reader_detected = false;
+  bool uiautomation_id_requested = false;
   switch (property_id) {
     // These properties are used by non-screenreader UIA clients. They should
     // not cause additional enablement.
-    case UIA_ControlTypePropertyId:
     case UIA_HasKeyboardFocusPropertyId:
     case UIA_IsControlElementPropertyId:
     case UIA_FrameworkIdPropertyId:
@@ -8297,6 +8297,11 @@ void AXPlatformNodeWin::NotifyAPIObserverForPropertyRequest(
       probable_screen_reader_detected = true;
       probable_advanced_client_detected = true;
       break;
+    case UIA_AutomationIdPropertyId:
+      uiautomation_id_requested = true;
+      probable_screen_reader_detected = true;
+      probable_advanced_client_detected = true;
+      break;
     default:
       // All other properties should cause us to enable.
       probable_advanced_client_detected = true;
@@ -8308,6 +8313,8 @@ void AXPlatformNodeWin::NotifyAPIObserverForPropertyRequest(
       observer.OnAdvancedUIAutomationUsed();
     if (probable_screen_reader_detected)
       observer.OnProbableUIAutomationScreenReaderDetected();
+    if (uiautomation_id_requested)
+      observer.OnUIAutomationIdRequested();
   }
 }
 
