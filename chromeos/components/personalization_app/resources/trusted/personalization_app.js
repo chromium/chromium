@@ -25,3 +25,9 @@ import {PersonalizationStore} from './personalization_store.js';
 PersonalizationStore.getInstance().init(emptyState());
 
 window.addEventListener('message', onMessageReceived);
+
+function reload(event) {
+  window.location.reload();
+}
+// Reload when online, in case any images are not loaded.
+window.addEventListener('online', reload);
