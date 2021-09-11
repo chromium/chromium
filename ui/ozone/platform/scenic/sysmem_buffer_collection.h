@@ -128,7 +128,7 @@ class SysmemBufferCollection
 
   // Handle for the Vulkan object that holds the same logical buffer collection
   // that is referenced by |collection_|.
-  VkBufferCollectionFUCHSIA vk_buffer_collection_ = VK_NULL_HANDLE;
+  VkBufferCollectionFUCHSIAX vk_buffer_collection_ = VK_NULL_HANDLE;
 
   // |scenic_overlay_view_| view should be used and deleted on the same thread
   // as creation.

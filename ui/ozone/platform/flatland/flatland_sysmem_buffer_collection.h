@@ -126,7 +126,7 @@ class FlatlandSysmemBufferCollection
 
   // Handle for the Vulkan object that holds the same logical buffer collection
   // that is referenced by |collection_|.
-  VkBufferCollectionFUCHSIA vk_buffer_collection_ = VK_NULL_HANDLE;
+  VkBufferCollectionFUCHSIAX vk_buffer_collection_ = VK_NULL_HANDLE;
 
   // Thread checker used to verify that CreateVkImage() is always called from
   // the same thread. It may be unsafe to use vk_buffer_collection_ on different

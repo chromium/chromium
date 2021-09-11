@@ -115,7 +115,7 @@ bool VulkanImplementationFlatland::GetPhysicalDevicePresentationSupport(
 std::vector<const char*>
 VulkanImplementationFlatland::GetRequiredDeviceExtensions() {
   std::vector<const char*> result = {
-      VK_FUCHSIA_BUFFER_COLLECTION_EXTENSION_NAME,
+      VK_FUCHSIA_BUFFER_COLLECTION_X_EXTENSION_NAME,
       VK_FUCHSIA_EXTERNAL_MEMORY_EXTENSION_NAME,
       VK_FUCHSIA_EXTERNAL_SEMAPHORE_EXTENSION_NAME,
       VK_KHR_BIND_MEMORY_2_EXTENSION_NAME,
