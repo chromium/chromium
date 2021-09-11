@@ -256,7 +256,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3017687597151988916">Área de seleção definida como janela</translation>
 <translation id="3033545621352269033">Ativada</translation>
 <translation id="3036649622769666520">Abrir arquivos</translation>
-<translation id="3038571455154067151">Para fazer login, insira seu código de acesso de pai/mãe do Family Link</translation>
+<translation id="3038571455154067151">Para fazer login, insira seu código de acesso do familiar responsável do Family Link</translation>
 <translation id="3039939407102840004">Bateria da stylus em <ph name="PERCENTAGE" />%.</translation>
 <translation id="3045488863354895414">Boa tarde,</translation>
 <translation id="3051189971848907985">Renomeando o perfil. Aguarde alguns minutos.</translation>
@@ -488,7 +488,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="4702647871202761252">A tela de privacidade está desativada</translation>
 <translation id="4705716602320768426">Enviar feedback</translation>
 <translation id="4706121060329443414">O download será feito mais tarde. Por enquanto, a fala será enviada ao Google para processamento.</translation>
-<translation id="4731797938093519117">Acesso de pai/mãe</translation>
+<translation id="4731797938093519117">Acesso do familiar responsável</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4735498845456076464">O atalho de teclado <ph name="LAUNCHER_KEY_NAME" /> + tecla numérica mudou. Para usar as teclas de função, pressione <ph name="LAUNCHER_KEY_NAME" /> + uma tecla na linha superior.</translation>
 <translation id="4744944742468440486">Informações relacionadas à sua seleção</translation>
@@ -813,7 +813,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="7378889811480108604">Modo de Economia de bateria desativado</translation>
 <translation id="7392563512730092880">Se quiser definir mais tarde, basta acessar as configurações a qualquer momento.</translation>
 <translation id="7398254312354928459">Conexão de rede alterada</translation>
-<translation id="7405710164030118432">Para desbloquear o dispositivo, insira seu código de acesso de pai/mãe do Family Link</translation>
+<translation id="7405710164030118432">Para desbloquear o dispositivo, insira seu código de acesso do familiar responsável do Family Link</translation>
 <translation id="7406608787870898861">Termine de configurar sua rede móvel</translation>
 <translation id="741244894080940828">conversão</translation>
 <translation id="7413851974711031813">Pressione "Esc" para fechar</translation>
@@ -971,7 +971,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> restante(s)</translation>
 <translation id="8641805545866562088">Atualizando a lista de perfis. Aguarde alguns minutos.</translation>
 <translation id="8646417893960517480">Timer de <ph name="TOTAL_TIME" /></translation>
-<translation id="8647931990447795414">Para adicionar uma pessoa, insira seu código de acesso de pai/mãe do Family Link</translation>
+<translation id="8647931990447795414">Para adicionar uma pessoa, insira seu código de acesso do familiar responsável do Family Link</translation>
 <translation id="8649101189709089199">Selecionar para ouvir</translation>
 <translation id="8652175077544655965">Fechar configurações</translation>
 <translation id="8653151467777939995">Mostrar configurações de notificação. As notificações estão ativadas</translation>
@@ -1026,7 +1026,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Usando <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Desbloqueie o dispositivo com a conta <ph name="LOGIN_ID" /> para executar a ação de notificação</translation>
-<translation id="9017320285115481645">Insira o código de acesso de pai/mãe do Family Link.</translation>
+<translation id="9017320285115481645">Insira o código de acesso do familiar responsável do Family Link.</translation>
 <translation id="9024331582947483881">tela cheia</translation>
 <translation id="9047624247355796468">Abrir configurações de <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">O dispositivo será revertido</translation>

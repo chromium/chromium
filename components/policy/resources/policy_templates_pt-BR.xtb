@@ -3035,7 +3035,7 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
 
           Se esta política não for definida, o áudio mono ficará desativado inicialmente, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
 <translation id="4768446404233019970">Ativar pacotes de criptografia 3DES em TLS</translation>
-<translation id="4770334626033858263">Configuração usada para gerar e verificar o código de acesso de pai/mãe.</translation>
+<translation id="4770334626033858263">Configuração usada para gerar e verificar o código de acesso do familiar responsável.</translation>
 <translation id="4787763197941188108">Modifica o tamanho da página para impressão padrão.
 
       <ph name="PAGE_SIZE_NAME" /> precisa conter um dos formatos listados ou "personalizado" se o tamanho do papel exigido não estiver na lista. Se um valor "personalizado" for fornecido, a propriedade <ph name="PAGE_SIZE_CUSTOM_SIZE" /> precisará ser especificada. Ela descreve a altura e a largura desejadas em micrômetros. Caso contrário, a propriedade <ph name="PAGE_SIZE_CUSTOM_SIZE" /> não precisa ser especificada. A política que violar essas regras será ignorada.
@@ -3881,7 +3881,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 <translation id="5860010874344790473">Se a política for definida como "Ativada", logs do sistema serão enviados ao servidor de gerenciamento para permitir que os administradores os monitorem.
 
       Se a política for definida como "Desativada" ou não for definida, nenhum log do sistema será enviado.</translation>
-<translation id="5861856285460256766">Configuração do código de acesso dos pais</translation>
+<translation id="5861856285460256766">Configuração do código de acesso do familiar responsável</translation>
 <translation id="5868414965372171132">Configuração de rede em nível do usuário</translation>
 <translation id="587242272905978723">Permita que <ph name="PLUGIN_VM_NAME" /> colete dados de uso de <ph name="PLUGIN_VM_NAME" />.
 
@@ -5296,7 +5296,7 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 <translation id="7613115815080726221">O tempo, em milissegundos, sem entrada do usuário após o qual a ação de inatividade é tomada.</translation>
 <translation id="7614663184588396421">Lista dos esquemas de protocolo desativados</translation>
 <translation id="7616631530432070402">Os pacotes de criptografia 3DES serão ativados em TLS</translation>
-<translation id="7620869951155758729">Esta política especifica a configuração que é usada para gerar e verificar o código de acesso dos pais.
+<translation id="7620869951155758729">Esta política especifica a configuração que é usada para gerar e verificar o código de acesso do familiar responsável.
 
       A |current_config| sempre é usada para gerar o código de acesso e precisa ser usada para a validação dele apenas quando o código não pode ser validado com |future_config|.
       |future_config| é a configuração principal usada para validação do código de acesso.
@@ -5306,8 +5306,8 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
       tempo, o valor existente é movido para |current_config|. Os valores anteriores de |current_config| são movidos para |old_configs| e removidos depois que o ciclo de alternância é concluído.
 
       Esta política se aplica apenas a usuários menores de idade.
-      Quando esta política é definida, o código de acesso dos pais pode ser verificado no dispositivo da criança.
-      Quando esta política não é definida, não é possível verificar o código de acesso dos pais no dispositivo da criança.</translation>
+      Quando esta política é definida, o código de acesso do familiar responsável pode ser verificado no dispositivo da criança.
+      Quando esta política não é definida, não é possível verificar o código de acesso do familiar responsável no dispositivo da criança.</translation>
 <translation id="7629840767216985001">Se esta política for definida como verdadeira, o cursor grande será ativado na tela de login. Se esta política for definida como falsa, o cursor grande será desativado na tela de login.
 
       Se você definir a política, os usuários poderão ativar ou desativar o cursor grande temporariamente. Quando a tela de login for atualizada ou ficar inativa por um minuto, o cursor retornará ao estado original.
