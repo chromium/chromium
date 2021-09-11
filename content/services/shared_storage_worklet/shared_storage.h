@@ -34,7 +34,8 @@ class SharedStorage final : public gin::Wrappable<SharedStorage> {
   v8::Local<v8::Promise> Delete(gin::Arguments* args);
   v8::Local<v8::Promise> Clear(gin::Arguments* args);
   v8::Local<v8::Promise> Get(gin::Arguments* args);
-  v8::Local<v8::Promise> Key(gin::Arguments* args);
+  v8::Local<v8::Object> Keys(gin::Arguments* args);
+  v8::Local<v8::Object> Entries(gin::Arguments* args);
   v8::Local<v8::Promise> Length(gin::Arguments* args);
 
   void OnVoidOperationFinished(

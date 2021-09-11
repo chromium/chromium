@@ -5,9 +5,11 @@
 #include "content/services/shared_storage_worklet/shared_storage.h"
 
 #include "base/logging.h"
+#include "content/services/shared_storage_worklet/shared_storage_iterator.h"
 #include "content/services/shared_storage_worklet/worklet_v8_helper.h"
 #include "gin/arguments.h"
 #include "gin/dictionary.h"
+#include "gin/handle.h"
 
 namespace shared_storage_worklet {
 
@@ -26,7 +28,8 @@ gin::ObjectTemplateBuilder SharedStorage::GetObjectTemplateBuilder(
       .SetMethod("delete", &SharedStorage::Delete)
       .SetMethod("clear", &SharedStorage::Clear)
       .SetMethod("get", &SharedStorage::Get)
-      .SetMethod("key", &SharedStorage::Key)
+      .SetMethod("keys", &SharedStorage::Keys)
+      .SetMethod("entries", &SharedStorage::Entries)
       .SetMethod("length", &SharedStorage::Length);
 }
 
@@ -85,7 +88,7 @@ v8::Local<v8::Promise> SharedStorage::Set(gin::Arguments* args) {
   bool ignore_if_present = false;
   arg2_options_dict.Get<bool>("ignoreIfPresent", &ignore_if_present);
 
-  client_->SetFromWorkletScope(
+  client_->SharedStorageSet(
       arg0_key, arg1_value, ignore_if_present,
       base::BindOnce(&SharedStorage::OnVoidOperationFinished,
                      weak_ptr_factory_.GetWeakPtr(), isolate,
@@ -125,7 +128,7 @@ v8::Local<v8::Promise> SharedStorage::Append(gin::Arguments* args) {
     return promise;
   }
 
-  client_->AppendFromWorkletScope(
+  client_->SharedStorageAppend(
       arg0_key, arg1_value,
       base::BindOnce(&SharedStorage::OnVoidOperationFinished,
                      weak_ptr_factory_.GetWeakPtr(), isolate,
@@ -154,7 +157,7 @@ v8::Local<v8::Promise> SharedStorage::Delete(gin::Arguments* args) {
     return promise;
   }
 
-  client_->DeleteFromWorkletScope(
+  client_->SharedStorageDelete(
       arg0_key,
       base::BindOnce(&SharedStorage::OnVoidOperationFinished,
                      weak_ptr_factory_.GetWeakPtr(), isolate,
@@ -172,7 +175,7 @@ v8::Local<v8::Promise> SharedStorage::Clear(gin::Arguments* args) {
 
   v8::Local<v8::Promise> promise = resolver->GetPromise();
 
-  client_->ClearFromWorkletScope(base::BindOnce(
+  client_->SharedStorageClear(base::BindOnce(
       &SharedStorage::OnVoidOperationFinished, weak_ptr_factory_.GetWeakPtr(),
       isolate, v8::Global<v8::Promise::Resolver>(isolate, resolver)));
 
@@ -200,7 +203,7 @@ v8::Local<v8::Promise> SharedStorage::Get(gin::Arguments* args) {
     return promise;
   }
 
-  client_->GetFromWorkletScope(
+  client_->SharedStorageGet(
       arg0_key,
       base::BindOnce(&SharedStorage::OnStringRetrievalOperationFinished,
                      weak_ptr_factory_.GetWeakPtr(), isolate,
@@ -208,34 +211,17 @@ v8::Local<v8::Promise> SharedStorage::Get(gin::Arguments* args) {
   return promise;
 }
 
-v8::Local<v8::Promise> SharedStorage::Key(gin::Arguments* args) {
-  v8::Isolate* isolate = args->isolate();
+v8::Local<v8::Object> SharedStorage::Keys(gin::Arguments* args) {
+  return (new SharedStorageIterator(SharedStorageIterator::Mode::kKey, client_))
+      ->GetWrapper(args->isolate())
+      .ToLocalChecked();
+}
 
-  v8::Local<v8::Promise::Resolver> resolver =
-      v8::Promise::Resolver::New(args->GetHolderCreationContext())
-          .ToLocalChecked();
-
-  v8::Local<v8::Promise> promise = resolver->GetPromise();
-
-  uint32_t arg0_pos;
-  if (!args->GetNext(&arg0_pos)) {
-    resolver
-        ->Reject(
-            args->GetHolderCreationContext(),
-            gin::StringToV8(
-                isolate,
-                "Missing or invalid \"pos\" argument in sharedStorage.key()"))
-        .ToChecked();
-    return promise;
-  }
-
-  client_->KeyFromWorkletScope(
-      arg0_pos,
-      base::BindOnce(&SharedStorage::OnStringRetrievalOperationFinished,
-                     weak_ptr_factory_.GetWeakPtr(), isolate,
-                     v8::Global<v8::Promise::Resolver>(isolate, resolver)));
-
-  return promise;
+v8::Local<v8::Object> SharedStorage::Entries(gin::Arguments* args) {
+  return (new SharedStorageIterator(SharedStorageIterator::Mode::kKeyValue,
+                                    client_))
+      ->GetWrapper(args->isolate())
+      .ToLocalChecked();
 }
 
 v8::Local<v8::Promise> SharedStorage::Length(gin::Arguments* args) {
@@ -247,7 +233,7 @@ v8::Local<v8::Promise> SharedStorage::Length(gin::Arguments* args) {
 
   v8::Local<v8::Promise> promise = resolver->GetPromise();
 
-  client_->LengthFromWorkletScope(base::BindOnce(
+  client_->SharedStorageLength(base::BindOnce(
       &SharedStorage::OnLengthOperationFinished, weak_ptr_factory_.GetWeakPtr(),
       isolate, v8::Global<v8::Promise::Resolver>(isolate, resolver)));
 

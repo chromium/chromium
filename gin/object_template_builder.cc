@@ -184,6 +184,12 @@ ObjectTemplateBuilder& ObjectTemplateBuilder::SetImpl(
   return *this;
 }
 
+ObjectTemplateBuilder& ObjectTemplateBuilder::SetImpl(v8::Local<v8::Name> name,
+                                                      v8::Local<v8::Data> val) {
+  template_->Set(name, val);
+  return *this;
+}
+
 ObjectTemplateBuilder& ObjectTemplateBuilder::SetPropertyImpl(
     const base::StringPiece& name, v8::Local<v8::FunctionTemplate> getter,
     v8::Local<v8::FunctionTemplate> setter) {

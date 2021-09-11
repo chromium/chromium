@@ -41,7 +41,7 @@ void Console::Log(gin::Arguments* args) {
       result += std::string(*val_utf8, val_utf8.length());
   }
 
-  client_->ConsoleLogFromWorkletScope(result);
+  client_->ConsoleLog(result);
 }
 
 }  // namespace shared_storage_worklet

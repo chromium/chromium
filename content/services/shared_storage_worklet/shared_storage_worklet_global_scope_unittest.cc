@@ -9,11 +9,25 @@
 #include "content/services/shared_storage_worklet/worklet_v8_helper.h"
 #include "gin/converter.h"
 #include "gin/dictionary.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace shared_storage_worklet {
 
 namespace {
+
+std::vector<shared_storage_worklet::mojom::SharedStorageKeyAndOrValuePtr>
+CreateBatchResult(std::vector<std::pair<std::string, std::string>> input) {
+  std::vector<shared_storage_worklet::mojom::SharedStorageKeyAndOrValuePtr>
+      result;
+  for (const auto& p : input) {
+    shared_storage_worklet::mojom::SharedStorageKeyAndOrValuePtr e =
+        shared_storage_worklet::mojom::SharedStorageKeyAndOrValue::New(
+            p.first, p.second);
+    result.push_back(std::move(e));
+  }
+  return result;
+}
 
 std::vector<uint8_t> Serialize(v8::Isolate* isolate,
                                v8::Local<v8::Context> context,
@@ -48,10 +62,10 @@ class TestClient
   explicit TestClient(scoped_refptr<base::SingleThreadTaskRunner> task_runner)
       : task_runner_(task_runner) {}
 
-  void SetFromWorkletScope(const std::string& key,
-                           const std::string& value,
-                           bool ignore_if_present,
-                           SetFromWorkletScopeCallback callback) override {
+  void SharedStorageSet(const std::string& key,
+                        const std::string& value,
+                        bool ignore_if_present,
+                        SharedStorageSetCallback callback) override {
     observed_set_params_.push_back({key, value, ignore_if_present});
 
     task_runner_->PostTask(
@@ -61,10 +75,9 @@ class TestClient
         }));
   }
 
-  void AppendFromWorkletScope(
-      const std::string& key,
-      const std::string& value,
-      AppendFromWorkletScopeCallback callback) override {
+  void SharedStorageAppend(const std::string& key,
+                           const std::string& value,
+                           SharedStorageAppendCallback callback) override {
     task_runner_->PostTask(
         FROM_HERE,
         base::BindLambdaForTesting([callback = std::move(callback)]() mutable {
@@ -74,14 +87,13 @@ class TestClient
         }));
   }
 
-  void DeleteFromWorkletScope(
-      const std::string& key,
-      DeleteFromWorkletScopeCallback callback) override {}
+  void SharedStorageDelete(const std::string& key,
+                           SharedStorageDeleteCallback callback) override {}
 
-  void ClearFromWorkletScope(ClearFromWorkletScopeCallback callback) override {}
+  void SharedStorageClear(SharedStorageClearCallback callback) override {}
 
-  void GetFromWorkletScope(const std::string& key,
-                           GetFromWorkletScopeCallback callback) override {
+  void SharedStorageGet(const std::string& key,
+                        SharedStorageGetCallback callback) override {
     task_runner_->PostTask(
         FROM_HERE,
         base::BindLambdaForTesting([callback = std::move(callback)]() mutable {
@@ -92,20 +104,21 @@ class TestClient
         }));
   }
 
-  void KeyFromWorkletScope(uint32_t pos,
-                           KeyFromWorkletScopeCallback callback) override {
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindLambdaForTesting([callback = std::move(callback)]() mutable {
-          std::move(callback).Run(
-              /*success=*/true,
-              /*error_message=*/{},
-              /*key=*/"test-key");
-        }));
+  void SharedStorageKeys(
+      mojo::PendingRemote<
+          shared_storage_worklet::mojom::SharedStorageEntriesListener>
+          pending_listener) override {
+    pending_keys_listeners_.push_back(std::move(pending_listener));
   }
 
-  void LengthFromWorkletScope(
-      LengthFromWorkletScopeCallback callback) override {
+  void SharedStorageEntries(
+      mojo::PendingRemote<
+          shared_storage_worklet::mojom::SharedStorageEntriesListener>
+          pending_listener) override {
+    pending_entries_listeners_.push_back(std::move(pending_listener));
+  }
+
+  void SharedStorageLength(SharedStorageLengthCallback callback) override {
     task_runner_->PostTask(
         FROM_HERE,
         base::BindLambdaForTesting([callback = std::move(callback)]() mutable {
@@ -116,7 +129,7 @@ class TestClient
         }));
   }
 
-  void ConsoleLogFromWorkletScope(const std::string& message) override {
+  void ConsoleLog(const std::string& message) override {
     observed_console_log_messages_.push_back(message);
   }
 
@@ -128,8 +141,48 @@ class TestClient
     return observed_console_log_messages_;
   }
 
+  size_t pending_keys_listeners_count() const {
+    return pending_keys_listeners_.size();
+  }
+
+  size_t pending_entries_listeners_count() const {
+    return pending_entries_listeners_.size();
+  }
+
+  mojo::Remote<shared_storage_worklet::mojom::SharedStorageEntriesListener>
+  OfferKeysListenerAtFront() {
+    CHECK(!pending_keys_listeners_.empty());
+
+    auto pending_listener = std::move(pending_keys_listeners_.front());
+    pending_keys_listeners_.pop_front();
+
+    return mojo::Remote<
+        shared_storage_worklet::mojom::SharedStorageEntriesListener>(
+        std::move(pending_listener));
+  }
+
+  mojo::Remote<shared_storage_worklet::mojom::SharedStorageEntriesListener>
+  OfferEntriesListenerAtFront() {
+    CHECK(!pending_entries_listeners_.empty());
+
+    auto pending_listener = std::move(pending_entries_listeners_.front());
+    pending_entries_listeners_.pop_front();
+
+    return mojo::Remote<
+        shared_storage_worklet::mojom::SharedStorageEntriesListener>(
+        std::move(pending_listener));
+  }
+
  private:
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+
+  std::deque<mojo::PendingRemote<
+      shared_storage_worklet::mojom::SharedStorageEntriesListener>>
+      pending_keys_listeners_;
+
+  std::deque<mojo::PendingRemote<
+      shared_storage_worklet::mojom::SharedStorageEntriesListener>>
+      pending_entries_listeners_;
 
   std::vector<SetParams> observed_set_params_;
   std::vector<std::string> observed_console_log_messages_;
@@ -207,7 +260,8 @@ TEST_F(SharedStorageWorkletGlobalScopeTest, OnModuleScriptDownloadedSuccess) {
   EXPECT_EQ(GetTypeOf("sharedStorage.delete"), "function");
   EXPECT_EQ(GetTypeOf("sharedStorage.clear"), "function");
   EXPECT_EQ(GetTypeOf("sharedStorage.get"), "function");
-  EXPECT_EQ(GetTypeOf("sharedStorage.key"), "function");
+  EXPECT_EQ(GetTypeOf("sharedStorage.keys"), "function");
+  EXPECT_EQ(GetTypeOf("sharedStorage.entries"), "function");
   EXPECT_EQ(GetTypeOf("sharedStorage.length"), "function");
 }
 
@@ -810,8 +864,7 @@ class SharedStorageObjectMethodTest : public SharedStorageRunOperationTest {
     SimulateAddModule(R"()");
   }
 
-  void ExecuteScriptAndWatchPromiseResolvedResult(
-      const std::string& script_body) {
+  void ExecuteScript(const std::string& script_body) {
     WorkletV8Helper::HandleScope scope(Isolate());
     v8::Local<v8::Context> context = LocalContext();
     v8::Context::Scope context_scope(context);
@@ -820,41 +873,38 @@ class SharedStorageObjectMethodTest : public SharedStorageRunOperationTest {
     ASSERT_TRUE(!v8_result.IsEmpty());
     ASSERT_TRUE(v8_result->IsPromise());
 
-    v8::Local<v8::Promise> v8_result_promise = v8_result.As<v8::Promise>();
-    if (v8_result_promise->State() == v8::Promise::PromiseState::kPending) {
-      task_environment_.RunUntilIdle();
-    } else {
-      finished_synchronously_ = true;
-    }
-
-    ASSERT_TRUE(v8_result_promise->State() !=
-                v8::Promise::PromiseState::kPending);
-
-    fulfilled_ =
-        (v8_result_promise->State() == v8::Promise::PromiseState::kFulfilled);
-
-    v8_resolved_value_ =
-        v8::Global<v8::Value>(Isolate(), v8_result_promise->Result());
+    v8_result_promise_ =
+        v8::Global<v8::Promise>(Isolate(), v8_result.As<v8::Promise>());
   }
 
-  bool finished_synchronously() const { return finished_synchronously_; }
+  bool finished() {
+    WorkletV8Helper::HandleScope scope(Isolate());
+    v8::Local<v8::Promise> v8_result_promise =
+        v8_result_promise_.Get(Isolate());
+    return v8_result_promise->State() != v8::Promise::PromiseState::kPending;
+  }
 
-  bool fulfilled() const { return fulfilled_; }
+  bool fulfilled() {
+    WorkletV8Helper::HandleScope scope(Isolate());
+    v8::Local<v8::Promise> v8_result_promise =
+        v8_result_promise_.Get(Isolate());
+    return v8_result_promise->State() == v8::Promise::PromiseState::kFulfilled;
+  }
 
   v8::Local<v8::Value> v8_resolved_value() {
-    return v8_resolved_value_.Get(Isolate());
+    DCHECK(finished());
+    v8::Local<v8::Promise> v8_result_promise =
+        v8_result_promise_.Get(Isolate());
+    return v8_result_promise->Result();
   }
 
  private:
-  bool finished_synchronously_ = false;
-  bool fulfilled_ = false;
-  v8::Global<v8::Value> v8_resolved_value_;
+  v8::Global<v8::Promise> v8_result_promise_;
 };
 
 TEST_F(SharedStorageObjectMethodTest, SetOperation_MissingKey) {
-  ExecuteScriptAndWatchPromiseResolvedResult("sharedStorage.set()");
-
-  EXPECT_TRUE(finished_synchronously());
+  ExecuteScript("sharedStorage.set()");
+  EXPECT_TRUE(finished());
   EXPECT_FALSE(fulfilled());
 
   {
@@ -868,9 +918,8 @@ TEST_F(SharedStorageObjectMethodTest, SetOperation_MissingKey) {
 }
 
 TEST_F(SharedStorageObjectMethodTest, SetOperation_MissingValue) {
-  ExecuteScriptAndWatchPromiseResolvedResult("sharedStorage.set('key')");
-
-  EXPECT_TRUE(finished_synchronously());
+  ExecuteScript("sharedStorage.set('key')");
+  EXPECT_TRUE(finished());
   EXPECT_FALSE(fulfilled());
 
   {
@@ -884,9 +933,8 @@ TEST_F(SharedStorageObjectMethodTest, SetOperation_MissingValue) {
 }
 
 TEST_F(SharedStorageObjectMethodTest, SetOperation_InvalidValue) {
-  ExecuteScriptAndWatchPromiseResolvedResult("sharedStorage.set('key', 123)");
-
-  EXPECT_TRUE(finished_synchronously());
+  ExecuteScript("sharedStorage.set('key', 123)");
+  EXPECT_TRUE(finished());
   EXPECT_FALSE(fulfilled());
 
   {
@@ -900,10 +948,8 @@ TEST_F(SharedStorageObjectMethodTest, SetOperation_InvalidValue) {
 }
 
 TEST_F(SharedStorageObjectMethodTest, SetOperation_InvalidOptions) {
-  ExecuteScriptAndWatchPromiseResolvedResult(
-      "sharedStorage.set('key', 'value', true)");
-
-  EXPECT_TRUE(finished_synchronously());
+  ExecuteScript("sharedStorage.set('key', 'value', true)");
+  EXPECT_TRUE(finished());
   EXPECT_FALSE(fulfilled());
 
   {
@@ -915,10 +961,10 @@ TEST_F(SharedStorageObjectMethodTest, SetOperation_InvalidOptions) {
 }
 
 TEST_F(SharedStorageObjectMethodTest, SetOperation_FulfilledAsynchronously) {
-  ExecuteScriptAndWatchPromiseResolvedResult(
-      "sharedStorage.set('key', 'value')");
-
-  EXPECT_FALSE(finished_synchronously());
+  ExecuteScript("sharedStorage.set('key', 'value')");
+  EXPECT_FALSE(finished());
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(finished());
   EXPECT_TRUE(fulfilled());
 
   {
@@ -933,10 +979,10 @@ TEST_F(SharedStorageObjectMethodTest, SetOperation_FulfilledAsynchronously) {
 }
 
 TEST_F(SharedStorageObjectMethodTest, SetOperation_IgnoreIfPresent) {
-  ExecuteScriptAndWatchPromiseResolvedResult(
-      "sharedStorage.set('key', 'value', {ignoreIfPresent: true})");
-
-  EXPECT_FALSE(finished_synchronously());
+  ExecuteScript("sharedStorage.set('key', 'value', {ignoreIfPresent: true})");
+  EXPECT_FALSE(finished());
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(finished());
   EXPECT_TRUE(fulfilled());
 
   {
@@ -951,9 +997,8 @@ TEST_F(SharedStorageObjectMethodTest, SetOperation_IgnoreIfPresent) {
 }
 
 TEST_F(SharedStorageObjectMethodTest, AppendOperation_MissingKey) {
-  ExecuteScriptAndWatchPromiseResolvedResult("sharedStorage.append()");
-
-  EXPECT_TRUE(finished_synchronously());
+  ExecuteScript("sharedStorage.append()");
+  EXPECT_TRUE(finished());
   EXPECT_FALSE(fulfilled());
 
   WorkletV8Helper::HandleScope scope(Isolate());
@@ -963,9 +1008,8 @@ TEST_F(SharedStorageObjectMethodTest, AppendOperation_MissingKey) {
 }
 
 TEST_F(SharedStorageObjectMethodTest, AppendOperation_MissingValue) {
-  ExecuteScriptAndWatchPromiseResolvedResult("sharedStorage.append('key')");
-
-  EXPECT_TRUE(finished_synchronously());
+  ExecuteScript("sharedStorage.append('key')");
+  EXPECT_TRUE(finished());
   EXPECT_FALSE(fulfilled());
 
   WorkletV8Helper::HandleScope scope(Isolate());
@@ -975,10 +1019,10 @@ TEST_F(SharedStorageObjectMethodTest, AppendOperation_MissingValue) {
 }
 
 TEST_F(SharedStorageObjectMethodTest, AppendOperation_RejectedAsynchronously) {
-  ExecuteScriptAndWatchPromiseResolvedResult(
-      "sharedStorage.append('key', 'value')");
-
-  EXPECT_FALSE(finished_synchronously());
+  ExecuteScript("sharedStorage.append('key', 'value')");
+  EXPECT_FALSE(finished());
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(finished());
   EXPECT_FALSE(fulfilled());
 
   WorkletV8Helper::HandleScope scope(Isolate());
@@ -988,9 +1032,8 @@ TEST_F(SharedStorageObjectMethodTest, AppendOperation_RejectedAsynchronously) {
 }
 
 TEST_F(SharedStorageObjectMethodTest, DeleteOperation_MissingKey) {
-  ExecuteScriptAndWatchPromiseResolvedResult("sharedStorage.delete()");
-
-  EXPECT_TRUE(finished_synchronously());
+  ExecuteScript("sharedStorage.delete()");
+  EXPECT_TRUE(finished());
   EXPECT_FALSE(fulfilled());
 
   WorkletV8Helper::HandleScope scope(Isolate());
@@ -1000,9 +1043,8 @@ TEST_F(SharedStorageObjectMethodTest, DeleteOperation_MissingKey) {
 }
 
 TEST_F(SharedStorageObjectMethodTest, GetOperation_MissingKey) {
-  ExecuteScriptAndWatchPromiseResolvedResult("sharedStorage.get()");
-
-  EXPECT_TRUE(finished_synchronously());
+  ExecuteScript("sharedStorage.get()");
+  EXPECT_TRUE(finished());
   EXPECT_FALSE(fulfilled());
 
   WorkletV8Helper::HandleScope scope(Isolate());
@@ -1012,9 +1054,10 @@ TEST_F(SharedStorageObjectMethodTest, GetOperation_MissingKey) {
 }
 
 TEST_F(SharedStorageObjectMethodTest, GetOperation_FulfilledAsynchronously) {
-  ExecuteScriptAndWatchPromiseResolvedResult("sharedStorage.get('key')");
-
-  EXPECT_FALSE(finished_synchronously());
+  ExecuteScript("sharedStorage.get('key')");
+  EXPECT_FALSE(finished());
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(finished());
   EXPECT_TRUE(fulfilled());
 
   WorkletV8Helper::HandleScope scope(Isolate());
@@ -1022,33 +1065,11 @@ TEST_F(SharedStorageObjectMethodTest, GetOperation_FulfilledAsynchronously) {
   EXPECT_EQ(gin::V8ToString(Isolate(), v8_resolved_value()), "test-value");
 }
 
-TEST_F(SharedStorageObjectMethodTest, KeyOperation_MissingPos) {
-  ExecuteScriptAndWatchPromiseResolvedResult("sharedStorage.key()");
-
-  EXPECT_TRUE(finished_synchronously());
-  EXPECT_FALSE(fulfilled());
-
-  WorkletV8Helper::HandleScope scope(Isolate());
-  EXPECT_TRUE(v8_resolved_value()->IsString());
-  EXPECT_EQ(gin::V8ToString(Isolate(), v8_resolved_value()),
-            "Missing or invalid \"pos\" argument in sharedStorage.key()");
-}
-
-TEST_F(SharedStorageObjectMethodTest, KeyOperation_FulfilledAsynchronously) {
-  ExecuteScriptAndWatchPromiseResolvedResult("sharedStorage.key(123)");
-
-  EXPECT_FALSE(finished_synchronously());
-  EXPECT_TRUE(fulfilled());
-
-  WorkletV8Helper::HandleScope scope(Isolate());
-  EXPECT_TRUE(v8_resolved_value()->IsString());
-  EXPECT_EQ(gin::V8ToString(Isolate(), v8_resolved_value()), "test-key");
-}
-
 TEST_F(SharedStorageObjectMethodTest, LengthOperation_FulfilledAsynchronously) {
-  ExecuteScriptAndWatchPromiseResolvedResult("sharedStorage.length()");
-
-  EXPECT_FALSE(finished_synchronously());
+  ExecuteScript("sharedStorage.length()");
+  EXPECT_FALSE(finished());
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(finished());
   EXPECT_TRUE(fulfilled());
 
   WorkletV8Helper::HandleScope scope(Isolate());
@@ -1057,6 +1078,247 @@ TEST_F(SharedStorageObjectMethodTest, LengthOperation_FulfilledAsynchronously) {
   uint32_t n = 0;
   gin::Converter<uint32_t>::FromV8(Isolate(), v8_resolved_value(), &n);
   EXPECT_EQ(n, 1u);
+}
+
+TEST_F(SharedStorageObjectMethodTest,
+       EntriesOperationAsyncIterator_OneEmptyBatch_Success) {
+  ExecuteScript(R"(
+    (async () => {
+      for await (const [key, value] of sharedStorage.entries()) {
+        console.log(key + ';' + value);
+      }
+    })();
+  )");
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(finished());
+  EXPECT_EQ(test_client()->observed_console_log_messages().size(), 0u);
+
+  EXPECT_EQ(test_client()->pending_entries_listeners_count(), 1u);
+  auto remote_listener = test_client()->OfferEntriesListenerAtFront();
+
+  remote_listener->DidReadEntries(
+      /*success=*/true, /*error_message=*/{}, CreateBatchResult({}),
+      /*has_more_entries=*/false);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(finished());
+  EXPECT_TRUE(fulfilled());
+  EXPECT_EQ(test_client()->observed_console_log_messages().size(), 0u);
+}
+
+TEST_F(SharedStorageObjectMethodTest,
+       EntriesOperationAsyncIterator_FirstBatchError_Failure) {
+  ExecuteScript(R"(
+    (async () => {
+      for await (const [key, value] of sharedStorage.entries()) {
+        console.log(key + ';' + value);
+      }
+    })();
+  )");
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(finished());
+  EXPECT_EQ(test_client()->observed_console_log_messages().size(), 0u);
+
+  EXPECT_EQ(test_client()->pending_entries_listeners_count(), 1u);
+  auto remote_listener = test_client()->OfferEntriesListenerAtFront();
+
+  remote_listener->DidReadEntries(
+      /*success=*/false, /*error_message=*/"Internal error 12345",
+      CreateBatchResult({}),
+      /*has_more_entries=*/true);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(finished());
+  EXPECT_FALSE(fulfilled());
+  EXPECT_EQ(test_client()->observed_console_log_messages().size(), 0u);
+
+  WorkletV8Helper::HandleScope scope(Isolate());
+  EXPECT_TRUE(v8_resolved_value()->IsString());
+  EXPECT_EQ(gin::V8ToString(Isolate(), v8_resolved_value()),
+            "Internal error 12345");
+}
+
+TEST_F(SharedStorageObjectMethodTest,
+       EntriesOperationAsyncIterator_TwoBatches_Success) {
+  ExecuteScript(R"(
+    (async () => {
+      for await (const [key, value] of sharedStorage.entries()) {
+        console.log(key + ';' + value);
+      }
+    })();
+  )");
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(finished());
+  EXPECT_EQ(test_client()->observed_console_log_messages().size(), 0u);
+
+  EXPECT_EQ(test_client()->pending_entries_listeners_count(), 1u);
+  auto remote_listener = test_client()->OfferEntriesListenerAtFront();
+
+  remote_listener->DidReadEntries(
+      /*success=*/true, /*error_message=*/{},
+      CreateBatchResult({{"key0", "value0"}}),
+      /*has_more_entries=*/true);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(finished());
+  EXPECT_EQ(test_client()->observed_console_log_messages().size(), 1u);
+  EXPECT_EQ(test_client()->observed_console_log_messages()[0], "key0;value0");
+
+  remote_listener->DidReadEntries(
+      /*success=*/true, /*error_message=*/{},
+      CreateBatchResult({{"key1", "value1"}, {"key2", "value2"}}),
+      /*has_more_entries=*/false);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(finished());
+  EXPECT_TRUE(fulfilled());
+  EXPECT_EQ(test_client()->observed_console_log_messages().size(), 3u);
+  EXPECT_EQ(test_client()->observed_console_log_messages()[1], "key1;value1");
+  EXPECT_EQ(test_client()->observed_console_log_messages()[2], "key2;value2");
+}
+
+TEST_F(SharedStorageObjectMethodTest,
+       EntriesOperationAsyncIterator_SecondBatchError_Failure) {
+  ExecuteScript(R"(
+    (async () => {
+      for await (const [key, value] of sharedStorage.entries()) {
+        console.log(key + ';' + value);
+      }
+    })();
+  )");
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(finished());
+  EXPECT_EQ(test_client()->observed_console_log_messages().size(), 0u);
+
+  EXPECT_EQ(test_client()->pending_entries_listeners_count(), 1u);
+  auto remote_listener = test_client()->OfferEntriesListenerAtFront();
+
+  remote_listener->DidReadEntries(
+      /*success=*/true, /*error_message=*/{},
+      CreateBatchResult({{"key0", "value0"}}),
+      /*has_more_entries=*/true);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(finished());
+  EXPECT_EQ(test_client()->observed_console_log_messages().size(), 1u);
+  EXPECT_EQ(test_client()->observed_console_log_messages()[0], "key0;value0");
+
+  remote_listener->DidReadEntries(
+      /*success=*/false, /*error_message=*/"Internal error 12345",
+      CreateBatchResult({}),
+      /*has_more_entries=*/true);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(finished());
+  EXPECT_FALSE(fulfilled());
+  EXPECT_EQ(test_client()->observed_console_log_messages().size(), 1u);
+
+  WorkletV8Helper::HandleScope scope(Isolate());
+  EXPECT_TRUE(v8_resolved_value()->IsString());
+  EXPECT_EQ(gin::V8ToString(Isolate(), v8_resolved_value()),
+            "Internal error 12345");
+}
+
+TEST_F(SharedStorageObjectMethodTest,
+       KeysOperationAsyncIterator_OneBatch_Success) {
+  ExecuteScript(R"(
+    (async () => {
+      for await (const key of sharedStorage.keys()) {
+        console.log(key);
+      }
+    })();
+  )");
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(finished());
+  EXPECT_EQ(test_client()->observed_console_log_messages().size(), 0u);
+
+  EXPECT_EQ(test_client()->pending_keys_listeners_count(), 1u);
+  auto remote_listener = test_client()->OfferKeysListenerAtFront();
+
+  // It's harmless to still send the `value` field. They will simply be ignored.
+  remote_listener->DidReadEntries(
+      /*success=*/true, /*error_message=*/{},
+      CreateBatchResult({{"key0", "value0"}, {"key1", "value1"}}),
+      /*has_more_entries=*/false);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(finished());
+  EXPECT_TRUE(fulfilled());
+  EXPECT_EQ(test_client()->observed_console_log_messages().size(), 2u);
+  EXPECT_EQ(test_client()->observed_console_log_messages()[0], "key0");
+  EXPECT_EQ(test_client()->observed_console_log_messages()[1], "key1");
+}
+
+TEST_F(SharedStorageObjectMethodTest,
+       KeysOperationAsyncIterator_ManuallyCallNext) {
+  ExecuteScript(R"(
+    (async () => {
+      const keys_iterator = sharedStorage.keys()[Symbol.asyncIterator]();
+
+      keys_iterator.next(); // result0 skipped
+      keys_iterator.next(); // result1 skipped
+
+      const result2 = await keys_iterator.next();
+      console.log(JSON.stringify(result2, Object.keys(result2).sort()));
+
+      const result3 = await keys_iterator.next();
+      console.log(JSON.stringify(result3, Object.keys(result3).sort()));
+
+      const result4 = await keys_iterator.next();
+      console.log(JSON.stringify(result4, Object.keys(result4).sort()));
+
+      const result5 = await keys_iterator.next();
+      console.log(JSON.stringify(result5, Object.keys(result5).sort()));
+    })();
+  )");
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(finished());
+  EXPECT_EQ(test_client()->observed_console_log_messages().size(), 0u);
+
+  EXPECT_EQ(test_client()->pending_keys_listeners_count(), 1u);
+  auto remote_listener = test_client()->OfferKeysListenerAtFront();
+
+  remote_listener->DidReadEntries(
+      /*success=*/true, /*error_message=*/{},
+      CreateBatchResult({{"key0", /*value=*/{}}}),
+      /*has_more_entries=*/true);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(finished());
+  EXPECT_EQ(test_client()->observed_console_log_messages().size(), 0u);
+
+  remote_listener->DidReadEntries(
+      /*success=*/true, /*error_message=*/{},
+      CreateBatchResult({{"key1", /*value=*/{}}, {"key2", /*value=*/{}}}),
+      /*has_more_entries=*/true);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(finished());
+  EXPECT_EQ(test_client()->observed_console_log_messages().size(), 1u);
+  EXPECT_EQ(test_client()->observed_console_log_messages()[0],
+            "{\"done\":false,\"value\":\"key2\"}");
+
+  remote_listener->DidReadEntries(
+      /*success=*/true, /*error_message=*/{},
+      CreateBatchResult({{"key3", /*value=*/{}}}),
+      /*has_more_entries=*/false);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(finished());
+  EXPECT_TRUE(fulfilled());
+  EXPECT_EQ(test_client()->observed_console_log_messages().size(), 4u);
+  EXPECT_EQ(test_client()->observed_console_log_messages()[1],
+            "{\"done\":false,\"value\":\"key3\"}");
+  EXPECT_EQ(test_client()->observed_console_log_messages()[2],
+            "{\"done\":true}");
+  EXPECT_EQ(test_client()->observed_console_log_messages()[3],
+            "{\"done\":true}");
 }
 
 TEST_F(SharedStorageObjectMethodTest, ConsoleLogOperation_NoArgument) {
