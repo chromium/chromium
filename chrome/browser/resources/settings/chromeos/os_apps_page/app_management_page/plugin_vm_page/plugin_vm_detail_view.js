@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../icons.m.js';
-import '../permission_item.m.js';
-import '../pin_to_shelf_item.m.js';
-import '../shared_style.m.js';
+import '../icons.js';
+import '../permission_item.js';
+import '../pin_to_shelf_item.js';
+import '../shared_style.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import '//resources/cr_elements/icons.m.js';
 
@@ -16,8 +16,8 @@ import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.mi
 
 import {Router} from '../../../../router.js';
 import {routes} from '../../../os_route.m.js';
-import {AppManagementStoreClient} from '../store_client.m.js';
-import {getSelectedApp} from '../util.m.js';
+import {AppManagementStoreClient} from '../store_client.js';
+import {getSelectedApp} from '../util.js';
 
 import {PluginVmBrowserProxyImpl} from './plugin_vm_browser_proxy.js';
 

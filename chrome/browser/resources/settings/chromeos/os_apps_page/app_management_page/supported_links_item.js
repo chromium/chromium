@@ -2,14 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './supported_links_dialog.js';
+import '//resources/cr_components/chromeos/localized_link/localized_link.js';
+import '//resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
+import '//resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
+
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
+import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../../metrics_recorder.m.js';
+
+import {BrowserProxy} from './browser_proxy.js';
+import {AppManagementEntryPoint, AppManagementEntryPointsHistogramName, AppManagementUserAction, AppType, ArcPermissionType, Bool, BorealisPermissionType, InstallSource, OptionalBool, PermissionValueType, PluginVmPermissionType, PwaPermissionType, TriState} from './constants.js';
+import {AppManagementStoreClient} from './store_client.js';
+import {alphabeticalSort, convertOptionalBoolToBool, createPermission, getAppIcon, getPermission, getPermissionValueBool, getSelectedApp, openAppDetailPage, openMainPage, permissionTypeHandle, recordAppManagementUserAction, toggleOptionalBool} from './util.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'app-management-supported-links-item',
 
   behaviors: [
-    app_management.AppManagementStoreClient,
+    AppManagementStoreClient,
     I18nBehavior,
   ],
 
@@ -108,13 +124,11 @@ Polymer({
    */
   onSupportedLinkPrefChanged_(event) {
     const newPref = event.detail.value === 'preferred';
-    app_management.BrowserProxy.getInstance().handler.setPreferredApp(
-        this.app.id, newPref);
+    BrowserProxy.getInstance().handler.setPreferredApp(this.app.id, newPref);
 
     const userAction = newPref ? AppManagementUserAction.PreferredAppTurnedOn :
                                  AppManagementUserAction.PreferredAppTurnedOff;
-    app_management.util.recordAppManagementUserAction(
-        this.app.type, userAction);
+    recordAppManagementUserAction(this.app.type, userAction);
   },
 
   /**
@@ -135,6 +149,6 @@ Polymer({
    */
   onDialogClose_() {
     this.showSupportedLinksDialog_ = false;
-    cr.ui.focusWithoutInk(assert(this.$$('#heading')));
+    focusWithoutInk(assert(this.$$('#heading')));
   }
 });

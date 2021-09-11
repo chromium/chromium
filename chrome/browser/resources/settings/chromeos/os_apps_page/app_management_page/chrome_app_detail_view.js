@@ -1,11 +1,23 @@
 // Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import './more_permissions_item.js';
+import './pin_to_shelf_item.js';
+import './shared_style.js';
+
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {BrowserProxy} from './browser_proxy.js';
+import {AppManagementEntryPoint, AppManagementEntryPointsHistogramName, AppManagementUserAction, AppType, ArcPermissionType, Bool, BorealisPermissionType, InstallSource, OptionalBool, PermissionValueType, PluginVmPermissionType, PwaPermissionType, TriState} from './constants.js';
+import {AppManagementStoreClient} from './store_client.js';
+import {alphabeticalSort, convertOptionalBoolToBool, createPermission, getAppIcon, getPermission, getPermissionValueBool, getSelectedApp, openAppDetailPage, openMainPage, permissionTypeHandle, recordAppManagementUserAction, toggleOptionalBool} from './util.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'app-management-chrome-app-detail-view',
 
   behaviors: [
-    app_management.AppManagementStoreClient,
+    AppManagementStoreClient,
   ],
 
   properties: {
@@ -24,7 +36,7 @@ Polymer({
   },
 
   attached() {
-    this.watch('app_', state => app_management.util.getSelectedApp(state));
+    this.watch('app_', state => getSelectedApp(state));
     this.updateFromStore();
   },
 
@@ -34,7 +46,7 @@ Polymer({
   onAppChanged_: async function() {
     try {
       const {messages: messages} =
-          await app_management.BrowserProxy.getInstance()
+          await BrowserProxy.getInstance()
               .handler.getExtensionAppPermissionMessages(this.app_.id);
       this.messages_ = messages;
     } catch (err) {

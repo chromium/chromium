@@ -1,30 +1,17 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="browser_proxy.html">
-<link rel="import" href="constants.html">
-<link rel="import" href="shared_style.html">
-<link rel="import" href="util.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
-
-<dom-module id="app-management-more-permissions-item">
-  <template>
-    <style include="app-management-shared-css">
-      :host {
-        align-items: center;
-        cursor: pointer;
-        display: flex;
-        flex: 1;
-        justify-content: space-between;
-      }
-    </style>
-    <div id="label" class="header-text" aria-hidden="true">
-      $i18n{appManagementMorePermissionsLabel}
-    </div>
-    <div class="permission-row-controls">
-      <cr-icon-button class="native-settings-icon icon-external" role="link"
-        tabindex="0" aria-labelledby="label">
-      </cr-icon-button>
-    </div>
-  </template>
-  <script src="more_permissions_item.js"></script>
-</dom-module>
+<style include="app-management-shared-css">
+  :host {
+    align-items: center;
+    cursor: pointer;
+    display: flex;
+    flex: 1;
+    justify-content: space-between;
+  }
+</style>
+<div id="label" class="header-text" aria-hidden="true">
+  $i18n{appManagementMorePermissionsLabel}
+</div>
+<div class="permission-row-controls">
+  <cr-icon-button class="native-settings-icon icon-external" role="link"
+      tabindex="0" aria-labelledby="label">
+  </cr-icon-button>
+</div>

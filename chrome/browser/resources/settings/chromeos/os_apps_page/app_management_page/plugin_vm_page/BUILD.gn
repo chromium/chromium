@@ -22,10 +22,10 @@ js_library("plugin_vm_browser_proxy") {
 js_library("plugin_vm_detail_view") {
   deps = [
     ":plugin_vm_browser_proxy",
-    "../:constants.m",
-    "../:permission_item.m",
-    "../:store_client.m",
-    "../:util.m",
+    "../:constants",
+    "../:permission_item",
+    "../:store_client",
+    "../:util",
     "../../..:os_route.m",
     "../../../..:router",
     "//ui/webui/resources/js:assert.m",

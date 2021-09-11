@@ -52,9 +52,11 @@ suite('<app-management-supported-links-item>', () => {
     fakeHandler.flushPipesForTesting();
     test_util.flushTasks();
 
-    expectEquals(supportedLinksItem.$$('cr-radio-group').selected, 'preferred');
+    expectEquals(
+        supportedLinksItem.shadowRoot.querySelector('cr-radio-group').selected,
+        'preferred');
 
-    await supportedLinksItem.$$('#browser').click();
+    await supportedLinksItem.shadowRoot.querySelector('#browser').click();
     await fakeHandler.flushPipesForTesting();
     await test_util.flushTasks();
 
@@ -62,7 +64,9 @@ suite('<app-management-supported-links-item>', () => {
                     .data.apps[app.id]
                     .isPreferredApp);
 
-    expectEquals(supportedLinksItem.$$('cr-radio-group').selected, 'browser');
+    expectEquals(
+        supportedLinksItem.shadowRoot.querySelector('cr-radio-group').selected,
+        'browser');
   });
 
   test('ARC - browser -> preferred', async function() {
@@ -89,9 +93,11 @@ suite('<app-management-supported-links-item>', () => {
     fakeHandler.flushPipesForTesting();
     test_util.flushTasks();
 
-    expectEquals(supportedLinksItem.$$('cr-radio-group').selected, 'browser');
+    expectEquals(
+        supportedLinksItem.shadowRoot.querySelector('cr-radio-group').selected,
+        'browser');
 
-    await supportedLinksItem.$$('#preferred').click();
+    await supportedLinksItem.shadowRoot.querySelector('#preferred').click();
     await fakeHandler.flushPipesForTesting();
     await test_util.flushTasks();
 
@@ -99,7 +105,9 @@ suite('<app-management-supported-links-item>', () => {
                    .data.apps[app.id]
                    .isPreferredApp);
 
-    expectEquals(supportedLinksItem.$$('cr-radio-group').selected, 'preferred');
+    expectEquals(
+        supportedLinksItem.shadowRoot.querySelector('cr-radio-group').selected,
+        'preferred');
   });
 
   test('No supported links', async function() {
@@ -154,8 +162,10 @@ suite('<app-management-supported-links-item>', () => {
     fakeHandler.flushPipesForTesting();
     test_util.flushTasks();
 
-    assertTrue(!!supportedLinksItem.$$('#explanation-text'));
-    assertTrue(!!supportedLinksItem.$$('#radio-group').disabled);
+    assertTrue(
+        !!supportedLinksItem.shadowRoot.querySelector('#explanation-text'));
+    assertTrue(
+        !!supportedLinksItem.shadowRoot.querySelector('#radio-group').disabled);
   });
 
   test('can open and close dialog', async function() {
@@ -183,27 +193,31 @@ suite('<app-management-supported-links-item>', () => {
     fakeHandler.flushPipesForTesting();
     test_util.flushTasks();
 
-    assertFalse(!!supportedLinksItem.$$('#dialog'));
+    assertFalse(!!supportedLinksItem.querySelector('#dialog'));
 
     // Open dialog.
-    supportedLinksItem.$$('#heading').$$('a').click();
+    const heading = supportedLinksItem.shadowRoot.querySelector('#heading');
+    heading.shadowRoot.querySelector('a').click();
     fakeHandler.flushPipesForTesting();
     test_util.flushTasks();
-    const dialog = supportedLinksItem.$$('#dialog').$$('#dialog');
+    const dialog = supportedLinksItem.shadowRoot.querySelector('#dialog')
+                       .shadowRoot.querySelector('#dialog');
     assertTrue(dialog.open);
 
     // Confirm google.com shows up.
     assertEquals(
-        supportedLinksItem.$$('#dialog')
-            .$$('#list')
+        supportedLinksItem.shadowRoot.querySelector('#dialog')
+            .shadowRoot.querySelector('#list')
             .getElementsByClassName('list-item')[0]
             .innerText,
         supportedLink);
 
     // Close dialog.
-    dialog.$$('#close').click();
+    dialog.shadowRoot.querySelector('#close').click();
     fakeHandler.flushPipesForTesting();
     test_util.flushTasks();
-    assertFalse(supportedLinksItem.$$('#dialog').$$('#dialog').open);
+    assertFalse(supportedLinksItem.shadowRoot.querySelector('#dialog')
+                    .shadowRoot.querySelector('#dialog')
+                    .open);
   });
 });

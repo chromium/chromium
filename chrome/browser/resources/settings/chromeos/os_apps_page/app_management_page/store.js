@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {Store} from 'chrome://resources/js/cr/ui/store.m.js';
-// #import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
-// #import {createEmptyState} from './util.m.js';
-// #import {reduceAction} from './reducers.m.js';
-// clang-format on
+import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
+import {Store} from 'chrome://resources/js/cr/ui/store.m.js';
+
+import {reduceAction} from './reducers.js';
+import {createEmptyState} from './util.js';
 
 /**
  * @fileoverview A singleton datastore for the App Management page. Page state
@@ -15,18 +14,10 @@
  * the store.
  */
 
-cr.define('app_management', function() {
-  /* #export */ class AppManagementStore extends cr.ui.Store {
-    constructor() {
-      super(
-          app_management.util.createEmptyState(), app_management.reduceAction);
-    }
+export class AppManagementStore extends Store {
+  constructor() {
+    super(createEmptyState(), reduceAction);
   }
+}
 
-  cr.addSingletonGetter(AppManagementStore);
-
-  // #cr_define_end
-  return {
-    AppManagementStore: AppManagementStore,
-  };
-});
+addSingletonGetter(AppManagementStore);

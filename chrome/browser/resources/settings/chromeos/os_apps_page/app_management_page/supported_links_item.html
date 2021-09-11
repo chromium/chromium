@@ -1,61 +1,42 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-<link rel="import" href="chrome://resources/html/assert.html">
+<style include="app-management-shared-css settings-shared">
+  #explanation-text {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+  }
 
-<link rel="import" href="browser_proxy.html">
-<link rel="import" href="constants.html">
-<link rel="import" href="store_client.html">
-<link rel="import" href="supported_links_dialog.html">
-<link rel="import" href="util.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/localized_link/localized_link.html">
-<link rel="import" href="../../metrics_recorder.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_radio_button/cr_radio_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_radio_group/cr_radio_group.html">
-<link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
-
-<dom-module id="app-management-supported-links-item">
-  <template>
-    <style include="app-management-shared-css settings-shared">
-      #explanation-text {
-        align-items: center;
-        display: flex;
-        flex-direction: row;
-      }
-
-      #info-icon {
-        padding-inline-end: var(--help-icon-padding);
-      }
-    </style>
-    <div class="permission-section-header">
-      <localized-link id="heading" class="header-text"
-          on-link-clicked="launchDialog_"
-          localized-string="$i18n{appManagementIntentSettingsTitle}">
-      </localized-link>
-    </div>
-    <template is="dom-if" if="[[disabled_]]">
-      <div id="explanation-text">
-        <iron-icon id="info-icon" icon="cr:info-outline"></iron-icon>
-        <localized-link localized-string="[[getDisabledExplanation_(app)]]">
-        </localized-link>
-      </div>
-    </template>
-    <div class="list-frame">
-      <cr-radio-group id="radio-group"
-        selected="[[getCurrentPref_(app)]]"
-        on-selected-changed="onSupportedLinkPrefChanged_"
-        disabled="[[disabled_]]">
-        <cr-radio-button id="preferred" name="preferred">
-          [[getPreferredLabel_(app)]]
-        </cr-radio-button>
-        <cr-radio-button id="browser" name="browser">
-          $i18n{appManagementIntentSharingOpenBrowserLabel}
-        </cr-radio-button>
-      </cr-radio-group>
-    </div>
-    <template is="dom-if" if="[[showSupportedLinksDialog_]]" restamp>
-      <app-management-supported-links-dialog id="dialog" app="[[app]]"
-          on-close="onDialogClose_">
-      </app-management-supported-links-dialog>
-    </template>
-  </template>
-  <script src="supported_links_item.js"></script>
-</dom-module>
+  #info-icon {
+    padding-inline-end: var(--help-icon-padding);
+  }
+</style>
+<div class="permission-section-header">
+  <localized-link id="heading" class="header-text"
+      on-link-clicked="launchDialog_"
+      localized-string="$i18n{appManagementIntentSettingsTitle}">
+  </localized-link>
+</div>
+<template is="dom-if" if="[[disabled_]]">
+  <div id="explanation-text">
+    <iron-icon id="info-icon" icon="cr:info-outline"></iron-icon>
+    <localized-link localized-string="[[getDisabledExplanation_(app)]]">
+    </localized-link>
+  </div>
+</template>
+<div class="list-frame">
+  <cr-radio-group id="radio-group"
+      selected="[[getCurrentPref_(app)]]"
+      on-selected-changed="onSupportedLinkPrefChanged_"
+      disabled="[[disabled_]]">
+    <cr-radio-button id="preferred" name="preferred">
+      [[getPreferredLabel_(app)]]
+    </cr-radio-button>
+    <cr-radio-button id="browser" name="browser">
+      $i18n{appManagementIntentSharingOpenBrowserLabel}
+    </cr-radio-button>
+  </cr-radio-group>
+</div>
+<template is="dom-if" if="[[showSupportedLinksDialog_]]" restamp>
+  <app-management-supported-links-dialog id="dialog" app="[[app]]"
+      on-close="onDialogClose_">
+  </app-management-supported-links-dialog>
+</template>

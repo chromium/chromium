@@ -6,14 +6,14 @@ const kBorealisMainAppId = 'epfhbkiklgmlkhfpbcdleadnhcfdjfmo';
 
 import {Polymer, html} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import '../icons.m.js';
-import '../permission_item.m.js';
-import '../pin_to_shelf_item.m.js';
-import '../shared_style.m.js';
+import '../icons.js';
+import '../permission_item.js';
+import '../pin_to_shelf_item.js';
+import '../shared_style.js';
 import '//resources/cr_elements/icons.m.js';
 
-import {AppManagementStoreClient} from '../store_client.m.js';
-import {getSelectedApp} from '../util.m.js';
+import {AppManagementStoreClient} from '../store_client.js';
+import {getSelectedApp} from '../util.js';
 import {routes} from '../../../os_route.m.js';
 import {Router} from '../../../../router.js';
 

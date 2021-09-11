@@ -2,11 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './shared_style.js';
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/policy/cr_tooltip_icon.m.js';
+
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../../metrics_recorder.m.js';
+
+import {BrowserProxy} from './browser_proxy.js';
+import {AppManagementEntryPoint, AppManagementEntryPointsHistogramName, AppManagementUserAction, AppType, ArcPermissionType, Bool, BorealisPermissionType, InstallSource, OptionalBool, PermissionValueType, PluginVmPermissionType, PwaPermissionType, TriState} from './constants.js';
+import {AppManagementStoreClient} from './store_client.js';
+import {alphabeticalSort, convertOptionalBoolToBool, createPermission, getAppIcon, getPermission, getPermissionValueBool, getSelectedApp, openAppDetailPage, openMainPage, permissionTypeHandle, recordAppManagementUserAction, toggleOptionalBool} from './util.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'app-management-uninstall-button',
 
   behaviors: [
-    app_management.AppManagementStoreClient,
+    AppManagementStoreClient,
   ],
 
   properties: {
@@ -17,7 +32,7 @@ Polymer({
   },
 
   attached() {
-    this.watch('app_', state => app_management.util.getSelectedApp(state));
+    this.watch('app_', state => getSelectedApp(state));
     this.updateFromStore();
   },
 
@@ -78,9 +93,9 @@ Polymer({
    * @private
    */
   onClick_() {
-    app_management.BrowserProxy.getInstance().handler.uninstall(this.app_.id);
-    settings.recordSettingChange();
-    app_management.util.recordAppManagementUserAction(
+    BrowserProxy.getInstance().handler.uninstall(this.app_.id);
+    recordSettingChange();
+    recordAppManagementUserAction(
         this.app_.type, AppManagementUserAction.UninstallDialogLaunched);
   },
 });

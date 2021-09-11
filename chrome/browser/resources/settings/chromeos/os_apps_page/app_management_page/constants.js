@@ -2,30 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
-// #import 'chrome://resources/mojo/skia/public/mojom/image_info.mojom-lite.js';
-// #import 'chrome://resources/mojo/skia/public/mojom/bitmap.mojom-lite.js';
-// #import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
-// #import '/app-management/file_path.mojom-lite.js';
-// #import '/app-management/image.mojom-lite.js';
-// #import '/app-management/types.mojom-lite.js';
-// #import '/app-management/app_management.mojom-lite.js';
-// clang-format on
+import 'chrome://resources/mojo/skia/public/mojom/image_info.mojom-lite.js';
+import 'chrome://resources/mojo/skia/public/mojom/bitmap.mojom-lite.js';
+import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
+import '/app-management/file_path.mojom-lite.js';
+import '/app-management/image.mojom-lite.js';
+import '/app-management/types.mojom-lite.js';
+import '/app-management/app_management.mojom-lite.js';
 
 /**
  * The number of apps displayed in app list in the main view before expanding.
  * @const {number}
  */
-/* #export */ const NUMBER_OF_APPS_DISPLAYED_DEFAULT = 4;
+export const NUMBER_OF_APPS_DISPLAYED_DEFAULT = 4;
 
 /**
  * Enumeration of the different subpage types within the app management page.
  * @enum {number}
  * @const
  */
-/* #export */ const PageType = {
+export const PageType = {
   MAIN: 0,
   DETAIL: 1,
 };
@@ -36,36 +34,36 @@
  * @enum {number}
  * @const
  */
-/* #export */ const Bool = {
+export const Bool = {
   kFalse: 0,
   kTrue: 1,
 };
 
-/* #export */ const PwaPermissionType = appManagement.mojom.PwaPermissionType;
+export const PwaPermissionType = appManagement.mojom.PwaPermissionType;
 
-/* #export */ const PluginVmPermissionType =
+export const PluginVmPermissionType =
     appManagement.mojom.PluginVmPermissionType;
 
-/* #export */ const ArcPermissionType = appManagement.mojom.ArcPermissionType;
+export const ArcPermissionType = appManagement.mojom.ArcPermissionType;
 
-/* #export */ const BorealisPermissionType =
+export const BorealisPermissionType =
     appManagement.mojom.BorealisPermissionType;
 
-/* #export */ const AppType = apps.mojom.AppType;
+export const AppType = apps.mojom.AppType;
 
-/* #export */ const PermissionValueType = apps.mojom.PermissionValueType;
+export const PermissionValueType = apps.mojom.PermissionValueType;
 
-/* #export */ const TriState = apps.mojom.TriState;
+export const TriState = apps.mojom.TriState;
 
-/* #export */ const OptionalBool = apps.mojom.OptionalBool;
+export const OptionalBool = apps.mojom.OptionalBool;
 
-/* #export */ const InstallSource = apps.mojom.InstallSource;
+export const InstallSource = apps.mojom.InstallSource;
 
-/* #export */ const WindowMode = apps.mojom.WindowMode;
+export const WindowMode = apps.mojom.WindowMode;
 
 // This histogram is also declared and used at chrome/browser/ui/webui/settings/
 // chromeos/app_management/app_management_uma.h.
-/* #export */ const AppManagementEntryPointsHistogramName =
+export const AppManagementEntryPointsHistogramName =
     'AppManagement.EntryPoints';
 
 /**
@@ -73,7 +71,7 @@
  * See tools/metrics/histograms/enums.xml.
  * @enum {number}
  */
-/* #export */ const AppManagementEntryPoint = {
+export const AppManagementEntryPoint = {
   AppListContextMenuAppInfoArc: 0,
   AppListContextMenuAppInfoChromeApp: 1,
   AppListContextMenuAppInfoWebApp: 2,
@@ -94,7 +92,7 @@
  * See tools/metrics/histograms/enums.xml.
  * @enum {number}
  */
-/* #export */ const AppManagementUserAction = {
+export const AppManagementUserAction = {
   ViewOpened: 0,
   NativeSettingsOpened: 1,
   UninstallDialogLaunched: 2,

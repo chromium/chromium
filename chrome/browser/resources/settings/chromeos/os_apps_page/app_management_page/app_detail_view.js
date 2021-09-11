@@ -2,12 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './dom_switch.js';
+import './pwa_detail_view.js';
+import './arc_detail_view.js';
+import './chrome_app_detail_view.js';
+import './plugin_vm_page/plugin_vm_detail_view.js';
+import './borealis_page/borealis_detail_view.js';
+import '../../../settings_shared_css.js';
+
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Route, RouteObserverBehavior, Router} from '../../../router.js';
+import {routes} from '../../os_route.m.js';
+
+import {updateSelectedAppId} from './actions.js';
+import {AppManagementEntryPoint, AppManagementEntryPointsHistogramName, AppManagementUserAction, AppType, ArcPermissionType, Bool, BorealisPermissionType, InstallSource, OptionalBool, PermissionValueType, PluginVmPermissionType, PwaPermissionType, TriState} from './constants.js';
+import {AppManagementStoreClient} from './store_client.js';
+import {alphabeticalSort, convertOptionalBoolToBool, createPermission, getAppIcon, getPermission, getPermissionValueBool, getSelectedApp, openAppDetailPage, openMainPage, permissionTypeHandle, recordAppManagementUserAction, toggleOptionalBool} from './util.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'app-management-app-detail-view',
 
   behaviors: [
-    app_management.AppManagementStoreClient,
-    settings.RouteObserverBehavior,
+    AppManagementStoreClient,
+    RouteObserverBehavior,
   ],
 
   properties: {
@@ -39,38 +59,38 @@ Polymer({
   },
 
   attached() {
-    this.watch('app_', state => app_management.util.getSelectedApp(state));
+    this.watch('app_', state => getSelectedApp(state));
     this.watch('apps_', state => state.apps);
     this.watch('selectedAppId_', state => state.selectedAppId);
     this.updateFromStore();
   },
 
   detached() {
-    this.dispatch(app_management.actions.updateSelectedAppId(null));
+    this.dispatch(updateSelectedAppId(null));
   },
 
   /**
    * Updates selected app ID based on the URL query params.
    *
-   * settings.RouteObserverBehavior
-   * @param {!settings.Route} currentRoute
+   * RouteObserverBehavior
+   * @param {!Route} currentRoute
    * @protected
    */
   currentRouteChanged(currentRoute) {
-    if (currentRoute !== settings.routes.APP_MANAGEMENT_DETAIL) {
+    if (currentRoute !== routes.APP_MANAGEMENT_DETAIL) {
       return;
     }
 
     if (this.selectedAppNotFound_()) {
       this.async(() => {
-        app_management.util.openMainPage();
+        openMainPage();
       });
       return;
     }
 
-    const appId = settings.Router.getInstance().getQueryParameters().get('id');
+    const appId = Router.getInstance().getQueryParameters().get('id');
 
-    this.dispatch(app_management.actions.updateSelectedAppId(appId));
+    this.dispatch(updateSelectedAppId(appId));
   },
 
   /**
@@ -106,7 +126,7 @@ Polymer({
 
   selectedAppIdChanged_(appId) {
     if (appId && this.app_) {
-      app_management.util.recordAppManagementUserAction(
+      recordAppManagementUserAction(
           this.app_.type, AppManagementUserAction.ViewOpened);
     }
   },
@@ -115,11 +135,11 @@ Polymer({
    * @private
    */
   appsChanged_() {
-    if (settings.Router.getInstance().getCurrentRoute() ===
-            settings.routes.APP_MANAGEMENT_DETAIL &&
+    if (Router.getInstance().getCurrentRoute() ===
+            routes.APP_MANAGEMENT_DETAIL &&
         this.selectedAppNotFound_()) {
       this.async(() => {
-        app_management.util.openMainPage();
+        openMainPage();
       });
     }
   },
@@ -130,7 +150,7 @@ Polymer({
    */
   selectedAppNotFound_() {
     const appId = /** @type {string} */ (
-        settings.Router.getInstance().getQueryParameters().get('id'));
+        Router.getInstance().getQueryParameters().get('id'));
     return this.apps_ && !this.apps_[appId];
   },
 });
