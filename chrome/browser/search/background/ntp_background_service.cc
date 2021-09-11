@@ -5,6 +5,7 @@
 #include "chrome/browser/search/background/ntp_background_service.h"
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -20,21 +21,27 @@
 
 namespace {
 
+// Command line param to override the collections base URL, e.g. for testing.
+constexpr char kCollectionsBaseUrlCmdlineSwitch[] = "collections-base-url";
+
+// The default base URL to download collections.
+constexpr char kCollectionsBaseUrl[] = "https://clients3.google.com";
+
 // The MIME type of the POST data sent to the server.
 constexpr char kProtoMimeType[] = "application/x-protobuf";
 
-// The url to download the proto of the complete list of wallpaper collections.
-constexpr char kCollectionsUrl[] =
-    "https://clients3.google.com/cast/chromecast/home/wallpaper/"
-    "collections?rt=b";
-// The url to download the metadata of the images in a collection.
-constexpr char kCollectionImagesUrl[] =
-    "https://clients3.google.com/cast/chromecast/home/wallpaper/"
-    "collection-images?rt=b";
-// The url to download the metadata of the 'next' image in a collection.
-constexpr char kNextCollectionImageUrl[] =
-    "https://clients3.google.com/cast/chromecast/home/wallpaper/"
-    "image?rt=b";
+// The path relative to kCollectionsBaseUrl to download the proto of the
+// complete list of wallpaper collections.
+constexpr char kCollectionsPath[] =
+    "/cast/chromecast/home/wallpaper/collections?rt=b";
+// The path relative to kCollectionsBaseUrl to download the metadata of the
+// images in a collection.
+constexpr char kCollectionImagesPath[] =
+    "/cast/chromecast/home/wallpaper/collection-images?rt=b";
+// The path relative to kCollectionsBaseUrl to download the metadata of the
+// 'next' image in a collection.
+constexpr char kNextCollectionImagePath[] =
+    "/cast/chromecast/home/wallpaper/image?rt=b";
 
 // The options to be added to an image URL, specifying resolution, cropping,
 // etc. Options appear on an image URL after the '=' character.
@@ -44,6 +51,16 @@ constexpr char kImageOptions[] = "=w3840-h2160-p-k-no-nd-mv";
 // Label added to request to filter out unwanted collections.
 constexpr char kFilteringLabel[] = "chrome_desktop_ntp";
 
+// Returns the configured collections base URL with |path| appended.
+GURL GetUrl(base::StringPiece path) {
+  return GURL(base::CommandLine::ForCurrentProcess()->HasSwitch(
+                  kCollectionsBaseUrlCmdlineSwitch)
+                  ? base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+                        kCollectionsBaseUrlCmdlineSwitch)
+                  : kCollectionsBaseUrl)
+      .Resolve(path);
+}
+
 }  // namespace
 
 NtpBackgroundService::NtpBackgroundService(
@@ -51,9 +68,9 @@ NtpBackgroundService::NtpBackgroundService(
     : url_loader_factory_(url_loader_factory) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   image_options_ = kImageOptions;
-  collections_api_url_ = GURL(kCollectionsUrl);
-  collection_images_api_url_ = GURL(kCollectionImagesUrl);
-  next_image_api_url_ = GURL(kNextCollectionImageUrl);
+  collections_api_url_ = GetUrl(kCollectionsPath);
+  collection_images_api_url_ = GetUrl(kCollectionImagesPath);
+  next_image_api_url_ = GetUrl(kNextCollectionImagePath);
 }
 
 NtpBackgroundService::~NtpBackgroundService() = default;
