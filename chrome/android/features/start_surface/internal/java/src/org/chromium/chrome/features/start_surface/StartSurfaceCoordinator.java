@@ -460,10 +460,16 @@ public class StartSurfaceCoordinator implements StartSurface {
     }
 
     @Override
-    public void onOverviewShownAtLaunch(long activityCreationTimeMs) {
-        mStartSurfaceMediator.onOverviewShownAtLaunch(activityCreationTimeMs);
-        if (mFeedPlaceholderCoordinator != null) {
-            mFeedPlaceholderCoordinator.onOverviewShownAtLaunch(activityCreationTimeMs);
+    public void onOverviewShownAtLaunch(
+            boolean isOverviewShownOnStartup, long activityCreationTimeMs) {
+        if (isOverviewShownOnStartup) {
+            mStartSurfaceMediator.onOverviewShownAtLaunch(activityCreationTimeMs);
+            if (mFeedPlaceholderCoordinator != null) {
+                mFeedPlaceholderCoordinator.onOverviewShownAtLaunch(activityCreationTimeMs);
+            }
+        }
+        if (StartSurfaceConfiguration.CHECK_SYNC_BEFORE_SHOW_START_AT_STARTUP.getValue()) {
+            ReturnToChromeExperimentsUtil.cachePrimaryAccountSyncStatus();
         }
     }
 

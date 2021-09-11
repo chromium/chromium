@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
@@ -13,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.TraceEvent;
@@ -20,6 +22,8 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.ChromeInactivityTracker;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -28,6 +32,10 @@ import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -38,6 +46,7 @@ import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -440,5 +449,81 @@ public final class ReturnToChromeExperimentsUtil {
             return allTabs != null ? allTabs.size() : 0;
         }
         return tabModelSelector.getTotalTabCount();
+    }
+
+    /**
+     * Returns whether grid Tab switcher or the Start surface should be shown at startup.
+     */
+    public static boolean shouldShowOverviewPageOnStart(Context context, Intent intent,
+            TabModelSelector tabModelSelector, ChromeInactivityTracker inactivityTracker) {
+        String intentUrl = IntentHandler.getUrlFromIntent(intent);
+        // If Chrome is launched by tapping the New Tab Item from the launch icon and
+        // {@link OMNIBOX_FOCUSED_ON_NEW_TAB} is enabled, a new Tab with omnibox focused will be
+        // shown on Startup.
+        if (IntentHandler.shouldIntentShowNewTabOmniboxFocused(intent)) {
+            return false;
+        }
+
+        // If user launches Chrome by tapping the app icon, the intentUrl is NULL;
+        // If user taps the "New Tab" item from the app icon, the intentUrl will be chrome://newtab,
+        // and UrlUtilities.isCanonicalizedNTPUrl(intentUrl) returns true.
+        if (UrlUtilities.isCanonicalizedNTPUrl(intentUrl)
+                && ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePage(context)) {
+            return true;
+        }
+        if (ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePageNoTabs(context)
+                && IntentUtils.isMainIntentFromLauncher(intent)
+                && ReturnToChromeExperimentsUtil.getTotalTabCount(context, tabModelSelector) <= 0) {
+            // Handle initial tab creation.
+            return true;
+        }
+
+        // Checks whether to show the Start surface / grid Tab switcher due to feature flag
+        // TAB_SWITCHER_ON_RETURN_MS.
+        long lastBackgroundedTimeMillis = inactivityTracker.getLastBackgroundedTimeMs();
+        boolean tabSwitcherOnReturn = IntentUtils.isMainIntentFromLauncher(intent)
+                && ReturnToChromeExperimentsUtil.shouldShowTabSwitcher(lastBackgroundedTimeMillis);
+
+        // If the overview page won't be shown on startup, stops here.
+        if (!tabSwitcherOnReturn) return false;
+
+        // We only check the sync status when flag CHECK_SYNC_BEFORE_SHOW_START_AT_STARTUP and the
+        // Start surface are both enabled.
+        if (StartSurfaceConfiguration.CHECK_SYNC_BEFORE_SHOW_START_AT_STARTUP.getValue()
+                && ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled()) {
+            return ReturnToChromeExperimentsUtil.isPrimaryAccountSync();
+        }
+
+        // If Start surface is disable and should show the Grid tab switcher at startup, or flag
+        // CHECK_SYNC_BEFORE_SHOW_START_AT_STARTUP isn't enabled, return true here.
+        return true;
+    }
+
+    /**
+     * Returns whether user has a primary account with syncing on.
+     */
+    @VisibleForTesting
+    public static boolean isPrimaryAccountSync() {
+        return SharedPreferencesManager.getInstance().readBoolean(
+                ChromePreferenceKeys.PRIMARY_ACCOUNT_SYNC, false);
+    }
+
+    /**
+     * Caches the status of whether the primary account is synced.
+     */
+    public static void cachePrimaryAccountSyncStatus() {
+        boolean isPrimaryAccountSync =
+                IdentityServicesProvider.get()
+                        .getSigninManager(Profile.getLastUsedRegularProfile())
+                        .getIdentityManager()
+                        .hasPrimaryAccount(ConsentLevel.SYNC);
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.PRIMARY_ACCOUNT_SYNC, isPrimaryAccountSync);
+    }
+
+    @VisibleForTesting
+    public static void setSyncForTesting(boolean isSyncing) {
+        SharedPreferencesManager manager = SharedPreferencesManager.getInstance();
+        manager.writeBoolean(ChromePreferenceKeys.PRIMARY_ACCOUNT_SYNC, isSyncing);
     }
 }
