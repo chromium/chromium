@@ -4,9 +4,11 @@
 
 #include "components/sync/driver/glue/sync_transport_data_prefs.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/base64.h"
+#include "base/feature_list.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -15,6 +17,9 @@
 namespace syncer {
 
 namespace {
+
+constexpr base::Feature kSyncResetVeryShortPollInterval{
+    "SyncResetVeryShortPollInterval", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // 64-bit integer serialization of the base::Time when the last sync occurred.
 const char kSyncLastSyncedTime[] = "sync.last_synced_time";
@@ -98,7 +103,18 @@ void SyncTransportDataPrefs::SetLastPollTime(base::Time time) {
 
 base::TimeDelta SyncTransportDataPrefs::GetPollInterval() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return pref_service_->GetTimeDelta(kSyncPollIntervalSeconds);
+  base::TimeDelta poll_interval =
+      pref_service_->GetTimeDelta(kSyncPollIntervalSeconds);
+  // If the poll interval is unreasonably short, reset it. This will cause
+  // callers to use a reasonable default value instead.
+  // This fixes a past bug where stored pref values were accidentally
+  // re-interpreted from "seconds" to "microseconds"; see crbug.com/1246850.
+  if (poll_interval < base::TimeDelta::FromMinutes(1) &&
+      base::FeatureList::IsEnabled(kSyncResetVeryShortPollInterval)) {
+    pref_service_->ClearPref(kSyncPollIntervalSeconds);
+    return base::TimeDelta();
+  }
+  return poll_interval;
 }
 
 void SyncTransportDataPrefs::SetPollInterval(base::TimeDelta interval) {
