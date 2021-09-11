@@ -42,8 +42,8 @@ namespace blink {
 
 namespace {
 
-const base::Feature kOneCopyCanvasCapture {
-  "OneCopyCanvasCapture",
+const base::Feature kTwoCopyCanvasCapture {
+  "TwoCopyCanvasCapture",
 #if defined(OS_MAC)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
@@ -237,7 +237,7 @@ void CanvasCaptureHandler::SendNewFrame(
 
   // Try async reading if image is texture backed.
   if (image->CurrentFrameKnownToBeOpaque() || can_discard_alpha_) {
-    if (base::FeatureList::IsEnabled(kOneCopyCanvasCapture)) {
+    if (base::FeatureList::IsEnabled(kTwoCopyCanvasCapture)) {
       if (!accelerated_frame_pool_) {
         accelerated_frame_pool_ =
             std::make_unique<WebGraphicsContext3DVideoFramePool>(

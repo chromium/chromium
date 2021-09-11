@@ -196,7 +196,8 @@ sk_sp<SkSurface> SharedImageRepresentationSkiaImpl::BeginWriteAccess(
   auto surface = SkSurface::MakeFromBackendTexture(
       context_state_->gr_context(), promise_texture_->backendTexture(),
       surface_origin(), final_msaa_count, sk_color_type,
-      backing()->color_space().ToSkColorSpace(), &surface_props);
+      backing()->color_space().GetAsFullRangeRGB().ToSkColorSpace(),
+      &surface_props);
   write_surface_ = surface.get();
   return surface;
 }

@@ -104,11 +104,6 @@ bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
   auto* raster_context_provider = context_provider->RasterContextProvider();
   if (!raster_context_provider)
     return false;
-  // TODO(https://crbug.com/1206168): Move this functionality to the
-  // RasterInterface instead of using the GrContext (which may or may not
-  // exist).
-  if (!raster_context_provider->GrContext())
-    return false;
 
   scoped_refptr<media::VideoFrame> dst_frame =
       pool_->MaybeCreateVideoFrame(src_size);
