@@ -171,9 +171,6 @@ WebAppUrlHandlerIntentPickerView::WebAppUrlHandlerIntentPickerView(
   SetButtonLabel(
       ui::DIALOG_BUTTON_OK,
       l10n_util::GetStringUTF16(IDS_URL_HANDLER_INTENT_PICKER_OK_BUTTON_TEXT));
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
-                 l10n_util::GetStringUTF16(
-                     IDS_URL_HANDLER_INTENT_PICKER_CANCEL_BUTTON_TEXT));
 
   SetAcceptCallback(base::BindOnce(
       &WebAppUrlHandlerIntentPickerView::OnAccepted, base::Unretained(this)));
