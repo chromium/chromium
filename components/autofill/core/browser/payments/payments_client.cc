@@ -56,10 +56,13 @@ const char kGetUnmaskDetailsRequestPath[] =
 const char kUnmaskCardRequestPath[] =
     "payments/apis-secure/creditcardservice/getrealpan?s7e_suffix=chromewallet";
 const char kUnmaskCardRequestFormat[] =
+    "requestContentType=application/json; charset=utf-8&request=%s";
+const char kUnmaskCardRequestFormatWithCvc[] =
     "requestContentType=application/json; charset=utf-8&request=%s"
     "&s7e_13_cvc=%s";
-const char kUnmaskCardRequestFormatWithoutCvc[] =
-    "requestContentType=application/json; charset=utf-8&request=%s";
+const char kUnmaskCardRequestFormatWithOtp[] =
+    "requestContentType=application/json; charset=utf-8&request=%s"
+    "&s7e_263_otp=%s";
 
 const char kOptChangeRequestPath[] =
     "payments/apis/chromepaymentsservice/updateautofilluserpreference";
@@ -378,6 +381,11 @@ class UnmaskCardRequest : public PaymentsRequest {
                                base::Value(full_sync_enabled_));
     request_dict.SetKey("chrome_user_context", std::move(chrome_user_context));
 
+    if (!request_details_.context_token.empty()) {
+      request_dict.SetKey("context_token",
+                          base::Value(request_details_.context_token));
+    }
+
     int value = 0;
     if (base::StringToInt(request_details_.user_response.exp_month, &value))
       request_dict.SetKey("expiration_month", base::Value(value));
@@ -388,14 +396,17 @@ class UnmaskCardRequest : public PaymentsRequest {
         "opt_in_fido_auth",
         base::Value(request_details_.user_response.enable_fido_auth));
 
-    // Either FIDO assertion info is set or CVC is set, never both.
     bool is_cvc_auth = !request_details_.user_response.cvc.empty();
+    bool is_otp_auth = !request_details_.otp.empty();
     bool is_fido_auth = request_details_.fido_assertion_info.has_value();
 
-    DCHECK_NE(is_cvc_auth, is_fido_auth);
+    // At most, only one of these auth methods can be provided.
+    DCHECK_LE(is_cvc_auth + is_fido_auth + is_otp_auth, 1);
     if (is_cvc_auth) {
       request_dict.SetKey("encrypted_cvc", base::Value("__param:s7e_13_cvc"));
-    } else {
+    } else if (is_otp_auth) {
+      request_dict.SetKey("otp", base::Value("__param:s7e_263_otp"));
+    } else if (is_fido_auth) {
       request_dict.SetKey(
           "fido_assertion_info",
           std::move(request_details_.fido_assertion_info.value()));
@@ -416,20 +427,29 @@ class UnmaskCardRequest : public PaymentsRequest {
     std::string request_content;
     if (is_cvc_auth) {
       request_content = base::StringPrintf(
-          kUnmaskCardRequestFormat,
+          kUnmaskCardRequestFormatWithCvc,
           net::EscapeUrlEncodedData(json_request, true).c_str(),
           net::EscapeUrlEncodedData(
               base::UTF16ToASCII(request_details_.user_response.cvc), true)
               .c_str());
-    } else {
+    } else if (is_otp_auth) {
       request_content = base::StringPrintf(
-          kUnmaskCardRequestFormatWithoutCvc,
+          kUnmaskCardRequestFormatWithOtp,
+          net::EscapeUrlEncodedData(json_request, true).c_str(),
+          net::EscapeUrlEncodedData(base::UTF16ToASCII(request_details_.otp),
+                                    true)
+              .c_str());
+    } else {
+      // If neither cvc nor otp request, use the normal request format.
+      request_content = base::StringPrintf(
+          kUnmaskCardRequestFormat,
           net::EscapeUrlEncodedData(json_request, true).c_str());
     }
 
     // Payments is reporting receiving blank or non-standard-length CVCs.
     // Log CVC length being sent to gauge how often this is happening.
-    if (request_details_.reason == AutofillClient::UNMASK_FOR_AUTOFILL) {
+    if (request_details_.reason == AutofillClient::UNMASK_FOR_AUTOFILL &&
+        is_cvc_auth) {
       base::UmaHistogramCounts1000("Autofill.CardUnmask.CvcLength.ForAutofill",
                                    request_details_.user_response.cvc.length());
     } else if (request_details_.reason ==
@@ -462,6 +482,7 @@ class UnmaskCardRequest : public PaymentsRequest {
         response_details_.expiration_year = base::NumberToString(year.value());
     }
 
+    // TODO(crbug.com/1248268): Clean up unused fido_creation_options.
     const base::Value* creation_options = response.FindKeyOfType(
         "fido_creation_options", base::Value::Type::DICTIONARY);
     if (creation_options)
@@ -472,9 +493,22 @@ class UnmaskCardRequest : public PaymentsRequest {
     if (request_options)
       response_details_.fido_request_options = request_options->Clone();
 
-    const std::string* token =
+    const base::Value* idv_challenge_options = response.FindKeyOfType(
+        "idv_challenge_options", base::Value::Type::LIST);
+    if (idv_challenge_options)
+      response_details_.idv_challenge_options = idv_challenge_options->Clone();
+
+    const std::string* card_authorization_token =
         response.FindStringKey("card_authorization_token");
-    response_details_.card_authorization_token = token ? *token : std::string();
+    response_details_.card_authorization_token =
+        card_authorization_token ? *card_authorization_token : std::string();
+
+    const std::string* context_token = response.FindStringKey("context_token");
+    response_details_.context_token =
+        context_token ? *context_token : std::string();
+
+    const std::string* flow_status = response.FindStringKey("flow_status");
+    response_details_.flow_status = flow_status ? *flow_status : std::string();
 
     if (request_details_.card.record_type() == CreditCard::VIRTUAL_CARD) {
       response_details_.card_type =
@@ -495,10 +529,15 @@ class UnmaskCardRequest : public PaymentsRequest {
       case AutofillClient::PaymentsRpcCardType::SERVER_CARD:
         return !response_details_.real_pan.empty();
       case AutofillClient::PaymentsRpcCardType::VIRTUAL_CARD:
-        return !response_details_.real_pan.empty() &&
-               !response_details_.expiration_month.empty() &&
-               !response_details_.expiration_year.empty() &&
-               !response_details_.dcvv.empty();
+        // When pan is returned, it has to contain pan + expiry + cvv.
+        // When pan is not returned, it has to contain context token to indicate
+        // success.
+        return (response_details_.real_pan.empty() &&
+                !response_details_.context_token.empty()) ||
+               (!response_details_.real_pan.empty() &&
+                !response_details_.expiration_month.empty() &&
+                !response_details_.expiration_year.empty() &&
+                !response_details_.dcvv.empty());
     }
   }
 
@@ -1079,6 +1118,8 @@ PaymentsClient::UnmaskRequestDetails::UnmaskRequestDetails(
   } else {
     fido_assertion_info.reset();
   }
+  context_token = other.context_token;
+  otp = other.otp;
   last_committed_url_origin = other.last_committed_url_origin;
 }
 PaymentsClient::UnmaskRequestDetails::~UnmaskRequestDetails() = default;
@@ -1102,7 +1143,14 @@ operator=(const PaymentsClient::UnmaskResponseDetails& other) {
   } else {
     fido_request_options.reset();
   }
+  if (other.idv_challenge_options.has_value()) {
+    idv_challenge_options = other.idv_challenge_options->Clone();
+  } else {
+    idv_challenge_options.reset();
+  }
   card_authorization_token = other.card_authorization_token;
+  flow_status = other.flow_status;
+  context_token = other.context_token;
   return *this;
 }
 

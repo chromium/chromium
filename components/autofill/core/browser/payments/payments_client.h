@@ -104,6 +104,9 @@ class PaymentsClient {
     std::string risk_data;
     CardUnmaskDelegate::UserProvidedUnmaskDetails user_response;
     absl::optional<base::Value> fido_assertion_info;
+    std::u16string otp;
+    // An opaque token used to chain consecutive payments requests together.
+    std::string context_token;
     // The url origin of the website where the unmasking happened. Should be
     // populated when the unmasking is for a virtual card.
     absl::optional<GURL> last_committed_url_origin;
@@ -144,7 +147,14 @@ class PaymentsClient {
     absl::optional<base::Value> fido_request_options;
     // An opaque token used to logically chain consecutive UnmaskCard and
     // OptChange calls together.
-    std::string card_authorization_token = std::string();
+    std::string card_authorization_token;
+    // Available ID&V challenge options.
+    absl::optional<base::Value> idv_challenge_options;
+    // An opaque token used to chain consecutive payments requests together.
+    // Client should not update or modify this token.
+    std::string context_token;
+    // An intermediate status in cases other than immediate success or failure.
+    std::string flow_status;
 
     // The type of the returned credit card.
     AutofillClient::PaymentsRpcCardType card_type =

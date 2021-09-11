@@ -55,12 +55,14 @@ int kAllDetectableValues =
     CreditCardSaveManager::DetectedValue::HAS_GOOGLE_PAYMENTS_ACCOUNT;
 
 struct CardUnmaskOptions {
-  CardUnmaskOptions& with_use_fido(bool b) {
-    use_fido = b;
+  CardUnmaskOptions& with_fido() {
+    use_fido = true;
+    use_cvc = false;
     return *this;
   }
 
   CardUnmaskOptions& with_cvc(std::string c) {
+    use_cvc = true;
     cvc = c;
     return *this;
   }
@@ -70,18 +72,49 @@ struct CardUnmaskOptions {
     return *this;
   }
 
-  CardUnmaskOptions& with_virtual_card(bool b) {
-    virtual_card = b;
+  CardUnmaskOptions& with_virtual_card() {
+    virtual_card = true;
     return *this;
   }
 
-  // If true, use FIDO authentication instead of CVC authentication.
+  CardUnmaskOptions& with_virtual_card_risk_based() {
+    with_virtual_card();
+    use_cvc = false;
+    return *this;
+  }
+
+  CardUnmaskOptions& with_virtual_card_risk_based_then_fido() {
+    with_virtual_card();
+    use_fido = true;
+    use_cvc = false;
+    set_context_token = true;
+    return *this;
+  }
+
+  CardUnmaskOptions& with_virtual_card_risk_based_then_otp(std::string o) {
+    with_virtual_card();
+    use_otp = true;
+    use_cvc = false;
+    set_context_token = true;
+    otp = o;
+    return *this;
+  }
+
+  // By default, use cvc authentication.
+  bool use_cvc = true;
+  // If true, use FIDO authentication.
   bool use_fido = false;
-  // If not using FIDO authentication, the CVC value the user entered, to be
+  // If true, use otp authentication.
+  bool use_otp = false;
+  // If CVC authentication is chosen, default CVC value the user entered, to be
   // sent to Google Payments.
   std::string cvc = "123";
+  // If OTP authentication is chosen, default OTP value the user entered.
+  std::string otp = "654321";
   // If true, mock that the unmasking is for a virtual card.
   bool virtual_card = false;
+  // If true, set context_token in the request.
+  bool set_context_token = true;
   // The reason for unmasking this card.
   AutofillClient::UnmaskCardReason reason = AutofillClient::UNMASK_FOR_AUTOFILL;
 };
@@ -90,8 +123,8 @@ struct CardUnmaskOptions {
 
 class PaymentsClientTest : public testing::Test {
  public:
-  PaymentsClientTest() : result_(AutofillClient::NONE) {}
-  ~PaymentsClientTest() override {}
+  PaymentsClientTest() = default;
+  ~PaymentsClientTest() override = default;
 
   void SetUp() override {
     // Silence the warning for mismatching sync and Payments servers.
@@ -210,13 +243,18 @@ class PaymentsClientTest : public testing::Test {
     if (options.use_fido) {
       request_details.fido_assertion_info =
           base::Value(base::Value::Type::DICTIONARY);
-    } else {
-      request_details.user_response.cvc = base::ASCIIToUTF16(options.cvc);
     }
+    if (options.use_cvc)
+      request_details.user_response.cvc = base::ASCIIToUTF16(options.cvc);
     if (options.virtual_card) {
+      request_details.card.set_record_type(CreditCard::VIRTUAL_CARD);
       request_details.last_committed_url_origin =
           GURL("https://www.example.com");
     }
+    if (options.set_context_token)
+      request_details.context_token = "fake context token";
+    if (options.use_otp)
+      request_details.otp = base::ASCIIToUTF16(options.otp);
     client_->UnmaskCard(request_details,
                         base::BindOnce(&PaymentsClientTest::OnDidGetRealPan,
                                        weak_ptr_factory_.GetWeakPtr()));
@@ -319,7 +357,49 @@ class PaymentsClientTest : public testing::Test {
     client_->OnSimpleLoaderCompleteInternal(response_code, response_body);
   }
 
-  AutofillClient::PaymentsRpcResult result_;
+  void assertCvcIncludedInRequest(std::string cvc) {
+    EXPECT_TRUE(!GetUploadData().empty());
+    // Verify that the encrypted_cvc and s7e_13_cvc parameters were both
+    // included in the request.
+    EXPECT_TRUE(GetUploadData().find("encrypted_cvc") != std::string::npos);
+    EXPECT_TRUE(GetUploadData().find("__param:s7e_13_cvc") !=
+                std::string::npos);
+    EXPECT_TRUE(GetUploadData().find("&s7e_13_cvc=" + cvc) !=
+                std::string::npos);
+  }
+
+  void assertOtpIncludedInRequest(std::string otp) {
+    EXPECT_TRUE(!GetUploadData().empty());
+    // Verify that the otp and s7e_263_otp parameters were both included in the
+    // request.
+    EXPECT_TRUE(GetUploadData().find("otp") != std::string::npos);
+    EXPECT_TRUE(GetUploadData().find("__param:s7e_263_otp") !=
+                std::string::npos);
+    EXPECT_TRUE(GetUploadData().find("&s7e_263_otp=" + otp) !=
+                std::string::npos);
+  }
+
+  void assertCvcNotIncludedInRequest() {
+    EXPECT_TRUE(!GetUploadData().empty());
+    // Verify that the encrypted_cvc and s7e_13_cvc parameters were NOT included
+    // in the request.
+    EXPECT_TRUE(GetUploadData().find("encrypted_cvc") == std::string::npos);
+    EXPECT_TRUE(GetUploadData().find("__param:s7e_13_cvc") ==
+                std::string::npos);
+    EXPECT_TRUE(GetUploadData().find("&s7e_13_cvc=") == std::string::npos);
+  }
+
+  void assertOtpNotIncludedInRequest() {
+    EXPECT_TRUE(!GetUploadData().empty());
+    // Verify that the otp and s7e_263_otp parameters were NOT included in the
+    // request.
+    EXPECT_TRUE(GetUploadData().find("otp") == std::string::npos);
+    EXPECT_TRUE(GetUploadData().find("__param:s7e_263_otp") ==
+                std::string::npos);
+    EXPECT_TRUE(GetUploadData().find("&s7e_263_otp=") == std::string::npos);
+  }
+
+  AutofillClient::PaymentsRpcResult result_ = AutofillClient::NONE;
   payments::PaymentsClient::UnmaskDetails* unmask_details_;
 
   // Server ID of a saved card via credit card upload save.
@@ -440,23 +520,27 @@ TEST_F(PaymentsClientTest,
 }
 
 TEST_F(PaymentsClientTest, UnmaskSuccessViaCVC) {
-  StartUnmasking(CardUnmaskOptions().with_use_fido(false));
+  StartUnmasking(CardUnmaskOptions().with_cvc("111"));
   IssueOAuthToken();
   ReturnResponse(net::HTTP_OK, "{ \"pan\": \"1234\" }");
+
+  assertCvcIncludedInRequest("111");
   EXPECT_EQ(AutofillClient::SUCCESS, result_);
   EXPECT_EQ("1234", unmask_response_details_->real_pan);
 }
 
 TEST_F(PaymentsClientTest, UnmaskSuccessViaFIDO) {
-  StartUnmasking(CardUnmaskOptions().with_use_fido(true));
+  StartUnmasking(CardUnmaskOptions().with_fido());
   IssueOAuthToken();
   ReturnResponse(net::HTTP_OK, "{ \"pan\": \"1234\" }");
+
+  assertCvcNotIncludedInRequest();
   EXPECT_EQ(AutofillClient::SUCCESS, result_);
   EXPECT_EQ("1234", unmask_response_details_->real_pan);
 }
 
 TEST_F(PaymentsClientTest, UnmaskSuccessViaCVCWithCreationOptions) {
-  StartUnmasking(CardUnmaskOptions().with_use_fido(false));
+  StartUnmasking(CardUnmaskOptions().with_cvc("111"));
   IssueOAuthToken();
   ReturnResponse(
       net::HTTP_OK,
@@ -478,17 +562,190 @@ TEST_F(PaymentsClientTest, UnmaskSuccessAccountFromSyncTest) {
   EXPECT_EQ("1234", unmask_response_details_->real_pan);
 }
 
-TEST_F(PaymentsClientTest, UnmaskSuccessWithVirtualCardInformation) {
-  StartUnmasking(CardUnmaskOptions().with_virtual_card(true));
+TEST_F(PaymentsClientTest, UnmaskSuccessWithVirtualCardCvcAuth) {
+  StartUnmasking(CardUnmaskOptions().with_virtual_card().with_cvc("222"));
   IssueOAuthToken();
   ReturnResponse(net::HTTP_OK,
                  "{ \"pan\": \"4111111111111111\", \"dcvv\": \"999\",  "
                  "\"expiration\": { \"month\":12, \"year\":2099 } }");
+
+  assertCvcIncludedInRequest("222");
   EXPECT_EQ(AutofillClient::SUCCESS, result_);
   EXPECT_EQ("4111111111111111", unmask_response_details_->real_pan);
   EXPECT_EQ("999", unmask_response_details_->dcvv);
   EXPECT_EQ("12", unmask_response_details_->expiration_month);
   EXPECT_EQ("2099", unmask_response_details_->expiration_year);
+}
+
+TEST_F(PaymentsClientTest, UnmaskSuccessWithVirtualCardFidoAuth) {
+  StartUnmasking(CardUnmaskOptions().with_virtual_card().with_fido());
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK,
+                 "{ \"pan\": \"4111111111111111\", \"dcvv\": \"999\",  "
+                 "\"expiration\": { \"month\":12, \"year\":2099 } }");
+
+  assertCvcNotIncludedInRequest();
+  EXPECT_EQ(AutofillClient::SUCCESS, result_);
+  EXPECT_EQ("4111111111111111", unmask_response_details_->real_pan);
+  EXPECT_EQ("999", unmask_response_details_->dcvv);
+  EXPECT_EQ("12", unmask_response_details_->expiration_month);
+  EXPECT_EQ("2099", unmask_response_details_->expiration_year);
+}
+
+TEST_F(PaymentsClientTest, VirtualCardRiskBasedGreenPathResponse) {
+  StartUnmasking(CardUnmaskOptions().with_virtual_card_risk_based());
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK,
+                 "{ \"pan\": \"4111111111111111\", \"dcvv\": \"999\",  "
+                 "\"expiration\": { \"month\":12, \"year\":2099 } }");
+
+  // Verify that Cvc/FIDO/OTP are not included in the request.
+  assertCvcNotIncludedInRequest();
+  assertOtpNotIncludedInRequest();
+  EXPECT_TRUE(GetUploadData().find("fido_assertion_info") == std::string::npos);
+  // Only merchant_domain is included.
+  EXPECT_TRUE(GetUploadData().find("merchant_domain") != std::string::npos);
+
+  EXPECT_EQ(AutofillClient::SUCCESS, result_);
+  EXPECT_EQ("4111111111111111", unmask_response_details_->real_pan);
+  EXPECT_EQ("999", unmask_response_details_->dcvv);
+  EXPECT_EQ("12", unmask_response_details_->expiration_month);
+  EXPECT_EQ("2099", unmask_response_details_->expiration_year);
+}
+
+TEST_F(PaymentsClientTest, VirtualCardRiskBasedRedPathResponse) {
+  StartUnmasking(CardUnmaskOptions().with_virtual_card_risk_based());
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK,
+                 "{ \"error\": { \"code\": \"NON-INTERNAL\", "
+                 "\"api_error_reason\": \"virtual_card_permanent_error\"} }");
+  EXPECT_EQ(AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE, result_);
+}
+
+TEST_F(PaymentsClientTest, VirtualCardRiskBasedYellowPathResponse) {
+  StartUnmasking(CardUnmaskOptions().with_virtual_card_risk_based());
+  IssueOAuthToken();
+  ReturnResponse(
+      net::HTTP_OK,
+      "{ \"fido_request_options\": { \"challenge\": \"fake_fido_challenge\" }, "
+      "\"context_token\": \"fake_context_token\", \"idv_challenge_options\": "
+      "[{ \"sms_otp_challenge_option\": { \"challenge_id\": "
+      "\"fake_challenge_id_1\", \"masked_phone_number\": \"(***)-***-1234\" } "
+      "}, { \"sms_otp_challenge_option\": { \"challenge_id\": "
+      "\"fake_challenge_id_2\", \"masked_phone_number\": \"(***)-***-5678\" } "
+      "}] }");
+
+  // Ensure that it's not treated as failure when no pan is returned.
+  EXPECT_EQ(AutofillClient::SUCCESS, result_);
+  EXPECT_EQ("fake_context_token", unmask_response_details_->context_token);
+  // Verify the FIDO request challenge is correctly parsed.
+  EXPECT_EQ("fake_fido_challenge",
+            *unmask_response_details_->fido_request_options->FindStringKey(
+                "challenge"));
+  // Verify the two idv challenge options are both sms challenge and fields can
+  // be correctly parsed.
+  EXPECT_EQ(2u,
+            unmask_response_details_->idv_challenge_options->GetList().size());
+  const base::Value& challenge_option_1 =
+      unmask_response_details_->idv_challenge_options->GetList()[0];
+  const base::Value* sms_challenge_option_1 = challenge_option_1.FindKeyOfType(
+      "sms_otp_challenge_option", base::Value::Type::DICTIONARY);
+  EXPECT_TRUE(sms_challenge_option_1);
+  EXPECT_EQ("fake_challenge_id_1",
+            *sms_challenge_option_1->FindStringKey("challenge_id"));
+  EXPECT_EQ("(***)-***-1234",
+            *sms_challenge_option_1->FindStringKey("masked_phone_number"));
+  const base::Value& challenge_option_2 =
+      unmask_response_details_->idv_challenge_options->GetList()[1];
+  const base::Value* sms_challenge_option_2 = challenge_option_2.FindKeyOfType(
+      "sms_otp_challenge_option", base::Value::Type::DICTIONARY);
+  EXPECT_TRUE(sms_challenge_option_2);
+  EXPECT_EQ("fake_challenge_id_2",
+            *sms_challenge_option_2->FindStringKey("challenge_id"));
+  EXPECT_EQ("(***)-***-5678",
+            *sms_challenge_option_2->FindStringKey("masked_phone_number"));
+}
+
+TEST_F(PaymentsClientTest, VirtualCardRiskBasedThenFido) {
+  StartUnmasking(CardUnmaskOptions().with_virtual_card_risk_based_then_fido());
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK,
+                 "{ \"pan\": \"4111111111111111\", \"dcvv\": \"999\",  "
+                 "\"expiration\": { \"month\":12, \"year\":2099 } }");
+
+  // Verify that Cvc/OTP are not included in the request.
+  assertCvcNotIncludedInRequest();
+  assertOtpNotIncludedInRequest();
+  // Verify the fido assertion and context token is included.
+  EXPECT_TRUE(GetUploadData().find("fido_assertion_info") != std::string::npos);
+  EXPECT_TRUE(GetUploadData().find("context_token") != std::string::npos);
+  EXPECT_TRUE(GetUploadData().find("merchant_domain") != std::string::npos);
+
+  EXPECT_EQ(AutofillClient::SUCCESS, result_);
+  EXPECT_EQ("4111111111111111", unmask_response_details_->real_pan);
+  EXPECT_EQ("999", unmask_response_details_->dcvv);
+  EXPECT_EQ("12", unmask_response_details_->expiration_month);
+  EXPECT_EQ("2099", unmask_response_details_->expiration_year);
+}
+
+TEST_F(PaymentsClientTest, VirtualCardRiskBasedThenOtpSuccess) {
+  const std::string otp = "111111";
+  StartUnmasking(
+      CardUnmaskOptions().with_virtual_card_risk_based_then_otp(otp));
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK,
+                 "{ \"pan\": \"4111111111111111\", \"dcvv\": \"999\",  "
+                 "\"expiration\": { \"month\":12, \"year\":2099 } }");
+
+  assertOtpIncludedInRequest(otp);
+  // Verify that Cvc/FIDO are not included in the request.
+  assertCvcNotIncludedInRequest();
+  EXPECT_TRUE(GetUploadData().find("fido_assertion_info") == std::string::npos);
+  // Verify the context token is also included.
+  EXPECT_TRUE(GetUploadData().find("context_token") != std::string::npos);
+  EXPECT_TRUE(GetUploadData().find("merchant_domain") != std::string::npos);
+
+  EXPECT_EQ(AutofillClient::SUCCESS, result_);
+  EXPECT_EQ("4111111111111111", unmask_response_details_->real_pan);
+  EXPECT_EQ("999", unmask_response_details_->dcvv);
+  EXPECT_EQ("12", unmask_response_details_->expiration_month);
+  EXPECT_EQ("2099", unmask_response_details_->expiration_year);
+}
+
+TEST_F(PaymentsClientTest, ExpiredOtp) {
+  const std::string otp = "222222";
+  StartUnmasking(
+      CardUnmaskOptions().with_virtual_card_risk_based_then_otp(otp));
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK,
+                 "{ \"context_token\": \"fake_context_token\", "
+                 "\"flow_status\": \"FLOW_STATUS_EXPIRED_OTP\" }");
+
+  assertOtpIncludedInRequest(otp);
+  // Verify the context token is also included.
+  EXPECT_TRUE(GetUploadData().find("context_token") != std::string::npos);
+  EXPECT_TRUE(GetUploadData().find("merchant_domain") != std::string::npos);
+
+  EXPECT_EQ(AutofillClient::SUCCESS, result_);
+  EXPECT_EQ("FLOW_STATUS_EXPIRED_OTP", unmask_response_details_->flow_status);
+}
+
+TEST_F(PaymentsClientTest, IncorrectOtp) {
+  const std::string otp = "333333";
+  StartUnmasking(
+      CardUnmaskOptions().with_virtual_card_risk_based_then_otp(otp));
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK,
+                 "{ \"context_token\": \"fake_context_token\", "
+                 "\"flow_status\": \"FLOW_STATUS_INCORRECT_OTP\" }");
+
+  assertOtpIncludedInRequest(otp);
+  // Verify the context token is also included.
+  EXPECT_TRUE(GetUploadData().find("context_token") != std::string::npos);
+  EXPECT_TRUE(GetUploadData().find("merchant_domain") != std::string::npos);
+
+  EXPECT_EQ(AutofillClient::SUCCESS, result_);
+  EXPECT_EQ("FLOW_STATUS_INCORRECT_OTP", unmask_response_details_->flow_status);
 }
 
 TEST_F(PaymentsClientTest, UnmaskIncludesChromeUserContext) {
@@ -519,7 +776,7 @@ TEST_F(PaymentsClientTest,
 }
 
 TEST_F(PaymentsClientTest, UnmaskIncludesMerchantDomain) {
-  StartUnmasking(CardUnmaskOptions().with_virtual_card(true));
+  StartUnmasking(CardUnmaskOptions().with_virtual_card());
   IssueOAuthToken();
   ReturnResponse(net::HTTP_OK, "{}");
 
@@ -536,6 +793,18 @@ TEST_F(PaymentsClientTest, UnmaskLogsCvcLengthForAutofill) {
 
   histogram_tester.ExpectBucketCount(
       "Autofill.CardUnmask.CvcLength.ForAutofill", 4, 1);
+}
+
+TEST_F(PaymentsClientTest, UnmaskLogsCvcLengthForAutofillOnlyWhenCvcAuth) {
+  base::HistogramTester histogram_tester;
+  StartUnmasking(CardUnmaskOptions()
+                     .with_reason(AutofillClient::UNMASK_FOR_AUTOFILL)
+                     .with_fido());
+  IssueOAuthToken();
+
+  // The CvcLength histogram should never be logged for non-Cvc auth.
+  histogram_tester.ExpectTotalCount("Autofill.CardUnmask.CvcLength.ForAutofill",
+                                    0);
 }
 
 TEST_F(PaymentsClientTest, UnmaskLogsCvcLengthForPaymentRequest) {
@@ -954,7 +1223,7 @@ TEST_F(PaymentsClientTest, UnmaskMissingPan) {
   EXPECT_EQ(AutofillClient::PERMANENT_FAILURE, result_);
 }
 
-TEST_F(PaymentsClientTest, RetryFailure) {
+TEST_F(PaymentsClientTest, UnmaskRetryFailure) {
   StartUnmasking(CardUnmaskOptions());
   IssueOAuthToken();
   ReturnResponse(net::HTTP_OK, "{ \"error\": { \"code\": \"INTERNAL\" } }");
@@ -962,7 +1231,7 @@ TEST_F(PaymentsClientTest, RetryFailure) {
   EXPECT_EQ("", unmask_response_details_->real_pan);
 }
 
-TEST_F(PaymentsClientTest, PermanentFailure) {
+TEST_F(PaymentsClientTest, UnmaskPermanentFailure) {
   StartUnmasking(CardUnmaskOptions());
   IssueOAuthToken();
   ReturnResponse(net::HTTP_OK,
@@ -971,7 +1240,7 @@ TEST_F(PaymentsClientTest, PermanentFailure) {
   EXPECT_EQ("", unmask_response_details_->real_pan);
 }
 
-TEST_F(PaymentsClientTest, MalformedResponse) {
+TEST_F(PaymentsClientTest, UnmaskMalformedResponse) {
   StartUnmasking(CardUnmaskOptions());
   IssueOAuthToken();
   ReturnResponse(net::HTTP_OK, "{ \"error_code\": \"WRONG_JSON_FORMAT\" }");
@@ -1034,7 +1303,7 @@ TEST_F(PaymentsClientTest, OtherError) {
 }
 
 TEST_F(PaymentsClientTest, VcnRetrievalTryAgainFailure) {
-  StartUnmasking(CardUnmaskOptions());
+  StartUnmasking(CardUnmaskOptions().with_virtual_card());
   IssueOAuthToken();
   ReturnResponse(net::HTTP_OK,
                  "{ \"error\": { \"code\": \"ANYTHING_ELSE\", "
@@ -1043,12 +1312,33 @@ TEST_F(PaymentsClientTest, VcnRetrievalTryAgainFailure) {
 }
 
 TEST_F(PaymentsClientTest, VcnRetrievalPermanentFailure) {
-  StartUnmasking(CardUnmaskOptions());
+  StartUnmasking(CardUnmaskOptions().with_virtual_card());
   IssueOAuthToken();
   ReturnResponse(net::HTTP_OK,
                  "{ \"error\": { \"code\": \"ANYTHING_ELSE\", "
                  "\"api_error_reason\": \"virtual_card_permanent_error\"} }");
   EXPECT_EQ(AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE, result_);
+}
+
+TEST_F(PaymentsClientTest, UnmaskPermanentFailureWhenVcnMissingExpiration) {
+  StartUnmasking(CardUnmaskOptions().with_virtual_card());
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK,
+                 "{ \"pan\": \"4111111111111111\", \"dcvv\": \"999\" }");
+
+  EXPECT_EQ("4111111111111111", unmask_response_details_->real_pan);
+  EXPECT_EQ(AutofillClient::PERMANENT_FAILURE, result_);
+}
+
+TEST_F(PaymentsClientTest, UnmaskPermanentFailureWhenVcnMissingCvv) {
+  StartUnmasking(CardUnmaskOptions().with_virtual_card());
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK,
+                 "{ \"pan\": \"4111111111111111\", \"expiration\": { "
+                 "\"month\":12, \"year\":2099 } }");
+
+  EXPECT_EQ("4111111111111111", unmask_response_details_->real_pan);
+  EXPECT_EQ(AutofillClient::PERMANENT_FAILURE, result_);
 }
 
 // Tests for the local card migration flow. Desktop only.
