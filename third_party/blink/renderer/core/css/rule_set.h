@@ -268,6 +268,12 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
     auto it = class_rules_.find(key);
     return it != class_rules_.end() ? it->value : nullptr;
   }
+  const HeapVector<Member<const RuleData>>* AttrRules(
+      const AtomicString& key) const {
+    DCHECK(!pending_rules_);
+    auto it = attr_rules_.find(key);
+    return it != attr_rules_.end() ? it->value : nullptr;
+  }
   const HeapVector<Member<const RuleData>>* TagRules(
       const AtomicString& key) const {
     DCHECK(!pending_rules_);
@@ -429,6 +435,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
 
     PendingRuleMap id_rules;
     PendingRuleMap class_rules;
+    PendingRuleMap attr_rules;
     PendingRuleMap tag_rules;
     PendingRuleMap ua_shadow_pseudo_element_rules;
 
@@ -460,6 +467,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
 
   CompactRuleMap id_rules_;
   CompactRuleMap class_rules_;
+  CompactRuleMap attr_rules_;
   CompactRuleMap tag_rules_;
   CompactRuleMap ua_shadow_pseudo_element_rules_;
   HeapVector<Member<const RuleData>> link_pseudo_class_rules_;

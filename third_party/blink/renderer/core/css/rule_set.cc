@@ -146,6 +146,7 @@ void RuleSet::AddToRuleSet(const AtomicString& key,
 static void ExtractSelectorValues(const CSSSelector* selector,
                                   AtomicString& id,
                                   AtomicString& class_name,
+                                  AtomicString& attr_name,
                                   AtomicString& custom_pseudo_element_name,
                                   AtomicString& tag_name,
                                   AtomicString& part_name,
@@ -192,6 +193,15 @@ static void ExtractSelectorValues(const CSSSelector* selector,
           break;
       }
       break;
+    case CSSSelector::kAttributeExact:
+    case CSSSelector::kAttributeSet:
+    case CSSSelector::kAttributeHyphen:
+    case CSSSelector::kAttributeList:
+    case CSSSelector::kAttributeContain:
+    case CSSSelector::kAttributeBegin:
+    case CSSSelector::kAttributeEnd:
+      attr_name = selector->Attribute().LocalName();
+      break;
     default:
       break;
   }
@@ -201,6 +211,7 @@ bool RuleSet::FindBestRuleSetAndAdd(const CSSSelector& component,
                                     RuleData* rule_data) {
   AtomicString id;
   AtomicString class_name;
+  AtomicString attr_name;
   AtomicString custom_pseudo_element_name;
   AtomicString tag_name;
   AtomicString part_name;
@@ -213,12 +224,14 @@ bool RuleSet::FindBestRuleSetAndAdd(const CSSSelector& component,
   const CSSSelector* it = &component;
   for (; it && it->Relation() == CSSSelector::kSubSelector;
        it = it->TagHistory()) {
-    ExtractSelectorValues(it, id, class_name, custom_pseudo_element_name,
-                          tag_name, part_name, pseudo_type);
+    ExtractSelectorValues(it, id, class_name, attr_name,
+                          custom_pseudo_element_name, tag_name, part_name,
+                          pseudo_type);
   }
   if (it) {
-    ExtractSelectorValues(it, id, class_name, custom_pseudo_element_name,
-                          tag_name, part_name, pseudo_type);
+    ExtractSelectorValues(it, id, class_name, attr_name,
+                          custom_pseudo_element_name, tag_name, part_name,
+                          pseudo_type);
   }
 
   // Prefer rule sets in order of most likely to apply infrequently.
@@ -229,6 +242,11 @@ bool RuleSet::FindBestRuleSetAndAdd(const CSSSelector& component,
 
   if (!class_name.IsEmpty()) {
     AddToRuleSet(class_name, EnsurePendingRules()->class_rules, rule_data);
+    return true;
+  }
+
+  if (!attr_name.IsEmpty()) {
+    AddToRuleSet(attr_name, EnsurePendingRules()->attr_rules, rule_data);
     return true;
   }
 
@@ -543,6 +561,7 @@ void RuleSet::CompactRules() {
   PendingRuleMaps* pending_rules = pending_rules_.Release();
   CompactPendingRules(pending_rules->id_rules, id_rules_);
   CompactPendingRules(pending_rules->class_rules, class_rules_);
+  CompactPendingRules(pending_rules->attr_rules, attr_rules_);
   CompactPendingRules(pending_rules->tag_rules, tag_rules_);
   CompactPendingRules(pending_rules->ua_shadow_pseudo_element_rules,
                       ua_shadow_pseudo_element_rules_);
@@ -669,6 +688,7 @@ void ExtendedRuleData::TraceAfterDispatch(Visitor* visitor) const {
 void RuleSet::PendingRuleMaps::Trace(Visitor* visitor) const {
   visitor->Trace(id_rules);
   visitor->Trace(class_rules);
+  visitor->Trace(attr_rules);
   visitor->Trace(tag_rules);
   visitor->Trace(ua_shadow_pseudo_element_rules);
 }
@@ -680,6 +700,7 @@ void RuleSet::LayerInterval::Trace(Visitor* visitor) const {
 void RuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(id_rules_);
   visitor->Trace(class_rules_);
+  visitor->Trace(attr_rules_);
   visitor->Trace(tag_rules_);
   visitor->Trace(ua_shadow_pseudo_element_rules_);
   visitor->Trace(link_pseudo_class_rules_);
