@@ -25,8 +25,8 @@
     </cr-tooltip-icon>
   </div>
   <cr-toggle id="enableDndToggle"
-      checked="{{isDndEnabled_}}"
-      on-change = "setQuietMode_"
+      checked="[[isDndEnabled_]]"
+      on-change="setQuietMode_"
       aria-labelledby="dndTitle"
       deep-link-focus-id$="[[Setting.kDoNotDisturbOnOff]]">
   </cr-toggle>

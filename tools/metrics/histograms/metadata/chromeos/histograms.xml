@@ -1117,6 +1117,16 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Settings.Apps.DoNotDisturbOnOff"
+    enum="BooleanToggled" expires_after="2022-09-01">
+  <owner>hsuregan@chromium.org</owner>
+  <owner>jimmyxgong@chromium.org</owner>
+  <summary>
+    Records when a user changes the kDoNotDisturbOnOff setting in the
+    Notifications subpage of the Apps section.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Settings.Bluetooth.BluetoothOnOff"
     enum="BooleanToggled" expires_after="2022-02-06">
   <owner>khorimoto@chromium.org</owner>
@@ -1274,6 +1284,16 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The amount of time between the render frame host StartProvisionalLoad and
     DidFinishDocumentLoad events for the Chrome OS settings page.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.NotificationPage.PermissionOnOff"
+    enum="BooleanToggled" expires_after="2022-09-01">
+  <owner>hsuregan@chromium.org</owner>
+  <owner>jimmyxgong@chromium.org</owner>
+  <summary>
+    Records when a user changes the notification permission of any app in the
+    Notifications subpage of the Apps section.
   </summary>
 </histogram>
 

@@ -28,6 +28,7 @@ js_library("app_notifications_subpage") {
     ":app_notification_row",
     ":mojo_interface_provider",
     "../..:deep_linking_behavior.m",
+    "../..:metrics_recorder.m",
     "../..:os_route.m",
     "../../..:router",
     "//chrome/browser/ui/webui/settings/chromeos/os_apps_page/mojom:mojom_js_library_for_compile",
@@ -37,8 +38,10 @@ js_library("app_notifications_subpage") {
 
 js_library("app_notification_row") {
   deps = [
+    "../..:metrics_recorder.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
+  externs_list = [ "$externs_path/metrics_private.js" ]
 }
 
 js_library("mojo_interface_provider") {

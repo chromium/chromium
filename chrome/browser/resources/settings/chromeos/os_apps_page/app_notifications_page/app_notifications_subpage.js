@@ -16,6 +16,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {Route, RouteObserverBehavior, RouteObserverBehaviorInterface, Router} from '../../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../../deep_linking_behavior.m.js';
+import {recordSettingChange} from '../../metrics_recorder.m.js';
 import {routes} from '../../os_route.m.js';
 
 import {getAppNotificationProvider} from './mojo_interface_provider.js';
@@ -148,7 +149,11 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
 
   /** @private */
   setQuietMode_() {
+    this.isDndEnabled_ = !this.isDndEnabled_;
     this.mojoInterfaceProvider_.setQuietMode(this.isDndEnabled_);
+    recordSettingChange(
+        chromeos.settings.mojom.Setting.kDoNotDisturbOnOff,
+        {boolValue: this.isDndEnabled_});
   }
 
   /**
@@ -156,8 +161,7 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
    * @private
    */
   onEnableTap_(event) {
-    this.isDndEnabled_ = !this.isDndEnabled_;
-    this.mojoInterfaceProvider_.setQuietMode(this.isDndEnabled_);
+    this.setQuietMode_();
     event.stopPropagation();
   }
 }

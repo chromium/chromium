@@ -13,6 +13,8 @@ import '/os_apps_page/app_notification_handler.mojom-lite.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {recordSettingChange} from '../../metrics_recorder.m.js';
+
 import {getAppNotificationProvider} from './mojo_interface_provider.js';
 
 /**
@@ -88,6 +90,9 @@ export class AppNotificationRowElement extends PolymerElement {
 
     this.mojoInterfaceProvider_.setNotificationPermission(
         this.app.id, permission);
+    recordSettingChange();
+    chrome.metricsPrivate.recordBoolean(
+        'ChromeOS.Settings.NotificationPage.PermissionOnOff', !this.checked_);
   }
 }
 

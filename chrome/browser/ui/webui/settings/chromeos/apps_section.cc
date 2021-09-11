@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -376,6 +377,11 @@ std::string AppsSection::GetSectionPath() const {
 
 bool AppsSection::LogMetric(mojom::Setting setting, base::Value& value) const {
   // Unimplemented.
+  if (setting == mojom::Setting::kDoNotDisturbOnOff) {
+    base::UmaHistogramBoolean("ChromeOS.Settings.Apps.DoNotDisturbOnOff",
+                              value.GetBool());
+    return true;
+  }
   return false;
 }
 
