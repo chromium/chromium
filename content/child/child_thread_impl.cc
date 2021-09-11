@@ -96,6 +96,7 @@
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
 #include <stdio.h>
 #include "base/test/clang_profiling.h"
+#include "build/config/compiler/compiler_buildflags.h"
 #if defined(OS_WIN)
 #include <io.h>
 #endif
@@ -377,7 +378,7 @@ class ChildThreadImpl::IOThreadState
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
   void SetProfilingFile(base::File file) override {
     // TODO(crbug.com/985574) Remove Android check when possible.
-#if defined(OS_POSIX) && !defined(OS_ANDROID)
+#if defined(OS_POSIX) && (!defined(OS_ANDROID) || defined(CLANG_PGO))
     // Take the file descriptor so that |file| does not close it.
     int fd = file.TakePlatformFile();
     FILE* f = fdopen(fd, "r+b");
