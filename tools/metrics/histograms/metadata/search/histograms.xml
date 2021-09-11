@@ -778,6 +778,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Search.ContextualSearchPromoOpenCount2" units="opens"
+    expires_after="M98">
+  <owner>donnd@chromium.org</owner>
+  <owner>contextual-search-eng@chromium.org</owner>
+  <summary>
+    The total count of times that the revised promo has been shown. Once the
+    user decides, this counter is no longer updated. Logged for each show of the
+    promo card. Implemented for Android.
+  </summary>
+</histogram>
+
 <histogram name="Search.ContextualSearchPromoOutcomeByGesture"
     enum="ContextualSearchOutcomeByGesture" expires_after="M72">
   <owner>donnd@chromium.org</owner>

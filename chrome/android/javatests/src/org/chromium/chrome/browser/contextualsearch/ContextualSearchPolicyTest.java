@@ -73,6 +73,7 @@ public class ContextualSearchPolicyTest {
             PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
             prefService.clearPref(Pref.CONTEXTUAL_SEARCH_ENABLED);
             prefService.clearPref(Pref.CONTEXTUAL_SEARCH_WAS_FULLY_PRIVACY_ENABLED);
+            prefService.clearPref(Pref.CONTEXTUAL_SEARCH_PROMO_CARD_SHOWN_COUNT);
         });
     }
 
@@ -83,6 +84,7 @@ public class ContextualSearchPolicyTest {
             PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
             prefService.clearPref(Pref.CONTEXTUAL_SEARCH_ENABLED);
             prefService.clearPref(Pref.CONTEXTUAL_SEARCH_WAS_FULLY_PRIVACY_ENABLED);
+            prefService.clearPref(Pref.CONTEXTUAL_SEARCH_PROMO_CARD_SHOWN_COUNT);
         });
     }
 
@@ -221,6 +223,28 @@ public class ContextualSearchPolicyTest {
             ContextualSearchPolicy.setContextualSearchPromoCardSelection(true);
             Assert.assertFalse(mPolicy.isUserUndecided());
             Assert.assertTrue(ContextualSearchPolicy.isContextualSearchEnabled());
+        });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"ContextualSearch"})
+    @EnableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_NEW_SETTINGS)
+    public void testIsPromoAvailable() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertTrue(mPolicy.isPromoAvailable());
+            Assert.assertEquals(0, ContextualSearchPolicy.getContextualSearchPromoCardShownCount());
+
+            // Promo show 1 time and promo is still available.
+            ContextualSearchPolicy.onPromoShown();
+            Assert.assertTrue(mPolicy.isPromoAvailable());
+            Assert.assertEquals(1, ContextualSearchPolicy.getContextualSearchPromoCardShownCount());
+
+            // After promo show 3 times, promo is not available.
+            ContextualSearchPolicy.onPromoShown();
+            ContextualSearchPolicy.onPromoShown();
+            Assert.assertFalse(mPolicy.isPromoAvailable());
+            Assert.assertEquals(3, ContextualSearchPolicy.getContextualSearchPromoCardShownCount());
         });
     }
 

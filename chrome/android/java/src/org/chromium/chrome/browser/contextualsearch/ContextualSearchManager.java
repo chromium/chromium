@@ -1975,6 +1975,11 @@ public class ContextualSearchManager
         ContextualSearchPolicy.setContextualSearchPromoCardSelection(enabled);
     }
 
+    /** Notifies that a promo card has been shown. */
+    public static void onPromoShown() {
+        ContextualSearchPolicy.onPromoShown();
+    }
+
     // Private helper functions
 
     /** @return The language of the base page being viewed by the user. */

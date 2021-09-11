@@ -205,6 +205,12 @@ class ContextualSearchPolicy {
      * @return Whether the Opt-out promo is available to be shown in any panel.
      */
     boolean isPromoAvailable() {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_NEW_SETTINGS)) {
+            // Only show promo card a limited number of times.
+            return isUserUndecided()
+                    && getContextualSearchPromoCardShownCount()
+                    < ContextualSearchFieldTrial.getDefaultPromoCardShownTimes();
+        }
         return isUserUndecided();
     }
 
@@ -511,6 +517,20 @@ class ContextualSearchPolicy {
     }
 
     /**
+     * @return Count of times the promo card has been shown.
+     */
+    static int getContextualSearchPromoCardShownCount() {
+        return getPrefService().getInteger(Pref.CONTEXTUAL_SEARCH_PROMO_CARD_SHOWN_COUNT);
+    }
+
+    /**
+     * Sets Count of times the promo card has been shown.
+     */
+    private static void setContextualSearchPromoCardShownCount(int count) {
+        getPrefService().setInteger(Pref.CONTEXTUAL_SEARCH_PROMO_CARD_SHOWN_COUNT, count);
+    }
+
+    /**
      * @return Whether the Contextual Search feature is disabled when the prefs service considers it
      *         managed.
      */
@@ -568,6 +588,16 @@ class ContextualSearchPolicy {
         getPrefService().setBoolean(Pref.CONTEXTUAL_SEARCH_WAS_FULLY_PRIVACY_ENABLED, enabled);
         setContextualSearchStateInternal(enabled ? ContextualSearchPreference.ENABLED
                                                  : ContextualSearchPreference.UNINITIALIZED);
+    }
+
+    /** Notifies that a promo card has been shown. */
+    static void onPromoShown() {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_NEW_SETTINGS)) {
+            int count = getContextualSearchPromoCardShownCount();
+            count++;
+            setContextualSearchPromoCardShownCount(count);
+            ContextualSearchUma.logRevisedPromoOpenCount(count);
+        }
     }
 
     /**

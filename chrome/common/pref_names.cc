@@ -406,6 +406,11 @@ const char kContextualSearchEnabled[] = "search.contextual_search_enabled";
 const char kContextualSearchDisabledValue[] = "false";
 const char kContextualSearchEnabledValue[] = "true";
 
+// A integer preference to store the number of times the Contextual Search promo
+// card shown.
+const char kContextualSearchPromoCardShownCount[] =
+    "search.contextual_search_promo_card_shown_count";
+
 // Boolean that indicates whether the user chose to fully opt in for Contextual
 // Search.
 const char kContextualSearchWasFullyPrivacyEnabled[] =
