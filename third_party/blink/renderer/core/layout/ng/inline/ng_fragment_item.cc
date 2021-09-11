@@ -818,11 +818,8 @@ void NGFragmentItem::RecalcInkOverflow(
 
     NGTextFragmentPaintInfo paint_info = TextPaintInfo(cursor.Items());
     if (paint_info.shape_result) {
-      // TODO(tkent): We should pass ScaledFont() instead of Style().GetFont().
-      // ScaledFont() breaks svg/transforms/transformed-text-fill-pattern.html,
-      // and we need more changes to fix it.
       ink_overflow_type_ = ink_overflow_.SetTextInkOverflow(
-          InkOverflowType(), paint_info, Style(), Style().GetFont(), Size(),
+          InkOverflowType(), paint_info, Style(), ScaledFont(), Size(),
           self_and_contents_rect_out);
       return;
     }

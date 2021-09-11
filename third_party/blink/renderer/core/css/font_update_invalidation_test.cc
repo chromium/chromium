@@ -101,7 +101,7 @@ TEST_F(FontUpdateInvalidationTest,
         font: 25px/1 monospace;
       }
     </style>
-    <svg><text id=target dx=0,10>0123456789</text></svg>
+    <svg><text id=target dx=0,10 transform="scale(3)">0123456789</text></svg>
     <svg><text id=reference dx=0,10>0123456789</text></svg>
   )HTML");
 
@@ -117,6 +117,8 @@ TEST_F(FontUpdateInvalidationTest,
 
   // Finish font loading, and trigger invalidations.
   font_resource.Complete(ReadAhemWoff2());
+  // FontFallbackMap::FontsNeedUpdate() should make the fallback list invalid.
+  EXPECT_FALSE(target->firstChild()->GetLayoutObject()->IsFontFallbackValid());
   GetDocument().GetStyleEngine().InvalidateStyleAndLayoutForFontUpdates();
 
   // No element is marked for style recalc, since no computed style is changed.

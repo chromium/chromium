@@ -2021,7 +2021,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   // Returns false when certain font changes (e.g., font-face rule changes, web
   // font loaded, etc) have occurred, in which case |this| needs relayout.
-  bool IsFontFallbackValid() const;
+  virtual bool IsFontFallbackValid() const;
 
   // Traverses subtree, and marks all layout objects as need relayout, repaint
   // and preferred width recalc. Also invalidates shaping on all text nodes.

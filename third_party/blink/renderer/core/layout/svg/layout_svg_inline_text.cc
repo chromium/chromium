@@ -103,6 +103,10 @@ void LayoutSVGInlineText::StyleDidChange(StyleDifference diff,
   }
 }
 
+bool LayoutSVGInlineText::IsFontFallbackValid() const {
+  return LayoutText::IsFontFallbackValid() && ScaledFont().IsFallbackValid();
+}
+
 void LayoutSVGInlineText::InvalidateSubtreeLayoutForFontUpdates() {
   NOT_DESTROYED();
   if (!IsFontFallbackValid()) {
