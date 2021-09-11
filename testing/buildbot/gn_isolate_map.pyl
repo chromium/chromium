@@ -853,6 +853,8 @@
       "../../content/test/gpu/run_gpu_integration_test_fuchsia.py",
       "--system-log-file",
       "${ISOLATED_OUTDIR}/system_log",
+      "--runner-logs-dir",
+      "${ISOLATED_OUTDIR}",
     ],
     "label": "//content/test:fuchsia_telemetry_gpu_integration_test",
     "script": "//testing/scripts/run_gpu_integration_test_as_googletest.py",
