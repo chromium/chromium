@@ -972,23 +972,6 @@ void WebLocalFrameImpl::RequestExecuteV8Function(
                                        callback);
 }
 
-void WebLocalFrameImpl::RequestExecuteScriptInIsolatedWorld(
-    int32_t world_id,
-    const WebScriptSource* sources_in,
-    unsigned num_sources,
-    bool user_gesture,
-    ScriptExecutionType option,
-    WebScriptExecutionCallback* callback,
-    BackForwardCacheAware back_forward_cache_aware) {
-  DCHECK(GetFrame());
-  CHECK_GT(world_id, DOMWrapperWorld::kMainWorldId);
-  CHECK_LT(world_id, DOMWrapperWorld::kDOMWrapperWorldEmbedderWorldIdLimit);
-
-  RequestExecuteScript(world_id, base::make_span(sources_in, num_sources),
-                       user_gesture, option, callback,
-                       back_forward_cache_aware);
-}
-
 void WebLocalFrameImpl::RequestExecuteScript(
     int32_t world_id,
     base::span<const WebScriptSource> sources,

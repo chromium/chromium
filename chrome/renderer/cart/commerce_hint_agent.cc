@@ -691,10 +691,10 @@ void CommerceHintAgent::ExtractProducts() {
 
   JavaScriptRequest* request =
       new JavaScriptRequest(weak_factory_.GetWeakPtr());
-  main_frame->RequestExecuteScriptInIsolatedWorld(
-      ISOLATED_WORLD_ID_CHROME_INTERNAL, &source, 1, false,
-      blink::WebLocalFrame::kAsynchronous, request,
-      blink::BackForwardCacheAware::kAllow);
+  main_frame->RequestExecuteScript(ISOLATED_WORLD_ID_CHROME_INTERNAL,
+                                   base::make_span(&source, 1), false,
+                                   blink::WebLocalFrame::kAsynchronous, request,
+                                   blink::BackForwardCacheAware::kAllow);
 }
 
 CommerceHintAgent::JavaScriptRequest::JavaScriptRequest(

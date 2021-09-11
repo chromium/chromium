@@ -392,19 +392,6 @@ class WebLocalFrame : public WebFrame {
     kAsynchronousBlockingOnload
   };
 
-  // worldID must be > 0 (as 0 is kMainDOMWorldId, which represents the
-  // main world) and must be < kEmbedderWorldIdLimit, high number used
-  // internally.
-  // DEPRECATED: Prefer RequestExecuteScript().
-  virtual void RequestExecuteScriptInIsolatedWorld(
-      int32_t world_id,
-      const WebScriptSource* source_in,
-      unsigned num_sources,
-      bool user_gesture,
-      ScriptExecutionType,
-      WebScriptExecutionCallback*,
-      BackForwardCacheAware) = 0;
-
   // Executes the script in the main world of the page.
   // Use kMainDOMWorldId to execute in the main world; otherwise,
   // `world_id` must be a positive integer and less than kEmbedderWorldIdLimit.
