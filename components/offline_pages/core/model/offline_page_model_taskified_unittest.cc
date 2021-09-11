@@ -1368,7 +1368,8 @@ TEST_F(OfflinePageModelTaskifiedTest, ClearStorage) {
 #define MAYBE_PersistentPageConsistencyCheckExecuted \
   PersistentPageConsistencyCheckExecuted
 #endif
-TEST_F(OfflinePageModelTaskifiedTest, PersistentPageConsistencyCheckExecuted) {
+TEST_F(OfflinePageModelTaskifiedTest,
+       MAYBE_PersistentPageConsistencyCheckExecuted) {
   // The PersistentPageConsistencyCheckTask should not be executed based on time
   // delays after launch (aka the model being built).
   FastForwardBy(base::TimeDelta::FromDays(1));
