@@ -174,6 +174,10 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.base_unittests.filter',
         ],
       },
+    },
+  },
+  'base_unittests_fuchsia': {
+    'modifications': {
       'fuchsia-code-coverage': {
         'swarming': {
           'shards': 5,
@@ -200,6 +204,10 @@
           ],
         },
       },
+    },
+  },
+  'blink_platform_unittests_fuchsia': {
+    'modifications': {
       'fuchsia-code-coverage': {
         'swarming': {
           'shards': 5,
@@ -207,7 +215,7 @@
       },
     },
   },
-  'blink_unittests': {
+  'blink_unittests_fuchsia': {
     'modifications': {
       'fuchsia-code-coverage': {
         'swarming': {
@@ -776,6 +784,10 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.cc_unittests.filter',
         ],
       },
+    },
+  },
+  'cc_unittests_fuchsia': {
+    'modifications': {
       'fuchsia-code-coverage': {
         'swarming': {
           'shards': 4,
@@ -1062,10 +1074,6 @@
     ],
   },
   'components_browsertests': {
-    'remove_from': [
-      'fuchsia-fyi-arm64-rel',  # https://crbug.com/961457
-      'fuchsia-fyi-x64-rel',  # https://crbug.com/961457
-    ],
     'modifications': {
       'android-11-x86-rel': {
         'swarming': {
@@ -1074,15 +1082,16 @@
       },
     },
   },
+  'components_browsertests_fuchsia': {
+    'remove_from': [
+      'fuchsia-fyi-arm64-rel',  # https://crbug.com/961457
+      'fuchsia-fyi-x64-rel',  # https://crbug.com/961457
+    ],
+  },
   'components_unittests': {
     'remove_from': [
       # https://crbug.com/1147531 - covered on lollipop
       'android-marshmallow-arm64-rel',
-      'Fuchsia ARM64',  # https://crbug.com/961457
-      'Fuchsia x64', # https://crbug.com/961457
-      'fuchsia-code-coverage',  # https://crbug.com/961457
-      'ToTFuchsia x64',  # https://crbug.com/961457
-      'ToTFuchsiaOfficial',  # https://crbug.com/961457
     ],
     'modifications': {
       'Linux ASan LSan Tests (1)': {
@@ -1134,7 +1143,7 @@
       },
     },
   },
-  'compositor_unittests': {
+  'compositor_unittests_fuchsia': {
     'modifications': {
       'fuchsia-fyi-arm64-dbg': {
         'args': [
@@ -1148,8 +1157,6 @@
       'CrWinAsan(dll)', # https://crbug.com/935598
       'android-lollipop-arm-rel', # crbug.com/1133002
       'android-marshmallow-arm64-rel', # http://crbug.com/1060245#c30: due to low utility and capacity.
-      'fuchsia-fyi-arm64-rel',  # https://crbug.com/1164534
-      'fuchsia-fyi-x64-rel',  # https://crbug.com/1164534
     ],
     'modifications': {
       'Cast Audio Linux': {
@@ -1328,6 +1335,12 @@
       },
     },
   },
+  'content_browsertests_fuchsia': {
+    'remove_from': [
+      'fuchsia-fyi-arm64-rel',  # https://crbug.com/1164534
+      'fuchsia-fyi-x64-rel',  # https://crbug.com/1164534
+    ],
+  },
   'content_browsertests_wayland': {
     'modifications': {
       'Linux Ozone Tester (Wayland)': {
@@ -1389,6 +1402,15 @@
           'shards': 2,
         },
       },
+      'fuchsia-code-coverage': {
+        'swarming': {
+          'shards': 12,
+        },
+      },
+    },
+  },
+  'content_unittests_fuchsia': {
+    'modifications': {
       'fuchsia-code-coverage': {
         'swarming': {
           'shards': 12,
@@ -1516,7 +1538,7 @@
       },
     },
   },
-  'gfx_unittests': {
+  'gfx_unittests_fuchsia': {
     'modifications': {
       'fuchsia-code-coverage': {
         'swarming': {
@@ -1685,7 +1707,7 @@
       'Android FYI Release (Pixel 2)',
     ],
   },
-  'gpu_unittests': {
+  'gpu_unittests_fuchsia': {
     'modifications': {
       'fuchsia-code-coverage': {
         'swarming': {
@@ -1711,6 +1733,11 @@
     ],
   },
   'headless_browsertests': {
+    'remove_from': [
+      'CrWinAsan(dll)', # https://crbug.com/935598
+    ],
+  },
+  'headless_browsertests_fuchsia': {
     'modifications': {
       'fuchsia-code-coverage': {
         'swarming': {
@@ -1718,11 +1745,7 @@
         },
       },
     },
-    'remove_from': [
-      'CrWinAsan(dll)', # https://crbug.com/935598
-    ],
   },
-
   'hybrid_browsertest': {
     'remove_from': [
       # Remove from CQ bots due to capacity.
@@ -2022,6 +2045,10 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_p.media_unittests.filter',
         ],
       },
+    },
+  },
+  'media_unittests_fuchsia': {
+    'modifications': {
       'fuchsia-code-coverage': {
         'swarming': {
           'shards': 3,
@@ -2053,6 +2080,10 @@
           'shards': 5,
         },
       },
+    },
+  },
+  'mojo_unittests_fuchsia': {
+    'modifications': {
       'fuchsia-code-coverage': {
         'swarming': {
           'shards': 2,
@@ -2262,11 +2293,6 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.net_unittests.filter',
         ],
       },
-      'fuchsia-code-coverage': {
-        'swarming': {
-          'shards': 14,
-        },
-      },
       'linux-blink-heap-concurrent-marking-tsan-rel': {
         'swarming': {
           'shards': 4,
@@ -2281,6 +2307,15 @@
         # TODO(crbug.com/794372): net_unittests is slow under ASan.
         'swarming': {
           'shards': 16,
+        },
+      },
+    },
+  },
+  'net_unittests_fuchsia': {
+    'modifications': {
+      'fuchsia-code-coverage': {
+        'swarming': {
+          'shards': 14,
         },
       },
     },
@@ -2493,11 +2528,6 @@
       },
     },
   },
-  'pixel_tests': {
-    'remove_from': [
-      'Fuchsia x64' # https://crbug.com/1203236
-    ],
-  },
   'rendering_representative_perf_tests': {
     'modifications': {
       'Win10 FYI x64 Exp Release (Intel HD 630)': {
@@ -2635,6 +2665,15 @@
       },
     }
   },
+  'services_unittests_fuchsia': {
+    'modifications': {
+      'fuchsia-code-coverage': {
+        'swarming': {
+          'shards': 7,
+        },
+      },
+    }
+  },
   # TODO(crbug.com/1202958): Remove these when SkiaRenderer is fully shipped
   # on Chrome OS.
   'skia_renderer_telemetry_perf_unittests': {
@@ -2679,7 +2718,7 @@
       },
     },
   },
-  'snapshot_unittests': {
+  'snapshot_unittests_fuchsia': {
     'modifications': {
       'fuchsia-fyi-arm64-dbg': {
         'args': [
@@ -3057,6 +3096,15 @@
       },
     },
   },
+  'views_unittests_fuchsia': {
+    'modifications': {
+      'fuchsia-fyi-arm64-dbg': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.debug.views_unittests.filter',
+        ],
+      },
+    },
+  },
   'views_unittests_wayland': {
     'modifications': {
       # CQ tester.
@@ -3097,6 +3145,15 @@
       },
     },
   },
+  'viz_unittests_fuchsia': {
+    'modifications': {
+      'fuchsia-fyi-arm64-dbg': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.debug.viz_unittests.filter',
+        ],
+      },
+    },
+  },
   'vr_android_unittests': {
     'remove_from': [
       'android-lollipop-arm-rel',
@@ -3118,7 +3175,7 @@
       'linux-chromeos-dbg',  # https://crbug.com/859307
     ],
   },
-  'web_engine_browsertests': {
+  'web_engine_browsertests_fuchsia': {
     'modifications': {
       'fuchsia-code-coverage': {
         'swarming': {
@@ -3127,7 +3184,7 @@
       },
     },
   },
-  'web_engine_integration_tests': {
+  'web_engine_integration_tests_fuchsia': {
     'modifications': {
       'fuchsia-code-coverage': {
         'swarming': {

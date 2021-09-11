@@ -1584,131 +1584,65 @@
 
     'fuchsia_common_gtests': {
       'absl_hardening_tests': {},
-      'accessibility_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'aura_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'base_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'blink_common_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'blink_heap_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'blink_platform_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
+      'accessibility_unittests': {},
+      'aura_unittests': {},
+      'base_unittests': {},
+      'blink_common_unittests': {},
+      'blink_heap_unittests': {},
+      'blink_platform_unittests': {},
       'blink_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.blink_unittests.filter',
         ],
       },
-      'boringssl_crypto_tests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'boringssl_ssl_tests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'capture_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
+      'boringssl_crypto_tests': {},
+      'boringssl_ssl_tests': {},
+      'capture_unittests': {},
       'cc_unittests': {
         'swarming': {
           'shards': 2,
-        },
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'color_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'compositor_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
+        },},
+      'color_unittests': {},
+      'compositor_unittests': {},
       'content_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.content_unittests.filter',
         ],
       },
-      'courgette_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'cronet_tests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'cronet_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'crypto_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'display_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'events_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'extensions_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'fuchsia_mojo_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'gcm_unit_tests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'gfx_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'gin_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'google_apis_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'gpu_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'gwp_asan_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
+      'courgette_unittests': {},
+      'cronet_tests': {},
+      'cronet_unittests': {},
+      'crypto_unittests': {},
+      'display_unittests': {},
+      'events_unittests': {},
+      'extensions_unittests': {},
+      'fuchsia_mojo_unittests': {},
+      'gcm_unit_tests': {},
+      'gfx_unittests': {},
+      'gin_unittests': {},
+      'google_apis_unittests': {},
+      'gpu_unittests': {},
+      'gwp_asan_unittests': {},
       'headless_browsertests': {
-        'mixins': ['fuchsia_runner_logs'],
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.headless_browsertests.filter',
         ],
       },
-      'headless_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
+      'headless_unittests': {},
+      'http_service_tests': {},
+      'ipc_tests': {},
+      'jingle_unittests': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.jingle_unittests.filter',
+        ],
       },
-      'http_service_tests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'ipc_tests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'latency_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'media_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'midi_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'mojo_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'native_theme_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
+      'latency_unittests': {},
+      'media_unittests': {},
+      'message_center_unittests': {},
+      'midi_unittests': {},
+      'mojo_unittests': {},
+      'native_theme_unittests': {},
       'net_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
         'swarming': {
           'shards': 4,
         },
@@ -1717,107 +1651,62 @@
         ],
       },
       'ozone_gl_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
         'args': [
           '--child-arg=--ozone-platform=headless',
         ],
       },
-      'ozone_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'perfetto_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'service_manager_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
+      'ozone_unittests': {},
+      'perfetto_unittests': {},
+      'service_manager_unittests': {},
       'services_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.services_unittests.filter',
         ],
       },
-      'shell_dialogs_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'skia_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'snapshot_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'sql_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
+      'shell_dialogs_unittests': {},
+      'skia_unittests': {},
+      'snapshot_unittests': {},
+      'sql_unittests': {},
       'storage_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.storage_unittests.filter',
         ],
       },
       'ui_base_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.ui_base_unittests.filter',
         ],
       },
-      'ui_touch_selection_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'url_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
+      'ui_touch_selection_unittests': {},
+      'url_unittests': {},
+      'views_examples_unittests': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_examples_unittests.filter',
+        ],
       },
       'views_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_unittests.filter',
         ],
       },
       'viz_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.viz_unittests.filter',
         ],
       },
-      'wtf_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'zlib_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
+      'wm_unittests': {},
+      'wtf_unittests': {},
+      'zlib_unittests': {},
     },
 
     'fuchsia_experimental_gtests': {
-      'components_browsertests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
+      'components_browsertests': {},
       'components_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.components_unittests.filter',
         ],
       },
-      'content_browsertests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'jingle_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.jingle_unittests.filter',
-        ],
-      },
-      'message_center_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'views_examples_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_examples_unittests.filter',
-        ],
-      },
-      'wm_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
+      'content_browsertests': {},
     },
 
     'fuchsia_gpu_telemetry_tests': {
@@ -5328,29 +5217,17 @@
     },
 
     'web_engine_gtests': {
-      'cast_runner_browsertests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'cast_runner_integration_tests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'cast_runner_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'cr_fuchsia_base_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'web_engine_browsertests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
+      'cast_runner_browsertests': {},
+      'cast_runner_integration_tests': {},
+      'cast_runner_unittests': {},
+      'cr_fuchsia_base_unittests': {},
+      'web_engine_browsertests': {},
       'web_engine_integration_tests': {
         'args': [
           '--child-arg=--vmodule=test_navigation_listener=1',
         ],
       },
-      'web_engine_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
+      'web_engine_unittests': {},
       'web_runner_integration_tests': {},
     },
 
@@ -6210,11 +6087,6 @@
       'gpu_angle_fuchsia_unittests_isolated_scripts',
     ],
 
-    'fuchsia_gtests': [
-      'fuchsia_common_gtests',
-      'web_engine_gtests',
-    ],
-
     'fuchsia_isolated_scripts': [
       'chromium_webkit_isolated_scripts',
       'gpu_angle_fuchsia_unittests_isolated_scripts'
@@ -7071,6 +6943,27 @@
           'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_TWO_MILESTONE',
         ]
       }
+    },
+
+    'fuchsia_experimental_gtests_with_runner_logs': {
+      'fuchsia_experimental_gtests': {
+        'variants': [
+          'FUCHSIA',
+        ],
+      },
+    },
+
+    'fuchsia_gtests_with_runner_logs': {
+      'fuchsia_common_gtests': {
+        'variants': [
+          'FUCHSIA',
+        ],
+      },
+      'web_engine_gtests': {
+        'variants': [
+          'FUCHSIA',
+        ],
+      },
     },
 
     'gpu_angle_ios_gtests': {

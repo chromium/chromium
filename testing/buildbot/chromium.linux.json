@@ -1840,10 +1840,14 @@
     ],
     "gtest_tests": [
       {
+        "args": [
+          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "absl_hardening_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1866,6 +1870,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "accessibility_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1888,6 +1893,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "aura_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1910,6 +1916,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "base_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1932,6 +1939,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "blink_common_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1954,6 +1962,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "blink_heap_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1976,6 +1985,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "blink_platform_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -1999,6 +2009,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "blink_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2021,6 +2032,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "boringssl_crypto_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2043,6 +2055,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "boringssl_ssl_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2065,6 +2078,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "capture_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2087,6 +2101,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "cast_runner_browsertests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2109,6 +2124,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "cast_runner_integration_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2131,6 +2147,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "cast_runner_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2153,6 +2170,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "cc_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2176,6 +2194,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "color_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2198,6 +2217,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "compositor_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2221,6 +2241,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "content_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2243,6 +2264,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "courgette_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2265,6 +2287,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "cr_fuchsia_base_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2287,6 +2310,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "cronet_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2309,6 +2333,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "cronet_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2331,6 +2356,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "crypto_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2353,6 +2379,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "display_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2375,6 +2402,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "events_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2397,6 +2425,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "extensions_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2419,6 +2448,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "fuchsia_mojo_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2441,6 +2471,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "gcm_unit_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2463,6 +2494,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "gfx_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2485,6 +2517,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "gin_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2507,6 +2540,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "google_apis_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2529,6 +2563,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "gpu_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2551,6 +2586,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "gwp_asan_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2574,6 +2610,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "headless_browsertests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2596,6 +2633,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "headless_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2618,6 +2656,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "http_service_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2640,6 +2679,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "ipc_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2656,12 +2696,37 @@
       },
       {
         "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.jingle_unittests.filter",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "jingle_unittests_fuchsia",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "arm64",
+              "inside_docker": "1",
+              "os": "Ubuntu-16.04|Ubuntu-20.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "jingle_unittests",
+        "test_id_prefix": "ninja://jingle:jingle_unittests/"
+      },
+      {
+        "args": [
+          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "latency_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2684,6 +2749,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "media_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2706,6 +2772,30 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "message_center_unittests_fuchsia",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "arm64",
+              "inside_docker": "1",
+              "os": "Ubuntu-16.04|Ubuntu-20.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "message_center_unittests",
+        "test_id_prefix": "ninja://ui/message_center:message_center_unittests/"
+      },
+      {
+        "args": [
+          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "midi_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2728,6 +2818,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "mojo_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2750,6 +2841,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "native_theme_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2773,6 +2865,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "net_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2797,6 +2890,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "ozone_gl_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2819,6 +2913,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "ozone_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2841,6 +2936,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "perfetto_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2863,6 +2959,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "service_manager_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2886,6 +2983,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "services_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2908,6 +3006,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "shell_dialogs_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2930,6 +3029,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "skia_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2952,6 +3052,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "snapshot_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2974,6 +3075,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "sql_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -2997,6 +3099,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "storage_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3020,6 +3123,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "ui_base_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3042,6 +3146,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "ui_touch_selection_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3064,6 +3169,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "url_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3080,6 +3186,30 @@
       },
       {
         "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_examples_unittests.filter",
+          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "views_examples_unittests_fuchsia",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "arm64",
+              "inside_docker": "1",
+              "os": "Ubuntu-16.04|Ubuntu-20.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "views_examples_unittests",
+        "test_id_prefix": "ninja://ui/views/examples:views_examples_unittests/"
+      },
+      {
+        "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_unittests.filter",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
@@ -3087,6 +3217,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "views_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3110,6 +3241,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "viz_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3132,6 +3264,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "web_engine_browsertests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3148,12 +3281,14 @@
       },
       {
         "args": [
-          "--child-arg=--vmodule=test_navigation_listener=1"
+          "--child-arg=--vmodule=test_navigation_listener=1",
+          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "web_engine_integration_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3176,6 +3311,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "web_engine_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3191,10 +3327,14 @@
         "test_id_prefix": "ninja://fuchsia/engine:web_engine_unittests/"
       },
       {
+        "args": [
+          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "web_runner_integration_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3217,6 +3357,30 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "wm_unittests_fuchsia",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "arm64",
+              "inside_docker": "1",
+              "os": "Ubuntu-16.04|Ubuntu-20.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "wm_unittests",
+        "test_id_prefix": "ninja://ui/wm:wm_unittests/"
+      },
+      {
+        "args": [
+          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "wtf_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3239,6 +3403,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "zlib_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3310,10 +3475,14 @@
     ],
     "gtest_tests": [
       {
+        "args": [
+          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "absl_hardening_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3335,6 +3504,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "accessibility_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3356,6 +3526,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "aura_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3377,6 +3548,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "base_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3398,6 +3570,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "blink_common_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3419,6 +3592,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "blink_heap_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3440,6 +3614,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "blink_platform_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3462,6 +3637,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "blink_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3483,6 +3659,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "boringssl_crypto_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3504,6 +3681,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "boringssl_ssl_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3525,6 +3703,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "capture_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3546,6 +3725,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "cast_runner_browsertests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3567,6 +3747,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "cast_runner_integration_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3588,6 +3769,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "cast_runner_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3609,6 +3791,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "cc_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3631,6 +3814,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "color_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3652,6 +3836,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "compositor_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3674,6 +3859,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "content_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3695,6 +3881,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "courgette_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3716,6 +3903,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "cr_fuchsia_base_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3737,6 +3925,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "cronet_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3758,6 +3947,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "cronet_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3779,6 +3969,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "crypto_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3800,6 +3991,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "display_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3821,6 +4013,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "events_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3842,6 +4035,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "extensions_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3863,6 +4057,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "fuchsia_mojo_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3884,6 +4079,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "gcm_unit_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3905,6 +4101,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "gfx_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3926,6 +4123,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "gin_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3947,6 +4145,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "google_apis_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3968,6 +4167,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "gpu_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -3989,6 +4189,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "gwp_asan_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4011,6 +4212,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "headless_browsertests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4032,6 +4234,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "headless_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4053,6 +4256,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "http_service_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4074,6 +4278,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "ipc_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4089,12 +4294,36 @@
       },
       {
         "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.jingle_unittests.filter",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "jingle_unittests_fuchsia",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "kvm": "1",
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "jingle_unittests",
+        "test_id_prefix": "ninja://jingle:jingle_unittests/"
+      },
+      {
+        "args": [
+          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "latency_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4116,6 +4345,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "media_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4137,6 +4367,29 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "message_center_unittests_fuchsia",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "kvm": "1",
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "message_center_unittests",
+        "test_id_prefix": "ninja://ui/message_center:message_center_unittests/"
+      },
+      {
+        "args": [
+          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "midi_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4158,6 +4411,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "mojo_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4179,6 +4433,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "native_theme_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4201,6 +4456,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "net_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4224,6 +4480,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "ozone_gl_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4245,6 +4502,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "ozone_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4266,6 +4524,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "perfetto_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4287,6 +4546,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "service_manager_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4309,6 +4569,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "services_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4330,6 +4591,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "shell_dialogs_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4351,6 +4613,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "skia_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4372,6 +4635,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "snapshot_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4393,6 +4657,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "sql_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4415,6 +4680,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "storage_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4437,6 +4703,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "ui_base_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4458,6 +4725,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "ui_touch_selection_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4479,6 +4747,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "url_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4494,6 +4763,29 @@
       },
       {
         "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_examples_unittests.filter",
+          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "views_examples_unittests_fuchsia",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "kvm": "1",
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "views_examples_unittests",
+        "test_id_prefix": "ninja://ui/views/examples:views_examples_unittests/"
+      },
+      {
+        "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_unittests.filter",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
@@ -4501,6 +4793,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "views_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4523,6 +4816,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "viz_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4544,6 +4838,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "web_engine_browsertests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4559,12 +4854,14 @@
       },
       {
         "args": [
-          "--child-arg=--vmodule=test_navigation_listener=1"
+          "--child-arg=--vmodule=test_navigation_listener=1",
+          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "web_engine_integration_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4586,6 +4883,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "web_engine_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4600,10 +4898,14 @@
         "test_id_prefix": "ninja://fuchsia/engine:web_engine_unittests/"
       },
       {
+        "args": [
+          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "web_runner_integration_tests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4625,6 +4927,29 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "wm_unittests_fuchsia",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "kvm": "1",
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "wm_unittests",
+        "test_id_prefix": "ninja://ui/wm:wm_unittests/"
+      },
+      {
+        "args": [
+          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "wtf_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -4646,6 +4971,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "name": "zlib_unittests_fuchsia",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
