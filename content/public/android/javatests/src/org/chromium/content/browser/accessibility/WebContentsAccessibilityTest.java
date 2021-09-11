@@ -1556,12 +1556,12 @@ public class WebContentsAccessibilityTest {
         Assert.assertFalse(
                 performActionOnUiThread(vvid, AccessibilityNodeInfo.ACTION_SET_TEXT, null));
         Bundle bundle = new Bundle();
-        bundle.putString(ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, null);
+        bundle.putCharSequence(ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, null);
         Assert.assertFalse(
                 performActionOnUiThread(vvid, AccessibilityNodeInfo.ACTION_SET_TEXT, bundle));
 
         // Send a proper action and poll for update.
-        bundle.putString(ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, "new text");
+        bundle.putCharSequence(ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, "new text");
         performActionOnUiThread(vvid, AccessibilityNodeInfo.ACTION_SET_TEXT, bundle,
                 () -> !createAccessibilityNodeInfo(vvid).getText().toString().isEmpty());
 
