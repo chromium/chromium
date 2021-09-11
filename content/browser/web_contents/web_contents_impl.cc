@@ -3249,6 +3249,7 @@ void WebContentsImpl::EnterFullscreenMode(
     const blink::mojom::FullscreenOptions& options) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::EnterFullscreenMode");
   DCHECK(CanEnterFullscreenMode());
+  DCHECK(requesting_frame->IsActive());
 
   if (delegate_) {
     delegate_->EnterFullscreenModeForTab(requesting_frame, options);

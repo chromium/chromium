@@ -78,6 +78,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/loader_constants.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
+#include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "url/gurl.h"
@@ -4901,6 +4902,24 @@ IN_PROC_BROWSER_TEST_F(PrerenderPurposePrefetchBrowserTest, ResourceRequests) {
                      "request('" + cross_origin_url2.spec() + "');",
                      EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
   EXPECT_FALSE(TestPurposePrefetchHeader(cross_origin_url2));
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, EnterFullscreen) {
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html?prerendering");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start a prerender.
+  int host_id = AddPrerender(kPrerenderingUrl);
+  auto* prerendered_rfh = GetPrerenderedMainFrameHost(host_id);
+
+  // We should disallow to enter Fullscreen by the inactive RFH.
+  prerendered_rfh->EnterFullscreen(
+      blink::mojom::FullscreenOptions::New(),
+      base::BindOnce([](bool value) { EXPECT_FALSE(value); }));
+  EXPECT_FALSE(web_contents_impl()->IsFullscreen());
 }
 
 }  // namespace
