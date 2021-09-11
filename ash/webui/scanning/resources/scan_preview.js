@@ -62,6 +62,12 @@ Polymer({
     progressPercent: Number,
 
     /** @private {boolean} */
+    showHelpOrProgress_: {
+      type: Boolean,
+      value: true,
+    },
+
+    /** @private {boolean} */
     showScannedImages_: {
       type: Boolean,
       value: false,
@@ -134,6 +140,16 @@ Polymer({
 
     /** @private {?Function} */
     onWindowResized_: Object,
+
+    /**
+     * True when |appState| is MULTI_PAGE_SCANNING.
+     * @private {boolean}
+     */
+    multiPageScanning_: {
+      type: Boolean,
+      value: false,
+      reflectToAttribute: true,
+    },
   },
 
   observers: [
@@ -146,7 +162,10 @@ Polymer({
   created() {
     // ScanningBrowserProxy is initialized when scanning_app.js is created.
     this.browserProxy_ = ScanningBrowserProxyImpl.getInstance();
-    this.onWindowResized_ = () => this.setActionToolbarPosition_();
+    this.onWindowResized_ = () => {
+      this.setMultiPageScanProgessHeight_();
+      this.setActionToolbarPosition_();
+    };
   },
 
   /** @override */
@@ -165,17 +184,21 @@ Polymer({
   /** @private */
   onAppStateChange_() {
     this.showScannedImages_ = this.appState === AppState.DONE ||
-        this.appState === AppState.MULTI_PAGE_NEXT_ACTION;
+        this.appState === AppState.MULTI_PAGE_NEXT_ACTION ||
+        this.appState === AppState.MULTI_PAGE_SCANNING;
     this.showScanProgress_ = this.appState === AppState.SCANNING ||
         this.appState === AppState.MULTI_PAGE_SCANNING;
     this.showCancelingProgress_ = this.appState === AppState.CANCELING ||
         this.appState === AppState.MULTI_PAGE_CANCELING;
     this.showHelperText_ = !this.showScanProgress_ &&
         !this.showCancelingProgress_ && !this.showScannedImages_;
+    this.showHelpOrProgress_ = !this.showScannedImages_ ||
+        this.appState === AppState.MULTI_PAGE_SCANNING;
+    this.multiPageScanning_ = this.appState === AppState.MULTI_PAGE_SCANNING;
 
     // If no longer showing the scanned images, reset |scannedImagesLoaded_| so
     // it can be used again for the next scan job.
-    if (!this.showScannedImages_) {
+    if (this.showHelpOrProgress_) {
       this.scannedImagesLoaded_ = false;
     }
   },
@@ -363,6 +386,8 @@ Polymer({
     this.setFocusedScannedImage_(
         scannedImages, this.getCurrentPageInView_(scannedImages));
 
+    this.setMultiPageScanProgessHeight_();
+
     // The below actions only needed for the first scanned image load.
     if (this.scannedImagesLoaded_) {
       return;
@@ -510,5 +535,15 @@ Polymer({
     } else {
       window.removeEventListener('resize', this.onWindowResized_);
     }
+  },
+
+  /**
+   * Make the scan progress height match the preview area height.
+   * @private
+   */
+  setMultiPageScanProgessHeight_() {
+    this.style.setProperty(
+        '--multi-page-scan-progress-height',
+        this.$$('#previewDiv').offsetHeight + 'px');
   },
 });

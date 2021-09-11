@@ -1,4 +1,8 @@
 <style include="scanning-shared scanning-fonts">
+  :host {
+    --preview-border-width: 2px;
+  }
+
   #helpDiv {
     display: flex;
     flex-direction: column;
@@ -22,6 +26,7 @@
   }
 
   #helpOrProgress {
+    background-color: white;
     display: flex;
     /* Calculate a height that results in a Letter aspect ratio (1:1.2941). */
     height: calc(1.2941 * var(--left-panel-width));
@@ -38,7 +43,7 @@
 
   #scanProgress,
   #cancelingProgress {
-    margin: auto;
+    margin: 60% auto auto;
     text-align: center;
     width: 70%;
   }
@@ -48,11 +53,11 @@
     max-height: calc(100vh - var(--panel-container-margin-top));
     outline: none;
     overflow-y: auto;
-    padding-top: 2px;
+    padding-top: var(--preview-border-width);
   }
 
   .preview:focus {
-    box-shadow: 0 0 0 2px rgba(var(--google-blue-600-rgb), .4);
+    box-shadow: 0 0 0 var(--preview-border-width) rgba(var(--google-blue-600-rgb), .4);
   }
 
   .preview:hover {
@@ -62,8 +67,7 @@
   .preview-item {
     border: 1px solid var(--google-grey-300);
     border-radius: 4px;
-    /* Subtract 2px for the border. */
-    width: calc(100% - 2px);
+    width: calc(100% - var(--preview-border-width));
   }
 
   .scanned-image {
@@ -74,8 +78,8 @@
     width: calc(100% - 24px);
   }
 
-  .preview:hover .focused-scanned-image {
-    box-shadow: rgba(var(--google-blue-600-rgb), .4) 0 0 0 2px;
+  :host(:not([multi-page-scanning_])) .preview:hover .focused-scanned-image {
+    box-shadow: rgba(var(--google-blue-600-rgb), .4) 0 0 0 var(--preview-border-width);
   }
 
   paper-progress {
@@ -105,11 +109,25 @@
   .preview:hover action-toolbar {
     visibility: visible;
   }
+
+  :host([multi-page-scanning_]) .preview {
+    overflow-y: hidden;
+    position: relative;
+  }
+
+  :host([multi-page-scanning_]) #helpOrProgress {
+    height: var(--multi-page-scan-progress-height);
+    margin-top: -4px;
+    opacity: .9;
+    position: fixed;
+    width: calc(var(--left-panel-width) - var(--preview-border-width));
+    z-index: 1;
+  }
 </style>
 <div id="previewDiv" class="preview" aria-label="[[previewAriaLabel_]]"
     tabindex="0" on-scroll="onScannedImagesScroll_">
-  <div id="helpOrProgress" class="preview-item" hidden$="[[showScannedImages_]]"
-      aria-hidden="true">
+  <div id="helpOrProgress" class="preview-item" aria-hidden="true"
+      hidden$="[[!showHelpOrProgress_]]">
     <div id="helpDiv" hidden$="[[!showHelperText_]]">
       <img id="readyToScanImg" src="svg/ready_to_scan.svg"
           alt="[[i18n('scanPreviewHelperText')]]">

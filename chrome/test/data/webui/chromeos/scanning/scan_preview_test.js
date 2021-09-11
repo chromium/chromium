@@ -166,6 +166,7 @@ export function scanPreviewTest() {
   test('positionActionToolbarOnSubsequentScans', () => {
     const scannedImagesDiv =
         /** @type {!HTMLElement} */ (scanPreview.$$('#scannedImages'));
+    scanPreview.objectUrls = ['image'];
     scanPreview.multiPageScanChecked = true;
     scanPreview.appState = AppState.MULTI_PAGE_SCANNING;
     return flushTasks()
@@ -352,6 +353,7 @@ export function scanPreviewTest() {
   test('resizingWindowRepositionsActionToolbar', () => {
     const scannedImagesDiv =
         /** @type {!HTMLElement} */ (scanPreview.$$('#scannedImages'));
+    scanPreview.objectUrls = ['image'];
     scanPreview.multiPageScanChecked = true;
     scanPreview.appState = AppState.MULTI_PAGE_SCANNING;
     return flushTasks()
