@@ -446,6 +446,10 @@ MinMaxSizesResult NGGridLayoutAlgorithm::ComputeMinMaxSizes(
   CacheGridItemsTrackSpanProperties(column_track_collection, &grid_items);
   CacheGridItemsTrackSpanProperties(row_track_collection, &grid_items);
 
+  // If we need to calculate the row geometry, we have a dependency on our
+  // block constraints.
+  bool depends_on_block_constraints = false;
+
   auto ComputeTotalColumnSize =
       [&](SizingConstraint sizing_constraint) -> LayoutUnit {
     GridGeometry grid_geometry(InitializeTrackSizes(&column_track_collection),
@@ -469,6 +473,8 @@ MinMaxSizesResult NGGridLayoutAlgorithm::ComputeMinMaxSizes(
     }
 
     if (needs_additional_pass || has_block_size_dependent_item) {
+      depends_on_block_constraints = true;
+
       absl::optional<SetGeometry> initial_row_geometry;
       if (!needs_additional_pass && has_block_size_dependent_item)
         initial_row_geometry = grid_geometry.row_geometry;
@@ -512,11 +518,8 @@ MinMaxSizesResult NGGridLayoutAlgorithm::ComputeMinMaxSizes(
 
   MinMaxSizes sizes{ComputeTotalColumnSize(SizingConstraint::kMinContent),
                     ComputeTotalColumnSize(SizingConstraint::kMaxContent)};
-
-  // TODO(janewman): Confirm that |input.percentage_resolution_block_size|
-  // isn't used within grid layout.
   sizes += BorderScrollbarPadding().InlineSum();
-  return MinMaxSizesResult(sizes, /* depends_on_block_constraints */ false);
+  return MinMaxSizesResult(sizes, depends_on_block_constraints);
 }
 
 const TrackSpanProperties& GridItemData::GetTrackSpanProperties(

@@ -171,6 +171,7 @@ crbug.com/1045599 external/wpt/css/css-grid/layout-algorithm/grid-content-distri
 crbug.com/1045599 external/wpt/css/css-grid/layout-algorithm/grid-flex-track-intrinsic-sizes-001.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/layout-algorithm/grid-flex-track-intrinsic-sizes-002.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/layout-algorithm/grid-flex-track-intrinsic-sizes-003.html [ Failure ]
+crbug.com/1045599 external/wpt/css/css-grid/layout-algorithm/grid-intrinsic-size-dynamic-block-size.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/layout-algorithm/grid-intrinsic-size-with-orthogonal-items.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/layout-algorithm/grid-template-flexible-rerun-track-sizing.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/grid-within-flexbox-indefinite.html [ Failure ]
