@@ -32,6 +32,7 @@ public class FollowManagementItemView extends LinearLayout {
 
     public void setTitle(String title) {
         mTitle.setText(title);
+        mSubscribedCheckbox.setContentDescription(title);
     }
 
     public void setUrl(String url) {
