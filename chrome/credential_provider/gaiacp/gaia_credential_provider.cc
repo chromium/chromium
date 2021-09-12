@@ -387,8 +387,6 @@ HRESULT CGaiaCredentialProvider::CreateReauthCredentials(
     GaiaCredentialComPtrStorage* auto_logon_credential) {
   std::map<std::wstring, std::pair<std::wstring, std::wstring>> sid_to_username;
 
-  OSUserManager* manager = OSUserManager::Get();
-
   // Get the SIDs of all users being shown in the logon UI.
   if (!users) {
     LOGFN(ERROR) << "hr=" << putHR(E_INVALIDARG);
@@ -433,8 +431,9 @@ HRESULT CGaiaCredentialProvider::CreateReauthCredentials(
     wchar_t username[kWindowsUsernameBufferLength];
     wchar_t domain[kWindowsDomainBufferLength];
 
-    hr = manager->FindUserBySID(sid.c_str(), username, base::size(username),
-                                domain, base::size(domain));
+    hr = OSUserManager::Get()->FindUserBySidWithFallback(
+        sid.c_str(), username, base::size(username), domain,
+        base::size(domain));
     if (FAILED(hr)) {
       LOGFN(ERROR) << "Can't get sid or username hr=" << putHR(hr);
       continue;

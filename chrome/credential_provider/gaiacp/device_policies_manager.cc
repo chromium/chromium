@@ -171,12 +171,16 @@ void DevicePoliciesManager::GetDevicePolicies(DevicePolicies* device_policies) {
   base::win::RegistryKeyIterator iter(HKEY_LOCAL_MACHINE, kGcpUsersRootKeyName);
   for (; iter.Valid(); ++iter) {
     std::wstring sid(iter.Name());
+    wchar_t found_username[kWindowsUsernameBufferLength];
+    wchar_t found_domain[kWindowsDomainBufferLength];
+
     // Check if this account with this sid exists on device.
-    HRESULT hr = OSUserManager::Get()->FindUserBySID(sid.c_str(), nullptr, 0,
-                                                     nullptr, 0);
+    HRESULT hr = OSUserManager::Get()->FindUserBySidWithFallback(
+        sid.c_str(), found_username, base::size(found_username), found_domain,
+        base::size(found_domain));
     if (hr != S_OK) {
       if (hr != HRESULT_FROM_WIN32(ERROR_NONE_MAPPED)) {
-        LOGFN(ERROR) << "FindUserBySID hr=" << putHR(hr);
+        LOGFN(ERROR) << "FindUserBySidWithRegistryFallback hr=" << putHR(hr);
       } else {
         LOGFN(WARNING) << sid << " is not a valid sid";
       }

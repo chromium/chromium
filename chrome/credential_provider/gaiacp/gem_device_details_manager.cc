@@ -167,7 +167,7 @@ HRESULT GemDeviceDetailsManager::UploadDeviceDetails(
   wchar_t found_username[kWindowsUsernameBufferLength] = {};
   wchar_t found_domain[kWindowsDomainBufferLength] = {};
 
-  status = OSUserManager::Get()->FindUserBySID(
+  status = OSUserManager::Get()->FindUserBySidWithFallback(
       context.user_sid.c_str(), found_username, base::size(found_username),
       found_domain, base::size(found_domain));
   if (FAILED(status)) {
