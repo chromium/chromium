@@ -97,6 +97,9 @@ using SetGeometry = NGGridLayoutAlgorithm::SetGeometry;
 
 LayoutUnit ComputeSetSpanSize(const SetGeometry& set_geometry,
                               const GridItemIndices& set_indices) {
+  DCHECK_LT(set_indices.end, set_geometry.sets.size());
+  DCHECK_LE(set_indices.begin, set_indices.end);
+
   const LayoutUnit start_offset = set_geometry.sets[set_indices.begin].offset;
   const LayoutUnit end_offset = set_geometry.sets[set_indices.end].offset;
   DCHECK_GE(end_offset, start_offset);
@@ -510,10 +513,9 @@ MinMaxSizesResult NGGridLayoutAlgorithm::ComputeMinMaxSizes(
       DCHECK(!unused_needs_additional_pass);
     }
 
-    DCHECK_GT(grid_geometry.column_geometry.sets.size(), 0u);
-    return grid_geometry.column_geometry.sets.back().offset -
-           grid_geometry.column_geometry.sets[0].offset -
-           grid_geometry.column_geometry.gutter_size;
+    return ComputeSetSpanSize(
+        grid_geometry.column_geometry,
+        /* set_indices */ {0, grid_geometry.column_geometry.sets.size() - 1});
   };
 
   MinMaxSizes sizes{ComputeTotalColumnSize(SizingConstraint::kMinContent),
