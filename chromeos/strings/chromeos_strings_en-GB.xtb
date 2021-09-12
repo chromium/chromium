@@ -162,6 +162,7 @@
 <translation id="4238516577297848345">No print jobs in progress</translation>
 <translation id="4244962993387259361">You need at least 500 MB free to run a Memory test. To free up space, go to Settings &gt; Storage management.</translation>
 <translation id="4258281355379922695">HTTP latency</translation>
+<translation id="4271957103967917607">View full screen</translation>
 <translation id="4289540628985791613">Overview</translation>
 <translation id="4297501883039923494">Stopped – unknown error</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> images</translation>
@@ -373,6 +374,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7550715992156305117">Diagnostic routines</translation>
 <translation id="7561454561030345039">This action is managed by your administrator</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7574732568136198983">ARC ping</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> left</translation>
 <translation id="7620771111601174153">Find out more in the Help Centre</translation>
 <translation id="763165478673169849">Last reset time</translation>
