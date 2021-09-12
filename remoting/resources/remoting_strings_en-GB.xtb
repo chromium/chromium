@@ -170,6 +170,7 @@ If '<ph name="SERVICE_SCRIPT_NAME" />' is already ticked, untick it and then tic
 To grant this permission, click '<ph name="BUTTON_NAME" />' below. In the 'Accessibility' preferences pane that opens, tick the box next to '<ph name="SERVICE_SCRIPT_NAME" />'.
 
 If '<ph name="SERVICE_SCRIPT_NAME" />' is already ticked, untick it and then tick it again.</translation>
+<translation id="8305209735512572429">Web authentication remoting process</translation>
 <translation id="8383794970363966105">To use Chromoting, you'll need to add a Google Account to your device.</translation>
 <translation id="8386846956409881180">Host is configured with invalid OAuth credentials.</translation>
 <translation id="8397385476380433240">Grant permission to <ph name="PRODUCT_NAME" /></translation>
