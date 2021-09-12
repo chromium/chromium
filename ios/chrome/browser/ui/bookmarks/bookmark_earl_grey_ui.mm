@@ -49,6 +49,7 @@ using chrome_test_util::ShareButton;
 using chrome_test_util::DeleteButton;
 using chrome_test_util::OpenLinkInNewTabButton;
 using chrome_test_util::OpenLinkInIncognitoButton;
+using chrome_test_util::TabGridEditButton;
 using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 namespace chrome_test_util {
@@ -57,8 +58,9 @@ id<GREYMatcher> BookmarksContextMenuEditButton() {
   // Making sure the edit button we're selecting is not on the bottom bar via
   // exclusion by accessibility ID and ancestry.
   return grey_allOf(
-      EditButton(),
+      EditButton(), grey_userInteractionEnabled(),
       grey_not(grey_accessibilityID(kBookmarkHomeTrailingButtonIdentifier)),
+      grey_not(TabGridEditButton()),
       grey_not(grey_ancestor(
           grey_accessibilityID(kBookmarkHomeTrailingButtonIdentifier))),
       nil);
@@ -680,9 +682,12 @@ id<GREYMatcher> SearchIconButton() {
   [BookmarkEarlGreyUI starCurrentTab];
 
   // Set the bookmark name.
-  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                          IDS_IOS_BOOKMARK_ACTION_EDIT)]
-      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_userInteractionEnabled(),
+                                          grey_not(TabGridEditButton()),
+                                          ButtonWithAccessibilityLabelId(
+                                              IDS_IOS_BOOKMARK_ACTION_EDIT),
+                                          nil)] performAction:grey_tap()];
 
   NSString* titleIdentifier = @"Title Field_textField";
   [[EarlGrey

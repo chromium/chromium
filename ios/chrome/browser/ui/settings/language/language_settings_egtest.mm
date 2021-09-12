@@ -28,6 +28,7 @@ using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::NavigationBarDoneButton;
 using chrome_test_util::SettingsMenuBackButton;
 using chrome_test_util::SettingsSwitchCell;
+using chrome_test_util::TabGridEditButton;
 using chrome_test_util::TurnSettingsSwitchOn;
 
 namespace {
@@ -133,7 +134,7 @@ id<GREYMatcher> LanguageEntryDeleteButton() {
 id<GREYMatcher> NavigationBarEditButton() {
   return grey_allOf(
       ButtonWithAccessibilityLabelId(IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON),
-      grey_kindOfClass([UIButton class]),
+      grey_not(TabGridEditButton()), grey_kindOfClass([UIButton class]),
       grey_ancestor(grey_kindOfClass([UINavigationBar class])),
       grey_sufficientlyVisible(), nil);
 }

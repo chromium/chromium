@@ -55,6 +55,7 @@ using chrome_test_util::NavigationBarDoneButton;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsMenuBackButton;
 using chrome_test_util::TurnSettingsSwitchOn;
+using chrome_test_util::TabGridEditButton;
 using chrome_test_util::TextFieldForCellWithLabelId;
 
 namespace {
@@ -211,6 +212,7 @@ id<GREYMatcher> DeleteButtonAtBottom() {
 id<GREYMatcher> NavigationBarEditButton() {
   return grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
                         IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON),
+                    grey_not(TabGridEditButton()),
                     grey_userInteractionEnabled(), nil);
 }
 

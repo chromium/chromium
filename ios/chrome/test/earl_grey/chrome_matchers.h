@@ -584,6 +584,9 @@ id<GREYMatcher> UseSuggestedPasswordMatcher();
 // Returns a matcher for the button to open the context menu for edit actions.
 id<GREYMatcher> TabGridEditButton();
 
+// Returns a matcher for the context menu button to close all tabs.
+id<GREYMatcher> TabGridEditMenuCloseAllButton();
+
 // Returns a matcher for the context menu button to enter the tab grid tab
 // selection mode.
 id<GREYMatcher> TabGridSelectTabsMenuButton();

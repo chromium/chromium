@@ -40,6 +40,7 @@ id<GREYMatcher> NicknameTextField() {
 id<GREYMatcher> NavigationBarEditButton() {
   return grey_allOf(
       ButtonWithAccessibilityLabelId(IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON),
+      grey_not(chrome_test_util::TabGridEditButton()),
       grey_kindOfClass([UIButton class]),
       grey_ancestor(grey_kindOfClass([UINavigationBar class])), nil);
 }

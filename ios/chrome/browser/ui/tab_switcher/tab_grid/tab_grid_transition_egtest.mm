@@ -23,7 +23,6 @@
 #error "This file requires ARC support."
 #endif
 
-using chrome_test_util::TabGridCloseAllButton;
 using chrome_test_util::TabGridDoneButton;
 using chrome_test_util::TabGridIncognitoTabsPanelButton;
 using chrome_test_util::TabGridNewIncognitoTabButton;

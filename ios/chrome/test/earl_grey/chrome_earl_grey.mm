@@ -687,8 +687,16 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
 - (void)triggerRestoreViaTabGridRemoveAllUndo {
   [ChromeEarlGrey showTabSwitcher];
   GREYWaitForAppToIdle(@"App failed to idle");
-  [ChromeEarlGrey
-      waitForAndTapButton:chrome_test_util::TabGridCloseAllButton()];
+  if ([self isTabGridBulkActionsEnabled]) {
+    [ChromeEarlGrey
+        waitForAndTapButton:grey_allOf(chrome_test_util::TabGridEditButton(),
+                                       grey_sufficientlyVisible(), nil)];
+    [ChromeEarlGrey
+        waitForAndTapButton:chrome_test_util::TabGridEditMenuCloseAllButton()];
+  } else {
+    [ChromeEarlGrey
+        waitForAndTapButton:chrome_test_util::TabGridCloseAllButton()];
+  }
   [ChromeEarlGrey
       waitForAndTapButton:chrome_test_util::TabGridUndoCloseAllButton()];
   [ChromeEarlGrey waitForAndTapButton:chrome_test_util::TabGridDoneButton()];
@@ -1217,6 +1225,10 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
 
 - (BOOL)isContextMenuActionsRefreshEnabled {
   return [ChromeEarlGreyAppInterface isContextMenuActionsRefreshEnabled];
+}
+
+- (BOOL)isTabGridBulkActionsEnabled {
+  return [ChromeEarlGreyAppInterface isTabGridBulkActionsEnabled];
 }
 
 #pragma mark - ScopedBlockPopupsPref

@@ -1018,6 +1018,10 @@ NSString* SerializedPref(const PrefService::Preference* pref) {
   return IsContextMenuActionsRefreshEnabled();
 }
 
++ (BOOL)isTabGridBulkActionsEnabled {
+  return IsTabsBulkActionsEnabled();
+}
+
 #pragma mark - ScopedBlockPopupsPref
 
 + (ContentSetting)popupPrefValue {

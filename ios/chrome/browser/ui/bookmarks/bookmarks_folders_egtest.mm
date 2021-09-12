@@ -36,6 +36,7 @@ using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::ContextBarLeadingButtonWithLabel;
 using chrome_test_util::OmniboxText;
 using chrome_test_util::ScrollToTop;
+using chrome_test_util::TabGridEditButton;
 using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Bookmark folders integration tests for Chrome.
@@ -974,7 +975,11 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   // Tap on the snackbar.
   NSString* snackbarLabel =
       l10n_util::GetNSString(IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON);
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(snackbarLabel)]
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityLabel(snackbarLabel),
+                                   grey_userInteractionEnabled(),
+                                   grey_not(TabGridEditButton()), nil)]
       performAction:grey_tap()];
 
   // Verify that the newly-created bookmark is in the BookmarkModel.

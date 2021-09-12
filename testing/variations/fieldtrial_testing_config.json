@@ -8477,6 +8477,21 @@
             ]
         }
     ],
+    "TabsBulkActions": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TabsBulkActions"
+                    ]
+                }
+            ]
+        }
+    ],
     "TextFragmentAnchor": [
         {
             "platforms": [
