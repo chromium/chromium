@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
@@ -358,6 +359,9 @@ class AppServiceProxyBase : public KeyedService,
 
   bool is_using_testing_profile_ = false;
   base::OnceClosure dialog_created_callback_;
+
+  FRIEND_TEST_ALL_PREFIXES(AppServiceProxyTest,
+                           PreferredAppsUpdatedOnUninstall);
 };
 
 }  // namespace apps

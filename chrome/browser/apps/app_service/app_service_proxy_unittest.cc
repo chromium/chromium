@@ -9,11 +9,20 @@
 #include "base/callback.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/web_applications/test/test_web_app_provider.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/services/app_service/public/cpp/intent_filter_util.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
+#include "components/services/app_service/public/cpp/publisher_base.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia_rep.h"
+
+namespace apps {
 
 class AppServiceProxyTest : public testing::Test {
  protected:
@@ -231,3 +240,74 @@ TEST_F(AppServiceProxyTest, ProxyAccessPerProfile) {
   EXPECT_TRUE(guest_proxy);
   EXPECT_NE(guest_proxy, proxy);
 }
+
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+TEST_F(AppServiceProxyTest, PreferredAppsUpdatedOnUninstall) {
+  constexpr char kTestAppId[] = "foo";
+  const GURL kTestUrl = GURL("https://www.example.com/");
+
+  TestingProfile profile;
+  auto* proxy = AppServiceProxyFactory::GetForProfile(&profile);
+
+  auto* const provider = web_app::TestWebAppProvider::Get(&profile);
+  provider->SkipAwaitingExtensionSystem();
+  web_app::test::AwaitStartWebAppProviderAndSubsystems(&profile);
+
+  // Install an app and set it as preferred for a URL.
+  {
+    std::vector<mojom::AppPtr> apps;
+    mojom::AppPtr app = PublisherBase::MakeApp(
+        mojom::AppType::kBuiltIn, kTestAppId, mojom::Readiness::kReady,
+        "Test App", mojom::InstallSource::kUser);
+    app->intent_filters.push_back(
+        apps_util::CreateIntentFilterForUrlScope(kTestUrl));
+    apps.push_back(std::move(app));
+
+    proxy->OnApps(std::move(apps), mojom::AppType::kBuiltIn,
+                  /*should_notify_initialized=*/false);
+    proxy->AddPreferredApp(kTestAppId, kTestUrl);
+    proxy->FlushMojoCallsForTesting();
+
+    absl::optional<std::string> preferred_app =
+        proxy->PreferredApps().FindPreferredAppForUrl(kTestUrl);
+    ASSERT_EQ(preferred_app, kTestAppId);
+  }
+
+  // Updating the app should not change its preferred app status.
+  {
+    std::vector<mojom::AppPtr> apps;
+    mojom::AppPtr app = mojom::App::New();
+    app->app_type = mojom::AppType::kBuiltIn;
+    app->app_id = kTestAppId;
+    app->last_launch_time = base::Time();
+    apps.push_back(std::move(app));
+
+    proxy->OnApps(std::move(apps), mojom::AppType::kBuiltIn,
+                  /*should_notify_initialized=*/false);
+    proxy->FlushMojoCallsForTesting();
+
+    absl::optional<std::string> preferred_app =
+        proxy->PreferredApps().FindPreferredAppForUrl(kTestUrl);
+    ASSERT_EQ(preferred_app, kTestAppId);
+  }
+
+  // Uninstalling the app should remove it from the preferred app list.
+  {
+    std::vector<mojom::AppPtr> apps;
+    mojom::AppPtr app = mojom::App::New();
+    app->app_type = mojom::AppType::kBuiltIn;
+    app->app_id = kTestAppId;
+    app->readiness = mojom::Readiness::kUninstalledByUser;
+    apps.push_back(std::move(app));
+
+    proxy->OnApps(std::move(apps), mojom::AppType::kBuiltIn,
+                  /*should_notify_initialized=*/false);
+    proxy->FlushMojoCallsForTesting();
+
+    // TODO(crbug.com/1247944): Once removals are synced back to
+    // AppServiceProxy, check that the app is no longer preferred.
+  }
+}
+#endif  // !BUILDFLAG(OS_CHROMEOS_LACROS)
+
+}  // namespace apps

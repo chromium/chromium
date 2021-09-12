@@ -6206,6 +6206,7 @@ test("unit_tests") {
     deps += [
       "//chrome/browser/share/core:share_targets_unittest",
       "//components/media_router/common:test_support",
+      "//components/services/app_service/public/cpp:publisher",
       "//components/soda:constants",
       "//services/network:test_support",
     ]

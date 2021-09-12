@@ -487,7 +487,8 @@ void AppServiceProxyBase::OnApps(std::vector<apps::mojom::AppPtr> deltas,
                                  bool should_notify_initialized) {
   if (app_service_.is_connected()) {
     for (const auto& delta : deltas) {
-      if (!apps_util::IsInstalled(delta->readiness)) {
+      if (delta->readiness != apps::mojom::Readiness::kUnknown &&
+          !apps_util::IsInstalled(delta->readiness)) {
         app_service_->RemovePreferredApp(delta->app_type, delta->app_id);
       }
     }
