@@ -253,7 +253,7 @@ void DevicePairingHandler::OnConfirmPairing(bool confirmed) {
 
 void DevicePairingHandler::FinishPairing(mojom::PairingResult result) {
   current_pairing_device_id_.clear();
-  std::move(pair_device_callback_).Run(std::move(result));
+  std::move(pair_device_callback_).Run(result);
 
   if (result == mojom::PairingResult::kSuccess)
     InvokeFinishedPairingCallback();
