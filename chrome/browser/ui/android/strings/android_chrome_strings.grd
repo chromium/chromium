@@ -4124,9 +4124,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_INSTANCE_SWITCHER_CLOSE_CONFIRM_HEADER" desc="The header of multi-instance switcher dialog confirming close operation.">
         Close window?
       </message>
-      <message name="IDS_INSTANCE_SWITCHER_CLOSE_CONFIRM_BUTTON" desc="The button text of multi-instance switcher dialog confirming close operation.">
-        Close window
-      </message>
       <message name="IDS_INSTANCE_SWITCHER_CLOSE_CONFIRM_DELETED_TABS_ZERO" desc="The phrase used in the message when there is a single tab to delete.">
         The window will be closed
       </message>

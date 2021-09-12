@@ -88,13 +88,13 @@ public class ModalDialogViewBinder
 
     /**
      * Checks if the PRIMARY_BUTTON_FILLED property is consistent with the set of enabled buttons.
-     * The primary button cannot be the only button in the dialog.
-     * @return false if the property is set to true, but there is only one button.
+     * The primary button (== positive button for dialog view) cannot be the only 'filled' button
+     * enabled in the dialog. It should be disabled, or the secondary one should be enabled.
+     * @return false if the property is set to true but the secondary button is disabled.
      */
     private static boolean checkFilledButtonConsistency(PropertyModel model) {
         return !(model.get(ModalDialogProperties.PRIMARY_BUTTON_FILLED)
-                && (TextUtils.isEmpty(model.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT))
-                        || TextUtils.isEmpty(
-                                model.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT))));
+                && !TextUtils.isEmpty(model.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT))
+                && TextUtils.isEmpty(model.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT)));
     }
 }

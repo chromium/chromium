@@ -150,19 +150,14 @@ public class InstanceSwitcherCoordinator {
             public void onClick(PropertyModel model, int buttonType) {
                 switch (buttonType) {
                     case ModalDialogProperties.ButtonType.POSITIVE:
-                        if (mIsShowingConfirmationMessage) {
-                            assert mItemToDelete != null;
-                            hideConfirmationMessage();
-                            removeInstance(mItemToDelete);
-                        } else {
-                            dismissDialog(DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
-                        }
+                        assert mIsShowingConfirmationMessage;
+                        assert mItemToDelete != null;
+                        hideConfirmationMessage();
+                        removeInstance(mItemToDelete);
                         break;
                     case ModalDialogProperties.ButtonType.NEGATIVE:
-                        assert mIsShowingConfirmationMessage;
-                        hideConfirmationMessage();
+                        dismissDialog(DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
                         break;
-                    default:
                 }
             }
         };
@@ -173,7 +168,9 @@ public class InstanceSwitcherCoordinator {
                 .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
                 .with(ModalDialogProperties.CUSTOM_VIEW, dialogView)
                 .with(ModalDialogProperties.TITLE, title)
-                .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources, R.string.cancel)
+                .with(ModalDialogProperties.PRIMARY_BUTTON_FILLED, true)
+                .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, null)
+                .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources, R.string.cancel)
                 .build();
     }
 
@@ -265,7 +262,7 @@ public class InstanceSwitcherCoordinator {
         mItemToDelete = item;
         Resources res = mContext.getResources();
         String header = res.getString(R.string.instance_switcher_close_confirm_header);
-        String closeButton = res.getString(R.string.instance_switcher_close_confirm_button);
+        String closeButton = res.getString(R.string.close);
         mDialog.set(ModalDialogProperties.TITLE, header);
         mDialog.set(ModalDialogProperties.TITLE_ICON, mArrowBackIcon);
         mDialog.set(ModalDialogProperties.POSITIVE_BUTTON_TEXT, closeButton);
@@ -281,8 +278,8 @@ public class InstanceSwitcherCoordinator {
         Resources res = mContext.getResources();
         mDialog.set(ModalDialogProperties.TITLE, res.getString(R.string.instance_switcher_header));
         mDialog.set(ModalDialogProperties.TITLE_ICON, null);
-        mDialog.set(ModalDialogProperties.POSITIVE_BUTTON_TEXT, res.getString(R.string.cancel));
-        mDialog.set(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, null);
+        mDialog.set(ModalDialogProperties.POSITIVE_BUTTON_TEXT, "");
+        mDialog.set(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, res.getString(R.string.cancel));
         mDialogView.findViewById(R.id.list_view).setVisibility(View.VISIBLE);
         mDialogView.findViewById(R.id.close_confirm).setVisibility(View.GONE);
         mIsShowingConfirmationMessage = false;

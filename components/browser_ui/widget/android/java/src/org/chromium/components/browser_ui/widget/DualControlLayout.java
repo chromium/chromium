@@ -209,9 +209,12 @@ public final class DualControlLayout extends ViewGroup {
                         && (mAlignment == DualControlLayoutAlignment.APART
                                 || mAlignment == DualControlLayoutAlignment.END));
 
+        // If primary view visibility is GONE, do not take into account the space it would occupy.
+        int primaryViewMeasuredWidth =
+                mPrimaryView.getVisibility() != View.GONE ? mPrimaryView.getMeasuredWidth() : 0;
         int primaryRight = isPrimaryOnRight ? (width - rightPadding)
-                                            : (mPrimaryView.getMeasuredWidth() + leftPadding);
-        int primaryLeft = primaryRight - mPrimaryView.getMeasuredWidth();
+                                            : (primaryViewMeasuredWidth + leftPadding);
+        int primaryLeft = primaryRight - primaryViewMeasuredWidth;
         int primaryTop = getPaddingTop();
         int primaryBottom = primaryTop + mPrimaryView.getMeasuredHeight();
         mPrimaryView.layout(primaryLeft, primaryTop, primaryRight, primaryBottom);
@@ -241,14 +244,14 @@ public final class DualControlLayout extends ViewGroup {
             } else if (isPrimaryOnRight) {
                 // Sit to the left of the primary View.
                 secondaryRight = primaryLeft;
-                if (mPrimaryView.getMeasuredWidth() > 0) {
+                if (primaryViewMeasuredWidth > 0) {
                     secondaryRight -= mHorizontalMarginBetweenViews;
                 }
                 secondaryLeft = secondaryRight - mSecondaryView.getMeasuredWidth();
             } else {
                 // Sit to the right of the primary View.
                 secondaryLeft = primaryRight;
-                if (mPrimaryView.getMeasuredWidth() > 0) {
+                if (primaryViewMeasuredWidth > 0) {
                     secondaryLeft += mHorizontalMarginBetweenViews;
                 }
                 secondaryRight = secondaryLeft + mSecondaryView.getMeasuredWidth();
