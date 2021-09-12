@@ -403,13 +403,6 @@ void NearbySharingServiceImpl::Shutdown() {
 
   net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
   on_network_changed_delay_timer_.Stop();
-
-  if (arc_transfer_cleanup_callback_) {
-    // Cleanup files / session in the case where the user started ARC Nearby
-    // Share but did not take further action (i.e. cancel, next, etc.) prior
-    // to shutdown.
-    std::move(arc_transfer_cleanup_callback_).Run();
-  }
 }
 
 void NearbySharingServiceImpl::AddObserver(
@@ -1047,6 +1040,14 @@ void NearbySharingServiceImpl::CleanupAfterNearbyProcessStopped() {
   process_shutdown_pending_timer_.Stop();
   certificate_download_during_discovery_timer_.Stop();
   rotate_background_advertisement_timer_.Stop();
+
+  if (arc_transfer_cleanup_callback_) {
+    // Cleanup send transfer resources where the user started ARC Nearby Share
+    // but did not complete (i.e. cancel, abort, utility process stopped, etc.)
+    // prior to shutdown.
+    base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
+                               std::move(arc_transfer_cleanup_callback_));
+  }
 }
 
 void NearbySharingServiceImpl::RestartNearbyProcessIfAppropriate(
@@ -2303,11 +2304,12 @@ void NearbySharingServiceImpl::OnTransferComplete() {
   is_transferring_ = false;
   is_sending_files_ = false;
 
-  // Cleanup ARC session/files used during send transfer since reading file
-  // descriptor(s) are completed at this point even though there could be
-  // Nearby Connection frames cached that are not yet sent to the remote device.
+  // Cleanup ARC after send transfer completes since reading from file
+  // descriptor(s) are done at this point even though there could be Nearby
+  // Connection frames cached that are not yet sent to the remote device.
   if (was_sending_files && arc_transfer_cleanup_callback_) {
-    std::move(arc_transfer_cleanup_callback_).Run();
+    base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
+                               std::move(arc_transfer_cleanup_callback_));
   }
 
   NS_LOG(VERBOSE) << __func__

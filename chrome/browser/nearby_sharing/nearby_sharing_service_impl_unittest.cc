@@ -4154,6 +4154,10 @@ TEST_F(NearbySharingServiceImplTest, SendPayloadWithArcCallback) {
   PayloadInfo info = AcceptAndSendPayload(transfer_callback, target);
   FinishOutgoingTransfer(transfer_callback, target, info);
 
+  // This ensures that the change propagates through the sequenced task which
+  // is running the ARC callback .
+  base::RunLoop().RunUntilIdle();
+
   // Make sure ARC cleanup is called after transfer completes.
   EXPECT_TRUE(arc_session.CleanupCallbackCalled());
 
@@ -4184,6 +4188,10 @@ TEST_F(NearbySharingServiceImplTest, ShutdownCallsObserversWithArcCallback) {
   EXPECT_FALSE(observer.shutdown_called_);
 
   service_->Shutdown();
+
+  // This ensures that the change propagates through the sequenced task which
+  // is running the ARC callback .
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(observer.shutdown_called_);
   EXPECT_TRUE(arc_session.CleanupCallbackCalled());

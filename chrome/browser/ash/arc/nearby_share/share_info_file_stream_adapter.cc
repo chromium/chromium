@@ -135,7 +135,7 @@ void ShareInfoFileStreamAdapter::PerformReadFileStream() {
       base::BindOnce(&ShareInfoFileStreamAdapter::OnReadFile,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  // Make sure we don't have pending IO before continusing to read virtual file.
+  // Make sure we don't have pending IO before continuing to read virtual file.
   if (bytes_read != net::ERR_IO_PENDING) {
     OnReadFile(bytes_read);
   }
