@@ -8,6 +8,7 @@
 <translation id="1378979118429748177">קבלת הודעות כשיזוהו הנחות</translation>
 <translation id="1657719826150349398">העברת הכרטיסייה למטה</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />)}two{<ph name="TABS_COUNT_MANY" /> כרטיסיות}many{<ph name="TABS_COUNT_MANY" /> כרטיסיות}other{<ph name="TABS_COUNT_MANY" /> כרטיסיות}}</translation>
+<translation id="2118649612461486615">פרטי החנות</translation>
 <translation id="2277224997687551299">עריכת שם הקבוצה</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{הסרת כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />) שנבחרה מהקבוצה.}two{הסרת <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו מהקבוצה.}many{הסרת <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו מהקבוצה.}other{הסרת <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו מהקבוצה.}}</translation>
 <translation id="2479148705183875116">למעבר אל ההגדרות</translation>
@@ -50,13 +51,16 @@
 <translation id="6040143037577758943">סגירה</translation>
 <translation id="6054741997831917303">המחיר של הפריט הזה ירד לאחרונה מ-<ph name="PREVIOUS_PRICE" /> ל-<ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">בחירת כרטיסיות</translation>
+<translation id="6228793724645064692">(דירוג החנות)</translation>
 <translation id="6510648526783655549">סגירת שורת הכרטיסיות</translation>
+<translation id="6549021453810473782">הצגת פרטי החנות</translation>
 <translation id="6562820390860419811">העברת הכרטיסייה ימינה</translation>
 <translation id="6615455863669487791">איך עושים את זה?</translation>
 <translation id="6840760312327750441">כדי לקבץ כרטיסיות, יש ללחוץ לחיצה ארוכה על כרטיסייה. בזמן הלחיצה, יש לגרור אותה אל כרטיסייה אחרת.</translation>
 <translation id="6856809498882026482">הסתרת מצב הבחירה המרובה</translation>
 <translation id="7151209024774799310">הסרת כרטיסיות מהקבוצה</translation>
 <translation id="7204204600596740190">מצב בחירה מרובה</translation>
+<translation id="7326879924029668159">מדיניות החזרת המוצרים ומידע נוסף</translation>
 <translation id="7352298686197644113">הצגת הפריטים שמופיעים עם מחיר נמוך יותר בכרטיסיות הפתוחות שלך</translation>
 <translation id="753732157349120914">מחליף הכרטיסיות</translation>
 <translation id="7559245342362162951">הצגת כרטיסיות הקבוצה ברשת מסך מלא</translation>
