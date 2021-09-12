@@ -104,9 +104,6 @@ class UkmPageLoadMetricsObserver
       content::RenderFrameHost* subframe_rfh,
       const page_load_metrics::mojom::CpuTiming& timing) override;
 
-  void OnLoadingBehaviorObserved(content::RenderFrameHost* rfh,
-                                 int behavior_flags) override;
-
   void DidActivatePortal(base::TimeTicks activation_time) override;
 
   void OnFirstContentfulPaintInPage(
@@ -145,8 +142,6 @@ class UkmPageLoadMetricsObserver
   void ReportMainResourceTimingMetrics(ukm::builders::PageLoad& builder);
 
   void ReportLayoutStability();
-
-  void ReportPerfectHeuristicsMetrics();
 
   void RecordAbortMetrics(
       const page_load_metrics::mojom::PageLoadTiming& timing,
@@ -294,10 +289,6 @@ class UkmPageLoadMetricsObserver
   // same document.
   // Unique across the lifetime of the browser process.
   int main_document_sequence_number_ = -1;
-
-  // These are to capture observed LoadingBehaviorFlags.
-  bool delay_async_script_execution_before_finished_parsing_seen_ = false;
-  bool delay_competing_low_priority_requests_seen_ = false;
 
   bool currently_in_foreground_ = false;
   // The last time the page became foregrounded, or navigation start if the page

@@ -13283,6 +13283,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PerfectHeuristics" singular="True">
+  <obsolete>
+    Implementation for these experiments were removed in M94.
+  </obsolete>
   <owner>dom@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>

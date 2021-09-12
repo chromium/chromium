@@ -381,7 +381,6 @@ void UkmPageLoadMetricsObserver::OnComplete(
     RecordTimingMetrics(timing);
   ReportLayoutStability();
   RecordSmoothnessMetrics();
-  ReportPerfectHeuristicsMetrics();
   RecordPageEndMetrics(&timing, current_time,
                        /* app_entered_background */ false);
   RecordMobileFriendlinessMetrics();
@@ -1031,20 +1030,6 @@ void UkmPageLoadMetricsObserver::ReportLayoutStability() {
           GetDelegate().GetMainFrameRenderData().layout_shift_score));
 }
 
-void UkmPageLoadMetricsObserver::ReportPerfectHeuristicsMetrics() {
-  if (!delay_async_script_execution_before_finished_parsing_seen_ &&
-      !delay_competing_low_priority_requests_seen_) {
-    return;
-  }
-
-  ukm::builders::PerfectHeuristics builder(GetDelegate().GetPageUkmSourceId());
-  if (delay_async_script_execution_before_finished_parsing_seen_)
-    builder.Setdelay_async_script_execution_before_finished_parsing(1);
-  if (delay_competing_low_priority_requests_seen_)
-    builder.SetDelayCompetingLowPriorityRequests(1);
-  builder.Record(ukm::UkmRecorder::Get());
-}
-
 void UkmPageLoadMetricsObserver::RecordAbortMetrics(
     const page_load_metrics::mojom::PageLoadTiming& timing,
     base::TimeTicks page_end_time,
@@ -1406,19 +1391,4 @@ void UkmPageLoadMetricsObserver::RecordGeneratedNavigationUKM(
   builder.SetFirstURLIsHomePage(start_url_is_home_page_);
   builder.SetFirstURLIsDefaultSearchEngine(start_url_is_default_search_);
   builder.Record(ukm::UkmRecorder::Get());
-}
-
-void UkmPageLoadMetricsObserver::OnLoadingBehaviorObserved(
-    content::RenderFrameHost* rfh,
-    int behavior_flag) {
-  if (behavior_flag &
-      blink::LoadingBehaviorFlag::
-          kLoadingBehaviorAsyncScriptReadyBeforeDocumentFinishedParsing) {
-    delay_async_script_execution_before_finished_parsing_seen_ = true;
-  }
-
-  if (behavior_flag & blink::LoadingBehaviorFlag::
-                          kLoadingBehaviorCompetingLowPriorityRequestsDelayed) {
-    delay_competing_low_priority_requests_seen_ = true;
-  }
 }
