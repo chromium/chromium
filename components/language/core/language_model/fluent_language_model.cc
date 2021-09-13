@@ -22,18 +22,14 @@ FluentLanguageModel::~FluentLanguageModel() {}
 std::vector<LanguageModel::LanguageDetails>
 FluentLanguageModel::GetLanguages() {
   std::vector<LanguageDetails> lang_details;
-  // TODO(https://crbug.com/1233068): Investigate calling
-  // TranslatePrefs::GetNeverPromptLanguages instead.
-  std::vector<std::string> acceptLanguages;
-  translate_prefs_->GetLanguageList(&acceptLanguages);
-  for (const std::string& lang_code : acceptLanguages) {
-    // Languages that are blocked from translation are assumed to be languages
-    // that the user is fluent in.
-    if (translate_prefs_->IsBlockedLanguage(lang_code)) {
-      lang_details.emplace_back(
-          LanguageDetails(lang_code, 1.0f / (lang_details.size() + 1)));
-    }
+  // Languages that are blocked from translation are assumed to be languages
+  // that the user is fluent in.
+  for (const std::string& lang_code :
+       translate_prefs_->GetNeverTranslateLanguages()) {
+    lang_details.emplace_back(
+        LanguageDetails(lang_code, 1.0f / (lang_details.size() + 1)));
   }
+
   return lang_details;
 }
 

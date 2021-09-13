@@ -35,6 +35,7 @@ source_set("unit_tests") {
     "//build:chromeos_buildflags",
     "//components/language/core/browser",
     "//components/language/core/browser:test_support",
+    "//components/language/core/common",
     "//components/language/core/language_model",
     "//components/pref_registry:pref_registry",
     "//components/prefs",
