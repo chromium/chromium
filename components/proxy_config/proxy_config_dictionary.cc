@@ -36,7 +36,11 @@ ProxyConfigDictionary::ProxyConfigDictionary(base::Value dict)
   DCHECK(dict_.is_dict());
 }
 
-ProxyConfigDictionary::~ProxyConfigDictionary() {}
+ProxyConfigDictionary::ProxyConfigDictionary(ProxyConfigDictionary&& other) {
+  dict_ = std::move(other.dict_);
+}
+
+ProxyConfigDictionary::~ProxyConfigDictionary() = default;
 
 bool ProxyConfigDictionary::GetMode(ProxyPrefs::ProxyMode* out) const {
   const base::Value* mode_value = dict_.FindKey(kProxyMode);

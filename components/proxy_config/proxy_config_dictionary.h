@@ -30,6 +30,7 @@ class PROXY_CONFIG_EXPORT ProxyConfigDictionary {
  public:
   // Takes ownership of |dict| (|dict| will be moved to |dict_|).
   explicit ProxyConfigDictionary(base::Value dict);
+  ProxyConfigDictionary(ProxyConfigDictionary&& other);
   ~ProxyConfigDictionary();
 
   bool GetMode(ProxyPrefs::ProxyMode* out) const;

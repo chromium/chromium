@@ -6,20 +6,30 @@
 #define CHROME_BROWSER_ASH_CROSAPI_NETWORK_SETTINGS_SERVICE_ASH_H_
 
 #include "chromeos/crosapi/mojom/network_settings_service.mojom.h"
+#include "chromeos/network/network_state_handler_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "url/gurl.h"
+
+class PrefService;
+class PrefChangeRegistrar;
+
+namespace chromeos {
+class NetworkState;
+}
 
 namespace crosapi {
 
 // This class is the Ash-Chrome implementation of the NetworkSettingsService
 // interface. This class must only be used from the main thread.
-// It's used to propagate network changes to Lacros-Chrome.
-class NetworkSettingsServiceAsh
-    : public crosapi::mojom::NetworkSettingsService {
+// It observes proxy changes coming from policies and the default network, and
+// propagates the proxy configuration to Lacros-Chrome observers.
+class NetworkSettingsServiceAsh : public crosapi::mojom::NetworkSettingsService,
+                                  public chromeos::NetworkStateHandlerObserver {
  public:
-  NetworkSettingsServiceAsh();
+  explicit NetworkSettingsServiceAsh(PrefService* local_state);
   NetworkSettingsServiceAsh(const NetworkSettingsServiceAsh&) = delete;
   NetworkSettingsServiceAsh& operator=(const NetworkSettingsServiceAsh&) =
       delete;
@@ -28,11 +38,38 @@ class NetworkSettingsServiceAsh
   void BindReceiver(
       mojo::PendingReceiver<crosapi::mojom::NetworkSettingsService>
           pending_receiver);
-  // crosapi::mojom::NetworSettingsService:
+  // crosapi::mojom::NetworkSettingsServiceAsh:
   void AddNetworkSettingsObserver(
       mojo::PendingRemote<mojom::NetworkSettingsObserver> observer) override;
 
  private:
+  // NetworkStateHandlerObserver:
+  void DefaultNetworkChanged(const chromeos::NetworkState* network) override;
+
+  void SendProxyConfigToObservers();
+
+  // Starts tracking the kProxy pref on the primary profile. Only invoked when
+  // there is at least one entry in `observers_`.
+  void StartTrackingPrefChanges();
+  void OnPrefChanged();
+
+  void DetermineEffectiveProxy();
+
+  // Called when a mojo observer is disconnecting. If there's no observer for
+  // this service, the service will stop listening for pref changes.
+  void OnDisconnect(mojo::RemoteSetElementId mojo_id);
+
+  crosapi::mojom::ProxyConfigPtr cached_proxy_config_;
+  // The PAC URL associated with `default_network_name_`, received via the DHCP
+  // discovery method.
+  GURL cached_wpad_url_;
+
+  // Has a non-null value only when there are entries in `observers_`, i.e. the
+  // class is only listening to pref changes when there is at least a Lacros
+  // instance running.
+  std::unique_ptr<PrefChangeRegistrar> profile_prefs_registrar_;
+
+  PrefService* local_state_;
   // Support any number of connections.
   mojo::ReceiverSet<mojom::NetworkSettingsService> receivers_;
   // Support any number of observers.

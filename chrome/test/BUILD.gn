@@ -2967,7 +2967,10 @@ if (!is_android && !is_fuchsia) {
     # Browser tests for functionality that is only intended to be present in
     # ash-chrome, not lacros-chrome.
     if (is_chromeos_ash && !is_chromeos_lacros) {
-      sources += [ "../browser/ash/crosapi/screen_manager_ash_browsertest.cc" ]
+      sources += [
+        "../browser/ash/crosapi/network_settings_service_ash_browsertest.cc",
+        "../browser/ash/crosapi/screen_manager_ash_browsertest.cc",
+      ]
     }
 
     # NOTE: This is the main "browser_tests" section for |is_chromeos_ash|.
@@ -3712,16 +3715,13 @@ if (!is_android && !is_fuchsia) {
       ]
 
       if (is_win || is_linux) {
-        sources += [
-          "../browser/safe_browsing/download_protection/file_analyzer_browsertest.cc",
-        ]
+        sources += [ "../browser/safe_browsing/download_protection/file_analyzer_browsertest.cc" ]
 
         deps += [
           "//chrome/services/file_util:file_util",
-          "//chrome/services/file_util/public/cpp:cpp"
+          "//chrome/services/file_util/public/cpp:cpp",
         ]
       }
-
     }
 
     if (enable_captive_portal_detection) {

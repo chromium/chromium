@@ -131,8 +131,8 @@ CrosapiAsh::CrosapiAsh()
           g_browser_process->local_state())),
       native_theme_service_ash_(std::make_unique<NativeThemeServiceAsh>()),
       networking_attributes_ash_(std::make_unique<NetworkingAttributesAsh>()),
-      network_settings_service_ash_(
-          std::make_unique<NetworkSettingsServiceAsh>()),
+      network_settings_service_ash_(std::make_unique<NetworkSettingsServiceAsh>(
+          g_browser_process->local_state())),
       power_ash_(std::make_unique<PowerAsh>()),
       prefs_ash_(
           std::make_unique<PrefsAsh>(g_browser_process->profile_manager(),
