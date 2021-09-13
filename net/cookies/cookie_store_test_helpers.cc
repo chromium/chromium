@@ -108,10 +108,11 @@ void DelayedCookieMonster::SetCanonicalCookieAsync(
 void DelayedCookieMonster::GetCookieListWithOptionsAsync(
     const GURL& url,
     const CookieOptions& options,
+    const absl::optional<CookiePartitionKey>& cookie_partition_key,
     CookieMonster::GetCookieListCallback callback) {
   did_run_ = false;
   cookie_monster_->GetCookieListWithOptionsAsync(
-      url, options,
+      url, options, absl::nullopt /*cookie_partition_key*/,
       base::BindOnce(
           &DelayedCookieMonster::GetCookieListWithOptionsInternalCallback,
           base::Unretained(this)));

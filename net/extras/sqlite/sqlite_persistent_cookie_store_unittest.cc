@@ -1437,7 +1437,7 @@ TEST_F(SQLitePersistentCookieStoreTest, KeyInconsistency) {
   GetCookieListCallback get_callback;
   cookie_monster->GetCookieListWithOptionsAsync(
       GURL("ftp://subdomain.ftperiffic.com/page"),
-      CookieOptions::MakeAllInclusive(),
+      CookieOptions::MakeAllInclusive(), absl::nullopt /*cookie_partition_key*/,
       base::BindOnce(&GetCookieListCallback::Run,
                      base::Unretained(&get_callback)));
   get_callback.WaitUntilDone();

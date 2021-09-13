@@ -126,7 +126,8 @@ class CookieStoreTest : public testing::Test {
         www_foo_foo_("http://www.foo.com/foo"),
         www_foo_bar_("http://www.foo.com/bar"),
         http_baz_com_("http://baz.com"),
-        http_bar_com_("http://bar.com") {
+        http_bar_com_("http://bar.com"),
+        https_www_bar_("https://www.bar.com") {
     // This test may be used outside of the net test suite, and thus may not
     // have a task environment.
     if (!base::CurrentThread::Get()) {
@@ -140,36 +141,49 @@ class CookieStoreTest : public testing::Test {
   // finally returning the value.
   // TODO(chlily): Consolidate some of these.
 
-  std::string GetCookies(CookieStore* cs, const GURL& url) {
+  std::string GetCookies(
+      CookieStore* cs,
+      const GURL& url,
+      absl::optional<CookiePartitionKey> cookie_partition_key = absl::nullopt) {
     DCHECK(cs);
     CookieOptions options;
     if (!CookieStoreTestTraits::supports_http_only)
       options.set_include_httponly();
     options.set_same_site_cookie_context(
         net::CookieOptions::SameSiteCookieContext::MakeInclusive());
-    return GetCookiesWithOptions(cs, url, options);
+    return GetCookiesWithOptions(cs, url, options, cookie_partition_key);
   }
 
   std::string GetCookiesWithOptions(CookieStore* cs,
                                     const GURL& url,
-                                    const CookieOptions& options) {
+                                    const CookieOptions& options,
+                                    const absl::optional<CookiePartitionKey>&
+                                        cookie_partition_key = absl::nullopt) {
     return CanonicalCookie::BuildCookieLine(
-        GetCookieListWithOptions(cs, url, options));
+        GetCookieListWithOptions(cs, url, options, cookie_partition_key));
   }
 
-  CookieList GetCookieListWithOptions(CookieStore* cs,
-                                      const GURL& url,
-                                      const CookieOptions& options) {
+  CookieList GetCookieListWithOptions(
+      CookieStore* cs,
+      const GURL& url,
+      const CookieOptions& options,
+      const absl::optional<CookiePartitionKey>& cookie_partition_key =
+          absl::nullopt) {
     DCHECK(cs);
     GetCookieListCallback callback;
-    cs->GetCookieListWithOptionsAsync(url, options, callback.MakeCallback());
+    cs->GetCookieListWithOptionsAsync(url, options, cookie_partition_key,
+                                      callback.MakeCallback());
     callback.WaitUntilDone();
     return callback.cookies();
   }
 
   // This does not update the access time on the cookies.
-  CookieList GetAllCookiesForURL(CookieStore* cs, const GURL& url) {
-    return GetCookieListWithOptions(cs, url, CookieOptions::MakeAllInclusive());
+  CookieList GetAllCookiesForURL(CookieStore* cs,
+                                 const GURL& url,
+                                 const absl::optional<CookiePartitionKey>&
+                                     cookie_partition_key = absl::nullopt) {
+    return GetCookieListWithOptions(cs, url, CookieOptions::MakeAllInclusive(),
+                                    cookie_partition_key);
   }
 
   // This does not update the access time on the cookies.
@@ -179,7 +193,9 @@ class CookieStoreTest : public testing::Test {
     GetCookieListCallback callback;
     CookieOptions options = CookieOptions::MakeAllInclusive();
     options.set_return_excluded_cookies();
-    cs->GetCookieListWithOptionsAsync(url, options, callback.MakeCallback());
+    cs->GetCookieListWithOptionsAsync(url, options,
+                                      absl::nullopt /*cookie_partition_key*/,
+                                      callback.MakeCallback());
     callback.WaitUntilDone();
     return callback.excluded_cookies();
   }
@@ -198,10 +214,11 @@ class CookieStoreTest : public testing::Test {
       const std::string& cookie_line,
       const CookieOptions& options,
       absl::optional<base::Time> server_time = absl::nullopt,
-      absl::optional<base::Time> system_time = absl::nullopt) {
+      absl::optional<base::Time> system_time = absl::nullopt,
+      absl::optional<CookiePartitionKey> cookie_partition_key = absl::nullopt) {
     auto cookie = CanonicalCookie::Create(
         url, cookie_line, system_time.value_or(base::Time::Now()), server_time,
-        absl::nullopt /* cookie_partition_key */);
+        cookie_partition_key);
 
     if (!cookie)
       return false;
@@ -256,15 +273,18 @@ class CookieStoreTest : public testing::Test {
                               absl::make_optional(server_time));
   }
 
-  bool SetCookie(CookieStore* cs,
-                 const GURL& url,
-                 const std::string& cookie_line) {
+  bool SetCookie(
+      CookieStore* cs,
+      const GURL& url,
+      const std::string& cookie_line,
+      absl::optional<CookiePartitionKey> cookie_partition_key = absl::nullopt) {
     CookieOptions options;
     if (!CookieStoreTestTraits::supports_http_only)
       options.set_include_httponly();
     options.set_same_site_cookie_context(
         net::CookieOptions::SameSiteCookieContext::MakeInclusive());
-    return CreateAndSetCookie(cs, url, cookie_line, options);
+    return CreateAndSetCookie(cs, url, cookie_line, options, absl::nullopt,
+                              absl::nullopt, cookie_partition_key);
   }
 
   CookieInclusionStatus CreateAndSetCookieReturnStatus(
@@ -413,6 +433,7 @@ class CookieStoreTest : public testing::Test {
   const CookieURLHelper www_foo_bar_;
   const CookieURLHelper http_baz_com_;
   const CookieURLHelper http_bar_com_;
+  const CookieURLHelper https_www_bar_;
 
   std::unique_ptr<base::test::SingleThreadTaskEnvironment> task_environment_;
 

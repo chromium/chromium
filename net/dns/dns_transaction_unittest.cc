@@ -2401,7 +2401,7 @@ TEST_F(DnsTransactionTest, HttpsPostTestNoCookies) {
   request_context_->cookie_store()->GetCookieListWithOptionsAsync(
       GURL(GetURLFromTemplateWithoutParameters(
           config_.dns_over_https_servers[0].server_template)),
-      CookieOptions::MakeAllInclusive(),
+      CookieOptions::MakeAllInclusive(), absl::nullopt /*cookie_partition_key*/,
       base::BindOnce(&CookieCallback::GetCookieListCallback,
                      base::Unretained(&callback)));
   callback.WaitUntilDone();

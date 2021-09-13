@@ -35,6 +35,7 @@ void FakeCookieStore::SetCanonicalCookieAsync(
 void FakeCookieStore::GetCookieListWithOptionsAsync(
     const GURL& url,
     const net::CookieOptions& options,
+    const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
     GetCookieListCallback callback) {
   NOTIMPLEMENTED() << "Implement this if necessary.";
 }

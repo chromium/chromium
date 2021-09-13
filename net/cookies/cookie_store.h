@@ -73,9 +73,13 @@ class NET_EXPORT CookieStore {
   // creation date.
   // To get all the cookies for a URL, use this method with an all-inclusive
   // |options|.
+  // If |cookie_partition_key| is supplied, then this function will return the
+  // partitioned cookies for that URL for the given partition key *in addition
+  // to* the unpartitioned cookies for that URL.
   virtual void GetCookieListWithOptionsAsync(
       const GURL& url,
       const CookieOptions& options,
+      const absl::optional<CookiePartitionKey>& cookie_partition_key,
       GetCookieListCallback callback) = 0;
 
   // Returns all the cookies, for use in management UI, etc. This does not mark

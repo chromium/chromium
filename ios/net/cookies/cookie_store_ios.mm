@@ -276,12 +276,16 @@ void CookieStoreIOS::SetCanonicalCookieAsync(
 void CookieStoreIOS::GetCookieListWithOptionsAsync(
     const GURL& url,
     const net::CookieOptions& options,
+    const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
     GetCookieListCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // If cookies are not allowed, a CookieStoreIOS subclass should be used
   // instead.
   DCHECK(SystemCookiesAllowed());
+
+  // TODO(crbug.com/1225444): Include cookie partition key when/if iOS supports
+  // it.
 
   // TODO(mkwst): If/when iOS supports Same-Site cookies, we'll need to pass
   // options in here as well. https://crbug.com/459154
@@ -660,7 +664,8 @@ void CookieStoreIOS::UpdateCachesFromCookieMonster() {
     GetCookieListCallback callback = base::BindOnce(
         &CookieStoreIOS::GotCookieListFor, weak_factory_.GetWeakPtr(), key);
     cookie_monster_->GetCookieListWithOptionsAsync(
-        key.first, net::CookieOptions::MakeAllInclusive(), std::move(callback));
+        key.first, net::CookieOptions::MakeAllInclusive(),
+        net::CookiePartitionKey::Todo(), std::move(callback));
   }
 }
 

@@ -596,7 +596,7 @@ void URLRequestHttpJob::AddCookieHeaderAndStart() {
             request_->force_ignore_top_frame_party_for_cookies()));
 
     cookie_store->GetCookieListWithOptionsAsync(
-        request_->url(), options,
+        request_->url(), options, CookiePartitionKey::Todo(),
         base::BindOnce(&URLRequestHttpJob::SetCookieHeaderAndStart,
                        weak_factory_.GetWeakPtr(), options));
   } else {
