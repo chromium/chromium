@@ -663,10 +663,10 @@ TEST(ChromeUnwindTableAndroidTest,
   };
 
   EXPECT_EQ(unwind_instruction_table + 3,
-            GetFirstUnwindInstructionFromInstructionOffset(
+            GetFirstUnwindInstructionFromFunctionOffsetTableIndex(
                 unwind_instruction_table, function_offset_table,
-                /* function_offset_table_byte_index */ 0x0,
-                /* instruction_offset_from_function_start */ 128));
+                {/* instruction_offset_from_function_start */ 128,
+                 /* function_offset_table_byte_index */ 0x0}));
 }
 
 TEST(ChromeUnwindTableAndroidTest,
@@ -691,10 +691,10 @@ TEST(ChromeUnwindTableAndroidTest,
   };
 
   EXPECT_EQ(unwind_instruction_table + 3,
-            GetFirstUnwindInstructionFromInstructionOffset(
+            GetFirstUnwindInstructionFromFunctionOffsetTableIndex(
                 unwind_instruction_table, function_offset_table,
-                /* function_offset_table_byte_index */ 0x0,
-                /* instruction_offset_from_function_start */ 129));
+                {/* instruction_offset_from_function_start */ 129,
+                 /* function_offset_table_byte_index */ 0x0}));
 }
 
 TEST(ChromeUnwindTableAndroidTest, TestFunctionOffsetTableLookupZeroOffset) {
@@ -718,10 +718,228 @@ TEST(ChromeUnwindTableAndroidTest, TestFunctionOffsetTableLookupZeroOffset) {
   };
 
   EXPECT_EQ(unwind_instruction_table + 4,
-            GetFirstUnwindInstructionFromInstructionOffset(
+            GetFirstUnwindInstructionFromFunctionOffsetTableIndex(
                 unwind_instruction_table, function_offset_table,
-                /* function_offset_table_byte_index */ 0x0,
-                /* instruction_offset_from_function_start */ 0));
+                {/* instruction_offset_from_function_start */ 0,
+                 /* function_offset_table_byte_index */ 0x0}));
 }
 
+TEST(ChromeUnwindTableAndroidTest, TestAddressTableLookupEntryInPage) {
+  const uint32_t page_start_instructions[] = {0, 2};
+  const FunctionTableEntry function_offset_table_indices[] = {
+      // Page 0
+      {
+          /* function_start_address_page_instruction_offset */ 0,
+          /* function_offset_table_byte_index */ 20,
+      },
+      {
+          /* function_start_address_page_instruction_offset */ 4,
+          /* function_offset_table_byte_index */ 40,
+      },
+      // Page 1
+      {
+          /* function_start_address_page_instruction_offset */ 6,
+          /* function_offset_table_byte_index */ 70,
+      },
+  };
+
+  {
+    const uint32_t page_number = 0;
+    const uint32_t page_instruction_offset = 4;
+    const auto entry_found = GetFunctionTableIndexFromInstructionOffset(
+        page_start_instructions, function_offset_table_indices,
+        /* instruction_offset */ (page_instruction_offset << 1) +
+            (page_number << 17));
+    ASSERT_NE(absl::nullopt, entry_found);
+    EXPECT_EQ(0, entry_found->instruction_offset_from_function_start);
+    EXPECT_EQ(40ul, entry_found->function_offset_table_byte_index);
+  }
+
+  {
+    const uint32_t page_number = 0;
+    const uint32_t page_instruction_offset = 50;
+    const auto entry_found = GetFunctionTableIndexFromInstructionOffset(
+        page_start_instructions, function_offset_table_indices,
+        /* instruction_offset */ (page_instruction_offset << 1) +
+            (page_number << 17));
+    ASSERT_NE(absl::nullopt, entry_found);
+    EXPECT_EQ(46, entry_found->instruction_offset_from_function_start);
+    EXPECT_EQ(40ul, entry_found->function_offset_table_byte_index);
+  }
+
+  // Lookup last instruction in last function.
+  {
+    const uint32_t page_number = 1;
+    const uint32_t page_instruction_offset = 0xffff;
+    const auto entry_found = GetFunctionTableIndexFromInstructionOffset(
+        page_start_instructions, function_offset_table_indices,
+        /* instruction_offset */ (page_instruction_offset << 1) +
+            (page_number << 17));
+    ASSERT_NE(absl::nullopt, entry_found);
+    // 0xffff - 6 = 0xfff9.
+    EXPECT_EQ(0xfff9, entry_found->instruction_offset_from_function_start);
+    EXPECT_EQ(70ul, entry_found->function_offset_table_byte_index);
+  }
+}
+
+TEST(ChromeUnwindTableAndroidTest, TestAddressTableLookupEmptyPage) {
+  const uint32_t page_start_instructions[] = {0, 1, 1};
+  const FunctionTableEntry function_offset_table_indices[] = {
+      // Page 0
+      {
+          /* function_start_address_page_instruction_offset */ 0,
+          /* function_offset_table_byte_index */ 20,
+      },
+      // Page 1 is empty
+      // Page 2
+      {
+          /* function_start_address_page_instruction_offset */ 6,
+          /* function_offset_table_byte_index */ 70,
+      },
+  };
+
+  const uint32_t page_number = 1;
+  const uint32_t page_instruction_offset = 4;
+  const auto entry_found = GetFunctionTableIndexFromInstructionOffset(
+      page_start_instructions, function_offset_table_indices,
+      /* instruction_offset */ (page_instruction_offset << 1) +
+          (page_number << 17));
+  ASSERT_NE(absl::nullopt, entry_found);
+  EXPECT_EQ(0x10004, entry_found->instruction_offset_from_function_start);
+  EXPECT_EQ(20ul, entry_found->function_offset_table_byte_index);
+}
+
+TEST(ChromeUnwindTableAndroidTest,
+     TestAddressTableLookupInvalidIntructionOffset) {
+  const uint32_t page_start_instructions[] = {0, 1};
+  const FunctionTableEntry function_offset_table_indices[] = {
+      // Page 0
+      // This function spans from page 0 offset 0 to page 1 offset 5.
+      {
+          /* function_start_address_page_instruction_offset */ 0,
+          /* function_offset_table_byte_index */ 20,
+      },
+      // Page 1
+      {
+          /* function_start_address_page_instruction_offset */ 6,
+          /* function_offset_table_byte_index */ 70,
+      },
+  };
+
+  // Instruction offset lies after last page on page table.
+  {
+    const uint32_t page_number = 50;
+    const uint32_t page_instruction_offset = 6;
+    const auto entry_found = GetFunctionTableIndexFromInstructionOffset(
+        page_start_instructions, function_offset_table_indices,
+        /* instruction_offset */ (page_instruction_offset << 1) +
+            (page_number << 17));
+    ASSERT_EQ(absl::nullopt, entry_found);
+  }
+  {
+    const uint32_t page_number = 2;
+    const uint32_t page_instruction_offset = 0;
+    const auto entry_found = GetFunctionTableIndexFromInstructionOffset(
+        page_start_instructions, function_offset_table_indices,
+        /* instruction_offset */ (page_instruction_offset << 1) +
+            (page_number << 17));
+    ASSERT_EQ(absl::nullopt, entry_found);
+  }
+}
+
+TEST(ChromeUnwindTableAndroidTest,
+     TestAddressTableLookupOnSecondPageOfFunctionSpanningPageBoundary) {
+  const uint32_t page_start_instructions[] = {0, 1, 2};
+  const FunctionTableEntry function_offset_table_indices[] = {
+      // Page 0
+      {
+          /* function_start_address_page_instruction_offset */ 0,
+          /* function_offset_table_byte_index */ 20,
+      },
+      // Page 1
+      {
+          /* function_start_address_page_instruction_offset */ 6,
+          /* function_offset_table_byte_index */ 70,
+      },
+      // Page 2
+      {
+          /* function_start_address_page_instruction_offset */ 10,
+          /* function_offset_table_byte_index */ 80,
+      }};
+
+  const uint32_t page_number = 1;
+  const uint32_t page_instruction_offset = 4;
+  const auto entry_found = GetFunctionTableIndexFromInstructionOffset(
+      page_start_instructions, function_offset_table_indices,
+      /* instruction_offset */ (page_instruction_offset << 1) +
+          (page_number << 17));
+  ASSERT_NE(absl::nullopt, entry_found);
+  EXPECT_EQ(0x10004, entry_found->instruction_offset_from_function_start);
+  EXPECT_EQ(20ul, entry_found->function_offset_table_byte_index);
+}
+
+TEST(ChromeUnwindTableAndroidTest,
+     TestAddressTableLookupWithinFunctionSpanningMultiplePages) {
+  const uint32_t page_start_instructions[] = {0, 1, 1, 1};
+  const FunctionTableEntry function_offset_table_indices[] = {
+      // Page 0
+      // This function spans from page 0 offset 0 to page 3 offset 5.
+      {
+          /* function_start_address_page_instruction_offset */ 0,
+          /* function_offset_table_byte_index */ 20,
+      },
+      // Page 1 is empty
+      // Page 2 is empty
+      // Page 3
+      {
+          /* function_start_address_page_instruction_offset */ 6,
+          /* function_offset_table_byte_index */ 70,
+      },
+  };
+
+  {
+    const uint32_t page_number = 0;
+    const uint32_t page_instruction_offset = 4;
+    const auto entry_found = GetFunctionTableIndexFromInstructionOffset(
+        page_start_instructions, function_offset_table_indices,
+        /* instruction_offset */ (page_instruction_offset << 1) +
+            (page_number << 17));
+    ASSERT_NE(absl::nullopt, entry_found);
+    EXPECT_EQ(0x4, entry_found->instruction_offset_from_function_start);
+    EXPECT_EQ(20ul, entry_found->function_offset_table_byte_index);
+  }
+  {
+    const uint32_t page_number = 1;
+    const uint32_t page_instruction_offset = 4;
+    const auto entry_found = GetFunctionTableIndexFromInstructionOffset(
+        page_start_instructions, function_offset_table_indices,
+        /* instruction_offset */ (page_instruction_offset << 1) +
+            (page_number << 17));
+    ASSERT_NE(absl::nullopt, entry_found);
+    EXPECT_EQ(0x10004, entry_found->instruction_offset_from_function_start);
+    EXPECT_EQ(20ul, entry_found->function_offset_table_byte_index);
+  }
+  {
+    const uint32_t page_number = 2;
+    const uint32_t page_instruction_offset = 4;
+    const auto entry_found = GetFunctionTableIndexFromInstructionOffset(
+        page_start_instructions, function_offset_table_indices,
+        /* instruction_offset */ (page_instruction_offset << 1) +
+            (page_number << 17));
+    ASSERT_NE(absl::nullopt, entry_found);
+    EXPECT_EQ(0x20004, entry_found->instruction_offset_from_function_start);
+    EXPECT_EQ(20ul, entry_found->function_offset_table_byte_index);
+  }
+  {
+    const uint32_t page_number = 3;
+    const uint32_t page_instruction_offset = 4;
+    const auto entry_found = GetFunctionTableIndexFromInstructionOffset(
+        page_start_instructions, function_offset_table_indices,
+        /* instruction_offset */ (page_instruction_offset << 1) +
+            (page_number << 17));
+    ASSERT_NE(absl::nullopt, entry_found);
+    EXPECT_EQ(0x30004, entry_found->instruction_offset_from_function_start);
+    EXPECT_EQ(20ul, entry_found->function_offset_table_byte_index);
+  }
+}
 }  // namespace base

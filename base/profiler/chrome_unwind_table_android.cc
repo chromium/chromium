@@ -4,6 +4,8 @@
 
 #include "base/profiler/chrome_unwind_table_android.h"
 
+#include <algorithm>
+
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
@@ -162,13 +164,13 @@ UnwindInstructionResult ExecuteUnwindInstruction(
   return UnwindInstructionResult::INSTRUCTION_PENDING;
 }
 
-const uint8_t* GetFirstUnwindInstructionFromInstructionOffset(
+const uint8_t* GetFirstUnwindInstructionFromFunctionOffsetTableIndex(
     const uint8_t* unwind_instruction_table,
     const uint8_t* function_offset_table,
-    uint16_t function_offset_table_byte_index,
-    uint32_t instruction_offset_from_function_start) {
+    const FunctionOffsetTableIndex& index) {
+  DCHECK_GE(index.instruction_offset_from_function_start, 0);
   const uint8_t* current_function_offset_table_position =
-      &function_offset_table[function_offset_table_byte_index];
+      &function_offset_table[index.function_offset_table_byte_index];
 
   do {
     const uintptr_t function_offset =
@@ -179,13 +181,120 @@ const uint8_t* GetFirstUnwindInstructionFromInstructionOffset(
 
     // Each function always ends at 0 offset. It is guaranteed to find an entry
     // as long as the function offset table is well-structured.
-    if (function_offset <= instruction_offset_from_function_start)
+    if (function_offset <=
+        static_cast<uint32_t>(index.instruction_offset_from_function_start))
       return &unwind_instruction_table[unwind_table_index];
 
   } while (true);
 
   NOTREACHED();
   return nullptr;
+}
+
+const absl::optional<FunctionOffsetTableIndex>
+GetFunctionTableIndexFromInstructionOffset(
+    span<const uint32_t> page_start_instructions,
+    span<const FunctionTableEntry> function_offset_table_indices,
+    uint32_t instruction_offset_from_text_section_start) {
+  DCHECK(!page_start_instructions.empty());
+  DCHECK(!function_offset_table_indices.empty());
+  // First function on first page should always start from 0 offset.
+  DCHECK_EQ(function_offset_table_indices.front()
+                .function_start_address_page_instruction_offset,
+            0ul);
+
+  const uint16_t page_number = instruction_offset_from_text_section_start >> 17;
+  const uint16_t page_instruction_offset =
+      (instruction_offset_from_text_section_start >> 1) & 0xffff;  // 16 bits.
+
+  // Invalid instruction_offset_from_text_section_start:
+  // instruction_offset_from_text_section_start falls after the last page.
+  if (page_number >= page_start_instructions.size()) {
+    return absl::nullopt;
+  }
+
+  const span<const FunctionTableEntry>::const_iterator
+      function_table_entry_start = function_offset_table_indices.begin() +
+                                   page_start_instructions[page_number];
+  const span<const FunctionTableEntry>::const_iterator
+      function_table_entry_end =
+          page_number == page_start_instructions.size() - 1
+              ? function_offset_table_indices.end()
+              : function_offset_table_indices.begin() +
+                    page_start_instructions[page_number + 1];
+
+  // `std::upper_bound` finds first element that > target in range
+  // [function_table_entry_start, function_table_entry_end).
+  const auto first_larger_entry_location = std::upper_bound(
+      function_table_entry_start, function_table_entry_end,
+      page_instruction_offset,
+      [](uint16_t page_instruction_offset, const FunctionTableEntry& entry) {
+        return page_instruction_offset <
+               entry.function_start_address_page_instruction_offset;
+      });
+
+  // Offsets the element found by 1 to get the biggest element that <= target.
+  const auto entry_location = first_larger_entry_location - 1;
+
+  // When all offsets in current range > page_instruction_offset (including when
+  // there is no entry in current range), the `FunctionTableEntry` we are
+  // looking for is not within the function_offset_table_indices range we are
+  // inspecting, because the function is too long that it spans multiple pages.
+  //
+  // We need to locate the previous entry on function_offset_table_indices and
+  // find its corresponding page_table index.
+  //
+  // Example:
+  // +--------------------+--------------------+
+  // | <-----2 byte-----> | <-----2 byte-----> |
+  // +--------------------+--------------------+
+  // | Page Offset        | Offset Table Index |
+  // +--------------------+--------------------+-----
+  // | 10                 | XXX                |  |
+  // +--------------------+--------------------+  |
+  // | ...                | ...                |Page 0x100
+  // +--------------------+--------------------+  |
+  // | 65500              | ZZZ                |  |
+  // +--------------------+--------------------+----- Page 0x101 is empty
+  // | 200                | AAA                |  |
+  // +--------------------+--------------------+  |
+  // | ...                | ...                |Page 0x102
+  // +--------------------+--------------------+  |
+  // | 65535              | BBB                |  |
+  // +--------------------+--------------------+-----
+  //
+  // Example:
+  // For
+  // - page_number = 0x100, page_instruction_offset >= 65535
+  // - page_number = 0x101, all page_instruction_offset
+  // - page_number = 0x102, page_instruction_offset < 200
+  // We should be able to map them all to entry [65500, ZZZ] in page 0x100.
+
+  // Finds the page_number that corresponds to `entry_location`. The page
+  // might not be the page we are inspecting, when the function spans over
+  // multiple pages.
+  uint16_t function_start_page_number = page_number;
+  while (function_offset_table_indices.begin() +
+             page_start_instructions[function_start_page_number] >
+         entry_location) {
+    // First page in page table must not be empty.
+    DCHECK_NE(function_start_page_number, 0);
+    function_start_page_number--;
+  };
+
+  const uint32_t function_start_address_instruction_offset =
+      (function_start_page_number << 16) +
+      entry_location->function_start_address_page_instruction_offset;
+
+  const int instruction_offset_from_function_start =
+      (instruction_offset_from_text_section_start >> 1) -
+      function_start_address_instruction_offset;
+
+  DCHECK_GE(instruction_offset_from_function_start, 0);
+  return FunctionOffsetTableIndex{
+      instruction_offset_from_function_start,
+      entry_location->function_offset_table_byte_index,
+  };
 }
 
 }  // namespace base

@@ -8,7 +8,9 @@
 #include <stdint.h>
 
 #include "base/base_export.h"
+#include "base/containers/span.h"
 #include "base/profiler/register_context.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -68,10 +70,31 @@ ExecuteUnwindInstruction(const uint8_t*& instruction,
                          bool& pc_was_updated,
                          RegisterContext* thread_context);
 
-// Given
-//  - function_offset_table_byte_index
-//  - instruction_offset_from_function_start
-// finds the instruction to execute on unwind instruction table.
+// Represents each entry in the function table (i.e. the second level of the
+// function address table).
+struct FunctionTableEntry {
+  // The offset into the 128kb page containing this function. Indexed by bits
+  // 1-16 of the pc offset from the start of the text section.
+  uint16_t function_start_address_page_instruction_offset;
+
+  // The byte index of the first offset for the function in the function
+  // offset table.
+  uint16_t function_offset_table_byte_index;
+};
+
+// Represents an index that can locate a specific entry on function offset
+// table.
+struct FunctionOffsetTableIndex {
+  // Number of 2-byte instructions between the instruction of interest and
+  // function_start_address.
+  int instruction_offset_from_function_start;
+  // The byte index of the first offset for the function in the function
+  // offset table.
+  uint16_t function_offset_table_byte_index;
+};
+
+// Given `FunctionOffsetTableIndex`, finds the instruction to execute on unwind
+// instruction table.
 //
 // Function offset table is expected to have following memory layout:
 // +---------------------+---------------------+
@@ -111,11 +134,55 @@ ExecuteUnwindInstruction(const uint8_t*& instruction,
 //  function_offset_table_byte_index: The byte index of the first offset for the
 //                                    function in the function offset table.
 //  instruction_offset_from_function_start: (pc - function_start_address) >> 1.
-BASE_EXPORT const uint8_t* GetFirstUnwindInstructionFromInstructionOffset(
+BASE_EXPORT const uint8_t*
+GetFirstUnwindInstructionFromFunctionOffsetTableIndex(
     const uint8_t* unwind_instruction_table,
     const uint8_t* function_offset_table,
-    uint16_t function_offset_table_byte_index,
-    uint32_t instruction_offset_from_function_start);
+    const FunctionOffsetTableIndex& index);
+
+// Given an instruction offset_from_text_section_start, finds the corresponding
+// `FunctionOffsetTableIndex`.
+//
+// The function table represents the individual functions within a 128kb page.
+// The relevant entry for an instruction offset from the start of the text
+// section is the one with the largest function_start_address_page_offset <=
+// instruction_offset_from_text_section_start
+//
+// Function table is expected to have following memory layout:
+// +--------------------+--------------------+
+// | <-----2 byte-----> | <-----2 byte-----> |
+// +--------------------+--------------------+
+// | Page Offset        | Offset Table Index |
+// +--------------------+--------------------+-----
+// | 10                 | XXX                |  |
+// +--------------------+--------------------+  |
+// | ...                | ...                |Page 0x100
+// +--------------------+--------------------+  |
+// | 65500              | ZZZ                |  |
+// +--------------------+--------------------+-----
+// | 200                | AAA                |  |
+// +--------------------+--------------------+  |
+// | ...                | ...                |Page 0x101
+// +--------------------+--------------------+  |
+// | 65535              | BBB                |  |
+// +--------------------+--------------------+-----
+//
+// Note:
+// - Within each page, `Page Offset` strictly increases.
+// - Each `FunctionTableEntry` represents a function where the start
+// address falls into the page memory address range.
+//
+// The page table represents discrete 128kb 'pages' of memory in the text
+// section, each of which contains `FunctionTableEntry`s.
+// Note:
+// - The page start instructions in page table non-strictly increases, i.e
+// empty page is allowed.
+BASE_EXPORT const absl::optional<FunctionOffsetTableIndex>
+GetFunctionTableIndexFromInstructionOffset(
+    span<const uint32_t> page_start_instructions,
+    span<const FunctionTableEntry> function_offset_table_indices,
+    uint32_t instruction_offset_from_text_section_start);
+
 }  // namespace base
 
 #endif  // BASE_PROFILER_CHROME_UNWIND_TABLE_ANDROID_H_
