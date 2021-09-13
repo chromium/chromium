@@ -87,47 +87,48 @@ bool BackgroundTracingConfigImpl::StringToCategoryPreset(
   return false;
 }
 
-void BackgroundTracingConfigImpl::IntoDict(base::DictionaryValue* dict) {
+base::Value BackgroundTracingConfigImpl::ToDict() {
+  base::Value dict(base::Value::Type::DICTIONARY);
+
   if (category_preset_ == CUSTOM_CATEGORY_PRESET) {
-    dict->SetString(kConfigCustomCategoriesKey, custom_categories_);
+    dict.SetStringKey(kConfigCustomCategoriesKey, custom_categories_);
   } else if (category_preset_ == CUSTOM_TRACE_CONFIG) {
     absl::optional<base::Value> trace_config =
         base::JSONReader::Read(trace_config_.ToString());
     if (trace_config) {
-      dict->SetKey(kConfigTraceConfigKey, std::move(*trace_config));
+      dict.SetKey(kConfigTraceConfigKey, std::move(*trace_config));
     }
   }
   if (!enabled_data_sources_.empty()) {
-    dict->SetString(kEnabledDataSourcesKey, enabled_data_sources_);
+    dict.SetStringKey(kEnabledDataSourcesKey, enabled_data_sources_);
   }
 
   switch (tracing_mode()) {
     case BackgroundTracingConfigImpl::PREEMPTIVE:
-      dict->SetString(kConfigModeKey, kConfigModePreemptive);
-      dict->SetString(kConfigCategoryKey,
-                      CategoryPresetToString(category_preset_));
+      dict.SetStringKey(kConfigModeKey, kConfigModePreemptive);
+      dict.SetStringKey(kConfigCategoryKey,
+                        CategoryPresetToString(category_preset_));
       break;
     case BackgroundTracingConfigImpl::REACTIVE:
-      dict->SetString(kConfigModeKey, kConfigModeReactive);
+      dict.SetStringKey(kConfigModeKey, kConfigModeReactive);
       break;
     case BackgroundTracingConfigImpl::SYSTEM:
-      dict->SetString(kConfigModeKey, kConfigModeSystem);
+      dict.SetStringKey(kConfigModeKey, kConfigModeSystem);
       break;
   }
 
   base::ListValue configs_list;
   for (const auto& rule : rules_) {
-    std::unique_ptr<base::DictionaryValue> config_dict(
-        new base::DictionaryValue());
     DCHECK(rule);
-    rule->IntoDict(config_dict.get());
-    configs_list.Append(std::move(config_dict));
+    configs_list.Append(rule->ToDict());
   }
 
-  dict->SetKey(kConfigsKey, std::move(configs_list));
+  dict.SetKey(kConfigsKey, std::move(configs_list));
 
   if (!scenario_name_.empty())
-    dict->SetString(kConfigScenarioName, scenario_name_);
+    dict.SetStringKey(kConfigScenarioName, scenario_name_);
+
+  return dict;
 }
 
 void BackgroundTracingConfigImpl::AddPreemptiveRule(const base::Value* dict) {

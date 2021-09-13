@@ -11,7 +11,6 @@
 #include "content/common/content_export.h"
 
 namespace base {
-class DictionaryValue;
 class Value;
 }  // namespace base
 
@@ -37,7 +36,7 @@ class CONTENT_EXPORT BackgroundTracingConfig {
 
   static std::unique_ptr<BackgroundTracingConfig> FromDict(base::Value&& dict);
 
-  virtual void IntoDict(base::DictionaryValue* dict) = 0;
+  virtual base::Value ToDict() = 0;
 
  protected:
   std::string scenario_name_;

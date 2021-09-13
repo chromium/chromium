@@ -645,15 +645,12 @@ BackgroundTracingActiveScenario::GetRuleAbleToTriggerTracing(
 
 void BackgroundTracingActiveScenario::GenerateMetadataDict(
     base::DictionaryValue* metadata_dict) {
-  base::DictionaryValue config_dict;
-  config_->IntoDict(&config_dict);
-  metadata_dict->SetKey("config", std::move(config_dict));
+  metadata_dict->SetKey("config", config_->ToDict());
   metadata_dict->SetString("scenario_name", config_->scenario_name());
 
   if (last_triggered_rule_) {
-    base::DictionaryValue rule;
-    last_triggered_rule_->IntoDict(&rule);
-    metadata_dict->SetKey("last_triggered_rule", std::move(rule));
+    metadata_dict->SetKey("last_triggered_rule",
+                          last_triggered_rule_->ToDict());
   }
 }
 

@@ -14,11 +14,6 @@
 #include "content/public/browser/background_tracing_manager.h"
 #include "third_party/perfetto/protos/perfetto/trace/chrome/chrome_metadata.pbzero.h"
 
-namespace base {
-class DictionaryValue;
-class Value;
-}  // namespace base
-
 namespace content {
 
 class CONTENT_EXPORT BackgroundTracingRule {
@@ -41,7 +36,7 @@ class CONTENT_EXPORT BackgroundTracingRule {
   }
 
   virtual void Install() {}
-  virtual void IntoDict(base::DictionaryValue* dict) const;
+  virtual base::Value ToDict() const;
   virtual void GenerateMetadataProto(MetadataProto* out) const;
   virtual bool ShouldTriggerNamedEvent(const std::string& named_event) const;
   virtual void OnHistogramTrigger(const std::string& histogram_name) const {}

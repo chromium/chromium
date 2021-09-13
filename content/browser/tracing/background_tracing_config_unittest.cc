@@ -53,23 +53,15 @@ std::unique_ptr<BackgroundTracingConfigImpl> ReadFromJSONString(
 }
 
 std::string ConfigToString(BackgroundTracingConfig* config) {
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-
-  config->IntoDict(dict.get());
-
   std::string results;
-  if (base::JSONWriter::Write(*dict.get(), &results))
+  if (base::JSONWriter::Write(config->ToDict(), &results))
     return results;
   return "";
 }
 
 std::string RuleToString(const std::unique_ptr<BackgroundTracingRule>& rule) {
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-
-  rule->IntoDict(dict.get());
-
   std::string results;
-  if (base::JSONWriter::Write(*dict.get(), &results))
+  if (base::JSONWriter::Write(rule->ToDict(), &results))
     return results;
   return "";
 }
