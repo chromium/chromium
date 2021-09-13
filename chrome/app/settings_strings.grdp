@@ -1259,18 +1259,6 @@
   <message name="IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_HEADING" desc="The heading displayed at the top of the Privacy Sandbox page. 'Privacy Sandbox' is a noun phrase (title case).">
     About Privacy Sandbox
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_EXPLANATION1" desc="Part 1 of the explanation of the Privacy Sandbox, shown on the Privacy Sandbox Page.">
-    Privacy Sandbox is an ongoing initiative to preserve the open web that will help safeguard you from tracking mechanisms.
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_EXPLANATION2" desc="Part 2 of the explanation of the Privacy Sandbox, shown on the Privacy Sandbox Page.">
-    Today, websites rely on many technologies, like third-party cookies, for important services like showing relevant ads and measuring a site’s performance.
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_EXPLANATION3" desc="Part 3 of the explanation of the Privacy Sandbox, shown on the Privacy Sandbox Page.">
-    Privacy Sandbox preserves the vitality of the open web by creating better ways to perform these services—without breaking sites, and while preventing you from being surreptitiously tracked across the web.
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_EXPLANATION4" desc="Part 4 of the explanation of the Privacy Sandbox, shown on the Privacy Sandbox Page. The 'Learn more' link navigates the user to a page with more details.">
-    Privacy Sandbox is still in active development and is available in selected regions. For now, sites may try out Privacy Sandbox while continuing to use current web technologies like third-party cookies. <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
-  </message>
   <message name="IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_EXPLANATION1_PHASE2" desc="Part 1 of the phase 2 explanation of the Privacy Sandbox, shown on the Privacy Sandbox Page. The 'Privacy Sandbox' link navigates the user to a page with more details.">
     With <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>Privacy Sandbox<ph name="END_LINK">&lt;/a&gt;</ph>, Chrome is developing new technologies to safeguard you from cross-site tracking while preserving the open web.
   </message>
@@ -1279,15 +1267,6 @@
   </message>
   <message name="IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_SETTING_TITLE" desc="Title of the description of the setting to enable or disable the Privacy Sandbox.">
     Privacy Sandbox trials
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_SETTING_EXPLANATION1" desc="Part 1 of the explanation of the setting to enable or disable the Privacy Sandbox.">
-    When enabled, sites may use the privacy-preserving techniques shown here to provide their content and services. These include alternatives to cross-site tracking. More trials may be added over time.
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_SETTING_EXPLANATION2" desc="Part 2 of the explanation of the setting to enable or disable the Privacy Sandbox.">
-    Advertisers can learn when thousands of users share a similar interest—like a crowd at a concert—and select ads for the crowd, rather than an individual person.
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_SETTING_EXPLANATION3" desc="Part 3 of the explanation of the setting to enable or disable the Privacy Sandbox.">
-    Advertisers can study the effectiveness of ads in a way that does not track you across sites.
   </message>
   <message name="IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_SETTING_EXPLANATION1_PHASE2" desc="Part 1 of the phase 2 explanation of the setting to enable or disable the Privacy Sandbox.">
     When on, sites may use the privacy-preserving techniques shown here to provide their content and services. These include alternatives to cross-site tracking. More trials may be added over time.

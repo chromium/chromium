@@ -1544,22 +1544,10 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
       {"privacySandboxCookiesDialogMore",
        IDS_SETTINGS_PRIVACY_SANDBOX_COOKIES_DIALOG_MORE},
       {"privacySandboxPageHeading", IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_HEADING},
-      {"privacySandboxPageExplanation1",
-       IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_EXPLANATION1},
-      {"privacySandboxPageExplanation2",
-       IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_EXPLANATION2},
-      {"privacySandboxPageExplanation3",
-       IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_EXPLANATION3},
       {"privacySandboxPageExplanation2Phase2",
        IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_EXPLANATION2_PHASE2},
       {"privacySandboxPageSettingTitle",
        IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_SETTING_TITLE},
-      {"privacySandboxPageSettingExplanation1",
-       IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_SETTING_EXPLANATION1},
-      {"privacySandboxPageSettingExplanation2",
-       IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_SETTING_EXPLANATION2},
-      {"privacySandboxPageSettingExplanation3",
-       IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_SETTING_EXPLANATION3},
       {"privacySandboxPageSettingExplanation1Phase2",
        IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_SETTING_EXPLANATION1_PHASE2},
       {"privacySandboxPageSettingExplanation2Phase2",
@@ -1580,19 +1568,11 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  const std::u16string privacy_sandbox_website_url =
-      u"https://www.privacysandbox.com";
-  html_source->AddString("privacySandboxURL", privacy_sandbox_website_url);
-  html_source->AddString(
-      "privacySandboxPageExplanation4",
-      l10n_util::GetStringFUTF16(IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_EXPLANATION4,
-                                 privacy_sandbox_website_url));
-
   html_source->AddString(
       "privacySandboxPageExplanation1Phase2",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_EXPLANATION1_PHASE2,
-          privacy_sandbox_website_url));
+          u"https://www.privacysandbox.com"));
 
   // The complete FLoC explanation string must be built from two strings,
   // one provided by the Privacy Sandbox service, and one with a URL
@@ -1601,9 +1581,8 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
       PrivacySandboxSettingsFactory::GetForProfile(profile)
           ->GetFlocDescriptionForDisplay() +
       u" " +  // Whitespace is a valid separator w.r.t l10n.
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_PRIVACY_SANDBOX_FLOC_TRIAL_ACTIVE,
-          base::ASCIIToUTF16(features::kPrivacySandboxSettings2FlocURL.Get()));
+      l10n_util::GetStringFUTF16(IDS_SETTINGS_PRIVACY_SANDBOX_FLOC_TRIAL_ACTIVE,
+                                 u"https://privacysandbox.com/proposals/floc");
   html_source->AddString("privacySandboxPageFlocExplanation", floc_explanation);
 
   // The FLoC compute frequency string is constant through the life of the

@@ -21,7 +21,6 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -65,30 +64,21 @@ public class PrivacySandboxSettingsFragment
         getActivity().setTitle(R.string.prefs_privacy_sandbox);
         SettingsUtils.addPreferencesFromResource(this, R.xml.privacy_sandbox_preferences);
 
-        // Remove the FLoC page Preference if the Phase 2 flag is disabled.
-        if (!phaseTwoEnabled()) {
-            getPreferenceScreen().removePreference(findPreference(FLOC_PREFERENCE));
-        } else {
-            // Modify the Privacy Sandbox elements.
-            getPreferenceScreen().removePreference(findPreference(EXPERIMENT_DESCRIPTION_TITLE));
-            updateFlocPreference();
-        }
+        // Modify the Privacy Sandbox elements.
+        getPreferenceScreen().removePreference(findPreference(EXPERIMENT_DESCRIPTION_TITLE));
+        updateFlocPreference();
 
         // Format the Privacy Sandbox description, which has a link.
         findPreference(EXPERIMENT_DESCRIPTION_PREFERENCE)
                 .setSummary(SpanApplier.applySpans(
-                        getContext().getString(phaseTwoEnabled()
-                                        ? R.string.privacy_sandbox_description_two
-                                        : R.string.privacy_sandbox_description),
+                        getContext().getString(R.string.privacy_sandbox_description_two),
                         new SpanInfo("<link>", "</link>",
                                 new NoUnderlineClickableSpan(getContext().getResources(),
                                         (widget) -> openUrlInCct(PRIVACY_SANDBOX_URL)))));
         // Format the toggle description, which has bullet points.
         findPreference(TOGGLE_DESCRIPTION_PREFERENCE)
                 .setSummary(SpanApplier.applySpans(
-                        getContext().getString(phaseTwoEnabled()
-                                        ? R.string.privacy_sandbox_toggle_description_two
-                                        : R.string.privacy_sandbox_toggle_description),
+                        getContext().getString(R.string.privacy_sandbox_toggle_description_two),
                         new SpanInfo("<li1>", "</li1>", new ChromeBulletSpan(getContext())),
                         new SpanInfo("<li2>", "</li2>", new ChromeBulletSpan(getContext()))));
 
@@ -197,10 +187,6 @@ public class PrivacySandboxSettingsFragment
         } else if (mPrivacySandboxReferrer == PrivacySandboxReferrer.COOKIES_SNACKBAR) {
             RecordUserAction.record("Settings.PrivacySandbox.OpenedFromCookiesPageToast");
         }
-    }
-
-    private boolean phaseTwoEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_2);
     }
 
     private void updateFlocPreference() {

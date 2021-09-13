@@ -1185,12 +1185,6 @@ extern const char kPrivacyAdvisorDescription[];
 extern const char kPrivacyReviewName[];
 extern const char kPrivacyReviewDescription[];
 
-extern const char kPrivacySandboxSettingsName[];
-extern const char kPrivacySandboxSettingsDescription[];
-
-extern const char kPrivacySandboxSettings2Name[];
-extern const char kPrivacySandboxSettings2Description[];
-
 extern const char kSafeBrowsingPerProfileNetworkContextsName[];
 extern const char kSafeBrowsingPerProfileNetworkContextsDescription[];
 

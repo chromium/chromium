@@ -100,11 +100,6 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kContinuousSearch;
 #endif
 
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kPrivacySandboxSettings2;
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<std::string> kPrivacySandboxSettings2FlocURL;
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kCrOSEnableUSMUserService;

@@ -799,15 +799,6 @@ For example, some websites may respond to this request by showing you ads that a
       <message name="IDS_PRIVACY_SANDBOX_DESCRIPTION_TITLE" desc="Title for the description text of 'Privacy Sandbox'.">
         About Privacy Sandbox
       </message>
-      <message name="IDS_PRIVACY_SANDBOX_DESCRIPTION" desc="Description of the 'Privacy Sandbox'.">
-        Privacy Sandbox is an ongoing initiative to preserve the open web that will help safeguard you from tracking mechanisms.
-
-Today, websites rely on many technologies, like third-party cookies, for important services like showing relevant ads and measuring a site’s performance.
-
-Privacy Sandbox preserves the vitality of the open web by creating better ways to perform these services – without breaking sites, and while preventing you from being surreptitiously tracked across the web.
-
-Privacy Sandbox is still in active development and is available in selected regions. For now, sites may try out Privacy Sandbox while continuing to use current web technologies like third-party cookies. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
-      </message>
       <message name="IDS_PRIVACY_SANDBOX_DESCRIPTION_TWO" desc="Description of the 'Privacy Sandbox' when phase 2 flag is enabled.">
         With <ph name="BEGIN_LINK">&lt;link&gt;</ph>Privacy Sandbox<ph name="END_LINK">&lt;/link&gt;</ph>, Chrome is developing new technologies to safeguard you from cross-site tracking while preserving the open web.
 
@@ -815,13 +806,6 @@ Privacy Sandbox trials are still in active development and are available in sele
       </message>
       <message name="IDS_PRIVACY_SANDBOX_TOGGLE" desc="Title for the Privacy Sandbox toggle.">
         Privacy Sandbox trials
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_TOGGLE_DESCRIPTION" desc="Description for the Privacy Sandbox toggle.">
-        When enabled, sites may use the privacy-preserving techniques shown here to provide their content and services. These include alternatives to cross-site tracking. More trials may be added over time.
-
-<ph name="BEGIN_LIST_ITEM1">&lt;li1&gt;</ph>Advertisers can learn when thousands of users share a similar interest – like a crowd at a concert — and select ads for the crowd, rather than an individual person.<ph name="END_LIST_ITEM1">&lt;/li1&gt;</ph>
-
-<ph name="BEGIN_LIST_ITEM2">&lt;li2&gt;</ph>Advertisers can study the effectiveness of ads in a way that does not track you across sites.<ph name="END_LIST_ITEM2">&lt;/li2&gt;</ph>
       </message>
       <message name="IDS_PRIVACY_SANDBOX_TOGGLE_DESCRIPTION_TWO" desc="Description for the Privacy Sandbox toggle when phase 2 flag is enabled.">
         When on, sites may use the privacy-preserving techniques shown here to provide their content and services. These include alternatives to cross-site tracking. More trials may be added over time.

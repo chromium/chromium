@@ -12,7 +12,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 // Those resources are loaded through settings.js as the privacy sandbox page
 // lives outside regular settings, hence can't access those resources directly
 // with |optimize_webui="true"|.
-import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxy, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrefsBehavior, PrefsBehaviorInterface, TrustSafetyInteraction} from '../settings.js';
+import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxy, MetricsBrowserProxyImpl, PrefsBehavior, PrefsBehaviorInterface, TrustSafetyInteraction} from '../settings.js';
 
 import {FlocIdentifier, PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl} from './privacy_sandbox_browser_proxy.js';
 
@@ -36,12 +36,6 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
 
   static get properties() {
     return {
-      /** @private */
-      privacySandboxSettings2Enabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('privacySandboxSettings2Enabled'),
-      },
-
       /** @private {!FlocIdentifier} */
       flocId_: {
         type: Object,
@@ -99,21 +93,8 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
   }
 
   /** @private */
-  apiToggleButtonClass_() {
-    return this.privacySandboxSettings2Enabled_ ? 'updated-toggle-button' : '';
-  }
-
-  /** @private */
   onFlocChanged_() {
     this.privacySandboxBrowserProxy_.getFlocId().then(id => this.flocId_ = id);
-  }
-
-  /** @private */
-  onLearnMoreButtonClick_() {
-    this.metricsBrowserProxy_.recordAction(
-        'Settings.PrivacySandbox.OpenExplainer');
-    OpenWindowProxyImpl.getInstance().openURL(
-        loadTimeData.getString('privacySandboxURL'));
   }
 
   /** @private */
