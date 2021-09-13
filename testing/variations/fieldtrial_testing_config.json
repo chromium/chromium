@@ -3803,6 +3803,26 @@
             ]
         }
     ],
+    "FirstInputDelayWithoutEventListener": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FirstInputDelayWithoutEventListener"
+                    ]
+                }
+            ]
+        }
+    ],
     "FirstPartySetsOriginTrial": [
         {
             "platforms": [
