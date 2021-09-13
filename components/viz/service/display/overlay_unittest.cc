@@ -2160,7 +2160,7 @@ TEST_F(ChangeSingleOnTopTest, DoNotPromoteIfContentsDontChange) {
   // frame counter based.
   if (features::IsOverlayPrioritizationEnabled()) {
     kFramesSkippedBeforeNotPromoting =
-        overlay_processor_->TrackerConfigAccessor().max_num_frames_avg;
+        overlay_processor_->TrackerConfigAccessor().max_frames_inactive;
   }
 
   ResourceId previous_resource_id;
@@ -2248,12 +2248,14 @@ TEST_F(FullThresholdTest, ThresholdTestForPrioritization) {
 
   // This test uses many iterations to test prioritization threshold features
   // due to frame averaging over samples.
-  OverlayCandidateTemporalTracker::Config config;
-  size_t kDamageFrameTestStart = config.max_num_frames_avg;
-  size_t kDamageFrameTestEnd =
-      kDamageFrameTestStart + config.max_num_frames_avg;
-  size_t kSlowFrameTestStart = kDamageFrameTestEnd + config.max_num_frames_avg;
-  size_t kSlowFrameTestEnd = kSlowFrameTestStart + config.max_num_frames_avg;
+  constexpr size_t kDamageFrameTestStart =
+      OverlayCandidateTemporalTracker::kNumRecords;
+  constexpr size_t kDamageFrameTestEnd =
+      kDamageFrameTestStart + OverlayCandidateTemporalTracker::kNumRecords;
+  constexpr size_t kSlowFrameTestStart =
+      kDamageFrameTestEnd + OverlayCandidateTemporalTracker::kNumRecords;
+  constexpr size_t kSlowFrameTestEnd =
+      kSlowFrameTestStart + OverlayCandidateTemporalTracker::kNumRecords;
 
   // This quad is used to occlude the damage of the overlay candidate to the
   // point that the damage is no longer considered significant.
@@ -2926,7 +2928,7 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
 
   // Test the default configuration.
   OverlayCandidateTemporalTracker::Config config;
-  float kDamageEpsilon = 1.0f / config.max_num_frames_avg;
+  float kDamageEpsilon = config.damage_rate_hysteresis_range;
   float kBelowLowDamage = config.damage_rate_threshold - kDamageEpsilon;
   float kAboveHighDamage = config.damage_rate_threshold + kDamageEpsilon;
   float kFullDamage = 1.0f;
@@ -2934,24 +2936,17 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
   auto wait_1_frame = [&]() { frame_counter++; };
 
   auto wait_inactive_frames = [&]() {
-    frame_counter += config.max_num_frames_avg + 1;
+    frame_counter += config.max_frames_inactive + 1;
   };
-
-  // Due to exponential algorithmic averaging the number of frames required to
-  // make the original smaller than inverse |config.max_frames_inactive| is the
-  // below formula.
-  const int kNumFramesClear =
-      std::log(1.0f / config.max_num_frames_avg) /
-      std::log((config.max_num_frames_avg - 1.f) / config.max_num_frames_avg);
 
   OverlayCandidateTemporalTracker tracker;
   int fake_display_area = 256 * 256;
   // We test internal hysteresis state by running this test twice.
   for (int j = 0; j < 2; j++) {
     SCOPED_TRACE(j);
-    tracker.Reset();
+
     // First setup a 60fps high damage candidate.
-    for (int i = 0; i < kNumFramesClear; i++) {
+    for (int i = 0; i < OverlayCandidateTemporalTracker::kNumRecords; i++) {
       wait_1_frame();
       tracker.AddRecord(frame_counter, kFullDamage,
                         id_generator.GenerateNextId(), config);
@@ -2961,7 +2956,7 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
     auto opaque_power_gain_60_full =
         tracker.GetModeledPowerGain(frame_counter, config, fake_display_area);
 
-    EXPECT_NEAR(tracker.MeanFrameRatioRate(config), 1.0f, kDamageEpsilon);
+    EXPECT_FLOAT_EQ(tracker.MeanFrameRatioRate(config), 1.0f);
     EXPECT_GT(opaque_power_gain_60_full, 0);
 
     // Test our hysteresis categorization of power by ensuring a single frame
@@ -2976,7 +2971,7 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
 
     // A single frame drop even at 60fps should not change our power
     // categorization.
-    EXPECT_EQ(opaque_power_gain_60_full, opaque_power_gain_60_stutter);
+    ASSERT_EQ(opaque_power_gain_60_full, opaque_power_gain_60_stutter);
 
     wait_inactive_frames();
     EXPECT_FALSE(tracker.IsActivelyChanging(frame_counter, config));
@@ -2990,21 +2985,7 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
     EXPECT_GT(opaque_power_gain_60_inactive, 0);
 
     // Now simulate a overlay candidate with 30fps full damage.
-    for (int i = 0; i < kNumFramesClear; i++) {
-      wait_1_frame();
-      wait_1_frame();
-      tracker.AddRecord(frame_counter, kFullDamage,
-                        id_generator.GenerateNextId(), config);
-    }
-
-    // Insert single stutter frame here to avoid hysteresis boundary.
-    wait_1_frame();
-    wait_1_frame();
-    wait_1_frame();
-    tracker.AddRecord(frame_counter, kFullDamage, id_generator.GenerateNextId(),
-                      config);
-
-    for (int i = 0; i < kNumFramesClear; i++) {
+    for (int i = 0; i < OverlayCandidateTemporalTracker::kNumRecords; i++) {
       wait_1_frame();
       wait_1_frame();
       tracker.AddRecord(frame_counter, kFullDamage,
@@ -3014,7 +2995,7 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
     auto opaque_power_gain_30_full =
         tracker.GetModeledPowerGain(frame_counter, config, fake_display_area);
 
-    EXPECT_NEAR(tracker.MeanFrameRatioRate(config), 0.5f, kDamageEpsilon);
+    EXPECT_FLOAT_EQ(tracker.MeanFrameRatioRate(config), 0.5f);
     EXPECT_GT(opaque_power_gain_30_full, 0);
     EXPECT_GT(opaque_power_gain_60_full, opaque_power_gain_30_full);
 
@@ -3030,7 +3011,7 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
     auto opaque_power_gain_30_stutter =
         tracker.GetModeledPowerGain(frame_counter, config, fake_display_area);
 
-    EXPECT_EQ(opaque_power_gain_30_stutter, opaque_power_gain_30_full);
+    EXPECT_TRUE(opaque_power_gain_30_stutter == opaque_power_gain_30_full);
 
     wait_inactive_frames();
     EXPECT_FALSE(tracker.IsActivelyChanging(frame_counter, config));
@@ -3043,9 +3024,8 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
     // invalidated when candidate becomes inactive.
     EXPECT_GT(opaque_power_gain_30_inactive, 0);
 
-    tracker.Reset();
     // Test low and high damage thresholds.
-    for (int i = 0; i < kNumFramesClear; i++) {
+    for (int i = 0; i < OverlayCandidateTemporalTracker::kNumRecords; i++) {
       wait_1_frame();
       tracker.AddRecord(frame_counter, kAboveHighDamage,
                         id_generator.GenerateNextId(), config);
@@ -3057,7 +3037,7 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
     EXPECT_GT(opaque_power_gain_high_damage, 0);
     EXPECT_GE(opaque_power_gain_60_full, opaque_power_gain_high_damage);
 
-    for (int i = 0; i < kNumFramesClear; i++) {
+    for (int i = 0; i < OverlayCandidateTemporalTracker::kNumRecords; i++) {
       wait_1_frame();
       tracker.AddRecord(frame_counter, kBelowLowDamage,
                         id_generator.GenerateNextId(), config);
@@ -3067,19 +3047,21 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
         tracker.GetModeledPowerGain(frame_counter, config, fake_display_area);
     EXPECT_LT(opaque_power_gain_low_damage, 0);
 
-    // Test our mean damage ratio computations for our tracker.
-    int avg_range_tracker = config.max_num_frames_avg - 1;
+    // Test our mean damage ratio computations for our tacker.
     float expected_mean = 0.0f;
-    tracker.Reset();
-    for (int i = 0; i < avg_range_tracker; i++) {
+    for (int i = 0; i < OverlayCandidateTemporalTracker::kNumRecords; i++) {
       wait_1_frame();
-      float dynamic_damage_ratio = static_cast<float>(i) / avg_range_tracker;
+      // Please note that this first iter frame damage will not get included in
+      // the mean as the mean is computed between timing intervals. This means 6
+      // timing intervals only gives 5 values.
+      float dynamic_damage_ratio = static_cast<float>(i);
       expected_mean += dynamic_damage_ratio;
       tracker.AddRecord(frame_counter, dynamic_damage_ratio,
                         id_generator.GenerateNextId(), config);
     }
 
-    expected_mean = expected_mean / avg_range_tracker;
+    expected_mean =
+        expected_mean / (OverlayCandidateTemporalTracker::kNumRecords - 1);
 
     EXPECT_FLOAT_EQ(expected_mean, tracker.MeanFrameRatioRate(config));
   }
@@ -3097,10 +3079,9 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
   // not resource ids (example here is low latency ink surface). Here we test
   // this small feature by keeping the resource id constant but passing in true
   // to the force update param.
-  tracker.Reset();
   static const float kDamageRatio = 0.7f;
   static const ResourceId kFakeConstantResourceId(13);
-  for (int i = 0; i < config.max_num_frames_avg; i++) {
+  for (int i = 0; i < OverlayCandidateTemporalTracker::kNumRecords; i++) {
     wait_1_frame();
     tracker.AddRecord(frame_counter, kDamageRatio, kFakeConstantResourceId,
                       config, true);
@@ -3108,7 +3089,7 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
   EXPECT_FLOAT_EQ(kDamageRatio, tracker.MeanFrameRatioRate(config));
 
   // Now test the false case for the force update param.
-  for (int i = 0; i < config.max_num_frames_avg; i++) {
+  for (int i = 0; i < OverlayCandidateTemporalTracker::kNumRecords; i++) {
     wait_1_frame();
     tracker.AddRecord(frame_counter, 0.9f, kFakeConstantResourceId, config,
                       false);
