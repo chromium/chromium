@@ -13,6 +13,11 @@
 namespace blink {
 namespace features {
 
+// Apply lazy-loading to frames which have embeds likely impacting Core Web
+// Vitals.
+const base::Feature kAutomaticLazyFrameLoadingToEmbeds{
+    "AutomaticLazyFrameLoadingToEmbeds", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable intervention for download that was initiated from or occurred in an ad
 // frame without user activation.
 const base::Feature kBlockingDownloadsInAdFrameWithoutUserActivation{

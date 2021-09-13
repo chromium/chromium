@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<title>Makes sure that iframes in the allowlist are automatically lazily loaded</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<body>
+  <!-- This is used to represent the top of the viewport, so we can scroll the
+       below-viewport iframe out-of-view later in the test -->
+  <div id="atf_div"></div>
+  <div style="height:1000vh;"></div>
+  <div id="btf_div"></div>
+  </iframe>
+  <script>
+    const loaded_ids = [];
+    const createFrame = (id, src) => {
+      const iframe = document.createElement('iframe');
+      iframe.witdh = "100";
+      iframe.height = "100";
+      iframe.id = id;
+      iframe.src = src;
+      iframe.onload = () => {
+        loaded_ids.push(id);
+      };
+      return iframe;
+    };
+
+    const isElementLoaded = (id) => loaded_ids.includes(id);
+
+    const waitForElementLoad = (id) => {
+      return new Promise((resolve, reject) => {
+        const elm = document.getElementById(id)
+        if (isElementLoaded(id)) {
+          resolve(true);
+        } else {
+          elm.addEventListener('load', () => {
+            resolve(true);
+          });
+        }
+      });
+    };
+
+    const defaultEmbedUrl = "http://{{host}}:{{ports[http][0]}}/wpt_internal/lazyembed/resources/embed.html";
+    const lazyEmbedUrl = "http://bad3p.test:{{ports[http][0]}}/wpt_internal/lazyembed/resources/embed.html";
+    const atf = document.querySelector('#atf_div');
+    const btf = document.querySelector('#btf_div');
+    atf.appendChild(createFrame("atf_default", defaultEmbedUrl));
+    atf.appendChild(createFrame("atf_lazy", lazyEmbedUrl));
+    btf.appendChild(createFrame("btf_default", defaultEmbedUrl));
+    btf.appendChild(createFrame("btf_lazy", lazyEmbedUrl));
+
+    promise_test(async t => {
+      let result;
+      // Test above the fold iframes.
+      result = await waitForElementLoad("atf_default");
+      assert_true(result, "iframe above the fold is successfully loaded");
+      result = await waitForElementLoad("atf_lazy");
+      assert_true(result, "iframe with lazy loadable url above the fold is successfully loaded");
+
+      // Normally iframe loads src url even in out of viewport.
+      result = await waitForElementLoad("btf_default");
+      assert_true(result, "iframe below the fold is successfully loaded");
+
+      // To detect the frame src is not loaded, wait for 1 sec.
+      result = await new Promise(resolve => {
+        t.step_timeout(() => {
+          resolve(isElementLoaded("btf_lazy"));
+        }, 1000);
+      });
+      assert_false(result, "iframe with lazy loadable url below the fold is not loaded on navigation");
+
+      // Then scroll to below the fold.
+      btf.scrollIntoView();
+
+      // If viewport is close to the frame, then start loading.
+      result = await waitForElementLoad("btf_lazy");
+      assert_true(result, "iframe with lazy loadable url below the fold is loaded when close to the element");
+    }, "Automatic lazy frame loading");
+  </script>
+</body>

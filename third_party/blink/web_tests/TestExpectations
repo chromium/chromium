@@ -261,6 +261,10 @@ crbug.com/1171298 http/tests/devtools/bfcache/* [ Skip ]
 crbug.com/1171298 virtual/bfcache/http/tests/inspector-protocol/bfcache/* [ Pass ]
 crbug.com/1171298 virtual/bfcache/http/tests/devtools/bfcache/* [ Pass ]
 
+# These tests require LazyEmbed, which is currently disabled by default.
+crbug.com/1247131 virtual/automatic-lazy-frame-loading/wpt_internal/lazyembed/* [ Pass ]
+crbug.com/1247131 wpt_internal/lazyembed/* [ Skip ]
+
 # Ref test with very minor differences. We need fuzzy matching for our ref tests,
 # or upstream this to WPT.
 crbug.com/1185506 svg/text/textpath-pattern.svg [ Failure Pass ]
