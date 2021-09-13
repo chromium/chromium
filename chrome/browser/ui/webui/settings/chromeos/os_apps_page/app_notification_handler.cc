@@ -47,6 +47,35 @@ std::vector<app_notification::mojom::AppPtr> Clone(
   return cloned_apps;
 }
 
+bool ShouldIncludeApp(const apps::AppUpdate& update) {
+  // Only apps that are installed and can be shown in management are supported.
+  if (update.ShowInManagement() != apps::mojom::OptionalBool::kTrue ||
+      !apps_util::IsInstalled(update.Readiness())) {
+    return false;
+  }
+
+  // Only kArc and kWeb apps are supported.
+  if (update.AppType() == apps::mojom::AppType::kArc) {
+    for (const auto& permission : update.Permissions()) {
+      if (static_cast<app_management::mojom::ArcPermissionType>(
+              permission->permission_id) ==
+          app_management::mojom::ArcPermissionType::NOTIFICATIONS) {
+        return true;
+      }
+    }
+  } else if (update.AppType() == apps::mojom::AppType::kWeb) {
+    for (const auto& permission : update.Permissions()) {
+      if (static_cast<app_management::mojom::PwaPermissionType>(
+              permission->permission_id) ==
+          app_management::mojom::PwaPermissionType::NOTIFICATIONS) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
 }  // namespace
 
 using app_notification::mojom::AppNotificationsHandler;
@@ -82,7 +111,6 @@ void AppNotificationHandler::BindInterface(
 }
 
 void AppNotificationHandler::OnQuietModeChanged(bool in_quiet_mode) {
-  in_quiet_mode_ = in_quiet_mode;
   for (const auto& observer : observer_list_) {
     observer->OnQuietModeChanged(in_quiet_mode);
   }
@@ -98,49 +126,30 @@ void AppNotificationHandler::SetNotificationPermission(
   app_service_proxy_->SetPermission(app_id, std::move(permission));
 }
 
-void AppNotificationHandler::GetApps() {
-  apps_.clear();
-  app_service_proxy_->AppRegistryCache().ForEachApp(
-      [this](const apps::AppUpdate& update) {
-        if (update.ShowInManagement() != apps::mojom::OptionalBool::kTrue ||
-            !apps_util::IsInstalled(update.Readiness())) {
-          // Do not add this app to the list.
-          return;
-        }
+void AppNotificationHandler::OnAppUpdate(const apps::AppUpdate& update) {
+  auto it = std::find_if(
+      apps_.begin(), apps_.end(),
+      [&update](const auto& app) { return app->id == update.AppId(); });
 
-        // This statement only adds apps to the list if they are
-        // of app_type kArc or kWeb.
-        if (update.AppType() == apps::mojom::AppType::kArc) {
-          for (const auto& permission : update.Permissions()) {
-            if (static_cast<app_management::mojom::ArcPermissionType>(
-                    permission->permission_id) ==
-                app_management::mojom::ArcPermissionType::NOTIFICATIONS) {
-              apps_.push_back(CreateAppPtr(update));
-              break;
-            }
-          }
-        } else if (update.AppType() == apps::mojom::AppType::kWeb) {
-          for (const auto& permission : update.Permissions()) {
-            if (static_cast<app_management::mojom::PwaPermissionType>(
-                    permission->permission_id) ==
-                app_management::mojom::PwaPermissionType::NOTIFICATIONS) {
-              apps_.push_back(CreateAppPtr(update));
-              break;
-            }
-          }
-        }
-      });
+  if (ShouldIncludeApp(update)) {
+    if (it != apps_.end())
+      *it = CreateAppPtr(update);
+    else
+      apps_.push_back(CreateAppPtr(update));
+  } else {
+    if (it != apps_.end())
+      apps_.erase(it);
+    else
+      return;
+  }
 
+  NotifyListChanged();
+}
+
+void AppNotificationHandler::NotifyListChanged() {
   for (const auto& observer : observer_list_) {
     observer->OnNotificationAppListChanged(Clone(apps_));
   }
-}
-
-void AppNotificationHandler::OnAppUpdate(const apps::AppUpdate& update) {
-  // Each time an update is observed the entire list of apps is refetched.
-  // 'update' is a required parameter from the AppRegistryCache::Observer,
-  // but is not used in this implementation.
-  GetApps();
 }
 
 void AppNotificationHandler::OnAppRegistryCacheWillBeDestroyed(
@@ -150,7 +159,15 @@ void AppNotificationHandler::OnAppRegistryCacheWillBeDestroyed(
 
 void AppNotificationHandler::NotifyPageReady() {
   OnQuietModeChanged(ash::MessageCenterAsh::Get()->IsQuietMode());
-  GetApps();
+
+  apps_.clear();
+  app_service_proxy_->AppRegistryCache().ForEachApp(
+      [this](const apps::AppUpdate& update) {
+        if (ShouldIncludeApp(update))
+          apps_.push_back(CreateAppPtr(update));
+      });
+
+  NotifyListChanged();
 }
 
 }  // namespace settings

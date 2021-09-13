@@ -56,9 +56,7 @@ class AppNotificationHandler
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
 
-  void GetApps();
-
-  bool in_quiet_mode_;
+  void NotifyListChanged();
 
   mojo::RemoteSet<app_notification::mojom::AppNotificationsObserver>
       observer_list_;

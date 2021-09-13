@@ -13,6 +13,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ui/webui/app_management/app_management.mojom.h"
+#include "chrome/browser/ui/webui/settings/chromeos/os_apps_page/mojom/app_notification_handler.mojom.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -43,6 +44,45 @@ class FakeMessageCenterAsh : public ash::MessageCenterAsh {
   bool in_quiet_mode_ = false;
 };
 
+class AppNotificationHandlerTestObserver
+    : public app_notification::mojom::AppNotificationsObserver {
+ public:
+  AppNotificationHandlerTestObserver() {}
+  ~AppNotificationHandlerTestObserver() override {}
+
+  void OnNotificationAppListChanged(
+      std::vector<app_notification::mojom::AppPtr> apps) override {
+    apps_ = std::move(apps);
+    app_list_changed_++;
+  }
+
+  void OnQuietModeChanged(bool enabled) override {
+    is_quiet_mode_ = enabled;
+    quiet_mode_changed_++;
+  }
+
+  mojo::PendingRemote<app_notification::mojom::AppNotificationsObserver>
+  GenerateRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  const std::vector<app_notification::mojom::AppPtr>& apps() { return apps_; }
+  bool is_quiet_mode() { return is_quiet_mode_; }
+
+  int app_list_changed() { return app_list_changed_; }
+  int quiet_mode_changed() { return quiet_mode_changed_; }
+
+ private:
+  std::vector<app_notification::mojom::AppPtr> apps_;
+  bool is_quiet_mode_ = false;
+
+  int app_list_changed_ = 0;
+  int quiet_mode_changed_ = 0;
+
+  mojo::Receiver<app_notification::mojom::AppNotificationsObserver> receiver_{
+      this};
+};
+
 }  // namespace
 
 class AppNotificationHandlerTest : public testing::Test {
@@ -58,6 +98,9 @@ class AppNotificationHandlerTest : public testing::Test {
         std::make_unique<apps::AppServiceProxyChromeOs>(profile_.get());
     handler_ =
         std::make_unique<AppNotificationHandler>(app_service_proxy_.get());
+
+    observer_ = std::make_unique<AppNotificationHandlerTestObserver>();
+    handler_->AddObserver(observer_->GenerateRemote());
   }
 
   void TearDown() override {
@@ -67,22 +110,25 @@ class AppNotificationHandlerTest : public testing::Test {
   }
 
  protected:
-  bool GetHandlerQuietModeState() { return handler_->in_quiet_mode_; }
+  AppNotificationHandlerTestObserver* observer() { return observer_.get(); }
 
   void SetQuietModeState(bool quiet_mode_enabled) {
     handler_->SetQuietMode(quiet_mode_enabled);
   }
 
+  void NotifyPageReady() { handler_->NotifyPageReady(); }
+
   void CreateAndStoreFakeApp(
       std::string fake_id,
       apps::mojom::AppType app_type,
       std::uint32_t permission_type,
-      apps::mojom::PermissionValueType permission_value_type) {
+      apps::mojom::PermissionValueType permission_value_type,
+      uint32_t permission_value = 1) {
     std::vector<apps::mojom::PermissionPtr> fake_permissions;
     apps::mojom::PermissionPtr fake_permission = apps::mojom::Permission::New();
     fake_permission->permission_id = permission_type;
     fake_permission->value_type = permission_value_type;
-    fake_permission->value = /*True=*/1;
+    fake_permission->value = /*True=*/permission_value;
     fake_permission->is_managed = false;
 
     fake_permissions.push_back(fake_permission.Clone());
@@ -107,15 +153,11 @@ class AppNotificationHandlerTest : public testing::Test {
   }
 
   bool CheckIfFakeAppInList(std::string fake_id) {
-    bool app_found = false;
-
-    for (app_notification::mojom::AppPtr const& app : handler_->apps_) {
-      if (app->id.compare(fake_id) == 0) {
-        app_found = true;
-        break;
-      }
+    for (app_notification::mojom::AppPtr const& app : observer_->apps()) {
+      if (app->id.compare(fake_id) == 0)
+        return true;
     }
-    return app_found;
+    return false;
   }
 
  private:
@@ -124,50 +166,68 @@ class AppNotificationHandlerTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<apps::AppServiceProxyChromeOs> app_service_proxy_;
   FakeMessageCenterAsh message_center_ash_;
+  std::unique_ptr<AppNotificationHandlerTestObserver> observer_;
 };
 
 // Tests for update of in_quiet_mode_ variable by MessageCenterAsh observer
 // OnQuietModeChange() after quiet mode state change between true and false.
 TEST_F(AppNotificationHandlerTest, TestOnQuietModeChanged) {
   ash::MessageCenterAsh::Get()->SetQuietMode(true);
-  EXPECT_TRUE(GetHandlerQuietModeState());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(observer()->is_quiet_mode());
+  EXPECT_EQ(observer()->quiet_mode_changed(), 1);
 
   ash::MessageCenterAsh::Get()->SetQuietMode(false);
-  EXPECT_FALSE(GetHandlerQuietModeState());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(observer()->is_quiet_mode());
+  EXPECT_EQ(observer()->quiet_mode_changed(), 2);
 }
 
 // Tests for update of in_quiet_mode_ variable after setting state
 // with MessageCenterAsh SetQuietMode() true and false.
 TEST_F(AppNotificationHandlerTest, TestSetQuietMode) {
   SetQuietModeState(true);
-  EXPECT_TRUE(GetHandlerQuietModeState());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(observer()->is_quiet_mode());
+  EXPECT_EQ(observer()->quiet_mode_changed(), 1);
 
   SetQuietModeState(false);
-  EXPECT_FALSE(GetHandlerQuietModeState());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(observer()->is_quiet_mode());
+  EXPECT_EQ(observer()->quiet_mode_changed(), 2);
 }
 
-// Tests the filtering of the GetApps() function
-// by creating multiple fake apps with different parameters
-// and confirming that GetApps() only adds the correct ones.
-// GetApps() should only add kArc and kWeb apps
-// with the NOTIFICATIONS permission.
-TEST_F(AppNotificationHandlerTest, TestGetAppsFiltering) {
+// Tests notifying observers with only kArc and kWeb apps that have the
+// NOTIFICATIONS permission.
+TEST_F(AppNotificationHandlerTest, TestAppListUpdated) {
   CreateAndStoreFakeApp(
       "arcAppWithNotifications", apps::mojom::AppType::kArc,
       static_cast<std::uint32_t>(
           app_management::mojom::ArcPermissionType::NOTIFICATIONS),
-      apps::mojom::PermissionValueType::kBool);
+      apps::mojom::PermissionValueType::kBool, /*permission_value=*/1);
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(observer()->app_list_changed(), 1);
 
   CreateAndStoreFakeApp(
       "webAppWithNotifications", apps::mojom::AppType::kWeb,
       static_cast<std::uint32_t>(
           app_management::mojom::PwaPermissionType::NOTIFICATIONS),
-      apps::mojom::PermissionValueType::kBool);
+      apps::mojom::PermissionValueType::kBool, /*permission_value=*/1);
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(observer()->app_list_changed(), 2);
+
+  EXPECT_EQ(observer()->apps()[0]->notification_permission->value, 1);
+  EXPECT_EQ(observer()->apps()[1]->notification_permission->value, 1);
 
   CreateAndStoreFakeApp("arcAppWithCamera", apps::mojom::AppType::kArc,
                         static_cast<std::uint32_t>(
                             app_management::mojom::ArcPermissionType::CAMERA),
                         apps::mojom::PermissionValueType::kBool);
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(observer()->app_list_changed(), 2);
 
   CreateAndStoreFakeApp(
       "webAppWithGeolocation", apps::mojom::AppType::kWeb,
@@ -175,17 +235,49 @@ TEST_F(AppNotificationHandlerTest, TestGetAppsFiltering) {
           app_management::mojom::PwaPermissionType::GEOLOCATION),
       apps::mojom::PermissionValueType::kBool);
 
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(observer()->app_list_changed(), 2);
+
   CreateAndStoreFakeApp(
       "pluginVmAppWithPrinting", apps::mojom::AppType::kPluginVm,
       static_cast<std::uint32_t>(
           app_management::mojom::PluginVmPermissionType::PRINTING),
       apps::mojom::PermissionValueType::kBool);
 
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(observer()->app_list_changed(), 2);
   EXPECT_TRUE(CheckIfFakeAppInList("arcAppWithNotifications"));
   EXPECT_TRUE(CheckIfFakeAppInList("webAppWithNotifications"));
   EXPECT_FALSE(CheckIfFakeAppInList("arcAppWithCamera"));
   EXPECT_FALSE(CheckIfFakeAppInList("webAppWithGeolocation"));
   EXPECT_FALSE(CheckIfFakeAppInList("pluginVmAppWithPrinting"));
+
+  CreateAndStoreFakeApp(
+      "arcAppWithNotifications", apps::mojom::AppType::kArc,
+      static_cast<std::uint32_t>(
+          app_management::mojom::ArcPermissionType::NOTIFICATIONS),
+      apps::mojom::PermissionValueType::kBool, /*permission_value=*/0);
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(observer()->app_list_changed(), 3);
+
+  CreateAndStoreFakeApp(
+      "webAppWithNotifications", apps::mojom::AppType::kWeb,
+      static_cast<std::uint32_t>(
+          app_management::mojom::PwaPermissionType::NOTIFICATIONS),
+      apps::mojom::PermissionValueType::kBool, /*permission_value=*/0);
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(observer()->app_list_changed(), 4);
+  EXPECT_EQ(observer()->apps()[0]->notification_permission->value, 0);
+  EXPECT_EQ(observer()->apps()[1]->notification_permission->value, 0);
+}
+
+TEST_F(AppNotificationHandlerTest, TestNotifyPageReady) {
+  NotifyPageReady();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(observer()->quiet_mode_changed(), 1);
+  EXPECT_EQ(observer()->app_list_changed(), 1);
 }
 
 }  // namespace settings
