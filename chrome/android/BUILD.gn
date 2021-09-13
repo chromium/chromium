@@ -3311,6 +3311,15 @@ group("chrome_nocompile_tests") {
   ]
 }
 
+script_test("monochrome_webview_finch_smoke_tests") {
+  script = "//testing/scripts/run_finch_smoke_tests_android.py"
+  data_deps = [
+    "//android_webview/tools/system_webview_shell:system_webview_shell_apk",
+    "//chrome/android:monochrome_public_apk",
+    "//testing:wpt_android_lib",
+  ]
+}
+
 script_test("chrome_public_wpt") {
   script = "//testing/scripts/run_android_wpt.py"
   args = [
