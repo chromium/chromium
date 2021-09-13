@@ -2002,7 +2002,6 @@ if (!is_android && !is_fuchsia) {
       "../browser/ui/views/eye_dropper/eye_dropper_browsertest.cc",
       "../browser/ui/views/hats/hats_browsertest.cc",
       "../browser/ui/views/incognito_clear_browsing_data_dialog_browsertest.cc",
-      "../browser/ui/views/intent_picker_bubble_view_browsertest.cc",
       "../browser/ui/views/reader_mode/reader_mode_icon_view_browsertest.cc",
       "../browser/ui/views/sharing/remote_copy_browsertest.cc",
       "../browser/ui/views/sharing/shared_clipboard_browsertest.cc",
@@ -2314,8 +2313,10 @@ if (!is_android && !is_fuchsia) {
     }
 
     if (!is_chromeos) {
-      sources +=
-          [ "../browser/policy/test/native_messaging_policy_browsertest.cc" ]
+      sources += [
+        "../browser/policy/test/native_messaging_policy_browsertest.cc",
+        "../browser/ui/views/intent_picker_bubble_view_browsertest.cc",
+      ]
     }
 
     if (include_js_tests) {

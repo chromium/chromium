@@ -33,29 +33,6 @@ namespace apps {
 
 namespace {
 
-std::vector<IntentPickerAppInfo> FindAppsForUrl(
-    content::WebContents* web_contents,
-    const GURL& url,
-    std::vector<IntentPickerAppInfo> apps) {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-
-  AppServiceProxyChromeOs* proxy =
-      AppServiceProxyFactory::GetForProfile(profile);
-
-  std::vector<std::string> app_ids =
-      proxy->GetAppIdsForUrl(url, /*exclude_browser=*/true);
-
-  for (const std::string& app_id : app_ids) {
-    proxy->AppRegistryCache().ForOneApp(
-        app_id, [&apps](const AppUpdate& update) {
-          apps.emplace(apps.begin(), GetPickerEntryType(update.AppType()),
-                       ui::ImageModel(), update.AppId(), update.Name());
-        });
-  }
-  return apps;
-}
-
 bool ShouldAutoDisplayUi(
     const std::vector<IntentPickerAppInfo>& apps_for_picker,
     content::NavigationHandle* navigation_handle) {
@@ -126,7 +103,47 @@ PickerShowState GetPickerShowState(
              : PickerShowState::kOmnibox;
 }
 
-void OnIntentPickerClosed(
+void OnAppIconsLoaded(content::WebContents* web_contents,
+                      IntentPickerAutoDisplayService* ui_auto_display_service,
+                      const GURL& url,
+                      std::vector<IntentPickerAppInfo> apps) {
+  ShowIntentPickerBubbleForApps(
+      web_contents, std::move(apps),
+      /*show_stay_in_chrome=*/true,
+      /*show_remember_selection=*/true,
+      base::BindOnce(&OnIntentPickerClosedAsh, web_contents,
+                     ui_auto_display_service, url));
+}
+
+}  // namespace
+
+void MaybeShowIntentPickerBubble(content::NavigationHandle* navigation_handle,
+                                 std::vector<IntentPickerAppInfo> apps) {
+  content::WebContents* web_contents = navigation_handle->GetWebContents();
+  IntentPickerAutoDisplayService* ui_auto_display_service =
+      IntentPickerAutoDisplayService::Get(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+  const GURL& url = navigation_handle->GetURL();
+  if (GetPickerShowState(navigation_handle, apps) ==
+      PickerShowState::kOmnibox) {
+    return;
+  }
+
+  IntentPickerTabHelper::LoadAppIcons(
+      web_contents, std::move(apps),
+      base::BindOnce(&OnAppIconsLoaded, web_contents, ui_auto_display_service,
+                     url));
+}
+
+bool ContainsOnlyPwasAndMacApps(const std::vector<IntentPickerAppInfo>& apps) {
+  return std::all_of(apps.begin(), apps.end(),
+                     [](const IntentPickerAppInfo& app_info) {
+                       return app_info.type == PickerEntryType::kWeb ||
+                              app_info.type == PickerEntryType::kMacOs;
+                     });
+}
+
+void OnIntentPickerClosedAsh(
     content::WebContents* web_contents,
     IntentPickerAutoDisplayService* ui_auto_display_service,
     const GURL& url,
@@ -200,99 +217,6 @@ void OnIntentPickerClosed(
       IntentHandlingMetrics::GetDestinationPlatform(launch_name, action);
   IntentHandlingMetrics::RecordIntentPickerMetrics(
       Source::kHttpOrHttps, should_persist, action, platform);
-}
-
-void OnAppIconsLoaded(content::WebContents* web_contents,
-                      IntentPickerAutoDisplayService* ui_auto_display_service,
-                      const GURL& url,
-                      std::vector<IntentPickerAppInfo> apps) {
-  ShowIntentPickerBubbleForApps(
-      web_contents, std::move(apps),
-      /*show_stay_in_chrome=*/true,
-      /*show_remember_selection=*/true,
-      base::BindOnce(&OnIntentPickerClosed, web_contents,
-                     ui_auto_display_service, url));
-}
-
-}  // namespace
-
-void MaybeShowIntentPickerAsh(content::NavigationHandle* navigation_handle) {
-  content::WebContents* web_contents = navigation_handle->GetWebContents();
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-
-  if (!AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile))
-    return;
-
-  const GURL& url = navigation_handle->GetURL();
-  std::vector<IntentPickerAppInfo> apps = FindAppsForUrl(web_contents, url, {});
-
-  if (apps.empty()) {
-    IntentPickerTabHelper::SetShouldShowIcon(web_contents, false);
-    return;
-  }
-
-  IntentPickerTabHelper::SetShouldShowIcon(web_contents, true);
-
-  IntentPickerAutoDisplayService* ui_auto_display_service =
-      IntentPickerAutoDisplayService::Get(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
-
-  if (GetPickerShowState(navigation_handle, apps) ==
-      PickerShowState::kOmnibox) {
-    return;
-  }
-
-  IntentPickerTabHelper::LoadAppIcons(
-      web_contents, std::move(apps),
-      base::BindOnce(&OnAppIconsLoaded, web_contents, ui_auto_display_service,
-                     url));
-}
-
-void ShowIntentPickerBubbleAsh(content::WebContents* web_contents,
-                               const GURL& url) {
-  std::vector<IntentPickerAppInfo> apps = FindAppsForUrl(web_contents, url, {});
-  if (apps.empty())
-    return;
-  IntentPickerTabHelper::LoadAppIcons(
-      web_contents, std::move(apps),
-      base::BindOnce(&OnAppIconsLoaded, web_contents,
-                     /*ui_auto_display_service=*/nullptr, url));
-}
-
-bool ContainsOnlyPwasAndMacApps(const std::vector<IntentPickerAppInfo>& apps) {
-  return std::all_of(apps.begin(), apps.end(),
-                     [](const IntentPickerAppInfo& app_info) {
-                       return app_info.type == PickerEntryType::kWeb ||
-                              app_info.type == PickerEntryType::kMacOs;
-                     });
-}
-
-PickerEntryType GetPickerEntryType(mojom::AppType app_type) {
-  PickerEntryType picker_entry_type = PickerEntryType::kUnknown;
-  switch (app_type) {
-    case mojom::AppType::kUnknown:
-    case mojom::AppType::kBuiltIn:
-    case mojom::AppType::kCrostini:
-    case mojom::AppType::kPluginVm:
-    case mojom::AppType::kExtension:
-    case mojom::AppType::kStandaloneBrowser:
-    case mojom::AppType::kStandaloneBrowserExtension:
-    case mojom::AppType::kRemote:
-    case mojom::AppType::kBorealis:
-      break;
-    case mojom::AppType::kArc:
-      picker_entry_type = PickerEntryType::kArc;
-      break;
-    case mojom::AppType::kWeb:
-    case mojom::AppType::kSystemWeb:
-      picker_entry_type = PickerEntryType::kWeb;
-      break;
-    case mojom::AppType::kMacOs:
-      picker_entry_type = PickerEntryType::kMacOs;
-      break;
-  }
-  return picker_entry_type;
 }
 
 }  // namespace apps

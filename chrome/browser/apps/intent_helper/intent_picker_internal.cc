@@ -18,6 +18,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/constants.h"
@@ -198,6 +199,33 @@ void CloseOrGoBack(content::WebContents* web_contents) {
     web_contents->GetController().GoBack();
   else
     web_contents->ClosePage();
+}
+
+PickerEntryType GetPickerEntryType(mojom::AppType app_type) {
+  PickerEntryType picker_entry_type = PickerEntryType::kUnknown;
+  switch (app_type) {
+    case mojom::AppType::kUnknown:
+    case mojom::AppType::kBuiltIn:
+    case mojom::AppType::kCrostini:
+    case mojom::AppType::kPluginVm:
+    case mojom::AppType::kExtension:
+    case mojom::AppType::kStandaloneBrowser:
+    case mojom::AppType::kStandaloneBrowserExtension:
+    case mojom::AppType::kRemote:
+    case mojom::AppType::kBorealis:
+      break;
+    case mojom::AppType::kArc:
+      picker_entry_type = PickerEntryType::kArc;
+      break;
+    case mojom::AppType::kWeb:
+    case mojom::AppType::kSystemWeb:
+      picker_entry_type = PickerEntryType::kWeb;
+      break;
+    case mojom::AppType::kMacOs:
+      picker_entry_type = PickerEntryType::kMacOs;
+      break;
+  }
+  return picker_entry_type;
 }
 
 }  // namespace apps
