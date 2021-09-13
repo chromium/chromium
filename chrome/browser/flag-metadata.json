@@ -1371,11 +1371,6 @@
     "expiry_milestone": 88
   },
   {
-    "name": "enable-android-spellchecker",
-    "owners": [ "timvolodine" ],
-    "expiry_milestone": 76
-  },
-  {
     "name": "enable-app-discovery-for-oobe",
     "owners": [ "melzhang", "tsergeant", "chromeos-apps-foundation-team" ],
     "expiry_milestone": 100

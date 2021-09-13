@@ -188,9 +188,6 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
   {
     ScopedAddFeatureFlags features(cl);
 
-#if BUILDFLAG(ENABLE_SPELLCHECK)
-    features.EnableIfNotSet(spellcheck::kAndroidSpellCheckerNonLowEnd);
-#endif  // ENABLE_SPELLCHECK
     if (base::android::BuildInfo::GetInstance()->sdk_int() >=
         base::android::SDK_VERSION_OREO) {
       features.EnableIfNotSet(autofill::features::kAutofillExtractAllDatalists);

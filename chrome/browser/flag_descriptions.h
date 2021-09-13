@@ -1753,8 +1753,6 @@ extern const char kAutofillManualFallbackAndroidDescription[];
 extern const char kEnableAutofillRefreshStyleName[];
 extern const char kEnableAutofillRefreshStyleDescription[];
 
-extern const char kEnableAndroidSpellcheckerDescription[];
-
 extern const char kEnableCommandLineOnNonRootedName[];
 extern const char kEnableCommandLineOnNoRootedDescription[];
 
