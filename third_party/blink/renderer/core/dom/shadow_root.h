@@ -33,7 +33,9 @@
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_menu_element.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -69,6 +71,13 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
     return *To<Element>(ParentOrShadowHostNode());
   }
   ShadowRootType GetType() const { return static_cast<ShadowRootType>(type_); }
+  void UpdateType(ShadowRootType type) {
+    DCHECK(GetType() == ShadowRootType::kUserAgent);
+    DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
+    DCHECK(IsA<HTMLSelectMenuElement>(host()))
+        << "Updating the type is only supported for <selectmenu> elements";
+    type_ = static_cast<unsigned>(type);
+  }
   String mode() const {
     switch (GetType()) {
       case ShadowRootType::kUserAgent:

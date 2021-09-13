@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<title>HTMLSelectMenuElement Test: shadow root replacement</title>
+<link rel="author" title="Ionel Popescu" href="mailto:iopopesc@microsoft.com">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<selectmenu id="selectmenu"></selectmenu>
+
+<script>
+  function clickOn(element) {
+    const actions = new test_driver.Actions();
+    return actions.pointerMove(0, 0, {origin: element})
+      .pointerDown({button: actions.ButtonType.LEFT})
+      .pointerUp({button: actions.ButtonType.LEFT})
+      .send();
+  }
+
+  promise_test(async () => {
+    const selectMenu = document.getElementById("selectmenu");
+    assert_equals(selectMenu.shadowRoot, null, "The UA provided shadow root should not be exposed to the web");
+    let selectMenuShadow = selectMenu.attachShadow({mode: 'open', delegatesFocus: true});
+    assert_equals(selectMenuShadow.host, selectMenu);
+    assert_equals(selectMenu.shadowRoot, selectMenuShadow);
+    assert_equals(selectMenuShadow.mode, "open");
+    assert_equals(selectMenuShadow.delegatesFocus, true);
+    selectMenuShadow.innerHTML = `
+      <style>
+        :focus {
+          outline: 2px solid blue;
+        }
+      </style>
+      <button part="button">My custom button</button>
+      <popup part="listbox">
+        <input type="text" placeholder="Filter options">
+        <option>Thing 1</option>
+        <option>Thing 2</option>
+    </popup>`;
+    assert_equals(selectMenu.shadowRoot.querySelectorAll("option").length, 2);
+    assert_equals(selectMenu.open, false);
+    await clickOn(selectMenu);
+    // TODO(crbug.com/1247879) Fails because controller code is not provided to the shadow DOM replacement.
+    assert_equals(selectMenu.open, true, "Ensure that controller code has been provided");
+  }, "Test that the UA provided shadow root can be replaced");
+
+  test(() => {
+    let customSelectMenu = document.createElement('selectmenu');
+    let customSelectMenuShadow = customSelectMenu.attachShadow({mode : 'closed'});
+    assert_equals(customSelectMenu.shadowRoot, null);
+    assert_equals(customSelectMenuShadow.mode, "closed");
+    assert_throws_dom('NotSupportedError', () => {
+      customSelectMenu.attachShadow({mode : 'closed'});
+    });
+  }, "Test that only the UA provided shadow root can be replaced");
+</script>
