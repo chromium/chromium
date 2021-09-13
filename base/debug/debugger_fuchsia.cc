@@ -29,11 +29,7 @@ bool BeingDebugged() {
   return (info.flags & ZX_INFO_PROCESS_FLAG_DEBUGGER_ATTACHED) != 0;
 }
 
-void BreakDebugger() {
-#if BUILDFLAG(CLANG_PROFILING)
-  WriteClangProfilingProfile();
-#endif
-
+void BreakDebuggerAsyncSafe() {
   // NOTE: This code MUST be async-signal safe (it's used by in-process
   // stack dumping signal handler). NO malloc or stdio is allowed here.
 
@@ -44,6 +40,13 @@ void BreakDebugger() {
   Alias(&static_variable_to_make_this_function_unique);
 
   abort();
+}
+
+void BreakDebugger() {
+#if BUILDFLAG(CLANG_PROFILING)
+  WriteClangProfilingProfile();
+#endif
+  BreakDebuggerAsyncSafe();
 }
 
 void VerifyDebugger() {}

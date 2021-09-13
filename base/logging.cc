@@ -1137,7 +1137,7 @@ void RawLog(int level, const char* message) {
   }
 
   if (level == LOGGING_FATAL)
-    base::debug::BreakDebugger();
+    base::debug::BreakDebuggerAsyncSafe();
 }
 
 // This was defined at the beginning of this file.

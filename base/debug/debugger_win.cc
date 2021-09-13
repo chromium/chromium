@@ -20,15 +20,19 @@ bool BeingDebugged() {
   return ::IsDebuggerPresent() != 0;
 }
 
+void BreakDebuggerAsyncSafe() {
+  if (IsDebugUISuppressed())
+    _exit(1);
+
+  __debugbreak();
+}
+
 void BreakDebugger() {
 #if BUILDFLAG(CLANG_PROFILING)
   WriteClangProfilingProfile();
 #endif
 
-  if (IsDebugUISuppressed())
-    _exit(1);
-
-  __debugbreak();
+  BreakDebuggerAsyncSafe();
 }
 
 void VerifyDebugger() {}

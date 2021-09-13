@@ -308,11 +308,7 @@ void DebugBreak() {
 #error "Don't know how to debug break on this architecture/OS"
 #endif
 
-void BreakDebugger() {
-#if BUILDFLAG(CLANG_PROFILING)
-  WriteClangProfilingProfile();
-#endif
-
+void BreakDebuggerAsyncSafe() {
   // NOTE: This code MUST be async-signal safe (it's used by in-process
   // stack dumping signal handler). NO malloc or stdio is allowed here.
 
@@ -339,6 +335,13 @@ void BreakDebugger() {
   _exit(1);
 #pragma GCC diagnostic pop
 #endif
+}
+
+void BreakDebugger() {
+#if BUILDFLAG(CLANG_PROFILING)
+  WriteClangProfilingProfile();
+#endif
+  BreakDebuggerAsyncSafe();
 }
 
 }  // namespace debug
