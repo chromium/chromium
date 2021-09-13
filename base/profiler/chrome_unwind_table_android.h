@@ -29,6 +29,7 @@ enum UnwindInstructionResult {
 // Only following instruction encodings are handled:
 // - 00xxxxxx
 // - 01xxxxxx
+// - 1000iiii iiiiiiii
 // - 1001nnnn
 // - 10100nnn
 // - 10101nnn
@@ -53,8 +54,18 @@ enum UnwindInstructionResult {
 // execute always have smaller function offset.
 // The function offsets are often discontinuous as not all instructions in
 // the function have corresponding unwind instructions.
+//
+// Arguments:
+//   instruction: The pointer to the instruction to execute. This pointer will
+//                be advanced by the size of the instruction executed after the
+//                function call.
+//   pc_was_updated: Set to true if the pc was updated by the instruction
+//                   execution. Used to decide whether to copy lr to pc on
+//                   COMPLETE.
+//   thread_context: The thread_context the instruction operates on.
 BASE_EXPORT UnwindInstructionResult
 ExecuteUnwindInstruction(const uint8_t*& instruction,
+                         bool& pc_was_updated,
                          RegisterContext* thread_context);
 
 // Given

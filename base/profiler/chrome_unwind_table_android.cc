@@ -13,8 +13,8 @@ namespace {
 
 uintptr_t* GetRegisterPointer(RegisterContext* context,
                               uint8_t register_index) {
-  DCHECK_LE(register_index, 14);
-  static unsigned long RegisterContext::*const registers[15] = {
+  DCHECK_LE(register_index, 15);
+  static unsigned long RegisterContext::*const registers[16] = {
       &RegisterContext::arm_r0,  &RegisterContext::arm_r1,
       &RegisterContext::arm_r2,  &RegisterContext::arm_r3,
       &RegisterContext::arm_r4,  &RegisterContext::arm_r5,
@@ -22,7 +22,7 @@ uintptr_t* GetRegisterPointer(RegisterContext* context,
       &RegisterContext::arm_r8,  &RegisterContext::arm_r9,
       &RegisterContext::arm_r10, &RegisterContext::arm_fp,
       &RegisterContext::arm_ip,  &RegisterContext::arm_sp,
-      &RegisterContext::arm_lr,
+      &RegisterContext::arm_lr,  &RegisterContext::arm_pc,
   };
   return reinterpret_cast<uintptr_t*>(&(context->*registers[register_index]));
 }
@@ -66,6 +66,7 @@ uint8_t GetTopBits(uint8_t byte, unsigned bits) {
 
 UnwindInstructionResult ExecuteUnwindInstruction(
     const uint8_t*& instruction,
+    bool& pc_was_updated,
     RegisterContext* thread_context) {
   if (GetTopBits(*instruction, 2) == 0b00) {
     // 00xxxxxx
@@ -104,23 +105,44 @@ UnwindInstructionResult ExecuteUnwindInstruction(
     // 10101nnn
     // Pop r4-r[4+nnn], r14
     const uint8_t max_register_index = (*instruction++ & 0b00000111) + 4;
-    bool success = true;
-    for (uint8_t n = 4; n <= max_register_index && success; n++) {
-      success = PopRegister(thread_context, n);
+    for (int n = 4; n <= max_register_index; n++) {
+      if (!PopRegister(thread_context, n)) {
+        return UnwindInstructionResult::STACK_POINTER_OUT_OF_BOUNDS;
+      }
     }
-    if (success)
-      success = PopRegister(thread_context, 14);
-    if (!success)
+    if (!PopRegister(thread_context, 14)) {
       return UnwindInstructionResult::STACK_POINTER_OUT_OF_BOUNDS;
+    }
+  } else if (GetTopBits(*instruction, 4) == 0b1000) {
+    // 1000iiii iiiiiiii
+    // Pop up to 12 integer registers under masks {r15-r12}, {r11-r4}
+    const uint32_t register_bitmask =
+        ((*instruction & 0xf) << 8) + *(instruction + 1);
+    // 10000000 00000000 is reserved for 'Refused to unwind'.
+    DCHECK_NE(register_bitmask, 0ul);
+    instruction += 2;
+
+    for (int register_index = 4; register_index < 16; register_index++) {
+      if (register_bitmask & (1 << (register_index - 4))) {
+        if (!PopRegister(thread_context, register_index)) {
+          return UnwindInstructionResult::STACK_POINTER_OUT_OF_BOUNDS;
+        }
+      }
+    }
+    // If we set pc (r15) with value on stack, we should no longer copy lr to
+    // pc on COMPLETE.
+    pc_was_updated |= register_bitmask & (1 << (15 - 4));
   } else if (*instruction == 0b10110000) {
     // Finish
     // Code 0xb0, Finish, copies VRS[r14] to VRS[r15] and also
     // indicates that no further instructions are to be processed for this
     // frame.
-    // Note: As we are not supporting any instructions that can set r15 (pc),
-    // we always need to copy r14 (lr) to r15 (pc).
+
     instruction++;
-    thread_context->arm_pc = thread_context->arm_lr;
+    // Only copy lr to pc when pc is not updated by other instructions before.
+    if (!pc_was_updated)
+      thread_context->arm_pc = thread_context->arm_lr;
+
     return UnwindInstructionResult::COMPLETED;
   } else if (*instruction == 0b10110010) {
     // 10110010 uleb128
