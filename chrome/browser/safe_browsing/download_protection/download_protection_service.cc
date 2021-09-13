@@ -526,6 +526,12 @@ DownloadProtectionService::IdentifyReferrerChain(
 std::unique_ptr<ReferrerChainData>
 DownloadProtectionService::IdentifyReferrerChain(
     const content::FileSystemAccessWriteItem& item) {
+  // If web_contents is null, return immediately. This can happen when the
+  // file system API is called in PerformAfterWriteChecks.
+  if (!item.web_contents) {
+    return nullptr;
+  }
+
   std::unique_ptr<ReferrerChain> referrer_chain =
       std::make_unique<ReferrerChain>();
 
@@ -534,8 +540,7 @@ DownloadProtectionService::IdentifyReferrerChain(
       "SafeBrowsing.ReferrerHasInvalidTabID.NativeFileSystemWriteAttribution",
       !tab_id.is_valid());
 
-  GURL tab_url =
-      item.web_contents ? item.web_contents->GetVisibleURL() : GURL();
+  GURL tab_url = item.web_contents->GetVisibleURL();
 
   SafeBrowsingNavigationObserverManager::AttributionResult result =
       GetNavigationObserverManager(item.web_contents)
