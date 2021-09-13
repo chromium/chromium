@@ -75045,6 +75045,14 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="A session restore deferred one or more tabs"/>
 </enum>
 
+<enum name="SessionRestoreExitResult">
+  <int value="0" label="No Exit"/>
+  <int value="1" label="Has One Service and Did Schedule"/>
+  <int value="2" label="Has One Service and No Schedule"/>
+  <int value="3" label="Is not first service and Did Schedule"/>
+  <int value="4" label="Is not first service and No Schedule"/>
+</enum>
+
 <enum name="SessionRestoreFinishReason">
   <int value="0"
       label="SessionRestore.ForegroundTabFirstPaint4_XX successfully
@@ -75061,6 +75069,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="The loading of a tab's content was deferred"/>
   <int value="3" label="A deferred tab's content was loaded via user action"/>
   <int value="4" label="A tab's content automatically started to load"/>
+</enum>
+
+<enum name="SessionRestoreWindowCount">
+  <int value="0" label="No window"/>
+  <int value="1" label="No app window, has normal window"/>
+  <int value="2" label="Has app window, no normal window"/>
+  <int value="3" label="Has app window, has normal window"/>
 </enum>
 
 <enum name="SessionStartupPref">

@@ -39,6 +39,10 @@ bool g_launch_browser_for_testing = false;
 constexpr char kRestoredAppLaunchHistogramPrefix[] = "Apps.RestoredAppLaunch";
 constexpr char kRestoreBrowserResultHistogramPrefix[] =
     "Apps.RestoreBrowserResult";
+constexpr char kSessionRestoreExitResultPrefix[] =
+    "Apps.SessionRestoreExitResult";
+constexpr char kSessionRestoreWindowCountPrefix[] =
+    "Apps.SessionRestoreWindowCount";
 
 }  // namespace
 
@@ -145,6 +149,18 @@ void FullRestoreAppLaunchHandler::OnAppTypeInitialized(
   }
 }
 
+void FullRestoreAppLaunchHandler::OnGotSession(Profile* session_profile,
+                                               bool for_app,
+                                               int window_count) {
+  if (session_profile != profile())
+    return;
+
+  if (for_app)
+    browser_app_window_count_ = window_count;
+  else
+    browser_window_count_ = window_count;
+}
+
 void FullRestoreAppLaunchHandler::ForceLaunchBrowserForTesting() {
   ::full_restore::AddChromeBrowserLaunchInfoForTesting(profile()->GetPath());
   UserSessionManager::GetInstance()->LaunchBrowser(profile());
@@ -221,6 +237,8 @@ void FullRestoreAppLaunchHandler::LaunchBrowser() {
   if (launch_list.find(extension_misc::kChromeAppId) == launch_list.end())
     return;
 
+  SessionRestore::AddObserver(this);
+
   VLOG(1) << "Restore browser for " << profile()->GetPath();
   RecordRestoredAppLaunch(apps::AppTypeName::kChromeBrowser);
 
@@ -238,6 +256,7 @@ void FullRestoreAppLaunchHandler::LaunchBrowser() {
     // restore app type browsers only.
     SessionRestore::RestoreSession(
         profile(), nullptr, SessionRestore::RESTORE_APPS, std::vector<GURL>());
+    SessionRestore::RemoveObserver(this);
     return;
   }
 
@@ -247,6 +266,7 @@ void FullRestoreAppLaunchHandler::LaunchBrowser() {
 
   UserSessionManager::GetInstance()->LaunchBrowser(profile());
   RecordLaunchBrowserResult();
+  SessionRestore::RemoveObserver(this);
 }
 
 void FullRestoreAppLaunchHandler::LaunchBrowserForFirstRunFullRestore() {
@@ -312,6 +332,53 @@ void FullRestoreAppLaunchHandler::RecordLaunchBrowserResult() {
   VLOG(1) << "Browser is restored (windows=" << window_count
           << " tabs=" << tab_count << ").";
   base::UmaHistogramEnumeration(kRestoreBrowserResultHistogramPrefix, result);
+
+  if (result != RestoreTabResult::kNoTabs)
+    return;
+
+  SessionRestoreExitResult session_restore_exit =
+      SessionRestoreExitResult::kNoExit;
+  for (auto iter = events.rbegin(); iter != events.rend(); ++iter) {
+    if (iter->type != SessionServiceEventLogType::kStart)
+      continue;
+
+    ++iter;
+    if (iter != events.rend() &&
+        iter->type == SessionServiceEventLogType::kExit) {
+      bool is_first_session_service = iter->data.exit.is_first_session_service;
+      bool did_schedule_command = iter->data.exit.did_schedule_command;
+      if (is_first_session_service) {
+        session_restore_exit =
+            did_schedule_command
+                ? SessionRestoreExitResult::kIsFirstServiceDidSchedule
+                : SessionRestoreExitResult::kIsFirstServiceNoSchedule;
+      } else {
+        session_restore_exit =
+            did_schedule_command
+                ? SessionRestoreExitResult::kNotFirstServiceDidSchedule
+                : SessionRestoreExitResult::kNotFirstServiceNoSchedule;
+      }
+    }
+    break;
+  }
+
+  base::UmaHistogramEnumeration(kSessionRestoreExitResultPrefix,
+                                session_restore_exit);
+
+  SessionRestoreWindowCount restored_window_count;
+  if (browser_app_window_count_ != 0) {
+    restored_window_count =
+        browser_window_count_ == 0
+            ? SessionRestoreWindowCount::kHasAppWindowNoNormalWindow
+            : SessionRestoreWindowCount::kHasAppWindowHasNormalWindow;
+  } else {
+    restored_window_count =
+        browser_window_count_ == 0
+            ? SessionRestoreWindowCount::kNoWindow
+            : SessionRestoreWindowCount::kNoAppWindowHasNormalWindow;
+  }
+  base::UmaHistogramEnumeration(kSessionRestoreWindowCountPrefix,
+                                restored_window_count);
 }
 
 void FullRestoreAppLaunchHandler::LogRestoreData() {

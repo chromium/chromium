@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/full_restore/app_launch_handler.h"
+#include "chrome/browser/sessions/session_restore_observer.h"
 #include "components/full_restore/restore_data.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
@@ -33,6 +34,31 @@ enum class RestoreTabResult {
   kMaxValue = kError,
 };
 
+// This is used for logging, so do not remove or reorder existing entries.
+enum class SessionRestoreExitResult {
+  kNoExit = 0,
+  kIsFirstServiceDidSchedule = 1,
+  kIsFirstServiceNoSchedule = 2,
+  kNotFirstServiceDidSchedule = 3,
+  kNotFirstServiceNoSchedule = 4,
+
+  // Add any new values above this one, and update kMaxValue to the highest
+  // enumerator value.
+  kMaxValue = kNotFirstServiceNoSchedule,
+};
+
+// This is used for logging, so do not remove or reorder existing entries.
+enum class SessionRestoreWindowCount {
+  kNoWindow = 0,
+  kNoAppWindowHasNormalWindow = 1,
+  kHasAppWindowNoNormalWindow = 2,
+  kHasAppWindowHasNormalWindow = 3,
+
+  // Add any new values above this one, and update kMaxValue to the highest
+  // enumerator value.
+  kMaxValue = kHasAppWindowHasNormalWindow,
+};
+
 // The FullRestoreAppLaunchHandler class calls FullRestoreReadHandler to read
 // the full restore data from the full restore data file on a background task
 // runner, and restore apps and web pages based on the user preference or the
@@ -43,7 +69,8 @@ enum class RestoreTabResult {
 // 2. The user preference sets always restore or the user selects 'Restore' from
 // the notification dialog.
 // 3. The app is ready.
-class FullRestoreAppLaunchHandler : public AppLaunchHandler {
+class FullRestoreAppLaunchHandler : public AppLaunchHandler,
+                                    public SessionRestoreObserver {
  public:
   explicit FullRestoreAppLaunchHandler(Profile* profile,
                                        bool should_init_service = false);
@@ -70,6 +97,9 @@ class FullRestoreAppLaunchHandler : public AppLaunchHandler {
   // AppLaunchHandler:
   void OnAppUpdate(const apps::AppUpdate& update) override;
   void OnAppTypeInitialized(apps::mojom::AppType app_type) override;
+
+  // SessionRestoreObserver:
+  void OnGotSession(Profile* profile, bool for_apps, int window_count) override;
 
   // Force launch browser for testing.
   void ForceLaunchBrowserForTesting();
@@ -127,6 +157,10 @@ class FullRestoreAppLaunchHandler : public AppLaunchHandler {
 
   // Specifies whether init FullRestoreService.
   bool should_init_service_ = false;
+
+  // Restored browser window count. This is used for debug only.
+  int browser_app_window_count_ = 0;
+  int browser_window_count_ = 0;
 
   base::WeakPtrFactory<FullRestoreAppLaunchHandler> weak_ptr_factory_{this};
 };

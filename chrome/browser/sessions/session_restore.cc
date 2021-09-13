@@ -407,6 +407,7 @@ class SessionRestoreImpl : public BrowserListObserver {
     std::copy(std::make_move_iterator(windows.begin()),
               std::make_move_iterator(windows.end()),
               std::back_inserter(windows_));
+    SessionRestore::OnGotSession(profile(), for_apps, windows.size());
     windows.clear();
 
     // Since we could now be possibly waiting for two |GetSession|s, we need
@@ -1150,6 +1151,14 @@ void SessionRestore::NotifySessionRestoreStartedLoadingTabs() {
 void SessionRestore::OnWillRestoreTab(content::WebContents* web_contents) {
   for (auto& observer : *observers())
     observer.OnWillRestoreTab(web_contents);
+}
+
+// static
+void SessionRestore::OnGotSession(Profile* profile,
+                                  bool for_apps,
+                                  int window_count) {
+  for (auto& observer : *observers())
+    observer.OnGotSession(profile, for_apps, window_count);
 }
 
 // static

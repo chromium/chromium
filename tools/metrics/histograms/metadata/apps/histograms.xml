@@ -2582,6 +2582,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Apps.SessionRestoreExitResult" enum="SessionRestoreExitResult"
+    expires_after="2022-07-01">
+  <owner>nancylingwang@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <summary>
+    Records the last session restore exit result. This is logged when the
+    restoration process finishes during the system startup phase.
+  </summary>
+</histogram>
+
+<histogram name="Apps.SessionRestoreWindowCount"
+    enum="SessionRestoreWindowCount" expires_after="2022-07-01">
+  <owner>nancylingwang@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <summary>
+    Records the restored browser window count from session restore. This is
+    logged when the restoration process finishes during the system startup
+    phase.
+  </summary>
+</histogram>
+
 <histogram name="Apps.ShortcutsMenu.Registration.Win.Result"
     enum="ShortcutsMenuRegistrationWinResult" expires_after="M87">
   <obsolete>
