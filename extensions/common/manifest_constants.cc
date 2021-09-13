@@ -18,7 +18,6 @@ const char kActionDefaultPopup[] = "default_popup";
 const char kActionDefaultState[] = "default_state";
 const char kActionDefaultTitle[] = "default_title";
 const char kApp[] = "app";
-const char kAppIconColor[] = "app.icon_color";
 const char kAppThemeColor[] = "app.theme_color";
 const char kAutomation[] = "automation";
 const char kBackground[] = "background";
@@ -291,7 +290,6 @@ const char kInvalidActionDefaultIcon[] = "Invalid value for 'default_icon'.";
 const char kInvalidActionDefaultPopup[] = "Invalid type for 'default_popup'.";
 const char kInvalidActionDefaultState[] = "Invalid value for 'default_state'.";
 const char kInvalidActionDefaultTitle[] = "Invalid value for 'default_title'.";
-const char kInvalidAppIconColor[] = "Invalid value for app.icon_color.";
 const char kInvalidAppThemeColor[] = "Invalid value for app.theme_color.";
 const char kInvalidBackground[] =
     "Invalid value for 'background_page'.";

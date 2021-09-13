@@ -32,7 +32,6 @@ const char kName[] = "MyExtension";
 const char kBookmarkAppUrl[] = "https://www.example.com/path";
 const char kBookmarkAppDescription[] = "My bookmark app";
 const char kBookmarkAppScope[] = "https://www.example.com/";
-const char kBookmarkIconColor[] = "#F00FED";
 const SkColor kBookmarkThemeColor = SK_ColorBLUE;
 
 // Serializes a protobuf structure (entity specifics) into an ExtensionSyncData
@@ -216,7 +215,6 @@ TEST_F(AppSyncDataTest, SyncDataToExtensionSyncDataForBookmarkApp) {
   app_specifics->set_bookmark_app_url(kBookmarkAppUrl);
   app_specifics->set_bookmark_app_description(kBookmarkAppDescription);
   app_specifics->set_bookmark_app_scope(kBookmarkAppScope);
-  app_specifics->set_bookmark_app_icon_color(kBookmarkIconColor);
   app_specifics->set_bookmark_app_theme_color(kBookmarkThemeColor);
 
   SetRequiredExtensionValues(app_specifics->mutable_extension());
@@ -233,8 +231,6 @@ TEST_F(AppSyncDataTest, SyncDataToExtensionSyncDataForBookmarkApp) {
             app_sync_data->bookmark_app_description());
   EXPECT_EQ(app_specifics->bookmark_app_scope(),
             app_sync_data->bookmark_app_scope());
-  EXPECT_EQ(app_specifics->bookmark_app_icon_color(),
-            app_sync_data->bookmark_app_icon_color());
   EXPECT_EQ(app_specifics->bookmark_app_theme_color(),
             app_sync_data->bookmark_app_theme_color());
 

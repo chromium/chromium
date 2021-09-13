@@ -17,7 +17,6 @@
 #include "chrome/browser/sync/test/integration/sync_extension_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "chrome/common/extensions/manifest_handlers/app_icon_color_info.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/extensions/manifest_handlers/app_theme_color_info.h"
 #include "components/crx_file/id_util.h"
@@ -44,7 +43,6 @@ struct AppState {
   extensions::LaunchType launch_type;
   GURL launch_web_url;
   GURL bookmark_app_scope;
-  std::string icon_color;
   absl::optional<SkColor> theme_color;
   std::string description;
   std::string name;
@@ -65,7 +63,7 @@ bool AppState::Equals(const AppState& other) const {
          page_ordinal.Equals(other.page_ordinal) &&
          launch_type == other.launch_type &&
          bookmark_app_scope == other.bookmark_app_scope &&
-         icon_color == other.icon_color && theme_color == other.theme_color &&
+         theme_color == other.theme_color &&
          launch_web_url == other.launch_web_url &&
          description == other.description && name == other.name;
 }
@@ -88,8 +86,6 @@ void LoadApp(content::BrowserContext* context,
   if (extension) {
     app_state->launch_web_url =
         extensions::AppLaunchInfo::GetLaunchWebURL(extension);
-    app_state->icon_color =
-        extensions::AppIconColorInfo::GetIconColorString(extension);
     app_state->theme_color =
         extensions::AppThemeColorInfo::GetThemeColor(extension);
     app_state->description = extension->description();

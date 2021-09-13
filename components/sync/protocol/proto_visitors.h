@@ -123,7 +123,6 @@ VISIT_PROTO_FIELDS(const sync_pb::AppSpecifics& proto) {
   VISIT_ENUM(launch_type);
   VISIT(bookmark_app_url);
   VISIT(bookmark_app_description);
-  VISIT(bookmark_app_icon_color);
   VISIT_REP(linked_app_icons);
   VISIT(bookmark_app_scope);
   VISIT(bookmark_app_theme_color);
