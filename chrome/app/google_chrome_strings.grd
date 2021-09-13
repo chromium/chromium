@@ -1147,20 +1147,24 @@ Google Chrome is unable to recover your settings.
         </message>
 
         <!-- OS install screen -->
-        <message name="IDS_OS_INSTALL_SCREEN_INTRO_TITLE" desc="Title of the introduction page in the OS install screen">
-          Install Chrome OS
+        <message name="IDS_OS_INSTALL_SCREEN_INTRO_TITLE" translateable="false" desc="Title of the introduction page in the OS install screen">
+          Install CloudReady 2.0
         </message>
-        <message name="IDS_OS_INSTALL_SCREEN_INTRO_SUBTITLE" desc="Subtitle text of the OS install screen's introduction step">
-          Installing Chrome OS will overwrite all data on your device.
+        <message name="IDS_OS_INSTALL_SCREEN_INTRO_SUBTITLE" translateable="false" desc="Subtitle text of the OS install screen's introduction step">
+          Installing CloudReady 2.0 will overwrite all data on your device.
         </message>
-        <message name="IDS_OS_INSTALL_SCREEN_INTRO_BODY" desc="Body text of the OS install screen's introduction step">
-          <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Before we get started, please ensure that you have an up-to-date backup of your data. Installing Chrome OS will overwrite all data on your hard drive.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
-          <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>Google is not responsible for any data loss, and makes no guarantee that Chrome OS will work on uncertified models. Please visit [TBD] to learn more about certified models.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
-          <ph name="BEGIN_PARAGRAPH3">&lt;p&gt;</ph>Learn more about installing Chrome OS and data erasure: [TBD URL]<ph name="END_PARAGRAPH3">&lt;/p&gt;</ph>
-          <ph name="BEGIN_PARAGRAPH4">&lt;p&gt;</ph>If you are ready to proceed, click “Install Chrome OS” and we'll guide you through the installation in just a couple easy steps. You'll have another chance to confirm before we make any changes to your computer.<ph name="END_PARAGRAPH4">&lt;/p&gt;</ph>
+        <message name="IDS_OS_INSTALL_SCREEN_INTRO_BODY" translateable="false" desc="Body text of the OS install screen's introduction step">
+          <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Before getting started, please ensure that you have an up-to-date backup of your data. Installing CloudReady 2.0 will overwrite your hard drive.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+          <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>If you are ready to proceed, click "Install CloudReady 2.0" and we'll guide you through the installation in just a couple easy steps. You'll have another chance to confirm before we make any changes to your computer.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
         </message>
-        <message name="IDS_OS_INSTALL_SCREEN_INTRO_NEXT_BUTTON" desc="Text of the next button on the introduction page of the OS install screen">
-          Install Chrome OS
+        <message name="IDS_OS_INSTALL_SCREEN_INTRO_LEARN_MORE" translateable="false" desc="Learn more text of the OS install screen's introduction step">
+          Learn more about install CloudReady 2.0 and data erasure.
+        </message>
+        <message name="IDS_OS_INSTALL_SCREEN_INTRO_FOOTER" translateable="false" desc="Footer text of the OS install screen's introduction step">
+          Google is not responsible for any data loss, and makes no guarantee that CloudReady 2.0 will work on uncertified models. Please visit [TBD link] to learn more about certified models.
+        </message>
+        <message name="IDS_OS_INSTALL_SCREEN_INTRO_NEXT_BUTTON" translateable="false" desc="Text of the next button on the introduction page of the OS install screen">
+          Install CloudReady 2.0
         </message>
         <message name="IDS_OS_INSTALL_SCREEN_CONFIRM_TITLE" desc="Title of the confirmation dialog of the OS install screen">
           Install Chrome OS

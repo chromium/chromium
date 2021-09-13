@@ -43,6 +43,12 @@ found in the LICENSE file. -->
         padding-inline-end: 20px;
         padding-inline-start: 20px;
       }
+      .intro-content {
+        color: var(--oobe-header-text-color);
+      }
+      .intro-footer {
+        color: var(--oobe-footer-text-color);
+      }
     </style>
 
     <oobe-adaptive-dialog id="osInstallDialogIntro"
@@ -51,13 +57,18 @@ found in the LICENSE file. -->
       <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
       <h1 slot="title">[[i18nDynamic(locale, 'osInstallDialogIntroTitle')]]</h1>
       <div slot="subtitle">
-        <strong>
-          [[i18nDynamic(locale, 'osInstallDialogIntroSubtitle')]]
-        </strong>
+        [[i18nDynamic(locale, 'osInstallDialogIntroSubtitle')]]
       </div>
-      <html-echo slot="content" content="[[getIntroBodyHtml_(locale)]]"
-          class="flex layout vertical center center-justified">
-      </html-echo>
+      <div slot="content" class="flex layout vertical center-justified">
+        <html-echo class="intro-content"
+            content="[[getIntroBodyHtml_(locale)]]"></html-echo>
+        <div class="intro-content">
+          [[i18nDynamic(locale, 'osInstallDialogIntroLearnMore')]]
+        </div>
+        <p class="intro-footer">
+          [[i18nDynamic(locale, 'osInstallDialogIntroFooter')]]
+        </p>
+      </div>
       <div slot="back-navigation">
         <oobe-back-button id="osInstallExitButton" on-click="onBack_">
         </oobe-back-button>

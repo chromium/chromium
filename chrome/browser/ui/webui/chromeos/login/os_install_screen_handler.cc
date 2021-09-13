@@ -45,6 +45,10 @@ void OsInstallScreenHandler::DeclareLocalizedValues(
   builder->Add("osInstallDialogIntroSubtitle",
                IDS_OS_INSTALL_SCREEN_INTRO_SUBTITLE);
   builder->Add("osInstallDialogIntroBody", IDS_OS_INSTALL_SCREEN_INTRO_BODY);
+  builder->Add("osInstallDialogIntroLearnMore",
+               IDS_OS_INSTALL_SCREEN_INTRO_LEARN_MORE);
+  builder->Add("osInstallDialogIntroFooter",
+               IDS_OS_INSTALL_SCREEN_INTRO_FOOTER);
   builder->Add("osInstallDialogIntroNextButton",
                IDS_OS_INSTALL_SCREEN_INTRO_NEXT_BUTTON);
 
