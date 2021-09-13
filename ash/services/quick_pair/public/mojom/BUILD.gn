@@ -31,6 +31,10 @@ mojom("mojom") {
           mojom = "ash.quick_pair.mojom.MessageType"
           cpp = "::ash::quick_pair::FastPairMessageType"
         },
+        {
+          mojom = "ash.quick_pair.mojom.NotDiscoverableAdvertisement"
+          cpp = "::ash::quick_pair::NotDiscoverableAdvertisement"
+        },
       ]
       traits_headers =
           [ "//ash/services/quick_pair/public/mojom/fast_pair_traits.h" ]

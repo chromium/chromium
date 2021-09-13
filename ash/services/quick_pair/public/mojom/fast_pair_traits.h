@@ -12,6 +12,7 @@
 #include "ash/services/quick_pair/public/cpp/decrypted_passkey.h"
 #include "ash/services/quick_pair/public/cpp/decrypted_response.h"
 #include "ash/services/quick_pair/public/cpp/fast_pair_message_type.h"
+#include "ash/services/quick_pair/public/cpp/not_discoverable_advertisement.h"
 #include "ash/services/quick_pair/public/mojom/fast_pair_data_parser.mojom-shared.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
@@ -22,9 +23,11 @@ namespace {
 using ash::quick_pair::DecryptedPasskey;
 using ash::quick_pair::DecryptedResponse;
 using ash::quick_pair::FastPairMessageType;
+using ash::quick_pair::NotDiscoverableAdvertisement;
 using ash::quick_pair::mojom::DecryptedPasskeyDataView;
 using ash::quick_pair::mojom::DecryptedResponseDataView;
 using ash::quick_pair::mojom::MessageType;
+using ash::quick_pair::mojom::NotDiscoverableAdvertisementDataView;
 }  // namespace
 
 template <>
@@ -68,6 +71,25 @@ class StructTraits<DecryptedPasskeyDataView, DecryptedPasskey> {
   }
 
   static bool Read(DecryptedPasskeyDataView data, DecryptedPasskey* out);
+};
+
+template <>
+class StructTraits<NotDiscoverableAdvertisementDataView,
+                   NotDiscoverableAdvertisement> {
+ public:
+  static std::vector<uint8_t> account_key_filter(
+      const NotDiscoverableAdvertisement& r) {
+    return r.account_key_filter;
+  }
+
+  static bool show_ui(const NotDiscoverableAdvertisement& r) {
+    return r.show_ui;
+  }
+
+  static uint8_t salt(const NotDiscoverableAdvertisement& r) { return r.salt; }
+
+  static bool Read(NotDiscoverableAdvertisementDataView data,
+                   NotDiscoverableAdvertisement* out);
 };
 
 }  // namespace mojo

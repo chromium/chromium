@@ -5,7 +5,9 @@
 #include "ash/services/quick_pair/public/mojom/fast_pair_traits.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <vector>
+#include "mojo/public/cpp/bindings/struct_traits.h"
 
 namespace mojo {
 
@@ -86,6 +88,20 @@ bool EnumTraits<MessageType, FastPairMessageType>::FromMojom(
   }
 
   return false;
+}
+
+// static
+bool StructTraits<NotDiscoverableAdvertisementDataView,
+                  NotDiscoverableAdvertisement>::
+    Read(NotDiscoverableAdvertisementDataView data,
+         NotDiscoverableAdvertisement* out) {
+  if (!data.ReadAccountKeyFilter(&out->account_key_filter))
+    return false;
+
+  out->salt = data.salt();
+  out->show_ui = data.show_ui();
+
+  return true;
 }
 
 }  // namespace mojo

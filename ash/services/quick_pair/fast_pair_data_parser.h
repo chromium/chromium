@@ -55,6 +55,11 @@ class FastPairDataParser : public mojom::FastPairDataParser {
       const std::vector<uint8_t>& encrypted_passkey_bytes,
       ParseDecryptedPasskeyCallback callback) override;
 
+  // Attempts to parse a 'Not Discoverable' advertisement from |service_data|.
+  void ParseNotDiscoverableAdvertisement(
+      const std::vector<uint8_t>& service_data,
+      ParseNotDiscoverableAdvertisementCallback callback) override;
+
  private:
   mojo::Receiver<mojom::FastPairDataParser> receiver_;
 };

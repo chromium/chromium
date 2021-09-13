@@ -36,6 +36,19 @@ struct DecryptedPasskey {
   array<uint8, 12> salt;
 };
 
+// Advertisement payload for Fast Pair 'not discoverable' devices. See
+// https://developers.google.com/nearby/fast-pair/spec#advertising_payload_fast_pair_account_data
+// for additional details (note: not all fields in the spec are in use, thus
+// aren't included in this struct).
+struct NotDiscoverableAdvertisement {
+  // Bytes in the account key filter.
+  array<uint8> account_key_filter;
+  // Random value generate by the Bluetooth device.
+  uint8 salt;
+  // Whether or not to show UI based on this advertisement.
+  bool show_ui;
+};
+
 // Parses untrusted bytes from a Bluetooth device during Fast Pair. Lives in a
 // sandboxed utility process which is launched by Ash. Instances should be
 // retrieved via QuickPairService.
@@ -55,4 +68,9 @@ interface FastPairDataParser {
   ParseDecryptedPasskey(
     array<uint8, 16> aes_key,
     array<uint8, 16> encrypted_passkey_bytes) => (DecryptedPasskey? passkey);
+
+  // Parses a 'not discoverable' advertisement instance from |service_data| if
+  // possible.
+  ParseNotDiscoverableAdvertisement(array<uint8> service_data)
+      => (NotDiscoverableAdvertisement? advertisement);
 };

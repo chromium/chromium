@@ -7,11 +7,14 @@
 #include <stddef.h>
 #include <iterator>
 
+#include "ash/quick_pair/common/fast_pair/fast_pair_service_data_creator.h"
 #include "ash/services/quick_pair/public/cpp/decrypted_passkey.h"
 #include "ash/services/quick_pair/public/cpp/decrypted_response.h"
 #include "ash/services/quick_pair/public/cpp/fast_pair_message_type.h"
+#include "ash/services/quick_pair/public/cpp/not_discoverable_advertisement.h"
 #include "ash/services/quick_pair/public/mojom/fast_pair_data_parser.mojom.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -20,6 +23,16 @@
 #include "third_party/boringssl/src/include/openssl/aes.h"
 
 namespace {
+
+constexpr int kNotDiscoverableAdvHeader = 0b00000110;
+constexpr int kAccountKeyFilterHeader = 0b01100000;
+constexpr int kAccountKeyFilterNoNotificationHeader = 0b01100010;
+constexpr int kSaltHeader = 0b00010001;
+constexpr int kSaltByte = 0x01;
+
+const std::string kModelId = "112233";
+const std::string kAccountKeyFilter = "112233445566";
+const std::string kSalt = "01";
 
 std::vector<uint8_t> aes_key_bytes = {0xA0, 0xBA, 0xF0, 0xBB, 0x95, 0x1F,
                                       0xF7, 0xB6, 0xCF, 0x5E, 0x3F, 0x45,
@@ -219,6 +232,185 @@ TEST_F(FastPairDataParserTest, DecryptProviderPasskeySuccessfully) {
 
   data_parser_->ParseDecryptedPasskey(aes_key_bytes, encrypted_bytes,
                                       std::move(callback));
+  run_loop.Run();
+}
+
+TEST_F(FastPairDataParserTest, ParseNotDiscoverableAdvertisement_Empty) {
+  base::RunLoop run_loop;
+  auto callback = base::BindLambdaForTesting(
+      [&run_loop](
+          const absl::optional<NotDiscoverableAdvertisement>& advertisement) {
+        EXPECT_FALSE(advertisement.has_value());
+        run_loop.Quit();
+      });
+
+  data_parser_->ParseNotDiscoverableAdvertisement(std::vector<uint8_t>(),
+                                                  std::move(callback));
+
+  run_loop.Run();
+}
+
+TEST_F(FastPairDataParserTest,
+       ParseNotDiscoverableAdvertisement_NoApplicibleData) {
+  std::vector<uint8_t> bytes = FastPairServiceDataCreator::Builder()
+                                   .SetHeader(kNotDiscoverableAdvHeader)
+                                   .Build()
+                                   ->CreateServiceData();
+  base::RunLoop run_loop;
+  auto callback = base::BindLambdaForTesting(
+      [&run_loop](
+          const absl::optional<NotDiscoverableAdvertisement>& advertisement) {
+        EXPECT_FALSE(advertisement.has_value());
+        run_loop.Quit();
+      });
+
+  data_parser_->ParseNotDiscoverableAdvertisement(bytes, std::move(callback));
+
+  run_loop.Run();
+}
+
+TEST_F(FastPairDataParserTest,
+       ParseNotDiscoverableAdvertisement_AccountKeyFilter) {
+  std::vector<uint8_t> bytes = FastPairServiceDataCreator::Builder()
+                                   .SetHeader(kNotDiscoverableAdvHeader)
+                                   .SetModelId(kModelId)
+                                   .AddExtraFieldHeader(kAccountKeyFilterHeader)
+                                   .AddExtraField(kAccountKeyFilter)
+                                   .AddExtraFieldHeader(kSaltHeader)
+                                   .AddExtraField(kSalt)
+                                   .Build()
+                                   ->CreateServiceData();
+  base::RunLoop run_loop;
+  auto callback = base::BindLambdaForTesting(
+      [&run_loop](
+          const absl::optional<NotDiscoverableAdvertisement>& advertisement) {
+        EXPECT_TRUE(advertisement.has_value());
+        EXPECT_EQ(kAccountKeyFilter,
+                  base::HexEncode(advertisement->account_key_filter));
+        EXPECT_EQ(kSaltByte, advertisement->salt);
+        EXPECT_TRUE(advertisement->show_ui);
+        run_loop.Quit();
+      });
+
+  data_parser_->ParseNotDiscoverableAdvertisement(bytes, std::move(callback));
+
+  run_loop.Run();
+}
+
+TEST_F(FastPairDataParserTest,
+       ParseNotDiscoverableAdvertisement_AccountKeyFilterNoNotification) {
+  std::vector<uint8_t> bytes =
+      FastPairServiceDataCreator::Builder()
+          .SetHeader(kNotDiscoverableAdvHeader)
+          .SetModelId(kModelId)
+          .AddExtraFieldHeader(kAccountKeyFilterNoNotificationHeader)
+          .AddExtraField(kAccountKeyFilter)
+          .AddExtraFieldHeader(kSaltHeader)
+          .AddExtraField(kSalt)
+          .Build()
+          ->CreateServiceData();
+  base::RunLoop run_loop;
+  auto callback = base::BindLambdaForTesting(
+      [&run_loop](
+          const absl::optional<NotDiscoverableAdvertisement>& advertisement) {
+        EXPECT_TRUE(advertisement.has_value());
+        EXPECT_EQ(kAccountKeyFilter,
+                  base::HexEncode(advertisement->account_key_filter));
+        EXPECT_EQ(kSaltByte, advertisement->salt);
+        EXPECT_FALSE(advertisement->show_ui);
+        run_loop.Quit();
+      });
+
+  data_parser_->ParseNotDiscoverableAdvertisement(bytes, std::move(callback));
+
+  run_loop.Run();
+}
+
+TEST_F(FastPairDataParserTest, ParseNotDiscoverableAdvertisement_WrongVersion) {
+  std::vector<uint8_t> bytes = FastPairServiceDataCreator::Builder()
+                                   .SetHeader(0b00100000)
+                                   .Build()
+                                   ->CreateServiceData();
+  base::RunLoop run_loop;
+  auto callback = base::BindLambdaForTesting(
+      [&run_loop](
+          const absl::optional<NotDiscoverableAdvertisement>& advertisement) {
+        EXPECT_FALSE(advertisement.has_value());
+        run_loop.Quit();
+      });
+
+  data_parser_->ParseNotDiscoverableAdvertisement(bytes, std::move(callback));
+
+  run_loop.Run();
+}
+
+TEST_F(FastPairDataParserTest,
+       ParseNotDiscoverableAdvertisement_ZeroLengthExtraField) {
+  std::vector<uint8_t> bytes = FastPairServiceDataCreator::Builder()
+                                   .SetHeader(kNotDiscoverableAdvHeader)
+                                   .SetModelId(kModelId)
+                                   .AddExtraFieldHeader(kAccountKeyFilterHeader)
+                                   .AddExtraField("")
+                                   .AddExtraFieldHeader(kSaltHeader)
+                                   .AddExtraField(kSalt)
+                                   .Build()
+                                   ->CreateServiceData();
+  base::RunLoop run_loop;
+  auto callback = base::BindLambdaForTesting(
+      [&run_loop](
+          const absl::optional<NotDiscoverableAdvertisement>& advertisement) {
+        EXPECT_FALSE(advertisement.has_value());
+        run_loop.Quit();
+      });
+
+  data_parser_->ParseNotDiscoverableAdvertisement(bytes, std::move(callback));
+
+  run_loop.Run();
+}
+
+TEST_F(FastPairDataParserTest, ParseNotDiscoverableAdvertisement_WrongType) {
+  std::vector<uint8_t> bytes = FastPairServiceDataCreator::Builder()
+                                   .SetHeader(kNotDiscoverableAdvHeader)
+                                   .SetModelId(kModelId)
+                                   .AddExtraFieldHeader(0b01100001)
+                                   .AddExtraField(kAccountKeyFilter)
+                                   .AddExtraFieldHeader(kSaltHeader)
+                                   .AddExtraField(kSalt)
+                                   .Build()
+                                   ->CreateServiceData();
+  base::RunLoop run_loop;
+  auto callback = base::BindLambdaForTesting(
+      [&run_loop](
+          const absl::optional<NotDiscoverableAdvertisement>& advertisement) {
+        EXPECT_FALSE(advertisement.has_value());
+        run_loop.Quit();
+      });
+
+  data_parser_->ParseNotDiscoverableAdvertisement(bytes, std::move(callback));
+
+  run_loop.Run();
+}
+
+TEST_F(FastPairDataParserTest, ParseNotDiscoverableAdvertisement_SaltTooLarge) {
+  std::vector<uint8_t> bytes = FastPairServiceDataCreator::Builder()
+                                   .SetHeader(kNotDiscoverableAdvHeader)
+                                   .SetModelId(kModelId)
+                                   .AddExtraFieldHeader(0b01100001)
+                                   .AddExtraField(kAccountKeyFilter)
+                                   .AddExtraFieldHeader(kSaltHeader)
+                                   .AddExtraField(kSalt + kSalt)
+                                   .Build()
+                                   ->CreateServiceData();
+  base::RunLoop run_loop;
+  auto callback = base::BindLambdaForTesting(
+      [&run_loop](
+          const absl::optional<NotDiscoverableAdvertisement>& advertisement) {
+        EXPECT_FALSE(advertisement.has_value());
+        run_loop.Quit();
+      });
+
+  data_parser_->ParseNotDiscoverableAdvertisement(bytes, std::move(callback));
+
   run_loop.Run();
 }
 

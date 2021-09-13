@@ -14,5 +14,7 @@ source_set("cpp") {
     "decrypted_response.cc",
     "decrypted_response.h",
     "fast_pair_message_type.h",
+    "not_discoverable_advertisement.cc",
+    "not_discoverable_advertisement.h",
   ]
 }
