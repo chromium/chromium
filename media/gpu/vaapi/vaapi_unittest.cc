@@ -369,6 +369,51 @@ TEST_F(VaapiTest, LowQualityEncodingSetting) {
   }
 }
 
+// This test checks the supported SVC scalability mode.
+TEST_F(VaapiTest, CheckSupportedSVCScalabilityModes) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const std::vector<SVCScalabilityMode> kSupportedTemporalSVC = {
+      SVCScalabilityMode::kL1T2, SVCScalabilityMode::kL1T3};
+  const std::vector<SVCScalabilityMode> kSupportedTemporalAndKeySVC = {
+      SVCScalabilityMode::kL1T2,    SVCScalabilityMode::kL1T3,
+      SVCScalabilityMode::kL2T2Key, SVCScalabilityMode::kL2T3Key,
+      SVCScalabilityMode::kL3T2Key, SVCScalabilityMode::kL3T3Key};
+#endif
+
+  const auto scalability_modes_vp9_profile0 =
+      VaapiWrapper::GetSupportedScalabilityModes(VP9PROFILE_PROFILE0,
+                                                 VAProfileVP9Profile0);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (base::FeatureList::IsEnabled(kVaapiVp9kSVCHWEncoding) &&
+      VaapiWrapper::GetDefaultVaEntryPoint(
+          VaapiWrapper::kEncodeConstantQuantizationParameter,
+          VAProfileVP9Profile0) == VAEntrypointEncSliceLP) {
+    EXPECT_EQ(scalability_modes_vp9_profile0, kSupportedTemporalAndKeySVC);
+  } else {
+    EXPECT_EQ(scalability_modes_vp9_profile0, kSupportedTemporalSVC);
+  }
+#else
+  EXPECT_TRUE(scalability_modes_vp9_profile0.empty());
+#endif
+
+  const auto scalability_modes_vp9_profile2 =
+      VaapiWrapper::GetSupportedScalabilityModes(VP9PROFILE_PROFILE2,
+                                                 VAProfileVP9Profile2);
+  EXPECT_TRUE(scalability_modes_vp9_profile2.empty());
+
+  const auto scalability_modes_h264_baseline =
+      VaapiWrapper::GetSupportedScalabilityModes(
+          H264PROFILE_BASELINE, VAProfileH264ConstrainedBaseline);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (base::FeatureList::IsEnabled(kVaapiH264TemporalLayerHWEncoding))
+    EXPECT_EQ(scalability_modes_h264_baseline, kSupportedTemporalSVC);
+  else
+    EXPECT_TRUE(scalability_modes_h264_baseline.empty());
+#else
+  EXPECT_TRUE(scalability_modes_h264_baseline.empty());
+#endif
+}
+
 class VaapiVppTest
     : public VaapiTest,
       public testing::WithParamInterface<std::tuple<uint32_t, uint32_t>> {
