@@ -1,25 +1,42 @@
 // Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #ifndef CHROME_BROWSER_LENS_REGION_SEARCH_LENS_REGION_SEARCH_CONTROLLER_H_
 #define CHROME_BROWSER_LENS_REGION_SEARCH_LENS_REGION_SEARCH_CONTROLLER_H_
 
 #include "chrome/browser/image_editor/screenshot_flow.h"
 #include "chrome/browser/lens/metrics/lens_metrics.h"
-#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
+
+class Browser;
+
+namespace content {
+class WebContents;
+enum class Visibility;
+}  // namespace content
+
+namespace views {
+class Widget;
+}  // namespace views
 
 namespace lens {
 
-class LensRegionSearchController {
+class LensRegionSearchController : public content::WebContentsObserver {
  public:
-  explicit LensRegionSearchController(content::WebContents* web_contents);
-  ~LensRegionSearchController();
+  explicit LensRegionSearchController(content::WebContents* web_contents,
+                                      Browser* browser);
+  ~LensRegionSearchController() override;
 
   // Creates and runs the drag and capture flow. When run, the user enters into
   // a screenshot capture mode with the ability to draw a rectagular region
   // around the web contents. When finished with selection, the region is
   // converted into a PNG and sent to Lens.
   void Start();
+
+  // Closes the UI overlay and user education bubble if currently being shown.
+  void Close();
+
   // Calculates the percentage that the image area takes up in the screen area.
   // This value is calculated as double and then floored to the nearest integer.
   static int CalculateViewportProportionFromAreas(int screen_height,
@@ -32,17 +49,28 @@ class LensRegionSearchController {
       int image_height,
       int image_width);
 
+  // content::WebContentsObserver:
+  void WebContentsDestroyed() override;
+  void OnVisibilityChanged(content::Visibility visibility) override;
+
  private:
   void RecordCaptureResult(lens::LensRegionSearchCaptureResult result);
+
   void RecordRegionSizeRelatedMetrics(gfx::Rect screen_bounds,
                                       gfx::Size region_size);
 
   void OnCaptureCompleted(const image_editor::ScreenshotCaptureResult& result);
+
   gfx::Image ResizeImageIfNecessary(const gfx::Image& image);
-  content::WebContents* source_web_contents_ = nullptr;
+
   std::unique_ptr<image_editor::ScreenshotFlow> screenshot_flow_;
 
+  Browser* browser_ = nullptr;
+
+  views::Widget* bubble_widget_ = nullptr;
+
   base::WeakPtr<LensRegionSearchController> weak_this_;
+
   base::WeakPtrFactory<LensRegionSearchController> weak_factory_{this};
 };
 }  // namespace lens

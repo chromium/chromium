@@ -194,7 +194,7 @@ void ScreenshotFlow::StartFullscreenCapture(
 }
 
 void ScreenshotFlow::CancelCapture() {
-  CompleteCapture(gfx::Rect());
+  RemoveUIOverlay();
 }
 
 void ScreenshotFlow::OnKeyEvent(ui::KeyEvent* event) {

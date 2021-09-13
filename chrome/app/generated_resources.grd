@@ -11811,6 +11811,10 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_LENS_REGION_SEARCH_EXPERIMENT_DESCRIPTION" desc="Description for Lens Region Search experiment">
       Right click and select “Search part of the page with Google Lens” to search any region of the site to learn more about the visual content you see while you browse and shop on the web.
     </message>
+    <!-- Lens Region Search bubble dialog -->
+    <message name="IDS_LENS_REGION_SEARCH_BUBBLE_TEXT" desc="Text that is shown in the Lens Region Search education bubble when starting the feature. Informs the user to drag over the screen to select a region to search with Google Lens.">
+      Drag over any image to search
+    </message>
 
     <if expr="is_cfm">
       <message name="IDS_CFM_NETWORK_SETTINGS_TITLE" desc="Title for CFM Network Settings dialog">
