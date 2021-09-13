@@ -733,7 +733,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallPlaceholder) {
             EXPECT_EQ(base::UTF8ToUTF16(kWebAppUrl.spec()), web_app_info.title);
             EXPECT_EQ(kWebAppUrl, web_app_info.start_url);
             EXPECT_EQ(web_app_info.user_display_mode, DisplayMode::kStandalone);
-            EXPECT_TRUE(web_app_info.icon_infos.empty());
+            EXPECT_TRUE(web_app_info.manifest_icons.empty());
             EXPECT_TRUE(web_app_info.icon_bitmaps.any.empty());
 
             run_loop.Quit();
@@ -777,7 +777,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest,
             EXPECT_EQ(base::UTF8ToUTF16(kWebAppUrl.spec()), web_app_info.title);
             EXPECT_EQ(kWebAppUrl, web_app_info.start_url);
             EXPECT_EQ(web_app_info.user_display_mode, DisplayMode::kStandalone);
-            EXPECT_TRUE(web_app_info.icon_infos.empty());
+            EXPECT_TRUE(web_app_info.manifest_icons.empty());
             EXPECT_TRUE(web_app_info.icon_bitmaps.any.empty());
 
             run_loop.Quit();

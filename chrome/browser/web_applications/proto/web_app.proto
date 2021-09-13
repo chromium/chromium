@@ -67,9 +67,9 @@ message ClientDataProto {
 message WebAppShortcutsMenuItemInfoProto {
   required string name = 1;
   required string url = 2;
-  repeated sync_pb.WebAppIconInfo shortcut_icon_infos = 3;
-  repeated sync_pb.WebAppIconInfo shortcut_icon_infos_maskable = 4;
-  repeated sync_pb.WebAppIconInfo shortcut_icon_infos_monochrome = 5;
+  repeated sync_pb.WebAppIconInfo shortcut_manifest_icons = 3;
+  repeated sync_pb.WebAppIconInfo shortcut_manifest_icons_maskable = 4;
+  repeated sync_pb.WebAppIconInfo shortcut_manifest_icons_monochrome = 5;
 }
 
 // List of icon sizes downloaded to disk for a shortcuts menu item.
@@ -115,8 +115,7 @@ message WebAppProto {
   required SourcesProto sources = 7;
   required bool is_locally_installed = 8;
   optional bool is_from_sync_and_pending_installation = 9;
-  // A list of icon infos.
-  repeated sync_pb.WebAppIconInfo icon_infos = 10;
+  repeated sync_pb.WebAppIconInfo manifest_icons = 10;
 
   // A list of icon sizes we successfully downloaded to store on disk, for icons
   // that are suitable for any purpose (ie. IconPurpose::ANY). See also:

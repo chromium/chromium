@@ -259,7 +259,7 @@ bool ManifestUpdateTask::IsUpdateNeededForManifest() const {
   // Allow app icon updating for certain apps, or if the existing icons are
   // empty - this means the app icon download during install failed.
   if (AllowUnpromptedIconUpdate(app_id_, registrar_) &&
-      web_application_info_->icon_infos != app->icon_infos()) {
+      web_application_info_->manifest_icons != app->manifest_icons()) {
     return true;
   }
 

@@ -110,8 +110,9 @@ void ExpectInitialManifestFieldsFromWebApplicationInfo(
   EXPECT_EQ("App Title", web_app->sync_fallback_data().name);
   EXPECT_EQ(url.Resolve("scope"), web_app->sync_fallback_data().scope);
   {
-    SCOPED_TRACE("web_app->icon_infos()");
-    ExpectInitialIconInfosFromWebApplicationInfo(web_app->icon_infos(), url);
+    SCOPED_TRACE("web_app->manifest_icons()");
+    ExpectInitialIconInfosFromWebApplicationInfo(web_app->manifest_icons(),
+                                                 url);
   }
   {
     SCOPED_TRACE("web_app->sync_fallback_data().icon_infos");

@@ -345,15 +345,15 @@ void WebApkInstallTask::OnArcFeaturesLoaded(
   // the manifest. Since we can't be perfect, it's okay to be roughly correct
   // and just send any URL of the correct purpose.
   auto& registrar = web_app_provider_->registrar();
-  const auto& icon_infos = registrar.GetAppIconInfos(app_id_);
+  const auto& manifest_icons = registrar.GetAppIconInfos(app_id_);
   auto it = std::find_if(
-      icon_infos.begin(), icon_infos.end(),
+      manifest_icons.begin(), manifest_icons.end(),
       [&icon_size_and_purpose](const apps::IconInfo& info) {
         return info.purpose ==
                ManifestPurposeToIconInfoPurpose(icon_size_and_purpose->purpose);
       });
 
-  if (it == icon_infos.end()) {
+  if (it == manifest_icons.end()) {
     LOG(ERROR) << "Could not find URL for icon";
     DeliverResult(WebApkInstallStatus::kAppInvalid);
     return;

@@ -87,10 +87,10 @@ void SetWebAppManifestFields(const WebApplicationInfo& web_app_info,
   sync_fallback_data.name = base::UTF16ToUTF8(web_app_info.title);
   sync_fallback_data.theme_color = web_app_info.theme_color;
   sync_fallback_data.scope = web_app_info.scope;
-  sync_fallback_data.icon_infos = web_app_info.icon_infos;
+  sync_fallback_data.icon_infos = web_app_info.manifest_icons;
   web_app.SetSyncFallbackData(std::move(sync_fallback_data));
 
-  web_app.SetIconInfos(web_app_info.icon_infos);
+  web_app.SetManifestIcons(web_app_info.manifest_icons);
   web_app.SetDownloadedIconSizes(
       IconPurpose::ANY, GetSquareSizePxs(web_app_info.icon_bitmaps.any));
   web_app.SetDownloadedIconSizes(

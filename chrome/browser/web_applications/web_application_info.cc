@@ -184,16 +184,16 @@ WebApplicationShortcutsMenuItemInfo::GetShortcutIconInfosForPurpose(
 void WebApplicationShortcutsMenuItemInfo::SetShortcutIconInfosForPurpose(
     IconPurpose purpose,
     std::vector<WebApplicationShortcutsMenuItemInfo::Icon>
-        shortcut_icon_infos) {
+        shortcut_manifest_icons) {
   switch (purpose) {
     case IconPurpose::ANY:
-      any = std::move(shortcut_icon_infos);
+      any = std::move(shortcut_manifest_icons);
       return;
     case IconPurpose::MONOCHROME:
-      monochrome = std::move(shortcut_icon_infos);
+      monochrome = std::move(shortcut_manifest_icons);
       return;
     case IconPurpose::MASKABLE:
-      maskable = std::move(shortcut_icon_infos);
+      maskable = std::move(shortcut_manifest_icons);
       return;
   }
 }
@@ -235,7 +235,7 @@ WebApplicationInfo::WebApplicationInfo(
     icon_info.url = icon->url;
     if (icon->square_size_px > 0)
       icon_info.square_size_px = icon->square_size_px;
-    icon_infos.push_back(icon_info);
+    manifest_icons.push_back(icon_info);
   }
   switch (metadata.mobile_capable) {
     case webapps::mojom::WebPageMobileCapable::UNSPECIFIED:

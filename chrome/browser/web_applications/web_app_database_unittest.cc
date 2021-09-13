@@ -301,7 +301,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_TRUE(app->scope().is_empty());
   EXPECT_FALSE(app->theme_color().has_value());
   EXPECT_FALSE(app->background_color().has_value());
-  EXPECT_TRUE(app->icon_infos().empty());
+  EXPECT_TRUE(app->manifest_icons().empty());
   EXPECT_TRUE(app->downloaded_icon_sizes(IconPurpose::ANY).empty());
   EXPECT_TRUE(app->downloaded_icon_sizes(IconPurpose::MASKABLE).empty());
   EXPECT_TRUE(app->downloaded_icon_sizes(IconPurpose::MONOCHROME).empty());
@@ -367,7 +367,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_TRUE(app_copy->last_badging_time().is_null());
   EXPECT_TRUE(app_copy->last_launch_time().is_null());
   EXPECT_TRUE(app_copy->install_time().is_null());
-  EXPECT_TRUE(app_copy->icon_infos().empty());
+  EXPECT_TRUE(app_copy->manifest_icons().empty());
   EXPECT_TRUE(app_copy->downloaded_icon_sizes(IconPurpose::ANY).empty());
   EXPECT_TRUE(app_copy->downloaded_icon_sizes(IconPurpose::MASKABLE).empty());
   EXPECT_TRUE(app_copy->downloaded_icon_sizes(IconPurpose::MONOCHROME).empty());
@@ -418,7 +418,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithManyIcons) {
     app->SetDownloadedIconSizes(purpose, std::move(sizes));
   }
 
-  app->SetIconInfos(std::move(icons));
+  app->SetManifestIcons(std::move(icons));
   app->SetIsGeneratedIcon(false);
 
   controller().RegisterApp(std::move(app));
@@ -428,10 +428,11 @@ TEST_F(WebAppDatabaseTest, WebAppWithManyIcons) {
 
   std::unique_ptr<WebApp>& app_copy = registry.at(app_id);
   EXPECT_EQ(static_cast<unsigned>(num_icons * kIconPurposes.size()),
-            app_copy->icon_infos().size());
+            app_copy->manifest_icons().size());
   for (int i = 1; i <= num_icons; ++i) {
     const int icon_size_in_px = i * i;
-    EXPECT_EQ(icon_size_in_px, app_copy->icon_infos()[i - 1].square_size_px);
+    EXPECT_EQ(icon_size_in_px,
+              app_copy->manifest_icons()[i - 1].square_size_px);
   }
   EXPECT_FALSE(app_copy->is_generated_icon());
 }

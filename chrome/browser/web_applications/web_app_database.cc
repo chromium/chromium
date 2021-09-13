@@ -303,8 +303,8 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
   local_data->set_is_from_sync_and_pending_installation(
       web_app.is_from_sync_and_pending_installation());
 
-  for (const apps::IconInfo& icon_info : web_app.icon_infos())
-    *(local_data->add_icon_infos()) = AppIconInfoToSyncProto(icon_info);
+  for (const apps::IconInfo& icon_info : web_app.manifest_icons())
+    *(local_data->add_manifest_icons()) = AppIconInfoToSyncProto(icon_info);
 
   for (SquareSizePx size : web_app.downloaded_icon_sizes(IconPurpose::ANY)) {
     local_data->add_downloaded_icon_sizes_purpose_any(size);
@@ -380,15 +380,15 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
         switch (purpose) {
           case IconPurpose::ANY:
             shortcut_icon_info_proto =
-                shortcut_info_proto->add_shortcut_icon_infos();
+                shortcut_info_proto->add_shortcut_manifest_icons();
             break;
           case IconPurpose::MASKABLE:
             shortcut_icon_info_proto =
-                shortcut_info_proto->add_shortcut_icon_infos_maskable();
+                shortcut_info_proto->add_shortcut_manifest_icons_maskable();
             break;
           case IconPurpose::MONOCHROME:
             shortcut_icon_info_proto =
-                shortcut_info_proto->add_shortcut_icon_infos_monochrome();
+                shortcut_info_proto->add_shortcut_manifest_icons_monochrome();
             break;
         }
 
@@ -649,13 +649,13 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   }
   web_app->SetSyncFallbackData(std::move(parsed_sync_fallback_data.value()));
 
-  absl::optional<std::vector<apps::IconInfo>> parsed_icon_infos =
-      ParseAppIconInfos("WebApp", local_data.icon_infos());
-  if (!parsed_icon_infos.has_value()) {
+  absl::optional<std::vector<apps::IconInfo>> parsed_manifest_icons =
+      ParseAppIconInfos("WebApp", local_data.manifest_icons());
+  if (!parsed_manifest_icons) {
     // ParseWebAppIconInfos() reports any errors.
     return nullptr;
   }
-  web_app->SetIconInfos(std::move(parsed_icon_infos.value()));
+  web_app->SetManifestIcons(std::move(parsed_manifest_icons.value()));
 
   std::vector<SquareSizePx> icon_sizes_any;
   for (int32_t size : local_data.downloaded_icon_sizes_purpose_any())
@@ -705,7 +705,7 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     if (WebAppFileHandlerManager::IconsEnabled()) {
       absl::optional<std::vector<apps::IconInfo>> parsed_icon_infos =
           ParseAppIconInfos("WebApp", file_handler_proto.icon_infos());
-      if (!parsed_icon_infos.has_value()) {
+      if (!parsed_icon_infos) {
         // ParseAppIconInfos() reports any errors.
         return nullptr;
       }
@@ -768,32 +768,33 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     shortcut_info.url = GURL(shortcut_info_proto.url());
     for (IconPurpose purpose : kIconPurposes) {
       // This default init needed to infer the sophisticated protobuf type.
-      const auto* shortcut_icon_infos =
-          &shortcut_info_proto.shortcut_icon_infos();
+      const auto* shortcut_manifest_icons =
+          &shortcut_info_proto.shortcut_manifest_icons();
 
       switch (purpose) {
         case IconPurpose::ANY:
-          shortcut_icon_infos = &shortcut_info_proto.shortcut_icon_infos();
+          shortcut_manifest_icons =
+              &shortcut_info_proto.shortcut_manifest_icons();
           break;
         case IconPurpose::MASKABLE:
-          shortcut_icon_infos =
-              &shortcut_info_proto.shortcut_icon_infos_maskable();
+          shortcut_manifest_icons =
+              &shortcut_info_proto.shortcut_manifest_icons_maskable();
           break;
         case IconPurpose::MONOCHROME:
-          shortcut_icon_infos =
-              &shortcut_info_proto.shortcut_icon_infos_monochrome();
+          shortcut_manifest_icons =
+              &shortcut_info_proto.shortcut_manifest_icons_monochrome();
           break;
       }
 
-      std::vector<WebApplicationShortcutsMenuItemInfo::Icon> icon_infos;
-      for (const auto& icon_info_proto : *shortcut_icon_infos) {
+      std::vector<WebApplicationShortcutsMenuItemInfo::Icon> manifest_icons;
+      for (const auto& icon_info_proto : *shortcut_manifest_icons) {
         WebApplicationShortcutsMenuItemInfo::Icon shortcut_icon_info;
         shortcut_icon_info.square_size_px = icon_info_proto.size_in_px();
         shortcut_icon_info.url = GURL(icon_info_proto.url());
-        icon_infos.emplace_back(std::move(shortcut_icon_info));
+        manifest_icons.emplace_back(std::move(shortcut_icon_info));
       }
       shortcut_info.SetShortcutIconInfosForPurpose(purpose,
-                                                   std::move(icon_infos));
+                                                   std::move(manifest_icons));
     }
     shortcuts_menu_item_infos.emplace_back(std::move(shortcut_info));
   }

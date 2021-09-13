@@ -69,7 +69,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   apps::IconInfo info;
   const GURL kAppIcon1("fav1.png");
   info.url = kAppIcon1;
-  web_app_info.icon_infos.push_back(info);
+  web_app_info.manifest_icons.push_back(info);
 
   blink::mojom::Manifest manifest;
   const GURL kAppUrl("http://www.chromium.org/index.html");
@@ -124,8 +124,8 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
 
   // The icon info from |web_app_info| should be left as is, since the manifest
   // doesn't have any icon information.
-  EXPECT_EQ(1u, web_app_info.icon_infos.size());
-  EXPECT_EQ(kAppIcon1, web_app_info.icon_infos[0].url);
+  EXPECT_EQ(1u, web_app_info.manifest_icons.size());
+  EXPECT_EQ(kAppIcon1, web_app_info.manifest_icons[0].url);
 
   // Test that |manifest.name| takes priority over |manifest.short_name|, and
   // that icons provided by the manifest replace icons in |web_app_info|.
@@ -166,12 +166,12 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   EXPECT_EQ(DisplayMode::kStandalone, web_app_info.display_override[1]);
 
   // We currently duplicate the app icons with multiple Purposes.
-  EXPECT_EQ(5u, web_app_info.icon_infos.size());
-  EXPECT_EQ(kAppIcon2, web_app_info.icon_infos[0].url);
-  EXPECT_EQ(kAppIcon3, web_app_info.icon_infos[1].url);
-  EXPECT_EQ(kAppIcon2, web_app_info.icon_infos[2].url);
-  EXPECT_EQ(kAppIcon3, web_app_info.icon_infos[3].url);
-  EXPECT_EQ(kAppIcon3, web_app_info.icon_infos[4].url);
+  EXPECT_EQ(5u, web_app_info.manifest_icons.size());
+  EXPECT_EQ(kAppIcon2, web_app_info.manifest_icons[0].url);
+  EXPECT_EQ(kAppIcon3, web_app_info.manifest_icons[1].url);
+  EXPECT_EQ(kAppIcon2, web_app_info.manifest_icons[2].url);
+  EXPECT_EQ(kAppIcon3, web_app_info.manifest_icons[3].url);
+  EXPECT_EQ(kAppIcon3, web_app_info.manifest_icons[4].url);
 
   // Check file handlers were updated.
   ASSERT_EQ(1u, web_app_info.file_handlers.size());
@@ -209,12 +209,13 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_EmptyName) {
   EXPECT_EQ(kAppShortName, web_app_info.title);
 }
 
-// Test that maskable icons are parsed as separate icon_infos from the manifest.
+// Test that maskable icons are parsed as separate manifest_icons from the
+// manifest.
 TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_MaskableIcon) {
   blink::mojom::Manifest manifest;
   blink::Manifest::ImageResource icon;
   icon.src = GURL("fav1.png");
-  // Produces 2 separate icon_infos.
+  // Produces 2 separate manifest_icons.
   icon.purpose = {Purpose::ANY, Purpose::MASKABLE};
   manifest.icons.push_back(icon);
   // Produces 1 icon_info.
@@ -227,9 +228,9 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_MaskableIcon) {
 
   UpdateWebAppInfoFromManifest(
       manifest, GURL("http://www.chromium.org/manifest.json"), &web_app_info);
-  EXPECT_EQ(4u, web_app_info.icon_infos.size());
+  EXPECT_EQ(4u, web_app_info.manifest_icons.size());
   std::map<IconPurpose, int> purpose_to_count;
-  for (const auto& icon_info : web_app_info.icon_infos) {
+  for (const auto& icon_info : web_app_info.manifest_icons) {
     purpose_to_count[IconInfoPurposeToManifestPurpose(icon_info.purpose)]++;
   }
   EXPECT_EQ(1, purpose_to_count[IconPurpose::ANY]);
@@ -247,13 +248,13 @@ TEST(WebAppInstallUtils,
   // WebApplicationInfo has existing icons (simulating found in page metadata).
   WebApplicationInfo web_app_info;
   apps::IconInfo icon_info;
-  web_app_info.icon_infos.push_back(icon_info);
-  web_app_info.icon_infos.push_back(icon_info);
+  web_app_info.manifest_icons.push_back(icon_info);
+  web_app_info.manifest_icons.push_back(icon_info);
 
   UpdateWebAppInfoFromManifest(
       manifest, GURL("http://www.chromium.org/manifest.json"), &web_app_info);
   // Metadata icons are replaced by manifest icon.
-  EXPECT_EQ(1U, web_app_info.icon_infos.size());
+  EXPECT_EQ(1U, web_app_info.manifest_icons.size());
 }
 
 TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_ShareTarget) {
@@ -341,7 +342,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestWithShortcuts) {
   apps::IconInfo info;
   const GURL kAppIcon1("fav1.png");
   info.url = kAppIcon1;
-  web_app_info.icon_infos.push_back(info);
+  web_app_info.manifest_icons.push_back(info);
 
   blink::mojom::Manifest manifest;
   const GURL kAppUrl("http://www.chromium.org/index.html");
@@ -389,8 +390,8 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestWithShortcuts) {
 
   // The icon info from |web_app_info| should be left as is, since the manifest
   // doesn't have any icon information.
-  EXPECT_EQ(1u, web_app_info.icon_infos.size());
-  EXPECT_EQ(kAppIcon1, web_app_info.icon_infos[0].url);
+  EXPECT_EQ(1u, web_app_info.manifest_icons.size());
+  EXPECT_EQ(kAppIcon1, web_app_info.manifest_icons[0].url);
 
   EXPECT_EQ(0u, web_app_info.shortcuts_menu_item_infos.size());
   EXPECT_EQ(web_app_info_original.shortcuts_menu_item_infos,
@@ -449,12 +450,12 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestWithShortcuts) {
   EXPECT_EQ(0u, web_app_info_original.shortcuts_menu_item_infos.size());
 
   // We currently duplicate the app icons with multiple Purposes.
-  EXPECT_EQ(5u, web_app_info.icon_infos.size());
-  EXPECT_EQ(kAppIcon2, web_app_info.icon_infos[0].url);
-  EXPECT_EQ(kAppIcon3, web_app_info.icon_infos[1].url);
-  EXPECT_EQ(kAppIcon2, web_app_info.icon_infos[2].url);
-  EXPECT_EQ(kAppIcon3, web_app_info.icon_infos[3].url);
-  EXPECT_EQ(kAppIcon3, web_app_info.icon_infos[4].url);
+  EXPECT_EQ(5u, web_app_info.manifest_icons.size());
+  EXPECT_EQ(kAppIcon2, web_app_info.manifest_icons[0].url);
+  EXPECT_EQ(kAppIcon3, web_app_info.manifest_icons[1].url);
+  EXPECT_EQ(kAppIcon2, web_app_info.manifest_icons[2].url);
+  EXPECT_EQ(kAppIcon3, web_app_info.manifest_icons[3].url);
+  EXPECT_EQ(kAppIcon3, web_app_info.manifest_icons[4].url);
 
   EXPECT_EQ(2u, web_app_info.shortcuts_menu_item_infos.size());
   EXPECT_EQ(1u, web_app_info.shortcuts_menu_item_infos[0]
@@ -515,7 +516,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestTooManyIcons) {
 
   UpdateWebAppInfoFromManifest(
       manifest, GURL("http://www.chromium.org/manifest.json"), &web_app_info);
-  EXPECT_EQ(20U, web_app_info.icon_infos.size());
+  EXPECT_EQ(20U, web_app_info.manifest_icons.size());
 }
 
 // Tests that we limit the number of shortcut icons declared by a site.
@@ -565,8 +566,8 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestIconsTooLarge) {
   UpdateWebAppInfoFromManifest(
       manifest, GURL("http://www.chromium.org/manifest.json"), &web_app_info);
 
-  EXPECT_EQ(10U, web_app_info.icon_infos.size());
-  for (const apps::IconInfo& icon : web_app_info.icon_infos) {
+  EXPECT_EQ(10U, web_app_info.manifest_icons.size());
+  for (const apps::IconInfo& icon : web_app_info.manifest_icons) {
     EXPECT_LE(icon.square_size_px, 1024);
   }
 }
@@ -611,30 +612,32 @@ TEST(WebAppInstallUtils, PopulateShortcutItemIcons) {
   const GURL kIconUrl1("http://www.chromium.org/shortcuts/icon1.png");
   {
     WebApplicationShortcutsMenuItemInfo shortcut_item;
-    std::vector<WebApplicationShortcutsMenuItemInfo::Icon> shortcut_icon_infos;
+    std::vector<WebApplicationShortcutsMenuItemInfo::Icon>
+        shortcut_manifest_icons;
     shortcut_item.name = std::u16string(kShortcutItemName) + u"1";
     shortcut_item.url = GURL("http://www.chromium.org/shortcuts/action");
     icon.url = kIconUrl1;
     icon.square_size_px = kIconSize;
-    shortcut_icon_infos.push_back(icon);
+    shortcut_manifest_icons.push_back(icon);
     shortcut_item.SetShortcutIconInfosForPurpose(
-        IconPurpose::ANY, std::move(shortcut_icon_infos));
+        IconPurpose::ANY, std::move(shortcut_manifest_icons));
     web_app_info.shortcuts_menu_item_infos.push_back(std::move(shortcut_item));
   }
 
   const GURL kIconUrl2("http://www.chromium.org/shortcuts/icon2.png");
   {
     WebApplicationShortcutsMenuItemInfo shortcut_item;
-    std::vector<WebApplicationShortcutsMenuItemInfo::Icon> shortcut_icon_infos;
+    std::vector<WebApplicationShortcutsMenuItemInfo::Icon>
+        shortcut_manifest_icons;
     shortcut_item.name = std::u16string(kShortcutItemName) + u"2";
     icon.url = kIconUrl1;
     icon.square_size_px = kIconSize;
-    shortcut_icon_infos.push_back(icon);
+    shortcut_manifest_icons.push_back(icon);
     icon.url = kIconUrl2;
     icon.square_size_px = 2 * kIconSize;
-    shortcut_icon_infos.push_back(icon);
+    shortcut_manifest_icons.push_back(icon);
     shortcut_item.SetShortcutIconInfosForPurpose(
-        IconPurpose::ANY, std::move(shortcut_icon_infos));
+        IconPurpose::ANY, std::move(shortcut_manifest_icons));
     web_app_info.shortcuts_menu_item_infos.push_back(std::move(shortcut_item));
   }
 
@@ -694,13 +697,13 @@ TEST(WebAppInstallUtils, PopulateProductIcons_MaskableIcons) {
   // Icon at URL 1 has both kAny and kMaskable purpose.
   info.url = kIconUrl1;
   info.purpose = apps::IconInfo::Purpose::kAny;
-  web_app_info.icon_infos.push_back(info);
+  web_app_info.manifest_icons.push_back(info);
   info.purpose = apps::IconInfo::Purpose::kMaskable;
-  web_app_info.icon_infos.push_back(info);
+  web_app_info.manifest_icons.push_back(info);
   // Icon at URL 2 has kMaskable purpose only.
   info.url = kIconUrl2;
   info.purpose = apps::IconInfo::Purpose::kMaskable;
-  web_app_info.icon_infos.push_back(info);
+  web_app_info.manifest_icons.push_back(info);
 
   PopulateProductIcons(&web_app_info, &icons_map);
 
@@ -727,7 +730,7 @@ TEST(WebAppInstallUtils, PopulateProductIcons_MaskableIconsOnly) {
   apps::IconInfo info;
   info.url = kIconUrl1;
   info.purpose = apps::IconInfo::Purpose::kMaskable;
-  web_app_info.icon_infos.push_back(info);
+  web_app_info.manifest_icons.push_back(info);
 
   PopulateProductIcons(&web_app_info, &icons_map);
 

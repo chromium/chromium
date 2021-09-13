@@ -292,9 +292,10 @@ class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
 
     info.icons =
         std::make_unique<std::vector<extensions::api::management::IconInfo>>();
-    std::vector<apps::IconInfo> icon_infos = registrar.GetAppIconInfos(app_id);
-    info.icons->reserve(icon_infos.size());
-    for (const apps::IconInfo& web_app_icon_info : icon_infos) {
+    std::vector<apps::IconInfo> manifest_icons =
+        registrar.GetAppIconInfos(app_id);
+    info.icons->reserve(manifest_icons.size());
+    for (const apps::IconInfo& web_app_icon_info : manifest_icons) {
       extensions::api::management::IconInfo icon_info;
       if (web_app_icon_info.square_size_px)
         icon_info.size = *web_app_icon_info.square_size_px;

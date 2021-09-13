@@ -630,7 +630,7 @@ TEST_F(WebAppInstallTaskTest, GetIcons) {
   EXPECT_TRUE(ContainsOneIconOfEachSize(web_app_info->icon_bitmaps.any));
 
   // Generated icons are not considered part of the manifest icons.
-  EXPECT_TRUE(web_app_info->icon_infos.empty());
+  EXPECT_TRUE(web_app_info->manifest_icons.empty());
 
   // Generated icons are not considered part of the manifest shortcut icons.
   EXPECT_TRUE(web_app_info->shortcuts_menu_item_infos.empty());
@@ -655,7 +655,7 @@ TEST_F(WebAppInstallTaskTest, GetIcons_NoIconsProvided) {
   EXPECT_TRUE(ContainsOneIconOfEachSize(web_app_info->icon_bitmaps.any));
 
   // Generated icons are not considered part of the manifest icons.
-  EXPECT_TRUE(web_app_info->icon_infos.empty());
+  EXPECT_TRUE(web_app_info->manifest_icons.empty());
 
   // Generated icons are not considered part of the manifest shortcut icons.
   EXPECT_TRUE(web_app_info->shortcuts_menu_item_infos.empty());
@@ -1014,7 +1014,7 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppFromManifestWithFallback_NoIcons) {
           EXPECT_FALSE(icon.second.drawsNothing());
         }
 
-        EXPECT_TRUE(final_web_app_info->icon_infos.empty());
+        EXPECT_TRUE(final_web_app_info->manifest_icons.empty());
 
         run_loop.Quit();
       }));
@@ -1240,7 +1240,7 @@ TEST_F(WebAppInstallTaskTest, LoadAndRetrieveWebApplicationInfoWithIcons) {
         LoadAndRetrieveWebApplicationInfoWithIcons(url);
     EXPECT_TRUE(result);
     EXPECT_EQ(result->start_url, start_url);
-    EXPECT_TRUE(result->icon_infos.empty());
+    EXPECT_TRUE(result->manifest_icons.empty());
     EXPECT_FALSE(result->icon_bitmaps.any.empty());
   }
   ResetInstallTask();

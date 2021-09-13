@@ -51,7 +51,7 @@ std::unique_ptr<WebApplicationInfo> BuildDefaultWebAppInfo() {
   icon.square_size_px = 64;
   icon.purpose = apps::IconInfo::Purpose::kAny;
   icon.url = GURL(kTestAppIcon);
-  app_info->icon_infos.push_back(icon);
+  app_info->manifest_icons.push_back(icon);
 
   apps::ShareTarget target;
   target.action = GURL(kTestAppActionUrl);

@@ -73,7 +73,7 @@ void TestWebAppRegistryController::ApplySyncChanges_AddApps(
   for (const std::unique_ptr<WebApp>& web_app_server_state :
        apps_server_state) {
     // Only fallback icon infos from SyncFallbackData are used.
-    DCHECK(web_app_server_state->icon_infos().empty());
+    DCHECK(web_app_server_state->manifest_icons().empty());
 
     std::unique_ptr<syncer::EntityData> entity_data =
         CreateSyncEntityData(*web_app_server_state);

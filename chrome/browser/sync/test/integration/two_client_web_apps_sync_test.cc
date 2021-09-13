@@ -262,18 +262,18 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncFaviconOnly) {
   }
   EXPECT_EQ(GetRegistrar(sourceProfile).GetAppShortName(app_id),
             "Favicon only");
-  std::vector<apps::IconInfo> icon_infos =
+  std::vector<apps::IconInfo> manifest_icons =
       GetRegistrar(sourceProfile).GetAppIconInfos(app_id);
-  ASSERT_EQ(icon_infos.size(), 1u);
-  EXPECT_FALSE(icon_infos[0].square_size_px.has_value());
+  ASSERT_EQ(manifest_icons.size(), 1u);
+  EXPECT_FALSE(manifest_icons[0].square_size_px.has_value());
 
   // Wait for app to sync across.
   AppId synced_app_id = destInstallObserver.Wait();
   EXPECT_EQ(synced_app_id, app_id);
   EXPECT_EQ(GetRegistrar(destProfile).GetAppShortName(app_id), "Favicon only");
-  icon_infos = GetRegistrar(destProfile).GetAppIconInfos(app_id);
-  ASSERT_EQ(icon_infos.size(), 1u);
-  EXPECT_FALSE(icon_infos[0].square_size_px.has_value());
+  manifest_icons = GetRegistrar(destProfile).GetAppIconInfos(app_id);
+  ASSERT_EQ(manifest_icons.size(), 1u);
+  EXPECT_FALSE(manifest_icons[0].square_size_px.has_value());
 }
 
 // Tests that we don't use the manifest start_url if it differs from what came
@@ -378,7 +378,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUsingIconUrlFallback) {
   icon_info.square_size_px = 192;
   icon_info.url = embedded_test_server()->GetURL("/web_apps/blue-192.png");
   icon_info.purpose = apps::IconInfo::Purpose::kAny;
-  info.icon_infos.push_back(icon_info);
+  info.manifest_icons.push_back(icon_info);
   AppId app_id = apps_helper::InstallWebApp(GetProfile(0), info);
   EXPECT_EQ(GetRegistrar(source_profile).GetAppShortName(app_id), "Blue icon");
 

@@ -223,7 +223,7 @@ void AddIconsToWebApplicationInfo(
     for (size_t i = 0; i < info.sizes_px.size(); ++i) {
       apps::IconInfo apps_icon_info =
           CreateIconInfo(icons_base_url, info.purpose, info.sizes_px[i]);
-      web_application_info->icon_infos.push_back(std::move(apps_icon_info));
+      web_application_info->manifest_icons.push_back(std::move(apps_icon_info));
 
       AddGeneratedIcon(&generated_bitmaps, info.sizes_px[i], info.colors[i]);
     }

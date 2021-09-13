@@ -175,7 +175,7 @@ TEST(WebAppTest, EmptyAppAsDebugValue) {
    "downloaded_shortcuts_menu_icons_sizes": [  ],
    "file_handler_permission_blocked": false,
    "file_handlers": [  ],
-   "icon_infos": [  ],
+   "manifest_icons": [  ],
    "install_time": "1601-01-01 00:00:00.000 UTC",
    "is_generated_icon": false,
    "is_from_sync_and_pending_installation": false,
@@ -198,7 +198,7 @@ TEST(WebAppTest, EmptyAppAsDebugValue) {
    "sources": [  ],
    "start_url": "",
    "sync_fallback_data": {
-      "icon_infos": [  ],
+      "manifest_icons": [  ],
       "name": "",
       "scope": "",
       "theme_color": "none"
@@ -348,7 +348,7 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
          "url": "https://example.com/image2.png"
       } ]
    } ],
-   "icon_infos": [ {
+   "manifest_icons": [ {
       "purpose": "kAny",
       "square_size_px": null,
       "url": "https://example.com/icon1783899413"
@@ -451,7 +451,7 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
    "sources": [ "WebAppStore", "Sync", "Default" ],
    "start_url": "https://example.com/scope1234/start1234",
    "sync_fallback_data": {
-      "icon_infos": [ {
+      "manifest_icons": [ {
          "purpose": "kAny",
          "square_size_px": null,
          "url": "https://example.com/icon1783899413"

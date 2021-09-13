@@ -25,7 +25,7 @@ struct IconResourceInfo {
 // key.
 void CreateIconInfoForSystemWebApp(
     const GURL& app_url,
-    const std::initializer_list<IconResourceInfo>& icon_infos,
+    const std::initializer_list<IconResourceInfo>& manifest_icons,
     WebApplicationInfo& web_app);
 
 }  // namespace web_app

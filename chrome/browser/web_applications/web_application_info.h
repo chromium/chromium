@@ -136,8 +136,9 @@ struct WebApplicationShortcutsMenuItemInfo {
 
   const std::vector<Icon>& GetShortcutIconInfosForPurpose(
       IconPurpose purpose) const;
-  void SetShortcutIconInfosForPurpose(IconPurpose purpose,
-                                      std::vector<Icon> shortcut_icon_infos);
+  void SetShortcutIconInfosForPurpose(
+      IconPurpose purpose,
+      std::vector<Icon> shortcut_manifest_icons);
 
   base::Value AsDebugValue() const;
 
@@ -203,7 +204,7 @@ struct WebApplicationInfo {
   // List of icon URLs with associated square size and purpose. The size
   // corresponds to what was specified in the manifest rather than any actual
   // size of a downloaded icon.
-  std::vector<apps::IconInfo> icon_infos;
+  std::vector<apps::IconInfo> manifest_icons;
 
   // Icon bitmaps, keyed by their square size.
   IconBitmaps icon_bitmaps;

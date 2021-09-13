@@ -209,8 +209,8 @@ void WebApp::SetIsUninstalling(bool is_uninstalling) {
   is_uninstalling_ = is_uninstalling;
 }
 
-void WebApp::SetIconInfos(std::vector<apps::IconInfo> icon_infos) {
-  icon_infos_ = std::move(icon_infos);
+void WebApp::SetManifestIcons(std::vector<apps::IconInfo> manifest_icons) {
+  manifest_icons_ = std::move(manifest_icons);
 }
 
 void WebApp::SetDownloadedIconSizes(IconPurpose purpose, SortedSizesPx sizes) {
@@ -361,10 +361,10 @@ base::Value WebApp::SyncFallbackData::AsDebugValue() const {
   root.SetStringKey("name", name);
   root.SetStringKey("theme_color", ColorToString(theme_color));
   root.SetStringKey("scope", scope.spec());
-  base::Value& icon_infos_json =
-      *root.SetKey("icon_infos", base::Value(base::Value::Type::LIST));
+  base::Value& manifest_icons_json =
+      *root.SetKey("manifest_icons", base::Value(base::Value::Type::LIST));
   for (const apps::IconInfo& icon_info : icon_infos)
-    icon_infos_json.Append(icon_info.AsDebugValue());
+    manifest_icons_json.Append(icon_info.AsDebugValue());
   return root;
 }
 
@@ -392,7 +392,7 @@ bool WebApp::operator==(const WebApp& other) const {
         app.is_locally_installed_,
         app.is_from_sync_and_pending_installation_,
         app.is_uninstalling_,
-        app.icon_infos_,
+        app.manifest_icons_,
         app.downloaded_icon_sizes_any_,
         app.downloaded_icon_sizes_monochrome_,
         app.downloaded_icon_sizes_maskable_,
@@ -514,7 +514,7 @@ base::Value WebApp::AsDebugValue() const {
 
   root.SetKey("file_handlers", ConvertDebugValueList(file_handlers_));
 
-  root.SetKey("icon_infos", ConvertDebugValueList(icon_infos_));
+  root.SetKey("manifest_icons", ConvertDebugValueList(manifest_icons_));
 
   root.SetStringKey("install_time", ConvertToString(install_time_));
 

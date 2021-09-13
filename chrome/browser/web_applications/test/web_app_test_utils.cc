@@ -314,7 +314,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
 
   const SquareSizePx size = 256;
   const int num_icons = random.next_uint(10);
-  std::vector<apps::IconInfo> icon_infos(num_icons);
+  std::vector<apps::IconInfo> manifest_icons(num_icons);
   for (int i = 0; i < num_icons; i++) {
     apps::IconInfo icon;
     icon.url =
@@ -331,9 +331,9 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
       icon.purpose = apps::IconInfo::Purpose::kMonochrome;
     // if (purpose == 3), leave purpose unset. Should default to ANY.
 
-    icon_infos[i] = icon;
+    manifest_icons[i] = icon;
   }
-  app->SetIconInfos(icon_infos);
+  app->SetManifestIcons(manifest_icons);
   if (random.next_bool())
     app->SetDownloadedIconSizes(IconPurpose::ANY, {size});
   if (random.next_bool())
@@ -386,7 +386,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
   sync_fallback_data.name = "Sync" + name;
   sync_fallback_data.theme_color = synced_theme_color;
   sync_fallback_data.scope = app->scope();
-  sync_fallback_data.icon_infos = app->icon_infos();
+  sync_fallback_data.icon_infos = app->manifest_icons();
   app->SetSyncFallbackData(std::move(sync_fallback_data));
 
   if (random.next_bool()) {

@@ -70,7 +70,7 @@ class FakeWebPageMetadataAgent
     web_page_metadata->application_url = web_app_info_.start_url;
 
     // Convert more fields as needed.
-    DCHECK(web_app_info_.icon_infos.empty());
+    DCHECK(web_app_info_.manifest_icons.empty());
     DCHECK(web_app_info_.mobile_capable ==
            WebApplicationInfo::MOBILE_CAPABLE_UNSPECIFIED);
 

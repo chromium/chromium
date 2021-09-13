@@ -44,9 +44,9 @@ sync_pb::WebAppIconInfo_Purpose IconInfoPurposeToSyncPurpose(
 
 absl::optional<std::vector<apps::IconInfo>> ParseAppIconInfos(
     const char* container_name_for_logging,
-    RepeatedIconInfosProto icon_infos_proto) {
-  std::vector<apps::IconInfo> icon_infos;
-  for (const sync_pb::WebAppIconInfo& icon_info_proto : icon_infos_proto) {
+    RepeatedIconInfosProto manifest_icons_proto) {
+  std::vector<apps::IconInfo> manifest_icons;
+  for (const sync_pb::WebAppIconInfo& icon_info_proto : manifest_icons_proto) {
     apps::IconInfo icon_info;
 
     if (icon_info_proto.has_size_in_px())
@@ -75,9 +75,9 @@ absl::optional<std::vector<apps::IconInfo>> ParseAppIconInfos(
       icon_info.purpose = apps::IconInfo::Purpose::kAny;
     }
 
-    icon_infos.push_back(std::move(icon_info));
+    manifest_icons.push_back(std::move(icon_info));
   }
-  return icon_infos;
+  return manifest_icons;
 }
 
 sync_pb::WebAppSpecifics WebAppToSyncProto(const WebApp& app) {
@@ -136,7 +136,7 @@ absl::optional<WebApp::SyncFallbackData> ParseSyncFallbackDataStruct(
 
   absl::optional<std::vector<apps::IconInfo>> parsed_icon_infos =
       ParseAppIconInfos("WebAppSpecifics", sync_proto.icon_infos());
-  if (!parsed_icon_infos.has_value())
+  if (!parsed_icon_infos)
     return absl::nullopt;
 
   parsed_sync_fallback_data.icon_infos = std::move(parsed_icon_infos.value());

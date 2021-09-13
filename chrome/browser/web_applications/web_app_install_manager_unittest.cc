@@ -76,7 +76,7 @@ std::unique_ptr<WebApplicationInfo> ConvertWebAppToRendererWebApplicationInfo(
 std::vector<blink::Manifest::ImageResource> ConvertWebAppIconsToImageResources(
     const WebApp& app) {
   std::vector<blink::Manifest::ImageResource> icons;
-  for (const apps::IconInfo& icon_info : app.icon_infos()) {
+  for (const apps::IconInfo& icon_info : app.manifest_icons()) {
     blink::Manifest::ImageResource icon;
     icon.src = icon_info.url;
     // TODO(estade): remove this cast.
@@ -106,7 +106,7 @@ blink::mojom::ManifestPtr ConvertWebAppToManifest(const WebApp& app) {
 
 IconsMap ConvertWebAppIconsToIconsMap(const WebApp& app) {
   IconsMap icons_map;
-  for (const apps::IconInfo& icon_info : app.icon_infos()) {
+  for (const apps::IconInfo& icon_info : app.manifest_icons()) {
     icons_map[icon_info.url] = {CreateSquareIcon(
         icon_info.square_size_px.value_or(kDefaultImageSize), SK_ColorBLACK)};
   }
@@ -684,17 +684,17 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, InstallWebAppsAfterSync_Success) {
   expected_app->SetThemeColor(SK_ColorCYAN);
   expected_app->SetDisplayMode(DisplayMode::kBrowser);
 
-  std::vector<apps::IconInfo> icon_infos;
+  std::vector<apps::IconInfo> manifest_icons;
   std::vector<int> sizes;
   for (int size : SizesToGenerate()) {
     apps::IconInfo icon_info;
     icon_info.square_size_px = size;
     icon_info.url =
         GURL{url_path + "/icon" + base::NumberToString(size) + ".png"};
-    icon_infos.push_back(std::move(icon_info));
+    manifest_icons.push_back(std::move(icon_info));
     sizes.push_back(size);
   }
-  expected_app->SetIconInfos(std::move(icon_infos));
+  expected_app->SetManifestIcons(std::move(manifest_icons));
   expected_app->SetDownloadedIconSizes(IconPurpose::ANY, std::move(sizes));
 
   {
@@ -702,7 +702,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, InstallWebAppsAfterSync_Success) {
     sync_fallback_data.name = "Name";
     sync_fallback_data.theme_color = SK_ColorCYAN;
     sync_fallback_data.scope = url;
-    sync_fallback_data.icon_infos = expected_app->icon_infos();
+    sync_fallback_data.icon_infos = expected_app->manifest_icons();
     expected_app->SetSyncFallbackData(std::move(sync_fallback_data));
   }
 
@@ -711,7 +711,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, InstallWebAppsAfterSync_Success) {
           expected_app->start_url(), "Name from sync",
           expected_app->user_display_mode(), SK_ColorRED,
           expected_app->is_locally_installed(), expected_app->scope(),
-          expected_app->icon_infos());
+          expected_app->manifest_icons());
 
   // Init using a copy.
   InitRegistrarWithApp(std::make_unique<WebApp>(*app_in_sync_install));
@@ -757,17 +757,17 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, InstallWebAppsAfterSync_Fallback) {
   expected_app->SetThemeColor(SK_ColorRED);
   // |scope| and |description| are empty here. |display_mode| is |kUndefined|.
 
-  std::vector<apps::IconInfo> icon_infos;
+  std::vector<apps::IconInfo> manifest_icons;
   std::vector<int> sizes;
   for (int size : SizesToGenerate()) {
     apps::IconInfo icon_info;
     icon_info.square_size_px = size;
     icon_info.url =
         GURL{url.spec() + "/icon" + base::NumberToString(size) + ".png"};
-    icon_infos.push_back(std::move(icon_info));
+    manifest_icons.push_back(std::move(icon_info));
     sizes.push_back(size);
   }
-  expected_app->SetIconInfos(std::move(icon_infos));
+  expected_app->SetManifestIcons(std::move(manifest_icons));
   expected_app->SetDownloadedIconSizes(IconPurpose::ANY, std::move(sizes));
   expected_app->SetIsGeneratedIcon(true);
 
@@ -776,7 +776,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, InstallWebAppsAfterSync_Fallback) {
     sync_fallback_data.name = "Name from sync";
     sync_fallback_data.theme_color = SK_ColorRED;
     sync_fallback_data.scope = expected_app->scope();
-    sync_fallback_data.icon_infos = expected_app->icon_infos();
+    sync_fallback_data.icon_infos = expected_app->manifest_icons();
     expected_app->SetSyncFallbackData(std::move(sync_fallback_data));
   }
 
@@ -786,7 +786,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, InstallWebAppsAfterSync_Fallback) {
           expected_app->user_display_mode(),
           expected_app->theme_color().value(),
           expected_app->is_locally_installed(), expected_app->scope(),
-          expected_app->icon_infos());
+          expected_app->manifest_icons());
 
   // Init using a copy.
   InitRegistrarWithApp(std::make_unique<WebApp>(*app_in_sync_install));
@@ -1122,7 +1122,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
   EXPECT_EQ(DisplayMode::kStandalone, web_app->display_mode());
   EXPECT_EQ(DisplayMode::kStandalone, web_app->user_display_mode());
 
-  EXPECT_TRUE(web_app->icon_infos().empty());
+  EXPECT_TRUE(web_app->manifest_icons().empty());
   EXPECT_TRUE(web_app->sync_fallback_data().icon_infos.empty());
 
   EXPECT_EQ(SK_ColorYELLOW, IconManagerReadAppIconPixel(icon_manager(), app_id,
@@ -1180,7 +1180,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
   EXPECT_EQ("https://example.com/sync_scope",
             web_app->sync_fallback_data().scope.spec());
 
-  EXPECT_TRUE(web_app->icon_infos().empty());
+  EXPECT_TRUE(web_app->manifest_icons().empty());
   ASSERT_EQ(1u, web_app->sync_fallback_data().icon_infos.size());
 
   const apps::IconInfo& app_icon_info =
