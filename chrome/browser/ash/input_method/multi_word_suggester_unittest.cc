@@ -286,7 +286,7 @@ TEST(MultiWordSuggesterTest,
   EXPECT_FALSE(suggester.Suggest(u"this is some tex", 16, 16));
 }
 
-TEST(MultiWordSuggesterTest, ReturnsGenericActionIfNoSuggestionShown) {
+TEST(MultiWordSuggesterTest, ReturnsGenericActionIfNoSuggestionHasBeenShown) {
   FakeSuggestionHandler suggestion_handler;
   MultiWordSuggester suggester(&suggestion_handler);
 
@@ -331,6 +331,48 @@ TEST(MultiWordSuggesterTest,
   suggester.OnExternalSuggestionsUpdated(suggestions);
 
   EXPECT_EQ(suggester.GetProposeActionType(),
+            AssistiveType::kMultiWordPrediction);
+}
+
+TEST(MultiWordSuggesterTest,
+     ReturnsCompletionActionAfterAcceptingCompletionSuggestion) {
+  FakeSuggestionHandler suggestion_handler;
+  MultiWordSuggester suggester(&suggestion_handler);
+
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "aren\'t you"},
+  };
+
+  suggester.OnFocus(kFocusedContextId);
+  suggester.OnSurroundingTextChanged(u"why ar", 6, 6);
+  suggester.Suggest(u"why", 6, 6);
+  suggester.OnExternalSuggestionsUpdated(suggestions);
+  SendKeyEvent(&suggester, ui::DomCode::TAB);
+
+  ASSERT_EQ(suggester.GetProposeActionType(),
+            AssistiveType::kMultiWordCompletion);
+}
+
+TEST(MultiWordSuggesterTest,
+     ReturnsPredictionActionAfterAcceptingPredictionSuggestion) {
+  FakeSuggestionHandler suggestion_handler;
+  MultiWordSuggester suggester(&suggestion_handler);
+
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "aren\'t you"},
+  };
+
+  suggester.OnFocus(kFocusedContextId);
+  suggester.OnSurroundingTextChanged(u"why", 3, 3);
+  suggester.Suggest(u"why", 3, 3);
+  suggester.OnExternalSuggestionsUpdated(suggestions);
+  SendKeyEvent(&suggester, ui::DomCode::TAB);
+
+  ASSERT_EQ(suggester.GetProposeActionType(),
             AssistiveType::kMultiWordPrediction);
 }
 

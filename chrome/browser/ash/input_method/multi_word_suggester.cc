@@ -134,6 +134,9 @@ void MultiWordSuggester::OnExternalSuggestionsUpdated(
           : 0;
 
   DisplaySuggestion(suggestion_text, confirmed_length);
+  state_.UpdateState(suggestion.mode == TextSuggestionMode::kCompletion
+                         ? SuggestionState::kCompletionSuggestionShown
+                         : SuggestionState::kPredictionSuggestionShown);
 
   size_t start_pos = text_state_.text.length() >= confirmed_length
                          ? text_state_.text.length() - confirmed_length
@@ -184,6 +187,7 @@ bool MultiWordSuggester::Suggest(const std::u16string& text,
   if (matches_last_suggestion) {
     int confirmed_length = possibly_confirmed_text.length();
     DisplaySuggestion(last_suggestion_shown.text, confirmed_length);
+    state_.UpdateState(SuggestionState::kTrackingLastSuggestionShown);
     suggestion_state_->confirmed_length = confirmed_length;
     return true;
   }
@@ -230,15 +234,7 @@ void MultiWordSuggester::DismissSuggestion() {
 }
 
 AssistiveType MultiWordSuggester::GetProposeActionType() {
-  if (!suggestion_state_)
-    return AssistiveType::kGenericAction;
-
-  AssistiveType multi_word_type =
-      suggestion_state_->suggestion_mode == TextSuggestionMode::kCompletion
-          ? AssistiveType::kMultiWordCompletion
-          : AssistiveType::kMultiWordPrediction;
-
-  return multi_word_type;
+  return state_.GetLastSuggestionType();
 }
 
 bool MultiWordSuggester::HasSuggestions() {
@@ -264,8 +260,6 @@ void MultiWordSuggester::DisplaySuggestion(const std::u16string& text,
     LOG(ERROR) << "suggest: Failed to show suggestion in assistive framework"
                << " - " << error;
   }
-
-  state_.UpdateState(SuggestionState::State::kSuggestionShown);
 }
 
 void MultiWordSuggester::ResetSuggestionState() {
@@ -292,21 +286,37 @@ MultiWordSuggester::SuggestionState::SuggestionState(
 MultiWordSuggester::SuggestionState::~SuggestionState() = default;
 
 void MultiWordSuggester::SuggestionState::UpdateState(const State& state) {
-  if (state_ == State::kNoSuggestionShown && state == State::kSuggestionShown) {
+  if (state == State::kPredictionSuggestionShown) {
+    last_suggestion_type_ = AssistiveType::kMultiWordPrediction;
+  }
+
+  if (state == State::kCompletionSuggestionShown) {
+    last_suggestion_type_ = AssistiveType::kMultiWordCompletion;
+  }
+
+  if (state_ == State::kNoSuggestionShown &&
+      (state == State::kPredictionSuggestionShown ||
+       state == State::kCompletionSuggestionShown)) {
     suggester_->Announce(kSuggestionShownMessage);
   }
 
-  if (state_ == State::kSuggestionShown &&
+  if ((state_ == State::kPredictionSuggestionShown ||
+       state_ == State::kCompletionSuggestionShown) &&
       state == State::kSuggestionAccepted) {
     suggester_->Announce(kSuggestionAcceptedMessage);
   }
 
-  if (state_ == State::kSuggestionShown &&
+  if ((state_ == State::kPredictionSuggestionShown ||
+       state_ == State::kCompletionSuggestionShown) &&
       state == State::kSuggestionDismissed) {
     suggester_->Announce(kSuggestionDismissedMessage);
   }
 
   state_ = state;
+}
+
+AssistiveType MultiWordSuggester::SuggestionState::GetLastSuggestionType() {
+  return last_suggestion_type_;
 }
 
 }  // namespace input_method

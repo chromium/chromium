@@ -62,12 +62,15 @@ class MultiWordSuggester : public Suggester {
                                 size_t anchor_pos);
 
  private:
-  // Used to capture any internal state around the current suggestion shown.
+  // Used to capture any internal state around the previously or currently
+  // shown suggestions.
   class SuggestionState {
    public:
     enum State {
       kNoSuggestionShown,
-      kSuggestionShown,
+      kPredictionSuggestionShown,
+      kCompletionSuggestionShown,
+      kTrackingLastSuggestionShown,
       kSuggestionDismissed,
       kSuggestionAccepted,
     };
@@ -79,12 +82,19 @@ class MultiWordSuggester : public Suggester {
     // any actions required during a transition.
     void UpdateState(const State& state);
 
+    // Returns the last suggestion type shown to the user. This suggestion may,
+    // or may not, be currently showing to the user.
+    AssistiveType GetLastSuggestionType();
+
    private:
     // Not owned by this class
     MultiWordSuggester* suggester_;
 
     // Current state
     State state_ = State::kNoSuggestionShown;
+
+    // The last suggestion type shown to the user.
+    AssistiveType last_suggestion_type_ = AssistiveType::kGenericAction;
   };
 
   void DisplaySuggestion(const std::u16string& text, int confirmed_length);
