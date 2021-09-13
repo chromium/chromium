@@ -365,8 +365,10 @@ TEST_P(AppListMainViewTest, DragReparentItemOntoPageSwitcher) {
 
   // The folder should not be destroyed.
   EXPECT_EQ(kNumApps + 1, GetRootViewModel()->view_size());
-  EXPECT_TRUE(delegate_->GetTestModel()->FindFolderItem("single_item_folder"));
-  EXPECT_EQ(1, GetFolderViewModel()->view_size());
+  AppListFolderItem* const folder_item =
+      delegate_->GetTestModel()->FindFolderItem("single_item_folder");
+  ASSERT_TRUE(folder_item);
+  EXPECT_EQ(1u, folder_item->item_list()->item_count());
 }
 
 // Test that an interrupted drag while reparenting an item from a folder, when
@@ -418,10 +420,12 @@ TEST_P(AppListMainViewTest, ReparentSingleItemOntoSelf) {
   GetFolderGridView()->EndDrag(false);
 
   // The app list model should remain unchanged.
-  EXPECT_EQ(1, GetFolderViewModel()->view_size());
   EXPECT_EQ(2, GetRootViewModel()->view_size());
   EXPECT_EQ(folder_id, GetRootGridView()->GetItemViewAt(0)->item()->id());
-  EXPECT_TRUE(delegate_->GetTestModel()->FindFolderItem("single_item_folder"));
+  AppListFolderItem* const folder_item =
+      delegate_->GetTestModel()->FindFolderItem("single_item_folder");
+  ASSERT_TRUE(folder_item);
+  EXPECT_EQ(1u, folder_item->item_list()->item_count());
 }
 
 }  // namespace test

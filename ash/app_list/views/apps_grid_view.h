@@ -244,10 +244,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // a folder item.
   void EndDragForReparentInHiddenFolderGridView();
 
-  // Called when the folder item associated with the grid view is removed.
-  // The grid view must be inside a folder view.
-  void OnFolderItemRemoved();
-
   // Moves |reparented_view| from its folder to the root AppsGridView in the
   // direction of |key_code|.
   // |original_parent_item_view|: The folder AppListView for the folder from

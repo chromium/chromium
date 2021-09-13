@@ -2540,6 +2540,50 @@ TEST_P(AppsGridViewDragTest, FocusOfDraggedViewAfterDrag) {
   }
 }
 
+TEST_P(AppsGridViewDragTest, FocusOfReparentedDragViewAfterDrag) {
+  // Creates a folder item - the folder size was chosen arbitrarily.
+  model_->CreateAndPopulateFolderWithApps(5);
+  // Add more apps to the root apps grid.
+  model_->PopulateApps(2);
+  test_api_->Update();
+
+  // Open the folder.
+  test_api_->PressItemAt(0);
+
+  // Drag the first folder child out of the folder.
+  InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 0,
+                                     folder_apps_grid_view());
+  gfx::Point point_outside_folder =
+      app_list_folder_view()->GetLocalBounds().bottom_center() +
+      gfx::Vector2d(10, 10);
+  UpdateDrag(AppsGridView::MOUSE, point_outside_folder, folder_apps_grid_view(),
+             /*steps=*/10);
+
+  // Fire the reparent timer that should be started when an item is dragged out
+  // of folder bounds.
+  ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
+
+  // Drop the item in (0,3) spot is the root apps grid. The spot is expected to
+  // be empty.
+  gfx::Point drop_point = GetItemRectOnCurrentPageAt(0, 3).CenterPoint();
+  views::View::ConvertPointToTarget(apps_grid_view_, folder_apps_grid_view(),
+                                    &drop_point);
+  UpdateDrag(AppsGridView::MOUSE, drop_point, folder_apps_grid_view(),
+             /*steps=*/5);
+  EndDrag(folder_apps_grid_view(), /*cancel=*/false);
+
+  AppListItemView* const item_view = GetItemViewInTopLevelGrid(3);
+  EXPECT_EQ("Item 0", item_view->item()->id());
+
+  if (features::IsAppListBubbleEnabled()) {
+    // AppListBubble keeps focus on the search box after drags.
+    EXPECT_TRUE(search_box_view_->search_box()->HasFocus());
+    EXPECT_FALSE(item_view->HasFocus());
+  } else {
+    EXPECT_TRUE(item_view->HasFocus());
+  }
+}
+
 TEST_P(AppsGridViewTabletTest, Basic) {
   base::HistogramTester histogram_tester;
 

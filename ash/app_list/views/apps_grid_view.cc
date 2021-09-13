@@ -612,17 +612,19 @@ void AppsGridView::EndDrag(bool cancel) {
     drag_and_drop_host_->EndDrag(cancel, std::move(drag_icon_proxy_));
 
     if (IsDraggingForReparentInHiddenGridView()) {
+      EndDragForReparentInHiddenFolderGridView();
       folder_delegate_->DispatchEndDragEventForReparent(
           true /* events_forwarded_to_drag_drop_host */,
           cancel /* cancel_drag */, std::move(drag_icon_proxy_));
+      return;
     }
   } else {
     if (IsDraggingForReparentInHiddenGridView()) {
+      EndDragForReparentInHiddenFolderGridView();
       // Forward the EndDrag event to the root level grid view.
       folder_delegate_->DispatchEndDragEventForReparent(
           false /* events_forwarded_to_drag_drop_host */,
           cancel /* cancel_drag */, std::move(drag_icon_proxy_));
-      EndDragForReparentInHiddenFolderGridView();
       return;
     }
 
@@ -1643,22 +1645,11 @@ void AppsGridView::EndDragFromReparentItemInRootLevel(
 }
 
 void AppsGridView::EndDragForReparentInHiddenFolderGridView() {
-  // If drag icon proxy had been created, it should have been passed on to the
-  // root grid view by this time.
-  DCHECK(!drag_icon_proxy_);
-
   SetAsFolderDroppingTarget(drop_target_, false);
   ClearDragState();
 
   // Hide |current_ghost_view_| in the hidden folder grid view.
   BeginHideCurrentGhostImageView();
-}
-
-void AppsGridView::OnFolderItemRemoved() {
-  DCHECK(folder_delegate_);
-  if (item_list_)
-    item_list_->RemoveObserver(this);
-  item_list_ = nullptr;
 }
 
 void AppsGridView::HandleKeyboardReparent(
@@ -2018,15 +2009,16 @@ void AppsGridView::OnListItemAdded(size_t index, AppListItem* item) {
     EndDrag(true);
 
   if (!item->is_page_break()) {
-    std::unique_ptr<AppListItemView> view = CreateViewForItemAtIndex(index);
-    if (view->item() == drag_item_) {
-      drag_view_ = view.get();
-      drag_view_->RequestFocus();
-      drag_view_hider_ = std::make_unique<DragViewHider>(drag_view_);
-    }
     int model_index = GetTargetModelIndexFromItemIndex(index);
-    view_model_.Add(view.get(), model_index);
-    items_container_->AddChildViewAt(std::move(view), model_index);
+    AppListItemView* view = items_container_->AddChildViewAt(
+        CreateViewForItemAtIndex(index), model_index);
+    view_model_.Add(view, model_index);
+
+    if (item == drag_item_) {
+      drag_view_ = view;
+      drag_view_hider_ = std::make_unique<DragViewHider>(drag_view_);
+      drag_view_->RequestFocus();
+    }
   }
 
   view_structure_.LoadFromMetadata();

@@ -1489,7 +1489,6 @@ TEST_P(PopulatedAppListTest, ScreenRotationDuringFolderItemDrag) {
   EXPECT_EQ("Item 0", apps_grid_view_->GetItemViewAt(0)->item()->id());
   EXPECT_EQ("Item 1", apps_grid_view_->GetItemViewAt(1)->item()->id());
   EXPECT_EQ(folder->id(), apps_grid_view_->GetItemViewAt(2)->item()->id());
-  EXPECT_EQ(dragged_view, folder_view()->items_grid_view()->GetItemViewAt(0));
   EXPECT_EQ("Item 5", apps_grid_view_->GetItemViewAt(3)->item()->id());
 }
 
@@ -1514,6 +1513,7 @@ TEST_P(PopulatedAppListTest, ScreenRotationDuringAppsGridItemReparentDrag) {
   // Start dragging the first item in the active folder.
   AppListItemView* dragged_view =
       folder_view()->items_grid_view()->GetItemViewAt(0);
+  AppListItem* dragged_item = dragged_view->item();
   event_generator->MoveTouch(dragged_view->GetBoundsInScreen().CenterPoint());
   event_generator->PressTouch();
   ASSERT_TRUE(dragged_view->FireTouchDragTimerForTest());
@@ -1547,7 +1547,7 @@ TEST_P(PopulatedAppListTest, ScreenRotationDuringAppsGridItemReparentDrag) {
   // Verify the new item location within the apps grid.
   EXPECT_EQ("Item 0", apps_grid_view_->GetItemViewAt(0)->item()->id());
   EXPECT_EQ("Item 1", apps_grid_view_->GetItemViewAt(1)->item()->id());
-  EXPECT_EQ(dragged_view->item()->id(),
+  EXPECT_EQ(dragged_item->id(),
             apps_grid_view_->GetItemViewAt(2)->item()->id());
   EXPECT_EQ(folder->id(), apps_grid_view_->GetItemViewAt(3)->item()->id());
 }
@@ -1574,6 +1574,7 @@ TEST_P(AppListBubbleAndTabletTest, AppsGridItemReparentToFolderDrag) {
   AppListItemView* dragged_view =
       folder_view()->items_grid_view()->GetItemViewAt(0);
   ASSERT_TRUE(dragged_view);
+  AppListItem* dragged_item = dragged_view->item();
   event_generator->MoveTouch(dragged_view->GetBoundsInScreen().CenterPoint());
   event_generator->PressTouch();
   ASSERT_TRUE(dragged_view->FireTouchDragTimerForTest());
@@ -1599,7 +1600,7 @@ TEST_P(AppListBubbleAndTabletTest, AppsGridItemReparentToFolderDrag) {
   EXPECT_EQ(folder->id(), apps_grid_view_->GetItemViewAt(2)->item()->id());
 
   EXPECT_TRUE(apps_grid_view_->GetItemViewAt(3)->item()->is_folder());
-  EXPECT_EQ(dragged_view->item()->folder_id(),
+  EXPECT_EQ(dragged_item->folder_id(),
             apps_grid_view_->GetItemViewAt(3)->item()->id());
 }
 
@@ -1715,7 +1716,8 @@ TEST_P(PopulatedAppListWithVKEnabledTest,
 // the apps grid crashes (See http://crbug.com/1100011).
 TEST_P(PopulatedAppListTest, FolderItemDroppedRemovesBlankPage) {
   InitializeAppsGrid();
-  app_list_test_model_->CreateAndPopulateFolderWithApps(3);
+  AppListFolderItem* folder_item =
+      app_list_test_model_->CreateAndPopulateFolderWithApps(3);
   app_list_test_model_->PopulateApps(2);
   ASSERT_EQ(1, apps_grid_view_->pagination_model()->total_pages());
 
@@ -1728,6 +1730,7 @@ TEST_P(PopulatedAppListTest, FolderItemDroppedRemovesBlankPage) {
   // Start dragging the first item in the active folder.
   AppListItemView* dragged_view =
       folder_view()->items_grid_view()->GetItemViewAt(0);
+  AppListItem* dragged_item = dragged_view->item();
   event_generator->MoveTouch(dragged_view->GetBoundsInScreen().CenterPoint());
   event_generator->PressTouch();
   ASSERT_TRUE(dragged_view->FireTouchDragTimerForTest());
@@ -1757,7 +1760,7 @@ TEST_P(PopulatedAppListTest, FolderItemDroppedRemovesBlankPage) {
                              gfx::Vector2d(-100, 0));
   event_generator->ReleaseTouch();
   EXPECT_EQ(1, apps_grid_view_->pagination_model()->total_pages());
-  EXPECT_EQ(dragged_view, folder_view()->items_grid_view()->GetItemViewAt(0));
+  EXPECT_EQ(folder_item->id(), dragged_item->folder_id());
 }
 
 // Tests that app list hides when focus moves to a normal window.
