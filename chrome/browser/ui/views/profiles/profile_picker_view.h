@@ -69,13 +69,11 @@ class ProfilePickerView : public views::WidgetDelegateView,
   void ShowScreen(content::WebContents* contents,
                   const GURL& url,
                   bool show_toolbar,
-                  bool enable_navigating_back = true,
                   base::OnceClosure navigation_finished_closure =
                       base::OnceClosure()) override;
   void ShowScreenInSystemContents(
       const GURL& url,
       bool show_toolbar,
-      bool enable_navigating_back = true,
       base::OnceClosure navigation_finished_closure =
           base::OnceClosure()) override;
   void CreateToolbarBackButton() override;
@@ -189,7 +187,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
   void ShowScreenFinished(
       content::WebContents* contents,
       bool show_toolbar,
-      bool enable_navigating_back,
       base::OnceClosure navigation_finished_closure = base::OnceClosure());
 
   void BackButtonPressed(const ui::Event& event);
@@ -230,7 +227,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
 
   // A mapping between accelerators and command IDs.
   std::map<ui::Accelerator, int> accelerator_table_;
-  bool enable_navigating_back_ = true;
 
   // Handler for unhandled key events from renderer.
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;

@@ -30,13 +30,11 @@ class ProfilePickerWebContentsHost
       content::WebContents* contents,
       const GURL& url,
       bool show_toolbar,
-      bool enable_navigating_back = true,
       base::OnceClosure navigation_finished_closure = base::OnceClosure()) = 0;
   // Like ShowScreen() but uses the system WebContents.
   virtual void ShowScreenInSystemContents(
       const GURL& url,
       bool show_toolbar,
-      bool enable_navigating_back = true,
       base::OnceClosure navigation_finished_closure = base::OnceClosure()) = 0;
 
   // Creates a simple back button and adds it to the toolbar.

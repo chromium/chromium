@@ -64,6 +64,9 @@ class ProfilePickerDiceSignInProvider
   // Reloads the sign-in page if applicable.
   void ReloadSignInPage();
 
+  // Navigates back in the sign-in flow if applicable.
+  void NavigateBack();
+
   // Returns theme provider based on the sign-in profile or nullptr if the flow
   // is not yet initialized.
   const ui::ThemeProvider* GetThemeProvider() const;

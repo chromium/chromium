@@ -104,6 +104,21 @@ void ProfilePickerDiceSignInProvider::ReloadSignInPage() {
   }
 }
 
+void ProfilePickerDiceSignInProvider::NavigateBack() {
+  if (!IsInitialized() || !contents())
+    return;
+
+  if (contents()->GetController().CanGoBack()) {
+    contents()->GetController().GoBack();
+    return;
+  }
+
+  // Move from sign-in back to the previous screen of profile creation.
+  // Do not load any url because the desired screen is still loaded in the
+  // system contents.
+  host_->ShowScreenInSystemContents(GURL(), /*show_toolbar=*/false);
+}
+
 const ui::ThemeProvider* ProfilePickerDiceSignInProvider::GetThemeProvider()
     const {
   if (!IsInitialized())
@@ -260,7 +275,6 @@ void ProfilePickerDiceSignInProvider::FinishFlow(bool is_saml) {
   contents()->SetDelegate(nullptr);
   // Stop the sign-in: hide the toolbar and disallow navigating back (without
   // navigating to any other page).
-  host_->ShowScreen(contents(), GURL(), /*show_toolbar=*/false,
-                    /*enable_navigating_back=*/false);
+  host_->ShowScreen(contents(), GURL(), /*show_toolbar=*/false);
   std::move(callback_).Run(profile_, std::move(contents_), is_saml);
 }

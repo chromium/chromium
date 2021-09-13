@@ -157,7 +157,6 @@ void ProfilePickerSignedInFlowController::SwitchToSyncConfirmation() {
   DCHECK(IsInitialized());
   host_->ShowScreen(contents(), GURL(chrome::kChromeUISyncConfirmationURL),
                     /*show_toolbar=*/false,
-                    /*enable_navigating_back=*/false,
                     /*navigation_finished_closure=*/
                     base::BindOnce(&ProfilePickerSignedInFlowController::
                                        SwitchToSyncConfirmationFinished,
@@ -173,7 +172,6 @@ void ProfilePickerSignedInFlowController::SwitchToEnterpriseProfileWelcome(
   host_->ShowScreen(contents(),
                     GURL(chrome::kChromeUIEnterpriseProfileWelcomeURL),
                     /*show_toolbar=*/false,
-                    /*enable_navigating_back=*/false,
                     /*navigation_finished_closure=*/
                     base::BindOnce(&ProfilePickerSignedInFlowController::
                                        SwitchToEnterpriseProfileWelcomeFinished,
@@ -192,8 +190,7 @@ void ProfilePickerSignedInFlowController::SwitchToProfileSwitch(
   switch_profile_path_ = profile_path;
   host_->ShowScreenInSystemContents(
       GURL(chrome::kChromeUIProfilePickerUrl).Resolve("profile-switch"),
-      /*show_toolbar=*/false,
-      /*enable_navigating_back=*/false);
+      /*show_toolbar=*/false);
 }
 
 bool ProfilePickerSignedInFlowController::HandleContextMenu(
@@ -234,7 +231,7 @@ void ProfilePickerSignedInFlowController::Init(bool is_saml) {
   // managed account and whether sync is disabled by policies (which in some
   // cases involves fetching policies and can take a couple of seconds).
   host_->ShowScreen(contents(), GetSyncConfirmationLoadingURL(),
-                    /*show_toolbar=*/false, /*enable_navigating_back=*/false);
+                    /*show_toolbar=*/false);
 
   // Set up a timeout for extended account info (which cancels any existing
   // timeout closure).
@@ -402,7 +399,7 @@ void ProfilePickerSignedInFlowController::FinishAndOpenBrowserForSAML() {
   // First, free up `contents()` to be moved to a new browser window.
   host_->ShowScreenInSystemContents(
       GURL(url::kAboutBlankURL),
-      /*show_toolbar=*/false, /*enable_navigating_back=*/false,
+      /*show_toolbar=*/false,
       /*navigation_finished_closure=*/
       base::BindOnce(
           &ProfilePickerSignedInFlowController::OnSignInContentsFreedUp,

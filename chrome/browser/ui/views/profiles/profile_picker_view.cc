@@ -381,11 +381,10 @@ void ProfilePickerView::ShowScreen(
     content::WebContents* contents,
     const GURL& url,
     bool show_toolbar,
-    bool enable_navigating_back,
     base::OnceClosure navigation_finished_closure) {
   if (url.is_empty()) {
     DCHECK(!navigation_finished_closure);
-    ShowScreenFinished(contents, show_toolbar, enable_navigating_back);
+    ShowScreenFinished(contents, show_toolbar);
     return;
   }
 
@@ -409,7 +408,6 @@ void ProfilePickerView::ShowScreen(
       url,
       base::BindOnce(&ProfilePickerView::ShowScreenFinished,
                      base::Unretained(this), contents, show_toolbar,
-                     enable_navigating_back,
                      std::move(navigation_finished_closure)),
       contents);
 }
@@ -417,10 +415,9 @@ void ProfilePickerView::ShowScreen(
 void ProfilePickerView::ShowScreenInSystemContents(
     const GURL& url,
     bool show_toolbar,
-    bool enable_navigating_back,
     base::OnceClosure navigation_finished_closure) {
   ShowScreen(system_profile_contents_.get(), url, show_toolbar,
-             enable_navigating_back, std::move(navigation_finished_closure));
+             std::move(navigation_finished_closure));
 }
 
 void ProfilePickerView::CreateToolbarBackButton() {
@@ -839,7 +836,6 @@ void ProfilePickerView::UpdateToolbarColor() {
 void ProfilePickerView::ShowScreenFinished(
     content::WebContents* contents,
     bool show_toolbar,
-    bool enable_navigating_back,
     base::OnceClosure navigation_finished_closure) {
   // Stop observing for this (or any previous) navigation.
   if (show_screen_finished_observer_)
@@ -851,7 +847,6 @@ void ProfilePickerView::ShowScreenFinished(
   // Change visibility of the toolbar after swapping wc in `web_view_` to make
   // it easier for tests to detect changing of the screen.
   toolbar_->SetVisible(show_toolbar);
-  enable_navigating_back_ = enable_navigating_back;
 
   if (navigation_finished_closure)
     std::move(navigation_finished_closure).Run();
@@ -862,20 +857,22 @@ void ProfilePickerView::BackButtonPressed(const ui::Event& event) {
 }
 
 void ProfilePickerView::NavigateBack() {
-  if (!enable_navigating_back_)
+  // Navigating back is not allowed when in the sync-setup phase of profile
+  // creation.
+  if (signed_in_flow_)
     return;
 
-  if (web_view_->GetWebContents()->GetController().CanGoBack()) {
+  // Go back in the system WebContents if it's currently displayed.
+  if (system_profile_contents_ &&
+      web_view_->GetWebContents() == system_profile_contents_.get() &&
+      web_view_->GetWebContents()->GetController().CanGoBack()) {
     web_view_->GetWebContents()->GetController().GoBack();
     return;
   }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Move from sign-in back to the previous screen of profile creation.
-  // Do not load any url because the desired screen is still loaded in
-  // `system_profile_contents_`.
   if (GetDiceSigningIn())
-    ShowScreenInSystemContents(GURL(), /*show_toolbar=*/false);
+    dice_sign_in_provider_->NavigateBack();
 #endif
 }
 
