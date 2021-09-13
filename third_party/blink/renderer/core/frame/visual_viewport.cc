@@ -300,8 +300,8 @@ PaintPropertyChangeType VisualViewport::UpdatePaintPropertyNodesIfNeeded(
 #if defined(OS_ANDROID)
   if (Platform::Current()->IsElasticOverscrollEnabled() &&
       base::GetFieldTrialParamValueByFeature(
-          ::features::kElasticOverscroll, ::features::kElasticOverscrollType) !=
-          ::features::kElasticOverscrollTypeTransform) {
+          ::features::kElasticOverscroll, ::features::kElasticOverscrollType) ==
+          ::features::kElasticOverscrollTypeFilter) {
     bool needs_overscroll_effect_node = !MaximumScrollOffset().IsZero();
     if (needs_overscroll_effect_node && !overscroll_elasticity_effect_node_) {
       EffectPaintPropertyNode::State state;

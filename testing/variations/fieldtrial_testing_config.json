@@ -150,24 +150,6 @@
             ]
         }
     ],
-    "AndroidElasticOverscroll": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "type": "transform"
-                    },
-                    "enable_features": [
-                        "ElasticOverscroll"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidHatsNext": [
         {
             "platforms": [
