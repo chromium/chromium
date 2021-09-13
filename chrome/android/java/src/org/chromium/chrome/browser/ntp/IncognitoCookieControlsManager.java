@@ -81,7 +81,7 @@ public class IncognitoCookieControlsManager
      * Tells the bridge to update itself if necessary.
      */
     public void updateIfNecessary() {
-        mServiceBridge.updateServiceIfNecessary();
+        if (mIsInitialized) mServiceBridge.updateServiceIfNecessary();
     }
 
     /**
