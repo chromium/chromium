@@ -223,7 +223,7 @@ void DedicatedWebTransportHttp3Client::Connect() {
 }
 
 const WebTransportError& DedicatedWebTransportHttp3Client::error() const {
-  return error_;
+  return *error_;
 }
 
 quic::WebTransportSession* DedicatedWebTransportHttp3Client::session() {
@@ -280,8 +280,7 @@ void DedicatedWebTransportHttp3Client::DoLoop(int rv) {
 
   if (rv == OK || rv == ERR_IO_PENDING)
     return;
-  if (error_.net_error == OK)
-    error_.net_error = rv;
+  SetErrorIfNecessary(rv);
   TransitionToState(FAILED);
 }
 
@@ -445,8 +444,7 @@ int DedicatedWebTransportHttp3Client::DoConnectComplete() {
   if (!session_->SupportsWebTransport()) {
     return ERR_METHOD_NOT_SUPPORTED;
   }
-  error_.safe_to_report_details = true;
-
+  safe_to_report_error_details_ = true;
   next_connect_state_ = CONNECT_STATE_SEND_REQUEST;
   return OK;
 }
@@ -465,7 +463,7 @@ void DedicatedWebTransportHttp3Client::OnHeadersComplete() {
 }
 
 void DedicatedWebTransportHttp3Client::OnConnectStreamClosed() {
-  error_.net_error = ERR_FAILED;
+  SetErrorIfNecessary(ERR_FAILED);
   TransitionToState(FAILED);
 }
 
@@ -531,11 +529,7 @@ void DedicatedWebTransportHttp3Client::TransitionToState(
       break;
 
     case FAILED:
-      DCHECK_LT(error_.net_error, OK);
-      if (error_.details.empty()) {
-        error_.details = ErrorToString(error_.net_error);
-      }
-
+      DCHECK(error_.has_value());
       if (last_state == CONNECTING) {
         visitor_->OnConnectionFailed();
         break;
@@ -547,6 +541,20 @@ void DedicatedWebTransportHttp3Client::TransitionToState(
     default:
       NOTREACHED() << "Invalid state reached: " << next_state;
       break;
+  }
+}
+
+void DedicatedWebTransportHttp3Client::SetErrorIfNecessary(int error) {
+  SetErrorIfNecessary(error, quic::QUIC_NO_ERROR, ErrorToString(error));
+}
+
+void DedicatedWebTransportHttp3Client::SetErrorIfNecessary(
+    int error,
+    quic::QuicErrorCode quic_error,
+    base::StringPiece details) {
+  if (!error_) {
+    error_ = WebTransportError(error, quic_error, details,
+                               safe_to_report_error_details_);
   }
 }
 
@@ -583,7 +591,7 @@ void DedicatedWebTransportHttp3Client::
 bool DedicatedWebTransportHttp3Client::OnReadError(
     int result,
     const DatagramClientSocket* socket) {
-  error_.net_error = result;
+  SetErrorIfNecessary(result);
   connection_->CloseConnection(quic::QUIC_PACKET_READ_ERROR,
                                ErrorToString(result),
                                quic::ConnectionCloseBehavior::SILENT_CLOSE);
@@ -605,7 +613,7 @@ int DedicatedWebTransportHttp3Client::HandleWriteError(
 }
 
 void DedicatedWebTransportHttp3Client::OnWriteError(int error_code) {
-  error_.net_error = error_code;
+  SetErrorIfNecessary(error_code);
   connection_->OnWriteError(error_code);
 }
 
@@ -643,10 +651,7 @@ void DedicatedWebTransportHttp3Client::OnConnectionClosed(
     return;
   }
 
-  if (error_.net_error == OK)
-    error_.net_error = ERR_QUIC_PROTOCOL_ERROR;
-  error_.quic_error = error;
-  error_.details = error_details;
+  SetErrorIfNecessary(ERR_QUIC_PROTOCOL_ERROR, error, error_details);
 
   if (state_ == CONNECTING) {
     DoLoop(OK);

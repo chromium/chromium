@@ -24,6 +24,7 @@
 #include "net/third_party/quiche/src/quic/core/quic_versions.h"
 #include "net/third_party/quiche/src/quic/core/web_transport_interface.h"
 #include "net/third_party/quiche/src/quic/quic_transport/web_transport_fingerprint_proof_verifier.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -134,6 +135,11 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
 
   void TransitionToState(WebTransportState next_state);
 
+  void SetErrorIfNecessary(int error);
+  void SetErrorIfNecessary(int error,
+                           quic::QuicErrorCode quic_error,
+                           base::StringPiece details);
+
   const GURL url_;
   const url::Origin origin_;
   const NetworkIsolationKey isolation_key_;
@@ -152,9 +158,10 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
 
   WebTransportState state_ = NEW;
   ConnectState next_connect_state_ = CONNECT_STATE_NONE;
-  WebTransportError error_;
+  absl::optional<WebTransportError> error_;
   bool retried_with_new_version_ = false;
   bool session_ready_ = false;
+  bool safe_to_report_error_details_ = false;
 
   ProxyInfo proxy_info_;
   std::unique_ptr<ProxyResolutionRequest> proxy_resolution_request_;

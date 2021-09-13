@@ -10,7 +10,7 @@ bool StructTraits<
     network::mojom::WebTransportErrorDataView,
     net::WebTransportError>::Read(network::mojom::WebTransportErrorDataView in,
                                   net::WebTransportError* out) {
-  if (in.net_error() > 0) {
+  if (in.net_error() >= 0) {
     return false;
   }
   if (in.quic_error() < 0 || in.quic_error() >= quic::QUIC_LAST_ERROR) {
