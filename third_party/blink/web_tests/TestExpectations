@@ -4736,7 +4736,6 @@ crbug.com/945665 http/tests/devtools/elements/styles-3/styles-add-new-rule-tab.j
 crbug.com/945665 http/tests/devtools/elements/styles-3/styles-add-new-rule.js [ Failure Pass Skip Timeout ]
 crbug.com/945665 http/tests/devtools/elements/styles-3/styles-disable-inherited.js [ Failure Pass ]
 crbug.com/945665 http/tests/devtools/elements/styles-3/styles-change-node-while-editing.js [ Failure Pass ]
-crbug.com/945629 http/tests/devtools/network/network-filters.js [ Failure Pass Skip Timeout ]
 
 # Tests using testRunner.useUnfortunateSynchronousResizeMode occasionally timeout,
 # but the test coverage is still good.
