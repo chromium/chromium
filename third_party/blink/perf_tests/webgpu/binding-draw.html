@@ -20,12 +20,12 @@
 
       const device = await adapter.requestDevice();
       const canvas = document.getElementById('canvas');
-      const context = canvas.getContext('gpupresent');
-      const swapChainFormat = context.getSwapChainPreferredFormat(adapter);
+      const context = canvas.getContext('webgpu');
+      const contextFormat = context.getPreferredFormat(adapter);
 
-      const swapChain = context.configureSwapChain({
+      context.configure({
         device,
-        format: swapChainFormat,
+        format: contextFormat,
       });
 
       const pipeline = device.createRenderPipeline({
@@ -54,7 +54,7 @@
           }),
           entryPoint: 'main',
           targets: [{
-            format: swapChainFormat,
+            format: contextFormat,
           }],
         },
         primitive: {
@@ -64,7 +64,7 @@
 
       const renderPassDescriptor = {
         colorAttachments: [{
-            attachment: undefined,
+            view: undefined,
             loadValue: { r: 0.0, g: 0.0, b: 0.0, a: 1.0 },
         }],
       };
@@ -75,7 +75,7 @@
         warmUpCount: 10,
         run() {
           const commandEncoder = device.createCommandEncoder();
-          renderPassDescriptor.colorAttachments[0].attachment = swapChain.getCurrentTexture().createView();
+          renderPassDescriptor.colorAttachments[0].view = context.getCurrentTexture().createView();
 
           const passEncoder = commandEncoder.beginRenderPass(renderPassDescriptor);
           passEncoder.setPipeline(pipeline);
