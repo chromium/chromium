@@ -141,6 +141,7 @@ specific_include_rules = {
         "+base/timer/lap_timer.h",
         "+base/message_loop/message_loop.h",
         "+base/test/test_mock_time_task_runner.h",
+        "+base/threading/thread_task_runner_handle.h",
         # Test harness may use cc directly instead of going through WebViewImpl etc.
         "+cc",
         "+components/ukm/test_ukm_recorder.h",

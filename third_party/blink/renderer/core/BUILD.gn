@@ -1500,6 +1500,7 @@ source_set("unit_tests") {
     "timing/window_performance_test.cc",
     "trustedtypes/trusted_types_util_test.cc",
     "typed_arrays/array_buffer/array_buffer_contents_test.cc",
+    "typed_arrays/dom_array_buffer_test.cc",
     "url/url_search_params_test.cc",
     "workers/dedicated_worker_test.cc",
     "workers/dedicated_worker_test.h",
