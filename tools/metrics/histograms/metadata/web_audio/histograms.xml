@@ -40,7 +40,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebAudio.AudioBuffer.SampleRate384kHz" units="Hz"
-    expires_after="2021-12-26">
+    expires_after="2021-12-31">
   <owner>hongchan@chromium.org</owner>
   <summary>
     The sample rate (in Hz) requested by createBuffer(). Recorded for every call
@@ -49,7 +49,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebAudio.AudioBuffer.SampleRateRatio384kHz" units="units"
-    expires_after="2021-10-25">
+    expires_after="2021-12-31">
   <owner>hongchan@chromium.org</owner>
   <summary>
     The ratio of the buffer sample rate from createBuffer() to the context
@@ -160,9 +160,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebAudio.Autoplay.CrossOrigin" enum="WebAudioAutoplayStatus"
-    expires_after="2021-10-04">
+    expires_after="2021-12-31">
   <owner>hongchan@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
   <summary>
     The autoplay status of an AudioContext when destroyed in a cross-origin
     frame.
