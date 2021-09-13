@@ -1505,7 +1505,7 @@ NavigationType NavigationControllerImpl::ClassifyNavigation(
     return NAVIGATION_TYPE_NEW_ENTRY;
   }
 
-  if (params.intended_as_new_entry) {
+  if (navigation_request->commit_params().intended_as_new_entry) {
     // This was intended to be a navigation to a new entry but the pending entry
     // got cleared in the meanwhile. Classify as EXISTING_ENTRY because we may
     // or may not have a pending entry.
@@ -1774,7 +1774,7 @@ void NavigationControllerImpl::RendererDidNavigateToExistingEntry(
   DCHECK(!rfh->GetParent());
 
   NavigationEntryImpl* entry = nullptr;
-  if (params.intended_as_new_entry) {
+  if (request->commit_params().intended_as_new_entry) {
     // We're guaranteed to have a last committed entry if intended_as_new_entry
     // is true.
     entry = GetLastCommittedEntry();

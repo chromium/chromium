@@ -80,12 +80,6 @@ struct DidCommitProvisionalLoadParams {
   // Contents MIME type of main frame.
   string contents_mime_type;
 
-  // This is the value from the browser (copied from the navigation request)
-  // indicating whether it intended to make a new entry. TODO(avi): Remove this
-  // when the pending entry situation is made sane and the browser keeps them
-  // around long enough to match them via nav_entry_id.
-  bool intended_as_new_entry;
-
   // Whether this commit created a new entry.
   bool did_create_new_entry;
 

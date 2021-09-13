@@ -5955,7 +5955,6 @@ NavigationRequest::MakeDidCommitProvisionalLoadParamsForActivation() {
   DCHECK_EQ(params->http_status_code, net::HTTP_OK);
   DCHECK_EQ(params->url_is_unreachable, false);
 
-  params->intended_as_new_entry = commit_params().intended_as_new_entry;
   params->should_replace_current_entry =
       common_params().should_replace_current_entry;
   DCHECK_EQ(params->post_id, -1);

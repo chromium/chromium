@@ -11523,7 +11523,6 @@ void RenderFrameHostImpl::
 #endif
   // Check if these values from DidCommitProvisionalLoadParams sent by the
   // renderer can be calculated entirely in the browser side:
-  // - intended_as_new_entry
   // - method
   // - url_is_unreachable
   // - post_id
@@ -11609,10 +11608,7 @@ void RenderFrameHostImpl::
   const bool browser_history_list_was_cleared =
       request->commit_params().should_clear_history_list;
 
-  if ((!ShouldVerify("intended_as_new_entry") ||
-       request->commit_params().intended_as_new_entry ==
-           params.intended_as_new_entry) &&
-      (!ShouldVerify("method") || browser_method == params.method) &&
+  if ((!ShouldVerify("method") || browser_method == params.method) &&
       (!ShouldVerify("url_is_unreachable") ||
        browser_url_is_unreachable == params.url_is_unreachable) &&
       (!ShouldVerify("post_id") || browser_post_id == params.post_id) &&
@@ -11655,10 +11651,8 @@ void RenderFrameHostImpl::
       "VerifyDidCommit", "history_url_fdu_type",
       GetURLTypeForCrashKey(request->common_params().history_url_for_data_url));
 
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "intended_browser",
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "intended_as_new_entry",
                         request->commit_params().intended_as_new_entry);
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "intended_renderer",
-                        params.intended_as_new_entry);
 
   SCOPED_CRASH_KEY_STRING32("VerifyDidCommit", "method_browser",
                             browser_method);
@@ -11833,8 +11827,6 @@ void RenderFrameHostImpl::
 
   // These DCHECKs ensure that tests will fail if we got here, as
   // DumpWithoutCrashing won't fail tests.
-  DCHECK_EQ(request->commit_params().intended_as_new_entry,
-            params.intended_as_new_entry);
   DCHECK_EQ(browser_method, params.method);
   DCHECK_EQ(browser_url_is_unreachable, params.url_is_unreachable);
   DCHECK_EQ(browser_post_id, params.post_id);
@@ -11852,11 +11844,6 @@ void RenderFrameHostImpl::
 
   // Log histograms to trigger Chrometto slow reports, allowing us to see traces
   // to analyze what happened in these navigations.
-  if (request->commit_params().intended_as_new_entry !=
-      params.intended_as_new_entry) {
-    LogVerifyDidCommitParamsDifference(
-        VerifyDidCommitParamsDifference::kIntendedAsNewEntry);
-  }
   if (browser_method != params.method) {
     LogVerifyDidCommitParamsDifference(
         VerifyDidCommitParamsDifference::kMethod);

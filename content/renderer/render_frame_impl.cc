@@ -4646,8 +4646,6 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
   params->http_status_code = response.HttpStatusCode();
   params->url_is_unreachable = document_loader->HasUnreachableURL();
   params->method = "GET";
-  params->intended_as_new_entry =
-      navigation_state->commit_params().intended_as_new_entry;
   params->should_replace_current_entry =
       document_loader->ReplacesCurrentHistoryItem();
   params->post_id = -1;
