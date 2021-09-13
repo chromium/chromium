@@ -17,7 +17,7 @@ def main(request, response):
     cookie = request.cookies.first(b"milk", None)
     if (cookie is not None) and cookie.value == b"1":
         with open(
-            os.path.join(os.path.dirname(__file__), "../resources/wbn/subresource.wbn"),
+            os.path.join(os.path.dirname(__file__), "../../resources/wbn/subresource.wbn"),
             "rb",
         ) as f:
             return (200, headers, f.read())
