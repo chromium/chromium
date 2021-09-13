@@ -10,7 +10,6 @@
 #include "ash/ash_export.h"
 #include "base/macros.h"
 #include "cc/paint/paint_flags.h"
-#include "ui/compositor/layer_animation_observer.h"
 #include "ui/display/display.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/views/animation/animation_delegate_views.h"
@@ -25,10 +24,6 @@ namespace gfx {
 class Animation;
 }  // namespace gfx
 
-namespace ui {
-class LayerAnimationSequence;
-}  // namespace ui
-
 namespace ash {
 
 class CircularThrobberView;
@@ -41,8 +36,7 @@ class HintBox;
 // |TouchCalibratorView| acts as a state machine and has an API to toggle its
 // state or get the current state.
 class ASH_EXPORT TouchCalibratorView : public views::View,
-                                       public views::AnimationDelegateViews,
-                                       public ui::LayerAnimationObserver {
+                                       public views::AnimationDelegateViews {
  public:
   // Different states of |TouchCalibratorView| in order.
   enum State {
@@ -85,12 +79,6 @@ class ASH_EXPORT TouchCalibratorView : public views::View,
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationCanceled(const gfx::Animation* animation) override;
 
-  // ui::LayerAnimationObserver
-  void OnLayerAnimationStarted(ui::LayerAnimationSequence* sequence) override;
-  void OnLayerAnimationEnded(ui::LayerAnimationSequence* sequence) override;
-  void OnLayerAnimationAborted(ui::LayerAnimationSequence* sequence) override;
-  void OnLayerAnimationScheduled(ui::LayerAnimationSequence* sequence) override;
-
   // Moves the touch calibrator view to its next state.
   void AdvanceToNextState();
 
@@ -114,6 +102,15 @@ class ASH_EXPORT TouchCalibratorView : public views::View,
                       bool is_primary_view);
 
   void InitViewContents();
+
+  void OnStateAnimationEnded();
+
+  // Animate the given |view|'s layer to |end_position| and an optional
+  // |opacity|.
+  void AnimateLayerToPosition(views::View* view,
+                              base::TimeDelta duration,
+                              gfx::Point end_position,
+                              float opacity = 1.f);
 
   // The target display on which this view is rendered on.
   const display::Display display_;
@@ -156,8 +153,6 @@ class ASH_EXPORT TouchCalibratorView : public views::View,
   views::View* touch_point_view_ = nullptr;
 
   State state_ = UNKNOWN;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchCalibratorView);
 };
 
 }  // namespace ash
