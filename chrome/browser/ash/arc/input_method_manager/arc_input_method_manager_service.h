@@ -107,10 +107,7 @@ class ArcInputMethodManagerService
   class TabletModeObserver;
 
   void EnableIme(const std::string& ime_id, bool enable);
-  // Notify ARC's IMM of the enabled input methods in Chrome.
-  void SyncEnabledImesInArc();
-  // Notify ARC's IMM of the current active input method in Chrome.
-  void SyncCurrentImeInArc();
+  void SwitchImeTo(const std::string& ime_id);
   chromeos::input_method::InputMethodDescriptor BuildInputMethodDescriptor(
       const mojom::ImeInfo* info);
   void Focus(int input_context_id);
