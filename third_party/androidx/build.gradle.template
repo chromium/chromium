@@ -58,6 +58,9 @@ dependencies {
     compile 'androidx.vectordrawable:vectordrawable-animated:{{androidx_dependency_version}}'
     compile 'androidx.viewpager:viewpager:{{androidx_dependency_version}}'
     compile 'androidx.window:window:{{androidx_dependency_version}}'
+    compile 'androidx.window:window-extensions:{{androidx_dependency_version}}'
+    compile 'androidx.window:window-java:{{androidx_dependency_version}}'
+    compile 'androidx.window:window-sidecar:{{androidx_dependency_version}}'
 
     // Those are for use by doubledown libraries.
     compile 'androidx.arch.core:core-common:{{androidx_dependency_version}}'
