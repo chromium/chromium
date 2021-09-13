@@ -53,6 +53,11 @@ class ChromeAppWindowTrackerAsh : public mojom::AppWindowTracker,
   // aura::WindowObserver overrides:
   void OnWindowDestroying(aura::Window* window) override;
 
+  // public and virtual for testing.
+  // Given a newly created chrome app window, either creates a shelf item
+  // controller or updates the existing shelf item controller.
+  virtual void UpdateShelf(const std::string& app_id, aura::Window* window);
+
  private:
   // If both pieces of metadata are present, then stop tracking the window as
   // it's no longer pending.
