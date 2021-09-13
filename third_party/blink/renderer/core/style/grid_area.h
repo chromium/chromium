@@ -33,6 +33,7 @@
 
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/style/grid_positions_resolver.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -41,12 +42,13 @@
 
 namespace blink {
 
-// Recommended maximum size for both explicit and implicit grids. Note that this
-// actually allows a [-999,999] range. The limit is low on purpouse because
-// higher values easly trigger OOM situations. That will definitely improve once
-// we switch from a vector of vectors based grid representation to a more
-// efficient one memory-wise.
-const int kGridMaxTracks = 1000;
+// Legacy grid expands out auto-repeaters, so it has a lower cap than GridNG.
+// Note that this actually allows a [-999,999] range.
+const int kLegacyGridMaxTracks = 1000;
+// GridNG's cap can be higher than 100k tracks. What would prevent us from
+// having an extremely large cap (say, INT_MAX - 1) is rendering tracks but
+// being unable to query their computed style.
+const int kGridMaxTracks = 100000;
 
 // A span in a single direction (either rows or columns). Note that |start_line|
 // and |end_line| are grid lines' indexes.
@@ -169,8 +171,13 @@ struct GridSpan {
     }
 #endif
 
-    start_line_ = clampTo<int>(start_line, -kGridMaxTracks, kGridMaxTracks - 1);
-    end_line_ = clampTo<int>(end_line, -kGridMaxTracks + 1, kGridMaxTracks);
+    const int grid_max_tracks = RuntimeEnabledFeatures::LayoutNGGridEnabled()
+                                    ? kGridMaxTracks
+                                    : kLegacyGridMaxTracks;
+
+    start_line_ =
+        clampTo<int>(start_line, -grid_max_tracks, grid_max_tracks - 1);
+    end_line_ = clampTo<int>(end_line, -grid_max_tracks + 1, grid_max_tracks);
   }
 
   int start_line_;

@@ -836,13 +836,14 @@ wtf_size_t LayoutGrid::ClampAutoRepeatTracks(
           : StyleRef().GridAutoRepeatRowsInsertionPoint();
 
   if (insertion_point == 0)
-    return std::min<wtf_size_t>(auto_repeat_tracks, kGridMaxTracks);
+    return std::min<wtf_size_t>(auto_repeat_tracks, kLegacyGridMaxTracks);
 
-  if (insertion_point >= kGridMaxTracks)
+  if (insertion_point >= kLegacyGridMaxTracks)
     return 0;
 
-  return std::min(auto_repeat_tracks,
-                  static_cast<wtf_size_t>(kGridMaxTracks) - insertion_point);
+  return std::min(
+      auto_repeat_tracks,
+      static_cast<wtf_size_t>(kLegacyGridMaxTracks) - insertion_point);
 }
 
 // TODO(svillar): we shouldn't have to pass the available logical width as
