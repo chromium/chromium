@@ -49,20 +49,15 @@ source_set("phishing_classifier") {
       "//skia",
       "//third_party/blink/public:blink_headers",
       "//third_party/smhasher:murmurhash3",
+      "//third_party/tflite",
+      "//third_party/tflite:tflite_public_headers",
+      "//third_party/tflite-support",
+      "//third_party/tflite-support:tflite-support-proto",
       "//ui/base",
       "//ui/gfx/geometry:geometry",
       "//url",
       "//v8",
     ]
-
-    if (build_with_tflite_lib) {
-      deps += [
-        "//third_party/tflite",
-        "//third_party/tflite:tflite_public_headers",
-        "//third_party/tflite-support",
-        "//third_party/tflite-support:tflite-support-proto",
-      ]
-    }
   }
 }
 
