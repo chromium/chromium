@@ -67,6 +67,7 @@ source_set("unit_tests") {
     "//ash/quick_pair/common:test_support",
     "//ash/quick_pair/pairing",
     "//ash/services/quick_pair/public/cpp",
+    "//ash/services/quick_pair/public/cpp:unit_tests",
     "//ash/services/quick_pair/public/mojom",
     "//base/test:test_support",
     "//testing/gmock",
