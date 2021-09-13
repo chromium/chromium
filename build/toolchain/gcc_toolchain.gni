@@ -146,14 +146,14 @@ template("gcc_toolchain") {
       }
     }
 
-    # When the invoker has explicitly overridden user_rbe, use_goma or
+    # When the invoker has explicitly overridden use_remoteexec, use_goma or
     # cc_wrapper in the toolchain args, use those values, otherwise default
     # to the global one.  This works because the only reasonable override
     # that toolchains might supply for these values are to force-disable them.
-    if (defined(toolchain_args.use_rbe)) {
-      toolchain_uses_rbe = toolchain_args.use_rbe
+    if (defined(toolchain_args.use_remoteexec)) {
+      toolchain_uses_remoteexec = toolchain_args.use_remoteexec
     } else {
-      toolchain_uses_rbe = use_rbe
+      toolchain_uses_remoteexec = use_remoteexec
     }
     if (defined(toolchain_args.use_goma)) {
       toolchain_uses_goma = toolchain_args.use_goma
@@ -173,10 +173,10 @@ template("gcc_toolchain") {
     } else {
       toolchain_cc_wrapper = cc_wrapper
     }
-    assert(!(toolchain_uses_rbe && toolchain_uses_goma),
-           "Goma and RBE can't be used together.")
-    assert(!(toolchain_cc_wrapper != "" && toolchain_uses_rbe),
-           "RBE and cc_wrapper can't be used together.")
+    assert(!(toolchain_uses_remoteexec && toolchain_uses_goma),
+           "Goma and re-client can't be used together.")
+    assert(!(toolchain_cc_wrapper != "" && toolchain_uses_remoteexec),
+           "re-client and cc_wrapper can't be used together.")
     assert(!(toolchain_cc_wrapper != "" && toolchain_uses_goma),
            "Goma and cc_wrapper can't be used together.")
 
@@ -188,7 +188,7 @@ template("gcc_toolchain") {
     # wrapper will have picked up gomacc via cmd-line arg. So need to prepend
     # gomacc in that case.
     goma_path = "$goma_dir/gomacc"
-    if (toolchain_uses_rbe &&
+    if (toolchain_uses_remoteexec &&
         (!defined(invoker_toolchain_args.needs_gomacc_path_arg) ||
          !invoker_toolchain_args.needs_gomacc_path_arg)) {
       if (defined(toolchain_args.rbe_cc_cfg_file)) {
@@ -197,7 +197,7 @@ template("gcc_toolchain") {
         toolchain_rbe_cc_cfg_file = rbe_cc_cfg_file
       }
 
-      # C/C++ (clang) rewrapper prefix to use when use_rbe is true.
+      # C/C++ (clang) rewrapper prefix to use when use_remoteexec is true.
       compiler_prefix = "${rbe_bin_dir}/rewrapper -cfg=${toolchain_rbe_cc_cfg_file} -exec_root=${rbe_exec_root} "
     } else if (toolchain_uses_goma &&
                (!defined(invoker_toolchain_args.needs_gomacc_path_arg) ||

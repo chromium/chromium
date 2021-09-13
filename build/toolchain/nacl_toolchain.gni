@@ -58,7 +58,7 @@ template("nacl_toolchain") {
       use_clang_coverage = false
       coverage_instrumentation_input_file = ""
 
-      if (use_rbe) {
+      if (use_remoteexec) {
         if (is_win) {
           rbe_cc_cfg_file = "${rbe_cfg_dir}/nacl/rewrapper_windows.cfg"
         } else if (is_mac) {
