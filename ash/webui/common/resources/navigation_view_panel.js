@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './navigation_shared_vars.js';
 import './page_toolbar.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';

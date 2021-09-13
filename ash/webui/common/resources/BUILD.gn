@@ -15,6 +15,7 @@ preprocessed_gen_manifest = "preprocessed_gen_manifest.json"
 polymer_element_files = [
   "navigation_icons.js",
   "navigation_selector.js",
+  "navigation_shared_vars.js",
   "navigation_view_panel.js",
   "page_toolbar.js",
 ]
@@ -54,6 +55,12 @@ js_library("fake_method_resolver") {
 js_library("navigation_selector") {
   deps = [
     ":navigation_icons",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("navigation_shared_vars") {
+  deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }

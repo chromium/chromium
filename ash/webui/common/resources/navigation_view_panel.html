@@ -7,15 +7,15 @@
 
   :host([show-tool-bar]) #container {
     display: grid;
-    grid-template-areas: "head head" "sideNav main";
-    grid-template-columns: 1fr 4fr;
+    grid-template-areas: var(--areas);
+    grid-template-columns: var(--columns);
     width: 100%;
   }
 
   :host(:not([show-tool-bar])) #container {
     display: grid;
-    grid-template-areas: "sideNav main";
-    grid-template-columns: 1fr 4fr;
+    grid-template-areas: var(--areas-no-header);
+    grid-template-columns: var(--columns);
   }
 
   :host([show-tool-bar]) #topNav {
