@@ -3486,6 +3486,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "incognito-downloads-warning",
+    "owners": [ "sideyilmaz", "chrome-incognito@google.com" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "incognito-ntp-revamp",
     "owners": [ "sideyilmaz", "chrome-incognito@google.com" ],
     "expiry_milestone": 100

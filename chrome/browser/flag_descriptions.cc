@@ -1450,6 +1450,12 @@ const char kIncognitoBrandConsistencyForAndroidDescription[] =
     "When enabled, keeps Incognito UI consistent regardless of any selected "
     "theme.";
 
+const char kIncognitoDownloadsWarningName[] =
+    "Enable Incognito downloads warning";
+const char kIncognitoDownloadsWarningDescription[] =
+    "When enabled, users will be warned that downloaded files are saved on the "
+    "device and might be seen by other users even if they are in Incognito.";
+
 const char kIncognitoReauthenticationForAndroidName[] =
     "Enable device reauthentication for Incognito.";
 const char kIncognitoReauthenticationForAndroidDescription[] =

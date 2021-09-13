@@ -7011,6 +7011,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIncognitoScreenshotDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kIncognitoScreenshot)},
 #endif
+    {"incognito-downloads-warning",
+     flag_descriptions::kIncognitoDownloadsWarningName,
+     flag_descriptions::kIncognitoDownloadsWarningDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kIncognitoDownloadsWarning)},
+
     {"incognito-ntp-revamp", flag_descriptions::kIncognitoNtpRevampName,
      flag_descriptions::kIncognitoNtpRevampDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kIncognitoNtpRevamp)},
