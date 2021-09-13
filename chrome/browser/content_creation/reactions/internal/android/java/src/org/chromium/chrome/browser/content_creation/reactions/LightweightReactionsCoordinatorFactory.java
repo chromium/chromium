@@ -1,0 +1,24 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.content_creation.reactions;
+
+import android.app.Activity;
+
+import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
+import org.chromium.chrome.browser.tab.Tab;
+
+/**
+ * Factory for creating instances of the LightweightReactionsCoordinatorImpl.
+ */
+public class LightweightReactionsCoordinatorFactory {
+    /**
+     * @return a LightweightReactionsCoordinator instance.
+     */
+    public static LightweightReactionsCoordinator create(Activity activity, Tab tab,
+            String shareUrl, ChromeOptionShareCallback chromeOptionShareCallback) {
+        return new LightweightReactionsCoordinatorImpl(
+                activity, tab, chromeOptionShareCallback, shareUrl);
+    }
+}

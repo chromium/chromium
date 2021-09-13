@@ -734,6 +734,7 @@ java_group("chrome_all_java") {
     "//chrome/browser/attribution_reporting/android/internal:java",
     "//chrome/browser/commerce/merchant_viewer/android:java",
     "//chrome/browser/content_creation/notes/internal/android:java",
+    "//chrome/browser/content_creation/reactions/internal/android:java",
     "//chrome/browser/download/internal/android:java",
     "//chrome/browser/page_annotations/android:java",
     "//chrome/browser/password_check:internal_java",

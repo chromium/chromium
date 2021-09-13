@@ -1,0 +1,22 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/content_creation/reactions/LightweightReactionsCoordinatorFactory.java",
+    "java/src/org/chromium/chrome/browser/content_creation/reactions/LightweightReactionsCoordinatorImpl.java",
+  ]
+
+  deps = [
+    "//chrome/browser/content_creation/reactions/android:public_java",
+    "//chrome/browser/share:java",
+    "//chrome/browser/tab:java",
+  ]
+  resources_package =
+      "org.chromium.chrome.browser.content_creation.reactions.internal"
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}

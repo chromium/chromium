@@ -19,6 +19,8 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.content_creation.notes.NoteCreationCoordinator;
 import org.chromium.chrome.browser.content_creation.notes.NoteCreationCoordinatorFactory;
+import org.chromium.chrome.browser.content_creation.reactions.LightweightReactionsCoordinator;
+import org.chromium.chrome.browser.content_creation.reactions.LightweightReactionsCoordinatorFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -451,7 +453,12 @@ public class ChromeProvidedSharingOptionsProvider {
                 .setIcon(R.drawable.lightweight_reactions_icon,
                         R.string.sharing_lightweight_reactions)
                 .setFeatureNameForMetrics("SharingHubAndroid.LightweightReactions")
-                .setOnClickCallback((view) -> {})
+                .setOnClickCallback((view) -> {
+                    LightweightReactionsCoordinator coordinator =
+                            LightweightReactionsCoordinatorFactory.create(mActivity,
+                                    mTabProvider.get(), mUrl, mChromeOptionShareCallback);
+                    coordinator.showDialog();
+                })
                 .build();
     }
 

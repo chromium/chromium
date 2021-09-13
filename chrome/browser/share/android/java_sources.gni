@@ -77,5 +77,7 @@ share_java_sources = [
 share_java_deps = [
   "//chrome/browser/content_creation/notes/android:factory_java",
   "//chrome/browser/content_creation/notes/android:public_java",
+  "//chrome/browser/content_creation/reactions/android:factory_java",
+  "//chrome/browser/content_creation/reactions/android:public_java",
   "//components/feature_engagement/public:public_java",
 ]
