@@ -462,14 +462,17 @@ bool AssistiveSuggester::OnKeyEvent(const ui::KeyEvent& event) {
 
 void AssistiveSuggester::OnExternalSuggestionsUpdated(
     const std::vector<TextSuggestion>& suggestions) {
-  if (!IsMultiWordSuggestEnabled() ||
-      (!IsAllowedUrlOrAppForMultiWordSuggestion() &&
-       !IsExpandedMultiWordSuggestEnabled())) {
-    RecordAssistiveDisabledReasonForMultiWord(GetDisabledReasonForMultiWord());
+  if (!IsMultiWordSuggestEnabled()) {
     return;
   }
 
   RecordSuggestionsMatch(suggestions);
+
+  if (!IsAllowedUrlOrAppForMultiWordSuggestion() &&
+      !IsExpandedMultiWordSuggestEnabled()) {
+    RecordAssistiveDisabledReasonForMultiWord(GetDisabledReasonForMultiWord());
+    return;
+  }
 
   if (current_suggester_) {
     current_suggester_->OnExternalSuggestionsUpdated(suggestions);
