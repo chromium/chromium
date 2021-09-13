@@ -677,7 +677,8 @@ void TraceEventDataSource::RegisterStartupHooks() {
   RegisterTracedValueProtoWriter();
   base::trace_event::EnableTypedTraceEvents(
       &TraceEventDataSource::OnAddTypedTraceEvent,
-      &TraceEventDataSource::OnAddTracePacket);
+      &TraceEventDataSource::OnAddTracePacket,
+      &TraceEventDataSource::OnAddEmptyPacket);
 #endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 }
 
@@ -1310,6 +1311,15 @@ base::trace_event::TracePacketHandle TraceEventDataSource::OnAddTracePacket() {
     return thread_local_event_sink->AddTracePacket();
   }
   return base::trace_event::TracePacketHandle();
+}
+
+// static
+void TraceEventDataSource::OnAddEmptyPacket() {
+  auto* thread_local_event_sink = GetOrPrepareEventSink();
+  if (thread_local_event_sink) {
+    // GetThreadIsInTraceEventTLS() is handled by the sink for trace packets.
+    thread_local_event_sink->AddEmptyPacket();
+  }
 }
 
 // static

@@ -52,6 +52,7 @@ class COMPONENT_EXPORT(TRACING_CPP) TrackEventThreadLocalEventSink
   base::trace_event::TrackEventHandle AddTypedTraceEvent(
       base::trace_event::TraceEvent* trace_event);
   base::trace_event::TracePacketHandle AddTracePacket();
+  void AddEmptyPacket();
 
   void UpdateDuration(
       const unsigned char* category_group_enabled,

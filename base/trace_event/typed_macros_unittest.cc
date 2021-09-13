@@ -113,6 +113,7 @@ struct TestTracePacket : public TracePacketHandle::CompletionListener {
   protozero::HeapBuffered<perfetto::protos::pbzero::TracePacket> packet;
   bool prepare_called = false;
   bool packet_completed = false;
+  bool emit_empty_called = false;
 };
 
 TrackEventHandle PrepareTrackEvent(TraceEvent*) {
@@ -131,11 +132,17 @@ TracePacketHandle PrepareTracePacket() {
                            g_test_trace_packet);
 }
 
+void EmitEmptyPacket() {
+  CHECK_NE(g_test_track_event, nullptr) << "TestTracePacket not set yet";
+  g_test_trace_packet->emit_empty_called = true;
+}
+
 class TypedTraceEventTest : public testing::Test {
  public:
   TypedTraceEventTest() {
     perfetto::internal::TrackRegistry::InitializeInstance();
-    EnableTypedTraceEvents(&PrepareTrackEvent, &PrepareTracePacket);
+    EnableTypedTraceEvents(&PrepareTrackEvent, &PrepareTracePacket,
+                           &EmitEmptyPacket);
   }
 
   ~TypedTraceEventTest() override { ResetTypedTraceEventsForTesting(); }
@@ -367,6 +374,25 @@ TEST_F(TypedTraceEventTest, EndEventOnDefaultTrackDoesNotWriteTrackUuid) {
   TRACE_EVENT_END("cat");
   auto end_event = ParseTrackEvent();
   EXPECT_FALSE(end_event.has_track_uuid());
+
+  CancelTrace();
+}
+
+// In the client library, EmitEmptyPacket() isn't called and the packet
+// disappears from the trace. This functionality is instead tested in Perfetto's
+// API integration tests. We just verify that the macro builds correctly here
+// when building with the client library.
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+#define MAYBE_EmptyEvent DISABLED_EmptyEvent
+#else
+#define MAYBE_EmptyEvent EmptyEvent
+#endif
+TEST_F(TypedTraceEventTest, MAYBE_EmptyEvent) {
+  EnableTrace();
+
+  EXPECT_FALSE(g_test_trace_packet->emit_empty_called);
+  PERFETTO_INTERNAL_ADD_EMPTY_EVENT();
+  EXPECT_TRUE(g_test_trace_packet->emit_empty_called);
 
   CancelTrace();
 }

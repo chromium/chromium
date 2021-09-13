@@ -274,6 +274,16 @@ TrackEventThreadLocalEventSink::AddTracePacket() {
   return base::trace_event::TracePacketHandle(std::move(packet), this);
 }
 
+void TrackEventThreadLocalEventSink::AddEmptyPacket() {
+  DCHECK(!base::tracing::GetThreadIsInTraceEventTLS()->Get());
+  base::tracing::GetThreadIsInTraceEventTLS()->Set(true);
+
+  DCHECK(!pending_trace_packet_);
+  trace_writer_->NewTracePacket();
+
+  base::tracing::GetThreadIsInTraceEventTLS()->Set(false);
+}
+
 void TrackEventThreadLocalEventSink::OnTracePacketCompleted() {
   DCHECK(base::tracing::GetThreadIsInTraceEventTLS()->Get());
   base::tracing::GetThreadIsInTraceEventTLS()->Set(false);

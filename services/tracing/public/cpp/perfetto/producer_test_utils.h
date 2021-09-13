@@ -14,7 +14,7 @@
 #include "base/tracing/perfetto_task_runner.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "services/tracing/public/cpp/perfetto/producer_client.h"
-#include "services/tracing/public/cpp/tracing_features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/trace_writer.h"
 #include "third_party/perfetto/include/perfetto/protozero/root_message.h"
 #include "third_party/perfetto/include/perfetto/protozero/scattered_stream_null_delegate.h"
@@ -69,7 +69,8 @@ class TestProducerClient : public ProducerClient {
       legacy_metadata_packets_;
   std::vector<std::unique_ptr<perfetto::protos::TracePacket>>
       proto_metadata_packets_;
-  protozero::RootMessage<perfetto::protos::pbzero::TracePacket> trace_packet_;
+  absl::optional<protozero::RootMessage<perfetto::protos::pbzero::TracePacket>>
+      trace_packet_;
   protozero::ScatteredStreamWriterNullDelegate delegate_;
   protozero::ScatteredStreamWriter stream_;
   std::unique_ptr<base::tracing::PerfettoTaskRunner> main_thread_task_runner_;

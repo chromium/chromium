@@ -25,6 +25,8 @@ base::trace_event::ThreadInstructionCount ThreadInstructionNow() {
 
 base::trace_event::PrepareTrackEventFunction g_typed_event_callback = nullptr;
 base::trace_event::PrepareTracePacketFunction g_trace_packet_callback = nullptr;
+base::trace_event::EmitEmptyTracePacketFunction g_empty_packet_callback =
+    nullptr;
 
 std::pair<char /*phase*/, unsigned long long /*id*/>
 GetPhaseAndIdForTraceLog(bool explicit_track, uint64_t track_uuid, char phase) {
@@ -57,15 +59,19 @@ const perfetto::Track kDefaultTrack{};
 namespace base {
 namespace trace_event {
 
-void EnableTypedTraceEvents(PrepareTrackEventFunction typed_event_callback,
-                            PrepareTracePacketFunction trace_packet_callback) {
+void EnableTypedTraceEvents(
+    PrepareTrackEventFunction typed_event_callback,
+    PrepareTracePacketFunction trace_packet_callback,
+    EmitEmptyTracePacketFunction empty_packet_callback) {
   g_typed_event_callback = typed_event_callback;
   g_trace_packet_callback = trace_packet_callback;
+  g_empty_packet_callback = empty_packet_callback;
 }
 
 void ResetTypedTraceEventsForTesting() {
   g_typed_event_callback = nullptr;
   g_trace_packet_callback = nullptr;
+  g_empty_packet_callback = nullptr;
 }
 
 TrackEventHandle::TrackEventHandle(TrackEvent* event,
@@ -178,6 +184,11 @@ base::trace_event::TracePacketHandle CreateTracePacket() {
   // g_trace_packet_callback.
   DCHECK(g_trace_packet_callback);
   return g_trace_packet_callback();
+}
+
+void AddEmptyPacket() {
+  if (g_empty_packet_callback)
+    g_empty_packet_callback();
 }
 
 bool ShouldEmitTrackDescriptor(

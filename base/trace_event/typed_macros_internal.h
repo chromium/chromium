@@ -58,6 +58,24 @@
     return 0;                                                                 \
   }()};
 
+// Emits an empty trace packet into the trace to ensure that the service can
+// safely read the last event from the trace buffer. This can be used to
+// periodically "flush" the last event on threads that don't support explicit
+// flushing of the shared memory buffer chunk when the tracing session stops
+// (e.g. thread pool workers).
+//
+// This workaround is only required because the tracing service cannot safely
+// read the last trace packet from an incomplete SMB chunk (crbug.com/1021571
+// and b/162206162) when scraping the SMB. Adding an empty trace packet ensures
+// that all prior events can be scraped by the service.
+#define PERFETTO_INTERNAL_ADD_EMPTY_EVENT()               \
+  do {                                                    \
+    /* Metadata category is enabled for any session. */   \
+    INTERNAL_TRACE_EVENT_GET_CATEGORY_INFO("__metadata"); \
+    if (INTERNAL_TRACE_EVENT_CATEGORY_GROUP_ENABLED())    \
+      trace_event_internal::AddEmptyPacket();             \
+  } while (false)
+
 namespace trace_event_internal {
 
 extern BASE_EXPORT const perfetto::Track kDefaultTrack;
@@ -77,6 +95,8 @@ CreateTrackEvent(char phase,
                  bool explicit_track);
 
 base::trace_event::TracePacketHandle BASE_EXPORT CreateTracePacket();
+
+void BASE_EXPORT AddEmptyPacket();
 
 bool BASE_EXPORT ShouldEmitTrackDescriptor(
     uint64_t track_uuid,

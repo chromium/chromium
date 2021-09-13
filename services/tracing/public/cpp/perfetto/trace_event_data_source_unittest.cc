@@ -2446,6 +2446,28 @@ TEST_F(TraceEventDataSourceTest, TypedAndUntypedEventsWithDebugAnnotations) {
   ExpectInternedDebugAnnotationNames(e_packet2, {{2u, "arg2"}});
 }
 
+TEST_F(TraceEventDataSourceTest, EmptyPacket) {
+  StartTraceEventDataSource();
+
+  TRACE_EVENT_INSTANT("browser", "Event");
+  PERFETTO_INTERNAL_ADD_EMPTY_EVENT();
+
+  size_t packet_index = ExpectStandardPreamble();
+  auto* instant_packet = GetFinalizedPacket(packet_index++);
+
+  ExpectEventCategories(instant_packet, {{1u, "browser"}});
+  ExpectInternedEventNames(instant_packet, {{1u, "Event"}});
+
+// The client library employs a real tracing service, which skips empty packets
+// when reading from the trace buffer. The functionality of the
+// PERFETTO_INTERNAL_ADD_EMPTY_EVENT macro is instead tested in Perfetto's API
+// integration tests.
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  auto* empty_packet = GetFinalizedPacket(packet_index++);
+  EXPECT_EQ(empty_packet->ByteSize(), 0);
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+}
+
 // TODO(eseckler): Add startup tracing unittests.
 
 }  // namespace
