@@ -1197,7 +1197,6 @@ class NearbySharingServiceImplTest : public testing::Test {
       fast_initiation_advertiser_factory_;
   std::unique_ptr<FakeFastInitiationScannerFactory>
       fast_initiation_scanner_factory_;
-  std::unique_ptr<FakeArcNearbyShareSession> arc_nearby_share_session_;
   bool is_bluetooth_present_ = true;
   bool is_bluetooth_powered_ = true;
   device::BluetoothAdapter::Observer* adapter_observer_ = nullptr;
@@ -4154,9 +4153,6 @@ TEST_F(NearbySharingServiceImplTest, SendPayloadWithArcCallback) {
   PayloadInfo info = AcceptAndSendPayload(transfer_callback, target);
   FinishOutgoingTransfer(transfer_callback, target, info);
 
-  // Make sure ARC cleanup is called after transfer completes.
-  EXPECT_TRUE(arc_session.CleanupCallbackCalled());
-
   // We should not have called disconnect yet as we want to wait for 1 minute to
   // make sure all outgoing packets have been sent properly.
   EXPECT_TRUE(
@@ -4164,6 +4160,10 @@ TEST_F(NearbySharingServiceImplTest, SendPayloadWithArcCallback) {
 
   // Forward time until we send the disconnect request to Nearby Connections.
   task_environment_.FastForwardBy(kOutgoingDisconnectionDelay);
+
+  // ARC cleanup runs in a ThreadPool.
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(arc_session.CleanupCallbackCalled());
 
   // Expect to be disconnected now.
   EXPECT_FALSE(
@@ -4184,6 +4184,9 @@ TEST_F(NearbySharingServiceImplTest, ShutdownCallsObserversWithArcCallback) {
   EXPECT_FALSE(observer.shutdown_called_);
 
   service_->Shutdown();
+
+  // ARC cleanup runs in a ThreadPool.
+  task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(observer.shutdown_called_);
   EXPECT_TRUE(arc_session.CleanupCallbackCalled());
