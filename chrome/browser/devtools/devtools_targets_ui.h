@@ -14,7 +14,6 @@
 #include "chrome/browser/devtools/device/devtools_android_bridge.h"
 
 namespace base {
-class DictionaryValue;
 class Value;
 }
 
@@ -49,8 +48,7 @@ class DevToolsTargetsUIHandler {
   virtual void ForceUpdate();
 
  protected:
-  std::unique_ptr<base::DictionaryValue> Serialize(
-      content::DevToolsAgentHost* host);
+  base::Value Serialize(content::DevToolsAgentHost* host);
   void SendSerializedTargets(const base::Value& list);
 
   using TargetMap =
