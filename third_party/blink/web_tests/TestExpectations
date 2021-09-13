@@ -6863,3 +6863,6 @@ external/wpt/WebIDL/* [ Skip ]
 
 # Sheriff 2021-09-10
 crbug.com/1248437 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/one-custom-property-animation-half-opaque.https.html [ Pass Failure ]
+
+# Sheriff 2021-09-13
+crbug.com/1248912 virtual/threaded/external/wpt/scroll-animations/css/at-scroll-timeline-dynamic.tentative.html [ Failure Pass ]
