@@ -132,6 +132,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabActivityIncognitoMetricTest.java",
   "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabActivityIncognitoTest.java",
   "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabActivityRenderTest.java",
+  "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabActivitySecurityIndicatorTest.java",
   "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabActivityTest.java",
   "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabActivityTypeTestUtils.java",
   "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabAutoplayUnmutedTest.java",
