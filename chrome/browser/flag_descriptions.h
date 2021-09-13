@@ -532,9 +532,6 @@ extern const char kEnableGpuServiceLoggingDescription[];
 extern const char kEnableLayoutNGName[];
 extern const char kEnableLayoutNGDescription[];
 
-extern const char kEnableLayoutNGTableName[];
-extern const char kEnableLayoutNGTableDescription[];
-
 extern const char kEnableLazyFrameLoadingName[];
 extern const char kEnableLazyFrameLoadingDescription[];
 

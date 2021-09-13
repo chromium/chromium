@@ -147,8 +147,6 @@ public final class ProductionSupportedFlagList {
                     "Enables the new Java/JS Bridge code path with mojo implementation."),
             Flag.baseFeature(
                     AwFeatures.WEBVIEW_ORIGIN_TRIALS, "Enables Origin Trials support on WebView."),
-            Flag.baseFeature(
-                    BlinkFeatures.LAYOUT_NG_TABLE, "Enables Blink's next generation table layout."),
             Flag.baseFeature(BlinkFeatures.GMS_CORE_EMOJI,
                     "Enables retrieval of the emoji font through GMS Core "
                             + "improving emoji glyph coverage."),

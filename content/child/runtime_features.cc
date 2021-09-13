@@ -367,7 +367,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            blink::features::kInterestCohortFeaturePolicy},
           {"LangClientHintHeader", blink::features::kLangClientHintHeader},
           {"LayoutNG", blink::features::kLayoutNG},
-          {"LayoutNGTable", blink::features::kLayoutNGTable},
           {"LegacyWindowsDWriteFontFallback",
            features::kLegacyWindowsDWriteFontFallback},
           {"ManagedConfiguration", blink::features::kManagedConfiguration},
