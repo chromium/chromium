@@ -4095,6 +4095,48 @@
             ]
         }
     ],
+    "HatsSmartUnlock": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "prob": "0.05",
+                        "survey_cycle_length": "7",
+                        "survey_start_date_ms": "1627801200000",
+                        "trigger_id": "4oPHNnPJy0jBnuKU19R0T1NSmNes"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingSmartLock"
+                    ]
+                }
+            ]
+        }
+    ],
+    "HatsUnlock": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "prob": "0.001",
+                        "survey_cycle_length": "7",
+                        "survey_start_date_ms": "1627801200000",
+                        "trigger_id": "qqZi3hpfx0jBnuKU19R0UA7zE7e4"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingUnlock"
+                    ]
+                }
+            ]
+        }
+    ],
     "HeapProfiling": [
         {
             "platforms": [
