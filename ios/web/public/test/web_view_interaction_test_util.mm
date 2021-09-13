@@ -11,6 +11,8 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
 #import "ios/web/web_state/ui/crw_web_view_proxy_impl.h"
@@ -50,6 +52,63 @@ std::unique_ptr<base::Value> ExecuteJavaScript(web::WebState* web_state,
     return did_finish;
   });
   if (!completed) {
+    return nullptr;
+  }
+
+  // As result is marked __block, this return call does a copy and not a move
+  // (marking the variable as __block mean it is allocated in the block object
+  // and not the stack). Use an explicit move to a local variable.
+  //
+  // Fixes the following compilation failures:
+  //   ../web_view_interaction_test_util.mm:58:10: error:
+  //       call to implicitly-deleted copy constructor of
+  //       'std::unique_ptr<base::Value>'
+  //
+  //   ../web_view_interaction_test_util.mm:58:10: error:
+  //       moving a local object in a return statement prevents copy elision
+  //       [-Werror,-Wpessimizing-move]
+  std::unique_ptr<base::Value> stack_result = std::move(result);
+  return stack_result;
+}
+
+std::unique_ptr<base::Value> CallJavaScriptFunction(
+    web::WebState* web_state,
+    const std::string& function,
+    const std::vector<base::Value>& parameters) {
+  if (!web_state) {
+    DLOG(ERROR) << "JavaScript can not be called on a null WebState.";
+    return nullptr;
+  }
+
+  WebFrame* frame = GetMainFrame(web_state);
+  if (!frame) {
+    DLOG(ERROR) << "JavaScript can not be called on a null WebFrame.";
+    return nullptr;
+  }
+
+  __block std::unique_ptr<base::Value> result;
+  __block bool did_finish = false;
+  bool function_call_successful = frame->CallJavaScriptFunction(
+      function, parameters, base::BindOnce(^(const base::Value* value) {
+        if (value)
+          result = value->CreateDeepCopy();
+        did_finish = true;
+      }),
+      base::TimeDelta::FromSecondsD(kWaitForJSCompletionTimeout));
+
+  if (!function_call_successful) {
+    DLOG(ERROR) << "JavaScript failed to be called on WebFrame.";
+    return nullptr;
+  }
+
+  // Wait twice as long as the completion block above should always be called at
+  // the timeout time per WebFrame API contract.
+  bool completed =
+      WaitUntilConditionOrTimeout(2 * kWaitForJSCompletionTimeout, ^{
+        return did_finish;
+      });
+  if (!completed) {
+    DLOG(ERROR) << "Expected callback was never called.";
     return nullptr;
   }
 

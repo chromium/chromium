@@ -25,6 +25,13 @@ namespace test {
 std::unique_ptr<base::Value> ExecuteJavaScript(web::WebState* web_state,
                                                const std::string& script);
 
+// Synchronously returns the result of the executed JavaScript function by
+// calling |function| with |parameters| in web_state's main frame.
+std::unique_ptr<base::Value> CallJavaScriptFunction(
+    web::WebState* web_state,
+    const std::string& function,
+    const std::vector<base::Value>& parameters);
+
 // Returns the CGRect, in the coordinate system of web_state's view, that
 // encloses the element returned by |selector| in |web_state|'s webview.
 // There is no guarantee that the CGRect returned is inside the current window;
