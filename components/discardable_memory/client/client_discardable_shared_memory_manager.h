@@ -29,9 +29,6 @@ class SingleThreadTaskRunner;
 
 namespace discardable_memory {
 
-DISCARDABLE_MEMORY_EXPORT extern const base::Feature
-    kReleaseDiscardableFreeListPages;
-
 // Implementation of DiscardableMemoryAllocator that allocates
 // discardable memory segments through the browser process.
 class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
@@ -175,32 +172,15 @@ class DISCARDABLE_MEMORY_EXPORT ClientDiscardableSharedMemoryManager
   // Releases all unlocked memory that was last locked at least |min_age| ago.
   void PurgeUnlockedMemory(base::TimeDelta min_age) LOCKS_EXCLUDED(lock_);
 
-  void ReleaseDiscardableFreeListPagesIfPossible(
-      DiscardableSharedMemoryHeap::Span* span);
-
-  void MergeIntoFreeListsDirty(
-      DiscardableMemoryImpl* memory,
-      std::unique_ptr<DiscardableSharedMemoryHeap::Span> span)
-      LOCKS_EXCLUDED(lock_);
-  void MergeIntoFreeListsDirtyLocked(
-      DiscardableMemoryImpl* memory,
-      std::unique_ptr<DiscardableSharedMemoryHeap::Span> span)
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  void MergeIntoFreeListsClean(
-      std::unique_ptr<DiscardableSharedMemoryHeap::Span> span)
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
-
   bool LockSpan(DiscardableSharedMemoryHeap::Span* span)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void UnlockSpan(DiscardableSharedMemoryHeap::Span* span)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  void UnregisterAndRelease(
+  void UnlockAndReleaseMemory(
       DiscardableMemoryImpl* memory,
       std::unique_ptr<DiscardableSharedMemoryHeap::Span> span)
-      LOCKS_EXCLUDED(lock_);
-  void UnregisterAndReleaseLocked(
-      DiscardableMemoryImpl* memory,
-      std::unique_ptr<DiscardableSharedMemoryHeap::Span> span)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void ReleaseSpan(std::unique_ptr<DiscardableSharedMemoryHeap::Span> span)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   size_t GetBytesAllocatedLocked() const EXCLUSIVE_LOCKS_REQUIRED(lock_);
