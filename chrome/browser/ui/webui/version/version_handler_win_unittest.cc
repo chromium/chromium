@@ -31,6 +31,53 @@ class WebUIWindowsVersion : public testing::Test {
   registry_util::RegistryOverrideManager registry_override_manager_;
 };
 
+TEST_F(WebUIWindowsVersion, Win11Pro) {
+  // set Windows Registry Key UBR
+  ubr_key.WriteValue(L"UBR", 555);
+  ubr_key.WriteValue(L"ReleaseId", L"2009");
+  ubr_key.WriteValue(L"DisplayVersion", L"21H2");
+  // override base::win::OSInfo
+  base::test::ScopedOSInfoOverride os(
+      base::test::ScopedOSInfoOverride::Type::kWin11Pro);
+  EXPECT_EQ(VersionHandlerWindows::GetFullWindowsVersionForTesting(),
+            "11 Version 21H2 (Build 22000.555)");
+}
+
+TEST_F(WebUIWindowsVersion, WinServer2022) {
+  // set Windows Registry Key UBR
+  ubr_key.WriteValue(L"UBR", 1);
+  ubr_key.WriteValue(L"ReleaseId", L"2009");
+  ubr_key.WriteValue(L"DisplayVersion", L"21H2");
+  // override base::win::OSInfo
+  base::test::ScopedOSInfoOverride os(
+      base::test::ScopedOSInfoOverride::Type::kWinServer2022);
+  EXPECT_EQ(VersionHandlerWindows::GetFullWindowsVersionForTesting(),
+            "Server 2022 Version 21H2 (Build 20348.1)");
+}
+
+TEST_F(WebUIWindowsVersion, Win10Pro21H1) {
+  // set Windows Registry Key UBR
+  ubr_key.WriteValue(L"UBR", 555);
+  ubr_key.WriteValue(L"ReleaseId", L"2009");
+  ubr_key.WriteValue(L"DisplayVersion", L"21H1");
+  // override base::win::OSInfo
+  base::test::ScopedOSInfoOverride os(
+      base::test::ScopedOSInfoOverride::Type::kWin10Pro21H1);
+  EXPECT_EQ(VersionHandlerWindows::GetFullWindowsVersionForTesting(),
+            "10 Version 21H1 (Build 19043.555)");
+}
+
+TEST_F(WebUIWindowsVersion, Win10Pro21H1NoReleaseId) {
+  // set Windows Registry Key UBR
+  ubr_key.WriteValue(L"UBR", 555);
+  ubr_key.WriteValue(L"DisplayVersion", L"21H1");
+  // override base::win::OSInfo
+  base::test::ScopedOSInfoOverride os(
+      base::test::ScopedOSInfoOverride::Type::kWin10Pro21H1);
+  EXPECT_EQ(VersionHandlerWindows::GetFullWindowsVersionForTesting(),
+            "10 Version 21H1 (Build 19043.555)");
+}
+
 TEST_F(WebUIWindowsVersion, Win10Pro) {
   // set Windows Registry Key UBR
   ubr_key.WriteValue(L"UBR", 555);
@@ -39,7 +86,7 @@ TEST_F(WebUIWindowsVersion, Win10Pro) {
   base::test::ScopedOSInfoOverride os(
       base::test::ScopedOSInfoOverride::Type::kWin10Pro);
   EXPECT_EQ(VersionHandlerWindows::GetFullWindowsVersionForTesting(),
-            "10 OS Version 1000 (Build 15063.555)");
+            "10 Version 1000 (Build 15063.555)");
 }
 
 TEST_F(WebUIWindowsVersion, WinServer2016) {
