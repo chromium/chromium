@@ -1123,7 +1123,7 @@ void GvrSchedulerDelegate::GetFrameData(
   TRACE_EVENT0("gpu", __func__);
   if (!get_frame_data_callback_.is_null()) {
     DLOG(WARNING) << ": previous get_frame_data_callback_ was not used yet";
-    mojo::ReportBadMessage(
+    frame_data_receiver_.ReportBadMessage(
         "Requested VSync before waiting for response to previous request.");
     ClosePresentationBindings();
     return;
@@ -1198,7 +1198,7 @@ void GvrSchedulerDelegate::SubmitFrameDrawnIntoTexture(
     DCHECK(sync_token.verified_flush());
     buffer->mailbox_holder.sync_token = sync_token;
   } else {
-    mojo::ReportBadMessage(
+    presentation_receiver_.ReportBadMessage(
         "SubmitFrameDrawnIntoTexture called while using the wrong transport "
         "mode");
     ClosePresentationBindings();
@@ -1215,14 +1215,16 @@ void GvrSchedulerDelegate::UpdateLayerBounds(int16_t frame_index,
                                              const gfx::RectF& right_bounds,
                                              const gfx::Size& source_size) {
   if (!ValidateRect(left_bounds) || !ValidateRect(right_bounds)) {
-    mojo::ReportBadMessage("UpdateLayerBounds called with invalid bounds");
+    presentation_receiver_.ReportBadMessage(
+        "UpdateLayerBounds called with invalid bounds");
     ClosePresentationBindings();
     return;
   }
 
   if (frame_index >= 0 && !webxr_.HaveAnimatingFrame()) {
     // The optional UpdateLayerBounds call must happen before SubmitFrame.
-    mojo::ReportBadMessage("UpdateLayerBounds called without animating frame");
+    presentation_receiver_.ReportBadMessage(
+        "UpdateLayerBounds called without animating frame");
     ClosePresentationBindings();
     return;
   }
@@ -1252,7 +1254,8 @@ bool GvrSchedulerDelegate::IsSubmitFrameExpected(int16_t frame_index) {
   if (animating_frame->index != frame_index) {
     DVLOG(1) << __func__ << ": wrong frame index, got " << frame_index
              << ", expected " << animating_frame->index;
-    mojo::ReportBadMessage("SubmitFrame called with wrong frame index");
+    presentation_receiver_.ReportBadMessage(
+        "SubmitFrame called with wrong frame index");
     ClosePresentationBindings();
     return false;
   }
@@ -1375,14 +1378,15 @@ void GvrSchedulerDelegate::GetEnvironmentIntegrationProvider(
         device::mojom::XREnvironmentIntegrationProvider> environment_provider) {
   // Environment integration is not supported. This call should not
   // be made on this device.
-  mojo::ReportBadMessage("Environment integration is not supported.");
+  frame_data_receiver_.ReportBadMessage(
+      "Environment integration is not supported.");
 }
 
 void GvrSchedulerDelegate::SetInputSourceButtonListener(
     mojo::PendingAssociatedRemote<device::mojom::XRInputSourceButtonListener>) {
   // Input eventing is not supported. This call should not
   // be made on this device.
-  mojo::ReportBadMessage("Input eventing is not supported.");
+  frame_data_receiver_.ReportBadMessage("Input eventing is not supported.");
 }
 
 }  // namespace vr
