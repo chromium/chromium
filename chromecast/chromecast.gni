@@ -45,9 +45,6 @@ declare_args() {
   # Set to true for builds targeting ARC.
   is_android_arc = false
 
-  # Set true for builds targeting Android appliances.
-  is_android_appliance = false
-
   # Set true if the platform works as a single volume device, mapping all
   # volume streams to a single one.
   is_single_volume = false
