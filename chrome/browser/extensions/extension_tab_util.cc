@@ -862,7 +862,7 @@ void ExtensionTabUtil::CreateTab(std::unique_ptr<WebContents> web_contents,
   // TODO(mpcomplete): This seems wrong. What if the extension content is hosted
   // in a tab?
   if (disposition == WindowOpenDisposition::NEW_POPUP)
-    params.extension_app_id = extension_id;
+    params.app_id = extension_id;
 
   params.disposition = disposition;
   params.window_bounds = initial_rect;

@@ -190,7 +190,7 @@ struct NavigateParams {
   int tabstrip_index = -1;
 
   // If non-empty, the new tab is an app tab.
-  std::string extension_app_id;
+  std::string app_id;
 
   // If non-empty, specifies the desired initial position and size of the
   // window if |disposition| == NEW_POPUP.

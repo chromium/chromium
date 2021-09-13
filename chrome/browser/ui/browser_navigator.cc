@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/app_service/web_contents_app_id_utils.h"
 #include "chrome/browser/browser_about_handler.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/platform_util.h"
@@ -36,6 +37,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/url_constants.h"
 #include "components/captive_portal/core/buildflags.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
@@ -66,12 +68,6 @@
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
-#endif
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/apps/app_service/web_contents_app_id_utils.h"
-#include "chrome/browser/web_applications/web_app_helpers.h"
-#include "extensions/common/extension.h"
 #endif
 
 using content::GlobalRequestID;
@@ -162,7 +158,6 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
     const NavigateParams& params) {
   Profile* profile = params.initiating_profile;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   if (params.open_pwa_window_if_possible) {
     absl::optional<web_app::AppId> app_id =
         web_app::FindInstalledAppWithUrlInScope(profile, params.url,
@@ -180,7 +175,6 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
       return {browser, -1};
     }
   }
-#endif
 
   switch (params.disposition) {
     case WindowOpenDisposition::SWITCH_TO_TAB:
@@ -230,14 +224,11 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
       // Make a new popup window.
       // Coerce app-style if |source| represents an app.
       std::string app_name;
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-      if (!params.extension_app_id.empty()) {
-        app_name =
-            web_app::GenerateApplicationNameFromAppId(params.extension_app_id);
+      if (!params.app_id.empty()) {
+        app_name = web_app::GenerateApplicationNameFromAppId(params.app_id);
       } else if (params.browser && !params.browser->app_name().empty()) {
         app_name = params.browser->app_name();
       }
-#endif
       if (Browser::GetCreationStatusForProfile(profile) !=
           Browser::CreationStatus::kOk) {
         return {nullptr, -1};
@@ -459,10 +450,8 @@ std::unique_ptr<content::WebContents> CreateTargetContents(
   // tab helpers, so the entire set of tab helpers needs to be set up
   // immediately.
   BrowserNavigatorWebContentsAdoption::AttachTabHelpers(target_contents.get());
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   apps::SetAppIdForWebContents(params.browser->profile(), target_contents.get(),
-                               params.extension_app_id);
-#endif
+                               params.app_id);
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
   if (params.is_captive_portal_popup) {

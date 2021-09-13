@@ -96,7 +96,7 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigateBrowserTest, NewPopup) {
   {
     NavigateParams params(MakeNavigateParams());
     params.disposition = WindowOpenDisposition::NEW_WINDOW;
-    params.extension_app_id = app_id;
+    params.app_id = app_id;
     Navigate(&params);
   }
   content::WebContents* const web_contents =
@@ -114,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigateBrowserTest, NewPopup) {
   {
     // From a browser tab, an app window opens if app_id is specified.
     NavigateParams params(MakeNavigateParams());
-    params.extension_app_id = app_id;
+    params.app_id = app_id;
     params.disposition = WindowOpenDisposition::NEW_POPUP;
     Navigate(&params);
     EXPECT_EQ(browser_list->GetLastActive()->app_controller()->app_id(),
