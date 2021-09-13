@@ -58,7 +58,11 @@ namespace blink {
 // +-div#thumb (created by the HTMLSliderElement)
 MediaControlTimelineElement::MediaControlTimelineElement(
     MediaControlsImpl& media_controls)
-    : MediaControlSliderElement(media_controls) {
+    : MediaControlSliderElement(media_controls),
+      render_timeline_timer_(
+          GetDocument().GetTaskRunner(TaskType::kInternalMedia),
+          this,
+          &MediaControlTimelineElement::RenderTimelineTimerFired) {
   SetShadowPseudoId(AtomicString("-webkit-media-controls-timeline"));
 }
 
@@ -180,18 +184,14 @@ void MediaControlTimelineElement::OnMediaPlaying() {
   if (!is_live_)
     return;
 
-  if (render_timeline_timer_.IsRunning())
-    render_timeline_timer_.Stop();
+  render_timeline_timer_.Stop();
 }
 
 void MediaControlTimelineElement::OnMediaStoppedPlaying() {
   if (!is_live_ || is_scrubbing_ || !live_anchor_time_)
     return;
 
-  render_timeline_timer_.Start(
-      FROM_HERE, kRenderTimelineInterval,
-      WTF::BindRepeating(&MediaControlTimelineElement::UpdateLiveTimeline,
-                         WrapWeakPersistent(this)));
+  render_timeline_timer_.StartRepeating(kRenderTimelineInterval, FROM_HERE);
 }
 
 void MediaControlTimelineElement::OnProgress() {
@@ -199,7 +199,7 @@ void MediaControlTimelineElement::OnProgress() {
   RenderBarSegments();
 }
 
-void MediaControlTimelineElement::UpdateLiveTimeline() {
+void MediaControlTimelineElement::RenderTimelineTimerFired(TimerBase*) {
   MaybeUpdateTimelineInterval();
   RenderBarSegments();
 }
@@ -298,6 +298,7 @@ void MediaControlTimelineElement::RenderBarSegments() {
 }
 
 void MediaControlTimelineElement::Trace(Visitor* visitor) const {
+  visitor->Trace(render_timeline_timer_);
   MediaControlSliderElement::Trace(visitor);
 }
 
