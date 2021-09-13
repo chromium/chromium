@@ -82,7 +82,7 @@ public class PageInfoHistoryController
                 /* isSeparateActivity */ false,
                 /* isIncognito */ false, /* shouldShowPrivacyDisclaimers */ true,
                 /* shouldShowClearData */ false, mHost,
-                /* selectionDelegate */ null, /* tabCreatorManager */ null, mTabSupplier);
+                /* selectionDelegate */ null, mTabSupplier);
         mContentManager.initialize();
         return mContentManager.getRecyclerView();
     }

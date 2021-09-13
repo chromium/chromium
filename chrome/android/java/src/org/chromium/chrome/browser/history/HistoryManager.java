@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
@@ -79,15 +78,13 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
      *                           the main Chrome activity.
      * @param snackbarManager The {@link SnackbarManager} used to display snackbars.
      * @param isIncognito Whether the incognito tab model is currently selected.
-     * @param tabCreatorManager Allows creation of tabs in different models, null if the history UI
-     *                          will be shown in a separate activity.
      * @param tabSupplier Supplies the current tab, null if the history UI will be shown in a
      *                    separate activity.
      */
     @SuppressWarnings("unchecked") // mSelectableListLayout
     public HistoryManager(@NonNull Activity activity, boolean isSeparateActivity,
             @NonNull SnackbarManager snackbarManager, boolean isIncognito,
-            @Nullable TabCreatorManager tabCreatorManager, @Nullable Supplier<Tab> tabSupplier) {
+            @Nullable Supplier<Tab> tabSupplier) {
         mActivity = activity;
         mIsSeparateActivity = isSeparateActivity;
         mSnackbarManager = snackbarManager;
@@ -111,7 +108,7 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
                 ChromePreferenceKeys.HISTORY_SHOW_HISTORY_INFO, true);
         mContentManager = new HistoryContentManager(mActivity, this, isSeparateActivity,
                 isIncognito, shouldShowInfoHeader, /* shouldShowClearData */ true,
-                /* hostName */ null, mSelectionDelegate, tabCreatorManager, tabSupplier);
+                /* hostName */ null, mSelectionDelegate, tabSupplier);
         mSelectableListLayout.initializeRecyclerView(
                 mContentManager.getAdapter(), mContentManager.getRecyclerView());
 

@@ -151,7 +151,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
                     mBrowserControlsManager, mCurrentTabSupplier, mSnackbarManagerSupplier,
                     mLifecycleDispatcher, mTabModelSelectorSupplier.get(), mShareDelegateSupplier,
                     mWindowAndroid, mLastUserInteractionTimeSupplier, mHadWarmStartSupplier,
-                    mTabCreatorManager, mJankTracker, mToolbarSupplier);
+                    mJankTracker, mToolbarSupplier);
         }
         return mNativePageFactory.createNativePage(url, candidatePage, tab);
     }
