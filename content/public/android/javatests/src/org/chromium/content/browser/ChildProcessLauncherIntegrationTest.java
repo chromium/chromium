@@ -218,8 +218,7 @@ public class ChildProcessLauncherIntegrationTest {
             crashServiceForTesting();
             mCrashServiceCalled = true;
             if (mConnectionBundle != null) {
-                super.setupConnection(
-                        mConnectionBundle, mClientInterfaces, mConnectionCallback, null);
+                super.setupConnection(mConnectionBundle, mClientInterfaces, mConnectionCallback);
                 mConnectionBundle = null;
                 mClientInterfaces = null;
                 mConnectionCallback = null;
@@ -234,11 +233,11 @@ public class ChildProcessLauncherIntegrationTest {
 
         @Override
         public void setupConnection(Bundle connectionBundle, List<IBinder> clientInterfaces,
-                ConnectionCallback connectionCallback, ZygoteInfoCallback zygoteInfoCallback) {
+                ConnectionCallback connectionCallback) {
             // Make sure setupConnection is called after crashServiceForTesting so that
             // setupConnection is guaranteed to fail.
             if (mCrashServiceCalled) {
-                super.setupConnection(connectionBundle, clientInterfaces, connectionCallback, null);
+                super.setupConnection(connectionBundle, clientInterfaces, connectionCallback);
                 return;
             }
             mConnectionBundle = connectionBundle;

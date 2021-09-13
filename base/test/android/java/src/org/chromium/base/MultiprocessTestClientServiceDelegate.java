@@ -83,7 +83,4 @@ public class MultiprocessTestClientServiceDelegate implements ChildProcessServic
             Log.e(TAG, "Failed to notify parent process of main returning.");
         }
     }
-
-    @Override
-    public void consumeRelroBundle(Bundle bundle) {}
 }

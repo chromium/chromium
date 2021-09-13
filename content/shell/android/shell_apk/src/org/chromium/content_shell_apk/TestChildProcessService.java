@@ -138,9 +138,6 @@ public class TestChildProcessService extends Service {
             Looper.prepare();
             Looper.loop();
         }
-
-        @Override
-        public void consumeRelroBundle(Bundle bundle) {}
     }
 
     private ChildProcessService mService;

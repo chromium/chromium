@@ -66,15 +66,6 @@ public class ChildProcessLauncher {
         public void onConnectionEstablished(ChildProcessConnection connection) {}
 
         /**
-         * Called as part of establishing the connection. Saves the bundle for transferring to other
-         * processes that did not inherit from the App Zygote.
-         * @param connection the new connection
-         * @param relroBundle the bundle potentially containing useful information for relocation
-         * sharing across processes.
-         */
-        public void onReceivedZygoteInfo(ChildProcessConnection connection, Bundle relroBundle) {}
-
-        /**
          * Called when a connection has been disconnected. Only invoked if onConnectionEstablished
          * was called, meaning the connection was already established.
          * @param connection the connection that got disconnected.
@@ -221,14 +212,6 @@ public class ChildProcessLauncher {
     }
 
     private void setupConnection() {
-        ChildProcessConnection.ZygoteInfoCallback zygoteInfoCallback =
-                new ChildProcessConnection.ZygoteInfoCallback() {
-                    @Override
-                    public void onReceivedZygoteInfo(
-                            ChildProcessConnection connection, Bundle relroBundle) {
-                        mDelegate.onReceivedZygoteInfo(connection, relroBundle);
-                    }
-                };
         ChildProcessConnection.ConnectionCallback connectionCallback =
                 new ChildProcessConnection.ConnectionCallback() {
                     @Override
@@ -238,8 +221,7 @@ public class ChildProcessLauncher {
                 };
         Bundle connectionBundle = createConnectionBundle();
         mDelegate.onBeforeConnectionSetup(connectionBundle);
-        mConnection.setupConnection(
-                connectionBundle, getClientInterfaces(), connectionCallback, zygoteInfoCallback);
+        mConnection.setupConnection(connectionBundle, getClientInterfaces(), connectionCallback);
     }
 
     private void onServiceConnected(ChildProcessConnection connection) {
