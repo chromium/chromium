@@ -392,8 +392,6 @@ viz_source_set("unit_tests") {
       "gl_scaler_overscan_pixeltest.cc",
       "gl_scaler_pixeltest.cc",
       "gl_scaler_shader_pixeltest.cc",
-      "gl_scaler_test_util.cc",
-      "gl_scaler_test_util.h",
       "gl_scaler_unittest.cc",
     ]
   }

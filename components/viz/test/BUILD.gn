@@ -107,6 +107,13 @@ viz_static_library("test_support") {
 
   public_deps = [ ":buildflags" ]
 
+  if (enable_gl_backend_tests) {
+    sources += [
+      "gl_scaler_test_util.cc",
+      "gl_scaler_test_util.h",
+    ]
+  }
+
   if (enable_vulkan) {
     deps += [ "//gpu/vulkan/init" ]
   }

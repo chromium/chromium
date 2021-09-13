@@ -1100,6 +1100,11 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
           &CopyOutputResultYUV::OnReadbackDone, context.release());
       break;
     }
+    case CopyOutputRequest::ResultFormat::NV12_PLANES: {
+      // TODO(https://crbug.com/1216287): Add support for NV12.
+      NOTREACHED();
+      break;
+    }
     case CopyOutputRequest::ResultFormat::RGBA: {
       CopyOutputRGBA(surface, geometry, color_space, src_rect, rescale_mode,
                      is_downscale_or_identity_in_both_dimensions,

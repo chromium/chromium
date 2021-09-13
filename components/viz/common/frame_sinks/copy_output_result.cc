@@ -43,7 +43,8 @@ CopyOutputResult::CopyOutputResult(Format format,
       destination_(destination),
       rect_(rect),
       needs_lock_for_bitmap_(needs_lock_for_bitmap) {
-  DCHECK(format_ == Format::RGBA || format_ == Format::I420_PLANES);
+  DCHECK(format_ == Format::RGBA || format_ == Format::I420_PLANES ||
+         format == Format::NV12_PLANES);
   DCHECK(destination_ == Destination::kSystemMemory ||
          destination_ == Destination::kNativeTextures);
 }
@@ -89,6 +90,7 @@ bool CopyOutputResult::ReadI420Planes(uint8_t* y_out,
   const SkBitmap& bitmap = scoped_sk_bitmap.bitmap();
   if (!bitmap.readyToDraw())
     return false;
+
   const uint8_t* pixels = static_cast<uint8_t*>(bitmap.getPixels());
   // The conversion below ignores color space completely, and it's not even
   // sRGB→Rec.709. Unfortunately, hand-optimized routines are not available, and
@@ -109,7 +111,40 @@ bool CopyOutputResult::ReadI420Planes(uint8_t* y_out,
 
   // Other SkBitmap color types could be supported, but are currently never
   // being used.
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED() << "Unsupported format, bitmap.colorType()="
+                   << bitmap.colorType();
+  return false;
+}
+
+bool CopyOutputResult::ReadNV12Planes(uint8_t* y_out,
+                                      int y_out_stride,
+                                      uint8_t* uv_out,
+                                      int uv_out_stride) const {
+  auto scoped_sk_bitmap = ScopedAccessSkBitmap();
+  const SkBitmap& bitmap = scoped_sk_bitmap.bitmap();
+  if (!bitmap.readyToDraw())
+    return false;
+
+  const uint8_t* pixels = static_cast<uint8_t*>(bitmap.getPixels());
+  // The conversion below ignores color space completely, and it's not even
+  // sRGB→Rec.709. Unfortunately, hand-optimized routines are not available, and
+  // a perfect conversion using gfx::ColorTransform would execute way too
+  // slowly. See SoftwareRenderer for related comments on its lack of color
+  // space management (due to performance concerns).
+  if (bitmap.colorType() == kBGRA_8888_SkColorType) {
+    return 0 == libyuv::ARGBToNV12(pixels, bitmap.rowBytes(), y_out,
+                                   y_out_stride, uv_out, uv_out_stride,
+                                   bitmap.width(), bitmap.height());
+  } else if (bitmap.colorType() == kRGBA_8888_SkColorType) {
+    return 0 == libyuv::ABGRToNV12(pixels, bitmap.rowBytes(), y_out,
+                                   y_out_stride, uv_out, uv_out_stride,
+                                   bitmap.width(), bitmap.height());
+  }
+
+  // Other SkBitmap color types could be supported, but are currently never
+  // being used.
+  NOTIMPLEMENTED() << "Unsupported format, bitmap.colorType()="
+                   << bitmap.colorType();
   return false;
 }
 

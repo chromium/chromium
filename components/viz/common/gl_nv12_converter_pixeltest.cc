@@ -8,7 +8,7 @@
 
 #include "cc/test/pixel_test.h"
 #include "cc/test/pixel_test_utils.h"
-#include "components/viz/common/gl_scaler_test_util.h"
+#include "components/viz/test/gl_scaler_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"

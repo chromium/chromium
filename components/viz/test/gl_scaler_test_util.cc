@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/viz/common/gl_scaler_test_util.h"
+#include "components/viz/test/gl_scaler_test_util.h"
 
 #include <algorithm>
 #include <cmath>
 
-#include "base/files/file_path.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/notreached.h"
-#include "base/path_service.h"
-#include "cc/test/pixel_test_utils.h"
-#include "components/viz/test/paths.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/gfx/geometry/rect.h"
@@ -381,27 +377,6 @@ SkBitmap GLScalerTestUtil::CreateVerticallyFlippedBitmap(
            bitmap.rowBytes());
   }
   return bitmap;
-}
-
-// static
-SkBitmap GLScalerTestUtil::LoadPNGTestImage(const std::string& basename) {
-  base::FilePath test_dir;
-  if (!base::PathService::Get(Paths::DIR_TEST_DATA, &test_dir)) {
-    LOG(ERROR) << "Unable to get Paths::DIR_TEST_DATA from base::PathService.";
-    return SkBitmap();
-  }
-  const auto source_file = test_dir.AppendASCII(basename);
-  SkBitmap as_n32;
-  if (!cc::ReadPNGFile(source_file, &as_n32)) {
-    return SkBitmap();
-  }
-  SkBitmap as_rgba =
-      AllocateRGBABitmap(gfx::Size(as_n32.width(), as_n32.height()));
-  if (!as_n32.readPixels(SkPixmap(as_rgba.info(), as_rgba.getAddr(0, 0),
-                                  as_rgba.rowBytes()))) {
-    return SkBitmap();
-  }
-  return as_rgba;
 }
 
 // The area and color of the bars in a 1920x1080 HD SMPTE color bars test image

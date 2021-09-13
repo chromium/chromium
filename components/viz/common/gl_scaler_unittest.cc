@@ -5,8 +5,8 @@
 #include "components/viz/common/gl_scaler.h"
 
 #include "cc/test/pixel_test.h"
-#include "components/viz/common/gl_scaler_test_util.h"
 #include "components/viz/common/gpu/context_provider.h"
+#include "components/viz/test/gl_scaler_test_util.h"
 #include "gpu/GLES2/gl2chromium.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"

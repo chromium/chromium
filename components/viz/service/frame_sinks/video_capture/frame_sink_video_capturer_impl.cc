@@ -731,6 +731,12 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
                                      frame->stride(VideoFrame::kUPlane),
                                      frame->stride(VideoFrame::kVPlane));
         break;
+      case CopyOutputResult::Format::NV12_PLANES:
+        format = "NV12";
+        strides = base::StringPrintf("strideY:%d StrideUV:%d",
+                                     frame->stride(VideoFrame::kYPlane),
+                                     frame->stride(VideoFrame::kUVPlane));
+        break;
       case CopyOutputResult::Format::RGBA:
 
         strides = base::StringPrintf("strideRGBA:%d",

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_VIZ_COMMON_GL_SCALER_TEST_UTIL_H_
-#define COMPONENTS_VIZ_COMMON_GL_SCALER_TEST_UTIL_H_
+#ifndef COMPONENTS_VIZ_TEST_GL_SCALER_TEST_UTIL_H_
+#define COMPONENTS_VIZ_TEST_GL_SCALER_TEST_UTIL_H_
 
 #include <stdint.h>
 
@@ -25,7 +25,8 @@ class Rect;
 
 namespace viz {
 
-// A collection of utility functions used in the GLScaler-related pixel tests.
+// A collection of utility functions used in the GLScaler and GLRenderer-related
+// pixel tests.
 class GLScalerTestUtil {
  public:
   struct ColorBar {
@@ -117,10 +118,6 @@ class GLScalerTestUtil {
   // Returns the |source| bitmap, but with its content vertically flipped.
   static SkBitmap CreateVerticallyFlippedBitmap(const SkBitmap& source);
 
-  // Loads a PNG test image from the test directory, and converts it to the same
-  // SkImageInfo format used by AllocateRGBABitmap() (i.e., GL_RGBA byte order).
-  static SkBitmap LoadPNGTestImage(const std::string& basename);
-
   // The area and color of the bars in a 1920x1080 HD SMPTE color bars test
   // image (https://commons.wikimedia.org/wiki/File:SMPTE_Color_Bars_16x9.svg).
   // The gray linear gradient bar is defined as half solid 0-level black and
@@ -151,6 +148,10 @@ class GLScalerTestTextureHelper {
   // |gl| context must outlive this instance.
   explicit GLScalerTestTextureHelper(gpu::gles2::GLES2Interface* gl);
 
+  GLScalerTestTextureHelper(const GLScalerTestTextureHelper& other) = delete;
+  GLScalerTestTextureHelper& operator=(const GLScalerTestTextureHelper& other) =
+      delete;
+
   ~GLScalerTestTextureHelper();
 
   // Creates a fully-defined RGBA texture of the given |size|, returning its GL
@@ -168,10 +169,8 @@ class GLScalerTestTextureHelper {
  private:
   gpu::gles2::GLES2Interface* const gl_;
   std::vector<GLuint> textures_to_delete_;
-
-  DISALLOW_COPY_AND_ASSIGN(GLScalerTestTextureHelper);
 };
 
 }  // namespace viz
 
-#endif  // COMPONENTS_VIZ_COMMON_GL_SCALER_TEST_UTIL_H_
+#endif  // COMPONENTS_VIZ_TEST_GL_SCALER_TEST_UTIL_H_

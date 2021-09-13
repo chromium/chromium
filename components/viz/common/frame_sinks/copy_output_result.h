@@ -40,6 +40,12 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
     // DirectRenderer implementation. For now, I420 format can be requested only
     // for system memory.
     I420_PLANES,
+    // NV12 format planes. This is intended to be used internally within the VIZ
+    // component to support video capture. When requesting this format, results
+    // can only be delivered on the same task runner sequence that runs the
+    // DirectRenderer implementation. For now, NV12 format can be requested only
+    // for system memory.
+    NV12_PLANES,
   };
 
   // Specifies how the results are delivered to the issuer of the request.
@@ -135,6 +141,49 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
   // |IsEmpty()| is true.
   virtual ReleaseCallbacks TakeTextureOwnership();
 
+  //
+  // Subsampled YUV format result description
+  // (valid for I420 and for NV12 formats)
+  //
+  // Since I420 and NV12 pixel formats subsample chroma planes and the results
+  // are returned in a planar manner, care must be taken when interpreting the
+  // results and when calculating sizes of memory regions for `ReadI420Planes()`
+  // and `ReadNV12()` methods.
+  //
+  // For chroma planes (both for U & for V), each pixel in a row of the result
+  // corresponds to "0.5 bytes". Therefore, if the result width is odd, we'll
+  // get a bit more information than what we got for luma plane:
+  //
+  //    (even offset)   or   (odd offset)
+  //      Y Y | Y ?           ? Y | Y Y
+  //       C  |  C             C  |  C
+  //      Y Y | Y ?           ? Y | Y Y
+  //
+  // Pipes separate groups of 2x2 pixels of the result.
+  // Y - luma values present in the results
+  // C - chroma (U & V) values present in the results
+  // ? - luma values that are not present in the results that correspond
+  //     to chroma values that are present in the results
+  // The behavior for odd-sized height is similar.
+  //
+  // For even width, we'll get:
+  //
+  //    (even offset)   or     (odd offset)
+  //      Y Y | Y Y           ? Y | Y Y | Y ?
+  //       C  |  C             C  |  C  |  ?
+  //      Y Y | Y Y           ? Y | Y Y | Y ?
+  //
+  // Note that there is a possibility to receive luma values without also
+  // receiving corresponding chroma values (even width, odd offset).
+  //
+  // Due to the above, callers should follow the memory region size requirements
+  // specified in `ReadI420Planes()` and `ReadNV12()` methods, and are advised
+  // to call `set_result_selection()` with an even-sized gfx::Rect if they
+  // intend to "stitch" the results into a subregion of an existing buffer by
+  // copying them. Memory region size calculation helpers are available in
+  // copy_output_util.h.
+  //
+
   // Copies the image planes of an I420_PLANES result to the caller-provided
   // memory. Returns true if successful, or false if: 1) this result is empty,
   // or 2) the result format is not I420_PLANES and does not provide a
@@ -157,6 +206,25 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
                               int u_out_stride,
                               uint8_t* v_out,
                               int v_out_stride) const;
+
+  // Copies the image planes of an NV12_PLANES result to the caller-provided
+  // memory. Returns true if successful, or false if: 1) this result is empty,
+  // or 2) the result format is not NV12_PLANES and does not provide a
+  // conversion implementation.
+  //
+  // |y_out| and |uv_out| point to the start of the memory regions to
+  // receive each plane. These memory regions must have the following sizes:
+  //
+  //   Y plane:   y_out_stride * size().height() bytes, with
+  //              y_out_stride >= size().width()
+  //   UV plane:  uv_out_stride * CEIL(size().height() / 2) bytes, with
+  //              uv_out_stride >= 2 * CEIL(size().width() / 2)
+  //
+  // The color space is always Rec.709 (see gfx::ColorSpace::CreateREC709()).
+  virtual bool ReadNV12Planes(uint8_t* y_out,
+                              int y_out_stride,
+                              uint8_t* uv_out,
+                              int uv_out_stride) const;
 
   // Copies the result into |dest|. The result is in N32Premul form. Returns
   // true if successful, or false if: 1) the result is empty, or 2) the result

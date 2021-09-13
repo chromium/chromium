@@ -15,6 +15,7 @@
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/frame_sinks/copy_output_util.h"
 #include "components/viz/common/gl_i420_converter.h"
+#include "components/viz/common/gl_nv12_converter.h"
 #include "components/viz/common/gl_scaler.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/service/display/texture_deleter.h"
@@ -83,26 +84,39 @@ void EnsureTextureDefinedWithSize(gpu::gles2::GLES2Interface* gl,
   *size = required;
 }
 
-// Sets the fields of |params| to scale/transform the image in the source
+// Returns parameters for the scaler to scale/transform the image in the source
 // framebuffer to meet the requirements of the |request|.
-void PopulateScalerParameters(const CopyOutputRequest& request,
-                              const gfx::ColorSpace& source_color_space,
-                              const gfx::ColorSpace& output_color_space,
-                              bool flipped_source,
-                              GLScaler::Parameters* params) {
-  params->scale_from = request.scale_from();
-  params->scale_to = request.scale_to();
-  params->source_color_space = source_color_space;
-  params->output_color_space = output_color_space;
+GLScaler::Parameters CreateScalerParameters(
+    const CopyOutputRequest& request,
+    const gfx::ColorSpace& source_color_space,
+    const gfx::ColorSpace& output_color_space,
+    bool flipped_source) {
+  GLScaler::Parameters params;
+
+  params.scale_from = request.scale_from();
+  params.scale_to = request.scale_to();
+  params.source_color_space = source_color_space;
+  params.output_color_space = output_color_space;
   // For downscaling, use the GOOD quality setting (appropriate for
   // thumbnailing); and, for upscaling, use the BEST quality.
   const bool is_downscale_in_both_dimensions =
       request.scale_to().x() < request.scale_from().x() &&
       request.scale_to().y() < request.scale_from().y();
-  params->quality = is_downscale_in_both_dimensions
-                        ? GLScaler::Parameters::Quality::GOOD
-                        : GLScaler::Parameters::Quality::BEST;
-  params->is_flipped_source = flipped_source;
+  params.quality = is_downscale_in_both_dimensions
+                       ? GLScaler::Parameters::Quality::GOOD
+                       : GLScaler::Parameters::Quality::BEST;
+  params.is_flipped_source = flipped_source;
+
+  return params;
+}
+
+// Returns the specified offset in the form of a pointer for OpenGL's
+// `glReadPixels` call. This is not a valid memory address and the pointer
+// should never be dereferenced.
+uint8_t* GetOffsetPointer(int offset) {
+  uint8_t* result = reinterpret_cast<uint8_t*>(0);
+  result += offset;
+  return result;
 }
 
 }  // namespace
@@ -226,7 +240,7 @@ void GLRendererCopier::CopyFromTextureOrFramebuffer(
 
       break;
 
-    case ResultFormat::I420_PLANES:
+    case ResultFormat::I420_PLANES: {
       // The optimized single-copy path, provided by GLPixelBufferI420Result,
       // requires that the result be accessed via a task in the same task runner
       // sequence as the GLRendererCopier. Since I420_PLANES requests are meant
@@ -241,6 +255,25 @@ void GLRendererCopier::CopyFromTextureOrFramebuffer(
       StartI420ReadbackFromTextures(std::move(request), aligned_rect,
                                     result_rect, things.get());
       break;
+    }
+
+    case ResultFormat::NV12_PLANES: {
+      // The optimized single-copy path, provided by GLPixelBufferNV12Result,
+      // requires that the result be accessed via a task in the same task runner
+      // sequence as the GLRendererCopier. Since NV12_PLANES requests are meant
+      // to be VIZ-internal, this is an acceptable limitation to enforce.
+      if (!request->SendsResultsInCurrentSequence()) {
+        request->set_result_task_runner(base::SequencedTaskRunnerHandle::Get());
+      }
+
+      const gfx::Rect aligned_rect = RenderNV12Textures(
+          *request, flipped_source, framebuffer_color_space, source_texture,
+          source_texture_size, sampling_rect, result_rect, things.get());
+      StartNV12ReadbackFromTextures(std::move(request), aligned_rect,
+                                    result_rect, things.get());
+
+      break;
+    }
   }
 
   StashReusableThingsOrDelete(requester, std::move(things));
@@ -274,13 +307,11 @@ void GLRendererCopier::RenderResultTexture(
     const gfx::Rect& result_rect,
     GLuint result_texture,
     ReusableThings* things) {
-  DCHECK_NE(request.result_format(), ResultFormat::I420_PLANES);
-
-  GLScaler::Parameters params;
-  PopulateScalerParameters(request, source_color_space, dest_color_space,
-                           flipped_source, &params);
-
   DCHECK_EQ(request.result_format(), ResultFormat::RGBA);
+
+  GLScaler::Parameters params = CreateScalerParameters(
+      request, source_color_space, dest_color_space, flipped_source);
+
   if (request.result_destination() == ResultDestination::kSystemMemory) {
     // Render the result in top-down row order, and swizzle, within the GPU so
     // these things don't have to be done, less efficiently, on the CPU later.
@@ -320,6 +351,8 @@ gfx::Rect GLRendererCopier::RenderI420Textures(
     ReusableThings* things) {
   DCHECK_EQ(request.result_format(), ResultFormat::I420_PLANES);
 
+  auto* const gl = context_provider_->ContextGL();
+
   // Compute required Y/U/V texture sizes and re-define them, if necessary. See
   // class comments for GLI420Converter for an explanation of how planar data is
   // packed into RGBA textures.
@@ -328,21 +361,19 @@ gfx::Rect GLRendererCopier::RenderI420Textures(
                                      aligned_rect.height());
   const gfx::Size required_chroma_size(required_luma_size.width() / 2,
                                        required_luma_size.height() / 2);
-  gfx::Size u_texture_size(things->y_texture_size.width() / 2,
-                           things->y_texture_size.height() / 2);
-  gfx::Size v_texture_size = u_texture_size;
-  auto* const gl = context_provider_->ContextGL();
-  EnsureTextureDefinedWithSize(gl, required_luma_size, &things->yuv_textures[0],
-                               &things->y_texture_size);
-  EnsureTextureDefinedWithSize(gl, required_chroma_size,
-                               &things->yuv_textures[1], &u_texture_size);
-  EnsureTextureDefinedWithSize(gl, required_chroma_size,
-                               &things->yuv_textures[2], &v_texture_size);
 
-  GLI420Converter::Parameters params;
-  PopulateScalerParameters(request, source_color_space,
-                           gfx::ColorSpace::CreateREC709(), flipped_source,
-                           &params);
+  EnsureTextureDefinedWithSize(gl, required_luma_size, &things->yuv_textures[0],
+                               &things->texture_sizes[0]);
+  EnsureTextureDefinedWithSize(gl, required_chroma_size,
+                               &things->yuv_textures[1],
+                               &things->texture_sizes[1]);
+  EnsureTextureDefinedWithSize(gl, required_chroma_size,
+                               &things->yuv_textures[2],
+                               &things->texture_sizes[2]);
+
+  GLI420Converter::Parameters params =
+      CreateScalerParameters(request, source_color_space,
+                             gfx::ColorSpace::CreateREC709(), flipped_source);
   // I420 readback assumes content is in top-down row order. Also, set the
   // output swizzle to match the readback format so that image bitmaps don't
   // have to be byte-order-swizzled on the CPU later.
@@ -362,6 +393,66 @@ gfx::Rect GLRendererCopier::RenderI420Textures(
   }
 
   const bool success = things->i420_converter->Convert(
+      source_texture, source_texture_size, sampling_rect.OffsetFromOrigin(),
+      aligned_rect, things->yuv_textures.data());
+  DCHECK(success);
+
+  return aligned_rect;
+}
+
+gfx::Rect GLRendererCopier::RenderNV12Textures(
+    const CopyOutputRequest& request,
+    bool flipped_source,
+    const gfx::ColorSpace& source_color_space,
+    GLuint source_texture,
+    const gfx::Size& source_texture_size,
+    const gfx::Rect& sampling_rect,
+    const gfx::Rect& result_rect,
+    ReusableThings* things) {
+  DCHECK_EQ(request.result_format(), ResultFormat::NV12_PLANES);
+
+  auto* const gl = context_provider_->ContextGL();
+
+  // Compute required Y/UV texture sizes and re-define them, if necessary. See
+  // class comments for GLNV12Converter for an explanation of how planar data is
+  // packed into RGBA textures.
+  const gfx::Rect aligned_rect = GLNV12Converter::ToAlignedRect(result_rect);
+
+  const gfx::Size required_luma_size(aligned_rect.width() / kRGBABytesPerPixel,
+                                     aligned_rect.height());
+  const gfx::Size required_chroma_size(required_luma_size.width(),
+                                       required_luma_size.height() / 2);
+
+  EnsureTextureDefinedWithSize(gl, required_luma_size, &things->yuv_textures[0],
+                               &things->texture_sizes[0]);
+
+  EnsureTextureDefinedWithSize(gl, required_chroma_size,
+                               &things->yuv_textures[1],
+                               &things->texture_sizes[1]);
+
+  GLNV12Converter::Parameters params =
+      CreateScalerParameters(request, source_color_space,
+                             gfx::ColorSpace::CreateREC709(), flipped_source);
+
+  // NV12 readback assumes content is in top-down row order. Also, set the
+  // output swizzle to match the readback format so that image bitmaps don't
+  // have to be byte-order-swizzled on the CPU later.
+  params.flip_output = flipped_source;
+  params.swizzle[0] = GetOptimalReadbackFormat();
+
+  if (!things->nv12_converter) {
+    things->nv12_converter =
+        std::make_unique<GLNV12Converter>(context_provider_);
+  }
+  if (!GLNV12Converter::ParametersAreEquivalent(
+          params, things->nv12_converter->params())) {
+    const bool is_configured = things->nv12_converter->Configure(params);
+    // GLRendererCopier should never use illegal or unsupported options, nor
+    // be using GLNV12Converter with an invalid GL context.
+    DCHECK(is_configured);
+  }
+
+  const bool success = things->nv12_converter->Convert(
       source_texture, source_texture_size, sampling_rect.OffsetFromOrigin(),
       aligned_rect, things->yuv_textures.data());
   DCHECK(success);
@@ -697,6 +788,7 @@ class GLPixelBufferI420Result final : public CopyOutputResult {
                       int v_out_stride) const final {
     DCHECK_GE(y_out_stride, size().width());
     const int chroma_row_bytes = (size().width() + 1) / 2;
+
     DCHECK_GE(u_out_stride, chroma_row_bytes);
     DCHECK_GE(v_out_stride, chroma_row_bytes);
     if (!copier_weak_ptr_)
@@ -732,6 +824,85 @@ class GLPixelBufferI420Result final : public CopyOutputResult {
   const GLuint transfer_buffer_;
   uint8_t* pixels_;
 };
+
+// Specialization of CopyOutputResult which reads NV12 plane data from a GL
+// pixel buffer object, and automatically deletes the pixel buffer object at
+// destruction time. This provides an optimal one-copy data flow, from the pixel
+// buffer into client-provided memory.
+class GLPixelBufferNV12Result final : public CopyOutputResult {
+ public:
+  // |aligned_rect| identifies the region of result pixels in the pixel buffer,
+  // while the |result_rect| is the subregion that is exposed to the client.
+  GLPixelBufferNV12Result(const gfx::Rect& aligned_rect,
+                          const gfx::Rect& result_rect,
+                          base::WeakPtr<GLRendererCopier> copier_weak_ptr,
+                          ContextProvider* context_provider,
+                          GLuint transfer_buffer)
+      : CopyOutputResult(CopyOutputResult::Format::NV12_PLANES,
+                         CopyOutputResult::Destination::kSystemMemory,
+                         result_rect,
+                         /*needs_lock_for_bitmap=*/false),
+        aligned_rect_(aligned_rect),
+        copier_weak_ptr_(copier_weak_ptr),
+        context_provider_(context_provider),
+        transfer_buffer_(transfer_buffer) {
+    auto* const gl = context_provider_->ContextGL();
+    gl->BindBuffer(GL_PIXEL_PACK_TRANSFER_BUFFER_CHROMIUM, transfer_buffer_);
+    pixels_ = static_cast<uint8_t*>(gl->MapBufferCHROMIUM(
+        GL_PIXEL_PACK_TRANSFER_BUFFER_CHROMIUM, GL_READ_ONLY));
+    gl->BindBuffer(GL_PIXEL_PACK_TRANSFER_BUFFER_CHROMIUM, 0);
+  }
+
+  ~GLPixelBufferNV12Result() final {
+    if (copier_weak_ptr_) {
+      auto* const gl = context_provider_->ContextGL();
+      gl->BindBuffer(GL_PIXEL_PACK_TRANSFER_BUFFER_CHROMIUM, transfer_buffer_);
+      gl->UnmapBufferCHROMIUM(GL_PIXEL_PACK_TRANSFER_BUFFER_CHROMIUM);
+      gl->BindBuffer(GL_PIXEL_PACK_TRANSFER_BUFFER_CHROMIUM, 0);
+      gl->DeleteBuffers(1, &transfer_buffer_);
+    }
+  }
+
+  bool ReadNV12Planes(uint8_t* y_out,
+                      int y_out_stride,
+                      uint8_t* uv_out,
+                      int uv_out_stride) const final {
+    DCHECK_GE(y_out_stride, size().width());
+    const int chroma_row_bytes = 2 * ((size().width() + 1) / 2);
+    DCHECK_GE(uv_out_stride, chroma_row_bytes);
+    if (!copier_weak_ptr_)
+      return false;
+
+    uint8_t* pixels = pixels_;
+
+    if (pixels) {
+      const int y_stride = aligned_rect_.width();
+      const gfx::Vector2d result_offset =
+          rect().OffsetFromOrigin() - aligned_rect_.OffsetFromOrigin();
+      const int y_start_offset =
+          result_offset.y() * y_stride + result_offset.x();
+      libyuv::CopyPlane(pixels + y_start_offset, y_stride, y_out, y_out_stride,
+                        size().width(), size().height());
+      pixels += y_stride * aligned_rect_.height();
+      const int chroma_stride = aligned_rect_.width();
+      const int chroma_start_offset =
+          ((result_offset.y() / 2) * chroma_stride) +
+          2 * (result_offset.x() / 2);
+      const int chroma_height = (size().height() + 1) / 2;
+      libyuv::CopyPlane(pixels + chroma_start_offset, chroma_stride, uv_out,
+                        uv_out_stride, chroma_row_bytes, chroma_height);
+    }
+    return !!pixels;
+  }
+
+ private:
+  const gfx::Rect aligned_rect_;
+  base::WeakPtr<GLRendererCopier> copier_weak_ptr_;
+  ContextProvider* const context_provider_;
+  const GLuint transfer_buffer_;
+  uint8_t* pixels_ = nullptr;
+};
+
 }  // namespace
 
 GLRendererCopier::ReadI420PlanesWorkflow::ReadI420PlanesWorkflow(
@@ -782,8 +953,7 @@ void GLRendererCopier::ReadI420PlanesWorkflow::StartPlaneReadback(
   // Note: While a PIXEL_PACK_BUFFER is bound, OpenGL interprets the last
   // argument to ReadPixels() as a byte offset within the buffer instead of
   // an actual pointer in system memory.
-  uint8_t* offset_in_buffer = reinterpret_cast<uint8_t*>(/* byte_offset = */ 0);
-  offset_in_buffer += data_offsets_[plane];
+  uint8_t* offset_in_buffer = GetOffsetPointer(data_offsets_[plane]);
   gl->ReadPixels(0, 0, size.width(), size.height(), readback_format,
                  GL_UNSIGNED_BYTE, offset_in_buffer);
   gl->EndQueryEXT(GL_ASYNC_PIXEL_PACK_COMPLETED_CHROMIUM);
@@ -819,6 +989,89 @@ gfx::Size GLRendererCopier::ReadI420PlanesWorkflow::chroma_texture_size()
                    aligned_rect.height() / 2);
 }
 
+GLRendererCopier::ReadNV12PlanesWorkflow::ReadNV12PlanesWorkflow(
+    std::unique_ptr<CopyOutputRequest> copy_request,
+    const gfx::Rect& aligned_rect,
+    const gfx::Rect& result_rect,
+    base::WeakPtr<GLRendererCopier> copier_weak_ptr,
+    ContextProvider* context_provider)
+    : copy_request_(std::move(copy_request)),
+      aligned_rect_(aligned_rect),
+      result_rect_(result_rect),
+      copier_weak_ptr_(copier_weak_ptr),
+      context_provider_(context_provider) {
+  // Create a buffer for the pixel transfer: A single buffer is used and will
+  // contain the Y plane, then the UV plane.
+  auto* const gl = context_provider_->ContextGL();
+  gl->GenBuffers(1, &transfer_buffer_);
+  gl->BindBuffer(GL_PIXEL_PACK_TRANSFER_BUFFER_CHROMIUM, transfer_buffer_);
+  base::CheckedNumeric<int> y_plane_bytes =
+      y_texture_size().GetCheckedArea() * kRGBABytesPerPixel;
+  base::CheckedNumeric<int> chroma_plane_bytes =
+      chroma_texture_size().GetCheckedArea() * kRGBABytesPerPixel;
+  gl->BufferData(GL_PIXEL_PACK_TRANSFER_BUFFER_CHROMIUM,
+                 (y_plane_bytes + chroma_plane_bytes).ValueOrDie(), nullptr,
+                 GL_STREAM_READ);
+  data_offsets_ = {0, y_plane_bytes.ValueOrDie()};
+  gl->BindBuffer(GL_PIXEL_PACK_TRANSFER_BUFFER_CHROMIUM, 0);
+
+  // Generate the two queries used for determining when each of the plane
+  // readbacks has completed.
+  gl->GenQueriesEXT(2, queries_.data());
+}
+
+void GLRendererCopier::ReadNV12PlanesWorkflow::BindTransferBuffer() {
+  DCHECK_NE(transfer_buffer_, 0u);
+  context_provider_->ContextGL()->BindBuffer(
+      GL_PIXEL_PACK_TRANSFER_BUFFER_CHROMIUM, transfer_buffer_);
+}
+
+void GLRendererCopier::ReadNV12PlanesWorkflow::StartPlaneReadback(
+    int plane,
+    GLenum readback_format) {
+  DCHECK_NE(queries_[plane], 0u);
+  auto* const gl = context_provider_->ContextGL();
+  gl->BeginQueryEXT(GL_ASYNC_PIXEL_PACK_COMPLETED_CHROMIUM, queries_[plane]);
+  const gfx::Size& size = plane == 0 ? y_texture_size() : chroma_texture_size();
+  // Note: While a PIXEL_PACK_BUFFER is bound, OpenGL interprets the last
+  // argument to ReadPixels() as a byte offset within the buffer instead of
+  // an actual pointer in system memory.
+  uint8_t* offset_in_buffer = GetOffsetPointer(data_offsets_[plane]);
+  gl->ReadPixels(0, 0, size.width(), size.height(), readback_format,
+                 GL_UNSIGNED_BYTE, offset_in_buffer);
+  gl->EndQueryEXT(GL_ASYNC_PIXEL_PACK_COMPLETED_CHROMIUM);
+  context_provider_->ContextSupport()->SignalQuery(
+      queries_[plane],
+      base::BindOnce(&GLRendererCopier::FinishReadNV12PlanesWorkflow,
+                     copier_weak_ptr_, this, plane));
+}
+
+void GLRendererCopier::ReadNV12PlanesWorkflow::UnbindTransferBuffer() {
+  context_provider_->ContextGL()->BindBuffer(
+      GL_PIXEL_PACK_TRANSFER_BUFFER_CHROMIUM, 0);
+}
+
+GLRendererCopier::ReadNV12PlanesWorkflow::~ReadNV12PlanesWorkflow() {
+  auto* const gl = context_provider_->ContextGL();
+  if (transfer_buffer_ != 0)
+    gl->DeleteBuffers(1, &transfer_buffer_);
+  for (GLuint& query : queries_) {
+    if (query != 0)
+      gl->DeleteQueriesEXT(1, &query);
+  }
+}
+
+gfx::Size GLRendererCopier::ReadNV12PlanesWorkflow::y_texture_size() const {
+  return gfx::Size(aligned_rect_.width() / kRGBABytesPerPixel,
+                   aligned_rect_.height());
+}
+
+gfx::Size GLRendererCopier::ReadNV12PlanesWorkflow::chroma_texture_size()
+    const {
+  return gfx::Size(aligned_rect_.width() / kRGBABytesPerPixel,
+                   aligned_rect_.height() / 2);
+}
+
 void GLRendererCopier::StartI420ReadbackFromTextures(
     std::unique_ptr<CopyOutputRequest> request,
     const gfx::Rect& aligned_rect,
@@ -827,8 +1080,11 @@ void GLRendererCopier::StartI420ReadbackFromTextures(
   DCHECK_EQ(request->result_format(), ResultFormat::I420_PLANES);
 
   auto* const gl = context_provider_->ContextGL();
-  if (things->yuv_readback_framebuffers[0] == 0)
+  if (things->yuv_readback_framebuffers[0] == 0) {
     gl->GenFramebuffers(3, things->yuv_readback_framebuffers.data());
+  } else if (things->yuv_readback_framebuffers[2] == 0) {
+    gl->GenFramebuffers(1, &things->yuv_readback_framebuffers[2]);
+  }
 
   // Execute three asynchronous read-pixels operations, one for each plane. The
   // CopyOutputRequest is passed to the ReadI420PlanesWorkflow, which will send
@@ -868,6 +1124,57 @@ void GLRendererCopier::FinishReadI420PlanesWorkflow(
                      [workflow](auto& ptr) { return ptr.get() == workflow; });
     DCHECK(it != read_i420_workflows_.end());
     read_i420_workflows_.erase(it);
+  }
+}
+
+void GLRendererCopier::StartNV12ReadbackFromTextures(
+    std::unique_ptr<CopyOutputRequest> request,
+    const gfx::Rect& aligned_rect,
+    const gfx::Rect& result_rect,
+    ReusableThings* things) {
+  DCHECK_EQ(request->result_format(), ResultFormat::NV12_PLANES);
+
+  auto* const gl = context_provider_->ContextGL();
+  if (things->yuv_readback_framebuffers[0] == 0)
+    gl->GenFramebuffers(2, things->yuv_readback_framebuffers.data());
+
+  // Execute two asynchronous read-pixels operations, one for each plane. The
+  // CopyOutputRequest is passed to the ReadNV12PlanesWorkflow, which will send
+  // the CopyOutputResult once all readback operations are complete.
+  read_nv12_workflows_.push_back(std::make_unique<ReadNV12PlanesWorkflow>(
+      std::move(request), aligned_rect, result_rect, weak_factory_.GetWeakPtr(),
+      context_provider_));
+  ReadNV12PlanesWorkflow* workflow = read_nv12_workflows_.back().get();
+  workflow->BindTransferBuffer();
+  for (int plane = 0; plane < 2; ++plane) {
+    gl->BindFramebuffer(GL_FRAMEBUFFER,
+                        things->yuv_readback_framebuffers[plane]);
+    gl->FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                             GL_TEXTURE_2D, things->yuv_textures[plane], 0);
+    workflow->StartPlaneReadback(plane, GetOptimalReadbackFormat());
+  }
+  workflow->UnbindTransferBuffer();
+}
+
+void GLRendererCopier::FinishReadNV12PlanesWorkflow(
+    ReadNV12PlanesWorkflow* workflow,
+    int plane) {
+  GLuint query = workflow->query(plane);
+  context_provider_->ContextGL()->DeleteQueriesEXT(1, &query);
+  workflow->MarkQueryCompleted(plane);
+
+  // If both readbacks have completed, send the result.
+  if (workflow->IsCompleted()) {
+    workflow->TakeRequest()->SendResult(
+        std::make_unique<GLPixelBufferNV12Result>(
+            workflow->aligned_rect(), workflow->result_rect(),
+            weak_factory_.GetWeakPtr(), context_provider_,
+            workflow->TakeTransferBuffer()));
+    const auto it =
+        std::find_if(read_nv12_workflows_.begin(), read_nv12_workflows_.end(),
+                     [workflow](auto& ptr) { return ptr.get() == workflow; });
+    DCHECK(it != read_nv12_workflows_.end());
+    read_nv12_workflows_.erase(it);
   }
 }
 
@@ -965,14 +1272,23 @@ void GLRendererCopier::ReusableThings::Free(gpu::gles2::GLES2Interface* gl) {
     gl->DeleteFramebuffers(1, &readback_framebuffer);
     readback_framebuffer = 0;
   }
+
   i420_converter.reset();
+  nv12_converter.reset();
+
   if (yuv_textures[0] != 0) {
-    gl->DeleteTextures(3, yuv_textures.data());
+    // We have some cached textures, check if there's 2 or 3 & delete them:
+    int num_textures = yuv_textures[2] != 0 ? 3 : 2;
+    gl->DeleteTextures(num_textures, yuv_textures.data());
     yuv_textures = {0, 0, 0};
-    y_texture_size = gfx::Size();
+    texture_sizes = {};
   }
   if (yuv_readback_framebuffers[0] != 0) {
-    gl->DeleteFramebuffers(3, yuv_readback_framebuffers.data());
+    // We have some cached readback buffers, check if there's 2 or 3 & delete
+    // them:
+    int num_readback_buffers = yuv_readback_framebuffers[2] != 0 ? 3 : 2;
+    gl->DeleteFramebuffers(num_readback_buffers,
+                           yuv_readback_framebuffers.data());
     yuv_readback_framebuffers = {0, 0, 0};
   }
 }
