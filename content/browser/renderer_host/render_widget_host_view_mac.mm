@@ -111,6 +111,17 @@ RenderWidgetHostViewMac::CollectSurfaceIdsForEviction() {
   return host()->CollectSurfaceIdsForEviction();
 }
 
+const display::DisplayList& RenderWidgetHostViewMac::GetDisplayList() const {
+  return display_list_;
+}
+
+void RenderWidgetHostViewMac::SetCurrentDeviceScaleFactor(
+    float device_scale_factor) {
+  display::Display display = display_list_.GetCurrentDisplay();
+  display.set_device_scale_factor(device_scale_factor);
+  display_list_.UpdateDisplay(display);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // AcceleratedWidgetMacNSView, public:
 
@@ -195,7 +206,7 @@ RenderWidgetHostViewMac::RenderWidgetHostViewMac(RenderWidgetHost* widget)
   viz::FrameSinkId frame_sink_id = host()->GetFrameSinkId();
 
   browser_compositor_ = std::make_unique<BrowserCompositorMac>(
-      this, this, host()->is_hidden(), display_list_, frame_sink_id);
+      this, this, host()->is_hidden(), frame_sink_id);
   DCHECK(![GetInProcessNSView() window]);
 
   host()->SetView(this);
@@ -415,21 +426,18 @@ RenderWidgetHostImpl* RenderWidgetHostViewMac::GetWidgetForIme() {
 }
 
 void RenderWidgetHostViewMac::GetScreenInfo(display::ScreenInfo* screen_info) {
-  const display::DisplayList& displays = browser_compositor_->display_list();
-  DCHECK(displays.IsValidAndHasPrimaryAndCurrentDisplays());
-  const display::Display& display = displays.GetCurrentDisplay();
+  const display::Display& display = display_list_.GetCurrentDisplay();
   display::DisplayUtil::DisplayToScreenInfo(screen_info, display);
   // Recalculate some ScreenInfo properties from the cached screen info, which
   // may originate from a remote process that hosts the associated NSWindow.
   // DisplayToScreenInfo derives some properties from the latest display::Screen
   // info observed directly in this process, which may be intermittently
-  // out-of-sync with remote info. Also, BrowserCompositorMac and
-  // RenderWidgetHostViewMac do not update their cached screen info during
-  // auto-resize.
+  // out-of-sync with remote info. Also, RenderWidgetHostViewMac does not
+  // update its cached screen info during auto-resize.
   // TODO(crbug.com/1194700): Pass cached remote process screen info to
   // DisplayToScreenInfo; it should not use local process info internally.
-  screen_info->is_extended = displays.displays().size() > 1;
-  screen_info->is_primary = display.id() == displays.primary_id();
+  screen_info->is_extended = display_list_.displays().size() > 1;
+  screen_info->is_primary = display.id() == display_list_.primary_id();
 }
 
 void RenderWidgetHostViewMac::Show() {
@@ -743,9 +751,9 @@ const std::vector<display::Display>& RenderWidgetHostViewMac::GetDisplays()
   // Return cached screen info, which may originate from a remote process that
   // hosts the associated NSWindow. The latest display::Screen info observed
   // directly in this process may be intermittently out-of-sync with that info.
-  // Also, BrowserCompositorMac and RenderWidgetHostViewMac do not update their
-  // cached screen info during auto-resize.
-  return browser_compositor_->display_list().displays();
+  // Also, RenderWidgetHostViewMac does not update its cached screen info
+  // during auto-resize.
+  return display_list_.displays();
 }
 
 void RenderWidgetHostViewMac::UpdateScreenInfo() {
@@ -770,16 +778,34 @@ void RenderWidgetHostViewMac::UpdateScreenInfo() {
   else
     host()->SendScreenRects();
 
+  // Update with the latest display list from the remote process if needed.
+  bool current_display_changed = false;
+  bool any_display_changed = false;
+  if (new_display_list_from_shim_.has_value()) {
+    current_display_changed =
+        new_display_list_from_shim_->GetCurrentDisplay() !=
+        display_list_.GetCurrentDisplay();
+    any_display_changed = new_display_list_from_shim_.value() != display_list_;
+
+    display_list_ = new_display_list_from_shim_.value();
+    new_display_list_from_shim_.reset();
+  }
+  bool dip_size_changed = view_bounds_in_window_dip_.size() !=
+                          browser_compositor_->GetRendererSize();
+
+  if (dip_size_changed || current_display_changed) {
+    browser_compositor_->UpdateSurfaceFromNSView(
+        view_bounds_in_window_dip_.size());
+  }
+
   // TODO(crbug.com/1169312): Unify display info caching and change detection.
   // Notify the associated RenderWidgetHostImpl when screen info has changed.
   // That will synchronize visual properties needed for frame tree rendering
   // and for web platform APIs that expose screen and window info and events.
   // RenderWidgetHostImpl will query BrowserCompositorMac for the dimensions
   // to send to the renderer, so BrowserCompositorMac must be updated first.
-  if (browser_compositor_->UpdateSurfaceFromNSView(
-          view_bounds_in_window_dip_.size(), display_list_)) {
+  if (dip_size_changed || any_display_changed)
     host()->NotifyScreenInfoChanged();
-  }
 }
 
 viz::ScopedSurfaceIdAllocator
@@ -1576,8 +1602,7 @@ void RenderWidgetHostViewMac::OnDisplaysChanged(
   // directly in this process may be intermittently out-of-sync with that info.
   // Also, BrowserCompositorMac and RenderWidgetHostViewMac do not update their
   // cached screen info during auto-resize.
-  // TODO(crbug.com/1169291): Unify screen info plumbing, caching, etc.
-  display_list_ = display_list;
+  new_display_list_from_shim_ = display_list;
   UpdateScreenInfo();
 }
 

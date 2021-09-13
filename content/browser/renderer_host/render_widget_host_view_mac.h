@@ -30,6 +30,7 @@
 #include "ui/base/cocoa/accessibility_focus_overrider.h"
 #include "ui/base/cocoa/remote_layer_api.h"
 #include "ui/base/mojom/attributed_string.mojom-forward.h"
+#include "ui/display/display_list.h"
 #include "ui/display/mac/display_link_mac.h"
 #include "ui/events/gesture_detection/filtered_gesture_provider.h"
 
@@ -409,6 +410,8 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   void DestroyCompositorForShutdown() override;
   bool OnBrowserCompositorSurfaceIdChanged() override;
   std::vector<viz::SurfaceId> CollectSurfaceIdsForEviction() override;
+  const display::DisplayList& GetDisplayList() const override;
+  void SetCurrentDeviceScaleFactor(float device_scale_factor) override;
 
   // AcceleratedWidgetMacNSView implementation.
   void AcceleratedWidgetCALayerParamsUpdated() override;
@@ -663,6 +666,14 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   // content::BrowserAccessibilityCocoa accessibility tree when the NSView for
   // this is focused.
   ui::AccessibilityFocusOverrider accessibility_focus_overrider_;
+
+  // Holds the latest display list sent from the remote process to be used
+  // in UpdateScreenInfo.  Other platforms check display::Screen for the current
+  // set of displays, but Mac has this info delivered explicitly and so can't do
+  // that.  This is therefore an out-of-band parameter to UpdateScreenInfo.
+  // This also allows the display_list_ to only be updated outside of resize by
+  // holding any updates temporarily in this variable.
+  absl::optional<display::DisplayList> new_display_list_from_shim_;
 
   // Represents a feature of the physical display whose offset and mask_length
   // are expressed in DIPs relative to the view. See display_feature.h for more

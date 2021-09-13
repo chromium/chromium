@@ -2166,7 +2166,7 @@ TEST_F(RenderWidgetHostViewMacTest, ConflictingAllocationsResolve) {
 
   // Cause a conflicting viz::LocalSurfaceId allocation
   BrowserCompositorMac* browser_compositor = rwhv_mac_->BrowserCompositor();
-  EXPECT_TRUE(browser_compositor->ForceNewSurfaceForTesting());
+  browser_compositor->ForceNewSurfaceForTesting();
   viz::LocalSurfaceId local_surface_id3(rwhv_mac_->GetLocalSurfaceId());
   EXPECT_NE(local_surface_id1, local_surface_id3);
 
