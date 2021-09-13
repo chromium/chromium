@@ -121,7 +121,7 @@ suite('ReadLaterAppTest', () => {
     testProxy.resetResolver('openURL');
 
     // Middle mouse button click.
-    item.dispatchEvent(new MouseEvent('auxclick'));
+    item.dispatchEvent(new MouseEvent('auxclick', {button: 1}));
     const [, , auxClick] = await testProxy.whenCalled('openURL');
     assertTrue(auxClick.middleButton);
     assertFalse(
