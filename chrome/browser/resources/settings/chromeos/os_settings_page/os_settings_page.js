@@ -13,7 +13,7 @@ import '//resources/cr_elements/icons.m.js';
 import '//resources/cr_elements/shared_vars_css.m.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './settings_idle_load.js';
-import '../os_apps_page/os_apps_page.m.js';
+import '../os_apps_page/os_apps_page.js';
 import '../os_people_page/os_people_page.m.js';
 import '../os_privacy_page/os_privacy_page.js';
 import '../os_printing_page/os_printing_page.js';
@@ -34,7 +34,7 @@ import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.j
 import {beforeNextRender, html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Route, RouteObserverBehavior, Router} from '../../router.js';
-import {AndroidAppsBrowserProxyImpl, AndroidAppsInfo} from '../os_apps_page/android_apps_browser_proxy.m.js';
+import {AndroidAppsBrowserProxyImpl, AndroidAppsInfo} from '../os_apps_page/android_apps_browser_proxy.js';
 import {OSPageVisibility, osPageVisibility} from '../os_page_visibility.m.js';
 import {routes} from '../os_route.m.js';
 
