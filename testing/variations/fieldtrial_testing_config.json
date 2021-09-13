@@ -565,12 +565,8 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_2021-06-21",
-                    "params": {
-                        "save_password_message_dismiss_duration_ms": "10000"
-                    },
+                    "name": "Enabled",
                     "enable_features": [
-                        "MessagesForAndroidInfrastructure",
                         "MessagesForAndroidPasswords"
                     ]
                 }
@@ -585,9 +581,6 @@
             "experiments": [
                 {
                     "name": "Enabled",
-                    "params": {
-                        "use_followup_button_text": "true"
-                    },
                     "enable_features": [
                         "MessagesForAndroidUpdatePassword"
                     ]
