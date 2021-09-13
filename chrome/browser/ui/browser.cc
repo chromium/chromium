@@ -1852,15 +1852,21 @@ void Browser::RendererUnresponsive(
     WebContents* source,
     content::RenderWidgetHost* render_widget_host,
     base::RepeatingClosure hang_monitor_restarter) {
-  TabDialogs::FromWebContents(source)->ShowHungRendererDialog(
-      render_widget_host, std::move(hang_monitor_restarter));
+  // Don't show the page hung dialog when a HTML popup hangs because
+  // the dialog will take the focus and immediately close the popup.
+  if (!render_widget_host->GetView()->IsHTMLFormPopup()) {
+    TabDialogs::FromWebContents(source)->ShowHungRendererDialog(
+        render_widget_host, std::move(hang_monitor_restarter));
+  }
 }
 
 void Browser::RendererResponsive(
     WebContents* source,
     content::RenderWidgetHost* render_widget_host) {
-  TabDialogs::FromWebContents(source)->HideHungRendererDialog(
-      render_widget_host);
+  if (!render_widget_host->GetView()->IsHTMLFormPopup()) {
+    TabDialogs::FromWebContents(source)->HideHungRendererDialog(
+        render_widget_host);
+  }
 }
 
 void Browser::DidNavigatePrimaryMainFramePostCommit(WebContents* web_contents) {

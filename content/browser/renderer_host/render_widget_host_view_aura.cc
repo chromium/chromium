@@ -2276,6 +2276,10 @@ void RenderWidgetHostViewAura::NotifyVirtualKeyboardOverlayRect(
   }
 }
 
+bool RenderWidgetHostViewAura::IsHTMLFormPopup() const {
+  return !!popup_parent_host_view_;
+}
+
 bool RenderWidgetHostViewAura::FocusedFrameHasStickyActivation() const {
   // Unless user has interacted with the iframe, we shouldn't be displaying VK
   // or fire geometrychange event.

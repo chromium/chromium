@@ -994,4 +994,8 @@ bool RenderWidgetHostViewBase::ShouldVirtualKeyboardOverlayContent() {
   return false;
 }
 
+bool RenderWidgetHostViewBase::IsHTMLFormPopup() const {
+  return false;
+}
+
 }  // namespace content

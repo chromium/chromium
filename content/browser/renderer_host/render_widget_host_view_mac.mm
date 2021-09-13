@@ -949,6 +949,10 @@ void RenderWidgetHostViewMac::TakeFallbackContentFrom(
       view_mac->browser_compositor_.get());
 }
 
+bool RenderWidgetHostViewMac::IsHTMLFormPopup() const {
+  return !!popup_parent_host_view_;
+}
+
 bool RenderWidgetHostViewMac::GetLineBreakIndex(
     const std::vector<gfx::Rect>& bounds,
     const gfx::Range& range,
