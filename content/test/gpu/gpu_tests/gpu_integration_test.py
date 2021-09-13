@@ -4,6 +4,7 @@
 
 from __future__ import print_function
 
+import collections
 import logging
 import re
 import sys
@@ -17,6 +18,7 @@ from gpu_tests import common_browser_args as cba
 from gpu_tests import gpu_helper
 
 _START_BROWSER_RETRIES = 3
+_MAX_TEST_TRIES = 3
 
 ResultType = json_results.ResultType
 
@@ -55,6 +57,11 @@ class GpuIntegrationTest(
   # to relaunch it, if a new pixel test requires a different set of
   # arguments.
   _last_launched_browser_args = set()
+
+  # Keeps track of flaky tests that we're retrying.
+  # TODO(crbug.com/1248602): Remove this in favor of a method that doesn't rely
+  # on assumptions about retries, etc. if possible.
+  _flaky_test_tries = collections.Counter()
 
   @classmethod
   def SetUpProcess(cls):
@@ -286,6 +293,15 @@ class GpuIntegrationTest(
         self._ClearExpectedCrashes(expected_crashes)
         if should_retry_on_failure:
           logging.exception('Exception while running flaky test %s', test_name)
+          # Perform the same data collection as we do for an unexpected failure
+          # but only if this was the last try for a flaky test so we don't
+          # waste time symbolizing minidumps for expected flaky crashes.
+          # TODO(crbug.com/1248602): Replace this with a different method of
+          # tracking retries if possible.
+          self._flaky_test_tries[test_name] += 1
+          if self._flaky_test_tries[test_name] == _MAX_TEST_TRIES:
+            if self.browser is not None:
+              self.browser.CollectDebugData(logging.ERROR)
           # For robustness, shut down the browser and restart it
           # between flaky test failures, to make sure any state
           # doesn't propagate to the next iteration.
