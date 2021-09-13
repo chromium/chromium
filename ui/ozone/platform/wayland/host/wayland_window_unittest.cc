@@ -1834,27 +1834,29 @@ TEST_P(WaylandWindowTest, WaylandPopupSurfaceScale) {
 TEST_P(WaylandWindowTest, WaylandPopupInitialBufferScale) {
   VerifyAndClearExpectations();
 
-  // Creating an output with scale 1.
   wl::TestOutput* main_output = server_.CreateAndInitializeOutput();
   main_output->SetRect(gfx::Rect(0, 0, 1920, 1080));
   main_output->SetScale(1);
   Sync();
 
-  // Creating an output with scale 2.
   wl::TestOutput* secondary_output = server_.CreateAndInitializeOutput();
   secondary_output->SetRect(gfx::Rect(1921, 0, 1920, 1080));
   secondary_output->SetScale(1);
   Sync();
 
-  // Send the window to |output1|.
   wl::MockSurface* surface = server_.GetObject<wl::MockSurface>(
       window_->root_surface()->GetSurfaceId());
   ASSERT_TRUE(surface);
 
-  std::vector<wl::TestOutput*> entered_outputs = {main_output,
-                                                  secondary_output};
-  for (auto* entered_output : entered_outputs) {
-    wl_surface_send_enter(surface->resource(), entered_output->resource());
+  struct {
+    wl::TestOutput* output;
+    const char* label;
+  } screen[] = {{main_output, "main output"},
+                {secondary_output, "secondary output"}};
+
+  for (const auto& entered_output : screen) {
+    wl_surface_send_enter(surface->resource(),
+                          entered_output.output->resource());
     Sync();
     for (auto main_output_scale = 1; main_output_scale < 5;
          main_output_scale++) {
@@ -1869,13 +1871,12 @@ TEST_P(WaylandWindowTest, WaylandPopupInitialBufferScale) {
         Sync();
 
         gfx::Rect bounds_dip(15, 15, 10, 10);
-        // DesktopWindowTreeHostPlatform has always to use a primary display's
-        // scale to translate initial bounds to pixels. Thus, use primary's
-        // output's scale to make initial bounds.
-        // This code snippet is a copy of
-        // DesktopWindowTreeHostPlatform::ToPixelRect.
+        // DesktopWindowTreeHostPlatform uses the scale of the current display
+        // of the parent window to translate initial bounds of the popup to
+        // pixels.
+        const auto effective_scale = entered_output.output->GetScale();
         gfx::Transform transform;
-        transform.Scale(main_output_scale, main_output_scale);
+        transform.Scale(effective_scale, effective_scale);
         gfx::RectF rect_in_pixels = gfx::RectF(bounds_dip);
         transform.TransformRect(&rect_in_pixels);
         gfx::Rect wayland_popup_bounds = gfx::ToEnclosingRect(rect_in_pixels);
@@ -1889,25 +1890,30 @@ TEST_P(WaylandWindowTest, WaylandPopupInitialBufferScale) {
         wayland_popup->Show(false);
 
         gfx::Rect expected_bounds = wayland_popup_bounds;
-        if (entered_output == secondary_output) {
+        if (entered_output.output == secondary_output) {
           expected_bounds =
               gfx::ScaleToRoundedRect(bounds_dip, secondary_output_scale);
         }
 
-        EXPECT_EQ(expected_bounds, wayland_popup->GetBounds());
+        EXPECT_EQ(expected_bounds, wayland_popup->GetBounds())
+            << " when the window is on " << entered_output.label
+            << " that has scale " << entered_output.output->GetScale();
       }
     }
-    wl_surface_send_leave(surface->resource(), entered_output->resource());
+    wl_surface_send_leave(surface->resource(),
+                          entered_output.output->resource());
     Sync();
   }
 }
 
-// Same as above except that it verifies that the bounds are also translated if
-// forced scale factor is set.
+// Verifies that when the forced scale factor is set, bounds are always the same
+// regardless of the scale of the display.
 TEST_P(WaylandWindowTest, WaylandPopupInitialBufferScaleForcedScale) {
   VerifyAndClearExpectations();
 
-  display::Display::SetForceDeviceScaleFactor(1.2);
+  const auto forced_scale = 1.2;
+
+  display::Display::SetForceDeviceScaleFactor(forced_scale);
 
   // Creating an output with scale 1.
   wl::TestOutput* main_output = server_.CreateAndInitializeOutput();
@@ -1929,7 +1935,10 @@ TEST_P(WaylandWindowTest, WaylandPopupInitialBufferScaleForcedScale) {
   wl_surface_send_enter(surface->resource(), secondary_output->resource());
   Sync();
 
-  gfx::Rect bounds_dip(15, 15, 10, 10);
+  const gfx::Rect bounds_dip{50, 50, 100, 100};
+  const gfx::Rect expected_bounds_px =
+      gfx::ScaleToRoundedRect(bounds_dip, forced_scale);
+
   // DesktopWindowTreeHostPlatform has always to use a primary display's
   // scale to translate initial bounds to pixels. However, the primary display
   // will use forced device scale factor and ignore wl_output's scale. Thus, use
@@ -1949,13 +1958,8 @@ TEST_P(WaylandWindowTest, WaylandPopupInitialBufferScaleForcedScale) {
 
   wayland_popup->Show(false);
 
-  gfx::Rect expected_bounds = gfx::ScaleToRoundedRect(
-      wayland_popup_bounds,
-      1.f / display::Display::GetForcedDeviceScaleFactor());
-  expected_bounds = gfx::ScaleToRoundedRect(expected_bounds,
-                                            2 /*secondary display's scale */);
+  EXPECT_EQ(expected_bounds_px, wayland_popup->GetBounds());
 
-  EXPECT_EQ(expected_bounds, wayland_popup->GetBounds());
   wl_surface_send_leave(surface->resource(), secondary_output->resource());
   Sync();
 }

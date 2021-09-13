@@ -729,6 +729,8 @@ gfx::Transform DesktopWindowTreeHostPlatform::GetRootTransform() const {
   // the display where it is shown.
   if (platform_window())
     display = GetDisplayNearestRootWindow();
+  else if (window_parent_)
+    display = window_parent_->GetDisplayNearestRootWindow();
 
   float scale = display.device_scale_factor();
   gfx::Transform transform;
