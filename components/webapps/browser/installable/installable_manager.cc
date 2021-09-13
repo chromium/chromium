@@ -514,6 +514,11 @@ void InstallableManager::CleanupAndStartNextTask() {
   // |valid_manifest_| shouldn't be re-used across tasks because its state is
   // dependent on current task's |params|.
   valid_manifest_ = std::make_unique<ValidManifestProperty>();
+  if (manifest_->error == NO_MANIFEST || manifest_->error == MANIFEST_EMPTY) {
+    valid_manifest_->fetched = true;
+    valid_manifest_->is_valid = false;
+  }
+
   task_queue_.Next();
   WorkOnTask();
 }

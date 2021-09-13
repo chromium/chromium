@@ -284,18 +284,7 @@ class InstallableManagerBrowserTest : public InProcessBrowserTest {
                                         const std::string& url) {
     GURL test_url = embedded_test_server()->GetURL(url);
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser, test_url));
-    InstallableManager* manager = GetManager(browser);
-
-    base::RunLoop run_loop;
-    std::vector<content::InstallabilityError> result;
-
-    manager->GetAllErrors(base::BindLambdaForTesting(
-        [&](std::vector<content::InstallabilityError> installability_errors) {
-          result = std::move(installability_errors);
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-    return result;
+    return GetAllInstallabilityErrors(browser);
   }
 
   void RunInstallableManager(Browser* browser,
@@ -316,6 +305,22 @@ class InstallableManagerBrowserTest : public InProcessBrowserTest {
     CHECK(manager);
 
     return manager;
+  }
+
+  std::vector<content::InstallabilityError> GetAllInstallabilityErrors(
+      Browser* browser) {
+    InstallableManager* manager = GetManager(browser);
+
+    base::RunLoop run_loop;
+    std::vector<content::InstallabilityError> result;
+
+    manager->GetAllErrors(base::BindLambdaForTesting(
+        [&](std::vector<content::InstallabilityError> installability_errors) {
+          result = std::move(installability_errors);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+    return result;
   }
 };
 
@@ -1777,18 +1782,27 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
-                       GetAllInatallabilityErrorsNoErrors) {
+                       GetAllInstallabilityErrorsNoErrors) {
   EXPECT_EQ(std::vector<content::InstallabilityError>{},
             NavigateAndGetAllInstallabilityErrors(
                 browser(), "/banners/manifest_test_page.html"));
+
+  // Should pass a second time with no issues.
+  EXPECT_EQ(std::vector<content::InstallabilityError>{},
+            GetAllInstallabilityErrors(browser()));
 }
 
 IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
-                       GetAllInatallabilityErrorsWithNoManifest) {
+                       GetAllInstallabilityErrorsWithNoManifest) {
   EXPECT_EQ(std::vector<content::InstallabilityError>{GetInstallabilityError(
                 NO_MANIFEST)},
             NavigateAndGetAllInstallabilityErrors(
                 browser(), "/banners/no_manifest_test_page.html"));
+
+  // Should pass a second time with no issues.
+  EXPECT_EQ(std::vector<content::InstallabilityError>{GetInstallabilityError(
+                NO_MANIFEST)},
+            GetAllInstallabilityErrors(browser()));
 }
 
 IN_PROC_BROWSER_TEST_P(InstallableManagerOfflineCapabilityBrowserTest,
