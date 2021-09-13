@@ -71,6 +71,7 @@ void FakeSpeechRecognitionManager::SendFakeResponse(
 
 void FakeSpeechRecognitionManager::OnRecognitionStarted() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  is_recognizing_ = true;
   // Complete the closure on the UI thread instead of the IO thread to avoid
   // threading issues.
   if (recognition_started_closure_)
@@ -79,6 +80,7 @@ void FakeSpeechRecognitionManager::OnRecognitionStarted() {
 
 void FakeSpeechRecognitionManager::OnRecognitionEnded() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  is_recognizing_ = false;
   // Complete the closure on the UI thread instead of the IO thread to avoid
   // threading issues.
   if (recognition_ended_closure_)
@@ -185,7 +187,6 @@ void FakeSpeechRecognitionManager::SetFakeRecognitionResult(
   if (!session_id_)  // Do a check in case we were cancelled..
     return;
   VLOG(1) << "Setting fake recognition result.";
-  LOG(ERROR) << "SetFakeRecognitionResult";
   if (!has_sent_result_) {
     listener_->OnAudioStart(session_id_);
     listener_->OnSoundStart(session_id_);
@@ -203,7 +204,6 @@ void FakeSpeechRecognitionManager::SetFakeRecognitionResult(
       base::BindOnce(&FakeSpeechRecognitionManager::OnFakeResponseSent,
                      base::Unretained(this)));
   if (end_recognition) {
-    LOG(ERROR) << "Ending recognition";
     // End recognition. Note that in normal SpeechRecognitionManager, a session
     // is not ended after the final result is sent. This behavior is just
     // to make testing easier.

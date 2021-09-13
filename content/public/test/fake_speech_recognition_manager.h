@@ -30,17 +30,15 @@ class FakeSpeechRecognitionManager : public SpeechRecognitionManager,
     return grammar_;
   }
 
-  bool did_cancel_all() {
-    return did_cancel_all_;
-  }
+  bool did_cancel_all() const { return did_cancel_all_; }
 
   void set_should_send_fake_response(bool send) {
     should_send_fake_response_ = send;
   }
 
-  bool should_send_fake_response() {
-    return should_send_fake_response_;
-  }
+  bool should_send_fake_response() const { return should_send_fake_response_; }
+
+  bool is_recognizing() const { return is_recognizing_; }
 
   void WaitForRecognitionStarted();
   void WaitForRecognitionEnded();
@@ -99,6 +97,7 @@ class FakeSpeechRecognitionManager : public SpeechRecognitionManager,
   bool did_cancel_all_ = false;
   bool should_send_fake_response_ = true;
   bool has_sent_result_ = false;
+  bool is_recognizing_ = false;
   base::OnceClosure recognition_started_closure_;
   base::OnceClosure recognition_ended_closure_;
   base::OnceClosure on_fake_response_sent_closure_;

@@ -181,6 +181,9 @@ export class Command {
   execute() {
     // Commands using keyboard shortcuts.
     switch (this.action_) {
+      case Command.Action.INPUT_TEXT:
+        // Text input is not handled here.
+        break;
       case Command.Action.DELETE_ONCE:
         EventGenerator.sendKeyPress(KeyCode.BACK);
         break;

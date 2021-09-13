@@ -80,10 +80,23 @@ export class Dictation {
     if (activated && this.state_ === Dictation.DictationState.OFF) {
       this.state_ = Dictation.DictationState.STARTING;
       this.startTone_.play();
+      this.setStopTimeout_(Dictation.Timeouts.NO_FOCUSED_IME_MS);
       this.inputController_.connect(() => this.maybeStartSpeechRecognition_());
     } else {
       this.onDictationStopped_();
     }
+  }
+
+  /**
+   * Sets the timeout to stop Dictation.
+   * @param {number} durationMs
+   * @private
+   */
+  setStopTimeout_(durationMs) {
+    if (this.timeoutId_ !== null) {
+      clearTimeout(this.timeoutId_);
+    }
+    this.timeoutId_ = setTimeout(() => this.stopDictation_(), durationMs);
   }
 
   /**
@@ -95,8 +108,7 @@ export class Dictation {
   maybeStartSpeechRecognition_() {
     if (this.state_ === Dictation.DictationState.STARTING) {
       this.speechRecognizer_.start();
-      this.timeoutId_ = setTimeout(
-          () => this.stopDictation_(), Dictation.SpeechTimeouts.NO_SPEECH_MS);
+      this.setStopTimeout_(Dictation.Timeouts.NO_SPEECH_MS);
     } else {
       // We are no longer starting up - perhaps a stop came
       // through during the async callbacks. Ensure cleanup
@@ -163,11 +175,9 @@ export class Dictation {
       return;
     }
     this.processSpeechRecognitionResult_(result[0].transcript, result.isFinal);
-    clearTimeout(this.timeoutId_);
-    this.timeoutId_ = setTimeout(
-        () => this.stopDictation_(),
-        result.isFinal ? Dictation.SpeechTimeouts.NO_SPEECH_MS :
-                         Dictation.SpeechTimeouts.NO_NEW_SPEECH_MS);
+    this.setStopTimeout_(
+        result.isFinal ? Dictation.Timeouts.NO_SPEECH_MS :
+                         Dictation.Timeouts.NO_NEW_SPEECH_MS);
   }
 
   /**
@@ -288,7 +298,8 @@ Dictation.SPOKEN_FEEDBACK_PREF = 'settings.accessibility';
  * Timeout durations.
  * @type {!Object<string, number>}
  */
-Dictation.SpeechTimeouts = {
+Dictation.Timeouts = {
   NO_SPEECH_MS: 10 * 1000,
   NO_NEW_SPEECH_MS: 5 * 1000,
+  NO_FOCUSED_IME_MS: 500,
 };

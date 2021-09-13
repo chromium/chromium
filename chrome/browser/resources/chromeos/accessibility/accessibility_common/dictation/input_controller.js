@@ -26,6 +26,9 @@ export class InputController {
     /** @private {function():void} */
     this.stopDictationCallback_ = stopDictationCallback;
 
+    /** @private {?function():void} */
+    this.onConnectCallback_ = null;
+
     this.initialize_();
   }
 
@@ -47,26 +50,25 @@ export class InputController {
    *     connected.
    */
   connect(callback) {
+    this.onConnectCallback_ = callback;
     chrome.inputMethodPrivate.getCurrentInputMethod(
-        (method) => this.saveCurrentInputMethodAndStart_(method, callback));
+        (method) => this.saveCurrentInputMethodAndStart_(method));
   }
 
   /**
    * Called when InputController has received the current input method. We save
    * the current method to reset when InputController toggles off, then continue
-   * with starting up Dictation via the callback.
+   * with starting up Dictation after the input gets focus (onImeFocus_()).
    * @param {string} method The currently active IME ID.
-   * @param {function():void} callback The callback to run after changing the
-   *     input method.
    * @private
    */
-  saveCurrentInputMethodAndStart_(method, callback) {
+  saveCurrentInputMethodAndStart_(method) {
     this.previousImeEngineId_ = method;
     // Add AccessibilityCommon as an input method and active it.
     chrome.languageSettingsPrivate.addInputMethod(
         InputController.IME_ENGINE_ID);
     chrome.inputMethodPrivate.setCurrentInputMethod(
-        InputController.IME_ENGINE_ID, callback);
+        InputController.IME_ENGINE_ID);
   }
 
   /**
@@ -137,12 +139,19 @@ export class InputController {
   }
 
   /**
-   * chrome.input.ime.onFocus callback. Save the active context ID.
+   * chrome.input.ime.onFocus callback. Save the active context ID, and
+   * finish starting speech recognition if needed. This needs to be done
+   * before starting recognition in order for browser tests to know that
+   * Dictation is already set up as an IME.
    * @param {chrome.input.ime.InputContext} context Input field context.
    * @private
    */
   onImeFocus_(context) {
     this.activeImeContextId_ = context.contextID;
+    if (this.onConnectCallback_) {
+      this.onConnectCallback_();
+      this.onConnectCallback_ = null;
+    }
   }
 
   /**

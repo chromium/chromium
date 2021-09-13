@@ -10,22 +10,29 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
+#include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
 #include "chrome/browser/speech/fake_speech_recognition_service.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/interactive_test_utils.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/soda/soda_installer.h"
 #include "components/soda/soda_installer_impl_chromeos.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/fake_speech_recognition_manager.h"
+#include "extensions/browser/notification_types.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/accessibility_switches.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
 #include "ui/base/ime/chromeos/mock_ime_input_context_handler.h"
 #include "ui/base/ime/dummy_text_input_client.h"
@@ -139,7 +146,7 @@ class DictationTest
 
   void EnableChromeVox() { GetManager()->EnableSpokenFeedback(true); }
 
-  void SendSpeechResult(const char* result, bool is_final) {
+  void SendSpeechResult(const std::string& result, bool is_final) {
     if (GetParam() == kNetworkRecognition) {
       if (!is_final) {
         // FakeSpeechRecognitionManager can only send final results,
@@ -253,11 +260,11 @@ IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEnds) {
   EXPECT_EQ(1, input_context_handler_->commit_text_call_count());
   EXPECT_EQ(kFinalSpeechResult16, input_context_handler_->last_commit_text());
 
-    EXPECT_FALSE(IsDictationOff());
-    base::OneShotTimer* timer = GetTimer();
-    ASSERT_TRUE(timer);
-    EXPECT_EQ(timer->GetCurrentDelay(),
-              base::TimeDelta::FromSeconds(kNoSpeechTimeoutInSeconds));
+  EXPECT_FALSE(IsDictationOff());
+  base::OneShotTimer* timer = GetTimer();
+  ASSERT_TRUE(timer);
+  EXPECT_EQ(timer->GetCurrentDelay(),
+            base::TimeDelta::FromSeconds(kNoSpeechTimeoutInSeconds));
 }
 
 IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEndsWithChromeVoxEnabled) {
@@ -285,11 +292,11 @@ IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEndsWithChromeVoxEnabled) {
   EXPECT_EQ(1, input_context_handler_->commit_text_call_count());
   EXPECT_EQ(kFinalSpeechResult16, input_context_handler_->last_commit_text());
 
-    EXPECT_FALSE(IsDictationOff());
-    base::OneShotTimer* timer = GetTimer();
-    ASSERT_TRUE(timer);
-    EXPECT_EQ(timer->GetCurrentDelay(),
-              base::TimeDelta::FromSeconds(kNoSpeechTimeoutInSeconds));
+  EXPECT_FALSE(IsDictationOff());
+  base::OneShotTimer* timer = GetTimer();
+  ASSERT_TRUE(timer);
+  EXPECT_EQ(timer->GetCurrentDelay(),
+            base::TimeDelta::FromSeconds(kNoSpeechTimeoutInSeconds));
 }
 
 IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEndsWithNoSpeech) {
@@ -438,5 +445,160 @@ IN_PROC_BROWSER_TEST_P(DictationTest, MightListenForMultipleResults) {
   // No change expected after toggle.
   EXPECT_EQ(3, input_context_handler_->commit_text_call_count());
 }
+
+class TextMatchesWaiter {
+ public:
+  TextMatchesWaiter(const std::string& expected,
+                    base::RepeatingCallback<std::string()> checker)
+      : expected_(expected), checker_(std::move(checker)) {}
+  ~TextMatchesWaiter() = default;
+  TextMatchesWaiter(const TextMatchesWaiter&) = delete;
+  TextMatchesWaiter& operator=(const TextMatchesWaiter&) = delete;
+
+  void Wait() {
+    base::RepeatingTimer check_timer;
+    check_timer.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(10), this,
+                      &TextMatchesWaiter::OnTimer);
+    run_loop_.Run();
+  }
+
+ private:
+  void OnTimer() {
+    if (checker_.Run() == expected_)
+      run_loop_.Quit();
+  }
+
+  std::string expected_;
+  base::RepeatingCallback<std::string()> checker_;
+  base::RunLoop run_loop_;
+};
+
+class DictationExtensionTest : public InProcessBrowserTest {
+ protected:
+  DictationExtensionTest() {}
+  ~DictationExtensionTest() override = default;
+  DictationExtensionTest(const DictationExtensionTest&) = delete;
+  DictationExtensionTest& operator=(const DictationExtensionTest&) = delete;
+
+  void SetUp() override {
+    fake_speech_recognition_manager_ =
+        std::make_unique<content::FakeSpeechRecognitionManager>();
+    // Don't send a fake response from the fake manager. The fake manager can
+    // only send one final response before shutting off. We will do more
+    // granular testing of multiple not-final and final results by sending
+    // OnSpeechResult callbacks to Dictation directly.
+    fake_speech_recognition_manager_->set_should_send_fake_response(false);
+    content::SpeechRecognitionManager::SetManagerForTesting(
+        fake_speech_recognition_manager_.get());
+    InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    ASSERT_FALSE(AccessibilityManager::Get()->IsDictationEnabled());
+    console_observer_ = std::make_unique<ExtensionConsoleErrorObserver>(
+        browser()->profile(), extension_misc::kAccessibilityCommonExtensionId);
+    browser()->profile()->GetPrefs()->SetBoolean(
+        ash::prefs::kDictationAcceleratorDialogHasBeenAccepted, true);
+    AccessibilityManager::Get()->SetDictationEnabled(true);
+    WaitForExtensionLoad(extension_misc::kAccessibilityCommonExtensionId);
+
+    aura::Window* root_window = Shell::Get()->GetPrimaryRootWindow();
+    generator_ = std::make_unique<ui::test::EventGenerator>(root_window);
+
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(),
+        GURL("data:text/html;charset=utf-8,<input type=text id=textarea>")));
+    // Put focus in the text box.
+    ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+        nullptr, ui::KeyboardCode::VKEY_TAB, false, false, false, false)));
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(
+        ::switches::kEnableExperimentalAccessibilityDictationExtension);
+  }
+
+  void WaitForRecognitionStarted() {
+    if (!fake_speech_recognition_manager_->is_recognizing())
+      fake_speech_recognition_manager_->WaitForRecognitionStarted();
+  }
+
+  void WaitForRecognitionEnded() {
+    if (fake_speech_recognition_manager_->is_recognizing())
+      fake_speech_recognition_manager_->WaitForRecognitionEnded();
+
+    // Wait for mojom / callbacks to propagate.
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SendSpeechResult(const std::string& result) {
+    // FakeSpeechRecognitionManager can only send final results.
+    // TODO(crbug.com/1216111): Use a MockIMEInputContextHandler to check
+    // composition after supporting interim results.
+    base::RunLoop loop;
+    fake_speech_recognition_manager_->SetFakeResult(result);
+    fake_speech_recognition_manager_->SendFakeResponse(
+        /*end_recognition=*/false, loop.QuitClosure());
+    loop.Run();
+  }
+
+  std::string GetTextareaValue() {
+    std::string output;
+    std::string script =
+        "window.domAutomationController.send("
+        "document.getElementById('textarea').value)";
+    CHECK(ExecuteScriptAndExtractString(
+        browser()->tab_strip_model()->GetWebContentsAt(0), script, &output));
+    return output;
+  }
+
+  void WaitForTextAreaValue(const std::string& value) {
+    TextMatchesWaiter waiter(
+        value, base::BindRepeating(&DictationExtensionTest::GetTextareaValue,
+                                   base::Unretained(this)));
+    waiter.Wait();
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void ToggleDictationWithKeystroke() {
+    ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+        nullptr, ui::KeyboardCode::VKEY_D, false, false, false, true)));
+  }
+
+ private:
+  std::unique_ptr<ui::test::EventGenerator> generator_;
+  std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
+  std::unique_ptr<content::FakeSpeechRecognitionManager>
+      fake_speech_recognition_manager_;
+};
+
+IN_PROC_BROWSER_TEST_F(DictationExtensionTest, StartsAndStopsRecognition) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionEnded();
+}
+
+IN_PROC_BROWSER_TEST_F(DictationExtensionTest, EntersFinalizedSpeech) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendSpeechResult(kFinalSpeechResult);
+  WaitForTextAreaValue(kFinalSpeechResult);
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionEnded();
+}
+
+IN_PROC_BROWSER_TEST_F(DictationExtensionTest, EntersMultipleFinalizedStrings) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendSpeechResult("The rain in Spain");
+  WaitForTextAreaValue("The rain in Spain");
+  SendSpeechResult(" falls mainly on the plain.");
+  WaitForTextAreaValue("The rain in Spain falls mainly on the plain.");
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionEnded();
+}
+
+// TODO(crbug.com/1247299): E2E tests for command text editing.
 
 }  // namespace ash

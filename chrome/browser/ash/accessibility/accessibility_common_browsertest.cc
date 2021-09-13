@@ -57,12 +57,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityCommonTest, ToggleFeatures) {
 
   PrefService* pref_service = manager->profile()->GetPrefs();
 
-  content::WindowedNotificationObserver
-      accessibility_common_extension_load_waiter(
-          extensions::NOTIFICATION_EXTENSION_HOST_DID_STOP_FIRST_LOAD,
-          content::NotificationService::AllSources());
   pref_service->SetBoolean(prefs::kAccessibilityAutoclickEnabled, true);
-  accessibility_common_extension_load_waiter.Wait();
+  WaitForExtensionLoad(extension_misc::kAccessibilityCommonExtensionId);
 
   EXPECT_EQ(1U, enabled_features.size());
   EXPECT_EQ(1U, enabled_features.count(prefs::kAccessibilityAutoclickEnabled));
@@ -90,11 +86,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityCommonTest, ToggleFeatures) {
       extension_misc::kAccessibilityCommonExtensionId));
 
   // Not an accessibility common feature.
-  content::WindowedNotificationObserver spoken_feedback_extension_load_waiter(
-      extensions::NOTIFICATION_EXTENSION_HOST_DID_STOP_FIRST_LOAD,
-      content::NotificationService::AllSources());
   pref_service->SetBoolean(prefs::kAccessibilitySpokenFeedbackEnabled, true);
-  spoken_feedback_extension_load_waiter.Wait();
+  WaitForExtensionLoad(extension_misc::kChromeVoxExtensionId);
   EXPECT_TRUE(enabled_features.empty());
   EXPECT_FALSE(DoesComponentExtensionExist(
       extension_misc::kAccessibilityCommonExtensionId));

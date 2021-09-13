@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/test/guest_session_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
@@ -26,7 +27,6 @@
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "chrome/test/base/extension_load_waiter_one_shot.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -327,13 +327,6 @@ void AssertMessageCenterEmpty() {
 void ClearMessageCenter() {
   message_center::MessageCenter::Get()->RemoveAllNotifications(
       /*by_user=*/false, message_center::MessageCenter::RemoveType::ALL);
-}
-
-void WaitForExtensionToLoad(const char* extension_id) {
-  base::RunLoop run_loop;
-  ExtensionLoadWaiterOneShot waiter;
-  waiter.WaitForExtension(extension_id, run_loop.QuitClosure());
-  run_loop.Run();
 }
 
 }  // namespace
@@ -734,7 +727,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, ChromeVoxPanel) {
   PostSwitchChromeVoxProfile();
   ASSERT_FALSE(IsChromeVoxPanelActive());
   SetSpokenFeedbackEnabled(true);
-  WaitForExtensionToLoad(extension_misc::kChromeVoxExtensionId);
+  WaitForExtensionLoad(extension_misc::kChromeVoxExtensionId);
   ASSERT_TRUE(IsSpokenFeedbackEnabled());
   ASSERT_TRUE(IsChromeVoxPanelActive());
   // Switch profiles. The panel should not be recreated.

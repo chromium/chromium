@@ -152,10 +152,11 @@ import('/accessibility_common/accessibility_common_loader.js').then(reinit);
   }
 
   /** Turns on Dictation and checks IME and Speech Recognition state. */
-  toggleDictationOn() {
+  toggleDictationOn(contextId) {
     this.mockAccessibilityPrivate.callOnToggleDictation(true);
     assertTrue(this.mockAccessibilityPrivate.getDictationActive());
     this.checkDictationImeActive();
+    this.mockInputIme.callOnFocus(contextId);
     assertTrue(mockSpeechRecognition.isStarted());
   }
 
@@ -232,7 +233,7 @@ SYNC_TEST_F(
     async function() {
       await this.waitForDictationModule();
       this.checkDictationImeInactive();
-      this.toggleDictationOn();
+      this.toggleDictationOn(1);
       this.toggleDictationOffFromA11yPrivate();
     });
 
@@ -240,10 +241,8 @@ SYNC_TEST_F(
     'DictationE2ETest', 'TogglesDictationOffWhenIMEBlur', async function() {
       await this.waitForDictationModule();
       this.checkDictationImeInactive();
-      this.toggleDictationOn();
+      this.toggleDictationOn(1);
 
-      // Focus an input context.
-      this.mockInputIme.callOnFocus(1);
       // Blur the input context. Dictation should get toggled off.
       this.mockInputIme.callOnBlur(1);
 
@@ -263,7 +262,7 @@ SYNC_TEST_F(
       this.mockInputMethodPrivate.setCurrentInputMethod('keyboard_cat');
       this.mockLanguageSettingsPrivate.addInputMethod('keyboard_cat');
 
-      this.toggleDictationOn();
+      this.toggleDictationOn(2);
 
       // Deactivate Dictation.
       this.mockAccessibilityPrivate.callOnToggleDictation(false);
@@ -313,7 +312,7 @@ SYNC_TEST_F(
     'DictationE2ETest', 'StopsDictationOnSpeechRecognitionError',
     async function() {
       await this.waitForDictationModule();
-      this.toggleDictationOn();
+      this.toggleDictationOn(1);
 
       // Complete start-up.
       mockSpeechRecognition.callOnStart();
@@ -335,7 +334,7 @@ SYNC_TEST_F(
     'DictationE2ETest', 'StopsDictationOnIMEDeactivateBeforeOnStartIsCalled',
     async function() {
       await this.waitForDictationModule();
-      this.toggleDictationOn();
+      this.toggleDictationOn(1);
 
       // Focus and blur an input context to cancel Dictation.
       this.mockInputIme.callOnFocus(1);
@@ -398,12 +397,7 @@ SYNC_TEST_F(
 
 SYNC_TEST_F(
     'DictationE2ETest', 'SetsCompositionForInterimResults', async function() {
-      await this.waitForDictationModule();
-      this.mockAccessibilityPrivate.callOnToggleDictation(true);
-
-      // The order of start and focus doesn't matter.
-      mockSpeechRecognition.callOnStart();
-      this.mockInputIme.callOnFocus(2);
+      await this.toggleDictationAndStartListening(2);
 
       // Send an interim result.
       mockSpeechRecognition.callOnResult('dogs drool', false);
@@ -449,12 +443,34 @@ SYNC_TEST_F(
       assertFalse(!!this.mockInputIme.getLastCommittedParameters());
     });
 
+SYNC_TEST_F('DictationE2ETest', 'TimesOutWithNoIMEContext', async function() {
+  this.mockSetTimeoutMethod();
+  await this.waitForDictationModule();
+  this.mockAccessibilityPrivate.callOnToggleDictation(true);
+
+  assertTrue(!!this.lastSetTimeoutCallback);
+  assertEquals(this.lastSetDelay, Dictation.Timeouts.NO_FOCUSED_IME_MS);
+
+  // Triggering the timeout should cause a request to toggle Dictation, but
+  // nothing should be committed after AccessibilityPrivate toggle is received.
+  this.lastSetTimeoutCallback();
+  this.lastSetTimeoutCallback = null;
+  assertFalse(this.mockAccessibilityPrivate.getDictationActive());
+  this.mockAccessibilityPrivate.callOnToggleDictation(false);
+
+  // Nothing was committed.
+  assertFalse(!!this.mockInputIme.getLastCommittedParameters());
+  assertFalse(!!this.mockInputIme.getLastCompositionParameters());
+});
+
 SYNC_TEST_F('DictationE2ETest', 'TimesOutWithNoSpeech', async function() {
   this.mockSetTimeoutMethod();
   await this.waitForDictationModule();
   this.mockAccessibilityPrivate.callOnToggleDictation(true);
+  this.mockInputIme.callOnFocus(1);
+
   assertTrue(!!this.lastSetTimeoutCallback);
-  assertEquals(this.lastSetDelay, Dictation.SpeechTimeouts.NO_SPEECH_MS);
+  assertEquals(this.lastSetDelay, Dictation.Timeouts.NO_SPEECH_MS);
 
   // Triggering the timeout should cause a request to toggle Dictation, but
   // nothing should be committed after AccessibilityPrivate toggle is received.
@@ -480,8 +496,7 @@ SYNC_TEST_F(
 
       // The timeout should be set based on the interim result.
       assertTrue(!!this.lastSetTimeoutCallback);
-      assertEquals(
-          this.lastSetDelay, Dictation.SpeechTimeouts.NO_NEW_SPEECH_MS);
+      assertEquals(this.lastSetDelay, Dictation.Timeouts.NO_NEW_SPEECH_MS);
 
       // Triggering the timeout should cause a request to toggle Dictation, and
       // after AccessibilityPrivate calls toggleDictation, to commit the interim
@@ -504,7 +519,7 @@ SYNC_TEST_F('DictationE2ETest', 'TimesOutAfterFinalResults', async function() {
 
   // The timeout should be set based on the final result.
   assertTrue(!!this.lastSetTimeoutCallback);
-  assertEquals(this.lastSetDelay, Dictation.SpeechTimeouts.NO_SPEECH_MS);
+  assertEquals(this.lastSetDelay, Dictation.Timeouts.NO_SPEECH_MS);
 
   // Triggering the timeout should stop listening.
   this.lastSetTimeoutCallback();

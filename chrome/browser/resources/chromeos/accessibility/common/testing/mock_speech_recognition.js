@@ -153,8 +153,6 @@ class MockSpeechRecognizer {
    * Ends mock speech recognition (in this case, just marks it as not started).
    */
   abort() {
-    // Shouldn't call abort if not started.
-    assertTrue(this.started);
     this.started = false;
   }
 }

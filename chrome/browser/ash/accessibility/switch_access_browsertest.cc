@@ -13,7 +13,6 @@
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "chrome/test/base/extension_load_waiter_one_shot.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -86,12 +85,7 @@ class SwitchAccessTest : public InProcessBrowserTest {
     ASSERT_TRUE(base::ReadFileToString(test_support_path, &script))
         << test_support_path;
 
-    // Wait for the extension to load.
-    base::RunLoop loop;
-    ExtensionLoadWaiterOneShot waiter;
-    waiter.WaitForExtension(extension_misc::kSwitchAccessExtensionId,
-                            loop.QuitClosure());
-    loop.Run();
+    WaitForExtensionLoad(extension_misc::kSwitchAccessExtensionId);
 
     std::string result =
         extensions::browsertest_util::ExecuteScriptInBackgroundPage(
