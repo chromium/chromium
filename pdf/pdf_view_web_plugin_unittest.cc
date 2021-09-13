@@ -360,22 +360,21 @@ TEST_F(PdfViewWebPluginWithoutInitializeTest, Initialize) {
       plugin_->InitializeForTesting(std::move(wrapper), std::move(engine)));
 }
 
-// TODO(crbug.com/1238395): Split this test into two: One with zoom-for-DSF
-// enabled, one with zoom-for-DSF disabled.
+TEST_F(PdfViewWebPluginTest, UpdateGeometrySetsPluginRectUseZoomForDSFEnabled) {
+  EXPECT_CALL(*client_ptr_, IsUseZoomForDSFEnabled)
+      .WillRepeatedly(Return(true));
+  TestUpdateGeometrySetsPluginRect(
+      /*device_scale=*/2.0f, /*window_rect=*/gfx::Rect(4, 4, 12, 12),
+      /*expected_plugin_rect=*/gfx::Rect(4, 4, 12, 12));
+}
+
 TEST_F(PdfViewWebPluginTest,
-       UpdateGeometrySetsPluginRectOnDifferentUseZoomForDSFSettings) {
-  // Use the same device scale for this test.
-  const float device_scale = 2.0f;
-
-  // Test when using zoom for DSF is enabled.
-  EXPECT_CALL(*client_ptr_, IsUseZoomForDSFEnabled).WillOnce(Return(true));
-  TestUpdateGeometrySetsPluginRect(device_scale, gfx::Rect(4, 4, 12, 12),
-                                   gfx::Rect(4, 4, 12, 12));
-
-  // Test when using zoom for DSF is disabled.
-  EXPECT_CALL(*client_ptr_, IsUseZoomForDSFEnabled).WillOnce(Return(false));
-  TestUpdateGeometrySetsPluginRect(device_scale, gfx::Rect(4, 4, 12, 12),
-                                   gfx::Rect(8, 8, 24, 24));
+       UpdateGeometrySetsPluginRectUseZoomForDSFDisabled) {
+  EXPECT_CALL(*client_ptr_, IsUseZoomForDSFEnabled)
+      .WillRepeatedly(Return(false));
+  TestUpdateGeometrySetsPluginRect(
+      /*device_scale=*/2.0f, /*window_rect=*/gfx::Rect(4, 4, 12, 12),
+      /*expected_plugin_rect=*/gfx::Rect(8, 8, 24, 24));
 }
 
 TEST_F(PdfViewWebPluginTest,
