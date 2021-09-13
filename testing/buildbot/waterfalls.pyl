@@ -3300,6 +3300,9 @@
         'mixins': [
           'linux-bionic',
         ],
+        'test_suites': {
+          'gtest_tests': 'perfetto_gtests',
+        },
       },
       'linux-upload-perfetto': {
         'additional_compile_targets': [ 'trace_processor_shell' ],

@@ -4679,6 +4679,16 @@
       'zlib_unittests': {},
     },
 
+    'perfetto_gtests': {
+      'base_unittests': {},
+      'perfetto_unittests': {},
+      'services_unittests': {
+        'args': [
+          '--gtest_filter=*Trace*:*Tracing*:*Perfetto*:*StackUnwinder*:*Hprof*:-TracingConsumerTest.*:PerfettoIntegrationTest.*',
+        ],
+      },
+    },
+
     'performance_smoke_test_isolated_scripts': {
       'performance_test_suite': {
         'args': [
