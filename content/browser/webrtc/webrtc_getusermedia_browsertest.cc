@@ -512,14 +512,6 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
             ExecuteJavascriptAndReturnResult(gum_with_vga_constraints));
 }
 
-#if defined(OS_ANDROID) && defined(NDEBUG)
-#define MAYBE_TraceVideoCaptureControllerPerformanceDuringGetUserMedia \
-  DISABLED_TraceVideoCaptureControllerPerformanceDuringGetUserMedia
-#else
-#define MAYBE_TraceVideoCaptureControllerPerformanceDuringGetUserMedia \
-  TraceVideoCaptureControllerPerformanceDuringGetUserMedia
-#endif
-
 // This test calls getUserMedia and checks for aspect ratio behavior.
 IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
                        TestGetUserMediaAspectRatio4To3) {
