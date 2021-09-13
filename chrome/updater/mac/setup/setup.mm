@@ -421,8 +421,6 @@ int DoSetup(UpdaterScope scope) {
     return setup_exit_codes::kFailedToGetVersionedUpdaterFolderPath;
   if (!CopyBundle(*dest_path, scope))
     return setup_exit_codes::kFailedToCopyBundle;
-  if (!CopyKeystoneBundle(scope))
-    return setup_exit_codes::kFailedToCopyKeystoneBundle;
 
   const base::FilePath updater_executable_path =
       dest_path->Append(GetExecutableRelativePath());
@@ -478,6 +476,9 @@ int PromoteCandidate(UpdaterScope scope) {
 
   if (!StartLaunchdServiceJob(scope))
     return setup_exit_codes::kFailedToStartLaunchdActiveServiceJob;
+
+  if (!CopyKeystoneBundle(scope))
+    return setup_exit_codes::kFailedToCopyKeystoneBundle;
 
   // Wait for launchd to finish the load operation for the update service.
   base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(2));
