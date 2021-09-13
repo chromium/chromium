@@ -119,12 +119,11 @@ gfx::Range TabGroup::ListTabs() const {
   // Safe to assume GetLastTab() is not nullopt.
   int last_tab = GetLastTab().value();
 
-  // Check for group contiguity. The result doesn't really make sense if the
-  // group is discontiguous.
-  for (int i = first_tab; i <= last_tab; ++i) {
-    const absl::optional<tab_groups::TabGroupId> maybe_tab_id =
-        controller_->GetTabGroupForTab(i);
-    CHECK(maybe_tab_id && maybe_tab_id == id_);
+  // If DCHECKs are enabled, check for group contiguity. The result
+  // doesn't really make sense if the group is discontiguous.
+  if (DCHECK_IS_ON()) {
+    for (int i = first_tab; i <= last_tab; ++i)
+      DCHECK(controller_->GetTabGroupForTab(i) == id_);
   }
 
   return gfx::Range(first_tab, last_tab + 1);
