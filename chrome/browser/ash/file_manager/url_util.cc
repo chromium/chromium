@@ -81,7 +81,9 @@ GURL GetFileManagerMainPageUrlWithParams(
   arg_value.SetString("title", title);
   arg_value.SetString("currentDirectoryURL", current_directory_url.spec());
   arg_value.SetString("selectionURL", selection_url.spec());
-  arg_value.SetString("targetName", target_name);
+  // |targetName| is only relevant for SaveAs.
+  if (type == ui::SelectFileDialog::Type::SELECT_SAVEAS_FILE)
+    arg_value.SetString("targetName", target_name);
   arg_value.SetString("searchQuery", search_query);
   arg_value.SetBoolean("showAndroidPickerApps", show_android_picker_apps);
 
