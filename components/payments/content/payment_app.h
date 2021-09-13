@@ -110,15 +110,6 @@ class PaymentApp {
   virtual std::set<std::string> GetApplicationIdentifiersThatHideThisApp()
       const;
 
-  // Whether the payment app is ready for minimal UI flow.
-  virtual bool IsReadyForMinimalUI() const;
-
-  // The account balance of the payment app that is ready for a minimal UI flow.
-  virtual std::string GetAccountBalance() const;
-
-  // Disable opening a window for this payment app. Used in minimal UI flow.
-  virtual void DisableShowingOwnUI();
-
   // Returns true if this payment app can be used to fulfill a request
   // specifying |method| as supported method of payment. The parsed basic-card
   // specific data (supported_networks) is relevant only for the

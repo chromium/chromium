@@ -170,8 +170,6 @@ ServiceWorkerPaymentApp::CreateCanMakePaymentEventData() {
 
   event_data->top_origin = top_origin_;
   event_data->payment_request_origin = frame_origin_;
-  if (base::FeatureList::IsEnabled(::features::kWebPaymentsMinimalUI))
-    event_data->currency = spec_->details().total->amount->currency;
 
   DCHECK(spec_->details().modifiers);
   for (const auto& modifier : *spec_->details().modifiers) {
@@ -206,9 +204,6 @@ void ServiceWorkerPaymentApp::OnCanMakePaymentEventResponded(
   // |can_make_payment| is true as long as there is a matching payment handler.
   can_make_payment_result_ = true;
   has_enrolled_instrument_result_ = response->can_make_payment;
-  is_ready_for_minimal_ui_ = response->ready_for_minimal_ui;
-  if (response->account_balance)
-    account_balance_ = *response->account_balance;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), this, can_make_payment_result_));
@@ -512,18 +507,6 @@ ServiceWorkerPaymentApp::GetApplicationIdentifiersThatHideThisApp() const {
   }
 
   return result;
-}
-
-bool ServiceWorkerPaymentApp::IsReadyForMinimalUI() const {
-  return is_ready_for_minimal_ui_;
-}
-
-std::string ServiceWorkerPaymentApp::GetAccountBalance() const {
-  return account_balance_;
-}
-
-void ServiceWorkerPaymentApp::DisableShowingOwnUI() {
-  can_show_own_ui_ = false;
 }
 
 bool ServiceWorkerPaymentApp::HandlesShippingAddress() const {

@@ -378,22 +378,6 @@ public class ChromePaymentRequestService
         // immediately after we determine the apps are ready and UI is shown.
         if (mHasSkippedAppSelector) {
             assert !mPaymentUiService.getPaymentApps().isEmpty();
-
-            if (isMinimalUiApplicable(isUserGestureShow)) {
-                if (mPaymentUiService.triggerMinimalUI(windowAndroid, mSpec.getRawTotal(),
-                            this::onMinimalUIReady, this::onMinimalUiConfirmed,
-                            /*dismissObserver=*/
-                            ()
-                                    -> onUiAborted(AbortReason.ABORTED_BY_USER,
-                                            ErrorStrings.USER_CANCELLED))) {
-                    mJourneyLogger.setShown();
-                    return null;
-                } else {
-                    return ErrorStrings.MINIMAL_UI_SUPPRESSED;
-                }
-            }
-
-            assert !mPaymentUiService.getPaymentApps().isEmpty();
             PaymentApp selectedApp = mPaymentUiService.getSelectedPaymentApp();
             dimBackgroundIfNotPaymentHandler(selectedApp);
             mJourneyLogger.setSkippedShow();
@@ -403,35 +387,6 @@ public class ChromePaymentRequestService
             mPaymentUiService.createShippingSectionIfNeeded(context);
         }
         return null;
-    }
-
-    /**
-     * @param isUserGestureShow Whether PaymentRequest.show() was invoked with a user gesture.
-     * @return Whether the minimal UI should be shown.
-     */
-    private boolean isMinimalUiApplicable(boolean isUserGestureShow) {
-        if (!isUserGestureShow || mPaymentUiService.getPaymentApps().size() != 1) {
-            return false;
-        }
-
-        PaymentApp app = mPaymentUiService.getSelectedPaymentApp();
-        if (app == null || !app.isReadyForMinimalUI() || TextUtils.isEmpty(app.accountBalance())) {
-            return false;
-        }
-
-        return PaymentFeatureList.isEnabled(PaymentFeatureList.WEB_PAYMENTS_MINIMAL_UI);
-    }
-
-    private void onMinimalUIReady() {
-        if (PaymentRequestService.getNativeObserverForTest() != null) {
-            PaymentRequestService.getNativeObserverForTest().onMinimalUIReady();
-        }
-    }
-
-    private void onMinimalUiConfirmed(PaymentApp app) {
-        app.disableShowingOwnUI();
-        invokePaymentApp(
-                null /* selectedShippingAddress */, null /* selectedShippingOption */, app);
     }
 
     // Implements BrowserPaymentRequest:
@@ -575,8 +530,7 @@ public class ChromePaymentRequestService
             PaymentPreferencesUtil.setPaymentCompleteOnce();
         }
 
-        mPaymentUiService.onPaymentRequestComplete(result,
-                /*onMinimalUiErroredAndClosed=*/this::close, onCompleteHandled);
+        mPaymentUiService.onPaymentRequestComplete(result, onCompleteHandled);
     }
 
     // Implements BrowserPaymentRequest:
@@ -707,12 +661,6 @@ public class ChromePaymentRequestService
     // Implements BrowserPaymentRequest:
     @Override
     public void onInstrumentDetailsError(String errorMessage) {
-        if (mPaymentUiService.isShowingMinimalUi()) {
-            mJourneyLogger.setAborted(AbortReason.ABORTED_BY_USER);
-            mPaymentUiService.closeMinimalUiOnError(this::close);
-            return;
-        }
-
         // When skipping UI, any errors/cancel from fetching payment details should abort payment.
         if (mHasSkippedAppSelector) {
             assert !TextUtils.isEmpty(errorMessage);

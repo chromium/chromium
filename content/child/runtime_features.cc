@@ -267,7 +267,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      blink::features::kWebAppEnableProtocolHandlers},
     {wf::EnableWebAppManifestId, blink::features::kWebAppEnableManifestId},
     {wf::EnablePaymentApp, features::kServiceWorkerPaymentApps},
-    {wf::EnablePaymentHandlerMinimalUI, features::kWebPaymentsMinimalUI},
     {wf::EnablePaymentRequest, features::kWebPayments},
     {wf::EnablePercentBasedScrolling, features::kPercentBasedScrolling},
     {wf::EnablePeriodicBackgroundSync, features::kPeriodicBackgroundSync},

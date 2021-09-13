@@ -181,7 +181,6 @@ public class PaymentRequestService
         void onConnectionTerminated();
         void onAbortCalled();
         void onCompleteHandled();
-        void onMinimalUIReady();
         void onUiDisplayed();
         void onPaymentUiServiceCreated(PaymentUiServiceTestInterface uiService);
         void onClosed();

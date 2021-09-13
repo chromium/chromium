@@ -274,16 +274,11 @@ void WebRuntimeFeatures::EnablePaymentApp(bool enable) {
   RuntimeEnabledFeatures::SetPaymentAppEnabled(enable);
 }
 
-void WebRuntimeFeatures::EnablePaymentHandlerMinimalUI(bool enable) {
-  RuntimeEnabledFeatures::SetPaymentHandlerMinimalUIEnabled(enable);
-}
-
 void WebRuntimeFeatures::EnablePaymentRequest(bool enable) {
   RuntimeEnabledFeatures::SetPaymentRequestEnabled(enable);
   if (!enable) {
     // Disable features that depend on Payment Request API.
     RuntimeEnabledFeatures::SetPaymentAppEnabled(false);
-    RuntimeEnabledFeatures::SetPaymentHandlerMinimalUIEnabled(false);
     RuntimeEnabledFeatures::SetPaymentMethodChangeEventEnabled(false);
   }
 }

@@ -53,9 +53,7 @@ payments::mojom::CanMakePaymentResponsePtr
 PaymentAppProviderUtil::CreateBlankCanMakePaymentResponse(
     payments::mojom::CanMakePaymentEventResponseType response_type) {
   return payments::mojom::CanMakePaymentResponse::New(
-      response_type, /*can_make_payment=*/false,
-      /*ready_for_minimal_ui=*/false,
-      /*account_balance=*/absl::nullopt);
+      response_type, /*can_make_payment=*/false);
 }
 
 // static

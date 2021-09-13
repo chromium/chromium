@@ -27,7 +27,6 @@ enum class TestEvent : int32_t {
   kAppListReady,
   kErrorDisplayed,
   kPaymentCompleted,
-  kMinimalUIReady,
   kUIDisplayed,
 };
 

@@ -26,8 +26,6 @@ enum CanMakePaymentEventResponseType {
   NO_EXPLICITLY_VERIFIED_METHODS,
   NOT_INSTALLED,
   NO_URL_BASED_PAYMENT_METHODS,
-
-  // Common response types from respondWith() and respondWithMinimalUI().
   BOOLEAN_CONVERSION_ERROR,
   BROWSER_ERROR,
   INTERNAL_ERROR,
@@ -35,14 +33,6 @@ enum CanMakePaymentEventResponseType {
   REJECT,
   SUCCESS,
   TIMEOUT,
-
-  // Response types specifically used in respondWithMinimalUI(), which is
-  // available when features::kWebPaymentsMinimalUI is ebabled.
-  INVALID_ACCOUNT_BALANCE_VALUE,
-  MINIMAL_UI_RESPONSE_CONVERSION_ERROR,
-  NO_ACCOUNT_BALANCE_VALUE,
-  NO_CAN_MAKE_PAYMENT_VALUE,
-  NO_READY_FOR_MINIMAL_UI_VALUE,
 };
 
 enum PaymentEventResponseType {
@@ -125,9 +115,6 @@ struct CanMakePaymentEventData {
   url.mojom.Url payment_request_origin;
   array<PaymentMethodData> method_data;
   array<PaymentDetailsModifier> modifiers;
-
-  // The field is null when features::kWebPaymentsMinimalUI is disabled.
-  string? currency;
 };
 
 // This struct is provided to send payment request data to render side
@@ -152,11 +139,6 @@ struct PaymentRequestEventData {
 struct CanMakePaymentResponse {
   CanMakePaymentEventResponseType response_type;
   bool can_make_payment;
-
-  // The following fields are used for the minimal UI feature when
-  // features::kWebPaymentsMinimalUI is enabled.
-  bool ready_for_minimal_ui;
-  string? account_balance;
 };
 
 // This struct is provided to receive payment app response from render
@@ -173,8 +155,7 @@ struct PaymentHandlerResponse {
 };
 
 // This interface is provided to pass a payment handler response from payment
-// request event in renderer side to browser side by calling respondWith() or
-// respondWithMinimalUI().
+// request event in renderer side to browser side by calling respondWith().
 interface PaymentHandlerResponseCallback {
   // Response from the renderer to the browser about the status of attempted
   // abort of payment.

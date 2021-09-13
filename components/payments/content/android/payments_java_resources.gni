@@ -4,8 +4,6 @@
 
 payments_java_resources = [
   "//components/payments/content/android/java/res/layout/payment_handler_content.xml",
-  "//components/payments/content/android/java/res/layout/payment_minimal_ui_content.xml",
-  "//components/payments/content/android/java/res/layout/payment_minimal_ui_toolbar.xml",
   "//components/payments/content/android/java/res/layout/payment_option_edit_icon.xml",
   "//components/payments/content/android/java/res/layout/payment_request.xml",
   "//components/payments/content/android/java/res/layout/payment_request_bottom_bar.xml",

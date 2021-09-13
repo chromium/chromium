@@ -49,22 +49,13 @@ class MODULES_EXPORT CanMakePaymentEvent final : public ExtendableEvent {
 
   void respondWith(ScriptState*, ScriptPromise, ExceptionState&);
 
-  const String& currency() const;
-  void respondWithMinimalUI(ScriptState*, ScriptPromise, ExceptionState&);
-
   void Trace(Visitor*) const override;
 
  private:
-  void RespondToCanMakePaymentEvent(ScriptState*,
-                                    ScriptPromise,
-                                    ExceptionState&,
-                                    bool is_minimal_ui);
-
   String top_origin_;
   String payment_request_origin_;
   HeapVector<Member<PaymentMethodData>> method_data_;
   HeapVector<Member<PaymentDetailsModifier>> modifiers_;
-  String currency_;
 
   Member<CanMakePaymentRespondWithObserver> observer_;
 

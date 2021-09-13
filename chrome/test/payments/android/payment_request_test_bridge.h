@@ -44,12 +44,6 @@ bool ClickPaymentHandlerCloseButtonForTest();
 // Closes the payment dialog, if any. Returns true on success.
 bool CloseDialogForTest();
 
-// Confirms payment in minimal UI. Returns true on success.
-bool ConfirmMinimalUIForTest();
-
-// Dismisses the minimal UI. Returns true on success.
-bool DismissMinimalUIForTest();
-
 // Returns true when running on Android M or L.
 bool IsAndroidMarshmallowOrLollipopForTest();
 
@@ -67,7 +61,6 @@ void SetUseNativeObserverOnPaymentRequestForTesting(
     base::RepeatingClosure on_connection_terminated,
     base::RepeatingClosure on_abort_called,
     base::RepeatingClosure on_complete_called,
-    base::RepeatingClosure on_minimal_ui_ready,
     base::RepeatingClosure on_ui_displayed);
 
 }  // namespace payments

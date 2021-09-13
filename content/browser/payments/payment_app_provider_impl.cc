@@ -234,10 +234,6 @@ void PaymentAppProviderImpl::CanMakePayment(
         {"Merchant Top Origin", event_data->top_origin.spec()},
         {"Merchant Payment Request Origin",
          event_data->payment_request_origin.spec()}};
-    if (event_data->currency &&
-        base::FeatureList::IsEnabled(features::kWebPaymentsMinimalUI)) {
-      data["Currency"] = *event_data->currency;
-    }
     AddMethodDataToMap(event_data->method_data, &data);
     AddModifiersToMap(event_data->modifiers, &data);
     dev_tools->LogBackgroundServiceEvent(

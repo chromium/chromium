@@ -76,29 +76,12 @@ void OnResponseForCanMakePayment(
     const std::string& payment_request_id,
     PaymentAppProvider::CanMakePaymentCallback callback,
     CanMakePaymentResponsePtr response) {
-  std::string error_message;
-  if (response->account_balance && !response->account_balance->empty() &&
-      !payments::PaymentsValidators::IsValidAmountFormat(
-          *response->account_balance, &error_message)) {
-    mojo::ReportBadMessage(
-        payments::errors::kCanMakePaymentEventInvalidAccountBalanceValue);
-    response =
-        content::PaymentAppProviderUtil::CreateBlankCanMakePaymentResponse(
-            CanMakePaymentEventResponseType::INVALID_ACCOUNT_BALANCE_VALUE);
-  }
-
   if (dev_tools) {
     std::stringstream response_type;
     response_type << response->response_type;
     std::map<std::string, std::string> data = {
         {"Type", response_type.str()},
         {"Can Make Payment", response->can_make_payment ? "true" : "false"}};
-    if (base::FeatureList::IsEnabled(features::kWebPaymentsMinimalUI)) {
-      data["Ready for Minimal UI"] =
-          response->ready_for_minimal_ui ? "true" : "false";
-      data["Account Balance"] =
-          response->account_balance ? *response->account_balance : "";
-    }
     dev_tools->LogBackgroundServiceEvent(
         registration_id, sw_origin, DevToolsBackgroundService::kPaymentHandler,
         "Can make payment response",

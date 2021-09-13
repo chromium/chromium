@@ -156,10 +156,6 @@ const char kCanMakePaymentEventTimeout[] =
 const char kCanMakePaymentEventNoResponse[] =
     "Payment handler did not respond to \"canmakepayment\" event.";
 
-const char kCanMakePaymentEventNoReadyForMinimalUiValue[] =
-    "Payment handler did not specify a value for \"readyForMinimalUI\" in "
-    "CanMakePaymentEvent.respondWithMinimalUI()..";
-
 const char kCanMakePaymentEventBooleanConversionError[] =
     "Unable to convert the value of \"canmakepayment\" response to a boolean.";
 
@@ -170,22 +166,6 @@ const char kCanMakePaymentEventBrowserError[] =
 const char kCanMakePaymentEventInternalError[] =
     "Payment handler encountered an error (e.g., threw a JavaScript exception) "
     "while responding to \"canmakepayment\" event.";
-
-const char kCanMakePaymentEventInvalidAccountBalanceValue[] =
-    "Payment handler provided invalid account balance value in "
-    "CanMakePaymentEvent.respondWithMinimalUI().";
-
-const char kCanMakePaymentEventMinimalUiResponseConversionError[] =
-    "Unable to parse the object that the payment handler passed into "
-    "CanMakePaymentEvent.respondWithMinimalUI().";
-
-const char kCanMakePaymentEventNoAccountBalanceValue[] =
-    "Payment handler did not specify account balance in "
-    "CanMakePaymentEvent.respondWithMinimalUI().";
-
-const char kCanMakePaymentEventNoCanMakePaymentValue[] =
-    "Payment handler did not specify a value for \"canMakePayment\" in "
-    "CanMakePaymentEvent.respondWithMinimalUI().";
 
 const char kCanMakePaymentEventNoUrlBasedPaymentMethods[] =
     "Browser did not fire \"canmakepayment\" event because the payment handler "

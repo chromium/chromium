@@ -120,7 +120,6 @@ public class PaymentRequestTestBridge {
         private final long mOnConnectionTerminatedPtr;
         private final long mOnAbortCalledPtr;
         private final long mOnCompleteHandledPtr;
-        private final long mOnMinimalUIReadyPtr;
         private final long mOnUiDisplayed;
 
         PaymentRequestNativeObserverBridgeToNativeForTest(long onCanMakePaymentCalledPtr,
@@ -128,7 +127,7 @@ public class PaymentRequestTestBridge {
                 long onHasEnrolledInstrumentReturnedPtr, long onAppListReadyPtr,
                 long setAppDescriptionPtr, long onErrorDisplayedPtr, long onNotSupportedErrorPtr,
                 long onConnectionTerminatedPtr, long onAbortCalledPtr, long onCompleteHandledPtr,
-                long onMinimalUIReadyPtr, long onUiDisplayed) {
+                long onUiDisplayed) {
             mOnCanMakePaymentCalledPtr = onCanMakePaymentCalledPtr;
             mOnCanMakePaymentReturnedPtr = onCanMakePaymentReturnedPtr;
             mOnHasEnrolledInstrumentCalledPtr = onHasEnrolledInstrumentCalledPtr;
@@ -140,7 +139,6 @@ public class PaymentRequestTestBridge {
             mOnConnectionTerminatedPtr = onConnectionTerminatedPtr;
             mOnAbortCalledPtr = onAbortCalledPtr;
             mOnCompleteHandledPtr = onCompleteHandledPtr;
-            mOnMinimalUIReadyPtr = onMinimalUIReadyPtr;
             mOnUiDisplayed = onUiDisplayed;
         }
 
@@ -219,10 +217,6 @@ public class PaymentRequestTestBridge {
             nativeResolvePaymentRequestObserverCallback(mOnCompleteHandledPtr);
         }
         @Override
-        public void onMinimalUIReady() {
-            nativeResolvePaymentRequestObserverCallback(mOnMinimalUIReadyPtr);
-        }
-        @Override
         public void onUiDisplayed() {
             nativeResolvePaymentRequestObserverCallback(mOnUiDisplayed);
         }
@@ -249,14 +243,13 @@ public class PaymentRequestTestBridge {
             long onHasEnrolledInstrumentReturnedPtr, long onAppListReadyPtr,
             long setAppDescriptionPtr, long onErrorDisplayedPtr, long onNotSupportedErrorPtr,
             long onConnectionTerminatedPtr, long onAbortCalledPtr, long onCompleteCalledPtr,
-            long onMinimalUIReadyPtr, long onUiDisplayedPtr) {
+            long onUiDisplayedPtr) {
         PaymentRequestService.setNativeObserverForTest(
                 new PaymentRequestNativeObserverBridgeToNativeForTest(onCanMakePaymentCalledPtr,
                         onCanMakePaymentReturnedPtr, onHasEnrolledInstrumentCalledPtr,
                         onHasEnrolledInstrumentReturnedPtr, onAppListReadyPtr, setAppDescriptionPtr,
                         onErrorDisplayedPtr, onNotSupportedErrorPtr, onConnectionTerminatedPtr,
-                        onAbortCalledPtr, onCompleteCalledPtr, onMinimalUIReadyPtr,
-                        onUiDisplayedPtr));
+                        onAbortCalledPtr, onCompleteCalledPtr, onUiDisplayedPtr));
     }
 
     @CalledByNative
@@ -280,16 +273,6 @@ public class PaymentRequestTestBridge {
                 PaymentRequestService.getSecurePaymentConfirmationNoMatchingCredUiForTesting();
         if (noMatchingUi != null) noMatchingUi.hide();
         return sUiService == null || sUiService.closeDialogForTest();
-    }
-
-    @CalledByNative
-    private static boolean confirmMinimalUIForTest() {
-        return sUiService.confirmMinimalUIForTest();
-    }
-
-    @CalledByNative
-    private static boolean dismissMinimalUIForTest() {
-        return sUiService.dismissMinimalUIForTest();
     }
 
     @CalledByNative

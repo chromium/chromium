@@ -113,8 +113,7 @@ class PaymentAppContentUnitTestBase::PaymentAppForWorkerTestHelper
       response_callback->OnResponseForCanMakePayment(
           payments::mojom::CanMakePaymentResponse::New(
               payments::mojom::CanMakePaymentEventResponseType::SUCCESS,
-              can_make_payment, /*ready_for_minimal_ui=*/false,
-              /*account_balance=*/""));
+              can_make_payment));
       std::move(callback).Run(
           blink::mojom::ServiceWorkerEventStatus::COMPLETED);
     }

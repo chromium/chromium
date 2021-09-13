@@ -2852,11 +2852,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-web-payments-minimal-ui",
-    "owners": [ "rouslan", "web-payments-team@google.com" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "enable-webassembly-baseline",
     "owners": [ "clemensb", "wasm-team@google.com" ],
     // This flag is often used by developers and partners to test
@@ -3222,11 +3217,6 @@
     // ECT is a baked-in feature of Chrome. This flag is used for frequent
     // testing and should not be removed.
     "expiry_milestone": -1
-  },
-  {
-    "name": "force-secure-payment-confirmation-dialog",
-    "owners": [ "//components/payments/OWNERS" ],
-    "expiry_milestone": 90
   },
   {
     "name": "force-show-update-menu-badge",

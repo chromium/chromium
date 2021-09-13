@@ -1546,9 +1546,6 @@ extern const char kWebglDraftExtensionsDescription[];
 extern const char kWebPaymentsExperimentalFeaturesName[];
 extern const char kWebPaymentsExperimentalFeaturesDescription[];
 
-extern const char kWebPaymentsMinimalUIName[];
-extern const char kWebPaymentsMinimalUIDescription[];
-
 extern const char kAppStoreBillingDebugName[];
 extern const char kAppStoreBillingDebugDescription[];
 

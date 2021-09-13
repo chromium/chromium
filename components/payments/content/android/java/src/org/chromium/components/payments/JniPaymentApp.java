@@ -175,22 +175,6 @@ public class JniPaymentApp extends PaymentApp {
     }
 
     @Override
-    public boolean isReadyForMinimalUI() {
-        return JniPaymentAppJni.get().isReadyForMinimalUI(mNativeObject);
-    }
-
-    @Override
-    @Nullable
-    public String accountBalance() {
-        return JniPaymentAppJni.get().accountBalance(mNativeObject);
-    }
-
-    @Override
-    public void disableShowingOwnUI() {
-        JniPaymentAppJni.get().disableShowingOwnUI(mNativeObject);
-    }
-
-    @Override
     @Nullable
     public String getApplicationIdentifierToHide() {
         return JniPaymentAppJni.get().getApplicationIdentifierToHide(mNativeObject);
@@ -256,9 +240,6 @@ public class JniPaymentApp extends PaymentApp {
         void onPaymentDetailsNotUpdated(long nativeJniPaymentApp);
         boolean isWaitingForPaymentDetailsUpdate(long nativeJniPaymentApp);
         void abortPaymentApp(long nativeJniPaymentApp, JniPaymentApp callback);
-        boolean isReadyForMinimalUI(long nativeJniPaymentApp);
-        String accountBalance(long nativeJniPaymentApp);
-        void disableShowingOwnUI(long nativeJniPaymentApp);
         String getApplicationIdentifierToHide(long nativeJniPaymentApp);
         String[] getApplicationIdentifiersThatHideThisApp(long nativeJniPaymentApp);
         long getUkmSourceId(long nativeJniPaymentApp);

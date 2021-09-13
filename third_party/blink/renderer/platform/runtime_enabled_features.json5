@@ -1677,10 +1677,6 @@
       status: "stable",
     },
     {
-      name: "PaymentHandlerMinimalUI",
-      status: "experimental",
-    },
-    {
       name: "PaymentMethodChangeEvent",
       status: "stable",
     },

@@ -37,7 +37,6 @@ public class PaymentFeatureList {
             "WebPaymentsExperimentalFeatures";
     public static final String WEB_PAYMENTS_METHOD_SECTION_ORDER_V2 =
             "WebPaymentsMethodSectionOrderV2";
-    public static final String WEB_PAYMENTS_MINIMAL_UI = "WebPaymentsMinimalUI";
     public static final String WEB_PAYMENTS_MODIFIERS = "WebPaymentsModifiers";
     public static final String WEB_PAYMENTS_REDACT_SHIPPING_ADDRESS =
             "WebPaymentsRedactShippingAddress";

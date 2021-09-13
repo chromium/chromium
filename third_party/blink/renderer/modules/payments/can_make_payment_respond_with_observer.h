@@ -16,9 +16,8 @@ class ExecutionContext;
 class ScriptValue;
 class WaitUntilObserver;
 
-// Implementation for CanMakePaymentEvent.respondWith() and
-// CanMakePayment.respondWithMinimalUI(), which are used by the payment handler
-// to indicate whether it can respond to a payment request.
+// Implementation for CanMakePaymentEvent.respondWith(), which is used by the
+// payment handler to indicate whether it can respond to a payment request.
 class MODULES_EXPORT CanMakePaymentRespondWithObserver final
     : public RespondWithObserver {
  public:
@@ -37,27 +36,12 @@ class MODULES_EXPORT CanMakePaymentRespondWithObserver final
 
   // Observes the given promise and calls OnResponseRejected() or
   // OnResponseFulfilled().
-  void ObservePromiseResponse(ScriptState*,
-                              ScriptPromise,
-                              ExceptionState&,
-                              bool is_minimal_ui);
+  void ObservePromiseResponse(ScriptState*, ScriptPromise, ExceptionState&);
 
  private:
-  void OnResponseFulfilledForMinimalUI(ScriptState*,
-                                       const ScriptValue&,
-                                       ExceptionState&);
-
-  void ConsoleWarning(const String& message);
-  void RespondWithoutMinimalUI(
+  void Respond(
       payments::mojom::blink::CanMakePaymentEventResponseType response_type,
       bool can_make_payment);
-  void RespondInternal(
-      payments::mojom::blink::CanMakePaymentEventResponseType response_type,
-      bool can_make_payment,
-      bool ready_for_minimal_ui,
-      const String& account_balance);
-
-  bool is_minimal_ui_ = false;
 };
 
 }  // namespace blink

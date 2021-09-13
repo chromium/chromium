@@ -253,7 +253,6 @@ CONTENT_EXPORT extern const base::Feature kWebGLImageChromium;
 CONTENT_EXPORT extern const base::Feature kWebID;
 CONTENT_EXPORT extern const base::Feature kWebOtpBackendAuto;
 CONTENT_EXPORT extern const base::Feature kWebPayments;
-CONTENT_EXPORT extern const base::Feature kWebPaymentsMinimalUI;
 CONTENT_EXPORT extern const base::Feature kWebRtcUseGpuMemoryBufferVideoFrames;
 CONTENT_EXPORT extern const base::Feature kWebUICodeCache;
 CONTENT_EXPORT extern const base::Feature kWebUIReportOnlyTrustedTypes;

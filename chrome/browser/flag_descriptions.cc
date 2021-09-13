@@ -2726,11 +2726,6 @@ const char kWebPaymentsExperimentalFeaturesName[] =
 const char kWebPaymentsExperimentalFeaturesDescription[] =
     "Enable experimental Web Payments API features";
 
-const char kWebPaymentsMinimalUIName[] = "Web Payments Minimal UI";
-const char kWebPaymentsMinimalUIDescription[] =
-    "Allow Payment Request API to open a minimal UI to replace the Payment "
-    "Request UI when appropriate.";
-
 const char kAppStoreBillingDebugName[] =
     "Web Payments App Store Billing Debug Mode";
 const char kAppStoreBillingDebugDescription[] =

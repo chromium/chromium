@@ -194,7 +194,6 @@ CanMakePaymentEventInit* PaymentEventDataConversion::ToCanMakePaymentEventInit(
         ToPaymentDetailsModifier(script_state, std::move(modifier)));
   }
   event_init->setModifiers(modifiers);
-  event_init->setCurrency(event_data->currency);
   return event_init;
 }
 

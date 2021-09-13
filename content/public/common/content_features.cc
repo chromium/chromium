@@ -103,7 +103,7 @@ const base::Feature kBackForwardCacheSameSiteForBots{
 
 // BackForwardCacheMemoryControls is enabled only on Android to disable
 // BackForwardCache for lower memory devices due to memory limiations.
-const base::Feature kBackForwardCacheMemoryControls{
+const base::Feature kBackForwardCacheMemoryControls {
   "BackForwardCacheMemoryControls",
 
 #if defined(OS_ANDROID)
@@ -165,7 +165,7 @@ const base::Feature kBlockInsecurePrivateNetworkRequestsForNavigations{
 };
 
 // Use ThreadPriority::DISPLAY for browser UI and IO threads.
-const base::Feature kBrowserUseDisplayThreadPriority{
+const base::Feature kBrowserUseDisplayThreadPriority {
   "BrowserUseDisplayThreadPriority",
 
 #if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1017,10 +1017,6 @@ const base::Feature kWebOtpBackendAuto{"WebOtpBackendAuto",
 // The JavaScript API for payments on the web.
 const base::Feature kWebPayments{"WebPayments",
                                  base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Minimal user interface experience for payments on the web.
-const base::Feature kWebPaymentsMinimalUI{"WebPaymentsMinimalUI",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Use GpuMemoryBuffer backed VideoFrames in media streams.
 const base::Feature kWebRtcUseGpuMemoryBufferVideoFrames{

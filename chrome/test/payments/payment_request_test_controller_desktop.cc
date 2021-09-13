@@ -205,16 +205,6 @@ bool PaymentRequestTestController::CloseDialog() {
   return true;
 }
 
-bool PaymentRequestTestController::ConfirmMinimalUI() {
-  // Desktop does not have a minimal UI.
-  return true;
-}
-
-bool PaymentRequestTestController::DismissMinimalUI() {
-  // Desktop does not have a minimal UI.
-  return true;
-}
-
 bool PaymentRequestTestController::IsAndroidMarshmallowOrLollipop() {
   return false;
 }
@@ -335,10 +325,6 @@ void PaymentRequestTestController::OnCompleteCalled() {
   if (observer_) {
     observer_->OnCompleteCalled();
   }
-}
-
-void PaymentRequestTestController::OnMinimalUIReady() {
-  NOTREACHED();
 }
 
 void PaymentRequestTestController::OnUIDisplayed() {

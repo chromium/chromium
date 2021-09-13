@@ -201,8 +201,6 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_camera_device_permission_descriptor.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_can_make_payment_event_init.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_can_make_payment_event_init.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_can_make_payment_response.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_can_make_payment_response.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_canvas_context_creation_attributes_module.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_canvas_context_creation_attributes_module.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_canvas_filter_dictionary.cc",
