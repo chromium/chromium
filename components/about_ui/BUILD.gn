@@ -9,6 +9,7 @@ static_library("about_ui") {
   ]
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//components/resources:components_resources",
     "//ui/base",
     "//ui/resources",

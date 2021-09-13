@@ -687,15 +687,6 @@ bool AboutUIHTMLSource::ShouldAddContentSecurityPolicy() {
   return content::URLDataSource::ShouldAddContentSecurityPolicy();
 }
 
-std::string AboutUIHTMLSource::GetContentSecurityPolicy(
-    network::mojom::CSPDirectiveName directive) {
-  if (source_name_ == chrome::kChromeUICreditsHost &&
-      directive == network::mojom::CSPDirectiveName::TrustedTypes) {
-    return "trusted-types credits-static;";
-  }
-  return content::URLDataSource::GetContentSecurityPolicy(directive);
-}
-
 std::string AboutUIHTMLSource::GetAccessControlAllowOriginForOrigin(
     const std::string& origin) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)

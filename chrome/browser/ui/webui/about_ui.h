@@ -30,8 +30,6 @@ class AboutUIHTMLSource : public content::URLDataSource {
       content::URLDataSource::GotDataCallback callback) override;
   std::string GetMimeType(const std::string& path) override;
   bool ShouldAddContentSecurityPolicy() override;
-  std::string GetContentSecurityPolicy(
-      network::mojom::CSPDirectiveName directive) override;
   std::string GetAccessControlAllowOriginForOrigin(
       const std::string& origin) override;
 
