@@ -1838,8 +1838,16 @@ void BookmarkBarView::ConfigureButton(const BookmarkNode* node,
             }
             break;
         }
-        // Set empty border for 6px horizontal padding.
-        button->SetBorder(views::CreateEmptyBorder(gfx::Insets(0, 6)));
+        // Set empty border using the default horizontal padding (but leaving
+        // vertical empty). This provides enough space to render some
+        // background to the left and right of the label. There's no need to
+        // set the top and bottom margins because the bookmarks bar is a fixed
+        // height and the button will be stretched vertically to fit.
+        gfx::Insets insets =
+            GetLayoutProvider()->GetInsetsMetric(views::INSETS_LABEL_BUTTON);
+        insets.set_top(0);
+        insets.set_bottom(0);
+        button->SetBorder(views::CreateEmptyBorder(insets));
       } else {
         if (tp->HasCustomColor(ThemeProperties::COLOR_BOOKMARK_TEXT)) {
           button->SetImageModel(
