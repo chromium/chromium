@@ -438,11 +438,6 @@ constexpr base::FeatureParam<kCrosGlobalMediaControlsPinOptions>
         kCrosGlobalMediaControlsPinOptions::kHeuristic,
         &kCrosGlobalMediaControlsParamOptions);
 
-// Allow global media controls notifications to be dragged out into overlay
-// notifications. It is no-op if kGlobalMediaControls is not enabled.
-const base::Feature kGlobalMediaControlsOverlayControls{
-    "GlobalMediaControlsOverlayControls", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Show picture-in-picture button in Global Media Controls.
 const base::Feature kGlobalMediaControlsPictureInPicture {
   "GlobalMediaControlsPictureInPicture",

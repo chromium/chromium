@@ -39,7 +39,6 @@ class CastDialogController;
 class MediaDialogDelegate;
 class MediaNotificationServiceObserver;
 class MediaSessionNotificationProducer;
-class OverlayMediaNotification;
 
 class MediaNotificationService : public MediaItemsManager, public KeyedService {
  public:
@@ -57,10 +56,6 @@ class MediaNotificationService : public MediaItemsManager, public KeyedService {
   // MediaItemsManager:
   void ShowItem(const std::string& id) override;
   void HideItem(const std::string& id) override;
-
-  // Called by the |overlay_media_notifications_manager_| when an overlay
-  // notification is closed.
-  void OnOverlayNotificationClosed(const std::string& id);
 
   // Called after changing anything about a notification to notify any observers
   // and update the visibility of supplemental notifications.
@@ -97,10 +92,6 @@ class MediaNotificationService : public MediaItemsManager, public KeyedService {
   bool HasOpenDialog() const;
 
   void HideMediaDialog();
-
-  std::unique_ptr<OverlayMediaNotification> PopOutNotification(
-      const std::string& id,
-      gfx::Rect bounds);
 
   // Used by a |MediaNotificationDeviceSelectorView| to query the system
   // for connected audio output devices.

@@ -109,12 +109,6 @@ void MediaNotificationProviderImpl::HideMediaSession(const std::string& id) {
     observer.OnNotificationListViewSizeChanged();
 }
 
-std::unique_ptr<OverlayMediaNotification> MediaNotificationProviderImpl::PopOut(
-    const std::string& id,
-    gfx::Rect bounds) {
-  return active_session_view_->PopOut(id, bounds);
-}
-
 void MediaNotificationProviderImpl::OnNotificationListChanged() {
   for (auto& observer : observers_)
     observer.OnNotificationListChanged();

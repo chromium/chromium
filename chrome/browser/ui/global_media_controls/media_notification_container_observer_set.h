@@ -33,7 +33,6 @@ class MediaNotificationContainerObserverSet
   void OnContainerClicked(const std::string& id) override;
   void OnContainerDismissed(const std::string& id) override;
   void OnContainerDestroyed(const std::string& id) override;
-  void OnContainerDraggedOut(const std::string& id, gfx::Rect bounds) override;
   void OnAudioSinkChosen(const std::string& id,
                          const std::string& sink_id) override;
 

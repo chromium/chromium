@@ -290,53 +290,6 @@ class MediaNotificationContainerImplViewTest : public ChromeViewsTestBase {
   display::test::ScopedScreenOverride screen_override_;
 };
 
-// TODO(https://crbug.com/1022452): Remove this class once
-// |kGlobalMediaControlsOverlayControls| is enabled by default.
-class MediaNotificationContainerImplViewOverlayControlsTest
-    : public MediaNotificationContainerImplViewTest {
- public:
-  void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        media::kGlobalMediaControlsOverlayControls);
-    MediaNotificationContainerImplViewTest::SetUp();
-  }
-
-  void SimulateMouseDragAndRelease(gfx::Vector2d drag_distance) {
-    gfx::Rect start_bounds = notification_container()->bounds();
-    gfx::Point drag_start = start_bounds.CenterPoint();
-    gfx::Point drag_end = drag_start + drag_distance;
-
-    SimulateMousePressed(drag_start);
-    SimulateMouseDragged(drag_end);
-    SimulateMouseReleased(drag_end);
-  }
-
-  void SimulateMousePressed(gfx::Point point) {
-    notification_container()->OnMousePressed(
-        ui::MouseEvent(ui::ET_MOUSE_PRESSED, point, point,
-                       ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
-  }
-
-  void SimulateMouseDragged(gfx::Point point) {
-    notification_container()->OnMouseDragged(
-        ui::MouseEvent(ui::ET_MOUSE_DRAGGED, point, point,
-                       ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
-  }
-
-  void SimulateMouseReleased(gfx::Point point) {
-    notification_container()->OnMouseReleased(
-        ui::MouseEvent(ui::ET_MOUSE_RELEASED, point, point,
-                       ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
-  }
-
-  views::Widget* GetDragImageWidget() {
-    return notification_container()->drag_image_widget_for_testing();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // TODO(b/185139027): Remove this class once
 // |media_router::kGlobalMediaControlsCastStartStop| is enabled by default.
 class MediaNotificationContainerImplViewCastTest
@@ -346,8 +299,7 @@ class MediaNotificationContainerImplViewCastTest
     ViewsTestBase::SetUp();
     feature_list_.InitWithFeatures(
         {media::kGlobalMediaControlsForCast,
-         media_router::kGlobalMediaControlsCastStartStop,
-         media::kGlobalMediaControlsOverlayControls},
+         media_router::kGlobalMediaControlsCastStartStop},
         {});
 
     media_router::MediaRouterFactory::GetInstance()->SetTestingFactory(
@@ -522,54 +474,3 @@ TEST_F(MediaNotificationContainerImplViewTest, MetadataTest) {
   views::test::TestViewMetadata(container_view.get());
 }
 
-TEST_F(MediaNotificationContainerImplViewOverlayControlsTest,
-       Dragging_VeryShortSendsClick) {
-  // If the user presses and releases the mouse with only a very short drag,
-  // then it should be considered a click.
-  EXPECT_CALL(observer(), OnContainerClicked(kTestNotificationId));
-  EXPECT_CALL(observer(), OnContainerDraggedOut(kTestNotificationId, _))
-      .Times(0);
-  SimulateMouseDragAndRelease(gfx::Vector2d(1, 1));
-  testing::Mock::VerifyAndClearExpectations(&observer());
-}
-
-TEST_F(MediaNotificationContainerImplViewOverlayControlsTest,
-       Dragging_ShortDoesNothing) {
-  // If the user presses and releases the mouse with a drag that doesn't go
-  // outside of the container, then it should just return to its initial
-  // position and do nothing.
-  EXPECT_CALL(observer(), OnContainerClicked(kTestNotificationId)).Times(0);
-  EXPECT_CALL(observer(), OnContainerDraggedOut(kTestNotificationId, _))
-      .Times(0);
-  SimulateMouseDragAndRelease(gfx::Vector2d(20, 20));
-  testing::Mock::VerifyAndClearExpectations(&observer());
-}
-
-TEST_F(MediaNotificationContainerImplViewOverlayControlsTest,
-       Dragging_LongFiresDraggedOut) {
-  // If the user presses and releases the mouse with a long enough drag to pull
-  // the container out of the dialog, then it should fire an
-  // |OnContainerDraggedOut()| notification.
-  EXPECT_CALL(observer(), OnContainerClicked(kTestNotificationId)).Times(0);
-  EXPECT_CALL(observer(), OnContainerDraggedOut(kTestNotificationId, _));
-  SimulateMouseDragAndRelease(
-      notification_container()->bounds().bottom_right().OffsetFromOrigin());
-  testing::Mock::VerifyAndClearExpectations(&observer());
-}
-
-TEST_F(MediaNotificationContainerImplViewOverlayControlsTest, DragImage) {
-  gfx::Point start_point =
-      notification_container()->GetBoundsInScreen().CenterPoint();
-  gfx::Point end_point = start_point + gfx::Vector2d(50, 50);
-
-  EXPECT_EQ(GetDragImageWidget(), nullptr);
-
-  SimulateMousePressed(start_point);
-  SimulateMouseDragged(end_point);
-  EXPECT_NE(GetDragImageWidget(), nullptr);
-  EXPECT_EQ(GetDragImageWidget()->GetWindowBoundsInScreen().CenterPoint(),
-            end_point);
-
-  SimulateMouseReleased(end_point);
-  EXPECT_EQ(GetDragImageWidget(), nullptr);
-}

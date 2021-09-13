@@ -51,10 +51,6 @@ class MockMediaDialogDelegate : public MediaDialogDelegate {
   void OpenForWebContents(MediaNotificationService* service,
                           content::WebContents* content);
   void Close();
-  // Need to use a proxy since std::unique_ptr is not copyable.
-  MOCK_METHOD2(PopOutProxy,
-               OverlayMediaNotification*(const std::string& id,
-                                         gfx::Rect bounds));
 
   // MediaDialogDelegate implementation.
   MOCK_METHOD(
@@ -65,8 +61,6 @@ class MockMediaDialogDelegate : public MediaDialogDelegate {
   MOCK_METHOD(void, HideMediaSession, (const std::string& id));
   MOCK_METHOD(void, Focus, ());
 
-  std::unique_ptr<OverlayMediaNotification> PopOut(const std::string& id,
-                                                   gfx::Rect bounds) override;
   void HideMediaDialog() override;
 
  private:

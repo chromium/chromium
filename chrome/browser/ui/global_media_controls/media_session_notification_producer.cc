@@ -141,13 +141,6 @@ void MediaSessionNotificationProducer::Session::MediaSessionInfoChanged(
     return;
   }
 
-  // If we're in an overlay, then we don't want to count the session as
-  // inactive.
-  // TODO(https://crbug.com/1032841): This means we won't record interaction
-  // delays. Consider changing to record them.
-  if (is_in_overlay_)
-    return;
-
   // If the timer is already running, we don't need to do anything.
   if (inactive_timer_.IsRunning())
     return;
@@ -220,24 +213,6 @@ void MediaSessionNotificationProducer::Session::OnSessionInteractedWith() {
   StartInactiveTimer();
 }
 
-void MediaSessionNotificationProducer::Session::OnSessionOverlayStateChanged(
-    bool is_in_overlay) {
-  is_in_overlay_ = is_in_overlay;
-
-  if (is_in_overlay_) {
-    // If we enter an overlay, then we don't want the session to be marked
-    // inactive.
-    if (inactive_timer_.IsRunning()) {
-      RecordInteractionDelayAfterPause();
-      inactive_timer_.Stop();
-    }
-  } else if (!is_playing_ && !inactive_timer_.IsRunning()) {
-    // If we exit an overlay and the session is paused, then the session is
-    // inactive.
-    StartInactiveTimer();
-  }
-}
-
 bool MediaSessionNotificationProducer::Session::IsPlaying() const {
   return is_playing_;
 }
@@ -291,9 +266,6 @@ void MediaSessionNotificationProducer::Session::StartInactiveTimer() {
 }
 
 void MediaSessionNotificationProducer::Session::OnInactiveTimerFired() {
-  // Overlay notifications should never be marked as inactive.
-  DCHECK(!is_in_overlay_);
-
   // If the session has been paused and inactive for long enough, then mark it
   // as inactive.
   is_marked_inactive_ = true;
@@ -323,9 +295,7 @@ MediaSessionNotificationProducer::MediaSessionNotificationProducer(
     MediaNotificationService* service,
     Profile* profile,
     bool show_from_all_profiles)
-    : service_(service),
-      container_observer_set_(this),
-      overlay_media_notifications_manager_(service_) {
+    : service_(service), container_observer_set_(this) {
   // Connect to the controller manager so we can create media controllers for
   // media sessions.
   content::GetMediaSessionService().BindMediaControllerManager(
@@ -418,8 +388,7 @@ void MediaSessionNotificationProducer::OnFocusLost(
 
   // If we're not currently showing this item, then we can just remove it.
   if (!base::Contains(active_controllable_session_ids_, id) &&
-      !base::Contains(frozen_session_ids_, id) &&
-      !base::Contains(dragged_out_session_ids_, id)) {
+      !base::Contains(frozen_session_ids_, id)) {
     RemoveItem(id);
     return;
   }
@@ -461,13 +430,6 @@ void MediaSessionNotificationProducer::OnContainerClicked(
 
 void MediaSessionNotificationProducer::OnContainerDismissed(
     const std::string& id) {
-  // If the notification is dragged out, then dismissing should just close the
-  // overlay notification.
-  if (base::Contains(dragged_out_session_ids_, id)) {
-    overlay_media_notifications_manager_.CloseOverlayNotification(id);
-    return;
-  }
-
   Session* session = GetSession(id);
   if (!session) {
     return;
@@ -476,32 +438,6 @@ void MediaSessionNotificationProducer::OnContainerDismissed(
   session->set_dismiss_reason(
       GlobalMediaControlsDismissReason::kUserDismissedNotification);
   session->item()->Dismiss();
-}
-
-void MediaSessionNotificationProducer::OnContainerDraggedOut(
-    const std::string& id,
-    gfx::Rect bounds) {
-  if (!HasSession(id)) {
-    return;
-  }
-  std::unique_ptr<OverlayMediaNotification> overlay_notification =
-      service_->PopOutNotification(id, bounds);
-
-  if (!overlay_notification) {
-    return;
-  }
-
-  // If the session has been destroyed, no action is needed.
-  auto it = sessions_.find(id);
-  DCHECK(it != sessions_.end());
-  // Inform the Session that it's in an overlay so should not timeout as
-  // inactive.
-  it->second.OnSessionOverlayStateChanged(/*is_in_overlay=*/true);
-  active_controllable_session_ids_.erase(id);
-  dragged_out_session_ids_.insert(id);
-  overlay_media_notifications_manager_.ShowOverlayNotification(
-      id, std::move(overlay_notification));
-  service_->OnNotificationChanged();
 }
 
 void MediaSessionNotificationProducer::OnAudioSinkChosen(
@@ -523,11 +459,6 @@ void MediaSessionNotificationProducer::HideItem(const std::string& id) {
   active_controllable_session_ids_.erase(id);
   frozen_session_ids_.erase(id);
 
-  if (base::Contains(dragged_out_session_ids_, id)) {
-    overlay_media_notifications_manager_.CloseOverlayNotification(id);
-    dragged_out_session_ids_.erase(id);
-  }
-
   service_->HideItem(id);
 }
 
@@ -536,21 +467,15 @@ void MediaSessionNotificationProducer::RemoveItem(const std::string& id) {
   frozen_session_ids_.erase(id);
   inactive_session_ids_.erase(id);
 
-  if (base::Contains(dragged_out_session_ids_, id)) {
-    overlay_media_notifications_manager_.CloseOverlayNotification(id);
-    dragged_out_session_ids_.erase(id);
-  }
-
   service_->HideItem(id);
   sessions_.erase(id);
 }
 
 void MediaSessionNotificationProducer::ActivateItem(const std::string& id) {
   DCHECK(HasSession(id));
-  if (base::Contains(dragged_out_session_ids_, id) ||
-      base::Contains(inactive_session_ids_, id)) {
+  if (base::Contains(inactive_session_ids_, id))
     return;
-  }
+
   active_controllable_session_ids_.insert(id);
   service_->ShowItem(id);
 }
@@ -562,26 +487,6 @@ bool MediaSessionNotificationProducer::IsSessionPlaying(
     const std::string& id) const {
   const auto it = sessions_.find(id);
   return it == sessions_.end() ? false : it->second.IsPlaying();
-}
-
-bool MediaSessionNotificationProducer::OnOverlayNotificationClosed(
-    const std::string& id) {
-  // If the session has been destroyed, no action is needed.
-  auto it = sessions_.find(id);
-  if (it == sessions_.end())
-    return false;
-
-  it->second.OnSessionOverlayStateChanged(/*is_in_overlay=*/false);
-
-  // Otherwise, if it's a non-frozen item, then it's now an active one.
-  if (!base::Contains(frozen_session_ids_, id))
-    active_controllable_session_ids_.insert(id);
-  dragged_out_session_ids_.erase(id);
-
-  // Since the overlay is closing, we no longer need to observe the associated
-  // container.
-  container_observer_set_.StopObserving(id);
-  return true;
 }
 
 bool MediaSessionNotificationProducer::HasFrozenNotifications() const {
@@ -732,8 +637,7 @@ void MediaSessionNotificationProducer::OnReceivedAudioFocusRequests(
 void MediaSessionNotificationProducer::OnItemUnfrozen(const std::string& id) {
   frozen_session_ids_.erase(id);
 
-  if (!base::Contains(dragged_out_session_ids_, id))
-    active_controllable_session_ids_.insert(id);
+  active_controllable_session_ids_.insert(id);
 
   service_->OnNotificationChanged();
 }

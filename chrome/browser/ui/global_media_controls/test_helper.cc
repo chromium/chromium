@@ -8,7 +8,6 @@
 #include <string>
 
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
-#include "chrome/browser/ui/global_media_controls/overlay_media_notification.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 MockMediaNotificationItem::MockMediaNotificationItem() = default;
@@ -44,12 +43,6 @@ void MockMediaDialogDelegate::Close() {
 
   service_->SetDialogDelegate(nullptr);
   service_ = nullptr;
-}
-
-std::unique_ptr<OverlayMediaNotification> MockMediaDialogDelegate::PopOut(
-    const std::string& id,
-    gfx::Rect bounds) {
-  return std::unique_ptr<OverlayMediaNotification>(PopOutProxy(id, bounds));
 }
 
 void MockMediaDialogDelegate::HideMediaDialog() {

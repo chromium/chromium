@@ -28,9 +28,6 @@ class MediaNotificationContainerObserver : public base::CheckedObserver {
   // Called when the container is about to be deleted.
   virtual void OnContainerDestroyed(const std::string& id) {}
 
-  // Called when the container has been dragged out of a dialog.
-  virtual void OnContainerDraggedOut(const std::string& id, gfx::Rect bounds) {}
-
   // Called when the audio output device for the container should change
   virtual void OnAudioSinkChosen(const std::string& id,
                                  const std::string& sink_id) {}

@@ -58,12 +58,6 @@ void MediaNotificationContainerObserverSet::OnContainerDestroyed(
   StopObserving(id);
 }
 
-void MediaNotificationContainerObserverSet::OnContainerDraggedOut(
-    const std::string& id,
-    gfx::Rect bounds) {
-  owner_->OnContainerDraggedOut(id, std::move(bounds));
-}
-
 void MediaNotificationContainerObserverSet::OnAudioSinkChosen(
     const std::string& id,
     const std::string& sink_id) {

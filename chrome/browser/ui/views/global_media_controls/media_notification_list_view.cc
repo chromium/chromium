@@ -6,7 +6,6 @@
 
 #include "base/containers/contains.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_container_impl_view.h"
-#include "chrome/browser/ui/views/global_media_controls/overlay_media_notification_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/border.h"
@@ -85,18 +84,6 @@ void MediaNotificationListView::ShowNotification(
 
 void MediaNotificationListView::HideNotification(const std::string& id) {
   RemoveNotification(id);
-}
-
-std::unique_ptr<OverlayMediaNotification> MediaNotificationListView::PopOut(
-    const std::string& id,
-    gfx::Rect bounds) {
-  std::unique_ptr<MediaNotificationContainerImplView> notification =
-      RemoveNotification(id);
-  if (!notification)
-    return nullptr;
-
-  return std::make_unique<OverlayMediaNotificationView>(
-      id, std::move(notification), bounds, nullptr);
 }
 
 std::unique_ptr<MediaNotificationContainerImplView>

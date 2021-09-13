@@ -65,8 +65,6 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
       const std::string& id,
       base::WeakPtr<media_message_center::MediaNotificationItem> item) override;
   void HideMediaSession(const std::string& id) override;
-  std::unique_ptr<OverlayMediaNotification> PopOut(const std::string& id,
-                                                   gfx::Rect bounds) override;
   void HideMediaDialog() override;
   void Focus() override;
 
@@ -81,8 +79,6 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
   void OnContainerClicked(const std::string& id) override {}
   void OnContainerDismissed(const std::string& id) override {}
   void OnContainerDestroyed(const std::string& id) override;
-  void OnContainerDraggedOut(const std::string& id, gfx::Rect bounds) override {
-  }
   void OnAudioSinkChosen(const std::string& id,
                          const std::string& sink_id) override {}
 

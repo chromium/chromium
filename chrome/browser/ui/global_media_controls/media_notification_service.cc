@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/global_media_controls/media_notification_service_observer.h"
 #include "chrome/browser/ui/global_media_controls/media_session_notification_item.h"
 #include "chrome/browser/ui/global_media_controls/media_session_notification_producer.h"
-#include "chrome/browser/ui/global_media_controls/overlay_media_notification.h"
 #include "chrome/browser/ui/media_router/media_router_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/media_message_center/media_notification_item.h"
@@ -103,14 +102,6 @@ void MediaNotificationService::HideItem(const std::string& id) {
     return;
   }
   dialog_delegate_->HideMediaSession(id);
-}
-
-void MediaNotificationService::OnOverlayNotificationClosed(
-    const std::string& id) {
-  if (!media_session_notification_producer_->OnOverlayNotificationClosed(id)) {
-    return;
-  }
-  ShowAndObserveContainer(id);
 }
 
 void MediaNotificationService::OnNotificationChanged() {
@@ -246,12 +237,6 @@ void MediaNotificationService::HideMediaDialog() {
   if (dialog_delegate_) {
     dialog_delegate_->HideMediaDialog();
   }
-}
-
-std::unique_ptr<OverlayMediaNotification>
-MediaNotificationService::PopOutNotification(const std::string& id,
-                                             gfx::Rect bounds) {
-  return dialog_delegate_ ? dialog_delegate_->PopOut(id, bounds) : nullptr;
 }
 
 base::CallbackListSubscription

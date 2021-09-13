@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/global_media_controls/media_notification_service_observer.h"
 #include "chrome/browser/ui/global_media_controls/media_session_notification_item.h"
 #include "chrome/browser/ui/global_media_controls/media_session_notification_producer.h"
-#include "chrome/browser/ui/global_media_controls/overlay_media_notification.h"
 #include "chrome/browser/ui/global_media_controls/test_helper.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
@@ -66,33 +65,6 @@ class MockMediaNotificationServiceObserver
   MOCK_METHOD(void, OnNotificationListChanged, ());
   MOCK_METHOD(void, OnMediaDialogOpened, ());
   MOCK_METHOD(void, OnMediaDialogClosed, ());
-};
-
-class MockOverlayMediaNotification : public OverlayMediaNotification {
- public:
-  MockOverlayMediaNotification() = default;
-  MockOverlayMediaNotification(const MockOverlayMediaNotification&) = delete;
-  MockOverlayMediaNotification& operator=(const MockOverlayMediaNotification&) =
-      delete;
-  ~MockOverlayMediaNotification() override = default;
-
-  OverlayMediaNotificationsManager* manager() { return manager_; }
-
-  // MockOverlayMediaNotification implementation.
-  void SetManager(OverlayMediaNotificationsManager* manager) {
-    manager_ = manager;
-    SetManagerProxy(manager);
-  }
-  MOCK_METHOD0(ShowNotification, void());
-  MOCK_METHOD0(CloseNotification, void());
-
-  // Use a proxy so we can add expectations on it while also storing the
-  // manager for future use.
-  MOCK_METHOD1(SetManagerProxy,
-               void(OverlayMediaNotificationsManager* manager));
-
- private:
-  OverlayMediaNotificationsManager* manager_ = nullptr;
 };
 
 }  // anonymous namespace
@@ -283,37 +255,6 @@ class MediaNotificationServiceTest : public ChromeRenderViewHostTestHarness {
   void SimulateDismissButtonClicked(const base::UnguessableToken& id) {
     service_->media_session_notification_producer_->OnContainerDismissed(
         id.ToString());
-  }
-
-  // Simulates the media notification of the given |id| being dragged out of the
-  // given dialog.
-  MockOverlayMediaNotification* SimulateNotificationDraggedOut(
-      const base::UnguessableToken& id,
-      MockMediaDialogDelegate* dialog_delegate) {
-    const gfx::Rect dragged_out_bounds(0, 1, 2, 3);
-    auto overlay_notification_unique =
-        std::make_unique<MockOverlayMediaNotification>();
-    MockOverlayMediaNotification* overlay_notification =
-        overlay_notification_unique.get();
-
-    // When the notification is dragged out, the dialog should be asked to
-    // remove the notification and return an overlay version of it.
-    EXPECT_CALL(*dialog_delegate,
-                PopOutProxy(id.ToString(), dragged_out_bounds))
-        .WillOnce(Return(overlay_notification_unique.release()));
-
-    // Then, that overlay notification should receive a manager and be shown.
-    Expectation set_manager =
-        EXPECT_CALL(*overlay_notification, SetManagerProxy(_));
-    EXPECT_CALL(*overlay_notification, ShowNotification()).After(set_manager);
-
-    // Fire the drag out.
-    service_->media_session_notification_producer_->OnContainerDraggedOut(
-        id.ToString(), dragged_out_bounds);
-    testing::Mock::VerifyAndClearExpectations(dialog_delegate);
-    testing::Mock::VerifyAndClearExpectations(overlay_notification);
-
-    return overlay_notification;
   }
 
   void ExpectHistogramCountRecorded(int count, int size) {
@@ -1024,33 +965,6 @@ TEST_F(MediaNotificationServiceTest, LoseGainLoseDoesNotCauseRaceCondition) {
   testing::Mock::VerifyAndClearExpectations(&observer());
 }
 
-TEST_F(MediaNotificationServiceTest, ShowsOverlayForDraggedOutNotifications) {
-  // First, start playing active media.
-  base::UnguessableToken id = SimulatePlayingControllableMedia();
-  EXPECT_TRUE(HasActiveNotifications());
-
-  // Then, open a dialog.
-  MockMediaDialogDelegate dialog_delegate;
-  EXPECT_CALL(dialog_delegate, ShowMediaSession(id.ToString(), _));
-  SimulateDialogOpened(&dialog_delegate);
-
-  // Drag out the notification.
-  MockOverlayMediaNotification* overlay_notification =
-      SimulateNotificationDraggedOut(id, &dialog_delegate);
-
-  // Now, dismiss the notification. Since the notification is an overlay
-  // notification, this should just close the overlay notification.
-  EXPECT_CALL(*overlay_notification, CloseNotification());
-  SimulateDismissButtonClicked(id);
-  testing::Mock::VerifyAndClearExpectations(overlay_notification);
-
-  // After we close, we notify our manager, and the dialog should be informed
-  // that it can show the notification again.
-  EXPECT_CALL(dialog_delegate, ShowMediaSession(id.ToString(), _));
-  overlay_notification->manager()->OnOverlayNotificationClosed(id.ToString());
-  testing::Mock::VerifyAndClearExpectations(&dialog_delegate);
-}
-
 TEST_F(MediaNotificationServiceTest, HidesInactiveNotifications) {
   // Start playing active media.
   base::UnguessableToken id = SimulatePlayingControllableMedia();
@@ -1215,68 +1129,6 @@ TEST_F(MediaNotificationServiceTest, DelaysHidingNotifications_Interactions) {
   // After the hour has passed, the notification should hide.
   AdvanceClockMinutes(2);
   EXPECT_FALSE(HasActiveNotifications());
-}
-
-TEST_F(MediaNotificationServiceTest,
-       DelaysHidingNotifications_OverlayThenPause) {
-  // Start playing active media.
-  base::UnguessableToken id = SimulatePlayingControllableMedia();
-  EXPECT_TRUE(HasActiveNotifications());
-
-  // Then, open a dialog.
-  NiceMock<MockMediaDialogDelegate> dialog_delegate;
-  EXPECT_CALL(dialog_delegate, ShowMediaSession(id.ToString(), _));
-  SimulateDialogOpened(&dialog_delegate);
-
-  // Then, pull out the notification into an overlay notification.
-  MockOverlayMediaNotification* overlay_notification =
-      SimulateNotificationDraggedOut(id, &dialog_delegate);
-
-  // Then, pause the media.
-  SimulatePlaybackStateChanged(id, false);
-
-  // Since the notification is in an overlay, it should never time out as
-  // inactive.
-  AdvanceClockMinutes(61);
-  EXPECT_FALSE(IsSessionInactive(id));
-
-  // Now, close the overlay notification.
-  overlay_notification->manager()->OnOverlayNotificationClosed(id.ToString());
-
-  // The notification should become inactive now that it's not in an overlay.
-  AdvanceClockMinutes(61);
-  EXPECT_TRUE(IsSessionInactive(id));
-}
-
-TEST_F(MediaNotificationServiceTest,
-       DelaysHidingNotifications_PauseThenOverlay) {
-  // Start playing active media.
-  base::UnguessableToken id = SimulatePlayingControllableMedia();
-  EXPECT_TRUE(HasActiveNotifications());
-
-  // Then, pause the media.
-  SimulatePlaybackStateChanged(id, false);
-
-  // Then, open a dialog.
-  NiceMock<MockMediaDialogDelegate> dialog_delegate;
-  EXPECT_CALL(dialog_delegate, ShowMediaSession(id.ToString(), _));
-  SimulateDialogOpened(&dialog_delegate);
-
-  // Then, pull out the notification into an overlay notification.
-  MockOverlayMediaNotification* overlay_notification =
-      SimulateNotificationDraggedOut(id, &dialog_delegate);
-
-  // Since the notification is in an overlay, it should never time out as
-  // inactive.
-  AdvanceClockMinutes(61);
-  EXPECT_FALSE(IsSessionInactive(id));
-
-  // Now, close the overlay notification.
-  overlay_notification->manager()->OnOverlayNotificationClosed(id.ToString());
-
-  // The notification should become inactive now that it's not in an overlay.
-  AdvanceClockMinutes(61);
-  EXPECT_TRUE(IsSessionInactive(id));
 }
 
 TEST_F(MediaNotificationServiceTest, HidingNotification_FeatureDisabled) {

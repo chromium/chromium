@@ -11,8 +11,6 @@
 #include "chrome/browser/ui/global_media_controls/media_notification_producer.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service_observer.h"
 #include "chrome/browser/ui/global_media_controls/media_session_notification_item.h"
-#include "chrome/browser/ui/global_media_controls/overlay_media_notification.h"
-#include "chrome/browser/ui/global_media_controls/overlay_media_notifications_manager_impl.h"
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
@@ -78,14 +76,11 @@ class MediaSessionNotificationProducer
   // MediaNotificationContainerObserver implementation.
   void OnContainerClicked(const std::string& id) override;
   void OnContainerDismissed(const std::string& id) override;
-  void OnContainerDraggedOut(const std::string& id, gfx::Rect bounds) override;
   void OnAudioSinkChosen(const std::string& id,
                          const std::string& sink_id) override;
 
   bool HasSession(const std::string& id) const;
   bool IsSessionPlaying(const std::string& id) const;
-  // Returns whether there still exists a session for |id|.
-  bool OnOverlayNotificationClosed(const std::string& id);
   bool HasFrozenNotifications() const;
   std::unique_ptr<media_router::CastDialogController>
   CreateCastDialogControllerForSession(const std::string& id);
@@ -168,10 +163,6 @@ class MediaSessionNotificationProducer
     // Called when a session is interacted with (to reset |inactive_timer_|).
     void OnSessionInteractedWith();
 
-    // Called when the notification associated with this session is pulled out
-    // into an overlay or it's overlay is closed.
-    void OnSessionOverlayStateChanged(bool is_in_overlay);
-
     bool IsPlaying() const;
 
     void SetAudioSinkId(const std::string& id);
@@ -214,9 +205,6 @@ class MediaSessionNotificationProducer
 
     // True if we're currently marked inactive.
     bool is_marked_inactive_ = false;
-
-    // True if we're in an overlay notification.
-    bool is_in_overlay_ = false;
 
     // True if the audio output device can be switched.
     bool is_audio_device_switching_supported_ = true;
@@ -262,11 +250,6 @@ class MediaSessionNotificationProducer
   // again (e.g. by playing the session).
   std::set<std::string> inactive_session_ids_;
 
-  // Tracks the sessions that are currently dragged out of the dialog. These
-  // should not be shown in the dialog and will be ignored for showing the
-  // toolbar icon.
-  std::set<std::string> dragged_out_session_ids_;
-
   // Connections with the media session service to listen for audio focus
   // updates and control media sessions.
   mojo::Remote<media_session::mojom::AudioFocusManager> audio_focus_remote_;
@@ -279,8 +262,6 @@ class MediaSessionNotificationProducer
 
   // Keeps track of all the containers we're currently observing.
   MediaNotificationContainerObserverSet container_observer_set_;
-
-  OverlayMediaNotificationsManagerImpl overlay_media_notifications_manager_;
 
   // Stores a Session for each media session keyed by its |request_id| in string
   // format.

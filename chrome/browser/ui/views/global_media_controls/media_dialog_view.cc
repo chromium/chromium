@@ -13,7 +13,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
-#include "chrome/browser/ui/global_media_controls/overlay_media_notification.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view_observer.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_container_impl_view.h"
@@ -138,12 +137,6 @@ void MediaDialogView::HideMediaSession(const std::string& id) {
 
   for (auto& observer : observers_)
     observer.OnMediaSessionHidden();
-}
-
-std::unique_ptr<OverlayMediaNotification> MediaDialogView::PopOut(
-    const std::string& id,
-    gfx::Rect bounds) {
-  return active_sessions_view_->PopOut(id, bounds);
 }
 
 void MediaDialogView::HideMediaDialog() {

@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/global_media_controls/media_notification_container_impl.h"
 #include "chrome/browser/ui/views/global_media_controls/global_media_controls_types.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_selector_view_delegate.h"
-#include "chrome/browser/ui/views/global_media_controls/overlay_media_notification_view.h"
 #include "components/media_message_center/media_notification_container.h"
 #include "components/media_message_center/media_notification_view_impl.h"
 #include "media/audio/audio_device_description.h"
@@ -69,9 +68,6 @@ class MediaNotificationContainerImplView
   // views::Button:
   void AddedToWidget() override;
   void RemovedFromWidget() override;
-  bool OnMousePressed(const ui::MouseEvent& event) override;
-  bool OnMouseDragged(const ui::MouseEvent& event) override;
-  void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
 
@@ -115,13 +111,6 @@ class MediaNotificationContainerImplView
   RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
       base::RepeatingCallback<void(bool)> callback) override;
 
-  // Sets up the notification to be ready to display in an overlay instead of
-  // the dialog.
-  void PopOut();
-
-  // Called when overlay notification is shown and setup |overlay_|.
-  void OnOverlayNotificationShown(OverlayMediaNotificationView* overlay);
-
   const std::u16string& GetTitle() const;
 
   views::ImageButton* GetDismissButtonForTesting();
@@ -138,10 +127,6 @@ class MediaNotificationContainerImplView
   bool is_playing_for_testing() { return is_playing_; }
   bool is_expanded_for_testing() { return is_expanded_; }
 
-  views::Widget* drag_image_widget_for_testing() {
-    return drag_image_widget_.get();
-  }
-
  private:
   class DismissButton;
 
@@ -155,13 +140,10 @@ class MediaNotificationContainerImplView
   void UpdateDismissButtonBackground();
   void UpdateDismissButtonVisibility();
   void DismissNotification();
-  void CreateDragImageWidget();
   // Updates the forced expanded state of |view_|.
   void ForceExpandedState();
   // Notify observers that we've been clicked.
   void ContainerClicked();
-  // True if we should handle the given mouse event for dragging purposes.
-  bool ShouldHandleMouseEvent(const ui::MouseEvent& event, bool is_press);
   void OnSizeChanged();
 
   const std::string id_;
@@ -193,23 +175,6 @@ class MediaNotificationContainerImplView
   bool has_artwork_ = false;
   bool has_many_actions_ = false;
 
-  // True if we've been dragged out of the dialog and into an overlay.
-  bool dragged_out_ = false;
-
-  // True if we're currently tracking a mouse drag. Used for dragging
-  // notifications out into an overlay notification, not for swiping to dismiss
-  // (see |slide_out_controller_| for swiping to dismiss).
-  bool is_mouse_pressed_ = false;
-
-  // The start point of a mouse drag. Used for dragging notifications out into
-  // an overlay notification, not for swiping to dismiss (see
-  // |slide_out_controller_| for swiping to dismiss).
-  gfx::Point initial_drag_location_;
-
-  // True if the current mouse press has been dragged enough to be considered a
-  // drag instead of a button click.
-  bool is_dragging_ = false;
-
   bool is_playing_ = false;
 
   bool is_expanded_ = false;
@@ -220,10 +185,6 @@ class MediaNotificationContainerImplView
 
   // Handles gesture events for swiping to dismiss notifications.
   std::unique_ptr<views::SlideOutController> slide_out_controller_;
-
-  OverlayMediaNotificationView* overlay_ = nullptr;
-
-  views::UniqueWidgetPtr drag_image_widget_;
 
   MediaNotificationService* const service_;
 

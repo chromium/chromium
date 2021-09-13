@@ -15,7 +15,6 @@ class MediaNotificationItem;
 }  // namespace media_message_center
 
 class MediaNotificationContainerImpl;
-class OverlayMediaNotification;
 
 // Delegate for MediaToolbarButtonController that is told when to display or
 // hide a media session.
@@ -30,12 +29,6 @@ class MediaDialogDelegate {
 
   // Hides a media session.
   virtual void HideMediaSession(const std::string& id) = 0;
-
-  // Returns an OverlayMediaNotification containing the media notification for
-  // the given |id|. The notification should be removed from the dialog.
-  virtual std::unique_ptr<OverlayMediaNotification> PopOut(
-      const std::string& id,
-      gfx::Rect bounds) = 0;
 
   virtual void HideMediaDialog() = 0;
 

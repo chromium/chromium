@@ -7536,7 +7536,6 @@ test("unit_tests") {
       "../browser/ui/views/global_media_controls/media_notification_device_selector_view_unittest.cc",
       "../browser/ui/views/global_media_controls/media_notification_footer_view_unittest.cc",
       "../browser/ui/views/global_media_controls/media_notification_list_view_unittest.cc",
-      "../browser/ui/views/global_media_controls/overlay_media_notification_view_unittest.cc",
       "../browser/ui/views/hover_button_unittest.cc",
       "../browser/ui/views/infobars/infobar_view_unittest.cc",
       "../browser/ui/views/intent_picker_bubble_view_unittest.cc",
