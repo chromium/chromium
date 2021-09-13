@@ -16,7 +16,7 @@ const resources_url = new URL("/service-workers/service-worker/resources/",
 // to serve the file from multiple URLs (see above).
 let greeting = '%GREETING_TEXT%';
 if (!greeting)
-  greeting = 'the shared worker script was served from network';
+  greeting = 'the worker script was served from network';
 
 // Call importScripts() which fills |echo_output| with a string indicating
 // whether a service worker intercepted the importScripts() request.
@@ -25,12 +25,15 @@ const import_scripts_msg = encodeURIComponent(
     'importScripts: served from network');
 const import_scripts_url =
     new URL(`import-scripts-echo.py?msg=${import_scripts_msg}`, resources_url);
-importScripts(import_scripts_url);
-const import_scripts_greeting = echo_output;
+let import_scripts_greeting = 'not set';
+try {
+  importScripts(import_scripts_url);
+  import_scripts_greeting = echo_output;
+} catch(e) {
+  import_scripts_greeting = 'importScripts failed';
+}
 
-self.onconnect = async function(e) {
-  const port = e.ports[0];
-  port.start();
+async function runTest(port) {
   port.postMessage(greeting);
 
   port.postMessage(import_scripts_greeting);
@@ -41,4 +44,17 @@ self.onconnect = async function(e) {
   port.postMessage('fetch(): ' + text);
 
   port.postMessage(self.location.href);
-};
+}
+
+if ('DedicatedWorkerGlobalScope' in self &&
+    self instanceof DedicatedWorkerGlobalScope) {
+  runTest(self);
+} else if (
+    'SharedWorkerGlobalScope' in self &&
+    self instanceof SharedWorkerGlobalScope) {
+  self.onconnect = function(e) {
+    const port = e.ports[0];
+    port.start();
+    runTest(port);
+  };
+}
