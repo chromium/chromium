@@ -1,5 +1,6 @@
 {
-  "log_list_timestamp": "2021-08-09T00:00:00Z",
+  "version": "3.28",
+  "log_list_timestamp": "2021-09-13T01:34:13Z",
   "operators": [
     {
       "name": "Google",
