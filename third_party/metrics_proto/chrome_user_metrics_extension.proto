@@ -28,7 +28,7 @@ import "translate_event.proto";
 import "user_action_event.proto";
 import "user_demographics.proto";
 
-// Next tag: 25
+// Next tag: 27
 message ChromeUserMetricsExtension {
   // The product (i.e. end user application) for a given UMA log.
   enum Product {
@@ -83,6 +83,37 @@ message ChromeUserMetricsExtension {
   // time the log is opened, then this field will be unset. All ephemeral (i.e.
   // guest, kiosk) users will have this field unset.
   optional fixed64 user_id = 24;
+
+  // Next tag: 4
+  message RealLocalTime {
+    // The source of the timestamp.
+    enum TimeSource {
+      UNSPECIFIED = 0;
+      // The time on the local machine.
+      CLIENT_CLOCK = 1;
+
+      // The time derived from server information provided by the
+      // NetworkTimeTracker a.k.a. "sane time" system.  See
+      // https://www.chromium.org/developers/design-documents/sane-time
+      NETWORK_TIME_CLOCK = 2;
+    }
+
+    optional TimeSource time_source = 1;
+
+    // |time_sec| is in seconds since epoch.
+    optional int64 time_sec = 2;
+
+    // |time_zone_offset_from_gmt_sec| is in seconds.
+    optional int32 time_zone_offset_from_gmt_sec = 3;
+  }
+
+  // These times are set for "ongoing" UMA logs.  For two other types
+  // of UMA logs, these values are omitted:
+  // - logs recovered from a previous run of Chrome ("persisted UMA"), such as
+  //   one that didn't shut down cleanly.
+  // - the initial stability log.
+  optional RealLocalTime time_log_created = 25;
+  optional RealLocalTime time_log_closed = 26;
 
   // Information about the user's browser and system configuration.
   optional SystemProfileProto system_profile = 3;
