@@ -6,6 +6,8 @@
 
 namespace chromecast {
 
+RuntimeApplicationService::RuntimeApplicationService() = default;
+
 RuntimeApplicationService::~RuntimeApplicationService() = default;
 
 }  // namespace chromecast

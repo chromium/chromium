@@ -17,11 +17,13 @@ namespace chromecast {
 // For example, Launch needs to respond with SetApplicationStatus.
 class RuntimeApplicationService {
  public:
+  RuntimeApplicationService();
   virtual ~RuntimeApplicationService() = 0;
 
   // NOTE: These fields are the empty string until after Load().
   const std::string& app_id() const { return app_id_; }
   const std::string& cast_session_id() const { return cast_session_id_; }
+  const std::string& display_name() { return display_name_; }
 
   // NOTE: This is the empty string until after Launch().
   const std::string& cast_media_service_grpc_endpoint() const {
@@ -41,8 +43,26 @@ class RuntimeApplicationService {
       const cast::runtime::LaunchApplicationRequest& request) = 0;
 
  protected:
+  void set_app_id(std::string app_id) { app_id_ = std::move(app_id); }
+
+  void set_cast_session_id(std::string cast_session_id) {
+    cast_session_id_ = std::move(cast_session_id);
+  }
+
+  void set_display_name(std::string display_name) {
+    app_id_ = std::move(display_name);
+  }
+
+  void set_cast_media_service_grpc_endpoint(
+      std::string cast_media_service_grpc_endpoint) {
+    cast_media_service_grpc_endpoint_ =
+        std::move(cast_media_service_grpc_endpoint);
+  }
+
+ private:
   std::string app_id_;
   std::string cast_session_id_;
+  std::string display_name_;
   std::string cast_media_service_grpc_endpoint_;
 };
 

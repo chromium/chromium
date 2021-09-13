@@ -42,13 +42,7 @@ class CastRuntimeServiceImpl
   // CastRuntimeMetricsRecorder::EventBuilderFactory overrides.
   std::unique_ptr<CastEventBuilder> CreateEventBuilder() override;
 
-  NetworkContextGetter network_context_getter() {
-    return network_context_getter_;
-  }
-
  private:
-  NetworkContextGetter network_context_getter_;
-
   RuntimeService runtime_service_;
 };
 

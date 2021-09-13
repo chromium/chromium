@@ -29,8 +29,10 @@ CastRuntimeServiceImpl::CastRuntimeServiceImpl(
     content::BrowserContext* browser_context,
     CastWindowManager* window_manager,
     NetworkContextGetter network_context_getter)
-    : network_context_getter_(std::move(network_context_getter)),
-      runtime_service_(browser_context, window_manager, this) {}
+    : runtime_service_(browser_context,
+                       window_manager,
+                       this,
+                       std::move(network_context_getter)) {}
 
 CastRuntimeServiceImpl::~CastRuntimeServiceImpl() = default;
 

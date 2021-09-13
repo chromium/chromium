@@ -153,8 +153,14 @@ cast_streaming::ReceiverSession::AVConstraints CreateConstraints(
 }
 
 std::unique_ptr<cast_streaming::ReceiverSession> CreateReceiverSession(
-    cast_streaming::ReceiverSession::MessagePortProvider message_port_provider,
+    std::unique_ptr<cast_api_bindings::MessagePort> message_port,
     cast_streaming::ReceiverSession::AVConstraints constraints) {
+  cast_streaming::ReceiverSession::MessagePortProvider message_port_provider =
+      base::BindOnce(
+          [](std::unique_ptr<cast_api_bindings::MessagePort> port) {
+            return port;
+          },
+          std::move(message_port));
   return cast_streaming::ReceiverSession::Create(
       std::make_unique<cast_streaming::ReceiverSession::AVConstraints>(
           std::move(constraints)),
@@ -169,13 +175,12 @@ constexpr base::TimeDelta
 StreamingReceiverSessionClient::StreamingReceiverSessionClient(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     cast_streaming::NetworkContextGetter network_context_getter,
-    cast_streaming::ReceiverSession::MessagePortProvider message_port_provider,
+    std::unique_ptr<cast_api_bindings::MessagePort> message_port,
     Handler* handler)
     : StreamingReceiverSessionClient(
           std::move(task_runner),
           std::move(network_context_getter),
-          base::BindOnce(&CreateReceiverSession,
-                         std::move(message_port_provider)),
+          base::BindOnce(&CreateReceiverSession, std::move(message_port)),
           handler) {}
 
 StreamingReceiverSessionClient::StreamingReceiverSessionClient(

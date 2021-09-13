@@ -15,6 +15,7 @@
 #include "chromecast/cast_core/grpc_server.h"
 #include "chromecast/cast_core/metrics_recorder_grpc.h"
 #include "chromecast/cast_core/runtime_service_grpc_impl.h"
+#include "components/cast_streaming/browser/public/network_context_getter.h"
 #include "third_party/grpc/src/include/grpcpp/server.h"
 #include "third_party/openscreen/src/cast/cast_core/api/metrics/metrics_recorder.grpc.pb.h"
 
@@ -36,7 +37,8 @@ class RuntimeService final : public GrpcServer,
   RuntimeService(
       content::BrowserContext* browser_context,
       CastWindowManager* window_manager,
-      CastRuntimeMetricsRecorder::EventBuilderFactory* event_builder_factory);
+      CastRuntimeMetricsRecorder::EventBuilderFactory* event_builder_factory,
+      cast_streaming::NetworkContextGetter network_context_getter);
   ~RuntimeService() override;
 
   // Starts and stops the runtime service, including the gRPC completion queue.
@@ -101,6 +103,8 @@ class RuntimeService final : public GrpcServer,
 
   const std::unique_ptr<CastWebViewFactory> web_view_factory_;
   const std::unique_ptr<CastWebService> web_service_;
+
+  cast_streaming::NetworkContextGetter network_context_getter_;
 
   std::unique_ptr<RuntimeApplicationService> app_service_;
 

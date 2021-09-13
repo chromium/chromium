@@ -182,8 +182,12 @@ if (is_linux) {
     sources = [
       "runtime_application_service.cc",
       "runtime_application_service.h",
+      "runtime_application_service_base.cc",
+      "runtime_application_service_base.h",
       "runtime_service.cc",
       "runtime_service.h",
+      "streaming_runtime_application_service.cc",
+      "streaming_runtime_application_service.h",
       "web_runtime_application_service.cc",
       "web_runtime_application_service.h",
     ]
@@ -205,8 +209,12 @@ if (is_linux) {
 
     deps = [
       ":core_service_bindings",
+      ":streaming_receiver_session_client",
       ":url_rewrite",
       "//chromecast/browser:browser_base",
+      "//components/cast/message_port:message_port_core",
+      "//components/cast_streaming/browser",
+      "//components/cast_streaming/public",
       "//content/public/browser",
       "//mojo/public/cpp/bindings",
       "//third_party/blink/public/common:headers",

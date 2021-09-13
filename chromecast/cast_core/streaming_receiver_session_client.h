@@ -62,9 +62,9 @@ class StreamingReceiverSessionClient
   StreamingReceiverSessionClient(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       cast_streaming::NetworkContextGetter network_context_getter,
-      cast_streaming::ReceiverSession::MessagePortProvider
-          message_port_provider,
+      std::unique_ptr<cast_api_bindings::MessagePort> message_port,
       Handler* handler);
+
   ~StreamingReceiverSessionClient() override;
 
   // Schedules starting the Streaming Receiver owned by this instance. May only

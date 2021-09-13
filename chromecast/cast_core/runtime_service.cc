@@ -11,11 +11,13 @@
 #include "chromecast/browser/cast_content_window.h"
 #include "chromecast/browser/cast_web_service.h"
 #include "chromecast/browser/cast_web_view_factory.h"
+#include "chromecast/cast_core/streaming_runtime_application_service.h"
 #include "chromecast/cast_core/web_runtime_application_service.h"
 #include "third_party/grpc/src/include/grpcpp/channel.h"
 #include "third_party/grpc/src/include/grpcpp/create_channel.h"
 #include "third_party/grpc/src/include/grpcpp/server_builder.h"
 #include "third_party/openscreen/src/cast/cast_core/api/common/application_config.pb.h"
+#include "third_party/openscreen/src/cast/streaming/constants.h"
 
 namespace chromecast {
 namespace {
@@ -49,12 +51,14 @@ void RuntimeService::AsyncMetricsRecord::StepGRPC(grpc::Status status) {
 RuntimeService::RuntimeService(
     content::BrowserContext* browser_context,
     CastWindowManager* window_manager,
-    CastRuntimeMetricsRecorder::EventBuilderFactory* event_builder_factory)
+    CastRuntimeMetricsRecorder::EventBuilderFactory* event_builder_factory,
+    cast_streaming::NetworkContextGetter network_context_getter)
     : GrpcServer(base::SequencedTaskRunnerHandle::Get()),
       web_view_factory_(std::make_unique<CastWebViewFactory>(browser_context)),
       web_service_(std::make_unique<CastWebService>(browser_context,
                                                     web_view_factory_.get(),
                                                     window_manager)),
+      network_context_getter_(std::move(network_context_getter)),
       metrics_recorder_(event_builder_factory) {
   shell::CastBrowserProcess::GetInstance()->SetWebViewFactory(
       web_view_factory_.get());
@@ -115,8 +119,19 @@ void RuntimeService::LoadApplication(
     const cast::runtime::LoadApplicationRequest& request,
     cast::runtime::LoadApplicationResponse* response,
     GrpcMethod* callback) {
-  app_service_ = std::make_unique<WebRuntimeApplicationService>(
-      web_service_.get(), task_runner_);
+  const std::string& app_id = request.application_config().app_id();
+
+  // TODO(issuetracker.google.com/issues/199543768): Use an openscreen-defined
+  // function instead of constants.
+  if (app_id == openscreen::cast::kMirroringAppId ||
+      app_id == openscreen::cast::kMirroringAudioOnlyAppId) {
+    // Deliberately copy |network_context_getter_|.
+    app_service_ = std::make_unique<StreamingRuntimeApplicationService>(
+        web_service_.get(), task_runner_, network_context_getter_);
+  } else {
+    app_service_ = std::make_unique<WebRuntimeApplicationService>(
+        web_service_.get(), task_runner_);
+  }
   if (!app_service_->Load(request)) {
     app_service_.reset();
     std::stringstream err_stream;

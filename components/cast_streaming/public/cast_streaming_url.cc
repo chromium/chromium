@@ -4,15 +4,19 @@
 
 #include "components/cast_streaming/public/cast_streaming_url.h"
 
-#include "url/gurl.h"
+#include "base/strings/string_util.h"
 
 namespace cast_streaming {
 namespace {
 
-// TODO(crbug.com/1211062): Update this constant.
+// TODO(crbug.com/1211062): Update this constant to a proper scheme.
 constexpr char kCastStreamingReceiverUrl[] = "data:cast_streaming_receiver";
 
 }  // namespace
+
+GURL GetCastStreamingMediaSourceUrl() {
+  return GURL(kCastStreamingReceiverUrl);
+}
 
 bool IsCastStreamingMediaSourceUrl(const GURL& url) {
   return url == kCastStreamingReceiverUrl;
