@@ -89,7 +89,7 @@ TEST_F(TextSuggestionControllerTest, ApplySpellCheckSuggestion) {
 #else
 #define MAYBE_ApplyTextSuggestion ApplyTextSuggestion
 #endif
-TEST_F(TextSuggestionControllerTest, ApplyTextSuggestion) {
+TEST_F(TextSuggestionControllerTest, MAYBE_ApplyTextSuggestion) {
   SetBodyContent(
       "<div contenteditable>"
       "word1 word2 word3 word4"
