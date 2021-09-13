@@ -21,7 +21,6 @@ ch-ua-mobile
 ch-ua-model
 ch-ua-platform
 ch-ua-platform-version
-ch-ua-reduced
 ch-viewport-height
 ch-viewport-width
 ch-width

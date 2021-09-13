@@ -97,6 +97,7 @@ class ShellContentBrowserClient : public ContentBrowserClient {
   base::DictionaryValue GetNetLogConstants() override;
   base::FilePath GetSandboxedStorageServiceDataDirectory() override;
   std::string GetUserAgent() override;
+  std::string GetReducedUserAgent() override;
   blink::UserAgentMetadata GetUserAgentMetadata() override;
   void OverrideURLLoaderFactoryParams(
       BrowserContext* browser_context,

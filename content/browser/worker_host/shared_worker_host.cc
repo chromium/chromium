@@ -289,6 +289,7 @@ void SharedWorkerHost::Start(
   factory_->CreateSharedWorker(
       std::move(info), token_, instance_.storage_key().origin(),
       GetContentClient()->browser()->GetUserAgent(),
+      GetContentClient()->browser()->GetReducedUserAgent(),
       GetContentClient()->browser()->GetUserAgentMetadata(),
       devtools_handle_->pause_on_start(), devtools_handle_->dev_tools_token(),
       std::move(renderer_preferences), std::move(preference_watcher_receiver),

@@ -175,6 +175,14 @@ class ShellVariationsServiceClient
   bool IsEnterprise() override { return false; }
 };
 
+// Returns the reduced user agent string for the content shell.
+std::string GetShellReducedUserAgent() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  return content::GetReducedUserAgent(
+      command_line->HasSwitch(switches::kUseMobileUserAgent),
+      CONTENT_SHELL_MAJOR_VERSION);
+}
+
 }  // namespace
 
 class ShellContentBrowserClient::ShellFieldTrials
@@ -192,13 +200,11 @@ class ShellContentBrowserClient::ShellFieldTrials
 };
 
 std::string GetShellUserAgent() {
+  if (base::FeatureList::IsEnabled(blink::features::kReduceUserAgent))
+    return GetShellReducedUserAgent();
+
   std::string product = "Chrome/" CONTENT_SHELL_VERSION;
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (base::FeatureList::IsEnabled(blink::features::kReduceUserAgent)) {
-    return content::GetReducedUserAgent(
-        command_line->HasSwitch(switches::kUseMobileUserAgent),
-        CONTENT_SHELL_MAJOR_VERSION);
-  }
   if (command_line->HasSwitch(switches::kUseMobileUserAgent))
     product += " Mobile";
   return BuildUserAgentFromProduct(product);
@@ -472,6 +478,10 @@ ShellContentBrowserClient::GetSandboxedStorageServiceDataDirectory() {
 
 std::string ShellContentBrowserClient::GetUserAgent() {
   return GetShellUserAgent();
+}
+
+std::string ShellContentBrowserClient::GetReducedUserAgent() {
+  return GetShellReducedUserAgent();
 }
 
 blink::UserAgentMetadata ShellContentBrowserClient::GetUserAgentMetadata() {

@@ -59,16 +59,21 @@ void ThreadedWorkletMessagingProxy::Initialize(
   ContentSecurityPolicy* csp = window->GetContentSecurityPolicy();
   DCHECK(csp);
 
+  LocalFrameClient* frame_client = window->GetFrame()->Client();
+  const String user_agent =
+      RuntimeEnabledFeatures::UserAgentReductionEnabled(window)
+          ? frame_client->ReducedUserAgent()
+          : frame_client->UserAgent();
+
   auto global_scope_creation_params =
       std::make_unique<GlobalScopeCreationParams>(
           window->Url(), mojom::blink::ScriptType::kModule, global_scope_name,
-          window->UserAgent(),
-          window->GetFrame()->Client()->UserAgentMetadata(),
-          window->GetFrame()->Client()->CreateWorkerFetchContext(),
+          user_agent, frame_client->UserAgentMetadata(),
+          frame_client->CreateWorkerFetchContext(),
           mojo::Clone(csp->GetParsedPolicies()), window->GetReferrerPolicy(),
           window->GetSecurityOrigin(), window->IsSecureContext(),
           window->GetHttpsState(), worker_clients,
-          window->GetFrame()->Client()->CreateWorkerContentSettingsClient(),
+          frame_client->CreateWorkerContentSettingsClient(),
           window->AddressSpace(), OriginTrialContext::GetTokens(window).get(),
           base::UnguessableToken::Create(),
           std::make_unique<WorkerSettings>(window->GetFrame()->GetSettings()),

@@ -33,6 +33,7 @@ class SharedWorkerFactoryImpl : public blink::mojom::SharedWorkerFactory {
       const blink::SharedWorkerToken& token,
       const url::Origin& constructor_origin,
       const std::string& user_agent,
+      const std::string& reduced_user_agent,
       const blink::UserAgentMetadata& ua_metadata,
       bool pause_on_start,
       const base::UnguessableToken& devtools_worker_token,
