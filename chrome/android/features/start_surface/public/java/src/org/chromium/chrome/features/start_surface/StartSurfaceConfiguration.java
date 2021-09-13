@@ -110,6 +110,13 @@ public class StartSurfaceConfiguration {
             new BooleanCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
                     CHECK_SYNC_BEFORE_SHOW_START_AT_STARTUP_PARAM, false);
 
+    private static final String SIGN_IN_PROMO_SHOW_SINCE_LAST_BACKGROUND_LIMIT_MS_PARAM =
+            "sign_in_promo_show_since_last_background_limit_ms";
+    public static final IntCachedFieldTrialParameter
+            SIGN_IN_PROMO_SHOW_SINCE_LAST_BACKGROUNDED_LIMIT_MS =
+                    new IntCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
+                            SIGN_IN_PROMO_SHOW_SINCE_LAST_BACKGROUND_LIMIT_MS_PARAM, -1);
+
     private static final String STARTUP_UMA_PREFIX = "Startup.Android.";
     private static final String INSTANT_START_SUBFIX = ".Instant";
     private static final String REGULAR_START_SUBFIX = ".NoInstant";

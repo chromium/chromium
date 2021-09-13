@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.ui.SyncConsentActivityLauncher.AccessPoint;
+import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.widget.impression.ImpressionTracker;
 import org.chromium.components.browser_ui.widget.impression.OneShotImpressionListener;
 import org.chromium.components.signin.AccountManagerFacade;
@@ -103,6 +104,27 @@ public class SigninPromoController {
                 && !isPromoDismissed;
     }
 
+    /**
+     * Expires the promo card if Chrome has been in the background long enough. We're using the
+     * "Start Surface" concept of session here which is if the app has been in the background for X
+     * amount of time. Called from #onStartWithNative, after which the time stored in {@link
+     * ChromeInactivityTracker} is expired.
+     *
+     * @param timeSinceLastBackgroundedMs The time since Chrome has sent into the background.
+     */
+    public static void maybeExpireNTPPromo(long timeSinceLastBackgroundedMs) {
+        long timeSinceLastBackgroundedLimitMs =
+                StartSurfaceConfiguration.SIGN_IN_PROMO_SHOW_SINCE_LAST_BACKGROUNDED_LIMIT_MS
+                        .getValue();
+        // If |timeSinceLastBackgroundedLimitMs| is not -1, which means we have a limit on last
+        // background time, check and record whether the current time is expired.
+        if (timeSinceLastBackgroundedLimitMs > 0
+                && timeSinceLastBackgroundedMs > timeSinceLastBackgroundedLimitMs) {
+            SharedPreferencesManager.getInstance().writeBoolean(
+                    ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_EXPIRED, true);
+        }
+    }
+
     private static boolean canShowNTPPromo() {
         int maxImpressions = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                 ChromeFeatureList.ENHANCED_PROTECTION_PROMO_CARD, "MaxSigninPromoImpressions",
@@ -112,6 +134,12 @@ public class SigninPromoController {
                 >= maxImpressions) {
             return false;
         }
+
+        if (SharedPreferencesManager.getInstance().readBoolean(
+                    ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_EXPIRED, false)) {
+            return false;
+        }
+
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS)) {
             return false;
         }
