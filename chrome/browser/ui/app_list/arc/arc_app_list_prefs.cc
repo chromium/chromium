@@ -1361,7 +1361,7 @@ void ArcAppListPrefs::AddAppAndShortcut(const std::string& name,
 
     app_dict->SetKey(kIconVersion, base::Value(current_icons_version));
 
-    if (arc::IsArcForceCacheAppIcon()) {
+    if (arc::IsArcForceCacheAppIcon() && app_id != arc::kPlayStoreAppId) {
       // Request full set of app icons.
       VLOG(1) << "Requested full set of app icons " << app_id;
       for (auto scale_factor : ui::GetSupportedResourceScaleFactors()) {
