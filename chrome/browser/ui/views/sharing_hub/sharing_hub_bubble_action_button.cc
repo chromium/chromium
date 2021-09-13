@@ -70,7 +70,12 @@ SharingHubBubbleActionButton::SharingHubBubbleActionButton(
   // which looks wrong.
   // TODO(ellyjones): This removes ~all the benefit of being a HoverButton -
   // should this class instead subclass LabelButton?
-  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
+
+  // TODO(crbug.com/1248181): Reverted to restore keyboard navigation showing
+  // background color highlights, but results in high-contrast mode using
+  // normal colors.
+  // views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
+
   title()->SetTextContext(views::style::CONTEXT_MENU);
 }
 
