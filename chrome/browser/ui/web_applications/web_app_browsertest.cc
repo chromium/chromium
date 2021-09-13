@@ -112,19 +112,22 @@ Browser* OpenPopupAndWait(Browser* browser,
   content::WebContents* const web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
 
-  content::WebContentsAddedObserver new_contents_observer;
+  ui_test_utils::BrowserChangeObserver browser_change_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   std::string open_window_script = base::StringPrintf(
       "window.open('%s', '_blank', 'toolbar=none,width=%i,height=%i')",
       url.spec().c_str(), popup_size.width(), popup_size.height());
 
   EXPECT_TRUE(content::ExecJs(web_contents, open_window_script));
 
-  content::WebContents* popup_contents = new_contents_observer.GetWebContents();
-  content::WaitForLoadStop(popup_contents);
-  Browser* popup_browser = chrome::FindBrowserWithWebContents(popup_contents);
-
   // The navigation should happen in a new window.
+  Browser* popup_browser = browser_change_observer.Wait();
   EXPECT_NE(browser, popup_browser);
+
+  content::WebContents* popup_contents =
+      popup_browser->tab_strip_model()->GetActiveWebContents();
+  EXPECT_TRUE(content::WaitForLoadStop(popup_contents));
+  EXPECT_EQ(popup_contents->GetLastCommittedURL(), url);
 
   return popup_browser;
 }
@@ -580,7 +583,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
 
   EXPECT_TRUE(AppBrowserController::IsWebApp(app_browser));
 
-  const GURL offscope_url("https://example.com");
+  const GURL offscope_url =
+      https_server()->GetURL("offscope.site.test", "/simple.html");
   const gfx::Size size(500, 500);
 
   Browser* const popup_browser =
