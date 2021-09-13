@@ -540,14 +540,9 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, PlatformAppsOnly) {
       << message_;
 }
 
-// Flaky on Windows. https://crbug.com/1246088
-#if defined(OS_WIN)
-#define MAYBE_Isolation DISABLED_Isolation
-#else
-#define MAYBE_Isolation Isolation
-#endif
+// TODO(https://crbug.com/1246088): Flaky.
 // Tests that platform apps have isolated storage by default.
-IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, MAYBE_Isolation) {
+IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, DISABLED_Isolation) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   // Load a (non-app) page under the "localhost" origin that sets a cookie.
