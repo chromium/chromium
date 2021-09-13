@@ -120,6 +120,9 @@ class CORE_EXPORT CounterStyle final : public GarbageCollected<CounterStyle> {
     return *speak_as_style_;
   }
 
+  // Converts kReference and kAuto to one of the remaining values.
+  CounterStyleSpeakAs EffectiveSpeakAs() const;
+
   // Generates the alternative text for the given counter value according to the
   // 'speak-as' descriptor. Consumed by accessibility.
   String GenerateTextAlternative(int value) const;
@@ -147,9 +150,6 @@ class CORE_EXPORT CounterStyle final : public GarbageCollected<CounterStyle> {
   String GenerateFallbackRepresentation(int value) const;
 
   String IndexesToString(const Vector<wtf_size_t>& symbol_indexes) const;
-
-  // Converts kReference and kAuto to one of the remaining values.
-  CounterStyleSpeakAs EffectiveSpeakAs() const;
 
   String GenerateTextAlternativeWithoutPrefixSuffix(int value) const;
 

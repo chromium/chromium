@@ -192,8 +192,120 @@ TEST_F(AXLayoutObjectTest, GetListStyleOverriddenDecimalLeadingZero) {
   </ul>
   )HTML");
 
+  ListStyle expected =
+      RuntimeEnabledFeatures::CSSAtRuleCounterStyleSpeakAsDescriptorEnabled()
+          ? ListStyle::kNumeric
+          : ListStyle::kOther;
+  EXPECT_EQ(expected, GetAXObjectByElementId("target")->GetListStyle());
+}
+
+TEST_F(AXLayoutObjectTest, GetPredefinedListStyleWithSpeakAs) {
+  ScopedCSSAtRuleCounterStyleSpeakAsDescriptorForTest enabled(true);
+
+  using ListStyle = ax::mojom::blink::ListStyle;
+
+  SetBodyInnerHTML(R"HTML(
+  <ul>
+    <li id="none" style="list-style-type: none"></li>
+
+    <li id="string" style="list-style-type: '-'"></li>
+
+    <li id="disc" style="list-style-type: disc"></li>
+    <li id="circle" style="list-style-type: circle"></li>
+    <li id="square" style="list-style-type: square"></li>
+
+    <li id="disclosure-open" style="list-style-type: disclosure-open"></li>
+    <li id="disclosure-closed" style="list-style-type: disclosure-closed"></li>
+
+    <li id="decimal" style="list-style-type: decimal"></li>
+    <li id="decimal-zero" style="list-style-type: decimal-leading-zero"></li>
+    <li id="roman" style="list-style-type: lower-roman"></li>
+    <li id="armenian" style="list-style-type: lower-armenian"></li>
+    <li id="persian" style="list-style-type: persian"></li>
+    <li id="chinese" style="list-style-type: simp-chinese-formal"></li>
+
+    <li id="alpha" style="list-style-type: lower-alpha"></li>
+  </ul>
+  )HTML");
+
+  EXPECT_EQ(ListStyle::kNone, GetAXObjectByElementId("none")->GetListStyle());
   EXPECT_EQ(ListStyle::kOther,
-            GetAXObjectByElementId("target")->GetListStyle());
+            GetAXObjectByElementId("string")->GetListStyle());
+  EXPECT_EQ(ListStyle::kDisc, GetAXObjectByElementId("disc")->GetListStyle());
+  EXPECT_EQ(ListStyle::kCircle,
+            GetAXObjectByElementId("circle")->GetListStyle());
+  EXPECT_EQ(ListStyle::kSquare,
+            GetAXObjectByElementId("square")->GetListStyle());
+  EXPECT_EQ(ListStyle::kOther,
+            GetAXObjectByElementId("disclosure-open")->GetListStyle());
+  EXPECT_EQ(ListStyle::kOther,
+            GetAXObjectByElementId("disclosure-closed")->GetListStyle());
+  EXPECT_EQ(ListStyle::kNumeric,
+            GetAXObjectByElementId("decimal")->GetListStyle());
+  EXPECT_EQ(ListStyle::kNumeric,
+            GetAXObjectByElementId("decimal-zero")->GetListStyle());
+  EXPECT_EQ(ListStyle::kNumeric,
+            GetAXObjectByElementId("roman")->GetListStyle());
+  EXPECT_EQ(ListStyle::kNumeric,
+            GetAXObjectByElementId("armenian")->GetListStyle());
+  EXPECT_EQ(ListStyle::kNumeric,
+            GetAXObjectByElementId("persian")->GetListStyle());
+  EXPECT_EQ(ListStyle::kNumeric,
+            GetAXObjectByElementId("chinese")->GetListStyle());
+  EXPECT_EQ(ListStyle::kOther, GetAXObjectByElementId("alpha")->GetListStyle());
+}
+
+TEST_F(AXLayoutObjectTest, GetCustomListStyleWithSpeakAs) {
+  ScopedCSSAtRuleCounterStyleSpeakAsDescriptorForTest enabled(true);
+
+  using ListStyle = ax::mojom::blink::ListStyle;
+
+  SetBodyInnerHTML(R"HTML(
+  <style>
+    @counter-style explicit-bullets {
+      system: extends decimal;
+      speak-as: bullets;
+    }
+    @counter-style explicit-numbers {
+      system: extends disc;
+      speak-as: numbers;
+    }
+    @counter-style explicit-words {
+      system: extends decimal;
+      speak-as: words;
+    }
+    @counter-style disc-reference {
+      system: extends decimal;
+      speak-as: disc;
+    }
+    @counter-style decimal-reference {
+      system: extends disc;
+      speak-as: decimal;
+    }
+    @counter-style alpha-reference {
+      system: extends decimal;
+      speak-as: lower-alpha;
+    }
+  </style>
+  <ul>
+    <li id="bullets" style="list-style-type: explicit-bullets"></li>
+    <li id="numbers" style="list-style-type: explicit-numbers"></li>
+    <li id="words" style="list-style-type: explicit-words"></li>
+    <li id="disc" style="list-style-type: disc-reference"></li>
+    <li id="decimal" style="list-style-type: decimal-reference"></li>
+    <li id="alpha" style="list-style-type: alpha-reference"></li>
+  </ul>
+  )HTML");
+
+  EXPECT_EQ(ListStyle::kDisc,
+            GetAXObjectByElementId("bullets")->GetListStyle());
+  EXPECT_EQ(ListStyle::kNumeric,
+            GetAXObjectByElementId("numbers")->GetListStyle());
+  EXPECT_EQ(ListStyle::kOther, GetAXObjectByElementId("words")->GetListStyle());
+  EXPECT_EQ(ListStyle::kDisc, GetAXObjectByElementId("disc")->GetListStyle());
+  EXPECT_EQ(ListStyle::kNumeric,
+            GetAXObjectByElementId("decimal")->GetListStyle());
+  EXPECT_EQ(ListStyle::kOther, GetAXObjectByElementId("alpha")->GetListStyle());
 }
 
 }  // namespace blink
