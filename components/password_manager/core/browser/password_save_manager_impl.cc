@@ -301,7 +301,7 @@ void PasswordSaveManagerImpl::Save(const FormData* observed_form,
       !HasGeneratedPassword()) {
     metrics_util::LogPasswordGenerationSubmissionEvent(
         metrics_util::PASSWORD_OVERRIDDEN);
-    pending_credentials_.type = PasswordForm::Type::kManual;
+    pending_credentials_.type = PasswordForm::Type::kFormSubmission;
   }
 
   if (IsNewLogin()) {

@@ -73,7 +73,7 @@ void AddMetricsTestData(TestPasswordStore* store) {
 
   password_form.url = GURL("http://fourth.example.com/");
   password_form.signon_realm = "http://fourth.example.com/";
-  password_form.type = PasswordForm::Type::kManual;
+  password_form.type = PasswordForm::Type::kFormSubmission;
   password_form.username_value = u"";
   password_form.times_used = 10;
   password_form.scheme = PasswordForm::Scheme::kHtml;

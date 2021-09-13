@@ -69,7 +69,8 @@ sync_pb::PasswordSpecificsData CreateSpecificsData(
   password_specifics.set_date_password_modified_windows_epoch_micros(
       kIssuesCreationTime);
   password_specifics.set_blacklisted(false);
-  password_specifics.set_type(static_cast<int>(PasswordForm::Type::kManual));
+  password_specifics.set_type(
+      static_cast<int>(PasswordForm::Type::kFormSubmission));
   password_specifics.set_times_used(1);
   password_specifics.set_display_name("display_name");
   password_specifics.set_avatar_url(GURL(origin).spec());

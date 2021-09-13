@@ -50,12 +50,14 @@ std::string ToString(PasswordForm::Scheme scheme) {
 
 std::string ToString(PasswordForm::Type type) {
   switch (type) {
-    case PasswordForm::Type::kManual:
-      return "Manual";
+    case PasswordForm::Type::kFormSubmission:
+      return "Form Submission";
     case PasswordForm::Type::kGenerated:
       return "Generated";
     case PasswordForm::Type::kApi:
       return "API";
+    case PasswordForm::Type::kManuallyAdded:
+      return "Manually Added";
   }
 
   NOTREACHED();

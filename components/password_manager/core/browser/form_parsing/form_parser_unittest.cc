@@ -358,7 +358,7 @@ void CheckTestData(const std::vector<FormParsingTestCase>& test_cases) {
         ASSERT_TRUE(parsed_form) << "Expected successful parsing";
         EXPECT_EQ(PasswordForm::Scheme::kHtml, parsed_form->scheme);
         EXPECT_FALSE(parsed_form->blocked_by_user);
-        EXPECT_EQ(PasswordForm::Type::kManual, parsed_form->type);
+        EXPECT_EQ(PasswordForm::Type::kFormSubmission, parsed_form->type);
         EXPECT_EQ(test_case.server_side_classification_successful,
                   parsed_form->server_side_classification_successful);
         EXPECT_EQ(test_case.username_may_use_prefilled_placeholder,
