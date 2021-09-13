@@ -145,7 +145,6 @@
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/tracing_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_action.h"
@@ -4646,58 +4645,6 @@ void AutotestPrivateSetMetricsEnabledFunction::OnDeviceSettingsStored() {
         {"Failed to set metrics consent: ", chromeos::kStatsReportingPref,
          " has wrong value."})));
   }
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// AutotestPrivateStartTracingFunction
-///////////////////////////////////////////////////////////////////////////////
-AutotestPrivateStartTracingFunction::AutotestPrivateStartTracingFunction() =
-    default;
-AutotestPrivateStartTracingFunction::~AutotestPrivateStartTracingFunction() =
-    default;
-
-ExtensionFunction::ResponseAction AutotestPrivateStartTracingFunction::Run() {
-  std::unique_ptr<api::autotest_private::StartTracing::Params> params(
-      api::autotest_private::StartTracing::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params);
-  std::unique_ptr<base::Value> config_value = params->config.ToValue();
-  base::trace_event::TraceConfig config(*config_value.get());
-
-  if (!content::TracingController::GetInstance()->StartTracing(
-          config,
-          base::BindOnce(&AutotestPrivateStartTracingFunction::OnStartTracing,
-                         this))) {
-    return RespondNow(Error("Failed to start tracing"));
-  }
-
-  return RespondLater();
-}
-
-void AutotestPrivateStartTracingFunction::OnStartTracing() {
-  Respond(NoArguments());
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// AutotestPrivateStopTracingFunction
-///////////////////////////////////////////////////////////////////////////////
-AutotestPrivateStopTracingFunction::AutotestPrivateStopTracingFunction() =
-    default;
-AutotestPrivateStopTracingFunction::~AutotestPrivateStopTracingFunction() =
-    default;
-
-ExtensionFunction::ResponseAction AutotestPrivateStopTracingFunction::Run() {
-  if (!content::TracingController::GetInstance()->StopTracing(
-          content::TracingController::CreateStringEndpoint(base::BindOnce(
-              &AutotestPrivateStopTracingFunction::OnTracingComplete, this)))) {
-    return RespondNow(Error("Failed to stop tracing"));
-  }
-  return RespondLater();
-}
-
-void AutotestPrivateStopTracingFunction::OnTracingComplete(
-    std::unique_ptr<std::string> trace) {
-  base::Value value(*trace.get());
-  Respond(OneArgument(std::move(value)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

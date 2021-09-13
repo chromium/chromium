@@ -1327,22 +1327,6 @@ var splitviewLeftSnappedTests = [
   }
 ];
 
-var startStopTracingTests = [function startStopTracing() {
-  chrome.autotestPrivate.startTracing({}, function() {
-    chrome.test.assertNoLastError();
-    chrome.autotestPrivate.stopTracing(function(trace) {
-      chrome.test.assertNoLastError();
-      chrome.test.assertTrue(trace.length > 0);
-      try {
-        chrome.test.assertTrue(JSON.parse(trace) instanceof Object);
-        chrome.test.succeed();
-      } catch (e) {
-        chrome.test.fail('stopTracing callback returned invalid JSON');
-      }
-    });
-  });
-}];
-
 var scrollableShelfTests = [
   function fetchScrollableShelfInfoWithoutScroll() {
     chrome.autotestPrivate.getScrollableShelfInfoForState(
@@ -1492,7 +1476,6 @@ var test_suites = {
   'overviewDefault': overviewTests,
   'overviewDrag': overviewDragTests,
   'splitviewLeftSnapped': splitviewLeftSnappedTests,
-  'startStopTracing': startStopTracingTests,
   'scrollableShelf': scrollableShelfTests,
   'shelf': shelfTests,
   'systemWebApps': systemWebAppsTests,

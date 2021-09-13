@@ -1253,32 +1253,6 @@ class AutotestPrivateSetMetricsEnabledFunction : public ExtensionFunction {
   bool target_value_ = false;
 };
 
-class AutotestPrivateStartTracingFunction : public ExtensionFunction {
- public:
-  AutotestPrivateStartTracingFunction();
-  DECLARE_EXTENSION_FUNCTION("autotestPrivate.startTracing",
-                             AUTOTESTPRIVATE_STARTTRACING)
-
- private:
-  ~AutotestPrivateStartTracingFunction() override;
-  ResponseAction Run() override;
-
-  void OnStartTracing();
-};
-
-class AutotestPrivateStopTracingFunction : public ExtensionFunction {
- public:
-  AutotestPrivateStopTracingFunction();
-  DECLARE_EXTENSION_FUNCTION("autotestPrivate.stopTracing",
-                             AUTOTESTPRIVATE_STOPTRACING)
-
- private:
-  ~AutotestPrivateStopTracingFunction() override;
-  ResponseAction Run() override;
-
-  void OnTracingComplete(std::unique_ptr<std::string> trace);
-};
-
 class AutotestPrivateSetArcTouchModeFunction : public ExtensionFunction {
  public:
   AutotestPrivateSetArcTouchModeFunction();

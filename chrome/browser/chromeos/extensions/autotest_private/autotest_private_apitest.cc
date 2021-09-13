@@ -40,7 +40,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
-#include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "ui/aura/window.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
@@ -326,30 +325,6 @@ IN_PROC_BROWSER_TEST_F(AutotestPrivateArcPerformanceTracing, Basic) {
 
   ASSERT_TRUE(RunExtensionTest("autotest_private",
                                {.custom_arg = "arcPerformanceTracing"},
-                               {.load_as_component = true}))
-      << message_;
-}
-
-class AutotestPrivateStartStopTracing : public AutotestPrivateApiTest {
- public:
-  AutotestPrivateStartStopTracing() = default;
-  ~AutotestPrivateStartStopTracing() override = default;
-  AutotestPrivateStartStopTracing(const AutotestPrivateStartStopTracing&) =
-      delete;
-  AutotestPrivateStartStopTracing& operator=(
-      const AutotestPrivateStartStopTracing&) = delete;
-
- protected:
-  // AutotestPrivateApiTest:
-  void SetUpOnMainThread() override {
-    AutotestPrivateApiTest::SetUpOnMainThread();
-    tracing::PerfettoTracedProcess::Get()->ClearDataSourcesForTesting();
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(AutotestPrivateStartStopTracing, StartStopTracing) {
-  ASSERT_TRUE(RunExtensionTest("autotest_private",
-                               {.custom_arg = "startStopTracing"},
                                {.load_as_component = true}))
       << message_;
 }

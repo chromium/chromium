@@ -539,36 +539,6 @@ namespace autotestPrivate {
 
   callback GetShelfUIInfoForStateCallback = void (ShelfUIInfo info);
 
-  dictionary TraceConfig {
-    // The recording mode of the trace. Possible options are:
-    // "record-until-full", "record-continuously", "record-as-much-as-possible",
-    // and "trace-to-console".
-    DOMString? record_mode;
-    // Stop trace after capturing |trace_buffer_size_in_events| events.
-    long? trace_buffer_size_in_events;
-    // Stop trace after capturing |trace_buffer_size_in_kb| kilobytes worth of
-    // events.
-    long? trace_buffer_size_in_kb;
-    // Determines whether systrace events should be included in the trace.
-    boolean? enable_systrace;
-    // Enables argument filter.
-    boolean? enable_argument_filter;
-    // A list of categories that should be included in the trace.
-    DOMString[]? included_categories;
-    // A list of categories that should be excluded from the the trace.
-    DOMString[]? excluded_categories;
-    // A list of processes from which events should be included in the trace. If
-    // this parameter is empty or missing, traces from all processes are
-    // included.
-    DOMString[]? included_process_ids;
-    // A list of Systrace events that will be included in the trace.
-    DOMString[]? enable_systrace_events;
-  };
-
-  // Defines a callback that will be run when the trace is complete. The parameter
-  // |data| contains the result of the trace in Trace Event JSON format.
-  callback TraceCompleteCallback = void (DOMString data);
-
   // Result of calling setWindowBounds, which returns the actual bounds and
   // display the window was set to. This may be different than the requested
   // bounds and display, for example if the window is showing an ARC app and
@@ -1083,16 +1053,6 @@ namespace autotestPrivate {
     // |enabled|: Enable metrics reporting.
     // |callback|: Called when the operation has completed.
     static void setMetricsEnabled(boolean enabled, VoidCallback callback);
-
-    // Starts Chrome tracing.
-    // |config|: the tracing configuration.
-    // |callback|: called when tracing has started.
-    static void startTracing(TraceConfig config, VoidCallback callback);
-
-    // Stops Chrome tracing.
-    // |completeCallback|: called when tracing is complete, with results as a
-    //     parameter.
-    static void stopTracing(TraceCompleteCallback completeCallback);
 
     // Sends ARC touch mode enabled or disabled.
     // |enable|: whether enabled touch mode.
