@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "components/optimization_guide/core/entity_metadata.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/tflite-support/src/tensorflow_lite_support/cc/task/core/category.h"
 
@@ -28,6 +29,19 @@ class PageEntitiesModelExecutor {
   virtual void ExecuteModelWithInput(
       const std::string& text,
       PageEntitiesModelExecutedCallback callback) = 0;
+
+  using PageEntitiesModelEntityMetadataRetrievedCallback =
+      base::OnceCallback<void(const absl::optional<EntityMetadata>&)>;
+
+  // Retrieves the metadata associated with |entity_id|. Invokes |callback|
+  // when done.
+  void GetMetadataForEntityId(
+      const std::string& entity_id,
+      PageEntitiesModelEntityMetadataRetrievedCallback callback) {
+    // TODO(crbug/1234578): Have this be a virtual, empty method once internal
+    // is updated.
+    std::move(callback).Run(absl::nullopt);
+  }
 };
 
 }  // namespace optimization_guide

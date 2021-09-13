@@ -298,6 +298,18 @@ PageContentAnnotationsModelManager::GetPageTopicsModelVersion() const {
   return absl::nullopt;
 }
 
+void PageContentAnnotationsModelManager::GetMetadataForEntityId(
+    const std::string& entity_id,
+    EntityMetadataRetrievedCallback callback) {
+  if (page_entities_model_executor_) {
+    page_entities_model_executor_->GetMetadataForEntityId(entity_id,
+                                                          std::move(callback));
+    return;
+  }
+
+  std::move(callback).Run(absl::nullopt);
+}
+
 void PageContentAnnotationsModelManager::
     PopulateContentModelAnnotationsFromPageTopicsModelOutput(
         const proto::PageTopicsModelMetadata& model_metadata,

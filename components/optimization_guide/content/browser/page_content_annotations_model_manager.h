@@ -7,6 +7,7 @@
 
 #include "components/history/core/browser/url_row.h"
 #include "components/optimization_guide/core/bert_model_executor.h"
+#include "components/optimization_guide/core/entity_metadata.h"
 #include "components/optimization_guide/proto/page_topics_model_metadata.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -18,6 +19,11 @@ class PageEntitiesModelExecutor;
 // Callback to inform the caller that the page content has been annotated.
 using PageContentAnnotatedCallback = base::OnceCallback<void(
     const absl::optional<history::VisitContentModelAnnotations>&)>;
+
+// Callback to inform the caller that the metadata for an entity ID has been
+// retrieved.
+using EntityMetadataRetrievedCallback =
+    base::OnceCallback<void(const absl::optional<EntityMetadata>&)>;
 
 // Manages the loading and execution of models used to annotate page content.
 class PageContentAnnotationsModelManager {
@@ -40,6 +46,11 @@ class PageContentAnnotationsModelManager {
   // to annotate page content. Will return |absl::nullopt| if no model is being
   // used to annotate page topics for received page content.
   absl::optional<int64_t> GetPageTopicsModelVersion() const;
+
+  // Retrieves the metadata associated with |entity_id|. Invokes |callback|
+  // when done.
+  void GetMetadataForEntityId(const std::string& entity_id,
+                              EntityMetadataRetrievedCallback callback);
 
  private:
   friend class PageContentAnnotationsModelManagerTest;

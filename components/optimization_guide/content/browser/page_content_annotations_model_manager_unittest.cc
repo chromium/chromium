@@ -137,6 +137,25 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
     return content_annotations;
   }
 
+  absl::optional<EntityMetadata> GetMetadataForEntityId(
+      const std::string& entity_id) {
+    absl::optional<EntityMetadata> entities_metadata;
+    base::RunLoop run_loop;
+    model_manager()->GetMetadataForEntityId(
+        entity_id,
+        base::BindOnce(
+            [](base::RunLoop* run_loop,
+               absl::optional<EntityMetadata>* out_entities_metadata,
+               const absl::optional<EntityMetadata>& entities_metadata) {
+              *out_entities_metadata = entities_metadata;
+              run_loop->Quit();
+            },
+            &run_loop, &entities_metadata));
+    run_loop.Run();
+
+    return entities_metadata;
+  }
+
   ModelObserverTracker* model_observer_tracker() const {
     return model_observer_tracker_.get();
   }
@@ -417,6 +436,11 @@ TEST_F(PageContentAnnotationsModelManagerTest, AnnotateModelNotAvailable) {
   EXPECT_FALSE(Annotate("sometext").has_value());
 }
 
+TEST_F(PageContentAnnotationsModelManagerTest,
+       GetMetadataForEntityIdEntitiesAnnotatorNotInitialized) {
+  EXPECT_FALSE(GetMetadataForEntityId("someid").has_value());
+}
+
 class PageContentAnnotationsModelManagerEntitiesOnlyTest
     : public PageContentAnnotationsModelManagerTest {
  public:
@@ -481,6 +505,13 @@ TEST_F(PageContentAnnotationsModelManagerEntitiesOnlyTest,
           history::VisitContentModelAnnotations::Category("entity4", 40),
           history::VisitContentModelAnnotations::Category("entity3", 30),
           history::VisitContentModelAnnotations::Category("entity2", 20)));
+}
+
+TEST_F(PageContentAnnotationsModelManagerEntitiesOnlyTest,
+       GetMetadataForEntityIdEntitiesAnnotatorInitialized) {
+  // TODO(crbug/1234578): Make this a real test that grabs from the annotator
+  // once that method is overridable.
+  EXPECT_FALSE(GetMetadataForEntityId("someid").has_value());
 }
 
 class PageContentAnnotationsModelManagerMultipleModelsTest
