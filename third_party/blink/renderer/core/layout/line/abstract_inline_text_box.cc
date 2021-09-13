@@ -248,7 +248,13 @@ void LegacyAbstractInlineTextBox::CharacterWidths(Vector<float>& widths) const {
 
 void AbstractInlineTextBox::GetWordBoundaries(
     Vector<WordBoundaries>& words) const {
-  String text = GetText();
+  return GetWordBoundariesForText(words, GetText());
+}
+
+// static
+void AbstractInlineTextBox::GetWordBoundariesForText(
+    Vector<WordBoundaries>& words,
+    const String& text) {
   if (!text.length())
     return;
 

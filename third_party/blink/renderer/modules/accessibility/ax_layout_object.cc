@@ -1689,6 +1689,31 @@ AXObject* AXLayoutObject::HeaderObject() const {
   return nullptr;
 }
 
+void AXLayoutObject::GetWordBoundaries(Vector<int>& word_starts,
+                                       Vector<int>& word_ends) const {
+  if (!layout_object_ || !layout_object_->IsListMarkerIncludingAll())
+    return;
+
+  String text_alternative;
+  if (layout_object_->IsListMarkerForNormalContent()) {
+    text_alternative =
+        To<LayoutListMarker>(layout_object_.Get())->TextAlternative();
+  } else if (ListMarker* marker = ListMarker::Get(layout_object_)) {
+    text_alternative = marker->TextAlternative(*layout_object_);
+  }
+  if (text_alternative.ContainsOnlyWhitespaceOrEmpty())
+    return;
+
+  Vector<AbstractInlineTextBox::WordBoundaries> boundaries;
+  AbstractInlineTextBox::GetWordBoundariesForText(boundaries, text_alternative);
+  word_starts.ReserveCapacity(boundaries.size());
+  word_ends.ReserveCapacity(boundaries.size());
+  for (const auto& boundary : boundaries) {
+    word_starts.push_back(boundary.start_index);
+    word_ends.push_back(boundary.end_index);
+  }
+}
+
 //
 // Private.
 //
