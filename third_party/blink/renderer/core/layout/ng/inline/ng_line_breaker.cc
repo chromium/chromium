@@ -1304,80 +1304,77 @@ bool NGLineBreaker::HandleTextForFastMinContent(NGInlineItemResult* item_result,
 
     unsigned non_hangable_run_end = end_offset;
     if (item.Style()->WhiteSpace() != EWhiteSpace::kBreakSpaces) {
-      while (non_hangable_run_end > item.StartOffset() &&
+      while (non_hangable_run_end > start_offset &&
              IsBreakableSpace(text[non_hangable_run_end - 1])) {
         --non_hangable_run_end;
       }
-      end_offset = non_hangable_run_end;
     }
 
-    if (end_offset >= item.EndOffset())
+    if (non_hangable_run_end >= item.EndOffset())
       break;
 
-    // Ignore soft-hyphen opportunities if `hyphens: none`.
-    bool has_hyphen = text[non_hangable_run_end - 1] == kSoftHyphenCharacter;
-    if (has_hyphen && !enable_soft_hyphen_) {
-      ++end_offset;
-      if (end_offset < item.EndOffset())
-        continue;
-      has_hyphen = false;
-    }
-
-    if (UNLIKELY(hyphenation_)) {
-      // When 'hyphens: auto', compute all hyphenation opportunities.
-      if (!hyphen_inline_size) {
-        if (!item_result->hyphen_shape_result)
-          item_result->ShapeHyphen();
-        hyphen_inline_size = item_result->HyphenInlineSize();
+    // |word_len| may be zero if |start_offset| is at a breakable space.
+    CHECK_GE(non_hangable_run_end, start_offset);
+    if (wtf_size_t word_len = non_hangable_run_end - start_offset) {
+      // Ignore soft-hyphen opportunities if `hyphens: none`.
+      bool has_hyphen = text[non_hangable_run_end - 1] == kSoftHyphenCharacter;
+      if (UNLIKELY(has_hyphen && !enable_soft_hyphen_ &&
+                   non_hangable_run_end == end_offset)) {
+        ++end_offset;
+        if (end_offset < item.EndOffset())
+          continue;
+        has_hyphen = false;
       }
-      wtf_size_t word_len = non_hangable_run_end - start_offset;
-      const StringView word(text, start_offset, word_len);
-      Vector<wtf_size_t, 8> locations = hyphenation_->HyphenLocations(word);
-      // |locations| is a list of hyphenation points in the descending order.
-      // Append 0 to process all parts the same way.
-      DCHECK(std::is_sorted(locations.rbegin(), locations.rend()));
-      DCHECK(!locations.Contains(0u));
-      DCHECK(!locations.Contains(word_len));
-      locations.push_back(0);
-      LayoutUnit max_part_width;
-      for (const wtf_size_t location : locations) {
-        LayoutUnit part_width = LayoutUnit::FromFloatCeil(ComputeWordWidth(
-            shape_result, start_offset + location, start_offset + word_len));
-        if (has_hyphen)
-          part_width += *hyphen_inline_size;
-        max_part_width = std::max(part_width, max_part_width);
-        word_len = location;
-        has_hyphen = true;
-      }
-      min_width = std::max(max_part_width.ToFloat(), min_width);
-    } else {
-      float word_width =
-          ComputeWordWidth(shape_result, start_offset, non_hangable_run_end);
 
-      // Append hyphen-width to `word_width` if the word is hyphenated.
-      if (has_hyphen) {
+      if (UNLIKELY(hyphenation_)) {
+        // When 'hyphens: auto', compute all hyphenation opportunities.
         if (!hyphen_inline_size) {
           if (!item_result->hyphen_shape_result)
             item_result->ShapeHyphen();
           hyphen_inline_size = item_result->HyphenInlineSize();
         }
-        word_width =
-            (LayoutUnit::FromFloatCeil(word_width) + *hyphen_inline_size)
-                .ToFloat();
-      }
+        const StringView word(text, start_offset, word_len);
+        Vector<wtf_size_t, 8> locations = hyphenation_->HyphenLocations(word);
+        // |locations| is a list of hyphenation points in the descending order.
+        // Append 0 to process all parts the same way.
+        DCHECK(std::is_sorted(locations.rbegin(), locations.rend()));
+        DCHECK(!locations.Contains(0u));
+        DCHECK(!locations.Contains(word_len));
+        locations.push_back(0);
+        LayoutUnit max_part_width;
+        for (const wtf_size_t location : locations) {
+          LayoutUnit part_width = LayoutUnit::FromFloatCeil(ComputeWordWidth(
+              shape_result, start_offset + location, start_offset + word_len));
+          if (has_hyphen)
+            part_width += *hyphen_inline_size;
+          max_part_width = std::max(part_width, max_part_width);
+          word_len = location;
+          has_hyphen = true;
+        }
+        min_width = std::max(max_part_width.ToFloat(), min_width);
+      } else {
+        float word_width =
+            ComputeWordWidth(shape_result, start_offset, non_hangable_run_end);
 
-      min_width = std::max(word_width, min_width);
+        // Append hyphen-width to `word_width` if the word is hyphenated.
+        if (has_hyphen) {
+          if (!hyphen_inline_size) {
+            if (!item_result->hyphen_shape_result)
+              item_result->ShapeHyphen();
+            hyphen_inline_size = item_result->HyphenInlineSize();
+          }
+          word_width =
+              (LayoutUnit::FromFloatCeil(word_width) + *hyphen_inline_size)
+                  .ToFloat();
+        }
+
+        min_width = std::max(word_width, min_width);
+      }
     }
 
     last_end_offset = non_hangable_run_end;
-    // TODO (jfernandez): I think that having the non_hangable_run_end
-    // would make this loop unnecessary/redudant.
     start_offset = end_offset;
-    while (start_offset < item.EndOffset() &&
-           IsBreakableSpace(text[start_offset])) {
-      ++start_offset;
-    }
-    end_offset = start_offset + 1;
+    ++end_offset;
   }
 
   if (saved_line_break_type.has_value())

@@ -673,6 +673,30 @@ TEST_F(NGLineBreakerTest, MinMaxWithTrailingSpaces) {
   EXPECT_EQ(sizes.max_size, LayoutUnit(110));
 }
 
+// `word-break: break-word` can break a space run.
+TEST_F(NGLineBreakerTest, MinMaxBreakSpaces) {
+  LoadAhem();
+  NGInlineNode node = CreateInlineNode(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    div {
+      font: 10px/1 Ahem;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    span {
+      font-size: 200%;
+    }
+    </style>
+    <div id=container>M):
+<span>    </span>p</div>
+  )HTML");
+
+  const auto sizes = ComputeMinMaxSizes(node);
+  EXPECT_EQ(sizes.min_size, LayoutUnit(10));
+  EXPECT_EQ(sizes.max_size, LayoutUnit(90));
+}
+
 TEST_F(NGLineBreakerTest, MinMaxWithSoftHyphen) {
   LoadAhem();
   NGInlineNode node = CreateInlineNode(R"HTML(
@@ -706,6 +730,24 @@ TEST_F(NGLineBreakerTest, MinMaxWithHyphensDisabled) {
   const auto sizes = ComputeMinMaxSizes(node);
   EXPECT_EQ(sizes.min_size, LayoutUnit(60));
   EXPECT_EQ(sizes.max_size, LayoutUnit(90));
+}
+
+TEST_F(NGLineBreakerTest, MinMaxWithHyphensDisabledWithTrailingSpaces) {
+  LoadAhem();
+  NGInlineNode node = CreateInlineNode(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    #container {
+      font: 10px/1 Ahem;
+      hyphens: none;
+    }
+    </style>
+    <div id=container>abcd&shy; ef xx</div>
+  )HTML");
+
+  const auto sizes = ComputeMinMaxSizes(node);
+  EXPECT_EQ(sizes.min_size, LayoutUnit(50));
+  EXPECT_EQ(sizes.max_size, LayoutUnit(100));
 }
 
 TEST_F(NGLineBreakerTest, MinMaxWithHyphensAuto) {
