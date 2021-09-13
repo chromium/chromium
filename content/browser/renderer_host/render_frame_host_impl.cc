@@ -1765,20 +1765,10 @@ void RenderFrameHostImpl::DidEnterBackForwardCache() {
   for (auto& child : children_)
     child->current_frame_host()->DidEnterBackForwardCache();
 
-  if (service_worker_container_hosts_.empty())
-    return;
-  RunOrPostTaskOnThread(
-      FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-      base::BindOnce(
-          [](const std::map<std::string,
-                            base::WeakPtr<ServiceWorkerContainerHost>>& hosts) {
-            for (auto host : hosts) {
-              if (host.second) {
-                host.second->OnEnterBackForwardCache();
-              }
-            }
-          },
-          service_worker_container_hosts_));
+  for (auto& entry : service_worker_container_hosts_) {
+    if (base::WeakPtr<ServiceWorkerContainerHost> host = entry.second)
+      host->OnEnterBackForwardCache();
+  }
 }
 
 // The frame as been restored from the BackForwardCache.
@@ -1791,19 +1781,10 @@ void RenderFrameHostImpl::WillLeaveBackForwardCache() {
   for (auto& child : children_)
     child->current_frame_host()->WillLeaveBackForwardCache();
 
-  if (service_worker_container_hosts_.empty())
-    return;
-  RunOrPostTaskOnThread(
-      FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-      base::BindOnce(
-          [](const std::map<std::string,
-                            base::WeakPtr<ServiceWorkerContainerHost>>& hosts) {
-            for (auto host : hosts) {
-              if (host.second)
-                host.second->OnRestoreFromBackForwardCache();
-            }
-          },
-          service_worker_container_hosts_));
+  for (auto& entry : service_worker_container_hosts_) {
+    if (base::WeakPtr<ServiceWorkerContainerHost> host = entry.second)
+      host->OnRestoreFromBackForwardCache();
+  }
 }
 
 mojom::DidCommitProvisionalLoadParamsPtr
@@ -8108,12 +8089,9 @@ void RenderFrameHostImpl::CommitNavigation(
     // it until its request endpoint is sent. Now that the request endpoint was
     // sent, it can be used, so add it to ServiceWorkerObjectHost.
     if (remote_object.is_valid()) {
-      RunOrPostTaskOnThread(
-          FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-          base::BindOnce(
-              &ServiceWorkerObjectHost::AddRemoteObjectPtrAndUpdateState,
-              subresource_loader_params->controller_service_worker_object_host,
-              std::move(remote_object), sent_state));
+      subresource_loader_params->controller_service_worker_object_host
+          ->AddRemoteObjectPtrAndUpdateState(std::move(remote_object),
+                                             sent_state);
     }
   }
 }
