@@ -90,8 +90,6 @@ class ConfigurableStorageDelegate : public ConversionStorage::Delegate {
   int GetMaxConversionsPerOrigin() const override;
   RateLimitConfig GetRateLimits(
       ConversionStorage::AttributionType attribution_type) const override;
-  StorableImpression::AttributionLogic SelectAttributionLogic(
-      const StorableImpression& impression) const override;
   int GetMaxAttributionDestinationsPerEventSource() const override;
   uint64_t GetFakeEventSourceTriggerData() const override;
   base::TimeDelta GetDeleteExpiredImpressionsFrequency() const override;
@@ -114,11 +112,6 @@ class ConfigurableStorageDelegate : public ConversionStorage::Delegate {
   }
 
   void set_rate_limits(RateLimitConfig c) { rate_limits_ = c; }
-
-  void set_attribution_logic(
-      StorableImpression::AttributionLogic attribution_logic) {
-    attribution_logic_ = attribution_logic;
-  }
 
   void set_fake_event_source_trigger_data(uint64_t data) {
     fake_event_source_trigger_data_ = data;
@@ -146,9 +139,6 @@ class ConfigurableStorageDelegate : public ConversionStorage::Delegate {
       .time_window = base::TimeDelta::Max(),
       .max_contributions_per_window = INT_MAX,
   };
-
-  StorableImpression::AttributionLogic attribution_logic_ =
-      StorableImpression::AttributionLogic::kTruthfully;
 
   uint64_t fake_event_source_trigger_data_ = 0;
 
@@ -262,6 +252,10 @@ class ImpressionBuilder {
 
   ImpressionBuilder& SetPriority(int64_t priority) WARN_UNUSED_RESULT;
 
+  ImpressionBuilder& SetAttributionLogic(
+      StorableImpression::AttributionLogic attribution_logic)
+      WARN_UNUSED_RESULT;
+
   ImpressionBuilder& SetImpressionId(
       absl::optional<StorableImpression::Id> impression_id) WARN_UNUSED_RESULT;
 
@@ -279,6 +273,7 @@ class ImpressionBuilder {
   url::Origin reporting_origin_;
   StorableImpression::SourceType source_type_;
   int64_t priority_;
+  StorableImpression::AttributionLogic attribution_logic_;
   absl::optional<StorableImpression::Id> impression_id_;
   std::vector<int64_t> dedup_keys_;
 };
@@ -349,6 +344,10 @@ std::ostream& operator<<(std::ostream& out, const ConversionReport& report);
 std::ostream& operator<<(std::ostream& out, SentReportInfo::Status status);
 
 std::ostream& operator<<(std::ostream& out, const SentReportInfo& info);
+
+std::ostream& operator<<(
+    std::ostream& out,
+    StorableImpression::AttributionLogic attribution_logic);
 
 std::vector<ConversionReport> GetConversionsToReportForTesting(
     ConversionManagerImpl* manager,

@@ -22,6 +22,7 @@ struct WebUIConversionReport {
   int64 priority;
   string report_body;
   int32 http_response_code;
+  bool attributed_truthfully;
 };
 
 // Struct representing a stored impression that will be displayed by WebUI.

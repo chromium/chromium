@@ -93,11 +93,6 @@ class ConversionStorage {
     virtual RateLimitConfig GetRateLimits(
         AttributionType attribution_type) const WARN_UNUSED_RESULT = 0;
 
-    // Selects how to handle the given impression; may involve RNG or other
-    // dynamic criteria.
-    virtual StorableImpression::AttributionLogic SelectAttributionLogic(
-        const StorableImpression& impression) const WARN_UNUSED_RESULT = 0;
-
     // Returns random data for falsely attributed event sources. Only present on
     // the delegate interface so it can be overridden to return deterministic
     // data in tests. The data must be sanitized in the same way it would be for

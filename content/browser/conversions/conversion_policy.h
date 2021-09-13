@@ -62,6 +62,11 @@ class CONTENT_EXPORT ConversionPolicy {
   // time.
   virtual base::TimeDelta GetMaxReportAge() const WARN_UNUSED_RESULT;
 
+  // Selects how to handle the given impression; may involve RNG or other
+  // dynamic criteria.
+  virtual StorableImpression::AttributionLogic GetAttributionLogicForImpression(
+      StorableImpression::SourceType source_type) const WARN_UNUSED_RESULT;
+
  protected:
   virtual bool ShouldNoiseConversionData() const WARN_UNUSED_RESULT;
 

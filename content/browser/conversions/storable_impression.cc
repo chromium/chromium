@@ -17,6 +17,7 @@ StorableImpression::StorableImpression(uint64_t impression_data,
                                        base::Time expiry_time,
                                        SourceType source_type,
                                        int64_t priority,
+                                       AttributionLogic attribution_logic,
                                        absl::optional<Id> impression_id)
     : impression_data_(impression_data),
       impression_origin_(std::move(impression_origin)),
@@ -26,6 +27,7 @@ StorableImpression::StorableImpression(uint64_t impression_data,
       expiry_time_(expiry_time),
       source_type_(source_type),
       priority_(priority),
+      attribution_logic_(attribution_logic),
       impression_id_(impression_id) {
   // 30 days is the max allowed expiry for an impression.
   DCHECK_GE(base::TimeDelta::FromDays(30), expiry_time - impression_time);

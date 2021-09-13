@@ -301,6 +301,7 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
       ImpressionBuilder(base::Time::Now())
           .SetData(200)
           .SetSourceType(StorableImpression::SourceType::kEvent)
+          .SetAttributionLogic(StorableImpression::AttributionLogic::kFalsely)
           .Build(),
       /*conversion_data=*/7, /*conversion_time=*/base::Time::Now(),
       /*report_time=*/base::Time::Now(), /*priority=*/13,
@@ -316,9 +317,11 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
             table.children[0].children[2].innerText ===
               "https://report.test/.well-known/attribution-reporting/report-attribution" &&
             table.children[0].children[4].innerText === "13" &&
-            table.children[0].children[5].innerText === "Pending" &&
+            table.children[0].children[5].innerText === "yes" &&
+            table.children[0].children[6].innerText === "Pending" &&
             table.children[1].children[4].innerText === "0" &&
-            table.children[1].children[5].innerText === "Sent: HTTP 200") {
+            table.children[1].children[5].innerText === "no" &&
+            table.children[1].children[6].innerText === "Sent: HTTP 200") {
           document.title = $2;
         }
       });
@@ -340,9 +343,11 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
             table.children[1].children[2].innerText ===
               "https://report.test/.well-known/attribution-reporting/report-attribution" &&
             table.children[1].children[4].innerText === "13" &&
-            table.children[1].children[5].innerText === "Pending" &&
+            table.children[1].children[5].innerText === "yes" &&
+            table.children[1].children[6].innerText === "Pending" &&
             table.children[0].children[4].innerText === "0" &&
-            table.children[0].children[5].innerText === "Sent: HTTP 200") {
+            table.children[0].children[5].innerText === "no" &&
+            table.children[0].children[6].innerText === "Sent: HTTP 200") {
           document.title = $2;
         }
       });
@@ -366,9 +371,11 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
             table.children[0].children[2].innerText ===
               "https://report.test/.well-known/attribution-reporting/report-attribution" &&
             table.children[0].children[4].innerText === "13" &&
-            table.children[0].children[5].innerText === "Pending" &&
+            table.children[0].children[5].innerText === "yes" &&
+            table.children[0].children[6].innerText === "Pending" &&
             table.children[1].children[4].innerText === "0" &&
-            table.children[1].children[5].innerText === "Sent: HTTP 200") {
+            table.children[1].children[5].innerText === "no" &&
+            table.children[1].children[6].innerText === "Sent: HTTP 200") {
           document.title = $2;
         }
       });
@@ -407,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
     let obs = new MutationObserver(() => {
       if (table.children.length === 2 &&
           table.children[0].children[4].innerText === "7" &&
-          table.children[1].children[5].innerText === "Sent: HTTP 200") {
+          table.children[1].children[6].innerText === "Sent: HTTP 200") {
         document.title = $1;
       }
     });

@@ -120,12 +120,6 @@ ConfigurableStorageDelegate::GetRateLimits(
   return rate_limits_;
 }
 
-StorableImpression::AttributionLogic
-ConfigurableStorageDelegate::SelectAttributionLogic(
-    const StorableImpression& impression) const {
-  return attribution_logic_;
-}
-
 uint64_t ConfigurableStorageDelegate::GetFakeEventSourceTriggerData() const {
   return fake_event_source_trigger_data_;
 }
@@ -228,7 +222,8 @@ ImpressionBuilder::ImpressionBuilder(base::Time time)
       conversion_origin_(url::Origin::Create(GURL(kDefaultConversionOrigin))),
       reporting_origin_(url::Origin::Create(GURL(kDefaultReportOrigin))),
       source_type_(StorableImpression::SourceType::kNavigation),
-      priority_(0) {}
+      priority_(0),
+      attribution_logic_(StorableImpression::AttributionLogic::kTruthfully) {}
 
 ImpressionBuilder::~ImpressionBuilder() = default;
 
@@ -268,6 +263,12 @@ ImpressionBuilder& ImpressionBuilder::SetPriority(int64_t priority) {
   return *this;
 }
 
+ImpressionBuilder& ImpressionBuilder::SetAttributionLogic(
+    StorableImpression::AttributionLogic attribution_logic) {
+  attribution_logic_ = attribution_logic;
+  return *this;
+}
+
 ImpressionBuilder& ImpressionBuilder::SetImpressionId(
     absl::optional<StorableImpression::Id> impression_id) {
   impression_id_ = impression_id;
@@ -281,11 +282,11 @@ ImpressionBuilder& ImpressionBuilder::SetDedupKeys(
 }
 
 StorableImpression ImpressionBuilder::Build() const {
-  StorableImpression impression(impression_data_, impression_origin_,
-                                conversion_origin_, reporting_origin_,
-                                impression_time_,
-                                /*expiry_time=*/impression_time_ + expiry_,
-                                source_type_, priority_, impression_id_);
+  StorableImpression impression(
+      impression_data_, impression_origin_, conversion_origin_,
+      reporting_origin_, impression_time_,
+      /*expiry_time=*/impression_time_ + expiry_, source_type_, priority_,
+      attribution_logic_, impression_id_);
   impression.SetDedupKeys(dedup_keys_);
   return impression;
 }
@@ -350,7 +351,8 @@ bool operator==(const StorableImpression& a, const StorableImpression& b) {
         impression.impression_data(), impression.impression_origin(),
         impression.conversion_origin(), impression.reporting_origin(),
         impression.impression_time(), impression.expiry_time(),
-        impression.source_type(), impression.priority());
+        impression.source_type(), impression.priority(),
+        impression.attribution_logic());
   };
   return tie(a) == tie(b);
 }
@@ -431,6 +433,23 @@ std::ostream& operator<<(std::ostream& out,
       break;
     case StorableImpression::SourceType::kEvent:
       out << "kEvent";
+      break;
+  }
+  return out;
+}
+
+std::ostream& operator<<(
+    std::ostream& out,
+    StorableImpression::AttributionLogic attribution_logic) {
+  switch (attribution_logic) {
+    case StorableImpression::AttributionLogic::kNever:
+      out << "kNever";
+      break;
+    case StorableImpression::AttributionLogic::kTruthfully:
+      out << "kTruthfully";
+      break;
+    case StorableImpression::AttributionLogic::kFalsely:
+      out << "kFalsely";
       break;
   }
   return out;

@@ -63,7 +63,9 @@ void ForwardImpressionsToWebUI(
   return ::mojom::WebUIConversionReport::New(
       report.impression.conversion_origin(), report.ReportURL(),
       report.report_time.ToJsTime(), report.priority,
-      report.ReportBody(/*pretty_print=*/true), http_response_code);
+      report.ReportBody(/*pretty_print=*/true), http_response_code,
+      /*attributed_truthfully=*/report.impression.attribution_logic() ==
+          StorableImpression::AttributionLogic::kTruthfully);
 }
 
 void ForwardReportsToWebUI(

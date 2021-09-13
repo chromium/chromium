@@ -59,6 +59,7 @@ class CONTENT_EXPORT StorableImpression {
                      base::Time expiry_time,
                      SourceType source_type,
                      int64_t priority,
+                     AttributionLogic attribution_logic,
                      absl::optional<Id> impression_id);
   StorableImpression(const StorableImpression& other);
   StorableImpression& operator=(const StorableImpression& other);
@@ -96,6 +97,10 @@ class CONTENT_EXPORT StorableImpression {
 
   int64_t priority() const WARN_UNUSED_RESULT { return priority_; }
 
+  AttributionLogic attribution_logic() const WARN_UNUSED_RESULT {
+    return attribution_logic_;
+  }
+
   const std::vector<int64_t>& dedup_keys() const WARN_UNUSED_RESULT {
     return dedup_keys_;
   }
@@ -125,6 +130,7 @@ class CONTENT_EXPORT StorableImpression {
   base::Time expiry_time_;
   SourceType source_type_;
   int64_t priority_;
+  AttributionLogic attribution_logic_;
 
   // If null, an ID has not been assigned yet.
   absl::optional<Id> impression_id_;

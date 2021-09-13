@@ -45,8 +45,6 @@ class CONTENT_EXPORT ConversionStorageDelegateImpl
   int GetMaxAttributionDestinationsPerEventSource() const override;
   RateLimitConfig GetRateLimits(
       ConversionStorage::AttributionType attribution_type) const override;
-  StorableImpression::AttributionLogic SelectAttributionLogic(
-      const StorableImpression& impression) const override;
   uint64_t GetFakeEventSourceTriggerData() const override;
   base::TimeDelta GetDeleteExpiredImpressionsFrequency() const override;
   base::TimeDelta GetDeleteExpiredRateLimitsFrequency() const override;

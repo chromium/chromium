@@ -870,10 +870,11 @@ TEST_F(ConversionStorageTest,
 }
 
 TEST_F(ConversionStorageTest, NeverAttributeImpression_ReportNotStored) {
-  delegate()->set_attribution_logic(
-      StorableImpression::AttributionLogic::kNever);
   delegate()->set_max_conversions_per_impression(1);
-  storage()->StoreImpression(ImpressionBuilder(clock()->Now()).Build());
+  storage()->StoreImpression(
+      ImpressionBuilder(clock()->Now())
+          .SetAttributionLogic(StorableImpression::AttributionLogic::kNever)
+          .Build());
 
   EXPECT_EQ(
       CreateReportStatus::kDroppedForNoise,
@@ -887,18 +888,17 @@ TEST_F(ConversionStorageTest, NeverAttributeImpression_ReportNotStored) {
 }
 
 TEST_F(ConversionStorageTest, NeverAttributeImpression_Deactivates) {
-  delegate()->set_attribution_logic(
-      StorableImpression::AttributionLogic::kNever);
   delegate()->set_max_conversions_per_impression(1);
   storage()->StoreImpression(
-      ImpressionBuilder(clock()->Now()).SetData(3).Build());
+      ImpressionBuilder(clock()->Now())
+          .SetData(3)
+          .SetAttributionLogic(StorableImpression::AttributionLogic::kNever)
+          .Build());
 
   EXPECT_EQ(
       CreateReportStatus::kDroppedForNoise,
       storage()->MaybeCreateAndStoreConversionReport(DefaultConversion()));
 
-  delegate()->set_attribution_logic(
-      StorableImpression::AttributionLogic::kTruthfully);
   storage()->StoreImpression(
       ImpressionBuilder(clock()->Now()).SetData(5).Build());
 
@@ -921,17 +921,16 @@ TEST_F(ConversionStorageTest, NeverAttributeImpression_RateLimitsNotChanged) {
       .max_contributions_per_window = 1,
   });
 
-  delegate()->set_attribution_logic(
-      StorableImpression::AttributionLogic::kNever);
   storage()->StoreImpression(
-      ImpressionBuilder(clock()->Now()).SetData(5).Build());
+      ImpressionBuilder(clock()->Now())
+          .SetData(5)
+          .SetAttributionLogic(StorableImpression::AttributionLogic::kNever)
+          .Build());
 
   const auto conversion = DefaultConversion();
   EXPECT_EQ(CreateReportStatus::kDroppedForNoise,
             storage()->MaybeCreateAndStoreConversionReport(conversion));
 
-  delegate()->set_attribution_logic(
-      StorableImpression::AttributionLogic::kTruthfully);
   const auto impression = ImpressionBuilder(clock()->Now()).SetData(7).Build();
   storage()->StoreImpression(impression);
   EXPECT_EQ(CreateReportStatus::kSuccess,
@@ -954,15 +953,14 @@ TEST_F(ConversionStorageTest, NeverAttributeImpression_RateLimitsNotChanged) {
 
 TEST_F(ConversionStorageTest,
        NeverAndTruthfullyAttributeImpressions_ReportNotStored) {
-  delegate()->set_attribution_logic(
-      StorableImpression::AttributionLogic::kTruthfully);
   storage()->StoreImpression(ImpressionBuilder(clock()->Now()).Build());
 
   clock()->Advance(base::TimeDelta::FromMilliseconds(1));
 
-  delegate()->set_attribution_logic(
-      StorableImpression::AttributionLogic::kNever);
-  storage()->StoreImpression(ImpressionBuilder(clock()->Now()).Build());
+  storage()->StoreImpression(
+      ImpressionBuilder(clock()->Now())
+          .SetAttributionLogic(StorableImpression::AttributionLogic::kNever)
+          .Build());
 
   const auto conversion = DefaultConversion();
   EXPECT_EQ(CreateReportStatus::kDroppedForNoise,
@@ -1211,8 +1209,6 @@ TEST_F(ConversionStorageTest, MultipleImpressions_CorrectDeactivation) {
 }
 
 TEST_F(ConversionStorageTest, FalselyAttributeImpression_ReportStored) {
-  delegate()->set_attribution_logic(
-      StorableImpression::AttributionLogic::kFalsely);
   delegate()->set_fake_event_source_trigger_data(7);
   delegate()->set_max_conversions_per_impression(1);
 
@@ -1221,6 +1217,7 @@ TEST_F(ConversionStorageTest, FalselyAttributeImpression_ReportStored) {
           .SetData(4)
           .SetSourceType(StorableImpression::SourceType::kEvent)
           .SetPriority(100)
+          .SetAttributionLogic(StorableImpression::AttributionLogic::kFalsely)
           .Build();
   storage()->StoreImpression(impression);
 

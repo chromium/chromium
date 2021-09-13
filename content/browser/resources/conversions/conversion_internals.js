@@ -345,6 +345,7 @@ class Report {
     this.reportUrl = mojo.reportUrl.url;
     this.reportTime = new Date(mojo.reportTime);
     this.reportPriority = mojo.priority;
+    this.attributedTruthfully = mojo.attributedTruthfully;
 
     if (sent) {
       this.status = `Sent: HTTP ${mojo.httpResponseCode}`;
@@ -366,6 +367,7 @@ class ReportTableModel extends TableModel {
       new Column('Report URL', (e) => e.reportUrl),
       new DateColumn('Report Time', (e) => e.reportTime),
       new Column('Report Priority', (e) => e.reportPriority),
+      new Column('Fake Report', (e) => e.attributedTruthfully ? 'no' : 'yes'),
       new Column('Status', (e) => e.status),
     ];
 

@@ -108,4 +108,26 @@ base::TimeDelta ConversionPolicy::GetMaxReportAge() const {
   return base::TimeDelta::FromDays(14);
 }
 
+StorableImpression::AttributionLogic
+ConversionPolicy::GetAttributionLogicForImpression(
+    StorableImpression::SourceType source_type) const {
+  if (debug_mode_)
+    return StorableImpression::AttributionLogic::kTruthfully;
+
+  switch (source_type) {
+    case StorableImpression::SourceType::kNavigation:
+      return StorableImpression::AttributionLogic::kTruthfully;
+    case StorableImpression::SourceType::kEvent: {
+      // TODO(apaseltiner): Finalize a value for this so that noise is actually
+      // triggered.
+      const double kNoise = 0;
+      if (base::RandDouble() < (1 - kNoise))
+        return StorableImpression::AttributionLogic::kTruthfully;
+      if (base::RandInt(0, 1) == 0)
+        return StorableImpression::AttributionLogic::kNever;
+      return StorableImpression::AttributionLogic::kFalsely;
+    }
+  }
+}
+
 }  // namespace content

@@ -63,6 +63,7 @@ bool VerifyAndStoreImpression(StorableImpression::SourceType source_type,
       policy.GetExpiryTimeForImpression(impression.expiry, impression_time,
                                         source_type),
       source_type, impression.priority,
+      policy.GetAttributionLogicForImpression(source_type),
       /*impression_id=*/absl::nullopt);
 
   conversion_manager.HandleImpression(std::move(storable_impression));
