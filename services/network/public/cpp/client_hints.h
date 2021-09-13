@@ -9,18 +9,21 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
+using ClientHintToNameMap =
+    base::flat_map<network::mojom::WebClientHintsType, std::string>;
+
 // Mapping from WebClientHintsType to the hint's name in Accept-CH header.
 // The ordering matches the ordering of enums in
 // services/network/public/mojom/web_client_hints_types.mojom
 COMPONENT_EXPORT(NETWORK_CPP)
-extern const char* const kClientHintsNameMapping[];
-COMPONENT_EXPORT(NETWORK_CPP) extern const size_t kClientHintsNameMappingCount;
+const ClientHintToNameMap& GetClientHintToNameMap();
 
 // Tries to parse an Accept-CH header. Returns absl::nullopt if parsing
 // failed and the header should be ignored; otherwise returns a (possibly

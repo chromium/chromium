@@ -7,7 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/cxx17_backports.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
@@ -18,21 +17,42 @@
 
 namespace network {
 
-const char* const kClientHintsNameMapping[] = {
-    "device-memory", "dpr", "width", "viewport-width", "rtt", "downlink", "ect",
-    // TODO(https://https://crbug.com/1227043) Remove lang client hint.
-    "lang", "sec-ch-ua", "sec-ch-ua-arch", "sec-ch-ua-platform",
-    "sec-ch-ua-model", "sec-ch-ua-mobile", "sec-ch-ua-full-version",
-    "sec-ch-ua-platform-version", "sec-ch-prefers-color-scheme",
-    "sec-ch-ua-bitness", "sec-ch-ua-reduced", "sec-ch-viewport-height"};
+ClientHintToNameMap MakeClientHintToNameMap() {
+  return {
+      {network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED,
+       "device-memory"},
+      {network::mojom::WebClientHintsType::kDpr_DEPRECATED, "dpr"},
+      {network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED, "width"},
+      {network::mojom::WebClientHintsType::kViewportWidth_DEPRECATED,
+       "viewport-width"},
+      {network::mojom::WebClientHintsType::kRtt_DEPRECATED, "rtt"},
+      {network::mojom::WebClientHintsType::kDownlink_DEPRECATED, "downlink"},
+      {network::mojom::WebClientHintsType::kEct_DEPRECATED, "ect"},
+      // TODO(https://https://crbug.com/1227043) Remove lang client hint.
+      {network::mojom::WebClientHintsType::kLang, "lang"},
+      {network::mojom::WebClientHintsType::kUA, "sec-ch-ua"},
+      {network::mojom::WebClientHintsType::kUAArch, "sec-ch-ua-arch"},
+      {network::mojom::WebClientHintsType::kUAPlatform, "sec-ch-ua-platform"},
+      {network::mojom::WebClientHintsType::kUAModel, "sec-ch-ua-model"},
+      {network::mojom::WebClientHintsType::kUAMobile, "sec-ch-ua-mobile"},
+      {network::mojom::WebClientHintsType::kUAFullVersion,
+       "sec-ch-ua-full-version"},
+      {network::mojom::WebClientHintsType::kUAPlatformVersion,
+       "sec-ch-ua-platform-version"},
+      {network::mojom::WebClientHintsType::kPrefersColorScheme,
+       "sec-ch-prefers-color-scheme"},
+      {network::mojom::WebClientHintsType::kUABitness, "sec-ch-ua-bitness"},
+      {network::mojom::WebClientHintsType::kUAReduced, "sec-ch-ua-reduced"},
+      {network::mojom::WebClientHintsType::kViewportHeight,
+       "sec-ch-viewport-height"},
+  };
+}
 
-const size_t kClientHintsNameMappingCount = base::size(kClientHintsNameMapping);
-
-static_assert(
-    kClientHintsNameMappingCount ==
-        (static_cast<int>(network::mojom::WebClientHintsType::kMaxValue) + 1),
-    "Client Hint name table size must match network::mojom::WebClientHintsType "
-    "range");
+const ClientHintToNameMap& GetClientHintToNameMap() {
+  static const base::NoDestructor<ClientHintToNameMap> map(
+      MakeClientHintToNameMap());
+  return *map;
+}
 
 namespace {
 
@@ -48,12 +68,10 @@ using DecodeMap = base::flat_map<std::string,
 
 DecodeMap MakeDecodeMap() {
   DecodeMap result;
-  for (size_t i = 0;
-       i < static_cast<int>(network::mojom::WebClientHintsType::kMaxValue) + 1;
-       ++i) {
-    result.insert(
-        std::make_pair(kClientHintsNameMapping[i],
-                       static_cast<network::mojom::WebClientHintsType>(i)));
+  for (const auto& elem : network::GetClientHintToNameMap()) {
+    const auto& type = elem.first;
+    const auto& header = elem.second;
+    result.insert(std::make_pair(header, type));
   }
   return result;
 }

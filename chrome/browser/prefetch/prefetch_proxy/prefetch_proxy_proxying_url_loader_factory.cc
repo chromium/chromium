@@ -474,15 +474,14 @@ void PrefetchProxyProxyingURLLoaderFactory::OnEligibilityResult(
   isolated_request.headers.RemoveHeader("Accept-Language");
 
   // Strip out all Client Hints.
-  for (size_t i = 0; i < network::kClientHintsNameMappingCount; ++i) {
+  for (const auto& elem : network::GetClientHintToNameMap()) {
+    const auto& header = elem.second;
     // UA Client Hint and UA Mobile are ok to send.
-    if (std::string(network::kClientHintsNameMapping[i]) ==
-            kAllowedUAClientHint ||
-        std::string(network::kClientHintsNameMapping[i]) ==
-            kAllowedUAMobileClientHint) {
+    if (header == kAllowedUAClientHint ||
+        header == kAllowedUAMobileClientHint) {
       continue;
     }
-    isolated_request.headers.RemoveHeader(network::kClientHintsNameMapping[i]);
+    isolated_request.headers.RemoveHeader(header);
   }
 
   ResourceLoadSuccessfulCallback resource_load_successful_callback =

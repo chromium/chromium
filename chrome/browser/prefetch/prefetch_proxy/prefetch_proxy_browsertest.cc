@@ -628,26 +628,23 @@ class PrefetchProxyBrowserTest
   }
 
   bool RequestHasClientHints(const net::test_server::HttpRequest& request) {
-    for (size_t i = 0; i < network::kClientHintsNameMappingCount; ++i) {
+    for (const auto& elem : network::GetClientHintToNameMap()) {
+      const auto& header = elem.second;
       // The UA {mobile} Client Hint is whitelisted so we don't check it.
-      if (std::string(network::kClientHintsNameMapping[i]) ==
-          std::string(kAllowedUAClientHint)) {
+      if (header == std::string(kAllowedUAClientHint)) {
         continue;
       }
 
-      if (std::string(network::kClientHintsNameMapping[i]) ==
-          std::string(kAllowedUAMobileClientHint)) {
+      if (header == std::string(kAllowedUAMobileClientHint)) {
         continue;
       }
 
-      if (std::string(network::kClientHintsNameMapping[i]) ==
-          std::string(kAllowedUAPlatformClientHint)) {
+      if (header == std::string(kAllowedUAPlatformClientHint)) {
         continue;
       }
 
-      if (base::Contains(request.headers,
-                         network::kClientHintsNameMapping[i])) {
-        LOG(WARNING) << "request has " << network::kClientHintsNameMapping[i];
+      if (base::Contains(request.headers, header)) {
+        LOG(WARNING) << "request has " << header;
 
         return true;
       }

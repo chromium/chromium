@@ -2596,8 +2596,8 @@ void DocumentLoader::RecordUseCountersForCommit() {
     CountUse(WebFeature::kRequiredDocumentPolicy);
 
   FrameClientHintsPreferencesContext hints_context(frame_);
-  for (size_t i = 0; i < network::kClientHintsNameMappingCount; ++i) {
-    auto type = static_cast<network::mojom::WebClientHintsType>(i);
+  for (const auto& elem : network::GetClientHintToNameMap()) {
+    const auto& type = elem.first;
     if (client_hints_preferences_.ShouldSend(type))
       hints_context.CountClientHints(type);
   }

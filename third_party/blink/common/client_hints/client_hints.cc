@@ -20,7 +20,7 @@
 
 namespace blink {
 
-const unsigned kClientHintsNumberOfLegacyHints = 4;
+const int kClientHintsNumberOfLegacyHints = 4;
 
 ClientHintToPolicyFeatureMap MakeClientHintToPolicyFeatureMap() {
   return {
@@ -114,23 +114,25 @@ void FindClientHintsToRemove(const PermissionsPolicy* permissions_policy,
                              std::vector<std::string>* removed_headers) {
   DCHECK(removed_headers);
   url::Origin origin = url::Origin::Create(url);
-  size_t startHint = 0;
+  int startHint = 0;
   if (base::FeatureList::IsEnabled(features::kAllowClientHintsToThirdParty)) {
     // Do not remove any legacy Client Hints
     startHint = kClientHintsNumberOfLegacyHints;
   }
-  for (size_t i = startHint; i < network::kClientHintsNameMappingCount; ++i) {
+  for (const auto& elem : network::GetClientHintToNameMap()) {
+    const auto& type = elem.first;
+    const auto& header = elem.second;
+    if (static_cast<int>(type) < startHint)
+      continue;
     // Remove the hint if any is true:
     // * Permissions policy is null (we're in a sync XHR case) and the hint is
     // not sent by default.
     // * Permissions policy exists and doesn't allow for the hint.
-    const network::mojom::WebClientHintsType type =
-        static_cast<network::mojom::WebClientHintsType>(i);
     if ((!permissions_policy && !IsClientHintSentByDefault(type)) ||
         (permissions_policy &&
          !permissions_policy->IsFeatureEnabledForOrigin(
              blink::GetClientHintToPolicyFeatureMap().at(type), origin))) {
-      removed_headers->push_back(network::kClientHintsNameMapping[i]);
+      removed_headers->push_back(header);
     }
   }
 }

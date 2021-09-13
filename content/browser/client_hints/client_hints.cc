@@ -205,31 +205,27 @@ GetWebHoldbackEffectiveConnectionType() {
 void SetHeaderToDouble(net::HttpRequestHeaders* headers,
                        WebClientHintsType client_hint_type,
                        double value) {
-  headers->SetHeader(
-      network::kClientHintsNameMapping[static_cast<int>(client_hint_type)],
-      DoubleToSpecCompliantString(value));
+  headers->SetHeader(network::GetClientHintToNameMap().at(client_hint_type),
+                     DoubleToSpecCompliantString(value));
 }
 
 void SetHeaderToInt(net::HttpRequestHeaders* headers,
                     WebClientHintsType client_hint_type,
                     double value) {
-  headers->SetHeader(
-      network::kClientHintsNameMapping[static_cast<int>(client_hint_type)],
-      base::NumberToString(std::round(value)));
+  headers->SetHeader(network::GetClientHintToNameMap().at(client_hint_type),
+                     base::NumberToString(std::round(value)));
 }
 
 void SetHeaderToString(net::HttpRequestHeaders* headers,
                        WebClientHintsType client_hint_type,
                        const std::string& value) {
-  headers->SetHeader(
-      network::kClientHintsNameMapping[static_cast<int>(client_hint_type)],
-      value);
+  headers->SetHeader(network::GetClientHintToNameMap().at(client_hint_type),
+                     value);
 }
 
 void RemoveClientHintHeader(WebClientHintsType client_hint_type,
                             net::HttpRequestHeaders* headers) {
-  headers->RemoveHeader(
-      network::kClientHintsNameMapping[static_cast<int>(client_hint_type)]);
+  headers->RemoveHeader(network::GetClientHintToNameMap().at(client_hint_type));
 }
 
 void AddDeviceMemoryHeader(net::HttpRequestHeaders* headers) {

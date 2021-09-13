@@ -373,8 +373,9 @@ void FrameFetchContext::PrepareRequest(
 
   const bool ua_reduced =
       request.HttpHeaderField(
-          network::kClientHintsNameMapping[static_cast<size_t>(
-              network::mojom::blink::WebClientHintsType::kUAReduced)]) == "?1";
+          network::GetClientHintToNameMap()
+              .at(network::mojom::blink::WebClientHintsType::kUAReduced)
+              .c_str()) == "?1";
   String user_agent = ua_reduced ? GetReducedUserAgent() : GetUserAgent();
   base::UmaHistogramBoolean("Blink.Fetch.ReducedUserAgent", ua_reduced);
   request.SetHTTPUserAgent(AtomicString(user_agent));

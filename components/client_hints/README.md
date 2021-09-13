@@ -78,7 +78,7 @@ There’s two main steps to adding a hint to Chromium: adding the token, and pop
 
 The canonical enum for client hint tokens is [network::mojom::WebClientHintsType]. Any new token should be added to the end of that list. Along with that:
 
-*   Add the header name to `kClientHintsNameMapping` in [/services/network/public/cpp/client_hints.cc].
+*   Add the header name to the map in `MakeClientHintToNameMap` in [/services/network/public/cpp/client_hints.cc].
 *   Add an enum value to `WebFeature` in [/third_party/blink/public/mojom/web_feature/web_feature.mojom].
 *   Add the feature enum to the map in `MakeClientHintToWebFeatureMap` in [/third_party/blink/renderer/core/loader/frame_client_hints_preferences_context.cc].
 *   Add the client hint header to the `Accept-CH` header in the appropriate test files in [/chrome/test/data/client_hints/] and [/third_party/blink/web_tests/external/wpt/client-hints].

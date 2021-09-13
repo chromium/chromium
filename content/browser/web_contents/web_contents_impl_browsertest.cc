@@ -2555,9 +2555,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestClientHintsEnabled,
       "\r\n"
       "<html>");
   http_response.Done();
-  const std::string mobile_id =
-      network::kClientHintsNameMapping[static_cast<int>(
-          network::mojom::WebClientHintsType::kUAMobile)];
+  const std::string mobile_id = network::GetClientHintToNameMap().at(
+      network::mojom::WebClientHintsType::kUAMobile);
   ASSERT_TRUE(base::Contains(http_response.http_request()->headers, mobile_id));
   // "?!" corresponds to "mobile=true".
   EXPECT_EQ("?1", http_response.http_request()->headers.at(mobile_id));

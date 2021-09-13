@@ -402,7 +402,7 @@ std::vector<mojom::WebClientHintsType> ComputeAcceptCHFrameHints(
   // Only look at/add headers that aren't already present.
   std::vector<mojom::WebClientHintsType> hints;
   for (auto hint : maybe_hints.value()) {
-    const char* header = kClientHintsNameMapping[static_cast<int>(hint)];
+    const std::string header = GetClientHintToNameMap().at(hint);
     if (!headers.HasHeader(header))
       hints.push_back(hint);
   }
