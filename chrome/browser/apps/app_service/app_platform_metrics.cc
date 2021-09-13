@@ -31,6 +31,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_utils.h"
@@ -722,7 +723,8 @@ void AppPlatformMetrics::OnAppUpdate(const apps::AppUpdate& update) {
   }
 
   if (!update.ReadinessChanged() ||
-      update.Readiness() != apps::mojom::Readiness::kReady) {
+      update.Readiness() != apps::mojom::Readiness::kReady ||
+      apps_util::IsInstalled(update.PriorReadiness())) {
     return;
   }
 
