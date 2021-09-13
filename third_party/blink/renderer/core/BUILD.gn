@@ -1463,11 +1463,6 @@ source_set("unit_tests") {
     "script/module_record_resolver_impl_test.cc",
     "script/module_script_test.cc",
     "script/script_runner_test.cc",
-    "scroll/scroll_animator_test.cc",
-    "scroll/scroll_test.cc",
-    "scroll/scrollable_area_test.cc",
-    "scroll/scrollbar_test_suite.h",
-    "scroll/scrollbar_theme_overlay_test.cc",
     "speculation_rules/speculation_rule_set_test.cc",
     "speculation_rules/speculation_rules_origin_trial_test.cc",
     "streams/miscellaneous_operations_test.cc",
@@ -1526,6 +1521,7 @@ source_set("unit_tests") {
   sources += rebase_path(blink_core_tests_fileapi, "", "fileapi")
   sources += rebase_path(blink_core_tests_html, "", "html")
   sources += rebase_path(blink_core_tests_layout, "", "layout")
+  sources += rebase_path(blink_core_tests_scroll, "", "scroll")
   sources += rebase_path(blink_core_tests_style, "", "style")
 
   if (is_debug || dcheck_always_on) {
