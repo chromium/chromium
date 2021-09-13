@@ -6,23 +6,29 @@
 // See http://code.google.com/p/googletest/issues/detail?id=371
 #include "testing/gtest/include/gtest/gtest.h"
 
+#include <drm_fourcc.h>
+#include <gbm.h>
 #include <unistd.h>
 #include <map>
 #include <vector>
 
 #include <va/va.h>
+#include <va/va_drmcommon.h>
 #include <va/va_str.h>
 
+#include "base/bits.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/cpu.h"
 #include "base/files/file.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/process/launch.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_suite.h"
@@ -31,6 +37,7 @@
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "media/media_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/linux/gbm_defines.h"
 
 namespace media {
 namespace {
@@ -117,6 +124,7 @@ std::unique_ptr<base::test::ScopedFeatureList> CreateScopedFeatureList() {
 unsigned int ToVaRTFormat(uint32_t va_fourcc) {
   switch (va_fourcc) {
     case VA_FOURCC_I420:
+    case VA_FOURCC_NV12:
       return VA_RT_FORMAT_YUV420;
     case VA_FOURCC_YUY2:
       return VA_RT_FORMAT_YUV422;
@@ -126,6 +134,22 @@ unsigned int ToVaRTFormat(uint32_t va_fourcc) {
       return VA_RT_FORMAT_YUV420_10;
   }
   return kInvalidVaRtFormat;
+}
+
+uint32_t ToVaFourcc(unsigned int va_rt_format) {
+  switch (va_rt_format) {
+    case VA_RT_FORMAT_YUV420:
+      return VA_FOURCC_NV12;
+  }
+  return DRM_FORMAT_INVALID;
+}
+
+int ToGBMFormat(unsigned int va_rt_format) {
+  switch (va_rt_format) {
+    case VA_RT_FORMAT_YUV420:
+      return DRM_FORMAT_NV12;
+  }
+  return DRM_FORMAT_INVALID;
 }
 
 }  // namespace
@@ -503,6 +527,199 @@ INSTANTIATE_TEST_SUITE_P(,
                          ::testing::Combine(::testing::ValuesIn(kVAFourCCs),
                                             ::testing::ValuesIn(kVAFourCCs)),
                          VaapiVppTest::PrintToStringParamName());
+
+class VaapiMinigbmTest
+    : public VaapiTest,
+      public testing::WithParamInterface<
+          std::tuple<VAProfile, unsigned int /*va_rt_format*/, gfx::Size>> {
+ public:
+  VaapiMinigbmTest() = default;
+  ~VaapiMinigbmTest() override = default;
+
+  // Populate meaningful test suffixes instead of /0, /1, etc.
+  struct PrintToStringParamName {
+    template <class ParamType>
+    std::string operator()(
+        const testing::TestParamInfo<ParamType>& info) const {
+      // Using here vaProfileStr(std::get<0>(info.param)) crashes the binary.
+      // TODO(mcasas): investigate why and use it instead of codec%d.
+      return base::StringPrintf(
+          "codec%d__VA_RT_FORMAT_0x%x__%s", std::get<0>(info.param),
+          std::get<1>(info.param), std::get<2>(info.param).ToString().c_str());
+    }
+  };
+};
+
+// This test allocates a VASurface (via VaapiWrapper) for the given VAProfile,
+// VA RT Format and resolution (as per the test parameters). It then verifies
+// that said VASurface's metadata (e.g. width, height, number of planes, pitch)
+// are the same as those we would allocate via minigbm.
+TEST_P(VaapiMinigbmTest, AllocateAndCompareWithMinigbm) {
+  const VAProfile va_profile = std::get<0>(GetParam());
+  const unsigned int va_rt_format = std::get<1>(GetParam());
+  const gfx::Size resolution = std::get<2>(GetParam());
+
+  // TODO(b/187852384): enable the other backends.
+  if (VaapiWrapper::GetImplementationType() != VAImplementation::kIntelIHD)
+    GTEST_SKIP() << "backend not supported";
+
+  ASSERT_NE(va_rt_format, kInvalidVaRtFormat);
+  if (!VaapiWrapper::IsDecodeSupported(va_profile))
+    GTEST_SKIP() << vaProfileStr(va_profile) << " not supported.";
+
+  if (!VaapiWrapper::IsDecodingSupportedForInternalFormat(va_profile,
+                                                          va_rt_format)) {
+    GTEST_SKIP() << "VA_RT_FORMAT 0x" << std::hex << va_rt_format
+                 << " not supported.";
+  }
+
+  gfx::Size minimum_supported_size;
+  ASSERT_TRUE(VaapiWrapper::GetDecodeMinResolution(va_profile,
+                                                   &minimum_supported_size));
+  gfx::Size maximum_supported_size;
+  ASSERT_TRUE(VaapiWrapper::GetDecodeMaxResolution(va_profile,
+                                                   &maximum_supported_size));
+
+  if (resolution.width() < minimum_supported_size.width() ||
+      resolution.height() < minimum_supported_size.height() ||
+      resolution.width() > maximum_supported_size.width() ||
+      resolution.height() > maximum_supported_size.height()) {
+    GTEST_SKIP() << resolution.ToString()
+                 << " not supported (min: " << minimum_supported_size.ToString()
+                 << ", max: " << maximum_supported_size.ToString() << ")";
+  }
+
+  auto wrapper =
+      VaapiWrapper::Create(VaapiWrapper::kDecode, va_profile,
+                           EncryptionScheme::kUnencrypted, base::DoNothing());
+  ASSERT_TRUE(!!wrapper);
+  ASSERT_TRUE(wrapper->CreateContext(resolution));
+
+  auto scoped_surfaces = wrapper->CreateScopedVASurfaces(
+      va_rt_format, resolution, {VaapiWrapper::SurfaceUsageHint::kVideoDecoder},
+      1u,
+      /*visible_size=*/absl::nullopt, /*va_fourcc=*/absl::nullopt);
+  ASSERT_FALSE(scoped_surfaces.empty());
+  const auto scoped_va_surface = std::move(scoped_surfaces[0]);
+  wrapper->DestroyContext();
+
+  ASSERT_TRUE(scoped_va_surface->IsValid());
+  EXPECT_EQ(scoped_va_surface->format(), va_rt_format);
+
+  // Request the underlying DRM metadata for |scoped_va_surface|.
+  VADRMPRIMESurfaceDescriptor va_descriptor{};
+  {
+    base::AutoLock auto_lock(*wrapper->va_lock_);
+    VAStatus va_res =
+        vaSyncSurface(wrapper->va_display_, scoped_va_surface->id());
+    ASSERT_EQ(va_res, VA_STATUS_SUCCESS);
+    va_res = vaExportSurfaceHandle(
+        wrapper->va_display_, scoped_va_surface->id(),
+        VA_SURFACE_ATTRIB_MEM_TYPE_DRM_PRIME_2,
+        VA_EXPORT_SURFACE_READ_ONLY | VA_EXPORT_SURFACE_SEPARATE_LAYERS,
+        &va_descriptor);
+    ASSERT_EQ(va_res, VA_STATUS_SUCCESS);
+  }
+
+  // Verify some expected properties of the allocated VASurface. We expect a
+  // single |object|, with a number of |layers| of the same |pitch|.
+  EXPECT_EQ(scoped_va_surface->size(),
+            gfx::Size(base::checked_cast<int>(va_descriptor.width),
+                      base::checked_cast<int>(va_descriptor.height)));
+
+  const auto va_fourcc = ToVaFourcc(va_rt_format);
+  ASSERT_NE(va_fourcc, base::checked_cast<unsigned int>(DRM_FORMAT_INVALID));
+  EXPECT_EQ(va_descriptor.fourcc, va_fourcc)
+      << FourccToString(va_descriptor.fourcc)
+      << " != " << FourccToString(va_fourcc);
+  EXPECT_EQ(va_descriptor.num_objects, 1u);
+  // TODO(mcasas): consider comparing |size| with a better estimate of the
+  // |scoped_va_surface| memory footprint (e.g. including planes and format).
+  EXPECT_GE(va_descriptor.objects[0].size,
+            base::checked_cast<uint32_t>(scoped_va_surface->size().GetArea()));
+  EXPECT_EQ(va_descriptor.objects[0].drm_format_modifier,
+            I915_FORMAT_MOD_Y_TILED);
+  // TODO(mcasas): |num_layers| actually depends on |va_descriptor.va_fourcc|.
+  EXPECT_EQ(va_descriptor.num_layers, 2u);
+  for (uint32_t i = 0; i < va_descriptor.num_layers; ++i) {
+    EXPECT_EQ(va_descriptor.layers[i].num_planes, 1u);
+    EXPECT_EQ(va_descriptor.layers[i].object_index[0], 0u);
+
+    DVLOG(2) << "plane " << i
+             << ", pitch: " << va_descriptor.layers[i].pitch[0];
+    // Luma and chroma planes have different |pitch| expectations.
+    if (i == 0) {
+      EXPECT_GE(
+          va_descriptor.layers[i].pitch[0],
+          base::checked_cast<uint32_t>(scoped_va_surface->size().width()));
+    } else {
+      const auto expected_rounded_up_pitch =
+          base::bits::AlignUp(scoped_va_surface->size().width(), 2);
+      EXPECT_GE(va_descriptor.layers[i].pitch[0],
+                base::checked_cast<uint32_t>(expected_rounded_up_pitch));
+    }
+  }
+
+  // Now open minigbm pointing to the DRM primary node, allocate a gbm_bo, and
+  // compare its width/height/stride/etc with the |va_descriptor|s.
+  base::File drm_fd(
+      base::FilePath("/dev/dri/card0"),
+      base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_WRITE);
+
+  ASSERT_TRUE(drm_fd.IsValid());
+  struct gbm_device* gbm = gbm_create_device(drm_fd.GetPlatformFile());
+  ASSERT_TRUE(gbm);
+
+  const auto gbm_format = ToGBMFormat(va_rt_format);
+  ASSERT_NE(gbm_format, DRM_FORMAT_INVALID);
+  struct gbm_bo* bo = gbm_bo_create(
+      gbm, resolution.width(), resolution.height(), gbm_format,
+      GBM_BO_USE_SCANOUT | GBM_BO_USE_TEXTURING | GBM_BO_USE_HW_VIDEO_DECODER);
+  ASSERT_TRUE(bo);
+  EXPECT_EQ(scoped_va_surface->size(),
+            gfx::Size(base::checked_cast<int>(gbm_bo_get_width(bo)),
+                      base::checked_cast<int>(gbm_bo_get_height(bo))));
+
+  const int bo_num_planes = gbm_bo_get_plane_count(bo);
+  ASSERT_EQ(va_descriptor.num_layers,
+            base::checked_cast<uint32_t>(bo_num_planes));
+  for (int i = 0; i < bo_num_planes; ++i) {
+    EXPECT_EQ(va_descriptor.layers[i].pitch[0],
+              gbm_bo_get_stride_for_plane(bo, i));
+  }
+
+  // TODO(mcasas): consider comparing |va_descriptor.objects[0].size| with |bo|s
+  // size (as returned by lseek()ing it).
+
+  gbm_bo_destroy(bo);
+  gbm_device_destroy(gbm);
+}
+
+constexpr VAProfile kVACodecProfiles[] = {
+    VAProfileVP8Version0_3, VAProfileH264ConstrainedBaseline,
+    VAProfileVP9Profile0, VAProfileAV1Profile0, VAProfileJPEGBaseline};
+constexpr uint32_t kVARTFormatsForGBM[] = {VA_RT_FORMAT_YUV420};
+constexpr gfx::Size kResolutions[] = {
+    // clang-format off
+    gfx::Size(127, 127),
+    gfx::Size(128, 128),
+    gfx::Size(129, 129),
+    gfx::Size(320, 180),
+    gfx::Size(320, 240),  // QVGA
+    gfx::Size(323, 243),
+    gfx::Size(480, 320),  // 3/4 VGA
+    gfx::Size(640, 360),  // VGA
+    gfx::Size(640, 480),
+    gfx::Size(1280, 720)};
+// clang-format on
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    VaapiMinigbmTest,
+    ::testing::Combine(::testing::ValuesIn(kVACodecProfiles),
+                       ::testing::ValuesIn(kVARTFormatsForGBM),
+                       ::testing::ValuesIn(kResolutions)),
+    VaapiMinigbmTest::PrintToStringParamName());
 
 }  // namespace media
 

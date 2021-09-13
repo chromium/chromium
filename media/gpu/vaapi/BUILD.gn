@@ -328,6 +328,8 @@ test("vaapi_unittest") {
     "//gpu",
     "//media/gpu/test:helpers",
     "//testing/gtest",
+    "//third_party/minigbm",
+    "//ui/gfx/linux:gbm",
   ]
 
   # TODO(https://crbug.com/1043007): remove is_chromeos.
