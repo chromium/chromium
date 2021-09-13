@@ -547,7 +547,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerOfflineCapabilityCheckBrowserTest,
                              }});
 
   // TODO(hayato): Find a reliable way to control the order of
-  // the execution. Currently, maybe_support_offline.js uses setTimeout so that
+  // the execution. Currently, maybe_offline_support.js uses setTimeout so that
   // 1st fetch event is still running when 2nd fetch event comes.
   RunFetchEventDispatchTest(
       {{
