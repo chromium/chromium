@@ -82,14 +82,6 @@ void WebIntTest::TearDown() {
   WebTest::TearDown();
 }
 
-std::unique_ptr<base::Value> WebIntTest::ExecuteJavaScript(NSString* script) {
-  return web::test::ExecuteJavaScript(web_state(),
-                                      base::SysNSStringToUTF8(script));
-  //  web_state()->ExecuteJavaScript
-  //  return web::test::ExecuteJavaScript(web_state()->GetJSInjectionReceiver(),
-  //                                      script);
-}
-
 bool WebIntTest::ExecuteBlockAndWaitForLoad(const GURL& url,
                                             ProceduralBlock block) {
   DCHECK(block);

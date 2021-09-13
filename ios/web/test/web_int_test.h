@@ -17,10 +17,6 @@
 
 class GURL;
 
-namespace base {
-class Value;
-}  // namespace base
-
 namespace web {
 
 // A test fixture for integration tests that need a WebState which loads pages.
@@ -43,10 +39,6 @@ class WebIntTest : public WebTest {
   NavigationItem* GetLastCommittedItem() {
     return navigation_manager()->GetLastCommittedItem();
   }
-
-  // Synchronously executes |script| on |web_state|'s JS injection receiver and
-  // returns the result.
-  std::unique_ptr<base::Value> ExecuteJavaScript(NSString* script);
 
   // Executes |block| and waits until |url| is successfully loaded in
   // |web_state_|.

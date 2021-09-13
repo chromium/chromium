@@ -1155,7 +1155,9 @@ TEST_F(WebStateObserverTest, InvalidURL) {
   // There should be no calls to WebStatePolicyDecider, since the navigation
   // should get cancelled before that is reached.
   EXPECT_CALL(*decider_, MockShouldAllowRequest(_, _, _)).Times(0);
-  ExecuteJavaScript(@"window.location.pathname = '/%00%50'");
+  web::test::ExecuteJavaScript(
+      web_state(),
+      base::SysNSStringToUTF8(@"window.location.pathname = '/%00%50'"));
 }
 
 // Tests navigation to a URL with /..; suffix. On iOS 12 and earlier this
@@ -1620,7 +1622,7 @@ TEST_F(WebStateObserverTest, RendererInitiatedHashChangeNavigation) {
 
   EXPECT_CALL(observer_,
               PageLoaded(web_state(), PageLoadCompletionStatus::SUCCESS));
-  ExecuteJavaScript(@"window.location.hash = '#1'");
+  web::test::ExecuteJavaScript(web_state(), "window.location.hash = '#1'");
 }
 
 // Tests state change.
@@ -1670,7 +1672,8 @@ TEST_F(WebStateObserverTest, StateNavigation) {
           web_state(), push_url, /*has_user_gesture=*/false, &context, &nav_id,
           ui::PageTransition::PAGE_TRANSITION_CLIENT_REDIRECT,
           /*renderer_initiated=*/true));
-  ExecuteJavaScript(@"window.history.pushState('', 'Test', 'test.html')");
+  web::test::ExecuteJavaScript(
+      web_state(), "window.history.pushState('', 'Test', 'test.html')");
 
   // Perform replace state using JavaScript.
   const GURL replace_url = test_server_->GetURL("/1.html");
@@ -1686,7 +1689,8 @@ TEST_F(WebStateObserverTest, StateNavigation) {
           web_state(), replace_url, /*has_user_gesture=*/false, &context,
           &nav_id, ui::PageTransition::PAGE_TRANSITION_CLIENT_REDIRECT,
           /*renderer_initiated=*/true));
-  ExecuteJavaScript(@"window.history.replaceState('', 'Test', '1.html')");
+  web::test::ExecuteJavaScript(
+      web_state(), "window.history.replaceState('', 'Test', '1.html')");
 }
 
 // Tests successful navigation to a new page with post HTTP method.
@@ -1783,7 +1787,8 @@ TEST_F(WebStateObserverTest, RendererInitiatedPostNavigation) {
   EXPECT_CALL(observer_, DidStopLoading(web_state()));
   EXPECT_CALL(observer_,
               PageLoaded(web_state(), PageLoadCompletionStatus::SUCCESS));
-  ExecuteJavaScript(@"document.getElementById('form').submit();");
+  web::test::ExecuteJavaScript(web_state(),
+                               "document.getElementById('form').submit();");
   ASSERT_TRUE(WaitForWebViewContainingText(web_state(),
                                            ::testing::kTestFormFieldValue));
 }
@@ -1834,7 +1839,8 @@ TEST_F(WebStateObserverTest, ReloadPostNavigation) {
   EXPECT_CALL(observer_, DidStopLoading(web_state()));
   EXPECT_CALL(observer_,
               PageLoaded(web_state(), PageLoadCompletionStatus::SUCCESS));
-  ExecuteJavaScript(@"window.document.getElementById('form').submit();");
+  web::test::ExecuteJavaScript(
+      web_state(), "window.document.getElementById('form').submit();");
   ASSERT_TRUE(WaitForWebViewContainingText(web_state(),
                                            ::testing::kTestFormFieldValue));
 
@@ -1923,7 +1929,8 @@ TEST_F(WebStateObserverTest, ForwardPostNavigation) {
   EXPECT_CALL(observer_, DidStopLoading(web_state()));
   EXPECT_CALL(observer_,
               PageLoaded(web_state(), PageLoadCompletionStatus::SUCCESS));
-  ExecuteJavaScript(@"window.document.getElementById('form').submit();");
+  web::test::ExecuteJavaScript(
+      web_state(), "window.document.getElementById('form').submit();");
   ASSERT_TRUE(WaitForWebViewContainingText(web_state(),
                                            ::testing::kTestFormFieldValue));
 
@@ -2528,14 +2535,14 @@ TEST_F(WebStateObserverTest, IframeNavigation) {
   EXPECT_CALL(observer_, DidChangeBackForwardState(web_state()));
   test::TapWebViewElementWithIdInIframe(web_state(), "normal-link");
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
-    std::unique_ptr<base::Value> URL =
-        ExecuteJavaScript(@"window.frames[0].location.pathname;");
+    std::unique_ptr<base::Value> URL = web::test::ExecuteJavaScript(
+        web_state(), "window.frames[0].location.pathname;");
     return URL->is_string() && URL->GetString() == "/pony.html";
   }));
   ASSERT_TRUE(web_state()->GetNavigationManager()->CanGoBack());
   ASSERT_FALSE(web_state()->GetNavigationManager()->CanGoForward());
   std::unique_ptr<base::Value> history_length =
-      ExecuteJavaScript(@"history.length;");
+      web::test::ExecuteJavaScript(web_state(), "history.length;");
   ASSERT_TRUE(history_length->is_double());
   ASSERT_EQ(2, history_length->GetDouble());
 
@@ -2560,8 +2567,8 @@ TEST_F(WebStateObserverTest, IframeNavigation) {
 
   web_state()->GetNavigationManager()->GoBack();
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
-    std::unique_ptr<base::Value> URL =
-        ExecuteJavaScript(@"window.frames[0].location.pathname;");
+    std::unique_ptr<base::Value> URL = web::test::ExecuteJavaScript(
+        web_state(), "window.frames[0].location.pathname;");
     return URL->is_string() && URL->GetString() == "/links.html";
   }));
   ASSERT_TRUE(web_state()->GetNavigationManager()->CanGoForward());
@@ -2642,9 +2649,10 @@ TEST_F(WebStateObserverTest, CrossOriginIframeNavigation) {
       .WillOnce(
           RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
   EXPECT_CALL(observer_, DidChangeBackForwardState(web_state()));
-  ExecuteJavaScript(
-      [NSString stringWithFormat:@"window.frames[0].location.href='%s';",
-                                 cross_origin_url.spec().c_str()]);
+  web::test::ExecuteJavaScript(
+      web_state(), base::SysNSStringToUTF8([NSString
+                       stringWithFormat:@"window.frames[0].location.href='%s';",
+                                        cross_origin_url.spec().c_str()]));
   ASSERT_TRUE(test::WaitForWebViewContainingTextInFrame(web_state(), "Echo"));
   ASSERT_TRUE(test::WaitForPageToFinishLoading(web_state()));
 
@@ -2662,9 +2670,10 @@ TEST_F(WebStateObserverTest, CrossOriginIframeNavigation) {
   EXPECT_CALL(*decider_, ShouldAllowResponse(_, /*for_main_frame=*/false, _))
       .WillOnce(
           RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
-  ExecuteJavaScript(
-      [NSString stringWithFormat:@"window.frames[0].location.href='%s';",
-                                 url2.spec().c_str()]);
+  web::test::ExecuteJavaScript(
+      web_state(), base::SysNSStringToUTF8([NSString
+                       stringWithFormat:@"window.frames[0].location.href='%s';",
+                                        url2.spec().c_str()]));
   ASSERT_TRUE(test::WaitForWebViewContainingTextInFrame(web_state(), "pony"));
   ASSERT_TRUE(test::WaitForPageToFinishLoading(web_state()));
 }
