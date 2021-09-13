@@ -5638,6 +5638,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="MediaRouter.Sink.SelectedType.CastAndDialPresent.{Ui}"
+    enum="MediaSinkType" expires_after="2022-02-01">
+  <owner>takumif@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    The type of the Media Sink that media is being cast to, when both Cast and
+    DIAL sinks are available for casting. Recorded each time the user selects a
+    Media Sink to start casting from {Ui}.
+  </summary>
+  <token key="Ui">
+    <variant name="CastHarmony"/>
+    <variant name="GlobalMediaControls"/>
+  </token>
+</histogram>
+
 <histogram name="MediaRouter.Sink.SelectedType.{Ui}" enum="MediaSinkType"
     expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>

@@ -193,6 +193,9 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   // Sets local file as the selected source if |file_info| is not null.
   void OnFilePickerClosed(const ui::SelectedFileInfo* file_info);
 
+  // Returns true if there are active Cast and DIAL sinks.
+  bool HasCastAndDialSinks() const;
+
   // The singleton dialog instance. This is a nullptr when a dialog is not
   // shown.
   static CastDialogView* instance_;

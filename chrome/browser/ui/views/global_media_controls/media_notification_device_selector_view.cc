@@ -11,12 +11,14 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_impl.h"
 #include "chrome/browser/ui/media_router/cast_dialog_model.h"
+#include "chrome/browser/ui/media_router/ui_media_sink.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_selector_observer.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_selector_view_delegate.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_sink_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_router/browser/media_router_metrics.h"
+#include "components/media_router/common/media_sink.h"
 #include "components/media_router/common/mojom/media_route_provider_id.mojom-shared.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -32,6 +34,7 @@
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/layout/box_layout.h"
 
+using media_router::MediaRouterMetrics;
 using media_router::mojom::MediaRouteProviderId;
 
 namespace {
@@ -61,7 +64,7 @@ media_router::MediaRouterDialogOpenOrigin ConvertToOrigin(
 
 void RecordCastDeviceCountMetrics(GlobalMediaControlsEntryPoint entry_point,
                                   std::vector<CastDeviceEntryView*> entries) {
-  media_router::MediaRouterMetrics::RecordDeviceCount(entries.size());
+  MediaRouterMetrics::RecordDeviceCount(entries.size());
 
   std::map<MediaRouteProviderId, std::map<bool, int>> counts = {
       {MediaRouteProviderId::CAST, {{true, 0}, {false, 0}}},
@@ -76,8 +79,8 @@ void RecordCastDeviceCountMetrics(GlobalMediaControlsEntryPoint entry_point,
                         MediaRouteProviderId::WIRED_DISPLAY}) {
     for (bool is_available : {true, false}) {
       int count = counts.at(provider).at(is_available);
-      media_router::MediaRouterMetrics::RecordGmcDeviceCount(
-          ConvertToOrigin(entry_point), provider, is_available, count);
+      MediaRouterMetrics::RecordGmcDeviceCount(ConvertToOrigin(entry_point),
+                                               provider, is_available, count);
     }
   }
 }
@@ -503,7 +506,7 @@ void MediaNotificationDeviceSelectorView::StartCastSession(
     // We record stopping casting here even if we are starting casting, because
     // the existing session is being stopped and replaced by a new session.
     RecordStopCastingMetrics();
-    if (sink.provider == media_router::mojom::MediaRouteProviderId::DIAL) {
+    if (sink.provider == MediaRouteProviderId::DIAL) {
       DCHECK(sink.route);
       cast_controller_->StopCasting(sink.route->media_route_id());
     } else {
@@ -522,8 +525,8 @@ void MediaNotificationDeviceSelectorView::DoStartCastSession(
 
 void MediaNotificationDeviceSelectorView::RecordStartCastingMetrics(
     media_router::SinkIconType sink_icon_type) {
-  media_router::MediaRouterMetrics::RecordMediaSinkTypeForGlobalMediaControls(
-      sink_icon_type);
+  MediaRouterMetrics::RecordMediaSinkTypeForGlobalMediaControls(sink_icon_type);
+  RecordStartCastingWithCastAndDialPresent(sink_icon_type);
 
   GlobalMediaControlsCastActionAndEntryPoint action;
   switch (entry_point_) {
@@ -541,6 +544,36 @@ void MediaNotificationDeviceSelectorView::RecordStartCastingMetrics(
   base::UmaHistogramEnumeration(
       media_message_center::MediaNotificationItem::kCastStartStopHistogramName,
       action);
+}
+
+void MediaNotificationDeviceSelectorView::
+    RecordStartCastingWithCastAndDialPresent(media_router::SinkIconType type) {
+  bool has_cast = false;
+  bool has_dial = false;
+  for (views::View* view : device_entry_views_container_->children()) {
+    DeviceEntryUI* entry = GetDeviceEntryUI(view);
+    if (entry->GetType() != DeviceEntryUIType::kCast) {
+      continue;
+    }
+    const auto* cast_entry = static_cast<CastDeviceEntryView*>(entry);
+    // A sink gets disabled while we're trying to connect to it, but we consider
+    // those sinks available.
+    if (!cast_entry->GetEnabled() &&
+        cast_entry->sink().state !=
+            media_router::UIMediaSinkState::CONNECTING) {
+      continue;
+    }
+    if (cast_entry->sink().provider == MediaRouteProviderId::CAST) {
+      has_cast = true;
+    } else if (cast_entry->sink().provider == MediaRouteProviderId::DIAL) {
+      has_dial = true;
+    }
+    if (has_cast && has_dial) {
+      MediaRouterMetrics::RecordMediaSinkTypeWhenCastAndDialPresent(
+          type, media_router::UiType::kGlobalMediaControls);
+      return;
+    }
+  }
 }
 
 void MediaNotificationDeviceSelectorView::RecordStopCastingMetrics() {
@@ -567,7 +600,7 @@ void MediaNotificationDeviceSelectorView::RecordCastDeviceCountAfterDelay() {
       base::BindOnce(
           &MediaNotificationDeviceSelectorView::RecordCastDeviceCount,
           weak_ptr_factory_.GetWeakPtr()),
-      media_router::MediaRouterMetrics::kDeviceCountMetricDelay);
+      MediaRouterMetrics::kDeviceCountMetricDelay);
 }
 
 void MediaNotificationDeviceSelectorView::RecordCastDeviceCount() {

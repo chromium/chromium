@@ -139,7 +139,8 @@ void CastDialogMetrics::OnPaint(const base::Time& paint_time) {
 void CastDialogMetrics::OnStartCasting(const base::Time& start_time,
                                        int selected_sink_index,
                                        MediaCastMode cast_mode,
-                                       SinkIconType icon_type) {
+                                       SinkIconType icon_type,
+                                       bool has_cast_and_dial) {
   DCHECK(!sinks_load_time_.is_null());
   MediaRouterMetrics::RecordStartRouteDeviceIndex(selected_sink_index);
   if (!first_action_recorded_) {
@@ -149,6 +150,10 @@ void CastDialogMetrics::OnStartCasting(const base::Time& start_time,
   MaybeRecordFirstAction(MediaRouterUserAction::START_LOCAL);
   MaybeRecordActivationLocationAndCastMode(cast_mode);
   MediaRouterMetrics::RecordMediaSinkTypeForCastDialog(icon_type);
+  if (has_cast_and_dial) {
+    MediaRouterMetrics::RecordMediaSinkTypeWhenCastAndDialPresent(
+        icon_type, UiType::kCastDialog);
+  }
 }
 
 void CastDialogMetrics::OnStopCasting(bool is_local_route) {
