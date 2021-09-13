@@ -33,7 +33,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
-import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.customtabs.IncognitoCustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -113,11 +112,7 @@ public class IncognitoNotificationServiceTest {
         createTabOnUiThread();
         createTabOnUiThread();
 
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    mActivityTestRule.getActivity().getTabModelSelector().getModel(true).getCount(),
-                    Matchers.is(2));
-        });
+        pollUiThreadForChromeActivityIncognitoTabCount(2);
 
         final Profile incognitoProfile =
                 TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<Profile>() {
@@ -136,11 +131,7 @@ public class IncognitoNotificationServiceTest {
 
         sendClearIncognitoIntent();
 
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    mActivityTestRule.getActivity().getTabModelSelector().getModel(true).getCount(),
-                    Matchers.is(0));
-        });
+        pollUiThreadForChromeActivityIncognitoTabCount(0);
         CriteriaHelper.pollUiThread(() -> !incognitoProfile.isNativeInitialized());
     }
 
@@ -250,11 +241,27 @@ public class IncognitoNotificationServiceTest {
                         .getPendingIntent();
         clearIntent.send();
 
+        pollUiThreadForChromeActivityIncognitoTabCount(0);
+
         // Verify the Incognito CCT is not closed.
-        CustomTabActivity customTabActivity = mCustomTabActivityTestRule.getActivity();
+        pollUiThreadForCustomIncognitoTabCount(1);
+    }
+
+    private void pollUiThreadForChromeActivityIncognitoTabCount(int expectedCount) {
         CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(customTabActivity.getTabModelSelector().getModel(true).getCount(),
-                    Matchers.equalTo(1));
+            Criteria.checkThat(
+                    mActivityTestRule.getActivity().getTabModelSelector().getModel(true).getCount(),
+                    Matchers.is(expectedCount));
+        });
+    }
+
+    private void pollUiThreadForCustomIncognitoTabCount(int expectedCount) {
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(mCustomTabActivityTestRule.getActivity()
+                                       .getTabModelSelector()
+                                       .getModel(true)
+                                       .getCount(),
+                    Matchers.is(expectedCount));
         });
     }
 }
