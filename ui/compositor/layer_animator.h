@@ -7,6 +7,8 @@
 
 #include <vector>
 
+#include "base/callback.h"
+#include "base/callback_list.h"
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/gtest_prod_util.h"
@@ -64,7 +66,13 @@ class COMPOSITOR_EXPORT LayerAnimator : public base::RefCounted<LayerAnimator>,
     REPLACE_QUEUED_ANIMATIONS
   };
 
+  using SequenceScheduledCallbacks =
+      base::RepeatingCallbackList<void(LayerAnimationSequence*)>;
+  using SequenceScheduledCallback = SequenceScheduledCallbacks::CallbackType;
+
   explicit LayerAnimator(base::TimeDelta transition_duration);
+  LayerAnimator(const LayerAnimator&) = delete;
+  LayerAnimator& operator=(const LayerAnimator&) = delete;
 
   // No implicit animations when properties are set.
   static LayerAnimator* CreateDefaultAnimator();
@@ -213,6 +221,14 @@ class COMPOSITOR_EXPORT LayerAnimator : public base::RefCounted<LayerAnimator>,
       std::unique_ptr<ImplicitAnimationObserver> animation_observer);
   void RemoveAndDestroyOwnedObserver(
       ImplicitAnimationObserver* animation_observer);
+
+  // Adds callback to list which is invoked when a new sequence is scheduled.
+  // Prefer using this callback to better managed LayerAnimationObservers.
+  // Caller must retain the result for as long as the callback needs to remain
+  // active. Clearing the result (add_sequence_subscription.reset()) will also
+  // remove the subscription.
+  base::CallbackListSubscription AddSequenceScheduledCallback(
+      SequenceScheduledCallback callback) WARN_UNUSED_RESULT;
 
   // Called when a threaded animation is actually started.
   void OnThreadedAnimationStarted(base::TimeTicks monotonic_time,
@@ -392,7 +408,7 @@ class COMPOSITOR_EXPORT LayerAnimator : public base::RefCounted<LayerAnimator>,
   AnimationQueue animation_queue_;
 
   // The target of all layer animations.
-  LayerAnimationDelegate* delegate_;
+  LayerAnimationDelegate* delegate_ = nullptr;
 
   // Plays CC animations.
   scoped_refptr<cc::Animation> animation_;
@@ -401,39 +417,42 @@ class COMPOSITOR_EXPORT LayerAnimator : public base::RefCounted<LayerAnimator>,
   RunningAnimations running_animations_;
 
   // Determines how animations are replaced.
-  PreemptionStrategy preemption_strategy_;
+  PreemptionStrategy preemption_strategy_ = IMMEDIATELY_SET_NEW_TARGET;
 
   // Whether the length of animations is locked. While it is locked
   // SetTransitionDuration does not set |transition_duration_|.
-  bool is_transition_duration_locked_;
+  bool is_transition_duration_locked_ = false;
 
   // The default length of animations.
   base::TimeDelta transition_duration_;
 
   // The default tween type for implicit transitions
-  gfx::Tween::Type tween_type_;
+  gfx::Tween::Type tween_type_ = gfx::Tween::LINEAR;
 
   // Used for coordinating the starting of animations.
   base::TimeTicks last_step_time_;
 
   // True if we are being stepped by our container.
-  bool is_started_;
+  bool is_started_ = false;
 
   // This prevents the animator from automatically stepping through animations
   // and allows for manual stepping.
-  bool disable_timer_for_test_;
+  bool disable_timer_for_test_ = false;
 
   // Prevents timer adjustments in case when we start multiple animations
   // with preemption strategies that discard previous animations.
-  bool adding_animations_;
+  bool adding_animations_ = false;
 
   // Observers are notified when layer animations end, are scheduled or are
   // aborted.
+  // TODO(crbug.com/1248132): Once all references to Add/RemoveObserver
+  // functions are removed, delete these, the associated methods other internal
+  // related code.
   base::ObserverList<LayerAnimationObserver>::Unchecked observers_;
 
   std::vector<std::unique_ptr<ImplicitAnimationObserver>> owned_observer_list_;
 
-  DISALLOW_COPY_AND_ASSIGN(LayerAnimator);
+  SequenceScheduledCallbacks sequence_scheduled_callbacks_;
 };
 
 }  // namespace ui
