@@ -274,11 +274,13 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
     // is not carefully tuned. Only control the threshold here to avoid changing
     // the rest of the code below.
     // As of 2021, 64 bits Android devices are not memory constrained.
-    largest_cached_size_ = base::internal::ThreadCache::kDefaultSizeThreshold;
+    largest_cached_size_ =
+        base::internal::ThreadCacheLimits::kDefaultSizeThreshold;
 #else
-    largest_cached_size_ = base::internal::ThreadCache::kLargeSizeThreshold;
+    largest_cached_size_ =
+        base::internal::ThreadCacheLimits::kLargeSizeThreshold;
     base::internal::ThreadCache::SetLargestCachedSize(
-        base::internal::ThreadCache::kLargeSizeThreshold);
+        base::internal::ThreadCacheLimits::kLargeSizeThreshold);
 #endif  // defined(OS_ANDROID) && !defined(ARCH_CPU_64_BITS)
   }
 
@@ -327,7 +329,7 @@ void PartitionAllocSupport::OnBackgrounded() {
   //
   // TODO(lizeb): Consider forcing a one-off thread cache purge.
   base::internal::ThreadCache::SetLargestCachedSize(
-      base::internal::ThreadCache::kDefaultSizeThreshold);
+      base::internal::ThreadCacheLimits::kDefaultSizeThreshold);
 #endif  // defined(PA_THREAD_CACHE_SUPPORTED) &&
         // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }

@@ -65,7 +65,7 @@ uint8_t ThreadCache::global_limits_[ThreadCache::kBucketCount];
 
 // Start with the normal size, not the maximum one.
 uint16_t ThreadCache::largest_active_bucket_index_ =
-    BucketIndexLookup::GetIndex(kDefaultSizeThreshold);
+    BucketIndexLookup::GetIndex(ThreadCache::kDefaultSizeThreshold);
 
 // static
 ThreadCacheRegistry& ThreadCacheRegistry::Instance() {
@@ -104,7 +104,7 @@ void ThreadCacheRegistry::DumpStats(bool my_thread_only,
     auto* tcache = ThreadCache::Get();
     if (!ThreadCache::IsValid(tcache))
       return;
-    tcache->AccumulateStats(stats, true);
+    tcache->AccumulateStats(stats);
   } else {
     ThreadCache* tcache = list_head_;
     while (tcache) {
@@ -112,7 +112,7 @@ void ThreadCacheRegistry::DumpStats(bool my_thread_only,
       // since we are only interested in statistics. However, this means that
       // count is not necessarily equal to hits + misses for the various types
       // of events.
-      tcache->AccumulateStats(stats, true);
+      tcache->AccumulateStats(stats);
       tcache = tcache->next_;
     }
   }
@@ -191,6 +191,11 @@ void ThreadCacheRegistry::StartPeriodicPurge() {
 
   periodic_purge_running_ = true;
   PostDelayedPurgeTask();
+}
+
+void ThreadCacheRegistry::SetLargestActiveBucketIndex(
+    uint8_t largest_active_bucket_index) {
+  largest_active_bucket_index_ = largest_active_bucket_index;
 }
 
 void ThreadCacheRegistry::SetThreadCacheMultiplier(float multiplier) {
@@ -335,9 +340,10 @@ void ThreadCache::Init(PartitionRoot<ThreadSafe>* root) {
 #if defined(OS_NACL)
   IMMEDIATE_CRASH();
 #endif
-  PA_CHECK(root->buckets[kBucketCount - 1].slot_size == kLargeSizeThreshold);
+  PA_CHECK(root->buckets[kBucketCount - 1].slot_size ==
+           ThreadCache::kLargeSizeThreshold);
   PA_CHECK(root->buckets[largest_active_bucket_index_].slot_size ==
-           kDefaultSizeThreshold);
+           ThreadCache::kDefaultSizeThreshold);
 
   EnsureThreadSpecificDataInitialized();
 
@@ -404,6 +410,8 @@ void ThreadCache::SetLargestCachedSize(size_t size) {
   largest_active_bucket_index_ =
       PartitionRoot<internal::ThreadSafe>::SizeToBucketIndex(size);
   PA_CHECK(largest_active_bucket_index_ < kBucketCount);
+  ThreadCacheRegistry::Instance().SetLargestActiveBucketIndex(
+      largest_active_bucket_index_);
 }
 
 // static
@@ -671,8 +679,7 @@ size_t ThreadCache::CachedMemory() const {
   return total;
 }
 
-void ThreadCache::AccumulateStats(ThreadCacheStats* stats,
-                                  bool with_alloc_stats) const {
+void ThreadCache::AccumulateStats(ThreadCacheStats* stats) const {
   stats->alloc_count += stats_.alloc_count;
   stats->alloc_hits += stats_.alloc_hits;
   stats->alloc_misses += stats_.alloc_misses;
@@ -687,11 +694,8 @@ void ThreadCache::AccumulateStats(ThreadCacheStats* stats,
   stats->batch_fill_count += stats_.batch_fill_count;
 
 #if defined(PA_THREAD_CACHE_ALLOC_STATS)
-  if (with_alloc_stats) {
-    for (size_t i = 0; i < kNumBuckets + 1; i++) {
-      stats->allocs_per_bucket_[i] += stats_.allocs_per_bucket_[i];
-    }
-  }
+  for (size_t i = 0; i < kNumBuckets + 1; i++)
+    stats->allocs_per_bucket_[i] += stats_.allocs_per_bucket_[i];
 #endif  // defined(PA_THREAD_CACHE_ALLOC_STATS)
 
   // cached_memory_ is not necessarily equal to |CachedMemory()| here, since

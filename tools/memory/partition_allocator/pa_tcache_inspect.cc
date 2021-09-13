@@ -136,6 +136,13 @@ namespace tools {
 
 class ThreadCacheInspector {
  public:
+  // Distinct from ThreadCache::Bucket because |count| is uint8_t.
+  struct BucketStats {
+    int count = 0;
+    int per_thread_limit = 0;
+    size_t size = 0;
+  };
+
   ThreadCacheInspector(uintptr_t registry_addr, base::ScopedFD mem_fd);
   bool GetAllThreadCaches();
   size_t CachedMemory() const;
@@ -148,9 +155,15 @@ class ThreadCacheInspector {
     return tcache.get()->should_purge_;
   }
 
+  std::vector<BucketStats> AccumulateThreadCacheBuckets();
+  std::uint8_t largest_active_bucket_index() {
+    return registry_.get()->largest_active_bucket_index_;
+  }
+
  private:
   uintptr_t registry_addr_;
   base::ScopedFD mem_fd_;
+  RawBuffer<ThreadCacheRegistry> registry_;
   std::vector<RawBuffer<ThreadCache>> thread_caches_;
 };
 
@@ -168,7 +181,8 @@ bool ThreadCacheInspector::GetAllThreadCaches() NO_THREAD_SAFETY_ANALYSIS {
   if (!registry.has_value())
     return false;
 
-  ThreadCache* head = registry->get()->list_head_;
+  registry_ = *registry;
+  ThreadCache* head = registry_.get()->list_head_;
   while (head) {
     auto tcache = RawBuffer<ThreadCache>::ReadFromMemFd(
         mem_fd_.get(), reinterpret_cast<uintptr_t>(head));
@@ -191,6 +205,23 @@ size_t ThreadCacheInspector::CachedMemory() const {
   }
 
   return total_memory;
+}
+
+std::vector<ThreadCacheInspector::BucketStats>
+ThreadCacheInspector::AccumulateThreadCacheBuckets() {
+  std::vector<BucketStats> result(ThreadCache::kBucketCount);
+  for (auto& tcache : thread_caches_) {
+    for (int i = 0; i < ThreadCache::kBucketCount; i++) {
+      result[i].count += tcache.get()->buckets_[i].count;
+      result[i].per_thread_limit = tcache.get()->buckets_[i].limit;
+    }
+  }
+
+  BucketIndexLookup lookup{};
+  for (int i = 0; i < ThreadCache::kBucketCount; i++) {
+    result[i].size = lookup.bucket_sizes()[i];
+  }
+  return result;
 }
 
 }  // namespace tools
@@ -255,8 +286,8 @@ int main(int argc, char** argv) {
     for (const auto& tcache : inspector.thread_caches()) {
       base::ThreadCacheStats stats = {0};
       // No alloc stats, they reach into tcache->root_, which is not valid.
-      tcache.get()->AccumulateStats(&stats, /* with_alloc_stats */ false);
-      tcache.get()->AccumulateStats(&all_threads_stats, false);
+      tcache.get()->AccumulateStats(&stats);
+      tcache.get()->AccumulateStats(&all_threads_stats);
       uint64_t count = stats.alloc_count;
       uint64_t hit_rate = (100 * stats.alloc_hits) / count;
       uint64_t too_large = (100 * stats.alloc_miss_too_large) / count;
@@ -284,6 +315,27 @@ int main(int argc, char** argv) {
               << "\tEmpty = " << empty << "%"
               << "\t Count = " << count / 1000 << "k"
               << "\n";
+
+    // Per-bucket stats.
+    std::cout << "\n\n\nPer-bucket stats (All Threads):"
+              << "\nBucket Size\tPer-thread Limit\tCount\tTotal Memory\n"
+              << std::string(80, '-') << "\n";
+
+    size_t total_memory = 0;
+    auto bucket_stats = inspector.AccumulateThreadCacheBuckets();
+    for (size_t index = 0; index < bucket_stats.size(); index++) {
+      const auto& bucket = bucket_stats[index];
+      size_t bucket_memory = bucket.size * bucket.count;
+
+      std::cout << bucket.size << "\t\t" << bucket.per_thread_limit << "\t\t\t"
+                << bucket.count << "\t" << bucket_memory / 1024 << "kiB";
+      if (inspector.largest_active_bucket_index() == index)
+        std::cout << "  <---- Limit";
+      std::cout << "\n";
+
+      total_memory += bucket_memory;
+    }
+    std::cout << "\nALL THREADS TOTAL: " << total_memory / 1024 << "kiB";
 
     std::cout << std::endl;
     usleep(100000);

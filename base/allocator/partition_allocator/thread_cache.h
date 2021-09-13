@@ -72,6 +72,17 @@ extern BASE_EXPORT PartitionTlsKey g_thread_cache_key;
 extern BASE_EXPORT thread_local ThreadCache* g_thread_cache;
 #endif
 
+struct ThreadCacheLimits {
+  // When trying to conserve memory, set the thread cache limit to this.
+  static constexpr size_t kDefaultSizeThreshold = 512;
+  // 32kiB is chosen here as from local experiments, "zone" allocation in
+  // V8 is performance-sensitive, and zones can (and do) grow up to 32kiB for
+  // each individual allocation.
+  static constexpr size_t kLargeSizeThreshold = 1 << 15;
+  static_assert(kLargeSizeThreshold <= std::numeric_limits<uint16_t>::max(),
+                "");
+};
+
 // Global registry of all ThreadCache instances.
 //
 // This class cannot allocate in the (Un)registerThreadCache() functions, as
@@ -109,6 +120,7 @@ class BASE_EXPORT ThreadCacheRegistry {
   // Controls the thread cache size, by setting the multiplier to a value above
   // or below |ThreadCache::kDefaultMultiplier|.
   void SetThreadCacheMultiplier(float multiplier);
+  void SetLargestActiveBucketIndex(uint8_t largest_active_bucket_index);
 
   static PartitionLock& GetLock() { return Instance().lock_; }
   // Purges all thread caches *now*. This is completely thread-unsafe, and
@@ -135,6 +147,15 @@ class BASE_EXPORT ThreadCacheRegistry {
   ThreadCache* list_head_ GUARDED_BY(GetLock()) = nullptr;
   base::TimeDelta purge_interval_ = kDefaultPurgeInterval;
   bool periodic_purge_running_ = false;
+
+#if defined(OS_NACL)
+  // The thread cache is never used with NaCl, but its compiler doesn't
+  // understand enough constexpr to handle the code below.
+  uint8_t largest_active_bucket_index_ = 1;
+#else
+  uint8_t largest_active_bucket_index_ =
+      BucketIndexLookup::GetIndex(ThreadCacheLimits::kDefaultSizeThreshold);
+#endif
 };
 
 constexpr ThreadCacheRegistry::ThreadCacheRegistry() = default;
@@ -261,7 +282,7 @@ class BASE_EXPORT ThreadCache {
   void Purge();
   // Amount of cached memory for this thread's cache, in bytes.
   size_t CachedMemory() const;
-  void AccumulateStats(ThreadCacheStats* stats, bool with_alloc_stats) const;
+  void AccumulateStats(ThreadCacheStats* stats) const;
 
   // Purge the thread cache of the current thread, if one exists.
   static void PurgeCurrentThread();
@@ -285,14 +306,10 @@ class BASE_EXPORT ThreadCache {
   static constexpr float kDefaultMultiplier = 2.;
   static constexpr uint8_t kSmallBucketBaseCount = 64;
 
-  // When trying to conserve memory, set the thread cache limit to this.
-  static constexpr size_t kDefaultSizeThreshold = 512;
-  // 32kiB is chosen here as from local experiments, "zone" allocation in
-  // V8 is performance-sensitive, and zones can (and do) grow up to 32kiB for
-  // each individual allocation.
-  static constexpr size_t kLargeSizeThreshold = 1 << 15;
-  static_assert(kLargeSizeThreshold <= std::numeric_limits<uint16_t>::max(),
-                "");
+  static constexpr size_t kDefaultSizeThreshold =
+      ThreadCacheLimits::kDefaultSizeThreshold;
+  static constexpr size_t kLargeSizeThreshold =
+      ThreadCacheLimits::kLargeSizeThreshold;
 
  private:
   friend class tools::ThreadCacheInspector;
@@ -329,7 +346,8 @@ class BASE_EXPORT ThreadCache {
   static constexpr uint16_t kBucketCount = 1;
 #else
   static constexpr uint16_t kBucketCount =
-      internal::BucketIndexLookup::GetIndex(kLargeSizeThreshold) + 1;
+      internal::BucketIndexLookup::GetIndex(ThreadCache::kLargeSizeThreshold) +
+      1;
 #endif
   static_assert(
       kBucketCount < kNumBuckets,
@@ -378,6 +396,7 @@ class BASE_EXPORT ThreadCache {
 
   friend class ThreadCacheRegistry;
   friend class PartitionAllocThreadCacheTest;
+  friend class tools::ThreadCacheInspector;
   FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest, Simple);
   FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest,
                            MultipleObjectsCachedPerBucket);
