@@ -7,31 +7,31 @@
   }
 
   progress::-webkit-progress-bar {
-    background-color: rgba(0, 0, 0, 0.06);
+    background-color: var(--cros-tab-slider-track-color);
     border-radius: 2px;
   }
 
   progress::-webkit-progress-value {
-    background-color: rgb(0, 175, 255);
+    background-color: var(--cros-icon-color-prominent);
     border-radius: 2px;
   }
 
   progress.space-low::-webkit-progress-value {
-    background-color: rgb(255, 176, 0);
+    background-color: var(--cros-icon-color-warning);
   }
 
   progress.space-critically-low::-webkit-progress-value {
-    background-color: var(--google-red-500);
+    background-color: var(--cros-icon-color-alert);
   }
 
   iron-icon {
-    --iron-icon-fill-color: rgb(255, 176, 0);
+    --iron-icon-fill-color: var(--cros-icon-color-warning);
     --iron-icon-height: 32px;
     --iron-icon-width: 32px;
   }
 
   #criticallyLowMessage iron-icon {
-    --iron-icon-fill-color: var(--google-red-500);
+    --iron-icon-fill-color: var(--cros-icon-color-alert);
   }
 
   .storage-size {
@@ -85,14 +85,14 @@
 
   .bar-label .vertical-line {
     align-self: center;
-    background-color: rgba(0, 0, 0, 0.17);
+    background-color: var(--cros-separator-color);
     height: 8px;
     margin-bottom: 4px;
     width: 1px;
   }
 
   .bar-label .wrapper {
-    color: rgb(51, 51, 51);
+    color: var(--cros-text-color-primary);
     text-align: center;
     white-space: nowrap;
   }
@@ -113,20 +113,6 @@
   .end-aligned .wrapper span {
     direction: initial;
     unicode-bidi: embed;
-  }
-
-  #deleteButton {
-    display: none;
-  }
-
-  [actionable] #deleteButton {
-    display: block;
-  }
-
-  button > iron-icon {
-    --iron-icon-fill-color: var(--google-grey-400);
-    --iron-icon-height: 24px;
-    --iron-icon-width: 24px;
   }
 </style>
 <template is="dom-if" if="[[isSpaceLow_(sizeStat_.spaceState)]]">

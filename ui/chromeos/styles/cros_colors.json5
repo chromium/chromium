@@ -291,6 +291,10 @@
       light: "$google_grey_600",
       dark: "$google_grey_500",
     },
+    tab_slider_track_color: {
+      light: "rgba($black_rgb, 0.06)",
+      dark: "rgba($white_rgb, 0.1)",
+    },
 
     /* textfield */
     textfield_background_color: {
