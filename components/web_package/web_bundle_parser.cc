@@ -66,7 +66,7 @@ const uint8_t kVersionB1MagicBytes[] = {
 
 // CBOR of the version string "b2\0\0".
 //   44               -- Byte string of length 4
-//       62 31 00 00  -- "b2\0\0"
+//       62 32 00 00  -- "b2\0\0"
 const uint8_t kVersionB2MagicBytes[] = {
     0x44, 0x62, 0x32, 0x00, 0x00,
 };
