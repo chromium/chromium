@@ -178,7 +178,7 @@ suite('SiteDetails', function() {
         ]);
 
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.instance_ = browserProxy;
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
     websiteUsageProxy = new TestWebsiteUsageBrowserProxy();

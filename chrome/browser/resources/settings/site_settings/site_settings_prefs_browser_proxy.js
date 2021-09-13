@@ -8,7 +8,7 @@
  */
 
 // clang-format off
-import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 import {ChooserType,ContentSetting,ContentSettingsTypes,SiteSettingSource} from './constants.js';
 // clang-format on
@@ -564,8 +564,17 @@ export class SiteSettingsPrefsBrowserProxyImpl {
   recordAction(action) {
     chrome.send('recordAction', [action]);
   }
+
+  /** @return {!SiteSettingsPrefsBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new SiteSettingsPrefsBrowserProxyImpl());
+  }
+
+  /** @param {!SiteSettingsPrefsBrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-// The singleton instance_ is replaced with a test version of this wrapper
-// during testing.
-addSingletonGetter(SiteSettingsPrefsBrowserProxyImpl);
+/** @type {?SiteSettingsPrefsBrowserProxy} */
+let instance = null;

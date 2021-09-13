@@ -28,7 +28,7 @@ suite('CategorySettingExceptions', function() {
   // Initialize a category-setting-exceptions before each test.
   setup(function() {
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.instance_ = browserProxy;
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
     PolymerTest.clearBody();
     testElement = document.createElement('category-setting-exceptions');
     document.body.appendChild(testElement);

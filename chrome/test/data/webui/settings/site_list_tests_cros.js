@@ -49,7 +49,7 @@ suite('SiteListChromeOS', function() {
                 ])]);
 
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.instance_ = browserProxy;
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
     androidInfoBrowserProxy = new TestAndroidInfoBrowserProxy();
     AndroidInfoBrowserProxyImpl.instance_ = androidInfoBrowserProxy;
 

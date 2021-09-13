@@ -26,7 +26,7 @@ suite('CategoryDefaultSetting', function() {
   // Initialize a site-settings-category before each test.
   setup(function() {
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.instance_ = browserProxy;
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
     PolymerTest.clearBody();
     testElement = document.createElement('category-default-setting');
     testElement.subOptionLabel = 'test label';

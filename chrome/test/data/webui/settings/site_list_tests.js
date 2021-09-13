@@ -304,7 +304,7 @@ suite('SiteListEmbargoedOrigin', function() {
     populateTestExceptions();
 
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.instance_ = browserProxy;
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = '';
     testElement =
         /** @type {!SiteListElement} */ (document.createElement('site-list'));
@@ -384,7 +384,7 @@ suite('SiteList', function() {
     populateTestExceptions();
 
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.instance_ = browserProxy;
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = '';
     testElement =
         /** @type {!SiteListElement} */ (document.createElement('site-list'));
@@ -1048,7 +1048,7 @@ suite('EditExceptionDialog', function() {
     };
 
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.instance_ = browserProxy;
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = '';
     dialog = /** @type {!SettingsEditExceptionDialogElement} */ (
         document.createElement('settings-edit-exception-dialog'));
@@ -1136,7 +1136,7 @@ suite('AddExceptionDialog', function() {
     populateTestExceptions();
 
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.instance_ = browserProxy;
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = '';
     dialog = /** @type {!AddSiteDialogElement} */ (
         document.createElement('add-site-dialog'));

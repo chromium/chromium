@@ -31,7 +31,7 @@ suite('ChooserExceptionListEntry', function() {
   // Initialize a chooser-exception-list-entry before each test.
   setup(function() {
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.instance_ = browserProxy;
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
     PolymerTest.clearBody();
     testElement = document.createElement('chooser-exception-list-entry');
     document.body.appendChild(testElement);

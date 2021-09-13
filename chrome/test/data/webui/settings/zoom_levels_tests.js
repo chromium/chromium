@@ -47,7 +47,7 @@ suite('ZoomLevels', function() {
 
   setup(async function() {
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.instance_ = browserProxy;
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
     return initPage();
   });
 

@@ -28,7 +28,7 @@ suite('SiteSettingsPage', function() {
 
   function setupPage() {
     siteSettingsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.instance_ = siteSettingsBrowserProxy;
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
     siteSettingsBrowserProxy.setCookieSettingDescription(testLabels[0]);
     document.body.innerHTML = '';
     page = /** @type {!SettingsSiteSettingsPageElement} */ (

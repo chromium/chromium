@@ -28,7 +28,7 @@ suite('SiteListEntry', function() {
 
   setup(function() {
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.instance_ = browserProxy;
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
     PolymerTest.clearBody();
     testElement = document.createElement('site-list-entry');
     document.body.appendChild(testElement);

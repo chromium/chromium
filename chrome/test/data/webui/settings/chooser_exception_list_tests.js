@@ -118,7 +118,7 @@ suite('ChooserExceptionList', function() {
     populateTestExceptions();
 
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.instance_ = browserProxy;
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
     PolymerTest.clearBody();
     testElement = document.createElement('chooser-exception-list');
     document.body.appendChild(testElement);

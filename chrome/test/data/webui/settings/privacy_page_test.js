@@ -89,7 +89,7 @@ suite('PrivacyPage', function() {
     const testBrowserProxy = new TestPrivacyPageBrowserProxy();
     PrivacyPageBrowserProxyImpl.setInstance(testBrowserProxy);
     siteSettingsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.instance_ = siteSettingsBrowserProxy;
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
     siteSettingsBrowserProxy.setCookieSettingDescription(testLabels[0]);
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);

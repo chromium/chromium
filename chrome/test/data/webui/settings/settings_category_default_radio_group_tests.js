@@ -30,7 +30,7 @@ suite('SettingsCategoryDefaultRadioGroup', function() {
   // Initialize a settings-category-default-radio-group before each test.
   setup(function() {
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.instance_ = browserProxy;
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = '';
     testElement = /** @type {!SettingsCategoryDefaultRadioGroupElement} */
         (document.createElement('settings-category-default-radio-group'));

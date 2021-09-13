@@ -74,7 +74,7 @@ suite('ProtocolHandlers', function() {
 
   setup(async function() {
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.instance_ = browserProxy;
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
   });
 
   teardown(function() {

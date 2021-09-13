@@ -37,7 +37,7 @@ suite('CrSettingsCookiesPageTest', function() {
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
     siteSettingsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.instance_ = siteSettingsBrowserProxy;
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
     document.body.innerHTML = '';
     page = /** @type {!SettingsCookiesPageElement} */ (
         document.createElement('settings-cookies-page'));
@@ -286,7 +286,7 @@ suite('CrSettingsCookiesPageTest_consolidatedControlsEnabled', function() {
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
     siteSettingsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.instance_ = siteSettingsBrowserProxy;
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
     document.body.innerHTML = '';
     page = /** @type {!SettingsCookiesPageElement} */ (
         document.createElement('settings-cookies-page'));

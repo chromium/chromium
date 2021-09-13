@@ -41,7 +41,7 @@ suite('SiteDetailsPermission', function() {
             [createRawSiteException('https://www.example.com')])]);
 
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.instance_ = browserProxy;
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
     PolymerTest.clearBody();
     testElement = document.createElement('site-details-permission');
     document.body.appendChild(testElement);
