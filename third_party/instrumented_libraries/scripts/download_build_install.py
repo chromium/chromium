@@ -54,7 +54,7 @@ class InstrumentedPackageBuilder(object):
     self._extra_configure_flags = unescape_flags(args.extra_configure_flags)
     self._libdir = args.libdir
     self._package = args.package
-    self._patch = real_path(args.patch) if args.patch else None
+    self._patches = [real_path(patch) for patch in (args.patch or [])]
     self._pre_build = \
         real_path(args.pre_build) if args.pre_build else None
     self._sanitizer = args.sanitizer
@@ -159,8 +159,8 @@ class InstrumentedPackageBuilder(object):
     return get_fresh_source
 
   def patch_source(self):
-    if self._patch:
-      self.shell_call('patch -p1 -i %s' % self._patch, cwd=self._source_dir)
+    for patch in self._patches:
+      self.shell_call('patch -p1 -i %s' % patch, cwd=self._source_dir)
     if self._pre_build:
       self.shell_call(self._pre_build, cwd=self._source_dir)
 
@@ -174,8 +174,8 @@ class InstrumentedPackageBuilder(object):
     os.makedirs(self._source_archives_dir)
     for filename in self._source_archives:
       shutil.copy(filename, self._source_archives_dir)
-    if self._patch:
-      shutil.copy(self._patch, self._source_archives_dir)
+    for patch in self._patches:
+      shutil.copy(patch, self._source_archives_dir)
 
   def download_build_install(self):
     got_fresh_source = self.maybe_download_source()
@@ -499,9 +499,9 @@ def main():
   parser.add_argument('-v', '--verbose', action='store_true')
   parser.add_argument('--cc')
   parser.add_argument('--cxx')
-  parser.add_argument('--patch', default='')
+  parser.add_argument('--patch', nargs='*')
   # This should be a shell script to run before building specific libraries.
-  # This will be run after applying the patch above.
+  # This will be run after applying the patches above.
   parser.add_argument('--pre-build', default='')
   parser.add_argument('--build-method', default='destdir')
   parser.add_argument('--sanitizer-blacklist', default='')

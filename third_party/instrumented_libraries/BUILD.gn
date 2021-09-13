@@ -249,9 +249,11 @@ if (use_locally_built_instrumented_libraries) {
         inputs += [ invoker.pre_build ]
         args += [ "--pre-build=${invoker.pre_build}" ]
       }
-      if (defined(invoker.patch)) {
-        inputs += [ invoker.patch ]
-        args += [ "--patch=${invoker.patch}" ]
+      if (defined(invoker.patches)) {
+        inputs += invoker.patches
+        foreach(patch, invoker.patches) {
+          args += [ "--patch=${patch}" ]
+        }
       }
       if (defined(invoker.asan_blacklist)) {
         if (is_asan) {
@@ -376,7 +378,8 @@ if (use_locally_built_instrumented_libraries) {
       "--disable-qt3",
       "--with-systemdsystemunitdir=/lib/systemd/system",
     ]
-    patch = "patches/libavahi-client3.${instrumented_libraries_platform}.diff"
+    patches =
+        [ "patches/libavahi-client3.${instrumented_libraries_platform}.diff" ]
     if (instrumented_libraries_platform != "trusty") {
       pre_build = "scripts/pre-build/autogen.sh"
     }
@@ -411,7 +414,7 @@ if (use_locally_built_instrumented_libraries) {
   }
 
   instrumented_library("libcups2") {
-    patch = "patches/libcups2.diff"
+    patches = [ "patches/libcups2.diff" ]
     extra_configure_flags = [
       "--disable-static",
 
@@ -445,7 +448,7 @@ if (use_locally_built_instrumented_libraries) {
     build_method = "custom_libcurl"
     if (instrumented_libraries_platform == "trusty") {
       # This patch is in upstream Xenial and later.
-      patch = "patches/libcurl3-gnutls.trusty.diff"
+      patches = [ "patches/libcurl3-gnutls.trusty.diff" ]
     }
   }
 
@@ -533,7 +536,7 @@ if (use_locally_built_instrumented_libraries) {
     ]
     if (instrumented_libraries_platform == "trusty") {
       # This patch is in upstream Xenial and later.
-      patch = "patches/libfontconfig.trusty.diff"
+      patches = [ "patches/libfontconfig.trusty.diff" ]
     }
   }
 
@@ -672,6 +675,12 @@ if (use_locally_built_instrumented_libraries) {
       "--with-tls=gnutls",
       "--with-odbc=unixodbc",
     ]
+
+    # Xenial added a custom patch that adds @VERSION_OPTION@, which must
+    # be substituted before building.
+    if (instrumented_libraries_platform == "xenial") {
+      pre_build = "scripts/pre-build/dh_autoreconf.sh"
+    }
   }
 
   instrumented_library("libnih1") {
@@ -679,7 +688,7 @@ if (use_locally_built_instrumented_libraries) {
 
     pre_build = "scripts/pre-build/libnih1.sh"
 
-    patch = "patches/libnih1.diff"
+    patches = [ "patches/libnih1.diff" ]
   }
 
   instrumented_library("libnih-dbus1") {
@@ -687,7 +696,7 @@ if (use_locally_built_instrumented_libraries) {
 
     pre_build = "scripts/pre-build/libnih1.sh"
 
-    patch = "patches/libnih1.diff"
+    patches = [ "patches/libnih1.diff" ]
   }
 
   instrumented_library("libnspr4") {
@@ -717,7 +726,11 @@ if (use_locally_built_instrumented_libraries) {
     # 16e25b2890927108ec15297aabb1d86a49792741.
     # which updated the atfork handler to be async-signal-safe.
     # https://bugs.freedesktop.org/show_bug.cgi?id=84567
-    patch = "patches/libp11-kit0.diff"
+    #
+    # The patch is already present in Xenial.
+    if (instrumented_libraries_platform == "trusty") {
+      patches = [ "patches/libp11-kit0.diff" ]
+    }
   }
 
   instrumented_library("libpci3") {
@@ -745,7 +758,11 @@ if (use_locally_built_instrumented_libraries) {
       # Avoid a clang issue. http://crbug.com/449183
       "--disable-mmx",
     ]
-    patch = "patches/libpixman-1-0.diff"
+    patches = [ "patches/libpixman-1-0.diff" ]
+    if (instrumented_libraries_platform == "xenial") {
+      # Fix an incompatibility when building with clang.
+      patches += [ "patches/libpixman-1-0.xenial.diff" ]
+    }
   }
 
   instrumented_library("libpng12-0") {
@@ -800,7 +817,7 @@ if (use_locally_built_instrumented_libraries) {
 
     # Backport a use-after-free fix:
     # http://cgit.freedesktop.org/libva/diff/va/va.c?h=staging&id=d4988142a3f2256e38c5c5cdcdfc1b4f5f3c1ea9
-    patch = "patches/libva1.diff"
+    patches = [ "patches/libva1.diff" ]
     pre_build = "scripts/pre-build/libva1.sh"
   }
 
@@ -907,7 +924,7 @@ if (use_locally_built_instrumented_libraries) {
   instrumented_library("nss") {
     # TODO(eugenis): get rid of this dependency
     deps = [ ":libnspr4" ]
-    patch = "patches/nss.diff"
+    patches = [ "patches/nss.diff" ]
     build_method = "custom_nss"
   }
 
@@ -957,6 +974,6 @@ if (use_locally_built_instrumented_libraries) {
 
   instrumented_library("zlib1g") {
     # --disable-static is not supported
-    patch = "patches/zlib1g.diff"
+    patches = [ "patches/zlib1g.diff" ]
   }
 }
