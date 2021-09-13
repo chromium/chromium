@@ -151,12 +151,12 @@ void UpdateVersionInfo(const ServiceWorkerVersionInfo& version, Value* info) {
     base::Value client(base::Value::Type::DICTIONARY);
     client.SetStringKey("client_id", it.first);
     if (it.second.type() == blink::mojom::ServiceWorkerClientType::kWindow) {
-      // TODO(crbug.com/1239092): Replace WebContents::GetURL() with
-      // RenderFrameHost::GetLastCommittedURL().
-      WebContents* web_contents = WebContentsImpl::FromRenderFrameHostID(
-          it.second.GetRenderFrameHostId());
-      if (web_contents)
-        client.SetStringKey("url", web_contents->GetURL().spec());
+      RenderFrameHost* render_frame_host =
+          RenderFrameHost::FromID(it.second.GetRenderFrameHostId());
+      if (render_frame_host) {
+        client.SetStringKey("url",
+                            render_frame_host->GetLastCommittedURL().spec());
+      }
     }
     clients.emplace_back(std::move(client));
   }
