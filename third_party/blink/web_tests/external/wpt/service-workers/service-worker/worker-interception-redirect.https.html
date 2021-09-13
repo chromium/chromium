@@ -178,8 +178,8 @@ worker_redirect_test(
     build_worker_url('network', 'scope2'),
     'resources/scope2/worker_interception_redirect_webworker.py',
     'the worker script was served from network',
-    'sw1 saw importScripts from the worker',
-    'fetch(): sw1 saw the fetch from the worker',
+    'sw1 saw importScripts from the worker: /service-workers/service-worker/resources/scope2/import-scripts-echo.py',
+    'fetch(): sw1 saw the fetch from the worker: /service-workers/service-worker/resources/scope2/simple.txt',
     'Case #1: network scope1->scope2');
 
 // request to sw1 scope gets network redirect to out-of-scope
@@ -187,17 +187,17 @@ worker_redirect_test(
     build_worker_url('network', 'out-scope'),
     'resources/worker_interception_redirect_webworker.py',
     'the worker script was served from network',
-    'sw1 saw importScripts from the worker',
-    'fetch(): sw1 saw the fetch from the worker',
+    'sw1 saw importScripts from the worker: /service-workers/service-worker/resources/import-scripts-echo.py',
+    'fetch(): sw1 saw the fetch from the worker: /service-workers/service-worker/resources/simple.txt',
     'Case #2: network scope1->out-scope');
 
 // request to sw1 scope gets service-worker redirect to sw2 scope
 worker_redirect_test(
     build_worker_url('serviceworker', 'scope2'),
-    'resources/worker_interception_redirect_webworker.py?greeting=sw2%20saw%20the%20request%20for%20the%20worker%20script',
+    'resources/subdir/worker_interception_redirect_webworker.py?greeting=sw2%20saw%20the%20request%20for%20the%20worker%20script',
     'sw2 saw the request for the worker script',
-    'sw2 saw importScripts from the worker',
-    'fetch(): sw2 saw the fetch from the worker',
+    'sw2 saw importScripts from the worker: /service-workers/service-worker/resources/subdir/import-scripts-echo.py',
+    'fetch(): sw2 saw the fetch from the worker: /service-workers/service-worker/resources/subdir/simple.txt',
     'Case #3: sw scope1->scope2');
 
 // request to sw1 scope gets service-worker redirect to out-of-scope
@@ -205,8 +205,8 @@ worker_redirect_test(
     build_worker_url('serviceworker', 'out-scope'),
     'resources/worker_interception_redirect_webworker.py',
     'the worker script was served from network',
-    'sw1 saw importScripts from the worker',
-    'fetch(): sw1 saw the fetch from the worker',
+    'sw1 saw importScripts from the worker: /service-workers/service-worker/resources/import-scripts-echo.py',
+    'fetch(): sw1 saw the fetch from the worker: /service-workers/service-worker/resources/simple.txt',
     'Case #4: sw scope1->out-scope');
 </script>
 </body>
