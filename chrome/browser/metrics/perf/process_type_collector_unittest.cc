@@ -65,7 +65,7 @@ void GetExampleThreadTypeDataset(std::string* ps_output,
   17001 17021 MemoryInfra       /opt/google/chrome/chrome --type=renderer
   18020 18211 Media             /opt/google/chrome/chrome --type=renderer
   19001 19008 DedicatedWorker   /opt/google/chrome/chrome --type=renderer
-  19123 19234 ServiceWorker     /opt/google/chrome/chrome --type=renderer
+  19123 19234 ServiceWorker t   /opt/google/chrome/chrome --type=renderer
   19321 19335 WebRTC_Signalin   /opt/google/chrome/chrome --type=renderer
   12345 12456 OtherThread       /opt/google/chrome/chrome --ppapi-flash-path=...
   13456 13566 Compositor/6      non_chrome_exec --some-flag=foo)text";
