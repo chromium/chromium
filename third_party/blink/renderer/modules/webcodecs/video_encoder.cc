@@ -349,7 +349,7 @@ VideoEncoderConfig* CopyConfig(const VideoEncoderConfig& config) {
 #if defined(OS_MAC)
 const base::Feature kWebCodecsEncoderGpuMemoryBufferReadback{
     "WebCodecsEncoderGpuMemoryBufferReadback",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+    base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 bool CanUseGpuMemoryBufferReadback(media::VideoPixelFormat format) {
