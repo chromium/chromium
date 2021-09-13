@@ -7,13 +7,16 @@
 #include "ash/constants/ash_features.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/chromeos/extensions/file_manager/device_event_router.h"
+#include "chrome/browser/chromeos/extensions/file_manager/event_router.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/notifications/notification_platform_bridge_delegator.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/disks/disk.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -135,6 +138,10 @@ class SystemNotificationManagerTest : public ::testing::Test {
 
   DeviceEventRouterImpl* GetDeviceEventRouter() {
     return device_event_router_.get();
+  }
+
+  SystemNotificationManager* GetSystemNotificationManager() {
+    return notification_manager_.get();
   }
 
   void GetNotificationsCallback(std::set<std::string> displayed_notifications,
@@ -332,6 +339,36 @@ TEST_F(SystemNotificationManagerTest, DeviceHardUnplugged) {
   EXPECT_EQ(notification_strings.message,
             u"In the future, be sure to eject your removable device in the "
             u"Files app before unplugging it. Otherwise, you might lose data.");
+}
+
+TEST_F(SystemNotificationManagerTest, DeviceNavigation) {
+  std::unique_ptr<Volume> volume(Volume::CreateForTesting(
+      base::FilePath(FILE_PATH_LITERAL("/mount/path1")),
+      VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
+      /*read_only=*/false, base::FilePath(FILE_PATH_LITERAL("/device/test")),
+      kDeviceLabel, "FAT32"));
+  file_manager_private::MountCompletedEvent event;
+  event.event_type = file_manager_private::MOUNT_COMPLETED_EVENT_TYPE_MOUNT;
+  event.should_notify = true;
+  event.status = file_manager_private::MOUNT_COMPLETED_STATUS_SUCCESS;
+  GetSystemNotificationManager()->HandleMountCompletedEvent(event,
+                                                            *volume.get());
+  // Get the number of notifications from the NotificationDisplayService.
+  NotificationDisplayServiceFactory::GetForProfile(GetProfile())
+      ->GetDisplayed(base::BindOnce(
+          &SystemNotificationManagerTest::GetNotificationsCallback,
+          weak_ptr_factory_.GetWeakPtr()));
+  // Check: We have one notification.
+  ASSERT_EQ(1, notification_count);
+  // Get the strings for the displayed notification.
+  TestNotificationStrings notification_strings;
+  notification_strings =
+      notification_platform_bridge->GetNotificationStringsById(
+          "swa-removable-device-id");
+  // Check: the expected strings match.
+  EXPECT_EQ(notification_strings.title, kRemovableDeviceTitle);
+  EXPECT_EQ(notification_strings.message,
+            u"Explore the device\x2019s content in the Files app.");
 }
 
 TEST_F(SystemNotificationManagerTest, TestCopyEvents) {

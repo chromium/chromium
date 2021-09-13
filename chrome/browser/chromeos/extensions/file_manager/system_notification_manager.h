@@ -210,6 +210,12 @@ class SystemNotificationManager {
 
   /**
    * Maps device paths to their mount status.
+   * This is used for removable devices with single/multiple partitions.
+   * e.g. the same device path could have 2 partitions that each generate a
+   * mount event. One partition could have a known file system and the other an
+   *      unknown file system. Different combinations of known/unknown file
+   *      systems on a multi-partition devices require this map to generate
+   *      the correct system notification when errors occur.
    */
   std::map<std::string, enum SystemNotificationManagerMountStatus>
       mount_status_;

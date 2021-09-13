@@ -190,6 +190,8 @@ void SystemNotificationManager::HandleDeviceEvent(
           NotificationHandler::Type::TRANSIENT,
           file_manager_private::ToString(
               file_manager_private::DEVICE_EVENT_TYPE_DISABLED));
+      // Remove the device from the mount status map.
+      mount_status_.erase(event.device_path);
       break;
     case file_manager_private::DEVICE_EVENT_TYPE_HARD_UNPLUGGED:
       notification = CreateNotification(id, IDS_DEVICE_HARD_UNPLUGGED_TITLE,
@@ -498,6 +500,7 @@ SystemNotificationManager::MakeMountErrorNotification(
         l10n_util::GetStringUTF16(IDS_REMOVABLE_DEVICE_DETECTION_TITLE);
     std::u16string message;
     switch (device_mount_status->second) {
+      // We have either an unsupported or unknown filesystem on the mount.
       case MOUNT_STATUS_ONLY_PARENT_ERROR:
       case MOUNT_STATUS_CHILD_ERROR:
         if (event.status ==
@@ -522,6 +525,8 @@ SystemNotificationManager::MakeMountErrorNotification(
           }
         }
         break;
+      // We have a multi-partition device for which at least one mount
+      // failed.
       case MOUNT_STATUS_MULTIPART_ERROR:
         if (volume.drive_label().empty()) {
           message = l10n_util::GetStringUTF16(
