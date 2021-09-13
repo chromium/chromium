@@ -38,7 +38,7 @@ enum AuthenticationState {
   SIGN_OUT_IF_NEEDED,
   CLEAR_DATA,
   SIGN_IN,
-  START_SYNC,
+  COMMIT_SYNC,
   COMPLETE_WITH_SUCCESS,
   COMPLETE_WITH_FAILURE,
   CLEANUP_BEFORE_DONE,
@@ -84,8 +84,10 @@ enum AuthenticationState {
   BOOL _failedOrCancelled;
   BOOL _shouldSignIn;
   BOOL _shouldSignOut;
+  // YES if the signed in account is a managed account and the sign-in flow
+  // includes sync.
   BOOL _shouldShowManagedConfirmation;
-  BOOL _shouldStartSync;
+  BOOL _shouldCommitSync;
   Browser* _browser;
   ChromeIdentity* _browserStateIdentity;
   ChromeIdentity* _identityToSignIn;
@@ -166,7 +168,7 @@ enum AuthenticationState {
     case SIGN_OUT_IF_NEEDED:
     case CLEAR_DATA:
     case SIGN_IN:
-    case START_SYNC:
+    case COMMIT_SYNC:
       return COMPLETE_WITH_FAILURE;
     case COMPLETE_WITH_SUCCESS:
     case COMPLETE_WITH_FAILURE:
@@ -219,11 +221,11 @@ enum AuthenticationState {
     case CLEAR_DATA:
       return SIGN_IN;
     case SIGN_IN:
-      if (_shouldStartSync)
-        return START_SYNC;
+      if (_shouldCommitSync)
+        return COMMIT_SYNC;
       else
         return COMPLETE_WITH_SUCCESS;
-    case START_SYNC:
+    case COMMIT_SYNC:
       return COMPLETE_WITH_SUCCESS;
     case COMPLETE_WITH_SUCCESS:
     case COMPLETE_WITH_FAILURE:
@@ -258,14 +260,14 @@ enum AuthenticationState {
       return;
 
     case CHECK_MERGE_CASE:
-      if ([_performer shouldHandleMergeCaseForIdentity:_identityToSignIn
-                                          browserState:browserState]) {
-        if (_shouldClearData == SHOULD_CLEAR_DATA_USER_CHOICE) {
-          [_performer promptMergeCaseForIdentity:_identityToSignIn
-                                         browser:_browser
-                                  viewController:_presentingViewController];
-          return;
-        }
+      if (([_performer shouldHandleMergeCaseForIdentity:_identityToSignIn
+                                           browserState:browserState]) &&
+          (_shouldClearData == SHOULD_CLEAR_DATA_USER_CHOICE) &&
+          (_postSignInAction == POST_SIGNIN_ACTION_COMMIT_SYNC)) {
+        [_performer promptMergeCaseForIdentity:_identityToSignIn
+                                       browser:_browser
+                                viewController:_presentingViewController];
+        return;
       }
       [self continueSignin];
       return;
@@ -289,7 +291,7 @@ enum AuthenticationState {
       [self signInIdentity:_identityToSignIn];
       return;
 
-    case START_SYNC:
+    case COMMIT_SYNC:
       [_performer commitSyncForBrowserState:browserState];
       [self continueSignin];
       return;
@@ -332,7 +334,7 @@ enum AuthenticationState {
     _shouldSignOut = YES;
 
   _shouldSignIn = YES;
-  _shouldStartSync = _postSignInAction == POST_SIGNIN_ACTION_START_SYNC;
+  _shouldCommitSync = _postSignInAction == POST_SIGNIN_ACTION_COMMIT_SYNC;
 }
 
 - (void)signInIdentity:(ChromeIdentity*)identity {
@@ -358,7 +360,11 @@ enum AuthenticationState {
       << "|completeSignInWithSuccess| should not be called twice.";
   if (success) {
     bool isManagedAccount = _identityToSignInHostedDomain.length > 0;
-    signin_metrics::RecordSigninAccountType(_shouldStartSync, isManagedAccount);
+    signin_metrics::RecordSigninAccountType(/*is_signin_and_sync=*/false,
+                                            isManagedAccount);
+    if (_shouldCommitSync)
+      signin_metrics::RecordSigninAccountType(/*is_signin_and_sync=*/true,
+                                              isManagedAccount);
   }
   if (_signInCompletion)
     _signInCompletion(success);
@@ -420,7 +426,9 @@ enum AuthenticationState {
 
 - (void)didFetchManagedStatus:(NSString*)hostedDomain {
   DCHECK_EQ(FETCH_MANAGED_STATUS, _state);
-  _shouldShowManagedConfirmation = [hostedDomain length] > 0;
+  _shouldShowManagedConfirmation =
+      [hostedDomain length] > 0 &&
+      (_postSignInAction == POST_SIGNIN_ACTION_COMMIT_SYNC);
   _identityToSignInHostedDomain = hostedDomain;
   [self continueSignin];
 }

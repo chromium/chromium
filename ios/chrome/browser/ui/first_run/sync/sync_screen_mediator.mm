@@ -150,8 +150,7 @@
     self.syncSetupService->CommitSyncChanges();
   }
 
-  [self.delegate syncScreenMediator:self
-          didFinishSigninWithResult:SigninCoordinatorResultSuccess];
+  [self.delegate syncScreenMediatorDidSuccessfulyFinishSignin:self];
 }
 
 @end

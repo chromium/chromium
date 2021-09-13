@@ -283,7 +283,7 @@ using signin_metrics::PromoAction;
       [[AuthenticationFlow alloc] initWithBrowser:self.browser
                                          identity:authenticatedIdentity
                                   shouldClearData:SHOULD_CLEAR_DATA_USER_CHOICE
-                                 postSignInAction:POST_SIGNIN_ACTION_START_SYNC
+                                 postSignInAction:POST_SIGNIN_ACTION_COMMIT_SYNC
                          presentingViewController:self.viewController];
   self.authenticationFlow.dispatcher = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), BrowsingDataCommands);
