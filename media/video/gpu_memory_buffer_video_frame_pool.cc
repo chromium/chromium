@@ -935,17 +935,31 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CopyVideoFrameToGpuMemoryBuffers(
     }
   }
 
-  // |barrier| keeps refptr of |video_frame| until all copy tasks are done.
-  const base::RepeatingClosure barrier = base::BarrierClosure(
-      copies,
+  auto on_copies_done =
       base::BindOnce(&PoolImpl::OnCopiesDone, this, /*copy_failed=*/false,
-                     video_frame, frame_resources));
-
+                     video_frame, frame_resources);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
       "media", "CopyVideoFrameToGpuMemoryBuffers",
       TRACE_ID_WITH_SCOPE("CopyVideoFrameToGpuMemoryBuffers",
                           video_frame->timestamp().InNanoseconds()));
-  // Post all the async tasks.
+  // If the frame can be copied in one step, do it directly.
+  if (copies == 1) {
+    DCHECK_LE(num_planes, planes_per_copy);
+    const int rows = VideoFrame::Rows(/*plane=*/0, VideoFormat(output_format_),
+                                      coded_size.height());
+    DCHECK_LE(rows, RowsPerCopy(
+                        /*plane=*/0, VideoFormat(output_format_),
+                        coded_size.width()));
+    CopyRowsToBuffer(output_format_, /*plane=*/0, /*row=*/0, rows, coded_size,
+                     video_frame.get(), frame_resources,
+                     std::move(on_copies_done));
+    return;
+  }
+
+  // |barrier| keeps refptr of |video_frame| until all copy tasks are done.
+  const base::RepeatingClosure barrier =
+      base::BarrierClosure(copies, std::move(on_copies_done));
+  // If is more than one copy, post each copy async.
   for (size_t i = 0; i < num_planes; i += planes_per_copy) {
     const int rows =
         VideoFrame::Rows(i, VideoFormat(output_format_), coded_size.height());
