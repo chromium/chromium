@@ -172,9 +172,6 @@ void ImageLoader::Dispose() {
       << ", has pending error event=" << pending_error_event_.IsActive();
 
   if (image_content_) {
-    image_content_->RemoveObserver(this);
-    image_content_ = nullptr;
-    image_content_for_image_document_ = nullptr;
     delay_until_image_notify_finished_ = nullptr;
   }
 }
@@ -278,6 +275,7 @@ void ImageLoader::Trace(Visitor* visitor) const {
   visitor->Trace(image_content_for_image_document_);
   visitor->Trace(element_);
   visitor->Trace(decode_requests_);
+  ImageResourceObserver::Trace(visitor);
 }
 
 void ImageLoader::SetImageForTest(ImageResourceContent* new_image) {

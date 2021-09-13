@@ -13,10 +13,12 @@
 
 namespace blink {
 
-class MockImageResourceObserver final : public ImageResourceObserver {
+class MockImageResourceObserver final
+    : public GarbageCollected<MockImageResourceObserver>,
+      public ImageResourceObserver {
  public:
   explicit MockImageResourceObserver(ImageResourceContent*);
-  ~MockImageResourceObserver() override;
+  ~MockImageResourceObserver() override = default;
 
   void RemoveAsObserver();
 
@@ -35,13 +37,15 @@ class MockImageResourceObserver final : public ImageResourceObserver {
 
   CanDeferInvalidation Defer() const { return defer_; }
 
+  void Trace(Visitor*) const override;
+
  private:
   // ImageResourceObserver overrides.
   void ImageNotifyFinished(ImageResourceContent*) override;
   void ImageChanged(ImageResourceContent*, CanDeferInvalidation) override;
   String DebugName() const override { return "MockImageResourceObserver"; }
 
-  Persistent<ImageResourceContent> content_;
+  Member<ImageResourceContent> content_;
   int image_changed_count_;
   CanDeferInvalidation defer_;
   int image_width_on_last_image_changed_;

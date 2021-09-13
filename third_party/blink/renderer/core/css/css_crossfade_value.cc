@@ -99,7 +99,10 @@ class CSSCrossfadeValue::ObserverProxy final
 
   String DebugName() const override { return "CrossfadeObserverProxy"; }
 
-  void Trace(Visitor* visitor) const { visitor->Trace(owner_); }
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(owner_);
+    ImageResourceObserver::Trace(visitor);
+  }
 
  private:
   const ClientSizeCountMap& Clients() const { return owner_->Clients(); }

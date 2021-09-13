@@ -59,6 +59,7 @@ void SVGFEImageElement::Trace(Visitor* visitor) const {
   visitor->Trace(target_id_observer_);
   SVGFilterPrimitiveStandardAttributes::Trace(visitor);
   SVGURIReference::Trace(visitor);
+  ImageResourceObserver::Trace(visitor);
 }
 
 bool SVGFEImageElement::CurrentFrameHasSingleSecurityOrigin() const {

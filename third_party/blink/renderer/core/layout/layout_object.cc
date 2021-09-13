@@ -372,6 +372,7 @@ void LayoutObject::Trace(Visitor* visitor) const {
   visitor->Trace(previous_);
   visitor->Trace(next_);
   visitor->Trace(fragment_);
+  ImageResourceObserver::Trace(visitor);
 }
 
 bool LayoutObject::IsDescendantOf(const LayoutObject* obj) const {

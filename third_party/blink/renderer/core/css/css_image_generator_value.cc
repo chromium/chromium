@@ -105,6 +105,11 @@ void CSSImageGeneratorValue::RemoveClient(const ImageResourceObserver* client) {
   }
 }
 
+void CSSImageGeneratorValue::TraceAfterDispatch(blink::Visitor* visitor) const {
+  visitor->Trace(clients_);
+  CSSValue::TraceAfterDispatch(visitor);
+}
+
 Image* CSSImageGeneratorValue::GetImage(const ImageResourceObserver* client,
                                         const FloatSize& size) const {
   ClientSizeCountMap::iterator it = clients_.find(client);

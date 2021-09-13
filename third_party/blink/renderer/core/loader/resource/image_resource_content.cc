@@ -111,6 +111,8 @@ void ImageResourceContent::SetImageResourceInfo(ImageResourceInfo* info) {
 
 void ImageResourceContent::Trace(Visitor* visitor) const {
   visitor->Trace(info_);
+  visitor->Trace(observers_);
+  visitor->Trace(finished_observers_);
   ImageObserver::Trace(visitor);
 }
 
@@ -246,27 +248,27 @@ void ImageResourceContent::NotifyObservers(
     NotifyFinishOption notifying_finish_option,
     CanDeferInvalidation defer) {
   {
-    Vector<ImageResourceObserver*> finished_observers_as_vector;
+    HeapVector<Member<ImageResourceObserver>> finished_observers_as_vector;
     {
       ProhibitAddRemoveObserverInScope prohibit_add_remove_observer_in_scope(
           this);
-      finished_observers_as_vector = finished_observers_.AsVector();
+      CopyToVector(finished_observers_, finished_observers_as_vector);
     }
 
-    for (auto* observer : finished_observers_as_vector) {
+    for (ImageResourceObserver* observer : finished_observers_as_vector) {
       if (finished_observers_.Contains(observer))
         observer->ImageChanged(this, defer);
     }
   }
   {
-    Vector<ImageResourceObserver*> observers_as_vector;
+    HeapVector<Member<ImageResourceObserver>> observers_as_vector;
     {
       ProhibitAddRemoveObserverInScope prohibit_add_remove_observer_in_scope(
           this);
-      observers_as_vector = observers_.AsVector();
+      CopyToVector(observers_, observers_as_vector);
     }
 
-    for (auto* observer : observers_as_vector) {
+    for (ImageResourceObserver* observer : observers_as_vector) {
       if (observers_.Contains(observer)) {
         observer->ImageChanged(this, defer);
         if (notifying_finish_option == kShouldNotifyFinish &&

@@ -55,7 +55,7 @@ class CORE_EXPORT ImageLoader : public GarbageCollected<ImageLoader>,
   explicit ImageLoader(Element*);
   ~ImageLoader() override;
 
-  void Trace(Visitor*) const;
+  void Trace(Visitor*) const override;
 
   enum UpdateFromElementBehavior {
     // This should be the update behavior when the element is attached to a
