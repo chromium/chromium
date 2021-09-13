@@ -105,7 +105,6 @@
 }
 
 - (void)stop {
-  [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
   self.viewController = nil;
 
   self.mediator = nil;
