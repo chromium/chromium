@@ -207,4 +207,24 @@ TEST_F(ApplyStyleCommandTest, ItalicCrossingIgnoredContentBoundary) {
             GetSelectionTextFromBody());
 #endif
 }
+
+// This is a regression test for https://crbug.com/1246190
+TEST_F(ApplyStyleCommandTest, RemoveEmptyItalic) {
+  GetDocument().setDesignMode("on");
+  InsertStyleElement("i {display: inline-block; width: 1px; height: 1px}");
+  SetBodyContent("<div><input><i></i>&#x20;</div>A");
+
+  Element* div = GetDocument().QuerySelector("div");
+  Element* i = GetDocument().QuerySelector("i");
+  Selection().SetSelection(
+      SelectionInDOMTree::Builder().Collapse(Position(i, 0)).Build(),
+      SetSelectionOptions());
+  auto* command = MakeGarbageCollected<ApplyStyleCommand>(
+      GetDocument(), MakeGarbageCollected<EditingStyle>(div),
+      InputEvent::InputType::kFormatRemove);
+
+  // Shouldn't crash.
+  EXPECT_TRUE(command->Apply());
+  EXPECT_EQ("<div><input>| </div>A", GetSelectionTextFromBody());
+}
 }  // namespace blink
