@@ -5419,6 +5419,13 @@ test("unit_tests") {
 
   public_deps = []
 
+  if (enable_chromium_updater) {
+    deps += [
+      "//chrome/browser/updater:browser_updater_client",
+      "//chrome/updater:browser_sources",
+    ]
+  }
+
   if (enable_paint_preview) {
     deps += [ "//chrome/browser/paint_preview:services" ]
   }

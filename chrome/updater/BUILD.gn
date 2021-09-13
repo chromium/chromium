@@ -424,6 +424,7 @@ if (is_win || is_mac) {
     visibility = [
       "//chrome/browser/ui:ui",
       "//chrome/browser/updater:*",
+      "//chrome/test:unit_tests",
     ]
   }
 
