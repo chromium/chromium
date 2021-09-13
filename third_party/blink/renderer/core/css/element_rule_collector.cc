@@ -363,11 +363,11 @@ void ElementRuleCollector::CollectMatchingRules(
   }
   bool lower_attr =
       !element.IsHTMLElement() && IsA<HTMLDocument>(element.GetDocument());
-  for (const auto& attribute_item : element.AttributesWithoutUpdate()) {
-    const auto& attribute_name = attribute_item.LocalName();
-    const auto& lower_name = lower_attr && !attribute_name.IsLowerASCII()
-                                 ? attribute_name.LowerASCII()
-                                 : attribute_name;
+  for (const auto& attribute_item : element.Attributes()) {
+    auto attribute_name = attribute_item.LocalName();
+    auto lower_name = lower_attr && !attribute_name.IsLowerASCII()
+                          ? attribute_name.LowerASCII()
+                          : attribute_name;
     CollectMatchingRulesForList(match_request.rule_set->AttrRules(lower_name),
                                 match_request, checker);
   }
