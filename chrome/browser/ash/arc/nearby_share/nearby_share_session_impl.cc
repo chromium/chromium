@@ -101,16 +101,19 @@ NearbyShareSessionImpl::~NearbyShareSessionImpl() = default;
 
 void NearbyShareSessionImpl::OnNearbyShareClosed(
     views::Widget::ClosedReason reason) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(session_instance_);
 
   DVLOG(1) << __func__;
-  // If share is not continuing after sharesheet closes (e.g. cancel, esc key,
-  // lost focus, etc.), we will clean up the current session including files.
-  // Otherwise cleanup session object and wait for Nearby Share to cleanup cache
-  // files when they are no longer needed for transfer.
-  bool should_cleanup_files =
-      reason != views::Widget::ClosedReason::kAcceptButtonClicked;
-  CleanupSession(should_cleanup_files);
+  session_instance_->OnNearbyShareViewClosed();
+  if (window_initialization_timer_.IsRunning()) {
+    window_initialization_timer_.Stop();
+  }
+  arc_window_observation_.Reset();
+  if (reason != views::Widget::ClosedReason::kAcceptButtonClicked) {
+    // If share is not continuing after sharesheet closes (e.g. cancel, esc key,
+    // lost focus, etc.), we will clean up the current session including files.
+    OnCleanupSession();
+  }
 }
 
 // Overridden from aura::EnvObserver:
@@ -227,13 +230,10 @@ void NearbyShareSessionImpl::OnPreparedDirectory(aura::Window* const arc_window,
       << "Prepare Directory was not successful";
 
   file_handler_->StartPreparingFiles(
-      /*started_callback=*/base::BindOnce(
-          &NearbyShareSessionImpl::OnFileStreamingStarted,
-          weak_ptr_factory_.GetWeakPtr(), arc_window),
-      /*completed_callback=*/
+      base::BindOnce(&NearbyShareSessionImpl::OnFileStreamingStarted,
+                     weak_ptr_factory_.GetWeakPtr(), arc_window),
       base::BindOnce(&NearbyShareSessionImpl::ShowNearbyShareBubbleInArcWindow,
                      weak_ptr_factory_.GetWeakPtr(), arc_window),
-      /*update_callback=*/
       base::BindRepeating(&NearbyShareSessionImpl::OnProgressBarUpdate,
                           weak_ptr_factory_.GetWeakPtr()));
 }
@@ -241,6 +241,7 @@ void NearbyShareSessionImpl::OnPreparedDirectory(aura::Window* const arc_window,
 void NearbyShareSessionImpl::OnNearbyShareBubbleShown(
     sharesheet::SharesheetResult result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(session_instance_);
 
   if (VLOG_IS_ON(1)) {
     switch (result) {
@@ -258,7 +259,8 @@ void NearbyShareSessionImpl::OnNearbyShareBubbleShown(
     }
   }
   if (result != sharesheet::SharesheetResult::kSuccess) {
-    CleanupSession(/*should_cleanup_files=*/true);
+    session_instance_->OnNearbyShareViewClosed();
+    OnCleanupSession();
   }
 }
 
@@ -294,7 +296,7 @@ void NearbyShareSessionImpl::ShowNearbyShareBubbleInArcWindow(
   if (result.has_value() && result.value() != base::File::FILE_OK) {
     LOG(ERROR) << "Failed to complete file streaming with error: "
                << base::File::ErrorToString(result.value());
-    CleanupSession(/*should_cleanup_files=*/true);
+    OnCleanupSession();
     return;
   }
 
@@ -326,7 +328,7 @@ void NearbyShareSessionImpl::OnConvertedShareIntentInfoToIntent(
   DVLOG(1) << __func__;
   if (!intent) {
     LOG(ERROR) << "No share info found.";
-    CleanupSession(/*should_cleanup_files=*/true);
+    OnCleanupSession();
     return;
   }
 
@@ -334,33 +336,31 @@ void NearbyShareSessionImpl::OnConvertedShareIntentInfoToIntent(
       sharesheet::SharesheetServiceFactory::GetForProfile(profile_);
   if (!sharesheet_service) {
     LOG(ERROR) << "Cannot find sharesheet service.";
-    CleanupSession(/*should_cleanup_files=*/true);
+    OnCleanupSession();
     return;
   }
 
-  base::FilePath share_path;
-  if (file_handler_) {
-    share_path = file_handler_->GetShareDirectory();
-  }
   sharesheet_service->ShowNearbyShareBubbleForArc(
       arc_window, std::move(intent),
       sharesheet::SharesheetMetrics::LaunchSource::kArcNearbyShare,
-      /*delivered_callback=*/
       base::BindOnce(&NearbyShareSessionImpl::OnNearbyShareBubbleShown,
                      weak_ptr_factory_.GetWeakPtr()),
-      /*close_callback=*/
       base::BindOnce(&NearbyShareSessionImpl::OnNearbyShareClosed,
                      weak_ptr_factory_.GetWeakPtr()),
-      /*cleanup_callback=*/base::BindOnce(&DeletePathAndFiles, share_path));
+      base::BindOnce(&NearbyShareSessionImpl::OnCleanupSession,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void NearbyShareSessionImpl::OnTimerFired() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(session_instance_);
 
   // TODO(b/191232397): Handle error case and add UMA metric.
   LOG(ERROR) << "ARC window didn't get initialized within "
              << kWindowInitializationTimeout.InSeconds() << " second(s)";
-  CleanupSession(/*should_cleanup_files=*/true);
+
+  session_instance_->OnNearbyShareViewClosed();
+  OnCleanupSession();
 }
 
 void NearbyShareSessionImpl::OnProgressBarIntervalElapsed() {
@@ -393,7 +393,7 @@ void NearbyShareSessionImpl::OnSessionDisconnected() {
   if (!arc_window) {
     LOG(ERROR) << "Unable to close sharesheet bubble. No ARC window found for "
                << "task ID: " << task_id_;
-    CleanupSession(/*should_cleanup_files=*/true);
+    OnCleanupSession();
     return;
   }
 
@@ -402,7 +402,7 @@ void NearbyShareSessionImpl::OnSessionDisconnected() {
   if (!sharesheet_service) {
     LOG(ERROR) << "Unable to close sharesheet bubble. Cannot find sharesheet "
                   "service.";
-    CleanupSession(/*should_cleanup_files=*/true);
+    OnCleanupSession();
     return;
   }
   sharesheet::SharesheetController* sharsheet_controller =
@@ -410,58 +410,29 @@ void NearbyShareSessionImpl::OnSessionDisconnected() {
   if (!sharsheet_controller) {
     LOG(ERROR) << "Unable to close sharesheet bubble. Cannot find the "
                   "sharesheet controller";
-    CleanupSession(/*should_cleanup_files=*/true);
+    OnCleanupSession();
     return;
   }
   sharsheet_controller->CloseBubble(sharesheet::SharesheetResult::kCancel);
 }
 
-void NearbyShareSessionImpl::CleanupSession(bool should_cleanup_files) {
+void NearbyShareSessionImpl::OnCleanupSession() {
   DVLOG(1) << __func__;
   // PrepareDirectoryTask must first relinquish ownership of |share_path|.
   prepare_directory_task_.reset();
   if (file_handler_) {
-    base::FilePath share_path = file_handler_->GetShareDirectory();
-    // Delete any file descriptor handles for files that were created during
-    // the session and owned by |file_handler_|. Even if handles are released,
-    // the physical files remain until DeletePathAndFiles is called.
+    const base::FilePath share_path = file_handler_->GetShareDirectory();
+    // Delete the temp directories created during the current session using
+    // the |backend_task_runner_| passed to |file_handler|.
     file_handler_.reset();
-    if (should_cleanup_files) {
-      // Delete any files and the top level share directory with the same
-      // |backend_task_runner_| that is used for all file IO operations.
-      // Make sure |session_finished_callback_| is not run until the
-      // |backend_task_runner_| is no longer in use.
-      backend_task_runner_->PostTaskAndReply(
-          FROM_HERE, base::BindOnce(&DeletePathAndFiles, share_path),
-          base::BindOnce(&NearbyShareSessionImpl::FinishSession,
-                         weak_ptr_factory_.GetWeakPtr()));
-      return;
-    }
-  }
-  FinishSession();
-}
-
-void NearbyShareSessionImpl::FinishSession() {
-  DCHECK(session_instance_);
-
-  // Stop timers and destroy any lingering UI surfaces or observers.
-  arc_window_observation_.Reset();
-  env_observation_.Reset();
-  if (window_initialization_timer_.IsRunning()) {
-    window_initialization_timer_.Stop();
-  }
-  if (progress_bar_update_timer_.IsRunning()) {
-    progress_bar_update_timer_.Stop();
-  }
-  progress_bar_view_.reset();
-  aura::Window* const arc_window = GetArcWindow(task_id_);
-  if (arc_window) {
-    NearbyShareOverlayView::CloseOverlayOn(arc_window);
+    // Delete any other lingering directories / files and the top level share
+    // directory on the same |backend_task_runner_|.
+    backend_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&DeletePathAndFiles, share_path));
   }
 
-  // Cleanup the session on Android side.
-  session_instance_->OnNearbyShareViewClosed();
-  // Delete the session object by task ID from the ArcNearbyShareBridge map.
+  // All temp files and directories have been deleted. Delete the session
+  // object if it's still valid.
   if (session_finished_callback_) {
     VLOG(1) << "Deleting session with task ID: " << task_id_;
     std::move(session_finished_callback_).Run(task_id_);
@@ -470,7 +441,7 @@ void NearbyShareSessionImpl::FinishSession() {
 
 // TODO(b/197588898): Currently IsNearbyShareBubbleVisible() does not WAI. It
 // always return true when called from OnNearbyShareClosed() and
-// NearbySharingServiceImpl / NearbyShareAction classes via CleanupSession.
+// NearbySharingServiceImpl / NearbyShareAction classes via OnCleanupSession.
 bool NearbyShareSessionImpl::IsNearbyShareBubbleVisible() const {
   DVLOG(1) << __func__;
   aura::Window* const arc_window = GetArcWindow(task_id_);

@@ -60,9 +60,7 @@ class ShareInfoFileHandler
 
   // |profile| is the current user profile.
   // |share_info| represents the data being shared.
-  // |directory| is the top level share directory. The owner of this class
-  // object will be required to clean up |directory| including any
-  // subdirectories and files within it.
+  // |directory| is the top level share directory.
   // |task_runner| is used for any cleanup which requires disk IO.
   ShareInfoFileHandler(Profile* profile,
                        mojom::ShareIntentInfo* share_info,
@@ -102,11 +100,14 @@ class ShareInfoFileHandler
 
   ~ShareInfoFileHandler();
 
-  // Create local unique share directory for cache files.
-  base::FilePath CreateShareDirectory();
+  // Create local share path in scoped directory for cache files.
+  bool CreateShareDirectory(std::list<base::ScopedTempDir>::iterator it);
 
-  // Called when share directory path is created and can start streaming files.
-  void OnShareDirectoryPathCreated(base::FilePath share_dir);
+  // Called when temp directory for Nearby Share cached files is created and
+  // started streaming files.
+  void OnCreatedDirectoryAndStartStreaming(
+      std::list<base::ScopedTempDir>::iterator it_dir,
+      bool result);
 
   // Create file with create and write flags and return scoped fd.
   base::ScopedFD CreateFileForWrite(const base::FilePath& file_path);
@@ -160,6 +161,7 @@ class ShareInfoFileHandler
 
   std::list<scoped_refptr<ShareInfoFileStreamAdapter>> file_stream_adapters_;
   std::list<scoped_refptr<storage::FileSystemContext>> contexts_;
+  std::list<base::ScopedTempDir> scoped_temp_dirs_;
   FileShareConfig file_config_;
   StartedCallback started_callback_;
   CompletedCallback completed_callback_;

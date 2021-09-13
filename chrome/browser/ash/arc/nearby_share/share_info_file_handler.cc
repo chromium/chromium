@@ -109,7 +109,15 @@ ShareInfoFileHandler::ShareInfoFileHandler(
   }
 }
 
-ShareInfoFileHandler::~ShareInfoFileHandler() = default;
+ShareInfoFileHandler::~ShareInfoFileHandler() {
+  DCHECK(task_runner_);
+
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](std::list<base::ScopedTempDir> dirs_list) { dirs_list.clear(); },
+          std::move(scoped_temp_dirs_)));
+}
 
 // static
 file_manager::util::FileSystemURLAndHandle
@@ -172,41 +180,44 @@ void ShareInfoFileHandler::StartPreparingFiles(
     return;
   }
 
+  // Keep track of all scoped directories created so they can be cleaned up.
+  scoped_temp_dirs_.emplace_front();
+  auto it_temp_dir = scoped_temp_dirs_.begin();
+
   VLOG(1) << "Creating unique directory for share and converting URLs to files";
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&ShareInfoFileHandler::CreateShareDirectory, this),
-      base::BindOnce(&ShareInfoFileHandler::OnShareDirectoryPathCreated,
-                     weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&ShareInfoFileHandler::CreateShareDirectory, this,
+                     it_temp_dir),
+      base::BindOnce(&ShareInfoFileHandler::OnCreatedDirectoryAndStartStreaming,
+                     weak_ptr_factory_.GetWeakPtr(), it_temp_dir));
 }
 
-base::FilePath ShareInfoFileHandler::CreateShareDirectory() {
+bool ShareInfoFileHandler::CreateShareDirectory(
+    std::list<base::ScopedTempDir>::iterator it_dir) {
   if (!base::PathExists(file_config_.directory)) {
-    LOG(ERROR) << "Base directory does not exist: " << file_config_.directory;
-    return base::FilePath();
+    LOG(ERROR) << "Share directory does not exist: " << file_config_.directory;
+    return false;
   }
 
-  // Prepare a temporary share directory to store cached share files.
-  base::FilePath temp_dir;
-  constexpr char kShareDirPrefix[] = "share-";
-  if (!base::CreateTemporaryDirInDir(file_config_.directory, kShareDirPrefix,
-                                     &temp_dir) ||
-      !base::PathExists(temp_dir)) {
-    LOG(ERROR) << "Failed to create unique temp share directory under: "
+  // Prepare a temporary directory for the session to store cached share files.
+  if (!it_dir->CreateUniqueTempDirUnderPath(file_config_.directory)) {
+    LOG(ERROR) << "Failed to create unique temp directory for: "
                << file_config_.directory;
-    return base::FilePath();
+    return false;
   }
-  return temp_dir;
+  return true;
 }
 
-void ShareInfoFileHandler::OnShareDirectoryPathCreated(
-    base::FilePath share_dir) {
+void ShareInfoFileHandler::OnCreatedDirectoryAndStartStreaming(
+    std::list<base::ScopedTempDir>::iterator it,
+    bool result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(started_callback_);
   DCHECK(task_runner_);
 
-  if (share_dir.empty()) {
-    LOG(ERROR) << "Failed to prepare temp share directory.";
+  if (!result) {
+    LOG(ERROR) << "Failed to prepare temp directory.";
     NotifyFileSharingCompleted(base::File::FILE_ERROR_FAILED);
     return;
   }
@@ -230,7 +241,7 @@ void ShareInfoFileHandler::OnShareDirectoryPathCreated(
     }
 
     const base::FilePath dest_file_path =
-        share_dir.AppendASCII(StripPathComponents(file_name));
+        it->GetPath().AppendASCII(StripPathComponents(file_name));
 
     task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
@@ -297,7 +308,7 @@ void ShareInfoFileHandler::OnFileDescriptorCreated(
   file_stream_adapters_.emplace_front();
   auto it_stream_adapter = file_stream_adapters_.begin();
   *it_stream_adapter = base::MakeRefCounted<ShareInfoFileStreamAdapter>(
-      *it_context, isolated_file_system.url, /*offset=*/0, file_size,
+      *it_context, isolated_file_system.url, /* offset = */ 0, file_size,
       kStreamReaderBufSizeInBytes, std::move(dest_fd),
       base::BindOnce(&ShareInfoFileHandler::OnFileStreamReadCompleted,
                      weak_ptr_factory_.GetWeakPtr(),

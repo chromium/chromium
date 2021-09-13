@@ -97,13 +97,9 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
   // Nearby Share bubble.
   void OnSessionDisconnected();
 
-  // Finish destroying the session by cleaning up the Android activity and
-  // destroying the session object from the map owned by ArcNearbyShareBridge.
-  void FinishSession();
-
-  // Clean up session and attempt to delete any existing cached files. If
-  // |should_cleanup_files| is false, clean up session without deleting files.
-  void CleanupSession(bool should_cleanup_files);
+  // Called when shared files are no longer used by Nearby Share and can be
+  // cleaned up along with the share session.
+  void OnCleanupSession();
 
   bool IsNearbyShareBubbleVisible() const;
 
