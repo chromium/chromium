@@ -1,6 +1,6 @@
 // Copyright 2021 The Chromium Authors. All rights reserved.
-// Use of this sink code is governed by a BSD-style license that can be found
-// in the LICENSE file.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
