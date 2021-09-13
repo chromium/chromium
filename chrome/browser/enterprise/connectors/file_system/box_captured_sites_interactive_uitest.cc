@@ -48,6 +48,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
@@ -950,6 +951,13 @@ class BoxCapturedSitesInteractiveTest : public InProcessBrowserTest {
         /*disabled_features=*/{});
     if (GetTestExecutionMode() != TestExecutionMode::kLive)
       WebPageReplayUtil::SetUpCommandLine(command_line);
+
+      // Disable GPU acceleration on Linux to avoid the GPU process
+      // crashing, and inadvertently block page load.
+#if defined(OS_POSIX)
+    command_line->AppendSwitch(switches::kDisableGpu);
+    command_line->AppendSwitch(switches::kDisableSoftwareRasterizer);
+#endif
   }
 
   void TearDownOnMainThread() override {
