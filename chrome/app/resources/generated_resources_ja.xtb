@@ -2278,6 +2278,7 @@
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />、<ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">このサイト用に保存されているパスワードはありません</translation>
 <translation id="3404249063913988450">スクリーン セーバーを有効にする</translation>
+<translation id="3404805962764077228"><ph name="DEVICE_TYPE" /> でスマートフォン アプリを一時的にストリーミングする</translation>
 <translation id="3405664148539009465">フォントをカスタマイズ</translation>
 <translation id="3405763860805964263">...</translation>
 <translation id="3406290648907941085">バーチャル リアリティ デバイスとデータの使用を許可するサイト</translation>
@@ -4247,6 +4248,7 @@
 <translation id="5543983818738093899">ステータスを確認しています...</translation>
 <translation id="554517701842997186">レンダラ</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{タブをグループに追加}other{タブをグループに追加}}</translation>
+<translation id="5545693483061321551">サイトは、Cookie を使用して別のサイトでのあなたの閲覧アクティビティを確認できず、広告のカスタマイズなどが行えなくなります。一部のサイトで機能を使用できなくなる可能性があります。</translation>
 <translation id="5546865291508181392">検索</translation>
 <translation id="5548075230008247516">すべての項目の選択を解除し、選択モードを終了しました。</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{「<ph name="TAB_TITLE" />」}=1{「<ph name="TAB_TITLE" />」と他 1 個のタブ}other{「<ph name="TAB_TITLE" />」と他 # 個のタブ}}</translation>
@@ -6674,6 +6676,7 @@
 <translation id="8149564499626272569">USB ケーブルで接続したスマートフォンで確認</translation>
 <translation id="8151638057146502721">設定</translation>
 <translation id="8154790740888707867">ファイルがありません</translation>
+<translation id="8154912474061769055">多くのサイトで機能を使用できなくなる可能性があります</translation>
 <translation id="815491593104042026">セキュリティで保護されていない URL（<ph name="BLOCKED_URL" />）を使用するよう設定されているため、認証に失敗しました。管理者にお問い合わせください。</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{不正使用されたパスワードは見つかりませんでした}=1{不正使用されたパスワード: {COUNT} 件}other{不正使用されたパスワード: {COUNT} 件}}</translation>
 <translation id="8157248655669507702">eSIM プロファイルをインストールするにはモバイルデータを有効にしてください</translation>
@@ -6850,6 +6853,7 @@
 <translation id="8342221978608739536">試していない</translation>
 <translation id="8342861492835240085">コレクションを選択</translation>
 <translation id="8347227221149377169">印刷ジョブ</translation>
+<translation id="834785183489258869">シークレット モードのとき、サイトは Cookie を使用して別のサイトでのあなたの閲覧アクティビティを確認できず、広告のカスタマイズなどを行えなくなります。一部のサイトで機能を使用できなくなる可能性があります。</translation>
 <translation id="8350789879725387295">Dock のタッチペン ツール</translation>
 <translation id="8351316842353540018">ユーザー補助設定オプションを常に表示する</translation>
 <translation id="8351419472474436977">この拡張機能によってプロキシ設定が制御されています。オンラインで行う操作は、この拡張機能によって変更、遮断、傍受される可能性があります。この変更が行われた理由に心当たりがない場合、これは不正な変更と考えられます。</translation>

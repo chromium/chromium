@@ -454,6 +454,7 @@
 <translation id="5556459405103347317">再読み込み</translation>
 <translation id="5580834567471114021">後で読めるようにリーディング リストに追加しますか？</translation>
 <translation id="5592679540098330836"><ph name="NAME" /> の同期をオンにします</translation>
+<translation id="560322036295180549">組織によって無効にされています</translation>
 <translation id="5614553682702429503">パスワードを保存しますか？</translation>
 <translation id="5626245204502895507">今回は、ファイルをダウンロードできませんでした。</translation>
 <translation id="5631164295104953411">お支払い方法を追加</translation>
@@ -711,6 +712,7 @@
 <translation id="7856733331829174190">ダウンロードできませんでした</translation>
 <translation id="7859704718976024901">閲覧履歴</translation>
 <translation id="7887198238286927132">プライバシー保護のため、Chrome ではこの欄の自動入力は行われません。</translation>
+<translation id="7911190106180361398">お客様の組織では、[すべてを同期する] の設定は許可されていません。</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">パスワードをエクスポート...</translation>
 <translation id="794799177247607889">ログ記録を停止</translation>
