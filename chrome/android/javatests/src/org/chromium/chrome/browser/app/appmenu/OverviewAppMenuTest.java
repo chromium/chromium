@@ -151,7 +151,8 @@ public class OverviewAppMenuTest {
                         || itemId == R.id.menu_group_tabs || itemId == R.id.track_prices_row_menu_id
                         || itemId == R.id.preferences_id);
                 if (itemId == R.id.close_all_incognito_tabs_menu_id
-                        || itemId == R.id.track_prices_row_menu_id) {
+                        || itemId == R.id.track_prices_row_menu_id
+                        || itemId == R.id.new_tab_menu_id) {
                     assertFalse(item.isVisible());
                 } else {
                     assertTrue(item.isVisible());
@@ -199,6 +200,66 @@ public class OverviewAppMenuTest {
             }
         }
         assertThat(checkedMenuItems, equalTo(13));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Browser", "Main"})
+    // clang-format off
+    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
+        ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:omnibox_focused_on_new_tab/true"})
+    public void testNewTabIsEnabledWithStartSurfaceFinale() throws Exception {
+        // clang-format on
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
+        });
+
+        int checkedMenuItems = 0;
+        Menu menu = mActivityTestRule.getMenu();
+        for (int i = 0; i < menu.size(); ++i) {
+            MenuItem item = menu.getItem(i);
+            int itemId = item.getItemId();
+            if (itemId == R.id.new_tab_menu_id) {
+                int itemGroupId = item.getGroupId();
+                if (itemGroupId == R.id.START_SURFACE_MODE_MENU) {
+                    assertTrue(item.isVisible());
+                    checkedMenuItems++;
+                }
+            }
+        }
+        assertThat(checkedMenuItems, equalTo(1));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Browser", "Main"})
+    // clang-format off
+    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
+        ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:open_ntp_instead_of_start/true"})
+    public void testNewTabIsEnabledWithStartSurfaceV2() throws Exception {
+        // clang-format on
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
+        });
+
+        int checkedMenuItems = 0;
+        Menu menu = mActivityTestRule.getMenu();
+        for (int i = 0; i < menu.size(); ++i) {
+            MenuItem item = menu.getItem(i);
+            int itemId = item.getItemId();
+            if (itemId == R.id.new_tab_menu_id) {
+                int itemGroupId = item.getGroupId();
+                if (itemGroupId == R.id.START_SURFACE_MODE_MENU) {
+                    assertTrue(item.isVisible());
+                    checkedMenuItems++;
+                }
+            }
+        }
+        assertThat(checkedMenuItems, equalTo(1));
     }
 
     @Test

@@ -60,6 +60,7 @@ import org.chromium.chrome.browser.translate.TranslateUtils;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.appmenu.CustomViewBinder;
+import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
@@ -402,6 +403,18 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                 }
             }
 
+            if (item.getItemId() == R.id.new_tab_menu_id && item.isVisible()) {
+                if (menuGroup == MenuGroup.START_SURFACE_MODE_MENU
+                        && !StartSurfaceConfiguration.OMNIBOX_FOCUSED_ON_NEW_TAB.getValue()
+                        && !StartSurfaceConfiguration.START_SURFACE_OPEN_NTP_INSTEAD_OF_START
+                                    .getValue()) {
+                    // Hides the "New Tab" menu item on the Start surface menu if the Start surface
+                    // itself will be shown as "New Tab". This happens on non-incognito mode. Hiding
+                    // the menu prevents confusion since it will be noop on UI.
+                    item.setEnabled(isIncognito);
+                    item.setVisible(isIncognito);
+                }
+            }
             if (item.getItemId() == R.id.new_incognito_tab_menu_id && item.isVisible()) {
                 // Disable new incognito tab when it is blocked (e.g. by a policy).
                 // findItem(...).setEnabled(...)" is not enough here, because of the inflated
