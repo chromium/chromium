@@ -1204,7 +1204,7 @@ static Node* EnclosingNodeOfTypeAlgorithm(const PositionTemplate<Strategy>& p,
     return nullptr;
 
   ContainerNode* const root =
-      rule == kCannotCrossEditingBoundary ? HighestEditableRoot(p) : nullptr;
+      rule == kCannotCrossEditingBoundary ? RootEditableElementOf(p) : nullptr;
   for (Node* n = p.AnchorNode(); n; n = Strategy::Parent(*n)) {
     // Don't return a non-editable node if the input position was editable,
     // since the callers from editing will no doubt want to perform editing

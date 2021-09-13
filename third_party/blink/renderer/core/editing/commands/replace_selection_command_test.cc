@@ -244,4 +244,51 @@ TEST_F(ReplaceSelectionCommandTest, InsertImageAfterWhiteSpace) {
   EXPECT_EQ("<button><div></div><svg></svg></button><img>|x<input>",
             GetSelectionTextFromBody());
 }
+
+// https://crbug.com/1246674
+TEST_F(ReplaceSelectionCommandTest, InsertImageInNonEditableBlock1) {
+  GetDocument().setDesignMode("on");
+  Selection().SetSelection(
+      SetSelectionTextToBody(
+          "<div contenteditable=\"false\"><span contenteditable>"
+          "a|b</span></div>"),
+      SetSelectionOptions());
+
+  DocumentFragment& fragment = *GetDocument().createDocumentFragment();
+  fragment.appendChild(GetDocument().CreateRawElement(html_names::kImgTag));
+  auto& command = *MakeGarbageCollected<ReplaceSelectionCommand>(
+      GetDocument(), &fragment, ReplaceSelectionCommand::kPreventNesting,
+      InputEvent::InputType::kNone);
+
+  // Should not crash
+  EXPECT_TRUE(command.Apply());
+  EXPECT_EQ(
+      "<div contenteditable=\"false\"><span contenteditable>"
+      "a<img>|<br>b</span></div>",
+      GetSelectionTextFromBody());
+}
+
+// https://crbug.com/1246674
+TEST_F(ReplaceSelectionCommandTest, InsertImageInNonEditableBlock2) {
+  GetDocument().setDesignMode("on");
+  Selection().SetSelection(
+      SetSelectionTextToBody("<strong xml:space><div contenteditable=\"false\">"
+                             "<span contenteditable><div>a|b</div></span>"
+                             "</div></strong>"),
+      SetSelectionOptions());
+
+  DocumentFragment& fragment = *GetDocument().createDocumentFragment();
+  fragment.appendChild(GetDocument().CreateRawElement(html_names::kImgTag));
+  auto& command = *MakeGarbageCollected<ReplaceSelectionCommand>(
+      GetDocument(), &fragment, ReplaceSelectionCommand::kPreventNesting,
+      InputEvent::InputType::kNone);
+
+  // Should not crash
+  EXPECT_TRUE(command.Apply());
+  EXPECT_EQ(
+      "<strong xml:space><div contenteditable=\"false\">"
+      "<span contenteditable><div>a</div><img>|<div>b</div></span>"
+      "</div></strong>",
+      GetSelectionTextFromBody());
+}
 }  // namespace blink
