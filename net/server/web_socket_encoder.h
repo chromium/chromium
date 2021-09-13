@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/macros.h"
 #include "base/strings/string_piece.h"
@@ -53,6 +54,9 @@ class WebSocketEncoder final {
   WebSocketEncoder(Type type,
                    std::unique_ptr<WebSocketDeflater> deflater,
                    std::unique_ptr<WebSocketInflater> inflater);
+
+  std::vector<std::string> continuation_message_frames_;
+  bool is_current_message_compressed_ = false;
 
   bool Inflate(std::string* message);
   bool Deflate(base::StringPiece message, std::string* output);

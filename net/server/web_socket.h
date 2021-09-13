@@ -22,7 +22,10 @@ class WebSocketEncoder;
 class WebSocket final {
  public:
   enum ParseResult {
-    FRAME_OK,
+    // Final frame of a text message or compressed frame.
+    FRAME_OK_FINAL,
+    // Other frame of a text message.
+    FRAME_OK_MIDDLE,
     FRAME_INCOMPLETE,
     FRAME_CLOSE,
     FRAME_ERROR

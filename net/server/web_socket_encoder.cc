@@ -6,10 +6,10 @@
 
 #include <limits>
 #include <utility>
-#include <vector>
 
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "net/base/io_buffer.h"
 #include "net/websockets/websocket_deflate_parameters.h"
@@ -72,7 +72,7 @@ WebSocket::ParseResult DecodeFrameHybi17(const base::StringPiece& frame,
   int op_code = first_byte & kOpCodeMask;
   bool masked = (second_byte & kMaskBit) != 0;
   *compressed = reserved1;
-  if (!final || reserved2 || reserved3)
+  if (reserved2 || reserved3)
     return WebSocket::FRAME_ERROR;  // Only compression extension is supported.
 
   bool closed = false;
@@ -80,10 +80,14 @@ WebSocket::ParseResult DecodeFrameHybi17(const base::StringPiece& frame,
     case kOpCodeClose:
       closed = true;
       break;
+
     case kOpCodeText:
       break;
+
+    case kOpCodeContinuation:  // Treated in the same as kOpCodeText.
+      break;
+
     case kOpCodeBinary:        // We don't support binary frames yet.
-    case kOpCodeContinuation:  // We don't support binary frames yet.
     case kOpCodePing:          // We don't support binary frames yet.
     case kOpCodePong:          // We don't support binary frames yet.
     default:
@@ -137,7 +141,10 @@ WebSocket::ParseResult DecodeFrameHybi17(const base::StringPiece& frame,
 
   size_t pos = p + actual_masking_key_length + payload_length - buffer_begin;
   *bytes_consumed = pos;
-  return closed ? WebSocket::FRAME_CLOSE : WebSocket::FRAME_OK;
+
+  if (closed)
+    return WebSocket::FRAME_CLOSE;
+  return final ? WebSocket::FRAME_OK_FINAL : WebSocket::FRAME_OK_MIDDLE;
 }
 
 void EncodeFrameHybi17(base::StringPiece message,
@@ -292,12 +299,24 @@ WebSocket::ParseResult WebSocketEncoder::DecodeFrame(
     int* bytes_consumed,
     std::string* output) {
   bool compressed;
+  std::string current_output;
   WebSocket::ParseResult result = DecodeFrameHybi17(
-      frame, type_ == FOR_SERVER, bytes_consumed, output, &compressed);
-  if (result == WebSocket::FRAME_OK && compressed) {
-    if (!Inflate(output))
-      result = WebSocket::FRAME_ERROR;
+      frame, type_ == FOR_SERVER, bytes_consumed, &current_output, &compressed);
+  if (result == WebSocket::FRAME_OK_FINAL ||
+      result == WebSocket::FRAME_OK_MIDDLE) {
+    if (continuation_message_frames_.empty())
+      is_current_message_compressed_ = compressed;
+    continuation_message_frames_.push_back(current_output);
   }
+  if (result == WebSocket::FRAME_OK_FINAL) {
+    *output = base::StrCat(continuation_message_frames_);
+    if (is_current_message_compressed_) {
+      if (!Inflate(output))
+        result = WebSocket::FRAME_ERROR;
+    }
+  }
+  if (result != WebSocket::FRAME_OK_MIDDLE)
+    continuation_message_frames_.clear();
   return result;
 }
 

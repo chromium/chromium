@@ -123,7 +123,7 @@ class AndroidDeviceManager::AndroidWebSocket::WebSocketImpl {
     WebSocket::ParseResult parse_result = encoder_->DecodeFrame(
         response_buffer_, &bytes_consumed, &output);
 
-    while (parse_result == WebSocket::FRAME_OK) {
+    while (parse_result == WebSocket::FRAME_OK_FINAL) {
       response_buffer_ = response_buffer_.substr(bytes_consumed);
       response_task_runner_->PostTask(
           FROM_HERE,
