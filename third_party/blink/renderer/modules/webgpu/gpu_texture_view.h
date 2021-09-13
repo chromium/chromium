@@ -19,6 +19,12 @@ class GPUTextureView : public DawnObject<WGPUTextureView> {
   DISALLOW_COPY_AND_ASSIGN(GPUTextureView);
 };
 
+// TODO(jie.a.chen@intel.com): Remove this once th Dawn CL below is landed.
+// https://dawn-review.googlesource.com/c/dawn/+/63660
+#if !defined(WGPU_ARRAY_LAYER_COUNT_UNDEFINED)
+#define WGPU_ARRAY_LAYER_COUNT_UNDEFINED (0u)
+#endif
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_TEXTURE_VIEW_H_

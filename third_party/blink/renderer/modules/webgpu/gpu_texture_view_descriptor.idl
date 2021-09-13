@@ -11,7 +11,7 @@ dictionary GPUTextureViewDescriptor : GPUObjectDescriptorBase {
     GPUIntegerCoordinate baseMipLevel = 0;
     GPUIntegerCoordinate mipLevelCount = 0;
     GPUIntegerCoordinate baseArrayLayer = 0;
-    GPUIntegerCoordinate arrayLayerCount = 0;
+    GPUIntegerCoordinate arrayLayerCount;
 };
 
 enum GPUTextureViewDimension {

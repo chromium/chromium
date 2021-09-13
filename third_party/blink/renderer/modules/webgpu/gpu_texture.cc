@@ -66,7 +66,11 @@ WGPUTextureViewDescriptor AsDawnType(
   dawn_desc.baseMipLevel = webgpu_desc->baseMipLevel();
   dawn_desc.mipLevelCount = webgpu_desc->mipLevelCount();
   dawn_desc.baseArrayLayer = webgpu_desc->baseArrayLayer();
-  dawn_desc.arrayLayerCount = webgpu_desc->arrayLayerCount();
+  if (webgpu_desc->hasArrayLayerCount()) {
+    dawn_desc.arrayLayerCount = webgpu_desc->arrayLayerCount();
+  } else {
+    dawn_desc.arrayLayerCount = WGPU_ARRAY_LAYER_COUNT_UNDEFINED;
+  }
   dawn_desc.aspect = AsDawnEnum<WGPUTextureAspect>(webgpu_desc->aspect());
   if (webgpu_desc->hasLabel()) {
     *label = webgpu_desc->label().Utf8();

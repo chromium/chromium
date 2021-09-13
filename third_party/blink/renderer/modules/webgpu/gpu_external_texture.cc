@@ -102,6 +102,7 @@ GPUExternalTexture* GPUExternalTexture::FromVideo(
           std::move(recyclable_canvas_resource));
 
   WGPUTextureViewDescriptor viewDesc = {};
+  viewDesc.arrayLayerCount = WGPU_ARRAY_LAYER_COUNT_UNDEFINED;
   WGPUTextureView plane0 = device->GetProcs().textureCreateView(
       mailbox_texture->GetTexture(), &viewDesc);
 
