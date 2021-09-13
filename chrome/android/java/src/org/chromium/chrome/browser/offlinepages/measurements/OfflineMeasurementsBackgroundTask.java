@@ -417,7 +417,6 @@ public class OfflineMeasurementsBackgroundTask implements BackgroundTask {
 
         // Gets whether airplane mode is enabled or disabled.
         boolean isAirplaneModeEnabled = isAirplaneModeEnabled(context);
-        boolean isRoaming = isRoaming(context);
         boolean isInteractive = isInteractive(context);
         boolean isApplicationForeground = isApplicationForeground();
 
@@ -425,9 +424,17 @@ public class OfflineMeasurementsBackgroundTask implements BackgroundTask {
                 didSystemBootSinceLastCheck, isInteractive, isApplicationForeground);
 
         partialSystemState.setUserState(SystemState.UserState.forNumber(userState))
-                .setIsRoaming(isRoaming)
                 .setIsAirplaneModeEnabled(isAirplaneModeEnabled)
                 .setLocalHourOfDayStart(localHourOfDay);
+
+        try {
+            boolean isRoaming = isRoaming(context);
+            partialSystemState.setIsRoaming(isRoaming);
+        } catch (SecurityException e) {
+            // When getting the capabilities of a network, we can encounter a SecurityException in
+            // some cases. When this happens we cannot determine if the network is marked as roaming
+            // or not roaming, so we do not record a value for IsRoaming. See crbug/1246848.
+        }
 
         // Starts the HTTP probe.
         sendHttpProbe((Integer probeResult) -> {
