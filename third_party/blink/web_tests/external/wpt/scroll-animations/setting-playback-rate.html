@@ -257,7 +257,6 @@
     const animation = createScrollLinkedAnimation(t);
     const scroller = animation.timeline.scrollSource;
     const maxScroll = scroller.scrollHeight - scroller.clientHeight;
-    const range = animation.timeline.timeRange;
     animation.playbackRate = 0;
     scroller.scrollTop = 0.3 * maxScroll;
     // Wait for new animation frame  which allows the timeline to compute new

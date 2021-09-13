@@ -3199,7 +3199,6 @@ TEST_F(StyleEngineTest, AtScrollTimelineInUserOrigin) {
   // @scroll-timeline in the user origin:
   InjectSheet("user1", WebDocument::kUserOrigin, R"CSS(
     @scroll-timeline timeline1 {
-      time-range: 10s;
       source: selector(#scroller1);
     }
   )CSS");
@@ -3212,7 +3211,6 @@ TEST_F(StyleEngineTest, AtScrollTimelineInUserOrigin) {
   // @scroll-timeline in the author origin (should win over user origin)
   InjectSheet("author", WebDocument::kAuthorOrigin, R"CSS(
     @scroll-timeline timeline1 {
-      time-range: 10s;
       source: selector(#scroller2);
     }
   )CSS");
@@ -3225,7 +3223,6 @@ TEST_F(StyleEngineTest, AtScrollTimelineInUserOrigin) {
   // An additional @scroll-timeline in the user origin:
   InjectSheet("user2", WebDocument::kUserOrigin, R"CSS(
     @scroll-timeline timeline2 {
-      time-range: 10s;
       source: selector(#scroller3);
     }
   )CSS");

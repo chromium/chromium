@@ -5706,12 +5706,6 @@
       runtime_flag: "CSSScrollTimeline",
     },
     {
-      name: "time-range",
-      is_descriptor: true,
-      is_property: false,
-      runtime_flag: "CSSScrollTimeline",
-    },
-    {
       name: "ascent-override",
       is_descriptor: true,
       is_property: false,

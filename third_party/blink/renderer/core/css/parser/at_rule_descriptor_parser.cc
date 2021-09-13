@@ -156,13 +156,6 @@ CSSValue* ConsumeScrollTimelineOrientation(CSSParserTokenRange& range) {
       CSSValueID::kHorizontal, CSSValueID::kVertical>(range);
 }
 
-CSSValue* ConsumeTimeRange(CSSParserTokenRange& range,
-                           const CSSParserContext& context) {
-  if (auto* value = css_parsing_utils::ConsumeIdent<CSSValueID::kAuto>(range))
-    return value;
-  return css_parsing_utils::ConsumeTime(range, context, kValueRangeAll);
-}
-
 CSSValue* ConsumeDescriptor(StyleRule::RuleType rule_type,
                             AtRuleDescriptorID id,
                             const CSSTokenizedValue& tokenized_value,
@@ -355,9 +348,6 @@ CSSValue* AtRuleDescriptorParser::ParseAtScrollTimelineDescriptor(
     case AtRuleDescriptorID::Start:
     case AtRuleDescriptorID::End:
       parsed_value = css_parsing_utils::ConsumeScrollOffset(range, context);
-      break;
-    case AtRuleDescriptorID::TimeRange:
-      parsed_value = ConsumeTimeRange(range, context);
       break;
     default:
       break;

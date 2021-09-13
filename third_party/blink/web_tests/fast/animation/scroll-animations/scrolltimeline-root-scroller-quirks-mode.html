@@ -17,8 +17,6 @@ body {
 <script>
 promise_test(async t => {
   const scroller = document.scrollingElement;
-  // For simplicity, we set the timeRange such that currentTime maps directly to
-  // the value scrolled.
   const scrollerHeight = scroller.scrollHeight - scroller.clientHeight;
   const scrollTimeline = new ScrollTimeline(
       { scrollSource: scroller, orientation: 'block' });

@@ -4400,7 +4400,6 @@ crbug.com/1050754 external/wpt/scroll-animations/css/at-scroll-timeline-sampling
 crbug.com/1050754 external/wpt/scroll-animations/css/at-scroll-timeline-source-invalidation.tentative.html [ Failure ]
 crbug.com/1050754 external/wpt/scroll-animations/css/at-scroll-timeline-source.html [ Failure ]
 crbug.com/1050754 external/wpt/scroll-animations/css/at-scroll-timeline-start-end.html [ Failure ]
-crbug.com/1050754 external/wpt/scroll-animations/css/at-scroll-timeline-time-range.html [ Failure ]
 crbug.com/1050754 external/wpt/scroll-animations/css/scroll-timeline-cssom.tentative.html [ Failure ]
 crbug.com/1050754 external/wpt/scroll-animations/current-time-nan.html [ Failure ]
 crbug.com/1050754 external/wpt/scroll-animations/current-time-root-scroller.html [ Failure ]

@@ -416,7 +416,6 @@ textSizeAdjust
 textTransform
 textUnderlineOffset
 textUnderlinePosition
-timeRange
 top
 touchAction
 transform
