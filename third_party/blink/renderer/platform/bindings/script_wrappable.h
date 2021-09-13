@@ -163,8 +163,6 @@ class PLATFORM_EXPORT ScriptWrappable
   friend class DOMDataStore;
   friend class DOMWrapperWorld;
   friend class HeapSnaphotWrapperVisitor;
-  friend class V8HiddenValue;
-  friend class V8PrivateProperty;
 };
 
 inline bool ScriptWrappable::UnsetMainWorldWrapperIfSet(
