@@ -94,14 +94,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         }
     }
 
-    // UMA constants.
-    private static final int SIGNIN_SETTINGS_DEFAULT_ACCOUNT = 0;
-    private static final int SIGNIN_SETTINGS_ANOTHER_ACCOUNT = 1;
-    private static final int SIGNIN_ACCEPT_DEFAULT_ACCOUNT = 2;
-    private static final int SIGNIN_ACCEPT_ANOTHER_ACCOUNT = 3;
-    private static final int SIGNIN_NO_THANKS = 4;
-    private static final int SIGNIN_MAX = 5;
-
     private static final int FRE_PROGRESS_STARTED = 0;
     private static final int FRE_PROGRESS_WELCOME_SHOWN = 1;
     private static final int FRE_PROGRESS_DATA_SAVER_SHOWN = 2;
@@ -115,7 +107,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     private static FirstRunActivityObserver sObserver;
 
     private String mResultSignInAccountName;
-    private boolean mResultIsDefaultAccount;
     private boolean mResultShowSignInSettings;
 
     private boolean mFlowIsKnown;
@@ -471,20 +462,9 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     public void completeFirstRunExperience() {
         RecordHistogram.recordMediumTimesHistogram("MobileFre.FromLaunch.FreCompleted",
                 SystemClock.elapsedRealtime() - mIntentCreationElapsedRealtimeMs);
-        if (!TextUtils.isEmpty(mResultSignInAccountName)) {
-            final int choice;
-            if (mResultShowSignInSettings) {
-                choice = mResultIsDefaultAccount ? SIGNIN_SETTINGS_DEFAULT_ACCOUNT
-                                                 : SIGNIN_SETTINGS_ANOTHER_ACCOUNT;
-            } else {
-                choice = mResultIsDefaultAccount ? SIGNIN_ACCEPT_DEFAULT_ACCOUNT
-                                                 : SIGNIN_ACCEPT_ANOTHER_ACCOUNT;
-            }
-            recordSigninChoiceHistogram(choice);
-            recordFreProgressHistogram(FRE_PROGRESS_COMPLETED_SIGNED_IN);
-        } else {
-            recordFreProgressHistogram(FRE_PROGRESS_COMPLETED_NOT_SIGNED_IN);
-        }
+        recordFreProgressHistogram(TextUtils.isEmpty(mResultSignInAccountName)
+                        ? FRE_PROGRESS_COMPLETED_NOT_SIGNED_IN
+                        : FRE_PROGRESS_COMPLETED_SIGNED_IN);
 
         FirstRunFlowSequencer.markFlowAsCompleted(
                 mResultSignInAccountName, mResultShowSignInSettings);
@@ -542,15 +522,13 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
     @Override
     public void refuseSignIn() {
-        recordSigninChoiceHistogram(SIGNIN_NO_THANKS);
         mResultSignInAccountName = null;
         mResultShowSignInSettings = false;
     }
 
     @Override
-    public void acceptSignIn(String accountName, boolean isDefaultAccount, boolean openSettings) {
+    public void acceptSignIn(String accountName, boolean openSettings) {
         mResultSignInAccountName = accountName;
-        mResultIsDefaultAccount = isDefaultAccount;
         mResultShowSignInSettings = openSettings;
     }
 
@@ -642,11 +620,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
             RecordHistogram.recordEnumeratedHistogram(
                     "MobileFre.Progress.ViewIntent", state, FRE_PROGRESS_MAX);
         }
-    }
-
-    private static void recordSigninChoiceHistogram(int signInChoice) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "MobileFre.SignInChoice", signInChoice, SIGNIN_MAX);
     }
 
     @Override

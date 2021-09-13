@@ -65,7 +65,7 @@ public class SyncConsentFirstRunFragment
     @Override
     protected void onSigninAccepted(String accountName, boolean isDefaultAccount,
             boolean settingsClicked, Runnable callback) {
-        getPageDelegate().acceptSignIn(accountName, isDefaultAccount, settingsClicked);
+        getPageDelegate().acceptSignIn(accountName, settingsClicked);
         getPageDelegate().advanceToNextPage();
         callback.run();
     }
