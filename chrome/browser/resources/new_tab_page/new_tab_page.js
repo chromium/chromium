@@ -26,9 +26,10 @@ export {FooProxy} from './modules/dummy/foo_proxy.js';
 export {dummyDescriptor} from './modules/dummy/module.js';
 // </if>
 export {InfoDialogElement} from './modules/info_dialog.js';
-export {Module, ModuleDescriptor} from './modules/module_descriptor.js';
+export {InitializeModuleCallback, Module, ModuleDescriptor} from './modules/module_descriptor.js';
 export {ModuleHeaderElement} from './modules/module_header.js';
 export {ModuleRegistry} from './modules/module_registry.js';
+export {ModuleWrapperElement} from './modules/module_wrapper.js';
 export {ModulesElement} from './modules/modules.js';
 // <if expr="not is_official_build">
 export {photosDescriptor} from './modules/photos/module.js';

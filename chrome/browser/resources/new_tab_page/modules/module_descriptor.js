@@ -11,7 +11,7 @@ import {WindowProxy} from '../window_proxy.js';
  */
 
 /** @typedef {function(): !Promise<?HTMLElement>} */
-let InitializeModuleCallback;
+export let InitializeModuleCallback;
 
 /** @typedef {{element: !HTMLElement, descriptor: !ModuleDescriptor}} */
 export let Module;
