@@ -591,7 +591,9 @@ bool ValidateEglConfig(EGLDisplay display,
   return true;
 }
 
-EGLConfig ChooseConfig(GLSurfaceFormat format, bool surfaceless) {
+EGLConfig ChooseConfig(GLSurfaceFormat format,
+                       bool surfaceless,
+                       bool offscreen) {
   // Choose an EGL configuration.
   // On X this is only used for PBuffer surfaces.
 
@@ -615,7 +617,9 @@ EGLConfig ChooseConfig(GLSurfaceFormat format, bool surfaceless) {
       &alpha_size, &buffer_size);
 
   EGLint surface_type =
-      (surfaceless ? EGL_DONT_CARE : EGL_WINDOW_BIT | EGL_PBUFFER_BIT);
+      (surfaceless
+           ? EGL_DONT_CARE
+           : (offscreen ? EGL_PBUFFER_BIT : EGL_WINDOW_BIT | EGL_PBUFFER_BIT));
 
   for (auto renderable_type : renderable_types) {
     EGLint config_attribs_8888[] = {EGL_BUFFER_SIZE,
@@ -945,7 +949,7 @@ EGLDisplay GLSurfaceEGL::GetDisplay() {
 
 EGLConfig GLSurfaceEGL::GetConfig() {
   if (!config_) {
-    config_ = ChooseConfig(format_, IsSurfaceless());
+    config_ = ChooseConfig(format_, IsSurfaceless(), IsOffscreen());
   }
   return config_;
 }
