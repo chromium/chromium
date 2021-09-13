@@ -190,9 +190,6 @@ crbug.com/angleproject/6358 conformance/programs/program-test.html [ Failure ]
 
 crbug.com/1219015 [ win intel ] conformance/textures/misc/video-rotation.html [ Failure ]
 
-crbug.com/1204224 [ win7 angle-d3d11 amd passthrough ] conformance/textures/video/* [ RetryOnFailure ]
-crbug.com/1204224 [ win7 angle-d3d11 amd passthrough ] conformance/textures/image_bitmap_from_video/* [ RetryOnFailure ]
-
 crbug.com/angleproject/4417 [ win angle-d3d11 ] conformance2/rendering/framebuffer-render-to-layer.html [ Failure ]
 crbug.com/angleproject/4417 [ win angle-d3d11 ] conformance2/rendering/framebuffer-render-to-layer-angle-issue.html [ Failure ]
 crbug.com/1127867 [ win angle-d3d11 ] conformance2/textures/image_data/tex-3d-rgb565-rgb-unsigned_byte.html [ RetryOnFailure ]
@@ -288,6 +285,9 @@ crbug.com/1159539 [ win amd-0x7340 angle-d3d11 passthrough ] deqp/functional/gle
 
 # Flaky on AMD Win7
 crbug.com/989050 [ angle-d3d11 win7 amd ] conformance2/textures/misc/tex-unpack-params-imagedata.html [ RetryOnFailure ]
+crbug.com/1204224 [ win7 angle-d3d11 amd passthrough ] conformance/textures/video/* [ RetryOnFailure ]
+crbug.com/1204224 [ win7 angle-d3d11 amd passthrough ] conformance/textures/image_bitmap_from_video/* [ RetryOnFailure ]
+crbug.com/1249006 [ win7 angle-d3d11 amd passthrough ] conformance2/textures/image_bitmap_from_video/* [ RetryOnFailure ]
 
 # Win D3D11 / Passthrough / Intel+AMD
 crbug.com/1215624 [ win angle-d3d11 passthrough intel ] conformance2/textures/video/* [ RetryOnFailure ]
