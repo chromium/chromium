@@ -64,6 +64,7 @@
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
+#include "third_party/blink/renderer/core/editing/ime/edit_context.h"
 #include "third_party/blink/renderer/core/events/current_input_event.h"
 #include "third_party/blink/renderer/core/events/pointer_event_factory.h"
 #include "third_party/blink/renderer/core/events/web_input_event_conversion.h"
@@ -1884,13 +1885,51 @@ WebLocalFrameImpl* WebFrameWidgetImpl::FocusedWebLocalFrameInWidget() const {
 
 bool WebFrameWidgetImpl::ScrollFocusedEditableElementIntoView() {
   Element* element = FocusedElement();
-  if (!element || !WebElement(element).IsEditable())
+  if (!element)
+    return false;
+
+  EditContext* edit_context = element->GetDocument()
+                                  .GetFrame()
+                                  ->GetInputMethodController()
+                                  .GetActiveEditContext();
+
+  if (!WebElement(element).IsEditable() && !edit_context)
     return false;
 
   element->GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kSelection);
 
   if (!element->GetLayoutObject())
     return false;
+
+  if (edit_context) {
+    // Scroll the |EditContext| into view.
+    // EditContext's coordinates are in Device Independent Pixels.
+    gfx::Rect control_bounds_in_dip;
+    gfx::Rect selection_bounds_in_dip;
+    edit_context->GetLayoutBounds(&control_bounds_in_dip,
+                                  &selection_bounds_in_dip);
+
+    IntRect control_bounds_in_physical_pixel = IntRect(control_bounds_in_dip);
+    IntRect selection_bounds_in_physical_pixel =
+        IntRect(selection_bounds_in_dip);
+    control_bounds_in_physical_pixel.Scale(
+        View()->ZoomFactorForDeviceScaleFactor());
+    selection_bounds_in_physical_pixel.Scale(
+        View()->ZoomFactorForDeviceScaleFactor());
+
+    LocalFrameView* main_frame_view = LocalRootImpl()->GetFrame()->View();
+
+    View()->ZoomAndScrollToFocusedEditableElementRect(
+        main_frame_view->RootFrameToDocument(
+            element->GetDocument().View()->ConvertToRootFrame(
+                control_bounds_in_physical_pixel)),
+        main_frame_view->RootFrameToDocument(
+            element->GetDocument().View()->ConvertToRootFrame(
+                selection_bounds_in_physical_pixel)),
+        View()->ShouldZoomToLegibleScale(*element));
+
+    return true;
+  }
 
   PhysicalRect rect_to_scroll;
   auto params =

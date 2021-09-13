@@ -12595,6 +12595,40 @@ TEST_F(WebFrameSimTest, ScrollFocusedEditableIntoViewNoLayoutObject) {
   EXPECT_EQ(ScrollOffset(0, 0), area->GetScrollOffset());
 }
 
+TEST_F(WebFrameSimTest, ScrollEditContextIntoView) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(500, 600));
+  WebView().GetPage()->GetSettings().SetTextAutosizingEnabled(false);
+
+  SimRequest r("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  r.Complete(R"HTML(
+      <!DOCTYPE html>
+      <div id="target" style='width:2000px;height:2000px'></div>
+      <script>
+        const editContext = new EditContext();
+        const target = document.getElementById('target');
+        target.editContext = editContext;
+        target.focus();
+        let controlBound = new DOMRect(500, 850, 1, 20);
+        let dummySelectionBound = new DOMRect(0, 0, 0, 0);
+        editContext.updateLayout(controlBound, dummySelectionBound);
+      </script>
+  )HTML");
+
+  WebView().EnableFakePageScaleAnimationForTesting(true);
+
+  WebView()
+      .MainFrameImpl()
+      ->FrameWidgetImpl()
+      ->ScrollFocusedEditableElementIntoView();
+
+  // scrollOffset.x = controlBound.x - left padding = 500 - 150 = 350
+  // scrollOffset.y = controlBound.y - (viewport.height - controlBound.height)/2
+  //                = 850 - (600 - 20) / 2 = 560
+  EXPECT_EQ(IntPoint(350, 560),
+            WebView().FakePageScaleAnimationTargetPositionForTesting());
+}
+
 TEST_F(WebFrameSimTest, DisplayNoneIFrameHasNoLayoutObjects) {
   SimRequest main_resource("https://example.com/test.html", "text/html");
   SimRequest frame_resource("https://example.com/frame.html", "text/html");
