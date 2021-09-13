@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {OOBE_UI_STATE} from '../display_manager_types.m.js';
+// #import {OOBE_UI_STATE, DisplayManagerScreenAttributes} from '../display_manager_types.m.js';
 // #import {OobeTypes} from '../oobe_types.m.js';
 // #import {Oobe} from '../../cr_ui.m.js';
 
@@ -150,3 +150,12 @@ const CALLBACK_USER_ACTED = 'userActed';
  * }}
  */
 LoginScreenBehavior.Proto;
+
+/** @interface */
+/* #export */ class LoginScreenBehaviorInterface {
+  /**
+   * @param {string} screenName
+   * @param {DisplayManagerScreenAttributes} attributes
+   */
+  initializeLoginScreen(screenName, attributes) {}
+}

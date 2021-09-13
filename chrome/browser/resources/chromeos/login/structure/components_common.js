@@ -33,7 +33,6 @@ function loadCommonComponents() {
 // <include src="../recommend_apps.js">
 // <include src="../app_downloading.js">
 // <include src="../pin_setup.js">
-// <include src="../marketing_opt_in.js">
 // <include src="../oobe_screen_assistant_optin_flow.js">
 // <include src="../multidevice_setup_first_run.js">
 // <include src="../screen_multidevice_setup.js">

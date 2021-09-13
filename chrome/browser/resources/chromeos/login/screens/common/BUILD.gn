@@ -5,8 +5,16 @@
 import("//chrome/test/base/js2gtest.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
+import("//tools/polymer/polymer.gni")
+import("../../oobe_auto_imports.gni")
 
 assert(is_chromeos, "OOBE UI is only available on ChromeOS builds")
+
+group("polymer3_elements") {
+  public_deps = [
+    ":marketing_opt_in_module",
+  ]
+}
 
 group("closure_compile") {
   deps = [
@@ -18,6 +26,14 @@ group("closure_compile") {
 js_type_check("closure_compile_local") {
   uses_legacy_modules = true
   deps = [ ":os_install" ]
+}
+
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
+  closure_flags = default_closure_args
+  deps = [
+    ":marketing_opt_in.m",
+  ]
 }
 
 ###############################
@@ -32,4 +48,25 @@ js_library("os_install") {
     "../../components/dialogs:oobe_adaptive_dialog",
     "../../components/dialogs:oobe_modal_dialog",
   ]
+}
+
+js_library("marketing_opt_in.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/marketing_opt_in.m.js" ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle.m",
+    "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/behaviors:oobe_dialog_host_behavior.m",
+    "../../components/behaviors:login_screen_behavior.m",
+  ]
+  extra_deps = [ ":marketing_opt_in_module" ]
+}
+
+polymer_modulizer("marketing_opt_in") {
+  js_file = "marketing_opt_in.js"
+  html_file = "marketing_opt_in.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
 }
