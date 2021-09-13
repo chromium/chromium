@@ -24,11 +24,15 @@ class WrappingTestTracker : public Tracker {
 
   void NotifyEvent(const std::string& event) override;
   bool ShouldTriggerHelpUI(const base::Feature& feature) override;
+  TriggerDetails ShouldTriggerHelpUIWithSnooze(
+      const base::Feature& feature) override;
   bool WouldTriggerHelpUI(const base::Feature& feature) const override;
   bool HasEverTriggered(const base::Feature& feature,
                         bool from_window) const override;
   TriggerState GetTriggerState(const base::Feature& feature) const override;
   void Dismissed(const base::Feature& feature) override;
+  void DismissedWithSnooze(const base::Feature& feature,
+                           absl::optional<SnoozeAction> snooze_action) override;
   std::unique_ptr<DisplayLockHandle> AcquireDisplayLock() override;
   bool IsInitialized() const override;
   void AddOnInitializedCallback(OnInitializedCallback callback) override;

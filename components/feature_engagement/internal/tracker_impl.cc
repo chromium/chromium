@@ -176,6 +176,11 @@ void TrackerImpl::NotifyEvent(const std::string& event) {
 }
 
 bool TrackerImpl::ShouldTriggerHelpUI(const base::Feature& feature) {
+  return ShouldTriggerHelpUIWithSnooze(feature).ShouldShowIph();
+}
+
+TrackerImpl::TriggerDetails TrackerImpl::ShouldTriggerHelpUIWithSnooze(
+    const base::Feature& feature) {
   FeatureConfig feature_config = configuration_->GetFeatureConfig(feature);
   ConditionValidator::Result result = condition_validator_->MeetsConditions(
       feature, feature_config, *event_model_, *availability_model_,
@@ -195,6 +200,8 @@ bool TrackerImpl::ShouldTriggerHelpUI(const base::Feature& feature) {
            << " tracking_only=" << feature_config.tracking_only << " "
            << result;
 
+  bool should_show_iph = false;
+
   if (feature_config.tracking_only) {
     if (result.NoErrors()) {
       // Because tracking only features always return false to the client,
@@ -203,10 +210,12 @@ bool TrackerImpl::ShouldTriggerHelpUI(const base::Feature& feature) {
       // showing. See https://crbug.com/1188679 for more details.
       Dismissed(feature);
     }
-    return false;
+    should_show_iph = false;
   } else {
-    return result.NoErrors();
+    should_show_iph = result.NoErrors();
   }
+
+  return TriggerDetails(should_show_iph, result.should_show_snooze);
 }
 
 bool TrackerImpl::WouldTriggerHelpUI(const base::Feature& feature) const {
@@ -264,6 +273,16 @@ void TrackerImpl::Dismissed(const base::Feature& feature) {
   DVLOG(2) << "Dismissing " << feature.name;
   condition_validator_->NotifyDismissed(feature);
   stats::RecordUserDismiss();
+}
+
+void TrackerImpl::DismissedWithSnooze(
+    const base::Feature& feature,
+    absl::optional<SnoozeAction> snooze_action) {
+  FeatureConfig feature_config = configuration_->GetFeatureConfig(feature);
+  DVLOG(2) << "Dismissing " << feature.name;
+  condition_validator_->NotifyDismissed(feature);
+  stats::RecordUserDismiss();
+  event_model_->DismissSnooze(feature_config.trigger.name);
 }
 
 std::unique_ptr<DisplayLockHandle> TrackerImpl::AcquireDisplayLock() {

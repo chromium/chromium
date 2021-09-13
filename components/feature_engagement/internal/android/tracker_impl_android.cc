@@ -100,6 +100,20 @@ bool TrackerImplAndroid::ShouldTriggerHelpUI(
   return tracker_->ShouldTriggerHelpUI(*features_[feature]);
 }
 
+base::android::ScopedJavaLocalRef<jobject>
+TrackerImplAndroid::ShouldTriggerHelpUIWithSnooze(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& jobj,
+    const base::android::JavaParamRef<jstring>& jfeature) {
+  std::string feature = ConvertJavaStringToUTF8(env, jfeature);
+  DCHECK(features_.find(feature) != features_.end());
+
+  Tracker::TriggerDetails triggerDetails =
+      tracker_->ShouldTriggerHelpUIWithSnooze(*features_[feature]);
+  return Java_TrackerImpl_createTriggerDetails(
+      env, triggerDetails.ShouldShowIph(), triggerDetails.ShouldShowSnooze());
+}
+
 bool TrackerImplAndroid::WouldTriggerHelpUI(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jobj,
@@ -139,6 +153,19 @@ void TrackerImplAndroid::Dismissed(
   DCHECK(features_.find(feature) != features_.end());
 
   tracker_->Dismissed(*features_[feature]);
+}
+
+void TrackerImplAndroid::DismissedWithSnooze(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& jobj,
+    const base::android::JavaParamRef<jstring>& jfeature,
+    const jint snooze_action) {
+  std::string feature = ConvertJavaStringToUTF8(env, jfeature);
+  DCHECK(features_.find(feature) != features_.end());
+
+  tracker_->DismissedWithSnooze(
+      *features_[feature],
+      absl::make_optional(static_cast<Tracker::SnoozeAction>(snooze_action)));
 }
 
 base::android::ScopedJavaLocalRef<jobject>
@@ -196,4 +223,5 @@ DisplayLockHandleAndroid::GetJavaObject() {
 void DisplayLockHandleAndroid::Release(JNIEnv* env) {
   delete this;
 }
+
 }  // namespace feature_engagement

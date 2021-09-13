@@ -76,6 +76,11 @@ class TrackerImplAndroid : public base::SupportsUserData::Data {
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jobj,
       const base::android::JavaParamRef<jstring>& jfeature);
+  virtual base::android::ScopedJavaLocalRef<jobject>
+  ShouldTriggerHelpUIWithSnooze(
+      JNIEnv* env,
+      const base::android::JavaRef<jobject>& jobj,
+      const base::android::JavaParamRef<jstring>& jfeature);
   virtual bool WouldTriggerHelpUI(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jobj,
@@ -92,6 +97,11 @@ class TrackerImplAndroid : public base::SupportsUserData::Data {
   virtual void Dismissed(JNIEnv* env,
                          const base::android::JavaRef<jobject>& jobj,
                          const base::android::JavaParamRef<jstring>& jfeature);
+  virtual void DismissedWithSnooze(
+      JNIEnv* env,
+      const base::android::JavaRef<jobject>& jobj,
+      const base::android::JavaParamRef<jstring>& jfeature,
+      const jint snooze_action);
   virtual base::android::ScopedJavaLocalRef<jobject> AcquireDisplayLock(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jobj);
