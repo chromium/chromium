@@ -329,6 +329,10 @@ const base::Feature kDarkLightMode{"DarkLightMode",
 const base::Feature kDemoModeSWA{"DemoModeSWA",
                                  base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables or disables Sync for desk templates on Chrome OS.
+const base::Feature kDeskTemplateSync{"DeskTemplateSync",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables the Diagnostics app.
 const base::Feature kDiagnosticsApp{"DiagnosticsApp",
                                     base::FEATURE_ENABLED_BY_DEFAULT};
@@ -1318,6 +1322,10 @@ bool IsDarkLightModeEnabled() {
 
 bool IsDemoModeSWAEnabled() {
   return base::FeatureList::IsEnabled(kDemoModeSWA);
+}
+
+bool IsDeskTemplateSyncEnabled() {
+  return base::FeatureList::IsEnabled(kDeskTemplateSync);
 }
 
 bool IsDiagnosticsAppEnabled() {

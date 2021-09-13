@@ -50,6 +50,9 @@ namespace {
 
 using syncer::ModelTypeStore;
 
+// The maximum number of templates the local storage can hold.
+constexpr std::size_t kMaxTemplateCount = 6u;
+
 // Converts a time field from sync protobufs to a time object.
 base::Time ProtoTimeToTime(int64_t proto_t) {
   return base::Time::FromDeltaSinceWindowsEpoch(
@@ -753,15 +756,44 @@ void DeskSyncBridge::DeleteAllEntries(DeleteEntryCallback callback) {
   std::unique_ptr<ModelTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
 
-  std::vector<std::string> all_uuids = GetAllUuids();
+  std::vector<base::GUID> all_uuids = GetAllEntryUuids();
 
   for (const auto& uuid : all_uuids) {
-    change_processor()->Delete(uuid, batch->GetMetadataChangeList());
-    batch->DeleteData(uuid);
+    change_processor()->Delete(uuid.AsLowercaseString(),
+                               batch->GetMetadataChangeList());
+    batch->DeleteData(uuid.AsLowercaseString());
   }
   entries_.clear();
 
   std::move(callback).Run(DeleteEntryStatus::kOk);
+}
+
+std::size_t DeskSyncBridge::GetEntryCount() const {
+  return entries_.size();
+}
+
+std::size_t DeskSyncBridge::GetMaxEntryCount() const {
+  return kMaxTemplateCount;
+}
+
+std::vector<base::GUID> DeskSyncBridge::GetAllEntryUuids() const {
+  std::vector<base::GUID> keys;
+  for (const auto& it : entries_) {
+    DCHECK_EQ(it.first, it.second->uuid());
+    keys.emplace_back(it.first);
+  }
+  return keys;
+}
+
+bool DeskSyncBridge::IsReady() const {
+  if (is_ready_) {
+    DCHECK(store_);
+  }
+  return is_ready_;
+}
+
+bool DeskSyncBridge::IsSyncing() const {
+  return change_processor()->IsTrackingMetadata();
 }
 
 sync_pb::WorkspaceDeskSpecifics DeskSyncBridge::ToSyncProto(
@@ -784,32 +816,18 @@ sync_pb::WorkspaceDeskSpecifics DeskSyncBridge::ToSyncProto(
   return pb_entry;
 }
 
-bool DeskSyncBridge::IsReady() const {
-  if (is_ready_) {
-    DCHECK(store_);
-  }
-  return is_ready_;
-}
-
-bool DeskSyncBridge::IsSyncing() const {
-  return change_processor()->IsTrackingMetadata();
-}
-
-std::vector<std::string> DeskSyncBridge::GetAllUuids() const {
-  std::vector<std::string> keys;
-  for (const auto& it : entries_) {
-    DCHECK_EQ(it.first, it.second->uuid());
-    keys.push_back(it.first.AsLowercaseString());
-  }
-  return keys;
-}
-
 const DeskTemplate* DeskSyncBridge::GetEntryByUUID(
     const base::GUID& uuid) const {
   auto it = entries_.find(uuid);
   if (it == entries_.end())
     return nullptr;
   return it->second.get();
+}
+
+void DeskSyncBridge::NotifyDeskModelLoaded() {
+  for (DeskModelObserver& observer : observers_) {
+    observer.DeskModelLoaded();
+  }
 }
 
 void DeskSyncBridge::NotifyRemoteDeskTemplateAddedOrUpdated(
@@ -880,6 +898,7 @@ void DeskSyncBridge::OnReadAllMetadata(
 
   change_processor()->ModelReadyToSync(std::move(metadata_batch));
   is_ready_ = true;
+  NotifyDeskModelLoaded();
 }
 
 void DeskSyncBridge::OnCommit(const absl::optional<syncer::ModelError>& error) {

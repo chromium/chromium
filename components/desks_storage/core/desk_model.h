@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/guid.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 
@@ -103,6 +104,27 @@ class DeskModel {
 
   // Delete all entries.
   virtual void DeleteAllEntries(DeleteEntryCallback callback) = 0;
+
+  // Gets the number of templates currently saved.
+  // This method assumes each implementation has a cache and can return the
+  // count synchronously.
+  virtual std::size_t GetEntryCount() const = 0;
+
+  // Gets the maximum number of templates this storage backend could hold.
+  // Adding more templates beyond this limit will result in |kHitMaximumLimit|
+  // error.
+  virtual std::size_t GetMaxEntryCount() const = 0;
+
+  // Returns a vector of desk template UUIDs.
+  // This method assumes each implementation has a cache and can return the
+  // UUIDs synchronously.
+  virtual std::vector<base::GUID> GetAllEntryUuids() const = 0;
+
+  // Whether this model is ready for saving and reading desk templates.
+  virtual bool IsReady() const = 0;
+
+  // Whether this model is syncing desk templates to server.
+  virtual bool IsSyncing() const = 0;
 
   // Observer registration methods. The model will remove all observers upon
   // destruction automatically.

@@ -71,6 +71,14 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
   void DeleteEntry(const std::string& uuid,
                    DeleteEntryCallback callback) override;
   void DeleteAllEntries(DeleteEntryCallback callback) override;
+  std::size_t GetEntryCount() const override;
+  std::size_t GetMaxEntryCount() const override;
+  std::vector<base::GUID> GetAllEntryUuids() const override;
+  bool IsReady() const override;
+  // Whether this sync bridge is syncing local data to sync. This sync bridge
+  // still allows user to save desk templates locally when users disable syncing
+  // for Workspace Desk model type.
+  bool IsSyncing() const override;
 
   // Other helper methods.
 
@@ -78,19 +86,13 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
   sync_pb::WorkspaceDeskSpecifics ToSyncProto(
       const ash::DeskTemplate* desk_template);
 
-  // Whether this sync bridge is ready for saving and reading desk templates
-  // locally.
-  bool IsReady() const;
-
-  // Whether this sync bridge is syncing local data to sync. This sync bridge
-  // still allows user to save desk templates locally when users disable syncing
-  // for Workspace Desk model type.
-  bool IsSyncing() const;
-  std::vector<std::string> GetAllUuids() const;
   const ash::DeskTemplate* GetEntryByUUID(const base::GUID& uuid) const;
 
  private:
   using DeskEntries = std::map<base::GUID, std::unique_ptr<ash::DeskTemplate>>;
+
+  // Notify all observers that the model is loaded;
+  void NotifyDeskModelLoaded();
 
   // Notify all observers of any |new_entries| when they are added/updated via
   // sync.

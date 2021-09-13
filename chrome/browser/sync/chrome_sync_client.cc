@@ -60,6 +60,7 @@
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/browser_sync/profile_sync_components_factory_impl.h"
 #include "components/consent_auditor/consent_auditor.h"
+#include "components/desks_storage/core/desk_sync_service.h"
 #include "components/dom_distiller/core/dom_distiller_service.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/common/pref_names.h"
@@ -133,6 +134,7 @@
 #include "chrome/browser/ash/sync/apps_model_type_controller.h"
 #include "chrome/browser/ash/sync/os_sync_model_type_controller.h"
 #include "chrome/browser/ash/sync/os_syncable_service_model_type_controller.h"
+#include "chrome/browser/sync/desk_sync_service_factory.h"
 #include "chrome/browser/sync/wifi_configuration_sync_service_factory.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
@@ -523,6 +525,18 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
           std::make_unique<ForwardingModelTypeControllerDelegate>(delegate),
           profile_->GetPrefs(), sync_service));
     }
+    if (!disabled_types.Has(syncer::WORKSPACE_DESK)) {
+      // Use the same delegate in full-sync and transport-only modes.
+      syncer::ModelTypeControllerDelegate* delegate =
+          GetControllerDelegateForModelType(syncer::WORKSPACE_DESK).get();
+      controllers.push_back(std::make_unique<OsSyncModelTypeController>(
+          syncer::WORKSPACE_DESK,
+          /*delegate_for_full_sync_mode=*/
+          std::make_unique<ForwardingModelTypeControllerDelegate>(delegate),
+          /*delegate_for_transport_mode=*/
+          std::make_unique<ForwardingModelTypeControllerDelegate>(delegate),
+          profile_->GetPrefs(), sync_service));
+    }
   } else {
     // SplitSettingsSync and SyncSettingsCategorization are disabled.
     if (!disabled_types.Has(syncer::WIFI_CONFIGURATIONS) &&
@@ -532,6 +546,13 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
           GetControllerDelegateForModelType(syncer::WIFI_CONFIGURATIONS).get();
       controllers.push_back(std::make_unique<syncer::ModelTypeController>(
           syncer::WIFI_CONFIGURATIONS,
+          std::make_unique<ForwardingModelTypeControllerDelegate>(delegate)));
+    }
+    if (!disabled_types.Has(syncer::WORKSPACE_DESK)) {
+      syncer::ModelTypeControllerDelegate* delegate =
+          GetControllerDelegateForModelType(syncer::WORKSPACE_DESK).get();
+      controllers.push_back(std::make_unique<syncer::ModelTypeController>(
+          syncer::WORKSPACE_DESK,
           std::make_unique<ForwardingModelTypeControllerDelegate>(delegate)));
     }
   }
@@ -638,6 +659,9 @@ ChromeSyncClient::GetControllerDelegateForModelType(syncer::ModelType type) {
     case syncer::WIFI_CONFIGURATIONS:
       return WifiConfigurationSyncServiceFactory::GetForProfile(profile_,
                                                                 /*create=*/true)
+          ->GetControllerDelegate();
+    case syncer::WORKSPACE_DESK:
+      return DeskSyncServiceFactory::GetForProfile(profile_)
           ->GetControllerDelegate();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     case syncer::SHARING_MESSAGE:

@@ -11,6 +11,8 @@ static_library("desks_storage") {
     "core/desk_model_observer.h",
     "core/desk_sync_bridge.cc",
     "core/desk_sync_bridge.h",
+    "core/desk_sync_service.cc",
+    "core/desk_sync_service.h",
     "core/local_desk_data_manager.cc",
     "core/local_desk_data_manager.h",
   ]
@@ -21,6 +23,7 @@ static_library("desks_storage") {
     "//components/sync",
     "//components/sync/model",
     "//components/sync/protocol",
+    "//components/version_info:channel",
     "//third_party/re2",
   ]
 

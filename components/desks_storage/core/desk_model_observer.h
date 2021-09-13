@@ -22,6 +22,10 @@ class DeskModelObserver {
   DeskModelObserver(const DeskModelObserver&) = delete;
   DeskModelObserver& operator=(const DeskModelObserver&) = delete;
 
+  // Invoked when the model has finished loading. Until this method is called it
+  // is unsafe to use the model.
+  virtual void DeskModelLoaded() = 0;
+
   // Invoked when desk templates are added/updated, removed remotely via sync.
   // This is the mechanism for the sync server to push changes in the state of
   // the model to clients.

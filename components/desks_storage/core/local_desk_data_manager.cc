@@ -272,12 +272,30 @@ void LocalDeskDataManager::DeleteAllEntries(
                      std::move(callback)));
 }
 
-std::size_t LocalDeskDataManager::GetTemplateCount() const {
+std::size_t LocalDeskDataManager::GetEntryCount() const {
   return templates_.size();
 }
 
 std::size_t LocalDeskDataManager::GetMaxEntryCount() const {
   return kMaxTemplateCount;
+}
+
+std::vector<base::GUID> LocalDeskDataManager::GetAllEntryUuids() const {
+  std::vector<base::GUID> keys;
+  for (const auto& it : templates_) {
+    DCHECK_EQ(it.first, it.second->uuid());
+    keys.emplace_back(it.first);
+  }
+  return keys;
+}
+
+bool LocalDeskDataManager::IsReady() const {
+  return cache_status_ == CacheStatus::kOk;
+}
+
+bool LocalDeskDataManager::IsSyncing() const {
+  // Local storage backend never syncs to server.
+  return false;
 }
 
 void LocalDeskDataManager::EnsureCacheIsLoaded() {

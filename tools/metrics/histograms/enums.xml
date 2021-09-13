@@ -48332,6 +48332,7 @@ from previous Chrome versions.
   <int value="-1228546373"
       label="UseLookalikesForNavigationSuggestions:enabled"/>
   <int value="-1227660915" label="WebContentsOcclusion:disabled"/>
+  <int value="-1226536953" label="DeskTemplateSync:disabled"/>
   <int value="-1225772151" label="OfflineHome:disabled"/>
   <int value="-1225629234" label="SyncPseudoUSSFavicons:enabled"/>
   <int value="-1225198073" label="ReaderModeInCCT:disabled"/>
@@ -50102,6 +50103,7 @@ from previous Chrome versions.
       label="QueryTilesRemoveTrendingAfterInactivity:disabled"/>
   <int value="194573877" label="MacViewsNativeDialogs:disabled"/>
   <int value="194895489" label="passive-listeners-default"/>
+  <int value="195112080" label="DeskTemplateSync:enabled"/>
   <int value="195335115" label="AudioWorkletRealtimeThread:disabled"/>
   <int value="195570937" label="EnableHomeLauncher:disabled"/>
   <int value="196103097" label="PaintPreviewShowOnStartup:disabled"/>

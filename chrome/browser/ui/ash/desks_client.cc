@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/session/session_observer.h"
@@ -17,8 +18,11 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/sync/desk_sync_service_factory.h"
 #include "chrome/browser/ui/ash/desk_template_app_launch_handler.h"
+#include "components/desks_storage/core/desk_sync_service.h"
 #include "components/desks_storage/core/local_desk_data_manager.h"
+#include "components/sync/model/model_type_store.h"
 #include "extensions/common/constants.h"
 
 namespace {
@@ -75,8 +79,11 @@ void DesksClient::OnActiveUserSessionChanged(const AccountId& account_id) {
 
   active_profile_ = profile;
   DCHECK(active_profile_);
-  storage_manager_ = std::make_unique<desks_storage::LocalDeskDataManager>(
-      active_profile_->GetPath());
+
+  if (!chromeos::features::IsDeskTemplateSyncEnabled()) {
+    storage_manager_ = std::make_unique<desks_storage::LocalDeskDataManager>(
+        active_profile_->GetPath());
+  }
 }
 
 void DesksClient::CaptureActiveDeskAndSaveTemplate(
@@ -91,7 +98,7 @@ void DesksClient::CaptureActiveDeskAndSaveTemplate(
       desks_controller_->CaptureActiveDeskAsTemplate();
   RecordWindowAndTabCountHistogram(desk_template.get());
   auto desk_template_clone = desk_template->Clone();
-  storage_manager_->AddOrUpdateEntry(
+  GetDeskModel()->AddOrUpdateEntry(
       std::move(desk_template_clone),
       base::BindOnce(&DesksClient::OnCaptureActiveDeskAndSaveTemplate,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
@@ -106,7 +113,7 @@ void DesksClient::UpdateDeskTemplate(const std::string& template_uuid,
     return;
   }
 
-  storage_manager_->GetEntryByUUID(
+  GetDeskModel()->GetEntryByUUID(
       template_uuid, base::BindOnce(&DesksClient::OnGetTemplateToBeUpdated,
                                     weak_ptr_factory_.GetWeakPtr(),
                                     template_name, std::move(callback)));
@@ -119,7 +126,7 @@ void DesksClient::DeleteDeskTemplate(const std::string& template_uuid,
     return;
   }
 
-  storage_manager_->DeleteEntry(
+  GetDeskModel()->DeleteEntry(
       template_uuid,
       base::BindOnce(&DesksClient::OnDeleteDeskTemplate,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -132,9 +139,9 @@ void DesksClient::GetDeskTemplates(GetDeskTemplatesCallback callback) {
     return;
   }
 
-  storage_manager_->GetAllEntries(
-      base::BindOnce(&DesksClient::OnGetAllTemplates,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  GetDeskModel()->GetAllEntries(base::BindOnce(&DesksClient::OnGetAllTemplates,
+                                               weak_ptr_factory_.GetWeakPtr(),
+                                               std::move(callback)));
 }
 
 void DesksClient::LaunchDeskTemplate(const std::string& template_uuid,
@@ -156,7 +163,7 @@ void DesksClient::LaunchDeskTemplate(const std::string& template_uuid,
     return;
   }
 
-  storage_manager_->GetEntryByUUID(
+  GetDeskModel()->GetEntryByUUID(
       template_uuid,
       base::BindOnce(&DesksClient::OnGetTemplateForDeskLaunch,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -215,8 +222,8 @@ void DesksClient::RecordLaunchFromTemplateHistogram() {
 
 void DesksClient::RecordTemplateCountHistogram() {
   UMA_HISTOGRAM_EXACT_LINEAR(kUserTemplateCountHistogramName,
-                             storage_manager_->GetTemplateCount(),
-                             storage_manager_->GetMaxEntryCount());
+                             GetDeskModel()->GetEntryCount(),
+                             GetDeskModel()->GetMaxEntryCount());
 }
 
 void DesksClient::OnGetTemplateForDeskLaunch(
@@ -304,7 +311,7 @@ void DesksClient::OnGetTemplateToBeUpdated(
   }
 
   entry->set_template_name(template_name);
-  storage_manager_->AddOrUpdateEntry(
+  GetDeskModel()->AddOrUpdateEntry(
       std::move(entry),
       base::BindOnce(&DesksClient::OnUpdateDeskTemplate,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -319,4 +326,14 @@ void DesksClient::OnGetAllTemplates(
       std::string(status != desks_storage::DeskModel::GetAllEntriesStatus::kOk
                       ? kStorageError
                       : ""));
+}
+
+desks_storage::DeskModel* DesksClient::GetDeskModel() {
+  if (chromeos::features::IsDeskTemplateSyncEnabled()) {
+    return DeskSyncServiceFactory::GetForProfile(active_profile_)
+        ->GetDeskModel();
+  } else {
+    DCHECK(storage_manager_.get());
+    return storage_manager_.get();
+  }
 }

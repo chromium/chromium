@@ -8793,6 +8793,8 @@ source_set("sync_integration_test_support") {
       "../browser/sync/test/integration/sync_consent_optional_sync_test.h",
       "../browser/sync/test/integration/sync_settings_categorization_sync_test.cc",
       "../browser/sync/test/integration/sync_settings_categorization_sync_test.h",
+      "../browser/sync/test/integration/workspace_desk_helper.cc",
+      "../browser/sync/test/integration/workspace_desk_helper.h",
       "../browser/ui/app_list/test/fake_app_list_model_updater.cc",
       "../browser/ui/app_list/test/fake_app_list_model_updater.h",
     ]
@@ -8800,6 +8802,7 @@ source_set("sync_integration_test_support") {
       "//ash/app_list:test_support",
       "//chromeos",
       "//components/arc:arc_test_support",
+      "//components/desks_storage",
       "//components/user_manager:test_support",
     ]
   }
@@ -8906,12 +8909,16 @@ if (!is_android && !is_fuchsia) {
         "../browser/sync/test/integration/single_client_arc_package_sync_test.cc",
         "../browser/sync/test/integration/single_client_os_preferences_sync_test.cc",
         "../browser/sync/test/integration/single_client_printers_sync_test.cc",
+        "../browser/sync/test/integration/single_client_workspace_desk_sync_test.cc",
         "../browser/sync/test/integration/two_client_app_list_sync_test.cc",
         "../browser/sync/test/integration/two_client_arc_package_sync_test.cc",
         "../browser/sync/test/integration/two_client_os_preferences_sync_test.cc",
         "../browser/sync/test/integration/two_client_printers_sync_test.cc",
       ]
-      deps += [ "//chromeos" ]
+      deps += [
+        "//chromeos",
+        "//components/desks_storage",
+      ]
     }
 
     if (toolkit_views) {
