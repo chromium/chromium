@@ -125,6 +125,7 @@ public class ChromeCachedFlags {
                         add(LensFeature.SEARCH_BOX_START_VARIANT_LENS_CAMERA_ASSISTED_SEARCH);
                         add(PageAnnotationsServiceConfig.PAGE_ANNOTATIONS_BASE_URL);
                         add(ReturnToChromeExperimentsUtil.TAB_SWITCHER_ON_RETURN_MS);
+                        add(StartSurfaceConfiguration.CHECK_SYNC_BEFORE_SHOW_START_AT_STARTUP);
                         add(StartSurfaceConfiguration.FINALE_ANIMATION_ENABLED);
                         add(StartSurfaceConfiguration.HOME_BUTTON_ON_GRID_TAB_SWITCHER);
                         add(StartSurfaceConfiguration.NEW_SURFACE_FROM_HOME_BUTTON);

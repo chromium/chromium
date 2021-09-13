@@ -104,6 +104,12 @@ public class StartSurfaceConfiguration {
             new IntCachedFieldTrialParameter(
                     ChromeFeatureList.START_SURFACE_ANDROID, SPARE_RENDERER_DELAY_MS_PARAM, 1000);
 
+    private static final String CHECK_SYNC_BEFORE_SHOW_START_AT_STARTUP_PARAM =
+            "check_sync_before_show_start_at_startup";
+    public static final BooleanCachedFieldTrialParameter CHECK_SYNC_BEFORE_SHOW_START_AT_STARTUP =
+            new BooleanCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
+                    CHECK_SYNC_BEFORE_SHOW_START_AT_STARTUP_PARAM, false);
+
     private static final String STARTUP_UMA_PREFIX = "Startup.Android.";
     private static final String INSTANT_START_SUBFIX = ".Instant";
     private static final String REGULAR_START_SUBFIX = ".NoInstant";

@@ -1920,6 +1920,30 @@ public class StartSurfaceTest {
         });
     }
 
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    // clang-format off
+    @CommandLineFlags.Add({BASE_PARAMS + "/single/check_sync_before_show_start_at_startup/true"})
+    public void testShowStartWithSyncCheck() throws Exception {
+        // clang-format on
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForTabModel(cta);
+        assertEquals(1, cta.getTabModelSelector().getTotalTabCount());
+        mActivityTestRule.waitForActivityNativeInitializationComplete();
+        Assert.assertFalse(cta.getLayoutManager().overviewVisible());
+
+        Assert.assertFalse(ReturnToChromeExperimentsUtil.isPrimaryAccountSync());
+        Assert.assertFalse(ReturnToChromeExperimentsUtil.shouldShowOverviewPageOnStart(cta,
+                cta.getIntent(), cta.getTabModelSelector(), cta.getInactivityTrackerForTesting()));
+        ReturnToChromeExperimentsUtil.setSyncForTesting(true);
+        Assert.assertTrue(ReturnToChromeExperimentsUtil.isPrimaryAccountSync());
+        Assert.assertEquals(mImmediateReturn,
+                ReturnToChromeExperimentsUtil.shouldShowOverviewPageOnStart(cta, cta.getIntent(),
+                        cta.getTabModelSelector(), cta.getInactivityTrackerForTesting()));
+        ReturnToChromeExperimentsUtil.setSyncForTesting(false);
+    }
+
     private void backActionDeleteBlankTabForOmniboxFocusedOnNewTabSingleSurface(
             Runnable backAction) {
         if (!mImmediateReturn) {
@@ -2071,5 +2095,3 @@ public class StartSurfaceTest {
         return dialogView.getVisibility() == View.GONE;
     }
 }
-
-// TODO(crbug.com/1033909): Add more integration tests.
