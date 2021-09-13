@@ -453,7 +453,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         mAppLaunchDrawBlocker = new AppLaunchDrawBlocker(getLifecycleDispatcher(),
                 () -> findViewById(android.R.id.content),
                 this::getIntent, this::shouldIgnoreIntent, this::isTablet,
-                this::shouldShowTabSwitcherOnStart);
+                this::shouldShowOverviewPageOnStart);
         // clang-format on
     }
 
@@ -1109,35 +1109,17 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         // carousels may be hidden before Chrome is brought to the background. If overview should be
         // shown, no matter overview was already visible or not, we should call
         // showOverview(StartSurfaceState.SHOWING_START) to show MV tiles and carousels again.
-        return shouldShowTabSwitcherOnStart()
+        return shouldShowOverviewPageOnStart()
                 && (!isOverviewVisible
                         || StartSurfaceConfiguration.shouldShowNewSurfaceFromHomeButton());
     }
 
-    private boolean shouldShowTabSwitcherOnStart() {
-        String intentUrl = IntentHandler.getUrlFromIntent(getIntent());
-        // If Chrome is launched by tapping the New Tab Item from the launch icon and
-        // {@link OMNIBOX_FOCUSED_ON_NEW_TAB} is enabled, a new Tab with omnibox focused will be
-        // shown on Startup.
-        boolean isCanonicalizedNTPUrl = UrlUtilities.isCanonicalizedNTPUrl(intentUrl);
-        if (IntentHandler.shouldIntentShowNewTabOmniboxFocused(getIntent())) {
-            return false;
-        }
-
-        if (isCanonicalizedNTPUrl
-                && ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePage(this)) {
-            // Handle NTP intent.
-            return true;
-        } else if (ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePageNoTabs(this)
-                && IntentUtils.isMainIntentFromLauncher(getIntent())
-                && ReturnToChromeExperimentsUtil.getTotalTabCount(this, getTabModelSelector())
-                        <= 0) {
-            // Handle initial tab creation.
-            return true;
-        }
-        long lastBackgroundedTimeMillis = mInactivityTracker.getLastBackgroundedTimeMs();
-        return IntentUtils.isMainIntentFromLauncher(getIntent())
-                && ReturnToChromeExperimentsUtil.shouldShowTabSwitcher(lastBackgroundedTimeMillis);
+    /**
+     * Returns whether grid Tab switcher or the Start surface should be shown at startup.
+     */
+    private boolean shouldShowOverviewPageOnStart() {
+        return ReturnToChromeExperimentsUtil.shouldShowOverviewPageOnStart(
+                this, getIntent(), getTabModelSelector(), mInactivityTracker);
     }
 
     private void logMainIntentBehavior(Intent intent) {
@@ -1246,7 +1228,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             // it will trigger the notification that tab restore is complete which is needed by
             // other parts of Chrome such as sync.
             boolean activeTabBeingRestored = !isIntentWithEffect
-                    || (shouldShowTabSwitcherOnStart() && !mTabModelSelector.isIncognitoSelected());
+                    || (shouldShowOverviewPageOnStart()
+                            && !mTabModelSelector.isIncognitoSelected());
 
             mTabModelOrchestrator.restoreTabs(activeTabBeingRestored);
 
@@ -1292,8 +1275,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         Log.i(TAG, "#createInitialTab executed.");
         mPendingInitialTabCreation = false;
 
-        // If the start surface will be shown on start, do not create a new tab.
-        if (!shouldShowTabSwitcherOnStart()) {
+        // If the start surface or grid tab switcher will be shown on start, do not create a new
+        // tab.
+        if (!shouldShowOverviewPageOnStart()) {
             String url = HomepageManager.getHomepageUri();
             if (TextUtils.isEmpty(url)) {
                 url = UrlConstants.NTP_URL;
@@ -1532,7 +1516,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                           : OmniboxFocusReason.UNFOCUS);
 
             if (tabModel.getCount() > 0 && isInOverviewMode() && !isTablet()
-                    && !shouldShowTabSwitcherOnStart()) {
+                    && !shouldShowOverviewPageOnStart()) {
                 mOverviewModeController.hideOverview(true);
             }
         }
@@ -1696,7 +1680,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         if (StartupPaintPreviewHelper.isEnabled()) {
             StartupPaintPreviewHelper paintPreviewHelper = new StartupPaintPreviewHelper(
                     getWindowAndroid(), getOnCreateTimestampMs(), getBrowserControlsManager(),
-                    getTabModelSelector(), shouldShowTabSwitcherOnStart(), () -> {
+                    getTabModelSelector(), shouldShowOverviewPageOnStart(), () -> {
                         return getToolbarManager() == null
                                 ? null
                                 : getToolbarManager().getProgressBarCoordinator();
@@ -1740,7 +1724,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             setupCompositorContentPreNativeForPhone();
             getCompositorViewHolderSupplier().get().setLayoutManager(mLayoutManager);
 
-            if (shouldShowTabSwitcherOnStart()) {
+            if (shouldShowOverviewPageOnStart()) {
                 mLayoutManager.setTabModelSelector(mTabModelSelector);
                 mIsAccessibilityTabSwitcherEnabled =
                         DeviceClassManager.enableAccessibilityLayout(this);
@@ -1897,8 +1881,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             ChromeSurveyController.initialize(mTabModelSelector, getLifecycleDispatcher(),
                     ChromeTabbedActivity.this, MessageDispatcherProvider.from(getWindowAndroid()));
 
-            if (mStartSurfaceSupplier.get() != null && mOverviewShownOnStart) {
-                mStartSurfaceSupplier.get().onOverviewShownAtLaunch(getOnCreateTimestampMs());
+            if (mStartSurfaceSupplier.get() != null) {
+                mStartSurfaceSupplier.get().onOverviewShownAtLaunch(
+                        mOverviewShownOnStart, getOnCreateTimestampMs());
             }
         });
     }

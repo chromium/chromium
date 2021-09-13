@@ -795,6 +795,7 @@ public final class ChromePreferenceKeys {
      */
     public static final String QUERY_TILES_SHOW_ON_NTP = "Chrome.Querytiles.ShowOnNTP";
 
+    public static final String PRIMARY_ACCOUNT_SYNC = "Chrome.StartSurface.PrimaryAccountSync";
     /**
      * Contains a trial group that was used to determine whether the reached code profiler should be
      * enabled.
@@ -1112,6 +1113,7 @@ public final class ChromePreferenceKeys {
                 PRICE_TRACKING_PRICE_WELCOME_MESSAGE_CARD,
                 PRICE_TRACKING_PRICE_WELCOME_MESSAGE_CARD_SHOW_COUNT,
                 PRICE_TRACKING_TRACK_PRICES_ON_TABS,
+                PRIMARY_ACCOUNT_SYNC,
                 PROMO_IS_DISMISSED.pattern(),
                 PROMO_TIMES_SEEN.pattern(),
                 QUERY_TILES_NEXT_DISPLAY_DECISION_TIME_MS,
