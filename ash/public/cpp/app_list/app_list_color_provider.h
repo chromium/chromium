@@ -49,7 +49,6 @@ class ASH_PUBLIC_EXPORT AppListColorProvider {
   virtual SkColor GetGridBackgroundCardInactiveColor() const = 0;
   virtual SkColor GetSeparatorColor() const = 0;
   virtual SkColor GetFocusRingColor() const = 0;
-  virtual float GetFolderBackgrounBlurSigma() const = 0;
   virtual SkColor GetRippleAttributesBaseColor(
       SkColor bg_color = gfx::kPlaceholderColor) const = 0;
   virtual float GetRippleAttributesInkDropOpacity(

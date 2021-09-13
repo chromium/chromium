@@ -31,6 +31,7 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/check.h"
@@ -116,16 +117,12 @@ class BackgroundAnimation : public AppListFolderView::Animation,
     to_rect -= background_view_->bounds().OffsetFromOrigin();
     const SkColor background_color =
         AppListColorProvider::Get()->GetFolderBackgroundColor();
-    const SkColor from_color =
-        show_ ? AppListColorProvider::Get()->GetFolderBubbleColor()
-              : background_color;
-    const SkColor to_color =
-        show_ ? background_color
-              : AppListColorProvider::Get()->GetFolderBubbleColor();
+    const SkColor bubble_color =
+        AppListColorProvider::Get()->GetFolderBubbleColor();
+    const SkColor from_color = show_ ? bubble_color : background_color;
+    const SkColor to_color = show_ ? background_color : bubble_color;
 
     background_view_->layer()->SetColor(from_color);
-    background_view_->layer()->SetBackgroundBlur(
-        AppListColorProvider::Get()->GetFolderBackgrounBlurSigma());
     background_view_->layer()->SetClipRect(from_rect);
     background_view_->layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF(from_radius));
@@ -528,8 +525,11 @@ AppListFolderView::AppListFolderView(AppListFolderController* folder_controller,
   // such changes.
   background_view_ = AddChildView(std::make_unique<views::View>());
   background_view_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-  background_view_->layer()->SetColor(SK_ColorTRANSPARENT);
   background_view_->layer()->SetFillsBoundsOpaquely(false);
+  background_view_->layer()->SetBackgroundBlur(
+      ColorProvider::kBackgroundBlurSigma);
+  background_view_->layer()->SetBackdropFilterQuality(
+      ColorProvider::kBackgroundBlurQuality);
 
   contents_container_ = AddChildView(std::make_unique<views::View>());
   contents_container_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);

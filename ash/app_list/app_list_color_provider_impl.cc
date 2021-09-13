@@ -24,7 +24,9 @@ bool IsTabletModeEnabled() {
 }  // namespace
 
 AppListColorProviderImpl::AppListColorProviderImpl()
-    : ash_color_provider_(AshColorProvider::Get()) {}
+    : ash_color_provider_(AshColorProvider::Get()),
+      is_dark_light_mode_enabled_(features::IsDarkLightModeEnabled()),
+      is_app_list_bubble_enabled_(features::IsAppListBubbleEnabled()) {}
 
 AppListColorProviderImpl::~AppListColorProviderImpl() = default;
 
@@ -99,11 +101,11 @@ SkColor AppListColorProviderImpl::GetSuggestionChipTextColor() const {
 
 SkColor AppListColorProviderImpl::GetAppListItemTextColor(
     bool is_in_folder) const {
-  if (is_in_folder && !features::IsDarkLightModeEnabled())
-    return SK_ColorBLACK;
-  return DeprecatedGetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary,
-      /*default_color*/ SK_ColorWHITE);
+  if (is_dark_light_mode_enabled_ || is_app_list_bubble_enabled_) {
+    return ash_color_provider_->GetContentLayerColor(
+        ColorProvider::ContentLayerType::kTextColorPrimary);
+  }
+  return is_in_folder ? SK_ColorBLACK : SK_ColorWHITE;
 }
 
 SkColor AppListColorProviderImpl::GetPageSwitcherButtonColor(
@@ -121,26 +123,35 @@ SkColor AppListColorProviderImpl::GetSearchBoxIconColor(
 }
 
 SkColor AppListColorProviderImpl::GetFolderBackgroundColor() const {
-  return DeprecatedGetBaseLayerColor(
-      AshColorProvider::BaseLayerType::kTransparent80, SK_ColorWHITE);
+  if (is_dark_light_mode_enabled_ || is_app_list_bubble_enabled_) {
+    return ash_color_provider_->GetBaseLayerColor(
+        ColorProvider::BaseLayerType::kTransparent80);
+  }
+  return SK_ColorWHITE;
 }
 
 SkColor AppListColorProviderImpl::GetFolderBubbleColor() const {
-  return DeprecatedGetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive,
-      SkColorSetA(gfx::kGoogleGrey100, 0x7A));
+  if (is_dark_light_mode_enabled_ || is_app_list_bubble_enabled_) {
+    return ash_color_provider_->GetControlsLayerColor(
+        ColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
+  }
+  return SkColorSetA(gfx::kGoogleGrey100, 0x7A);
 }
 
 SkColor AppListColorProviderImpl::GetFolderTitleTextColor() const {
-  return DeprecatedGetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary,
-      gfx::kGoogleGrey700);
+  if (is_dark_light_mode_enabled_ || is_app_list_bubble_enabled_) {
+    return ash_color_provider_->GetContentLayerColor(
+        ColorProvider::ContentLayerType::kTextColorPrimary);
+  }
+  return gfx::kGoogleGrey700;
 }
 
 SkColor AppListColorProviderImpl::GetFolderHintTextColor() const {
-  return DeprecatedGetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorSecondary,
-      /*default_color*/ gfx::kGoogleGrey600);
+  if (is_dark_light_mode_enabled_ || is_app_list_bubble_enabled_) {
+    return ash_color_provider_->GetContentLayerColor(
+        ColorProvider::ContentLayerType::kTextColorSecondary);
+  }
+  return gfx::kGoogleGrey600;
 }
 
 SkColor AppListColorProviderImpl::GetFolderNameBorderColor(bool active) const {
@@ -187,10 +198,6 @@ SkColor AppListColorProviderImpl::GetFocusRingColor() const {
       gfx::kGoogleBlue600);
 }
 
-float AppListColorProviderImpl::GetFolderBackgrounBlurSigma() const {
-  return ColorProvider::kBackgroundBlurSigma;
-}
-
 SkColor AppListColorProviderImpl::GetRippleAttributesBaseColor(
     SkColor bg_color) const {
   return ash_color_provider_->GetRippleAttributes(bg_color).base_color;
@@ -208,7 +215,7 @@ float AppListColorProviderImpl::GetRippleAttributesHighlightOpacity(
 
 SkColor AppListColorProviderImpl::GetSearchResultViewHighlightColor() const {
   // Use highlight colors when Dark Light mode is enabled.
-  if (features::IsDarkLightModeEnabled()) {
+  if (is_dark_light_mode_enabled_) {
     return ash_color_provider_->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kHighlightColorHover);
   }

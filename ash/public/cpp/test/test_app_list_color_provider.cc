@@ -111,10 +111,6 @@ SkColor TestAppListColorProvider::GetFocusRingColor() const {
   return gfx::kGoogleBlue600;
 }
 
-float TestAppListColorProvider::GetFolderBackgrounBlurSigma() const {
-  return 30.0f;
-}
-
 SkColor TestAppListColorProvider::GetRippleAttributesBaseColor(
     SkColor bg_color) const {
   return SK_ColorWHITE;

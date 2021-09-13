@@ -41,7 +41,6 @@ class TestAppListColorProvider : public AppListColorProvider {
   SkColor GetGridBackgroundCardInactiveColor() const override;
   SkColor GetSeparatorColor() const override;
   SkColor GetFocusRingColor() const override;
-  float GetFolderBackgrounBlurSigma() const override;
   SkColor GetRippleAttributesBaseColor(
       SkColor bg_color = gfx::kPlaceholderColor) const override;
   float GetRippleAttributesInkDropOpacity(
