@@ -83,6 +83,7 @@ class FeedSurfaceScopeDependencyProvider implements SurfaceScopeDependencyProvid
 
     /**
      * FeedLoggingDependencyProvider implementation.
+     * TODO(iwells): Remove these methods after callers switch to the process scope version.
      */
 
     @Override

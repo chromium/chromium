@@ -8,9 +8,12 @@ package org.chromium.chrome.browser.xsurface;
  * Methods to be implemented by Chrome to support Feed logging.
  */
 public interface FeedLoggingDependencyProvider {
-    /** Returns whether or not activity logging should be enabled. */
-    default boolean isActivityLoggingEnabled() {
-        return false;
+    /** Logging dependencies tied to a specific surface. */
+    public interface SurfaceScope {
+        /** Returns whether or not activity logging should be enabled. */
+        default boolean isActivityLoggingEnabled() {
+            return false;
+        }
     }
 
     /** Returns the account name of the signed-in user, or the empty string. */
@@ -45,4 +48,19 @@ public interface FeedLoggingDependencyProvider {
      * @param success - whether the upload was successful
      */
     default void reportOnUploadVisibilityLog(boolean success) {}
+
+    /** Returns the reliability logging id. */
+    default long getReliabilityLoggingId() {
+        return 0L;
+    }
+
+    /** Returns Chrome's version string. */
+    default String getChromeVersion() {
+        return "";
+    }
+
+    /** Returns Chrome's channel as enumerated in components/version_info/channel.h. */
+    default int getChromeChannel() {
+        return 0;
+    }
 }

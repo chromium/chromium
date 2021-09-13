@@ -14,8 +14,11 @@ import androidx.annotation.Nullable;
  * Provides dependencies for xsurface at the surface level.
  *
  * Should only be called on the UI thread.
+ *
+ * TODO(iwells): Extend FeedLoggingDependencyProvider.SurfaceScope only.
  */
-public interface SurfaceScopeDependencyProvider extends FeedLoggingDependencyProvider {
+public interface SurfaceScopeDependencyProvider
+        extends FeedLoggingDependencyProvider, FeedLoggingDependencyProvider.SurfaceScope {
     /** Returns the activity. */
     @Nullable
     default Activity getActivity() {
