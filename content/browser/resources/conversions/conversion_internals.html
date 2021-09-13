@@ -28,112 +28,18 @@
   </div>
   <h2> Active Sources </h2>
   <div class="content">
-    <div class="table-wrapper">
-      <table id="source-table">
-        <thead>
-          <tr class="header-row">
-            <th>
-              Source Event ID
-            </th>
-            <th>
-              Source Origin
-            </th>
-            <th>
-              Destination
-            </th>
-            <th>
-              Report To
-            </th>
-            <th>
-              Source Registration Time
-            </th>
-            <th>
-              Expiry Time
-            </th>
-            <th>
-              Source Type
-            </th>
-            <th>
-              Priority
-            </th>
-            <th>
-              Dedup Keys
-            </th>
-          </tr>
-        </thead>
-        <tbody id="source-table-body">
-        </tbody>
-      </table>
-    </div>
+    <div class="table-wrapper" id="source-table-wrapper"></div>
   </div>
   <h2> Sent and Pending Reports </h2>
   <div class="content">
     <div>
       <span id="debug-mode-content"></span>
     </div>
-    <div class="table-wrapper">
-      <table id="report-table">
-        <thead>
-          <tr class="header-row">
-            <th>
-              Report Body
-            </th>
-            <th>
-              Destination
-            </th>
-            <th>
-              Report URL
-            </th>
-            <th>
-              Report Time
-            </th>
-            <th>
-              Report Priority
-            </th>
-            <th>
-              Status
-            </th>
-          </tr>
-        </thead>
-        <tbody id="report-table-body">
-        </tbody>
-      </table>
-    </div>
+    <div class="table-wrapper" id="report-table-wrapper"></div>
     <div>
       <button id="send-reports">Send All Pending Reports</button>
     </div>
   </div>
 </div>
-
-<template id="source-row">
-  <tr>
-    <td class="source-event-id-cell"></td>
-    <td class="source-origin-cell"></td>
-    <td class="destination-cell"></td>
-    <td class="report-to-cell"></td>
-    <td class="source-registration-time-cell"></td>
-    <td class="expiry-time-cell"></td>
-    <td class="source-type-cell"></td>
-    <td class="priority-cell"></td>
-    <td class="dedup-keys-cell"></td>
-  </tr>
-</template>
-
-<template id="no-reports-row">
-  <tr>
-    <td colspan="6">No sent or pending reports.</td>
-  </tr>
-</template>
-
-<template id="report-row">
-  <tr>
-    <td class="report-body-cell"><pre><code></code></pre></td>
-    <td class="destination-cell"></td>
-    <td class="report-url-cell"></td>
-    <td class="report-time-cell"></td>
-    <td class="report-priority-cell"></td>
-    <td class="status-cell"></td>
-  </tr>
-</template>
 </body>
 </html>

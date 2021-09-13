@@ -64,13 +64,13 @@ table {
   border-collapse: collapse;
 }
 
-table tr {
+tbody tr {
   border-top-color: rgba(0,0,0,.12);
   border-top-style: solid;
   border-top-width: 1px;
 }
 
-.header-row {
+thead tr {
   border: 0;
 }
 
@@ -78,6 +78,22 @@ table td,
 table th {
   padding-inline-end: 16px;
   padding-inline-start: 16px;
+}
+
+th[aria-sort] {
+  cursor: pointer;
+}
+
+th[aria-sort]::after {
+  content: '⬍';
+}
+
+th[aria-sort='ascending']::after {
+  content: '⬆';
+}
+
+th[aria-sort='descending']::after {
+  content: '⬇';
 }
 
 button {

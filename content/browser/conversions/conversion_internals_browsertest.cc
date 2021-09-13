@@ -28,6 +28,8 @@ namespace {
 const char kConversionInternalsUrl[] = "chrome://conversion-internals/";
 
 const std::u16string kCompleteTitle = u"Complete";
+const std::u16string kCompleteTitle2 = u"Complete2";
+const std::u16string kCompleteTitle3 = u"Complete3";
 
 const std::u16string kMaxInt64String = u"9223372036854775807";
 const std::u16string kMaxUint64String = u"18446744073709551615";
@@ -66,7 +68,7 @@ class ConversionInternalsWebUiBrowserTest : public ContentBrowserTest {
   // the report table is empty.
   void SetTitleOnReportsTableEmpty(const std::u16string& title) {
     const std::string kObserveEmptyReportsTableScript = R"(
-    let table = document.getElementById("report-table-body");
+    let table = document.querySelector("#report-table-wrapper tbody");
     let obs = new MutationObserver(() => {
       if (table.children.length === 1 &&
           table.children[0].children[0].innerText === "No sent or pending reports.") {
@@ -156,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(
   OverrideWebUIConversionManager(&manager);
 
   std::string wait_script = R"(
-    let table = document.getElementById("source-table-body");
+    let table = document.querySelector("#source-table-wrapper tbody");
     let obs = new MutationObserver(() => {
       if (table.children.length === 1 &&
           table.children[0].children[0].innerText ===
@@ -193,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
   OverrideWebUIConversionManager(&manager);
 
   std::string wait_script = R"(
-    let table = document.getElementById("source-table-body");
+    let table = document.querySelector("#source-table-wrapper tbody");
     let obs = new MutationObserver(() => {
       if (table.children.length === 2 &&
           table.children[0].children[0].innerText === $1 &&
@@ -305,27 +307,82 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
       ConversionReport::Id(1))});
   OverrideWebUIConversionManager(&manager);
 
-  std::string wait_script = R"(
-    let table = document.getElementById("report-table-body");
-    let obs = new MutationObserver(() => {
-      if (table.children.length === 2 &&
-          table.children[0].children[1].innerText === "https://sub.conversion.test" &&
-          table.children[0].children[2].innerText ===
-            "https://report.test/.well-known/attribution-reporting/report-attribution" &&
-          table.children[0].children[4].innerText === "13" &&
-          table.children[0].children[5].innerText === "Pending" &&
-          table.children[1].children[4].innerText === "0" &&
-          table.children[1].children[5].innerText === "Sent: HTTP 200") {
-        document.title = $2;
-      }
-    });
-    obs.observe(table, {'childList': true});)";
-  EXPECT_TRUE(
-      ExecJsInWebUI(JsReplace(wait_script, kMaxUint64String, kCompleteTitle)));
+  {
+    std::string wait_script = R"(
+      let table = document.querySelector("#report-table-wrapper tbody");
+      let obs = new MutationObserver(() => {
+        if (table.children.length === 2 &&
+            table.children[0].children[1].innerText === "https://sub.conversion.test" &&
+            table.children[0].children[2].innerText ===
+              "https://report.test/.well-known/attribution-reporting/report-attribution" &&
+            table.children[0].children[4].innerText === "13" &&
+            table.children[0].children[5].innerText === "Pending" &&
+            table.children[1].children[4].innerText === "0" &&
+            table.children[1].children[5].innerText === "Sent: HTTP 200") {
+          document.title = $2;
+        }
+      });
+      obs.observe(table, {'childList': true});)";
+    EXPECT_TRUE(ExecJsInWebUI(
+        JsReplace(wait_script, kMaxUint64String, kCompleteTitle)));
 
-  TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
-  ClickRefreshButton();
-  EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
+    TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
+    ClickRefreshButton();
+    EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
+  }
+
+  {
+    std::string wait_script = R"(
+      let table = document.querySelector("#report-table-wrapper tbody");
+      let obs = new MutationObserver(() => {
+        if (table.children.length === 2 &&
+            table.children[1].children[1].innerText === "https://sub.conversion.test" &&
+            table.children[1].children[2].innerText ===
+              "https://report.test/.well-known/attribution-reporting/report-attribution" &&
+            table.children[1].children[4].innerText === "13" &&
+            table.children[1].children[5].innerText === "Pending" &&
+            table.children[0].children[4].innerText === "0" &&
+            table.children[0].children[5].innerText === "Sent: HTTP 200") {
+          document.title = $2;
+        }
+      });
+      obs.observe(table, {'childList': true});)";
+    EXPECT_TRUE(ExecJsInWebUI(
+        JsReplace(wait_script, kMaxUint64String, kCompleteTitle2)));
+
+    TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle2);
+    // Sort by priority ascending.
+    EXPECT_TRUE(ExecJsInWebUI(
+        "document.querySelectorAll('#report-table-wrapper th')[4].click();"));
+    EXPECT_EQ(kCompleteTitle2, title_watcher.WaitAndGetTitle());
+  }
+
+  {
+    std::string wait_script = R"(
+      let table = document.querySelector("#report-table-wrapper tbody");
+      let obs = new MutationObserver(() => {
+        if (table.children.length === 2 &&
+            table.children[0].children[1].innerText === "https://sub.conversion.test" &&
+            table.children[0].children[2].innerText ===
+              "https://report.test/.well-known/attribution-reporting/report-attribution" &&
+            table.children[0].children[4].innerText === "13" &&
+            table.children[0].children[5].innerText === "Pending" &&
+            table.children[1].children[4].innerText === "0" &&
+            table.children[1].children[5].innerText === "Sent: HTTP 200") {
+          document.title = $2;
+        }
+      });
+      obs.observe(table, {'childList': true});)";
+    EXPECT_TRUE(ExecJsInWebUI(
+        JsReplace(wait_script, kMaxUint64String, kCompleteTitle3)));
+
+    TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle3);
+    // Sort by priority descending.
+    EXPECT_TRUE(ExecJsInWebUI(
+        "document.querySelectorAll('#report-table-wrapper th')[4].click();"));
+
+    EXPECT_EQ(kCompleteTitle3, title_watcher.WaitAndGetTitle());
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
@@ -346,7 +403,7 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
 
   // Verify both rows get rendered.
   std::string wait_script = R"(
-    let table = document.getElementById("report-table-body");
+    let table = document.querySelector("#report-table-wrapper tbody");
     let obs = new MutationObserver(() => {
       if (table.children.length === 2 &&
           table.children[0].children[4].innerText === "7" &&
@@ -388,7 +445,7 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
   OverrideWebUIConversionManager(&manager);
 
   std::string wait_script = R"(
-    let table = document.getElementById("report-table-body");
+    let table = document.querySelector("#report-table-wrapper tbody");
     let obs = new MutationObserver(() => {
       if (table.children.length === 1 &&
           table.children[0].children[4].innerText === "7") {
