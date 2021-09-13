@@ -1060,8 +1060,7 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
     // CreditCardAccessManager::FetchCreditCard() will call
     // OnCreditCardFetched() in this class after successfully fetching the card.
     credit_card_access_manager_->FetchCreditCard(
-        credit_card, weak_ptr_factory_.GetWeakPtr(),
-        form_structure->form_parsed_timestamp());
+        credit_card, weak_ptr_factory_.GetWeakPtr());
     return;
   }
 

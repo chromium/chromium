@@ -27,16 +27,14 @@ CreditCardCVCAuthenticator::~CreditCardCVCAuthenticator() {}
 void CreditCardCVCAuthenticator::Authenticate(
     const CreditCard* card,
     base::WeakPtr<Requester> requester,
-    PersonalDataManager* personal_data_manager,
-    const base::TimeTicks& form_parsed_timestamp) {
+    PersonalDataManager* personal_data_manager) {
   requester_ = requester;
   if (!card) {
     return OnFullCardRequestFailed(
         payments::FullCardRequest::FailureType::GENERIC_FAILURE);
   }
   full_card_request_ = std::make_unique<payments::FullCardRequest>(
-      client_, client_->GetPaymentsClient(), personal_data_manager,
-      form_parsed_timestamp);
+      client_, client_->GetPaymentsClient(), personal_data_manager);
 
   absl::optional<GURL> last_committed_url_origin;
   if (card->record_type() == CreditCard::VIRTUAL_CARD &&

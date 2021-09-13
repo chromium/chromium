@@ -257,8 +257,7 @@ void CreditCardAccessManager::OnDidGetUnmaskDetails(
 
 void CreditCardAccessManager::FetchCreditCard(
     const CreditCard* card,
-    base::WeakPtr<Accessor> accessor,
-    const base::TimeTicks& form_parsed_timestamp) {
+    base::WeakPtr<Accessor> accessor) {
   // Return error if authentication is already in progress or card is nullptr.
   if (is_authentication_in_progress_ || !card) {
     accessor->OnCreditCardFetched(CreditCardFetchResult::kTransientError,
@@ -280,9 +279,7 @@ void CreditCardAccessManager::FetchCreditCard(
     return;
   }
 
-  // Latency metrics should only be logged if the user is verifiable and the
-  // flag is turned on. If flag is turned off, then |is_user_verifiable_| is not
-  // set.
+  // Latency metrics should only be logged if the user is verifiable.
 #if !defined(OS_IOS)
   bool should_log_latency_metrics = is_user_verifiable_.value_or(false);
 #endif
@@ -302,7 +299,6 @@ void CreditCardAccessManager::FetchCreditCard(
 
   card_ = std::make_unique<CreditCard>(*card);
   accessor_ = accessor;
-  form_parsed_timestamp_ = form_parsed_timestamp;
   is_authentication_in_progress_ = true;
 
   bool get_unmask_details_returned =
@@ -462,7 +458,7 @@ void CreditCardAccessManager::Authenticate(bool get_unmask_details_returned) {
 
     DCHECK(unmask_details_.fido_request_options.has_value());
     GetOrCreateFIDOAuthenticator()->Authenticate(
-        card_.get(), weak_ptr_factory_.GetWeakPtr(), form_parsed_timestamp_,
+        card_.get(), weak_ptr_factory_.GetWeakPtr(),
         std::move(unmask_details_.fido_request_options.value()));
 #endif
   } else {
@@ -472,8 +468,7 @@ void CreditCardAccessManager::Authenticate(bool get_unmask_details_returned) {
     client_->CloseWebauthnDialog();
 #endif
     GetOrCreateCVCAuthenticator()->Authenticate(
-        card_.get(), weak_ptr_factory_.GetWeakPtr(), personal_data_manager_,
-        form_parsed_timestamp_);
+        card_.get(), weak_ptr_factory_.GetWeakPtr(), personal_data_manager_);
   }
 }
 
@@ -666,8 +661,7 @@ void CreditCardAccessManager::OnFIDOAuthenticationComplete(
     form_event_logger_->LogCardUnmaskAuthenticationPromptShown(
         unmask_auth_flow_type_);
     GetOrCreateCVCAuthenticator()->Authenticate(
-        card_.get(), weak_ptr_factory_.GetWeakPtr(), personal_data_manager_,
-        form_parsed_timestamp_);
+        card_.get(), weak_ptr_factory_.GetWeakPtr(), personal_data_manager_);
   }
 }
 

@@ -102,10 +102,6 @@ class FullCardRequest final : public CardUnmaskDelegate {
   FullCardRequest(RiskDataLoader* risk_data_loader,
                   payments::PaymentsClient* payments_client,
                   PersonalDataManager* personal_data_manager);
-  FullCardRequest(RiskDataLoader* risk_data_loader,
-                  payments::PaymentsClient* payments_client,
-                  PersonalDataManager* personal_data_manager,
-                  base::TimeTicks form_parsed_timestamp);
   ~FullCardRequest();
 
   // Retrieves the pan for |card| after querying the user for CVC and invokes
@@ -154,10 +150,6 @@ class FullCardRequest final : public CardUnmaskDelegate {
   payments::PaymentsClient::UnmaskResponseDetails unmask_response_details()
       const {
     return unmask_response_details_;
-  }
-
-  base::TimeTicks form_parsed_timestamp() const {
-    return form_parsed_timestamp_;
   }
 
  private:
@@ -227,9 +219,6 @@ class FullCardRequest final : public CardUnmaskDelegate {
   // The timestamp when the full PAN was requested from a server. For
   // histograms.
   base::TimeTicks real_pan_request_timestamp_;
-
-  // The timestamp when the form is parsed. For histograms.
-  base::TimeTicks form_parsed_timestamp_;
 
   // Includes all details from GetRealPan response.
   payments::PaymentsClient::UnmaskResponseDetails unmask_response_details_;

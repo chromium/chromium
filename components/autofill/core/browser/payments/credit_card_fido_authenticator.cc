@@ -74,11 +74,9 @@ CreditCardFIDOAuthenticator::~CreditCardFIDOAuthenticator() {
 void CreditCardFIDOAuthenticator::Authenticate(
     const CreditCard* card,
     base::WeakPtr<Requester> requester,
-    base::TimeTicks form_parsed_timestamp,
     base::Value request_options) {
   card_ = card;
   requester_ = requester;
-  form_parsed_timestamp_ = form_parsed_timestamp;
 
   // Cancel any previous pending WebAuthn requests.
   authenticator()->Cancel();
@@ -430,7 +428,7 @@ void CreditCardFIDOAuthenticator::OnDidGetAssertion(
         ParseAssertionResponse(std::move(assertion_response));
     full_card_request_ = std::make_unique<payments::FullCardRequest>(
         autofill_client_, autofill_client_->GetPaymentsClient(),
-        autofill_client_->GetPersonalDataManager(), form_parsed_timestamp_);
+        autofill_client_->GetPersonalDataManager());
 
     absl::optional<GURL> last_committed_url_origin;
     if (card_->record_type() == CreditCard::VIRTUAL_CARD &&

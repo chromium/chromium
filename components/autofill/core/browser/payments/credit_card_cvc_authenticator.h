@@ -87,8 +87,7 @@ class CreditCardCVCAuthenticator
   // Authentication
   void Authenticate(const CreditCard* card,
                     base::WeakPtr<Requester> requester,
-                    PersonalDataManager* personal_data_manager,
-                    const base::TimeTicks& form_parsed_timestamp);
+                    PersonalDataManager* personal_data_manager);
 
   // payments::FullCardRequest::ResultDelegate
   void OnFullCardRequestSucceeded(

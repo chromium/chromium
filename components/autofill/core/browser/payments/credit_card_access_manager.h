@@ -120,10 +120,8 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   void PrepareToFetchCreditCard();
 
   // Calls |accessor->OnCreditCardFetched()| once credit card is fetched.
-  virtual void FetchCreditCard(
-      const CreditCard* card,
-      base::WeakPtr<Accessor> accessor,
-      const base::TimeTicks& timestamp = base::TimeTicks());
+  virtual void FetchCreditCard(const CreditCard* card,
+                               base::WeakPtr<Accessor> accessor);
 
   // If |opt_in| = true, opts the user into using FIDO authentication for card
   // unmasking. Otherwise, opts the user out. If |creation_options| is set,
@@ -305,9 +303,6 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   // Timestamp used for user-perceived latency metrics.
   absl::optional<base::TimeTicks>
       card_selected_without_unmask_details_timestamp_;
-
-  // Meant for histograms recorded in FullCardRequest.
-  base::TimeTicks form_parsed_timestamp_;
 
   // Timestamp for when fido_authenticator_->IsUserVerifiable() is called.
   absl::optional<base::TimeTicks> is_user_verifiable_called_timestamp_ =

@@ -51,7 +51,6 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_switches.h"
-#include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_state/core/security_state.h"
@@ -408,7 +407,6 @@ TEST_F(CreditCardFIDOAuthenticatorTest, AuthenticateCard_BadRequestOptions) {
   CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
 
   fido_authenticator_->Authenticate(&card, requester_->GetWeakPtr(),
-                                    AutofillTickClock::NowTicks(),
                                     base::Value(base::Value::Type::DICTIONARY));
   EXPECT_FALSE(requester_->did_succeed());
 }
@@ -418,7 +416,7 @@ TEST_F(CreditCardFIDOAuthenticatorTest,
   CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
 
   fido_authenticator_->Authenticate(
-      &card, requester_->GetWeakPtr(), AutofillTickClock::NowTicks(),
+      &card, requester_->GetWeakPtr(),
       GetTestRequestOptions(kTestChallenge, kTestRelyingPartyId,
                             kTestCredentialId));
 
@@ -432,7 +430,7 @@ TEST_F(CreditCardFIDOAuthenticatorTest,
   CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
 
   fido_authenticator_->Authenticate(
-      &card, requester_->GetWeakPtr(), AutofillTickClock::NowTicks(),
+      &card, requester_->GetWeakPtr(),
       GetTestRequestOptions(kTestChallenge, kTestRelyingPartyId,
                             kTestCredentialId));
   EXPECT_EQ(CreditCardFIDOAuthenticator::Flow::AUTHENTICATION_FLOW,
@@ -451,7 +449,7 @@ TEST_F(CreditCardFIDOAuthenticatorTest,
   CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
 
   fido_authenticator_->Authenticate(
-      &card, requester_->GetWeakPtr(), AutofillTickClock::NowTicks(),
+      &card, requester_->GetWeakPtr(),
       GetTestRequestOptions(kTestChallenge, kTestRelyingPartyId,
                             kTestCredentialId));
   EXPECT_EQ(CreditCardFIDOAuthenticator::Flow::AUTHENTICATION_FLOW,
@@ -473,7 +471,7 @@ TEST_F(CreditCardFIDOAuthenticatorTest, AuthenticateCard_Success) {
   CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
 
   fido_authenticator_->Authenticate(
-      &card, requester_->GetWeakPtr(), AutofillTickClock::NowTicks(),
+      &card, requester_->GetWeakPtr(),
       GetTestRequestOptions(kTestChallenge, kTestRelyingPartyId,
                             kTestCredentialId));
   EXPECT_EQ(CreditCardFIDOAuthenticator::Flow::AUTHENTICATION_FLOW,

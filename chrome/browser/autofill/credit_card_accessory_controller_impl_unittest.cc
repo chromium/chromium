@@ -63,10 +63,8 @@ class TestAccessManager : public CreditCardAccessManager {
     card_.SetNumber(kFirstTwelveDigits + card_.number());
   }
 
-  void FetchCreditCard(
-      const CreditCard* card,
-      base::WeakPtr<Accessor> accessor,
-      const base::TimeTicks& timestamp = base::TimeTicks()) override {
+  void FetchCreditCard(const CreditCard* card,
+                       base::WeakPtr<Accessor> accessor) override {
     accessor->OnCreditCardFetched(CreditCardFetchResult::kSuccess, &card_);
   }
 

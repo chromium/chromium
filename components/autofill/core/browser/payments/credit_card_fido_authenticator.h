@@ -107,7 +107,6 @@ class CreditCardFIDOAuthenticator
   // Invokes Authentication flow. Responds to |accessor_| with full pan.
   void Authenticate(const CreditCard* card,
                     base::WeakPtr<Requester> requester,
-                    base::TimeTicks form_parsed_timestamp,
                     base::Value request_options);
 
   // Invokes Registration flow. Sends credentials created from
@@ -259,9 +258,6 @@ class CreditCardFIDOAuthenticator
   // Token used for authorizing new cards. Helps tie CVC auth and FIDO calls
   // together in order to support FIDO-only unmasking on future attempts.
   std::string card_authorization_token_;
-
-  // Meant for histograms recorded in FullCardRequest.
-  base::TimeTicks form_parsed_timestamp_;
 
   // The associated autofill driver. Weak reference.
   AutofillDriver* const autofill_driver_;

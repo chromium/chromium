@@ -26,28 +26,18 @@ namespace payments {
 FullCardRequest::FullCardRequest(RiskDataLoader* risk_data_loader,
                                  payments::PaymentsClient* payments_client,
                                  PersonalDataManager* personal_data_manager)
-    : FullCardRequest(risk_data_loader,
-                      payments_client,
-                      personal_data_manager,
-                      base::TimeTicks()) {}
-
-FullCardRequest::FullCardRequest(RiskDataLoader* risk_data_loader,
-                                 payments::PaymentsClient* payments_client,
-                                 PersonalDataManager* personal_data_manager,
-                                 base::TimeTicks form_parsed_timestamp)
     : risk_data_loader_(risk_data_loader),
       payments_client_(payments_client),
       personal_data_manager_(personal_data_manager),
       result_delegate_(nullptr),
       ui_delegate_(nullptr),
-      should_unmask_card_(false),
-      form_parsed_timestamp_(form_parsed_timestamp) {
+      should_unmask_card_(false) {
   DCHECK(risk_data_loader_);
   DCHECK(payments_client_);
   DCHECK(personal_data_manager_);
 }
 
-FullCardRequest::~FullCardRequest() {}
+FullCardRequest::~FullCardRequest() = default;
 
 void FullCardRequest::GetFullCard(
     const CreditCard& card,

@@ -47,7 +47,6 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_switches.h"
-#include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_state/core/security_state.h"
@@ -164,8 +163,7 @@ TEST_F(CreditCardCVCAuthenticatorTest, AuthenticateServerCardSuccess) {
   CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
 
   cvc_authenticator_->Authenticate(&card, requester_->GetWeakPtr(),
-                                   &personal_data_manager_,
-                                   AutofillTickClock::NowTicks());
+                                   &personal_data_manager_);
 
   OnDidGetRealPan(AutofillClient::SUCCESS, kTestNumber);
   EXPECT_TRUE(requester_->did_succeed());
@@ -176,8 +174,7 @@ TEST_F(CreditCardCVCAuthenticatorTest, AuthenticateServerCardNetworkError) {
   CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
 
   cvc_authenticator_->Authenticate(&card, requester_->GetWeakPtr(),
-                                   &personal_data_manager_,
-                                   AutofillTickClock::NowTicks());
+                                   &personal_data_manager_);
 
   OnDidGetRealPan(AutofillClient::NETWORK_ERROR, std::string());
   EXPECT_FALSE(requester_->did_succeed());
@@ -187,8 +184,7 @@ TEST_F(CreditCardCVCAuthenticatorTest, AuthenticateServerCardPermanentFailure) {
   CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
 
   cvc_authenticator_->Authenticate(&card, requester_->GetWeakPtr(),
-                                   &personal_data_manager_,
-                                   AutofillTickClock::NowTicks());
+                                   &personal_data_manager_);
 
   OnDidGetRealPan(AutofillClient::PERMANENT_FAILURE, std::string());
   EXPECT_FALSE(requester_->did_succeed());
@@ -198,8 +194,7 @@ TEST_F(CreditCardCVCAuthenticatorTest, AuthenticateServerCardTryAgainFailure) {
   CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
 
   cvc_authenticator_->Authenticate(&card, requester_->GetWeakPtr(),
-                                   &personal_data_manager_,
-                                   AutofillTickClock::NowTicks());
+                                   &personal_data_manager_);
 
   OnDidGetRealPan(AutofillClient::TRY_AGAIN_FAILURE, std::string());
   EXPECT_FALSE(requester_->did_succeed());
