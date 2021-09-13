@@ -32,21 +32,21 @@ base::TimeDelta GetPreviewImageCaptureDelay(
     case ThumbnailImage::CaptureReadiness::kNotReady: {
       static const int not_ready_delay = base::GetFieldTrialParamByFeatureAsInt(
           features::kTabHoverCardImages,
-          features::kTabHoverCardImagesNotReadyDelayParameterName, 0);
+          features::kTabHoverCardImagesNotReadyDelayParameterName, 800);
       ms = not_ready_delay;
       break;
     }
     case ThumbnailImage::CaptureReadiness::kReadyForInitialCapture: {
       static const int loading_delay = base::GetFieldTrialParamByFeatureAsInt(
           features::kTabHoverCardImages,
-          features::kTabHoverCardImagesLoadingDelayParameterName, 0);
+          features::kTabHoverCardImagesLoadingDelayParameterName, 300);
       ms = loading_delay;
       break;
     }
     case ThumbnailImage::CaptureReadiness::kReadyForFinalCapture: {
       static const int loaded_delay = base::GetFieldTrialParamByFeatureAsInt(
           features::kTabHoverCardImages,
-          features::kTabHoverCardImagesLoadedDelayParameterName, 0);
+          features::kTabHoverCardImagesLoadedDelayParameterName, 300);
       ms = loaded_delay;
       break;
     }

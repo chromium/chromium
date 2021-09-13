@@ -1404,78 +1404,10 @@ const FeatureEntry::FeatureVariation kTabScrollingVariations[] = {
     {" - tabs don't shrink", kMinimumTabWidthSettingFull,
      base::size(kMinimumTabWidthSettingFull), nullptr}};
 
-const FeatureEntry::FeatureParam kTabHoverCardImagesOptimizationCaptureSpeed[] =
-    {{features::kTabHoverCardImagesNotReadyDelayParameterName, "0"},
-     {features::kTabHoverCardImagesLoadingDelayParameterName, "0"},
-     {features::kTabHoverCardImagesLoadedDelayParameterName, "0"}};
-const FeatureEntry::FeatureParam
-    kTabHoverCardImagesOptimizationResourceUsage[] = {
-        {features::kTabHoverCardImagesNotReadyDelayParameterName, "800"},
-        {features::kTabHoverCardImagesLoadingDelayParameterName, "300"},
-        {features::kTabHoverCardImagesLoadedDelayParameterName, "300"}};
-const FeatureEntry::FeatureParam
-    kTabHoverCardImagesImmediatePlaceholderCrossfade[] = {
-        {features::kTabHoverCardImagesNotReadyDelayParameterName, "500"},
-        {features::kTabHoverCardImagesLoadingDelayParameterName, "100"},
-        {features::kTabHoverCardImagesLoadedDelayParameterName, "0"},
-        {features::kTabHoverCardImagesCrossfadePreviewAtParameterName, "0.0"}};
-const FeatureEntry::FeatureParam
-    kTabHoverCardImagesEarlySlidePlaceholderCrossfade[] = {
-        {features::kTabHoverCardImagesNotReadyDelayParameterName, "500"},
-        {features::kTabHoverCardImagesLoadingDelayParameterName, "100"},
-        {features::kTabHoverCardImagesLoadedDelayParameterName, "0"},
-        {features::kTabHoverCardImagesCrossfadePreviewAtParameterName, "0.25"}};
-const FeatureEntry::FeatureParam
-    kTabHoverCardImagesMidSlidePlaceholderCrossfade[] = {
-        {features::kTabHoverCardImagesNotReadyDelayParameterName, "500"},
-        {features::kTabHoverCardImagesLoadingDelayParameterName, "100"},
-        {features::kTabHoverCardImagesLoadedDelayParameterName, "0"},
-        {features::kTabHoverCardImagesCrossfadePreviewAtParameterName, "0.5"}};
-const FeatureEntry::FeatureParam kTabHoverCardImagesLatePlaceholderCrossfade[] =
-    {{features::kTabHoverCardImagesNotReadyDelayParameterName, "500"},
-     {features::kTabHoverCardImagesLoadingDelayParameterName, "100"},
-     {features::kTabHoverCardImagesLoadedDelayParameterName, "0"},
-     {features::kTabHoverCardImagesCrossfadePreviewAtParameterName, "1.0"}};
-const FeatureEntry::FeatureParam
-    kTabHoverCardImagesSmallAdditionalFullWidthDelay[] = {
-        {features::kTabHoverCardImagesNotReadyDelayParameterName, "500"},
-        {features::kTabHoverCardImagesLoadingDelayParameterName, "100"},
-        {features::kTabHoverCardImagesLoadedDelayParameterName, "0"},
-        {features::kTabHoverCardAdditionalMaxWidthDelay, "200"}};
-const FeatureEntry::FeatureParam
-    kTabHoverCardImagesNoAdditionalFullWidthDelay[] = {
-        {features::kTabHoverCardImagesNotReadyDelayParameterName, "500"},
-        {features::kTabHoverCardImagesLoadingDelayParameterName, "100"},
-        {features::kTabHoverCardImagesLoadedDelayParameterName, "0"},
-        {features::kTabHoverCardAdditionalMaxWidthDelay, "0"}};
 const FeatureEntry::FeatureParam kTabHoverCardImagesAlternateFormat[] = {
-    {features::kTabHoverCardImagesNotReadyDelayParameterName, "500"},
-    {features::kTabHoverCardImagesLoadingDelayParameterName, "100"},
-    {features::kTabHoverCardImagesLoadedDelayParameterName, "0"},
     {features::kTabHoverCardAlternateFormat, "1"}};
 
 const FeatureEntry::FeatureVariation kTabHoverCardImagesVariations[] = {
-    {" capture speed", kTabHoverCardImagesOptimizationCaptureSpeed,
-     base::size(kTabHoverCardImagesOptimizationCaptureSpeed), nullptr},
-    {" resource usage", kTabHoverCardImagesOptimizationResourceUsage,
-     base::size(kTabHoverCardImagesOptimizationResourceUsage), nullptr},
-    {" immediate placeholder crossfade",
-     kTabHoverCardImagesImmediatePlaceholderCrossfade,
-     base::size(kTabHoverCardImagesImmediatePlaceholderCrossfade), nullptr},
-    {" early-transition placeholder crossfade",
-     kTabHoverCardImagesEarlySlidePlaceholderCrossfade,
-     base::size(kTabHoverCardImagesEarlySlidePlaceholderCrossfade), nullptr},
-    {" mid-transition placeholder crossfade",
-     kTabHoverCardImagesMidSlidePlaceholderCrossfade,
-     base::size(kTabHoverCardImagesMidSlidePlaceholderCrossfade), nullptr},
-    {" placeholder crossfade on land",
-     kTabHoverCardImagesLatePlaceholderCrossfade,
-     base::size(kTabHoverCardImagesImmediatePlaceholderCrossfade), nullptr},
-    {" smaller full width show delay",
-     kTabHoverCardImagesSmallAdditionalFullWidthDelay,
-     base::size(kTabHoverCardImagesSmallAdditionalFullWidthDelay), nullptr},
-    {" no full width show delay", kTabHoverCardImagesNoAdditionalFullWidthDelay,
-     base::size(kTabHoverCardImagesNoAdditionalFullWidthDelay), nullptr},
     {" alternate hover card format", kTabHoverCardImagesAlternateFormat,
      base::size(kTabHoverCardImagesAlternateFormat), nullptr}};
 
