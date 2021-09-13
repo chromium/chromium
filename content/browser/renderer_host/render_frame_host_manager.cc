@@ -1696,7 +1696,7 @@ RenderFrameHostManager::ShouldProactivelySwapBrowsingInstance(
     return ShouldSwapBrowsingInstance::kNo_ProactiveSwapDisabled;
 
   // Only main frames are eligible to swap BrowsingInstances.
-  if (!render_frame_host_->frame_tree_node()->IsMainFrame())
+  if (!frame_tree_node_->IsMainFrame())
     return ShouldSwapBrowsingInstance::kNo_NotMainFrame;
 
   // If the frame has not committed any navigation yet, we should not try to do
@@ -3248,8 +3248,7 @@ void RenderFrameHostManager::CommitPending(
   NavigationEntryImpl* navigation_entry =
       GetNavigationController().GetLastCommittedEntry();
   if (navigation_entry) {
-    render_frame_host_->frame_tree_node()->PruneChildFrameNavigationEntries(
-        navigation_entry);
+    frame_tree_node_->PruneChildFrameNavigationEntries(navigation_entry);
   }
 
   // If we navigate to an existing page (i.e. |pending_stored_page| is not

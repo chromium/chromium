@@ -3588,8 +3588,8 @@ void RenderFrameHostImpl::DidNavigate(
     // is through accessing parent frame's security context(either remote or
     // local) when initializing child's security context, so the update to
     // proxies is needed.
-    frame_tree_node()->UpdateFramePolicyHeaders(active_sandbox_flags_,
-                                                permissions_policy_header_);
+    navigation_request->frame_tree_node()->UpdateFramePolicyHeaders(
+        active_sandbox_flags_, permissions_policy_header_);
     // Document policy's inheritance from parent frame's required document
     // policy is done at |HTMLFrameOwnerElement::UpdateRequiredPolicy|. Parent
     // frame owns both parent's required document policy and child frame's frame
@@ -7619,8 +7619,8 @@ void RenderFrameHostImpl::CommitNavigation(
     const base::UnguessableToken& devtools_navigation_token,
     std::unique_ptr<WebBundleHandle> web_bundle_handle) {
   TRACE_EVENT2("navigation", "RenderFrameHostImpl::CommitNavigation",
-               "frame_tree_node", frame_tree_node_->frame_tree_node_id(), "url",
-               common_params->url.possibly_invalid_spec());
+               "navigation_request", navigation_request, "url",
+               common_params->url);
   DCHECK(!blink::IsRendererDebugURL(common_params->url));
   DCHECK(navigation_request);
   DCHECK_EQ(this, navigation_request->GetRenderFrameHost());
@@ -7637,7 +7637,7 @@ void RenderFrameHostImpl::CommitNavigation(
 
   // All children of MHTML documents must be MHTML documents.
   // As a defensive measure, crash the browser if something went wrong.
-  if (!frame_tree_node()->IsMainFrame()) {
+  if (!is_main_frame()) {
     RenderFrameHostImpl* root = GetMainFrame();
     if (root->is_mhtml_document_) {
       bool loaded_from_outside_the_archive =
@@ -7656,7 +7656,7 @@ void RenderFrameHostImpl::CommitNavigation(
   if (is_srcdoc) {
     // Main frame srcdoc navigation are meaningless. They are blocked whenever a
     // navigation attempt is made. It shouldn't reach CommitNavigation.
-    CHECK(!frame_tree_node_->IsMainFrame());
+    CHECK(!is_main_frame());
 
     // An about:srcdoc document is always same SiteInstance with its parent.
     // Otherwise, it won't be able to load. The parent's document contains the
@@ -7682,8 +7682,7 @@ void RenderFrameHostImpl::CommitNavigation(
                               process_lock.ToString());
     SCOPED_CRASH_KEY_STRING64("CommitNavigation", "commit_origin",
                               common_params->url.GetOrigin().spec());
-    SCOPED_CRASH_KEY_BOOL("CommitNavigation", "is_main_frame",
-                          frame_tree_node_->IsMainFrame());
+    SCOPED_CRASH_KEY_BOOL("CommitNavigation", "is_main_frame", is_main_frame());
     NOTREACHED() << "Commiting in incompatible process for URL: "
                  << process_lock.lock_url() << " lock vs "
                  << common_params->url.GetOrigin();
@@ -7954,7 +7953,8 @@ void RenderFrameHostImpl::CommitNavigation(
          subresource_loader_factories);
 
   if (is_same_document) {
-    DCHECK_EQ(frame_tree_node()->current_frame_host(), this);
+    DCHECK_EQ(navigation_request->frame_tree_node()->current_frame_host(),
+              this);
     const base::UnguessableToken& navigation_token =
         commit_params->navigation_token;
     DCHECK(GetSameDocumentNavigationRequest(navigation_token));
@@ -8010,7 +8010,7 @@ void RenderFrameHostImpl::CommitNavigation(
           static_cast<StoragePartitionImpl*>(GetStoragePartition());
       storage_partition->GetPrefetchURLLoaderService()->GetFactory(
           prefetch_loader_factory.InitWithNewPipeAndPassReceiver(),
-          frame_tree_node_->frame_tree_node_id(),
+          navigation_request->frame_tree_node()->frame_tree_node_id(),
           std::move(factory_bundle_for_prefetch),
           weak_ptr_factory_.GetWeakPtr(),
           EnsurePrefetchedSignedExchangeCache());
@@ -8034,10 +8034,14 @@ void RenderFrameHostImpl::CommitNavigation(
     // point just before the navigation commits.
     // TODO(altimin, crbug.com/933147): Remove this logic after we are done with
     // implementing back-forward cache.
-    if (!GetParent() && frame_tree_node_->current_frame_host() == this) {
+    if (!GetParent() &&
+        navigation_request->frame_tree_node()->current_frame_host() == this) {
       if (NavigationEntryImpl* last_committed_entry =
               NavigationEntryImpl::FromNavigationEntry(
-                  frame_tree()->controller().GetLastCommittedEntry())) {
+                  navigation_request->frame_tree_node()
+                      ->frame_tree()
+                      ->controller()
+                      .GetLastCommittedEntry())) {
         if (last_committed_entry->back_forward_cache_metrics()) {
           last_committed_entry->back_forward_cache_metrics()
               ->RecordFeatureUsage(this);
@@ -8105,8 +8109,7 @@ void RenderFrameHostImpl::FailedNavigation(
     int extended_error_code,
     const absl::optional<std::string>& error_page_content) {
   TRACE_EVENT2("navigation", "RenderFrameHostImpl::FailedNavigation",
-               "frame_tree_node", frame_tree_node_->frame_tree_node_id(),
-               "error", error_code);
+               "navigation_request", navigation_request, "error", error_code);
 
   DCHECK(navigation_request);
 
@@ -10713,7 +10716,8 @@ void RenderFrameHostImpl::SendCommitNavigation(
 
         // Session storage must match the default namespace.
         const std::string& namespace_id =
-            frame_tree()
+            navigation_request->frame_tree_node()
+                ->frame_tree()
                 ->controller()
                 .GetSessionStorageNamespace(GetSiteInstance()->GetSiteInfo())
                 ->id();
@@ -10806,6 +10810,9 @@ void RenderFrameHostImpl::DidCommitNavigation(
 
   // The commit IPC should be associated with the URL being committed (not with
   // the *last* committed URL that most other IPCs are associated with).
+  // TODO(crbug.com/1179502): Investigate where the origin should come from when
+  // we remove FrameTree/FrameTreeNode members of this class, and the last
+  // committed origin may be incorrect.
   ScopedActiveURL scoped_active_url(params->url,
                                     frame_tree()->root()->current_origin());
 
@@ -10887,7 +10894,7 @@ void RenderFrameHostImpl::DidCommitNavigation(
   // compositor output (possibly because of script deliberately creating this
   // situation) then we clear it after a while anyway.
   // See https://crbug.com/497588.
-  if (frame_tree_node_->IsMainFrame() && GetView()) {
+  if (is_main_frame() && GetView()) {
     RenderWidgetHostImpl::From(GetView()->GetRenderWidgetHost())->DidNavigate();
   }
 
@@ -11077,8 +11084,8 @@ void RenderFrameHostImpl::LogCannotCommitUrlCrashKeys(
 
   static auto* const is_main_frame_key = base::debug::AllocateCrashKeyString(
       "is_main_frame", base::debug::CrashKeySize::Size32);
-  base::debug::SetCrashKeyString(
-      is_main_frame_key, bool_to_crash_key(frame_tree_node_->IsMainFrame()));
+  base::debug::SetCrashKeyString(is_main_frame_key,
+                                 bool_to_crash_key(is_main_frame()));
 
   static auto* const is_cross_process_subframe_key =
       base::debug::AllocateCrashKeyString("is_cross_process_subframe",
@@ -11184,8 +11191,9 @@ void RenderFrameHostImpl::LogCannotCommitUrlCrashKeys(
     // Recompute the target SiteInstance to see if it matches the current
     // one at commit time.
     scoped_refptr<SiteInstance> dest_instance =
-        frame_tree_node_->render_manager()->GetSiteInstanceForNavigationRequest(
-            navigation_request);
+        navigation_request->frame_tree_node()
+            ->render_manager()
+            ->GetSiteInstanceForNavigationRequest(navigation_request);
     static auto* const does_recomputed_site_instance_match_key =
         base::debug::AllocateCrashKeyString(
             "does_recomputed_site_instance_match",
@@ -11562,7 +11570,7 @@ void RenderFrameHostImpl::
       is_same_document_navigation
           ? is_overriding_user_agent_
           : (request->commit_params().is_overriding_user_agent &&
-             frame_tree_node_->IsMainFrame());
+             request->frame_tree_node()->IsMainFrame());
 
   const int browser_http_status_code =
       CalculateHTTPStatusCode(request, last_http_status_code_);
@@ -11746,7 +11754,7 @@ void RenderFrameHostImpl::
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "renderer_initiated",
                         request->IsRendererInitiated());
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "is_subframe",
-                        !frame_tree_node_->IsMainFrame());
+                        !request->frame_tree_node()->IsMainFrame());
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "is_form_submission",
                         request->IsFormSubmission());
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "is_error_page", is_error_page);
@@ -11760,11 +11768,14 @@ void RenderFrameHostImpl::
 
   SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", "entry_offset",
                           request->GetNavigationEntryOffset());
-  SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", "entry_count",
-                          frame_tree()->controller().GetEntryCount());
   SCOPED_CRASH_KEY_NUMBER(
-      "VerifyDidCommit", "last_committed_index",
-      frame_tree()->controller().GetLastCommittedEntryIndex());
+      "VerifyDidCommit", "entry_count",
+      request->frame_tree_node()->frame_tree()->controller().GetEntryCount());
+  SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", "last_committed_index",
+                          request->frame_tree_node()
+                              ->frame_tree()
+                              ->controller()
+                              .GetLastCommittedEntryIndex());
 
   SCOPED_CRASH_KEY_BOOL(
       "VerifyDidCommit", "is_reload",
@@ -11792,10 +11803,10 @@ void RenderFrameHostImpl::
                             GetLastCommittedURL()));
 
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "committed_real_load",
-                        frame_tree_node_->has_committed_real_load());
+                        request->frame_tree_node()->has_committed_real_load());
   SCOPED_CRASH_KEY_BOOL(
       "VerifyDidCommit", "on_initial_empty_doc",
-      frame_tree_node_
+      request->frame_tree_node()
           ->is_on_initial_empty_document_or_subsequent_empty_documents());
 
   SCOPED_CRASH_KEY_STRING256("VerifyDidCommit", "last_committed_url",
@@ -11936,8 +11947,8 @@ void RenderFrameHostImpl::LogCannotCommitOriginCrashKeys(
 
   static auto* const is_subframe_key = base::debug::AllocateCrashKeyString(
       "is_subframe", base::debug::CrashKeySize::Size32);
-  base::debug::SetCrashKeyString(
-      is_subframe_key, bool_to_crash_key(!frame_tree_node_->IsMainFrame()));
+  base::debug::SetCrashKeyString(is_subframe_key,
+                                 bool_to_crash_key(GetMainFrame() != this));
 
   static auto* const lifecycle_state_key = base::debug::AllocateCrashKeyString(
       "lifecycle_state", base::debug::CrashKeySize::Size32);

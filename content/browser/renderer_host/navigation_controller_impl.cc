@@ -1573,7 +1573,7 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
         nullptr /* policy_container_policies */);
 
     new_entry = GetLastCommittedEntry()->CloneAndReplace(
-        frame_entry, true, rfh->frame_tree_node(), frame_tree_.root());
+        frame_entry, true, request->frame_tree_node(), frame_tree_.root());
     if (new_entry->GetURL().GetOrigin() != params.url.GetOrigin()) {
       // TODO(jam): we had one report of this with a URL that was redirecting to
       // only tildes. Until we understand that better, don't copy the cert in
