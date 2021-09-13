@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/ethernet_info.js';
+
+import {AuthenticationType, EthernetStateProperties, Network} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeEthernetNetwork} from 'chrome://diagnostics/fake_data.js';
 
 import {assertFalse, assertTrue} from '../../chai_assert.js';
@@ -37,6 +39,22 @@ export function ethernetInfoTestSuite() {
     return flushTasks();
   }
 
+  /**
+   * @param {!EthernetStateProperties} typeProps
+   * @return {!Network}
+   */
+  function getEthernetNetworkWithTypeProperties(typeProps) {
+    const baseProperties = {
+      authentication: AuthenticationType.kNone,
+    };
+    const ethernetTypeProperties = Object.assign({}, baseProperties, typeProps);
+    return Object.assign({}, fakeEthernetNetwork, {
+      typeProperties: {
+        ethernet: ethernetTypeProperties,
+      }
+    });
+  }
+
   test('EthernetInfoPopulated', () => {
     return initializeEthernetInfo().then(() => {
       // Element expected on screen but data currently missing in api.
@@ -55,14 +73,35 @@ export function ethernetInfoTestSuite() {
     });
   });
 
-  test('EthernetInfoAuthenticationBasedOnNetwork', () => {
+  test('EthernetInfoAuthenticationWithAuthentication8021x', () => {
     return initializeEthernetInfo(fakeEthernetNetwork).then(() => {
       const expectedHeader =
           ethernetInfoElement.i18n('networkAuthenticationLabel');
-      // TODO(ashleydp): Update test when authenticaton data provided.
+      const expectedValue =
+          ethernetInfoElement.i18n('networkEthernetAuthentication8021xLabel');
       assertDataPointHasExpectedHeaderAndValue(
-          ethernetInfoElement, '#authentication', expectedHeader, '');
+          ethernetInfoElement, '#authentication', expectedHeader,
+          expectedValue);
     });
+  });
+
+  test('EthernetInfoAuthenticationWithAuthenticationNone', () => {
+    return initializeEthernetInfo()
+        .then(() => {
+          ethernetInfoElement.network = getEthernetNetworkWithTypeProperties(
+              /** @type {EthernetStateProperties} */
+              ({authentication: AuthenticationType.kNone}));
+          return flushTasks();
+        })
+        .then(() => {
+          const expectedHeader =
+              ethernetInfoElement.i18n('networkAuthenticationLabel');
+          const expectedValue = ethernetInfoElement.i18n(
+              'networkEthernetAuthenticationNoneLabel');
+          assertDataPointHasExpectedHeaderAndValue(
+              ethernetInfoElement, '#authentication', expectedHeader,
+              expectedValue);
+        });
   });
 
   test('EthernetInfoLinkSpeedBasedOnNetwork', () => {
