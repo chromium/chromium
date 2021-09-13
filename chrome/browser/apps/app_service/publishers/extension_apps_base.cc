@@ -535,6 +535,7 @@ void ExtensionAppsBase::OnExtensionLoaded(
   app->app_id = extension->id();
   app->readiness = apps::mojom::Readiness::kReady;
   app->name = extension->name();
+  app->install_source = GetInstallSource(profile_, extension);
   Publish(std::move(app), subscribers_);
 }
 
