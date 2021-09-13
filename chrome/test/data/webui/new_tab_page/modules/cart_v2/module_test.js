@@ -3,9 +3,7 @@
 // found in the LICENSE file.
 
 import {$$, ChromeCartProxy, chromeCartV2Descriptor} from 'chrome://new-tab-page/new_tab_page.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
 import {fakeMetricsPrivate, MetricsTracker} from 'chrome://test/new_tab_page/metrics_test_support.js';
 import {assertNotStyle, installMock} from 'chrome://test/new_tab_page/test_support.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
@@ -15,11 +13,11 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
   /** @type {!TestBrowserProxy} */
   let handler;
 
-  /** @type {!MetricsTracker} */
+  /** @type {MetricsTracker} */
   let metrics;
 
   setup(() => {
-    document.body.innerHTML = '';
+    PolymerTest.clearBody();
 
     handler = installMock(
         chromeCart.mojom.CartHandlerRemote, ChromeCartProxy.setHandler);
@@ -43,7 +41,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       handler.setResultFor('getMerchantCarts', Promise.resolve({carts: []}));
 
       // Act.
-      const moduleElement = await chromeCartV2Descriptor.initialize(0);
+      const moduleElement = await chromeCartV2Descriptor.initialize();
 
       // Assert.
       assertEquals(1, handler.getCallCount('getMerchantCarts'));
@@ -92,9 +90,9 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       });
 
       // Act.
-      const moduleElement = assert(await chromeCartV2Descriptor.initialize(0));
+      const moduleElement = await chromeCartV2Descriptor.initialize();
       document.body.append(moduleElement);
-      $$(moduleElement, '#cartItemRepeat').render();
+      moduleElement.$.cartItemRepeat.render();
 
       // Assert.
       const cartItems = moduleElement.shadowRoot.querySelectorAll('.cart-item');
@@ -179,10 +177,9 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
           });
 
           // Arrange.
-          const moduleElement =
-              assert(await chromeCartV2Descriptor.initialize(0));
+          const moduleElement = await chromeCartV2Descriptor.initialize();
           document.body.append(moduleElement);
-          $$(moduleElement, '#cartItemRepeat').render();
+          moduleElement.$.cartItemRepeat.render();
 
           // Act.
           const waitForDismissEvent =
@@ -246,9 +243,9 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       handler.setResultFor('getMerchantCarts', Promise.resolve({carts}));
 
       // Arrange.
-      const moduleElement = assert(await chromeCartV2Descriptor.initialize(0));
+      const moduleElement = await chromeCartV2Descriptor.initialize();
       document.body.append(moduleElement);
-      $$(moduleElement, '#cartItemRepeat').render();
+      moduleElement.$.cartItemRepeat.render();
 
       // Assert.
       const cartItems = moduleElement.shadowRoot.querySelectorAll('.cart-item');
@@ -276,8 +273,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
               'modulesCartCartMenuHideMerchantToastMessage', 'Foo'),
           $$(moduleElement, '#dismissCartToastMessage').textContent.trim());
       assertNotStyle(
-          assert($$(moduleElement, '#undoDismissCartButton')), 'display',
-          'none');
+          $$(moduleElement, '#undoDismissCartButton'), 'display', 'none');
       assertEquals(0, handler.getCallCount('restoreHiddenCart'));
 
       // Act.
@@ -308,8 +304,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
               'modulesCartCartMenuRemoveMerchantToastMessage', 'Bar'),
           $$(moduleElement, '#dismissCartToastMessage').textContent.trim());
       assertNotStyle(
-          assert($$(moduleElement, '#undoDismissCartButton')), 'display',
-          'none');
+          $$(moduleElement, '#undoDismissCartButton'), 'display', 'none');
       assertEquals(0, handler.getCallCount('restoreRemovedCart'));
 
       // Act
@@ -334,9 +329,9 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       handler.setResultFor('getMerchantCarts', Promise.resolve({carts}));
 
       // Arrange.
-      const moduleElement = assert(await chromeCartV2Descriptor.initialize(0));
+      const moduleElement = await chromeCartV2Descriptor.initialize();
       document.body.append(moduleElement);
-      $$(moduleElement, '#cartItemRepeat').render();
+      moduleElement.$.cartItemRepeat.render();
 
       // Assert.
       let cartItems = moduleElement.shadowRoot.querySelectorAll('.cart-item');
@@ -398,9 +393,9 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       handler.setResultFor('getMerchantCarts', Promise.resolve({carts}));
 
       // Arrange.
-      const moduleElement = assert(await chromeCartV2Descriptor.initialize(0));
+      const moduleElement = await chromeCartV2Descriptor.initialize();
       document.body.append(moduleElement);
-      $$(moduleElement, '#cartItemRepeat').render();
+      moduleElement.$.cartItemRepeat.render();
       const cartCarousel =
           moduleElement.shadowRoot.querySelector('#cartCarousel');
       moduleElement.scrollBehavior = 'auto';
@@ -493,9 +488,9 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       handler.setResultFor('getMerchantCarts', Promise.resolve({carts}));
 
       // Arrange.
-      const moduleElement = assert(await chromeCartV2Descriptor.initialize(0));
+      const moduleElement = await chromeCartV2Descriptor.initialize();
       document.body.append(moduleElement);
-      $$(moduleElement, '#cartItemRepeat').render();
+      moduleElement.$.cartItemRepeat.render();
       const cartCarousel =
           moduleElement.shadowRoot.querySelector('#cartCarousel');
       moduleElement.scrollBehavior = 'auto';
@@ -560,9 +555,9 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       handler.setResultFor('getMerchantCarts', Promise.resolve({carts}));
 
       // Arrange.
-      const moduleElement = assert(await chromeCartV2Descriptor.initialize(0));
+      const moduleElement = await chromeCartV2Descriptor.initialize();
       document.body.append(moduleElement);
-      $$(moduleElement, '#cartItemRepeat').render();
+      moduleElement.$.cartItemRepeat.render();
       const cartCarousel =
           moduleElement.shadowRoot.querySelector('#cartCarousel');
       moduleElement.scrollBehavior = 'auto';
@@ -640,9 +635,9 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       handler.setResultFor('getMerchantCarts', Promise.resolve({carts}));
 
       // Act.
-      const moduleElement = assert(await chromeCartV2Descriptor.initialize(0));
+      const moduleElement = await chromeCartV2Descriptor.initialize();
       document.body.append(moduleElement);
-      $$(moduleElement, '#cartItemRepeat').render();
+      moduleElement.$.cartItemRepeat.render();
 
       // Assert.
       const cartItems = moduleElement.shadowRoot.querySelectorAll('.cart-item');
@@ -676,14 +671,14 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       });
 
       // Arrange.
-      const moduleElement = assert(await chromeCartV2Descriptor.initialize(0));
+      const moduleElement = await chromeCartV2Descriptor.initialize();
       document.body.append(moduleElement);
-      $$(moduleElement, '#consentCardElement').render();
+      moduleElement.$.consentCardElement.render();
 
       // Assert.
-      const consentCard = assert($$(moduleElement, '#consentCard'));
-      const consentToast = assert(moduleElement.shadowRoot.querySelector(
-          '#confirmDiscountConsentToast'));
+      const consentCard = $$(moduleElement, '#consentCard');
+      const consentToast = moduleElement.shadowRoot.querySelector(
+          '#confirmDiscountConsentToast');
       assertEquals(true, isVisible(consentCard));
       assertEquals(false, consentToast.open);
       assertEquals(
@@ -717,7 +712,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
 
       // Act.
       moduleElement.showDiscountConsent = true;
-      $$(moduleElement, '#consentCardElement').render();
+      moduleElement.$.consentCardElement.render();
 
       // Assert.
       assertEquals(true, isVisible(consentCard));
@@ -756,9 +751,9 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
           Promise.resolve({consentVisible: true}));
 
       // Arrange.
-      const moduleElement = assert(await chromeCartV2Descriptor.initialize(0));
+      const moduleElement = await chromeCartV2Descriptor.initialize();
       document.body.append(moduleElement);
-      $$(moduleElement, '#cartItemRepeat').render();
+      moduleElement.$.cartItemRepeat.render();
       const cartCarousel =
           moduleElement.shadowRoot.querySelector('#cartCarousel');
       moduleElement.scrollBehavior = 'auto';
@@ -843,9 +838,9 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       handler.setResultFor('getMerchantCarts', Promise.resolve({carts}));
 
       // Act.
-      const moduleElement = assert(await chromeCartV2Descriptor.initialize(0));
+      const moduleElement = await chromeCartV2Descriptor.initialize();
       document.body.append(moduleElement);
-      $$(moduleElement, '#cartItemRepeat').render();
+      moduleElement.$.cartItemRepeat.render();
 
       // Assert.
       const cartItems = moduleElement.shadowRoot.querySelectorAll('.cart-item');
@@ -937,9 +932,9 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
           Promise.resolve({discountUrl: {url: 'https://www.foo.com'}}));
 
       // Act.
-      const moduleElement = assert(await chromeCartV2Descriptor.initialize(0));
+      const moduleElement = await chromeCartV2Descriptor.initialize();
       document.body.append(moduleElement);
-      $$(moduleElement, '#cartItemRepeat').render();
+      moduleElement.$.cartItemRepeat.render();
 
       // Assert.
       const cartItems = moduleElement.shadowRoot.querySelectorAll('.cart-item');

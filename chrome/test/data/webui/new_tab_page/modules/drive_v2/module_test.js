@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 import {$$, DriveProxy, driveV2Descriptor} from 'chrome://new-tab-page/new_tab_page.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {assertEquals, assertTrue} from 'chrome://test/chai_assert.js';
 import {installMock} from 'chrome://test/new_tab_page/test_support.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 import {isVisible} from 'chrome://test/test_util.js';
@@ -14,7 +12,7 @@ suite('NewTabPageModulesDriveModuleTest', () => {
   let handler;
 
   setup(() => {
-    document.body.innerHTML = '';
+    PolymerTest.clearBody();
     handler =
         installMock(drive.mojom.DriveHandlerRemote, DriveProxy.setHandler);
   });
@@ -47,10 +45,10 @@ suite('NewTabPageModulesDriveModuleTest', () => {
     };
     handler.setResultFor('getFiles', Promise.resolve(data));
 
-    const module = assert(await driveV2Descriptor.initialize(0));
+    const module = await driveV2Descriptor.initialize();
     document.body.append(module);
     await handler.whenCalled('getFiles');
-    $$(module, '#fileRepeat').render();
+    module.$.fileRepeat.render();
     const items = Array.from(module.shadowRoot.querySelectorAll('.file'));
     const urls = module.shadowRoot.querySelectorAll('.file');
 
@@ -78,7 +76,7 @@ suite('NewTabPageModulesDriveModuleTest', () => {
   test('documents do not show without data', async () => {
     handler.setResultFor('getFiles', Promise.resolve({files: []}));
 
-    const module = await driveV2Descriptor.initialize(0);
+    const module = await driveV2Descriptor.initialize();
     await handler.whenCalled('getFiles');
     assertTrue(!module);
   });
@@ -93,10 +91,10 @@ suite('NewTabPageModulesDriveModuleTest', () => {
     };
     handler.setResultFor('getFiles', Promise.resolve(data));
 
-    const module = assert(await driveV2Descriptor.initialize(0));
+    const module = await driveV2Descriptor.initialize();
     document.body.append(module);
     await handler.whenCalled('getFiles');
-    $$(module, '#fileRepeat').render();
+    module.$.fileRepeat.render();
 
     assertEquals(86, module.offsetHeight);
   });
@@ -114,10 +112,10 @@ suite('NewTabPageModulesDriveModuleTest', () => {
     };
     handler.setResultFor('getFiles', Promise.resolve(data));
 
-    const module = assert(await driveV2Descriptor.initialize(0));
+    const module = await driveV2Descriptor.initialize();
     document.body.append(module);
     await handler.whenCalled('getFiles');
-    $$(module, '#fileRepeat').render();
+    module.$.fileRepeat.render();
 
     assertEquals(142, module.offsetHeight);
   });
@@ -138,10 +136,10 @@ suite('NewTabPageModulesDriveModuleTest', () => {
     };
     handler.setResultFor('getFiles', Promise.resolve(data));
 
-    const module = assert(await driveV2Descriptor.initialize(0));
+    const module = await driveV2Descriptor.initialize();
     document.body.append(module);
     await handler.whenCalled('getFiles');
-    $$(module, '#fileRepeat').render();
+    module.$.fileRepeat.render();
 
     assertEquals(198, module.offsetHeight);
   });
@@ -160,7 +158,7 @@ suite('NewTabPageModulesDriveModuleTest', () => {
       ]
     };
     handler.setResultFor('getFiles', Promise.resolve(data));
-    const driveModule = assert(await driveV2Descriptor.initialize(0));
+    const driveModule = await driveV2Descriptor.initialize();
     document.body.append(driveModule);
 
     // Act.
@@ -187,7 +185,7 @@ suite('NewTabPageModulesDriveModuleTest', () => {
           ]
         };
         handler.setResultFor('getFiles', Promise.resolve(data));
-        const driveModule = assert(await driveV2Descriptor.initialize(0));
+        const driveModule = await driveV2Descriptor.initialize();
         document.body.append(driveModule);
 
         // Act.
@@ -217,7 +215,7 @@ suite('NewTabPageModulesDriveModuleTest', () => {
       ]
     };
     handler.setResultFor('getFiles', Promise.resolve(data));
-    const driveModule = assert(await driveV2Descriptor.initialize(0));
+    const driveModule = await driveV2Descriptor.initialize();
     document.body.append(driveModule);
 
     // Act.

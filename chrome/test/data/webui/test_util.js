@@ -134,7 +134,7 @@ export function flushTasks() {
 
 /**
  * Returns whether or not the element specified is visible.
- * @param {!Element} element
+ * @param {!HTMLElement} element
  * @return {boolean}
  */
 export function isVisible(element) {
@@ -145,7 +145,7 @@ export function isVisible(element) {
 /**
  * Searches the DOM of the parentEl element for a child matching the provided
  * selector then checks the visibility of the child.
- * @param {!Element} parentEl
+ * @param {!HTMLElement} parentEl
  * @param {string} selector
  * @param {boolean=} checkLightDom
  * @return {boolean}
@@ -153,5 +153,5 @@ export function isVisible(element) {
 export function isChildVisible(parentEl, selector, checkLightDom) {
   const element = checkLightDom ? parentEl.querySelector(selector) :
                                   parentEl.shadowRoot.querySelector(selector);
-  return isVisible(element);
+  return isVisible(/** @type {!HTMLElement} */ (element));
 }

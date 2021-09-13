@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 import {$$, shoppingTasksDescriptor, TaskModuleHandlerProxy} from 'chrome://new-tab-page/new_tab_page.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://test/chai_assert.js';
 import {installMock} from 'chrome://test/new_tab_page/test_support.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 import {eventToPromise, flushTasks} from 'chrome://test/test_util.js';
@@ -14,7 +12,7 @@ suite('NewTabPageModulesTaskModuleTest', () => {
   let handler;
 
   setup(() => {
-    document.body.innerHTML = '';
+    PolymerTest.clearBody();
 
     handler = installMock(
         taskModule.mojom.TaskModuleHandlerRemote,
@@ -26,7 +24,7 @@ suite('NewTabPageModulesTaskModuleTest', () => {
     handler.setResultFor('getPrimaryTask', Promise.resolve({task: null}));
 
     // Act.
-    const moduleElement = await shoppingTasksDescriptor.initialize(0);
+    const moduleElement = await shoppingTasksDescriptor.initialize();
 
     // Assert.
     assertEquals(1, handler.getCallCount('getPrimaryTask'));
@@ -67,10 +65,10 @@ suite('NewTabPageModulesTaskModuleTest', () => {
     handler.setResultFor('getPrimaryTask', Promise.resolve({task}));
 
     // Act.
-    const moduleElement = assert(await shoppingTasksDescriptor.initialize(0));
+    const moduleElement = await shoppingTasksDescriptor.initialize();
     document.body.append(moduleElement);
-    $$(moduleElement, '#taskItemsRepeat').render();
-    $$(moduleElement, '#relatedSearchesRepeat').render();
+    moduleElement.$.taskItemsRepeat.render();
+    moduleElement.$.relatedSearchesRepeat.render();
 
     // Assert.
     const products =
@@ -120,10 +118,10 @@ suite('NewTabPageModulesTaskModuleTest', () => {
                                     })),
       }
     }));
-    const moduleElement = assert(await shoppingTasksDescriptor.initialize(0));
+    const moduleElement = await shoppingTasksDescriptor.initialize();
     document.body.append(moduleElement);
-    $$(moduleElement, '#taskItemsRepeat').render();
-    $$(moduleElement, '#relatedSearchesRepeat').render();
+    moduleElement.$.taskItemsRepeat.render();
+    moduleElement.$.relatedSearchesRepeat.render();
     const getElements = () => Array.from(
         moduleElement.shadowRoot.querySelectorAll('.task-item, .pill'));
     assertEquals(40, getElements().length);
@@ -177,7 +175,7 @@ suite('NewTabPageModulesTaskModuleTest', () => {
     handler.setResultFor('getPrimaryTask', Promise.resolve({task}));
 
     // Arrange.
-    const moduleElement = assert(await shoppingTasksDescriptor.initialize(0));
+    const moduleElement = await shoppingTasksDescriptor.initialize();
     document.body.append(moduleElement);
     await flushTasks();
 
@@ -214,7 +212,7 @@ suite('NewTabPageModulesTaskModuleTest', () => {
       relatedSearches: [],
     };
     handler.setResultFor('getPrimaryTask', Promise.resolve({task}));
-    const moduleElement = assert(await shoppingTasksDescriptor.initialize(0));
+    const moduleElement = await shoppingTasksDescriptor.initialize();
     document.body.append(moduleElement);
 
     // Act.

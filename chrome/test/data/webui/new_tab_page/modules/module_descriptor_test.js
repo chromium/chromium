@@ -4,20 +4,19 @@
 
 import {ModuleDescriptor, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {assertEquals} from 'chrome://test/chai_assert.js';
 import {fakeMetricsPrivate, MetricsTracker} from 'chrome://test/new_tab_page/metrics_test_support.js';
-import {createElement, initNullModule, installMock} from 'chrome://test/new_tab_page/test_support.js';
+import {installMock} from 'chrome://test/new_tab_page/test_support.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 
 suite('NewTabPageModulesModuleDescriptorTest', () => {
   /** @type {!TestBrowserProxy} */
   let windowProxy;
 
-  /** @type {!MetricsTracker} */
+  /** @type {MetricsTracker} */
   let metrics;
 
   setup(() => {
-    document.body.innerHTML = '';
+    PolymerTest.clearBody();
     loadTimeData.overrideValues({
       navigationStartTime: 0.0,
     });
@@ -27,7 +26,7 @@ suite('NewTabPageModulesModuleDescriptorTest', () => {
 
   test('instantiate module with data', async () => {
     // Arrange.
-    const element = createElement();
+    const element = document.createElement('div');
     const moduleDescriptor = new ModuleDescriptor('foo', 'bar', () => {
       // Move time forward to simulate delay instantiating module.
       windowProxy.setResultFor('now', 128);
@@ -36,7 +35,7 @@ suite('NewTabPageModulesModuleDescriptorTest', () => {
     windowProxy.setResultFor('now', 123);
 
     // Act.
-    const moduleElement = await moduleDescriptor.initialize(0);
+    const moduleElement = await moduleDescriptor.initialize();
 
     // Assert.
     assertEquals(element, moduleElement);
@@ -52,10 +51,11 @@ suite('NewTabPageModulesModuleDescriptorTest', () => {
 
   test('instantiate module without data', async () => {
     // Arrange.
-    const moduleDescriptor = new ModuleDescriptor('foo', 'bar', initNullModule);
+    const moduleDescriptor =
+        new ModuleDescriptor('foo', 'bar', () => Promise.resolve(null));
 
     // Act.
-    const moduleElement = await moduleDescriptor.initialize(0);
+    const moduleElement = await moduleDescriptor.initialize();
 
     // Assert.
     assertEquals(null, moduleElement);

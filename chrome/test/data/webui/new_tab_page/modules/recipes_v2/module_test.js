@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {$$, recipeTasksV2Descriptor, TaskModuleHandlerProxy} from 'chrome://new-tab-page/new_tab_page.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {assertEquals} from 'chrome://test/chai_assert.js';
+import {recipeTasksV2Descriptor, TaskModuleHandlerProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {installMock} from 'chrome://test/new_tab_page/test_support.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 
@@ -13,7 +11,7 @@ suite('NewTabPageModulesRecipesV2ModuleTest', () => {
   let handler;
 
   setup(() => {
-    document.body.innerHTML = '';
+    PolymerTest.clearBody();
 
     handler = installMock(
         taskModule.mojom.TaskModuleHandlerRemote,
@@ -48,9 +46,9 @@ suite('NewTabPageModulesRecipesV2ModuleTest', () => {
     handler.setResultFor('getPrimaryTask', Promise.resolve({task}));
 
     // Act.
-    const moduleElement = assert(await recipeTasksV2Descriptor.initialize(0));
+    const moduleElement = await recipeTasksV2Descriptor.initialize();
     document.body.append(moduleElement);
-    $$(moduleElement, '#recipesRepeat').render();
+    moduleElement.$.recipesRepeat.render();
 
     // Assert.
     const recipes =
@@ -89,7 +87,7 @@ suite('NewTabPageModulesRecipesV2ModuleTest', () => {
     handler.setResultFor('getPrimaryTask', Promise.resolve({task: null}));
 
     // Act.
-    const moduleElement = await recipeTasksV2Descriptor.initialize(0);
+    const moduleElement = await recipeTasksV2Descriptor.initialize();
 
     // Assert.
     assertEquals(null, moduleElement);

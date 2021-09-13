@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {$$, photosDescriptor, PhotosProxy} from 'chrome://new-tab-page/new_tab_page.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
+import {photosDescriptor, PhotosProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {installMock} from 'chrome://test/new_tab_page/test_support.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 import {isVisible} from 'chrome://test/test_util.js';
@@ -14,7 +12,7 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
   let handler;
 
   setup(() => {
-    document.body.innerHTML = '';
+    PolymerTest.clearBody();
     handler =
         installMock(photos.mojom.PhotosHandlerRemote, PhotosProxy.setHandler);
   });
@@ -25,10 +23,10 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
     };
     handler.setResultFor('getMemories', Promise.resolve(data));
 
-    const module = assert(await photosDescriptor.initialize(0));
+    const module = await photosDescriptor.initialize();
     document.body.append(module);
     await handler.whenCalled('getMemories');
-    $$(module, '#memoryRepeat').render();
+    module.$.memoryRepeat.render();
 
     const items = Array.from(module.shadowRoot.querySelectorAll('.memory'));
     assertTrue(!!module);
@@ -43,7 +41,7 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
   test('module does not show without data', async () => {
     handler.setResultFor('getMemories', Promise.resolve({memories: []}));
 
-    const module = await photosDescriptor.initialize(0);
+    const module = await photosDescriptor.initialize();
     await handler.whenCalled('getMemories');
     assertFalse(!!module);
   });
