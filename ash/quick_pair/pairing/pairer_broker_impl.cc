@@ -74,7 +74,7 @@ void PairerBrokerImpl::OnFastPairDevicePaired(scoped_refptr<Device> device) {
   QP_LOG(INFO) << __func__ << ": Device=" << device;
 
   for (auto& observer : observers_) {
-    observer.OnDevicePaired(std::move(device));
+    observer.OnDevicePaired(device);
   }
 }
 
@@ -83,7 +83,7 @@ void PairerBrokerImpl::OnFastPairPairingFailure(scoped_refptr<Device> device,
   QP_LOG(INFO) << __func__ << ": Device=" << device << ", Failure=" << failure;
 
   for (auto& observer : observers_) {
-    observer.OnPairFailure(std::move(device), failure);
+    observer.OnPairFailure(device, failure);
   }
 }
 
