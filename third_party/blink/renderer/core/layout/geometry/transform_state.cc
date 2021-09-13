@@ -35,7 +35,6 @@ TransformState& TransformState::operator=(const TransformState& other) {
     last_planar_point_ = other.last_planar_point_;
   if (map_quad_)
     last_planar_quad_ = other.last_planar_quad_;
-  accumulating_transform_ = other.accumulating_transform_;
   force_accumulating_transform_ = other.force_accumulating_transform_;
   direction_ = other.direction_;
 
@@ -77,7 +76,7 @@ void TransformState::Move(const PhysicalOffset& offset,
     accumulated_offset_ += offset;
   } else {
     ApplyAccumulatedOffset();
-    if (accumulating_transform_ && accumulated_transform_) {
+    if (accumulated_transform_) {
       // If we're accumulating into an existing transform, apply the
       // translation.
       TranslateTransform(offset);
@@ -86,7 +85,6 @@ void TransformState::Move(const PhysicalOffset& offset,
       TranslateMappedCoordinates(offset);
     }
   }
-  accumulating_transform_ = accumulate == kAccumulateTransform;
 }
 
 void TransformState::ApplyAccumulatedOffset() {
@@ -146,8 +144,6 @@ void TransformState::ApplyTransform(
       FlattenWithTransform(*final_transform);
     }
   }
-  accumulating_transform_ =
-      accumulate == kAccumulateTransform || force_accumulating_transform_;
 }
 
 void TransformState::Flatten() {
@@ -156,7 +152,6 @@ void TransformState::Flatten() {
   ApplyAccumulatedOffset();
 
   if (!accumulated_transform_) {
-    accumulating_transform_ = false;
     return;
   }
 
@@ -192,7 +187,6 @@ FloatQuad TransformState::MappedQuad() const {
 
 const TransformationMatrix& TransformState::AccumulatedTransform() const {
   DCHECK(force_accumulating_transform_);
-  DCHECK(accumulating_transform_);
   return *accumulated_transform_;
 }
 
@@ -216,7 +210,6 @@ void TransformState::FlattenWithTransform(const TransformationMatrix& t) {
   // preserve-3d and flat elements.
   if (accumulated_transform_)
     accumulated_transform_->MakeIdentity();
-  accumulating_transform_ = false;
 }
 
 }  // namespace blink
