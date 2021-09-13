@@ -26,8 +26,12 @@ bool ExternallyManagedAppManager::InstallResult::operator==(
 
 ExternallyManagedAppManager::SynchronizeRequest::SynchronizeRequest(
     SynchronizeCallback callback,
-    int remaining_requests)
-    : callback(std::move(callback)), remaining_requests(remaining_requests) {}
+    std::vector<ExternalInstallOptions> pending_installs,
+    int remaining_uninstall_requests)
+    : callback(std::move(callback)),
+      remaining_install_requests(pending_installs.size()),
+      pending_installs(std::move(pending_installs)),
+      remaining_uninstall_requests(remaining_uninstall_requests) {}
 
 ExternallyManagedAppManager::SynchronizeRequest::~SynchronizeRequest() =
     default;
@@ -100,17 +104,19 @@ void ExternallyManagedAppManager::SynchronizeInstalledApps(
   synchronize_requests_.insert_or_assign(
       install_source,
       SynchronizeRequest(std::move(callback),
-                         urls_to_remove.size() + desired_urls.size()));
+                         std::move(desired_apps_install_options),
+                         urls_to_remove.size()));
 
-  UninstallApps(
-      urls_to_remove, install_source,
-      base::BindRepeating(
-          &ExternallyManagedAppManager::UninstallForSynchronizeCallback,
-          weak_ptr_factory_.GetWeakPtr(), install_source));
-  InstallApps(std::move(desired_apps_install_options),
-              base::BindRepeating(
-                  &ExternallyManagedAppManager::InstallForSynchronizeCallback,
-                  weak_ptr_factory_.GetWeakPtr(), install_source));
+  if (urls_to_remove.empty()) {
+    // If there are no uninstalls, this will trigger the installs.
+    ContinueOrCompleteSynchronization(install_source);
+  } else {
+    UninstallApps(
+        urls_to_remove, install_source,
+        base::BindRepeating(
+            &ExternallyManagedAppManager::UninstallForSynchronizeCallback,
+            weak_ptr_factory_.GetWeakPtr(), install_source));
+  }
 }
 
 void ExternallyManagedAppManager::SetRegistrationCallbackForTesting(
@@ -148,8 +154,10 @@ void ExternallyManagedAppManager::InstallForSynchronizeCallback(
   DCHECK(source_and_request != synchronize_requests_.end());
   SynchronizeRequest& request = source_and_request->second;
   request.install_results[app_url] = result;
+  --request.remaining_install_requests;
+  DCHECK_GE(request.remaining_install_requests, 0);
 
-  OnAppSynchronized(source, app_url);
+  ContinueOrCompleteSynchronization(source);
 }
 
 void ExternallyManagedAppManager::UninstallForSynchronizeCallback(
@@ -160,26 +168,42 @@ void ExternallyManagedAppManager::UninstallForSynchronizeCallback(
   DCHECK(source_and_request != synchronize_requests_.end());
   SynchronizeRequest& request = source_and_request->second;
   request.uninstall_results[app_url] = succeeded;
+  --request.remaining_uninstall_requests;
+  DCHECK_GE(request.remaining_uninstall_requests, 0);
 
-  OnAppSynchronized(source, app_url);
+  ContinueOrCompleteSynchronization(source);
 }
 
-void ExternallyManagedAppManager::OnAppSynchronized(
-    ExternalInstallSource source,
-    const GURL& app_url) {
+void ExternallyManagedAppManager::ContinueOrCompleteSynchronization(
+    ExternalInstallSource source) {
   auto source_and_request = synchronize_requests_.find(source);
   DCHECK(source_and_request != synchronize_requests_.end());
 
   SynchronizeRequest& request = source_and_request->second;
-  DCHECK_GT(request.remaining_requests, 0);
 
-  if (--request.remaining_requests == 0) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(request.callback),
-                                  std::move(request.install_results),
-                                  std::move(request.uninstall_results)));
-    synchronize_requests_.erase(source);
+  if (request.remaining_uninstall_requests > 0)
+    return;
+
+  // Installs only take place after all uninstalls.
+  if (!request.pending_installs.empty()) {
+    DCHECK_GT(request.remaining_install_requests, 0);
+    // Note: It is intentional that std::move(request.pending_installs) clears
+    // the vector in `request`, preventing this branch from triggering again.
+    InstallApps(std::move(request.pending_installs),
+                base::BindRepeating(
+                    &ExternallyManagedAppManager::InstallForSynchronizeCallback,
+                    weak_ptr_factory_.GetWeakPtr(), source));
+    return;
   }
+
+  if (request.remaining_install_requests > 0)
+    return;
+
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(request.callback),
+                                std::move(request.install_results),
+                                std::move(request.uninstall_results)));
+  synchronize_requests_.erase(source);
 }
 void ExternallyManagedAppManager::ClearSynchronizeRequestsForTesting() {
   synchronize_requests_.erase(synchronize_requests_.begin(),
