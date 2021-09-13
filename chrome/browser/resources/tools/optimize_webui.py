@@ -216,7 +216,7 @@ def _optimize(in_folder, args):
                  ['--no-inline-includes', '-f'] +
                  bundled_paths + ['-o'] + pcb_out_paths)
 
-    # Pass the JS files through Uglify and write the output to its final
+    # Pass the JS files through Terser and write the output to its final
     # destination.
     for index, js_out_file in enumerate(args.js_out_files):
       node.RunNode([node_modules.PathToTerser(),
