@@ -172,6 +172,11 @@ void SetUpProcess::Start(base::OnceCallback<void(bool)> done_callback) {
 }
 
 void SetUpProcess::OnSetUpDialogContinue() {
+  // Windows does not pick up changes in RegisteredApplications until
+  // SHChangeNotify() is called, so we call it here in case the user has just
+  // added the URL forwarder entry to the registry.
+  SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, nullptr, nullptr);
+
   HOST_LOG << "Launching default apps settings dialog";
   if (!LaunchDefaultAppsSettingsModernDialog()) {
     std::move(done_callback_).Run(false);

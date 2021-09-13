@@ -72,7 +72,9 @@ class DesktopEnvironmentOptions final {
   // True if this host has file transfer enabled.
   bool enable_file_transfer_ = false;
 
-  // True if this host has the remote open URL feature enabled.
+  // True if this host has the remote open URL feature enabled. Note, caller
+  // should also call IsRemoteOpenUrlSupported() to determine if the feature is
+  // supported by the platform.
   bool enable_remote_open_url_ = false;
 
   // The DesktopCaptureOptions to initialize DesktopCapturer.

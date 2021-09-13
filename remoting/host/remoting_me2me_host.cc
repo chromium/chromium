@@ -1579,18 +1579,8 @@ void HostProcess::StartHost() {
         enable_user_interface_);
   }
 
-  // Remote open URL is fully supported on Linux and still in development for
-  // Windows.
-#if defined(OS_LINUX)
-  desktop_environment_options_.set_enable_remote_open_url(true);
-#elif !defined(NDEBUG) && defined(OS_WIN)
-  // The modern default apps settings dialog is only available to Windows 8+.
-  // Given older Windows versions are EOL, we only advertise the feature on
-  // Windows 8+.
-  if (base::win::GetVersion() >= base::win::Version::WIN8) {
-    desktop_environment_options_.set_enable_remote_open_url(true);
-  }
-#endif
+  // The feature is enabled for all Googlers using a supported platform.
+  desktop_environment_options_.set_enable_remote_open_url(is_googler_);
 
   host_ = std::make_unique<ChromotingHost>(
       desktop_environment_factory_.get(), std::move(session_manager),

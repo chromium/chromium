@@ -33,6 +33,7 @@
 #include "remoting/host/ipc_mouse_cursor_monitor.h"
 #include "remoting/host/ipc_screen_controls.h"
 #include "remoting/host/ipc_video_frame_capturer.h"
+#include "remoting/host/remote_open_url_util.h"
 #include "remoting/proto/audio.pb.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/proto/event.pb.h"
@@ -187,7 +188,7 @@ std::string DesktopSessionProxy::GetCapabilities() const {
     result += protocol::kFileTransferCapability;
   }
 
-  if (options_.enable_remote_open_url()) {
+  if (options_.enable_remote_open_url() && IsRemoteOpenUrlSupported()) {
     result += " ";
     result += protocol::kRemoteOpenUrlCapability;
   }

@@ -384,6 +384,8 @@ static_library("common") {
     "remote_open_url_client.h",
     "remote_open_url_message_handler.cc",
     "remote_open_url_message_handler.h",
+    "remote_open_url_util.cc",
+    "remote_open_url_util.h",
     "remoting_register_support_host_request.cc",
     "remoting_register_support_host_request.h",
     "resizing_host_observer.cc",

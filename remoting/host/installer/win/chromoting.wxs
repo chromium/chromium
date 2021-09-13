@@ -217,82 +217,67 @@
               Vital="yes"/>
       </Component>
 
-      <!-- The remote open URL feature is not ready on Windows, so don't ship
-           these components on official build. -->
-      <!-- TODO(b/183135000): Remove if-statement once the feature is ready -->
-      <?if $(var.OfficialBuild) = 0 ?>
-        <Component Id="remote_open_url" Guid="*">
-          <File Id="remote_open_url.exe"
-                DiskId="1"
-                KeyPath="yes"
-                Name="remote_open_url.exe"
-                Vital="yes"/>
-        </Component>
+      <Component Id="remote_open_url" Guid="*">
+        <File Id="remote_open_url.exe"
+              DiskId="1"
+              KeyPath="yes"
+              Name="remote_open_url.exe"
+              Vital="yes"/>
+      </Component>
 
-        <Component Id="remote_open_url_registration" Guid="*">
-          <!-- ProgID -->
-          <RegistryKey Id="remote_open_url_prog_id_reg_key"
-                      Root="HKLM"
-                      Key="SOFTWARE\Classes\$(var.UrlForwarderProgId)"
-                      Action="create">
-            <RegistryKey Key="Application">
-              <RegistryValue Type="string"
-                            Name="ApplicationCompany"
-                            Value="$(var.Manufacturer)"/>
-              <RegistryValue Type="string"
-                            Name="ApplicationName"
-                            Value="@[binaries]$(var.CoreBinary),-119"/>
-              <RegistryValue Type="string"
-                            Name="ApplicationDescription"
-                            Value="@[binaries]$(var.CoreBinary),-120"/>
-              <RegistryValue Type="string"
-                            Name="ApplicationIcon"
-                            Value="[binaries]$(var.CoreBinary),-112"/>
-            </RegistryKey>
-            <RegistryKey Key="DefaultIcon">
-              <RegistryValue Type="string"
-                            Value="[binaries]$(var.CoreBinary),-112"/>
-            </RegistryKey>
-
-            <RegistryKey Key="shell\open\command">
-              <RegistryValue Type="string"
-                            Value='"[binaries]remote_open_url.exe" %1'/>
-            </RegistryKey>
-          </RegistryKey>
-
-          <!-- Capabilities -->
-          <RegistryKey Id="remote_open_url_capabilities_reg_key"
-                      Root="HKLM"
-                      Key="SOFTWARE\$(var.ChromotingKeyPath)\UrlForwarder\Capabilities"
-                      Action="create">
+      <Component Id="remote_open_url_registration" Guid="*">
+        <!-- ProgID -->
+        <RegistryKey Id="remote_open_url_prog_id_reg_key"
+                    Root="HKLM"
+                    Key="SOFTWARE\Classes\$(var.UrlForwarderProgId)"
+                    Action="create">
+          <RegistryKey Key="Application">
+            <RegistryValue Type="string"
+                          Name="ApplicationCompany"
+                          Value="$(var.Manufacturer)"/>
+            <RegistryValue Type="string"
+                          Name="ApplicationName"
+                          Value="@[binaries]$(var.CoreBinary),-119"/>
             <RegistryValue Type="string"
                           Name="ApplicationDescription"
                           Value="@[binaries]$(var.CoreBinary),-120"/>
-
-            <RegistryKey Key="URLAssociations">
-              <RegistryValue Type="string"
-                            Name="http"
-                            Value="$(var.UrlForwarderProgId)"/>
-              <RegistryValue Type="string"
-                            Name="https"
-                            Value="$(var.UrlForwarderProgId)"/>
-              <RegistryValue Type="string"
-                            Name="mailto"
-                            Value="$(var.UrlForwarderProgId)"/>
-            </RegistryKey>
-          </RegistryKey>
-
-          <!-- RegisteredApplications -->
-          <RegistryKey Id="remote_open_url_registered_applications_reg_key"
-                      Root="HKLM"
-                      Key="SOFTWARE\RegisteredApplications"
-                      Action="create">
             <RegistryValue Type="string"
-                          Name="$(var.UrlForwarderName)"
-                          Value="SOFTWARE\$(var.ChromotingKeyPath)\UrlForwarder\Capabilities"/>
+                          Name="ApplicationIcon"
+                          Value="[binaries]$(var.CoreBinary),-112"/>
           </RegistryKey>
-        </Component>
-      <?endif?>  <!-- remote open URL components -->
+          <RegistryKey Key="DefaultIcon">
+            <RegistryValue Type="string"
+                          Value="[binaries]$(var.CoreBinary),-112"/>
+          </RegistryKey>
+
+          <RegistryKey Key="shell\open\command">
+            <RegistryValue Type="string"
+                          Value='"[binaries]remote_open_url.exe" %1'/>
+          </RegistryKey>
+        </RegistryKey>
+
+        <!-- Capabilities -->
+        <RegistryKey Id="remote_open_url_capabilities_reg_key"
+                    Root="HKLM"
+                    Key="SOFTWARE\$(var.ChromotingKeyPath)\UrlForwarder\Capabilities"
+                    Action="create">
+          <RegistryValue Type="string"
+                        Name="ApplicationDescription"
+                        Value="@[binaries]$(var.CoreBinary),-120"/>
+
+          <RegistryKey Key="URLAssociations">
+            <RegistryValue Type="string"
+                          Name="http"
+                          Value="$(var.UrlForwarderProgId)"/>
+            <RegistryValue Type="string"
+                          Name="https"
+                          Value="$(var.UrlForwarderProgId)"/>
+            <RegistryValue Type="string"
+                          Name="mailto"
+                          Value="$(var.UrlForwarderProgId)"/>
+          </RegistryKey>
+        </RegistryKey>
+      </Component>
 
       <Component Id="native_messaging_host_manifest" Guid="*">
         <File Id="com.google.chrome.remote_desktop.json"
@@ -779,11 +764,8 @@
       <ComponentRef Id="remote_assistance_host_registry"/>
       <ComponentRef Id="remote_assistance_host_uiaccess"/>
 
-      <!-- TODO(b/183135000): Remove if-statement once the feature is ready -->
-      <?if $(var.OfficialBuild) = 0 ?>
-        <ComponentRef Id="remote_open_url"/>
-        <ComponentRef Id="remote_open_url_registration"/>
-      <?endif?>
+      <ComponentRef Id="remote_open_url"/>
+      <ComponentRef Id="remote_open_url_registration"/>
 
       <ComponentRef Id="remote_security_key"/>
       <ComponentRef Id="remote_security_key_registration"/>
