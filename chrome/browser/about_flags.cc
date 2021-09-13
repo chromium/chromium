@@ -5158,7 +5158,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCommercePriceTrackingAndroidDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(commerce::kCommercePriceTracking,
                                     kCommercePriceTrackingAndroidVariations,
-                                    "CommercePriceTrackingAndroid")},
+                                    "CommercePriceTracking")},
 
     {"enable-tab-groups", flag_descriptions::kTabGroupsAndroidName,
      flag_descriptions::kTabGroupsAndroidDescription, kOsAndroid,

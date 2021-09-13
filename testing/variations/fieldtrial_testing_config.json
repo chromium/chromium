@@ -2336,8 +2336,9 @@
             ],
             "experiments": [
                 {
-                    "name": "PriceDropIndicators_20210729",
+                    "name": "PriceDropIndicators_20210910",
                     "params": {
+                        "enable_persisted_tab_data_maintenance": "true",
                         "enable_price_tracking": "true",
                         "price_tracking_with_optimization_guide": "true"
                     },
