@@ -33,6 +33,7 @@
 
 namespace blink {
 
+class CascadeLayer;
 class CSSRule;
 class CSSStyleSheet;
 
@@ -215,6 +216,9 @@ class CORE_EXPORT StyleRuleProperty : public StyleRuleBase {
   const CSSValue* Inherits() const;
   const CSSValue* GetInitialValue() const;
 
+  void SetCascadeLayer(const CascadeLayer* layer) { layer_ = layer; }
+  const CascadeLayer* GetCascadeLayer() const { return layer_; }
+
   StyleRuleProperty* Copy() const {
     return MakeGarbageCollected<StyleRuleProperty>(*this);
   }
@@ -224,6 +228,7 @@ class CORE_EXPORT StyleRuleProperty : public StyleRuleBase {
  private:
   String name_;
   Member<CSSPropertyValueSet> properties_;
+  Member<const CascadeLayer> layer_;
 };
 
 class CORE_EXPORT StyleRuleScrollTimeline : public StyleRuleBase {
@@ -244,12 +249,17 @@ class CORE_EXPORT StyleRuleScrollTimeline : public StyleRuleBase {
   const CSSValue* GetStart() const { return start_; }
   const CSSValue* GetEnd() const { return end_; }
 
+  void SetCascadeLayer(const CascadeLayer* layer) { layer_ = layer; }
+  const CascadeLayer* GetCascadeLayer() const { return layer_; }
+
  private:
   AtomicString name_;
   Member<const CSSValue> source_;
   Member<const CSSValue> orientation_;
   Member<const CSSValue> start_;
   Member<const CSSValue> end_;
+  Member<const CSSValue> time_range_;
+  Member<const CascadeLayer> layer_;
 };
 
 class CORE_EXPORT StyleRuleGroup : public StyleRuleBase {

@@ -4413,4 +4413,209 @@ TEST_F(StyleEngineTest, UserCounterStyleOverrideWithCascadeLayers) {
   EXPECT_EQ(40, target->OffsetWidth());
 }
 
+TEST_F(StyleEngineTest, UserPropertyOverrideWithCascadeLayers) {
+  ScopedCSSCascadeLayersForTest enabled_scope(true);
+
+  auto* user_sheet = MakeGarbageCollected<StyleSheetContents>(
+      MakeGarbageCollected<CSSParserContext>(GetDocument()));
+  user_sheet->ParseString(R"CSS(
+    @layer base, override;
+
+    #target {
+      width: var(--foo);
+    }
+
+    @layer override {
+      @property --foo {
+        syntax: '<length>';
+        initial-value: 100px;
+        inherits: false;
+      }
+    }
+
+    @layer base {
+      @property --foo {
+        syntax: '<length>';
+        initial-value: 50px;
+        inherits: false;
+      }
+    }
+  )CSS");
+  StyleSheetKey key("user");
+  GetStyleEngine().InjectSheet(key, user_sheet, WebDocument::kUserOrigin);
+
+  GetDocument().body()->setInnerHTML(
+      "<div id=target style='height: 100px'></div>");
+
+  UpdateAllLifecyclePhases();
+
+  Element* target = GetDocument().getElementById("target");
+  EXPECT_EQ(100, target->OffsetWidth());
+}
+
+TEST_F(StyleEngineTest, UserAndAuthorPropertyOverrideWithCascadeLayers) {
+  ScopedCSSCascadeLayersForTest enabled_scope(true);
+
+  auto* user_sheet = MakeGarbageCollected<StyleSheetContents>(
+      MakeGarbageCollected<CSSParserContext>(GetDocument()));
+  user_sheet->ParseString(R"CSS(
+    @layer base, override;
+
+    @layer override {
+      @property --foo {
+        syntax: '<length>';
+        initial-value: 50px;
+        inherits: false;
+      }
+    }
+  )CSS");
+  StyleSheetKey key("user");
+  GetStyleEngine().InjectSheet(key, user_sheet, WebDocument::kUserOrigin);
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      @property --foo {
+        syntax: '<length>';
+        initial-value: 100px;
+        inherits: false;
+      }
+
+      #target {
+        width: var(--foo);
+      }
+    </style>
+    <div id=target style='height: 100px'></div>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+
+  // User-defined custom properties should not override author-defined
+  // properties regardless of cascade layers.
+  Element* target = GetDocument().getElementById("target");
+  EXPECT_EQ(100, target->OffsetWidth());
+}
+
+TEST_F(StyleEngineTest, UserScrollTimelineOverrideWithCascadeLayers) {
+  ScopedCSSCascadeLayersForTest layer_enabled(true);
+  ScopedCSSScrollTimelineForTest scroll_timeline_enabled(true);
+
+  auto* user_sheet = MakeGarbageCollected<StyleSheetContents>(
+      MakeGarbageCollected<CSSParserContext>(GetDocument()));
+  user_sheet->ParseString(R"CSS(
+    @layer base, override;
+
+    #scroller {
+      overflow: scroll;
+      width: 100px;
+      height: 100px;
+    }
+
+    #scroll-contents {
+      height: 200px;
+    }
+
+    @keyframes expand {
+      from { width: 100px; }
+      to { width: 200px; }
+    }
+
+    #target {
+      animation: expand 10s linear;
+      animation-timeline: timeline;
+      height: 100px;
+    }
+
+    @layer override {
+      @scroll-timeline timeline {
+        source: selector(#scroller);
+        start: 0px;
+        end: 50px;
+      }
+    }
+
+    @layer base {
+      @scroll-timeline timeline {
+        source: selector(#scroller);
+        start: 0px;
+        end: 100px;
+      }
+    }
+  )CSS");
+  StyleSheetKey key("user");
+  GetStyleEngine().InjectSheet(key, user_sheet, WebDocument::kUserOrigin);
+
+  GetDocument().body()->setInnerHTML(
+      "<div id=scroller><div id=scroll-contents></div></div>"
+      "<div id=target></div>");
+
+  Element* scroller = GetDocument().getElementById("scroller");
+  scroller->setScrollTop(25);
+  UpdateAllLifecyclePhases();
+
+  Element* target = GetDocument().getElementById("target");
+  EXPECT_EQ(150, target->OffsetWidth());
+}
+
+TEST_F(StyleEngineTest, UserAndAuthorScrollTimelineOverrideWithCascadeLayers) {
+  ScopedCSSCascadeLayersForTest layer_enabled(true);
+  ScopedCSSScrollTimelineForTest scroll_timeline_enabled(true);
+
+  auto* user_sheet = MakeGarbageCollected<StyleSheetContents>(
+      MakeGarbageCollected<CSSParserContext>(GetDocument()));
+  user_sheet->ParseString(R"CSS(
+    @layer base, override;
+
+    #scroller {
+      overflow: scroll;
+      width: 100px;
+      height: 100px;
+    }
+
+    #scroll-contents {
+      height: 200px;
+    }
+
+    @keyframes expand {
+      from { width: 100px; }
+      to { width: 200px; }
+    }
+
+    @layer override {
+      @scroll-timeline timeline {
+        source: selector(#scroller);
+        start: 0px;
+        end: 100px;
+      }
+    }
+  )CSS");
+  StyleSheetKey key("user");
+  GetStyleEngine().InjectSheet(key, user_sheet, WebDocument::kUserOrigin);
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      @scroll-timeline timeline {
+        source: selector(#scroller);
+        start: 0px;
+        end: 50px;
+      }
+
+      #target {
+        animation: expand 10s linear;
+        animation-timeline: timeline;
+        height: 100px;
+      }
+    </style>
+    <div id=scroller><div id=scroll-contents></div></div>
+    <div id=target></div>
+  )HTML");
+
+  Element* scroller = GetDocument().getElementById("scroller");
+  scroller->setScrollTop(25);
+  UpdateAllLifecyclePhases();
+
+  // User-defined scroll timelines should not override author-defined
+  // scroll timelines regardless of cascade layers.
+  Element* target = GetDocument().getElementById("target");
+  EXPECT_EQ(150, target->OffsetWidth());
+}
 }  // namespace blink

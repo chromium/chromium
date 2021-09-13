@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/css/property_registration.h"
 #include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -148,7 +149,13 @@ void DeclareProperty(Document& document,
       DynamicTo<StyleRuleProperty>(ParseRule(document, builder.ToString()));
   if (!rule)
     return;
-  PropertyRegistration::DeclareProperty(document, AtomicString(name), *rule);
+  auto* registration = PropertyRegistration::MaybeCreateForDeclaredProperty(
+      document, AtomicString(name), *rule);
+  if (!registration)
+    return;
+  document.EnsurePropertyRegistry().DeclareProperty(AtomicString(name),
+                                                    *registration);
+  document.GetStyleEngine().PropertyRegistryChanged();
 }
 
 scoped_refptr<CSSVariableData> CreateVariableData(String s) {

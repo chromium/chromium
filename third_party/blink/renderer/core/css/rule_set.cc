@@ -437,6 +437,7 @@ void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
       keyframes_rule->SetCascadeLayer(cascade_layer);
       AddKeyframesRule(keyframes_rule);
     } else if (auto* property_rule = DynamicTo<StyleRuleProperty>(rule)) {
+      property_rule->SetCascadeLayer(cascade_layer);
       AddPropertyRule(property_rule);
     } else if (auto* counter_style_rule =
                    DynamicTo<StyleRuleCounterStyle>(rule)) {
@@ -444,6 +445,7 @@ void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
       AddCounterStyleRule(counter_style_rule);
     } else if (auto* scroll_timeline_rule =
                    DynamicTo<StyleRuleScrollTimeline>(rule)) {
+      scroll_timeline_rule->SetCascadeLayer(cascade_layer);
       AddScrollTimelineRule(scroll_timeline_rule);
     } else if (auto* supports_rule = DynamicTo<StyleRuleSupports>(rule)) {
       if (supports_rule->ConditionIsSupported()) {

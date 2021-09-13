@@ -1487,6 +1487,62 @@ void StyleEngine::InvalidateInitialData() {
   initial_data_ = nullptr;
 }
 
+// A miniature CascadeMap for cascading @property and @scroll-timeline
+// at-rules according to their origin, cascade layer order and position.
+class StyleEngine::AtRuleCascadeMap {
+  STACK_ALLOCATED();
+
+ public:
+  explicit AtRuleCascadeMap(Document& document) : document_(document) {}
+
+  // No need to use the full CascadePriority class, since we are not handling UA
+  // style, shadow DOM or importance, and rules are inserted in source ordering.
+  struct Priority {
+    DISALLOW_NEW();
+    bool is_user_style;
+    unsigned layer_order;
+
+    bool operator<(const Priority& other) const {
+      if (is_user_style != other.is_user_style)
+        return is_user_style;
+      return layer_order < other.layer_order;
+    }
+  };
+
+  Priority GetPriority(bool is_user_style, const CascadeLayer* layer) {
+    return Priority{is_user_style, GetLayerOrder(is_user_style, layer)};
+  }
+
+  // Returns true if this is the first rule with the name, or if this has a
+  // higher priority than all the previously added rules with the same name.
+  bool AddAndCascade(const AtomicString& name, Priority priority) {
+    auto add_result = map_.insert(name, priority);
+    if (add_result.is_new_entry)
+      return true;
+    if (priority < add_result.stored_value->value)
+      return false;
+    add_result.stored_value->value = priority;
+    return true;
+  }
+
+ private:
+  unsigned GetLayerOrder(bool is_user_style, const CascadeLayer* layer) {
+    if (!layer)
+      return CascadeLayerMap::kImplicitOuterLayerOrder;
+    const CascadeLayerMap* layer_map = nullptr;
+    if (is_user_style)
+      layer_map = document_.GetStyleEngine().GetUserCascadeLayerMap();
+    else if (document_.GetScopedStyleResolver())
+      layer_map = document_.GetScopedStyleResolver()->GetCascadeLayerMap();
+    if (!layer_map)
+      return CascadeLayerMap::kImplicitOuterLayerOrder;
+    return layer_map->GetLayerOrder(*layer);
+  }
+
+  Document& document_;
+  HashMap<AtomicString, Priority> map_;
+};
+
 void StyleEngine::ApplyUserRuleSetChanges(
     const ActiveStyleSheetVector& old_style_sheets,
     const ActiveStyleSheetVector& new_style_sheets) {
@@ -1561,11 +1617,15 @@ void StyleEngine::ApplyUserRuleSetChanges(
   if (changed_rule_flags & (kPropertyRules | kScrollTimelineRules)) {
     if (changed_rule_flags & kPropertyRules) {
       ClearPropertyRules();
-      AddPropertyRulesFromSheets(new_style_sheets);
+      AtRuleCascadeMap cascade_map(GetDocument());
+      AddPropertyRulesFromSheets(cascade_map, new_style_sheets,
+                                 true /* is_user_style */);
     }
     if (changed_rule_flags & kScrollTimelineRules) {
       ClearScrollTimelineRules();
-      AddScrollTimelineRulesFromSheets(new_style_sheets);
+      AtRuleCascadeMap cascade_map(GetDocument());
+      AddScrollTimelineRulesFromSheets(cascade_map, new_style_sheets,
+                                       true /* is_user_style */);
     }
 
     // We just cleared all the rules, which includes any author rules. They
@@ -1623,36 +1683,9 @@ void StyleEngine::ApplyRuleSetChanges(
   if (changed_rule_flags & kCounterStyleRules)
     MarkCounterStylesNeedUpdate();
 
-  if ((changed_rule_flags & kPropertyRules) || rebuild_at_property_registry) {
-    // @property rules are (for now) ignored in shadow trees, per spec.
-    // https://drafts.css-houdini.org/css-properties-values-api-1/#at-property-rule
-    if (tree_scope.RootNode().IsDocumentNode()) {
-      ClearPropertyRules();
-      AddPropertyRulesFromSheets(active_user_style_sheets_);
-      AddPropertyRulesFromSheets(new_style_sheets);
-    }
-  }
-
-  if ((changed_rule_flags & kScrollTimelineRules) ||
-      rebuild_at_scroll_timeline_map) {
-    // @scroll-timeline rules are currently not allowed in shadow trees.
-    // https://drafts.csswg.org/scroll-animations-1/#scroll-timeline-at-rule
-    if (tree_scope.RootNode().IsDocumentNode()) {
-      ClearScrollTimelineRules();
-      AddScrollTimelineRulesFromSheets(active_user_style_sheets_);
-      AddScrollTimelineRulesFromSheets(new_style_sheets);
-    }
-  }
-
-  bool has_rebuilt_font_face_cache = false;
-  if (rebuild_font_face_cache) {
-    has_rebuilt_font_face_cache =
-        ClearFontFaceCacheAndAddUserFonts(active_user_style_sheets_);
-  }
-
   unsigned append_start_index = 0;
   if (scoped_resolver) {
-    // - If all sheets were removed, we remove the ScopedStyleResolver.
+    // - If all sheets were removed, we remove the ScopedStyleResolver
     // - If new sheets were appended to existing ones, start appending after the
     //   common prefix.
     // - For other diffs, reset author style and re-add all sheets for the
@@ -1665,18 +1698,55 @@ void StyleEngine::ApplyRuleSetChanges(
       scoped_resolver->ResetStyle();
   }
 
-  if (!new_style_sheets.IsEmpty()) {
-    ScopedStyleResolver& resolver = tree_scope.EnsureScopedStyleResolver();
-    if (changed_rule_flags & kLayerRules) {
+  // Cascade layer map must be built before adding other at-rules, because other
+  // at-rules rely on layer order to resolve name conflicts.
+  if (changed_rule_flags & kLayerRules) {
+    if (!new_style_sheets.IsEmpty()) {
       // Rebuild cascade layer map in all cases, because a newly inserted
       // sub-layer can precede an original layer in the final ordering.
-      resolver.RebuildCascadeLayerMap(new_style_sheets);
-
-      if (resolver_)
-        resolver_->InvalidateMatchedPropertiesCache();
+      tree_scope.EnsureScopedStyleResolver().RebuildCascadeLayerMap(
+          new_style_sheets);
     }
+    if (resolver_)
+      resolver_->InvalidateMatchedPropertiesCache();
+  }
 
-    resolver.AppendActiveStyleSheets(append_start_index, new_style_sheets);
+  if ((changed_rule_flags & kPropertyRules) || rebuild_at_property_registry) {
+    // @property rules are (for now) ignored in shadow trees, per spec.
+    // https://drafts.css-houdini.org/css-properties-values-api-1/#at-property-rule
+    if (tree_scope.RootNode().IsDocumentNode()) {
+      ClearPropertyRules();
+      AtRuleCascadeMap cascade_map(GetDocument());
+      AddPropertyRulesFromSheets(cascade_map, active_user_style_sheets_,
+                                 true /* is_user_style */);
+      AddPropertyRulesFromSheets(cascade_map, new_style_sheets,
+                                 false /* is_user_style */);
+    }
+  }
+
+  if ((changed_rule_flags & kScrollTimelineRules) ||
+      rebuild_at_scroll_timeline_map) {
+    // @scroll-timeline rules are currently not allowed in shadow trees.
+    // https://drafts.csswg.org/scroll-animations-1/#scroll-timeline-at-rule
+    if (tree_scope.RootNode().IsDocumentNode()) {
+      ClearScrollTimelineRules();
+      AtRuleCascadeMap cascade_map(GetDocument());
+      AddScrollTimelineRulesFromSheets(cascade_map, active_user_style_sheets_,
+                                       true /* is_user_style */);
+      AddScrollTimelineRulesFromSheets(cascade_map, new_style_sheets,
+                                       false /* is_user_style */);
+    }
+  }
+
+  bool has_rebuilt_font_face_cache = false;
+  if (rebuild_font_face_cache) {
+    has_rebuilt_font_face_cache =
+        ClearFontFaceCacheAndAddUserFonts(active_user_style_sheets_);
+  }
+
+  if (!new_style_sheets.IsEmpty()) {
+    tree_scope.EnsureScopedStyleResolver().AppendActiveStyleSheets(
+        append_start_index, new_style_sheets);
   }
 
   if (tree_scope.RootNode().IsDocumentNode()) {
@@ -1878,18 +1948,22 @@ void StyleEngine::ClearScrollTimelineRules() {
 }
 
 void StyleEngine::AddPropertyRulesFromSheets(
-    const ActiveStyleSheetVector& sheets) {
+    AtRuleCascadeMap& cascade_map,
+    const ActiveStyleSheetVector& sheets,
+    bool is_user_style) {
   for (const ActiveStyleSheet& active_sheet : sheets) {
     if (RuleSet* rule_set = active_sheet.second)
-      AddPropertyRules(*rule_set);
+      AddPropertyRules(cascade_map, *rule_set, is_user_style);
   }
 }
 
 void StyleEngine::AddScrollTimelineRulesFromSheets(
-    const ActiveStyleSheetVector& sheets) {
+    AtRuleCascadeMap& cascade_map,
+    const ActiveStyleSheetVector& sheets,
+    bool is_user_style) {
   for (const ActiveStyleSheet& active_sheet : sheets) {
     if (RuleSet* rule_set = active_sheet.second)
-      AddScrollTimelineRules(*rule_set);
+      AddScrollTimelineRules(cascade_map, *rule_set, is_user_style);
   }
 }
 
@@ -1935,23 +2009,45 @@ bool StyleEngine::UserKeyframeStyleShouldOverride(
                                          new_rule->GetCascadeLayer()) <= 0;
 }
 
-void StyleEngine::AddPropertyRules(const RuleSet& rule_set) {
+void StyleEngine::AddPropertyRules(AtRuleCascadeMap& cascade_map,
+                                   const RuleSet& rule_set,
+                                   bool is_user_style) {
   const HeapVector<Member<StyleRuleProperty>> property_rules =
       rule_set.PropertyRules();
   for (unsigned i = 0; i < property_rules.size(); ++i) {
     StyleRuleProperty* rule = property_rules[i];
     AtomicString name(rule->GetName());
-    PropertyRegistration::DeclareProperty(GetDocument(), name, *rule);
+
+    PropertyRegistration* registration =
+        PropertyRegistration::MaybeCreateForDeclaredProperty(GetDocument(),
+                                                             name, *rule);
+    if (!registration)
+      continue;
+
+    auto priority =
+        cascade_map.GetPriority(is_user_style, rule->GetCascadeLayer());
+    if (!cascade_map.AddAndCascade(name, priority))
+      continue;
+
+    GetDocument().EnsurePropertyRegistry().DeclareProperty(name, *registration);
+    PropertyRegistryChanged();
   }
 }
 
-void StyleEngine::AddScrollTimelineRules(const RuleSet& rule_set) {
+void StyleEngine::AddScrollTimelineRules(AtRuleCascadeMap& cascade_map,
+                                         const RuleSet& rule_set,
+                                         bool is_user_style) {
   const HeapVector<Member<StyleRuleScrollTimeline>> scroll_timeline_rules =
       rule_set.ScrollTimelineRules();
   if (scroll_timeline_rules.IsEmpty())
     return;
-  for (const auto& rule : scroll_timeline_rules)
+  for (const auto& rule : scroll_timeline_rules) {
+    auto priority =
+        cascade_map.GetPriority(is_user_style, rule->GetCascadeLayer());
+    if (!cascade_map.AddAndCascade(rule->GetName(), priority))
+      continue;
     scroll_timeline_rule_map_.Set(rule->GetName(), rule);
+  }
   ScrollTimelinesChanged();
 }
 

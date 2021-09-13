@@ -574,15 +574,23 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void ClearPropertyRules();
   void ClearScrollTimelineRules();
 
-  void AddPropertyRulesFromSheets(const ActiveStyleSheetVector&);
-  void AddScrollTimelineRulesFromSheets(const ActiveStyleSheetVector&);
+  class AtRuleCascadeMap;
+
+  void AddPropertyRulesFromSheets(AtRuleCascadeMap&,
+                                  const ActiveStyleSheetVector&,
+                                  bool is_user_style);
+  void AddScrollTimelineRulesFromSheets(AtRuleCascadeMap&,
+                                        const ActiveStyleSheetVector&,
+                                        bool is_user_style);
 
   // Returns true if any @font-face rules are added.
   bool AddUserFontFaceRules(const RuleSet&);
   void AddUserKeyframeRules(const RuleSet&);
   void AddUserKeyframeStyle(StyleRuleKeyframes*);
-  void AddPropertyRules(const RuleSet&);
-  void AddScrollTimelineRules(const RuleSet&);
+  void AddPropertyRules(AtRuleCascadeMap&, const RuleSet&, bool is_user_style);
+  void AddScrollTimelineRules(AtRuleCascadeMap&,
+                              const RuleSet&,
+                              bool is_user_style);
   bool UserKeyframeStyleShouldOverride(
       const StyleRuleKeyframes* new_rule,
       const StyleRuleKeyframes* existing_rule) const;

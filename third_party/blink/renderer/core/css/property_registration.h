@@ -24,9 +24,12 @@ class StyleRuleProperty;
 class CORE_EXPORT PropertyRegistration final
     : public GarbageCollected<PropertyRegistration> {
  public:
-  static void DeclareProperty(Document&,
-                              const AtomicString& name,
-                              StyleRuleProperty&);
+  // Creates a PropertyRegistration for a valid @property rule, or returns
+  // nullptr if the rule is invalid.
+  static PropertyRegistration* MaybeCreateForDeclaredProperty(
+      Document&,
+      const AtomicString& name,
+      StyleRuleProperty&);
 
   static void registerProperty(ExecutionContext*,
                                const PropertyDefinition*,

@@ -21,6 +21,7 @@
 
 #include "third_party/blink/renderer/core/css/style_rule.h"
 
+#include "third_party/blink/renderer/core/css/cascade_layer.h"
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
 #include "third_party/blink/renderer/core/css/css_counter_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_font_face_rule.h"
@@ -403,6 +404,7 @@ const CSSValue* StyleRuleProperty::GetInitialValue() const {
 
 void StyleRuleProperty::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(properties_);
+  visitor->Trace(layer_);
   StyleRuleBase::TraceAfterDispatch(visitor);
 }
 
@@ -443,6 +445,8 @@ void StyleRuleScrollTimeline::TraceAfterDispatch(
   visitor->Trace(orientation_);
   visitor->Trace(start_);
   visitor->Trace(end_);
+  visitor->Trace(time_range_);
+  visitor->Trace(layer_);
 
   StyleRuleBase::TraceAfterDispatch(visitor);
 }
