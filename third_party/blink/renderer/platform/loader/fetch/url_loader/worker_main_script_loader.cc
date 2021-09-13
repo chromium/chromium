@@ -172,12 +172,9 @@ void WorkerMainScriptLoader::OnComplete(
       ResourceTimingInfo::Create(g_empty_atom, base::TimeTicks::Now(),
                                  initial_request_.GetRequestContext(),
                                  initial_request_.GetRequestDestination());
-  const int64_t encoded_data_length = resource_response_.EncodedDataLength();
   timing_info->SetInitialURL(initial_request_url_);
   timing_info->SetFinalResponse(resource_response_);
   timing_info->SetLoadResponseEnd(status.completion_time);
-  timing_info->AddFinalTransferSize(
-      encoded_data_length == -1 ? 0 : encoded_data_length);
   fetch_context_->AddResourceTiming(*timing_info);
 
   has_received_completion_ = true;

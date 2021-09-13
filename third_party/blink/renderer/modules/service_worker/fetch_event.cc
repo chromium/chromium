@@ -225,8 +225,6 @@ void FetchEvent::OnNavigationPreloadComplete(
   info->SetLoadResponseEnd(completion_time);
   info->SetInitialURL(request_->url());
   info->SetFinalResponse(resource_response);
-  info->AddFinalTransferSize(encoded_data_length == -1 ? 0
-                                                       : encoded_data_length);
   WorkerGlobalScopePerformance::performance(*worker_global_scope)
       ->GenerateAndAddResourceTiming(*info);
 }

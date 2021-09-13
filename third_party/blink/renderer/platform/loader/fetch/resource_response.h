@@ -37,6 +37,7 @@
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-shared.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
+#include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/renderer/platform/network/http_header_map.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
@@ -431,6 +432,9 @@ class PLATFORM_EXPORT ResourceResponse final {
 
   AtomicString ConnectionInfoString() const;
 
+  mojom::blink::CacheState CacheState() const;
+  void SetIsValidated(bool is_validated);
+
   int64_t EncodedDataLength() const { return encoded_data_length_; }
   void SetEncodedDataLength(int64_t value);
 
@@ -676,6 +680,9 @@ class PLATFORM_EXPORT ResourceResponse final {
   // Information about the type of connection used to fetch this resource.
   net::HttpResponseInfo::ConnectionInfo connection_info_ =
       net::HttpResponseInfo::ConnectionInfo::CONNECTION_INFO_UNKNOWN;
+
+  // Whether the resource came from the cache and validated over the network.
+  bool is_validated_ = false;
 
   // Size of the response in bytes prior to decompression.
   int64_t encoded_data_length_ = 0;

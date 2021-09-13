@@ -31,6 +31,13 @@ struct ServerTimingInfo {
   string description;
 };
 
+// https://fetch.spec.whatwg.org/#concept-response-cache-state
+enum CacheState {
+  kNone,
+  kLocal,
+  kValidated,
+};
+
 // This struct holds the information from PerformanceResourceTiming that needs
 // to be passed between processes. This is currently used to send timing
 // information about cross-process iframes for window.performance.
@@ -72,9 +79,8 @@ struct ResourceTimingInfo {
   RequestContextType context_type;
   network.mojom.RequestDestination request_destination;
 
-  // Corresponds to |transferSize| in PerformanceResourceTiming
-  // (http://www.w3.org/TR/resource-timing-2/).
-  uint64 transfer_size;
+  // https://w3c.github.io/resource-timing/#dfn-cache-mode
+  CacheState cache_state;
 
   // Corresponds to |encodedBodySize| in PerformanceResourceTiming
   // (http://www.w3.org/TR/resource-timing-2/).

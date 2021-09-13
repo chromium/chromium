@@ -824,6 +824,7 @@ void WebURLLoader::PopulateURLResponse(
   response->SetCorsExposedHeaderNames(cors_exposed_header_names);
   response->SetDidServiceWorkerNavigationPreload(
       head.did_service_worker_navigation_preload);
+  response->SetIsValidated(head.is_validated);
   response->SetEncodedDataLength(head.encoded_data_length);
   response->SetEncodedBodyLength(head.encoded_body_length);
   response->SetWasAlpnNegotiated(head.was_alpn_negotiated);

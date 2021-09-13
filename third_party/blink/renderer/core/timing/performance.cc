@@ -531,7 +531,7 @@ mojom::blink::ResourceTimingInfoPtr Performance::GenerateResourceTiming(
     result->last_redirect_end_time = base::TimeTicks();
   }
 
-  result->transfer_size = info.TransferSize();
+  result->cache_state = info.CacheState();
   result->encoded_body_size = final_response.EncodedBodyLength();
   result->decoded_body_size = final_response.DecodedBodyLength();
   result->did_reuse_connection = final_response.ConnectionReused();

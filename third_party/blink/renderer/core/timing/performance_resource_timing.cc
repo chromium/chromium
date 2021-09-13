@@ -76,7 +76,7 @@ PerformanceResourceTiming::PerformanceResourceTiming(
       response_end_(info.response_end),
       context_type_(info.context_type),
       request_destination_(info.request_destination),
-      transfer_size_(info.transfer_size),
+      cache_state_(info.cache_state),
       encoded_body_size_(info.encoded_body_size),
       decoded_body_size_(info.decoded_body_size),
       did_reuse_connection_(info.did_reuse_connection),
@@ -137,8 +137,23 @@ bool PerformanceResourceTiming::DidReuseConnection() const {
   return did_reuse_connection_;
 }
 
+uint64_t PerformanceResourceTiming::GetTransferSize(
+    uint64_t encoded_body_size,
+    mojom::blink::CacheState cache_state) {
+  switch (cache_state) {
+    case mojom::blink::CacheState::kLocal:
+      return 0;
+    case mojom::blink::CacheState::kValidated:
+      return kHeaderSize;
+    case mojom::blink::CacheState::kNone:
+      return encoded_body_size + kHeaderSize;
+  }
+  NOTREACHED();
+  return 0;
+}
+
 uint64_t PerformanceResourceTiming::GetTransferSize() const {
-  return transfer_size_;
+  return GetTransferSize(encoded_body_size_, cache_state_);
 }
 
 uint64_t PerformanceResourceTiming::GetEncodedBodySize() const {

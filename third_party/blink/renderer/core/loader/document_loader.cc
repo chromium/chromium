@@ -856,8 +856,6 @@ void DocumentLoader::BodyLoadingFinished(
       // sizes.
       // TODO(yoav): copy the sizes info directly.
       navigation_timing_info_->SetFinalResponse(response_);
-      navigation_timing_info_->AddFinalTransferSize(
-          total_encoded_data_length == -1 ? 0 : total_encoded_data_length);
       if (report_timing_info_to_parent_) {
         navigation_timing_info_->SetLoadResponseEnd(completion_time);
         if (state_ >= kCommitted) {

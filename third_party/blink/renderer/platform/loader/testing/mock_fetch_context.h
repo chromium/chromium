@@ -36,8 +36,6 @@ class MockFetchContext : public FetchContext {
   MockFetchContext() = default;
   ~MockFetchContext() override = default;
 
-  uint64_t GetTransferSize() const { return transfer_size_; }
-
   void set_blocked_urls(Vector<String> blocked_urls) {
     blocked_urls_ = std::move(blocked_urls);
   }
@@ -85,7 +83,6 @@ class MockFetchContext : public FetchContext {
   }
   void AddResourceTiming(
       const ResourceTimingInfo& resource_timing_info) override {
-    transfer_size_ = resource_timing_info.TransferSize();
   }
   std::unique_ptr<ResourceLoadInfoNotifierWrapper>
   CreateResourceLoadInfoNotifierWrapper() override {
@@ -116,7 +113,6 @@ class MockFetchContext : public FetchContext {
   }
 
  private:
-  uint64_t transfer_size_ = 0;
   mojom::ResourceLoadInfoNotifier* resource_load_info_notifier_ = nullptr;
   std::unique_ptr<WeakWrapperResourceLoadInfoNotifier>
       weak_wrapper_resource_load_info_notifier_;

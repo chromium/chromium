@@ -439,6 +439,10 @@ void WebURLResponse::SetAddressSpace(
   resource_response_->SetAddressSpace(remote_ip_address_space);
 }
 
+void WebURLResponse::SetIsValidated(bool is_validated) {
+  resource_response_->SetIsValidated(is_validated);
+}
+
 void WebURLResponse::SetEncodedDataLength(int64_t length) {
   resource_response_->SetEncodedDataLength(length);
 }

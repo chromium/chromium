@@ -109,7 +109,8 @@ bool PerformanceNavigationTiming::DidReuseConnection() const {
 }
 
 uint64_t PerformanceNavigationTiming::GetTransferSize() const {
-  return resource_timing_info_->TransferSize();
+  return PerformanceResourceTiming::GetTransferSize(
+      resource_timing_info_->FinalResponse().EncodedBodyLength(), CacheState());
 }
 
 uint64_t PerformanceNavigationTiming::GetEncodedBodySize() const {

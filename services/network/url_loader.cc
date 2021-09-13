@@ -105,6 +105,8 @@ void PopulateResourceResponse(net::URLRequest* request,
   response->connection_info = response_info.connection_info;
   response->remote_endpoint = response_info.remote_endpoint;
   response->was_fetched_via_cache = request->was_cached();
+  response->is_validated = (response_info.cache_entry_status ==
+                            net::HttpResponseInfo::ENTRY_VALIDATED);
   response->proxy_server = request->proxy_server();
   response->network_accessed = response_info.network_accessed;
   response->async_revalidation_requested =

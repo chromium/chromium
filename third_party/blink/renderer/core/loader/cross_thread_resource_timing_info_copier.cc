@@ -32,7 +32,7 @@ CrossThreadCopier<blink::mojom::blink::ResourceTimingInfoPtr>::Copy(
       info->connection_info.IsolatedCopy(),
       info->timing ? info->timing->Clone() : nullptr,
       info->last_redirect_end_time, info->response_end, info->context_type,
-      info->request_destination, info->transfer_size, info->encoded_body_size,
+      info->request_destination, info->cache_state, info->encoded_body_size,
       info->decoded_body_size, info->did_reuse_connection,
       info->is_secure_context, info->allow_timing_details,
       info->allow_redirect_details, info->allow_negative_values,

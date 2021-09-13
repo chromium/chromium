@@ -108,8 +108,14 @@ class CORE_EXPORT PerformanceResourceTiming
   virtual AtomicString ConnectionInfo() const;
 
   base::TimeTicks TimeOrigin() const { return time_origin_; }
+  mojom::blink::CacheState CacheState() const { return cache_state_; }
+  static uint64_t GetTransferSize(uint64_t encoded_body_size,
+                                  mojom::blink::CacheState cache_state);
 
  private:
+  // https://w3c.github.io/resource-timing/#dom-performanceresourcetiming-transfersize
+  static const size_t kHeaderSize = 300;
+
   AtomicString GetNextHopProtocol(const AtomicString& alpn_negotiated_protocol,
                                   const AtomicString& connection_info) const;
 
@@ -133,7 +139,7 @@ class CORE_EXPORT PerformanceResourceTiming
       mojom::blink::RequestContextType::UNSPECIFIED;
   network::mojom::RequestDestination request_destination_ =
       network::mojom::RequestDestination::kEmpty;
-  uint64_t transfer_size_ = 0;
+  mojom::blink::CacheState cache_state_ = mojom::blink::CacheState::kNone;
   uint64_t encoded_body_size_ = 0;
   uint64_t decoded_body_size_ = 0;
   bool did_reuse_connection_ = false;

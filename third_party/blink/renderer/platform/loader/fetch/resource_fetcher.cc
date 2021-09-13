@@ -276,20 +276,13 @@ void SetReferrer(
 
 void PopulateAndAddResourceTimingInfo(Resource* resource,
                                       scoped_refptr<ResourceTimingInfo> info,
-                                      base::TimeTicks response_end,
-                                      int64_t encoded_data_length) {
+                                      base::TimeTicks response_end) {
   info->SetInitialURL(
       resource->GetResourceRequest().GetRedirectInfo().has_value()
           ? resource->GetResourceRequest().GetRedirectInfo()->original_url
           : resource->GetResourceRequest().Url());
   info->SetFinalResponse(resource->GetResponse());
   info->SetLoadResponseEnd(response_end);
-  // encodedDataLength == -1 means "not available".
-  // TODO(ricea): Find cases where it is not available but the
-  // PerformanceResourceTiming spec requires it to be available and fix
-  // them.
-  info->AddFinalTransferSize(encoded_data_length == -1 ? 0
-                                                       : encoded_data_length);
 }
 
 }  // namespace
@@ -1866,8 +1859,7 @@ void ResourceFetcher::HandleLoaderFinish(Resource* resource,
   if (scoped_refptr<ResourceTimingInfo> info =
           resource_timing_info_map_.Take(resource)) {
     if (resource->GetResponse().IsHTTP()) {
-      PopulateAndAddResourceTimingInfo(resource, info, response_end,
-                                       encoded_data_length);
+      PopulateAndAddResourceTimingInfo(resource, info, response_end);
       auto receiver = Context().TakePendingWorkerTimingReceiver(
           resource->GetResponse().RequestId());
       info->SetWorkerTimingReceiver(std::move(receiver));
@@ -1914,9 +1906,7 @@ void ResourceFetcher::HandleLoaderError(Resource* resource,
 
   if (scoped_refptr<ResourceTimingInfo> info =
           resource_timing_info_map_.Take(resource)) {
-    PopulateAndAddResourceTimingInfo(
-        resource, info, finish_time,
-        resource->GetResponse().EncodedDataLength());
+    PopulateAndAddResourceTimingInfo(resource, info, finish_time);
     if (resource->Options().request_initiator_context == kDocumentContext)
       Context().AddResourceTiming(*info);
   }
