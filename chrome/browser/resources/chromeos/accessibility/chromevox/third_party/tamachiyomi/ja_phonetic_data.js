@@ -29,11 +29,11 @@ JaPhoneticData = class {
    */
   static forCharacter(char) {
     const characterSet = JaPhoneticData.getCharacterSet(char);
-    if (characterSet) {
-      return characterSet + ' ' + char;
-    } else {
-      return JaPhoneticData.phoneticMap_[char] || char;
+    if (characterSet !== JaPhoneticData.CharacterSet.OTHER) {
+      const prefix = JaPhoneticData.getDefaultPrefix(characterSet);
+      return prefix + ' ' + char;
     }
+    return JaPhoneticData.phoneticMap_[char] || char;
   }
 
   /**
@@ -44,14 +44,15 @@ JaPhoneticData = class {
   static forText(text) {
     const result = [];
     const chars = [...text];
-    let lastCharacterSet = null;
+    let lastCharacterSet = JaPhoneticData.CharacterSet.NONE;
     for (const char of chars) {
       const currentCharacterSet = JaPhoneticData.getCharacterSet(char);
-      if (currentCharacterSet) {
+      if (currentCharacterSet !== JaPhoneticData.CharacterSet.OTHER) {
         if (currentCharacterSet !== lastCharacterSet) {
-          // If the character set has changed, push the character set first,
+          // If the character set has changed, push the prefix first,
           // followed by the character.
-          result.push(currentCharacterSet, char);
+          const prefix = JaPhoneticData.getDefaultPrefix(currentCharacterSet);
+          result.push(prefix, char);
         } else {
           const lastEntry = result[result.length - 1];
           if (lastEntry) {
@@ -70,67 +71,150 @@ JaPhoneticData = class {
   }
 
   /**
-   * @param {string} char
-   * @return {?JaPhoneticData.CharacterSet}
+   * @param {string} character
+   * @return {JaPhoneticData.CharacterSet}
    */
-  static getCharacterSet(char) {
-    if (JaPhoneticData.isHiragana(char)) {
+  static getCharacterSet(character) {
+    // See https://www.unicode.org/charts/PDF/U3040.pdf
+    if (character >= 'ぁ' && character <= 'ゖ') {
+      if (JaPhoneticData.isSmallLetter(character)) {
+        return JaPhoneticData.CharacterSet.HIRAGANA_SMALL_LETTER;
+      }
       return JaPhoneticData.CharacterSet.HIRAGANA;
-    } else if (JaPhoneticData.isKatakana(char)) {
+    }
+    // See https://www.unicode.org/charts/PDF/U30A0.pdf
+    if (character >= 'ァ' && character <= 'ヺ') {
+      if (JaPhoneticData.isSmallLetter(character)) {
+        return JaPhoneticData.CharacterSet.KATAKANA_SMALL_LETTER;
+      }
       return JaPhoneticData.CharacterSet.KATAKANA;
-    } else if (JaPhoneticData.isHalfWidth(char)) {
-      return JaPhoneticData.CharacterSet.HALF_WIDTH;
-    } else {
-      // Return null for all other characters, including Kanji.
-      return null;
     }
+    // See https://unicode.org/charts/PDF/UFF00.pdf
+    if (character >= 'ｦ' && character <= 'ﾟ') {
+      if (JaPhoneticData.isSmallLetter(character)) {
+        return JaPhoneticData.CharacterSet.HALF_WIDTH_KATAKANA_SMALL_LETTER;
+      }
+      return JaPhoneticData.CharacterSet.HALF_WIDTH_KATAKANA;
+    }
+    if (character >= 'A' && character <= 'Z') {
+      return JaPhoneticData.CharacterSet.HALF_WIDTH_ALPHABET_UPPER;
+    }
+    if (character >= 'a' && character <= 'z') {
+      return JaPhoneticData.CharacterSet.HALF_WIDTH_ALPHABET_LOWER;
+    }
+    if (character >= 'Ａ' && character <= 'Ｚ') {
+      return JaPhoneticData.CharacterSet.FULL_WIDTH_ALPHABET_UPPER;
+    }
+    if (character >= 'ａ' && character <= 'ｚ') {
+      return JaPhoneticData.CharacterSet.FULL_WIDTH_ALPHABET_LOWER;
+    }
+    // Return OTHER for all other characters, including Kanji.
+    return JaPhoneticData.CharacterSet.OTHER;
   }
 
   /**
-   * Returns true if the character is part of the Hiragana character set.
-   * Please see the following resource detailing Hiragana unicode values:
-   * https://www.unicode.org/charts/PDF/U3040.pdf
+   * Returns true if the character is part of the small letter character set.
+   * @param {string} character
    * @return {boolean}
    */
-  static isHiragana(character) {
-    if (character >= '\u3040' && character <= '\u3096') {
-      // The range above only applies to characters あ - ゖ.
-      return true;
-    }
-    return false;
+  static isSmallLetter(character) {
+    return JaPhoneticData.SMALL_TO_LARGE.has(character);
   }
 
   /**
-   * Returns true if the character is part of the Katakana character set.
-   * Please see the following resource detailing Katakana unicode values:
-   * https://www.unicode.org/charts/PDF/U30A0.pdf
-   * @return {boolean}
+   * @param {JaPhoneticData.CharacterSet} characterSet
+   * @return {string}
    */
-  static isKatakana(character) {
-    if (character >= '\u30a0' && character <= '\u30fa') {
-      // The range above only applies to characters ア - ヺ.
-      return true;
-    }
-    return false;
-  }
-
-  /**
-   * Returns true if the character is part of the half-width kana character set.
-   * Please see the following resource detailing half-width kana unicode values:
-   * https://unicode.org/charts/PDF/UFF00.pdf
-   * @return {boolean}
-   */
-  static isHalfWidth(character) {
-    if (character >= '\uff61' && character <= '\uff9f') {
-      return true;
-    }
-    return false;
+  static getDefaultPrefix(characterSet) {
+    return JaPhoneticData.DEFAULT_PREFIX.get(characterSet);
   }
 };
 
-/** @enum {string} */
+/** @enum {number} */
 JaPhoneticData.CharacterSet = {
-  HIRAGANA: 'ひらがな',
-  KATAKANA: 'カタカナ',
-  HALF_WIDTH: 'ハンカク',
+  NONE: 0,
+  HIRAGANA: 1,                          // 'あ'
+  KATAKANA: 2,                          // 'ア'
+  HIRAGANA_SMALL_LETTER: 3,             // 'ぁ'
+  KATAKANA_SMALL_LETTER: 4,             // 'ァ'
+  HALF_WIDTH_KATAKANA: 5,               // 'ｱ'
+  HALF_WIDTH_KATAKANA_SMALL_LETTER: 6,  // 'ｧ'
+  HALF_WIDTH_ALPHABET_UPPER: 7,         // 'A'
+  HALF_WIDTH_ALPHABET_LOWER: 8,         // 'a'
+  FULL_WIDTH_ALPHABET_UPPER: 9,         // 'Ａ'
+  FULL_WIDTH_ALPHABET_LOWER: 10,        // 'ａ'
+  OTHER: 11                             // Kanji, number, symbol...
 };
+
+/**
+ *  @type {Map<JaPhoneticData.CharacterSet, string>}
+ *  @const
+ */
+JaPhoneticData.DEFAULT_PREFIX = new Map([
+  [JaPhoneticData.CharacterSet.HIRAGANA, 'ヒラガナ'],  // 'あ'
+  [JaPhoneticData.CharacterSet.KATAKANA, 'カタカナ'],  // 'ア'
+  [
+    JaPhoneticData.CharacterSet.HIRAGANA_SMALL_LETTER,
+    'ヒラガナチイサイ'
+  ],  // 'ぁ'
+  [
+    JaPhoneticData.CharacterSet.KATAKANA_SMALL_LETTER,
+    'カタカナチイサイ'
+  ],                                                              // 'ァ'
+  [JaPhoneticData.CharacterSet.HALF_WIDTH_KATAKANA, 'ハンカク'],  // 'ｱ'
+  [
+    JaPhoneticData.CharacterSet.HALF_WIDTH_KATAKANA_SMALL_LETTER,
+    'ハンカクチイサイ'
+  ],                                                                    // 'ｧ'
+  [JaPhoneticData.CharacterSet.HALF_WIDTH_ALPHABET_UPPER, 'オオモジ'],  // 'A'
+  [JaPhoneticData.CharacterSet.HALF_WIDTH_ALPHABET_LOWER, 'ハンカク'],  // 'a'
+  [
+    JaPhoneticData.CharacterSet.FULL_WIDTH_ALPHABET_UPPER,
+    'ゼンカクオオモジ'
+  ],                                                                    // 'Ａ'
+  [JaPhoneticData.CharacterSet.FULL_WIDTH_ALPHABET_LOWER, 'ゼンカク'],  // 'ａ'
+]);
+
+/**
+ * This object maps small letters of Kana to their large equivalents.
+ * @type {Map<string, string>}
+ * @const
+ */
+JaPhoneticData.SMALL_TO_LARGE = new Map([
+  // Hiragana
+  ['ぁ', 'あ'],
+  ['ぃ', 'い'],
+  ['ぅ', 'う'],
+  ['ぇ', 'え'],
+  ['ぉ', 'お'],
+  ['っ', 'つ'],
+  ['ゃ', 'や'],
+  ['ゅ', 'ゆ'],
+  ['ょ', 'よ'],
+  ['ゎ', 'わ'],
+  ['ゕ', 'か'],
+  ['ゖ', 'け'],
+  // Katakana
+  ['ァ', 'ア'],
+  ['ィ', 'イ'],
+  ['ゥ', 'ウ'],
+  ['ェ', 'エ'],
+  ['ォ', 'オ'],
+  ['ッ', 'ツ'],
+  ['ャ', 'ヤ'],
+  ['ュ', 'ユ'],
+  ['ョ', 'ヨ'],
+  ['ヮ', 'ワ'],
+  ['ヵ', 'カ'],
+  ['ヶ', 'ケ'],
+  // HalfWidthKatakana
+  ['ｧ', 'ｱ'],
+  ['ｨ', 'ｲ'],
+  ['ｩ', 'ｳ'],
+  ['ｪ', 'ｴ'],
+  ['ｫ', 'ｵ'],
+  ['ｬ', 'ﾔ'],
+  ['ｭ', 'ﾕ'],
+  ['ｮ', 'ﾖ'],
+  ['ｯ', 'ﾂ'],
+]);

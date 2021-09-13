@@ -81,7 +81,7 @@ TEST_F('ChromeVoxTtsBackgroundTest', 'UpdateVoice', function() {
   };
 
   // Asks this test to process the next task immediately.
-  const flushNextTask = function() {
+  const flushNextTask = () => {
     const task = tasks.shift();
     if (!task) {
       return;
@@ -94,7 +94,7 @@ TEST_F('ChromeVoxTtsBackgroundTest', 'UpdateVoice', function() {
       assertEquals(task.expectedVoice, actualVoice);
       flushNextTask();
     }));
-  }.bind(this);
+  };
 
   assertTrue(!tts.currentVoice);
 
@@ -131,7 +131,7 @@ TEST_F(
     'ChromeVoxTtsBackgroundTest', 'DISABLED_EmptyStringCallsCallbacks',
     function() {
       let startCalls = 0, endCalls = 0;
-      assertCallsCallbacks = function(text, speakCalls) {
+      assertCallsCallbacks = (text, speakCalls) => {
         tts.speak(text, QueueMode.QUEUE, {
           startCallback() {
             ++startCalls;
@@ -142,7 +142,7 @@ TEST_F(
             assertEquals(endCalls, startCalls);
           })
         });
-      }.bind(this);
+      };
 
       assertCallsCallbacks('', 1);
       assertCallsCallbacks('  ', 2);
@@ -340,10 +340,12 @@ SYNC_TEST_F('ChromeVoxTtsBackgroundTest', 'Phonetics', function() {
   // Japanese.
   tts.speak('t', QueueMode.QUEUE, {lang: 'ja', phoneticCharacters: true});
   assertTrue(spokenStrings.includes('T'));
-  assertTrue(spokenStrings.includes('ティー タイム'));
+  assertTrue(spokenStrings.includes('ハンカク t'));
+
   tts.speak('a', QueueMode.QUEUE, {lang: 'ja', phoneticCharacters: true});
   assertTrue(spokenStrings.includes('A'));
-  assertTrue(spokenStrings.includes('エイ アニマル'));
+  assertTrue(spokenStrings.includes('ハンカク a'));
+
   tts.speak('人', QueueMode.QUEUE, {lang: 'ja', phoneticCharacters: true});
   assertTrue(spokenStrings.includes('人'));
   assertTrue(spokenStrings.includes('ヒト，ニンゲン ノ ニン'));
