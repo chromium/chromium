@@ -36,4 +36,3 @@ class COMPONENT_EXPORT(UI_BASE) DropTargetEvent : public LocatedEvent {
 }  // namespace ui
 
 #endif  // UI_BASE_DRAGDROP_DROP_TARGET_EVENT_H_
-
