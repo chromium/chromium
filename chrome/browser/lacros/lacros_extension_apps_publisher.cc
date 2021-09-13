@@ -255,6 +255,13 @@ class LacrosExtensionAppsPublisher::ProfileTracker
     app->name = extension->name();
     app->short_name = extension->short_name();
 
+    // We always use an empty icon key since we currently do not support
+    // dynamically changing icons or modifying the appearance of icons.
+    // This bug is tracked at https://crbug.com/1248499, but given that Chrome
+    // Apps is deprecated, it's unclear if we'll ever get around to implementing
+    // this functionality.
+    app->icon_key = apps::mojom::IconKey::New();
+
     auto* prefs = extensions::ExtensionPrefs::Get(profile_);
     if (prefs) {
       app->last_launch_time = prefs->GetLastLaunchTime(extension->id());
