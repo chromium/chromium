@@ -87092,7 +87092,7 @@ others/histograms.xml -->
   <int value="16" label="InstallURLLoadTimeout"/>
   <int value="17" label="FailedPlaceholderUninstall"/>
   <int value="18" label="NotInstallable"/>
-  <int value="19" label="BookmarkExtensionInstallError"/>
+  <int value="19" label="DEPRECATED: BookmarkExtensionInstallError"/>
   <int value="20" label="ApkWebInstallFailed"/>
   <int value="21" label="CancelledOnWebAppProviderShuttingDown"/>
   <int value="22" label="WebAppProviderNotReady"/>

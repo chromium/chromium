@@ -101,9 +101,6 @@ enum class InstallResultCode {
   // Web App is not considered installable, i.e. missing manifest fields, no
   // service worker, etc.
   kNotInstallable = 18,
-  // Bookmark App extension install or update fails.
-  // TODO(crbug.com/1065748): No bookmark apps, remove this error type.
-  kBookmarkExtensionInstallError = 19,
   // Apk Web App install fails.
   kApkWebAppInstallFailed = 20,
   // App managers are shutting down. For example, when user logs out immediately

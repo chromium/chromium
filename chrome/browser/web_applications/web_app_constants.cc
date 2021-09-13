@@ -113,8 +113,6 @@ std::ostream& operator<<(std::ostream& os, InstallResultCode code) {
       return os << "kFailedPlaceholderUninstall";
     case InstallResultCode::kNotInstallable:
       return os << "kNotInstallable";
-    case InstallResultCode::kBookmarkExtensionInstallError:
-      return os << "kBookmarkExtensionInstallError";
     case InstallResultCode::kApkWebAppInstallFailed:
       return os << "kApkWebAppInstallFailed";
     case InstallResultCode::kCancelledOnWebAppProviderShuttingDown:

@@ -875,12 +875,12 @@ TEST_F(WebAppInstallTaskTest, FinalizerMethodsCalled) {
 TEST_F(WebAppInstallTaskTest, FinalizerMethodsNotCalled) {
   PrepareTestAppInstall();
   test_install_finalizer().SetNextFinalizeInstallResult(
-      AppId(), InstallResultCode::kBookmarkExtensionInstallError);
+      AppId(), InstallResultCode::kInstallURLLoadTimeOut);
 
   InstallResult result = InstallWebAppFromManifestWithFallbackAndGetResults();
 
   EXPECT_TRUE(result.app_id.empty());
-  EXPECT_EQ(InstallResultCode::kBookmarkExtensionInstallError, result.code);
+  EXPECT_EQ(InstallResultCode::kInstallURLLoadTimeOut, result.code);
 
   EXPECT_EQ(0u, test_os_integration_manager().num_create_shortcuts_calls());
   EXPECT_EQ(0, test_install_finalizer().num_reparent_tab_calls());
