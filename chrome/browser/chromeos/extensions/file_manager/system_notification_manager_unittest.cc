@@ -405,6 +405,80 @@ TEST_F(SystemNotificationManagerTest, DeviceNavigationReadOnlyPolicy) {
             u"restricted by an admin and can\x2019t be modified.");
 }
 
+constexpr char kDeviceFailNotificationId[] = "swa-device-fail-id";
+
+// Device unsupported notifications are generated when a removable
+// drive is mounted with an unsupported filesystem on a partition.
+// The default message is used when there is no device label.
+// In the notification generation logic there is a distinction
+// between parent and child volumes found by the volume is_parent()
+// method. Both parent and child unknown volume filesystems generate
+// the same nofication.
+TEST_F(SystemNotificationManagerTest, DeviceUnsupportedDefault) {
+  std::unique_ptr<Volume> volume(Volume::CreateForTesting(
+      base::FilePath(FILE_PATH_LITERAL("/mount/path1")),
+      VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
+      /*read_only=*/false, base::FilePath(FILE_PATH_LITERAL("/device/test")),
+      "", "FAT32"));
+  file_manager_private::MountCompletedEvent event;
+  event.event_type = file_manager_private::MOUNT_COMPLETED_EVENT_TYPE_MOUNT;
+  event.should_notify = true;
+  event.status =
+      file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_UNSUPPORTED_FILESYSTEM;
+  GetSystemNotificationManager()->HandleMountCompletedEvent(event,
+                                                            *volume.get());
+  // Get the number of notifications from the NotificationDisplayService.
+  NotificationDisplayServiceFactory::GetForProfile(GetProfile())
+      ->GetDisplayed(base::BindOnce(
+          &SystemNotificationManagerTest::GetNotificationsCallback,
+          weak_ptr_factory_.GetWeakPtr()));
+  // Check: We have one notification.
+  ASSERT_EQ(1, notification_count);
+  // Get the strings for the displayed notification.
+  TestNotificationStrings notification_strings;
+  notification_strings =
+      notification_platform_bridge->GetNotificationStringsById(
+          kDeviceFailNotificationId);
+  // Check: the expected strings match.
+  EXPECT_EQ(notification_strings.title, kRemovableDeviceTitle);
+  EXPECT_EQ(
+      notification_strings.message,
+      u"Sorry, your external storage device is not supported at this time.");
+}
+
+// The named version of the device unsupported notification is
+// generated when the device includes a device label.
+TEST_F(SystemNotificationManagerTest, DeviceUnsupportedNamed) {
+  std::unique_ptr<Volume> volume(Volume::CreateForTesting(
+      base::FilePath(FILE_PATH_LITERAL("/mount/path1")),
+      VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
+      /*read_only=*/false, base::FilePath(FILE_PATH_LITERAL("/device/test")),
+      kDeviceLabel, "FAT32"));
+  file_manager_private::MountCompletedEvent event;
+  event.event_type = file_manager_private::MOUNT_COMPLETED_EVENT_TYPE_MOUNT;
+  event.should_notify = true;
+  event.status =
+      file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_UNSUPPORTED_FILESYSTEM;
+  GetSystemNotificationManager()->HandleMountCompletedEvent(event,
+                                                            *volume.get());
+  // Get the number of notifications from the NotificationDisplayService.
+  NotificationDisplayServiceFactory::GetForProfile(GetProfile())
+      ->GetDisplayed(base::BindOnce(
+          &SystemNotificationManagerTest::GetNotificationsCallback,
+          weak_ptr_factory_.GetWeakPtr()));
+  // Check: We have one notification.
+  ASSERT_EQ(1, notification_count);
+  // Get the strings for the displayed notification.
+  TestNotificationStrings notification_strings;
+  notification_strings =
+      notification_platform_bridge->GetNotificationStringsById(
+          kDeviceFailNotificationId);
+  // Check: the expected strings match.
+  EXPECT_EQ(notification_strings.title, kRemovableDeviceTitle);
+  EXPECT_EQ(notification_strings.message,
+            u"Sorry, the device MyUSB is not supported at this time.");
+}
+
 TEST_F(SystemNotificationManagerTest, TestCopyEvents) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(ash::features::kFilesSWA);
