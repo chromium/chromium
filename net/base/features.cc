@@ -245,7 +245,7 @@ const base::FeatureParam<bool> kFirstPartySetsIsDogfooder{
 
 #if BUILDFLAG(ENABLE_REPORTING)
 const base::Feature kDocumentReporting{"DocumentReporting",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
+                                       base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
 #if defined(OS_POSIX) || defined(OS_FUCHSIA)
