@@ -438,8 +438,10 @@ bool OmniboxPopupModel::IsControlPresentOnMatch(
   return false;
 }
 
-bool OmniboxPopupModel::TriggerSelectionAction(OmniboxPopupSelection selection,
-                                               base::TimeTicks timestamp) {
+bool OmniboxPopupModel::TriggerSelectionAction(
+    OmniboxPopupSelection selection,
+    base::TimeTicks timestamp,
+    WindowOpenDisposition disposition) {
   // Early exit for the kNoMatch case. Also exits if the calling UI passes in
   // an invalid |selection|.
   if (selection.line >= result().size())
@@ -469,7 +471,8 @@ bool OmniboxPopupModel::TriggerSelectionAction(OmniboxPopupSelection selection,
     case OmniboxPopupSelection::FOCUSED_BUTTON_ACTION:
       DCHECK(timestamp != base::TimeTicks());
       DCHECK(match.action);
-      edit_model()->ExecuteAction(match, selection.line, timestamp);
+      edit_model()->ExecuteAction(match, selection.line, timestamp,
+                                  disposition);
       break;
 
     case OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION:

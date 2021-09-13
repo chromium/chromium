@@ -93,8 +93,7 @@ void OmniboxAction::OpenURL(OmniboxAction::ExecutionContext& context,
   // to HTTP. The URL might have been entered without a scheme, but Action
   // destination URLs don't need a fallback so it's fine to pass false here.
   context.controller_.OnAutocompleteAccept(
-      url, nullptr, WindowOpenDisposition::CURRENT_TAB,
-      ui::PAGE_TRANSITION_GENERATED,
+      url, nullptr, context.disposition_, ui::PAGE_TRANSITION_GENERATED,
       /*match_type=*/AutocompleteMatchType::URL_WHAT_YOU_TYPED,
       context.match_selection_timestamp_,
       /*destination_url_entered_without_scheme=*/false);

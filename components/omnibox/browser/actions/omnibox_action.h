@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/buildflags.h"
+#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 #if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
@@ -82,13 +83,16 @@ class OmniboxAction : public base::RefCounted<OmniboxAction> {
    public:
     ExecutionContext(Client& client,
                      OmniboxEditController& controller,
-                     base::TimeTicks match_selection_timestamp)
+                     base::TimeTicks match_selection_timestamp,
+                     WindowOpenDisposition disposition)
         : client_(client),
           controller_(controller),
-          match_selection_timestamp_(match_selection_timestamp) {}
+          match_selection_timestamp_(match_selection_timestamp),
+          disposition_(disposition) {}
     Client& client_;
     OmniboxEditController& controller_;
     base::TimeTicks match_selection_timestamp_;
+    WindowOpenDisposition disposition_;
   };
 
   OmniboxAction(LabelStrings strings, GURL url);

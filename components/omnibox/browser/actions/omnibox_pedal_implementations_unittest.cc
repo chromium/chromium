@@ -15,6 +15,7 @@
 #include "components/omnibox/browser/test_omnibox_edit_controller.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/window_open_disposition.h"
 
 class OmniboxPedalImplementationsTest : public testing::Test {
  protected:
@@ -31,7 +32,8 @@ class OmniboxPedalImplementationsTest : public testing::Test {
 
   GURL ExecuteContextAndReturnResult(const OmniboxPedal* pedal) {
     OmniboxPedal::ExecutionContext context(*omnibox_client_,
-                                           *omnibox_edit_controller_, {});
+                                           *omnibox_edit_controller_, {},
+                                           WindowOpenDisposition::CURRENT_TAB);
     pedal->Execute(context);
     return omnibox_edit_controller_->destination_url();
   }

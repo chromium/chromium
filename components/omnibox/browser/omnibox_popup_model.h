@@ -15,6 +15,7 @@
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/image/image.h"
 
 class OmniboxPopupView;
@@ -211,8 +212,12 @@ class OmniboxPopupModel {
   // This can't handle all actions currently, and returns false in those cases.
   // The timestamp parameter is currently only used by FOCUSED_BUTTON_TAB_SWITCH
   // and FOCUSED_BUTTON_ACTION, so is set by default for other use cases.
-  bool TriggerSelectionAction(OmniboxPopupSelection selection,
-                              base::TimeTicks timestamp = base::TimeTicks());
+  // The `disposition` can be used to respect keyboard state for opening
+  // actions in background tabs, new windows, etc.
+  bool TriggerSelectionAction(
+      OmniboxPopupSelection selection,
+      base::TimeTicks timestamp = base::TimeTicks(),
+      WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB);
 
   // This returns the accessibility label for current selection. This is an
   // extended version of AutocompleteMatchType::ToAccessibilityLabel() which

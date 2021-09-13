@@ -1567,21 +1567,20 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
   switch (event.key_code()) {
     case ui::VKEY_RETURN: {
       OmniboxPopupModel* popup_model = model()->popup_model();
-      if (popup_model && popup_model->TriggerSelectionAction(
-                             popup_model->selection(), event.time_stamp())) {
-        return true;
-      } else if ((alt && !shift) || (shift && command)) {
-        model()->AcceptInput(WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                             event.time_stamp());
+      WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB;
+      if ((alt && !shift) || (shift && command)) {
+        disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
       } else if (alt || command) {
-        model()->AcceptInput(WindowOpenDisposition::NEW_BACKGROUND_TAB,
-                             event.time_stamp());
+        disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
       } else if (shift) {
-        model()->AcceptInput(WindowOpenDisposition::NEW_WINDOW,
-                             event.time_stamp());
+        disposition = WindowOpenDisposition::NEW_WINDOW;
+      }
+      if (popup_model &&
+          popup_model->TriggerSelectionAction(
+              popup_model->selection(), event.time_stamp(), disposition)) {
+        return true;
       } else {
-        model()->AcceptInput(WindowOpenDisposition::CURRENT_TAB,
-                             event.time_stamp());
+        model()->AcceptInput(disposition, event.time_stamp());
       }
       return true;
     }

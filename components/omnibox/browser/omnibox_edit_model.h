@@ -210,10 +210,12 @@ class OmniboxEditModel {
       base::TimeTicks match_selection_timestamp = base::TimeTicks());
 
   // Executes the action associated with `match`. `match_position` is also
-  // passed for metrics.
+  // passed for metrics. `disposition` may be used by actions to open
+  // in another tab, a new window, etc.
   void ExecuteAction(const AutocompleteMatch& match,
                      size_t match_position,
-                     base::TimeTicks match_selection_timestamp);
+                     base::TimeTicks match_selection_timestamp,
+                     WindowOpenDisposition disposition);
 
   // Asks the browser to load |match|. |index| is only used for logging, and
   // can be kNoMatch if the popup was closed, or if none of the suggestions

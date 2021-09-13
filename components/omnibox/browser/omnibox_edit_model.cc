@@ -733,15 +733,15 @@ void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
   EmitKeywordHistogram(entry_method);
 }
 
-void OmniboxEditModel::ExecuteAction(
-    const AutocompleteMatch& match,
-    size_t match_position,
-    base::TimeTicks match_selection_timestamp) {
+void OmniboxEditModel::ExecuteAction(const AutocompleteMatch& match,
+                                     size_t match_position,
+                                     base::TimeTicks match_selection_timestamp,
+                                     WindowOpenDisposition disposition) {
   RecordActionShownForAllActions(result());
 
   match.action->RecordActionExecuted(match_position);
-  OmniboxPedal::ExecutionContext context(*client_, *controller_,
-                                         match_selection_timestamp);
+  OmniboxPedal::ExecutionContext context(
+      *client_, *controller_, match_selection_timestamp, disposition);
   match.action->Execute(context);
 
   {
