@@ -256,7 +256,7 @@ public class SectionHeaderView extends LinearLayout {
         } else {
             mLeadingStatusIndicator.setImageResource(R.drawable.ic_visibility_off_black);
             // Grey tint if visibility indicator.
-            ImageViewCompat.setImageTintMode(mLeadingStatusIndicator, PorterDuff.Mode.MULTIPLY);
+            ImageViewCompat.setImageTintMode(mLeadingStatusIndicator, PorterDuff.Mode.SRC_IN);
         }
     }
 
