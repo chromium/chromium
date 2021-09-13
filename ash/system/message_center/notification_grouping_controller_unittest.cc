@@ -144,9 +144,10 @@ TEST_F(NotificationGroupingControllerTest,
   AddNotificationWithNotifierId("tmp");
   EXPECT_FALSE(GetPopupView(parent_id));
 
-  AnimateUntilIdle();
-
   AddNotificationWithNotifierId(group_id);
+
+  // Move down or fade in animation might happen before showing the popup.
+  AnimateUntilIdle();
 
   EXPECT_TRUE(GetPopupView(parent_id));
 }

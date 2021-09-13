@@ -90,6 +90,8 @@ class TestNotificationView : public NotificationViewBase {
   TestNotificationView(const TestNotificationView&) = delete;
   TestNotificationView& operator=(const TestNotificationView&) = delete;
   ~TestNotificationView() override = default;
+
+  void CreateOrUpdateTitleView(const Notification& notification) override {}
 };
 
 class NotificationTestDelegate : public NotificationDelegate {
@@ -397,7 +399,6 @@ void NotificationViewBaseTest::InkDropRippleAnimationEnded(
 // * FormatContextMessageTest
 
 TEST_F(NotificationViewBaseTest, CreateOrUpdateTest) {
-  EXPECT_NE(nullptr, notification_view()->title_view_);
   EXPECT_NE(nullptr, notification_view()->message_view_);
   EXPECT_NE(nullptr, notification_view()->icon_view_);
   EXPECT_NE(nullptr, notification_view()->image_container_view_);
@@ -410,40 +411,9 @@ TEST_F(NotificationViewBaseTest, CreateOrUpdateTest) {
 
   notification_view()->CreateOrUpdateViews(*notification);
 
-  EXPECT_EQ(nullptr, notification_view()->title_view_);
   EXPECT_EQ(nullptr, notification_view()->message_view_);
   EXPECT_TRUE(notification_view()->image_container_view_->children().empty());
   EXPECT_EQ(nullptr, notification_view()->icon_view_);
-}
-
-TEST_F(NotificationViewBaseTest, UpdateViewsOrderingTest) {
-  EXPECT_NE(nullptr, notification_view()->title_view_);
-  EXPECT_NE(nullptr, notification_view()->message_view_);
-  EXPECT_EQ(0, notification_view()->left_content_->GetIndexOf(
-                   notification_view()->title_view_));
-  EXPECT_EQ(1, notification_view()->left_content_->GetIndexOf(
-                   notification_view()->message_view_));
-
-  std::unique_ptr<Notification> notification = CreateSimpleNotification();
-  notification->set_title(std::u16string());
-
-  notification_view()->CreateOrUpdateViews(*notification);
-
-  EXPECT_EQ(nullptr, notification_view()->title_view_);
-  EXPECT_NE(nullptr, notification_view()->message_view_);
-  EXPECT_EQ(0, notification_view()->left_content_->GetIndexOf(
-                   notification_view()->message_view_));
-
-  notification->set_title(u"title");
-
-  notification_view()->CreateOrUpdateViews(*notification);
-
-  EXPECT_NE(nullptr, notification_view()->title_view_);
-  EXPECT_NE(nullptr, notification_view()->message_view_);
-  EXPECT_EQ(0, notification_view()->left_content_->GetIndexOf(
-                   notification_view()->title_view_));
-  EXPECT_EQ(1, notification_view()->left_content_->GetIndexOf(
-                   notification_view()->message_view_));
 }
 
 TEST_F(NotificationViewBaseTest, UpdateButtonsStateTest) {

@@ -216,6 +216,9 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   void OnNotificationInputSubmit(size_t index,
                                  const std::u16string& text) override;
 
+  // Whether the notification view is showing `icon_view_`.
+  bool IsIconViewShown() const;
+
  protected:
   explicit NotificationViewBase(const Notification& notification);
 
@@ -246,8 +249,30 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   // Actions row contains inline action buttons and inline textfield.
   std::unique_ptr<views::View> CreateActionsRow();
 
+  // Generate a view to show notification title and other supporting views.
+  static std::unique_ptr<views::Label> GenerateTitleView(
+      const std::u16string& title);
+
   void CreateOrUpdateViews(const Notification& notification);
 
+  virtual void UpdateViewForExpandedState(bool expanded);
+
+  virtual void CreateOrUpdateTitleView(const Notification& notification) = 0;
+
+  // Add view to `left_content_` in its appropriate position according to
+  // `left_content_count_`. Return a pointer to added view.
+  template <typename T>
+  T* AddViewToLeftContent(std::unique_ptr<T> view) {
+    return left_content_->AddChildViewAt(std::move(view),
+                                         left_content_count_++);
+  }
+
+  // Reorder the view in `left_content_` according to `left_content_count_`.
+  void ReorderViewInLeftContent(views::View* view);
+
+  NotificationHeaderView* header_row() { return header_row_; }
+  views::View* left_content() { return left_content_; }
+  views::Label* message_view() { return message_view_; }
   views::View* image_container_view() { return image_container_view_; }
   bool IsExpandable() const;
 
@@ -286,7 +311,6 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, UpdateButtonsStateTest);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, UpdateInSettings);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, UpdateType);
-  FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, UpdateViewsOrderingTest);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, UseImageAsIcon);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewTest, TestIconSizing);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewTest, LeftContentResizeForIcon);
@@ -296,7 +320,6 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   class NotificationViewPathGenerator;
 
   void CreateOrUpdateContextTitleView(const Notification& notification);
-  void CreateOrUpdateTitleView(const Notification& notification);
   void CreateOrUpdateMessageView(const Notification& notification);
   void CreateOrUpdateCompactTitleMessageView(const Notification& notification);
   void CreateOrUpdateProgressBarView(const Notification& notification);
@@ -312,7 +335,6 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   void ActionButtonPressed(size_t index, const ui::Event& event);
 
   void ToggleExpanded();
-  void UpdateViewForExpandedState(bool expanded);
   void ToggleInlineSettings(const ui::Event& event);
   void UpdateHeaderViewBackgroundColor();
   SkColor GetNotificationHeaderViewBackgroundColor() const;
@@ -360,7 +382,6 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   views::View* right_content_ = nullptr;
 
   // Views which are dynamically created inside view hierarchy.
-  views::Label* title_view_ = nullptr;
   views::Label* message_view_ = nullptr;
   views::Label* status_view_ = nullptr;
   ProportionalImageView* icon_view_ = nullptr;

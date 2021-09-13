@@ -13,30 +13,93 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
+#include "base/check.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
+#include "ui/gfx/text_elider.h"
+#include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/views/notification_background_painter.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/message_center/views/notification_header_view.h"
 #include "ui/message_center/views/notification_view.h"
+#include "ui/message_center/views/relative_time_formatter.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
 
 namespace {
+
+constexpr int kTitleRowSpacing = 6;
+
+// Bullet character. The divider symbol between the title and the timestamp.
+constexpr char16_t kTitleRowDivider[] = u"\u2022";
+
 constexpr int kExpandButtonSize = 24;
+constexpr int kTitleCharacterLimit =
+    message_center::kNotificationWidth * message_center::kMaxTitleLines /
+    message_center::kMinPixelsPerTitleCharacter;
+
 }  // namespace
 
 namespace ash {
 
+using Orientation = views::BoxLayout::Orientation;
+
+BEGIN_METADATA(AshNotificationView, NotificationTitleRow, views::View)
+END_METADATA
 BEGIN_METADATA(AshNotificationView, ExpandButton, views::ImageButton)
 END_METADATA
+
+AshNotificationView::NotificationTitleRow::NotificationTitleRow(
+    const std::u16string& title)
+    : title_view_(AddChildView(GenerateTitleView(title))),
+      title_row_divider_(AddChildView(std::make_unique<views::Label>(
+          kTitleRowDivider,
+          views::style::CONTEXT_DIALOG_BODY_TEXT))),
+      timestamp_in_collapsed_view_(
+          AddChildView(std::make_unique<views::Label>())) {
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      Orientation::kHorizontal, gfx::Insets(), kTitleRowSpacing));
+}
+
+AshNotificationView::NotificationTitleRow::~NotificationTitleRow() {
+  timestamp_update_timer_.Stop();
+}
+
+void AshNotificationView::NotificationTitleRow::UpdateTitle(
+    const std::u16string& title) {
+  title_view_->SetText(title);
+}
+
+void AshNotificationView::NotificationTitleRow::UpdateTimestamp(
+    base::Time timestamp) {
+  std::u16string relative_time;
+  base::TimeDelta next_update;
+  message_center::GetRelativeTimeStringAndNextUpdateTime(
+      timestamp - base::Time::Now(), &relative_time, &next_update);
+
+  timestamp_ = timestamp;
+  timestamp_in_collapsed_view_->SetText(relative_time);
+
+  // Unretained is safe as the timer cancels the task on destruction.
+  timestamp_update_timer_.Start(
+      FROM_HERE, next_update,
+      base::BindOnce(&NotificationTitleRow::UpdateTimestamp,
+                     base::Unretained(this), timestamp));
+}
+
+void AshNotificationView::NotificationTitleRow::UpdateVisibility(
+    bool in_collapsed_mode) {
+  timestamp_in_collapsed_view_->SetVisible(in_collapsed_mode);
+  title_row_divider_->SetVisible(in_collapsed_mode);
+}
 
 AshNotificationView::ExpandButton::ExpandButton(PressedCallback callback)
     : ImageButton(std::move(callback)) {
@@ -94,8 +157,6 @@ AshNotificationView::AshNotificationView(
     bool shown_in_popup)
     : NotificationViewBase(notification), shown_in_popup_(shown_in_popup) {
   // Instantiate view instances and define layout and view hierarchy.
-  using Orientation = views::BoxLayout::Orientation;
-
   auto* layout_manager = SetLayoutManager(std::make_unique<views::BoxLayout>(
       Orientation::kVertical, gfx::Insets(), 0));
   layout_manager->set_cross_axis_alignment(
@@ -158,23 +219,39 @@ AshNotificationView::AshNotificationView(
       std::make_unique<views::BoxLayout>(Orientation::kVertical, gfx::Insets(),
                                          0));
 
-  CreateOrUpdateViews(notification);
-  UpdateControlButtonsVisibilityWithNotification(notification);
-
-  expand_button_->SetVisible(IsExpandable());
-
   if (shown_in_popup_ && !notification.group_child()) {
     layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   }
+
+  UpdateWithNotification(notification);
 }
 
 AshNotificationView::~AshNotificationView() = default;
 
-void AshNotificationView::UpdateWithNotification(
+void AshNotificationView::CreateOrUpdateTitleView(
     const message_center::Notification& notification) {
-  NotificationViewBase::UpdateWithNotification(notification);
-  expand_button_->SetVisible(IsExpandable());
+  if (notification.title().empty()) {
+    if (title_row_) {
+      DCHECK(left_content()->Contains(title_row_));
+      left_content()->RemoveChildViewT(title_row_);
+      title_row_ = nullptr;
+    }
+    return;
+  }
+
+  const std::u16string& title = gfx::TruncateString(
+      notification.title(), kTitleCharacterLimit, gfx::WORD_BREAK);
+
+  if (!title_row_) {
+    title_row_ =
+        AddViewToLeftContent(std::make_unique<NotificationTitleRow>(title));
+  } else {
+    title_row_->UpdateTitle(title);
+    ReorderViewInLeftContent(title_row_);
+  }
+
+  title_row_->UpdateTimestamp(notification.timestamp());
 }
 
 void AshNotificationView::ToggleExpand() {
@@ -226,9 +303,18 @@ void AshNotificationView::RemoveGroupNotification(
   PreferredSizeChanged();
 }
 
-void AshNotificationView::SetExpanded(bool expanded) {
+void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
+  header_row()->SetVisible(expanded);
+
+  // TODO(crbug/1243889): call SizeToFit() `title_view_` to fit the space after
+  // the padding and spacing are done.
+  if (title_row_)
+    title_row_->UpdateVisibility(IsExpandable() && !expanded);
+
+  expand_button_->SetVisible(IsExpandable());
   expand_button_->SetExpanded(expanded);
-  NotificationViewBase::SetExpanded(expanded);
+
+  NotificationViewBase::UpdateViewForExpandedState(expanded);
 }
 
 void AshNotificationView::SetExpandButtonEnabled(bool enabled) {

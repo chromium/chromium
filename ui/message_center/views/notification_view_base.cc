@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/message_center/views/notification_view.h"
+#include "ui/message_center/views/notification_view_base.h"
 
 #include <stddef.h>
 #include <algorithm>
@@ -41,6 +41,7 @@
 #include "ui/message_center/views/notification_background_painter.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/message_center/views/notification_header_view.h"
+#include "ui/message_center/views/notification_view.h"
 #include "ui/message_center/views/padded_button.h"
 #include "ui/message_center/views/proportional_image_view.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -113,8 +114,6 @@ constexpr int kMessageViewWidth =
     kNotificationWidth - kLeftContentPadding.left() -
     kLeftContentPadding.right() - kContentRowPadding.left() -
     kContentRowPadding.right();
-
-const int kMinPixelsPerTitleCharacter = 4;
 
 // Character limit = pixels per line * line limit / min. pixels per character.
 constexpr size_t kMessageCharacterLimit =
@@ -772,6 +771,10 @@ void NotificationViewBase::OnNotificationInputSubmit(
                                                            index, text);
 }
 
+bool NotificationViewBase::IsIconViewShown() const {
+  return icon_view_ && (!hide_icon_on_expanded_ || !expanded_);
+}
+
 std::unique_ptr<NotificationControlButtonsView>
 NotificationViewBase::CreateControlButtonsView() {
   DCHECK(!control_buttons_view_);
@@ -887,6 +890,20 @@ std::unique_ptr<views::View> NotificationViewBase::CreateActionsRow() {
   return actions_row;
 }
 
+// static
+std::unique_ptr<views::Label> NotificationViewBase::GenerateTitleView(
+    const std::u16string& title) {
+  auto title_view = std::make_unique<views::Label>(
+      title, views::style::CONTEXT_DIALOG_BODY_TEXT);
+  title_view->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
+  // TODO(crbug.com/682266): multiline should not be required, but we need to
+  // set the width of |title_view_|, which only works in multiline mode.
+  title_view->SetMultiLine(true);
+  title_view->SetMaxLines(kMaxLinesForTitleView);
+  title_view->SetAllowCharacterBreak(true);
+  return title_view;
+}
+
 void NotificationViewBase::CreateOrUpdateContextTitleView(
     const Notification& notification) {
   header_row_->SetAccentColor(notification.accent_color());
@@ -914,38 +931,6 @@ void NotificationViewBase::CreateOrUpdateContextTitleView(
   header_row_->SetAppName(app_name);
 }
 
-void NotificationViewBase::CreateOrUpdateTitleView(
-    const Notification& notification) {
-  if (notification.title().empty() ||
-      notification.type() == NOTIFICATION_TYPE_PROGRESS) {
-    DCHECK(!title_view_ || left_content_->Contains(title_view_));
-    delete title_view_;
-    title_view_ = nullptr;
-    return;
-  }
-
-  int title_character_limit =
-      kNotificationWidth * kMaxTitleLines / kMinPixelsPerTitleCharacter;
-
-  std::u16string title = gfx::TruncateString(
-      notification.title(), title_character_limit, gfx::WORD_BREAK);
-  if (!title_view_) {
-    title_view_ =
-        new views::Label(title, views::style::CONTEXT_DIALOG_BODY_TEXT);
-    title_view_->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
-    // TODO(crbug.com/682266): multiline should not be required, but we need to
-    // set the width of |title_view_|, which only works in multiline mode.
-    title_view_->SetMultiLine(true);
-    title_view_->SetMaxLines(kMaxLinesForTitleView);
-    title_view_->SetAllowCharacterBreak(true);
-    left_content_->AddChildViewAt(title_view_, left_content_count_);
-  } else {
-    title_view_->SetText(title);
-  }
-
-  left_content_count_++;
-}
-
 void NotificationViewBase::CreateOrUpdateMessageView(
     const Notification& notification) {
   if (notification.type() == NOTIFICATION_TYPE_PROGRESS ||
@@ -956,25 +941,24 @@ void NotificationViewBase::CreateOrUpdateMessageView(
     return;
   }
 
-  std::u16string text = gfx::TruncateString(
+  const std::u16string& text = gfx::TruncateString(
       notification.message(), kMessageCharacterLimit, gfx::WORD_BREAK);
 
   if (!message_view_) {
-    message_view_ = left_content_->AddChildViewAt(
-        std::make_unique<views::Label>(text,
-                                       views::style::CONTEXT_DIALOG_BODY_TEXT,
-                                       views::style::STYLE_SECONDARY),
-        left_content_count_);
-    message_view_->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
-    message_view_->SetMultiLine(true);
-    message_view_->SetMaxLines(kMaxLinesForMessageView);
-    message_view_->SetAllowCharacterBreak(true);
+    auto message_view = std::make_unique<views::Label>(
+        text, views::style::CONTEXT_DIALOG_BODY_TEXT,
+        views::style::STYLE_SECONDARY);
+    message_view->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
+    message_view->SetMultiLine(true);
+    message_view->SetMaxLines(kMaxLinesForMessageView);
+    message_view->SetAllowCharacterBreak(true);
+    message_view_ = AddViewToLeftContent(std::move(message_view));
   } else {
     message_view_->SetText(text);
+    ReorderViewInLeftContent(message_view_);
   }
 
   message_view_->SetVisible(notification.items().empty());
-  left_content_count_++;
 }
 
 void NotificationViewBase::CreateOrUpdateCompactTitleMessageView(
@@ -986,16 +970,19 @@ void NotificationViewBase::CreateOrUpdateCompactTitleMessageView(
     compact_title_message_view_ = nullptr;
     return;
   }
+
   if (!compact_title_message_view_) {
-    compact_title_message_view_ = new CompactTitleMessageView();
-    left_content_->AddChildViewAt(compact_title_message_view_,
-                                  left_content_count_);
+    auto compact_title_message_view =
+        std::make_unique<CompactTitleMessageView>();
+    compact_title_message_view_ =
+        AddViewToLeftContent(std::move(compact_title_message_view));
+  } else {
+    ReorderViewInLeftContent(compact_title_message_view_);
   }
 
   compact_title_message_view_->set_title(notification.title());
   compact_title_message_view_->set_message(notification.message());
   left_content_->InvalidateLayout();
-  left_content_count_++;
 }
 
 void NotificationViewBase::CreateOrUpdateProgressBarView(
@@ -1010,11 +997,14 @@ void NotificationViewBase::CreateOrUpdateProgressBarView(
   DCHECK(left_content_);
 
   if (!progress_bar_view_) {
-    progress_bar_view_ = new views::ProgressBar(kProgressBarHeight,
-                                                /* allow_round_corner */ false);
-    progress_bar_view_->SetBorder(
+    auto progress_bar_view =
+        std::make_unique<views::ProgressBar>(kProgressBarHeight,
+                                             /* allow_round_corner */ false);
+    progress_bar_view->SetBorder(
         views::CreateEmptyBorder(kProgressBarTopPadding, 0, 0, 0));
-    left_content_->AddChildViewAt(progress_bar_view_, left_content_count_);
+    progress_bar_view_ = AddViewToLeftContent(std::move(progress_bar_view));
+  } else {
+    ReorderViewInLeftContent(progress_bar_view_);
   }
 
   progress_bar_view_->SetValue(notification.progress() / 100.0);
@@ -1022,8 +1012,6 @@ void NotificationViewBase::CreateOrUpdateProgressBarView(
 
   if (0 <= notification.progress() && notification.progress() <= 100)
     header_row_->SetProgress(notification.progress());
-
-  left_content_count_++;
 }
 
 void NotificationViewBase::CreateOrUpdateProgressStatusView(
@@ -1039,17 +1027,17 @@ void NotificationViewBase::CreateOrUpdateProgressStatusView(
   }
 
   if (!status_view_) {
-    status_view_ = left_content_->AddChildViewAt(
-        std::make_unique<views::Label>(std::u16string(),
-                                       views::style::CONTEXT_DIALOG_BODY_TEXT,
-                                       views::style::STYLE_SECONDARY),
-        left_content_count_);
-    status_view_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    status_view_->SetBorder(views::CreateEmptyBorder(kStatusTextPadding));
+    auto status_view = std::make_unique<views::Label>(
+        std::u16string(), views::style::CONTEXT_DIALOG_BODY_TEXT,
+        views::style::STYLE_SECONDARY);
+    status_view->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    status_view->SetBorder(views::CreateEmptyBorder(kStatusTextPadding));
+    status_view_ = AddViewToLeftContent(std::move(status_view));
+  } else {
+    ReorderViewInLeftContent(status_view_);
   }
 
   status_view_->SetText(notification.progress_status());
-  left_content_count_++;
 }
 
 void NotificationViewBase::CreateOrUpdateListItemViews(
@@ -1063,8 +1051,7 @@ void NotificationViewBase::CreateOrUpdateListItemViews(
   for (size_t i = 0; i < items.size() && i < kMaxLinesForExpandedMessageView;
        ++i) {
     std::unique_ptr<views::View> item_view = CreateItemView(items[i]);
-    item_views_.push_back(item_view.get());
-    left_content_->AddChildViewAt(item_view.release(), left_content_count_++);
+    item_views_.push_back(AddViewToLeftContent(std::move(item_view)));
   }
 
   list_items_count_ = items.size();
@@ -1279,6 +1266,10 @@ void NotificationViewBase::CreateOrUpdateInlineSettingsViews(
   settings_row_->AddChildView(settings_button_row);
 }
 
+void NotificationViewBase::ReorderViewInLeftContent(views::View* view) {
+  left_content_->ReorderChildView(view, left_content_count_++);
+}
+
 void NotificationViewBase::HeaderRowPressed() {
   if (!IsExpandable() || !content_row_->GetVisible())
     return;
@@ -1388,7 +1379,7 @@ void NotificationViewBase::UpdateViewForExpandedState(bool expanded) {
   else if (!item_views_.empty())
     header_row_->SetSummaryText(std::u16string());
 
-  bool has_icon = icon_view_ && (!hide_icon_on_expanded_ || !expanded);
+  bool has_icon = IsIconViewShown();
   right_content_->SetVisible(has_icon);
   left_content_->SetBorder(views::CreateEmptyBorder(
       has_icon ? kLeftContentPaddingWithIcon : kLeftContentPadding));
@@ -1401,8 +1392,6 @@ void NotificationViewBase::UpdateViewForExpandedState(bool expanded) {
   const int message_view_width =
       (has_icon ? kMessageViewWidthWithIcon : kMessageViewWidth) -
       GetInsets().width();
-  if (title_view_)
-    title_view_->SizeToFit(message_view_width);
   if (message_view_)
     message_view_->SizeToFit(message_view_width);
 

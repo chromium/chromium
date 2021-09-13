@@ -20,6 +20,16 @@ class MESSAGE_CENTER_EXPORT NotificationView : public NotificationViewBase {
   NotificationView(const NotificationView&) = delete;
   NotificationView& operator=(const NotificationView&) = delete;
   ~NotificationView() override;
+
+ private:
+  friend class NotificationViewTest;
+
+  // NotificationViewBase:
+  void CreateOrUpdateTitleView(const Notification& notification) override;
+  void UpdateViewForExpandedState(bool expanded) override;
+
+  // Notification title, which is dynamically created inside view hierarchy.
+  views::Label* title_view_ = nullptr;
 };
 
 }  // namespace message_center

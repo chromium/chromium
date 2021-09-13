@@ -136,6 +136,9 @@ class NotificationViewTest : public views::ViewObserver,
 
  protected:
   NotificationView* notification_view() { return notification_view_; }
+  views::View* left_content() { return notification_view_->left_content(); }
+  views::Label* title_view() { return notification_view_->title_view_; }
+  views::Label* message_view() { return notification_view_->message_view(); }
 
  private:
   const SkBitmap CreateBitmap(int width, int height) const {
@@ -151,6 +154,49 @@ class NotificationViewTest : public views::ViewObserver,
 
   NotificationView* notification_view_ = nullptr;
 };
+
+TEST_F(NotificationViewTest, UpdateViewsOrderingTest) {
+  EXPECT_NE(nullptr, title_view());
+  EXPECT_NE(nullptr, message_view());
+  EXPECT_EQ(0, left_content()->GetIndexOf(title_view()));
+  EXPECT_EQ(1, left_content()->GetIndexOf(message_view()));
+
+  std::unique_ptr<Notification> notification = CreateSimpleNotification();
+  notification->set_title(std::u16string());
+
+  UpdateNotificationViews(*notification);
+
+  EXPECT_EQ(nullptr, title_view());
+  EXPECT_NE(nullptr, message_view());
+  EXPECT_EQ(0, left_content()->GetIndexOf(message_view()));
+
+  notification->set_title(u"title");
+
+  UpdateNotificationViews(*notification);
+
+  EXPECT_NE(nullptr, title_view());
+  EXPECT_NE(nullptr, message_view());
+  EXPECT_EQ(0, left_content()->GetIndexOf(title_view()));
+  EXPECT_EQ(1, left_content()->GetIndexOf(message_view()));
+}
+
+TEST_F(NotificationViewTest, CreateOrUpdateTitle) {
+  EXPECT_NE(nullptr, title_view());
+
+  std::unique_ptr<Notification> notification = CreateSimpleNotification();
+  notification->set_title(std::u16string());
+
+  UpdateNotificationViews(*notification);
+
+  EXPECT_EQ(nullptr, title_view());
+
+  const std::u16string& expected_text = u"title";
+  notification->set_title(expected_text);
+
+  UpdateNotificationViews(*notification);
+
+  EXPECT_EQ(expected_text, title_view()->GetText());
+}
 
 TEST_F(NotificationViewTest, TestIconSizing) {
   // TODO(tetsui): Remove duplicated integer literal in CreateOrUpdateIconView.
