@@ -206,14 +206,6 @@ ThumbnailTabHelper::~ThumbnailTabHelper() {
   StopVideoCapture();
 }
 
-// Called when a thumbnail is published to observers. Records what
-// method was used to capture the thumbnail.
-//
-// static
-void ThumbnailTabHelper::RecordCaptureType(CaptureType type) {
-  UMA_HISTOGRAM_ENUMERATION("Tab.Preview.CaptureType", type);
-}
-
 // static
 ThumbnailScheduler& ThumbnailTabHelper::GetScheduler() {
   static base::NoDestructor<ThumbnailSchedulerImpl> instance;
@@ -273,7 +265,6 @@ void ThumbnailTabHelper::StoreThumbnail(CaptureType type,
 
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  RecordCaptureType(type);
   state_->OnFrameCaptured(type);
   thumbnail_->AssignSkBitmap(bitmap, frame_id);
 }

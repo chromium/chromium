@@ -34,7 +34,6 @@ class ThumbnailTabHelper
 
   // Metrics enums and helper functions:
   enum class CaptureType;
-  static void RecordCaptureType(CaptureType type);
 
   explicit ThumbnailTabHelper(content::WebContents* contents);
 

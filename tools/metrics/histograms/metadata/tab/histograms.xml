@@ -250,13 +250,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Tab.Preview.CaptureType" enum="TabPreviewCaptureType"
     expires_after="M92">
+  <obsolete>
+    Removed August 2021
+  </obsolete>
   <owner>dfried@chromium.org</owner>
   <owner>collinbaker@chromium.org</owner>
   <summary>Records how a tab preview image was generated.</summary>
 </histogram>
 
 <histogram name="Tab.Preview.MemoryUsage.CompressedData.PerThumbnailKiB"
-    units="KB" expires_after="2021-12-12">
+    units="KB" expires_after="2022-02-13">
   <owner>dfried@chromium.org</owner>
   <owner>collinbaker@chromium.org</owner>
   <summary>
@@ -266,7 +269,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Tab.Preview.MemoryUsage.CompressedData.TotalKiB" units="KB"
-    expires_after="2021-12-12">
+    expires_after="2022-02-13">
   <owner>dfried@chromium.org</owner>
   <owner>collinbaker@chromium.org</owner>
   <summary>
@@ -324,7 +327,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Tab.Preview.VideoCaptureDuration" units="ms"
-    expires_after="2021-12-12">
+    expires_after="2022-02-13">
   <owner>dfried@chromium.org</owner>
   <owner>collinbaker@chromium.org</owner>
   <summary>
@@ -732,7 +735,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="TabHoverCards.LastTabHoverCardPreviewTime{TabCountMetrics}"
-    units="units" expires_after="2021-10-01">
+    units="units" expires_after="2022-02-13">
   <owner>dfried@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -761,7 +764,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="TabHoverCards.LastTabHoverCardViewedTime{TabCountMetrics}"
-    units="units" expires_after="2021-10-01">
+    units="units" expires_after="2022-02-13">
   <owner>dfried@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -788,7 +791,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="TabHoverCards.TabHoverCardPreviewTime{TabCountMetrics}"
-    units="units" expires_after="2021-10-01">
+    units="units" expires_after="2022-02-13">
   <owner>dfried@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -817,7 +820,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="TabHoverCards.TabHoverCardsSeenBeforeTabSelection{TabCountMetrics}"
-    units="units" expires_after="2021-10-01">
+    units="units" expires_after="2022-02-13">
   <owner>dfried@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -842,7 +845,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="TabHoverCards.TabHoverCardViewedTime{TabCountMetrics}"
-    units="units" expires_after="2021-10-01">
+    units="units" expires_after="2022-02-13">
   <owner>dfried@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -870,7 +873,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="TabHoverCards.TabPreviewsSeenBeforeTabSelection{TabCountMetrics}"
-    units="units" expires_after="2021-10-01">
+    units="units" expires_after="2022-02-13">
   <owner>dfried@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -896,7 +899,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="TabHoverCards.TimeSinceLastVisible" units="ms"
-    expires_after="2021-10-01">
+    expires_after="2022-02-13">
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
