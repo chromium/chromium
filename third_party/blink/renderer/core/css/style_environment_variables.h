@@ -66,6 +66,9 @@ enum class UADefinedVariable {
 // StyleEnvironmentVariables stores user agent and user defined CSS environment
 // variables. It has a static root instance that stores global values and
 // each document has a child that stores document level values.
+// Setting and removing values can only be done for the set of variables in
+// UADefinedVariable. Note that UADefinedVariables are not always set/defined,
+// as they depend on the environment.
 class CORE_EXPORT StyleEnvironmentVariables
     : public RefCounted<StyleEnvironmentVariables> {
  public:
@@ -84,16 +87,11 @@ class CORE_EXPORT StyleEnvironmentVariables
 
   virtual ~StyleEnvironmentVariables();
 
-  // Set the value of the variable |name| and invalidate any dependents.
-  void SetVariable(const AtomicString& name,
-                   scoped_refptr<CSSVariableData> value);
-
-  // Tokenize |value| and set it.
-  void SetVariable(const AtomicString& name, const String& value);
-  void SetVariable(const UADefinedVariable name, const String& value);
+  // Tokenize |value| and set it. This will invalidate any dependents.
+  void SetVariable(UADefinedVariable variable, const String& value);
 
   // Remove the variable |name| and invalidate any dependents.
-  void RemoveVariable(const AtomicString& name);
+  void RemoveVariable(UADefinedVariable variable);
 
   // Resolve the variable |name| by traversing the tree of
   // |StyleEnvironmentVariables|.
@@ -110,6 +108,12 @@ class CORE_EXPORT StyleEnvironmentVariables
 
  protected:
   friend class StyleEnvironmentVariablesTest;
+  friend class StyleCascadeTest;
+
+  // Tokenize |value| and set it, invalidating dependents along the way.
+  void SetVariable(const AtomicString& name, const String& value);
+
+  void RemoveVariable(const AtomicString& name);
 
   void ClearForTesting();
 

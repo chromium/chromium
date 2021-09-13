@@ -92,11 +92,27 @@ class StyleEnvironmentVariablesTest : public PageTestBase {
     EXPECT_NE(nullptr, data);
     return data->BackingStrings()[0];
   }
+
+  void SetVariableOnRoot(const AtomicString& name, const String& value) {
+    StyleEnvironmentVariables::GetRootInstance().SetVariable(name, value);
+  }
+
+  void RemoveVariableOnRoot(const AtomicString& name) {
+    StyleEnvironmentVariables::GetRootInstance().RemoveVariable(name);
+  }
+
+  void SetVariableOnDocument(const AtomicString& name, const String& value) {
+    GetDocumentVariables().SetVariable(name, value);
+  }
+
+  void RemoveVariableOnDocument(const AtomicString& name) {
+    GetDocumentVariables().RemoveVariable(name);
+  }
 };
 
 TEST_F(StyleEnvironmentVariablesTest, DocumentVariable_AfterLoad) {
   InitializeTestPageWithVariableNamed(GetFrame(), kVariableName);
-  GetDocumentVariables().SetVariable(kVariableName, kVariableTestColor);
+  SetVariableOnDocument(kVariableName, kVariableTestColor);
 
   // Ensure that the document has been invalidated.
   EXPECT_TRUE(GetDocument().NeedsLayoutTreeUpdate());
@@ -109,11 +125,11 @@ TEST_F(StyleEnvironmentVariablesTest, DocumentVariable_AfterLoad) {
 }
 
 TEST_F(StyleEnvironmentVariablesTest, DocumentVariable_Change) {
-  GetDocumentVariables().SetVariable(kVariableName, kVariableAltTestColor);
+  SetVariableOnDocument(kVariableName, kVariableAltTestColor);
   InitializeTestPageWithVariableNamed(GetFrame(), kVariableName);
 
   // Change the variable value after we have loaded the page.
-  GetDocumentVariables().SetVariable(kVariableName, kVariableTestColor);
+  SetVariableOnDocument(kVariableName, kVariableTestColor);
 
   // Ensure that the document has been invalidated.
   EXPECT_TRUE(GetDocument().NeedsLayoutTreeUpdate());
@@ -128,8 +144,7 @@ TEST_F(StyleEnvironmentVariablesTest, DocumentVariable_Change) {
 TEST_F(StyleEnvironmentVariablesTest,
        DocumentVariable_Override_RemoveDocument) {
   // Set the variable globally.
-  StyleEnvironmentVariables::GetRootInstance().SetVariable(
-      kVariableName, kVariableAltTestColor);
+  SetVariableOnRoot(kVariableName, kVariableAltTestColor);
   InitializeTestPageWithVariableNamed(GetFrame(), kVariableName);
 
   // Check that the element has the background color provided by the global
@@ -139,7 +154,7 @@ TEST_F(StyleEnvironmentVariablesTest,
                                GetCSSPropertyBackgroundColor()));
 
   // Change the variable value on the document after we have loaded the page.
-  GetDocumentVariables().SetVariable(kVariableName, kVariableTestColor);
+  SetVariableOnDocument(kVariableName, kVariableTestColor);
 
   // Ensure that the document has been invalidated.
   EXPECT_TRUE(GetDocument().NeedsLayoutTreeUpdate());
@@ -151,7 +166,7 @@ TEST_F(StyleEnvironmentVariablesTest,
                                GetCSSPropertyBackgroundColor()));
 
   // Remove the document variable.
-  GetDocumentVariables().RemoveVariable(kVariableName);
+  RemoveVariableOnDocument(kVariableName);
 
   // Ensure that the document has been invalidated.
   EXPECT_TRUE(GetDocument().NeedsLayoutTreeUpdate());
@@ -165,8 +180,7 @@ TEST_F(StyleEnvironmentVariablesTest,
 
 TEST_F(StyleEnvironmentVariablesTest, DocumentVariable_Override_RemoveGlobal) {
   // Set the variable globally.
-  StyleEnvironmentVariables::GetRootInstance().SetVariable(
-      kVariableName, kVariableAltTestColor);
+  SetVariableOnRoot(kVariableName, kVariableAltTestColor);
   InitializeTestPageWithVariableNamed(GetFrame(), kVariableName);
 
   // Check that the element has the background color provided by the global
@@ -176,7 +190,7 @@ TEST_F(StyleEnvironmentVariablesTest, DocumentVariable_Override_RemoveGlobal) {
                                GetCSSPropertyBackgroundColor()));
 
   // Change the variable value on the document after we have loaded the page.
-  GetDocumentVariables().SetVariable(kVariableName, kVariableTestColor);
+  SetVariableOnDocument(kVariableName, kVariableTestColor);
 
   // Ensure that the document has been invalidated.
   EXPECT_TRUE(GetDocument().NeedsLayoutTreeUpdate());
@@ -188,14 +202,14 @@ TEST_F(StyleEnvironmentVariablesTest, DocumentVariable_Override_RemoveGlobal) {
                                GetCSSPropertyBackgroundColor()));
 
   // Remove the global variable.
-  StyleEnvironmentVariables::GetRootInstance().RemoveVariable(kVariableName);
+  RemoveVariableOnRoot(kVariableName);
 
   // Ensure that the document has not been invalidated.
   EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdate());
 }
 
 TEST_F(StyleEnvironmentVariablesTest, DocumentVariable_Preset) {
-  GetDocumentVariables().SetVariable(kVariableName, kVariableTestColor);
+  SetVariableOnDocument(kVariableName, kVariableTestColor);
   InitializeTestPageWithVariableNamed(GetFrame(), kVariableName);
 
   // Check that the element has the background color provided by the variable.
@@ -205,7 +219,7 @@ TEST_F(StyleEnvironmentVariablesTest, DocumentVariable_Preset) {
 }
 
 TEST_F(StyleEnvironmentVariablesTest, DocumentVariable_Remove) {
-  GetDocumentVariables().SetVariable(kVariableName, kVariableTestColor);
+  SetVariableOnDocument(kVariableName, kVariableTestColor);
   InitializeTestPageWithVariableNamed(GetFrame(), kVariableName);
 
   // Check that the element has the background color provided by the variable.
@@ -214,7 +228,7 @@ TEST_F(StyleEnvironmentVariablesTest, DocumentVariable_Remove) {
                                GetCSSPropertyBackgroundColor()));
 
   // Change the variable value after we have loaded the page.
-  GetDocumentVariables().RemoveVariable(kVariableName);
+  RemoveVariableOnDocument(kVariableName);
 
   // Ensure that the document has been invalidated.
   EXPECT_TRUE(GetDocument().NeedsLayoutTreeUpdate());
@@ -236,8 +250,7 @@ TEST_F(StyleEnvironmentVariablesTest, MultiDocumentInvalidation_FromRoot) {
   auto empty_page = std::make_unique<DummyPageHolder>(IntSize(800, 600));
   empty_page->GetDocument().View()->UpdateAllLifecyclePhasesForTest();
 
-  StyleEnvironmentVariables::GetRootInstance().SetVariable(kVariableName,
-                                                           kVariableTestColor);
+  SetVariableOnRoot(kVariableName, kVariableTestColor);
 
   // The first two pages should be invalidated and the empty one should not.
   EXPECT_TRUE(GetDocument().NeedsLayoutTreeUpdate());
@@ -252,7 +265,7 @@ TEST_F(StyleEnvironmentVariablesTest, MultiDocumentInvalidation_FromDocument) {
   auto new_page = std::make_unique<DummyPageHolder>(IntSize(800, 600));
   InitializeTestPageWithVariableNamed(new_page->GetFrame(), kVariableName);
 
-  GetDocumentVariables().SetVariable(kVariableName, kVariableTestColor);
+  SetVariableOnDocument(kVariableName, kVariableTestColor);
 
   // Only the first document should be invalidated.
   EXPECT_TRUE(GetDocument().NeedsLayoutTreeUpdate());
@@ -260,7 +273,7 @@ TEST_F(StyleEnvironmentVariablesTest, MultiDocumentInvalidation_FromDocument) {
 }
 
 TEST_F(StyleEnvironmentVariablesTest, NavigateToClear) {
-  GetDocumentVariables().SetVariable(kVariableName, kVariableTestColor);
+  SetVariableOnDocument(kVariableName, kVariableTestColor);
 
   // Simulate a navigation to clear the variables.
   SimulateNavigation();
@@ -274,8 +287,7 @@ TEST_F(StyleEnvironmentVariablesTest, NavigateToClear) {
 
 TEST_F(StyleEnvironmentVariablesTest, GlobalVariable_AfterLoad) {
   InitializeTestPageWithVariableNamed(GetFrame(), kVariableName);
-  StyleEnvironmentVariables::GetRootInstance().SetVariable(kVariableName,
-                                                           kVariableTestColor);
+  SetVariableOnRoot(kVariableName, kVariableTestColor);
 
   // Ensure that the document has been invalidated.
   EXPECT_TRUE(GetDocument().NeedsLayoutTreeUpdate());
@@ -288,13 +300,11 @@ TEST_F(StyleEnvironmentVariablesTest, GlobalVariable_AfterLoad) {
 }
 
 TEST_F(StyleEnvironmentVariablesTest, GlobalVariable_Change) {
-  StyleEnvironmentVariables::GetRootInstance().SetVariable(
-      kVariableName, kVariableAltTestColor);
+  SetVariableOnRoot(kVariableName, kVariableAltTestColor);
   InitializeTestPageWithVariableNamed(GetFrame(), kVariableName);
 
   // Change the variable value after we have loaded the page.
-  StyleEnvironmentVariables::GetRootInstance().SetVariable(kVariableName,
-                                                           kVariableTestColor);
+  SetVariableOnRoot(kVariableName, kVariableTestColor);
 
   // Ensure that the document has been invalidated.
   EXPECT_TRUE(GetDocument().NeedsLayoutTreeUpdate());
@@ -322,8 +332,7 @@ TEST_F(StyleEnvironmentVariablesTest, GlobalVariable_DefaultsPresent) {
 }
 
 TEST_F(StyleEnvironmentVariablesTest, GlobalVariable_Preset) {
-  StyleEnvironmentVariables::GetRootInstance().SetVariable(kVariableName,
-                                                           kVariableTestColor);
+  SetVariableOnRoot(kVariableName, kVariableTestColor);
   InitializeTestPageWithVariableNamed(GetFrame(), kVariableName);
 
   // Check that the element has the background color provided by the variable.
@@ -333,8 +342,7 @@ TEST_F(StyleEnvironmentVariablesTest, GlobalVariable_Preset) {
 }
 
 TEST_F(StyleEnvironmentVariablesTest, GlobalVariable_Remove) {
-  StyleEnvironmentVariables::GetRootInstance().SetVariable(kVariableName,
-                                                           kVariableTestColor);
+  SetVariableOnRoot(kVariableName, kVariableTestColor);
   InitializeTestPageWithVariableNamed(GetFrame(), kVariableName);
 
   // Check that the element has the background color provided by the variable.
@@ -343,7 +351,7 @@ TEST_F(StyleEnvironmentVariablesTest, GlobalVariable_Remove) {
                                GetCSSPropertyBackgroundColor()));
 
   // Change the variable value after we have loaded the page.
-  StyleEnvironmentVariables::GetRootInstance().RemoveVariable(kVariableName);
+  RemoveVariableOnRoot(kVariableName);
 
   // Ensure that the document has been invalidated.
   EXPECT_TRUE(GetDocument().NeedsLayoutTreeUpdate());

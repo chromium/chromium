@@ -159,13 +159,6 @@ StyleEnvironmentVariables::~StyleEnvironmentVariables() {
   }
 }
 
-void StyleEnvironmentVariables::SetVariable(
-    const AtomicString& name,
-    scoped_refptr<CSSVariableData> value) {
-  data_.Set(name, std::move(value));
-  InvalidateVariable(name);
-}
-
 void StyleEnvironmentVariables::SetVariable(const AtomicString& name,
                                             const String& value) {
   CSSTokenizer tokenizer(value);
@@ -175,17 +168,23 @@ void StyleEnvironmentVariables::SetVariable(const AtomicString& name,
   Vector<String> backing_strings;
   backing_strings.push_back(value);
 
-  SetVariable(
-      name,
+  scoped_refptr<CSSVariableData> variable_data =
       CSSVariableData::CreateResolved(
           std::move(tokens), std::move(backing_strings),
           false /* is_animation_tainted */, false /* has_font_units */,
-          false /* has_root_font_units*/, g_null_atom, WTF::TextEncoding()));
+          false /* has_root_font_units*/, g_null_atom, WTF::TextEncoding());
+  data_.Set(name, std::move(variable_data));
+  InvalidateVariable(name);
 }
 
-void StyleEnvironmentVariables::SetVariable(const UADefinedVariable name,
+void StyleEnvironmentVariables::SetVariable(UADefinedVariable variable,
                                             const String& value) {
-  SetVariable(GetVariableName(name, GetFeatureContext()), value);
+  SetVariable(GetVariableName(variable, GetFeatureContext()), value);
+}
+
+void StyleEnvironmentVariables::RemoveVariable(UADefinedVariable variable) {
+  const AtomicString name = GetVariableName(variable, GetFeatureContext());
+  RemoveVariable(name);
 }
 
 void StyleEnvironmentVariables::RemoveVariable(const AtomicString& name) {

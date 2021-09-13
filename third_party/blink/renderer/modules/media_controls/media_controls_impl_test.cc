@@ -1305,13 +1305,13 @@ TEST_F(MediaControlsImplTest, ControlsShouldUseSafeAreaInsets) {
   }
 
   GetStyleEngine().EnsureEnvironmentVariables().SetVariable(
-      "safe-area-inset-top", "1px");
+      UADefinedVariable::kSafeAreaInsetTop, "1px");
   GetStyleEngine().EnsureEnvironmentVariables().SetVariable(
-      "safe-area-inset-left", "2px");
+      UADefinedVariable::kSafeAreaInsetLeft, "2px");
   GetStyleEngine().EnsureEnvironmentVariables().SetVariable(
-      "safe-area-inset-bottom", "3px");
+      UADefinedVariable::kSafeAreaInsetBottom, "3px");
   GetStyleEngine().EnsureEnvironmentVariables().SetVariable(
-      "safe-area-inset-right", "4px");
+      UADefinedVariable::kSafeAreaInsetRight, "4px");
 
   EXPECT_TRUE(GetDocument().NeedsLayoutTreeUpdate());
   UpdateAllLifecyclePhasesForTest();

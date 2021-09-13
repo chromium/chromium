@@ -1346,8 +1346,7 @@ void LocalFrame::UpdateCSSFoldEnvironmentVariables(
         UADefinedVariable::kFoldWidth,  UADefinedVariable::kFoldHeight,
     };
     for (auto var : vars_to_remove) {
-      vars.RemoveVariable(StyleEnvironmentVariables::GetVariableName(
-          var, /*feature_context=*/nullptr));
+      vars.RemoveVariable(var);
     }
   }
 }
@@ -2738,8 +2737,7 @@ void LocalFrame::UpdateWindowControlsOverlay(
         UADefinedVariable::kTitlebarAreaHeight,
     };
     for (auto var_to_remove : vars_to_remove) {
-      vars.RemoveVariable(StyleEnvironmentVariables::GetVariableName(
-          var_to_remove, vars.GetFeatureContext()));
+      vars.RemoveVariable(var_to_remove);
     }
   }
 
