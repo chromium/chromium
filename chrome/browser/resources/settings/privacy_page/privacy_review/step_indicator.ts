@@ -7,12 +7,17 @@
  * 'step-indicator' is an element that displays a row of dots, one of which is
  * highlighted, to indicate how far the user is through a multi-step flow.
  */
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-const StepIndicatorBase = mixinBehaviors([I18nBehavior], PolymerElement);
+const StepIndicatorBase = mixinBehaviors([I18nBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior};
 
-/** @polymer */
+export type StepIndicatorModel = {
+  active: number,
+  total: number,
+};
+
 export class StepIndicator extends StepIndicatorBase {
   static get is() {
     return 'step-indicator';
@@ -29,7 +34,6 @@ export class StepIndicator extends StepIndicatorBase {
       /**
        * An array with length equal to the number of dots, for use by
        * dom-repeat. The contents of the array are unused.
-       * @private {Array<undefined>}
        */
       dots_: {
         type: Array,
@@ -38,21 +42,18 @@ export class StepIndicator extends StepIndicatorBase {
     };
   }
 
+  model: StepIndicatorModel;
+  private dots_: Array<void>;
+
   /**
-   * Returns the screenreader label for this element.
-   * @private
-   * @return {string}
+   * @return the screenreader label for this element.
    */
-  computeA11yLabel_() {
+  private computeA11yLabel_(): string {
     return this.i18n(
         'privacyReviewSteps', this.model.active + 1, this.model.total);
   }
 
-  /**
-   * @private
-   * @return {Array<undefined>}
-   */
-  computeDots_() {
+  private computeDots_(): Array<void> {
     // If total is 1, show nothing.
     return new Array(this.model.total > 1 ? this.model.total : 0);
   }
@@ -60,10 +61,8 @@ export class StepIndicator extends StepIndicatorBase {
   /**
    * Returns a class for the dot at `index`, which will highlight the dot at the
    * active index.
-   * @private
-   * @return {string}
    */
-  getActiveClass_(index) {
+  private getActiveClass_(index: number): string {
     return index === this.model.active ? 'active' : '';
   }
 

@@ -86,7 +86,6 @@ js_type_check("closure_compile") {
     #":pref_util_tests",
     #":prefs_test_cases",
     #":prefs_tests",
-    ":privacy_review_page_test",
     ":privacy_sandbox_test",
 
     #":protocol_handlers_tests",
@@ -207,16 +206,6 @@ js_library("languages_page_metrics_test_browser") {
     ":fake_language_settings_private",
     ":fake_settings_private",
     ":test_languages_browser_proxy",
-    "..:chai_assert",
-    "..:test_util",
-    "//chrome/browser/resources/settings:lazy_load",
-    "//chrome/browser/resources/settings:settings",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("privacy_review_page_test") {
-  deps = [
     "..:chai_assert",
     "..:test_util",
     "//chrome/browser/resources/settings:lazy_load",
