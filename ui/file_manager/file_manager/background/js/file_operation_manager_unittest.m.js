@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
+import {assertArrayEquals, assertEquals, assertFalse, assertLT, assertNotReached, assertTrue} from 'chrome://test/chai_assert.js';
 
-import {FileOperationProgressEvent} from '../../common/js/file_operation_common.js';
+import {FileOperationError, FileOperationProgressEvent} from '../../common/js/file_operation_common.js';
 import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {joinPath, MockDirectoryEntry, MockEntry, MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {reportPromise, waitUntil} from '../../common/js/test_error_reporting.js';
@@ -1143,16 +1143,10 @@ export function testZipProgress(callback) {
 
   mockChrome.fileManagerPrivate.zipSelection =
       (sources, parent, newName, callback) => {
-        console.log(`fileManagerPrivate.zipSelection('${newName}')`);
-        const newPath = joinPath('/', newName);
-        const newEntry = MockFileEntry.create(
-            fileSystem, newPath, /** @type {!Metadata} */ ({size: destSize}));
-        fileSystem.entries[newPath] = newEntry;
         setTimeout(callback, 100, wantZipId, destSize);
       };
 
   mockChrome.fileManagerPrivate.getZipProgress = (zipId, callback) => {
-    console.log(`fileManagerPrivate.getZipProgress(${zipId})`);
     assertEquals(wantZipId, zipId);
     ++step;
     const result = step < maxSteps ? -1 : 0;
@@ -1207,12 +1201,10 @@ export function testZipError(callback) {
 
   mockChrome.fileManagerPrivate.zipSelection =
       (sources, parent, newName, callback) => {
-        console.log(`fileManagerPrivate.zipSelection('${newName}')`);
         setTimeout(callback, 100, wantZipId, destSize);
       };
 
   mockChrome.fileManagerPrivate.getZipProgress = (zipId, callback) => {
-    console.log(`fileManagerPrivate.getZipProgress(${zipId})`);
     assertEquals(wantZipId, zipId);
     const result = 2;  // Positive error code.
     setTimeout(callback, 100, result, 3524);
@@ -1244,4 +1236,445 @@ export function testZipError(callback) {
   fileOperationManager.zipSelection(
       [fileSystem.entries['/test.txt']],
       /** @type {!DirectoryEntry} */ (fileSystem.entries['/']));
+}
+
+/**
+ * Tests ZipTask initialization.
+ * @param {function(boolean)} callback Callback to be passed true on error.
+ */
+export async function testZipTaskInit(callback) {
+  try {
+    const taskId = 'file-operation-23460982';
+    const fileSystem = createTestFileSystem('testVolume', {
+      '/out': DIRECTORY_SIZE,
+      '/in': DIRECTORY_SIZE,
+      '/in/input 1.txt': 10,
+      '/in/input 2.txt': 20,
+    });
+
+    const sourceEntries = [
+      fileSystem.entries['/in/input 1.txt'],
+      fileSystem.entries['/in/input 2.txt'],
+    ];
+    const baseEntry =
+        /** @type {!DirectoryEntry} */ (fileSystem.entries['/in']);
+    const targetEntry =
+        /** @type {!DirectoryEntry} */ (fileSystem.entries['/out']);
+
+    const task = new fileOperationUtil.ZipTask(
+        taskId, sourceEntries, targetEntry, baseEntry);
+
+    assertEquals(util.FileOperationType.ZIP, task.operationType);
+    assertEquals(taskId, task.taskId);
+    assertEquals(baseEntry, task.zipBaseDirEntry);
+    assertEquals(targetEntry, task.targetDirEntry);
+    assertArrayEquals(sourceEntries, task.sourceEntries);
+
+    await new Promise(resolve => task.initialize(resolve));
+
+    // The real number of bytes is computed in task.run().
+    assertEquals(1, task.totalBytes);
+
+    callback(false);
+  } catch (error) {
+    console.error(error);
+    callback(true);
+  }
+}
+
+/**
+ * Tests ZipTask progress in normal circumstances.
+ * @param {function(boolean)} callback Callback to be passed true on error.
+ */
+export async function testZipTaskRun(callback) {
+  try {
+    const taskId = 'file-operation-23460982';
+    const fileSystem = createTestFileSystem('testVolume', {
+      '/out': DIRECTORY_SIZE,
+      '/in': DIRECTORY_SIZE,
+      '/in/input 1.txt': 10,
+      '/in/input 2.txt': 20,
+    });
+
+    const sourceEntries = [
+      fileSystem.entries['/in/input 1.txt'],
+      fileSystem.entries['/in/input 2.txt'],
+    ];
+    const baseEntry =
+        /** @type {!DirectoryEntry} */ (fileSystem.entries['/in']);
+    const targetEntry =
+        /** @type {!DirectoryEntry} */ (fileSystem.entries['/out']);
+
+    const task = new fileOperationUtil.ZipTask(
+        taskId, sourceEntries, targetEntry, baseEntry);
+
+    await new Promise(resolve => task.initialize(resolve));
+
+    const entryChangedCallback = () => assertNotReached();
+
+    let progressCount = 0;
+    const progressCallback = () => void ++progressCount;
+
+    const destSize = 9876;
+    const wantZipId = 42;
+    const maxSteps = 5;
+    let step = 0;
+
+    let zipSelectionCount = 0;
+    mockChrome.fileManagerPrivate.zipSelection =
+        (sources, parent, newName, callback) => {
+          assertEquals(0, zipSelectionCount++);
+          assertEquals(0, step);
+          assertArrayEquals(sourceEntries, sources);
+          const newPath = joinPath('/out', newName);
+          const newEntry = MockFileEntry.create(
+              fileSystem, newPath, /** @type {!Metadata} */ ({size: destSize}));
+          fileSystem.entries[newPath] = newEntry;
+          setTimeout(callback, 100, wantZipId, destSize);
+        };
+
+    mockChrome.fileManagerPrivate.getZipProgress = (zipId, callback) => {
+      assertEquals(wantZipId, zipId);
+      // By now, task.totalBytes should be set to the expected value.
+      assertEquals(destSize, task.totalBytes);
+      assertLT(step, maxSteps);
+      assertEquals(step, progressCount);
+      ++step;
+      const result = step < maxSteps ? -1 : 0;
+      const bytes = Math.round(destSize * step / maxSteps);
+      setTimeout(callback, 100, result, bytes);
+    };
+
+    mockChrome.fileManagerPrivate.cancelZip = (zipId) => assertNotReached();
+
+    await new Promise(
+        (resolve, reject) =>
+            task.run(entryChangedCallback, progressCallback, resolve, reject));
+
+    assertEquals(maxSteps, progressCount);
+    assertEquals(maxSteps, step);
+
+    callback(false);
+  } catch (error) {
+    console.error(error);
+    callback(true);
+  }
+}
+
+/**
+ * Tests ZipTask cancellation before run() is called.
+ * @param {function(boolean)} callback Callback to be passed true on error.
+ */
+export async function testZipTaskCancellationBeforeRun(callback) {
+  try {
+    const taskId = 'file-operation-23460982';
+    const fileSystem = createTestFileSystem('testVolume', {
+      '/out': DIRECTORY_SIZE,
+      '/in': DIRECTORY_SIZE,
+      '/in/input 1.txt': 10,
+      '/in/input 2.txt': 20,
+    });
+
+    const sourceEntries = [
+      fileSystem.entries['/in/input 1.txt'],
+      fileSystem.entries['/in/input 2.txt'],
+    ];
+    const baseEntry =
+        /** @type {!DirectoryEntry} */ (fileSystem.entries['/in']);
+    const targetEntry =
+        /** @type {!DirectoryEntry} */ (fileSystem.entries['/out']);
+
+    const task = new fileOperationUtil.ZipTask(
+        taskId, sourceEntries, targetEntry, baseEntry);
+
+    await new Promise(resolve => task.initialize(resolve));
+
+    mockChrome.fileManagerPrivate.zipSelection = () => assertNotReached();
+    mockChrome.fileManagerPrivate.getZipProgress = () => assertNotReached();
+    mockChrome.fileManagerPrivate.cancelZip = () => assertNotReached();
+
+    // Request cancellation before running the task.
+    task.requestCancel();
+
+    const entryChangedCallback = () => assertNotReached();
+    const progressCallback = () => assertNotReached();
+    const successCallback = () => assertNotReached();
+    await new Promise(
+        resolve => task.run(
+            entryChangedCallback, progressCallback, successCallback, error => {
+              assertTrue(error instanceof FileOperationError);
+              assertEquals(
+                  util.FileOperationErrorType.FILESYSTEM_ERROR, error.code);
+              const domError = /** @type {!DOMError} */ (error.data);
+              assertTrue(domError instanceof DOMError);
+              assertEquals(util.FileError.ABORT_ERR, domError.name);
+              resolve();
+            }));
+
+    callback(false);
+  } catch (error) {
+    console.error(error);
+    callback(true);
+  }
+}
+
+/**
+ * Tests ZipTask cancellation when it is requested while
+ * fileManagerPrivate.zipSelection() is running.
+ * @param {function(boolean)} callback Callback to be passed true on error.
+ */
+export async function testZipTaskCancellationDuringRunStart(callback) {
+  try {
+    const taskId = 'file-operation-23460982';
+    const fileSystem = createTestFileSystem('testVolume', {
+      '/out': DIRECTORY_SIZE,
+      '/in': DIRECTORY_SIZE,
+      '/in/input 1.txt': 10,
+      '/in/input 2.txt': 20,
+    });
+
+    const sourceEntries = [
+      fileSystem.entries['/in/input 1.txt'],
+      fileSystem.entries['/in/input 2.txt'],
+    ];
+    const baseEntry =
+        /** @type {!DirectoryEntry} */ (fileSystem.entries['/in']);
+    const targetEntry =
+        /** @type {!DirectoryEntry} */ (fileSystem.entries['/out']);
+
+    const task = new fileOperationUtil.ZipTask(
+        taskId, sourceEntries, targetEntry, baseEntry);
+
+    await new Promise(resolve => task.initialize(resolve));
+
+    const destSize = 9876;
+    const wantZipId = 42;
+
+    let zipSelectionCount = 0;
+    let cancelZipCount = 0;
+    let getZipProgressCount = 0;
+
+    mockChrome.fileManagerPrivate.zipSelection =
+        (sources, parent, newName, callback) => {
+          assertEquals(0, zipSelectionCount++);
+          assertEquals(0, cancelZipCount);
+          // Request cancellation during fileManagerPrivate.zipSelection().
+          setTimeout(() => task.requestCancel(), 50);
+          setTimeout(callback, 100, wantZipId, destSize);
+        };
+
+    mockChrome.fileManagerPrivate.cancelZip = (zipId) => {
+      assertEquals(0, cancelZipCount++);
+      assertEquals(1, zipSelectionCount);
+      assertEquals(wantZipId, zipId);
+    };
+
+    mockChrome.fileManagerPrivate.getZipProgress = (zipId, callback) => {
+      assertEquals(0, getZipProgressCount++);
+      assertEquals(1, zipSelectionCount);
+      assertEquals(1, cancelZipCount);
+      assertEquals(wantZipId, zipId);
+      const result = +1;  // Cancelled
+      const bytes = 0;
+      setTimeout(callback, 100, result, bytes);
+    };
+
+    const entryChangedCallback = () => assertNotReached();
+    const progressCallback = () => assertNotReached();
+    const successCallback = () => assertNotReached();
+    await new Promise(
+        resolve => task.run(
+            entryChangedCallback, progressCallback, successCallback, error => {
+              assertTrue(error instanceof FileOperationError);
+              assertEquals(
+                  util.FileOperationErrorType.FILESYSTEM_ERROR, error.code);
+              const domError = /** @type {!DOMError} */ (error.data);
+              assertTrue(domError instanceof DOMError);
+              assertEquals(util.FileError.ABORT_ERR, domError.name);
+              resolve();
+            }));
+
+    assertEquals(1, getZipProgressCount);
+    assertEquals(1, zipSelectionCount);
+    assertEquals(1, cancelZipCount);
+
+    callback(false);
+  } catch (error) {
+    console.error(error);
+    callback(true);
+  }
+}
+
+/**
+ * Tests ZipTask cancellation when it is requested while
+ * fileManagerPrivate.getZipProgress() is running.
+ * @param {function(boolean)} callback Callback to be passed true on error.
+ */
+export async function testZipTaskCancellationDuringProgress(callback) {
+  try {
+    const taskId = 'file-operation-23460982';
+    const fileSystem = createTestFileSystem('testVolume', {
+      '/out': DIRECTORY_SIZE,
+      '/in': DIRECTORY_SIZE,
+      '/in/input 1.txt': 10,
+      '/in/input 2.txt': 20,
+    });
+
+    const sourceEntries = [
+      fileSystem.entries['/in/input 1.txt'],
+      fileSystem.entries['/in/input 2.txt'],
+    ];
+    const baseEntry =
+        /** @type {!DirectoryEntry} */ (fileSystem.entries['/in']);
+    const targetEntry =
+        /** @type {!DirectoryEntry} */ (fileSystem.entries['/out']);
+
+    const task = new fileOperationUtil.ZipTask(
+        taskId, sourceEntries, targetEntry, baseEntry);
+
+    await new Promise(resolve => task.initialize(resolve));
+
+    const destSize = 9876;
+    const wantZipId = 42;
+
+    let zipSelectionCount = 0;
+    let cancelZipCount = 0;
+    let getZipProgressCount = 0;
+
+    mockChrome.fileManagerPrivate.zipSelection =
+        (sources, parent, newName, callback) => {
+          assertEquals(0, zipSelectionCount++);
+          assertEquals(0, cancelZipCount);
+          setTimeout(callback, 100, wantZipId, destSize);
+        };
+
+    mockChrome.fileManagerPrivate.cancelZip = (zipId) => {
+      assertEquals(0, cancelZipCount++);
+      assertEquals(1, zipSelectionCount);
+      assertEquals(1, getZipProgressCount);
+      assertEquals(wantZipId, zipId);
+    };
+
+    mockChrome.fileManagerPrivate.getZipProgress = (zipId, callback) => {
+      getZipProgressCount++;
+      assertEquals(1, zipSelectionCount);
+      assertEquals(wantZipId, zipId);
+      const bytes = 0;
+      if (getZipProgressCount == 1) {
+        assertEquals(0, cancelZipCount);
+        // Request cancellation during fileManagerPrivate.getZipProgress().
+        setTimeout(() => task.requestCancel(), 50);
+        const result = -1;  // In progress
+        setTimeout(callback, 100, result, bytes);
+      } else {
+        assertEquals(2, getZipProgressCount);
+        assertEquals(1, cancelZipCount);
+        const result = +1;  // Cancelled
+        setTimeout(callback, 100, result, bytes);
+      }
+    };
+
+    let progressCallbackCount = 0;
+    const progressCallback = () => void ++progressCallbackCount;
+    const entryChangedCallback = () => assertNotReached();
+    const successCallback = () => assertNotReached();
+    await new Promise(
+        resolve => task.run(
+            entryChangedCallback, progressCallback, successCallback, error => {
+              assertTrue(error instanceof FileOperationError);
+              assertEquals(
+                  util.FileOperationErrorType.FILESYSTEM_ERROR, error.code);
+              const domError = /** @type {!DOMError} */ (error.data);
+              assertTrue(domError instanceof DOMError);
+              assertEquals(util.FileError.ABORT_ERR, domError.name);
+              resolve();
+            }));
+
+    assertEquals(1, zipSelectionCount);
+    assertEquals(2, getZipProgressCount);
+    assertEquals(1, cancelZipCount);
+    assertEquals(1, progressCallbackCount);
+
+    callback(false);
+  } catch (error) {
+    console.error(error);
+    callback(true);
+  }
+}
+
+/**
+ * Tests ZipTask error during fileManagerPrivate.getZipProgress().
+ * @param {function(boolean)} callback Callback to be passed true on error.
+ */
+export async function testZipTaskError(callback) {
+  try {
+    const taskId = 'file-operation-23460982';
+    const fileSystem = createTestFileSystem('testVolume', {
+      '/out': DIRECTORY_SIZE,
+      '/in': DIRECTORY_SIZE,
+      '/in/input 1.txt': 10,
+      '/in/input 2.txt': 20,
+    });
+
+    const sourceEntries = [
+      fileSystem.entries['/in/input 1.txt'],
+      fileSystem.entries['/in/input 2.txt'],
+    ];
+    const baseEntry =
+        /** @type {!DirectoryEntry} */ (fileSystem.entries['/in']);
+    const targetEntry =
+        /** @type {!DirectoryEntry} */ (fileSystem.entries['/out']);
+
+    const task = new fileOperationUtil.ZipTask(
+        taskId, sourceEntries, targetEntry, baseEntry);
+
+    await new Promise(resolve => task.initialize(resolve));
+
+    const destSize = 9876;
+    const wantZipId = 42;
+
+    let zipSelectionCount = 0;
+    let getZipProgressCount = 0;
+
+    mockChrome.fileManagerPrivate.zipSelection =
+        (sources, parent, newName, callback) => {
+          assertEquals(0, zipSelectionCount++);
+          setTimeout(callback, 100, wantZipId, destSize);
+        };
+
+    mockChrome.fileManagerPrivate.cancelZip = () => assertNotReached();
+
+    mockChrome.fileManagerPrivate.getZipProgress = (zipId, callback) => {
+      assertEquals(0, getZipProgressCount++);
+      assertEquals(1, zipSelectionCount);
+      assertEquals(wantZipId, zipId);
+      const result = +2;  // Error
+      const bytes = 0;
+      setTimeout(callback, 100, result, bytes);
+    };
+
+    const progressCallback = () => assertNotReached();
+    const entryChangedCallback = () => assertNotReached();
+    const successCallback = () => assertNotReached();
+    await new Promise(
+        resolve => task.run(
+            entryChangedCallback, progressCallback, successCallback, error => {
+              assertTrue(error instanceof FileOperationError);
+              assertEquals(
+                  util.FileOperationErrorType.FILESYSTEM_ERROR, error.code);
+              const domError = /** @type {!DOMError} */ (error.data);
+              assertTrue(domError instanceof DOMError);
+              assertEquals(
+                  util.FileError.INVALID_MODIFICATION_ERR, domError.name);
+              resolve();
+            }));
+
+    assertEquals(1, zipSelectionCount);
+    assertEquals(1, getZipProgressCount);
+
+    callback(false);
+  } catch (error) {
+    console.error(error);
+    callback(true);
+  }
 }

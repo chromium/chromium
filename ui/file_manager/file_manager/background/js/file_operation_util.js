@@ -566,7 +566,7 @@ fileOperationUtil.Task = class {
     this.processingEntries = null;
 
     /**
-     * Total number of bytes to be processed. Filled in initialize().
+     * Total number of bytes to be processed. Filled in initialize() or run().
      * Use 1 as an initial value to indicate that the task is not completed.
      * @type {number}
      */
@@ -629,7 +629,9 @@ fileOperationUtil.Task = class {
   /**
    * @param {function()} callback When entries resolved.
    */
-  initialize(callback) {}
+  initialize(callback) {
+    callback();
+  }
 
   /**
    * Requests cancellation of this task.
@@ -1154,16 +1156,6 @@ fileOperationUtil.ZipTask = class extends fileOperationUtil.Task {
     this.zipBaseDirEntry = zipBaseDirEntry;
   }
 
-
-  /**
-   * Initializes the ZipTask.
-   * @param {function()} callback Called when the initialize is completed.
-   */
-  initialize(callback) {
-    this.totalBytes = this.sourceEntries.length;
-    callback();
-  }
-
   /**
    * Runs a zip file creation task.
    *
@@ -1192,6 +1184,10 @@ fileOperationUtil.ZipTask = class extends fileOperationUtil.Task {
         const destPath = await fileOperationUtil.deduplicatePath(
             this.targetDirEntry, destName + '.zip');
 
+        if (this.cancelRequested_) {
+          throw util.createDOMError(util.FileError.ABORT_ERR);
+        }
+
         // Start ZIP operation.
         const {zipId, totalBytes} = await new Promise(
             (resolve, reject) => chrome.fileManagerPrivate.zipSelection(
@@ -1203,8 +1199,15 @@ fileOperationUtil.ZipTask = class extends fileOperationUtil.Task {
         this.totalBytes = totalBytes;
         this.speedometer_.setTotalBytes(this.totalBytes);
 
-        // Set up cancellation callback.
-        this.cancelCallback_ = () => chrome.fileManagerPrivate.cancelZip(zipId);
+        if (this.cancelRequested_) {
+          // Cancellation was requested while fileManagerPrivate.zipSelection()
+          // was running.
+          chrome.fileManagerPrivate.cancelZip(zipId);
+        } else {
+          // Set up cancellation callback.
+          this.cancelCallback_ = () =>
+              chrome.fileManagerPrivate.cancelZip(zipId);
+        }
 
         // Monitor progress.
         while (true) {
