@@ -184,4 +184,7 @@
     <color name="adaptive_toolbar_preference_header_blue_dark">@color/modern_blue_300</color>
     <color name="adaptive_toolbar_preference_header_omnibox_light">@color/modern_grey_100</color>
     <color name="adaptive_toolbar_preference_header_omnibox_dark">@color/white_alpha_6</color>
+
+    <!-- Toast colors -->
+    <color name="toast_bg_color">@color/baseline_neutral_900_with_neutral_200_alpha_11_with_primary_200_alpha_2</color>
 </resources>
