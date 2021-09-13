@@ -3176,14 +3176,6 @@ void RenderFrameHostImpl::RenderFrameCreated() {
 
   delegate_->RenderFrameCreated(this);
 
-  if (IsRenderFrameLive() && is_main_frame()) {
-    NavigationEntry* entry = frame_tree_->controller().GetPendingEntry();
-    if (entry && entry->IsViewSourceMode()) {
-      // Put the renderer in view source mode.
-      GetAssociatedLocalFrame()->EnableViewSourceMode();
-    }
-  }
-
   if (enabled_bindings_)
     GetFrameBindingsControl()->AllowBindings(enabled_bindings_);
 

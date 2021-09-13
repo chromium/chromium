@@ -766,10 +766,11 @@ class EnableViewSourceLocalFrame : public content::FakeLocalFrame,
   explicit EnableViewSourceLocalFrame(WebContents* web_contents)
       : WebContentsObserver(web_contents) {}
 
-  void RenderFrameCreated(RenderFrameHost* render_frame_host) override {
+  void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override {
     if (!initialized_) {
       initialized_ = true;
-      Init(render_frame_host->GetRemoteAssociatedInterfaces());
+      Init(navigation_handle->GetRenderFrameHost()
+               ->GetRemoteAssociatedInterfaces());
     }
   }
 

@@ -5654,6 +5654,14 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
     GetDelegate()->ReadyToCommitNavigation(this);
   }
 
+  if (IsInMainFrame()) {
+    NavigationEntry* entry = GetNavigationEntry();
+    if (entry && entry->IsViewSourceMode()) {
+      // Put the renderer in view source mode.
+      render_frame_host_->GetAssociatedLocalFrame()->EnableViewSourceMode();
+    }
+  }
+
   if (ready_to_commit_callback_for_testing_)
     std::move(ready_to_commit_callback_for_testing_).Run();
 }
