@@ -851,7 +851,7 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
 
 // Test window.open to a data URL with binary mimetype.
 IN_PROC_BROWSER_TEST_F(BlockedSchemeNavigationBrowserTest,
-                       DataUrl_OctetStream_WindowOpen) {
+                       MAYBE_DataUrl_OctetStream_WindowOpen) {
   Navigate(embedded_test_server()->GetURL(
       base::StringPrintf("/data_url_navigations.html")));
   // Navigations to data URLs with unknown mime types should end up as
