@@ -171,8 +171,8 @@ public class DuplicateDownloadDialog {
     private static void recordDuplicateDownloadDialogEvent(
             boolean isOfflinePage, @DuplicateDownloadDialogEvent int event) {
         RecordHistogram.recordEnumeratedHistogram(isOfflinePage
-                        ? "Download.DuplicateDialogEvemt.OfflinePage"
-                        : "Download.DuplicateDialogEvemt.Download",
+                        ? "Download.DuplicateDialogEvent.OfflinePage"
+                        : "Download.DuplicateDialogEvent.Download",
                 event, DuplicateDownloadDialogEvent.COUNT);
     }
 }
