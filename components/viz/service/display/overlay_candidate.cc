@@ -562,6 +562,10 @@ void OverlayCandidate::HandleClipAndSubsampling(
   // not be regarded as clippped after this.
   candidate->display_rect.Intersect(gfx::RectF(*candidate->clip_rect));
   candidate->clip_rect.reset();
+  gfx::Rect rounded_display_rect = gfx::ToRoundedRect(candidate->display_rect);
+  candidate->display_rect.SetRect(
+      rounded_display_rect.x(), rounded_display_rect.y(),
+      rounded_display_rect.width(), rounded_display_rect.height());
 
   // Now correct |uv_rect| if required so that the source rect aligns on a pixel
   // boundary that is a multiple of the chroma subsampling.
