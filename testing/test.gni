@@ -640,7 +640,11 @@ template("test") {
       ]
 
       if (_use_ash_chrome) {
-        executable_args += [ "--ash-chrome-path=ash_clang_x64/test_ash_chrome" ]
+        executable_args += [ "--ash-chrome-path" ]
+
+        # Can't use --ash-chrome-path=path because WrappedPath
+        # won't be expanded for that usage.
+        executable_args += [ "@WrappedPath(./ash_clang_x64/test_ash_chrome)" ]
       }
 
       if (is_asan) {
