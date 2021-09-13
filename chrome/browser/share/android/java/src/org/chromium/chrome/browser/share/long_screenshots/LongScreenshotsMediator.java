@@ -62,9 +62,11 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
     private int mDragStartViewHeight;
 
     // Amount by which tapping up/down scrolls the viewport.
-    private static final int BUTTON_SCROLL_STEP_PX = 500;
+    private static final int BUTTON_SCROLL_STEP_PX = 100;
     // Minimum selectable screenshot, vertical size.
     private static final int MINIMUM_VERTICAL_SELECTION_PX = 50;
+    // Minimum height for mask views; should scale with ImageView margins.
+    private static final int MINIMUM_MASK_HEIGHT_PX = 20;
 
     private static final String TAG = "long_screenshots";
 
@@ -171,28 +173,37 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
                 - mBottomAreaMaskView.getHeight();
     }
 
-    // User tapped the down button inside the top mask selector.
+    // User tapped the down button inside the bottom mask selector; expand region downward.
     public void areaSelectionDown(View view) {
-        int oldY = getTopMaskY();
-        int newY = oldY + BUTTON_SCROLL_STEP_PX;
-        newY = Math.min(newY, getBottomMaskY() - MINIMUM_VERTICAL_SELECTION_PX);
-
-        ViewGroup.LayoutParams params = mTopAreaMaskView.getLayoutParams();
-        params.height = newY;
-        mTopAreaMaskView.setLayoutParams(params);
-        mScrollView.smoothScrollBy(0, newY - oldY);
+        expandScreenshotRegion(false);
     }
 
-    // User tapped the up button inside the bottom mask selector.
+    // User tapped the up button inside the top mask selector; expand region upward.
     public void areaSelectionUp(View view) {
-        int oldY = getBottomMaskY();
-        int newY = oldY - BUTTON_SCROLL_STEP_PX;
-        newY = Math.max(newY, getTopMaskY() + MINIMUM_VERTICAL_SELECTION_PX);
+        expandScreenshotRegion(true);
+    }
 
-        ViewGroup.LayoutParams params = mBottomAreaMaskView.getLayoutParams();
-        params.height = newY;
-        mBottomAreaMaskView.setLayoutParams(params);
-        mScrollView.smoothScrollBy(0, newY - oldY);
+    // Helper for areaSelectionDown/areaSelectionUp.
+    // Tapping on the buttons shrinks a mask region, expanding the screenshot area.
+    private void expandScreenshotRegion(boolean isTop) {
+        View maskView = (isTop ? mTopAreaMaskView : mBottomAreaMaskView);
+        int oldHeight = maskView.getHeight();
+
+        // Message if we reached the extent of allowable capture.
+        if (oldHeight <= MINIMUM_MASK_HEIGHT_PX) {
+            Toast.makeText(mActivity,
+                         (isTop ? R.string.sharing_long_screenshot_reached_top
+                                : R.string.sharing_long_screenshot_reached_bottom),
+                         Toast.LENGTH_LONG)
+                    .show();
+            return;
+        }
+
+        int newHeight = Math.max(MINIMUM_MASK_HEIGHT_PX, oldHeight - BUTTON_SCROLL_STEP_PX);
+        ViewGroup.LayoutParams params = maskView.getLayoutParams();
+        params.height = newHeight;
+        maskView.setLayoutParams(params);
+        mScrollView.smoothScrollBy(0, (isTop ? 1 : -1) * (newHeight - oldHeight));
     }
 
     // Performs postprocessing or error handling on new entry availability.
@@ -270,6 +281,10 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
             startY = (int) (startY * imageScale);
             endY = (int) (endY * imageScale);
         }
+
+        // Ensure in any case we don't crop beyond the bounds of the screenshot.
+        startY = Math.max(startY, 0);
+        endY = Math.min(endY, mFullBitmap.getHeight() - 1);
 
         Bitmap cropped =
                 Bitmap.createBitmap(mFullBitmap, 0, startY, mFullBitmap.getWidth(), endY - startY);
