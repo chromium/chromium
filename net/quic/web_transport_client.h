@@ -56,10 +56,14 @@ class NET_EXPORT WebTransportClientVisitor {
   virtual ~WebTransportClientVisitor();
 
   // State change notifiers.
-  virtual void OnConnected() = 0;         // CONNECTING -> CONNECTED
-  virtual void OnConnectionFailed() = 0;  // CONNECTING -> FAILED
-  virtual void OnClosed() = 0;            // CONNECTED -> CLOSED
-  virtual void OnError() = 0;             // CONNECTED -> FAILED
+  // CONNECTING -> CONNECTED
+  virtual void OnConnected() = 0;
+  // CONNECTING -> FAILED
+  virtual void OnConnectionFailed(const WebTransportError& error) = 0;
+  // CONNECTED -> CLOSED
+  virtual void OnClosed() = 0;
+  // CONNECTED -> FAILED
+  virtual void OnError(const WebTransportError& error) = 0;
 
   virtual void OnIncomingBidirectionalStreamAvailable() = 0;
   virtual void OnIncomingUnidirectionalStreamAvailable() = 0;
@@ -101,7 +105,6 @@ class NET_EXPORT WebTransportClient {
 
   // session() can be nullptr in states other than CONNECTED.
   virtual quic::WebTransportSession* session() = 0;
-  virtual const WebTransportError& error() const = 0;
 };
 
 // Creates a WebTransport client for |url| accessed from |origin| with the

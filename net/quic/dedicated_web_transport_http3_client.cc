@@ -222,10 +222,6 @@ void DedicatedWebTransportHttp3Client::Connect() {
   DoLoop(OK);
 }
 
-const WebTransportError& DedicatedWebTransportHttp3Client::error() const {
-  return *error_;
-}
-
 quic::WebTransportSession* DedicatedWebTransportHttp3Client::session() {
   if (web_transport_session_ == nullptr)
     return nullptr;
@@ -531,11 +527,11 @@ void DedicatedWebTransportHttp3Client::TransitionToState(
     case FAILED:
       DCHECK(error_.has_value());
       if (last_state == CONNECTING) {
-        visitor_->OnConnectionFailed();
+        visitor_->OnConnectionFailed(*error_);
         break;
       }
       DCHECK_EQ(last_state, CONNECTED);
-      visitor_->OnError();
+      visitor_->OnError(*error_);
       break;
 
     default:

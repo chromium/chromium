@@ -19,10 +19,9 @@ class FailedWebTransportClient : public WebTransportClient {
                ErrorToString(net_error),
                /*safe_to_report_details=*/true),
         visitor_(visitor) {}
-  void Connect() override { visitor_->OnConnectionFailed(); }
+  void Connect() override { visitor_->OnConnectionFailed(error_); }
 
   quic::WebTransportSession* session() override { return nullptr; }
-  const WebTransportError& error() const override { return error_; }
 
  private:
   WebTransportError error_;

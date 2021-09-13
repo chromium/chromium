@@ -59,7 +59,6 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
   ~DedicatedWebTransportHttp3Client() override;
 
   WebTransportState state() const { return state_; }
-  const WebTransportError& error() const override;
 
   // Connect() is an asynchronous operation.  Once the operation is finished,
   // OnConnected() or OnConnectionFailed() is called on the Visitor.

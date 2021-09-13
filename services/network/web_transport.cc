@@ -484,7 +484,7 @@ void WebTransport::OnConnected() {
       base::BindOnce(&WebTransport::Dispose, base::Unretained(this)));
 }
 
-void WebTransport::OnConnectionFailed() {
+void WebTransport::OnConnectionFailed(const net::WebTransportError& error) {
   if (torn_down_) {
     return;
   }
@@ -493,7 +493,7 @@ void WebTransport::OnConnectionFailed() {
 
   // Here we assume that the error is not going to handed to the
   // initiator renderer.
-  handshake_client_->OnHandshakeFailed(transport_->error());
+  handshake_client_->OnHandshakeFailed(error);
 
   TearDown();
 }
@@ -508,7 +508,7 @@ void WebTransport::OnClosed() {
   TearDown();
 }
 
-void WebTransport::OnError() {
+void WebTransport::OnError(const net::WebTransportError& error) {
   if (torn_down_) {
     return;
   }

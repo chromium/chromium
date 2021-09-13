@@ -70,9 +70,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebTransport final
 
   // WebTransportClientVisitor implementation:
   void OnConnected() override;
-  void OnConnectionFailed() override;
+  void OnConnectionFailed(const net::WebTransportError& error) override;
   void OnClosed() override;
-  void OnError() override;
+  void OnError(const net::WebTransportError& error) override;
   void OnIncomingBidirectionalStreamAvailable() override;
   void OnIncomingUnidirectionalStreamAvailable() override;
   void OnDatagramReceived(base::StringPiece datagram) override;
