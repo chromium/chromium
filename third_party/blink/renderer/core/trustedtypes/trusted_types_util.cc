@@ -218,8 +218,7 @@ bool TrustedTypeFail(TrustedTypeViolationKind kind,
   }
   probe::OnContentSecurityPolicyViolation(
       const_cast<ExecutionContext*>(execution_context),
-      ContentSecurityPolicy::ContentSecurityPolicyViolationType::
-          kTrustedTypesSinkViolation);
+      ContentSecurityPolicyViolationType::kTrustedTypesSinkViolation);
 
   if (!allow) {
     exception_state.ThrowTypeError(GetMessage(kind));

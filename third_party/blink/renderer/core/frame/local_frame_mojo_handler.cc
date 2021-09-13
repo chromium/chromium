@@ -764,7 +764,7 @@ void LocalFrameMojoHandler::ReportContentSecurityPolicyViolation(
       violation->directive, directive_type, violation->console_message,
       violation->blocked_url, violation->report_endpoints,
       violation->use_reporting_api, violation->header, violation->type,
-      ContentSecurityPolicy::ContentSecurityPolicyViolationType::kURLViolation,
+      ContentSecurityPolicyViolationType::kURLViolation,
       std::move(source_location), context_frame,
       violation->after_redirect ? RedirectStatus::kFollowedRedirect
                                 : RedirectStatus::kNoRedirect,

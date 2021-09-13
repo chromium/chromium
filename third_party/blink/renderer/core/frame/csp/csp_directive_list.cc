@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
+#include "third_party/blink/renderer/core/frame/csp/content_security_policy_violation_type.h"
 #include "third_party/blink/renderer/core/frame/csp/source_list_directive.h"
 #include "third_party/blink/renderer/core/frame/csp/trusted_types_directive.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
@@ -171,8 +172,8 @@ void ReportViolation(
     const String& console_message,
     const KURL& blocked_url,
     ResourceRequest::RedirectStatus redirect_status,
-    ContentSecurityPolicy::ContentSecurityPolicyViolationType violation_type =
-        ContentSecurityPolicy::kURLViolation,
+    ContentSecurityPolicyViolationType violation_type =
+        ContentSecurityPolicyViolationType::kURLViolation,
     const String& sample = String(),
     const String& sample_prefix = String(),
     absl::optional<base::UnguessableToken> issue_id = absl::nullopt) {
@@ -214,7 +215,7 @@ void ReportViolationWithLocation(
   policy->ReportViolation(directive_text, effective_type, message, blocked_url,
                           csp.report_endpoints, csp.use_reporting_api,
                           csp.header->header_value, csp.header->type,
-                          ContentSecurityPolicy::kInlineViolation,
+                          ContentSecurityPolicyViolationType::kInlineViolation,
                           std::move(source_location), nullptr,  // localFrame
                           RedirectStatus::kNoRedirect, element, source);
 }
@@ -244,7 +245,7 @@ void ReportEvalViolation(
   policy->ReportViolation(directive_text, effective_type, message, blocked_url,
                           csp.report_endpoints, csp.use_reporting_api,
                           csp.header->header_value, csp.header->type,
-                          ContentSecurityPolicy::kEvalViolation,
+                          ContentSecurityPolicyViolationType::kEvalViolation,
                           std::unique_ptr<SourceLocation>(), nullptr,
                           RedirectStatus::kNoRedirect, nullptr, content);
 }
@@ -577,13 +578,14 @@ bool CSPDirectiveListAllowTrustedTypeAssignmentFailure(
   if (!CSPDirectiveListRequiresTrustedTypes(csp))
     return true;
 
-  ReportViolation(csp, policy,
-                  ContentSecurityPolicy::GetDirectiveName(
-                      CSPDirectiveName::RequireTrustedTypesFor),
-                  CSPDirectiveName::RequireTrustedTypesFor, message, KURL(),
-                  RedirectStatus::kNoRedirect,
-                  ContentSecurityPolicy::kTrustedTypesSinkViolation, sample,
-                  sample_prefix, issue_id);
+  ReportViolation(
+      csp, policy,
+      ContentSecurityPolicy::GetDirectiveName(
+          CSPDirectiveName::RequireTrustedTypesFor),
+      CSPDirectiveName::RequireTrustedTypesFor, message, KURL(),
+      RedirectStatus::kNoRedirect,
+      ContentSecurityPolicyViolationType::kTrustedTypesSinkViolation, sample,
+      sample_prefix, issue_id);
   return CSPDirectiveListIsReportOnly(csp);
 }
 
@@ -819,12 +821,13 @@ bool CSPDirectiveListAllowTrustedTypePolicy(
           : "Refused to create a TrustedTypePolicy named '%s' because "
             "it violates the following Content Security Policy directive: "
             "\"%s\".";
-  ReportViolation(csp, policy, "trusted-types", CSPDirectiveName::TrustedTypes,
-                  String::Format(message, policy_name.Utf8().c_str(),
-                                 raw_directive.Utf8().c_str()),
-                  KURL(), RedirectStatus::kNoRedirect,
-                  ContentSecurityPolicy::kTrustedTypesPolicyViolation,
-                  policy_name, String(), issue_id);
+  ReportViolation(
+      csp, policy, "trusted-types", CSPDirectiveName::TrustedTypes,
+      String::Format(message, policy_name.Utf8().c_str(),
+                     raw_directive.Utf8().c_str()),
+      KURL(), RedirectStatus::kNoRedirect,
+      ContentSecurityPolicyViolationType::kTrustedTypesPolicyViolation,
+      policy_name, String(), issue_id);
 
   return CSPDirectiveListIsReportOnly(csp);
 }

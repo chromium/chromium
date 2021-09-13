@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
+#include "third_party/blink/renderer/core/frame/csp/content_security_policy_violation_type.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/inspector/inspector_dom_agent.h"
 #include "third_party/blink/renderer/core/inspector/resolve_node.h"
@@ -846,15 +847,12 @@ void InspectorDOMDebuggerAgent::DidSuspendAudioContext() {
       true);
 }
 
-String ViolationTypeToString(
-    const ContentSecurityPolicy::ContentSecurityPolicyViolationType type) {
+String ViolationTypeToString(const ContentSecurityPolicyViolationType type) {
   switch (type) {
-    case ContentSecurityPolicy::ContentSecurityPolicyViolationType::
-        kTrustedTypesSinkViolation:
+    case ContentSecurityPolicyViolationType::kTrustedTypesSinkViolation:
       return protocol::DOMDebugger::CSPViolationTypeEnum::
           TrustedtypeSinkViolation;
-    case ContentSecurityPolicy::ContentSecurityPolicyViolationType::
-        kTrustedTypesPolicyViolation:
+    case ContentSecurityPolicyViolationType::kTrustedTypesPolicyViolation:
       return protocol::DOMDebugger::CSPViolationTypeEnum::
           TrustedtypePolicyViolation;
     default:
@@ -863,8 +861,7 @@ String ViolationTypeToString(
 }
 
 void InspectorDOMDebuggerAgent::OnContentSecurityPolicyViolation(
-    const ContentSecurityPolicy::ContentSecurityPolicyViolationType
-        violationType) {
+    const ContentSecurityPolicyViolationType violationType) {
   auto violationString = ViolationTypeToString(violationType);
   if (!csp_violation_breakpoints_.Get(violationString))
     return;

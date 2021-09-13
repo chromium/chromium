@@ -78,8 +78,7 @@ TrustedTypePolicy* TrustedTypePolicyFactory::createPolicy(
       // in case policy is a report-only one.
       probe::OnContentSecurityPolicyViolation(
           GetExecutionContext(),
-          ContentSecurityPolicy::ContentSecurityPolicyViolationType::
-              kTrustedTypesPolicyViolation);
+          ContentSecurityPolicyViolationType::kTrustedTypesPolicyViolation);
     }
     if (disallowed) {
       // For a better error message, we'd like to disambiguate between

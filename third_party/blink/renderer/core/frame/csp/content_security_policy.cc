@@ -851,7 +851,7 @@ std::unique_ptr<SourceLocation> GatherSecurityPolicyViolationEventData(
     const String& header,
     RedirectStatus redirect_status,
     ContentSecurityPolicyType header_type,
-    ContentSecurityPolicy::ContentSecurityPolicyViolationType violation_type,
+    ContentSecurityPolicyViolationType violation_type,
     std::unique_ptr<SourceLocation> source_location,
     const String& script_source,
     const String& sample_prefix) {
@@ -870,13 +870,13 @@ std::unique_ptr<SourceLocation> GatherSecurityPolicyViolationEventData(
         RedirectStatus::kNoRedirect, CSPDirectiveName::DefaultSrc);
     init->setDocumentURI(stripped_url);
     switch (violation_type) {
-      case ContentSecurityPolicy::kInlineViolation:
+      case ContentSecurityPolicyViolationType::kInlineViolation:
         init->setBlockedURI("inline");
         break;
-      case ContentSecurityPolicy::kEvalViolation:
+      case ContentSecurityPolicyViolationType::kEvalViolation:
         init->setBlockedURI("eval");
         break;
-      case ContentSecurityPolicy::kURLViolation:
+      case ContentSecurityPolicyViolationType::kURLViolation:
         // We pass RedirectStatus::kNoRedirect so that StripURLForUseInReport
         // does not strip path and query from the URL. This is safe since
         // blocked_url at this point is always the original url (before
@@ -885,10 +885,10 @@ std::unique_ptr<SourceLocation> GatherSecurityPolicyViolationEventData(
             delegate->GetSecurityOrigin(), blocked_url,
             RedirectStatus::kNoRedirect, effective_type));
         break;
-      case ContentSecurityPolicy::kTrustedTypesSinkViolation:
+      case ContentSecurityPolicyViolationType::kTrustedTypesSinkViolation:
         init->setBlockedURI("trusted-types-sink");
         break;
-      case ContentSecurityPolicy::kTrustedTypesPolicyViolation:
+      case ContentSecurityPolicyViolationType::kTrustedTypesPolicyViolation:
         init->setBlockedURI("trusted-types-policy");
         break;
     }
@@ -1124,7 +1124,7 @@ void ContentSecurityPolicy::ReportMixedContent(const KURL& blocked_url,
                       blocked_url, policy->report_endpoints,
                       policy->use_reporting_api, policy->header->header_value,
                       policy->header->type,
-                      ContentSecurityPolicy::kURLViolation,
+                      ContentSecurityPolicyViolationType::kURLViolation,
                       std::unique_ptr<SourceLocation>(),
                       /*contextFrame=*/nullptr, redirect_status);
     }
@@ -1151,24 +1151,20 @@ void ContentSecurityPolicy::LogToConsole(const String& message,
 
 mojom::blink::ContentSecurityPolicyViolationType
 ContentSecurityPolicy::BuildCSPViolationType(
-    ContentSecurityPolicy::ContentSecurityPolicyViolationType violation_type) {
+    ContentSecurityPolicyViolationType violation_type) {
   switch (violation_type) {
-    case blink::ContentSecurityPolicy::ContentSecurityPolicyViolationType::
-        kEvalViolation:
+    case blink::ContentSecurityPolicyViolationType::kEvalViolation:
       return mojom::blink::ContentSecurityPolicyViolationType::kEvalViolation;
-    case blink::ContentSecurityPolicy::ContentSecurityPolicyViolationType::
-        kInlineViolation:
+    case blink::ContentSecurityPolicyViolationType::kInlineViolation:
       return mojom::blink::ContentSecurityPolicyViolationType::kInlineViolation;
-    case blink::ContentSecurityPolicy::ContentSecurityPolicyViolationType::
+    case blink::ContentSecurityPolicyViolationType::
         kTrustedTypesPolicyViolation:
       return mojom::blink::ContentSecurityPolicyViolationType::
           kTrustedTypesPolicyViolation;
-    case blink::ContentSecurityPolicy::ContentSecurityPolicyViolationType::
-        kTrustedTypesSinkViolation:
+    case blink::ContentSecurityPolicyViolationType::kTrustedTypesSinkViolation:
       return mojom::blink::ContentSecurityPolicyViolationType::
           kTrustedTypesSinkViolation;
-    case blink::ContentSecurityPolicy::ContentSecurityPolicyViolationType::
-        kURLViolation:
+    case blink::ContentSecurityPolicyViolationType::kURLViolation:
       return mojom::blink::ContentSecurityPolicyViolationType::kURLViolation;
   }
 }

@@ -15,6 +15,7 @@ blink_core_sources_frame = [
   "coop_access_violation_report_body.h",
   "csp/content_security_policy.cc",
   "csp/content_security_policy.h",
+  "csp/content_security_policy_violation_type.h",
   "csp/conversion_util.cc",
   "csp/conversion_util.h",
   "csp/csp_directive_list.cc",

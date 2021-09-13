@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
+#include "third_party/blink/renderer/core/frame/csp/content_security_policy_violation_type.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -134,21 +135,6 @@ class CORE_EXPORT ContentSecurityPolicy final
     : public GarbageCollected<ContentSecurityPolicy> {
  public:
   enum ExceptionStatus { kWillThrowException, kWillNotThrowException };
-
-  // This covers the possible values of a violation's 'resource', as defined in
-  // https://w3c.github.io/webappsec-csp/#violation-resource. By the time we
-  // generate a report, we're guaranteed that the value isn't 'null', so we
-  // don't need that state in this enum.
-  //
-  // Trusted Types violation's 'resource' values are defined in
-  // https://wicg.github.io/trusted-types/dist/spec/#csp-violation-object-hdr.
-  enum ContentSecurityPolicyViolationType {
-    kInlineViolation,
-    kEvalViolation,
-    kURLViolation,
-    kTrustedTypesSinkViolation,
-    kTrustedTypesPolicyViolation
-  };
 
   // The |type| argument given to inline checks, e.g.:
   // https://w3c.github.io/webappsec-csp/#should-block-inline
@@ -483,7 +469,7 @@ class CORE_EXPORT ContentSecurityPolicy final
   // TODO: Consider replacing 'ContentSecurityPolicy::ViolationType' with the
   // mojo enum.
   mojom::blink::ContentSecurityPolicyViolationType BuildCSPViolationType(
-      ContentSecurityPolicy::ContentSecurityPolicyViolationType violation_type);
+      ContentSecurityPolicyViolationType violation_type);
 
   void ReportContentSecurityPolicyIssue(
       const blink::SecurityPolicyViolationEventInit& violation_data,
