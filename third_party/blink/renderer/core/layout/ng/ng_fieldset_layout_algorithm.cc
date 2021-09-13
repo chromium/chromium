@@ -133,6 +133,7 @@ scoped_refptr<const NGLayoutResult> NGFieldsetLayoutAlgorithm::Layout() {
       return RelayoutAndBreakEarlier<NGFieldsetLayoutAlgorithm>(
           container_builder_.EarlyBreak());
     }
+    DCHECK_EQ(status, NGBreakStatus::kContinue);
   } else {
 #if DCHECK_IS_ON()
     // If we're not participating in a fragmentation context, no block
@@ -366,8 +367,7 @@ NGBreakStatus NGFieldsetLayoutAlgorithm::LayoutFieldsetContent(
           fieldset_content, adjusted_padding_box_size, intrinsic_block_size_,
           NGCacheSlot::kMeasure);
       LayoutUnit intrinsic_content_block_size =
-          fieldset_content.Layout(child_measure_space, content_break_token)
-              ->IntrinsicBlockSize();
+          fieldset_content.Layout(child_measure_space)->IntrinsicBlockSize();
       if (intrinsic_content_block_size > max_content_block_size)
         adjusted_padding_box_size.block_size = max_content_block_size;
     }
@@ -508,7 +508,8 @@ NGFieldsetLayoutAlgorithm::CreateConstraintSpaceForFieldsetContent(
       ConstraintSpace().PercentageResolutionSize());
   builder.SetIsFixedBlockSize(padding_box_size.block_size != kIndefiniteSize);
 
-  if (ConstraintSpace().HasBlockFragmentation()) {
+  if (ConstraintSpace().HasBlockFragmentation() &&
+      slot != NGCacheSlot::kMeasure) {
     SetupSpaceBuilderForFragmentation(ConstraintSpace(), fieldset_content,
                                       block_offset, &builder,
                                       /* is_new_fc */ true);
