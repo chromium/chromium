@@ -157,6 +157,8 @@ extern const base::FeatureParam<std::string>
 // When specifying these values on the command-line, the commas and semicolons
 // should be escaped using URL encoding. I.e. '1;2,3;4' -> '1%3B2%2C3%3B4'.
 //
+// See SurfaceSetValuation for details on the costing model.
+//
 // E.g.:
 //   * "261;0.5" : Sets the relative cost of 0.5 for surface with ID 261, which
 //   is a surface of type kWebFeature and token 1.
@@ -175,6 +177,8 @@ extern const base::FeatureParam<std::string> kIdentifiabilityStudyPerHashCost;
 //
 // When specifying these values on the command-line, the commas and semicolons
 // should be escaped using URL encoding. I.e. '1;2,3;4' -> '1%3B2%2C3%3B4'.
+//
+// See SurfaceSetValuation for details on the costing model.
 //
 // E.g.:
 //   * "1;0.5" : Sets the relative cost of 0.5 for all surfaces of type

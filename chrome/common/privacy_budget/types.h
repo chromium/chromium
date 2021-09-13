@@ -46,23 +46,8 @@ using IdentifiableSurfaceSampleRateMap =
 using IdentifiableSurfaceTypeSampleRateMap =
     base::flat_map<blink::IdentifiableSurface::Type, unsigned int>;
 
-// Costs are represented as a ratio relative to the "median" identifiability of
-// a single API. This odd choice is due to backwards compatibility where prior
-// versions of the study controlled client exposure via placing a limit on the
-// _number_ of surfaces sampled.
-//
-// Relative costs are in the logarithmic domain. Explained below.
-//
-// Let's say there's a surface 𝐀 whose value can be used to uniformly divide the
-// audience in to four segments. In terms of Shannon entropy one might say that
-// the information content of surface 𝐀 is log₂4 bits. Now if there's another
-// surface 𝐁 whose relative cost is 0.5, then 𝐁 would have a Shannon entropy of
-// 0.5×log₂4 bits. In other words 𝐁 has the information content equivalent to
-// what's needed to uniformly divide an audience into √4=2 equal parts.
-//
-// In general, if the median identifiability is 𝐦, and the relative
-// identifiability of a surface is 𝐫, then the identifiability of that surface
-// is mʳ.
+// See SurfaceSetValuation for details on the costing model and the units for
+// cost.
 using PrivacyBudgetCost = double;
 
 using IdentifiableSurfaceCostMap =
