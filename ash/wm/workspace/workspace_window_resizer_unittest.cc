@@ -2255,7 +2255,6 @@ TEST_F(WorkspaceWindowResizerTest, HorizontalMoveNotTriggerSnap) {
   resizer = CreateResizerForTest(window_.get());
   resizer->Drag(gfx::PointF(1.f, 1.f), 0);
   resizer->Drag(gfx::PointF(100.f, 1.f), 0);
-  DwellCountdownTimerFireNow();
   resizer->CompleteDrag();
   window_state = WindowState::Get(window_.get());
   EXPECT_FALSE(window_state->IsMaximized());
@@ -2274,6 +2273,10 @@ class PortraitWorkspaceWindowResizerTest : public WorkspaceWindowResizerTest {
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(features::kVerticalSnapState);
     WorkspaceWindowResizerTest::SetUp();
+    UpdateDisplay("600x800");
+
+    // Make the window snappable.
+    AllowSnap(window_.get());
   }
 
  private:
@@ -2290,12 +2293,11 @@ TEST_F(PortraitWorkspaceWindowResizerTest, MultiDisplaySnapPhantom) {
   window_->SetBoundsInScreen(gfx::Rect(0, 0, 50, 60),
                              display::Screen::GetScreen()->GetPrimaryDisplay());
 
-  // Make the window snappable.
-  AllowSnap(window_.get());
   gfx::Rect work_area(
       screen_util::GetDisplayWorkAreaBoundsInParent(window_.get()));
   EXPECT_EQ(root_windows[0], window_->GetRootWindow());
   EXPECT_FLOAT_EQ(1.0f, window_->layer()->opacity());
+
   std::unique_ptr<WindowResizer> resizer = CreateResizerForTest(window_.get());
   ASSERT_TRUE(resizer.get());
   EXPECT_FALSE(snap_phantom_window_controller());
@@ -2318,22 +2320,87 @@ TEST_F(PortraitWorkspaceWindowResizerTest, MultiDisplaySnapPhantom) {
   Shell::Get()->cursor_manager()->SetDisplay(display);
   work_area = display.work_area();
 
-  // TODO(crbug/1236166): Update the test to dragging to top/bottom area
-  // instead of left/right to trigger snap in portrait mode.
-  // Move the window to the portrait display. Now the snap left should show
-  // top phantom window.
-  resizer->Drag(CalculateDragPoint(*resizer, 810, 0), 0);
+  // Move the window to the portrait display to snap top with vertical movement
+  // more than |kSnapTriggerVerticalMoveThreshold| to show top phantom window.
+  resizer->Drag(CalculateDragPoint(*resizer, 1100, 67), 0);
+  resizer->Drag(CalculateDragPoint(*resizer, 1100, 2), 0);
+  resizer->Drag(CalculateDragPoint(*resizer, 1100, 1), 0);
   EXPECT_TRUE(snap_phantom_window_controller());
   EXPECT_EQ(gfx::Rect(800, 0, work_area.width(), work_area.height() / 2),
             snap_phantom_window_controller()->GetTargetBoundsForTesting());
 
-  // Move the window to the portrait display. Now the snap right should show
+  // Move the window to the portrait display. Now the snap bottom should show
   // bottom phantom window.
-  resizer->Drag(CalculateDragPoint(*resizer, 1399, 0), 0);
+  resizer->Drag(CalculateDragPoint(*resizer, 1100, 780), 0);
+  resizer->Drag(CalculateDragPoint(*resizer, 1100, 781), 0);
   EXPECT_TRUE(snap_phantom_window_controller());
   EXPECT_EQ(gfx::Rect(800, work_area.height() / 2, work_area.width(),
                       work_area.height() / 2),
             snap_phantom_window_controller()->GetTargetBoundsForTesting());
+}
+
+// Tests that dragging window to top triggers top snap.
+TEST_F(PortraitWorkspaceWindowResizerTest, SnapTop) {
+  const gfx::Rect restore_bounds(50, 50, 100, 100);
+  window_->SetBounds(restore_bounds);
+  const gfx::Rect work_area =
+      screen_util::GetDisplayWorkAreaBoundsInParent(window_.get());
+  const float work_area_center_x = work_area.CenterPoint().x();
+
+  constexpr int kScreenEdgeInsetForSnappingTop = 8;
+  std::unique_ptr<WindowResizer> resizer(
+      CreateResizerForTest(window_.get(), gfx::Point(0, 100), HTCAPTION));
+  // Drag to a top-snap region should snap top.
+  resizer->Drag(
+      gfx::PointF(work_area_center_x, kScreenEdgeInsetForSnappingTop + 1), 0);
+  resizer->Drag(gfx::PointF(work_area_center_x, kScreenEdgeInsetForSnappingTop),
+                0);
+  EXPECT_FALSE(snap_phantom_window_controller());
+  resizer->Drag(
+      gfx::PointF(work_area_center_x, kScreenEdgeInsetForSnappingTop - 1), 0);
+  auto* phantom_controller = snap_phantom_window_controller();
+  ASSERT_TRUE(phantom_controller);
+
+  const gfx::Rect expected_snapped_bounds(work_area.width(),
+                                          work_area.height() / 2);
+  EXPECT_EQ(expected_snapped_bounds,
+            phantom_controller->GetTargetBoundsForTesting());
+  resizer->CompleteDrag();
+  EXPECT_TRUE(WindowState::Get(window_.get())->IsSnapped());
+  EXPECT_EQ(expected_snapped_bounds, window_->bounds());
+}
+
+// Tests that dragging window to bottom area trigger bottom snap.
+TEST_F(PortraitWorkspaceWindowResizerTest, SnapBottom) {
+  const gfx::Rect restore_bounds(50, 50, 100, 100);
+  window_->SetBounds(restore_bounds);
+  const gfx::Rect work_area =
+      screen_util::GetDisplayWorkAreaBoundsInParent(window_.get());
+  const float work_area_center_x = work_area.CenterPoint().x();
+
+  std::unique_ptr<WindowResizer> resizer(
+      CreateResizerForTest(window_.get(), gfx::Point(), HTCAPTION));
+  constexpr int kScreenEdgeInsetForSnappingSides = 32;
+  EXPECT_FALSE(snap_phantom_window_controller());
+  // Drag to a bottom-snap region should snap bottom. Bottom area should
+  // be with
+  resizer->Drag(
+      gfx::PointF(work_area_center_x,
+                  work_area.bottom() - kScreenEdgeInsetForSnappingSides - 2),
+      0);
+  EXPECT_FALSE(snap_phantom_window_controller());
+  resizer->Drag(
+      gfx::PointF(work_area_center_x,
+                  work_area.bottom() - kScreenEdgeInsetForSnappingSides - 1),
+      0);
+  ASSERT_TRUE(snap_phantom_window_controller());
+
+  const gfx::Rect expected_snapped_bounds(
+      0, work_area.bottom() / 2, work_area.width(), work_area.height() / 2);
+
+  resizer->CompleteDrag();
+  EXPECT_TRUE(WindowState::Get(window_.get())->IsSnapped());
+  EXPECT_EQ(expected_snapped_bounds, window_->bounds());
 }
 
 }  // namespace ash

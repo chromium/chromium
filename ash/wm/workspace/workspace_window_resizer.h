@@ -128,9 +128,15 @@ class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
   int PrimaryAxisSize(const gfx::Size& size) const;
   int PrimaryAxisCoordinate(int x, int y) const;
 
-  // Updates the bounds of the phantom window for window snapping.
-  void UpdateSnapPhantomWindow(const gfx::PointF& location_in_screen,
-                               const gfx::Rect& bounds);
+  // From a given snap |type| and a current display orientation, returns true
+  // if the snap is snap top or maximize. This function is used to decide if
+  // we need to show the phantom window for top snap or maximize or not.
+  bool IsSnapTopOrMaximize(SnapType type) const;
+
+  // Updates the bounds of the phantom window where the snap bounds are
+  // calculated from GetSnappedWindowBounds() given a |target_snap_type| and
+  // maximize bounds is from full display work area.
+  void UpdateSnapPhantomWindow(const SnapType target_snap_type);
 
   // Restacks the windows z-order position so that one of the windows is at the
   // top of the z-order, and the rest directly underneath it.
