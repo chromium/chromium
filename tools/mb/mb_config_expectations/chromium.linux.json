@@ -20,6 +20,17 @@
       "use_goma": true
     }
   },
+  "Cast Linux ARM64": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_chromecast": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "use_goma": true
+    }
+  },
   "Cast Linux Debug": {
     "gn_args": {
       "is_chromecast": true,
