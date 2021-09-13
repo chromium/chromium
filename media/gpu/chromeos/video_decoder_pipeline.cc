@@ -637,7 +637,8 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
 
   std::unique_ptr<ImageProcessor> image_processor =
       ImageProcessorFactory::CreateWithInputCandidates(
-          candidates, /*input_visible_rect=*/decoder_visible_rect, *output_size,
+          candidates, /*input_visible_rect=*/decoder_visible_rect,
+          output_size ? *output_size : decoder_visible_rect.size(),
           kNumFramesForImageProcessor, decoder_task_runner_,
           base::BindRepeating(&PickRenderableFourcc),
           BindToCurrentLoop(base::BindRepeating(&VideoDecoderPipeline::OnError,
