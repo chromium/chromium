@@ -57,6 +57,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
   NGOutOfFlowLayoutPart(
       bool is_absolute_container,
       bool is_fixed_container,
+      bool is_grid_container,
       const ComputedStyle& container_style,
       const NGConstraintSpace& container_space,
       NGBoxFragmentBuilder* container_builder,
