@@ -38,7 +38,7 @@ void SVGMaskPainter::Paint(GraphicsContext& context,
     return;
 
   // TODO(fs): Should clip this with the bounds of the mask's PaintRecord.
-  FloatRect visual_rect = properties->MaskClip()->UnsnappedClipRect().Rect();
+  FloatRect visual_rect = properties->MaskClip()->PaintClipRect().Rect();
   DrawingRecorder recorder(context, display_item_client, DisplayItem::kSVGMask,
                            EnclosingIntRect(visual_rect));
 

@@ -76,36 +76,33 @@ class PLATFORM_EXPORT ClipPaintPropertyNode
   struct State {
     State(scoped_refptr<const TransformPaintPropertyNodeOrAlias>
               local_transform_space,
-          const FloatRoundedRect& clip_rect)
-        : State(std::move(local_transform_space), clip_rect, clip_rect) {}
-
-    State(scoped_refptr<const TransformPaintPropertyNodeOrAlias>
-              local_transform_space,
-          const FloatRoundedRect& clip_rect,
-          const FloatRoundedRect& pixel_snapped_clip_rect)
+          const FloatRect& layout_clip_rect,
+          const FloatRoundedRect& paint_clip_rect)
         : local_transform_space(std::move(local_transform_space)) {
-      SetClipRect(clip_rect, pixel_snapped_clip_rect);
+      SetClipRect(layout_clip_rect, paint_clip_rect);
     }
 
     scoped_refptr<const TransformPaintPropertyNodeOrAlias>
         local_transform_space;
-    absl::optional<FloatClipRect> clip_rect_excluding_overlay_scrollbars;
+    absl::optional<FloatClipRect> layout_clip_rect_excluding_overlay_scrollbars;
     scoped_refptr<const RefCountedPath> clip_path;
 
-    void SetClipRect(const FloatRoundedRect& clip_rect_arg,
-                     const FloatRoundedRect& pixel_snapped_clip_rect_arg) {
-      clip_rect = clip_rect_arg;
-      pixel_snapped_clip_rect = pixel_snapped_clip_rect_arg;
+    void SetClipRect(const FloatRect& layout_clip_rect_arg,
+                     const FloatRoundedRect& paint_clip_rect_arg) {
+      layout_clip_rect.SetRect(layout_clip_rect_arg);
+      if (paint_clip_rect_arg.IsRounded())
+        layout_clip_rect.SetHasRadius();
+      paint_clip_rect = paint_clip_rect_arg;
     }
 
     PaintPropertyChangeType ComputeChange(const State& other) const {
       if (local_transform_space != other.local_transform_space ||
-          pixel_snapped_clip_rect != other.pixel_snapped_clip_rect ||
+          paint_clip_rect != other.paint_clip_rect ||
           clip_path != other.clip_path) {
         return PaintPropertyChangeType::kChangedOnlyValues;
       }
-      if (clip_rect_excluding_overlay_scrollbars !=
-          other.clip_rect_excluding_overlay_scrollbars) {
+      if (layout_clip_rect_excluding_overlay_scrollbars !=
+          other.layout_clip_rect_excluding_overlay_scrollbars) {
         return PaintPropertyChangeType::kChangedOnlyNonRerasterValues;
       }
       return PaintPropertyChangeType::kUnchanged;
@@ -114,8 +111,8 @@ class PLATFORM_EXPORT ClipPaintPropertyNode
     friend class ClipPaintPropertyNode;
 
    private:
-    FloatRoundedRect clip_rect;
-    FloatRoundedRect pixel_snapped_clip_rect;
+    FloatClipRect layout_clip_rect;
+    FloatRoundedRect paint_clip_rect;
   };
 
   // This node is really a sentinel, and does not represent a real clip space.
@@ -148,16 +145,19 @@ class PLATFORM_EXPORT ClipPaintPropertyNode
   const TransformPaintPropertyNodeOrAlias& LocalTransformSpace() const {
     return *state_.local_transform_space;
   }
-  // The pixel-snapped clip rect may be the same as the unsnapped one, in cases
-  // where pixel snapping is not desirable for a clip, such as for SVG.
-  const FloatRoundedRect& PixelSnappedClipRect() const {
-    return state_.pixel_snapped_clip_rect;
+  // The clip rect for painting and compositing. It may be pixel snapped, or
+  // not (e.g. for SVG).
+  const FloatRoundedRect& PaintClipRect() const {
+    return state_.paint_clip_rect;
   }
-  const FloatRoundedRect UnsnappedClipRect() const { return state_.clip_rect; }
-  const FloatClipRect UnsnappedClipRectExcludingOverlayScrollbars() const {
-    return state_.clip_rect_excluding_overlay_scrollbars
-               ? *state_.clip_rect_excluding_overlay_scrollbars
-               : FloatClipRect(state_.clip_rect);
+  // The clip rect used for GeometryMapper to map in layout coordinates.
+  const FloatClipRect& LayoutClipRect() const {
+    return state_.layout_clip_rect;
+  }
+  const FloatClipRect& LayoutClipRectExcludingOverlayScrollbars() const {
+    return state_.layout_clip_rect_excluding_overlay_scrollbars
+               ? *state_.layout_clip_rect_excluding_overlay_scrollbars
+               : state_.layout_clip_rect;
   }
 
   const RefCountedPath* ClipPath() const { return state_.clip_path.get(); }

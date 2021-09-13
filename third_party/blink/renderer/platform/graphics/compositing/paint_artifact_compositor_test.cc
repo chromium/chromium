@@ -836,7 +836,7 @@ TEST_P(PaintArtifactCompositorTest, DeeplyNestedClips) {
   for (auto it = clips.rbegin(); it != clips.rend(); ++it) {
     const ClipPaintPropertyNode* paint_clip_node = it->get();
     EXPECT_EQ(cc::ClipNode::ClipType::APPLIES_LOCAL_CLIP, clip_node->clip_type);
-    EXPECT_EQ(paint_clip_node->UnsnappedClipRect().Rect(), clip_node->clip);
+    EXPECT_EQ(paint_clip_node->PaintClipRect().Rect(), clip_node->clip);
     clip_node = GetPropertyTrees().clip_tree.Node(clip_node->parent_id);
   }
 }

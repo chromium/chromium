@@ -222,7 +222,7 @@ void ClipPathClipper::PaintClipPathAsMaskImage(
   // CompositeClipPathAnimation.
   DrawingRecorder recorder(
       context, display_item_client, DisplayItem::kSVGClip,
-      EnclosingIntRect(properties->MaskClip()->UnsnappedClipRect().Rect()));
+      EnclosingIntRect(properties->MaskClip()->PaintClipRect().Rect()));
   context.Save();
   context.Translate(paint_offset.left, paint_offset.top);
 

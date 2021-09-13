@@ -357,12 +357,8 @@ TEST_P(RasterInvalidatorTest, ClipPropertyChangeRounded) {
   // Change both clip0 and clip2.
   invalidator_.SetTracksRasterInvalidations(true);
   FloatRoundedRect new_clip_rect(FloatRect(-2000, -2000, 4000, 4000), radii);
-  clip0->Update(*clip0->Parent(),
-                ClipPaintPropertyNode::State{&clip0->LocalTransformSpace(),
-                                             new_clip_rect});
-  clip2->Update(*clip2->Parent(),
-                ClipPaintPropertyNode::State{&clip2->LocalTransformSpace(),
-                                             new_clip_rect});
+  UpdateClip(*clip0, new_clip_rect);
+  UpdateClip(*clip2, new_clip_rect);
 
   invalidator_.Generate(base::DoNothing(), chunks, kDefaultLayerOffset,
                         kDefaultLayerBounds, layer_state);
@@ -418,9 +414,7 @@ TEST_P(RasterInvalidatorTest, ClipPropertyChangeSimple) {
   // visual change.
   invalidator_.SetTracksRasterInvalidations(true);
   FloatRoundedRect new_clip_rect1(-2000, -2000, 4000, 4000);
-  clip1->Update(*clip1->Parent(),
-                ClipPaintPropertyNode::State{&clip1->LocalTransformSpace(),
-                                             new_clip_rect1});
+  UpdateClip(*clip1, new_clip_rect1);
 
   invalidator_.Generate(base::DoNothing(), chunks, kDefaultLayerOffset,
                         kDefaultLayerBounds, layer_state);
@@ -429,9 +423,7 @@ TEST_P(RasterInvalidatorTest, ClipPropertyChangeSimple) {
 
   // Change clip1 to smaller.
   FloatRoundedRect new_clip_rect2(-500, -500, 1000, 1000);
-  clip1->Update(*clip1->Parent(),
-                ClipPaintPropertyNode::State{&clip1->LocalTransformSpace(),
-                                             new_clip_rect2});
+  UpdateClip(*clip1, new_clip_rect2);
 
   invalidator_.Generate(base::DoNothing(), chunks, kDefaultLayerOffset,
                         kDefaultLayerBounds, layer_state);
@@ -448,9 +440,7 @@ TEST_P(RasterInvalidatorTest, ClipPropertyChangeSimple) {
 
   // Change clip1 bigger at one side.
   FloatRoundedRect new_clip_rect3(-500, -500, 2000, 1000);
-  clip1->Update(*clip1->Parent(),
-                ClipPaintPropertyNode::State{&clip1->LocalTransformSpace(),
-                                             new_clip_rect3});
+  UpdateClip(*clip1, new_clip_rect3);
 
   invalidator_.SetTracksRasterInvalidations(true);
   invalidator_.Generate(base::DoNothing(), chunks, kDefaultLayerOffset,
@@ -481,7 +471,7 @@ TEST_P(RasterInvalidatorTest, ClipChangeOnCachedSubsequence) {
 
   invalidator_.SetTracksRasterInvalidations(true);
   FloatRoundedRect new_clip_rect(-500, -500, 1000, 1000);
-  c1->Update(*c1->Parent(), ClipPaintPropertyNode::State{&t0(), new_clip_rect});
+  UpdateClip(*c1, new_clip_rect);
   invalidator_.Generate(base::DoNothing(), chunks, kDefaultLayerOffset,
                         kDefaultLayerBounds, layer_state);
   EXPECT_THAT(
@@ -517,7 +507,7 @@ TEST_P(RasterInvalidatorTest, ClipPropertyChangeWithOutsetForRasterEffects) {
 
   invalidator_.SetTracksRasterInvalidations(true);
   FloatRoundedRect new_clip_rect(-2000, -2000, 4000, 4000);
-  clip->Update(c0(), ClipPaintPropertyNode::State{&t0(), new_clip_rect});
+  UpdateClip(*clip, new_clip_rect);
 
   invalidator_.Generate(base::DoNothing(), chunks, kDefaultLayerOffset,
                         kDefaultLayerBounds, layer_state);

@@ -214,8 +214,7 @@ class PLATFORM_EXPORT GeometryMapper {
   // on contents of |local_state|, it's not affected by any effect nodes between
   // |local_state| and |ancestor_state|.
   //
-  // The UnsnappedClipRect of any clip nodes is used, *not* the
-  // PixelSnappedClipRect.
+  // The LayoutClipRect of any clip nodes is used, *not* the PaintClipRect.
   //
   // Note that the clip of |ancestor_state| is *not* applied.
   //

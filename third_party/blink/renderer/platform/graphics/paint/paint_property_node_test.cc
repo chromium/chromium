@@ -212,8 +212,9 @@ TEST_F(PaintPropertyNodeTest, ClipChangeAncestor) {
   ResetAllChanged();
   ExpectUnchangedState();
   clip.ancestor->Update(
-      *clip.root, ClipPaintPropertyNode::State{transform.ancestor.get(),
-                                               FloatRoundedRect(1, 2, 3, 4)});
+      *clip.root, ClipPaintPropertyNode::State(transform.ancestor.get(),
+                                               FloatRect(1, 2, 3, 4),
+                                               FloatRoundedRect(1, 2, 3, 4)));
 
   // Test descendant->Changed(ancestor).
   EXPECT_TRUE(clip.ancestor->Changed(
@@ -415,8 +416,9 @@ TEST_F(PaintPropertyNodeTest, ClipChangeOneChild) {
   ResetAllChanged();
   ExpectUnchangedState();
   clip.child1->Update(
-      *clip.root, ClipPaintPropertyNode::State{transform.ancestor.get(),
-                                               FloatRoundedRect(1, 2, 3, 4)});
+      *clip.root, ClipPaintPropertyNode::State(transform.ancestor.get(),
+                                               FloatRect(1, 2, 3, 4),
+                                               FloatRoundedRect(1, 2, 3, 4)));
 
   // Test descendant->Changed(ancestor).
   EXPECT_FALSE(clip.ancestor->Changed(

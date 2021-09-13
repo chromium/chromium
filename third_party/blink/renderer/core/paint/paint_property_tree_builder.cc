@@ -1307,9 +1307,13 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
         if (mask_clip && clip_path_clip)
           combined_clip.Intersect(*clip_path_clip);
 
+        // TODO(crbug.com/1248598): We use pixel-snapped mask clip and clip path
+        // clip as the layout clip rect, which may cause wrong result when
+        // mapping in layout coordinates.
         OnUpdateClip(properties_->UpdateMaskClip(
             *context_.current.clip,
             ClipPaintPropertyNode::State(context_.current.transform,
+                                         FloatRect(combined_clip),
                                          FloatRoundedRect(combined_clip))));
         output_clip = properties_->MaskClip();
       } else {
@@ -1668,7 +1672,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateFragmentClip() {
       OnUpdateClip(properties_->UpdateFragmentClip(
           *context_.current.clip,
           ClipPaintPropertyNode::State(context_.current.transform,
-                                       FloatRoundedRect(FloatRect(clip_rect)),
+                                       FloatRect(clip_rect),
                                        ToSnappedClipRect(clip_rect))));
     } else {
       OnClearClip(properties_->ClearFragmentClip());
@@ -1702,7 +1706,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateCssClip() {
       OnUpdateClip(properties_->UpdateCssClip(
           *context_.current.clip,
           ClipPaintPropertyNode::State(context_.current.transform,
-                                       FloatRoundedRect(FloatRect(clip_rect)),
+                                       FloatRect(clip_rect),
                                        ToSnappedClipRect(clip_rect))));
     } else {
       OnClearClip(properties_->ClearCssClip());
@@ -1718,8 +1722,12 @@ void FragmentPaintPropertyTreeBuilder::UpdateClipPathClip() {
     if (!NeedsClipPathClip(object_, fragment_data_)) {
       OnClearClip(properties_->ClearClipPathClip());
     } else {
+      // TODO(crbug.com/1248598): We use pixel-snapped clip path clip as the
+      // layout clip rect, which may cause wrong result when mapping in layout
+      // coordinates.
       ClipPaintPropertyNode::State state(
           context_.current.transform,
+          FloatRect(*fragment_data_.ClipPathBoundingBox()),
           FloatRoundedRect(*fragment_data_.ClipPathBoundingBox()));
       state.clip_path = fragment_data_.ClipPathPath();
       OnUpdateClip(properties_->UpdateClipPathClip(*context_.current.clip,
@@ -1869,7 +1877,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowControlsClip() {
     OnUpdate(properties_->UpdateOverflowControlsClip(
         *context_.current.clip,
         ClipPaintPropertyNode::State(context_.current.transform,
-                                     FloatRoundedRect(FloatRect(clip_rect)),
+                                     FloatRect(clip_rect),
                                      ToSnappedClipRect(clip_rect))));
   } else {
     OnClear(properties_->ClearOverflowControlsClip());
@@ -1888,7 +1896,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateInnerBorderRadiusClip() {
       PhysicalRect box_rect(context_.current.paint_offset, box.Size());
       ClipPaintPropertyNode::State state(
           context_.current.transform,
-          RoundedBorderGeometry::RoundedInnerBorder(box.StyleRef(), box_rect),
+          RoundedBorderGeometry::RoundedInnerBorder(box.StyleRef(), box_rect)
+              .Rect(),
           RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(box.StyleRef(),
                                                                 box_rect));
       OnUpdateClip(properties_->UpdateInnerBorderRadiusClip(
@@ -1908,7 +1917,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
   if (NeedsPaintPropertyUpdate()) {
     if (NeedsOverflowClip(object_)) {
       ClipPaintPropertyNode::State state(context_.current.transform,
-                                         FloatRoundedRect());
+                                         FloatRect(), FloatRoundedRect());
 
       if (object_.IsLayoutReplaced()) {
         const auto& replaced = To<LayoutReplaced>(object_);
@@ -1931,17 +1940,17 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
                     -(replaced.PaddingRight() + replaced.BorderRight()),
                     -(replaced.PaddingBottom() + replaced.BorderBottom()),
                     -(replaced.PaddingLeft() + replaced.BorderLeft())));
-        state.SetClipRect(clip_rect, clip_rect);
         if (replaced.IsLayoutEmbeddedContent()) {
           // Embedded objects are always sized to fit the content rect, but they
           // could overflow by 1px due to pre-snapping. Adjust clip rect to
           // match pre-snapped box as a special case.
-          FloatRect adjusted_rect = clip_rect.Rect();
-          adjusted_rect.SetSize(FloatSize(replaced.ReplacedContentRect().size));
-          FloatRoundedRect adjusted_clip_rect(adjusted_rect,
-                                              clip_rect.GetRadii());
-          state.SetClipRect(adjusted_clip_rect, adjusted_clip_rect);
+          clip_rect.SetRect(
+              FloatRect(clip_rect.Rect().Location(),
+                        FloatSize(replaced.ReplacedContentRect().size)));
         }
+        // TODO(crbug.com/1248598): Should we use non-snapped clip rect for
+        // the first parameter?
+        state.SetClipRect(clip_rect.Rect(), clip_rect);
       } else if (object_.IsBox()) {
         PhysicalRect clip_rect;
         if (pre_paint_info_) {
@@ -1952,10 +1961,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
           clip_rect = To<LayoutBox>(object_).OverflowClipRect(
               context_.current.paint_offset);
         }
-        state.SetClipRect(FloatRoundedRect(FloatRect(clip_rect)),
-                          ToSnappedClipRect(clip_rect));
+        state.SetClipRect(FloatRect(clip_rect), ToSnappedClipRect(clip_rect));
 
-        state.clip_rect_excluding_overlay_scrollbars =
+        state.layout_clip_rect_excluding_overlay_scrollbars =
             FloatClipRect(FloatRect(To<LayoutBox>(object_).OverflowClipRect(
                 context_.current.paint_offset,
                 kExcludeOverlayScrollbarSizeForHitTesting)));
@@ -1963,10 +1971,12 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
         DCHECK(object_.IsSVGViewportContainer());
         const auto& viewport_container =
             To<LayoutSVGViewportContainer>(object_);
-        const auto clip_rect = FloatRoundedRect(
+        const auto clip_rect =
             viewport_container.LocalToSVGParentTransform().Inverse().MapRect(
-                viewport_container.Viewport()));
-        state.SetClipRect(clip_rect, clip_rect);
+                viewport_container.Viewport());
+        // TODO(crbug.com/1248598): Should we use non-snapped clip rect for
+        // the first parameter?
+        state.SetClipRect(clip_rect, FloatRoundedRect(clip_rect));
       }
       OnUpdateClip(properties_->UpdateOverflowClip(*context_.current.clip,
                                                    std::move(state)));
@@ -2351,7 +2361,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateOutOfFlowContext() {
         OnUpdate(properties_->UpdateCssClipFixedPosition(
             *context_.fixed_position.clip,
             ClipPaintPropertyNode::State(&css_clip->LocalTransformSpace(),
-                                         css_clip->PixelSnappedClipRect())));
+                                         css_clip->LayoutClipRect().Rect(),
+                                         css_clip->PaintClipRect())));
       }
       if (properties_->CssClipFixedPosition())
         context_.fixed_position.clip = properties_->CssClipFixedPosition();
@@ -3660,7 +3671,7 @@ void PaintPropertyTreeBuilder::CreateFragmentContextsInFlowThread(
           new_fragment_contexts.back().fragment_clip;
       fragments_changed = !!old_fragment_clip != !!new_fragment_clip ||
                           (old_fragment_clip && new_fragment_clip &&
-                           old_fragment_clip->PixelSnappedClipRect() !=
+                           old_fragment_clip->PaintClipRect() !=
                                ToSnappedClipRect(*new_fragment_clip));
     }
 

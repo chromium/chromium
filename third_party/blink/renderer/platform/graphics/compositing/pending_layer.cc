@@ -28,7 +28,7 @@ const ClipPaintPropertyNode* HighestOutputClipBetween(
 // When possible, provides a clip rect that limits the visibility.
 absl::optional<FloatRect> VisibilityLimit(const PropertyTreeState& state) {
   if (&state.Clip().LocalTransformSpace() == &state.Transform())
-    return state.Clip().PixelSnappedClipRect().Rect();
+    return state.Clip().PaintClipRect().Rect();
   if (const auto* scroll = state.Transform().ScrollNode()) {
     return FloatRect(
         IntRect(scroll->ContainerRect().Location(), scroll->ContentsSize()));

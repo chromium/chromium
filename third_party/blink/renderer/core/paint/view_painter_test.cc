@@ -185,7 +185,7 @@ TEST_P(ViewPainterTest, FrameScrollHitTestProperties) {
   const auto& scroll_hit_test_clip =
       ToUnaliased(scroll_hit_test_chunk.properties.Clip());
   EXPECT_EQ(FloatRect(LayoutRect::InfiniteIntRect()),
-            scroll_hit_test_clip.UnsnappedClipRect().Rect());
+            scroll_hit_test_clip.PaintClipRect().Rect());
 
   // The scrolled contents should be scrolled and clipped.
   const auto& contents_transform =
@@ -194,8 +194,7 @@ TEST_P(ViewPainterTest, FrameScrollHitTestProperties) {
   EXPECT_EQ(IntSize(800, 2000), contents_scroll->ContentsSize());
   EXPECT_EQ(IntRect(0, 0, 800, 600), contents_scroll->ContainerRect());
   const auto& contents_clip = ToUnaliased(contents_chunk.properties.Clip());
-  EXPECT_EQ(FloatRect(0, 0, 800, 600),
-            contents_clip.UnsnappedClipRect().Rect());
+  EXPECT_EQ(FloatRect(0, 0, 800, 600), contents_clip.PaintClipRect().Rect());
 
   // The scroll hit test paint chunk maintains a reference to a scroll offset
   // translation node and the contents should be scrolled by this node.

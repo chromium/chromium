@@ -164,26 +164,39 @@ CreateAnimatingBackdropFilterEffect(
 inline scoped_refptr<ClipPaintPropertyNode> CreateClip(
     const ClipPaintPropertyNodeOrAlias& parent,
     const TransformPaintPropertyNodeOrAlias& local_transform_space,
-    const FloatRoundedRect& clip_rect) {
-  ClipPaintPropertyNode::State state(&local_transform_space, clip_rect);
+    const FloatRect& layout_clip_rect,
+    const FloatRoundedRect& paint_clip_rect) {
+  ClipPaintPropertyNode::State state(&local_transform_space, layout_clip_rect,
+                                     paint_clip_rect);
   return ClipPaintPropertyNode::Create(parent, std::move(state));
 }
 
 inline scoped_refptr<ClipPaintPropertyNode> CreateClip(
     const ClipPaintPropertyNodeOrAlias& parent,
     const TransformPaintPropertyNodeOrAlias& local_transform_space,
-    const FloatRoundedRect& clip_rect,
-    const FloatRoundedRect& pixel_snapped_clip_rect) {
-  ClipPaintPropertyNode::State state(&local_transform_space, clip_rect,
-                                     pixel_snapped_clip_rect);
-  return ClipPaintPropertyNode::Create(parent, std::move(state));
+    const FloatRoundedRect& clip_rect) {
+  return CreateClip(parent, local_transform_space, clip_rect.Rect(), clip_rect);
+}
+
+inline void UpdateClip(ClipPaintPropertyNode& clip,
+                       const FloatRect& layout_clip_rect,
+                       const FloatRoundedRect& paint_clip_rect) {
+  clip.Update(*clip.Parent(),
+              ClipPaintPropertyNode::State(&clip.LocalTransformSpace(),
+                                           layout_clip_rect, paint_clip_rect));
+}
+
+inline void UpdateClip(ClipPaintPropertyNode& clip,
+                       const FloatRoundedRect& clip_rect) {
+  UpdateClip(clip, clip_rect.Rect(), clip_rect);
 }
 
 inline scoped_refptr<ClipPaintPropertyNode> CreateClipPathClip(
     const ClipPaintPropertyNodeOrAlias& parent,
     const TransformPaintPropertyNodeOrAlias& local_transform_space,
     const FloatRoundedRect& clip_rect) {
-  ClipPaintPropertyNode::State state(&local_transform_space, clip_rect);
+  ClipPaintPropertyNode::State state(&local_transform_space, clip_rect.Rect(),
+                                     clip_rect);
   state.clip_path = base::AdoptRef(new RefCountedPath);
   return ClipPaintPropertyNode::Create(parent, std::move(state));
 }

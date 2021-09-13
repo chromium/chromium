@@ -65,6 +65,18 @@ class PaintPropertyTreeBuilderTest : public PaintControllerPaintTest {
   void SetUp() override;
 };
 
+// Used when LayoutClipRect and PaintClipRect are the same.
+// |expected_arg| can be FloatRect or FloatRoundedRect.
+#define EXPECT_CLIP_RECT(expected_arg, clip_node)                     \
+  do {                                                                \
+    FloatRoundedRect expected((expected_arg));                        \
+    ASSERT_TRUE(clip_node);                                           \
+    EXPECT_EQ(expected.Rect(), (clip_node)->LayoutClipRect().Rect()); \
+    EXPECT_EQ(expected.IsRounded(),                                   \
+              (clip_node)->LayoutClipRect().HasRadius());             \
+    EXPECT_EQ(expected, (clip_node)->PaintClipRect());                \
+  } while (false)
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_PROPERTY_TREE_BUILDER_TEST_H_

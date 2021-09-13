@@ -364,10 +364,12 @@ FloatClipRect GeometryMapper::LocalToAncestorClipRect(
 
 static FloatClipRect GetClipRect(const ClipPaintPropertyNode& clip_node,
                                  OverlayScrollbarClipBehavior clip_behavior) {
-  FloatClipRect clip_rect(
+  // TODO(crbug.com/1248598): Do we need to use PaintClipRect when mapping for
+  // painting/compositing?
+  FloatClipRect clip_rect =
       UNLIKELY(clip_behavior == kExcludeOverlayScrollbarSizeForHitTesting)
-          ? clip_node.UnsnappedClipRectExcludingOverlayScrollbars()
-          : FloatClipRect(clip_node.UnsnappedClipRect()));
+          ? clip_node.LayoutClipRectExcludingOverlayScrollbars()
+          : clip_node.LayoutClipRect();
   if (clip_node.ClipPath())
     clip_rect.ClearIsTight();
   return clip_rect;
