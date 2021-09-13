@@ -1,4 +1,4 @@
-# tags: [ Android Fuchsia Linux Mac Mac10.12 Mac10.13 Mac10.14 Mac10.15 Mac11.0 Win Win7 Win10.1909 Win10.20h2 ]
+# tags: [ Android Fuchsia Linux Mac Mac10.12 Mac10.13 Mac10.14 Mac10.15 Mac11.0 Win Win7 Win10.20h2 ]
 # tags: [ Release Debug ]
 # results: [ Slow ]
 
@@ -549,19 +549,12 @@ crbug.com/1134580 virtual/eye-dropper/http/tests/eye-dropper/color-picker-show-e
 crbug.com/1145716 fast/forms/calendar-picker/datetimelocal-picker-open-to-focused-field.html [ Slow ]
 
 # These began to hit timeouts when moving from Windows-10-15063 to Windows-10-18363
-crbug.com/1142023 [ Win10.1909 ] external/wpt/web-animations/animation-model/animation-types/accumulation-per-property-002.html [ Slow ]
 crbug.com/1142023 [ Win10.20h2 ] external/wpt/web-animations/animation-model/animation-types/accumulation-per-property-002.html [ Slow ]
-crbug.com/1142023 [ Win10.1909 ] external/wpt/web-animations/animation-model/animation-types/addition-per-property-002.html [ Slow ]
 crbug.com/1142023 [ Win10.20h2 ] external/wpt/web-animations/animation-model/animation-types/addition-per-property-002.html [ Slow ]
-crbug.com/1142023 [ Win10.1909 ] external/wpt/web-animations/animation-model/animation-types/interpolation-per-property-002.html [ Slow ]
 crbug.com/1142023 [ Win10.20h2 ] external/wpt/web-animations/animation-model/animation-types/interpolation-per-property-002.html [ Slow ]
-crbug.com/1142023 [ Win10.1909 ] fast/dom/HTMLScriptElement/script-sync-load-failure.html [ Slow ]
 crbug.com/1142023 [ Win10.20h2 ] fast/dom/HTMLScriptElement/script-sync-load-failure.html [ Slow ]
-crbug.com/1142023 [ Win10.1909 ] http/tests/eventsource/eventsource-cors-no-server.html [ Slow ]
 crbug.com/1142023 [ Win10.20h2 ] http/tests/eventsource/eventsource-cors-no-server.html [ Slow ]
-crbug.com/1142023 [ Win10.1909 ] http/tests/eventsource/workers/eventsource-cors-no-server.html [ Slow ]
 crbug.com/1142023 [ Win10.20h2 ] http/tests/eventsource/workers/eventsource-cors-no-server.html [ Slow ]
-crbug.com/1142023 [ Win10.1909 ] http/tests/security/document-domain-canonicalizes-iframe.html [ Slow ]
 crbug.com/1142023 [ Win10.20h2 ] http/tests/security/document-domain-canonicalizes-iframe.html [ Slow ]
 
 # crbug.com/1095379: These were all added here in an attempt to reduce flakiness.
@@ -591,7 +584,6 @@ crbug.com/1066178 external/wpt/html/user-activation/consumption-crossorigin.sub.
 crbug.com/1064522 external/wpt/html/user-activation/propagation-crossorigin.sub.tentative.html [ Slow ]
 crbug.com/863599 [ Debug ] external/wpt/requestidlecallback/callback-iframe.html [ Slow ]
 crbug.com/869364 http/tests/devtools/console/console-correct-suggestions.js [ Slow ]
-crbug.com/886566 [ Win10.1909 ] http/tests/csspaint/invalidation-background-image.html [ Slow ]
 crbug.com/886566 [ Mac ] http/tests/csspaint/invalidation-background-image.html [ Slow ]
 crbug.com/886566 http/tests/csspaint/invalidation-content-image.html [ Slow ]
 crbug.com/888609 http/tests/devtools/coverage/gutter-css.js [ Slow ]
@@ -738,7 +730,6 @@ crbug.com/1046784 http/tests/devtools/application-panel/resources-panel-iframe-i
 crbug.com/1046784 http/tests/devtools/a11y-axe-core/sources/scope-pane-a11y-test.js [ Slow ]
 crbug.com/1046784 http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Slow ]
 crbug.com/1041847 virtual/gpu/fast/canvas/color-space/canvas-colorManaged-convertToBlob-roundtrip.html [ Slow ]
-crbug.com/848799 [ Win10.1909 ] http/tests/devtools/coverage/multiple-instances-merge.js [ Slow ]
 crbug.com/1048597 [ Linux ] virtual/android/fullscreen/video-scrolled-iframe.html [ Slow ]
 crbug.com/1057807 http/tests/misc/destroy-middle-click-locked-target-crash.html [ Slow ]
 crbug.com/1042694 fast/forms/form-control-with-state-eager-tracing-crashTest.html [ Slow ]
