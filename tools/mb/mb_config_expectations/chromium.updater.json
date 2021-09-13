@@ -1,7 +1,7 @@
 {
   "mac-updater-builder-dbg": {
     "gn_args": {
-      "is_chrome_branded": true,
+      "enable_chromium_updater": true,
       "is_component_build": true,
       "is_debug": true,
       "symbol_level": 1,
@@ -11,7 +11,7 @@
   "mac-updater-builder-rel": {
     "gn_args": {
       "dcheck_always_on": false,
-      "is_chrome_branded": true,
+      "enable_chromium_updater": true,
       "is_component_build": false,
       "is_debug": false,
       "use_goma": true
@@ -19,7 +19,7 @@
   },
   "win-updater-builder-dbg": {
     "gn_args": {
-      "is_chrome_branded": true,
+      "enable_chromium_updater": true,
       "is_component_build": true,
       "is_debug": true,
       "symbol_level": 1,
@@ -29,7 +29,7 @@
   "win-updater-builder-rel": {
     "gn_args": {
       "dcheck_always_on": false,
-      "is_chrome_branded": true,
+      "enable_chromium_updater": true,
       "is_component_build": false,
       "is_debug": false,
       "use_goma": true
@@ -37,7 +37,7 @@
   },
   "win32-updater-builder-dbg": {
     "gn_args": {
-      "is_chrome_branded": true,
+      "enable_chromium_updater": true,
       "is_component_build": true,
       "is_debug": true,
       "symbol_level": 1,
@@ -48,7 +48,7 @@
   "win32-updater-builder-rel": {
     "gn_args": {
       "dcheck_always_on": false,
-      "is_chrome_branded": true,
+      "enable_chromium_updater": true,
       "is_component_build": false,
       "is_debug": false,
       "target_cpu": "x86",

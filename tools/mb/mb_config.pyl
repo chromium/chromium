@@ -3534,7 +3534,7 @@
     },
 
     'updater_on_win_mac': {
-      'gn_args': 'is_chrome_branded=true',
+      'gn_args': 'enable_chromium_updater=true',
     },
 
     'optimize_for_fuzzing': {
