@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.components.download.DownloadCollectionBridge;
+import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemState;
@@ -833,34 +834,22 @@ public class OMADownloadHandler extends BroadcastReceiver {
 
     private void showDownloadsUi(long downloadId, DownloadItem item,
             DownloadManagerBridge.DownloadQueryResult result, String installNotifyURI) {
-        new AsyncTask<Boolean>() {
-            @Override
-            protected Boolean doInBackground() {
-                boolean canResolve = DownloadManagerService.canResolveDownloadItem(
-                        item, DownloadManagerService.isSupportedMimeType(result.mimeType));
-                return canResolve;
-            }
-
-            @Override
-            protected void onPostExecute(Boolean canResolve) {
-                if (result.downloadStatus == DownloadStatus.COMPLETE) {
-                    DownloadInfo.Builder builder = item.getDownloadInfo() == null
-                            ? new DownloadInfo.Builder()
-                            : DownloadInfo.Builder.fromDownloadInfo(item.getDownloadInfo());
-                    builder.setFilePath(result.filePath);
-                    item.setDownloadInfo(builder.build());
-                    onDownloadCompleted(item.getDownloadInfo(), downloadId, installNotifyURI);
-                    removeOMADownloadFromSharedPrefs(downloadId);
-                    showDownloadOnInfoBar(item, result.downloadStatus);
-                } else if (result.downloadStatus == DownloadStatus.FAILED) {
-                    onDownloadFailed(item.getDownloadInfo(), downloadId, result.failureReason,
-                            installNotifyURI);
-                    removeOMADownloadFromSharedPrefs(downloadId);
-                    // TODO(shaktisahu): Find a way to pass the failure reason.
-                    showDownloadOnInfoBar(item, result.downloadStatus);
-                }
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        if (result.downloadStatus == DownloadStatus.COMPLETE) {
+            DownloadInfo.Builder builder = item.getDownloadInfo() == null
+                    ? new DownloadInfo.Builder()
+                    : DownloadInfo.Builder.fromDownloadInfo(item.getDownloadInfo());
+            builder.setFilePath(result.filePath);
+            item.setDownloadInfo(builder.build());
+            onDownloadCompleted(item.getDownloadInfo(), downloadId, installNotifyURI);
+            removeOMADownloadFromSharedPrefs(downloadId);
+            showDownloadOnInfoBar(item, result.downloadStatus);
+        } else if (result.downloadStatus == DownloadStatus.FAILED) {
+            onDownloadFailed(
+                    item.getDownloadInfo(), downloadId, result.failureReason, installNotifyURI);
+            removeOMADownloadFromSharedPrefs(downloadId);
+            // TODO(shaktisahu): Find a way to pass the failure reason.
+            showDownloadOnInfoBar(item, result.downloadStatus);
+        }
     }
 
     private void showDownloadOnInfoBar(DownloadItem downloadItem, int downloadStatus) {
@@ -1003,8 +992,19 @@ public class OMADownloadHandler extends BroadcastReceiver {
                         success = DownloadCollectionBridge.copyFileToIntermediateUri(
                                 path, pendingUri);
                         if (success) {
-                            DownloadCollectionBridge.publishDownload(pendingUri);
+                            String uri = DownloadCollectionBridge.publishDownload(pendingUri);
                             fromFile.delete();
+                            // Post a nofification to open the Android download page.
+                            DownloadInfo newInfo =
+                                    DownloadInfo.Builder.fromDownloadInfo(mDownloadInfo)
+                                            .setFilePath(uri)
+                                            .setContentId(
+                                                    new ContentId("", String.valueOf(mDownloadId)))
+                                            .build();
+                            DownloadManagerService.getDownloadManagerService()
+                                    .getDownloadNotifier()
+                                    .notifyDownloadSuccessful(newInfo, mDownloadId,
+                                            false /*canResolve*/, false /*isSupportedMimeType*/);
                         } else {
                             DownloadCollectionBridge.deleteIntermediateUri(pendingUri);
                         }
