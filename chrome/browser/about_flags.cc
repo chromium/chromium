@@ -2702,6 +2702,13 @@ const FeatureEntry::FeatureVariation kReadLaterVariations[] = {
     {"(use root bookmark as default)", kReadLaterUseRootBookmarkAsDefault,
      base::size(kReadLaterUseRootBookmarkAsDefault), nullptr}};
 
+const FeatureEntry::FeatureParam kScrollCaptureInMemory[] = {
+    {"in_memory_capture", "true"}};
+
+const FeatureEntry::FeatureVariation kScrollCaptureVariations[] = {
+    {"(in memory capture)", kScrollCaptureInMemory,
+     base::size(kScrollCaptureInMemory), nullptr}};
+
 #endif  // defined(OS_ANDROID)
 
 const FeatureEntry::Choice kDocumentTransitionSlowdownFactorChoices[] = {
@@ -7118,7 +7125,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"scroll-capture", flag_descriptions::kScrollCaptureName,
      flag_descriptions::kScrollCaptureDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kScrollCapture)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kScrollCapture,
+                                    kScrollCaptureVariations,
+                                    "ScrollCapture")},
 #endif  // defined(OS_ANDROID)
 
     {"chrome-labs", flag_descriptions::kChromeLabsName,

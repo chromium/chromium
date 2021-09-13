@@ -10,7 +10,6 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.paint_preview.common.proto.PaintPreview.PaintPreviewProto;
 import org.chromium.components.paintpreview.browser.NativePaintPreviewServiceProvider;
 import org.chromium.content_public.browser.WebContents;
 
@@ -23,7 +22,7 @@ import org.chromium.content_public.browser.WebContents;
 public class LongScreenshotsTabService implements NativePaintPreviewServiceProvider {
     /** Interface used for notifying in the event of navigation to a URL. */
     public interface CaptureProcessor {
-        void processCapturedTab(PaintPreviewProto response, @Status int status);
+        void processCapturedTab(long nativeCaptureResultPtr, @Status int status);
     }
 
     private CaptureProcessor mCaptureProcessor;
@@ -48,28 +47,22 @@ public class LongScreenshotsTabService implements NativePaintPreviewServiceProvi
     @CalledByNative
     private void processCaptureTabStatus(@Status int status) {
         if (mCaptureProcessor != null) {
-            mCaptureProcessor.processCapturedTab(null, status);
+            mCaptureProcessor.processCapturedTab(0, status);
         }
     }
 
     @CalledByNative
-    private void processPaintPreviewResponse(byte[] paintPreviewProtoResponse) {
+    private void processPaintPreviewResponse(long nativeCaptureResultPtr) {
         if (mCaptureProcessor == null) {
             // TODO(tgupta): return an error here.
+            releaseNativeCaptureResultPtr(nativeCaptureResultPtr);
             return;
         }
 
-        PaintPreviewProto response;
-        try {
-            response = PaintPreviewProto.parseFrom(paintPreviewProtoResponse);
-        } catch (Exception e) {
-            processCaptureTabStatus(Status.PROTO_DESERIALIZATION_FAILED);
-            return;
-        }
-        mCaptureProcessor.processCapturedTab(response, Status.OK);
+        mCaptureProcessor.processCapturedTab(nativeCaptureResultPtr, Status.OK);
     }
 
-    public void captureTab(Tab tab, Rect clipRect) {
+    public void captureTab(Tab tab, Rect clipRect, boolean inMemory) {
         if (mNativeLongScreenshotsTabService == 0) {
             processCaptureTabStatus(Status.NATIVE_SERVICE_NOT_INITIALIZED);
         }
@@ -80,7 +73,7 @@ public class LongScreenshotsTabService implements NativePaintPreviewServiceProvi
 
         LongScreenshotsTabServiceJni.get().captureTabAndroid(mNativeLongScreenshotsTabService,
                 tab.getId(), tab.getWebContents(), clipRect.left, clipRect.top, clipRect.right,
-                clipRect.height());
+                clipRect.height(), inMemory);
     }
 
     public void longScreenshotsClosed() {
@@ -96,11 +89,18 @@ public class LongScreenshotsTabService implements NativePaintPreviewServiceProvi
         return mNativeLongScreenshotsTabService;
     }
 
+    public void releaseNativeCaptureResultPtr(long nativeCaptureResultPtr) {
+        if (nativeCaptureResultPtr == 0) return;
+
+        LongScreenshotsTabServiceJni.get().releaseCaptureResultPtr(nativeCaptureResultPtr);
+    }
+
     @NativeMethods
     interface Natives {
         void captureTabAndroid(long nativeLongScreenshotsTabService, int tabId,
-                WebContents webContents, int clipX, int clipY, int clipWidth, int clipHeight);
-
+                WebContents webContents, int clipX, int clipY, int clipWidth, int clipHeight,
+                boolean inMemory);
         void longScreenshotsClosedAndroid(long nativeLongScreenshotsTabService);
+        void releaseCaptureResultPtr(long captureResultPtr);
     }
 }

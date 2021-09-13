@@ -9,7 +9,6 @@ import android.graphics.Bitmap;
 import android.graphics.Rect;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -25,7 +24,6 @@ import org.chromium.base.UnguessableToken;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.components.paint_preview.common.proto.PaintPreview.PaintPreviewProto;
 import org.chromium.components.paintpreview.browser.NativePaintPreviewServiceProvider;
 import org.chromium.components.paintpreview.player.CompositorStatus;
 import org.chromium.components.paintpreview.player.PlayerCompositorDelegate;
@@ -63,9 +61,9 @@ public class LongScreenshotsCompositorTest {
         }
 
         @Override
-        public PlayerCompositorDelegate createForProto(NativePaintPreviewServiceProvider service,
-                @Nullable PaintPreviewProto proto, GURL url, String directoryKey,
-                boolean mainFrameMode,
+        public PlayerCompositorDelegate createForCaptureResult(
+                NativePaintPreviewServiceProvider service, long nativeCaptureResultPtr, GURL url,
+                String directoryKey, boolean mainFrameMode,
                 @NonNull PlayerCompositorDelegate.CompositorListener compositorListener,
                 Callback<Integer> compositorErrorCallback) {
             return mCompositorDelegate;
@@ -159,8 +157,7 @@ public class LongScreenshotsCompositorTest {
         };
 
         LongScreenshotsCompositor compositor = new LongScreenshotsCompositor(mTestGurl,
-                mNativePaintPreviewServiceProvider, "test_directory_key",
-                PaintPreviewProto.getDefaultInstance(), compositorCallback);
+                mNativePaintPreviewServiceProvider, "test_directory_key", 0, compositorCallback);
 
         // Mimic the service calling onCompositorReady
         compositor.onCompositorReady(null, null, null, null, null, null, null, 0);
@@ -194,8 +191,7 @@ public class LongScreenshotsCompositorTest {
         };
 
         LongScreenshotsCompositor compositor = new LongScreenshotsCompositor(mTestGurl,
-                mNativePaintPreviewServiceProvider, "test_directory_key",
-                PaintPreviewProto.getDefaultInstance(), compositorCallback);
+                mNativePaintPreviewServiceProvider, "test_directory_key", 0, compositorCallback);
 
         // Mimic the service calling onCompositorReady
         compositor.onCompositorReady(null, null, null, null, null, null, null, 0);

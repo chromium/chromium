@@ -11,7 +11,6 @@ import android.os.Handler;
 import android.os.Parcel;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -34,7 +33,6 @@ import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabService
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.components.paint_preview.common.proto.PaintPreview.PaintPreviewProto;
 import org.chromium.components.paintpreview.browser.NativePaintPreviewServiceProvider;
 import org.chromium.components.paintpreview.player.PlayerCompositorDelegate;
 import org.chromium.components.paintpreview.player.PlayerManager;
@@ -65,14 +63,14 @@ public class TabbedPaintPreviewTest {
                 String directoryKey, boolean mainFrameMode,
                 @NonNull PlayerCompositorDelegate.CompositorListener compositorListener,
                 Callback<Integer> compositorErrorCallback) {
-            return new TestCompositorDelegate(service, null, url, directoryKey, mainFrameMode,
+            return new TestCompositorDelegate(service, 0, url, directoryKey, mainFrameMode,
                     compositorListener, compositorErrorCallback);
         }
 
         @Override
-        public PlayerCompositorDelegate createForProto(NativePaintPreviewServiceProvider service,
-                @Nullable PaintPreviewProto proto, GURL url, String directoryKey,
-                boolean mainFrameMode,
+        public PlayerCompositorDelegate createForCaptureResult(
+                NativePaintPreviewServiceProvider service, long nativeCaptureResultPtr, GURL url,
+                String directoryKey, boolean mainFrameMode,
                 @NonNull PlayerCompositorDelegate.CompositorListener compositorListener,
                 Callback<Integer> compositorErrorCallback) {
             Assert.fail("createForProto shouldn't be called");
@@ -325,10 +323,10 @@ public class TabbedPaintPreviewTest {
         private int mNextRequestId;
 
         TestCompositorDelegate(NativePaintPreviewServiceProvider service,
-                @Nullable PaintPreviewProto proto, GURL url, String directoryKey,
-                boolean mainFrameMode, @NonNull CompositorListener compositorListener,
+                long nativeCaptureResultPtr, GURL url, String directoryKey, boolean mainFrameMode,
+                @NonNull CompositorListener compositorListener,
                 Callback<Integer> compositorErrorCallback) {
-            Assert.assertNull(proto);
+            Assert.assertEquals(nativeCaptureResultPtr, 0);
             Assert.assertFalse(mainFrameMode);
             new Handler().postDelayed(() -> {
                 Parcel parcel = Parcel.obtain();

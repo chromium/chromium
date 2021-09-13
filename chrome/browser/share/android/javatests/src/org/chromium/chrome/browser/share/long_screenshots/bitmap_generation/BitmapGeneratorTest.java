@@ -107,7 +107,7 @@ public class BitmapGeneratorTest {
                     new Listener());
             PaintPreviewCompositorUtils.warmupCompositor();
             mTab.loadUrl(new LoadUrlParams(url));
-            mGenerator.captureTab();
+            mGenerator.captureTab(/*inMemory=*/false);
         });
     }
 }

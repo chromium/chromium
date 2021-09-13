@@ -67,16 +67,18 @@ class LongScreenshotsTabService
   // |tab_id| for storage. |callback| is invoked on completion to indicate
   // status.
   // Clip args specify the bounds of the capture:
-  // clipX: Where to start the capture on the X axis
-  // clipY: Where to start the capture on the Y axis
-  // clipWidth: How wide of a capture relative to clipX
-  // clipHeight: How wide of a capture relative to clipY
+  // clip_x: Where to start the capture on the X axis.
+  // clip_y: Where to start the capture on the Y axis.
+  // clip_width: How wide of a capture relative to clip_x.
+  // clip_height: How wide of a capture relative to clip_y.
+  // in_memory: Use in memory capture mode.
   void CaptureTab(int tab_id,
                   content::WebContents* contents,
-                  int clipX,
-                  int clipY,
-                  int clipWidth,
-                  int clipHeight);
+                  int clip_x,
+                  int clip_y,
+                  int clip_width,
+                  int clip_height,
+                  bool in_memory);
 
   // Delete all old long screenshot files.
   void DeleteAllLongScreenshotFiles();
@@ -86,10 +88,11 @@ class LongScreenshotsTabService
       JNIEnv* env,
       jint j_tab_id,
       const base::android::JavaParamRef<jobject>& j_web_contents,
-      jint clipX,
-      jint clipY,
-      jint clipWidth,
-      jint clipHeight);
+      jint clip_x,
+      jint clip_y,
+      jint clip_width,
+      jint clip_height,
+      jboolean in_memory);
   void LongScreenshotsClosedAndroid(JNIEnv* env);
 
   base::android::ScopedJavaGlobalRef<jobject> GetJavaRef() { return java_ref_; }
@@ -99,13 +102,13 @@ class LongScreenshotsTabService
   // (confirming that the contents are alive using the |frame_routing_id|).
   // Calls PaintPreviewBaseService to retrieve the bitmap and write it to file.
   void CaptureTabInternal(int tab_id,
-                          const paint_preview::DirectoryKey& key,
                           int frame_tree_node_id,
                           content::GlobalRenderFrameHostId frame_routing_id,
-                          int clipX,
-                          int clipY,
-                          int clipWidth,
-                          int clipHeight,
+                          int clip_x,
+                          int clip_y,
+                          int clip_width,
+                          int clip_height,
+                          bool in_memory,
                           const absl::optional<base::FilePath>& file_path);
 
   void OnCaptured(paint_preview::PaintPreviewBaseService::CaptureStatus status,
