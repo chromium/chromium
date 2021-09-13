@@ -31,6 +31,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.compat.ApiHelperForN;
+import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.memory.MemoryPressureMonitor;
 import org.chromium.base.metrics.RecordHistogram;
 
@@ -147,15 +148,28 @@ public class ChildProcessService {
             synchronized (mBinderLock) {
                 if (mBindToCallerCheck && mBoundCallingPid == 0) {
                     Log.e(TAG, "Service has not been bound with bindToCaller()");
-                    parentProcess.sendPid(-1);
+                    parentProcess.finishSetupConnection(-1, 0, 0, null);
                     return;
                 }
             }
 
-            parentProcess.sendPid(Process.myPid());
-            if (sZygotePid != 0) {
-                parentProcess.sendZygoteInfo(sZygotePid, sZygoteStartupTimeMillis);
+            int pid = Process.myPid();
+            int zygotePid = 0;
+            long startupTimeMillis = -1;
+            Bundle relroBundle = null;
+            if (LibraryLoader.getInstance().isLoadedByZygote()) {
+                zygotePid = sZygotePid;
+                startupTimeMillis = sZygoteStartupTimeMillis;
+                LibraryLoader.MultiProcessMediator m = LibraryLoader.getInstance().getMediator();
+                m.initInChildProcess();
+                // In a number of cases the app zygote decides not to produce a RELRO FD. The bundle
+                // will tell the receiver to silently ignore it.
+                relroBundle = new Bundle();
+                m.putSharedRelrosToBundle(relroBundle);
             }
+            // After finishSetupConnection() the parent process will stop accepting |relroBundle|
+            // from this process to ensure that another FD to shared memory is not sent later.
+            parentProcess.finishSetupConnection(pid, zygotePid, startupTimeMillis, relroBundle);
             mParentProcess = parentProcess;
             processConnectionBundle(args, callbacks);
         }
@@ -204,6 +218,11 @@ public class ChildProcessService {
             ChildProcessServiceJni.get().dumpProcessStack();
         }
 
+        @Override
+        public void consumeRelroBundle(Bundle bundle) {
+            bundle.setClassLoader(ContextUtils.getApplicationContext().getClassLoader());
+            mDelegate.consumeRelroBundle(bundle);
+        }
     };
 
     /**

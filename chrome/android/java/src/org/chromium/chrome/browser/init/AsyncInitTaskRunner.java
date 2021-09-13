@@ -135,6 +135,7 @@ public abstract class AsyncInitTaskRunner {
      */
     private ProcessInitException loadNativeLibrary() {
         try {
+            LibraryLoader.getInstance().getMediator().ensureInitializedInMainProcess();
             LibraryLoader.getInstance().ensureInitialized();
             // The prefetch is done after the library load for two reasons:
             // - It is easier to know the library location after it has

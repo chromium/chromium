@@ -349,8 +349,12 @@ abstract class Linker {
         assert !library.equals(LINKER_JNI_LIBRARY);
         try {
             loadLibraryImplLocked(library, relroMode);
+            if (DEBUG) {
+                Log.i(TAG, "Attempt to replace RELRO: waswaiting=%b, remotenonnull=%b, state=%d",
+                        mLinkerWasWaitingSynchronously, mRemoteLibInfo != null, mState);
+            }
             if (!mLinkerWasWaitingSynchronously && mRemoteLibInfo != null && mState == State.DONE) {
-                atomicReplaceRelroLocked(true /* relroAvailableImmediately */);
+                atomicReplaceRelroLocked(/* relroAvailableImmediately= */ true);
             }
         } finally {
             // Reset the state to serve the retry in loadLibrary().
@@ -400,6 +404,7 @@ abstract class Linker {
     void putSharedRelrosToBundle(Bundle bundle) {
         Bundle relros = null;
         synchronized (mLock) {
+            if (DEBUG) Log.i(TAG, "putSharedRelrosToBundle: state=%d", mState);
             if (mState == State.DONE_PROVIDE_RELRO) {
                 assert mRelroProducer;
                 relros = mLocalLibInfo.toBundle();
@@ -479,7 +484,7 @@ abstract class Linker {
      *
      * @param libraryName The name of the library to load.
      * @param relroMode Tells whether to use RELRO sharing and whether to produce or consume the
-     *          RELRO region.
+     *                  RELRO region.
      */
     protected abstract void loadLibraryImplLocked(
             String libraryName, @RelroSharingMode int relroMode);
