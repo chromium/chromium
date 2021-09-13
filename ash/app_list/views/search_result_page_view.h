@@ -60,6 +60,7 @@ class ASH_EXPORT SearchResultPageView
   gfx::Size CalculatePreferredSize() const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  void OnThemeChanged() override;
 
   // AppListPage overrides:
   void OnWillBeHidden() override;

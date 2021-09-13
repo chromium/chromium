@@ -296,6 +296,12 @@ void SearchResultPageView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetValue(value);
 }
 
+void SearchResultPageView::OnThemeChanged() {
+  AppListPage::OnThemeChanged();
+  GetBackground()->SetNativeControlColor(
+      AppListColorProvider::Get()->GetSearchBoxCardBackgroundColor());
+}
+
 void SearchResultPageView::UpdateResultContainersVisibility() {
   bool should_show_page_view = false;
 
