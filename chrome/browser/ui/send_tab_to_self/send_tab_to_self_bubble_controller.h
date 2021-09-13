@@ -39,6 +39,8 @@ class SendTabToSelfBubbleController
   // Displays send tab to self bubble.
   void ShowBubble();
 
+  bool IsBubbleShown() { return bubble_shown_; }
+
   // Returns nullptr if no bubble is currently shown.
   SendTabToSelfBubbleView* send_tab_to_self_bubble_view() const;
   // Returns the title of send tab to self bubble.
@@ -88,6 +90,8 @@ class SendTabToSelfBubbleController
   SendTabToSelfBubbleView* send_tab_to_self_bubble_view_ = nullptr;
   // True if a confirmation message should be shown in the omnibox.
   bool show_message_ = false;
+  // True if the bubble is currently shown.
+  bool bubble_shown_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

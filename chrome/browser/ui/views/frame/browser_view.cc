@@ -46,6 +46,7 @@
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
+#include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/signin/chrome_signin_helper.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -1850,13 +1851,19 @@ BrowserView::ShowQRCodeGeneratorBubble(
       // Unretained is safe: controller is a WebContentsUserData, owned by
       // WebContents, and the bubble can't outlive the WebContents.
       base::Unretained(controller));
+
+  PageActionIconType icon_type =
+      sharing_hub::SharingHubOmniboxEnabled(contents->GetBrowserContext())
+          ? PageActionIconType::kSharingHub
+          : PageActionIconType::kQRCodeGenerator;
+
   qrcode_generator::QRCodeGeneratorBubble* bubble =
       new qrcode_generator::QRCodeGeneratorBubble(
-          GetLocationBarView(), contents, std::move(on_closing), url);
+          toolbar_button_provider()->GetAnchorView(icon_type), contents,
+          std::move(on_closing), url);
 
   PageActionIconView* icon_view =
-      toolbar_button_provider()->GetPageActionIconView(
-          PageActionIconType::kQRCodeGenerator);
+      toolbar_button_provider()->GetPageActionIconView(icon_type);
   if (icon_view)
     bubble->SetHighlightedButton(icon_view);
 
@@ -1903,14 +1910,17 @@ send_tab_to_self::SendTabToSelfBubbleView* BrowserView::ShowSendTabToSelfBubble(
     return nullptr;
   }
 
+  PageActionIconType icon_type =
+      sharing_hub::SharingHubOmniboxEnabled(web_contents->GetBrowserContext())
+          ? PageActionIconType::kSharingHub
+          : PageActionIconType::kSendTabToSelf;
+
   send_tab_to_self::SendTabToSelfBubbleViewImpl* bubble =
       new send_tab_to_self::SendTabToSelfBubbleViewImpl(
-          toolbar_button_provider()->GetAnchorView(
-              PageActionIconType::kSendTabToSelf),
-          web_contents, controller);
+          toolbar_button_provider()->GetAnchorView(icon_type), web_contents,
+          controller);
   PageActionIconView* icon_view =
-      toolbar_button_provider()
-          ->GetPageActionIconView(PageActionIconType::kSendTabToSelf);
+      toolbar_button_provider()->GetPageActionIconView(icon_type);
   if (icon_view)
     bubble->SetHighlightedButton(icon_view);
 
