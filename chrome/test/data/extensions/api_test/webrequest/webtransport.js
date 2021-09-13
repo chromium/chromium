@@ -13,12 +13,14 @@ async function expectSessionEstablished(url) {
 
 async function expectSessionFailed(url) {
   const transport = new WebTransport(url);
+  let established = false;
   try {
     await transport.ready;
-    chrome.test.fail('Ready should be rejected.');
+    established = true;
   } catch (e) {
     // TODO(crbug.com/1240935): Consider showing error.
     // This is filtered by InterceptingHandshakeClient.
     chrome.test.assertEq({}, e);
   }
+  chrome.test.assertFalse(established);
 }
