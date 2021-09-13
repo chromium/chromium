@@ -359,11 +359,14 @@ const base::Feature kWebCodecsEncoderGpuMemoryBufferReadback{
     base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
-bool CanUseGpuMemoryBufferReadback(media::VideoPixelFormat format) {
+bool CanUseGpuMemoryBufferReadback(media::VideoPixelFormat format,
+                                   bool force_opaque) {
 #if defined(OS_MAC)
   // GMB readback only works with NV12, so only opaque buffers can be used.
   return (format == media::PIXEL_FORMAT_XBGR ||
-          format == media::PIXEL_FORMAT_XRGB) &&
+          format == media::PIXEL_FORMAT_XRGB ||
+          (force_opaque && (format == media::PIXEL_FORMAT_ABGR ||
+                            format == media::PIXEL_FORMAT_ARGB))) &&
          base::FeatureList::IsEnabled(kWebCodecsEncoderGpuMemoryBufferReadback);
 #else
   return false;
@@ -614,7 +617,10 @@ void VideoEncoder::ProcessEncode(Request* request) {
   // so let's readback pixel data to CPU memory.
   // TODO(crbug.com/1229845): We shouldn't be reading back frames here.
   if (frame->HasTextures() && !frame->HasGpuMemoryBuffer()) {
-    const bool can_use_gmb = CanUseGpuMemoryBufferReadback(frame->format());
+    // TODO(crbug.com/1195433): Once support for alpha channel encoding is
+    // implemented, |force_opaque| must be set based on the VideoEncoderConfig.
+    const bool can_use_gmb =
+        CanUseGpuMemoryBufferReadback(frame->format(), /*force_opaque=*/true);
     if (can_use_gmb && !accelerated_frame_pool_) {
       if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
         accelerated_frame_pool_ =
@@ -627,12 +633,16 @@ void VideoEncoder::ProcessEncode(Request* request) {
       // completes. |stall_request_processing_| = true will ensure that
       // HasPendingActivity() keeps the VideoEncoder alive long enough.
       auto blit_done_callback = [](VideoEncoder* self, bool keyframe,
+                                   uint32_t reset_count,
                                    media::VideoEncoder::StatusCB done_callback,
                                    scoped_refptr<media::VideoFrame> frame) {
+        if (self->reset_count_ != reset_count)
+          return;
         --self->requested_encodes_;
         self->stall_request_processing_ = false;
         self->media_encoder_->Encode(std::move(frame), keyframe,
                                      std::move(done_callback));
+        self->ProcessRequests();
       };
 
       auto origin = frame->metadata().texture_origin_is_top_left
@@ -643,7 +653,8 @@ void VideoEncoder::ProcessEncode(Request* request) {
       // Expose the color space and pixel format that is backing
       // `image->GetMailboxHolder()`, or, alternatively, expose an accelerated
       // SkImage.
-      auto format = frame->format() == media::PIXEL_FORMAT_XBGR
+      auto format = (frame->format() == media::PIXEL_FORMAT_XBGR ||
+                     frame->format() == media::PIXEL_FORMAT_ABGR)
                         ? viz::ResourceFormat::RGBA_8888
                         : viz::ResourceFormat::BGRA_8888;
 
@@ -656,6 +667,7 @@ void VideoEncoder::ProcessEncode(Request* request) {
               format, frame->coded_size(), gfx::ColorSpace::CreateSRGB(),
               origin, frame->mailbox_holder(0),
               WTF::Bind(blit_done_callback, WrapWeakPersistent(this), keyframe,
+                        reset_count_,
                         ConvertToBaseOnceCallback(CrossThreadBindOnce(
                             done_callback, WrapCrossThreadWeakPersistent(this),
                             WrapCrossThreadPersistent(request)))))) {
@@ -665,6 +677,7 @@ void VideoEncoder::ProcessEncode(Request* request) {
 
       // Error occurred, fall through to error handling below.
       stall_request_processing_ = false;
+      frame.reset();
     } else {
       auto wrapper = SharedGpuContext::ContextProviderWrapper();
       scoped_refptr<viz::RasterContextProvider> raster_provider;
