@@ -197,7 +197,7 @@ class BrowsingDataRemoverBrowserTest
 #endif
 
   inline void ExpectCookieTreeModelCount(int expected) {
-    std::unique_ptr<CookiesTreeModel> model = GetCookiesTreeModel(GetBrowser());
+    std::unique_ptr<CookiesTreeModel> model = GetCookiesTreeModel(GetProfile());
     EXPECT_EQ(expected, GetCookiesTreeModelCount(model->GetRoot()))
         << GetCookiesTreeModelInfo(model->GetRoot());
   }

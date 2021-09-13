@@ -750,6 +750,9 @@ if (is_android) {
       "../browser/android/webapk/webapk_icon_hasher_browsertest.cc",
       "../browser/autofill/android/save_update_address_profile_flow_manager_browsertest.cc",
       "../browser/browsing_data/access_context_audit_browsertest.cc",
+      "../browser/browsing_data/browsing_data_remover_browsertest_base.cc",
+      "../browser/browsing_data/browsing_data_remover_browsertest_base.h",
+      "../browser/browsing_data/chrome_browsing_data_lifetime_manager_browsertest.cc",
       "../browser/engagement/important_sites_util_browsertest.cc",
       "../browser/metrics/metrics_service_user_demographics_browsertest.cc",
       "../browser/metrics/ukm_browsertest.cc",
@@ -776,6 +779,8 @@ if (is_android) {
 
     deps += [
       "//components/autofill/content/renderer:test_support",
+      "//components/browsing_data/core:core",
+      "//components/enterprise:enterprise",
       "//components/enterprise:test_support",
       "//components/invalidation/impl:test_support",
       "//components/policy:chrome_settings_proto_generated_compile",

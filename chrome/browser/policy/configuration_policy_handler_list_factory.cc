@@ -1636,6 +1636,10 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       std::make_unique<ExplicitlyAllowedNetworkPortsPolicyHandler>());
   handlers->AddHandler(std::make_unique<HttpsOnlyModePolicyHandler>());
 
+  handlers->AddHandler(std::make_unique<BrowsingDataLifetimePolicyHandler>(
+      key::kBrowsingDataLifetime, browsing_data::prefs::kBrowsingDataLifetime,
+      chrome_schema));
+
 #if defined(OS_ANDROID)
   handlers->AddHandler(
       std::make_unique<ContextualSearchPolicyHandlerAndroid>());
@@ -1718,10 +1722,6 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
           key::kEnterpriseRealTimeUrlCheckMode,
           prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
           prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope, chrome_schema));
-
-  handlers->AddHandler(std::make_unique<BrowsingDataLifetimePolicyHandler>(
-      key::kBrowsingDataLifetime, browsing_data::prefs::kBrowsingDataLifetime,
-      chrome_schema));
 
   handlers->AddHandler(std::make_unique<BrowsingDataLifetimePolicyHandler>(
       key::kClearBrowsingDataOnExitList,

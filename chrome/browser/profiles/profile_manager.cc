@@ -41,6 +41,8 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_lifetime_manager.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_lifetime_manager_factory.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -84,6 +86,7 @@
 #include "components/account_id/account_id.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
+#include "components/browsing_data/core/pref_names.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/prefs/pref_service.h"
@@ -132,8 +135,6 @@
 
 #if !defined(OS_ANDROID)
 #include "chrome/browser/accessibility/live_caption_controller_factory.h"
-#include "chrome/browser/browsing_data/chrome_browsing_data_lifetime_manager.h"
-#include "chrome/browser/browsing_data/chrome_browsing_data_lifetime_manager_factory.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -1473,8 +1474,10 @@ void ProfileManager::DoFinalInit(ProfileInfo* profile_info,
   // The caret browsing command-line switch toggles caret browsing on
   // initially, but the user can still toggle it from there.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kEnableCaretBrowsing))
+          switches::kEnableCaretBrowsing)) {
     profile->GetPrefs()->SetBoolean(prefs::kCaretBrowsingEnabled, true);
+  }
+#endif  // !defined(OS_ANDROID)
 
   // Delete browsing data specified by the ClearBrowsingDataOnExitList policy
   // if they were not properly deleted on the last browser shutdown.
@@ -1486,7 +1489,6 @@ void ProfileManager::DoFinalInit(ProfileInfo* profile_info,
     browsing_data_lifetime_manager->ClearBrowsingDataForOnExitPolicy(
         /*keep_browser_alive=*/false);
   }
-#endif
 }
 
 void ProfileManager::DoFinalInitForServices(Profile* profile,
@@ -2268,7 +2270,6 @@ void ProfileManager::OnBrowserClosed(Browser* browser) {
     // Delete if the profile is an ephemeral profile.
     ScheduleForcedEphemeralProfileForDeletion(path);
   } else if (!profile->IsOffTheRecord()) {
-#if !defined(OS_ANDROID)
     auto* browsing_data_lifetime_manager =
         ChromeBrowsingDataLifetimeManagerFactory::GetForProfile(
             original_profile);
@@ -2277,7 +2278,6 @@ void ProfileManager::OnBrowserClosed(Browser* browser) {
       browsing_data_lifetime_manager->ClearBrowsingDataForOnExitPolicy(
           /*keep_browser_alive=*/true);
     }
-#endif
   }
 }
 

@@ -6966,8 +6966,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"enable-browsing-data-lifetime-manager",
      flag_descriptions::kEnableBrowsingDataLifetimeManagerName,
-     flag_descriptions::kEnableBrowsingDataLifetimeManagerDescription,
-     kOsDesktop,
+     flag_descriptions::kEnableBrowsingDataLifetimeManagerDescription, kOsAll,
      FEATURE_VALUE_TYPE(
          browsing_data::features::kEnableBrowsingDataLifetimeManager)},
 
