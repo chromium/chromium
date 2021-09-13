@@ -371,6 +371,40 @@ TEST_F(SystemNotificationManagerTest, DeviceNavigation) {
             u"Explore the device\x2019s content in the Files app.");
 }
 
+// Test for notification generated when enterprise read-only policy is set.
+// Condition that triggers that is a mount event for a removable device
+// and the volume has read only set.
+TEST_F(SystemNotificationManagerTest, DeviceNavigationReadOnlyPolicy) {
+  std::unique_ptr<Volume> volume(Volume::CreateForTesting(
+      base::FilePath(FILE_PATH_LITERAL("/mount/path1")),
+      VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
+      /*read_only=*/true, base::FilePath(FILE_PATH_LITERAL("/device/test")),
+      kDeviceLabel, "FAT32"));
+  file_manager_private::MountCompletedEvent event;
+  event.event_type = file_manager_private::MOUNT_COMPLETED_EVENT_TYPE_MOUNT;
+  event.should_notify = true;
+  event.status = file_manager_private::MOUNT_COMPLETED_STATUS_SUCCESS;
+  GetSystemNotificationManager()->HandleMountCompletedEvent(event,
+                                                            *volume.get());
+  // Get the number of notifications from the NotificationDisplayService.
+  NotificationDisplayServiceFactory::GetForProfile(GetProfile())
+      ->GetDisplayed(base::BindOnce(
+          &SystemNotificationManagerTest::GetNotificationsCallback,
+          weak_ptr_factory_.GetWeakPtr()));
+  // Check: We have one notification.
+  ASSERT_EQ(1, notification_count);
+  // Get the strings for the displayed notification.
+  TestNotificationStrings notification_strings;
+  notification_strings =
+      notification_platform_bridge->GetNotificationStringsById(
+          "swa-removable-device-id");
+  // Check: the expected strings match.
+  EXPECT_EQ(notification_strings.title, kRemovableDeviceTitle);
+  EXPECT_EQ(notification_strings.message,
+            u"Explore the device's content in the Files app. The content is "
+            u"restricted by an admin and can\x2019t be modified.");
+}
+
 TEST_F(SystemNotificationManagerTest, TestCopyEvents) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(ash::features::kFilesSWA);
