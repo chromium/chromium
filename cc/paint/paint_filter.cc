@@ -231,7 +231,7 @@ const char* kStretchShader = R"(
         );
         coord.x = outU * viewportWidth;
         coord.y = outV * viewportHeight;
-        return sample(uContentTexture, coord);
+        return uContentTexture.eval(coord);
     })";
 
 static const float CONTENT_DISTANCE_STRETCHED = 1.f;
