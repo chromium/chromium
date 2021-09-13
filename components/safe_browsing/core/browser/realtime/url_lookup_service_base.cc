@@ -459,6 +459,11 @@ void RealTimeUrlLookupServiceBase::OnURLLoaderComplete(
   RecordCount100WithAndWithoutSuffix("SafeBrowsing.RT.ThreatInfoSize",
                                      GetMetricSuffix(),
                                      response->threat_info_size());
+  if (response && response->threat_info_size() > 0) {
+    RecordSparseWithAndWithoutSuffix("SafeBrowsing.RT.Response.VerdictType",
+                                     GetMetricSuffix(),
+                                     response->threat_info(0).verdict_type());
+  }
 
   response_callback_task_runner->PostTask(
       FROM_HERE,
