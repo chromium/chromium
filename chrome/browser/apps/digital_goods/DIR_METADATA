@@ -1,4 +1,5 @@
 monorail: {
-  component: "Platform>Apps>Foundation>AppService"
+  component: "Platform>Apps>Foundation>Stores"
 }
 team_email: "chromeos-apps-foundation-team@google.com"
+os: CHROME_OS
