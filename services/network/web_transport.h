@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "net/quic/quic_transport_client.h"
+#include "net/quic/web_transport_client.h"
 #include "services/network/public/mojom/web_transport.mojom.h"
 
 class GURL;
