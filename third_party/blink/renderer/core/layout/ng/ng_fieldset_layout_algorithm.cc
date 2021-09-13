@@ -124,9 +124,15 @@ scoped_refptr<const NGLayoutResult> NGFieldsetLayoutAlgorithm::Layout() {
   container_builder_.SetIsFieldsetContainer();
 
   if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
-    FinishFragmentation(Node(), ConstraintSpace(), borders_.block_end,
-                        FragmentainerSpaceAtBfcStart(ConstraintSpace()),
-                        &container_builder_);
+    NGBreakStatus status = FinishFragmentation(
+        Node(), ConstraintSpace(), borders_.block_end,
+        FragmentainerSpaceAtBfcStart(ConstraintSpace()), &container_builder_);
+    if (status == NGBreakStatus::kNeedsEarlierBreak) {
+      // If we found a good break somewhere inside this block, re-layout and
+      // break at that location.
+      return RelayoutAndBreakEarlier<NGFieldsetLayoutAlgorithm>(
+          container_builder_.EarlyBreak());
+    }
   } else {
 #if DCHECK_IS_ON()
     // If we're not participating in a fragmentation context, no block
@@ -328,6 +334,21 @@ NGBreakStatus NGFieldsetLayoutAlgorithm::LayoutFieldsetContent(
     const NGBlockBreakToken* content_break_token,
     LogicalSize adjusted_padding_box_size,
     bool has_legend) {
+  const NGEarlyBreak* early_break_in_child = nullptr;
+  if (UNLIKELY(early_break_)) {
+    if (IsEarlyBreakTarget(*early_break_, container_builder_,
+                           fieldset_content)) {
+      container_builder_.AddBreakBeforeChild(fieldset_content,
+                                             kBreakAppealPerfect,
+                                             /* is_forced_break */ false);
+      ConsumeRemainingFragmentainerSpace();
+      return NGBreakStatus::kContinue;
+    } else {
+      early_break_in_child =
+          EnterEarlyBreakInChild(fieldset_content, *early_break_);
+    }
+  }
+
   // If the following conditions meet, the content should be laid out with
   // a block-size limitation:
   // - The FIELDSET block-size is indefinite.
@@ -354,10 +375,11 @@ NGBreakStatus NGFieldsetLayoutAlgorithm::LayoutFieldsetContent(
   auto child_space = CreateConstraintSpaceForFieldsetContent(
       fieldset_content, adjusted_padding_box_size, intrinsic_block_size_,
       NGCacheSlot::kLayout);
-  auto result = fieldset_content.Layout(child_space, content_break_token);
+  auto result = fieldset_content.Layout(child_space, content_break_token,
+                                        early_break_in_child);
 
   NGBreakStatus break_status = NGBreakStatus::kContinue;
-  if (ConstraintSpace().HasBlockFragmentation()) {
+  if (ConstraintSpace().HasBlockFragmentation() && !early_break_) {
     bool has_container_separation = is_legend_past_border_;
     // TODO(almaher): The legend should be treated as out-of-flow.
     break_status = BreakBeforeChildIfNeeded(
