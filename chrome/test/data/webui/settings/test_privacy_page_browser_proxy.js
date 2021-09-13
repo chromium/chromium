@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import { MetricsReporting,PrivacyPageBrowserProxy, ResolverOption, SecureDnsMode, SecureDnsSetting, SecureDnsUiManagementMode} from 'chrome://settings/settings.js';
+import {SecureDnsMode, SecureDnsUiManagementMode} from 'chrome://settings/settings.js';
 
 import {assertFalse} from '../chai_assert.js';
 import {TestBrowserProxy} from '../test_browser_proxy.js';

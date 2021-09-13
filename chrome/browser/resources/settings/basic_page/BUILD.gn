@@ -19,7 +19,6 @@ js_library("basic_page") {
     "..:router",
     "..:search_settings",
     "../prefs:prefs_behavior",
-    "../privacy_page:privacy_page",
     "../settings_page:main_page_mixin",
     "//ui/webui/resources/js:load_time_data.m",
   ]

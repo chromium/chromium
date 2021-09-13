@@ -58,7 +58,7 @@ import '../privacy_page/secure_dns_input.js';
 export {SmbBrowserProxyImpl, SmbMountResult} from 'chrome://resources/cr_components/chromeos/smb_shares/smb_browser_proxy.m.js';
 export {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from '../languages_page/languages_browser_proxy.js';
 export {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
-export {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl, ResolverOption, SecureDnsMode, SecureDnsSetting, SecureDnsUiManagementMode} from '../privacy_page/privacy_page_browser_proxy.js';
+export {PrivacyPageBrowserProxyImpl, SecureDnsMode, SecureDnsUiManagementMode} from '../privacy_page/privacy_page_browser_proxy.js';
 export {CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_page/crostini_browser_proxy.js';
 export {TimeZoneAutoDetectMethod} from './date_time_page/date_time_types.js';
 export {TimeZoneBrowserProxyImpl} from './date_time_page/timezone_browser_proxy.js';

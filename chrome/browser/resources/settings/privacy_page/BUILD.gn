@@ -2,119 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/html_to_js.gni")
-import("../settings.gni")
-
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags = settings_closure_flags
-  deps = [
-    ":collapse_radio_button",
-    ":cookies_page",
-    ":do_not_track_toggle",
-    ":personalization_options",
-    ":privacy_page",
-    ":privacy_page_browser_proxy",
-    ":privacy_review_promo",
-  ]
-}
-
-js_library("cookies_page") {
-  deps = [
-    ":collapse_radio_button",
-    ":do_not_track_toggle",
-    "..:metrics_browser_proxy",
-    "..:route",
-    "..:router",
-    "../controls:settings_toggle_button",
-    "../prefs:prefs_behavior",
-    "../site_settings:site_list",
-    "../site_settings:site_settings_prefs_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-  ]
-}
-
-js_library("collapse_radio_button") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/iron-collapse:iron-collapse",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_radio_button:cr_radio_button_behavior.m",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_indicator_behavior.m",
-  ]
-}
-
-js_library("do_not_track_toggle") {
-  deps = [
-    "..:metrics_browser_proxy",
-    "../controls:settings_toggle_button",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
-  ]
-}
-
-js_library("personalization_options") {
-  deps = [
-    ":privacy_page_browser_proxy",
-    "..:i18n_setup",
-    "..:lifetime_browser_proxy",
-    "../controls:settings_toggle_button",
-    "../people_page:signout_dialog",
-    "../people_page:sync_browser_proxy",
-    "../prefs:prefs_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-  ]
-}
-
-js_library("privacy_page") {
-  deps = [
-    ":privacy_page_browser_proxy",
-    ":privacy_review_promo",
-    "..:hats_browser_proxy",
-    "..:i18n_setup",
-    "..:metrics_browser_proxy",
-    "..:page_visibility",
-    "..:route",
-    "..:router",
-    "../controls:settings_toggle_button",
-    "../prefs:prefs_behavior",
-    "../privacy_page/privacy_review:privacy_review_page",
-    "../site_settings:constants",
-    "../site_settings:site_data_details_subpage",
-    "../site_settings:site_settings_prefs_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
-  ]
-}
-
-js_library("privacy_page_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-}
-
-js_library("privacy_review_promo") {
-  deps = [
-    "..:route",
-    "..:router",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:i18n_behavior.m",
-  ]
-}
 
 html_to_js("polymer3_elements") {
   js_files = [
-    "collapse_radio_button.js",
-    "cookies_page.js",
+    "collapse_radio_button.ts",
+    "cookies_page.ts",
     "disable_safebrowsing_dialog.ts",
-    "do_not_track_toggle.js",
-    "personalization_options.js",
-    "privacy_page.js",
-    "privacy_review_promo.js",
+    "do_not_track_toggle.ts",
+    "personalization_options.ts",
+    "privacy_page.ts",
+    "privacy_review_promo.ts",
     "secure_dns.ts",
     "secure_dns_input.ts",
     "security_keys_bio_enroll_dialog.ts",

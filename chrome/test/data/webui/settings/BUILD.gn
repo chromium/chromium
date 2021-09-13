@@ -45,14 +45,11 @@ js_type_check("closure_compile") {
     #":chooser_exception_list_tests",
     #":chrome_cleanup_page_test",
     #":clear_browsing_data_test",
-    ":collapse_radio_button_tests",
 
     #":controlled_button_tests",
     #":controlled_radio_button_tests",
-    ":cookies_page_test",
 
     #":default_browser_browsertest",
-    ":do_not_track_toggle_test",
 
     #":downloads_page_test",
     #":dropdown_menu_tests",
@@ -152,7 +149,6 @@ js_type_check("closure_compile") {
     ":test_open_window_proxy",
 
     #":test_password_manager_proxy",
-    ":test_privacy_page_browser_proxy",
 
     #":test_profile_info_browser_proxy",
     #":test_reset_browser_proxy",
@@ -182,40 +178,6 @@ js_library("advanced_page_test") {
     ":settings_page_test_util",
     "..:chai_assert",
     "//chrome/browser/resources/settings:settings",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("collapse_radio_button_tests") {
-  deps = [
-    "..:chai_assert",
-    "..:test_util",
-    "//chrome/browser/resources/settings:lazy_load",
-    "//chrome/browser/resources/settings:settings",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("cookies_page_test") {
-  deps = [
-    ":test_metrics_browser_proxy",
-    ":test_site_settings_prefs_browser_proxy",
-    ":test_util",
-    "..:chai_assert",
-    "..:test_util",
-    "//chrome/browser/resources/settings:lazy_load",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("do_not_track_toggle_test") {
-  deps = [
-    ":test_metrics_browser_proxy",
-    "..:chai_assert",
-    "..:test_util",
-    "//chrome/browser/resources/settings:lazy_load",
     "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
@@ -309,14 +271,6 @@ js_library("test_metrics_browser_proxy") {
 
 js_library("test_open_window_proxy") {
   deps = [
-    "..:test_browser_proxy",
-    "//chrome/browser/resources/settings:settings",
-  ]
-}
-
-js_library("test_privacy_page_browser_proxy") {
-  deps = [
-    "..:chai_assert",
     "..:test_browser_proxy",
     "//chrome/browser/resources/settings:settings",
   ]

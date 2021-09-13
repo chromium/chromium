@@ -10,11 +10,15 @@ import '../controls/settings_toggle_button.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import {SettingsToggleButtonElement} from '../controls/settings_toggle_button_ts.js';
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
 
+export interface SettingsDoNotTrackToggleElement {
+  $: {
+    toggle: SettingsToggleButtonElement,
+  };
+}
 
-/** @polymer */
 export class SettingsDoNotTrackToggleElement extends PolymerElement {
   static get is() {
     return 'settings-do-not-track-toggle';
@@ -34,7 +38,6 @@ export class SettingsDoNotTrackToggleElement extends PolymerElement {
         notify: true,
       },
 
-      /** @private */
       showDialog_: {
         type: Boolean,
         value: false,
@@ -42,23 +45,22 @@ export class SettingsDoNotTrackToggleElement extends PolymerElement {
     };
   }
 
-  /** @private */
-  onDomChange_() {
+  private showDialog_: boolean;
+
+  private onDomChange_() {
     if (this.showDialog_) {
-      this.shadowRoot.querySelector('#confirmDialog').showModal();
+      this.shadowRoot!.querySelector('cr-dialog')!.showModal();
     }
   }
 
   /**
    * Handles the change event for the do-not-track toggle. Shows a
    * confirmation dialog when enabling the setting.
-   * @param {!Event} event
-   * @private
    */
-  onToggleChange_(event) {
+  private onToggleChange_(event: Event) {
     MetricsBrowserProxyImpl.getInstance().recordSettingsPageHistogram(
         PrivacyElementInteractions.DO_NOT_TRACK);
-    const target = /** @type {!SettingsToggleButtonElement} */ (event.target);
+    const target = event.target as SettingsToggleButtonElement;
     if (!target.checked) {
       // Always allow disabling the pref.
       target.sendPrefChange();
@@ -68,35 +70,29 @@ export class SettingsDoNotTrackToggleElement extends PolymerElement {
     this.showDialog_ = true;
   }
 
-  /** @private */
-  closeDialog_() {
-    this.shadowRoot.querySelector('#confirmDialog').close();
+  private closeDialog_() {
+    this.shadowRoot!.querySelector('cr-dialog')!.close();
     this.showDialog_ = false;
   }
 
-  /** @private */
-  onDialogClosed_() {
+  private onDialogClosed_() {
     focusWithoutInk(this.$.toggle);
   }
 
   /**
    * Handles the shared proxy confirmation dialog 'Confirm' button.
-   * @private
    */
-  onDialogConfirm_() {
-    /** @type {!SettingsToggleButtonElement} */ (this.$.toggle)
-        .sendPrefChange();
+  private onDialogConfirm_() {
+    this.$.toggle.sendPrefChange();
     this.closeDialog_();
   }
 
   /**
    * Handles the shared proxy confirmation dialog 'Cancel' button or a cancel
    * event.
-   * @private
    */
-  onDialogCancel_() {
-    /** @type {!SettingsToggleButtonElement} */ (this.$.toggle)
-        .resetToPrefValue();
+  private onDialogCancel_() {
+    this.$.toggle.resetToPrefValue();
     this.closeDialog_();
   }
 }

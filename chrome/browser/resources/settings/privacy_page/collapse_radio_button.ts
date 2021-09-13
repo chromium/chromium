@@ -8,19 +8,13 @@ import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../settings_shared_css.js';
 
-import {CrRadioButtonBehavior, CrRadioButtonBehaviorInterface} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button_behavior.m.js';
+import {CrRadioButtonBehavior} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {CrRadioButtonBehaviorInterface}
- */
 const SettingsCollapseRadioButtonElementBase =
-    mixinBehaviors([CrRadioButtonBehavior], PolymerElement);
+    mixinBehaviors([CrRadioButtonBehavior], PolymerElement) as
+    {new (): PolymerElement & CrRadioButtonBehavior};
 
-/** @polymer */
 export class SettingsCollapseRadioButtonElement extends
     SettingsCollapseRadioButtonElementBase {
   static get is() {
@@ -57,7 +51,6 @@ export class SettingsCollapseRadioButtonElement extends
 
       /*
        * The Preference associated with the radio group.
-       * @type {!chrome.settingsPrivate.PrefObject|undefined}
        */
       pref: Object,
 
@@ -87,12 +80,23 @@ export class SettingsCollapseRadioButtonElement extends
     ];
   }
 
+  expanded: boolean;
+  noAutomaticCollapse: boolean;
+  noCollapse: boolean;
+  label: string;
+  indicatorAriaLabel: string;
+  icon: string;
+  pref?: chrome.settingsPrivate.PrefObject;
+  disabled: boolean;
+  subLabel: string;
+  expandAriaLabel: string;
+  private pendingUpdateCollapsed_: boolean;
+
   constructor() {
     super();
 
     /**
      * Tracks if this button was clicked but wasn't expanded.
-     * @private
      */
     this.pendingUpdateCollapsed_ = false;
   }
@@ -100,7 +104,6 @@ export class SettingsCollapseRadioButtonElement extends
   /**
    * Updates the collapsed status of this radio button to reflect
    * the user selection actions.
-   * @public
    */
   updateCollapsed() {
     if (this.pendingUpdateCollapsed_) {
@@ -109,16 +112,14 @@ export class SettingsCollapseRadioButtonElement extends
     }
   }
 
-  /** @private */
-  onCheckedChanged_() {
+  private onCheckedChanged_() {
     this.pendingUpdateCollapsed_ = true;
     if (!this.noAutomaticCollapse) {
       this.updateCollapsed();
     }
   }
 
-  /** @private */
-  onPrefChanged_() {
+  private onPrefChanged_() {
     // If the preference has been set, and is managed, this control should be
     // disabled. Unless the value associated with this control is present in
     // |pref.userSelectableValues|. This will override the disabled set on the
@@ -129,24 +130,20 @@ export class SettingsCollapseRadioButtonElement extends
           this.pref.userSelectableValues.includes(this.name));
   }
 
-  /** @private */
-  onExpandClicked_() {
+  private onExpandClicked_() {
     this.dispatchEvent(
         new CustomEvent('expand-clicked', {bubbles: true, composed: true}));
   }
 
-  /** @private */
-  onRadioFocus_() {
+  private onRadioFocus_() {
     this.getRipple().showAndHoldDown();
   }
 
   /**
    * Clear the ripple associated with the radio button when the expand button
    * is focused. Stop propagation to prevent the ripple being re-created.
-   * @param {!Event} e
-   * @private
    */
-  onNonRadioFocus_(e) {
+  private onNonRadioFocus_(e: Event) {
     this.getRipple().clear();
     e.stopPropagation();
   }

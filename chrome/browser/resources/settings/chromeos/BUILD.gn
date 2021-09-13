@@ -283,7 +283,6 @@ preprocess_if_expr("preprocess_v3") {
     "prefs/prefs.js",
     "prefs/prefs_types.js",
     "prefs/pref_util.js",
-    "privacy_page/privacy_page_browser_proxy.js",
     "router.js",
   ]
 }
@@ -303,6 +302,8 @@ preprocess_if_expr("copy_browser_settings_tsc") {
     "i18n_setup.js",
     "icons.js",
     "lifetime_browser_proxy.js",
+    "privacy_page/personalization_options.js",
+    "privacy_page/privacy_page_browser_proxy.js",
     "privacy_page/secure_dns_input.js",
     "privacy_page/secure_dns.js",
     "setting_id_param_util.js",
@@ -552,7 +553,6 @@ preprocess_if_expr("preprocess_gen_v3") {
     "people_page/sync_controls.js",
     "people_page/sync_encryption_options.js",
     "people_page/sync_page.js",
-    "privacy_page/personalization_options.js",
     "settings_page/settings_animated_pages.js",
   ]
 }

@@ -171,7 +171,6 @@ js_library("settings_category_default_radio_group") {
     ":constants",
     ":site_settings_mixin",
     "../controls:settings_radio_group",
-    "../privacy_page:collapse_radio_button",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",

@@ -30,7 +30,6 @@ import {flush, html, mixinBehaviors, PolymerElement} from '//resources/polymer/v
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {SettingsPersonalizationOptionsElement} from '../privacy_page/personalization_options.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
 import {PageStatus, StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from './sync_browser_proxy.js';
@@ -52,6 +51,19 @@ let SyncRoutes;
 function getSyncRoutes() {
   const router = Router.getInstance();
   return /** @type {!SyncRoutes} */ (router.getRoutes());
+}
+
+// TODO(dpapad): Remove this interface when this file is no longer needed by OS
+// Settings.
+class SettingsPersonalizationOptionsElement {
+  /** @return {?HTMLElement} */
+  getDriveSuggestToggle() {}
+
+  /** @return {?HTMLElement} */
+  getUrlCollectionToggle() {}
+
+  /** @return {?HTMLElement} */
+  getSearchSuggestToggle() {}
 }
 
 /**
@@ -307,8 +319,9 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   }
 
   /**
-   * Returns the encryption options SettingsPersonalizationOptionsElement.
+   * Returns the personalization options SettingsPersonalizationOptionsElement.
    * @return {?SettingsPersonalizationOptionsElement}
+   * @suppress {checkTypes}
    */
   getPersonalizationOptions() {
     return /** @type {?SettingsPersonalizationOptionsElement} */ (

@@ -10,7 +10,7 @@
 
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
+import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import '../controls/settings_toggle_button.js';
 import '../icons.js';
 import '../prefs/prefs.js';
@@ -18,13 +18,16 @@ import '../settings_shared_css.js';
 import '../site_settings/site_list.js';
 import './collapse_radio_button.js';
 import './do_not_track_toggle.js';
+import '../controls/settings_radio_group.js';
 
+import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SettingsRadioGroupElement} from '../controls/settings_radio_group_ts.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
 import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs/prefs_behavior.js';
@@ -36,41 +39,42 @@ import {ContentSetting, ContentSettingsTypes} from '../site_settings/constants.j
  * The primary cookie setting associated with each radio button. Must be kept in
  * sync with the C++ enum of the same name in
  * chrome/browser/content_settings/generated_cookie_prefs.h
- * @enum {number}
  */
-const CookiePrimarySetting = {
-  ALLOW_ALL: 0,
-  BLOCK_THIRD_PARTY_INCOGNITO: 1,
-  BLOCK_THIRD_PARTY: 2,
-  BLOCK_ALL: 3,
-};
+enum CookiePrimarySetting {
+  ALLOW_ALL = 0,
+  BLOCK_THIRD_PARTY_INCOGNITO = 1,
+  BLOCK_THIRD_PARTY = 2,
+  BLOCK_ALL = 3,
+}
 
 /**
  * Must be kept in sync with the C++ enum of the same name (see
  * chrome/browser/net/prediction_options.h).
- * @enum {number}
  */
-const NetworkPredictionOptions = {
-  ALWAYS: 0,
-  WIFI_ONLY: 1,
-  NEVER: 2,
-  DEFAULT: 1,
-};
+enum NetworkPredictionOptions {
+  ALWAYS = 0,
+  WIFI_ONLY = 1,
+  NEVER = 2,
+  DEFAULT = 1,
+}
 
+type FocusConfig = Map<string, (string|(() => void))>;
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {PrefsBehaviorInterface}
- * @implements {RouteObserverMixinInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const SettingsCookiesPageElementBase = mixinBehaviors(
-    [I18nBehavior, PrefsBehavior, WebUIListenerBehavior],
-    RouteObserverMixin(PolymerElement));
+export interface SettingsCookiesPageElement {
+  $: {
+    toast: CrToastElement,
+    primarySettingGroup: SettingsRadioGroupElement,
+  };
+}
 
-/** @polymer */
+const SettingsCookiesPageElementBase =
+    mixinBehaviors(
+        [I18nBehavior, PrefsBehavior, WebUIListenerBehavior],
+        RouteObserverMixin(PolymerElement)) as {
+      new (): PolymerElement & I18nBehavior & WebUIListenerBehavior &
+      PrefsBehaviorInterface & RouteObserverMixinInterface
+    };
+
 export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   static get is() {
     return 'settings-cookies-page';
@@ -101,7 +105,6 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
 
       /**
        * Primary cookie control states for use in bindings.
-       * @private
        */
       cookiePrimarySettingEnum_: {
         type: Object,
@@ -113,54 +116,44 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
        * within the ready callback, because the value needs to be available
        * before local DOM initialization - otherwise, the toggle has unexpected
        * behavior.
-       * @private {!NetworkPredictionOptions}
        */
       networkPredictionUncheckedValue_: {
         type: Number,
         value: NetworkPredictionOptions.NEVER,
       },
 
-      /** @private */
       contentSetting_: {
         type: Object,
         value: ContentSetting,
       },
 
-      /**
-       * @private {!ContentSettingsTypes}
-       */
       cookiesContentSettingType_: {
         type: String,
         value: ContentSettingsTypes.COOKIES,
       },
 
-      /** @private */
       exceptionListsReadOnly_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {!chrome.settingsPrivate.PrefObject} */
       blockAllPref_: {
         type: Object,
         value() {
-          return /** @type {chrome.settingsPrivate.PrefObject} */ ({});
+          return {};
         },
       },
 
-      /** @private */
       enableConsolidatedSiteStorageControls_: {
         type: Boolean,
         value: () =>
             loadTimeData.getBoolean('consolidatedSiteStorageControlsEnabled'),
       },
 
-      /** @type {!Map<string, (string|Function)>} */
       focusConfig: {
         type: Object,
         observer: 'focusConfigChanged_',
       },
-
     };
   }
 
@@ -169,24 +162,22 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
         prefs.generated.cookie_primary_setting)`];
   }
 
-  constructor() {
-    super();
+  searchTerm: string;
+  private cookiesContentSettingType_: ContentSettingsTypes;
+  private exceptionListsReadOnly_: boolean;
+  private blockAllPref_: chrome.settingsPrivate.PrefObject;
+  private enableConsolidatedSiteStorageControls_: boolean;
+  focusConfig: FocusConfig;
 
-    /** @type {!MetricsBrowserProxy} */
-    this.metricsBrowserProxy_ = MetricsBrowserProxyImpl.getInstance();
-  }
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
 
-  /*
-   * @param {!Map<string, string>} newConfig
-   * @param {?Map<string, string>} oldConfig
-   * @private
-   */
-  focusConfigChanged_(newConfig, oldConfig) {
+  private focusConfigChanged_(_newConfig: FocusConfig, oldConfig: FocusConfig) {
     assert(!oldConfig);
     assert(routes.SITE_SETTINGS_SITE_DATA);
     const selectSiteDataLinkRow = () => {
       focusWithoutInk(
-          assert(this.shadowRoot.querySelector('#site-data-trigger')));
+          assert(this.shadowRoot!.querySelector('#site-data-trigger')!));
     };
     this.focusConfig.set(
         routes.SITE_SETTINGS_SITE_DATA.path, selectSiteDataLinkRow);
@@ -197,25 +188,19 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
     }
   }
 
-  /** @override */
-  currentRouteChanged(route) {
+  currentRouteChanged(route: Route) {
     if (route !== routes.COOKIES) {
       this.$.toast.hide();
     }
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getSiteDataLabel_() {
+  private getSiteDataLabel_(): string {
     return this.enableConsolidatedSiteStorageControls_ ?
         this.i18n('cookiePageAllSitesLink') :
         this.i18n('siteSettingsCookieLink');
   }
 
-  /** @private */
-  onSiteDataClick_() {
+  private onSiteDataClick_() {
     if (this.enableConsolidatedSiteStorageControls_) {
       Router.getInstance().navigateTo(routes.SITE_SETTINGS_ALL);
     } else {
@@ -223,8 +208,7 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
     }
   }
 
-  /** @private */
-  onGeneratedPrefsUpdated_() {
+  private onGeneratedPrefsUpdated_() {
     const sessionOnlyPref = this.getPref('generated.cookie_session_only');
 
     // If the clear on exit toggle is managed this implies a content setting
@@ -249,9 +233,8 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
 
   /**
    * Record interaction metrics for the primary cookie radio setting.
-   * @private
    */
-  onCookiePrimarySettingChanged_() {
+  private onCookiePrimarySettingChanged_() {
     const selection = Number(this.$.primarySettingGroup.selected);
     if (selection === CookiePrimarySetting.ALLOW_ALL) {
       this.metricsBrowserProxy_.recordSettingsPageHistogram(
@@ -290,8 +273,7 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
     this.$.primarySettingGroup.sendPrefChange();
   }
 
-  /** @private */
-  onClearOnExitChange_() {
+  private onClearOnExitChange_() {
     this.metricsBrowserProxy_.recordSettingsPageHistogram(
         PrivacyElementInteractions.COOKIES_SESSION);
   }
@@ -300,20 +282,19 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
    * Records changes made to the network prediction setting for logging, the
    * logic of actually changing the setting is taken care of by the
    * net.network_prediction_options pref.
-   * @private
    */
-  onNetworkPredictionChange_() {
+  private onNetworkPredictionChange_() {
     this.metricsBrowserProxy_.recordSettingsPageHistogram(
         PrivacyElementInteractions.NETWORK_PREDICTION);
   }
 
-  /** @private */
-  onPrivacySandboxClick_() {
+  private onPrivacySandboxClick_() {
     this.metricsBrowserProxy_.recordAction(
         'Settings.PrivacySandbox.OpenedFromCookiesPageToast');
     this.$.toast.hide();
     // TODO(crbug/1159942): Replace this with an ordinary OpenWindowProxy call.
-    this.shadowRoot.getElementById('privacySandboxLink').click();
+    this.shadowRoot!.querySelector<HTMLAnchorElement>(
+                        '#privacySandboxLink')!.click();
   }
 }
 

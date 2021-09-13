@@ -12,7 +12,6 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 
-/** @polymer */
 export class PrivacyReviewPromoElement extends PolymerElement {
   static get is() {
     return 'settings-privacy-review-promo';
@@ -22,8 +21,7 @@ export class PrivacyReviewPromoElement extends PolymerElement {
     return html`{__html_template__}`;
   }
 
-  /** @private */
-  onPrivacyReviewClick_() {
+  private onPrivacyReviewClick_() {
     Router.getInstance().navigateTo(routes.PRIVACY_REVIEW);
   }
 }
