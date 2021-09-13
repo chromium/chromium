@@ -16,6 +16,15 @@
       <ExpandedItem Condition="raw_ != 0">($T1*)raw_</ExpandedItem>
     </Expand>
   </Type>
+  <Type Name="cppgc::internal::BasicPersistent&lt;*&gt;">
+    <SmartPointer Usage="Minimal">($T1*)raw_</SmartPointer>
+    <DisplayString Condition="raw_ == 0">null</DisplayString>
+    <DisplayString>{*($T1*)raw_}</DisplayString>
+    <Expand>
+      <Item Name="Raw">($T1*)raw_</Item>
+      <ExpandedItem Condition="raw_ != 0">($T1*)raw_</ExpandedItem>
+    </Expand>
+  </Type>
   <!--
    !== !USE_V8_OILPAN version of Member
    !== See "third_party/blink/renderer/platform/heap/impl/member.h"
