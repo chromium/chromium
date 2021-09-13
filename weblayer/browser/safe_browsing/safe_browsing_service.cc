@@ -15,6 +15,7 @@
 #include "components/safe_browsing/content/browser/mojo_safe_browsing_impl.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_throttle.h"
 #include "components/safe_browsing/content/browser/safe_browsing_network_context.h"
+#include "components/safe_browsing/content/browser/triggers/trigger_manager.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -29,6 +30,7 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "weblayer/browser/browser_context_impl.h"
+#include "weblayer/browser/browser_process.h"
 #include "weblayer/browser/safe_browsing/url_checker_delegate_impl.h"
 #include "weblayer/browser/safe_browsing/weblayer_safe_browsing_blocking_page_factory.h"
 #include "weblayer/browser/safe_browsing/weblayer_ui_manager_delegate.h"
@@ -115,6 +117,9 @@ void SafeBrowsingService::Initialize() {
           base::BindRepeating(CreateDefaultNetworkContextParams, user_agent_));
 
   CreateSafeBrowsingUIManager();
+
+  // Needs to happen after |ui_manager_| is created.
+  CreateTriggerManager();
 }
 
 std::unique_ptr<blink::URLLoaderThrottle>
@@ -176,12 +181,22 @@ SafeBrowsingService::GetSafeBrowsingUIManager() {
   return ui_manager_;
 }
 
+safe_browsing::TriggerManager* SafeBrowsingService::GetTriggerManager() {
+  return trigger_manager_.get();
+}
+
 void SafeBrowsingService::CreateSafeBrowsingUIManager() {
   DCHECK(!ui_manager_);
   ui_manager_ = new safe_browsing::SafeBrowsingUIManager(
       std::make_unique<WebLayerSafeBrowsingUIManagerDelegate>(),
       std::make_unique<WebLayerSafeBrowsingBlockingPageFactory>(),
       GURL(url::kAboutBlankURL));
+}
+
+void SafeBrowsingService::CreateTriggerManager() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  trigger_manager_ = std::make_unique<safe_browsing::TriggerManager>(
+      ui_manager_.get(), BrowserProcess::GetInstance()->GetLocalState());
 }
 
 void SafeBrowsingService::CreateAndStartSafeBrowsingDBManager() {

@@ -130,6 +130,7 @@
 #include "components/navigation_interception/intercept_navigation_delegate.h"
 #include "components/safe_browsing/core/browser/realtime/policy_engine.h"  // nogncheck
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service.h"  // nogncheck
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/spellcheck/browser/spell_check_host_impl.h"  // nogncheck
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -274,6 +275,7 @@ void RegisterPrefs(PrefRegistrySimple* pref_registry) {
   pref_registry->RegisterIntegerPref(kDownloadNextIDPref, 0);
 #if defined(OS_ANDROID)
   metrics::AndroidMetricsServiceClient::RegisterPrefs(pref_registry);
+  safe_browsing::RegisterLocalStatePrefs(pref_registry);
 #else
   // Call MetricsService::RegisterPrefs() as VariationsService::RegisterPrefs()
   // CHECKs that kVariationsCrashStreak has already been registered.
