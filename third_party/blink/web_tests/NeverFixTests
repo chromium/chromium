@@ -439,6 +439,7 @@ external/wpt/css/css-text/word-boundary/* [ Skip ]
 external/wpt/css/css-text/writing-system/writing-system-line-break-001.html [ Skip ]
 external/wpt/css/css-text/writing-system/writing-system-line-break-002.html [ Skip ]
 external/wpt/css/css-text/writing-system/writing-system-segment-break-001.html [ Skip ]
+external/wpt/css/css-text/writing-system/writing-system-text-transform-001.html [ Skip ]
 
 # Tests without any implementations.
 # https://github.com/w3c/csswg-drafts/issues/4576
@@ -1185,6 +1186,7 @@ external/wpt/css/css-animations/animation-timing-function-011-manual.html [ Skip
 external/wpt/css/css-animations/animation-timing-function-012-manual.html [ Skip ]
 external/wpt/css/css-animations/animationstart-and-animationend-events-manual.html [ Skip ]
 external/wpt/css/css-counter-styles/counter-style-speak-as-manual.html [ Skip ]
+external/wpt/css/css-text/text-transform/text-transform-copy-paste-001-manual.html [ Skip ]
 external/wpt/css/css-transitions/transition-delay-000-manual.html [ Skip ]
 external/wpt/css/css-transitions/transition-delay-002-manual.html [ Skip ]
 external/wpt/css/css-transitions/transition-delay-003-manual.html [ Skip ]
