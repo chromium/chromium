@@ -3,10 +3,6 @@
     color: var(--cr-primary-text-color);
     display: block;
     font-size: 0.875rem;  /* 14px */
-  }
-
-  #container {
-    height: 100%;
     overflow-y: scroll;
   }
 
@@ -21,23 +17,20 @@
     padding: 0 var(--cluster-padding);
   }
 </style>
-<div id="container">
-  <div id="header" hidden="[[!result_.query]]">
-    <div id="title">[[title_]]</div>
-  </div>
-
-  <iron-list id="clusters" scroll-target="container"
-      items="[[result_.clusters]]"
-      on-remove-visits="onRemoveVisits_">
-    <template>
-      <history-cluster cluster="[[item]]"
-          on-cluster-emptied="onClusterEmptied_">
-      </history-cluster>
-    </template>
-  </iron-list>
+<div id="header" hidden="[[!result_.query]]">
+  <div id="title">[[title_]]</div>
 </div>
-<iron-scroll-threshold id="scrollThreshold" scroll-target="container"
-    on-lower-threshold="onScrolledToBottom_">
+<iron-list id="clusters"
+    items="[[result_.clusters]]"
+    on-remove-visits="onRemoveVisits_">
+  <template>
+    <history-cluster cluster="[[item]]"
+        on-cluster-emptied="onClusterEmptied_">
+    </history-cluster>
+  </template>
+</iron-list>
+<iron-scroll-threshold id="scrollThreshold"
+    lower-threshold="500" on-lower-threshold="onScrolledToBottom_">
 </iron-scroll-threshold>
 
 <cr-lazy-render id="confirmationDialog">

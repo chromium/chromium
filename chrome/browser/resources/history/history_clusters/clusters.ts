@@ -8,7 +8,6 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
@@ -16,6 +15,7 @@ import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {IronScrollThresholdElement} from 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -45,9 +45,9 @@ declare global {
 
 interface HistoryClustersElement {
   $: {
+    clusters: IronListElement,
     confirmationDialog: CrLazyRenderElement<CrDialogElement>,
     confirmationToast: CrLazyRenderElement<CrToastElement>,
-    container: Element,
     scrollThreshold: IronScrollThresholdElement,
   };
 }
@@ -124,6 +124,11 @@ class HistoryClustersElement extends PolymerElement {
 
   connectedCallback() {
     super.connectedCallback();
+
+    this.$.clusters.notifyResize();
+    this.$.clusters.scrollTarget = this;
+    this.$.scrollThreshold.scrollTarget = this;
+
     this.onClustersQueryResultListenerId_ =
         this.callbackRouter_.onClustersQueryResult.addListener(
             this.onClustersQueryResult_.bind(this));
@@ -252,8 +257,8 @@ class HistoryClustersElement extends PolymerElement {
     }
 
     // Handle the "tall monitor" edge case: if the returned results are are
-    // shorter than the vertical viewport, the "container" div will not have a
-    // scrollbar, and the user will never be able to trigger the
+    // shorter than the vertical viewport, the <history-clusters> element will
+    // not have a scrollbar, and the user will never be able to trigger the
     // iron-scroll-threshold to request more results. Therefore, immediately
     // request more results if there is no scrollbar to fill the viewport.
     //
@@ -266,8 +271,7 @@ class HistoryClustersElement extends PolymerElement {
     // Do this on browser idle to avoid jank and to give the DOM a chance to be
     // updated with the results we just got.
     this.onBrowserIdle_().then(() => {
-      const container = this.$.container;
-      if (container.scrollHeight <= container.clientHeight) {
+      if (this.scrollHeight <= this.clientHeight) {
         this.onScrolledToBottom_();
       }
     });
@@ -282,7 +286,7 @@ class HistoryClustersElement extends PolymerElement {
         endTime: undefined,
       });
       // Scroll to the top when the results change due to query change.
-      this.$.container.scrollTop = 0;
+      this.scrollTop = 0;
     });
   }
 
