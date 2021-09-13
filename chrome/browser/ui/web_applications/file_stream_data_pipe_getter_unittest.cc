@@ -167,13 +167,13 @@ TEST_F(FileStreamDataPipeGetterTest, SingleFile) {
       data_pipe_getter_remotes(1);
   {
     storage::FileSystemURL url = CreateTestFile("test.dat", 0, kTestDataSize);
-    mojo::MakeSelfOwnedReceiver(
-        std::make_unique<web_app::FileStreamDataPipeGetter>(
-            file_system_context_, url,
-            /*offset=*/0,
-            /*file_size=*/kTestDataSize,
-            /*buf_size=*/kBufSize),
-        data_pipe_getter_remotes[0].InitWithNewPipeAndPassReceiver());
+    web_app::FileStreamDataPipeGetter::Create(
+        /*receiver=*/data_pipe_getter_remotes[0]
+            .InitWithNewPipeAndPassReceiver(),
+        file_system_context_, url,
+        /*offset=*/0,
+        /*file_size=*/kTestDataSize,
+        /*buf_size=*/kBufSize);
   }
 
   std::string response_body =
@@ -192,13 +192,14 @@ TEST_F(FileStreamDataPipeGetterTest, MultipleFiles) {
 
     storage::FileSystemURL url = CreateTestFile(
         base::StringPrintf("test%i.dat", index), begin_offset, file_size);
-    mojo::MakeSelfOwnedReceiver(
-        std::make_unique<web_app::FileStreamDataPipeGetter>(
-            file_system_context_, url,
-            /*offset=*/0,
-            /*file_size=*/file_size,
-            /*buf_size=*/kBufSize),
-        data_pipe_getter_remotes[index].InitWithNewPipeAndPassReceiver());
+
+    web_app::FileStreamDataPipeGetter::Create(
+        /*receiver=*/data_pipe_getter_remotes[index]
+            .InitWithNewPipeAndPassReceiver(),
+        file_system_context_, url,
+        /*offset=*/0,
+        /*file_size=*/file_size,
+        /*buf_size=*/kBufSize);
   }
 
   std::string response_body =

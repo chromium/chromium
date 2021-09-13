@@ -27,7 +27,6 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/file_stream_data_pipe_getter.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #endif
 
 namespace web_app {
@@ -140,14 +139,13 @@ NavigateParams NavigateParamsForShareTarget(
           continue;
         }
 
-        mojo::MakeSelfOwnedReceiver(
-            std::make_unique<FileStreamDataPipeGetter>(
-                /*context=*/file_system_context,
-                /*url=*/file_system_url,
-                /*offset=*/0,
-                /*file_size=*/file->file_size,
-                /*buf_size=*/kBufSize),
-            data_pipe_getter.InitWithNewPipeAndPassReceiver());
+        FileStreamDataPipeGetter::Create(
+            /*receiver=*/data_pipe_getter.InitWithNewPipeAndPassReceiver(),
+            /*context=*/file_system_context,
+            /*url=*/file_system_url,
+            /*offset=*/0,
+            /*file_size=*/file->file_size,
+            /*buf_size=*/kBufSize);
       }
 
       const std::string filename =

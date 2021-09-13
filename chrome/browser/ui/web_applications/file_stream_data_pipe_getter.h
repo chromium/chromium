@@ -21,22 +21,39 @@ namespace web_app {
 
 class FileStreamDataPipeGetter : public network::mojom::DataPipeGetter {
  public:
-  FileStreamDataPipeGetter(scoped_refptr<storage::FileSystemContext> context,
-                           const storage::FileSystemURL& url,
-                           int64_t offset,
-                           int64_t file_size,
-                           int buf_size);
+  // Create a new FileStreamDataPipeGetter instance. The instance owns itself,
+  // cleaning up after all receivers have disconnected. Returns a WeakPtr to the
+  // new instance.
+  static base::WeakPtr<FileStreamDataPipeGetter> Create(
+      mojo::PendingReceiver<network::mojom::DataPipeGetter> receiver,
+      scoped_refptr<storage::FileSystemContext> context,
+      const storage::FileSystemURL& url,
+      int64_t offset,
+      int64_t file_size,
+      int buf_size);
   FileStreamDataPipeGetter(const FileStreamDataPipeGetter& other) = delete;
   FileStreamDataPipeGetter& operator=(const FileStreamDataPipeGetter&) = delete;
   ~FileStreamDataPipeGetter() override;
 
  private:
+  FileStreamDataPipeGetter(
+      mojo::PendingReceiver<network::mojom::DataPipeGetter> receiver,
+      scoped_refptr<storage::FileSystemContext> context,
+      const storage::FileSystemURL& url,
+      int64_t offset,
+      int64_t file_size,
+      int buf_size);
+
   // network::mojom::DataPipeGetter:
   void Read(mojo::ScopedDataPipeProducerHandle pipe,
             ReadCallback callback) override;
   void Clone(mojo::PendingReceiver<DataPipeGetter> receiver) override;
 
   void OnResult(bool result);
+
+  // Destroys the FileStreamDataPipeGetter instance when all receivers have
+  // disconnected.
+  void OnDisconnect(uint32_t custom_reason, const std::string& description);
 
   const scoped_refptr<storage::FileSystemContext> context_;
   const storage::FileSystemURL url_;
@@ -45,7 +62,7 @@ class FileStreamDataPipeGetter : public network::mojom::DataPipeGetter {
   const int buf_size_;
 
   mojo::ReceiverSet<network::mojom::DataPipeGetter> receivers_;
-  scoped_refptr<arc::ShareInfoFileStreamAdapter> stream_adapter_;
+  std::vector<scoped_refptr<arc::ShareInfoFileStreamAdapter>> stream_adapters_;
   base::WeakPtrFactory<FileStreamDataPipeGetter> weak_factory_{this};
 };
 
