@@ -2856,10 +2856,12 @@ bool RenderProcessHostImpl::IsProcessBackgrounded() {
   return priority_.is_background();
 }
 
-void RenderProcessHostImpl::IncrementKeepAliveRefCount() {
+void RenderProcessHostImpl::IncrementKeepAliveRefCount(uint64_t handle_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!are_ref_counts_disabled_);
   ++keep_alive_ref_count_;
+  DCHECK(!keep_alive_start_times_.contains(handle_id));
+  keep_alive_start_times_[handle_id] = base::Time::Now();
 }
 
 bool RenderProcessHostImpl::AreAllRefCountsZero() {
@@ -2867,13 +2869,26 @@ bool RenderProcessHostImpl::AreAllRefCountsZero() {
          shutdown_delay_ref_count_ == 0;
 }
 
-void RenderProcessHostImpl::DecrementKeepAliveRefCount() {
+void RenderProcessHostImpl::DecrementKeepAliveRefCount(uint64_t handle_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!are_ref_counts_disabled_);
   DCHECK_GT(keep_alive_ref_count_, 0U);
   --keep_alive_ref_count_;
+  DCHECK(keep_alive_start_times_.contains(handle_id));
+  keep_alive_start_times_.erase(handle_id);
   if (AreAllRefCountsZero())
     Cleanup();
+}
+
+std::string RenderProcessHostImpl::GetKeepAliveDurations() const {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  std::stringstream result;
+  base::Time now = base::Time::Now();
+  result << keep_alive_start_times_.size() << " uid/time-deltas:";
+  for (auto entry : keep_alive_start_times_)
+    result << " " << entry.first << "/" << (now - entry.second);
+  result << ".";
+  return result.str();
 }
 
 void RenderProcessHostImpl::IncrementWorkerRefCount() {

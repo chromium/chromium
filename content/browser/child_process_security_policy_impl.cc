@@ -155,11 +155,18 @@ base::debug::CrashKeyString* GetCanAccessDataFailureReasonKey() {
   return crash_key;
 }
 
+base::debug::CrashKeyString* GetCanAccessDataKeepAliveDurationKey() {
+  static auto* keep_alive_duration_key = base::debug::AllocateCrashKeyString(
+      "keep_alive_duration", base::debug::CrashKeySize::Size256);
+  return keep_alive_duration_key;
+}
+
 void LogCanAccessDataForOriginCrashKeys(
     const std::string& expected_process_lock,
     const std::string& killed_process_origin_lock,
     const std::string& requested_origin,
-    const std::string& failure_reason) {
+    const std::string& failure_reason,
+    const std::string& keep_alive_durations) {
   base::debug::SetCrashKeyString(GetExpectedProcessLockKey(),
                                  expected_process_lock);
   base::debug::SetCrashKeyString(GetKilledProcessOriginLockKey(),
@@ -168,6 +175,8 @@ void LogCanAccessDataForOriginCrashKeys(
                                  requested_origin);
   base::debug::SetCrashKeyString(GetCanAccessDataFailureReasonKey(),
                                  failure_reason);
+  base::debug::SetCrashKeyString(GetCanAccessDataKeepAliveDurationKey(),
+                                 keep_alive_durations);
 }
 
 }  // namespace
@@ -378,7 +387,8 @@ bool ChildProcessSecurityPolicyImpl::Handle::CanAccessDataForOrigin(
     const url::Origin& origin) {
   if (child_id_ == ChildProcessHost::kInvalidUniqueID) {
     LogCanAccessDataForOriginCrashKeys(
-        "(unknown)", "(unknown)", origin.GetDebugString(), "handle_not_valid");
+        "(unknown)", "(unknown)", origin.GetDebugString(), "handle_not_valid",
+        "no_keep_alive_durations");
     return false;
   }
 
@@ -1814,11 +1824,22 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
     }
   }
 
+  // Record the duration of KeepAlive requests to include in the crash keys.
+  std::string keep_alive_durations;
+  if (BrowserThread::CurrentlyOn(BrowserThread::UI)) {
+    if (auto* process = RenderProcessHostImpl::FromID(child_id)) {
+      keep_alive_durations = process->GetKeepAliveDurations();
+    }
+  } else {
+    keep_alive_durations = "no durations available: on IO thread.";
+  }
+
   // Returning false here will result in a renderer kill.  Set some crash
   // keys that will help understand the circumstances of that kill.
   LogCanAccessDataForOriginCrashKeys(expected_process_lock.ToString(),
                                      GetKilledProcessOriginLock(security_state),
-                                     url.GetOrigin().spec(), failure_reason);
+                                     url.GetOrigin().spec(), failure_reason,
+                                     keep_alive_durations);
   return false;
 }
 

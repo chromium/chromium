@@ -84,6 +84,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/context_menu_params.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/notification_observer.h"
@@ -6457,7 +6458,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // termination.
   RenderProcessHost* subframe_process =
       root->child_at(0)->current_frame_host()->GetProcess();
-  subframe_process->IncrementKeepAliveRefCount();
+  subframe_process->IncrementKeepAliveRefCount(0);
 
   // Navigate the subframe away from b.com.  Since this is the last active
   // frame in the b.com process, this causes the RenderWidget and RenderView to
@@ -6469,7 +6470,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // Release the process.
   RenderProcessHostWatcher process_shutdown_observer(
       subframe_process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
-  subframe_process->DecrementKeepAliveRefCount();
+  subframe_process->DecrementKeepAliveRefCount(0);
   process_shutdown_observer.Wait();
 }
 

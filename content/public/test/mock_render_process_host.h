@@ -154,8 +154,9 @@ class MockRenderProcessHost : public RenderProcessHost {
   bool IsProcessBackgrounded() override;
   size_t GetKeepAliveRefCount() const;
   size_t GetWorkerRefCount() const;
-  void IncrementKeepAliveRefCount() override;
-  void DecrementKeepAliveRefCount() override;
+  void IncrementKeepAliveRefCount(uint64_t handle_id) override;
+  void DecrementKeepAliveRefCount(uint64_t handle_id) override;
+  std::string GetKeepAliveDurations() const override;
   void DisableRefCounts() override;
   void IncrementWorkerRefCount() override;
   void DecrementWorkerRefCount() override;

@@ -245,8 +245,9 @@ class CONTENT_EXPORT RenderProcessHostImpl
       override;
   const base::TimeTicks& GetLastInitTime() override;
   bool IsProcessBackgrounded() override;
-  void IncrementKeepAliveRefCount() override;
-  void DecrementKeepAliveRefCount() override;
+  void IncrementKeepAliveRefCount(uint64_t handle_id_) override;
+  void DecrementKeepAliveRefCount(uint64_t handle_id_) override;
+  std::string GetKeepAliveDurations() const override;
   void IncrementWorkerRefCount() override;
   void DecrementWorkerRefCount() override;
   void DisableRefCounts() override;
@@ -957,6 +958,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
   size_t keep_alive_ref_count_;
   size_t worker_ref_count_;
   size_t shutdown_delay_ref_count_;
+  // We track the start-time for each |handle_id|, for crashkey reporting.
+  base::flat_map<uint64_t, base::Time> keep_alive_start_times_;
 
   // Set in DisableRefCounts(). When true, |keep_alive_ref_count_| and
   // |worker_ref_count_|, and |shutdown_delay_ref_count_| must no longer be

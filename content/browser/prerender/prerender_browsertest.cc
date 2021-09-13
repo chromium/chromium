@@ -36,6 +36,7 @@
 #include "content/common/content_navigation_policy.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_type.h"
 #include "content/public/browser/notification_service.h"
@@ -3819,7 +3820,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // so it is reused on the back navigation below. The test checks that the
   // session storage state changed in the activated page is correctly propagated
   // after a back navigation that uses an existing renderer process.
-  initial_process_host->IncrementKeepAliveRefCount();
+  initial_process_host->IncrementKeepAliveRefCount(0);
 
   AddPrerender(kPrerenderingUrl);
   NavigatePrimaryPage(kPrerenderingUrl);

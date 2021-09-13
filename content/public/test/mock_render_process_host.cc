@@ -389,12 +389,16 @@ size_t MockRenderProcessHost::GetKeepAliveRefCount() const {
   return keep_alive_ref_count_;
 }
 
-void MockRenderProcessHost::IncrementKeepAliveRefCount() {
+void MockRenderProcessHost::IncrementKeepAliveRefCount(uint64_t handle_id) {
   ++keep_alive_ref_count_;
 }
 
-void MockRenderProcessHost::DecrementKeepAliveRefCount() {
+void MockRenderProcessHost::DecrementKeepAliveRefCount(uint64_t handle_id) {
   --keep_alive_ref_count_;
+}
+
+std::string MockRenderProcessHost::GetKeepAliveDurations() const {
+  return std::string("MockRenderProcessHost: durations not tracked.");
 }
 
 void MockRenderProcessHost::IncrementWorkerRefCount() {
