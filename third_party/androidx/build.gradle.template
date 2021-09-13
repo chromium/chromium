@@ -5,10 +5,10 @@
 apply plugin: ChromiumPlugin
 
 repositories {
+    google()
     maven {
         url '{{androidx_repository_url}}'
     }
-    google()
     mavenCentral()
 }
 

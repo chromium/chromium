@@ -671,9 +671,10 @@ class ChromiumDepGraph {
                 if (repoUrls.contains(repoUrl)) {
                     continue
                 }
-                // Special case to check androidx.dev first and avoid new androidx deps always failing for mavenCentral.
-                // Also preserves the order between mavenCentral and google so that mavenCentral is queried last.
-                if (repoUrl.contains('androidx.dev')) {
+                // If the component is from androidx, we likely need the nightly builds from androidx.dev, so check that
+                // repo first to avoid potential 404s. Inserting at the front preserves order between google and
+                // mavenCentral.
+                if (component.group.contains('androidx') && repoUrl.contains('androidx.dev')) {
                     repoUrls.add(0, repoUrl)
                 } else {
                     repoUrls.add(repoUrl)
