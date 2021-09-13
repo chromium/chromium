@@ -18,8 +18,10 @@
 #include "third_party/perfetto/protos/perfetto/trace/track_event/track_event.pbzero.h"
 
 // These macros should not be called directly. They are intended to be used by
-// macros in //base/trace_event/typed_macros.h only.
+// macros in //base/trace_event/typed_macros.h only. With the Perfetto client
+// library, these macros are either implemented by Perfetto or unneeded.
 
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 #define TRACING_INTERNAL_CONCAT2(a, b) a##b
 #define TRACING_INTERNAL_CONCAT(a, b) TRACING_INTERNAL_CONCAT2(a, b)
 #define TRACING_INTERNAL_UID(prefix) TRACING_INTERNAL_CONCAT(prefix, __LINE__)
@@ -75,6 +77,8 @@
     if (INTERNAL_TRACE_EVENT_CATEGORY_GROUP_ENABLED())    \
       trace_event_internal::AddEmptyPacket();             \
   } while (false)
+
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 namespace trace_event_internal {
 
