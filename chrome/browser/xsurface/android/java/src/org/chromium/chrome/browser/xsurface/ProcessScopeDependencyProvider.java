@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 /**
  * Provides application-level dependencies for an external surface.
  */
-public interface ProcessScopeDependencyProvider extends FeedLoggingDependencyProvider {
+public interface ProcessScopeDependencyProvider {
     /**
      * Resolves a library name such as "foo" to an absolute path. The library name should be in the
      * same format given to System.loadLibrary().
@@ -24,6 +24,24 @@ public interface ProcessScopeDependencyProvider extends FeedLoggingDependencyPro
     @Nullable
     default Context getContext() {
         return null;
+    }
+
+    /** Returns the account name of the signed-in user, or the empty string. */
+    @Deprecated
+    default String getAccountName() {
+        return "";
+    }
+
+    /** Returns the client instance id for this chrome. */
+    @Deprecated
+    default String getClientInstanceId() {
+        return "";
+    }
+
+    /** Returns the collection of currently active experiment ids. */
+    @Deprecated
+    default int[] getExperimentIds() {
+        return new int[0];
     }
 
     /** @see {Log.e} */
@@ -72,9 +90,24 @@ public interface ProcessScopeDependencyProvider extends FeedLoggingDependencyPro
         return false;
     }
 
+    /** Returns the reliability logging id. */
+    default long getReliabilityLoggingId() {
+        return 0L;
+    }
+
     /** Returns the google API key. */
     default String getGoogleApiKey() {
         return null;
+    }
+
+    /** Returns Chrome's version string. */
+    default String getChromeVersion() {
+        return "";
+    }
+
+    /** Returns Chrome's channel as enumerated in components/version_info/channel.h. */
+    default int getChromeChannel() {
+        return 0;
     }
 
     /** Returns the percentage size that the memory cache is allowed to use. */
