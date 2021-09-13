@@ -170,6 +170,7 @@ Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıkla
 Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıklayarak "Erişilebilirlik" tercihleri bölmesini açın ve ardından, "<ph name="SERVICE_SCRIPT_NAME" />" öğesinin yanındaki kutuyu işaretleyin.
 
 "<ph name="SERVICE_SCRIPT_NAME" />" zaten işaretliyse işaretini kaldırıp yeniden işaretleyin.</translation>
+<translation id="8305209735512572429">Web Kimlik Doğrulama Uzaktan Erişim İşlemi</translation>
 <translation id="8383794970363966105">Chromoting'i kullanmak için cihazınıza Google Hesabı eklemeniz gerekir.</translation>
 <translation id="8386846956409881180">Ana makine, geçersiz OAuth kimlik bilgileriyle yapılandırılmış.</translation>
 <translation id="8397385476380433240"><ph name="PRODUCT_NAME" /> için izin ver</translation>
