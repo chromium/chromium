@@ -892,6 +892,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3987940399970879459">1 MB'tan az</translation>
 <translation id="3990250421422698716">Jog ofset</translation>
 <translation id="3996311196211510766"><ph name="ORIGIN" /> sitesi, bir kaynak politikasının kendisine gelen tüm talepler için geçerli olmasını istedi, ancak bu politika şu anda uygulanamıyor.</translation>
+<translation id="4010758435855888356">Depolama alanına erişime izin verilsin mi?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} sayfalı PDF dokümanı}other{{COUNT} sayfalı PDF dokümanı}}</translation>
 <translation id="4023431997072828269">Bu form, güvenli olmayan bir bağlantı kullanılarak gönderildiğinden bilgileriniz başkaları tarafından görülebilir.</translation>
 <translation id="4030383055268325496">Eklemeyi &amp;geri al</translation>
@@ -1727,6 +1728,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6884662655240309489">Boyut 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome, okumayı kolaylaştırmak için bu sayfayı basitleştirdi. Chrome, orijinal sayfayı güvenli olmayan bir bağlantı üzerinden aldı.</translation>
+<translation id="6890443033788248019">Konum erişimine izin verilsin mi?</translation>
 <translation id="6891596781022320156">Politika düzeyi desteklenmiyor.</translation>
 <translation id="6895143722905299846">Sanal numara:</translation>
 <translation id="6895330447102777224">Kartınız onaylandı</translation>
@@ -1998,6 +2000,7 @@ Ek ayrıntılar:
 <translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">Bağlantıyı güvenlik duvarı veya virüsten korunma yazılımı engellemiş olabilir.</translation>
 <translation id="776110834126722255">Kullanımdan kaldırıldı</translation>
+<translation id="7761159795823346334">Kameraya izin verilsin mi?</translation>
 <translation id="7761701407923456692">Sunucu sertifikası URL ile eşleşmiyor.</translation>
 <translation id="7763386264682878361">Ödeme Bildirimi Ayrıştırıcısı</translation>
 <translation id="7764225426217299476">Adres ekle</translation>
@@ -2226,6 +2229,7 @@ Ek ayrıntılar:
 <translation id="8522552481199248698">Chrome, Google Hesabınızı korumanıza ve şifrenizi değiştirmenize yardımcı olabilir.</translation>
 <translation id="8530813470445476232">Chrome ayarlarında tarama geçmişinizi, çerezleri, önbelleği ve diğer öğeleri temizleyin</translation>
 <translation id="8533619373899488139">Engellenen URL'lerin ve sistem yöneticinizin zorunlu tuttuğu diğer politikaların listesini görmek için &lt;strong&gt;chrome://policy&lt;/strong&gt; adresini ziyaret edin.</translation>
+<translation id="8539500321752640291">2 izin verilsin mi?</translation>
 <translation id="8541158209346794904">Bluetooth cihaz</translation>
 <translation id="8542014550340843547">Altta üçlü tel zımba</translation>
 <translation id="8543181531796978784"><ph name="BEGIN_ERROR_LINK" />Bir tespit sorununu bildirebilir<ph name="END_ERROR_LINK" /> veya güvenliğiniz açısından riskleri anlıyorsanız <ph name="BEGIN_LINK" />güvenli olmayan bu siteyi ziyaret edebilirsiniz<ph name="END_LINK" />.</translation>
@@ -2353,6 +2357,7 @@ Ek ayrıntılar:
 <translation id="9025348182339809926">(Geçersiz)</translation>
 <translation id="9030265603405983977">Tek renk</translation>
 <translation id="9035022520814077154">Güvenlik hatası</translation>
+<translation id="9036306139374661733">Mikrofona izin verilsin mi?</translation>
 <translation id="9038649477754266430">Sayfaları daha hızlı yüklemek için bir tahmin hizmeti kullan</translation>
 <translation id="9039213469156557790">Ayrıca, bu sayfa güvenli olmayan başka kaynaklar içeriyor. Bu kaynaklar, aktarım sırasında başkaları tarafından görülebilir ve bir saldırgan tarafından sayfanın davranışını değiştirmek üzere kullanılabilir.</translation>
 <translation id="9044359186343685026">Touch ID'yi kullan</translation>
