@@ -29,7 +29,7 @@ mac_app_bundle("updater_bundle") {
 
   sources = [ "main.cc" ]
   deps = [
-    ":updater_bundle_frameworks",
+    ":updater_bundle_helpers",
     "//chrome/updater:base",
     "//chrome/updater:constants_prod",
   ]
@@ -43,7 +43,7 @@ mac_app_bundle("updater_bundle_test") {
 
   sources = [ "main.cc" ]
   deps = [
-    ":updater_bundle_frameworks",
+    ":updater_bundle_helpers",
     "//chrome/updater:base",
     "//chrome/updater:constants_test",
   ]
@@ -124,9 +124,9 @@ mac_app_bundle("keystone_bundle") {
   public_deps = [ ":keystone_helpers" ]
 }
 
-bundle_data("updater_bundle_frameworks") {
+bundle_data("updater_bundle_helpers") {
   sources = [ "$root_out_dir/$keystone_app_name.bundle" ]
-  outputs = [ "{{bundle_contents_dir}}/Frameworks/{{source_file_part}}" ]
+  outputs = [ "{{bundle_contents_dir}}/Helpers/{{source_file_part}}" ]
 
   public_deps = [ ":keystone_bundle" ]
 }

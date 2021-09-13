@@ -122,11 +122,11 @@ bool CopyBundle(const base::FilePath& dest_path, UpdaterScope scope) {
 
 bool CopyKeystoneBundle(UpdaterScope scope) {
   // The Keystone Bundle is in
-  // GoogleUpdater.app/Contents/Frameworks/GoogleSoftwareUpdate.bundle.
+  // GoogleUpdater.app/Contents/Helpers/GoogleSoftwareUpdate.bundle.
   base::FilePath keystone_bundle_path =
       base::mac::OuterBundlePath()
           .Append(FILE_PATH_LITERAL("Contents"))
-          .Append(FILE_PATH_LITERAL("Frameworks"))
+          .Append(FILE_PATH_LITERAL("Helpers"))
           .Append(FILE_PATH_LITERAL(KEYSTONE_NAME ".bundle"));
 
   if (!base::PathExists(keystone_bundle_path)) {
