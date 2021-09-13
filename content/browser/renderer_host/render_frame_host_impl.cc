@@ -4937,7 +4937,13 @@ void RenderFrameHostImpl::WriteIntoTrace(perfetto::TracedValue context) {
   dict.Add("url", GetLastCommittedURL());
   dict.Add("frame_tree_node_id", frame_tree_node_->frame_tree_node_id());
   dict.Add("site_instance", GetSiteInstance());
-  dict.Add("parent", GetParent());
+  if (auto* parent = GetParent()) {
+    dict.Add("parent", parent);
+  } else if (auto* outer_document = GetParentOrOuterDocument()) {
+    dict.Add("outer_document", outer_document);
+  } else if (auto* embedder = GetParentOrOuterDocumentOrEmbedder()) {
+    dict.Add("embedder", embedder);
+  }
 }
 
 StoragePartition* RenderFrameHostImpl::GetStoragePartition() {
