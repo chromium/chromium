@@ -73,13 +73,13 @@
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
+#include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/webui/chromeos/login/encryption_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/kiosk_autolaunch_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/kiosk_enable_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/l10n_util.h"
 #include "chrome/browser/ui/webui/chromeos/login/tpm_error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/update_required_screen_handler.h"
-#include "chrome/browser/ui/webui/management/management_ui_handler.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -1034,10 +1034,11 @@ void ExistingUserController::OnProfilePrepared(Profile* profile,
                                                    is_enterprise_managed);
 
   if (is_enterprise_managed) {
-    std::string manager = ManagementUIHandler::GetAccountManager(profile);
-    if (!manager.empty()) {
+    absl::optional<std::string> manager =
+        chrome::GetAccountManagerIdentity(profile);
+    if (manager) {
       user_manager::known_user::SetAccountManager(user_context.GetAccountId(),
-                                                  manager);
+                                                  *manager);
     }
   }
 

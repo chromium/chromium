@@ -28,6 +28,7 @@
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/singleton_tabs.h"
@@ -36,7 +37,6 @@
 #include "chrome/browser/ui/webui/chromeos/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_dialog.h"
-#include "chrome/browser/ui/webui/management/management_ui_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
@@ -653,8 +653,10 @@ void SystemTrayClientImpl::UpdateEnterpriseDomainInfo() {
 }
 
 void SystemTrayClientImpl::UpdateEnterpriseAccountDomainInfo(Profile* profile) {
-  const std::string account_manager =
-      profile ? ManagementUIHandler::GetAccountManager(profile) : std::string();
+  std::string account_manager =
+      profile
+          ? chrome::GetAccountManagerIdentity(profile).value_or(std::string())
+          : std::string();
   if (account_manager == last_enterprise_account_domain_manager_)
     return;
 

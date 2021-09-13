@@ -344,13 +344,11 @@ void AddThreatProtectionPermission(const char* title,
   info->Append(std::move(value));
 }
 
-}  // namespace
-
-std::string ManagementUIHandler::GetAccountManager(Profile* profile) {
-  absl::optional<std::string> account_manager =
-      chrome::GetAccountManagerIdentity(profile);
-  return account_manager ? *account_manager : std::string();
+std::string GetAccountManager(Profile* profile) {
+  return chrome::GetAccountManagerIdentity(profile).value_or(std::string());
 }
+
+}  // namespace
 
 ManagementUIHandler::ManagementUIHandler() {
   reporting_extension_ids_ = {kOnPremReportingExtensionStableId,

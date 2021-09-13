@@ -116,14 +116,12 @@ struct ContextualManagementSourceUpdate {
   bool managed;
 };
 
-namespace {
-const char kDomain[] = "domain.com";
-const char kUser[] = "user@domain.com";
-const char kManager[] = "manager@domain.com";
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+namespace {
+const char kUser[] = "user@domain.com";
 const char kGaiaId[] = "gaia_id";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }  // namespace
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // This class is just to mock the behaviour of the few flags we need for
@@ -1382,47 +1380,4 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
   }
 
   EXPECT_EQ(expected_info, *threat_protection_info->FindListKey("info"));
-}
-
-TEST_F(ManagementUIHandlerTests, GetAccountManager) {
-  TestingProfile::Builder builder_managed_user;
-  builder_managed_user.SetProfileName(kUser);
-  builder_managed_user.OverridePolicyConnectorIsManagedForTesting(true);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
-  std::unique_ptr<TestingProfileManager> profile_manager =
-      std::make_unique<TestingProfileManager>(
-          TestingBrowserProcess::GetGlobal());
-  ASSERT_TRUE(profile_manager->SetUp());
-  builder_managed_user.SetUserCloudPolicyManagerAsh(BuildCloudPolicyManager());
-#else
-  builder_managed_user.SetUserCloudPolicyManager(BuildCloudPolicyManager());
-#endif
-  auto managed_user = builder_managed_user.Build();
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  policy::UserCloudPolicyManagerAsh* policy_manager =
-      managed_user->GetUserCloudPolicyManagerAsh();
-  policy::MockCloudPolicyStore* mock_store =
-      static_cast<policy::MockCloudPolicyStore*>(
-          policy_manager->core()->store());
-#else
-  policy::UserCloudPolicyManager* policy_manager =
-      managed_user->GetUserCloudPolicyManager();
-  policy::MockUserCloudPolicyStore* mock_store =
-      static_cast<policy::MockUserCloudPolicyStore*>(
-          policy_manager->core()->store());
-#endif
-
-  DCHECK(mock_store);
-  mock_store->policy_ = std::make_unique<enterprise_management::PolicyData>();
-
-  // If no managed_by, then just calculate the domain from the user.
-  EXPECT_FALSE(mock_store->policy_->has_managed_by());
-  EXPECT_EQ(kDomain, handler_.GetAccountManager(managed_user.get()));
-
-  // If managed_by is set, then use that value.
-  mock_store->policy_->set_managed_by(kManager);
-  EXPECT_EQ(kManager, handler_.GetAccountManager(managed_user.get()));
 }

@@ -38,7 +38,7 @@
 #include "chrome/browser/policy/schema_registry_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
-#include "chrome/browser/ui/webui/management/management_ui_handler.h"
+#include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/webui/version/version_ui.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/channel_info.h"
@@ -172,9 +172,10 @@ void GetOffHoursStatus(base::DictionaryValue* dict) {
 void GetUserManager(base::DictionaryValue* dict, Profile* profile) {
   CHECK(profile);
 
-  std::string account_manager = ManagementUIHandler::GetAccountManager(profile);
-  if (!account_manager.empty()) {
-    dict->SetString("enterpriseDomainManager", account_manager);
+  absl::optional<std::string> account_manager =
+      chrome::GetAccountManagerIdentity(profile);
+  if (account_manager) {
+    dict->SetString("enterpriseDomainManager", *account_manager);
   }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

@@ -10,6 +10,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/management/management_ui_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -179,7 +180,8 @@ std::u16string ManagementUI::GetManagementPageSubtitle(Profile* profile) {
   if (account_manager.empty())
     account_manager = connector->GetRealm();
   if (account_manager.empty())
-    account_manager = ManagementUIHandler::GetAccountManager(profile);
+    account_manager =
+        chrome::GetAccountManagerIdentity(profile).value_or(std::string());
   if (account_manager.empty()) {
     return l10n_util::GetStringFUTF16(IDS_MANAGEMENT_SUBTITLE_MANAGED,
                                       l10n_util::GetStringUTF16(device_type));
@@ -188,7 +190,8 @@ std::u16string ManagementUI::GetManagementPageSubtitle(Profile* profile) {
                                     l10n_util::GetStringUTF16(device_type),
                                     base::UTF8ToUTF16(account_manager));
 #else   // BUILDFLAG(IS_CHROMEOS_ASH)
-  const auto account_manager = ManagementUIHandler::GetAccountManager(profile);
+  const auto account_manager =
+      chrome::GetAccountManagerIdentity(profile).value_or(std::string());
   const auto managed =
       profile->GetProfilePolicyConnector()->IsManaged() ||
       g_browser_process->browser_policy_connector()->HasMachineLevelPolicies();
