@@ -21,6 +21,10 @@ mojom("mojom") {
           mojom = "ash.diagnostics.mojom.SecurityType"
           cpp = "ash::diagnostics::mojom::SecurityType"
         },
+        {
+          mojom = "ash.diagnostics.mojom.AuthenticationType"
+          cpp = "ash::diagnostics::mojom::AuthenticationType"
+        },
       ]
       traits_headers = [ "network_provider_mojom_traits.h" ]
       traits_sources = [ "network_provider_mojom_traits.cc" ]

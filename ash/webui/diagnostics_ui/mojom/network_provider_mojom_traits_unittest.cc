@@ -74,5 +74,21 @@ TEST_F(DiagnosticsNetworkProviderMojomTraitsTest, SecurityTypeStateMatches) {
   TestToMojom(enums);
   TestFromMojom(enums);
 }
+
+TEST_F(DiagnosticsNetworkProviderMojomTraitsTest,
+       AuthenticationTypeStateMatches) {
+  constexpr auto enums =
+      base::MakeFixedFlatMap<mojom::AuthenticationType,
+                             network_config_mojom::AuthenticationType>({
+          {mojom::AuthenticationType::kNone,
+           network_config_mojom::AuthenticationType::kNone},
+          {mojom::AuthenticationType::k8021x,
+           network_config_mojom::AuthenticationType::k8021x},
+      });
+
+  // Ensure mapping between types behaves as expected.
+  TestToMojom(enums);
+  TestFromMojom(enums);
+}
 }  // namespace diagnostics
 }  // namespace ash

@@ -579,8 +579,14 @@ TEST_F(NetworkHealthProviderTest, SetupEthernetNetwork) {
   EXPECT_EQ(observer.GetLatestState()->state, mojom::NetworkState::kConnected);
   EXPECT_FALSE(list_observer.active_guid().empty());
   EXPECT_EQ(observer_guid, list_observer.active_guid());
-  // TODO(michaelcheco): Verify ethernet authentication properties once added
-  // to the API.
+  // Verify ethernet authentication is none for non-EAP Ethernet.
+  EXPECT_EQ(observer.GetLatestState()
+                ->type_properties->get_ethernet()
+                ->authentication,
+            mojom::AuthenticationType::kNone);
+
+  // TODO(ashleydp): Add test for authentication k8021x when fake shill service
+  // can support and required configuration is known.
 
   // Put ethernet into online state. It's guid should remain active.
   SetEthernetOnline();

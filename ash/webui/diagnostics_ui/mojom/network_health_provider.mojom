@@ -14,6 +14,12 @@ struct IPConfigProperties {
   string? ip_address;
 };
 
+// Ethernet Authentication types.
+enum AuthenticationType {
+  kNone,
+  k8021x,
+};
+
 // Connection state of visible networks.
 enum NetworkState {
   kOnline,
@@ -65,9 +71,8 @@ struct CellularStateProperties {
   LockType lock_type;
 };
 
-// TODO(michaelcheco): Add Ethernet properties.
 struct EthernetStateProperties {
-
+  AuthenticationType authentication;
 };
 
 // The security type for WiFi Ethernet networks.

@@ -64,4 +64,40 @@ bool EnumTraits<diagnostics_mojom::SecurityType,
   NOTREACHED();
   return false;
 }
+
+// static
+diagnostics_mojom::AuthenticationType
+EnumTraits<diagnostics_mojom::AuthenticationType,
+           network_config_mojom::AuthenticationType>::
+    ToMojom(network_config_mojom::AuthenticationType input) {
+  switch (input) {
+    case network_config_mojom::AuthenticationType::kNone:
+      return diagnostics_mojom::AuthenticationType::kNone;
+    case network_config_mojom::AuthenticationType::k8021x:
+      return diagnostics_mojom::AuthenticationType::k8021x;
+  }
+  VLOG(1) << "Unknown authentication type: " << input;
+  NOTREACHED();
+  return diagnostics_mojom::AuthenticationType::kMinValue;
+}
+
+// static
+bool EnumTraits<diagnostics_mojom::AuthenticationType,
+                network_config_mojom::AuthenticationType>::
+    FromMojom(diagnostics_mojom::AuthenticationType input,
+              network_config_mojom::AuthenticationType* output) {
+  switch (input) {
+    case diagnostics_mojom::AuthenticationType::kNone:
+      *output = network_config_mojom::AuthenticationType::kNone;
+      return true;
+    case diagnostics_mojom::AuthenticationType::k8021x:
+      *output = network_config_mojom::AuthenticationType::k8021x;
+      return true;
+  }
+  VLOG(1) << "Unknown authentication type: "
+          << static_cast<network_config_mojom::AuthenticationType>(input);
+  NOTREACHED();
+  return false;
+}
+
 }  // namespace mojo
