@@ -52,11 +52,14 @@ TEST(XEventTranslationTest, KeyEventDomKeyExtraction) {
   EXPECT_TRUE(keyev);
 
   KeyEventTestApi test(keyev.get());
-#if defined(IS_CHROMEOS_ASH)
-  EXPECT_EQ(ui::DomKey::NONE, test.dom_key());
-#else
-  EXPECT_EQ(ui::DomKey::ENTER, test.dom_key());
+#if defined(USE_OZONE)
+  if (features::IsUsingOzonePlatform()) {
+    EXPECT_EQ(ui::DomKey::NONE, test.dom_key());
+  } else
 #endif
+  {
+    EXPECT_EQ(ui::DomKey::ENTER, test.dom_key());
+  }
 
   EXPECT_EQ(13, keyev->GetCharacter());
   EXPECT_EQ("Enter", keyev->GetCodeString());
