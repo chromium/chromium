@@ -129,23 +129,31 @@ struct PartitionOptions {
     kAllowed,
   };
 
+  enum class UseConfigurablePool : uint8_t {
+    kNo,
+    kIfAvailable,
+  };
+
   // Constructor to suppress aggregate initialization.
   constexpr PartitionOptions(AlignedAlloc aligned_alloc,
                              ThreadCache thread_cache,
                              Quarantine quarantine,
                              Cookie cookie,
-                             RefCount ref_count)
+                             RefCount ref_count,
+                             UseConfigurablePool use_configurable_pool)
       : aligned_alloc(aligned_alloc),
         thread_cache(thread_cache),
         quarantine(quarantine),
         cookie(cookie),
-        ref_count(ref_count) {}
+        ref_count(ref_count),
+        use_configurable_pool(use_configurable_pool) {}
 
   AlignedAlloc aligned_alloc;
   ThreadCache thread_cache;
   Quarantine quarantine;
   Cookie cookie;
   RefCount ref_count;
+  UseConfigurablePool use_configurable_pool;
 };
 
 // Never instantiate a PartitionRoot directly, instead use
@@ -188,6 +196,7 @@ struct BASE_EXPORT PartitionRoot {
   bool allow_aligned_alloc;
   bool allow_cookie;
   bool allow_ref_count;
+  bool use_configurable_pool;
 
   // Lazy commit should only be enabled on Windows, because commit charge is
   // only meaningful and limited on Windows. It affects performance on other
@@ -430,7 +439,10 @@ struct BASE_EXPORT PartitionRoot {
     return TS_UNCHECKED_READ(max_size_of_allocated_bytes);
   }
 
-  internal::pool_handle ChooseGigaCagePool() const {
+  internal::pool_handle ChoosePool() const {
+    if (use_configurable_pool) {
+      return internal::GetConfigurablePool();
+    }
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
     return allow_ref_count ? internal::GetBRPPool() : internal::GetNonBRPPool();
 #else

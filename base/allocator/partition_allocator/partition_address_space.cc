@@ -21,7 +21,7 @@ namespace internal {
 
 #if defined(PA_HAS_64_BITS_POINTERS)
 
-constexpr std::array<size_t, 2> PartitionAddressSpace::kPoolSizes;
+constexpr std::array<size_t, 2> PartitionAddressSpace::kGigaCagePoolSizes;
 
 uintptr_t PartitionAddressSpace::reserved_base_address_ = 0;
 // Before PartitionAddressSpace::Init(), no allocation are allocated from a
@@ -32,14 +32,19 @@ uintptr_t PartitionAddressSpace::non_brp_pool_base_address_ =
     kNonBRPPoolOffsetMask;
 uintptr_t PartitionAddressSpace::brp_pool_base_address_ = kBRPPoolOffsetMask;
 
+uintptr_t PartitionAddressSpace::configurable_pool_base_address_ =
+    kConfigurablePoolOffsetMask;
+
 pool_handle PartitionAddressSpace::non_brp_pool_ = 0;
 pool_handle PartitionAddressSpace::brp_pool_ = 0;
+pool_handle PartitionAddressSpace::configurable_pool_ = 0;
 
 void PartitionAddressSpace::Init() {
   if (IsInitialized())
     return;
 
-  GigaCageProperties properties = CalculateGigaCageProperties(kPoolSizes);
+  GigaCageProperties properties =
+      CalculateGigaCageProperties(kGigaCagePoolSizes);
 
   reserved_base_address_ =
       reinterpret_cast<uintptr_t>(AllocPagesWithAlignOffset(
@@ -85,8 +90,28 @@ void PartitionAddressSpace::Init() {
   PA_DCHECK(reserved_base_address_ + properties.size == current);
 }
 
+void PartitionAddressSpace::InitConfigurablePool(void* address, size_t size) {
+  // The ConfigurablePool must only be initialized once.
+  PA_CHECK(!IsConfigurablePoolInitialized());
+
+  // The other Pools must be initialized first.
+  Init();
+
+  PA_CHECK(address);
+  PA_CHECK(size == kConfigurablePoolSize);
+  PA_CHECK(bits::IsPowerOfTwo(size));
+  PA_CHECK(reinterpret_cast<uintptr_t>(address) % size == 0);
+
+  configurable_pool_base_address_ = reinterpret_cast<uintptr_t>(address);
+
+  configurable_pool_ = internal::AddressPoolManager::GetInstance()->Add(
+      configurable_pool_base_address_, size);
+  PA_CHECK(configurable_pool_ == kConfigurablePoolHandle);
+}
+
 void PartitionAddressSpace::UninitForTesting() {
-  GigaCageProperties properties = CalculateGigaCageProperties(kPoolSizes);
+  GigaCageProperties properties =
+      CalculateGigaCageProperties(kGigaCagePoolSizes);
 
   FreePages(reinterpret_cast<void*>(reserved_base_address_), properties.size);
   reserved_base_address_ = 0;
@@ -94,6 +119,7 @@ void PartitionAddressSpace::UninitForTesting() {
   brp_pool_base_address_ = kBRPPoolOffsetMask;
   non_brp_pool_ = 0;
   brp_pool_ = 0;
+  configurable_pool_ = 0;
   internal::AddressPoolManager::GetInstance()->ResetForTesting();
 }
 

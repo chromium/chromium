@@ -504,6 +504,15 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
         opts.aligned_alloc == PartitionOptions::AlignedAlloc::kAllowed;
     allow_cookie = opts.cookie == PartitionOptions::Cookie::kAllowed;
     allow_ref_count = opts.ref_count == PartitionOptions::RefCount::kAllowed;
+    use_configurable_pool =
+        (opts.use_configurable_pool ==
+         PartitionOptions::UseConfigurablePool::kIfAvailable) &&
+        IsConfigurablePoolAvailable();
+    PA_DCHECK(!use_configurable_pool || IsConfigurablePoolAvailable());
+
+    // allow_ref_count is not supported in the configurable pool because
+    // ref-counting requires objects to be in a different Pool.
+    PA_CHECK(!(use_configurable_pool && allow_ref_count));
 
     // Ref-count messes up alignment needed for AlignedAlloc, making this
     // option incompatible. However, except in the

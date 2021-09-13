@@ -50,7 +50,8 @@ class PartitionAllocMemoryReclaimerTest : public ::testing::Test {
                       PartitionOptions::ThreadCache::kDisabled,
                       PartitionOptions::Quarantine::kAllowed,
                       PartitionOptions::Cookie::kAllowed,
-                      PartitionOptions::RefCount::kDisallowed});
+                      PartitionOptions::RefCount::kDisallowed,
+                      PartitionOptions::UseConfigurablePool::kNo});
   }
 
   void TearDown() override {

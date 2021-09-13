@@ -149,6 +149,7 @@ class MainPartitionConstructor {
         base::PartitionOptions::Quarantine::kAllowed,
         base::PartitionOptions::Cookie::kAllowed,
         base::PartitionOptions::RefCount::kDisallowed,
+        base::PartitionOptions::UseConfigurablePool::kNo,
     });
 
     return new_root;
@@ -478,6 +479,7 @@ void ConfigurePartitionRefCountSupport(bool enable_ref_count) {
           base::PartitionOptions::Cookie::kAllowed,
           enable_ref_count ? base::PartitionOptions::RefCount::kAllowed
                            : base::PartitionOptions::RefCount::kDisallowed,
+          base::PartitionOptions::UseConfigurablePool::kNo,
       });
   g_root.Replace(new_root);
   // g_original_root has to be set after g_root, because other code doesn't
@@ -502,6 +504,7 @@ void ConfigurePartitionRefCountSupport(bool enable_ref_count) {
                     base::PartitionOptions::Quarantine::kAllowed,
                     base::PartitionOptions::Cookie::kAllowed,
                     base::PartitionOptions::RefCount::kDisallowed,
+                    base::PartitionOptions::UseConfigurablePool::kNo,
                 })
           // Otherwise, the new main root can also support AlignedAlloc.
           : g_root.Get();

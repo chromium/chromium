@@ -94,7 +94,8 @@ class PartitionAllocator : public Allocator {
                                   PartitionOptions::ThreadCache::kDisabled,
                                   PartitionOptions::Quarantine::kDisallowed,
                                   PartitionOptions::Cookie::kAllowed,
-                                  PartitionOptions::RefCount::kDisallowed}};
+                                  PartitionOptions::RefCount::kDisallowed,
+                                  PartitionOptions::UseConfigurablePool::kNo}};
 };
 
 // Only one partition with a thread cache.
@@ -108,7 +109,8 @@ class PartitionAllocatorWithThreadCache : public Allocator {
            PartitionOptions::ThreadCache::kEnabled,
            PartitionOptions::Quarantine::kDisallowed,
            PartitionOptions::Cookie::kAllowed,
-           PartitionOptions::RefCount::kDisallowed});
+           PartitionOptions::RefCount::kDisallowed,
+           PartitionOptions::UseConfigurablePool::kNo});
     }
     internal::ThreadCacheRegistry::Instance().PurgeAll();
   }

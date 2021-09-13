@@ -347,7 +347,8 @@ TestDriver::TestDriver()
                              base::PartitionOptions::ThreadCache::kDisabled,
                              base::PartitionOptions::Quarantine::kDisallowed,
                              base::PartitionOptions::Cookie::kAllowed,
-                             base::PartitionOptions::RefCount::kDisallowed});
+                             base::PartitionOptions::RefCount::kDisallowed,
+                             base::PartitionOptions::UseConfigurablePool::kNo});
 }
 TestDriver::~TestDriver() {
   base::PartitionAllocGlobalUninitForTesting();

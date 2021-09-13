@@ -198,16 +198,19 @@ constexpr size_t kSuperPageBaseMask = ~kSuperPageOffsetMask;
 
 // GigaCage is split into two pools, one which supports BackupRefPtr (BRP) and
 // one that doesn't.
-constexpr size_t kNumPools = 2;
 #if defined(PA_HAS_64_BITS_POINTERS)
+// The Configurable Pool is only available in 64-bit mode
+constexpr size_t kNumPools = 3;
 constexpr size_t kPoolMaxSize = 8 * kGiB;
 #else
+constexpr size_t kNumPools = 2;
 constexpr size_t kPoolMaxSize = 4 * kGiB;
 #endif
 constexpr size_t kMaxSuperPages = kPoolMaxSize / kSuperPageSize;
 
 static constexpr internal::pool_handle kNonBRPPoolHandle = 1;
 static constexpr internal::pool_handle kBRPPoolHandle = 2;
+static constexpr internal::pool_handle kConfigurablePoolHandle = 3;
 
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
 NumPartitionPagesPerSuperPage() {

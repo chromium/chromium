@@ -10,6 +10,7 @@
 
 #include "base/allocator/partition_allocator/address_pool_manager_bitmap.h"
 #include "base/allocator/partition_allocator/address_pool_manager_types.h"
+#include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
@@ -28,7 +29,7 @@ namespace internal {
 // AddressPoolManager takes a reserved virtual address space and manages address
 // space allocation.
 //
-// AddressPoolManager (currently) supports up to 2 pools. Each pool manages a
+// AddressPoolManager (currently) supports up to 3 pools. Each pool manages a
 // contiguous reserved address space. Alloc() takes a pool_handle and returns
 // address regions from the specified pool. Free() also takes a pool_handle and
 // returns the address region back to the manager.
@@ -138,6 +139,11 @@ ALWAYS_INLINE pool_handle GetNonBRPPool() {
 
 ALWAYS_INLINE pool_handle GetBRPPool() {
   return kBRPPoolHandle;
+}
+
+ALWAYS_INLINE pool_handle GetConfigurablePool() {
+  PA_DCHECK(IsConfigurablePoolAvailable());
+  return kConfigurablePoolHandle;
 }
 
 }  // namespace internal

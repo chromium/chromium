@@ -30,7 +30,8 @@ TEST(HardeningTest, PartialCorruption) {
                        PartitionOptions::ThreadCache::kDisabled,
                        PartitionOptions::Quarantine::kDisallowed,
                        PartitionOptions::Cookie::kDisallowed,
-                       PartitionOptions::RefCount::kDisallowed}};
+                       PartitionOptions::RefCount::kDisallowed,
+                       PartitionOptions::UseConfigurablePool::kNo}};
 
   const size_t kAllocSize = 100;
   void* data = root.Alloc(kAllocSize, "");
@@ -58,7 +59,8 @@ TEST(HardeningTest, OffHeapPointerCrashing) {
                        PartitionOptions::ThreadCache::kDisabled,
                        PartitionOptions::Quarantine::kDisallowed,
                        PartitionOptions::Cookie::kDisallowed,
-                       PartitionOptions::RefCount::kDisallowed}};
+                       PartitionOptions::RefCount::kDisallowed,
+                       PartitionOptions::UseConfigurablePool::kNo}};
 
   const size_t kAllocSize = 100;
   void* data = root.Alloc(kAllocSize, "");
@@ -83,7 +85,8 @@ TEST(HardeningTest, MetadataPointerCrashing) {
                        PartitionOptions::ThreadCache::kDisabled,
                        PartitionOptions::Quarantine::kDisallowed,
                        PartitionOptions::Cookie::kDisallowed,
-                       PartitionOptions::RefCount::kDisallowed}};
+                       PartitionOptions::RefCount::kDisallowed,
+                       PartitionOptions::UseConfigurablePool::kNo}};
 
   const size_t kAllocSize = 100;
   void* data = root.Alloc(kAllocSize, "");
@@ -113,7 +116,8 @@ TEST(HardeningTest, SuccessfulCorruption) {
                        PartitionOptions::ThreadCache::kDisabled,
                        PartitionOptions::Quarantine::kDisallowed,
                        PartitionOptions::Cookie::kDisallowed,
-                       PartitionOptions::RefCount::kDisallowed}};
+                       PartitionOptions::RefCount::kDisallowed,
+                       PartitionOptions::UseConfigurablePool::kNo}};
 
   uintptr_t* zero_vector = reinterpret_cast<uintptr_t*>(
       root.AllocFlags(PartitionAllocZeroFill, 100 * sizeof(uintptr_t), ""));

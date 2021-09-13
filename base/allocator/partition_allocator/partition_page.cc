@@ -27,7 +27,7 @@ namespace {
 
 void UnmapNow(void* reservation_start,
               size_t reservation_size,
-              pool_handle giga_cage_pool);
+              pool_handle pool);
 
 template <bool thread_safe>
 ALWAYS_INLINE void PartitionDirectUnmap(
@@ -73,7 +73,7 @@ ALWAYS_INLINE void PartitionDirectUnmap(
   // expected to be very rare though, and likely preferable to holding the lock
   // while releasing the address space.
   ScopedUnlockGuard<thread_safe> unlock{root->lock_};
-  UnmapNow(reservation_start, reservation_size, root->ChooseGigaCagePool());
+  UnmapNow(reservation_start, reservation_size, root->ChoosePool());
 }
 
 template <bool thread_safe>
@@ -230,12 +230,12 @@ void SlotSpanMetadata<thread_safe>::DecommitIfPossible(
 namespace {
 void UnmapNow(void* reservation_start,
               size_t reservation_size,
-              pool_handle giga_cage_pool) {
+              pool_handle pool) {
   PA_DCHECK(reservation_start && reservation_size > 0);
 #if DCHECK_IS_ON()
   // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
-  if (giga_cage_pool == GetBRPPool()) {
+  if (pool == GetBRPPool()) {
     // In 32-bit mode, the beginning of a reservation may be excluded from the
     // BRP pool, so shift the pointer. Non-BRP pool doesn't have logic.
     PA_DCHECK(IsManagedByPartitionAllocBRPPool(
@@ -250,9 +250,11 @@ void UnmapNow(void* reservation_start,
   } else
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   {
-    PA_DCHECK(giga_cage_pool == GetNonBRPPool());
-    // Non-BRP pool doesn't need adjustment that BRP needs in 32-bit mode.
-    PA_DCHECK(IsManagedByPartitionAllocNonBRPPool(reservation_start));
+    PA_DCHECK(pool == GetNonBRPPool() ||
+              (IsConfigurablePoolAvailable() && pool == GetConfigurablePool()));
+    // Non-BRP pools don't need adjustment that BRP needs in 32-bit mode.
+    PA_DCHECK(IsManagedByPartitionAllocNonBRPPool(reservation_start) ||
+              IsManagedByPartitionAllocConfigurablePool(reservation_start));
   }
 #endif  // DCHECK_IS_ON()
 
@@ -274,13 +276,13 @@ void UnmapNow(void* reservation_start,
   }
 
 #if !defined(PA_HAS_64_BITS_POINTERS)
-  AddressPoolManager::GetInstance()->MarkUnused(
-      giga_cage_pool, reservation_start, reservation_size);
+  AddressPoolManager::GetInstance()->MarkUnused(pool, reservation_start,
+                                                reservation_size);
 #endif
 
   // After resetting the table entries, unreserve and decommit the memory.
   AddressPoolManager::GetInstance()->UnreserveAndDecommit(
-      giga_cage_pool, reservation_start, reservation_size);
+      pool, reservation_start, reservation_size);
 }
 }  // namespace
 

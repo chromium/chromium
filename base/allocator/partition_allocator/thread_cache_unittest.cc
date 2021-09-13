@@ -69,16 +69,17 @@ class DeltaCounter {
 
 // Forbid extras, since they make finding out which bucket is used harder.
 ThreadSafePartitionRoot* CreatePartitionRoot() {
-  ThreadSafePartitionRoot* root = new ThreadSafePartitionRoot(
-      PartitionOptions{PartitionOptions::AlignedAlloc::kAllowed,
+  ThreadSafePartitionRoot* root = new ThreadSafePartitionRoot(PartitionOptions {
+    PartitionOptions::AlignedAlloc::kAllowed,
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-                       PartitionOptions::ThreadCache::kEnabled,
+        PartitionOptions::ThreadCache::kEnabled,
 #else
-                       PartitionOptions::ThreadCache::kDisabled,
+    PartitionOptions::ThreadCache::kDisabled,
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-                       PartitionOptions::Quarantine::kAllowed,
-                       PartitionOptions::Cookie::kDisallowed,
-                       PartitionOptions::RefCount::kDisallowed
+        PartitionOptions::Quarantine::kAllowed,
+        PartitionOptions::Cookie::kDisallowed,
+        PartitionOptions::RefCount::kDisallowed,
+        PartitionOptions::UseConfigurablePool::kNo
   });
 
   // We do this here instead of in SetUp()/TearDown() because we need this to
@@ -256,7 +257,8 @@ TEST_F(PartitionAllocThreadCacheTest, NoCrossPartitionCache) {
                                 PartitionOptions::ThreadCache::kDisabled,
                                 PartitionOptions::Quarantine::kAllowed,
                                 PartitionOptions::Cookie::kDisallowed,
-                                PartitionOptions::RefCount::kDisallowed}};
+                                PartitionOptions::RefCount::kDisallowed,
+                                PartitionOptions::UseConfigurablePool::kNo}};
 
   size_t bucket_index = FillThreadCacheAndReturnIndex(kSmallSize);
   void* ptr = root.Alloc(kSmallSize, "");

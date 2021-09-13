@@ -85,10 +85,11 @@ bool Partitions::InitializeOnce() {
         base::PartitionOptions::Quarantine::kAllowed,
         base::PartitionOptions::Cookie::kAllowed,
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_IN_RENDERER_PROCESS)
-        base::PartitionOptions::RefCount::kAllowed
+        base::PartitionOptions::RefCount::kAllowed,
 #else
-        base::PartitionOptions::RefCount::kDisallowed
+        base::PartitionOptions::RefCount::kDisallowed,
 #endif
+        base::PartitionOptions::UseConfigurablePool::kNo
   });
 
   fast_malloc_root_ = fast_malloc_allocator->root();
@@ -108,17 +109,19 @@ bool Partitions::InitializeOnce() {
        base::PartitionOptions::ThreadCache::kDisabled,
        base::PartitionOptions::Quarantine::kAllowed,
        base::PartitionOptions::Cookie::kAllowed,
-       base::PartitionOptions::RefCount::kDisallowed});
+       base::PartitionOptions::RefCount::kDisallowed,
+       base::PartitionOptions::UseConfigurablePool::kNo});
   buffer_allocator->init({
     base::PartitionOptions::AlignedAlloc::kDisallowed,
         base::PartitionOptions::ThreadCache::kDisabled,
         base::PartitionOptions::Quarantine::kAllowed,
         base::PartitionOptions::Cookie::kAllowed,
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_IN_RENDERER_PROCESS)
-        base::PartitionOptions::RefCount::kAllowed
+        base::PartitionOptions::RefCount::kAllowed,
 #else
-        base::PartitionOptions::RefCount::kDisallowed
+        base::PartitionOptions::RefCount::kDisallowed,
 #endif
+        base::PartitionOptions::UseConfigurablePool::kNo
   });
   // RefCount disallowed because layout code will be excluded from raw_ptr<T>
   // rewrite due to performance.
@@ -126,7 +129,8 @@ bool Partitions::InitializeOnce() {
                           base::PartitionOptions::ThreadCache::kDisabled,
                           base::PartitionOptions::Quarantine::kAllowed,
                           base::PartitionOptions::Cookie::kAllowed,
-                          base::PartitionOptions::RefCount::kDisallowed});
+                          base::PartitionOptions::RefCount::kDisallowed,
+                          base::PartitionOptions::UseConfigurablePool::kNo});
 
   array_buffer_root_ = array_buffer_allocator->root();
   buffer_root_ = buffer_allocator->root();

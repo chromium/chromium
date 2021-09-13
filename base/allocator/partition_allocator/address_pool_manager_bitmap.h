@@ -178,6 +178,8 @@ class BASE_EXPORT AddressPoolManagerBitmap {
 // Returns false for nullptr.
 ALWAYS_INLINE bool IsManagedByPartitionAlloc(const void* address) {
   // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
+  // No need to add IsManagedByConfigurablePool, because Configurable Pool
+  // doesn't exist on 32-bit.
 #if !BUILDFLAG(USE_BACKUP_REF_PTR)
   PA_DCHECK(!internal::AddressPoolManagerBitmap::IsManagedByBRPPool(address));
 #endif
@@ -196,6 +198,18 @@ ALWAYS_INLINE bool IsManagedByPartitionAllocNonBRPPool(const void* address) {
 // Returns false for nullptr.
 ALWAYS_INLINE bool IsManagedByPartitionAllocBRPPool(const void* address) {
   return internal::AddressPoolManagerBitmap::IsManagedByBRPPool(address);
+}
+
+// Returns false for nullptr.
+ALWAYS_INLINE bool IsManagedByPartitionAllocConfigurablePool(
+    const void* address) {
+  // The Configurable Pool is only available on 64-bit builds.
+  return false;
+}
+
+ALWAYS_INLINE bool IsConfigurablePoolAvailable() {
+  // The Configurable Pool is only available on 64-bit builds.
+  return false;
 }
 
 }  // namespace base

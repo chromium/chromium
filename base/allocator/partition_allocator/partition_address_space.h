@@ -85,6 +85,12 @@ class BASE_EXPORT PartitionAddressSpace {
 
   static ALWAYS_INLINE internal::pool_handle GetBRPPool() { return brp_pool_; }
 
+  // The Configurable Pool can be created inside an existing mapping and so will
+  // be located outside PartitionAlloc's GigaCage.
+  static ALWAYS_INLINE internal::pool_handle GetConfigurablePool() {
+    return configurable_pool_;
+  }
+
   static ALWAYS_INLINE std::pair<pool_handle, uintptr_t> GetPoolAndOffset(
       const void* address) {
     // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
@@ -101,14 +107,28 @@ class BASE_EXPORT PartitionAddressSpace {
       pool = GetBRPPool();
       base = brp_pool_base_address_;
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
+    } else if (IsInConfigurablePool(address)) {
+      pool = GetConfigurablePool();
+      base = configurable_pool_base_address_;
     } else {
       PA_NOTREACHED();
     }
     uintptr_t address_as_uintptr = reinterpret_cast<uintptr_t>(address);
     return std::make_pair(pool, address_as_uintptr - base);
   }
+  static ALWAYS_INLINE constexpr size_t ConfigurablePoolReservationSize() {
+    return kConfigurablePoolSize;
+  }
 
+  // Initialize the GigaCage and the Pools inside of it.
+  // This function must only be called from the main thread.
   static void Init();
+  // Initialize the ConfigurablePool at the given address.
+  // The address must be aligned to the size of the pool. Currently, the size of
+  // the pool must always be ConfigurablePoolReservationSize(). In general, the
+  // size must be less than or equal to kPoolMaxSize and must be a power of two.
+  // This function must only be called from the main thread.
+  static void InitConfigurablePool(void* address, size_t size);
   static void UninitForTesting();
 
   static ALWAYS_INLINE bool IsInitialized() {
@@ -121,6 +141,10 @@ class BASE_EXPORT PartitionAddressSpace {
     PA_DCHECK(non_brp_pool_ == 0);
     PA_DCHECK(brp_pool_ == 0);
     return false;
+  }
+
+  static ALWAYS_INLINE bool IsConfigurablePoolInitialized() {
+    return configurable_pool_base_address_ != kConfigurablePoolOffsetMask;
   }
 
   // Returns false for nullptr.
@@ -137,6 +161,15 @@ class BASE_EXPORT PartitionAddressSpace {
   static ALWAYS_INLINE bool IsInBRPPool(const void* address) {
     return (reinterpret_cast<uintptr_t>(address) & kBRPPoolBaseMask) ==
            brp_pool_base_address_;
+  }
+  // Returns false for nullptr.
+  static ALWAYS_INLINE bool IsInConfigurablePool(const void* address) {
+    return (reinterpret_cast<uintptr_t>(address) & kConfigurablePoolBaseMask) ==
+           configurable_pool_base_address_;
+  }
+
+  static ALWAYS_INLINE uintptr_t ConfigurablePoolBase() {
+    return configurable_pool_base_address_;
   }
 
   static ALWAYS_INLINE uintptr_t OffsetInBRPPool(const void* address) {
@@ -178,13 +211,23 @@ class BASE_EXPORT PartitionAddressSpace {
   // impossible to align each pool at its own size boundary while keeping them
   // next to each other. CalculateGigaCageProperties() has non-debug, run-time
   // checks to assert that.
+  //
+  // The ConfigurablePool is an optional Pool that can be created inside an
+  // existing mapping by the embedder, and so will be outside of the GigaCage.
+  // This Pool can be used when certain PA allocations must be located inside a
+  // given virtual address region. One use case for this Pool is V8's virtual
+  // memory cage, which requires that ArrayBuffers be located inside of it.
   static constexpr size_t kNonBRPPoolSize = kPoolMaxSize;
   static constexpr size_t kBRPPoolSize = kPoolMaxSize;
-  static constexpr size_t kTotalSize = kNonBRPPoolSize + kBRPPoolSize;
-  static constexpr std::array<size_t, 2> kPoolSizes = {kNonBRPPoolSize,
-                                                       kBRPPoolSize};
+  static constexpr std::array<size_t, 2> kGigaCagePoolSizes = {kNonBRPPoolSize,
+                                                               kBRPPoolSize};
+  static constexpr size_t kConfigurablePoolSize = 4 * kGiB;
+  static_assert(
+      kConfigurablePoolSize <= kPoolMaxSize,
+      "The Configurable Pool must not be larger than the maximum pool size");
   static_assert(bits::IsPowerOfTwo(kNonBRPPoolSize) &&
-                    bits::IsPowerOfTwo(kBRPPoolSize),
+                    bits::IsPowerOfTwo(kBRPPoolSize) &&
+                    bits::IsPowerOfTwo(kConfigurablePoolSize),
                 "Each pool size should be a power of two.");
 
   // Masks used to easy determine belonging to a pool.
@@ -194,14 +237,20 @@ class BASE_EXPORT PartitionAddressSpace {
   static constexpr uintptr_t kBRPPoolOffsetMask =
       static_cast<uintptr_t>(kBRPPoolSize) - 1;
   static constexpr uintptr_t kBRPPoolBaseMask = ~kBRPPoolOffsetMask;
+  static constexpr uintptr_t kConfigurablePoolOffsetMask =
+      static_cast<uintptr_t>(kConfigurablePoolSize) - 1;
+  static constexpr uintptr_t kConfigurablePoolBaseMask =
+      ~kConfigurablePoolOffsetMask;
 
   // See the comment describing the address layout above.
   static uintptr_t reserved_base_address_;
   static uintptr_t non_brp_pool_base_address_;
   static uintptr_t brp_pool_base_address_;
+  static uintptr_t configurable_pool_base_address_;
 
   static pool_handle non_brp_pool_;
   static pool_handle brp_pool_;
+  static pool_handle configurable_pool_;
 };
 
 ALWAYS_INLINE std::pair<pool_handle, uintptr_t> GetPoolAndOffset(
@@ -232,7 +281,7 @@ ALWAYS_INLINE bool IsManagedByPartitionAlloc(const void* address) {
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
          || internal::PartitionAddressSpace::IsInBRPPool(address)
 #endif
-      ;
+         || internal::PartitionAddressSpace::IsInConfigurablePool(address);
 }
 
 // Returns false for nullptr.
@@ -243,6 +292,16 @@ ALWAYS_INLINE bool IsManagedByPartitionAllocNonBRPPool(const void* address) {
 // Returns false for nullptr.
 ALWAYS_INLINE bool IsManagedByPartitionAllocBRPPool(const void* address) {
   return internal::PartitionAddressSpace::IsInBRPPool(address);
+}
+
+// Returns false for nullptr.
+ALWAYS_INLINE bool IsManagedByPartitionAllocConfigurablePool(
+    const void* address) {
+  return internal::PartitionAddressSpace::IsInConfigurablePool(address);
+}
+
+ALWAYS_INLINE bool IsConfigurablePoolAvailable() {
+  return internal::PartitionAddressSpace::IsConfigurablePoolInitialized();
 }
 #endif  // defined(PA_HAS_64_BITS_POINTERS)
 

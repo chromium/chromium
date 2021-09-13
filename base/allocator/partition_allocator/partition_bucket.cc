@@ -235,7 +235,7 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
 
     // Allocate from GigaCage. Route to the appropriate GigaCage pool based on
     // BackupRefPtr support.
-    pool_handle pool = root->ChooseGigaCagePool();
+    pool_handle pool = root->ChoosePool();
     char* reservation_start =
         ReserveMemoryFromGigaCage(pool, nullptr, reservation_size);
     if (UNLIKELY(!reservation_start)) {
@@ -543,7 +543,7 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSuperPage(
   char* requested_address = root->next_super_page;
   // Allocate from GigaCage. Route to the appropriate GigaCage pool based on
   // BackupRefPtr support.
-  pool_handle pool = root->ChooseGigaCagePool();
+  pool_handle pool = root->ChoosePool();
   char* super_page =
       ReserveMemoryFromGigaCage(pool, requested_address, kSuperPageSize);
   if (UNLIKELY(!super_page)) {
