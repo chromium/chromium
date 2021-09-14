@@ -547,7 +547,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cookie.SameParty.ReadExclusionDecidedBySameParty"
-    enum="Boolean" expires_after="2022-01-06">
+    enum="Boolean" expires_after="2022-03-13">
   <owner>cfredric@chromium.org</owner>
   <owner>bingler@chromium.org</owner>
   <summary>
@@ -557,7 +557,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cookie.SameParty.SetExclusionDecidedBySameParty"
-    enum="Boolean" expires_after="2022-01-06">
+    enum="Boolean" expires_after="2022-03-13">
   <owner>cfredric@chromium.org</owner>
   <owner>bingler@chromium.org</owner>
   <summary>

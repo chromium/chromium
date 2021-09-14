@@ -6440,7 +6440,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Feedback.HappinessTrackingSurvey.ShouldShowSurveyReason"
     enum="HappinessTrackingSurveyShouldShowSurveyReasons"
-    expires_after="2022-01-09">
+    expires_after="2022-03-13">
   <owner>sauski@google.com</owner>
   <owner>msramek@chromium.org</owner>
   <summary>
@@ -10738,7 +10738,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Mojo.Channel.WritevBatchedMessages" units="messages"
-    expires_after="2022-01-09">
+    expires_after="2022-03-13">
   <owner>amistry@chromium.org</owner>
   <owner>bgeffon@chromium.org</owner>
   <owner>rockot@google.com</owner>
@@ -14575,7 +14575,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="SB2.RemoteCall.Elapsed" units="ms" expires_after="2022-01-09">
+<histogram name="SB2.RemoteCall.Elapsed" units="ms" expires_after="2022-03-13">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -14814,7 +14814,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SBIRS.UploadResult" enum="ReportProcessingResult"
-    expires_after="2022-01-09">
+    expires_after="2022-03-13">
   <owner>caitkp@google.com</owner>
   <summary>
     The result of an attempted report upload by the safe browsing incident
@@ -18666,7 +18666,7 @@ regressions. -->
 </histogram>
 
 <histogram name="Viz.DisplayCompositor.OverlayStrategy"
-    enum="OverlayStrategies" expires_after="2022-01-09">
+    enum="OverlayStrategies" expires_after="2022-03-13">
   <owner>dcastagna@chromium.org</owner>
   <owner>hoegsberg@chromium.org</owner>
   <summary>
@@ -19218,7 +19218,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebFont.HadBlankText" enum="BooleanHadBlankText"
-    expires_after="2022-01-09">
+    expires_after="2022-03-13">
   <owner>kenjibaheux@chromium.org</owner>
   <owner>ksakamoto@chromium.org</owner>
   <summary>

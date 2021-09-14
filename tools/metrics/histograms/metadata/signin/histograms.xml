@@ -397,7 +397,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram base="true" name="Signin.CookieJar.SignedInCountWithPrimary"
-    units="accounts" expires_after="2022-01-09">
+    units="accounts" expires_after="2022-03-13">
   <owner>jkrcal@chromium.org</owner>
   <owner>droger@chromium.org</owner>
 <!-- Name completed by histogram_suffixes name="UnconsentedPrimaryAccountType" -->
