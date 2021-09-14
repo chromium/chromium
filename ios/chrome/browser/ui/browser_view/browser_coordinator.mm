@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/ui/activity_services/requirements/activity_service_positioner.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/alert_coordinator/repost_form_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/enterprise/enterprise_signout/enterprise_signout_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_policy_signout_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_coordinator.h"
 #import "ios/chrome/browser/ui/badges/badge_popup_menu_coordinator.h"
@@ -101,6 +102,7 @@
                                   BrowserCoordinatorCommands,
                                   DefaultBrowserPromoCommands,
                                   DefaultPromoNonModalPresentationDelegate,
+                                  EnterpriseSignoutCoordinatorDelegate,
                                   FormInputAccessoryCoordinatorNavigator,
                                   PageInfoCommands,
                                   PasswordBreachCommands,
@@ -220,6 +222,10 @@
 
 // The coordinator that manages alerts for enterprise sync policy changes.
 @property(nonatomic, strong) AlertCoordinator* syncDisabledAlertCoordinator;
+
+// The coordinator that manages the view for enterprise signout.
+@property(nonatomic, strong)
+    EnterpriseSignoutCoordinator* enterpriseSignoutCoordinator;
 
 @end
 
@@ -1120,6 +1126,25 @@
   [self.syncDisabledAlertCoordinator start];
 }
 
+- (void)showEnterpriseSignout {
+  if (self.active) {
+    if (!self.enterpriseSignoutCoordinator) {
+      self.enterpriseSignoutCoordinator = [[EnterpriseSignoutCoordinator alloc]
+          initWithBaseViewController:self.viewController
+                             browser:self.browser];
+      self.enterpriseSignoutCoordinator.delegate = self;
+    }
+    [self.enterpriseSignoutCoordinator start];
+  } else {
+    __weak BrowserCoordinator* weakSelf = self;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
+                                 static_cast<int64_t>(1 * NSEC_PER_SEC)),
+                   dispatch_get_main_queue(), ^{
+                     [weakSelf showEnterpriseSignout];
+                   });
+  }
+}
+
 #pragma mark - UserPolicySignoutCoordinatorDelegate
 
 - (void)hidePolicySignoutPromptForLearnMore:(BOOL)learnMore {
@@ -1171,6 +1196,13 @@
                                  completion:(void (^)())completion {
   [self.nonModalPromoCoordinator dismissInfobarBannerAnimated:animated
                                                    completion:completion];
+}
+
+#pragma mark - EnterpriseSignoutCoordinatorDelegate
+
+- (void)enterpriseSignoutCoordinatorDidDismiss {
+  [self.enterpriseSignoutCoordinator stop];
+  self.enterpriseSignoutCoordinator = nil;
 }
 
 @end

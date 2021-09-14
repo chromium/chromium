@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_delegate_fake.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/authentication_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
@@ -707,7 +708,8 @@ TEST_F(AuthenticationServiceTest, SigninDisallowedCrash) {
   EXPECT_CHECK_DEATH(authentication_service()->SignIn(identity(0)));
 }
 
-// Tests that reauth prompt is set if the primary identity is restricted.
+// Tests that reauth prompt is not set if the primary identity is restricted and
+// |OnPrimaryAccountRestricted| is forwarded.
 TEST_F(AuthenticationServiceTest, TestHandleRestrictedIdentityPromptSignIn) {
   // Sign in.
   SetExpectationsForSignInAndSync();
@@ -720,6 +722,8 @@ TEST_F(AuthenticationServiceTest, TestHandleRestrictedIdentityPromptSignIn) {
 
   // Set the authentication service as "In Background" and run the loop.
   base::RunLoop().RunUntilIdle();
+  id<AuthenticationServiceObserving> observer =
+      OCMStrictProtocolMock(@protocol(AuthenticationServiceObserving));
 
   // User is signed out (no corresponding identity), and reauth prompt is set.
   EXPECT_TRUE(identity_manager()
@@ -729,5 +733,6 @@ TEST_F(AuthenticationServiceTest, TestHandleRestrictedIdentityPromptSignIn) {
       signin::ConsentLevel::kSignin));
   EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
-  EXPECT_TRUE(authentication_service()->ShouldReauthPromptForSignInAndSync());
+  EXPECT_FALSE(authentication_service()->ShouldReauthPromptForSignInAndSync());
+  OCMExpect([observer primaryAccountRestricted]);
 }

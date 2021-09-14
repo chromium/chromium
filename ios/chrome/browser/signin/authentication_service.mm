@@ -134,6 +134,10 @@ void AuthenticationService::Shutdown() {
 void AuthenticationService::AddObserver(
     AuthenticationServiceObserver* observer) {
   observer_list_.AddObserver(observer);
+  // Handle messages for late observers.
+  if (primary_account_was_restricted_) {
+    observer->OnPrimaryAccountRestricted();
+  }
 }
 
 void AuthenticationService::RemoveObserver(
@@ -274,6 +278,8 @@ ChromeIdentity* AuthenticationService::GetPrimaryIdentity(
 void AuthenticationService::SignIn(ChromeIdentity* identity) {
   CHECK(signin::IsSigninAllowed(pref_service_));
   DCHECK(account_manager_service_->IsValidIdentity(identity));
+
+  primary_account_was_restricted_ = false;
 
   ResetReauthPromptForSignInAndSync();
 
@@ -553,8 +559,11 @@ void AuthenticationService::HandleForgottenIdentity(
   // Sign the user out.
   SignOut(signout_source, /*force_clear_browsing_data=*/false, nil);
 
-  if (should_prompt)
+  if (should_prompt && account_filtered_out) {
+    FirePrimaryAccountRestricted();
+  } else if (should_prompt) {
     SetReauthPromptForSignInAndSync();
+  }
 }
 
 void AuthenticationService::ReloadCredentialsFromIdentities(
@@ -582,6 +591,8 @@ void AuthenticationService::ReloadCredentialsFromIdentities(
 }
 
 void AuthenticationService::FirePrimaryAccountRestricted() {
-  for (auto& observer : observer_list_)
+  primary_account_was_restricted_ = true;
+  for (auto& observer : observer_list_) {
     observer.OnPrimaryAccountRestricted();
+  }
 }

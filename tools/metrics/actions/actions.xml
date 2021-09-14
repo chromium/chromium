@@ -24419,6 +24419,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Signin_FromEnterpriseSignoutSheet">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>jlebel@chromium.org</owner>
+  <description>
+    Recorded on sign in start from the enterprise sign out sheet.
+  </description>
+</action>
+
 <action name="Signin_Signin_FromExtensionInstallBubble">
   <owner>gogerald@chromium.org</owner>
   <description>

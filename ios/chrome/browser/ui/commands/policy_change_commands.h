@@ -17,6 +17,10 @@
 // user dismisses it.
 - (void)showSyncDisabledAlert;
 
+// Command to show a ViewController that contains enterprise signout
+// information.
+- (void)showEnterpriseSignout;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_COMMANDS_POLICY_CHANGE_COMMANDS_H_

@@ -72,6 +72,8 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
     case signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN:
     case signin_metrics::AccessPoint::ACCESS_POINT_SAFETY_CHECK:
     case signin_metrics::AccessPoint::ACCESS_POINT_KALEIDOSCOPE:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       return false;
   }
@@ -93,6 +95,8 @@ void RecordImpressionsTilSigninButtonsHistogramForAccessPoint(
           "MobileSignInPromo.SettingsManager.ImpressionsTilSigninButtons",
           displayed_count);
       break;
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
     case signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS:
     case signin_metrics::AccessPoint::ACCESS_POINT_TAB_SWITCHER:
     case signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE:
@@ -146,6 +150,8 @@ void RecordImpressionsTilDismissHistogramForAccessPoint(
           "MobileSignInPromo.SettingsManager.ImpressionsTilDismiss",
           displayed_count);
       break;
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
     case signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS:
     case signin_metrics::AccessPoint::ACCESS_POINT_TAB_SWITCHER:
     case signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE:
@@ -199,6 +205,8 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
           "MobileSignInPromo.SettingsManager.ImpressionsTilXButton",
           displayed_count);
       break;
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
     case signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS:
     case signin_metrics::AccessPoint::ACCESS_POINT_TAB_SWITCHER:
     case signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE:
@@ -274,6 +282,8 @@ const char* DisplayedCountPreferenceKey(
     case signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN:
     case signin_metrics::AccessPoint::ACCESS_POINT_SAFETY_CHECK:
     case signin_metrics::AccessPoint::ACCESS_POINT_KALEIDOSCOPE:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       return nullptr;
   }
@@ -317,6 +327,8 @@ const char* AlreadySeenSigninViewPreferenceKey(
     case signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN:
     case signin_metrics::AccessPoint::ACCESS_POINT_SAFETY_CHECK:
     case signin_metrics::AccessPoint::ACCESS_POINT_KALEIDOSCOPE:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       return nullptr;
   }

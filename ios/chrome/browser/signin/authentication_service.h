@@ -221,6 +221,10 @@ class AuthenticationService : public KeyedService,
   // to avoid an infinite reloading loop.
   bool is_reloading_credentials_ = false;
 
+  // Whether the primary account was logged out because it became restricted.
+  // It is used to respond to late observers.
+  bool primary_account_was_restricted_ = false;
+
   // Map between account IDs and their associated MDM error.
   mutable std::map<CoreAccountId, NSDictionary*> cached_mdm_infos_;
 

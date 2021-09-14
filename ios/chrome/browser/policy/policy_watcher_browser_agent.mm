@@ -149,5 +149,5 @@ void PolicyWatcherBrowserAgent::OnSignOutComplete() {
 }
 
 void PolicyWatcherBrowserAgent::OnPrimaryAccountRestricted() {
-  // TODO(crbug.com/1237946): Display UI when user is signed out.
+  [handler_ showEnterpriseSignout];
 }
