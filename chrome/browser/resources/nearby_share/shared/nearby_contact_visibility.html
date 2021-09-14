@@ -19,18 +19,18 @@
   <template>
     <style include="cr-icons cr-shared-style">
       :host {
-        --card-border-color: var(--google-grey-300);
+        --card-border-color: var(--cros-button-stroke-color-secondary);
         --cr-card-radio-button-padding: 4px 12px 4px 12px;
         --iron-icon-height: var(--cr-icon-size);
         --iron-icon-width: var(--cr-icon-size);
       }
 
       .grey-icon {
-        fill: var(--google-grey-refresh-700);
+        fill: var(--cros-icon-color-secondary);
       }
 
       .light-grey-icon {
-        fill: var(--google-grey-refresh-500);
+        fill: var(--cros-icon-color-disabled);
       }
 
       #main {
@@ -73,11 +73,11 @@
       }
 
       .card-contents {
-        color: var(--google-blue-600);
+        color: var(--cros-button-label-color-secondary);
       }
 
       .card-icon {
-        fill: var(--google-blue-600);
+        fill: var(--cros-icon-color-prominent);
         margin-inline-end: 8px;
       }
 
@@ -125,7 +125,7 @@
       }
 
       #zeroStateHelpLink {
-        color: var(--google-blue-600);
+        color: var(--cros-link-color);
         text-decoration: none;
       }
 
@@ -183,7 +183,7 @@
       }
 
       #unreachableMessage {
-        color: var(--google-grey-refresh-500);
+        color: var(--cros-text-color-disabled);
         font-size: 11px;
         line-height: 16px;
       }
