@@ -3792,9 +3792,12 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
       if (base::ios::IsMultipleScenesSupported()) {
         // Open in New Window.
+
+        NSUserActivity* newWindowActivity =
+            ActivityToLoadURL(WindowActivityContextMenuOrigin, link, referrer,
+                              self.isOffTheRecord);
         UIAction* openNewWindow = [actionFactory
-            actionToOpenInNewWindowWithURL:link
-                            activityOrigin:WindowActivityContextMenuOrigin];
+            actionToOpenInNewWindowWithActivity:newWindowActivity];
 
         [menuElements addObject:openNewWindow];
       }

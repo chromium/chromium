@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/menu/menu_action_type.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
+#import "ios/chrome/browser/window_activities/window_activity_helpers.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -133,9 +134,19 @@ TEST_F(BrowserActionFactoryTest, OpenInNewWindowAction) {
     NSString* expectedTitle =
         l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENINNEWWINDOW);
 
+    // Test URL variant
     UIAction* action =
         [factory actionToOpenInNewWindowWithURL:testURL
                                  activityOrigin:WindowActivityToolsOrigin];
+
+    EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+    EXPECT_EQ(expectedImage, action.image);
+
+    // Test user activity variant
+    action = [factory
+        actionToOpenInNewWindowWithActivity:ActivityToLoadURL(
+                                                WindowActivityToolsOrigin,
+                                                testURL)];
 
     EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
     EXPECT_EQ(expectedImage, action.image);
