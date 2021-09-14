@@ -152,7 +152,8 @@ std::string GetMachineName() {
 }
 
 std::string GetOSVersion() {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_APPLE)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_APPLE) || \
+    defined(OS_ANDROID)
   return base::SysInfo::OperatingSystemVersion();
 #elif defined(OS_WIN)
   base::win::OSInfo::VersionNumber version_number =
@@ -160,8 +161,6 @@ std::string GetOSVersion() {
   return base::StringPrintf("%u.%u.%u.%u", version_number.major,
                             version_number.minor, version_number.build,
                             version_number.patch);
-#elif defined(OS_ANDROID)
-  return std::string();
 #else
   NOTREACHED();
   return std::string();

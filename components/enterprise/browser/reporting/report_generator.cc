@@ -46,28 +46,35 @@ void ReportGenerator::CreateBasicRequest(
   if (report_type == kExtensionRequest) {
     basic_request->add_partial_report_types(
         em::PartialReportType::EXTENSION_REQUEST);
-  } else {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    delegate_->SetAndroidAppInfos(basic_request.get());
-#else
-    basic_request->set_computer_name(this->GetMachineName());
-    basic_request->set_os_user_name(GetOSUserName());
-    basic_request->set_serial_number(GetSerialNumber());
-    basic_request->set_allocated_os_report(GetOSReport().release());
-    basic_request->set_allocated_browser_device_identifier(
-        policy::GetBrowserDeviceIdentifier().release());
-#if defined(OS_IOS)
-    basic_request->set_device_model(policy::GetDeviceModel());
-    basic_request->set_brand_name(policy::GetDeviceManufacturer());
-#endif  // defined(OS_IOS)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    GenerateReport(report_type, std::move(callback), std::move(basic_request));
+    return;
   }
 
-  browser_report_generator_.Generate(
-      report_type,
-      base::BindOnce(&ReportGenerator::OnBrowserReportReady,
-                     weak_ptr_factory_.GetWeakPtr(), report_type,
-                     std::move(callback), std::move(basic_request)));
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  delegate_->SetAndroidAppInfos(basic_request.get());
+#else
+  basic_request->set_computer_name(this->GetMachineName());
+  basic_request->set_os_user_name(GetOSUserName());
+  basic_request->set_serial_number(GetSerialNumber());
+  basic_request->set_allocated_os_report(GetOSReport().release());
+  basic_request->set_allocated_browser_device_identifier(
+      policy::GetBrowserDeviceIdentifier().release());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if defined(OS_ANDROID) || defined(OS_IOS)
+  // 1. Async function base::SysInfo::SetHardwareInfo is called.
+  // 2. ReportGenerator::SetHardwareInfo fills basic_report
+  // 3. ReportGenerator::GenerateReport is called
+
+  base::SysInfo::GetHardwareInfo(
+      base::BindOnce(&ReportGenerator::SetHardwareInfo,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(basic_request),
+                     base::BindOnce(&ReportGenerator::GenerateReport,
+                                    weak_ptr_factory_.GetWeakPtr(), report_type,
+                                    std::move(callback))));
+#else
+  GenerateReport(report_type, std::move(callback), std::move(basic_request));
+#endif  // defined(OS_ANDROID) || defined(OS_IOS)
 }
 
 std::unique_ptr<em::OSReport> ReportGenerator::GetOSReport() {
@@ -95,10 +102,21 @@ std::string ReportGenerator::GetSerialNumber() {
 #endif
 }
 
-void ReportGenerator::OnBrowserReportReady(
+void ReportGenerator::GenerateReport(
     ReportType report_type,
     ReportCallback callback,
+    std::unique_ptr<ReportRequest> basic_request) {
+  browser_report_generator_.Generate(
+      report_type,
+      base::BindOnce(&ReportGenerator::OnBrowserReportReady,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(basic_request),
+                     report_type, std::move(callback)));
+}
+
+void ReportGenerator::OnBrowserReportReady(
     std::unique_ptr<ReportRequest> basic_request,
+    ReportType report_type,
+    ReportCallback callback,
     std::unique_ptr<em::BrowserReport> browser_report) {
   basic_request->set_allocated_browser_report(browser_report.release());
 
@@ -114,6 +132,18 @@ void ReportGenerator::OnBrowserReportReady(
   ReportRequests requests;
   requests.push(std::move(basic_request));
   std::move(callback).Run(std::move(requests));
+}
+
+void ReportGenerator::SetHardwareInfo(
+    std::unique_ptr<ReportRequest> basic_request,
+    base::OnceCallback<void(std::unique_ptr<ReportRequest>)> callback,
+    base::SysInfo::HardwareInfo hardware_info) {
+#if defined(OS_ANDROID) || defined(OS_IOS)
+  basic_request->set_brand_name(hardware_info.manufacturer);
+  basic_request->set_device_model(hardware_info.model);
+#endif  // defined(OS_ANDROID) || defined(OS_IOS)
+
+  std::move(callback).Run(std::move(basic_request));
 }
 
 }  // namespace enterprise_reporting
