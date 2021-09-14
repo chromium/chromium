@@ -12,12 +12,16 @@
 #include "components/viz/common/features.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
+#include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/mock_render_widget_host.h"
+#include "content/browser/site_instance_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/mock_render_widget_host_delegate.h"
+#include "content/test/test_render_view_host.h"
 #include "content/test/test_view_android_delegate.h"
+#include "content/test/test_web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
@@ -41,6 +45,9 @@ class RenderWidgetHostViewAndroidTest : public testing::Test {
       const absl::optional<viz::LocalSurfaceId>& child_local_surface_id);
   void WasEvicted();
   ui::ViewAndroid* GetViewAndroid() { return &native_view_; }
+  void OnRenderFrameMetadataChangedAfterActivation(
+      cc::RenderFrameMetadata metadata,
+      base::TimeTicks activation_time);
 
  protected:
   // testing::Test:
@@ -53,6 +60,9 @@ class RenderWidgetHostViewAndroidTest : public testing::Test {
 
  private:
   std::unique_ptr<TestBrowserContext> browser_context_;
+  scoped_refptr<SiteInstanceImpl> site_instance_;
+  std::unique_ptr<TestWebContents> web_contents_;
+  std::unique_ptr<FrameTree> frame_tree_;
   std::unique_ptr<MockRenderProcessHost> process_;
   std::unique_ptr<AgentSchedulingGroupHost> agent_scheduling_group_;
   std::unique_ptr<MockRenderWidgetHostDelegate> delegate_;
@@ -60,7 +70,10 @@ class RenderWidgetHostViewAndroidTest : public testing::Test {
   scoped_refptr<cc::Layer> layer_;
   ui::ViewAndroid parent_view_;
   ui::ViewAndroid native_view_;
-  std::unique_ptr<MockRenderWidgetHost> host_;
+  // TestRenderViewHost
+  scoped_refptr<RenderViewHostImpl> render_view_host_;
+  // Owned by `render_view_host_`.
+  MockRenderWidgetHost* host_;
   RenderWidgetHostViewAndroid* render_widget_host_view_android_;
 
   BrowserTaskEnvironment task_environment_;
@@ -83,15 +96,41 @@ void RenderWidgetHostViewAndroidTest::WasEvicted() {
   render_widget_host_view_android_->WasEvicted();
 }
 
+void RenderWidgetHostViewAndroidTest::
+    OnRenderFrameMetadataChangedAfterActivation(
+        cc::RenderFrameMetadata metadata,
+        base::TimeTicks activation_time) {
+  render_widget_host_view_android()
+      ->host()
+      ->render_frame_metadata_provider()
+      ->OnRenderFrameMetadataChangedAfterActivation(metadata, activation_time);
+}
+
 void RenderWidgetHostViewAndroidTest::SetUp() {
   browser_context_ = std::make_unique<TestBrowserContext>();
+  site_instance_ = SiteInstanceImpl::Create(browser_context_.get());
+  web_contents_ =
+      TestWebContents::Create(browser_context_.get(), site_instance_);
+  frame_tree_ = std::make_unique<FrameTree>(
+      browser_context_.get(), web_contents_.get(), web_contents_.get(),
+      web_contents_.get(), web_contents_.get(), web_contents_.get(),
+      web_contents_.get(), web_contents_.get(), web_contents_.get(),
+      FrameTree::Type::kPrimary);
+
   delegate_ = std::make_unique<MockRenderWidgetHostDelegate>();
   process_ = std::make_unique<MockRenderProcessHost>(browser_context_.get());
   agent_scheduling_group_ =
       std::make_unique<AgentSchedulingGroupHost>(*process_);
-  host_ = MockRenderWidgetHost::Create(/*frame_tree=*/nullptr, delegate_.get(),
-                                       *agent_scheduling_group_,
-                                       process_->GetNextRoutingID());
+  // Initialized before ownership is given to `render_view_host_`.
+  std::unique_ptr<MockRenderWidgetHost> mock_host =
+      MockRenderWidgetHost::Create(frame_tree_.get(), delegate_.get(),
+                                   *agent_scheduling_group_,
+                                   process_->GetNextRoutingID());
+  host_ = mock_host.get();
+  render_view_host_ = new TestRenderViewHost(
+      frame_tree_.get(), site_instance_.get(), std::move(mock_host),
+      web_contents_.get(), process_->GetNextRoutingID(),
+      process_->GetNextRoutingID(), false);
   parent_layer_ = cc::Layer::Create();
   parent_view_.SetLayer(parent_layer_);
   layer_ = cc::Layer::Create();
@@ -99,13 +138,18 @@ void RenderWidgetHostViewAndroidTest::SetUp() {
   parent_view_.AddChild(&native_view_);
   EXPECT_EQ(&parent_view_, native_view_.parent());
   render_widget_host_view_android_ =
-      new RenderWidgetHostViewAndroid(host_.get(), &native_view_);
+      new RenderWidgetHostViewAndroid(host_, &native_view_);
   test_view_android_delegate_ = std::make_unique<TestViewAndroidDelegate>();
 }
 
 void RenderWidgetHostViewAndroidTest::TearDown() {
   render_widget_host_view_android_->Destroy();
-  host_.reset();
+  render_view_host_.reset();
+  frame_tree_->Shutdown();
+  frame_tree_.reset();
+  web_contents_.reset();
+  site_instance_.reset();
+
   delegate_.reset();
   process_->Cleanup();
   agent_scheduling_group_ = nullptr;
@@ -251,6 +295,37 @@ TEST_F(RenderWidgetHostViewAndroidTest, DisplayFeature) {
   EXPECT_EQ(expected_display_feature, *rwhv->GetDisplayFeature());
 }
 
+// Tests that if a Renderer submits content before a navigation is completed,
+// that we generate a new Surface. So that the old content cannot be used as a
+// fallback.
+TEST_F(RenderWidgetHostViewAndroidTest, RenderFrameSubmittedBeforeNavigation) {
+  RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
+
+  // Creating a visible RWHVA should have a valid surface.
+  const viz::LocalSurfaceId initial_local_surface_id =
+      rwhva->GetLocalSurfaceId();
+  EXPECT_TRUE(initial_local_surface_id.is_valid());
+  EXPECT_TRUE(rwhva->IsShowing());
+
+  {
+    // Simulate that the Renderer submitted some content to the current Surface
+    // before Navigation concludes.
+    cc::RenderFrameMetadata metadata;
+    metadata.local_surface_id = initial_local_surface_id;
+    OnRenderFrameMetadataChangedAfterActivation(metadata,
+                                                base::TimeTicks::Now());
+  }
+
+  // Pre-commit information of Navigation is not told to RWHVA, these are the
+  // two entry points. We should have a new Surface afterwards.
+  rwhva->OnDidNavigateMainFrameToNewPage();
+  rwhva->DidNavigate();
+  const viz::LocalSurfaceId post_nav_local_surface_id =
+      rwhva->GetLocalSurfaceId();
+  EXPECT_TRUE(post_nav_local_surface_id.is_valid());
+  EXPECT_TRUE(post_nav_local_surface_id.IsNewerThan(initial_local_surface_id));
+}
+
 // Tests Rotation improvements that are behind the
 // features::kSurfaceSyncThrottling flag.
 class RenderWidgetHostViewAndroidRotationTest
@@ -261,9 +336,6 @@ class RenderWidgetHostViewAndroidRotationTest
 
   void OnDidUpdateVisualPropertiesComplete(
       const cc::RenderFrameMetadata& metadata);
-  void OnRenderFrameMetadataChangedAfterActivation(
-      cc::RenderFrameMetadata metadata,
-      base::TimeTicks activation_time);
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -279,16 +351,6 @@ void RenderWidgetHostViewAndroidRotationTest::
         const cc::RenderFrameMetadata& metadata) {
   render_widget_host_view_android()->OnDidUpdateVisualPropertiesComplete(
       metadata);
-}
-
-void RenderWidgetHostViewAndroidRotationTest::
-    OnRenderFrameMetadataChangedAfterActivation(
-        cc::RenderFrameMetadata metadata,
-        base::TimeTicks activation_time) {
-  render_widget_host_view_android()
-      ->host()
-      ->render_frame_metadata_provider()
-      ->OnRenderFrameMetadataChangedAfterActivation(metadata, activation_time);
 }
 
 // Tests that when a rotation occurs, that we only advance the

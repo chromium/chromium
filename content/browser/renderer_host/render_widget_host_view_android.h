@@ -576,7 +576,10 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   // another before the first has displayed. This can occur on pages that have
   // long layout and rendering time.
   std::deque<std::pair<base::TimeTicks, viz::LocalSurfaceId>> rotation_metrics_;
-  bool is_first_navigation_ = true;
+  // If true, then content was displayed before the completion of the initial
+  // navigation. After any content has been displayed, we need to allocate a new
+  // surface for all subsequent navigations.
+  bool pre_navigation_content_ = false;
   // If true, then the next allocated surface should be embedded.
   bool navigation_while_hidden_ = false;
 
