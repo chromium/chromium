@@ -27,6 +27,7 @@ class PersonalDataManager;
 bool IsCreditCardUploadEnabled(const PrefService* pref_service,
                                const syncer::SyncService* sync_service,
                                const std::string& user_email,
+                               const std::string& user_country,
                                const AutofillSyncSigninState sync_state,
                                LogManager* log_manager);
 

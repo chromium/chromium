@@ -37,9 +37,15 @@ class AutofillExperimentsTest : public testing::Test {
 
   bool IsCreditCardUploadEnabled(const std::string& user_email,
                                  const AutofillSyncSigninState sync_state) {
+    return IsCreditCardUploadEnabled(user_email, "US", sync_state);
+  }
+
+  bool IsCreditCardUploadEnabled(const std::string& user_email,
+                                 const std::string& user_country,
+                                 const AutofillSyncSigninState sync_state) {
     return autofill::IsCreditCardUploadEnabled(&pref_service_, &sync_service_,
-                                               user_email, sync_state,
-                                               log_manager_.get());
+                                               user_email, user_country,
+                                               sync_state, log_manager_.get());
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -55,30 +61,49 @@ class AutofillExperimentsTest : public testing::Test {
 // the results.
 TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_FeatureEnabled) {
   scoped_feature_list_.InitAndEnableFeature(features::kAutofillUpstream);
+  // Use an unsupported country to show that feature flag enablement overrides
+  // the client-side country check.
   EXPECT_TRUE(IsCreditCardUploadEnabled(
+      "john.smith@gmail.com", "ZZ",
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::CARD_UPLOAD_ENABLED, 1);
+      AutofillMetrics::CardUploadEnabledMetric::ENABLED_BY_FLAG, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::CARD_UPLOAD_ENABLED, 1);
+      AutofillMetrics::CardUploadEnabledMetric::ENABLED_BY_FLAG, 1);
 }
 
-TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_FeatureDisabled) {
-  scoped_feature_list_.InitAndDisableFeature(features::kAutofillUpstream);
+TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_UnsupportedCountry) {
+  // "ZZ" is NOT one of the countries in |kAutofillUpstreamLaunchedCountries|.
   EXPECT_FALSE(IsCreditCardUploadEnabled(
+      "john.smith@gmail.com", "ZZ",
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::AUTOFILL_UPSTREAM_DISABLED, 1);
+      AutofillMetrics::CardUploadEnabledMetric::UNSUPPORTED_COUNTRY, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::AUTOFILL_UPSTREAM_DISABLED, 1);
+      AutofillMetrics::CardUploadEnabledMetric::UNSUPPORTED_COUNTRY, 1);
+}
+
+TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_SupportedCountry) {
+  // Show that a disabled or missing feature flag no longer impedes feature
+  // availability. The flag is used only to launch to new countries.
+  scoped_feature_list_.InitAndDisableFeature(features::kAutofillUpstream);
+  // "US" is one of the countries in |kAutofillUpstreamLaunchedCountries|.
+  EXPECT_TRUE(IsCreditCardUploadEnabled(
+      "john.smith@gmail.com", "US",
+      AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CardUploadEnabled",
+      AutofillMetrics::CardUploadEnabledMetric::ENABLED_FOR_COUNTRY, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
+      AutofillMetrics::CardUploadEnabledMetric::ENABLED_FOR_COUNTRY, 1);
 }
 
 TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_AuthError) {
-  scoped_feature_list_.InitAndEnableFeature(features::kAutofillUpstream);
   sync_service_.SetAuthError(
       GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
   EXPECT_FALSE(IsCreditCardUploadEnabled(AutofillSyncSigninState::kSyncPaused));
@@ -94,7 +119,6 @@ TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_AuthError) {
 
 TEST_F(AutofillExperimentsTest,
        IsCardUploadEnabled_SyncDoesNotHaveAutofillWalletDataActiveType) {
-  scoped_feature_list_.InitAndEnableFeature(features::kAutofillUpstream);
   sync_service_.SetActiveDataTypes(syncer::ModelTypeSet());
   EXPECT_FALSE(IsCreditCardUploadEnabled(
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
@@ -112,7 +136,6 @@ TEST_F(AutofillExperimentsTest,
 
 TEST_F(AutofillExperimentsTest,
        IsCardUploadEnabled_SyncDoesNotHaveAutofillProfileActiveType) {
-  scoped_feature_list_.InitAndEnableFeature(features::kAutofillUpstream);
   sync_service_.SetActiveDataTypes(
       syncer::ModelTypeSet(syncer::AUTOFILL_WALLET_DATA));
   EXPECT_FALSE(IsCreditCardUploadEnabled(
@@ -131,7 +154,6 @@ TEST_F(AutofillExperimentsTest,
 
 TEST_F(AutofillExperimentsTest,
        IsCardUploadEnabled_SyncServiceUsingExplicitPassphrase) {
-  scoped_feature_list_.InitAndEnableFeature(features::kAutofillUpstream);
   sync_service_.SetIsUsingExplicitPassphrase(true);
   EXPECT_FALSE(IsCreditCardUploadEnabled(
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
@@ -147,7 +169,6 @@ TEST_F(AutofillExperimentsTest,
 
 TEST_F(AutofillExperimentsTest,
        IsCardUploadEnabled_AutofillWalletImportEnabledPrefIsDisabled) {
-  scoped_feature_list_.InitAndEnableFeature(features::kAutofillUpstream);
   prefs::SetPaymentsIntegrationEnabled(&pref_service_, false);
   EXPECT_FALSE(IsCreditCardUploadEnabled(
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
@@ -162,7 +183,6 @@ TEST_F(AutofillExperimentsTest,
 }
 
 TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_EmptyUserEmail) {
-  scoped_feature_list_.InitAndEnableFeature(features::kAutofillUpstream);
   EXPECT_FALSE(IsCreditCardUploadEnabled(
       "", AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester.ExpectUniqueSample(
@@ -174,10 +194,8 @@ TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_EmptyUserEmail) {
 }
 
 TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_TransportModeOnly) {
-  scoped_feature_list_.InitWithFeatures(
-      /*enable_features=*/{features::kAutofillUpstream,
-                           features::kAutofillEnableAccountWalletStorage},
-      /*disable_features=*/{});
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kAutofillEnableAccountWalletStorage);
   // When we have no primary account, Sync will start in Transport-only mode
   // (if allowed).
   sync_service_.SetIsAuthenticatedAccountPrimary(false);
@@ -187,19 +205,17 @@ TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_TransportModeOnly) {
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::CARD_UPLOAD_ENABLED, 1);
+      AutofillMetrics::CardUploadEnabledMetric::ENABLED_FOR_COUNTRY, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::CARD_UPLOAD_ENABLED, 1);
+      AutofillMetrics::CardUploadEnabledMetric::ENABLED_FOR_COUNTRY, 1);
 }
 
 TEST_F(
     AutofillExperimentsTest,
     IsCardUploadEnabled_TransportSyncDoesNotHaveAutofillProfileActiveDataType) {
-  scoped_feature_list_.InitWithFeatures(
-      /*enable_features=*/{features::kAutofillUpstream,
-                           features::kAutofillEnableAccountWalletStorage},
-      /*disable_features=*/{});
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kAutofillEnableAccountWalletStorage);
   // When we have no primary account, Sync will start in Transport-only mode
   // (if allowed).
   sync_service_.SetIsAuthenticatedAccountPrimary(false);
@@ -213,14 +229,13 @@ TEST_F(
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::CARD_UPLOAD_ENABLED, 1);
+      AutofillMetrics::CardUploadEnabledMetric::ENABLED_FOR_COUNTRY, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::CARD_UPLOAD_ENABLED, 1);
+      AutofillMetrics::CardUploadEnabledMetric::ENABLED_FOR_COUNTRY, 1);
 }
 
 TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_UserEmailWithGoogleDomain) {
-  scoped_feature_list_.InitAndEnableFeature(features::kAutofillUpstream);
   EXPECT_TRUE(IsCreditCardUploadEnabled(
       "john.smith@gmail.com",
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
@@ -235,15 +250,14 @@ TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_UserEmailWithGoogleDomain) {
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::CARD_UPLOAD_ENABLED, 4);
+      AutofillMetrics::CardUploadEnabledMetric::ENABLED_FOR_COUNTRY, 4);
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::CARD_UPLOAD_ENABLED, 4);
+      AutofillMetrics::CardUploadEnabledMetric::ENABLED_FOR_COUNTRY, 4);
 }
 
 TEST_F(AutofillExperimentsTest,
        IsCardUploadEnabled_UserEmailWithNonGoogleDomain) {
-  scoped_feature_list_.InitAndEnableFeature(features::kAutofillUpstream);
   EXPECT_FALSE(IsCreditCardUploadEnabled(
       "cool.user@hotmail.com",
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
@@ -266,10 +280,8 @@ TEST_F(AutofillExperimentsTest,
 
 TEST_F(AutofillExperimentsTest,
        IsCardUploadEnabled_UserEmailWithNonGoogleDomainIfExperimentEnabled) {
-  scoped_feature_list_.InitWithFeatures(
-      {features::kAutofillUpstream,
-       features::kAutofillUpstreamAllowAllEmailDomains},
-      {});
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kAutofillUpstreamAllowAllEmailDomains);
   EXPECT_TRUE(IsCreditCardUploadEnabled(
       "cool.user@hotmail.com",
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
@@ -284,10 +296,10 @@ TEST_F(AutofillExperimentsTest,
       AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::CARD_UPLOAD_ENABLED, 4);
+      AutofillMetrics::CardUploadEnabledMetric::ENABLED_FOR_COUNTRY, 4);
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
-      AutofillMetrics::CardUploadEnabledMetric::CARD_UPLOAD_ENABLED, 4);
+      AutofillMetrics::CardUploadEnabledMetric::ENABLED_FOR_COUNTRY, 4);
 }
 
 }  // namespace autofill

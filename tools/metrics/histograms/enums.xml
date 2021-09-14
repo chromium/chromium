@@ -5548,6 +5548,7 @@ others/histograms.xml -->
   <int value="9" label="User is logged into an unsupported domain"/>
   <int value="10" label="Card upload feature flag disabled"/>
   <int value="11" label="Success, card upload enabled"/>
+  <int value="12" label="User is in an unlaunched/unsupported country"/>
 </enum>
 
 <enum name="AutofillCreditCardAuthenticationEvents">

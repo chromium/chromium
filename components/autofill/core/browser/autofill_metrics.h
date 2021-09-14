@@ -933,9 +933,12 @@ class AutofillMetrics {
     PAYMENTS_INTEGRATION_DISABLED = 7,
     EMAIL_EMPTY = 8,
     EMAIL_DOMAIN_NOT_SUPPORTED = 9,
-    AUTOFILL_UPSTREAM_DISABLED = 10,
-    CARD_UPLOAD_ENABLED = 11,
-    kMaxValue = CARD_UPLOAD_ENABLED,
+    // Deprecated: AUTOFILL_UPSTREAM_DISABLED = 10,
+    // Deprecated: CARD_UPLOAD_ENABLED = 11,
+    UNSUPPORTED_COUNTRY = 12,
+    ENABLED_FOR_COUNTRY = 13,
+    ENABLED_BY_FLAG = 14,
+    kMaxValue = ENABLED_BY_FLAG,
   };
 
   // Enumerates the status of the  different requirements to successfully import

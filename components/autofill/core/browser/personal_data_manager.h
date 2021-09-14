@@ -373,6 +373,11 @@ class PersonalDataManager : public KeyedService,
   // will only update when Chrome is restarted.
   virtual const std::string& GetDefaultCountryCodeForNewAddress() const;
 
+  // Returns our best guess for the country a user is in, for experiment group
+  // purposes. The value is calculated once and cached, so it will only update
+  // when Chrome is restarted.
+  virtual const std::string& GetCountryCodeForExperimentGroup() const;
+
   // De-dupe credit card to suggest. Full server cards are preferred over their
   // local duplicates, and local cards are preferred over their masked server
   // card duplicate.
@@ -833,6 +838,11 @@ class PersonalDataManager : public KeyedService,
 
   // The default country code for new addresses.
   mutable std::string default_country_code_;
+
+  // The determined country code for experiment group purposes. Uses
+  // |variations_country_code_| if it exists but falls back to other methods if
+  // necessary to ensure it always has a value.
+  mutable std::string experiment_country_code_;
 
   // The PrefService that this instance uses. Must outlive this instance.
   PrefService* pref_service_ = nullptr;

@@ -53,9 +53,20 @@ void LogCardUploadEnabled(LogManager* log_manager) {
 }
 }  // namespace
 
+// The list of countries for which the credit card upload save feature is fully
+// launched. Last updated M75.
+const char* const kAutofillUpstreamLaunchedCountries[] = {
+    "AD", "AE", "AF", "AG", "AT", "AU", "BB", "BE", "BG", "BM", "BR", "BS",
+    "CA", "CH", "CR", "CY", "CZ", "DE", "DK", "EE", "ES", "FI", "FR", "GB",
+    "GF", "GI", "GL", "GP", "GR", "GU", "HK", "HR", "HU", "IE", "IL", "IS",
+    "IT", "JP", "KY", "LC", "LT", "LU", "LV", "ME", "MK", "MO", "MQ", "MT",
+    "NC", "NL", "NO", "NZ", "PA", "PL", "PR", "PT", "RE", "RO", "RU", "SE",
+    "SG", "SI", "SK", "TH", "TR", "TT", "TW", "UA", "US", "VI", "VN", "ZA"};
+
 bool IsCreditCardUploadEnabled(const PrefService* pref_service,
                                const syncer::SyncService* sync_service,
                                const std::string& user_email,
+                               const std::string& user_country,
                                const AutofillSyncSigninState sync_state,
                                LogManager* log_manager) {
   if (!sync_service) {
@@ -164,16 +175,31 @@ bool IsCreditCardUploadEnabled(const PrefService* pref_service,
     return false;
   }
 
-  if (!base::FeatureList::IsEnabled(features::kAutofillUpstream)) {
+  if (base::FeatureList::IsEnabled(features::kAutofillUpstream)) {
+    // Feature flag is enabled, so continue regardless of the country. This is
+    // required for the ability to continue to launch to more countries as
+    // necessary.
     AutofillMetrics::LogCardUploadEnabledMetric(
-        AutofillMetrics::CardUploadEnabledMetric::AUTOFILL_UPSTREAM_DISABLED,
+        AutofillMetrics::CardUploadEnabledMetric::ENABLED_BY_FLAG, sync_state);
+    LogCardUploadEnabled(log_manager);
+    return true;
+  }
+
+  std::string country_code = base::ToUpperASCII(user_country);
+  auto* const* country_iter =
+      std::find(std::begin(kAutofillUpstreamLaunchedCountries),
+                std::end(kAutofillUpstreamLaunchedCountries), country_code);
+  if (country_iter == std::end(kAutofillUpstreamLaunchedCountries)) {
+    // |country_code| was not found in the list of launched countries.
+    AutofillMetrics::LogCardUploadEnabledMetric(
+        AutofillMetrics::CardUploadEnabledMetric::UNSUPPORTED_COUNTRY,
         sync_state);
-    LogCardUploadDisabled(log_manager, "AUTOFILL_UPSTREAM_NOT_ENABLED");
+    LogCardUploadDisabled(log_manager, "UNSUPPORTED_COUNTRY");
     return false;
   }
 
   AutofillMetrics::LogCardUploadEnabledMetric(
-      AutofillMetrics::CardUploadEnabledMetric::CARD_UPLOAD_ENABLED,
+      AutofillMetrics::CardUploadEnabledMetric::ENABLED_FOR_COUNTRY,
       sync_state);
   LogCardUploadEnabled(log_manager);
   return true;
@@ -191,6 +217,7 @@ bool IsCreditCardMigrationEnabled(PersonalDataManager* personal_data_manager,
       !IsCreditCardUploadEnabled(
           pref_service, sync_service,
           personal_data_manager->GetAccountInfoForPaymentsServer().email,
+          personal_data_manager->GetCountryCodeForExperimentGroup(),
           personal_data_manager->GetSyncSigninState(), log_manager)) {
     return false;
   }
