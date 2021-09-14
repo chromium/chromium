@@ -1033,7 +1033,8 @@ scoped_refptr<Image> ImageBitmap::GetSourceImageForCanvas(
 
   scoped_refptr<StaticBitmapImage> image = image_;
 
-  // If the alpha_disposition is already correct, this is a no-op.
+  // If the alpha_disposition is already correct, or the image is opaque, this
+  // is a no-op.
   return GetImageWithAlphaDisposition(std::move(image), alpha_disposition);
 }
 
