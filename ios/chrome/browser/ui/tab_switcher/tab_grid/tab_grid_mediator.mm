@@ -481,6 +481,10 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
 
 - (NSArray<UIMenuElement*>*)addToButtonMenuElementsForItems:
     (NSArray<NSString*>*)items {
+  if (!self.browser) {
+    return nil;
+  }
+
   ActionFactory* actionFactory =
       [[ActionFactory alloc] initWithScenario:MenuScenario::kTabGridAddTo];
 
