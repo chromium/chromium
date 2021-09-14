@@ -1167,7 +1167,8 @@ public class IntentHandler {
         // except dash, plus and period. Those are the only valid scheme chars:
         // https://tools.ietf.org/html/rfc3986#section-3.1
         boolean nonAlphaNum = false;
-        for (char ch : scheme.toCharArray()) {
+        for (int i = 0; i < scheme.length(); i++) {
+            char ch = scheme.charAt(i);
             if (!Character.isLetterOrDigit(ch) && ch != '-' && ch != '+' && ch != '.') {
                 nonAlphaNum = true;
                 break;

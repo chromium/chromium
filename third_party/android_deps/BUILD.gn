@@ -235,7 +235,7 @@ java_prebuilt("com_google_dagger_dagger_compiler_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_errorprone_error_prone_annotation_java") {
-  jar_path = "libs/com_google_errorprone_error_prone_annotation/error_prone_annotation-2.7.1.jar"
+  jar_path = "libs/com_google_errorprone_error_prone_annotation/error_prone_annotation-2.9.0.jar"
   output_name = "com_google_errorprone_error_prone_annotation"
   enable_bytecode_checks = false
   deps = [ ":com_google_guava_guava_java" ]
@@ -243,7 +243,7 @@ java_prebuilt("com_google_errorprone_error_prone_annotation_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_errorprone_error_prone_annotations_java") {
-  jar_path = "libs/com_google_errorprone_error_prone_annotations/error_prone_annotations-2.7.1.jar"
+  jar_path = "libs/com_google_errorprone_error_prone_annotations/error_prone_annotations-2.9.0.jar"
   output_name = "com_google_errorprone_error_prone_annotations"
   supports_android = true
 
@@ -253,7 +253,7 @@ java_prebuilt("com_google_errorprone_error_prone_annotations_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_errorprone_error_prone_check_api_java") {
-  jar_path = "libs/com_google_errorprone_error_prone_check_api/error_prone_check_api-2.7.1.jar"
+  jar_path = "libs/com_google_errorprone_error_prone_check_api/error_prone_check_api-2.9.0.jar"
   output_name = "com_google_errorprone_error_prone_check_api"
   enable_bytecode_checks = false
   deps = [
@@ -265,14 +265,14 @@ java_prebuilt("com_google_errorprone_error_prone_check_api_java") {
     ":com_google_errorprone_error_prone_annotations_java",
     ":com_google_errorprone_javac_java",
     ":io_github_java_diff_utils_java_diff_utils_java",
-    ":org_checkerframework_dataflow_shaded_java",
+    ":org_checkerframework_dataflow_errorprone_java",
   ]
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_errorprone_error_prone_core_java") {
   jar_path =
-      "libs/com_google_errorprone_error_prone_core/error_prone_core-2.7.1.jar"
+      "libs/com_google_errorprone_error_prone_core/error_prone_core-2.9.0.jar"
   output_name = "com_google_errorprone_error_prone_core"
   enable_bytecode_checks = false
   deps = [
@@ -288,7 +288,7 @@ java_prebuilt("com_google_errorprone_error_prone_core_java") {
     ":com_google_errorprone_javac_java",
     ":com_google_guava_guava_java",
     ":com_google_protobuf_protobuf_java_java",
-    ":org_checkerframework_dataflow_shaded_java",
+    ":org_checkerframework_dataflow_errorprone_java",
     ":org_pcollections_pcollections_java",
   ]
 }
@@ -312,7 +312,7 @@ java_prebuilt("com_google_guava_failureaccess_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_guava_guava_java") {
-  jar_path = "libs/com_google_guava_guava/guava-30.1-jre.jar"
+  jar_path = "libs/com_google_guava_guava/guava-30.1.1-jre.jar"
   output_name = "com_google_guava_guava"
   enable_bytecode_checks = false
   deps = [
@@ -463,7 +463,7 @@ java_prebuilt("com_github_kevinstern_software_and_algorithms_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_auto_auto_common_java") {
-  jar_path = "libs/com_google_auto_auto_common/auto-common-0.10.jar"
+  jar_path = "libs/com_google_auto_auto_common/auto-common-1.1.2.jar"
   output_name = "com_google_auto_auto_common"
   enable_bytecode_checks = false
 
@@ -551,7 +551,7 @@ java_prebuilt("com_google_dagger_dagger_spi_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_errorprone_error_prone_type_annotations_java") {
-  jar_path = "libs/com_google_errorprone_error_prone_type_annotations/error_prone_type_annotations-2.7.1.jar"
+  jar_path = "libs/com_google_errorprone_error_prone_type_annotations/error_prone_type_annotations-2.9.0.jar"
   output_name = "com_google_errorprone_error_prone_type_annotations"
   enable_bytecode_checks = false
 
@@ -655,10 +655,9 @@ java_prebuilt("org_checkerframework_checker_qual_java") {
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-java_prebuilt("org_checkerframework_dataflow_shaded_java") {
-  jar_path =
-      "libs/org_checkerframework_dataflow_shaded/dataflow-shaded-3.11.0.jar"
-  output_name = "org_checkerframework_dataflow_shaded"
+java_prebuilt("org_checkerframework_dataflow_errorprone_java") {
+  jar_path = "libs/org_checkerframework_dataflow_errorprone/dataflow-errorprone-3.15.0.jar"
+  output_name = "org_checkerframework_dataflow_errorprone"
   enable_bytecode_checks = false
 
   # To remove visibility constraint, add this dependency to
