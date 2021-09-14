@@ -328,6 +328,15 @@
 
       Se attivi le funzioni di accessibilità in altro modo (ad esempio, con una combinazione di tasti), tali opzioni vengono sempre mostrate nel menu della barra delle applicazioni.</translation>
 <translation id="1449777485284610883">Consenti l'installazione e l'aggiornamento di estensioni ospitate al di fuori del Chrome Web Store</translation>
+<translation id="1451113827539677573">Consente di stabilire la modalità di stampa di <ph name="PRODUCT_NAME" /> su <ph name="MS_WIN_NAME" />.
+
+      Quando stampi con una stampante non PostScript su <ph name="MS_WIN_NAME" />, a volte i processi di stampa devono essere rasterizzati per essere stampati correttamente.
+
+      Se il criterio viene impostato su Full, <ph name="PRODUCT_NAME" /> effettuerà la rasterizzazione completa delle pagine, se necessario.
+
+      Se il criterio viene impostato su Fast, se possibile <ph name="PRODUCT_NAME" /> eviterà la rasterizzazione: ridurre la quantità di rasterizzazione può contribuire a diminuire le dimensioni dei processi di stampa e ad aumentare la velocità di stampa.
+
+      Se il criterio non viene impostato, <ph name="PRODUCT_NAME" /> sarà in modalità Full.</translation>
 <translation id="1456822151187621582">Windows (client <ph name="PRODUCT_OS_NAME" />):</translation>
 <translation id="1464848559468748897">Consente di controllare il comportamento degli utenti in una sessione multiprofilo su dispositivi <ph name="PRODUCT_OS_NAME" />.
 
@@ -1127,6 +1136,13 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
 <translation id="2355876547176311490">Disattiva l'utilizzo dei relay server per l'host di accesso remoto</translation>
 <translation id="2358176879566587521">Il criterio è rimosso. Non è compatibile con questa versione di <ph name="PRODUCT_NAME" />. Leggi ulteriori informazioni all'indirizzo https://support.google.com/chrome/a/answer/7643500</translation>
 <translation id="2362469626417133796">Intervallo di tempo per il riavvio</translation>
+<translation id="2363928351203698966">Se per il criterio viene impostato un valore valido, <ph name="PRODUCT_NAME" /> non utilizzerà versioni SSL/TLS precedenti alla versione specificata. I valori non riconosciuti vengono ignorati.
+
+      Se il criterio non viene impostato, <ph name="PRODUCT_NAME" /> mostra un errore per TLS 1.0 e TLS 1.1, ma l'utente può ignorarlo.
+
+      Se il criterio viene impostato su "tls1.2", l'utente non potrà ignorare l'errore.
+
+      Il supporto dell'impostazione dei valori "tls1" o "tls1.1" per questo criterio è stato rimosso nella versione 91. L'eliminazione dell'avviso relativo a TLS 1.0/1.1 non è più supportata.</translation>
 <translation id="2364639863953745682">Modalità dell'esperienza di onboarding dell'assistente</translation>
 <translation id="2384233438419344179">Se il criterio è impostato su Attivato, gli elementi della pagina web che non provengono dal dominio presente nella barra degli indirizzi del browser non possono impostare i cookie. Se il criterio è impostato su Disattivato, tali elementi possono impostare i cookie e gli utenti non possono modificare l'impostazione.
 
@@ -1814,6 +1830,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 <translation id="3146711617256415776">Non consentire le voci di sintesi vocale di rete migliorate durante l'utilizzo di Seleziona per ascoltare</translation>
 <translation id="3152425128389603870">Rendi disponibile la modalità Desktop unificato e attivala per impostazione predefinita</translation>
 <translation id="3159375329008977062">L'utente è abilitato a importare/esportare contenitori Crostini tramite l'interfaccia</translation>
+<translation id="3164531087779621747">Modalità di stampa PostScript</translation>
 <translation id="3165808775394012744">Queste norme sono incluse qui in modo che sia più facile rimuoverle.</translation>
 <translation id="3166210414652928099">Consenti all'utente di usare app Android di fonti non attendibili</translation>
 <translation id="316778957754360075">Questa impostazione non è più supportata a partire dalla versione 29 di <ph name="PRODUCT_NAME" />. Il metodo consigliato per la configurazione di raccolte di estensioni/app ospitate dall'organizzazione consiste nell'includere il sito che ospita i pacchetti CRX in ExtensionInstallSources e inserire link di download diretti per i pacchetti in una pagina web. È possibile creare una funzione Avvio applicazioni per la pagina web utilizzando la norma ExtensionInstallForcelist.</translation>
@@ -3356,6 +3373,15 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="5213038356678567351">Siti web che non devono mai attivare il cambio di browser.</translation>
 <translation id="5219844027738217407">Nell'ambito delle app Android, la norma influisce solo sul microfono. Se la norma viene impostata su true, il microfono viene disattivato per tutte le app Android, senza alcuna eccezione.</translation>
 <translation id="5220594484746830711">Consenti ai popup aperti con una destinazione <ph name="BLANK_PAGE_NAME" /> di interagire con la pagina che ha aperto il popup soltanto se la pagina di apertura attiva esplicitamente tale interazione</translation>
+<translation id="5227124062673546005">Consente di stabilire la modalità di stampa di <ph name="PRODUCT_NAME" /> su <ph name="MS_WIN_NAME" />.
+
+      Quando stampi con una stampante PostScript su <ph name="MS_WIN_NAME" />, metodi di generazione PostScript diversi possono incidere sulle prestazioni della stampa.
+
+      Se il criterio viene impostato su Default, <ph name="PRODUCT_NAME" /> userà un insieme di opzioni predefinite per generare PostScript. In particolare, il testo verrà sempre visualizzato con i caratteri Type 3.
+
+      Se il criterio viene impostato su Type42, <ph name="PRODUCT_NAME" /> visualizzerà il testo usando i caratteri Type 42, se possibile. In questo modo dovrebbe aumentare la velocità di stampa di alcune stampanti PostScript.
+
+      Se il criterio non viene impostato, <ph name="PRODUCT_NAME" /> sarà in modalità Default.</translation>
 <translation id="5227647876065695164">Questo criterio consente di specificare il comportamento del downgrade del canale sui dispositivi registrati. Per downgrade del canale si intende il passaggio a un canale più stabile, ad esempio da beta a stabile.
 
       Il valore di questo criterio interessa i downgrade del canale avviati dall'utente e dall'amministratore.
@@ -4311,6 +4337,7 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
       Tuttavia, queste notifiche verranno mostrate solo se le informazioni sulla scadenza della password vengono inviate al dispositivo dal provider di identità SAML durante il flusso di accesso SAML.
 
       Se questo criterio viene impostato su Disattivato o se non viene configurato, non è possibile modificare le password SAML all'indirizzo chrome://password-change e non verranno mostrate notifiche quando tali password stanno per scadere.</translation>
+<translation id="6457477291648119596">Type42</translation>
 <translation id="6458361632497500815">Se il criterio viene impostato su Attivato o se non viene configurato, tutti gli utenti possono utilizzare <ph name="PRODUCT_CROSTINI_NAME" /> finché tutti e tre i criteri, <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" />, <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> e <ph name="DEVICE_UNAFFILIATED_CROSTINI_ALLOWED_POLICY_NAME" /> sono impostati su Attivato. Se il criterio viene impostato su Disattivato, gli utenti non affiliati non possono utilizzare <ph name="PRODUCT_CROSTINI_NAME" />. Impostando il criterio su Disattivato, questo viene applicato all'avvio di nuovi container <ph name="PRODUCT_CROSTINI_NAME" />, non a quelli già in esecuzione.</translation>
 <translation id="6464074037294098618">Attiva la Compilazione automatica per gli indirizzi</translation>
 <translation id="6467613372414922590">Consenti host di messaggistica nativi a livello di utente (installati senza privilegi di amministratore)</translation>

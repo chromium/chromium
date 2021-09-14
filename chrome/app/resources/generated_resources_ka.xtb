@@ -2100,6 +2100,7 @@
 <translation id="3183143381919926261">მობილური ინტერნეტის ქსელები</translation>
 <translation id="3183944777708523606">მონიტორის მოწყობა</translation>
 <translation id="3184536091884214176">CUPS პრინტერების დაყენება ან მართვა. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
+<translation id="3185014249447200271">{NUM_APPS,plural, =1{ეს აპი დაბლოკილია}other{ზოგიერთი აპი დაბლოკილია}}</translation>
 <translation id="3188257591659621405">ჩემი ფაილები</translation>
 <translation id="3188465121994729530">საშუალო გადაადგილება</translation>
 <translation id="3189187154924005138">დიდი კურსორი</translation>
@@ -3060,6 +3061,7 @@
 <translation id="4220648711404560261">გააქტიურება ვერ მოხერხდა შეცდომის გამო.</translation>
 <translation id="4225020013797061859">დააჭირეთ გადამრთველზე ან კლავიშზე, „<ph name="ACTION" />“ რომ მიემაგროს</translation>
 <translation id="4225397296022057997">ყველა საიტზე</translation>
+<translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{ამ გაფართოების გამოყენება დაუშვებელია}other{ზოგიერთი გაფართოების გამოყენება დაუშვებელია}}</translation>
 <translation id="4231095370974836764">დააინსტალირეთ აპები და თამაშები Google Play-დან თქვენს <ph name="DEVICE_TYPE" />-ზე. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos-ის კონფიგურაცია</translation>
 <translation id="4235965441080806197">შესვლის გაუქმება</translation>
@@ -4306,6 +4308,7 @@
 <translation id="5604884720628869833">მოწყობილობა <ph name="DEVICE_INDEX" /> / <ph name="DEVICE_COUNT" />-დან, <ph name="DEVICE_NAME" />, კლავიატურა</translation>
 <translation id="5605623530403479164">სხვა საძიებო სისტემები</translation>
 <translation id="5605758115928394442">თქვენს ტელეფონზე გაიგზავნა შეტყობინება თქვენი ვინაობის დასადასტურებლად.</translation>
+<translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{ეს გაფართოება დაბლოკილია}other{ეს გაფართოებები დაბლოკილია}}</translation>
 <translation id="560834977503641186">Wi-Fi სინქრონიზაცია, შეიტყვეთ მეტი</translation>
 <translation id="5608580678041221894">ჩამოჭრის არის დასარეგულირებლად ან გადასაადგილებლად დააჭირეთ მითითებულ კლავიშებს</translation>
 <translation id="5609231933459083978">ჩანს აპლიკაცია არ არის მოქმედი.</translation>
@@ -5052,6 +5055,7 @@
 <translation id="6434325376267409267"><ph name="APP_NAME" />-ის გამოსაყენებლად საჭიროა თქვენი მოწყობილობის განახლება.</translation>
 <translation id="6436164536244065364">იხილეთ ვებ მაღაზიაში</translation>
 <translation id="6436610005579237680">თქვენს ინტერესებზე მეტად მორგებული პასუხები რომ მიიღოთ, დართეთ Google ასისტენტს თქვენი ეკრანის ანაბეჭდზე წვდომის ნებართვა თქვენ მიერ შეკითხვების დასმისას. თქვენმა ასისტენტმა, შესაძლოა, გამოიყენოს იმ სიმღერების ან ვიდეოების შესახებ ინფორმაციაც, რომლებიც გაშვებულია.</translation>
+<translation id="6436778875248895551">გაფართოება „<ph name="EXTENSION_NAME" />“ დაბლოკილია თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="6438234780621650381">პარამეტრების აღდგენა</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> — უკრავს აუდიო</translation>
 <translation id="6442187272350399447">შესანიშნავი</translation>
@@ -5203,6 +5207,7 @@
 <translation id="6596816719288285829">IP მისამართი</translation>
 <translation id="6597017209724497268">ნიმუშები</translation>
 <translation id="6597148444736186483">ამ მოწყობილობაზე ძირითადი ანგარიშიდან გამოსასვლელად ეკრანზე დააწკაპუნეთ დროზე. გამოჩენილ მენიუში დააწკაპუნეთ „გასვლაზე“.</translation>
+<translation id="6597331566371766302">შემდეგი გაფართოებები დაბლოკილია თქვენი ადმინისტრატორის მიერ:</translation>
 <translation id="6601395831301182804">გსურთ, გაააქტიუროთ ChromeVox, Chrome OS-ში ჩაშენებული ეკრანის წამკითხველი? ამისთვის დააჭირეთ შორისის კლავიშს.</translation>
 <translation id="6601612474695404578">ზოგიერთი საიტი გვერდების ჩასატვირთად მესამე მხარის ქუქი-ჩანაწერებს იყენებს. თუ რომელიმე საიტი არ მუშაობს, შეგიძლიათ ცადოთ ქუქი-ჩანაწერების დაშვება.</translation>
 <translation id="6602937173026466876">თქვენს პრინტერებზე წვდომა</translation>
@@ -5336,6 +5341,7 @@
 <translation id="6757101664402245801">URL დაკოპირდა</translation>
 <translation id="6758056191028427665">შეგვატყობინეთ, როგორ ვმუშაობთ.</translation>
 <translation id="6759193508432371551">ქარხნული პარამეტრების დაბრუნება</translation>
+<translation id="676158322851696513">„<ph name="EXTENSION_NAME" />“</translation>
 <translation id="6762833852331690540">ჩართული</translation>
 <translation id="676560328519657314">თქვენი გადახდის მეთოდები Google Pay-ში</translation>
 <translation id="6767566652486411142">სხვა ენის არჩევა...</translation>
@@ -6215,6 +6221,7 @@
 <translation id="7691698019618282776">Crostini-ს ვერსიის განახლება</translation>
 <translation id="7696063401938172191">თქვენს „<ph name="PHONE_NAME" />“-ზე:</translation>
 <translation id="7697166915480294040">ეკრანის გაზიარებისას დეტალები დამალულია</translation>
+<translation id="7698507637739331665">ზოგიერთი ერთეული დაბლოკილია</translation>
 <translation id="7701040980221191251">არცერთი</translation>
 <translation id="7701869757853594372">მომხმარებლის მარკერები</translation>
 <translation id="7702574632857388784">ამოიშალოს <ph name="FILE_NAME" /> სიიდან</translation>
@@ -6393,6 +6400,7 @@
 <translation id="7861215335140947162">ჩ&amp;ამოტვირთვები</translation>
 <translation id="7861846108263890455">Google ანგარიშის ენა</translation>
 <translation id="7864539943188674973">გამორთეთ Bluetooth</translation>
+<translation id="7865127013871431856">თარგმნის ვარიანტები</translation>
 <translation id="7866230141401327032">გვერდის ნაწილში ძიება Google Lens-ით</translation>
 <translation id="7869143217755017858">მუქი რეჟიმის გათიშვა</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> — დაწყვილებული</translation>

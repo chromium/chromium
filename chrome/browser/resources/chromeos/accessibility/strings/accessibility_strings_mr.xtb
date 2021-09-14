@@ -7,7 +7,7 @@
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">दोन बोटांनी उजवीकडे स्वाइप करा</translation>
 <translation id="1022586497894531524">तुम्ही ChromeVox वाचिक फीडबॅक पहिल्या वेळी वापरत आहात का? हे जलद ट्युटोरियल ChromeVox सोबत सुरुवात करण्यासाठी आवश्यक गोष्टी समजावून सांगते.</translation>
-<translation id="1025074108959230262">रोचक मोड अक्षम</translation>
+<translation id="1025074108959230262">स्टिकी मोड बंद केला</translation>
 <translation id="1031961866430398710">नंतर</translation>
 <translation id="1038643060055067718">रेखा:</translation>
 <translation id="1038795173450935438">पेजवरील आयटम मधून पुढे जाण्याकरिता, Search + Right किंवा परत मागे जाण्यासाठी Search + Left ॲरो दाबा. पुढील ओळीवर जाण्यासाठी, Search + Down ॲरो दाबा. मागील ओळीवर जाण्यासाठी Search + Up ॲरो वापरा. तुम्ही क्लिक करू इच्छित आयटमवर पोहचल्यास, Search + Space दाबा.</translation>
@@ -617,7 +617,7 @@
 <translation id="5304943142864553931"><ph name="TITLE" />, टॅब</translation>
 <translation id="5308380583665731573">कनेक्‍ट करा</translation>
 <translation id="5310788376443009632">काढले:</translation>
-<translation id="5320727453979144100">रोचक मोड सक्षम</translation>
+<translation id="5320727453979144100">स्टिकी मोड सुरू केला</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{स्वल्पविराम}other{# स्वल्पविराम}}</translation>
 <translation id="532485153932049746">मजकूर फॉरमॅटिंग
     <ph name="FONT_SIZE_STRING" />
@@ -1150,7 +1150,7 @@
 <translation id="958854023026327378">एका बोटाने खालच्या दिशेला स्वाइप करा</translation>
 <translation id="962913030769097253">पुढील स्तर 1 मथळा</translation>
 <translation id="966588271015727539">ब्लूटूथ ब्रेल डिस्प्ले निवडा</translation>
-<translation id="973955474346881951">स्‍टिकी मोड सक्षम/अक्षम करा</translation>
+<translation id="973955474346881951">स्‍टिकी मोड सुरू/बंद करा</translation>
 <translation id="985654871861528815">एक ओळ खाली जा</translation>
 <translation id="992256792861109788">गुलाबी</translation>
 </translationbundle>

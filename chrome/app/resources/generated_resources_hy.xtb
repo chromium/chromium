@@ -2101,6 +2101,7 @@
 <translation id="3183143381919926261">Տվյալների փոխանցման ցանցեր</translation>
 <translation id="3183944777708523606">Փոխել դիրքը</translation>
 <translation id="3184536091884214176">CUPS տպիչների կարգավորում և կառավարում <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
+<translation id="3185014249447200271">{NUM_APPS,plural, =1{Այս հավելվածն արգելափակված է}one{Այս հավելվածն արգելափակված է}other{Որոշ հավելվածներ արգելափակված են}}</translation>
 <translation id="3188257591659621405">Իմ ֆայլերը</translation>
 <translation id="3188465121994729530">Սահող միջին</translation>
 <translation id="3189187154924005138">Մեծ նշորդ</translation>
@@ -3061,6 +3062,7 @@
 <translation id="4220648711404560261">Ակտիվացման ժամանակ սխալ առաջացավ։</translation>
 <translation id="4225020013797061859">Սեղմեք որևէ փոխանջատիչ կամ ստեղն՝ դրան «<ph name="ACTION" />» գործողությունը նշանակելու համար։</translation>
 <translation id="4225397296022057997">Բոլոր կայքերում</translation>
+<translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Այս ընդլայնումը չի թույլատրվում օգտագործել}one{Այս ընդլայնումը չի թույլատրվում օգտագործել}other{Այս ընդլայնումները չի թույլատրվում օգտագործել}}</translation>
 <translation id="4231095370974836764"><ph name="DEVICE_TYPE" /> սարքում տեղադրեք հավելվածներ ու խաղեր Google Play-ից։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos-ի կարգավորում</translation>
 <translation id="4235965441080806197">Չեղարկել մուտքը</translation>
@@ -4310,6 +4312,7 @@
 <translation id="5604884720628869833">Սարք <ph name="DEVICE_INDEX" />/<ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, ստեղնաշար</translation>
 <translation id="5605623530403479164">Այլ որոնիչներ</translation>
 <translation id="5605758115928394442">Ձեր ինքնությունը հաստատելու համար ձեր հեռախոսին ծանուցում է ուղարկվել:</translation>
+<translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Այս ընդլայնումն արգելափակված է}one{Այս ընդլայնումն արգելափակված է}other{Այս ընդլայնումներն արգելափակված են}}</translation>
 <translation id="560834977503641186">Մանրամասն Wi-Fi համաժամացման մասին</translation>
 <translation id="5608580678041221894">Սեղմեք հետևյալ ստեղները` եզրատվող տարածքը ճշգրտելու կամ տեղաշարժելու համար</translation>
 <translation id="5609231933459083978">Հավելվածն անվավեր է:</translation>
@@ -5056,6 +5059,7 @@
 <translation id="6434325376267409267"><ph name="APP_NAME" /> հավելվածն օգտագործելու համար թարմացրեք ձեր սարքը։</translation>
 <translation id="6436164536244065364">Դիտել Web Store-ում</translation>
 <translation id="6436610005579237680">Ավելի անհատականացված պատասխաններ ստանալու համար թույլատրեք Օգնականին օգտագործել ձեր էկրանի սքրինշոթը, երբ դուք հարցեր եք տալիս։ Ձեր Օգնականը պետք է նաև կարողանա օգտագործել նվագարկվող երգերի և տեսանյութերի մասին տվյալները։</translation>
+<translation id="6436778875248895551">«<ph name="EXTENSION_NAME" />» ընդլայնումն արգելափակվել է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="6438234780621650381">Կարգավորումների զրոյացում</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – Աուդիոնվագարկում</translation>
 <translation id="6442187272350399447">Տպավորիչ</translation>
@@ -5207,6 +5211,7 @@
 <translation id="6596816719288285829">IP հասցե</translation>
 <translation id="6597017209724497268">Նմուշներ</translation>
 <translation id="6597148444736186483">Այս սարքում հիմնական հաշվից դուրս գրվելու համար սեղմեք ժամի վրա ձեր էկրանին։ Բացվող ընտրացանկում սեղմեք «Դուրս գալ»։</translation>
+<translation id="6597331566371766302">Հետևյալ ընդլայնումներն արգելափակվել են ձեր ադմինիստրատորի կողմից՝</translation>
 <translation id="6601395831301182804">Ակտիվացնե՞լ ChromeVox-ը՝ էկրանի ներկառուցված ընթերցիչը Chrome OS-ի համար։ Եթե այո, ապա սեղմեք բացատի ստեղնը։</translation>
 <translation id="6601612474695404578">Որոշ կայքեր իրենց էջերը բեռնելու համար օգտագործում են երրորդ կողմի քուքիներ։ Եթե կայքը չի աշխատում, փորձեք թույլատրել քուքիները։</translation>
 <translation id="6602937173026466876">Հասանելիություն տպիչներին</translation>
@@ -5340,6 +5345,7 @@
 <translation id="6757101664402245801">URL-ը պատճենվեց</translation>
 <translation id="6758056191028427665">Կիսվեք մեզ հետ ձեր տպավորություններով:</translation>
 <translation id="6759193508432371551">Գործարանային կարգավորումների վերականգնում</translation>
+<translation id="676158322851696513">«<ph name="EXTENSION_NAME" />»</translation>
 <translation id="6762833852331690540">Միացված է</translation>
 <translation id="676560328519657314">Ձեր վճարման եղանակները Google Pay-ում</translation>
 <translation id="6767566652486411142">Ընտրել մեկ այլ լեզու...</translation>
@@ -6219,6 +6225,7 @@
 <translation id="7691698019618282776">Crostini-ի նորացում</translation>
 <translation id="7696063401938172191">Ձեր «<ph name="PHONE_NAME" />» հեռախոսում՝</translation>
 <translation id="7697166915480294040">Էկրանի ցուցադրման ժամանակ ծանուցումների մանրամասները թաքցվում են</translation>
+<translation id="7698507637739331665">Որոշ տարրեր արգելափակված են</translation>
 <translation id="7701040980221191251">Չկա</translation>
 <translation id="7701869757853594372">USER նկարագրիչներ</translation>
 <translation id="7702574632857388784">Հեռացնել «<ph name="FILE_NAME" />» ֆայլը ցանկից</translation>
@@ -6396,6 +6403,7 @@
 <translation id="7861215335140947162">&amp;Ներբեռնումներ</translation>
 <translation id="7861846108263890455">Google հաշվի լեզուն</translation>
 <translation id="7864539943188674973">Անջատել Bluetooth-ը</translation>
+<translation id="7865127013871431856">Թարգմանության կարգավորումներ</translation>
 <translation id="7866230141401327032">Որոնել էջի հատվածում Google Տեսապակու միջոցով</translation>
 <translation id="7869143217755017858">Անջատել մուգ ռեժիմը</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> սարք՝ զուգակցված է</translation>

@@ -2115,6 +2115,7 @@
 <translation id="3183143381919926261">Δίκτυα δεδομένων κινητής τηλεφωνίας</translation>
 <translation id="3183944777708523606">Διάταξη οθόνης</translation>
 <translation id="3184536091884214176">Ρυθμίστε ή διαχειριστείτε εκτυπωτές CUPS. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
+<translation id="3185014249447200271">{NUM_APPS,plural, =1{Αυτή η εφαρμογή έχει αποκλειστεί}other{Ορισμένες εφαρμογές έχουν αποκλειστεί}}</translation>
 <translation id="3188257591659621405">Τα αρχεία μου</translation>
 <translation id="3188465121994729530">Μετακίνηση μέσου όρου</translation>
 <translation id="3189187154924005138">Μεγάλος δείκτης ποντικιού</translation>
@@ -3075,6 +3076,7 @@
 <translation id="4220648711404560261">Παρουσιάστηκε σφάλμα κατά την ενεργοποίηση.</translation>
 <translation id="4225020013797061859">Πατήστε έναν διακόπτη ή πλήκτρο για να αναθέσετε την ενέργεια "<ph name="ACTION" />"</translation>
 <translation id="4225397296022057997">Σε όλους τους ιστοτόπους</translation>
+<translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Δεν επιτρέπεται αυτή η επέκταση}other{Δεν επιτρέπονται ορισμένες επεκτάσεις}}</translation>
 <translation id="4231095370974836764">Εγκαταστήστε εφαρμογές και παιχνίδια από το Google Play στη συσκευή <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Διαμόρφωση του Kerberos</translation>
 <translation id="4235965441080806197">Ακύρωση σύνδεσης</translation>
@@ -4322,6 +4324,7 @@
 <translation id="5604884720628869833">Συσκευή <ph name="DEVICE_INDEX" /> από <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Πληκτρολόγιο</translation>
 <translation id="5605623530403479164">Άλλες μηχανές αναζήτησης</translation>
 <translation id="5605758115928394442">Στάλθηκε μια ειδοποίηση στο τηλέφωνό σας για την επιβεβαίωση της ταυτότητάς σας.</translation>
+<translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Αυτή η επέκταση έχει αποκλειστεί}other{Αυτές οι επεκτάσεις έχουν αποκλειστεί}}</translation>
 <translation id="560834977503641186">Συγχρονισμός Wi-Fi, Μάθετε περισσότερα</translation>
 <translation id="5608580678041221894">Πατήστε τα παρακάτω πλήκτρα για να προσαρμόσετε ή να μετακινήσετε την περιοχή περικοπής</translation>
 <translation id="5609231933459083978">Φαίνεται πως η εφαρμογή δεν είναι έγκυρη.</translation>
@@ -5069,6 +5072,7 @@
 <translation id="6434325376267409267">Η συσκευή σας πρέπει να ενημερωθεί πριν χρησιμοποιήσετε την εφαρμογή <ph name="APP_NAME" />.</translation>
 <translation id="6436164536244065364">Προβολή στο Web Store</translation>
 <translation id="6436610005579237680">Για να λαμβάνετε απαντήσεις που είναι πιο εξατομικευμένες για εσάς, επιτρέψτε στον Βοηθό Google να αποκτήσει πρόσβαση σε ένα στιγμιότυπο οθόνης του περιεχομένου στην οθόνη σας όταν κάνετε ερωτήσεις. Επίσης, ο Βοηθός ενδέχεται να χρησιμοποιήσει πληροφορίες για τραγούδια ή βίντεο που αναπαράγονται.</translation>
+<translation id="6436778875248895551">Η επέκταση "<ph name="EXTENSION_NAME" />" αποκλείστηκε από τον διαχειριστή σας.</translation>
 <translation id="6438234780621650381">Επαναφορά ρυθμίσεων</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - Αναπαραγωγή ήχου</translation>
 <translation id="6442187272350399447">Φανταστικό</translation>
@@ -5220,6 +5224,7 @@
 <translation id="6596816719288285829">Διεύθυνση IP</translation>
 <translation id="6597017209724497268">Δείγματα</translation>
 <translation id="6597148444736186483">Για να αποσυνδεθείτε από τον κύριο λογαριασμό σε αυτήν τη συσκευή, κάντε κλικ στην ώρα που εμφανίζεται στην οθόνη. Στο μενού που θα εμφανιστεί, κάντε κλικ στην επιλογή Αποσύνδεση.</translation>
+<translation id="6597331566371766302">Οι παρακάτω επεκτάσεις αποκλείστηκαν από τον διαχειριστή σας:</translation>
 <translation id="6601395831301182804">Θέλετε να ενεργοποιήσετε το ChromeVox, τον ενσωματωμένο αναγνώστη οθόνης για Chrome OS; Εφόσον το επιθυμείτε, πατήστε το πλήκτρο διαστήματος.</translation>
 <translation id="6601612474695404578">Ορισμένοι ιστότοποι χρησιμοποιούν cookie τρίτου μέρους για τη φόρτωση των σελίδων τους. Εάν ένας ιστότοπος δεν λειτουργεί, μπορείτε να δοκιμάσετε να επιτρέψετε τα cookie.</translation>
 <translation id="6602937173026466876">Αποκτήστε πρόσβαση στους εκτυπωτές σας</translation>
@@ -5353,6 +5358,7 @@
 <translation id="6757101664402245801">Το URL αντιγράφηκε</translation>
 <translation id="6758056191028427665">Πείτε μας πώς τα πηγαίνουμε</translation>
 <translation id="6759193508432371551">Επαναφορά εργοστασιακών ρυθμίσεων</translation>
+<translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6762833852331690540">Ενεργό</translation>
 <translation id="676560328519657314">Οι τρόποι πληρωμής σας στο Google Pay</translation>
 <translation id="6767566652486411142">Επιλογή άλλης γλώσσας…</translation>
@@ -6232,6 +6238,7 @@
 <translation id="7691698019618282776">Αναβάθμιση Crostini</translation>
 <translation id="7696063401938172191">Στο τηλέφωνο "<ph name="PHONE_NAME" />":</translation>
 <translation id="7697166915480294040">Οι λεπτομέρειες αποκρύπτονται όσο μοιράζεστε την οθόνη σας.</translation>
+<translation id="7698507637739331665">Ορισμένα στοιχεία έχουν αποκλειστεί</translation>
 <translation id="7701040980221191251">Καμία</translation>
 <translation id="7701869757853594372">Χειρισμοί ΧΡΗΣΤΗ</translation>
 <translation id="7702574632857388784">Κατάργηση αρχείου <ph name="FILE_NAME" /> από τη λίστα</translation>
@@ -6410,6 +6417,7 @@
 <translation id="7861215335140947162">&amp;Λήψεις</translation>
 <translation id="7861846108263890455">Γλώσσα Λογαριασμού Google</translation>
 <translation id="7864539943188674973">Απενεργοποίηση Bluetooth</translation>
+<translation id="7865127013871431856">Επιλογές Μετάφρασης</translation>
 <translation id="7866230141401327032">Αναζήτηση τμήματος της σελίδας με το Google Lens</translation>
 <translation id="7869143217755017858">Απενεργοποίηση λειτουργίας χαμηλού φωτισμού</translation>
 <translation id="786957569166715433">Έγινε σύζευξη της συσκευής <ph name="DEVICE_NAME" /></translation>

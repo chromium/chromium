@@ -287,6 +287,7 @@
 <translation id="3549797760399244642">Wejdź na drive.google.com...</translation>
 <translation id="3553048479571901246">Aby otworzyć pliki w aplikacji <ph name="APP_NAME" />, najpierw skopiuj je do folderu Pliki systemu Windows.</translation>
 <translation id="3556731189587832921">Angielski (USA) z komputerową klawiaturą międzynarodową</translation>
+<translation id="3567221313191587603">Aby umożliwić dostęp offline do plików, wybierz plik i włącz opcję <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="357479282490346887">Litewski</translation>
 <translation id="3592251141500063301">Pliku <ph name="FILE_NAME" /> nie udało się udostępnić offline</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -397,6 +398,7 @@
 <translation id="4642769377300286600">Instalowanie profilu mobilnego: sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Czeski z klawiaturą QWERTY</translation>
 <translation id="4656293982926141856">Ten komputer</translation>
+<translation id="4656777537938206294">Udostępnij pliki offline</translation>
 <translation id="4669606053856530811">Osoby z uprawnieniami do: „<ph name="SOURCE_NAME" />” utracą dostęp do tych elementów, chyba że zostaną one im udostępnione.</translation>
 <translation id="4690246192099372265">Szwedzki</translation>
 <translation id="4693155481716051732">Sushi</translation>

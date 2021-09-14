@@ -162,6 +162,7 @@
 <translation id="4238516577297848345">No hi ha tasques d'impressió en curs</translation>
 <translation id="4244962993387259361">Necessites com a mínim 500 MB lliures per executar una prova de memòria. Per alliberar espai, ves a Configuració &gt; Gestió de l'emmagatzematge.</translation>
 <translation id="4258281355379922695">Latència d'HTTP</translation>
+<translation id="4271957103967917607">Mostra en pantalla completa</translation>
 <translation id="4289540628985791613">Visió general</translation>
 <translation id="4297501883039923494">S'ha aturat: error desconegut</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imatges</translation>
@@ -373,6 +374,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7550715992156305117">Rutines de diagnòstic</translation>
 <translation id="7561454561030345039">El teu administrador gestiona aquesta acció</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7574732568136198983">Ping d'ARC</translation>
 <translation id="7595982850646262331">Temps restant: <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Més informació al Centre d'ajuda</translation>
 <translation id="763165478673169849">Hora del darrer restabliment</translation>
