@@ -383,7 +383,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
 // The unconsented primary account isn't supported on ChromeOS (see
 // IdentityManager::ComputeUnconsentedPrimaryAccountInfo()) so Sync won't start
 // up for a secondary account.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// Signing out on Lacros is not possible,
+#if !defined(OS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
                        ClearsAccountDBOnSignout) {
   AddTestPasswordToFakeServer();
@@ -413,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
   // Make sure the password is gone from the store.
   ASSERT_EQ(passwords_helper::GetAllLogins(account_store).size(), 0u);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !defined(OS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
                        SwitchesStoresOnEnablingSync) {

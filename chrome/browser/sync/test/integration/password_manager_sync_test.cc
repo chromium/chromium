@@ -771,6 +771,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   EXPECT_TRUE(bubble_observer.IsUpdatePromptAvailable());
 }
 
+// Signing out on Lacros is not possible,
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
                        SignOutWithUnsyncedPasswordsOpensBubble) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
@@ -797,6 +799,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   SignOut();
   bubble_observer.WaitForSaveUnsyncedCredentialsPrompt();
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
                        PasswordDeletionsPropagateToServer) {
