@@ -13,6 +13,7 @@
 
 namespace blink {
 
+class AffineTransform;
 class ComputedStyle;
 class Font;
 struct NGTextFragmentPaintInfo;
@@ -114,9 +115,21 @@ class CORE_EXPORT NGInkOverflow {
   Type SetTextInkOverflow(Type type,
                           const NGTextFragmentPaintInfo& text_info,
                           const ComputedStyle& style,
-                          const Font& scaled_font,
                           const PhysicalSize& size,
                           PhysicalRect* ink_overflow_out);
+
+  // Compute and set ink overflow for SVG text.
+  // |rect| represents scaled rectangle, and |*ink_overflow_out| will store
+  // unscaled rectangle.
+  Type SetSvgTextInkOverflow(Type type,
+                             const NGTextFragmentPaintInfo& text_info,
+                             const ComputedStyle& style,
+                             const Font& scaled_font,
+                             const FloatRect& rect,
+                             float scaling_factor,
+                             float length_adjust_scale,
+                             const AffineTransform& transform,
+                             PhysicalRect* ink_overflow_out);
 
   static absl::optional<PhysicalRect> ComputeTextInkOverflow(
       const NGTextFragmentPaintInfo& text_info,

@@ -830,8 +830,16 @@ void NGFragmentItem::RecalcInkOverflow(
 
     NGTextFragmentPaintInfo paint_info = TextPaintInfo(cursor.Items());
     if (paint_info.shape_result) {
+      if (Type() == kSvgText) {
+        ink_overflow_type_ = ink_overflow_.SetSvgTextInkOverflow(
+            InkOverflowType(), paint_info, Style(), ScaledFont(),
+            SvgFragmentData()->rect, SvgScalingFactor(),
+            SvgFragmentData()->length_adjust_scale,
+            BuildSvgTransformForBoundingBox(), self_and_contents_rect_out);
+        return;
+      }
       ink_overflow_type_ = ink_overflow_.SetTextInkOverflow(
-          InkOverflowType(), paint_info, Style(), ScaledFont(), Size(),
+          InkOverflowType(), paint_info, Style(), Size(),
           self_and_contents_rect_out);
       return;
     }

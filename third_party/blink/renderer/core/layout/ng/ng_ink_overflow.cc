@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_text_decoration_offset.h"
 #include "third_party/blink/renderer/core/paint/text_decoration_info.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
 namespace blink {
@@ -342,19 +343,83 @@ NGInkOverflow::Type NGInkOverflow::SetTextInkOverflow(
     Type type,
     const NGTextFragmentPaintInfo& text_info,
     const ComputedStyle& style,
-    const Font& scaled_font,
     const PhysicalSize& size,
     PhysicalRect* ink_overflow_out) {
   CheckType(type);
   DCHECK(type == kNotSet || type == kInvalidated);
   absl::optional<PhysicalRect> ink_overflow =
-      ComputeTextInkOverflow(text_info, style, scaled_font, size);
+      ComputeTextInkOverflow(text_info, style, style.GetFont(), size);
   if (!ink_overflow) {
     *ink_overflow_out = {PhysicalOffset(), size};
     return Reset(type);
   }
+  ink_overflow->ExpandEdgesToPixelBoundaries();
   *ink_overflow_out = *ink_overflow;
   return SetSelf(type, *ink_overflow, size);
+}
+
+NGInkOverflow::Type NGInkOverflow::SetSvgTextInkOverflow(
+    Type type,
+    const NGTextFragmentPaintInfo& text_info,
+    const ComputedStyle& style,
+    const Font& scaled_font,
+    const FloatRect& rect,
+    float scaling_factor,
+    float length_adjust_scale,
+    const AffineTransform& transform,
+    PhysicalRect* ink_overflow_out) {
+  CheckType(type);
+  DCHECK(type == kNotSet || type == kInvalidated);
+  // Unapply length_adjust_scale because the size argument is compared with
+  // Font::TextInkBounds().
+  PhysicalSize item_size =
+      style.IsHorizontalWritingMode()
+          ? PhysicalSize(LayoutUnit(rect.Width() / length_adjust_scale),
+                         LayoutUnit(rect.Height()))
+          : PhysicalSize(LayoutUnit(rect.Width()),
+                         LayoutUnit(rect.Height() / length_adjust_scale));
+  absl::optional<PhysicalRect> ink_overflow =
+      ComputeTextInkOverflow(text_info, style, scaled_font, item_size);
+  const bool needs_transform =
+      scaling_factor != 1.0f || !transform.IsIdentity();
+  PhysicalSize unscaled_size = PhysicalSize::FromFloatSizeRound(rect.Size());
+  unscaled_size.Scale(1.0f / scaling_factor);
+  if (!ink_overflow) {
+    if (needs_transform) {
+      FloatRect transformed_rect = transform.MapRect(rect);
+      transformed_rect.Move(-rect.X(), -rect.Y());
+      transformed_rect.Scale(1 / scaling_factor);
+      *ink_overflow_out = PhysicalRect::EnclosingRect(transformed_rect);
+      ink_overflow_out->ExpandEdgesToPixelBoundaries();
+      return SetSelf(type, *ink_overflow_out, unscaled_size);
+    }
+    *ink_overflow_out = {PhysicalOffset(), unscaled_size};
+    ink_overflow_out->ExpandEdgesToPixelBoundaries();
+    return Reset(type);
+  }
+  // Apply length_adjust_scale before applying AffineTransform.
+  if (style.IsHorizontalWritingMode()) {
+    ink_overflow->SetX(LayoutUnit(ink_overflow->X() * length_adjust_scale));
+    ink_overflow->SetWidth(
+        LayoutUnit(ink_overflow->Width() * length_adjust_scale));
+  } else {
+    ink_overflow->SetY(LayoutUnit(ink_overflow->Y() * length_adjust_scale));
+    ink_overflow->SetHeight(
+        LayoutUnit(ink_overflow->Height() * length_adjust_scale));
+  }
+  if (needs_transform) {
+    FloatRect transformed_rect = FloatRect(*ink_overflow);
+    transformed_rect.Move(rect.X(), rect.Y());
+    transformed_rect = transform.MapRect(transformed_rect);
+    transformed_rect.Move(-rect.X(), -rect.Y());
+    transformed_rect.Scale(1 / scaling_factor);
+    *ink_overflow_out = PhysicalRect::EnclosingRect(transformed_rect);
+    ink_overflow_out->ExpandEdgesToPixelBoundaries();
+    return SetSelf(type, *ink_overflow_out, unscaled_size);
+  }
+  *ink_overflow_out = *ink_overflow;
+  ink_overflow_out->ExpandEdgesToPixelBoundaries();
+  return SetSelf(type, *ink_overflow, unscaled_size);
 }
 
 // static
@@ -409,7 +474,6 @@ absl::optional<PhysicalRect> NGInkOverflow::ComputeTextInkOverflow(
     return absl::nullopt;
 
   local_ink_overflow.Unite({{}, size});
-  local_ink_overflow.ExpandEdgesToPixelBoundaries();
   return local_ink_overflow;
 }
 
