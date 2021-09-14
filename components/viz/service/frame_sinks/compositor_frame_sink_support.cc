@@ -1092,10 +1092,12 @@ bool CompositorFrameSinkSupport::ShouldSendBeginFrame(
   // index must be at least as large as our last drawn frame index.
   DCHECK_GE(active_frame_index, last_drawn_frame_index_);
 
-  // Throttle clients that have submitted too many undrawn frames.
+  // Throttle clients that have submitted too many undrawn frames, unless the
+  // active frame requests that it doesn't.
   uint64_t num_undrawn_frames = active_frame_index - last_drawn_frame_index_;
   if (can_throttle_if_unresponsive_or_excessive &&
-      num_undrawn_frames > kUndrawnFrameLimit) {
+      num_undrawn_frames > kUndrawnFrameLimit &&
+      surface->GetActiveFrameMetadata().may_throttle_if_undrawn_frames) {
     RecordShouldSendBeginFrame("ThrottleUndrawnFrames");
     return false;
   }

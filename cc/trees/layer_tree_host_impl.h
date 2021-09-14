@@ -405,6 +405,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   void SetPrefersReducedMotion(bool prefers_reduced_motion);
 
+  void SetMayThrottleIfUndrawnFrames(bool may_throttle_if_undrawn_frames);
+
   // Updates registered ElementIds present in |changed_list|. Call this after
   // changing the property trees for the |changed_list| trees.
   void UpdateElements(ElementListType changed_list);
@@ -1179,6 +1181,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   bool is_viewport_mobile_optimized_ = false;
 
   bool prefers_reduced_motion_ = false;
+
+  bool may_throttle_if_undrawn_frames_ = true;
 
   std::unique_ptr<PendingTreeRasterDurationHistogramTimer>
       pending_tree_raster_duration_timer_;

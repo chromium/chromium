@@ -27,6 +27,7 @@ struct CompositorFrameMetadata {
   gfx.mojom.SizeF scrollable_viewport_size;
   gfx.mojom.ContentColorUsage content_color_usage;
   bool may_contain_video;
+  bool may_throttle_if_undrawn_frames;
   bool is_resourceless_software_draw_with_scroll_or_animation;
   uint32 root_background_color;
   array<ui.mojom.LatencyInfo> latency_info;

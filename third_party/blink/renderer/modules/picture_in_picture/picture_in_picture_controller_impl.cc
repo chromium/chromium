@@ -219,7 +219,6 @@ void PictureInPictureControllerImpl::OnEnteredPictureInPicture(
   picture_in_picture_session_.Bind(
       std::move(session_remote),
       element->GetDocument().GetTaskRunner(TaskType::kMediaElementEvent));
-
   if (IsElementAllowed(*element, /*report_failure=*/true) != Status::kEnabled) {
     if (resolver) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -235,6 +234,12 @@ void PictureInPictureControllerImpl::OnEnteredPictureInPicture(
 
   picture_in_picture_element_ = element;
   picture_in_picture_element_->OnEnteredPictureInPicture();
+
+  // Request that viz does not throttle our LayerTree's BeginFrame messages, in
+  // case this page generates them as a side-effect of driving picture-in-
+  // picture content.  See the header file for more details, or
+  // https://crbug.com/1232173
+  SetMayThrottleIfUndrawnFrames(false);
 
   picture_in_picture_window_ = MakeGarbageCollected<PictureInPictureWindow>(
       GetExecutionContext(), picture_in_picture_window_size);
@@ -269,6 +274,12 @@ void PictureInPictureControllerImpl::OnExitedPictureInPicture(
   // Bail out if document is not active.
   if (!GetSupplementable()->IsActive())
     return;
+
+  // Now that this widget is not responsible for providing the content for a
+  // Picture in Picture window, we should not be producing CompositorFrames
+  // while the widget is hidden.  Let viz know that throttling us is okay if we
+  // do that.
+  SetMayThrottleIfUndrawnFrames(true);
 
   // The Picture-in-Picture window and the Picture-in-Picture element
   // should be either both set or both null.
@@ -429,6 +440,14 @@ void PictureInPictureControllerImpl::OnWindowSizeChanged(
 
 void PictureInPictureControllerImpl::OnStopped() {
   OnExitedPictureInPicture(nullptr);
+}
+
+void PictureInPictureControllerImpl::SetMayThrottleIfUndrawnFrames(
+    bool may_throttle) {
+  GetSupplementable()
+      ->GetFrame()
+      ->GetWidgetForLocalRoot()
+      ->SetMayThrottleIfUndrawnFrames(may_throttle);
 }
 
 void PictureInPictureControllerImpl::Trace(Visitor* visitor) const {

@@ -4104,6 +4104,19 @@ WebFrameWidgetImpl::GetFrameWidgetTestHelperForTesting() {
   return nullptr;
 }
 
+void WebFrameWidgetImpl::SetMayThrottleIfUndrawnFrames(
+    bool may_throttle_if_undrawn_frames) {
+  if (!View()->does_composite())
+    return;
+  widget_base_->LayerTreeHost()->SetMayThrottleIfUndrawnFrames(
+      may_throttle_if_undrawn_frames);
+}
+
+bool WebFrameWidgetImpl::GetMayThrottleIfUndrawnFramesForTesting() {
+  return widget_base_->LayerTreeHost()
+      ->GetMayThrottleIfUndrawnFramesForTesting();
+}
+
 WebPlugin* WebFrameWidgetImpl::GetFocusedPluginContainer() {
   LocalFrame* focused_frame = FocusedLocalFrameInWidget();
   if (!focused_frame)
