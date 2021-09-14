@@ -68,7 +68,6 @@ void OAuthHttpFetcher::OnAccessTokenFetched(
     QP_LOG(WARNING) << __func__ << ": Failed to retrieve access token. "
                     << error.ToString();
     std::move(callback_).Run(nullptr);
-    Reset();
     return;
   }
 
@@ -77,7 +76,6 @@ void OAuthHttpFetcher::OnAccessTokenFetched(
   if (!url_loader_factory) {
     QP_LOG(WARNING) << __func__ << ": No SharedURLLoaderFactory is available.";
     std::move(callback_).Run(nullptr);
-    Reset();
     return;
   }
 
@@ -85,12 +83,6 @@ void OAuthHttpFetcher::OnAccessTokenFetched(
 
   OAuth2ApiCallFlow::Start(std::move(url_loader_factory),
                            access_token_info.token);
-}
-
-void OAuthHttpFetcher::Reset() {
-  url_ = GURL();
-  callback_.Reset();
-  has_call_started_ = false;
 }
 
 GURL OAuthHttpFetcher::CreateApiCallUrl() {
@@ -106,7 +98,6 @@ void OAuthHttpFetcher::ProcessApiCallSuccess(
     std::unique_ptr<std::string> body) {
   QP_LOG(INFO) << __func__;
   std::move(callback_).Run(std::move(body));
-  Reset();
 }
 
 void OAuthHttpFetcher::ProcessApiCallFailure(
@@ -115,7 +106,6 @@ void OAuthHttpFetcher::ProcessApiCallFailure(
     std::unique_ptr<std::string> body) {
   QP_LOG(WARNING) << __func__ << ": net_err=" << net_error;
   std::move(callback_).Run(nullptr);
-  Reset();
 }
 
 net::PartialNetworkTrafficAnnotationTag

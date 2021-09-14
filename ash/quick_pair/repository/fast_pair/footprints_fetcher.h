@@ -29,9 +29,6 @@ class FootprintsFetcher {
  public:
   FootprintsFetcher();
 
-  // For testing.
-  explicit FootprintsFetcher(std::unique_ptr<HttpFetcher> http_fetcher);
-
   FootprintsFetcher(const FootprintsFetcher&) = delete;
   FootprintsFetcher& operator=(const FootprintsFetcher&) = delete;
   virtual ~FootprintsFetcher();
@@ -40,9 +37,8 @@ class FootprintsFetcher {
 
  private:
   void OnFetchComplete(UserReadDevicesCallback callback,
+                       std::unique_ptr<HttpFetcher> http_fetcher,
                        std::unique_ptr<std::string> response_body);
-
-  std::unique_ptr<HttpFetcher> http_fetcher_;
 
   base::WeakPtrFactory<FootprintsFetcher> weak_ptr_factory_{this};
 };

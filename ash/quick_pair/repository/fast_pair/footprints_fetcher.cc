@@ -16,6 +16,9 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
 
+namespace ash {
+namespace quick_pair {
+
 namespace {
 
 const char kUserReadDevicesUrl[] =
@@ -44,31 +47,30 @@ const net::PartialNetworkTrafficAnnotationTag kTrafficAnnotation =
             "Not yet created, feature disabled by flag"
       })");
 
+std::unique_ptr<HttpFetcher> CreateHttpFetcher() {
+  return std::make_unique<OAuthHttpFetcher>(
+      kTrafficAnnotation, GaiaConstants::kCloudPlatformProjectsOAuth2Scope);
+}
+
 }  // namespace
 
-namespace ash {
-namespace quick_pair {
-
-FootprintsFetcher::FootprintsFetcher()
-    : http_fetcher_(std::make_unique<OAuthHttpFetcher>(
-          kTrafficAnnotation,
-          GaiaConstants::kCloudPlatformProjectsOAuth2Scope)) {}
-
-FootprintsFetcher::FootprintsFetcher(std::unique_ptr<HttpFetcher> http_fetcher)
-    : http_fetcher_(std::move(http_fetcher)) {}
-
+FootprintsFetcher::FootprintsFetcher() = default;
 FootprintsFetcher::~FootprintsFetcher() = default;
 
 void FootprintsFetcher::GetUserDevices(UserReadDevicesCallback callback) {
   GURL url = GURL(base::StringPrintf(kUserReadDevicesUrl,
                                      google_apis::GetAPIKey().c_str()));
-  http_fetcher_->ExecuteGetRequest(
+  auto http_fetcher = CreateHttpFetcher();
+  auto* raw_http_fetcher = http_fetcher.get();
+  raw_http_fetcher->ExecuteGetRequest(
       url, base::BindOnce(&FootprintsFetcher::OnFetchComplete,
-                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                          weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                          std::move(http_fetcher)));
 }
 
 void FootprintsFetcher::OnFetchComplete(
     UserReadDevicesCallback callback,
+    std::unique_ptr<HttpFetcher> http_fetcher,
     std::unique_ptr<std::string> response_body) {
   QP_LOG(VERBOSE) << __func__;
 

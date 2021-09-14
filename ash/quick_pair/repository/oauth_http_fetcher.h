@@ -56,7 +56,6 @@ class OAuthHttpFetcher : public HttpFetcher, public OAuth2ApiCallFlow {
  private:
   void OnAccessTokenFetched(GoogleServiceAuthError error,
                             signin::AccessTokenInfo access_token_info);
-  void Reset();
 
   net::PartialNetworkTrafficAnnotationTag traffic_annotation_;
   OAuth2AccessTokenManager::ScopeSet oauth_scopes_;
