@@ -221,7 +221,8 @@ class CrashRestoreComplexTest : public CrashRestoreSimpleTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(CrashRestoreComplexTest, RestoreSessionForThreeUsers) {
+// TODO(crbug.com/1249033): Disabled due to flakiness.
+IN_PROC_BROWSER_TEST_F(CrashRestoreComplexTest, DISABLED_RestoreSessionForThreeUsers) {
   {
     UserSessionRestoreObserver restore_observer;
     restore_observer.Wait();
