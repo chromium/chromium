@@ -51,8 +51,8 @@ std::unique_ptr<content::NavigationSimulator> NavigateAndKeepLoading(
 class TestTabLoadTracker : public TabLoadTracker {
  public:
   using TabLoadTracker::DetermineLoadingState;
+  using TabLoadTracker::DidReceiveResponse;
   using TabLoadTracker::OnPageStoppedLoading;
-  using TabLoadTracker::PrimaryPageChanged;
   using TabLoadTracker::RenderProcessGone;
   using TabLoadTracker::StartTracking;
   using TabLoadTracker::StopTracking;
@@ -105,8 +105,8 @@ class TestWebContentsObserver : public content::WebContentsObserver {
   ~TestWebContentsObserver() override {}
 
   // content::WebContentsObserver:
-  void PrimaryPageChanged(content::Page& page) override {
-    tracker_->PrimaryPageChanged(web_contents());
+  void DidReceiveResponse() override {
+    tracker_->DidReceiveResponse(web_contents());
   }
   void RenderProcessGone(base::TerminationStatus status) override {
     tracker_->RenderProcessGone(web_contents(), status);

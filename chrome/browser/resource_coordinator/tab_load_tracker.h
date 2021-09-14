@@ -142,9 +142,9 @@ class TabLoadTracker {
   // actually an observer, but the relevant events are forwarded to it from the
   // TabManager.
   //
-  // In all cases, a call to PrimaryPageChanged() is expected to be followed by
+  // In all cases, a call to DidReceiveResponse() is expected to be followed by
   // a call to StopTracking(), RenderProcessGone() or OnPageStoppedLoading().
-  void PrimaryPageChanged(content::WebContents* web_contents);
+  void DidReceiveResponse(content::WebContents* web_contents);
   void DidStopLoading(content::WebContents* web_contents);
   void RenderProcessGone(content::WebContents* web_contents,
                          base::TerminationStatus status);

@@ -74,10 +74,6 @@ const TabLoader::TabVector& TabLoaderTester::tabs_to_load() const {
   return tab_loader_->tabs_to_load_;
 }
 
-const TabLoader::TabSet& TabLoaderTester::tabs_load_initiated() const {
-  return tab_loader_->tabs_load_initiated_;
-}
-
 size_t TabLoaderTester::scheduled_to_load_count() const {
   return tab_loader_->scheduled_to_load_count_;
 }
