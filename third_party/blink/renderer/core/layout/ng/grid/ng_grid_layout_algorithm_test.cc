@@ -91,11 +91,13 @@ class NGGridLayoutAlgorithmTest
     bool unused;
     algorithm.ComputeUsedTrackSizes(
         NGGridLayoutAlgorithm::SizingConstraint::kLayout, grid_geometry_,
-        grid_properties, &column_track_collection_, &grid_items_, &unused);
+        grid_properties, /* is_minmax_pass */ false, &column_track_collection_,
+        &grid_items_, &unused);
     // Resolve block size.
     algorithm.ComputeUsedTrackSizes(
         NGGridLayoutAlgorithm::SizingConstraint::kLayout, grid_geometry_,
-        grid_properties, &row_track_collection_, &grid_items_, &unused);
+        grid_properties, /* is_minmax_pass */ false, &row_track_collection_,
+        &grid_items_, &unused);
   }
 
   NGGridLayoutAlgorithmTrackCollection& TrackCollection(

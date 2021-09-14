@@ -340,11 +340,11 @@ struct GridItemIndices {
     // Returns the size that a grid item will distribute across the tracks with
     // an intrinsic sizing function it spans in the relevant track direction.
     LayoutUnit ContributionSizeForGridItem(
-        SizingConstraint sizing_constraint,
         const GridGeometry& grid_geometry,
         const GridItemData& grid_item,
         GridTrackSizingDirection track_direction,
         GridItemContributionType contribution_type,
+        bool is_min_max_pass,
         bool* needs_additional_pass,
         bool* has_block_size_dependent_item) const;
 
@@ -403,6 +403,7 @@ struct GridItemIndices {
         SizingConstraint sizing_constraint,
         const GridGeometry& grid_geometry,
         const NGGridProperties& grid_properties,
+        const bool is_min_max_pass,
         NGGridLayoutAlgorithmTrackCollection* track_collection,
         GridItems* grid_items,
         bool* needs_additional_pass,
@@ -412,20 +413,20 @@ struct GridItemIndices {
     // size resolution defined in
     // https://drafts.csswg.org/css-grid-2/#algo-content.
     void ResolveIntrinsicTrackSizes(
-        SizingConstraint sizing_constraint,
         const GridGeometry& grid_geometry,
+        bool is_min_max_pass,
         NGGridLayoutAlgorithmTrackCollection* track_collection,
         GridItems* grid_items,
         bool* needs_additional_pass,
         bool* has_block_size_dependent_item) const;
 
     void IncreaseTrackSizesToAccommodateGridItems(
-        SizingConstraint sizing_constraint,
         const GridGeometry& grid_geometry,
         GridItems::Iterator group_begin,
         GridItems::Iterator group_end,
         const bool is_group_spanning_flex_track,
         GridItemContributionType contribution_type,
+        bool is_min_max_pass,
         NGGridLayoutAlgorithmTrackCollection* track_collection,
         bool* needs_additional_pass,
         bool* has_block_size_dependent_item) const;
@@ -441,6 +442,7 @@ struct GridItemIndices {
     void ExpandFlexibleTracks(
         SizingConstraint sizing_constraint,
         const GridGeometry& grid_geometry,
+        bool is_min_max_pass,
         NGGridLayoutAlgorithmTrackCollection* track_collection,
         GridItems* grid_items,
         bool* needs_additional_pass,
