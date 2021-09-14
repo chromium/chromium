@@ -1,10 +1,8 @@
 file://components/services/app_service/OWNERS
 
 # For Web Applications system:
-per-file web_app*=loyso@chromium.org
-per-file web_app*=cmp@chromium.org
-per-file web_app*=dmurph@chromium.org
-per-file web_app*=msw@chromium.org
+per-file browser_*=raymes@chromium.org
+
 per-file plugin_vm*=file://chrome/browser/ash/guest_os/OWNERS
 
 # For files and intent handling system:
