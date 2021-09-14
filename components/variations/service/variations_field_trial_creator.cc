@@ -184,6 +184,11 @@ bool VariationsFieldTrialCreator::SetupFieldTrials(
     SafeSeedManager* safe_seed_manager,
     absl::optional<int> low_entropy_source_value,
     bool extend_variations_safe_mode) {
+  DCHECK(feature_list);
+  DCHECK(metrics_state_manager);
+  DCHECK(platform_field_trials);
+  DCHECK(safe_seed_manager);
+
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kEnableBenchmarking) ||

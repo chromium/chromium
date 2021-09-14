@@ -103,15 +103,16 @@ class VariationsFieldTrialCreator {
   // |extra_overrides| gives a list of feature overrides that should be applied
   // after the features explicitly disabled/enabled from the command line via
   // --disable-features and --enable-features, but before field trials.
-  // |low_entropy_provider| allows for field trial randomization.
+  // |low_entropy_provider| allows for field trial randomization. May be null.
   // |feature_list| contains the list of all active features for this client.
+  // Must not be null.
   // |metrics_state_manager| facilitates signaling that Chrome has not yet
-  // exited cleanly.
-  // |platform_field_trials| provides the platform-specific field trial set up
-  // for Chrome.
+  // exited cleanly. Must not be null.
+  // |platform_field_trials| provides the platform-specific field trial setup
+  // for Chrome. Must not be null.
   // |safe_seed_manager| should be notified of the combined server and client
   // state that was activated to create the field trials (only when the return
-  // value is true).
+  // value is true). Must not be null.
   // |low_entropy_source_value| contains the low entropy source value that was
   // used for client-side randomization of variations.
   // |extend_variations_safe_mode| indicates whether the client should

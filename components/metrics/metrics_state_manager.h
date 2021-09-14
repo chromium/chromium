@@ -129,6 +129,8 @@ class MetricsStateManager final {
   //
   // |user_data_dir| is the path to the client's user data directory. If empty,
   // a separate file will not be used for Variations Safe Mode prefs.
+  //
+  // TODO(crbug/1249196): Make the callbacks optional.
   static std::unique_ptr<MetricsStateManager> Create(
       PrefService* local_state,
       EnabledStateProvider* enabled_state_provider,

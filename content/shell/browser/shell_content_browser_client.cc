@@ -21,7 +21,10 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
+#include "components/metrics/client_info.h"
 #include "components/metrics/metrics_service.h"
+#include "components/metrics/metrics_state_manager.h"
+#include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/performance_manager/embedder/performance_manager_registry.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -145,6 +148,13 @@ class ShellControllerImpl : public mojom::ShellController {
 
   void ShutDown() override { Shell::Shutdown(); }
 };
+
+// Callbacks for MetricsStateManager::Create(). They're no-ops for the
+// ShellVariationsServiceClient.
+void StoreClientInfo(const metrics::ClientInfo& client_info) {}
+std::unique_ptr<metrics::ClientInfo> LoadClientInfo() {
+  return nullptr;
+}
 
 // https://crbug.com/1219642 consider not needing VariationsServiceClient just
 // to use VariationsFieldTrialCreator.
@@ -621,9 +631,6 @@ void ShellContentBrowserClient::SetUpFieldTrials() {
     // Note: This is intentionally leaked since it needs to live for the
     // duration of the browser process and there's no benefit in cleaning it up
     // at exit.
-    // Note: We deliberately use CreateLowEntropyProvider because
-    // CreateDefaultEntropyProvider needs to know if user conset has been given
-    // but getting consent from GMS is slow.
     base::FieldTrialList* leaked_field_trial_list =
         new base::FieldTrialList(nullptr);
     ANNOTATE_LEAKING_OBJECT_PTR(leaked_field_trial_list);
@@ -651,15 +658,29 @@ void ShellContentBrowserClient::SetUpFieldTrials() {
           /*signature_verification_enabled=*/true),
       variations::UIStringOverrider());
 
+  metrics::TestEnabledStateProvider enabled_state_provider(/*consent=*/false,
+                                                           /*enabled=*/false);
+  base::FilePath path;
+  base::PathService::Get(SHELL_DIR_USER_DATA, &path);
+  std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager =
+      metrics::MetricsStateManager::Create(
+          local_state_.get(), &enabled_state_provider, std::wstring(),
+          path.AppendASCII("Local State"),
+          base::BindRepeating(&StoreClientInfo),
+          base::BindRepeating(&LoadClientInfo));
   variations::SafeSeedManager safe_seed_manager(local_state_.get());
+
+  // Since this is a test-only code path, some arguments to SetupFieldTrials are
+  // null.
+  // TODO(crbug/1248066): Consider passing a low entropy provider and source.
   field_trial_creator.SetupFieldTrials(
       cc::switches::kEnableGpuBenchmarking, switches::kEnableFeatures,
       switches::kDisableFeatures, variation_ids,
       content::GetSwitchDependentFeatureOverrides(
           *base::CommandLine::ForCurrentProcess()),
-      nullptr /* low_entropy_provider */, std::move(feature_list),
-      nullptr /* metrics_state_manager unused*/, field_trials_.get(),
-      &safe_seed_manager, absl::nullopt);
+      /*low_entropy_provider=*/nullptr, std::move(feature_list),
+      metrics_state_manager.get(), field_trials_.get(), &safe_seed_manager,
+      /*low_entropy_source_value=*/absl::nullopt);
 }
 
 void ShellContentBrowserClient::OnNetworkServiceCreated(

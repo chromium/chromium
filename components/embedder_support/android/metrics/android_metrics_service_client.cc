@@ -71,8 +71,7 @@ const int kMaxHistogramStorageKiB = 100 << 10;  // 100 MiB
 void StoreClientInfo(const ClientInfo& client_info) {}
 
 std::unique_ptr<ClientInfo> LoadClientInfo() {
-  std::unique_ptr<ClientInfo> client_info;
-  return client_info;
+  return nullptr;
 }
 
 // Divides the spectrum of uint32_t values into 1000 ~equal-sized buckets (range
