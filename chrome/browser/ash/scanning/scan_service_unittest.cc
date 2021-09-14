@@ -13,6 +13,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/webui/scanning/mojom/scanning.mojom-test-utils.h"
 #include "ash/webui/scanning/mojom/scanning.mojom.h"
+#include "ash/webui/scanning/scanning_uma.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -856,10 +857,14 @@ TEST_F(ScanServiceTest, MultiPageScan) {
   histogram_tester.ExpectUniqueSample("Scanning.NumPagesScanned", 2, 1);
   histogram_tester.ExpectUniqueSample("Scanning.MultiPageScan.NumPagesScanned",
                                       2, 1);
+  histogram_tester.ExpectUniqueSample("Scanning.MultiPageScan.PageScanResult",
+                                      scanning::ScanJobFailureReason::kSuccess,
+                                      2);
 }
 
 // Test that when a multi-page scan fails, the scan job is marked as failed.
 TEST_F(ScanServiceTest, MultiPageScanFails) {
+  base::HistogramTester histogram_tester;
   scoped_feature_list_.InitWithFeatures(
       {chromeos::features::kScanAppMultiPageScan}, {});
 
@@ -889,6 +894,13 @@ TEST_F(ScanServiceTest, MultiPageScanFails) {
   EXPECT_EQ(mojo_ipc::ScanResult::kDeviceBusy,
             fake_scan_job_observer_.multi_page_scan_result());
   EXPECT_TRUE(fake_scan_job_observer_.scanned_file_paths().empty());
+
+  histogram_tester.ExpectBucketCount("Scanning.MultiPageScan.PageScanResult",
+                                     scanning::ScanJobFailureReason::kSuccess,
+                                     1);
+  histogram_tester.ExpectBucketCount(
+      "Scanning.MultiPageScan.PageScanResult",
+      scanning::ScanJobFailureReason::kDeviceBusy, 1);
 }
 
 // Test that attempting to start a second multi-page scan while another

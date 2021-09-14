@@ -514,6 +514,8 @@ void ScanService::OnMultiPageScanPageCompleted(
     lorgnette::ScanFailureMode failure_mode) {
   if (failure_mode ==
       lorgnette::ScanFailureMode::SCAN_FAILURE_MODE_NO_FAILURE) {
+    base::UmaHistogramEnumeration("Scanning.MultiPageScan.PageScanResult",
+                                  scanning::ScanJobFailureReason::kSuccess);
     return;
   }
 
@@ -523,6 +525,9 @@ void ScanService::OnMultiPageScanPageCompleted(
       mojo::EnumTraits<ash::scanning::mojom::ScanResult,
                        lorgnette::ScanFailureMode>::
           ToMojom(static_cast<lorgnette::ScanFailureMode>(failure_mode)));
+
+  base::UmaHistogramEnumeration("Scanning.MultiPageScan.PageScanResult",
+                                GetScanJobFailureReason(failure_mode));
 }
 
 void ScanService::OnCancelCompleted(bool success) {

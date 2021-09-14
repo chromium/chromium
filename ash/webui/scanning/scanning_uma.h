@@ -29,7 +29,8 @@ enum class ScanJobFailureReason {
   kAdfEmpty = 6,
   kFlatbedOpen = 7,
   kIoError = 8,
-  kMaxValue = kIoError,
+  kSuccess = 9,
+  kMaxValue = kSuccess,
 };
 
 enum class ScanJobSettingsResolution {
