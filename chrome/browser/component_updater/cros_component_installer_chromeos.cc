@@ -141,7 +141,7 @@ bool CrOSComponentInstallerPolicy::RequiresNetworkEncryption() const {
 
 update_client::CrxInstaller::Result
 CrOSComponentInstallerPolicy::OnCustomInstall(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) {
   cros_component_installer_->EmitInstalledSignal(GetName());
 
@@ -156,7 +156,7 @@ void CrOSComponentInstallerPolicy::OnCustomUninstall() {
 }
 
 bool CrOSComponentInstallerPolicy::VerifyInstallation(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) const {
   return true;
 }
@@ -184,15 +184,14 @@ EnvVersionInstallerPolicy::EnvVersionInstallerPolicy(
 
 EnvVersionInstallerPolicy::~EnvVersionInstallerPolicy() = default;
 
-void EnvVersionInstallerPolicy::ComponentReady(
-    const base::Version& version,
-    const base::FilePath& path,
-    std::unique_ptr<base::DictionaryValue> manifest) {
-  std::string min_env_version;
-  if (!manifest || !manifest->GetString("min_env_version", &min_env_version))
+void EnvVersionInstallerPolicy::ComponentReady(const base::Version& version,
+                                               const base::FilePath& path,
+                                               base::Value manifest) {
+  std::string* min_env_version = manifest.FindStringKey("min_env_version");
+  if (!min_env_version)
     return;
 
-  if (!IsCompatible(env_version_, min_env_version))
+  if (!IsCompatible(env_version_, *min_env_version))
     return;
 
   cros_component_installer_->RegisterCompatiblePath(GetName(), path);
@@ -223,10 +222,9 @@ LacrosInstallerPolicy::LacrosInstallerPolicy(
 
 LacrosInstallerPolicy::~LacrosInstallerPolicy() = default;
 
-void LacrosInstallerPolicy::ComponentReady(
-    const base::Version& version,
-    const base::FilePath& path,
-    std::unique_ptr<base::DictionaryValue> manifest) {
+void LacrosInstallerPolicy::ComponentReady(const base::Version& version,
+                                           const base::FilePath& path,
+                                           base::Value manifest) {
   // Each version of Lacros guarantees it will be compatible through the next
   // major ash/OS version. For example, Lacros 89 will work with ash/OS 90,
   // but may not work with ash/OS 91.

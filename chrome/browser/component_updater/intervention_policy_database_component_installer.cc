@@ -58,7 +58,7 @@ bool InterventionPolicyDatabaseComponentInstallerPolicy::
 
 update_client::CrxInstaller::Result
 InterventionPolicyDatabaseComponentInstallerPolicy::OnCustomInstall(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);
 }
@@ -67,7 +67,7 @@ void InterventionPolicyDatabaseComponentInstallerPolicy::OnCustomUninstall() {}
 
 // Called during startup and installation before ComponentReady().
 bool InterventionPolicyDatabaseComponentInstallerPolicy::VerifyInstallation(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) const {
   return base::PathExists(
       install_dir.Append(kInterventionPolicyDatabaseBinaryPbFileName));
@@ -79,7 +79,7 @@ bool InterventionPolicyDatabaseComponentInstallerPolicy::VerifyInstallation(
 void InterventionPolicyDatabaseComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    std::unique_ptr<base::DictionaryValue> manifest) {
+    base::Value manifest) {
   DCHECK(database_);
   database_->InitializeDatabaseWithProtoFile(
       install_dir.Append(kInterventionPolicyDatabaseBinaryPbFileName), version,

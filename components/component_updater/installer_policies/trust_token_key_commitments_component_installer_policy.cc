@@ -85,7 +85,7 @@ bool TrustTokenKeyCommitmentsComponentInstallerPolicy::
 
 update_client::CrxInstaller::Result
 TrustTokenKeyCommitmentsComponentInstallerPolicy::OnCustomInstall(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);  // Nothing custom here.
 }
@@ -107,7 +107,7 @@ TrustTokenKeyCommitmentsComponentInstallerPolicy::GetInstalledPath(
 void TrustTokenKeyCommitmentsComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    std::unique_ptr<base::DictionaryValue> manifest) {
+    base::Value manifest) {
   VLOG(1) << "Component ready, version " << version.GetString() << " in "
           << install_dir.value();
 
@@ -118,7 +118,7 @@ void TrustTokenKeyCommitmentsComponentInstallerPolicy::ComponentReady(
 
 // Called during startup and installation before ComponentReady().
 bool TrustTokenKeyCommitmentsComponentInstallerPolicy::VerifyInstallation(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) const {
   // No need to actually validate the commitments here, since we'll do the
   // checking in NetworkService::SetTrustTokenKeyCommitments.

@@ -28,6 +28,7 @@
 #include "components/update_client/network.h"
 #include "components/update_client/update_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace android_webview {
@@ -208,23 +209,22 @@ class MockInstallerPolicy : public component_updater::ComponentInstallerPolicy {
   bool RequiresNetworkEncryption() const override { return false; }
 
   update_client::CrxInstaller::Result OnCustomInstall(
-      const base::DictionaryValue& manifest,
+      const base::Value& manifest,
       const base::FilePath& install_dir) override {
     return update_client::CrxInstaller::Result(0);
   }
 
   void OnCustomUninstall() override { FAIL(); }
 
-  void ComponentReady(
-      const base::Version& version,
-      const base::FilePath& install_dir,
-      std::unique_ptr<base::DictionaryValue> manifest) override {
+  void ComponentReady(const base::Version& version,
+                      const base::FilePath& install_dir,
+                      base::Value manifest) override {
     version_ = version;
     install_dir_ = install_dir;
     manifest_ = std::move(manifest);
   }
 
-  bool VerifyInstallation(const base::DictionaryValue& manifest,
+  bool VerifyInstallation(const base::Value& manifest,
                           const base::FilePath& install_dir) const override {
     return true;
   }
@@ -244,12 +244,12 @@ class MockInstallerPolicy : public component_updater::ComponentInstallerPolicy {
   }
 
   bool IsComponentReadyInvoked() { return !!manifest_; }
-  base::DictionaryValue* GetManifest() { return manifest_.get(); }
+  base::Value& GetManifest() { return *manifest_; }
   base::FilePath GetInstallDir() const { return install_dir_; }
   base::Version GetVersion() const { return version_; }
 
  private:
-  std::unique_ptr<base::DictionaryValue> manifest_;
+  absl::optional<base::Value> manifest_;
   base::FilePath install_dir_;
   base::Version version_;
 };
@@ -363,10 +363,11 @@ TEST_F(AwComponentUpdateServiceTest, TestFreshDownloadingFakeApk) {
 
   // Assert that the manifest is valid by asserting a field in it other than
   // version.
-  std::string minimum_chrome_version;
-  ASSERT_TRUE(service.GetMockPolicy()->GetManifest()->GetString(
-      "minimum_chrome_version", &minimum_chrome_version));
-  EXPECT_EQ(minimum_chrome_version, "50");
+  std::string* minimum_chrome_version =
+      service.GetMockPolicy()->GetManifest().FindStringKey(
+          "minimum_chrome_version");
+  ASSERT_TRUE(minimum_chrome_version);
+  EXPECT_EQ(*minimum_chrome_version, "50");
 }
 
 }  // namespace android_webview

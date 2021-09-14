@@ -69,14 +69,13 @@ class OptimizationHintsComponentInstallerTest : public PlatformTest {
   }
 
   void LoadOptimizationHints(const base::Version& ruleset_format) {
-    std::unique_ptr<base::DictionaryValue> manifest(new base::DictionaryValue);
+    base::Value manifest(base::Value::Type::DICTIONARY);
     if (ruleset_format.IsValid()) {
-      manifest->SetString(
+      manifest.SetStringKey(
           OptimizationHintsComponentInstallerPolicy::kManifestRulesetFormatKey,
           ruleset_format.GetString());
     }
-    ASSERT_TRUE(
-        policy_->VerifyInstallation(*manifest, component_install_dir()));
+    ASSERT_TRUE(policy_->VerifyInstallation(manifest, component_install_dir()));
     const base::Version expected_version(kTestHintsVersion);
     policy_->ComponentReady(expected_version, component_install_dir(),
                             std::move(manifest));

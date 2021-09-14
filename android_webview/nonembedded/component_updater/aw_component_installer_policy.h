@@ -5,12 +5,10 @@
 #ifndef ANDROID_WEBVIEW_NONEMBEDDED_COMPONENT_UPDATER_AW_COMPONENT_INSTALLER_POLICY_H_
 #define ANDROID_WEBVIEW_NONEMBEDDED_COMPONENT_UPDATER_AW_COMPONENT_INSTALLER_POLICY_H_
 
-#include <memory>
-
 #include "components/component_updater/component_installer.h"
 
 namespace base {
-class DictionaryValue;
+class Value;
 class FilePath;
 class Version;
 }  // namespace base
@@ -28,7 +26,7 @@ class AwComponentInstallerPolicy
 
   void ComponentReady(const base::Version& version,
                       const base::FilePath& install_dir,
-                      std::unique_ptr<base::DictionaryValue> manifest) final;
+                      base::Value manifest) final;
   void OnCustomUninstall() final;
 
  private:

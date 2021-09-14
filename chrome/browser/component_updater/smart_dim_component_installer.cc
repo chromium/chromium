@@ -105,7 +105,7 @@ bool SmartDimComponentInstallerPolicy::RequiresNetworkEncryption() const {
 
 update_client::CrxInstaller::Result
 SmartDimComponentInstallerPolicy::OnCustomInstall(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);  // Nothing custom here.
 }
@@ -115,7 +115,7 @@ void SmartDimComponentInstallerPolicy::OnCustomUninstall() {}
 void SmartDimComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    std::unique_ptr<base::DictionaryValue> manifest) {
+    base::Value manifest) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // If IsDownloadWorkerReady(), newly downloaded components will take effect
   // on next reboot. This makes sure the updating happens at most once.
@@ -139,14 +139,14 @@ void SmartDimComponentInstallerPolicy::ComponentReady(
 
 // Called during startup and installation before ComponentReady().
 bool SmartDimComponentInstallerPolicy::VerifyInstallation(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) const {
   // Get component version from manifest and compare to the expected_version_.
   // Note: versions should not be treated as simple strings, for example,
   // base::Version("2020.02.06") == base::Version("2020.2.6").
-  const auto* version_value = manifest.FindKey("version");
-  DCHECK(version_value);
-  const base::Version component_version(version_value->GetString());
+  const std::string* version_string = manifest.FindStringKey("version");
+  DCHECK(version_string);
+  const base::Version component_version(*version_string);
   const base::Version expected_version(expected_version_);
   if (component_version != expected_version) {
     DVLOG(1) << "Version " << component_version

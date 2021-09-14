@@ -69,7 +69,7 @@ bool SafetyTipsComponentInstallerPolicy::RequiresNetworkEncryption() const {
 
 update_client::CrxInstaller::Result
 SafetyTipsComponentInstallerPolicy::OnCustomInstall(
-    const base::DictionaryValue& /* manifest */,
+    const base::Value& /* manifest */,
     const base::FilePath& /* install_dir */) {
   return update_client::CrxInstaller::Result(0);  // Nothing custom here.
 }
@@ -84,7 +84,7 @@ base::FilePath SafetyTipsComponentInstallerPolicy::GetInstalledPath(
 void SafetyTipsComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    std::unique_ptr<base::DictionaryValue> /* manifest */) {
+    base::Value /* manifest */) {
   DVLOG(1) << "Component ready, version " << version.GetString() << " in "
            << install_dir.value();
 
@@ -103,7 +103,7 @@ void SafetyTipsComponentInstallerPolicy::ComponentReady(
 
 // Called during startup and installation before ComponentReady().
 bool SafetyTipsComponentInstallerPolicy::VerifyInstallation(
-    const base::DictionaryValue& /* manifest */,
+    const base::Value& /* manifest */,
     const base::FilePath& install_dir) const {
   // No need to actually validate the proto here, since we'll do the checking
   // in PopulateFromDynamicUpdate().

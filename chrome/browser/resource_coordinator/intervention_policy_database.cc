@@ -43,7 +43,7 @@ InterventionPolicyDatabase::GetFreezingPolicy(const url::Origin& origin) const {
 void InterventionPolicyDatabase::InitializeDatabaseWithProtoFile(
     const base::FilePath& proto_location,
     const base::Version& version,
-    std::unique_ptr<base::DictionaryValue> manifest) {
+    base::Value manifest) {
   // TODO(sebmarchand): Validate the version and the manifest?
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,

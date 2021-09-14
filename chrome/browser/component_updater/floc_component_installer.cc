@@ -12,6 +12,7 @@
 #include "components/component_updater/component_updater_paths.h"
 #include "components/federated_learning/floc_constants.h"
 #include "components/federated_learning/floc_sorting_lsh_clusters_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace component_updater {
 
@@ -43,7 +44,7 @@ bool FlocComponentInstallerPolicy::RequiresNetworkEncryption() const {
 
 update_client::CrxInstaller::Result
 FlocComponentInstallerPolicy::OnCustomInstall(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);  // Nothing custom here.
 }
@@ -53,7 +54,7 @@ void FlocComponentInstallerPolicy::OnCustomUninstall() {}
 void FlocComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    std::unique_ptr<base::DictionaryValue> manifest) {
+    base::Value manifest) {
   DCHECK(!install_dir.empty());
 
   floc_sorting_lsh_clusters_service_->OnSortingLshClustersFileReady(
@@ -63,15 +64,15 @@ void FlocComponentInstallerPolicy::ComponentReady(
 
 // Called during startup and installation before ComponentReady().
 bool FlocComponentInstallerPolicy::VerifyInstallation(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) const {
   if (!base::PathExists(install_dir))
     return false;
 
-  int floc_component_format = 0;
-  if (!manifest.GetInteger(federated_learning::kManifestFlocComponentFormatKey,
-                           &floc_component_format) ||
-      floc_component_format !=
+  absl::optional<int> floc_component_format =
+      manifest.FindIntKey(federated_learning::kManifestFlocComponentFormatKey);
+  if (!floc_component_format ||
+      *floc_component_format !=
           federated_learning::kCurrentFlocComponentFormatVersion) {
     return false;
   }

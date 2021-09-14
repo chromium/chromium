@@ -123,11 +123,11 @@ class FlocComponentInstallerTest : public PlatformTest {
 
   void LoadFlocComponent(const std::string& content_version,
                          int format_version) {
-    auto manifest = std::make_unique<base::DictionaryValue>();
-    manifest->SetInteger(federated_learning::kManifestFlocComponentFormatKey,
-                         format_version);
+    base::Value manifest(base::Value::Type::DICTIONARY);
+    manifest.SetIntKey(federated_learning::kManifestFlocComponentFormatKey,
+                       format_version);
 
-    if (!policy_->VerifyInstallation(*manifest, component_install_dir()))
+    if (!policy_->VerifyInstallation(manifest, component_install_dir()))
       return;
 
     policy_->ComponentReady(base::Version(content_version),

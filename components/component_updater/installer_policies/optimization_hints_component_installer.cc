@@ -63,7 +63,7 @@ bool OptimizationHintsComponentInstallerPolicy::RequiresNetworkEncryption()
 
 update_client::CrxInstaller::Result
 OptimizationHintsComponentInstallerPolicy::OnCustomInstall(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);  // Nothing custom here.
 }
@@ -73,15 +73,16 @@ void OptimizationHintsComponentInstallerPolicy::OnCustomUninstall() {}
 void OptimizationHintsComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    std::unique_ptr<base::DictionaryValue> manifest) {
+    base::Value manifest) {
   DCHECK(!install_dir.empty());
   DVLOG(1) << "Optimization Hints Version Ready: " << version.GetString();
-  std::string ruleset_format;
-  if (!manifest->GetString(kManifestRulesetFormatKey, &ruleset_format)) {
+  std::string* ruleset_format =
+      manifest.FindStringKey(kManifestRulesetFormatKey);
+  if (!ruleset_format) {
     DVLOG(1) << "No ruleset_format present in manifest";
     return;
   }
-  base::Version ruleset_format_version = base::Version(ruleset_format);
+  base::Version ruleset_format_version = base::Version(*ruleset_format);
   if (!ruleset_format_version.IsValid() ||
       ruleset_format_version.CompareTo(ruleset_format_version_) > 0) {
     DVLOG(1) << "Got incompatible ruleset_format. Bailing out.";
@@ -101,7 +102,7 @@ void OptimizationHintsComponentInstallerPolicy::ComponentReady(
 
 // Called during startup and installation before ComponentReady().
 bool OptimizationHintsComponentInstallerPolicy::VerifyInstallation(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) const {
   return base::PathExists(install_dir);
 }

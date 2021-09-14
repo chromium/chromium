@@ -25,7 +25,7 @@ AwComponentInstallerPolicyShim::~AwComponentInstallerPolicyShim() = default;
 
 update_client::CrxInstaller::Result
 AwComponentInstallerPolicyShim::OnCustomInstall(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) {
   return policy_->OnCustomInstall(manifest, install_dir);
 }
@@ -40,7 +40,7 @@ bool AwComponentInstallerPolicyShim::RequiresNetworkEncryption() const {
 }
 
 bool AwComponentInstallerPolicyShim::VerifyInstallation(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) const {
   return policy_->VerifyInstallation(manifest, install_dir);
 }

@@ -61,7 +61,7 @@ bool AutofillStatesComponentInstallerPolicy::RequiresNetworkEncryption() const {
 
 update_client::CrxInstaller::Result
 AutofillStatesComponentInstallerPolicy::OnCustomInstall(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(update_client::InstallError::NONE);
 }
@@ -71,7 +71,7 @@ void AutofillStatesComponentInstallerPolicy::OnCustomUninstall() {}
 void AutofillStatesComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    std::unique_ptr<base::DictionaryValue> manifest) {
+    base::Value manifest) {
   DVLOG(1) << "Component ready, version " << version.GetString() << " in "
            << install_dir.value();
 
@@ -82,7 +82,7 @@ void AutofillStatesComponentInstallerPolicy::ComponentReady(
 
 // Called during startup and installation before ComponentReady().
 bool AutofillStatesComponentInstallerPolicy::VerifyInstallation(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) const {
   // Verify that state files are present.
   return base::ranges::count(

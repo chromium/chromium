@@ -152,11 +152,11 @@ bool GetOptionalBehaviour(
 // Returns whether the manifest was successfully read.
 bool ExtractInvocationSequenceFromManifest(
     const base::FilePath& exe_path,
-    std::unique_ptr<base::DictionaryValue> manifest,
+    base::Value manifest,
     safe_browsing::SwReporterInvocationSequence* out_sequence) {
   // Allow an empty or missing |parameter_list| list, but log an error if
   // |parameter_list| cannot be parsed as a list.
-  base::Value* parameter_list = manifest->FindPath("launch_params");
+  base::Value* parameter_list = manifest.FindPath("launch_params");
   if (parameter_list && !parameter_list->is_list()) {
     ReportConfigurationError(kBadParams);
     return false;
@@ -257,7 +257,7 @@ SwReporterInstallerPolicy::SwReporterInstallerPolicy(
 SwReporterInstallerPolicy::~SwReporterInstallerPolicy() = default;
 
 bool SwReporterInstallerPolicy::VerifyInstallation(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& dir) const {
   return base::PathExists(dir.Append(kSwReporterExeName));
 }
@@ -272,7 +272,7 @@ bool SwReporterInstallerPolicy::RequiresNetworkEncryption() const {
 }
 
 update_client::CrxInstaller::Result SwReporterInstallerPolicy::OnCustomInstall(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);
 }
@@ -282,7 +282,7 @@ void SwReporterInstallerPolicy::OnCustomUninstall() {}
 void SwReporterInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    std::unique_ptr<base::DictionaryValue> manifest) {
+    base::Value manifest) {
   safe_browsing::SwReporterInvocationSequence invocations(version);
   const base::FilePath exe_path(install_dir.Append(kSwReporterExeName));
   if (ExtractInvocationSequenceFromManifest(exe_path, std::move(manifest),

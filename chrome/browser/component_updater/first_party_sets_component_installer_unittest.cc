@@ -76,7 +76,7 @@ TEST_F(FirstPartySetsComponentInstallerTest, LoadsSets_OnComponentReady) {
                       expectation));
 
   policy->ComponentReady(base::Version(), component_install_dir_.GetPath(),
-                         std::make_unique<base::DictionaryValue>());
+                         base::Value(base::Value::Type::DICTIONARY));
 
   run_loop.Run();
 }
@@ -107,7 +107,7 @@ TEST_F(FirstPartySetsComponentInstallerTest, IgnoreNewSets_OnComponentReady) {
                           dir_v1.GetPath()),
                       sets_v1));
   policy.ComponentReady(base::Version(), dir_v1.GetPath(),
-                        std::make_unique<base::DictionaryValue>());
+                        base::Value(base::Value::Type::DICTIONARY));
 
   // Install newer version of the component, which should not be picked up when
   // calling ComponentReady again.
@@ -116,7 +116,7 @@ TEST_F(FirstPartySetsComponentInstallerTest, IgnoreNewSets_OnComponentReady) {
                           dir_v2.GetPath()),
                       sets_v2));
   policy.ComponentReady(base::Version(), dir_v2.GetPath(),
-                        std::make_unique<base::DictionaryValue>());
+                        base::Value(base::Value::Type::DICTIONARY));
 
   env_.RunUntilIdle();
 
@@ -143,7 +143,7 @@ TEST_F(FirstPartySetsComponentInstallerTest, LoadsSets_OnNetworkRestart) {
         expectation));
 
     policy.ComponentReady(base::Version(), component_install_dir_.GetPath(),
-                          std::make_unique<base::DictionaryValue>());
+                          base::Value(base::Value::Type::DICTIONARY));
 
     run_loop.Run();
   }
@@ -186,7 +186,7 @@ TEST_F(FirstPartySetsComponentInstallerTest, IgnoreNewSets_OnNetworkRestart) {
                           dir_v1.GetPath()),
                       sets_v1));
   policy.ComponentReady(base::Version(), dir_v1.GetPath(),
-                        std::make_unique<base::DictionaryValue>());
+                        base::Value(base::Value::Type::DICTIONARY));
 
   // Install newer version of the component, which should not be picked up when
   // calling ComponentReady again.
@@ -195,7 +195,7 @@ TEST_F(FirstPartySetsComponentInstallerTest, IgnoreNewSets_OnNetworkRestart) {
                           dir_v2.GetPath()),
                       sets_v2));
   policy.ComponentReady(base::Version(), dir_v2.GetPath(),
-                        std::make_unique<base::DictionaryValue>());
+                        base::Value(base::Value::Type::DICTIONARY));
 
   env_.RunUntilIdle();
 

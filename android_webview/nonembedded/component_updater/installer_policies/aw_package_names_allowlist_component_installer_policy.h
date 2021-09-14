@@ -15,7 +15,7 @@
 #include "base/callback.h"
 
 namespace base {
-class DictionaryValue;
+class Value;
 class FilePath;
 }  // namespace base
 
@@ -38,9 +38,9 @@ class AwPackageNamesAllowlistComponentInstallerPolicy
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;
   bool RequiresNetworkEncryption() const override;
   update_client::CrxInstaller::Result OnCustomInstall(
-      const base::DictionaryValue& manifest,
+      const base::Value& manifest,
       const base::FilePath& install_dir) override;
-  bool VerifyInstallation(const base::DictionaryValue& manifest,
+  bool VerifyInstallation(const base::Value& manifest,
                           const base::FilePath& install_dir) const override;
   base::FilePath GetRelativeInstallDir() const override;
   std::string GetName() const override;

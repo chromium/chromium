@@ -96,7 +96,7 @@ constexpr std::array<uint8_t, 32> kZxcvbnDataPublicKeySha256 = {
 }  // namespace
 
 bool ZxcvbnDataComponentInstallerPolicy::VerifyInstallation(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) const {
   return base::ranges::all_of(kFileNames, [&](const auto& file_name) {
     return base::PathExists(install_dir.Append(file_name));
@@ -114,7 +114,7 @@ bool ZxcvbnDataComponentInstallerPolicy::RequiresNetworkEncryption() const {
 
 update_client::CrxInstaller::Result
 ZxcvbnDataComponentInstallerPolicy::OnCustomInstall(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(update_client::InstallError::NONE);
 }
@@ -124,7 +124,7 @@ void ZxcvbnDataComponentInstallerPolicy::OnCustomUninstall() {}
 void ZxcvbnDataComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    std::unique_ptr<base::DictionaryValue> manifest) {
+    base::Value manifest) {
   DVLOG(1) << "Zxcvbn Data Component ready, version " << version.GetString()
            << " in " << install_dir;
 

@@ -73,7 +73,7 @@ void AwComponentInstallerPolicy::OnCustomUninstall() {
 void AwComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    std::unique_ptr<base::DictionaryValue> manifest) {
+    base::Value manifest) {
   base::FilePath cps_component_base_path =
       GetComponentsProviderServiceDirectory();
 

@@ -133,7 +133,7 @@ class MockInstallerPolicy : public ComponentInstallerPolicy {
   MockInstallerPolicy() = default;
   ~MockInstallerPolicy() override = default;
 
-  bool VerifyInstallation(const base::DictionaryValue& manifest,
+  bool VerifyInstallation(const base::Value& manifest,
                           const base::FilePath& dir) const override {
     return true;
   }
@@ -145,17 +145,16 @@ class MockInstallerPolicy : public ComponentInstallerPolicy {
   bool RequiresNetworkEncryption() const override { return true; }
 
   update_client::CrxInstaller::Result OnCustomInstall(
-      const base::DictionaryValue& manifest,
+      const base::Value& manifest,
       const base::FilePath& install_dir) override {
     return update_client::CrxInstaller::Result(0);
   }
 
   void OnCustomUninstall() override {}
 
-  void ComponentReady(
-      const base::Version& version,
-      const base::FilePath& install_dir,
-      std::unique_ptr<base::DictionaryValue> manifest) override {}
+  void ComponentReady(const base::Version& version,
+                      const base::FilePath& install_dir,
+                      base::Value manifest) override {}
 
   base::FilePath GetRelativeInstallDir() const override {
     return base::FilePath(relative_install_dir);

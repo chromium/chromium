@@ -19,6 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/values.h"
 #include "base/version.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/component_updater/mock_component_updater_service.h"
@@ -150,12 +151,11 @@ class SubresourceFilterComponentInstallerTest : public PlatformTest {
   }
 
   void LoadSubresourceFilterRuleset(int ruleset_format) {
-    std::unique_ptr<base::DictionaryValue> manifest(new base::DictionaryValue);
-    manifest->SetInteger(
+    base::Value manifest(base::Value::Type::DICTIONARY);
+    manifest.SetIntKey(
         SubresourceFilterComponentInstallerPolicy::kManifestRulesetFormatKey,
         ruleset_format);
-    ASSERT_TRUE(
-        policy_->VerifyInstallation(*manifest, component_install_dir()));
+    ASSERT_TRUE(policy_->VerifyInstallation(manifest, component_install_dir()));
     const base::Version expected_version(kTestRulesetVersion);
     policy_->ComponentReady(expected_version, component_install_dir(),
                             std::move(manifest));
