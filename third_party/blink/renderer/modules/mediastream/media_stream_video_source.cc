@@ -106,20 +106,19 @@ void MediaStreamVideoSource::RemoveTrack(MediaStreamVideoTrack* video_track,
                                          base::OnceClosure callback) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   {
-    auto it = std::find(tracks_.begin(), tracks_.end(), video_track);
-    DCHECK(it != tracks_.end());
-    tracks_.erase(it);
+    auto it = tracks_.Find(video_track);
+    DCHECK_NE(it, kNotFound);
+    tracks_.EraseAt(it);
   }
   secure_tracker_.Remove(video_track);
 
   {
-    auto it = std::find(suspended_tracks_.begin(), suspended_tracks_.end(),
-                        video_track);
-    if (it != suspended_tracks_.end())
-      suspended_tracks_.erase(it);
+    auto it = suspended_tracks_.Find(video_track);
+    if (it != kNotFound)
+      suspended_tracks_.EraseAt(it);
   }
 
-  for (auto it = pending_tracks_.begin(); it != pending_tracks_.end(); ++it) {
+  for (auto* it = pending_tracks_.begin(); it != pending_tracks_.end(); ++it) {
     if (it->track == video_track) {
       pending_tracks_.erase(it);
       break;
@@ -130,7 +129,7 @@ void MediaStreamVideoSource::RemoveTrack(MediaStreamVideoTrack* video_track,
   // failed and |frame_adapter_->AddCallback| has not been called.
   GetTrackAdapter()->RemoveTrack(video_track);
 
-  if (tracks_.empty()) {
+  if (tracks_.IsEmpty()) {
     if (callback) {
       // Use StopForRestart() in order to get a notification of when the
       // source is actually stopped (if supported). The source will not be
@@ -304,13 +303,12 @@ void MediaStreamVideoSource::OnRestartDone(bool did_restart) {
 void MediaStreamVideoSource::UpdateHasConsumers(MediaStreamVideoTrack* track,
                                                 bool has_consumers) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  const auto it =
-      std::find(suspended_tracks_.begin(), suspended_tracks_.end(), track);
+  const auto it = suspended_tracks_.Find(track);
   if (has_consumers) {
-    if (it != suspended_tracks_.end())
-      suspended_tracks_.erase(it);
+    if (it != kNotFound)
+      suspended_tracks_.EraseAt(it);
   } else {
-    if (it == suspended_tracks_.end())
+    if (it == kNotFound)
       suspended_tracks_.push_back(track);
   }
   OnHasConsumers(suspended_tracks_.size() < tracks_.size());
@@ -424,7 +422,7 @@ void MediaStreamVideoSource::OnStartDone(
 
 void MediaStreamVideoSource::FinalizeAddPendingTracks() {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  std::vector<PendingTrackInfo> pending_track_descriptors;
+  Vector<PendingTrackInfo> pending_track_descriptors;
   pending_track_descriptors.swap(pending_tracks_);
   for (auto& track_info : pending_track_descriptors) {
     auto result = mojom::blink::MediaStreamRequestResult::OK;

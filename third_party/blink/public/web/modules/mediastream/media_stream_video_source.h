@@ -23,6 +23,7 @@
 #include "third_party/blink/public/platform/modules/mediastream/web_platform_media_stream_source.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/web/modules/mediastream/encoded_video_frame.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -338,7 +339,7 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
     std::unique_ptr<VideoTrackAdapterSettings> adapter_settings;
     ConstraintsOnceCallback callback;
   };
-  std::vector<PendingTrackInfo> pending_tracks_;
+  Vector<PendingTrackInfo> pending_tracks_;
 
   // |restart_callback_| is used for notifying both StopForRestart and Restart,
   // since it is impossible to have a situation where there can be callbacks
@@ -349,11 +350,11 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   scoped_refptr<VideoTrackAdapter> track_adapter_;
 
   // Tracks that currently are connected to this source.
-  std::vector<MediaStreamVideoTrack*> tracks_;
+  Vector<MediaStreamVideoTrack*> tracks_;
 
   // Tracks that have no paths to a consuming endpoint, and so do not need
   // frames delivered from the source. This is a subset of |tracks_|.
-  std::vector<MediaStreamVideoTrack*> suspended_tracks_;
+  Vector<MediaStreamVideoTrack*> suspended_tracks_;
 
   // This is used for tracking if all connected video sinks are secure.
   SecureDisplayLinkTracker<MediaStreamVideoTrack> secure_tracker_;
