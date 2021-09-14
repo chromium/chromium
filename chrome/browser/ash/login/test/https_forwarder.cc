@@ -22,7 +22,7 @@
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_canon.h"
 
-namespace chromeos {
+namespace ash {
 
 // A net::LocalTestServer that handles the actual forwarding to another server.
 // Requires that the root certificate used by minica.py be marked as trusted
@@ -127,4 +127,4 @@ bool HTTPSForwarder::Stop() {
   return forwarding_server_->Stop();
 }
 
-}  // namespace chromeos
+}  // namespace ash

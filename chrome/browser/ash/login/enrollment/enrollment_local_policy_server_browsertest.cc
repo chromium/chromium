@@ -147,9 +147,8 @@ class EnrollmentLocalPolicyServerBase : public OobeBaseTest {
     test::OobeJS().ClickOnPath(kEnterprisePrimaryButton);
   }
 
-  std::unique_ptr<chromeos::LoginOrLockScreenVisibleWaiter>
-  CreateLoginVisibleWaiter() {
-    return std::make_unique<chromeos::LoginOrLockScreenVisibleWaiter>();
+  std::unique_ptr<LoginOrLockScreenVisibleWaiter> CreateLoginVisibleWaiter() {
+    return std::make_unique<LoginOrLockScreenVisibleWaiter>();
   }
 
   void ConfirmAndWaitLoginScreen() {

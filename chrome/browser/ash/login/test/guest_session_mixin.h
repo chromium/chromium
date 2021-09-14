@@ -12,7 +12,7 @@ namespace base {
 class CommandLine;
 }
 
-namespace chromeos {
+namespace ash {
 
 // A mixin that sets up test command line for guest user session.
 // Use this with tests for in-session behavior for guest user.
@@ -28,10 +28,12 @@ class GuestSessionMixin : public InProcessBrowserTestMixin {
   DISALLOW_COPY_AND_ASSIGN(GuestSessionMixin);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-using chromeos::GuestSessionMixin;
+namespace chromeos {
+using ::ash::GuestSessionMixin;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_GUEST_SESSION_MIXIN_H_

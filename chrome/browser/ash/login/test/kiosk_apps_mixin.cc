@@ -10,7 +10,7 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 
-namespace chromeos {
+namespace ash {
 
 // This is a simple test app that creates an app window and immediately closes
 // it again. Webstore data json is in
@@ -25,9 +25,9 @@ constexpr char KioskAppsMixin::kEnterpriseWebKioskAccountId[] = "web_kiosk_id";
 
 // static
 void KioskAppsMixin::WaitForAppsButton() {
-  while (!ash::LoginScreenTestApi::IsAppsButtonShown()) {
-    int ui_update_count = ash::LoginScreenTestApi::GetUiUpdateCount();
-    ash::LoginScreenTestApi::WaitForUiUpdate(ui_update_count);
+  while (!LoginScreenTestApi::IsAppsButtonShown()) {
+    int ui_update_count = LoginScreenTestApi::GetUiUpdateCount();
+    LoginScreenTestApi::WaitForUiUpdate(ui_update_count);
   }
 }
 
@@ -72,7 +72,7 @@ void KioskAppsMixin::AppendAutoLaunchKioskAccount(
                         ACCOUNT_TYPE_KIOSK_APP);
   account->mutable_kiosk_app()->set_app_id(KioskAppsMixin::kKioskAppId);
   device_local_accounts->set_auto_login_id(
-      ash::KioskAppsMixin::kEnterpriseKioskAccountId);
+      KioskAppsMixin::kEnterpriseKioskAccountId);
 }
 
 KioskAppsMixin::KioskAppsMixin(InProcessBrowserTestMixinHost* host,
@@ -88,4 +88,4 @@ void KioskAppsMixin::SetUpInProcessBrowserTestFixture() {
                          "1.0.0");
 }
 
-}  // namespace chromeos
+}  // namespace ash

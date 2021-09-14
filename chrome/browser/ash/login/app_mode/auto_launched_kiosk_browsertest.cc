@@ -326,7 +326,7 @@ class AutoLaunchedKioskEphemeralUsersTest : public AutoLaunchedKioskTest {
   // AutoLaunchedKioskTest:
   void SetUpInProcessBrowserTestFixture() override {
     AutoLaunchedKioskTest::SetUpInProcessBrowserTestFixture();
-    std::unique_ptr<chromeos::ScopedDevicePolicyUpdate> device_policy_update =
+    std::unique_ptr<ScopedDevicePolicyUpdate> device_policy_update =
         device_state_.RequestDevicePolicyUpdate();
     device_policy_update->policy_payload()
         ->mutable_ephemeral_users_enabled()

@@ -146,8 +146,8 @@ class SupervisedUserNavigationThrottleTest
 
   bool IsInterstitialBeingShownInMainFrame(Browser* browser);
 
-  virtual chromeos::LoggedInUserMixin::LogInType GetLogInType() {
-    return chromeos::LoggedInUserMixin::LogInType::kChild;
+  virtual ash::LoggedInUserMixin::LogInType GetLogInType() {
+    return ash::LoggedInUserMixin::LogInType::kChild;
   }
 
   content::test::PrerenderTestHelper& prerender_helper() {
@@ -184,7 +184,7 @@ class SupervisedUserNavigationThrottleTest
         std::move(dict_to_insert));
   }
 
-  std::unique_ptr<chromeos::LoggedInUserMixin> logged_in_user_mixin_;
+  std::unique_ptr<ash::LoggedInUserMixin> logged_in_user_mixin_;
   content::test::PrerenderTestHelper prerender_helper_;
 };
 
@@ -201,7 +201,7 @@ bool SupervisedUserNavigationThrottleTest::IsInterstitialBeingShownInMainFrame(
 void SupervisedUserNavigationThrottleTest::SetUp() {
   prerender_helper_.SetUp(embedded_test_server());
   // Polymorphically initiate logged_in_user_mixin_.
-  logged_in_user_mixin_ = std::make_unique<chromeos::LoggedInUserMixin>(
+  logged_in_user_mixin_ = std::make_unique<ash::LoggedInUserMixin>(
       &mixin_host_, GetLogInType(), embedded_test_server(), this);
   MixinBasedInProcessBrowserTest::SetUp();
 }
@@ -713,8 +713,8 @@ class SupervisedUserNavigationThrottleNotSupervisedTest
   SupervisedUserNavigationThrottleNotSupervisedTest() = default;
   ~SupervisedUserNavigationThrottleNotSupervisedTest() override = default;
 
-  chromeos::LoggedInUserMixin::LogInType GetLogInType() override {
-    return chromeos::LoggedInUserMixin::LogInType::kRegular;
+  ash::LoggedInUserMixin::LogInType GetLogInType() override {
+    return ash::LoggedInUserMixin::LogInType::kRegular;
   }
 };
 

@@ -118,16 +118,16 @@ void LoginPolicyTestBase::SkipToLoginScreen() {
 }
 
 void LoginPolicyTestBase::TriggerLogIn() {
-  const LoginManagerMixin::TestUserInfo test_user(account_id());
-  chromeos::UserContext user_context =
-      LoginManagerMixin::CreateDefaultUserContext(test_user);
+  const ash::LoginManagerMixin::TestUserInfo test_user(account_id());
+  auto user_context =
+      ash::LoginManagerMixin::CreateDefaultUserContext(test_user);
   login_manager_.LoginAsNewRegularUser(user_context);
 }
 
 void LoginPolicyTestBase::LogIn() {
   ash::WizardController::SkipPostLoginScreensForTesting();
   TriggerLogIn();
-  chromeos::test::WaitForPrimaryUserSessionStart();
+  ash::test::WaitForPrimaryUserSessionStart();
 }
 
 }  // namespace policy

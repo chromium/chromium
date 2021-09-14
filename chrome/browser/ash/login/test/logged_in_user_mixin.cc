@@ -12,8 +12,7 @@
 #include "components/account_id/account_id.h"
 #include "net/dns/mock_host_resolver.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 user_manager::UserType ConvertUserType(LoggedInUserMixin::LogInType type) {
@@ -108,4 +107,4 @@ void LoggedInUserMixin::LogInUser(bool issue_any_scope_token,
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

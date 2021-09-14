@@ -40,6 +40,7 @@ using ::chromeos::prefs::kGaiaLockScreenOfflineSigninTimeLimitDays;
 using ::chromeos::prefs::kGaiaOfflineSigninTimeLimitDays;
 using ::chromeos::prefs::kLastLoginInputMethod;
 using ::chromeos::prefs::kLockScreenReauthenticationEnabled;
+using ::chromeos::prefs::kOobeComplete;
 using ::chromeos::prefs::kOobeMarketingOptInChoice;
 using ::chromeos::prefs::kOobeMarketingOptInScreenFinished;
 using ::chromeos::prefs::kOobeOnboardingTime;

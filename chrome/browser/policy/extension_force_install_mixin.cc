@@ -365,7 +365,7 @@ void UpdatePolicyViaMockPolicyProvider(
 void UpdatePolicyViaDeviceStateMixin(
     const extensions::ExtensionId& extension_id,
     const GURL& update_manifest_url,
-    chromeos::DeviceStateMixin* device_state_mixin) {
+    ash::DeviceStateMixin* device_state_mixin) {
   device_state_mixin->RequestDevicePolicyUpdate()
       ->policy_payload()
       ->mutable_device_login_screen_extensions()
@@ -410,7 +410,7 @@ void ExtensionForceInstallMixin::InitWithMockPolicyProvider(
 
 void ExtensionForceInstallMixin::InitWithDeviceStateMixin(
     Profile* profile,
-    chromeos::DeviceStateMixin* device_state_mixin) {
+    ash::DeviceStateMixin* device_state_mixin) {
   DCHECK(profile);
   DCHECK(device_state_mixin);
   DCHECK(!profile_) << "Init already called";

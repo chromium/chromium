@@ -27,9 +27,8 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 
-namespace chromeos {
+namespace ash {
 namespace test {
-
 namespace {
 
 void WaitFor(OobeScreenId screen_id) {
@@ -49,7 +48,7 @@ void WaitForWelcomeScreen() {
 }
 
 void TapWelcomeNext() {
-  test::OobeJS().TapOnPath({"connect", "welcomeScreen", "getStarted"});
+  OobeJS().TapOnPath({"connect", "welcomeScreen", "getStarted"});
 }
 
 void WaitForNetworkSelectionScreen() {
@@ -57,16 +56,16 @@ void WaitForNetworkSelectionScreen() {
 }
 
 void TapNetworkSelectionNext() {
-  test::OobeJS()
+  OobeJS()
       .CreateEnabledWaiter(true /* enabled */,
                            {"network-selection", "nextButton"})
       ->Wait();
-  test::OobeJS().TapOnPath({"network-selection", "nextButton"});
+  OobeJS().TapOnPath({"network-selection", "nextButton"});
 }
 
 void WaitForUpdateScreen() {
   WaitFor(UpdateView::kScreenId);
-  test::OobeJS().CreateVisibilityWaiter(true, {"oobe-update"})->Wait();
+  OobeJS().CreateVisibilityWaiter(true, {"oobe-update"})->Wait();
 }
 
 void ExitUpdateScreenNoUpdate() {
@@ -83,20 +82,20 @@ void WaitForFingerprintScreen() {
   OobeScreenWaiter(FingerprintSetupScreenView::kScreenId).Wait();
   LOG(INFO) << "Waiting for fingerprint setup screen "
                "to show.";
-  test::OobeJS().CreateVisibilityWaiter(true, {"fingerprint-setup"})->Wait();
+  OobeJS().CreateVisibilityWaiter(true, {"fingerprint-setup"})->Wait();
   LOG(INFO) << "Waiting for fingerprint setup screen "
                "to show setupFingerprint.";
-  test::OobeJS()
+  OobeJS()
       .CreateVisibilityWaiter(true, {"fingerprint-setup", "setupFingerprint"})
       ->Wait();
 }
 
 void ExitFingerprintPinSetupScreen() {
-  test::OobeJS().ExpectVisiblePath({"fingerprint-setup", "setupFingerprint"});
+  OobeJS().ExpectVisiblePath({"fingerprint-setup", "setupFingerprint"});
   // This might be the last step in flow. Synchronous execute gets stuck as
   // WebContents may be destroyed in the process. So it may never return.
   // So we use ExecuteAsync() here.
-  test::OobeJS().ExecuteAsync("$('fingerprint-setup').$.skipStart.click()");
+  OobeJS().ExecuteAsync("$('fingerprint-setup').$.skipStart.click()");
   LOG(INFO) << "OobeInteractiveUITest: Waiting for fingerprint setup screen "
                "to close.";
   WaitForExit(FingerprintSetupScreenView::kScreenId);
@@ -110,22 +109,22 @@ void ExitPinSetupScreen() {
   // This might be the last step in flow. Synchronous execute gets stuck as
   // WebContents may be destroyed in the process. So it may never return.
   // So we use ExecuteAsync() here.
-  test::OobeJS().ExecuteAsync("$('pin-setup').$.setupSkipButton.click()");
+  OobeJS().ExecuteAsync("$('pin-setup').$.setupSkipButton.click()");
   WaitForExit(PinSetupScreenView::kScreenId);
 }
 
 void SkipToEnrollmentOnRecovery() {
-  test::WaitForWelcomeScreen();
-  test::TapWelcomeNext();
+  WaitForWelcomeScreen();
+  TapWelcomeNext();
 
-  test::WaitForNetworkSelectionScreen();
-  test::TapNetworkSelectionNext();
+  WaitForNetworkSelectionScreen();
+  TapNetworkSelectionNext();
 
   WaitForEulaScreen();
   TapEulaAccept();
 
-  test::WaitForUpdateScreen();
-  test::ExitUpdateScreenNoUpdate();
+  WaitForUpdateScreen();
+  ExitUpdateScreenNoUpdate();
 
   WaitFor(EnrollmentScreenView::kScreenId);
 }
@@ -139,7 +138,7 @@ void WaitForUserCreationScreen() {
 }
 
 void TapUserCreationNext() {
-  test::OobeJS().TapOnPath({"user-creation", "nextButton"});
+  OobeJS().TapOnPath({"user-creation", "nextButton"});
 }
 
 void WaitForOobeJSReady() {
@@ -166,7 +165,7 @@ void WaitForEulaScreen() {
 void TapEulaAccept() {
   if (!WizardController::IsBrandedBuild())
     return;
-  test::OobeJS().TapOnPath({"oobe-eula-md", "acceptButton"});
+  OobeJS().TapOnPath({"oobe-eula-md", "acceptButton"});
 }
 
 void WaitForSyncConsentScreen() {
@@ -188,17 +187,17 @@ void ExitScreenSyncConsent() {
 }
 
 void ClickSignInFatalScreenActionButton() {
-  test::OobeJS().ClickOnPath({"signin-fatal-error", "actionButton"});
+  OobeJS().ClickOnPath({"signin-fatal-error", "actionButton"});
 }
 
 bool IsScanningRequestedOnNetworkScreen() {
-  return test::OobeJS().GetAttributeBool(
+  return OobeJS().GetAttributeBool(
       "enableWifiScans",
       {"network-selection", "networkSelectLogin", "networkSelect"});
 }
 
 bool IsScanningRequestedOnErrorScreen() {
-  return test::OobeJS().GetAttributeBool(
+  return OobeJS().GetAttributeBool(
       "enableWifiScans",
       {"error-message", "offline-network-control", "networkSelect"});
 }
@@ -221,4 +220,4 @@ LanguageReloadObserver::~LanguageReloadObserver() {
 }
 
 }  // namespace test
-}  // namespace chromeos
+}  // namespace ash

@@ -137,9 +137,9 @@ class MinimumVersionPolicyTestBase : public chromeos::LoginManagerTest {
   DevicePolicyCrosTestHelper helper_;
   base::test::ScopedFeatureList feature_list_;
   chromeos::FakeUpdateEngineClient* fake_update_engine_client_ = nullptr;
-  chromeos::DeviceStateMixin device_state_{
+  ash::DeviceStateMixin device_state_{
       &mixin_host_,
-      chromeos::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+      ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
   absl::optional<base::test::ScopedChromeOSVersionInfo> version_info_;
 };
 
@@ -218,11 +218,11 @@ class MinimumVersionPolicyTest : public MinimumVersionPolicyTestBase {
   void LoginUnmanagedUser();
 
  protected:
-  const chromeos::LoginManagerMixin::TestUserInfo managed_user{
+  const ash::LoginManagerMixin::TestUserInfo managed_user{
       AccountId::FromUserEmailGaiaId(kManagedUserId, kManagedUserGaiaId)};
-  chromeos::UserPolicyMixin user_policy_mixin_{&mixin_host_,
-                                               managed_user.account_id};
-  chromeos::LoginManagerMixin login_manager_{&mixin_host_, {managed_user}};
+  ash::UserPolicyMixin user_policy_mixin_{&mixin_host_,
+                                          managed_user.account_id};
+  ash::LoginManagerMixin login_manager_{&mixin_host_, {managed_user}};
   std::unique_ptr<chromeos::NetworkStateTestHelper> network_state_test_helper_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
   std::unique_ptr<ash::SystemTrayTestApi> tray_test_api_;
@@ -234,8 +234,7 @@ void MinimumVersionPolicyTest::LoginManagedUser() {
   EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
             session_manager::SessionState::LOGIN_PRIMARY);
 
-  auto context =
-      chromeos::LoginManagerMixin::CreateDefaultUserContext(managed_user);
+  auto context = ash::LoginManagerMixin::CreateDefaultUserContext(managed_user);
   login_manager_.LoginAndWaitForActiveSession(context);
   EXPECT_EQ(user_manager::UserManager::Get()->GetLoggedInUsers().size(), 1u);
   EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
@@ -264,14 +263,13 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, CriticalUpdateOnLoginScreen) {
       CreateMinimumVersionSingleRequirementPolicyValue(
           kNewVersion, kNoWarning, kNoWarning,
           false /* unmanaged_user_restricted */));
-  chromeos::OobeScreenWaiter(chromeos::UpdateRequiredView::kScreenId).Wait();
+  ash::OobeScreenWaiter(chromeos::UpdateRequiredView::kScreenId).Wait();
   EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
 
   // Revoke policy and check update required screen is hidden.
   base::Value empty_policy(base::Value::Type::DICTIONARY);
   SetDevicePolicyAndWaitForSettingChange(empty_policy);
-  chromeos::OobeScreenExitWaiter(chromeos::UpdateRequiredView::kScreenId)
-      .Wait();
+  ash::OobeScreenExitWaiter(chromeos::UpdateRequiredView::kScreenId).Wait();
   EXPECT_FALSE(ash::LoginScreenTestApi::IsOobeDialogVisible());
 }
 
@@ -692,13 +690,12 @@ class MinimumVersionNoUsersLoginTest : public MinimumVersionPolicyTestBase {
   ~MinimumVersionNoUsersLoginTest() override = default;
 
  protected:
-  chromeos::LoginManagerMixin login_manager_{&mixin_host_};
+  ash::LoginManagerMixin login_manager_{&mixin_host_};
 };
 
 IN_PROC_BROWSER_TEST_F(MinimumVersionNoUsersLoginTest,
                        CriticalUpdateOnLoginScreen) {
-  chromeos::OobeScreenWaiter(chromeos::OobeBaseTest::GetFirstSigninScreen())
-      .Wait();
+  ash::OobeScreenWaiter(ash::OobeBaseTest::GetFirstSigninScreen()).Wait();
   EXPECT_EQ(ash::LoginScreenTestApi::GetUsersCount(), 0);
   SetDevicePolicyAndWaitForSettingChange(
       CreateMinimumVersionSingleRequirementPolicyValue(
@@ -706,17 +703,15 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionNoUsersLoginTest,
           false /* unmanaged_user_restricted */));
 
   // Check update required screen is shown on the login screen.
-  chromeos::OobeScreenWaiter(chromeos::UpdateRequiredView::kScreenId).Wait();
+  ash::OobeScreenWaiter(chromeos::UpdateRequiredView::kScreenId).Wait();
   EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
 
   // Revoke policy and check update required screen is hidden and gaia screen is
   // shown.
   base::Value empty_policy(base::Value::Type::DICTIONARY);
   SetDevicePolicyAndWaitForSettingChange(empty_policy);
-  chromeos::OobeScreenExitWaiter(chromeos::UpdateRequiredView::kScreenId)
-      .Wait();
-  chromeos::OobeScreenWaiter(chromeos::OobeBaseTest::GetFirstSigninScreen())
-      .Wait();
+  ash::OobeScreenExitWaiter(chromeos::UpdateRequiredView::kScreenId).Wait();
+  ash::OobeScreenWaiter(ash::OobeBaseTest::GetFirstSigninScreen()).Wait();
 }
 
 class MinimumVersionPolicyPresentTest : public MinimumVersionPolicyTestBase {
@@ -740,7 +735,7 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyPresentTest,
   // the device.
   EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
             session_manager::SessionState::LOGIN_PRIMARY);
-  chromeos::OobeScreenWaiter(chromeos::UpdateRequiredView::kScreenId).Wait();
+  ash::OobeScreenWaiter(chromeos::UpdateRequiredView::kScreenId).Wait();
   EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
 }
 
@@ -752,7 +747,7 @@ class MinimumVersionExistingUserTest : public MinimumVersionPolicyPresentTest {
   }
 
  protected:
-  chromeos::LoginManagerMixin login_mixin_{&mixin_host_};
+  ash::LoginManagerMixin login_mixin_{&mixin_host_};
 };
 
 IN_PROC_BROWSER_TEST_F(MinimumVersionExistingUserTest, DeadlineReached) {
@@ -760,7 +755,7 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionExistingUserTest, DeadlineReached) {
   // the device.
   EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
             session_manager::SessionState::LOGIN_PRIMARY);
-  chromeos::OobeScreenWaiter(chromeos::UpdateRequiredView::kScreenId).Wait();
+  ash::OobeScreenWaiter(chromeos::UpdateRequiredView::kScreenId).Wait();
   EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
 }
 
@@ -789,7 +784,7 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionBeforeLoginHost, DeadlineReached) {
   ShowLoginWizard(chromeos::OobeScreen::SCREEN_UNKNOWN);
   EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
             session_manager::SessionState::LOGIN_PRIMARY);
-  chromeos::OobeScreenWaiter(chromeos::UpdateRequiredView::kScreenId).Wait();
+  ash::OobeScreenWaiter(chromeos::UpdateRequiredView::kScreenId).Wait();
   EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
 }
 
@@ -823,7 +818,7 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPublicSessionAutoLoginTest,
   // reboot.
   EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
             session_manager::SessionState::LOGIN_PRIMARY);
-  chromeos::OobeScreenWaiter(chromeos::UpdateRequiredView::kScreenId).Wait();
+  ash::OobeScreenWaiter(chromeos::UpdateRequiredView::kScreenId).Wait();
   EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
   EXPECT_FALSE(chromeos::ExistingUserController::current_controller()
                    ->IsSigninInProgress());
@@ -851,8 +846,7 @@ class MinimumVersionKioskAutoLoginTest : public MinimumVersionExistingUserTest {
 IN_PROC_BROWSER_TEST_F(MinimumVersionKioskAutoLoginTest, AllowAutoLaunch) {
   EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
             session_manager::SessionState::LOGIN_PRIMARY);
-  chromeos::OobeScreenWaiter(chromeos::AppLaunchSplashScreenView::kScreenId)
-      .Wait();
+  ash::OobeScreenWaiter(chromeos::AppLaunchSplashScreenView::kScreenId).Wait();
   // Policy handler returns early when device is setup in auto launch kiosk
   // mode.
   PrefService* prefs = g_browser_process->local_state();
@@ -867,12 +861,12 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionKioskAutoLoginTest, AllowAutoLaunch) {
 
 class MinimumVersionTimerExpiredOnLogin
     : public MinimumVersionPolicyTestBase,
-      public chromeos::LocalStateMixin::Delegate {
+      public ash::LocalStateMixin::Delegate {
  public:
   MinimumVersionTimerExpiredOnLogin() = default;
   ~MinimumVersionTimerExpiredOnLogin() override = default;
 
-  // chromeos::LocalStateMixin::Delegate:
+  // ash::LocalStateMixin::Delegate:
   void SetUpLocalState() override {
     // Set up local state to reflect that update required deadline has passed
     // when device is rebooted.
@@ -893,14 +887,14 @@ class MinimumVersionTimerExpiredOnLogin
   }
 
  private:
-  chromeos::LocalStateMixin local_state_mixin_{&mixin_host_, this};
+  ash::LocalStateMixin local_state_mixin_{&mixin_host_, this};
 };
 
 IN_PROC_BROWSER_TEST_F(MinimumVersionTimerExpiredOnLogin, DeadlinePassed) {
   // Show update required screen as deadline to update the device has passed.
   EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
             session_manager::SessionState::LOGIN_PRIMARY);
-  chromeos::OobeScreenWaiter(chromeos::UpdateRequiredView::kScreenId).Wait();
+  ash::OobeScreenWaiter(chromeos::UpdateRequiredView::kScreenId).Wait();
   EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
 }
 
@@ -922,13 +916,12 @@ class MinimumVersionPolicyChildUser : public MinimumVersionPolicyTestBase {
   }
 
  private:
-  const chromeos::LoginManagerMixin::TestUserInfo child_user{
-      AccountId::FromUserEmailGaiaId(chromeos::test::kTestEmail,
-                                     chromeos::test::kTestGaiaId)};
-  chromeos::UserPolicyMixin user_policy_mixin_{&mixin_host_,
-                                               child_user.account_id};
-  chromeos::FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
-  chromeos::LoginManagerMixin login_manager_{&mixin_host_, {}, &fake_gaia_};
+  const ash::LoginManagerMixin::TestUserInfo child_user{
+      AccountId::FromUserEmailGaiaId(ash::test::kTestEmail,
+                                     ash::test::kTestGaiaId)};
+  ash::UserPolicyMixin user_policy_mixin_{&mixin_host_, child_user.account_id};
+  ash::FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  ash::LoginManagerMixin login_manager_{&mixin_host_, {}, &fake_gaia_};
 };
 
 IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyChildUser,

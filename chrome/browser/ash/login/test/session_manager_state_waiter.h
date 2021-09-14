@@ -12,8 +12,7 @@
 #include "components/session_manager/core/session_manager_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace test {
 
 // Waits for the primary user's session to start, or returns immediately if a
@@ -49,15 +48,15 @@ class SessionStateWaiter : public session_manager::SessionManagerObserver {
   DISALLOW_COPY_AND_ASSIGN(SessionStateWaiter);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-using ::chromeos::SessionStateWaiter;
+namespace chromeos {
+using ::ash::SessionStateWaiter;
 namespace test {
-using ::chromeos::test::WaitForPrimaryUserSessionStart;
+using ::ash::test::WaitForPrimaryUserSessionStart;
 }  // namespace test
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_SESSION_MANAGER_STATE_WAITER_H_

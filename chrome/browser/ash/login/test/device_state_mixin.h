@@ -18,7 +18,7 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 
-namespace chromeos {
+namespace ash {
 
 // A mixin for setting up device state:
 // *   OOBE completion state
@@ -124,12 +124,12 @@ class DeviceStateMixin : public InProcessBrowserTestMixin,
   DISALLOW_COPY_AND_ASSIGN(DeviceStateMixin);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-using ::chromeos::DeviceStateMixin;
+namespace chromeos {
+using ::ash::DeviceStateMixin;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_DEVICE_STATE_MIXIN_H_

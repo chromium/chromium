@@ -16,8 +16,7 @@ namespace net {
 class ScopedTestRoot;
 }
 
-namespace chromeos {
-
+namespace ash {
 class ForwardingServer;
 
 // An https test server that forwards all requests to another server. This
@@ -47,12 +46,12 @@ class HTTPSForwarder {
   DISALLOW_COPY_AND_ASSIGN(HTTPSForwarder);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-using ::chromeos::HTTPSForwarder;
+namespace chromeos {
+using ::ash::HTTPSForwarder;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_HTTPS_FORWARDER_H_

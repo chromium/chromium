@@ -33,9 +33,9 @@ class MockConfigurationPolicyProvider;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
-namespace chromeos {
+namespace ash {
 class DeviceStateMixin;
-}  // namespace chromeos
+}
 
 namespace policy {
 class DevicePolicyCrosTestHelper;
@@ -104,7 +104,7 @@ class ExtensionForceInstallMixin final : public InProcessBrowserTestMixin {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void InitWithDeviceStateMixin(Profile* profile,
-                                chromeos::DeviceStateMixin* device_state_mixin);
+                                ash::DeviceStateMixin* device_state_mixin);
   void InitWithDevicePolicyCrosTestHelper(
       Profile* profile,
       policy::DevicePolicyCrosTestHelper* device_policy_cros_test_helper);
@@ -190,7 +190,7 @@ class ExtensionForceInstallMixin final : public InProcessBrowserTestMixin {
   Profile* profile_ = nullptr;
   policy::MockConfigurationPolicyProvider* mock_policy_provider_ = nullptr;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::DeviceStateMixin* device_state_mixin_ = nullptr;
+  ash::DeviceStateMixin* device_state_mixin_ = nullptr;
   policy::DevicePolicyCrosTestHelper* device_policy_cros_test_helper_ = nullptr;
 #endif
 };

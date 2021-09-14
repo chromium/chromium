@@ -959,7 +959,7 @@ class DesksClientMultiProfileTest : public chromeos::LoginManagerTest {
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-  LoginManagerMixin login_mixin_{&mixin_host_};
+  ash::LoginManagerMixin login_mixin_{&mixin_host_};
   AccountId account_id1_;
   AccountId account_id2_;
 };

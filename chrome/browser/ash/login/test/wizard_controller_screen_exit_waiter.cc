@@ -9,7 +9,7 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 WizardControllerExitWaiter::WizardControllerExitWaiter(OobeScreenId screen_id)
     : WizardControllerExitWaiter(
@@ -68,4 +68,4 @@ void WizardControllerExitWaiter::EndWait() {
   run_loop_->Quit();
 }
 
-}  // namespace chromeos
+}  // namespace ash

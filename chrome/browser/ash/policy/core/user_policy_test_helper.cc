@@ -29,7 +29,7 @@ namespace policy {
 
 UserPolicyTestHelper::UserPolicyTestHelper(
     const std::string& account_id,
-    chromeos::LocalPolicyTestServerMixin* local_policy_server)
+    ash::LocalPolicyTestServerMixin* local_policy_server)
     : account_id_(account_id), local_policy_server_(local_policy_server) {}
 
 UserPolicyTestHelper::~UserPolicyTestHelper() {}

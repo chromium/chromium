@@ -98,7 +98,7 @@ class ChromeOsMirrorAccountConsistencyTest : public chromeos::LoginManagerTest {
   }
 
   AccountId account_id_;
-  chromeos::LoginManagerMixin login_mixin_{&mixin_host_};
+  ash::LoginManagerMixin login_mixin_{&mixin_host_};
 
  protected:
   std::unique_ptr<net::EmbeddedTestServer> test_server_;

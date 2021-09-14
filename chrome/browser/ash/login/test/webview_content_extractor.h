@@ -7,7 +7,7 @@
 
 #include <string>
 
-namespace chromeos {
+namespace ash {
 namespace test {
 
 // Returns the contents of the <webview> identified by `element_ids`.
@@ -17,6 +17,15 @@ std::string GetWebViewContents(
 // Returns the contents of the <webview> identified by `element_id`.
 std::string GetWebViewContentsById(const std::string& element_id);
 
+}  // namespace test
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+namespace test {
+using ::ash::test::GetWebViewContents;
+using ::ash::test::GetWebViewContentsById;
 }  // namespace test
 }  // namespace chromeos
 

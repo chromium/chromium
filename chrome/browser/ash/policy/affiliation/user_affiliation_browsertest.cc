@@ -160,7 +160,7 @@ class UserAffiliationBrowserTest
     MixinBasedInProcessBrowserTest::CreatedBrowserMainParts(browser_main_parts);
 
     login_ui_visible_waiter_ =
-        std::make_unique<chromeos::LoginOrLockScreenVisibleWaiter>();
+        std::make_unique<ash::LoginOrLockScreenVisibleWaiter>();
   }
 
   void SetUpOnMainThread() override {
@@ -236,15 +236,14 @@ class UserAffiliationBrowserTest
 
   std::unique_ptr<crypto::ScopedTestSystemNSSKeySlot> test_system_slot_;
 
-  std::unique_ptr<chromeos::LoginOrLockScreenVisibleWaiter>
-      login_ui_visible_waiter_;
+  std::unique_ptr<ash::LoginOrLockScreenVisibleWaiter> login_ui_visible_waiter_;
 
-  chromeos::DeviceStateMixin device_state_{
+  ash::DeviceStateMixin device_state_{
       &mixin_host_,
       GetParam().active_directory
-          ? chromeos::DeviceStateMixin::State::
+          ? ash::DeviceStateMixin::State::
                 OOBE_COMPLETED_ACTIVE_DIRECTORY_ENROLLED
-          : chromeos::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+          : ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
 
   DISALLOW_COPY_AND_ASSIGN(UserAffiliationBrowserTest);
 };

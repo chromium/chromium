@@ -87,14 +87,14 @@ struct BlockingLoginTestParam {
 // to see if the profile finishes loading which is not at all what it is
 // intended to test. We need to fix this test or remove it (crbug.com/580537).
 class BlockingLoginTest
-    : public OobeBaseTest,
+    : public ash::OobeBaseTest,
       public content::NotificationObserver,
       public testing::WithParamInterface<BlockingLoginTestParam> {
  public:
   BlockingLoginTest() : profile_added_(NULL) {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    OobeBaseTest::SetUpCommandLine(command_line);
+    ash::OobeBaseTest::SetUpCommandLine(command_line);
 
     command_line->AppendSwitchASCII(
         switches::kDeviceManagementUrl,
@@ -105,13 +105,13 @@ class BlockingLoginTest
     registrar_.Add(this, chrome::NOTIFICATION_PROFILE_ADDED,
                    content::NotificationService::AllSources());
 
-    OobeBaseTest::SetUpOnMainThread();
+    ash::OobeBaseTest::SetUpOnMainThread();
   }
 
   void TearDownOnMainThread() override {
     RunUntilIdle();
     EXPECT_TRUE(responses_.empty());
-    OobeBaseTest::TearDownOnMainThread();
+    ash::OobeBaseTest::TearDownOnMainThread();
   }
 
   void Observe(int type,

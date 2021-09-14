@@ -133,8 +133,8 @@ class SupervisedUserURLFilterTest : public MixinBasedInProcessBrowserTest {
 
   SupervisedUserService* supervised_user_service_ = nullptr;
 
-  chromeos::LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_, chromeos::LoggedInUserMixin::LogInType::kChild,
+  ash::LoggedInUserMixin logged_in_user_mixin_{
+      &mixin_host_, ash::LoggedInUserMixin::LogInType::kChild,
       embedded_test_server(), this};
 };
 

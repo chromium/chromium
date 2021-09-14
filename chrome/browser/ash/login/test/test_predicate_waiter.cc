@@ -8,7 +8,7 @@
 #include "base/logging.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace test {
 namespace {
 
@@ -47,4 +47,4 @@ void TestPredicateWaiter::CheckPredicate() {
 }
 
 }  // namespace test
-}  // namespace chromeos
+}  // namespace ash

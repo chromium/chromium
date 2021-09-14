@@ -18,7 +18,7 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/login/test/embedded_test_server_mixin.h"
+#include "chrome/browser/ash/login/test/embedded_test_server_setup_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/profiles/profile_manager.h"

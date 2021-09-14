@@ -192,9 +192,9 @@ class DisplayRotationBootTest
     MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
   }
 
-  chromeos::DeviceStateMixin device_state_{
+  ash::DeviceStateMixin device_state_{
       &mixin_host_,
-      chromeos::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+      ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
 
   DevicePolicyCrosTestHelper* policy_helper() { return &policy_helper_; }
   DeviceDisplayCrosTestHelper* display_helper() { return &display_helper_; }

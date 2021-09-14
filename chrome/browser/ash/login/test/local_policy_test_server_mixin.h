@@ -12,18 +12,15 @@
 #include "base/values.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/system/fake_statistics_provider.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/policy/test_support/local_policy_test_server.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-
-namespace system {
-class ScopedFakeStatisticsProvider;
-}  // namespace system
-
+namespace ash {
 namespace test {
 
 // Test constants used during enrollment wherever appropriate.
@@ -135,17 +132,12 @@ class LocalPolicyTestServerMixin : public InProcessBrowserTestMixin {
   DISALLOW_COPY_AND_ASSIGN(LocalPolicyTestServerMixin);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-using ::chromeos::LocalPolicyTestServerMixin;
-namespace test {
-using ::chromeos::test::kTestDomain;
-using ::chromeos::test::kTestRlzBrandCodeKey;
-using ::chromeos::test::kTestSerialNumber;
-}  // namespace test
-}  // namespace ash
+namespace chromeos {
+using ::ash::LocalPolicyTestServerMixin;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_LOCAL_POLICY_TEST_SERVER_MIXIN_H_

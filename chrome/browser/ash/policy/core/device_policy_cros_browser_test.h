@@ -124,9 +124,9 @@ class DevicePolicyCrosBrowserTest : public MixinBasedInProcessBrowserTest {
 
   chromeos::FakeSessionManagerClient* session_manager_client();
 
-  chromeos::DeviceStateMixin device_state_{
+  ash::DeviceStateMixin device_state_{
       &mixin_host_,
-      chromeos::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+      ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
 
   DevicePolicyCrosTestHelper* policy_helper() { return &policy_helper_; }
 

@@ -574,7 +574,7 @@ class SystemWebAppManagerMultiDesktopLaunchBrowserTest
 
  protected:
   std::unique_ptr<TestSystemWebAppInstallation> installation_;
-  chromeos::LoginManagerMixin login_mixin_{&mixin_host_};
+  ash::LoginManagerMixin login_mixin_{&mixin_host_};
   AccountId account_id1_;
   AccountId account_id2_;
 };

@@ -16,7 +16,7 @@
 #include "components/policy/test_support/local_policy_test_server.h"
 #include "content/public/test/browser_test_utils.h"
 
-namespace chromeos {
+namespace ash {
 
 // Handles interaction with Active Directory login screen and Active Directory
 // password change screen.
@@ -85,12 +85,12 @@ class ActiveDirectoryLoginMixin : public InProcessBrowserTestMixin {
   DISALLOW_COPY_AND_ASSIGN(ActiveDirectoryLoginMixin);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-using ::chromeos::ActiveDirectoryLoginMixin;
+namespace chromeos {
+using ::ash::ActiveDirectoryLoginMixin;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_ACTIVE_DIRECTORY_LOGIN_MIXIN_H_

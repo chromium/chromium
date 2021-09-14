@@ -13,8 +13,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 class TestMainExtraPart : public ChromeBrowserMainExtraParts {
@@ -64,4 +63,4 @@ LocalStateMixin::LocalStateMixin::Delegate::~Delegate() {
   EXPECT_TRUE(setup_called_) << "Forgot to use LocalStateMixin?";
 }
 
-}  // namespace chromeos
+}  // namespace ash

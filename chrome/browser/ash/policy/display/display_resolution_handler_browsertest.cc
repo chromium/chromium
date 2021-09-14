@@ -320,9 +320,9 @@ class DisplayResolutionBootTest
     MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
   }
 
-  chromeos::DeviceStateMixin device_state_{
+  ash::DeviceStateMixin device_state_{
       &mixin_host_,
-      chromeos::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+      ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
 
   DeviceDisplayCrosTestHelper* display_helper() { return &helper_; }
   DevicePolicyCrosTestHelper* policy_helper() { return &policy_helper_; }

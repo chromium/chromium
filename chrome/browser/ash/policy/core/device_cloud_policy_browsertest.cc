@@ -185,7 +185,7 @@ class KeyRotationDeviceCloudPolicyTest : public DevicePolicyCrosBrowserTest {
     }
   }
 
-  chromeos::LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
+  ash::LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
   std::unique_ptr<PolicyChangeRegistrar> policy_change_registrar_;
   int awaited_policy_value_ = -1;
   std::unique_ptr<base::RunLoop> policy_change_waiting_run_loop_;
@@ -372,7 +372,7 @@ class SigninExtensionsDeviceCloudPolicyBrowserTest
     builder->Build();
   }
 
-  chromeos::LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
+  ash::LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
 
   DISALLOW_COPY_AND_ASSIGN(SigninExtensionsDeviceCloudPolicyBrowserTest);
 };

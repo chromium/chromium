@@ -36,7 +36,7 @@ class SystemMenuModelBuilderMultiUserTest : public chromeos::LoginManagerTest {
  protected:
   AccountId account_id1_;
   AccountId account_id2_;
-  chromeos::LoginManagerMixin login_mixin_{&mixin_host_};
+  ash::LoginManagerMixin login_mixin_{&mixin_host_};
 };
 
 // Regression test for https://crbug.com/1023043

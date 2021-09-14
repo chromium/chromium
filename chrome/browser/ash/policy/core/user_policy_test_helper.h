@@ -13,12 +13,12 @@
 
 class Profile;
 
-namespace base {
-class Value;
+namespace ash {
+class LocalPolicyTestServerMixin;
 }
 
-namespace chromeos {
-class LocalPolicyTestServerMixin;
+namespace base {
+class Value;
 }
 
 namespace policy {
@@ -27,9 +27,8 @@ namespace policy {
 // BrowserTest.
 class UserPolicyTestHelper {
  public:
-  UserPolicyTestHelper(
-      const std::string& account_id,
-      chromeos::LocalPolicyTestServerMixin* local_policy_server);
+  UserPolicyTestHelper(const std::string& account_id,
+                       ash::LocalPolicyTestServerMixin* local_policy_server);
   virtual ~UserPolicyTestHelper();
 
   void SetPolicy(const base::Value& mandatory, const base::Value& recommended);
@@ -50,7 +49,7 @@ class UserPolicyTestHelper {
 
  private:
   const std::string account_id_;
-  chromeos::LocalPolicyTestServerMixin* local_policy_server_;
+  ash::LocalPolicyTestServerMixin* local_policy_server_;
 
   DISALLOW_COPY_AND_ASSIGN(UserPolicyTestHelper);
 };

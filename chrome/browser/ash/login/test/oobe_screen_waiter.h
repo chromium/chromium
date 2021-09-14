@@ -17,7 +17,7 @@ namespace base {
 class RunLoop;
 }
 
-namespace chromeos {
+namespace ash {
 
 // A waiter that blocks until the target oobe screen is reached.
 class OobeScreenWaiter : public OobeUI::Observer,
@@ -86,11 +86,12 @@ class OobeScreenWaiter : public OobeUI::Observer,
   DISALLOW_COPY_AND_ASSIGN(OobeScreenWaiter);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::OobeScreenWaiter;
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::OobeScreenWaiter;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_OOBE_SCREEN_WAITER_H_

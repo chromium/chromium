@@ -12,10 +12,11 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/test/embedded_test_server/http_response.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
+
 constexpr char kGAIAHost[] = "accounts.google.com";
+
 }  // namespace
 
 // static
@@ -157,4 +158,4 @@ void FakeGaiaMixin::TearDownOnMainThread() {
   EXPECT_TRUE(gaia_https_forwarder_.Stop());
 }
 
-}  // namespace chromeos
+}  // namespace ash

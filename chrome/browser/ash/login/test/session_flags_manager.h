@@ -18,7 +18,7 @@ class CommandLine;
 class Value;
 }  // namespace base
 
-namespace chromeos {
+namespace ash {
 namespace test {
 
 // Test helper that sets up command line for login tests. By default, it
@@ -112,6 +112,6 @@ class SessionFlagsManager {
 };
 
 }  // namespace test
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_SESSION_FLAGS_MANAGER_H_

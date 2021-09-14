@@ -107,18 +107,17 @@ class ShillProfileLoadingTest : public LoginManagerTest {
     chromeos::SessionManagerClient::InitializeFakeInMemory();
   }
 
-  const chromeos::LoginManagerMixin::TestUserInfo unmanaged_user_{
+  const LoginManagerMixin::TestUserInfo unmanaged_user_{
       AccountId::FromUserEmailGaiaId(kUnmanagedUser, kUnmanagedGaiaID)};
-  const chromeos::LoginManagerMixin::TestUserInfo secondary_unmanaged_user_{
+  const LoginManagerMixin::TestUserInfo secondary_unmanaged_user_{
       AccountId::FromUserEmailGaiaId(kSecondaryUnmanagedUser,
                                      kSecondaryUnmanagedGaiaID)};
-  const chromeos::LoginManagerMixin::TestUserInfo managed_user_{
+  const LoginManagerMixin::TestUserInfo managed_user_{
       AccountId::FromUserEmailGaiaId(kManagedUser, kManagedGaiaID)};
 
-  chromeos::UserPolicyMixin user_policy_mixin_{&mixin_host_,
-                                               managed_user_.account_id};
-  chromeos::LoginManagerMixin login_manager_{&mixin_host_,
-                                             {managed_user_, unmanaged_user_}};
+  UserPolicyMixin user_policy_mixin_{&mixin_host_, managed_user_.account_id};
+  LoginManagerMixin login_manager_{&mixin_host_,
+                                   {managed_user_, unmanaged_user_}};
 };
 
 // Verifies that the LoadShillProfile method call is invoked on

@@ -18,7 +18,7 @@ namespace base {
 class CommandLine;
 }
 
-namespace chromeos {
+namespace ash {
 
 class FakeGaiaMixin : public InProcessBrowserTestMixin {
  public:
@@ -118,11 +118,11 @@ class FakeGaiaMixin : public InProcessBrowserTestMixin {
   DISALLOW_COPY_AND_ASSIGN(FakeGaiaMixin);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove once the migration is finished.
-namespace ash {
-using ::chromeos::FakeGaiaMixin;
+namespace chromeos {
+using ::ash::FakeGaiaMixin;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_FAKE_GAIA_MIXIN_H_

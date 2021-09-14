@@ -18,7 +18,7 @@
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
-#include "chrome/browser/ash/login/test/embedded_test_server_mixin.h"
+#include "chrome/browser/ash/login/test/embedded_test_server_setup_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/guest_session_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -231,7 +231,7 @@ void TestSystemTrayIsVisible() {
   EXPECT_TRUE(tray->GetVisible());
 
   // Wait for the system tray be inside primary bounds.
-  chromeos::test::TestPredicateWaiter(
+  test::TestPredicateWaiter(
       base::BindRepeating(
           [](const aura::Window* primary_win,
              const ash::TrayBackgroundView* tray) {

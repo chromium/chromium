@@ -191,4 +191,10 @@ class COMPONENT_EXPORT(AUTHPOLICY) FakeAuthPolicyClient
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::FakeAuthPolicyClient;
+}
+
 #endif  // CHROMEOS_DBUS_AUTHPOLICY_FAKE_AUTHPOLICY_CLIENT_H_

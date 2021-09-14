@@ -152,8 +152,7 @@ class WebKioskTest : public OobeBaseTest {
  private:
   NetworkPortalDetectorMixin network_portal_detector_{&mixin_host_};
   DeviceStateMixin device_state_mixin_{
-      &mixin_host_,
-      chromeos::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
   const AccountId account_id_;
   std::unique_ptr<ScopedDeviceSettings> settings_;
 

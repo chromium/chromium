@@ -37,7 +37,7 @@ class UserCloudPolicyManagerTest
     : public MixinBasedInProcessBrowserTest,
       public testing::WithParamInterface<
           std::tuple<std::vector<base::Feature>,
-                     chromeos::LoggedInUserMixin::LogInType>> {
+                     ash::LoggedInUserMixin::LogInType>> {
  protected:
   UserCloudPolicyManagerTest() {
     // Override default tests configuration that prevents effective testing of
@@ -67,12 +67,12 @@ class UserCloudPolicyManagerTest
   }
 
  protected:
-  chromeos::LoggedInUserMixin logged_in_user_mixin_{
+  ash::LoggedInUserMixin logged_in_user_mixin_{
       &mixin_host_, std::get<1>(GetParam()) /*type*/, embedded_test_server(),
       this, true /*should_launch_browser*/,
       AccountId::FromUserEmailGaiaId(
-          chromeos::FakeGaiaMixin::kEnterpriseUser1,
-          chromeos::FakeGaiaMixin::kEnterpriseUser1GaiaId),
+          ash::FakeGaiaMixin::kEnterpriseUser1,
+          ash::FakeGaiaMixin::kEnterpriseUser1GaiaId),
       // Initializing the login manager with no user will cause GAIA screen to
       // be shown on start-up.
       false /*include_initial_user*/};
@@ -254,13 +254,13 @@ INSTANTIATE_TEST_SUITE_P(
     UserCloudPolicyManagerTest,
     testing::Combine(
         testing::ValuesIn(feature_lists),
-        testing::Values(chromeos::LoggedInUserMixin::LogInType::kRegular)));
+        testing::Values(ash::LoggedInUserMixin::LogInType::kRegular)));
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     UserCloudPolicyManagerChildTest,
     testing::Combine(
         testing::ValuesIn(feature_lists),
-        testing::Values(chromeos::LoggedInUserMixin::LogInType::kChild)));
+        testing::Values(ash::LoggedInUserMixin::LogInType::kChild)));
 
 }  // namespace policy

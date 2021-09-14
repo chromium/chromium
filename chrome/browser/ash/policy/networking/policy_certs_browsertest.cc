@@ -694,7 +694,7 @@ class PolicyProvidedCertsDeviceLocalAccountTest
     command_line->AppendSwitch(chromeos::switches::kOobeSkipPostLogin);
   }
 
-  chromeos::LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
+  ash::LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
 
   const AccountId device_local_account_id_ =
       AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
@@ -731,7 +731,7 @@ class PolicyProvidedCertsPublicSessionTest
     ASSERT_TRUE(wizard_controller);
     wizard_controller->SkipToLoginForTesting();
 
-    chromeos::LoginOrLockScreenVisibleWaiter().Wait();
+    ash::LoginOrLockScreenVisibleWaiter().Wait();
 
     // Login into the public session.
     chromeos::ExistingUserController* controller =
@@ -748,7 +748,7 @@ class PolicyProvidedCertsPublicSessionTest
 IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsPublicSessionTest,
                        DISABLED_AllowedInPublicSession) {
   StartLogin();
-  chromeos::test::WaitForPrimaryUserSessionStart();
+  ash::test::WaitForPrimaryUserSessionStart();
 
   BrowserList* browser_list = BrowserList::GetInstance();
   EXPECT_EQ(1U, browser_list->size());
@@ -799,7 +799,7 @@ IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsOnUserSessionInitTest,
   OobeBaseTest::WaitForSigninScreen();
   TriggerLogIn();
 
-  chromeos::test::WaitForPrimaryUserSessionStart();
+  ash::test::WaitForPrimaryUserSessionStart();
   EXPECT_EQ(net::OK, VerifyTestServerCert(active_user_profile(), server_cert));
 }
 
@@ -979,8 +979,7 @@ class PolicyProvidedCertsForSigninExtensionTest
 // caches), the test is able to catch that.
 IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsForSigninExtensionTest,
                        ActiveOnlyInSelectedExtension) {
-  chromeos::OobeScreenWaiter(chromeos::OobeBaseTest::GetFirstSigninScreen())
-      .Wait();
+  ash::OobeScreenWaiter(ash::OobeBaseTest::GetFirstSigninScreen()).Wait();
   content::StoragePartition* signin_profile_default_partition =
       signin_profile_->GetDefaultStoragePartition();
 

@@ -205,9 +205,8 @@ class CryptohomeKeyDelegateServiceProviderTest
   extensions::SimpleFeature::ScopedThreadUnsafeAllowlistForTest
       feature_allowlist_{TestCertificateProviderExtension::extension_id()};
 
-  chromeos::DeviceStateMixin device_state_mixin_{
-      &mixin_host_,
-      chromeos::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+  DeviceStateMixin device_state_mixin_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
   ExtensionForceInstallMixin force_install_mixin_{&mixin_host_};
 
   CryptohomeKeyDelegateServiceProvider service_provider_;

@@ -9,7 +9,7 @@
 #include "chromeos/login/auth/auth_status_consumer.h"
 #include "components/account_id/account_id.h"
 
-namespace chromeos {
+namespace ash {
 namespace test {
 
 // Wait for ExistingUserController::OnProfilePrepared
@@ -22,7 +22,7 @@ class ProfilePreparedWaiter : public AuthStatusConsumer {
   ~ProfilePreparedWaiter() override;
 
   // AuthStatusConsumer
-  void OnAuthSuccess(const UserContext& user_context) override;
+  void OnAuthSuccess(const chromeos::UserContext& user_context) override;
   void OnAuthFailure(const AuthFailure& error) override;
 
   void Wait();
@@ -35,6 +35,14 @@ class ProfilePreparedWaiter : public AuthStatusConsumer {
 };
 
 }  // namespace test
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+namespace test {
+using ::ash::test::ProfilePreparedWaiter;
+}
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_PROFILE_PREPARED_WAITER_H_

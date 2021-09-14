@@ -45,8 +45,8 @@ class SupervisedUserServiceTestSupervised
     MixinBasedInProcessBrowserTest::SetUp();
   }
 
-  chromeos::LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_, chromeos::LoggedInUserMixin::LogInType::kChild,
+  ash::LoggedInUserMixin logged_in_user_mixin_{
+      &mixin_host_, ash::LoggedInUserMixin::LogInType::kChild,
       embedded_test_server(), this};
   base::ScopedTempDir fake_user_data_dir_;
 };

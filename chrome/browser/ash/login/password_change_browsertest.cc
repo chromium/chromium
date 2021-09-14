@@ -535,7 +535,7 @@ IN_PROC_BROWSER_TEST_F(RotationTokenTest, Rotated) {
 
 class IgnoreOldTokenTest
     : public LoginManagerTest,
-      public chromeos::LocalStateMixin::Delegate,
+      public LocalStateMixin::Delegate,
       public ::testing::WithParamInterface<bool> /* isManagedUser */ {
  public:
   IgnoreOldTokenTest() {
@@ -547,7 +547,7 @@ class IgnoreOldTokenTest
     account_id_ = login_mixin_.users()[0].account_id;
   }
 
-  // chromeos::LocalStateMixin::Delegate:
+  // LocalStateMixin::Delegate:
   void SetUpLocalState() override {
     TokenHandleUtil::StoreTokenHandle(account_id_, kTokenHandle);
 
@@ -579,7 +579,7 @@ class IgnoreOldTokenTest
   LoginManagerMixin login_mixin_{&mixin_host_};
   AccountId account_id_;
 
-  chromeos::LocalStateMixin local_state_mixin_{&mixin_host_, this};
+  LocalStateMixin local_state_mixin_{&mixin_host_, this};
 };
 
 // Verify case when a user got token invalidated on a previous version and then

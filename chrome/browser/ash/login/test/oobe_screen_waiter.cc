@@ -12,7 +12,7 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view.h"
 
-namespace chromeos {
+namespace ash {
 
 OobeScreenWaiter::OobeScreenWaiter(OobeScreenId target_screen)
     : target_screen_(target_screen) {}
@@ -137,4 +137,4 @@ void OobeScreenWaiter::EndWait() {
   run_loop_->Quit();
 }
 
-}  // namespace chromeos
+}  // namespace ash

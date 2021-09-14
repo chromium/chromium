@@ -12,7 +12,7 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace test {
 
 namespace ui {
@@ -89,25 +89,25 @@ class EnrollmentUIMixin : public InProcessBrowserTestMixin {
 };
 
 }  // namespace test
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
+namespace chromeos {
 namespace test {
-using ::chromeos::test::EnrollmentUIMixin;
+using ::ash::test::EnrollmentUIMixin;
 namespace ui {
-using ::chromeos::test::ui::kEnrollmentStepDeviceAttributes;
-using ::chromeos::test::ui::kEnrollmentStepError;
-using ::chromeos::test::ui::kEnrollmentStepSignin;
-using ::chromeos::test::ui::kEnrollmentStepSuccess;
-using ::chromeos::test::ui::kEnrollmentStepWorking;
+using ::ash::test::ui::kEnrollmentStepADJoin;
+using ::ash::test::ui::kEnrollmentStepDeviceAttributes;
+using ::ash::test::ui::kEnrollmentStepError;
+using ::ash::test::ui::kEnrollmentStepSignin;
+using ::ash::test::ui::kEnrollmentStepSuccess;
 }  // namespace ui
 namespace values {
-using ::chromeos::test::values::kAssetId;
-using ::chromeos::test::values::kLocation;
+using ::ash::test::values::kAssetId;
+using ::ash::test::values::kLocation;
 }  // namespace values
 }  // namespace test
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_ENROLLMENT_UI_MIXIN_H_

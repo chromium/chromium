@@ -158,7 +158,7 @@ class NSSContextChromeOSBrowserTest : public chromeos::LoginManagerTest {
   ~NSSContextChromeOSBrowserTest() override {}
 
  protected:
-  chromeos::LoginManagerMixin login_mixin_{&mixin_host_};
+  ash::LoginManagerMixin login_mixin_{&mixin_host_};
 };
 
 IN_PROC_BROWSER_TEST_F(NSSContextChromeOSBrowserTest, TwoUsers) {

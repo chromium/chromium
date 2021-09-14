@@ -47,7 +47,6 @@
 #include "ui/message_center/message_center.h"
 
 namespace extension_ime_util = chromeos::extension_ime_util;
-using chromeos::LoggedInUserMixin;
 using chromeos::input_method::InputMethodDescriptors;
 using chromeos::input_method::InputMethodManager;
 using chromeos::input_method::InputMethodUtil;

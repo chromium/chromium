@@ -685,7 +685,7 @@ class DurationBetweenSeesionActivationAndFirstLauncherShowingBrowserTest
 
   AccountId new_user_id_;
   AccountId registered_user_id_;
-  chromeos::LoginManagerMixin login_mixin_{&mixin_host_};
+  ash::LoginManagerMixin login_mixin_{&mixin_host_};
 };
 
 IN_PROC_BROWSER_TEST_F(

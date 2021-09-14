@@ -357,7 +357,7 @@ class ClipboardHistoryWithMultiProfileBrowserTest
 
   AccountId account_id1_;
   AccountId account_id2_;
-  chromeos::LoginManagerMixin login_mixin_{&mixin_host_};
+  ash::LoginManagerMixin login_mixin_{&mixin_host_};
 
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 

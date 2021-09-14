@@ -2548,8 +2548,7 @@ class KioskEnterpriseTest : public KioskTest {
 
  private:
   DeviceStateMixin device_state_{
-      &mixin_host_,
-      chromeos::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
 
   DISALLOW_COPY_AND_ASSIGN(KioskEnterpriseTest);
 };
@@ -2854,7 +2853,7 @@ class KioskAutoLaunchViewsTest : public OobeBaseTest,
         kAccountsPrefDeviceLocalAccountAutoLoginId, kTestEnterpriseAccountId);
   }
 
-  // chromeos::LocalStateMixin::Delegate:
+  // LocalStateMixin::Delegate:
   void SetUpLocalState() override {
     // Simulate auto login request from the previous session.
     PrefService* prefs = g_browser_process->local_state();
@@ -2874,7 +2873,7 @@ class KioskAutoLaunchViewsTest : public OobeBaseTest,
  protected:
   std::unique_ptr<FakeOwnerSettingsService> owner_settings_service_;
   chromeos::ScopedTestingCrosSettings scoped_testing_cros_settings_;
-  chromeos::LocalStateMixin local_state_mixin_{&mixin_host_, this};
+  LocalStateMixin local_state_mixin_{&mixin_host_, this};
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED};

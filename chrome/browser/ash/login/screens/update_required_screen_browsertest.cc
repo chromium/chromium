@@ -201,9 +201,8 @@ class UpdateRequiredScreenTest : public OobeBaseTest {
   // Handles network connections
   std::unique_ptr<chromeos::NetworkStateTestHelper> network_state_test_helper_;
   policy::DevicePolicyCrosTestHelper policy_helper_;
-  chromeos::DeviceStateMixin device_state_mixin_{
-      &mixin_host_,
-      chromeos::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+  DeviceStateMixin device_state_mixin_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
 };
 
@@ -523,9 +522,8 @@ class UpdateRequiredScreenPolicyPresentTest : public OobeBaseTest {
   }
 
  protected:
-  chromeos::DeviceStateMixin device_state_mixin_{
-      &mixin_host_,
-      chromeos::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+  DeviceStateMixin device_state_mixin_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
   policy::DevicePolicyCrosTestHelper policy_helper_;
 };
 

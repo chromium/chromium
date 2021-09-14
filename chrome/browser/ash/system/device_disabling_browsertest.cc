@@ -90,9 +90,8 @@ class DeviceDisablingTest
   NetworkPortalDetectorMixin network_portal_detector_{&mixin_host_};
 
  private:
-  chromeos::DeviceStateMixin device_state_{
-      &mixin_host_,
-      chromeos::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+  DeviceStateMixin device_state_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
 
   DISALLOW_COPY_AND_ASSIGN(DeviceDisablingTest);
 };

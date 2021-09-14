@@ -45,8 +45,7 @@
 #include "google_apis/gaia/gaia_switches.h"
 #include "net/dns/mock_host_resolver.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 class GaiaPageEventWaiter : public test::TestConditionWaiter {
@@ -109,13 +108,13 @@ void OobeBaseTest::SetUp() {
 }
 
 void OobeBaseTest::SetUpCommandLine(base::CommandLine* command_line) {
-  command_line->AppendSwitch(chromeos::switches::kLoginManager);
-  command_line->AppendSwitch(chromeos::switches::kForceLoginManagerInTests);
+  command_line->AppendSwitch(switches::kLoginManager);
+  command_line->AppendSwitch(switches::kForceLoginManagerInTests);
   command_line->AppendSwitch(
-      chromeos::switches::kDisableOOBEChromeVoxHintTimerForTesting);
+      switches::kDisableOOBEChromeVoxHintTimerForTesting);
   if (!needs_background_networking_)
     command_line->AppendSwitch(::switches::kDisableBackgroundNetworking);
-  command_line->AppendSwitchASCII(chromeos::switches::kLoginProfile, "user");
+  command_line->AppendSwitchASCII(switches::kLoginProfile, "user");
 
   // Blink features are controlled via a command line switch. Disable HTML
   // imports which are deprecated. OOBE uses a polyfill for imports that will
@@ -246,4 +245,4 @@ void OobeBaseTest::MaybeWaitForLoginScreenLoad() {
   login_screen_load_observer_.reset();
 }
 
-}  // namespace chromeos
+}  // namespace ash

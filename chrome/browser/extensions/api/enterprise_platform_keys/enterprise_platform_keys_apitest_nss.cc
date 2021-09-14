@@ -363,9 +363,9 @@ class EnterprisePlatformKeysLoginScreenTest
                                     kExtensionId);
   }
 
-  chromeos::DeviceStateMixin device_state_mixin_{
+  ash::DeviceStateMixin device_state_mixin_{
       &mixin_host_,
-      chromeos::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+      ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
   chromeos::ScopedTestSystemNSSKeySlotMixin system_nss_key_slot_mixin_{
       &mixin_host_};
   ExtensionForceInstallMixin extension_force_install_mixin_{&mixin_host_};

@@ -172,16 +172,15 @@
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
-namespace em = enterprise_management;
-
-using chromeos::test::GetOobeElementPath;
-using testing::_;
-using testing::InvokeWithoutArgs;
-using testing::Return;
-
 namespace policy {
-
 namespace {
+
+namespace em = ::enterprise_management;
+
+using ::ash::test::GetOobeElementPath;
+using ::testing::_;
+using ::testing::InvokeWithoutArgs;
+using ::testing::Return;
 
 const char16_t kDomain[] = u"example.com";
 const char kAccountId1[] = "dla1@example.com";
@@ -432,7 +431,7 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
     initial_locale_ = g_browser_process->GetApplicationLocale();
     initial_language_ = l10n_util::GetLanguage(initial_locale_);
 
-    chromeos::LoginOrLockScreenVisibleWaiter().Wait();
+    ash::LoginOrLockScreenVisibleWaiter().Wait();
 
     auto* host = ash::LoginDisplayHost::default_host();
     contents_ = host->GetOobeWebContents();
@@ -447,8 +446,7 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
       run_loop.Run();
 
     // Skip to the login screen.
-    chromeos::OobeScreenWaiter(chromeos::OobeBaseTest::GetFirstSigninScreen())
-        .Wait();
+    ash::OobeScreenWaiter(ash::OobeBaseTest::GetFirstSigninScreen()).Wait();
 
     ash::test::UserSessionManagerTestApi session_manager_test_api(
         ash::UserSessionManager::GetInstance());
@@ -525,7 +523,7 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
   void WaitForPublicSessionLocalesChange(const AccountId& account_id) {
     std::vector<ash::LocaleItem> locales =
         ash::LoginScreenTestApi::GetPublicSessionLocales(account_id);
-    chromeos::test::TestPredicateWaiter(
+    ash::test::TestPredicateWaiter(
         base::BindRepeating(
             [](const std::vector<ash::LocaleItem>& locales,
                const AccountId& account_id) {
@@ -667,7 +665,7 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
     if (IsSessionStarted())
       return;
     ash::WizardController::SkipPostLoginScreensForTesting();
-    chromeos::test::WaitForPrimaryUserSessionStart();
+    ash::test::WaitForPrimaryUserSessionStart();
   }
 
   void WaitUntilLocalStateChanged() {
@@ -738,7 +736,7 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
   std::unique_ptr<base::RunLoop> local_state_changed_run_loop_;
 
   UserPolicyBuilder device_local_account_policy_;
-  chromeos::LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
+  ash::LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
 
   content::WebContents* contents_;
 
@@ -2031,7 +2029,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, TermsOfServiceWithLocaleSwitch) {
   // point. Wait for the constructions of this list to finish.
   WaitForGetKeyboardLayoutsForLocaleToFinish();
 
-  ::chromeos::test::ProfilePreparedWaiter profile_prepared(account_id_1_);
+  ash::test::ProfilePreparedWaiter profile_prepared(account_id_1_);
   // Manually select a different keyboard layout and click the enter button to
   // start the session.
   ash::LoginScreenTestApi::SetPublicSessionKeyboard(
@@ -2040,11 +2038,10 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, TermsOfServiceWithLocaleSwitch) {
   profile_prepared.Wait();
 
   // Wait for the Terms of Service screen is being shown.
-  chromeos::OobeScreenWaiter(chromeos::TermsOfServiceScreenView::kScreenId)
-      .Wait();
+  ash::OobeScreenWaiter(chromeos::TermsOfServiceScreenView::kScreenId).Wait();
 
   // Wait for the Terms of Service to finish downloading.
-  chromeos::test::OobeJS()
+  ash::test::OobeJS()
       .CreateWaiter(GetOobeElementPath({"terms-of-service"}) + ".isLoaded_()")
       ->Wait();
 
@@ -2059,12 +2056,12 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, TermsOfServiceWithLocaleSwitch) {
                 .id());
 
   // Wait for 'tos-accept-button' to become enabled.
-  chromeos::test::OobeJS()
+  ash::test::OobeJS()
       .CreateEnabledWaiter(true, {"terms-of-service", "acceptButton"})
       ->Wait();
 
   // Click the accept button.
-  chromeos::test::OobeJS().ClickOnPath({"terms-of-service", "acceptButton"});
+  ash::test::OobeJS().ClickOnPath({"terms-of-service", "acceptButton"});
 
   WaitForSessionStart();
 
@@ -2608,7 +2605,7 @@ IN_PROC_BROWSER_TEST_P(TermsOfServiceDownloadTest, TermsOfServiceScreen) {
 
   WaitForPolicy();
 
-  ::chromeos::test::ProfilePreparedWaiter profile_prepared(account_id_1_);
+  ash::test::ProfilePreparedWaiter profile_prepared(account_id_1_);
   ASSERT_NO_FATAL_FAILURE(StartLogin(std::string(), std::string()));
   profile_prepared.Wait();
 
@@ -2624,29 +2621,29 @@ IN_PROC_BROWSER_TEST_P(TermsOfServiceDownloadTest, TermsOfServiceScreen) {
   if (!use_valid_url) {
     // The Terms of Service URL was invalid. Verify that the screen is showing
     // an error and the accept button is disabled.
-    chromeos::test::OobeJS()
+    ash::test::OobeJS()
         .CreateVisibilityWaiter(
             true, {"terms-of-service", "termsOfServiceErrorDialog"})
         ->Wait();
 
-    chromeos::test::OobeJS().ExpectTrue(
-        GetOobeElementPath({"terms-of-service"}) + ".hasError_()");
+    ash::test::OobeJS().ExpectTrue(GetOobeElementPath({"terms-of-service"}) +
+                                   ".hasError_()");
 
-    chromeos::test::OobeJS().ExpectDisabledPath(
+    ash::test::OobeJS().ExpectDisabledPath(
         {"terms-of-service", "acceptButton"});
     return;
   }
 
-  chromeos::test::OobeJS()
+  ash::test::OobeJS()
       .CreateWaiter(GetOobeElementPath({"terms-of-service"}) + ".isLoaded_()")
       ->Wait();
 
-  chromeos::test::OobeJS()
+  ash::test::OobeJS()
       .CreateVisibilityWaiter(true, {"terms-of-service", "termsOfServiceFrame"})
       ->Wait();
 
   // Get the Terms Of Service from the webview.
-  const std::string content = chromeos::test::GetWebViewContents(
+  const std::string content = ash::test::GetWebViewContents(
       {"terms-of-service", "termsOfServiceFrame"});
 
   // Get the expected values for heading and subheading.
@@ -2656,10 +2653,10 @@ IN_PROC_BROWSER_TEST_P(TermsOfServiceDownloadTest, TermsOfServiceScreen) {
       IDS_TERMS_OF_SERVICE_SCREEN_SUBHEADING, kDomain);
 
   // Compare heading and subheading
-  chromeos::test::OobeJS().ExpectEQ(
+  ash::test::OobeJS().ExpectEQ(
       GetOobeElementPath({"terms-of-service", "tosHeading"}) + ".textContent",
       expected_heading);
-  chromeos::test::OobeJS().ExpectEQ(
+  ash::test::OobeJS().ExpectEQ(
       GetOobeElementPath({"terms-of-service", "tosSubheading"}) +
           ".textContent",
       expected_subheading);
@@ -2676,14 +2673,13 @@ IN_PROC_BROWSER_TEST_P(TermsOfServiceDownloadTest, TermsOfServiceScreen) {
   }
   EXPECT_EQ(terms_of_service, content);
 
-  chromeos::test::OobeJS().ExpectFalse(
-      GetOobeElementPath({"terms-of-service"}) + ".hasError_()");
+  ash::test::OobeJS().ExpectFalse(GetOobeElementPath({"terms-of-service"}) +
+                                  ".hasError_()");
 
-  chromeos::test::OobeJS().ExpectEnabledPath(
-      {"terms-of-service", "acceptButton"});
+  ash::test::OobeJS().ExpectEnabledPath({"terms-of-service", "acceptButton"});
 
   // Click the accept button.
-  chromeos::test::OobeJS().ClickOnPath({"terms-of-service", "acceptButton"});
+  ash::test::OobeJS().ClickOnPath({"terms-of-service", "acceptButton"});
 
   WaitForSessionStart();
 }
@@ -2702,7 +2698,7 @@ IN_PROC_BROWSER_TEST_P(TermsOfServiceDownloadTest, DeclineTermsOfService) {
 
   WaitForPolicy();
 
-  ::chromeos::test::ProfilePreparedWaiter profile_prepared(account_id_1_);
+  ash::test::ProfilePreparedWaiter profile_prepared(account_id_1_);
   ASSERT_NO_FATAL_FAILURE(StartLogin(std::string(), std::string()));
   profile_prepared.Wait();
 
@@ -2714,7 +2710,7 @@ IN_PROC_BROWSER_TEST_P(TermsOfServiceDownloadTest, DeclineTermsOfService) {
             wizard_controller->current_screen()->screen_id());
 
   // Click the back button.
-  chromeos::test::OobeJS().ClickOnPath({"terms-of-service", "backButton"});
+  ash::test::OobeJS().ClickOnPath({"terms-of-service", "backButton"});
 
   EXPECT_TRUE(session_manager_client()->session_stopped());
 }

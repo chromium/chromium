@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 
-namespace chromeos {
+namespace ash {
 namespace test {
 
 // Generic class for conditions that can be awaited it test.
@@ -23,6 +23,6 @@ class TestConditionWaiter {
 };
 
 }  // namespace test
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_TEST_CONDITION_WAITER_H_

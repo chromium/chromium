@@ -138,7 +138,7 @@ class UserSelectionScreenEnforceOnlineTest : public LoginManagerTest,
   UserSelectionScreenEnforceOnlineTest& operator=(
       const UserSelectionScreenEnforceOnlineTest&) = delete;
 
-  // chromeos::LocalStateMixin::Delegate:
+  // LocalStateMixin::Delegate:
   void SetUpLocalState() override {
     const auto& users = login_manager_mixin_.users();
     const base::Time now = base::DefaultClock::GetInstance()->Now();
@@ -157,7 +157,7 @@ class UserSelectionScreenEnforceOnlineTest : public LoginManagerTest,
 
  protected:
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
-  chromeos::LocalStateMixin local_state_mixin_{&mixin_host_, this};
+  LocalStateMixin local_state_mixin_{&mixin_host_, this};
 };
 
 IN_PROC_BROWSER_TEST_F(UserSelectionScreenEnforceOnlineTest,
@@ -181,7 +181,7 @@ class UserSelectionScreenBlockOfflineTest : public LoginManagerTest,
   UserSelectionScreenBlockOfflineTest& operator=(
       const UserSelectionScreenBlockOfflineTest&) = delete;
 
-  // chromeos::LocalStateMixin::Delegate:
+  // LocalStateMixin::Delegate:
   void SetUpLocalState() override {
     const base::Time now = base::DefaultClock::GetInstance()->Now();
 
@@ -222,7 +222,7 @@ class UserSelectionScreenBlockOfflineTest : public LoginManagerTest,
       {test_user_over_the_limit_, test_user_under_the_limit_,
        test_user_limit_not_set_}};
   OfflineLoginTestMixin offline_login_test_mixin_{&mixin_host_};
-  chromeos::LocalStateMixin local_state_mixin_{&mixin_host_, this};
+  LocalStateMixin local_state_mixin_{&mixin_host_, this};
 };
 
 // Tests that offline login link is hidden on the network error screen when

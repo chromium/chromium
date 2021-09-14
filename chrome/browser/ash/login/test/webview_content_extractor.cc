@@ -17,9 +17,8 @@
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 
-namespace chromeos {
+namespace ash {
 namespace test {
-
 namespace {
 
 class WebContentsLoadFinishedWaiter : public content::WebContentsObserver {
@@ -62,7 +61,7 @@ bool AddNamedWebContentsToSet(std::set<content::WebContents*>* frame_set,
 content::WebContents* FindContents(std::string element_id) {
   // Tag the webview in use with a unique name.
   std::string unique_webview_name = base::GenerateGUID();
-  test::OobeJS().Evaluate(
+  OobeJS().Evaluate(
       base::StringPrintf("(function(){"
                          "  var webView = %s;"
                          "  webView.name = '%s';"
@@ -86,7 +85,7 @@ content::WebContents* FindContents(std::string element_id) {
 
 std::string GetWebViewContents(
     std::initializer_list<base::StringPiece> element_ids) {
-  return GetWebViewContentsById(test::GetOobeElementPath(element_ids));
+  return GetWebViewContentsById(GetOobeElementPath(element_ids));
 }
 
 std::string GetWebViewContentsById(const std::string& element_id) {
@@ -103,4 +102,4 @@ std::string GetWebViewContentsById(const std::string& element_id) {
 }
 
 }  // namespace test
-}  // namespace chromeos
+}  // namespace ash

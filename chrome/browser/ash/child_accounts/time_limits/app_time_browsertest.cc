@@ -188,9 +188,9 @@ class AppTimeTest : public MixinBasedInProcessBrowserTest {
     return profile;
   }
 
-  chromeos::LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_, chromeos::LoggedInUserMixin::LogInType::kChild,
-      embedded_test_server(), this};
+  LoggedInUserMixin logged_in_user_mixin_{&mixin_host_,
+                                          LoggedInUserMixin::LogInType::kChild,
+                                          embedded_test_server(), this};
 
   ArcAppListPrefs* arc_app_list_prefs_ = nullptr;
   std::unique_ptr<arc::FakeAppInstance> arc_app_instance_;

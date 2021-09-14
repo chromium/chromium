@@ -329,9 +329,9 @@ class CertStoreServiceTest
 
   std::vector<InstalledTestCert> installed_certs_;
 
-  chromeos::DeviceStateMixin device_state_{
+  ash::DeviceStateMixin device_state_{
       &mixin_host_,
-      chromeos::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+      ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
   policy::DevicePolicyCrosTestHelper device_policy_helper_;
   policy::AffiliationMixin affiliation_mixin_{&mixin_host_,
                                               &device_policy_helper_};

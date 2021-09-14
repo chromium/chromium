@@ -11,7 +11,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 
-namespace chromeos {
+namespace ash {
 
 // Waits for the window that hosts OOBE UI changes visibility to target value.
 // When waiting for the OOBE UI window to be hidden, it handles the window
@@ -39,12 +39,12 @@ class OobeWindowVisibilityWaiter : public aura::WindowObserver {
   DISALLOW_COPY_AND_ASSIGN(OobeWindowVisibilityWaiter);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source code migration is finished.
-namespace ash {
-using ::chromeos::OobeWindowVisibilityWaiter;
+namespace chromeos {
+using ::ash::OobeWindowVisibilityWaiter;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_OOBE_WINDOW_VISIBILITY_WAITER_H_

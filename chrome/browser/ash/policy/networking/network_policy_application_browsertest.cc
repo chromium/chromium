@@ -217,7 +217,7 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
   ash::ShillProfileClient::TestInterface* shill_profile_client_test_ = nullptr;
   ash::ShillDeviceClient::TestInterface* shill_device_client_test_ = nullptr;
 
-  LoginManagerMixin login_mixin_{&mixin_host_};
+  ash::LoginManagerMixin login_mixin_{&mixin_host_};
   AccountId test_account_id_;
 
  private:

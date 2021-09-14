@@ -15,8 +15,7 @@
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 
-namespace chromeos {
-
+namespace ash {
 class LocalPolicyTestServerMixin;
 
 // Mixin for setting up user policy for a test user.
@@ -76,12 +75,12 @@ class UserPolicyMixin : public InProcessBrowserTestMixin {
   DISALLOW_COPY_AND_ASSIGN(UserPolicyMixin);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-using ::chromeos::UserPolicyMixin;
-}  // namespace ash
+namespace chromeos {
+using ::ash::UserPolicyMixin;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_USER_POLICY_MIXIN_H_

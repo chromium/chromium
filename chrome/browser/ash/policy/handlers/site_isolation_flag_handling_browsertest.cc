@@ -169,7 +169,7 @@ const Params kTestCases[] = {
            {"https://example.com"} /* expected_isolated_origins */)};
 
 class SiteIsolationFlagHandlingTest
-    : public OobeBaseTest,
+    : public ash::OobeBaseTest,
       public ::testing::WithParamInterface<Params> {
  protected:
   SiteIsolationFlagHandlingTest()
@@ -272,8 +272,8 @@ class SiteIsolationFlagHandlingTest
       ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
   ash::UserPolicyMixin user_policy_{&mixin_host_, account_id_};
 
-  const LoginManagerMixin::TestUserInfo user_{account_id_};
-  LoginManagerMixin login_manager_{&mixin_host_, {user_}};
+  const ash::LoginManagerMixin::TestUserInfo user_{account_id_};
+  ash::LoginManagerMixin login_manager_{&mixin_host_, {user_}};
 
   ash::FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
 

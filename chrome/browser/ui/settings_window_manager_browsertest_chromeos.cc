@@ -210,7 +210,7 @@ class SettingsWindowManagerLoginTest : public MixinBasedInProcessBrowserTest {
   ~SettingsWindowManagerLoginTest() override = default;
 
  private:
-  LoginManagerMixin login_manager_{&mixin_host_, {}};
+  ash::LoginManagerMixin login_manager_{&mixin_host_, {}};
 };
 
 // Regression test for crash. https://crbug.com/1174525

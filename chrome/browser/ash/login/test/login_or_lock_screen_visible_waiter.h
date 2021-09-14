@@ -10,7 +10,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
-namespace chromeos {
+namespace ash {
 
 // A waiter that blocks until the login or lock screen is shown.
 class LoginOrLockScreenVisibleWaiter
@@ -41,6 +41,12 @@ class LoginOrLockScreenVisibleWaiter
   base::RunLoop run_loop_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::LoginOrLockScreenVisibleWaiter;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_LOGIN_OR_LOCK_SCREEN_VISIBLE_WAITER_H_

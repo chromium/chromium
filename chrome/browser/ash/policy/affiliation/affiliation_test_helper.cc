@@ -199,7 +199,7 @@ void AffiliationTestHelper::LoginUser(const AccountId& account_id) {
       chromeos::ExistingUserController::current_controller();
   CHECK(controller);
   controller->Login(user_context, chromeos::SigninSpecifics());
-  chromeos::test::WaitForPrimaryUserSessionStart();
+  ash::test::WaitForPrimaryUserSessionStart();
 
   const user_manager::UserList& logged_users =
       user_manager::UserManager::Get()->GetLoggedInUsers();

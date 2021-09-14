@@ -224,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(EulaTest, LoadOnline) {
   WebContentsLoadFinishedWaiter(eula_contents).Wait();
 
   // Wait until the Accept button on the EULA frame becomes enabled.
-  chromeos::test::OobeJS().CreateEnabledWaiter(true, kAcceptEulaButton)->Wait();
+  test::OobeJS().CreateEnabledWaiter(true, kAcceptEulaButton)->Wait();
 
   const std::string webview_contents = test::GetWebViewContents(kEulaWebview);
   EXPECT_TRUE(webview_contents.find(FakeEulaMixin::kFakeOnlineEula) !=

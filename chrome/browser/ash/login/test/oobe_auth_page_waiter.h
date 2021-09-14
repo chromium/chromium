@@ -8,7 +8,7 @@
 #include <string>
 #include "base/macros.h"
 
-namespace chromeos {
+namespace ash {
 namespace test {
 
 // Utility class for tests that allows waiting for different page events on
@@ -47,6 +47,6 @@ OobeAuthPageWaiter OobeGaiaPageWaiter();
 OobeAuthPageWaiter OobeEnrollmentPageWaiter();
 
 }  // namespace test
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_OOBE_AUTH_PAGE_WAITER_H_

@@ -9,12 +9,12 @@
 #include <string>
 
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/network/network_state_test_helper.h"
 
 class AccountId;
 
-namespace chromeos {
-
-class NetworkStateTestHelper;
+namespace ash {
 
 // This object sets offline login mode on the login screen.
 class OfflineLoginTestMixin : public InProcessBrowserTestMixin {
@@ -59,12 +59,12 @@ class OfflineLoginTestMixin : public InProcessBrowserTestMixin {
   DISALLOW_COPY_AND_ASSIGN(OfflineLoginTestMixin);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-using ::chromeos::OfflineLoginTestMixin;
+namespace chromeos {
+using ::ash::OfflineLoginTestMixin;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_OFFLINE_LOGIN_TEST_MIXIN_H_

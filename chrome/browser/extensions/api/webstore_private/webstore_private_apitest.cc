@@ -389,7 +389,7 @@ class ExtensionWebstorePrivateApiTestChild
         embedded_test_server_(std::make_unique<net::EmbeddedTestServer>()),
         logged_in_user_mixin_(
             &mixin_host_,
-            chromeos::LoggedInUserMixin::LogInType::kChild,
+            ash::LoggedInUserMixin::LogInType::kChild,
             embedded_test_server_.get(),
             this,
             true /* should_launch_browser */,
@@ -433,7 +433,7 @@ class ExtensionWebstorePrivateApiTestChild
         true);
   }
 
-  chromeos::LoggedInUserMixin* GetLoggedInUserMixin() {
+  ash::LoggedInUserMixin* GetLoggedInUserMixin() {
     return &logged_in_user_mixin_;
   }
 
@@ -473,7 +473,7 @@ class ExtensionWebstorePrivateApiTestChild
  private:
   // Create another embedded test server to avoid starting the same one twice.
   std::unique_ptr<net::EmbeddedTestServer> embedded_test_server_;
-  chromeos::LoggedInUserMixin logged_in_user_mixin_;
+  ash::LoggedInUserMixin logged_in_user_mixin_;
   absl::optional<NextDialogAction> next_dialog_action_;
 };
 

@@ -32,13 +32,10 @@ namespace base {
 class ElapsedTimer;
 }
 
-namespace chromeos {
+namespace ash {
 namespace test {
 class EnrollmentHelperMixin;
 }
-}  // namespace chromeos
-
-namespace ash {
 
 // The screen implementation that links the enterprise enrollment UI into the
 // OOBE wizard.
@@ -113,7 +110,7 @@ class EnrollmentScreen
  private:
   friend class ZeroTouchEnrollmentScreenUnitTest;
   friend class AutomaticReenrollmentScreenUnitTest;
-  friend class chromeos::test::EnrollmentHelperMixin;
+  friend class test::EnrollmentHelperMixin;
 
   FRIEND_TEST_ALL_PREFIXES(AttestationAuthEnrollmentScreenTest, TestCancel);
   FRIEND_TEST_ALL_PREFIXES(ForcedAttestationAuthEnrollmentScreenTest,

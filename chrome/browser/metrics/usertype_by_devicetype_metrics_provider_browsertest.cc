@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/browser_process.h"
@@ -83,8 +84,8 @@ absl::optional<em::PolicyData::MetricsLogSegment> GetMetricsLogSegment(
 
 absl::optional<AccountId> GetPrimaryAccountId() {
   return AccountId::FromUserEmailGaiaId(
-      chromeos::FakeGaiaMixin::kEnterpriseUser1,
-      chromeos::FakeGaiaMixin::kEnterpriseUser1GaiaId);
+      ash::FakeGaiaMixin::kEnterpriseUser1,
+      ash::FakeGaiaMixin::kEnterpriseUser1GaiaId);
 }
 
 void ProvideCurrentSessionData() {
@@ -358,7 +359,7 @@ class UserTypeByDeviceTypeMetricsProviderTest
     if (IsSessionStarted())
       return;
     ash::WizardController::SkipPostLoginScreensForTesting();
-    chromeos::test::WaitForPrimaryUserSessionStart();
+    ash::test::WaitForPrimaryUserSessionStart();
   }
 
   bool IsSessionStarted() {
@@ -372,8 +373,8 @@ class UserTypeByDeviceTypeMetricsProviderTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  chromeos::LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_, chromeos::LoggedInUserMixin::LogInType::kRegular,
+  ash::LoggedInUserMixin logged_in_user_mixin_{
+      &mixin_host_, ash::LoggedInUserMixin::LogInType::kRegular,
       embedded_test_server(), this,
       /*should_launch_browser=*/true, GetPrimaryAccountId(),
       /*include_initial_user=*/true,
@@ -382,7 +383,7 @@ class UserTypeByDeviceTypeMetricsProviderTest
       // TODO(crbug/1112885): Use LocalPolicyTestServer when this is fixed.
       /*use_local_policy_server=*/false};
   policy::UserPolicyBuilder device_local_account_policy_;
-  chromeos::LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
+  ash::LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
 
   const AccountId account_id_1_ =
       AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(

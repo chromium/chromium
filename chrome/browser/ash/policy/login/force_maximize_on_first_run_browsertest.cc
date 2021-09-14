@@ -83,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(ForceMaximizeOnFirstRunTest, TwoRuns) {
   SetUpResolution();
   ash::LoginScreenTestApi::SubmitPassword(account_id(), "123456",
                                           true /* check_if_submittable */);
-  chromeos::test::WaitForPrimaryUserSessionStart();
+  ash::test::WaitForPrimaryUserSessionStart();
 
   const Browser* const browser = OpenNewBrowserWindow();
   ASSERT_TRUE(browser);

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/test/login_or_lock_screen_visible_waiter.h"
 
-namespace chromeos {
+namespace ash {
 
 LoginOrLockScreenVisibleWaiter::LoginOrLockScreenVisibleWaiter() {
   auto* session_manager = session_manager::SessionManager::Get();
@@ -44,4 +44,4 @@ void LoginOrLockScreenVisibleWaiter::OnLoginOrLockScreenVisible() {
   run_loop_.Quit();
 }
 
-}  // namespace chromeos
+}  // namespace ash

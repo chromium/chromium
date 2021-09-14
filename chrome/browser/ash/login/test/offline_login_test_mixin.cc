@@ -23,8 +23,7 @@
 #include "chromeos/settings/cros_settings_provider.h"
 #include "content/public/test/test_utils.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 const test::UIPath kOfflineLoginLink = {"error-message",
@@ -50,7 +49,7 @@ void SetExpectedCredentials(const AccountId& test_account_id,
   session_manager_test_api.InjectStubUserContext(user_context);
 }
 
-}  // anonymous namespace
+}  // namespace
 
 OfflineLoginTestMixin::OfflineLoginTestMixin(
     InProcessBrowserTestMixinHost* host)
@@ -145,4 +144,4 @@ void OfflineLoginTestMixin::SubmitLoginAuthOfflineForm(
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -80,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(RestoreOnStartupTest, PRE_LogInAndVerify) {
 IN_PROC_BROWSER_TEST_F(RestoreOnStartupTest, LogInAndVerify) {
   ash::LoginScreenTestApi::SubmitPassword(account_id(), "7654321",
                                           true /* check_if_submittable */);
-  chromeos::test::WaitForPrimaryUserSessionStart();
+  ash::test::WaitForPrimaryUserSessionStart();
   VerifyStartUpURLs();
 }
 

@@ -10,12 +10,10 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
-// TODO(https://crbug.com/1164001): use forward declaration when moved to
-// chrome/browser/ash/.
-#include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 
-namespace chromeos {
+namespace ash {
+class FakeOwnerSettingsService;
 
 // Common classes that can be used for kiosk mode testing.
 // Waits for kiosk session to be initialized.
@@ -73,13 +71,6 @@ class ScopedCanConfigureNetwork {
   KioskLaunchController::ReturnBoolCallback needs_owner_auth_callback_;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to chrome/browser/ash/.
-namespace ash {
-using ::chromeos::KioskSessionInitializedWaiter;
-using ::chromeos::ScopedCanConfigureNetwork;
-using ::chromeos::ScopedDeviceSettings;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_KIOSK_TEST_HELPERS_H_

@@ -32,8 +32,7 @@
 #include "components/user_manager/known_user.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 // Ensure LoginManagerMixin is only created once.
@@ -224,4 +223,4 @@ void LoginManagerMixin::LoginAsNewChildUser() {
   profile_prepared.Wait();
 }
 
-}  // namespace chromeos
+}  // namespace ash

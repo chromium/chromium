@@ -26,12 +26,12 @@ class UserPolicyTestHelper;
 // This class can be used to implement tests which need policy to be set prior
 // to login.
 // TODO (crbug/1014663): Deprecate this class in favor of LoggedInUserMixin.
-class LoginPolicyTestBase : public chromeos::OobeBaseTest {
+class LoginPolicyTestBase : public ash::OobeBaseTest {
  protected:
   LoginPolicyTestBase();
   ~LoginPolicyTestBase() override;
 
-  // chromeos::OobeBaseTest::
+  // ash::OobeBaseTest:
   void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpInProcessBrowserTestFixture() override;
   void SetUpOnMainThread() override;
@@ -56,9 +56,9 @@ class LoginPolicyTestBase : public chromeos::OobeBaseTest {
 
   const AccountId& account_id() const { return account_id_; }
 
-  chromeos::FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
-  chromeos::LocalPolicyTestServerMixin local_policy_server_{&mixin_host_};
-  chromeos::LoginManagerMixin login_manager_{&mixin_host_};
+  ash::FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  ash::LocalPolicyTestServerMixin local_policy_server_{&mixin_host_};
+  ash::LoginManagerMixin login_manager_{&mixin_host_};
 
  private:
   void SetMergeSessionParams();

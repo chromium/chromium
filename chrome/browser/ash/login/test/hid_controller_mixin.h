@@ -19,7 +19,7 @@ namespace device {
 class FakeInputServiceLinux;
 }
 
-namespace chromeos {
+namespace ash {
 namespace test {
 
 // This test mixin allows to control presence of Human Input Devices during
@@ -61,14 +61,14 @@ class HIDControllerMixin : public InProcessBrowserTestMixin {
 };
 
 }  // namespace test
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
+namespace chromeos {
 namespace test {
-using ::chromeos::test::HIDControllerMixin;
+using ::ash::test::HIDControllerMixin;
 }
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_HID_CONTROLLER_MIXIN_H_

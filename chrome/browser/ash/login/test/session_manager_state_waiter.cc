@@ -9,8 +9,7 @@
 #include "chrome/browser/ash/login/test/profile_prepared_waiter.h"
 #include "components/user_manager/user_manager.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace test {
 
 void WaitForPrimaryUserSessionStart() {
@@ -19,7 +18,7 @@ void WaitForPrimaryUserSessionStart() {
 
   // If login UI is still there profile may not be prepared yet.
   if (ExistingUserController::current_controller()) {
-    chromeos::test::ProfilePreparedWaiter(
+    ProfilePreparedWaiter(
         user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId())
         .Wait();
   }
@@ -77,4 +76,4 @@ void SessionStateWaiter::OnUserSessionStarted(bool is_primary_user) {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

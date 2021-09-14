@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_LOGIN_TEST_EMBEDDED_TEST_SERVER_MIXIN_H_
-#define CHROME_BROWSER_ASH_LOGIN_TEST_EMBEDDED_TEST_SERVER_MIXIN_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_TEST_EMBEDDED_TEST_SERVER_SETUP_MIXIN_H_
+#define CHROME_BROWSER_ASH_LOGIN_TEST_EMBEDDED_TEST_SERVER_SETUP_MIXIN_H_
 
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
-namespace chromeos {
+namespace ash {
 
 // An InProcessBrowserTestMixin that sets up an embedded test server
 // to serve data from test data directory.
@@ -33,12 +33,12 @@ class EmbeddedTestServerSetupMixin : public InProcessBrowserTestMixin {
   DISALLOW_COPY_AND_ASSIGN(EmbeddedTestServerSetupMixin);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-using ::chromeos::EmbeddedTestServerSetupMixin;
+namespace chromeos {
+using ::ash::EmbeddedTestServerSetupMixin;
 }
 
-#endif  // CHROME_BROWSER_ASH_LOGIN_TEST_EMBEDDED_TEST_SERVER_MIXIN_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_TEST_EMBEDDED_TEST_SERVER_SETUP_MIXIN_H_

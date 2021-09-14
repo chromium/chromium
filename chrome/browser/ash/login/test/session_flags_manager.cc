@@ -25,9 +25,8 @@
 #include "components/user_manager/user_names.h"
 #include "third_party/cros_system_api/switches/chrome_switches.h"
 
-namespace chromeos {
+namespace ash {
 namespace test {
-
 namespace {
 
 // Keys for values in dictionary used to preserve session manager state.
@@ -245,4 +244,4 @@ base::Value SessionFlagsManager::GetSwitchesValueFromArgv(
 }
 
 }  // namespace test
-}  // namespace chromeos
+}  // namespace ash

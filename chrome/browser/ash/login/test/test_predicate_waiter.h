@@ -10,7 +10,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/test/test_condition_waiter.h"
 
-namespace chromeos {
+namespace ash {
 namespace test {
 
 // Waits for predicate to be fulfilled.
@@ -41,14 +41,14 @@ class TestPredicateWaiter : public TestConditionWaiter {
 };
 
 }  // namespace test
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-namespace test {
-using ::chromeos::test::TestPredicateWaiter;
-}
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+namespace test {
+using ::ash::test::TestPredicateWaiter;
+}
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_TEST_PREDICATE_WAITER_H_

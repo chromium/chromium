@@ -100,7 +100,7 @@ class PlatformKeysTestBase : public extensions::MixinBasedExtensionApiTest {
   testing::NiceMock<policy::MockConfigurationPolicyProvider>
       mock_policy_provider_;
   FakeGaia fake_gaia_;
-  chromeos::HTTPSForwarder gaia_https_forwarder_;
+  ash::HTTPSForwarder gaia_https_forwarder_;
   chromeos::ScopedStubInstallAttributes install_attributes_;
 
   DISALLOW_COPY_AND_ASSIGN(PlatformKeysTestBase);

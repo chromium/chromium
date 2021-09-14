@@ -109,10 +109,10 @@ class SupervisedUserExtensionTest : public ExtensionBrowserTest {
 
   // We want to log in as child user for all of the PRE tests, and regular user
   // otherwise.
-  chromeos::LoggedInUserMixin logged_in_user_mixin_{
+  ash::LoggedInUserMixin logged_in_user_mixin_{
       &mixin_host_,
-      content::IsPreTest() ? chromeos::LoggedInUserMixin::LogInType::kChild
-                           : chromeos::LoggedInUserMixin::LogInType::kRegular,
+      content::IsPreTest() ? ash::LoggedInUserMixin::LogInType::kChild
+                           : ash::LoggedInUserMixin::LogInType::kRegular,
       embedded_test_server(), this};
 };
 

@@ -8,19 +8,18 @@
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 
-namespace chromeos {
+namespace ash {
 namespace test {
 
 ProfilePreparedWaiter::ProfilePreparedWaiter(const AccountId& account_id)
     : account_id_(account_id) {
-  ash::ExistingUserController::current_controller()->AddLoginStatusConsumer(
-      this);
+  ExistingUserController::current_controller()->AddLoginStatusConsumer(this);
 }
 
 ProfilePreparedWaiter::~ProfilePreparedWaiter() {
-  if (ash::ExistingUserController::current_controller()) {
-    ash::ExistingUserController::current_controller()
-        ->RemoveLoginStatusConsumer(this);
+  if (ExistingUserController::current_controller()) {
+    ExistingUserController::current_controller()->RemoveLoginStatusConsumer(
+        this);
   }
 }
 
@@ -51,4 +50,4 @@ void ProfilePreparedWaiter::Wait() {
 }
 
 }  // namespace test
-}  // namespace chromeos
+}  // namespace ash

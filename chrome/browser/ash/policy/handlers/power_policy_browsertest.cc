@@ -277,7 +277,7 @@ void PowerPolicyLoginScreenBrowserTest::SetUpOnMainThread() {
   PowerPolicyBrowserTestBase::SetUpOnMainThread();
 
   // Wait for the login screen to be shown.
-  chromeos::LoginOrLockScreenVisibleWaiter().Wait();
+  ash::LoginOrLockScreenVisibleWaiter().Wait();
 }
 
 void PowerPolicyLoginScreenBrowserTest::TearDownOnMainThread() {

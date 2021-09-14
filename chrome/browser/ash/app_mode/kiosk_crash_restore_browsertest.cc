@@ -12,7 +12,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
-#include "chrome/browser/ash/login/test/embedded_test_server_mixin.h"
+#include "chrome/browser/ash/login/test/embedded_test_server_setup_mixin.h"
 #include "chrome/browser/ash/login/test/kiosk_apps_mixin.h"
 #include "chrome/browser/ash/login/test/kiosk_test_helpers.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
@@ -35,14 +35,14 @@
 namespace ash {
 
 class KioskCrashRestoreTest : public MixinBasedInProcessBrowserTest,
-                              public chromeos::LocalStateMixin::Delegate {
+                              public LocalStateMixin::Delegate {
  public:
   KioskCrashRestoreTest()
       : owner_key_util_(new ownership::MockOwnerKeyUtil()) {}
   KioskCrashRestoreTest(const KioskCrashRestoreTest&) = delete;
   KioskCrashRestoreTest& operator=(const KioskCrashRestoreTest&) = delete;
 
-  // chromeos::LocalStateMixin::Delegate:
+  // LocalStateMixin::Delegate:
   void SetUpLocalState() override { SetUpExistingKioskApp(); }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -82,8 +82,8 @@ class KioskCrashRestoreTest : public MixinBasedInProcessBrowserTest,
  private:
   void SetUpExistingKioskApp() {
     // Create policy data that contains the test app as an existing kiosk app.
-    chromeos::KioskAppsMixin::AppendKioskAccount(&device_policy_.payload());
-    chromeos::KioskAppsMixin::AppendWebKioskAccount(&device_policy_.payload());
+    KioskAppsMixin::AppendKioskAccount(&device_policy_.payload());
+    KioskAppsMixin::AppendWebKioskAccount(&device_policy_.payload());
     device_policy_.Build();
 
     // Prepare the policy data to store in device policy cache.
@@ -106,16 +106,16 @@ class KioskCrashRestoreTest : public MixinBasedInProcessBrowserTest,
   policy::DevicePolicyBuilder device_policy_;
   scoped_refptr<ownership::MockOwnerKeyUtil> owner_key_util_;
 
-  chromeos::EmbeddedTestServerSetupMixin embedded_test_server_{
-      &mixin_host_, embedded_test_server()};
-  chromeos::KioskAppsMixin kiosk_apps_{&mixin_host_, embedded_test_server()};
-  chromeos::LocalStateMixin local_state_mixin_{&mixin_host_, this};
+  EmbeddedTestServerSetupMixin embedded_test_server_{&mixin_host_,
+                                                     embedded_test_server()};
+  KioskAppsMixin kiosk_apps_{&mixin_host_, embedded_test_server()};
+  LocalStateMixin local_state_mixin_{&mixin_host_, this};
 };
 
 class ChromeKioskCrashRestoreTest : public KioskCrashRestoreTest {
   const std::string GetTestAppUserId() const override {
     return policy::GenerateDeviceLocalAccountUserId(
-        chromeos::KioskAppsMixin::kEnterpriseKioskAccountId,
+        KioskAppsMixin::kEnterpriseKioskAccountId,
         policy::DeviceLocalAccount::TYPE_KIOSK_APP);
   }
 };
@@ -131,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(ChromeKioskCrashRestoreTest, ChromeAppNotInstalled) {
 class WebKioskCrashRestoreTest : public KioskCrashRestoreTest {
   const std::string GetTestAppUserId() const override {
     return policy::GenerateDeviceLocalAccountUserId(
-        chromeos::KioskAppsMixin::kEnterpriseWebKioskAccountId,
+        KioskAppsMixin::kEnterpriseWebKioskAccountId,
         policy::DeviceLocalAccount::TYPE_WEB_KIOSK_APP);
   }
 };

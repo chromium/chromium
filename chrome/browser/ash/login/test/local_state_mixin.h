@@ -7,7 +7,7 @@
 
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 
-namespace chromeos {
+namespace ash {
 
 // Mixin browser tests can use for setting up local state environment.
 class LocalStateMixin : public InProcessBrowserTestMixin {
@@ -34,12 +34,12 @@ class LocalStateMixin : public InProcessBrowserTestMixin {
   Delegate* const delegate_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
-using ::chromeos::LocalStateMixin;
+namespace chromeos {
+using ::ash::LocalStateMixin;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_LOCAL_STATE_MIXIN_H_

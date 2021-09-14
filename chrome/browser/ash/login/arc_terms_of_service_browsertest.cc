@@ -18,7 +18,7 @@
 #include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/recommend_apps_screen.h"
-#include "chrome/browser/ash/login/test/embedded_test_server_mixin.h"
+#include "chrome/browser/ash/login/test/embedded_test_server_setup_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -702,10 +702,9 @@ class PublicAccountArcTermsOfServiceScreenTest
           policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION));
   policy::DevicePolicyCrosTestHelper policy_helper_;
   policy::UserPolicyBuilder device_local_account_policy_;
-  chromeos::LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
-  chromeos::DeviceStateMixin device_state_{
-      &mixin_host_,
-      chromeos::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+  LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
+  DeviceStateMixin device_state_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
   DISALLOW_COPY_AND_ASSIGN(PublicAccountArcTermsOfServiceScreenTest);
 };
 
@@ -713,7 +712,7 @@ IN_PROC_BROWSER_TEST_F(PublicAccountArcTermsOfServiceScreenTest,
                        SkippedForPublicAccount) {
   StartPublicSession();
 
-  chromeos::test::WaitForPrimaryUserSessionStart();
+  test::WaitForPrimaryUserSessionStart();
   histogram_tester_.ExpectTotalCount(
       "OOBE.StepCompletionTimeByExitReason.Arc-tos.Accepted", 0);
   histogram_tester_.ExpectTotalCount(

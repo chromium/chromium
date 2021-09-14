@@ -22,8 +22,7 @@
 #include "components/policy/core/common/policy_switches.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 base::Value GetDefaultConfig() {
@@ -264,4 +263,4 @@ void LocalPolicyTestServerMixin::EnableAutomaticRotationOfSigningKeys() {
 
 LocalPolicyTestServerMixin::~LocalPolicyTestServerMixin() = default;
 
-}  // namespace chromeos
+}  // namespace ash

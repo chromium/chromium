@@ -76,15 +76,14 @@ class LockscreenWebUiTest : public MixinBasedInProcessBrowserTest {
     session_manager_test_api.SetShouldObtainTokenHandleInTests(false);
 
     fake_gaia_mixin()->fake_gaia()->RegisterSamlUser(
-        chromeos::FakeGaiaMixin::kEnterpriseUser1,
-        fake_saml_idp_.GetSamlPageUrl());
+        FakeGaiaMixin::kEnterpriseUser1, fake_saml_idp_.GetSamlPageUrl());
 
     fake_gaia_mixin()->set_initialize_fake_merge_session(false);
     fake_gaia_mixin()->fake_gaia()->SetFakeMergeSessionParams(
-        chromeos::FakeGaiaMixin::kEnterpriseUser1, kTestAuthSIDCookie1,
+        FakeGaiaMixin::kEnterpriseUser1, kTestAuthSIDCookie1,
         kTestAuthLSIDCookie1);
-    fake_gaia_mixin()->SetupFakeGaiaForLogin(
-        chromeos::FakeGaiaMixin::kEnterpriseUser1, "", kTestRefreshToken);
+    fake_gaia_mixin()->SetupFakeGaiaForLogin(FakeGaiaMixin::kEnterpriseUser1,
+                                             "", kTestRefreshToken);
 
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
   }
@@ -178,15 +177,14 @@ class LockscreenWebUiTest : public MixinBasedInProcessBrowserTest {
   LockScreenStartReauthUI* reauth_webui_controller_ = nullptr;
   LockScreenReauthHandler* main_handler_ = nullptr;
 
-  chromeos::LoggedInUserMixin logged_in_user_mixin_{
+  LoggedInUserMixin logged_in_user_mixin_{
       &mixin_host_,
       LoggedInUserMixin::LogInType::kRegular,
       embedded_test_server(),
       /*test_base=*/this,
       true /*should_launch_browser*/,
-      AccountId::FromUserEmailGaiaId(
-          chromeos::FakeGaiaMixin::kEnterpriseUser1,
-          chromeos::FakeGaiaMixin::kEnterpriseUser1GaiaId),
+      AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kEnterpriseUser1,
+                                     FakeGaiaMixin::kEnterpriseUser1GaiaId),
       true /*include_initial_user*/};
 
   FakeSamlIdpMixin fake_saml_idp_{&mixin_host_, fake_gaia_mixin()};
@@ -212,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, Login) {
 
   // Fill-in the SAML IdP form and submit.
   SigninFrameJS().CreateVisibilityWaiter(true, {"Email"})->Wait();
-  SigninFrameJS().TypeIntoPath(chromeos::FakeGaiaMixin::kEnterpriseUser1, {"Email"});
+  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kEnterpriseUser1, {"Email"});
   SigninFrameJS().TypeIntoPath("actual_password", {"Password"});
   SigninFrameJS().TapOn("Submit");
 

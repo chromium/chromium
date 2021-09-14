@@ -323,8 +323,8 @@ class SamlTest : public OobeBaseTest {
 
   FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
 
-  chromeos::DeviceStateMixin device_state_{
-      &mixin_host_, chromeos::DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED};
+  DeviceStateMixin device_state_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED};
 
  private:
   FakeSamlIdpMixin fake_saml_idp_mixin_{&mixin_host_, &fake_gaia_};
@@ -920,9 +920,9 @@ class SAMLPolicyTest : public SamlTest {
   // Add a fake user so the login screen does not show GAIA auth by default.
   // This enables tests to control when the GAIA is shown (and ensure it's
   // loaded after SAML config has been set up).
-  chromeos::LoginManagerMixin login_manager_{
+  LoginManagerMixin login_manager_{
       &mixin_host_,
-      {chromeos::LoginManagerMixin::TestUserInfo(
+      {LoginManagerMixin::TestUserInfo(
           AccountId::FromUserEmailGaiaId("user@gmail.com", "1111"))}};
 
  private:

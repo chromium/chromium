@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/login/test/embedded_test_server_mixin.h"
+#include "chrome/browser/ash/login/test/embedded_test_server_setup_mixin.h"
 
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "chrome/common/chrome_paths.h"
 
-namespace chromeos {
+namespace ash {
 
 EmbeddedTestServerSetupMixin::EmbeddedTestServerSetupMixin(
     InProcessBrowserTestMixinHost* host,
@@ -34,4 +34,4 @@ void EmbeddedTestServerSetupMixin::TearDownOnMainThread() {
   CHECK(embedded_test_server_->ShutdownAndWaitUntilComplete());
 }
 
-}  // namespace chromeos
+}  // namespace ash

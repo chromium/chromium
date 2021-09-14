@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLoginScreenPolicyBrowsertest, DeviceLocalAccount) {
   RefreshDevicePolicy();
 
   // Wait for Gaia dialog to be hidden.
-  chromeos::test::TestPredicateWaiter(base::BindRepeating([]() {
+  ash::test::TestPredicateWaiter(base::BindRepeating([]() {
     return !ash::LoginScreenTestApi::IsOobeDialogVisible();
   })).Wait();
   EXPECT_EQ(ash::LoginScreenTestApi::GetUsersCount(), 1);
@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLoginScreenPolicyBrowsertest, DeviceLocalAccount) {
   RefreshDevicePolicy();
 
   // Wait for Gaia dialog to be open.
-  chromeos::test::TestPredicateWaiter(base::BindRepeating([]() {
+  ash::test::TestPredicateWaiter(base::BindRepeating([]() {
     return ash::LoginScreenTestApi::IsOobeDialogVisible();
   })).Wait();
 }
@@ -228,22 +228,21 @@ IN_PROC_BROWSER_TEST_F(DeviceLoginScreenPolicyBrowsertest, DeviceLocalAccount) {
 // Tests that adding public accounts does not close the Oobe dialog when it
 // shows a screen different from the Gaia login screen.
 IN_PROC_BROWSER_TEST_F(DeviceLoginScreenPolicyBrowsertest, ResetScreen) {
-  chromeos::OobeScreenWaiter(chromeos::OobeBaseTest::GetFirstSigninScreen())
-      .Wait();
+  ash::OobeScreenWaiter(ash::OobeBaseTest::GetFirstSigninScreen()).Wait();
   EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
   EXPECT_EQ(ash::LoginScreenTestApi::GetUsersCount(), 0);
 
   // Switch to another (Reset) screen.
   ash::LoginDisplayHost::default_host()->StartWizard(
       chromeos::ResetView::kScreenId);
-  chromeos::OobeScreenWaiter(chromeos::ResetView::kScreenId).Wait();
+  ash::OobeScreenWaiter(chromeos::ResetView::kScreenId).Wait();
 
   em::ChromeDeviceSettingsProto& proto(device_policy()->payload());
   policy::DeviceLocalAccountTestHelper::AddPublicSession(&proto, "test");
   RefreshDevicePolicy();
 
   // Wait for users to propagate.
-  chromeos::test::TestPredicateWaiter(base::BindRepeating([]() {
+  ash::test::TestPredicateWaiter(base::BindRepeating([]() {
     return ash::LoginScreenTestApi::GetUsersCount() > 0;
   })).Wait();
 
