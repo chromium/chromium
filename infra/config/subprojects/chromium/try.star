@@ -1747,6 +1747,7 @@ try_.chromium_mac_ios_builder(
     name = "ios14-sdk-simulator",
     os = os.MAC_11,
     xcode = xcode.x12e262,
+    cpu = cpu.ARM64,
 )
 
 try_.chromium_updater_mac_builder(
