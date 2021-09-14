@@ -7,7 +7,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 
 import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Debouncer, enqueueDebouncer, html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
 import {CommanderOptionElement} from './option.js';
@@ -28,6 +28,7 @@ interface CommanderAppElement {
   }
 }
 
+
 class CommanderAppElement extends PolymerElement {
   static get is() {
     return 'commander-app';
@@ -46,6 +47,7 @@ class CommanderAppElement extends PolymerElement {
         observer: 'onFocusedIndexChanged_',
       },
       promptText_: String,
+      resultSetId_: Number,
     };
   }
 
@@ -55,18 +57,19 @@ class CommanderAppElement extends PolymerElement {
   private browserProxy_: BrowserProxy;
   private resultSetId_: number|null;
   private savedInput_: string;
+  private showNoResults_: boolean;
+  private debouncer_: Debouncer|null;
 
   constructor() {
     super();
     this.browserProxy_ = BrowserProxy.getInstance();
-    this.resultSetId_ = null;
-    this.savedInput_ = '';
   }
 
   ready() {
     super.ready();
     addWebUIListener('view-model-updated', this.onViewModelUpdated_.bind(this));
     addWebUIListener('initialize', this.initialize_.bind(this));
+    this.initialize_();
   }
 
   /**
@@ -80,6 +83,7 @@ class CommanderAppElement extends PolymerElement {
     this.resultSetId_ = null;
     this.promptText_ = null;
     this.savedInput_ = '';
+    this.showNoResults_ = false;
   }
 
   private onKeydown_(e: KeyboardEvent) {
@@ -118,10 +122,13 @@ class CommanderAppElement extends PolymerElement {
     if (viewModel.action === Action.DISPLAY_RESULTS) {
       this.options_ = viewModel.options || [];
       this.resultSetId_ = viewModel.resultSetId;
+      this.showNoResults_ =
+          this.resultSetId_ != null && this.options_.length === 0;
       if (this.options_.length > 0) {
         this.focusedIndex_ = 0;
       }
     } else if (viewModel.action === Action.PROMPT) {
+      this.showNoResults_ = false;
       this.options_ = [];
       this.resultSetId_ = viewModel.resultSetId;
       this.promptText_ = viewModel.promptText || null;
@@ -132,7 +139,10 @@ class CommanderAppElement extends PolymerElement {
   }
 
   private onDomChange_() {
-    this.browserProxy_.heightChanged(document.body.offsetHeight);
+    this.debouncer_ = Debouncer.debounce(this.debouncer_, microTask, () => {
+      this.browserProxy_.heightChanged(document.body.offsetHeight);
+    });
+    enqueueDebouncer(this.debouncer_);
   }
 
   /**
