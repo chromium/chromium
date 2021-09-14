@@ -32,21 +32,6 @@ namespace content {
 
 namespace {
 
-void TerminateServiceWorkerOnCoreThread(
-    scoped_refptr<ServiceWorkerContextWrapper> context,
-    int64_t version_id) {
-  if (ServiceWorkerVersion* version = context->GetLiveVersion(version_id))
-    version->StopWorker(base::DoNothing());
-}
-
-void SetDevToolsAttachedOnCoreThread(
-    scoped_refptr<ServiceWorkerContextWrapper> context,
-    int64_t version_id,
-    bool attached) {
-  if (ServiceWorkerVersion* version = context->GetLiveVersion(version_id))
-    version->SetDevToolsAttached(attached);
-}
-
 /*
  In addition to watching for dedicated workers (as all auto-attachers dealing
  with renderer targets do), the service worker auto-attacher below would also
@@ -213,9 +198,12 @@ void ServiceWorkerDevToolsAgentHost::Reload() {
 }
 
 bool ServiceWorkerDevToolsAgentHost::Close() {
-  RunOrPostTaskOnThread(FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-                        base::BindOnce(&TerminateServiceWorkerOnCoreThread,
-                                       context_wrapper_, version_id_));
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (ServiceWorkerVersion* version =
+          context_wrapper_->GetLiveVersion(version_id_)) {
+    version->StopWorker(base::DoNothing());
+  }
+
   return true;
 }
 
@@ -312,10 +300,11 @@ void ServiceWorkerDevToolsAgentHost::WorkerStopped() {
 }
 
 void ServiceWorkerDevToolsAgentHost::UpdateIsAttached(bool attached) {
-  RunOrPostTaskOnThread(
-      FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-      base::BindOnce(&SetDevToolsAttachedOnCoreThread, context_wrapper_,
-                     version_id_, attached));
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (ServiceWorkerVersion* version =
+          context_wrapper_->GetLiveVersion(version_id_))
+    version->SetDevToolsAttached(attached);
 }
 
 void ServiceWorkerDevToolsAgentHost::UpdateProcessHost() {
