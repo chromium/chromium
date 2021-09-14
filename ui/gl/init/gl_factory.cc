@@ -120,9 +120,9 @@ GLImplementationParts GetRequestedGLImplementation(
 
   *fallback_to_software_gl = false;
   if (cmd->HasSwitch(switches::kOverrideUseSoftwareGLForHeadless)) {
-    impl = GetSoftwareGLForHeadlessImplementation();
+    impl = GetSoftwareGLImplementationForPlatform();
   } else if (cmd->HasSwitch(switches::kOverrideUseSoftwareGLForTests)) {
-    impl = GetSoftwareGLForTestsImplementation();
+    impl = GetSoftwareGLImplementationForPlatform();
   } else if (cmd->HasSwitch(switches::kUseGL) ||
              cmd->HasSwitch(switches::kUseANGLE)) {
     if (requested_implementation_gl_name == "any") {
@@ -166,16 +166,12 @@ bool InitializeGLOneOffPlatformHelper(bool init_extensions) {
 
 }  // namespace
 
-GLImplementationParts GetSoftwareGLForTestsImplementation() {
+GLImplementationParts GetSoftwareGLImplementationForPlatform() {
 #if defined(OS_WIN) || defined(OS_LINUX)
   return GetSoftwareGLImplementation();
 #else
   return GetLegacySoftwareGLImplementation();
 #endif
-}
-
-GLImplementationParts GetSoftwareGLForHeadlessImplementation() {
-  return GetLegacySoftwareGLImplementation();
 }
 
 bool InitializeGLOneOff() {
@@ -228,7 +224,7 @@ bool InitializeStaticGLBindingsImplementation(GLImplementationParts impl,
   if (!initialized && fallback_to_software_gl) {
     ShutdownGL(/*due_to_fallback*/ true);
     initialized =
-        InitializeStaticGLBindings(GetLegacySoftwareGLImplementation());
+        InitializeStaticGLBindings(GetSoftwareGLImplementationForPlatform());
   }
   if (!initialized) {
     ShutdownGL(/*due_to_fallback*/ false);
@@ -247,7 +243,7 @@ bool InitializeGLOneOffPlatformImplementation(bool fallback_to_software_gl,
   if (!initialized && fallback_to_software_gl) {
     ShutdownGL(/*due_to_fallback*/ true);
     initialized =
-        InitializeStaticGLBindings(GetLegacySoftwareGLImplementation()) &&
+        InitializeStaticGLBindings(GetSoftwareGLImplementationForPlatform()) &&
         InitializeGLOneOffPlatform();
   }
   if (initialized && init_extensions) {
