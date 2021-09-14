@@ -213,7 +213,9 @@ class PermissionsSecurityModelInteractiveUITest
     ASSERT_FALSE(
         content::EvalJs(test_rfh, check_permission_script).value.GetBool());
 
-    const bool is_embedder = test_rfh->IsDescendantOf(opener_rfh);
+    const bool contents_is_embedder =
+        content::WebContents::FromRenderFrameHost(test_rfh) ==
+        opener_or_embedder_contents;
 
     permissions::PermissionRequestManager* manager =
         permissions::PermissionRequestManager::FromWebContents(
@@ -244,21 +246,19 @@ class PermissionsSecurityModelInteractiveUITest
     EXPECT_TRUE(
         content::EvalJs(opener_rfh, check_permission_script).value.GetBool());
 
+    // If `test_rfh` is not a descendant of `opener_or_embedder_contents`,
+    // in other words if `test_rfh` was created via `Window.open()`,
+    // permissions are propagated from an opener WebContents only if
+    // `RevisedOriginHandlingEnabled` is enabled.
+    const bool expect_granted =
+        IsRevisedOriginHandlingEnabled() || contents_is_embedder;
+
     // Verify permissions on the test RFH.
     {
-      // If `test_rfh` is not a descendant of `opener_or_embedder_contents`,
-      // in other words if `test_rfh` was created via `Window.open()`,
-      // permissions are propagated from an opener WebContents only if
-      // `RevisedOriginHandlingEnabled` is enabled.
-      const bool expect_granted =
-          IsRevisedOriginHandlingEnabled() || is_embedder;
-
       EXPECT_EQ(
           expect_granted,
           content::EvalJs(test_rfh, check_permission_script).value.GetBool());
     }
-
-    const bool expect_granted = IsRevisedOriginHandlingEnabled() || is_embedder;
 
     // Request permission on the test RFH.
     test_rfh->GetView()->Focus();
