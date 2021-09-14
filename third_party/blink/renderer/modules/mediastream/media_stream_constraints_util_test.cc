@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <string>
-
-#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_sets.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_constraint_factory.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_processor_options.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
@@ -42,8 +41,8 @@ class MediaStreamConstraintsUtilTest : public testing::Test {
 };
 
 TEST_F(MediaStreamConstraintsUtilTest, BooleanConstraints) {
-  static const std::string kValueTrue = "true";
-  static const std::string kValueFalse = "false";
+  static const String kValueTrue = "true";
+  static const String kValueFalse = "false";
 
   MockConstraintFactory constraint_factory;
   // Mandatory constraints.

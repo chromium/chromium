@@ -5,11 +5,11 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_sets.h"
 
 #include <cmath>
-#include <string>
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_constraint_factory.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 namespace media_constraints {
@@ -1360,7 +1360,7 @@ TEST_F(MediaStreamConstraintsUtilSetsTest, NumericRangeSetFromValue) {
 
 TEST_F(MediaStreamConstraintsUtilSetsTest, DiscreteSetString) {
   // Universal set.
-  using StringSet = media_constraints::DiscreteSet<std::string>;
+  using StringSet = media_constraints::DiscreteSet<String>;
   StringSet set = StringSet::UniversalSet();
   EXPECT_TRUE(set.Contains("arbitrary"));
   EXPECT_TRUE(set.Contains("strings"));
@@ -1369,7 +1369,7 @@ TEST_F(MediaStreamConstraintsUtilSetsTest, DiscreteSetString) {
   EXPECT_FALSE(set.HasExplicitElements());
 
   // Constrained set.
-  set = StringSet(Vector<std::string>({"a", "b", "c"}));
+  set = StringSet(Vector<String>({"a", "b", "c"}));
   EXPECT_TRUE(set.Contains("a"));
   EXPECT_TRUE(set.Contains("b"));
   EXPECT_TRUE(set.Contains("c"));
@@ -1377,7 +1377,7 @@ TEST_F(MediaStreamConstraintsUtilSetsTest, DiscreteSetString) {
   EXPECT_FALSE(set.IsEmpty());
   EXPECT_FALSE(set.is_universal());
   EXPECT_TRUE(set.HasExplicitElements());
-  EXPECT_EQ(std::string("a"), set.FirstElement());
+  EXPECT_EQ(String("a"), set.FirstElement());
 
   // Empty set.
   set = StringSet::EmptySet();
@@ -1388,8 +1388,8 @@ TEST_F(MediaStreamConstraintsUtilSetsTest, DiscreteSetString) {
   EXPECT_FALSE(set.HasExplicitElements());
 
   // Intersection.
-  set = StringSet(Vector<std::string>({"a", "b", "c"}));
-  StringSet set2 = StringSet(Vector<std::string>({"b", "c", "d"}));
+  set = StringSet(Vector<String>({"a", "b", "c"}));
+  StringSet set2 = StringSet(Vector<String>({"b", "c", "d"}));
   auto intersection = set.Intersection(set2);
   EXPECT_FALSE(intersection.Contains("a"));
   EXPECT_TRUE(intersection.Contains("b"));
@@ -1398,10 +1398,10 @@ TEST_F(MediaStreamConstraintsUtilSetsTest, DiscreteSetString) {
   EXPECT_FALSE(intersection.IsEmpty());
   EXPECT_FALSE(intersection.is_universal());
   EXPECT_TRUE(intersection.HasExplicitElements());
-  EXPECT_EQ(std::string("b"), intersection.FirstElement());
+  EXPECT_EQ(String("b"), intersection.FirstElement());
 
   // Empty intersection.
-  set2 = StringSet(Vector<std::string>({"d", "e", "f"}));
+  set2 = StringSet(Vector<String>({"d", "e", "f"}));
   intersection = set.Intersection(set2);
   EXPECT_FALSE(intersection.Contains("a"));
   EXPECT_FALSE(intersection.Contains("b"));
