@@ -159,6 +159,10 @@ class WebTransportVisitorProxy : public quic::WebTransportVisitor {
   void OnSessionReady(const spdy::SpdyHeaderBlock& block) override {
     visitor_->OnSessionReady(block);
   }
+  void OnSessionClosed(quic::WebTransportSessionError error_code,
+                       const std::string& error_message) override {
+    visitor_->OnSessionClosed(error_code, error_message);
+  }
   void OnIncomingBidirectionalStreamAvailable() override {
     visitor_->OnIncomingBidirectionalStreamAvailable();
   }
