@@ -87,7 +87,7 @@ Record ReportQueueImpl::AugmentRecord(base::StringPiece record_data) const {
   record.set_dm_token(config_->dm_token());
   // Calculate timestamp in microseconds - to match Spanner expectations.
   const int64_t time_since_epoch_us =
-      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds();
+      base::Time::Now().ToJavaTime() * base::Time::kMicrosecondsPerMillisecond;
   record.set_timestamp_us(time_since_epoch_us);
   return record;
 }
