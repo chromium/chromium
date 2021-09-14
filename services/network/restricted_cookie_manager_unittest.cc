@@ -1447,4 +1447,126 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(mojom::RestrictedCookieManagerRole::SCRIPT,
                       mojom::RestrictedCookieManagerRole::NETWORK));
 
+class PartitionedCookiesEnabledRestrictedCookieManagerTest
+    : public RestrictedCookieManagerTest {
+ public:
+  PartitionedCookiesEnabledRestrictedCookieManagerTest() {
+    feature_list_.InitAndEnableFeature(net::features::kPartitionedCookies);
+  }
+  ~PartitionedCookiesEnabledRestrictedCookieManagerTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Test Partitioned cookie behavior when feature is disabled.
+TEST_P(RestrictedCookieManagerTest, PartitionedCookies) {
+  const GURL kCookieURL("https://example.com");
+  const GURL kTopFrameURL("https://foo.com");
+  const net::SiteForCookies kSiteForCookies =
+      net::SiteForCookies::FromUrl(kTopFrameURL);
+  const url::Origin kTopFrameOrigin = url::Origin::Create(kTopFrameURL);
+  const net::IsolationInfo kIsolationInfo =
+      net::IsolationInfo::CreateForInternalRequest(kTopFrameOrigin);
+
+  service_->OverrideIsolationInfoForTesting(kIsolationInfo);
+  sync_service_->SetCookieFromString(
+      kCookieURL, kSiteForCookies, kTopFrameOrigin,
+      "__Host-foo=bar; Secure; SameSite=None; Path=/; Partitioned");
+
+  {  // Test request from the same top-level site.
+    auto options = mojom::CookieManagerGetOptions::New();
+    options->name = "";
+    options->match_type = mojom::CookieMatchType::STARTS_WITH;
+
+    net::CookieList cookies = sync_service_->GetAllForUrl(
+        kCookieURL, kSiteForCookies, kTopFrameOrigin, std::move(options));
+    ASSERT_EQ(1u, cookies.size());
+    EXPECT_FALSE(cookies[0].IsPartitioned());
+    EXPECT_EQ("__Host-foo", cookies[0].Name());
+  }
+
+  {  // Test request from another top-level site.
+    const GURL kOtherTopFrameURL("https://bar.com");
+    const net::SiteForCookies kOtherSiteForCookies =
+        net::SiteForCookies::FromUrl(kOtherTopFrameURL);
+    const url::Origin kOtherTopFrameOrigin =
+        url::Origin::Create(kOtherTopFrameURL);
+    const net::IsolationInfo kOtherIsolationInfo =
+        net::IsolationInfo::CreateForInternalRequest(kOtherTopFrameOrigin);
+
+    service_->OverrideIsolationInfoForTesting(kOtherIsolationInfo);
+
+    auto options = mojom::CookieManagerGetOptions::New();
+    options->name = "";
+    options->match_type = mojom::CookieMatchType::STARTS_WITH;
+
+    net::CookieList cookies =
+        sync_service_->GetAllForUrl(kCookieURL, kOtherSiteForCookies,
+                                    kOtherTopFrameOrigin, std::move(options));
+    ASSERT_EQ(1u, cookies.size());
+    EXPECT_FALSE(cookies[0].IsPartitioned());
+    EXPECT_EQ("__Host-foo", cookies[0].Name());
+  }
+}
+
+// Test Partitioned cookie behavior when feature is enabled.
+TEST_P(PartitionedCookiesEnabledRestrictedCookieManagerTest,
+       PartitionedCookies) {
+  const GURL kCookieURL("https://example.com");
+  const GURL kTopFrameURL("https://sub.foo.com");
+  const net::SiteForCookies kSiteForCookies =
+      net::SiteForCookies::FromUrl(kTopFrameURL);
+  const url::Origin kTopFrameOrigin = url::Origin::Create(kTopFrameURL);
+  const net::IsolationInfo kIsolationInfo =
+      net::IsolationInfo::CreateForInternalRequest(kTopFrameOrigin);
+
+  service_->OverrideIsolationInfoForTesting(kIsolationInfo);
+  sync_service_->SetCookieFromString(
+      kCookieURL, kSiteForCookies, kTopFrameOrigin,
+      "__Host-foo=bar; Secure; SameSite=None; Path=/; Partitioned");
+
+  {  // Test request from the same top-level site.
+    auto options = mojom::CookieManagerGetOptions::New();
+    options->name = "";
+    options->match_type = mojom::CookieMatchType::STARTS_WITH;
+
+    net::CookieList cookies = sync_service_->GetAllForUrl(
+        kCookieURL, kSiteForCookies, kTopFrameOrigin, std::move(options));
+    ASSERT_EQ(1u, cookies.size());
+    EXPECT_TRUE(cookies[0].IsPartitioned());
+    EXPECT_EQ(
+        net::CookiePartitionKey::FromURLForTesting(GURL("https://foo.com")),
+        cookies[0].PartitionKey());
+    EXPECT_EQ("__Host-foo", cookies[0].Name());
+  }
+
+  {  // Test request from another top-level site.
+    const GURL kOtherTopFrameURL("https://foo.bar.com");
+    const net::SiteForCookies kOtherSiteForCookies =
+        net::SiteForCookies::FromUrl(kOtherTopFrameURL);
+    const url::Origin kOtherTopFrameOrigin =
+        url::Origin::Create(kOtherTopFrameURL);
+    const net::IsolationInfo kOtherIsolationInfo =
+        net::IsolationInfo::CreateForInternalRequest(kOtherTopFrameOrigin);
+
+    service_->OverrideIsolationInfoForTesting(kOtherIsolationInfo);
+
+    auto options = mojom::CookieManagerGetOptions::New();
+    options->name = "";
+    options->match_type = mojom::CookieMatchType::STARTS_WITH;
+
+    net::CookieList cookies =
+        sync_service_->GetAllForUrl(kCookieURL, kOtherSiteForCookies,
+                                    kOtherTopFrameOrigin, std::move(options));
+    ASSERT_EQ(0u, cookies.size());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    PartitionedCookies,
+    PartitionedCookiesEnabledRestrictedCookieManagerTest,
+    ::testing::Values(mojom::RestrictedCookieManagerRole::SCRIPT,
+                      mojom::RestrictedCookieManagerRole::NETWORK));
+
 }  // namespace network

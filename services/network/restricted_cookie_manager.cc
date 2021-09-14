@@ -297,7 +297,9 @@ void RestrictedCookieManager::GetAllForUrl(
   net_options.set_return_excluded_cookies();
 
   cookie_store_->GetCookieListWithOptionsAsync(
-      url, net_options, net::CookiePartitionKey::Todo(),
+      url, net_options,
+      net::CookiePartitionKey::FromNetworkIsolationKey(
+          isolation_info_.network_isolation_key()),
       base::BindOnce(&RestrictedCookieManager::CookieListToGetAllForUrlCallback,
                      weak_ptr_factory_.GetWeakPtr(), url, site_for_cookies,
                      top_frame_origin, net_options, std::move(options),
@@ -523,9 +525,11 @@ void RestrictedCookieManager::SetCookieFromString(
 
   net::CookieInclusionStatus status;
   std::unique_ptr<net::CanonicalCookie> parsed_cookie =
-      net::CanonicalCookie::Create(url, cookie, base::Time::Now(),
-                                   absl::nullopt /* server_time */,
-                                   net::CookiePartitionKey::Todo(), &status);
+      net::CanonicalCookie::Create(
+          url, cookie, base::Time::Now(), absl::nullopt /* server_time */,
+          net::CookiePartitionKey::FromNetworkIsolationKey(
+              isolation_info_.network_isolation_key()),
+          &status);
   if (!parsed_cookie) {
     if (cookie_observer_) {
       std::vector<network::mojom::CookieOrLineWithAccessResultPtr>
