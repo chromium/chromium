@@ -999,7 +999,6 @@ void PopulateBinderMapWithContext(
   map->Add<blink::mojom::TextSuggestionHost>(
       base::BindRepeating(&BindTextSuggestionHostForFrame));
 #else
-  // TODO(crbug.com/1060004): add conditions on the renderer side instead.
   map->Add<blink::mojom::TextSuggestionHost>(base::BindRepeating(
       &EmptyBinderForFrame<blink::mojom::TextSuggestionHost>));
 #endif  // defined(OS_ANDROID)
