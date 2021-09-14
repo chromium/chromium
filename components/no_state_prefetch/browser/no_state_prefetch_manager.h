@@ -21,7 +21,7 @@
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager_delegate.h"
 #include "components/no_state_prefetch/browser/prerender_config.h"
 #include "components/no_state_prefetch/browser/prerender_histograms.h"
-#include "components/no_state_prefetch/common/prerender_final_status.h"
+#include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
 #include "components/no_state_prefetch/common/prerender_origin.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

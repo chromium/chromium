@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/no_state_prefetch/common/prerender_final_status.h"
+#include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
 
 #include "base/check_op.h"
 #include "base/cxx17_backports.h"

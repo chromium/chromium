@@ -21,7 +21,7 @@
 #include "components/data_use_measurement/core/data_use_user_data.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
-#include "components/no_state_prefetch/common/prerender_final_status.h"
+#include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"

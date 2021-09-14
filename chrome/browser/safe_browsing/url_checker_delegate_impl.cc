@@ -14,7 +14,7 @@
 #include "chrome/browser/profiles/profile_io_data.h"
 #include "chrome/browser/safe_browsing/user_interaction_observer.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
-#include "components/no_state_prefetch/common/prerender_final_status.h"
+#include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/triggers/suspicious_site_trigger.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"

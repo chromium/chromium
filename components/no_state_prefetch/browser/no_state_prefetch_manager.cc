@@ -40,7 +40,7 @@
 #include "components/no_state_prefetch/browser/no_state_prefetch_utils.h"
 #include "components/no_state_prefetch/browser/prerender_histograms.h"
 #include "components/no_state_prefetch/browser/prerender_history.h"
-#include "components/no_state_prefetch/common/prerender_final_status.h"
+#include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"

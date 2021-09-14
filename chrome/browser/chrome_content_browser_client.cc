@@ -195,7 +195,7 @@
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/net_log/chrome_net_log.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
-#include "components/no_state_prefetch/common/prerender_final_status.h"
+#include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
 #include "components/no_state_prefetch/common/prerender_url_loader_throttle.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/page_load_metrics/browser/metrics_navigation_throttle.h"

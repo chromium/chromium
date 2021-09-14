@@ -62,7 +62,7 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
-#include "components/no_state_prefetch/common/prerender_final_status.h"
+#include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"

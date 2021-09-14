@@ -39,7 +39,7 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
-#include "components/no_state_prefetch/common/prerender_final_status.h"
+#include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
