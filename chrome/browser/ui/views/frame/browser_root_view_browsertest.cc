@@ -48,7 +48,7 @@ IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, ClearDropInfo) {
 #else
 #define MAYBE_PlainString PlainString
 #endif
-IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, PlainString) {
+IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, MAYBE_PlainString) {
   ui::OSExchangeData data;
   data.SetString(u"Plain string");
   ui::DropTargetEvent event(data, gfx::PointF(), gfx::PointF(),
