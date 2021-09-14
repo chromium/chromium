@@ -80,6 +80,7 @@ constexpr uint32_t kMaxWpPresentationVersion = 1;
 constexpr uint32_t kMaxWpViewporterVersion = 1;
 constexpr uint32_t kMaxTextInputManagerVersion = 1;
 constexpr uint32_t kMaxExplicitSyncVersion = 2;
+constexpr uint32_t kMaxAlphaCompositingVersion = 1;
 constexpr uint32_t kMaxXdgDecorationVersion = 1;
 constexpr uint32_t kMaxExtendedDragVersion = 1;
 constexpr uint32_t kMaxXdgOutputManagerVersion = 3;
@@ -491,6 +492,14 @@ void WaylandConnection::Global(void* data,
     xdg_wm_base_add_listener(connection->shell_.get(), &shell_listener,
                              connection);
     ReportShellUMA(UMALinuxWaylandShell::kXdgWmBase);
+  } else if (!connection->alpha_compositing_ &&
+             (strcmp(interface, "zcr_alpha_compositing_v1") == 0)) {
+    connection->alpha_compositing_ = wl::Bind<zcr_alpha_compositing_v1>(
+        registry, name, std::min(version, kMaxAlphaCompositingVersion));
+    if (!connection->alpha_compositing_) {
+      LOG(ERROR) << "Failed to bind zcr_alpha_compositing_v1";
+      return;
+    }
   } else if (!connection->linux_explicit_synchronization_ &&
              (strcmp(interface, "zwp_linux_explicit_synchronization_v1") ==
               0)) {

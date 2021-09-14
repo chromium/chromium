@@ -120,6 +120,9 @@ class WaylandConnection {
   uint32_t compositor_version() const { return compositor_version_; }
   wl_subcompositor* subcompositor() const { return subcompositor_.get(); }
   wp_viewporter* viewporter() const { return viewporter_.get(); }
+  zcr_alpha_compositing_v1* alpha_compositing() const {
+    return alpha_compositing_.get();
+  }
   xdg_wm_base* shell() const { return shell_.get(); }
   zxdg_shell_v6* shell_v6() const { return shell_v6_.get(); }
   wl_seat* seat() const { return seat_.get(); }
@@ -335,6 +338,7 @@ class WaylandConnection {
   wl::Object<zxdg_shell_v6> shell_v6_;
   wl::Object<wp_presentation> presentation_;
   wl::Object<wp_viewporter> viewporter_;
+  wl::Object<zcr_alpha_compositing_v1> alpha_compositing_;
   wl::Object<zcr_keyboard_extension_v1> keyboard_extension_v1_;
   wl::Object<zwp_text_input_manager_v1> text_input_manager_v1_;
   wl::Object<zwp_linux_explicit_synchronization_v1>

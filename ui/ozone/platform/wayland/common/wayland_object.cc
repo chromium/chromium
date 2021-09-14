@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
+#include <alpha-compositing-unstable-v1-client-protocol.h>
 #include <aura-shell-client-protocol.h>
 #include <cursor-shapes-unstable-v1-client-protocol.h>
 #include <extended-drag-unstable-v1-client-protocol.h>
@@ -143,6 +144,8 @@ IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_extended_keyboard_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_extended_drag_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_extended_drag_source_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_extended_drag_offer_v1)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_blending_v1)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_alpha_compositing_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_idle_inhibit_manager_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_idle_inhibitor_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_linux_buffer_release_v1)

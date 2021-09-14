@@ -66,6 +66,8 @@ bool TestWaylandServerThread::Start(const ServerConfig& config) {
     return false;
   if (!viewporter_.Initialize(display_.get()))
     return false;
+  if (!alpha_compositing_.Initialize(display_.get()))
+    return false;
   if (!output_.Initialize(display_.get()))
     return false;
   SetupOutputs();

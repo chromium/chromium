@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
 
+#include <alpha-compositing-unstable-v1-client-protocol.h>
 #include <linux-explicit-synchronization-unstable-v1-client-protocol.h>
 #include <viewporter-client-protocol.h>
 #include <algorithm>
@@ -72,6 +73,17 @@ bool WaylandSurface::Initialize() {
     }
   } else {
     LOG(WARNING) << "Server doesn't support wp_viewporter.";
+  }
+
+  if (connection_->alpha_compositing()) {
+    blending_.reset(zcr_alpha_compositing_v1_get_blending(
+        connection_->alpha_compositing(), surface()));
+    if (!blending_) {
+      LOG(ERROR) << "Failed to create zcr_blending_v1";
+      return false;
+    }
+  } else {
+    LOG(WARNING) << "Server doesn't support zcr_alpha_compositing_v1.";
   }
 
   return true;

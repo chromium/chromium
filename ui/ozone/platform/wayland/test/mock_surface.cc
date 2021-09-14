@@ -122,6 +122,8 @@ MockSurface::~MockSurface() {
     wl_resource_destroy(sub_surface_->resource());
   if (viewport_ && viewport_->resource())
     wl_resource_destroy(viewport_->resource());
+  if (blending_ && blending_->resource())
+    wl_resource_destroy(blending_->resource());
 }
 
 MockSurface* MockSurface::FromResource(wl_resource* resource) {

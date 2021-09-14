@@ -14,6 +14,7 @@
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/ozone/platform/wayland/test/mock_xdg_surface.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
+#include "ui/ozone/platform/wayland/test/test_alpha_blending.h"
 #include "ui/ozone/platform/wayland/test/test_subsurface.h"
 #include "ui/ozone/platform/wayland/test/test_viewport.h"
 #include "ui/ozone/platform/wayland/test/test_xdg_popup.h"
@@ -58,6 +59,9 @@ class MockSurface : public ServerObject {
   void set_viewport(TestViewport* viewport) { viewport_ = viewport; }
   TestViewport* viewport() { return viewport_; }
 
+  void set_blending(TestAlphaBlending* blending) { blending_ = blending; }
+  TestAlphaBlending* blending() { return blending_; }
+
   gfx::Rect opaque_region() const { return opaque_region_; }
   gfx::Rect input_region() const { return input_region_; }
 
@@ -93,6 +97,7 @@ class MockSurface : public ServerObject {
   MockXdgSurface* xdg_surface_ = nullptr;
   TestSubSurface* sub_surface_ = nullptr;
   TestViewport* viewport_ = nullptr;
+  TestAlphaBlending* blending_ = nullptr;
   gfx::Rect opaque_region_ = {-1, -1, 0, 0};
   gfx::Rect input_region_ = {-1, -1, 0, 0};
 

@@ -19,6 +19,7 @@
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
 struct zwp_linux_buffer_release_v1;
+struct zcr_blending_v1;
 
 namespace ui {
 
@@ -40,6 +41,7 @@ class WaylandSurface {
   WaylandWindow* root_window() const { return root_window_; }
   wl_surface* surface() const { return surface_.get(); }
   wp_viewport* viewport() const { return viewport_.get(); }
+  zcr_blending_v1* blending() const { return blending_.get(); }
 
   const std::vector<uint32_t>& entered_outputs() const {
     return entered_outputs_;
@@ -158,6 +160,7 @@ class WaylandSurface {
   WaylandWindow* root_window_ = nullptr;
   wl::Object<wl_surface> surface_;
   wl::Object<wp_viewport> viewport_;
+  wl::Object<zcr_blending_v1> blending_;
   wl::Object<zwp_linux_surface_synchronization_v1> surface_sync_;
   base::flat_map<zwp_linux_buffer_release_v1*, ExplicitReleaseInfo>
       linux_buffer_releases_;

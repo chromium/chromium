@@ -18,6 +18,7 @@
 #include "ui/ozone/platform/wayland/test/mock_wp_presentation.h"
 #include "ui/ozone/platform/wayland/test/mock_xdg_shell.h"
 #include "ui/ozone/platform/wayland/test/mock_zwp_linux_dmabuf.h"
+#include "ui/ozone/platform/wayland/test/test_alpha_compositing.h"
 #include "ui/ozone/platform/wayland/test/test_compositor.h"
 #include "ui/ozone/platform/wayland/test/test_data_device_manager.h"
 #include "ui/ozone/platform/wayland/test/test_output.h"
@@ -136,6 +137,7 @@ class TestWaylandServerThread : public base::Thread,
   TestCompositor compositor_;
   TestSubCompositor sub_compositor_;
   TestViewporter viewporter_;
+  TestAlphaCompositing alpha_compositing_;
   TestDataDeviceManager data_device_manager_;
   TestOutput output_;
   TestSeat seat_;
