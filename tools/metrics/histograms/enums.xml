@@ -10252,6 +10252,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="7" label="Data wipe failed">
     Failed to delete lacros data directory with old data.
   </int>
+  <int value="8" label="Size limit exceeded">
+    The total size of data that needs to be copied exceeded the limit. This
+    limit is set as a short-term fix to avoid making users stuck on the
+    migration screen for more than a few minutes.
+  </int>
 </enum>
 
 <enum name="BrowserGestureActionType">

@@ -73,7 +73,8 @@ class BrowserDataMigrator {
     kCopyFailed = 5,
     kMoveFailed = 6,
     kDataWipeFailed = 7,
-    kMaxValue = kDataWipeFailed
+    kSizeLimitExceeded = 8,
+    kMaxValue = kSizeLimitExceeded
   };
 
   enum class ResultValue {
@@ -137,6 +138,10 @@ class BrowserDataMigrator {
   // Compares space available under `from_dir_` against total byte size that
   // needs to be copied.
   bool HasEnoughDiskSpace(const TargetInfo& target_info) const;
+  // TODO(crbug.com/1248318):Remove this arbitrary cap for migration once a long
+  // term solution is found. Temporarily limit the migration size to 4GB until
+  // the slow migration speed issue is resolved.
+  static bool IsMigrationSmallEnough(const TargetInfo& target_info);
   // Copies `item` to location pointed by `dest`. Returns true on success and
   // false on failure.
   bool CopyTargetItem(const BrowserDataMigrator::TargetItem& item,
