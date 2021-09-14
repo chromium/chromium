@@ -20,8 +20,11 @@
     width: 0px;
     height: 20px;
     animation-name: expand;
-    animation-duration: 1e10s;
-    animation-timing-function: linear;
+    /* Some of the tests in this file assume animations attached to the
+       DocumentTimeline are "stopped" without actually being paused.
+       Using 600s + steps(10, end) achieves this for one minute.*/
+    animation-duration: 600s;
+    animation-timing-function: steps(10, end);
   }
 </style>
 <div id=scrollers>
@@ -34,6 +37,8 @@
   scroller1.offsetTop;
   scroller2.offsetTop;
 
+  // Note the steps(10, end) timing function and height:100px. (10px scroll
+  // resolution).
   scroller1.scrollTop = 20;
   scroller2.scrollTop = 40;
 
@@ -98,19 +103,13 @@
 
     // Verify that the computed style after scrolling a bit.
     instantiate(async (element, expected) => {
-      scroller1.scrollTop = scroller1.scrollTop + 1;
-      scroller2.scrollTop = scroller2.scrollTop + 1;
+      scroller1.scrollTop = scroller1.scrollTop + 10;
+      scroller2.scrollTop = scroller2.scrollTop + 10;
       await waitForNextFrame();
-      scroller1.scrollTop = scroller1.scrollTop - 1;
-      scroller2.scrollTop = scroller2.scrollTop - 1;
+      scroller1.scrollTop = scroller1.scrollTop - 10;
+      scroller2.scrollTop = scroller2.scrollTop - 10;
       await waitForNextFrame();
-      assert_approx_equals(
-          parseFloat(getComputedStyle(element).width),
-          parseFloat(expected),
-          // converting between progress based scroll timelines and document
-          // timelines has some margin of rounding error, this check makes sure
-          // values are within 1/10th of a pixel.
-          0.1);
+      assert_equals(getComputedStyle(element).width, expected);
     }, description + ' [scroll]');
   }
 
