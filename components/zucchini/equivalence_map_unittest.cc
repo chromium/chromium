@@ -22,7 +22,7 @@ namespace zucchini {
 
 namespace {
 
-using OffsetVector = std::vector<offset_t>;
+using OffsetDeque = std::deque<offset_t>;
 
 // Make all references 2 bytes long.
 constexpr offset_t kReferenceSize = 2;
@@ -504,7 +504,7 @@ TEST(EquivalenceMapTest, ExtendedForwardProjectEncoding) {
 TEST(EquivalenceMapTest, ForwardProjectAll) {
   auto ForwardProjectAllTest = [](const OffsetMapper& offset_mapper,
                                   std::initializer_list<offset_t> offsets) {
-    OffsetVector offsets_vec(offsets);
+    std::deque<offset_t> offsets_vec(offsets);
     offset_mapper.ForwardProjectAll(&offsets_vec);
     return offsets_vec;
   };
@@ -512,29 +512,29 @@ TEST(EquivalenceMapTest, ForwardProjectAll) {
   // [0,2) --> [10,12), [2,3) --> [13,14), [4,6) --> [16,18).
   OffsetMapper offset_mapper1({{0, 10, +2}, {2, 13, +1}, {4, 16, +2}}, 100U,
                               100U);
-  EXPECT_EQ(OffsetVector({10}), ForwardProjectAllTest(offset_mapper1, {0}));
-  EXPECT_EQ(OffsetVector({13}), ForwardProjectAllTest(offset_mapper1, {2}));
-  EXPECT_EQ(OffsetVector({}), ForwardProjectAllTest(offset_mapper1, {3}));
-  EXPECT_EQ(OffsetVector({10, 13}),
+  EXPECT_EQ(OffsetDeque({10}), ForwardProjectAllTest(offset_mapper1, {0}));
+  EXPECT_EQ(OffsetDeque({13}), ForwardProjectAllTest(offset_mapper1, {2}));
+  EXPECT_EQ(OffsetDeque({}), ForwardProjectAllTest(offset_mapper1, {3}));
+  EXPECT_EQ(OffsetDeque({10, 13}),
             ForwardProjectAllTest(offset_mapper1, {0, 2}));
-  EXPECT_EQ(OffsetVector({11, 13, 17}),
+  EXPECT_EQ(OffsetDeque({11, 13, 17}),
             ForwardProjectAllTest(offset_mapper1, {1, 2, 5}));
-  EXPECT_EQ(OffsetVector({11, 17}),
+  EXPECT_EQ(OffsetDeque({11, 17}),
             ForwardProjectAllTest(offset_mapper1, {1, 3, 5}));
-  EXPECT_EQ(OffsetVector({10, 11, 13, 16, 17}),
+  EXPECT_EQ(OffsetDeque({10, 11, 13, 16, 17}),
             ForwardProjectAllTest(offset_mapper1, {0, 1, 2, 3, 4, 5, 6}));
 
   // [0,2) --> [10,12), [13,14) --> [2,3), [16,18) --> [4,6).
   OffsetMapper offset_mapper2({{0, 10, +2}, {13, 2, +1}, {16, 4, +2}}, 100U,
                               100U);
-  EXPECT_EQ(OffsetVector({2}), ForwardProjectAllTest(offset_mapper2, {13}));
-  EXPECT_EQ(OffsetVector({10, 2}),
+  EXPECT_EQ(OffsetDeque({2}), ForwardProjectAllTest(offset_mapper2, {13}));
+  EXPECT_EQ(OffsetDeque({10, 2}),
             ForwardProjectAllTest(offset_mapper2, {0, 13}));
-  EXPECT_EQ(OffsetVector({11, 2, 5}),
+  EXPECT_EQ(OffsetDeque({11, 2, 5}),
             ForwardProjectAllTest(offset_mapper2, {1, 13, 17}));
-  EXPECT_EQ(OffsetVector({11, 5}),
+  EXPECT_EQ(OffsetDeque({11, 5}),
             ForwardProjectAllTest(offset_mapper2, {1, 14, 17}));
-  EXPECT_EQ(OffsetVector({10, 11, 2, 4, 5}),
+  EXPECT_EQ(OffsetDeque({10, 11, 2, 4, 5}),
             ForwardProjectAllTest(offset_mapper2, {0, 1, 13, 14, 16, 17, 18}));
 }
 

@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <deque>
 #include <vector>
 
 #include "components/zucchini/image_utils.h"
@@ -30,8 +31,8 @@ class TargetsAffinity {
   // affinity scores. Both |old_targets| and |new_targets| are targets in the
   // same pool and are sorted in ascending order.
   void InferFromSimilarities(const EquivalenceMap& equivalence_map,
-                             const std::vector<offset_t>& old_targets,
-                             const std::vector<offset_t>& new_targets);
+                             const std::deque<offset_t>& old_targets,
+                             const std::deque<offset_t>& new_targets);
 
   // Assigns labels to targets based on associations previously inferred, using
   // |min_affinity| to reject associations with weak |affinity|. Label 0 is

@@ -291,7 +291,7 @@ offset_t OffsetMapper::ExtendedForwardProject(offset_t offset) const {
                                                 : kOffsetBound - 1;
 }
 
-void OffsetMapper::ForwardProjectAll(std::vector<offset_t>* offsets) const {
+void OffsetMapper::ForwardProjectAll(std::deque<offset_t>* offsets) const {
   DCHECK(std::is_sorted(offsets->begin(), offsets->end()));
   auto current = equivalences_.begin();
   for (auto& src : *offsets) {

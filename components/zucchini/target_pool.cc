@@ -16,7 +16,7 @@ namespace zucchini {
 
 TargetPool::TargetPool() = default;
 
-TargetPool::TargetPool(std::vector<offset_t>&& targets) {
+TargetPool::TargetPool(std::deque<offset_t>&& targets) {
   DCHECK(targets_.empty());
   DCHECK(std::is_sorted(targets.begin(), targets.end()));
   targets_ = std::move(targets);

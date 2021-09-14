@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <deque>
 #include <utility>
 #include <vector>
 
@@ -30,8 +31,8 @@ constexpr double kDummySim = 0.0;
 std::vector<int32_t> GenerateReferencesDeltaTest(
     std::vector<Reference>&& old_references,
     std::vector<Reference>&& new_references,
-    std::vector<offset_t>&& exp_old_targets,
-    std::vector<offset_t>&& exp_projected_old_targets,
+    std::deque<offset_t>&& exp_old_targets,
+    std::deque<offset_t>&& exp_projected_old_targets,
     EquivalenceMap&& equivalence_map) {
   // OffsetMapper needs image sizes for forward-projection overflow check. These
   // are tested elsewhere, so just use arbitrary large value.

@@ -128,7 +128,7 @@ class OffsetMapper {
   // Given sorted |offsets|, applies a projection in-place of all offsets that
   // are part of a pruned equivalence from |old_image| to |new_image|. Other
   // offsets are removed from |offsets|.
-  void ForwardProjectAll(std::vector<offset_t>* offsets) const;
+  void ForwardProjectAll(std::deque<offset_t>* offsets) const;
 
   // Accessor for testing.
   const std::vector<Equivalence> equivalences() const { return equivalences_; }

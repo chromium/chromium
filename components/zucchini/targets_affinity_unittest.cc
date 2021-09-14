@@ -25,8 +25,8 @@ TEST(TargetsAffinityTest, AffinityBetween) {
 
   auto test_affinity = [&targets_affinity](
                            const EquivalenceMap& equivalence_map,
-                           const std::vector<offset_t>& old_targets,
-                           const std::vector<offset_t>& new_targets) {
+                           const std::deque<offset_t>& old_targets,
+                           const std::deque<offset_t>& new_targets) {
     targets_affinity.InferFromSimilarities(equivalence_map, old_targets,
                                            new_targets);
     AffinityVector affinities(old_targets.size());
@@ -81,8 +81,8 @@ TEST(TargetsAffinityTest, AssignLabels) {
 
   auto test_labels_assignment =
       [&targets_affinity](const EquivalenceMap& equivalence_map,
-                          const std::vector<offset_t>& old_targets,
-                          const std::vector<offset_t>& new_targets,
+                          const std::deque<offset_t>& old_targets,
+                          const std::deque<offset_t>& new_targets,
                           double min_affinity,
                           const std::vector<uint32_t>& expected_old_labels,
                           const std::vector<uint32_t>& expected_new_labels) {
