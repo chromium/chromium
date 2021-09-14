@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/cxx17_backports.h"
+#include "base/i18n/rtl.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "cc/paint/paint_record.h"

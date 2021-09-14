@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/glass_browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/windows_10_caption_button.h"
 #include "chrome/browser/ui/views/frame/windows_10_tab_search_caption_button.h"

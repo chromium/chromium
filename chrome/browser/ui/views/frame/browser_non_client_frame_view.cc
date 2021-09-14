@@ -53,11 +53,6 @@ BrowserNonClientFrameView::BrowserNonClientFrameView(BrowserFrame* frame,
     g_browser_process->profile_manager()->
         GetProfileAttributesStorage().AddObserver(this);
   }
-  if (browser_view_->tabstrip()) {
-    DCHECK(
-        !tab_strip_observation_.IsObservingSource(browser_view_->tabstrip()));
-    tab_strip_observation_.Observe(browser_view_->tabstrip());
-  }
 }
 
 BrowserNonClientFrameView::~BrowserNonClientFrameView() {
