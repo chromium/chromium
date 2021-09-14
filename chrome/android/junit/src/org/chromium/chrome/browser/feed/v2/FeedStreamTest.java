@@ -288,6 +288,21 @@ public class FeedStreamTest {
     }
 
     @Test
+    public void testUnbindDismissesSnackbars() {
+        bindToView();
+
+        FeedStream.FeedActionsHandlerImpl handler =
+                (FeedStream.FeedActionsHandlerImpl) mContentManager.getContextValues(0).get(
+                        FeedActionsHandler.KEY);
+
+        handler.showSnackbar(
+                "message", "Undo", FeedActionsHandler.SnackbarDuration.SHORT, mSnackbarController);
+        verify(mSnackbarManager).showSnackbar(any());
+        mFeedStream.unbind(false);
+        verify(mSnackbarManager, times(1)).dismissSnackbars(any());
+    }
+
+    @Test
     @SmallTest
     public void testAddSlicesOnStreamUpdated() {
         bindToView();

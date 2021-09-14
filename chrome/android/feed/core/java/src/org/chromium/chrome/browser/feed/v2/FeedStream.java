@@ -298,28 +298,29 @@ public class FeedStream implements Stream {
 
         @Override
         public void showSnackbar(String text, String actionLabel, SnackbarDuration duration,
-                SnackbarController controller) {
+                SnackbarController delegateController) {
             assert ThreadUtils.runningOnUiThread();
             int durationMs = SNACKBAR_DURATION_MS_SHORT;
             if (duration == FeedActionsHandler.SnackbarDuration.LONG) {
                 durationMs = SNACKBAR_DURATION_MS_LONG;
             }
+            SnackbarManager.SnackbarController controller =
+                    new SnackbarManager.SnackbarController() {
+                        @Override
+                        public void onAction(Object actionData) {
+                            delegateController.onAction();
+                        }
+                        @Override
+                        public void onDismissNoAction(Object actionData) {
+                            delegateController.onDismissNoAction();
+                        }
+                    };
 
-            mSnackManager.showSnackbar(
-                    Snackbar.make(text,
-                                    new SnackbarManager.SnackbarController() {
-                                        @Override
-                                        public void onAction(Object actionData) {
-                                            controller.onAction();
-                                        }
-                                        @Override
-                                        public void onDismissNoAction(Object actionData) {
-                                            controller.onDismissNoAction();
-                                        }
-                                    },
-                                    Snackbar.TYPE_ACTION, Snackbar.UMA_FEED_NTP_STREAM)
-                            .setAction(actionLabel, /*actionData=*/null)
-                            .setDuration(durationMs));
+            mSnackbarControllers.add(controller);
+            mSnackManager.showSnackbar(Snackbar.make(text, controller, Snackbar.TYPE_ACTION,
+                                                       Snackbar.UMA_FEED_NTP_STREAM)
+                                               .setAction(actionLabel, /*actionData=*/null)
+                                               .setDuration(durationMs));
         }
 
         @Override
@@ -414,6 +415,7 @@ public class FeedStream implements Stream {
     private int mHeaderCount;
     private boolean mIsPlaceholderShown;
     private long mLastFetchTimeMs;
+    private ArrayList<SnackbarManager.SnackbarController> mSnackbarControllers = new ArrayList<>();
 
     // Placeholder view that simply takes up space.
     private NtpListContentManager.NativeViewContent mSpacerViewContent;
@@ -553,6 +555,13 @@ public class FeedStream implements Stream {
 
     @Override
     public void unbind(boolean shouldPlaceSpacer) {
+        // Dismiss any snackbars. It's important we do this now so that xsurface can respond to
+        // these events before the content is removed.
+        for (SnackbarManager.SnackbarController controller : mSnackbarControllers) {
+            mSnackManager.dismissSnackbars(controller);
+        }
+        mSnackbarControllers.clear();
+
         mSliceViewTracker.destroy();
         mSliceViewTracker = null;
         mSurfaceScope = null;
