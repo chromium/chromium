@@ -8,10 +8,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#if defined(OS_WIN)
 #include <string>
 #include <vector>
-#endif
 
 #include "base/macros.h"
 #include "base/time/time.h"
@@ -79,7 +77,7 @@ class VIEWS_EXPORT PrefixSelector : public ui::TextInputClient {
   ukm::SourceId GetClientSourceForMetrics() const override;
   bool ShouldDoLearning() override;
 
-#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_WIN) || defined(OS_CHROMEOS)
   bool SetCompositionFromExistingText(
       const gfx::Range& range,
       const std::vector<ui::ImeTextSpan>& ui_ime_text_spans) override;
