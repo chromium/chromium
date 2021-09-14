@@ -190,6 +190,10 @@ int64_t LayoutShiftUkmValue(float shift_score);
 // Adjusts the layout shift score for UMA.
 int32_t LayoutShiftUmaValue(float shift_score);
 
+// Experimentally adjusts the layout shift score to 10000x for better bucketing
+// in UMA. Rename or remove when resolving crbug.com/1230786
+int32_t LayoutShiftExperimentalUmaValue10000(float shift_score);
+
 }  // namespace page_load_metrics
 
 #endif  // COMPONENTS_PAGE_LOAD_METRICS_BROWSER_PAGE_LOAD_METRICS_UTIL_H_
