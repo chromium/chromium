@@ -536,9 +536,6 @@ CHAR_LIMIT guidelines:
       <message name="IDS_MANAGE_PASSWORDS_TEXT" desc="Text for link to manage passwords on Account Central.">
         View and manage saved passwords in your <ph name="BEGIN_LINK">&lt;link&gt;</ph>Google Account<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
-      <message name="IDS_PHONE_AS_SECURITY_KEY_TEXT" desc="Text for link to use phone as a security key. A 'security key' is physical device used for authentication, usually as part of two-factor security. This option allows a phone to be used in place of a dedicated security key.">
-        Use phone as a security key
-      </message>
       <message name="IDS_SAVED_PASSWORDS_NONE_TEXT" desc="Text when there are no saved passwords/exceptions.">
         Saved passwords will appear here.
       </message>

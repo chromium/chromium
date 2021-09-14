@@ -42,7 +42,6 @@ import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
-import org.chromium.chrome.browser.webauthn.CableAuthenticatorModuleProvider;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SearchUtils;
@@ -78,7 +77,6 @@ public class PasswordSettings extends PreferenceFragmentCompat
     public static final String PREF_CHECK_PASSWORDS = "check_passwords";
     public static final String PREF_TRUSTED_VAULT_OPT_IN = "trusted_vault_opt_in";
     public static final String PREF_KEY_MANAGE_ACCOUNT_LINK = "manage_account_link";
-    public static final String PREF_KEY_SECURITY_KEY_LINK = "security_key_link";
 
     // A PasswordEntryViewer receives a boolean value with this key. If set true, the the entry was
 
@@ -112,7 +110,6 @@ public class PasswordSettings extends PreferenceFragmentCompat
 
     private String mSearchQuery;
     private Preference mLinkPref;
-    private Preference mSecurityKey;
     private ChromeSwitchPreference mSavePasswordsSwitch;
     private ChromeSwitchPreference mAutoSignInSwitch;
     private ChromeBasePreference mCheckPasswords;
@@ -323,10 +320,6 @@ public class PasswordSettings extends PreferenceFragmentCompat
     public void passwordListAvailable(int count) {
         resetList(PREF_KEY_CATEGORY_SAVED_PASSWORDS);
         resetNoEntriesTextMessage();
-
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_AUTH_PHONE_SUPPORT)) {
-            displaySecurityKeyLink();
-        }
 
         mNoPasswords = count == 0;
         if (mNoPasswords) {
@@ -606,22 +599,6 @@ public class PasswordSettings extends PreferenceFragmentCompat
         mLinkPref.setOnPreferenceClickListener(this);
         mLinkPref.setOrder(ORDER_MANAGE_ACCOUNT_LINK);
         getPreferenceScreen().addPreference(mLinkPref);
-    }
-
-    private void displaySecurityKeyLink() {
-        if (mSecurityKey == null) {
-            mSecurityKey = new ChromeBasePreference(getStyledContext());
-            mSecurityKey.setKey(PREF_KEY_SECURITY_KEY_LINK);
-            mSecurityKey.setTitle(R.string.phone_as_security_key_text);
-            mSecurityKey.setOnPreferenceClickListener(preference -> {
-                SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-                settingsLauncher.launchSettingsActivity(
-                        getActivity(), CableAuthenticatorModuleProvider.class, null);
-                return true;
-            });
-            mSecurityKey.setOrder(ORDER_SECURITY_KEY);
-        }
-        getPreferenceScreen().addPreference(mSecurityKey);
     }
 
     private Context getStyledContext() {
