@@ -189,7 +189,7 @@ SkPath MessageView::GetHighlightPath() const {
   // them on top of the notifications. We need to do this because TrayBubbleView
   // has a layer that masks to bounds due to which the focus ring can not extend
   // outside the view.
-  int inset = -views::FocusRing::kHaloInset;
+  int inset = -views::FocusRing::kDefaultHaloInset;
   rect.Inset(gfx::Insets(inset));
 
   SkScalar top_radius = std::max(0, top_radius_ - inset);

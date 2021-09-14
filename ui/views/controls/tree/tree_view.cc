@@ -79,7 +79,7 @@ bool EventIsDoubleTapOrClick(const ui::LocatedEvent& event) {
 
 int GetSpaceThicknessForFocusRing() {
   static const int kSpaceThicknessForFocusRing =
-      FocusRing::kHaloThickness - FocusRing::kHaloInset;
+      FocusRing::kDefaultHaloThickness - FocusRing::kDefaultHaloInset;
   return kSpaceThicknessForFocusRing;
 }
 

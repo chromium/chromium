@@ -339,7 +339,8 @@ CaptureLabelView::CreatePathGenerator() {
   // the same size as its widget, inset by half the focus ring thickness to
   // ensure the focus ring is drawn inside the widget bounds.
   return std::make_unique<views::RoundRectHighlightPathGenerator>(
-      gfx::Insets(views::FocusRing::kHaloThickness / 2), kCaptureLabelRadius);
+      gfx::Insets(views::FocusRing::kDefaultHaloThickness / 2),
+      kCaptureLabelRadius);
 }
 
 void CaptureLabelView::ScheduleCountDownAnimation() {

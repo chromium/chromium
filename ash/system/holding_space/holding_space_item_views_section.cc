@@ -88,8 +88,8 @@ class HoldingSpaceScrollView : public views::ScrollView,
     // avoid clipping of these focus rings. Note that a clip rect *does* need to
     // be applied to prevent this view from painting its contents outside of its
     // viewport.
-    const float kFocusInsets =
-        kHoldingSpaceFocusInsets - (views::FocusRing::kHaloThickness / 2.f);
+    const float kFocusInsets = kHoldingSpaceFocusInsets -
+                               (views::FocusRing::kDefaultHaloThickness / 2.f);
     gfx::Rect bounds = GetLocalBounds();
     bounds.Inset(gfx::Insets(kFocusInsets));
     layer()->SetClipRect(bounds);

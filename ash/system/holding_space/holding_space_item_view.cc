@@ -406,7 +406,7 @@ void HoldingSpaceItemView::OnPaintFocus(gfx::Canvas* canvas, gfx::Size size) {
   flags.setAntiAlias(true);
   flags.setColor(AshColorProvider::Get()->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kFocusRingColor));
-  flags.setStrokeWidth(views::FocusRing::kHaloThickness);
+  flags.setStrokeWidth(views::FocusRing::kDefaultHaloThickness);
   flags.setStyle(cc::PaintFlags::kStroke_Style);
 
   gfx::Rect bounds = gfx::Rect(size);

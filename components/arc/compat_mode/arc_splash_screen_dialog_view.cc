@@ -66,7 +66,7 @@ class HighlightBorder : public views::View {
 
   void Layout() override {
     auto bounds = parent()->GetLocalBounds();
-    bounds.Inset(gfx::Insets(views::FocusRing::kHaloInset));
+    bounds.Inset(gfx::Insets(views::FocusRing::kDefaultHaloInset));
     SetBoundsRect(bounds);
   }
 
@@ -84,7 +84,7 @@ class HighlightBorder : public views::View {
     flags.setColor(GetNativeTheme()->GetSystemColor(
         ui::NativeTheme::kColorId_FocusedBorderColor));
     flags.setStyle(cc::PaintFlags::kStroke_Style);
-    flags.setStrokeWidth(views::FocusRing::kHaloThickness);
+    flags.setStrokeWidth(views::FocusRing::kDefaultHaloThickness);
     canvas->DrawRoundRect(rect, (*rrect).GetSimpleRadius(), flags);
   }
 };

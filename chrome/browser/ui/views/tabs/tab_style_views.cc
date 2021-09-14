@@ -293,8 +293,8 @@ SkPath GM2TabStyle::GetPath(PathType path_type,
   } else if (path_type == PathType::kHighlight) {
     // The path is a round rect inset by the focus ring thickness. The
     // radius is also adjusted by the inset.
-    const float inset =
-        views::FocusRing::kHaloThickness + views::FocusRing::kHaloInset;
+    const float inset = views::FocusRing::kDefaultHaloThickness +
+                        views::FocusRing::kDefaultHaloInset;
     SkRRect rrect = SkRRect::MakeRectXY(
         SkRect::MakeLTRB(tab_left + inset, tab_top + inset, tab_right - inset,
                          tab_bottom - inset),
