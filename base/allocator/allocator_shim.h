@@ -166,7 +166,7 @@ BASE_EXPORT void EnablePartitionAllocMemoryReclaimer();
 
 BASE_EXPORT void ReconfigurePartitionAllocLazyCommit();
 
-BASE_EXPORT void ConfigurePartitionRefCountSupport(bool enable_ref_count);
+BASE_EXPORT void ConfigurePartitionBackupRefPtrSupport(bool enable_brp);
 #endif
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)

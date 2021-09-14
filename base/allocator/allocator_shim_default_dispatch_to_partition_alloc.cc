@@ -148,7 +148,7 @@ class MainPartitionConstructor {
         thread_cache,
         base::PartitionOptions::Quarantine::kAllowed,
         base::PartitionOptions::Cookie::kAllowed,
-        base::PartitionOptions::RefCount::kDisallowed,
+        base::PartitionOptions::BackupRefPtr::kDisabled,
         base::PartitionOptions::UseConfigurablePool::kNo,
     });
 
@@ -162,7 +162,8 @@ base::ThreadSafePartitionRoot* Allocator() {
   return g_root.Get();
 }
 
-// Original g_root_ if it was replaced by ConfigurePartitionRefCountSupport().
+// Original g_root_ if it was replaced by
+// ConfigurePartitionBackupRefPtrSupport().
 std::atomic<base::ThreadSafePartitionRoot*> g_original_root(nullptr);
 
 class AlignedPartitionConstructor {
@@ -444,7 +445,7 @@ alignas(base::ThreadSafePartitionRoot) uint8_t
         base::ThreadSafePartitionRoot)];
 #endif
 
-void ConfigurePartitionRefCountSupport(bool enable_ref_count) {
+void ConfigurePartitionBackupRefPtrSupport(bool enable_brp) {
   auto* current_root = g_root.Get();
   // Call Get() to ensure g_aligned_root gets initialized. In some cases it is
   // initialized with g_root, and we want to make sure it is the pre-swap
@@ -456,19 +457,20 @@ void ConfigurePartitionRefCountSupport(bool enable_ref_count) {
 
   const bool allow_aligned_alloc_in_main_root =
 #if BUILDFLAG(USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC_UPON_ENABLING_BRP)
-      // If ref-count is to be enabled, this partition can't support
+      // If BRP is to be enabled, this partition can't support
       // AlignedAlloc. Instead, a new one is created below. Otherwise,
       // no separate AlignedAlloc partition is created, so this one must
       // support it.
-      !enable_ref_count;
+      !enable_brp;
 #else
       // No separate AlignedAlloc partition is created, so this one must
       // support it.
       true;
 #endif
-  // TODO(bartekn): When enable_ref_count is false, simply enable thread cache
-  // in the existing root instead of creating a new one -- the only difference
-  // between the current and new partition is the thread cache setting.
+  // TODO(bartekn): When enable_brp is false, simply enable thread
+  // cache in the existing root instead of creating a new one -- the only
+  // difference between the current and new partition is the thread cache
+  // setting.
   auto* new_root = new (g_allocator_buffer_for_ref_count_config)
       base::ThreadSafePartitionRoot({
           allow_aligned_alloc_in_main_root
@@ -477,8 +479,8 @@ void ConfigurePartitionRefCountSupport(bool enable_ref_count) {
           base::PartitionOptions::ThreadCache::kEnabled,
           base::PartitionOptions::Quarantine::kAllowed,
           base::PartitionOptions::Cookie::kAllowed,
-          enable_ref_count ? base::PartitionOptions::RefCount::kAllowed
-                           : base::PartitionOptions::RefCount::kDisallowed,
+          enable_brp ? base::PartitionOptions::BackupRefPtr::kEnabled
+                     : base::PartitionOptions::BackupRefPtr::kDisabled,
           base::PartitionOptions::UseConfigurablePool::kNo,
       });
   g_root.Replace(new_root);
@@ -491,7 +493,7 @@ void ConfigurePartitionRefCountSupport(bool enable_ref_count) {
 
   base::ThreadSafePartitionRoot* new_aligned_root =
 #if BUILDFLAG(USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC_UPON_ENABLING_BRP)
-      enable_ref_count
+      enable_brp
           // If BRP is getting enabled, we need to create a new AlignedAlloc
           // partition now.
           // TODO(bartekn): Use the original root instead of creating a new one.
@@ -503,7 +505,7 @@ void ConfigurePartitionRefCountSupport(bool enable_ref_count) {
                     base::PartitionOptions::ThreadCache::kDisabled,
                     base::PartitionOptions::Quarantine::kAllowed,
                     base::PartitionOptions::Cookie::kAllowed,
-                    base::PartitionOptions::RefCount::kDisallowed,
+                    base::PartitionOptions::BackupRefPtr::kDisabled,
                     base::PartitionOptions::UseConfigurablePool::kNo,
                 })
           // Otherwise, the new main root can also support AlignedAlloc.

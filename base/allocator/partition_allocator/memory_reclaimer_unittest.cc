@@ -50,7 +50,7 @@ class PartitionAllocMemoryReclaimerTest : public ::testing::Test {
                       PartitionOptions::ThreadCache::kDisabled,
                       PartitionOptions::Quarantine::kAllowed,
                       PartitionOptions::Cookie::kAllowed,
-                      PartitionOptions::RefCount::kDisallowed,
+                      PartitionOptions::BackupRefPtr::kDisabled,
                       PartitionOptions::UseConfigurablePool::kNo});
   }
 

@@ -225,11 +225,12 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
         slot_span_alignment - PartitionPageSize();
     const size_t reservation_size =
         PartitionRoot<thread_safe>::GetDirectMapReservationSize(
-            raw_size + padding_for_alignment);
+            raw_size + padding_for_alignment, root->brp_enabled());
 #if DCHECK_IS_ON()
     const size_t available_reservation_size =
         reservation_size - padding_for_alignment -
-        PartitionRoot<thread_safe>::GetDirectMapMetadataAndGuardPagesSize();
+        PartitionRoot<thread_safe>::GetDirectMapMetadataAndGuardPagesSize(
+            root->brp_enabled());
     PA_DCHECK(slot_size <= available_reservation_size);
 #endif
 

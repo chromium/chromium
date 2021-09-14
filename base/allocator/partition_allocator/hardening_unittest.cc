@@ -30,7 +30,7 @@ TEST(HardeningTest, PartialCorruption) {
                        PartitionOptions::ThreadCache::kDisabled,
                        PartitionOptions::Quarantine::kDisallowed,
                        PartitionOptions::Cookie::kDisallowed,
-                       PartitionOptions::RefCount::kDisallowed,
+                       PartitionOptions::BackupRefPtr::kDisabled,
                        PartitionOptions::UseConfigurablePool::kNo}};
 
   const size_t kAllocSize = 100;
@@ -59,7 +59,7 @@ TEST(HardeningTest, OffHeapPointerCrashing) {
                        PartitionOptions::ThreadCache::kDisabled,
                        PartitionOptions::Quarantine::kDisallowed,
                        PartitionOptions::Cookie::kDisallowed,
-                       PartitionOptions::RefCount::kDisallowed,
+                       PartitionOptions::BackupRefPtr::kDisabled,
                        PartitionOptions::UseConfigurablePool::kNo}};
 
   const size_t kAllocSize = 100;
@@ -85,7 +85,7 @@ TEST(HardeningTest, MetadataPointerCrashing) {
                        PartitionOptions::ThreadCache::kDisabled,
                        PartitionOptions::Quarantine::kDisallowed,
                        PartitionOptions::Cookie::kDisallowed,
-                       PartitionOptions::RefCount::kDisallowed,
+                       PartitionOptions::BackupRefPtr::kDisabled,
                        PartitionOptions::UseConfigurablePool::kNo}};
 
   const size_t kAllocSize = 100;
@@ -116,7 +116,7 @@ TEST(HardeningTest, SuccessfulCorruption) {
                        PartitionOptions::ThreadCache::kDisabled,
                        PartitionOptions::Quarantine::kDisallowed,
                        PartitionOptions::Cookie::kDisallowed,
-                       PartitionOptions::RefCount::kDisallowed,
+                       PartitionOptions::BackupRefPtr::kDisabled,
                        PartitionOptions::UseConfigurablePool::kNo}};
 
   uintptr_t* zero_vector = reinterpret_cast<uintptr_t*>(

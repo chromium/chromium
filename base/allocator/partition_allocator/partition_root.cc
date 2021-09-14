@@ -503,22 +503,27 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
     allow_aligned_alloc =
         opts.aligned_alloc == PartitionOptions::AlignedAlloc::kAllowed;
     allow_cookie = opts.cookie == PartitionOptions::Cookie::kAllowed;
-    allow_ref_count = opts.ref_count == PartitionOptions::RefCount::kAllowed;
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
+    brp_enabled_ =
+        opts.backup_ref_ptr == PartitionOptions::BackupRefPtr::kEnabled;
+#else
+    PA_CHECK(opts.backup_ref_ptr == PartitionOptions::BackupRefPtr::kDisabled);
+#endif
     use_configurable_pool =
         (opts.use_configurable_pool ==
          PartitionOptions::UseConfigurablePool::kIfAvailable) &&
         IsConfigurablePoolAvailable();
     PA_DCHECK(!use_configurable_pool || IsConfigurablePoolAvailable());
 
-    // allow_ref_count is not supported in the configurable pool because
-    // ref-counting requires objects to be in a different Pool.
-    PA_CHECK(!(use_configurable_pool && allow_ref_count));
+    // brp_enabled_() is not supported in the configurable pool because
+    // BRP requires objects to be in a different Pool.
+    PA_CHECK(!(use_configurable_pool && brp_enabled()));
 
     // Ref-count messes up alignment needed for AlignedAlloc, making this
     // option incompatible. However, except in the
     // PUT_REF_COUNT_IN_PREVIOUS_SLOT case.
-#if !BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-    PA_CHECK(!allow_aligned_alloc || !allow_ref_count);
+#if BUILDFLAG(USE_BACKUP_REF_PTR) && !BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
+    PA_CHECK(!allow_aligned_alloc || !brp_enabled_);
 #endif
 
 #if defined(PA_EXTRAS_REQUIRED)
@@ -529,7 +534,7 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
       extras_size += internal::kPartitionCookieSizeAdjustment;
     }
 
-    if (allow_ref_count) {
+    if (brp_enabled()) {
       // TODO(tasak): In the PUT_REF_COUNT_IN_PREVIOUS_SLOT case, ref-count is
       // stored out-of-line for single-slot slot spans, so no need to
       // add/subtract its size in this case.
@@ -670,7 +675,8 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForDirectMap(
   size_t current_reservation_size = extent->reservation_size;
   // Calculate the new reservation size the way PartitionDirectMap() would, but
   // skip the alignment, because this call isn't requesting it.
-  size_t new_reservation_size = GetDirectMapReservationSize(raw_size);
+  size_t new_reservation_size =
+      GetDirectMapReservationSize(raw_size, brp_enabled());
 
   // If new reservation would be larger, there is nothing we can do to
   // reallocate in-place.
@@ -705,14 +711,16 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForDirectMap(
   // allocation can grow.
   size_t available_reservation_size =
       current_reservation_size - extent->padding_for_alignment -
-      PartitionRoot<thread_safe>::GetDirectMapMetadataAndGuardPagesSize();
+      PartitionRoot<thread_safe>::GetDirectMapMetadataAndGuardPagesSize(
+          brp_enabled());
 #if DCHECK_IS_ON()
   char* reservation_start = reinterpret_cast<char*>(
       reinterpret_cast<uintptr_t>(slot_start) & kSuperPageBaseMask);
   PA_DCHECK(internal::IsReservationStart(reservation_start));
   PA_DCHECK(slot_start + available_reservation_size ==
             reservation_start + current_reservation_size -
-                GetDirectMapMetadataAndGuardPagesSize() + PartitionPageSize());
+                GetDirectMapMetadataAndGuardPagesSize(brp_enabled()) +
+                PartitionPageSize());
 #endif
 
   if (new_slot_size == current_slot_size) {
@@ -783,14 +791,14 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForNormalBuckets(
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) && DCHECK_IS_ON()
     void* slot_start = AdjustPointerForExtrasSubtract(ptr);
     internal::PartitionRefCount* old_ref_count;
-    if (allow_ref_count) {
+    if (brp_enabled()) {
       old_ref_count = internal::PartitionRefCountPointer(slot_start);
     }
 #endif  // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) && DCHECK_IS_ON()
     size_t new_raw_size = AdjustSizeForExtrasAdd(new_size);
     slot_span->SetRawSize(new_raw_size);
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) && DCHECK_IS_ON()
-    if (allow_ref_count) {
+    if (brp_enabled()) {
       internal::PartitionRefCount* new_ref_count =
           internal::PartitionRefCountPointer(slot_start);
       PA_DCHECK(new_ref_count == old_ref_count);

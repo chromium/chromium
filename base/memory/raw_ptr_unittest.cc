@@ -726,7 +726,8 @@ static constexpr PartitionOptions kOpts = {
     PartitionOptions::AlignedAlloc::kDisallowed,
     PartitionOptions::ThreadCache::kDisabled,
     PartitionOptions::Quarantine::kDisallowed,
-    PartitionOptions::Cookie::kAllowed, PartitionOptions::RefCount::kAllowed};
+    PartitionOptions::Cookie::kAllowed,
+    PartitionOptions::BackupRefPtr::kEnabled};
 
 TEST(BackupRefPtrImpl, Basic) {
   // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to

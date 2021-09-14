@@ -85,9 +85,9 @@ bool Partitions::InitializeOnce() {
         base::PartitionOptions::Quarantine::kAllowed,
         base::PartitionOptions::Cookie::kAllowed,
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_IN_RENDERER_PROCESS)
-        base::PartitionOptions::RefCount::kAllowed,
+        base::PartitionOptions::BackupRefPtr::kEnabled,
 #else
-        base::PartitionOptions::RefCount::kDisallowed,
+        base::PartitionOptions::BackupRefPtr::kDisabled,
 #endif
         base::PartitionOptions::UseConfigurablePool::kNo
   });
@@ -109,7 +109,7 @@ bool Partitions::InitializeOnce() {
        base::PartitionOptions::ThreadCache::kDisabled,
        base::PartitionOptions::Quarantine::kAllowed,
        base::PartitionOptions::Cookie::kAllowed,
-       base::PartitionOptions::RefCount::kDisallowed,
+       base::PartitionOptions::BackupRefPtr::kDisabled,
        base::PartitionOptions::UseConfigurablePool::kNo});
   buffer_allocator->init({
     base::PartitionOptions::AlignedAlloc::kDisallowed,
@@ -117,9 +117,9 @@ bool Partitions::InitializeOnce() {
         base::PartitionOptions::Quarantine::kAllowed,
         base::PartitionOptions::Cookie::kAllowed,
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_IN_RENDERER_PROCESS)
-        base::PartitionOptions::RefCount::kAllowed,
+        base::PartitionOptions::BackupRefPtr::kEnabled,
 #else
-        base::PartitionOptions::RefCount::kDisallowed,
+        base::PartitionOptions::BackupRefPtr::kDisabled,
 #endif
         base::PartitionOptions::UseConfigurablePool::kNo
   });
@@ -129,7 +129,7 @@ bool Partitions::InitializeOnce() {
                           base::PartitionOptions::ThreadCache::kDisabled,
                           base::PartitionOptions::Quarantine::kAllowed,
                           base::PartitionOptions::Cookie::kAllowed,
-                          base::PartitionOptions::RefCount::kDisallowed,
+                          base::PartitionOptions::BackupRefPtr::kDisabled,
                           base::PartitionOptions::UseConfigurablePool::kNo});
 
   array_buffer_root_ = array_buffer_allocator->root();

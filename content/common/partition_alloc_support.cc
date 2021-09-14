@@ -86,9 +86,9 @@ bool EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded() {
 //
 // Furthermore, since the function has to allocate a new partition, it must
 // only run once.
-void ConfigurePartitionRefCountSupportIfNeeded(bool enable_ref_count) {
+void ConfigurePartitionBackupRefPtrSupportIfNeeded(bool enable_backup_refptr) {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_BACKUP_REF_PTR)
-  base::allocator::ConfigurePartitionRefCountSupport(enable_ref_count);
+  base::allocator::ConfigurePartitionBackupRefPtrSupport(enable_backup_refptr);
 #endif
 }
 
@@ -96,7 +96,7 @@ void ReconfigurePartitionForKnownProcess(const std::string& process_type) {
   DCHECK_NE(process_type, switches::kZygoteProcess);
 
   // No specified process type means this is the Browser process.
-  ConfigurePartitionRefCountSupportIfNeeded(
+  ConfigurePartitionBackupRefPtrSupportIfNeeded(
       process_type.empty()
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_IN_RENDERER_PROCESS)
       || process_type == switches::kRendererProcess

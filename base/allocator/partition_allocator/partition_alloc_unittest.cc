@@ -193,17 +193,23 @@ class PartitionAllocTest : public testing::Test {
 
   void SetUp() override {
     PartitionAllocGlobalInit(HandleOOM);
-    allocator.init({PartitionOptions::AlignedAlloc::kDisallowed,
-                    PartitionOptions::ThreadCache::kDisabled,
-                    PartitionOptions::Quarantine::kDisallowed,
-                    PartitionOptions::Cookie::kAllowed,
-                    PartitionOptions::RefCount::kAllowed,
-                    PartitionOptions::UseConfigurablePool::kNo});
+    allocator.init({
+      PartitionOptions::AlignedAlloc::kDisallowed,
+          PartitionOptions::ThreadCache::kDisabled,
+          PartitionOptions::Quarantine::kDisallowed,
+          PartitionOptions::Cookie::kAllowed,
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
+          PartitionOptions::BackupRefPtr::kEnabled,
+#else
+          PartitionOptions::BackupRefPtr::kDisabled,
+#endif
+          PartitionOptions::UseConfigurablePool::kNo
+    });
     aligned_allocator.init({PartitionOptions::AlignedAlloc::kAllowed,
                             PartitionOptions::ThreadCache::kDisabled,
                             PartitionOptions::Quarantine::kDisallowed,
                             PartitionOptions::Cookie::kDisallowed,
-                            PartitionOptions::RefCount::kDisallowed,
+                            PartitionOptions::BackupRefPtr::kDisabled,
                             PartitionOptions::UseConfigurablePool::kNo});
     test_bucket_index_ = SizeToIndex(kRealAllocSize);
   }
@@ -1860,7 +1866,8 @@ TEST_F(PartitionAllocDeathTest, DirectMapGuardPages) {
       kMaxBucketed + kExtraAllocSize + 1, kMaxBucketed + SystemPageSize(),
       kMaxBucketed + PartitionPageSize(),
       bits::AlignUp(kMaxBucketed + kSuperPageSize, kSuperPageSize) -
-          PartitionRoot<ThreadSafe>::GetDirectMapMetadataAndGuardPagesSize()};
+          PartitionRoot<ThreadSafe>::GetDirectMapMetadataAndGuardPagesSize(
+              allocator.root()->brp_enabled())};
   for (size_t size : kSizes) {
     size -= kExtraAllocSize;
     EXPECT_GT(size, kMaxBucketed)
@@ -3065,7 +3072,8 @@ TEST_F(PartitionAllocTest, MAYBE_Bookkeeping) {
       // It also includes alignment. However, these would double count the first
       // partition page, so it needs to be subtracted.
       size_t surrounding_pages_size =
-          PartitionRoot<ThreadSafe>::GetDirectMapMetadataAndGuardPagesSize() +
+          PartitionRoot<ThreadSafe>::GetDirectMapMetadataAndGuardPagesSize(
+              root.brp_enabled()) +
           alignment - PartitionPageSize();
       size_t expected_direct_map_size =
           bits::AlignUp(aligned_size + surrounding_pages_size,
@@ -3353,9 +3361,9 @@ TEST_F(PartitionAllocTest, CrossPartitionRootRealloc) {
                                            nullptr);
   EXPECT_TRUE(ptr);
 
-  // Create new root to simulate ConfigurePartitionRefCountSupport(false)
+  // Create new root to simulate ConfigurePartitionBackupRefPtrSupport(false)
 
-  // Copied from ConfigurePartitionRefCountSupport()
+  // Copied from ConfigurePartitionBackupRefPtrSupport()
   allocator.root()->PurgeMemory(PartitionPurgeDecommitEmptySlotSpans |
                                 PartitionPurgeDiscardUnusedSystemPages);
 
@@ -3365,7 +3373,7 @@ TEST_F(PartitionAllocTest, CrossPartitionRootRealloc) {
       base::PartitionOptions::ThreadCache::kDisabled,
       base::PartitionOptions::Quarantine::kDisallowed,
       base::PartitionOptions::Cookie::kAllowed,
-      base::PartitionOptions::RefCount::kDisallowed,
+      base::PartitionOptions::BackupRefPtr::kDisabled,
       base::PartitionOptions::UseConfigurablePool::kNo,
   });
 
@@ -3534,17 +3542,19 @@ TEST_F(PartitionAllocTest, MallocFunctionAnnotations) {
   Free(buffer);
 }
 
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
 TEST_F(PartitionAllocTest, Padding) {
-  uintptr_t allow_ref_count_offset =
-      reinterpret_cast<uintptr_t>(&allocator.root()->allow_ref_count) -
+  uintptr_t brp_enabled_offset =
+      reinterpret_cast<uintptr_t>(&allocator.root()->brp_enabled_) -
       reinterpret_cast<uintptr_t>(allocator.root());
   uintptr_t lock_offset =
       reinterpret_cast<uintptr_t>(&allocator.root()->lock_) -
       reinterpret_cast<uintptr_t>(allocator.root());
 
   // Double-check that the padding in the root was not removed.
-  EXPECT_GT(lock_offset - allow_ref_count_offset, 64u);
+  EXPECT_GT(lock_offset - brp_enabled_offset, 64u);
 }
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
 // Test that the ConfigurablePool works properly.
 TEST_F(PartitionAllocTest, ConfigurablePool) {
@@ -3566,7 +3576,7 @@ TEST_F(PartitionAllocTest, ConfigurablePool) {
       base::PartitionOptions::ThreadCache::kDisabled,
       base::PartitionOptions::Quarantine::kDisallowed,
       base::PartitionOptions::Cookie::kAllowed,
-      base::PartitionOptions::RefCount::kDisallowed,
+      base::PartitionOptions::BackupRefPtr::kDisabled,
       base::PartitionOptions::UseConfigurablePool::kIfAvailable,
   });
 

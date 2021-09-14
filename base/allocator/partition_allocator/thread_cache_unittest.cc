@@ -74,11 +74,11 @@ ThreadSafePartitionRoot* CreatePartitionRoot() {
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
         PartitionOptions::ThreadCache::kEnabled,
 #else
-    PartitionOptions::ThreadCache::kDisabled,
+        PartitionOptions::ThreadCache::kDisabled,
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
         PartitionOptions::Quarantine::kAllowed,
         PartitionOptions::Cookie::kDisallowed,
-        PartitionOptions::RefCount::kDisallowed,
+        PartitionOptions::BackupRefPtr::kDisabled,
         PartitionOptions::UseConfigurablePool::kNo
   });
 
@@ -257,7 +257,7 @@ TEST_F(PartitionAllocThreadCacheTest, NoCrossPartitionCache) {
                                 PartitionOptions::ThreadCache::kDisabled,
                                 PartitionOptions::Quarantine::kAllowed,
                                 PartitionOptions::Cookie::kDisallowed,
-                                PartitionOptions::RefCount::kDisallowed,
+                                PartitionOptions::BackupRefPtr::kDisabled,
                                 PartitionOptions::UseConfigurablePool::kNo}};
 
   size_t bucket_index = FillThreadCacheAndReturnIndex(kSmallSize);

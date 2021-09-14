@@ -16,7 +16,7 @@ constexpr PartitionOptions kConfig{PartitionOptions::AlignedAlloc::kDisallowed,
                                    PartitionOptions::ThreadCache::kDisabled,
                                    PartitionOptions::Quarantine::kDisallowed,
                                    PartitionOptions::Cookie::kAllowed,
-                                   PartitionOptions::RefCount::kDisallowed,
+                                   PartitionOptions::BackupRefPtr::kDisabled,
                                    PartitionOptions::UseConfigurablePool::kNo};
 }
 
