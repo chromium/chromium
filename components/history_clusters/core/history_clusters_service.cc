@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
@@ -580,11 +581,43 @@ std::vector<Cluster> HistoryClustersService::CollapseDuplicateVisits(
               "Duplicates shouldn't themselves have duplicates. "
               "If they do, the output is undefined.");
         }
-        visits_map[visit_id].duplicate_visits.push_back(
+        auto& canonical_visit = visits_map[visit_id];
+        canonical_visit.duplicate_visits.push_back(
             std::move(duplicate_visit->second));
 
-        // TODO(tommycli): Here we should also upgrade the canonical visit's
-        // annotations (i.e. is-bookmarked) with those of the duplicate visits.
+        // Upgrade the canonical visit's annotations (i.e. is-bookmarked) with
+        // those of the duplicate visits.
+        auto& context_annotations =
+            canonical_visit.annotated_visit.context_annotations;
+        const auto& duplicate_annotations =
+            canonical_visit.duplicate_visits.back()
+                .annotated_visit.context_annotations;
+        context_annotations.is_existing_bookmark |=
+            duplicate_annotations.is_existing_bookmark;
+        context_annotations.is_existing_part_of_tab_group |=
+            duplicate_annotations.is_existing_part_of_tab_group;
+        context_annotations.is_new_bookmark |=
+            duplicate_annotations.is_new_bookmark;
+        context_annotations.is_placed_in_tab_group |=
+            duplicate_annotations.is_placed_in_tab_group;
+        context_annotations.is_ntp_custom_link |=
+            duplicate_annotations.is_ntp_custom_link;
+        context_annotations.omnibox_url_copied |=
+            duplicate_annotations.omnibox_url_copied;
+
+        auto& canonical_searches = canonical_visit.annotated_visit
+                                       .content_annotations.related_searches;
+        const auto& duplicate_searches =
+            canonical_visit.duplicate_visits.back()
+                .annotated_visit.content_annotations.related_searches;
+        for (const auto& query : duplicate_searches) {
+          // This is an n^2 algorithm, but in practice the list of related
+          // searches should be on the order of 10 elements long at maximum.
+          // If that's not true we should replace this with a set structure.
+          if (!base::Contains(canonical_searches, query)) {
+            canonical_searches.push_back(query);
+          }
+        }
 
         visits_map.erase(duplicate_visit);
       }
