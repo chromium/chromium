@@ -639,8 +639,15 @@ static PositionTemplate<Strategy> MostBackwardCaretPosition(
   // iterate backward from there, looking for a qualified position
   Node* const boundary = EnclosingVisualBoundary<Strategy>(start_node);
   // FIXME: PositionIterator should respect Before and After positions.
-  PositionIteratorAlgorithm<Strategy> last_visible(
-      AdjustPositionForBackwardIteration<Strategy>(position));
+  const PositionTemplate<Strategy>& adjusted_position =
+      AdjustPositionForBackwardIteration<Strategy>(position);
+#if DCHECK_IS_ON()
+  // Debug what causes bug 1248744
+  if (adjusted_position.IsNull())
+    position.ShowTreeForThis();
+  DCHECK(adjusted_position.IsNotNull()) << position;
+#endif
+  PositionIteratorAlgorithm<Strategy> last_visible(adjusted_position);
   const bool start_editable = HasEditableStyle(*start_node);
   Node* last_node = start_node;
   bool boundary_crossed = false;
