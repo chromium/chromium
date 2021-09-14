@@ -170,7 +170,8 @@ MetricsStateManager::MetricsStateManager(
     const std::wstring& backup_registry_key,
     const base::FilePath& user_data_dir,
     StoreClientInfoCallback store_client_info,
-    LoadClientInfoCallback retrieve_client_info)
+    LoadClientInfoCallback retrieve_client_info,
+    StartupVisibility startup_visibility)
     : local_state_(local_state),
       enabled_state_provider_(enabled_state_provider),
       store_client_info_(std::move(store_client_info)),
@@ -178,7 +179,8 @@ MetricsStateManager::MetricsStateManager(
       clean_exit_beacon_(backup_registry_key, user_data_dir, local_state),
       entropy_state_(local_state),
       entropy_source_returned_(ENTROPY_SOURCE_NONE),
-      metrics_ids_were_reset_(false) {
+      metrics_ids_were_reset_(false),
+      startup_visibility_(startup_visibility) {
   ResetMetricsIDsIfNecessary();
 
   bool is_first_run = false;
@@ -409,13 +411,15 @@ std::unique_ptr<MetricsStateManager> MetricsStateManager::Create(
     const std::wstring& backup_registry_key,
     const base::FilePath& user_data_dir,
     StoreClientInfoCallback store_client_info,
-    LoadClientInfoCallback retrieve_client_info) {
+    LoadClientInfoCallback retrieve_client_info,
+    StartupVisibility startup_visibility) {
   std::unique_ptr<MetricsStateManager> result;
   // Note: |instance_exists_| is updated in the constructor and destructor.
   if (!instance_exists_) {
     result.reset(new MetricsStateManager(
         local_state, enabled_state_provider, backup_registry_key, user_data_dir,
-        std::move(store_client_info), std::move(retrieve_client_info)));
+        std::move(store_client_info), std::move(retrieve_client_info),
+        startup_visibility));
   }
   return result;
 }

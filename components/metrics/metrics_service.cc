@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 //------------------------------------------------------------------------------
-// Description of the life cycle of a instance of MetricsService.
+// Description of a MetricsService instance's life cycle.
 //
-//  OVERVIEW
+// OVERVIEW
 //
 // A MetricsService instance is typically created at application startup.  It is
 // the central controller for the acquisition of log data, and the automatic
@@ -17,7 +17,7 @@
 // results for transmission.  Transmission includes submitting a compressed log
 // as data in a URL-post, and retransmitting (or retaining at process
 // termination) if the attempted transmission failed.  Retention across process
-// terminations is done using the the PrefServices facilities. The retained logs
+// terminations is done using the PrefServices facilities. The retained logs
 // (the ones that never got transmitted) are compressed and base64-encoded
 // before being persisted.
 //
@@ -512,15 +512,23 @@ void MetricsService::InitializeMetricsState() {
     provider.LogCrash(
         state_manager_->clean_exit_beacon()->browser_last_live_timestamp());
 #if defined(OS_ANDROID)
-    // Android can have background sessions in which Chrome may not come to the
-    // foreground, so signal that Chrome should stop watching for crashes. If
-    // and when the app enters the foreground, Chrome starts watching for
-    // crashes via MetricsService::OnAppEnterForeground().
-    //
-    // TODO(crbug/1243895): Watch for crashes here by skipping the call to
-    // WriteBeaconValue() in sessions in which Chrome will come to the
-    // foreground.
-    state_manager_->clean_exit_beacon()->WriteBeaconValue(true);
+    if (!state_manager_->is_foreground_session()) {
+      // Android can have background sessions in which the app may not come to
+      // the foreground, so signal that Chrome should stop watching for crashes
+      // here. This ensures that the termination of such sessions is not
+      // considered a crash. If and when the app enters the foreground, Chrome
+      // starts watching for crashes via MetricsService::OnAppEnterForeground().
+      //
+      // TODO(crbug/1232027): Such sessions do not yet exist on iOS. When they
+      // do, it may not be possible to know at this point whether a session is a
+      // background session.
+      //
+      // TODO(crbug/1245347): On WebLayer, it is not possible to know whether
+      // it's a background session at this point.
+      //
+      // TODO(crbug/1245676): Ditto for WebView.
+      state_manager_->clean_exit_beacon()->WriteBeaconValue(true);
+    }
 #endif  // defined(OS_ANDROID)
   }
 

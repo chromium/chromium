@@ -16,8 +16,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
-#include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/chrome_metrics_service_client.h"
@@ -39,6 +37,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if defined(OS_ANDROID)
+#include "chrome/browser/android/metrics/uma_session_stats.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #else
@@ -62,8 +61,8 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace metrics {
-
 namespace internal {
+
 // Metrics reporting feature. This feature, along with user consent, controls if
 // recording and reporting are enabled. If the feature is enabled, but no
 // consent is given, then there will be no recording or reporting.
@@ -170,6 +169,11 @@ ChromeMetricsServicesManagerClient::ChromeMetricsServicesManagerClient(
 }
 
 ChromeMetricsServicesManagerClient::~ChromeMetricsServicesManagerClient() {}
+
+metrics::MetricsStateManager*
+ChromeMetricsServicesManagerClient::GetMetricsStateManagerForTesting() {
+  return GetMetricsStateManager();
+}
 
 // static
 void ChromeMetricsServicesManagerClient::CreateFallbackSamplingTrial(
@@ -280,10 +284,21 @@ ChromeMetricsServicesManagerClient::GetMetricsStateManager() {
   if (!metrics_state_manager_) {
     base::FilePath user_data_dir;
     base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
+
+    metrics::StartupVisibility startup_visibility;
+#if defined(OS_ANDROID)
+    startup_visibility = UmaSessionStats::HasVisibleActivity()
+                             ? metrics::StartupVisibility::kForeground
+                             : metrics::StartupVisibility::kBackground;
+#else
+    startup_visibility = metrics::StartupVisibility::kForeground;
+#endif  // defined(OS_ANDROID)
+
     metrics_state_manager_ = metrics::MetricsStateManager::Create(
         local_state_, enabled_state_provider_.get(), GetRegistryBackupKey(),
         user_data_dir, base::BindRepeating(&PostStoreMetricsClientInfo),
-        base::BindRepeating(&GoogleUpdateSettings::LoadMetricsClientInfo));
+        base::BindRepeating(&GoogleUpdateSettings::LoadMetricsClientInfo),
+        startup_visibility);
   }
   return metrics_state_manager_.get();
 }

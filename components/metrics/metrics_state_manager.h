@@ -31,6 +31,17 @@ namespace metrics {
 class EnabledStateProvider;
 class MetricsProvider;
 
+// Denotes whether this session is a background or foreground session at
+// startup. May be unknown. A background session refers to the situation in
+// which the browser process starts; does some work, e.g. servicing a sync; and
+// ends without ever becoming visible. Note that the point in startup at which
+// this value is determined is likely before the UI is visible.
+enum class StartupVisibility {
+  kUnknown = 0,
+  kBackground = 1,
+  kForeground = 2,
+};
+
 // Responsible for managing MetricsService state prefs, specifically the UMA
 // client id and low entropy source. Code outside the metrics directory should
 // not be instantiating or using this class directly.
@@ -70,6 +81,20 @@ class MetricsStateManager final {
   CleanExitBeacon* clean_exit_beacon() { return &clean_exit_beacon_; }
   const CleanExitBeacon* clean_exit_beacon() const {
     return &clean_exit_beacon_;
+  }
+
+  // Returns true if the session was deemed a background session during startup.
+  // Note that this is not equivalent to !is_foreground_session() because the
+  // type of session may be unknown.
+  bool is_background_session() const {
+    return startup_visibility_ == StartupVisibility::kBackground;
+  }
+
+  // Returns true if the session was deemed a foreground session during startup.
+  // Note that this is not equivalent to !is_background_session() because the
+  // type of session may be unknown.
+  bool is_foreground_session() const {
+    return startup_visibility_ == StartupVisibility::kForeground;
   }
 
   // Signals whether the session has shutdown cleanly if |update_beacon| is
@@ -130,6 +155,9 @@ class MetricsStateManager final {
   // |user_data_dir| is the path to the client's user data directory. If empty,
   // a separate file will not be used for Variations Safe Mode prefs.
   //
+  // |startup_visibility| denotes whether this session is expected to come to
+  // the foreground.
+  //
   // TODO(crbug/1249196): Make the callbacks optional.
   static std::unique_ptr<MetricsStateManager> Create(
       PrefService* local_state,
@@ -137,7 +165,8 @@ class MetricsStateManager final {
       const std::wstring& backup_registry_key,
       const base::FilePath& user_data_dir,
       StoreClientInfoCallback store_client_info,
-      LoadClientInfoCallback load_client_info);
+      LoadClientInfoCallback load_client_info,
+      StartupVisibility startup_visibility = StartupVisibility::kUnknown);
 
   // Registers local state prefs used by this class.
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -198,7 +227,8 @@ class MetricsStateManager final {
                       const std::wstring& backup_registry_key,
                       const base::FilePath& user_data_dir,
                       StoreClientInfoCallback store_client_info,
-                      LoadClientInfoCallback load_client_info);
+                      LoadClientInfoCallback load_client_info,
+                      StartupVisibility startup_visibility);
 
   // Backs up the current client info via |store_client_info_|.
   void BackUpCurrentClientInfo();
@@ -299,6 +329,11 @@ class MetricsStateManager final {
   // The detector for understanding the cloned nature of the install so that we
   // can reset client ids.
   ClonedInstallDetector cloned_install_detector_;
+
+  // The type of session, e.g. a foreground session, at startup. This value is
+  // used only during startup. On Android WebLayer, Android WebView, and iOS,
+  // the visibility is unknown at this point in startup.
+  const StartupVisibility startup_visibility_;
 
   DISALLOW_COPY_AND_ASSIGN(MetricsStateManager);
 };

@@ -118,13 +118,18 @@ UmaSessionStats* UmaSessionStats::GetInstance() {
   return instance.get();
 }
 
+// static
+bool UmaSessionStats::HasVisibleActivity() {
+  return Java_UmaSessionStats_hasVisibleActivity(
+      base::android::AttachCurrentThread());
+}
+
 // Called on startup. If there is an activity, do nothing because a foreground
 // session will be created naturally. Otherwise, begin recording a background
 // session.
 // static
 void UmaSessionStats::OnStartup() {
-  if (!Java_UmaSessionStats_hasVisibleActivity(
-          base::android::AttachCurrentThread())) {
+  if (!UmaSessionStats::HasVisibleActivity()) {
     GetInstance()->session_time_tracker_.BeginBackgroundSession();
   }
 }

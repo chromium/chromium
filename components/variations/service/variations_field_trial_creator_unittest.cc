@@ -282,7 +282,9 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
       PrefService* local_state,
       TestVariationsServiceClient* client,
       SafeSeedManager* safe_seed_manager,
-      const base::FilePath user_data_dir = base::FilePath())
+      const base::FilePath user_data_dir = base::FilePath(),
+      metrics::StartupVisibility startup_visibility =
+          metrics::StartupVisibility::kUnknown)
       : VariationsFieldTrialCreator(
             client,
             std::make_unique<VariationsSeedStore>(local_state),
@@ -294,7 +296,7 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
     metrics_state_manager_ = metrics::MetricsStateManager::Create(
         local_state, &enabled_state_provider_, std::wstring(), user_data_dir,
         base::BindRepeating(&NoOpStoreClientInfoBackup),
-        base::BindRepeating(&NoOpLoadClientInfoBackup));
+        base::BindRepeating(&NoOpLoadClientInfoBackup), startup_visibility);
   }
 
   ~TestVariationsFieldTrialCreator() override = default;
@@ -363,6 +365,83 @@ class FieldTrialCreatorTest : public ::testing::Test {
 
   DISALLOW_COPY_AND_ASSIGN(FieldTrialCreatorTest);
 };
+
+#if !defined(OS_ANDROID)
+// TODO(crbug/1248239): Enable Extended Variations Safe Mode on Android.
+class FieldTrialCreatorSafeModeExperimentTest : public FieldTrialCreatorTest {
+ public:
+  FieldTrialCreatorSafeModeExperimentTest()
+      : field_trial_list_(std::make_unique<base::MockEntropyProvider>(0.1)) {}
+  ~FieldTrialCreatorSafeModeExperimentTest() override = default;
+
+  void SetUp() override {
+    DisableTestingConfig();
+
+    // Create a temp prefs file with no prefs.
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    prefs_file_ = temp_dir_.GetPath().AppendASCII("write.json");
+    ASSERT_LT(0, base::WriteFile(prefs_file_, kEmptyPrefsFile));
+    ASSERT_TRUE(PathExists(prefs_file_));
+  }
+
+  void TearDown() override { ASSERT_TRUE(base::DeleteFile(prefs_file_)); }
+
+  // Creates and returns a PrefService that uses a real JsonPrefStore rather
+  // than a TestingPrefStore.
+  std::unique_ptr<PrefService> CreatePrefService() {
+    auto pref_registry = base::MakeRefCounted<PrefRegistrySimple>();
+    metrics::MetricsService::RegisterPrefs(pref_registry.get());
+    VariationsService::RegisterPrefs(pref_registry.get());
+
+    auto pref_store = base::MakeRefCounted<JsonPrefStore>(prefs_file_);
+    PrefServiceFactory pref_service_factory;
+    pref_service_factory.set_user_prefs(pref_store);
+    return pref_service_factory.Create(pref_registry);
+  }
+
+  // Sets up the extended safe mode experiment such that |group_name| is the
+  // active group. Returns the numeric value that denotes the active group.
+  int SetUpExtendedSafeModeExperiment(const std::string& group_name) {
+    int default_group;
+    scoped_refptr<base::FieldTrial> trial(
+        base::FieldTrialList::FactoryGetFieldTrial(
+            kExtendedSafeModeTrial, 100, kDefaultGroup,
+            base::FieldTrial::ONE_TIME_RANDOMIZED, &default_group));
+
+    int active_group;
+    if (group_name == kDefaultGroup) {
+      active_group = default_group;
+    } else {
+      active_group = trial->AppendGroup(group_name, 100);
+    }
+
+    trial->SetForced();
+    return active_group;
+  }
+
+  const base::FilePath prefs_file() const { return prefs_file_; }
+  const base::FilePath user_data_dir_path() const {
+    return temp_dir_.GetPath();
+  }
+
+ private:
+  base::test::TaskEnvironment task_environment_;
+  base::ScopedTempDir temp_dir_;
+  base::FilePath prefs_file_;
+  base::test::ScopedFieldTrialListResetter trial_list_resetter_;
+  base::FieldTrialList field_trial_list_;
+};
+
+struct StartupVisibilityTestParams {
+  const std::string test_name;
+  metrics::StartupVisibility startup_visibility;
+  bool is_trial_active;
+};
+
+class FieldTrialCreatorTestWithStartupVisibility
+    : public FieldTrialCreatorSafeModeExperimentTest,
+      public ::testing::WithParamInterface<StartupVisibilityTestParams> {};
+#endif  // !defined(OS_ANDROID)
 
 // Verify that unexpired seeds are used.
 TEST_F(FieldTrialCreatorTest, SetupFieldTrials_ValidSeed_NotExpired) {
@@ -764,66 +843,7 @@ TEST_F(FieldTrialCreatorTest, ClientFilterableState_HardwareClass) {
 #endif  // OS_ANDROID
 
 #if !defined(OS_ANDROID)
-class FieldTrialCreatorSafeModeExperimentTest : public FieldTrialCreatorTest {
- public:
-  FieldTrialCreatorSafeModeExperimentTest()
-      : field_trial_list_(std::make_unique<base::MockEntropyProvider>(0.1)) {}
-  ~FieldTrialCreatorSafeModeExperimentTest() override = default;
-
-  void SetUp() override {
-    DisableTestingConfig();
-
-    // Create a temp prefs file with no prefs.
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    prefs_file_ = temp_dir_.GetPath().AppendASCII("write.json");
-    ASSERT_LT(0, base::WriteFile(prefs_file_, kEmptyPrefsFile));
-    ASSERT_TRUE(PathExists(prefs_file_));
-  }
-
-  void TearDown() override { ASSERT_TRUE(base::DeleteFile(prefs_file_)); }
-
-  // Creates and returns a PrefService that uses a real JsonPrefStore rather
-  // than a TestingPrefStore.
-  std::unique_ptr<PrefService> CreatePrefService() {
-    auto pref_registry = base::MakeRefCounted<PrefRegistrySimple>();
-    metrics::MetricsService::RegisterPrefs(pref_registry.get());
-    VariationsService::RegisterPrefs(pref_registry.get());
-
-    auto pref_store = base::MakeRefCounted<JsonPrefStore>(prefs_file_);
-    PrefServiceFactory pref_service_factory;
-    pref_service_factory.set_user_prefs(pref_store);
-    return pref_service_factory.Create(pref_registry);
-  }
-
-  // Sets up the extended safe mode experiment such that |group_name| is the
-  // active group. Returns the numeric value that denotes the active group.
-  int SetUpExtendedSafeModeExperiment(const std::string& group_name) {
-    int default_group;
-    scoped_refptr<base::FieldTrial> trial(
-        base::FieldTrialList::FactoryGetFieldTrial(
-            kExtendedSafeModeTrial, 100, kDefaultGroup,
-            base::FieldTrial::ONE_TIME_RANDOMIZED, &default_group));
-
-    int active_group = group_name == kDefaultGroup
-                           ? default_group
-                           : trial->AppendGroup(group_name, 100);
-    trial->SetForced();
-    return active_group;
-  }
-
-  const base::FilePath prefs_file() const { return prefs_file_; }
-  const base::FilePath user_data_dir_path() const {
-    return temp_dir_.GetPath();
-  }
-
- private:
-  base::test::TaskEnvironment task_environment_;
-  base::ScopedTempDir temp_dir_;
-  base::FilePath prefs_file_;
-  base::test::ScopedFieldTrialListResetter trial_list_resetter_;
-  base::FieldTrialList field_trial_list_;
-};
-
+// TODO(crbug/1248239): Enable Extended Variations Safe Mode on Android.
 TEST_F(FieldTrialCreatorSafeModeExperimentTest, OptOutOfExperiment) {
   std::unique_ptr<PrefService> pref_service(CreatePrefService());
 
@@ -848,6 +868,52 @@ TEST_F(FieldTrialCreatorSafeModeExperimentTest, OptOutOfExperiment) {
   EXPECT_FALSE(base::FieldTrialList::IsTrialActive(kExtendedSafeModeTrial));
   histogram_tester.ExpectTotalCount(
       "Variations.ExtendedSafeMode.WritePrefsTime", 0);
+
+  base::FeatureList::ClearInstanceForTesting();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    FieldTrialCreatorTestWithStartupVisibility,
+    ::testing::Values(
+        StartupVisibilityTestParams{
+            .test_name = "UnknownVisibility",
+            .startup_visibility = metrics::StartupVisibility::kUnknown,
+            .is_trial_active = true},
+        StartupVisibilityTestParams{
+            .test_name = "BackgroundVisibility",
+            .startup_visibility = metrics::StartupVisibility::kBackground,
+            .is_trial_active = false},
+        StartupVisibilityTestParams{
+            .test_name = "ForegroundVisibility",
+            .startup_visibility = metrics::StartupVisibility::kForeground,
+            .is_trial_active = true}),
+    [](const ::testing::TestParamInfo<StartupVisibilityTestParams>& params) {
+      return params.param.test_name;
+    });
+
+TEST_P(FieldTrialCreatorTestWithStartupVisibility,
+       SkipExperimentInBackgroundSessions) {
+  std::unique_ptr<PrefService> pref_service(CreatePrefService());
+
+  // Ensure that variations safe mode is not triggered.
+  NiceMock<MockSafeSeedManager> safe_seed_manager(pref_service.get());
+  ON_CALL(safe_seed_manager, ShouldRunInSafeMode())
+      .WillByDefault(Return(false));
+
+  NiceMock<MockVariationsServiceClient> variations_service_client;
+  ON_CALL(variations_service_client, GetChannel())
+      .WillByDefault(Return(version_info::Channel::DEV));
+
+  StartupVisibilityTestParams params = GetParam();
+  TestVariationsFieldTrialCreator field_trial_creator(
+      pref_service.get(), &variations_service_client, &safe_seed_manager,
+      base::FilePath(), params.startup_visibility);
+  ASSERT_TRUE(field_trial_creator.SetupFieldTrials());
+
+  // Verify that the experiment is active (or inactive).
+  EXPECT_EQ(base::FieldTrialList::IsTrialActive(kExtendedSafeModeTrial),
+            params.is_trial_active);
 
   base::FeatureList::ClearInstanceForTesting();
 }

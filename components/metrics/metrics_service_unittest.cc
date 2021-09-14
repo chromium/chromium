@@ -22,6 +22,7 @@
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "components/metrics/client_info.h"
 #include "components/metrics/environment_recorder.h"
 #include "components/metrics/log_decoder.h"
@@ -40,7 +41,6 @@
 #include "third_party/zlib/google/compression_utils.h"
 
 namespace metrics {
-
 namespace {
 
 void YieldUntil(base::Time when) {
@@ -140,14 +140,15 @@ class MetricsServiceTest : public testing::Test {
 
   ~MetricsServiceTest() override {}
 
-  MetricsStateManager* GetMetricsStateManager() {
+  MetricsStateManager* GetMetricsStateManager(
+      StartupVisibility startup_visibility = StartupVisibility::kUnknown) {
     // Lazy-initialize the metrics_state_manager so that it correctly reads the
     // stability state from prefs after tests have a chance to initialize it.
     if (!metrics_state_manager_) {
       metrics_state_manager_ = MetricsStateManager::Create(
           GetLocalState(), enabled_state_provider_.get(), std::wstring(),
           base::FilePath(), base::BindRepeating(&StoreNoClientInfoBackup),
-          base::BindRepeating(&ReturnNoBackup));
+          base::BindRepeating(&ReturnNoBackup), startup_visibility);
     }
     return metrics_state_manager_.get();
   }
@@ -228,6 +229,16 @@ class MetricsServiceTest : public testing::Test {
 
   DISALLOW_COPY_AND_ASSIGN(MetricsServiceTest);
 };
+
+struct StartupVisibilityTestParams {
+  const std::string test_name;
+  metrics::StartupVisibility startup_visibility;
+  bool expected_beacon_value;
+};
+
+class MetricsServiceTestWithStartupVisibility
+    : public MetricsServiceTest,
+      public ::testing::WithParamInterface<StartupVisibilityTestParams> {};
 
 class ExperimentTestMetricsProvider : public TestMetricsProvider {
  public:
@@ -349,9 +360,30 @@ TEST_F(MetricsServiceTest, InitialStabilityLogAtProviderRequest) {
   EXPECT_EQ(0, uma_log.system_profile().stability().crash_count());
 }
 
-TEST_F(MetricsServiceTest, InitialStabilityLogAfterCrash) {
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    MetricsServiceTestWithStartupVisibility,
+    ::testing::Values(
+        StartupVisibilityTestParams{
+            .test_name = "UnknownVisibility",
+            .startup_visibility = StartupVisibility::kUnknown,
+            .expected_beacon_value = true},
+        StartupVisibilityTestParams{
+            .test_name = "BackgroundVisibility",
+            .startup_visibility = StartupVisibility::kBackground,
+            .expected_beacon_value = true},
+        StartupVisibilityTestParams{
+            .test_name = "ForegroundVisibility",
+            .startup_visibility = StartupVisibility::kForeground,
+            .expected_beacon_value = false}),
+    [](const ::testing::TestParamInfo<StartupVisibilityTestParams>& params) {
+      return params.param.test_name;
+    });
+
+TEST_P(MetricsServiceTestWithStartupVisibility, InitialStabilityLogAfterCrash) {
+  PrefService* local_state = GetLocalState();
   EnableMetricsReporting();
-  CleanExitBeacon::SetStabilityExitedCleanlyForTesting(GetLocalState(), true);
+  CleanExitBeacon::SetStabilityExitedCleanlyForTesting(local_state, false);
 
   // Set up prefs to simulate restarting after a crash.
 
@@ -362,27 +394,35 @@ TEST_F(MetricsServiceTest, InitialStabilityLogAfterCrash) {
   client.set_version_string(kCrashedVersion);
   TestMetricsLog log("client", 1, &client);
   DelegatingProvider delegating_provider;
-  TestMetricsService::RecordCurrentEnvironmentHelper(&log, GetLocalState(),
+  TestMetricsService::RecordCurrentEnvironmentHelper(&log, local_state,
                                                      &delegating_provider);
 
   // Record stability build time and version from previous session, so that
   // stability metrics (including exited cleanly flag) won't be cleared.
-  EnvironmentRecorder(GetLocalState())
+  EnvironmentRecorder(local_state)
       .SetBuildtimeAndVersion(MetricsLog::GetBuildTime(),
                               client.GetVersionString());
-
-  CleanExitBeacon::SetStabilityExitedCleanlyForTesting(GetLocalState(), false);
 
   const std::string kCurrentVersion = "5.0.322.0-64-devel";
   client.set_version_string(kCurrentVersion);
 
-  TestMetricsService service(
-      GetMetricsStateManager(), &client, GetLocalState());
+  StartupVisibilityTestParams params = GetParam();
+  TestMetricsService service(GetMetricsStateManager(params.startup_visibility),
+                             &client, local_state);
   // Add a provider.
   TestMetricsProvider* test_provider = new TestMetricsProvider();
   service.RegisterMetricsProvider(
       std::unique_ptr<MetricsProvider>(test_provider));
   service.InitializeMetricsRecordingState();
+
+  // Verify that Chrome is (or is not) watching for crashes by checking the
+  // beacon value.
+#if defined(OS_ANDROID)
+  EXPECT_EQ(local_state->GetBoolean(prefs::kStabilityExitedCleanly),
+            params.expected_beacon_value);
+#else
+  EXPECT_FALSE(local_state->GetBoolean(prefs::kStabilityExitedCleanly));
+#endif  // defined(OS_ANDROID)
 
   // The initial stability log should be generated and persisted in unsent logs.
   MetricsLogStore* test_log_store = service.LogStoreForTest();

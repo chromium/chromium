@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/threading/thread_checker.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/metrics_services_manager/metrics_services_manager_client.h"
 
@@ -40,6 +41,8 @@ class ChromeMetricsServicesManagerClient
  public:
   explicit ChromeMetricsServicesManagerClient(PrefService* local_state);
   ~ChromeMetricsServicesManagerClient() override;
+
+  metrics::MetricsStateManager* GetMetricsStateManagerForTesting();
 
   // Unconditionally attempts to create a field trial to control client side
   // metrics/crash sampling to use as a fallback when one hasn't been

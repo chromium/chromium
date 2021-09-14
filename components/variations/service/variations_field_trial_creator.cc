@@ -197,8 +197,16 @@ bool VariationsFieldTrialCreator::SetupFieldTrials(
   }
 
 #if !defined(OS_ANDROID)
-  if (extend_variations_safe_mode)
+  // TODO(crbug/1248239): Enable Extended Variations Safe Mode on Android.
+  if (extend_variations_safe_mode &&
+      !metrics_state_manager->is_background_session()) {
+    // If the session is expected to be a background session, then do not extend
+    // Variations Safe Mode. Extending Safe Mode involves monitoring for crashes
+    // earlier on in startup; however, this monitoring is not desired in
+    // background sessions, whose terminations should never be considered
+    // crashes.
     MaybeExtendVariationsSafeMode(metrics_state_manager);
+  }
 #endif
 
   if (command_line->HasSwitch(switches::kForceFieldTrialParams)) {

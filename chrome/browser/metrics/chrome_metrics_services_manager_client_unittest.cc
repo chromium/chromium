@@ -7,10 +7,12 @@
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
+#include "chrome/browser/metrics/chrome_metrics_service_client.h"
 #include "components/metrics/enabled_state_provider.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_reporting_default_state.h"
 #include "components/metrics/metrics_service_accessor.h"
+#include "components/metrics/metrics_state_manager.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -66,4 +68,20 @@ TEST(ChromeMetricsServicesManagerClientTest, ForceTrialsDisablesReporting) {
   // Consent should be true but reporting should be false.
   EXPECT_TRUE(provider.IsConsentGiven());
   EXPECT_FALSE(provider.IsReportingEnabled());
+}
+
+TEST(ChromeMetricsServicesManagerClientTest, PopulateStartupVisibility) {
+  // Set up Local State prefs.
+  TestingPrefServiceSimple local_state;
+  ChromeMetricsServiceClient::RegisterPrefs(local_state.registry());
+  local_state.registry()->RegisterBooleanPref(
+      metrics::prefs::kMetricsReportingEnabled, false);
+
+  ChromeMetricsServicesManagerClient client(&local_state);
+  metrics::MetricsStateManager* metrics_state_manager =
+      client.GetMetricsStateManagerForTesting();
+
+  // Verify that the MetricsStateManager's StartupVisibility is not unknown.
+  EXPECT_TRUE(metrics_state_manager->is_foreground_session() ||
+              metrics_state_manager->is_background_session());
 }

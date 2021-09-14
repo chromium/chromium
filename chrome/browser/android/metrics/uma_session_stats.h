@@ -30,6 +30,9 @@ class UmaSessionStats {
 
   static UmaSessionStats* GetInstance();
 
+  // Returns true if there is a visible activity. Android Chrome only.
+  static bool HasVisibleActivity();
+
   // Called once on browser startup.
   static void OnStartup();
 
