@@ -55,6 +55,7 @@
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/callback_list.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
@@ -70,6 +71,7 @@
 #include "extensions/common/constants.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animation_sequence.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -115,11 +117,13 @@ class WindowAnimationsCallback : public ui::LayerAnimationObserver {
   WindowAnimationsCallback(base::OnceClosure callback,
                            ui::LayerAnimator* animator)
       : callback_(std::move(callback)), animator_(animator) {
-    animator_->AddObserver(this);
+    subscription_ = animator_->AddSequenceScheduledCallback(
+        base::BindRepeating(&WindowAnimationsCallback::OnSequenceScheduled,
+                            base::Unretained(this)));
   }
   WindowAnimationsCallback(const WindowAnimationsCallback&) = delete;
   WindowAnimationsCallback& operator=(const WindowAnimationsCallback&) = delete;
-  ~WindowAnimationsCallback() override { animator_->RemoveObserver(this); }
+  ~WindowAnimationsCallback() override = default;
 
   // ui::LayerAnimationObserver:
   void OnLayerAnimationEnded(ui::LayerAnimationSequence* sequence) override {
@@ -130,11 +134,18 @@ class WindowAnimationsCallback : public ui::LayerAnimationObserver {
   }
   void OnLayerAnimationScheduled(
       ui::LayerAnimationSequence* sequence) override {}
+
   void OnDetachedFromSequence(ui::LayerAnimationSequence* sequence) override {
     FireCallbackIfDone();
   }
 
  private:
+  void OnSequenceScheduled(ui::LayerAnimationSequence* sequence) {
+    // LayerAnimationSequence::RemoveObserver is called by the ancestor during
+    // destruction.
+    sequence->AddObserver(this);
+  }
+
   // Fires the callback if all scheduled animations completed (either ended or
   // got aborted).
   void FireCallbackIfDone() {
@@ -146,6 +157,7 @@ class WindowAnimationsCallback : public ui::LayerAnimationObserver {
 
   base::OnceClosure callback_;
   ui::LayerAnimator* animator_;  // Owned by the layer that is animating.
+  base::CallbackListSubscription subscription_;
 };
 
 // Minimizes all windows in |windows| that aren't in the home screen container,
