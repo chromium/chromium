@@ -8,7 +8,7 @@
 ##
 ## Top level settings
 ##
-version_id: 44
+version_id: 45
 sampled_ping_probability: 0.01
 max_archived_binaries_to_report: 10
 default_file_type {
