@@ -40,7 +40,7 @@
             android:layout_weight="1"
             android:layout_gravity="center"
             android:text="@string/sharing_long_screenshot"
-            android:textAppearance="@style/TextAppearance.TextSmall.Primary.Light" />
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
 
         <org.chromium.ui.widget.ChromeImageButton
             android:id="@+id/done_button"
@@ -82,20 +82,20 @@
 
         <!-- The ScrollView must have a single child; this child view contains
              the entire bitmap, and top/bottom mask selectors to define the region.
-             The framing layouts are defined after the image to be placed above it. -->
+             The framing layouts are defined after the image to be placed above it.
+             clipChildren is set false for grandchild buttons to render outside the masks. -->
         <RelativeLayout
             android:id="@+id/bitmap_container_inner"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:clipChildren="false">
 
             <ImageView
                 android:id="@+id/screenshot_image"
                 android:layout_height="match_parent"
                 android:layout_width="match_parent"
-                android:layout_marginEnd="30dp"
-                android:layout_marginStart="30dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="20dp"
+                android:layout_marginHorizontal="30dp"
+                android:layout_marginVertical="20dp"
                 android:background="@color/modern_white"
                 android:contentDescription="@string/sharing_long_screenshot"
                 android:padding="1dp"/>
@@ -103,36 +103,52 @@
             <!-- Top draggable mask -->
             <LinearLayout
                 android:id="@+id/region_selection_top"
-                android:background="@color/modern_grey_800_alpha_38"
+                android:background="@color/black_alpha_65"
                 android:orientation="vertical"
+                android:clipChildren="false"
                 android:layout_alignParentTop="true"
                 android:layout_height="150dp"
                 android:layout_width="match_parent"
+                android:layout_marginHorizontal="30dp"
                 android:gravity="bottom|center_horizontal">
-
                 <org.chromium.ui.widget.ChromeImageButton
                     android:id="@+id/up_button"
                     android:src="@drawable/arrow_up"
                     android:contentDescription="@string/sharing_long_screenshot_move_up_button_description"
+                    android:elevation="@dimen/default_elevation_3"
                     android:layout_width="@dimen/long_screenshots_button_size"
+                    android:translationY="30dp"
                     style="@style/ToolbarButton" />
+                <View
+                    android:id="@+id/top_mask_border"
+                    android:background="@color/modern_white"
+                    android:layout_height="2dp"
+                    android:layout_width="match_parent"/>
             </LinearLayout>
 
             <!-- Bottom draggable mask -->
             <LinearLayout
                 android:id="@+id/region_selection_bottom"
-                android:background="@color/modern_grey_800_alpha_38"
+                android:background="@color/black_alpha_65"
                 android:orientation="vertical"
+                android:clipChildren="false"
                 android:layout_alignParentBottom="true"
                 android:layout_height="150dp"
                 android:layout_width="match_parent"
+                android:layout_marginHorizontal="30dp"
                 android:gravity="top|center_horizontal">
-
+                <View
+                    android:id="@+id/bottom_mask_border"
+                    android:background="@color/modern_white"
+                    android:layout_height="2dp"
+                    android:layout_width="match_parent"/>
                 <org.chromium.ui.widget.ChromeImageButton
                     android:id="@+id/down_button"
                     android:src="@drawable/arrow_down"
                     android:contentDescription="@string/sharing_long_screenshot_move_down_button_description"
+                    android:elevation="@dimen/default_elevation_3"
                     android:layout_width="@dimen/long_screenshots_button_size"
+                    android:translationY="-30dp"
                     style="@style/ToolbarButton" />
             </LinearLayout>
         </RelativeLayout>
