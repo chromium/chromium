@@ -914,10 +914,17 @@ int SSLClientSocketImpl::Init() {
 
   // TODO(https://crbug.com/1091403): Also enable ECH GREASE, gated on SSLConfig
   // or a base::Feature, for when we don't have an ECHConfig.
-  if (!ssl_config_.ech_config_list.empty() &&
-      !SSL_set1_ech_config_list(ssl_.get(), ssl_config_.ech_config_list.data(),
-                                ssl_config_.ech_config_list.size())) {
-    return ERR_UNEXPECTED;
+  if (!ssl_config_.ech_config_list.empty()) {
+    net_log_.AddEvent(NetLogEventType::SSL_ECH_CONFIG_LIST, [&] {
+      base::Value dict(base::Value::Type::DICTIONARY);
+      dict.SetKey("bytes", NetLogBinaryValue(ssl_config_.ech_config_list));
+      return dict;
+    });
+    if (!SSL_set1_ech_config_list(ssl_.get(),
+                                  ssl_config_.ech_config_list.data(),
+                                  ssl_config_.ech_config_list.size())) {
+      return ERR_INVALID_ECH_CONFIG_LIST;
+    }
   }
 
   return OK;

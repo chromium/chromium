@@ -251,9 +251,7 @@ base::Value NetLogQuicPublicResetPacketParams(
 
 base::Value NetLogQuicPathData(const quic::QuicPathFrameBuffer& buffer) {
   base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("data",
-              NetLogBinaryValue(reinterpret_cast<const char*>(buffer.data()),
-                                buffer.size()));
+  dict.SetKey("data", NetLogBinaryValue(buffer));
   return dict;
 }
 

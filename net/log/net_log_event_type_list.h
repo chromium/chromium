@@ -523,6 +523,13 @@ EVENT_TYPE(SOCKS_UNKNOWN_ADDRESS_TYPE)
 //  }
 EVENT_TYPE(SSL_CONNECT)
 
+// Emitted at the start of an SSL handshakes that use ECH. The following
+// parameters are attached.
+// {
+//     "bytes": <The ECHConfigList used, base64 encoded>
+// }
+EVENT_TYPE(SSL_ECH_CONFIG_LIST)
+
 // The start/end of an SSL server handshake (aka "accept").
 EVENT_TYPE(SSL_SERVER_HANDSHAKE)
 

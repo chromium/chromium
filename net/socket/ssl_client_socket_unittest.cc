@@ -5633,6 +5633,19 @@ TEST_F(SSLClientSocketTest, ECHWrongKeys) {
   EXPECT_THAT(rv, IsError(ERR_FAILED));
 }
 
+TEST_F(SSLClientSocketTest, InvalidECHConfigList) {
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, SSLServerConfig()));
+
+  // If the ECHConfigList cannot be parsed at all, report an error to the
+  // caller.
+  SSLConfig client_config;
+  client_config.ech_config_list = {0x00};
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(client_config, &rv));
+  EXPECT_THAT(rv, IsError(ERR_INVALID_ECH_CONFIG_LIST));
+}
+
 class TLS13DowngradeTest
     : public SSLClientSocketTest,
       public ::testing::WithParamInterface<

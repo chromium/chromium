@@ -430,6 +430,9 @@ NET_ERROR(TLS13_DOWNGRADE_DETECTED, -180)
 // negotiated TLS key exchange method.
 NET_ERROR(SSL_KEY_USAGE_INCOMPATIBLE, -181)
 
+// The ECHConfigList fetched over DNS cannot be parsed.
+NET_ERROR(INVALID_ECH_CONFIG_LIST, -182)
+
 // Certificate error codes
 //
 // The values of certificate error codes must be consecutive.
