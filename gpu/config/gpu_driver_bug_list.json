@@ -3789,7 +3789,7 @@
           "value": "10.0"
         }
       },
-      "vendor_id": "0x8086", 
+      "vendor_id": "0x8086",
       "intel_gpu_generation": {
         "op": ">=",
         "value": "9"
@@ -3797,6 +3797,25 @@
       "features": [
         "no_downscaled_overlay_promotion"
       ]
-    }    
+    },
+    {
+      "id": 381,
+      "cr_bugs": [
+        1246254
+      ],
+      "description": "Check if egl fences are already signalled before waiting them on the i965 driver",
+      "os": {
+        "type": "chromeos"
+      },
+      "intel_gpu_generation": {
+        "op": ">=",
+        "value": "4"
+      },
+      "driver_vendor": "Mesa",
+      "gl_vendor": "Intel.*",
+      "features": [
+        "check_egl_fence_before_wait"
+      ]
+    }
   ]
 }

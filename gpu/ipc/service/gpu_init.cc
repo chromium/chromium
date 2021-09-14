@@ -66,6 +66,10 @@
 #include "gpu/vulkan/vulkan_util.h"
 #endif
 
+#if defined(USE_EGL) && !defined(OS_MAC)
+#include "ui/gl/gl_fence_egl.h"
+#endif
+
 namespace gpu {
 
 namespace {
@@ -657,6 +661,11 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
           DISABLE_DIRECT_COMPOSITION_SW_VIDEO_OVERLAYS)) {
     gl::DirectCompositionSurfaceWin::DisableSoftwareOverlays();
   }
+#endif
+
+#if defined(USE_EGL) && !defined(OS_MAC)
+  if (gpu_feature_info_.IsWorkaroundEnabled(CHECK_EGL_FENCE_BEFORE_WAIT))
+    gl::GLFenceEGL::CheckEGLFenceBeforeWait();
 #endif
 
   return true;

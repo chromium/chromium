@@ -22,6 +22,12 @@ class GL_EXPORT GLFenceEGL : public GLFence {
   // Factory method using custom initialization.
   static std::unique_ptr<GLFenceEGL> Create(EGLenum type, EGLint* attribs);
 
+  // On i965, passing an already signalled fence has a large performance
+  // cost. See crbug.com/1246254. This function should be called at
+  // initialization to enable checking the fence before waiting on
+  // i965 platforms. TODO(crbug.com/1246254): Remove this.
+  static void CheckEGLFenceBeforeWait();
+
   // GLFence implementation:
   bool HasCompleted() override;
   void ClientWait() override;
