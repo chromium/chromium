@@ -45,17 +45,15 @@ gfx::Size ParseAndValidateDisplaySizeImpl(T* init,
     exception_state.ThrowTypeError("displayHeight must be nonzero.");
     return gfx::Size();
   }
-  // There is no limit on display size in //media; 2 * kMaxDimension is
-  // arbitrary. A big difference is that //media computes display size such
-  // that at least one dimension is the same as the visible size (and the
-  // other is not smaller than the visible size), while WebCodecs apps can
-  // specify any combination.
+
+  // Check that display size does not exceed dimension limits in
+  // media::VideoFrame::IsValidSize().
   //
   // Note that at large display sizes, it can become impossible to allocate
   // a texture large enough to render into. It may be impossible, for example,
   // to create an ImageBitmap without also scaling down.
-  if (display_width > 2 * media::limits::kMaxDimension ||
-      display_height > 2 * media::limits::kMaxDimension) {
+  if (display_width > media::limits::kMaxDimension ||
+      display_height > media::limits::kMaxDimension) {
     exception_state.ThrowTypeError(
         String::Format("Invalid display size (%u, %u); exceeds "
                        "implementation limit.",
