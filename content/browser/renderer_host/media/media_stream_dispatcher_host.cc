@@ -10,6 +10,7 @@
 #include "base/bind_post_task.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/task/post_task.h"
 #include "base/task_runner_util.h"
 #include "content/browser/bad_message.h"
@@ -20,6 +21,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -325,8 +327,12 @@ void MediaStreamDispatcherHost::DoGenerateStream(
                          blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE) ||
                         (controls.video.stream_type ==
                          blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE);
-  if (!salt_and_origin.has_focus && is_gum_request &&
-      base::FeatureList::IsEnabled(features::kUserMediaCaptureOnFocus)) {
+  bool needs_focus =
+      is_gum_request &&
+      base::FeatureList::IsEnabled(features::kUserMediaCaptureOnFocus) &&
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kUseFakeUIForMediaStream);
+  if (needs_focus && !salt_and_origin.has_focus) {
     pending_requests_.push_back(std::make_unique<PendingAccessRequest>(
         page_request_id, controls, user_gesture,
         std::move(audio_stream_selection_info_ptr), std::move(callback),
