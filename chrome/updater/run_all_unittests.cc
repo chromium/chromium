@@ -16,13 +16,34 @@
 
 #include "base/win/scoped_com_initializer.h"
 #include "chrome/updater/win/win_util.h"
-#endif
+
+namespace {
+
+// Changes the priority class of the process if it is not NORMAL_PRIORITY_CLASS.
+void EnsurePriorityClassNormal() {
+  const HANDLE process = ::GetCurrentProcess();
+  const DWORD priority_class = ::GetPriorityClass(process);
+  if (priority_class == NORMAL_PRIORITY_CLASS)
+    return;
+  ::SetPriorityClass(process, NORMAL_PRIORITY_CLASS);
+}
+
+}  // namespace
+
+#endif  // OS_WIN
 
 int main(int argc, char** argv) {
 #if defined(OS_WIN)
   std::cerr << "Process priority: " << base::Process::Current().GetPriority()
             << std::endl;
   std::cerr << updater::GetUACState() << std::endl;
+
+  // TODO(crbug.com/1245429): remove when the bug is fixed.
+  // Typically, the test suite runner expects the swarming task to run with
+  // normal priority but for some reason, on the updater bots with UAC on, the
+  // swarming task runs with a priority below normal.
+  EnsurePriorityClassNormal();
+
   auto scoped_com_initializer =
       std::make_unique<base::win::ScopedCOMInitializer>(
           base::win::ScopedCOMInitializer::kMTA);
