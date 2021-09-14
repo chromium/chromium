@@ -120,7 +120,8 @@ class ScanService : public scanning::mojom::ScanService,
   // Processes the final result of calling LorgnetteScannerManager::Scan().
   // |failure_mode| is set to SCAN_FAILURE_MODE_NO_FAILURE when the scan
   // succeeds; otherwise, its value indicates what caused the scan to fail.
-  void OnScanCompleted(lorgnette::ScanFailureMode failure_mode);
+  void OnScanCompleted(bool is_multi_page_scan,
+                       lorgnette::ScanFailureMode failure_mode);
 
   // For a multi-page scan, when a page scan completes, report a failure if it
   // exists.

@@ -94,9 +94,16 @@ bool WriteImage(const base::FilePath& file_path,
 // Returns whether the PDF was successfully saved.
 bool SaveAsPdf(const std::vector<std::string>& jpg_images,
                const base::FilePath& file_path,
-               bool rotate_alternate_pages) {
-  return chromeos::ConvertJpgImagesToPdf(jpg_images, file_path,
-                                         rotate_alternate_pages);
+               bool rotate_alternate_pages,
+               bool is_multi_page_scan) {
+  const base::TimeTicks pdf_start_time = base::TimeTicks::Now();
+  const bool pdf_saved = chromeos::ConvertJpgImagesToPdf(
+      jpg_images, file_path, rotate_alternate_pages);
+  base::UmaHistogramTimes(is_multi_page_scan
+                              ? "Scanning.MultiPageScan.PDFGenerationTime"
+                              : "Scanning.PDFGenerationTime",
+                          base::TimeTicks::Now() - pdf_start_time);
+  return pdf_saved;
 }
 
 // Saves |scanned_image| to a file after converting it if necessary. Returns the
@@ -207,7 +214,8 @@ void ScanService::StartScan(
   std::move(callback).Run(SendScanRequest(
       scanner_id, std::move(settings), /*page_index_to_replace=*/absl::nullopt,
       base::BindOnce(&ScanService::OnScanCompleted,
-                     weak_ptr_factory_.GetWeakPtr())));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     /*is_multi_page_scan=*/false)));
 }
 
 void ScanService::StartMultiPageScan(
@@ -345,7 +353,8 @@ void ScanService::RescanPage(const base::UnguessableToken& scanner_id,
 }
 
 void ScanService::CompleteMultiPageScan() {
-  OnScanCompleted(lorgnette::SCAN_FAILURE_MODE_NO_FAILURE);
+  OnScanCompleted(/*is_multi_page_scan=*/true,
+                  lorgnette::SCAN_FAILURE_MODE_NO_FAILURE);
   base::UmaHistogramCounts100("Scanning.MultiPageScan.NumPagesScanned",
                               num_pages_scanned_);
   multi_page_controller_receiver_.reset();
@@ -476,7 +485,8 @@ void ScanService::OnPageReceived(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ScanService::OnScanCompleted(lorgnette::ScanFailureMode failure_mode) {
+void ScanService::OnScanCompleted(bool is_multi_page_scan,
+                                  lorgnette::ScanFailureMode failure_mode) {
   // |scanned_images_| only has data for PDF scans.
   if (failure_mode == lorgnette::SCAN_FAILURE_MODE_NO_FAILURE &&
       !scanned_images_.empty()) {
@@ -484,7 +494,7 @@ void ScanService::OnScanCompleted(lorgnette::ScanFailureMode failure_mode) {
     base::PostTaskAndReplyWithResult(
         task_runner_.get(), FROM_HERE,
         base::BindOnce(&SaveAsPdf, scanned_images_, scanned_file_paths_.back(),
-                       rotate_alternate_pages_),
+                       rotate_alternate_pages_, is_multi_page_scan),
         base::BindOnce(&ScanService::OnPdfSaved,
                        weak_ptr_factory_.GetWeakPtr()));
   }

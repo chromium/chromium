@@ -30,6 +30,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Scanning.MultiPageScan.PDFGenerationTime" units="ms"
+    expires_after="2022-09-03">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the amount of time it takes from the user clicking save on their
+    multi-page scan session to the PDF file being generated and saved.
+  </summary>
+</histogram>
+
 <histogram name="Scanning.NumCompletedScansInSession" units="scans"
     expires_after="2022-06-15">
   <owner>gavinwill@chromium.org</owner>
@@ -82,6 +92,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Records the number of scan setting changes before a scan is initiated.
+  </summary>
+</histogram>
+
+<histogram name="Scanning.PDFGenerationTime" units="ms"
+    expires_after="2022-09-03">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the amount of time it takes from the final document in a scan job
+    being scanned to the PDF file being generated and saved.
   </summary>
 </histogram>
 
