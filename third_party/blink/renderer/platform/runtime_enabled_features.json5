@@ -987,7 +987,11 @@
     },
     {
       name: "EyeDropperAPI",
-      status: "stable",
+      status: {
+        // EyeDropper UI is available only on desktop operating systems.
+        "Android": "test",
+        "default": "stable",
+      },
     },
     {
       name: "FaceDetector",
