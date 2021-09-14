@@ -34,7 +34,6 @@ class WebUsbDetector : public device::mojom::UsbDeviceManagerClient {
   void OnDeviceAdded(device::mojom::UsbDeviceInfoPtr device_info) override;
   void OnDeviceRemoved(device::mojom::UsbDeviceInfoPtr device_info) override;
 
-  void OnDeviceManagerConnectionError();
   bool IsDisplayingNotification(const GURL& url);
 
   std::map<std::string, GURL> open_notifications_by_id_;

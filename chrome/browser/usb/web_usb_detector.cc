@@ -199,8 +199,6 @@ void WebUsbDetector::Initialize() {
         device_manager_.BindNewPipeAndPassReceiver());
   }
   DCHECK(device_manager_);
-  device_manager_.set_disconnect_handler(base::BindOnce(
-      &WebUsbDetector::OnDeviceManagerConnectionError, base::Unretained(this)));
 
   // Listen for added/removed device events.
   DCHECK(!client_receiver_.is_bound());
@@ -270,14 +268,6 @@ void WebUsbDetector::RemoveNotification(const std::string& id) {
 void WebUsbDetector::OnDeviceRemoved(
     device::mojom::UsbDeviceInfoPtr device_info) {
   SystemNotificationHelper::GetInstance()->Close(device_info->guid);
-}
-
-void WebUsbDetector::OnDeviceManagerConnectionError() {
-  device_manager_.reset();
-  client_receiver_.reset();
-
-  // Try to reconnect the device manager.
-  Initialize();
 }
 
 void WebUsbDetector::SetDeviceManagerForTesting(
