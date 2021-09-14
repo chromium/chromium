@@ -473,8 +473,16 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 }
 
+// Disabled due to test failure. http://crbug.com/1249355
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_OnlineSetupFlowSuccessWithCountryCustomization \
+  DISABLED_OnlineSetupFlowSuccessWithCountryCustomization
+#else
+#define MAYBE_OnlineSetupFlowSuccessWithCountryCustomization \
+  OnlineSetupFlowSuccessWithCountryCustomization
+#endif
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
-                       OnlineSetupFlowSuccessWithCountryCustomization) {
+                       MAYBE_OnlineSetupFlowSuccessWithCountryCustomization) {
   // Simulate successful online setup.
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION);
@@ -529,7 +537,14 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 }
 
-IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, OnlineSetupFlowErrorDefault) {
+// Disabled due to test failure. http://crbug.com/1249355
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_OnlineSetupFlowErrorDefault DISABLED_OnlineSetupFlowErrorDefault
+#else
+#define MAYBE_OnlineSetupFlowErrorDefault OnlineSetupFlowErrorDefault
+#endif
+IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
+                       MAYBE_OnlineSetupFlowErrorDefault) {
   // Simulate online setup failure.
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION);
@@ -1087,7 +1102,13 @@ IN_PROC_BROWSER_TEST_F(DemoSetupFRETest, DeviceFromFactory) {
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 }
 
-IN_PROC_BROWSER_TEST_F(DemoSetupFRETest, NonEnterpriseDevice) {
+// Disabled due to test failure. http://crbug.com/1249355
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_NonEnterpriseDevice DISABLED_NonEnterpriseDevice
+#else
+#define MAYBE_NonEnterpriseDevice NonEnterpriseDevice
+#endif
+IN_PROC_BROWSER_TEST_F(DemoSetupFRETest, MAYBE_NonEnterpriseDevice) {
   // Simulating device that was never set for enterprise:
   // * "active_date" is set
   // * "check_enrollment" and "block_devmode" flags are set to false.
@@ -1150,7 +1171,13 @@ IN_PROC_BROWSER_TEST_F(DemoSetupFRETest, MAYBE_LegacyDemoModeDevice) {
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 }
 
-IN_PROC_BROWSER_TEST_F(DemoSetupFRETest, DeviceWithFRE) {
+// Disabled due to test failure. http://crbug.com/1249355
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_DeviceWithFRE DISABLED_DeviceWithFRE
+#else
+#define MAYBE_DeviceWithFRE DeviceWithFRE
+#endif
+IN_PROC_BROWSER_TEST_F(DemoSetupFRETest, MAYBE_DeviceWithFRE) {
   // Simulating device that requires FRE. "check_enrollment", "block_devmode"
   // and "ActivateDate" flags are set.
   statistics_provider_.SetMachineStatistic(system::kActivateDateKey, "2018-01");
