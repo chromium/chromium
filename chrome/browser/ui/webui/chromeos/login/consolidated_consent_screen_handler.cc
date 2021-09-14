@@ -107,7 +107,16 @@ void ConsolidatedConsentScreenHandler::DeclareLocalizedValues(
 
 void ConsolidatedConsentScreenHandler::Initialize() {}
 
-void ConsolidatedConsentScreenHandler::Show(const ScreenConfig& config) {}
+void ConsolidatedConsentScreenHandler::Show(const ScreenConfig& config) {
+  base::DictionaryValue data;
+  data.SetBoolean("isArcEnabled", config.is_arc_enabled);
+  data.SetBoolean("isDemo", config.is_demo);
+  data.SetBoolean("isChildAccount", config.is_child_account);
+  data.SetString("countryCode", config.country_code);
+  data.SetString("eulaUrl", config.eula_url);
+  data.SetString("additionalTosUrl", config.additional_tos_url);
+  ShowScreenWithData(kScreenId, &data);
+}
 
 void ConsolidatedConsentScreenHandler::Bind(ConsolidatedConsentScreen* screen) {
   screen_ = screen;
@@ -119,7 +128,11 @@ void ConsolidatedConsentScreenHandler::Unbind() {
   BaseScreenHandler::SetBaseScreen(nullptr);
 }
 
-void ConsolidatedConsentScreenHandler::RegisterMessages() {}
+void ConsolidatedConsentScreenHandler::RegisterMessages() {
+  BaseScreenHandler::RegisterMessages();
+
+  AddCallback("ToSAccept", &ConsolidatedConsentScreenHandler::HandleAccept);
+}
 
 void ConsolidatedConsentScreenHandler::HandleAccept(
     bool enable_stats_usage,
@@ -132,17 +145,17 @@ void ConsolidatedConsentScreenHandler::HandleAccept(
 
 void ConsolidatedConsentScreenHandler::SetUsageMode(bool enabled,
                                                     bool managed) {
-  // TODO(crbug.com/1201616): CallJS to updated the UI
+  CallJS("login.ConsolidatedConsentScreen.SetUsageMode", enabled, managed);
 }
 
 void ConsolidatedConsentScreenHandler::SetBackupMode(bool enabled,
                                                      bool managed) {
-  // TODO(crbug.com/1201616): CallJS to update the UI
+  CallJS("login.ConsolidatedConsentScreen.setBackupMode", enabled, managed);
 }
 
 void ConsolidatedConsentScreenHandler::SetLocationMode(bool enabled,
                                                        bool managed) {
-  // TODO(crbug.com/1201616): CallJS to update the UI
+  CallJS("login.ConsolidatedConsentScreen.setLocationMode", enabled, managed);
 }
 
 }  // namespace chromeos

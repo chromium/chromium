@@ -49,6 +49,7 @@ function loadCommonComponents() {
 // <include src="../oobe_screen_autolaunch.js">
 // <include src="../screen_error_message.js">
 // <include src="../managed_terms_of_service.js">
+// <include src="../consolidated_consent.js">
 
 // <include src="components_[OOBE].js">
 // <include src="components_[OS_INSTALL].js">

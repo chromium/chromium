@@ -874,6 +874,74 @@ cr.define('cr.ui.login.debug', function() {
       }]
     },
     {
+      id: 'consolidated-consent',
+      kind: ScreenKind.NORMAL,
+      handledSteps: 'loaded,loading,error,eula,additional,arc,privacy',
+      // TODO(crbug.com/1247174): Use localized URLs for eulaUrl and
+      // additionalTosUrl.
+      states: [
+        {
+          id: 'regular',
+          data: {
+            isArcEnabled: true,
+            isDemo: false,
+            isChildAccount: false,
+            eulaUrl: 'https://policies.google.com/terms/embedded?hl=en',
+            additionalTosUrl: 'https://www.google.com/intl/en/chrome/terms/',
+            countryCode: 'us',
+          },
+        },
+        {
+          id: 'child',
+          data: {
+            isArcEnabled: true,
+            isDemo: false,
+            isChildAccount: true,
+            eulaUrl: 'https://policies.google.com/terms/embedded?hl=en',
+            additionalTosUrl: 'https://www.google.com/intl/en/chrome/terms/',
+            countryCode: 'us',
+          },
+        },
+        {
+          id: 'demo-mode',
+          data: {
+            isArcEnabled: true,
+            isDemo: true,
+            isChildAccount: false,
+            eulaUrl: 'https://policies.google.com/terms/embedded?hl=en',
+            additionalTosUrl: 'https://www.google.com/intl/en/chrome/terms/',
+            countryCode: 'us',
+          },
+        },
+        {
+          id: 'arc-disabled',
+          data: {
+            isArcEnabled: false,
+            isDemo: false,
+            isChildAccount: false,
+            eulaUrl: 'https://policies.google.com/terms/embedded?hl=en',
+            additionalTosUrl: 'https://www.google.com/intl/en/chrome/terms/',
+            countryCode: 'us',
+          },
+        },
+        {
+          id: 'error',
+          trigger: (screen) => {
+            screen.setUIStep('error');
+          },
+          data: {
+            isArcEnabled: true,
+            isDemo: false,
+            isChildAccount: false,
+            eulaUrl: 'https://policies.google.com/terms/embedded?hl=en',
+            additionalTosUrl: 'https://www.google.com/intl/en/chrome/terms/',
+            countryCode: 'us',
+          },
+        },
+
+      ]
+    },
+    {
       id: 'fingerprint-setup',
       kind: ScreenKind.NORMAL,
       defaultState: 'default',

@@ -43,6 +43,8 @@ using sync_pb::UserConsentTypes;
 
 namespace ash {
 namespace {
+constexpr const char kBackDemoButtonClicked[] = "back";
+
 std::string GetEulaOnlineUrl() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kOobeEulaUrlForTests)) {
@@ -67,6 +69,8 @@ std::string ConsolidatedConsentScreen::GetResultString(Result result) {
     case Result::ACCEPTED_DEMO_ONLINE:
     case Result::ACCEPTED_DEMO_OFFLINE:
       return "Accepted";
+    case Result::BACK_DEMO:
+      return "Back";
     case Result::NOT_APPLICABLE:
       return BaseScreen::kNotApplicable;
   }
@@ -152,6 +156,13 @@ void ConsolidatedConsentScreen::ShowImpl() {
 
 void ConsolidatedConsentScreen::HideImpl() {
   pref_handler_.reset();
+}
+
+void ConsolidatedConsentScreen::OnUserAction(const std::string& action_id) {
+  if (action_id == kBackDemoButtonClicked)
+    exit_callback_.Run(Result::BACK_DEMO);
+  else
+    BaseScreen::OnUserAction(action_id);
 }
 
 void ConsolidatedConsentScreen::AddObserver(Observer* observer) {

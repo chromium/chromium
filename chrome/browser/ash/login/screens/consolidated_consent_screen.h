@@ -25,6 +25,9 @@ class ConsolidatedConsentScreen
     // The user accepted terms of service in the regular flow.
     ACCEPTED,
 
+    // The user clicked the back button in the demo mode.
+    BACK_DEMO,
+
     // The user accepted terms of service in online demo mode.
     ACCEPTED_DEMO_ONLINE,
 
@@ -88,6 +91,7 @@ class ConsolidatedConsentScreen
   bool MaybeSkip(WizardContext* context) override;
   void ShowImpl() override;
   void HideImpl() override;
+  void OnUserAction(const std::string& action_id) override;
 
   void RecordConsents(const ConsentsParameters& params);
 
