@@ -13,6 +13,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
+import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -38,6 +39,7 @@ import androidx.test.espresso.action.GeneralSwipeAction;
 import androidx.test.espresso.action.Press;
 import androidx.test.espresso.action.Swipe;
 import androidx.test.espresso.contrib.RecyclerViewActions;
+import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
 
 import com.google.common.base.Optional;
@@ -440,7 +442,9 @@ public class FeedV2NewTabPageTest {
         onView(withText(expanded ? R.string.ntp_turn_on_feed : R.string.ntp_turn_off_feed))
                 .perform(click());
 
-        onView(withText(expanded ? R.string.ntp_discover_on : R.string.ntp_discover_off))
+        // There must be one and only one view with "Discover on/off" text being displayed.
+        onView(allOf(withText(expanded ? R.string.ntp_discover_on : R.string.ntp_discover_off),
+                       withEffectiveVisibility(Visibility.VISIBLE)))
                 .check(matches(isDisplayed()));
     }
 

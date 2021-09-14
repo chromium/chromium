@@ -9451,6 +9451,25 @@
             ]
         }
     ],
+    "WebFeedsMVP": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Grouped_IphIntro",
+                    "params": {
+                        "following_feed_content_order": "grouped",
+                        "intro_style": "IPH"
+                    },
+                    "enable_features": [
+                        "WebFeed"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebGPUOriginTrial": [
         {
             "platforms": [
