@@ -1832,7 +1832,7 @@
   {
     "name": "enable-desktop-pwas-url-handling",
     "owners": [ "luhua@microsoft.com", "desktop-pwas-team@google.com" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 102
   },
   {
     "name": "enable-desktop-pwas-web-bundles",
