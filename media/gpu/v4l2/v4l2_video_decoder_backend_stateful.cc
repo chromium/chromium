@@ -19,6 +19,7 @@
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_device.h"
+#include "media/gpu/v4l2/v4l2_stateful_workaround.h"
 #include "media/gpu/v4l2/v4l2_vda_helpers.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_backend.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -147,6 +148,11 @@ void V4L2StatefulVideoDecoderBackend::DoDecodeWork() {
     // This is our new decode request.
     current_decode_request_ = std::move(decode_request);
     DCHECK_EQ(current_decode_request_->bytes_used, 0u);
+
+    if (VideoCodecProfileToVideoCodec(profile_) == VideoCodec::kVP9 &&
+        !AppendVP9SuperFrameIndexIfNeeded(current_decode_request_->buffer)) {
+      VLOGF(1) << "Failed to append superframe index for VP9 k-SVC frame";
+    }
   }
 
   // Get a V4L2 buffer to copy the encoded data into.

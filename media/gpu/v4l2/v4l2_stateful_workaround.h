@@ -13,6 +13,7 @@
 
 namespace media {
 
+// TODO(hiroh): Remove this class once V4L2VideoDecodeAccelerator is removed.
 class V4L2StatefulWorkaround {
  public:
   enum class Result {
@@ -37,6 +38,14 @@ std::vector<std::unique_ptr<V4L2StatefulWorkaround>>
 CreateV4L2StatefulWorkarounds(V4L2Device::Type device_type,
                               VideoCodecProfile profile);
 
+// DecoderBuffer contains superframe in VP9 k-SVC stream but doesn't have
+// superframe_index. If DecoderBuffer has side_data, it stands for sizes of
+// frames in a superframe, this constructs superframe_index from them.
+// |buffer| is replaced with a new DecoderBuffer, where superframe index is
+// appended to |buffer| data. Besides, show_frame in the new DecoderBuffer is
+// overwritten so that show_frame is one only in the top spatial layer.
+// See go/VP9-k-SVC-Decoing-VAAPI for detail.
+bool AppendVP9SuperFrameIndexIfNeeded(scoped_refptr<DecoderBuffer>& buffer);
 }  // namespace media
 
 #endif  // MEDIA_GPU_V4L2_V4L2_STATEFUL_WORKAROUND_H_

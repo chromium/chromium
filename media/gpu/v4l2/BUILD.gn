@@ -126,9 +126,14 @@ source_set("v4l2") {
 
 source_set("unit_test") {
   testonly = true
-  sources = [ "v4l2_device_unittest.cc" ]
+  sources = [
+    "v4l2_device_unittest.cc",
+    "v4l2_stateful_workaround_unittest.cc",
+  ]
   deps = [
     ":v4l2",
+    "//base",
+    "//media",
     "//media:test_support",
     "//testing/gtest",
     "//ui/gfx:test_support",
