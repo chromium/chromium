@@ -55,9 +55,7 @@ const receive = async function(uuid, maybe_timeout) {
 
 const receiveReport = async function(uuid, type) {
   while(true) {
-    // reports should be sent within 100ms after being queued, set timeout
-    // to 3000ms to be safer.
-    let reports = await receive(uuid, 3000);
+    let reports = await receive(uuid);
     if (reports == "timeout")
       return "timeout";
     reports = JSON.parse(reports);
@@ -67,17 +65,6 @@ const receiveReport = async function(uuid, type) {
         return report;
     }
   }
-}
-
-// Build a set of 'Cross-Origin-Opener-Policy' and
-// 'Cross-Origin-Opener-Policy-Report-Only' headers.
-const coopHeaders = function (uuid) {
-  return {
-    coopSameOriginHeader: `|header(Cross-Origin-Opener-Policy,same-origin%3Breport-to="${uuid}")`,
-    coopSameOriginAllowPopupsHeader: `|header(Cross-Origin-Opener-Policy,same-origin-allow-popups%3Breport-to="${uuid}")`,
-    coopReportOnlySameOriginHeader: `|header(Cross-Origin-Opener-Policy-Report-Only,same-origin%3Breport-to="${uuid}")`,
-    coopReportOnlySameOriginAllowPopupsHeader: `|header(Cross-Origin-Opener-Policy-Report-Only,same-origin-allow-popups%3Breport-to="${uuid}")`
-  };
 }
 
 // Build a set of headers to tests the reporting API. This defines a set of
@@ -99,19 +86,9 @@ const reportToHeaders = function(uuid) {
 
   return {
     header: `|header(report-to,${reportToJSON})`,
-    ...coopHeaders(uuid)
-  };
-};
-
-// Build a set of headers to tests the reporting API. This defines a set of
-// matching 'Reporting-Endpoints', 'Cross-Origin-Opener-Policy' and
-// 'Cross-Origin-Opener-Policy-Report-Only' headers.
-const reportingEndpointsHeaders = function (uuid) {
-  const report_endpoint_url = `${dispatcher_path}?uuid=${uuid}`;
-  const reporting_endpoints_header = `${uuid}="${report_endpoint_url}"`;
-
-  return {
-    header: `|header(Reporting-Endpoints,${reporting_endpoints_header})`,
-    ...coopHeaders(uuid)
+    coopSameOriginHeader: `|header(Cross-Origin-Opener-Policy,same-origin%3Breport-to="${uuid}")`,
+    coopSameOriginAllowPopupsHeader: `|header(Cross-Origin-Opener-Policy,same-origin-allow-popups%3Breport-to="${uuid}")`,
+    coopReportOnlySameOriginHeader: `|header(Cross-Origin-Opener-Policy-Report-Only,same-origin%3Breport-to="${uuid}")`,
+    coopReportOnlySameOriginAllowPopupsHeader: `|header(Cross-Origin-Opener-Policy-Report-Only,same-origin-allow-popups%3Breport-to="${uuid}")`,
   };
 };

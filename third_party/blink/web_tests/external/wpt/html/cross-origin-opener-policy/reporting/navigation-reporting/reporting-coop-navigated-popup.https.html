@@ -19,14 +19,12 @@ promise_test( async t => {
   const noCoopToken = token();
   const coopToken= token();
   await reportingTest( async resolve => {
-    const reportingHeader = convertToWPTHeaderPipe(
-      getReportToHeader(location.origin));
     const noCOOPUrl = executor_path +
-      `|${reportingHeader}` +
+      `|header(report-to,${encodeURIComponent(getReportEndpoints(location.origin))})` +
       `|header(Cross-Origin-Opener-Policy,${encodeURIComponent(`unsafe-none; report-to="${popupReportEndpoint.name}"`)})` +
       `&uuid=${noCoopToken}`;
     const coopUrl = executor_path +
-      `|${reportingHeader}` +
+      `|header(report-to,${encodeURIComponent(getReportEndpoints(location.origin))})` +
       `|header(Cross-Origin-Opener-Policy,${encodeURIComponent(`same-origin; report-to="${redirectReportEndpoint.name}"`)})` +
       `&uuid=${coopToken}`;
 
