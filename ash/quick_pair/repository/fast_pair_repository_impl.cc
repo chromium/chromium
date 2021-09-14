@@ -5,8 +5,12 @@
 #include "ash/quick_pair/repository/fast_pair_repository_impl.h"
 
 #include "ash/quick_pair/common/logging.h"
+#include "ash/quick_pair/proto/fastpair.pb.h"
+#include "ash/quick_pair/proto/fastpair_data.pb.h"
 #include "ash/quick_pair/repository/fast_pair/device_metadata_fetcher.h"
 #include "ash/quick_pair/repository/fast_pair/fast_pair_image_decoder.h"
+#include "ash/quick_pair/repository/fast_pair/footprints_fetcher.h"
+#include "ash/services/quick_pair/public/cpp/account_key_filter.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "device/bluetooth/bluetooth_device.h"
 
@@ -16,8 +20,14 @@ namespace quick_pair {
 FastPairRepositoryImpl::FastPairRepositoryImpl()
     : FastPairRepository(),
       device_metadata_fetcher_(std::make_unique<DeviceMetadataFetcher>()),
+      footprints_fetcher_(std::make_unique<FootprintsFetcher>()),
       image_decoder_(std::make_unique<FastPairImageDecoder>(
-          std::unique_ptr<image_fetcher::ImageFetcher>())) {}
+          std::unique_ptr<image_fetcher::ImageFetcher>())),
+      footprints_last_updated_(base::Time::UnixEpoch()) {
+  footprints_fetcher_->GetUserDevices(
+      base::BindOnce(&FastPairRepositoryImpl::UpdateUserDevicesCache,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
 
 FastPairRepositoryImpl::~FastPairRepositoryImpl() = default;
 
@@ -79,12 +89,69 @@ void FastPairRepositoryImpl::IsValidModelId(
   std::move(callback).Run(false);
 }
 
-void FastPairRepositoryImpl::GetAssociatedAccountKey(
-    const std::string& address,
-    const std::string& account_key_filter,
-    base::OnceCallback<void(absl::optional<std::string>)> callback) {
+void FastPairRepositoryImpl::CheckAccountKeys(
+    const AccountKeyFilter& account_key_filter,
+    DeviceMetadataCallback callback) {
+  CheckAccountKeysImpl(account_key_filter, std::move(callback),
+                       /*refresh_cache_on_miss=*/true);
+}
+
+void FastPairRepositoryImpl::CheckAccountKeysImpl(
+    const AccountKeyFilter& account_key_filter,
+    DeviceMetadataCallback callback,
+    bool refresh_cache_on_miss) {
   QP_LOG(INFO) << __func__;
-  std::move(callback).Run(absl::nullopt);
+  for (const auto& info : user_devices_cache_.fast_pair_info()) {
+    if (info.has_device()) {
+      const std::string& string_key = info.device().account_key();
+      const std::vector<uint8_t> binary_key(string_key.begin(),
+                                            string_key.end());
+      if (account_key_filter.Test(binary_key)) {
+        nearby::fastpair::StoredDiscoveryItem device;
+        if (device.ParseFromString(info.device().discovery_item_bytes())) {
+          QP_LOG(INFO) << "Account key matched with a paired device: "
+                       << device.title();
+          GetDeviceMetadata(device.id(), std::move(callback));
+          return;
+        }
+      }
+    }
+  }
+
+  if (refresh_cache_on_miss && (base::Time::Now() - footprints_last_updated_) >
+                                   base::TimeDelta::FromMinutes(1)) {
+    footprints_fetcher_->GetUserDevices(
+        base::BindOnce(&FastPairRepositoryImpl::RetryCheckAccountKeys,
+                       weak_ptr_factory_.GetWeakPtr(), account_key_filter,
+                       std::move(callback)));
+    return;
+  }
+
+  std::move(callback).Run(nullptr);
+}
+
+void FastPairRepositoryImpl::RetryCheckAccountKeys(
+    const AccountKeyFilter& account_key_filter,
+    DeviceMetadataCallback callback,
+    absl::optional<nearby::fastpair::UserReadDevicesResponse> user_devices) {
+  if (!user_devices) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  UpdateUserDevicesCache(user_devices);
+  CheckAccountKeysImpl(account_key_filter, std::move(callback),
+                       /*refresh_cache_on_miss=*/false);
+}
+
+void FastPairRepositoryImpl::UpdateUserDevicesCache(
+    absl::optional<nearby::fastpair::UserReadDevicesResponse> user_devices) {
+  if (user_devices) {
+    QP_LOG(VERBOSE) << "Updated user devices cache with "
+                    << user_devices->fast_pair_info_size() << " devices.";
+    user_devices_cache_ = std::move(*user_devices);
+    footprints_last_updated_ = base::Time::Now();
+  }
 }
 
 void FastPairRepositoryImpl::AssociateAccountKey(

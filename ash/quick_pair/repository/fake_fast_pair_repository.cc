@@ -43,11 +43,10 @@ void FakeFastPairRepository::IsValidModelId(
   std::move(callback).Run(data_.contains(base::ToUpperASCII(hex_model_id)));
 }
 
-void FakeFastPairRepository::GetAssociatedAccountKey(
-    const std::string& address,
-    const std::string& account_key_filter,
-    base::OnceCallback<void(absl::optional<std::string>)> callback) {
-  std::move(callback).Run(absl::nullopt);
+void FakeFastPairRepository::CheckAccountKeys(
+    const AccountKeyFilter& account_key_filter,
+    DeviceMetadataCallback callback) {
+  std::move(callback).Run(nullptr);
 }
 
 void FakeFastPairRepository::AssociateAccountKey(

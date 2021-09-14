@@ -20,14 +20,14 @@ class AccountKeyFilter {
   explicit AccountKeyFilter(const NotDiscoverableAdvertisement& advertisement);
   AccountKeyFilter(const std::vector<uint8_t>& account_key_filter_bytes,
                    uint8_t salt);
-  AccountKeyFilter(const AccountKeyFilter&) = delete;
-  AccountKeyFilter& operator=(const AccountKeyFilter&) = delete;
+  AccountKeyFilter(const AccountKeyFilter&);
+  AccountKeyFilter& operator=(AccountKeyFilter&&);
   ~AccountKeyFilter();
 
   // Tests whether the |account_key_bytes| belong to this Account Key Filter.
   // Note: The return value may be a false positive, but will never be a false
   // negative.
-  bool Test(const std::vector<uint8_t>& account_key_bytes);
+  bool Test(const std::vector<uint8_t>& account_key_bytes) const;
 
  private:
   std::vector<uint8_t> bit_sets_;

@@ -25,9 +25,12 @@ AccountKeyFilter::AccountKeyFilter(
     uint8_t salt)
     : bit_sets_(account_key_filter_bytes), salt_(salt) {}
 
+AccountKeyFilter::AccountKeyFilter(const AccountKeyFilter&) = default;
+AccountKeyFilter& AccountKeyFilter::operator=(AccountKeyFilter&&) = default;
 AccountKeyFilter::~AccountKeyFilter() = default;
 
-bool AccountKeyFilter::Test(const std::vector<uint8_t>& account_key_bytes) {
+bool AccountKeyFilter::Test(
+    const std::vector<uint8_t>& account_key_bytes) const {
   if (bit_sets_.empty())
     return false;
 

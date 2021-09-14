@@ -6,22 +6,29 @@
 #define ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_REPOSITORY_IMPL_H_
 
 #include "ash/quick_pair/common/device.h"
-#include "ash/quick_pair/proto/fastpair.pb.h"
 #include "ash/quick_pair/repository/fast_pair/device_metadata.h"
 #include "ash/quick_pair/repository/fast_pair_repository.h"
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 class BluetoothDevice;
 }
 
+namespace nearby {
+namespace fastpair {
+class UserReadDevicesResponse;
+}  // namespace fastpair
+}  // namespace nearby
+
 namespace ash {
 namespace quick_pair {
 
 class DeviceMetadataFetcher;
 class FastPairImageDecoder;
+class FootprintsFetcher;
 
 // The entry point for the Repository component in the Quick Pair system,
 // responsible for connecting to back-end services.
@@ -32,33 +39,21 @@ class FastPairRepositoryImpl : public FastPairRepository {
   FastPairRepositoryImpl& operator=(const FastPairRepositoryImpl&) = delete;
   ~FastPairRepositoryImpl() override;
 
-  // Returns the DeviceMetadata for a given |hex_model_id| to the provided
-  // |callback|, if available.
+  // FastPairRepository::
   void GetDeviceMetadata(const std::string& hex_model_id,
                          DeviceMetadataCallback callback) override;
-
-  // Checks if the input |hex_model_id| is valid and notifies the requester
-  // through the provided |callback|.
   void IsValidModelId(const std::string& hex_model_id,
                       base::OnceCallback<void(bool)> callback) override;
-
-  // Looks up the key associated with either |address| or |account_key_filter|
-  // and returns it to the provided |callback|, if available.  If this
-  // information is available locally that will be returned immediately,
-  // otherwise this will request data from the footprints server.
-  void GetAssociatedAccountKey(
-      const std::string& address,
-      const std::string& account_key_filter,
-      base::OnceCallback<void(absl::optional<std::string>)> callback) override;
-
-  // Stores the given |account_key| for a |device| on the server.
+  void CheckAccountKeys(const AccountKeyFilter& account_key_filter,
+                        DeviceMetadataCallback callback) override;
   void AssociateAccountKey(const Device& device,
                            const std::string& account_key) override;
-
-  // Deletes the associated data for a given |device|.
   void DeleteAssociatedDevice(const device::BluetoothDevice* device) override;
 
  private:
+  void CheckAccountKeysImpl(const AccountKeyFilter& account_key_filter,
+                            DeviceMetadataCallback callback,
+                            bool refresh_cache_on_miss);
   void OnMetadataFetched(
       const std::string& normalized_model_id,
       DeviceMetadataCallback callback,
@@ -67,10 +62,21 @@ class FastPairRepositoryImpl : public FastPairRepository {
                       DeviceMetadataCallback callback,
                       nearby::fastpair::GetObservedDeviceResponse response,
                       gfx::Image image);
+  void RetryCheckAccountKeys(
+      const AccountKeyFilter& account_key_filter,
+      DeviceMetadataCallback callback,
+      absl::optional<nearby::fastpair::UserReadDevicesResponse> user_devices);
+  void UpdateUserDevicesCache(
+      absl::optional<nearby::fastpair::UserReadDevicesResponse> user_devices);
 
   std::unique_ptr<DeviceMetadataFetcher> device_metadata_fetcher_;
+  std::unique_ptr<FootprintsFetcher> footprints_fetcher_;
   std::unique_ptr<FastPairImageDecoder> image_decoder_;
+
   base::flat_map<std::string, std::unique_ptr<DeviceMetadata>> metadata_cache_;
+  nearby::fastpair::UserReadDevicesResponse user_devices_cache_;
+  base::Time footprints_last_updated_;
+
   base::WeakPtrFactory<FastPairRepositoryImpl> weak_ptr_factory_{this};
 };
 

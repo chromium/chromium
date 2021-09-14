@@ -32,6 +32,7 @@ source_set("repository") {
   deps = [
     "//ash/quick_pair/common",
     "//ash/quick_pair/proto:fastpair_proto",
+    "//ash/services/quick_pair/public/cpp",
     "//base",
     "//components/image_fetcher/core",
     "//components/signin/public/identity_manager",
