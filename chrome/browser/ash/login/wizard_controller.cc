@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "ash/components/audio/cras_audio_handler.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/devicetype.h"
 #include "base/bind.h"
@@ -56,6 +57,7 @@
 #include "chrome/browser/ash/login/screens/arc_terms_of_service_screen.h"
 #include "chrome/browser/ash/login/screens/assistant_optin_flow_screen.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chrome/browser/ash/login/screens/consolidated_consent_screen.h"
 #include "chrome/browser/ash/login/screens/demo_preferences_screen.h"
 #include "chrome/browser/ash/login/screens/demo_setup_screen.h"
 #include "chrome/browser/ash/login/screens/device_disabled_screen.h"
@@ -123,6 +125,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/arc_terms_of_service_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/assistant_optin_flow_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/auto_enrollment_check_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/consolidated_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/demo_preferences_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/demo_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/device_disabled_screen_handler.h"
@@ -738,6 +741,13 @@ std::vector<std::unique_ptr<BaseScreen>> WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnParentalHandoffScreenExit,
                           weak_factory_.GetWeakPtr())));
 
+  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+    append(std::make_unique<ConsolidatedConsentScreen>(
+        oobe_ui->GetView<ConsolidatedConsentScreenHandler>(),
+        base::BindRepeating(&WizardController::OnConsolidatedConsentScreenExit,
+                            weak_factory_.GetWeakPtr())));
+  }
+
   if (switches::IsOsInstallAllowed()) {
     append(std::make_unique<OsInstallScreen>(
         oobe_ui->GetView<OsInstallScreenHandler>(),
@@ -952,6 +962,10 @@ void WizardController::ShowOsInstallScreen() {
   SetCurrentScreen(GetScreen(OsInstallScreenView::kScreenId));
 }
 
+void WizardController::ShowConsolidatedConsentScreen() {
+  SetCurrentScreen(GetScreen(ConsolidatedConsentScreenView::kScreenId));
+}
+
 void WizardController::ShowActiveDirectoryPasswordChangeScreen(
     const std::string& username) {
   GetScreen<ActiveDirectoryPasswordChangeScreen>()->SetUsername(username);
@@ -1057,6 +1071,30 @@ void WizardController::OnParentalHandoffScreenExit(
   OnScreenExit(ParentalHandoffScreenView::kScreenId,
                ParentalHandoffScreen::GetResultString(result));
   ShowMultiDeviceSetupScreen();
+}
+
+void WizardController::OnConsolidatedConsentScreenExit(
+    ConsolidatedConsentScreen::Result result) {
+  OnScreenExit(ConsolidatedConsentScreenView::kScreenId,
+               ConsolidatedConsentScreen::GetResultString(result));
+  switch (result) {
+    case ConsolidatedConsentScreen::Result::ACCEPTED:
+    case ConsolidatedConsentScreen::Result::NOT_APPLICABLE:
+      ShowTermsOfServiceScreen();
+      break;
+    case ConsolidatedConsentScreen::Result::ACCEPTED_DEMO_ONLINE:
+      DCHECK(demo_setup_controller_);
+      ShowAutoEnrollmentCheckScreen();
+      break;
+    case ConsolidatedConsentScreen::Result::ACCEPTED_DEMO_OFFLINE:
+      DCHECK(demo_setup_controller_);
+      ShowDemoModeSetupScreen();
+      break;
+    case ConsolidatedConsentScreen::Result::BACK_DEMO:
+      DCHECK(demo_setup_controller_);
+      ShowNetworkScreen();
+      break;
+  }
 }
 
 void WizardController::OnOfflineLoginScreenExit(
@@ -1202,6 +1240,12 @@ void WizardController::OnNetworkScreenExit(NetworkScreen::Result result) {
   if (ShowEulaOrArcTosAfterNetworkScreen())
     return;
 
+  // TODO(crbug.com/1247998): Investigate if we can call PerformPostEulaActions
+  // from here before enabling OobeConsolidatedConsent flag. If it's allowed,
+  // update the name of the method.
+  if (chromeos::features::IsOobeConsolidatedConsentEnabled())
+    PerformPostEulaActions();
+
   switch (result) {
     case NetworkScreen::Result::CONNECTED:
       InitiateOOBEUpdate();
@@ -1211,7 +1255,11 @@ void WizardController::OnNetworkScreenExit(NetworkScreen::Result result) {
       // and attempt system update. It is possible to initiate offline demo
       // setup on the device that is connected, although it is probably not
       // common.
-      ShowDemoModeSetupScreen();
+      if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+        ShowConsolidatedConsentScreen();
+      } else {
+        ShowDemoModeSetupScreen();
+      }
       break;
     case NetworkScreen::Result::BACK:
       NOTREACHED();
@@ -1219,6 +1267,9 @@ void WizardController::OnNetworkScreenExit(NetworkScreen::Result result) {
 }
 
 bool WizardController::ShowEulaOrArcTosAfterNetworkScreen() {
+  if (chromeos::features::IsOobeConsolidatedConsentEnabled())
+    return false;
+
   if (!is_branded_build_)
     return false;
 
@@ -1298,6 +1349,11 @@ void WizardController::OnUpdateScreenExit(UpdateScreen::Result result) {
 }
 
 void WizardController::OnUpdateCompleted() {
+  if (chromeos::features::IsOobeConsolidatedConsentEnabled() &&
+      demo_setup_controller_) {
+    ShowConsolidatedConsentScreen();
+    return;
+  }
   ShowAutoEnrollmentCheckScreen();
 }
 
@@ -1449,7 +1505,13 @@ void WizardController::OnLocaleSwitchScreenExit(
     LocaleSwitchScreen::Result result) {
   OnScreenExit(LocaleSwitchView::kScreenId,
                LocaleSwitchScreen::GetResultString(result));
-  AdvanceToScreen(TermsOfServiceScreenView::kScreenId);
+  // TODO(crbug.com/1248063): Handle the case when the feature flag is disabled
+  // after being enabled during OOBE.
+  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+    ShowConsolidatedConsentScreen();
+  } else {
+    AdvanceToScreen(TermsOfServiceScreenView::kScreenId);
+  }
 }
 
 void WizardController::OnTermsOfServiceScreenExit(

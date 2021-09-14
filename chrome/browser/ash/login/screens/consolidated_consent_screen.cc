@@ -109,7 +109,9 @@ bool ConsolidatedConsentScreen::MaybeSkip(WizardContext* context) {
   bool is_managed_account = ProfileManager::GetActiveUserProfile()
                                 ->GetProfilePolicyConnector()
                                 ->IsManaged();
-  if (is_managed_account && !arc::IsArcTermsOfServiceOobeNegotiationNeeded()) {
+  if ((is_managed_account &&
+       !arc::IsArcTermsOfServiceOobeNegotiationNeeded()) ||
+      !WizardController::IsBrandedBuild()) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
   }

@@ -33,6 +33,7 @@
 #include "chrome/browser/ash/login/screens/assistant_optin_flow_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chrome/browser/ash/login/screens/consolidated_consent_screen.h"
 #include "chrome/browser/ash/login/screens/demo_preferences_screen.h"
 #include "chrome/browser/ash/login/screens/demo_setup_screen.h"
 #include "chrome/browser/ash/login/screens/edu_coexistence_login_screen.h"
@@ -278,6 +279,7 @@ class WizardController {
   void ShowParentalHandoffScreen();
   void ShowOsInstallScreen();
   void ShowLacrosDataMigrationScreen();
+  void ShowConsolidatedConsentScreen();
 
   // Shows images login screen.
   void ShowLoginScreen();
@@ -348,6 +350,8 @@ class WizardController {
   void OnParentalHandoffScreenExit(ParentalHandoffScreen::Result result);
   void OnOfflineLoginScreenExit(OfflineLoginScreen::Result result);
   void OnOsInstallScreenExit();
+  void OnConsolidatedConsentScreenExit(
+      ConsolidatedConsentScreen::Result result);
 
   // Callback invoked once it has been determined whether the device is disabled
   // or not.
