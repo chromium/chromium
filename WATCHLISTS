@@ -2640,7 +2640,7 @@
     'nfc': ['mattreynolds+watch@chromium.org',
             'rijubrata.bhaumik@intel.com'],
     'notification_scheduler': ['xingliu+watch@chromium.org'],
-    'notifications': ['peter@chromium.org'],
+    'notifications': ['peter@chromium.org', 'sarakato+watch@chromium.org'],
     'nqe': ['tbansal+watch-nqe@chromium.org'],
     'ntp_snippets': ['ntp-dev+reviews@chromium.org'],
     'ntp_tiles': ['ntp-dev+reviews@chromium.org'],
