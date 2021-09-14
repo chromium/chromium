@@ -19,13 +19,15 @@
 
 namespace {
 
-// Changes the priority class of the process if it is not NORMAL_PRIORITY_CLASS.
-void EnsurePriorityClassNormal() {
+// Makes the priority class of the process NORMAL_PRIORITY_CLASS and the current
+// thread priority THREAD_PRIORITY_NORMAL.
+void EnsurePriorityNormal() {
   const HANDLE process = ::GetCurrentProcess();
   const DWORD priority_class = ::GetPriorityClass(process);
   if (priority_class == NORMAL_PRIORITY_CLASS)
     return;
   ::SetPriorityClass(process, NORMAL_PRIORITY_CLASS);
+  ::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_NORMAL);
 }
 
 }  // namespace
@@ -41,8 +43,9 @@ int main(int argc, char** argv) {
   // TODO(crbug.com/1245429): remove when the bug is fixed.
   // Typically, the test suite runner expects the swarming task to run with
   // normal priority but for some reason, on the updater bots with UAC on, the
-  // swarming task runs with a priority below normal.
-  EnsurePriorityClassNormal();
+  // swarming task runs with a priority below normal. The thread priority must
+  // be adjusted as well.
+  EnsurePriorityNormal();
 
   auto scoped_com_initializer =
       std::make_unique<base::win::ScopedCOMInitializer>(
