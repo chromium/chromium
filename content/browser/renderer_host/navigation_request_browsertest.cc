@@ -1571,12 +1571,13 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
       shell()->web_contents(), embedded_test_server()->GetURL("/title1.html"));
   TestNavigationObserver navigation_observer(shell()->web_contents(), 1);
 
-  auto frames = shell()->web_contents()->GetMainFrame()->GetFramesInSubtree();
-  ASSERT_EQ(frames.size(), 2u);
-  auto* frame = static_cast<RenderFrameHostImpl*>(frames[1]);
+  RenderFrameHostImpl* main_frame = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetMainFrame());
+  ASSERT_EQ(1u, main_frame->child_count());
+  FrameTreeNode* child = main_frame->child_at(0u);
   auto* navigation_controller = static_cast<NavigationControllerImpl*>(
       &shell()->web_contents()->GetController());
-  navigation_controller->ReloadFrame(frame->frame_tree_node());
+  navigation_controller->ReloadFrame(child);
   navigation_observer.Wait();
 
   EXPECT_EQ(handle_observer.reload_type(), ReloadType::NORMAL);
