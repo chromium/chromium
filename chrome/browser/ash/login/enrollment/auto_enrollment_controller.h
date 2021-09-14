@@ -25,6 +25,8 @@ class CommandLine;
 
 namespace ash {
 
+class SystemClockSyncObservation;
+
 // Drives the forced re-enrollment check (for historical reasons called
 // auto-enrollment check), running an AutoEnrollmentClient if appropriate to
 // make a decision.
@@ -145,8 +147,6 @@ class AutoEnrollmentController {
       policy::AutoEnrollmentClient::Factory* auto_enrollment_client_factory);
 
  private:
-  class SystemClockSyncWaiter;
-
   // Determines the FRE and Initial Enrollment requirement and starts initial
   // enrollment if necessary. If Initial Enrollment would be skipped and the
   // system clock has not been synchronized yet, triggers waiting for system
@@ -184,7 +184,7 @@ class AutoEnrollmentController {
 
   // Called when the system clock has been synchronized or a timeout has been
   // reached while waiting for the system clock sync.
-  void OnSystemClockSyncResult(SystemClockSyncState system_clock_sync_state);
+  void OnSystemClockSyncResult(bool system_clock_synchronized);
 
   // Starts the auto-enrollment client for initial enrollment.
   void StartClientForInitialEnrollment();
@@ -274,7 +274,7 @@ class AutoEnrollmentController {
       AutoEnrollmentCheckType::kNone;
 
   // Utility for waiting until the system clock has been synchronized.
-  std::unique_ptr<SystemClockSyncWaiter> system_clock_sync_waiter_;
+  std::unique_ptr<SystemClockSyncObservation> system_clock_sync_observation_;
 
   // Current system clock sync state. This is only modified in
   // `OnSystemClockSyncResult` after `system_clock_sync_wait_requested_` has

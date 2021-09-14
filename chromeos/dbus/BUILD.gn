@@ -148,6 +148,7 @@ source_set("unit_tests") {
     "//chromeos/dbus/rmad:test_support",
     "//chromeos/dbus/session_manager",
     "//chromeos/dbus/shill:test_support",
+    "//chromeos/dbus/system_clock:unit_tests",
     "//chromeos/dbus/tpm_manager",
     "//chromeos/dbus/tpm_manager:tpm_manager_proto",
     "//chromeos/dbus/u2f",

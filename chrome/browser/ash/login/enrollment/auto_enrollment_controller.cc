@@ -27,6 +27,7 @@
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/system_clock/system_clock_client.h"
+#include "chromeos/dbus/system_clock/system_clock_sync_observation.h"
 #include "chromeos/dbus/userdataauth/install_attributes_client.h"
 #include "chromeos/system/factory_ping_embargo_check.h"
 #include "chromeos/system/statistics_provider.h"
@@ -182,105 +183,6 @@ policy::DeviceManagementService* InitializeAndGetDeviceManagementService() {
 
 }  // namespace
 
-// Supports waiting for the system clock to become synchronized.
-class AutoEnrollmentController::SystemClockSyncWaiter
-    : public chromeos::SystemClockClient::Observer {
- public:
-  SystemClockSyncWaiter() : weak_ptr_factory_(this) {
-    chromeos::SystemClockClient::Get()->AddObserver(this);
-  }
-
-  ~SystemClockSyncWaiter() override {
-    chromeos::SystemClockClient::Get()->RemoveObserver(this);
-  }
-
-  // Waits for the system clock to be synchronized. If it already is
-  // synchronized, `callback` will be called immediately. Otherwise, `callback`
-  // will be called when the system clock has been synchronized, or after
-  // `kSystemClockSyncWaitTimeout`.
-  void WaitForSystemClockSync(SystemClockSyncCallback callback) {
-    if (state_ == SystemClockSyncState::kSyncFailed ||
-        state_ == SystemClockSyncState::kSynchronized) {
-      std::move(callback).Run(state_);
-      return;
-    }
-
-    system_clock_sync_callbacks_.push_back(std::move(callback));
-
-    if (state_ == SystemClockSyncState::kWaitingForSync)
-      return;
-    state_ = SystemClockSyncState::kWaitingForSync;
-
-    timeout_timer_.Start(FROM_HERE, kSystemClockSyncWaitTimeout,
-                         base::BindOnce(&SystemClockSyncWaiter::OnTimeout,
-                                        weak_ptr_factory_.GetWeakPtr()));
-
-    chromeos::SystemClockClient::Get()->WaitForServiceToBeAvailable(
-        base::BindOnce(&SystemClockSyncWaiter::OnGotSystemClockServiceAvailable,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-
- private:
-  // Called when the system clock D-Bus service is available, or when it is
-  // known that the system clock D-Bus service is not available.
-  void OnGotSystemClockServiceAvailable(bool service_is_available) {
-    if (!service_is_available) {
-      SetStateAndRunCallbacks(SystemClockSyncState::kSyncFailed);
-      return;
-    }
-
-    chromeos::SystemClockClient::Get()->GetLastSyncInfo(
-        base::BindOnce(&SystemClockSyncWaiter::OnGotLastSyncInfo,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  // Called on initial fetch of the system clock sync state, and when the system
-  // clock sync state has changed.
-  void OnGotLastSyncInfo(bool network_synchronized) {
-    if (!network_synchronized)
-      return;
-
-    SetStateAndRunCallbacks(SystemClockSyncState::kSynchronized);
-  }
-
-  // Called when the time out has been reached.
-  void OnTimeout() {
-    SetStateAndRunCallbacks(SystemClockSyncState::kSyncFailed);
-  }
-
-  // Runs all callbacks in `system_clock_sync_callbacks_` and clears the vector.
-  void SetStateAndRunCallbacks(SystemClockSyncState state) {
-    state_ = state;
-    timeout_timer_.AbandonAndStop();
-
-    std::vector<SystemClockSyncCallback> callbacks;
-    callbacks.swap(system_clock_sync_callbacks_);
-    for (auto& callback : callbacks) {
-      std::move(callback).Run(state_);
-    }
-  }
-
-  // chromeos::SystemClockClient::Observer:
-  void SystemClockUpdated() override {
-    chromeos::SystemClockClient::Get()->GetLastSyncInfo(
-        base::BindOnce(&SystemClockSyncWaiter::OnGotLastSyncInfo,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  // Current state of the system clock.
-  SystemClockSyncState state_ = SystemClockSyncState::kCanWaitForSync;
-
-  // Pending callbacks to be called when the system clock has been synchronized
-  // or a timeout has been reached.
-  std::vector<SystemClockSyncCallback> system_clock_sync_callbacks_;
-
-  base::OneShotTimer timeout_timer_;
-
-  base::WeakPtrFactory<SystemClockSyncWaiter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SystemClockSyncWaiter);
-};
-
 const char AutoEnrollmentController::kForcedReEnrollmentAlways[] = "always";
 const char AutoEnrollmentController::kForcedReEnrollmentNever[] = "never";
 const char AutoEnrollmentController::kForcedReEnrollmentOfficialBuild[] =
@@ -376,8 +278,7 @@ AutoEnrollmentController::GetFRERequirement() {
   return FRERequirement::kRequired;
 }
 
-AutoEnrollmentController::AutoEnrollmentController()
-    : system_clock_sync_waiter_(std::make_unique<SystemClockSyncWaiter>()) {
+AutoEnrollmentController::AutoEnrollmentController() {
   // Create the PSM (private set membership) RLWE client factory depending on
   // whether switches::kEnterpriseUseFakePsmRlweClient is set.
   if (ShouldUseFakePsmRlweClient()) {
@@ -435,15 +336,17 @@ void AutoEnrollmentController::StartWithSystemClockSyncState() {
   if (auto_enrollment_check_type_ == AutoEnrollmentCheckType::kNone) {
     if (may_request_system_clock_sync && system_clock_sync_wait_requested_) {
       // Set state before waiting for the system clock sync, because
-      // `WaitForSystemClockSync` may invoke its callback synchronously if the
+      // `Start` may invoke its callback synchronously if the
       // system clock sync status is already known.
       UpdateState(policy::AUTO_ENROLLMENT_STATE_PENDING);
 
       // Use `client_start_weak_factory_` so the callback is not invoked if
       // `Timeout` has been called in the meantime (after `kSafeguardTimeout`).
-      system_clock_sync_waiter_->WaitForSystemClockSync(
-          base::BindOnce(&AutoEnrollmentController::OnSystemClockSyncResult,
-                         client_start_weak_factory_.GetWeakPtr()));
+      system_clock_sync_observation_ =
+          SystemClockSyncObservation::WaitForSystemClockSync(
+              SystemClockClient::Get(), kSystemClockSyncWaitTimeout,
+              base::BindOnce(&AutoEnrollmentController::OnSystemClockSyncResult,
+                             client_start_weak_factory_.GetWeakPtr()));
       return;
     }
     UpdateState(policy::AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
@@ -709,8 +612,10 @@ void AutoEnrollmentController::StartClientForFRE(
 }
 
 void AutoEnrollmentController::OnSystemClockSyncResult(
-    SystemClockSyncState system_clock_sync_state) {
-  system_clock_sync_state_ = system_clock_sync_state;
+    bool system_clock_synchronized) {
+  system_clock_sync_state_ = system_clock_synchronized
+                                 ? SystemClockSyncState::kSynchronized
+                                 : SystemClockSyncState::kSyncFailed;
   StartWithSystemClockSyncState();
 }
 
