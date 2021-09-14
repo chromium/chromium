@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+FAIL @layer A; should be a valid rule Cannot read properties of null (reading 'cssText')
+FAIL @layer A, B, C; should be a valid rule Cannot read properties of null (reading 'cssText')
+FAIL @layer A.A; should be a valid rule Cannot read properties of null (reading 'cssText')
+FAIL @layer A, B.C.D, C; should be a valid rule Cannot read properties of null (reading 'cssText')
+PASS @layer; should be an invalid rule
+PASS @layer A . A; should be an invalid rule
+FAIL @layer {
+} should be a valid rule Cannot read properties of null (reading 'cssText')
+FAIL @layer A {
+} should be a valid rule Cannot read properties of null (reading 'cssText')
+FAIL @layer A.B {
+} should be a valid rule Cannot read properties of null (reading 'cssText')
+PASS @layer A . B {
+} should be an invalid rule
+PASS @layer A, B, C {
+} should be an invalid rule
+Harness: the test ran to completion.
+

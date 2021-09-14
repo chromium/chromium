@@ -39,7 +39,7 @@
      * @param {String} src Optional resource URL to load.
      * @returns {Promise} Resolves when the src loads.
      */
-    async function attachIframe(src = "blank.html") {
+    async function attachIframe(src = "./resources/blank.html") {
       const iframe = document.createElement("iframe");
       iframe.allow = "payment";
       iframe.src = src;
@@ -150,7 +150,7 @@
       // and the request is showing boolean to become false.
       await new Promise((resolve) => {
         iframe.onload = resolve;
-        iframe.src = "blank.html?test=123";
+        iframe.src = "./resources/blank.html?test=123";
       });
 
       iframe.remove();

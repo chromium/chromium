@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS Default iterator objects for an interface have the same prototype
+FAIL Object.prototype.toString returns correct value assert_equals: expected "[object URLSearchParams Iterator]" but got "[object Iterator]"
+FAIL @@toStringTag has correct value from prototype assert_equals: expected "URLSearchParams Iterator" but got "Iterator"
+Harness: the test ran to completion.
+

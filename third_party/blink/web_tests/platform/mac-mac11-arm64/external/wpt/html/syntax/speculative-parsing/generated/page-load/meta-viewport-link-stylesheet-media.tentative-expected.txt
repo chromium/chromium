@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Speculative parsing, page load: meta-viewport-link-stylesheet-media Unhandled rejection: assert_equals: non-speculative case incorrectly fetched expected "" but got "param-encodingcheck: %C4%9E\r\nHost: web-platform.test:8001\nConnection: keep-alive\nUser-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/999.77.34.5 Safari/537.36\nAccept: text/css,*/*;q=0.1\nReferer: http://web-platform.test:8001/html/syntax/speculative-parsing/generated/resources/meta-viewport-link-stylesheet-media-nonspeculative.sub.html?uuid=647aff15-4c57-45b8-a8c9-96b248ab328b\nAccept-Encoding: gzip, deflate\nAccept-Language: en-us,en\n\n"
+Harness: the test ran to completion.
+

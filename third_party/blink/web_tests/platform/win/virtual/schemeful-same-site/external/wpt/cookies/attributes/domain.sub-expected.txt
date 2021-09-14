@@ -1,0 +1,50 @@
+This is a testharness.js-based test.
+PASS Test cookie domain attribute parsing
+PASS Return cookie for a domain match
+PASS No cookie returned for domain mismatch (subdomains differ post-redirect)
+PASS Return cookie for a domain match with leading '.'
+PASS Return cookie for domain match (domain attribute is suffix of the host name and first level subdomain)
+PASS Return cookie for domain match (domain attribute is suffix of the host name and first level subdomain, with leading '.')
+PASS No cookie returned for domain mismatch (subdomains differ, with leading '.')
+PASS No cookie returned for domain mismatch when cookie was created (which would match after the redirect, with one subdomain level)
+PASS Return cookie for domain match (domain attribute is suffix of the host name, with leading '.')
+PASS Return cookie for domain match (domain attribute is suffix of the host name)
+PASS No cookie returned for domain attribute with double leading '.'
+PASS No cookie returned for domain attribute with subdomain followed by ..
+PASS Return cookie for a domain match with leading whitespace and '.'
+PASS No cookie returned for domain attribute with whitespace that surrounds a leading '.'
+PASS No cookie returned for domain attribute with trailing '.'
+PASS No cookie returned for domain attribute with trailing '..'
+PASS No cookie returned for domain attribute with trailing whitespace and '.'
+PASS No cookie returned for domain attribute with TLD as value
+PASS No cookie returned for domain attribute with TLD as value, with leading '.'
+PASS No cookie returned for domain attribute with TLD as value, with leading and trailing '.'
+PASS Return multiple cookies that match on domain (without and with leading '.')
+PASS Return multiple cookies that match on domain (with and without leading '.')
+PASS No cookie returned for domain attribute value between quotes
+PASS Return multiple cookies that match on subdomain and domain (without and with leading '.')
+PASS Return multiple cookies that match on domain and subdomain (with and without leading '.')
+PASS No cookie returned when domain attribute does not domain-match (and first does)
+PASS Return cookie for domain attribute match (first does not, but second does)
+FAIL Return cookie for domain match (with bizarre capitalization for domain attribute value) assert_equals: The cookie was set as expected. expected (string) "test=26" but got (undefined) undefined
+PASS No cookie returned for domain attribute value with port
+PASS No cookie returned for domain mismatch when cookie was created (which would match after the redirect, with two subdomain levels)
+PASS No cookie returned for cookie set on different domain (with no domain attribute)
+PASS Return cookie set with bare domain= attribute
+PASS Return cookie that domain-matches with bizarre-cased URL
+PASS No cookie returned for domain attribute mismatch (first attribute matches, but second does not)
+PASS Return cookie for domain match (first attribute doesn't, but second does)
+PASS Return cookie for domain match (first attribute matches, second doesn't, third does)
+PASS No cookie returned for domain attribute mismatch (first attribute doesn't, second does, third doesn't)
+PASS Return cookie for domain match (with two identical domain attributes)
+PASS Return cookie for domain match (with first domain attribute a match for host name and second as suffix of host name)
+PASS Return cookie for domain match (with first domain attribute as suffix of host name and second a match for host name)
+PASS No cookie set on domain mismatch before a (domain matching) redirect
+PASS No cookie set on domain mismatch before a (domain matching) redirect (for second level subdomain)
+PASS Return cookie for domain match (with first domain attribute as suffix of host name and second a bare attribute)
+PASS No cookie returned for domain mismatch (with domain mismatch as first domain attribute and second a bare attribute)
+PASS No cookie returned for domain mismatch (first attribute is a different subdomain and second is bare)
+PASS Cookies with same name, path, and domain (differing only in leading '.') overwrite each other ('.' second)
+PASS Cookies with same name, path, and domain (differing only in leading '.') overwrite each other ('.' first)
+Harness: the test ran to completion.
+
