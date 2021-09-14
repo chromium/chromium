@@ -4790,6 +4790,11 @@
     "expiry_milestone": 96
   },
   {
+    "name": "request-desktop-site-global",
+    "owners": [ "shuyng@google.com", "twellington", "clank-app-team@google.com" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "restore-gaia-cookies-if-deleted",
     "owners": [ "fernandex", "chrome-signin-team" ],
     "expiry_milestone": 99

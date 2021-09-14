@@ -1066,6 +1066,11 @@ const base::Feature kBindingManagementWaiveCpu{
 const base::Feature kOnDemandAccessibilityEvents{
     "OnDemandAccessibilityEvents", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Request Desktop Site global setting for Android.
+// Refer to the launch bug (crbug.com/1107601) for more information.
+const base::Feature kRequestDesktopSiteGlobal{
+    "RequestDesktopSiteGlobal", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Screen Capture API support for Android
 const base::Feature kUserMediaScreenCapturing{
     "UserMediaScreenCapturing", base::FEATURE_DISABLED_BY_DEFAULT};

@@ -27,6 +27,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kExperimentalAccessibilityLabels,
     &features::kOnDemandAccessibilityEvents,
     &features::kProcessSharingWithStrictSiteInstances,
+    &features::kRequestDesktopSiteGlobal,
     &features::kWebAuth,
     &features::kWebBluetoothNewPermissionsBackend,
     &features::kWebNfc,

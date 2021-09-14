@@ -1926,6 +1926,9 @@ extern const char kRelatedSearchesSimplifiedUxDescription[];
 extern const char kRelatedSearchesUiName[];
 extern const char kRelatedSearchesUiDescription[];
 
+extern const char kRequestDesktopSiteGlobalName[];
+extern const char kRequestDesktopSiteGlobalDescription[];
+
 extern const char kShareUsageRankingName[];
 extern const char kShareUsageRankingDescription[];
 extern const char kShareUsageRankingFixedMoreName[];

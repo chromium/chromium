@@ -3379,6 +3379,12 @@ const char kRelatedSearchesUiDescription[] =
     "regardless of whether they are safe or useful. This requires the Related "
     "Searches feature flag to also be enabled.";
 
+const char kRequestDesktopSiteGlobalName[] =
+    "Global setting to request desktop site on Android.";
+const char kRequestDesktopSiteGlobalDescription[] =
+    "An option in `Site settings` to persistently request the "
+    "desktop version of websites.";
+
 const char kShareUsageRankingName[] =
     "Incorporate usage history into share target ranking.";
 const char kShareUsageRankingDescription[] =
