@@ -97,6 +97,7 @@ cast_source_set("common") {
     "//chromecast/common/mojom",
     "//components/cast/common:constants",
     "//components/cdm/common:common",
+    "//components/version_info",
     "//content/public/common",
     "//media:media_buildflags",
     "//mojo/public/cpp/bindings",

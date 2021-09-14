@@ -12,7 +12,9 @@
 #include "chromecast/base/version.h"
 #include "chromecast/chromecast_buildflags.h"
 #include "components/cast/common/constants.h"
+#include "components/version_info/version_info.h"
 #include "content/public/common/user_agent.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace chromecast {
 
@@ -54,16 +56,20 @@ std::string GetDeviceUserAgentSuffix() {
   return std::string(DEVICE_USER_AGENT_SUFFIX);
 }
 
-}  // namespace
+// TODO(guohuideng): Use embedder_support::GetUserAgent() instead after we
+// decouple chromecast and the web browser, when we have fewer restrictions on
+// gn target dependency.
+std::string GetChromiumUserAgent() {
+  if (base::FeatureList::IsEnabled(blink::features::kReduceUserAgent)) {
+    return content::GetReducedUserAgent(
+        /*mobile=*/false, version_info::GetMajorVersionNumber());
+  }
 
-std::string GetUserAgent() {
   std::string product = "Chrome/" PRODUCT_VERSION;
   std::string os_info;
   base::StringAppendF(&os_info, "%s%s",
 #if defined(OS_ANDROID)
                       "Linux; ", BuildAndroidOsInfo().c_str()
-#elif BUILDFLAG(USE_ANDROID_USER_AGENT)
-                      "Linux; ", "Android"
 #else
                       "X11; ",
                       content::BuildOSCpuInfo(
@@ -72,9 +78,15 @@ std::string GetUserAgent() {
                           .c_str()
 #endif
   );
-  return base::StrCat(
-      {content::BuildUserAgentFromOSAndProduct(os_info, product), " ",
-       GetChromeKeyString(), " ", GetDeviceUserAgentSuffix()});
+  return content::BuildUserAgentFromOSAndProduct(os_info, product);
+}
+
+}  // namespace
+
+std::string GetUserAgent() {
+  std::string chromium_user_agent = GetChromiumUserAgent();
+  return base::StrCat({chromium_user_agent, " ", GetChromeKeyString(), " ",
+                       GetDeviceUserAgentSuffix()});
 }
 
 }  // namespace chromecast
