@@ -21531,6 +21531,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="QuickActionSearchWidget.StartDinoGame">
+  <owner>ender@google.com</owner>
+  <owner>fgorski@chromium.org</owner>
+  <description>
+    User started the Dino Game from the Quick Action Search Widget.
+  </description>
+</action>
+
 <action name="QuickActionSearchWidget.StartIncognito">
   <owner>ender@google.com</owner>
   <owner>fgorski@chromium.org</owner>
