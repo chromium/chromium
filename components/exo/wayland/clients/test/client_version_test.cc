@@ -23,6 +23,7 @@
 #include <viewporter-client-protocol.h>
 #include <wayland-client-core.h>
 #include <wayland-client-protocol.h>
+#include <weston-test-server-protocol.h>
 #include <xdg-decoration-unstable-v1-server-protocol.h>
 #include <xdg-shell-server-protocol.h>
 #include <xdg-shell-unstable-v6-server-protocol.h>
@@ -89,6 +90,7 @@ struct Globals {
   std::unique_ptr<zxdg_decoration_manager_v1> zxdg_decoration_manager_v1;
   std::unique_ptr<zcr_extended_drag_v1> zcr_extended_drag_v1;
   std::unique_ptr<zxdg_output_manager_v1> zxdg_output_manager_v1;
+  std::unique_ptr<weston_test> weston_test;
 };
 
 typedef void (*InterfaceRegistryCallback)(Globals*,
@@ -182,6 +184,7 @@ void RegistryHandler(void* data,
                             zxdg_decoration_manager_v1),
           REGISTRY_CALLBACK(zcr_extended_drag_v1, zcr_extended_drag_v1),
           REGISTRY_CALLBACK(zxdg_output_manager_v1, zxdg_output_manager_v1),
+          REGISTRY_CALLBACK(weston_test, weston_test),
       };
   if (interfaces_callbacks.find(interface) != interfaces_callbacks.end()) {
     interfaces_callbacks[interface](globals, registry, id, version);
