@@ -434,6 +434,8 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
 
         // The Promo can only be interacted when the View is being displayed.
         mWasInteractive = true;
+
+        ContextualSearchManager.onPromoShown();
     }
 
     /**

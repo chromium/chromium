@@ -1636,6 +1636,17 @@ const FeatureEntry::FeatureVariation kLongpressResolveVariations[] = {
     {"and preserve Tap behavior", &kLongpressResolvePreserveTap, 1, nullptr},
 };
 
+const FeatureEntry::FeatureParam kContextualSearchPromoCardShow3Times = {
+    "promo_card_max_shown", "3"};
+const FeatureEntry::FeatureParam kContextualSearchPromoCardShow100Times = {
+    "promo_card_max_shown", "100"};
+const FeatureEntry::FeatureVariation ContextualSearchNewSettingsVariations[] = {
+    {"with promo show 3 times", &kContextualSearchPromoCardShow3Times, 1,
+     nullptr},
+    {"with promo show 100 times", &kContextualSearchPromoCardShow100Times, 1,
+     nullptr},
+};
+
 const FeatureEntry::FeatureParam kRelatedSearchesUrl = {"stamp", "1Ru"};
 const FeatureEntry::FeatureParam kRelatedSearchesContent = {"stamp", "1Rc"};
 const FeatureEntry::FeatureVariation kRelatedSearchesVariations[] = {
@@ -2861,7 +2872,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"contextual-search-new-settings",
      flag_descriptions::KContextualSearchNewSettingsName,
      flag_descriptions::KContextualSearchNewSettingsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::KContextualSearchNewSettings)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::KContextualSearchNewSettings,
+         ContextualSearchNewSettingsVariations,
+         "ContextualSearchNewSettings")},
     {"contextual-search-ranker-query",
      flag_descriptions::kContextualSearchRankerQueryName,
      flag_descriptions::kContextualSearchRankerQueryDescription, kOsAndroid,
