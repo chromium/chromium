@@ -93,10 +93,6 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
   // Called when progress bar UI update is available.
   void OnProgressBarUpdate(double value);
 
-  // Called when the |session_receiver_| is disconnected, and closes the
-  // Nearby Share bubble.
-  void OnSessionDisconnected();
-
   // Finish destroying the session by cleaning up the Android activity and
   // destroying the session object from the map owned by ArcNearbyShareBridge.
   void FinishSession();
@@ -104,8 +100,6 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
   // Clean up session and attempt to delete any existing cached files. If
   // |should_cleanup_files| is false, clean up session without deleting files.
   void CleanupSession(bool should_cleanup_files);
-
-  bool IsNearbyShareBubbleVisible() const;
 
   // Android activity's task ID
   uint32_t task_id_;

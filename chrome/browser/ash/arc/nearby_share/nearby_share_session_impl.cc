@@ -56,6 +56,7 @@ constexpr base::FilePath::CharType kArcNearbyShareDirname[] =
     FILE_PATH_LITERAL(".NearbyShare");
 
 void DeletePathAndFiles(const base::FilePath& file_path) {
+  DVLOG(1) << __func__;
   if (!file_path.empty() && base::PathExists(file_path)) {
     base::DeletePathRecursively(file_path);
   }
@@ -82,6 +83,9 @@ NearbyShareSessionImpl::NearbyShareSessionImpl(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
       session_finished_callback_(std::move(session_finished_callback)) {
+  session_receiver_.set_disconnect_handler(base::BindOnce(
+      &NearbyShareSessionImpl::CleanupSession, weak_ptr_factory_.GetWeakPtr(),
+      /*should_cleanup_files=*/true));
   aura::Window* const arc_window = GetArcWindow(task_id_);
   if (arc_window) {
     VLOG(1) << "ARC window found";
@@ -99,6 +103,8 @@ NearbyShareSessionImpl::NearbyShareSessionImpl(
 
 NearbyShareSessionImpl::~NearbyShareSessionImpl() = default;
 
+// TODO(b/197588898): Currently OnNearbyShareClosed() is called just before the
+// Nearby Share bubble is actually closed. This is not an issue functionally.
 void NearbyShareSessionImpl::OnNearbyShareClosed(
     views::Widget::ClosedReason reason) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -383,40 +389,9 @@ void NearbyShareSessionImpl::OnProgressBarUpdate(double value) {
   }
 }
 
-// TODO(b/198808858): This crashes immediately after share if bubble is not
-// visible and calls cleanup while share is still on-going.
-void NearbyShareSessionImpl::OnSessionDisconnected() {
+void NearbyShareSessionImpl::CleanupSession(bool should_cleanup_files) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  DVLOG(1) << __func__;
-  aura::Window* const arc_window = GetArcWindow(task_id_);
-  if (!arc_window) {
-    LOG(ERROR) << "Unable to close sharesheet bubble. No ARC window found for "
-               << "task ID: " << task_id_;
-    CleanupSession(/*should_cleanup_files=*/true);
-    return;
-  }
-
-  sharesheet::SharesheetService* sharesheet_service =
-      sharesheet::SharesheetServiceFactory::GetForProfile(profile_);
-  if (!sharesheet_service) {
-    LOG(ERROR) << "Unable to close sharesheet bubble. Cannot find sharesheet "
-                  "service.";
-    CleanupSession(/*should_cleanup_files=*/true);
-    return;
-  }
-  sharesheet::SharesheetController* sharsheet_controller =
-      sharesheet_service->GetSharesheetController(arc_window);
-  if (!sharsheet_controller) {
-    LOG(ERROR) << "Unable to close sharesheet bubble. Cannot find the "
-                  "sharesheet controller";
-    CleanupSession(/*should_cleanup_files=*/true);
-    return;
-  }
-  sharsheet_controller->CloseBubble(sharesheet::SharesheetResult::kCancel);
-}
-
-void NearbyShareSessionImpl::CleanupSession(bool should_cleanup_files) {
   DVLOG(1) << __func__;
   // PrepareDirectoryTask must first relinquish ownership of |share_path|.
   prepare_directory_task_.reset();
@@ -427,6 +402,7 @@ void NearbyShareSessionImpl::CleanupSession(bool should_cleanup_files) {
     // the physical files remain until DeletePathAndFiles is called.
     file_handler_.reset();
     if (should_cleanup_files) {
+      VLOG(1) << "Deleting session files including base path: " << share_path;
       // Delete any files and the top level share directory with the same
       // |backend_task_runner_| that is used for all file IO operations.
       // Make sure |session_finished_callback_| is not run until the
@@ -442,6 +418,7 @@ void NearbyShareSessionImpl::CleanupSession(bool should_cleanup_files) {
 }
 
 void NearbyShareSessionImpl::FinishSession() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(session_instance_);
 
   // Stop timers and destroy any lingering UI surfaces or observers.
@@ -466,32 +443,6 @@ void NearbyShareSessionImpl::FinishSession() {
     VLOG(1) << "Deleting session with task ID: " << task_id_;
     std::move(session_finished_callback_).Run(task_id_);
   }
-}
-
-// TODO(b/197588898): Currently IsNearbyShareBubbleVisible() does not WAI. It
-// always return true when called from OnNearbyShareClosed() and
-// NearbySharingServiceImpl / NearbyShareAction classes via CleanupSession.
-bool NearbyShareSessionImpl::IsNearbyShareBubbleVisible() const {
-  DVLOG(1) << __func__;
-  aura::Window* const arc_window = GetArcWindow(task_id_);
-  if (!arc_window) {
-    VLOG(1) << "IsNearbyShareBubbleVisible: No ARC window found for task ID: "
-            << task_id_;
-    return false;
-  }
-  sharesheet::SharesheetService* sharesheet_service =
-      sharesheet::SharesheetServiceFactory::GetForProfile(profile_);
-  if (!sharesheet_service) {
-    VLOG(1) << "IsNearbyShareBubbleVisible: Cannot find sharesheet service.";
-    return false;
-  }
-  sharesheet::SharesheetController* sharesheet_controller =
-      sharesheet_service->GetSharesheetController(arc_window);
-  if (!sharesheet_controller) {
-    VLOG(1) << "IsNearbyShareBubbleVisible: Cannot find sharesheet controller.";
-    return false;
-  }
-  return sharesheet_controller->IsBubbleVisible();
 }
 
 }  // namespace arc
