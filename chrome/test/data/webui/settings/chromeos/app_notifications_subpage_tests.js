@@ -28,6 +28,11 @@ class FakeAppNotificationHandler {
 
     this.lastUpdatedAppPermission_ = {};
 
+    /**
+     * @private {!Array<!chromeos.settings.appNotification.mojom.App>}
+     */
+    this.apps_ = [];
+
     this.resetForTest();
   }
 
@@ -40,6 +45,7 @@ class FakeAppNotificationHandler {
     this.resolverMap_.set('setQuietMode', new PromiseResolver());
     this.resolverMap_.set('setNotificationPermission', new PromiseResolver());
     this.resolverMap_.set('notifyPageReady', new PromiseResolver());
+    this.resolverMap_.set('getApps', new PromiseResolver());
   }
 
   /**
@@ -145,6 +151,16 @@ class FakeAppNotificationHandler {
     return new Promise(resolve => {
       this.methodCalled('notifyPageReady');
       resolve();
+    });
+  }
+
+  /**
+   * @return {!Promise<!Array<!chromeos.settings.appNotification.mojom.App>>}
+   */
+  getApps() {
+    return new Promise(resolve => {
+      this.methodCalled('getApps');
+      resolve({apps: this.apps_});
     });
   }
 }

@@ -50,12 +50,14 @@ class AppNotificationHandler
   void SetNotificationPermission(
       const std::string& app_id,
       apps::mojom::PermissionPtr permission) override;
+  void GetApps(GetAppsCallback callback) override;
 
   // apps::AppRegistryCache::Observer:
   void OnAppUpdate(const apps::AppUpdate& update) override;
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
 
+  void UpdateAppList();
   void NotifyListChanged();
 
   mojo::RemoteSet<app_notification::mojom::AppNotificationsObserver>

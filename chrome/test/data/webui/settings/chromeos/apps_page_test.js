@@ -5,10 +5,12 @@
 // clang-format off
 // #import 'chrome://os-settings/chromeos/os_settings.js';
 
-// #import {AndroidAppsBrowserProxyImpl, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+// #import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+// #import {AndroidAppsBrowserProxyImpl, Router, routes, setAppNotificationProviderForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {TestAndroidAppsBrowserProxy} from './test_android_apps_browser_proxy.m.js';
 // #import {flush} from'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {waitAfterNextRender} from 'chrome://test/test_util.js';
+// #import {waitAfterNextRender, flushTasks} from 'chrome://test/test_util.js';
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 // clang-format on
 
@@ -56,17 +58,192 @@ function setPrefs(restoreOption) {
   };
 }
 
+class FakeAppNotificationHandler {
+  constructor() {
+    /** @private {!Map<string, !PromiseResolver>} */
+    this.resolverMap_ = new Map();
+
+    /**
+     * @private
+     *     {?chromeos.settings.appNotification.mojom.
+     *      AppNotificationObserverRemote}
+     */
+    this.appNotificationObserverRemote_;
+
+    /**
+     * @private {!Array<!chromeos.settings.appNotification.mojom.App>}
+     */
+    this.apps_ = [];
+
+    this.resetForTest();
+  }
+
+  resetForTest() {
+    if (this.appNotificationObserverRemote_) {
+      this.appNotificationObserverRemote_ = null;
+    }
+
+    this.resolverMap_.set('addObserver', new PromiseResolver());
+    this.resolverMap_.set('setQuietMode', new PromiseResolver());
+    this.resolverMap_.set('setNotificationPermission', new PromiseResolver());
+    this.resolverMap_.set('notifyPageReady', new PromiseResolver());
+    this.resolverMap_.set('getApps', new PromiseResolver());
+  }
+
+  /**
+   * @param {string} methodName
+   * @return {!PromiseResolver}
+   * @private
+   */
+  getResolver_(methodName) {
+    const method = this.resolverMap_.get(methodName);
+    assertTrue(!!method, `Method '${methodName}' not found.`);
+    return method;
+  }
+
+  /**
+   * @param {string} methodName
+   * @protected
+   */
+  methodCalled(methodName) {
+    this.getResolver_(methodName).resolve();
+  }
+
+  /**
+   * @param {string} methodName
+   * @return {!Promise}
+   */
+  whenCalled(methodName) {
+    return this.getResolver_(methodName).promise.then(() => {
+      // Support sequential calls to whenCalled by replacing the promise.
+      this.resolverMap_.set(methodName, new PromiseResolver());
+    });
+  }
+
+  /**
+   * @return
+   *      {chromeos.settings.appNotification.mojom.
+   *        AppNotificationObserverRemote}
+   */
+  getObserverRemote() {
+    return this.appNotificationObserverRemote_;
+  }
+
+  // appNotificationHandler methods
+
+  /**
+   * @param {!chromeos.settings.appNotification.mojom.
+   *        AppNotificationObserverRemote}
+   *      remote
+   * @return {!Promise}
+   */
+  addObserver(remote) {
+    return new Promise(resolve => {
+      this.appNotificationObserverRemote_ = remote;
+      this.methodCalled('addObserver');
+      resolve();
+    });
+  }
+
+  /** @return {!Promise<{success: boolean}>} */
+  setQuietMode(enabled) {
+    return new Promise(resolve => {
+      this.methodCalled('setQuietMode');
+      resolve({success: true});
+    });
+  }
+
+  /**
+   * @param {string} id
+   * @param {!apps.mojom.Permission} permission
+   */
+  setNotificationPermission(id, permission) {
+    return new Promise(resolve => {
+      this.methodCalled('setNotificationPermission');
+      resolve({success: true});
+    });
+  }
+
+  /** @return {!Promise} */
+  notifyPageReady() {
+    return new Promise(resolve => {
+      this.methodCalled('notifyPageReady');
+      resolve();
+    });
+  }
+
+  /**
+   * @return {!Promise<!Array<!chromeos.settings.appNotification.mojom.App>>}
+   */
+  getApps() {
+    return new Promise(resolve => {
+      this.methodCalled('getApps');
+      resolve({apps: this.apps_});
+    });
+  }
+}
+
 suite('AppsPageTests', function() {
-  setup(function() {
+  /**
+   * @type {
+   *    ?chromeos.settings.appNotification.mojom.AppNotificationHandlerRemote
+   *  }
+   */
+  let mojoApi_;
+
+  /**
+   * @param {number} id
+   * @param {!apps.mojom.PermissionValueType} value_type
+   * @param {number} value
+   * @param {boolean} is_managed
+   * @return {!apps.mojom.Permission}
+   */
+  function createPermission(id, value_type, value, is_managed) {
+    return {
+      permissionId: id,
+      valueType: value_type,
+      value: value,
+      isManaged: is_managed
+    };
+  }
+
+  /**
+   * @param {string} id
+   * @param {string} title
+   * @param {!apps.mojom.Permission} permission
+   * @return {!chromeos.settings.appNotification.mojom.App}
+   */
+  function createApp(id, title, permission) {
+    return {id: id, title: title, notificationPermission: permission};
+  }
+
+  /**
+   * @return {!Promise}
+   */
+  function initializeObserver() {
+    return mojoApi_.whenCalled('addObserver');
+  }
+
+  /** @param {!Array<!chromeos.settings.appNotification.mojom.App>} */
+  function simulateNotificationAppListChanged(apps) {
+    mojoApi_.getObserverRemote().onNotificationAppListChanged(apps);
+  }
+
+  setup(async () => {
+    loadTimeData.overrideValues({showOsSettingsAppNotificationsRow: true});
     androidAppsBrowserProxy = new TestAndroidAppsBrowserProxy();
     settings.AndroidAppsBrowserProxyImpl.instance_ = androidAppsBrowserProxy;
     PolymerTest.clearBody();
+    mojoApi_ = new FakeAppNotificationHandler();
+    setAppNotificationProviderForTesting(mojoApi_);
     appsPage = document.createElement('os-settings-apps-page');
+
     document.body.appendChild(appsPage);
     testing.Test.disableAnimationsAndTransitions();
   });
 
   teardown(function() {
+    mojoApi_.resetForTest();
     appsPage.remove();
     appsPage = null;
     settings.Router.getInstance().resetRouteForTesting();
@@ -111,6 +288,32 @@ suite('AppsPageTests', function() {
       assertTrue(AndroidAppsShown());
       assertTrue(RestoreAppsOnStartupShown());
       expectEquals(3, appsPage.onStartupOptions_.length);
+    });
+
+    test('App notification row', async () => {
+      appsPage.showAndroidApps = true;
+      appsPage.showStartup = true;
+      Polymer.dom.flush();
+
+      const rowLink = appsPage.$$('#appNotifications');
+      assertTrue(!!rowLink);
+      // Test default is to have 0 apps.
+      assertEquals('0 apps', rowLink.subLabel);
+
+      const permission1 = createPermission(
+          /**id=*/ 1, /**value_type=*/ 0,
+          /**value=*/ 0, /**is_managed=*/ false);
+      const permission2 = createPermission(
+          /**id=*/ 2, /**value_type=*/ 0,
+          /**value=*/ 1, /**is_managed=*/ false);
+      const app1 = createApp('1', 'App1', permission1);
+      const app2 = createApp('2', 'App2', permission2);
+      const expectedApps = [app1, app2];
+
+      simulateNotificationAppListChanged(expectedApps);
+      await flushTasks();
+
+      assertEquals('2 apps', rowLink.subLabel);
     });
   });
 

@@ -38,6 +38,7 @@ import {AndroidAppsBrowserProxyImpl, AndroidAppsInfo} from './android_apps_brows
 import {AppManagementEntryPoint, AppManagementEntryPointsHistogramName, AppManagementUserAction, AppType, ArcPermissionType, Bool, BorealisPermissionType, InstallSource, OptionalBool, PermissionValueType, PluginVmPermissionType, PwaPermissionType, TriState} from './app_management_page/constants.js';
 import {AppManagementStoreClient} from './app_management_page/store_client.js';
 import {alphabeticalSort, convertOptionalBoolToBool, createPermission, getAppIcon, getPermission, getPermissionValueBool, getSelectedApp, openAppDetailPage, openMainPage, permissionTypeHandle, recordAppManagementUserAction, toggleOptionalBool} from './app_management_page/util.js';
+import {getAppNotificationProvider} from './app_notifications_page/mojo_interface_provider.js';
 
 Polymer({
   _template: html`{__html_template__}`,
@@ -50,6 +51,21 @@ Polymer({
     PrefsBehavior,
     RouteObserverBehavior,
   ],
+
+  /**
+   * Mojo interface provider for AppNotifications.
+   * @private
+   */
+  mojoInterfaceProvider_: null,
+
+  /**
+   * Receiver responsible for observing app notification events.
+   * @private {
+   *    ?chromeos.settings.appNotification.mojom.
+   *    AppNotificationsObserverReceiver
+   * }
+   */
+  appNotificationsObserverReceiver_: null,
 
   properties: {
     /** Preferences state. */
@@ -126,6 +142,12 @@ Polymer({
      */
     app_: Object,
 
+    /** @private */
+    numAppsWithNotifications_: {
+      type: Number,
+      value: 0,
+    },
+
     /**
      * List of options for the on startup drop-down menu.
      * @type {!DropdownMenuOptionList}
@@ -158,6 +180,24 @@ Polymer({
 
   attached() {
     this.watch('app_', state => getSelectedApp(state));
+
+    this.mojoInterfaceProvider_ = getAppNotificationProvider();
+
+    this.appNotificationsObserverReceiver_ =
+        new chromeos.settings.appNotification.mojom
+            .AppNotificationsObserverReceiver(
+                /**
+                 * @type {!chromeos.settings.appNotification.mojom.
+                 * AppNotificationsObserverInterface}
+                 */
+                (this));
+
+    this.mojoInterfaceProvider_.addObserver(
+        this.appNotificationsObserverReceiver_.$.bindNewPipeAndPassRemote());
+
+    this.mojoInterfaceProvider_.getApps().then((result) => {
+      this.numAppsWithNotifications_ = result.apps.length;
+    });
   },
 
   /**
@@ -234,4 +274,20 @@ Polymer({
         isKeyboardAction);
   },
 
+  /** Override chromeos.settings.appNotification.onNotificationAppListChanged */
+  onNotificationAppListChanged(apps) {
+    this.numAppsWithNotifications_ = apps.length;
+  },
+
+  /** Override chromeos.settings.appNotification.onQuietModeChanged */
+  onQuietModeChanged(enabled) {},
+
+  /**
+   * @return {string}
+   * @protected
+   */
+  getAppListCountDescription_() {
+    return this.i18n('appNotificationsCountDescription',
+        this.numAppsWithNotifications_);
+  }
 });

@@ -318,6 +318,8 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_DESCRIPTION},
       {"appNotificationsLinkToBrowserSettingsDescription",
        IDS_SETTINGS_APP_NOTIFICATIONS_LINK_TO_BROWSER_SETTINGS_DESCRIPTION},
+      {"appNotificationsCountDescription",
+       IDS_SETTINGS_APP_NOTIFICATIONS_SUBLABEL_TEXT},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 

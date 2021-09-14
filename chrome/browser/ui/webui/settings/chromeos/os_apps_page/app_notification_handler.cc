@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/os_apps_page/app_notification_handler.h"
 
+#include <algorithm>
+
 #include "ash/public/cpp/message_center_ash.h"
 #include "base/logging.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -126,6 +128,11 @@ void AppNotificationHandler::SetNotificationPermission(
   app_service_proxy_->SetPermission(app_id, std::move(permission));
 }
 
+void AppNotificationHandler::GetApps(GetAppsCallback callback) {
+  UpdateAppList();
+  std::move(callback).Run(Clone(apps_));
+}
+
 void AppNotificationHandler::OnAppUpdate(const apps::AppUpdate& update) {
   auto it = std::find_if(
       apps_.begin(), apps_.end(),
@@ -146,6 +153,15 @@ void AppNotificationHandler::OnAppUpdate(const apps::AppUpdate& update) {
   NotifyListChanged();
 }
 
+void AppNotificationHandler::UpdateAppList() {
+  apps_.clear();
+  app_service_proxy_->AppRegistryCache().ForEachApp(
+      [this](const apps::AppUpdate& update) {
+        if (ShouldIncludeApp(update))
+          apps_.push_back(CreateAppPtr(update));
+      });
+}
+
 void AppNotificationHandler::NotifyListChanged() {
   for (const auto& observer : observer_list_) {
     observer->OnNotificationAppListChanged(Clone(apps_));
@@ -159,14 +175,7 @@ void AppNotificationHandler::OnAppRegistryCacheWillBeDestroyed(
 
 void AppNotificationHandler::NotifyPageReady() {
   OnQuietModeChanged(ash::MessageCenterAsh::Get()->IsQuietMode());
-
-  apps_.clear();
-  app_service_proxy_->AppRegistryCache().ForEachApp(
-      [this](const apps::AppUpdate& update) {
-        if (ShouldIncludeApp(update))
-          apps_.push_back(CreateAppPtr(update));
-      });
-
+  UpdateAppList();
   NotifyListChanged();
 }
 

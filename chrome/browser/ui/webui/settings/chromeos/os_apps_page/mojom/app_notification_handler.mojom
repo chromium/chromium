@@ -37,6 +37,9 @@ interface AppNotificationsHandler {
 
   // Updates the permission of the specified app (via app_id).
   SetNotificationPermission(string app_id, apps.mojom.Permission permission);
+
+  // Get the list of installed apps.
+  GetApps() => (array<App> apps);
 };
 
 // Frontend interface.
