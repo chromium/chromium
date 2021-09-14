@@ -6040,6 +6040,10 @@ test("unit_tests") {
       if (enable_chromium_updater) {
         sources +=
             [ "../browser/updater/browser_updater_client_mac_unittest.mm" ]
+        deps += [
+          "//chrome/browser/updater:browser_updater_client",
+          "//chrome/updater:browser_sources",
+        ]
       }
     }
     if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {

@@ -117,16 +117,23 @@ void AppInstall::GetVersionDone(scoped_refptr<UpdateService>,
             splash_screen->Dismiss(base::BindOnce(std::move(done), result));
           },
           splash_screen_.get(),
-          base::BindOnce(&AppInstall::InstallCandidateDone, this)));
+          base::BindOnce(&AppInstall::InstallCandidateDone, this,
+                         version.IsValid())));
 }
 
-void AppInstall::InstallCandidateDone(int result) {
+void AppInstall::InstallCandidateDone(bool valid_version, int result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (result != 0) {
     Shutdown(result);
     return;
   }
+
+  if (valid_version) {
+    WakeCandidateDone();
+    return;
+  }
+
   WakeCandidate();
 }
 
