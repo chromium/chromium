@@ -5,7 +5,7 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #import "base/test/ios/wait_util.h"
-#import "ios/web/public/test/web_js_test.h"
+#import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #import "ios/web/public/test/web_view_interaction_test_util.h"
 #import "ios/web/public/web_state.h"
@@ -54,10 +54,9 @@ NSString* kSearchableForm =
 }
 
 // Test fixture for search_engine.js testing.
-class SearchEngineJsTest : public web::WebJsTest<web::WebTestWithWebState> {
+class SearchEngineJsTest : public web::WebTestWithWebState {
  protected:
-  SearchEngineJsTest()
-      : web::WebJsTest<web::WebTestWithWebState>(@[ @"search_engine" ]) {}
+  SearchEngineJsTest() : web::WebTestWithWebState() {}
 
   void SetUp() override {
     WebTestWithWebState::SetUp();
@@ -79,6 +78,12 @@ class SearchEngineJsTest : public web::WebJsTest<web::WebTestWithWebState> {
     message_ = message.Clone();
   }
 
+  void InjectSearchEngineJavaScript() {
+    // Main web injection should have occurred.
+    ASSERT_NSEQ(@"object", ExecuteJavaScript(@"typeof __gCrWeb"));
+    ExecuteJavaScript(web::test::GetPageScript(@"search_engine"));
+  }
+
   base::Value message_;
   bool message_received_ = false;
 
@@ -91,7 +96,7 @@ class SearchEngineJsTest : public web::WebJsTest<web::WebTestWithWebState> {
 // Tests that if a OSDD <link> is found in page, __gCrWeb.searchEngine will
 // send a message containing the page's URL and OSDD's URL.
 TEST_F(SearchEngineJsTest, TestGetOpenSearchDescriptionDocumentUrlSucceed) {
-  LoadHtmlAndInject(
+  LoadHtml(
       @"<html><link rel='search' type='application/opensearchdescription+xml' "
       @"title='Chromium Code Search' "
       @"href='//cs.chromium.org/codesearch/first_opensearch.xml' />"
@@ -101,6 +106,7 @@ TEST_F(SearchEngineJsTest, TestGetOpenSearchDescriptionDocumentUrlSucceed) {
       @"<link href='/favicon.ico' rel='shortcut icon' "
       @"type='image/x-icon'></html>",
       GURL("https://cs.chromium.org"));
+  InjectSearchEngineJavaScript();
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
     base::RunLoop().RunUntilIdle();
     return message_received_;
@@ -123,10 +129,10 @@ TEST_F(SearchEngineJsTest, TestGetOpenSearchDescriptionDocumentUrlSucceed) {
 // Tests that if no OSDD <link> is found in page, __gCrWeb.searchEngine will
 // not send a message about OSDD.
 TEST_F(SearchEngineJsTest, TestGetOpenSearchDescriptionDocumentUrlFail) {
-  LoadHtmlAndInject(
-      @"<html><link href='/favicon.ico' rel='shortcut icon' "
-      @"type='image/x-icon'></html>",
-      GURL("https://cs.chromium.org"));
+  LoadHtml(@"<html><link href='/favicon.ico' rel='shortcut icon' "
+           @"type='image/x-icon'></html>",
+           GURL("https://cs.chromium.org"));
+  InjectSearchEngineJavaScript();
   ASSERT_FALSE(WaitUntilConditionOrTimeout(kWaitForJsNotReturnTimeout, ^{
     base::RunLoop().RunUntilIdle();
     return message_received_;
@@ -137,7 +143,8 @@ TEST_F(SearchEngineJsTest, TestGetOpenSearchDescriptionDocumentUrlFail) {
 // URL when <form> is submitted by click on the first button in <form>.
 TEST_F(SearchEngineJsTest,
        GenerateSearchableUrlForValidFormSubmittedByFirstButton) {
-  LoadHtmlAndInject(kSearchableForm, GURL("https://abc.com"));
+  LoadHtml(kSearchableForm, GURL("https://abc.com"));
+  InjectSearchEngineJavaScript();
   ASSERT_TRUE(TapWebViewElementWithId(web_state(), "btn1"));
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
     base::RunLoop().RunUntilIdle();
@@ -161,7 +168,8 @@ TEST_F(SearchEngineJsTest,
 // URL when <form> is submitted by click on a non-first button in <form>.
 TEST_F(SearchEngineJsTest,
        GenerateSearchableUrlForValidFormSubmittedByNonFirstButton) {
-  LoadHtmlAndInject(kSearchableForm, GURL("https://abc.com"));
+  LoadHtml(kSearchableForm, GURL("https://abc.com"));
+  InjectSearchEngineJavaScript();
   ASSERT_TRUE(TapWebViewElementWithId(web_state(), "btn2"));
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
     base::RunLoop().RunUntilIdle();
@@ -180,9 +188,9 @@ TEST_F(SearchEngineJsTest,
 // Tests that __gCrWeb.searchEngine doesn't generate and send back a searchable
 // URL for <form> with <textarea>.
 TEST_F(SearchEngineJsTest, GenerateSearchableUrlForInvalidFormWithTextArea) {
-  LoadHtmlAndInject(
-      @"<html><form><input type='search' name='q'><textarea "
-      @"name='a'></textarea><input id='btn' type='submit'></form></html>");
+  LoadHtml(@"<html><form><input type='search' name='q'><textarea "
+           @"name='a'></textarea><input id='btn' type='submit'></form></html>");
+  InjectSearchEngineJavaScript();
   ASSERT_TRUE(TapWebViewElementWithId(web_state(), "btn"));
   ASSERT_FALSE(WaitUntilConditionOrTimeout(kWaitForJsNotReturnTimeout, ^{
     base::RunLoop().RunUntilIdle();
@@ -194,9 +202,10 @@ TEST_F(SearchEngineJsTest, GenerateSearchableUrlForInvalidFormWithTextArea) {
 // URL for <form> with <input type="password">.
 TEST_F(SearchEngineJsTest,
        GenerateSearchableUrlForInvalidFormWithInputPassword) {
-  LoadHtmlAndInject(
+  LoadHtml(
       @"<html><form><input type='search' name='q'><input "
       @"type='password' name='a'><input id='btn' type='submit'></form></html>");
+  InjectSearchEngineJavaScript();
   ASSERT_TRUE(TapWebViewElementWithId(web_state(), "btn"));
   ASSERT_FALSE(WaitUntilConditionOrTimeout(kWaitForJsNotReturnTimeout, ^{
     base::RunLoop().RunUntilIdle();
@@ -207,9 +216,9 @@ TEST_F(SearchEngineJsTest,
 // Tests that __gCrWeb.searchEngine doesn't generate and send back a searchable
 // URL for <form> with <input type="file">.
 TEST_F(SearchEngineJsTest, GenerateSearchableUrlForInvalidFormWithInputFile) {
-  LoadHtmlAndInject(
-      @"<html><form><input type='search' name='q'><input "
-      @"type='file' name='a'><input id='btn' type='submit'</form></html>");
+  LoadHtml(@"<html><form><input type='search' name='q'><input "
+           @"type='file' name='a'><input id='btn' type='submit'</form></html>");
+  InjectSearchEngineJavaScript();
   ASSERT_TRUE(TapWebViewElementWithId(web_state(), "btn"));
   ASSERT_FALSE(WaitUntilConditionOrTimeout(kWaitForJsNotReturnTimeout, ^{
     base::RunLoop().RunUntilIdle();
@@ -220,9 +229,9 @@ TEST_F(SearchEngineJsTest, GenerateSearchableUrlForInvalidFormWithInputFile) {
 // Tests that __gCrWeb.searchEngine doesn't generate and send back a searchable
 // URL for <form> without <input type="email|search|tel|text|url|number">.
 TEST_F(SearchEngineJsTest, GenerateSearchableUrlForInvalidFormWithNoTextInput) {
-  LoadHtmlAndInject(
-      @"<html><form id='f'><input type='hidden' name='q' "
-      @"value='v'><input id='btn' type='submit'></form></html>");
+  LoadHtml(@"<html><form id='f'><input type='hidden' name='q' "
+           @"value='v'><input id='btn' type='submit'></form></html>");
+  InjectSearchEngineJavaScript();
   ASSERT_TRUE(TapWebViewElementWithId(web_state(), "btn"));
   ASSERT_FALSE(WaitUntilConditionOrTimeout(kWaitForJsNotReturnTimeout, ^{
     base::RunLoop().RunUntilIdle();
@@ -235,9 +244,10 @@ TEST_F(SearchEngineJsTest, GenerateSearchableUrlForInvalidFormWithNoTextInput) {
 // type="email|search|tel|text|url|number">.
 TEST_F(SearchEngineJsTest,
        GenerateSearchableUrlForInvalidFormWithMoreThanOneTextInput) {
-  LoadHtmlAndInject(
+  LoadHtml(
       @"<html><form id='f'><input type='search' name='q'><input "
       @"type='text' name='q2'><input id='btn' type='submit'></form></html>");
+  InjectSearchEngineJavaScript();
   ASSERT_TRUE(TapWebViewElementWithId(web_state(), "btn"));
   ASSERT_FALSE(WaitUntilConditionOrTimeout(kWaitForJsNotReturnTimeout, ^{
     base::RunLoop().RunUntilIdle();
@@ -249,7 +259,8 @@ TEST_F(SearchEngineJsTest,
 // URL for <form> with <input type='radio'> in non-default state.
 TEST_F(SearchEngineJsTest,
        GenerateSearchableUrlForInvalidFormWithNonDefaultRadio) {
-  LoadHtmlAndInject(kSearchableForm);
+  LoadHtml(kSearchableForm);
+  InjectSearchEngineJavaScript();
   ASSERT_TRUE(TapWebViewElementWithId(web_state(), "r2"));
   ASSERT_TRUE(TapWebViewElementWithId(web_state(), "btn1"));
   ASSERT_FALSE(WaitUntilConditionOrTimeout(kWaitForJsNotReturnTimeout, ^{
@@ -262,7 +273,8 @@ TEST_F(SearchEngineJsTest,
 // URL for <form> with <input type='checkbox'> in non-default state.
 TEST_F(SearchEngineJsTest,
        GenerateSearchableUrlForInvalidFormWithNonDefaultCheckbox) {
-  LoadHtmlAndInject(kSearchableForm);
+  LoadHtml(kSearchableForm);
+  InjectSearchEngineJavaScript();
   ASSERT_TRUE(TapWebViewElementWithId(web_state(), "c1"));
   ASSERT_TRUE(TapWebViewElementWithId(web_state(), "btn1"));
   ASSERT_FALSE(WaitUntilConditionOrTimeout(kWaitForJsNotReturnTimeout, ^{
@@ -275,7 +287,8 @@ TEST_F(SearchEngineJsTest,
 // for <form> with <select> in non-default state.
 TEST_F(SearchEngineJsTest,
        GenerateSearchableUrlForInvalidFormWithNonDefaultSelect) {
-  LoadHtmlAndInject(kSearchableForm);
+  LoadHtml(kSearchableForm);
+  InjectSearchEngineJavaScript();
   ASSERT_TRUE(SelectWebViewElementWithId(web_state(), "op1"));
   ASSERT_TRUE(TapWebViewElementWithId(web_state(), "btn1"));
   ASSERT_FALSE(WaitUntilConditionOrTimeout(kWaitForJsNotReturnTimeout, ^{

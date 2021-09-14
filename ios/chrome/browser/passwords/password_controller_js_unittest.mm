@@ -12,7 +12,6 @@
 #include "ios/web/public/js_messaging/web_frame.h"
 #include "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
-#import "ios/web/public/test/web_js_test.h"
 #import "ios/web/public/web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
@@ -30,10 +29,10 @@ using web::WebFrame;
 namespace {
 
 // Text fixture to test password controller.
-class PasswordControllerJsTest : public web::WebJsTest<ChromeWebTest> {
+class PasswordControllerJsTest : public ChromeWebTest {
  public:
   PasswordControllerJsTest()
-      : web::WebJsTest<ChromeWebTest>(std::make_unique<ChromeWebClient>()) {}
+      : ChromeWebTest(std::make_unique<ChromeWebClient>()) {}
 
   bool SetUpUniqueIDs() {
     __block web::WebFrame* main_frame = nullptr;
@@ -146,10 +145,16 @@ TEST_F(PasswordControllerJsTest,
           stringWithFormat:
               @"__gCrWeb.passwords.fillPasswordForm(%@, '%@', '%@')",
               GAIASignInFormData(formOrigin, formName), username, password]));
+
   // Verifies that the sign-in form has been filled with username/password.
-  ExecuteJavaScriptOnElementsAndCheck(@"document.getElementById('%@').value",
-                                      @[ kEmailInputID, kPasswordInputID ],
-                                      @[ username, password ]);
+  NSString* email_js = [NSString
+      stringWithFormat:@"document.getElementById('%@').value", kEmailInputID];
+  EXPECT_NSEQ(username, ExecuteJavaScript(email_js));
+
+  NSString* password_js =
+      [NSString stringWithFormat:@"document.getElementById('%@').value",
+                                 kPasswordInputID];
+  EXPECT_NSEQ(password, ExecuteJavaScript(password_js));
 }
 
 // Loads a page with a password form containing a username value already.
@@ -173,9 +178,14 @@ TEST_F(PasswordControllerJsTest,
               @"__gCrWeb.passwords.fillPasswordForm(%@, '%@', '%@')",
               GAIASignInFormData(formOrigin, formName), username2, password]));
   // Verifies that the sign-in form has not been filled.
-  ExecuteJavaScriptOnElementsAndCheck(@"document.getElementById('%@').value",
-                                      @[ kEmailInputID, kPasswordInputID ],
-                                      @[ username1, @"" ]);
+  NSString* email_js = [NSString
+      stringWithFormat:@"document.getElementById('%@').value", kEmailInputID];
+  EXPECT_NSEQ(username1, ExecuteJavaScript(email_js));
+
+  NSString* password_js =
+      [NSString stringWithFormat:@"document.getElementById('%@').value",
+                                 kPasswordInputID];
+  EXPECT_NSEQ(@"", ExecuteJavaScript(password_js));
 }
 
 // Loads a page with a password form containing a username value already.
@@ -200,9 +210,15 @@ TEST_F(PasswordControllerJsTest,
               GAIASignInFormData(formOrigin, formName), username2, password]));
   // Verifies that the sign-in form has been filled with the new username
   // and password.
-  ExecuteJavaScriptOnElementsAndCheck(@"document.getElementById('%@').value",
-                                      @[ kEmailInputID, kPasswordInputID ],
-                                      @[ username2, password ]);
+
+  NSString* email_js = [NSString
+      stringWithFormat:@"document.getElementById('%@').value", kEmailInputID];
+  EXPECT_NSEQ(username2, ExecuteJavaScript(email_js));
+
+  NSString* password_js =
+      [NSString stringWithFormat:@"document.getElementById('%@').value",
+                                 kPasswordInputID];
+  EXPECT_NSEQ(password, ExecuteJavaScript(password_js));
 }
 
 // Check that one password form is identified and serialized correctly.
@@ -501,9 +517,10 @@ TEST_F(PasswordControllerJsTest, OriginsAreDifferentInPathes) {
                       @"__gCrWeb.passwords.fillPasswordForm(%@, '%@', '%@')",
                       form_fill_data, username, password]));
   // Verifies that the sign-in form has been filled with username/password.
-  ExecuteJavaScriptOnElementsAndCheck(@"document.getElementById('%@').value",
-                                      @[ @"name", @"password" ],
-                                      @[ username, password ]);
+  EXPECT_NSEQ(username,
+              ExecuteJavaScript(@"document.getElementById('name').value"));
+  EXPECT_NSEQ(password,
+              ExecuteJavaScript(@"document.getElementById('password').value"));
 }
 
 // Check that when instructed to fill a form named "bar", a form named "foo"
@@ -787,8 +804,8 @@ TEST_F(PasswordControllerJsTest, FillOnlyPasswordField) {
           stringWithFormat:@"__gCrWeb.passwords.fillPasswordForm(%@, '', '%@')",
                            form_fill_data, password]));
   // Verifies that the sign-in form has been filled with |password|.
-  ExecuteJavaScriptOnElementsAndCheck(@"document.getElementById('%@').value",
-                                      @[ @"password" ], @[ password ]);
+  EXPECT_NSEQ(password,
+              ExecuteJavaScript(@"document.getElementById('password').value"));
 }
 
 // Check that password form outside the <form> tag is extracted correctly.

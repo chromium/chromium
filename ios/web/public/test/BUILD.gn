@@ -34,7 +34,6 @@ source_set("test") {
     "test_redirect_observer.h",
     "test_redirect_observer.mm",
     "test_web_thread.h",
-    "web_js_test.h",
     "web_task_environment.h",
     "web_test.h",
     "web_test.mm",
