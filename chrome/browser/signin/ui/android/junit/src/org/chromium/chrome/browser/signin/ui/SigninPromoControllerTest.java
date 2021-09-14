@@ -25,10 +25,14 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.AccountUtils;
@@ -43,8 +47,10 @@ import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 @Features.EnableFeatures({ChromeFeatureList.MINOR_MODE_SUPPORT})
 @Features.DisableFeatures({ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS})
 public class SigninPromoControllerTest {
+    private static final int TIME_SINCE_LAST_BACKGROUNDED_LIMIT_MS = 100;
+
     @Rule
-    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
     @Rule
     public final Features.JUnitProcessor processor = new Features.JUnitProcessor();
@@ -58,6 +64,9 @@ public class SigninPromoControllerTest {
 
     @Mock
     private IdentityManager mIdentityManagerMock;
+
+    private final SharedPreferencesManager mSharedPreferencesManager =
+            SharedPreferencesManager.getInstance();
 
     @Before
     public void setUp() {
@@ -111,6 +120,74 @@ public class SigninPromoControllerTest {
         mAccountManagerTestRule.addAccount("test.account.default@gmail.com");
         mAccountManagerTestRule.addAccount(secondAccount);
 
+        Assert.assertTrue(
+                SigninPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
+    }
+
+    @Test
+    public void shouldShowSyncPromoForNTPWhenCountLimitDoesNotExceed() {
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.addFieldTrialParamOverride(
+                ChromeFeatureList.ENHANCED_PROTECTION_PROMO_CARD, "MaxSigninPromoImpressions", "2");
+        testValues.addFeatureFlagOverride(ChromeFeatureList.ENHANCED_PROTECTION_PROMO_CARD, true);
+        testValues.addFeatureFlagOverride(
+                ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS, false);
+        FeatureList.setTestValues(testValues);
+        mSharedPreferencesManager.writeInt(
+                ChromePreferenceKeys.SIGNIN_PROMO_IMPRESSIONS_COUNT_NTP, 1);
+
+        Assert.assertTrue(
+                SigninPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
+    }
+
+    @Test
+    public void shouldHideSyncPromoForNTPWhenCountLimitExceeds() {
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.addFieldTrialParamOverride(
+                ChromeFeatureList.ENHANCED_PROTECTION_PROMO_CARD, "MaxSigninPromoImpressions", "2");
+        testValues.addFeatureFlagOverride(ChromeFeatureList.ENHANCED_PROTECTION_PROMO_CARD, true);
+        testValues.addFeatureFlagOverride(
+                ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS, false);
+        FeatureList.setTestValues(testValues);
+        mSharedPreferencesManager.writeInt(
+                ChromePreferenceKeys.SIGNIN_PROMO_IMPRESSIONS_COUNT_NTP, 2);
+
+        Assert.assertFalse(
+                SigninPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
+    }
+
+    @Test
+    public void shouldShowSyncPromoForNTPWhenBackgroundedTimeLimitDoesNotExceed() {
+        StartSurfaceConfiguration.SIGN_IN_PROMO_SHOW_SINCE_LAST_BACKGROUNDED_LIMIT_MS.setForTesting(
+                TIME_SINCE_LAST_BACKGROUNDED_LIMIT_MS);
+        SigninPromoController.maybeExpireNTPPromo(TIME_SINCE_LAST_BACKGROUNDED_LIMIT_MS - 1);
+
+        Assert.assertFalse(mSharedPreferencesManager.readBoolean(
+                ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_EXPIRED, false));
+        Assert.assertTrue(
+                SigninPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
+    }
+
+    @Test
+    public void shouldHideSyncPromoForNTPWhenBackgroundedTimeLimitExceeds() {
+        StartSurfaceConfiguration.SIGN_IN_PROMO_SHOW_SINCE_LAST_BACKGROUNDED_LIMIT_MS.setForTesting(
+                TIME_SINCE_LAST_BACKGROUNDED_LIMIT_MS);
+        SigninPromoController.maybeExpireNTPPromo(TIME_SINCE_LAST_BACKGROUNDED_LIMIT_MS + 1);
+
+        Assert.assertTrue(mSharedPreferencesManager.readBoolean(
+                ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_EXPIRED, false));
+        Assert.assertFalse(
+                SigninPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
+    }
+
+    @Test
+    public void shouldShowSyncPromoForNTPWithoutBackgroundedTimeLimit() {
+        StartSurfaceConfiguration.SIGN_IN_PROMO_SHOW_SINCE_LAST_BACKGROUNDED_LIMIT_MS.setForTesting(
+                -1);
+        SigninPromoController.maybeExpireNTPPromo(TIME_SINCE_LAST_BACKGROUNDED_LIMIT_MS + 1);
+
+        Assert.assertFalse(mSharedPreferencesManager.readBoolean(
+                ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_EXPIRED, false));
         Assert.assertTrue(
                 SigninPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
     }
