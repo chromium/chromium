@@ -1108,21 +1108,21 @@
   'win10': {
     'swarming': {
       'dimensions': {
-        'os': 'Windows-10-18363',
+        'os': 'Windows-10-19042',
       },
     },
   },
-  'win10-1703' : {
+  'win10-1703': {
     'swarming': {
       'dimensions': {
         'os': 'Windows-10-15063',
       },
     },
   },
-  'win10-20h2': {
+  'win10-1909': {
     'swarming': {
       'dimensions': {
-        'os': 'Windows-10-19042',
+        'os': 'Windows-10-18363',
       },
     },
   },

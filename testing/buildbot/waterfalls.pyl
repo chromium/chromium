@@ -202,7 +202,7 @@
         ],
         'mixins': [
           'chrome-swarming-pool',
-          'win10-20h2',
+          'win10',
         ],
         'test_suites': {
           'isolated_scripts': 'chrome_sizes',
@@ -215,7 +215,7 @@
         ],
         'mixins': [
           'chrome-swarming-pool',
-          'win10-20h2',
+          'win10',
         ],
         'test_suites': {
           'isolated_scripts': 'chrome_sizes',
@@ -1531,7 +1531,7 @@
       'CrWinAsan': {
         'mixins': [
           'x86-64',
-          'win10-20h2',
+          'win10',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_win_gtests',
@@ -1543,7 +1543,7 @@
       'CrWinAsan(dll)': {
         'mixins': [
           'x86-64',
-          'win10-20h2',
+          'win10',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_win_gtests',
@@ -1857,7 +1857,7 @@
       'ToTWin64': {
         'mixins': [
           'x86-64',
-          'win10-20h2',
+          'win10',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_win_gtests',
@@ -1870,7 +1870,7 @@
       'ToTWin64(dbg)': {
         'mixins': [
           'x86-64',
-          'win10-20h2',
+          'win10',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_win_gtests',
@@ -1883,7 +1883,7 @@
       'ToTWin64(dll)': {
         'mixins': [
           'x86-64',
-          'win10-20h2',
+          'win10',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_win_gtests',
@@ -2016,7 +2016,7 @@
       },
       'linux-win_cross-rel': {
         'mixins': [
-          'win10-20h2',
+          'win10',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_win_gtests',
@@ -2689,7 +2689,7 @@
       'Win10 Tests x64 20h2': {
         'mixins': [
           'x86-64',
-          'win10-20h2',
+          'win10',
           'isolate_profile_data',
         ],
         'test_suites': {
@@ -3471,7 +3471,7 @@
           'gtest_tests': 'chromium_win_gtests',
         },
         'mixins': [
-          'win10-20h2',
+          'win10',
           'x86-64',
         ],
       },
@@ -3486,7 +3486,7 @@
       },
       'win-pixel-tester-rel': {
         'mixins': [
-            'win10-20h2',
+            'win10',
         ],
         'test_suites': {
           'gtest_tests': 'pixel_browser_tests_gtests',
@@ -3509,7 +3509,7 @@
       },
       'win10.20h2-blink-rel-dummy': {
         'mixins': [
-            'win10-20h2',
+            'win10',
         ],
         'swarming': {
           'hard_timeout': 900,
@@ -5779,7 +5779,7 @@
       },
       'win10-updater-tester-dbg': {
         'mixins': [
-          'win10-20h2',
+          'win10',
           'x86-64',
         ],
         'test_suites': {
@@ -5795,7 +5795,7 @@
       },
       'win10-updater-tester-dbg-uac': {
         'mixins': [
-          'win10',
+          'win10-1909',
           'x86-64',
         ],
         'test_suites': {
@@ -5811,7 +5811,7 @@
       },
       'win10-updater-tester-rel': {
         'mixins': [
-          'win10-20h2',
+          'win10',
           'x86-64',
         ],
         'test_suites': {
@@ -6058,7 +6058,7 @@
       'WebRTC Chromium FYI Win10 Tester': {
         'mixins': [
           'x86-64',
-          'win10-20h2',
+          'win10',
         ],
         'test_suites': {
           'gtest_tests': 'webrtc_chromium_gtests',
@@ -6090,7 +6090,7 @@
     'machines': {
       'WebKit Win10': {
         'mixins': [
-            'win10-20h2',
+            'win10',
         ],
         'test_suites': {
           'isolated_scripts': 'chromium_webkit_isolated_scripts',
@@ -6126,7 +6126,7 @@
       'Win10 Tests x64': {
         'mixins': [
           'x86-64',
-          'win10-20h2',
+          'win10',
           'isolate_profile_data',
         ],
         'test_suites': {
@@ -6137,7 +6137,7 @@
       'Win10 Tests x64 (dbg)': {
         'mixins': [
           'x86-64',
-          'win10-20h2',
+          'win10',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_win_gtests',
@@ -6362,7 +6362,7 @@
       },
       'V8 Blink Win': {
         'mixins': [
-          'win10-20h2',
+          'win10',
         ],
         'additional_compile_targets': ['blink_tests'],
         'test_suites': {
@@ -6444,7 +6444,7 @@
         }
       },
       'win-bootstrap-tests': {
-        'mixins': ['win10-20h2'],
+        'mixins': ['win10'],
         'test_suites': {
           'gtest_tests': 'bootstrap_tests',
         }
