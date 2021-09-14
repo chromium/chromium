@@ -225,21 +225,6 @@ class WebAppInstallManagerTest
     return *externally_installed_app_prefs_;
   }
 
-  std::unique_ptr<WebApp> CreateWebApp(const GURL& start_url,
-                                       Source::Type source,
-                                       DisplayMode user_display_mode) {
-    const AppId app_id =
-        GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
-
-    auto web_app = std::make_unique<WebApp>(app_id);
-    web_app->SetStartUrl(start_url);
-
-    web_app->AddSource(source);
-    web_app->SetUserDisplayMode(user_display_mode);
-    web_app->SetName("Name");
-    return web_app;
-  }
-
   std::unique_ptr<WebApp> CreateWebAppFromSyncAndPendingInstallation(
       const GURL& start_url,
       const std::string& app_name,
@@ -248,7 +233,8 @@ class WebAppInstallManagerTest
       bool locally_installed,
       const GURL& scope,
       const std::vector<apps::IconInfo>& icon_infos) {
-    auto web_app = CreateWebApp(start_url, Source::kSync, user_display_mode);
+    auto web_app =
+        test::CreateWebApp(start_url, Source::kSync, user_display_mode);
     web_app->SetIsFromSyncAndPendingInstallation(true);
     web_app->SetIsLocallyInstalled(locally_installed);
 
@@ -674,9 +660,8 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, InstallWebAppsAfterSync_Success) {
 
   bool expect_locally_installed = AreAppsLocallyInstalledBySync();
 
-  const std::unique_ptr<WebApp> expected_app =
-      CreateWebApp(url, Source::kSync,
-                   /*user_display_mode=*/DisplayMode::kStandalone);
+  const std::unique_ptr<WebApp> expected_app = test::CreateWebApp(
+      url, Source::kSync, /*user_display_mode=*/DisplayMode::kStandalone);
   expected_app->SetIsFromSyncAndPendingInstallation(false);
   expected_app->SetScope(url);
   expected_app->SetName("Name");
@@ -748,8 +733,8 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, InstallWebAppsAfterSync_Fallback) {
   bool expect_locally_installed = AreAppsLocallyInstalledBySync();
 
   const std::unique_ptr<WebApp> expected_app =
-      CreateWebApp(url, Source::kSync,
-                   /*user_display_mode=*/DisplayMode::kBrowser);
+      test::CreateWebApp(url, Source::kSync,
+                         /*user_display_mode=*/DisplayMode::kBrowser);
   expected_app->SetIsFromSyncAndPendingInstallation(false);
   expected_app->SetName("Name from sync");
   expected_app->SetScope(url);
@@ -826,8 +811,8 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, InstallWebAppsAfterSync_Fallback) {
 TEST_P(WebAppInstallManagerTest_SyncOnly,
        UninstallFromSyncAfterRegistryUpdate) {
   std::unique_ptr<WebApp> app =
-      CreateWebApp(GURL("https://example.com/path"), Source::kSync,
-                   /*user_display_mode=*/DisplayMode::kStandalone);
+      test::CreateWebApp(GURL("https://example.com/path"), Source::kSync,
+                         /*user_display_mode=*/DisplayMode::kStandalone);
 
   const AppId app_id = app->app_id();
   InitRegistrarWithApp(std::move(app));
@@ -895,8 +880,8 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
 TEST_P(WebAppInstallManagerTest_SyncOnly,
        PolicyAndUser_UninstallExternalWebApp) {
   std::unique_ptr<WebApp> policy_and_user_app =
-      CreateWebApp(GURL("https://example.com/path"), Source::kSync,
-                   /*user_display_mode=*/DisplayMode::kStandalone);
+      test::CreateWebApp(GURL("https://example.com/path"), Source::kSync,
+                         /*user_display_mode=*/DisplayMode::kStandalone);
   policy_and_user_app->AddSource(Source::kPolicy);
 
   const AppId app_id = policy_and_user_app->app_id();
@@ -931,8 +916,8 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
 
 TEST_P(WebAppInstallManagerTest_SyncOnly, DefaultAndUser_UninstallWebApp) {
   std::unique_ptr<WebApp> default_and_user_app =
-      CreateWebApp(GURL("https://example.com/path"), Source::kSync,
-                   /*user_display_mode=*/DisplayMode::kStandalone);
+      test::CreateWebApp(GURL("https://example.com/path"), Source::kSync,
+                         /*user_display_mode=*/DisplayMode::kStandalone);
   default_and_user_app->AddSource(Source::kDefault);
 
   const AppId app_id = default_and_user_app->app_id();

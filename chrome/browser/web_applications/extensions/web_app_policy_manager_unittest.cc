@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/test_externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_registry_controller.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -220,19 +221,6 @@ ExternalInstallOptions GetFallbackAppNameInstallOptions() {
   return options;
 }
 
-std::unique_ptr<WebApp> CreateWebApp(const GURL& start_url,
-                                     Source::Type source_type) {
-  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
-
-  auto web_app = std::make_unique<WebApp>(app_id);
-  web_app->SetStartUrl(start_url);
-  web_app->SetName("App Name");
-  web_app->AddSource(source_type);
-  web_app->SetDisplayMode(DisplayMode::kStandalone);
-  web_app->SetUserDisplayMode(DisplayMode::kStandalone);
-  return web_app;
-}
-
 Source::Type ConvertExternalInstallSourceToSourceType(
     ExternalInstallSource external_install_source) {
   return InferSourceFromMetricsInstallSource(
@@ -275,7 +263,7 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness {
               if (!app_registrar().GetAppById(GenerateAppId(
                       /*manifest_id=*/absl::nullopt, install_url))) {
                 const auto install_source = install_options.install_source;
-                std::unique_ptr<WebApp> web_app = CreateWebApp(
+                std::unique_ptr<WebApp> web_app = test::CreateWebApp(
                     install_url,
                     ConvertExternalInstallSourceToSourceType(install_source));
                 RegisterApp(std::move(web_app));
@@ -319,7 +307,7 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness {
 
   void SimulatePreviouslyInstalledApp(GURL url,
                                       ExternalInstallSource install_source) {
-    auto web_app = CreateWebApp(
+    auto web_app = test::CreateWebApp(
         url, ConvertExternalInstallSourceToSourceType(install_source));
     RegisterApp(std::move(web_app));
 

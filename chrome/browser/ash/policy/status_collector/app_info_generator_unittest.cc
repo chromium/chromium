@@ -18,6 +18,7 @@
 #include "chrome/browser/web_applications/test/test_install_finalizer.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
 #include "chrome/browser/web_applications/test/test_web_app_registry_controller.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
@@ -244,20 +245,6 @@ class AppInfoGeneratorTest : public ::testing::Test {
     return generator;
   }
 
-  std::unique_ptr<web_app::WebApp> CreateWebApp() {
-    const GURL app_url = GURL("http://app.com/app/path");
-    const web_app::AppId app_id = "c";
-
-    auto web_app = std::make_unique<web_app::WebApp>(app_id);
-    web_app->AddSource(web_app::Source::kDefault);
-    web_app->SetDisplayMode(web_app::DisplayMode::kStandalone);
-    web_app->SetUserDisplayMode(web_app::DisplayMode::kStandalone);
-    web_app->SetName("Name");
-    web_app->SetStartUrl(app_url);
-
-    return web_app;
-  }
-
   void RegisterApp(std::unique_ptr<web_app::WebApp> web_app) {
     web_app::AppId app_id = web_app->app_id();
     DCHECK(!app_registrar_->GetAppById(app_id));
@@ -333,8 +320,11 @@ TEST_F(AppInfoGeneratorTest, GenerateInventoryList) {
 TEST_F(AppInfoGeneratorTest, GenerateWebApp) {
   user_manager()->LoginUser(account_id(), true);
   auto generator = GetReadyGenerator();
+  web_app::AppId app_id;
   {
-    auto web_app = CreateWebApp();
+    auto web_app = web_app::test::CreateWebApp(GURL("http://app.com/app/path"),
+                                               web_app::Source::kDefault);
+    app_id = web_app->app_id();
     auto app = MakeApp(web_app->app_id(), "App",
                        apps::mojom::Readiness::kUninstalledByUser, "",
                        apps::mojom::AppType::kWeb);
@@ -344,7 +334,7 @@ TEST_F(AppInfoGeneratorTest, GenerateWebApp) {
     RegisterApp(std::move(web_app));
   }
 
-  Instance app_instance("c");
+  Instance app_instance(app_id);
   test_clock().SetNow(MakeLocalTime("29-MAR-2020 3:30pm"));
   PushAppInstance(app_instance, apps::InstanceState::kStarted);
   test_clock().SetNow(MakeLocalTime("29-MAR-2020 8:30pm"));
@@ -365,8 +355,11 @@ TEST_F(AppInfoGeneratorTest, GenerateWebApp) {
 TEST_F(AppInfoGeneratorTest, GenerateSystemWebApp) {
   user_manager()->LoginUser(account_id(), true);
   auto generator = GetReadyGenerator();
+  web_app::AppId app_id;
   {
-    auto web_app = CreateWebApp();
+    auto web_app = web_app::test::CreateWebApp(GURL("http://app.com/app/path"),
+                                               web_app::Source::kDefault);
+    app_id = web_app->app_id();
     auto app = MakeApp(web_app->app_id(), "App",
                        apps::mojom::Readiness::kUninstalledByUser, "",
                        apps::mojom::AppType::kSystemWeb);
@@ -376,7 +369,7 @@ TEST_F(AppInfoGeneratorTest, GenerateSystemWebApp) {
     RegisterApp(std::move(web_app));
   }
 
-  Instance app_instance("c");
+  Instance app_instance(app_id);
   test_clock().SetNow(MakeLocalTime("29-MAR-2020 3:30pm"));
   PushAppInstance(app_instance, apps::InstanceState::kStarted);
   test_clock().SetNow(MakeLocalTime("29-MAR-2020 8:30pm"));

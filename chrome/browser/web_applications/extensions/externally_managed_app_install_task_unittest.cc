@@ -28,6 +28,7 @@
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
 #include "chrome/browser/web_applications/test/test_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
@@ -103,17 +104,6 @@ class TestExternallyManagedAppInstallFinalizer : public WebAppInstallFinalizer {
     return TestInstallFinalizer::GetAppIdForUrl(url);
   }
 
-  std::unique_ptr<WebApp> CreateWebApp(const AppId& app_id,
-                                       const GURL& start_url) {
-    auto web_app = std::make_unique<WebApp>(app_id);
-    web_app->SetStartUrl(start_url);
-    web_app->SetName("App Name");
-    web_app->AddSource(Source::kPolicy);
-    web_app->SetDisplayMode(DisplayMode::kStandalone);
-    web_app->SetUserDisplayMode(DisplayMode::kStandalone);
-    return web_app;
-  }
-
   void RegisterApp(std::unique_ptr<web_app::WebApp> web_app) {
     web_app::AppId app_id = web_app->app_id();
     registrar_->registry().emplace(std::move(app_id), std::move(web_app));
@@ -179,7 +169,7 @@ class TestExternallyManagedAppInstallFinalizer : public WebAppInstallFinalizer {
         FROM_HERE,
         base::BindLambdaForTesting(
             [&, app_id, url, code, callback = std::move(callback)]() mutable {
-              auto web_app = CreateWebApp(app_id, url);
+              auto web_app = test::CreateWebApp(url, Source::kPolicy);
               RegisterApp(std::move(web_app));
               std::move(callback).Run(app_id, code);
             }));

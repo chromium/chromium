@@ -36,6 +36,7 @@
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -228,25 +229,6 @@ class SystemWebAppManagerTest : public WebAppTest {
         GenerateAppId(/*manifest_id=*/absl::nullopt, install_url));
   }
 
-  std::unique_ptr<WebApp> CreateWebApp(
-      const GURL& start_url,
-      Source::Type source_type = Source::kDefault) {
-    const AppId app_id =
-        GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
-
-    auto web_app = std::make_unique<WebApp>(app_id);
-    web_app->SetStartUrl(start_url);
-    web_app->SetName("App Name");
-    web_app->AddSource(source_type);
-    web_app->SetDisplayMode(DisplayMode::kStandalone);
-    web_app->SetUserDisplayMode(DisplayMode::kStandalone);
-    return web_app;
-  }
-
-  std::unique_ptr<WebApp> CreateSystemWebApp(const GURL& start_url) {
-    return CreateWebApp(start_url, Source::Type::kSystem);
-  }
-
   void InitRegistrarWithRegistry(const Registry& registry) {
     controller().database_factory().WriteRegistry(registry);
     controller().Init();
@@ -263,7 +245,8 @@ class SystemWebAppManagerTest : public WebAppTest {
 
     Registry registry;
     for (const SystemAppData& data : system_app_data_list) {
-      std::unique_ptr<WebApp> web_app = CreateSystemWebApp(data.url);
+      std::unique_ptr<WebApp> web_app =
+          test::CreateWebApp(data.url, Source::Type::kSystem);
       const AppId app_id = web_app->app_id();
       registry.emplace(app_id, std::move(web_app));
 

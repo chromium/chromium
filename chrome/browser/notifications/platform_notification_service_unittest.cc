@@ -431,8 +431,7 @@ TEST_F(PlatformNotificationServiceTest_WebAppNotificationIconAndTitle,
       web_app::TestWebAppProvider::Get(&profile_);
   web_app::WebAppIconManager& icon_manager = provider->GetIconManager();
 
-  std::unique_ptr<web_app::WebApp> web_app =
-      web_app::test::CreateMinimalWebApp();
+  std::unique_ptr<web_app::WebApp> web_app = web_app::test::CreateWebApp();
   const GURL web_app_url = web_app->start_url();
   const web_app::AppId app_id = web_app->app_id();
   web_app->SetName("Web App Title");

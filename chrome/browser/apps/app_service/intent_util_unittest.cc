@@ -169,7 +169,7 @@ TEST_F(IntentUtilsTest, CreateShareIntentFromText) {
 }
 
 TEST_F(IntentUtilsTest, CreateWebAppIntentFilters_ShortcutApp_NoUrlFilter) {
-  auto web_app = web_app::test::CreateMinimalWebApp();
+  auto web_app = web_app::test::CreateWebApp();
   // Ensure scope is empty, as in a "Create Shortcut" app.
   web_app->SetScope(GURL());
 
@@ -180,7 +180,7 @@ TEST_F(IntentUtilsTest, CreateWebAppIntentFilters_ShortcutApp_NoUrlFilter) {
 }
 
 TEST_F(IntentUtilsTest, CreateWebAppIntentFilters_WebApp_HasUrlFilter) {
-  auto web_app = web_app::test::CreateMinimalWebApp();
+  auto web_app = web_app::test::CreateWebApp();
   DCHECK(web_app->start_url().is_valid());
   GURL scope = web_app->start_url().GetWithoutFilename();
   web_app->SetScope(scope);
@@ -239,7 +239,7 @@ TEST_F(IntentUtilsTest, CreateWebAppIntentFilters_WebApp_HasUrlFilter) {
 }
 
 TEST_F(IntentUtilsTest, CreateWebAppIntentFilters_FileHandlers) {
-  auto web_app = web_app::test::CreateMinimalWebApp();
+  auto web_app = web_app::test::CreateWebApp();
   DCHECK(web_app->start_url().is_valid());
   GURL scope = web_app->start_url().GetWithoutFilename();
   web_app->SetScope(scope);
@@ -296,7 +296,7 @@ TEST_F(IntentUtilsTest, CreateWebAppIntentFilters_FileHandlers) {
 
 TEST_F(IntentUtilsTest, CreateWebAppIntentFilters_NoteTakingApp) {
   base::test::ScopedFeatureList features{blink::features::kWebAppNoteTaking};
-  auto web_app = web_app::test::CreateMinimalWebApp();
+  auto web_app = web_app::test::CreateWebApp();
   DCHECK(web_app->start_url().is_valid());
   GURL scope = web_app->start_url().GetWithoutFilename();
   web_app->SetScope(scope);

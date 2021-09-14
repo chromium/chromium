@@ -27,6 +27,7 @@
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
 #include "chrome/browser/web_applications/test/web_app_registration_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -89,17 +90,6 @@ ExternalInstallOptions GetInstallOptionsWithWebAppInfo(
 
 std::string GenerateFakeAppId(const GURL& url) {
   return TestInstallFinalizer::GetAppIdForUrl(url);
-}
-
-std::unique_ptr<WebApp> CreateWebApp(const AppId& app_id, const GURL& app_url) {
-  auto web_app = std::make_unique<WebApp>(app_id);
-  web_app->AddSource(Source::kPolicy);
-  web_app->SetDisplayMode(DisplayMode::kStandalone);
-  web_app->SetUserDisplayMode(DisplayMode::kStandalone);
-  web_app->SetName("Name");
-  web_app->SetStartUrl(app_url);
-
-  return web_app;
 }
 
 // Class to delay completion of TestExternallyManagedAppInstallTasks.
@@ -312,7 +302,7 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
                 install_url);
         const auto install_source = install_options().install_source;
         if (!registrar().IsInstalled(*app_id)) {
-          auto web_app = CreateWebApp(*app_id, install_url);
+          auto web_app = test::CreateWebApp(install_url, Source::kPolicy);
           controller().RegisterApp(std::move(web_app));
           externally_installed_app_prefs_.Insert(install_url, *app_id,
                                                  install_source);
@@ -1430,7 +1420,7 @@ TEST_F(ExternallyManagedAppManagerImplTest, ExternalAppUninstalled) {
 
 TEST_F(ExternallyManagedAppManagerImplTest, UninstallApps_Succeeds) {
   const GURL kFooWebAppUrl("https://foo.example");
-  auto web_app = CreateWebApp(GenerateFakeAppId(kFooWebAppUrl), kFooWebAppUrl);
+  auto web_app = test::CreateWebApp(kFooWebAppUrl, Source::kPolicy);
   controller().RegisterApp(std::move(web_app));
 
   install_finalizer().SetNextUninstallExternalWebAppResult(kFooWebAppUrl, true);
@@ -1460,9 +1450,9 @@ TEST_F(ExternallyManagedAppManagerImplTest, UninstallApps_Fails) {
 TEST_F(ExternallyManagedAppManagerImplTest, UninstallApps_Multiple) {
   const GURL kFooWebAppUrl("https://foo.example");
   const GURL kBarWebAppUrl("https://bar.example");
-  auto web_app = CreateWebApp(GenerateFakeAppId(kFooWebAppUrl), kFooWebAppUrl);
+  auto web_app = test::CreateWebApp(kFooWebAppUrl, Source::kPolicy);
   controller().RegisterApp(std::move(web_app));
-  web_app = CreateWebApp(GenerateFakeAppId(kBarWebAppUrl), kBarWebAppUrl);
+  web_app = test::CreateWebApp(kBarWebAppUrl, Source::kPolicy);
   controller().RegisterApp(std::move(web_app));
 
   install_finalizer().SetNextUninstallExternalWebAppResult(kFooWebAppUrl, true);

@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/test/test_externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_registry_controller.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -45,7 +46,8 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
               const GURL& install_url = install_options.install_url;
               if (!app_registrar().GetAppById(GenerateAppId(
                       /*manifest_id=*/absl::nullopt, install_url))) {
-                std::unique_ptr<WebApp> web_app = CreateWebApp(install_url);
+                std::unique_ptr<WebApp> web_app =
+                    test::CreateWebApp(install_url, Source::kDefault);
                 controller().RegisterApp(std::move(web_app));
 
                 externally_installed_app_prefs().Insert(
@@ -117,19 +119,6 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
   void ResetCounts() {
     deduped_install_count_ = 0;
     deduped_uninstall_count_ = 0;
-  }
-
-  std::unique_ptr<WebApp> CreateWebApp(const GURL& start_url) {
-    const AppId app_id =
-        GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
-
-    auto web_app = std::make_unique<WebApp>(app_id);
-    web_app->SetStartUrl(start_url);
-    web_app->SetName("App Name");
-    web_app->AddSource(Source::kDefault);
-    web_app->SetDisplayMode(DisplayMode::kStandalone);
-    web_app->SetUserDisplayMode(DisplayMode::kStandalone);
-    return web_app;
   }
 
   TestWebAppRegistryController& controller() {

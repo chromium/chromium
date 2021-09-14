@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/test/web_app_sync_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -89,17 +90,6 @@ bool RegistryContainsSyncDataBatchChanges(
       return false;
   }
   return true;
-}
-
-std::unique_ptr<WebApp> CreateWebApp(const std::string& url) {
-  const GURL start_url(url);
-  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
-
-  auto web_app = std::make_unique<WebApp>(app_id);
-  web_app->SetStartUrl(start_url);
-  web_app->SetUserDisplayMode(DisplayMode::kStandalone);
-  web_app->SetName("Name");
-  return web_app;
 }
 
 std::unique_ptr<WebApp> CreateWebAppWithSyncOnlyFields(const std::string& url) {
@@ -306,8 +296,8 @@ TEST_F(WebAppSyncBridgeTest, GetData) {
   // sync_fallback_data is empty for this app.
   InsertAppIntoRegistry(&registry, std::move(synced_app2));
 
-  std::unique_ptr<WebApp> policy_app = CreateWebApp("https://example.org/");
-  policy_app->AddSource(Source::kPolicy);
+  std::unique_ptr<WebApp> policy_app =
+      test::CreateWebApp(GURL("https://example.org/"), Source::kPolicy);
   InsertAppIntoRegistry(&registry, std::move(policy_app));
 
   database_factory().WriteRegistry(registry);
@@ -661,9 +651,9 @@ TEST_F(WebAppSyncBridgeTest,
        ApplySyncChanges_AddSyncAppsWithOverlappingPolicyApps) {
   AppsList policy_apps;
   for (int i = 0; i < 10; ++i) {
-    std::unique_ptr<WebApp> policy_app =
-        CreateWebApp("https://example.com/" + base::NumberToString(i));
-    policy_app->AddSource(Source::kPolicy);
+    std::unique_ptr<WebApp> policy_app = test::CreateWebApp(
+        GURL("https://example.com/" + base::NumberToString(i)),
+        Source::kPolicy);
     policy_apps.push_back(std::move(policy_app));
   }
 
@@ -703,8 +693,8 @@ TEST_F(WebAppSyncBridgeTest,
        ApplySyncChanges_UpdateSyncAppsWithOverlappingPolicyApps) {
   AppsList policy_and_sync_apps;
   for (int i = 0; i < 10; ++i) {
-    std::unique_ptr<WebApp> policy_and_sync_app =
-        CreateWebApp("https://example.com/" + base::NumberToString(i));
+    std::unique_ptr<WebApp> policy_and_sync_app = test::CreateWebApp(
+        GURL("https://example.com/" + base::NumberToString(i)));
     policy_and_sync_app->AddSource(Source::kPolicy);
     policy_and_sync_app->AddSource(Source::kSync);
     policy_and_sync_apps.push_back(std::move(policy_and_sync_app));
@@ -757,8 +747,8 @@ TEST_F(WebAppSyncBridgeTest,
        ApplySyncChanges_DeleteSyncAppsWithOverlappingPolicyApps) {
   AppsList policy_and_sync_apps;
   for (int i = 0; i < 10; ++i) {
-    std::unique_ptr<WebApp> policy_and_sync_app =
-        CreateWebApp("https://example.com/" + base::NumberToString(i));
+    std::unique_ptr<WebApp> policy_and_sync_app = test::CreateWebApp(
+        GURL("https://example.com/" + base::NumberToString(i)));
     policy_and_sync_app->AddSource(Source::kPolicy);
     policy_and_sync_app->AddSource(Source::kSync);
     policy_and_sync_apps.push_back(std::move(policy_and_sync_app));
@@ -953,10 +943,9 @@ TEST_F(WebAppSyncBridgeTest,
        CommitUpdate_CreateSyncAppWithOverlappingPolicyApp) {
   AppsList policy_apps;
   for (int i = 0; i < 10; ++i) {
-    std::unique_ptr<WebApp> policy_app =
-        CreateWebApp("https://example.com/" + base::NumberToString(i));
-    // CreateWebApp does policy_app->SetName("Name");
-    policy_app->AddSource(Source::kPolicy);
+    std::unique_ptr<WebApp> policy_app = test::CreateWebApp(
+        GURL("https://example.com/" + base::NumberToString(i)),
+        Source::kPolicy);
     policy_apps.push_back(std::move(policy_app));
   }
 
@@ -1013,9 +1002,8 @@ TEST_F(WebAppSyncBridgeTest,
        CommitUpdate_DeleteSyncAppWithOverlappingPolicyApp) {
   AppsList policy_and_sync_apps;
   for (int i = 0; i < 10; ++i) {
-    std::unique_ptr<WebApp> policy_and_sync_app =
-        CreateWebApp("https://example.com/" + base::NumberToString(i));
-    // CreateWebApp does policy_app->SetName("Name");
+    std::unique_ptr<WebApp> policy_and_sync_app = test::CreateWebApp(
+        GURL("https://example.com/" + base::NumberToString(i)));
     policy_and_sync_app->AddSource(Source::kPolicy);
     policy_and_sync_app->AddSource(Source::kSync);
     policy_and_sync_apps.push_back(std::move(policy_and_sync_app));
