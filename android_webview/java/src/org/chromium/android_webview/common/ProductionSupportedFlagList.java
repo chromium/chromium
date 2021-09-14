@@ -152,6 +152,9 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(BlinkFeatures.GMS_CORE_EMOJI,
                     "Enables retrieval of the emoji font through GMS Core "
                             + "improving emoji glyph coverage."),
+            Flag.baseFeature(AutofillFeatures.AUTOFILL_ACROSS_IFRAMES,
+                    "Enable Autofill for frame-transcending forms (forms whose fields live in "
+                            + "different frames)."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_ENABLE_SUPPORT_FOR_MORE_STRUCTURE_IN_NAMES,
                     "Enables support for names with a rich structure including multiple last "
                             + "names."),
