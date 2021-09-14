@@ -63,6 +63,7 @@ preprocess_if_expr("preprocess_src") {
     "test_loader_util.js",
     "util.js",
     "webui_resource_test.js",
+    "webview_manager.js",
   ]
 
   if (is_chromeos_ash) {
@@ -212,6 +213,9 @@ js_library("promise_resolver") {
 js_library("util") {
   deps = [ ":cr" ]
   externs_list = [ "$externs_path/chrome_send.js" ]
+}
+
+js_library("webview_manager") {
 }
 
 js_library("web_ui_listener_behavior") {

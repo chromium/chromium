@@ -43,6 +43,7 @@ if (include_js_tests) {
       "//chrome/browser/ui",
       "//ui/webui/resources/js:post_message_api_client.m",
       "//ui/webui/resources/js:post_message_api_server.m",
+      "//ui/webui/resources/js:webview_manager",
     ]
     data = [
       "$root_gen_dir/chrome/test/data/webui/fake_chrome_event.m.js",
@@ -164,6 +165,7 @@ if (include_js_tests) {
         "settings/chromeos/a11y/v3_os_a11y_browsertest.js",
         "settings/chromeos/os_settings_v3_browsertest.js",
         "sys_internals/sys_internals_browsertest.js",
+        "webview_manager/webview_manager_browsertest.js",
       ]
     } else {
       sources += [
