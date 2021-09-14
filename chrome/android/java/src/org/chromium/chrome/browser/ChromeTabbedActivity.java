@@ -1465,9 +1465,19 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     if (!IncognitoUtils.isIncognitoModeEnabled()) {
                         // The incognito launcher shortcut is manipulated in #onDeferredStartup(),
                         // so it's possible for a user to invoke the shortcut before it's disabled.
+                        // Quick actions search widget is installed on the home screen and may
+                        // need to be updated before the incognito button is removed.
                         // Opening an incognito tab while incognito mode is disabled from somewhere
-                        // besides the launcher shortcut is an error.
-                        if (!fromLauncherShortcut) {
+                        // besides the launcher shortcut of from quick action search widget is an
+                        // error.
+                        if (fromAppWidget || fromLauncherShortcut) {
+                            // We are using the message introduced for quick action search widget
+                            // for both the widget and the launcher shortcut here.
+                            Toast.makeText(ChromeTabbedActivity.this,
+                                         R.string.quick_action_search_widget_message_no_incognito,
+                                         Toast.LENGTH_LONG)
+                                    .show();
+                        } else {
                             assert false : "Tried to open incognito tab while incognito disabled";
                             Log.e(TAG, "Tried to open incognito tab while incognito disabled");
                         }
