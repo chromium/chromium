@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
+#include "base/hash/sha1.h"
 #include "base/i18n/timezone.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -17,15 +18,28 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/arc/arc_prefs.h"
+#include "components/consent_auditor/consent_auditor.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/consent_level.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_manager/user_manager.h"
+
+using ArcBackupAndRestoreConsent =
+    sync_pb::UserConsentTypes::ArcBackupAndRestoreConsent;
+using ArcGoogleLocationServiceConsent =
+    sync_pb::UserConsentTypes::ArcGoogleLocationServiceConsent;
+using ArcPlayTermsOfServiceConsent =
+    sync_pb::UserConsentTypes::ArcPlayTermsOfServiceConsent;
+using sync_pb::UserConsentTypes;
 
 namespace ash {
 namespace {
@@ -170,7 +184,61 @@ void ConsolidatedConsentScreen::OnLocationServicesModeChanged(bool enabled,
 
 void ConsolidatedConsentScreen::RecordConsents(
     const ConsentsParameters& params) {
-  // TODO: Implement after strings added
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  consent_auditor::ConsentAuditor* consent_auditor =
+      ConsentAuditorFactory::GetForProfile(profile);
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  // The account may or may not have consented to browser sync.
+  DCHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  const CoreAccountId account_id =
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+
+  ArcPlayTermsOfServiceConsent play_consent;
+  play_consent.set_status(UserConsentTypes::GIVEN);
+  play_consent.set_confirmation_grd_id(
+      IDS_CONSOLIDATED_CONSENT_ACCEPT_AND_CONTINUE);
+  play_consent.set_consent_flow(ArcPlayTermsOfServiceConsent::SETUP);
+  if (params.record_arc_tos_consent) {
+    play_consent.set_play_terms_of_service_text_length(
+        params.tos_content.length());
+    play_consent.set_play_terms_of_service_hash(
+        base::SHA1HashString(params.tos_content));
+  }
+  consent_auditor->RecordArcPlayConsent(account_id, play_consent);
+
+  if (params.record_backup_consent) {
+    ArcBackupAndRestoreConsent backup_and_restore_consent;
+    backup_and_restore_consent.set_confirmation_grd_id(
+        IDS_CONSOLIDATED_CONSENT_ACCEPT_AND_CONTINUE);
+    backup_and_restore_consent.add_description_grd_ids(
+        IDS_CONSOLIDATED_CONSENT_BACKUP_OPT_IN_TITLE);
+    backup_and_restore_consent.add_description_grd_ids(
+        is_child_account_ ? IDS_CONSOLIDATED_CONSENT_BACKUP_OPT_IN_CHILD
+                          : IDS_CONSOLIDATED_CONSENT_BACKUP_OPT_IN);
+    backup_and_restore_consent.set_status(params.backup_accepted
+                                              ? UserConsentTypes::GIVEN
+                                              : UserConsentTypes::NOT_GIVEN);
+
+    consent_auditor->RecordArcBackupAndRestoreConsent(
+        account_id, backup_and_restore_consent);
+  }
+
+  if (params.record_location_consent) {
+    ArcGoogleLocationServiceConsent location_service_consent;
+    location_service_consent.set_confirmation_grd_id(
+        IDS_CONSOLIDATED_CONSENT_ACCEPT_AND_CONTINUE);
+    location_service_consent.add_description_grd_ids(
+        IDS_CONSOLIDATED_CONSENT_LOCATION_OPT_IN_TITLE);
+    location_service_consent.add_description_grd_ids(
+        is_child_account_ ? IDS_CONSOLIDATED_CONSENT_LOCATION_OPT_IN_CHILD
+                          : IDS_CONSOLIDATED_CONSENT_LOCATION_OPT_IN);
+    location_service_consent.set_status(params.location_accepted
+                                            ? UserConsentTypes::GIVEN
+                                            : UserConsentTypes::NOT_GIVEN);
+
+    consent_auditor->RecordArcGoogleLocationServiceConsent(
+        account_id, location_service_consent);
+  }
 }
 
 void ConsolidatedConsentScreen::OnAccept(bool enable_stats_usage,
