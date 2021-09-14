@@ -165,9 +165,9 @@ class OutsideSettingsCSPDelegate final
     // nothing for workers/worklets.
   }
 
-  void AddInspectorIssue(mojom::blink::InspectorIssueInfoPtr info) override {
+  void AddInspectorIssue(AuditsIssue issue) override {
     DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
-    global_scope_for_logging_->AddInspectorIssue(std::move(info));
+    global_scope_for_logging_->AddInspectorIssue(std::move(issue));
   }
 
  private:

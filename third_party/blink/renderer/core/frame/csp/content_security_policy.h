@@ -64,6 +64,7 @@ class OrdinalNumber;
 
 namespace blink {
 
+class AuditsIssue;
 class ConsoleMessage;
 class DOMWrapperWorld;
 class Element;
@@ -123,7 +124,7 @@ class CORE_EXPORT ContentSecurityPolicyDelegate : public GarbageCollectedMixin {
   virtual void Count(WebFeature) = 0;
 
   virtual void AddConsoleMessage(ConsoleMessage*) = 0;
-  virtual void AddInspectorIssue(mojom::blink::InspectorIssueInfoPtr) = 0;
+  virtual void AddInspectorIssue(AuditsIssue) = 0;
   virtual void DisableEval(const String& error_message) = 0;
   virtual void ReportBlockedScriptExecutionToInspector(
       const String& directive_text) = 0;
@@ -470,15 +471,6 @@ class CORE_EXPORT ContentSecurityPolicy final
   // mojo enum.
   mojom::blink::ContentSecurityPolicyViolationType BuildCSPViolationType(
       ContentSecurityPolicyViolationType violation_type);
-
-  void ReportContentSecurityPolicyIssue(
-      const blink::SecurityPolicyViolationEventInit& violation_data,
-      network::mojom::ContentSecurityPolicyType header_type,
-      ContentSecurityPolicyViolationType violation_type,
-      LocalFrame*,
-      Element*,
-      SourceLocation*,
-      absl::optional<base::UnguessableToken> issue_id);
 
   Member<ContentSecurityPolicyDelegate> delegate_;
   bool override_inline_style_allowed_ = false;

@@ -7,6 +7,7 @@
 #include "base/unguessable_token.h"
 #include "services/network/public/mojom/blocked_by_response_reason.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_security_policy_violation_event_init.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -386,6 +387,27 @@ MixedContentResolutionStatusToProtocol(
   }
 }
 
+protocol::Audits::ContentSecurityPolicyViolationType CSPViolationTypeToProtocol(
+    ContentSecurityPolicyViolationType violation_type) {
+  switch (violation_type) {
+    case ContentSecurityPolicyViolationType::kEvalViolation:
+      return protocol::Audits::ContentSecurityPolicyViolationTypeEnum::
+          KEvalViolation;
+    case ContentSecurityPolicyViolationType::kInlineViolation:
+      return protocol::Audits::ContentSecurityPolicyViolationTypeEnum::
+          KInlineViolation;
+    case ContentSecurityPolicyViolationType::kTrustedTypesPolicyViolation:
+      return protocol::Audits::ContentSecurityPolicyViolationTypeEnum::
+          KTrustedTypesPolicyViolation;
+    case ContentSecurityPolicyViolationType::kTrustedTypesSinkViolation:
+      return protocol::Audits::ContentSecurityPolicyViolationTypeEnum::
+          KTrustedTypesSinkViolation;
+    case ContentSecurityPolicyViolationType::kURLViolation:
+      return protocol::Audits::ContentSecurityPolicyViolationTypeEnum::
+          KURLViolation;
+  }
+}
+
 }  // namespace
 
 void AuditsIssue::ReportSharedArrayBufferIssue(
@@ -492,5 +514,72 @@ void AuditsIssue::ReportMixedContentIssue(
           .build();
 
   frame->DomWindow()->AddInspectorIssue(AuditsIssue(std::move(issue)));
+}
+
+AuditsIssue AuditsIssue::CreateContentSecurityPolicyIssue(
+    const blink::SecurityPolicyViolationEventInit& violation_data,
+    bool is_report_only,
+    ContentSecurityPolicyViolationType violation_type,
+    LocalFrame* frame_ancestor,
+    Element* element,
+    SourceLocation* source_location,
+    absl::optional<base::UnguessableToken> issue_id) {
+  std::unique_ptr<protocol::Audits::ContentSecurityPolicyIssueDetails>
+      cspDetails = protocol::Audits::ContentSecurityPolicyIssueDetails::create()
+                       .setIsReportOnly(is_report_only)
+                       .setViolatedDirective(violation_data.violatedDirective())
+                       .setContentSecurityPolicyViolationType(
+                           CSPViolationTypeToProtocol(violation_type))
+                       .build();
+  if (violation_type == ContentSecurityPolicyViolationType::kURLViolation ||
+      violation_data.violatedDirective() == "frame-ancestors") {
+    cspDetails->setBlockedURL(violation_data.blockedURI());
+  }
+
+  if (frame_ancestor) {
+    std::unique_ptr<protocol::Audits::AffectedFrame> affected_frame =
+        protocol::Audits::AffectedFrame::create()
+            .setFrameId(
+                frame_ancestor->GetDevToolsFrameToken().ToString().c_str())
+            .build();
+    cspDetails->setFrameAncestor(std::move(affected_frame));
+  }
+
+  if (violation_data.sourceFile() && violation_data.lineNumber()) {
+    std::unique_ptr<protocol::Audits::SourceCodeLocation> source_code_location =
+        protocol::Audits::SourceCodeLocation::create()
+            .setUrl(violation_data.sourceFile())
+            // The frontend expects 0-based line numbers.
+            .setLineNumber(violation_data.lineNumber() - 1)
+            .setColumnNumber(violation_data.columnNumber())
+            .build();
+    if (source_location) {
+      source_code_location->setScriptId(
+          WTF::String::Number(source_location->ScriptId()));
+    }
+    cspDetails->setSourceCodeLocation(std::move(source_code_location));
+  }
+
+  if (element) {
+    cspDetails->setViolatingNodeId(DOMNodeIds::IdForNode(element));
+  }
+
+  std::unique_ptr<protocol::Audits::InspectorIssueDetails> details =
+      protocol::Audits::InspectorIssueDetails::create()
+          .setContentSecurityPolicyIssueDetails(std::move(cspDetails))
+          .build();
+
+  std::unique_ptr<protocol::Audits::InspectorIssue> issue =
+      protocol::Audits::InspectorIssue::create()
+          .setCode(protocol::Audits::InspectorIssueCodeEnum::
+                       ContentSecurityPolicyIssue)
+          .setDetails(std::move(details))
+          .build();
+
+  if (issue_id) {
+    issue->setIssueId(IdentifiersFactory::IdFromToken(*issue_id));
+  }
+
+  return AuditsIssue(std::move(issue));
 }
 }  // namespace blink
