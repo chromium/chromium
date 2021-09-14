@@ -32,10 +32,13 @@ import static org.chromium.content.browser.accessibility.AccessibilityContentShe
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sTextMatcher;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sTextOrContentDescriptionMatcher;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sViewIdResourceNameMatcher;
+import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EVENTS_DROPPED_HISTOGRAM;
 import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRAS_KEY_CHROME_ROLE;
 import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRAS_KEY_OFFSCREEN;
 import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRAS_KEY_UNCLIPPED_BOTTOM;
 import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRAS_KEY_UNCLIPPED_TOP;
+import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.ONE_HUNDRED_PERCENT_HISTOGRAM;
+import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.PERCENTAGE_DROPPED_HISTOGRAM;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -1485,11 +1488,56 @@ public class WebContentsAccessibilityTest {
 
         // Verify results were recorded in histograms.
         Assert.assertEquals(ONDEMAND_HISTOGRAM_ERROR, 1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "Accessibility.Android.OnDemand.PercentageDropped"));
+                RecordHistogram.getHistogramTotalCountForTesting(PERCENTAGE_DROPPED_HISTOGRAM));
         Assert.assertEquals(ONDEMAND_HISTOGRAM_ERROR, 1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "Accessibility.Android.OnDemand.EventsDropped"));
+                RecordHistogram.getHistogramTotalCountForTesting(EVENTS_DROPPED_HISTOGRAM));
+        Assert.assertEquals(ONDEMAND_HISTOGRAM_ERROR, 0,
+                RecordHistogram.getHistogramTotalCountForTesting(ONE_HUNDRED_PERCENT_HISTOGRAM));
+    }
+
+    /**
+     * Test that UMA histogram for 100% events dropped is recorded for the OnDemand AT feature.
+     */
+    @Test
+    @SmallTest
+    public void testOnDemandAccessibilityEventsUMARecorded_100Percent() throws Throwable {
+        // Build a simple web page with a few nodes to traverse.
+        setupTestWithHTML("<p>This is a test 1</p>\n"
+                + "<p>This is a test 2</p>\n"
+                + "<p>This is a test 3</p>");
+
+        // Set the relevant events type masks to be empty so no events are dispatched.
+        mActivityTestRule.mWcax.setEventTypeMaskEmptyForTesting();
+
+        // Find the three text nodes.
+        int vvId1 = waitForNodeMatching(sTextMatcher, "This is a test 1");
+        int vvId2 = waitForNodeMatching(sTextMatcher, "This is a test 2");
+        int vvId3 = waitForNodeMatching(sTextMatcher, "This is a test 3");
+        AccessibilityNodeInfo mNodeInfo1 = createAccessibilityNodeInfo(vvId1);
+        AccessibilityNodeInfo mNodeInfo2 = createAccessibilityNodeInfo(vvId2);
+        AccessibilityNodeInfo mNodeInfo3 = createAccessibilityNodeInfo(vvId3);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo1);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo2);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo3);
+
+        // Focus each node in turn to generate events.
+        focusNode(vvId1);
+        focusNode(vvId2);
+        focusNode(vvId3);
+
+        // Signal end of test.
+        mActivityTestRule.sendEndOfTestSignal();
+
+        // Force recording of UMA histograms.
+        mActivityTestRule.mWcax.forceRecordUMAHistogramsForTesting();
+
+        // Verify results were recorded in histograms.
+        Assert.assertEquals(ONDEMAND_HISTOGRAM_ERROR, 1,
+                RecordHistogram.getHistogramTotalCountForTesting(PERCENTAGE_DROPPED_HISTOGRAM));
+        Assert.assertEquals(ONDEMAND_HISTOGRAM_ERROR, 1,
+                RecordHistogram.getHistogramTotalCountForTesting(EVENTS_DROPPED_HISTOGRAM));
+        Assert.assertEquals(ONDEMAND_HISTOGRAM_ERROR, 1,
+                RecordHistogram.getHistogramTotalCountForTesting(ONE_HUNDRED_PERCENT_HISTOGRAM));
     }
 
     /**

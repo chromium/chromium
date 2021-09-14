@@ -144,10 +144,15 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
     private static final int CONTENT_INVALID_THROTTLE_DELAY = 4500;
 
     // These are constant names of UMA histograms, and values for custom count histogram.
-    private static final String PERCENTAGE_DROPPED_HISTOGRAM =
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static final String PERCENTAGE_DROPPED_HISTOGRAM =
             "Accessibility.Android.OnDemand.PercentageDropped";
-    private static final String EVENTS_DROPPED_HISTOGRAM =
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static final String EVENTS_DROPPED_HISTOGRAM =
             "Accessibility.Android.OnDemand.EventsDropped";
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static final String ONE_HUNDRED_PERCENT_HISTOGRAM =
+            "Accessibility.Android.OnDemand.OneHundredPercentEventsDropped";
     private static final int EVENTS_DROPPED_HISTOGRAM_MIN_BUCKET = 1;
     private static final int EVENTS_DROPPED_HISTOGRAM_MAX_BUCKET = 10000;
     private static final int EVENTS_DROPPED_HISTOGRAM_BUCKET_COUNT = 100;
@@ -433,6 +438,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         recordUMAHistograms();
     }
 
+    @VisibleForTesting
+    public void setEventTypeMaskEmptyForTesting() {
+        BrowserAccessibilityState.setEventTypeMaskEmptyForTesting();
+    }
+
     @CalledByNative
     public void handleEndOfTestSignal() {
         // We have received a signal that we have reached the end of a unit test. If we have a
@@ -462,14 +472,24 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         // If we did not enqueue any events, we can ignore the data as a trivial case.
         if (mTotalEnqueuedEvents > 0) {
             // Log the percentage dropped (dispatching 0 events should be 100% dropped).
-            RecordHistogram.recordPercentageHistogram(PERCENTAGE_DROPPED_HISTOGRAM,
-                    100 - (int) (mTotalDispatchedEvents * 1.0 / mTotalEnqueuedEvents * 100.0));
+            int percentSent = (int) (mTotalDispatchedEvents * 1.0 / mTotalEnqueuedEvents * 100.0);
+            RecordHistogram.recordPercentageHistogram(
+                    PERCENTAGE_DROPPED_HISTOGRAM, 100 - percentSent);
 
             // Log the total number of dropped events.
             RecordHistogram.recordCustomCountHistogram(EVENTS_DROPPED_HISTOGRAM,
                     mTotalEnqueuedEvents - mTotalDispatchedEvents,
                     EVENTS_DROPPED_HISTOGRAM_MIN_BUCKET, EVENTS_DROPPED_HISTOGRAM_MAX_BUCKET,
                     EVENTS_DROPPED_HISTOGRAM_BUCKET_COUNT);
+
+            // If 100% of events were dropped, also track the number of dropped events in a
+            // separate bucket.
+            if (percentSent == 0) {
+                RecordHistogram.recordCustomCountHistogram(ONE_HUNDRED_PERCENT_HISTOGRAM,
+                        mTotalEnqueuedEvents - mTotalDispatchedEvents,
+                        EVENTS_DROPPED_HISTOGRAM_MIN_BUCKET, EVENTS_DROPPED_HISTOGRAM_MAX_BUCKET,
+                        EVENTS_DROPPED_HISTOGRAM_BUCKET_COUNT);
+            }
         }
 
         // Reset counters.
