@@ -11066,7 +11066,11 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="IsRoaming" enum="Boolean">
     <summary>
-      Whether the device was roaming when the background task ran.
+      Whether the device was roaming when the background task ran. This field is
+      only set if we can determine whether the network was roaming or not. This
+      means in cases where the HTTP probe was cancelled or we ecountered an
+      error while getting whether the network is roaming or not that this field
+      will be null.
     </summary>
   </metric>
   <metric name="LocalHourOfDayStart">
