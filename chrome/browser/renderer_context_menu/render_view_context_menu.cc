@@ -150,6 +150,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/base/media_switches.h"
@@ -3062,6 +3063,12 @@ bool RenderViewContextMenu::IsLensRegionSearchEnabled() const {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return base::FeatureList::IsEnabled(lens::features::kLensRegionSearch) &&
          search::DefaultSearchProviderIsGoogle(GetProfile()) &&
+// Build flag for enable_pdf is needed here because the function used does not
+// build without this flag.
+#if BUILDFLAG(ENABLE_PDF)
+         !IsPdfPluginURL(GetDocumentURL(params_)) &&
+#endif
+         !GetDocumentURL(params_).SchemeIs(content::kChromeUIScheme) &&
          GetPrefs(browser_context_)
              ->GetBoolean(prefs::kLensRegionSearchEnabled);
 #else
