@@ -1187,8 +1187,6 @@ static_library("browser") {
     "policy/javascript_policy_handler.h",
     "policy/messaging_layer/public/report_client.cc",
     "policy/messaging_layer/public/report_client.h",
-    "policy/messaging_layer/public/report_queue_impl.cc",
-    "policy/messaging_layer/public/report_queue_impl.h",
     "policy/messaging_layer/upload/dm_server_upload_service.cc",
     "policy/messaging_layer/upload/dm_server_upload_service.h",
     "policy/messaging_layer/upload/record_handler_impl.cc",

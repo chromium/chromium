@@ -41,12 +41,16 @@ static_library("report_queue") {
   sources = [
     "report_queue.cc",
     "report_queue.h",
+    "report_queue_impl.cc",
+    "report_queue_impl.h",
   ]
   deps = [
     ":report_queue_configuration",
     "//base",
+    "//components/reporting/encryption:encryption_module",
     "//components/reporting/proto:record_constants",
     "//components/reporting/proto:record_proto",
+    "//components/reporting/storage:storage_module",
     "//components/reporting/storage:storage_uploader_interface",
     "//components/reporting/util:status",
     "//components/reporting/util:status_macros",
@@ -89,6 +93,7 @@ static_library("test_support") {
     "//base/test:test_support",
     "//components/reporting/proto:record_constants",
     "//components/reporting/proto:record_proto",
+    "//components/reporting/proto:test_proto",
     "//components/reporting/util:status",
     "//components/reporting/util:status_macros",
     "//testing/gmock",
@@ -103,6 +108,7 @@ source_set("unit_tests") {
   sources = [
     "report_queue_configuration_unittest.cc",
     "report_queue_factory_unittest.cc",
+    "report_queue_impl_unittest.cc",
     "report_queue_provider_test_helper.cc",
     "report_queue_provider_test_helper.h",
     "report_queue_provider_unittest.cc",
@@ -118,6 +124,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/reporting/proto:record_constants",
     "//components/reporting/proto:record_proto",
+    "//components/reporting/proto:test_proto",
     "//components/reporting/storage:test_support",
     "//components/reporting/util:status",
     "//components/reporting/util:status_macros",

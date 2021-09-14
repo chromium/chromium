@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_POLICY_MESSAGING_LAYER_PUBLIC_REPORT_QUEUE_IMPL_H_
-#define CHROME_BROWSER_POLICY_MESSAGING_LAYER_PUBLIC_REPORT_QUEUE_IMPL_H_
+#ifndef COMPONENTS_REPORTING_CLIENT_REPORT_QUEUE_IMPL_H_
+#define COMPONENTS_REPORTING_CLIENT_REPORT_QUEUE_IMPL_H_
 
 #include <memory>
 #include <string>
@@ -138,4 +138,4 @@ class SpeculativeReportQueueImpl : public ReportQueue {
 
 }  // namespace reporting
 
-#endif  // CHROME_BROWSER_POLICY_MESSAGING_LAYER_PUBLIC_REPORT_QUEUE_IMPL_H_
+#endif  // COMPONENTS_REPORTING_CLIENT_REPORT_QUEUE_IMPL_H_

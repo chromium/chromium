@@ -29,3 +29,8 @@ proto_library("interface_proto") {
     "//components/reporting/util:status_proto",
   ]
 }
+
+proto_library("test_proto") {
+  proto_in_dir = "//"
+  sources = [ "test.proto" ]
+}

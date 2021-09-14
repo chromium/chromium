@@ -3665,6 +3665,7 @@ if (!is_android && !is_fuchsia) {
         "//components/onc",
         "//components/prefs",
         "//components/quirks",
+        "//components/reporting/client:report_queue",
         "//components/reporting/client:test_support",
         "//components/reporting/storage:test_support",
         "//components/rlz",
@@ -4597,7 +4598,6 @@ test("unit_tests") {
     "../browser/policy/homepage_location_policy_handler_unittest.cc",
     "../browser/policy/javascript_policy_handler_unittest.cc",
     "../browser/policy/messaging_layer/public/report_client_unittest.cc",
-    "../browser/policy/messaging_layer/public/report_queue_impl_unittest.cc",
     "../browser/policy/messaging_layer/upload/dm_server_upload_service_unittest.cc",
     "../browser/policy/messaging_layer/upload/record_handler_impl_unittest.cc",
     "../browser/policy/messaging_layer/upload/record_upload_request_builder_unittest.cc",
@@ -5122,7 +5122,6 @@ test("unit_tests") {
   defines = []
 
   deps = [
-    ":messaging_test_proto",
     ":profile_proto_db_test_proto",
     ":test_support",
     ":test_support_unit",
@@ -9601,10 +9600,6 @@ if (!is_android) {
     sources = [ "//chrome/browser/vr/test/run_xr_browser_tests.py" ]
     outputs = [ "$root_out_dir/run_xr_browser_tests.py" ]
   }
-}
-
-proto_library("messaging_test_proto") {
-  sources = [ "//chrome/browser/policy/messaging_layer/proto/test.proto" ]
 }
 
 proto_library("profile_proto_db_test_proto") {

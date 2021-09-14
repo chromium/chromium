@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/policy/messaging_layer/public/report_queue_impl.h"
+#include "components/reporting/client/report_queue_impl.h"
 
 #include <memory>
 #include <string>
@@ -22,7 +22,6 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "components/policy/core/common/cloud/dm_token.h"
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/encryption/encryption_module.h"
 #include "components/reporting/proto/record.pb.h"

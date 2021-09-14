@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/policy/messaging_layer/public/report_queue_impl.h"
+#include "components/reporting/client/report_queue_impl.h"
 
 #include <stdio.h>
 
@@ -13,16 +13,15 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
-#include "chrome/browser/policy/messaging_layer/proto/test.pb.h"
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/proto/record_constants.pb.h"
+#include "components/reporting/proto/test.pb.h"
 #include "components/reporting/storage/storage_module_interface.h"
 #include "components/reporting/storage/test_storage_module.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
 #include "components/reporting/util/test_support_callbacks.h"
-#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -82,7 +81,8 @@ class ReportQueueImplTest : public testing::Test {
 
   NiceMock<MockFunction<Status()>> mocked_policy_check_;
 
-  content::BrowserTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   const Priority priority_;
 
