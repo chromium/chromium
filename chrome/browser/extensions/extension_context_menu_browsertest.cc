@@ -729,12 +729,6 @@ static void VerifyMenuForSeparatorsTest(const MenuModel& menu) {
   ExpectLabelAndType("normal3", MenuModel::TYPE_COMMAND, menu, index++);
 }
 
-#if defined(OS_WIN)
-#define MAYBE_Separators DISABLED_Separators
-#else
-#define MAYBE_Separators Separators
-#endif
-
 // Tests a number of cases for auto-generated and explicitly added separators.
 IN_PROC_BROWSER_TEST_F(ExtensionContextMenuPersistentTest, Separators) {
   // Load the extension.
