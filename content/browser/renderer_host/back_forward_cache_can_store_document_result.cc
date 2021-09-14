@@ -261,13 +261,13 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
 
 void BackForwardCacheCanStoreDocumentResult::No(
     BackForwardCacheMetrics::NotRestoredReason reason) {
-  if (reason ==
-          BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures ||
-      reason == BackForwardCacheMetrics::NotRestoredReason::
-                    kDisableForRenderFrameHostCalled) {
-    CaptureTraceForNavigationDebugScenario(
-        DebugScenario::kDebugBackForwardCacheMetricsMismatch);
-  }
+  // Either |NoDueToFeatures()| or |NoDueToDisableForRenderFrameHostCalled|
+  // should be called instead.
+  DCHECK_NE(reason,
+            BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures);
+  DCHECK_NE(reason, BackForwardCacheMetrics::NotRestoredReason::
+                        kDisableForRenderFrameHostCalled);
+
   AddNotStoredReason(reason);
 }
 
