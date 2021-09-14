@@ -227,6 +227,14 @@ void NearbyShareSessionImpl::OnPreparedDirectory(aura::Window* const arc_window,
   DCHECK_GT(file_handler_->GetTotalSizeOfFiles(), 0);
 
   DVLOG(1) << __func__;
+  if (result == base::File::FILE_ERROR_NO_SPACE) {
+    LOG(ERROR) << "Not enough disk space to proceed with sharing.";
+    CleanupSession(/*should_cleanup_files=*/true);
+    // TODO(b/197784924): Show message in UI (e.g. toast) for the user to take
+    // action and reduce disk space usage.
+    return;
+  }
+
   // TODO(b/191232168): Figure out why PrepareDirectoryTask is flaky. Ignoring
   // the error seem to always work otherwise will sometimes return error.
   PLOG_IF(WARNING, result != base::File::FILE_OK)
