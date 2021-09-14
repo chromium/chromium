@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/full_restore/arc_window_utils.h"
 
+#include "components/app_restore/features.h"
 #include "components/arc/arc_util.h"
 #include "components/exo/wm_helper.h"
-#include "components/full_restore/features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"

@@ -14,8 +14,8 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "components/account_id/account_id.h"
-#include "components/full_restore/full_restore_info.h"
-#include "components/full_restore/window_info.h"
+#include "components/app_restore/full_restore_info.h"
+#include "components/app_restore/window_info.h"
 #include "ui/aura/window_observer.h"
 
 namespace aura {

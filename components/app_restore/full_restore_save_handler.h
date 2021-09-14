@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_FULL_RESTORE_FULL_RESTORE_SAVE_HANDLER_H_
-#define COMPONENTS_FULL_RESTORE_FULL_RESTORE_SAVE_HANDLER_H_
+#ifndef COMPONENTS_APP_RESTORE_FULL_RESTORE_SAVE_HANDLER_H_
+#define COMPONENTS_APP_RESTORE_FULL_RESTORE_SAVE_HANDLER_H_
 
 #include <map>
 #include <memory>
@@ -16,7 +16,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
-#include "components/full_restore/arc_save_handler.h"
+#include "components/app_restore/arc_save_handler.h"
 #include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window.h"
@@ -50,7 +50,7 @@ struct WindowInfo;
 // background task runner) for the actual writing. To minimize IO,
 // FullRestoreSaveHandler starts a timer that invokes restore data saving at a
 // later time.
-class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
+class COMPONENT_EXPORT(APP_RESTORE) FullRestoreSaveHandler
     : public aura::EnvObserver,
       public aura::WindowObserver {
  public:
@@ -289,4 +289,4 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
 
 }  // namespace full_restore
 
-#endif  // COMPONENTS_FULL_RESTORE_FULL_RESTORE_SAVE_HANDLER_H_
+#endif  // COMPONENTS_APP_RESTORE_FULL_RESTORE_SAVE_HANDLER_H_

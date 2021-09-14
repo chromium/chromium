@@ -5,9 +5,9 @@
 #include "chrome/browser/ash/full_restore/arc_window_utils.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "components/app_restore/features.h"
 #include "components/exo/wm_helper.h"
 #include "components/exo/wm_helper_chromeos.h"
-#include "components/full_restore/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display.h"
 #include "ui/display/test/test_screen.h"

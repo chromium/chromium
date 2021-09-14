@@ -19,7 +19,7 @@ static_library("desks_storage") {
   deps = [
     "//ash/public/cpp",
     "//base",
-    "//components/full_restore",
+    "//components/app_restore",
     "//components/sync",
     "//components/sync/model",
     "//components/sync/protocol",

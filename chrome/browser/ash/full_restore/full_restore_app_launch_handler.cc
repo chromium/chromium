@@ -25,8 +25,8 @@
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/session_service_log.h"
 #include "chrome/common/chrome_switches.h"
-#include "components/full_restore/full_restore_read_handler.h"
-#include "components/full_restore/full_restore_save_handler.h"
+#include "components/app_restore/full_restore_read_handler.h"
+#include "components/app_restore/full_restore_save_handler.h"
 #include "extensions/common/constants.h"
 
 namespace ash {

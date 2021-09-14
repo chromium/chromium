@@ -10,7 +10,7 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/guid.h"
 #include "base/time/time.h"
-#include "components/full_restore/restore_data.h"
+#include "components/app_restore/restore_data.h"
 
 namespace ash {
 

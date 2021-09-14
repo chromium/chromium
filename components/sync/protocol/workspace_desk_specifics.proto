@@ -49,7 +49,7 @@ message WorkspaceDeskSpecifics {
 
     // window_id used to instantiate proto as a restore_data object.  The
     // restore_data object in question can be found at:
-    // //components/full_restore/restore_data.h
+    // //components/app_restore/restore_data.h
     optional int32 window_id = 5;
 
     // Display ID this app is on.

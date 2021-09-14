@@ -145,7 +145,7 @@ static_library("exo") {
       "//chromeos/crosapi/cpp",
       "//chromeos/ui/base",
       "//chromeos/ui/frame",
-      "//components/full_restore",
+      "//components/app_restore",
       "//components/fullscreen_control",
       "//components/strings",
       "//ui/base",

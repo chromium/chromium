@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_FULL_RESTORE_ARC_SAVE_HANDLER_H_
-#define COMPONENTS_FULL_RESTORE_ARC_SAVE_HANDLER_H_
+#ifndef COMPONENTS_APP_RESTORE_ARC_SAVE_HANDLER_H_
+#define COMPONENTS_APP_RESTORE_ARC_SAVE_HANDLER_H_
 
 #include <map>
 #include <memory>
@@ -26,7 +26,7 @@ struct WindowInfo;
 
 // ArcSaveHandler is a helper class for FullRestoreSaveHandler to handle ARC app
 // windows special cases, e.g. ARC task creation, ARC session id, etc.
-class COMPONENT_EXPORT(FULL_RESTORE) ArcSaveHandler {
+class COMPONENT_EXPORT(APP_RESTORE) ArcSaveHandler {
  public:
   using AppLaunchInfoPtr = std::unique_ptr<AppLaunchInfo>;
   using SessionIdMap =
@@ -112,4 +112,4 @@ class COMPONENT_EXPORT(FULL_RESTORE) ArcSaveHandler {
 
 }  // namespace full_restore
 
-#endif  // COMPONENTS_FULL_RESTORE_ARC_SAVE_HANDLER_H_
+#endif  // COMPONENTS_APP_RESTORE_ARC_SAVE_HANDLER_H_

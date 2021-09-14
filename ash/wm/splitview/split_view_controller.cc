@@ -50,7 +50,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/system/sys_info.h"
 #include "chromeos/ui/base/window_properties.h"
-#include "components/full_restore/features.h"
+#include "components/app_restore/features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"

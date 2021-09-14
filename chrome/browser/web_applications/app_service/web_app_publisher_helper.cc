@@ -55,9 +55,9 @@
 #include "chrome/browser/ash/arc/arc_web_contents_data.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
-#include "components/full_restore/app_launch_info.h"
-#include "components/full_restore/full_restore_save_handler.h"
-#include "components/full_restore/full_restore_utils.h"
+#include "components/app_restore/app_launch_info.h"
+#include "components/app_restore/full_restore_save_handler.h"
+#include "components/app_restore/full_restore_utils.h"
 #include "components/sessions/core/session_id.h"
 #endif
 

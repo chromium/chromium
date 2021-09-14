@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/full_restore/app_restore_data.h"
+#include "components/app_restore/app_restore_data.h"
 
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
-#include "components/full_restore/app_launch_info.h"
-#include "components/full_restore/window_info.h"
+#include "components/app_restore/app_launch_info.h"
+#include "components/app_restore/window_info.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 
 namespace full_restore {

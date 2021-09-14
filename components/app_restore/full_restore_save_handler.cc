@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/full_restore/full_restore_save_handler.h"
+#include "components/app_restore/full_restore_save_handler.h"
 
 #include "ash/constants/app_types.h"
 #include "base/bind.h"
@@ -11,13 +11,13 @@
 #include "base/no_destructor.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "components/full_restore/app_launch_info.h"
-#include "components/full_restore/full_restore_file_handler.h"
-#include "components/full_restore/full_restore_info.h"
-#include "components/full_restore/full_restore_read_handler.h"
-#include "components/full_restore/full_restore_utils.h"
-#include "components/full_restore/restore_data.h"
-#include "components/full_restore/window_info.h"
+#include "components/app_restore/app_launch_info.h"
+#include "components/app_restore/full_restore_file_handler.h"
+#include "components/app_restore/full_restore_info.h"
+#include "components/app_restore/full_restore_read_handler.h"
+#include "components/app_restore/full_restore_utils.h"
+#include "components/app_restore/restore_data.h"
+#include "components/app_restore/window_info.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/sessions/core/session_id.h"
 #include "extensions/common/constants.h"

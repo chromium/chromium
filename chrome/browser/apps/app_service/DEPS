@@ -1,7 +1,7 @@
 include_rules = [
   "+components/services/app_service/app_service_impl.h",
   "+components/services/app_service/public",
-  "+components/full_restore",
+  "+components/app_restore",
   "+components/webapk",
 ]
 

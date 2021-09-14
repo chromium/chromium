@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_FULL_RESTORE_WINDOW_INFO_H_
-#define COMPONENTS_FULL_RESTORE_WINDOW_INFO_H_
+#ifndef COMPONENTS_APP_RESTORE_WINDOW_INFO_H_
+#define COMPONENTS_APP_RESTORE_WINDOW_INFO_H_
 
 #include "chromeos/ui/base/window_state_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -15,7 +15,7 @@ namespace full_restore {
 
 // This struct is the parameter for the interface SaveWindowInfo, to save the
 // window information.
-struct COMPONENT_EXPORT(FULL_RESTORE) WindowInfo {
+struct COMPONENT_EXPORT(APP_RESTORE) WindowInfo {
  public:
   // This struct is the ARC specific window info.
   struct ArcExtraInfo {
@@ -71,4 +71,4 @@ struct COMPONENT_EXPORT(FULL_RESTORE) WindowInfo {
 
 }  // namespace full_restore
 
-#endif  // COMPONENTS_FULL_RESTORE_WINDOW_INFO_H_
+#endif  // COMPONENTS_APP_RESTORE_WINDOW_INFO_H_

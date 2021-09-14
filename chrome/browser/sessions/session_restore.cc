@@ -81,7 +81,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/boot_times_recorder.h"
-#include "components/full_restore/features.h"
+#include "components/app_restore/features.h"
 #endif
 
 #if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_FULL_RESTORE_FULL_RESTORE_FILE_HANDLER_H_
-#define COMPONENTS_FULL_RESTORE_FULL_RESTORE_FILE_HANDLER_H_
+#ifndef COMPONENTS_APP_RESTORE_FULL_RESTORE_FILE_HANDLER_H_
+#define COMPONENTS_APP_RESTORE_FULL_RESTORE_FILE_HANDLER_H_
 
 #include <memory>
 
@@ -25,7 +25,7 @@ class RestoreData;
 // FullRestoreFileHandler is created on the main thread, and does no IO by
 // the constructor. The real work is done by WriteToFile and ReadFromFile, which
 // must be invoked on a background task runner |owning_task_runner|.
-class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreFileHandler
+class COMPONENT_EXPORT(APP_RESTORE) FullRestoreFileHandler
     : public base::RefCountedDeleteOnSequence<FullRestoreFileHandler> {
  public:
   // Creates a FullRestoreFileHandler. This method is invoked on the main
@@ -68,4 +68,4 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreFileHandler
 
 }  // namespace full_restore
 
-#endif  // COMPONENTS_FULL_RESTORE_FULL_RESTORE_FILE_HANDLER_H_
+#endif  // COMPONENTS_APP_RESTORE_FULL_RESTORE_FILE_HANDLER_H_

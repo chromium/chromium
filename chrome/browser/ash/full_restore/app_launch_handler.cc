@@ -16,7 +16,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/full_restore/full_restore_read_handler.h"
+#include "components/app_restore/full_restore_read_handler.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"

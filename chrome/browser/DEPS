@@ -146,7 +146,7 @@ include_rules = [
   "+components/feedback",
   "+components/find_in_page",
   "+components/flags_ui",
-  "+components/full_restore",
+  "+components/app_restore",
   "+components/gcm_driver",
   "+components/google/core/browser",
   "+components/google/core/common",

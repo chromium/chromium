@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/full_restore/restore_data.h"
+#include "components/app_restore/restore_data.h"
 
 #include <memory>
 #include <utility>
@@ -10,9 +10,9 @@
 #include "base/containers/contains.h"
 #include "base/values.h"
 #include "chromeos/ui/base/window_state_type.h"
-#include "components/full_restore/app_launch_info.h"
-#include "components/full_restore/app_restore_data.h"
-#include "components/full_restore/window_info.h"
+#include "components/app_restore/app_launch_info.h"
+#include "components/app_restore/app_restore_data.h"
+#include "components/app_restore/window_info.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/common/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"

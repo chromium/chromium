@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/full_restore/full_restore_utils.h"
+#include "components/app_restore/full_restore_utils.h"
 
 #include "base/files/file_path.h"
 #include "components/account_id/account_id.h"
-#include "components/full_restore/app_launch_info.h"
-#include "components/full_restore/desk_template_read_handler.h"
-#include "components/full_restore/features.h"
-#include "components/full_restore/full_restore_info.h"
-#include "components/full_restore/full_restore_read_handler.h"
-#include "components/full_restore/full_restore_save_handler.h"
-#include "components/full_restore/window_info.h"
+#include "components/app_restore/app_launch_info.h"
+#include "components/app_restore/desk_template_read_handler.h"
+#include "components/app_restore/features.h"
+#include "components/app_restore/full_restore_info.h"
+#include "components/app_restore/full_restore_read_handler.h"
+#include "components/app_restore/full_restore_save_handler.h"
+#include "components/app_restore/window_info.h"
 
-DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(FULL_RESTORE), int32_t*)
-DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(FULL_RESTORE),
+DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(APP_RESTORE), int32_t*)
+DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(APP_RESTORE),
                                        full_restore::WindowInfo*)
 
 namespace full_restore {
@@ -164,8 +164,9 @@ void OnTaskThemeColorUpdated(int32_t task_id,
 }
 
 void AddChromeBrowserLaunchInfoForTesting(const base::FilePath& profile_path) {
-  FullRestoreReadHandler::GetInstance()->AddChromeBrowserLaunchInfoForTesting(
-      profile_path);
+  FullRestoreReadHandler::GetInstance()
+      ->AddChromeBrowserLaunchInfoForTesting(  // IN-TEST
+          profile_path);
 }
 
 std::string GetAppId(aura::Window* window) {

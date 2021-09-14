@@ -1,4 +1,4 @@
 include_rules = [
   "+components/services/app_service/public",
-  "+components/full_restore/full_restore_utils.h",
+  "+components/app_restore/full_restore_utils.h",
 ]

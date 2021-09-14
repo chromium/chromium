@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-component("full_restore") {
-  output_name = "full_restore_lib"
+component("app_restore") {
+  output_name = "app_restore_lib"
   sources = [
     "app_launch_info.cc",
     "app_launch_info.h",
@@ -33,7 +33,7 @@ component("full_restore") {
     "window_info.h",
   ]
 
-  defines = [ "IS_FULL_RESTORE_IMPL" ]
+  defines = [ "IS_APP_RESTORE_IMPL" ]
 
   public_deps = [
     "//ash/constants",
@@ -60,7 +60,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
-    ":full_restore",
+    ":app_restore",
     "//content/test:test_support",
     "//testing/gtest",
     "//ui/aura:test_support",

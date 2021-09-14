@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/full_restore/arc_save_handler.h"
+#include "components/app_restore/arc_save_handler.h"
 
 #include "base/containers/contains.h"
-#include "components/full_restore/app_launch_info.h"
-#include "components/full_restore/full_restore_info.h"
-#include "components/full_restore/full_restore_save_handler.h"
-#include "components/full_restore/full_restore_utils.h"
-#include "components/full_restore/window_info.h"
+#include "components/app_restore/app_launch_info.h"
+#include "components/app_restore/full_restore_info.h"
+#include "components/app_restore/full_restore_save_handler.h"
+#include "components/app_restore/full_restore_utils.h"
+#include "components/app_restore/window_info.h"
 #include "ui/aura/window.h"
 
 namespace full_restore {

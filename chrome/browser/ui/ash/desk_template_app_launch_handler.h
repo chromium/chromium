@@ -9,7 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/full_restore/app_launch_handler.h"
-#include "components/full_restore/desk_template_read_handler.h"
+#include "components/app_restore/desk_template_read_handler.h"
 
 class Profile;
 

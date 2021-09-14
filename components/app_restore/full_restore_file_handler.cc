@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/full_restore/full_restore_file_handler.h"
+#include "components/app_restore/full_restore_file_handler.h"
 
 #include <utility>
 
@@ -13,7 +13,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "components/full_restore/restore_data.h"
+#include "components/app_restore/restore_data.h"
 
 namespace full_restore {
 

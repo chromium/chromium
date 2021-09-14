@@ -104,7 +104,7 @@
 #include "ui/gfx/color_palette.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "components/full_restore/features.h"
+#include "components/app_restore/features.h"
 #endif
 
 #if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)

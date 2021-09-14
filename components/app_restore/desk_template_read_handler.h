@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_FULL_RESTORE_DESK_TEMPLATE_READ_HANDLER_H_
-#define COMPONENTS_FULL_RESTORE_DESK_TEMPLATE_READ_HANDLER_H_
+#ifndef COMPONENTS_APP_RESTORE_DESK_TEMPLATE_READ_HANDLER_H_
+#define COMPONENTS_APP_RESTORE_DESK_TEMPLATE_READ_HANDLER_H_
 
 #include <memory>
 #include <string>
@@ -17,9 +17,9 @@ struct WindowInfo;
 // A class which acts as a proxy to fetch data from a delegate class located in
 // chrome/browser.
 // TODO(sammiequon): Revisit after M93 and move this class to a more suitable
-// location, outside of components/full_restore as it is part of a different
+// location, outside of components/app_restore as it is part of a different
 // feature.
-class COMPONENT_EXPORT(FULL_RESTORE) DeskTemplateReadHandler {
+class COMPONENT_EXPORT(APP_RESTORE) DeskTemplateReadHandler {
  public:
   class Delegate {
    public:
@@ -64,4 +64,4 @@ class COMPONENT_EXPORT(FULL_RESTORE) DeskTemplateReadHandler {
 
 }  // namespace full_restore
 
-#endif  // COMPONENTS_FULL_RESTORE_DESK_TEMPLATE_READ_HANDLER_H_
+#endif  // COMPONENTS_APP_RESTORE_DESK_TEMPLATE_READ_HANDLER_H_

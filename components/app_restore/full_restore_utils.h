@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_FULL_RESTORE_FULL_RESTORE_UTILS_H_
-#define COMPONENTS_FULL_RESTORE_FULL_RESTORE_UTILS_H_
+#ifndef COMPONENTS_APP_RESTORE_FULL_RESTORE_UTILS_H_
+#define COMPONENTS_APP_RESTORE_FULL_RESTORE_UTILS_H_
 
 #include <memory>
 
@@ -42,28 +42,28 @@ constexpr int32_t kParentToHiddenContainer = -1;
 // A property key to indicate the id for the window to be saved in RestoreData.
 // For web apps, browser windows or Chrome app windows, this is the session id.
 // For ARC apps, this is the task id.
-COMPONENT_EXPORT(FULL_RESTORE)
+COMPONENT_EXPORT(APP_RESTORE)
 extern const ui::ClassProperty<int32_t>* const kWindowIdKey;
 
 // A property key to indicate the restore id for the window from RestoreData.
-COMPONENT_EXPORT(FULL_RESTORE)
+COMPONENT_EXPORT(APP_RESTORE)
 extern const ui::ClassProperty<int32_t>* const kRestoreWindowIdKey;
 
 // A property key to indicate the session id for the ARC ghost window from
 // RestoreData.
-COMPONENT_EXPORT(FULL_RESTORE)
+COMPONENT_EXPORT(APP_RESTORE)
 extern const ui::ClassProperty<int32_t>* const kGhostWindowSessionIdKey;
 
 // A property key to store the app id.
-COMPONENT_EXPORT(FULL_RESTORE)
+COMPONENT_EXPORT(APP_RESTORE)
 extern const ui::ClassProperty<std::string*>* const kAppIdKey;
 
 // A property key to store the browser app name.
-COMPONENT_EXPORT(FULL_RESTORE)
+COMPONENT_EXPORT(APP_RESTORE)
 extern const ui::ClassProperty<std::string*>* const kBrowserAppNameKey;
 
 // A property key to indicate that the browser window type is an app type.
-COMPONENT_EXPORT(FULL_RESTORE)
+COMPONENT_EXPORT(APP_RESTORE)
 extern const ui::ClassProperty<bool>* const kAppTypeBrowser;
 
 // A property key to store the activation index of an app. Used by ash to
@@ -73,113 +73,113 @@ extern const ui::ClassProperty<bool>* const kAppTypeBrowser;
 // system startup phase, could have a kActivationIndexKey. A smaller index
 // indicates a more recently used window. If this key is null, then the window
 // was not launched from full restore.
-COMPONENT_EXPORT(FULL_RESTORE)
+COMPONENT_EXPORT(APP_RESTORE)
 extern const ui::ClassProperty<int32_t*>* const kActivationIndexKey;
 
 // A property key to add the window to a hidden container, if the ARC task is
 // not created when the window is initialized.
-COMPONENT_EXPORT(FULL_RESTORE)
+COMPONENT_EXPORT(APP_RESTORE)
 extern const ui::ClassProperty<bool>* const kParentToHiddenContainerKey;
 
 // A property key indicating whether a window was launched from full restore.
 // These windows will not be activatable until they are shown.
-COMPONENT_EXPORT(FULL_RESTORE)
+COMPONENT_EXPORT(APP_RESTORE)
 extern const ui::ClassProperty<bool>* const kLaunchedFromFullRestoreKey;
 
 // A property key indicating whether a ARC ghost window has replaced by real
 // ARC task window.
-COMPONENT_EXPORT(FULL_RESTORE)
+COMPONENT_EXPORT(APP_RESTORE)
 extern const ui::ClassProperty<bool>* const kRealArcTaskWindow;
 
-COMPONENT_EXPORT(FULL_RESTORE)
+COMPONENT_EXPORT(APP_RESTORE)
 extern const ui::ClassProperty<WindowInfo*>* const kWindowInfoKey;
 
 // Saves the app launch parameters to the full restore file.
-COMPONENT_EXPORT(FULL_RESTORE)
+COMPONENT_EXPORT(APP_RESTORE)
 void SaveAppLaunchInfo(const base::FilePath& profile_path,
                        std::unique_ptr<AppLaunchInfo> app_launch_info);
 
 // Saves the window information to the full restore file.
-COMPONENT_EXPORT(FULL_RESTORE)
+COMPONENT_EXPORT(APP_RESTORE)
 void SaveWindowInfo(const WindowInfo& window_info);
 
 // Gets the ARC app launch information from the full restore file for `app_id`
 // and `session_id`.
-COMPONENT_EXPORT(FULL_RESTORE)
+COMPONENT_EXPORT(APP_RESTORE)
 std::unique_ptr<AppLaunchInfo> GetArcAppLaunchInfo(const std::string& app_id,
                                                    int32_t session_id);
 
 // Gets the window information from the full restore file for |window|.
-COMPONENT_EXPORT(FULL_RESTORE)
+COMPONENT_EXPORT(APP_RESTORE)
 std::unique_ptr<WindowInfo> GetWindowInfo(aura::Window* window);
 
 // Fetches the restore window id from the restore data for the given |app_id|.
 // |app_id| should be a Chrome app id.
-COMPONENT_EXPORT(FULL_RESTORE)
+COMPONENT_EXPORT(APP_RESTORE)
 int32_t FetchRestoreWindowId(const std::string& app_id);
 
 // Returns the restore window id for the ARC app's |task_id|.
-COMPONENT_EXPORT(FULL_RESTORE)
+COMPONENT_EXPORT(APP_RESTORE)
 int32_t GetArcRestoreWindowIdForTaskId(int32_t task_id);
 
 // Returns the restore window id for the ARC app's |session_id|.
-COMPONENT_EXPORT(FULL_RESTORE)
+COMPONENT_EXPORT(APP_RESTORE)
 int32_t GetArcRestoreWindowIdForSessionId(int32_t session_id);
 
 // Returns true if we should restore apps and pages based on the restore setting
 // and the user's choice from the notification. Otherwise, returns false.
-COMPONENT_EXPORT(FULL_RESTORE) bool ShouldRestore(const AccountId& account_id);
+COMPONENT_EXPORT(APP_RESTORE) bool ShouldRestore(const AccountId& account_id);
 
 // Returns true if the restore pref is 'Always' or 'Ask every time', as we
 // could restore apps and pages based on the user's choice from the
 // notification for |account_id|. Otherwise, returns false, when the restore
 // pref is 'Do not restore'.
-COMPONENT_EXPORT(FULL_RESTORE)
+COMPONENT_EXPORT(APP_RESTORE)
 bool CanPerformRestore(const AccountId& account_id);
 
 // Sets the current active profile path.
-COMPONENT_EXPORT(FULL_RESTORE)
+COMPONENT_EXPORT(APP_RESTORE)
 void SetActiveProfilePath(const base::FilePath& profile_path);
 
 // Returns true if there are app type browsers from the full restore file.
 // Otherwise, returns false.
-COMPONENT_EXPORT(FULL_RESTORE)
+COMPONENT_EXPORT(APP_RESTORE)
 bool HasAppTypeBrowser(const base::FilePath& profile_path);
 
 // Returns true if there are normal browsers from the full restore file.
 // Otherwise, returns false.
-COMPONENT_EXPORT(FULL_RESTORE)
+COMPONENT_EXPORT(APP_RESTORE)
 bool HasBrowser(const base::FilePath& profile_path);
 
 // Returns true if there is a window info for |restore_window_id| from the full
 // restore file. Otherwise, returns false. This interface can't be used for Arc
 // app windows.
-COMPONENT_EXPORT(FULL_RESTORE)
+COMPONENT_EXPORT(APP_RESTORE)
 bool HasWindowInfo(int32_t restore_window_id);
 
 // Modifies `out_params` based on the window info associated with
 // `restore_window_id`.
-COMPONENT_EXPORT(FULL_RESTORE)
+COMPONENT_EXPORT(APP_RESTORE)
 void ModifyWidgetParams(int32_t restore_window_id,
                         views::Widget::InitParams* out_params);
 
 // Invoked when the task is created for an ARC app.
-COMPONENT_EXPORT(FULL_RESTORE)
+COMPONENT_EXPORT(APP_RESTORE)
 void OnTaskCreated(const std::string& app_id,
                    int32_t task_id,
                    int32_t session_id);
 
 // Invoked when the task is destroyed for an ARC app.
-COMPONENT_EXPORT(FULL_RESTORE)
+COMPONENT_EXPORT(APP_RESTORE)
 void OnTaskDestroyed(int32_t task_id);
 
 // Invoked when the task theme colors are updated for an ARC app.
-COMPONENT_EXPORT(FULL_RESTORE)
+COMPONENT_EXPORT(APP_RESTORE)
 void OnTaskThemeColorUpdated(int32_t task_id,
                              uint32_t primary_color,
                              uint32_t status_bar_color);
 
-COMPONENT_EXPORT(FULL_RESTORE)
+COMPONENT_EXPORT(APP_RESTORE)
 void AddChromeBrowserLaunchInfoForTesting(const base::FilePath& profile_path);
 
 // Returns the full restore app id that's associated with |window|. Note this
@@ -187,9 +187,9 @@ void AddChromeBrowserLaunchInfoForTesting(const base::FilePath& profile_path);
 // is only non-empty for Chrome apps and ARC apps, but empty for other apps (for
 // example, browsers, PWAs, SWAs). This function however guarantees to return a
 // valid app id value for a window that can be restored by full restore.
-COMPONENT_EXPORT(FULL_RESTORE)
+COMPONENT_EXPORT(APP_RESTORE)
 std::string GetAppId(aura::Window* window);
 
 }  // namespace full_restore
 
-#endif  // COMPONENTS_FULL_RESTORE_FULL_RESTORE_UTILS_H_
+#endif  // COMPONENTS_APP_RESTORE_FULL_RESTORE_UTILS_H_

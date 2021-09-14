@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/full_restore/full_restore_read_handler.h"
+#include "components/app_restore/full_restore_read_handler.h"
 
 #include <cstdint>
 #include <memory>
@@ -13,13 +13,13 @@
 #include "base/no_destructor.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "components/full_restore/app_launch_info.h"
-#include "components/full_restore/desk_template_read_handler.h"
-#include "components/full_restore/full_restore_file_handler.h"
-#include "components/full_restore/full_restore_info.h"
-#include "components/full_restore/full_restore_save_handler.h"
-#include "components/full_restore/restore_data.h"
-#include "components/full_restore/window_info.h"
+#include "components/app_restore/app_launch_info.h"
+#include "components/app_restore/desk_template_read_handler.h"
+#include "components/app_restore/full_restore_file_handler.h"
+#include "components/app_restore/full_restore_info.h"
+#include "components/app_restore/full_restore_save_handler.h"
+#include "components/app_restore/restore_data.h"
+#include "components/app_restore/window_info.h"
 #include "components/sessions/core/session_id.h"
 #include "extensions/common/constants.h"
 #include "ui/aura/client/aura_constants.h"

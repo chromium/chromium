@@ -5,7 +5,7 @@ include_rules = [
   "+chromeos/ui/base",
   "+chromeos/ui/frame",
   "+components/fullscreen_control",
-  "+components/full_restore",
+  "+components/app_restore",
   "+components/strings",
   "+components/viz/common",
   "+components/viz/host",

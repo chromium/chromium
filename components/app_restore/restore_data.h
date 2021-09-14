@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_FULL_RESTORE_RESTORE_DATA_H_
-#define COMPONENTS_FULL_RESTORE_RESTORE_DATA_H_
+#ifndef COMPONENTS_APP_RESTORE_RESTORE_DATA_H_
+#define COMPONENTS_APP_RESTORE_RESTORE_DATA_H_
 
 #include <map>
 #include <memory>
 
 #include "base/component_export.h"
-#include "components/full_restore/app_restore_data.h"
+#include "components/app_restore/app_restore_data.h"
 
 namespace base {
 class Value;
@@ -28,7 +28,7 @@ struct WindowInfo;
 // 1. Add the interface to modify LaunchAndWindowInfo when the window
 // information is updated.
 // 2. Add the interface to remove LaunchAndWindowInfo.
-class COMPONENT_EXPORT(FULL_RESTORE) RestoreData {
+class COMPONENT_EXPORT(APP_RESTORE) RestoreData {
  public:
   // Map from a window id to AppRestoreData.
   using LaunchList = std::map<int, std::unique_ptr<AppRestoreData>>;
@@ -194,4 +194,4 @@ class COMPONENT_EXPORT(FULL_RESTORE) RestoreData {
 
 }  // namespace full_restore
 
-#endif  // COMPONENTS_FULL_RESTORE_RESTORE_DATA_H_
+#endif  // COMPONENTS_APP_RESTORE_RESTORE_DATA_H_

@@ -50,7 +50,7 @@ static_library("apps") {
 
   if (is_chromeos_ash) {
     deps += [
-      "//components/full_restore",
+      "//components/app_restore",
       "//components/user_manager",
     ]
   }

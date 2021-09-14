@@ -3655,13 +3655,13 @@ if (!is_android && !is_fuchsia) {
         "//chromeos/ui/frame",
         "//chromeos/ui/frame:test_support",
         "//chromeos/ui/wm",
+        "//components/app_restore",
         "//components/arc:arc_test_support",
         "//components/arc/enterprise",
         "//components/crash/content/browser/error_reporting:mock_crash_endpoint",
         "//components/device_event_log",
         "//components/drive",
         "//components/exo:test_support",
-        "//components/full_restore",
         "//components/onc",
         "//components/prefs",
         "//components/quirks",
@@ -6467,8 +6467,8 @@ test("unit_tests") {
       "//chromeos/dbus/u2f",
       "//chromeos/services/nearby/public/cpp:test_support",
       "//chromeos/ui/wm",
+      "//components/app_restore:unit_tests",
       "//components/arc:arc_test_support",
-      "//components/full_restore:unit_tests",
     ]
   }
 

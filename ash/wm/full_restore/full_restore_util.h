@@ -6,7 +6,7 @@
 #define ASH_WM_FULL_RESTORE_FULL_RESTORE_UTIL_H_
 
 #include "ash/ash_export.h"
-#include "components/full_restore/window_info.h"
+#include "components/app_restore/window_info.h"
 
 namespace aura {
 class Window;

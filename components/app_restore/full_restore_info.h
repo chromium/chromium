@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_FULL_RESTORE_FULL_RESTORE_INFO_H_
-#define COMPONENTS_FULL_RESTORE_FULL_RESTORE_INFO_H_
+#ifndef COMPONENTS_APP_RESTORE_FULL_RESTORE_INFO_H_
+#define COMPONENTS_APP_RESTORE_FULL_RESTORE_INFO_H_
 
 #include <set>
 
@@ -29,7 +29,7 @@ namespace full_restore {
 // 2. Notifies when the restore pref is changed for |account_id|.
 // 3. Notifies when |window| is ready to be restored, after we have the app
 // launch information, e.g. a task id for an ARC app
-class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreInfo {
+class COMPONENT_EXPORT(APP_RESTORE) FullRestoreInfo {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -133,4 +133,4 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreInfo {
 
 }  // namespace full_restore
 
-#endif  // COMPONENTS_FULL_RESTORE_FULL_RESTORE_INFO_H_
+#endif  // COMPONENTS_APP_RESTORE_FULL_RESTORE_INFO_H_

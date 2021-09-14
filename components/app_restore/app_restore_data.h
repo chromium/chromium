@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_FULL_RESTORE_APP_RESTORE_DATA_H_
-#define COMPONENTS_FULL_RESTORE_APP_RESTORE_DATA_H_
+#ifndef COMPONENTS_APP_RESTORE_APP_RESTORE_DATA_H_
+#define COMPONENTS_APP_RESTORE_APP_RESTORE_DATA_H_
 
 #include <memory>
 #include <vector>
@@ -28,7 +28,7 @@ struct WindowInfo;
 // This is the struct used by RestoreData to save both app launch parameters and
 // app window information. This struct can be converted to JSON format to be
 // written to the FullRestoreData file.
-struct COMPONENT_EXPORT(FULL_RESTORE) AppRestoreData {
+struct COMPONENT_EXPORT(APP_RESTORE) AppRestoreData {
   AppRestoreData();
   explicit AppRestoreData(base::Value&& value);
   explicit AppRestoreData(std::unique_ptr<AppLaunchInfo> app_launch_info);
@@ -110,4 +110,4 @@ struct COMPONENT_EXPORT(FULL_RESTORE) AppRestoreData {
 
 }  // namespace full_restore
 
-#endif  // COMPONENTS_FULL_RESTORE_APP_RESTORE_DATA_H_
+#endif  // COMPONENTS_APP_RESTORE_APP_RESTORE_DATA_H_

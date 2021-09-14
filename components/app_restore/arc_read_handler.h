@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_FULL_RESTORE_ARC_READ_HANDLER_H_
-#define COMPONENTS_FULL_RESTORE_ARC_READ_HANDLER_H_
+#ifndef COMPONENTS_APP_RESTORE_ARC_READ_HANDLER_H_
+#define COMPONENTS_APP_RESTORE_ARC_READ_HANDLER_H_
 
 #include <map>
 #include <set>
@@ -11,7 +11,7 @@
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "components/full_restore/full_restore_utils.h"
+#include "components/app_restore/full_restore_utils.h"
 
 namespace aura {
 class Window;
@@ -24,7 +24,7 @@ struct WindowInfo;
 
 // ArcReadHandler is a helper class for FullRestoreReadHandler to handle ARC app
 // windows special cases, e.g. ARC task creation, ARC session id, etc.
-class COMPONENT_EXPORT(FULL_RESTORE) ArcReadHandler {
+class COMPONENT_EXPORT(APP_RESTORE) ArcReadHandler {
  public:
   explicit ArcReadHandler(const base::FilePath& profile_path);
   ArcReadHandler(const ArcReadHandler&) = delete;
@@ -115,4 +115,4 @@ class COMPONENT_EXPORT(FULL_RESTORE) ArcReadHandler {
 
 }  // namespace full_restore
 
-#endif  // COMPONENTS_FULL_RESTORE_ARC_READ_HANDLER_H_
+#endif  // COMPONENTS_APP_RESTORE_ARC_READ_HANDLER_H_

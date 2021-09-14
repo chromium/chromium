@@ -10,7 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/full_restore/app_launch_handler.h"
 #include "chrome/browser/sessions/session_restore_observer.h"
-#include "components/full_restore/restore_data.h"
+#include "components/app_restore/restore_data.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
 namespace apps {

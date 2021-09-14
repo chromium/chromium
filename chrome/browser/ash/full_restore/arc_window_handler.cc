@@ -8,10 +8,10 @@
 #include "chrome/browser/ash/full_restore/arc_window_utils.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "components/app_restore/app_restore_data.h"
+#include "components/app_restore/full_restore_utils.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/wm_helper.h"
-#include "components/full_restore/app_restore_data.h"
-#include "components/full_restore/full_restore_utils.h"
 #include "ui/views/window/caption_button_layout_constants.h"
 
 namespace ash {

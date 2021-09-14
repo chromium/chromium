@@ -56,7 +56,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crostini/crostini_util.h"
-#include "components/full_restore/features.h"
+#include "components/app_restore/features.h"
 #endif
 
 #if defined(OS_MAC)

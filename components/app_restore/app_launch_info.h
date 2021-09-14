@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_FULL_RESTORE_APP_LAUNCH_INFO_H_
-#define COMPONENTS_FULL_RESTORE_APP_LAUNCH_INFO_H_
+#ifndef COMPONENTS_APP_RESTORE_APP_LAUNCH_INFO_H_
+#define COMPONENTS_APP_RESTORE_APP_LAUNCH_INFO_H_
 
 #include <vector>
 
@@ -18,7 +18,7 @@ namespace full_restore {
 
 // This class is the parameter for the interface SaveAppLaunchInfo, to save the
 // app launch information.
-struct COMPONENT_EXPORT(FULL_RESTORE) AppLaunchInfo {
+struct COMPONENT_EXPORT(APP_RESTORE) AppLaunchInfo {
   AppLaunchInfo(const std::string& app_id,
                 int32_t window_id,
                 apps::mojom::LaunchContainer container,
@@ -74,4 +74,4 @@ struct COMPONENT_EXPORT(FULL_RESTORE) AppLaunchInfo {
 
 }  // namespace full_restore
 
-#endif  // COMPONENTS_FULL_RESTORE_APP_LAUNCH_INFO_H_
+#endif  // COMPONENTS_APP_RESTORE_APP_LAUNCH_INFO_H_

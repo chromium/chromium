@@ -11,7 +11,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/full_restore/features.h"
+#include "components/app_restore/features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace ash {
