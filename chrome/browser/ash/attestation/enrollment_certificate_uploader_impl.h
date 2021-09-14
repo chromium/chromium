@@ -40,9 +40,9 @@ class EnrollmentCertificateUploaderImpl : public EnrollmentCertificateUploader {
   ~EnrollmentCertificateUploaderImpl() override;
 
   // Sets the retry limit in number of tries; useful in testing.
-  void set_retry_limit(int limit) { retry_limit_ = limit; }
+  void set_retry_limit_for_testing(int limit) { retry_limit_ = limit; }
   // Sets the retry delay; useful in testing.
-  void set_retry_delay(base::TimeDelta retry_delay) {
+  void set_retry_delay_for_testing(base::TimeDelta retry_delay) {
     retry_delay_ = retry_delay;
   }
 

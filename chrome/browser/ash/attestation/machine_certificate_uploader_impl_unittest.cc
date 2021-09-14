@@ -180,8 +180,8 @@ class MachineCertificateUploaderTestBase : public ::testing::Test {
   void RunUploader() {
     MachineCertificateUploaderImpl uploader(&policy_client_,
                                             &attestation_flow_);
-    uploader.set_retry_limit(kRetryLimit);
-    uploader.set_retry_delay(0);
+    uploader.set_retry_limit_for_testing(kRetryLimit);
+    uploader.set_retry_delay_for_testing(0);
     if (GetShouldRefreshCert())
       uploader.RefreshAndUploadCertificate(base::DoNothing());
     else

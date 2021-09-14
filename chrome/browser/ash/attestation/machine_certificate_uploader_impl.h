@@ -38,9 +38,11 @@ class MachineCertificateUploaderImpl : public MachineCertificateUploader {
   ~MachineCertificateUploaderImpl() override;
 
   // Sets the retry limit in number of tries; useful in testing.
-  void set_retry_limit(int limit) { retry_limit_ = limit; }
+  void set_retry_limit_for_testing(int limit) { retry_limit_ = limit; }
   // Sets the retry delay in seconds; useful in testing.
-  void set_retry_delay(int retry_delay) { retry_delay_ = retry_delay; }
+  void set_retry_delay_for_testing(int retry_delay) {
+    retry_delay_ = retry_delay;
+  }
 
   using UploadCallback =
       base::OnceCallback<void(bool /*certificate_uploaded*/)>;

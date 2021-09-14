@@ -27,7 +27,7 @@ namespace ash {
 namespace attestation {
 class AttestationPolicyObserver;
 class EnrollmentCertificateUploader;
-class EnrollmentPolicyObserver;
+class EnrollmentIdUploadManager;
 class MachineCertificateUploader;
 }  // namespace attestation
 }  // namespace ash
@@ -202,8 +202,8 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager {
 
   std::unique_ptr<ash::attestation::EnrollmentCertificateUploader>
       enrollment_certificate_uploader_;
-  std::unique_ptr<ash::attestation::EnrollmentPolicyObserver>
-      enrollment_policy_observer_;
+  std::unique_ptr<ash::attestation::EnrollmentIdUploadManager>
+      enrollment_id_upload_manager_;
   std::unique_ptr<ash::attestation::MachineCertificateUploader>
       machine_certificate_uploader_;
   std::unique_ptr<ash::attestation::AttestationPolicyObserver>

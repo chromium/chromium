@@ -76,8 +76,8 @@ class EnrollmentCertificateUploaderTest : public ::testing::Test {
     settings_helper_.ReplaceDeviceSettingsProviderWithStub();
     policy_client_.SetDMToken("fake_dm_token");
 
-    uploader_.set_retry_limit(kRetryLimit);
-    uploader_.set_retry_delay(base::TimeDelta());
+    uploader_.set_retry_limit_for_testing(kRetryLimit);
+    uploader_.set_retry_delay_for_testing(base::TimeDelta());
   }
 
  protected:

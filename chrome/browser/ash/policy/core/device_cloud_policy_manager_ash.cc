@@ -23,7 +23,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/attestation/attestation_policy_observer.h"
 #include "chrome/browser/ash/attestation/enrollment_certificate_uploader_impl.h"
-#include "chrome/browser/ash/attestation/enrollment_policy_observer.h"
+#include "chrome/browser/ash/attestation/enrollment_id_upload_manager.h"
 #include "chrome/browser/ash/attestation/machine_certificate_uploader_impl.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/ash/login/reporting/login_logout_reporter.h"
@@ -205,8 +205,8 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
   enrollment_certificate_uploader_ =
       std::make_unique<ash::attestation::EnrollmentCertificateUploaderImpl>(
           client());
-  enrollment_policy_observer_ =
-      std::make_unique<ash::attestation::EnrollmentPolicyObserver>(
+  enrollment_id_upload_manager_ =
+      std::make_unique<ash::attestation::EnrollmentIdUploadManager>(
           client(), enrollment_certificate_uploader_.get());
   lookup_key_uploader_ = std::make_unique<LookupKeyUploader>(
       device_store(), g_browser_process->local_state(),

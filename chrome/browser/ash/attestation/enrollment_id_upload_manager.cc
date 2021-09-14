@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/attestation/enrollment_policy_observer.h"
+#include "chrome/browser/ash/attestation/enrollment_id_upload_manager.h"
 
 #include <utility>
 
@@ -41,14 +41,14 @@ const int kRetryLimit = 100;
 namespace ash {
 namespace attestation {
 
-EnrollmentPolicyObserver::EnrollmentPolicyObserver(
+EnrollmentIdUploadManager::EnrollmentIdUploadManager(
     policy::CloudPolicyClient* policy_client,
     EnrollmentCertificateUploader* certificate_uploader)
-    : EnrollmentPolicyObserver(policy_client,
-                               DeviceSettingsService::Get(),
-                               certificate_uploader) {}
+    : EnrollmentIdUploadManager(policy_client,
+                                DeviceSettingsService::Get(),
+                                certificate_uploader) {}
 
-EnrollmentPolicyObserver::EnrollmentPolicyObserver(
+EnrollmentIdUploadManager::EnrollmentIdUploadManager(
     policy::CloudPolicyClient* policy_client,
     DeviceSettingsService* device_settings_service,
     EnrollmentCertificateUploader* certificate_uploader)
@@ -63,41 +63,41 @@ EnrollmentPolicyObserver::EnrollmentPolicyObserver(
   Start();
 }
 
-EnrollmentPolicyObserver::~EnrollmentPolicyObserver() {
+EnrollmentIdUploadManager::~EnrollmentIdUploadManager() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(DeviceSettingsService::IsInitialized());
   device_settings_service_->RemoveObserver(this);
 }
 
-void EnrollmentPolicyObserver::DeviceSettingsUpdated() {
+void EnrollmentIdUploadManager::DeviceSettingsUpdated() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   num_retries_ = 0;
   Start();
 }
 
-void EnrollmentPolicyObserver::Start() {
+void EnrollmentIdUploadManager::Start() {
   // If identification for enrollment isn't needed, there is nothing to do.
   const enterprise_management::PolicyData* policy_data =
       device_settings_service_->policy_data();
   if (!policy_data || !policy_data->enrollment_id_needed())
     return;
 
-  // Do not allow multiple concurrent starts.
+  ObtainAndUploadCertificate();
+}
+
+void EnrollmentIdUploadManager::ObtainAndUploadCertificate() {
+  // Do not allow multiple concurrent requests.
   if (request_in_flight_)
     return;
 
   request_in_flight_ = true;
 
-  ObtainAndUploadCertificate();
+  certificate_uploader_->ObtainAndUploadCertificate(base::BindOnce(
+      &EnrollmentIdUploadManager::OnEnrollmentCertificateUploaded,
+      weak_factory_.GetWeakPtr()));
 }
 
-void EnrollmentPolicyObserver::ObtainAndUploadCertificate() {
-  certificate_uploader_->ObtainAndUploadCertificate(
-      base::BindOnce(&EnrollmentPolicyObserver::OnEnrollmentCertificateUploaded,
-                     weak_factory_.GetWeakPtr()));
-}
-
-void EnrollmentPolicyObserver::OnEnrollmentCertificateUploaded(
+void EnrollmentIdUploadManager::OnEnrollmentCertificateUploaded(
     EnrollmentCertificateUploader::Status status) {
   switch (status) {
     case EnrollmentCertificateUploader::Status::kSuccess:
@@ -105,7 +105,7 @@ void EnrollmentPolicyObserver::OnEnrollmentCertificateUploaded(
       request_in_flight_ = false;
       break;
     case EnrollmentCertificateUploader::Status::kFailedToFetch:
-      LOG(WARNING) << "EnrollmentPolicyObserver: Failed to fetch certificate. "
+      LOG(WARNING) << "EnrollmentIdUploadManager: Failed to fetch certificate. "
                       "Trying to compute and upload enrollment ID.";
       GetEnrollmentId();
       break;
@@ -117,7 +117,7 @@ void EnrollmentPolicyObserver::OnEnrollmentCertificateUploaded(
   }
 }
 
-void EnrollmentPolicyObserver::GetEnrollmentId() {
+void EnrollmentIdUploadManager::GetEnrollmentId() {
   // If we already uploaded an empty identification, we are done, because
   // we asked to compute and upload it only if the PCA refused to give
   // us an enrollment certificate, an error that will happen again (the
@@ -130,7 +130,7 @@ void EnrollmentPolicyObserver::GetEnrollmentId() {
 
   // We expect a registered CloudPolicyClient.
   if (!policy_client_->is_registered()) {
-    LOG(ERROR) << "EnrollmentPolicyObserver: Invalid CloudPolicyClient.";
+    LOG(ERROR) << "EnrollmentIdUploadManager: Invalid CloudPolicyClient.";
     request_in_flight_ = false;
     return;
   }
@@ -138,11 +138,11 @@ void EnrollmentPolicyObserver::GetEnrollmentId() {
   ::attestation::GetEnrollmentIdRequest request;
   request.set_ignore_cache(true);
   AttestationClient::Get()->GetEnrollmentId(
-      request, base::BindOnce(&EnrollmentPolicyObserver::OnGetEnrollmentId,
+      request, base::BindOnce(&EnrollmentIdUploadManager::OnGetEnrollmentId,
                               weak_factory_.GetWeakPtr()));
 }
 
-void EnrollmentPolicyObserver::OnGetEnrollmentId(
+void EnrollmentIdUploadManager::OnGetEnrollmentId(
     const ::attestation::GetEnrollmentIdReply& reply) {
   if (reply.status() != ::attestation::STATUS_SUCCESS) {
     LOG(WARNING) << "Failed to get enrollment ID: " << reply.status();
@@ -150,29 +150,29 @@ void EnrollmentPolicyObserver::OnGetEnrollmentId(
     return;
   }
   if (reply.enrollment_id().empty()) {
-    LOG(WARNING) << "EnrollmentPolicyObserver: The enrollment identifier"
-                    " obtained is empty.";
+    LOG(WARNING) << "EnrollmentIdUploadManager: The enrollment identifier "
+                    "obtained is empty.";
   }
   policy_client_->UploadEnterpriseEnrollmentId(
       reply.enrollment_id(),
-      base::BindOnce(&EnrollmentPolicyObserver::OnUploadComplete,
+      base::BindOnce(&EnrollmentIdUploadManager::OnUploadComplete,
                      weak_factory_.GetWeakPtr(), reply.enrollment_id()));
 }
 
-void EnrollmentPolicyObserver::RescheduleGetEnrollmentId() {
+void EnrollmentIdUploadManager::RescheduleGetEnrollmentId() {
   if (++num_retries_ < retry_limit_) {
     content::GetUIThreadTaskRunner({})->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&EnrollmentPolicyObserver::GetEnrollmentId,
+        base::BindOnce(&EnrollmentIdUploadManager::GetEnrollmentId,
                        weak_factory_.GetWeakPtr()),
         base::TimeDelta::FromSeconds(retry_delay_));
   } else {
-    LOG(WARNING) << "EnrollmentPolicyObserver: Retry limit exceeded.";
+    LOG(WARNING) << "EnrollmentIdUploadManager: Retry limit exceeded.";
     request_in_flight_ = false;
   }
 }
 
-void EnrollmentPolicyObserver::OnUploadComplete(
+void EnrollmentIdUploadManager::OnUploadComplete(
     const std::string& enrollment_id,
     bool status) {
   const std::string& printable_enrollment_id = base::ToLowerASCII(

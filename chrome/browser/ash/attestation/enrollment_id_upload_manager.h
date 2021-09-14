@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_ATTESTATION_ENROLLMENT_POLICY_OBSERVER_H_
-#define CHROME_BROWSER_ASH_ATTESTATION_ENROLLMENT_POLICY_OBSERVER_H_
+#ifndef CHROME_BROWSER_ASH_ATTESTATION_ENROLLMENT_ID_UPLOAD_MANAGER_H_
+#define CHROME_BROWSER_ASH_ATTESTATION_ENROLLMENT_ID_UPLOAD_MANAGER_H_
 
 #include <memory>
 #include <string>
@@ -25,28 +25,37 @@ namespace attestation {
 
 // A class which observes policy changes and triggers uploading identification
 // for enrollment if necessary.
-class EnrollmentPolicyObserver : public DeviceSettingsService::Observer {
+class EnrollmentIdUploadManager : public DeviceSettingsService::Observer {
  public:
-  // The observer immediately connects with DeviceSettingsService to listen for
+  // The manager immediately connects with DeviceSettingsService to listen for
   // policy changes. The EnrollmentCertificateUploader is used to attempt to
-  // upload enrollment certificate first. If it fails, the observer attempts to
+  // upload enrollment certificate first. If it fails, the manager attempts to
   // upload enrollment ID. The CloudPolicyClient is used to upload enrollment ID
   // to the server; it must be in the registered state. This class does not take
   // ownership of |policy_client|.
-  EnrollmentPolicyObserver(policy::CloudPolicyClient* policy_client,
-                           EnrollmentCertificateUploader* certificate_uploader);
+  EnrollmentIdUploadManager(
+      policy::CloudPolicyClient* policy_client,
+      EnrollmentCertificateUploader* certificate_uploader);
 
   // A constructor which accepts custom instances useful for testing.
-  EnrollmentPolicyObserver(policy::CloudPolicyClient* policy_client,
-                           DeviceSettingsService* device_settings_service,
-                           EnrollmentCertificateUploader* certificate_uploader);
+  EnrollmentIdUploadManager(
+      policy::CloudPolicyClient* policy_client,
+      DeviceSettingsService* device_settings_service,
+      EnrollmentCertificateUploader* certificate_uploader);
 
-  ~EnrollmentPolicyObserver() override;
+  // Disallow copy and assign.
+  EnrollmentIdUploadManager(const EnrollmentIdUploadManager&) = delete;
+  EnrollmentIdUploadManager& operator=(const EnrollmentIdUploadManager&) =
+      delete;
+
+  ~EnrollmentIdUploadManager() override;
 
   // Sets the retry limit in number of tries; useful in testing.
-  void set_retry_limit(int limit) { retry_limit_ = limit; }
+  void set_retry_limit_for_testing(int limit) { retry_limit_ = limit; }
   // Sets the retry delay in seconds; useful in testing.
-  void set_retry_delay(int retry_delay) { retry_delay_ = retry_delay; }
+  void set_retry_delay_for_testing(int retry_delay) {
+    retry_delay_ = retry_delay;
+  }
 
  private:
   // Called when the device settings change.
@@ -94,14 +103,12 @@ class EnrollmentPolicyObserver : public DeviceSettingsService::Observer {
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate the weak pointers before any other members are destroyed.
-  base::WeakPtrFactory<EnrollmentPolicyObserver> weak_factory_{this};
+  base::WeakPtrFactory<EnrollmentIdUploadManager> weak_factory_{this};
 
-  friend class EnrollmentPolicyObserverTest;
-
-  DISALLOW_COPY_AND_ASSIGN(EnrollmentPolicyObserver);
+  friend class EnrollmentIdUploadManagerTest;
 };
 
 }  // namespace attestation
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_ATTESTATION_ENROLLMENT_POLICY_OBSERVER_H_
+#endif  // CHROME_BROWSER_ASH_ATTESTATION_ENROLLMENT_ID_UPLOAD_MANAGER_H_
