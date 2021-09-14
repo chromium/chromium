@@ -9194,6 +9194,7 @@ interface VisualViewport : EventTarget
     getter pageLeft
     getter pageTop
     getter scale
+    getter segments
     getter width
     method constructor
     setter onresize
@@ -11514,7 +11515,6 @@ namespace CSS
     method getLockScreenData
     method getScreens
     method getSelection
-    method getWindowSegments
     method matchMedia
     method moveBy
     method moveTo

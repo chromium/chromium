@@ -741,7 +741,6 @@ crbug.com/1092135 [ Linux ] virtual/threaded/external/wpt/permissions-policy/exp
 crbug.com/1176802 [ Debug ] external/wpt/feature-policy/feature-policy-frame-policy-timing.https.sub.html [ Slow ]
 crbug.com/1176802 [ Debug ] external/wpt/permissions-policy/permissions-policy-frame-policy-timing.https.sub.html [ Slow ]
 crbug.com/1044825 http/tests/devtools/network/resource-priority.js [ Slow ]
-crbug.com/1097094 external/wpt/window-segments/getWindowSegments-iframes.tentative.sub.html [ Slow ]
 crbug.com/1097810 [ Debug Mac10.13 ] external/wpt/editing/other/white-spaces-after-execCommand-delete.tentative.html [ Slow ]
 crbug.com/1105270 [ Mac10.15 ] fast/events/open-window-from-another-frame.html [ Slow ]
 crbug.com/1094436 http/tests/devtools/sources/debugger-ui/snippet-edit-breakpoint.js [ Slow ]

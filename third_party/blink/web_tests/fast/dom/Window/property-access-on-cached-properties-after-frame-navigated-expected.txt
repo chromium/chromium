@@ -143,6 +143,7 @@ PASS window.cached_visualViewport.onscroll is null
 PASS window.cached_visualViewport.pageLeft is 0
 PASS window.cached_visualViewport.pageTop is 0
 PASS window.cached_visualViewport.scale is 0
+PASS window.cached_visualViewport.segments is null
 PASS window.cached_visualViewport.width is 0
 PASS successfullyParsed is true
 

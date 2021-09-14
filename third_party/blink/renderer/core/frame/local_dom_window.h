@@ -237,8 +237,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   DOMVisualViewport* visualViewport();
 
-  HeapVector<Member<DOMRect>> getWindowSegments() const;
-
   const AtomicString& name() const;
   void setName(const AtomicString&);
 

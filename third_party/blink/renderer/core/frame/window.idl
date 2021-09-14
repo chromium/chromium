@@ -156,10 +156,6 @@
     [HighEntropy=Direct, MeasureAs=WindowOuterHeight, Replaceable] readonly attribute long outerHeight;
     [HighEntropy=Direct, MeasureAs=WindowDevicePixelRatio, Replaceable] readonly attribute double devicePixelRatio;
 
-    // Window Segments API
-    // https://github.com/webscreens/window-segments
-    [RuntimeEnabled=WindowSegments, Affects=Nothing] FrozenArray<DOMRect> getWindowSegments();
-
     // Selection API
     // https://w3c.github.io/selection-api/#extensions-to-window-interface
     [Affects=Nothing] Selection? getSelection();

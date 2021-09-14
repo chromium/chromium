@@ -2310,6 +2310,10 @@
       status: "experimental",
     },
     {
+      name: "ViewportSegments",
+      status: "experimental",
+    },
+    {
       name: "VirtualKeyboard",
       status: "stable",
     },
@@ -2611,10 +2615,6 @@
     {
       name: "WindowPlacement",
       origin_trial_feature_name: "WindowPlacementOT2",
-      status: "experimental",
-    },
-    {
-      name: "WindowSegments",
       status: "experimental",
     },
     {
