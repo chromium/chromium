@@ -65,6 +65,7 @@ android_library("embedded_test_server_aidl_java") {
 android_library("net_java_test_support") {
   testonly = true
   sources = [
+    "../test/android/javatests/src/org/chromium/net/AndroidNetworkLibraryTestUtil.java",
     "../test/android/javatests/src/org/chromium/net/test/EmbeddedTestServer.java",
     "../test/android/javatests/src/org/chromium/net/test/EmbeddedTestServerRule.java",
     "../test/android/javatests/src/org/chromium/net/test/util/CertTestUtil.java",
@@ -171,7 +172,6 @@ android_library("net_javatests") {
   sources = [
     "javatests/src/org/chromium/net/AndroidKeyStoreTestUtil.java",
     "javatests/src/org/chromium/net/AndroidNetworkLibraryTest.java",
-    "javatests/src/org/chromium/net/AndroidNetworkLibraryTestUtil.java",
     "javatests/src/org/chromium/net/AndroidProxyConfigServiceTestUtil.java",
     "javatests/src/org/chromium/net/AndroidProxySelectorTest.java",
     "javatests/src/org/chromium/net/EmbeddedTestServerTest.java",

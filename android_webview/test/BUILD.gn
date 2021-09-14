@@ -256,7 +256,6 @@ instrumentation_test_apk("webview_instrumentation_test_apk") {
     "//mojo/public/java:bindings_java",
     "//net/android:net_java",
     "//net/android:net_java_test_support",
-    "//net/android:net_javatests",
     "//services/device/public/java:geolocation_java",
     "//services/device/public/java:geolocation_java_test_support",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
