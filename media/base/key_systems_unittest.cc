@@ -14,6 +14,7 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
+#include "build/build_config.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/eme_constants.h"

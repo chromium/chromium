@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/threading/thread_checker.h"
+#include "build/build_config.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_preferences.h"

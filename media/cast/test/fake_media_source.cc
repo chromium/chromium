@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "build/build_config.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_fifo.h"

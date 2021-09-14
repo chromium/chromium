@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
+#include "build/build_config.h"
 #include "media/base/media_export.h"
 #include "media/base/mime_util.h"
 #include "media/base/video_codecs.h"
