@@ -139,24 +139,6 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_TagThenAttrThenId) {
   ASSERT_EQ(tag_str, rules->at(0)->Selector().TagQName().LocalName());
 }
 
-TEST(RuleSetTest, findBestRuleSetAndAdd_TagThenAttr) {
-  css_test_helpers::TestStyleSheet sheet;
-
-  sheet.AddCSSRules("div[attr] { }");
-  RuleSet& rule_set = sheet.GetRuleSet();
-  ASSERT_EQ(1u, rule_set.AttrRules("attr")->size());
-  ASSERT_FALSE(rule_set.TagRules("div"));
-}
-
-TEST(RuleSetTest, findBestRuleSetAndAdd_AttrThenClass) {
-  css_test_helpers::TestStyleSheet sheet;
-
-  sheet.AddCSSRules("[attr].class { }");
-  RuleSet& rule_set = sheet.GetRuleSet();
-  ASSERT_FALSE(rule_set.AttrRules("attr"));
-  ASSERT_EQ(1u, rule_set.ClassRules("class")->size());
-}
-
 TEST(RuleSetTest, findBestRuleSetAndAdd_Host) {
   css_test_helpers::TestStyleSheet sheet;
 
@@ -232,8 +214,9 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_Focus) {
   sheet.AddCSSRules(":focus { }");
   sheet.AddCSSRules("[attr]:focus { }");
   RuleSet& rule_set = sheet.GetRuleSet();
-  ASSERT_EQ(1u, rule_set.FocusPseudoClassRules()->size());
-  ASSERT_EQ(1u, rule_set.AttrRules("attr")->size());
+  const HeapVector<Member<const RuleData>>* rules =
+      rule_set.FocusPseudoClassRules();
+  ASSERT_EQ(2u, rules->size());
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_LinkVisited) {
@@ -246,8 +229,9 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_LinkVisited) {
   sheet.AddCSSRules(":-webkit-any-link { }");
   sheet.AddCSSRules("[attr]:-webkit-any-link { }");
   RuleSet& rule_set = sheet.GetRuleSet();
-  ASSERT_EQ(3u, rule_set.LinkPseudoClassRules()->size());
-  ASSERT_EQ(3u, rule_set.AttrRules("attr")->size());
+  const HeapVector<Member<const RuleData>>* rules =
+      rule_set.LinkPseudoClassRules();
+  ASSERT_EQ(6u, rules->size());
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_Cue) {

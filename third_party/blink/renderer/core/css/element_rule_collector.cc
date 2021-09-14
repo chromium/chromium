@@ -49,7 +49,6 @@
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
-#include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
 namespace blink {
@@ -360,16 +359,6 @@ void ElementRuleCollector::CollectMatchingRules(
           match_request.rule_set->ClassRules(element.ClassNames()[i]),
           match_request, checker);
     }
-  }
-  bool lower_attr =
-      !element.IsHTMLElement() && IsA<HTMLDocument>(element.GetDocument());
-  for (const auto& attribute_item : element.Attributes()) {
-    auto attribute_name = attribute_item.LocalName();
-    auto lower_name = lower_attr && !attribute_name.IsLowerASCII()
-                          ? attribute_name.LowerASCII()
-                          : attribute_name;
-    CollectMatchingRulesForList(match_request.rule_set->AttrRules(lower_name),
-                                match_request, checker);
   }
 
   if (element.IsLink()) {
