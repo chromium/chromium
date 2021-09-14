@@ -11374,7 +11374,7 @@
 
       If set, devices will update up to a selected version.
 
-      The exact format of this policy value is an impelmentation details of the update service and may change. The policy value is not processed on the device.
+      The exact format of this policy value is an implementation detail of the update service and may change. The policy value is not processed on the device.
 
       If used together with <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME">DeviceTargetVersionPrefix</ph>, this policy will be checked first by update service.
       Unlike <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME">DeviceTargetVersionPrefix</ph> (which may allow minor updates), devices will stay on the selected version until the value of this policy is changed.
