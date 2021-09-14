@@ -1312,7 +1312,6 @@ android_library("chrome_test_java") {
     "//chrome/browser/fullscreen/android:java",
     "//chrome/browser/gsa:java",
     "//chrome/browser/image_descriptions:javatests",
-    "//chrome/browser/incognito:incognito_java_tests",
     "//chrome/browser/incognito:java",
     "//chrome/browser/language/android:base_module_java",
     "//chrome/browser/language/android:java",
