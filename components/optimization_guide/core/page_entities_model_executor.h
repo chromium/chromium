@@ -35,13 +35,9 @@ class PageEntitiesModelExecutor {
 
   // Retrieves the metadata associated with |entity_id|. Invokes |callback|
   // when done.
-  void GetMetadataForEntityId(
+  virtual void GetMetadataForEntityId(
       const std::string& entity_id,
-      PageEntitiesModelEntityMetadataRetrievedCallback callback) {
-    // TODO(crbug/1234578): Have this be a virtual, empty method once internal
-    // is updated.
-    std::move(callback).Run(absl::nullopt);
-  }
+      PageEntitiesModelEntityMetadataRetrievedCallback callback) = 0;
 };
 
 }  // namespace optimization_guide

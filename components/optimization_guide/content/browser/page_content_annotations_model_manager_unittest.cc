@@ -49,8 +49,9 @@ class FakePageEntitiesModelExecutor : public PageEntitiesModelExecutor {
  public:
   explicit FakePageEntitiesModelExecutor(
       const base::flat_map<std::string,
-                           std::vector<tflite::task::core::Category>>& entries)
-      : entries_(entries) {}
+                           std::vector<tflite::task::core::Category>>& entries,
+      const base::flat_map<std::string, EntityMetadata>& entity_metadata)
+      : entries_(entries), entity_metadata_(entity_metadata) {}
   ~FakePageEntitiesModelExecutor() override = default;
 
   void ExecuteModelWithInput(
@@ -61,9 +62,19 @@ class FakePageEntitiesModelExecutor : public PageEntitiesModelExecutor {
         it != entries_.end() ? absl::make_optional(it->second) : absl::nullopt);
   }
 
+  void GetMetadataForEntityId(
+      const std::string& entity_id,
+      PageEntitiesModelEntityMetadataRetrievedCallback callback) override {
+    auto it = entity_metadata_.find(entity_id);
+    std::move(callback).Run(it != entity_metadata_.end()
+                                ? absl::make_optional(it->second)
+                                : absl::nullopt);
+  }
+
  private:
   base::flat_map<std::string, std::vector<tflite::task::core::Category>>
       entries_;
+  base::flat_map<std::string, EntityMetadata> entity_metadata_;
 };
 
 class PageContentAnnotationsModelManagerTest : public testing::Test {
@@ -110,10 +121,11 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
 
   void SetPageEntitiesModelExecutor(
       const base::flat_map<std::string,
-                           std::vector<tflite::task::core::Category>>&
-          entries) {
+                           std::vector<tflite::task::core::Category>>& entries,
+      const base::flat_map<std::string, EntityMetadata>& entity_metadata) {
     model_manager()->OverridePageEntitiesModelExecutorForTesting(
-        std::make_unique<FakePageEntitiesModelExecutor>(entries));
+        std::make_unique<FakePageEntitiesModelExecutor>(entries,
+                                                        entity_metadata));
   }
 
   absl::optional<history::VisitContentModelAnnotations> Annotate(
@@ -477,7 +489,8 @@ TEST_F(PageContentAnnotationsModelManagerEntitiesOnlyTest,
                                   {"entity3", 0.3},
                                   {"entity4", 0.4},
                                   {"entity5", 0.5},
-                                  {"entity6", 0.6}}}});
+                                  {"entity6", 0.6}}}},
+                               /*entity_metadata=*/{});
 
   absl::optional<history::VisitContentModelAnnotations> annotations =
       Annotate("sometext");
@@ -509,9 +522,10 @@ TEST_F(PageContentAnnotationsModelManagerEntitiesOnlyTest,
 
 TEST_F(PageContentAnnotationsModelManagerEntitiesOnlyTest,
        GetMetadataForEntityIdEntitiesAnnotatorInitialized) {
-  // TODO(crbug/1234578): Make this a real test that grabs from the annotator
-  // once that method is overridable.
-  EXPECT_FALSE(GetMetadataForEntityId("someid").has_value());
+  SetPageEntitiesModelExecutor(/*entries=*/{}, {
+                                                   {"entity1", {"entity1"}},
+                                               });
+  EXPECT_TRUE(GetMetadataForEntityId("entity1").has_value());
 }
 
 class PageContentAnnotationsModelManagerMultipleModelsTest
@@ -537,7 +551,8 @@ TEST_F(PageContentAnnotationsModelManagerMultipleModelsTest,
                                   {"entity3", 0.3},
                                   {"entity4", 0.4},
                                   {"entity5", 0.5},
-                                  {"entity6", 0.6}}}});
+                                  {"entity6", 0.6}}}},
+                               /*entity_metadata=*/{});
 
   Annotate("sometext");
 
