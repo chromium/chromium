@@ -7,6 +7,7 @@
 #include "ash/quick_pair/common/constants.h"
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_data_encryptor.h"
+#include "base/memory/ptr_util.h"
 #include "base/time/time.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_gatt_connection.h"
@@ -83,7 +84,7 @@ FastPairGattServiceClientImpl::Factory::Create(
     return g_test_factory_->CreateInstance(device, adapter,
                                            std::move(on_initialized_callback));
   }
-  return absl::WrapUnique(new FastPairGattServiceClientImpl(
+  return base::WrapUnique(new FastPairGattServiceClientImpl(
       device, adapter, std::move(on_initialized_callback)));
 }
 

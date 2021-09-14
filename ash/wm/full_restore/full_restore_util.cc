@@ -22,7 +22,7 @@ std::unique_ptr<::full_restore::WindowInfo> BuildWindowInfo(
     absl::optional<int> activation_index,
     const std::vector<aura::Window*>& mru_windows) {
   std::unique_ptr<::full_restore::WindowInfo> window_info =
-      absl::make_unique<::full_restore::WindowInfo>();
+      std::make_unique<::full_restore::WindowInfo>();
 
   int window_activation_index = -1;
   if (activation_index) {
