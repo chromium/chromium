@@ -13,6 +13,7 @@
 #include "ui/events/devices/x11/touch_factory_x11.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
+#include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_code_conversion_x.h"
 #include "ui/events/pointer_details.h"
 #include "ui/events/types/event_type.h"
@@ -104,19 +105,14 @@ std::unique_ptr<KeyEvent> CreateKeyEvent(EventType event_type,
   // In Ozone builds, keep DomCode/DomKey unset, so they are extracted lazily
   // in KeyEvent::ApplyLayout() which makes it possible for CrOS/Linux, for
   // example, to support host system keyboard layouts.
-  std::unique_ptr<KeyEvent> event;
-#if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    event = std::make_unique<KeyEvent>(event_type, key_code, event_flags,
-                                       EventTimeFromXEvent(x11_event));
-  }
-#endif
-#if defined(USE_X11)
-  if (!event) {
-    event = std::make_unique<KeyEvent>(
-        event_type, key_code, CodeFromXEvent(x11_event), event_flags,
-        GetDomKeyFromXEvent(x11_event), EventTimeFromXEvent(x11_event));
-  }
+  std::unique_ptr<KeyEvent> event =
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      std::make_unique<KeyEvent>(event_type, key_code, event_flags,
+                                 EventTimeFromXEvent(x11_event));
+#else
+      std::make_unique<KeyEvent>(
+          event_type, key_code, CodeFromXEvent(x11_event), event_flags,
+          GetDomKeyFromXEvent(x11_event), EventTimeFromXEvent(x11_event));
 #endif
 
   DCHECK(event);

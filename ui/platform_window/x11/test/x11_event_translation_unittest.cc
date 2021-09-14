@@ -7,6 +7,7 @@
 #include <xcb/xcb.h>
 
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
@@ -40,9 +41,10 @@ int XkbBuildCoreState(int key_button_mask, int group) {
 
 }  // namespace
 
-// Ensure DomKey extraction happens lazily in Ozone X11, while in non-Ozone
-// path it is set right away in XEvent => ui::Event translation. This prevents
-// regressions such as crbug.com/1007389.
+// Ensure DomKey extraction happens lazily in ash-chrome (ie: linux-chromeos),
+// while in Linux Desktop path it is set right away in XEvent => ui::Event
+// translation and it's properly copied when native event ctor is used. This
+// prevents regressions such as crbug.com/1007389 and crbug.com/1240616.
 TEST(XEventTranslationTest, KeyEventDomKeyExtraction) {
   ui::ScopedKeyboardLayout keyboard_layout(ui::KEYBOARD_LAYOUT_ENGLISH_US);
   ScopedXI2Event xev;
@@ -52,17 +54,20 @@ TEST(XEventTranslationTest, KeyEventDomKeyExtraction) {
   EXPECT_TRUE(keyev);
 
   KeyEventTestApi test(keyev.get());
-#if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    EXPECT_EQ(ui::DomKey::NONE, test.dom_key());
-  } else
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_EQ(ui::DomKey::NONE, test.dom_key());
+#else
+  EXPECT_EQ(ui::DomKey::ENTER, test.dom_key());
 #endif
-  {
-    EXPECT_EQ(ui::DomKey::ENTER, test.dom_key());
-  }
 
   EXPECT_EQ(13, keyev->GetCharacter());
   EXPECT_EQ("Enter", keyev->GetCodeString());
+
+#if defined(USE_OZONE)
+  KeyEvent copy(keyev.get());
+  EXPECT_EQ(ui::DomKey::ENTER, KeyEventTestApi(&copy).dom_key());
+  EXPECT_EQ(ui::DomKey::ENTER, copy.GetDomKey());
+#endif
 }
 
 // Ensure KeyEvent::Properties is properly set regardless X11 build config is
