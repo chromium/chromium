@@ -293,9 +293,6 @@ are declared in tools/grit/grit_rule.gni.
       <part file="profiles_strings.grdp" />
 
       <!-- Web app intent picker strings -->
-      <if expr="not is_android">
-        <part file="protocol_handler_intent_picker_strings.grdp" />
-      </if>
       <if expr="is_win or is_macosx or is_linux">
         <part file="url_handler_intent_picker_strings.grdp" />
       </if>
@@ -10818,10 +10815,25 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Don't ask again when opening these file formats in this app:
 <ph name="FILE_FORMATS">$1<ex>TXT, CSV, DOC</ex></ph>
       </message>
-      <message name="IDS_WEB_APP_FILE_HANDLING_PERMISSION_DONT_ALLOW" desc="In permission request dialog that is shown when the user is opening files in a PWA: text for button that doesn't allow PWA to open the file(s).">
+      <if expr="use_titlecase">
+      <message name="IDS_WEB_APP_PERMISSION_DONT_ALLOW" desc="Label for the button in the protocol handler intent picker dialog that dismisses the dialog and does not launch an application.">
+        Don't Allow
+      </message>
+      </if>
+      <if expr="not use_titlecase">
+      <message name="IDS_WEB_APP_PERMISSION_DONT_ALLOW" desc="Label for the button in the protocol handler intent picker dialog that dismisses the dialog and does not launch an application.">
         Don't allow
       </message>
+      </if>
     </if>
+
+  <!-- Protocol Handling intent prompt -->
+    <if expr="not is_android">
+      <message name="IDS_PROTOCOL_HANDLER_INTENT_PICKER_QUESTION" desc="Label on the protocol handler intent picker.">
+    Allow app to open <ph name="PROTOCOL_SCHEME">$1<ex>mailto</ex></ph> links?
+  </message>
+  </if>
+
 
     <!-- Font Access chooser -->
     <if expr="not is_android">

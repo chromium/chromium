@@ -76,7 +76,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     WebAppProtocolHandlerIntentPickerDialogInProcessBrowserTest,
-    AcceptProtocolHandlerIntentPickerDialog) {
+    AcceptAndRememberProtocolHandlerIntentPickerDialog) {
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "WebAppProtocolHandlerIntentPickerView");
   GURL protocol_url("web+test://test");
@@ -92,6 +92,39 @@ IN_PROC_BROWSER_TEST_F(
       ProfileKeepAliveOrigin::kWebAppPermissionDialogWindow);
   auto keep_alive = std::make_unique<ScopedKeepAlive>(
       KeepAliveOrigin::WEB_APP_INTENT_PICKER, KeepAliveRestartOption::DISABLED);
+
+  WebAppProtocolHandlerIntentPickerView::SetDefaultRememberSelectionForTesting(
+      true);
+  WebAppProtocolHandlerIntentPickerView::Show(
+      protocol_url, browser()->profile(), test_app_id,
+      std::move(profile_keep_alive), std::move(keep_alive), show_dialog.Get());
+
+  waiter.WaitIfNeededAndGet()->CloseWithReason(
+      views::Widget::ClosedReason::kAcceptButtonClicked);
+
+  WebAppProtocolHandlerIntentPickerView::SetDefaultRememberSelectionForTesting(
+      false);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppProtocolHandlerIntentPickerDialogInProcessBrowserTest,
+    AcceptProtocolHandlerIntentPickerDialog) {
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "WebAppProtocolHandlerIntentPickerView");
+  GURL protocol_url("web+test://test");
+  web_app::AppId test_app_id = InstallTestWebApp(browser()->profile());
+
+  base::MockCallback<chrome::WebAppProtocolHandlerAcceptanceCallback>
+      show_dialog;
+  EXPECT_CALL(show_dialog,
+              Run(/*allowed=*/true, /*remember_user_choice=*/false));
+
+  auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+      browser()->profile(),
+      ProfileKeepAliveOrigin::kWebAppPermissionDialogWindow);
+  auto keep_alive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::WEB_APP_INTENT_PICKER, KeepAliveRestartOption::DISABLED);
+
   WebAppProtocolHandlerIntentPickerView::Show(
       protocol_url, browser()->profile(), test_app_id,
       std::move(profile_keep_alive), std::move(keep_alive), show_dialog.Get());

@@ -136,8 +136,7 @@ FileHandlingPermissionRequestDialog::FileHandlingPermissionRequestDialog(
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW));
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
-                 l10n_util::GetStringUTF16(
-                     IDS_WEB_APP_FILE_HANDLING_PERMISSION_DONT_ALLOW));
+                 l10n_util::GetStringUTF16(IDS_WEB_APP_PERMISSION_DONT_ALLOW));
   SetDefaultButton(ui::DIALOG_BUTTON_NONE);
   SetAcceptCallback(
       base::BindOnce(&FileHandlingPermissionRequestDialog::OnDialogAccepted,

@@ -8,46 +8,61 @@
 #include <string>
 #include <utility>
 
-#include "base/callback_forward.h"
 #include "base/check_op.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keep_alive_types.h"
-#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/web_apps/web_app_hover_button.h"
-#include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/ui/views/web_apps/web_app_info_image_source.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
-#include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
-#include "third_party/skia/include/core/SkColor.h"
+#include "content/public/common/custom_handlers/protocol_handler.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/gfx/geometry/size.h"
-#include "ui/views/border.h"
-#include "ui/views/controls/scroll_view.h"
+#include "ui/views/controls/button/checkbox.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/grid_layout.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/window/dialog_delegate.h"
-#include "url/gurl.h"
 
 namespace {
-// This dialog follows the design that
-// chrome/browser/ui/views/intent_picker_bubble_view.cc created and the
-// main component sizes were also mostly copied over to share the
-// same layout.
-// Main components sizes
-constexpr int kMaxIntentPickerWidth = 320;
-constexpr int kRowHeight = 32;
-constexpr int kTitlePadding = 16;
+
+bool g_default_remember_selection = false;
+
+// TODO(https://crbug.com/1248757): Reconcile the code here, and the
+// code in the PWA install dialog, and URL Handler picker.
+// Returns a label containing the app name.
+std::unique_ptr<views::Label> CreateNameLabel(const std::u16string& name) {
+  auto name_label = std::make_unique<views::Label>(
+      name, views::style::CONTEXT_DIALOG_BODY_TEXT,
+      views::style::TextStyle::STYLE_PRIMARY);
+  name_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  name_label->SetElideBehavior(gfx::ELIDE_TAIL);
+  return name_label;
+}
+
+std::unique_ptr<views::Label> CreateOriginLabel(const url::Origin& origin) {
+  auto origin_label = std::make_unique<views::Label>(
+      FormatOriginForSecurityDisplay(
+          origin, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS),
+      CONTEXT_DIALOG_BODY_TEXT_SMALL, views::style::STYLE_PRIMARY);
+  origin_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+
+  // Elide from head to prevent origin spoofing.
+  origin_label->SetElideBehavior(gfx::ELIDE_HEAD);
+
+  // Multiline breaks elision, so explicitly disable multiline.
+  origin_label->SetMultiLine(false);
+
+  return origin_label;
+}
 
 }  // namespace
 
@@ -67,6 +82,11 @@ void WebAppProtocolHandlerIntentPickerView::Show(
                                             /*context=*/nullptr,
                                             /*parent=*/nullptr)
       ->Show();
+}
+
+void WebAppProtocolHandlerIntentPickerView::
+    SetDefaultRememberSelectionForTesting(bool remember_selection) {
+  g_default_remember_selection = remember_selection;
 }
 
 WebAppProtocolHandlerIntentPickerView::WebAppProtocolHandlerIntentPickerView(
@@ -89,18 +109,14 @@ WebAppProtocolHandlerIntentPickerView::WebAppProtocolHandlerIntentPickerView(
       close_callback_(std::move(close_callback)) {
   SetDefaultButton(ui::DIALOG_BUTTON_CANCEL);
   SetModalType(ui::MODAL_TYPE_NONE);
-  std::u16string title = l10n_util::GetStringUTF16(
-      IDS_PROTOCOL_HANDLER_INTENT_PICKER_SINGLE_TITLE);
+  std::u16string title = l10n_util::GetStringUTF16(IDS_PRODUCT_NAME);
   SetTitle(title);
   SetShowCloseButton(true);
 
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
-                 l10n_util::GetStringUTF16(
-                     IDS_PROTOCOL_HANDLER_INTENT_PICKER_SINGLE_OK_BUTTON_TEXT));
-  SetButtonLabel(
-      ui::DIALOG_BUTTON_CANCEL,
-      l10n_util::GetStringUTF16(
-          IDS_PROTOCOL_HANDLER_INTENT_PICKER_SINGLE_CANCEL_BUTTON_TEXT));
+                 l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW));
+  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+                 l10n_util::GetStringUTF16(IDS_WEB_APP_PERMISSION_DONT_ALLOW));
 
   SetAcceptCallback(
       base::BindOnce(&WebAppProtocolHandlerIntentPickerView::OnAccepted,
@@ -113,7 +129,7 @@ WebAppProtocolHandlerIntentPickerView::WebAppProtocolHandlerIntentPickerView(
   SetCloseCallback(
       base::BindOnce(&WebAppProtocolHandlerIntentPickerView::OnClosed,
                      base::Unretained(this)));
-  Initialize();
+  InitChildViews();
 }
 
 WebAppProtocolHandlerIntentPickerView::
@@ -121,66 +137,110 @@ WebAppProtocolHandlerIntentPickerView::
 
 gfx::Size WebAppProtocolHandlerIntentPickerView::CalculatePreferredSize()
     const {
-  return gfx::Size(kMaxIntentPickerWidth,
-                   GetHeightForWidth(kMaxIntentPickerWidth));
+  const int preferred_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
+  return gfx::Size(preferred_width, GetHeightForWidth(preferred_width));
 }
 
 void WebAppProtocolHandlerIntentPickerView::OnAccepted() {
-  RunCloseCallback(/*allowed=*/true, /*remember_user_choice=*/true);
+  RunCloseCallback(
+      /*allowed=*/true,
+      /*remember_user_choice=*/remember_selection_checkbox_->GetChecked());
 }
 
 void WebAppProtocolHandlerIntentPickerView::OnCanceled() {
+  // TODO: crbug.com/1243336 - Add support for remembering user choice.
   RunCloseCallback(/*allowed=*/false, /*remember_user_choice=*/false);
 }
 
 void WebAppProtocolHandlerIntentPickerView::OnClosed() {
-  if (GetWidget()->closed_reason() ==
-      views::Widget::ClosedReason::kAcceptButtonClicked) {
-    OnAccepted();
-  } else {
-    OnCanceled();
+  switch (GetWidget()->closed_reason()) {
+    case views::Widget::ClosedReason::kAcceptButtonClicked:
+      OnAccepted();
+      break;
+    case views::Widget::ClosedReason::kCancelButtonClicked:
+      OnCanceled();
+      break;
+    default:
+      RunCloseCallback(/*allowed=*/false, /*remember_user_choice=*/false);
+      break;
   }
 }
 
-void WebAppProtocolHandlerIntentPickerView::Initialize() {
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
+void WebAppProtocolHandlerIntentPickerView::InitChildViews() {
+  const ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
 
-  // Creates a view to hold the views for each app.
-  auto scrollable_view = std::make_unique<views::View>();
-  scrollable_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
+  // Use CONTROL insets, because the icon is non-text (see documentation for
+  // DialogContentType).
+  gfx::Insets margin_insets = layout_provider->GetDialogInsetsForContentType(
+      views::DialogContentType::kControl, views::DialogContentType::kControl);
+  set_margins(margin_insets);
 
-  web_app::WebAppProvider* provider =
-      web_app::WebAppProvider::GetForWebApps(profile_);
-  web_app::WebAppRegistrar& registrar = provider->registrar();
-  auto app_button = std::make_unique<WebAppHoverButton>(
-      views::Button::PressedCallback(), app_id_, provider,
-      base::UTF8ToUTF16(registrar.GetAppShortName(app_id_)),
-      registrar.GetAppStartUrl(app_id_));
-  app_button->set_tag(0);
-  app_button->SetTooltipAndAccessibleName();
-  scrollable_view->AddChildViewAt(std::move(app_button), 0);
+  const int vertical_single_distance = layout_provider->GetDistanceMetric(
+      DISTANCE_RELATED_CONTROL_VERTICAL_SMALL);
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
+      vertical_single_distance));
 
-  auto scroll_view = std::make_unique<views::ScrollView>();
-  scroll_view->SetBackgroundThemeColorId(
-      ui::NativeTheme::kColorId_BubbleBackground);
-  scroll_view->SetContents(std::move(scrollable_view));
-  // This part gives the scroll a fixed height.
-  scroll_view->ClipHeightTo(kRowHeight, 2 * kRowHeight);
+  // Add "Allow app to open" label.
+  auto open_app_label = std::make_unique<views::Label>(
+      l10n_util::GetStringFUTF16(
+          IDS_PROTOCOL_HANDLER_INTENT_PICKER_QUESTION,
+          content::ProtocolHandler::GetProtocolDisplayName(url_.scheme())),
+      views::style::CONTEXT_DIALOG_TITLE,
+      views::style::TextStyle::STYLE_PRIMARY);
+  open_app_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  open_app_label->SetElideBehavior(gfx::ELIDE_TAIL);
+  AddChildView(std::move(open_app_label));
 
-  constexpr int kColumnSetId = 0;
-  views::ColumnSet* cs = layout->AddColumnSet(kColumnSetId);
-  cs->AddColumn(views::GridLayout::FILL, views::GridLayout::CENTER,
-                views::GridLayout::kFixedSize,
-                views::GridLayout::ColumnSize::kFixed, kMaxIntentPickerWidth,
-                0);
+  // Add the app info, which will look like:
+  // +-------------------------------------------------------------------+
+  // |      |    app short name                                          |
+  // | icon |                                                            |
+  // |      |    origin                                                  |
+  // +-------------------------------------------------------------------+
+  {
+    web_app::WebAppProvider* provider =
+        web_app::WebAppProvider::GetForWebApps(profile_);
+    web_app::WebAppRegistrar& registrar = provider->registrar();
+    auto app_info_view = std::make_unique<views::View>();
+    int icon_label_spacing = layout_provider->GetDistanceMetric(
+        views::DISTANCE_RELATED_CONTROL_HORIZONTAL);
+    app_info_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+        icon_label_spacing));
 
-  layout->StartRowWithPadding(views::GridLayout::kFixedSize, kColumnSetId,
-                              views::GridLayout::kFixedSize, kTitlePadding);
-  layout->AddView(std::move(scroll_view));
-  layout->StartRow(views::GridLayout::kFixedSize, kColumnSetId, 0);
-  layout->AddPaddingRow(views::GridLayout::kFixedSize, kRowHeight);
+    provider->icon_manager().ReadIcons(
+        app_id_, IconPurpose::ANY,
+        provider->registrar().GetAppDownloadedIconSizesAny(app_id_),
+        base::BindOnce(&WebAppProtocolHandlerIntentPickerView::OnIconsRead,
+                       weak_ptr_factory_.GetWeakPtr()));
+    icon_image_view_ =
+        app_info_view->AddChildView(std::make_unique<views::ImageView>());
+    icon_image_view_->SetCanProcessEventsWithinSubtree(false);
+    icon_image_view_->SetImageSize(
+        gfx::Size(web_app::kWebAppIconSmall, web_app::kWebAppIconSmall));
+
+    auto app_name_publisher_view = std::make_unique<views::View>();
+    app_name_publisher_view->SetLayoutManager(
+        std::make_unique<views::BoxLayout>(
+            views::BoxLayout::Orientation::kVertical));
+    app_name_publisher_view->AddChildView(
+        CreateNameLabel(base::UTF8ToUTF16(registrar.GetAppShortName(app_id_)))
+            .release());
+    app_name_publisher_view->AddChildView(
+        CreateOriginLabel(
+            url::Origin::Create(registrar.GetAppStartUrl(app_id_)))
+            .release());
+    app_info_view->AddChildView(std::move(app_name_publisher_view));
+
+    AddChildView(std::move(app_info_view));
+  }
+
+  remember_selection_checkbox_ =
+      AddChildView(std::make_unique<views::Checkbox>(l10n_util::GetStringUTF16(
+          IDS_INTENT_PICKER_BUBBLE_VIEW_REMEMBER_SELECTION)));
+  remember_selection_checkbox_->SetChecked(g_default_remember_selection);
 }
 
 void WebAppProtocolHandlerIntentPickerView::RunCloseCallback(
@@ -189,6 +249,18 @@ void WebAppProtocolHandlerIntentPickerView::RunCloseCallback(
   if (close_callback_) {
     std::move(close_callback_).Run(allowed, remember_user_choice);
   }
+}
+
+void WebAppProtocolHandlerIntentPickerView::OnIconsRead(
+    std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
+  if (icon_bitmaps.empty() || !icon_image_view_)
+    return;
+
+  gfx::Size image_size{web_app::kWebAppIconSmall, web_app::kWebAppIconSmall};
+  auto imageSkia = gfx::ImageSkia(std::make_unique<WebAppInfoImageSource>(
+                                      web_app::kWebAppIconSmall, icon_bitmaps),
+                                  image_size);
+  icon_image_view_->SetImage(imageSkia);
 }
 
 BEGIN_METADATA(WebAppProtocolHandlerIntentPickerView, views::DialogDelegateView)

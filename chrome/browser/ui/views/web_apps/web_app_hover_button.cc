@@ -41,11 +41,9 @@ WebAppHoverButton::WebAppHoverButton(views::Button::PressedCallback callback,
     : HoverButton(std::move(callback),
                   std::make_unique<NonAccessibleImageView>(),
                   display_name,
-                  l10n_util::GetStringFUTF16(
-                      IDS_PROTOCOL_HANDLER_INTENT_PICKER_APP_ORIGIN_LABEL,
-                      url_formatter::FormatUrlForSecurityDisplay(
-                          url,
-                          url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)),
+                  url_formatter::FormatUrlForSecurityDisplay(
+                      url,
+                      url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS),
                   /*secondary_view=*/nullptr,
                   /*resize_row_for_secondary_view=*/false,
                   /*secondary_view_can_process_events=*/false),
