@@ -11,6 +11,8 @@ import android.util.Pair;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import com.google.protobuf.InvalidProtocolBufferException;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
@@ -18,6 +20,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksShim;
+import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -27,6 +30,7 @@ import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -592,13 +596,23 @@ public class BookmarkBridge {
      * @return List of bookmark IDs that are related to the given query.
      */
     public List<BookmarkId> searchBookmarks(String query, int maxNumberOfResult) {
-        ThreadUtils.assertOnUiThread();
-        List<BookmarkId> bookmarkMatches = new ArrayList<BookmarkId>();
-        BookmarkBridgeJni.get().searchBookmarks(mNativeBookmarkBridge, BookmarkBridge.this,
-                bookmarkMatches, query, maxNumberOfResult);
-        return bookmarkMatches;
+        return searchBookmarks(query, null, maxNumberOfResult);
     }
 
+    /**
+     * Synchronously gets a list of bookmarks that match the specified search query.
+     * @param query Keyword used for searching bookmarks.
+     * @param tags A list of tags the resulting bookmarks should have.
+     * @param maxNumberOfResult Maximum number of result to fetch.
+     * @return List of bookmark IDs that are related to the given query.
+     */
+    public List<BookmarkId> searchBookmarks(String query, String[] tags, int maxNumberOfResult) {
+        ThreadUtils.assertOnUiThread();
+        List<BookmarkId> bookmarkMatches = new ArrayList<>();
+        BookmarkBridgeJni.get().searchBookmarks(mNativeBookmarkBridge, BookmarkBridge.this,
+                bookmarkMatches, query, tags, maxNumberOfResult);
+        return bookmarkMatches;
+    }
 
     /**
      * Set title of the given bookmark.
@@ -619,6 +633,47 @@ public class BookmarkBridge {
         assert id.getType() == BookmarkType.NORMAL;
         BookmarkBridgeJni.get().setBookmarkUrl(
                 mNativeBookmarkBridge, BookmarkBridge.this, id.getId(), id.getType(), url);
+    }
+
+    /**
+     * Retrieve the PowerBookmarkMeta for a node if it exists.
+     * @param id The {@link BookmarkId} of the bookmark to fetch the meta for.
+     * @return The meta or null if none exists.
+     */
+    public PowerBookmarkMeta getPowerBookmarkMeta(BookmarkId id) {
+        String protoBytes = BookmarkBridgeJni.get().getPowerBookmarkMeta(
+                mNativeBookmarkBridge, this, id.getId(), id.getType());
+
+        if (TextUtils.isEmpty(protoBytes)) return null;
+
+        try {
+            return PowerBookmarkMeta.parseFrom(protoBytes.getBytes(StandardCharsets.UTF_8));
+        } catch (InvalidProtocolBufferException ex) {
+            deletePowerBookmarkMeta(id);
+            return null;
+        }
+    }
+
+    /**
+     * Set the PowerBookmarkMeta for a node. This MUST be called in order to persist any changes
+     * made to the proto in the java layer.
+     * @param id The ID of the bookmark to set the meta on.
+     * @param meta The meta to store.
+     */
+    public void setPowerBookmarkMeta(BookmarkId id, PowerBookmarkMeta meta) {
+        String protoBytes =
+                meta != null ? new String(meta.toByteArray(), StandardCharsets.UTF_8) : null;
+        BookmarkBridgeJni.get().setPowerBookmarkMeta(
+                mNativeBookmarkBridge, BookmarkBridge.this, id.getId(), id.getType(), protoBytes);
+    }
+
+    /**
+     * Delete the PowerBookmarkMeta from a node.
+     * @param id The ID of the bookmark to remove the meta from.
+     */
+    public void deletePowerBookmarkMeta(BookmarkId id) {
+        BookmarkBridgeJni.get().deletePowerBookmarkMeta(
+                mNativeBookmarkBridge, BookmarkBridge.this, id.getId(), id.getType());
     }
 
     /**
@@ -770,6 +825,32 @@ public class BookmarkBridge {
         if (TextUtils.isEmpty(title)) title = url.getSpec();
         return BookmarkBridgeJni.get().addBookmark(
                 mNativeBookmarkBridge, BookmarkBridge.this, parent, index, title, url);
+    }
+
+    /**
+     * Add a new power bookmark.
+     *
+     * @param webContents A {@link WebContents} associated with the page being bookmarked.
+     * @param parent Folder where to add. Must be a normal editable folder, instead of a partner
+     *               bookmark folder or a managed bookmark folder or root node of the entire
+     *               bookmark model.
+     * @param index The position where the bookmark will be placed in parent folder
+     * @param title Title of the new bookmark. If empty, the URL will be used as the title.
+     * @param url Url of the new bookmark
+     * @return Id of the added node. If adding failed (index is invalid, string is null, parent is
+     *         not editable), returns null.
+     */
+    public BookmarkId addPowerBookmark(
+            WebContents webContents, BookmarkId parent, int index, String title, GURL url) {
+        ThreadUtils.assertOnUiThread();
+        assert parent.getType() == BookmarkType.NORMAL;
+        assert index >= 0;
+        assert title != null;
+        assert url != null;
+
+        if (TextUtils.isEmpty(title)) title = url.getSpec();
+        return BookmarkBridgeJni.get().addPowerBookmark(
+                mNativeBookmarkBridge, this, webContents, parent, index, title, url);
     }
 
     @Deprecated // Only included until internal repository is updated.
@@ -1096,6 +1177,12 @@ public class BookmarkBridge {
                 long nativeBookmarkBridge, BookmarkBridge caller, long id, int type, String title);
         void setBookmarkUrl(
                 long nativeBookmarkBridge, BookmarkBridge caller, long id, int type, GURL url);
+        String getPowerBookmarkMeta(
+                long nativeBookmarkBridge, BookmarkBridge caller, long id, int type);
+        void setPowerBookmarkMeta(
+                long nativeBookmarkBridge, BookmarkBridge caller, long id, int type, String meta);
+        void deletePowerBookmarkMeta(
+                long nativeBookmarkBridge, BookmarkBridge caller, long id, int type);
         boolean doesBookmarkExist(
                 long nativeBookmarkBridge, BookmarkBridge caller, long id, int type);
         void getBookmarksForFolder(long nativeBookmarkBridge, BookmarkBridge caller,
@@ -1113,6 +1200,8 @@ public class BookmarkBridge {
                 BookmarkId newParentId, int index);
         BookmarkId addBookmark(long nativeBookmarkBridge, BookmarkBridge caller, BookmarkId parent,
                 int index, String title, GURL url);
+        BookmarkId addPowerBookmark(long nativeBookmarkBridge, BookmarkBridge caller,
+                WebContents webContents, BookmarkId parent, int index, String title, GURL url);
         BookmarkId addToReadingList(
                 long nativeBookmarkBridge, BookmarkBridge caller, String title, GURL url);
         BookmarkItem getReadingListItem(long nativeBookmarkBridge, BookmarkBridge caller, GURL url);
@@ -1126,7 +1215,7 @@ public class BookmarkBridge {
         void loadFakePartnerBookmarkShimForTesting(
                 long nativeBookmarkBridge, BookmarkBridge caller);
         void searchBookmarks(long nativeBookmarkBridge, BookmarkBridge caller,
-                List<BookmarkId> bookmarkMatches, String query, int maxNumber);
+                List<BookmarkId> bookmarkMatches, String query, String[] tags, int maxNumber);
         long init(BookmarkBridge caller, Profile profile);
         boolean isDoingExtensiveChanges(long nativeBookmarkBridge, BookmarkBridge caller);
         void destroy(long nativeBookmarkBridge, BookmarkBridge caller);

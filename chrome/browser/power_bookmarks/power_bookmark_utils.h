@@ -51,9 +51,9 @@ const bookmarks::BookmarkNode* AddURL(
     size_t index,
     const std::u16string& title,
     const GURL& url,
-    bookmarks::BookmarkNode::MetaInfoMap* meta_info,
-    absl::optional<base::Time> creation_time,
-    absl::optional<base::GUID> guid);
+    bookmarks::BookmarkNode::MetaInfoMap* meta_info = nullptr,
+    absl::optional<base::Time> creation_time = absl::nullopt,
+    absl::optional<base::GUID> guid = absl::nullopt);
 
 // Get the PowerBookmarkMeta for a node. The ownership of the returned object
 // is transferred to the caller and a new instance is created each time this is

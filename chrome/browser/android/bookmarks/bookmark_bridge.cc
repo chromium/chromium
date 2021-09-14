@@ -19,6 +19,7 @@
 #include "base/bind.h"
 #include "base/containers/adapters.h"
 #include "base/containers/stack.h"
+#include "base/feature_list.h"
 #include "base/guid.h"
 #include "base/i18n/string_compare.h"
 #include "base/strings/utf_string_conversions.h"
@@ -27,6 +28,9 @@
 #include "chrome/browser/android/reading_list/reading_list_manager_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
+#include "chrome/browser/commerce/commerce_feature_list.h"
+#include "chrome/browser/power_bookmarks/power_bookmark_utils.h"
+#include "chrome/browser/power_bookmarks/proto/power_bookmark_meta.pb.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
@@ -573,6 +577,52 @@ void BookmarkBridge::SetBookmarkUrl(JNIEnv* env,
                           *url::GURLAndroid::ToNativeGURL(env, url));
 }
 
+void BookmarkBridge::SetPowerBookmarkMeta(JNIEnv* env,
+                                          const JavaParamRef<jobject>& obj,
+                                          jlong id,
+                                          jint type,
+                                          const JavaParamRef<jstring>& bytes) {
+  const BookmarkNode* node = GetNodeByID(id, type);
+  if (!node || bytes.is_null())
+    return;
+
+  std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
+      std::make_unique<power_bookmarks::PowerBookmarkMeta>();
+  if (meta->ParseFromString(ConvertJavaStringToUTF8(env, bytes))) {
+    power_bookmarks::SetNodePowerBookmarkMeta(bookmark_model_, node,
+                                              std::move(meta));
+  }
+}
+
+ScopedJavaLocalRef<jstring> BookmarkBridge::GetPowerBookmarkMeta(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    jlong id,
+    jint type) {
+  const BookmarkNode* node = GetNodeByID(id, type);
+  std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
+      power_bookmarks::GetNodePowerBookmarkMeta(node);
+
+  std::string proto_bytes;
+  if (meta)
+    meta->SerializeToString(&proto_bytes);
+
+  return ConvertUTF8ToJavaString(env, proto_bytes);
+}
+
+void BookmarkBridge::DeletePowerBookmarkMeta(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj,
+    jlong id,
+    jint type) {
+  const BookmarkNode* node = GetNodeByID(id, type);
+
+  if (!node)
+    return;
+
+  power_bookmarks::DeleteNodePowerBookmarkMeta(bookmark_model_, node);
+}
+
 bool BookmarkBridge::DoesBookmarkExist(JNIEnv* env,
                                         const JavaParamRef<jobject>& obj,
                                         jlong id,
@@ -683,20 +733,32 @@ void BookmarkBridge::GetCurrentFolderHierarchy(
 }
 
 void BookmarkBridge::SearchBookmarks(JNIEnv* env,
-                                      const JavaParamRef<jobject>& obj,
-                                      const JavaParamRef<jobject>& j_list,
-                                      const JavaParamRef<jstring>& j_query,
-                                      jint max_results) {
+                                     const JavaParamRef<jobject>& obj,
+                                     const JavaParamRef<jobject>& j_list,
+                                     const JavaParamRef<jstring>& j_query,
+                                     const JavaParamRef<jobjectArray>& j_tags,
+                                     jint max_results) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(bookmark_model_->loaded());
 
   std::vector<const BookmarkNode*> results;
 
-  bookmarks::QueryFields query;
+  power_bookmarks::PowerBookmarkQueryFields query;
   query.word_phrase_query = std::make_unique<std::u16string>(
       base::android::ConvertJavaStringToUTF16(env, j_query));
 
-  GetBookmarksMatchingProperties(bookmark_model_, query, max_results, &results);
+  if (base::FeatureList::IsEnabled(commerce::kShoppingList)) {
+    if (!j_tags.is_null()) {
+      base::android::AppendJavaStringArrayToStringVector(env, j_tags,
+                                                         &query.tags);
+    }
+
+    power_bookmarks::GetBookmarksMatchingProperties(bookmark_model_, query,
+                                                    max_results, &results);
+  } else {
+    GetBookmarksMatchingProperties(bookmark_model_, query, max_results,
+                                   &results);
+  }
 
   reading_list_manager_->GetMatchingNodes(query, max_results, &results);
   if (partner_bookmarks_shim_->HasPartnerBookmarks() &&
@@ -821,6 +883,34 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::AddBookmark(
   ScopedJavaLocalRef<jobject> new_java_obj =
       JavaBookmarkIdCreateBookmarkId(
           env, new_node->id(), GetBookmarkType(new_node));
+  return new_java_obj;
+}
+
+ScopedJavaLocalRef<jobject> BookmarkBridge::AddPowerBookmark(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    const JavaParamRef<jobject>& j_web_contents,
+    const JavaParamRef<jobject>& j_parent_id_obj,
+    jint index,
+    const JavaParamRef<jstring>& j_title,
+    const JavaParamRef<jobject>& j_url) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(IsLoaded());
+  long parent_id = JavaBookmarkIdGetId(env, j_parent_id_obj);
+  int type = JavaBookmarkIdGetType(env, j_parent_id_obj);
+  const BookmarkNode* parent = GetNodeByID(parent_id, type);
+
+  auto* web_contents =
+      content::WebContents::FromJavaWebContents(j_web_contents);
+  DCHECK(web_contents);
+
+  const BookmarkNode* new_node = power_bookmarks::AddURL(
+      web_contents, bookmark_model_, parent, static_cast<size_t>(index),
+      base::android::ConvertJavaStringToUTF16(env, j_title),
+      *url::GURLAndroid::ToNativeGURL(env, j_url));
+  DCHECK(new_node);
+  ScopedJavaLocalRef<jobject> new_java_obj = JavaBookmarkIdCreateBookmarkId(
+      env, new_node->id(), GetBookmarkType(new_node));
   return new_java_obj;
 }
 
