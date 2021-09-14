@@ -9,7 +9,6 @@
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/signing_key_pair.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
-#include "chrome/browser/enterprise/connectors/device_trust/signal_reporter.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/signals_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/signals_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -55,9 +54,9 @@ KeyedService* DeviceTrustServiceFactory::BuildServiceInstanceFor(
       std::make_unique<DesktopAttestationService>(SigningKeyPair::Create());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  return new DeviceTrustService(
-      profile->GetPrefs(), std::move(attestation_service),
-      std::make_unique<DeviceTrustSignalReporter>(), CreateSignalsService());
+  return new DeviceTrustService(profile->GetPrefs(),
+                                std::move(attestation_service),
+                                CreateSignalsService());
 }
 
 }  // namespace enterprise_connectors

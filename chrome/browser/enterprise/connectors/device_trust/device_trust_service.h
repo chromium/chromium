@@ -19,13 +19,14 @@ class PrefService;
 namespace enterprise_connectors {
 
 class AttestationService;
-class DeviceTrustSignalReporter;
 class SignalsService;
 
+// Main service used to drive device trust connector scenarios. It is currently
+// used to generate a response for a crypto challenge received from Verified
+// Access during an attestation flow.
 class DeviceTrustService : public KeyedService {
  public:
   using AttestationCallback = base::OnceCallback<void(const std::string&)>;
-  using SignalReportCallback = base::OnceCallback<void(bool)>;
 
   using TrustedUrlPatternsChangedCallbackList =
       base::RepeatingCallbackList<void(const base::ListValue&)>;
@@ -37,13 +38,7 @@ class DeviceTrustService : public KeyedService {
 
   DeviceTrustService(PrefService* profile_prefs,
                      std::unique_ptr<AttestationService> attestation_service,
-                     std::unique_ptr<DeviceTrustSignalReporter> signal_reporter,
                      std::unique_ptr<SignalsService> signals_service);
-  DeviceTrustService(PrefService* profile_prefs,
-                     std::unique_ptr<AttestationService> attestation_service,
-                     std::unique_ptr<DeviceTrustSignalReporter> signal_reporter,
-                     std::unique_ptr<SignalsService> signals_service,
-                     SignalReportCallback signal_report_callback);
 
   DeviceTrustService(const DeviceTrustService&) = delete;
   DeviceTrustService& operator=(const DeviceTrustService&) = delete;
@@ -73,25 +68,12 @@ class DeviceTrustService : public KeyedService {
 
  private:
   void OnPolicyUpdated();
-  void OnReporterInitialized(bool success);
-  void OnSignalReported(bool success);
-
-  base::RepeatingCallback<bool()> MakePolicyCheck();
-
-  // Caches whether the device trust service is enabled or not.  This is used
-  // to implement IsEnabled() so the method does not need to access the prefs.
-  // This is important because |reporter_| will indirectly call IsEnabled()
-  // from a sequence that cannot call prefs methods.
-  bool is_enabled_ = false;
 
   PrefChangeRegistrar pref_observer_;
-  bool first_report_sent_ = false;
 
   PrefService* const profile_prefs_;
   std::unique_ptr<AttestationService> attestation_service_;
-  std::unique_ptr<DeviceTrustSignalReporter> signal_reporter_;
   std::unique_ptr<SignalsService> signals_service_;
-  SignalReportCallback signal_report_callback_;
   TrustedUrlPatternsChangedCallbackList callbacks_;
 
   base::WeakPtrFactory<DeviceTrustService> weak_factory_{this};
