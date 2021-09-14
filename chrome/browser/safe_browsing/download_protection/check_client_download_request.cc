@@ -251,6 +251,7 @@ CheckClientDownloadRequest::ShouldUploadBinary(
 }
 
 void CheckClientDownloadRequest::UploadBinary(
+    DownloadCheckResult result,
     DownloadCheckResultReason reason,
     enterprise_connectors::AnalysisSettings settings) {
   if (reason == REASON_DOWNLOAD_DANGEROUS ||
@@ -260,12 +261,12 @@ void CheckClientDownloadRequest::UploadBinary(
       reason == REASON_DOWNLOAD_DANGEROUS_ACCOUNT_COMPROMISE) {
     service()->UploadForDeepScanning(
         item_, base::BindRepeating(&MaybeOverrideScanResult, reason, callback_),
-        DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
+        DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY, result,
         std::move(settings));
   } else {
     service()->UploadForDeepScanning(
         item_, callback_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
-        std::move(settings));
+        result, std::move(settings));
   }
 }
 

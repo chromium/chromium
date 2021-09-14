@@ -69,7 +69,8 @@ class CheckClientDownloadRequest : public CheckClientDownloadRequestBase,
   // done.
   absl::optional<enterprise_connectors::AnalysisSettings> ShouldUploadBinary(
       DownloadCheckResultReason reason) override;
-  void UploadBinary(DownloadCheckResultReason reason,
+  void UploadBinary(DownloadCheckResult result,
+                    DownloadCheckResultReason reason,
                     enterprise_connectors::AnalysisSettings settings) override;
 
   // Called when this request is completed.

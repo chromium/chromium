@@ -191,16 +191,20 @@ class DownloadProtectionService {
   void ReportDelayedBypassEvent(download::DownloadItem* download,
                                 download::DownloadDangerType danger_type);
 
-  // Uploads |item| to Safe Browsing for deep scanning, using the upload
-  // service attached to the profile |item| was downloaded in. This is
-  // non-blocking, and the result we be provided through |callback|. |source| is
-  // used to identify the reason for deep scanning. Only the scan types listed
-  // in |allowed_scans| will be performed. This must be called on the UI
+  // Uploads `item` to Safe Browsing for deep scanning, using the upload
+  // service attached to the profile `item` was downloaded in. This is
+  // non-blocking, and the result we be provided through `callback`. `trigger`
+  // is used to identify the reason for deep scanning, aka enterprise policy or
+  // APP. `download_check_result` indicates the previously known SB verdict to
+  // apply to the download should deep scanning fail. `analysis_settings`
+  // contains settings to apply throughout scanning (types of scans to do,
+  // whether to block/allow large files, etc). This must be called on the UI
   // thread.
   void UploadForDeepScanning(
       download::DownloadItem* item,
       CheckDownloadRepeatingCallback callback,
       DeepScanningRequest::DeepScanTrigger trigger,
+      DownloadCheckResult download_check_result,
       enterprise_connectors::AnalysisSettings analysis_settings);
 
   // Returns all the currently active deep scanning requests.

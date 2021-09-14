@@ -366,8 +366,8 @@ TEST_P(DeepScanningRequestFeaturesEnabledTest, ChecksFeatureFlags) {
   {
     DeepScanningRequest request(
         &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
-        base::DoNothing(), &download_protection_service_,
-        dlp_and_malware_settings());
+        DownloadCheckResult::SAFE, base::DoNothing(),
+        &download_protection_service_, dlp_and_malware_settings());
     request.Start();
     expect_dlp_and_malware_tags();
   }
@@ -389,7 +389,8 @@ TEST_F(DeepScanningRequestAllFeaturesEnabledTest,
                          kScanForDlpAndMalware);
     DeepScanningRequest request(
         &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
-        base::DoNothing(), &download_protection_service_, settings().value());
+        DownloadCheckResult::SAFE, base::DoNothing(),
+        &download_protection_service_, settings().value());
     request.Start();
     EXPECT_EQ(2, download_protection_service_.GetFakeBinaryUploadService()
                      ->last_request()
@@ -419,7 +420,8 @@ TEST_F(DeepScanningRequestAllFeaturesEnabledTest,
                          kScanForMalware);
     DeepScanningRequest request(
         &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
-        base::DoNothing(), &download_protection_service_, settings().value());
+        DownloadCheckResult::SAFE, base::DoNothing(),
+        &download_protection_service_, settings().value());
     request.Start();
     EXPECT_EQ(1, download_protection_service_.GetFakeBinaryUploadService()
                      ->last_request()
@@ -435,7 +437,8 @@ TEST_F(DeepScanningRequestAllFeaturesEnabledTest,
                          enterprise_connectors::FILE_DOWNLOADED, kScanForDlp);
     DeepScanningRequest request(
         &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
-        base::DoNothing(), &download_protection_service_, settings().value());
+        DownloadCheckResult::SAFE, base::DoNothing(),
+        &download_protection_service_, settings().value());
     request.Start();
     EXPECT_EQ(1, download_protection_service_.GetFakeBinaryUploadService()
                      ->last_request()
@@ -451,7 +454,8 @@ TEST_F(DeepScanningRequestAllFeaturesEnabledTest,
     EXPECT_FALSE(settings().has_value());
     DeepScanningRequest request(
         &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
-        base::DoNothing(), &download_protection_service_,
+        DownloadCheckResult::SAFE, base::DoNothing(),
+        &download_protection_service_,
         enterprise_connectors::AnalysisSettings());
     request.Start();
     EXPECT_TRUE(download_protection_service_.GetFakeBinaryUploadService()
@@ -479,7 +483,8 @@ TEST_P(DeepScanningAPPRequestTest, GeneratesCorrectRequestForAPP) {
   settings.tags = {"malware"};
   DeepScanningRequest request(
       &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_APP_PROMPT,
-      base::DoNothing(), &download_protection_service_, std::move(settings));
+      DownloadCheckResult::SAFE, base::DoNothing(),
+      &download_protection_service_, std::move(settings));
   request.Start();
 
   EXPECT_EQ(1, download_protection_service_.GetFakeBinaryUploadService()
@@ -550,6 +555,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
   {
     DeepScanningRequest request(
         &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
+        DownloadCheckResult::SAFE,
         base::BindRepeating(&DeepScanningRequestTest::SetLastResult,
                             base::Unretained(this)),
         &download_protection_service_, settings().value());
@@ -603,6 +609,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
   {
     DeepScanningRequest request(
         &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
+        DownloadCheckResult::SAFE,
         base::BindRepeating(&DeepScanningRequestTest::SetLastResult,
                             base::Unretained(this)),
         &download_protection_service_, settings().value());
@@ -656,6 +663,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
   {
     DeepScanningRequest request(
         &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
+        DownloadCheckResult::SAFE,
         base::BindRepeating(&DeepScanningRequestTest::SetLastResult,
                             base::Unretained(this)),
         &download_protection_service_, settings().value());
@@ -699,6 +707,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
   {
     DeepScanningRequest request(
         &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
+        DownloadCheckResult::SAFE,
         base::BindRepeating(&DeepScanningRequestTest::SetLastResult,
                             base::Unretained(this)),
         &download_protection_service_, settings().value());
@@ -742,6 +751,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
   {
     DeepScanningRequest request(
         &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
+        DownloadCheckResult::SAFE,
         base::BindRepeating(&DeepScanningRequestTest::SetLastResult,
                             base::Unretained(this)),
         &download_protection_service_, settings().value());
@@ -788,6 +798,7 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
   {
     DeepScanningRequest request(
         &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
+        DownloadCheckResult::SAFE,
         base::BindRepeating(&DeepScanningRequestTest::SetLastResult,
                             base::Unretained(this)),
         &download_protection_service_, settings().value());
@@ -820,12 +831,13 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
 
     request.Start();
 
-    EXPECT_EQ(DownloadCheckResult::UNKNOWN, last_result_);
+    EXPECT_EQ(DownloadCheckResult::SAFE, last_result_);
   }
 
   {
     DeepScanningRequest request(
         &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
+        DownloadCheckResult::SAFE,
         base::BindRepeating(&DeepScanningRequestTest::SetLastResult,
                             base::Unretained(this)),
         &download_protection_service_, settings().value());
@@ -858,7 +870,51 @@ TEST_F(DeepScanningReportingTest, ProcessesResponseCorrectly) {
 
     request.Start();
 
-    EXPECT_EQ(DownloadCheckResult::UNKNOWN, last_result_);
+    EXPECT_EQ(DownloadCheckResult::SAFE, last_result_);
+  }
+
+  {
+    // The DownloadCheckResult passed below should be used if scanning fails.
+    DeepScanningRequest request(
+        &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
+        DownloadCheckResult::DANGEROUS,
+        base::BindRepeating(&DeepScanningRequestTest::SetLastResult,
+                            base::Unretained(this)),
+        &download_protection_service_, settings().value());
+
+    EXPECT_CALL(item_, GetDangerType())
+        .WillRepeatedly(Return(download::DownloadDangerType::
+                                   DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT));
+
+    enterprise_connectors::ContentAnalysisResponse response;
+
+    auto* malware_result = response.add_results();
+    malware_result->set_tag("malware");
+    malware_result->set_status(
+        enterprise_connectors::ContentAnalysisResponse::Result::FAILURE);
+
+    download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
+        download_path_, BinaryUploadService::Result::SUCCESS, response);
+
+    EventReportValidator validator(client_.get());
+    validator.ExpectUnscannedFileEvent(
+        /*url*/ "https://example.com/download.exe",
+        /*filename*/ download_path_.AsUTF8Unsafe(),
+        // printf "download contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
+        /*sha256*/
+        "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
+        /*trigger*/
+        extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
+        /*reason*/ "MALWARE_SCAN_FAILED",
+        /*mimetypes*/ ExeMimeTypes(),
+        /*size*/ std::string("download contents").size(),
+        /*result*/
+        EventResultToString(EventResult::WARNED),
+        /*username*/ kUserName);
+
+    request.Start();
+
+    EXPECT_EQ(DownloadCheckResult::DANGEROUS, last_result_);
   }
 }
 
@@ -896,7 +952,7 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
     }
 
     DeepScanningRequest request(
-        &item_,
+        &item_, DownloadCheckResult::SAFE,
         base::BindRepeating(&DeepScanningRequestTest::SetLastResult,
                             base::Unretained(this)),
         &download_protection_service_, settings().value(),
@@ -956,7 +1012,7 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
     }
 
     DeepScanningRequest request(
-        &item_,
+        &item_, DownloadCheckResult::SAFE,
         base::BindRepeating(&DeepScanningRequestTest::SetLastResult,
                             base::Unretained(this)),
         &download_protection_service_, settings().value(),
@@ -984,7 +1040,7 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
     request.Start();
     run_loop.Run();
 
-    EXPECT_EQ(DownloadCheckResult::UNKNOWN, last_result_);
+    EXPECT_EQ(DownloadCheckResult::SAFE, last_result_);
     EXPECT_EQ(4u, download_protection_service_.GetFakeBinaryUploadService()
                       ->num_finished_requests());
     download_protection_service_.GetFakeBinaryUploadService()->Reset();
@@ -1041,7 +1097,7 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
     }
 
     DeepScanningRequest request(
-        &item_,
+        &item_, DownloadCheckResult::SAFE,
         base::BindRepeating(&DeepScanningRequestTest::SetLastResult,
                             base::Unretained(this)),
         &download_protection_service_, settings().value(),
@@ -1094,6 +1150,7 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
 TEST_F(DeepScanningReportingTest, Timeout) {
   DeepScanningRequest request(
       &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
+      DownloadCheckResult::SAFE,
       base::BindRepeating(&DeepScanningRequestTest::SetLastResult,
                           base::Unretained(this)),
       &download_protection_service_, settings().value());
@@ -1120,7 +1177,7 @@ TEST_F(DeepScanningReportingTest, Timeout) {
 
   request.Start();
 
-  EXPECT_EQ(DownloadCheckResult::UNKNOWN, last_result_);
+  EXPECT_EQ(DownloadCheckResult::SAFE, last_result_);
 }
 
 class DeepScanningDownloadRestrictionsTest
@@ -1178,6 +1235,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
   {
     DeepScanningRequest request(
         &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
+        DownloadCheckResult::SAFE,
         base::BindRepeating(&DeepScanningRequestTest::SetLastResult,
                             base::Unretained(this)),
         &download_protection_service_, settings().value());
@@ -1219,6 +1277,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
   {
     DeepScanningRequest request(
         &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
+        DownloadCheckResult::SAFE,
         base::BindRepeating(&DeepScanningRequestTest::SetLastResult,
                             base::Unretained(this)),
         &download_protection_service_, settings().value());
@@ -1261,6 +1320,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
   {
     DeepScanningRequest request(
         &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
+        DownloadCheckResult::SAFE,
         base::BindRepeating(&DeepScanningRequestTest::SetLastResult,
                             base::Unretained(this)),
         &download_protection_service_, settings().value());
@@ -1289,7 +1349,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
 
     request.Start();
 
-    EXPECT_EQ(DownloadCheckResult::UNKNOWN, last_result_);
+    EXPECT_EQ(DownloadCheckResult::SAFE, last_result_);
   }
 
   {
@@ -1301,6 +1361,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
                                    DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT));
     DeepScanningRequest request(
         &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
+        DownloadCheckResult::DANGEROUS,
         base::BindRepeating(&DeepScanningRequestTest::SetLastResult,
                             base::Unretained(this)),
         &download_protection_service_, settings().value());
@@ -1328,7 +1389,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
 
     request.Start();
 
-    EXPECT_EQ(DownloadCheckResult::UNKNOWN, last_result_);
+    EXPECT_EQ(DownloadCheckResult::DANGEROUS, last_result_);
   }
 }
 
@@ -1409,7 +1470,8 @@ TEST_F(DeepScanningRequestAllFeaturesEnabledTest, PopulatesRequest) {
 
   DeepScanningRequest request(
       &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
-      base::DoNothing(), &download_protection_service_, settings().value());
+      DownloadCheckResult::SAFE, base::DoNothing(),
+      &download_protection_service_, settings().value());
   request.Start();
   EXPECT_EQ(download_protection_service_.GetFakeBinaryUploadService()
                 ->last_request()

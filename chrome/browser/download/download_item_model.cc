@@ -792,7 +792,7 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
               delegate->GetWeakPtr(), download_->GetId()),
           safe_browsing::DeepScanningRequest::DeepScanTrigger::
               TRIGGER_APP_PROMPT,
-          std::move(settings));
+          safe_browsing::DownloadCheckResult::UNKNOWN, std::move(settings));
       break;
   }
 }

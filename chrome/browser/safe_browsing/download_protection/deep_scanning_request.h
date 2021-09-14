@@ -71,6 +71,7 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
   // `download_service`.
   DeepScanningRequest(download::DownloadItem* item,
                       DeepScanTrigger trigger,
+                      DownloadCheckResult pre_scan_download_check_result,
                       CheckDownloadRepeatingCallback callback,
                       DownloadProtectionService* download_service,
                       enterprise_connectors::AnalysisSettings settings);
@@ -83,6 +84,7 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
   // `download_service`.
   DeepScanningRequest(
       download::DownloadItem* item,
+      DownloadCheckResult pre_scan_download_check_result,
       CheckDownloadRepeatingCallback callback,
       DownloadProtectionService* download_service,
       enterprise_connectors::AnalysisSettings settings,
@@ -208,6 +210,9 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
   // This should be updated when a scan completes.
   DownloadCheckResult download_check_result_ =
       DownloadCheckResult::DEEP_SCANNED_SAFE;
+
+  // Cached SB result for the download to be used if deep scanning fails.
+  DownloadCheckResult pre_scan_download_check_result_;
 
   // Cached danger type for the download to be used by reporting in case
   // scanning is skipped for any reason.

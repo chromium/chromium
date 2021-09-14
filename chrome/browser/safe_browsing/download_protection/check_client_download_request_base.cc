@@ -195,7 +195,7 @@ void CheckClientDownloadRequestBase::FinishRequest(
 
   auto settings = ShouldUploadBinary(reason);
   if (settings.has_value()) {
-    UploadBinary(reason, std::move(settings.value()));
+    UploadBinary(result, reason, std::move(settings.value()));
   } else {
     // Post a task to avoid reentrance issue. http://crbug.com//1152451.
     content::GetUIThreadTaskRunner({})->PostTask(

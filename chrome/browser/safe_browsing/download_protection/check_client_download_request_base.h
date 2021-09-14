@@ -114,6 +114,7 @@ class CheckClientDownloadRequestBase {
   // If ShouldUploadBinary returns settings, actually performs the upload to
   // Safe Browsing for deep scanning.
   virtual void UploadBinary(
+      DownloadCheckResult result,
       DownloadCheckResultReason reason,
       enterprise_connectors::AnalysisSettings settings) = 0;
 

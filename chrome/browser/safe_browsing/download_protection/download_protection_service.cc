@@ -199,8 +199,12 @@ bool DownloadProtectionService::MaybeCheckClientDownload(
       base::FeatureList::IsEnabled(
           kSafeBrowsingDisableConsumerCsdForEnterprise) &&
       settings.has_value()) {
+    // Since this branch implies that the CSD check is done through the deep
+    // scanning request and not with a consumer check, the pre-deep scanning
+    // DownloadCheckResult is considered UNKNOWN.
     UploadForDeepScanning(item, std::move(callback),
                           DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
+                          DownloadCheckResult::UNKNOWN,
                           std::move(settings.value()));
     return true;
   }
@@ -213,8 +217,11 @@ bool DownloadProtectionService::MaybeCheckClientDownload(
   // TODO(https://crbug.com/1165815): Remove this check once the enterpise CSD
   // check has fully launched.
   if (settings.has_value()) {
+    // Since this branch implies that Safe Browsing is disabled, the pre-deep
+    // scanning DownloadCheckResult is considered UNKNOWN.
     UploadForDeepScanning(item, std::move(callback),
                           DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
+                          DownloadCheckResult::UNKNOWN,
                           std::move(settings.value()));
     return true;
   }
@@ -672,10 +679,12 @@ void DownloadProtectionService::UploadForDeepScanning(
     download::DownloadItem* item,
     CheckDownloadRepeatingCallback callback,
     DeepScanningRequest::DeepScanTrigger trigger,
+    DownloadCheckResult download_check_result,
     enterprise_connectors::AnalysisSettings analysis_settings) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto request = std::make_unique<DeepScanningRequest>(
-      item, trigger, callback, this, std::move(analysis_settings));
+      item, trigger, download_check_result, callback, this,
+      std::move(analysis_settings));
   DeepScanningRequest* request_raw = request.get();
   auto insertion_result = deep_scanning_requests_.insert(
       std::make_pair(request_raw, std::move(request)));

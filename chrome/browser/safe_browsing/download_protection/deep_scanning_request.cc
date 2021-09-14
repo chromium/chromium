@@ -298,6 +298,7 @@ DeepScanningRequest::ShouldUploadBinary(download::DownloadItem* item) {
 DeepScanningRequest::DeepScanningRequest(
     download::DownloadItem* item,
     DeepScanTrigger trigger,
+    DownloadCheckResult pre_scan_download_check_result,
     CheckDownloadRepeatingCallback callback,
     DownloadProtectionService* download_service,
     enterprise_connectors::AnalysisSettings settings)
@@ -307,12 +308,14 @@ DeepScanningRequest::DeepScanningRequest(
       download_service_(download_service),
       analysis_settings_(std::move(settings)),
       pending_scan_requests_(1),
+      pre_scan_download_check_result_(pre_scan_download_check_result),
       weak_ptr_factory_(this) {
   item_->AddObserver(this);
 }
 
 DeepScanningRequest::DeepScanningRequest(
     download::DownloadItem* item,
+    DownloadCheckResult pre_scan_download_check_result,
     CheckDownloadRepeatingCallback callback,
     DownloadProtectionService* download_service,
     enterprise_connectors::AnalysisSettings settings,
@@ -324,6 +327,7 @@ DeepScanningRequest::DeepScanningRequest(
       analysis_settings_(std::move(settings)),
       save_package_files_(std::move(save_package_files)),
       pending_scan_requests_(save_package_files_.size()),
+      pre_scan_download_check_result_(pre_scan_download_check_result),
       weak_ptr_factory_(this) {
   item_->AddObserver(this);
 }
@@ -599,6 +603,13 @@ void DeepScanningRequest::FinishRequest(DownloadCheckResult result) {
             ? GetEventResult(pre_scan_danger_type_, item_)
             : GetEventResult(result, profile);
     report_callbacks_.Notify(event_result);
+  }
+
+  // If the deep-scanning result is unknown for whatever reason, `callback_`
+  // should be called with whatever SB result was known prior to deep scanning.
+  if (result == DownloadCheckResult::UNKNOWN &&
+      trigger_ == DeepScanTrigger::TRIGGER_POLICY) {
+    result = pre_scan_download_check_result_;
   }
 
   for (auto& observer : observers_)
