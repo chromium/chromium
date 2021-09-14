@@ -86,12 +86,12 @@ void LayoutSVGInline::ObjectBoundingBoxForCursor(NGInlineCursor& cursor,
   for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
     const NGFragmentItem& item = *cursor.CurrentItem();
     if (item.Type() == NGFragmentItem::kSvgText) {
-      bounds.Unite(item.ObjectBoundingBox());
+      bounds.Unite(cursor.Current().ObjectBoundingBox(cursor));
     } else if (NGInlineCursor descendants = cursor.CursorForDescendants()) {
       for (; descendants; descendants.MoveToNext()) {
         const NGFragmentItem& descendant_item = *descendants.CurrentItem();
         if (descendant_item.Type() == NGFragmentItem::kSvgText)
-          bounds.Unite(descendant_item.ObjectBoundingBox());
+          bounds.Unite(descendants.Current().ObjectBoundingBox(cursor));
       }
     }
   }
@@ -147,10 +147,10 @@ void LayoutSVGInline::AbsoluteQuads(Vector<FloatQuad>& quads,
          cursor.MoveToNextForSameLayoutObject()) {
       const NGFragmentItem& item = *cursor.CurrentItem();
       if (item.Type() == NGFragmentItem::kSvgText) {
-        quads.push_back(
-            LocalToAbsoluteQuad(SVGLayoutSupport::ExtendTextBBoxWithStroke(
-                                    *this, item.ObjectBoundingBox()),
-                                mode));
+        quads.push_back(LocalToAbsoluteQuad(
+            SVGLayoutSupport::ExtendTextBBoxWithStroke(
+                *this, cursor.Current().ObjectBoundingBox(cursor)),
+            mode));
       }
     }
     return;

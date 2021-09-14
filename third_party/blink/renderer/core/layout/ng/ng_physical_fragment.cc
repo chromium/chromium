@@ -823,8 +823,8 @@ void NGPhysicalFragment::AddOutlineRectsForCursor(
         break;
       }
       case NGFragmentItem::kSvgText: {
-        PhysicalRect rect =
-            PhysicalRect::EnclosingRect(item.ObjectBoundingBox());
+        auto rect = PhysicalRect::EnclosingRect(
+            cursor->Current().ObjectBoundingBox(*cursor));
         DCHECK(!text_combine);
         rect.Move(additional_offset);
         outline_rects->push_back(rect);

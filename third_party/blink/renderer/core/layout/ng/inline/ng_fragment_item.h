@@ -184,10 +184,10 @@ class CORE_EXPORT NGFragmentItem {
   void SetDeltaToNextForSameLayoutObject(wtf_size_t delta) const;
 
   const PhysicalRect& RectInContainerFragment() const { return rect_; }
-  // This function returns a transformed unscaled FloatRect for kSvgText
-  // type, and returns a FloatRect just converted from
-  // RectInContainerFragment() for other types.
-  FloatRect ObjectBoundingBox() const;
+  // This function returns a transformed unscaled glyph bounds for kSvgText
+  // type.
+  // Do not call this for other types.
+  FloatRect ObjectBoundingBox(const NGFragmentItems& items) const;
 
   // Returns a point transformed by the inverse of
   // BuildSvgTransformForBoundingBox(). The return value can be compared with

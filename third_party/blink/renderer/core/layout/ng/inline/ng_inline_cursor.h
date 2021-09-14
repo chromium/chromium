@@ -142,7 +142,7 @@ class CORE_EXPORT NGInlineCursorPosition {
   const PhysicalRect RectInContainerFragment() const {
     return item_->RectInContainerFragment();
   }
-  FloatRect ObjectBoundingBox() const { return item_->ObjectBoundingBox(); }
+  FloatRect ObjectBoundingBox(const NGInlineCursor& cursor) const;
   const PhysicalOffset OffsetInContainerFragment() const {
     return item_->OffsetInContainerFragment();
   }

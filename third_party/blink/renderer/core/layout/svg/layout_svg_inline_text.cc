@@ -193,7 +193,7 @@ FloatRect LayoutSVGInlineText::ObjectBoundingBox() const {
   for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
     const NGFragmentItem& item = *cursor.CurrentItem();
     if (item.Type() == NGFragmentItem::kSvgText)
-      bounds.Unite(item.ObjectBoundingBox());
+      bounds.Unite(cursor.Current().ObjectBoundingBox(cursor));
   }
   return bounds;
 }

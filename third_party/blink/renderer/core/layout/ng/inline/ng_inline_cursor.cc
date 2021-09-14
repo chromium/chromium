@@ -449,6 +449,11 @@ const Node* NGInlineCursorPosition::GetNode() const {
   return nullptr;
 }
 
+FloatRect NGInlineCursorPosition::ObjectBoundingBox(
+    const NGInlineCursor& cursor) const {
+  return item_->ObjectBoundingBox(cursor.Items());
+}
+
 void NGInlineCursorPosition::RecalcInkOverflow(
     const NGInlineCursor& cursor) const {
   DCHECK(item_);

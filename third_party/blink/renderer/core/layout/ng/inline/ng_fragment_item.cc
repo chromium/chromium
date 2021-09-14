@@ -349,14 +349,26 @@ void NGFragmentItem::SetSvgLineLocalRect(const PhysicalRect& unscaled_rect) {
   rect_ = unscaled_rect;
 }
 
-FloatRect NGFragmentItem::ObjectBoundingBox() const {
-  if (Type() != kSvgText)
-    return FloatRect(rect_);
-  FloatRect item_rect = SvgFragmentData()->rect;
+FloatRect NGFragmentItem::ObjectBoundingBox(
+    const NGFragmentItems& items) const {
+  DCHECK_EQ(Type(), kSvgText);
+  const Font scaled_font = ScaledFont();
+  FloatRect ink_bounds = scaled_font.TextInkBounds(TextPaintInfo(items));
+  if (const auto* font_data = scaled_font.PrimaryFont())
+    ink_bounds.Move(0.0f, font_data->GetFontMetrics().FloatAscent());
+  ink_bounds.Scale(SvgFragmentData()->length_adjust_scale, 1.0f);
+  const FloatRect& scaled_rect = SvgFragmentData()->rect;
+  if (!IsHorizontal()) {
+    ink_bounds =
+        FloatRect(scaled_rect.Width() - ink_bounds.MaxY(), ink_bounds.X(),
+                  ink_bounds.Height(), ink_bounds.Width());
+  }
+  ink_bounds.MoveBy(scaled_rect.Location());
+  ink_bounds.Unite(scaled_rect);
   if (HasSvgTransformForBoundingBox())
-    item_rect = BuildSvgTransformForBoundingBox().MapRect(item_rect);
-  item_rect.Scale(1 / SvgScalingFactor());
-  return item_rect;
+    ink_bounds = BuildSvgTransformForBoundingBox().MapRect(ink_bounds);
+  ink_bounds.Scale(1 / SvgScalingFactor());
+  return ink_bounds;
 }
 
 FloatQuad NGFragmentItem::SvgUnscaledQuad() const {
