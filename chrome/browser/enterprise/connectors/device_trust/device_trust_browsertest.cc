@@ -202,8 +202,7 @@ class DeviceTrustBrowserTest : public InProcessBrowserTest {
 
 // Tests that the whole attestation flow occurs when navigating to an allowed
 // domain.
-// TODO(crbug.com/1246534) Flaky test.
-IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest, DISABLED_AttestationFullFlow) {
+IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest, AttestationFullFlow) {
   GURL redirect_url = GetRedirectUrl();
   TestNavigationManager first_navigation(web_contents(), redirect_url);
 
@@ -238,9 +237,7 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest, DISABLED_AttestationFullFlow) {
 
 // Tests that the attestation flow does not get triggered when navigating to a
 // domain that is not part of the allow-list.
-// TODO(crbug.com/1246597) Flaky test
-IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest,
-                       DISABLED_AttestationHostNotAllowed) {
+IN_PROC_BROWSER_TEST_F(DeviceTrustBrowserTest, AttestationHostNotAllowed) {
   GURL navigation_url = GetDisallowedUrl();
   TestNavigationManager navigation_manager(web_contents(), navigation_url);
 
