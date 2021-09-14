@@ -1973,6 +1973,12 @@ crbug.com/509989 [ Fuchsia ] virtual/text-antialias/font-synthesis-style-system-
 crbug.com/509989 [ Mac ] virtual/text-antialias/font-synthesis-style-local-linux.html [ Skip ]
 crbug.com/509989 [ Win ] virtual/text-antialias/font-synthesis-style-local-linux.html [ Skip ]
 crbug.com/509989 [ Fuchsia ] virtual/text-antialias/font-synthesis-style-local-linux.html [ Skip ]
+crbug.com/509989 [ Mac ] virtual/text-antialias/font-synthesis-weight-fallback.html [ Skip ]
+crbug.com/509989 [ Win ] virtual/text-antialias/font-synthesis-weight-fallback.html [ Skip ]
+crbug.com/509989 [ Fuchsia ] virtual/text-antialias/font-synthesis-weight-fallback.html [ Skip ]
+crbug.com/509989 [ Mac ] virtual/text-antialias/font-synthesis-style-fallback.html [ Skip ]
+crbug.com/509989 [ Win ] virtual/text-antialias/font-synthesis-style-fallback.html [ Skip ]
+crbug.com/509989 [ Fuchsia ] virtual/text-antialias/font-synthesis-style-fallback.html [ Skip ]
 
 # Tests Mac system font available only in Regular style in Mac set of fonts.
 crbug.com/509989 [ Linux ] virtual/text-antialias/font-synthesis-weight-system-mac.html [ Skip ]
