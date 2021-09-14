@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import './navigation_shared_vars.js';
 import './page_toolbar.js';
 
@@ -79,6 +80,11 @@ export class NavigationViewPanelElement extends PolymerElement {
       showToolBar: {
         type: Boolean,
         value: false,
+      },
+
+      /** @protected {boolean} */
+      showNav: {
+        type: Boolean,
       },
     }
   }

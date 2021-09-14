@@ -1,10 +1,37 @@
 <custom-style>
   <style>
     html {
-      --areas: "head head"
-               "sideNav main";
-      --areas-no-header: "sideNav main";
-      --columns: 1fr 4fr;
+      --areas-no-header-nav: "sideNav main";
+    }
+
+   /* calc formula: (viewport width - (padding + side nav size)) */
+    @media (min-width: 600px) {
+      html {
+        --areas-nav: "head head"
+                 "main main";
+        --columns-nav: 1fr 1fr;
+        --container-padding-nav: 24px;
+        --container-max-width-nav: calc(100vw - 48px);
+        }
+    }
+
+    @media (min-width: 769px) {
+      html {
+        --areas-nav: "head head"
+                 "sideNav main";
+        --columns-nav: 192px 1fr;
+        --container-padding-nav: 40px;
+        --container-max-width-nav: calc(100vw - 272px);
+        }
+    }
+
+    @media (min-width: 961px) {
+      html {
+        --columns-nav: 248px 1fr;
+        --container-padding-nav: 48px;
+        --container-max-width-nav: calc(100vw - 344px);
+
+      }
     }
   </style>
 </custom-style>
