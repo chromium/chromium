@@ -168,6 +168,49 @@ DisplayLockUtilities::ActivatableLockedInclusiveAncestors(
   return elements_to_activate;
 }
 
+DisplayLockUtilities::ScopedForcedUpdate::Impl::Impl(const Range* range)
+    : node_(range->FirstNode()) {
+  if (!RuntimeEnabledFeatures::CSSContentVisibilityEnabled())
+    return;
+  if (!node_)
+    return;
+
+  // Selection doesn't span frames, so we don't need to worry about including
+  // subframes inside the Range or multiple parent frames.
+  auto* owner_node = GetFrameOwnerNode(node_);
+  if (owner_node)
+    parent_frame_impl_ = MakeGarbageCollected<Impl>(owner_node, true);
+
+  range->OwnerDocument().GetDisplayLockDocumentState().BeginRangeForcedScope(
+      range, this);
+
+  if (node_->GetDocument()
+          .GetDisplayLockDocumentState()
+          .LockedDisplayLockCount() == 0)
+    return;
+
+  for (Node& node : EphemeralRangeInFlatTree(range).Nodes()) {
+    if (Element* element = DynamicTo<Element>(&node)) {
+      if (DisplayLockContext* context = element->GetDisplayLockContext()) {
+        forced_context_set_.insert(context);
+      }
+    }
+  }
+  // We want to unlock everything up the ancestor tree and all nodes in between
+  // the first and last nodes of the range. EphemeralRangeInFlatTree::Nodes will
+  // cover all of the in between nodes and the ancestors of the end node
+  for (Node& node : FlatTreeTraversal::AncestorsOf(*range->FirstNode())) {
+    if (Element* element = DynamicTo<Element>(&node)) {
+      if (DisplayLockContext* context = element->GetDisplayLockContext()) {
+        forced_context_set_.insert(context);
+      }
+    }
+  }
+  for (DisplayLockContext* context : forced_context_set_) {
+    context->NotifyForcedUpdateScopeStarted();
+  }
+}
+
 DisplayLockUtilities::ScopedForcedUpdate::Impl::Impl(const Node* node,
                                                      bool include_self)
     : node_(node) {
@@ -222,7 +265,7 @@ void DisplayLockUtilities::ScopedForcedUpdate::Impl::Destroy() {
   if (!node_)
     return;
   if (RuntimeEnabledFeatures::CSSContentVisibilityEnabled())
-    node_->GetDocument().GetDisplayLockDocumentState().EndNodeForcedScope(this);
+    node_->GetDocument().GetDisplayLockDocumentState().EndForcedScope(this);
   if (parent_frame_impl_)
     parent_frame_impl_->Destroy();
   for (auto context : forced_context_set_) {
