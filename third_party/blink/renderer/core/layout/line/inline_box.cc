@@ -37,12 +37,14 @@ namespace blink {
 
 class LayoutObject;
 
-struct SameSizeAsInlineBox : DisplayItemClient {
+struct SameSizeAsInlineBox : GarbageCollected<SameSizeAsInlineBox>,
+                             DisplayItemClient {
   ~SameSizeAsInlineBox() override = default;
   Member<void*> members[4];
   LayoutPoint b;
   LayoutUnit c;
   uint32_t bitfields;
+  void Trace(Visitor* visitor) const {}
 };
 
 ASSERT_SIZE(InlineBox, SameSizeAsInlineBox);
