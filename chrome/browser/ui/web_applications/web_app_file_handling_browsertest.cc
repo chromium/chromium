@@ -809,8 +809,9 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingOriginTrialBrowserTest,
 }
 
 // Part 2: Test that expired file handlers for an app are cleaned up.
+// Disabled due to flakiness. http://crbug.com/1249357
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingOriginTrialBrowserTest,
-                       ExpiredTrialHandlersAreCleanedUpAtLaunch) {
+                       DISABLED_ExpiredTrialHandlersAreCleanedUpAtLaunch) {
   EXPECT_EQ(1, file_handler_manager().TriggerFileHandlerCleanupForTesting());
 }
 
