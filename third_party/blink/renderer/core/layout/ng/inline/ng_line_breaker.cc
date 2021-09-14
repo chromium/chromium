@@ -1462,7 +1462,7 @@ scoped_refptr<ShapeResultView> NGLineBreaker::TruncateLineEndResult(
   ShapeResultView::Segment segments[2];
   segments[0] = {source_result, start_offset, last_safe};
   segments[1] = {end_result.get(), 0, end_offset};
-  return ShapeResultView::Create(&segments[0], 2);
+  return ShapeResultView::Create(segments);
 }
 
 // Update |ShapeResult| in |item_result| to match to its |start_offset| and

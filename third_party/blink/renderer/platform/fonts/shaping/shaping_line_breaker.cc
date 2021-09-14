@@ -507,7 +507,7 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLine(
     segments[count++] = {result_.get(), first_safe, last_safe};
   if (line_end_result)
     segments[count++] = {line_end_result.get(), last_safe, max_length};
-  auto line_result = ShapeResultView::Create(&segments[0], count);
+  auto line_result = ShapeResultView::Create({&segments[0], count});
   DCHECK_EQ(break_opportunity.offset - start, line_result->NumCharacters());
 
   SetBreakOffset(break_opportunity, text, result_out);
@@ -548,7 +548,7 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeToEnd(
   ShapeResultView::Segment segments[2] = {
       {line_start.get(), 0, std::numeric_limits<unsigned>::max()},
       {result_.get(), first_safe, range_end}};
-  return ShapeResultView::Create(&segments[0], 2);
+  return ShapeResultView::Create(segments);
 }
 
 }  // namespace blink

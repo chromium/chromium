@@ -397,11 +397,8 @@ constexpr size_t ShapeResultView::ByteSize(wtf_size_t num_parts) {
 }
 
 scoped_refptr<ShapeResultView> ShapeResultView::Create(
-    const Segment* segment_start,
-    size_t segment_count) {
-  DCHECK_GT(segment_count, 0u);
-  base::span<const Segment> segments(segment_start, segment_count);
-
+    base::span<const Segment> segments) {
+  DCHECK(!segments.empty());
   InitData data;
   data.Populate(segments);
 
@@ -432,16 +429,16 @@ scoped_refptr<ShapeResultView> ShapeResultView::Create(
     const ShapeResult* result,
     unsigned start_index,
     unsigned end_index) {
-  Segment segment = {result, start_index, end_index};
-  return Create(&segment, 1);
+  const Segment segments[] = {{result, start_index, end_index}};
+  return Create(segments);
 }
 
 scoped_refptr<ShapeResultView> ShapeResultView::Create(
     const ShapeResultView* result,
     unsigned start_index,
     unsigned end_index) {
-  Segment segment = {result, start_index, end_index};
-  return Create(&segment, 1);
+  const Segment segments[] = {{result, start_index, end_index}};
+  return Create(segments);
 }
 
 scoped_refptr<ShapeResultView> ShapeResultView::Create(

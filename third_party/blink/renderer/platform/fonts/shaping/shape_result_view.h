@@ -89,7 +89,8 @@ class PLATFORM_EXPORT ShapeResultView final
     unsigned start_index;
     unsigned end_index;
   };
-  static scoped_refptr<ShapeResultView> Create(const Segment*, size_t);
+  static scoped_refptr<ShapeResultView> Create(
+      base::span<const Segment> segments);
 
   // Creates a new ShapeResultView from a single segment.
   static scoped_refptr<ShapeResultView> Create(const ShapeResult*);
