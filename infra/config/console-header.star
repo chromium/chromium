@@ -30,6 +30,10 @@ HEADER = headers.header(
             url = "https://chrome-ops-rotation-proxy.appspot.com/current/oncallator:chromeos-gardeners",
         ),
         headers.oncall(
+            name = "Fuchsia",
+            url = "https://chrome-ops-rotation-proxy.appspot.com/current/grotation:chrome-fuchsia-gardener",
+        ),
+        headers.oncall(
             name = "GPU",
             url = "https://chrome-ops-rotation-proxy.appspot.com/current/oncallator:chrome-gpu-pixel-wrangler",
         ),
