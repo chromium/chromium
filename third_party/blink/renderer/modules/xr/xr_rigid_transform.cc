@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/xr/xr_rigid_transform.h"
 
+#include <cmath>
 #include <utility>
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_point_init.h"
@@ -13,6 +14,15 @@
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 
 namespace blink {
+
+namespace {
+
+bool IsComponentValid(DOMPointInit* point) {
+  DCHECK(point);
+  return std::isfinite(point->x()) && std::isfinite(point->y()) &&
+         std::isfinite(point->z()) && std::isfinite(point->w());
+}
+}  // anonymous namespace
 
 // makes a deep copy of transformationMatrix
 XRRigidTransform::XRRigidTransform(
@@ -61,6 +71,13 @@ XRRigidTransform* XRRigidTransform::Create(DOMPointInit* position,
                                            ExceptionState& exception_state) {
   if (position && position->w() != 1.0) {
     exception_state.ThrowTypeError("W component of position must be 1.0");
+    return nullptr;
+  }
+
+  if ((position && !IsComponentValid(position)) ||
+      (orientation && !IsComponentValid(orientation))) {
+    exception_state.ThrowTypeError(
+        "Position and Orientation must consist of only finite values");
     return nullptr;
   }
 
