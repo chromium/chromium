@@ -22,22 +22,6 @@ namespace {
 const char kInstalledPaymentAppsFinderImplName[] =
     "installed_payment_apps_finder_impl";
 
-void DidGetAllPaymentAppsOnCoreThread(
-    InstalledPaymentAppsFinder::GetAllPaymentAppsCallback callback,
-    InstalledPaymentAppsFinder::PaymentApps apps) {
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(apps)));
-}
-
-void GetAllPaymentAppsOnCoreThread(
-    scoped_refptr<PaymentAppContextImpl> payment_app_context,
-    InstalledPaymentAppsFinder::GetAllPaymentAppsCallback callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
-
-  payment_app_context->payment_app_database()->ReadAllPaymentApps(
-      base::BindOnce(&DidGetAllPaymentAppsOnCoreThread, std::move(callback)));
-}
-
 }  // namespace
 
 // static
@@ -75,14 +59,10 @@ void InstalledPaymentAppsFinderImpl::GetAllPaymentApps(
       browser_context_->GetDefaultStoragePartition());
   scoped_refptr<PaymentAppContextImpl> payment_app_context =
       partition->GetPaymentAppContext();
-
-  RunOrPostTaskOnThread(
-      FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
+  payment_app_context->payment_app_database()->ReadAllPaymentApps(
       base::BindOnce(
-          &GetAllPaymentAppsOnCoreThread, payment_app_context,
-          base::BindOnce(
-              &InstalledPaymentAppsFinderImpl::CheckPermissionForPaymentApps,
-              weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
+          &InstalledPaymentAppsFinderImpl::CheckPermissionForPaymentApps,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void InstalledPaymentAppsFinderImpl::CheckPermissionForPaymentApps(
