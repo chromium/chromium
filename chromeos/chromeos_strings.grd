@@ -993,6 +993,40 @@ Try tapping the mic to ask me anything.
         EID
       </message>
 
+      <!-- Input diagnostics -->
+      <message name="IDS_INPUT_DIAGNOSTICS_RUN_TEST" desc="Text for the button that runs a test for a specific input device">
+        Test
+      </message>
+      <message name="IDS_INPUT_DIAGNOSTICS_CATEGORY_KEYBOARD" desc="Section heading for the list of keyboards in the input diagnostics.">
+        Keyboard
+      </message>
+      <message name="IDS_INPUT_DIAGNOSTICS_CATEGORY_TOUCHPAD" desc="Section heading for the list of touchpads in the input diagnostics.">
+        Touchpad
+      </message>
+      <message name="IDS_INPUT_DIAGNOSTICS_CATEGORY_TOUCHSCREEN" desc="Section heading for the list of touchscreens in the input diagnostics.">
+        Touchscreen
+      </message>
+
+      <message name="IDS_INPUT_DIAGNOSTICS_KEYBOARD_DESCRIPTION" desc="Description for a keyboard in the input diagnostics device list.">
+        <ph name="CONNECTION_TYPE">$1<ex>Bluetooth</ex></ph> keyboard
+      </message>
+      <message name="IDS_INPUT_DIAGNOSTICS_TOUCHPAD_DESCRIPTION" desc="Description for a touchpad in the input diagnostics device list.">
+        <ph name="CONNECTION_TYPE">$1<ex>Internal</ex></ph> touchpad
+      </message>
+      <message name="IDS_INPUT_DIAGNOSTICS_TOUCHSCREEN_DESCRIPTION" desc="Description for a touchscreen in the input diagnostics device list.">
+        <ph name="CONNECTION_TYPE">$1<ex>USB</ex></ph> touchscreen
+      </message>
+
+      <message name="IDS_INPUT_DIAGNOSTICS_CONNECTION_TYPE_BLUETOOTH" desc="Used in input device descriptions such as 'Bluetooth keyboard'.">
+        Bluetooth
+      </message>
+      <message name="IDS_INPUT_DIAGNOSTICS_CONNECTION_TYPE_INTERNAL" desc="Used in input device descriptions such as 'Internal keyboard'.">
+        Internal
+      </message>
+      <message name="IDS_INPUT_DIAGNOSTICS_CONNECTION_TYPE_USB" desc="Used in input device descriptions such as 'USB keyboard'.">
+        USB
+      </message>
+
       <message name="IDS_ECHE_APP_DEFAULT_DEVICE_NAME" desc="The default device name used to display on Android endpoint of Eche app.">
         <ph name="GIVEN_NAME">$1<ex>Josh</ex></ph>'s <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph>
       </message>

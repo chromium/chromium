@@ -17,6 +17,7 @@ import {fakeNetworkHealthProviderTestSuite} from './fake_network_health_provider
 import {fakeSystemDataProviderTestSuite} from './fake_system_data_provider_test.js';
 import {fakeSystemRoutineContollerTestSuite} from './fake_system_routine_controller_test.js';
 import {frequencyChannelUtilsTestSuite} from './frequency_channel_utils_test.js';
+import {inputCardTestSuite} from './input_card_test.js';
 import {inputListTestSuite} from './input_list_test.js';
 import {ipConfigInfoDrawerTestSuite} from './ip_config_info_drawer_test.js';
 import {memoryCardTestSuite} from './memory_card_test.js';
@@ -63,6 +64,7 @@ runSuite('FakeNetworkHealthProvider', fakeNetworkHealthProviderTestSuite);
 runSuite('FakeSystemDataProvider', fakeSystemDataProviderTestSuite);
 runSuite('FakeSystemRoutineContoller', fakeSystemRoutineContollerTestSuite);
 runSuite('FrequencyChannelUtils', frequencyChannelUtilsTestSuite);
+runSuite('InputCard', inputCardTestSuite, 'input');
 runSuite('InputList', inputListTestSuite, 'input');
 runSuite('IpConfigInfoDrawer', ipConfigInfoDrawerTestSuite, 'network');
 runSuite('MemoryCard', memoryCardTestSuite);

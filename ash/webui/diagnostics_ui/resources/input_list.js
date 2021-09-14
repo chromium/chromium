@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './diagnostics_shared_css.js';
+import './input_card.js';
+
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ConnectedDevicesObserverReceiver, ConnectedDevicesObserverInterface, InputDataProviderInterface, KeyboardInfo, TouchDeviceInfo, TouchDeviceType} from './diagnostics_types.js'
@@ -16,6 +20,8 @@ Polymer({
   is: 'input-list',
 
   _template: html`{__html_template__}`,
+
+  behaviors: [I18nBehavior],
 
   /** @private {?InputDataProviderInterface} */
   inputDataProvider_: null,

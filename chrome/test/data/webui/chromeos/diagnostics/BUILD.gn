@@ -24,6 +24,7 @@ js_type_check("closure_compile") {
     ":fake_system_data_provider_test",
     ":fake_system_routine_controller_test",
     ":frequency_channel_utils_test",
+    ":input_card_test",
     ":input_list_test",
     ":ip_config_info_drawer_test",
     ":memory_card_test",
@@ -183,6 +184,16 @@ js_library("frequency_channel_utils_test") {
     "../../:chai_assert",
     "//ash/webui/diagnostics_ui/resources:frequency_channel_utils",
   ]
+}
+
+js_library("input_card_test") {
+  deps = [
+    "../..:chai_assert",
+    "../..:test_util",
+    "//ash/webui/diagnostics_ui/resources:fake_data",
+    "//ash/webui/diagnostics_ui/resources:input_card",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
 js_library("input_list_test") {
