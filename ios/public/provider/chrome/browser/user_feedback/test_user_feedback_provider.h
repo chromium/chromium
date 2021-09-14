@@ -14,7 +14,16 @@ class TestUserFeedbackProvider : public UserFeedbackProvider {
   TestUserFeedbackProvider();
   ~TestUserFeedbackProvider() override;
 
+  // UserFeedbackProvider implementation.
+  void Synchronize() override;
+
+  // Helper methods for tests.
+  bool SynchronizeCalled() const;
+  void ResetSynchronizeCalled();
+
  private:
+  bool synchronize_called_ = false;
+
   DISALLOW_COPY_AND_ASSIGN(TestUserFeedbackProvider);
 };
 

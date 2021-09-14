@@ -44,7 +44,7 @@ UITextField* TestChromeBrowserProvider::CreateStyledTextField() const {
   return [[UITextField alloc] initWithFrame:CGRectZero];
 }
 
-UserFeedbackProvider* TestChromeBrowserProvider::GetUserFeedbackProvider()
+TestUserFeedbackProvider* TestChromeBrowserProvider::GetUserFeedbackProvider()
     const {
   return user_feedback_provider_.get();
 }

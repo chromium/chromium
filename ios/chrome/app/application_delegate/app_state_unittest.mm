@@ -46,7 +46,6 @@
 #import "ios/chrome/browser/ui/safe_mode/safe_mode_coordinator.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #include "ios/chrome/test/block_cleanup_test.h"
-#include "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_provider.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #include "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
 #include "ios/public/provider/chrome/browser/app_distribution/test_app_distribution.h"
@@ -145,33 +144,6 @@ typedef void (^HandleStartupParam)(
     ChromeBrowserState* browserState);
 // A block ths returns values of AppState connectedScenes.
 typedef NSArray<SceneState*>* (^ScenesBlock)(id self);
-
-class FakeUserFeedbackProvider : public TestUserFeedbackProvider {
- public:
-  FakeUserFeedbackProvider() : synchronize_called_(false) {}
-  ~FakeUserFeedbackProvider() override {}
-  void Synchronize() override { synchronize_called_ = true; }
-  bool synchronize_called() { return synchronize_called_; }
-
- private:
-  bool synchronize_called_;
-  DISALLOW_COPY_AND_ASSIGN(FakeUserFeedbackProvider);
-};
-
-class FakeChromeBrowserProvider : public ios::TestChromeBrowserProvider {
- public:
-  FakeChromeBrowserProvider()
-      : user_feedback_provider_(std::make_unique<FakeUserFeedbackProvider>()) {}
-  ~FakeChromeBrowserProvider() override {}
-
-  UserFeedbackProvider* GetUserFeedbackProvider() const override {
-    return user_feedback_provider_.get();
-  }
-
- private:
-  std::unique_ptr<FakeUserFeedbackProvider> user_feedback_provider_;
-  DISALLOW_COPY_AND_ASSIGN(FakeChromeBrowserProvider);
-};
 
 // Sets init stage expected transition calls from |start| to |end|.
 void SetInitStageTransitionExpectations(id mock,
@@ -677,9 +649,6 @@ TEST_F(AppStateWithThreadTest, willTerminate) {
   ios::provider::test::ResetAppDistributionNotificationsState();
   ASSERT_FALSE(ios::provider::test::AreAppDistributionNotificationsCanceled());
 
-  IOSChromeScopedTestingChromeBrowserProvider provider_(
-      std::make_unique<FakeChromeBrowserProvider>());
-
   id browserLauncher =
       [OCMockObject mockForProtocol:@protocol(BrowserLauncher)];
   id applicationDelegate =
@@ -726,8 +695,10 @@ TEST_F(AppStateTest, applicationWillEnterForeground) {
   swizzleSafeModeShouldStart(NO);
 
   // Setup.
-  IOSChromeScopedTestingChromeBrowserProvider provider_(
-      std::make_unique<FakeChromeBrowserProvider>());
+  ios::TestChromeBrowserProvider::GetTestProvider()
+      .GetUserFeedbackProvider()
+      ->ResetSynchronizeCalled();
+
   id application = [OCMockObject mockForClass:[UIApplication class]];
   id metricsMediator = [OCMockObject mockForClass:[MetricsMediator class]];
   id memoryHelper = [OCMockObject mockForClass:[MemoryWarningHelper class]];
@@ -775,10 +746,9 @@ TEST_F(AppStateTest, applicationWillEnterForeground) {
   EXPECT_OCMOCK_VERIFY(metricsMediator);
   EXPECT_OCMOCK_VERIFY(memoryHelper);
   EXPECT_OCMOCK_VERIFY(getStartupInformationMock());
-  FakeUserFeedbackProvider* user_feedback_provider =
-      static_cast<FakeUserFeedbackProvider*>(
-          ios::GetChromeBrowserProvider().GetUserFeedbackProvider());
-  EXPECT_TRUE(user_feedback_provider->synchronize_called());
+  EXPECT_TRUE(ios::TestChromeBrowserProvider::GetTestProvider()
+                  .GetUserFeedbackProvider()
+                  ->SynchronizeCalled());
 }
 
 // Tests that -applicationWillEnterForeground starts the browser if the
