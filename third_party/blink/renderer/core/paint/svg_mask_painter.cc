@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/svg_mask_painter.h"
 
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_masker.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
@@ -46,7 +47,9 @@ void SVGMaskPainter::Paint(GraphicsContext& context,
   auto* masker = GetSVGResourceAsType<LayoutSVGResourceMasker>(
       *client, style.MaskerResource());
   DCHECK(masker);
-  SECURITY_DCHECK(!masker->NeedsLayout());
+  if (DisplayLockUtilities::LockedAncestorPreventingLayout(*masker))
+    return;
+  SECURITY_DCHECK(!masker->SelfNeedsLayout());
   masker->ClearInvalidationMask();
 
   FloatRect reference_box = SVGResources::ReferenceBoxForEffects(layout_object);
