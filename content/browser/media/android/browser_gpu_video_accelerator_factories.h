@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_MEDIA_ANDROID_BROWSER_GPU_VIDEO_ACCELERATOR_FACTORIES_H_
 #define CONTENT_BROWSER_MEDIA_ANDROID_BROWSER_GPU_VIDEO_ACCELERATOR_FACTORIES_H_
 
+#include "base/callback_list.h"
 #include "base/macros.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 
@@ -27,6 +28,8 @@ class BrowserGpuVideoAcceleratorFactories
   // media::GpuVideoAcceleratorFactories implementation.
   bool IsGpuVideoAcceleratorEnabled() override;
   base::UnguessableToken GetChannelToken() override;
+  void GetChannelToken(
+      gpu::mojom::GpuChannel::GetChannelTokenCallback cb) override;
   int32_t GetCommandBufferRouteId() override;
   Supported IsDecoderConfigSupported(
       const media::VideoDecoderConfig& config) override;
@@ -59,8 +62,13 @@ class BrowserGpuVideoAcceleratorFactories
   void SetRenderingColorSpace(const gfx::ColorSpace& color_space) override;
   const gfx::ColorSpace& GetRenderingColorSpace() const override;
 
+  // Called when gpu channel token is retrieved asynchronously.
+  void OnChannelTokenReady(const base::UnguessableToken& token);
+
   scoped_refptr<viz::ContextProviderCommandBuffer> context_provider_;
   base::UnguessableToken channel_token_;
+  base::OnceCallbackList<void(const base::UnguessableToken&)>
+      channel_token_callbacks_;
 
   DISALLOW_COPY_AND_ASSIGN(BrowserGpuVideoAcceleratorFactories);
 };

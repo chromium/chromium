@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequenced_task_runner.h"
+#include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "media/video/video_encode_accelerator.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
@@ -29,6 +30,8 @@ class MockGpuVideoAcceleratorFactories : public GpuVideoAcceleratorFactories {
   bool IsGpuVideoAcceleratorEnabled() override;
 
   MOCK_METHOD0(GetChannelToken, base::UnguessableToken());
+  MOCK_METHOD1(GetChannelToken,
+               void(gpu::mojom::GpuChannel::GetChannelTokenCallback));
   MOCK_METHOD0(GetCommandBufferRouteId, int32_t());
 
   MOCK_METHOD1(IsDecoderConfigSupported, Supported(const VideoDecoderConfig&));

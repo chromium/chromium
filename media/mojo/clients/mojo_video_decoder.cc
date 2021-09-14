@@ -191,20 +191,30 @@ void MojoVideoDecoder::Initialize(const VideoDecoderConfig& config,
     return;
   }
 
-  if (!remote_decoder_bound_) {
-    BindRemoteDecoder();
-    get_mojo_instance_counter()++;
-  }
-
-  if (has_connection_error_) {
-    FailInit(std::move(init_cb), StatusCode::kMojoDecoderNoConnection);
-    return;
-  }
-
   initialized_ = false;
   init_cb_ = std::move(init_cb);
   output_cb_ = output_cb;
   waiting_cb_ = waiting_cb;
+
+  if (!remote_decoder_bound_) {
+    InitAndBindRemoteDecoder(
+        base::BindOnce(&MojoVideoDecoder::InitializeRemoteDecoder, weak_this_,
+                       config, low_delay, std::move(cdm_id)));
+    return;
+  }
+
+  InitializeRemoteDecoder(config, low_delay, std::move(cdm_id));
+}
+
+void MojoVideoDecoder::InitializeRemoteDecoder(
+    const VideoDecoderConfig& config,
+    bool low_delay,
+    absl::optional<base::UnguessableToken> cdm_id) {
+  if (has_connection_error_) {
+    DCHECK(init_cb_);
+    FailInit(std::move(init_cb_), StatusCode::kMojoDecoderNoConnection);
+    return;
+  }
 
   remote_decoder_->Initialize(
       config, low_delay, cdm_id,
@@ -366,7 +376,7 @@ bool MojoVideoDecoder::IsOptimizedForRTC() const {
   return true;
 }
 
-void MojoVideoDecoder::BindRemoteDecoder() {
+void MojoVideoDecoder::InitAndBindRemoteDecoder(base::OnceClosure complete_cb) {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!remote_decoder_bound_);
@@ -377,6 +387,38 @@ void MojoVideoDecoder::BindRemoteDecoder() {
   remote_decoder_.set_disconnect_handler(
       base::BindOnce(&MojoVideoDecoder::Stop, base::Unretained(this)));
 
+  // Generate |command_buffer_id|.
+  media::mojom::CommandBufferIdPtr command_buffer_id;
+
+  if (gpu_factories_) {
+    DCHECK(complete_cb);
+    gpu_factories_->GetChannelToken(
+        base::BindOnce(&MojoVideoDecoder::OnChannelTokenReady, weak_this_,
+                       std::move(command_buffer_id), std::move(complete_cb)));
+    return;
+  }
+
+  DCHECK(complete_cb);
+  InitAndConstructRemoteDecoder(std::move(command_buffer_id),
+                                std::move(complete_cb));
+}
+
+void MojoVideoDecoder::OnChannelTokenReady(
+    media::mojom::CommandBufferIdPtr command_buffer_id,
+    base::OnceClosure complete_cb,
+    const base::UnguessableToken& channel_token) {
+  if (channel_token) {
+    command_buffer_id = media::mojom::CommandBufferId::New();
+    command_buffer_id->channel_token = std::move(channel_token);
+    command_buffer_id->route_id = gpu_factories_->GetCommandBufferRouteId();
+  }
+  InitAndConstructRemoteDecoder(std::move(command_buffer_id),
+                                std::move(complete_cb));
+}
+
+void MojoVideoDecoder::InitAndConstructRemoteDecoder(
+    media::mojom::CommandBufferIdPtr command_buffer_id,
+    base::OnceClosure complete_cb) {
   // Create |video_frame_handle_releaser| interface receiver, and bind
   // |mojo_video_frame_handle_releaser_| to it.
   mojo::PendingRemote<mojom::VideoFrameHandleReleaser>
@@ -393,17 +435,6 @@ void MojoVideoDecoder::BindRemoteDecoder() {
   mojo_decoder_buffer_writer_ = MojoDecoderBufferWriter::Create(
       writer_capacity_, &remote_consumer_handle);
 
-  // Generate |command_buffer_id|.
-  media::mojom::CommandBufferIdPtr command_buffer_id;
-  if (gpu_factories_) {
-    base::UnguessableToken channel_token = gpu_factories_->GetChannelToken();
-    if (channel_token) {
-      command_buffer_id = media::mojom::CommandBufferId::New();
-      command_buffer_id->channel_token = std::move(channel_token);
-      command_buffer_id->route_id = gpu_factories_->GetCommandBufferRouteId();
-    }
-  }
-
   // Use `mojo::MakeSelfOwnedReceiver` for MediaLog so logs may go through even
   // after `MojoVideoDecoder` is destructed.
   mojo::PendingReceiver<mojom::MediaLog> media_log_pending_receiver;
@@ -418,6 +449,8 @@ void MojoVideoDecoder::BindRemoteDecoder() {
                              std::move(video_frame_handle_releaser_receiver),
                              std::move(remote_consumer_handle),
                              std::move(command_buffer_id), target_color_space_);
+  get_mojo_instance_counter()++;
+  std::move(complete_cb).Run();
 }
 
 void MojoVideoDecoder::OnWaiting(WaitingReason reason) {

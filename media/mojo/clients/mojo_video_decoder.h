@@ -96,7 +96,16 @@ class MojoVideoDecoder final : public VideoDecoder,
   void OnDecodeDone(uint64_t decode_id, const Status& status);
   void OnResetDone();
 
-  void BindRemoteDecoder();
+  void InitAndBindRemoteDecoder(base::OnceClosure complete_cb);
+  void OnChannelTokenReady(media::mojom::CommandBufferIdPtr command_buffer_id,
+                           base::OnceClosure complete_cb,
+                           const base::UnguessableToken& channel_token);
+  void InitAndConstructRemoteDecoder(
+      media::mojom::CommandBufferIdPtr command_buffer_id,
+      base::OnceClosure complete_cb);
+  void InitializeRemoteDecoder(const VideoDecoderConfig& config,
+                               bool low_delay,
+                               absl::optional<base::UnguessableToken> cdm_id);
 
   // Forwards |overlay_info| to the remote decoder.
   void OnOverlayInfoChanged(const OverlayInfo& overlay_info);

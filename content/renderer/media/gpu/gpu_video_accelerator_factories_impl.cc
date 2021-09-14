@@ -152,6 +152,11 @@ void GpuVideoAcceleratorFactoriesImpl::BindOnTaskRunner(
 
   context_provider_->AddObserver(this);
 
+  // Request the channel token.
+  context_provider_->GetCommandBufferProxy()->GetGpuChannel().GetChannelToken(
+      base::BindOnce(&GpuVideoAcceleratorFactoriesImpl::OnChannelTokenReady,
+                     base::Unretained(this)));
+
   if (video_accelerator_enabled_) {
     {
       // TODO(crbug.com/709631): This should be removed.
@@ -290,6 +295,31 @@ base::UnguessableToken GpuVideoAcceleratorFactoriesImpl::GetChannelToken() {
   }
 
   return channel_token_;
+}
+
+void GpuVideoAcceleratorFactoriesImpl::GetChannelToken(
+    gpu::mojom::GpuChannel::GetChannelTokenCallback cb) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  if (CheckContextLost()) {
+    std::move(cb).Run(base::UnguessableToken());
+    return;
+  }
+
+  if (!channel_token_.is_empty()) {
+    // Use cached token.
+    std::move(cb).Run(channel_token_);
+    return;
+  }
+
+  // Retrieve a channel token if needed.
+  channel_token_callbacks_.AddUnsafe(std::move(cb));
+}
+
+void GpuVideoAcceleratorFactoriesImpl::OnChannelTokenReady(
+    const base::UnguessableToken& token) {
+  channel_token_ = token;
+  channel_token_callbacks_.Notify(channel_token_);
+  DCHECK(channel_token_callbacks_.empty());
 }
 
 int32_t GpuVideoAcceleratorFactoriesImpl::GetCommandBufferRouteId() {

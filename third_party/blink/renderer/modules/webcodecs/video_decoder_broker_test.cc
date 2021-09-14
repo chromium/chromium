@@ -35,6 +35,7 @@
 
 #include "third_party/blink/renderer/modules/webcodecs/video_decoder_broker.h"
 using ::testing::_;
+using ::testing::Invoke;
 using ::testing::Return;
 
 namespace blink {
@@ -241,6 +242,12 @@ class VideoDecoderBrokerTest : public testing::Test {
     EXPECT_CALL(*gpu_factories_, IsDecoderConfigSupported(_))
         .WillRepeatedly(
             Return(media::GpuVideoAcceleratorFactories::Supported::kTrue));
+    EXPECT_CALL(*gpu_factories_, GetChannelToken(_))
+        .WillRepeatedly(
+            Invoke([](base::OnceCallback<void(const base::UnguessableToken&)>
+                          callback) {
+              std::move(callback).Run(base::UnguessableToken());
+            }));
   }
 
   void ConstructDecoder(ExecutionContext& execution_context) {

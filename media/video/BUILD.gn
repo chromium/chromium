@@ -67,6 +67,7 @@ source_set("video") {
     "//build:chromeos_buildflags",
     "//gpu/command_buffer/client",
     "//gpu/command_buffer/common",
+    "//gpu/ipc/common",
     "//media/base",
     "//third_party/libyuv",
     "//ui/gfx",
