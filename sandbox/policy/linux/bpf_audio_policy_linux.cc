@@ -132,7 +132,7 @@ ResultExpr AudioProcessPolicy::EvaluateSyscall(int system_call_number) const {
 
       auto* sandbox_linux = SandboxLinux::GetInstance();
       if (sandbox_linux->ShouldBrokerHandleSyscall(system_call_number))
-        return sandbox_linux->HandleViaBroker();
+        return sandbox_linux->HandleViaBroker(system_call_number);
 
       return BPFBasePolicy::EvaluateSyscall(system_call_number);
   }

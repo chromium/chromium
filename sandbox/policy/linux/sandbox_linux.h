@@ -242,7 +242,7 @@ class SANDBOX_POLICY_EXPORT SandboxLinux {
   // handled transparently by the broker process. This is useful for file
   // syscalls that take pathnames, so we can enforce pathname whitelisting.
   // Only usable if StartBrokerProcess() was already called.
-  bpf_dsl::ResultExpr HandleViaBroker() const;
+  bpf_dsl::ResultExpr HandleViaBroker(int sysno) const;
 
  private:
   friend struct base::DefaultSingletonTraits<SandboxLinux>;

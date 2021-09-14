@@ -32,6 +32,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "sandbox/constants.h"
+#include "sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.h"
 #include "sandbox/linux/services/credentials.h"
 #include "sandbox/linux/services/libc_interceptor.h"
 #include "sandbox/linux/services/namespace_sandbox.h"
@@ -43,6 +44,7 @@
 #include "sandbox/linux/syscall_broker/broker_client.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
 #include "sandbox/linux/syscall_broker/broker_process.h"
+#include "sandbox/linux/system_headers/linux_stat.h"
 #include "sandbox/policy/linux/bpf_broker_policy_linux.h"
 #include "sandbox/policy/linux/sandbox_seccomp_bpf_linux.h"
 #include "sandbox/policy/sandbox.h"
@@ -509,10 +511,23 @@ bool SandboxLinux::ShouldBrokerHandleSyscall(int sysno) const {
   return broker_process_->IsSyscallAllowed(sysno);
 }
 
-sandbox::bpf_dsl::ResultExpr SandboxLinux::HandleViaBroker() const {
-  return sandbox::bpf_dsl::Trap(
-      sandbox::syscall_broker::BrokerClient::SIGSYS_Handler,
-      broker_process_->GetBrokerClientSignalBased());
+bpf_dsl::ResultExpr SandboxLinux::HandleViaBroker(int sysno) const {
+  const bpf_dsl::ResultExpr handle_via_broker =
+      bpf_dsl::Trap(syscall_broker::BrokerClient::SIGSYS_Handler,
+                    broker_process_->GetBrokerClientSignalBased());
+  if (sysno == __NR_fstatat_default) {
+    // This may be an fstatat(fd, "", stat_buf, AT_EMPTY_PATH), which should be
+    // rewritten as fstat(fd, stat_buf). This should be consistent with how the
+    // baseline policy handles fstatat().
+    // Note that this will cause some legitimate but strange invocations of
+    // fstatat() to fail, see https://crbug.com/1243290#c8 for details.
+    const bpf_dsl::Arg<int> flags(3);
+    return bpf_dsl::If((flags & AT_EMPTY_PATH) == AT_EMPTY_PATH,
+                       RewriteFstatatSIGSYS(BPFBasePolicy::GetFSDeniedErrno()))
+        .Else(handle_via_broker);
+  } else {
+    return handle_via_broker;
+  }
 }
 
 bool SandboxLinux::HasOpenDirectories() const {
