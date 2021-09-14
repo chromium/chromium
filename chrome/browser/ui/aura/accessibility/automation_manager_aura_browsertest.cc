@@ -397,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, MAYBE_ScrollView) {
 #else
 #define MAYBE_TableView TableView
 #endif
-IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, TableView) {
+IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, MAYBE_TableView) {
   // Make our own AXAuraObjCache.
   auto cache = std::make_unique<views::AXAuraObjCache>();
   auto* cache_ptr = cache.get();
