@@ -68,8 +68,21 @@
     min-width: 100%;
     object-fit: cover;
   }
+
+  ntp-info-dialog a {
+    color: var(--cr-link-color);
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  ntp-info-dialog a:focus {
+    border-radius: 2px;
+    box-shadow: var(--ntp-focus-shadow);
+    outline: none;
+  }
 </style>
-<ntp-module-header>
+<ntp-module-header
+    show-info-button on-info-button-click="onInfoButtonClick_">
   [[i18n('modulesPhotosTitle')]]
 </ntp-module-header>
 <div id="memories">
@@ -81,3 +94,9 @@
     </a>
   </template>
 </div>
+<cr-lazy-render id="infoDialogRender">
+  <template>
+    <ntp-info-dialog inner-h-t-m-l="[[i18nAdvanced('modulesPhotosInfo')]]">
+    </ntp-info-dialog>
+  </template>
+</cr-lazy-render>

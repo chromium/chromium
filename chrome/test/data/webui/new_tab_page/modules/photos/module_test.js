@@ -47,4 +47,20 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
     await handler.whenCalled('getMemories');
     assertFalse(!!module);
   });
+
+  test('info button click opens info dialog', async () => {
+    // Arrange.
+    const data = {
+      memories: [{title: 'Title 1', id: 'key1'}, {title: 'Title 2', id: 'key2'}]
+    };
+    handler.setResultFor('getMemories', Promise.resolve(data));
+
+    const module = assert(await photosDescriptor.initialize(0));
+    document.body.append(module);
+    // Act.
+    $$(module, 'ntp-module-header')
+        .dispatchEvent(new Event('info-button-click'));
+    // Assert.
+    assertTrue(!!$$(module, 'ntp-info-dialog'));
+  });
 });

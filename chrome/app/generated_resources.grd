@@ -5951,14 +5951,20 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_DRIVE_TITLE" desc="Title shown in the header of the drive module and various other UIs.">
         From your Google Drive
       </message>
-      <message name="IDS_NTP_MODULES_PHOTOS_TITLE" desc="Title shown in the header of the photos module and various other UIs.">
-        Google Photos
-      </message>
       <message name="IDS_NTP_MODULES_DRIVE_INFO" desc="Text shown in the body of the info dialog of the drive module.">
         You’re seeing your recent and suggested documents based on your previous activity using Google Drive.
         <ph name="BREAK">&lt;br&gt;</ph>
         <ph name="BREAK">&lt;br&gt;</ph>
         Learn about the data Google Drive collects and why <ph name="BEGIN_LINK">&lt;a href="https://support.google.com/drive/answer/2450387" target="_blank"&gt;</ph>here<ph name="END_LINK">&lt;/a&gt;</ph>.
+      </message>
+      <message name="IDS_NTP_MODULES_PHOTOS_TITLE" desc="Title shown in the header of the photos module and various other UIs.">
+        Google Photos
+      </message>
+      <message name="IDS_NTP_MODULES_PHOTOS_INFO" desc="Text shown in the body of the info dialog of the Photos module.">
+        Your Memories from Google Photos are shown here. They are visible only when you’re signed in.
+        <ph name="BREAK">&lt;br&gt;</ph>
+        <ph name="BREAK">&lt;br&gt;</ph>
+        Manage what you see in your memories at <ph name="BEGIN_LINK">&lt;a href="https://photos.google.com/settings" target="_blank"&gt;</ph>photos.google.com/settings<ph name="END_LINK">&lt;/a&gt;</ph>.
       </message>
       <message name="IDS_NTP_MODULES_KALEIDOSCOPE_TITLE" desc="Title shown in the header of the Kaleidoscope module.">
         Top picks for you
