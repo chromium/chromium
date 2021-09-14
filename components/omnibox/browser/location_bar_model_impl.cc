@@ -274,3 +274,8 @@ bool LocationBarModelImpl::IsOfflinePage() const {
 bool LocationBarModelImpl::ShouldPreventElision() const {
   return delegate_->ShouldPreventElision();
 }
+
+bool LocationBarModelImpl::ShouldUseUpdatedConnectionSecurityIndicators()
+    const {
+  return delegate_->ShouldUseUpdatedConnectionSecurityIndicators();
+}

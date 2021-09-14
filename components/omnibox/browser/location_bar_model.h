@@ -79,6 +79,10 @@ class LocationBarModel {
   // should be username/password and trailing slash on bare hostname.
   virtual bool ShouldPreventElision() const = 0;
 
+  // Returns whether the omnibox should use the new security indicators for
+  // secure HTTPS connections.
+  virtual bool ShouldUseUpdatedConnectionSecurityIndicators() const = 0;
+
  protected:
   LocationBarModel() = default;
 
