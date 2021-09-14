@@ -18,29 +18,23 @@
 namespace blink {
 
 ClientHintsPreferences::ClientHintsPreferences() {
-  DCHECK_EQ(
-      static_cast<size_t>(network::mojom::WebClientHintsType::kMaxValue) + 1,
-      network::GetClientHintToNameMap().size());
+  DCHECK_LE(
+      network::GetClientHintToNameMap().size(),
+      static_cast<size_t>(network::mojom::WebClientHintsType::kMaxValue) + 1);
 }
 
 void ClientHintsPreferences::UpdateFrom(
     const ClientHintsPreferences& preferences) {
-  for (size_t i = 0;
-       i < static_cast<int>(network::mojom::WebClientHintsType::kMaxValue) + 1;
-       ++i) {
-    network::mojom::WebClientHintsType type =
-        static_cast<network::mojom::WebClientHintsType>(i);
+  for (const auto& elem : network::GetClientHintToNameMap()) {
+    const auto& type = elem.first;
     enabled_hints_.SetIsEnabled(type, preferences.ShouldSend(type));
   }
 }
 
 void ClientHintsPreferences::CombineWith(
     const ClientHintsPreferences& preferences) {
-  for (size_t i = 0;
-       i < static_cast<int>(network::mojom::WebClientHintsType::kMaxValue) + 1;
-       ++i) {
-    network::mojom::WebClientHintsType type =
-        static_cast<network::mojom::WebClientHintsType>(i);
+  for (const auto& elem : network::GetClientHintToNameMap()) {
+    const auto& type = elem.first;
     if (preferences.ShouldSend(type))
       SetShouldSend(type);
   }
@@ -73,12 +67,8 @@ void ClientHintsPreferences::UpdateFromHttpEquivAcceptCH(
     enabled_hints_.SetIsEnabled(newly_enabled, true);
 
   if (context) {
-    for (size_t i = 0;
-         i <
-         static_cast<int>(network::mojom::WebClientHintsType::kMaxValue) + 1;
-         ++i) {
-      network::mojom::WebClientHintsType type =
-          static_cast<network::mojom::WebClientHintsType>(i);
+    for (const auto& elem : network::GetClientHintToNameMap()) {
+      const auto& type = elem.first;
       if (enabled_hints_.IsEnabled(type))
         context->CountClientHints(type);
     }

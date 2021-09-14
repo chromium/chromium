@@ -6,6 +6,8 @@ module network.mojom;
 
 enum WebClientHintsType {
   // Enumerator values are logged in UMA histograms and must not be changed.
+  // Hints may be removed from this list, so if you need the total count call
+  // network::GetClientHintToNameMap().size() and don't use kMaxValue.
 
   // Warning: The list of client hints to be persisted for a given origin are
   // sent by the renderer process to the browser process. This makes it possible

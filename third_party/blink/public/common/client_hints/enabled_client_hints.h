@@ -59,6 +59,8 @@ class BLINK_COMMON_EXPORT EnabledClientHints {
   std::vector<network::mojom::WebClientHintsType> GetEnabledHints() const;
 
  private:
+  // Deprecated/removed preferences will stick around in this array
+  // unused. Consider refactoring into a map down the road.
   std::array<bool,
              static_cast<int>(network::mojom::WebClientHintsType::kMaxValue) +
                  1>

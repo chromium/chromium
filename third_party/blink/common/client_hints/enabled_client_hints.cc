@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "net/http/http_response_headers.h"
+#include "services/network/public/cpp/client_hints.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "url/gurl.h"
@@ -77,11 +78,10 @@ void EnabledClientHints::SetIsEnabled(
 
 std::vector<WebClientHintsType> EnabledClientHints::GetEnabledHints() const {
   std::vector<WebClientHintsType> hints;
-  for (int v = 0; v <= static_cast<int>(WebClientHintsType::kMaxValue); ++v) {
-    const auto hint = static_cast<WebClientHintsType>(v);
-    if (IsEnabled(hint)) {
-      hints.push_back(hint);
-    }
+  for (const auto& elem : network::GetClientHintToNameMap()) {
+    const auto& type = elem.first;
+    if (IsEnabled(type))
+      hints.push_back(type);
   }
   return hints;
 }

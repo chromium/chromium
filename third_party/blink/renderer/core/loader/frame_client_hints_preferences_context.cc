@@ -6,6 +6,7 @@
 
 #include "base/cxx17_backports.h"
 #include "base/no_destructor.h"
+#include "services/network/public/cpp/client_hints.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -63,6 +64,8 @@ ClientHintToWebFeatureMap MakeClientHintToWebFeatureMap() {
 }
 
 const ClientHintToWebFeatureMap& GetClientHintToWebFeatureMap() {
+  DCHECK_EQ(network::GetClientHintToNameMap().size(),
+            MakeClientHintToWebFeatureMap().size());
   static const base::NoDestructor<ClientHintToWebFeatureMap> map(
       MakeClientHintToWebFeatureMap());
   return *map;
