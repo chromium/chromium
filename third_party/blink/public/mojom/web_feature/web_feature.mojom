@@ -3330,6 +3330,8 @@ enum WebFeature {
   kV8FileSystemSyncAccessHandle_Truncate_Method = 4019,
   kV8SharedArrayBufferConstructedInExtensionWithoutIsolation = 4020,
   kMediaSourceExtensionsForWebCodecs = 4021,
+  kPaymentRequestResponse = 4023,
+  kPaymentRequestComplete = 4024,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

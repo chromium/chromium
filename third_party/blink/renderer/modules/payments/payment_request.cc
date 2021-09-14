@@ -1104,6 +1104,8 @@ ScriptPromise PaymentRequest::Complete(ScriptState* script_state,
     return ScriptPromise();
   }
 
+  UseCounter::Count(GetExecutionContext(), WebFeature::kPaymentRequestComplete);
+
   complete_timer_.Stop();
 
   // The payment provider should respond in PaymentRequest::OnComplete().
@@ -1500,6 +1502,8 @@ void PaymentRequest::OnPaymentResponse(PaymentResponsePtr response) {
     ClearResolversAndCloseMojoConnection();
     return;
   }
+
+  UseCounter::Count(GetExecutionContext(), WebFeature::kPaymentRequestResponse);
 
   // If the website does not call complete() 60 seconds after show() has been
   // resolved, then behave as if the website called complete("fail").
