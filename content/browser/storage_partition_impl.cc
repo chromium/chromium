@@ -72,6 +72,7 @@
 #include "content/browser/push_messaging/push_messaging_context.h"
 #include "content/browser/quota/quota_context.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/ssl/ssl_client_auth_handler.h"
@@ -117,6 +118,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-shared.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
+#include "url/origin.h"
 
 #if defined(OS_ANDROID)
 #include "content/public/browser/android/java_interfaces.h"
@@ -1701,20 +1703,33 @@ StoragePartitionImpl::GetProtoDatabaseProviderForTesting() {
 }
 
 void StoragePartitionImpl::OpenLocalStorage(
-    const url::Origin& origin,
+    const url::Origin& local_frame_origin,
+    const blink::LocalFrameToken& local_frame_token,
     mojo::PendingReceiver<blink::mojom::StorageArea> receiver) {
   DCHECK(initialized_);
+  RenderFrameHostImpl* host = RenderFrameHostImpl::FromFrameToken(
+      dom_storage_receivers_.current_context()->GetChildID(),
+      local_frame_token);
   const auto& security_policy_handle = dom_storage_receivers_.current_context();
-  if (!security_policy_handle->CanAccessDataForOrigin(origin)) {
+  if (!host) {
+    SYSLOG(WARNING) << "Killing renderer: illegal localStorage request.";
+    dom_storage_receivers_.ReportBadMessage(
+        "LocalStorage request made from unknown LocalFrame");
+    return;
+  }
+  if (host->GetLastCommittedOrigin() != local_frame_origin ||
+      host->storage_key().origin() != local_frame_origin ||
+      // TODO(https://crbug/1223838): We should enforce that this check always
+      // passes at the time we set the StorageKey on the RenderFrameHost.
+      !security_policy_handle->CanAccessDataForOrigin(
+          host->storage_key().origin())) {
     SYSLOG(WARNING) << "Killing renderer: illegal localStorage request.";
     dom_storage_receivers_.ReportBadMessage(
         "Access denied for localStorage request");
     return;
   }
-  dom_storage_context_->OpenLocalStorage(
-      // TODO(https://crbug.com/1199077): Pass the real StorageKey
-      // when StoragePartitionImpl is converted.
-      blink::StorageKey(origin), std::move(receiver));
+  dom_storage_context_->OpenLocalStorage(host->storage_key(),
+                                         std::move(receiver));
 }
 
 void StoragePartitionImpl::BindSessionStorageNamespace(
@@ -1726,18 +1741,34 @@ void StoragePartitionImpl::BindSessionStorageNamespace(
       std::move(receiver));
 }
 
+// TODO(https://crbug/1223838): Add coverage for this API to ensure correct
+// validation of parameters.
 void StoragePartitionImpl::BindSessionStorageArea(
-    const url::Origin& origin,
+    const url::Origin& local_frame_origin,
+    const blink::LocalFrameToken& local_frame_token,
     const std::string& namespace_id,
     mojo::PendingReceiver<blink::mojom::StorageArea> receiver) {
   DCHECK(initialized_);
+  RenderFrameHostImpl* host = RenderFrameHostImpl::FromFrameToken(
+      dom_storage_receivers_.current_context()->GetChildID(),
+      local_frame_token);
+  if (!host) {
+    SYSLOG(WARNING) << "Killing renderer: illegal localStorage request.";
+    dom_storage_receivers_.ReportBadMessage(
+        "LocalStorage request made from unknown LocalFrame");
+    return;
+  }
+  if (host->GetLastCommittedOrigin() != local_frame_origin ||
+      host->storage_key().origin() != local_frame_origin) {
+    SYSLOG(WARNING) << "Killing renderer: illegal localStorage request.";
+    dom_storage_receivers_.ReportBadMessage(
+        "Access denied for localStorage request");
+    return;
+  }
   ChildProcessSecurityPolicyImpl::Handle security_policy_handle =
       dom_storage_receivers_.current_context()->Duplicate();
   dom_storage_context_->BindStorageArea(
-      std::move(security_policy_handle),
-      // TODO(https://crbug.com/1199077): Pass the real StorageKey
-      // when StoragePartitionImpl is converted.
-      blink::StorageKey(origin), namespace_id,
+      std::move(security_policy_handle), host->storage_key(), namespace_id,
       dom_storage_receivers_.GetBadMessageCallback(), std::move(receiver));
 }
 

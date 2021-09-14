@@ -6,6 +6,7 @@ module blink.mojom;
 
 import "third_party/blink/public/mojom/dom_storage/session_storage_namespace.mojom";
 import "third_party/blink/public/mojom/dom_storage/storage_area.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "url/mojom/origin.mojom";
 
 // This interface is used by renderers to bootstrap their connection to the
@@ -23,10 +24,13 @@ interface DomStorageProvider {
 // interface and a corresponding DomStorageClient interface pointing back at the
 // renderer.
 interface DomStorage {
-  // Binds to a StorageArea interface for Local Storage within `origin`, which
-  // must be validated by the browser to ensure the renderer is allowed to
-  // access that origin's data.
-  OpenLocalStorage(url.mojom.Origin origin,
+  // Binds to a StorageArea interface for Local Storage within the StorageKey
+  // retrieved from the RenderFrameHost identified by `local_frame_token`,
+  // which must be validated by the browser to ensure the renderer is allowed
+  // to access that StorageKey's data. `local_frame_origin` is checked against
+  // RenderFrameHost to ensure navigation won't permit a cross-site request.
+  OpenLocalStorage(url.mojom.Origin local_frame_origin,
+                   blink.mojom.LocalFrameToken local_frame_token,
                    pending_receiver<StorageArea> area);
 
   // Binds a control interface for Session Storage within the identified
@@ -36,10 +40,14 @@ interface DomStorage {
       pending_receiver<SessionStorageNamespace> receiver);
 
   // Binds to a StorageArea interface for Session Storage within the identified
-  // namespace and origin. The given origin must be validated by the browser to
-  // ensure the renderer is allowed to access that origin's data.
+  // `namespace_id` and the StorageKey retrieved from the RenderFrameHost
+  // identified by `local_frame_token`. The given frame must be validated by
+  // the browser to ensure the renderer is allowed to access that StorageKey's
+  // data. `local_frame_origin` is checked against RenderFrameHost to ensure
+  // navigation won't permit a cross-site request.
   BindSessionStorageArea(
-      url.mojom.Origin origin,
+      url.mojom.Origin local_frame_origin,
+      blink.mojom.LocalFrameToken local_frame_token,
       string namespace_id,
       pending_receiver<StorageArea> session_namespace);
 };
