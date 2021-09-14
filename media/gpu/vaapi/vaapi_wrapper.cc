@@ -196,19 +196,21 @@ const char* VaapiFunctionName(VaapiFunctions function) {
     report_error_to_uma_cb_.Run(function);                       \
   } while (0)
 
-#define VA_LOG_ON_ERROR(va_error, function)        \
-  do {                                             \
-    if ((va_error) != VA_STATUS_SUCCESS)           \
-      LOG_VA_ERROR_AND_REPORT(va_error, function); \
+#define VA_LOG_ON_ERROR(va_res, function)                        \
+  do {                                                           \
+    const VAStatus va_res_va_log_on_error = (va_res);            \
+    if (va_res_va_log_on_error != VA_STATUS_SUCCESS)             \
+      LOG_VA_ERROR_AND_REPORT(va_res_va_log_on_error, function); \
   } while (0)
 
-#define VA_SUCCESS_OR_RETURN(va_error, function, ret) \
-  do {                                                \
-    if ((va_error) != VA_STATUS_SUCCESS) {            \
-      LOG_VA_ERROR_AND_REPORT(va_error, function);    \
-      return (ret);                                   \
-    }                                                 \
-    DVLOG(3) << VaapiFunctionName(function);          \
+#define VA_SUCCESS_OR_RETURN(va_res, function, ret)                  \
+  do {                                                               \
+    const VAStatus va_res_va_sucess_or_return = (va_res);            \
+    if (va_res_va_sucess_or_return != VA_STATUS_SUCCESS) {           \
+      LOG_VA_ERROR_AND_REPORT(va_res_va_sucess_or_return, function); \
+      return (ret);                                                  \
+    }                                                                \
+    DVLOG(3) << VaapiFunctionName(function);                         \
   } while (0)
 
 namespace {
@@ -2797,16 +2799,17 @@ bool VaapiWrapper::BlitSurface(const VASurface& va_surface_src,
         break;
     }
 
-    VA_SUCCESS_OR_RETURN(mapping.Unmap(), VaapiFunctions::kVAUnmapBuffer,
-                         false);
+    const VAStatus va_res = mapping.Unmap();
+    VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVAUnmapBuffer, false);
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<base::ScopedClosureRunner> protected_session_detacher;
   if (va_protected_session_id != VA_INVALID_ID) {
-    VA_SUCCESS_OR_RETURN(vaAttachProtectedSession(va_display_, va_context_id_,
-                                                  va_protected_session_id),
-                         VaapiFunctions::kVAAttachProtectedSession, false);
+    const VAStatus va_res = vaAttachProtectedSession(
+        va_display_, va_context_id_, va_protected_session_id);
+    VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVAAttachProtectedSession,
+                         false);
     // Note that we use a lambda expression to wrap vaDetachProtectedSession()
     // because the function in |protected_session_detacher| must return void.
     protected_session_detacher =
@@ -2818,17 +2821,15 @@ bool VaapiWrapper::BlitSurface(const VASurface& va_surface_src,
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  VA_SUCCESS_OR_RETURN(
-      vaBeginPicture(va_display_, va_context_id_, va_surface_dest.id()),
-      VaapiFunctions::kVABeginPicture, false);
+  VAStatus va_res =
+      vaBeginPicture(va_display_, va_context_id_, va_surface_dest.id());
+  VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVABeginPicture, false);
 
   VABufferID va_buffer_id = va_buffer_for_vpp_->id();
-  VA_SUCCESS_OR_RETURN(
-      vaRenderPicture(va_display_, va_context_id_, &va_buffer_id, 1),
-      VaapiFunctions::kVARenderPicture_Vpp, false);
-
-  VA_SUCCESS_OR_RETURN(vaEndPicture(va_display_, va_context_id_),
-                       VaapiFunctions::kVAEndPicture, false);
+  va_res = vaRenderPicture(va_display_, va_context_id_, &va_buffer_id, 1);
+  VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVARenderPicture_Vpp, false);
+  va_res = vaEndPicture(va_display_, va_context_id_);
+  VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVAEndPicture, false);
 
   return true;
 }
