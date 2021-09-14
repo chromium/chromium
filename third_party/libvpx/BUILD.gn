@@ -430,15 +430,18 @@ static_library("libvpx") {
   public_configs = [ ":libvpx_external_config" ]
 }
 
-static_library("libvp9rc") {
+static_library("libvpxrc") {
   if (!is_debug && is_win) {
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_max" ]
   }
 
   sources = [
+    "//third_party/libvpx/source/libvpx/vp8/vp8_ratectrl_rtc.cc",
+    "//third_party/libvpx/source/libvpx/vp8/vp8_ratectrl_rtc.h",
     "//third_party/libvpx/source/libvpx/vp9/ratectrl_rtc.cc",
     "//third_party/libvpx/source/libvpx/vp9/ratectrl_rtc.h",
+    "//third_party/libvpx/source/libvpx/vpx/internal/vpx_ratectrl_rtc.h",
   ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
