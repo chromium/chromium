@@ -152,7 +152,14 @@ void CastToolbarButton::OnGestureEvent(ui::GestureEvent* event) {
   ToolbarButton::OnGestureEvent(event);
 }
 
+void CastToolbarButton::OnThemeChanged() {
+  ToolbarButton::OnThemeChanged();
+  UpdateIcon();
+}
+
 void CastToolbarButton::UpdateIcon() {
+  if (!GetWidget())
+    return;
   using Severity = media_router::IssueInfo::Severity;
   const auto severity =
       current_issue_ ? current_issue_->severity : Severity::NOTIFICATION;
