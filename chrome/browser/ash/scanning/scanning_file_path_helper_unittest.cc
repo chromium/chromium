@@ -96,4 +96,13 @@ TEST_F(ScanningFilePathHelperTest, FilePathSupportedRemovableMedia) {
       base::FilePath("/media/removable/STATE/test_file.png")));
 }
 
+// Validates that passing a file path that is a child of the MyFiles path
+// returns true when Google Drive path is empty for IsFilePathSupported().
+TEST_F(ScanningFilePathHelperTest, FilePathSupportedGoogleDriveAbsent) {
+  drive_path_ = base::FilePath();
+  file_path_helper_ = ScanningFilePathHelper(drive_path_, my_files_path_);
+  EXPECT_TRUE(file_path_helper_.IsFilePathSupported(
+      my_files_path_.Append("test_file.png")));
+}
+
 }  // namespace ash
