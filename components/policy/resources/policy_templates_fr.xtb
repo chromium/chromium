@@ -914,7 +914,7 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Si vous désactivez ce paramètre, <ph name="PRODUCT_NAME" /> ne détecte pas si une fenêtre est recouverte par d'autres.
 
       Si cette règle n'est pas configurée, les fenêtres recouvertes sont détectées.</translation>
-<translation id="2132424782557550556">Configure les règles de création de rapports cloud.
+<translation id="2132424782557550556">Configure les règles de reporting cloud.
 
       Ces règles sont ignorées si la règle <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> n'est pas définie ou si elle est désactivée.
 
@@ -5320,8 +5320,8 @@ On attend de cette règle qu'elle soit utilisée dans le cadre de la modificatio
 <translation id="7638764766629234761">Autoriser l'utilisation des notifications système</translation>
 <translation id="7643883929273267746">Limiter les comptes visibles dans <ph name="PRODUCT_NAME" /></translation>
 <translation id="7648664871086956188">Cette règle est une option générale pour toutes les règles définies dans la règle DataLeakPreventionRulesList.
-      Si cette règle est définie sur "True", la création de rapports en temps réel sur les événements de prévention des fuites de données sera activée.
-      Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, la création de rapports sera désactivée.
+      Si cette règle est définie sur "True", le reporting en temps réel des événements de prévention des fuites de données sera activée.
+      Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, le reporting sera désactivé.
       Les règles dont les niveaux de restriction ont été définis sur "ALLOW" dans DataLeakPreventionRulesList ne signaleront aucun événement dans les deux cas.</translation>
 <translation id="7648907905084499629">Utiliser le comportement <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> pour les cookies sur tous les sites</translation>
 <translation id="7657261947024629645">Privilégier les performances.</translation>

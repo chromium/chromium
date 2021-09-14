@@ -91,7 +91,7 @@
 <translation id="1589090746204042747">存取你在這個工作階段內的所有活動</translation>
 <translation id="1611993646327628135">開啟</translation>
 <translation id="1615402009686901181">當畫面上出現機密內容，系統管理員政策就會停用螢幕畫面擷取功能</translation>
-<translation id="1632985212731562677">你可以依序點選 [設定] &gt; [無障礙設定] 來停用開關功能。</translation>
+<translation id="1632985212731562677">你可以依序點選 [設定] &gt; [無障礙設定] 來停用切換控制功能。</translation>
 <translation id="1654477262762802994">啟動語音查詢</translation>
 <translation id="1655967159878494613"><ph name="QUERY_TEXT" />；<ph name="RESULT_TEXT" />；按下搜尋鍵加空白鍵即可在 Google 助理中查看結果。</translation>
 <translation id="1667964833127753507">中間色模式不會使用從桌布擷取的色彩，而是改用一組中間色的亮色調或深色調。</translation>
@@ -279,7 +279,7 @@
 <translation id="3181441307743005334">重新啟動中，請稍候</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{已連線至一部裝置}other{已連線至 # 部裝置}}</translation>
 <translation id="320207200541803018">設定計時器</translation>
-<translation id="3203405173652969239">已啟用開關功能</translation>
+<translation id="3203405173652969239">已啟用切換控制功能</translation>
 <translation id="3207953481422525583">使用者設定</translation>
 <translation id="3217205077783620295">音量已開啟；使用切換按鈕可設為靜音。</translation>
 <translation id="3226991577105957773">還有 <ph name="COUNT" /> 則</translation>
@@ -780,7 +780,7 @@
 <translation id="7067196344162293536">自動旋轉</translation>
 <translation id="7068360136237591149">開啟檔案</translation>
 <translation id="7076293881109082629">登入中</translation>
-<translation id="7088960765736518739">開關功能</translation>
+<translation id="7088960765736518739">切換控制功能</translation>
 <translation id="7098389117866926363">USB-C 裝置 (背面左側連接埠)</translation>
 <translation id="7106330611027933926">顯示桌面列</translation>
 <translation id="7118268675952955085">螢幕截圖</translation>

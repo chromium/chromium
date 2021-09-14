@@ -337,7 +337,7 @@
 <translation id="1362865166188278099">發生機械故障。請檢查印表機</translation>
 <translation id="1363585519747660921">請設定 USB 印表機</translation>
 <translation id="1367951781824006909">選擇檔案</translation>
-<translation id="1369149969991017342">開關功能 (使用一或兩種開關就能操控電腦)</translation>
+<translation id="1369149969991017342">切換控制功能 (使用一或兩種開關就能操控電腦)</translation>
 <translation id="1372841398847029212">同步到你的帳戶</translation>
 <translation id="1373176046406139583">裝置分享設定可以控制當螢幕處於解鎖狀態時，哪些人能夠與你分享內容。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">網路「<ph name="NETWORK_NAME" />」要求的憑證尚未安裝或已經無效。請取得新憑證，然後嘗試重新連線。</translation>
@@ -1395,7 +1395,7 @@
 <translation id="2445484935443597917">建立新的個人資料</translation>
 <translation id="244641233057214044">與搜尋內容相關</translation>
 <translation id="2448312741937722512">類型</translation>
-<translation id="2448810255793562605">開關功能自動掃描</translation>
+<translation id="2448810255793562605">切換控制功能自動掃描</translation>
 <translation id="2450223707519584812">找不到 Google API 金鑰，因此您無法新增使用者。詳情請參閱 <ph name="DETAILS_URL" />。</translation>
 <translation id="2450849356604136918">沒有運作中的檢視畫面</translation>
 <translation id="2451298179137331965">2 倍</translation>
@@ -2110,7 +2110,7 @@
 <translation id="3201422919974259695">可用的 USB 裝置將會顯示在這裡。</translation>
 <translation id="3202131003361292969">路徑</translation>
 <translation id="3202173864863109533">分頁音訊已關閉。</translation>
-<translation id="3202879084005596395">你隨時可以變更其他設定，或是透過開關功能設定頁面再次開啟設定指南。</translation>
+<translation id="3202879084005596395">你隨時可以變更其他設定，或是透過切換控制功能設定頁面再次開啟設定指南。</translation>
 <translation id="3208321278970793882">應用程式</translation>
 <translation id="3208584281581115441">立即檢查</translation>
 <translation id="3208703785962634733">尚未確認的</translation>
@@ -2669,7 +2669,7 @@
 <translation id="3797739167230984533">你的 <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> 受到貴機構管理<ph name="END_LINK" /></translation>
 <translation id="3797900183766075808">透過 <ph name="SEARCH_ENGINE" /> 搜尋「<ph name="SEARCH_TERMS" />」(&amp;S)</translation>
 <translation id="3798449238516105146">版本</translation>
-<translation id="3799128412641261490">開關功能設定</translation>
+<translation id="3799128412641261490">切換控制功能設定</translation>
 <translation id="3800806661949714323">全部顯示 (建議)</translation>
 <translation id="380329542618494757">姓名</translation>
 <translation id="3803345858388753269">視訊品質</translation>
@@ -3579,7 +3579,7 @@
 <translation id="4809079943450490359">來自裝置管理員的指示：</translation>
 <translation id="480990236307250886">開啟首頁</translation>
 <translation id="4809927044794281115">淺色主題</translation>
-<translation id="4811212958317149293">開關功能鍵盤自動掃描</translation>
+<translation id="4811212958317149293">切換控制功能鍵盤自動掃描</translation>
 <translation id="4811503964269049987">將所選分頁分組</translation>
 <translation id="4813136279048157860">我的圖片</translation>
 <translation id="4813512666221746211">網路錯誤</translation>
@@ -5613,7 +5613,7 @@
 <translation id="7034692021407794547">有「帳單管理」權限的管理員必須先前往管理控制台的「Google Meet 設備」專區接受《Google Meet 設備服務條款》。</translation>
 <translation id="7036706669646341689">建議你為 Linux 保留 <ph name="DISK_SIZE" /> 的空間。如要增加可用空間，請刪除裝置中的檔案。</translation>
 <translation id="7037509989619051237">要預覽的文字</translation>
-<translation id="7038632520572155338">開關功能</translation>
+<translation id="7038632520572155338">切換控制功能</translation>
 <translation id="7038710352229712897">為<ph name="USER_NAME" />新增其他 Google 帳戶</translation>
 <translation id="7039326228527141150">存取由 <ph name="VENDOR_NAME" /> 製造的 USB 裝置</translation>
 <translation id="7039912931802252762">Microsoft 智慧卡登入</translation>
@@ -6530,7 +6530,7 @@
 <translation id="7987814697832569482">一律透過這個 VPN 建立連線</translation>
 <translation id="7988355189918024273">啟用無障礙功能</translation>
 <translation id="7990394755527173834">第一次設定 Android 手機做為這台電腦的安全金鑰時，請在手機上開啟 Chrome，並依序前往 [設定] &gt; [密碼] &gt; [使用手機做為安全金鑰]。然後，請輕觸 [與新裝置連線] 並掃描這個 QR 圖碼。</translation>
-<translation id="7991296728590311172">開關功能設定</translation>
+<translation id="7991296728590311172">切換控制功能設定</translation>
 <translation id="7997826902155442747">處理優先順序</translation>
 <translation id="7999229196265990314">已建立下列檔案：
 
@@ -7214,7 +7214,7 @@
 <translation id="8737914367566358838">請選擇網頁的譯文語言</translation>
 <translation id="8737916108453753541">系統會將網址提供給 Google，藉此瞭解瀏覽行為</translation>
 <translation id="8740247629089392745">你可以將這部 Chromebook 交給「<ph name="SUPERVISED_USER_NAME" />」。設定即將完成，完成後即可開始探索。</translation>
-<translation id="8741944563400125534">開關功能設定指南</translation>
+<translation id="8741944563400125534">切換控制功能設定指南</translation>
 <translation id="8742998548129056176">這個頁面會顯示裝置和裝置使用情況的一般資訊 (例如電池電量、系統和應用程式活動，以及錯誤資訊)。這些資料將用於改善 Android，且部分匯總資訊還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 提高應用程式和產品的服務品質。</translation>
 <translation id="8746654918629346731">你已要求安裝「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="874689135111202667">{0,plural, =1{要將 1 個檔案上傳到這個網站嗎？}other{要將 # 個檔案上傳到這個網站嗎？}}</translation>
@@ -7410,7 +7410,7 @@
 <translation id="8931076093143205651">傳送使用狀況與診斷資料。讓系統自動將診斷資料、裝置和應用程式的使用資料傳送給 Google，協助改善你的 Android 使用體驗。這些資料將有助於改善系統和應用程式的穩定性與其他功能。此外，部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 改善自己的產品和服務。這項設定是由裝置擁有者強制執行。擁有者可選擇將這部裝置的診斷資料與使用資料傳送給 Google。如果你將「其他網路和應用程式活動」設定為開啟，這些資料可能會儲存在你的 Google 帳戶中。</translation>
 <translation id="8931475688782629595">管理同步處理的項目</translation>
 <translation id="8932654652795262306">即時網路共用詳細資料</translation>
-<translation id="8932894639908691771">開關功能選項</translation>
+<translation id="8932894639908691771">切換控制功能選項</translation>
 <translation id="893298445929867520">已隱藏購物車。變更設定即可讓購物車再次出現。</translation>
 <translation id="8933960630081805351">在 Finder 中顯示(&amp;S)</translation>
 <translation id="8934732568177537184">繼續</translation>
