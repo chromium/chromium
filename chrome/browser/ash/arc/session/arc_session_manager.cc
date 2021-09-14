@@ -7,12 +7,10 @@
 #include <string>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
@@ -423,11 +421,6 @@ ArcSupportHost::Error GetSupportHostError(const ArcProvisioningResult& result) {
 }
 
 bool ShouldShowNetworkTests(const ArcProvisioningResult& result) {
-  if (!base::FeatureList::IsEnabled(
-          ash::features::kButtonARCNetworkDiagnostics)) {
-    return false;
-  }
-
   // For GMS signin errors
   if (result.gms_sign_in_error() ==
           mojom::GMSSignInError::GMS_SIGN_IN_TIMEOUT ||

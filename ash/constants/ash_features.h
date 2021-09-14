@@ -463,6 +463,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAmbientModeNewUrlEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAppListBubbleEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAppNotificationsPageEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsArcInputOverlayEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsArcNetworkDiagnosticsButtonEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsArcResizeLockEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAssistiveMultiWordEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAutoNightLightEnabled();

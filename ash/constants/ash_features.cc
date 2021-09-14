@@ -1247,6 +1247,11 @@ bool IsArcInputOverlayEnabled() {
   return base::FeatureList::IsEnabled(kArcInputOverlay);
 }
 
+bool IsArcNetworkDiagnosticsButtonEnabled() {
+  return IsNetworkingInDiagnosticsAppEnabled() &&
+         base::FeatureList::IsEnabled(kButtonARCNetworkDiagnostics);
+}
+
 bool IsArcResizeLockEnabled() {
   return base::FeatureList::IsEnabled(kArcResizeLock);
 }
