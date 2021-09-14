@@ -209,8 +209,11 @@ class TestServerThread(threading.Thread):
   def _CloseUnnecessaryFDsForTestServerProcess(self):
     # This is required to avoid subtle deadlocks that could be caused by the
     # test server child process inheriting undesirable file descriptors such as
-    # file lock file descriptors.
-    for fd in xrange(0, 1024):
+    # file lock file descriptors. Note stdin, stdout, and stderr (0-2) are left
+    # alone and redirected with subprocess.Popen. It is important to leave those
+    # fds filled, or the test server will accidentally open other fds at those
+    # numbers.
+    for fd in xrange(3, 1024):
       if fd != self.pipe_out:
         try:
           os.close(fd)
@@ -231,10 +234,17 @@ class TestServerThread(threading.Thread):
     unbuf = os.environ.pop('PYTHONUNBUFFERED', None)
 
     # Pass _DIR_SOURCE_ROOT as the child's working directory so that relative
-    # paths in the arguments are resolved correctly.
-    self.process = subprocess.Popen(
-        command, preexec_fn=self._CloseUnnecessaryFDsForTestServerProcess,
-        cwd=_DIR_SOURCE_ROOT)
+    # paths in the arguments are resolved correctly. devnull can be replaced
+    # with subprocess.DEVNULL in Python 3.
+    with open(os.devnull, "r+b") as devnull:
+      self.process = subprocess.Popen(
+          command,
+          preexec_fn=self._CloseUnnecessaryFDsForTestServerProcess,
+          stdin=devnull,
+          # Preserve stdout and stderr from the test server.
+          stdout=None,
+          stderr=None,
+          cwd=_DIR_SOURCE_ROOT)
     if unbuf:
       os.environ['PYTHONUNBUFFERED'] = unbuf
     if self.process:
