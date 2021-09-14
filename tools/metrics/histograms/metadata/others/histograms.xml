@@ -10759,7 +10759,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Mojo.InvalidUTF8String" units="BooleanValid"
-    expires_after="2021-09-23">
+    expires_after="2022-04-01">
   <owner>rsesek@chromium.org</owner>
   <owner>chrome-mojo@google.com</owner>
   <summary>
