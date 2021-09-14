@@ -17,7 +17,7 @@ namespace media {
 // process hosting MediaFoundationRenderer and MediaFoundationCdm.
 class MediaFoundationMojoMediaClient final : public MojoMediaClient {
  public:
-  explicit MediaFoundationMojoMediaClient(const base::FilePath& user_data_dir);
+  MediaFoundationMojoMediaClient();
   ~MediaFoundationMojoMediaClient() override;
 
   // MojoMediaClient implementation.
@@ -31,7 +31,6 @@ class MediaFoundationMojoMediaClient final : public MojoMediaClient {
       mojom::FrameInterfaceFactory* frame_interfaces) override;
 
  private:
-  base::FilePath user_data_dir_;
   DISALLOW_COPY_AND_ASSIGN(MediaFoundationMojoMediaClient);
 };
 

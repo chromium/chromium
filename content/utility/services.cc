@@ -235,14 +235,8 @@ std::unique_ptr<media::MediaFoundationServiceBroker>
 RunMediaFoundationServiceBroker(
     mojo::PendingReceiver<media::mojom::MediaFoundationServiceBroker>
         receiver) {
-  base::FilePath user_data;
-  if (!GetContentClient()->utility()->GetDefaultUserDataDirectory(&user_data)) {
-    receiver.ResetWithReason(0, "Cannot get user data directory!");
-    return nullptr;
-  }
-
   return std::make_unique<media::MediaFoundationServiceBroker>(
-      std::move(receiver), user_data, base::BindOnce(&EnsureSandboxedWin));
+      std::move(receiver), base::BindOnce(&EnsureSandboxedWin));
 }
 #endif  // defined(OS_WIN)
 
