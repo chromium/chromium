@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/modules/mediastream/webmediaplayer_ms_compositor.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 using ::testing::_;
 using ::testing::ByRef;
@@ -599,7 +600,7 @@ class WebMediaPlayerMSTest
     background_rendering_ = background_rendering;
   }
 
-  std::vector<blink::TextTrackMetadata> GetTextTrackMetadata() override {
+  Vector<blink::TextTrackMetadata> GetTextTrackMetadata() override {
     return {};
   }
 

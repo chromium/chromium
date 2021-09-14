@@ -90,9 +90,6 @@
 #include "media/base/android/media_codec_util.h"
 #endif
 
-#define STATIC_ASSERT_ENUM(a, b)                            \
-  static_assert(static_cast<int>(a) == static_cast<int>(b), \
-                "mismatching enums: " #a)
 
 namespace blink {
 namespace {

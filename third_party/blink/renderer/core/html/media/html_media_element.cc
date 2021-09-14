@@ -128,6 +128,7 @@
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/display/screen_info.h"
 
 #ifndef LOG_MEDIA_EVENTS
@@ -3217,9 +3218,9 @@ TextTrack* HTMLMediaElement::addTextTrack(const AtomicString& kind,
   return text_track;
 }
 
-std::vector<TextTrackMetadata> HTMLMediaElement::GetTextTrackMetadata() {
+Vector<TextTrackMetadata> HTMLMediaElement::GetTextTrackMetadata() {
   TextTrackList* tracks = textTracks();
-  std::vector<TextTrackMetadata> result;
+  Vector<TextTrackMetadata> result;
   for (unsigned i = 0; i < tracks->length(); i++) {
     TextTrack* track = tracks->AnonymousIndexedGetter(i);
     result.emplace_back(track->language().GetString().Utf8(),
