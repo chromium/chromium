@@ -55,6 +55,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/net/delay_network_call.h"
+#include "chromeos/network/network_handler.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -241,6 +242,13 @@ void ChromeSigninClient::OnConnectionChanged(
 
 void ChromeSigninClient::DelayNetworkCall(base::OnceClosure callback) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Do not make network requests in unit tests. chromeos::NetworkHandler should
+  // not be used and is not expected to have been initialized in unit tests.
+  if (url_loader_factory_for_testing_ &&
+      !chromeos::NetworkHandler::IsInitialized()) {
+    std::move(callback).Run();
+    return;
+  }
   chromeos::DelayNetworkCall(
       base::TimeDelta::FromMilliseconds(chromeos::kDefaultNetworkRetryDelayMS),
       std::move(callback));

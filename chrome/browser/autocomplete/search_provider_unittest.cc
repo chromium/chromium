@@ -26,6 +26,8 @@
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
+#include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -212,7 +214,8 @@ class BaseSearchProviderTest : public testing::Test,
 
   explicit BaseSearchProviderTest(const bool command_line_overrides = false)
       : feature_test_component_(command_line_overrides) {
-    // We need both the history service and template url model loaded.
+    // We need the history service, the template url model, and the signin
+    // client initialized with a TestURLLoaderFactory.
     TestingProfile::Builder profile_builder;
     profile_builder.AddTestingFactory(
         HistoryServiceFactory::GetInstance(),
@@ -220,6 +223,10 @@ class BaseSearchProviderTest : public testing::Test,
     profile_builder.AddTestingFactory(
         TemplateURLServiceFactory::GetInstance(),
         base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
+    profile_builder.AddTestingFactory(
+        ChromeSigninClientFactory::GetInstance(),
+        base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                            &test_url_loader_factory_));
     profile_ = profile_builder.Build();
   }
 

@@ -49,6 +49,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
@@ -412,7 +413,7 @@ bool ChromeAutocompleteProviderClient::IsAuthenticated() const {
   const auto* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
   return identity_manager &&
-         identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+         !identity_manager->GetAccountsInCookieJar().signed_in_accounts.empty();
 }
 
 bool ChromeAutocompleteProviderClient::IsSyncActive() const {

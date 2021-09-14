@@ -26,6 +26,8 @@
 #include "chrome/browser/command_updater.h"
 #include "chrome/browser/command_updater_impl.h"
 #include "chrome/browser/search_engines/template_url_service_factory_test_util.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
+#include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_edit_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
@@ -41,6 +43,7 @@
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
@@ -369,6 +372,7 @@ class OmniboxViewViewsTest : public OmniboxViewViewsTestBase {
   }
 
  private:
+  network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<TemplateURLServiceFactoryTestUtil> util_;
   CommandUpdaterImpl command_updater_;
@@ -410,7 +414,14 @@ void OmniboxViewViewsTest::SetAndEmphasizeText(const std::string& new_text,
 void OmniboxViewViewsTest::SetUp() {
   ChromeViewsTestBase::SetUp();
 
-  profile_ = std::make_unique<TestingProfile>();
+  // We need the signin client initialized with a TestURLLoaderFactory.
+  TestingProfile::Builder profile_builder;
+  profile_builder.AddTestingFactory(
+      ChromeSigninClientFactory::GetInstance(),
+      base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                          &test_url_loader_factory_));
+  profile_ = profile_builder.Build();
+
   util_ = std::make_unique<TemplateURLServiceFactoryTestUtil>(profile_.get());
 
   // We need a widget so OmniboxView can be correctly focused and unfocused.
