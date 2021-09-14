@@ -307,69 +307,6 @@ void SystemClipboard::CopyToFindPboard(const String& text) {
 #endif
 }
 
-void SystemClipboard::RecordClipboardImageUrls(
-    DocumentFragment* pasting_fragment) {
-  if (!pasting_fragment)
-    return;
-  image_urls_in_paste_.clear();
-  bool rtf_format_available =
-      IsFormatAvailable(blink::mojom::ClipboardFormat::kRtf);
-  for (Element& element : ElementTraversal::DescendantsOf(*pasting_fragment)) {
-    if (!IsA<HTMLImageElement>(&element))
-      continue;
-
-    auto* html_image_element = DynamicTo<HTMLImageElement>(&element);
-    const AtomicString& image_src_url = html_image_element->ImageSourceURL();
-    if (image_src_url.IsEmpty())
-      continue;
-    // Save the image url so we can record it when the image loading fails.
-    image_urls_in_paste_.insert(image_src_url.GetString());
-    static constexpr char kFilePrefix[] = "file:";
-    static constexpr char kCidPrefix[] = "cid:";
-    static constexpr char kHttpPrefix[] = "http:";
-    static constexpr char kHttpsPrefix[] = "https:";
-    static constexpr char kDataPrefix[] = "data:";
-    static constexpr char kBase64[] = "base64,";
-    ClipboardPastedImageUrls image_src_url_prefix =
-        ClipboardPastedImageUrls::kUnknown;
-    if (image_src_url.StartsWithIgnoringCase(kFilePrefix)) {
-      // Record local file urls.
-      image_src_url_prefix = ClipboardPastedImageUrls::kLocalFileUrls;
-    } else if (image_src_url.StartsWithIgnoringCase(kCidPrefix)) {
-      // Record cid prefix.
-      image_src_url_prefix = ClipboardPastedImageUrls::kCidUrls;
-    } else if (image_src_url.StartsWithIgnoringCase(kHttpPrefix) ||
-               image_src_url.StartsWithIgnoringCase(kHttpsPrefix)) {
-      // Record http prefix.
-      image_src_url_prefix = ClipboardPastedImageUrls::kHttpUrls;
-    } else if (image_src_url.StartsWithIgnoringCase(kDataPrefix) &&
-               image_src_url.Contains(kBase64)) {
-      // Record base64 encoded image.
-      image_src_url_prefix = ClipboardPastedImageUrls::kBase64EncodedImage;
-    } else {
-      image_src_url_prefix = ClipboardPastedImageUrls::kOtherUrls;
-    }
-    base::UmaHistogramEnumeration("Blink.Clipboard.Paste.Image",
-                                  image_src_url_prefix);
-    // Check if RTF is present in the clipboard.
-    if (image_src_url_prefix == ClipboardPastedImageUrls::kLocalFileUrls &&
-        rtf_format_available) {
-      image_src_url_prefix = ClipboardPastedImageUrls::kLocalFileUrlWithRtf;
-      base::UmaHistogramEnumeration("Blink.Clipboard.Paste.Image",
-                                    image_src_url_prefix);
-    }
-  }
-}
-
-void SystemClipboard::RecordImageLoadError(const String& image_url) {
-  if (image_urls_in_paste_.IsEmpty())
-    return;
-  if (base::Contains(image_urls_in_paste_, image_url)) {
-    base::UmaHistogramEnumeration("Blink.Clipboard.Paste.Image",
-                                  ClipboardPastedImageUrls::kImageLoadError);
-  }
-}
-
 void SystemClipboard::ReadAvailableCustomAndStandardFormats(
     mojom::blink::ClipboardHost::ReadAvailableCustomAndStandardFormatsCallback
         callback) {

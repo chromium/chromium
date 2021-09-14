@@ -30,7 +30,6 @@
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
-#include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
@@ -812,15 +811,6 @@ void ImageLoader::ImageNotifyFinished(ImageResourceContent* content) {
     LazyImageHelper::RecordMetricsOnLoadFinished(html_image_element);
 
   if (content->ErrorOccurred()) {
-    // Record the image fail metric if the `html_image_element` is part of paste
-    // data.
-    if (html_image_element) {
-      const auto& document = GetElement()->GetDocument();
-      LocalFrame* frame = document.GetFrame();
-      if (frame && document.IsPageVisible())
-        frame->GetSystemClipboard()->RecordImageLoadError(
-            html_image_element->ImageSourceURL().GetString());
-    }
     pending_load_event_.Cancel();
 
     absl::optional<ResourceError> error = content->GetResourceError();

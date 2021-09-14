@@ -198,11 +198,6 @@ void ClipboardHostImpl::IsFormatAvailable(blink::mojom::ClipboardFormat format,
       result = false;
 #endif
       break;
-    case blink::mojom::ClipboardFormat::kRtf:
-      result =
-          clipboard->IsFormatAvailable(ui::ClipboardFormatType::RtfType(),
-                                       clipboard_buffer, data_endpoint.get());
-      break;
   }
   std::move(callback).Run(result);
 }

@@ -684,6 +684,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Blink.Clipboard.Paste.Image" enum="ClipboardPastedImageUrls"
     expires_after="2021-09-05">
+  <obsolete>
+    Retired in Sept 2021 as enough data was collected.
+  </obsolete>
   <owner>huangdarwin@chromium.org</owner>
   <owner>snianu@microsoft.com</owner>
   <summary>

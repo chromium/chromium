@@ -76,9 +76,6 @@ void MockClipboardHost::IsFormatAvailable(blink::mojom::ClipboardFormat format,
     case blink::mojom::ClipboardFormat::kBookmark:
       result = false;
       break;
-    case blink::mojom::ClipboardFormat::kRtf:
-      result = false;
-      break;
   }
   std::move(callback).Run(result);
 }

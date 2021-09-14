@@ -413,8 +413,6 @@ void ClipboardCommands::PasteFromClipboard(LocalFrame& frame,
 
   if (!fragment_and_plain_text.first)
     return;
-  frame.GetSystemClipboard()->RecordClipboardImageUrls(
-      fragment_and_plain_text.first);
   PasteAsFragment(frame, fragment_and_plain_text.first,
                   CanSmartReplaceInClipboard(frame),
                   fragment_and_plain_text.second, source);
