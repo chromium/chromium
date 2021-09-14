@@ -1928,6 +1928,7 @@ static_library("browser") {
     "//chrome/app/vector_icons",
     "//chrome/browser/breadcrumbs",
     "//chrome/browser/browsing_data:constants",
+    "//chrome/browser/commerce:feature_list",
     "//chrome/browser/devtools",
     "//chrome/browser/image_decoder",
     "//chrome/browser/media:media_engagement_preload_proto",

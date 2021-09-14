@@ -5140,6 +5140,7 @@ test("unit_tests") {
     "//chrome/browser:permissions_proto",
     "//chrome/browser:theme_properties",
     "//chrome/browser/browsing_data:constants",
+    "//chrome/browser/commerce/shopping_list:unit_tests",
     "//chrome/browser/devtools",
     "//chrome/browser/media/router",
     "//chrome/browser/media/router:media_router_feature",

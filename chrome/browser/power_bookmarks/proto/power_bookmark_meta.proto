@@ -5,11 +5,13 @@
 syntax = "proto2";
 
 option java_multiple_files = true;
-option java_package = "org.chromium.components.power_bookmarks";
+option java_package = "org.chromium.chrome.browser.power_bookmarks";
 
 option optimize_for = LITE_RUNTIME;
 
 package power_bookmarks;
+
+import "components/commerce/core/proto/price_tracking.proto";
 
 enum PowerBookmarkType {
   NONE = 0;
@@ -29,6 +31,9 @@ message PowerBookmarkMeta {
   // This enum can aid in determining what type of UI to show the bookmark in or
   // which backend to update with.
   optional PowerBookmarkType type = 4;
+
+  // Extra information corresponding to the |type|.
+  oneof type_specifics { commerce.BuyableProduct shopping_specifics = 5; }
 
   message Tag {
     // The name of the tag as displayed to the user.

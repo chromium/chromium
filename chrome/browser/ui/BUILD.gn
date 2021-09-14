@@ -381,6 +381,8 @@ static_library("ui") {
     "//chrome/browser:buildflags",
     "//chrome/browser:dev_ui_browser_resources",
     "//chrome/browser:resource_prefetch_predictor_proto",
+    "//chrome/browser/commerce:feature_list",
+    "//chrome/browser/commerce/shopping_list",
     "//chrome/browser/devtools",
     "//chrome/browser/image_decoder",
     "//chrome/browser/media:mojo_bindings",

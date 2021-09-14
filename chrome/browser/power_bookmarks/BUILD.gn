@@ -16,14 +16,16 @@ static_library("power_bookmarks") {
     "//base",
     "//base:i18n",
     "//components/bookmarks/browser",
+    "//components/commerce/core:proto",
     "//ui/base",
     "//url",
   ]
 }
 
 proto_library("proto") {
-  proto_in_dir = "../"
+  proto_in_dir = "//"
   sources = [ "proto/power_bookmark_meta.proto" ]
+  deps = [ "//components/commerce/core:proto" ]
 }
 
 static_library("unit_tests") {

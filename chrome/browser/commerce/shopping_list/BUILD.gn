@@ -1,0 +1,36 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("shopping_list") {
+  sources = [
+    "shopping_data_provider.cc",
+    "shopping_data_provider.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser:resources",
+    "//chrome/browser/power_bookmarks:proto",
+    "//chrome/common",
+    "//components/commerce/core:proto",
+    "//components/optimization_guide/content/browser",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//content/public/browser",
+  ]
+}
+
+static_library("unit_tests") {
+  testonly = true
+
+  sources = [ "shopping_data_provider_unittest.cc" ]
+
+  deps = [
+    ":shopping_list",
+    "//base/test:test_support",
+    "//chrome/browser/power_bookmarks:proto",
+    "//components/commerce/core:proto",
+    "//content/public/browser",
+    "//testing/gtest",
+  ]
+}

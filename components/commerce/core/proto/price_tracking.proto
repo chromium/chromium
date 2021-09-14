@@ -4,9 +4,11 @@
 
 syntax = "proto2";
 
-package org.chromium.components.commerce;
+package commerce;
 
 option java_package = "org.chromium.components.commerce";
+
+option optimize_for = LITE_RUNTIME;
 
 message PriceTrackingData {
   // metadata relating to the product

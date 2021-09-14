@@ -86,6 +86,7 @@ include_rules = [
   "+components/chromeos_camera",
   "+components/client_hints/browser",
   "+components/cloud_devices/common",
+  "+components/commerce",
   "+components/component_updater",
   "+components/component_updater/installer_policies",
   "+components/consent_auditor",
