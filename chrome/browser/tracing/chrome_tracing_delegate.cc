@@ -24,7 +24,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/tracing/background_tracing_field_trial.h"
-#include "chrome/browser/tracing/crash_service_uploader.h"
 #include "chrome/browser/ui/browser_otr_state.h"
 #include "chrome/common/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -89,23 +88,6 @@ bool IsBackgroundTracingCommandLine() {
     return true;
   }
   return false;
-}
-
-bool IsMetricsReportingEnabled() {
-  // No need to check for metrics reporting for proto uploads, the metrics
-  // service will check before uploading.
-  if (base::FeatureList::IsEnabled(features::kBackgroundTracingProtoOutput))
-    return true;
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && defined(OFFICIAL_BUILD)
-  PrefService* local_state = g_browser_process->local_state();
-  return local_state->GetBoolean(metrics::prefs::kMetricsReportingEnabled);
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(chinglinyu): Fix if JSON traces are needed for ChromeOS-ASH.
-  return false;
-#else
-  return true;
-#endif
 }
 
 // Removes any version numbers from the scenario name.
@@ -358,12 +340,6 @@ void ChromeTracingDelegate::OnBrowserAdded(Browser* browser) {
 }
 #endif  // defined(OS_ANDROID)
 
-std::unique_ptr<content::TraceUploader> ChromeTracingDelegate::GetTraceUploader(
-    scoped_refptr<network::SharedURLLoaderFactory> factory) {
-  return std::unique_ptr<content::TraceUploader>(
-      new TraceCrashServiceUploader(std::move(factory)));
-}
-
 bool ChromeTracingDelegate::IsAllowedToBeginBackgroundScenarioInternal(
     const content::BackgroundTracingConfig& config,
     bool requires_anonymized_data) const {
@@ -383,11 +359,6 @@ bool ChromeTracingDelegate::IsAllowedToBeginBackgroundScenarioInternal(
   if (state.DidLastSessionEndUnexpectedly()) {
     RecordDisallowedMetric(
         TracingFinalizationDisallowedReason::kLastTracingSessionDidNotEnd);
-    return false;
-  }
-  if (!IsMetricsReportingEnabled()) {
-    RecordDisallowedMetric(
-        TracingFinalizationDisallowedReason::kMetricsReportingDisabled);
     return false;
   }
 

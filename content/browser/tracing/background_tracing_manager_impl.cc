@@ -115,16 +115,14 @@ bool BackgroundTracingManagerImpl::SetActiveScenario(
     std::unique_ptr<BackgroundTracingConfig> config,
     DataFiltering data_filtering) {
   // Pass a null ReceiveCallback to use the default upload behaviour.
-  return SetActiveScenarioWithReceiveCallback(std::move(config),
-                                              ReceiveCallback(), data_filtering,
-                                              /*local_output=*/false);
+  return SetActiveScenarioWithReceiveCallback(
+      std::move(config), ReceiveCallback(), data_filtering);
 }
 
 bool BackgroundTracingManagerImpl::SetActiveScenarioWithReceiveCallback(
     std::unique_ptr<BackgroundTracingConfig> config,
     ReceiveCallback receive_callback,
-    DataFiltering data_filtering,
-    bool local_output) {
+    DataFiltering data_filtering) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (config) {
     RecordMetric(Metrics::SCENARIO_ACTIVATION_REQUESTED);
@@ -192,8 +190,7 @@ bool BackgroundTracingManagerImpl::SetActiveScenarioWithReceiveCallback(
   active_scenario_ = std::make_unique<BackgroundTracingActiveScenario>(
       std::move(config_impl), std::move(receive_callback),
       base::BindOnce(&BackgroundTracingManagerImpl::OnScenarioAborted,
-                     base::Unretained(this)),
-      local_output);
+                     base::Unretained(this)));
 
   // Notify observers before starting tracing.
   for (auto* observer : background_tracing_observers_) {

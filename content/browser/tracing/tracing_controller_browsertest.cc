@@ -22,7 +22,6 @@
 #include "content/browser/tracing/tracing_controller_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/trace_uploader.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -92,14 +91,6 @@ class TracingControllerTestEndpoint
 
   std::string trace_;
   TracingController::CompletionCallback done_callback_;
-};
-
-class TestTracingDelegate : public TracingDelegate {
- public:
-  std::unique_ptr<TraceUploader> GetTraceUploader(
-      scoped_refptr<network::SharedURLLoaderFactory>) override {
-    return nullptr;
-  }
 };
 
 class TracingControllerTest : public ContentBrowserTest {
@@ -215,7 +206,7 @@ class TracingControllerTest : public ContentBrowserTest {
 
   void TestStartAndStopTracingStringWithFilter() {
     TracingControllerImpl::GetInstance()->SetTracingDelegateForTesting(
-        std::make_unique<TestTracingDelegate>());
+        std::make_unique<TracingDelegate>());
 
     Navigate(shell());
 

@@ -43,6 +43,8 @@
 #include "services/tracing/perfetto/privacy_filtering_check.h"
 #include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"
 #include "services/tracing/public/cpp/tracing_features.h"
+#include "third_party/perfetto/include/perfetto/ext/trace_processor/export_json.h"
+#include "third_party/perfetto/include/perfetto/trace_processor/trace_processor_storage.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "third_party/zlib/zlib.h"
 
@@ -252,24 +254,24 @@ class TestBackgroundTracingHelper
 //   TestTraceReceiverHelper trace_receiver_helper;
 //   [... do tracing stuff ...]
 //   trace_receiver_helper.WaitForTraceReceived();
-class TestTraceReceiverHelper {
+class TestTraceReceiverHelper
+    : public perfetto::trace_processor::json::OutputWriter {
  public:
+  TestTraceReceiverHelper() {}
+
   BackgroundTracingManager::ReceiveCallback get_receive_callback() {
     return base::BindRepeating(&TestTraceReceiverHelper::Upload,
                                base::Unretained(this));
   }
 
-  BackgroundTracingManager::ReceiveCallback get_raw_receive_callback() {
-    return base::BindRepeating(&TestTraceReceiverHelper::RawUpload,
-                               base::Unretained(this));
-  }
-
   void WaitForTraceReceived() { wait_for_trace_received_.Run(); }
   bool trace_received() const { return trace_received_; }
-  const std::string& file_contents() const { return file_contents_; }
-
+  const std::string& json_file_contents() const { return json_file_contents_; }
+  const std::string& proto_file_contents() const {
+    return proto_file_contents_;
+  }
   bool TraceHasMatchingString(const char* text) const {
-    return file_contents_.find(text) != std::string::npos;
+    return json_file_contents_.find(text) != std::string::npos;
   }
 
   void Upload(
@@ -278,30 +280,28 @@ class TestTraceReceiverHelper {
     EXPECT_TRUE(file_contents);
     EXPECT_FALSE(trace_received_);
     trace_received_ = true;
+    proto_file_contents_ = *file_contents;
 
-    // Uncompress the trace content.
-    size_t compressed_length = file_contents->length();
-    const size_t kOutputBufferLength = 10 * 1024 * 1024;
-    std::vector<char> output_str(kOutputBufferLength);
+    std::unique_ptr<perfetto::trace_processor::TraceProcessorStorage>
+        trace_processor =
+            perfetto::trace_processor::TraceProcessorStorage::CreateInstance(
+                perfetto::trace_processor::Config());
 
-    z_stream stream = {nullptr};
-    stream.avail_in = compressed_length;
-    stream.avail_out = kOutputBufferLength;
-    stream.next_in =
-        reinterpret_cast<Bytef*>(const_cast<char*>(file_contents->data()));
-    stream.next_out = reinterpret_cast<Bytef*>(output_str.data());
+    size_t data_length = file_contents->length();
+    std::unique_ptr<uint8_t[]> data(new uint8_t[data_length]);
+    memcpy(data.get(), file_contents->data(), data_length);
 
-    // 16 + MAX_WBITS means only decoding gzip encoded streams, and using
-    // the biggest window size, according to zlib.h
-    int result = inflateInit2(&stream, 16 + MAX_WBITS);
-    EXPECT_EQ(Z_OK, result);
-    result = inflate(&stream, Z_FINISH);
-    int bytes_written = kOutputBufferLength - stream.avail_out;
+    auto parse_status = trace_processor->Parse(std::move(data), data_length);
+    ASSERT_TRUE(parse_status.ok()) << parse_status.message();
 
-    inflateEnd(&stream);
-    EXPECT_EQ(Z_STREAM_END, result);
+    trace_processor->NotifyEndOfFile();
 
-    file_contents_.assign(output_str.data(), bytes_written);
+    auto export_status = perfetto::trace_processor::json::ExportJson(
+        trace_processor.get(), this,
+        perfetto::trace_processor::json::ArgumentFilterPredicate(),
+        perfetto::trace_processor::json::MetadataFilterPredicate(),
+        perfetto::trace_processor::json::LabelFilterPredicate());
+    ASSERT_TRUE(export_status.ok()) << export_status.message();
 
     // Post the callbacks.
     content::GetUIThreadTaskRunner({})->PostTask(
@@ -311,27 +311,18 @@ class TestTraceReceiverHelper {
         FROM_HERE, wait_for_trace_received_.QuitWhenIdleClosure());
   }
 
-  void RawUpload(
-      std::unique_ptr<std::string> file_contents,
-      BackgroundTracingManager::FinishedProcessingCallback done_callback) {
-    EXPECT_TRUE(file_contents);
-    EXPECT_FALSE(trace_received_);
-    trace_received_ = true;
-
-    file_contents_ = *file_contents;
-
-    // Post the callbacks.
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(std::move(done_callback), true));
-
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, wait_for_trace_received_.QuitWhenIdleClosure());
+  // perfetto::trace_processor::json::OutputWriter
+  perfetto::trace_processor::util::Status AppendString(
+      const std::string& json) override {
+    json_file_contents_ += json;
+    return perfetto::trace_processor::util::OkStatus();
   }
 
  private:
   base::RunLoop wait_for_trace_received_;
   bool trace_received_ = false;
-  std::string file_contents_;
+  std::string proto_file_contents_;
+  std::string json_file_contents_;
 };
 
 // An helper class that receives multiple traces through the same callback.
@@ -396,7 +387,7 @@ class BackgroundTracingManagerBrowserTest : public ContentBrowserTest {
   BackgroundTracingManagerBrowserTest() {
     feature_list_.InitWithFeatures(
         /* enabled_features = */ {features::kEnablePerfettoSystemTracing},
-        /* disabled_features = */ {features::kBackgroundTracingProtoOutput});
+        /* disabled_features = */ {});
     // CreateUniqueTempDir() makes a blocking call to create the directory and
     // wait on it. This isn't allowed in a normal browser context. Therefore we
     // do this in the test constructor before the browser prevents the blocking
@@ -585,7 +576,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
   background_tracing_helper.WaitForTracingEnabled();
 
   {
-    TRACE_EVENT1("startup", "TestAllowlist", "test_allowlist", "abc");
+    TRACE_EVENT1("toplevel", "ThreadPool_RunTask", "src_file", "abc");
     TRACE_EVENT1("startup", "TestNotAllowlist", "test_not_allowlist", "abc");
   }
 
@@ -600,7 +591,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
 
   EXPECT_TRUE(trace_receiver_helper.trace_received());
   EXPECT_TRUE(trace_receiver_helper.TraceHasMatchingString("{"));
-  EXPECT_TRUE(trace_receiver_helper.TraceHasMatchingString("test_allowlist"));
+  EXPECT_TRUE(trace_receiver_helper.TraceHasMatchingString("src_file"));
   EXPECT_FALSE(
       trace_receiver_helper.TraceHasMatchingString("test_not_allowlist"));
 }
@@ -668,7 +659,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
                   ->SetActiveScenarioWithReceiveCallback(
                       std::move(config),
                       trace_receiver_helper.get_receive_callback(),
-                      BackgroundTracingManager::ANONYMIZE_DATA));
+                      BackgroundTracingManager::NO_DATA_FILTERING));
 
   background_tracing_helper.WaitForTracingEnabled();
 
@@ -1069,7 +1060,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
   EXPECT_TRUE(trace_receiver_helper.trace_received());
 
   absl::optional<base::Value> trace_json =
-      base::JSONReader::Read(trace_receiver_helper.file_contents());
+      base::JSONReader::Read(trace_receiver_helper.json_file_contents());
   ASSERT_TRUE(trace_json);
   auto* metadata_json = static_cast<base::DictionaryValue*>(
       trace_json->FindKeyOfType("metadata", base::Value::Type::DICTIONARY));
@@ -1142,7 +1133,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
   EXPECT_TRUE(trace_receiver_helper.trace_received());
 
   absl::optional<base::Value> trace_json =
-      base::JSONReader::Read(trace_receiver_helper.file_contents());
+      base::JSONReader::Read(trace_receiver_helper.json_file_contents());
   ASSERT_TRUE(trace_json);
   auto* metadata_json = static_cast<base::DictionaryValue*>(
       trace_json->FindKeyOfType("metadata", base::Value::Type::DICTIONARY));
@@ -1226,7 +1217,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
   trace_analyzer::TraceEventVector events;
   std::unique_ptr<trace_analyzer::TraceAnalyzer> analyzer(
       trace_analyzer::TraceAnalyzer::Create(
-          trace_receiver_helper.file_contents()));
+          trace_receiver_helper.json_file_contents()));
   ASSERT_TRUE(analyzer);
 
   base::ModuleCache module_cache;
@@ -1826,15 +1817,6 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest, RunStartupTracing) {
 namespace {
 
 class ProtoBackgroundTracingTest : public DevToolsProtocolTest {
- public:
-  ProtoBackgroundTracingTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kBackgroundTracingProtoOutput},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace
@@ -1924,9 +1906,8 @@ IN_PROC_BROWSER_TEST_F(ProtoBackgroundTracingTest, ReceiveCallback) {
   EXPECT_TRUE(BackgroundTracingManager::GetInstance()
                   ->SetActiveScenarioWithReceiveCallback(
                       std::move(config),
-                      trace_receiver_helper.get_raw_receive_callback(),
-                      BackgroundTracingManager::ANONYMIZE_DATA,
-                      /*local_output=*/true));
+                      trace_receiver_helper.get_receive_callback(),
+                      BackgroundTracingManager::ANONYMIZE_DATA));
 
   background_tracing_helper.WaitForTracingEnabled();
 
@@ -1943,7 +1924,7 @@ IN_PROC_BROWSER_TEST_F(ProtoBackgroundTracingTest, ReceiveCallback) {
   trace_receiver_helper.WaitForTraceReceived();
   EXPECT_FALSE(BackgroundTracingManager::GetInstance()->HasTraceToUpload());
   ASSERT_TRUE(trace_receiver_helper.trace_received());
-  std::string trace_data = trace_receiver_helper.file_contents();
+  std::string trace_data = trace_receiver_helper.proto_file_contents();
 
   BackgroundTracingManager::GetInstance()->AbortScenarioForTesting();
   background_tracing_helper.WaitForScenarioAborted();

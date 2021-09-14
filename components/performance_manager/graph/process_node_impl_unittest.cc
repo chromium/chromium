@@ -297,8 +297,7 @@ class LenientFakeBackgroundTracingManager
   bool SetActiveScenarioWithReceiveCallback(
       std::unique_ptr<content::BackgroundTracingConfig> config,
       ReceiveCallback receive_callback,
-      DataFiltering data_filtering,
-      bool local_output = false) override {
+      DataFiltering data_filtering) override {
     return true;
   }
 

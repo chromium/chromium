@@ -9,10 +9,6 @@
 
 #include "content/public/browser/tracing_delegate.h"
 
-namespace network {
-class SharedURLLoaderFactory;
-}
-
 namespace android_webview {
 
 class AwTracingDelegate : public content::TracingDelegate {
@@ -21,8 +17,6 @@ class AwTracingDelegate : public content::TracingDelegate {
   ~AwTracingDelegate() override;
 
   // content::TracingDelegate implementation:
-  std::unique_ptr<content::TraceUploader> GetTraceUploader(
-      scoped_refptr<network::SharedURLLoaderFactory> factory) override;
   bool IsAllowedToBeginBackgroundScenario(
       const content::BackgroundTracingConfig& config,
       bool requires_anonymized_data) override;

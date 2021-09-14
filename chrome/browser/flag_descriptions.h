@@ -1461,13 +1461,6 @@ extern const char kTouchSelectionStrategyDescription[];
 extern const char kTouchSelectionStrategyCharacter[];
 extern const char kTouchSelectionStrategyDirection[];
 
-extern const char kTraceUploadUrlName[];
-extern const char kTraceUploadUrlDescription[];
-extern const char kTraceUploadUrlChoiceOther[];
-extern const char kTraceUploadUrlChoiceEmloading[];
-extern const char kTraceUploadUrlChoiceQa[];
-extern const char kTraceUploadUrlChoiceTesting[];
-
 extern const char kTranslateAssistContentName[];
 extern const char kTranslateAssistContentDescription[];
 

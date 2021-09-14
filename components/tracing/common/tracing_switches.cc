@@ -98,9 +98,6 @@ const char kPerfettoDisableInterning[] = "perfetto-disable-interning";
 // Sends a pretty-printed version of tracing info to the console.
 const char kTraceToConsole[] = "trace-to-console";
 
-// Sets the target URL for uploading tracing data.
-const char kTraceUploadURL[] = "trace-upload-url";
-
 // Sets a local file destination for tracing data. This is only used if
 // kEnableBackgroundTracing is also specified.
 const char kBackgroundTracingOutputFile[] = "background-tracing-output-file";

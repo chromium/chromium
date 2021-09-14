@@ -25,10 +25,6 @@ namespace base {
 class Time;
 }
 
-namespace network {
-class SharedURLLoaderFactory;
-}
-
 class ChromeTracingDelegate : public content::TracingDelegate,
 #if defined(OS_ANDROID)
                               public TabModelListObserver
@@ -41,9 +37,6 @@ class ChromeTracingDelegate : public content::TracingDelegate,
   ~ChromeTracingDelegate() override;
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
-
-  std::unique_ptr<content::TraceUploader> GetTraceUploader(
-      scoped_refptr<network::SharedURLLoaderFactory> factory) override;
 
   // Returns if the tracing session is allowed to begin. Also updates the
   // background tracing state in prefs using BackgroundTracingStateManager. So,

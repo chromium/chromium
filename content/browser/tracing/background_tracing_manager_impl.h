@@ -99,8 +99,7 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager {
   bool SetActiveScenarioWithReceiveCallback(
       std::unique_ptr<BackgroundTracingConfig>,
       ReceiveCallback receive_callback,
-      DataFiltering data_filtering,
-      bool local_output = false) override;
+      DataFiltering data_filtering) override;
   void AbortScenario();
   bool HasActiveScenario() override;
 

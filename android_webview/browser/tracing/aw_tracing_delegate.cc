@@ -9,19 +9,12 @@
 #include "base/notreached.h"
 #include "base/values.h"
 #include "components/version_info/version_info.h"
-#include "content/public/browser/trace_uploader.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace android_webview {
 
 AwTracingDelegate::AwTracingDelegate() {}
 AwTracingDelegate::~AwTracingDelegate() {}
-
-std::unique_ptr<content::TraceUploader> AwTracingDelegate::GetTraceUploader(
-    scoped_refptr<network::SharedURLLoaderFactory>) {
-  NOTREACHED();
-  return NULL;
-}
 
 bool AwTracingDelegate::IsAllowedToBeginBackgroundScenario(
     const content::BackgroundTracingConfig& config,

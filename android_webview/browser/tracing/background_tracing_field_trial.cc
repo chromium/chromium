@@ -21,10 +21,9 @@ void SetupBackgroundTracingFieldTrial() {
 
   if (config &&
       config->tracing_mode() == content::BackgroundTracingConfig::SYSTEM &&
-      tracing::ShouldSetupSystemTracing() &&
-      base::FeatureList::IsEnabled(features::kBackgroundTracingProtoOutput)) {
+      tracing::ShouldSetupSystemTracing()) {
     // Only enable background tracing for system tracing if the system producer
-    // is enabled. Legacy JSON traces are not supported.
+    // is enabled.
     manager->SetActiveScenario(
         std::move(config), content::BackgroundTracingManager::ANONYMIZE_DATA);
   }

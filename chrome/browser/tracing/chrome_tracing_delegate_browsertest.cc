@@ -68,24 +68,10 @@ class ChromeTracingDelegateBrowserTest : public InProcessBrowserTest {
 
     std::unique_ptr<content::BackgroundTracingConfig> config(
         content::BackgroundTracingConfig::FromDict(std::move(dict)));
-
     DCHECK(config);
-    // Proto output is uploaded through
-    // BackgroundTracingManager::SetTraceToUpload, with no ReceiveCallback.
-    if (base::FeatureList::IsEnabled(features::kBackgroundTracingProtoOutput)) {
-      return content::BackgroundTracingManager::GetInstance()
-          ->SetActiveScenario(std::move(config), data_filtering);
-    }
 
-    // Legacy JSON output needs a receive callback.
-    wait_for_upload_ = std::make_unique<base::RunLoop>();
-    content::BackgroundTracingManager::ReceiveCallback receive_callback =
-        base::BindRepeating(&ChromeTracingDelegateBrowserTest::OnUpload,
-                            base::Unretained(this));
-
-    return content::BackgroundTracingManager::GetInstance()
-        ->SetActiveScenarioWithReceiveCallback(
-            std::move(config), std::move(receive_callback), data_filtering);
+    return content::BackgroundTracingManager::GetInstance()->SetActiveScenario(
+        std::move(config), data_filtering);
   }
 
   void TriggerPreemptiveScenario(
@@ -105,12 +91,6 @@ class ChromeTracingDelegateBrowserTest : public InProcessBrowserTest {
   }
 
   void WaitForUpload() {
-    if (wait_for_upload_) {
-      // Wait for the ReceiveCallback to quit this RunLoop.
-      wait_for_upload_->Run();
-      return;
-    }
-
     // No ReceiveCallback set, so wait for SetTraceToUpload to be called.
     auto* manager = content::BackgroundTracingManager::GetInstance();
     while (!manager->HasTraceToUpload()) {
@@ -129,19 +109,6 @@ class ChromeTracingDelegateBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  void OnUpload(std::unique_ptr<std::string> file_contents,
-                content::BackgroundTracingManager::FinishedProcessingCallback
-                    done_callback) {
-    receive_count_ += 1;
-
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(std::move(done_callback), true));
-    if (wait_for_upload_) {
-      content::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE, wait_for_upload_->QuitClosure());
-    }
-  }
-
   void OnStartedFinalizing(bool success) {
     started_finalizations_count_++;
     last_on_started_finalizing_success_ = success;
@@ -152,7 +119,6 @@ class ChromeTracingDelegateBrowserTest : public InProcessBrowserTest {
     }
   }
 
-  std::unique_ptr<base::RunLoop> wait_for_upload_;
   base::OnceClosure on_started_finalization_callback_;
   int receive_count_;
   int started_finalizations_count_;
