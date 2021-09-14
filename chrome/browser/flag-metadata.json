@@ -4424,13 +4424,13 @@
   },
   {
     "name": "password-change-in-settings",
-    "owners": [ "kolos" ],
-    "expiry_milestone": 95
+    "owners": [ "kolos", "selakovic@google.com", "treib" ],
+    "expiry_milestone": 100
   },
   {
     "name": "password-change-support",
-    "owners": [ "selakovic@google.com" ],
-    "expiry_milestone": 95
+    "owners": [ "kolos", "selakovic@google.com", "treib" ],
+    "expiry_milestone": 100
   },
   {
     "name": "password-import",
@@ -4441,8 +4441,8 @@
   },
   {
     "name": "password-scripts-fetching",
-    "owners": [ "kolos" ],
-    "expiry_milestone": 95
+    "owners": [ "kolos", "selakovic@google.com", "treib" ],
+    "expiry_milestone": 100
   },
   {
     "name": "passwords-account-storage-revised-opt-in-flow",
