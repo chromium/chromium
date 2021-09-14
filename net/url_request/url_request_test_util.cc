@@ -461,7 +461,8 @@ int TestNetworkDelegate::OnBeforeStartTransaction(
   event_order_[req_id] += "OnBeforeStartTransaction\n";
   EXPECT_TRUE(next_states_[req_id] & kStageBeforeStartTransaction)
       << event_order_[req_id];
-  next_states_[req_id] = kStageHeadersReceived | kStageCompletedError;
+  next_states_[req_id] =
+      kStageHeadersReceived | kStageCompletedError | kStageBeforeRedirect;
   before_start_transaction_count_++;
   return OK;
 }

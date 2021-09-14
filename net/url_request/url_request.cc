@@ -611,7 +611,8 @@ void URLRequest::BeforeRequestComplete(int error) {
     StartJob(std::make_unique<URLRequestRedirectJob>(
         this, new_url,
         // Use status code 307 to preserve the method, so POST requests work.
-        URLRequestRedirectJob::REDIRECT_307_TEMPORARY_REDIRECT, "Delegate"));
+        RedirectUtil::ResponseCode::REDIRECT_307_TEMPORARY_REDIRECT,
+        "Delegate"));
   } else {
     StartJob(context_->job_factory()->CreateJob(this));
   }

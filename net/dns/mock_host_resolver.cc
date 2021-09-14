@@ -26,6 +26,7 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "build/build_config.h"
+#include "net/base/address_family.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
@@ -207,7 +208,8 @@ class MockHostResolverBase::RequestImpl
     // Check that error information has been set and that the top-level error
     // code is valid.
     DCHECK(resolve_error_info_.error != ERR_IO_PENDING);
-    DCHECK(error == OK || error == ERR_NAME_NOT_RESOLVED);
+    DCHECK(error == OK || error == ERR_NAME_NOT_RESOLVED ||
+           error == ERR_DNS_NAME_HTTPS_ONLY);
 
     DCHECK(!complete_);
     complete_ = true;
@@ -891,7 +893,7 @@ void RuleBasedHostResolverProc::AddRuleWithLatency(
   DCHECK(!replacement.empty());
   HostResolverFlags flags = HOST_RESOLVER_LOOPBACK_ONLY;
   Rule rule(Rule::kResolverTypeSystem, host_pattern, ADDRESS_FAMILY_UNSPECIFIED,
-            flags, replacement, {} /* dns_aliases */, latency_ms);
+            flags, replacement, /*dns_aliases=*/{}, latency_ms);
   AddRuleInternal(rule);
 }
 
@@ -899,7 +901,7 @@ void RuleBasedHostResolverProc::AllowDirectLookup(
     const std::string& host_pattern) {
   HostResolverFlags flags = HOST_RESOLVER_LOOPBACK_ONLY;
   Rule rule(Rule::kResolverTypeSystem, host_pattern, ADDRESS_FAMILY_UNSPECIFIED,
-            flags, std::string(), {} /* dns_aliases */, 0);
+            flags, std::string(), /*dns_aliases=*/{}, 0);
   AddRuleInternal(rule);
 }
 
@@ -907,7 +909,7 @@ void RuleBasedHostResolverProc::AddSimulatedFailure(
     const std::string& host_pattern,
     HostResolverFlags flags) {
   Rule rule(Rule::kResolverTypeFail, host_pattern, ADDRESS_FAMILY_UNSPECIFIED,
-            flags, std::string(), {} /* dns_aliases */, 0);
+            flags, std::string(), /*dns_aliases=*/{}, 0);
   AddRuleInternal(rule);
 }
 
@@ -916,7 +918,16 @@ void RuleBasedHostResolverProc::AddSimulatedTimeoutFailure(
     HostResolverFlags flags) {
   Rule rule(Rule::kResolverTypeFailTimeout, host_pattern,
             ADDRESS_FAMILY_UNSPECIFIED, flags, std::string(),
-            {} /* dns_aliases */, 0);
+            /*dns_aliases=*/{}, 0);
+  AddRuleInternal(rule);
+}
+
+void RuleBasedHostResolverProc::AddSimulatedHTTPSServiceFormRecord(
+    const std::string& host_pattern) {
+  Rule rule(Rule::kResolverTypeFailHTTPSServiceFormRecord, host_pattern,
+            ADDRESS_FAMILY_UNSPECIFIED, /*host_resolver_flags=*/0,
+            /*replacement=*/std::string(),
+            /*dns_aliases=*/{}, /*latency_ms=*/0);
   AddRuleInternal(rule);
 }
 
@@ -976,6 +987,14 @@ int RuleBasedHostResolverProc::Resolve(const std::string& host,
           return ERR_NAME_NOT_RESOLVED;
         case Rule::kResolverTypeFailTimeout:
           return ERR_DNS_TIMED_OUT;
+        case Rule::kResolverTypeFailHTTPSServiceFormRecord: {
+          // Remove the rule to create the behavior that the HTTPS record is
+          // only returned for the first request.
+          rules_.erase(r);
+          // TODO(https://crbug.com/1206799) Only return this error when the
+          // scheme is non-cryptographic (http:// or ws://).
+          return ERR_DNS_NAME_HTTPS_ONLY;
+        }
         case Rule::kResolverTypeSystem:
 #if defined(OS_WIN)
           EnsureWinsockInit();

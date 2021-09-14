@@ -442,6 +442,14 @@ class RuleBasedHostResolverProc : public HostResolverProc {
       const std::string& host,
       HostResolverFlags flags = HOST_RESOLVER_LOOPBACK_ONLY);
 
+  // Simulate a lookup that returns ERR_DNS_NAME_HTTPS_ONLY regardless of the
+  // request's scheme. After the rule is used once, it is deleted.
+  //
+  // TODO(https://crbug.com/1206799) Once RuleBasedHostResolverProc::Resolve
+  // takes a url::SchemeHostPort parameter, change the semantics of this method
+  // to vary depending on request scheme.
+  void AddSimulatedHTTPSServiceFormRecord(const std::string& host);
+
   // Deletes all the rules that have been added.
   void ClearRules();
 
@@ -461,6 +469,7 @@ class RuleBasedHostResolverProc : public HostResolverProc {
     enum ResolverType {
       kResolverTypeFail,
       kResolverTypeFailTimeout,
+      kResolverTypeFailHTTPSServiceFormRecord,
       // TODO(mmenke): Is it really reasonable for a "mock" host resolver to
       // fall back to the system resolver?
       kResolverTypeSystem,

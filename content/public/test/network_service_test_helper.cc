@@ -116,6 +116,10 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
         case network::mojom::ResolverType::kResolverTypeFailTimeout:
           host_resolver->AddSimulatedTimeoutFailure(rule->host_pattern);
           break;
+        case network::mojom::ResolverType::
+            kResolverTypeFailHTTPSServiceFormRecord:
+          host_resolver->AddSimulatedHTTPSServiceFormRecord(rule->host_pattern);
+          break;
         case network::mojom::ResolverType::kResolverTypeIPLiteral: {
           net::IPAddress ip_address;
           DCHECK(ip_address.AssignFromIPLiteral(rule->replacement));

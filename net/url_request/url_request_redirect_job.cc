@@ -19,19 +19,20 @@
 #include "net/http/http_log_util.h"
 #include "net/http/http_raw_request_headers.h"
 #include "net/http/http_response_headers.h"
-#include "net/http/http_util.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
+#include "net/url_request/redirect_util.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_job.h"
 
 namespace net {
 
-URLRequestRedirectJob::URLRequestRedirectJob(URLRequest* request,
-                                             const GURL& redirect_destination,
-                                             ResponseCode response_code,
-                                             const std::string& redirect_reason)
+URLRequestRedirectJob::URLRequestRedirectJob(
+    URLRequest* request,
+    const GURL& redirect_destination,
+    RedirectUtil::ResponseCode response_code,
+    const std::string& redirect_reason)
     : URLRequestJob(request),
       redirect_destination_(redirect_destination),
       response_code_(response_code),
@@ -87,32 +88,9 @@ void URLRequestRedirectJob::StartAsync() {
   receive_headers_end_ = base::TimeTicks::Now();
   response_time_ = base::Time::Now();
 
-  std::string header_string =
-      base::StringPrintf("HTTP/1.1 %i Internal Redirect\n"
-                             "Location: %s\n"
-                             "Non-Authoritative-Reason: %s",
-                         response_code_,
-                         redirect_destination_.spec().c_str(),
-                         redirect_reason_.c_str());
-
-  std::string http_origin;
   const HttpRequestHeaders& request_headers = request_->extra_request_headers();
-  if (request_headers.GetHeader("Origin", &http_origin)) {
-    // If this redirect is used in a cross-origin request, add CORS headers to
-    // make sure that the redirect gets through. Note that the destination URL
-    // is still subject to the usual CORS policy, i.e. the resource will only
-    // be available to web pages if the server serves the response with the
-    // required CORS response headers.
-    header_string += base::StringPrintf(
-        "\n"
-        "Access-Control-Allow-Origin: %s\n"
-        "Access-Control-Allow-Credentials: true",
-        http_origin.c_str());
-  }
-
-  fake_headers_ = base::MakeRefCounted<HttpResponseHeaders>(
-      HttpUtil::AssembleRawHeaders(header_string));
-  DCHECK(fake_headers_->IsRedirect(nullptr));
+  fake_headers_ = RedirectUtil::SynthesizeRedirectHeaders(
+      redirect_destination_, response_code_, redirect_reason_, request_headers);
 
   NetLogResponseHeaders(
       request()->net_log(),

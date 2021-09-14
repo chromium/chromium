@@ -6,12 +6,14 @@
 
 #include <algorithm>
 #include <iterator>
+#include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/file_version_info.h"
@@ -55,6 +57,7 @@
 #include "net/filter/gzip_source_stream.h"
 #include "net/filter/source_stream.h"
 #include "net/http/http_content_disposition.h"
+#include "net/http/http_log_util.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
@@ -75,6 +78,7 @@
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_config_service.h"
 #include "net/ssl/ssl_connection_status_flags.h"
+#include "net/url_request/redirect_util.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_error_job.h"
@@ -83,7 +87,9 @@
 #include "net/url_request/url_request_throttler_manager.h"
 #include "net/url_request/websocket_handshake_userdata_key.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 #if defined(OS_ANDROID)
 #include "net/android/network_library.h"
@@ -187,6 +193,22 @@ bool IsTLS13OverTCP(const net::HttpResponseInfo& response_info) {
          net::SSL_CONNECTION_VERSION_TLS1_3;
 }
 
+GURL UpgradeSchemeToCryptographic(const GURL& insecure_url) {
+  DCHECK(!insecure_url.SchemeIsCryptographic());
+  DCHECK(insecure_url.SchemeIs(url::kHttpScheme) ||
+         insecure_url.SchemeIs(url::kWsScheme));
+
+  GURL::Replacements replacements;
+  replacements.SetSchemeStr(insecure_url.SchemeIs(url::kHttpScheme)
+                                ? url::kHttpsScheme
+                                : url::kWssScheme);
+
+  GURL secure_url = insecure_url.ReplaceComponents(replacements);
+  DCHECK(secure_url.SchemeIsCryptographic());
+
+  return secure_url;
+}
+
 }  // namespace
 
 namespace net {
@@ -205,13 +227,10 @@ std::unique_ptr<URLRequestJob> URLRequestHttpJob::Create(URLRequest* request) {
     TransportSecurityState* hsts =
         request->context()->transport_security_state();
     if (hsts && hsts->ShouldUpgradeToSSL(url.host())) {
-      GURL::Replacements replacements;
-      replacements.SetSchemeStr(
-          url.SchemeIs(url::kHttpScheme) ? url::kHttpsScheme : url::kWssScheme);
       return std::make_unique<URLRequestRedirectJob>(
-          request, url.ReplaceComponents(replacements),
+          request, UpgradeSchemeToCryptographic(url),
           // Use status code 307 to preserve the method, so POST requests work.
-          URLRequestRedirectJob::REDIRECT_307_TEMPORARY_REDIRECT, "HSTS");
+          RedirectUtil::ResponseCode::REDIRECT_307_TEMPORARY_REDIRECT, "HSTS");
     }
 
 #if defined(OS_ANDROID)
@@ -347,7 +366,12 @@ void URLRequestHttpJob::NotifyHeadersComplete() {
   DCHECK_EQ(0, num_cookie_lines_left_);
   DCHECK(request_->maybe_stored_cookies().empty());
 
-  response_info_ = transaction_->GetResponseInfo();
+  if (override_response_info_) {
+    DCHECK(!transaction_);
+    response_info_ = override_response_info_.get();
+  } else {
+    response_info_ = transaction_->GetResponseInfo();
+  }
 
   if (!response_info_->was_cached && throttling_entry_.get())
     throttling_entry_->UpdateWithResponse(GetResponseCode());
@@ -363,7 +387,7 @@ void URLRequestHttpJob::NotifyHeadersComplete() {
   // The HTTP transaction may be restarted several times for the purposes
   // of sending authorization information. Each time it restarts, we get
   // notified of the headers completion so that we can update the cookie store.
-  if (transaction_->IsReadyToRestartForAuth()) {
+  if (transaction_ && transaction_->IsReadyToRestartForAuth()) {
     // TODO(battre): This breaks the webrequest API for
     // URLRequestTestHTTP.BasicAuthWithCookies
     // where OnBeforeStartTransaction -> OnStartTransaction ->
@@ -391,6 +415,8 @@ void URLRequestHttpJob::DestroyTransaction() {
 }
 
 void URLRequestHttpJob::StartTransaction() {
+  DCHECK(!override_response_info_);
+
   NetworkDelegate* network_delegate = request()->network_delegate();
   if (network_delegate) {
     OnCallToDelegate(
@@ -968,6 +994,30 @@ void URLRequestHttpJob::OnStartCompleted(int result) {
   } else if (result == ERR_SSL_CLIENT_AUTH_CERT_NEEDED) {
     NotifyCertificateRequested(
         transaction_->GetResponseInfo()->cert_request_info.get());
+  } else if (result == ERR_DNS_NAME_HTTPS_ONLY) {
+    // If DNS indicated the name is HTTPS-only, synthesize a redirect to either
+    // HTTPS or WSS.
+    DCHECK(features::kUseDnsHttpsSvcbHttpUpgrade.Get());
+    DCHECK(!request_->url().SchemeIsCryptographic());
+
+    base::Time request_time =
+        transaction_ && transaction_->GetResponseInfo()
+            ? transaction_->GetResponseInfo()->request_time
+            : base::Time::Now();
+    DestroyTransaction();
+    override_response_info_ = std::make_unique<HttpResponseInfo>();
+    override_response_info_->request_time = request_time;
+
+    override_response_info_->headers = RedirectUtil::SynthesizeRedirectHeaders(
+        UpgradeSchemeToCryptographic(request_->url()),
+        RedirectUtil::ResponseCode::REDIRECT_307_TEMPORARY_REDIRECT, "DNS",
+        request_->extra_request_headers());
+    NetLogResponseHeaders(
+        request_->net_log(),
+        NetLogEventType::URL_REQUEST_FAKE_RESPONSE_HEADERS_CREATED,
+        override_response_info_->headers.get());
+
+    NotifyHeadersComplete();
   } else {
     // Even on an error, there may be useful information in the response
     // info (e.g. whether there's a cached copy).
@@ -1004,6 +1054,8 @@ void URLRequestHttpJob::OnReadCompleted(int result) {
 
 void URLRequestHttpJob::RestartTransactionWithAuth(
     const AuthCredentials& credentials) {
+  DCHECK(!override_response_info_);
+
   auth_credentials_ = credentials;
 
   // These will be reset in OnStartCompleted.
@@ -1028,13 +1080,15 @@ void URLRequestHttpJob::RestartTransactionWithAuth(
 }
 
 void URLRequestHttpJob::SetUpload(UploadDataStream* upload) {
-  DCHECK(!transaction_.get()) << "cannot change once started";
+  DCHECK(!transaction_.get() && !override_response_info_)
+      << "cannot change once started";
   request_info_.upload_data_stream = upload;
 }
 
 void URLRequestHttpJob::SetExtraRequestHeaders(
     const HttpRequestHeaders& headers) {
-  DCHECK(!transaction_.get()) << "cannot change once started";
+  DCHECK(!transaction_.get() && !override_response_info_)
+      << "cannot change once started";
   request_info_.extra_headers.CopyFrom(headers);
 }
 
@@ -1044,7 +1098,7 @@ LoadState URLRequestHttpJob::GetLoadState() const {
 }
 
 bool URLRequestHttpJob::GetMimeType(std::string* mime_type) const {
-  DCHECK(transaction_.get());
+  DCHECK(transaction_.get() || override_response_info_);
 
   if (!response_info_)
     return false;
@@ -1056,7 +1110,7 @@ bool URLRequestHttpJob::GetMimeType(std::string* mime_type) const {
 }
 
 bool URLRequestHttpJob::GetCharset(std::string* charset) {
-  DCHECK(transaction_.get());
+  DCHECK(transaction_.get() || override_response_info_);
 
   if (!response_info_)
     return false;
@@ -1065,6 +1119,12 @@ bool URLRequestHttpJob::GetCharset(std::string* charset) {
 }
 
 void URLRequestHttpJob::GetResponseInfo(HttpResponseInfo* info) {
+  if (override_response_info_) {
+    DCHECK(!transaction_.get());
+    *info = *override_response_info_;
+    return;
+  }
+
   if (response_info_) {
     DCHECK(transaction_.get());
 
@@ -1379,6 +1439,7 @@ void URLRequestHttpJob::DoneReading() {
 
 void URLRequestHttpJob::DoneReadingRedirectResponse() {
   if (transaction_) {
+    DCHECK(!override_response_info_);
     if (transaction_->GetResponseInfo()->headers->IsRedirect(nullptr)) {
       // If the original headers indicate a redirect, go ahead and cache the
       // response, even if the |override_response_headers_| are a redirect to
@@ -1557,8 +1618,14 @@ void URLRequestHttpJob::DoneWithRequest(CompletionCause reason) {
 }
 
 HttpResponseHeaders* URLRequestHttpJob::GetResponseHeaders() const {
+  if (override_response_info_) {
+    DCHECK(!transaction_.get());
+    return override_response_info_->headers.get();
+  }
+
   DCHECK(transaction_.get());
   DCHECK(transaction_->GetResponseInfo());
+
   return override_response_headers_.get() ?
              override_response_headers_.get() :
              transaction_->GetResponseInfo()->headers.get();

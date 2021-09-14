@@ -15,6 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "net/dns/public/secure_dns_policy.h"
+#include "url/url_constants.h"
 
 #if defined(OS_WIN)
 #include <objbase.h>
@@ -131,6 +132,7 @@
 #include "net/test/url_request/url_request_failed_job.h"
 #include "net/test/url_request/url_request_mock_http_job.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/redirect_util.h"
 #include "net/url_request/referrer_policy.h"
 #include "net/url_request/static_http_user_agent_settings.h"
 #include "net/url_request/url_request.h"
@@ -141,6 +143,7 @@
 #include "net/url_request/url_request_redirect_job.h"
 #include "net/url_request/url_request_test_job.h"
 #include "net/url_request/url_request_test_util.h"
+#include "net/url_request/websocket_handshake_userdata_key.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -160,6 +163,10 @@
 #include "net/network_error_logging/network_error_logging_service.h"
 #include "net/network_error_logging/network_error_logging_test_util.h"
 #endif  // BUILDFLAG(ENABLE_REPORTING)
+
+#if BUILDFLAG(ENABLE_WEBSOCKETS)
+#include "net/websockets/websocket_test_util.h"
+#endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
 
 using net::test::IsError;
 using net::test::IsOk;
@@ -1332,6 +1339,220 @@ TEST_F(URLRequestTest, NetworkDelegateProxyError) {
   EXPECT_THAT(network_delegate.last_error(),
               IsError(ERR_PROXY_CONNECTION_FAILED));
   EXPECT_EQ(1, network_delegate.completed_requests());
+}
+
+// Test that requests with "http" scheme are upgraded to "https" when DNS
+// indicates that the name is HTTPS-only.
+TEST_F(URLRequestTest, DnsHttpsRecordPresentCausesSchemeUpgrade) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbHttpUpgrade", "true"}});
+
+  EmbeddedTestServer https_server(EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(EmbeddedTestServer::CERT_TEST_NAMES);
+  RegisterDefaultHandlers(&https_server);
+  ASSERT_TRUE(https_server.Start());
+
+  // Build an http URL that should be auto-upgraded to https.
+  const std::string kHost = "foo.a.test";  // Covered by CERT_TEST_NAMES.
+  const GURL https_url = https_server.GetURL(kHost, "/defaultresponse");
+  GURL::Replacements replacements;
+  replacements.SetSchemeStr(url::kHttpScheme);
+  const GURL http_url = https_url.ReplaceComponents(replacements);
+
+  // Build a mocked resolver that returns ERR_DNS_NAME_HTTPS_ONLY for the
+  // first lookup, regardless of the request scheme. Real resolvers should
+  // only return this error when the scheme is "http" or "ws".
+  MockHostResolver host_resolver;
+  host_resolver.rules()->AddSimulatedHTTPSServiceFormRecord("*");
+
+  TestNetworkDelegate network_delegate;  // Must outlive URLRequest.
+  TestURLRequestContext context(true);
+  context.set_network_delegate(&network_delegate);
+  context.set_host_resolver(&host_resolver);
+  context.Init();
+
+  TestDelegate d;
+  std::unique_ptr<URLRequest> req(context.CreateRequest(
+      http_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+  EXPECT_FALSE(req->url().SchemeIsCryptographic());
+
+  // Note that there is no http server running, so the request should fail or
+  // hang if its scheme is not upgraded to https.
+  req->Start();
+  d.RunUntilComplete();
+
+  EXPECT_EQ(d.received_redirect_count(), 1);
+
+  EXPECT_EQ(0, network_delegate.error_count());
+  EXPECT_EQ(200, req->GetResponseCode());
+  ASSERT_TRUE(req->response_headers());
+  EXPECT_EQ(200, req->response_headers()->response_code());
+
+  // Observe that the scheme has been upgraded to https.
+  EXPECT_TRUE(req->url().SchemeIsCryptographic());
+  EXPECT_TRUE(req->url().SchemeIs(url::kHttpsScheme));
+}
+
+// Test that DNS-based scheme upgrade supports deferred redirect.
+TEST_F(URLRequestTest, DnsHttpsRecordPresentCausesSchemeUpgradeDeferred) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbHttpUpgrade", "true"}});
+
+  EmbeddedTestServer https_server(EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(EmbeddedTestServer::CERT_TEST_NAMES);
+  RegisterDefaultHandlers(&https_server);
+  ASSERT_TRUE(https_server.Start());
+
+  // Build an http URL that should be auto-upgraded to https.
+  const std::string kHost = "foo.a.test";  // Covered by CERT_TEST_NAMES.
+  const GURL https_url = https_server.GetURL(kHost, "/defaultresponse");
+  GURL::Replacements replacements;
+  replacements.SetSchemeStr(url::kHttpScheme);
+  const GURL http_url = https_url.ReplaceComponents(replacements);
+
+  // Build a mocked resolver that returns ERR_DNS_NAME_HTTPS_ONLY for the
+  // first lookup, regardless of the request scheme. Real resolvers should
+  // only return this error when the scheme is "http" or "ws".
+  MockHostResolver host_resolver;
+  host_resolver.rules()->AddSimulatedHTTPSServiceFormRecord("*");
+
+  TestNetworkDelegate network_delegate;  // Must outlive URLRequest.
+  TestURLRequestContext context(true);
+  context.set_network_delegate(&network_delegate);
+  context.set_host_resolver(&host_resolver);
+  context.Init();
+
+  TestDelegate d;
+  std::unique_ptr<URLRequest> req(context.CreateRequest(
+      http_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+  EXPECT_FALSE(req->url().SchemeIsCryptographic());
+
+  // Note that there is no http server running, so the request should fail or
+  // hang if its scheme is not upgraded to https.
+  req->Start();
+  d.RunUntilRedirect();
+
+  EXPECT_EQ(d.received_redirect_count(), 1);
+
+  req->FollowDeferredRedirect(/*removed_headers=*/absl::nullopt,
+                              /*modified_headers=*/absl::nullopt);
+  d.RunUntilComplete();
+
+  EXPECT_EQ(0, network_delegate.error_count());
+  EXPECT_EQ(200, req->GetResponseCode());
+  ASSERT_TRUE(req->response_headers());
+  EXPECT_EQ(200, req->response_headers()->response_code());
+
+  // Observe that the scheme has been upgraded to https.
+  EXPECT_TRUE(req->url().SchemeIsCryptographic());
+  EXPECT_TRUE(req->url().SchemeIs(url::kHttpsScheme));
+}
+
+#if BUILDFLAG(ENABLE_WEBSOCKETS)
+// Test that requests with "ws" scheme are upgraded to "wss" when DNS
+// indicates that the name is HTTPS-only.
+TEST_F(URLRequestTest, DnsHttpsRecordPresentCausesWsSchemeUpgrade) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbHttpUpgrade", "true"}});
+
+  EmbeddedTestServer https_server(EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(EmbeddedTestServer::CERT_TEST_NAMES);
+  RegisterDefaultHandlers(&https_server);
+  ASSERT_TRUE(https_server.Start());
+
+  // Build an http URL that should be auto-upgraded to https.
+  const std::string kHost = "foo.a.test";  // Covered by CERT_TEST_NAMES.
+  const GURL https_url = https_server.GetURL(kHost, "/defaultresponse");
+  GURL::Replacements replacements;
+  replacements.SetSchemeStr(url::kWsScheme);
+  const GURL ws_url = https_url.ReplaceComponents(replacements);
+
+  // Build a mocked resolver that returns ERR_DNS_NAME_HTTPS_ONLY for the
+  // first lookup, regardless of the request scheme. Real resolvers should
+  // only return this error when the scheme is "http" or "ws".
+  MockHostResolver host_resolver;
+  host_resolver.rules()->AddSimulatedHTTPSServiceFormRecord("*");
+
+  TestNetworkDelegate network_delegate;  // Must outlive URLRequest.
+  TestURLRequestContext context(true);
+  context.set_network_delegate(&network_delegate);
+  context.set_host_resolver(&host_resolver);
+  context.Init();
+
+  TestDelegate d;
+  std::unique_ptr<URLRequest> req(context.CreateRequest(
+      ws_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS,
+      /*is_for_websockets=*/true));
+  EXPECT_FALSE(req->url().SchemeIsCryptographic());
+
+  HttpRequestHeaders headers = WebSocketCommonTestHeaders();
+  req->SetExtraRequestHeaders(headers);
+
+  auto websocket_stream_create_helper =
+      std::make_unique<TestWebSocketHandshakeStreamCreateHelper>();
+  req->SetUserData(kWebSocketHandshakeUserDataKey,
+                   std::move(websocket_stream_create_helper));
+
+  // Note that there is no ws server running, so the request should fail or hang
+  // if its scheme is not upgraded to wss.
+  req->Start();
+  d.RunUntilComplete();
+
+  EXPECT_EQ(d.received_redirect_count(), 1);
+
+  // Expect failure because test server is not set up to provide websocket
+  // responses.
+  EXPECT_EQ(network_delegate.error_count(), 1);
+  EXPECT_EQ(network_delegate.last_error(), ERR_INVALID_RESPONSE);
+
+  // Observe that the scheme has been upgraded to wss.
+  EXPECT_TRUE(req->url().SchemeIsCryptographic());
+  EXPECT_TRUE(req->url().SchemeIs(url::kWssScheme));
+}
+#endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
+
+TEST_F(URLRequestTest, DnsHttpsRecordAbsentNoSchemeUpgrade) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbHttpUpgrade", "true"}});
+
+  EmbeddedTestServer http_server(EmbeddedTestServer::TYPE_HTTP);
+  RegisterDefaultHandlers(&http_server);
+  ASSERT_TRUE(http_server.Start());
+
+  // Build an http URL that should be auto-upgraded to https.
+  const std::string kHost = "foo.a.test";  // Covered by CERT_TEST_NAMES.
+  const GURL http_url = http_server.GetURL(kHost, "/defaultresponse");
+
+  MockHostResolver host_resolver;
+  TestNetworkDelegate network_delegate;  // Must outlive URLRequest.
+  TestURLRequestContext context(true);
+  context.set_network_delegate(&network_delegate);
+  context.set_host_resolver(&host_resolver);
+  context.Init();
+
+  TestDelegate d;
+  std::unique_ptr<URLRequest> req(context.CreateRequest(
+      http_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+  EXPECT_FALSE(req->url().SchemeIsCryptographic());
+
+  req->Start();
+  d.RunUntilComplete();
+
+  EXPECT_EQ(d.received_redirect_count(), 0);
+
+  EXPECT_EQ(0, network_delegate.error_count());
+  EXPECT_EQ(200, req->GetResponseCode());
+  ASSERT_TRUE(req->response_headers());
+  EXPECT_EQ(200, req->response_headers()->response_code());
+
+  // Observe that the scheme has not been upgraded.
+  EXPECT_EQ(http_url, req->url());
+  EXPECT_FALSE(req->url().SchemeIsCryptographic());
+  EXPECT_TRUE(req->url().SchemeIs(url::kHttpScheme));
 }
 
 TEST_F(URLRequestTest, SkipSecureDnsDisabledByDefault) {
@@ -6817,7 +7038,7 @@ TEST_F(URLRequestTestHTTP, RedirectJobWithReferenceFragment) {
 
   std::unique_ptr<URLRequestRedirectJob> job =
       std::make_unique<URLRequestRedirectJob>(
-          r.get(), redirect_url, URLRequestRedirectJob::REDIRECT_302_FOUND,
+          r.get(), redirect_url, RedirectUtil::ResponseCode::REDIRECT_302_FOUND,
           "Very Good Reason");
   TestScopedURLInterceptor interceptor(r->url(), std::move(job));
 
@@ -8445,7 +8666,7 @@ TEST_F(URLRequestTestHTTP, InterceptPost302RedirectGet) {
   std::unique_ptr<URLRequestRedirectJob> job =
       std::make_unique<URLRequestRedirectJob>(
           req.get(), http_test_server()->GetURL("/echo"),
-          URLRequestRedirectJob::REDIRECT_302_FOUND, "Very Good Reason");
+          RedirectUtil::ResponseCode::REDIRECT_302_FOUND, "Very Good Reason");
   TestScopedURLInterceptor interceptor(req->url(), std::move(job));
 
   req->Start();
@@ -8472,7 +8693,7 @@ TEST_F(URLRequestTestHTTP, InterceptPost307RedirectPost) {
   std::unique_ptr<URLRequestRedirectJob> job =
       std::make_unique<URLRequestRedirectJob>(
           req.get(), http_test_server()->GetURL("/echo"),
-          URLRequestRedirectJob::REDIRECT_307_TEMPORARY_REDIRECT,
+          RedirectUtil::ResponseCode::REDIRECT_307_TEMPORARY_REDIRECT,
           "Very Good Reason");
   TestScopedURLInterceptor interceptor(req->url(), std::move(job));
 
@@ -8699,8 +8920,8 @@ TEST_F(URLRequestTestHTTP, SetSubsequentJobPriority) {
 
   std::unique_ptr<URLRequestRedirectJob> redirect_job =
       std::make_unique<URLRequestRedirectJob>(
-          req.get(), redirect_url, URLRequestRedirectJob::REDIRECT_302_FOUND,
-          "Very Good Reason");
+          req.get(), redirect_url,
+          RedirectUtil::ResponseCode::REDIRECT_302_FOUND, "Very Good Reason");
   auto interceptor = std::make_unique<TestScopedURLInterceptor>(
       initial_url, std::move(redirect_job));
 
@@ -11710,7 +11931,7 @@ TEST_F(URLRequestTest, URLRequestRedirectJobCancelRequest) {
   std::unique_ptr<URLRequestRedirectJob> job =
       std::make_unique<URLRequestRedirectJob>(
           req.get(), GURL("http://this-should-never-be-navigated-to/"),
-          URLRequestRedirectJob::REDIRECT_307_TEMPORARY_REDIRECT,
+          RedirectUtil::ResponseCode::REDIRECT_307_TEMPORARY_REDIRECT,
           "Jumbo shrimp");
   TestScopedURLInterceptor interceptor(req->url(), std::move(job));
 

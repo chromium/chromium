@@ -17,6 +17,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
@@ -24,11 +25,14 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "net/base/auth.h"
+#include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/isolation_info.h"
@@ -37,6 +41,7 @@
 #include "net/base/proxy_delegate.h"
 #include "net/base/url_util.h"
 #include "net/cert/ct_policy_status.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/transport_security_state.h"
 #include "net/log/net_log.h"
@@ -87,6 +92,10 @@ class ConnectTestingEventInterface : public WebSocketEventInterface {
   void WaitForResponse();
 
   bool failed() const { return failed_; }
+
+  const std::unique_ptr<WebSocketHandshakeResponseInfo>& response() const {
+    return response_;
+  }
 
   // Only set if the handshake failed, otherwise empty.
   std::string failure_message() const;
@@ -142,6 +151,7 @@ class ConnectTestingEventInterface : public WebSocketEventInterface {
 
   // failed_ is true if the handshake failed (ie. OnFailChannel was called).
   bool failed_;
+  std::unique_ptr<WebSocketHandshakeResponseInfo> response_;
   std::string selected_subprotocol_;
   std::string extensions_;
   std::string failure_message_;
@@ -173,6 +183,7 @@ void ConnectTestingEventInterface::OnAddChannelResponse(
     std::unique_ptr<WebSocketHandshakeResponseInfo> response,
     const std::string& selected_subprotocol,
     const std::string& extensions) {
+  response_ = std::move(response);
   selected_subprotocol_ = selected_subprotocol;
   extensions_ = extensions;
   QuitNestedEventLoop();
@@ -535,9 +546,53 @@ TEST_F(WebSocketEndToEndTest, HeaderContinuations) {
             event_interface_->extensions());
 }
 
+// Test not compatible with Mac because SpawnedTestServer on Mac uses an
+// obsolete version of SSL.
+// TODO(crbug.com/1248530): Reenable when we have a wss test server that
+// supports non-obsolete SSL on Mac.
+#if defined(OS_MAC)
+#define MAYBE_DnsSchemeUpgradeSupported DISABLED_DnsSchemeUpgradeSupported
+#else
+#define MAYBE_DnsSchemeUpgradeSupported DnsSchemeUpgradeSupported
+#endif
+
+// Test that ws->wss scheme upgrade is supported on receiving a DNS HTTPS
+// record.
+TEST_F(WebSocketEndToEndTest, MAYBE_DnsSchemeUpgradeSupported) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbHttpUpgrade", "true"}});
+
+  SpawnedTestServer wss_server(SpawnedTestServer::TYPE_WSS,
+                               SpawnedTestServer::SSLOptions(base::FilePath(
+                                   FILE_PATH_LITERAL("test_names.pem"))),
+                               GetWebSocketTestDataDirectory());
+  ASSERT_TRUE(wss_server.Start());
+
+  GURL wss_url("wss://a.test:" +
+               base::NumberToString(wss_server.host_port_pair().port()) + "/" +
+               kEchoServer);
+  GURL::Replacements replacements;
+  replacements.SetSchemeStr(url::kWsScheme);
+  GURL ws_url = wss_url.ReplaceComponents(replacements);
+
+  // Build a mocked resolver that returns ERR_DNS_NAME_HTTPS_ONLY for the
+  // first lookup, regardless of the request scheme. Real resolvers should
+  // only return this error when the scheme is "http" or "ws".
+  MockHostResolver host_resolver;
+  host_resolver.rules()->AddSimulatedHTTPSServiceFormRecord("a.test");
+  host_resolver.rules()->AddRule("*", "127.0.0.1");
+  context_.set_host_resolver(&host_resolver);
+
+  EXPECT_TRUE(ConnectAndWait(ws_url));
+
+  // Expect request to have reached the server using the upgraded URL.
+  EXPECT_EQ(event_interface_->response()->url, wss_url);
+}
+
 // These are not true end-to-end tests as the SpawnedTestServer doesn't
 // support TLS 1.2.
-// TODO(ricea): Make these be true end-to-end tests again when
+// TODO(crbug.com/1248530): Make these be true end-to-end tests again when
 // SpawnedTestServer supports TLS 1.2 or EmbeddedTestServer supports
 // WebSockets.
 class WebSocketHstsTest : public TestWithTaskEnvironment {

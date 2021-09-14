@@ -14,6 +14,7 @@ import "services/network/public/mojom/network_types.mojom";
 enum ResolverType {
   kResolverTypeFail,
   kResolverTypeFailTimeout,
+  kResolverTypeFailHTTPSServiceFormRecord,
   kResolverTypeSystem,
   kResolverTypeIPLiteral,
   kResolverTypeDirectLookup,

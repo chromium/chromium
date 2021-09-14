@@ -145,6 +145,7 @@ class BaseTestServer {
 
     // Initialize a new SSLOptions that will use the specified certificate.
     explicit SSLOptions(ServerCertificate cert);
+    explicit SSLOptions(base::FilePath cert);
     SSLOptions(const SSLOptions& other);
     ~SSLOptions();
 
@@ -154,6 +155,7 @@ class BaseTestServer {
 
     // The certificate to use when serving requests.
     ServerCertificate server_certificate = CERT_OK;
+    base::FilePath custom_certificate;
 
     // True if a CertificateRequest should be sent to the client during
     // handshaking.
