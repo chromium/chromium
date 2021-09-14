@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertEquals} from 'chrome://test/chai_assert.js';
+import {assertDeepEquals, assertEquals} from 'chrome://test/chai_assert.js';
 
 import {MockChromeFileManagerPrivateDirectoryChanged, MockChromeStorageAPI} from '../../common/js/mock_chrome.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
@@ -43,6 +43,7 @@ let mockDate;
  * function((!Banner.DiskThresholdMinSize|!Banner.DiskThresholdMinRatio|!undefined)),
  *    setHideAfterDismissedDurationSeconds: function(number),
  *    setTimeLimit: function(number),
+ *    getFilteredContext: function(),
  *    reset: function(),
  *    tagName: string,
  * }}
@@ -120,6 +121,11 @@ function createTestBanner(tagName) {
    */
   let timeLimitSeconds;
 
+  /**
+   * @type {!Object}
+   */
+  let context;
+
   class FakeBanner extends Banner {
     allowedVolumes() {
       return allowedVolumes;
@@ -139,6 +145,10 @@ function createTestBanner(tagName) {
 
     hideAfterDismissedDurationSeconds() {
       return hideAfterDismissDurationSeconds;
+    }
+
+    onFilteredContext(filteredContext) {
+      context = filteredContext;
     }
   }
 
@@ -164,6 +174,9 @@ function createTestBanner(tagName) {
     },
     setTimeLimit: (seconds) => {
       timeLimitSeconds = seconds;
+    },
+    getFilteredContext: () => {
+      return context;
     },
     // Element.tagName returns uppercase.
     tagName: tagName.toUpperCase(),
@@ -1077,15 +1090,16 @@ export async function testCustomFiltersCanBeAttached() {
   testEducationalBanners[0].setAllowedVolumes([downloadsAllowedVolumeType]);
   testWarningBanners[0].setAllowedVolumes([downloadsAllowedVolumeType]);
 
-  let educationalBannerCustomFilterResponse = false;
-  let warningBannerCustomFilterResponse = false;
+  let educationalBannerCustomFilterResponse = true;
+  let warningBannerCustomFilterResponse = true;
 
-  controller.registerCustomBannerFilter_(
-      testEducationalBanners[0].tagName, () => {
-        return educationalBannerCustomFilterResponse;
-      });
-  controller.registerCustomBannerFilter_(testWarningBanners[0].tagName, () => {
-    return warningBannerCustomFilterResponse;
+  controller.registerCustomBannerFilter_(testEducationalBanners[0].tagName, {
+    shouldShow: () => educationalBannerCustomFilterResponse,
+    context: () => ({}),
+  });
+  controller.registerCustomBannerFilter_(testWarningBanners[0].tagName, {
+    shouldShow: () => warningBannerCustomFilterResponse,
+    context: () => ({}),
   });
 
   // Verify that the warning banner is shown first.
@@ -1095,12 +1109,12 @@ export async function testCustomFiltersCanBeAttached() {
 
   // Verify that explicitly making the custom filter return true reconciles
   // the banners and does not show the warning banner.
-  warningBannerCustomFilterResponse = true;
+  warningBannerCustomFilterResponse = false;
   await startNewFilesAppSession();
   await waitUntil(isOnlyBannerVisible(testEducationalBanners[0]));
 
   // Ensure no banners are shown when both custom filters return true.
-  educationalBannerCustomFilterResponse = true;
+  educationalBannerCustomFilterResponse = false;
   await startNewFilesAppSession();
   await waitUntil(isAllBannersHidden);
 }
@@ -1124,10 +1138,11 @@ export async function testCustomFiltersInteract() {
   testEducationalBanners[1].setAllowedVolumes([driveAllowedVolumeType]);
   testWarningBanners[0].setAllowedVolumes([downloadsAllowedVolumeType]);
 
-  let warningBannerCustomFilterResponse = false;
+  let warningBannerCustomFilterResponse = true;
 
-  controller.registerCustomBannerFilter_(testWarningBanners[0].tagName, () => {
-    return warningBannerCustomFilterResponse;
+  controller.registerCustomBannerFilter_(testWarningBanners[0].tagName, {
+    shouldShow: () => warningBannerCustomFilterResponse,
+    context: () => ({}),
   });
 
   // Verify that the warning banner is shown first.
@@ -1143,7 +1158,7 @@ export async function testCustomFiltersInteract() {
 
   // Making the custom filter return false and navigating back to the Downloads
   // directory should show the highest priority educational banner.
-  warningBannerCustomFilterResponse = true;
+  warningBannerCustomFilterResponse = false;
   changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
   await waitUntil(isOnlyBannerVisible(testEducationalBanners[0]));
 
@@ -1165,4 +1180,96 @@ export async function testCustomFiltersInteract() {
 
   await startNewFilesAppSession();
   await waitUntil(isAllBannersHidden);
+}
+
+/**
+ * Test that custom banners receive their requested context when the filter
+ * function is executed.
+ * @suppress {accessControls} to call registerCustomBannerFilter_.
+ */
+export async function testCustomContextIsReceivedByBanner() {
+  // Add 1 warning banner.
+  controller.setWarningBannersInOrder([testWarningBanners[0].tagName]);
+  testWarningBanners[0].setAllowedVolumes([downloadsAllowedVolumeType]);
+
+  const warningBannerCustomFilterResponse = true;
+  const warningBannerCustomContext = {
+    'fake-key': 'test-fake-value',
+  };
+
+  controller.registerCustomBannerFilter_(testWarningBanners[0].tagName, {
+    shouldShow: () => warningBannerCustomFilterResponse,
+    context: () => warningBannerCustomContext,
+  });
+
+  // Verify that the warning banner is shown first.
+  await controller.initialize();
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
+  await waitUntil(isOnlyBannerVisible(testWarningBanners[0]));
+  assertDeepEquals(
+      testWarningBanners[0].getFilteredContext(), warningBannerCustomContext);
+
+  // Change to Drive volume to ensure changing directory re-verifies the filter.
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DRIVE);
+  await waitUntil(isAllBannersHidden);
+
+  // Update the context of the filter and change back to Downloads. Expect that
+  // the context is retrieved every time to ensure fresh data.
+  warningBannerCustomContext['another-fake-key'] = 'another-fake-value';
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
+  await waitUntil(isOnlyBannerVisible(testWarningBanners[0]));
+  assertDeepEquals(
+      testWarningBanners[0].getFilteredContext(), warningBannerCustomContext);
+}
+
+/**
+ * Test that if multiple filters are registered to a single banner, only the
+ * winning filter has their associated context passed to the banner.
+ * @suppress {accessControls} to call registerCustomBannerFilter_.
+ */
+export async function testWinningFilterContextIsPassed() {
+  // Add 1 warning banner.
+  controller.setWarningBannersInOrder([testWarningBanners[0].tagName]);
+  testWarningBanners[0].setAllowedVolumes([downloadsAllowedVolumeType]);
+
+  // Setup 2 custom filters on the warning banner.
+  let warningBannerCustomFilter1Response = true;
+  const warningBannerCustomFilter2Response = true;
+  const warningBannerCustomContext1 = {
+    'fake-key-1': 'test-fake-value-1',
+  };
+  const warningBannerCustomContext2 = {
+    'fake-key-2': 'test-fake-value-2',
+  };
+  controller.registerCustomBannerFilter_(testWarningBanners[0].tagName, {
+    shouldShow: () => warningBannerCustomFilter1Response,
+    context: () => warningBannerCustomContext1,
+  });
+  controller.registerCustomBannerFilter_(testWarningBanners[0].tagName, {
+    shouldShow: () => warningBannerCustomFilter2Response,
+    context: () => warningBannerCustomContext2,
+  });
+
+  // Verify that even though both filters allow the banner to display, only the
+  // context for the first registered filter is passed to the banner.
+  await controller.initialize();
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
+  await waitUntil(isOnlyBannerVisible(testWarningBanners[0]));
+  assertDeepEquals(
+      testWarningBanners[0].getFilteredContext(), warningBannerCustomContext1);
+
+  // Change directory to Drive to enable a change back to re-verify the custom
+  // filters.
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DRIVE);
+  await waitUntil(isAllBannersHidden);
+
+  // Set the first registered filter to hide the banner.
+  warningBannerCustomFilter1Response = false;
+
+  // Change back to Downloads and ensure the second registered filter shows the
+  // banner and passes the context setup.
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
+  await waitUntil(isOnlyBannerVisible(testWarningBanners[0]));
+  assertDeepEquals(
+      testWarningBanners[0].getFilteredContext(), warningBannerCustomContext2);
 }

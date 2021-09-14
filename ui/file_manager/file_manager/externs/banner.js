@@ -55,6 +55,13 @@ export class Banner extends HTMLElement {
    * shown.
    */
   onShow() {}
+
+  /**
+   * When a custom filter is registered for a banner and the banner is shown,
+   * some context can be passed back to the banner to update.
+   * @param {!Object} context Custom context passed to banner when shown.
+   */
+  onFilteredContext(context) {}
 }
 
 /**
@@ -116,3 +123,11 @@ Banner.Event = {
  * @const {number}
  */
 Banner.INIFINITE_TIME = 0;
+
+/**
+ * @typedef {{
+ *            shouldShow: !(function(): boolean),
+ *            context: !function(),
+ *          }}
+ */
+Banner.CustomFilter;

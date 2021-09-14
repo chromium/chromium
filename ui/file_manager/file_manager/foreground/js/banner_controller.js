@@ -178,7 +178,7 @@ export class BannerController extends EventTarget {
      * An object keyed by a banners tagName (in upper case) that lists custom
      * filters for the specified banner. Used to house banner specific logic
      * that can decide whether to display a banner or not.
-     * @private {!Object<string, !Array<function(): boolean>>}
+     * @private {!Object<string, !Array<Banner.CustomFilter>>}
      */
     this.customBannerFilters_ = {};
 
@@ -364,13 +364,20 @@ export class BannerController extends EventTarget {
       return false;
     }
 
-    // See if the banner has any custom filters assigned. Custom filters allow
-    // individual banners to check extra conditions that are unique.
+    // See if the banner has any custom filters assigned, if the shouldShow
+    // method returns true, the banner should be shown and the context is passed
+    // to the banner in preparation.
     if (this.customBannerFilters_[banner.tagName]) {
+      let shownFilter = false;
       for (const bannerFilter of this.customBannerFilters_[banner.tagName]) {
-        if (bannerFilter()) {
-          return false;
+        if (bannerFilter.shouldShow()) {
+          banner.onFilteredContext(bannerFilter.context());
+          shownFilter = true;
+          break;
         }
+      }
+      if (!shownFilter) {
+        return false;
       }
     }
 
@@ -578,7 +585,7 @@ export class BannerController extends EventTarget {
   /**
    * Registers a custom filter against the specified banner tagName.
    * @param {string} bannerTagName
-   * @param {!function(): boolean} filter
+   * @param {!Banner.CustomFilter} filter
    * @private
    */
   registerCustomBannerFilter_(bannerTagName, filter) {
