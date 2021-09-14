@@ -23,7 +23,7 @@ export {dashToCamelCase} from './lib/utils/case-map.js';
 export {Debouncer, enqueueDebouncer} from './lib/utils/debounce.js';
 export {html} from './lib/utils/html-tag.js';
 export {dedupingMixin} from './lib/utils/mixin.js';
-export {matches, translate} from './lib/utils/path.js';
+export {get, matches, translate} from './lib/utils/path.js';
 export {afterNextRender, beforeNextRender} from './lib/utils/render-status.js';
 export {TemplateInstanceBase, templatize} from './lib/utils/templatize.js';
 export {PolymerElement} from './polymer-element.js';
