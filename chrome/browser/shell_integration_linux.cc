@@ -52,6 +52,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "components/version_info/version_info.h"
+#include "third_party/libxml/chromium/xml_writer.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_family.h"
 #include "url/gurl.h"
@@ -729,22 +730,34 @@ base::FilePath GetMimeTypesRegistrationFilename(
 
 std::string GetMimeTypesRegistrationFileContents(
     const apps::FileHandlers& file_handlers) {
-  std::stringstream ss;
-  ss << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-        "<mime-info "
-        "xmlns=\"http://www.freedesktop.org/standards/shared-mime-info\">\n";
+  XmlWriter writer;
+
+  writer.StartWriting();
+  writer.StartElement("mime-info");
+  writer.AddAttribute("xmlns",
+                      "http://www.freedesktop.org/standards/shared-mime-info");
 
   for (const auto& file_handler : file_handlers) {
     for (const auto& accept_entry : file_handler.accept) {
-      ss << "  <mime-type type=\"" << accept_entry.mime_type + "\">\n";
-      for (const auto& file_extension : accept_entry.file_extensions)
-        ss << "    <glob pattern=\"*" << file_extension << "\"/>\n";
-      ss << "  </mime-type>\n";
+      writer.StartElement("mime-type");
+      writer.AddAttribute("type", accept_entry.mime_type);
+
+      if (!file_handler.display_name.empty()) {
+        writer.WriteElement("comment",
+                            base::UTF16ToUTF8(file_handler.display_name));
+      }
+      for (const auto& file_extension : accept_entry.file_extensions) {
+        writer.StartElement("glob");
+        writer.AddAttribute("pattern", "*" + file_extension);
+        writer.EndElement();  // "glob"
+      }
+      writer.EndElement();  // "mime-type"
     }
   }
 
-  ss << "</mime-info>\n";
-  return ss.str();
+  writer.EndElement();  // "mime-info"
+  writer.StopWriting();
+  return writer.GetWrittenString();
 }
 
 }  // namespace shell_integration_linux
