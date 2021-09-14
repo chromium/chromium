@@ -1700,9 +1700,12 @@
         'content/browser/browsing_instance',
     },
     'smartlock': {
-      'filepath': 'chrome/browser/ash/login/easy_unlock/'\
-                  '|chrome/browser/resources/easy_unlock/'\
-                  '|chromeos/components/proximity_auth/'
+      'filepath': 'ash/public/cpp/smartlock*'\
+                  '|chrome/browser/ash/login/easy_unlock/'\
+                  '|chrome/browser/resources/settings/chromeos/multidevice_page/multidevice_smartlock*'\
+                  '|chrome/test/data/webui/settings/chromeos/multidevice_smartlock*'\
+                  '|chromeos/components/proximity_auth/'\
+                  '|chromeos/dbus/easy_unlock/',
     },
     'smb': {
       'filepath': 'chrome/browser/ash/file_system_provider' \
@@ -2743,7 +2746,9 @@
     'site_instance': ['ajwong+watch@chromium.org',
                       'alexmos+watch@chromium.org',
                       'creis+watch@chromium.org'],
-    'smartlock': ['hansberry+watch-smartlock@chromium.org'],
+    'smartlock': ['bhartmire+watch-smartlock@google.com',
+                  'cclem+watch-smartlock@google.com',
+                  'hansberry+watch-smartlock@chromium.org'],
     'smb': ['cros-enterprise-lax+smbwatch@chromium.org'],
     'source_idls': ['jmedley+watch@chromium.org'],
     'speed_metrics_changelog': ['igrigorik@chromium.org',
