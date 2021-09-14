@@ -303,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, PromiseBasedAPI) {
            "background": {
              "service_worker": "background.js"
            },
-           "permissions": ["tabs", "storage"]
+           "permissions": ["tabs", "storage", "contentSettings"]
          })");
   constexpr char kBackgroundJs[] =
       R"(let tabIdExample;
@@ -354,6 +354,23 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, PromiseBasedAPI) {
                await chrome.storage.local.clear();
                allValues = await chrome.storage.local.get(null);
                chrome.test.assertEq({}, allValues);
+               chrome.test.succeed();
+             },
+             async function contentSettingsCustomTypesWithPromises() {
+               await chrome.contentSettings.cookies.set({
+                   primaryPattern: '<all_urls>', setting: 'block'});
+               {
+                 const {setting} = await chrome.contentSettings.cookies.get({
+                     primaryUrl: exampleUrl});
+                 chrome.test.assertEq('block', setting);
+               }
+               await chrome.contentSettings.cookies.clear({});
+               {
+                 const {setting} = await chrome.contentSettings.cookies.get({
+                     primaryUrl: exampleUrl});
+                 // 'allow' is the default value for the setting.
+                 chrome.test.assertEq('allow', setting);
+               }
                chrome.test.succeed();
              },
 
@@ -413,7 +430,7 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, MV2PromisesNotSupported) {
            "background": {
              "scripts": ["background.js"]
            },
-           "permissions": ["tabs", "storage"]
+           "permissions": ["tabs", "storage", "contentSettings"]
          })");
   constexpr char kBackgroundJs[] =
       R"(let tabIdGooge;
@@ -446,7 +463,16 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, MV2PromisesNotSupported) {
                                         ['foo'], expectedError);
                chrome.test.succeed();
              },
-
+             function contentSettingPromise() {
+               let expectedError = 'Error in invocation of contentSettings' +
+                   '.ContentSetting.get(object details, function callback): ' +
+                   'No matching signature.';
+               chrome.test.assertThrows(chrome.contentSettings.cookies.get,
+                                        chrome.contentSettings.cookies,
+                                        [{primaryUrl: exampleUrl}],
+                                        expectedError);
+               chrome.test.succeed();
+             },
              function createNewTabCallback() {
                chrome.tabs.create({url: googleUrl}, (tab) => {
                  let url = tab.pendingUrl;
