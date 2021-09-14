@@ -9091,31 +9091,6 @@
             ]
         }
     ],
-    "V8Sparkplug": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "V8Sparkplug"
-                    ]
-                },
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "V8Sparkplug"
-                    ]
-                }
-            ]
-        }
-    ],
     "V8Sparkplug-Android": [
         {
             "platforms": [
@@ -9124,6 +9099,9 @@
                 "android_webview"
             ],
             "experiments": [
+                {
+                    "name": "Default"
+                },
                 {
                     "name": "Disabled",
                     "disable_features": [
