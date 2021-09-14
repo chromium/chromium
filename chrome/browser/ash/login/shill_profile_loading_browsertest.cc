@@ -36,13 +36,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::ElementsAre;
-
-namespace chromeos {
-
-namespace em = enterprise_management;
-
+namespace ash {
 namespace {
+
+namespace em = ::enterprise_management;
+
+using ::testing::ElementsAre;
 
 constexpr char kUnmanagedUser[] = "unmanaged@gmail.com";
 constexpr char kUnmanagedGaiaID[] = "33333";
@@ -234,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(ShillProfileLoadingGuestLoginTest, GuestLogin) {
 
   LoadShillProfileWaiter load_shill_profile_waiter(
       FakeSessionManagerClient::Get());
-  ASSERT_TRUE(ash::LoginScreenTestApi::ClickGuestButton());
+  ASSERT_TRUE(LoginScreenTestApi::ClickGuestButton());
 
   restart_job_waiter.Run();
 
@@ -246,4 +245,4 @@ IN_PROC_BROWSER_TEST_F(ShillProfileLoadingGuestLoginTest, GuestLogin) {
           user_manager::GuestAccountId()))));
 }
 
-}  // namespace chromeos
+}  // namespace ash

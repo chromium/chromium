@@ -37,8 +37,7 @@
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr char kWifiServiceName[] = "stub_wifi";
@@ -72,7 +71,7 @@ class NetworkErrorScreenTest : public InProcessBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(
-        chromeos::switches::kDisableOOBEChromeVoxHintTimerForTesting);
+        switches::kDisableOOBEChromeVoxHintTimerForTesting);
   }
 
   void ShowErrorScreenWithNetworkList() {
@@ -315,11 +314,11 @@ class KioskErrorScreenTest : public MixinBasedInProcessBrowserTest {
 // Verify that certificate manager dialog opens.
 IN_PROC_BROWSER_TEST_F(KioskErrorScreenTest, OpenCertificateConfig) {
   KioskAppsMixin::WaitForAppsButton();
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsAppsButtonShown());
-  ASSERT_TRUE(ash::LoginScreenTestApi::LaunchApp(KioskAppsMixin::kKioskAppId));
+  EXPECT_TRUE(LoginScreenTestApi::IsAppsButtonShown());
+  ASSERT_TRUE(LoginScreenTestApi::LaunchApp(KioskAppsMixin::kKioskAppId));
 
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
 
   DialogWindowWaiter waiter(
       l10n_util::GetStringUTF16(IDS_CERTIFICATE_MANAGER_TITLE));
@@ -331,4 +330,4 @@ IN_PROC_BROWSER_TEST_F(KioskErrorScreenTest, OpenCertificateConfig) {
   waiter.Wait();
 }
 
-}  // namespace chromeos
+}  // namespace ash

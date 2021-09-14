@@ -20,8 +20,7 @@
 #include "content/public/test/test_utils.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 class ProxyAuthDialogWaiter : public content::WindowedNotificationObserver {
@@ -84,9 +83,9 @@ class ProxyAuthOnUserBoardScreenTest : public LoginManagerTest {
 
 IN_PROC_BROWSER_TEST_F(ProxyAuthOnUserBoardScreenTest,
                        ProxyAuthDialogOnUserBoardScreen) {
-  ASSERT_FALSE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  ASSERT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
   ProxyAuthDialogWaiter auth_dialog_waiter;
-  ASSERT_TRUE(ash::LoginScreenTestApi::ClickAddUserButton());
+  ASSERT_TRUE(LoginScreenTestApi::ClickAddUserButton());
   OobeScreenWaiter(chromeos::UserCreationView::kScreenId).Wait();
   test::OobeJS().TapOnPath({"user-creation", "nextButton"});
   OobeScreenWaiter(chromeos::GaiaView::kScreenId).Wait();
@@ -94,4 +93,4 @@ IN_PROC_BROWSER_TEST_F(ProxyAuthOnUserBoardScreenTest,
   ASSERT_TRUE(auth_dialog_waiter.login_handler());
 }
 
-}  // namespace chromeos
+}  // namespace ash

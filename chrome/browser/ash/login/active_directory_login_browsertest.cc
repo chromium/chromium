@@ -27,8 +27,7 @@
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr char kTestActiveDirectoryUser[] = "test-user";
@@ -325,4 +324,4 @@ IN_PROC_BROWSER_TEST_F(ActiveDirectoryLoginAutocompleteTest, TestAutocomplete) {
   EXPECT_EQ(kPassword, fake_authpolicy_client()->auth_password());
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -40,13 +40,14 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/devicetype_utils.h"
 
-namespace em = enterprise_management;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
+
+namespace em = ::enterprise_management;
+
 const char kDomain[] = "domain.com";
 const char16_t kDomain16[] = u"domain.com";
+
 }  // namespace
 
 class LoginScreenPolicyTest : public policy::DevicePolicyCrosBrowserTest {
@@ -101,44 +102,44 @@ IN_PROC_BROWSER_TEST_F(LoginScreenGuestButtonPolicyTest, NoUsers) {
   OobeScreenWaiter(OobeBaseTest::GetFirstSigninScreen()).Wait();
 
   // Default.
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
 
   // When there are no users - should be the same as OOBE.
   test::ExecuteOobeJS("chrome.send('setIsFirstSigninStep', [false]);");
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
 
   test::ExecuteOobeJS("chrome.send('setIsFirstSigninStep', [true]);");
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
 
   SetGuestModePolicy(false);
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
 
   test::ExecuteOobeJS("chrome.send('setIsFirstSigninStep', [true]);");
   // Should not affect.
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
 
   SetGuestModePolicy(true);
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
 }
 
 IN_PROC_BROWSER_TEST_F(LoginScreenGuestButtonPolicyTest, HasUsers) {
   OobeScreenWaiter(OobeBaseTest::GetFirstSigninScreen()).Wait();
 
   // Default.
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
 
-  ash::LoginScreen::Get()->GetModel()->SetUserList({{}});
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
+  LoginScreen::Get()->GetModel()->SetUserList({{}});
+  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
 
   // Should not affect.
   test::ExecuteOobeJS("chrome.send('setIsFirstSigninStep', [true]);");
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
 
-  ash::LoginScreen::Get()->GetModel()->SetUserList({});
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsGuestButtonShown());
+  LoginScreen::Get()->GetModel()->SetUserList({});
+  EXPECT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
 
   test::ExecuteOobeJS("chrome.send('setIsFirstSigninStep', [false]);");
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
 }
 
 class LoginScreenLocalePolicyTestBase : public LoginScreenPolicyTest {
@@ -192,8 +193,7 @@ class LoginScreenButtonsLocalePolicy : public LoginScreenLocalePolicyTestBase {
 IN_PROC_BROWSER_TEST_F(LoginScreenButtonsLocalePolicy,
                        LoginShelfButtonsTextAndAlignment) {
   // Actual text on the button.
-  std::u16string actual_text =
-      ash::LoginScreenTestApi::GetShutDownButtonLabel();
+  std::u16string actual_text = LoginScreenTestApi::GetShutDownButtonLabel();
 
   // Shut down text in the current locale.
   std::u16string expected_text =
@@ -203,10 +203,9 @@ IN_PROC_BROWSER_TEST_F(LoginScreenButtonsLocalePolicy,
 
   // Check if the shelf buttons are correctly aligned for RTL locale.
   // Target bounds are not updated in case of wrong alignment.
-  gfx::Rect actual_bounds =
-      ash::LoginScreenTestApi::GetShutDownButtonTargetBounds();
+  gfx::Rect actual_bounds = LoginScreenTestApi::GetShutDownButtonTargetBounds();
   gfx::Rect expected_bounds =
-      ash::LoginScreenTestApi::GetShutDownButtonMirroredBounds();
+      LoginScreenTestApi::GetShutDownButtonMirroredBounds();
 
   // RTL locales use the mirrored bounds, this is why we check the X coordinate.
   EXPECT_EQ(expected_bounds.x(), actual_bounds.x());
@@ -214,25 +213,25 @@ IN_PROC_BROWSER_TEST_F(LoginScreenButtonsLocalePolicy,
 
 IN_PROC_BROWSER_TEST_F(LoginScreenButtonsLocalePolicy,
                        PRE_UnifiedTrayLabelsText) {
-  chromeos::StartupUtils::MarkOobeCompleted();
+  StartupUtils::MarkOobeCompleted();
 }
 
 IN_PROC_BROWSER_TEST_F(LoginScreenButtonsLocalePolicy, UnifiedTrayLabelsText) {
-  auto unified_tray_test_api = ash::SystemTrayTestApi::Create();
+  auto unified_tray_test_api = SystemTrayTestApi::Create();
 
   // Check that tray is open.
   // The tray must be open before trying to retrieve its elements.
   EXPECT_TRUE(unified_tray_test_api->IsBubbleViewVisible(
-      ash::VIEW_ID_TRAY_ENTERPRISE, true /* open_tray */));
+      VIEW_ID_TRAY_ENTERPRISE, true /* open_tray */));
 
   // Text on EnterpriseManagedView tooltip in current locale.
   std::u16string expected_text =
-      ash::features::IsManagedDeviceUIRedesignEnabled()
+      features::IsManagedDeviceUIRedesignEnabled()
           ? l10n_util::GetStringFUTF16(IDS_ASH_SHORT_MANAGED_BY, kDomain16)
           : l10n_util::GetStringFUTF16(IDS_ASH_ENTERPRISE_DEVICE_MANAGED_BY,
                                        ui::GetChromeOSDeviceName(), kDomain16);
   EXPECT_EQ(expected_text, unified_tray_test_api->GetBubbleViewTooltip(
-                               ash::VIEW_ID_TRAY_ENTERPRISE));
+                               VIEW_ID_TRAY_ENTERPRISE));
 }
 
-}  // namespace chromeos
+}  // namespace ash

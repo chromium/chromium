@@ -58,24 +58,23 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace em = enterprise_management;
-
-using consent_auditor::FakeConsentAuditor;
-using sync_pb::UserConsentTypes;
-using ArcPlayTermsOfServiceConsent =
-    sync_pb::UserConsentTypes::ArcPlayTermsOfServiceConsent;
-using ArcBackupAndRestoreConsent =
-    sync_pb::UserConsentTypes::ArcBackupAndRestoreConsent;
-using ArcGoogleLocationServiceConsent =
-    sync_pb::UserConsentTypes::ArcGoogleLocationServiceConsent;
-using net::test_server::BasicHttpResponse;
-using net::test_server::HttpRequest;
-using net::test_server::HttpResponse;
-using ::testing::ElementsAre;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
+
+namespace em = ::enterprise_management;
+
+using ::consent_auditor::FakeConsentAuditor;
+using ::sync_pb::UserConsentTypes;
+using ArcPlayTermsOfServiceConsent =
+    ::sync_pb::UserConsentTypes::ArcPlayTermsOfServiceConsent;
+using ArcBackupAndRestoreConsent =
+    ::sync_pb::UserConsentTypes::ArcBackupAndRestoreConsent;
+using ArcGoogleLocationServiceConsent =
+    ::sync_pb::UserConsentTypes::ArcGoogleLocationServiceConsent;
+using ::net::test_server::BasicHttpResponse;
+using ::net::test_server::HttpRequest;
+using ::net::test_server::HttpResponse;
+using ::testing::ElementsAre;
 
 const char kAccountId[] = "dla@example.com";
 const char kDisplayName[] = "display name";
@@ -670,8 +669,8 @@ class PublicAccountArcTermsOfServiceScreenTest
   }
 
   void StartLogin() {
-    ASSERT_TRUE(ash::LoginScreenTestApi::ExpandPublicSessionPod(account_id_));
-    ash::LoginScreenTestApi::ClickPublicExpandedSubmitButton();
+    ASSERT_TRUE(LoginScreenTestApi::ExpandPublicSessionPod(account_id_));
+    LoginScreenTestApi::ClickPublicExpandedSubmitButton();
   }
 
   void StartPublicSession() {
@@ -722,4 +721,4 @@ IN_PROC_BROWSER_TEST_F(PublicAccountArcTermsOfServiceScreenTest,
   histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Arc_tos", 0);
 }
 
-}  // namespace chromeos
+}  // namespace ash

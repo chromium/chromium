@@ -37,9 +37,9 @@
 #include "content/public/test/test_utils.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
+
 constexpr char kDebuggingScreenId[] = "debugging";
 
 const test::UIPath kRemoveProtectionDialog = {kDebuggingScreenId,
@@ -181,8 +181,7 @@ class EnableDebuggingTestBase : public OobeBaseTest {
     OobeBaseTest::SetUpCommandLine(command_line);
     // Disable HID detection because it takes precedence and could block
     // enable-debugging UI.
-    command_line->AppendSwitch(
-        chromeos::switches::kDisableHIDDetectionOnOOBEForTesting);
+    command_line->AppendSwitch(switches::kDisableHIDDetectionOnOOBEForTesting);
   }
   void SetUpInProcessBrowserTestFixture() override {
     debug_daemon_client_ = new TestDebugDaemonClient;
@@ -194,7 +193,7 @@ class EnableDebuggingTestBase : public OobeBaseTest {
 
   void InvokeEnableDebuggingScreen() {
     LoginDisplayHost::default_host()->HandleAccelerator(
-        ash::LoginAcceleratorAction::kEnableDebugging);
+        LoginAcceleratorAction::kEnableDebugging);
 
     OobeScreenWaiter(EnableDebuggingScreenView::kScreenId).Wait();
   }
@@ -418,4 +417,4 @@ IN_PROC_BROWSER_TEST_F(EnableDebuggingRequestedTest, CancelAutoShowSetup) {
   test::OobeJS().ExpectHidden(kDebuggingScreenId);
 }
 
-}  // namespace chromeos
+}  // namespace ash

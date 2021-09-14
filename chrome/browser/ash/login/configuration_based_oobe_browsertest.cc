@@ -44,14 +44,11 @@
 #include "content/public/test/mock_notification_observer.h"
 #include "ui/base/ime/chromeos/input_method_util.h"
 
-using testing::_;
-using testing::Invoke;
-
 // Disabled due to flakiness: https://crbug.com/997685.
 #define MAYBE_TestDemoModeOfflineNetwork DISABLED_TestDemoModeOfflineNetwork
 #define MAYBE_TestDemoModeAcceptEula DISABLED_TestDemoModeAcceptEula
 
-namespace chromeos {
+namespace ash {
 
 // This test case will use
 // src/chromeos/test/data/oobe_configuration/<TestName>.json file as
@@ -109,7 +106,8 @@ class OobeConfigurationTest : public OobeBaseTest {
     const ::testing::TestInfo* const test_info =
         ::testing::UnitTest::GetInstance()->current_test_info();
     const std::string filename = std::string(test_info->name()) + suffix;
-    return test_utils::GetTestDataPath("oobe_configuration", filename, file);
+    return chromeos::test_utils::GetTestDataPath("oobe_configuration", filename,
+                                                 file);
   }
 
   // Overridden from InProcessBrowserTest:
@@ -277,4 +275,4 @@ IN_PROC_BROWSER_TEST_F(OobeConfigurationEnrollmentTest, TestSkipUpdate) {
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSignin);
 }
 
-}  // namespace chromeos
+}  // namespace ash

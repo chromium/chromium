@@ -148,4 +148,9 @@ class COMPONENT_EXPORT(CHROMEOS_TPM) TPMTokenLoader
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when //chromeos/test is moved to ash.
+namespace ash {
+using ::chromeos::TPMTokenLoader;
+}
+
 #endif  // CHROMEOS_TPM_TPM_TOKEN_LOADER_H_

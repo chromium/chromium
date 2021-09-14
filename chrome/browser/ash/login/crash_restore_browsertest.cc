@@ -43,8 +43,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 // Use consumer.example.com to keep policy code out of the tests.
@@ -297,4 +296,4 @@ IN_PROC_BROWSER_TEST_F(CrashRestoreChildUserTest, SessionRestore) {
   // Verify that there is no crash on chrome restart.
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -52,6 +52,13 @@ class ElapsedTimer;
 class ListValue;
 }
 
+// TODO(https://crbug.com/1164001): remove when ExistingUserController is moved
+// to ash.
+namespace ash {
+class ExistingUserControllerPublicSessionTest;
+class ExistingUserControllerTest;
+}  // namespace ash
+
 namespace chromeos {
 namespace login {
 class NetworkStateHelper;
@@ -149,9 +156,9 @@ class ExistingUserController : public LoginDisplay::Delegate,
       const user_manager::UserList& users);
 
  private:
-  friend class ExistingUserControllerTest;
+  friend class ash::ExistingUserControllerTest;
   friend class ExistingUserControllerAutoLoginTest;
-  friend class ExistingUserControllerPublicSessionTest;
+  friend class ash::ExistingUserControllerPublicSessionTest;
   friend class MockLoginPerformerDelegate;
   friend class ExistingUserControllerForcedOnlineAuthTest;
 

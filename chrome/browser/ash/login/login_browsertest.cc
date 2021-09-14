@@ -53,13 +53,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/geometry/test/rect_test_util.h"
 
-using ::gfx::test::RectContains;
-using ::testing::_;
-using ::testing::AnyNumber;
-using ::testing::Return;
-
-namespace chromeos {
+namespace ash {
 namespace {
+
+using ::gfx::test::RectContains;
 
 const char kDomainAllowlist[] = "*@example.com";
 const test::UIPath kOfflineLoginBackButton = {"offline-login", "backButton"};
@@ -120,11 +117,11 @@ class LoginOnlineCryptohomeError : public LoginManagerTest {
 
 IN_PROC_BROWSER_TEST_F(LoginOnlineCryptohomeError, FatalScreenShown) {
   const auto& account_id = reauth_user_.account_id;
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsOobeDialogVisible());
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsForcedOnlineSignin(account_id));
-  EXPECT_TRUE(ash::LoginScreenTestApi::FocusUser(account_id));
+  EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_TRUE(LoginScreenTestApi::IsForcedOnlineSignin(account_id));
+  EXPECT_TRUE(LoginScreenTestApi::FocusUser(account_id));
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
   chromeos::FakeUserDataAuthClient::Get()->set_cryptohome_error(
       user_data_auth::CRYPTOHOME_ERROR_MOUNT_FATAL);
 
@@ -135,31 +132,31 @@ IN_PROC_BROWSER_TEST_F(LoginOnlineCryptohomeError, FatalScreenShown) {
                                 FakeGaiaMixin::kFakeUserPassword,
                                 FakeGaiaMixin::kEmptyUserServices);
   OobeScreenWaiter(SignInFatalErrorView::kScreenId).Wait();
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
   test::ClickSignInFatalScreenActionButton();
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(LoginOfflineTest, FatalScreenShown) {
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
   chromeos::FakeUserDataAuthClient::Get()->set_cryptohome_error(
       user_data_auth::CRYPTOHOME_ERROR_TPM_UPDATE_REQUIRED);
-  ash::LoginScreenTestApi::SubmitPassword(test_account_id_, "password",
-                                          /*check_if_submittable=*/false);
+  LoginScreenTestApi::SubmitPassword(test_account_id_, "password",
+                                     /*check_if_submittable=*/false);
   OobeScreenWaiter(SignInFatalErrorView::kScreenId).Wait();
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(LoginOfflineTest, FatalScreenNotShown) {
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
   chromeos::FakeUserDataAuthClient::Get()->set_cryptohome_error(
       user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED);
-  ash::LoginScreenTestApi::SubmitPassword(test_account_id_, "password",
-                                          /*check_if_submittable=*/false);
+  LoginScreenTestApi::SubmitPassword(test_account_id_, "password",
+                                     /*check_if_submittable=*/false);
   // Inserted RunUntilIdle here to give maximum chances for the dialog to show
   // up in case of a bug.
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
 }
 
 class LoginOfflineManagedTest : public LoginManagerTest {
@@ -173,8 +170,7 @@ class LoginOfflineManagedTest : public LoginManagerTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     LoginManagerTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(
-        chromeos::switches::kAllowFailedPolicyFetchForTest);
+    command_line->AppendSwitch(switches::kAllowFailedPolicyFetchForTest);
   }
 
   void ConfigurePolicy(const std::string& autocomplete_domain) {
@@ -218,23 +214,21 @@ class LoginOfflineManagedTest : public LoginManagerTest {
 // Used to make sure that the system tray is visible and within the screen
 // bounds after login.
 void TestSystemTrayIsVisible() {
-  aura::Window* primary_win = ash::Shell::GetPrimaryRootWindow();
-  ash::Shelf* shelf = ash::Shelf::ForWindow(primary_win);
-  ash::TrayBackgroundView* tray =
+  aura::Window* primary_win = Shell::GetPrimaryRootWindow();
+  Shelf* shelf = Shelf::ForWindow(primary_win);
+  TrayBackgroundView* tray =
       shelf->GetStatusAreaWidget()->unified_system_tray();
   SCOPED_TRACE(testing::Message()
                << "ShelfVisibilityState=" << shelf->GetVisibilityState()
                << " ShelfAutoHideBehavior="
                << static_cast<int>(shelf->auto_hide_behavior()));
-  ash::StatusAreaWidgetTestHelper::WaitForAnimationEnd(
-      shelf->GetStatusAreaWidget());
+  StatusAreaWidgetTestHelper::WaitForAnimationEnd(shelf->GetStatusAreaWidget());
   EXPECT_TRUE(tray->GetVisible());
 
   // Wait for the system tray be inside primary bounds.
   test::TestPredicateWaiter(
       base::BindRepeating(
-          [](const aura::Window* primary_win,
-             const ash::TrayBackgroundView* tray) {
+          [](const aura::Window* primary_win, const TrayBackgroundView* tray) {
             if (RectContains(primary_win->bounds(), tray->GetBoundsInScreen()))
               return true;
             LOG(WARNING) << primary_win->bounds().ToString()
@@ -275,11 +269,11 @@ IN_PROC_BROWSER_TEST_F(LoginGuestTest, GuestIsOTR) {
 IN_PROC_BROWSER_TEST_F(LoginCursorTest, CursorHidden) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
   // Cursor should be hidden at startup
-  EXPECT_FALSE(ash::Shell::Get()->cursor_manager()->IsCursorVisible());
+  EXPECT_FALSE(Shell::Get()->cursor_manager()->IsCursorVisible());
 
   // Cursor should be shown after cursor is moved.
   EXPECT_TRUE(ui_test_utils::SendMouseMoveSync(gfx::Point()));
-  EXPECT_TRUE(ash::Shell::Get()->cursor_manager()->IsCursorVisible());
+  EXPECT_TRUE(Shell::Get()->cursor_manager()->IsCursorVisible());
 
   TestSystemTrayIsVisible();
 }
@@ -358,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, BackButtonTest) {
   // Send network state update once again.
   offline_login_test_mixin_.GoOffline();
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, LoginAllowlistedUser) {
@@ -392,8 +386,8 @@ IN_PROC_BROWSER_TEST_F(UserAddingScreenTrayTest, TrayVisible) {
 }
 
 IN_PROC_BROWSER_TEST_F(LoginManagerTest, SafeBrowsingDisabledForSigninProfile) {
-  ASSERT_FALSE(ash::ProfileHelper::GetSigninProfile()->GetPrefs()->GetBoolean(
+  ASSERT_FALSE(ProfileHelper::GetSigninProfile()->GetPrefs()->GetBoolean(
       prefs::kSafeBrowsingEnabled));
 }
 
-}  // namespace chromeos
+}  // namespace ash

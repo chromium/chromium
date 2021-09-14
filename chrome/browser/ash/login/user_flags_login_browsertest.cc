@@ -20,7 +20,7 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 
-namespace chromeos {
+namespace ash {
 
 // Checks whether per-user feature flags get correctly applied at session start
 // by restarting the browser.
@@ -71,9 +71,9 @@ IN_PROC_BROWSER_TEST_F(UserFlagsLoginTest, PRE_PRE_RestartToApplyFlags) {
 // Triggers a login. A restart should be performed to apply flags.
 IN_PROC_BROWSER_TEST_F(UserFlagsLoginTest, PRE_RestartToApplyFlags) {
   bool restart_requested = false;
-  ash::SessionStateWaiter waiter;
-  ash::test::UserSessionManagerTestApi session_manager_test_api(
-      ash::UserSessionManager::GetInstance());
+  SessionStateWaiter waiter;
+  test::UserSessionManagerTestApi session_manager_test_api(
+      UserSessionManager::GetInstance());
   session_manager_test_api.SetAttemptRestartClosureInTests(
       base::BindLambdaForTesting([&]() {
         // Signal |waiter| to exit its RunLoop.
@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(UserFlagsLoginTest, FlagsNotAppliedForSecondary) {
   const user_manager::User* primary_user = user_manager->GetActiveUser();
 
   // Adds a secondary user.
-  ash::UserAddingScreen::Get()->Start();
+  UserAddingScreen::Get()->Start();
   context =
       LoginManagerMixin::CreateDefaultUserContext(login_manager_.users()[1]);
   ASSERT_TRUE(login_manager_.LoginAndWaitForActiveSession(context));
@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(UserFlagsLoginTest, FlagsNotAppliedForSecondary) {
   flags_storage.CommitPendingWrites();
 
   // Update flags.
-  ash::about_flags::FeatureFlagsUpdate(flags_storage, secondary_user_prefs)
+  about_flags::FeatureFlagsUpdate(flags_storage, secondary_user_prefs)
       .UpdateSessionManager();
 
   // Session manager client should not get flags for secondary user.
@@ -135,4 +135,4 @@ IN_PROC_BROWSER_TEST_F(UserFlagsLoginTest, FlagsNotAppliedForSecondary) {
       nullptr));
 }
 
-}  // namespace chromeos
+}  // namespace ash

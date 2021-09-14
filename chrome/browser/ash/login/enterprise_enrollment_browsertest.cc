@@ -33,12 +33,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 
-using testing::_;
-using testing::Invoke;
-using testing::InvokeWithoutArgs;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr char kPartitionAttribute[] = ".partition";
@@ -499,7 +494,7 @@ IN_PROC_BROWSER_TEST_F(EnterpriseEnrollmentTest, StoragePartitionUpdated) {
   // Cancel button is enabled when the authenticator is ready. Do it manually
   // instead of waiting for it.
   test::ExecuteOobeJS("$('enterprise-enrollment').isCancelDisabled = false");
-  host()->HandleAccelerator(ash::LoginAcceleratorAction::kCancelScreenAction);
+  host()->HandleAccelerator(LoginAcceleratorAction::kCancelScreenAction);
 
   // Simulate navigating over the enrollment screen a second time.
   ShowEnrollmentScreen();
@@ -691,4 +686,4 @@ IN_PROC_BROWSER_TEST_F(ActiveDirectoryJoinTest,
   CheckPossibleConfiguration(kAdDomainJoinUnlockedConfig);
 }
 
-}  // namespace chromeos
+}  // namespace ash

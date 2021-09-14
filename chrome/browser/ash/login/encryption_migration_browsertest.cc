@@ -34,8 +34,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/cryptohome/dbus-constants.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr char kEncryptionMigrationId[] = "encryption-migration";
@@ -220,9 +219,9 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, SkipWithNoPolicySet) {
   SetUpStubAuthenticatorAndAttemptLogin(false /* has_incomplete_migration */);
   encryption_migration_screen_waiter.Wait();
 
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsShutdownButtonShown());
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsShutdownButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
 
   test::OobeJS().CreateVisibilityWaiter(true, kReadyDialog)->Wait();
 
@@ -500,4 +499,4 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest,
   RunFullMigrationFlowTest();
 }
 
-}  // namespace chromeos
+}  // namespace ash

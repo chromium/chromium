@@ -29,12 +29,6 @@ template <typename T>
 struct DefaultSingletonTraits;
 }  // namespace base
 
-// TODO(https://crbug.com/1164001): remove when
-// ExistingUserControllerActiveDirectoryTest is moved to ash.
-namespace chromeos {
-class ExistingUserControllerActiveDirectoryTest;
-}  // namespace chromeos
-
 namespace dbus {
 class Signal;
 }
@@ -136,7 +130,7 @@ class AuthPolicyCredentialsManagerFactory
   friend struct base::DefaultSingletonTraits<
       AuthPolicyCredentialsManagerFactory>;
   friend class AuthPolicyCredentialsManagerTest;
-  friend class ::chromeos::ExistingUserControllerActiveDirectoryTest;
+  friend class ExistingUserControllerActiveDirectoryTest;
 
   AuthPolicyCredentialsManagerFactory();
   ~AuthPolicyCredentialsManagerFactory() override;

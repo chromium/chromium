@@ -77,18 +77,18 @@ class PasswordChangeTestBase : public LoginManagerTest {
   }
 
   void OpenGaiaDialog(const AccountId& account_id) {
-    EXPECT_FALSE(ash::LoginScreenTestApi::IsOobeDialogVisible());
-    EXPECT_TRUE(ash::LoginScreenTestApi::IsForcedOnlineSignin(account_id));
-    EXPECT_TRUE(ash::LoginScreenTestApi::FocusUser(account_id));
+    EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
+    EXPECT_TRUE(LoginScreenTestApi::IsForcedOnlineSignin(account_id));
+    EXPECT_TRUE(LoginScreenTestApi::FocusUser(account_id));
     OobeScreenWaiter(GaiaView::kScreenId).Wait();
-    EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+    EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
   }
 
   // Sets up UserSessionManager to use stub authenticator that reports a
   // password change, and attempts login.
   // Password changed OOBE dialog is expected to show up after calling this.
   void SetUpStubAuthenticatorAndAttemptLogin(const std::string& old_password) {
-    EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+    EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
     UserContext user_context = GetTestUserContext();
 
     auto authenticator_builder =
@@ -106,9 +106,9 @@ class PasswordChangeTestBase : public LoginManagerTest {
     OobeScreenWaiter(GaiaPasswordChangedView::kScreenId).Wait();
     OobeWindowVisibilityWaiter(true).Wait();
 
-    EXPECT_FALSE(ash::LoginScreenTestApi::IsShutdownButtonShown());
-    EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
-    EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
+    EXPECT_FALSE(LoginScreenTestApi::IsShutdownButtonShown());
+    EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
+    EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
   }
 
  protected:
@@ -322,7 +322,7 @@ class PasswordChangeTokenCheck : public PasswordChangeTestBase {
 IN_PROC_BROWSER_TEST_F(PasswordChangeTokenCheck, LoginScreenPasswordChange) {
   TokenHandleUtil::StoreTokenHandle(user_with_invalid_token_, kTokenHandle);
   // Focus triggers token check.
-  ash::LoginScreenTestApi::FocusUser(user_with_invalid_token_);
+  LoginScreenTestApi::FocusUser(user_with_invalid_token_);
 
   OpenGaiaDialog(user_with_invalid_token_);
   base::HistogramTester histogram_tester;
@@ -335,7 +335,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeTokenCheck, LoginScreenPasswordChange) {
 IN_PROC_BROWSER_TEST_F(PasswordChangeTokenCheck, LoginScreenNoPasswordChange) {
   TokenHandleUtil::StoreTokenHandle(user_with_invalid_token_, kTokenHandle);
   // Focus triggers token check.
-  ash::LoginScreenTestApi::FocusUser(user_with_invalid_token_);
+  LoginScreenTestApi::FocusUser(user_with_invalid_token_);
 
   OpenGaiaDialog(user_with_invalid_token_);
   base::HistogramTester histogram_tester;
@@ -373,9 +373,9 @@ class ProfileWaiter : public ProfileManagerObserver {
 IN_PROC_BROWSER_TEST_F(PasswordChangeTokenCheck, PRE_Session) {
   // Focus triggers token check. User does not have stored token, so online
   // login should not be forced.
-  ash::LoginScreenTestApi::FocusUser(user_with_invalid_token_);
+  LoginScreenTestApi::FocusUser(user_with_invalid_token_);
   ASSERT_FALSE(
-      ash::LoginScreenTestApi::IsForcedOnlineSignin(user_with_invalid_token_));
+      LoginScreenTestApi::IsForcedOnlineSignin(user_with_invalid_token_));
 
   // Store invalid token to triger notification in the session.
   TokenHandleUtil::StoreTokenHandle(user_with_invalid_token_, kTokenHandle);
@@ -408,7 +408,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeTokenCheck, PRE_Session) {
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeTokenCheck, Session) {
   ASSERT_TRUE(
-      ash::LoginScreenTestApi::IsForcedOnlineSignin(user_with_invalid_token_));
+      LoginScreenTestApi::IsForcedOnlineSignin(user_with_invalid_token_));
   OpenGaiaDialog(user_with_invalid_token_);
 
   base::HistogramTester histogram_tester;
@@ -423,7 +423,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeTokenCheck, Session) {
 IN_PROC_BROWSER_TEST_F(PasswordChangeTokenCheck, TokenRecentlyChecked) {
   TokenHandleUtil::StoreTokenHandle(user_with_invalid_token_, kTokenHandle);
   // Focus triggers token check.
-  ash::LoginScreenTestApi::FocusUser(user_with_invalid_token_);
+  LoginScreenTestApi::FocusUser(user_with_invalid_token_);
   OpenGaiaDialog(user_with_invalid_token_);
 
   ProfileWaiter waiter;
@@ -515,8 +515,8 @@ IN_PROC_BROWSER_TEST_F(RotationTokenTest, PRE_Rotated) {
   user_manager::known_user::RemovePref(account_id_, "TokenHandleRotated");
 
   // Focus should not trigger online login.
-  ash::LoginScreenTestApi::FocusUser(account_id_);
-  ASSERT_FALSE(ash::LoginScreenTestApi::IsForcedOnlineSignin(account_id_));
+  LoginScreenTestApi::FocusUser(account_id_);
+  ASSERT_FALSE(LoginScreenTestApi::IsForcedOnlineSignin(account_id_));
 
   // Should be considered for rotation.
   EXPECT_TRUE(TokenHandleUtil::ShouldObtainHandle(account_id_));
@@ -585,14 +585,14 @@ class IgnoreOldTokenTest
 // Verify case when a user got token invalidated on a previous version and then
 // updated to the version when not rotated tokens are ignored for managed users.
 IN_PROC_BROWSER_TEST_P(IgnoreOldTokenTest, PRE_IgnoreNotRotated) {
-  ASSERT_TRUE(ash::LoginScreenTestApi::IsForcedOnlineSignin(account_id_));
+  ASSERT_TRUE(LoginScreenTestApi::IsForcedOnlineSignin(account_id_));
 }
 
 // Old tokens should be ignored for managed users. Regular users should be
 // forced to go through online signin.
 IN_PROC_BROWSER_TEST_P(IgnoreOldTokenTest, IgnoreNotRotated) {
-  ASSERT_NE(ash::TokenHandleUtil::HasToken(account_id_), IsManagedUser());
-  ASSERT_NE(ash::LoginScreenTestApi::IsForcedOnlineSignin(account_id_),
+  ASSERT_NE(TokenHandleUtil::HasToken(account_id_), IsManagedUser());
+  ASSERT_NE(LoginScreenTestApi::IsForcedOnlineSignin(account_id_),
             IsManagedUser());
 }
 

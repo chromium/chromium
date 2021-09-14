@@ -47,10 +47,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-using ::testing::ElementsAre;
-
-namespace chromeos {
+namespace ash {
 namespace {
+
+using ::testing::ElementsAre;
 
 const test::UIPath kEulaWebview = {"oobe-eula-md", "crosEulaFrame"};
 const test::UIPath kAcceptEulaButton = {"oobe-eula-md", "acceptButton"};
@@ -413,5 +413,4 @@ IN_PROC_BROWSER_TEST_F(EulaTest, SkippedEula) {
 }
 
 }  // namespace
-
-}  // namespace chromeos
+}  // namespace ash

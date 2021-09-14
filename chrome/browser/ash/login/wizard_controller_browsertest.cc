@@ -2786,7 +2786,7 @@ class WizardControllerOobeConfigurationTest : public WizardControllerTest {
     ASSERT_TRUE(chromeos::test_utils::GetTestDataPath(
         "oobe_configuration", "non_empty_configuration.json",
         &configuration_file));
-    command_line->AppendSwitchPath(chromeos::switches::kFakeOobeConfiguration,
+    command_line->AppendSwitchPath(switches::kFakeOobeConfiguration,
                                    configuration_file);
   }
 
@@ -2838,14 +2838,14 @@ class WizardControllerRollbackFlowTest : public WizardControllerFlowTest {
     ASSERT_TRUE(chromeos::test_utils::GetTestDataPath(
         "oobe_configuration", "TestEnterpriseRollbackRecover.json",
         &configuration_file));
-    command_line->AppendSwitchPath(chromeos::switches::kFakeOobeConfiguration,
+    command_line->AppendSwitchPath(switches::kFakeOobeConfiguration,
                                    configuration_file);
   }
 
   content::MockNotificationObserver observer_;
   content::NotificationRegistrar registrar_;
 
-  ash::FakeRollbackNetworkConfig* network_config_;
+  FakeRollbackNetworkConfig* network_config_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(WizardControllerRollbackFlowTest);

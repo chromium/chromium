@@ -27,8 +27,7 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 const char kFamilyLinkUser[] = "fl@gmail.com";
@@ -124,23 +123,23 @@ IN_PROC_BROWSER_TEST_F(DeviceFamilyLinkAllowedPolicyTest, LoginScreenUpdates) {
   // No policy restrictions, all users available.
   EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
             session_manager::SessionState::LOGIN_PRIMARY);
-  EXPECT_EQ(ash::LoginScreenTestApi::GetUsersCount(), 3);
+  EXPECT_EQ(LoginScreenTestApi::GetUsersCount(), 3);
 
   // User allowlist on - only school domain account available.
   AddUserToAllowlist(kSchoolAllowlist);
-  EXPECT_EQ(ash::LoginScreenTestApi::GetUsersCount(), 1);
+  EXPECT_EQ(LoginScreenTestApi::GetUsersCount(), 1);
 
   // Family Link allowed - school and Family Link accounts available.
   SetDeviceFamilyLinkAccountsAllowedPolicy(true);
-  EXPECT_EQ(ash::LoginScreenTestApi::GetUsersCount(), 2);
+  EXPECT_EQ(LoginScreenTestApi::GetUsersCount(), 2);
 
   // Family link off - Family Link account should disappear.
   SetDeviceFamilyLinkAccountsAllowedPolicy(false);
-  EXPECT_EQ(ash::LoginScreenTestApi::GetUsersCount(), 1);
+  EXPECT_EQ(LoginScreenTestApi::GetUsersCount(), 1);
 
   // Allow all new users.
   SetDeviceAllowNewUsersPolicy(true);
-  EXPECT_EQ(ash::LoginScreenTestApi::GetUsersCount(), 3);
+  EXPECT_EQ(LoginScreenTestApi::GetUsersCount(), 3);
 }
 
 // Tests that the user is signed out when policy value changes.
@@ -151,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(DeviceFamilyLinkAllowedPolicyTest, InSessionUpdate) {
   // Family Link allowed - school and Family Link accounts available.
   AddUserToAllowlist(kSchoolAllowlist);
   SetDeviceFamilyLinkAccountsAllowedPolicy(true);
-  EXPECT_EQ(ash::LoginScreenTestApi::GetUsersCount(), 2);
+  EXPECT_EQ(LoginScreenTestApi::GetUsersCount(), 2);
 
   LoginFamilyLinkUser();
   SessionStateWaiter(session_manager::SessionState::ACTIVE).Wait();
@@ -166,4 +165,4 @@ IN_PROC_BROWSER_TEST_F(DeviceFamilyLinkAllowedPolicyTest, InSessionUpdate) {
   termination_waiter.Wait();
 }
 
-}  // namespace chromeos
+}  // namespace ash

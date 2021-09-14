@@ -41,8 +41,7 @@ namespace base {
 class TaskRunner;
 }
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 // OOBE constants.
@@ -384,4 +383,4 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Range(&oobe_localization_test_parameters[0],
                    &oobe_localization_test_parameters[base::size(
                        oobe_localization_test_parameters)]));
-}  // namespace chromeos
+}  // namespace ash

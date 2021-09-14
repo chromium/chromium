@@ -38,11 +38,10 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 
-namespace em = enterprise_management;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
+
+namespace em = ::enterprise_management;
 
 constexpr char kTestUser1[] = "test-user1@gmail.com";
 constexpr char kTestUser1NonCanonicalDisplayEmail[] = "test-us.e.r1@gmail.com";
@@ -74,7 +73,7 @@ void Append_en_US_InputMethods(std::vector<std::string>* out) {
 
 }  // anonymous namespace
 
-class LoginUIKeyboardTest : public chromeos::LoginManagerTest {
+class LoginUIKeyboardTest : public LoginManagerTest {
  public:
   LoginUIKeyboardTest() : LoginManagerTest() {
     test_users_.push_back(
@@ -118,7 +117,7 @@ class LoginUIUserAddingKeyboardTest : public LoginUIKeyboardTest {
 
  protected:
   void FocusUserPod(const AccountId& account_id) {
-    ASSERT_TRUE(ash::LoginScreenTestApi::FocusUser(account_id));
+    ASSERT_TRUE(LoginScreenTestApi::FocusUser(account_id));
   }
 };
 
@@ -179,8 +178,8 @@ IN_PROC_BROWSER_TEST_F(LoginUIKeyboardTest, PRE_CheckPODScreenDefault) {
 // Check default IME initialization, when there is no IME configuration in
 // local_state.
 IN_PROC_BROWSER_TEST_F(LoginUIKeyboardTest, CheckPODScreenDefault) {
-  EXPECT_EQ(2, ash::LoginScreenTestApi::GetUsersCount());
-  EXPECT_EQ(test_users_[0], ash::LoginScreenTestApi::GetFocusedUser());
+  EXPECT_EQ(2, LoginScreenTestApi::GetUsersCount());
+  EXPECT_EQ(test_users_[0], LoginScreenTestApi::GetFocusedUser());
 
   std::vector<std::string> expected_input_methods;
   Append_en_US_InputMethods(&expected_input_methods);
@@ -200,8 +199,8 @@ IN_PROC_BROWSER_TEST_F(LoginUIKeyboardTest, PRE_CheckPODScreenWithUsers) {
 }
 
 IN_PROC_BROWSER_TEST_F(LoginUIKeyboardTest, CheckPODScreenWithUsers) {
-  EXPECT_EQ(2, ash::LoginScreenTestApi::GetUsersCount());
-  EXPECT_EQ(test_users_[0], ash::LoginScreenTestApi::GetFocusedUser());
+  EXPECT_EQ(2, LoginScreenTestApi::GetUsersCount());
+  EXPECT_EQ(test_users_[0], LoginScreenTestApi::GetFocusedUser());
 
   EXPECT_EQ(user_input_methods[0], input_method::InputMethodManager::Get()
                                        ->GetActiveIMEState()
@@ -217,14 +216,14 @@ IN_PROC_BROWSER_TEST_F(LoginUIKeyboardTest, CheckPODScreenWithUsers) {
                                         ->GetActiveIMEState()
                                         ->GetActiveInputMethodIds());
 
-  EXPECT_TRUE(ash::LoginScreenTestApi::FocusUser(test_users_[1]));
+  EXPECT_TRUE(LoginScreenTestApi::FocusUser(test_users_[1]));
 
   EXPECT_EQ(user_input_methods[1], input_method::InputMethodManager::Get()
                                        ->GetActiveIMEState()
                                        ->GetCurrentInputMethod()
                                        .id());
 
-  EXPECT_TRUE(ash::LoginScreenTestApi::FocusUser(test_users_[0]));
+  EXPECT_TRUE(LoginScreenTestApi::FocusUser(test_users_[0]));
 
   EXPECT_EQ(user_input_methods[0], input_method::InputMethodManager::Get()
                                        ->GetActiveIMEState()
@@ -232,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(LoginUIKeyboardTest, CheckPODScreenWithUsers) {
                                        .id());
 }
 
-class LoginUIKeyboardTestWithUsersAndOwner : public chromeos::LoginManagerTest {
+class LoginUIKeyboardTestWithUsersAndOwner : public LoginManagerTest {
  public:
   LoginUIKeyboardTestWithUsersAndOwner() = default;
   ~LoginUIKeyboardTestWithUsersAndOwner() override {}
@@ -301,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(LoginUIKeyboardTestWithUsersAndOwner,
 
 IN_PROC_BROWSER_TEST_F(LoginUIKeyboardTestWithUsersAndOwner,
                        CheckPODScreenKeyboard) {
-  EXPECT_EQ(3, ash::LoginScreenTestApi::GetUsersCount());
+  EXPECT_EQ(3, LoginScreenTestApi::GetUsersCount());
 
   std::vector<std::string> expected_input_methods;
   // Owner input method.
@@ -316,15 +315,15 @@ IN_PROC_BROWSER_TEST_F(LoginUIKeyboardTestWithUsersAndOwner,
                                         ->GetActiveInputMethodIds());
 
   // Switch to Gaia.
-  ASSERT_TRUE(ash::LoginScreenTestApi::ClickAddUserButton());
+  ASSERT_TRUE(LoginScreenTestApi::ClickAddUserButton());
   OobeScreenWaiter(UserCreationView::kScreenId).Wait();
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
 
   CheckGaiaKeyboard();
 
   // Switch back.
   test::ExecuteOobeJS("$('user-creation').cancel()");
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
 
   EXPECT_EQ(expected_input_methods, input_method::InputMethodManager::Get()
                                         ->GetActiveIMEState()
@@ -514,4 +513,4 @@ IN_PROC_BROWSER_TEST_F(EphemeralUserKeyboardTest, PersistToProfile) {
             expected_input_method[0]);
 }
 
-}  // namespace chromeos
+}  // namespace ash

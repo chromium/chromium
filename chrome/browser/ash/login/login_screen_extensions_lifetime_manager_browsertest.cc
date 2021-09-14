@@ -24,8 +24,7 @@
 #include "extensions/test/test_background_page_ready_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr char kAllowlistedAppId[] = "bjaiihebfngildkcjkjckolinodhliff";
@@ -34,7 +33,7 @@ constexpr char kAllowlistedAppCrxPath[] =
 
 // Returns the profile into which login-screen extensions are force-installed.
 Profile* GetOriginalSigninProfile() {
-  return chromeos::ProfileHelper::GetSigninProfile()->GetOriginalProfile();
+  return ProfileHelper::GetSigninProfile()->GetOriginalProfile();
 }
 
 }  // namespace
@@ -169,4 +168,4 @@ IN_PROC_BROWSER_TEST_F(LoginScreenExtensionsLifetimeManagerTest,
   EXPECT_TRUE(IsExtensionBackgroundPageReady(kAllowlistedAppId));
 }
 
-}  // namespace chromeos
+}  // namespace ash

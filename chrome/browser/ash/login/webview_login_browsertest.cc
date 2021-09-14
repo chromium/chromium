@@ -120,11 +120,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace em = enterprise_management;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
+
+namespace em = ::enterprise_management;
 
 constexpr char kTestGuid[] = "cccccccc-cccc-4ccc-0ccc-ccccccccccc1";
 constexpr char kTestCookieName[] = "TestCookie";
@@ -367,7 +366,7 @@ class WebviewLoginTest : public OobeBaseTest {
   }
 
  protected:
-  chromeos::ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  ScopedTestingCrosSettings scoped_testing_cros_settings_;
   FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -387,10 +386,10 @@ class WebviewCloseViewLoginTest
     scoped_feature_list_.Reset();
     if (IsFeatureEnabled(GetParam())) {
       scoped_feature_list_.InitAndEnableFeature(
-          ash::features::kGaiaCloseViewMessage);
+          features::kGaiaCloseViewMessage);
     } else {
       scoped_feature_list_.InitAndDisableFeature(
-          ash::features::kGaiaCloseViewMessage);
+          features::kGaiaCloseViewMessage);
     }
   }
 
@@ -726,11 +725,11 @@ class ReauthWebviewLoginTest : public WebviewLoginTest {
 
 IN_PROC_BROWSER_TEST_F(ReauthWebviewLoginTest, EmailPrefill) {
   EXPECT_TRUE(
-      ash::LoginScreenTestApi::IsForcedOnlineSignin(reauth_user_.account_id));
+      LoginScreenTestApi::IsForcedOnlineSignin(reauth_user_.account_id));
   // Focus triggers online signin.
-  EXPECT_TRUE(ash::LoginScreenTestApi::FocusUser(reauth_user_.account_id));
+  EXPECT_TRUE(LoginScreenTestApi::FocusUser(reauth_user_.account_id));
   WaitForGaiaPageLoad();
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
   EXPECT_EQ(fake_gaia_.fake_gaia()->prefilled_email(),
             reauth_user_.account_id.GetUserEmail());
 }
@@ -758,11 +757,11 @@ class ReauthEndpointWebviewLoginTest : public WebviewLoginTest {
 
 IN_PROC_BROWSER_TEST_F(ReauthEndpointWebviewLoginTest, SupervisedUser) {
   EXPECT_TRUE(
-      ash::LoginScreenTestApi::IsForcedOnlineSignin(reauth_user_.account_id));
+      LoginScreenTestApi::IsForcedOnlineSignin(reauth_user_.account_id));
   // Focus triggers online signin.
-  EXPECT_TRUE(ash::LoginScreenTestApi::FocusUser(reauth_user_.account_id));
+  EXPECT_TRUE(LoginScreenTestApi::FocusUser(reauth_user_.account_id));
   WaitForGaiaPageLoad();
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
   EXPECT_EQ(fake_gaia_.fake_gaia()->prefilled_email(),
             reauth_user_.account_id.GetUserEmail());
   EXPECT_EQ(fake_gaia_.fake_gaia()->is_supervised(), "1");
@@ -781,11 +780,11 @@ class ReauthEndpointWebviewLoginOwnerTest
 
 IN_PROC_BROWSER_TEST_F(ReauthEndpointWebviewLoginOwnerTest, SupervisedUser) {
   EXPECT_TRUE(
-      ash::LoginScreenTestApi::IsForcedOnlineSignin(reauth_user_.account_id));
+      LoginScreenTestApi::IsForcedOnlineSignin(reauth_user_.account_id));
   // Focus triggers online signin.
-  EXPECT_TRUE(ash::LoginScreenTestApi::FocusUser(reauth_user_.account_id));
+  EXPECT_TRUE(LoginScreenTestApi::FocusUser(reauth_user_.account_id));
   WaitForGaiaPageLoad();
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
   EXPECT_EQ(fake_gaia_.fake_gaia()->prefilled_email(),
             reauth_user_.account_id.GetUserEmail());
   EXPECT_EQ(fake_gaia_.fake_gaia()->is_supervised(), "1");
@@ -1852,4 +1851,4 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Combine(testing::Bool(), testing::Bool()),
                          &WebviewCloseViewLoginTest::GetName);
 
-}  // namespace chromeos
+}  // namespace ash
