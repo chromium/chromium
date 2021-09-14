@@ -159,8 +159,6 @@ base::FilePath BaseTestServer::SSLOptions::GetCertificateFile() const {
     case CERT_KEY_USAGE_RSA_DIGITAL_SIGNATURE:
       return base::FilePath(
           FILE_PATH_LITERAL("key_usage_rsa_digitalsignature.pem"));
-    case CERT_AUTO:
-      return base::FilePath();
     default:
       NOTREACHED();
   }

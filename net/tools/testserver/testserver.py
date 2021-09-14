@@ -19,7 +19,6 @@ import BaseHTTPServer
 import cgi
 import hashlib
 import logging
-import minica
 import os
 import json
 import random
@@ -62,13 +61,6 @@ SERVER_PROXY = 3
 
 # Default request queue size for WebSocketServer.
 _DEFAULT_REQUEST_QUEUE_SIZE = 128
-
-OCSP_STATES_NO_SINGLE_RESPONSE = {
-  minica.OCSP_STATE_INVALID_RESPONSE,
-  minica.OCSP_STATE_UNAUTHORIZED,
-  minica.OCSP_STATE_TRY_LATER,
-  minica.OCSP_STATE_INVALID_RESPONSE_DATA,
-}
 
 class WebSocketOptions:
   """Holds options for WebSocketServer."""
@@ -123,21 +115,6 @@ class ThreadingHTTPServer(SocketServer.ThreadingMixIn,
   should only be used with handlers that are known to be threadsafe."""
 
   pass
-
-class OCSPServer(testserver_base.ClientRestrictingServerMixIn,
-                 testserver_base.BrokenPipeHandlerMixIn,
-                 BaseHTTPServer.HTTPServer):
-  """This is a specialization of HTTPServer that serves an
-  OCSP response"""
-
-  def serve_forever_on_thread(self):
-    self.thread = threading.Thread(target = self.serve_forever,
-                                   name = "OCSPServerThread")
-    self.thread.start()
-
-  def stop_serving(self):
-    self.shutdown()
-    self.thread.join()
 
 
 class HTTPSServer(tlslite.api.TLSSocketServerMixIn,
@@ -1526,43 +1503,6 @@ class TestPageHandler(testserver_base.BasePageHandler):
     self.wfile.write('\r\n')
 
 
-class OCSPHandler(testserver_base.BasePageHandler):
-  def __init__(self, request, client_address, socket_server):
-    handlers = [self.OCSPResponse, self.CaIssuersResponse]
-    self.ocsp_response = socket_server.ocsp_response
-    self.ocsp_response_intermediate = socket_server.ocsp_response_intermediate
-    self.ca_issuers_response = socket_server.ca_issuers_response
-    testserver_base.BasePageHandler.__init__(self, request, client_address,
-                                             socket_server, [], handlers, [],
-                                             handlers, [])
-
-  def OCSPResponse(self):
-    if self._ShouldHandleRequest("/ocsp"):
-      response = self.ocsp_response
-    elif self._ShouldHandleRequest("/ocsp_intermediate"):
-      response = self.ocsp_response_intermediate
-    else:
-      return False
-    print 'handling ocsp request'
-    self.send_response(200)
-    self.send_header('Content-Type', 'application/ocsp-response')
-    self.send_header('Content-Length', str(len(response)))
-    self.end_headers()
-
-    self.wfile.write(response)
-
-  def CaIssuersResponse(self):
-    if not self._ShouldHandleRequest("/ca_issuers"):
-      return False
-    print 'handling ca_issuers request'
-    self.send_response(200)
-    self.send_header('Content-Type', 'application/pkix-cert')
-    self.send_header('Content-Length', str(len(self.ca_issuers_response)))
-    self.end_headers()
-
-    self.wfile.write(self.ca_issuers_response)
-
-
 class ProxyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
   """A request handler that behaves as a proxy server. Only CONNECT, GET and
   HEAD methods are supported.
@@ -1699,7 +1639,6 @@ class ServerRunner(testserver_base.TestServerRunner):
 
   def __init__(self):
     super(ServerRunner, self).__init__()
-    self.__ocsp_server = None
 
   def __make_data_dir(self):
     if self.options.data_dir:
@@ -1712,72 +1651,6 @@ class ServerRunner(testserver_base.TestServerRunner):
       my_data_dir = os.path.join(BASE_DIR, "..", "..", "data")
 
     return my_data_dir
-
-  def __parse_ocsp_options(self, states_option, date_option, produced_option):
-    if states_option is None:
-      return None, None, None
-
-    ocsp_states = list()
-    for ocsp_state_arg in states_option.split(':'):
-      if ocsp_state_arg == 'ok':
-        ocsp_state = minica.OCSP_STATE_GOOD
-      elif ocsp_state_arg == 'revoked':
-        ocsp_state = minica.OCSP_STATE_REVOKED
-      elif ocsp_state_arg == 'invalid':
-        ocsp_state = minica.OCSP_STATE_INVALID_RESPONSE
-      elif ocsp_state_arg == 'unauthorized':
-        ocsp_state = minica.OCSP_STATE_UNAUTHORIZED
-      elif ocsp_state_arg == 'unknown':
-        ocsp_state = minica.OCSP_STATE_UNKNOWN
-      elif ocsp_state_arg == 'later':
-        ocsp_state = minica.OCSP_STATE_TRY_LATER
-      elif ocsp_state_arg == 'invalid_data':
-        ocsp_state = minica.OCSP_STATE_INVALID_RESPONSE_DATA
-      elif ocsp_state_arg == "mismatched_serial":
-        ocsp_state = minica.OCSP_STATE_MISMATCHED_SERIAL
-      else:
-        raise testserver_base.OptionError('unknown OCSP status: ' +
-            ocsp_state_arg)
-      ocsp_states.append(ocsp_state)
-
-    if len(ocsp_states) > 1:
-      if set(ocsp_states) & OCSP_STATES_NO_SINGLE_RESPONSE:
-        raise testserver_base.OptionError('Multiple OCSP responses '
-            'incompatible with states ' + str(ocsp_states))
-
-    ocsp_dates = list()
-    for ocsp_date_arg in date_option.split(':'):
-      if ocsp_date_arg == 'valid':
-        ocsp_date = minica.OCSP_DATE_VALID
-      elif ocsp_date_arg == 'old':
-        ocsp_date = minica.OCSP_DATE_OLD
-      elif ocsp_date_arg == 'early':
-        ocsp_date = minica.OCSP_DATE_EARLY
-      elif ocsp_date_arg == 'long':
-        ocsp_date = minica.OCSP_DATE_LONG
-      elif ocsp_date_arg == 'longer':
-        ocsp_date = minica.OCSP_DATE_LONGER
-      else:
-        raise testserver_base.OptionError('unknown OCSP date: ' +
-            ocsp_date_arg)
-      ocsp_dates.append(ocsp_date)
-
-    if len(ocsp_states) != len(ocsp_dates):
-      raise testserver_base.OptionError('mismatched ocsp and ocsp-date '
-          'count')
-
-    ocsp_produced = None
-    if produced_option == 'valid':
-      ocsp_produced = minica.OCSP_PRODUCED_VALID
-    elif produced_option == 'before':
-      ocsp_produced = minica.OCSP_PRODUCED_BEFORE_CERT
-    elif produced_option == 'after':
-      ocsp_produced = minica.OCSP_PRODUCED_AFTER_CERT
-    else:
-      raise testserver_base.OptionError('unknown OCSP produced: ' +
-          produced_option)
-
-    return ocsp_states, ocsp_dates, ocsp_produced
 
   def create_server(self, server_data):
     port = self.options.port
@@ -1810,83 +1683,13 @@ class ServerRunner(testserver_base.TestServerRunner):
 
     if self.options.server_type == SERVER_HTTP:
       if self.options.https:
-        pem_cert_and_key = None
-        ocsp_der = None
-        if self.options.cert_and_key_file:
-          if not os.path.isfile(self.options.cert_and_key_file):
-            raise testserver_base.OptionError(
-                'specified server cert file not found: ' +
-                self.options.cert_and_key_file + ' exiting...')
-          pem_cert_and_key = file(self.options.cert_and_key_file, 'r').read()
-        elif self.options.aia_intermediate:
-          self.__ocsp_server = OCSPServer((host, 0), OCSPHandler)
-          print ('AIA server started on %s:%d...' %
-              (host, self.__ocsp_server.server_port))
-
-          ocsp_server_port = self.__ocsp_server.server_port
-          if self.options.ocsp_proxy_port_number != 0:
-            ocsp_server_port = self.options.ocsp_proxy_port_number
-            server_data['ocsp_port'] = self.__ocsp_server.server_port
-
-          (pem_cert_and_key, intermediate_cert_der) = \
-              minica.GenerateCertKeyAndIntermediate(
-                  subject = self.options.cert_common_name,
-                  ip_sans=ip_sans, dns_sans=dns_sans,
-                  ca_issuers_url =
-                      ("http://%s:%d/ca_issuers" % (host, ocsp_server_port)),
-                  serial = self.options.cert_serial)
-
-          self.__ocsp_server.ocsp_response = None
-          self.__ocsp_server.ocsp_response_intermediate = None
-          self.__ocsp_server.ca_issuers_response = intermediate_cert_der
-        else:
-          # generate a new certificate and run an OCSP server for it.
-          self.__ocsp_server = OCSPServer((host, 0), OCSPHandler)
-          print ('OCSP server started on %s:%d...' %
-              (host, self.__ocsp_server.server_port))
-
-          ocsp_states, ocsp_dates, ocsp_produced =  self.__parse_ocsp_options(
-                  self.options.ocsp,
-                  self.options.ocsp_date,
-                  self.options.ocsp_produced)
-
-          (ocsp_intermediate_states, ocsp_intermediate_dates,
-           ocsp_intermediate_produced) =  self.__parse_ocsp_options(
-                  self.options.ocsp_intermediate,
-                  self.options.ocsp_intermediate_date,
-                  self.options.ocsp_intermediate_produced)
-
-          ocsp_server_port = self.__ocsp_server.server_port
-          if self.options.ocsp_proxy_port_number != 0:
-            ocsp_server_port = self.options.ocsp_proxy_port_number
-            server_data['ocsp_port'] = self.__ocsp_server.server_port
-
-          pem_cert_and_key, (ocsp_der,
-           ocsp_intermediate_der) = minica.GenerateCertKeyAndOCSP(
-              subject = self.options.cert_common_name,
-              ip_sans = ip_sans,
-              dns_sans = dns_sans,
-              ocsp_url = ("http://%s:%d/ocsp" % (host, ocsp_server_port)),
-              ocsp_states = ocsp_states,
-              ocsp_dates = ocsp_dates,
-              ocsp_produced = ocsp_produced,
-              ocsp_intermediate_url = (
-                  "http://%s:%d/ocsp_intermediate" % (host, ocsp_server_port)
-                  if ocsp_intermediate_states else None),
-              ocsp_intermediate_states = ocsp_intermediate_states,
-              ocsp_intermediate_dates = ocsp_intermediate_dates,
-              ocsp_intermediate_produced = ocsp_intermediate_produced,
-              serial = self.options.cert_serial)
-
-          if self.options.ocsp_server_unavailable:
-            # SEQUENCE containing ENUMERATED with value 3 (tryLater).
-            self.__ocsp_server.ocsp_response_intermediate = \
-                self.__ocsp_server.ocsp_response = '30030a0103'.decode('hex')
-          else:
-            self.__ocsp_server.ocsp_response = ocsp_der
-            self.__ocsp_server.ocsp_response_intermediate = \
-                ocsp_intermediate_der
-          self.__ocsp_server.ca_issuers_response = None
+        if not self.options.cert_and_key_file:
+          raise testserver_base.OptionError('server cert file not specified')
+        if not os.path.isfile(self.options.cert_and_key_file):
+          raise testserver_base.OptionError(
+              'specified server cert file not found: ' +
+              self.options.cert_and_key_file + ' exiting...')
+        pem_cert_and_key = file(self.options.cert_and_key_file, 'r').read()
 
         for ca_cert in self.options.ssl_client_ca:
           if not os.path.isfile(ca_cert):
@@ -1895,11 +1698,6 @@ class ServerRunner(testserver_base.TestServerRunner):
                 ' exiting...')
 
         stapled_ocsp_response = None
-        if self.options.staple_ocsp_response:
-          # TODO(mattm): Staple the intermediate response too (if applicable,
-          # and if chrome ever supports it).
-          stapled_ocsp_response = ocsp_der
-
         server = HTTPSServer((host, port), TestPageHandler, pem_cert_and_key,
                              self.options.ssl_client_auth,
                              self.options.ssl_client_ca,
@@ -1984,15 +1782,6 @@ class ServerRunner(testserver_base.TestServerRunner):
 
     return server
 
-  def run_server(self):
-    if self.__ocsp_server:
-      self.__ocsp_server.serve_forever_on_thread()
-
-    testserver_base.TestServerRunner.run_server(self)
-
-    if self.__ocsp_server:
-      self.__ocsp_server.stop_serving()
-
   def add_options(self):
     testserver_base.TestServerRunner.add_options(self)
     self.option_parser.add_option('--proxy', action='store_const',
@@ -2016,35 +1805,6 @@ class ServerRunner(testserver_base.TestServerRunner):
                                   'path to the file containing the certificate '
                                   'and private key for the server in PEM '
                                   'format')
-    self.option_parser.add_option('--aia-intermediate', action='store_true',
-                                  dest='aia_intermediate',
-                                  help='generate a certificate chain that '
-                                  'requires AIA cert fetching, and run a '
-                                  'server to respond to the AIA request.')
-    self.option_parser.add_option('--ocsp', dest='ocsp', default='ok',
-                                  help='The type of OCSP response generated '
-                                  'for the automatically generated '
-                                  'certificate. One of [ok,revoked,invalid]')
-    self.option_parser.add_option('--ocsp-date', dest='ocsp_date',
-                                  default='valid', help='The validity of the '
-                                  'range between thisUpdate and nextUpdate')
-    self.option_parser.add_option('--ocsp-produced', dest='ocsp_produced',
-                                  default='valid', help='producedAt relative '
-                                  'to certificate expiry')
-    self.option_parser.add_option('--ocsp-intermediate',
-                                  dest='ocsp_intermediate', default=None,
-                                  help='If specified, the automatically '
-                                  'generated chain will include an '
-                                  'intermediate certificate with this type '
-                                  'of OCSP response (see docs for --ocsp)')
-    self.option_parser.add_option('--ocsp-intermediate-date',
-                                  dest='ocsp_intermediate_date',
-                                  default='valid', help='The validity of the '
-                                  'range between thisUpdate and nextUpdate')
-    self.option_parser.add_option('--ocsp-intermediate-produced',
-                                  dest='ocsp_intermediate_produced',
-                                  default='valid', help='producedAt relative '
-                                  'to certificate expiry')
     self.option_parser.add_option('--cert-serial', dest='cert_serial',
                                   default=0, type=int,
                                   help='If non-zero then the generated '
@@ -2082,12 +1842,6 @@ class ServerRunner(testserver_base.TestServerRunner):
                                   'will be enabled. This causes the server to '
                                   'reject fallback connections from compatible '
                                   'clients (e.g. Chrome).')
-    self.option_parser.add_option('--staple-ocsp-response',
-                                  dest='staple_ocsp_response',
-                                  default=False, action='store_true',
-                                  help='If set, server will staple the OCSP '
-                                  'response whenever OCSP is on and the client '
-                                  'supports OCSP stapling.')
     self.option_parser.add_option('--https-record-resume',
                                   dest='record_resume', const=True,
                                   default=False, action='store_const',
@@ -2146,16 +1900,6 @@ class ServerRunner(testserver_base.TestServerRunner):
     self.option_parser.add_option('--ws-basic-auth', action='store_true',
                                   dest='ws_basic_auth',
                                   help='Enable basic-auth for WebSocket')
-    self.option_parser.add_option('--ocsp-server-unavailable',
-                                  dest='ocsp_server_unavailable',
-                                  default=False, action='store_true',
-                                  help='If set, the OCSP server will return '
-                                  'a tryLater status rather than the actual '
-                                  'OCSP response.')
-    self.option_parser.add_option('--ocsp-proxy-port-number', default=0,
-                                  type='int', dest='ocsp_proxy_port_number',
-                                  help='Port allocated for OCSP proxy '
-                                  'when connection is proxied.')
     self.option_parser.add_option('--alert-after-handshake',
                                   dest='alert_after_handshake',
                                   default=False, action='store_true',
