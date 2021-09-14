@@ -13,29 +13,32 @@
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/search/search_result.h"
 #include "ash/bubble/bubble_utils.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "base/strings/string_util.h"
 #include "extensions/common/constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/flex_layout.h"
 
 namespace ash {
 namespace {
 constexpr int kPreferredWidth = 242;
 constexpr int kPreferredHeight = 52;
 
-constexpr int kLabelLeftPadding = 8;
-constexpr int kLabelRightPadding = 16;
-constexpr int kLabelContainerHeight = 38;
-
 constexpr int kIconSize = 36;
-constexpr int kIconVericalPadding = 8;
+
+constexpr int kBetweenChildPadding = 16;
+constexpr gfx::Insets kInteriorMargin(7, 8, 7, 16);
+
+constexpr int kViewCornerRadius = 8;
 
 }  // namespace
 
@@ -44,24 +47,46 @@ ContinueTaskView::ContinueTaskView(AppListViewDelegate* view_delegate)
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetCallback(base::BindRepeating(&ContinueTaskView::OnButtonPressed,
                                   base::Unretained(this)));
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal));
+  SetPreferredSize(gfx::Size(kPreferredWidth, kPreferredHeight));
+  auto ink_drop_highlight_path =
+      std::make_unique<views::RoundRectHighlightPathGenerator>(
+          gfx::Insets(), kViewCornerRadius);
+  ink_drop_highlight_path->set_use_contents_bounds(true);
+  ink_drop_highlight_path->set_use_mirrored_rect(true);
+  views::HighlightPathGenerator::Install(this,
+                                         std::move(ink_drop_highlight_path));
+  SetInstallFocusRingOnFocus(true);
+  views::FocusRing::Get(this)->SetColor(
+      ColorProvider::Get()->GetControlsLayerColor(
+          ColorProvider::ControlsLayerType::kFocusRingColor));
+  SetFocusPainter(nullptr);
+
+  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
+  SetHasInkDropActionOnClick(true);
+
+  auto ripple_attributes = ColorProvider::Get()->GetRippleAttributes();
+  views::InkDrop::Get(this)->SetBaseColor(ripple_attributes.base_color);
+  views::InkDrop::Get(this)->SetVisibleOpacity(
+      ripple_attributes.inkdrop_opacity);
+
+  views::BoxLayout* layout_manager =
+      SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal, kInteriorMargin,
+          kBetweenChildPadding));
+  layout_manager->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kListItem);
 
   icon_ = AddChildView(std::make_unique<views::ImageView>());
   icon_->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
   icon_->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
-  icon_->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets((kPreferredHeight - kIconSize) / 2, kIconVericalPadding)));
   icon_->SetImageSize(GetIconSize());
   icon_->SetPreferredSize(GetIconSize());
 
   auto* label_container = AddChildView(std::make_unique<views::View>());
   label_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
-  label_container->SetBorder(views::CreateEmptyBorder(gfx::Insets(
-      (kPreferredHeight - kLabelContainerHeight) / 2, kLabelLeftPadding,
-      (kPreferredHeight - kLabelContainerHeight) / 2, kLabelRightPadding)));
 
   title_ = label_container->AddChildView(
       std::make_unique<views::Label>(std::u16string()));
@@ -71,8 +96,6 @@ ContinueTaskView::ContinueTaskView(AppListViewDelegate* view_delegate)
       std::make_unique<views::Label>(std::u16string()));
   subtitle_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   UpdateResult();
-
-  SetPreferredSize(gfx::Size(kPreferredWidth, kPreferredHeight));
 }
 ContinueTaskView::~ContinueTaskView() {}
 
