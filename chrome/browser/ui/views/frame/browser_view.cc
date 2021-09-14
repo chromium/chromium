@@ -685,9 +685,9 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if ((base::FeatureList::IsEnabled(lens::features::kLensStandalone) &&
-       lens::features::kEnableSidePanelForLensRegionSearch.Get()) ||
+       lens::features::kEnableSidePanelForLensImageSearch.Get()) ||
       (base::FeatureList::IsEnabled(lens::features::kLensRegionSearch) &&
-       lens::features::kEnableSidePanelForLensImageSearch.Get())) {
+       lens::features::kEnableSidePanelForLensRegionSearch.Get())) {
     lens_side_panel_ = AddChildView(std::make_unique<SidePanel>());
     lens_side_panel_controller_ =
         std::make_unique<lens::LensSidePanelController>(lens_side_panel_, this);
