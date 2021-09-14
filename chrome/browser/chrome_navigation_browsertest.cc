@@ -118,16 +118,6 @@ class ChromeNavigationBrowserTest : public InProcessBrowserTest {
   DISALLOW_COPY_AND_ASSIGN(ChromeNavigationBrowserTest);
 };
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-// Fails on chromium.memory/Linux Chromium OS ASan LSan:
-// https://crbug.com/897879
-#define MAYBE_TransientEntryPreservedOnMultipleNavigationsDuringInterstitial \
-  DISABLED_TransientEntryPreservedOnMultipleNavigationsDuringInterstitial
-#else
-#define MAYBE_TransientEntryPreservedOnMultipleNavigationsDuringInterstitial \
-  TransientEntryPreservedOnMultipleNavigationsDuringInterstitial
-#endif
-
 // Tests that viewing frame source on a local file:// page with an iframe
 // with a remote URL shows the correct tab title.
 IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest, TestViewFrameSource) {
