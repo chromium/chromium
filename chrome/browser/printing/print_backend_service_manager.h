@@ -61,6 +61,14 @@ class PrintBackendServiceManager {
       const std::string& printer_name,
       base::flat_map<std::string, base::Value> job_settings,
       mojom::PrintBackendService::UpdatePrintSettingsCallback callback);
+  void StartPrinting(
+      const std::string& printer_name,
+      int document_cookie,
+      const std::u16string& document_name,
+      mojom::PrintTargetType target_type,
+      int page_count,
+      const PrintSettings& settings,
+      mojom::PrintBackendService::StartPrintingCallback callback);
 
   // Query if printer driver has been found to require elevated privilege in
   // order to have print queries/commands succeed.
@@ -123,6 +131,8 @@ class PrintBackendServiceManager {
       RemoteSavedStructCallbacks<mojom::PrinterSemanticCapsAndDefaultsResult>;
   using RemoteSavedUpdatePrintSettingsCallbacks =
       RemoteSavedStructCallbacks<mojom::PrintSettingsResult>;
+  using RemoteSavedStartPrintingCallbacks =
+      RemoteSavedCallbacks<mojom::ResultCode>;
 
   PrintBackendServiceManager();
   ~PrintBackendServiceManager();
@@ -157,6 +167,8 @@ class PrintBackendServiceManager {
   GetRemoteSavedGetPrinterSemanticCapsAndDefaultsCallbacks(bool sandboxed);
   RemoteSavedUpdatePrintSettingsCallbacks&
   GetRemoteSavedUpdatePrintSettingsCallbacks(bool sandboxed);
+  RemoteSavedStartPrintingCallbacks& GetRemoteSavedStartPrintingCallbacks(
+      bool sandboxed);
 
   // Helper function to save outstanding callbacks.
   template <class T, class X>
@@ -196,14 +208,22 @@ class PrintBackendServiceManager {
                                const std::string& remote_id,
                                const base::UnguessableToken& saved_callback_id,
                                mojom::PrintSettingsResultPtr printer_caps);
+  void StartPrintingDone(bool sandboxed,
+                         const std::string& remote_id,
+                         const base::UnguessableToken& saved_callback_id,
+                         mojom::ResultCode result);
 
-  // Helper function to run outstanding callbacks when a remote has become
+  // Helper functions to run outstanding callbacks when a remote has become
   // disconnected.
   template <class T>
   void RunSavedCallbacksStructResult(
       RemoteSavedStructCallbacks<T>& saved_callbacks,
       const std::string& remote_id,
       mojo::StructPtr<T> result_to_clone);
+  template <class T>
+  void RunSavedCallbacksResult(RemoteSavedCallbacks<T>& saved_callbacks,
+                               const std::string& remote_id,
+                               T result);
 
   using RemotesMap =
       base::flat_map<std::string,
@@ -240,6 +260,8 @@ class PrintBackendServiceManager {
       sandboxed_saved_update_print_settings_callbacks_;
   RemoteSavedUpdatePrintSettingsCallbacks
       unsandboxed_saved_update_print_settings_callbacks_;
+  RemoteSavedStartPrintingCallbacks sandboxed_saved_start_printing_callbacks_;
+  RemoteSavedStartPrintingCallbacks unsandboxed_saved_start_printing_callbacks_;
 
   // Track if next service started should be sandboxed.
   bool is_sandboxed_service_ = true;

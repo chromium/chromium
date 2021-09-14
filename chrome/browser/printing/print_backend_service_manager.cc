@@ -377,6 +377,47 @@ void PrintBackendServiceManager::UpdatePrintSettings(
                      saved_callback_id));
 }
 
+void PrintBackendServiceManager::StartPrinting(
+    const std::string& printer_name,
+    int document_cookie,
+    const std::u16string& document_name,
+    mojom::PrintTargetType target_type,
+    int page_count,
+    const PrintSettings& settings,
+    mojom::PrintBackendService::StartPrintingCallback callback) {
+  // Need to be able to run the callback either after a successful return from
+  // the service or after the remote was disconnected, so save it here for
+  // either eventuality.
+  // Get a callback ID to represent this command.
+  auto saved_callback_id = base::UnguessableToken::Create();
+
+  // Note that `GetService()` will set state internally if this is sandboxed.
+  std::string remote_id = GetRemoteIdForPrinterName(printer_name);
+  auto& service = GetService(printer_name);
+
+  SaveCallback(GetRemoteSavedStartPrintingCallbacks(is_sandboxed_service_),
+               remote_id, saved_callback_id, std::move(callback));
+
+  if (!sandboxed_service_remote_for_test_) {
+    // TODO(1227561)  Remove local call for driver info, don't want any
+    // residual accesses left into the printer drivers from the browser
+    // process.
+    base::ScopedAllowBlocking allow_blocking;
+    scoped_refptr<PrintBackend> print_backend =
+        PrintBackend::CreateInstance(g_browser_process->GetApplicationLocale());
+    crash_keys_ = std::make_unique<crash_keys::ScopedPrinterInfo>(
+        print_backend->GetPrinterDriverInfo(printer_name));
+  }
+
+  DVLOG(1) << "Sending StartPrinting on remote `" << remote_id
+           << "`, saved callback ID of " << saved_callback_id;
+  service->StartPrinting(
+      document_cookie, document_name, target_type, page_count, settings,
+      base::BindOnce(&PrintBackendServiceManager::StartPrintingDone,
+                     base::Unretained(this), is_sandboxed_service_, remote_id,
+                     saved_callback_id));
+}
+
 bool PrintBackendServiceManager::PrinterDriverRequiresElevatedPrivilege(
     const std::string& printer_name) const {
   return drivers_requiring_elevated_privilege_.contains(printer_name);
@@ -506,6 +547,8 @@ void PrintBackendServiceManager::OnRemoteDisconnected(
   RunSavedCallbacksStructResult(
       GetRemoteSavedUpdatePrintSettingsCallbacks(sandboxed), remote_id,
       mojom::PrintSettingsResult::NewResultCode(mojom::ResultCode::kFailed));
+  RunSavedCallbacksResult(GetRemoteSavedStartPrintingCallbacks(sandboxed),
+                          remote_id, mojom::ResultCode::kFailed);
 }
 
 PrintBackendServiceManager::RemoteSavedEnumeratePrintersCallbacks&
@@ -544,6 +587,13 @@ PrintBackendServiceManager::GetRemoteSavedUpdatePrintSettingsCallbacks(
     bool sandboxed) {
   return sandboxed ? sandboxed_saved_update_print_settings_callbacks_
                    : unsandboxed_saved_update_print_settings_callbacks_;
+}
+
+PrintBackendServiceManager::RemoteSavedStartPrintingCallbacks&
+PrintBackendServiceManager::GetRemoteSavedStartPrintingCallbacks(
+    bool sandboxed) {
+  return sandboxed ? sandboxed_saved_start_printing_callbacks_
+                   : unsandboxed_saved_start_printing_callbacks_;
 }
 
 template <class T, class X>
@@ -637,6 +687,18 @@ void PrintBackendServiceManager::UpdatePrintSettingsDone(
                       remote_id, saved_callback_id, std::move(settings));
 }
 
+void PrintBackendServiceManager::StartPrintingDone(
+    bool sandboxed,
+    const std::string& remote_id,
+    const base::UnguessableToken& saved_callback_id,
+    mojom::ResultCode result) {
+  DVLOG(1) << "StartPrinting completed for remote `" << remote_id
+           << "` saved callback ID " << saved_callback_id;
+
+  ServiceCallbackDone(GetRemoteSavedStartPrintingCallbacks(sandboxed),
+                      remote_id, saved_callback_id, result);
+}
+
 template <class T>
 void PrintBackendServiceManager::RunSavedCallbacksStructResult(
     RemoteSavedStructCallbacks<T>& saved_callbacks,
@@ -657,6 +719,31 @@ void PrintBackendServiceManager::RunSavedCallbacksStructResult(
     // just run the callbacks.
     base::OnceCallback<void(mojo::StructPtr<T>)>& callback = iter.second;
     std::move(callback).Run(result_to_clone.Clone());
+  }
+
+  // Now that we're done iterating we can safely delete all of the callbacks.
+  callbacks_map.clear();
+}
+
+template <class T>
+void PrintBackendServiceManager::RunSavedCallbacksResult(
+    RemoteSavedCallbacks<T>& saved_callbacks,
+    const std::string& remote_id,
+    T result) {
+  auto found_callbacks_map = saved_callbacks.find(remote_id);
+  if (found_callbacks_map == saved_callbacks.end())
+    return;  // No callbacks to run.
+
+  SavedCallbacks<T>& callbacks_map = found_callbacks_map->second;
+  for (auto& iter : callbacks_map) {
+    const base::UnguessableToken& saved_callback_id = iter.first;
+    DVLOG(1) << "Propagating print backend callback, saved callback ID "
+             << saved_callback_id << " for remote `" << remote_id << "`";
+
+    // Don't remove entries from the map while we are iterating through it,
+    // just run the callbacks.
+    base::OnceCallback<void(T)>& callback = iter.second;
+    std::move(callback).Run(result);
   }
 
   // Now that we're done iterating we can safely delete all of the callbacks.
