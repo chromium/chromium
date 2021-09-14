@@ -67,6 +67,7 @@
 #import "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/web_state.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "ui/base/device_form_factor.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -221,12 +222,7 @@
 
   self.started = YES;
 
-    self.dragDropHandler = [[URLDragDropHandler alloc] init];
-    self.dragDropHandler.origin = WindowActivityLocationBarSteadyViewOrigin;
-    self.dragDropHandler.dragDataSource = self;
-    [self.viewController.view
-        addInteraction:[[UIDragInteraction alloc]
-                           initWithDelegate:self.dragDropHandler]];
+  [self setUpDragAndDrop];
 }
 
 - (void)stop {
@@ -502,6 +498,27 @@
         ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
     UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
   }
+}
+
+- (void)setUpDragAndDrop {
+  // iOS 15 adds Drag and Drop support to iPhones. This causes the long-press
+  // recognizer for showing the copy/paste menu to not appear until the user
+  // lifts their finger. The long-term solution is to move to the new
+  // UIContextMenu API, but for now, disable Drag from the omnibox on iOS 15
+  // iPhones.
+  // TODO (crbug.com/1247668): Reenable this after moving to new API and move
+  // this code back to -start.
+  if (@available(iOS 15, *)) {
+    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE) {
+      return;
+    }
+  }
+  self.dragDropHandler = [[URLDragDropHandler alloc] init];
+  self.dragDropHandler.origin = WindowActivityLocationBarSteadyViewOrigin;
+  self.dragDropHandler.dragDataSource = self;
+  [self.viewController.view
+      addInteraction:[[UIDragInteraction alloc]
+                         initWithDelegate:self.dragDropHandler]];
 }
 
 @end
