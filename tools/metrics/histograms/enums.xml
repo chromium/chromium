@@ -80083,6 +80083,27 @@ would be helpful to identify which type is being sent.
   <int value="8" label="First time user"/>
 </enum>
 
+<enum name="SurveyPresentationStatusCode">
+  <summary>
+    Results when survey has been download and requested to be shown. Used by
+    Android.Survey.ShowSurveyStatus.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Account changed or signed out"/>
+  <int value="2" label="Survey container was invalid"/>
+  <int value="3" label="Survey data was unavailable"/>
+  <int value="4" label="Client activity was destroyed"/>
+  <int value="5" label="Client activity was finishing"/>
+  <int value="6" label="Client activity was invalid"/>
+  <int value="7" label="Survey completion style was invalid"/>
+  <int value="8" label="Survey prompt style was invalid"/>
+  <int value="9" label="Survey data type was invalid"/>
+  <int value="10" label="Survey payload was invalid"/>
+  <int value="11" label="Survey was already running"/>
+  <int value="12" label="Survey had expired"/>
+  <int value="13" label="Unknown reason for failure"/>
+</enum>
+
 <enum name="SuspendAttempt">
   <int value="0" label="Attempted"/>
 </enum>
