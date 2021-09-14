@@ -189,6 +189,8 @@ SearchTabHelper::~SearchTabHelper() {
     instant_service_->RemoveObserver(this);
   if (auto* helper = OmniboxTabHelper::FromWebContents(web_contents_))
     helper->RemoveObserver(this);
+  if (select_file_dialog_)
+    select_file_dialog_->ListenerDestroyed();
 }
 
 void SearchTabHelper::OnTabActivated() {
