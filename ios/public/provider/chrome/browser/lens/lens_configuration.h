@@ -7,8 +7,16 @@
 
 #import <Foundation/Foundation.h>
 
+@class ChromeIdentity;
+
 // Configuration object used by the LensProvider.
 @interface LensConfiguration : NSObject
+
+// The current identity associated with the browser.
+@property(nonatomic, assign) ChromeIdentity* identity;
+
+// Whether or not the browser is currently in incognito mode.
+@property(nonatomic, assign) BOOL isIncognito;
 
 @end
 

@@ -5,14 +5,40 @@
 #ifndef IOS_PUBLIC_PROVIDER_CHROME_BROWSER_LENS_LENS_API_H_
 #define IOS_PUBLIC_PROVIDER_CHROME_BROWSER_LENS_LENS_API_H_
 
+#import <UIKit/UIKit.h>
+
 @class LensConfiguration;
 @class UIViewController;
+
+// A delegate that can receive Lens events forwarded by a ChromeLensController.
+@protocol ChromeLensControllerDelegate <NSObject>
+
+// Called when the Lens view controller's dimiss button has been tapped.
+- (void)lensControllerDidTapDismissButton;
+
+// Called when a URL in the Lens view controller has been selected.
+- (void)lensControllerDidSelectURL:(NSURL*)url;
+
+@end
+
+// A controller that can facilitate communication with the downstream Lens
+// controller.
+@protocol ChromeLensController <NSObject>
+
+// A delegate that can receive Lens events forwarded by the controller.
+@property(nonatomic, weak) id<ChromeLensControllerDelegate> delegate;
+
+// Returns a Lens post-capture view controller for the given query image.
+- (UIViewController*)postCaptureViewControllerForImage:(UIImage*)image;
+
+@end
 
 namespace ios {
 namespace provider {
 
-// Returns a Lens view controller.
-UIViewController* NewLensViewController(LensConfiguration* config);
+// Returns a controller for the given configuration that can facilitate
+// communication with the downstream Lens controller.
+id<ChromeLensController> NewChromeLensController(LensConfiguration* config);
 
 }  // namespace provider
 }  // namespace ios
