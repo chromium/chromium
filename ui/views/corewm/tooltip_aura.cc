@@ -20,6 +20,8 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
@@ -27,7 +29,6 @@
 #include "ui/gfx/render_text.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/gfx/text_utils.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/painter.h"
@@ -310,16 +311,13 @@ void TooltipAura::Update(aura::Window* window,
   widget_->SetTooltipView(std::move(new_tooltip_view));
   widget_->AddObserver(this);
 
-  ui::NativeTheme* native_theme = widget_->GetNativeTheme();
-  auto background_color =
-      native_theme->GetSystemColor(ui::NativeTheme::kColorId_TooltipBackground);
+  ui::ColorProvider* color_provider = widget_->GetColorProvider();
+  auto background_color = color_provider->GetColor(ui::kColorTooltipBackground);
   if (!CanUseTranslucentTooltipWidget()) {
     background_color = color_utils::GetResultingPaintColor(
-        background_color, native_theme->GetSystemColor(
-                              ui::NativeTheme::kColorId_WindowBackground));
+        background_color, color_provider->GetColor(ui::kColorWindowBackground));
   }
-  auto foreground_color =
-      native_theme->GetSystemColor(ui::NativeTheme::kColorId_TooltipText);
+  auto foreground_color = color_provider->GetColor(ui::kColorTooltipForeground);
   if (!CanUseTranslucentTooltipWidget())
     foreground_color =
         color_utils::GetResultingPaintColor(foreground_color, background_color);
