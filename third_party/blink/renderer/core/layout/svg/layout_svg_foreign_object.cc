@@ -196,19 +196,4 @@ PaintLayerType LayoutSVGForeignObject::LayerTypeRequired() const {
   return LayoutBlockFlow::LayerTypeRequired();
 }
 
-void LayoutSVGForeignObject::StyleDidChange(StyleDifference diff,
-                                            const ComputedStyle* old_style) {
-  NOT_DESTROYED();
-  LayoutSVGBlock::StyleDidChange(diff, old_style);
-
-  if (old_style && (SVGLayoutSupport::IsOverflowHidden(*old_style) !=
-                    SVGLayoutSupport::IsOverflowHidden(StyleRef()))) {
-    // See NeedsOverflowClip() in PaintPropertyTreeBuilder for the reason.
-    SetNeedsPaintPropertyUpdate();
-
-    if (Layer())
-      Layer()->SetNeedsCompositingInputsUpdate();
-  }
-}
-
 }  // namespace blink
