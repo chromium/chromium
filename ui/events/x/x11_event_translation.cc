@@ -104,13 +104,18 @@ std::unique_ptr<KeyEvent> CreateKeyEvent(EventType event_type,
   // in KeyEvent::ApplyLayout() which makes it possible for CrOS/Linux, for
   // example, to support host system keyboard layouts.
   std::unique_ptr<KeyEvent> event;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  event = std::make_unique<KeyEvent>(event_type, key_code, event_flags,
-                                     EventTimeFromXEvent(x11_event));
-#else
-  event = std::make_unique<KeyEvent>(
-      event_type, key_code, CodeFromXEvent(x11_event), event_flags,
-      GetDomKeyFromXEvent(x11_event), EventTimeFromXEvent(x11_event));
+#if defined(USE_OZONE)
+  if (features::IsUsingOzonePlatform()) {
+    event = std::make_unique<KeyEvent>(event_type, key_code, event_flags,
+                                       EventTimeFromXEvent(x11_event));
+  }
+#endif
+#if defined(USE_X11)
+  if (!event) {
+    event = std::make_unique<KeyEvent>(
+        event_type, key_code, CodeFromXEvent(x11_event), event_flags,
+        GetDomKeyFromXEvent(x11_event), EventTimeFromXEvent(x11_event));
+  }
 #endif
 
   DCHECK(event);
