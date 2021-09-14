@@ -69,11 +69,10 @@ void ChromeAppListModelUpdater::AddItem(
   std::unique_ptr<ash::AppListItemMetadata> item_data =
       app_item->CloneMetadata();
 
-  // If removing launcher space is enabled, ignore page break items because
-  // empty slots only exist on the last launcher page. Therefore syncing on page
-  // break items is unnecessary.
-  if (item_data->is_page_break &&
-      ash::features::IsLauncherRemoveEmptySpaceEnabled()) {
+  // If AppListBubble is enabled, ignore page break items because empty slots
+  // only exist on the last launcher page. Therefore syncing on page break items
+  // is unnecessary.
+  if (item_data->is_page_break && ash::features::IsAppListBubbleEnabled()) {
     return;
   }
 
@@ -529,8 +528,8 @@ void ChromeAppListModelUpdater::OnItemAdded(
   }
 
   // Do not propagate the addition of page break items from Ash side to remote
-  // side if removing launcher space is enabled. Because:
-  // (1) If a remote device enables removing launcher space as well, it will
+  // side if AppListBubble feature is enabled. Because:
+  // (1) If a remote device enables AppListBubble as well, it will
   // generate a page break item by its own when the current launcher page has no
   // space for extra icons. In other words, it does not need to sync on page
   // break items with other devices.
@@ -542,8 +541,7 @@ void ChromeAppListModelUpdater::OnItemAdded(
   // Therefore we should handle the page break item sync in a better way.
   // TODO(crbug.com/1234588): Ideally we should not send page breaks from/to the
   // app list controller if the feature to remove spaces is enabled.
-  if (chrome_item->is_page_break() &&
-      ash::features::IsLauncherRemoveEmptySpaceEnabled()) {
+  if (chrome_item->is_page_break() && ash::features::IsAppListBubbleEnabled()) {
     return;
   }
 

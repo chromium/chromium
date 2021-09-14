@@ -2474,7 +2474,7 @@ int AppsGridView::GetNumberOfItemsOnPage(int page) const {
   if (page < 0 || page >= GetTotalPages())
     return 0;
 
-  if (!folder_delegate_ && !features::IsLauncherRemoveEmptySpaceEnabled())
+  if (!folder_delegate_ && !features::IsAppListBubbleEnabled())
     return view_structure_.items_on_page(page);
 
   // We are guaranteed not on the last page, so the page must be full.

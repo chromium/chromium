@@ -5,6 +5,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/test/app_list_test_api.h"
+#include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
@@ -23,9 +24,9 @@ class AppListSortBrowserTest : public extensions::ExtensionBrowserTest {
 
  protected:
   void SetUp() override {
-    feature_list_.InitWithFeatures({ash::features::kLauncherRemoveEmptySpace,
-                                    ash::features::kLauncherAppSort},
-                                   /*disabled_features=*/{});
+    feature_list_.InitWithFeatures(
+        {ash::features::kAppListBubble, ash::features::kLauncherAppSort},
+        /*disabled_features=*/{});
     extensions::ExtensionBrowserTest::SetUp();
   }
 
@@ -35,10 +36,14 @@ class AppListSortBrowserTest : public extensions::ExtensionBrowserTest {
     ASSERT_TRUE(client);
     client->UpdateProfile();
 
+    // Since the AppListBubble flag is enabled, the sort buttons will only be
+    // shown in tablet mode.
+    ash::ShellTestApi().SetTabletModeEnabledForTest(true);
+
     // Ensure async callbacks are run.
     base::RunLoop().RunUntilIdle();
 
-    // Create the app list view by triggering the accelerator to show it.
+    // Shows the app list which is initially behind a window in tablet mode.
     ash::AcceleratorController::Get()->PerformActionIfEnabled(
         ash::TOGGLE_APP_LIST_FULLSCREEN, {});
 

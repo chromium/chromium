@@ -1415,9 +1415,8 @@ TEST_F(AppListSyncableServiceTest, TransferItem) {
 class AppListSortUnitTest : public AppListSyncableServiceTest {
  public:
   AppListSortUnitTest() {
-    feature_list_.InitWithFeatures({ash::features::kLauncherAppSort,
-                                    ash::features::kLauncherRemoveEmptySpace},
-                                   {});
+    feature_list_.InitWithFeatures(
+        {ash::features::kLauncherAppSort, ash::features::kAppListBubble}, {});
   }
   AppListSortUnitTest(const AppListSortUnitTest&) = delete;
   AppListSortUnitTest& operator=(const AppListSortUnitTest&) = delete;

@@ -194,10 +194,9 @@ PagedAppsGridView::PagedAppsGridView(
       is_app_list_bubble_enabled_(features::IsAppListBubbleEnabled()) {
   DCHECK(contents_view_);
 
-  view_structure_.Init(
-      (IsInFolder() || features::IsLauncherRemoveEmptySpaceEnabled())
-          ? PagedViewStructure::Mode::kFullPages
-          : PagedViewStructure::Mode::kPartialPages);
+  view_structure_.Init((IsInFolder() || features::IsAppListBubbleEnabled())
+                           ? PagedViewStructure::Mode::kFullPages
+                           : PagedViewStructure::Mode::kPartialPages);
 
   pagination_model_.AddObserver(this);
 
@@ -604,7 +603,7 @@ int PagedAppsGridView::TilesPerPage(int page) const {
 }
 
 void PagedAppsGridView::UpdatePaging() {
-  if (!IsInFolder() && !features::IsLauncherRemoveEmptySpaceEnabled()) {
+  if (!IsInFolder() && !features::IsAppListBubbleEnabled()) {
     pagination_model_.SetTotalPages(view_structure_.total_pages());
     return;
   }
@@ -626,7 +625,8 @@ void PagedAppsGridView::RecordPageMetrics() {
   DCHECK(!IsInFolder());
   UMA_HISTOGRAM_COUNTS_100("Apps.NumberOfPages", GetTotalPages());
 
-  if (features::IsLauncherRemoveEmptySpaceEnabled())
+  // There are no empty slots with AppListBubble enabled.
+  if (features::IsAppListBubbleEnabled())
     return;
 
   // Calculate the number of pages that have empty slots.
@@ -892,7 +892,7 @@ bool PagedAppsGridView::IsValidPageFlipTarget(int page) const {
   // If the user wants to drag an app to the next new page and has not done so
   // during the dragging session, then it is the right target because a new page
   // will be created in OnPageFlipTimer().
-  return !features::IsLauncherRemoveEmptySpaceEnabled() && !IsInFolder() &&
+  return !features::IsAppListBubbleEnabled() && !IsInFolder() &&
          !extra_page_opened_ && pagination_model_.total_pages() == page;
 }
 

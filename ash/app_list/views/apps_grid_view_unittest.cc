@@ -2427,9 +2427,16 @@ TEST_P(AppsGridViewTabletTest, TouchDragFlipToNextPage) {
     page_flip_waiter_->Wait();
   }
 
-  // We flip to an extra page created at the end.
-  EXPECT_EQ("1,2,3", page_flip_waiter_->selected_pages());
-  EXPECT_EQ(3, GetPaginationModel()->selected_page());
+  if (features::IsAppListBubbleEnabled()) {
+    // A new page cannot be created or flipped to with the AppListBubble flag
+    // enabled.
+    EXPECT_EQ("1,2", page_flip_waiter_->selected_pages());
+    EXPECT_EQ(2, GetPaginationModel()->selected_page());
+  } else {
+    // We flip to an extra page created at the end.
+    EXPECT_EQ("1,2,3", page_flip_waiter_->selected_pages());
+    EXPECT_EQ(3, GetPaginationModel()->selected_page());
+  }
   // The drag is centered relative to the app item icon bounds, not the whole
   // app item view.
   gfx::Vector2d icon_offset(
@@ -2728,7 +2735,9 @@ TEST_F(AppsGridViewTest, PopulateAppsGridWithAFolder) {
   EXPECT_TRUE(folder_apps_grid_view()->IsInFolder());
 }
 
-TEST_P(AppsGridViewTabletTest, MoveAnItemToNewEmptyPage) {
+// This is a NonBubble test because new empty pages cannot be created with the
+// AppListBubble feature.
+TEST_P(AppsGridViewDragNonBubbleTest, MoveAnItemToNewEmptyPage) {
   const int kApps = 2;
   model_->PopulateApps(kApps);
   const views::ViewModelT<AppListItemView>* view_model =
@@ -2757,7 +2766,9 @@ TEST_P(AppsGridViewTabletTest, MoveAnItemToNewEmptyPage) {
             model_->GetModelContent());
 }
 
-TEST_P(AppsGridViewTabletTest, MoveLastItemToCreateFolderInNextPage) {
+// This is a NonBubble test because new empty pages cannot be created with the
+// AppListBubble feature.
+TEST_P(AppsGridViewDragNonBubbleTest, MoveLastItemToCreateFolderInNextPage) {
   const int kApps = 2;
   model_->PopulateApps(kApps);
   const views::ViewModelT<AppListItemView>* view_model =
@@ -2792,7 +2803,9 @@ TEST_P(AppsGridViewTabletTest, MoveLastItemToCreateFolderInNextPage) {
             model_->GetModelContent());
 }
 
-TEST_P(AppsGridViewTabletTest, MoveLastItemForReorderInNextPage) {
+// This is a NonBubble test because new empty pages cannot be created with the
+// AppListBubble feature.
+TEST_P(AppsGridViewDragNonBubbleTest, MoveLastItemForReorderInNextPage) {
   const int kApps = 2;
   model_->PopulateApps(kApps);
   const views::ViewModelT<AppListItemView>* view_model =
@@ -2829,7 +2842,9 @@ TEST_P(AppsGridViewTabletTest, MoveLastItemForReorderInNextPage) {
             model_->GetModelContent());
 }
 
-TEST_P(AppsGridViewTabletTest, MoveLastItemToNewEmptyPage) {
+// This is a NonBubble test because new empty pages cannot be created with the
+// AppListBubble feature.
+TEST_P(AppsGridViewDragNonBubbleTest, MoveLastItemToNewEmptyPage) {
   const int kApps = 1;
   model_->PopulateApps(kApps);
   const views::ViewModelT<AppListItemView>* view_model =
@@ -2870,7 +2885,9 @@ TEST_F(AppsGridViewTest, NoPageBreakItemWithFullGrid) {
   EXPECT_EQ(model_content, model_->GetModelContent());
 }
 
-TEST_P(AppsGridViewTabletTest, PageBreakItemAddedAfterDrag) {
+// This is a NonBubble test because page breaks are ignored with the
+// AppListBubble feature.
+TEST_P(AppsGridViewDragNonBubbleTest, PageBreakItemAddedAfterDrag) {
   // There are two pages and last item is on second page.
   const int kApps = 2 + GetTilesPerPage(0);
   model_->PopulateApps(kApps);
@@ -2927,7 +2944,9 @@ TEST_P(AppsGridViewTabletTest, MoveItemToPreviousFullPage) {
   }
 }
 
-TEST_P(AppsGridViewTabletTest, MoveItemSubsequentDragKeepPageBreak) {
+// This is a NonBubble test because page breaks are ignored with the
+// AppListBubble feature.
+TEST_P(AppsGridViewDragNonBubbleTest, MoveItemSubsequentDragKeepPageBreak) {
   // There are two pages and last item is on second page.
   const int kApps = 2 + GetTilesPerPage(0);
   model_->PopulateApps(kApps);
@@ -2991,7 +3010,9 @@ TEST_F(AppsGridViewTest, CreateANewPageWithKeyboardLogsMetrics) {
       AppListPageCreationType::kMovingAppWithKeyboard, 1);
 }
 
-TEST_P(AppsGridViewTabletTest, CreateANewPageByDraggingLogsMetrics) {
+// This is a NonBubble test because new empty pages cannot be created with the
+// AppListBubble feature.
+TEST_P(AppsGridViewDragNonBubbleTest, CreateANewPageByDraggingLogsMetrics) {
   ASSERT_TRUE(paged_apps_grid_view_)
       << "Only available in tablet mode or when AppListBubble is disabled.";
 
@@ -3183,7 +3204,9 @@ TEST_P(AppsGridViewCardifiedStateTest, BackgroundCardBoundsOnSecondPage) {
   EXPECT_EQ(0, paged_apps_grid_view_->BackgroundCardCountForTesting());
 }
 
-TEST_P(AppsGridViewCardifiedStateTest,
+// This is a NonBubble test because new empty pages cannot be created with the
+// AppListBubble feature.
+TEST_P(AppsGridViewDragNonBubbleTest,
        PeekingCardOnLastPageAfterCreatingNewPage) {
   ASSERT_TRUE(paged_apps_grid_view_);
 

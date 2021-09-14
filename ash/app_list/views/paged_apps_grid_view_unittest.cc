@@ -75,8 +75,7 @@ class PagedAppsGridViewTestBase : public AshTestBase {
 class PagedAppsGridViewTest : public PagedAppsGridViewTestBase {
  public:
   PagedAppsGridViewTest() {
-    scoped_features_.InitWithFeatures(
-        {features::kAppListBubble, features::kLauncherRemoveEmptySpace}, {});
+    scoped_features_.InitAndEnableFeature(ash::features::kAppListBubble);
   }
 
   base::test::ScopedFeatureList scoped_features_;

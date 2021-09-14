@@ -1454,9 +1454,8 @@ TEST_F(AppListControllerWithAssistantTest, TriggerSearchKeyWhenAppListClosing) {
 class AppListSortTest : public AppListControllerImplTest {
  public:
   AppListSortTest() {
-    feature_list_.InitWithFeatures({ash::features::kLauncherAppSort,
-                                    ash::features::kLauncherRemoveEmptySpace},
-                                   {});
+    feature_list_.InitWithFeatures(
+        {ash::features::kLauncherAppSort, ash::features::kAppListBubble}, {});
   }
   ~AppListSortTest() override = default;
 
