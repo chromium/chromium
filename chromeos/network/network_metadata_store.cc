@@ -356,7 +356,7 @@ void NetworkMetadataStore::RemoveNetworkFromPref(
 
   const base::DictionaryValue* dict =
       pref_service->GetDictionary(kNetworkMetadataPref);
-  if (!dict || !dict->HasKey(network_guid)) {
+  if (!dict || !dict->FindKey(network_guid)) {
     return;
   }
 
