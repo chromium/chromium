@@ -248,6 +248,14 @@ void BackForwardCacheMetrics::RecordHistoryNavigationUkm(
     rfh_reason_builder.SetReason2(MetricValue(reason));
     rfh_reason_builder.Record(ukm::UkmRecorder::Get());
   }
+
+  for (const uint64_t reason :
+       page_store_result_->disallow_activation_reasons()) {
+    ukm::builders::BackForwardCacheDisallowActivationReason reason_builder(
+        source_id);
+    reason_builder.SetReason(reason);
+    reason_builder.Record(ukm::UkmRecorder::Get());
+  }
 }
 
 void BackForwardCacheMetrics::MainFrameDidNavigateAwayFromDocument(
@@ -409,6 +417,14 @@ void BackForwardCacheMetrics::RecordMetricsForHistoryNavigationCommit(
         "BackForwardCache.HistoryNavigationOutcome."
         "DisabledForRenderFrameHostReason2",
         MetricValue(reason));
+  }
+
+  for (const uint64_t reason :
+       page_store_result_->disallow_activation_reasons()) {
+    base::UmaHistogramSparse(
+        "BackForwardCache.HistoryNavigationOutcome."
+        "DisallowActivationReason",
+        reason);
   }
 
   if (!DidSwapBrowsingInstance()) {

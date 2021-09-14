@@ -6,11 +6,14 @@
 #define CONTENT_BROWSER_RENDERER_HOST_BACK_FORWARD_CACHE_CAN_STORE_DOCUMENT_RESULT_H_
 
 #include <bitset>
+#include <cstdint>
 #include <set>
 
 #include "base/containers/enum_set.h"
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
 #include "content/browser/renderer_host/should_swap_browsing_instance.h"
+#include "content/public/browser/back_forward_cache.h"
+#include "content/public/browser/render_frame_host.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 
@@ -51,6 +54,7 @@ class CONTENT_EXPORT BackForwardCacheCanStoreDocumentResult {
   // FROM_HERE for privacy reasons.
   void NoDueToDisableForRenderFrameHostCalled(
       const std::set<BackForwardCache::DisabledReason>& reasons);
+  void NoDueToDisallowActivation(uint64_t reason);
 
   bool CanStore() const;
   operator bool() const { return CanStore(); }
@@ -66,6 +70,10 @@ class CONTENT_EXPORT BackForwardCacheCanStoreDocumentResult {
     return disabled_reasons_;
   }
 
+  const std::set<uint64_t>& disallow_activation_reasons() const {
+    return disallow_activation_reasons_;
+  }
+
   std::string ToString() const;
 
  private:
@@ -77,6 +85,7 @@ class CONTENT_EXPORT BackForwardCacheCanStoreDocumentResult {
   BlockListedFeatures blocklisted_features_;
   std::set<BackForwardCache::DisabledReason> disabled_reasons_;
   absl::optional<ShouldSwapBrowsingInstance> browsing_instance_swap_result_;
+  std::set<uint64_t> disallow_activation_reasons_;
 };
 
 }  // namespace content

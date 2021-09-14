@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "cc/input/browser_controls_state.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
@@ -718,26 +719,32 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // or can't be deferred until the RenderFrameHost becomes active again.
   // Callers that only want to check whether a RenderFrameHost is active or not
   // should use IsActive() instead.
-
+  //
   // Additionally, this method has a side effect for back-forward cache and
   // prerendering, where the document is prevented from ever becoming active
   // after calling this method. This allows to safely ignore the event as the
   // RenderFrameHost will never be shown to the user again.
-
+  //
   // For BackForwardCache: it evicts the document from the cache and triggers
   // deletion.
   // For Prerendering: it cancels prerendering and triggers deletion.
-
+  //
   // This should not be called for speculative and pending commit
   // RenderFrameHosts as disallowing activation is not supported. In that case
   // |IsInactiveAndDisallowActivation()| returns false along with terminating
   // the renderer process.
-
+  //
   // The return value of IsInactiveAndDisallowActivation() is the opposite of
   // IsActive() except in some uncommon cases:
   // - The "small window" referred to in the IsActive() documentation.
   // - For speculative and pending commit RenderFrameHosts, as mentioned above.
-  virtual bool IsInactiveAndDisallowActivation() = 0;
+  //
+  // |reason| will be logged via UMA and UKM. It is recommended to provide
+  // a unique value for each caller.
+  //
+  // Embedders should use a value equal to or greater than
+  // DisallowActivationReasonId.kMinEmbedderDisallowActivationReason.
+  virtual bool IsInactiveAndDisallowActivation(uint64_t reason) = 0;
 
   // Get the number of proxies to this frame, in all processes. Exposed for
   // use by resource metrics.

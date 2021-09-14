@@ -30,6 +30,7 @@
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -136,7 +137,9 @@ bool PermissionRequestManager::PermissionRequestSource::
     IsSourceFrameInactiveAndDisallowActivation() const {
   content::RenderFrameHost* rfh =
       content::RenderFrameHost::FromID(render_process_id, render_frame_id);
-  return !rfh || rfh->IsInactiveAndDisallowActivation();
+  return !rfh ||
+         rfh->IsInactiveAndDisallowActivation(
+             content::DisallowActivationReasonId::kPermissionRequestSource);
 }
 
 PermissionRequestManager::~PermissionRequestManager() {
@@ -159,7 +162,8 @@ void PermissionRequestManager::AddRequest(
     return;
   }
 
-  if (source_frame->IsInactiveAndDisallowActivation()) {
+  if (source_frame->IsInactiveAndDisallowActivation(
+          content::DisallowActivationReasonId::kPermissionAddRequest)) {
     request->Cancelled();
     request->RequestFinished();
     return;

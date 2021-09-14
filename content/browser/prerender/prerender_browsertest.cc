@@ -36,6 +36,7 @@
 #include "content/common/content_navigation_policy.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_type.h"
@@ -2929,7 +2930,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // Invoke IsInactiveAndDisallowActivation for the prerendered document.
   EXPECT_EQ(prerender_render_frame_host->lifecycle_state(),
             RenderFrameHostImpl::LifecycleStateImpl::kPrerendering);
-  EXPECT_TRUE(prerender_render_frame_host->IsInactiveAndDisallowActivation());
+  EXPECT_TRUE(prerender_render_frame_host->IsInactiveAndDisallowActivation(
+      DisallowActivationReasonId::kForTesting));
 
   // The prerender host for the URL should be destroyed as
   // RenderFrameHost::IsInactiveAndDisallowActivation cancels prerendering in

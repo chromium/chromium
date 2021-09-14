@@ -29,6 +29,7 @@
 #include "components/permissions/request_type.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
@@ -199,7 +200,8 @@ void PermissionContextBase::RequestPermission(
   // document from the cache.
   // - If this is called when RenderFrameHost is in prerendering, cancel
   // prerendering.
-  if (rfh->IsInactiveAndDisallowActivation()) {
+  if (rfh->IsInactiveAndDisallowActivation(
+          content::DisallowActivationReasonId::kRequestPermission)) {
     std::move(callback).Run(result.content_setting);
     return;
   }

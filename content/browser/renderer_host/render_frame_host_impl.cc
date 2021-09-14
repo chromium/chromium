@@ -151,6 +151,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/context_menu_params.h"
+#include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/permission_type.h"
@@ -2553,7 +2554,9 @@ void RenderFrameHostImpl::OnAssociatedInterfaceRequest(
 void RenderFrameHostImpl::AccessibilityPerformAction(
     const ui::AXActionData& action_data) {
   // Don't perform any Accessibility action on an inactive frame.
-  if (IsInactiveAndDisallowActivation() || !render_accessibility_)
+  if (IsInactiveAndDisallowActivation(
+          DisallowActivationReasonId::kAXPerformAction) ||
+      !render_accessibility_)
     return;
 
   if (action_data.action == ax::mojom::Action::kHitTest) {
@@ -2583,7 +2586,7 @@ bool RenderFrameHostImpl::AccessibilityViewHasFocus() {
 
 void RenderFrameHostImpl::AccessibilityViewSetFocus() {
   // Don't update Accessibility for inactive frames.
-  if (IsInactiveAndDisallowActivation())
+  if (IsInactiveAndDisallowActivation(DisallowActivationReasonId::kAXSetFocus))
     return;
 
   RenderWidgetHostView* view = render_view_host_->GetWidget()->GetView();
@@ -2652,7 +2655,8 @@ RenderFrameHostImpl::AccessibilityGetNativeViewAccessible() {
   // If this method is called when the document is in BackForwardCache, evict
   // the document to avoid ignoring any accessibility related events which the
   // document might not expect.
-  if (IsInactiveAndDisallowActivation())
+  if (IsInactiveAndDisallowActivation(
+          DisallowActivationReasonId::kAXGetNativeView))
     return nullptr;
 
   RenderWidgetHostViewBase* view = static_cast<RenderWidgetHostViewBase*>(
@@ -2667,7 +2671,8 @@ RenderFrameHostImpl::AccessibilityGetNativeViewAccessibleForWindow() {
   // If this method is called when the frame is in BackForwardCache, evict
   // the frame to avoid ignoring any accessibility related events which are not
   // expected.
-  if (IsInactiveAndDisallowActivation())
+  if (IsInactiveAndDisallowActivation(
+          DisallowActivationReasonId::kAXGetNativeViewForWindow))
     return nullptr;
 
   RenderWidgetHostViewBase* view = static_cast<RenderWidgetHostViewBase*>(
@@ -2681,7 +2686,8 @@ RenderFrameHostImpl* RenderFrameHostImpl::AccessibilityRenderFrameHost() {
   // If this method is called when the frame is in BackForwardCache, evict
   // the frame to avoid ignoring any accessibility related events which are not
   // expected.
-  if (IsInactiveAndDisallowActivation())
+  if (IsInactiveAndDisallowActivation(
+          DisallowActivationReasonId::kAXWebContents))
     return nullptr;
   return this;
 }
@@ -2695,7 +2701,8 @@ void RenderFrameHostImpl::AccessibilityHitTest(
   // This is called by BrowserAccessibilityManager. During teardown it's
   // possible that render_accessibility_ is null but the corresponding
   // BrowserAccessibilityManager still exists and could call this.
-  if (IsInactiveAndDisallowActivation() || !render_accessibility_) {
+  if (IsInactiveAndDisallowActivation(DisallowActivationReasonId::kAXHitTest) ||
+      !render_accessibility_) {
     if (opt_callback)
       std::move(opt_callback).Run(nullptr, 0);
     return;
@@ -3390,7 +3397,8 @@ void RenderFrameHostImpl::OnCreateChildFrame(
     // The RenderFrame corresponding to this host sent an IPC message to create
     // a child, but by the time we get here, it's possible for the
     // RenderFrameHost to become inactive. Ignore such messages.
-    if (IsInactiveAndDisallowActivation())
+    if (IsInactiveAndDisallowActivation(
+            DisallowActivationReasonId::kCreateChildFrame))
       return;
   }
 
@@ -4114,7 +4122,8 @@ void RenderFrameHostImpl::DidCommitSameDocumentNavigation(
   // Prerendering as prerendered frames can be navigated, including
   // same-document navigations like push/replaceState.
   if (lifecycle_state() != LifecycleStateImpl::kPrerendering &&
-      IsInactiveAndDisallowActivation()) {
+      IsInactiveAndDisallowActivation(
+          DisallowActivationReasonId::kCommitSameDocumentNavigation)) {
     return;
   }
 
@@ -4744,7 +4753,8 @@ void RenderFrameHostImpl::ContentsPreferredSizeChanged(
   // page, the page will be deleted. We predict that it will not significantly
   // impact coverage because renderers only send this message when running in
   // `PreferredSizeChanged` mode.
-  if (IsInactiveAndDisallowActivation()) {
+  if (IsInactiveAndDisallowActivation(
+          DisallowActivationReasonId::kContentsPreferredSizeChanged)) {
     return;
   }
 
@@ -5280,7 +5290,8 @@ void RenderFrameHostImpl::UpdateEncoding(const std::string& encoding_name) {
 void RenderFrameHostImpl::FullscreenStateChanged(
     bool is_fullscreen,
     blink::mojom::FullscreenOptionsPtr options) {
-  if (IsInactiveAndDisallowActivation())
+  if (IsInactiveAndDisallowActivation(
+          DisallowActivationReasonId::kFullScreenStateChanged))
     return;
   delegate_->FullscreenStateChanged(this, is_fullscreen, std::move(options));
 }
@@ -5329,7 +5340,8 @@ void RenderFrameHostImpl::DocumentAvailableInMainFrame(
 void RenderFrameHostImpl::SetNeedsOcclusionTracking(bool needs_tracking) {
   // Do not update the parent on behalf of inactive RenderFrameHost. See also
   // https://crbug.com/972566.
-  if (IsInactiveAndDisallowActivation())
+  if (IsInactiveAndDisallowActivation(
+          DisallowActivationReasonId::kSetNeedsOcclusionTracking))
     return;
 
   RenderFrameProxyHost* proxy =
@@ -5503,7 +5515,8 @@ void RenderFrameHostImpl::DispatchLoad() {
     // RenderFrameHost. This can happen in a race where this inactive
     // RenderFrameHost finishes loading just after the frame navigates away.
     // See https://crbug.com/626802.
-    if (IsInactiveAndDisallowActivation())
+    if (IsInactiveAndDisallowActivation(
+            DisallowActivationReasonId::kDispatchLoad))
       return;
   }
 
@@ -5629,7 +5642,8 @@ void RenderFrameHostImpl::ForwardResourceTimingToParent(
     // RenderFrameHost. This can happen in a race where this RenderFrameHost
     // finishes loading just after the frame navigates away. See
     // https://crbug.com/626802.
-    if (IsInactiveAndDisallowActivation())
+    if (IsInactiveAndDisallowActivation(
+            DisallowActivationReasonId::kForwardResourceTimingToParent))
       return;
   }
 
@@ -5683,18 +5697,19 @@ void RenderFrameHostImpl::SendAccessibilityEventsToManager(
   }
 }
 
-bool RenderFrameHostImpl::IsInactiveAndDisallowActivation() {
+bool RenderFrameHostImpl::IsInactiveAndDisallowActivation(uint64_t reason) {
   TRACE_EVENT1("navigation",
                "RenderFrameHostImpl::IsInactiveAndDisallowActivation",
                "render_frame_host", this);
-
   switch (lifecycle_state_) {
     case LifecycleStateImpl::kRunningUnloadHandlers:
     case LifecycleStateImpl::kReadyToBeDeleted:
       return true;
-    case LifecycleStateImpl::kInBackForwardCache:
-      EvictFromBackForwardCacheWithReason(
-          BackForwardCacheMetrics::NotRestoredReason::kIgnoreEventAndEvict);
+    case LifecycleStateImpl::kInBackForwardCache: {
+      BackForwardCacheCanStoreDocumentResult can_store;
+      can_store.NoDueToDisallowActivation(reason);
+      EvictFromBackForwardCacheWithReasons(can_store);
+    }
       return true;
     case LifecycleStateImpl::kPrerendering:
       // TODO(https://crbug.com/1126305): Explain why we cancel prerendering
@@ -5726,6 +5741,10 @@ void RenderFrameHostImpl::EvictFromBackForwardCache(
 
 void RenderFrameHostImpl::EvictFromBackForwardCacheWithReason(
     BackForwardCacheMetrics::NotRestoredReason reason) {
+  // kIgnoreEventAndEvict should never be a reason on its own without further
+  // details.
+  DCHECK_NE(reason,
+            BackForwardCacheMetrics::NotRestoredReason::kIgnoreEventAndEvict);
   auto can_store =
       frame_tree()->controller().GetBackForwardCache().CanStorePageNow(
           GetMainFrame());
@@ -6087,7 +6106,8 @@ void RenderFrameHostImpl::BubbleLogicalScrollInParentFrame(
     blink::mojom::ScrollDirection direction,
     ui::ScrollGranularity granularity) {
   // Do not update the parent on behalf of inactive RenderFrameHost.
-  if (IsInactiveAndDisallowActivation())
+  if (IsInactiveAndDisallowActivation(
+          DisallowActivationReasonId::kDispatchLoad))
     return;
 
   RenderFrameProxyHost* proxy =
@@ -6147,7 +6167,8 @@ void RenderFrameHostImpl::ShowContextMenu(
     mojo::PendingAssociatedRemote<blink::mojom::ContextMenuClient>
         context_menu_client,
     const blink::UntrustworthyContextMenuParams& params) {
-  if (IsInactiveAndDisallowActivation())
+  if (IsInactiveAndDisallowActivation(
+          DisallowActivationReasonId::kShowContextMenu))
     return;
 
   // Validate the URLs in |params|.  If the renderer can't request the URLs
@@ -6268,7 +6289,8 @@ void RenderFrameHostImpl::DidChangeFramePolicy(
 void RenderFrameHostImpl::CapturePaintPreviewOfSubframe(
     const gfx::Rect& clip_rect,
     const base::UnguessableToken& guid) {
-  if (IsInactiveAndDisallowActivation())
+  if (IsInactiveAndDisallowActivation(
+          DisallowActivationReasonId::kCapturePaintPreview))
     return;
   // This should only be called on a subframe.
   if (is_main_frame()) {
@@ -6861,7 +6883,8 @@ void RenderFrameHostImpl::BeginNavigation(
   if (lifecycle_state() != LifecycleStateImpl::kPrerendering) {
     // If this is reached in case the RenderFrameHost is in BackForwardCache
     // evict the document from BackForwardCache.
-    if (IsInactiveAndDisallowActivation())
+    if (IsInactiveAndDisallowActivation(
+            DisallowActivationReasonId::kBeginNavigation))
       return;
   }
 
@@ -7012,7 +7035,8 @@ void RenderFrameHostImpl::HandleAXEvents(
   accessibility_reset_token_ = 0;
 
   ui::AXMode accessibility_mode = delegate_->GetAccessibilityMode();
-  if (accessibility_mode.is_mode_off() || IsInactiveAndDisallowActivation()) {
+  if (accessibility_mode.is_mode_off() ||
+      IsInactiveAndDisallowActivation(DisallowActivationReasonId::kAXEvent)) {
     return;
   }
 
@@ -7080,7 +7104,9 @@ void RenderFrameHostImpl::HandleAXLocationChanges(
     return;
   }
 
-  if (accessibility_reset_token_ || IsInactiveAndDisallowActivation())
+  if (accessibility_reset_token_ ||
+      IsInactiveAndDisallowActivation(
+          DisallowActivationReasonId::kAXLocationChange))
     return;
 
   ui::AXMode accessibility_mode = delegate_->GetAccessibilityMode();
@@ -8560,7 +8586,9 @@ void RenderFrameHostImpl::SetAccessibilityCallbackForTesting(
 
 void RenderFrameHostImpl::UpdateAXTreeData() {
   ui::AXMode accessibility_mode = delegate_->GetAccessibilityMode();
-  if (accessibility_mode.is_mode_off() || IsInactiveAndDisallowActivation()) {
+  if (accessibility_mode.is_mode_off() ||
+      IsInactiveAndDisallowActivation(
+          DisallowActivationReasonId::kAXUpdateTree)) {
     return;
   }
 
@@ -8957,7 +8985,8 @@ void RenderFrameHostImpl::AccessibilityHitTestCallback(
       GetProcess()->GetID(), hit_test_response->hit_frame_token);
   RenderFrameHostImpl* hit_frame = frame_or_proxy.GetCurrentFrameHost();
 
-  if (!hit_frame || hit_frame->IsInactiveAndDisallowActivation()) {
+  if (!hit_frame || hit_frame->IsInactiveAndDisallowActivation(
+                        DisallowActivationReasonId::kAXHitTestCallback)) {
     if (opt_callback)
       std::move(opt_callback).Run(nullptr, 0);
     return;
@@ -12576,7 +12605,8 @@ void RenderFrameHostImpl::OnDidRunContentWithCertificateErrors() {
   // i.e., before the renderer is told to commit the navigation.
   DCHECK_NE(lifecycle_state(), LifecycleStateImpl::kSpeculative);
   if (lifecycle_state() != LifecycleStateImpl::kPendingCommit &&
-      IsInactiveAndDisallowActivation()) {
+      IsInactiveAndDisallowActivation(
+          DisallowActivationReasonId::kCertificateErrors)) {
     return;
   }
   frame_tree_->controller().ssl_manager()->DidRunContentWithCertErrors(

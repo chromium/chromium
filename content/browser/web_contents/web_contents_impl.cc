@@ -109,6 +109,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/device_service.h"
+#include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/focused_node_details.h"
@@ -2198,7 +2199,8 @@ void WebContentsImpl::DisallowActivationNavigationsForBug1234857() {
     // Just look at main frames since we only need to call
     // IsInactiveAndDisallowActivation() on the main frame.
     if (!rfh->GetParent())
-      rfh->IsInactiveAndDisallowActivation();
+      rfh->IsInactiveAndDisallowActivation(
+          DisallowActivationReasonId::kBug1234857);
   }));
 }
 

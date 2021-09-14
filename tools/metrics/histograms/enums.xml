@@ -7136,6 +7136,42 @@ others/histograms.xml -->
   <int value="58230" label="MediaWebContentsObserver::OnMediaPlaying"/>
 </enum>
 
+<enum name="BackForwardCacheDisallowActivationReason">
+  <int value="0" label="ForTesting"/>
+  <int value="1" label="LoadPostCommitErrorPage"/>
+  <int value="2" label="BeginNavigation"/>
+  <int value="3" label="CapturePaintPreview"/>
+  <int value="4" label="OpenURL"/>
+  <int value="5" label="AXEvent"/>
+  <int value="6" label="AXLocationChange"/>
+  <int value="7" label="AXUpdateTree"/>
+  <int value="8" label="AXHitTest"/>
+  <int value="9" label="AXHitTestCallback"/>
+  <int value="10" label="AXPerformAction"/>
+  <int value="11" label="AXSetFocus"/>
+  <int value="12" label="AXGetNativeView"/>
+  <int value="13" label="AXGetNativeViewForWindow"/>
+  <int value="14" label="AXWebContents"/>
+  <int value="15" label="CertificateErrors"/>
+  <int value="16" label="CreateChildFrame"/>
+  <int value="17" label="CommitSameDocumentNavigation"/>
+  <int value="18" label="FullScreenStateChanged"/>
+  <int value="19" label="SetNeedsOcclusionTrack"/>
+  <int value="20" label="DispatchLoad"/>
+  <int value="21" label="ForwardResourceTimingToParent"/>
+  <int value="22" label="CapturePaintPreviewProxy"/>
+  <int value="23" label="ShowContextMenu"/>
+  <int value="24" label="DetermineActionForHistoryNavigation"/>
+  <int value="25" label="NavigatingInInactiveFrame"/>
+  <int value="26" label="PostMessage"/>
+  <int value="27" label="RequestPermission"/>
+  <int value="28" label="PermissionRequestSource"/>
+  <int value="29" label="PermissionAddRequest"/>
+  <int value="30" label="ContentsPreferredSizeChanged"/>
+  <int value="31" label="BeginDownload"/>
+  <int value="32" label="Bug1234857"/>
+</enum>
+
 <enum name="BackForwardCacheEligibilityDuringCommit">
   <int value="0" label="No longer bfcache-eligible"/>
   <int value="1" label="Still bfcache-eligible"/>

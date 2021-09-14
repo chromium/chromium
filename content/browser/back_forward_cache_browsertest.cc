@@ -44,6 +44,7 @@
 #include "content/common/content_navigation_policy.h"
 #include "content/common/render_accessibility.mojom.h"
 #include "content/public/browser/back_forward_cache.h"
+#include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/document_service_base.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/idle_time_provider.h"
@@ -354,7 +355,7 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
   void ExpectRestored(base::Location location) {
     ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
                   location);
-    ExpectReasons({}, {}, {}, {}, location);
+    ExpectReasons({}, {}, {}, {}, {}, location);
   }
 
   void ExpectNotRestored(
@@ -363,12 +364,14 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
       const std::vector<ShouldSwapBrowsingInstance>& not_swapped,
       const std::vector<BackForwardCache::DisabledReason>&
           disabled_for_render_frame_host,
+      const std::vector<uint64_t>& disallow_activation,
       base::Location location) {
     ExpectOutcome(
         BackForwardCacheMetrics::HistoryNavigationOutcome::kNotRestored,
         location);
     ExpectReasons(not_restored, block_listed, not_swapped,
-                  disabled_for_render_frame_host, location);
+                  disabled_for_render_frame_host, disallow_activation,
+                  location);
   }
 
   void ExpectNotRestoredDidNotChange(base::Location location) {
@@ -582,6 +585,7 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
       const std::vector<ShouldSwapBrowsingInstance>& not_swapped,
       const std::vector<BackForwardCache::DisabledReason>&
           disabled_for_render_frame_host,
+      const std::vector<uint64_t>& disallow_activation,
       base::Location location) {
     // Check that the expected reasons are consistent.
     bool expect_blocklisted =
@@ -605,6 +609,7 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
     ExpectBlocklistedFeatures(block_listed, location);
     ExpectBrowsingInstanceNotSwappedReasons(not_swapped, location);
     ExpectDisabledWithReasons(disabled_for_render_frame_host, location);
+    ExpectDisallowActivationReasons(disallow_activation, location);
   }
 
   void ExpectNotRestoredReasons(
@@ -680,6 +685,20 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
         << location.ToString();
   }
 
+  void ExpectDisallowActivationReasons(const std::vector<uint64_t>& reasons,
+                                       base::Location location) {
+    for (const uint64_t& reason : reasons) {
+      base::HistogramBase::Sample sample(reason);
+      AddSampleToBuckets(&expected_disallow_activation_reasons_, sample);
+    }
+    EXPECT_THAT(
+        histogram_tester_.GetAllSamples(
+            "BackForwardCache.HistoryNavigationOutcome."
+            "DisallowActivationReason"),
+        UnorderedElementsAreArray(expected_disallow_activation_reasons_))
+        << location.ToString();
+  }
+
   void ExpectBrowsingInstanceNotSwappedReasons(
       const std::vector<ShouldSwapBrowsingInstance>& reasons,
       base::Location location) {
@@ -714,6 +733,7 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
   std::vector<base::Bucket> expected_not_restored_;
   std::vector<base::Bucket> expected_blocklisted_features_;
   std::vector<base::Bucket> expected_disabled_reasons_;
+  std::vector<base::Bucket> expected_disallow_activation_reasons_;
   std::vector<base::Bucket> expected_browsing_instance_not_swapped_reasons_;
   std::vector<base::Bucket> expected_eviction_after_committing_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
@@ -1233,7 +1253,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   web_contents()->GetController().GoToOffset(-2);
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::kCacheLimit},
-                    {}, {}, {}, FROM_HERE);
+                    {}, {}, {}, {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, ResponseHeaders) {
@@ -1384,7 +1404,7 @@ IN_PROC_BROWSER_TEST_F(
     } else {
       ExpectNotRestored(
           {BackForwardCacheMetrics::NotRestoredReason::kForegroundCacheLimit},
-          {}, {}, {}, FROM_HERE);
+          {}, {}, {}, {}, FROM_HERE);
     }
   }
 }
@@ -1435,7 +1455,7 @@ IN_PROC_BROWSER_TEST_F(
     } else {
       ExpectNotRestored(
           {BackForwardCacheMetrics::NotRestoredReason::kCacheLimit}, {}, {}, {},
-          FROM_HERE);
+          {}, FROM_HERE);
     }
   }
 }
@@ -2122,7 +2142,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
-      {blink::scheduler::WebSchedulerTrackedFeature::kSharedWorker}, {}, {},
+      {blink::scheduler::WebSchedulerTrackedFeature::kSharedWorker}, {}, {}, {},
       FROM_HERE);
 }
 
@@ -2153,7 +2173,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
       {blink::scheduler::WebSchedulerTrackedFeature::kDedicatedWorkerOrWorklet},
-      {}, {}, FROM_HERE);
+      {}, {}, {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
@@ -2270,7 +2290,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       {BackForwardCacheMetrics::NotRestoredReason::kWasGrantedMediaAccess,
        BackForwardCacheMetrics::NotRestoredReason::
            kDisableForRenderFrameHostCalled},
-      {}, {}, {reason}, FROM_HERE);
+      {}, {}, {reason}, {}, FROM_HERE);
   EXPECT_TRUE(
       tester.IsDisabledForFrameWithReason(process_id, routing_id, reason));
 }
@@ -2319,7 +2339,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       {BackForwardCacheMetrics::NotRestoredReason::kWasGrantedMediaAccess,
        BackForwardCacheMetrics::NotRestoredReason::
            kDisableForRenderFrameHostCalled},
-      {}, {}, {reason}, FROM_HERE);
+      {}, {}, {reason}, {}, FROM_HERE);
   EXPECT_TRUE(
       tester.IsDisabledForFrameWithReason(process_id, routing_id, reason));
 }
@@ -2361,7 +2381,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       BackForwardCacheDisable::DisabledReasonId::kMediaDevicesDispatcherHost);
   ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
                          kDisableForRenderFrameHostCalled},
-                    {}, {}, {reason}, FROM_HERE);
+                    {}, {}, {reason}, {}, FROM_HERE);
   EXPECT_TRUE(
       tester.IsDisabledForFrameWithReason(process_id, routing_id, reason));
 }
@@ -2405,7 +2425,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   web_contents()->GetController().GoBack();
   EXPECT_FALSE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::kLoading}, {},
-                    {}, {}, FROM_HERE);
+                    {}, {}, {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
@@ -2446,7 +2466,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
           BackForwardCacheMetrics::NotRestoredReason::kLoading,
           BackForwardCacheMetrics::NotRestoredReason::kSubframeIsNavigating,
       },
-      {}, {}, {}, FROM_HERE);
+      {}, {}, {}, {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
@@ -2488,7 +2508,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
           BackForwardCacheMetrics::NotRestoredReason::kLoading,
           BackForwardCacheMetrics::NotRestoredReason::kSubframeIsNavigating,
       },
-      {}, {}, {}, FROM_HERE);
+      {}, {}, {}, {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CacheIfWebGL) {
@@ -2545,7 +2565,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DoesNotCacheIfWebHID) {
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
-      {blink::scheduler::WebSchedulerTrackedFeature::kWebHID}, {}, {},
+      {blink::scheduler::WebSchedulerTrackedFeature::kWebHID}, {}, {}, {},
       FROM_HERE);
 }
 #endif  // !defined(OS_ANDROID)
@@ -2657,7 +2677,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DoesNotCacheIfHttpError) {
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kHTTPStatusNotOK}, {}, {},
-      {}, FROM_HERE);
+      {}, {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DoesNotCacheIdleManager) {
@@ -2691,7 +2711,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DoesNotCacheIdleManager) {
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
-      {blink::scheduler::WebSchedulerTrackedFeature::kIdleManager}, {}, {},
+      {blink::scheduler::WebSchedulerTrackedFeature::kIdleManager}, {}, {}, {},
       FROM_HERE);
 }
 
@@ -2766,7 +2786,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
       {blink::scheduler::WebSchedulerTrackedFeature::kPaymentManager}, {}, {},
-      FROM_HERE);
+      {}, FROM_HERE);
 
   // Note that on Mac10.10, there is occasionally blocklisting for network
   // requests (kOutstandingNetworkRequestOthers). This causes flakiness if we
@@ -2822,7 +2842,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
-      {blink::scheduler::WebSchedulerTrackedFeature::kKeyboardLock}, {}, {},
+      {blink::scheduler::WebSchedulerTrackedFeature::kKeyboardLock}, {}, {}, {},
       FROM_HERE);
 }
 
@@ -2849,7 +2869,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
-      {blink::scheduler::WebSchedulerTrackedFeature::kDummy}, {}, {},
+      {blink::scheduler::WebSchedulerTrackedFeature::kDummy}, {}, {}, {},
       FROM_HERE);
 }
 
@@ -2895,7 +2915,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // RenderFrameHostManager::UnloadOldFrame.
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
-      {blink::scheduler::WebSchedulerTrackedFeature::kDummy}, {}, {},
+      {blink::scheduler::WebSchedulerTrackedFeature::kDummy}, {}, {}, {},
       FROM_HERE);
 }
 
@@ -2945,7 +2965,7 @@ IN_PROC_BROWSER_TEST_F(
          BackForwardCacheMetrics::NotRestoredReason::
              kBrowsingInstanceNotSwapped},
         {blink::scheduler::WebSchedulerTrackedFeature::kDummy},
-        {ShouldSwapBrowsingInstance::kNo_NotNeededForBackForwardCache}, {},
+        {ShouldSwapBrowsingInstance::kNo_NotNeededForBackForwardCache}, {}, {},
         FROM_HERE);
 
     web_contents()->GetController().GoForward();
@@ -2970,7 +2990,7 @@ IN_PROC_BROWSER_TEST_F(
                 kBrowsingInstanceNotSwapped,
         },
         {blink::scheduler::WebSchedulerTrackedFeature::kDummy},
-        {ShouldSwapBrowsingInstance::kNo_NotNeededForBackForwardCache}, {},
+        {ShouldSwapBrowsingInstance::kNo_NotNeededForBackForwardCache}, {}, {},
         FROM_HERE);
   }
 }
@@ -3018,7 +3038,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
               kBrowsingInstanceNotSwapped,
       },
       {blink::scheduler::WebSchedulerTrackedFeature::kDummy},
-      {ShouldSwapBrowsingInstance::kNo_NotNeededForBackForwardCache}, {},
+      {ShouldSwapBrowsingInstance::kNo_NotNeededForBackForwardCache}, {}, {},
       FROM_HERE);
 }
 
@@ -3062,7 +3082,7 @@ IN_PROC_BROWSER_TEST_F(
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
       {blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel}, {}, {},
-      FROM_HERE);
+      {}, FROM_HERE);
 }
 
 // Tests which blocklisted features are tracked in the metrics when we used a
@@ -3105,7 +3125,7 @@ IN_PROC_BROWSER_TEST_F(
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
       {blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel}, {}, {},
-      FROM_HERE);
+      {}, FROM_HERE);
 }
 
 // Tests which blocklisted features are tracked in the metrics when we used a
@@ -3146,7 +3166,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
       {blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel}, {}, {},
-      FROM_HERE);
+      {}, FROM_HERE);
 }
 
 // Flaky on Android, see crbug.com/1135601 and on other platforms, see
@@ -3277,7 +3297,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DoesNotCacheIfAppBanner) {
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
-      {blink::scheduler::WebSchedulerTrackedFeature::kAppBanner}, {}, {},
+      {blink::scheduler::WebSchedulerTrackedFeature::kAppBanner}, {}, {}, {},
       FROM_HERE);
 }
 
@@ -3300,7 +3320,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DoesNotCacheIfWebDatabase) {
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
-      {blink::scheduler::WebSchedulerTrackedFeature::kWebDatabase}, {}, {},
+      {blink::scheduler::WebSchedulerTrackedFeature::kWebDatabase}, {}, {}, {},
       FROM_HERE);
 }
 
@@ -3343,7 +3363,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kHTTPStatusNotOK,
        BackForwardCacheMetrics::NotRestoredReason::kNoResponseHead},
-      {}, {}, {}, FROM_HERE);
+      {}, {}, {}, {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
@@ -3401,7 +3421,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kJavaScriptExecution}, {},
-      {}, {}, FROM_HERE);
+      {}, {}, {}, FROM_HERE);
 }
 
 // Similar to BackForwardCacheBrowserTest.EvictionOnJavaScriptExecution.
@@ -3445,7 +3465,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kJavaScriptExecution}, {},
-      {}, {}, FROM_HERE);
+      {}, {}, {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
@@ -3486,7 +3506,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kJavaScriptExecution}, {},
-      {}, {}, FROM_HERE);
+      {}, {}, {}, FROM_HERE);
 }
 
 // Tests the events are fired when going back from the cache.
@@ -3684,7 +3704,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
       {blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel}, {}, {},
-      FROM_HERE);
+      {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
@@ -3754,7 +3774,7 @@ IN_PROC_BROWSER_TEST_F(
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
       {blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel}, {}, {},
-      FROM_HERE);
+      {}, FROM_HERE);
   RenderFrameHostImpl* rfh_b_2 = current_frame_host();
   // Do not acquire broadcast channel. Now b.com is eligible for bfcache.
   EXPECT_TRUE(
@@ -3861,7 +3881,7 @@ IN_PROC_BROWSER_TEST_F(WebTransportBackForwardCacheBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
-      {blink::scheduler::WebSchedulerTrackedFeature::kWebTransport}, {}, {},
+      {blink::scheduler::WebSchedulerTrackedFeature::kWebTransport}, {}, {}, {},
       FROM_HERE);
 }
 
@@ -4039,7 +4059,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, EvictPageWithInfiniteLoop) {
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kTimeoutPuttingInCache}, {},
-      {}, {}, FROM_HERE);
+      {}, {}, {}, FROM_HERE);
 }
 
 // Test the race condition where a document is evicted from the BackForwardCache
@@ -4102,7 +4122,7 @@ IN_PROC_BROWSER_TEST_F(
 
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kJavaScriptExecution}, {},
-      {}, {}, FROM_HERE);
+      {}, {}, {}, FROM_HERE);
 }
 
 // Similar to ReissuesNavigationIfEvictedDuringNavigation, except that
@@ -4182,7 +4202,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kRendererProcessKilled}, {},
-      {}, {}, FROM_HERE);
+      {}, {}, {}, FROM_HERE);
 }
 
 // The test is simulating a race condition. The scheduler tracked features are
@@ -4321,7 +4341,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kNetworkRequestRedirected},
-      {}, {}, {}, FROM_HERE);
+      {}, {}, {}, {}, FROM_HERE);
 }
 
 // Eviction is triggered when a keepalive fetch request gets redirected while
@@ -4378,7 +4398,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kNetworkRequestRedirected},
-      {}, {}, {}, FROM_HERE);
+      {}, {}, {}, {}, FROM_HERE);
 }
 
 // Tests the case when the header was received before the page is frozen,
@@ -4418,7 +4438,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
                          kNetworkRequestDatapipeDrainedAsBytesConsumer},
-                    {}, {}, {}, FROM_HERE);
+                    {}, {}, {}, {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -4505,7 +4525,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kNetworkExceedsBufferLimit},
-      {}, {}, {}, FROM_HERE);
+      {}, {}, {}, {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
@@ -4577,7 +4597,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kNetworkExceedsBufferLimit},
-      {}, {}, {}, FROM_HERE);
+      {}, {}, {}, {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -4695,7 +4715,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kNetworkExceedsBufferLimit},
-      {}, {}, {}, FROM_HERE);
+      {}, {}, {}, {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -4780,7 +4800,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kNetworkExceedsBufferLimit},
-      {}, {}, {}, FROM_HERE);
+      {}, {}, {}, {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -4914,7 +4934,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kNetworkExceedsBufferLimit},
-      {}, {}, {}, FROM_HERE);
+      {}, {}, {}, {}, FROM_HERE);
 
   // The second page was still loading images when we navigated away, but it's
   // still eligible for back-forward cache.
@@ -4975,7 +4995,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kNetworkRequestTimeout}, {},
-      {}, {}, FROM_HERE);
+      {}, {}, {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -5016,7 +5036,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kNetworkExceedsBufferLimit},
-      {}, {}, {}, FROM_HERE);
+      {}, {}, {}, {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -5093,7 +5113,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kNetworkExceedsBufferLimit},
-      {}, {}, {}, FROM_HERE);
+      {}, {}, {}, {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
@@ -5551,7 +5571,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
           BackForwardCacheMetrics::NotRestoredReason::
               kServiceWorkerVersionActivation,
       },
-      {}, {}, {}, FROM_HERE);
+      {}, {}, {}, {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
@@ -5609,7 +5629,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(tab_to_be_bfcached->web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kServiceWorkerPostMessage},
-      {}, {}, {}, FROM_HERE);
+      {}, {}, {}, {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, EvictOnServiceWorkerClaim) {
@@ -5659,7 +5679,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, EvictOnServiceWorkerClaim) {
   EXPECT_TRUE(deleted.deleted());
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kServiceWorkerClaim}, {}, {},
-      {}, FROM_HERE);
+      {}, {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
@@ -5722,7 +5742,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(deleted.deleted());
   ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
                          kServiceWorkerUnregistration},
-                    {}, {}, {}, FROM_HERE);
+                    {}, {}, {}, {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CachePagesWithBeacon) {
@@ -5911,7 +5931,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithSameSiteDisabled,
 
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBrowsingInstanceNotSwapped},
-      {}, {ShouldSwapBrowsingInstance::kNo_SameSiteNavigation}, {}, FROM_HERE);
+      {}, {ShouldSwapBrowsingInstance::kNo_SameSiteNavigation}, {}, {},
+      FROM_HERE);
 
   // 5) Go to A2.
   web_contents()->GetController().GoForward();
@@ -5922,7 +5943,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithSameSiteDisabled,
           BackForwardCacheMetrics::NotRestoredReason::
               kConflictingBrowsingInstance,
       },
-      {}, {}, {}, FROM_HERE);
+      {}, {}, {}, {}, FROM_HERE);
 }
 
 // When same-site bfcache is disabled, we should not cache on same-site
@@ -5996,7 +6017,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithSameSiteDisabled,
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
                          kDisableForRenderFrameHostCalled},
-                    {}, {}, {RenderFrameHostDisabledForTestingReason()},
+                    {}, {}, {RenderFrameHostDisabledForTestingReason()}, {},
                     FROM_HERE);
 }
 
@@ -6410,7 +6431,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, TimedEviction) {
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::kTimeout}, {},
-                    {}, {}, FROM_HERE);
+                    {}, {}, {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -6437,7 +6458,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
                          kDisableForRenderFrameHostCalled},
-                    {}, {}, {RenderFrameHostDisabledForTestingReason()},
+                    {}, {}, {RenderFrameHostDisabledForTestingReason()}, {},
                     FROM_HERE);
 }
 
@@ -6468,7 +6489,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
                          kDisableForRenderFrameHostCalled},
-                    {}, {}, {RenderFrameHostDisabledForTestingReason()},
+                    {}, {}, {RenderFrameHostDisabledForTestingReason()}, {},
                     FROM_HERE);
 }
 
@@ -6498,7 +6519,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
                          kDisableForRenderFrameHostCalled},
-                    {}, {}, {RenderFrameHostDisabledForTestingReason()},
+                    {}, {}, {RenderFrameHostDisabledForTestingReason()}, {},
                     FROM_HERE);
 }
 
@@ -6529,7 +6550,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
                          kDisableForRenderFrameHostCalled},
-                    {}, {}, {RenderFrameHostDisabledForTestingReason()},
+                    {}, {}, {RenderFrameHostDisabledForTestingReason()}, {},
                     FROM_HERE);
 }
 
@@ -7141,7 +7162,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, NestedWebContents) {
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kHaveInnerContents}, {}, {},
-      {}, FROM_HERE);
+      {}, {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WebBluetooth) {
@@ -7180,7 +7201,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WebBluetooth) {
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
                          kDisableForRenderFrameHostCalled},
-                    {}, {}, {reason}, FROM_HERE);
+                    {}, {}, {reason}, {}, FROM_HERE);
 }
 
 // Check the BackForwardCache is disabled when the WebUSB feature is used.
@@ -7916,7 +7937,7 @@ IN_PROC_BROWSER_TEST_F(SensorBackForwardCacheBrowserTest,
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
       {blink::scheduler::WebSchedulerTrackedFeature::
            kRequestedBackForwardCacheBlockedSensors},
-      {}, {}, FROM_HERE);
+      {}, {}, {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(SensorBackForwardCacheBrowserTest, OrientationCached) {
@@ -8116,7 +8137,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // 1) Navigate to A.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
-  EXPECT_FALSE(current_frame_host()->IsInactiveAndDisallowActivation());
+  EXPECT_FALSE(current_frame_host()->IsInactiveAndDisallowActivation(
+      DisallowActivationReasonId::kForTesting));
 
   // 2) Navigate to B.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
@@ -8141,14 +8163,15 @@ IN_PROC_BROWSER_TEST_F(
 
   // 2) Navigate to B.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
-  EXPECT_TRUE(rfh_a->IsInactiveAndDisallowActivation());
+  const uint64_t reason = DisallowActivationReasonId::kForTesting;
+  EXPECT_TRUE(rfh_a->IsInactiveAndDisallowActivation(reason));
 
   // 3) Go back to A.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kIgnoreEventAndEvict}, {},
-      {}, {}, FROM_HERE);
+      {}, {}, {reason}, FROM_HERE);
 }
 
 // Check BackForwardCache is enabled and works for devices with very low memory.
@@ -8723,7 +8746,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
-      {blink::scheduler::WebSchedulerTrackedFeature::kWebRTC}, {}, {},
+      {blink::scheduler::WebSchedulerTrackedFeature::kWebRTC}, {}, {}, {},
       FROM_HERE);
 }
 #endif  // !defined(OS_ANDROID)
@@ -8760,7 +8783,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WebLocksNotCached) {
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
-      {blink::scheduler::WebSchedulerTrackedFeature::kWebLocks}, {}, {},
+      {blink::scheduler::WebSchedulerTrackedFeature::kWebLocks}, {}, {}, {},
       FROM_HERE);
 }
 
@@ -8986,7 +9009,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WebMidiNotCached) {
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
       {blink::scheduler::WebSchedulerTrackedFeature::kRequestedMIDIPermission},
-      {}, {}, FROM_HERE);
+      {}, {}, {}, FROM_HERE);
 }
 
 #if defined(OS_ANDROID)
@@ -9392,7 +9415,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
       {blink::scheduler::WebSchedulerTrackedFeature::kSpeechRecognizer}, {}, {},
-      FROM_HERE);
+      {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
@@ -9470,7 +9493,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
       {blink::scheduler::WebSchedulerTrackedFeature::kSpeechSynthesis}, {}, {},
-      FROM_HERE);
+      {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
@@ -9520,7 +9543,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
                          kDisableForRenderFrameHostCalled},
-                    {}, {}, {reason}, FROM_HERE);
+                    {}, {}, {reason}, {}, FROM_HERE);
 }
 
 // RenderFrameHostImpl::coep_reporter() must be preserved when doing a back
@@ -10449,7 +10472,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 3) Initiate eviction of rfh_a from BackForwardCache. Entries should be 0.
   // RenderViewHost, RenderProcessHost and RenderFrameHost should all be
   // deleted.
-  EXPECT_TRUE(rfh_a->IsInactiveAndDisallowActivation());
+  EXPECT_TRUE(rfh_a->IsInactiveAndDisallowActivation(
+      DisallowActivationReasonId::kForTesting));
   destruction_observer.Wait();
   ASSERT_TRUE(delete_observer_rvh_a.deleted());
   delete_observer_rfh_a.WaitUntilDeleted();
@@ -10485,7 +10509,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 3) Initiate eviction of rfh a1 from BackForwardCache. RenderViewHost,
   // RenderProcessHost and RenderFrameHost of sub-frame b1 should all be deleted
   // on eviction.
-  EXPECT_TRUE(a1->IsInactiveAndDisallowActivation());
+  EXPECT_TRUE(a1->IsInactiveAndDisallowActivation(
+      DisallowActivationReasonId::kForTesting));
   destruction_observer.Wait();
   ASSERT_TRUE(delete_observer_rvh_b1.deleted());
   delete_observer_rfh_b1.WaitUntilDeleted();
@@ -10520,7 +10545,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 3) Initiate eviction of rfh a1 from BackForwardCache. RenderViewHost,
   // RenderProcessHost and RenderFrameHost of sub-frame a2 should all be
   // deleted.
-  EXPECT_TRUE(a1->IsInactiveAndDisallowActivation());
+  EXPECT_TRUE(a1->IsInactiveAndDisallowActivation(
+      DisallowActivationReasonId::kForTesting));
   destruction_observer.Wait();
   ASSERT_TRUE(delete_observer_rvh_a2.deleted());
   delete_observer_rfh_a2.WaitUntilDeleted();
@@ -10676,7 +10702,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
                          kNavigationCancelledWhileRestoring},
-                    {}, {}, {}, FROM_HERE);
+                    {}, {}, {}, {}, FROM_HERE);
 }
 
 // Check that about:blank is not cached.
@@ -10702,7 +10728,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, AboutBlankWillNotBeCached) {
           BackForwardCacheMetrics::NotRestoredReason::
               kBrowsingInstanceNotSwapped,
       },
-      {}, {ShouldSwapBrowsingInstance::kNo_DoesNotHaveSite}, {}, FROM_HERE);
+      {}, {ShouldSwapBrowsingInstance::kNo_DoesNotHaveSite}, {}, {}, FROM_HERE);
 }
 
 // Check that an eligible page is cached when navigating to about:blank.
@@ -10764,7 +10790,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, RedirectToSelf) {
           BackForwardCacheMetrics::NotRestoredReason::
               kBrowsingInstanceNotSwapped,
       },
-      {}, {ShouldSwapBrowsingInstance::kNo_SameUrlNavigation}, {}, FROM_HERE);
+      {}, {ShouldSwapBrowsingInstance::kNo_SameUrlNavigation}, {}, {},
+      FROM_HERE);
 }
 
 // Check that the response 204 No Content doesn't affect back-forward cache.
@@ -11058,7 +11085,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithNoSupportedFeatures,
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
       {blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel}, {}, {},
-      FROM_HERE);
+      {}, FROM_HERE);
 
   RenderFrameHostImpl* rfh_a2 = current_frame_host();
   RenderFrameDeletedObserver deleted_a2(rfh_a2);
@@ -11080,7 +11107,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithNoSupportedFeatures,
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
-      {blink::scheduler::WebSchedulerTrackedFeature::kKeyboardLock}, {}, {},
+      {blink::scheduler::WebSchedulerTrackedFeature::kKeyboardLock}, {}, {}, {},
       FROM_HERE);
 }
 
@@ -11211,7 +11238,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
               EvalJs(shell()->web_contents(), "navigator.userAgent"));
     ExpectNotRestored(
         {BackForwardCacheMetrics::NotRestoredReason::kUserAgentOverrideDiffers},
-        {}, {}, {}, FROM_HERE);
+        {}, {}, {}, {}, FROM_HERE);
   }
 
   // B should be stored in the back-forward cache.
@@ -11261,7 +11288,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
               EvalJs(shell()->web_contents(), "navigator.userAgent"));
     ExpectNotRestored(
         {BackForwardCacheMetrics::NotRestoredReason::kUserAgentOverrideDiffers},
-        {}, {}, {}, FROM_HERE);
+        {}, {}, {}, {}, FROM_HERE);
   }
 }
 
@@ -11419,7 +11446,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       BackForwardCacheDisable::DisabledReasonId::kMediaSession);
   ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
                          kDisableForRenderFrameHostCalled},
-                    {}, {}, {reason}, FROM_HERE);
+                    {}, {}, {reason}, {}, FROM_HERE);
 }
 
 // Test if the delegate doesn't support BFCache that the reason is
@@ -11447,7 +11474,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
                          kBackForwardCacheDisabledForDelegate},
-                    {}, {}, {}, FROM_HERE);
+                    {}, {}, {}, {}, FROM_HERE);
 }
 
 class BackForwardCacheOptInBrowserTest : public BackForwardCacheBrowserTest {
@@ -11476,7 +11503,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheOptInBrowserTest, NoCacheWithoutHeader) {
 
   ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
                          kOptInUnloadHeaderNotPresent},
-                    {}, {}, {}, FROM_HERE);
+                    {}, {}, {}, {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheOptInBrowserTest,
@@ -11521,7 +11548,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheOptInBrowserTest,
 
   ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
                          kOptInUnloadHeaderNotPresent},
-                    {}, {}, {}, FROM_HERE);
+                    {}, {}, {}, {}, FROM_HERE);
 
   // 4) Go forward. - B has the header, so it should be cached.
   web_contents()->GetController().GoForward();
@@ -11585,7 +11612,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheUnloadStrategyBrowserTest,
   } else {
     ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
                            kUnloadHandlerExistsInMainFrame},
-                      {}, {}, {}, FROM_HERE);
+                      {}, {}, {}, {}, FROM_HERE);
   }
 
   // 4) Go forward.
@@ -11617,11 +11644,11 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheUnloadStrategyBrowserTest,
   } else if (GetParam() == "opt_in_header_required") {
     ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
                            kOptInUnloadHeaderNotPresent},
-                      {}, {}, {}, FROM_HERE);
+                      {}, {}, {}, {}, FROM_HERE);
   } else {
     ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
                            kUnloadHandlerExistsInMainFrame},
-                      {}, {}, {}, FROM_HERE);
+                      {}, {}, {}, {}, FROM_HERE);
   }
 
   // 4) Go forward.
@@ -11657,7 +11684,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheUnloadStrategyBrowserTest,
     ASSERT_EQ("no", GetParam());
     ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
                            kUnloadHandlerExistsInSubFrame},
-                      {}, {}, {}, FROM_HERE);
+                      {}, {}, {}, {}, FROM_HERE);
   }
 
   // 4) Go forward.
@@ -11690,7 +11717,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheUnloadStrategyBrowserTest,
   } else {
     ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
                            kUnloadHandlerExistsInSubFrame},
-                      {}, {}, {}, FROM_HERE);
+                      {}, {}, {}, {}, FROM_HERE);
   }
 
   // 4) Go forward.
@@ -11799,7 +11826,7 @@ IN_PROC_BROWSER_TEST_F(
 
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kCacheControlNoStore}, {},
-      {}, {}, FROM_HERE);
+      {}, {}, {}, FROM_HERE);
 }
 
 #if BUILDFLAG(IS_CHROMECAST)
@@ -11864,7 +11891,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("foo=baz", EvalJs(tab_to_be_bfcached, "document.cookie"));
   ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
                          kCacheControlNoStoreCookieModified},
-                    {}, {}, {}, FROM_HERE);
+                    {}, {}, {}, {}, FROM_HERE);
 }
 
 // Disabled due to flakiness on Cast Audio Linux https://crbug.com/1229182
@@ -11919,7 +11946,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("foo=baz", EvalJs(tab_to_be_bfcached, "document.cookie"));
   ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
                          kCacheControlNoStoreCookieModified},
-                    {}, {}, {}, FROM_HERE);
+                    {}, {}, {}, {}, FROM_HERE);
   RenderFrameHostImplWrapper rfh_a_2(current_frame_host());
 
   // 6) Navigate away to b.com. |rfh_a_2| should enter bfcache again.
@@ -11932,7 +11959,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(WaitForLoadStop(tab_to_be_bfcached->web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kCacheControlNoStore}, {},
-      {}, {}, FROM_HERE);
+      {}, {}, {}, FROM_HERE);
 }
 
 // Disabled due to flakiness on Cast Audio Linux https://crbug.com/1229182
@@ -11997,7 +12024,7 @@ IN_PROC_BROWSER_TEST_F(
 
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kCacheControlNoStore}, {},
-      {}, {}, FROM_HERE);
+      {}, {}, {}, FROM_HERE);
 }
 
 // Test that a page with cache-control:no-store records other not restored
@@ -12029,7 +12056,7 @@ IN_PROC_BROWSER_TEST_F(
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kJavaScriptExecution,
        BackForwardCacheMetrics::NotRestoredReason::kCacheControlNoStore},
-      {}, {}, {}, FROM_HERE);
+      {}, {}, {}, {}, FROM_HERE);
 }
 
 // Test that a page with cache-control:no-store records other not restored
@@ -12063,7 +12090,7 @@ IN_PROC_BROWSER_TEST_F(
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures,
        BackForwardCacheMetrics::NotRestoredReason::kCacheControlNoStore},
       {blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel}, {}, {},
-      FROM_HERE);
+      {}, FROM_HERE);
 }
 
 namespace {
@@ -12153,7 +12180,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("foo=baz", EvalJs(tab_to_be_bfcached, "document.cookie"));
   ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
                          kCacheControlNoStoreCookieModified},
-                    {}, {}, {}, FROM_HERE);
+                    {}, {}, {}, {}, FROM_HERE);
 }
 
 // Disabled due to flakiness on Cast Audio Linux https://crbug.com/1229182
@@ -12221,7 +12248,7 @@ IN_PROC_BROWSER_TEST_F(
   observer3.Wait();
   ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
                          kCacheControlNoStoreHTTPOnlyCookieModified},
-                    {}, {}, {}, FROM_HERE);
+                    {}, {}, {}, {}, FROM_HERE);
 }
 
 // Disabled due to flakiness on Cast Audio Linux https://crbug.com/1229182
@@ -12290,7 +12317,7 @@ IN_PROC_BROWSER_TEST_F(
 
   ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
                          kCacheControlNoStoreHTTPOnlyCookieModified},
-                    {}, {}, {}, FROM_HERE);
+                    {}, {}, {}, {}, FROM_HERE);
   RenderFrameHostImplWrapper rfh_a_2(current_frame_host());
 
   // 5) Navigate away to b.com. |rfh_a_2| should enter bfcache again.
@@ -12307,7 +12334,7 @@ IN_PROC_BROWSER_TEST_F(
   observer4.Wait();
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kCacheControlNoStore}, {},
-      {}, {}, FROM_HERE);
+      {}, {}, {}, FROM_HERE);
 }
 
 class BackForwardCacheBrowserTestRestoreCacheControlNoStoreUnlessCookieChange
@@ -12427,7 +12454,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("foo=baz", EvalJs(tab_to_be_bfcached, "document.cookie"));
   ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
                          kCacheControlNoStoreCookieModified},
-                    {}, {}, {}, FROM_HERE);
+                    {}, {}, {}, {}, FROM_HERE);
 }
 
 namespace {

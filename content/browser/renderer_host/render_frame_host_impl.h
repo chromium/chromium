@@ -367,7 +367,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool IsRenderFrameLive() override;
   LifecycleState GetLifecycleState() override;
   bool IsActive() override;
-  bool IsInactiveAndDisallowActivation() override;
+  bool IsInactiveAndDisallowActivation(uint64_t reason) override;
   size_t GetProxyCount() override;
   bool HasSelection() override;
   const net::HttpResponseHeaders* GetLastResponseHeaders() override;

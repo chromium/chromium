@@ -141,6 +141,7 @@ source_set("browser_sources") {
     "devtools_permission_overrides.cc",
     "devtools_permission_overrides.h",
     "devtools_socket_factory.h",
+    "disallow_activation_reason.h",
     "document_service_base.h",
     "dom_storage_context.h",
     "download_item_utils.h",

@@ -33,6 +33,7 @@
 #include "content/browser/scoped_active_url.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/referrer_type_converters.h"
@@ -473,8 +474,10 @@ void RenderFrameProxyHost::CapturePaintPreviewOfCrossProcessSubframe(
     const base::UnguessableToken& guid) {
   RenderFrameHostImpl* rfh = frame_tree_node_->current_frame_host();
   // Do not capture paint on behalf of inactive RenderFrameHost.
-  if (rfh->IsInactiveAndDisallowActivation())
+  if (rfh->IsInactiveAndDisallowActivation(
+          DisallowActivationReasonId::kCapturePaintPreviewProxy)) {
     return;
+  }
   rfh->delegate()->CapturePaintPreviewOfCrossProcessSubframe(clip_rect, guid,
                                                              rfh);
 }
@@ -668,9 +671,10 @@ void RenderFrameProxyHost::OpenURL(blink::mojom::OpenURLParamsPtr params) {
   // - If the document is prerendering, we don't expect to get here because
   // prerendering pages are expected to defer cross-origin iframes, so there
   // should not be any OOPIFs. Just cancel prerendering if we get here.
-  // TODO(falken): Log a specific cancellation reason if this occurs.
-  if (current_rfh->IsInactiveAndDisallowActivation())
+  if (current_rfh->IsInactiveAndDisallowActivation(
+          DisallowActivationReasonId::kOpenURL)) {
     return;
+  }
 
   // Verify that we are in the same BrowsingInstance as the current
   // RenderFrameHost.

@@ -52,6 +52,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/device_service.h"
+#include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/download_manager_delegate.h"
 #include "content/public/browser/download_request_utils.h"
@@ -1386,7 +1387,8 @@ void DownloadManagerImpl::BeginDownloadInternal(
 
   if (rfh && content_initiated) {
     // Cancel downloads from non-active documents (e.g prerendered, bfcached).
-    if (rfh->IsInactiveAndDisallowActivation()) {
+    if (rfh->IsInactiveAndDisallowActivation(
+            DisallowActivationReasonId::kBeginDownload)) {
       DropDownload();
       return;
     }

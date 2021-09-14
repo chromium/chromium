@@ -74,6 +74,7 @@
 #include "content/common/trace_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/notification_service.h"
@@ -2965,8 +2966,10 @@ NavigationControllerImpl::DetermineActionForHistoryNavigation(
     //
     // If the document is inactive, there's no need to recurse into subframes,
     // which should all be inactive as well.
-    if (render_frame_host->IsInactiveAndDisallowActivation())
+    if (frame->current_frame_host()->IsInactiveAndDisallowActivation(
+            DisallowActivationReasonId::kDetermineActionForHistoryNavigation)) {
       return HistoryNavigationAction::kStopLooking;
+    }
   }
 
   // If there's no last committed entry, there is no previous history entry to
@@ -3781,8 +3784,10 @@ void NavigationControllerImpl::LoadPostCommitErrorPage(
   // back-forward cache.
   // - If the document is prerendering, it can navigate but when loading error
   // pages, cancel prerendering.
-  if (rfhi->IsInactiveAndDisallowActivation())
+  if (rfhi->IsInactiveAndDisallowActivation(
+          DisallowActivationReasonId::kLoadPostCommitErrorPage)) {
     return;
+  }
 
   FrameTreeNode* node = rfhi->frame_tree_node();
 
