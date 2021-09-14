@@ -21,6 +21,8 @@ source_set("app_service") {
     "//chrome/browser/web_applications",
     "//chrome/common",
     "//components/content_settings/core/browser",
+    "//components/services/app_service/public/cpp:app_update",
+    "//components/services/app_service/public/cpp:intents",
     "//components/services/app_service/public/cpp:publisher",
     "//components/sessions",
     "//components/webapps/browser",
@@ -29,7 +31,6 @@ source_set("app_service") {
 
   if (is_chromeos_ash) {
     assert(enable_system_notifications)
-    sources += [ "web_apps_chromeos.cc" ]
 
     deps += [
       "//ash/public/cpp",
