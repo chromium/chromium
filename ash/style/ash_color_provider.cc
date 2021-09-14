@@ -453,7 +453,7 @@ SkColor AshColorProvider::GetContentLayerColorImpl(ContentLayerType type,
     case ContentLayerType::kRadioColorInactive:
       return use_dark_color ? gfx::kGoogleGrey200 : gfx::kGoogleGrey700;
     case ContentLayerType::kSwitchKnobColorInactive:
-      return use_dark_color ? gfx::kGoogleGrey800 : SK_ColorWHITE;
+      return use_dark_color ? gfx::kGoogleGrey400 : SK_ColorWHITE;
     case ContentLayerType::kSwitchTrackColorInactive:
       return GetSecondToneColor(use_dark_color ? gfx::kGoogleGrey200
                                                : gfx::kGoogleGrey700);
