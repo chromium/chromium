@@ -16,6 +16,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
@@ -93,10 +94,11 @@ public class InstanceSwitcherCoordinator {
             boolean newWindowEnabled, List<InstanceInfo> instanceInfo) {
         new InstanceSwitcherCoordinator(context, modalDialogManager, iconBridge, openCallback,
                 closeCallback, newWindowAction)
-                .showDialog(instanceInfo, newWindowEnabled);
+                .show(instanceInfo, newWindowEnabled);
     }
 
-    private InstanceSwitcherCoordinator(Context context, ModalDialogManager modalDialogManager,
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    InstanceSwitcherCoordinator(Context context, ModalDialogManager modalDialogManager,
             LargeIconBridge iconBridge, Callback<InstanceInfo> openCallback,
             Callback<InstanceInfo> closeCallback, Runnable newWindowAction) {
         mContext = context;
@@ -122,7 +124,8 @@ public class InstanceSwitcherCoordinator {
         listView.setAdapter(adapter);
     }
 
-    private void showDialog(List<InstanceInfo> items, boolean newWindowEnabled) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void show(List<InstanceInfo> items, boolean newWindowEnabled) {
         UiUtils.closeOpenDialogs();
         sPrevInstance = this;
         for (int i = 0; i < items.size(); ++i) {
@@ -283,5 +286,13 @@ public class InstanceSwitcherCoordinator {
         mDialogView.findViewById(R.id.list_view).setVisibility(View.VISIBLE);
         mDialogView.findViewById(R.id.close_confirm).setVisibility(View.GONE);
         mIsShowingConfirmationMessage = false;
+    }
+
+    @VisibleForTesting
+    void clickMoreMenuItemForTesting(int instanceIndex, int menuIndex) {
+        BasicListMenu moreMenu = (BasicListMenu) mModelList.get(instanceIndex)
+                                         .model.get(InstanceSwitcherItemProperties.MORE_MENU)
+                                         .getListMenu();
+        moreMenu.onItemClick(null, null, menuIndex, 0);
     }
 }

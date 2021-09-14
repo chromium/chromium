@@ -5,7 +5,14 @@
 package org.chromium.chrome.browser.multiwindow;
 
 import static androidx.test.espresso.Espresso.onData;
+import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE;
+import static androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE;
+import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.anything;
 
@@ -61,7 +68,7 @@ public class InstanceSwitcherCoordinatorTest extends DummyUiChromeActivityTestCa
 
     @Test
     @SmallTest
-    public void testInstanceSwitcherCoordinator_openWindow() throws Exception {
+    public void testOpenWindow() throws Exception {
         InstanceInfo[] instances = new InstanceInfo[] {
                 new InstanceInfo(0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
                 new InstanceInfo(1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false),
@@ -79,7 +86,7 @@ public class InstanceSwitcherCoordinatorTest extends DummyUiChromeActivityTestCa
 
     @Test
     @SmallTest
-    public void testInstanceSwitcherCoordinator_newWindow() throws Exception {
+    public void testNewWindow() throws Exception {
         InstanceInfo[] instances = new InstanceInfo[] {
                 new InstanceInfo(0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
                 new InstanceInfo(1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false),
@@ -93,6 +100,42 @@ public class InstanceSwitcherCoordinatorTest extends DummyUiChromeActivityTestCa
         });
         // 0 ~ 2: instances. 3: 'new window' command.
         onData(anything()).atPosition(3).perform(click());
+        itemClickCallbackHelper.waitForCallback(itemClickCount);
+    }
+
+    @Test
+    @SmallTest
+    public void testCloseWindow() throws Exception {
+        InstanceInfo[] instances = new InstanceInfo[] {
+                new InstanceInfo(0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
+                new InstanceInfo(1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false),
+                new InstanceInfo(2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 1, 1, false)};
+        final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
+        final int itemClickCount = itemClickCallbackHelper.getCallCount();
+        Callback<InstanceInfo> closeCallback = (item) -> itemClickCallbackHelper.notifyCalled();
+        InstanceSwitcherCoordinator coordinator = TestThreadUtils.runOnUiThreadBlocking(() -> {
+            InstanceSwitcherCoordinator ic = new InstanceSwitcherCoordinator(
+                    getActivity(), mModalDialogManager, mIconBridge, null, closeCallback, null);
+            ic.show(Arrays.asList(instances), true);
+            return ic;
+        });
+
+        // Verify that we have only [cancel] button.
+        onView(withId(org.chromium.components.browser_ui.modaldialog.R.id.positive_button))
+                .check(matches(withEffectiveVisibility(GONE)));
+        onView(withText("Cancel")).check(matches(withEffectiveVisibility(VISIBLE)));
+
+        final int itemIndex = 2; // Index of the instance entry to close
+        final int closeWindowMenuIndex = 0; // Index of the item 'Close Window' in 3-dot menu.
+        onData(anything()).atPosition(itemIndex).onChildView(withId(R.id.more)).perform(click());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> coordinator.clickMoreMenuItemForTesting(itemIndex, closeWindowMenuIndex));
+
+        // Verify that we have both [cancel] [close] buttons now.
+        onView(withText("Close")).check(matches(withEffectiveVisibility(VISIBLE)));
+        onView(withText("Cancel")).check(matches(withEffectiveVisibility(VISIBLE)));
+
+        onView(withText("Close")).perform(click());
         itemClickCallbackHelper.waitForCallback(itemClickCount);
     }
 }
