@@ -31,17 +31,21 @@ class COMPONENT_EXPORT(ASSISTANT_UI) UiElementContainerView
   explicit UiElementContainerView(AssistantViewDelegate* delegate);
   ~UiElementContainerView() override;
 
+  void OnOverflowIndicatorVisibilityChanged(bool is_visible);
+
   // AnimatedContainerView:
   const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   int GetHeightForWidth(int width) const override;
   gfx::Size GetMinimumSize() const override;
   void Layout() override;
-  void OnContentsPreferredSizeChanged(views::View* content_view) override;
   void OnCommittedQueryChanged(const AssistantQuery& query) override;
 
   // views::View:
   void OnThemeChanged() override;
+
+  // AssistantScrollView::Observer:
+  void OnContentsPreferredSizeChanged(views::View* content_view) override;
 
  private:
   void InitLayout();
@@ -50,14 +54,6 @@ class COMPONENT_EXPORT(ASSISTANT_UI) UiElementContainerView
   std::unique_ptr<ElementAnimator> HandleUiElement(
       const AssistantUiElement* ui_element) override;
   void OnAllViewsAnimatedIn() override;
-  void OnScrollBarUpdated(views::ScrollBar* scroll_bar,
-                          int viewport_size,
-                          int content_size,
-                          int content_scroll_offset) override;
-  void OnScrollBarVisibilityChanged(views::ScrollBar* scroll_bar,
-                                    bool is_visible) override;
-
-  void UpdateScrollIndicator(bool can_scroll);
 
   views::View* scroll_indicator_ = nullptr;  // Owned by view hierarchy.
 
