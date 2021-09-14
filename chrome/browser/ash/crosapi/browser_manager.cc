@@ -903,7 +903,8 @@ policy::CloudPolicyStore* BrowserManager::GetDeviceAccountPolicyStore() {
         return nullptr;
       return user_cloud_policy_manager->core()->store();
     }
-    case user_manager::USER_TYPE_PUBLIC_ACCOUNT: {
+    case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
+    case user_manager::USER_TYPE_WEB_KIOSK_APP: {
       policy::DeviceLocalAccountPolicyBroker* broker =
           g_browser_process->platform_part()
               ->browser_policy_connector_ash()
