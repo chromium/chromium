@@ -567,7 +567,12 @@ gfx::Size AppListFolderView::CalculatePreferredSize() const {
 void AppListFolderView::Layout() {
   CalculateIdealBounds();
   views::ViewModelUtils::SetViewBoundsToIdealBounds(*view_model_);
-  background_view_->layer()->SetClipRect(background_view_->GetLocalBounds());
+  // `BackgroundAnimation` animates the clip rect during open/close.
+  if (!background_animation_ || !background_animation_->IsAnimationRunning()) {
+    // The folder view can change size due to app install/uninstall. Ensure the
+    // rounded corners have the correct position. https://crbug.com/993282
+    background_view_->layer()->SetClipRect(background_view_->GetLocalBounds());
+  }
 }
 
 bool AppListFolderView::OnKeyPressed(const ui::KeyEvent& event) {
