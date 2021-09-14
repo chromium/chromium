@@ -82,12 +82,6 @@ constexpr SkColor kBubbleButtonTextColor = SK_ColorWHITE;
 // The outline color of the button.
 constexpr SkColor kBubbleButtonBorderColor = gfx::kGoogleGrey300;
 
-// The focus ring color of the button.
-constexpr SkColor kBubbleButtonFocusRingColor = SK_ColorWHITE;
-
-// The background color of the button when focused.
-constexpr SkColor kBubbleButtonFocusedBackgroundColor = gfx::kGoogleBlue600;
-
 // The background color of the button when highlighted.
 constexpr SkColor kBubbleButtonHighlightColor = gfx::kGoogleBlue300;
 
@@ -97,22 +91,22 @@ class MdIPHBubbleButton : public views::MdTextButton {
 
   MdIPHBubbleButton(PressedCallback callback,
                     const std::u16string& text,
-                    bool has_border)
+                    bool is_default_button)
       : MdTextButton(callback,
                      text,
                      ChromeTextContext::CONTEXT_IPH_BUBBLE_BUTTON),
-        has_border_(has_border) {
+        button_colors_(ComputeButtonColors(is_default_button)) {
     // Prominent style gives a button hover highlight.
     SetProminent(true);
     // TODO(kerenzhu): IPH bubble uses blue600 as the background color
     // for both regular and dark mode. We might want to use a
     // dark-mode-appropriate background color so that overriding text color
     // is not needed.
-    SetEnabledTextColors(kBubbleButtonTextColor);
+    SetEnabledTextColors(button_colors_.text_color);
     // TODO(crbug/1112244): Temporary fix for Mac. Bubble shouldn't be in
     // inactive style when the bubble loses focus.
-    SetTextColor(ButtonState::STATE_DISABLED, kBubbleButtonTextColor);
-    views::FocusRing::Get(this)->SetColor(kBubbleButtonFocusRingColor);
+    SetTextColor(ButtonState::STATE_DISABLED, button_colors_.text_color);
+    views::FocusRing::Get(this)->SetColor(button_colors_.focus_ring_color);
     GetViewAccessibility().OverrideIsLeaf(true);
   }
   MdIPHBubbleButton(const MdIPHBubbleButton&) = delete;
@@ -123,27 +117,39 @@ class MdIPHBubbleButton : public views::MdTextButton {
     // Prominent MD button does not have a border.
     // Override this method to draw a border.
     // Adapted from MdTextButton::UpdateBackgroundColor()
-    ui::NativeTheme* theme = GetNativeTheme();
-
-    // Default button background color is the same as IPH bubble's color.
-    const SkColor kBubbleBackgroundColor = ThemeProperties::GetDefaultColor(
-        ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_BACKGROUND, false);
-
-    SkColor bg_color = HasFocus() ? kBubbleButtonFocusedBackgroundColor
-                                  : kBubbleBackgroundColor;
+    SkColor bg_color = button_colors_.background_color;
     if (GetState() == STATE_PRESSED)
-      bg_color = theme->GetSystemButtonPressedColor(bg_color);
-
-    SkColor stroke_color =
-        has_border_ ? kBubbleButtonBorderColor : kBubbleBackgroundColor;
+      bg_color = GetNativeTheme()->GetSystemButtonPressedColor(bg_color);
 
     SetBackground(CreateBackgroundFromPainter(
         views::Painter::CreateRoundRectWith1PxBorderPainter(
-            bg_color, stroke_color, GetCornerRadius())));
+            bg_color, button_colors_.background_stroke_color,
+            GetCornerRadius())));
   }
 
  private:
-  bool has_border_;
+  struct ButtonColors {
+    SkColor text_color;
+    SkColor background_color;
+    SkColor background_stroke_color;
+    SkColor focus_ring_color;
+  };
+
+  static ButtonColors ComputeButtonColors(bool is_default_button) {
+    const SkColor kBubbleBackgroundColor = ThemeProperties::GetDefaultColor(
+        ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_BACKGROUND, false);
+    ButtonColors button_colors;
+    button_colors.text_color =
+        is_default_button ? kBubbleBackgroundColor : kBubbleButtonTextColor;
+    button_colors.background_color =
+        is_default_button ? kBubbleButtonTextColor : kBubbleBackgroundColor;
+    button_colors.background_stroke_color =
+        is_default_button ? kBubbleButtonTextColor : kBubbleButtonBorderColor;
+    button_colors.focus_ring_color = kBubbleBackgroundColor;
+    return button_colors;
+  }
+
+  ButtonColors button_colors_;
 };
 
 BEGIN_METADATA(MdIPHBubbleButton, views::MdTextButton)
