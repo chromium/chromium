@@ -15,7 +15,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DiagnosticsBrowserProxy, DiagnosticsBrowserProxyImpl} from './diagnostics_browser_proxy.js';
-import {getNavigationIcon} from './diagnostics_utils.js';
+import {getDiagnosticsIcon, getNavigationIcon} from './diagnostics_utils.js';
 
 /**
  * @fileoverview
@@ -88,7 +88,7 @@ Polymer({
 
       if (this.isInputEnabled_) {
         pages.push(navPanel.createSelectorItem(
-            'Input', 'input-list', /*icon=*/ '', 'input'));
+            'Input', 'input-list', getDiagnosticsIcon('keyboard'), 'input'));
       }
       navPanel.addSelectors(pages);
     }

@@ -49,6 +49,19 @@ Polymer({
       type: Array,
       value: () => [],
     },
+
+    deviceIcon_: {
+      type: String,
+      computed: 'computeDeviceIcon_(deviceType)',
+    },
+  },
+
+  computeDeviceIcon_(deviceType) {
+    return {
+      [InputCardType.kKeyboard]: 'diagnostics:keyboard',
+      [InputCardType.kTouchpad]: 'diagnostics:touchpad',
+      [InputCardType.kTouchscreen]: 'diagnostics:touchscreen',
+    }[deviceType];
   },
 
   /**

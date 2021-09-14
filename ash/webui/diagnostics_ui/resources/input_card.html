@@ -30,8 +30,7 @@
     <dom-repeat items="[[devices]]" as="device">
       <template>
         <div class="device">
-          <!-- TODO(crbug.com/1207678): actually use the appropriate icon. -->
-          <iron-icon icon="diagnostics:cpu"></iron-icon>
+          <iron-icon icon="[[deviceIcon_]]"></iron-icon>
           <div class="device-body">
             <div class="device-name">[[device.name]]</div>
             <div class="device-description">[[getDeviceDescription_(device)]]</div>
