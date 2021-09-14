@@ -186,7 +186,6 @@ source_set("unit_tests") {
     "browser_manager_unittest.cc",
     "browser_util_unittest.cc",
     "browser_version_service_ash_unittest.cc",
-    "chrome_app_window_tracker_ash_unittest.cc",
     "download_controller_ash_unittest.cc",
     "field_trial_service_ash_unittest.cc",
     "geolocation_service_ash_unittest.cc",
