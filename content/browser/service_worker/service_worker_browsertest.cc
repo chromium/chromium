@@ -1186,6 +1186,12 @@ class UserAgentServiceWorkerBrowserTest
                                     kOriginTrialTestPublicKey);
   }
 
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(features::kPlzServiceWorker);
+
+    ServiceWorkerBrowserTest::SetUp();
+  }
+
   bool WithUserAgentReductionOriginTrialToken() const { return GetParam(); }
 
   std::string GetExpectedUserAgent() const {
@@ -1194,6 +1200,9 @@ class UserAgentServiceWorkerBrowserTest
       return client->GetReducedUserAgent();
     return client->GetUserAgent();
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(UserAgentServiceWorkerBrowserTest, NavigatorUserAgent) {
