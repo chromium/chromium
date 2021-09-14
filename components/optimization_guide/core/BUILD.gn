@@ -90,6 +90,7 @@ static_library("core") {
       "bert_model_executor.cc",
       "bert_model_executor.h",
       "entity_metadata.h",
+      "entity_metadata_provider.h",
       "model_executor.h",
       "model_validator.cc",
       "model_validator.h",

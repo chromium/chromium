@@ -20,6 +20,7 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/optimization_guide/core/entity_metadata_provider.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "url/gurl.h"
 
@@ -51,7 +52,8 @@ struct HistoryVisit {
 };
 
 // A KeyedService that annotates page content.
-class PageContentAnnotationsService : public KeyedService {
+class PageContentAnnotationsService : public KeyedService,
+                                      public EntityMetadataProvider {
  public:
   explicit PageContentAnnotationsService(
       OptimizationGuideModelProvider* optimization_guide_model_provider,
@@ -86,6 +88,11 @@ class PageContentAnnotationsService : public KeyedService {
   // to annotate page content. Will return |absl::nullopt| if no model is being
   // used to annotate page topics for received page content.
   absl::optional<int64_t> GetPageTopicsModelVersion() const;
+
+  // EntityMetadataProvider:
+  void GetMetadataForEntityId(
+      const std::string& entity_id,
+      EntityMetadataRetrievedCallback callback) override;
 
  private:
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)

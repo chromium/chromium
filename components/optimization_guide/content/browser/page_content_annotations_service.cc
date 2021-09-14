@@ -183,6 +183,16 @@ PageContentAnnotationsService::GetPageTopicsModelVersion() const {
 #endif
 }
 
+void PageContentAnnotationsService::GetMetadataForEntityId(
+    const std::string& entity_id,
+    EntityMetadataRetrievedCallback callback) {
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  model_manager_->GetMetadataForEntityId(entity_id, std::move(callback));
+#else
+  std::move(callback).Run(absl::nullopt);
+#endif
+}
+
 // static
 HistoryVisit PageContentAnnotationsService::CreateHistoryVisitFromWebContents(
     content::WebContents* web_contents) {
