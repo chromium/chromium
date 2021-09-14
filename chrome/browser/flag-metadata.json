@@ -1604,32 +1604,32 @@
   {
     "name": "enable-cros-ime-assist-autocorrect",
     "owners": [ "jopalmer", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 100
   },
   {
     "name": "enable-cros-ime-assist-emoji-enhanced",
     "owners": [ "myy", "curtismcmullan", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 96
+    "expiry_milestone": 100
   },
   {
     "name": "enable-cros-ime-assist-multi-word",
     "owners": [ "curtismcmullan", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 100
   },
   {
     "name": "enable-cros-ime-assist-multi-word-expanded",
     "owners": [ "curtismcmullan", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 96
+    "expiry_milestone": 100
   },
   {
     "name": "enable-cros-ime-assist-personal-info",
     "owners": [ "jiwan", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 100
   },
   {
     "name": "enable-cros-ime-emoji-suggest-addition",
     "owners": [ "myy", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 100
   },
   {
     "name": "enable-cros-ime-mozc-proto",
@@ -1649,7 +1649,7 @@
   {
     "name": "enable-cros-ime-system-emoji-picker",
     "owners": [ "jopalmer", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 100
   },
   {
     "name": "enable-cros-ime-system-emoji-picker-clipboard",
@@ -1674,7 +1674,7 @@
   {
     "name": "enable-cros-on-device-grammar-check",
     "owners": [ "jiwan", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 100
   },
   {
     "name": "enable-cros-system-chinese-physical-typing",
@@ -1699,17 +1699,17 @@
   {
     "name": "enable-cros-virtual-keyboard-bordered-key",
     "owners": [ "essential-inputs-team@google.com" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 100
   },
   {
     "name": "enable-cros-virtual-keyboard-multipaste",
-    "owners": [ "essential-inputs-team@google.com" ],
-    "expiry_milestone": 95
+    "owners": [ "jiwan", "essential-inputs-team@google.com" ],
+    "expiry_milestone": 100
   },
   {
     "name": "enable-cros-virtual-keyboard-multipaste-suggestion",
     "owners": [ "jiwan", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 98
+    "expiry_milestone": 100
   },
   {
     "name": "enable-dangerous-download-dialog",
@@ -3343,7 +3343,7 @@
   },
   {
     "name": "handwriting-gesture-editing",
-    "owners": [ "essential-inputs-team@google.com" ],
+    "owners": [ "curtismcmullan", "essential-inputs-team@google.com" ],
     "expiry_milestone": 95
   },
   {
