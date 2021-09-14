@@ -319,7 +319,8 @@ void AppWindowShelfItemController::UpdateShelfItemIcon() {
         aura::client::kAppIconKey);
   }
   // TODO(khmel): Remove using image_set_by_controller
-  if (app_icon && !app_icon->isNull()) {
+  if (app_icon && !app_icon->isNull() &&
+      ChromeShelfController::instance()->GetItem(shelf_id())) {
     set_image_set_by_controller(true);
     ChromeShelfController::instance()->SetItemImage(shelf_id(), *app_icon);
   } else if (image_set_by_controller()) {
