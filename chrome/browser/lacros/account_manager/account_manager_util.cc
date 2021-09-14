@@ -6,11 +6,12 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/signin/signin_features.h"
 
 bool IsAccountManagerAvailable(const Profile* profile) {
   // Account Manager / Mirror is only enabled on Lacros's Main Profile for now.
   if (!profile->IsMainProfile())
-    return false;
+    return base::FeatureList::IsEnabled(kMultiProfileAccountConsistency);
 
   // TODO(anastasiian): check for Web kiosk mode.
 
