@@ -9,7 +9,6 @@
 #include "base/android/path_utils.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/download/android/download_controller.h"
 #include "chrome/browser/download/android/download_dialog_utils.h"
 #include "chrome/browser/ui/android/infobars/duplicate_download_infobar.h"
@@ -22,15 +21,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace android {
-namespace {
-void RecordDuplicateDownloadInfobarEvent(bool is_offline_page,
-                                         DuplicateDownloadInfobarEvent event) {
-  base::UmaHistogramEnumeration(
-      is_offline_page ? "Download.DuplicateInfobarEvent.OfflinePage"
-                      : "Download.DuplicateDownloadInfobarEvent.Download",
-      event, DuplicateDownloadInfobarEvent::kCount);
-}
-}  // namespace
 
 ChromeDuplicateDownloadInfoBarDelegate::
     ~ChromeDuplicateDownloadInfoBarDelegate() {
@@ -64,8 +54,8 @@ ChromeDuplicateDownloadInfoBarDelegate::ChromeDuplicateDownloadInfoBarDelegate(
       file_path_(file_path),
       file_selected_callback_(std::move(file_selected_callback)) {
   download_item_->AddObserver(this);
-  RecordDuplicateDownloadInfobarEvent(IsOfflinePage(),
-                                      DuplicateDownloadInfobarEvent::kShown);
+  DuplicateDownloadInfoBar::RecordDuplicateDownloadInfobarEvent(
+      false, DuplicateDownloadInfobarEvent::kShown);
 }
 
 infobars::InfoBarDelegate::InfoBarIdentifier
@@ -74,8 +64,8 @@ ChromeDuplicateDownloadInfoBarDelegate::GetIdentifier() const {
 }
 
 bool ChromeDuplicateDownloadInfoBarDelegate::Accept() {
-  RecordDuplicateDownloadInfobarEvent(IsOfflinePage(),
-                                      DuplicateDownloadInfobarEvent::kAccepted);
+  DuplicateDownloadInfoBar::RecordDuplicateDownloadInfobarEvent(
+      false, DuplicateDownloadInfobarEvent::kAccepted);
   if (!download_item_) {
     return true;
   }
@@ -95,8 +85,8 @@ bool ChromeDuplicateDownloadInfoBarDelegate::Accept() {
 }
 
 bool ChromeDuplicateDownloadInfoBarDelegate::Cancel() {
-  RecordDuplicateDownloadInfobarEvent(IsOfflinePage(),
-                                      DuplicateDownloadInfobarEvent::kCanceled);
+  DuplicateDownloadInfoBar::RecordDuplicateDownloadInfobarEvent(
+      false, DuplicateDownloadInfobarEvent::kCanceled);
   if (!download_item_)
     return true;
 
@@ -111,8 +101,8 @@ std::string ChromeDuplicateDownloadInfoBarDelegate::GetFilePath() const {
 }
 
 void ChromeDuplicateDownloadInfoBarDelegate::InfoBarDismissed() {
-  RecordDuplicateDownloadInfobarEvent(IsOfflinePage(),
-                                      DuplicateDownloadInfobarEvent::kCanceled);
+  DuplicateDownloadInfoBar::RecordDuplicateDownloadInfobarEvent(
+      false, DuplicateDownloadInfobarEvent::kDismissed);
   Cancel();
 }
 
