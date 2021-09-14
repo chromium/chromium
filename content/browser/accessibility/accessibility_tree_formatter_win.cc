@@ -259,16 +259,21 @@ void AccessibilityTreeFormatterWin::RecursiveBuildTree(
     LONG root_y) const {
   ui::AXPlatformNode* platform_node =
       ui::AXPlatformNode::FromNativeViewAccessible(node.Get());
-  DCHECK(platform_node);
 
-  ui::AXPlatformNodeDelegate* delegate = platform_node->GetDelegate();
-  DCHECK(delegate);
+  bool skipChildren = false;
+  if (platform_node) {
+    ui::AXPlatformNodeDelegate* delegate = platform_node->GetDelegate();
+    DCHECK(delegate);
 
-  if (!ShouldDumpNode(*delegate))
-    return;
+    if (!ShouldDumpNode(*delegate))
+      return;
+
+    if (!ShouldDumpChildren(*delegate))
+      skipChildren = true;
+  }
 
   AddProperties(node, dict, root_x, root_y);
-  if (!ShouldDumpChildren(*delegate))
+  if (skipChildren)
     return;
 
   base::Value child_list(base::Value::Type::LIST);
