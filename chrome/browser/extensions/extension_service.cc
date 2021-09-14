@@ -971,10 +971,9 @@ void ExtensionService::RemoveDisableReasonAndMaybeEnable(
   if ((disable_reason & reason_to_remove) == 0)
     return;
 
+  extension_prefs_->RemoveDisableReason(extension_id, reason_to_remove);
   if (disable_reason == reason_to_remove) {
     EnableExtension(extension_id);
-  } else {
-    extension_prefs_->RemoveDisableReason(extension_id, reason_to_remove);
   }
 }
 

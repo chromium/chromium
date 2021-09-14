@@ -183,6 +183,33 @@ TEST_F(ExtensionAllowlistUnitTest, AllowlistEnforcement) {
   EXPECT_TRUE(IsDisabled(kExtensionId1));
 }
 
+TEST_F(ExtensionAllowlistUnitTest, DisabledReasonResetWhenBlocklisted) {
+  // Created with 3 installed extensions.
+  CreateExtensionService(/*enhanced_protection_enabled=*/true);
+  service()->Init();
+
+  // The disabled reason should be set if an extension is not in the allowlist.
+  PerformActionBasedOnOmahaAttributes(kExtensionId1,
+                                      /*is_malware=*/false,
+                                      /*is_allowlisted=*/false);
+  EXPECT_EQ(disable_reason::DISABLE_NOT_ALLOWLISTED,
+            extension_prefs()->GetDisableReasons(kExtensionId1));
+
+  // The extension is added to the blocklist.
+  service()->BlocklistExtensionForTest(kExtensionId1);
+
+  // A blocklisted item should not be allowlisted, but if the improbable
+  // happens, the item should still be blocklisted.
+  PerformActionBasedOnOmahaAttributes(kExtensionId1,
+                                      /*is_malware=*/false,
+                                      /*is_allowlisted=*/true);
+  EXPECT_TRUE(IsBlocklisted(kExtensionId1));
+  // The disabled reason should be reset because the extension is in the
+  // allowlist.
+  EXPECT_EQ(disable_reason::DISABLE_NONE,
+            extension_prefs()->GetDisableReasons(kExtensionId1));
+}
+
 TEST_F(ExtensionAllowlistUnitTest, DisabledItemStaysDisabledWhenAllowlisted) {
   // Created with 3 installed extensions.
   CreateExtensionService(/*enhanced_protection_enabled=*/true);
