@@ -2416,6 +2416,8 @@ static_library("ui") {
       "webui/chromeos/login/base_screen_handler.h",
       "webui/chromeos/login/base_webui_handler.cc",
       "webui/chromeos/login/base_webui_handler.h",
+      "webui/chromeos/login/consolidated_consent_screen_handler.cc",
+      "webui/chromeos/login/consolidated_consent_screen_handler.h",
       "webui/chromeos/login/cookie_waiter.cc",
       "webui/chromeos/login/cookie_waiter.h",
       "webui/chromeos/login/core_oobe_handler.cc",

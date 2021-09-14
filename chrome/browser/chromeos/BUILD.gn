@@ -1761,6 +1761,8 @@ source_set("chromeos") {
     "../ash/login/screens/chrome_user_selection_screen.h",
     "../ash/login/screens/chromevox_hint/chromevox_hint_detector.cc",
     "../ash/login/screens/chromevox_hint/chromevox_hint_detector.h",
+    "../ash/login/screens/consolidated_consent_screen.cc",
+    "../ash/login/screens/consolidated_consent_screen.h",
     "../ash/login/screens/demo_preferences_screen.cc",
     "../ash/login/screens/demo_preferences_screen.h",
     "../ash/login/screens/demo_setup_screen.cc",

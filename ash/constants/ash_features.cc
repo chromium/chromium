@@ -801,6 +801,11 @@ const base::Feature kOnDeviceGrammarCheck{"OnDeviceGrammarCheck",
 const base::Feature kOnDeviceSpeechRecognition{
     "OnDeviceSpeechRecognition", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, EULA and ARC Terms of Service screens are skipped and merged
+// into Consolidated Consent Screen.
+const base::Feature kOobeConsolidatedConsent{"OobeConsolidatedConsent",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables the feedback tool new UX on Chrome OS.
 // This tool under development will be rolled out via Finch.
 // Enabling this flag will use the new feedback tool instead of the current
@@ -1504,6 +1509,10 @@ bool IsOobeChromeVoxHintEnabled() {
 
 bool IsOobePolymer3Enabled() {
   return base::FeatureList::IsEnabled(kEnableOobePolymer3);
+}
+
+bool IsOobeConsolidatedConsentEnabled() {
+  return base::FeatureList::IsEnabled(kOobeConsolidatedConsent);
 }
 
 bool IsPciguardUiEnabled() {
