@@ -1488,7 +1488,8 @@ void PaintLayer::RemoveOnlyThisLayerAfterStyleChange(
 
     if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
         PaintLayerPainter::PaintedOutputInvisible(*old_style)) {
-      // This layer is removed because opacity becomes 1. Do the same as
+      // PaintedOutputInvisible() was true because opacity was near zero, and
+      // this layer is to be removed because opacity becomes 1. Do the same as
       // StyleDidChange() on change of PaintedOutputInvisible().
       GetLayoutObject().SetSubtreeShouldDoFullPaintInvalidation();
     }
