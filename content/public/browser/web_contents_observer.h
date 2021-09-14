@@ -238,18 +238,28 @@ class CONTENT_EXPORT WebContentsObserver {
   // should clear any references to |navigation_handle| in DidFinishNavigation,
   // just before it is destroyed.
   //
-  // Note that this is fired by navigations in any frame of the WebContents,
-  // not just the main frame.
+  // NOTES:
+  // - Starting a navigation doesn't affect which document is shown, or
+  // (in many cases) which URL is displayed in the omnibox. Most effects of the
+  // navigation only occur at DidFinishNavigation, if it commits. Feature code
+  // generally should not use DidStartNavigation to reset their state (e.g.
+  // close the UI), especially given that a renderer process can easily start a
+  // navigation which is guaranteed not to commit (e.g. by navigating to
+  // a URL returning a response with HTTP status code of 204 or a download).
+  // Consider listening to PrimaryPageChange or DidFinishNavigation instead.
   //
-  // Note that this is fired by same-document navigations, such as fragment
+  // - This notification is fired by navigations in any frame of the
+  // WebContents, not just the primary main frame.
+  //
+  // - This notification is fired by same-document navigations, such as fragment
   // navigations or pushState/replaceState, which will not result in a document
   // change. To filter these out, use NavigationHandle::IsSameDocument.
   //
-  // Note that more than one navigation can be ongoing in the same frame at the
-  // same time (including the main frame). Each will get its own
+  // - There can be more than one navigation can be ongoing in the same frame at
+  // the same time (including the main frame). Each will get its own
   // NavigationHandle.
   //
-  // Note that there is no guarantee that DidFinishNavigation will be called
+  // - There is no guarantee that DidFinishNavigation will be called
   // for any particular navigation before DidStartNavigation is called on the
   // next.
   virtual void DidStartNavigation(NavigationHandle* navigation_handle) {}
