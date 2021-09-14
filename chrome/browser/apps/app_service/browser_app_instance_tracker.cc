@@ -229,6 +229,25 @@ void BrowserAppInstanceTracker::ActivateTabInstance(BrowserAppInstanceId id) {
   }
 }
 
+void BrowserAppInstanceTracker::StopInstancesOfApp(const std::string& app_id) {
+  std::vector<content::WebContents*> web_contents_to_close;
+  for (const auto& pair : app_instances_) {
+    if (pair.second->app_id == app_id) {
+      web_contents_to_close.push_back(pair.first);
+    }
+  }
+
+  for (content::WebContents* web_contents : web_contents_to_close) {
+    Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+    if (!browser)
+      continue;
+    int index = browser->tab_strip_model()->GetIndexOfWebContents(web_contents);
+    DCHECK(index != TabStripModel::kNoTab);
+    browser->tab_strip_model()->CloseWebContentsAt(index,
+                                                   TabStripModel::CLOSE_NONE);
+  }
+}
+
 void BrowserAppInstanceTracker::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,

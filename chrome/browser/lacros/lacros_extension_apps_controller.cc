@@ -202,6 +202,10 @@ void LacrosExtensionAppsController::ExecuteContextMenuCommand(
   NOTIMPLEMENTED();
 }
 
+void LacrosExtensionAppsController::StopApp(const std::string& app_id) {
+  NOTIMPLEMENTED();
+}
+
 void LacrosExtensionAppsController::FinishedEnableFlow(
     crosapi::mojom::LaunchParamsPtr launch_params,
     LaunchCallback callback,

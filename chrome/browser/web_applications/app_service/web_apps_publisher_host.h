@@ -109,6 +109,7 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
       const std::string& app_id,
       const std::string& id,
       ExecuteContextMenuCommandCallback callback) override;
+  void StopApp(const std::string& app_id) override;
 
   // WebAppPublisherHelper::Delegate:
   void PublishWebApps(std::vector<apps::mojom::AppPtr> apps) override;

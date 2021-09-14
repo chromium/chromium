@@ -85,6 +85,10 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
   // its own window, this will have no effect.
   void ActivateTabInstance(BrowserAppInstanceId id);
 
+  // Stop all running instances of an app. The app's associated windows/tabs
+  // will be closed.
+  void StopInstancesOfApp(const std::string& app_id);
+
   void AddObserver(BrowserAppInstanceObserver* observer) {
     app_instances_.AddObserver(observer);
     chrome_instances_.AddObserver(observer);

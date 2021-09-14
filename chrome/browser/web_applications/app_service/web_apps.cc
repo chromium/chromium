@@ -279,6 +279,10 @@ void WebApps::UnpauseApp(const std::string& app_id) {
   publisher_helper().UnpauseApp(app_id);
 }
 
+void WebApps::StopApp(const std::string& app_id) {
+  publisher_helper().StopApp(app_id);
+}
+
 void WebApps::GetMenuModel(const std::string& app_id,
                            apps::mojom::MenuType menu_type,
                            int64_t display_id,

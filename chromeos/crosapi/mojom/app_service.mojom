@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 13
+// Next MinVersion: 14
 
 module crosapi.mojom;
 
@@ -118,6 +118,10 @@ interface AppController {
   ExecuteContextMenuCommand@9(
       string app_id,
       string id) => (LaunchResult launch_result);
+
+  // Close all instances of the given |app_id|.
+  [MinVersion=13]
+  StopApp@10(string app_id);
 };
 
 // Interacts with the app service. Implemented in ash-chrome and called in

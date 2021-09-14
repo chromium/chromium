@@ -241,6 +241,10 @@ void WebAppsPublisherHost::ExecuteContextMenuCommand(
   ReturnLaunchResult(profile_, web_contents, std::move(callback));
 }
 
+void WebAppsPublisherHost::StopApp(const std::string& app_id) {
+  publisher_helper().StopApp(app_id);
+}
+
 void WebAppsPublisherHost::Launch(crosapi::mojom::LaunchParamsPtr launch_params,
                                   LaunchCallback callback) {
   content::WebContents* web_contents;

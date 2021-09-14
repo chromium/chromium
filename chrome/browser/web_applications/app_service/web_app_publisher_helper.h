@@ -174,6 +174,10 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   void SetPermission(const std::string& app_id,
                      apps::mojom::PermissionPtr permission);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  void StopApp(const std::string& app_id);
+#endif
+
   void OpenNativeSettings(const std::string& app_id);
 
   void SetWindowMode(const std::string& app_id,

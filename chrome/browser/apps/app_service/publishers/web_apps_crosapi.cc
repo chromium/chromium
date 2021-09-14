@@ -202,6 +202,10 @@ void WebAppsCrosapi::UnpauseApp(const std::string& app_id) {
   controller_->UnpauseApp(app_id);
 }
 
+void WebAppsCrosapi::StopApp(const std::string& app_id) {
+  controller_->StopApp(app_id);
+}
+
 void WebAppsCrosapi::OpenNativeSettings(const std::string& app_id) {
   controller_->OpenNativeSettings(app_id);
 }

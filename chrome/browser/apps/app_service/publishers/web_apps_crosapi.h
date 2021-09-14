@@ -72,6 +72,7 @@ class WebAppsCrosapi : public KeyedService,
                     GetMenuModelCallback callback) override;
   void PauseApp(const std::string& app_id) override;
   void UnpauseApp(const std::string& app_id) override;
+  void StopApp(const std::string& app_id) override;
   void OpenNativeSettings(const std::string& app_id) override;
   void SetWindowMode(const std::string& app_id,
                      apps::mojom::WindowMode window_mode) override;

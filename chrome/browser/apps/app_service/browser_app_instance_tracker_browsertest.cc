@@ -106,6 +106,15 @@ bool operator!=(const TestInstance& e1, const TestInstance& e2) {
   return !(e1 == e2);
 }
 
+bool operator<(const TestInstance& e1, const TestInstance& e2) {
+  return std::tie(e1.name, e1.id, e1.type, e1.app_id, e1.window, e1.title,
+                  e1.is_browser_visible, e1.is_browser_active,
+                  e1.is_web_contents_active) <
+         std::tie(e2.name, e2.id, e2.type, e2.app_id, e2.window, e2.title,
+                  e2.is_browser_visible, e2.is_browser_active,
+                  e2.is_web_contents_active);
+}
+
 std::ostream& operator<<(std::ostream& os, const TestInstance& e) {
   if (e.name == "") {
     return os << "none";
@@ -168,6 +177,19 @@ class Recorder : public apps::BrowserAppInstanceObserver {
     EXPECT_EQ(calls_.size(), expected_calls.size());
     for (int i = 0; i < std::max(calls_.size(), expected_calls.size()); ++i) {
       EXPECT_EQ(Get(calls_, i), Get(expected_calls, i)) << "call #" << i;
+    }
+  }
+
+  void VerifyIgnoreOrder(const std::vector<TestInstance>& expected_calls) {
+    EXPECT_EQ(calls_.size(), expected_calls.size());
+    std::vector<TestInstance> expected_calls_copy(expected_calls);
+    std::vector<TestInstance> calls_copy(calls_);
+    std::sort(expected_calls_copy.begin(), expected_calls_copy.end());
+    std::sort(calls_copy.begin(), calls_copy.end());
+    for (int i = 0; i < std::max(calls_copy.size(), expected_calls_copy.size());
+         ++i) {
+      EXPECT_EQ(Get(calls_copy, i), Get(expected_calls_copy, i))
+          << "call #" << i;
     }
   }
 
@@ -1065,4 +1087,76 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, ActivateTabInstance) {
   tracker_->ActivateTabInstance(tracker_->GetAppInstance(web_contents_a)->id);
 
   EXPECT_EQ(browser->tab_strip_model()->GetActiveWebContents(), web_contents_a);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, StopInstancesOfApp) {
+  // Setup: a browser with 4 tabs and an app window for app D. The browser
+  // contains 2 tabs of app A, one tab of app B and one tab not associated with
+  // an app.
+  Browser* browser1 = nullptr;
+  aura::Window* window1 = nullptr;
+  Browser* browser2 = nullptr;
+  aura::Window* window2 = nullptr;
+
+  // Open two tabbed instances of app A and 1 instance of app B.
+  browser1 = CreateBrowser();
+  window1 = browser1->window()->GetNativeWindow();
+  content::WebContents* tab;
+  tab = InsertForegroundTab(browser1, "https://a.example.org");
+  EXPECT_EQ(GetId(tab), 2);
+  tab = InsertForegroundTab(browser1, "https://a.example.org");
+  EXPECT_EQ(GetId(tab), 3);
+  tab = InsertForegroundTab(browser1, "https://b.example.org");
+  EXPECT_EQ(GetId(tab), 4);
+
+  // Open a fourth tab with no app.
+  InsertForegroundTab(browser1, "https://c.example.org");
+
+  // Open a windowed instance of app D.
+  std::string app_d_id = InstallWebAppOpeningAsWindow("https://d.example.org");
+  browser2 = CreateAppBrowser(app_d_id);
+  window2 = browser2->window()->GetNativeWindow();
+  tab = InsertForegroundTab(browser2, "https://d.example.org");
+  EXPECT_EQ(GetId(tab), 5);
+
+  // Stop app A.
+  {
+    SCOPED_TRACE("close app A");
+    Recorder recorder(*tracker_);
+
+    tracker_->StopInstancesOfApp(kAppId_A);
+
+    recorder.VerifyIgnoreOrder({
+        {"removed", 3, kAppTab, kAppId_A, window1, kTitle_A, kVisible,
+         kInactive, kInactive},
+        {"removed", 2, kAppTab, kAppId_A, window1, kTitle_A, kVisible,
+         kInactive, kInactive},
+    });
+  }
+
+  // Stop app D.
+  {
+    SCOPED_TRACE("close app D");
+    Recorder recorder(*tracker_);
+
+    tracker_->StopInstancesOfApp(app_d_id);
+
+    recorder.Verify({
+        {"removed", 5, kAppWindow, app_d_id, window2, "d.example.org", kVisible,
+         kActive, kActive},
+    });
+  }
+
+  // Stop app B.
+  {
+    SCOPED_TRACE("close app B");
+    Recorder recorder(*tracker_);
+
+    tracker_->StopInstancesOfApp(kAppId_B);
+
+    recorder.Verify({
+        {"removed", 4, kAppTab, kAppId_B, window1, kTitle_B, kVisible,
+         kInactive, kInactive},
+    });
+  }
 }

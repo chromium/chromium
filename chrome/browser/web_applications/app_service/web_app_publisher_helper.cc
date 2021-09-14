@@ -43,6 +43,9 @@
 
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/apps/app_service/app_service_metrics.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
 #include "chrome/browser/badging/badge_manager_factory.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/common/chrome_switches.h"
@@ -627,6 +630,22 @@ void WebAppPublisherHelper::SetPermission(
   host_content_settings_map->SetContentSettingDefaultScope(
       url, url, permission_type, permission_value);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+void WebAppPublisherHelper::StopApp(const std::string& app_id) {
+  if (!base::FeatureList::IsEnabled(
+          apps::BrowserAppInstanceTracker::kEnabled)) {
+    return;
+  }
+
+  apps::BrowserAppInstanceTracker* instance_tracker =
+      apps::AppServiceProxyFactory::GetInstance()
+          ->GetForProfile(profile_)
+          ->BrowserAppInstanceTracker();
+
+  instance_tracker->StopInstancesOfApp(app_id);
+}
+#endif
 
 void WebAppPublisherHelper::OpenNativeSettings(const std::string& app_id) {
   if (!profile_) {
