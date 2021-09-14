@@ -8,7 +8,11 @@
 #include <utility>
 #include <vector>
 
+#include <fuchsia/ui/views/cpp/fidl.h>
+#include <lib/ui/scenic/cpp/view_token_pair.h>
+
 #include "base/check.h"
+#include "base/fuchsia/fuchsia_logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump_type.h"
@@ -40,15 +44,21 @@
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/ozone_switches.h"
 #include "ui/ozone/public/system_input_injector.h"
-#include "ui/platform_window/platform_window_init_properties.h"
-
-#if defined(OS_FUCHSIA)
 #include "ui/platform_window/fuchsia/initialize_presenter_api_view.h"
-#endif
+#include "ui/platform_window/platform_window_init_properties.h"
 
 namespace ui {
 
 namespace {
+
+::fuchsia::ui::views::ViewRef CloneViewRef(
+    const ::fuchsia::ui::views::ViewRef& view_ref) {
+  ::fuchsia::ui::views::ViewRef dup;
+  zx_status_t status =
+      view_ref.reference.duplicate(ZX_RIGHT_SAME_RIGHTS, &dup.reference);
+  ZX_CHECK(status == ZX_OK, status) << "zx_object_duplicate";
+  return dup;
+}
 
 class ScenicPlatformEventSource : public ui::PlatformEventSource {
  public:
@@ -94,6 +104,15 @@ class OzonePlatformScenic : public OzonePlatform,
       PlatformWindowDelegate* delegate,
       PlatformWindowInitProperties properties) override {
     BindInMainProcessIfNecessary();
+
+    if (!properties.view_token && !properties.allow_null_view_token_for_test) {
+      auto view_tokens = scenic::ViewTokenPair::New();
+      properties.view_token = std::move(view_tokens.view_token.value);
+      properties.view_ref_pair = scenic::ViewRefPair::New();
+      ::ui::fuchsia::GetScenicViewPresenter().Run(
+          std::move(view_tokens.view_holder_token),
+          CloneViewRef(properties.view_ref_pair.view_ref));
+    }
 
     // Allow tests to create a view themselves.
     if (!properties.view_token) {

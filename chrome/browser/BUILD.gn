@@ -5621,6 +5621,14 @@ static_library("browser") {
       "upgrade_detector/get_installed_version_fuchsia.cc",
       "upgrade_detector/installed_version_monitor_fuchsia.cc",
     ]
+
+    deps += [
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.app",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.scenic",
+      "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
+      "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+      "//ui/platform_window",
+    ]
   }
 
   if (is_posix) {

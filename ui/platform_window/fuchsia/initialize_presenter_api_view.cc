@@ -13,9 +13,21 @@
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
+#include "base/no_destructor.h"
 
 namespace ui {
 namespace fuchsia {
+namespace {
+base::RepeatingCallback<void(::fuchsia::ui::views::ViewHolderToken,
+                             ::fuchsia::ui::views::ViewRef)>&
+GetScenicViewPresenterInternal() {
+  static base::NoDestructor<base::RepeatingCallback<void(
+      ::fuchsia::ui::views::ViewHolderToken, ::fuchsia::ui::views::ViewRef)>>
+      view_presenter;
+  return *view_presenter;
+}
+
+}  // namespace
 
 void InitializeViewTokenAndPresentView(
     ui::PlatformWindowInitProperties* window_properties_out) {
@@ -36,6 +48,19 @@ void InitializeViewTokenAndPresentView(
 
   presenter->PresentOrReplaceView(std::move(view_tokens.view_holder_token),
                                   nullptr);
+}
+
+void SetScenicViewPresenter(
+    base::RepeatingCallback<void(::fuchsia::ui::views::ViewHolderToken,
+                                 ::fuchsia::ui::views::ViewRef)>
+        view_presenter) {
+  GetScenicViewPresenterInternal() = std::move(view_presenter);
+}
+
+const base::RepeatingCallback<void(::fuchsia::ui::views::ViewHolderToken,
+                                   ::fuchsia::ui::views::ViewRef)>&
+GetScenicViewPresenter() {
+  return GetScenicViewPresenterInternal();
 }
 
 }  // namespace fuchsia
