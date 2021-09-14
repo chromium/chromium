@@ -19,8 +19,6 @@ js_library("connectivity_diagnostics") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/network_health:network_diagnostics.m",
-    "//ui/webui/resources/cr_components/chromeos/network_health:network_diagnostics_mojo.m",
-    "//ui/webui/resources/cr_components/chromeos/network_health:network_health_mojo.m",
     "//ui/webui/resources/cr_components/chromeos/network_health:network_health_summary.m",
     "//ui/webui/resources/cr_elements:cr_container_shadow_behavior.m",
     "//ui/webui/resources/js:i18n_behavior.m",
