@@ -6804,6 +6804,7 @@ crbug.com/1248437 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css
 
 # Sheriff 2021-09-13
 crbug.com/1248912 virtual/threaded/external/wpt/scroll-animations/css/at-scroll-timeline-dynamic.tentative.html [ Failure Pass ]
+crbug.com/1229701 [ Linux ] http/tests/inspector-protocol/network/disable-cache-media-resource.js [ Pass Failure ]
 
 # WebRTC simulcast tests contineue to be flaky
 crbug.com/1230534 [ Win ] external/wpt/webrtc/simulcast/vp8.https.html [ Pass Skip Timeout ]
