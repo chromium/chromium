@@ -31,8 +31,7 @@ gfx::BufferUsage GetBufferUsage(uint32_t usage) {
   } else if (usage & SHARED_IMAGE_USAGE_SCANOUT) {
     return gfx::BufferUsage::SCANOUT;
   } else {
-    NOTREACHED() << "Unsupported usage flags.";
-    return gfx::BufferUsage::SCANOUT;
+    return gfx::BufferUsage::GPU_READ;
   }
 }
 
@@ -186,16 +185,6 @@ bool SharedImageBackingFactoryOzone::IsSupported(
   // TODO(crbug.com/969114): Not all shared image factory implementations
   // support concurrent read/write usage.
   if (usage & SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE) {
-    return false;
-  }
-
-  // TODO(hitawala): Until SharedImageBackingOzone supports all use cases prefer
-  // using SharedImageBackingGLImage instead
-  bool needs_interop_factory = (gr_context_type == GrContextType::kVulkan &&
-                                (usage & SHARED_IMAGE_USAGE_DISPLAY)) ||
-                               (usage & SHARED_IMAGE_USAGE_WEBGPU) ||
-                               (usage & SHARED_IMAGE_USAGE_VIDEO_DECODE);
-  if (!needs_interop_factory) {
     return false;
   }
 
