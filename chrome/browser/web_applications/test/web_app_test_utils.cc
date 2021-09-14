@@ -218,14 +218,13 @@ std::vector<IconSizes> CreateRandomDownloadedShortcutsMenuIconsSizes(
 }  // namespace
 
 std::unique_ptr<WebApp> CreateWebApp(const GURL& start_url,
-                                     Source::Type source_type,
-                                     DisplayMode user_display_mode) {
+                                     Source::Type source_type) {
   const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
 
   auto web_app = std::make_unique<WebApp>(app_id);
   web_app->SetStartUrl(start_url);
   web_app->AddSource(source_type);
-  web_app->SetUserDisplayMode(user_display_mode);
+  web_app->SetUserDisplayMode(DisplayMode::kStandalone);
   web_app->SetName("Name");
 
   return web_app;

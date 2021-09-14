@@ -233,10 +233,10 @@ class WebAppInstallManagerTest
       bool locally_installed,
       const GURL& scope,
       const std::vector<apps::IconInfo>& icon_infos) {
-    auto web_app =
-        test::CreateWebApp(start_url, Source::kSync, user_display_mode);
+    auto web_app = test::CreateWebApp(start_url, Source::kSync);
     web_app->SetIsFromSyncAndPendingInstallation(true);
     web_app->SetIsLocallyInstalled(locally_installed);
+    web_app->SetUserDisplayMode(user_display_mode);
 
     WebApp::SyncFallbackData sync_fallback_data;
     sync_fallback_data.name = app_name;
@@ -660,8 +660,8 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, InstallWebAppsAfterSync_Success) {
 
   bool expect_locally_installed = AreAppsLocallyInstalledBySync();
 
-  const std::unique_ptr<WebApp> expected_app = test::CreateWebApp(
-      url, Source::kSync, /*user_display_mode=*/DisplayMode::kStandalone);
+  const std::unique_ptr<WebApp> expected_app =
+      test::CreateWebApp(url, Source::kSync);
   expected_app->SetIsFromSyncAndPendingInstallation(false);
   expected_app->SetScope(url);
   expected_app->SetName("Name");
@@ -669,6 +669,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, InstallWebAppsAfterSync_Success) {
   expected_app->SetDescription("Description");
   expected_app->SetThemeColor(SK_ColorCYAN);
   expected_app->SetDisplayMode(DisplayMode::kBrowser);
+  expected_app->SetUserDisplayMode(DisplayMode::kStandalone);
 
   std::vector<apps::IconInfo> manifest_icons;
   std::vector<int> sizes;
@@ -733,12 +734,12 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, InstallWebAppsAfterSync_Fallback) {
   bool expect_locally_installed = AreAppsLocallyInstalledBySync();
 
   const std::unique_ptr<WebApp> expected_app =
-      test::CreateWebApp(url, Source::kSync,
-                         /*user_display_mode=*/DisplayMode::kBrowser);
+      test::CreateWebApp(url, Source::kSync);
   expected_app->SetIsFromSyncAndPendingInstallation(false);
   expected_app->SetName("Name from sync");
   expected_app->SetScope(url);
   expected_app->SetDisplayMode(DisplayMode::kBrowser);
+  expected_app->SetUserDisplayMode(DisplayMode::kBrowser);
   expected_app->SetIsLocallyInstalled(expect_locally_installed);
   expected_app->SetThemeColor(SK_ColorRED);
   // |scope| and |description| are empty here. |display_mode| is |kUndefined|.
@@ -811,8 +812,8 @@ TEST_P(WebAppInstallManagerTest_SyncOnly, InstallWebAppsAfterSync_Fallback) {
 TEST_P(WebAppInstallManagerTest_SyncOnly,
        UninstallFromSyncAfterRegistryUpdate) {
   std::unique_ptr<WebApp> app =
-      test::CreateWebApp(GURL("https://example.com/path"), Source::kSync,
-                         /*user_display_mode=*/DisplayMode::kStandalone);
+      test::CreateWebApp(GURL("https://example.com/path"), Source::kSync);
+  app->SetUserDisplayMode(DisplayMode::kStandalone);
 
   const AppId app_id = app->app_id();
   InitRegistrarWithApp(std::move(app));
@@ -880,9 +881,9 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
 TEST_P(WebAppInstallManagerTest_SyncOnly,
        PolicyAndUser_UninstallExternalWebApp) {
   std::unique_ptr<WebApp> policy_and_user_app =
-      test::CreateWebApp(GURL("https://example.com/path"), Source::kSync,
-                         /*user_display_mode=*/DisplayMode::kStandalone);
+      test::CreateWebApp(GURL("https://example.com/path"), Source::kSync);
   policy_and_user_app->AddSource(Source::kPolicy);
+  policy_and_user_app->SetUserDisplayMode(DisplayMode::kStandalone);
 
   const AppId app_id = policy_and_user_app->app_id();
   const GURL external_app_url("https://example.com/path/policy");
@@ -916,9 +917,9 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
 
 TEST_P(WebAppInstallManagerTest_SyncOnly, DefaultAndUser_UninstallWebApp) {
   std::unique_ptr<WebApp> default_and_user_app =
-      test::CreateWebApp(GURL("https://example.com/path"), Source::kSync,
-                         /*user_display_mode=*/DisplayMode::kStandalone);
+      test::CreateWebApp(GURL("https://example.com/path"), Source::kSync);
   default_and_user_app->AddSource(Source::kDefault);
+  default_and_user_app->SetUserDisplayMode(DisplayMode::kStandalone);
 
   const AppId app_id = default_and_user_app->app_id();
   const GURL external_app_url("https://example.com/path/default");
