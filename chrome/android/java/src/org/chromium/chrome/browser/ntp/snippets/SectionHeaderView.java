@@ -77,6 +77,46 @@ public class SectionHeaderView extends LinearLayout {
         }
     }
 
+    private class UnreadIndicator implements ViewTreeObserver.OnGlobalLayoutListener {
+        private View mAnchor;
+        private BadgeDrawable mBadge;
+
+        UnreadIndicator(View anchor) {
+            mAnchor = anchor;
+            mBadge = BadgeDrawable.createFromResource(
+                    SectionHeaderView.this.getContext(), R.xml.tab_layout_badge);
+
+            mBadge.setVisible(true);
+            mAnchor.getViewTreeObserver().addOnGlobalLayoutListener(this);
+        }
+
+        void destroy() {
+            mAnchor.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            mBadge.setVisible(false);
+            BadgeUtils.detachBadgeDrawable(mBadge, mAnchor);
+        }
+
+        @Override
+        public void onGlobalLayout() {
+            // attachBadgeDrawable() will crash if mAnchor has no parent. This can happen after the
+            // views are detached from the window.
+            if (mAnchor.getParent() != null) {
+                BadgeUtils.attachBadgeDrawable(mBadge, mAnchor);
+            }
+        }
+    }
+
+    /** Holds additional state for a tab. */
+    private class TabState {
+        // Whether the tab has unread content.
+        public boolean hasUnreadContent;
+        // Null when unread indicator isn't shown.
+        @Nullable
+        public UnreadIndicator unreadIndicator;
+        // The tab's displayed text.
+        public String text = "";
+    }
+
     // Views in the header layout that are set during inflate.
     private @Nullable ImageView mLeadingStatusIndicator;
     private @Nullable TabLayout mTabLayout;
@@ -92,8 +132,7 @@ public class SectionHeaderView extends LinearLayout {
     private Drawable mEnabledIndicatorDrawable;
     private Drawable mNoIndicatorDrawable;
 
-    // Non-null only when the indicator should be shown.
-    private @Nullable UnreadIndicator mUnreadIndicator;
+    private boolean mTextsEnabled;
 
     public SectionHeaderView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -156,6 +195,7 @@ public class SectionHeaderView extends LinearLayout {
         if (mTabLayout != null) {
             TabLayout.Tab tab = mTabLayout.newTab();
             tab.setCustomView(R.layout.new_tab_page_section_tab);
+            tab.setTag(new TabState());
             mTabLayout.addTab(tab);
         }
     }
@@ -185,24 +225,14 @@ public class SectionHeaderView extends LinearLayout {
      */
     void setHeaderAt(String text, boolean hasUnreadContent, int index) {
         TabLayout.Tab tab = getTabAt(index);
-        if (tab != null) {
-            tab.setText(text);
-            String contentDescription = text;
-            if (hasUnreadContent) {
-                contentDescription = contentDescription + ", "
-                        + getResources().getString(
-                                R.string.accessibility_ntp_following_unread_content);
-                if (mUnreadIndicator == null) {
-                    mUnreadIndicator = new UnreadIndicator(tab.getCustomView());
-                }
-            } else {
-                if (mUnreadIndicator != null) {
-                    mUnreadIndicator.destroy();
-                    mUnreadIndicator = null;
-                }
-            }
-            tab.setContentDescription(contentDescription);
+        if (tab == null) {
+            return;
         }
+        TabState state = getTabState(tab);
+
+        state.text = text;
+        state.hasUnreadContent = hasUnreadContent;
+        applyTabState(tab);
     }
 
     @Nullable
@@ -358,13 +388,9 @@ public class SectionHeaderView extends LinearLayout {
     }
 
     private void setTextsEnabled(boolean enabled) {
+        mTextsEnabled = enabled;
         for (int i = 0; i < mTabLayout.getTabCount(); i++) {
-            TabLayout.Tab tab = mTabLayout.getTabAt(i);
-            tab.view.setClickable(enabled);
-            tab.view.setEnabled(enabled);
-            if (mUnreadIndicator != null) {
-                mUnreadIndicator.setVisible(enabled);
-            }
+            applyTabState(mTabLayout.getTabAt(i));
         }
         mTitleView.setEnabled(enabled);
     }
@@ -463,36 +489,34 @@ public class SectionHeaderView extends LinearLayout {
         mMenuView.showMenu();
     }
 
-    private class UnreadIndicator implements ViewTreeObserver.OnGlobalLayoutListener {
-        private View mAnchor;
-        private BadgeDrawable mBadge;
+    private TabState getTabState(TabLayout.Tab tab) {
+        return (TabState) tab.getTag();
+    }
 
-        UnreadIndicator(View anchor) {
-            mAnchor = anchor;
-            mBadge = BadgeDrawable.createFromResource(
-                    SectionHeaderView.this.getContext(), R.xml.tab_layout_badge);
+    /** Updates the view for changes made to TabState or mTextsEnabled. */
+    void applyTabState(TabLayout.Tab tab) {
+        TabState state = getTabState(tab);
+        tab.setText(state.text);
+        tab.view.setClickable(mTextsEnabled);
+        tab.view.setEnabled(mTextsEnabled);
 
-            mBadge.setVisible(true);
-            mAnchor.getViewTreeObserver().addOnGlobalLayoutListener(this);
-        }
+        String contentDescription = state.text;
+        if (state.hasUnreadContent && mTextsEnabled) {
+            contentDescription = contentDescription + ", "
+                    + getResources().getString(R.string.accessibility_ntp_following_unread_content);
 
-        void destroy() {
-            mAnchor.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            setVisible(false);
-            BadgeUtils.detachBadgeDrawable(mBadge, mAnchor);
-        }
-
-        void setVisible(boolean visible) {
-            mBadge.setVisible(visible);
-        }
-
-        @Override
-        public void onGlobalLayout() {
-            // attachBadgeDrawable() will crash if mAnchor has no parent. This can happen after the
-            // views are detached from the window.
-            if (mAnchor.getParent() != null) {
-                BadgeUtils.attachBadgeDrawable(mBadge, mAnchor);
+            if (state.unreadIndicator == null) {
+                if (tab.getCustomView() != null) {
+                    state.unreadIndicator = new UnreadIndicator(tab.getCustomView());
+                }
+            }
+        } else {
+            if (state.unreadIndicator != null) {
+                state.unreadIndicator.destroy();
+                state.unreadIndicator = null;
             }
         }
+
+        tab.setContentDescription(contentDescription);
     }
 }
