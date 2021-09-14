@@ -23,15 +23,25 @@
 #include "chrome/common/privacy_budget/types.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 
+namespace {
+
+IdentifiableSurfaceCostMap GetPerSurfaceCostsFromFieldTrial() {
+  return DecodeIdentifiabilityFieldTrialParam<IdentifiableSurfaceCostMap>(
+      features::kIdentifiabilityStudyPerHashCost.Get());
+}
+
+IdentifiableSurfaceTypeCostMap GetPerTypeCostsFromFieldTrial() {
+  return DecodeIdentifiabilityFieldTrialParam<IdentifiableSurfaceTypeCostMap>(
+      features::kIdentifiabilityStudyPerTypeCost.Get());
+}
+
+}  // namespace
+
 SurfaceSetValuation::SurfaceSetValuation(
     const SurfaceSetEquivalence& surface_set_equivalence)
     : equivalence_sets_(surface_set_equivalence),
-      per_surface_costs_(
-          DecodeIdentifiabilityFieldTrialParam<IdentifiableSurfaceCostMap>(
-              features::kIdentifiabilityStudyPerHashCost.Get())),
-      per_type_costs_(
-          DecodeIdentifiabilityFieldTrialParam<IdentifiableSurfaceTypeCostMap>(
-              features::kIdentifiabilityStudyPerTypeCost.Get())) {}
+      per_surface_costs_(GetPerSurfaceCostsFromFieldTrial()),
+      per_type_costs_(GetPerTypeCostsFromFieldTrial()) {}
 
 SurfaceSetValuation::~SurfaceSetValuation() = default;
 
