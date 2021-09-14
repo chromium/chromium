@@ -110,6 +110,9 @@ class ASH_EXPORT WindowCycleController : public SessionObserver,
   // does not exist.
   aura::Window* GetWindowAtPoint(const ui::LocatedEvent* event);
 
+  // Returns whether or not the event is located in tab slider container.
+  bool IsEventInTabSliderContainer(const ui::LocatedEvent* event);
+
   // Returns whether or not the window cycle view is visible.
   bool IsWindowListVisible();
 

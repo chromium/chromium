@@ -240,6 +240,12 @@ aura::Window* WindowCycleList::GetWindowAtPoint(const ui::LocatedEvent* event) {
              : nullptr;
 }
 
+bool WindowCycleList::IsEventInTabSliderContainer(
+    const ui::LocatedEvent* event) {
+  return cycle_view_ &&
+         cycle_view_->IsEventInTabSliderContainer(ConvertEventToScreen(event));
+}
+
 bool WindowCycleList::ShouldShowUi() {
   // Show alt-tab when there are at least two windows to pick from alt-tab, or
   // when there is at least a window to switch to by switching to the different

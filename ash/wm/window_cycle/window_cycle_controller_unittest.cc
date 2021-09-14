@@ -1881,6 +1881,154 @@ class ModeSelectionWindowCycleControllerTest
   ui::test::EventGenerator* generator_;
 };
 
+// Tests that when user taps tab slider buttons, the active mode should
+// correspondingly change.
+TEST_F(ModeSelectionWindowCycleControllerTest, ModeChangesOnTap) {
+  WindowCycleController* cycle_controller =
+      Shell::Get()->window_cycle_controller();
+  ui::test::EventGenerator* generator = GetEventGenerator();
+
+  // Create one window for desk1 and two windows for desk2.
+  auto win0 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+  const Desk* desk_2 = desks_controller->desks()[1].get();
+  ActivateDesk(desk_2);
+  EXPECT_EQ(desk_2, desks_controller->active_desk());
+  auto win1 = CreateAppWindow(gfx::Rect(0, 0, 300, 200));
+  auto win2 = CreateAppWindow(gfx::Rect(10, 30, 400, 200));
+
+  auto generate_gesture_event = [](ui::test::EventGenerator* generator,
+                                   const gfx::Point& location,
+                                   ui::EventType type) {
+    ui::GestureEvent event(location.x(), location.y(),
+                           /*flags=*/0, base::TimeTicks::Now(),
+                           ui::GestureEventDetails{type});
+    generator->Dispatch(&event);
+  };
+
+  auto tap = [generate_gesture_event](ui::test::EventGenerator* generator,
+                                      const gfx::Point& location) {
+    // Generates the following events at |location| in the given order:
+    // ET_GESTURE_BEGIN, ET_GESTURE_TAP_DOWN, ui::ET_GESTURE_SHOW_PRESS,
+    // ET_GESTURE_END
+    generate_gesture_event(generator, location, ui::ET_GESTURE_BEGIN);
+    generate_gesture_event(generator, location, ui::ET_GESTURE_TAP_DOWN);
+    generate_gesture_event(generator, location, ui::ET_GESTURE_SHOW_PRESS);
+    generate_gesture_event(generator, location, ui::ET_GESTURE_TAP);
+    generate_gesture_event(generator, location, ui::ET_GESTURE_END);
+  };
+
+  // Start cycle. Alt-tab should contain windows from all desks with tab slider.
+  cycle_controller->StartCycling();
+  auto cycle_windows = GetWindows(cycle_controller);
+  EXPECT_FALSE(cycle_controller->IsAltTabPerActiveDesk());
+  EXPECT_EQ(3u, cycle_windows.size());
+  EXPECT_EQ(cycle_windows.size(), GetWindowCycleItemViews().size());
+  auto tab_slider_buttons = GetWindowCycleTabSliderButtons();
+  EXPECT_EQ(2u, tab_slider_buttons.size());
+
+  // Tap current desk tab slider button. Switch to current desk mode.
+  gfx::Point current_desk_button_center_point =
+      tab_slider_buttons[1]->GetBoundsInScreen().CenterPoint();
+  tap(generator, current_desk_button_center_point);
+  EXPECT_TRUE(cycle_controller->IsAltTabPerActiveDesk());
+  EXPECT_EQ(2u, GetWindowCycleItemViews().size());
+  CompleteCycling(cycle_controller);
+
+  // Tap all desks tab slider button. Switch back to all desks mode.
+  cycle_controller->StartCycling();
+  EXPECT_TRUE(cycle_controller->IsAltTabPerActiveDesk());
+  tab_slider_buttons = GetWindowCycleTabSliderButtons();
+  gfx::Point all_desks_button_center_point =
+      tab_slider_buttons[0]->GetBoundsInScreen().CenterPoint();
+  tap(generator, all_desks_button_center_point);
+  cycle_windows = GetWindows(cycle_controller);
+  EXPECT_FALSE(cycle_controller->IsAltTabPerActiveDesk());
+  EXPECT_EQ(3u, GetWindowCycleItemViews().size());
+  EXPECT_EQ(cycle_windows.size(), GetWindowCycleItemViews().size());
+  CompleteCycling(cycle_controller);
+}
+
+// Tests that when user taps tab slider buttons, but then scrolles and releases
+// finger on a window. Mode change should not happen in this use case.
+TEST_F(ModeSelectionWindowCycleControllerTest,
+       TapTabSliderButtonButReleaseOnWindow) {
+  WindowCycleController* cycle_controller =
+      Shell::Get()->window_cycle_controller();
+  ui::test::EventGenerator* generator = GetEventGenerator();
+
+  // Create one window for desk1 and two windows for desk2.
+  auto win0 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+  const Desk* desk_2 = desks_controller->desks()[1].get();
+  ActivateDesk(desk_2);
+  EXPECT_EQ(desk_2, desks_controller->active_desk());
+  auto win1 = CreateAppWindow(gfx::Rect(0, 0, 300, 200));
+  auto win2 = CreateAppWindow(gfx::Rect(10, 30, 400, 200));
+
+  auto generate_gesture_event = [](ui::test::EventGenerator* generator,
+                                   const gfx::Point& location,
+                                   ui::EventType type) {
+    ui::GestureEvent event(location.x(), location.y(),
+                           /*flags=*/0, base::TimeTicks::Now(),
+                           ui::GestureEventDetails{type});
+    generator->Dispatch(&event);
+  };
+
+  auto tap_then_scroll = [generate_gesture_event](
+                             ui::test::EventGenerator* generator,
+                             const gfx::Point& location) {
+    // Generates the following events at |location| in the given order:
+    // ET_GESTURE_BEGIN, ET_GESTURE_TAP_DOWN, T_GESTURE_SCROLL_BEGIN,
+    // ui::ET_GESTURE_SCROLL_UPDATE
+    generate_gesture_event(generator, location, ui::ET_GESTURE_BEGIN);
+    generate_gesture_event(generator, location, ui::ET_GESTURE_TAP_DOWN);
+    generate_gesture_event(generator, location, ui::ET_GESTURE_SCROLL_BEGIN);
+    generate_gesture_event(generator, location, ui::ET_GESTURE_SCROLL_UPDATE);
+  };
+
+  auto scroll_update = [generate_gesture_event](
+                           ui::test::EventGenerator* generator,
+                           const gfx::Point& location) {
+    // Generates the following events at |location| in the given order:
+    // ET_GESTURE_SCROLL_UPDATE, ET_GESTURE_SCROLL_END, ET_GESTURE_END
+    generate_gesture_event(generator, location, ui::ET_GESTURE_SCROLL_UPDATE);
+    generate_gesture_event(generator, location, ui::ET_GESTURE_SCROLL_END);
+    generate_gesture_event(generator, location, ui::ET_GESTURE_END);
+  };
+
+  // Start cycle. Alt-tab should contain windows from all desks with tab slider.
+  cycle_controller->StartCycling();
+  auto cycle_windows = GetWindows(cycle_controller);
+  EXPECT_FALSE(cycle_controller->IsAltTabPerActiveDesk());
+  EXPECT_EQ(3u, cycle_windows.size());
+  EXPECT_EQ(cycle_windows.size(), GetWindowCycleItemViews().size());
+  auto tab_slider_buttons = GetWindowCycleTabSliderButtons();
+  EXPECT_EQ(2u, tab_slider_buttons.size());
+
+  // Tap current desk tab slider button, scroll from it to one window,
+  // mode change should not happen. It's still the all desks mode.
+  gfx::Point current_desk_button_center_point =
+      tab_slider_buttons[1]->GetBoundsInScreen().CenterPoint();
+  EXPECT_FALSE(cycle_controller->IsAltTabPerActiveDesk());
+  tab_slider_buttons = GetWindowCycleTabSliderButtons();
+  cycle_windows = GetWindows(cycle_controller);
+  current_desk_button_center_point =
+      tab_slider_buttons[1]->GetBoundsInScreen().CenterPoint();
+  gfx::Point window_center_point =
+      cycle_windows[0]->GetBoundsInScreen().CenterPoint();
+  tap_then_scroll(generator, current_desk_button_center_point);
+  scroll_update(generator, window_center_point);
+  EXPECT_FALSE(cycle_controller->IsAltTabPerActiveDesk());
+  EXPECT_EQ(3u, GetWindowCycleItemViews().size());
+  EXPECT_EQ(cycle_windows.size(), GetWindowCycleItemViews().size());
+  CompleteCycling(cycle_controller);
+}
+
 // Tests that if user uses only one desk, the tab slider and no recent items
 // are not shown. Moreover, `SetAltTabMode()` should not change the windows
 // list.

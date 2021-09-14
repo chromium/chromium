@@ -116,6 +116,10 @@ class ASH_EXPORT WindowCycleView : public views::WidgetDelegateView,
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override;
 
+  // Returns whether or not the given `screen_point` is located in tab slider
+  // container.
+  bool IsEventInTabSliderContainer(const gfx::Point& screen_point);
+
  private:
   friend class WindowCycleListTestApi;
 

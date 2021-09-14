@@ -595,6 +595,12 @@ void WindowCycleView::OnImplicitAnimationsCompleted() {
   }
 }
 
+bool WindowCycleView::IsEventInTabSliderContainer(
+    const gfx::Point& screen_point) {
+  return tab_slider_container_ &&
+         tab_slider_container_->GetBoundsInScreen().Contains(screen_point);
+}
+
 gfx::Rect WindowCycleView::GetContentContainerBounds() const {
   const bool empty_mirror_container = mirror_container_->children().empty();
   if (empty_mirror_container && no_recent_items_label_)

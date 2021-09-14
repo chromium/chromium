@@ -85,6 +85,9 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   // if |event| not in cycle view or if |cycle_view_| does not exist.
   aura::Window* GetWindowAtPoint(const ui::LocatedEvent* event);
 
+  // Returns whether or not the event is located in tab slider container.
+  bool IsEventInTabSliderContainer(const ui::LocatedEvent* event);
+
   // Returns true if the window list overlay should be shown.
   bool ShouldShowUi();
 

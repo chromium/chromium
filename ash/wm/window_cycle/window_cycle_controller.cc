@@ -271,6 +271,12 @@ aura::Window* WindowCycleController::GetWindowAtPoint(
                             : nullptr;
 }
 
+bool WindowCycleController::IsEventInTabSliderContainer(
+    const ui::LocatedEvent* event) {
+  return window_cycle_list_ &&
+         window_cycle_list_->IsEventInTabSliderContainer(event);
+}
+
 bool WindowCycleController::IsWindowListVisible() {
   return window_cycle_list_ && window_cycle_list_->ShouldShowUi();
 }

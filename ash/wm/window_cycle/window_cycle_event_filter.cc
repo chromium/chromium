@@ -126,6 +126,12 @@ void WindowCycleEventFilter::OnScrollEvent(ui::ScrollEvent* event) {
 }
 
 void WindowCycleEventFilter::OnGestureEvent(ui::GestureEvent* event) {
+  if (Shell::Get()->window_cycle_controller()->IsEventInTabSliderContainer(
+          event)) {
+    // Return immediately if the event is on the tab slider container. Pass
+    // the event to the tab slider buttons to handle it.
+    return;
+  }
   ProcessGestureEvent(event);
 }
 
