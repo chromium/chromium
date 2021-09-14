@@ -94,15 +94,9 @@ addSuggestionsToModel:
 // Returns whether |section| contains the Discover feed.
 - (BOOL)isDiscoverSection:(NSInteger)section;
 
-// Returns whether |section| is one of the section containing ContentSuggestions
-// items.
-- (BOOL)isContentSuggestionsSection:(NSInteger)section;
-
 // Returns whether |itemType| is a Discover ItemType.
 - (BOOL)isDiscoverItem:(NSInteger)itemType;
 
-// Dismisses the |item| from the model. Does not change the UI.
-- (void)dismissItem:(CollectionViewItem<SuggestedContent>*)item;
 
 @end
 

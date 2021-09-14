@@ -31,7 +31,6 @@
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_return_to_recent_tab_item.h"
@@ -40,7 +39,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_synchronizer.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/browser/ui/content_suggestions/discover_feed_metrics_recorder.h"
@@ -83,9 +81,6 @@ const char kFeedManageInterestsURL[] =
 // URL for 'Learn More' item in the Discover feed menu;
 const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
                                  "?p=new_tab&co=GENIE.Platform%3DiOS&oco=1";
-// URL for the page displaying help for the NTP.
-const char kNTPHelpURL[] =
-    "https://support.google.com/chrome/?p=ios_new_tab&ios=1";
 }  // namespace
 
 @interface NTPHomeMediator () <ChromeAccountManagerServiceObserver,
@@ -164,7 +159,6 @@ const char kNTPHelpURL[] =
 
 - (void)setUp {
   DCHECK(!_webStateObserver);
-  DCHECK(self.suggestionsService);
 
   _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
   if (self.webState) {
@@ -240,39 +234,6 @@ const char kNTPHelpURL[] =
   [self.dispatcher showReadingList];
 }
 
-- (void)openPageForItemAtIndexPath:(NSIndexPath*)indexPath {
-  NewTabPageTabHelper* NTPHelper =
-      NewTabPageTabHelper::FromWebState(self.webState);
-  if (NTPHelper && NTPHelper->IgnoreLoadRequests()) {
-    return;
-  }
-  CollectionViewItem* item = [self.suggestionsViewController.collectionViewModel
-      itemAtIndexPath:indexPath];
-  ContentSuggestionsItem* suggestionItem =
-      base::mac::ObjCCastStrict<ContentSuggestionsItem>(item);
-
-  [self.metricsRecorder
-         onSuggestionOpened:suggestionItem
-                atIndexPath:indexPath
-         sectionsShownAbove:[self.suggestionsViewController
-                                numberOfSectionsAbove:indexPath.section]
-      suggestionsShownAbove:[self.suggestionsViewController
-                                numberOfSuggestionsAbove:indexPath.section]
-                 withAction:WindowOpenDisposition::CURRENT_TAB];
-  self.suggestionsService->user_classifier()->OnEvent(
-      ntp_snippets::UserClassifier::Metric::SUGGESTIONS_USED);
-
-  // Use a referrer with a specific URL to mark this entry as coming from
-  // ContentSuggestions.
-  UrlLoadParams params = UrlLoadParams::InCurrentTab(suggestionItem.URL);
-  params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
-  params.web_params.referrer =
-      web::Referrer(GURL(ntp_snippets::GetContentSuggestionsReferrerURL()),
-                    web::ReferrerPolicyDefault);
-  _URLLoader->Load(params);
-  [self.NTPMetrics recordAction:new_tab_page_uma::ACTION_OPENED_SUGGESTION];
-}
-
 - (void)openMostVisitedItem:(CollectionViewItem*)item
                     atIndex:(NSInteger)mostVisitedIndex {
   NewTabPageTabHelper* NTPHelper =
@@ -317,37 +278,6 @@ const char kNTPHelpURL[] =
   UrlLoadParams params = UrlLoadParams::InCurrentTab(mostVisitedItem.URL);
   params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
   _URLLoader->Load(params);
-}
-
-- (void)displayContextMenuForSuggestion:(CollectionViewItem*)item
-                                atPoint:(CGPoint)touchLocation
-                            atIndexPath:(NSIndexPath*)indexPath
-                        readLaterAction:(BOOL)readLaterAction {
-  DCHECK(_browser);
-  // Unfocus the omnibox as the omnibox can disappear when choosing some
-  // options. See crbug.com/928237.
-  [self.dispatcher cancelOmniboxEdit];
-
-  ContentSuggestionsItem* suggestionsItem =
-      base::mac::ObjCCastStrict<ContentSuggestionsItem>(item);
-
-  [self.metricsRecorder
-      onMenuOpenedForSuggestion:suggestionsItem
-                    atIndexPath:indexPath
-          suggestionsShownAbove:[self.suggestionsViewController
-                                    numberOfSuggestionsAbove:indexPath
-                                                                 .section]];
-
-  self.alertCoordinator = [ContentSuggestionsAlertFactory
-      alertCoordinatorForSuggestionItem:suggestionsItem
-                       onViewController:self.suggestionsViewController
-                                atPoint:touchLocation
-                            atIndexPath:indexPath
-                        readLaterAction:readLaterAction
-                         commandHandler:self
-                                browser:self.browser];
-
-  [self.alertCoordinator start];
 }
 
 - (void)displayContextMenuForMostVisitedItem:(CollectionViewItem*)item
@@ -442,11 +372,6 @@ const char kNTPHelpURL[] =
   [self.discoverFeedMetrics recordHeaderMenuLearnMoreTapped];
 }
 
-- (void)handleLearnMoreTapped {
-  [self openMenuItemWebPage:GURL(kNTPHelpURL)];
-  [self.NTPMetrics recordAction:new_tab_page_uma::ACTION_OPENED_LEARN_MORE];
-}
-
 - (void)openMostRecentTab:(CollectionViewItem*)item {
   DCHECK([item isKindOfClass:[ContentSuggestionsReturnToRecentTabItem class]]);
   base::RecordAction(
@@ -465,65 +390,6 @@ const char kNTPHelpURL[] =
 }
 
 #pragma mark - ContentSuggestionsGestureCommands
-
-- (void)openNewTabWithSuggestionsItem:(ContentSuggestionsItem*)item
-                            incognito:(BOOL)incognito {
-  [self.NTPMetrics recordAction:new_tab_page_uma::ACTION_OPENED_SUGGESTION];
-  self.suggestionsService->user_classifier()->OnEvent(
-      ntp_snippets::UserClassifier::Metric::SUGGESTIONS_USED);
-
-  NSIndexPath* indexPath = [self.suggestionsViewController.collectionViewModel
-      indexPathForItem:item];
-  if (indexPath) {
-    WindowOpenDisposition disposition =
-        incognito ? WindowOpenDisposition::OFF_THE_RECORD
-                  : WindowOpenDisposition::NEW_BACKGROUND_TAB;
-    [self.metricsRecorder
-           onSuggestionOpened:item
-                  atIndexPath:indexPath
-           sectionsShownAbove:[self.suggestionsViewController
-                                  numberOfSectionsAbove:indexPath.section]
-        suggestionsShownAbove:[self.suggestionsViewController
-                                  numberOfSuggestionsAbove:indexPath.section]
-                   withAction:disposition];
-  }
-
-  CGPoint cellCenter = [self cellCenterForItem:item];
-  [self openNewTabWithURL:item.URL incognito:incognito originPoint:cellCenter];
-}
-
-- (void)addItemToReadingList:(ContentSuggestionsItem*)item {
-  NSIndexPath* indexPath = [self.suggestionsViewController.collectionViewModel
-      indexPathForItem:item];
-  if (indexPath) {
-    [self.metricsRecorder
-           onSuggestionOpened:item
-                  atIndexPath:indexPath
-           sectionsShownAbove:[self.suggestionsViewController
-                                  numberOfSectionsAbove:indexPath.section]
-        suggestionsShownAbove:[self.suggestionsViewController
-                                  numberOfSuggestionsAbove:indexPath.section]
-                   withAction:WindowOpenDisposition::SAVE_TO_DISK];
-  }
-
-  self.suggestionsMediator.readingListNeedsReload = YES;
-  ReadingListAddCommand* command =
-      [[ReadingListAddCommand alloc] initWithURL:item.URL title:item.title];
-  [self.dispatcher addToReadingList:command];
-}
-
-- (void)dismissSuggestion:(ContentSuggestionsItem*)item
-              atIndexPath:(NSIndexPath*)indexPath {
-  NSIndexPath* itemIndexPath = indexPath;
-  if (!itemIndexPath) {
-    // If the caller uses a nil |indexPath|, find it from the model.
-    itemIndexPath = [self.suggestionsViewController.collectionViewModel
-        indexPathForItem:item];
-  }
-
-  [self.suggestionsMediator dismissSuggestion:item.suggestionIdentifier];
-  [self.suggestionsViewController dismissEntryAtIndexPath:itemIndexPath];
-}
 
 - (void)openNewTabWithMostVisitedItem:(ContentSuggestionsMostVisitedItem*)item
                             incognito:(BOOL)incognito

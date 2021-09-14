@@ -21,7 +21,6 @@
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_consumer.h"
@@ -95,9 +94,6 @@ class NTPHomeMediatorTest : public PlatformTest {
           accountManagerService:accountManagerService
                      logoVendor:logo_vendor_
         voiceSearchAvailability:&voice_availability_];
-    mediator_.suggestionsService =
-        IOSChromeContentSuggestionsServiceFactory::GetForBrowserState(
-            chrome_browser_state_.get());
     mediator_.dispatcher = dispatcher_;
     mediator_.suggestionsViewController = suggestions_view_controller_;
     consumer_ = OCMProtocolMock(@protocol(NTPHomeConsumer));
@@ -179,30 +175,6 @@ TEST_F(NTPHomeMediatorTest, TestOpenReadingList) {
 
   // Test.
   EXPECT_OCMOCK_VERIFY(dispatcher_);
-}
-
-// Tests that the command is sent to the loader when opening a suggestion.
-TEST_F(NTPHomeMediatorTest, TestOpenPage) {
-  // Setup.
-  [mediator_ setUp];
-  GURL url = GURL("http://chromium.org");
-  NSIndexPath* indexPath = [NSIndexPath indexPathForItem:0 inSection:0];
-  ContentSuggestionsItem* item =
-      [[ContentSuggestionsItem alloc] initWithType:0
-                                             title:@"test item"
-                                               url:url];
-  id model = OCMClassMock([CollectionViewModel class]);
-  OCMStub([suggestions_view_controller_ collectionViewModel]).andReturn(model);
-  OCMStub([model itemAtIndexPath:indexPath]).andReturn(item);
-
-  // Action.
-  [mediator_ openPageForItemAtIndexPath:indexPath];
-
-  // Test.
-  EXPECT_EQ(url, url_loader_->last_params.web_params.url);
-  EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
-      ui::PAGE_TRANSITION_AUTO_BOOKMARK,
-      url_loader_->last_params.web_params.transition_type));
 }
 
 // Tests that the command is sent to the loader when opening a most visited.

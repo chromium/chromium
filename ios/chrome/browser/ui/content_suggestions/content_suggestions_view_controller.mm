@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/ui/collection_view/cells/MDCCollectionViewCell+Chrome.h"
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_item.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_cell.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_discover_header_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_discover_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_cell.h"
@@ -27,7 +26,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_synchronizing.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_layout.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_menu_provider.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recording.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/browser/ui/content_suggestions/discover_feed_menu_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/discover_feed_metrics_recorder.h"
@@ -108,7 +106,6 @@ const CGFloat kDiscoverFeedLoadedHeight = 1000;
 @synthesize overscrollActionsController = _overscrollActionsController;
 @synthesize overscrollDelegate = _overscrollDelegate;
 @synthesize scrolledToTop = _scrolledToTop;
-@synthesize metricsRecorder = _metricsRecorder;
 @dynamic collectionViewModel;
 
 #pragma mark - Lifecycle
@@ -160,11 +157,6 @@ const CGFloat kDiscoverFeedLoadedHeight = 1000;
     [self.suggestionCommandHandler hideMostRecentTab];
     return;
   }
-
-  [self.metricsRecorder
-      onSuggestionDismissed:[self.collectionViewModel itemAtIndexPath:indexPath]
-                atIndexPath:indexPath
-      suggestionsShownAbove:[self numberOfSuggestionsAbove:indexPath.section]];
 
   [self.collectionView performBatchUpdates:^{
     [self collectionView:self.collectionView
@@ -218,27 +210,6 @@ const CGFloat kDiscoverFeedLoadedHeight = 1000;
   };
 
   [self.collectionView performBatchUpdates:batchUpdates completion:nil];
-}
-
-- (NSInteger)numberOfSuggestionsAbove:(NSInteger)section {
-  NSInteger suggestionsAbove = 0;
-  for (NSInteger sectionAbove = 0; sectionAbove < section; sectionAbove++) {
-    if ([self.collectionUpdater isContentSuggestionsSection:sectionAbove]) {
-      suggestionsAbove +=
-          [self.collectionViewModel numberOfItemsInSection:sectionAbove];
-    }
-  }
-  return suggestionsAbove;
-}
-
-- (NSInteger)numberOfSectionsAbove:(NSInteger)section {
-  NSInteger sectionsAbove = 0;
-  for (NSInteger sectionAbove = 0; sectionAbove < section; sectionAbove++) {
-    if ([self.collectionUpdater isContentSuggestionsSection:sectionAbove]) {
-      sectionsAbove++;
-    }
-  }
-  return sectionsAbove;
 }
 
 - (void)updateConstraints {
@@ -421,13 +392,6 @@ const CGFloat kDiscoverFeedLoadedHeight = 1000;
   CollectionViewItem* item =
       [self.collectionViewModel itemAtIndexPath:indexPath];
   switch ([self.collectionUpdater contentSuggestionTypeForItem:item]) {
-    case ContentSuggestionTypeReadingList:
-      base::RecordAction(base::UserMetricsAction("MobileReadingListOpen"));
-      [self.suggestionCommandHandler openPageForItemAtIndexPath:indexPath];
-      break;
-    case ContentSuggestionTypeArticle:
-      [self.suggestionCommandHandler openPageForItemAtIndexPath:indexPath];
-      break;
     case ContentSuggestionTypeMostVisited:
       [self.suggestionCommandHandler openMostVisitedItem:item
                                                  atIndex:indexPath.item];
@@ -441,7 +405,9 @@ const CGFloat kDiscoverFeedLoadedHeight = 1000;
       [self.collectionViewLayout invalidateLayout];
       break;
     case ContentSuggestionTypeLearnMore:
-      [self.suggestionCommandHandler handleLearnMoreTapped];
+    case ContentSuggestionTypeReadingList:
+    case ContentSuggestionTypeArticle:
+      // TODO(crbug.com/1200303): Remove these three types.
       break;
     case ContentSuggestionTypeDiscover:
     case ContentSuggestionTypeEmpty:
@@ -489,18 +455,6 @@ const CGFloat kDiscoverFeedLoadedHeight = 1000;
         return cell;
       }
     }
-  }
-
-  if ([self.collectionUpdater isContentSuggestionsSection:indexPath.section] &&
-      [self.collectionUpdater contentSuggestionTypeForItem:item] !=
-          ContentSuggestionTypeEmpty &&
-      !item.metricsRecorded) {
-    [self.metricsRecorder
-            onSuggestionShown:item
-                  atIndexPath:indexPath
-        suggestionsShownAbove:[self
-                                  numberOfSuggestionsAbove:indexPath.section]];
-    item.metricsRecorded = YES;
   }
 
   UICollectionViewCell* cell = [super collectionView:collectionView
@@ -665,8 +619,7 @@ const CGFloat kDiscoverFeedLoadedHeight = 1000;
                                       layout:collectionViewLayout
              referenceSizeForHeaderInSection:section];
   if (UIContentSizeCategoryIsAccessibilityCategory(
-          self.traitCollection.preferredContentSizeCategory) &&
-      [self.collectionUpdater isContentSuggestionsSection:section]) {
+          self.traitCollection.preferredContentSizeCategory)) {
     // Double the size of the header as it is now on two lines.
     defaultSize.height *= 2;
   }
@@ -698,42 +651,8 @@ const CGFloat kDiscoverFeedLoadedHeight = 1000;
 }
 
 - (BOOL)collectionView:(UICollectionView*)collectionView
-    shouldHideItemSeparatorAtIndexPath:(NSIndexPath*)indexPath {
-  // Show separators for all cells in content suggestion sections.
-  return !
-      [self.collectionUpdater isContentSuggestionsSection:indexPath.section];
-}
-
-- (BOOL)collectionView:(UICollectionView*)collectionView
     shouldHideHeaderSeparatorForSection:(NSInteger)section {
   return [self.collectionUpdater shouldUseCustomStyleForSection:section];
-}
-
-#pragma mark - MDCCollectionViewEditingDelegate
-
-- (BOOL)collectionViewAllowsSwipeToDismissItem:
-    (UICollectionView*)collectionView {
-  return YES;
-}
-
-- (BOOL)collectionView:(UICollectionView*)collectionView
-    canSwipeToDismissItemAtIndexPath:(NSIndexPath*)indexPath {
-  CollectionViewItem* item =
-      [self.collectionViewModel itemAtIndexPath:indexPath];
-  return ![self.collectionUpdater isMostVisitedSection:indexPath.section] &&
-         ![self.collectionUpdater isPromoSection:indexPath.section] &&
-         ![self.collectionUpdater isDiscoverSection:indexPath.section] &&
-         [self.collectionUpdater contentSuggestionTypeForItem:item] !=
-             ContentSuggestionTypeLearnMore &&
-         [self.collectionUpdater contentSuggestionTypeForItem:item] !=
-             ContentSuggestionTypeEmpty;
-}
-
-- (void)collectionView:(UICollectionView*)collectionView
-    didEndSwipeToDismissItemAtIndexPath:(NSIndexPath*)indexPath {
-  [self.collectionUpdater
-      dismissItem:[self.collectionViewModel itemAtIndexPath:indexPath]];
-  [self dismissEntryAtIndexPath:indexPath];
 }
 
 #pragma mark - ThumbStripSupporting
@@ -804,12 +723,6 @@ const CGFloat kDiscoverFeedLoadedHeight = 1000;
     [self.discoverFeedMetricsRecorder
         recordFeedScrolled:scrollView.contentOffset.y -
                            self.scrollStartPosition];
-  }
-
-  // Track scrolling for the visible Zine feed.
-  if (!IsDiscoverFeedEnabled() && [self isFeedVisible]) {
-    [self.metricsRecorder recordFeedScrolled:scrollView.contentOffset.y -
-                                             self.scrollStartPosition];
   }
 }
 
@@ -949,20 +862,6 @@ const CGFloat kDiscoverFeedLoadedHeight = 1000;
   ContentSuggestionType type =
       [self.collectionUpdater contentSuggestionTypeForItem:touchedItem];
   switch (type) {
-    case ContentSuggestionTypeArticle:
-      [self.suggestionCommandHandler
-          displayContextMenuForSuggestion:touchedItem
-                                  atPoint:touchLocation
-                              atIndexPath:touchedItemIndexPath
-                          readLaterAction:YES];
-      break;
-    case ContentSuggestionTypeReadingList:
-      [self.suggestionCommandHandler
-          displayContextMenuForSuggestion:touchedItem
-                                  atPoint:touchLocation
-                              atIndexPath:touchedItemIndexPath
-                          readLaterAction:NO];
-      break;
     case ContentSuggestionTypeMostVisited:
       break;
     default:

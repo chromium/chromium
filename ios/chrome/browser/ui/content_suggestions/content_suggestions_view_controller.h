@@ -20,7 +20,6 @@
 @protocol ContentSuggestionsHeaderControlling;
 @protocol ContentSuggestionsHeaderSynchronizing;
 @protocol ContentSuggestionsMenuProvider;
-@protocol ContentSuggestionsMetricsRecording;
 @protocol ContentSuggestionsViewControllerAudience;
 @protocol DiscoverFeedHeaderChanging;
 @protocol DiscoverFeedMenuCommands;
@@ -70,8 +69,6 @@
 @property(nonatomic, weak) id<DiscoverFeedMenuCommands> discoverFeedMenuHandler;
 @property(nonatomic, weak, readonly) id<DiscoverFeedHeaderChanging>
     discoverFeedHeaderDelegate;
-@property(nonatomic, weak) id<ContentSuggestionsMetricsRecording>
-    metricsRecorder;
 // Whether or not the contents section should be hidden completely.
 @property(nonatomic, assign) BOOL contentSuggestionsEnabled;
 // Provides information about the content suggestions header. Used to get the
@@ -110,11 +107,6 @@
 - (void)addSuggestions:
             (NSArray<CollectionViewItem<SuggestedContent>*>*)suggestions
          toSectionInfo:(ContentSuggestionsSectionInformation*)sectionInfo;
-// Returns the number of suggestions displayed above this |section|.
-- (NSInteger)numberOfSuggestionsAbove:(NSInteger)section;
-// Returns the number of sections containing suggestions displayed above this
-// |section|.
-- (NSInteger)numberOfSectionsAbove:(NSInteger)section;
 // Updates the constraints of the collection.
 - (void)updateConstraints;
 // Clear the overscroll actions.

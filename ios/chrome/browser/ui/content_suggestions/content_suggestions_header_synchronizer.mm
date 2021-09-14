@@ -6,7 +6,6 @@
 
 #include "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_cell.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_cell.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_cell.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_controlling.h"
@@ -278,10 +277,7 @@ initWithCollectionController:
   BOOL isMostVisitedActionCell =
       content_suggestions::nearestAncestor(
           touch.view, [ContentSuggestionsMostVisitedActionCell class]) != nil;
-  BOOL isSuggestionCell =
-      content_suggestions::nearestAncestor(
-          touch.view, [ContentSuggestionsCell class]) != nil;
-  return !isMostVisitedCell && !isMostVisitedActionCell && !isSuggestionCell;
+  return !isMostVisitedCell && !isMostVisitedActionCell;
 }
 
 - (UIView*)nearestAncestorOfView:(UIView*)view withClass:(Class)aClass {

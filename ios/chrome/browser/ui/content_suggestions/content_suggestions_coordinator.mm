@@ -12,9 +12,6 @@
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #include "components/feed/core/v2/public/ios/pref_names.h"
-#include "components/ntp_snippets/content_suggestions_service.h"
-#include "components/ntp_snippets/pref_names.h"
-#include "components/ntp_snippets/remote/remote_suggestions_scheduler.h"
 #include "components/ntp_tiles/most_visited_sites.h"
 #include "components/prefs/pref_service.h"
 #import "components/search_engines/template_url.h"
@@ -28,7 +25,6 @@
 #include "ios/chrome/browser/favicon/large_icon_cache.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/main/browser.h"
-#include "ios/chrome/browser/ntp_snippets/ios_chrome_content_suggestions_service_factory.h"
 #include "ios/chrome/browser/ntp_tiles/ios_most_visited_sites_factory.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #include "ios/chrome/browser/pref_names.h"
@@ -53,7 +49,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_menu_provider.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/browser/ui/content_suggestions/discover_feed_delegate.h"
@@ -120,7 +115,6 @@
     ContentSuggestionsMediator* contentSuggestionsMediator;
 @property(nonatomic, strong)
     ContentSuggestionsHeaderSynchronizer* headerCollectionInteractionHandler;
-@property(nonatomic, strong) ContentSuggestionsMetricsRecorder* metricsRecorder;
 @property(nonatomic, strong) UIViewController* discoverFeedViewController;
 @property(nonatomic, strong) UIView* discoverFeedHeaderMenuButton;
 @property(nonatomic, strong) URLDragDropHandler* dragDropHandler;
@@ -166,15 +160,6 @@
   self.authService = AuthenticationServiceFactory::GetForBrowserState(
       self.browser->GetBrowserState());
 
-  ntp_snippets::ContentSuggestionsService* contentSuggestionsService =
-      IOSChromeContentSuggestionsServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
-  contentSuggestionsService->remote_suggestions_scheduler()
-      ->OnSuggestionsSurfaceOpened();
-  contentSuggestionsService->user_classifier()->OnEvent(
-      ntp_snippets::UserClassifier::Metric::NTP_OPENED);
-  contentSuggestionsService->user_classifier()->OnEvent(
-      ntp_snippets::UserClassifier::Metric::SUGGESTIONS_SHOWN);
   PrefService* prefs =
       ChromeBrowserState::FromBrowserState(self.browser->GetBrowserState())
           ->GetPrefs();
@@ -248,8 +233,7 @@
           SEARCH_ENGINE_GOOGLE;
 
   self.contentSuggestionsMediator = [[ContentSuggestionsMediator alloc]
-             initWithContentService:contentSuggestionsService
-                   largeIconService:largeIconService
+           initWithLargeIconService:largeIconService
                      largeIconCache:cache
                     mostVisitedSite:std::move(mostVisitedFactory)
                    readingListModel:readingListModel
@@ -269,10 +253,6 @@
 
   self.headerController.promoCanShow =
       [self.contentSuggestionsMediator notificationPromo]->CanShow();
-
-  self.metricsRecorder = [[ContentSuggestionsMetricsRecorder alloc] init];
-  self.metricsRecorder.delegate = self.contentSuggestionsMediator;
-
 
   // Offset to maintain Discover feed scroll position.
   CGFloat offset = 0;
@@ -299,7 +279,6 @@
   self.suggestionsViewController.audience = self;
   self.suggestionsViewController.overscrollDelegate = self;
   self.suggestionsViewController.themeChangeDelegate = self;
-  self.suggestionsViewController.metricsRecorder = self.metricsRecorder;
   id<SnackbarCommands> dispatcher =
       static_cast<id<SnackbarCommands>>(self.browser->GetCommandDispatcher());
   self.suggestionsViewController.dispatcher = dispatcher;
@@ -332,10 +311,8 @@
   self.ntpMediator.NTPMetrics = [[NTPHomeMetrics alloc]
       initWithBrowserState:self.browser->GetBrowserState()
                   webState:self.webState];
-  self.ntpMediator.metricsRecorder = self.metricsRecorder;
   self.ntpMediator.suggestionsViewController = self.suggestionsViewController;
   self.ntpMediator.suggestionsMediator = self.contentSuggestionsMediator;
-  self.ntpMediator.suggestionsService = contentSuggestionsService;
   [self.ntpMediator setUp];
   self.ntpMediator.discoverFeedMetrics = self.discoverFeedMetricsRecorder;
 

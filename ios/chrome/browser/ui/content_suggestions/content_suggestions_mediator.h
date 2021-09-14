@@ -12,16 +12,11 @@
 #include "components/prefs/pref_service.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_data_source.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_removal_observer_bridge.h"
 
 namespace favicon {
 class LargeIconService;
-}
-
-namespace ntp_snippets {
-class ContentSuggestionsService;
 }
 
 namespace ntp_tiles {
@@ -44,19 +39,18 @@ class NotificationPromoWhatsNew;
 class ReadingListModel;
 class WebStateList;
 
-// Mediator for ContentSuggestions. Makes the interface between a
-// ntp_snippets::ContentSuggestionsService and the Objective-C services using
-// its data.
+// Mediator for ContentSuggestions.
+// TODO(crbug.com/1200303): Update comment once this file has been cleaned up.
+// This means removing legacy Feed and non refactored NTP code.
 @interface ContentSuggestionsMediator
     : NSObject <ContentSuggestionsDataSource,
-                ContentSuggestionsMetricsRecorderDelegate,
                 StartSurfaceRecentTabObserving>
 
-// Initialize the mediator with the |contentService| to mediate.
+// Default initializer.
+// TODO(crbug.com/1200303): Update comment once this file has been cleaned up.
+// This means removing legacy Feed and non refactored NTP code.
 - (instancetype)
-           initWithContentService:
-               (ntp_snippets::ContentSuggestionsService*)contentService
-                 largeIconService:(favicon::LargeIconService*)largeIconService
+         initWithLargeIconService:(favicon::LargeIconService*)largeIconService
                    largeIconCache:(LargeIconCache*)largeIconCache
                   mostVisitedSite:(std::unique_ptr<ntp_tiles::MostVisitedSites>)
                                       mostVisitedSites
