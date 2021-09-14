@@ -14,11 +14,10 @@
 
 namespace base {
 
-enum UnwindInstructionResult {
-  COMPLETED,                    // Signals the end of unwind process.
-  INSTRUCTION_PENDING,          // Continues to unwind next instruction.
-  STACK_POINTER_OUT_OF_BOUNDS,  // Stack pointer is out of bounds after
-                                // execution of unwind instruction.
+enum class UnwindInstructionResult {
+  kCompleted,           // Signals the end of unwind process.
+  kInstructionPending,  // Continues to unwind next instruction.
+  kAborted,             // Unable to unwind.
 };
 
 // Execute a single unwind instruction on the given thread_context,

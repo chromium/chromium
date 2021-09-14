@@ -19,7 +19,7 @@ TEST(ChromeAndroidUnwindInstructionTest,
   bool pc_was_updated = false;
   ASSERT_EQ(ExecuteUnwindInstruction(current_instruction, pc_was_updated,
                                      &thread_context),
-            UnwindInstructionResult::INSTRUCTION_PENDING);
+            UnwindInstructionResult::kInstructionPending);
   EXPECT_FALSE(pc_was_updated);
   ASSERT_EQ(current_instruction, &instruction + 1);
   EXPECT_EQ(0x10000004ul, thread_context.arm_sp);
@@ -35,7 +35,7 @@ TEST(ChromeAndroidUnwindInstructionTest,
   bool pc_was_updated = false;
   ASSERT_EQ(ExecuteUnwindInstruction(current_instruction, pc_was_updated,
                                      &thread_context),
-            UnwindInstructionResult::INSTRUCTION_PENDING);
+            UnwindInstructionResult::kInstructionPending);
   EXPECT_FALSE(pc_was_updated);
   ASSERT_EQ(current_instruction, &instruction + 1);
   EXPECT_EQ(0x10000014ul, thread_context.arm_sp);
@@ -50,7 +50,7 @@ TEST(ChromeAndroidUnwindInstructionTest,
   bool pc_was_updated = false;
   ASSERT_EQ(ExecuteUnwindInstruction(current_instruction, pc_was_updated,
                                      &thread_context),
-            UnwindInstructionResult::INSTRUCTION_PENDING);
+            UnwindInstructionResult::kInstructionPending);
   EXPECT_FALSE(pc_was_updated);
   ASSERT_EQ(current_instruction, &instruction + 1);
   EXPECT_EQ(0x10000100ul, thread_context.arm_sp);
@@ -65,7 +65,7 @@ TEST(ChromeAndroidUnwindInstructionTest,
   bool pc_was_updated = false;
   ASSERT_EQ(ExecuteUnwindInstruction(current_instruction, pc_was_updated,
                                      &thread_context),
-            UnwindInstructionResult::STACK_POINTER_OUT_OF_BOUNDS);
+            UnwindInstructionResult::kAborted);
   ASSERT_EQ(current_instruction, &instruction + 1);
   EXPECT_EQ(0xffffffff, thread_context.arm_sp);
 }
@@ -79,7 +79,7 @@ TEST(ChromeAndroidUnwindInstructionTest,
   bool pc_was_updated = false;
   ASSERT_EQ(ExecuteUnwindInstruction(current_instruction, pc_was_updated,
                                      &thread_context),
-            UnwindInstructionResult::INSTRUCTION_PENDING);
+            UnwindInstructionResult::kInstructionPending);
   EXPECT_FALSE(pc_was_updated);
   ASSERT_EQ(current_instruction, &instruction + 1);
   EXPECT_EQ(0x0ffffffcul, thread_context.arm_sp);
@@ -95,7 +95,7 @@ TEST(ChromeAndroidUnwindInstructionTest,
   bool pc_was_updated = false;
   ASSERT_EQ(ExecuteUnwindInstruction(current_instruction, pc_was_updated,
                                      &thread_context),
-            UnwindInstructionResult::INSTRUCTION_PENDING);
+            UnwindInstructionResult::kInstructionPending);
   EXPECT_FALSE(pc_was_updated);
   ASSERT_EQ(current_instruction, &instruction + 1);
   EXPECT_EQ(0x0fffffecul, thread_context.arm_sp);
@@ -110,7 +110,7 @@ TEST(ChromeAndroidUnwindInstructionTest,
   bool pc_was_updated = false;
   ASSERT_EQ(ExecuteUnwindInstruction(current_instruction, pc_was_updated,
                                      &thread_context),
-            UnwindInstructionResult::INSTRUCTION_PENDING);
+            UnwindInstructionResult::kInstructionPending);
   EXPECT_FALSE(pc_was_updated);
   ASSERT_EQ(current_instruction, &instruction + 1);
   EXPECT_EQ(0x0fffff00ul, thread_context.arm_sp);
@@ -125,7 +125,7 @@ TEST(ChromeAndroidUnwindInstructionTest,
   bool pc_was_updated = false;
   ASSERT_EQ(ExecuteUnwindInstruction(current_instruction, pc_was_updated,
                                      &thread_context),
-            UnwindInstructionResult::STACK_POINTER_OUT_OF_BOUNDS);
+            UnwindInstructionResult::kAborted);
   EXPECT_FALSE(pc_was_updated);
   ASSERT_EQ(current_instruction, &instruction + 1);
   EXPECT_EQ(0x0ul, thread_context.arm_sp);
@@ -168,7 +168,7 @@ TEST_P(ChromeAndroidUnwindSetStackPointerFromRegisterValueTest,
   bool pc_was_updated = false;
   ASSERT_EQ(ExecuteUnwindInstruction(current_instruction, pc_was_updated,
                                      &thread_context),
-            UnwindInstructionResult::INSTRUCTION_PENDING);
+            UnwindInstructionResult::kInstructionPending);
   EXPECT_FALSE(pc_was_updated);
   ASSERT_EQ(current_instruction, &instruction + 1);
   EXPECT_EQ(100ul + register_index, thread_context.arm_sp);
@@ -183,7 +183,7 @@ TEST(ChromeAndroidUnwindInstructionTest, TestCompleteWithNoPriorPCUpdate) {
   bool pc_was_updated = false;
   ASSERT_EQ(ExecuteUnwindInstruction(current_instruction, pc_was_updated,
                                      &thread_context),
-            UnwindInstructionResult::COMPLETED);
+            UnwindInstructionResult::kCompleted);
   ASSERT_EQ(current_instruction, &instruction + 1);
   EXPECT_EQ(114ul, thread_context.arm_pc);
 }
@@ -197,7 +197,7 @@ TEST(ChromeAndroidUnwindInstructionTest, TestCompleteWithPriorPCUpdate) {
   bool pc_was_updated = true;
   ASSERT_EQ(ExecuteUnwindInstruction(current_instruction, pc_was_updated,
                                      &thread_context),
-            UnwindInstructionResult::COMPLETED);
+            UnwindInstructionResult::kCompleted);
   ASSERT_EQ(current_instruction, &instruction + 1);
   EXPECT_EQ(115ul, thread_context.arm_pc);
 }
@@ -233,7 +233,7 @@ TEST(ChromeAndroidUnwindInstructionTest,
   bool pc_was_updated = false;
   ASSERT_EQ(ExecuteUnwindInstruction(current_instruction, pc_was_updated,
                                      &thread_context),
-            UnwindInstructionResult::INSTRUCTION_PENDING);
+            UnwindInstructionResult::kInstructionPending);
   EXPECT_TRUE(pc_was_updated);
   ASSERT_EQ(current_instruction, instruction + 2);
   EXPECT_EQ(reinterpret_cast<uintptr_t>(&stack[0] + 4), thread_context.arm_sp);
@@ -285,7 +285,7 @@ TEST(ChromeAndroidUnwindInstructionTest, TestPopDiscontinuousRegisters) {
   bool pc_was_updated = false;
   ASSERT_EQ(ExecuteUnwindInstruction(current_instruction, pc_was_updated,
                                      &thread_context),
-            UnwindInstructionResult::INSTRUCTION_PENDING);
+            UnwindInstructionResult::kInstructionPending);
   EXPECT_FALSE(pc_was_updated);
   ASSERT_EQ(current_instruction, instruction + 2);
   EXPECT_EQ(reinterpret_cast<uintptr_t>(&stack[0] + 3), thread_context.arm_sp);
@@ -336,7 +336,7 @@ TEST(ChromeAndroidUnwindInstructionTest,
   bool pc_was_updated = false;
   ASSERT_EQ(ExecuteUnwindInstruction(current_instruction, pc_was_updated,
                                      &thread_context),
-            UnwindInstructionResult::STACK_POINTER_OUT_OF_BOUNDS);
+            UnwindInstructionResult::kAborted);
   EXPECT_FALSE(pc_was_updated);
   ASSERT_EQ(current_instruction, instruction + 2);
   EXPECT_EQ(0xffffffff, thread_context.arm_sp);
@@ -356,6 +356,20 @@ TEST(ChromeAndroidUnwindInstructionTest,
   EXPECT_EQ(112ul, thread_context.arm_ip);
   EXPECT_EQ(113ul, thread_context.arm_lr);
   EXPECT_EQ(114ul, thread_context.arm_pc);
+}
+
+TEST(ChromeAndroidUnwindInstructionTest, TestRefuseToUnwind) {
+  RegisterContext thread_context = {};
+
+  const uint8_t instruction[] = {0b10000000, 0b0};
+  const uint8_t* current_instruction = instruction;
+
+  bool pc_was_updated = false;
+  ASSERT_EQ(ExecuteUnwindInstruction(current_instruction, pc_was_updated,
+                                     &thread_context),
+            UnwindInstructionResult::kAborted);
+  EXPECT_FALSE(pc_was_updated);
+  ASSERT_EQ(current_instruction, instruction + 2);
 }
 
 TEST(ChromeAndroidUnwindInstructionTest,
@@ -387,7 +401,7 @@ TEST(ChromeAndroidUnwindInstructionTest,
   bool pc_was_updated = false;
   ASSERT_EQ(ExecuteUnwindInstruction(current_instruction, pc_was_updated,
                                      &thread_context),
-            UnwindInstructionResult::INSTRUCTION_PENDING);
+            UnwindInstructionResult::kInstructionPending);
   EXPECT_FALSE(pc_was_updated);
   ASSERT_EQ(current_instruction, &instruction + 1);
   EXPECT_EQ(reinterpret_cast<uintptr_t>(&stack[0] + 2), thread_context.arm_sp);
@@ -437,7 +451,7 @@ TEST(ChromeAndroidUnwindInstructionTest,
   bool pc_was_updated = false;
   ASSERT_EQ(ExecuteUnwindInstruction(current_instruction, pc_was_updated,
                                      &thread_context),
-            UnwindInstructionResult::INSTRUCTION_PENDING);
+            UnwindInstructionResult::kInstructionPending);
   EXPECT_FALSE(pc_was_updated);
   ASSERT_EQ(current_instruction, &instruction + 1);
   EXPECT_EQ(reinterpret_cast<uintptr_t>(&stack[0] + 6), thread_context.arm_sp);
@@ -487,7 +501,7 @@ TEST(ChromeAndroidUnwindInstructionTest,
   bool pc_was_updated = false;
   ASSERT_EQ(ExecuteUnwindInstruction(current_instruction, pc_was_updated,
                                      &thread_context),
-            UnwindInstructionResult::INSTRUCTION_PENDING);
+            UnwindInstructionResult::kInstructionPending);
   EXPECT_FALSE(pc_was_updated);
   ASSERT_EQ(current_instruction, &instruction + 1);
   EXPECT_EQ(reinterpret_cast<uintptr_t>(&stack[0] + 9), thread_context.arm_sp);
@@ -534,7 +548,7 @@ TEST(ChromeAndroidUnwindInstructionTest, TestPopRegistersIncludingR14Overflow) {
   bool pc_was_updated = false;
   ASSERT_EQ(ExecuteUnwindInstruction(current_instruction, pc_was_updated,
                                      &thread_context),
-            UnwindInstructionResult::STACK_POINTER_OUT_OF_BOUNDS);
+            UnwindInstructionResult::kAborted);
   EXPECT_FALSE(pc_was_updated);
   ASSERT_EQ(current_instruction, &instruction + 1);
   EXPECT_EQ(0xffffffff, thread_context.arm_sp);
@@ -567,7 +581,7 @@ TEST(ChromeAndroidUnwindInstructionTest, TestBigStackPointerIncrementMinValue) {
   bool pc_was_updated = false;
   ASSERT_EQ(ExecuteUnwindInstruction(current_instruction, pc_was_updated,
                                      &thread_context),
-            UnwindInstructionResult::INSTRUCTION_PENDING);
+            UnwindInstructionResult::kInstructionPending);
   EXPECT_FALSE(pc_was_updated);
   ASSERT_EQ(current_instruction, increment_0 + sizeof(increment_0));
   // vsp + 0x204 + (0 << 2)
@@ -591,7 +605,7 @@ TEST(ChromeAndroidUnwindInstructionTest, TestBigStackPointerIncrementMidValue) {
   bool pc_was_updated = false;
   ASSERT_EQ(ExecuteUnwindInstruction(current_instruction, pc_was_updated,
                                      &thread_context),
-            UnwindInstructionResult::INSTRUCTION_PENDING);
+            UnwindInstructionResult::kInstructionPending);
   EXPECT_FALSE(pc_was_updated);
   ASSERT_EQ(current_instruction, increment_4 + sizeof(increment_4));
   EXPECT_EQ(0x10000214ul, thread_context.arm_sp);
@@ -615,7 +629,7 @@ TEST(ChromeAndroidUnwindInstructionTest,
   bool pc_was_updated = false;
   ASSERT_EQ(ExecuteUnwindInstruction(current_instruction, pc_was_updated,
                                      &thread_context),
-            UnwindInstructionResult::INSTRUCTION_PENDING);
+            UnwindInstructionResult::kInstructionPending);
   EXPECT_FALSE(pc_was_updated);
   ASSERT_EQ(current_instruction, increment_128 + sizeof(increment_128));
   EXPECT_EQ(0x10000404ul, thread_context.arm_sp);
@@ -634,7 +648,7 @@ TEST(ChromeAndroidUnwindInstructionTest, TestBigStackPointerIncrementOverflow) {
   bool pc_was_updated = false;
   ASSERT_EQ(ExecuteUnwindInstruction(current_instruction, pc_was_updated,
                                      &thread_context),
-            UnwindInstructionResult::STACK_POINTER_OUT_OF_BOUNDS);
+            UnwindInstructionResult::kAborted);
   EXPECT_FALSE(pc_was_updated);
   ASSERT_EQ(current_instruction,
             increment_overflow + sizeof(increment_overflow));

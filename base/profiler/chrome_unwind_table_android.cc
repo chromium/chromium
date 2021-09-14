@@ -79,7 +79,7 @@ UnwindInstructionResult ExecuteUnwindInstruction(
         CheckedNumeric<uintptr_t>(RegisterContextStackPointer(thread_context)) +
         offset;
     if (!new_sp.AssignIfValid(&RegisterContextStackPointer(thread_context))) {
-      return UnwindInstructionResult::STACK_POINTER_OUT_OF_BOUNDS;
+      return UnwindInstructionResult::kAborted;
     }
   } else if (GetTopBits(*instruction, 2) == 0b01) {
     // 01xxxxxx
@@ -89,7 +89,7 @@ UnwindInstructionResult ExecuteUnwindInstruction(
         CheckedNumeric<uintptr_t>(RegisterContextStackPointer(thread_context)) -
         offset;
     if (!new_sp.AssignIfValid(&RegisterContextStackPointer(thread_context))) {
-      return UnwindInstructionResult::STACK_POINTER_OUT_OF_BOUNDS;
+      return UnwindInstructionResult::kAborted;
     }
   } else if (GetTopBits(*instruction, 4) == 0b1001) {
     // 1001nnnn (nnnn != 13,15)
@@ -109,25 +109,27 @@ UnwindInstructionResult ExecuteUnwindInstruction(
     const uint8_t max_register_index = (*instruction++ & 0b00000111) + 4;
     for (int n = 4; n <= max_register_index; n++) {
       if (!PopRegister(thread_context, n)) {
-        return UnwindInstructionResult::STACK_POINTER_OUT_OF_BOUNDS;
+        return UnwindInstructionResult::kAborted;
       }
     }
     if (!PopRegister(thread_context, 14)) {
-      return UnwindInstructionResult::STACK_POINTER_OUT_OF_BOUNDS;
+      return UnwindInstructionResult::kAborted;
     }
+  } else if (*instruction == 0b10000000 && *(instruction + 1) == 0) {
+    // 10000000 00000000
+    // Refuse to unwind.
+    instruction += 2;
+    return UnwindInstructionResult::kAborted;
   } else if (GetTopBits(*instruction, 4) == 0b1000) {
-    // 1000iiii iiiiiiii
-    // Pop up to 12 integer registers under masks {r15-r12}, {r11-r4}
     const uint32_t register_bitmask =
         ((*instruction & 0xf) << 8) + *(instruction + 1);
-    // 10000000 00000000 is reserved for 'Refused to unwind'.
-    DCHECK_NE(register_bitmask, 0ul);
     instruction += 2;
-
+    // 1000iiii iiiiiiii
+    // Pop up to 12 integer registers under masks {r15-r12}, {r11-r4}
     for (int register_index = 4; register_index < 16; register_index++) {
       if (register_bitmask & (1 << (register_index - 4))) {
         if (!PopRegister(thread_context, register_index)) {
-          return UnwindInstructionResult::STACK_POINTER_OUT_OF_BOUNDS;
+          return UnwindInstructionResult::kAborted;
         }
       }
     }
@@ -145,7 +147,7 @@ UnwindInstructionResult ExecuteUnwindInstruction(
     if (!pc_was_updated)
       thread_context->arm_pc = thread_context->arm_lr;
 
-    return UnwindInstructionResult::COMPLETED;
+    return UnwindInstructionResult::kCompleted;
   } else if (*instruction == 0b10110010) {
     // 10110010 uleb128
     // vsp = vsp + 0x204 + (uleb128 << 2)
@@ -156,12 +158,12 @@ UnwindInstructionResult ExecuteUnwindInstruction(
         (CheckedNumeric<uintptr_t>(DecodeULEB128(instruction)) << 2) + 0x204;
 
     if (!new_sp.AssignIfValid(&RegisterContextStackPointer(thread_context))) {
-      return UnwindInstructionResult::STACK_POINTER_OUT_OF_BOUNDS;
+      return UnwindInstructionResult::kAborted;
     }
   } else {
     NOTREACHED();
   }
-  return UnwindInstructionResult::INSTRUCTION_PENDING;
+  return UnwindInstructionResult::kInstructionPending;
 }
 
 const uint8_t* GetFirstUnwindInstructionFromFunctionOffsetTableIndex(
