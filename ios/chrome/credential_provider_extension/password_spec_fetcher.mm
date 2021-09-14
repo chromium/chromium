@@ -109,8 +109,9 @@ const NSTimeInterval kPasswordSpecTimeout = 10;
 
   // Parse the proto and execute completion.
   std::string decoded;
-  const char* bytes = static_cast<const char*>([data bytes]);
-  if (base::Base64Decode(bytes, &decoded)) {
+  const base::StringPiece encoded_bytes(static_cast<const char*>([data bytes]),
+                                        [data length]);
+  if (base::Base64Decode(encoded_bytes, &decoded)) {
     DomainSuggestions suggestions;
     suggestions.ParseFromString(decoded);
     if (suggestions.has_password_requirements()) {
