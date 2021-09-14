@@ -160,6 +160,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Profile.Delete" enum="BooleanProfileSignedIn"
     expires_after="2021-07-31">
+  <obsolete>
+    Removed in M96.
+  </obsolete>
   <owner>msarda@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>

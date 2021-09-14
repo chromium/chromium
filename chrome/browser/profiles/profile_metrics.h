@@ -168,7 +168,6 @@ class ProfileMetrics {
   static void LogProfileDeleteUser(ProfileDelete metric);
   static void LogProfileSwitchGaia(ProfileGaia metric);
   static void LogProfileSyncInfo(ProfileSync metric);
-  static void LogProfileDelete(bool profile_was_signed_in);
 
 #if defined(OS_ANDROID)
   static void LogProfileAndroidAccountManagementMenu(

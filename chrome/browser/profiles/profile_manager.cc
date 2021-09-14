@@ -1943,10 +1943,6 @@ void ProfileManager::OnLoadProfileForProfileDeletion(
       sync_service->StopAndClear();
     }
 
-    ProfileAttributesEntry* entry =
-        storage.GetProfileAttributesWithPath(profile_dir);
-    DCHECK(entry);
-    ProfileMetrics::LogProfileDelete(entry->IsAuthenticated());
     // Some platforms store passwords in keychains. They should be removed.
     scoped_refptr<password_manager::PasswordStoreInterface> password_store =
         PasswordStoreFactory::GetInterfaceForProfile(

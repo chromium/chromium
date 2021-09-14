@@ -428,10 +428,6 @@ void ProfileMetrics::LogProfileSyncInfo(ProfileSync metric) {
                                 NUM_PROFILE_SYNC_METRICS);
 }
 
-void ProfileMetrics::LogProfileDelete(bool profile_was_signed_in) {
-  base::UmaHistogramBoolean("Profile.Delete", profile_was_signed_in);
-}
-
 #if defined(OS_ANDROID)
 void ProfileMetrics::LogProfileAndroidAccountManagementMenu(
     ProfileAndroidAccountManagementMenu metric,
