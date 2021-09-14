@@ -3569,8 +3569,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       file_system_manager_;
 
   // Hosts blink::mojom::PushMessaging for the RenderFrame.
-  std::unique_ptr<PushMessagingManager, base::OnTaskRunnerDeleter>
-      push_messaging_manager_;
+  std::unique_ptr<PushMessagingManager> push_messaging_manager_;
 
   // Hosts blink::mojom::SpeechSynthesis for the RenderFrame.
   std::unique_ptr<SpeechSynthesisImpl> speech_synthesis_impl_;

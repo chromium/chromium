@@ -1715,12 +1715,6 @@ RenderProcessHostImpl::RenderProcessHostImpl(
           storage_partition_impl_->GetGeneratedCodeCacheContext()),
       channel_connected_(false),
       sent_render_process_ready_(false),
-      push_messaging_manager_(
-          nullptr,
-          base::OnTaskRunnerDeleter(
-
-              BrowserThread::GetTaskRunnerForThread(
-                  ServiceWorkerContext::GetCoreThreadId()))),
       instance_weak_factory_(absl::in_place, this),
       shutdown_exit_code_(-1) {
   CHECK(!browser_context->ShutdownStarted());
@@ -1756,13 +1750,10 @@ RenderProcessHostImpl::RenderProcessHostImpl(
   // bound to service workers (i.e. PushProvider), since frame-bound
   // clients will rely on BrowserInterfaceBroker instead. Therefore,
   // pass an invalid frame ID here.
-  //
-  // Constructing the manager must occur after RegisterHost(), since
-  // PushMessagingManager::Core looks up |this| using the process id.
-  push_messaging_manager_.reset(new PushMessagingManager(
-      GetID(),
+  push_messaging_manager_ = std::make_unique<PushMessagingManager>(
+      *this,
       /* render_frame_id= */ ChildProcessHost::kInvalidUniqueID,
-      storage_partition_impl_->GetServiceWorkerContext()));
+      base::WrapRefCounted(storage_partition_impl_->GetServiceWorkerContext()));
 
   InitializeChannelProxy();
 

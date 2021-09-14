@@ -1428,12 +1428,6 @@ RenderFrameHostImpl::RenderFrameHostImpl(
           blink::PreviewsTypes::PREVIEWS_UNSPECIFIED),
       frame_(std::move(frame_remote)),
       waiting_for_init_(renderer_initiated_creation_of_main_frame),
-      push_messaging_manager_(
-          nullptr,
-          base::OnTaskRunnerDeleter(
-
-              BrowserThread::GetTaskRunnerForThread(
-                  ServiceWorkerContext::GetCoreThreadId()))),
       frame_token_(frame_token),
       keep_alive_handle_factory_(
           agent_scheduling_group_.GetProcess(),
@@ -9605,17 +9599,15 @@ void RenderFrameHostImpl::GetWebAuthenticationService(
 void RenderFrameHostImpl::GetPushMessaging(
     mojo::PendingReceiver<blink::mojom::PushMessaging> receiver) {
   if (!push_messaging_manager_) {
-    push_messaging_manager_.reset(new PushMessagingManager(
-        GetProcess()->GetID(), routing_id_,
-        static_cast<StoragePartitionImpl*>(GetProcess()->GetStoragePartition())
-            ->GetServiceWorkerContext()));
+    auto* rph = GetProcess();
+    push_messaging_manager_ = std::make_unique<PushMessagingManager>(
+        *rph, routing_id_,
+        base::WrapRefCounted(
+            static_cast<StoragePartitionImpl*>(rph->GetStoragePartition())
+                ->GetServiceWorkerContext()));
   }
 
-  RunOrPostTaskOnThread(
-      FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-      base::BindOnce(&PushMessagingManager::AddPushMessagingReceiver,
-                     push_messaging_manager_->AsWeakPtr(),
-                     std::move(receiver)));
+  push_messaging_manager_->AddPushMessagingReceiver(std::move(receiver));
 }
 
 void RenderFrameHostImpl::GetVirtualAuthenticatorManager(

@@ -1112,8 +1112,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   std::unique_ptr<FileSystemManagerImpl, BrowserThread::DeleteOnIOThread>
       file_system_manager_impl_;
   std::unique_ptr<viz::GpuClient, BrowserThread::DeleteOnIOThread> gpu_client_;
-  std::unique_ptr<PushMessagingManager, base::OnTaskRunnerDeleter>
-      push_messaging_manager_;
+  std::unique_ptr<PushMessagingManager> push_messaging_manager_;
 
   std::unique_ptr<EmbeddedFrameSinkProviderImpl> embedded_frame_sink_provider_;
   std::unique_ptr<PluginRegistryImpl> plugin_registry_;
