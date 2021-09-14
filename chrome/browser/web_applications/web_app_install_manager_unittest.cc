@@ -27,6 +27,7 @@
 #include "chrome/browser/web_applications/test/test_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_sync_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -880,7 +881,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
           }));
 
   // The sync server sends a change to delete the app.
-  controller().ApplySyncChanges_DeleteApps({app_id});
+  sync_bridge_test_utils::DeleteApps(controller().sync_bridge(), {app_id});
   run_loop.Run();
 
   const std::vector<Event> expected_event_order{
@@ -1157,7 +1158,8 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
 
     std::vector<std::unique_ptr<WebApp>> add_synced_apps_data;
     add_synced_apps_data.push_back(std::move(synced_specifics_data));
-    controller().ApplySyncChanges_AddApps(add_synced_apps_data);
+    sync_bridge_test_utils::AddApps(controller().sync_bridge(),
+                                    add_synced_apps_data);
   }
 
   EXPECT_EQ(web_app, registrar().GetAppById(app_id));

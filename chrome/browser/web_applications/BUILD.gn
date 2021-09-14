@@ -425,6 +425,8 @@ source_set("web_applications_test_support") {
     "test/web_app_icon_test_utils.h",
     "test/web_app_registration_waiter.cc",
     "test/web_app_registration_waiter.h",
+    "test/web_app_sync_test_utils.cc",
+    "test/web_app_sync_test_utils.h",
     "test/web_app_test.h",
     "test/web_app_test_utils.cc",
     "test/web_app_test_utils.h",

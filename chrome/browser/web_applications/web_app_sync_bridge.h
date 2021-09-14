@@ -128,6 +128,10 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
 
   const std::set<AppId>& GetAppsInSyncUninstallForTest();
 
+  void set_disable_checks_for_testing(bool disable_checks_for_testing) {
+    disable_checks_for_testing_ = disable_checks_for_testing;
+  }
+
  private:
   void CheckRegistryUpdateData(const RegistryUpdateData& update_data) const;
 
@@ -171,6 +175,7 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
   SyncInstallDelegate* const install_delegate_;
 
   bool is_in_update_ = false;
+  bool disable_checks_for_testing_ = false;
 
   base::WeakPtrFactory<WebAppSyncBridge> weak_ptr_factory_{this};
 };

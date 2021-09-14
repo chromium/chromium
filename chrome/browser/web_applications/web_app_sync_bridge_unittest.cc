@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_database_factory.h"
 #include "chrome/browser/web_applications/test/test_web_app_registry_controller.h"
+#include "chrome/browser/web_applications/test/web_app_sync_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -1145,7 +1146,7 @@ TEST_F(WebAppSyncBridgeTest, ApplySyncChanges_OnWebAppsWillBeUpdatedFromSync) {
     apps_server_state.push_back(std::move(app_server_state));
   }
 
-  controller().ApplySyncChanges_UpdateApps(apps_server_state);
+  sync_bridge_test_utils::UpdateApps(sync_bridge(), apps_server_state);
 
   run_loop.Run();
 

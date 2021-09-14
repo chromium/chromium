@@ -29,7 +29,7 @@ class WebApp;
 class TestWebAppRegistryController : public SyncInstallDelegate {
  public:
   TestWebAppRegistryController();
-  ~TestWebAppRegistryController();
+  ~TestWebAppRegistryController() override;
 
   void SetUp(Profile* profile);
 
@@ -40,12 +40,6 @@ class TestWebAppRegistryController : public SyncInstallDelegate {
   void RegisterApp(std::unique_ptr<WebApp> web_app);
   void UnregisterApp(const AppId& app_id);
   void UnregisterAll();
-
-  void ApplySyncChanges_AddApps(
-      const std::vector<std::unique_ptr<WebApp>>& apps_server_state);
-  void ApplySyncChanges_UpdateApps(
-      const std::vector<std::unique_ptr<WebApp>>& apps_server_state);
-  void ApplySyncChanges_DeleteApps(std::vector<AppId> app_ids_to_delete);
 
   using InstallWebAppsAfterSyncDelegate =
       base::RepeatingCallback<void(std::vector<WebApp*> web_apps,
