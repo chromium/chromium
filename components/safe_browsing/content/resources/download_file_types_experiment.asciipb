@@ -12,7 +12,7 @@
 ## version id is larger than the version id in download_file_types.asciipb. If
 ## there isn't an ongoing experiment, this version id is equal to the version id
 ## in download_file_types.asciipb.
-version_id: 44
+version_id: 45
 sampled_ping_probability: 0.01
 max_archived_binaries_to_report: 10
 default_file_type {
@@ -1399,6 +1399,7 @@ file_types {
   extension: "doc"
   uma_value: 328
   ping_setting: FULL_PING
+  inspection_type: OFFICE_DOCUMENT
 }
 file_types {
   extension: "docb"
@@ -1409,11 +1410,13 @@ file_types {
   extension: "docm"
   uma_value: 269
   ping_setting: FULL_PING
+  inspection_type: OFFICE_DOCUMENT
 }
 file_types {
   extension: "docx"
   uma_value: 268
   ping_setting: FULL_PING
+  inspection_type: OFFICE_DOCUMENT
 }
 file_types {
   extension: "dot"
@@ -1464,6 +1467,7 @@ file_types {
   extension: "pps"
   uma_value: 355
   ping_setting: FULL_PING
+  inspection_type: OFFICE_DOCUMENT
 }
 file_types {
   extension: "ppsm"
@@ -1474,11 +1478,13 @@ file_types {
   extension: "ppsx"
   uma_value: 281
   ping_setting: FULL_PING
+  inspection_type: OFFICE_DOCUMENT
 }
 file_types {
   extension: "ppt"
   uma_value: 332
   ping_setting: FULL_PING
+  inspection_type: OFFICE_DOCUMENT
 }
 file_types {
   extension: "pptm"
@@ -1489,6 +1495,7 @@ file_types {
   extension: "pptx"
   uma_value: 277
   ping_setting: FULL_PING
+  inspection_type: OFFICE_DOCUMENT
 }
 file_types {
   extension: "rtf"
@@ -1509,6 +1516,7 @@ file_types {
   extension: "xla"
   uma_value: 348
   ping_setting: FULL_PING
+  inspection_type: OFFICE_DOCUMENT
 }
 file_types {
   extension: "xlam"
@@ -1534,21 +1542,25 @@ file_types {
   extension: "xls"
   uma_value: 327
   ping_setting: FULL_PING
+  inspection_type: OFFICE_DOCUMENT
 }
 file_types {
   extension: "xlsb"
   uma_value: 344
   ping_setting: FULL_PING
+  inspection_type: OFFICE_DOCUMENT
 }
 file_types {
   extension: "xlsm"
   uma_value: 274
   ping_setting: FULL_PING
+  inspection_type: OFFICE_DOCUMENT
 }
 file_types {
   extension: "xlsx"
   uma_value: 273
   ping_setting: FULL_PING
+  inspection_type: OFFICE_DOCUMENT
 }
 file_types {
   extension: "xlt"
