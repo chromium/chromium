@@ -4,6 +4,8 @@
 
 #include "chrome/browser/commerce/shopping_list/shopping_data_provider.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/json/json_reader.h"
@@ -114,6 +116,17 @@ void ShoppingDataProvider::OnJavascriptExecutionCompleted(base::Value result) {
     return;
 
   MergeData(meta_for_navigation_.get(), json_root.value());
+}
+
+std::unique_ptr<power_bookmarks::PowerBookmarkMeta>
+ShoppingDataProvider::GetCurrentMetadata() {
+  if (!meta_for_navigation_)
+    return nullptr;
+
+  std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
+      std::make_unique<power_bookmarks::PowerBookmarkMeta>();
+  meta->CopyFrom(*meta_for_navigation_.get());
+  return meta;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ShoppingDataProvider)

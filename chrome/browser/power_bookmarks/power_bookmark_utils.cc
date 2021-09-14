@@ -7,14 +7,18 @@
 #include <string>
 #include <vector>
 
+#include "base/guid.h"
 #include "base/i18n/string_search.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
+#include "chrome/browser/commerce/shopping_list/shopping_data_provider.h"
 #include "chrome/browser/power_bookmarks/proto/power_bookmark_meta.pb.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/models/tree_node_iterator.h"
+#include "url/gurl.h"
 
 namespace power_bookmarks {
 
@@ -22,6 +26,45 @@ const char kPowerBookmarkMetaKey[] = "power_bookmark_meta";
 
 PowerBookmarkQueryFields::PowerBookmarkQueryFields() = default;
 PowerBookmarkQueryFields::~PowerBookmarkQueryFields() = default;
+
+const bookmarks::BookmarkNode* AddURL(
+    content::WebContents* web_contents,
+    bookmarks::BookmarkModel* model,
+    const bookmarks::BookmarkNode* parent,
+    size_t index,
+    const std::u16string& title,
+    const GURL& url,
+    bookmarks::BookmarkNode::MetaInfoMap* meta_info,
+    absl::optional<base::Time> creation_time,
+    absl::optional<base::GUID> guid) {
+  CHECK(web_contents);
+  CHECK(model);
+
+  // Add meta info if available.
+  // TODO(1247352): Long-term, power bookmarks should not know about individual
+  //                features. Rather features should register themselves as
+  //                providers of this information.
+  shopping_list::ShoppingDataProvider* data_provider =
+      shopping_list::ShoppingDataProvider::FromWebContents(web_contents);
+  bookmarks::BookmarkNode::MetaInfoMap local_meta_info;
+  if (data_provider) {
+    std::unique_ptr<PowerBookmarkMeta> meta =
+        data_provider->GetCurrentMetadata();
+    if (meta) {
+      if (!meta_info)
+        meta_info = &local_meta_info;
+
+      std::string proto_bytes;
+      meta->SerializeToString(&proto_bytes);
+      (*meta_info)[kPowerBookmarkMetaKey] = proto_bytes;
+    }
+  }
+
+  const bookmarks::BookmarkNode* node =
+      model->AddURL(parent, index, title, url, meta_info, creation_time, guid);
+
+  return node;
+}
 
 std::unique_ptr<PowerBookmarkMeta> GetNodePowerBookmarkMeta(
     const bookmarks::BookmarkNode* node) {

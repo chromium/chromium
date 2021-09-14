@@ -10,10 +10,21 @@
 
 #include "components/bookmarks/browser/bookmark_utils.h"
 
+class GURL;
+
+namespace base {
+class GUID;
+class Time;
+}  // namespace base
+
 namespace bookmarks {
 class BookmarkModel;
 class BookmarkNode;
 }  // namespace bookmarks
+
+namespace content {
+class WebContents;
+}
 
 namespace power_bookmarks {
 
@@ -29,6 +40,20 @@ struct PowerBookmarkQueryFields : bookmarks::QueryFields {
 // This is the key for the storage of PowerBookmarkMeta in bookmarks' meta_info
 // map.
 extern const char kPowerBookmarkMetaKey[];
+
+// Add a bookmark to the provided model. This version is similar to the method
+// on BookmarkModel with the addition of polling extra metadata providers and
+// attaching it to the node prior to returning it to the client.
+const bookmarks::BookmarkNode* AddURL(
+    content::WebContents* web_contents,
+    bookmarks::BookmarkModel* model,
+    const bookmarks::BookmarkNode* parent,
+    size_t index,
+    const std::u16string& title,
+    const GURL& url,
+    bookmarks::BookmarkNode::MetaInfoMap* meta_info,
+    absl::optional<base::Time> creation_time,
+    absl::optional<base::GUID> guid);
 
 // Get the PowerBookmarkMeta for a node. The ownership of the returned object
 // is transferred to the caller and a new instance is created each time this is

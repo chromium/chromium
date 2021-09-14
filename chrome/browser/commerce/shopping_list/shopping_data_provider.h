@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_COMMERCE_SHOPPING_LIST_SHOPPING_DATA_PROVIDER_H_
 #define CHROME_BROWSER_COMMERCE_SHOPPING_LIST_SHOPPING_DATA_PROVIDER_H_
 
+#include <memory>
+
 #include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -41,6 +43,9 @@ class ShoppingDataProvider
   ~ShoppingDataProvider() override;
   ShoppingDataProvider(const ShoppingDataProvider& other) = delete;
   ShoppingDataProvider& operator=(const ShoppingDataProvider& other) = delete;
+
+  // Provides a copy of the metadata held by this provider.
+  std::unique_ptr<power_bookmarks::PowerBookmarkMeta> GetCurrentMetadata();
 
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
