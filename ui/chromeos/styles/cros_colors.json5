@@ -352,7 +352,13 @@
     shortcut_background_gradient_color: {
       light:"rgba($white_rgb, 0)",
       dark:"rgba($white_rgb, 0.12)"
-    }
+    },
+
+    /* dialog */
+    dialog_title_background_color: {
+      light:"$google_grey_100",
+      dark:"$google_grey_900",
+    },
   },
   opacities: {
     disabled_opacity: 0.38,
