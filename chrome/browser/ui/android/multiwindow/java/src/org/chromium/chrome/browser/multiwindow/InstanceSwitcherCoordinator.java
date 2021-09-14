@@ -145,7 +145,6 @@ public class InstanceSwitcherCoordinator {
         ModalDialogProperties.Controller controller = new ModalDialogProperties.Controller() {
             @Override
             public void onDismiss(PropertyModel model, @DialogDismissalCause int dismissalCause) {
-                InstanceSwitcherItemViewBinder.sMoreMenu = null;
                 sPrevInstance = null;
             }
 
