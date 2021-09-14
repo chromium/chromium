@@ -4,6 +4,8 @@
 
 #include "weblayer/browser/permissions/weblayer_camera_pan_tilt_zoom_permission_context_delegate.h"
 
+#include "build/build_config.h"
+
 namespace weblayer {
 
 WebLayerCameraPanTiltZoomPermissionContextDelegate::
