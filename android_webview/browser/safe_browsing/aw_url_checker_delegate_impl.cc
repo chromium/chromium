@@ -174,7 +174,8 @@ void AwUrlCheckerDelegateImpl::StartApplicationResponse(
     scoped_refptr<AwSafeBrowsingUIManager> ui_manager,
     const security_interstitials::UnsafeResource& resource,
     const AwWebResourceRequest& request) {
-  content::WebContents* web_contents = resource.web_contents_getter.Run();
+  content::WebContents* web_contents =
+      security_interstitials::GetWebContentsForResource(resource);
 
   security_interstitials::SecurityInterstitialTabHelper*
       security_interstitial_tab_helper = security_interstitials::
@@ -209,8 +210,9 @@ void AwUrlCheckerDelegateImpl::DoApplicationResponse(
     const AwWebResourceRequest& request,
     SafeBrowsingAction action,
     bool reporting) {
-  content::WebContents* web_contents = resource.web_contents_getter.Run();
-  // |web_contents_getter| can return null after RenderFrameHost is destroyed.
+  content::WebContents* web_contents =
+      security_interstitials::GetWebContentsForResource(resource);
+  // |web_contents| can be null after RenderFrameHost is destroyed.
   if (!web_contents)
     return;
 
@@ -282,7 +284,8 @@ void AwUrlCheckerDelegateImpl::DoApplicationResponse(
 void AwUrlCheckerDelegateImpl::StartDisplayingDefaultBlockingPage(
     scoped_refptr<AwSafeBrowsingUIManager> ui_manager,
     const security_interstitials::UnsafeResource& resource) {
-  content::WebContents* web_contents = resource.web_contents_getter.Run();
+  content::WebContents* web_contents =
+      security_interstitials::GetWebContentsForResource(resource);
   if (web_contents) {
     ui_manager->DisplayBlockingPage(resource);
     return;

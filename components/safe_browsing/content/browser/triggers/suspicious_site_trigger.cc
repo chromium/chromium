@@ -18,6 +18,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -90,8 +91,6 @@ bool SuspiciousSiteTrigger::MaybeStartReport() {
   security_interstitials::UnsafeResource resource;
   resource.threat_type = SB_THREAT_TYPE_SUSPICIOUS_SITE;
   resource.url = primary_rfh.GetLastCommittedURL();
-  resource.web_contents_getter =
-      security_interstitials::GetWebContentsGetter(primary_rfh_id);
   resource.render_process_id = primary_rfh_id.child_id;
   resource.render_frame_id = primary_rfh_id.frame_routing_id;
 

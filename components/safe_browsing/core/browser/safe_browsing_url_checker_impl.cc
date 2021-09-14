@@ -232,7 +232,6 @@ UnsafeResource SafeBrowsingUrlCheckerImpl::MakeUnsafeResource(
       base::BindRepeating(&SafeBrowsingUrlCheckerImpl::OnBlockingPageComplete,
                           weak_factory_.GetWeakPtr());
   resource.callback_sequence = base::SequencedTaskRunnerHandle::Get();
-  resource.web_contents_getter = web_contents_getter_;
   resource.render_process_id = render_process_id_;
   resource.render_frame_id = render_frame_id_;
   resource.frame_tree_node_id = frame_tree_node_id_;

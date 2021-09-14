@@ -4,7 +4,6 @@
 
 #include "components/security_interstitials/content/unsafe_resource_util.h"
 
-#include "base/bind.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -13,7 +12,7 @@ namespace security_interstitials {
 
 content::NavigationEntry* GetNavigationEntryForResource(
     const UnsafeResource& resource) {
-  content::WebContents* web_contents = resource.web_contents_getter.Run();
+  content::WebContents* web_contents = GetWebContentsForResource(resource);
   if (!web_contents)
     return nullptr;
   // If a safebrowsing hit occurs during main frame navigation, the navigation
@@ -28,21 +27,14 @@ content::NavigationEntry* GetNavigationEntryForResource(
   return web_contents->GetController().GetLastCommittedEntry();
 }
 
-base::RepeatingCallback<content::WebContents*(void)> GetWebContentsGetter(
-    int render_process_host_id,
-    int render_frame_id) {
-  return GetWebContentsGetter(content::GlobalRenderFrameHostId(
-      render_process_host_id, render_frame_id));
-}
-
-base::RepeatingCallback<content::WebContents*(void)> GetWebContentsGetter(
-    content::GlobalRenderFrameHostId render_frame_host_id) {
-  return base::BindRepeating(
-      [](content::GlobalRenderFrameHostId render_frame_host_id) {
-        return content::WebContents::FromRenderFrameHost(
-            content::RenderFrameHost::FromID(render_frame_host_id));
-      },
-      render_frame_host_id);
+content::WebContents* GetWebContentsForResource(
+    const UnsafeResource& resource) {
+  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
+      resource.render_process_id, resource.render_frame_id);
+  if (rfh) {
+    return content::WebContents::FromRenderFrameHost(rfh);
+  }
+  return content::WebContents::FromFrameTreeNodeId(resource.frame_tree_node_id);
 }
 
 }  // namespace security_interstitials

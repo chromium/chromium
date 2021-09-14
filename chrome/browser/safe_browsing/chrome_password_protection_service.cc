@@ -77,6 +77,7 @@
 #include "components/unified_consent/pref_names.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -597,8 +598,6 @@ void ChromePasswordProtectionService::MaybeStartThreatDetailsCollection(
     resource.threat_type = SB_THREAT_TYPE_SIGNED_IN_NON_SYNC_PASSWORD_REUSE;
   }
   resource.url = web_contents->GetLastCommittedURL();
-  resource.web_contents_getter =
-      security_interstitials::GetWebContentsGetter(primary_main_frame_id);
   resource.render_process_id = primary_main_frame_id.child_id;
   resource.render_frame_id = primary_main_frame_id.frame_routing_id;
   resource.token = token;

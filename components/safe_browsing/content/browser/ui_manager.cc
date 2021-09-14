@@ -60,7 +60,8 @@ void SafeBrowsingUIManager::Stop(bool shutdown) {
 
 void SafeBrowsingUIManager::CreateAndSendHitReport(
     const UnsafeResource& resource) {
-  WebContents* web_contents = resource.web_contents_getter.Run();
+  WebContents* web_contents =
+      security_interstitials::GetWebContentsForResource(resource);
   DCHECK(web_contents);
   HitReport hit_report;
   hit_report.malicious_url = resource.url;
@@ -102,7 +103,8 @@ void SafeBrowsingUIManager::CreateAndSendHitReport(
 
 void SafeBrowsingUIManager::StartDisplayingBlockingPage(
     const security_interstitials::UnsafeResource& resource) {
-  content::WebContents* web_contents = resource.web_contents_getter.Run();
+  content::WebContents* web_contents =
+      security_interstitials::GetWebContentsForResource(resource);
 
   if (!web_contents) {
     // Tab is gone.
