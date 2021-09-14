@@ -46,8 +46,13 @@ using ::testing::ValuesIn;
 
 namespace blink {
 
-static const std::string kTestVideoTrackId = "video_track_id";
-static const std::string kTestAudioTrackId = "audio_track_id";
+static String TestVideoTrackId() {
+  return "video_track_id";
+}
+
+static String TestAudioTrackId() {
+  return "audio_track_id";
+}
 static const int kTestAudioChannels = 2;
 static const int kTestAudioSampleRate = 48000;
 static const int kTestAudioBufferDurationMs = 10;
@@ -159,7 +164,7 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
   }
 
   void AddVideoTrack() {
-    video_source_ = registry_.AddVideoTrack(kTestVideoTrackId);
+    video_source_ = registry_.AddVideoTrack(TestVideoTrackId());
   }
 
   void AddTracks() {
@@ -167,7 +172,7 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
     if (has_video_)
       AddVideoTrack();
     if (has_audio_)
-      registry_.AddAudioTrack(kTestAudioTrackId);
+      registry_.AddAudioTrack(TestAudioTrackId());
   }
 
   void ForceOneErrorInWebmMuxer() {
@@ -686,7 +691,7 @@ class MediaRecorderHandlerPassthroughTest
  public:
   MediaRecorderHandlerPassthroughTest() {
     registry_.Init();
-    video_source_ = registry_.AddVideoTrack(kTestVideoTrackId);
+    video_source_ = registry_.AddVideoTrack(TestVideoTrackId());
     ON_CALL(*video_source_, SupportsEncodedOutput).WillByDefault(Return(true));
     media_recorder_handler_ = MakeGarbageCollected<MediaRecorderHandler>(
         scheduler::GetSingleThreadTaskRunnerForTesting());
