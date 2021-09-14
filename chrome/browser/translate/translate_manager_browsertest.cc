@@ -1024,7 +1024,7 @@ IN_PROC_BROWSER_TEST_F(OverrideSitePrefsForAutoHrefTranslateBrowserTest,
 #define MAYBE_PageTranslationError PageTranslationError
 #endif
 IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
-                       DISABLED_PageTranslationError) {
+                       MAYBE_PageTranslationError) {
   SetTranslateScript(kTestValidScript);
 
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
