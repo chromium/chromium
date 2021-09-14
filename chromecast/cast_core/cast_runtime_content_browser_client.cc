@@ -5,6 +5,7 @@
 #include "chromecast/cast_core/cast_runtime_content_browser_client.h"
 
 #include "chromecast/browser/service_manager_connection.h"
+#include "chromecast/browser/webui/constants.h"
 #include "chromecast/cast_core/cast_core_switches.h"
 #include "chromecast/cast_core/cast_runtime_service.h"
 #include "chromecast/common/cors_exempt_headers.h"
@@ -56,6 +57,11 @@ std::unique_ptr<::media::CdmFactory>
 CastRuntimeContentBrowserClient::CreateCdmFactory(
     ::media::mojom::FrameInterfaceFactory* frame_interfaces) {
   return nullptr;
+}
+
+bool CastRuntimeContentBrowserClient::IsWebUIAllowedToMakeNetworkRequests(
+    const url::Origin& origin) {
+  return origin.host() == kCastWebUIHomeHost;
 }
 
 }  // namespace chromecast

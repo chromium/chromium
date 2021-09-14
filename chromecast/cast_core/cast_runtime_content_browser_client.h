@@ -31,6 +31,8 @@ class CastRuntimeContentBrowserClient : public shell::CastContentBrowserClient {
                            blink::web_pref::WebPreferences* prefs) override;
   std::unique_ptr<::media::CdmFactory> CreateCdmFactory(
       ::media::mojom::FrameInterfaceFactory* frame_interfaces) override;
+  // This function is used to allow/disallow WebUIs to make network requests.
+  bool IsWebUIAllowedToMakeNetworkRequests(const url::Origin& origin) override;
 };
 
 }  // namespace chromecast
