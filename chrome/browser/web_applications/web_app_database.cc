@@ -324,6 +324,8 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     WebAppFileHandlerProto* file_handler_proto =
         local_data->add_file_handlers();
     file_handler_proto->set_action(file_handler.action.spec());
+    file_handler_proto->set_display_name(
+        base::UTF16ToUTF8(file_handler.display_name));
 
     for (const auto& accept_entry : file_handler.accept) {
       WebAppFileHandlerAcceptProto* accept_entry_proto =
@@ -685,6 +687,11 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     if (file_handler.action.is_empty() || !file_handler.action.is_valid()) {
       DLOG(ERROR) << "WebApp FileHandler proto action parse error";
       return nullptr;
+    }
+
+    if (file_handler_proto.has_display_name()) {
+      file_handler.display_name =
+          base::UTF8ToUTF16(file_handler_proto.display_name());
     }
 
     for (const auto& accept_entry_proto : file_handler_proto.accept()) {

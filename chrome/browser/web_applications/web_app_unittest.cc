@@ -274,7 +274,8 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
          "purpose": "kAny",
          "square_size_px": 48,
          "url": "https://example.com/image2.png"
-      } ]
+      } ],
+      "name": "13087720410 file"
    }, {
       "accept": [ {
          "file_extensions": [ ".13087720411a", ".13087720411b" ],
@@ -292,7 +293,8 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
          "purpose": "kAny",
          "square_size_px": 48,
          "url": "https://example.com/image2.png"
-      } ]
+      } ],
+      "name": "13087720411 file"
    }, {
       "accept": [ {
          "file_extensions": [ ".13087720412a", ".13087720412b" ],
@@ -310,7 +312,8 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
          "purpose": "kAny",
          "square_size_px": 48,
          "url": "https://example.com/image2.png"
-      } ]
+      } ],
+      "name": "13087720412 file"
    }, {
       "accept": [ {
          "file_extensions": [ ".13087720413a", ".13087720413b" ],
@@ -328,7 +331,8 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
          "purpose": "kAny",
          "square_size_px": 48,
          "url": "https://example.com/image2.png"
-      } ]
+      } ],
+      "name": "13087720413 file"
    }, {
       "accept": [ {
          "file_extensions": [ ".13087720414a", ".13087720414b" ],
@@ -346,7 +350,8 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
          "purpose": "kAny",
          "square_size_px": 48,
          "url": "https://example.com/image2.png"
-      } ]
+      } ],
+      "name": "13087720414 file"
    } ],
    "manifest_icons": [ {
       "purpose": "kAny",

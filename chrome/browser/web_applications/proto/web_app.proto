@@ -28,6 +28,7 @@ message WebAppFileHandlerProto {
   required string action = 1;
   repeated WebAppFileHandlerAcceptProto accept = 2;
   repeated sync_pb.WebAppIconInfo icon_infos = 3;
+  optional string display_name = 4;
 }
 
 message WebAppProtocolHandler {

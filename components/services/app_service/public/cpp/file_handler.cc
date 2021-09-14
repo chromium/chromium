@@ -32,15 +32,16 @@ base::Value FileHandler::AcceptEntry::AsDebugValue() const {
 base::Value FileHandler::AsDebugValue() const {
   base::Value root(base::Value::Type::DICTIONARY);
 
-  root.SetStringKey("action", action.spec());
   base::Value& accept_json =
       *root.SetKey("accept", base::Value(base::Value::Type::LIST));
   for (const AcceptEntry& entry : accept)
     accept_json.Append(entry.AsDebugValue());
+  root.SetStringKey("action", action.spec());
   base::Value& icons_json =
       *root.SetKey("icons", base::Value(base::Value::Type::LIST));
   for (const IconInfo& entry : icons)
     icons_json.Append(entry.AsDebugValue());
+  root.SetStringKey("name", display_name);
 
   return root;
 }
@@ -74,8 +75,10 @@ bool operator==(const FileHandler::AcceptEntry& accept_entry1,
 
 bool operator==(const FileHandler& file_handler1,
                 const FileHandler& file_handler2) {
-  return std::tie(file_handler1.action, file_handler1.accept) ==
-         std::tie(file_handler2.action, file_handler2.accept);
+  return std::tie(file_handler1.action, file_handler1.accept,
+                  file_handler1.display_name) ==
+         std::tie(file_handler2.action, file_handler2.accept,
+                  file_handler2.display_name);
 }
 
 bool operator!=(const FileHandler::AcceptEntry& accept_entry1,

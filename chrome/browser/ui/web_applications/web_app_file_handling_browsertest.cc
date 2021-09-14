@@ -315,6 +315,22 @@ class WebAppFileHandlingBrowserTest : public WebAppFileHandlingTestBase {
   std::unique_ptr<content::WebContentsDestroyedWatcher> destroyed_watcher_;
 };
 
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest, ManifestFields) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL app_url(
+      embedded_test_server()->GetURL("/web_app_file_handling/basic_app.html"));
+  const AppId app_id = InstallWebAppFromManifest(browser(), app_url);
+  auto* provider = WebAppProvider::GetForTest(browser()->profile());
+  const WebApp* web_app = provider->registrar().GetAppById(app_id);
+  ASSERT_TRUE(web_app);
+
+  ASSERT_EQ(1U, web_app->file_handlers().size());
+  EXPECT_EQ(embedded_test_server()->GetURL(
+                "/web_app_file_handling/icons_app_load.html"),
+            web_app->file_handlers()[0].action);
+  EXPECT_EQ(u"Plain Text!", web_app->file_handlers()[0].display_name);
+}
+
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        LaunchConsumerIsNotTriggeredWithNoFiles) {
   InstallFileHandlingPWA();

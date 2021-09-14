@@ -70,6 +70,7 @@ apps::FileHandlers CreateRandomFileHandlers(uint32_t suffix) {
     file_handler.accept.push_back(std::move(accept_entry2));
     file_handler.icons.emplace_back(GURL("https://example.com/image.png"), 16);
     file_handler.icons.emplace_back(GURL("https://example.com/image2.png"), 48);
+    file_handler.display_name = base::ASCIIToUTF16(suffix_str) + u" file";
 
     file_handlers.push_back(std::move(file_handler));
   }

@@ -305,6 +305,7 @@ apps::FileHandlers CreateFileHandlersFromManifest(
     DCHECK(manifest_file_handler);
     apps::FileHandler web_app_file_handler;
     web_app_file_handler.action = manifest_file_handler->action;
+    web_app_file_handler.display_name = manifest_file_handler->name;
 
     for (const auto& it : manifest_file_handler->accept) {
       apps::FileHandler::AcceptEntry web_app_accept_entry;

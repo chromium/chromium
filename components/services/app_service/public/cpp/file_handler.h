@@ -45,6 +45,10 @@ struct FileHandler {
   // matching MIME type or file extension.
   GURL action;
 
+  // The user-visible name for the file type, e.g. "ACME Word Processor document
+  // file". May be empty.
+  std::u16string display_name;
+
   // A collection of MIME type to file extensions mappings that the handler
   // will match on.
   using Accept = std::vector<AcceptEntry>;

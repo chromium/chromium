@@ -16,6 +16,7 @@ namespace {
 apps::FileHandlers GetDefaultAppsFileHandlers() {
   apps::FileHandler handler;
   handler.action = GURL("http://foo.com/?plaintext");
+  handler.display_name = u"Text";
   apps::FileHandler::AcceptEntry text_entry;
   text_entry.mime_type = "text/plain";
   text_entry.file_extensions = {".txt", ".md"};
@@ -73,7 +74,6 @@ TEST_F(ManifestUpdateTaskTest, TestSecondFileHandlerAdded) {
   EXPECT_NE(old_handlers, new_handlers);
 }
 
-// Ignore name changes, because the registrar doesn't store the name.
 TEST_F(ManifestUpdateTaskTest, TestFileHandlerChangedName) {
   apps::FileHandlers old_handlers = GetDefaultAppsFileHandlers();
   std::vector<blink::mojom::ManifestFileHandlerPtr> manifest_handlers =
@@ -82,7 +82,7 @@ TEST_F(ManifestUpdateTaskTest, TestFileHandlerChangedName) {
 
   apps::FileHandlers new_handlers =
       CreateFileHandlersFromManifest(manifest_handlers, GURL("http://foo.com"));
-  EXPECT_EQ(old_handlers, new_handlers);
+  EXPECT_NE(old_handlers, new_handlers);
 }
 
 TEST_F(ManifestUpdateTaskTest, TestFileHandlerChangedAction) {
