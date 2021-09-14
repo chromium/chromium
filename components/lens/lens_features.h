@@ -27,6 +27,9 @@ extern const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText2;
 // Enables alternate option 3 for the Region Search context menu item text.
 extern const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText3;
 
+// Enables alternate option 4 for the Region Search context menu item text.
+extern const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText4;
+
 // Enables UKM logging for the Lens Region Search feature.
 extern const base::FeatureParam<bool> kEnableUKMLoggingForRegionSearch;
 
