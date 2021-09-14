@@ -8087,6 +8087,28 @@
             ]
         }
     ],
+    "SharedHighlightingTimeout": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_600",
+                    "params": {
+                        "TimeoutLengthMs": "600"
+                    },
+                    "enable_features": [
+                        "PreemptiveLinkToTextGeneration"
+                    ]
+                }
+            ]
+        }
+    ],
     "SharingFilterDevices": [
         {
             "platforms": [
