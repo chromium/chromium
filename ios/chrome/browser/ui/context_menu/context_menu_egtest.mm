@@ -545,6 +545,42 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
                              inWindowWithNumber:1];
 }
 
+// Checks that "open in new window" shows up on a long press of a url link
+// and that it actually opens in a new window, and that when the link is in an
+// incognito webstate, the newly opened webstate is also incognito.
+- (void)testOpenIncognitoLinkInNewWindow {
+  if (![ChromeEarlGrey areMultipleWindowsSupported])
+    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+
+  [ChromeEarlGrey openNewIncognitoTab];
+
+  // Loads url in first window.
+  const GURL initialURL = self.testServer->GetURL(kInitialPageUrl);
+  [ChromeEarlGrey loadURL:initialURL inWindowWithNumber:0];
+
+  [ChromeEarlGrey waitForWebStateContainingText:kInitialPageDestinationLinkText
+                             inWindowWithNumber:0];
+  [ChromeEarlGrey waitForWebStateZoomScale:1.0];
+
+  // Display the context menu.
+  LongPressElement(kInitialPageDestinationLinkId);
+
+  // Open link in new window.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::OpenLinkInNewWindowButton()]
+      performAction:grey_tap()];
+
+  // Assert there's a second window with expected content.
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+  [ChromeEarlGrey waitForWebStateContainingText:kDestinationPageText
+                             inWindowWithNumber:1];
+
+  // Assert that the second window is incognito, and there are no non-incognito
+  // tabs.
+  [ChromeEarlGrey waitForIncognitoTabCount:1 inWindowWithNumber:1];
+  [ChromeEarlGrey waitForMainTabCount:0 inWindowWithNumber:1];
+}
+
 // Checks that JavaScript links only have the "copy" option.
 - (void)testJavaScriptLinks {
   const GURL initialURL = self.testServer->GetURL(kJavaScriptPageUrl);
