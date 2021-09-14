@@ -127,6 +127,8 @@ class WaylandSurface {
   void RemoveEnteredOutput(uint32_t id);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(WaylandWindowTest,
+                           DoesNotCreateSurfaceSyncOnCommitWithoutBuffers);
   // Holds information about each explicit synchronization buffer release.
   struct ExplicitReleaseInfo {
     ExplicitReleaseInfo(

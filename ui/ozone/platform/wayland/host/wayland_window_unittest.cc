@@ -3001,6 +3001,15 @@ TEST_P(WaylandWindowTest, RepositionPopups) {
   VerifyAndClearExpectations();
 }
 
+// If buffers are not attached (aka WaylandBufferManagerHost is not used for
+// buffer management), WaylandSurface::Commit mustn't result in creation of
+// surface sync.
+TEST_P(WaylandWindowTest, DoesNotCreateSurfaceSyncOnCommitWithoutBuffers) {
+  EXPECT_THAT(window_->root_surface()->surface_sync_, nullptr);
+  window_->root_surface()->Commit();
+  EXPECT_THAT(window_->root_surface()->surface_sync_, nullptr);
+}
+
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandWindowTest,
                          Values(wl::ServerConfig{
