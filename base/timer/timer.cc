@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"
@@ -21,6 +22,13 @@ namespace base {
 namespace internal {
 
 namespace {
+
+// This feature controls whether or not the scheduled task is always abandoned
+// when the timer is stopped or reset. The re-use of the scheduled task is an
+// optimization that ensures a timer can not leave multiple canceled tasks in
+// the task queue.
+constexpr Feature kAlwaysAbandonScheduledTask{"AlwaysAbandonScheduledTask",
+                                              FEATURE_DISABLED_BY_DEFAULT};
 
 // The reason for which the timer's scheduled task was invoked.
 enum ScheduledTaskInvokedReason {
@@ -131,6 +139,9 @@ void TimerBase::Stop() {
 
   is_running_ = false;
 
+  if (FeatureList::IsEnabled(kAlwaysAbandonScheduledTask))
+    AbandonScheduledTask();
+
   // It's safe to destroy or restart Timer on another sequence after Stop().
   DETACH_FROM_SEQUENCE(sequence_checker_);
 
@@ -141,23 +152,25 @@ void TimerBase::Stop() {
 void TimerBase::Reset() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // If there's no pending task, start one up and return.
-  if (!task_destruction_detector_) {
-    ScheduleNewTask(delay_);
-    return;
-  }
+  if (!FeatureList::IsEnabled(kAlwaysAbandonScheduledTask)) {
+    // If there's no pending task, start one up and return.
+    if (!task_destruction_detector_) {
+      ScheduleNewTask(delay_);
+      return;
+    }
 
-  // Set the new |desired_run_time_|.
-  if (delay_ > TimeDelta::FromMicroseconds(0))
-    desired_run_time_ = Now() + delay_;
-  else
-    desired_run_time_ = TimeTicks();
+    // Set the new |desired_run_time_|.
+    if (delay_ > TimeDelta::FromMicroseconds(0))
+      desired_run_time_ = Now() + delay_;
+    else
+      desired_run_time_ = TimeTicks();
 
-  // We can use the existing scheduled task if it arrives before the new
-  // |desired_run_time_|.
-  if (desired_run_time_ >= scheduled_run_time_) {
-    is_running_ = true;
-    return;
+    // We can use the existing scheduled task if it arrives before the new
+    // |desired_run_time_|.
+    if (desired_run_time_ >= scheduled_run_time_) {
+      is_running_ = true;
+      return;
+    }
   }
 
   // We can't reuse the |scheduled_task_|, so abandon it and post a new one.
@@ -219,6 +232,7 @@ void TimerBase::OnScheduledTaskInvoked(
 
   // The timer may have been stopped.
   if (!is_running_) {
+    DCHECK(!FeatureList::IsEnabled(kAlwaysAbandonScheduledTask));
     RecordScheduledTaskInvokedReason(ScheduledTaskInvokedReason::kStopped);
     return;
   }
@@ -231,6 +245,7 @@ void TimerBase::OnScheduledTaskInvoked(
     // Task runner may have called us late anyway, so only post a continuation
     // task if the |desired_run_time_| is in the future.
     if (desired_run_time_ > now) {
+      DCHECK(!FeatureList::IsEnabled(kAlwaysAbandonScheduledTask));
       RecordScheduledTaskInvokedReason(
           ScheduledTaskInvokedReason::kRescheduled);
       // Post a new task to span the remaining time.
