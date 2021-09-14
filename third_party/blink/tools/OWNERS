@@ -3,6 +3,3 @@ rmhasan@google.com
 smcgruer@chromium.org
 tkent@chromium.org
 wangxianzhu@chromium.org
-
-# For Fuchsia related files
-per-file *fuchsia.py=file://build/fuchsia/OWNERS

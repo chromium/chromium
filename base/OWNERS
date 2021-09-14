@@ -25,7 +25,7 @@ per-file *android*=file://base/android/OWNERS
 per-file BUILD.gn=file://base/android/OWNERS
 
 # For Fuchsia-specific changes:
-per-file *_fuchsia*=file://build/fuchsia/OWNERS
+per-file ..._fuchsia*=file://build/fuchsia/OWNERS
 
 # For Windows-specific changes:
 per-file *_win*=file://base/win/OWNERS

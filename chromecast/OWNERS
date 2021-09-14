@@ -9,7 +9,7 @@ per-file *android*=file://chromecast/android/OWNERS
 per-file *.java=file://chromecast/android/OWNERS
 
 # Fuchsia integration owners:
-per-file *fuchsia*=file://build/fuchsia/OWNERS
+per-file ...fuchsia*=file://build/fuchsia/OWNERS
 
 # For major changes, please use one of the reviewers above!
 dnicoara@chromium.org
