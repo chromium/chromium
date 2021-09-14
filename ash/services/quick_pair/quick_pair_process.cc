@@ -7,6 +7,7 @@
 #include "ash/quick_pair/common/logging.h"
 #include "ash/services/quick_pair/public/cpp/decrypted_passkey.h"
 #include "ash/services/quick_pair/public/cpp/decrypted_response.h"
+#include "ash/services/quick_pair/public/cpp/not_discoverable_advertisement.h"
 #include "ash/services/quick_pair/public/mojom/fast_pair_data_parser.mojom.h"
 #include "ash/services/quick_pair/quick_pair_process.h"
 #include "ash/services/quick_pair/quick_pair_process_manager.h"
@@ -48,6 +49,7 @@ void GetHexModelIdFromServiceData(
       GetProcessReference(std::move(process_stopped_callback));
 
   if (!process_reference) {
+    QP_LOG(WARNING) << __func__ << ": Failed to get new process reference.";
     std::move(callback).Run(absl::nullopt);
     return;
   }
@@ -74,6 +76,7 @@ void ParseDecryptedResponse(
       GetProcessReference(std::move(process_stopped_callback));
 
   if (!process_reference) {
+    QP_LOG(WARNING) << __func__ << ": Failed to get new process reference.";
     std::move(callback).Run(absl::nullopt);
     return;
   }
@@ -99,6 +102,7 @@ void ParseDecryptedPasskey(const std::vector<uint8_t>& aes_key,
       GetProcessReference(std::move(process_stopped_callback));
 
   if (!process_reference) {
+    QP_LOG(WARNING) << __func__ << ": Failed to get new process reference.";
     std::move(callback).Run(absl::nullopt);
     return;
   }
@@ -114,6 +118,33 @@ void ParseDecryptedPasskey(const std::vector<uint8_t>& aes_key,
             std::move(callback).Run(result);
           },
           std::move(process_reference), std::move(callback)));
+}
+
+void ParseNotDiscoverableAdvertisement(
+    const std::vector<uint8_t>& service_data,
+    ParseNotDiscoverableAdvertisementCallback callback,
+    ProcessStoppedCallback process_stopped_callback) {
+  std::unique_ptr<QuickPairProcessManager::ProcessReference> process_reference =
+      GetProcessReference(std::move(process_stopped_callback));
+
+  if (!process_reference) {
+    QP_LOG(WARNING) << __func__ << ": Failed to get new process reference.";
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  auto* raw_process_reference = process_reference.get();
+
+  raw_process_reference->GetFastPairDataParser()
+      ->ParseNotDiscoverableAdvertisement(
+          service_data,
+          base::BindOnce(
+              [](std::unique_ptr<QuickPairProcessManager::ProcessReference>,
+                 ParseNotDiscoverableAdvertisementCallback callback,
+                 const absl::optional<NotDiscoverableAdvertisement>& result) {
+                std::move(callback).Run(result);
+              },
+              std::move(process_reference), std::move(callback)));
 }
 
 }  // namespace quick_pair_process

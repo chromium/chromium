@@ -9,6 +9,7 @@
 
 #include "ash/services/quick_pair/public/cpp/decrypted_passkey.h"
 #include "ash/services/quick_pair/public/cpp/decrypted_response.h"
+#include "ash/services/quick_pair/public/cpp/not_discoverable_advertisement.h"
 #include "base/callback_helpers.h"
 #include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -48,6 +49,17 @@ TEST_F(QuickPairProcessTest,
                               EXPECT_FALSE(result.has_value());
                             }),
                         base::DoNothing());
+}
+
+TEST_F(QuickPairProcessTest,
+       ParseNotDiscoverableAdvertisement_NoValueIfNoProcessManagerSet) {
+  ParseNotDiscoverableAdvertisement(
+      std::vector<uint8_t>(),
+      base::BindLambdaForTesting(
+          [](const absl::optional<NotDiscoverableAdvertisement>& result) {
+            EXPECT_FALSE(result.has_value());
+          }),
+      base::DoNothing());
 }
 
 }  // namespace quick_pair_process
