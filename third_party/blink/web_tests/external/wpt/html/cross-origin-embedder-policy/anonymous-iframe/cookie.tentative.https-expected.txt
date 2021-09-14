@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+PASS Setup
+FAIL Anonymous same-origin iframe is loaded without credentials assert_equals: expected (undefined) undefined but got (string) "same_origin"
+FAIL Anonymous cross-origin iframe is loaded without credentials assert_equals: expected (undefined) undefined but got (string) "cross_origin"
+FAIL same_origin anonymous iframe can't send same_origin credentials assert_equals: expected (undefined) undefined but got (string) "same_origin"
+FAIL same_origin anonymous iframe can't send cross_origin credentials assert_equals: expected (undefined) undefined but got (string) "cross_origin"
+FAIL cross_origin anonymous iframe can't send cross_origin credentials assert_equals: expected (undefined) undefined but got (string) "cross_origin"
+FAIL cross_origin anonymous iframe can't send same_origin credentials assert_equals: expected (undefined) undefined but got (string) "same_origin"
+FAIL same_origin anonymous iframe can't send same_origin credentials on child iframe assert_equals: expected (undefined) undefined but got (string) "same_origin"
+FAIL same_origin anonymous iframe can't send cross_origin credentials on child iframe assert_equals: expected (undefined) undefined but got (string) "cross_origin"
+FAIL cross_origin anonymous iframe can't send cross_origin credentials on child iframe assert_equals: expected (undefined) undefined but got (string) "cross_origin"
+FAIL cross_origin anonymous iframe can't send same_origin credentials on child iframe assert_equals: expected (undefined) undefined but got (string) "same_origin"
+Harness: the test ran to completion.
+
