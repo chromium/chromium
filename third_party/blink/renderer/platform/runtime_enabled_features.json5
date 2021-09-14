@@ -359,9 +359,11 @@
     {
       name: "CapabilityDelegation",
       implied_by: ["CapabilityDelegationPaymentRequest"],
+      origin_trial_feature_name: "CapabilityDelegationPaymentRequest",
     },
     {
       name: "CapabilityDelegationPaymentRequest",
+      origin_trial_feature_name: "CapabilityDelegationPaymentRequest",
     },
     {
       name: "CaptureHandle",
