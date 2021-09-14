@@ -42,7 +42,7 @@ public class SiteSettingsCategory {
             Type.CLIPBOARD, Type.COOKIES, Type.IDLE_DETECTION, Type.DEVICE_LOCATION,
             Type.JAVASCRIPT, Type.MICROPHONE, Type.NFC, Type.NOTIFICATIONS, Type.POPUPS,
             Type.PROTECTED_MEDIA, Type.SENSORS, Type.SOUND, Type.USB, Type.VIRTUAL_REALITY,
-            Type.USE_STORAGE})
+            Type.USE_STORAGE, Type.AUTO_DARK_WEB_CONTENT})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Type {
         // All updates here must also be reflected in {@link #preferenceKey(int)
@@ -70,10 +70,11 @@ public class SiteSettingsCategory {
         int BLUETOOTH = 20;
         int VIRTUAL_REALITY = 21;
         int USE_STORAGE = 22;
+        int AUTO_DARK_WEB_CONTENT = 23;
         /**
          * Number of handled categories used for calculating array sizes.
          */
-        int NUM_ENTRIES = 23;
+        int NUM_ENTRIES = 24;
     }
 
     private final BrowserContextHandle mBrowserContextHandle;
@@ -145,14 +146,17 @@ public class SiteSettingsCategory {
     }
 
     /**
-     * Convert Type into {@link ContentSettingsType}
+     * Convert Type into {@link ContentSettingsType}.
      */
     public static int contentSettingsType(@Type int type) {
+        // This switch statement is ordered by types alphabetically.
         switch (type) {
             case Type.ADS:
                 return ContentSettingsType.ADS;
             case Type.AUGMENTED_REALITY:
                 return ContentSettingsType.AR;
+            case Type.AUTO_DARK_WEB_CONTENT:
+                return ContentSettingsType.AUTO_DARK_WEB_CONTENT;
             case Type.AUTOMATIC_DOWNLOADS:
                 return ContentSettingsType.AUTOMATIC_DOWNLOADS;
             case Type.BACKGROUND_SYNC:
@@ -217,11 +221,14 @@ public class SiteSettingsCategory {
      * Convert Type into preference String
      */
     public static String preferenceKey(@Type int type) {
+        // This switch statement is ordered by types alphabetically.
         switch (type) {
             case Type.ADS:
                 return "ads";
             case Type.AUGMENTED_REALITY:
                 return "augmented_reality";
+            case Type.AUTO_DARK_WEB_CONTENT:
+                return "auto_dark_web_content";
             case Type.ALL_SITES:
                 return "all_sites";
             case Type.AUTOMATIC_DOWNLOADS:

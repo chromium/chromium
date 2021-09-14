@@ -493,7 +493,7 @@ public class WebsitePermissionsFetcherTest {
         // If the ContentSettingsType.NUM_TYPES value changes *and* a new value has been exposed on
         // Android, then please update this code block to include a test for your new type.
         // Otherwise, just update count in the assert.
-        Assert.assertEquals(74, ContentSettingsType.NUM_TYPES);
+        Assert.assertEquals(75, ContentSettingsType.NUM_TYPES);
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(ContentSettingsType.COOKIES, googleOrigin,
                         ContentSettingValues.DEFAULT, preferenceSource));
@@ -520,6 +520,9 @@ public class WebsitePermissionsFetcherTest {
                         googleOrigin, ContentSettingValues.DEFAULT, preferenceSource));
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(ContentSettingsType.JAVASCRIPT_JIT, googleOrigin,
+                        ContentSettingValues.DEFAULT, preferenceSource));
+        websitePreferenceBridge.addContentSettingException(
+                new ContentSettingException(ContentSettingsType.AUTO_DARK_WEB_CONTENT, googleOrigin,
                         ContentSettingValues.DEFAULT, preferenceSource));
 
         // Add storage info.
@@ -581,6 +584,9 @@ public class WebsitePermissionsFetcherTest {
             Assert.assertEquals(Integer.valueOf(ContentSettingValues.DEFAULT),
                     site.getContentSetting(
                             UNUSED_BROWSER_CONTEXT_HANDLE, ContentSettingsType.JAVASCRIPT_JIT));
+            Assert.assertEquals(Integer.valueOf(ContentSettingValues.DEFAULT),
+                    site.getContentSetting(UNUSED_BROWSER_CONTEXT_HANDLE,
+                            ContentSettingsType.AUTO_DARK_WEB_CONTENT));
 
             // Check storage info.
             ArrayList<StorageInfo> storageInfos = new ArrayList<>(site.getStorageInfo());

@@ -1151,6 +1151,24 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
+    public void testAllowAutoDark() {
+        doTestSiteSettingPermissions("AutoDarkWebContent",
+                SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT,
+                ContentSettingsType.AUTO_DARK_WEB_CONTENT, true);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    public void testBlockAutoDark() {
+        doTestSiteSettingPermissions("AutoDarkWebContent",
+                SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT,
+                ContentSettingsType.AUTO_DARK_WEB_CONTENT, false);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
     @DisableIf.
     Build(message = "Flaky, see crbug.com/1170671", sdk_is_less_than = Build.VERSION_CODES.Q)
     public void testEmbargoedNotificationSiteSettings() throws Exception {

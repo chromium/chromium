@@ -14109,6 +14109,7 @@ Called by update_net_error_codes.py.-->
   <int value="80" label="HTTP allowed"/>
   <int value="81" label="Formfill metadata"/>
   <int value="82" label="Federated identity active session"/>
+  <int value="83" label="Auto-darken web content"/>
 </enum>
 
 <enum name="ContentTypeParseableResult">

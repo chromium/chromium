@@ -57,6 +57,7 @@ public class WebsitePermissionsFetcher {
             @ContentSettingsType int contentSettingsType) {
         switch (contentSettingsType) {
             case ContentSettingsType.ADS:
+            case ContentSettingsType.AUTO_DARK_WEB_CONTENT:
             case ContentSettingsType.AUTOMATIC_DOWNLOADS:
             case ContentSettingsType.BACKGROUND_SYNC:
             case ContentSettingsType.BLUETOOTH_SCANNING:

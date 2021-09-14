@@ -81,7 +81,8 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     // The following ContentSettingsTypes have UI in Content Settings
     // and require a mapping from their Javascript string representation in
     // chrome/browser/resources/settings/site_settings/constants.js to their C++
-    // ContentSettingsType provided here.
+    // ContentSettingsType provided here. These group names are only used by
+    // desktop webui.
     {ContentSettingsType::COOKIES, "cookies"},
     {ContentSettingsType::IMAGES, "images"},
     {ContentSettingsType::JAVASCRIPT, "javascript"},
@@ -123,8 +124,9 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
      "file-system-access-handles-data"},
 
     // Add new content settings here if a corresponding Javascript string
-    // representation for it is not required. Note some exceptions do have UI in
-    // Content Settings but do not require a separate string.
+    // representation for it is not required, for example if the content setting
+    // is not used for desktop. Note some exceptions do have UI in Content
+    // Settings but do not require a separate string.
     {ContentSettingsType::DEFAULT, nullptr},
     {ContentSettingsType::AUTO_SELECT_CERTIFICATE, nullptr},
     {ContentSettingsType::SSL_CERT_DECISIONS, nullptr},
@@ -163,6 +165,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::HTTP_ALLOWED, nullptr},
     {ContentSettingsType::FORMFILL_METADATA, nullptr},
     {ContentSettingsType::FEDERATED_IDENTITY_ACTIVE_SESSION, nullptr},
+    {ContentSettingsType::AUTO_DARK_WEB_CONTENT, nullptr},
 };
 
 static_assert(base::size(kContentSettingsTypeGroupNames) ==

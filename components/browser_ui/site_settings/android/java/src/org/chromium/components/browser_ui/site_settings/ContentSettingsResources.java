@@ -259,6 +259,13 @@ public class ContentSettingsResources {
                         ContentSettingValues.ASK, ContentSettingValues.BLOCK,
                         R.string.website_settings_category_vr_ask,
                         R.string.website_settings_category_vr_blocked);
+
+            case ContentSettingsType.AUTO_DARK_WEB_CONTENT:
+                return new ResourceItem(R.drawable.ic_brightness_medium_24dp,
+                        R.drawable.ic_brightness_medium_20dp, R.string.auto_dark_web_content_title,
+                        ContentSettingValues.ALLOW, ContentSettingValues.BLOCK,
+                        R.string.website_settings_category_auto_dark_allowed,
+                        R.string.website_settings_category_auto_dark_blocked);
         }
         assert false; // NOTREACHED
         return null;
