@@ -228,7 +228,14 @@ void CachedStorageArea::BindStorageArea(
   DCHECK(!remote_area_);
   if (!local_dom_window)
     local_dom_window = GetBestCurrentDOMWindow();
-  if (new_area) {
+  if (!local_dom_window) {
+    // If there isn't a local_dom_window to bind to, clear out storage areas and
+    // mutations. When EnsureLoaded is called it will attempt to re-bind.
+    map_ = nullptr;
+    pending_mutations_by_key_.clear();
+    pending_mutations_by_source_.clear();
+    return;
+  } else if (new_area) {
     remote_area_.Bind(std::move(new_area), task_runner_);
   } else if (storage_namespace_) {
     storage_namespace_->BindStorageArea(
@@ -585,6 +592,8 @@ void CachedStorageArea::MaybeApplyNonLocalMutationForKey(
 void CachedStorageArea::EnsureLoaded() {
   if (map_)
     return;
+  if (!remote_area_)
+    BindStorageArea();
 
   // There might be something weird happening during the sync call that destroys
   // this object. Keep a reference to either fix or rule out that this is the
