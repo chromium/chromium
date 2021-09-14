@@ -57,7 +57,7 @@
     "Win10 Tests x64": {
         "master": "chromium.win",
         "port_name": "win-win10.20h2",
-        "specifiers": ["Win10.1909", "Release"]
+        "specifiers": ["Win10.20h2", "Release"]
     },
     "Win7 Tests (dbg)(1)": {
         "master": "chromium.win",
@@ -155,7 +155,7 @@
     "win10_chromium_x64_rel_ng": {
         "master": "tryserver.chromium.win",
         "port_name": "win-win10.20h2",
-        "specifiers": ["Win10.1909", "Release"],
+        "specifiers": ["Win10.20h2", "Release"],
         "is_try_builder": true,
         "is_cq_builder":true
     },
