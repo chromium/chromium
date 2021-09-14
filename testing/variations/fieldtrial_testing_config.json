@@ -1710,6 +1710,7 @@
     "CanvasOutOfProcessRasterization": [
         {
             "platforms": [
+                "android",
                 "mac"
             ],
             "experiments": [
