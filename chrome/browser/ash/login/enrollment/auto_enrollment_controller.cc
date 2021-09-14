@@ -330,11 +330,12 @@ void AutoEnrollmentController::Start() {
 }
 
 void AutoEnrollmentController::StartWithSystemClockSyncState() {
-  bool may_request_system_clock_sync = !system_clock_sync_wait_requested_;
-
   DetermineAutoEnrollmentCheckType();
   if (auto_enrollment_check_type_ == AutoEnrollmentCheckType::kNone) {
-    if (may_request_system_clock_sync && system_clock_sync_wait_requested_) {
+    if (system_clock_sync_state_ == SystemClockSyncState::kCanWaitForSync &&
+        system_clock_sync_wait_requested_) {
+      system_clock_sync_state_ = SystemClockSyncState::kWaitingForSync;
+
       // Set state before waiting for the system clock sync, because
       // `Start` may invoke its callback synchronously if the
       // system clock sync status is already known.
