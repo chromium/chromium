@@ -48,8 +48,8 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
       ModelTypeSet model_types = {PREFERENCES, DICTIONARY, PRIORITY_PREFERENCES,
                                   SEARCH_ENGINES};
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      // SplitSettingsSync makes Printers a separate OS setting.
-      if (!chromeos::features::IsSplitSettingsSyncEnabled())
+      // SyncSettingsCategorization makes Printers a separate OS setting.
+      if (!chromeos::features::IsSyncSettingsCategorizationEnabled())
         model_types.Put(PRINTERS);
 #endif
       return {kPreferencesTypeName, PREFERENCES, model_types};
@@ -73,8 +73,8 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
           kExtensionsTypeName, EXTENSIONS, {EXTENSIONS, EXTENSION_SETTINGS}};
     case UserSelectableType::kApps: {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      // SplitSettingsSync moves apps to Chrome OS settings.
-      if (chromeos::features::IsSplitSettingsSyncEnabled()) {
+      // SyncSettingsCategorization moves apps to Chrome OS settings.
+      if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
         return {kAppsTypeName, UNSPECIFIED};
       } else {
         return {kAppsTypeName,
@@ -92,8 +92,9 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
           kTabsTypeName, PROXY_TABS, {PROXY_TABS, SESSIONS, SEND_TAB_TO_SELF}};
     case UserSelectableType::kWifiConfigurations: {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      // SplitSettingsSync moves Wi-Fi configurations to Chrome OS settings.
-      if (chromeos::features::IsSplitSettingsSyncEnabled())
+      // SyncSettingsCategorization moves Wi-Fi configurations to Chrome OS
+      // settings.
+      if (chromeos::features::IsSyncSettingsCategorizationEnabled())
         return {kWifiConfigurationsTypeName, UNSPECIFIED};
 #endif
       return {kWifiConfigurationsTypeName,
