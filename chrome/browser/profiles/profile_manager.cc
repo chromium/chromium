@@ -166,6 +166,11 @@
 #include "chrome/browser/signin/signin_util_win.h"
 #endif  // defined(OS_WIN) && BUILDFLAG(ENABLE_DICE_SUPPORT)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
+#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
+#endif
+
 using base::UserMetricsAction;
 using content::BrowserThread;
 
@@ -1012,6 +1017,17 @@ ProfileAttributesStorage& ProfileManager::GetProfileAttributesStorage() {
 ProfileShortcutManager* ProfileManager::profile_shortcut_manager() {
   return profile_shortcut_manager_.get();
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+AccountProfileMapper* ProfileManager::GetAccountProfileMapper() {
+  if (!account_profile_mapper_) {
+    account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+        GetAccountManagerFacade(/*profile_path=*/std::string()),
+        &GetProfileAttributesStorage());
+  }
+  return account_profile_mapper_.get();
+}
+#endif
 
 #if !defined(OS_ANDROID)
 void ProfileManager::MaybeScheduleProfileForDeletion(

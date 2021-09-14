@@ -4,8 +4,10 @@
 
 #include "chrome/browser/lacros/account_manager/profile_account_manager_factory.h"
 
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/lacros/account_manager/profile_account_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -33,5 +35,7 @@ ProfileAccountManagerFactory::~ProfileAccountManagerFactory() = default;
 
 KeyedService* ProfileAccountManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return new ProfileAccountManager(/*profile_path=*/context->GetPath());
+  return new ProfileAccountManager(
+      g_browser_process->profile_manager()->GetAccountProfileMapper(),
+      /*profile_path=*/context->GetPath());
 }

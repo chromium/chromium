@@ -31,6 +31,10 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #endif  // !defined(OS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+class AccountProfileMapper;
+#endif
+
 class ProfileAttributesStorage;
 enum class ProfileKeepAliveOrigin;
 class ProfileManagerObserver;
@@ -210,6 +214,10 @@ class ProfileManager : public Profile::Delegate {
   // Returns a ProfileShortcut Manager that enables the caller to create
   // profile specfic desktop shortcuts.
   ProfileShortcutManager* profile_shortcut_manager();
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  AccountProfileMapper* GetAccountProfileMapper();
+#endif
 
 #if !defined(OS_ANDROID)
   // Less strict version of ScheduleProfileForDeletion(), silently exits if
@@ -534,6 +542,10 @@ class ProfileManager : public Profile::Delegate {
 
   // Manages the process of creating, deleteing and updating Desktop shortcuts.
   std::unique_ptr<ProfileShortcutManager> profile_shortcut_manager_;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::unique_ptr<AccountProfileMapper> account_profile_mapper_;
+#endif
 
   // For keeping track of the last active profiles.
   std::map<Profile*, int> browser_counts_;

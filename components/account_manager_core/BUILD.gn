@@ -48,7 +48,10 @@ component("account_manager_core") {
     deps += [ "//chromeos/lacros:lacros" ]
   }
 
-  public_deps = [ ":account_manager_proto" ]
+  public_deps = [
+    ":account_manager_proto",
+    "//third_party/abseil-cpp:absl",
+  ]
 
   defines = [ "IS_ACCOUNT_MANAGER_CORE_IMPL" ]
 }
@@ -59,9 +62,16 @@ source_set("test_support") {
   sources = [
     "account_manager_test_util.cc",
     "account_manager_test_util.h",
+    "mock_account_manager_facade.cc",
+    "mock_account_manager_facade.h",
   ]
 
-  deps = [ ":account_manager_core" ]
+  public_deps = [ "//testing/gmock" ]
+
+  deps = [
+    ":account_manager_core",
+    "//google_apis",
+  ]
 }
 
 source_set("unit_tests") {

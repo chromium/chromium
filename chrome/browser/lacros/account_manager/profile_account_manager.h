@@ -7,13 +7,16 @@
 
 #include "base/files/file_path.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_addition_result.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-// This is a profile-scoped implementation of AccountManagerFacade, intended to
-// be used by the identity manager. Accounts update generally follow the path:
+// This is a profile-scoped implementation of `AccountManagerFacade`, intended
+// to be used by the identity manager. Account updates generally follow the
+// path:
 //
 //                       AccountManagerFacadeImpl
 //                                  |
@@ -26,12 +29,15 @@
 //                                  V
 //                            IdentityManager
 //
-// The ProfileAccountManager is not intended to have much logic and mostly
-// forwards calls to the AccountProfileMapper.
+// The `ProfileAccountManager` is not intended to have much logic and mostly
+// forwards calls to the `AccountProfileMapper`.
 class ProfileAccountManager : public KeyedService,
-                              public account_manager::AccountManagerFacade {
+                              public account_manager::AccountManagerFacade,
+                              public AccountProfileMapper::Observer {
  public:
-  explicit ProfileAccountManager(const base::FilePath& profile_path);
+  // `mapper` must outlive this object.
+  ProfileAccountManager(AccountProfileMapper* mapper,
+                        const base::FilePath& profile_path);
   ~ProfileAccountManager() override;
 
   ProfileAccountManager(const ProfileAccountManager&) = delete;
@@ -40,9 +46,17 @@ class ProfileAccountManager : public KeyedService,
   // KeyedService:
   void Shutdown() override;
 
+  // AccountProfileMapper::Observer:
+  void OnAccountUpserted(const base::FilePath& profile_path,
+                         const account_manager::Account& account) override;
+  void OnAccountRemoved(const base::FilePath& profile_path,
+                        const account_manager::Account& account) override;
+
   // account_manager::AccountManagerFacade:
-  void AddObserver(Observer* observer) override;
-  void RemoveObserver(Observer* observer) override;
+  void AddObserver(
+      account_manager::AccountManagerFacade::Observer* observer) override;
+  void RemoveObserver(
+      account_manager::AccountManagerFacade::Observer* observer) override;
   void GetAccounts(
       base::OnceCallback<void(const std::vector<account_manager::Account>&)>
           callback) override;
@@ -64,13 +78,12 @@ class ProfileAccountManager : public KeyedService,
       OAuth2AccessTokenConsumer* consumer) override;
 
  private:
-  // Returns the `AccountManagerFacade` for the whole browser, managing accounts
-  // across all profiles.
-  account_manager::AccountManagerFacade* GetSystemAccountManager() const;
-
+  AccountProfileMapper* const mapper_;
   const base::FilePath profile_path_;
   base::ObserverList<account_manager::AccountManagerFacade::Observer>
       observers_;
+  base::ScopedObservation<AccountProfileMapper, AccountProfileMapper::Observer>
+      mapper_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_LACROS_ACCOUNT_MANAGER_PROFILE_ACCOUNT_MANAGER_H_

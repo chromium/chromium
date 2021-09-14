@@ -4,48 +4,68 @@
 
 #include "chrome/browser/lacros/account_manager/profile_account_manager.h"
 
-#include <string>
-
 #include "base/check.h"
+#include "base/containers/flat_set.h"
 #include "base/notreached.h"
-#include "components/account_manager_core/account_manager_facade.h"
-#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
+#include "components/account_manager_core/account.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 
-ProfileAccountManager::ProfileAccountManager(const base::FilePath& profile_path)
-    : profile_path_(profile_path) {}
+ProfileAccountManager::ProfileAccountManager(AccountProfileMapper* mapper,
+                                             const base::FilePath& profile_path)
+    : mapper_(mapper), profile_path_(profile_path) {
+  DCHECK(mapper_);
+  mapper_observation_.Observe(mapper_);
+}
 
 ProfileAccountManager::~ProfileAccountManager() = default;
 
-void ProfileAccountManager::AddObserver(Observer* observer) {
+void ProfileAccountManager::AddObserver(
+    account_manager::AccountManagerFacade::Observer* observer) {
   observers_.AddObserver(observer);
-  // TODO(https://crbug.com/1226045): Go through AccountProfileMapper instead.
-  GetSystemAccountManager()->AddObserver(observer);
 }
 
-void ProfileAccountManager::RemoveObserver(Observer* observer) {
+void ProfileAccountManager::RemoveObserver(
+    account_manager::AccountManagerFacade::Observer* observer) {
   observers_.RemoveObserver(observer);
-  // TODO(https://crbug.com/1226045): Go through AccountProfileMapper instead.
-  GetSystemAccountManager()->RemoveObserver(observer);
 }
 
 void ProfileAccountManager::Shutdown() {
   DCHECK(observers_.empty());
+  mapper_observation_.Reset();
+}
+
+void ProfileAccountManager::OnAccountUpserted(
+    const base::FilePath& profile_path,
+    const account_manager::Account& account) {
+  DCHECK_EQ(account.key.account_type, account_manager::AccountType::kGaia);
+  if (profile_path != profile_path_)
+    return;
+  for (auto& obs : observers_)
+    obs.OnAccountUpserted(account);
+}
+
+void ProfileAccountManager::OnAccountRemoved(
+    const base::FilePath& profile_path,
+    const account_manager::Account& account) {
+  if (profile_path != profile_path_)
+    return;
+  for (auto& obs : observers_)
+    obs.OnAccountRemoved(account);
 }
 
 void ProfileAccountManager::GetAccounts(
     base::OnceCallback<void(const std::vector<account_manager::Account>&)>
         callback) {
   DCHECK(!callback.is_null());
-  GetSystemAccountManager()->GetAccounts(std::move(callback));
+  mapper_->GetAccounts(profile_path_, std::move(callback));
 }
 
 void ProfileAccountManager::GetPersistentErrorForAccount(
     const account_manager::AccountKey& account,
     base::OnceCallback<void(const GoogleServiceAuthError&)> callback) {
   DCHECK(!callback.is_null());
-  return GetSystemAccountManager()->GetPersistentErrorForAccount(
-      account, std::move(callback));
+  return mapper_->GetPersistentErrorForAccount(profile_path_, account,
+                                               std::move(callback));
 }
 
 void ProfileAccountManager::ShowAddAccountDialog(
@@ -75,11 +95,6 @@ ProfileAccountManager::CreateAccessTokenFetcher(
     const account_manager::AccountKey& account,
     const std::string& oauth_consumer_name,
     OAuth2AccessTokenConsumer* consumer) {
-  return GetSystemAccountManager()->CreateAccessTokenFetcher(
-      account, oauth_consumer_name, consumer);
-}
-
-account_manager::AccountManagerFacade*
-ProfileAccountManager::GetSystemAccountManager() const {
-  return GetAccountManagerFacade(profile_path_.value());
+  return mapper_->CreateAccessTokenFetcher(profile_path_, account,
+                                           oauth_consumer_name, consumer);
 }
