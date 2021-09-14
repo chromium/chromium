@@ -19,12 +19,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
-namespace print = chromeos::printing::proto;
-namespace em = enterprise_management;
-
-namespace chromeos {
+namespace ash {
 
 namespace {
+
+namespace print = ::chromeos::printing::proto;
+namespace em = ::enterprise_management;
 
 using ::testing::_;
 using ::testing::DoAll;
@@ -390,4 +390,4 @@ TEST_F(PrintJobReportingServiceTest, ShouldReportPolicyInitiallyDisabled) {
   EXPECT_TRUE(priorities_.empty());
 }
 
-}  // namespace chromeos
+}  // namespace ash

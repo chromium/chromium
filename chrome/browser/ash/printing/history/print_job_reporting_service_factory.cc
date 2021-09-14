@@ -14,7 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 // static
 PrintJobReportingService* PrintJobReportingServiceFactory::GetForBrowserContext(
@@ -57,4 +57,4 @@ bool PrintJobReportingServiceFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }
 
-}  // namespace chromeos
+}  // namespace ash

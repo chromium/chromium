@@ -13,7 +13,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/reporting/client/report_queue.h"
 
-namespace chromeos {
+namespace ash {
 
 // This service is responsible for reporting print jobs.
 class PrintJobReportingService : public KeyedService,
@@ -28,10 +28,10 @@ class PrintJobReportingService : public KeyedService,
   GetReportQueueSetter() = 0;
 
   // PrintJobHistoryService::Observer:
-  void OnPrintJobFinished(
-      const printing::proto::PrintJobInfo& print_job_info) override = 0;
+  void OnPrintJobFinished(const chromeos::printing::proto::PrintJobInfo&
+                              print_job_info) override = 0;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_HISTORY_PRINT_JOB_REPORTING_SERVICE_H_

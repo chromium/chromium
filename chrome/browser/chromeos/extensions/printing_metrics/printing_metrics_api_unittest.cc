@@ -29,16 +29,14 @@ constexpr int kPagesNumber = 3;
 // Creates a new MockPrintJobHistoryService for the given |context|.
 std::unique_ptr<KeyedService> BuildPrintJobHistoryService(
     content::BrowserContext* context) {
-  return std::make_unique<chromeos::MockPrintJobHistoryService>();
+  return std::make_unique<ash::MockPrintJobHistoryService>();
 }
 
-void ReturnNoPrintJobs(
-    chromeos::PrintJobDatabase::GetPrintJobsCallback callback) {
+void ReturnNoPrintJobs(ash::PrintJobDatabase::GetPrintJobsCallback callback) {
   std::move(callback).Run(true, std::vector<PrintJobInfo>());
 }
 
-void ReturnOnePrintJob(
-    chromeos::PrintJobDatabase::GetPrintJobsCallback callback) {
+void ReturnOnePrintJob(ash::PrintJobDatabase::GetPrintJobsCallback callback) {
   chromeos::printing::proto::PrintJobInfo print_job_info_proto;
   print_job_info_proto.set_title(kTitle1);
   print_job_info_proto.set_status(
@@ -48,8 +46,7 @@ void ReturnOnePrintJob(
                           std::vector<PrintJobInfo>{print_job_info_proto});
 }
 
-void ReturnTwoPrintJobs(
-    chromeos::PrintJobDatabase::GetPrintJobsCallback callback) {
+void ReturnTwoPrintJobs(ash::PrintJobDatabase::GetPrintJobsCallback callback) {
   chromeos::printing::proto::PrintJobInfo print_job_info_proto1;
   print_job_info_proto1.set_title(kTitle1);
   print_job_info_proto1.set_status(
@@ -77,19 +74,19 @@ class PrintingMetricsApiUnittest : public ExtensionApiUnittest {
             .Build();
     set_extension(extension);
 
-    chromeos::PrintJobHistoryServiceFactory::GetInstance()->SetTestingFactory(
+    ash::PrintJobHistoryServiceFactory::GetInstance()->SetTestingFactory(
         browser()->profile(),
         base::BindRepeating(&BuildPrintJobHistoryService));
   }
 
  protected:
   using GetPrintJobsCallback =
-      void (*)(chromeos::PrintJobDatabase::GetPrintJobsCallback);
+      void (*)(ash::PrintJobDatabase::GetPrintJobsCallback);
 
   void SetUpMockPrintJobHistoryService(GetPrintJobsCallback callback) {
-    chromeos::MockPrintJobHistoryService* print_job_history_service =
-        static_cast<chromeos::MockPrintJobHistoryService*>(
-            chromeos::PrintJobHistoryServiceFactory::GetForBrowserContext(
+    ash::MockPrintJobHistoryService* print_job_history_service =
+        static_cast<ash::MockPrintJobHistoryService*>(
+            ash::PrintJobHistoryServiceFactory::GetForBrowserContext(
                 browser()->profile()));
     EXPECT_CALL(*print_job_history_service, GetPrintJobs(testing::_))
         .WillOnce(testing::Invoke(callback));

@@ -8,6 +8,8 @@
 #include "ash/webui/print_management/mojom/printing_manager.mojom.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+// TODO(https://crbug.com/1164001): remove and use forward declaration.
+#include "chrome/browser/ash/printing/history/print_job_history_service.h"
 #include "chrome/browser/chromeos/printing/cups_print_job_manager.h"
 #include "chrome/browser/chromeos/printing/history/print_job_info.pb.h"
 #include "components/history/core/browser/history_service.h"
@@ -23,7 +25,6 @@ class PrefService;
 namespace chromeos {
 class DeletionInfo;
 class HistoryService;
-class PrintJobHistoryService;
 namespace printing {
 namespace print_management {
 

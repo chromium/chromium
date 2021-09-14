@@ -9,7 +9,7 @@
 #include "chrome/browser/ash/printing/history/print_job_history_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
+namespace ash {
 
 // The mock implementation of PrintJobHistoryService for testing.
 class MockPrintJobHistoryService : public PrintJobHistoryService {
@@ -19,7 +19,8 @@ class MockPrintJobHistoryService : public PrintJobHistoryService {
 
   // This method doesn't save print job to the persistent storage.
   // It should be used only for testing to notify observers.
-  void SavePrintJobProto(const printing::proto::PrintJobInfo& print_job_info);
+  void SavePrintJobProto(
+      const chromeos::printing::proto::PrintJobInfo& print_job_info);
 
   MOCK_METHOD(void,
               GetPrintJobs,
@@ -32,6 +33,6 @@ class MockPrintJobHistoryService : public PrintJobHistoryService {
               (override));
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_HISTORY_MOCK_PRINT_JOB_HISTORY_SERVICE_H_

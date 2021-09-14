@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "chrome/browser/ash/printing/history/print_job_database.h"
 
-namespace chromeos {
+namespace ash {
 
 class TestPrintJobDatabase : public PrintJobDatabase {
  public:
@@ -21,8 +21,9 @@ class TestPrintJobDatabase : public PrintJobDatabase {
   // PrintJobDatabase:
   void Initialize(InitializeCallback callback) override;
   bool IsInitialized() override;
-  void SavePrintJob(const printing::proto::PrintJobInfo& print_job_info,
-                    SavePrintJobCallback callback) override;
+  void SavePrintJob(
+      const chromeos::printing::proto::PrintJobInfo& print_job_info,
+      SavePrintJobCallback callback) override;
   void DeletePrintJobs(const std::vector<std::string>& ids,
                        DeletePrintJobsCallback callback) override;
   void Clear(DeletePrintJobsCallback callback) override;
@@ -30,11 +31,17 @@ class TestPrintJobDatabase : public PrintJobDatabase {
 
  private:
   // In-memory database of PrintJobInfo.
-  std::unordered_map<std::string, printing::proto::PrintJobInfo> database_;
+  std::unordered_map<std::string, chromeos::printing::proto::PrintJobInfo>
+      database_;
 
   DISALLOW_COPY_AND_ASSIGN(TestPrintJobDatabase);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+using ::ash::TestPrintJobDatabase;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_HISTORY_TEST_PRINT_JOB_DATABASE_H_

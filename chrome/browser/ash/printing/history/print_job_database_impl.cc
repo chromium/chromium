@@ -17,9 +17,11 @@
 #include "chrome/browser/chromeos/printing/history/print_job_info.pb.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
+
+namespace printing = ::chromeos::printing;
 
 using EntryVector =
     leveldb_proto::ProtoDatabase<printing::proto::PrintJobInfo>::KeyEntryVector;
@@ -271,4 +273,4 @@ void PrintJobDatabaseImpl::OnPrintJobRetrievedFromDatabase(
       base::BindOnce(std::move(callback), success, std::move(entries)));
 }
 
-}  // namespace chromeos
+}  // namespace ash

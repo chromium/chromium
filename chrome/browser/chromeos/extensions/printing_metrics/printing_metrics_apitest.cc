@@ -91,8 +91,8 @@ IN_PROC_BROWSER_TEST_F(PrintingMetricsApiTest, GetPrintJobs) {
   ASSERT_TRUE(extension);
 
   base::RunLoop run_loop;
-  chromeos::TestPrintJobHistoryServiceObserver observer(
-      chromeos::PrintJobHistoryServiceFactory::GetForBrowserContext(
+  ash::TestPrintJobHistoryServiceObserver observer(
+      ash::PrintJobHistoryServiceFactory::GetForBrowserContext(
           browser()->profile()),
       run_loop.QuitClosure());
 

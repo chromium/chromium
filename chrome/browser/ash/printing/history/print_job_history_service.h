@@ -12,7 +12,7 @@
 
 class PrefRegistrySimple;
 
-namespace chromeos {
+namespace ash {
 
 // This service is responsible for maintaining print job history.
 class PrintJobHistoryService : public KeyedService {
@@ -20,7 +20,7 @@ class PrintJobHistoryService : public KeyedService {
   class Observer {
    public:
     virtual void OnPrintJobFinished(
-        const printing::proto::PrintJobInfo& print_job_info) = 0;
+        const chromeos::printing::proto::PrintJobInfo& print_job_info) = 0;
   };
 
   PrintJobHistoryService();
@@ -46,6 +46,11 @@ class PrintJobHistoryService : public KeyedService {
   DISALLOW_COPY_AND_ASSIGN(PrintJobHistoryService);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+using ::ash::PrintJobHistoryService;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_HISTORY_PRINT_JOB_HISTORY_SERVICE_H_

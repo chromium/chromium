@@ -18,11 +18,11 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
-using printing::proto::PrintJobInfo;
+namespace ash {
 
 namespace {
+
+using ::chromeos::printing::proto::PrintJobInfo;
 
 constexpr char kId1[] = "id1";
 constexpr char kId2[] = "id2";
@@ -185,4 +185,4 @@ TEST_F(PrintJobHistoryCleanerTest, StorePrintJobHistoryIndefinite) {
   EXPECT_EQ(kId1, entries[0].id());
 }
 
-}  // namespace chromeos
+}  // namespace ash

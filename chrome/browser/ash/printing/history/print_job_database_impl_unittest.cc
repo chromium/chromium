@@ -14,11 +14,11 @@
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
-using printing::proto::PrintJobInfo;
+namespace ash {
 
 namespace {
+
+using ::chromeos::printing::proto::PrintJobInfo;
 
 constexpr char kId1[] = "id1";
 constexpr char kId2[] = "id2";
@@ -252,4 +252,4 @@ TEST_F(PrintJobDatabaseImplTest, RequestsBeforeInitialization) {
   EXPECT_EQ(kTitle1, print_job_entries[0].title());
 }
 
-}  // namespace chromeos
+}  // namespace ash

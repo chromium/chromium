@@ -7,9 +7,9 @@
 #include "base/callback.h"
 #include "chrome/browser/chromeos/printing/history/print_job_info.pb.h"
 
-namespace chromeos {
+namespace ash {
 
-using printing::proto::PrintJobInfo;
+using ::chromeos::printing::proto::PrintJobInfo;
 
 TestPrintJobDatabase::TestPrintJobDatabase() = default;
 
@@ -49,4 +49,4 @@ void TestPrintJobDatabase::GetPrintJobs(GetPrintJobsCallback callback) {
   std::move(callback).Run(true, std::move(entries));
 }
 
-}  // namespace chromeos
+}  // namespace ash

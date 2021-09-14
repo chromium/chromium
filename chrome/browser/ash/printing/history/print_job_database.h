@@ -12,12 +12,14 @@
 #include "base/callback_forward.h"
 
 namespace chromeos {
-
 namespace printing {
 namespace proto {
 class PrintJobInfo;
 }  // namespace proto
 }  // namespace printing
+}  // namespace chromeos
+
+namespace ash {
 
 class PrintJobDatabase {
  public:
@@ -27,12 +29,14 @@ class PrintJobDatabase {
 
   using DeletePrintJobsCallback = base::OnceCallback<void(bool success)>;
 
-  using GetPrintJobsCallback = base::OnceCallback<
-      void(bool success, std::vector<printing::proto::PrintJobInfo> entries)>;
+  using GetPrintJobsCallback = base::OnceCallback<void(
+      bool success,
+      std::vector<chromeos::printing::proto::PrintJobInfo> entries)>;
 
   using GetPrintJobsFromProtoDatabaseCallback = base::OnceCallback<void(
       bool success,
-      std::unique_ptr<std::vector<printing::proto::PrintJobInfo>> entries)>;
+      std::unique_ptr<std::vector<chromeos::printing::proto::PrintJobInfo>>
+          entries)>;
 
   virtual ~PrintJobDatabase() = default;
 
@@ -47,8 +51,9 @@ class PrintJobDatabase {
   // Saves given print job in the storage.
   // Note that the callback will be called only after the call returned. It may
   // also still be called after PrintJobDatabase was destructed.
-  virtual void SavePrintJob(const printing::proto::PrintJobInfo& print_job_info,
-                            SavePrintJobCallback callback) = 0;
+  virtual void SavePrintJob(
+      const chromeos::printing::proto::PrintJobInfo& print_job_info,
+      SavePrintJobCallback callback) = 0;
 
   // Removes the print jobs associated with given |ids| from the storage.
   // Note that the callback will be called only after the call returned. It may
@@ -67,6 +72,6 @@ class PrintJobDatabase {
   virtual void GetPrintJobs(GetPrintJobsCallback callback) = 0;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_HISTORY_PRINT_JOB_DATABASE_H_

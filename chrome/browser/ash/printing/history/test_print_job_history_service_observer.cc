@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/printing/history/test_print_job_history_service_observer.h"
 
-namespace chromeos {
+namespace ash {
 
 TestPrintJobHistoryServiceObserver::TestPrintJobHistoryServiceObserver(
     PrintJobHistoryService* print_job_history_service,
@@ -19,9 +19,9 @@ TestPrintJobHistoryServiceObserver::~TestPrintJobHistoryServiceObserver() {
 }
 
 void TestPrintJobHistoryServiceObserver::OnPrintJobFinished(
-    const printing::proto::PrintJobInfo& print_job_info) {
+    const chromeos::printing::proto::PrintJobInfo& print_job_info) {
   num_print_jobs_++;
   run_loop_closure_.Run();
 }
 
-}  // namespace chromeos
+}  // namespace ash

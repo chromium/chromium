@@ -12,7 +12,7 @@ namespace content {
 class BrowserContext;
 }  // namespace content
 
-namespace chromeos {
+namespace ash {
 class PrintJobReportingService;
 
 // Singleton that owns all PrintJobReportingServices and associates them with
@@ -43,6 +43,6 @@ class PrintJobReportingServiceFactory
   bool ServiceIsNULLWhileTesting() const override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_HISTORY_PRINT_JOB_REPORTING_SERVICE_FACTORY_H_

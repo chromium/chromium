@@ -14,7 +14,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -85,7 +85,7 @@ void PrintJobHistoryCleaner::OnPrefServiceInitialized(
 void PrintJobHistoryCleaner::OnPrintJobsRetrieved(
     base::OnceClosure callback,
     bool success,
-    std::vector<printing::proto::PrintJobInfo> print_job_infos) {
+    std::vector<chromeos::printing::proto::PrintJobInfo> print_job_infos) {
   if (!success) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                      std::move(callback));
@@ -120,4 +120,4 @@ void PrintJobHistoryCleaner::OnPrintJobsDeleted(base::OnceClosure callback,
                                                    std::move(callback));
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -16,8 +16,8 @@ PrintingMetricsGetPrintJobsFunction::~PrintingMetricsGetPrintJobsFunction() =
     default;
 
 ExtensionFunction::ResponseAction PrintingMetricsGetPrintJobsFunction::Run() {
-  chromeos::PrintJobHistoryService* print_job_history_service =
-      chromeos::PrintJobHistoryServiceFactory::GetForBrowserContext(
+  ash::PrintJobHistoryService* print_job_history_service =
+      ash::PrintJobHistoryServiceFactory::GetForBrowserContext(
           browser_context());
   print_job_history_service->GetPrintJobs(base::BindOnce(
       &PrintingMetricsGetPrintJobsFunction::OnPrintJobsRetrieved, this));

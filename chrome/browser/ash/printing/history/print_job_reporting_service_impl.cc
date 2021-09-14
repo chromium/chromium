@@ -26,10 +26,10 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
-namespace print = chromeos::printing::proto;
-namespace em = enterprise_management;
+namespace print = ::chromeos::printing::proto;
+namespace em = ::enterprise_management;
 
-namespace chromeos {
+namespace ash {
 
 class PrintJobReportingServiceImpl : public PrintJobReportingService {
  public:
@@ -210,4 +210,4 @@ std::unique_ptr<PrintJobReportingService> PrintJobReportingService::Create(
   return std::make_unique<PrintJobReportingServiceImpl>(dm_token_value);
 }
 
-}  // namespace chromeos
+}  // namespace ash
