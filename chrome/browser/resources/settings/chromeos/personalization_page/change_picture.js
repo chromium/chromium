@@ -39,7 +39,7 @@ Polymer({
     },
 
     /**
-     * The active set of default user images.
+     * The set of all default user images.
      * @private {?Array<!settings.DefaultImage>}
      */
     defaultImages_: {
@@ -48,10 +48,13 @@ Polymer({
     },
 
     /**
-     * The index of the first default image to use in the selection list.
-     * @private
+     * The current active set of the default user images.
+     * @private {?Array<!settings.DefaultImage>}
      */
-    firstDefaultImageIndex_: Number,
+    activeImages_: {
+      type: Object,
+      value: null,
+    },
 
     /**
      * True when camera video mode is enabled.
@@ -150,12 +153,13 @@ Polymer({
 
   /**
    * Handler for the 'default-images-changed' event.
-   * @param {{first: number, images: !Array<!settings.DefaultImage>}} info
+   * @param {{default_images: !Array<!settings.DefaultImage>, active_images:
+   *     !Array<!settings.DefaultImage>}} info
    * @private
    */
   receiveDefaultImages_(info) {
-    this.defaultImages_ = info.images;
-    this.firstDefaultImageIndex_ = info.first;
+    this.defaultImages_ = info.default_images;
+    this.activeImages_ = info.active_images;
   },
 
   /**
@@ -319,16 +323,6 @@ Polymer({
   getImageType_(selectedItem) {
     return (selectedItem && selectedItem.dataset.type) ||
         CrPicture.SelectionTypes.NONE;
-  },
-
-  /**
-   * @param {!Array<!settings.DefaultImage>} defaultImages
-   * @param {number} firstDefaultImageIndex
-   * @return {!Array<!settings.DefaultImage>}
-   * @private
-   */
-  getDefaultImages_(defaultImages, firstDefaultImageIndex) {
-    return defaultImages ? defaultImages.slice(firstDefaultImageIndex) : [];
   },
 
   /**

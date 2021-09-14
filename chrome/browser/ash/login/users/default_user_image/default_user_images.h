@@ -21,6 +21,14 @@ class ImageSkia;
 namespace ash {
 namespace default_user_image {
 
+// Enumeration of user image eligibility states.
+enum class Eligibility {
+  // The images has been deprecated.
+  kDeprecated,
+  // The image is eligible.
+  kEligible,
+};
+
 // Returns the URL to a default user image with the specified index. If the
 // index is invalid, returns the default user image for index 0 (anonymous
 // avatar image).
@@ -33,8 +41,8 @@ bool IsDefaultImageUrl(const std::string& url, int* image_id);
 // Returns bitmap of default user image with specified index.
 const gfx::ImageSkia& GetDefaultImage(int index);
 
-// Resource IDs of default user images.
-extern const int kDefaultImageResourceIDs[];
+// Returns ID of default user image with specified index.
+const int GetDefaultImageResourceId(int index);
 
 // Number of default images.
 extern const int kDefaultImagesCount;

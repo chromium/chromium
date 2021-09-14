@@ -148,7 +148,7 @@ scoped_refptr<base::RefCountedMemory> GetUserImageInternal(
     }
     if (user->HasDefaultImage()) {
       return LoadUserImageFrameForScaleFactor(
-          default_user_image::kDefaultImageResourceIDs[user->image_index()],
+          default_user_image::GetDefaultImageResourceId(user->image_index()),
           frame, scale_factor);
     }
     NOTREACHED() << "User with custom image missing data bytes";

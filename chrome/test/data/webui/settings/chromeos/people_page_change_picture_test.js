@@ -58,9 +58,25 @@ cr.define('settings_people_page_change_picture', function() {
           website: 'http://foo3.com',
         },
       ];
+      const fakeActiveImages = [
+        {
+          author: 'Author1',
+          index: 2,
+          title: 'Title2',
+          url: 'chrome://foo/2.png',
+          website: 'http://foo2.com',
+        },
+        {
+          author: 'Author2',
+          index: 3,
+          title: 'Title3',
+          url: 'chrome://foo/3.png',
+          website: 'http://foo3.com',
+        },
+      ];
       cr.webUIListenerCallback('default-images-changed', {
-        images: fakeDefaultImages,
-        first: 1,
+        default_images: fakeDefaultImages,
+        active_images: fakeActiveImages,
       });
 
       this.methodCalled('initialize');

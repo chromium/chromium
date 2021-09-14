@@ -22,134 +22,118 @@
 
 namespace ash {
 namespace default_user_image {
+namespace {
 
-// Resource IDs of default user images. When adding new entries to this list,
-// please also update the enum ChromeOSUserImageId in the
-// tools/metrics/histograms/enums.xml.
+struct DefaultImageInfo {
+  // Resource IDs of default user images.
+  const int resource_id;
+
+  // Message IDs of default user image descriptions.
+  const int description_message_id;
+
+  // Whether the user image is eligible in the current set. If so, user can
+  // select the image as avatar through personalization settings.
+  Eligibility eligibility;
+};
+
+// Info of default user images. When adding new entries to this list,
+// please also update the enum ChromeOSUserImageId in
+// tools/metrics/histograms/enums.xml
 // clang-format off
-const int kDefaultImageResourceIDs[] = {
-    IDR_LOGIN_DEFAULT_USER,
-
+const DefaultImageInfo kDefaultImageInfo[] = {
+    // No description for deprecated user image 0-18.
+    {IDR_LOGIN_DEFAULT_USER, 0, Eligibility::kDeprecated},
     // Original set of images.
-    IDR_LOGIN_DEFAULT_USER_1,
-    IDR_LOGIN_DEFAULT_USER_2,
-    IDR_LOGIN_DEFAULT_USER_3,
-    IDR_LOGIN_DEFAULT_USER_4,
-    IDR_LOGIN_DEFAULT_USER_5,
-    IDR_LOGIN_DEFAULT_USER_6,
-    IDR_LOGIN_DEFAULT_USER_7,
-    IDR_LOGIN_DEFAULT_USER_8,
-    IDR_LOGIN_DEFAULT_USER_9,
-    IDR_LOGIN_DEFAULT_USER_10,
-    IDR_LOGIN_DEFAULT_USER_11,
-    IDR_LOGIN_DEFAULT_USER_12,
-    IDR_LOGIN_DEFAULT_USER_13,
-    IDR_LOGIN_DEFAULT_USER_14,
-    IDR_LOGIN_DEFAULT_USER_15,
-    IDR_LOGIN_DEFAULT_USER_16,
-    IDR_LOGIN_DEFAULT_USER_17,
-    IDR_LOGIN_DEFAULT_USER_18,
-
+    {IDR_LOGIN_DEFAULT_USER_1, 0, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_2, 0, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_3, 0, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_4, 0, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_5, 0, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_6, 0, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_7, 0, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_8, 0, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_9, 0, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_10, 0, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_11, 0, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_12, 0, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_13, 0, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_14, 0, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_15, 0, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_16, 0, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_17, 0, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_18, 0, Eligibility::kDeprecated},
     // Second set of images.
-    IDR_LOGIN_DEFAULT_USER_19,
-    IDR_LOGIN_DEFAULT_USER_20,
-    IDR_LOGIN_DEFAULT_USER_21,
-    IDR_LOGIN_DEFAULT_USER_22,
-    IDR_LOGIN_DEFAULT_USER_23,
-    IDR_LOGIN_DEFAULT_USER_24,
-    IDR_LOGIN_DEFAULT_USER_25,
-    IDR_LOGIN_DEFAULT_USER_26,
-    IDR_LOGIN_DEFAULT_USER_27,
-    IDR_LOGIN_DEFAULT_USER_28,
-    IDR_LOGIN_DEFAULT_USER_29,
-    IDR_LOGIN_DEFAULT_USER_30,
-    IDR_LOGIN_DEFAULT_USER_31,
-    IDR_LOGIN_DEFAULT_USER_32,
-    IDR_LOGIN_DEFAULT_USER_33,
-
+    {IDR_LOGIN_DEFAULT_USER_19, IDS_LOGIN_DEFAULT_USER_DESC_19, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_20, IDS_LOGIN_DEFAULT_USER_DESC_20, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_21, IDS_LOGIN_DEFAULT_USER_DESC_21, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_22, IDS_LOGIN_DEFAULT_USER_DESC_22, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_23, IDS_LOGIN_DEFAULT_USER_DESC_23, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_24, IDS_LOGIN_DEFAULT_USER_DESC_24, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_25, IDS_LOGIN_DEFAULT_USER_DESC_25, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_26, IDS_LOGIN_DEFAULT_USER_DESC_26, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_27, IDS_LOGIN_DEFAULT_USER_DESC_27, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_28, IDS_LOGIN_DEFAULT_USER_DESC_28, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_29, IDS_LOGIN_DEFAULT_USER_DESC_29, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_30, IDS_LOGIN_DEFAULT_USER_DESC_30, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_31, IDS_LOGIN_DEFAULT_USER_DESC_31, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_32, IDS_LOGIN_DEFAULT_USER_DESC_32, Eligibility::kDeprecated},
+    {IDR_LOGIN_DEFAULT_USER_33, IDS_LOGIN_DEFAULT_USER_DESC_33, Eligibility::kDeprecated},
     // Third set of images.
-    IDR_LOGIN_DEFAULT_USER_34,
-    IDR_LOGIN_DEFAULT_USER_35,
-    IDR_LOGIN_DEFAULT_USER_36,
-    IDR_LOGIN_DEFAULT_USER_37,
-    IDR_LOGIN_DEFAULT_USER_38,
-    IDR_LOGIN_DEFAULT_USER_39,
-    IDR_LOGIN_DEFAULT_USER_40,
-    IDR_LOGIN_DEFAULT_USER_41,
-    IDR_LOGIN_DEFAULT_USER_42,
-    IDR_LOGIN_DEFAULT_USER_43,
-    IDR_LOGIN_DEFAULT_USER_44,
-    IDR_LOGIN_DEFAULT_USER_45,
-    IDR_LOGIN_DEFAULT_USER_46,
-    IDR_LOGIN_DEFAULT_USER_47,
-    IDR_LOGIN_DEFAULT_USER_48,
-    IDR_LOGIN_DEFAULT_USER_49,
-    IDR_LOGIN_DEFAULT_USER_50,
-    IDR_LOGIN_DEFAULT_USER_51,
-    IDR_LOGIN_DEFAULT_USER_52,
-    IDR_LOGIN_DEFAULT_USER_53,
-    IDR_LOGIN_DEFAULT_USER_54,
-    IDR_LOGIN_DEFAULT_USER_55,
-    IDR_LOGIN_DEFAULT_USER_56,
-    IDR_LOGIN_DEFAULT_USER_57,
-    IDR_LOGIN_DEFAULT_USER_58,
-    IDR_LOGIN_DEFAULT_USER_59,
-    IDR_LOGIN_DEFAULT_USER_60,
-    IDR_LOGIN_DEFAULT_USER_61,
-    IDR_LOGIN_DEFAULT_USER_62,
-    IDR_LOGIN_DEFAULT_USER_63,
-    IDR_LOGIN_DEFAULT_USER_64,
-    IDR_LOGIN_DEFAULT_USER_65,
-    IDR_LOGIN_DEFAULT_USER_66,
-    IDR_LOGIN_DEFAULT_USER_67,
-    IDR_LOGIN_DEFAULT_USER_68,
-    IDR_LOGIN_DEFAULT_USER_69,
-    IDR_LOGIN_DEFAULT_USER_70,
-    IDR_LOGIN_DEFAULT_USER_71,
-    IDR_LOGIN_DEFAULT_USER_72,
-    IDR_LOGIN_DEFAULT_USER_73,
-    IDR_LOGIN_DEFAULT_USER_74,
-    IDR_LOGIN_DEFAULT_USER_75,
-    IDR_LOGIN_DEFAULT_USER_76,
-    IDR_LOGIN_DEFAULT_USER_77,
-    IDR_LOGIN_DEFAULT_USER_78,
-    IDR_LOGIN_DEFAULT_USER_79,
-    IDR_LOGIN_DEFAULT_USER_80,
-    IDR_LOGIN_DEFAULT_USER_81,
-    IDR_LOGIN_DEFAULT_USER_82,
+    {IDR_LOGIN_DEFAULT_USER_34, IDS_LOGIN_DEFAULT_USER_DESC_34, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_35, IDS_LOGIN_DEFAULT_USER_DESC_35, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_36, IDS_LOGIN_DEFAULT_USER_DESC_36, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_37, IDS_LOGIN_DEFAULT_USER_DESC_37, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_38, IDS_LOGIN_DEFAULT_USER_DESC_38, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_39, IDS_LOGIN_DEFAULT_USER_DESC_39, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_40, IDS_LOGIN_DEFAULT_USER_DESC_40, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_41, IDS_LOGIN_DEFAULT_USER_DESC_41, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_42, IDS_LOGIN_DEFAULT_USER_DESC_42, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_43, IDS_LOGIN_DEFAULT_USER_DESC_43, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_44, IDS_LOGIN_DEFAULT_USER_DESC_44, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_45, IDS_LOGIN_DEFAULT_USER_DESC_45, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_46, IDS_LOGIN_DEFAULT_USER_DESC_46, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_47, IDS_LOGIN_DEFAULT_USER_DESC_47, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_48, IDS_LOGIN_DEFAULT_USER_DESC_48, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_49, IDS_LOGIN_DEFAULT_USER_DESC_49, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_50, IDS_LOGIN_DEFAULT_USER_DESC_50, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_51, IDS_LOGIN_DEFAULT_USER_DESC_51, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_52, IDS_LOGIN_DEFAULT_USER_DESC_52, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_53, IDS_LOGIN_DEFAULT_USER_DESC_53, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_54, IDS_LOGIN_DEFAULT_USER_DESC_54, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_55, IDS_LOGIN_DEFAULT_USER_DESC_55, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_56, IDS_LOGIN_DEFAULT_USER_DESC_56, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_57, IDS_LOGIN_DEFAULT_USER_DESC_57, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_58, IDS_LOGIN_DEFAULT_USER_DESC_58, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_59, IDS_LOGIN_DEFAULT_USER_DESC_59, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_60, IDS_LOGIN_DEFAULT_USER_DESC_60, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_61, IDS_LOGIN_DEFAULT_USER_DESC_61, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_62, IDS_LOGIN_DEFAULT_USER_DESC_62, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_63, IDS_LOGIN_DEFAULT_USER_DESC_63, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_64, IDS_LOGIN_DEFAULT_USER_DESC_64, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_65, IDS_LOGIN_DEFAULT_USER_DESC_65, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_66, IDS_LOGIN_DEFAULT_USER_DESC_66, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_67, IDS_LOGIN_DEFAULT_USER_DESC_67, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_68, IDS_LOGIN_DEFAULT_USER_DESC_68, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_69, IDS_LOGIN_DEFAULT_USER_DESC_69, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_70, IDS_LOGIN_DEFAULT_USER_DESC_70, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_71, IDS_LOGIN_DEFAULT_USER_DESC_71, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_72, IDS_LOGIN_DEFAULT_USER_DESC_72, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_73, IDS_LOGIN_DEFAULT_USER_DESC_73, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_74, IDS_LOGIN_DEFAULT_USER_DESC_74, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_75, IDS_LOGIN_DEFAULT_USER_DESC_75, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_76, IDS_LOGIN_DEFAULT_USER_DESC_76, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_77, IDS_LOGIN_DEFAULT_USER_DESC_77, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_78, IDS_LOGIN_DEFAULT_USER_DESC_78, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_79, IDS_LOGIN_DEFAULT_USER_DESC_79, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_80, IDS_LOGIN_DEFAULT_USER_DESC_80, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_81, IDS_LOGIN_DEFAULT_USER_DESC_81, Eligibility::kEligible},
+    {IDR_LOGIN_DEFAULT_USER_82, IDS_LOGIN_DEFAULT_USER_DESC_82, Eligibility::kEligible},
 };
 // clang-format on
-
-const int kDefaultImagesCount = base::size(kDefaultImageResourceIDs);
-
-const int kFirstDefaultImageIndex = 34;
-
-// Limit random default image index to prevent undesirable UI behavior when
-// selecting an image with a high index. E.g. automatic scrolling of picture
-// list that is used to present default images.
-const int kLastRandomDefaultImageIndex = 47;
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// The order and the values of these constants are important for histograms
-// of different Chrome OS versions to be merged smoothly.
-const int kHistogramImageFromCamera = 0;
-const int kHistogramImageExternal = 1;
-const int kHistogramImageFromProfile = 2;
-// The special images max count is used to reserve a histogram range (0-9) for
-// special images. Default images will have their histogram value starting
-// at 10. Check ChromeOSUserImageId in tools/metrics/histograms/enums.xml to see
-// how these values are mapped.
-const int kHistogramSpecialImagesMaxCount = 10;
-const int kHistogramImagesCount =
-    kDefaultImagesCount + kHistogramSpecialImagesMaxCount;
-
-namespace {
 
 const char kDefaultUrlPrefix[] = "chrome://theme/IDR_LOGIN_DEFAULT_USER_";
 const char kZeroDefaultUrl[] = "chrome://theme/IDR_LOGIN_DEFAULT_USER";
 
-// clang-format off
 const int kDefaultImageAuthorIDs[] = {
     IDS_LOGIN_DEFAULT_USER_AUTHOR,
     IDS_LOGIN_DEFAULT_USER_AUTHOR_1,
@@ -186,11 +170,9 @@ const int kDefaultImageAuthorIDs[] = {
     IDS_LOGIN_DEFAULT_USER_AUTHOR_32,
     IDS_LOGIN_DEFAULT_USER_AUTHOR_33,
 };
-// clang-format on
 
 const int kDefaultImageAuthorMaxID = base::size(kDefaultImageAuthorIDs);
 
-// clang-format off
 const int kDefaultImageWebsiteIDs[] = {
     IDS_LOGIN_DEFAULT_USER_WEBSITE,
     IDS_LOGIN_DEFAULT_USER_WEBSITE_1,
@@ -229,97 +211,6 @@ const int kDefaultImageWebsiteIDs[] = {
 };
 
 const int kDefaultImageWebsiteMaxID = base::size(kDefaultImageWebsiteIDs);
-// clang-format on
-
-// IDs of default user image descriptions.
-const int kDefaultImageDescriptions[] = {
-    0,  // No description for deprecated user image 0.
-    0,  // No description for deprecated user image 1.
-    0,  // No description for deprecated user image 2.
-    0,  // No description for deprecated user image 3.
-    0,  // No description for deprecated user image 4.
-    0,  // No description for deprecated user image 5.
-    0,  // No description for deprecated user image 6.
-    0,  // No description for deprecated user image 7.
-    0,  // No description for deprecated user image 8.
-    0,  // No description for deprecated user image 9.
-    0,  // No description for deprecated user image 10.
-    0,  // No description for deprecated user image 11.
-    0,  // No description for deprecated user image 12.
-    0,  // No description for deprecated user image 13.
-    0,  // No description for deprecated user image 14.
-    0,  // No description for deprecated user image 15.
-    0,  // No description for deprecated user image 16.
-    0,  // No description for deprecated user image 17.
-    0,  // No description for deprecated user image 18.
-    IDS_LOGIN_DEFAULT_USER_DESC_19,
-    IDS_LOGIN_DEFAULT_USER_DESC_20,
-    IDS_LOGIN_DEFAULT_USER_DESC_21,
-    IDS_LOGIN_DEFAULT_USER_DESC_22,
-    IDS_LOGIN_DEFAULT_USER_DESC_23,
-    IDS_LOGIN_DEFAULT_USER_DESC_24,
-    IDS_LOGIN_DEFAULT_USER_DESC_25,
-    IDS_LOGIN_DEFAULT_USER_DESC_26,
-    IDS_LOGIN_DEFAULT_USER_DESC_27,
-    IDS_LOGIN_DEFAULT_USER_DESC_28,
-    IDS_LOGIN_DEFAULT_USER_DESC_29,
-    IDS_LOGIN_DEFAULT_USER_DESC_30,
-    IDS_LOGIN_DEFAULT_USER_DESC_31,
-    IDS_LOGIN_DEFAULT_USER_DESC_32,
-    IDS_LOGIN_DEFAULT_USER_DESC_33,
-    IDS_LOGIN_DEFAULT_USER_DESC_34,
-    IDS_LOGIN_DEFAULT_USER_DESC_35,
-    IDS_LOGIN_DEFAULT_USER_DESC_36,
-    IDS_LOGIN_DEFAULT_USER_DESC_37,
-    IDS_LOGIN_DEFAULT_USER_DESC_38,
-    IDS_LOGIN_DEFAULT_USER_DESC_39,
-    IDS_LOGIN_DEFAULT_USER_DESC_40,
-    IDS_LOGIN_DEFAULT_USER_DESC_41,
-    IDS_LOGIN_DEFAULT_USER_DESC_42,
-    IDS_LOGIN_DEFAULT_USER_DESC_43,
-    IDS_LOGIN_DEFAULT_USER_DESC_44,
-    IDS_LOGIN_DEFAULT_USER_DESC_45,
-    IDS_LOGIN_DEFAULT_USER_DESC_46,
-    IDS_LOGIN_DEFAULT_USER_DESC_47,
-    IDS_LOGIN_DEFAULT_USER_DESC_48,
-    IDS_LOGIN_DEFAULT_USER_DESC_49,
-    IDS_LOGIN_DEFAULT_USER_DESC_50,
-    IDS_LOGIN_DEFAULT_USER_DESC_51,
-    IDS_LOGIN_DEFAULT_USER_DESC_52,
-    IDS_LOGIN_DEFAULT_USER_DESC_53,
-    IDS_LOGIN_DEFAULT_USER_DESC_54,
-    IDS_LOGIN_DEFAULT_USER_DESC_55,
-    IDS_LOGIN_DEFAULT_USER_DESC_56,
-    IDS_LOGIN_DEFAULT_USER_DESC_57,
-    IDS_LOGIN_DEFAULT_USER_DESC_58,
-    IDS_LOGIN_DEFAULT_USER_DESC_59,
-    IDS_LOGIN_DEFAULT_USER_DESC_60,
-    IDS_LOGIN_DEFAULT_USER_DESC_61,
-    IDS_LOGIN_DEFAULT_USER_DESC_62,
-    IDS_LOGIN_DEFAULT_USER_DESC_63,
-    IDS_LOGIN_DEFAULT_USER_DESC_64,
-    IDS_LOGIN_DEFAULT_USER_DESC_65,
-    IDS_LOGIN_DEFAULT_USER_DESC_66,
-    IDS_LOGIN_DEFAULT_USER_DESC_67,
-    IDS_LOGIN_DEFAULT_USER_DESC_68,
-    IDS_LOGIN_DEFAULT_USER_DESC_69,
-    IDS_LOGIN_DEFAULT_USER_DESC_70,
-    IDS_LOGIN_DEFAULT_USER_DESC_71,
-    IDS_LOGIN_DEFAULT_USER_DESC_72,
-    IDS_LOGIN_DEFAULT_USER_DESC_73,
-    IDS_LOGIN_DEFAULT_USER_DESC_74,
-    IDS_LOGIN_DEFAULT_USER_DESC_75,
-    IDS_LOGIN_DEFAULT_USER_DESC_76,
-    IDS_LOGIN_DEFAULT_USER_DESC_77,
-    IDS_LOGIN_DEFAULT_USER_DESC_78,
-    IDS_LOGIN_DEFAULT_USER_DESC_79,
-    IDS_LOGIN_DEFAULT_USER_DESC_80,
-    IDS_LOGIN_DEFAULT_USER_DESC_81,
-    IDS_LOGIN_DEFAULT_USER_DESC_82,
-};
-
-const int kDefaultImageDescriptionsMaxID =
-    base::size(kDefaultImageDescriptions);
 
 // Returns true if the string specified consists of the prefix and one of
 // the default images indices. Returns the index of the image in `image_id`
@@ -353,6 +244,30 @@ void GetFirstLastIndex(int* first, int* last) {
 
 }  // namespace
 
+const int kDefaultImagesCount = base::size(kDefaultImageInfo);
+
+const int kFirstDefaultImageIndex = 34;
+
+// Limit random default image index to prevent undesirable UI behavior when
+// selecting an image with a high index. E.g. automatic scrolling of picture
+// list that is used to present default images.
+const int kLastRandomDefaultImageIndex = 47;
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// The order and the values of these constants are important for histograms
+// of different Chrome OS versions to be merged smoothly.
+const int kHistogramImageFromCamera = 0;
+const int kHistogramImageExternal = 1;
+const int kHistogramImageFromProfile = 2;
+// The special images max count is used to reserve a histogram range (0-9) for
+// special images. Default images will have their histogram value starting
+// at 10. Check ChromeOSUserImageId in tools/metrics/histograms/enums.xml to see
+// how these values are mapped.
+const int kHistogramSpecialImagesMaxCount = 10;
+const int kHistogramImagesCount =
+    kDefaultImagesCount + kHistogramSpecialImagesMaxCount;
+
 std::string GetDefaultImageUrl(int index) {
   if (index <= 0 || index >= kDefaultImagesCount)
     return kZeroDefaultUrl;
@@ -370,7 +285,11 @@ bool IsDefaultImageUrl(const std::string& url, int* image_id) {
 const gfx::ImageSkia& GetDefaultImage(int index) {
   DCHECK(index >= 0 && index < kDefaultImagesCount);
   return *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-      kDefaultImageResourceIDs[index]);
+      kDefaultImageInfo[index].resource_id);
+}
+
+const int GetDefaultImageResourceId(int index) {
+  return kDefaultImageInfo[index].resource_id;
 }
 
 int GetRandomDefaultImageIndex() {
@@ -386,7 +305,8 @@ bool IsValidIndex(int index) {
 bool IsInCurrentImageSet(int index) {
   int first, last;
   GetFirstLastIndex(&first, &last);
-  return index >= first && index <= last;
+  return index >= first && index <= last &&
+         kDefaultImageInfo[index].eligibility == Eligibility::kEligible;
 }
 
 std::unique_ptr<base::ListValue> GetAsDictionary(bool all) {
@@ -397,6 +317,9 @@ std::unique_ptr<base::ListValue> GetAsDictionary(bool all) {
 
   auto image_urls = std::make_unique<base::ListValue>();
   for (int i = first; i <= last; ++i) {
+    if (!all && kDefaultImageInfo[i].eligibility == Eligibility::kDeprecated)
+      continue;
+
     auto image_data = std::make_unique<base::DictionaryValue>();
     image_data->SetString("url", default_user_image::GetDefaultImageUrl(i));
     image_data->SetInteger("index", i);
@@ -410,12 +333,10 @@ std::unique_ptr<base::ListValue> GetAsDictionary(bool all) {
           "website", l10n_util::GetStringUTF16(
                          default_user_image::kDefaultImageWebsiteIDs[i]));
     }
-    if (i < kDefaultImageDescriptionsMaxID) {
-      int string_id = kDefaultImageDescriptions[i];
-      image_data->SetString("title", string_id
-                                         ? l10n_util::GetStringUTF16(string_id)
-                                         : std::u16string());
-    }
+    int string_id = kDefaultImageInfo[i].description_message_id;
+    image_data->SetString("title", string_id
+                                       ? l10n_util::GetStringUTF16(string_id)
+                                       : std::u16string());
     image_urls->Append(std::move(image_data));
   }
   return image_urls;

@@ -153,11 +153,14 @@ void ChangePictureHandler::OnJavascriptDisallowed() {
 
 void ChangePictureHandler::SendDefaultImages() {
   base::DictionaryValue result;
-  result.SetInteger("first", default_user_image::GetFirstDefaultImage());
   std::unique_ptr<base::ListValue> default_images =
       default_user_image::GetAsDictionary(true /* all */);
-  result.SetKey("images",
+  result.SetKey("default_images",
                 base::Value::FromUniquePtrValue(std::move(default_images)));
+  std::unique_ptr<base::ListValue> active_images =
+      default_user_image::GetAsDictionary(false /* all */);
+  result.SetKey("active_images",
+                base::Value::FromUniquePtrValue(std::move(active_images)));
   FireWebUIListener("default-images-changed", result);
 }
 

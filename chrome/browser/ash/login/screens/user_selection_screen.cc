@@ -550,7 +550,7 @@ UserAvatar UserSelectionScreen::BuildAshUserAvatarForUser(
         user.image_bytes()->front() + user.image_bytes()->size());
   } else if (user.HasDefaultImage()) {
     int resource_id =
-        default_user_image::kDefaultImageResourceIDs[user.image_index()];
+        default_user_image::GetDefaultImageResourceId(user.image_index());
     load_image_from_resource(resource_id);
   } else if (user.image_is_stub()) {
     load_image_from_resource(IDR_LOGIN_DEFAULT_USER);
