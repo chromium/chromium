@@ -76,6 +76,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_manager.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/plugin_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -1854,6 +1855,24 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, PdfAndHtml) {
   EXPECT_EQ(pdf_frames[0]->GetLastCommittedOrigin(),
             frames[1]->GetLastCommittedOrigin());
   EXPECT_NE(pdf_frames[0]->GetProcess(), frames[1]->GetProcess());
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, HistoryNavigation) {
+  // Navigating to a PDF should spawn a PDF renderer process.
+  EXPECT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
+  EXPECT_EQ(CountPDFProcesses(), 1);
+
+  // Navigating to non-PDF content should remove the PDF renderer process.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+  EXPECT_EQ(CountPDFProcesses(), 0);
+
+  // Navigating back to the PDF should once again spawn a PDF renderer process.
+  WebContents* web_contents = GetActiveWebContents();
+  web_contents->GetController().GoBack();
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+  EXPECT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
+  EXPECT_EQ(CountPDFProcesses(), 1);
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, Jitless) {
