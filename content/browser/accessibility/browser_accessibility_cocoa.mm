@@ -2020,10 +2020,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
                              CreateTextMarker(_owner->CreateTextPositionAt(i)));
 }
 
-- (BOOL)instanceActive {
-  return _owner != nullptr;
-}
-
 // internal
 - (NSRect)rectInScreen:(gfx::Rect)rect {
   if (![self instanceActive])
