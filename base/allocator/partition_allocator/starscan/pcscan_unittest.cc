@@ -594,13 +594,7 @@ TEST_F(PartitionAllocPCScanTest, Safepoint) {
 }
 #endif  // PCSCAN_DISABLE_SAFEPOINTS
 
-// Disabled due to consistent failure http://crbug.com/1248949
-#if defined(OS_MAC)
-#define MAYBE_StackScanning DISABLED_StackScanning
-#else
-#define MAYBE_StackScanning StackScanning
-#endif
-TEST_F(PartitionAllocPCScanTest, MAYBE_StackScanning) {
+TEST_F(PartitionAllocPCScanTest, StackScanning) {
   using ValueList = List<8>;
 
   PCScan::EnableStackScanning();
