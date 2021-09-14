@@ -10,6 +10,9 @@ per-file *browser_task_environment*=gab@chromium.org
 # For Android-specific changes.
 per-file *android*=file://content/public/test/android/OWNERS
 
+# For FakeSpeechRecognitionManager, used by the a11y Dictation feature.
+per-file fake_speech_recognition_manager*=file://ui/accessibility/OWNERS
+
 # For security presubmit checks, though test mojom really don't need review.
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
