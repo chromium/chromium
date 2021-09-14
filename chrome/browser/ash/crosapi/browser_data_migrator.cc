@@ -50,6 +50,10 @@ const char* const kCopyUserDataPaths[] = {"First Run"};
 // Flag values for `switches::kForceBrowserDataMigrationForTesting`.
 const char kBrowserDataMigrationForceSkip[] = "force-skip";
 const char kBrowserDataMigrationForceMigration[] = "force-migration";
+// The size of disk space that should be kept free after migration. This is
+// important since crypotohome conducts an aggressive disk cleanup if free disk
+// space becomes less than 768MB. The buffer is rounded up to 1GB.
+const int64_t kBuffer = (int64_t)1024 * 1024 * 1024;
 
 // Enable this to turn on profile migration for non-googlers. Currently the
 // feature is only limited to googlers only.
@@ -246,6 +250,11 @@ BrowserDataMigrator::MigrationResult BrowserDataMigrator::MigrateInternal() {
     return {data_wipe_result, ResultValue::kFailed};
   }
 
+  if (!IsMigrationSmallEnough(target_info)) {
+    RecordStatus(FinalStatus::kSizeLimitExceeded, &target_info);
+    return {data_wipe_result, ResultValue::kFailed};
+  }
+
   if (!CopyToTmpDir(target_info)) {
     if (base::PathExists(tmp_dir_)) {
       base::DeletePathRecursively(tmp_dir_);
@@ -356,11 +365,26 @@ bool BrowserDataMigrator::HasEnoughDiskSpace(
     const TargetInfo& target_info) const {
   const int64_t free_disk_space =
       base::SysInfo::AmountOfFreeDiskSpace(from_dir_);
-  if (free_disk_space < target_info.total_byte_count) {
+  if (free_disk_space < target_info.total_byte_count + kBuffer) {
     LOG(ERROR) << "Aborting migration. Need " << target_info.total_byte_count
                << " bytes but only have " << free_disk_space << " bytes left.";
     return false;
   }
+
+  return true;
+}
+
+// static
+bool BrowserDataMigrator::IsMigrationSmallEnough(
+    const TargetInfo& target_info) {
+  const int64_t max_migration_size = (int64_t)4 * 1024 * 1024 * 1024;
+  if (target_info.total_byte_count > max_migration_size) {
+    LOG(ERROR) << "Aborting migration because the data size is too large for "
+                  "migration: "
+               << target_info.total_byte_count << " bytes.";
+    return false;
+  }
+
   return true;
 }
 
