@@ -443,7 +443,8 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
   // For tests.
 
   // Replace stream_.
-  void CreateStream(bool wait_for_initialization = true);
+  void CreateStream(bool wait_for_initialization = true,
+                    bool start_surface = false);
   std::unique_ptr<StreamModel> CreateStreamModel();
   bool IsTaskQueueIdle() const;
   void WaitForIdleTaskQueue();

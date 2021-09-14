@@ -815,10 +815,12 @@ void FeedApiTest::PrefetchImage(const GURL& url) {
   prefetch_image_call_count_++;
 }
 
-void FeedApiTest::CreateStream(bool wait_for_initialization) {
+void FeedApiTest::CreateStream(bool wait_for_initialization,
+                               bool start_surface) {
   ChromeInfo chrome_info;
   chrome_info.channel = version_info::Channel::STABLE;
   chrome_info.version = base::Version({99, 1, 9911, 2});
+  chrome_info.start_surface = start_surface;
   stream_ = std::make_unique<FeedStream>(
       &refresh_scheduler_, metrics_reporter_.get(), this, &profile_prefs_,
       &network_, image_fetcher_.get(), store_.get(),

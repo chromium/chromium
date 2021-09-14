@@ -259,6 +259,8 @@ feedwire::ClientInfo CreateClientInfo(const RequestMetadata& request_metadata) {
         request_metadata.session_id);
   }
 
+  client_info.mutable_chrome_client_info()->set_start_surface(
+      request_metadata.chrome_info.start_surface);
   return client_info;
 }
 

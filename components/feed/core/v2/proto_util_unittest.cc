@@ -48,6 +48,13 @@ TEST(ProtoUtilTest, CreateClientInfo) {
   EXPECT_EQ("en-US", result.locale());
 }
 
+TEST(ProtoUtilTest, ClientInfoStartSurface) {
+  RequestMetadata request_metadata;
+  request_metadata.chrome_info.start_surface = true;
+  feedwire::ClientInfo result = CreateClientInfo(request_metadata);
+  EXPECT_TRUE(result.chrome_client_info().start_surface());
+}
+
 TEST(ProtoUtilTest, DefaultCapabilities) {
   feedwire::FeedRequest request =
       CreateFeedQueryRefreshRequest(kForYouStream,

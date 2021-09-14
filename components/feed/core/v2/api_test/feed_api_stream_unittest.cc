@@ -1959,7 +1959,8 @@ TEST_F(FeedApiTest, SignedOutSessionIdConsistency) {
                   .empty());
   EXPECT_FALSE(network_.query_request_sent->feed_request()
                    .client_info()
-                   .has_chrome_client_info());
+                   .chrome_client_info()
+                   .has_session_id());
   EXPECT_EQ(kSessionToken1, stream_->GetMetadata().session_id().token());
   const base::Time kSessionToken1ExpiryTime =
       feedstore::GetSessionIdExpiryTime(stream_->GetMetadata());
@@ -2074,7 +2075,8 @@ TEST_F(FeedApiTest, SignedOutSessionIdExpiry) {
   ASSERT_EQ(1, network_.send_query_call_count);
   EXPECT_FALSE(network_.query_request_sent->feed_request()
                    .client_info()
-                   .has_chrome_client_info());
+                   .chrome_client_info()
+                   .has_session_id());
   EXPECT_EQ(kSessionToken1, stream_->GetMetadata().session_id().token());
 
   // (2) Reload the stream from the network:
@@ -2114,7 +2116,8 @@ TEST_F(FeedApiTest, SignedOutSessionIdExpiry) {
   ASSERT_EQ(3, network_.send_query_call_count);
   EXPECT_FALSE(network_.query_request_sent->feed_request()
                    .client_info()
-                   .has_chrome_client_info());
+                   .chrome_client_info()
+                   .has_session_id());
   EXPECT_EQ(kSessionToken2, stream_->GetMetadata().session_id().token());
 }
 
@@ -2549,7 +2552,39 @@ TEST_F(FeedApiTest, ForYouContentOrderUnset) {
       network_.query_request_sent->feed_request().feed_query().order_by());
 }
 
-TEST_F(FeedApiTest, ContentOrderIsGroupedByDefault) {
+TEST_F(FeedApiTest, StartSurface) {
+  CreateStream(/*wait_for_initialization=*/true, /*start_surface=*/true);
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+  response_translator_.InjectResponse(MakeTypicalRefreshModelState());
+  CallbackReceiver<bool> callback;
+  stream_->ManualRefresh(surface.GetStreamType(), callback.Bind());
+  WaitForIdleTaskQueue();
+
+  ASSERT_TRUE(network_.query_request_sent.has_value());
+  EXPECT_TRUE(network_.query_request_sent->feed_request()
+                  .client_info()
+                  .chrome_client_info()
+                  .start_surface());
+}
+
+TEST_F(FeedApiTest, NoStartSurface) {
+  CreateStream(/*wait_for_initialization=*/true, /*start_surface=*/false);
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+  response_translator_.InjectResponse(MakeTypicalRefreshModelState());
+  CallbackReceiver<bool> callback;
+  stream_->ManualRefresh(surface.GetStreamType(), callback.Bind());
+  WaitForIdleTaskQueue();
+
+  ASSERT_TRUE(network_.query_request_sent.has_value());
+  EXPECT_FALSE(network_.query_request_sent->feed_request()
+                   .client_info()
+                   .chrome_client_info()
+                   .start_surface());
+}
+
+TEST_F(FeedStreamTestForAllStreamTypes, ContentOrderIsGroupedByDefault) {
   network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestWebFeedSurface surface(stream_.get());
