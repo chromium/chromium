@@ -224,8 +224,10 @@ AvailableOfflineContentProvider::~AvailableOfflineContentProvider() = default;
 
 void AvailableOfflineContentProvider::List(ListCallback callback) {
   Profile* profile = GetProfile();
-  if (!profile)
+  if (!profile) {
+    CloseSelfOwnedReceiverIfNeeded();
     return;
+  }
   offline_items_collection::OfflineContentAggregator* aggregator =
       OfflineContentAggregatorFactory::GetForKey(profile->GetProfileKey());
   aggregator->GetAllItems(
@@ -270,10 +272,14 @@ void AvailableOfflineContentProvider::Create(
     int render_process_host_id,
     mojo::PendingReceiver<chrome::mojom::AvailableOfflineContentProvider>
         receiver) {
-  // Self owned receiveres remain as long as the pipe is error free.
-  mojo::MakeSelfOwnedReceiver(
+  // Self owned receivers remain as long as the pipe is error free.
+  auto provider_self_owned_receiver = mojo::MakeSelfOwnedReceiver(
       std::make_unique<AvailableOfflineContentProvider>(render_process_host_id),
       std::move(receiver));
+  // TODO(curranmax): Rework this code so the static_cast is not needed.
+  auto* provider = static_cast<AvailableOfflineContentProvider*>(
+      provider_self_owned_receiver->impl());
+  provider->SetSelfOwnedReceiver(provider_self_owned_receiver);
 }
 
 // Picks the best available offline content items, and passes them to callback.
@@ -282,8 +288,10 @@ void AvailableOfflineContentProvider::ListFinalize(
     offline_items_collection::OfflineContentAggregator* aggregator,
     const std::vector<OfflineItem>& all_items) {
   Profile* profile = GetProfile();
-  if (!profile)
+  if (!profile) {
+    CloseSelfOwnedReceiverIfNeeded();
     return;
+  }
 
   std::vector<OfflineItem> selected(kMinInterestingItemCount);
   const auto end = std::partial_sort_copy(all_items.begin(), all_items.end(),
@@ -333,6 +341,20 @@ Profile* AvailableOfflineContentProvider::GetProfile() {
   if (!render_process_host)
     return nullptr;
   return Profile::FromBrowserContext(render_process_host->GetBrowserContext());
+}
+
+void AvailableOfflineContentProvider::SetSelfOwnedReceiver(
+    const mojo::SelfOwnedReceiverRef<
+        chrome::mojom::AvailableOfflineContentProvider>&
+        provider_self_owned_receiver) {
+  provider_self_owned_receiver_ = provider_self_owned_receiver;
+}
+
+void AvailableOfflineContentProvider::CloseSelfOwnedReceiverIfNeeded() {
+  // Closing the mojo pipe invalidates any pending callbacks, and they should
+  // not be used after the receiver is closed.
+  if (provider_self_owned_receiver_)
+    provider_self_owned_receiver_->Close();
 }
 
 }  // namespace android
