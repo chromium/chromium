@@ -55,74 +55,6 @@ class ClipboardPngReader final : public ClipboardReader {
   void NextRead(Vector<uint8_t> utf8_bytes) override { NOTREACHED(); }
 };
 
-// TODO(crbug.com/1223849): Replace this class with `ClipboardPngReader` logic
-// and remove `ClipboardPngReader` once `ReadImage()` path is removed.
-// Reads an image from the System Clipboard as a Blob with image/png content.
-class ClipboardImageReader final : public ClipboardReader {
- public:
-  explicit ClipboardImageReader(SystemClipboard* system_clipboard,
-                                ClipboardPromise* promise)
-      : ClipboardReader(system_clipboard, promise) {}
-  ~ClipboardImageReader() override = default;
-
-  ClipboardImageReader(const ClipboardImageReader&) = delete;
-  ClipboardImageReader& operator=(const ClipboardImageReader&) = delete;
-
-  void Read() override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    SkBitmap bitmap =
-        system_clipboard()->ReadImage(mojom::ClipboardBuffer::kStandard);
-    sk_sp<SkImage> image = SkImage::MakeFromBitmap(bitmap);
-    if (!image) {
-      NextRead(Vector<uint8_t>());
-      return;
-    }
-
-    worker_pool::PostTask(
-        FROM_HERE,
-        CrossThreadBindOnce(&ClipboardImageReader::EncodeOnBackgroundThread,
-                            std::move(image), WrapCrossThreadPersistent(this),
-                            std::move(clipboard_task_runner_)));
-  }
-
- private:
-  static void EncodeOnBackgroundThread(
-      sk_sp<SkImage> image,
-      ClipboardImageReader* reader,
-      scoped_refptr<base::SingleThreadTaskRunner> clipboard_task_runner) {
-    DCHECK(!IsMainThread());
-
-    SkPixmap pixmap;
-    image->peekPixels(&pixmap);
-
-    // Set encoding options to favor speed over size.
-    SkPngEncoder::Options options;
-    options.fZLibLevel = 1;
-    options.fFilterFlags = SkPngEncoder::FilterFlag::kNone;
-
-    Vector<uint8_t> png_data;
-    if (!ImageEncoder::Encode(&png_data, pixmap, options))
-      png_data.clear();
-
-    // Now return to the kUserInteraction thread.
-    PostCrossThreadTask(*clipboard_task_runner, FROM_HERE,
-                        CrossThreadBindOnce(&ClipboardImageReader::NextRead,
-                                            WrapCrossThreadPersistent(reader),
-                                            std::move(png_data)));
-  }
-
-  void NextRead(Vector<uint8_t> utf8_bytes) override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    Blob* blob = nullptr;
-    if (utf8_bytes.size()) {
-      blob =
-          Blob::Create(utf8_bytes.data(), utf8_bytes.size(), kMimeTypeImagePng);
-    }
-
-    promise_->OnRead(blob);
-  }
-};
-
 // Reads an image from the System Clipboard as a Blob with text/plain content.
 class ClipboardTextReader final : public ClipboardReader {
  public:
@@ -376,15 +308,7 @@ ClipboardReader* ClipboardReader::Create(SystemClipboard* system_clipboard,
         system_clipboard, promise, mime_type);
   }
   if (mime_type == kMimeTypeImagePng) {
-    // TODO(crbug.com/1223849): Use `ClipboardPngReader` once `ReadImage()` path
-    // is removed.
-    if (RuntimeEnabledFeatures::ClipboardReadPngEnabled()) {
-      return MakeGarbageCollected<ClipboardPngReader>(system_clipboard,
-                                                      promise);
-    } else {
-      return MakeGarbageCollected<ClipboardImageReader>(system_clipboard,
-                                                        promise);
-    }
+    return MakeGarbageCollected<ClipboardPngReader>(system_clipboard, promise);
   }
   if (mime_type == kMimeTypeTextPlain)
     return MakeGarbageCollected<ClipboardTextReader>(system_clipboard, promise);

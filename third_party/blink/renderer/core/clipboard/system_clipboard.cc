@@ -194,14 +194,8 @@ SkBitmap SystemClipboard::ReadImage(mojom::ClipboardBuffer buffer) {
 
 String SystemClipboard::ReadImageAsImageMarkup(
     mojom::blink::ClipboardBuffer buffer) {
-  // TODO(crbug.com/1223849): Remove check once `ReadImage()` is removed.
-  if (RuntimeEnabledFeatures::ClipboardReadPngEnabled()) {
-    mojo_base::BigBuffer png_data = ReadPng(buffer);
-    return PNGToImageMarkup(png_data);
-  } else {
-    SkBitmap bitmap = ReadImage(buffer);
-    return BitmapToImageMarkup(bitmap);
-  }
+  mojo_base::BigBuffer png_data = ReadPng(buffer);
+  return PNGToImageMarkup(png_data);
 }
 
 void SystemClipboard::WriteImageWithTag(Image* image,
