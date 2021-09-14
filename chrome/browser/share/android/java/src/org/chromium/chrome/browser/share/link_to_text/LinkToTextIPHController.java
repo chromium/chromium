@@ -11,11 +11,16 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.blink.mojom.TextFragmentReceiver;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
@@ -29,22 +34,37 @@ import org.chromium.url.GURL;
  * This class is responsible for rendering an IPH, when receiving a link-to-text.
  */
 public class LinkToTextIPHController {
+    private static final String FEATURE_NAME =
+            FeatureConstants.SHARED_HIGHLIGHTING_RECEIVER_FEATURE;
+
     private final TabModelSelector mTabModelSelector;
     private CurrentTabObserver mCurrentTabObserver;
+    private Tracker mTracker;
 
     /**
      * Creates an {@link LinkToTextIPHController}.
-     * @param Tab The {@link Tab} where the IPH will be rendered.
+     * @param ObservableSupplier<Tab> An {@link ObservableSupplier} for {@link Tab} where the IPH
+     *         will be rendered.
+     * @param TabModelSelector The {@link TabModelSelector} to open a new tab.
      */
     public LinkToTextIPHController(
             ObservableSupplier<Tab> tabSupplier, TabModelSelector tabModelSelector) {
-        // TODO(cheickcisse): Create this object in {@link TabbedRootUiCoordinator} and check
-        // feature tracker.
         mTabModelSelector = tabModelSelector;
+        mTracker = TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
         mCurrentTabObserver = new CurrentTabObserver(tabSupplier, new EmptyTabObserver() {
             @Override
             public void onPageLoadFinished(Tab tab, GURL url) {
+                if (!ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE)) {
+                    return;
+                }
+
                 if (!hasTextFragment(tab, url)) return;
+
+                if (!mTracker.wouldTriggerHelpUI(FEATURE_NAME)) {
+                    return;
+                }
+
                 getExistingSelectors(tab);
             }
         }, null);
@@ -57,7 +77,7 @@ public class LinkToTextIPHController {
                         TextFragmentReceiver.MANAGER);
         LinkToTextCoordinator.getExistingSelectors(producer, (text) -> {
             if (text.length > 0) {
-                showMessageIPH(tab);
+                if (mTracker.shouldTriggerHelpUI(FEATURE_NAME)) showMessageIPH(tab);
             }
             producer.close();
         });
@@ -89,9 +109,12 @@ public class LinkToTextIPHController {
 
     private void onMessageButtonClicked() {
         onOpenInChrome(LinkToTextCoordinator.SHARED_HIGHLIGHTING_SUPPORT_URL);
+        mTracker.dismissed(FEATURE_NAME);
     }
 
-    private void onMessageDismissed(Integer dismissReason) {}
+    private void onMessageDismissed(Integer dismissReason) {
+        mTracker.dismissed(FEATURE_NAME);
+    }
 
     private void onOpenInChrome(String linkUrl) {
         mTabModelSelector.openNewTab(new LoadUrlParams(linkUrl), TabLaunchType.FROM_LINK,

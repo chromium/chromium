@@ -74,6 +74,7 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadLaterIPHController;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.share.link_to_text.LinkToTextIPHController;
 import org.chromium.chrome.browser.share.scroll_capture.ScrollCaptureManager;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.ui.SigninPromoUtil;
@@ -140,6 +141,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private UrlFocusChangeListener mUrlFocusChangeListener;
     private @Nullable ToolbarButtonInProductHelpController mToolbarButtonInProductHelpController;
     private AddToHomescreenIPHController mAddToHomescreenIPHController;
+    private LinkToTextIPHController mLinkToTextIPHController;
     private AddToHomescreenMostVisitedTileClickObserver mAddToHomescreenMostVisitedTileObserver;
     private AppBannerInProductHelpController mAppBannerInProductHelpController;
     private PwaBottomSheetController mPwaBottomSheetController;
@@ -622,6 +624,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 R.id.add_to_homescreen_id, () -> {
                     return mToolbarManager.getMenuButtonView();
                 }, MessageDispatcherProvider.from(mWindowAndroid));
+        mLinkToTextIPHController =
+                new LinkToTextIPHController(mActivityTabProvider, mTabModelSelectorSupplier.get());
         mAddToHomescreenMostVisitedTileObserver = new AddToHomescreenMostVisitedTileClickObserver(
                 mActivityTabProvider, mAddToHomescreenIPHController);
         mAppBannerInProductHelpController =
