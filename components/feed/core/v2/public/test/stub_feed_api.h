@@ -69,7 +69,8 @@ class StubFeedApi : public FeedApi {
   void ReportSliceViewed(SurfaceId surface_id,
                          const StreamType& stream_type,
                          const std::string& slice_id) override {}
-  void ReportFeedViewed(SurfaceId surface_id) override {}
+  void ReportFeedViewed(const StreamType& stream_type,
+                        SurfaceId surface_id) override {}
   void ReportPageLoaded() override {}
   void ReportOpenAction(const GURL& url,
                         const StreamType& stream_type,
