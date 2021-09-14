@@ -321,12 +321,11 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, OOPIFAMPSubframe) {
   consumer.WaitForPageText();
 
   content::GlobalRenderFrameHostId amp_frame_id;
-  for (auto* rfh : web_contents()->GetMainFrame()->GetFramesInSubtree()) {
-    if (rfh->GetFrameName() == "amp") {
-      amp_frame_id = rfh->GetGlobalId();
-      break;
-    }
-  }
+  content::RenderFrameHost* amp_frame = content::FrameMatchingPredicate(
+      web_contents()->GetPrimaryPage(),
+      base::BindRepeating(&content::FrameMatchesName, "amp"));
+  ASSERT_TRUE(amp_frame);
+  amp_frame_id = amp_frame->GetGlobalId();
 
   ASSERT_TRUE(consumer.result());
 
