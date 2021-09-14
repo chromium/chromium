@@ -170,6 +170,7 @@ Si la casella <ph name="SERVICE_SCRIPT_NAME" /> ja està marcada, desmarca-la i 
 Per concedir el permís, fes clic a <ph name="BUTTON_NAME" /> més avall. Al tauler de preferències Accessibilitat que s'obre, marca la casella corresponent a <ph name="SERVICE_SCRIPT_NAME" />.
 
 Si la casella <ph name="SERVICE_SCRIPT_NAME" /> ja està marcada, desmarca-la i torna-la a marcar.</translation>
+<translation id="8305209735512572429">Procés remot d'autenticació web</translation>
 <translation id="8383794970363966105">Per utilitzar Chromoting, haureu d'afegir un compte de Google al dispositiu.</translation>
 <translation id="8386846956409881180">L'amfitrió està configurat amb unes credencials d'OAuth no vàlides.</translation>
 <translation id="8397385476380433240">Concedeix permís a <ph name="PRODUCT_NAME" /></translation>

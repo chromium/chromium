@@ -170,6 +170,7 @@ Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver selecionado, desselecione-o e
 Para conceder esta autorização, clique em "<ph name="BUTTON_NAME" />" abaixo. No painel de preferências "Acessibilidade" aberto, selecione a caixa junto a "<ph name="SERVICE_SCRIPT_NAME" />".
 
 Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver selecionado, desselecione-o e volte a selecioná-lo.</translation>
+<translation id="8305209735512572429">Processo de comunicação remota da autenticação Web</translation>
 <translation id="8383794970363966105">Para utilizar o Chromoting, tem de adicionar uma Conta Google ao seu dispositivo.</translation>
 <translation id="8386846956409881180">O anfitrião está configurado com credenciais OAuth inválidas.</translation>
 <translation id="8397385476380433240">Conceda autorização ao <ph name="PRODUCT_NAME" /></translation>

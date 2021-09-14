@@ -170,6 +170,7 @@ Kung mayroon nang check ang '<ph name="SERVICE_SCRIPT_NAME" />,' i-uncheck ito a
 Para ibigay ang pahintulot na ito, i-click ang '<ph name="BUTTON_NAME" />' sa ibaba. Sa magbubukas na pane ng mga kagustuhan sa 'Accessibility,' lagyan ng check ang kahon sa tabi ng '<ph name="SERVICE_SCRIPT_NAME" />.'
 
 Kung mayroon nang check ang '<ph name="SERVICE_SCRIPT_NAME" />,' i-uncheck ito at pagkatapos ay lagyan ulit ito ng check.</translation>
+<translation id="8305209735512572429">Proseso ng Pag-remote sa Pag-authenticate sa Web</translation>
 <translation id="8383794970363966105">Upang magamit ang Chromoting, kakailanganin mong magdagdag ng Google Account sa iyong device.</translation>
 <translation id="8386846956409881180">Na-configure ang host gamit ang mga di-wastong kredensyal sa OAuth.</translation>
 <translation id="8397385476380433240">Magbigay ng pahintulot sa <ph name="PRODUCT_NAME" /></translation>

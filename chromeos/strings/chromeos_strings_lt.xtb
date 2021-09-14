@@ -162,6 +162,7 @@
 <translation id="4238516577297848345">Nėra vykstančių spausdinimo užduočių</translation>
 <translation id="4244962993387259361">Norint atlikti atminties bandymą, reikia bent 500 MB laisvos vietos. Kad atlaisvintumėte vietos, eikite į skiltį „Nustatymai“ &gt; „Saugyklos tvarkymas“.</translation>
 <translation id="4258281355379922695">HTTP delsa</translation>
+<translation id="4271957103967917607">Peržiūrėti per visą ekraną</translation>
 <translation id="4289540628985791613">Apžvalga</translation>
 <translation id="4297501883039923494">Sustabdyta – nežinoma klaida</translation>
 <translation id="4300073214558989">Vaizdų: <ph name="IMAGE_COUNT" /></translation>
@@ -373,6 +374,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="7550715992156305117">Diagnostikos veiksmų sekos</translation>
 <translation id="7561454561030345039">Šį veiksmą tvarko jūsų administratorius</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7574732568136198983">ARC ryšio patikra</translation>
 <translation id="7595982850646262331">Liko <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Sužinokite daugiau pagalbos centre</translation>
 <translation id="763165478673169849">Paskutinio nustatymo iš naujo laikas</translation>

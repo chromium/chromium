@@ -162,6 +162,7 @@
 <translation id="4238516577297848345">Engin prentun í gangi</translation>
 <translation id="4244962993387259361">Þú verður að hafa a.m.k. 500 MB laus til að keyra minnisprófun. Til að losa um pláss skaltu opna Stillingar &gt; Geymslustjórnun.</translation>
 <translation id="4258281355379922695">HTTP-biðtími</translation>
+<translation id="4271957103967917607">Skoða á öllum skjánum</translation>
 <translation id="4289540628985791613">Yfirlit</translation>
 <translation id="4297501883039923494">Stöðvað – óþekkt villa</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> myndir</translation>
@@ -373,6 +374,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="7550715992156305117">Greiningarrútínur</translation>
 <translation id="7561454561030345039">Kerfisstjórinn þinn stjórnar þessari stillingu</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7574732568136198983">ARC ping-prófun</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> eftir</translation>
 <translation id="7620771111601174153">Fáðu frekari upplýsingar í hjálparmiðstöðinni</translation>
 <translation id="763165478673169849">Tími síðustu endurstillingar</translation>

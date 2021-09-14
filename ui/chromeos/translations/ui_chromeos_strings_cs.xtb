@@ -287,6 +287,7 @@
 <translation id="3549797760399244642">Přejít na stránky drive.google.com...</translation>
 <translation id="3553048479571901246">Pokud soubory chcete otevřít pomocí aplikace <ph name="APP_NAME" />, nejdříve je zkopírujte do složky souborů Windows.</translation>
 <translation id="3556731189587832921">angličtina (USA) s mezinárodní (PC) klávesnicí</translation>
+<translation id="3567221313191587603">Pokud k souborům chcete mít přístup v režimu offline, vyberte soubor a přepněte možnost <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="357479282490346887">litevština</translation>
 <translation id="3592251141500063301">Soubor <ph name="FILE_NAME" /> se nepodařilo zpřístupnit offline</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -397,6 +398,7 @@
 <translation id="4642769377300286600">Instalace mobilního profilu, síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">čeština s klávesnicí Qwerty</translation>
 <translation id="4656293982926141856">Tento počítač</translation>
+<translation id="4656777537938206294">Dostupnost souborů v režimu offline</translation>
 <translation id="4669606053856530811">Pokud s nimi tyto položky nejsou sdíleny, ztratí k nim členové týmu <ph name="SOURCE_NAME" /> přístup.</translation>
 <translation id="4690246192099372265">švédština</translation>
 <translation id="4693155481716051732">Suši</translation>

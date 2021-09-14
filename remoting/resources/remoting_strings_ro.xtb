@@ -170,6 +170,7 @@ Dacă opțiunea „<ph name="SERVICE_SCRIPT_NAME" />” este deja bifată, debif
 Ca să acorzi această permisiune, dă clic pe butonul „<ph name="BUTTON_NAME" />” de mai jos. În panoul de preferințe pentru „Accesibilitate” care se deschide, bifează caseta de lângă „<ph name="SERVICE_SCRIPT_NAME" />”.
 
 Dacă opțiunea „<ph name="SERVICE_SCRIPT_NAME" />” este deja bifată, debifeaz-o și bifeaz-o din nou.</translation>
+<translation id="8305209735512572429">Proces de control la distanță al autentificării pe web</translation>
 <translation id="8383794970363966105">Pentru a folosi Chromoting, va trebui să adăugați un Cont Google pe dispozitiv.</translation>
 <translation id="8386846956409881180">Gazda este configurată cu date de conectare OAuth nevalide.</translation>
 <translation id="8397385476380433240">Acordă permisiunea pentru <ph name="PRODUCT_NAME" /></translation>

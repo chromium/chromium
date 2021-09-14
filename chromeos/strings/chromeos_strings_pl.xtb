@@ -162,6 +162,7 @@
 <translation id="4238516577297848345">Brak zadań drukowania w toku</translation>
 <translation id="4244962993387259361">Aby można było uruchomić test pamięci, co najmniej 500 MB pamięci musi być wolne. Aby zwolnić miejsce, otwórz Ustawienia &gt; Zarządzanie pamięcią.</translation>
 <translation id="4258281355379922695">Opóźnienie HTTP</translation>
+<translation id="4271957103967917607">Wyświetl na pełnym ekranie</translation>
 <translation id="4289540628985791613">Przegląd</translation>
 <translation id="4297501883039923494">Zatrzymano – nieznany błąd</translation>
 <translation id="4300073214558989">Obrazy: <ph name="IMAGE_COUNT" /></translation>
@@ -373,6 +374,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7550715992156305117">Procedury diagnostyczne</translation>
 <translation id="7561454561030345039">Tym ustawieniem zarządza Twój administrator</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7574732568136198983">Ping ARC</translation>
 <translation id="7595982850646262331">Pozostało: <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Dowiedz się więcej w Centrum pomocy</translation>
 <translation id="763165478673169849">Czas ostatniego resetu</translation>

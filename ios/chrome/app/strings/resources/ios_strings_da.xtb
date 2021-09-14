@@ -357,6 +357,7 @@ Følg vejledningen nedenfor:</translation>
 <translation id="4619564267100705184">Bekræft din identitet</translation>
 <translation id="4619615317237390068">Faner fra andre enheder</translation>
 <translation id="4620246317052452550">Sider, du har læst</translation>
+<translation id="4620888520263267479">Vis forhåndsvisninger af links</translation>
 <translation id="4630540211544979320">Oversæt sider</translation>
 <translation id="4634124774493850572">Brug adgangskode</translation>
 <translation id="4636930964841734540">Oplysninger</translation>
@@ -662,6 +663,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7336264872878993241"><ph name="PERCENT" /> procent er downloadet</translation>
 <translation id="7340958967809483333">Indstillinger for Discover</translation>
 <translation id="7346909386216857016">OK</translation>
+<translation id="7347393021726115275">Du kan kun logge ind med konti, der er godkendt af din administrator. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="734758817008927353">Valgmuligheder for at gemme kort</translation>
 <translation id="7348502496356775519">Tilføj bogmærke</translation>
 <translation id="7353432112255316844">Bekræft din identitet</translation>

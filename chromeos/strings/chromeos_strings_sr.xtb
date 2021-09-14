@@ -162,6 +162,7 @@
 <translation id="4238516577297848345">Ниједан задатак штампања није у току</translation>
 <translation id="4244962993387259361">Треба да имате слободно барем 500 MB да бисте покренули тест меморије. Да бисте ослободили простор, идите у Подешавања &gt; Управљање меморијским простором.</translation>
 <translation id="4258281355379922695">HTTP кашњење</translation>
+<translation id="4271957103967917607">Прикажи преко целог екрана</translation>
 <translation id="4289540628985791613">Преглед</translation>
 <translation id="4297501883039923494">Заустављено – непозната грешка</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> слика</translation>
@@ -373,6 +374,7 @@
 <translation id="7550715992156305117">Дијагностичке рутине</translation>
 <translation id="7561454561030345039">Овим подешавањем управља администратор</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7574732568136198983">Пинговање времена извршавања апликације за Chrome</translation>
 <translation id="7595982850646262331">Још <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Сазнајте више у Центру за помоћ</translation>
 <translation id="763165478673169849">Време последњег ресетовања</translation>

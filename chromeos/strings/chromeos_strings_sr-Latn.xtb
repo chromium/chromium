@@ -162,6 +162,7 @@
 <translation id="4238516577297848345">Nijedan zadatak štampanja nije u toku</translation>
 <translation id="4244962993387259361">Treba da imate slobodno barem 500 MB da biste pokrenuli test memorije. Da biste oslobodili prostor, idite u Podešavanja &gt; Upravljanje memorijskim prostorom.</translation>
 <translation id="4258281355379922695">HTTP kašnjenje</translation>
+<translation id="4271957103967917607">Prikaži preko celog ekrana</translation>
 <translation id="4289540628985791613">Pregled</translation>
 <translation id="4297501883039923494">Zaustavljeno – nepoznata greška</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> slika</translation>
@@ -373,6 +374,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="7550715992156305117">Dijagnostičke rutine</translation>
 <translation id="7561454561030345039">Ovim podešavanjem upravlja administrator</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7574732568136198983">Pingovanje vremena izvršavanja aplikacije za Chrome</translation>
 <translation id="7595982850646262331">Još <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Saznajte više u Centru za pomoć</translation>
 <translation id="763165478673169849">Vreme poslednjeg resetovanja</translation>

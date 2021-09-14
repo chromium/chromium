@@ -170,6 +170,7 @@ Om <ph name="SERVICE_SCRIPT_NAME" /> redan har markerats avmarkerar du rutan och
 Du beviljar behörigheten genom att klicka på <ph name="BUTTON_NAME" /> nedan så att inställningsrutan för Tillgänglighet öppnas. Sedan markerar du kryssrutan vid <ph name="SERVICE_SCRIPT_NAME" />.
 
 Om <ph name="SERVICE_SCRIPT_NAME" /> redan har markerats avmarkerar du rutan och markerar den på nytt.</translation>
+<translation id="8305209735512572429">Fjärrkommunikationsprocess för webbautentisering</translation>
 <translation id="8383794970363966105">Om du vill använda Chromoting måste du lägga till ett Google-konto på enheten.</translation>
 <translation id="8386846956409881180">Värden konfigurerades med ogiltiga användaruppgifter för OAuth.</translation>
 <translation id="8397385476380433240">Bevilja behörighet åt <ph name="PRODUCT_NAME" /></translation>

@@ -170,6 +170,7 @@
 この権限を付与するには、下の [<ph name="BUTTON_NAME" />] をクリックして [アクセシビリティ] 設定パネルを開き、[<ph name="SERVICE_SCRIPT_NAME" />] の横にあるチェックボックスをオンにします。
 
 [<ph name="SERVICE_SCRIPT_NAME" />] のチェックボックスがすでにオンになっている場合は、いったんオフにしてからもう一度オンにしてください。</translation>
+<translation id="8305209735512572429">ウェブ認証のリモーティング プロセス</translation>
 <translation id="8383794970363966105">Chromoting を使用するには、お使いのデバイスに Google アカウントを追加する必要があります。</translation>
 <translation id="8386846956409881180">ホストの設定で無効な OAuth 認証情報が指定されています。</translation>
 <translation id="8397385476380433240"><ph name="PRODUCT_NAME" />に権限を付与する</translation>

@@ -705,6 +705,7 @@
 <translation id="1719312230114180055">ध्यान दें: आपका फ़िंगरप्रिंट किसी मज़बूत पासवर्ड या पिन की तुलना में कम सुरक्षित हो सकता है.</translation>
 <translation id="1720318856472900922">TLS WWW सर्वर प्रमाणीकरण</translation>
 <translation id="1720941539803966190">ट्यूटोरियल बंद करें</translation>
+<translation id="172123215662733643"><ph name="VISUAL_SEARCH_PROVIDER" /> की मदद से इमेज खोजें</translation>
 <translation id="1721312023322545264">आपको <ph name="NAME" /> से इस साइट पर जाने की अनुमति लेनी होगी</translation>
 <translation id="1722460139690167654">आपके <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> का प्रबंधन<ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" /> करता है</translation>
 <translation id="1723824996674794290">&amp;नई विंडो</translation>
@@ -1281,6 +1282,7 @@
     अगर बाद में आपको लगता है कि वॉइस मैच की सुविधा आपके बच्चे के लिए सही नहीं है, तो Assistant की सेटिंग में जाकर, इस सुविधा को आसानी से बंद किया जा सकता है. वॉइस मैच की सुविधा सेट अप करने के दौरान, अपने बच्चे की रिकॉर्ड की गई ऑडियो क्लिप देखने या मिटाने के लिए, अपने बच्चे के खाते से <ph name="VOICE_MATCH_SETTINGS_URL" /> पर जाएं.
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
+<translation id="2307630946657910723"><ph name="VISUAL_SEARCH_PROVIDER" /> की मदद से पेज का हिस्सा खोजें</translation>
 <translation id="230927227160767054">यह पेज सेवा हैंडलर इंस्टॉल करना चाहता है.</translation>
 <translation id="2309620859903500144">इस साइट को आपके डिवाइस के गति या रोशनी के सेंसर ऐक्सेस करने से ब्लॉक कर दिया गया है.</translation>
 <translation id="2312219318583366810">पेज का यूआरएल</translation>
@@ -1845,6 +1847,7 @@
 <translation id="289695669188700754">कुंजी ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">इस कस्टम सेटिंग को तब हटाया जाएगा, जब आप अपने सभी गुप्त विंडो बंद करेंगे</translation>
 <translation id="2897878306272793870">क्या आप वाकई <ph name="TAB_COUNT" /> टैब खोलना चाहते हैं?</translation>
+<translation id="2900477968385519153"><ph name="VISUAL_SEARCH_PROVIDER" /> की मदद से स्क्रीन खोजें</translation>
 <translation id="290105521672621980">फ़ाइल असमर्थित सुविधाओं का उपयोग कर‍‍ती है</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> इस प्रिंटर के साथ जुड़ नहीं सका. पक्का करें कि प्रिंटर को प्लग इन किया गया है और पुनः प्रयास करें.</translation>
 <translation id="2902312830803030883">और क्रियाएं</translation>
@@ -2115,6 +2118,7 @@
 <translation id="3183143381919926261">मोबाइल डेटा नेटवर्क</translation>
 <translation id="3183944777708523606">मॉनिटर की डिसप्ले सेटिंग</translation>
 <translation id="3184536091884214176">CUPS प्रिंटर सेट अप या प्रबंधित करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
+<translation id="3185014249447200271">{NUM_APPS,plural, =1{इस ऐप्लिकेशन को ब्लॉक किया गया है}one{इस ऐप्लिकेशन को ब्लॉक किया गया है}other{कुछ ऐप्लिकेशन ब्लॉक किए गए हैं}}</translation>
 <translation id="3188257591659621405">मेरी फ़ाइलें</translation>
 <translation id="3188465121994729530">गतिशील औसत</translation>
 <translation id="3189187154924005138">बड़ा कर्सर</translation>
@@ -2283,6 +2287,7 @@
 <translation id="3390741581549395454">Linux ऐप्लिकेशन और फ़ाइलों का बैक अप ले लिया गया है. जल्द ही बेहतर बनाने की प्रोसेस शुरू हो जाएगी.</translation>
 <translation id="3391512812407811893">निजता सैंडबॉक्स ट्रायल</translation>
 <translation id="339178315942519818"><ph name="DEVICE_TYPE" /> पर अपने चैट ऐप्लिकेशन की सूचनाएं देखें</translation>
+<translation id="3393554941209044235">Chrome के दस्तावेज़ का विश्लेषण</translation>
 <translation id="3394850431319394743">सुरक्षित कॉन्टेंट दिखाने के लिए, पहचानकर्ताओं का इस्तेमाल किया जा सकता है</translation>
 <translation id="3396800784455899911">"स्वीकार करें और जारी रखें" बटन पर क्लिक करके, आप पुष्टि करते हैं कि इन Google सेवाओं के लिए ऊपर बताई गई प्रोसेसिंग से आप सहमत हैं.</translation>
 <translation id="339722927132407568">रुक जाना/हैंग हो जाना</translation>
@@ -2953,6 +2958,7 @@
 <translation id="4066207411788646768">नेटवर्क में उपलब्ध पार्टनर देखने के लिए अपने कनेक्शन की जाँच करें</translation>
 <translation id="4068776064906523561">सहेजे गए फ़िंगरप्रिंट</translation>
 <translation id="407173827865827707">क्लिक करने पर</translation>
+<translation id="4072701974556190758">पासवर्ड आपके Google खाते (<ph name="ACCOUNT" />) में सेव हो जाएगा. आपको इसे याद नहीं रखना पड़ेगा.</translation>
 <translation id="4074900173531346617">ईमेल हस्ताक्षरकर्ता प्रमाणपत्र</translation>
 <translation id="407520071244661467">स्केल</translation>
 <translation id="407543464472585404"><ph name="NAME" /> की प्रोफ़ाइल <ph name="EMAIL" /> से लिंक है</translation>
@@ -3074,6 +3080,7 @@
 <translation id="4220648711404560261">सेटअप पूरा करने के दौरान कुछ गड़बड़ी हुई.</translation>
 <translation id="4225020013797061859">"<ph name="ACTION" />" असाइन करने के लिए कोई बटन दबाएं</translation>
 <translation id="4225397296022057997">सभी साइट पर</translation>
+<translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{यह एक्सटेंशन इस्तेमाल करने की अनुमति नहीं है}one{यह एक्सटेंशन इस्तेमाल करने की अनुमति नहीं है}other{कुछ एक्सटेंशन इस्तेमाल करने की अनुमति नहीं है}}</translation>
 <translation id="4231095370974836764">Google Play से अपने <ph name="DEVICE_TYPE" /> पर ऐप्लिकेशन और गेम इंस्टॉल करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos कॉन्फ़िगर करें</translation>
 <translation id="4235965441080806197">साइन इन रद्द करें</translation>
@@ -3244,6 +3251,7 @@
 <translation id="4415748029120993980">SECG अंडाकार वक्र secp384r1 (अर्थात NIST P-384)</translation>
 <translation id="4416450511678320850">इस कॉन्टेंट के लिए कोई भी ऐप्लिकेशन उपलब्ध नहीं है</translation>
 <translation id="4416582610654027550">एक मान्य यूआरएल टाइप करें</translation>
+<translation id="4417162649853416189"><ph name="VISUAL_SEARCH_PROVIDER" /> की मदद से खोजने के लिए, खींचें और इमेज पर छोड़ें</translation>
 <translation id="4419409365248380979"><ph name="HOST" /> को हमेशा कुकी सेट करने की अनुमति दें</translation>
 <translation id="4421932782753506458">फ्लफ़ी</translation>
 <translation id="4423376891418188461">सेटिंग फिर से स्थापित करें</translation>
@@ -3371,6 +3379,7 @@
 <translation id="4551763574344810652">पहले जैसा करने के लिए <ph name="MODIFIER_KEY_DESCRIPTION" /> दबाएं</translation>
 <translation id="4553526521109675518">आपको डिवाइस की भाषा बदलने के लिए, अपने Chromebook को रीस्टार्ट करना होगा. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553898717331438468">सेट अप शुरू करें</translation>
+<translation id="4554491709904933912"><ph name="VISUAL_SEARCH_PROVIDER" /> की मदद से खोजने के लिए, खींचें और इमेज पर छोड़ें</translation>
 <translation id="4554591392113183336">बाहरी एक्‍सटेंशन मौजूदा की तुलना में समान या निम्नतर संस्‍करण पर है.</translation>
 <translation id="4555769855065597957">परछाई</translation>
 <translation id="4555863373929230635">अपने Google खाते में पासवर्ड सेव करने के लिए, साइन इन करें और सिंक करना चालू करें.</translation>
@@ -4145,6 +4154,7 @@
 <translation id="5427278936122846523">हमेशा अनुवाद करें</translation>
 <translation id="5427459444770871191">&amp;घड़ी की दिशा में घुमाएं</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (अपडेट उपलब्‍ध है)</translation>
+<translation id="5429373054983029602"><ph name="VISUAL_SEARCH_PROVIDER" /> की मदद से स्क्रीन खोजें</translation>
 <translation id="542948651837270806">भरोसेमंद प्लैटफ़ॉर्म मॉड्यूल फ़र्मवेयर के लिए अपडेट इंस्टॉल करने की ज़रूरत है. <ph name="TPM_FIRMWARE_UPDATE_LINK" /> देखें</translation>
 <translation id="5430931332414098647">इंस्टैंट टेदरिंग</translation>
 <translation id="5431318178759467895">रंग</translation>
@@ -4211,6 +4221,7 @@
 <translation id="5494920125229734069">सभी को चुनें</translation>
 <translation id="5495466433285976480">आपके अगली बार फिर से शुरू करने के बाद ये सभी स्थानीय उपयोगकर्ताओं, फ़ाइलों, डेटा, और अन्य सेटिंग को हटा देगा. सभी उपयोगकर्ताओं को फिर से साइन इन करना होगा.</translation>
 <translation id="5495597166260341369">डिसप्ले चालू रखें</translation>
+<translation id="549580971452855947"><ph name="VISUAL_SEARCH_PROVIDER" /> की मदद से इमेज खोजने के लिए, खींचें और छोड़ें</translation>
 <translation id="5496587651328244253">व्यवस्थित करें</translation>
 <translation id="5496730470963166430">पॉप-अप भेजने या दूसरे वेबलिंक पर भेजने वाले यूआरएल इस्तेमाल करने की अनुमति नहीं है</translation>
 <translation id="5497251278400702716">इस फ़ाइल</translation>
@@ -4320,6 +4331,7 @@
 <translation id="5604884720628869833"><ph name="DEVICE_COUNT" /> में से <ph name="DEVICE_INDEX" /> डिवाइस, <ph name="DEVICE_NAME" />, कीबोर्ड</translation>
 <translation id="5605623530403479164">दूसरे सर्च इंजन</translation>
 <translation id="5605758115928394442">आपकी पहचान की पुष्टि करने के लिए, आपके फ़ोन पर एक सूचना भेजी गई थी.</translation>
+<translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{इस एक्सटेंशन को ब्लॉक किया गया है}one{इस एक्सटेंशन को ब्लॉक किया गया है}other{इन एक्सटेंशन को ब्लॉक किया गया है}}</translation>
 <translation id="560834977503641186">'वाई-फ़ाई सिंक' के बारे में ज़्यादा जानें</translation>
 <translation id="5608580678041221894">काटे जाने वाले क्षेत्र को एडजस्ट करने या उसकी जगह बदलने के लिए इन कुंजियों पर टैप करें</translation>
 <translation id="5609231933459083978">ऐप्लिकेशन अमान्य मालूम होता है.</translation>
@@ -5066,6 +5078,7 @@
 <translation id="6434325376267409267"><ph name="APP_NAME" /> का इस्तेमाल करने से पहले अपने डिवाइस को अपडेट करें.</translation>
 <translation id="6436164536244065364">वेब स्टोर में देखें</translation>
 <translation id="6436610005579237680">Google Assistant को स्क्रीन पर उपलब्ध जानकारी ऐक्सेस करने दें, ताकि आप जब भी सवाल पूछें, तब ज़रूरत के हिसाब से जवाब मिल सके. जो गाने या वीडियो चल रहे हैं Assistant उनकी जानकारी का भी इस्तेमाल कर सकती है.</translation>
+<translation id="6436778875248895551">आपके एडमिन ने इस एक्सटेंशन "<ph name="EXTENSION_NAME" />" को ब्लॉक किया है</translation>
 <translation id="6438234780621650381">सेटिंग रीसेट करें</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - ऑडियो चलाया जा रहा है</translation>
 <translation id="6442187272350399447">अद्भुत</translation>
@@ -5212,10 +5225,12 @@
 <translation id="6593881952206664229">हो सकता है कि कॉपीराइट वाला मीडिया न चले</translation>
 <translation id="6594011207075825276">क्रम से लगाए गए डिवाइस ढूंढे जा रहे हैं...</translation>
 <translation id="6595187330192059106"><ph name="HOST" /> को, MIDI डिवाइस का पूरा कंट्रोल रखने से हमेशा रोकें.</translation>
+<translation id="6595792813574514527"><ph name="VISUAL_SEARCH_PROVIDER" /> की मदद से इमेज खोजने के लिए, खींचें और छोड़ें</translation>
 <translation id="6596325263575161958">सुरक्षित करने के तरीकों के विकल्प</translation>
 <translation id="6596816719288285829">आईपी पता</translation>
 <translation id="6597017209724497268">नमूने</translation>
 <translation id="6597148444736186483">इस डिवाइस के प्राथमिक खाते से साइन आउट करने के लिए अपनी स्क्रीन पर दिखाए गए समय पर क्लिक करें. दिखाई देने वाले मेन्यू में, "साइन आउट" पर क्लिक करें.</translation>
+<translation id="6597331566371766302">आपके एडमिन ने इन एक्सटेंशन को ब्लॉक किया है:</translation>
 <translation id="6601395831301182804">क्या आप Chrome OS में पहले से मौजूद ChromeVox स्क्रीन रीडर को चालू करना चाहते हैं? अगर हां, तो स्पेस बार दबाएं.</translation>
 <translation id="6601612474695404578">कुछ साइटें अपने पेज लोड करने के लिए, तीसरे पक्ष की कुकी का इस्तेमाल करती हैं. अगर कोई साइट काम नहीं कर रही है, तो आप कुकी की अनुमति दे सकते हैं.</translation>
 <translation id="6602937173026466876">अपने प्रिंटर ऐक्सेस करें</translation>
@@ -5348,6 +5363,7 @@
 <translation id="6757101664402245801">URL कॉपी किया गया</translation>
 <translation id="6758056191028427665">हमें बताएं कि हम कैसा प्रदर्शन कर रहे हैं.</translation>
 <translation id="6759193508432371551">फैक्टरी रीसेट करें</translation>
+<translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6762833852331690540">चालू है</translation>
 <translation id="676560328519657314">Google Pay में पैसे चुकाने के तरीके</translation>
 <translation id="6767566652486411142">कोई दूसरी भाषा चुनें...</translation>
@@ -5728,6 +5744,7 @@
 <translation id="7170236477717446850">प्रोफ़ाइल फ़ोटो</translation>
 <translation id="7171000599584840888">प्रोफ़ाइल जोड़ें...</translation>
 <translation id="7171259390164035663">रजिस्टर न करें</translation>
+<translation id="7171746271229206319">Chrome OS डिवाइस की जानकारी और डेटा को ऐक्सेस करें. हो सकता है कि यह जानकारी आपका डिवाइस बनाने वाली कंपनी के साथ शेयर की जाए. Google को छोड़कर, डेटा मैनेज करने वाले अन्य संगठन अपनी अलग निजता नीति लागू करेंगे</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{टैब को नए ग्रुप में शामिल करें}one{टैब को नए ग्रुप में शामिल करें}other{टैब को नए ग्रुप में शामिल करें}}</translation>
 <translation id="7173114856073700355">सेटिंग खोलें</translation>
 <translation id="7174199383876220879">नया! अपने संगीत, वीडियो, और दूसरी चीज़ें नियंत्रित करें.</translation>
@@ -5779,6 +5796,7 @@
 <translation id="7230222852462421043">&amp;विंडो को पहले जैसा करना</translation>
 <translation id="7230787553283372882">अपने लेख के आकार को पसंद के मुताबिक बनाएं</translation>
 <translation id="7232750842195536390">नाम नहीं बदला जा सका</translation>
+<translation id="723343421145275488"><ph name="VISUAL_SEARCH_PROVIDER" /> की मदद से इमेज खोजें</translation>
 <translation id="7234010996000898150">Linux का डेटा बहाल करने की प्रक्रिया रद्द की जा रही है</translation>
 <translation id="7235716375204803342">गतिविधियां लाई जा रही हैं...</translation>
 <translation id="7235737137505019098">आपकी सुरक्षा कुंजी में और खाते जोड़ने के लिए खाली जगह नहीं है.</translation>
@@ -6227,6 +6245,7 @@
 <translation id="7691698019618282776">Crostini को अपग्रेड करें</translation>
 <translation id="7696063401938172191">आपके '<ph name="PHONE_NAME" />' पर:</translation>
 <translation id="7697166915480294040">स्क्रीन शेयर करने के दौरान सूचना का कॉन्टेंट छिपा रहता है</translation>
+<translation id="7698507637739331665">कुछ आइटम ब्लॉक किए गए हैं</translation>
 <translation id="7701040980221191251">कुछ भी नहीं</translation>
 <translation id="7701869757853594372">उपयोगकर्ता हैंडल</translation>
 <translation id="7702574632857388784"><ph name="FILE_NAME" /> को सूची से हटाएं</translation>
@@ -6403,6 +6422,7 @@
 <translation id="7861215335140947162">&amp;डाउनलोड</translation>
 <translation id="7861846108263890455">Google खाते की भाषा</translation>
 <translation id="7864539943188674973">ब्लूटूथ अक्षम करें</translation>
+<translation id="7865127013871431856">Google Translate के विकल्प</translation>
 <translation id="7869143217755017858">गहरे रंग वाला मोड बंद करें</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - युग्मित किया गया</translation>
 <translation id="7870730066603611552">सेटअप के बाद सिंक विकल्पों की समीक्षा करें</translation>
@@ -6723,6 +6743,7 @@
 <translation id="8184318863960255706">ज़्यादा जानकारी</translation>
 <translation id="8184472985242519288">एक जैसा</translation>
 <translation id="8186609076106987817">सर्वर को फ़ाइल नहीं मिल सकी.</translation>
+<translation id="8186704951085064172"><ph name="VISUAL_SEARCH_PROVIDER" /> की मदद से पेज का हिस्सा खोजें</translation>
 <translation id="8188389033983459049">अपनी डिवाइस सेटिंग जांचें और जारी रखने के लिए उसे चालू करें</translation>
 <translation id="8189306097519446565">स्कूल वाले खाते</translation>
 <translation id="8189750580333936930">निजता सैंडबॉक्स</translation>

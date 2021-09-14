@@ -170,6 +170,7 @@ Nëse "<ph name="SERVICE_SCRIPT_NAME" />" është e zgjedhur tashmë, anulo zgje
 Për të dhënë këtë autorizim, kliko "<ph name="BUTTON_NAME" />" më poshtë. Në panelin e preferencave të "Qasshmërisë" që hapet, zgjidh kutinë pranë "<ph name="SERVICE_SCRIPT_NAME" />".
 
 Nëse "<ph name="SERVICE_SCRIPT_NAME" />" është e zgjedhur tashmë, anulo zgjedhjen e saj dhe më pas zgjidhe përsëri.</translation>
+<translation id="8305209735512572429">Procesi i lidhjes në distancë me vërtetim nga uebi</translation>
 <translation id="8383794970363966105">Për të përdorur Chromoting, duhet të shtosh një llogari të Google në pajisjen tënde.</translation>
 <translation id="8386846956409881180">Strehuesi është konfiguruar me kredenciale të pavlefshme OAuth.</translation>
 <translation id="8397385476380433240">Jep lejen për <ph name="PRODUCT_NAME" /></translation>

@@ -162,6 +162,7 @@
 <translation id="4238516577297848345">Ei tulostustöitä käynnissä</translation>
 <translation id="4244962993387259361">Tarvitset muistitestin suorittamiseen ainakin 500 Mt vapaata tilaa. Voit vapauttaa tilaa valitsemalla Asetukset &gt; Tallennustilan hallinta.</translation>
 <translation id="4258281355379922695">HTTP-viive</translation>
+<translation id="4271957103967917607">Katso koko näytöllä</translation>
 <translation id="4289540628985791613">Yleiskatsaus</translation>
 <translation id="4297501883039923494">Pysähtynyt – Tuntematon virhe</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> kuvaa</translation>
@@ -373,6 +374,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="7550715992156305117">Diagnostiikkaohjelmat</translation>
 <translation id="7561454561030345039">Järjestelmänvalvojasi ylläpitää tätä toimintoa</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7574732568136198983">ARC:n ping-testi</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> jäljellä</translation>
 <translation id="7620771111601174153">Lue lisää ohjekeskuksesta</translation>
 <translation id="763165478673169849">Edellinen nollausaika</translation>

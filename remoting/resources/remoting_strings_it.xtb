@@ -170,6 +170,7 @@ Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezio
 Per concedere questa autorizzazione, fai clic su "<ph name="BUTTON_NAME" />" sotto. Nel riquadro delle preferenze "Accessibilità" visualizzato, seleziona la casella "<ph name="SERVICE_SCRIPT_NAME" />".
 
 Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezionala e selezionala di nuovo.</translation>
+<translation id="8305209735512572429">Web Authentication Remoting Process</translation>
 <translation id="8383794970363966105">Per poter utilizzare Chromoting devi aggiungere un Account Google sul dispositivo.</translation>
 <translation id="8386846956409881180">L'host è stato configurato con credenziali OAuth non valide.</translation>
 <translation id="8397385476380433240">Concedi l'autorizzazione a <ph name="PRODUCT_NAME" /></translation>

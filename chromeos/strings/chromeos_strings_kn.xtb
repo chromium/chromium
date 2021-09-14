@@ -58,9 +58,11 @@
 <translation id="1999615961760456652">ವೈ-ಫೈ ಪ್ರಾರಂಭ ಪೋರ್ಟಲ್</translation>
 <translation id="2006864819935886708">ಸಂಪರ್ಕತೆ</translation>
 <translation id="2008685064673031089">ಪ್ರೈಮ್ ಹುಡುಕಾಟ</translation>
+<translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">ಇನ್ನಷ್ಟು ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, ಆವೃತ್ತಿ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> GB ಯಲ್ಲಿನ <ph name="AVAILABLE_MEMORY" /> GB ಲಭ್ಯವಿದೆ</translation>
+<translation id="2129264932216073062">ARC HTTP</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">ಸರದಿಯಲ್ಲಿರಿಸಲಾಗಿದೆ</translation>
 <translation id="2161394479394250669">ಮುದ್ರಣ ಕಾರ್ಯವನ್ನು ರದ್ದುಮಾಡಿ</translation>
@@ -74,6 +76,7 @@
 <translation id="2364498172489649528">ಪರಿಶೀಲನೆ ಸಫಲವಾಗಿದೆ</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">ಪ್ರತಿಕ್ರಿಯೆ ವರದಿ ಕಳುಹಿಸಿ</translation>
+<translation id="2407209115954268704">SIM ಲಾಕ್ ಸ್ಥಿತಿ</translation>
 <translation id="2418150275289244458">ಸೆಟ್ಟಿಂಗ್‍ಗಳಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="2446553403094072641">ಫ್ಲೋಟಿಂಗ್ ಪಾಯಿಂಟ್ ನಿಖರತೆ</translation>
 <translation id="2448312741937722512">ಪ್ರಕಾರ</translation>
@@ -179,6 +182,7 @@
 <translation id="4536864596629708641">IP ಕಾನ್ಫಿಗರೇಶನ್</translation>
 <translation id="4548483925627140043">ಸಿಗ್ನಲ್ ಕಂಡುಬಂದಿಲ್ಲ</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh ಬ್ಯಾಟರಿ</translation>
+<translation id="4561801978359312462">ಸಿಮ್ ಅನ್‌ಲಾಕ್ ಆಗಿದೆ</translation>
 <translation id="4562494484721939086">ಸೇವೆ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="458794348635939462">ಎಲ್ಲಾ ಹೋಸ್ಟ್‌ಗಳನ್ನು ಪರಿಹರಿಸಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="4593212453765072419">ಪ್ರಾಕ್ಸಿ ದೃಢೀಕರಣ ಅಗತ್ಯವಿದೆ</translation>
@@ -218,6 +222,7 @@
 <translation id="4999333166442584738">ವರದಿಯನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="500920857929044050">ಪರೀಕ್ಷೆ ನಿಲ್ಲಿಸಿ</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5049856988445523908">ಸಿಮ್ ಲಾಕ್ ಆಗಿದೆ (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">ಗುಂಪು ಹೆಸರು</translation>
 <translation id="5088172560898466307">ಸರ್ವರ್ ಹೋಸ್ಟ್ ಹೆಸರು</translation>
 <translation id="5089810972385038852">ರಾಜ್ಯ</translation>
@@ -311,6 +316,7 @@
 <translation id="6527081081771465939">ಅಪರಿಚಿತ ವೈಫೈ ಸುರಕ್ಷತೆ ಪ್ರೊಟೊಕಾಲ್</translation>
 <translation id="65587193855025101">ಫ್ಲಾಟ್‌ಬೆಡ್</translation>
 <translation id="6564646048574748301">ವಿಫಲವಾಗಿದೆ - ಪ್ರಿಂಟರ್ ಅನ್ನು ಸಂಪರ್ಕಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
+<translation id="6566314079205407217">ಬಹು-ಪುಟದ ಸ್ಕ್ಯಾನ್</translation>
 <translation id="6574762126505704998">ತುಂಬುವಿಕೆ</translation>
 <translation id="6575134580692778371">ಕಾನ್ಫಿಗರ್ ಮಾಡಲಾಗಿಲ್ಲ</translation>
 <translation id="6596816719288285829">IP ವಿಳಾಸ</translation>

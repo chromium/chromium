@@ -162,6 +162,7 @@
 <translation id="4238516577297848345">Nincsenek folyamatban lévő nyomtatási feladatok</translation>
 <translation id="4244962993387259361">Legalább 500 MB szabad tárhely szükséges memóriateszt futtatásához. Tárhely felszabadításához lépjen a Beállítások &gt; Tárhelykezelő menübe.</translation>
 <translation id="4258281355379922695">HTTP várakozási idő</translation>
+<translation id="4271957103967917607">Teljes képernyős nézet</translation>
 <translation id="4289540628985791613">Áttekintés</translation>
 <translation id="4297501883039923494">Leállt – Ismeretlen hiba</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> kép</translation>
@@ -373,6 +374,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="7550715992156305117">Diagnosztikai rutinok</translation>
 <translation id="7561454561030345039">Ezt a műveletet a rendszergazdája kezeli.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7574732568136198983">ARC Ping</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> van hátra</translation>
 <translation id="7620771111601174153">További információ a Súgóban</translation>
 <translation id="763165478673169849">Utolsó visszaállítás ideje</translation>

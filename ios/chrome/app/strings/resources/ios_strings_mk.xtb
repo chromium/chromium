@@ -357,6 +357,7 @@
 <translation id="4619564267100705184">Потврдете дека сте вие</translation>
 <translation id="4619615317237390068">Картички од другите уреди</translation>
 <translation id="4620246317052452550">Прочитани страници</translation>
+<translation id="4620888520263267479">Прикажи прегледи на линк</translation>
 <translation id="4630540211544979320">Преведувај страници</translation>
 <translation id="4634124774493850572">Употреби ја лозинката</translation>
 <translation id="4636930964841734540">Информации</translation>
@@ -662,6 +663,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7336264872878993241">Преземено <ph name="PERCENT" /> проценти</translation>
 <translation id="7340958967809483333">Опции за Discover</translation>
 <translation id="7346909386216857016">Добро, сфатив</translation>
+<translation id="7347393021726115275">Може да се најавите само со сметки кои се одобрени од администраторот. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="734758817008927353">Опции за „Зачувај ја картичката“</translation>
 <translation id="7348502496356775519">Обележи</translation>
 <translation id="7353432112255316844">Потврдете дека сте вие</translation>

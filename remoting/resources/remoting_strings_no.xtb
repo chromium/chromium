@@ -170,6 +170,7 @@ Hvis det allerede er merket av for «<ph name="SERVICE_SCRIPT_NAME" />», fjerne
 For å innvilge denne tillatelsen, klikk på «<ph name="BUTTON_NAME" />» under. I innstillingsfeltet for «Tilgjengelighet» som åpnes, merker du av i boksen ved siden av «<ph name="SERVICE_SCRIPT_NAME" />».
 
 Hvis det allerede er merket av for «<ph name="SERVICE_SCRIPT_NAME" />», fjerner du avmerkingen og merker av på nytt.</translation>
+<translation id="8305209735512572429">Fjernstyringsprosess for nettautentisering</translation>
 <translation id="8383794970363966105">Hvis du vil bruke Chromoting, må du legge til en Google-konto på enheten din.</translation>
 <translation id="8386846956409881180">Verten er konfigurert med ugyldig OAuth-legitimasjon.</translation>
 <translation id="8397385476380433240">Gi tillatelse til <ph name="PRODUCT_NAME" /></translation>

@@ -162,6 +162,7 @@
 <translation id="4238516577297848345">Nema aktivnih zadataka za štampanje</translation>
 <translation id="4244962993387259361">Morate imati slobodno najmanje 500 MB da pokrenete test memorije. Da oslobodite prostor, idite u Postavke &gt; Upravljanje pohranom.</translation>
 <translation id="4258281355379922695">HTTP latentnost</translation>
+<translation id="4271957103967917607">Prikaz preko cijelog ekrana</translation>
 <translation id="4289540628985791613">Pregled</translation>
 <translation id="4297501883039923494">Zaustavljeno – nepoznata greška</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> slike/a</translation>
@@ -373,6 +374,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="7550715992156305117">Rutine dijagnostike</translation>
 <translation id="7561454561030345039">Ovom radnjom upravlja vaš administrator</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7574732568136198983">ARC ping</translation>
 <translation id="7595982850646262331">Još <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Saznajte više u Centru za pomoć</translation>
 <translation id="763165478673169849">Vrijeme posljednjeg poništavanja</translation>

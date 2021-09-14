@@ -170,6 +170,7 @@
 لمنح هذا الإذن، يُرجى النقر على "<ph name="BUTTON_NAME" />" أدناه لفتح لوحة إعدادات "أدوات تمكين الوصول" المفضّلة ثم وضع علامة في المربّع بجانب "<ph name="SERVICE_SCRIPT_NAME" />".
 
 في حال سبق ووضعت علامة في المربّع بجانب "<ph name="SERVICE_SCRIPT_NAME" />"، عليك إزالة العلامة ثم وضعها مرة أخرى.</translation>
+<translation id="8305209735512572429">عملية مصادقة الويب عن بُعد</translation>
 <translation id="8383794970363966105">‏لاستخدام التوافق مع نظام التشغيل Chrome، يجب إضافة حساب في Google إلى جهازك.</translation>
 <translation id="8386846956409881180">‏تم إعداد المضيف بواسطة بيانات اعتماد OAuth غير صالحة.</translation>
 <translation id="8397385476380433240">منح الإذن إلى <ph name="PRODUCT_NAME" /></translation>

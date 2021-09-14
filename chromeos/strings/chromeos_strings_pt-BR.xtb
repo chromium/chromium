@@ -162,6 +162,7 @@
 <translation id="4238516577297848345">Nenhum trabalho de impressão em andamento</translation>
 <translation id="4244962993387259361">É necessário ter pelo menos 500 MB livres para executar um teste de memória. Para liberar espaço, acesse Configurações &gt; Gerenciador de armazenamento.</translation>
 <translation id="4258281355379922695">Latência do HTTP</translation>
+<translation id="4271957103967917607">Ver em tela cheia</translation>
 <translation id="4289540628985791613">Visão geral</translation>
 <translation id="4297501883039923494">Parado (erro desconhecido)</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imagens</translation>
@@ -373,6 +374,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="7550715992156305117">Rotinas de diagnóstico</translation>
 <translation id="7561454561030345039">Essa ação é gerenciada pelo administrador</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7574732568136198983">ARC Ping</translation>
 <translation id="7595982850646262331">Tempo restante: <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Saiba mais na Central de Ajuda</translation>
 <translation id="763165478673169849">Horário da última redefinição</translation>

@@ -170,6 +170,7 @@
 За да ја доделите дозволава, кликнете на „<ph name="BUTTON_NAME" />“ подолу. Во окното со поставките за „Пристапност“ што ќе се отвори, изберете го полето веднаш до „<ph name="SERVICE_SCRIPT_NAME" />“.
 
 Ако „<ph name="SERVICE_SCRIPT_NAME" />“ е веќе избрано, поништете го изборот и повторно изберете го.</translation>
+<translation id="8305209735512572429">Далечински процес за интернет-проверка</translation>
 <translation id="8383794970363966105">За да користите Chromoting, ќе треба да додадете сметка на Google на уредот.</translation>
 <translation id="8386846956409881180">Домаќинот е конфигуриран со неважечки акредитиви OAuth.</translation>
 <translation id="8397385476380433240">Одобрете дозвола за <ph name="PRODUCT_NAME" /></translation>

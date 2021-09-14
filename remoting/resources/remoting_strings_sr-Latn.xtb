@@ -170,6 +170,7 @@ Ako je stavka „<ph name="SERVICE_SCRIPT_NAME" />“ već označena, uklonite 
 Da biste dali ovu dozvolu, kliknite na <ph name="BUTTON_NAME" /> u nastavku. U oknu podešavanja za Pristupačnost koje se otvara označite polje pored stavke <ph name="SERVICE_SCRIPT_NAME" />.
 
 Ako je polje pored stavke <ph name="SERVICE_SCRIPT_NAME" /> već označeno, uklonite oznaku, pa ga ponovo označite.</translation>
+<translation id="8305209735512572429">Proces daljinskog upravljanja potvrdom identiteta na vebu</translation>
 <translation id="8383794970363966105">Da biste koristili Chromoting, morate da dodate Google nalog na uređaj.</translation>
 <translation id="8386846956409881180">Host je konfigurisan pomoću nevažećih OAuth akreditiva.</translation>
 <translation id="8397385476380433240">Dajte dozvolu: <ph name="PRODUCT_NAME" /></translation>

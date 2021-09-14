@@ -162,6 +162,7 @@
 <translation id="4238516577297848345">Nicio sarcină de printare în desfășurare</translation>
 <translation id="4244962993387259361">Ai nevoie de minimum 500 MB de spațiu disponibil pentru a rula un test de memorie. Pentru a elibera spațiu, accesează Setări &gt; Gestionarea stocării.</translation>
 <translation id="4258281355379922695">Latența solicitărilor HTTP</translation>
+<translation id="4271957103967917607">Afișează pe tot ecranul</translation>
 <translation id="4289540628985791613">Prezentare generală</translation>
 <translation id="4297501883039923494">Oprită – Eroare necunoscută</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imagini</translation>
@@ -373,6 +374,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7550715992156305117">Rutine de diagnosticare</translation>
 <translation id="7561454561030345039">Această setare este gestionată de administrator</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7574732568136198983">Ping către ARC</translation>
 <translation id="7595982850646262331">Timp rămas: <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Află mai multe din Centrul de ajutor</translation>
 <translation id="763165478673169849">Data ultimei resetări</translation>

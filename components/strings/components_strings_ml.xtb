@@ -91,6 +91,7 @@
 <translation id="1257553931232494454">സൂം ലെവലുകൾ</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, നിങ്ങളുടെ Chrome ക്രമീകരണം മാനേജ് ചെയ്യാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
 <translation id="1263231323834454256">വായനാ ലിസ്റ്റ്</translation>
+<translation id="1269096320618100013">ഉപയോഗസഹായി ക്രമീകരണം മാനേജ് ചെയ്യുക ബട്ടൺ, Chrome OS ക്രമീകരണത്തിൽ നിങ്ങളുടെ ഉപയോഗസഹായി ടൂളുകൾ വ്യക്തിപരമാക്കാൻ Enter അമർത്തുക</translation>
 <translation id="1269516672602708785">Google Sites-ൽ പുതിയൊരു സൈറ്റ് വേഗത്തിൽ സൃഷ്ടിക്കുക</translation>
 <translation id="1270502636509132238">പിക്കപ്പ് രീതി</translation>
 <translation id="1281476433249504884">സ്റ്റാക്കർ 1</translation>
@@ -504,6 +505,7 @@
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ ബ്രൗസിംഗ് ചരിത്രവും കുക്കികളും കാഷെയും മറ്റും മായ്ക്കാൻ 'Tab' അമർത്തുക, തുടർന്ന് 'Enter' അമർത്തുക</translation>
 <translation id="2650446666397867134">ഫയലിലേക്കുള്ള ആക്‌സസ് നിരസിച്ചു</translation>
 <translation id="2653659639078652383">സമര്‍പ്പിക്കുക</translation>
+<translation id="2659491813326907275">Chrome OS ക്രമീകരണത്തിൽ നിങ്ങളുടെ ഉപയോഗസഹായി ടൂളുകൾ വ്യക്തിപരമാക്കുക</translation>
 <translation id="2660779039299703961">ഇവന്റ്</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{ഒന്നുമില്ല}=1{<ph name="DOMAIN_LIST" /> എന്നതിനുള്ള ഒരു പാസ്‌വേഡ്}=2{<ph name="DOMAIN_LIST" /> എന്നതിനുള്ള 2 പാസ്‌വേഡുകൾ}other{<ph name="DOMAIN_LIST" /> എന്നതിനുള്ള # പാസ്‌വേഡുകൾ}}</translation>
 <translation id="2666092431469916601">മുകളിലേക്ക്</translation>
@@ -1197,7 +1199,6 @@
 <translation id="4958444002117714549">ലിസ്റ്റ് വിപുലീകരിക്കുക</translation>
 <translation id="4968522289500246572">ഈ ആപ്പ് മൊബൈലിനായി രൂപകൽപ്പന ചെയ്തതാണ്, അതിന്റെ വലുപ്പം ഉദ്ദേശിക്കുന്ന രീതിയിൽ മാറ്റാൻ കഴിഞ്ഞേക്കില്ല. ആപ്പിന് പ്രശ്നങ്ങൾ നേരിട്ടേക്കാം അല്ലെങ്കിൽ അത് റീസ്റ്റാർട്ട് ചെയ്തേക്കാം.</translation>
 <translation id="4973922308112707173">മുകളിൽ ഇരട്ട പഞ്ച് ചെയ്യുക</translation>
-<translation id="4974590756084640048">മുന്നറിയിപ്പുകൾ വീണ്ടും പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="4984088539114770594">മൈക്രോഫോൺ ഉപയോഗിക്കണോ?</translation>
 <translation id="4984339528288761049">Prc5 (എൻവലപ്പ്)</translation>
 <translation id="4989163558385430922">എല്ലാം കാണുക</translation>
@@ -1245,6 +1246,7 @@
 <translation id="5115216390227830982">യൂറോപ്യൻ-Edp</translation>
 <translation id="5115232566827194440">നിയന്ത്രിത 'മാനേജ് ചെയ്യുന്ന അതിഥി സെഷൻ' അസാധുവാക്കൽ</translation>
 <translation id="5115563688576182185">(64-ബിറ്റ്)</translation>
+<translation id="5116898824332672776"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome OS ക്രമീകരണത്തിൽ നിങ്ങളുടെ ഉപയോഗസഹായി ടൂളുകൾ വ്യക്തിപരമാക്കാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക.</translation>
 <translation id="5123063207673082822">വാരാന്ത്യം</translation>
 <translation id="5125394840236832993">B-പ്ലസ്</translation>
 <translation id="5126510351761255129">നിങ്ങളുടെ കാർഡ് പരിശോധിച്ചുറപ്പിക്കുക</translation>
@@ -1416,7 +1418,6 @@
 <translation id="5701381305118179107">മധ്യഭാഗം</translation>
 <translation id="570530837424789914">മാനേജ് ചെയ്യുക...</translation>
 <translation id="57094364128775171">ശക്തമായ പാസ്‌വേഡ് നിർദ്ദേശിക്കുക…</translation>
-<translation id="5710435578057952990">ഈ വെബ്സൈറ്റിന്റെ ഐഡന്റിറ്റി പരിശോധിച്ചുറപ്പിച്ചിട്ടില്ല</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="5720705177508910913">നിലവിലെ ഉപയോക്താവ്</translation>
 <translation id="5728056243719941842">C5 (എൻവലപ്പ്)</translation>
@@ -1556,7 +1557,6 @@
 <translation id="624499991300733384">പ്രിന്റ് കോമ്പോസിറ്റർ സേവനം</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, നിങ്ങൾ Chrome-ൽ ഡൗൺലോഡ് ചെയ്തിരിക്കുന്ന ഫയലുകൾ മാനേജ് ചെയ്യാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
 <translation id="6254436959401408446">ഈ പേജ് തുറക്കാൻ മതിയായ മെമ്മറി ഇല്ല</translation>
-<translation id="625755898061068298">നിങ്ങൾ ഈ സൈറ്റിന്റെ സുരക്ഷാ മുന്നറിയിപ്പുകൾ പ്രവർത്തനരഹിതമാക്കാൻ തീരുമാനിച്ചു.</translation>
 <translation id="6259156558325130047">&amp;പുനഃക്രമീകരിക്കുന്നത് വീണ്ടും ചെയ്യുക</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> ബുക്ക്‌മാർക്കുകൾ</translation>
 <translation id="6264485186158353794">തിരികെ സുരക്ഷയിലേക്ക്</translation>

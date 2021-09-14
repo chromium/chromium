@@ -170,6 +170,7 @@ Nếu đã chọn '<ph name="SERVICE_SCRIPT_NAME" />', hãy bỏ chọn rồi ch
 Để cấp quyền này, hãy nhấp vào nút '<ph name="BUTTON_NAME" />' bên dưới để mở ngăn tùy chọn 'Hỗ trợ tiếp cận' rồi đánh dấu vào hộp bên cạnh '<ph name="SERVICE_SCRIPT_NAME" />'.
 
 Nếu đã đánh dấu vào hộp '<ph name="SERVICE_SCRIPT_NAME" />', hãy bỏ đánh dấu rồi đánh dấu lại vào hộp này.</translation>
+<translation id="8305209735512572429">Xử lý từ xa quá trình xác thực web</translation>
 <translation id="8383794970363966105">Để sử dụng Kết nối từ xa trên Chrome, bạn cần thêm một tài khoản Google cho thiết bị của mình.</translation>
 <translation id="8386846956409881180">Máy chủ được định cấu hình bằng thông tin xác thực OAuth không hợp lệ.</translation>
 <translation id="8397385476380433240">Cấp quyền cho <ph name="PRODUCT_NAME" /></translation>

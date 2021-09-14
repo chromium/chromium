@@ -170,6 +170,7 @@ Si ya está marcada la casilla "<ph name="SERVICE_SCRIPT_NAME" />", desmárcala 
 Para otorgarlo, haz clic en "<ph name="BUTTON_NAME" />" que aparece a continuación. En el panel de preferencias de "Accesibilidad" que se abre, marca la casilla junto a "<ph name="SERVICE_SCRIPT_NAME" />".
 
 Si ya está marcada la casilla "<ph name="SERVICE_SCRIPT_NAME" />", desmárcala y vuelve a marcarla.</translation>
+<translation id="8305209735512572429">Proceso para que la autenticación web sea remota</translation>
 <translation id="8383794970363966105">Para utilizar Chromoting, debes agregar una cuenta de Google en el dispositivo.</translation>
 <translation id="8386846956409881180">El host está configurado con credenciales OAuth que no son válidas.</translation>
 <translation id="8397385476380433240">Otorga permiso a <ph name="PRODUCT_NAME" /></translation>

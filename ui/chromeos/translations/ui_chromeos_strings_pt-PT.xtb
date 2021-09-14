@@ -287,6 +287,7 @@
 <translation id="3549797760399244642">Aceder a drive.google.com...</translation>
 <translation id="3553048479571901246">Para abrir ficheiros com a app <ph name="APP_NAME" />, copie-os primeiro para a pasta de ficheiros do Windows.</translation>
 <translation id="3556731189587832921">Inglês (EUA) com teclado de PC internacional</translation>
+<translation id="3567221313191587603">Selecione um ficheiro e ative a opção <ph name="OFFLINE_CHECKBOX_NAME" /> para o acesso offline aos seus ficheiros.</translation>
 <translation id="357479282490346887">Lituânia</translation>
 <translation id="3592251141500063301">Não foi possível disponibilizar offline o ficheiro <ph name="FILE_NAME" />.</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -397,6 +398,7 @@
 <translation id="4642769377300286600">A instalar o perfil móvel, rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Checo com teclado Qwerty</translation>
 <translation id="4656293982926141856">Este computador</translation>
+<translation id="4656777537938206294">Disponibilize ficheiros offline</translation>
 <translation id="4669606053856530811">Os membros de "<ph name="SOURCE_NAME" />" irão perder o acesso, exceto se estes itens forem partilhados com eles.</translation>
 <translation id="4690246192099372265">Sueco</translation>
 <translation id="4693155481716051732">Sushi</translation>

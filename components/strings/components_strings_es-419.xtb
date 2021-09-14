@@ -891,6 +891,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3987940399970879459">Menos de 1 MB</translation>
 <translation id="3990250421422698716">Desplazamiento del borde</translation>
 <translation id="3996311196211510766">El sitio <ph name="ORIGIN" /> solicitó que se aplique una política de origen a todas las solicitudes. Sin embargo, no es posible en este momento.</translation>
+<translation id="4010758435855888356">¿Quieres habilitar el acceso a la cámara?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Documento PDF con {COUNT} página}other{Documento PDF con {COUNT} páginas}}</translation>
 <translation id="4023431997072828269">Dado que se está utilizando una conexión no segura para enviar este formulario, otras personas podrán ver tu información.</translation>
 <translation id="4030383055268325496">&amp;Deshacer Agregar</translation>
@@ -1195,7 +1196,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4958444002117714549">Mostrar lista</translation>
 <translation id="4968522289500246572">Esta app está diseñada para dispositivos móviles y es posible que el cambio de tamaño no funcione correctamente. Posiblemente la app se reiniciará o presentará problemas.</translation>
 <translation id="4973922308112707173">Perforación doble en la parte superior</translation>
-<translation id="4974590756084640048">Volver a habilitar las advertencias</translation>
 <translation id="4984088539114770594">¿Permitir el uso del micrófono?</translation>
 <translation id="4984339528288761049">Prc5 (Envelope)</translation>
 <translation id="4989163558385430922">Ver todo</translation>
@@ -1415,7 +1415,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5701381305118179107">Centrar</translation>
 <translation id="570530837424789914">Administrar…</translation>
 <translation id="57094364128775171">Sugerir contraseña segura…</translation>
-<translation id="5710435578057952990">No se ha verificado la identidad de este sitio web.</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="5720705177508910913">Usuario actual</translation>
 <translation id="5728056243719941842">C5 (Envelope)</translation>
@@ -1555,7 +1554,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="624499991300733384">Servicio de composición de impresiones</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para administrar los archivos que descargaste en Chrome</translation>
 <translation id="6254436959401408446">Tu dispositivo no tiene suficiente memoria para abrir esta página</translation>
-<translation id="625755898061068298">Decidiste inhabilitar las advertencias de seguridad para este sitio.</translation>
 <translation id="6259156558325130047">&amp;Rehacer Reorganizar</translation>
 <translation id="6263376278284652872">Favoritos de <ph name="DOMAIN" /></translation>
 <translation id="6264485186158353794">Volver a seguridad</translation>
@@ -1725,6 +1723,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6884662655240309489">Tamaño 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome simplificó esta página para facilitar la lectura. Chrome recuperó la página original a través de una conexión no segura.</translation>
+<translation id="6890443033788248019">¿Quieres permitir acceso a la ubicación?</translation>
 <translation id="6891596781022320156">No se admite el nivel de políticas.</translation>
 <translation id="6895143722905299846">Número virtual:</translation>
 <translation id="6895330447102777224">Tu tarjeta se confirmó</translation>
@@ -1996,6 +1995,7 @@ Detalles adicionales:
 <translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">Es posible que un software antivirus o un firewall hayan bloqueado la conexión.</translation>
 <translation id="776110834126722255">Obsoleta</translation>
+<translation id="7761159795823346334">¿Quieres habilitar el permiso a la cámara?</translation>
 <translation id="7761701407923456692">El certificado del servidor no coincide con la dirección URL.</translation>
 <translation id="7763386264682878361">Analizador del manifiesto de pagos</translation>
 <translation id="7764225426217299476">Agregar dirección</translation>
@@ -2223,6 +2223,7 @@ Detalles adicionales:
 <translation id="8522552481199248698">Chrome puede ayudarte a proteger tu Cuenta de Google y cambiar tu contraseña.</translation>
 <translation id="8530813470445476232">Borra el historial de navegación, las cookies, la memoria caché y mucho más en la configuración de Chrome</translation>
 <translation id="8533619373899488139">Visita &lt;strong&gt;chrome://policy&lt;/strong&gt; para ver la lista de URL bloqueadas y otras políticas que estableció el administrador del sistema.</translation>
+<translation id="8539500321752640291">¿Quieres habilitar 2 permisos?</translation>
 <translation id="8541158209346794904">Dispositivo Bluetooth</translation>
 <translation id="8542014550340843547">Grapas triples en la parte inferior</translation>
 <translation id="8543181531796978784">Puedes <ph name="BEGIN_ERROR_LINK" />informar un problema de detección<ph name="END_ERROR_LINK" /> o, si comprendes los riesgos de seguridad, puedes <ph name="BEGIN_LINK" />visitar el sitio no seguro<ph name="END_LINK" />.</translation>
@@ -2350,6 +2351,7 @@ Detalles adicionales:
 <translation id="9025348182339809926">(No válido)</translation>
 <translation id="9030265603405983977">Monochrome</translation>
 <translation id="9035022520814077154">Error de seguridad</translation>
+<translation id="9036306139374661733">¿Quieres habilitar el permiso al micrófono?</translation>
 <translation id="9038649477754266430">Utilizar un servicio de predicción para cargar las páginas más rápido</translation>
 <translation id="9039213469156557790">Además, esta página incluye otros recursos que no son seguros. Otras personas pueden ver estos recursos mientras se encuentran en tránsito, y un atacante puede modificarlos para cambiar el funcionamiento de la página.</translation>
 <translation id="9044359186343685026">Usar Touch ID</translation>

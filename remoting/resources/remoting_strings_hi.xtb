@@ -170,6 +170,7 @@
 यह अनुमति देने के लिए, नीचे दिए गए '<ph name="BUTTON_NAME" />' पर क्लिक करें. 'सुलभता' की प्राथमिकताओं वाले पैनल में '<ph name="SERVICE_SCRIPT_NAME" />' के आगे बने बॉक्स को चुनें.
 
 अगर '<ph name="SERVICE_SCRIPT_NAME" />' पहले से चुना है, तो सही का निशान हटाकर फिर से लगाएं.</translation>
+<translation id="8305209735512572429">वेब की पुष्टि करने की रिमोटिंग प्रोसेस</translation>
 <translation id="8383794970363966105">Chromoting का उपयोग करने के लिए, आपको अपने डिवाइस में Google खाता जोड़ना होगा.</translation>
 <translation id="8386846956409881180">होस्‍ट को अमान्‍य OAuth क्रेडेंशियल से कॉन्‍फ़िगर किया गया है.</translation>
 <translation id="8397385476380433240"><ph name="PRODUCT_NAME" /> को अनुमति दें</translation>

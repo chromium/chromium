@@ -170,6 +170,7 @@ Ef þegar er hakað við „<ph name="SERVICE_SCRIPT_NAME" />“ skaltu fjarlæg
 Til að veita þessa heimild skaltu smella á <ph name="BUTTON_NAME" /> hér fyrir neðan. Á stillingasvæðinu „Aðgengi“ sem opnast skaltu merkja í reitinn við hliðina á „<ph name="SERVICE_SCRIPT_NAME" />“.
 
 Ef þegar er merkt í „<ph name="SERVICE_SCRIPT_NAME" />“ skaltu fjarlægja merkið og merkja svo aftur í reitinn.</translation>
+<translation id="8305209735512572429">Fjarvinnsla Web Authentication</translation>
 <translation id="8383794970363966105">Til að nota Chromoting þarftu að bæta Google reikningi við tækið þitt.</translation>
 <translation id="8386846956409881180">Hýsillinn er stilltur með ógildum OAuth-skilríkjum.</translation>
 <translation id="8397385476380433240">Veita <ph name="PRODUCT_NAME" /> heimild</translation>

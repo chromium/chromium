@@ -170,6 +170,7 @@ Jos <ph name="SERVICE_SCRIPT_NAME" /> on jo valittuna, poista valinta ja valitse
 Myönnä käyttölupa valitsemalla alta <ph name="BUTTON_NAME" />. Valitse avautuvasta esteettömyyden asetuspaneelista ruutu kohdasta <ph name="SERVICE_SCRIPT_NAME" />.
 
 Jos <ph name="SERVICE_SCRIPT_NAME" /> on jo valittu, poista valinta ja valitse se uudelleen.</translation>
+<translation id="8305209735512572429">Verkkotodennuksen etäkäyttöprosessi</translation>
 <translation id="8383794970363966105">Sinun on lisättävä laitteeseesi Google-tili, jotta voit käyttää Chromotingia.</translation>
 <translation id="8386846956409881180">Isännälle on määritetty virheelliset OAuth-kirjautumistiedot.</translation>
 <translation id="8397385476380433240">Myönnä käyttölupa: <ph name="PRODUCT_NAME" /></translation>

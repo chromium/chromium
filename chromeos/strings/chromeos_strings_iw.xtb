@@ -162,6 +162,7 @@
 <translation id="4238516577297848345">אין משימות הדפסה שמתבצעות כרגע</translation>
 <translation id="4244962993387259361">‏צריך נפח אחסון פנוי של MB‏500 לפחות כדי להריץ בדיקת זיכרון. כדי לפנות מקום, עוברים להגדרות &gt; ניהול האחסון.</translation>
 <translation id="4258281355379922695">‏זמן המתנה ל-HTTP</translation>
+<translation id="4271957103967917607">הצגת מסך מלא</translation>
 <translation id="4289540628985791613">סקירה כללית</translation>
 <translation id="4297501883039923494">הפסיקה – שגיאה לא ידועה</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> תמונות</translation>
@@ -373,6 +374,7 @@
 <translation id="7550715992156305117">תרחישי אבחון</translation>
 <translation id="7561454561030345039">הפעולה הזו מנוהלת על-ידי מנהל המערכת</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7574732568136198983">‏פינג ARC</translation>
 <translation id="7595982850646262331">הזמן שנותר: <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">מידע נוסף במרכז העזרה</translation>
 <translation id="763165478673169849">זמן האיפוס האחרון</translation>

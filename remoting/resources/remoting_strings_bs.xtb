@@ -170,6 +170,7 @@ Ako je skripta "<ph name="SERVICE_SCRIPT_NAME" />" već označena, uklonite ozna
 Za davanje odobrenja, kliknite "<ph name="BUTTON_NAME" />" u nastavku. U oknu s postavkama "Pristupačnost" koje se otvori označite polje pored stavke "<ph name="SERVICE_SCRIPT_NAME" />".
 
 Ako je stavka "<ph name="SERVICE_SCRIPT_NAME" />" već označena, uklonite oznaku i ponovo je označite.</translation>
+<translation id="8305209735512572429">Postupak daljinskog upravljanja web autentifikacijom</translation>
 <translation id="8383794970363966105">Za korištenje Chromotinga, morate dodati Google račun na svoj uređaj.</translation>
 <translation id="8386846956409881180">Host računar je konfiguriran koristeći nevažeće OAuth akreditive.</translation>
 <translation id="8397385476380433240">Dajte odobrenje uređaju <ph name="PRODUCT_NAME" /></translation>

@@ -170,6 +170,7 @@ Pokud je položka <ph name="SERVICE_SCRIPT_NAME" /> již zaškrtnutá, zrušte j
 Chcete-li udělit toto oprávnění, klikněte na tlačítko <ph name="BUTTON_NAME" /> níže. Na panelu Přístupnost, který se otevře, pak zaškrtněte políčko vedle položky <ph name="SERVICE_SCRIPT_NAME" />.
 
 Pokud je položka <ph name="SERVICE_SCRIPT_NAME" /> již zaškrtnutá, zrušte její zaškrtnutí a poté ji zaškrtněte znovu.</translation>
+<translation id="8305209735512572429">Proces vzdáleného přístupu k webovému ověření</translation>
 <translation id="8383794970363966105">Chcete-li používat Chromoting, budete do zařízení muset přidat účet Google.</translation>
 <translation id="8386846956409881180">Hostitel je nakonfigurován s neplatnými identifikačními údaji OAuth.</translation>
 <translation id="8397385476380433240">Udělte aplikaci <ph name="PRODUCT_NAME" /> oprávnění</translation>

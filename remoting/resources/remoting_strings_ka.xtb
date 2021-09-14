@@ -170,6 +170,7 @@
 აღნიშნული ნებართვის მისანიჭებლად დააწკაპუნეთ ქვემოთ მოცემულ ღილაკზე „<ph name="BUTTON_NAME" />“. „მარტივი წვდომის“ პარამეტრების გახსნილ პანელზე მონიშნეთ „<ph name="SERVICE_SCRIPT_NAME" />“.
 
 თუ „<ph name="SERVICE_SCRIPT_NAME" />“ უკვე მონიშნულია, მოხსენით და ხელახლა მონიშნეთ.</translation>
+<translation id="8305209735512572429">ვებ-ავტორიზაციის გადისტანციურების პროცესი</translation>
 <translation id="8383794970363966105">Chromoting-ის გამოსაყენებლად თქვენ უნდა დაამატოთ Google Account თქვენს აპარატში.</translation>
 <translation id="8386846956409881180">მასპინძელი დაკონფიგურირებულია არასწორი OAuth მონაცემებით.</translation>
 <translation id="8397385476380433240">მიანიჭეთ ნებართვა <ph name="PRODUCT_NAME" />-ს</translation>

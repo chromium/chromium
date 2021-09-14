@@ -162,6 +162,7 @@
 <translation id="4238516577297848345">Inga utskriftsjobb pågår</translation>
 <translation id="4244962993387259361">Du behöver minst 500 MB ledigt utrymme för att köra ett minnestest. Öppna Inställningar &gt; Lagringshantering om du vill frigöra utrymme.</translation>
 <translation id="4258281355379922695">HTTP-latens</translation>
+<translation id="4271957103967917607">Visa helskärm</translation>
 <translation id="4289540628985791613">Översikt</translation>
 <translation id="4297501883039923494">Har stoppats – okänt fel</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> bilder</translation>
@@ -373,6 +374,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="7550715992156305117">Diagnostikrutiner</translation>
 <translation id="7561454561030345039">Den här åtgärden hanteras av administratören</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7574732568136198983">ARC-ping</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> återstår</translation>
 <translation id="7620771111601174153">Läs mer i hjälpcentret</translation>
 <translation id="763165478673169849">Återställdes senast</translation>

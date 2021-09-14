@@ -170,6 +170,7 @@
 Бул уруксатты берүү үчүн төмөндөгү "<ph name="BUTTON_NAME" />" баскычын чыкылдатып, "Атайын мүмкүнчүлүктөр" параметрин ачыңыз да "<ph name="SERVICE_SCRIPT_NAME" />" тушунда жайгашкан кутучаны белгилеңиз.
 
 Эгер "<ph name="SERVICE_SCRIPT_NAME" />" мурунтан эле белгиленген болсо, ал белгилөөнү өчүрүп, кайра кошсоңуз болот.</translation>
+<translation id="8305209735512572429">Web Authentication'ди алыстан башкаруу процесси</translation>
 <translation id="8383794970363966105">Chromoting'ди колдонуу үчүн түзмөгүңүзгө Google аккаунтун кошуу керек.</translation>
 <translation id="8386846956409881180">Хост жараксыз OAuth далдаштырма дайындары менен конфигурацияланган.</translation>
 <translation id="8397385476380433240"><ph name="PRODUCT_NAME" /> кызматына уруксат берүү</translation>

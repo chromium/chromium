@@ -162,6 +162,7 @@
 <translation id="4238516577297848345">Nobeno tiskalno opravilo ne poteka</translation>
 <translation id="4244962993387259361">Če želite izvajati preizkus pomnilnika, potrebujete najmanj 500 MB prostora. Če želite sprostiti prostor, odprite »Nastavitve &gt; Upravljanje shrambe«.</translation>
 <translation id="4258281355379922695">Zakasnitev HTTP</translation>
+<translation id="4271957103967917607">Ogled v celozaslonskem načinu</translation>
 <translation id="4289540628985791613">Pregled</translation>
 <translation id="4297501883039923494">Ustavljeno – neznana napaka</translation>
 <translation id="4300073214558989">Št. slik: <ph name="IMAGE_COUNT" /></translation>
@@ -373,6 +374,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7550715992156305117">Rutine za diagnostiko</translation>
 <translation id="7561454561030345039">To dejanje upravlja skrbnik</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7574732568136198983">Preverjanje za ARC</translation>
 <translation id="7595982850646262331">Še <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Preberite več v centru za pomoč</translation>
 <translation id="763165478673169849">Čas zadnje ponastavitve</translation>

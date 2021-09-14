@@ -162,6 +162,7 @@
 <translation id="4238516577297848345">Nemáte žádné probíhající tiskové úlohy</translation>
 <translation id="4244962993387259361">Ke spuštění testu paměti potřebujete minimálně 500 MB volného místa. Pokud chcete místo uvolnit, přejděte do Nastavení &gt; Správa úložiště.</translation>
 <translation id="4258281355379922695">Latence požadavků HTTP</translation>
+<translation id="4271957103967917607">Zobrazit na celé obrazovce</translation>
 <translation id="4289540628985791613">Přehled</translation>
 <translation id="4297501883039923494">Zastaveno – neznámá chyba</translation>
 <translation id="4300073214558989">Počet obrázků: <ph name="IMAGE_COUNT" /></translation>
@@ -373,6 +374,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="7550715992156305117">Diagnostické rutiny</translation>
 <translation id="7561454561030345039">Tuto akci spravuje administrátor</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7574732568136198983">Ping ARC</translation>
 <translation id="7595982850646262331">Zbývá <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Další informace v centru nápovědy</translation>
 <translation id="763165478673169849">Čas posledního resetování</translation>

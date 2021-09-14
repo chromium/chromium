@@ -162,6 +162,7 @@
 <translation id="4238516577297848345">No hay ningún trabajo de impresión en curso</translation>
 <translation id="4244962993387259361">Necesitas al menos 500 MB de espacio libre para ejecutar una prueba de memoria. Para liberar espacio, ve a Configuración &gt; Gestión del almacenamiento.</translation>
 <translation id="4258281355379922695">Latencia de HTTP</translation>
+<translation id="4271957103967917607">Ver en pantalla completa</translation>
 <translation id="4289540628985791613">Vista general</translation>
 <translation id="4297501883039923494">Detenido: error desconocido</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imágenes</translation>
@@ -372,6 +373,7 @@
 <translation id="7550715992156305117">Rutinas de diagnóstico</translation>
 <translation id="7561454561030345039">Esta acción la gestiona tu administrador</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7574732568136198983">Ping ARC</translation>
 <translation id="7595982850646262331">Tiempo restante: <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Más información en el Centro de Ayuda</translation>
 <translation id="763165478673169849">Hora a la que se restableció por última vez</translation>

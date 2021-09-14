@@ -170,6 +170,7 @@ Kui ruut teenuse „<ph name="SERVICE_SCRIPT_NAME" />” juures on juba märgitu
 Selle loa andmiseks klõpsake alloleval nupul „<ph name="BUTTON_NAME" />”. Märkige avaneval eelistuste paanil „Juurdepääsufunktsioonid” ruut teenuse „<ph name="SERVICE_SCRIPT_NAME" />” juures.
 
 Kui ruut teenuse „<ph name="SERVICE_SCRIPT_NAME" />” juures on juba märgitud, eemaldage märge ja märkige see siis uuesti.</translation>
+<translation id="8305209735512572429">Web Authenticationi kaugseansi protsess</translation>
 <translation id="8383794970363966105">Chromootimise kasutamiseks peate lisama seadmele Google'i konto.</translation>
 <translation id="8386846956409881180">Host on seadistatud sobimatu OAuth-mandaadiga.</translation>
 <translation id="8397385476380433240">Andke teenusele <ph name="PRODUCT_NAME" /> luba</translation>

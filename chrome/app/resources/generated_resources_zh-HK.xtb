@@ -703,6 +703,7 @@
 <translation id="1719312230114180055">請注意：相比安全性較強的密碼或 PIN，指紋識別的安全性較低。</translation>
 <translation id="1720318856472900922">TLS WWW 伺服器驗證</translation>
 <translation id="1720941539803966190">閂教學課程</translation>
+<translation id="172123215662733643">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜尋圖片</translation>
 <translation id="1721312023322545264">您必須獲得<ph name="NAME" />授權，才能瀏覽此網頁</translation>
 <translation id="1722460139690167654">您的 <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> 由 <ph name="END_LINK" /><ph name="ENROLLMENT_DOMAIN" /> 管理</translation>
 <translation id="1723824996674794290">新視窗(&amp;N)</translation>
@@ -1279,6 +1280,7 @@
     如果之後您不想子女使用 Voice Match，只需在「Google 助理」設定中移除即可。如要查看或刪除子女設定 Voice Match 時的錄音，請從子女的帳戶前往 <ph name="VOICE_MATCH_SETTINGS_URL" />。
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
+<translation id="2307630946657910723">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜尋頁面上的部分內容</translation>
 <translation id="230927227160767054">這個網頁想要安裝服務處理常式。</translation>
 <translation id="2309620859903500144">系統已封鎖此網站存取您的動作或光線感應器。</translation>
 <translation id="2312219318583366810">網頁網址</translation>
@@ -1844,6 +1846,7 @@
 <translation id="289695669188700754">金鑰識別碼：<ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">當您關閉所有無痕式視窗時，系統將會移除此自訂設定</translation>
 <translation id="2897878306272793870">您確定要開啟 <ph name="TAB_COUNT" /> 分頁嗎？</translation>
+<translation id="2900477968385519153">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜尋螢幕畫面</translation>
 <translation id="290105521672621980">檔案使用的功能不受支援</translation>
 <translation id="2902127500170292085">「<ph name="EXTENSION_NAME" />」無法與此打印機通訊。請確定已插上打印機，然後再試一次。</translation>
 <translation id="2902312830803030883">更多操作</translation>
@@ -2114,6 +2117,7 @@
 <translation id="3183143381919926261">流動數據網絡</translation>
 <translation id="3183944777708523606">顯示器排列</translation>
 <translation id="3184536091884214176">設定或管理 CUPS 打印機。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="3185014249447200271">{NUM_APPS,plural, =1{已封鎖這個應用程式}other{已封鎖部分應用程式}}</translation>
 <translation id="3188257591659621405">我的檔案</translation>
 <translation id="3188465121994729530">移動平均</translation>
 <translation id="3189187154924005138">大型游標</translation>
@@ -2282,6 +2286,7 @@
 <translation id="3390741581549395454">已成功備份 Linux 應用程式和檔案。升級即將開始。</translation>
 <translation id="3391512812407811893">試用 Privacy Sandbox</translation>
 <translation id="339178315942519818">在 <ph name="DEVICE_TYPE" /> 上查看即時通訊應用程式的通知</translation>
+<translation id="3393554941209044235">Chrome 文件分析</translation>
 <translation id="3394850431319394743">已允許使用識別碼來播放受保護的內容</translation>
 <translation id="3396800784455899911">按一下 [接受並繼續] 按鈕，即表示您同意上述的 Google 服務處理程序。.</translation>
 <translation id="339722927132407568">畫面凍結</translation>
@@ -2953,6 +2958,7 @@
 <translation id="4066207411788646768">請檢查您的連線，以查看網絡中的可用打印機</translation>
 <translation id="4068776064906523561">已儲存的指紋</translation>
 <translation id="407173827865827707">僅在點擊時</translation>
+<translation id="4072701974556190758">密碼會儲存在你的 Google 帳戶 (<ph name="ACCOUNT" />) 中，因此你不必記住密碼。</translation>
 <translation id="4074900173531346617">電郵簽名者憑證</translation>
 <translation id="407520071244661467">縮放比例</translation>
 <translation id="407543464472585404"><ph name="NAME" />的設定檔已連結至 <ph name="EMAIL" /></translation>
@@ -3074,6 +3080,7 @@
 <translation id="4220648711404560261">啟用時發生錯誤。</translation>
 <translation id="4225020013797061859">請按下要為「<ph name="ACTION" />」動作指派的按鈕裝置或按鍵</translation>
 <translation id="4225397296022057997">在所有網站上</translation>
+<translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{已封鎖這個擴充功能}other{已封鎖部分擴充功能}}</translation>
 <translation id="4231095370974836764">在 <ph name="DEVICE_TYPE" /> 上透過 Google Play 安裝應用程式和遊戲。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">設定 Kerberos</translation>
 <translation id="4235965441080806197">取消登入</translation>
@@ -3244,6 +3251,7 @@
 <translation id="4415748029120993980">SECG 橢圓曲線 secp384r1 (亦稱為 NIST P-384)</translation>
 <translation id="4416450511678320850">沒有與此內容相關的應用程式</translation>
 <translation id="4416582610654027550">輸入有效的網址</translation>
+<translation id="4417162649853416189">在圖片上拖曳游標以使用 <ph name="VISUAL_SEARCH_PROVIDER" />的搜尋功能</translation>
 <translation id="4419409365248380979">永遠允許 <ph name="HOST" /> 設定 Coockie</translation>
 <translation id="4421932782753506458">長毛貓</translation>
 <translation id="4423376891418188461">還原設定</translation>
@@ -3371,6 +3379,7 @@
 <translation id="4551763574344810652">按下 <ph name="MODIFIER_KEY_DESCRIPTION" /> 即可復原</translation>
 <translation id="4553526521109675518">您需要重新啟動 Chromebook 才能變更裝置語言。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553898717331438468">重新設定</translation>
+<translation id="4554491709904933912">在圖片上拖曳游標以使用 <ph name="VISUAL_SEARCH_PROVIDER" />的搜尋功能</translation>
 <translation id="4554591392113183336">外部擴充功能與現有擴充功能的版本相同或較低。</translation>
 <translation id="4555769855065597957">陰影</translation>
 <translation id="4555863373929230635">如要將密碼儲存至 Google 帳戶，請登入並開啟同步功能。</translation>
@@ -4145,6 +4154,7 @@
 <translation id="5427278936122846523">一律翻譯</translation>
 <translation id="5427459444770871191">順時針旋轉(&amp;C)</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (有可用的更新)</translation>
+<translation id="5429373054983029602">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜尋螢幕畫面</translation>
 <translation id="542948651837270806">需要安裝信任平台模組韌體的更新。請參閱 <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5430931332414098647">即時網絡共享</translation>
 <translation id="5431318178759467895">顏色</translation>
@@ -4211,6 +4221,7 @@
 <translation id="5494920125229734069">全部選取</translation>
 <translation id="5495466433285976480">這樣會在下次重新啟動時移除所有本機使用者、檔案、數據和其他設定。所有使用者都必須重新登入。</translation>
 <translation id="5495597166260341369">保持螢幕開啟</translation>
+<translation id="549580971452855947">拖曳游標以使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜尋圖片</translation>
 <translation id="5496587651328244253">管理</translation>
 <translation id="5496730470963166430">不允許傳送彈出式視窗或使用重新導向</translation>
 <translation id="5497251278400702716">此檔案</translation>
@@ -4320,6 +4331,7 @@
 <translation id="5604884720628869833"><ph name="DEVICE_COUNT" /> 個裝置入面嘅第 <ph name="DEVICE_INDEX" /> 個，<ph name="DEVICE_NAME" />，鍵盤</translation>
 <translation id="5605623530403479164">其他搜尋引擎</translation>
 <translation id="5605758115928394442">已將通知傳送至您的手機，以確認您的身分。</translation>
+<translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{已封鎖這個擴充功能}other{已封鎖這些擴充功能}}</translation>
 <translation id="560834977503641186">Wi-Fi Sync，了解詳情</translation>
 <translation id="5608580678041221894">輕按以下按鍵即可調整或移動裁剪區域</translation>
 <translation id="5609231933459083978">這似乎是無效的應用程式。</translation>
@@ -5066,6 +5078,7 @@
 <translation id="6434325376267409267">您需要先更新裝置，才能使用 <ph name="APP_NAME" />。</translation>
 <translation id="6436164536244065364">在網上商店中檢視</translation>
 <translation id="6436610005579237680">如要取得更貼近您需要的回覆，請讓「Google 助理」在您問問題時存取包含畫面上資料的螢幕截圖，包括正在播放歌曲或影片的相關資料。</translation>
+<translation id="6436778875248895551">系統管理員已封鎖「<ph name="EXTENSION_NAME" />」擴充功能</translation>
 <translation id="6438234780621650381">重設設定</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - 正在播放音訊</translation>
 <translation id="6442187272350399447">太棒了</translation>
@@ -5212,10 +5225,12 @@
 <translation id="6593881952206664229">系統可能不會播放受版權保護的媒體</translation>
 <translation id="6594011207075825276">正在尋找序列裝置…</translation>
 <translation id="6595187330192059106">一律禁止 <ph name="HOST" /> 全權控制 MIDI 裝置。</translation>
+<translation id="6595792813574514527">拖曳游標以使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜尋圖片</translation>
 <translation id="6596325263575161958">加密選項</translation>
 <translation id="6596816719288285829">IP 地址</translation>
 <translation id="6597017209724497268">樣本數目</translation>
 <translation id="6597148444736186483">如要登出此裝置上的主要帳戶，請按一下螢幕上的時間。當畫面顯示選單時，按一下 [登出]。</translation>
+<translation id="6597331566371766302">系統管理員已封鎖下列擴充功能：</translation>
 <translation id="6601395831301182804">係咪要啟動 Chrome 作業系統內置嘅螢幕閱讀器 ChromeVox？要嘅話請㩒空格鍵。</translation>
 <translation id="6601612474695404578">有些網站會使用第三方 Cookie 載入頁面。如果網站無法正常運作，您可嘗試允許 Cookie。</translation>
 <translation id="6602937173026466876">存取打印機</translation>
@@ -5348,6 +5363,7 @@
 <translation id="6757101664402245801">已複製網址</translation>
 <translation id="6758056191028427665">請讓我們瞭解您的滿意度。</translation>
 <translation id="6759193508432371551">恢復原廠設定</translation>
+<translation id="676158322851696513">「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="6762833852331690540">開啟</translation>
 <translation id="676560328519657314">您喺 Google Pay 入面嘅付款方法</translation>
 <translation id="6767566652486411142">選擇其他語言…</translation>
@@ -5728,6 +5744,7 @@
 <translation id="7170236477717446850">個人檔案相片</translation>
 <translation id="7171000599584840888">新增設定檔…</translation>
 <translation id="7171259390164035663">不要註冊</translation>
+<translation id="7171746271229206319">讀取 Chrome OS 裝置資訊和裝置資料。這項資訊可能會提供給裝置製造商。Google 以外的機構會根據另行訂定的隱私權政策處理資料</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{在新群組中加入分頁}other{在新群組中加入分頁}}</translation>
 <translation id="7173114856073700355">開啟設定</translation>
 <translation id="7174199383876220879">新功能！控制音樂、影片及其他內容。</translation>
@@ -5779,6 +5796,7 @@
 <translation id="7230222852462421043">還原視窗</translation>
 <translation id="7230787553283372882">自訂文字大小</translation>
 <translation id="7232750842195536390">無法重新命名</translation>
+<translation id="723343421145275488">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜尋圖片</translation>
 <translation id="7234010996000898150">正在取消 Linux 還原</translation>
 <translation id="7235716375204803342">正在擷取活動…</translation>
 <translation id="7235737137505019098">安全密鑰的空間不足，無法建立帳戶。</translation>
@@ -6227,6 +6245,7 @@
 <translation id="7691698019618282776">Crostini 升級</translation>
 <translation id="7696063401938172191">在您的 <ph name="PHONE_NAME" /> 上：</translation>
 <translation id="7697166915480294040">分享螢幕畫面時會隱藏詳細資料</translation>
+<translation id="7698507637739331665">已封鎖部分項目</translation>
 <translation id="7701040980221191251">沒有</translation>
 <translation id="7701869757853594372">USER 控制代碼</translation>
 <translation id="7702574632857388784">從清單中移除 <ph name="FILE_NAME" /></translation>
@@ -6404,6 +6423,7 @@
 <translation id="7861215335140947162">下載(&amp;D)</translation>
 <translation id="7861846108263890455">Google 帳戶語言</translation>
 <translation id="7864539943188674973">停用藍牙</translation>
+<translation id="7865127013871431856">翻譯選項</translation>
 <translation id="7869143217755017858">停用夜間模式</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - 已配對</translation>
 <translation id="7870730066603611552">設定後查看同步選項</translation>
@@ -6724,6 +6744,7 @@
 <translation id="8184318863960255706">更多資訊</translation>
 <translation id="8184472985242519288">平均</translation>
 <translation id="8186609076106987817">伺服器無法找到這個檔案。</translation>
+<translation id="8186704951085064172">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜尋頁面上的部分內容</translation>
 <translation id="8188389033983459049">檢查您的裝置設定並開啟藍牙以繼續</translation>
 <translation id="8189306097519446565">學校帳戶</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>

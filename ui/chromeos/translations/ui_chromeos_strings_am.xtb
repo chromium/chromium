@@ -287,6 +287,7 @@
 <translation id="3549797760399244642">ወደ drive.google.com ይሂዱ...</translation>
 <translation id="3553048479571901246">ፋይሎችን በ<ph name="APP_NAME" /> ለመክፈት፣መጀመሪያ ወደ የመስኮቶች ፋይሎች አቃፊዉ ይቅዱዋቸው።</translation>
 <translation id="3556731189587832921">እንግሊዝኛ (አሜሪካ) በዓለም ከአቀፍ ፒሲ ቁልፍ ሰሌዳ</translation>
+<translation id="3567221313191587603">አንድ ፋይል ይምረጡ እና ለፋይሎችዎ ከመስመር ውጭ መዳረሻ <ph name="OFFLINE_CHECKBOX_NAME" />ን ይቀያይሩ።</translation>
 <translation id="357479282490346887">ሊቱአኒያን</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" />ን ከመስመር ውጭ እንዲገኝ ማድረግ አልተቻለም</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -397,6 +398,7 @@
 <translation id="4642769377300286600">የሞባይል መገለጫ በመጫን ላይ፣ አውታረ መረብ<ph name="NETWORK_INDEX" /> ከ <ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" />፣ <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">ቼክኛ በQwerty ቁልፍ ሰሌዳ</translation>
 <translation id="4656293982926141856">ይህ ኮምፒውተር</translation>
+<translation id="4656777537938206294">ፋይሎችን ከመስመር ውጭ እንዲገኙ ያድርጉ</translation>
 <translation id="4669606053856530811">እነዚህ ንጥሎች ለእነሱ ካልተጋሩ በስተቀር የ«<ph name="SOURCE_NAME" />» አባላት መዳረሻ ያጣሉ።</translation>
 <translation id="4690246192099372265">ስዊድንኛ</translation>
 <translation id="4693155481716051732">ሱሺ</translation>

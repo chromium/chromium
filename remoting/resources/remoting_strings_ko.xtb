@@ -170,6 +170,7 @@
 권한을 부여하려면 아래의 ‘<ph name="BUTTON_NAME" />’ 버튼을 클릭합니다. ‘접근성’ 환경설정 창이 열리면 ‘<ph name="SERVICE_SCRIPT_NAME" />’ 옆의 체크박스를 선택하세요.
 
 ‘<ph name="SERVICE_SCRIPT_NAME" />’이(가) 이미 선택되어 있다면 선택 해제한 다음 다시 선택합니다.</translation>
+<translation id="8305209735512572429">웹 인증 원격 프로세스</translation>
 <translation id="8383794970363966105">Chromoting을 사용하려면 기기에 Google 계정을 추가해야 합니다.</translation>
 <translation id="8386846956409881180">호스트가 잘못된 OAuth 사용자 인증 정보로 구성되었습니다.</translation>
 <translation id="8397385476380433240"><ph name="PRODUCT_NAME" />에 권한 부여</translation>

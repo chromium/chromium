@@ -324,6 +324,15 @@
 
       ユーザー補助機能を他の手段（キーの組み合わせなど）によって有効にした場合は、通知領域（システムトレイ）メニューにユーザー補助オプションが常に表示されます。</translation>
 <translation id="1449777485284610883">Chrome ウェブストア以外でホストされている拡張機能のインストールと更新を許可する</translation>
+<translation id="1451113827539677573"><ph name="MS_WIN_NAME" /> での <ph name="PRODUCT_NAME" /> の印刷方法を制御します。
+
+      <ph name="MS_WIN_NAME" /> で非 PostScript プリンタを使用して印刷する場合、正確に印刷するために、印刷ジョブのラスタライズが必要となることがあります。
+
+      このポリシーを Full（完全）に設定した場合、<ph name="PRODUCT_NAME" /> では必要に応じてページ全体がラスタライズされます。
+
+      このポリシーを Fast（高速）に設定した場合、<ph name="PRODUCT_NAME" /> では可能であればラスタライズせず、ラスタライズの処理量を減らします。これにより、印刷ジョブのサイズを減らして印刷速度を上げることができます。
+
+      このポリシーを設定しない場合、<ph name="PRODUCT_NAME" /> は Full モードになります。</translation>
 <translation id="1456822151187621582">Windows（<ph name="PRODUCT_OS_NAME" /> クライアント）:</translation>
 <translation id="1464848559468748897"><ph name="PRODUCT_OS_NAME" /> デバイス上のマルチプロフィール セッションでのユーザーの行動を制御します。
 
@@ -1110,6 +1119,13 @@
 <translation id="2355876547176311490">リモート アクセスホストで中継サーバーを使用できないようにする</translation>
 <translation id="2358176879566587521">このポリシーは削除されました。このバージョンの <ph name="PRODUCT_NAME" /> には対応していません。詳しくは、https://support.google.com/chrome/a/answer/7643500 をご覧ください。</translation>
 <translation id="2362469626417133796">再起動の時間枠</translation>
+<translation id="2363928351203698966">このポリシーでは、<ph name="PRODUCT_NAME" /> で使用する SSL / TLS の最小バージョンを指定できます。認識できない値は無視されます。
+
+      このポリシーを設定しない場合、<ph name="PRODUCT_NAME" /> では TLS 1.0 および TLS 1.1 についてエラーが表示されますが、ユーザーはこのエラーを回避できます。
+
+      このポリシーを「tls1.2」に設定した場合、ユーザーはこのエラーを回避できません。
+
+      バージョン 91 以降、このポリシーを「tls1」または「tls1.1」に設定することはできなくなり、TLS 1.0 / 1.1 の警告の抑制はサポートされなくなりました。</translation>
 <translation id="2364639863953745682">アシスタントのオンボーディング エクスペリエンスのモード</translation>
 <translation id="2384233438419344179">このポリシーを有効に設定した場合、ブラウザのアドレスバーに表示されているドメイン以外のウェブページ要素からは、Cookie を設定できなくなります。このポリシーを無効に設定した場合、これらの要素による Cookie の設定が許可され、ユーザーはこの設定を変更できません。
 
@@ -1782,6 +1798,7 @@
 <translation id="3146711617256415776">「選択して読み上げ」の使用時に Enhanced Network のテキスト読み上げ音声を許可しない</translation>
 <translation id="3152425128389603870">統合デスクトップを使用可能にし、デフォルトで有効にする</translation>
 <translation id="3159375329008977062">ユーザーは UI から Crostini コンテナを書き出しおよび読み込みできます</translation>
+<translation id="3164531087779621747">印刷の PostScript モード</translation>
 <translation id="3165808775394012744">これらのポリシーは、削除しやすいようにこのフォルダにまとめられています。</translation>
 <translation id="3166210414652928099">信頼できない提供元の Android アプリの使用をユーザーに許可する</translation>
 <translation id="316778957754360075">この設定は <ph name="PRODUCT_NAME" /> バージョン 29 で廃止されました。組織でホストする拡張機能/アプリのコレクションを設定するには、CRX パッケージをホストするサイトを ExtensionInstallSources の中で指定し、パッケージへの直接ダウンロード リンクをウェブページに置くことをおすすめします。そのウェブページのランチャーは、ExtensionInstallForcelist ポリシーを使用して作成できます。</translation>
@@ -3286,6 +3303,15 @@
 <translation id="5213038356678567351">ブラウザの切り替えを行わないウェブサイト。</translation>
 <translation id="5219844027738217407">Android アプリに対しては、このポリシーはマイクにのみ適用されます。このポリシーを true に設定した場合、すべての Android アプリでは例外なくマイクがミュートされます。</translation>
 <translation id="5220594484746830711">ポップアップの表示元ページで操作が明示的に許可されている場合に限り、<ph name="BLANK_PAGE_NAME" /> をターゲットとして開いたポップアップにその表示元ページの操作を許可する</translation>
+<translation id="5227124062673546005"><ph name="MS_WIN_NAME" /> での <ph name="PRODUCT_NAME" /> の印刷方法を制御します。
+
+      <ph name="MS_WIN_NAME" /> で PostScript プリンタを使用して印刷する場合、PostScript の生成方法によって印刷のパフォーマンスは変わります。
+
+      このポリシーを Default（デフォルト）に設定した場合、<ph name="PRODUCT_NAME" /> では PostScript の生成時にデフォルトのオプション セットが使用されます。具体的には、テキストは常に Type 3 フォントを使用してレンダリングされます。
+
+      このポリシーを Type42（Type 42）に設定した場合、<ph name="PRODUCT_NAME" /> では可能であればテキストのレンダリングに Type 42 フォントが使用されます。これにより、一部の PostScript プリンタでは印刷速度が上がります。
+
+      このポリシーを設定しない場合、<ph name="PRODUCT_NAME" /> は Default モードになります。</translation>
 <translation id="5227647876065695164">このポリシーでは、登録済みデバイスでのチャンネル ダウングレードの動作を指定します。チャンネル ダウングレードとは、より安定したチャンネルに切り替える（例: Beta チャンネルから Stable チャンネルに切り替える）ことを意味します。
 
       このポリシーの値は、ユーザーが行うチャンネル ダウングレードと、管理者が行うチャンネル ダウングレードに影響します。
@@ -4226,6 +4252,7 @@
       ただし、この通知は、パスワードの有効期限に関する情報が、SAML ログインフロー中に SAML ID プロバイダからデバイスに送信される場合にのみ表示されます。
 
       このポリシーを無効に設定するか未設定のままにした場合、chrome://password-change で SAML パスワードを変更することはできず、SAML パスワードの有効期限が近づいても通知されません。</translation>
+<translation id="6457477291648119596">Type42</translation>
 <translation id="6458361632497500815">このポリシーを有効に設定するか未設定のままにした場合、<ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" />、<ph name="CROSTINI_ALLOWED_POLICY_NAME" />、<ph name="DEVICE_UNAFFILIATED_CROSTINI_ALLOWED_POLICY_NAME" /> の 3 つのポリシーすべてが有効になっていれば、すべてのユーザーが <ph name="PRODUCT_CROSTINI_NAME" /> を使用できます。このポリシーを無効に設定した場合、外部のユーザーは <ph name="PRODUCT_CROSTINI_NAME" /> を使用できません。このポリシーを無効に変更すると、すでに実行されているコンテナではなく、新しい <ph name="PRODUCT_CROSTINI_NAME" /> コンテナの開始に対してポリシーが適用されます。</translation>
 <translation id="6464074037294098618">住所の自動入力を有効にします</translation>
 <translation id="6467613372414922590">ユーザーレベルのネイティブ メッセージング ホスト（管理者権限なしでインストールされたホスト）を許可する</translation>

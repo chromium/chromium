@@ -895,6 +895,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3990250421422698716">Separar conjuntos</translation>
 <translation id="3996311196211510766">O site <ph name="ORIGIN" /> solicitou que seja aplicada uma política de origem
     a todos os pedidos, mas, de momento, não é possível aplicar essa política.</translation>
+<translation id="4010758435855888356">Pretende permitir o acesso ao armazenamento?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Documento PDF com {COUNT} página}other{Documento PDF com {COUNT} páginas}}</translation>
 <translation id="4023431997072828269">Uma vez que este formulário está a ser enviado através de uma ligação insegura, as suas informações vão ficar visíveis para outras pessoas.</translation>
 <translation id="4030383055268325496">&amp;Anular adição</translation>
@@ -1203,7 +1204,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4958444002117714549">Expandir lista</translation>
 <translation id="4968522289500246572">Esta app foi concebida para dispositivos móveis e pode não ser redimensionada corretamente. A app pode ter problemas ou reiniciar.</translation>
 <translation id="4973922308112707173">Perfuração dupla na parte superior</translation>
-<translation id="4974590756084640048">Reativar avisos</translation>
 <translation id="4984088539114770594">Pretende utilizar o microfone?</translation>
 <translation id="4984339528288761049">Prc5 (Envelope)</translation>
 <translation id="4989163558385430922">Ver tudo</translation>
@@ -1423,7 +1423,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5701381305118179107">Centrar</translation>
 <translation id="570530837424789914">Gerir…</translation>
 <translation id="57094364128775171">Sugerir palavra-passe forte…</translation>
-<translation id="5710435578057952990">A identidade deste Website não foi verificada.</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="5720705177508910913">Utilizador atual</translation>
 <translation id="5728056243719941842">C5 (Envelope)</translation>
@@ -1563,7 +1562,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="624499991300733384">Serviço do compositor de impressão</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Prima Tab e, em seguida, Enter para gerir ficheiros que transferiu no Chrome</translation>
 <translation id="6254436959401408446">Não existe memória suficiente para abrir esta página</translation>
-<translation id="625755898061068298">Optou por desativar os avisos de segurança para este site.</translation>
 <translation id="6259156558325130047">&amp;Refazer reordenação</translation>
 <translation id="6263376278284652872">Marcadores do <ph name="DOMAIN" /></translation>
 <translation id="6264485186158353794">Voltar para segurança</translation>
@@ -1733,6 +1731,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6884662655240309489">Tamanho 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">O Chrome simplificou esta página para facilitar a leitura. O Chrome obteve a página original através de uma ligação insegura.</translation>
+<translation id="6890443033788248019">Pretende permitir o acesso à localização?</translation>
 <translation id="6891596781022320156">O nível da política não é suportado.</translation>
 <translation id="6895143722905299846">Número virtual:</translation>
 <translation id="6895330447102777224">O seu cartão foi confirmado</translation>
@@ -2003,6 +2002,7 @@ Detalhes adicionais:
 <translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">O software de firewall ou antivírus pode ter bloqueado a ligação.</translation>
 <translation id="776110834126722255">Descontinuada</translation>
+<translation id="7761159795823346334">Pretende permitir o acesso à câmara?</translation>
 <translation id="7761701407923456692">O certificado do servidor não corresponde ao URL.</translation>
 <translation id="7763386264682878361">Analisador de manifestos de pagamento</translation>
 <translation id="7764225426217299476">Adicionar endereço</translation>
@@ -2230,6 +2230,7 @@ Detalhes adicionais:
 <translation id="8522552481199248698">O Chrome pode ajudá-lo a proteger a sua Conta Google e a alterar a palavra-passe.</translation>
 <translation id="8530813470445476232">Limpe o seu histórico de navegação, cookies, cache e muito mais nas definições do Chrome.</translation>
 <translation id="8533619373899488139">Visite &lt;strong&gt;chrome://policy&lt;/strong&gt; para ver a lista dos URLs bloqueados e outras políticas aplicadas pelo administrador do sistema.</translation>
+<translation id="8539500321752640291">Pretende permitir 2 autorizações?</translation>
 <translation id="8541158209346794904">Dispositivo Bluetooth</translation>
 <translation id="8542014550340843547">Agrafo triplo na parte inferior</translation>
 <translation id="8543181531796978784">Pode <ph name="BEGIN_ERROR_LINK" />comunicar um problema de deteção<ph name="END_ERROR_LINK" /> ou, se compreende os riscos para a sua segurança, <ph name="BEGIN_LINK" />aceda a este site não seguro<ph name="END_LINK" />.</translation>
@@ -2357,6 +2358,7 @@ Detalhes adicionais:
 <translation id="9025348182339809926">(Inválido)</translation>
 <translation id="9030265603405983977">Monocromático</translation>
 <translation id="9035022520814077154">Erro de segurança</translation>
+<translation id="9036306139374661733">Pretende permitir o acesso ao microfone?</translation>
 <translation id="9038649477754266430">Utilizar um serviço de previsão para carregar páginas mais rapidamente</translation>
 <translation id="9039213469156557790">Além disso, esta página inclui outros recursos que não são seguros. Estes recursos podem ser vistos por outros utilizadores em trânsito e modificados por um utilizador mal intencionado com o intuito de alterar o comportamento da página.</translation>
 <translation id="9044359186343685026">Utilizar Touch ID</translation>

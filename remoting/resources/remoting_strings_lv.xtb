@@ -170,6 +170,7 @@ Ja kastīte “<ph name="SERVICE_SCRIPT_NAME" />” jau ir atzīmēta, noņemiet
 Lai piešķirtu šo atļauju, tālāk noklikšķiniet uz pogas <ph name="BUTTON_NAME" /> un atvērtajā preferenču rūtī “Pieejamība” atzīmējiet izvēles rūtiņu blakus vienumam “<ph name="SERVICE_SCRIPT_NAME" />”.
 
 Ja izvēles rūtiņa “<ph name="SERVICE_SCRIPT_NAME" />” jau ir atzīmēta, noņemiet atzīmi un atzīmējiet to vēlreiz.</translation>
+<translation id="8305209735512572429">Tīmekļa autentifikācijas tālvadības process</translation>
 <translation id="8383794970363966105">Lai izmantotu Chrome saiti, jums ir jāpievieno savā ierīcē Google konts.</translation>
 <translation id="8386846956409881180">Saimniekdators ir konfigurēts ar nederīgiem OAuth akreditācijas datiem.</translation>
 <translation id="8397385476380433240">Atļaujas piešķiršana pakalpojumam <ph name="PRODUCT_NAME" /></translation>

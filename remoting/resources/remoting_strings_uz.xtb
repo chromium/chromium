@@ -169,6 +169,7 @@ Agar “<ph name="SERVICE_SCRIPT_NAME" />” allaqachon yoniq boʻlsa, uning tan
 Ruxsat berish uchun quyidagi “<ph name="BUTTON_NAME" />” tugmasini bosib, maxsus imkoniyatlar sozlamalari panelidan “<ph name="SERVICE_SCRIPT_NAME" />” bandini tanlang.
 
 Agar “<ph name="SERVICE_SCRIPT_NAME" />” allaqachon yoniq boʻlsa, uning tanlovini olib tashlang va qayta belgilang.</translation>
+<translation id="8305209735512572429">Veb autentifikatsiyasiga masofaviy ruxsat</translation>
 <translation id="8383794970363966105">Chromoting‘dan foydalanish uchun qurilmaga Google hisobini qo‘shish zarur.</translation>
 <translation id="8386846956409881180">Host noto‘g‘ri OAuth hisob ma’lmotlari bilan sozlangan.</translation>
 <translation id="8397385476380433240"><ph name="PRODUCT_NAME" /> xizmatiga ruxsat berish</translation>

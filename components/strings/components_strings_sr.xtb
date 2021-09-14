@@ -895,6 +895,7 @@
 <translation id="3990250421422698716">Протресање ради поравнања</translation>
 <translation id="3996311196211510766">Сајт <ph name="ORIGIN" /> је затражио да се смернице за порекло
     примене на све захтеве ка њему, али ове смернице тренутно не могу да се примене.</translation>
+<translation id="4010758435855888356">Желите ли да дозволите приступ меморијском простору?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF документ који садржи {COUNT} страницу}one{PDF документ који садржи {COUNT} страницу}few{PDF документ који садржи {COUNT} странице}other{PDF документ који садржи {COUNT} страница}}</translation>
 <translation id="4023431997072828269">Овај образац се шаље помоћу везе која није безбедна, па ће информације бити видљиве другима.</translation>
 <translation id="4030383055268325496">&amp;Опозови додавање</translation>
@@ -1203,7 +1204,6 @@
 <translation id="4958444002117714549">Прошири листу</translation>
 <translation id="4968522289500246572">Ова апликација је дизајнирана за мобилне уређаје и можда неће променити величину на правилан начин. Можда ће имати проблеме или се рестартовати.</translation>
 <translation id="4973922308112707173">Двоструко бушење на врху</translation>
-<translation id="4974590756084640048">Поново омогући упозорења</translation>
 <translation id="4984088539114770594">Дозволићете коришћење микрофона?</translation>
 <translation id="4984339528288761049">Prc5 (коверат)</translation>
 <translation id="4989163558385430922">Прикажи све</translation>
@@ -1423,7 +1423,6 @@
 <translation id="5701381305118179107">Центрирај</translation>
 <translation id="570530837424789914">Управљајте...</translation>
 <translation id="57094364128775171">Предложи јаку лозинку…</translation>
-<translation id="5710435578057952990">Идентитет овог веб-сајта није верификован.</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="5720705177508910913">Тренутни корисник</translation>
 <translation id="5728056243719941842">C5 (коверат)</translation>
@@ -1562,7 +1561,6 @@
 <translation id="624499991300733384">Услуга слагања за штампање</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте управљали фајловима које сте преузели у Chrome-у</translation>
 <translation id="6254436959401408446">Нема довољно меморије за отварање ове странице</translation>
-<translation id="625755898061068298">Онемогућили сте безбедносна упозорења за овај сајт.</translation>
 <translation id="6259156558325130047">&amp;Понови промену редоследа</translation>
 <translation id="6263376278284652872">Обележивачи домена <ph name="DOMAIN" /></translation>
 <translation id="6264485186158353794">Назад на безбедно</translation>
@@ -1732,6 +1730,7 @@
 <translation id="6884662655240309489">Величина 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome је поједноставио ову страницу ради лакшег читања. Chrome је преузео оригиналну страницу преко небезбедне везе.</translation>
+<translation id="6890443033788248019">Желите ли да дозволите локацију?</translation>
 <translation id="6891596781022320156">Ниво смерница није подржан.</translation>
 <translation id="6895143722905299846">Виртуелни број:</translation>
 <translation id="6895330447102777224">Картица је потврђена</translation>
@@ -2003,6 +2002,7 @@
 <translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">Можда је заштитни зид или антивирусни софтвер блокирао везу.</translation>
 <translation id="776110834126722255">Застарело</translation>
+<translation id="7761159795823346334">Желите ли да дозволите камеру?</translation>
 <translation id="7761701407923456692">Сертификат сервера се не подудара са URL адресом.</translation>
 <translation id="7763386264682878361">Рашчлањивач манифеста за плаћање</translation>
 <translation id="7764225426217299476">Додајте адресу</translation>
@@ -2230,6 +2230,7 @@
 <translation id="8522552481199248698">Chrome може да вам помогне да заштитите Google налог и промените лозинку.</translation>
 <translation id="8530813470445476232">Обришите историју прегледања, колачиће, кеш и друго у подешавањима Chrome-а</translation>
 <translation id="8533619373899488139">Посетите &lt;strong&gt;chrome://policy&lt;/strong&gt; да бисте видели листу блокираних URL-ова и друге смернице које је одредио администратор система.</translation>
+<translation id="8539500321752640291">Желите ли да омогућите 2 дозволе?</translation>
 <translation id="8541158209346794904">Bluetooth уређај</translation>
 <translation id="8542014550340843547">Троструко спајање на дну</translation>
 <translation id="8543181531796978784">Можете да <ph name="BEGIN_ERROR_LINK" />пријавите проблем са откривањем<ph name="END_ERROR_LINK" /> или, ако схватате безбедносне ризике, <ph name="BEGIN_LINK" />посетите овај небезбедан сајт<ph name="END_LINK" />.</translation>
@@ -2357,6 +2358,7 @@
 <translation id="9025348182339809926">(Неважеће)</translation>
 <translation id="9030265603405983977">Монохроматско</translation>
 <translation id="9035022520814077154">Безбедносна грешка</translation>
+<translation id="9036306139374661733">Желите ли да дозволите микрофон?</translation>
 <translation id="9038649477754266430">Користите услугу предвиђања да бисте брже учитавали странице</translation>
 <translation id="9039213469156557790">Поред тога, ова страница садржи и друге ресурсе који нису безбедни. Ове ресурсе могу да виде и други док су у пролазу и нападач може да их измени како би променио понашање странице.</translation>
 <translation id="9044359186343685026">Користи Touch ID</translation>

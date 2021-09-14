@@ -170,6 +170,7 @@ Jei parinktis „<ph name="SERVICE_SCRIPT_NAME" />“ jau pažymėta, atžymėki
 Jei norite suteikti šį leidimą, toliau spustelėję „<ph name="BUTTON_NAME" />“ atidarykite pasiekiamumo nuostatų sritį ir pažymėkite laukelį šalia parinkties „<ph name="SERVICE_SCRIPT_NAME" />“.
 
 Jei parinktis „<ph name="SERVICE_SCRIPT_NAME" />“ jau pažymėta, atžymėkite ją ir pažymėkite iš naujo.</translation>
+<translation id="8305209735512572429">Žiniatinklio autentifikavimo nuotolinio valdymo procesas</translation>
 <translation id="8383794970363966105">Jei norite naudoti „Chrome“ nuotolinį ryšį, įrenginyje turite pridėti „Google“ paskyrą.</translation>
 <translation id="8386846956409881180">Priegloba sukonfigūruota naudojant netinkamus „OAuth“ prisijungimo duomenis.</translation>
 <translation id="8397385476380433240">Suteikite leidimą produktui „<ph name="PRODUCT_NAME" />“</translation>

@@ -8,6 +8,7 @@
 <translation id="1378979118429748177">വിലയിടിയുമ്പോൾ അറിയിപ്പ് നേടുക</translation>
 <translation id="1657719826150349398">ടാബ് താഴേക്ക് നീക്കുക</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ടാബ്}other{<ph name="TABS_COUNT_MANY" /> ടാബുകൾ}}</translation>
+<translation id="2118649612461486615">സ്റ്റോർ വിവരങ്ങൾ</translation>
 <translation id="2277224997687551299">ഗ്രൂപ്പിന്റെ പേര് എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_ONE" /> ടാബ്, ഗ്രൂപ്പിൽ നിന്ന് നീക്കം ചെയ്യുക.}other{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_MANY" /> ടാബുകൾ, ഗ്രൂപ്പിൽ നിന്ന് നീക്കം ചെയ്യുക.}}</translation>
 <translation id="2479148705183875116">ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
@@ -50,13 +51,16 @@
 <translation id="6040143037577758943">അടയ്ക്കുക</translation>
 <translation id="6054741997831917303">ഈ ഇനത്തിന്റെ വില അടുത്തിടെ <ph name="PREVIOUS_PRICE" /> എന്നതിൽ നിന്ന് <ph name="NEW_PRICE" /> ആയി കുറഞ്ഞു</translation>
 <translation id="6193448654517602979">തിരഞ്ഞെടുക്കൂ</translation>
+<translation id="6228793724645064692">(സ്റ്റോർ റേറ്റിംഗ്)</translation>
 <translation id="6510648526783655549">തുറന്ന് വച്ചിട്ടുള്ള ടാബുകൾ അടയ്ക്കുക</translation>
+<translation id="6549021453810473782">സ്റ്റോർ വിവരങ്ങൾ കാണുക</translation>
 <translation id="6562820390860419811">ടാബ് ഇടത്തേക്ക് നീക്കുക</translation>
 <translation id="6615455863669487791">എന്നെ കാണിക്കുക</translation>
 <translation id="6840760312327750441">ടാബുകൾ ഗ്രൂപ്പ് ചെയ്യാൻ, ഒരു ടാബിൽ സ്‌പർശിച്ച് പിടിക്കുക. തുടർന്ന്, അത് മറ്റൊരു ടാബിലേക്ക് വലിച്ചിടുക.</translation>
 <translation id="6856809498882026482">ഒന്നിലധികം തിരഞ്ഞെടുക്കൽ മോഡ് മറയ്ക്കുക</translation>
 <translation id="7151209024774799310">ഗ്രൂപ്പിൽ നിന്ന് ടാബുകൾ നീക്കൂ</translation>
 <translation id="7204204600596740190">ഒന്നിലധികം തിരഞ്ഞെടുക്കൽ മോഡ്</translation>
+<translation id="7326879924029668159">മടക്കി നൽകൽ നയവും മറ്റും കാണുക</translation>
 <translation id="7352298686197644113">തുറന്നിരിക്കുന്ന ടാബുകളിൽ ഏത് ഇനത്തിനാണ് കുറഞ്ഞ വിലയുള്ളതെന്ന് കാണുക</translation>
 <translation id="753732157349120914">ടാബ് സ്വിച്ചർ</translation>
 <translation id="7559245342362162951">ഗ്രൂപ്പിന്റെ ടാബുകൾ പൂർണ്ണസ്ക്രീൻ ഗ്രിഡിൽ കാണിക്കുക</translation>

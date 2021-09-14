@@ -155,6 +155,7 @@
 Če želite odobriti to dovoljenje, spodaj kliknite »<ph name="BUTTON_NAME" />«. V podoknu z nastavitvami možnosti »Dostopnost« označite polje zraven »<ph name="SERVICE_SCRIPT_NAME" />«.
 
 Če je »<ph name="SERVICE_SCRIPT_NAME" />« že označeno, ga odznačite in znova označite.</translation>
+<translation id="8305209735512572429">Postopek oddaljenega delovanja spletnega preverjanja pristnosti</translation>
 <translation id="8383794970363966105">Če želite uporabljati Oddaljeno povezovanje s Chromom, morate v napravo dodati Google Račun.</translation>
 <translation id="8386846956409881180">Gostitelj je konfiguriran z neveljavnimi poverilnicami OAuth.</translation>
 <translation id="8397385476380433240">Odobrite dovoljenje izdelku <ph name="PRODUCT_NAME" /></translation>

@@ -170,6 +170,7 @@ Als <ph name="SERVICE_SCRIPT_NAME" /> al is aangevinkt, vink je dit eerst uit en
 Als je dit recht wilt verlenen, klik je hieronder op '<ph name="BUTTON_NAME" />' om het voorkeurenvenster voor toegankelijkheid te openen. Vink daarna '<ph name="SERVICE_SCRIPT_NAME" />' aan.
 
 Als '<ph name="SERVICE_SCRIPT_NAME" />' al is aangevinkt, moet je dit uitvinken en vervolgens weer aanvinken.</translation>
+<translation id="8305209735512572429">Proces voor externe webverificatie</translation>
 <translation id="8383794970363966105">Als je Chromoting wilt gebruiken, moet je een Google-account aan je apparaat toevoegen</translation>
 <translation id="8386846956409881180">Host is geconfigureerd met ongeldige OAuth-inloggegevens.</translation>
 <translation id="8397385476380433240">Verleen rechten aan <ph name="PRODUCT_NAME" /></translation>

@@ -889,6 +889,7 @@
 <translation id="3987940399970879459">小於 1 MB</translation>
 <translation id="3990250421422698716">撞頁偏移</translation>
 <translation id="3996311196211510766">網站 <ph name="ORIGIN" /> 指定所有收到的要求都必須套用來源政策，但目前無法套用此政策。</translation>
+<translation id="4010758435855888356">要授予儲存空間存取權嗎？</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF 文件入面有 {COUNT} 頁}other{PDF 文件入面有 {COUNT} 頁}}</translation>
 <translation id="4023431997072828269">由於此表格透過不安全的連線提交，其他人將可看到您的資料。</translation>
 <translation id="4030383055268325496">復原新增(&amp;U)</translation>
@@ -1193,7 +1194,6 @@
 <translation id="4958444002117714549">展開清單</translation>
 <translation id="4968522289500246572">此應用程式專為流動裝置而設，可能無法正常調整大小。應用程式可能會發生問題或重新啟動。</translation>
 <translation id="4973922308112707173">雙孔 (頂端)</translation>
-<translation id="4974590756084640048">重新啟用警告功能</translation>
 <translation id="4984088539114770594">要使用麥克風嗎？</translation>
 <translation id="4984339528288761049">Prc5 (信封)</translation>
 <translation id="4989163558385430922">查看全部</translation>
@@ -1413,7 +1413,6 @@
 <translation id="5701381305118179107">置中</translation>
 <translation id="570530837424789914">管理…</translation>
 <translation id="57094364128775171">建議安全性強的密碼…</translation>
-<translation id="5710435578057952990">這個網頁的身分未經驗證。</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="5720705177508910913">目前使用者</translation>
 <translation id="5728056243719941842">C5 (信封)</translation>
@@ -1553,7 +1552,6 @@
 <translation id="624499991300733384">列印建立服務</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以管理您喺 Chrome 度下載嘅檔案</translation>
 <translation id="6254436959401408446">記憶體不足，因此無法開啟此網頁</translation>
-<translation id="625755898061068298">您已選擇關閉此網站的安全警告。</translation>
 <translation id="6259156558325130047">重做重新排序(&amp;R)</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> 書籤</translation>
 <translation id="6264485186158353794">返回安全連線</translation>
@@ -1723,6 +1721,7 @@
 <translation id="6884662655240309489">粗幼：1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome 已簡化此頁面，方便您閱讀。Chrome 已透過不安全連線擷取原始網頁。</translation>
+<translation id="6890443033788248019">要授予位置存取權嗎？</translation>
 <translation id="6891596781022320156">系統不支援這項政策的層級。</translation>
 <translation id="6895143722905299846">虛擬卡號：</translation>
 <translation id="6895330447102777224">您的信用卡已完成驗證</translation>
@@ -1994,6 +1993,7 @@
 <translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">連線可能遭防火牆或防毒軟件封鎖。</translation>
 <translation id="776110834126722255">已淘汰</translation>
+<translation id="7761159795823346334">要授予相機權限嗎？</translation>
 <translation id="7761701407923456692">伺服器憑證與網址不符。</translation>
 <translation id="7763386264682878361">付款資訊清單剖析器</translation>
 <translation id="7764225426217299476">新增地址</translation>
@@ -2221,6 +2221,7 @@
 <translation id="8522552481199248698">Chrome 可助您保護 Google 帳戶並變更密碼。</translation>
 <translation id="8530813470445476232">清除您的瀏覽記錄、Cookie、快取以及其他 Chrome 設定</translation>
 <translation id="8533619373899488139">請前往 &lt;strong&gt;chrome://policy&lt;/strong&gt; 查看被封鎖的網址清單，以及由系統管理員強制執行的其他政策。</translation>
+<translation id="8539500321752640291">要授予 2 項權限嗎？</translation>
 <translation id="8541158209346794904">藍牙裝置</translation>
 <translation id="8542014550340843547">三釘 (底部)</translation>
 <translation id="8543181531796978784">您可以<ph name="BEGIN_ERROR_LINK" />報告偵測問題<ph name="END_ERROR_LINK" />；或如果您瞭解安全性風險，也可以<ph name="BEGIN_LINK" />瀏覽這個不安全的網站<ph name="END_LINK" />。</translation>
@@ -2347,6 +2348,7 @@
 <translation id="9025348182339809926">(無效)</translation>
 <translation id="9030265603405983977">單色</translation>
 <translation id="9035022520814077154">安全錯誤</translation>
+<translation id="9036306139374661733">要授予麥克風權限嗎？</translation>
 <translation id="9038649477754266430">使用搜尋預測服務，加快網頁載入速度</translation>
 <translation id="9039213469156557790">而且，這個網頁含有其他不安全的資源。其他人可能會在資源傳輸期間檢視這些資源，攻擊者也可能會修改這些資源，繼而變更網頁行為。</translation>
 <translation id="9044359186343685026">使用 Touch ID</translation>

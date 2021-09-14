@@ -91,6 +91,7 @@
 <translation id="1257553931232494454">زوم کے لیولز</translation>
 <translation id="1262388120645841613">‏<ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />، اپنے Chrome کی ترتیبات کا نظم کرنے کے لیے ٹیب پھر اینٹر دبائیں</translation>
 <translation id="1263231323834454256">پڑھنے کی فہرست</translation>
+<translation id="1269096320618100013">‏ایکسیسبیلٹی کی ترتیبات کے بٹن کا نظم کریں، Chrome OS کی ترتیبات میں اپنی ایکسیسبیلٹی کے ٹولز کو ذاتی نوعیت کا بنانے کے لیے اینٹر دبائیں</translation>
 <translation id="1269516672602708785">‏Google Sites میں تیزی سے نئی سائٹ تخلیق کریں</translation>
 <translation id="1270502636509132238">پِک اپ کا طریقہ</translation>
 <translation id="1281476433249504884">اسٹیکر 1</translation>
@@ -505,6 +506,7 @@
 <translation id="2649259151839507861">‏<ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />، Chrome ترتیبات میں اپنے براؤزنگ کی سرگزشت، کوکیز، کیش اور بہت کچھ کو صاف کرنے کے لیے ٹیب، پھر اینٹر دبائیں</translation>
 <translation id="2650446666397867134">فائل تک رسائی مسترد کر دی گئی</translation>
 <translation id="2653659639078652383">جمع کرائیں</translation>
+<translation id="2659491813326907275">‏Chrome کی ترتیبات میں اپنی ایکسیسبیلٹی کے ٹولز کو ذاتی نوعیت کا بنائیں</translation>
 <translation id="2660779039299703961">ایونٹ</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{کوئی نہیں}=1{(<ph name="DOMAIN_LIST" /> کے لیے) 1 پاس ورڈ}=2{(<ph name="DOMAIN_LIST" /> کے لیے) 2 پاس ورڈز}other{(<ph name="DOMAIN_LIST" /> کے لیے) # پاس ورڈز}}</translation>
 <translation id="2666092431469916601">سرفہرست</translation>
@@ -1202,7 +1204,6 @@
 <translation id="4958444002117714549">فہرست پھیلائیں</translation>
 <translation id="4968522289500246572">یہ ایپ موبائل کیلئے ڈیزائن کی گئی ہے اور ممکن ہے کہ اس کا سائز صحیح طریقے سے تبدیل نہ ہو۔ اس کو استعمال کرنے میں مسائل کا سامنا ہو سکتا ہے یا ری اسٹارٹ کرنا پڑ سکتی ہے۔</translation>
 <translation id="4973922308112707173">اوپر دُہرا سوراخ</translation>
-<translation id="4974590756084640048">وارننگز کو دوبارہ فعال کریں</translation>
 <translation id="4984088539114770594">مائیکروفون کا استعمال کریں؟</translation>
 <translation id="4984339528288761049">Prc5 ‎(Envelope‎)‎</translation>
 <translation id="4989163558385430922">سبھی دیکھیں</translation>
@@ -1250,6 +1251,7 @@
 <translation id="5115216390227830982">European-Edp</translation>
 <translation id="5115232566827194440">نظم کردہ ممنوع مہمان کا سیشن اوور رائیڈ کریں</translation>
 <translation id="5115563688576182185">(64 بٹ)</translation>
+<translation id="5116898824332672776">‏<ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />، Chrome OS کی ترتیبات میں اپنی ایکسیسبیلٹی کے ٹولز کو ذاتی نوعیت کا بنانے کے لیے ٹیب پھر اینٹر دبائیں۔</translation>
 <translation id="5123063207673082822">ویک اینڈ</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">اپنے کارڈ کی توثیق کریں</translation>
@@ -1421,7 +1423,6 @@
 <translation id="5701381305118179107">مرکز</translation>
 <translation id="570530837424789914">نظم کریں…</translation>
 <translation id="57094364128775171">مضبوط پاس ورڈ تجویز کریں…</translation>
-<translation id="5710435578057952990">اس ویب سائٹ کی شناخت کی توثیق نہیں ہوئی ہے۔</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="5720705177508910913">حالیہ صارف</translation>
 <translation id="5728056243719941842">C5 ‎(Envelope‎)‎</translation>
@@ -1562,7 +1563,6 @@
 <translation id="624499991300733384">پرنٹ کمپوزیٹر سروس</translation>
 <translation id="6252613631861574218">‏<ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />، Chrome میں ڈاؤن لوڈ کردہ اپنی فائلز کا نظم کرنے کے لیے ٹیب پھر اینٹر دبائیں</translation>
 <translation id="6254436959401408446">اس صفحہ کو کھولنے کیلئے کافی میموری نہیں ہے</translation>
-<translation id="625755898061068298">آپ نے اس سائٹ کیلئے سیکیورٹی وارننگز کو غیر فعال کرنے کا انتخاب کیا ہے۔</translation>
 <translation id="6259156558325130047">دوبارہ ترتیب کو &amp;واپس لائیں</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> بُک مارکس</translation>
 <translation id="6264485186158353794">تحفظ پر واپس جائیں</translation>

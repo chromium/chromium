@@ -170,6 +170,7 @@ Ako je okvir "<ph name="SERVICE_SCRIPT_NAME" />" već potvrđen, uklonite kvači
 Za dodjelu tog dopuštenja kliknite "<ph name="BUTTON_NAME" />" u nastavku. U oknu s postavkama "Pristupačnosti" koje će se otvoriti potvrdite okvir pored stavke "<ph name="SERVICE_SCRIPT_NAME" />".
 
 Ako je okvir stavke "<ph name="SERVICE_SCRIPT_NAME" />" već potvrđen, poništite ga i potvrdite ponovo.</translation>
+<translation id="8305209735512572429">Postupak daljinskog postavljanja autentifikacije na webu</translation>
 <translation id="8383794970363966105">Da biste upotrebljavali Chromoting, uređaju morate dodati Google račun.</translation>
 <translation id="8386846956409881180">Host je konfiguriran s nevažećim vjerodajnicama za OAuth.</translation>
 <translation id="8397385476380433240">Odobravanje dopuštenja za proizvod <ph name="PRODUCT_NAME" /></translation>

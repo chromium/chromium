@@ -287,6 +287,7 @@
 <translation id="3549797760399244642">前往 drive.google.com...</translation>
 <translation id="3553048479571901246">如要使用「<ph name="APP_NAME" />」開啟檔案，請先將檔案複製到 Windows 檔案資料夾。</translation>
 <translation id="3556731189587832921">英文 (美國) 搭配國際 PC 鍵盤</translation>
+<translation id="3567221313191587603">如要將檔案設為可離線使用，請選取該檔案，然後將 <ph name="OFFLINE_CHECKBOX_NAME" /> 改為勾選狀態。</translation>
 <translation id="357479282490346887">立陶宛文</translation>
 <translation id="3592251141500063301">無法將「<ph name="FILE_NAME" />」設為可離線使用</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -397,6 +398,7 @@
 <translation id="4642769377300286600">正在安裝行動裝置設定檔，第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">捷克文搭配 Qwerty 鍵盤</translation>
 <translation id="4656293982926141856">這台電腦</translation>
+<translation id="4656777537938206294">將檔案設為可離線使用</translation>
 <translation id="4669606053856530811">「<ph name="SOURCE_NAME" />」的成員將失去存取權，除非有人與他們共用這些項目。</translation>
 <translation id="4690246192099372265">瑞典文</translation>
 <translation id="4693155481716051732">壽司</translation>

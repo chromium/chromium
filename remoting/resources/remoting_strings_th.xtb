@@ -170,6 +170,7 @@
 หากต้องการให้สิทธิ์นี้ ให้คลิกปุ่ม "<ph name="BUTTON_NAME" />" ด้านล่าง จากนั้นเลือกช่องข้าง "<ph name="SERVICE_SCRIPT_NAME" />" ในแผงค่ากำหนด "การเข้าถึง" ที่เปิดขึ้นมา
 
 หากมีการเลือก "<ph name="SERVICE_SCRIPT_NAME" />" ไว้แล้ว ให้ยกเลิกการเลือกแล้วเลือกอีกครั้ง</translation>
+<translation id="8305209735512572429">กระบวนการทำงานระยะไกลของการตรวจสอบสิทธิ์ผ่านเว็บ</translation>
 <translation id="8383794970363966105">ในการใช้ Chromoting คุณจะต้องเพิ่มบัญชี Google ลงในอุปกรณ์ของคุณ</translation>
 <translation id="8386846956409881180">โฮสต์ได้รับการกำหนดค่าด้วยข้อมูลรับรอง OAuth ที่ไม่ถูกต้อง</translation>
 <translation id="8397385476380433240">ให้สิทธิ์แก่ <ph name="PRODUCT_NAME" /></translation>

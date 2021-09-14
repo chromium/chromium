@@ -170,6 +170,7 @@ Ha már be van jelölve az „<ph name="SERVICE_SCRIPT_NAME" />” melletti nég
 Az engedély megadásához kattintson az alábbi „<ph name="BUTTON_NAME" />” gombra. Az ekkor megnyíló „Kisegítő lehetőségek” beállításait tartalmazó panelen jelölje be a(z) „<ph name="SERVICE_SCRIPT_NAME" />” melletti négyzetet.
 
 Ha már be van jelölve a(z) „<ph name="SERVICE_SCRIPT_NAME" />” melletti négyzet, távolítsa el a jelölését, majd jelölje be újra.</translation>
+<translation id="8305209735512572429">Webes hitelesítés távoli elérési folyamata</translation>
 <translation id="8383794970363966105">A Chromoting használatához adjon hozzá eszközéhez egy Google-fiókot.</translation>
 <translation id="8386846956409881180">A gazdagép beállítása érvénytelen OAuth hitelesítési adatokkal történt.</translation>
 <translation id="8397385476380433240">Engedély megadása a következőnek: <ph name="PRODUCT_NAME" /></translation>

@@ -170,6 +170,7 @@ Bu icazəni vermək üçün aşağıda "<ph name="BUTTON_NAME" />" düyməsinə 
 Bu icazəni vermək üçün aşağıda "<ph name="BUTTON_NAME" />" düyməsinə toxunun. Açılan "Giriş" tərcihləri panelində "<ph name="SERVICE_SCRIPT_NAME" />" yanındakı xananı işarələyin.
 
 "<ph name="SERVICE_SCRIPT_NAME" />" artıq işarələnibsə, işarəni götürün və yenidən işarələyin.</translation>
+<translation id="8305209735512572429">Veb Doğrulamanı Uzaqdan İdarəetmə Prosesi</translation>
 <translation id="8383794970363966105">Chromoting işlətmək üçün cihazınız üçün Google Hesabı olmalıdır.</translation>
 <translation id="8386846956409881180">Host güvənsiz OAuth kredensialları ilə sazlanıb.</translation>
 <translation id="8397385476380433240"><ph name="PRODUCT_NAME" /> üçün icazə verin</translation>

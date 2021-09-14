@@ -328,6 +328,15 @@
 
       Si las funciones de accesibilidad se habilitan de otra forma (por ejemplo, mediante una combinación de teclas), siempre se mostrarán en el menú de la bandeja del sistema</translation>
 <translation id="1449777485284610883">Permitir la instalación y actualización de extensiones alojadas fuera de Chrome Web Store</translation>
+<translation id="1451113827539677573">Controla el modo en que <ph name="PRODUCT_NAME" /> imprime en <ph name="MS_WIN_NAME" />.
+
+      Cuando se imprime en una impresora que no utiliza PostScript en <ph name="MS_WIN_NAME" />, los trabajos de impresión a veces se tienen que rasterizar para que se impriman correctamente.
+
+      Si se le asigna el valor "full" a esta política, <ph name="PRODUCT_NAME" /> rasterizará la página completa si es necesario.
+
+      Si se le asigna el valor "fast", <ph name="PRODUCT_NAME" /> evita la rasterización si es posible. Reducir la cantidad de rasterización puede ayudar a reducir los tamaños de los trabajos de impresión y aumentar la velocidad de impresión.
+
+      Si no se le asigna ningún valor a esta política, <ph name="PRODUCT_NAME" /> tendrá activado el modo completo.</translation>
 <translation id="1456822151187621582">Windows (clientes de <ph name="PRODUCT_OS_NAME" />):</translation>
 <translation id="1464848559468748897">Controla el comportamiento del usuario en una sesión de varios perfiles en dispositivos <ph name="PRODUCT_OS_NAME" />.
 
@@ -1135,6 +1144,13 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 <translation id="2355876547176311490">Inhabilitar el uso de servidores de retransmisión por parte del host de acceso remoto</translation>
 <translation id="2358176879566587521">Se ha retirado esta política. No es compatible con esta versión de <ph name="PRODUCT_NAME" />. Consulta https://support.google.com/chrome/a/answer/7643500</translation>
 <translation id="2362469626417133796">Periodo de reinicio</translation>
+<translation id="2363928351203698966">Si se le asigna un valor válido a esta política, <ph name="PRODUCT_NAME" /> no podrá usar las versiones de SSL/TLS anteriores a la versión especificada. Los valores que no se reconozcan se ignorarán.
+
+      Si no se establece esta política, <ph name="PRODUCT_NAME" /> mostrará un error para las versiones TLS 1.0 y TLS 1.1, pero el usuario podrá evitarlo.
+
+      Si se le asigna el valor "tls1.2" a esta política, el usuario no podrá omitir este error.
+
+      A partir de la versión 91, ya no se le pueden asignar los valores "tls1" o "tls1.1" a esta política. Ya no es posible eliminar la advertencia TLS 1.0/1.1.</translation>
 <translation id="2364639863953745682">Modo de la experiencia de incorporación del Asistente</translation>
 <translation id="2384233438419344179">Si se habilita esta política, los elementos de sitios web que no pertenezcan al dominio que aparece en la barra de direcciones del navegador no podrán establecer cookies. Si se inhabilita esta política, estos elementos podrán establecer cookies y los usuarios no podrán cambiar esta opción.
 
@@ -1830,6 +1846,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="3146711617256415776">No permitir las voces de conversión de texto a voz de red mejorada al usar Enunciar selección</translation>
 <translation id="3152425128389603870">Habilitar el escritorio unificado y activarlo de forma predeterminada</translation>
 <translation id="3159375329008977062">El usuario tiene permiso para exportar e importar contenedores Crostini a través de la UI</translation>
+<translation id="3164531087779621747">Imprimir en modo PostScript</translation>
 <translation id="3165808775394012744">Estas políticas se incluyen aquí para que sea fácil eliminarlas.</translation>
 <translation id="3166210414652928099">Permitir al usuario utilizar aplicaciones Android de fuentes que no son de confianza</translation>
 <translation id="316778957754360075">Esta opción no está disponible desde la versión 29 de <ph name="PRODUCT_NAME" />. La forma recomendada de configurar colecciones de aplicaciones o extensiones alojadas por una organización es incluir el sitio que aloja los paquetes CRX en la política ExtensionInstallSources y colocar enlaces de descarga directa de los paquetes en una página web. También se puede crear un menú de aplicaciones para la página web con la política ExtensionInstallForcelist.</translation>
@@ -3380,6 +3397,15 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="5213038356678567351">Sitios web que nunca deben activar un cambio de navegador.</translation>
 <translation id="5219844027738217407">En el caso de las aplicaciones para Android, esta política afecta solo al micrófono. Si se asigna el valor true a esta política, el micrófono se silenciará en todas las aplicaciones para Android, sin excepciones.</translation>
 <translation id="5220594484746830711">Solo permitir que las ventanas emergentes abiertas con <ph name="BLANK_PAGE_NAME" /> como objetivo interactúen con la página que ha abierto la ventana emergente si esa página ha aceptado dicha interacción</translation>
+<translation id="5227124062673546005">Controla el modo en que <ph name="PRODUCT_NAME" /> imprime en <ph name="MS_WIN_NAME" />.
+
+      Al imprimir en una impresora PostScript en <ph name="MS_WIN_NAME" />, pueden afectar al rendimiento de impresión diferentes métodos de generación de PostScript.
+
+      Si se le asigna el valor predeterminado a esta política, <ph name="PRODUCT_NAME" /> usará un conjunto de opciones predeterminadas al generar el PostScript. En particular, el texto se renderizará siempre con fuentes Tipo 3.
+
+      Si se le asigna el valor "Type42" a esta política, <ph name="PRODUCT_NAME" /> renderizará el texto con fuentes Tipo 42 si es posible. De esta manera, debería aumentar la velocidad de impresión de algunas impresoras PostScript.
+
+      Si no se le asigna ningún valor a esta política, <ph name="PRODUCT_NAME" /> tendrá activado el modo predeterminado.</translation>
 <translation id="5227647876065695164">Esta política especifica el comportamiento del cambio a una versión inferior en los dispositivos registrados. Cambiar a una versión inferior significa cambiar a un canal más estable, por ejemplo, de beta a estable.
 
       El valor de esta política afecta a los cambios a versiones inferiores iniciados por el usuario o el administrador.
@@ -4358,6 +4384,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Estas notificaciones solo se mostrarán si el proveedor de identidades de SAML envía la información sobre la caducidad de la contraseña al dispositivo durante el flujo de inicio de sesión de SAML.
 
       Si se asigna el valor Disabled a esta política o no se establece, la contraseña de SAML no se podrá cambiar en chrome://password-change y no se mostrará ninguna notificación cuando las contraseñas de SAML estén a punto de caducar.</translation>
+<translation id="6457477291648119596">Type42</translation>
 <translation id="6458361632497500815">Si se habilita la política o no se establece, los usuarios podrán usar <ph name="PRODUCT_CROSTINI_NAME" /> siempre y cuando estén habilitadas las 3 políticas <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" />, <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> y <ph name="DEVICE_UNAFFILIATED_CROSTINI_ALLOWED_POLICY_NAME" />. Si se inhabilita la política, los usuarios no afiliados no podrán usar <ph name="PRODUCT_CROSTINI_NAME" />. En caso de inhabilitar la política, esto se aplicará a los nuevos contenedores de <ph name="PRODUCT_CROSTINI_NAME" /> que se empiecen a usar, pero no a los que ya estén ejecutándose.</translation>
 <translation id="6464074037294098618">Habilitar la función Autocompletar para direcciones</translation>
 <translation id="6467613372414922590">Permitir hosts de mensajes nativos en el nivel de usuario (instalados sin permisos de administrador)</translation>

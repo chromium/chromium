@@ -357,6 +357,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="4619564267100705184">본인 인증</translation>
 <translation id="4619615317237390068">다른 기기의 탭</translation>
 <translation id="4620246317052452550">내가 읽은 페이지</translation>
+<translation id="4620888520263267479">링크 미리보기 표시</translation>
 <translation id="4630540211544979320">페이지 번역</translation>
 <translation id="4634124774493850572">비밀번호 사용</translation>
 <translation id="4636930964841734540">정보</translation>
@@ -662,6 +663,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="7336264872878993241"><ph name="PERCENT" />% 다운로드됨</translation>
 <translation id="7340958967809483333">디스커버용 옵션</translation>
 <translation id="7346909386216857016">확인</translation>
+<translation id="7347393021726115275">관리자가 승인한 계정으로만 로그인할 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="734758817008927353">카드 저장 옵션</translation>
 <translation id="7348502496356775519">북마크</translation>
 <translation id="7353432112255316844">본인 인증</translation>

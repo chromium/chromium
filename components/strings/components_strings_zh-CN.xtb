@@ -1190,7 +1190,6 @@
 <translation id="4958444002117714549">展开列表</translation>
 <translation id="4968522289500246572">此应用是专为移动设备设计的，可能无法妥当地调整大小。此应用可能会出现问题或重启。</translation>
 <translation id="4973922308112707173">双孔（顶部）</translation>
-<translation id="4974590756084640048">重新启用警告功能</translation>
 <translation id="4984088539114770594">使用麦克风？</translation>
 <translation id="4984339528288761049">Prc5 (Envelope)</translation>
 <translation id="4989163558385430922">查看全部</translation>
@@ -1410,7 +1409,6 @@
 <translation id="5701381305118179107">居中</translation>
 <translation id="570530837424789914">管理…</translation>
 <translation id="57094364128775171">建议安全系数高的密码…</translation>
-<translation id="5710435578057952990">此网站尚未经过身份验证。</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="5720705177508910913">当前用户</translation>
 <translation id="5728056243719941842">C5 (Envelope)</translation>
@@ -1549,7 +1547,6 @@
 <translation id="624499991300733384">打印合成器服务</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可管理您已在 Chrome 中下载的文件</translation>
 <translation id="6254436959401408446">内存不足，无法打开此网页</translation>
-<translation id="625755898061068298">您已选择针对此网站停用安全警告功能。</translation>
 <translation id="6259156558325130047">恢复顺序调整(&amp;R)</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> 书签</translation>
 <translation id="6264485186158353794">返回安全连接</translation>

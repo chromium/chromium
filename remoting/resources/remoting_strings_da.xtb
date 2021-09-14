@@ -170,6 +170,7 @@ Hvis "<ph name="SERVICE_SCRIPT_NAME" />" allerede er markeret, skal du fjerne ma
 Hvis du vil give denne tilladelse, skal du klikke på "<ph name="BUTTON_NAME" />" nedenfor. I ruden med præferencer for "Tilgængelighed", som åbnes, skal du markere afkrydsningsfeltet ud for "<ph name="SERVICE_SCRIPT_NAME" />".
 
 Hvis "<ph name="SERVICE_SCRIPT_NAME" />" allerede er markeret, skal du fjerne markeringen og så markere afkrydsningsfeltet igen.</translation>
+<translation id="8305209735512572429">Proces til webgodkendelse via fjernadgang</translation>
 <translation id="8383794970363966105">Hvis du vil bruge Chromoting, skal du føje en Google-konto til din enhed.</translation>
 <translation id="8386846956409881180">Hosten er konfigureret med ugyldige OAuth-loginoplysninger.</translation>
 <translation id="8397385476380433240">Giv tilladelse til <ph name="PRODUCT_NAME" /></translation>

@@ -162,6 +162,7 @@
 <translation id="4238516577297848345">Neprebiehajú žiadne tlačové úlohy</translation>
 <translation id="4244962993387259361">Na spustenie testu pamäte potrebujete aspoň 500 MB voľného miesta. Miesto uvoľnite v sekcii Nastavenia &gt; Správa priestoru.</translation>
 <translation id="4258281355379922695">Latencia protokolu HTTP</translation>
+<translation id="4271957103967917607">Zobraziť na celú obrazovku</translation>
 <translation id="4289540628985791613">Prehľad</translation>
 <translation id="4297501883039923494">Zastavené – neznáma chyba</translation>
 <translation id="4300073214558989">Počet obrázkov: <ph name="IMAGE_COUNT" /></translation>
@@ -373,6 +374,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7550715992156305117">Diagnostické postupy</translation>
 <translation id="7561454561030345039">Túto akciu ovláda váš správca</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7574732568136198983">ARC Ping</translation>
 <translation id="7595982850646262331">Zostáva <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Ďalšie informácie v centre pomoci</translation>
 <translation id="763165478673169849">Čas posledného resetovania</translation>

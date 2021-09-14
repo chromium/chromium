@@ -170,6 +170,7 @@
 כדי להעניק את ההרשאה הזו, יש ללחוץ על '<ph name="BUTTON_NAME" />' למטה. אחרי הלחיצה, תיפתח חלונית לבחירת העדפות. בקטע 'נגישות', יש לסמן את התיבה שלצד '<ph name="SERVICE_SCRIPT_NAME" />'.
 
 אם האפשרות '<ph name="SERVICE_SCRIPT_NAME" />' כבר מסומנת, יש לבטל את הסימון ואז לסמן מחדש.</translation>
+<translation id="8305209735512572429">תהליך התקשרות מרחוק לאימות באינטרנט</translation>
 <translation id="8383794970363966105">‏כדי להשתמש ב-Chromoting, עליך להוסיף חשבון Google למכשיר שלך.</translation>
 <translation id="8386846956409881180">‏בהגדרת המארח נעשה שימוש בפרטי כניסת OAuth לא חוקיים.</translation>
 <translation id="8397385476380433240">מתן הרשאה ל-<ph name="PRODUCT_NAME" /></translation>

@@ -170,6 +170,7 @@ Ak je políčko <ph name="SERVICE_SCRIPT_NAME" /> už začiarknuté, začiarknut
 Toto povolenie udelíte tak, že kliknutím na <ph name="BUTTON_NAME" /> nižšie otvoríte panel predvolieb Dostupnosť a začiarknete políčko <ph name="SERVICE_SCRIPT_NAME" />.
 
 Ak je políčko <ph name="SERVICE_SCRIPT_NAME" /> už začiarknuté, začiarknutie zrušte a potom ho znova začiarknite.</translation>
+<translation id="8305209735512572429">Proces vzdialeného prístupu overenia webov</translation>
 <translation id="8383794970363966105">Ak chcete používať funkciu Chromoting, musíte si na zariadení pridať účet Google.</translation>
 <translation id="8386846956409881180">Hostiteľ bol nakonfigurovaný pomocou neplatných poverení protokolu OAuth</translation>
 <translation id="8397385476380433240">Udelenie povolenia službe <ph name="PRODUCT_NAME" /></translation>

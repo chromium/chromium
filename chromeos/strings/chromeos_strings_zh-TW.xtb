@@ -162,6 +162,7 @@
 <translation id="4238516577297848345">沒有任何進行中的列印工作</translation>
 <translation id="4244962993387259361">如要執行記憶體測試，你必須至少有 500 MB 的可用空間。如要釋出空間，請依序點選 [設定] &gt; [儲存空間管理]。</translation>
 <translation id="4258281355379922695">HTTP 延遲</translation>
+<translation id="4271957103967917607">以全螢幕模式瀏覽</translation>
 <translation id="4289540628985791613">總覽</translation>
 <translation id="4297501883039923494">已停止 - 不明的錯誤</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> 張圖片</translation>
@@ -373,6 +374,7 @@
 <translation id="7550715992156305117">診斷日常安排</translation>
 <translation id="7561454561030345039">這個動作是由系統管理員管理</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7574732568136198983">ARC 連線偵測 (ping)</translation>
 <translation id="7595982850646262331">還剩 <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">前往說明中心瞭解詳情</translation>
 <translation id="763165478673169849">上次重設時間</translation>

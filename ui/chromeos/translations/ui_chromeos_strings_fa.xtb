@@ -287,6 +287,7 @@
 <translation id="3549797760399244642">‏رفتن به drive.google.com…</translation>
 <translation id="3553048479571901246">‏برای باز کردن فایل‌ها با <ph name="APP_NAME" />، ابتدا آن‌ها را در پوشه فایل‌های Windows کپی کنید.</translation>
 <translation id="3556731189587832921">انگلیسی (آمریکایی) با صفحه‌کلید بین‌المللی رایانه</translation>
+<translation id="3567221313191587603">فایلی انتخاب کنید و برای دسترسی آفلاین به فایل‌هایتان، <ph name="OFFLINE_CHECKBOX_NAME" /> را روشن کنید.</translation>
 <translation id="357479282490346887">لیتوانیایی</translation>
 <translation id="3592251141500063301">نمی‌توان <ph name="FILE_NAME" /> را به‌صورت آفلاین دردسترس قرار داد</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -397,6 +398,7 @@
 <translation id="4642769377300286600">درحال نصب نمایه تلفن همراه، شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">‏چکی با صفحه‌کلید Qwerty</translation>
 <translation id="4656293982926141856">این رایانه</translation>
+<translation id="4656777537938206294">تنظیم فایل برای دسترسی آفلاین</translation>
 <translation id="4669606053856530811">اگر این موارد با اعضای «<ph name="SOURCE_NAME" />» هم‌رسانی نشوند، دسترسی را از دست خواهند داد.</translation>
 <translation id="4690246192099372265">سوئدی</translation>
 <translation id="4693155481716051732">سوشی</translation>

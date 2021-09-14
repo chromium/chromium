@@ -170,6 +170,7 @@
 如要授予這項權限，請點擊下方的 [<ph name="BUTTON_NAME" />]，然後在隨即開啟的「無障礙功能」偏好設定窗格中，勾選「<ph name="SERVICE_SCRIPT_NAME" />」旁邊的方塊。
 
 如果「<ph name="SERVICE_SCRIPT_NAME" />」已勾選，請先取消勾選，然後再次勾選。</translation>
+<translation id="8305209735512572429">網路驗證遠端處理程序</translation>
 <translation id="8383794970363966105">你必須在裝置上新增 Google 帳戶，才能使用 Chromoting。</translation>
 <translation id="8386846956409881180">用於設定主機的 OAuth 憑證無效。</translation>
 <translation id="8397385476380433240">授予權限給 <ph name="PRODUCT_NAME" /></translation>

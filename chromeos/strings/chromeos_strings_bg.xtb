@@ -162,6 +162,7 @@
 <translation id="4238516577297848345">Няма активни задания за отпечатване</translation>
 <translation id="4244962993387259361">За да извършите тест на паметта, трябва да имате поне 500 МБ свободно място. За да освободите място, отворете „Настройки &gt; Мениджър на хранилището”.</translation>
 <translation id="4258281355379922695">Забавяне на HTTP</translation>
+<translation id="4271957103967917607">Преглед на цял екран</translation>
 <translation id="4289540628985791613">Общ преглед</translation>
 <translation id="4297501883039923494">Спряло – неизвестна грешка</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> изображения</translation>
@@ -373,6 +374,7 @@
 <translation id="7550715992156305117">Диагностични процедури</translation>
 <translation id="7561454561030345039">Това действие се управлява от администратора ви</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7574732568136198983">Команда ping към СИПС</translation>
 <translation id="7595982850646262331">Оставащо време: <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Научете повече в Помощния център</translation>
 <translation id="763165478673169849">Последен час на нулиране</translation>
