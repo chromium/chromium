@@ -4,6 +4,7 @@
 
 #include "ui/latency/latency_tracker.h"
 
+#include <algorithm>
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -60,6 +61,14 @@ LatencyTracker::~LatencyTracker() = default;
 void LatencyTracker::OnGpuSwapBuffersCompleted(
     std::vector<ui::LatencyInfo> latency_info,
     bool top_controls_visible_height_changed) {
+  // ReportJankyFrame has to process latency infos in increasing trace_id
+  // order, so it can compare the current frame to previous one. Therefore, the
+  // vector is sorted here before passing it down the call chain.
+  std::sort(latency_info.begin(), latency_info.end(),
+            [](const LatencyInfo& x, const LatencyInfo& y) {
+              return x.trace_id() < y.trace_id();
+            });
+
   for (const auto& latency : latency_info) {
     base::TimeTicks gpu_swap_end_timestamp;
     if (!latency.FindLatency(INPUT_EVENT_LATENCY_FRAME_SWAP_COMPONENT,
