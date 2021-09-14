@@ -2670,6 +2670,7 @@ if (!is_android && !is_fuchsia) {
         "../browser/extensions/view_extension_source_browsertest.cc",
         "../browser/extensions/wake_event_page_apitest.cc",
         "../browser/extensions/wasm_app_browsertest.cc",
+        "../browser/extensions/wasm_mv3_browsertest.cc",
         "../browser/extensions/web_contents_browsertest.cc",
         "../browser/extensions/webstore_installer_browsertest.cc",
         "../browser/extensions/webstore_installer_test.cc",

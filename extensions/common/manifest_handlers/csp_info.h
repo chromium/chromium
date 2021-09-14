@@ -77,7 +77,6 @@ class CSPHandler : public ManifestHandler {
   bool ParseExtensionPagesCSP(Extension* extension,
                               std::u16string* error,
                               base::StringPiece manifest_key,
-                              bool secure_only,
                               const base::Value* content_security_policy);
 
   // Parses the content security policy specified in the manifest for sandboxed
@@ -90,7 +89,6 @@ class CSPHandler : public ManifestHandler {
   // Helper to set the extension pages content security policy manifest data.
   bool SetExtensionPagesCSP(Extension* extension,
                             base::StringPiece manifest_key,
-                            bool secure_only,
                             std::string content_security_policy);
 
   // Helper to set the sandbox content security policy manifest data.

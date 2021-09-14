@@ -30,6 +30,8 @@ extern const base::Feature kAllowSharedArrayBuffersUnconditionally;
 
 extern const base::Feature kU2FSecurityKeyAPI;
 
+extern const base::Feature kAllowWasmInMV3;
+
 }  // namespace extensions_features
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_FEATURES_H_

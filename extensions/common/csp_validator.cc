@@ -17,12 +17,14 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/cxx17_backports.h"
+#include "base/feature_list.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/install_warning.h"
 #include "extensions/common/manifest_constants.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -41,6 +43,7 @@ const char kChildSrc[] = "child-src";
 const char kWorkerSrc[] = "worker-src";
 const char kSelfSource[] = "'self'";
 const char kNoneSource[] = "'none'";
+const char kWasmEvalSource[] = "'wasm-eval'";
 
 const char kDirectiveSeparator = ';';
 
@@ -237,7 +240,7 @@ std::string GetSecureDirectiveValues(
 
     // We might need to relax this whitelist over time.
     if (source_lower == kSelfSource || source_lower == kNoneSource ||
-        source_lower == "'wasm-eval'" || source_lower == "blob:" ||
+        source_lower == kWasmEvalSource || source_lower == "blob:" ||
         source_lower == "filesystem:" ||
         isNonWildcardTLD(source_lower, "https://", true) ||
         isNonWildcardTLD(source_lower, "chrome://", false) ||
@@ -694,8 +697,18 @@ bool DoesCSPDisallowRemoteCode(const std::string& content_security_policy,
         directive_values.begin(), directive_values.end(),
         [](base::StringPiece source) {
           std::string source_lower = base::ToLowerASCII(source);
-          return source_lower == kSelfSource || source_lower == kNoneSource ||
-                 IsLocalHostSource(source_lower);
+          if (source_lower == kSelfSource || source_lower == kNoneSource ||
+              IsLocalHostSource(source_lower)) {
+            return true;
+          }
+
+          if (source_lower == kWasmEvalSource &&
+              base::FeatureList::IsEnabled(
+                  extensions_features::kAllowWasmInMV3)) {
+            return true;
+          }
+
+          return false;
         });
 
     if (it == directive_values.end())
