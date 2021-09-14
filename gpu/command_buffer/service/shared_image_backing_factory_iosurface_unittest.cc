@@ -644,7 +644,7 @@ TEST_F(SharedImageBackingFactoryIOSurfaceTest, UnclearDawn_SkiaFails) {
     color_desc.view = texture.CreateView();
     color_desc.resolveTarget = nullptr;
     color_desc.loadOp = wgpu::LoadOp::Clear;
-    color_desc.storeOp = wgpu::StoreOp::Clear;
+    color_desc.storeOp = wgpu::StoreOp::Discard;
     color_desc.clearColor = {0, 255, 0, 255};
 
     wgpu::RenderPassDescriptor renderPassDesc = {};
