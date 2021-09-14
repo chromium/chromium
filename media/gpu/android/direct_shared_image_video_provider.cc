@@ -215,10 +215,10 @@ bool GpuSharedImageVideoFactory::CreateImageInternal(
   // colorspace and wire it here.
   // TODO(vikassoni): This shared image need to be thread safe eventually for
   // webview to work with shared images.
-  auto shared_image = std::make_unique<gpu::SharedImageVideo>(
+  auto shared_image = gpu::SharedImageVideo::Create(
       mailbox, coded_size, gfx::ColorSpace::CreateSRGB(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, std::move(image),
-      std::move(shared_context), /*is_thread_safe=*/true, std::move(drdc_lock));
+      std::move(shared_context), std::move(drdc_lock));
 
   // Register it with shared image mailbox as well as legacy mailbox. This
   // keeps |shared_image| around until its destruction cb is called.
