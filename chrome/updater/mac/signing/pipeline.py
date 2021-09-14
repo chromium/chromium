@@ -126,7 +126,7 @@ def sign_all(orig_paths,
             for _ in notarize.wait_for_results([uuid], config):
                 pass  # We are only waiting for a single notarization.
             notarize.staple_bundled_parts(
-                parts.get_parts(config).values(),
+                parts.get_parts(config),
                 notary_paths.replace_work(
                     os.path.join(notary_paths.work,
                                  config.packaging_basename)))
