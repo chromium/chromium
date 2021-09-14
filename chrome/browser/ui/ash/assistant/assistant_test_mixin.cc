@@ -310,7 +310,7 @@ class LoggedInUserMixin : public InProcessBrowserTestMixin {
       : InProcessBrowserTestMixin(host),
         login_manager_(host, {user}),
         test_server_(host, embedded_test_server),
-        fake_gaia_(host, embedded_test_server),
+        fake_gaia_(host),
         user_(user),
         test_base_(test_base),
         user_context_(LoginManagerMixin::CreateDefaultUserContext(user)) {
