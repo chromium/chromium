@@ -32,8 +32,8 @@ class RTCEncodedAudioFrameDelegate
   uint32_t Timestamp() const;
   DOMArrayBuffer* CreateDataBuffer() const;
   void SetData(const DOMArrayBuffer* data);
-  uint32_t Ssrc() const;
-  uint8_t PayloadType() const;
+  absl::optional<uint32_t> Ssrc() const;
+  absl::optional<uint8_t> PayloadType() const;
   Vector<uint32_t> ContributingSources() const;
   std::unique_ptr<webrtc::TransformableFrameInterface> PassWebRtcFrame();
 

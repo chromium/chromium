@@ -54,10 +54,12 @@ DOMArrayBuffer* RTCEncodedAudioFrame::data() const {
 RTCEncodedAudioFrameMetadata* RTCEncodedAudioFrame::getMetadata() const {
   RTCEncodedAudioFrameMetadata* metadata =
       RTCEncodedAudioFrameMetadata::Create();
-  metadata->setSynchronizationSource(delegate_->Ssrc());
+  if (delegate_->Ssrc()) {
+    metadata->setSynchronizationSource(*delegate_->Ssrc());
+  }
   metadata->setContributingSources(delegate_->ContributingSources());
-  if (delegate_->PayloadType() != 255) {
-    metadata->setPayloadType(delegate_->PayloadType());
+  if (delegate_->PayloadType()) {
+    metadata->setPayloadType(*delegate_->PayloadType());
   }
   return metadata;
 }
@@ -69,7 +71,7 @@ void RTCEncodedAudioFrame::setData(DOMArrayBuffer* data) {
 String RTCEncodedAudioFrame::toString() const {
   StringBuilder sb;
   sb.Append("RTCEncodedAudioFrame{rtpTimestamp: ");
-  sb.AppendNumber(timestamp());
+  sb.AppendNumber(delegate_->Timestamp());
   sb.Append(", size: ");
   sb.AppendNumber(data() ? data()->ByteLength() : 0);
   sb.Append("}");

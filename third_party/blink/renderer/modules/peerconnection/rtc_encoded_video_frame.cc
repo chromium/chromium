@@ -40,7 +40,12 @@ DOMArrayBuffer* RTCEncodedVideoFrame::data() const {
 RTCEncodedVideoFrameMetadata* RTCEncodedVideoFrame::getMetadata() const {
   RTCEncodedVideoFrameMetadata* metadata =
       RTCEncodedVideoFrameMetadata::Create();
-  metadata->setSynchronizationSource(delegate_->Ssrc());
+  if (delegate_->Ssrc()) {
+    metadata->setSynchronizationSource(*delegate_->Ssrc());
+  }
+  if (delegate_->PayloadType()) {
+    metadata->setPayloadType(*delegate_->PayloadType());
+  }
   const auto* webrtc_metadata = delegate_->GetMetadata();
   if (!webrtc_metadata)
     return metadata;
@@ -56,9 +61,6 @@ RTCEncodedVideoFrameMetadata* RTCEncodedVideoFrame::getMetadata() const {
   metadata->setHeight(webrtc_metadata->GetHeight());
   metadata->setSpatialIndex(webrtc_metadata->GetSpatialIndex());
   metadata->setTemporalIndex(webrtc_metadata->GetTemporalIndex());
-  if (delegate_->PayloadType() != 255) {
-    metadata->setPayloadType(delegate_->PayloadType());
-  }
   return metadata;
 }
 

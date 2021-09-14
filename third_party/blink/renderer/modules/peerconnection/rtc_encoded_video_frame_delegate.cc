@@ -75,15 +75,16 @@ DOMArrayBuffer* RTCEncodedVideoFrameDelegate::CreateAdditionalDataBuffer()
   return DOMArrayBuffer::Create(std::move(contents));
 }
 
-uint32_t RTCEncodedVideoFrameDelegate::Ssrc() const {
+absl::optional<uint32_t> RTCEncodedVideoFrameDelegate::Ssrc() const {
   MutexLocker lock(mutex_);
-  return webrtc_frame_ ? webrtc_frame_->GetSsrc() : 0;
+  return webrtc_frame_ ? absl::make_optional(webrtc_frame_->GetSsrc())
+                       : absl::nullopt;
 }
 
-uint8_t RTCEncodedVideoFrameDelegate::PayloadType() const {
+absl::optional<uint8_t> RTCEncodedVideoFrameDelegate::PayloadType() const {
   MutexLocker lock(mutex_);
-  // 255 is outside the range [0..127] of valid payload types.
-  return webrtc_frame_ ? webrtc_frame_->GetPayloadType() : 255;
+  return webrtc_frame_ ? absl::make_optional(webrtc_frame_->GetPayloadType())
+                       : absl::nullopt;
 }
 
 const webrtc::VideoFrameMetadata* RTCEncodedVideoFrameDelegate::GetMetadata()
