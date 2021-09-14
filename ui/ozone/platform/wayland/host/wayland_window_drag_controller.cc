@@ -215,7 +215,7 @@ void WaylandWindowDragController::OnDragEnter(WaylandWindow* window,
   if (*drag_source_ == DragSource::kMouse)
     pointer_delegate_->OnPointerFocusChanged(window, location);
   else
-    touch_delegate_->OnTouchFocusChanged(window, true);
+    touch_delegate_->OnTouchFocusChanged(window);
 
   VLOG(1) << "OnEnter. widget=" << window->GetWidget();
 
@@ -324,9 +324,14 @@ void WaylandWindowDragController::OnDataSourceFinish(bool completed) {
   // before the drag session, we must reset focus to it, otherwise it would be
   // wrongly kept to the latest surface received through wl_data_device::enter
   // (see OnDragEnter function).
+  // In case of touch, though, we simply reset the focus altogether.
   if (IsExtendedDragAvailable() && dragged_window_) {
-    pointer_delegate_->OnPointerFocusChanged(dragged_window_,
-                                             pointer_location_);
+    if (*drag_source_ == DragSource::kMouse) {
+      pointer_delegate_->OnPointerFocusChanged(dragged_window_,
+                                               pointer_location_);
+    } else {
+      touch_delegate_->OnTouchFocusChanged(nullptr);
+    }
   }
   dragged_window_ = nullptr;
 

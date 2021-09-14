@@ -688,6 +688,8 @@ TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop_TOUCH) {
   ScheduleTestTask(task_1);
   ScheduleTestTask(task_2);
   base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(window_manager()->GetCurrentFocusedWindow());
 }
 
 // Verifies wl_data_device::leave events are properly handled and propagated

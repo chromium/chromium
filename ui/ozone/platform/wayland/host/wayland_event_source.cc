@@ -367,13 +367,8 @@ void WaylandEventSource::OnTouchCancelEvent() {
   touch_points_.clear();
 }
 
-void WaylandEventSource::OnTouchFocusChanged(WaylandWindow* window,
-                                             bool focus) {
-  auto* prev_focused_window = window_manager_->GetCurrentTouchFocusedWindow();
-  if (focus && prev_focused_window)
-    HandleTouchFocusChange(prev_focused_window, false);
-
-  HandleTouchFocusChange(window, focus);
+void WaylandEventSource::OnTouchFocusChanged(WaylandWindow* window) {
+  window_manager_->SetTouchFocusedWindow(window);
 }
 
 std::vector<PointerId> WaylandEventSource::GetActiveTouchPointIds() {

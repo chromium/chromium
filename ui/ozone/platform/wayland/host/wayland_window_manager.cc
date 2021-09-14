@@ -110,6 +110,16 @@ void WaylandWindowManager::SetPointerFocusedWindow(WaylandWindow* window) {
     window->SetPointerFocus(true);
 }
 
+void WaylandWindowManager::SetTouchFocusedWindow(WaylandWindow* window) {
+  auto* old_focused_window = GetCurrentTouchFocusedWindow();
+  if (window == old_focused_window)
+    return;
+  if (old_focused_window)
+    old_focused_window->set_touch_focus(false);
+  if (window)
+    window->set_touch_focus(true);
+}
+
 void WaylandWindowManager::SetKeyboardFocusedWindow(WaylandWindow* window) {
   auto* old_focused_window = GetCurrentKeyboardFocusedWindow();
   if (window == old_focused_window)
