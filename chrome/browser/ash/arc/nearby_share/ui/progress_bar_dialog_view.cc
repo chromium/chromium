@@ -110,8 +110,8 @@ double ProgressBarDialogView::GetProgressBarValue() const {
 void ProgressBarDialogView::UpdateInterpolatedProgressBarValue() {
   DCHECK(progress_bar_);
 
-  constexpr double kStepSize = 0.1;
-  constexpr double kStepFactor = 2;  // Larger value = smaller step progression.
+  constexpr double kStepSize = 0.075;
+  constexpr double kStepFactor = 3;  // Larger value = smaller step progression.
 
   const double value = progress_bar_->GetValue();
 
