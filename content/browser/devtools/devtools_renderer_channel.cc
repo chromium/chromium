@@ -159,7 +159,7 @@ void DevToolsRendererChannel::ChildWorkerCreated(
     const base::UnguessableToken& devtools_worker_token,
     bool waiting_for_debugger) {
   if (content::DevToolsAgentHost::GetForId(devtools_worker_token.ToString())) {
-    mojo::ReportBadMessage("Workers should have unique tokens.");
+    receiver_.ReportBadMessage("Workers should have unique tokens.");
     return;
   }
   RenderProcessHost* process = RenderProcessHost::FromID(process_id_);
