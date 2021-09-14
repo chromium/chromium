@@ -17,6 +17,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
+#include "extensions/browser/extension_host_registry.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/lazy_context_id.h"
@@ -40,7 +41,8 @@ class ExtensionHost;
 class LazyBackgroundTaskQueue : public KeyedService,
                                 public LazyContextTaskQueue,
                                 public content::NotificationObserver,
-                                public ExtensionRegistryObserver {
+                                public ExtensionRegistryObserver,
+                                public ExtensionHostRegistry::Observer {
  public:
   explicit LazyBackgroundTaskQueue(content::BrowserContext* browser_context);
   ~LazyBackgroundTaskQueue() override;
@@ -82,6 +84,10 @@ class LazyBackgroundTaskQueue : public KeyedService,
                const content::NotificationSource& source,
                const content::NotificationDetails& details) override;
 
+  // ExtensionHostRegistry::Observer:
+  void OnExtensionHostDestroyed(content::BrowserContext* browser_context,
+                                ExtensionHost* host) override;
+
   // ExtensionRegistryObserver interface.
   void OnExtensionLoaded(content::BrowserContext* browser_context,
                          const Extension* extension) override;
@@ -114,6 +120,9 @@ class LazyBackgroundTaskQueue : public KeyedService,
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
+  base::ScopedObservation<ExtensionHostRegistry,
+                          ExtensionHostRegistry::Observer>
+      extension_host_registry_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(LazyBackgroundTaskQueue);
 };

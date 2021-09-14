@@ -20,6 +20,7 @@
 #include "extensions/browser/api/bluetooth/bluetooth_api_utils.h"
 #include "extensions/browser/api/bluetooth/bluetooth_event_router.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_host_registry.h"
 #include "extensions/common/api/bluetooth.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -60,6 +61,13 @@ static base::LazyInstance<
 BrowserContextKeyedAPIFactory<BluetoothAPI>*
 BluetoothAPI::GetFactoryInstance() {
   return g_factory.Pointer();
+}
+
+template <>
+void BrowserContextKeyedAPIFactory<BluetoothAPI>::DeclareFactoryDependencies() {
+  /// The BluetoothEventRouter, which is owned by the BluetoothAPI object,
+  // depends on the ExtensionHostRegistry.
+  DependsOn(ExtensionHostRegistry::GetFactory());
 }
 
 // static

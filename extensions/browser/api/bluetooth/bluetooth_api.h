@@ -64,6 +64,9 @@ class BluetoothAPI : public BrowserContextKeyedAPI,
   std::unique_ptr<BluetoothEventRouter> event_router_;
 };
 
+template <>
+void BrowserContextKeyedAPIFactory<BluetoothAPI>::DeclareFactoryDependencies();
+
 namespace api {
 
 class BluetoothGetAdapterStateFunction : public BluetoothExtensionFunction {

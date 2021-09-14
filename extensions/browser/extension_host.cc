@@ -25,6 +25,7 @@
 #include "extensions/browser/extension_host_delegate.h"
 #include "extensions/browser/extension_host_observer.h"
 #include "extensions/browser/extension_host_queue.h"
+#include "extensions/browser/extension_host_registry.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_web_contents_observer.h"
@@ -97,6 +98,8 @@ ExtensionHost::~ExtensionHost() {
       content::Details<ExtensionHost>(this));
   for (auto& observer : observer_list_)
     observer.OnExtensionHostDestroyed(this);
+
+  ExtensionHostRegistry::Get(browser_context_)->ExtensionHostDestroyed(this);
 
   // Remove ourselves from the queue as late as possible (before effectively
   // destroying self, but after everything else) so that queues that are
@@ -422,6 +425,7 @@ void ExtensionHost::NotifyRenderProcessReady() {
       extensions::NOTIFICATION_EXTENSION_HOST_CREATED,
       content::Source<BrowserContext>(browser_context_),
       content::Details<ExtensionHost>(this));
+  ExtensionHostRegistry::Get(browser_context_)->ExtensionHostCreated(this);
 }
 
 void ExtensionHost::RenderFrameDeleted(content::RenderFrameHost* frame_host) {

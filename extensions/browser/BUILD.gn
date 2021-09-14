@@ -298,6 +298,8 @@ source_set("browser_sources") {
     "extension_host_observer.h",
     "extension_host_queue.cc",
     "extension_host_queue.h",
+    "extension_host_registry.cc",
+    "extension_host_registry.h",
     "extension_icon_image.cc",
     "extension_icon_image.h",
     "extension_icon_placeholder.cc",
