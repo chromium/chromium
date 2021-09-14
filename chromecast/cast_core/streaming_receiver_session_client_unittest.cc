@@ -93,14 +93,14 @@ class StreamingReceiverSessionClientTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
+  MockCastWebView cast_web_view_;
+
   StrictMock<MockStreamingReceiverSessionHandler> handler_;
   StrictMock<MockReceiverSession>* receiver_session_;
   std::unique_ptr<StreamingReceiverSessionClient> receiver_session_client_;
 
   // Set when the session is launched.
   cast_streaming::ReceiverSession::AVConstraints session_constraints_;
-
-  MockCastWebView cast_web_view_;
 
  private:
   std::unique_ptr<cast_streaming::ReceiverSession> CreateReceiverSession(
