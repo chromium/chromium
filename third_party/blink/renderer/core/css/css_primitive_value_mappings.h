@@ -855,6 +855,39 @@ inline FontDescription::FontSynthesisStyle CSSIdentifierValue::ConvertTo()
 }
 
 template <>
+inline CSSIdentifierValue::CSSIdentifierValue(
+    FontDescription::FontSynthesisSmallCaps font_synthesis_small_caps)
+    : CSSValue(kIdentifierClass) {
+  switch (font_synthesis_small_caps) {
+    case FontDescription::kAutoFontSynthesisSmallCaps:
+      value_id_ = CSSValueID::kAuto;
+      return;
+    case FontDescription::kNoneFontSynthesisSmallCaps:
+      value_id_ = CSSValueID::kNone;
+      return;
+  }
+
+  NOTREACHED();
+  value_id_ = CSSValueID::kAuto;
+}
+
+template <>
+inline FontDescription::FontSynthesisSmallCaps CSSIdentifierValue::ConvertTo()
+    const {
+  switch (value_id_) {
+    case CSSValueID::kAuto:
+      return FontDescription::kAutoFontSynthesisSmallCaps;
+    case CSSValueID::kNone:
+      return FontDescription::kNoneFontSynthesisSmallCaps;
+    default:
+      break;
+  }
+
+  NOTREACHED();
+  return FontDescription::kAutoFontSynthesisSmallCaps;
+}
+
+template <>
 inline CSSIdentifierValue::CSSIdentifierValue(EFillSizeType fill_size)
     : CSSValue(kIdentifierClass) {
   switch (fill_size) {

@@ -177,6 +177,7 @@ fontSize
 fontSizeAdjust
 fontStretch
 fontStyle
+fontSynthesisSmallCaps
 fontSynthesisStyle
 fontSynthesisWeight
 fontVariant

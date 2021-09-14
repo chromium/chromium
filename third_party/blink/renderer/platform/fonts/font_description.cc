@@ -109,6 +109,7 @@ FontDescription::FontDescription()
   fields_.hash_category_ = kHashRegularValue;
   fields_.font_synthesis_weight_ = kAutoFontSynthesisWeight;
   fields_.font_synthesis_style_ = kAutoFontSynthesisStyle;
+  fields_.font_synthesis_small_caps_ = kAutoFontSynthesisSmallCaps;
 }
 
 FontDescription::FontDescription(const FontDescription&) = default;
@@ -629,6 +630,17 @@ String FontDescription::ToString(FontSynthesisStyle font_synthesis_style) {
     case FontSynthesisStyle::kAutoFontSynthesisStyle:
       return "Auto";
     case FontSynthesisStyle::kNoneFontSynthesisStyle:
+      return "None";
+  }
+  return "Unknown";
+}
+
+String FontDescription::ToString(
+    FontSynthesisSmallCaps font_synthesis_small_caps) {
+  switch (font_synthesis_small_caps) {
+    case FontSynthesisSmallCaps::kAutoFontSynthesisSmallCaps:
+      return "Auto";
+    case FontSynthesisSmallCaps::kNoneFontSynthesisSmallCaps:
       return "None";
   }
   return "Unknown";

@@ -1002,6 +1002,21 @@
       typedom_types: ["Keyword"]
     },
     {
+      name: "font-synthesis-small-caps",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      inherited: true,
+      runtime_flag: "FontSynthesis",
+      font: true,
+      name_for_methods: "FontSynthesisSmallCaps",
+      type_name: "FontDescription::FontSynthesisSmallCaps",
+      priority: "High",
+      keywords: ["auto", "none"],
+      typedom_types: ["Keyword"],
+      valid_for_first_letter: true,
+      valid_for_first_line: true,
+      valid_for_marker: true,
+    },
+    {
       name: "font-feature-settings",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       is_descriptor: true,

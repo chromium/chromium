@@ -190,6 +190,13 @@ void FontBuilder::SetFontSynthesisStyle(
   font_description_.SetFontSynthesisStyle(font_synthesis_style);
 }
 
+void FontBuilder::SetFontSynthesisSmallCaps(
+    FontDescription::FontSynthesisSmallCaps font_synthesis_small_caps) {
+  Set(PropertySetFlag::kFontSynthesisSmallCaps);
+
+  font_description_.SetFontSynthesisSmallCaps(font_synthesis_small_caps);
+}
+
 void FontBuilder::SetTextRendering(TextRenderingMode text_rendering_mode) {
   Set(PropertySetFlag::kTextRendering);
 
@@ -413,6 +420,10 @@ void FontBuilder::UpdateFontDescription(FontDescription& description,
   if (IsSet(PropertySetFlag::kFontSynthesisStyle)) {
     description.SetFontSynthesisStyle(
         font_description_.GetFontSynthesisStyle());
+  }
+  if (IsSet(PropertySetFlag::kFontSynthesisSmallCaps)) {
+    description.SetFontSynthesisSmallCaps(
+        font_description_.GetFontSynthesisSmallCaps());
   }
   if (IsSet(PropertySetFlag::kTextRendering))
     description.SetTextRendering(font_description_.TextRendering());

@@ -76,6 +76,7 @@ class CORE_EXPORT FontBuilder {
   void SetVariantNumeric(const FontVariantNumeric&);
   void SetFontSynthesisWeight(FontDescription::FontSynthesisWeight);
   void SetFontSynthesisStyle(FontDescription::FontSynthesisStyle);
+  void SetFontSynthesisSmallCaps(FontDescription::FontSynthesisSmallCaps);
   void SetTextRendering(TextRenderingMode);
   void SetKerning(FontDescription::Kerning);
   void SetFontOpticalSizing(OpticalSizing);
@@ -132,6 +133,10 @@ class CORE_EXPORT FontBuilder {
   static FontDescription::FontSynthesisStyle InitialFontSynthesisStyle() {
     return FontDescription::kAutoFontSynthesisStyle;
   }
+  static FontDescription::FontSynthesisSmallCaps
+  InitialFontSynthesisSmallCaps() {
+    return FontDescription::kAutoFontSynthesisSmallCaps;
+  }
 
  private:
   void SetFamilyDescription(FontDescription&,
@@ -179,6 +184,7 @@ class CORE_EXPORT FontBuilder {
     kFontSmoothing,
     kFontSynthesisWeight,
     kFontSynthesisStyle,
+    kFontSynthesisSmallCaps,
 
     kEffectiveZoom,
     kTextOrientation,

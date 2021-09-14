@@ -106,6 +106,12 @@ class PLATFORM_EXPORT FontDescription {
   enum FontSynthesisStyle { kAutoFontSynthesisStyle, kNoneFontSynthesisStyle };
   static String ToString(FontSynthesisStyle);
 
+  enum FontSynthesisSmallCaps {
+    kAutoFontSynthesisSmallCaps,
+    kNoneFontSynthesisSmallCaps
+  };
+  static String ToString(FontSynthesisSmallCaps);
+
   FontDescription();
   FontDescription(const FontDescription&);
 
@@ -272,6 +278,10 @@ class PLATFORM_EXPORT FontDescription {
   bool SyntheticItalicAllowed() const {
     return fields_.font_synthesis_style_ == kAutoFontSynthesisStyle;
   }
+  FontSynthesisSmallCaps GetFontSynthesisSmallCaps() const {
+    return static_cast<FontSynthesisSmallCaps>(
+        fields_.font_synthesis_small_caps_);
+  }
 
   FontSelectionRequest GetFontSelectionRequest() const;
   float WordSpacing() const { return word_spacing_; }
@@ -358,6 +368,10 @@ class PLATFORM_EXPORT FontDescription {
   }
   void SetFontSynthesisStyle(FontSynthesisStyle font_synthesis_style) {
     fields_.font_synthesis_style_ = font_synthesis_style;
+  }
+  void SetFontSynthesisSmallCaps(
+      FontSynthesisSmallCaps font_synthesis_small_caps) {
+    fields_.font_synthesis_small_caps_ = font_synthesis_small_caps;
   }
   void SetFeatureSettings(scoped_refptr<FontFeatureSettings> settings) {
     feature_settings_ = std::move(settings);
@@ -492,6 +506,7 @@ class PLATFORM_EXPORT FontDescription {
     unsigned synthetic_oblique_ : 1;
     unsigned font_synthesis_weight_ : 1;
     unsigned font_synthesis_style_ : 1;
+    unsigned font_synthesis_small_caps_ : 1;
     unsigned subpixel_text_position_ : 1;
     unsigned typesetting_features_ : 3;
     unsigned variant_numeric_ : 8;
