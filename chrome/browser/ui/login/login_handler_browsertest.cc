@@ -1502,7 +1502,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
 
   std::vector<content::RenderFrameHost*> frames = contents->GetAllFrames();
   ASSERT_EQ(2u, frames.size());
-  ASSERT_TRUE(frames[1]->IsDescendantOf(frames[0]));
+  ASSERT_EQ(frames[0], frames[1]->GetParent());
   ASSERT_EQ(test_page, frames[1]->GetLastCommittedURL());
 
   // Make sure the iframe is displaying the base64-encoded credentials that
@@ -1576,7 +1576,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
 
   std::vector<content::RenderFrameHost*> frames = contents->GetAllFrames();
   ASSERT_EQ(2u, frames.size());
-  ASSERT_TRUE(frames[1]->IsDescendantOf(frames[0]));
+  ASSERT_EQ(frames[0], frames[1]->GetParent());
   ASSERT_EQ(test_page, frames[1]->GetLastCommittedURL());
 
   // Make sure the iframe is displaying the base64-encoded credentials that
