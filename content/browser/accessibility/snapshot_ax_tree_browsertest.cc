@@ -5,6 +5,8 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/test/scoped_feature_list.h"
+#include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
@@ -96,6 +98,71 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest,
   ASSERT_EQ(ax::mojom::Role::kGenericContainer, group->data().role);
   ui::AXNode* button = group->GetUnignoredChildAtIndex(0);
   ASSERT_EQ(ax::mojom::Role::kButton, button->data().role);
+}
+
+class SnapshotAXTreeFencedFrameBrowserTest : public SnapshotAXTreeBrowserTest {
+ public:
+  SnapshotAXTreeFencedFrameBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    SnapshotAXTreeBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SnapshotAXTreeFencedFrameBrowserTest,
+                       SnapshotAccessibilityTreeFromMultipleFrames) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("fencedframe.test",
+                                              "/fenced_frames/basic.html")));
+
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  RenderFrameHostImpl* primary_rfh = web_contents->GetMainFrame();
+  std::vector<FencedFrame*> fenced_frames = primary_rfh->GetFencedFrames();
+  EXPECT_EQ(1u, fenced_frames.size());
+
+  const GURL fenced_frame_url =
+      embedded_test_server()->GetURL("fencedframe.test", "/title1.html");
+  EXPECT_TRUE(ExecJs(
+      primary_rfh, JsReplace("document.querySelector('fencedframe').src = $1;",
+                             fenced_frame_url.spec())));
+  fenced_frames.at(0)->WaitForDidStopLoadingForTesting();
+
+  AXTreeSnapshotWaiter waiter;
+  web_contents->RequestAXTreeSnapshot(
+      base::BindOnce(&AXTreeSnapshotWaiter::ReceiveSnapshot,
+                     base::Unretained(&waiter)),
+      ui::kAXModeComplete,
+      /* exclude_offscreen= */ false,
+      /* max_nodes= */ 0,
+      /* timeout= */ {});
+  waiter.Wait();
+
+  // Dump the whole tree if one of the assertions below fails
+  // to aid in debugging why it failed.
+  SCOPED_TRACE(waiter.snapshot().ToString());
+
+  ui::AXTree tree(waiter.snapshot());
+  ui::AXNode* root = tree.root();
+  std::string dump;
+  DumpRolesAndNamesAsText(root, 0, &dump);
+  EXPECT_EQ(
+      "rootWebArea\n"
+      "  genericContainer\n"
+      "    iframe\n"
+      "      rootWebArea\n"
+      "        genericContainer\n"
+      "          staticText 'This page has no title.'\n",
+      dump);
 }
 
 IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest,
