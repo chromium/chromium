@@ -1033,6 +1033,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.PopulationMatchesCachedValue.{Field}"
+    enum="BooleanMatched" expires_after="2021-12-10">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Whenever the ChromeUserPopulation proto is created (almost every time Safe
+    Browsing is contacted), we compare it to a cached value. This histogram
+    records whether the cached value has the same value in {Field} as the newly
+    created value.
+  </summary>
+  <token key="Field">
+    <variant name="Mbb" summary="Make Browsing Better preference"/>
+    <variant name="Population" summary="Safe Browsing population"/>
+    <variant name="UserAgent" summary="User agent"/>
+  </token>
+</histogram>
+
 <histogram name="SafeBrowsing.Pref.Daily.Extended" enum="BooleanEnabled"
     expires_after="2022-01-09">
   <owner>xinghuilu@chromium.org</owner>

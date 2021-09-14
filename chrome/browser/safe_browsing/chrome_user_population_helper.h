@@ -7,12 +7,19 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace safe_browsing {
 
 // A convenience function that creates a ChromeUserPopulation proto for the
 // given |profile|.
 ChromeUserPopulation GetUserPopulationForProfile(Profile* profile);
+
+// A cache of the ChromeUserPopulation is used to validate that we are
+// consistently populating the same values into Safe Browsing pings. This should
+// be cleared whenever we expect the correct value of the ChromeUserPopulation
+// to be cleared. See crbug/1208532.
+void ClearCachedUserPopulation(Profile* profile);
 
 }  // namespace safe_browsing
 

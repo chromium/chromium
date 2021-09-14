@@ -31,6 +31,7 @@
 #include "chrome/browser/safe_browsing/chrome_password_protection_service_factory.h"
 #include "chrome/browser/safe_browsing/chrome_safe_browsing_blocking_page_factory.h"
 #include "chrome/browser/safe_browsing/chrome_ui_manager_delegate.h"
+#include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
 #include "chrome/browser/safe_browsing/network_context_service.h"
 #include "chrome/browser/safe_browsing/network_context_service_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
@@ -56,6 +57,7 @@
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
+#include "components/unified_consent/pref_names.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -159,6 +161,7 @@ void SafeBrowsingService::ShutDown() {
   // Delete the PrefChangeRegistrars, whose dtors also unregister |this| as an
   // observer of the preferences.
   prefs_map_.clear();
+  user_population_prefs_.clear();
 
   Stop(true);
 
@@ -397,6 +400,19 @@ void SafeBrowsingService::OnProfileAdded(Profile* profile) {
   prefs_map_[pref_service] = std::move(registrar);
   RefreshState();
 
+  registrar = std::make_unique<PrefChangeRegistrar>();
+  registrar->Init(pref_service);
+  registrar->Add(prefs::kSafeBrowsingEnabled,
+                 base::BindRepeating(&ClearCachedUserPopulation, profile));
+  registrar->Add(prefs::kSafeBrowsingScoutReportingEnabled,
+                 base::BindRepeating(&ClearCachedUserPopulation, profile));
+  registrar->Add(prefs::kSafeBrowsingEnhanced,
+                 base::BindRepeating(&ClearCachedUserPopulation, profile));
+  registrar->Add(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
+      base::BindRepeating(&ClearCachedUserPopulation, profile));
+  user_population_prefs_[pref_service] = std::move(registrar);
+
   // Record the current pref state for standard protection.
   UMA_HISTOGRAM_BOOLEAN(kSafeBrowsingEnabledHistogramName,
                         pref_service->GetBoolean(prefs::kSafeBrowsingEnabled));
@@ -425,6 +441,7 @@ void SafeBrowsingService::OnProfileWillBeDestroyed(Profile* profile) {
   PrefService* pref_service = profile->GetPrefs();
   DCHECK(pref_service);
   prefs_map_.erase(pref_service);
+  user_population_prefs_.erase(pref_service);
 }
 
 void SafeBrowsingService::CreateServicesForProfile(Profile* profile) {
@@ -440,6 +457,7 @@ base::CallbackListSubscription SafeBrowsingService::RegisterStateCallback(
 
 void SafeBrowsingService::RefreshState() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
   // Check if any profile requires the service to be active.
   enabled_by_prefs_ = false;
   estimated_extended_reporting_by_prefs_ = SBER_LEVEL_OFF;

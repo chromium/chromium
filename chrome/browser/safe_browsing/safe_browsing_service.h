@@ -305,6 +305,11 @@ class SafeBrowsingService : public SafeBrowsingServiceInterface,
   // Accessed on UI thread.
   std::map<PrefService*, std::unique_ptr<PrefChangeRegistrar>> prefs_map_;
 
+  // Tracks existing PrefServices. This is used to clear the cached user
+  // population whenever a relevant pref is changed.
+  std::map<PrefService*, std::unique_ptr<PrefChangeRegistrar>>
+      user_population_prefs_;
+
   // Callbacks when SafeBrowsing state might have changed.
   // Should only be accessed on the UI thread.
   base::RepeatingClosureList state_callback_list_;
