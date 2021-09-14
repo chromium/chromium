@@ -37,6 +37,7 @@ group("resources") {
     ":table_view_row_highlight_color",
     ":tertiary_background_color",
     ":text_primary_color",
+    ":text_quaternary_color",
     ":text_secondary_color",
     ":text_tertiary_color",
     ":textfield_background_color",
@@ -156,6 +157,10 @@ colorset("text_tertiary_color") {
 
 colorset("text_primary_color") {
   sources = [ "text_primary_color.colorset/Contents.json" ]
+}
+
+colorset("text_quaternary_color") {
+  sources = [ "text_quaternary_color.colorset/Contents.json" ]
 }
 
 colorset("text_secondary_color") {

@@ -52,7 +52,6 @@ const CGFloat kArrowDownMargin = 12.;
     _arrowImageView.translatesAutoresizingMaskIntoConstraints = NO;
     _arrowDirection = IdentityButtonControlArrowDown;
     [self updateArrowDirection];
-    _arrowImageView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
     [self addSubview:_arrowImageView];
 
     // Main view with avatar, name and email.
@@ -142,6 +141,7 @@ const CGFloat kArrowDownMargin = 12.;
       break;
     case IdentityButtonControlArrowDown:
       image = [UIImage imageNamed:@"identity_picker_view_arrow_down"];
+      tintColor = [UIColor colorNamed:kTextQuaternaryColor];
       break;
   }
   DCHECK(image);
