@@ -2684,6 +2684,9 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_SIGNIN_FRE_DISMISS_BUTTON" desc="Text for the dismiss button on the welcome sign-in screen. By clicking this button users will continue without signing in,">
         Use without an account
       </message>
+      <message name="IDS_SIGNIN_FRE_FOOTER" desc="Text for asking the user to allow sending diagnostic reports">
+        To help improve the app, Chrome sends diagnostic data to Google. <ph name="BEGIN_LINK">&lt;LINK&gt;</ph>Change<ph name="END_LINK">&lt;/LINK&gt;</ph>
+      </message>
 
       <!-- Account Signin Strings -->
       <message name="IDS_SIGNIN_ADD_ACCOUNT" desc="Text for adding another Google Account">

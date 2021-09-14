@@ -78,8 +78,7 @@
             android:layout_marginEnd="24dp"
             android:text="@string/signin_fre_dismiss_button" />
 
-        <!-- TODO(crbug/1228155): Use the correct string for the footer -->
-        <org.chromium.ui.widget.TextViewWithLeading
+        <org.chromium.ui.widget.TextViewWithClickableSpans
             android:id="@+id/signin_fre_footer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -89,7 +88,7 @@
             android:layout_marginBottom="24dp"
             android:gravity="center_horizontal"
             android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
-            android:text="@string/signin_account_picker_bottom_sheet_subtitle"
+            android:text="@string/signin_fre_footer"
             app:leading="@dimen/text_size_small_leading" />
   </LinearLayout>
 </RelativeLayout>

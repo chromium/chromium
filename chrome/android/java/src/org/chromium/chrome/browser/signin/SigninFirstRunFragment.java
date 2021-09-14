@@ -9,6 +9,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,12 +26,18 @@ import org.chromium.chrome.browser.signin.ui.frebottomgroup.FREBottomGroupCoordi
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
+import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.SpanApplier;
+import org.chromium.ui.widget.TextViewWithClickableSpans;
 
 /**
  * This fragment handles the sign-in without sync consent during the FRE.
  */
 public class SigninFirstRunFragment
         extends Fragment implements FirstRunFragment, FREBottomGroupCoordinator.Listener {
+    private static final String FOOTER_LINK_OPEN = "<LINK>";
+    private static final String FOOTER_LINK_CLOSE = "</LINK>";
+
     @VisibleForTesting
     static final int ADD_ACCOUNT_REQUEST_CODE = 1;
 
@@ -54,6 +62,13 @@ public class SigninFirstRunFragment
         final View view = inflater.inflate(R.layout.signin_first_run_view, container, false);
         mFREBottomGroupCoordinator = new FREBottomGroupCoordinator(requireContext(),
                 view.findViewById(R.id.signin_fre_bottom_group), mModalDialogManager, this);
+        final NoUnderlineClickableSpan footerLinkSpan =
+                new NoUnderlineClickableSpan(getResources(), this::onFooterLinkClicked);
+        SpannableString footerString = SpanApplier.applySpans(getString(R.string.signin_fre_footer),
+                new SpanApplier.SpanInfo(FOOTER_LINK_OPEN, FOOTER_LINK_CLOSE, footerLinkSpan));
+        TextViewWithClickableSpans footerView = view.findViewById(R.id.signin_fre_footer);
+        footerView.setText(footerString);
+        footerView.setMovementMethod(LinkMovementMethod.getInstance());
         notifyCoordinatorWhenNativeAndPolicyAreLoaded();
         return view;
     }
@@ -122,4 +137,6 @@ public class SigninFirstRunFragment
             mFREBottomGroupCoordinator.onNativeAndPolicyLoaded();
         }
     }
+
+    private void onFooterLinkClicked(View view) {}
 }
