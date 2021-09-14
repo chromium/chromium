@@ -39,7 +39,7 @@ WITH
             FROM tr.tags
             WHERE key = "raw_typ_expectation") as typ_expectations
       )) as test_results,
-      FROM `luci-resultdb.chromium.gpu_{builder_type}_test_results` tr
+      FROM `chrome-luci-data.chromium.gpu_{builder_type}_test_results` tr
       WHERE
         status != "SKIP"
         AND exported.realm = "chromium:{builder_type}"
@@ -85,7 +85,7 @@ WITH
             FROM tr.tags
             WHERE key = "raw_typ_expectation") as typ_expectations
       )) as test_results,
-      FROM `luci-resultdb.chromium.gpu_{builder_type}_test_results` tr
+      FROM `chrome-luci-data.chromium.gpu_{builder_type}_test_results` tr
       WHERE
         status != "SKIP"
         AND exported.realm = "chromium:{builder_type}"
