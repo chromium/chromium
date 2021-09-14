@@ -480,12 +480,17 @@ void SubmenuView::SetDropMenuItem(MenuItemView* item,
   if (drop_item_ == item && drop_position_ == position)
     return;
   SchedulePaintForDropIndicator(drop_item_, drop_position_);
+  MenuItemView* old_drop_item = drop_item_;
   drop_item_ = item;
   drop_position_ = position;
+  if (old_drop_item && old_drop_item != drop_item_)
+    old_drop_item->OnDropStatusChanged();
+  if (drop_item_)
+    drop_item_->OnDropStatusChanged();
   SchedulePaintForDropIndicator(drop_item_, drop_position_);
 }
 
-bool SubmenuView::GetShowSelection(MenuItemView* item) {
+bool SubmenuView::GetShowSelection(const MenuItemView* item) const {
   if (drop_item_ == nullptr)
     return true;
   // Something is being dropped on one of this menus items. Show the

@@ -150,7 +150,7 @@ class VIEWS_EXPORT SubmenuView : public View,
   // Returns whether the selection should be shown for the specified item.
   // The selection is NOT shown during drag and drop when the drop is over
   // the menu.
-  bool GetShowSelection(MenuItemView* item);
+  bool GetShowSelection(const MenuItemView* item) const;
 
   // Returns the container for the SubmenuView.
   MenuScrollViewContainer* GetScrollViewContainer();

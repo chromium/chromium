@@ -25,6 +25,10 @@ class TestMenuItemView : public MenuItemView {
 
   bool show_mnemonics() { return show_mnemonics_; }
 
+  static ImageView* submenu_arrow_image_view(MenuItemView* view) {
+    return view->submenu_arrow_image_view_;
+  }
+
  private:
   DISALLOW_COPY_AND_ASSIGN(TestMenuItemView);
 };

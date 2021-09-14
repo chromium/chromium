@@ -16,6 +16,9 @@ class VIEWS_EXPORT ViewTestApi {
 
   bool needs_layout() { return view_->needs_layout(); }
 
+  void ClearNeedsPaint() { view_->needs_paint_ = false; }
+  bool needs_paint() const { return view_->needs_paint_; }
+
  private:
   View* view_;
 

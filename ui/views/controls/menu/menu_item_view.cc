@@ -154,6 +154,20 @@ void MenuItemView::ChildPreferredSizeChanged(View* child) {
   PreferredSizeChanged();
 }
 
+void MenuItemView::OnThemeChanged() {
+  View::OnThemeChanged();
+  // Force updating as the colors may have changed.
+  UpdateSelectionBasedState(ShouldPaintAsSelected(PaintMode::kNormal));
+}
+
+void MenuItemView::ViewHierarchyChanged(
+    const ViewHierarchyChangedDetails& details) {
+  // Whether the selection is painted may change based on the number of
+  // children.
+  if (details.parent == this)
+    UpdateSelectionBasedStateIfChanged(PaintMode::kNormal);
+}
+
 std::u16string MenuItemView::GetTooltipText(const gfx::Point& p) const {
   if (!tooltip_.empty())
     return tooltip_;
@@ -430,24 +444,29 @@ MenuItemView* MenuItemView::AppendMenuItemImpl(int item_id,
 }
 
 SubmenuView* MenuItemView::CreateSubmenu() {
-  if (!submenu_) {
-    submenu_ = new SubmenuView(this);
+  if (submenu_)
+    return submenu_;
+
+  submenu_ = new SubmenuView(this);
 
 #if defined(OS_MAC)
-    // All MenuItemViews of Type kSubMenu have a respective SubmenuView.
-    // However, in the Views hierarchy, this SubmenuView is not a child of the
-    // MenuItemView. This confuses VoiceOver, because it expects the submenu
-    // itself to be a child of the menu item. To allow VoiceOver to recognize
-    // submenu items, we create a virtual child of type Menu.
-    std::unique_ptr<AXVirtualView> virtual_child =
-        std::make_unique<AXVirtualView>();
-    virtual_child->GetCustomData().role = ax::mojom::Role::kMenu;
-    GetViewAccessibility().AddVirtualChildView(std::move(virtual_child));
+  // All MenuItemViews of Type kSubMenu have a respective SubmenuView.
+  // However, in the Views hierarchy, this SubmenuView is not a child of the
+  // MenuItemView. This confuses VoiceOver, because it expects the submenu
+  // itself to be a child of the menu item. To allow VoiceOver to recognize
+  // submenu items, we create a virtual child of type Menu.
+  std::unique_ptr<AXVirtualView> virtual_child =
+      std::make_unique<AXVirtualView>();
+  virtual_child->GetCustomData().role = ax::mojom::Role::kMenu;
+  GetViewAccessibility().AddVirtualChildView(std::move(virtual_child));
 #endif  //  defined(OS_MAC)
 
-    // Initialize the submenu indicator icon (arrow).
-    submenu_arrow_image_view_ = AddChildView(std::make_unique<ImageView>());
-  }
+  // Initialize the submenu indicator icon (arrow).
+  submenu_arrow_image_view_ = AddChildView(std::make_unique<ImageView>());
+
+  // Force an update to the selection state so that `submenu_arrow_image_view_`
+  // is updated.
+  UpdateSelectionBasedState(ShouldPaintAsSelected(PaintMode::kNormal));
 
   return submenu_;
 }
@@ -485,7 +504,11 @@ void MenuItemView::SetMinorIcon(const ui::ImageModel& minor_icon) {
 }
 
 void MenuItemView::SetSelected(bool selected) {
+  if (selected_ == selected)
+    return;
+
   selected_ = selected;
+  UpdateSelectionBasedStateIfChanged(PaintMode::kNormal);
   OnPropertyChanged(&selected_, kPropertyEffectsPaint);
 }
 
@@ -537,8 +560,12 @@ void MenuItemView::SetIconView(std::unique_ptr<ImageView> icon_view) {
   SchedulePaint();
 }
 
+void MenuItemView::OnDropStatusChanged() {
+  UpdateSelectionBasedStateIfChanged(PaintMode::kNormal);
+}
+
 void MenuItemView::OnPaint(gfx::Canvas* canvas) {
-  PaintButton(canvas, PaintButtonMode::kNormal);
+  OnPaintImpl(canvas, PaintMode::kNormal);
 }
 
 gfx::Size MenuItemView::CalculatePreferredSize() const {
@@ -757,7 +784,11 @@ void MenuItemView::SetMargins(int top_margin, int bottom_margin) {
 }
 
 void MenuItemView::SetForcedVisualSelection(bool selected) {
+  if (selected == forced_visual_selection_)
+    return;
+
   forced_visual_selection_ = selected;
+  UpdateSelectionBasedStateIfChanged(PaintMode::kNormal);
   SchedulePaint();
 }
 
@@ -954,24 +985,24 @@ void MenuItemView::AdjustBoundsForRTLUI(gfx::Rect* rect) const {
   rect->set_x(GetMirroredXForRect(*rect));
 }
 
-void MenuItemView::PaintButton(gfx::Canvas* canvas, PaintButtonMode mode) {
-  bool render_selection =
-      (mode == PaintButtonMode::kNormal && IsSelected() &&
-       parent_menu_item_->GetSubmenu()->GetShowSelection(this) &&
-       (NonIconChildViewsCount() == 0));
-  if (forced_visual_selection_.has_value())
-    render_selection = *forced_visual_selection_;
+void MenuItemView::PaintForDrag(gfx::Canvas* canvas) {
+  UpdateSelectionBasedStateIfChanged(PaintMode::kForDrag);
+  OnPaintImpl(canvas, PaintMode::kForDrag);
+  UpdateSelectionBasedStateIfChanged(PaintMode::kNormal);
+}
+
+void MenuItemView::OnPaintImpl(gfx::Canvas* canvas, PaintMode mode) {
+  const bool paint_as_selected = ShouldPaintAsSelected(mode);
+  // If these are out of sync, UpdateSelectionBasedStateIfChanged() was not
+  // called.
+  DCHECK_EQ(paint_as_selected, last_paint_as_selected_);
 
   // Render the background. As MenuScrollViewContainer draws the background, we
   // only need the background when we want it to look different, as when we're
   // selected.
-  PaintBackground(canvas, mode, render_selection);
+  PaintBackground(canvas, mode, paint_as_selected);
 
-  // Calculate some colors.
-  SkColor fg_color = GetTextColor(/*minor=*/false, render_selection);
-  if (const auto& label_color = GetMenuLabelColor())
-    fg_color = label_color.value();
-  SkColor icon_color = color_utils::DeriveDefaultIconColor(fg_color);
+  const Colors colors = CalculateColors(paint_as_selected);
 
   const gfx::FontList& font_list = GetFontList();
 
@@ -984,22 +1015,6 @@ void MenuItemView::PaintButton(gfx::Canvas* canvas, PaintButtonMode mode) {
       secondary_title().empty() ? text_height : text_height * 2;
   top_margin += (available_height - total_text_height) / 2;
 
-  // Render the check.
-  MenuDelegate* delegate = GetDelegate();
-  if (type_ == Type::kCheckbox && delegate &&
-      delegate->IsItemChecked(GetCommand())) {
-    radio_check_image_view_->SetImage(GetMenuCheckImage(icon_color));
-  } else if (type_ == Type::kRadio) {
-    const bool toggled = delegate && delegate->IsItemChecked(GetCommand());
-    const gfx::VectorIcon& radio_icon =
-        toggled ? kMenuRadioSelectedIcon : kMenuRadioEmptyIcon;
-    const SkColor radio_icon_color = GetNativeTheme()->GetSystemColor(
-        toggled ? ui::NativeTheme::kColorId_ButtonCheckedColor
-                : ui::NativeTheme::kColorId_ButtonUncheckedColor);
-    radio_check_image_view_->SetImage(
-        gfx::CreateVectorIcon(radio_icon, kMenuCheckSize, radio_icon_color));
-  }
-
   // Render the foreground.
   int accel_width = parent_menu_item_->GetSubmenu()->max_minor_text_width();
   int label_start = GetLabelStartForThisItem();
@@ -1008,20 +1023,19 @@ void MenuItemView::PaintButton(gfx::Canvas* canvas, PaintButtonMode mode) {
   gfx::Rect text_bounds(label_start, top_margin, width, text_height);
   text_bounds.set_x(GetMirroredXForRect(text_bounds));
   int flags = GetDrawStringFlags();
-  if (mode == PaintButtonMode::kForDrag)
+  if (mode == PaintMode::kForDrag)
     flags |= gfx::Canvas::NO_SUBPIXEL_RENDERING;
-  canvas->DrawStringRectWithFlags(title(), font_list, fg_color, text_bounds,
-                                  flags);
+  canvas->DrawStringRectWithFlags(title(), font_list, colors.fg_color,
+                                  text_bounds, flags);
 
   // The rest should be drawn with the minor foreground color.
-  fg_color = GetTextColor(/*minor=*/true, render_selection);
   if (!secondary_title().empty()) {
     text_bounds.set_y(text_bounds.y() + text_height);
-    canvas->DrawStringRectWithFlags(secondary_title(), font_list, fg_color,
-                                    text_bounds, flags);
+    canvas->DrawStringRectWithFlags(secondary_title(), font_list,
+                                    colors.minor_fg_color, text_bounds, flags);
   }
 
-  PaintMinorIconAndText(canvas, fg_color);
+  PaintMinorIconAndText(canvas, colors.minor_fg_color);
 
   if (ShouldShowNewBadge()) {
     NewBadge::DrawNewBadge(canvas, this,
@@ -1030,21 +1044,17 @@ void MenuItemView::PaintButton(gfx::Canvas* canvas, PaintButtonMode mode) {
                                NewBadge::kNewBadgeHorizontalMargin,
                            top_margin, font_list);
   }
-
-  // Set the submenu indicator (arrow) image and color.
-  if (HasSubmenu())
-    submenu_arrow_image_view_->SetImage(GetSubmenuArrowImage(icon_color));
 }
 
 void MenuItemView::PaintBackground(gfx::Canvas* canvas,
-                                   PaintButtonMode mode,
-                                   bool render_selection) {
+                                   PaintMode mode,
+                                   bool paint_as_selected) {
   if (type_ == Type::kHighlighted || is_alerted_) {
     SkColor color = gfx::kPlaceholderColor;
 
     if (type_ == Type::kHighlighted) {
       const ui::NativeTheme::ColorId color_id =
-          render_selection
+          paint_as_selected
               ? ui::NativeTheme::kColorId_FocusedMenuItemBackgroundColor
               : ui::NativeTheme::kColorId_HighlightedMenuItemBackgroundColor;
       color = GetNativeTheme()->GetSystemColor(color_id);
@@ -1072,7 +1082,7 @@ void MenuItemView::PaintBackground(gfx::Canvas* canvas,
     spilling_rect.set_y(spilling_rect.y() - corner_radius_);
     spilling_rect.set_height(spilling_rect.height() + corner_radius_);
     canvas->DrawRoundRect(spilling_rect, corner_radius_, flags);
-  } else if (render_selection) {
+  } else if (paint_as_selected) {
     gfx::Rect item_bounds = GetLocalBounds();
     if (type_ == Type::kActionableSubMenu) {
       if (submenu_area_of_actionable_submenu_selected_) {
@@ -1137,7 +1147,7 @@ void MenuItemView::PaintMinorIconAndText(gfx::Canvas* canvas, SkColor color) {
   }
 }
 
-SkColor MenuItemView::GetTextColor(bool minor, bool render_selection) const {
+SkColor MenuItemView::GetTextColor(bool minor, bool paint_as_selected) const {
   style::TextContext context =
       GetMenuController() && GetMenuController()->use_touchable_layout()
           ? style::CONTEXT_TOUCH_MENU
@@ -1150,12 +1160,24 @@ SkColor MenuItemView::GetTextColor(bool minor, bool render_selection) const {
     text_style = style::STYLE_HIGHLIGHTED;
   else if (!GetEnabled())
     text_style = style::STYLE_DISABLED;
-  else if (render_selection)
+  else if (paint_as_selected)
     text_style = style::STYLE_SELECTED;
   else if (minor)
     text_style = style::STYLE_SECONDARY;
 
   return style::GetColor(*this, context, text_style);
+}
+
+MenuItemView::Colors MenuItemView::CalculateColors(
+    bool paint_as_selected) const {
+  const absl::optional<SkColor> label_color_from_delegate = GetMenuLabelColor();
+  Colors colors;
+  colors.fg_color = label_color_from_delegate
+                        ? *label_color_from_delegate
+                        : GetTextColor(/*minor=*/false, paint_as_selected);
+  colors.icon_color = color_utils::DeriveDefaultIconColor(colors.fg_color);
+  colors.minor_fg_color = GetTextColor(/*minor=*/true, paint_as_selected);
+  return colors;
 }
 
 std::u16string MenuItemView::GetAccessibleName() const {
@@ -1440,6 +1462,44 @@ bool MenuItemView::HasChecksOrRadioButtons() const {
   return std::any_of(
       menu_items.cbegin(), menu_items.cend(),
       [](const auto* item) { return item->HasChecksOrRadioButtons(); });
+}
+
+void MenuItemView::UpdateSelectionBasedStateIfChanged(PaintMode mode) {
+  const bool paint_as_selected = ShouldPaintAsSelected(mode);
+  if (paint_as_selected != last_paint_as_selected_)
+    UpdateSelectionBasedState(paint_as_selected);
+}
+
+void MenuItemView::UpdateSelectionBasedState(bool paint_as_selected) {
+  last_paint_as_selected_ = paint_as_selected;
+  const Colors colors = CalculateColors(paint_as_selected);
+  if (submenu_arrow_image_view_) {
+    submenu_arrow_image_view_->SetImage(
+        GetSubmenuArrowImage(colors.icon_color));
+  }
+  MenuDelegate* delegate = GetDelegate();
+  if (type_ == Type::kCheckbox && delegate &&
+      delegate->IsItemChecked(GetCommand())) {
+    radio_check_image_view_->SetImage(GetMenuCheckImage(colors.icon_color));
+  } else if (type_ == Type::kRadio) {
+    const bool toggled = delegate && delegate->IsItemChecked(GetCommand());
+    const gfx::VectorIcon& radio_icon =
+        toggled ? kMenuRadioSelectedIcon : kMenuRadioEmptyIcon;
+    const SkColor radio_icon_color = GetNativeTheme()->GetSystemColor(
+        toggled ? ui::NativeTheme::kColorId_ButtonCheckedColor
+                : ui::NativeTheme::kColorId_ButtonUncheckedColor);
+    radio_check_image_view_->SetImage(
+        gfx::CreateVectorIcon(radio_icon, kMenuCheckSize, radio_icon_color));
+  }
+}
+
+bool MenuItemView::ShouldPaintAsSelected(PaintMode mode) const {
+  if (forced_visual_selection_.has_value())
+    return true;
+
+  return (parent_menu_item_ && mode == PaintMode::kNormal && IsSelected() &&
+          parent_menu_item_->GetSubmenu()->GetShowSelection(this) &&
+          (NonIconChildViewsCount() == 0));
 }
 
 BEGIN_METADATA(MenuItemView, View)
