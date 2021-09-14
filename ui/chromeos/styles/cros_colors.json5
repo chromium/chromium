@@ -57,6 +57,10 @@
       dark: "$google_grey_400",
       debug: "$google_yellow_700",
     },
+    text_color_disabled: {
+      light: "$google_grey_600",
+      dark: "$google_grey_500",
+    },
     text_color_alert: {
       light: "$google_red_600",
       dark: "$google_red_300",
