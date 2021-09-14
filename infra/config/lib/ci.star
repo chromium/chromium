@@ -429,6 +429,7 @@ def fyi_builder(
     kwargs["experiments"].setdefault("chromium.chromium_tests.use_rdb_results", 100)
     return ci.builder(
         name = name,
+        bootstrap = True,
         builder_group = "chromium.fyi",
         execution_timeout = execution_timeout,
         goma_backend = goma_backend,
