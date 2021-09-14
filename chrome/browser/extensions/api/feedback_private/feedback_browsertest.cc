@@ -64,11 +64,12 @@ class FeedbackTest : public ExtensionBrowserTest {
   void StartFeedbackUI(FeedbackFlow flow,
                        const std::string& extra_diagnostics,
                        bool from_assistant = false,
-                       bool include_bluetooth_logs = false) {
+                       bool include_bluetooth_logs = false,
+                       bool show_questionnaire = false) {
     base::OnceClosure callback = base::BindOnce(&StopMessageLoopCallback);
     extensions::FeedbackPrivateGetStringsFunction::set_test_callback(&callback);
     InvokeFeedbackUI(flow, extra_diagnostics, from_assistant,
-                     include_bluetooth_logs);
+                     include_bluetooth_logs, show_questionnaire);
     content::RunMessageLoop();
     extensions::FeedbackPrivateGetStringsFunction::set_test_callback(nullptr);
   }
@@ -87,14 +88,15 @@ class FeedbackTest : public ExtensionBrowserTest {
   void InvokeFeedbackUI(FeedbackFlow flow,
                         const std::string& extra_diagnostics,
                         bool from_assistant,
-                        bool include_bluetooth_logs) {
+                        bool include_bluetooth_logs,
+                        bool show_questionnaire) {
     extensions::FeedbackPrivateAPI* api =
         extensions::FeedbackPrivateAPI::GetFactoryInstance()->Get(
             browser()->profile());
-    api->RequestFeedbackForFlow("Test description", "Test placeholder",
-                                "Test tag", extra_diagnostics,
-                                GURL("http://www.test.com"), flow,
-                                from_assistant, include_bluetooth_logs);
+    api->RequestFeedbackForFlow(
+        "Test description", "Test placeholder", "Test tag", extra_diagnostics,
+        GURL("http://www.test.com"), flow, from_assistant,
+        include_bluetooth_logs, show_questionnaire);
   }
 };
 
@@ -283,6 +285,107 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, ProvideBluetoothLogs) {
       "        return true;"
       "      }"
       "      return false;"
+      "    })()));",
+      &bool_result));
+  EXPECT_TRUE(bool_result);
+}
+
+// Ensures that when triggered from a Google account and a Bluetooth related
+// string is entered into the description, that we append Bluetooth-related
+// questions to the issue description.
+IN_PROC_BROWSER_TEST_F(FeedbackTest, AppendQuestionnaire) {
+  WaitForExtensionViewsToLoad();
+
+  ASSERT_TRUE(IsFeedbackAppAvailable());
+  StartFeedbackUI(FeedbackFlow::FEEDBACK_FLOW_GOOGLEINTERNAL, std::string(),
+                  /*from_assistant*/ false, /*include_bluetooth_logs*/ true,
+                  /*show_questionnaire*/ true);
+  VerifyFeedbackAppLaunch();
+
+  AppWindow* const window =
+      PlatformAppBrowserTest::GetFirstAppWindowForBrowser(browser());
+  ASSERT_TRUE(window);
+  content::WebContents* const content = window->web_contents();
+
+  // Questionnaire shouldn't be visible until we put the Bluetooth text into the
+  // description.
+  bool bool_result = false;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
+      content,
+      "domAutomationController.send("
+      "  ((function() {"
+      "      return !$('description-text').value.includes('please answer');"
+      "    })()));",
+      &bool_result));
+  EXPECT_TRUE(bool_result);
+
+  // Bluetooth questions should appear.
+  bool_result = false;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
+      content,
+      "domAutomationController.send("
+      "  ((function() {"
+      "      var elem = document.getElementById('description-text');"
+      "      elem.value = 'bluetooth';"
+      "      elem.dispatchEvent(new Event('input', {}));"
+      "      return elem.value.includes('please answer')"
+      "          && elem.value.includes('[Bluetooth]')"
+      "          && !elem.value.includes('[WiFi]');"
+      "    })()));",
+      &bool_result));
+  EXPECT_TRUE(bool_result);
+
+  // WiFi questions should appear.
+  bool_result = false;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
+      content,
+      "domAutomationController.send("
+      "  ((function() {"
+      "      var elem = document.getElementById('description-text');"
+      "      elem.value = 'wifi issue';"
+      "      elem.dispatchEvent(new Event('input', {}));"
+      "      return elem.value.includes('[WiFi]');"
+      "    })()));",
+      &bool_result));
+  EXPECT_TRUE(bool_result);
+}
+
+// Questionnaires should not be displayed if it's not a Googler session.
+IN_PROC_BROWSER_TEST_F(FeedbackTest, AppendQuestionnaireNotGoogler) {
+  WaitForExtensionViewsToLoad();
+
+  ASSERT_TRUE(IsFeedbackAppAvailable());
+  StartFeedbackUI(FeedbackFlow::FEEDBACK_FLOW_REGULAR, std::string(),
+                  /*from_assistant*/ false, /*include_bluetooth_logs*/ false,
+                  /*show_questionnaire*/ false);
+  VerifyFeedbackAppLaunch();
+
+  AppWindow* const window =
+      PlatformAppBrowserTest::GetFirstAppWindowForBrowser(browser());
+  ASSERT_TRUE(window);
+  content::WebContents* const content = window->web_contents();
+
+  // Questionnaire shouldn't be visible in the beginning.
+  bool bool_result = false;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
+      content,
+      "domAutomationController.send("
+      "  ((function() {"
+      "      return !$('description-text').value.includes('[Bluetooth]');"
+      "    })()));",
+      &bool_result));
+  EXPECT_TRUE(bool_result);
+
+  // Questionnaire should not appear even with a Bluetooth keyword.
+  bool_result = false;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
+      content,
+      "domAutomationController.send("
+      "  ((function() {"
+      "      var elem = document.getElementById('description-text');"
+      "      elem.value = 'bluetooth';"
+      "      elem.dispatchEvent(new Event('input', {}));"
+      "      return !elem.value.includes('please answer');"
       "    })()));",
       &bool_result));
   EXPECT_TRUE(bool_result);
