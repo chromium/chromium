@@ -2836,7 +2836,8 @@ TEST_P(ArcAppModelBuilderTest, IconLoaderCompressed) {
   run_loop.Run();
 }
 
-TEST_P(ArcAppModelIconTest, IconInvalidation) {
+// Flaky.  https://crbug.com/1248526
+TEST_P(ArcAppModelIconTest, DISABLED_IconInvalidation) {
   ArcAppListPrefs* const prefs = ArcAppListPrefs::Get(profile_.get());
   ASSERT_TRUE(prefs);
 
