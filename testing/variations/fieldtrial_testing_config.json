@@ -6349,29 +6349,6 @@
             ]
         }
     ],
-    "PageLoadMetricsBufferTimer": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled100ms",
-                    "params": {
-                        "BufferTimerDelayMillis": "100"
-                    },
-                    "enable_features": [
-                        "PageLoadMetricsTimerDelay"
-                    ]
-                }
-            ]
-        }
-    ],
     "PaintHoldingCrossOrigin": [
         {
             "platforms": [

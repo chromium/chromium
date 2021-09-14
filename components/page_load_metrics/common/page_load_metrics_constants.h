@@ -10,7 +10,7 @@
 namespace page_load_metrics {
 
 const base::Feature kPageLoadMetricsTimerDelayFeature{
-    "PageLoadMetricsTimerDelay", base::FEATURE_DISABLED_BY_DEFAULT};
+    "PageLoadMetricsTimerDelay", base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace page_load_metrics
 
