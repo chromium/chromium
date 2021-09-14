@@ -59,18 +59,16 @@ void PlatformKeysTestBase::SetUp() {
   base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
   embedded_test_server()->ServeFilesFromDirectory(test_data_dir);
 
-  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+  net::EmbeddedTestServer::ServerCertificateConfig gaia_cert_config;
+  gaia_cert_config.dns_names = {GaiaUrls::GetInstance()->gaia_url().host()};
+  gaia_server_.SetSSLConfig(gaia_cert_config);
+  gaia_server_.RegisterRequestHandler(base::BindRepeating(
       &FakeGaia::HandleRequest, base::Unretained(&fake_gaia_)));
 
-  // Don't spin up the IO thread yet since no threads are allowed while
-  // spawning sandbox host process. See crbug.com/322732.
-  ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-
-  // Start https wrapper here so that the URLs can be pointed at it in
-  // SetUpCommandLine().
-  ASSERT_TRUE(gaia_https_forwarder_.Initialize(
-      GaiaUrls::GetInstance()->gaia_url().host(),
-      embedded_test_server()->base_url()));
+  // Initialize the server to allocate a port, so that URLs can be pointed at it
+  // in SetUpCommandLine(). Don't spin up the IO thread yet since no threads are
+  // allowed while spawning sandbox host process. See crbug.com/322732.
+  ASSERT_TRUE(gaia_server_.InitializeAndListen());
 
   chromeos::platform_keys::PlatformKeysServiceFactory::GetInstance()
       ->SetTestingMode(true);
@@ -84,7 +82,8 @@ void PlatformKeysTestBase::SetUpCommandLine(base::CommandLine* command_line) {
   policy::AffiliationTestHelper::AppendCommandLineSwitchesForLoginManager(
       command_line);
 
-  const GURL gaia_url = gaia_https_forwarder_.GetURLForSSLHost(std::string());
+  const GURL gaia_url =
+      gaia_server_.GetURL(GaiaUrls::GetInstance()->gaia_url().host(), "/");
   command_line->AppendSwitchASCII(::switches::kGaiaUrl, gaia_url.spec());
   command_line->AppendSwitchASCII(::switches::kLsoUrl, gaia_url.spec());
   command_line->AppendSwitchASCII(::switches::kGoogleApisUrl, gaia_url.spec());
@@ -133,7 +132,8 @@ void PlatformKeysTestBase::SetUpOnMainThread() {
   host_resolver()->AddRule("*", "127.0.0.1");
   // Start the accept thread as the sandbox host process has already been
   // spawned.
-  embedded_test_server()->StartAcceptingConnections();
+  ASSERT_TRUE(embedded_test_server()->Start());
+  gaia_server_.StartAcceptingConnections();
 
   FakeGaia::AccessTokenInfo token_info;
   token_info.scopes.insert(GaiaConstants::kDeviceManagementServiceOAuth);

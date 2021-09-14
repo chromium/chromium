@@ -33,7 +33,6 @@
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/enrollment_ui_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
-#include "chrome/browser/ash/login/test/https_forwarder.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -321,7 +320,7 @@ class SamlTest : public OobeBaseTest {
  protected:
   SecretInterceptingFakeUserDataAuthClient* cryptohome_client_;
 
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
 
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED};
@@ -727,14 +726,18 @@ IN_PROC_BROWSER_TEST_F(SamlTest, PasswordConfirmFlow) {
 // http://crbug.com/447818.
 IN_PROC_BROWSER_TEST_F(SamlTest, NoticeUpdatedOnRedirect) {
   // Start another https server at `kAdditionalIdPHost`.
-  HTTPSForwarder saml_https_forwarder;
-  ASSERT_TRUE(saml_https_forwarder.Initialize(
-      kAdditionalIdPHost, embedded_test_server()->base_url()));
+  net::EmbeddedTestServer saml_https_server(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  net::EmbeddedTestServer::ServerCertificateConfig saml_cert_config;
+  saml_cert_config.dns_names = {kAdditionalIdPHost};
+  saml_https_server.SetSSLConfig(saml_cert_config);
+  saml_https_server.ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(saml_https_server.Start());
 
   // Make the login flow redirect to `kAdditionalIdPHost`.
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login_instant_meta_refresh.html");
   fake_saml_idp()->SetRefreshURL(
-      saml_https_forwarder.GetURLForSSLHost("simple.html"));
+      saml_https_server.GetURL(kAdditionalIdPHost, "/simple.html"));
   StartSamlAndWaitForIdpPageLoad(
       saml_test_users::kFirstUserCorpExampleComEmail);
 

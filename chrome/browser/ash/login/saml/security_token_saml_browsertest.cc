@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/login/saml/test_client_cert_saml_idp_mixin.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
-#include "chrome/browser/ash/login/test/https_forwarder.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
@@ -231,7 +230,7 @@ class SecurityTokenSamlTest : public OobeBaseTest {
       feature_allowlist_{TestCertificateProviderExtension::extension_id()};
 
   ScopedTestSystemNSSKeySlotMixin system_nss_key_slot_mixin_{&mixin_host_};
-  FakeGaiaMixin gaia_mixin_{&mixin_host_, embedded_test_server()};
+  FakeGaiaMixin gaia_mixin_{&mixin_host_};
   DeviceStateMixin device_state_mixin_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
   TestClientCertSamlIdpMixin saml_idp_mixin_{

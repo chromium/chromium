@@ -299,7 +299,7 @@ class WallpaperPolicyTest : public LoginManagerTest,
   std::unique_ptr<policy::UserPolicyBuilder> user_policy_builders_[2];
   policy::DevicePolicyBuilder device_policy_;
   scoped_refptr<ownership::MockOwnerKeyUtil> owner_key_util_;
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
   LoginManagerMixin login_manager_{&mixin_host_};

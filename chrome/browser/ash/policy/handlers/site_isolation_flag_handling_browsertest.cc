@@ -275,7 +275,7 @@ class SiteIsolationFlagHandlingTest
   const ash::LoginManagerMixin::TestUserInfo user_{account_id_};
   ash::LoginManagerMixin login_manager_{&mixin_host_, {user_}};
 
-  ash::FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  ash::FakeGaiaMixin fake_gaia_{&mixin_host_};
 
   // Observes for user session start.
   std::unique_ptr<ash::SessionStateWaiter> user_session_started_observer_;

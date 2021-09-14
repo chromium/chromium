@@ -106,7 +106,7 @@ class UserCreationScreenTest
   base::RepeatingClosure screen_exit_callback_;
 
   base::test::ScopedFeatureList feature_list_;
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
 };
 
 // Verify flow for setting up the device for self.

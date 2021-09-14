@@ -84,7 +84,7 @@ class ParentalHandoffScreenBrowserTest : public OobeBaseTest {
 
   ParentalHandoffScreen::ScreenExitCallback original_callback_;
 
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
 
   base::test::ScopedFeatureList feature_list_;
 

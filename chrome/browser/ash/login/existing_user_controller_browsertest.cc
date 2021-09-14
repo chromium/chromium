@@ -1229,7 +1229,7 @@ class ExistingUserControllerAuthFailureTest : public OobeBaseTest {
   }
 
  protected:
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
   const LoginManagerMixin::TestUserInfo test_user_{
       AccountId::FromUserEmailGaiaId("user@gmail.com", "user")};
   LoginManagerMixin login_manager_{&mixin_host_, {test_user_}};

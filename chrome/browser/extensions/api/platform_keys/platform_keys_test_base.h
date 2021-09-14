@@ -8,13 +8,13 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "chrome/browser/ash/login/test/https_forwarder.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/extensions/mixin_based_extension_apitest.h"
 #include "chromeos/tpm/stub_install_attributes.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "google_apis/gaia/fake_gaia.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 
 namespace crypto {
 class ScopedTestSystemNSSKeySlot;
@@ -100,7 +100,7 @@ class PlatformKeysTestBase : public extensions::MixinBasedExtensionApiTest {
   testing::NiceMock<policy::MockConfigurationPolicyProvider>
       mock_policy_provider_;
   FakeGaia fake_gaia_;
-  ash::HTTPSForwarder gaia_https_forwarder_;
+  net::EmbeddedTestServer gaia_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   chromeos::ScopedStubInstallAttributes install_attributes_;
 
   DISALLOW_COPY_AND_ASSIGN(PlatformKeysTestBase);

@@ -147,7 +147,7 @@ class OobeConfigurationEnrollmentTest : public OobeConfigurationTest {
  protected:
   LocalPolicyTestServerMixin policy_server_{&mixin_host_};
   // We need fake gaia to fetch device local account tokens.
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
   test::EnrollmentUIMixin enrollment_ui_{&mixin_host_};
 
  private:

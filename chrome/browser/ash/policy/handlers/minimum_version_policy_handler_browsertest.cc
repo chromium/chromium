@@ -920,7 +920,7 @@ class MinimumVersionPolicyChildUser : public MinimumVersionPolicyTestBase {
       AccountId::FromUserEmailGaiaId(ash::test::kTestEmail,
                                      ash::test::kTestGaiaId)};
   ash::UserPolicyMixin user_policy_mixin_{&mixin_host_, child_user.account_id};
-  ash::FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  ash::FakeGaiaMixin fake_gaia_{&mixin_host_};
   ash::LoginManagerMixin login_manager_{&mixin_host_, {}, &fake_gaia_};
 };
 

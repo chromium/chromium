@@ -94,7 +94,7 @@ class ChromeSessionManagerTest : public LoginManagerTest {
   }
 
  protected:
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED};
 

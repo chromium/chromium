@@ -56,7 +56,7 @@ class LoginPolicyTestBase : public ash::OobeBaseTest {
 
   const AccountId& account_id() const { return account_id_; }
 
-  ash::FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  ash::FakeGaiaMixin fake_gaia_{&mixin_host_};
   ash::LocalPolicyTestServerMixin local_policy_server_{&mixin_host_};
   ash::LoginManagerMixin login_manager_{&mixin_host_};
 

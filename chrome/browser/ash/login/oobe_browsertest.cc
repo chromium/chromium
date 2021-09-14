@@ -84,7 +84,7 @@ class OobeTest : public OobeBaseTest {
   }
 
  private:
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
 
   DISALLOW_COPY_AND_ASSIGN(OobeTest);
 };

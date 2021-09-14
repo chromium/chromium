@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "chrome/browser/ash/login/test/https_forwarder.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "google_apis/gaia/fake_gaia.h"
@@ -59,8 +58,7 @@ class FakeGaiaMixin : public InProcessBrowserTestMixin {
   static const test::UIPath kEmailPath;
   static const test::UIPath kPasswordPath;
 
-  FakeGaiaMixin(InProcessBrowserTestMixinHost* host,
-                net::EmbeddedTestServer* embedded_test_server);
+  explicit FakeGaiaMixin(InProcessBrowserTestMixinHost* host);
   ~FakeGaiaMixin() override;
 
   // Sets up fake gaia for the login code:
@@ -99,17 +97,19 @@ class FakeGaiaMixin : public InProcessBrowserTestMixin {
   }
 
   FakeGaia* fake_gaia() { return fake_gaia_.get(); }
-  HTTPSForwarder* gaia_https_forwarder() { return &gaia_https_forwarder_; }
+  net::EmbeddedTestServer* gaia_server() { return &gaia_server_; }
+
+  // Returns the URL on `gaia_server()` for `relative_url`. Use this method
+  // instead of `gaia_server()->GetURL()` so the hostname is correct.
+  GURL GetFakeGaiaURL(const std::string& relative_url);
 
   // InProcessBrowserTestMixin:
   void SetUp() override;
   void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpOnMainThread() override;
-  void TearDownOnMainThread() override;
 
  private:
-  net::EmbeddedTestServer* embedded_test_server_;
-  HTTPSForwarder gaia_https_forwarder_;
+  net::EmbeddedTestServer gaia_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 
   std::unique_ptr<FakeGaia> fake_gaia_;
   bool initialize_fake_merge_session_ = true;

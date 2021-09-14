@@ -253,6 +253,8 @@ class OAuth2Test : public OobeBaseTest {
   void RegisterAdditionalRequestHandlers() override {
     embedded_test_server()->RegisterRequestMonitor(base::BindRepeating(
         &OAuth2Test::InterceptRequest, base::Unretained(this)));
+    fake_gaia_.gaia_server()->RegisterRequestMonitor(base::BindRepeating(
+        &OAuth2Test::InterceptRequest, base::Unretained(this)));
   }
 
   void SetupGaiaServerForNewAccount(bool is_under_advanced_protection) {
@@ -464,7 +466,7 @@ class OAuth2Test : public OobeBaseTest {
         NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
   }
 
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
   NetworkPortalDetectorMixin network_portal_detector_{&mixin_host_};
 
  private:
@@ -1145,6 +1147,10 @@ class MergeSessionTimeoutTest : public MergeSessionTest {
     // Do not defer /MergeSession requests (like the base class does) because
     // this test will intentionally hang that request to force a timeout.
     embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+        &FakeGoogle::HandleRequest, base::Unretained(&fake_google_)));
+    // Hanging /MergeSession is implemented in `fake_google_`, so register it
+    // with the GAIA test server as well.
+    fake_gaia_.gaia_server()->RegisterRequestHandler(base::BindRepeating(
         &FakeGoogle::HandleRequest, base::Unretained(&fake_google_)));
   }
 

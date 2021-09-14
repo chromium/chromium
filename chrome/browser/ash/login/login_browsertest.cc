@@ -96,7 +96,7 @@ class LoginOfflineTest : public LoginManagerTest {
   OfflineLoginTestMixin offline_login_test_mixin_{&mixin_host_};
   // We need Fake gaia to avoid network errors that can be caused by
   // attempts to load real GAIA.
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
   NetworkPortalDetectorMixin network_portal_detector_{&mixin_host_};
 };
 
@@ -112,7 +112,7 @@ class LoginOnlineCryptohomeError : public LoginManagerTest {
       /* invalid token status to force online signin */
       user_manager::User::OAUTH2_TOKEN_STATUS_INVALID};
   LoginManagerMixin login_manager_{&mixin_host_, {reauth_user_}};
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
 };
 
 IN_PROC_BROWSER_TEST_F(LoginOnlineCryptohomeError, FatalScreenShown) {
@@ -208,7 +208,7 @@ class LoginOfflineManagedTest : public LoginManagerTest {
   OfflineLoginTestMixin offline_login_test_mixin_{&mixin_host_};
   // We need Fake gaia to avoid network errors that can be caused by
   // attempts to load real GAIA.
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
 };
 
 // Used to make sure that the system tray is visible and within the screen

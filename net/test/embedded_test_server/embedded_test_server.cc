@@ -496,6 +496,10 @@ bool EmbeddedTestServer::GenerateCertAndKey() {
       intermediate->SetCertificatePolicies(cert_config_.policy_oids);
   }
 
+  if (!cert_config_.dns_names.empty()) {
+    leaf->SetSubjectAltNames(cert_config_.dns_names, {});
+  }
+
   const std::string leaf_serial_text =
       base::NumberToString(leaf->GetSerialNumber());
   const std::string intermediate_serial_text =

@@ -3547,8 +3547,6 @@ static_library("test_support") {
     "../ash/login/test/embedded_test_server_setup_mixin.h",
     "../ash/login/test/fake_gaia_mixin.cc",
     "../ash/login/test/fake_gaia_mixin.h",
-    "../ash/login/test/https_forwarder.cc",
-    "../ash/login/test/https_forwarder.h",
     "../ash/login/test/js_checker.cc",
     "../ash/login/test/js_checker.h",
     "../ash/login/test/local_policy_test_server_mixin.cc",

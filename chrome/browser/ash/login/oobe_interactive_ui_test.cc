@@ -649,7 +649,7 @@ class OobeInteractiveUITest : public OobeBaseTest,
 
  private:
   std::unique_ptr<base::AutoReset<bool>> branded_build_override_;
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
   FakeEulaMixin fake_eula_{&mixin_host_, embedded_test_server()};
 
   net::EmbeddedTestServer arc_tos_server_{net::EmbeddedTestServer::TYPE_HTTPS};
@@ -1004,7 +1004,7 @@ class EphemeralUserOobeTest : public MixinBasedInProcessBrowserTest,
  private:
   EmbeddedTestServerSetupMixin gaia_server_setup_{&mixin_host_,
                                                   embedded_test_server()};
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
 
   net::EmbeddedTestServer arc_tos_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   EmbeddedTestServerSetupMixin arc_tos_server_setup_{&mixin_host_,

@@ -299,6 +299,9 @@ class EmbeddedTestServer {
     // non-empty, the policies will be added to the leaf cert and the
     // intermediate cert (if an intermediate is configured).
     std::vector<std::string> policy_oids;
+
+    // A list of DNS names to include in the leaf subjectAltName extension.
+    std::vector<std::string> dns_names;
   };
 
   typedef base::RepeatingCallback<std::unique_ptr<HttpResponse>(

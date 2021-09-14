@@ -34,7 +34,6 @@
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
-#include "chrome/browser/ash/login/test/https_forwarder.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -367,7 +366,7 @@ class WebviewLoginTest : public OobeBaseTest {
 
  protected:
   ScopedTestingCrosSettings scoped_testing_cros_settings_;
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
@@ -905,52 +904,62 @@ class WebviewLoginWithIframeTest
   void RegisterAdditionalRequestHandlers() override {
     WebviewLoginTest::RegisterAdditionalRequestHandlers();
 
-    embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
-        [](const net::test_server::HttpRequest& request)
-            -> std::unique_ptr<net::test_server::HttpResponse> {
-          if (!base::EndsWith(request.relative_url, kFrameRelativePath,
-                              base::CompareCase::INSENSITIVE_ASCII)) {
-            return nullptr;
-          }
-          auto response =
-              std::make_unique<net::test_server::BasicHttpResponse>();
-          response->set_code(net::HTTP_OK);
-          response->set_content("<!DOCTYPE html>");
-          response->AddCustomHeader("X-Frame-Options", "SAMEORIGIN");
-          return response;
-        }));
+    // For simplicity the request handler is registered on both servers. The
+    // test will only request the path from one of them, depending on the
+    // FrameUrlOrigin test parameter.
+    fake_gaia_.gaia_server()->RegisterRequestHandler(base::BindRepeating(
+        &WebviewLoginWithIframeTest::HandleFrameRelativePath));
+    other_origin_server_.RegisterRequestHandler(base::BindRepeating(
+        &WebviewLoginWithIframeTest::HandleFrameRelativePath));
   }
 
   void SetUpInProcessBrowserTestFixture() override {
     WebviewLoginTest::SetUpInProcessBrowserTestFixture();
 
-    ASSERT_TRUE(other_origin_https_forwarder_.Initialize(
-        kOtherOriginHost, embedded_test_server()->base_url()));
+    net::EmbeddedTestServer::ServerCertificateConfig other_origin_cert_config;
+    other_origin_cert_config.dns_names = {kOtherOriginHost};
+    other_origin_server_.SetSSLConfig(other_origin_cert_config);
+    // Initialize the server so the port is known, but don't start the IO thread
+    // until SetupThreadMain().
+    ASSERT_TRUE(other_origin_server_.InitializeAndListen());
 
-    // /frame_with_same_origin_requirement is reachable through both
-    // HTTPSForwarders (the one for fake gaia and the one for another origin),
-    // because they both eventually point to embedded_test_server().
-    // From chrome's perspective, they are a different origins.
     switch (GetParam()) {
       case FrameUrlOrigin::kSameOrigin:
-        frame_url_ = fake_gaia_.gaia_https_forwarder()->GetURLForSSLHost(
-            kFrameRelativePath);
+        frame_url_ = fake_gaia_.GetFakeGaiaURL(kFrameRelativePath);
         break;
       case FrameUrlOrigin::kDifferentOrigin:
         frame_url_ =
-            other_origin_https_forwarder_.GetURLForSSLHost(kFrameRelativePath);
+            other_origin_server_.GetURL(kOtherOriginHost, kFrameRelativePath);
         break;
     }
 
     fake_gaia_.fake_gaia()->SetIframeOnEmbeddedSetupChromeosUrl(frame_url_);
   }
 
+  void SetUpOnMainThread() override {
+    other_origin_server_.StartAcceptingConnections();
+    WebviewLoginTest::SetUpOnMainThread();
+  }
+
  protected:
   static constexpr const char* kOtherOriginHost = "other.example.com";
   static constexpr const char* kFrameRelativePath =
-      "frame_with_same_origin_requirement";
+      "/frame_with_same_origin_requirement";
 
-  HTTPSForwarder other_origin_https_forwarder_;
+  static std::unique_ptr<net::test_server::HttpResponse>
+  HandleFrameRelativePath(const net::test_server::HttpRequest& request) {
+    if (request.relative_url != kFrameRelativePath) {
+      return nullptr;
+    }
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    response->set_code(net::HTTP_OK);
+    response->set_content("<!DOCTYPE html>");
+    response->AddCustomHeader("X-Frame-Options", "SAMEORIGIN");
+    return response;
+  }
+
+  net::EmbeddedTestServer other_origin_server_{
+      net::EmbeddedTestServer::TYPE_HTTPS};
   GURL frame_url_;
 };
 

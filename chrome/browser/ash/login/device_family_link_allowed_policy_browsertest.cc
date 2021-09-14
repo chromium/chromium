@@ -108,7 +108,7 @@ class DeviceFamilyLinkAllowedPolicyTest : public LoginManagerTest {
 
   UserPolicyMixin user_policy_mixin_{&mixin_host_,
                                      family_link_user_.account_id};
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
 
   LoginManagerMixin login_manager_ = {
       &mixin_host_,

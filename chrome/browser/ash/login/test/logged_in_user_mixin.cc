@@ -58,7 +58,7 @@ LoggedInUserMixin::LoggedInUserMixin(
       user_policy_helper_(user_.account_id.GetUserEmail(),
                           &local_policy_server_),
       embedded_test_server_setup_(mixin_host, embedded_test_server),
-      fake_gaia_(mixin_host, embedded_test_server),
+      fake_gaia_(mixin_host),
       test_base_(test_base) {
   // By default, LoginManagerMixin will set up user session manager not to
   // launch browser as part of user session setup - use this to override that

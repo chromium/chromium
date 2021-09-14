@@ -150,7 +150,7 @@ class MarketingOptInScreenTest : public OobeBaseTest,
   base::RepeatingClosure screen_exit_callback_;
   MarketingOptInScreen::ScreenExitCallback original_callback_;
 
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
   LocalStateMixin local_state_mixin_{&mixin_host_, this};
 };
 

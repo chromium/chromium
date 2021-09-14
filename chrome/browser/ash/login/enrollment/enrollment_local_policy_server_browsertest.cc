@@ -175,7 +175,7 @@ class EnrollmentLocalPolicyServerBase : public OobeBaseTest {
 
   LocalPolicyTestServerMixin policy_server_{&mixin_host_};
   test::EnrollmentUIMixin enrollment_ui_{&mixin_host_};
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED};
 

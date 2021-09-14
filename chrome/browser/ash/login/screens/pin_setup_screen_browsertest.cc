@@ -52,8 +52,7 @@ class PinSetupScreenTest
     FakeUserDataAuthClient::Get()->set_supports_low_entropy_credentials(false);
 
     if (GetParam() == user_manager::USER_TYPE_CHILD) {
-      fake_gaia_ =
-          std::make_unique<FakeGaiaMixin>(&mixin_host_, embedded_test_server());
+      fake_gaia_ = std::make_unique<FakeGaiaMixin>(&mixin_host_);
       policy_server_ =
           std::make_unique<LocalPolicyTestServerMixin>(&mixin_host_);
       user_policy_mixin_ = std::make_unique<UserPolicyMixin>(
@@ -349,8 +348,7 @@ class PinSetupForManagedUsers : public PinForLoginSetupScreenTest {
     scoped_feature_list_.InitAndEnableFeature(
         features::kPinSetupForManagedUsers);
     policy_server_ = std::make_unique<LocalPolicyTestServerMixin>(&mixin_host_);
-    fake_gaia_ =
-        std::make_unique<FakeGaiaMixin>(&mixin_host_, embedded_test_server());
+    fake_gaia_ = std::make_unique<FakeGaiaMixin>(&mixin_host_);
     user_policy_mixin_ = std::make_unique<UserPolicyMixin>(
         &mixin_host_, managed_test_user_.account_id, policy_server_.get());
   }

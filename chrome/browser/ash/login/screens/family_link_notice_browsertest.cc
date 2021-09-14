@@ -99,7 +99,7 @@ class FamilyLinkNoticeScreenTest : public OobeBaseTest {
   base::RepeatingClosure screen_exit_callback_;
   FamilyLinkNoticeScreen::ScreenExitCallback original_callback_;
 
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
 
   base::test::ScopedFeatureList feature_list_;
 };

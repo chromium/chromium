@@ -315,7 +315,7 @@ class UserImageManagerTestBase : public LoginManagerTest,
   std::unique_ptr<net::test_server::ControllableHttpResponse>
       controllable_http_response_;
 
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
 
  private:
   DISALLOW_COPY_AND_ASSIGN(UserImageManagerTestBase);

@@ -212,7 +212,7 @@ class CaptivePortalWindowCtorDtorTest : public LoginManagerTest {
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED};
   // Use fake GAIA to avoid potential flakiness when real GAIA would not
   // load and Error screen would be shown instead of Login screen.
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
 
   DISALLOW_COPY_AND_ASSIGN(CaptivePortalWindowCtorDtorTest);
 };

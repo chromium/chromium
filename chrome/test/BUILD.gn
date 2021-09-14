@@ -3471,7 +3471,6 @@ if (!is_android && !is_fuchsia) {
         # TODO(GYP): figure out which of these things are
         # actually needed and also which should be pulled in via
         # data or data_deps and through which dependencies.
-        "//chrome/browser/ash/login/test/https_forwarder.py",
         "//chrome/browser/resources/chromeos/wallpaper_manager/",
         "//chromeos/test/data/",
         "//ui/file_manager/base/",

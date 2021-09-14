@@ -825,7 +825,7 @@ class KioskTest : public OobeBaseTest {
 
   // We need Fake gaia to avoid network errors that can be caused by
   // attempts to load real GAIA.
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
 
  private:
   bool use_consumer_kiosk_mode_ = true;
