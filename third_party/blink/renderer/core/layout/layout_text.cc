@@ -141,13 +141,17 @@ class SecureTextTimer final : public GarbageCollected<SecureTextTimer>,
   int last_typed_character_offset_;
 };
 
-class SelectionDisplayItemClient : public DisplayItemClient {
+class SelectionDisplayItemClient
+    : public GarbageCollected<SelectionDisplayItemClient>,
+      public DisplayItemClient {
+ public:
   String DebugName() const final { return "Selection"; }
+  void Trace(Visitor* visitor) const {}
 };
 
 using SelectionDisplayItemClientMap =
     HeapHashMap<WeakMember<const LayoutText>,
-                std::unique_ptr<SelectionDisplayItemClient>>;
+                Member<SelectionDisplayItemClient>>;
 SelectionDisplayItemClientMap& GetSelectionDisplayItemClientMap() {
   DEFINE_STATIC_LOCAL(Persistent<SelectionDisplayItemClientMap>, map,
                       (MakeGarbageCollected<SelectionDisplayItemClientMap>()));
@@ -2842,8 +2846,8 @@ const DisplayItemClient* LayoutText::GetSelectionDisplayItemClient() const {
   if (it != GetSelectionDisplayItemClientMap().end())
     return &*it->value;
   return GetSelectionDisplayItemClientMap()
-      .insert(this, std::make_unique<SelectionDisplayItemClient>())
-      .stored_value->value.get();
+      .insert(this, MakeGarbageCollected<SelectionDisplayItemClient>())
+      .stored_value->value.Get();
 }
 
 PhysicalRect LayoutText::DebugRect() const {
