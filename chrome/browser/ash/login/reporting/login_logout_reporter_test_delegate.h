@@ -9,7 +9,7 @@
 
 #include "components/account_id/account_id.h"
 
-namespace chromeos {
+namespace ash {
 namespace reporting {
 
 class LoginLogoutReporterTestDelegate : public LoginLogoutReporter::Delegate {
@@ -23,7 +23,8 @@ class LoginLogoutReporterTestDelegate : public LoginLogoutReporter::Delegate {
  private:
   const AccountId account_id_;
 };
+
 }  // namespace reporting
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_REPORTING_LOGIN_LOGOUT_REPORTER_TEST_DELEGATE_H_

@@ -20,7 +20,7 @@ class UserEventReporterHelper;
 
 }  // namespace reporting
 
-namespace chromeos {
+namespace ash {
 namespace reporting {
 
 class LoginLogoutReporter : public policy::ManagedSessionService::Observer {
@@ -80,7 +80,8 @@ class LoginLogoutReporter : public policy::ManagedSessionService::Observer {
                           policy::ManagedSessionService::Observer>
       managed_session_observation_{this};
 };
+
 }  // namespace reporting
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_REPORTING_LOGIN_LOGOUT_REPORTER_H_

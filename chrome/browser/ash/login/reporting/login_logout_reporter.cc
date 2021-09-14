@@ -19,7 +19,7 @@
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
 
-namespace chromeos {
+namespace ash {
 namespace reporting {
 namespace {
 
@@ -162,5 +162,6 @@ void LoginLogoutReporter::OnLoginFailure(const chromeos::AuthFailure& error) {
   record.mutable_login_event()->mutable_failure()->set_reason(failure_reason);
   MaybeReportEvent(std::move(record), account_id);
 }
+
 }  // namespace reporting
-}  // namespace chromeos
+}  // namespace ash

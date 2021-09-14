@@ -30,6 +30,9 @@ class EnrollmentCertificateUploader;
 class EnrollmentIdUploadManager;
 class MachineCertificateUploader;
 }  // namespace attestation
+namespace reporting {
+class LoginLogoutReporter;
+}
 }  // namespace ash
 
 namespace base {
@@ -37,13 +40,8 @@ class SequencedTaskRunner;
 }  // namespace base
 
 namespace chromeos {
-
-namespace reporting {
-class LoginLogoutReporter;
-}  // namespace reporting
-
 class InstallAttributes;
-}  // namespace chromeos
+}
 
 class PrefRegistrySimple;
 class PrefService;
@@ -185,8 +183,7 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager {
   std::unique_ptr<policy::ManagedSessionService> managed_session_service_;
 
   // Object that reports login/logout events to the server.
-  std::unique_ptr<chromeos::reporting::LoginLogoutReporter>
-      login_logout_reporter_;
+  std::unique_ptr<ash::reporting::LoginLogoutReporter> login_logout_reporter_;
 
   // Object that reports user added/removed events to the server.
   std::unique_ptr<reporting::UserAddedRemovedReporter>

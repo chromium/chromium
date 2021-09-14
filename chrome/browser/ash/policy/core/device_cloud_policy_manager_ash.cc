@@ -245,7 +245,7 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
     heartbeat_scheduler_ = std::make_unique<HeartbeatScheduler>(
         g_browser_process->gcm_driver(), client(), device_store_.get(),
         install_attributes->GetDeviceId(), task_runner_);
-    login_logout_reporter_ = chromeos::reporting::LoginLogoutReporter::Create(
+    login_logout_reporter_ = ash::reporting::LoginLogoutReporter::Create(
         managed_session_service_.get());
     user_added_removed_reporter_ =
         std::make_unique<::reporting::UserAddedRemovedReporter>();

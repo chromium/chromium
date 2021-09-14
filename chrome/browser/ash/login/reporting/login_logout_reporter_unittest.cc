@@ -17,16 +17,16 @@
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
 
-using testing::_;
-
-namespace chromeos {
+namespace ash {
 namespace reporting {
+
+using ::testing::_;
 
 class LoginLogoutReporterTest : public ::testing::Test {
  protected:
   void SetUp() override {
     chromeos::PowerManagerClient::InitializeFake();
-    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
+    auto user_manager = std::make_unique<FakeChromeUserManager>();
     user_manager_ = user_manager.get();
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(user_manager));
@@ -70,7 +70,7 @@ class LoginLogoutReporterTest : public ::testing::Test {
   }
 
  private:
-  ash::FakeChromeUserManager* user_manager_;
+  FakeChromeUserManager* user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   content::BrowserTaskEnvironment task_environment_;
 };
@@ -242,7 +242,7 @@ TEST_F(LoginLogoutReporterTest, ReportAffiliatedLogout) {
       std::make_unique<LoginLogoutReporterTestDelegate>());
   auto profile = CreateRegularProfile(user_email);
   reporter->OnSessionTerminationStarted(
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile.get()));
+      ProfileHelper::Get()->GetUserByProfile(profile.get()));
 
   EXPECT_THAT(priority, testing::Eq(::reporting::Priority::IMMEDIATE));
   EXPECT_TRUE(record.has_event_timestamp());
@@ -283,7 +283,7 @@ TEST_F(LoginLogoutReporterTest, ReportUnaffiliatedLogout) {
       std::make_unique<LoginLogoutReporterTestDelegate>());
   auto profile = CreateRegularProfile(user_email);
   reporter->OnSessionTerminationStarted(
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile.get()));
+      ProfileHelper::Get()->GetUserByProfile(profile.get()));
 
   EXPECT_THAT(priority, testing::Eq(::reporting::Priority::IMMEDIATE));
   EXPECT_TRUE(record.has_event_timestamp());
@@ -321,7 +321,7 @@ TEST_F(LoginLogoutReporterTest, ReportManagedGuestLogout) {
       std::make_unique<LoginLogoutReporterTestDelegate>());
   auto profile = CreatePublicAccountProfile();
   reporter->OnSessionTerminationStarted(
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile.get()));
+      ProfileHelper::Get()->GetUserByProfile(profile.get()));
 
   EXPECT_THAT(priority, testing::Eq(::reporting::Priority::IMMEDIATE));
   EXPECT_TRUE(record.has_event_timestamp());
@@ -349,7 +349,7 @@ TEST_F(LoginLogoutReporterTest, KioskLogout) {
       std::make_unique<LoginLogoutReporterTestDelegate>());
   auto profile = CreateKioskAppProfile();
   reporter->OnSessionTerminationStarted(
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile.get()));
+      ProfileHelper::Get()->GetUserByProfile(profile.get()));
 }
 
 TEST_F(LoginLogoutReporterTest, ReportAffiliatedLoginFailure) {
@@ -542,5 +542,6 @@ TEST_F(LoginLogoutReporterTest, ShouldNotReportEvent) {
   auto profile = CreateRegularProfile(user_email);
   reporter->OnLogin(profile.get());
 }
+
 }  // namespace reporting
-}  // namespace chromeos
+}  // namespace ash

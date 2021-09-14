@@ -6,7 +6,7 @@ syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
 
-package chromeos.reporting;
+package ash.reporting;
 
 message SessionAffiliatedUser {
   optional string user_email = 1;

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/reporting/login_logout_reporter_test_delegate.h"
 
-namespace chromeos {
+namespace ash {
 namespace reporting {
 
 LoginLogoutReporterTestDelegate::~LoginLogoutReporterTestDelegate() = default;
@@ -17,5 +17,6 @@ AccountId LoginLogoutReporterTestDelegate::GetLastLoginAttemptAccountId()
     const {
   return account_id_;
 }
+
 }  // namespace reporting
-}  // namespace chromeos
+}  // namespace ash
