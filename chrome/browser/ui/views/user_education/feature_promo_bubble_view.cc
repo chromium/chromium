@@ -107,8 +107,6 @@ class MdIPHBubbleButton : public views::MdTextButton {
     // inactive style when the bubble loses focus.
     SetTextColor(ButtonState::STATE_DISABLED, button_colors_.text_color);
     views::FocusRing::Get(this)->SetColor(button_colors_.focus_ring_color);
-    views::FocusRing::Get(this)->SetHaloThickness(1.0f);
-    views::FocusRing::Get(this)->SetHaloInset(0.0f);
     GetViewAccessibility().OverrideIsLeaf(true);
   }
   MdIPHBubbleButton(const MdIPHBubbleButton&) = delete;
