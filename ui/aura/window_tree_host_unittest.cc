@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/aura/test/aura_test_base.h"
@@ -10,6 +11,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host_platform.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/test/draw_waiter_for_test.h"
 #include "ui/events/event_rewriter.h"
@@ -182,6 +184,11 @@ class TestWindowTreeHost : public WindowTreeHostPlatform {
 };
 
 TEST_F(WindowTreeHostTest, LostCaptureDuringTearDown) {
+#if defined(OS_WIN)
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kApplyNativeOcclusionToCompositor);
+#endif
   TestWindowTreeHost host;
 }
 

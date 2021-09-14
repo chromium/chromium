@@ -14,16 +14,23 @@ class WindowTreeHost;
 // NativeWindowOcclusionTrackerWin).
 class NativeWindowOcclusionTracker {
  public:
-  NativeWindowOcclusionTracker();
-  virtual ~NativeWindowOcclusionTracker();
+  NativeWindowOcclusionTracker() = delete;
+  NativeWindowOcclusionTracker(const NativeWindowOcclusionTracker&) = delete;
+  NativeWindowOcclusionTracker& operator=(const NativeWindowOcclusionTracker&) =
+      delete;
+  ~NativeWindowOcclusionTracker() = delete;
 
   // Enables native window occlusion tracking for the native window |host|
   // represents.
-  void EnableNativeWindowOcclusionTracking(WindowTreeHost* host);
+  static void EnableNativeWindowOcclusionTracking(WindowTreeHost* host);
 
   // Disables native window occlusion tracking for the native window |host|
   // represents.
-  void DisableNativeWindowOcclusionTracking(WindowTreeHost* host);
+  static void DisableNativeWindowOcclusionTracking(WindowTreeHost* host);
+
+  // Returns whether native window occlusion tracking is always enabled.
+  static bool IsNativeWindowOcclusionTrackingAlwaysEnabled(
+      WindowTreeHost* host);
 };
 
 }  // namespace aura

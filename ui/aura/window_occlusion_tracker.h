@@ -14,7 +14,6 @@
 #include "base/macros.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/aura/aura_export.h"
-#include "ui/aura/native_window_occlusion_tracker.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/aura/window_tree_host_observer.h"
@@ -395,10 +394,6 @@ class AURA_EXPORT WindowOcclusionTracker : public ui::LayerAnimationObserver,
   // values. If the occlusion tracker is not computing for a specific window
   // (most of the time it is not), this will be nullptr.
   Window* target_occlusion_window_ = nullptr;
-
-  // Shim to connect WindowOcclusionTracker with native window occlusion
-  // tracker(s), currently just NativeWindowOcclusionTrackerWin.
-  NativeWindowOcclusionTracker native_window_occlusion_tracker_;
 
   DISALLOW_COPY_AND_ASSIGN(WindowOcclusionTracker);
 };

@@ -14,6 +14,7 @@
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/env.h"
+#include "ui/aura/native_window_occlusion_tracker.h"
 #include "ui/aura/scoped_keyboard_hook.h"
 #include "ui/aura/scoped_simple_keyboard_hook.h"
 #include "ui/aura/window.h"
@@ -73,6 +74,19 @@ class ScopedLocalSurfaceIdValidator {
   ~ScopedLocalSurfaceIdValidator() {}
 };
 #endif
+
+bool ShouldOcclusionStateBeConsideredVisible(Window::OcclusionState state) {
+  switch (state) {
+    case Window::OcclusionState::UNKNOWN:
+      return true;
+    case Window::OcclusionState::VISIBLE:
+      return true;
+    case Window::OcclusionState::OCCLUDED:
+      return false;
+    case Window::OcclusionState::HIDDEN:
+      return false;
+  }
+}
 
 }  // namespace
 
@@ -298,15 +312,14 @@ void WindowTreeHost::Show() {
   // and InitHost().
   DCHECK(compositor());
   DCHECK_EQ(compositor()->root_layer(), window()->layer());
-  compositor()->SetVisible(true);
+  OnAcceleratedWidgetMadeVisible(true);
   ShowImpl();
   window()->Show();
 }
 
 void WindowTreeHost::Hide() {
   HideImpl();
-  if (compositor())
-    compositor()->SetVisible(false);
+  OnAcceleratedWidgetMadeVisible(false);
 }
 
 std::unique_ptr<ScopedKeyboardHook> WindowTreeHost::CaptureSystemKeyEvents(
@@ -330,11 +343,22 @@ bool WindowTreeHost::IsNativeWindowOcclusionEnabled() {
 
 void WindowTreeHost::SetNativeWindowOcclusionState(
     Window::OcclusionState state) {
-  if (occlusion_state_ != state) {
-    occlusion_state_ = state;
-    for (WindowTreeHostObserver& observer : observers_)
-      observer.OnOcclusionStateChanged(this, state);
+  if (occlusion_state_ == state)
+    return;
+
+  occlusion_state_ = state;
+
+  if (compositor() && accelerated_widget_made_visible_ &&
+      NativeWindowOcclusionTracker::
+          IsNativeWindowOcclusionTrackingAlwaysEnabled(this)) {
+    const bool visible =
+        ShouldOcclusionStateBeConsideredVisible(occlusion_state_);
+    if (visible != compositor()->IsVisible())
+      compositor()->SetVisible(visible);
   }
+
+  for (WindowTreeHostObserver& observer : observers_)
+    observer.OnOcclusionStateChanged(this, state);
 }
 
 std::unique_ptr<ScopedEnableUnadjustedMouseEvents>
@@ -400,9 +424,13 @@ void WindowTreeHost::IntializeDeviceScaleFactor(float device_scale_factor) {
 }
 
 void WindowTreeHost::DestroyCompositor() {
-  if (compositor_) {
-    compositor_->RemoveObserver(this);
-    compositor_.reset();
+  if (!compositor_)
+    return;
+  compositor_->RemoveObserver(this);
+  compositor_.reset();
+  if (NativeWindowOcclusionTracker::
+          IsNativeWindowOcclusionTrackingAlwaysEnabled(this)) {
+    NativeWindowOcclusionTracker::DisableNativeWindowOcclusionTracking(this);
   }
 }
 
@@ -420,6 +448,18 @@ void WindowTreeHost::DestroyDispatcher() {
   // as GetRootWindow()) result in Window's implementation. By destroying here
   // we ensure GetRootWindow() still returns this.
   //window()->RemoveOrDestroyChildren();
+}
+
+void WindowTreeHost::OnAcceleratedWidgetMadeVisible(bool value) {
+  if (accelerated_widget_made_visible_ == value)
+    return;
+
+  accelerated_widget_made_visible_ = value;
+  // Always update the compositor (ignoring occlusion-state) as it is entirely
+  // possible the occlusion-state is out of date at this point. It is expected
+  // that the proper occlusion state is provided soon after this.
+  if (compositor())
+    compositor()->SetVisible(value);
 }
 
 void WindowTreeHost::CreateCompositor(
@@ -460,6 +500,10 @@ void WindowTreeHost::OnAcceleratedWidgetAvailable() {
   compositor_->SetAcceleratedWidget(GetAcceleratedWidget());
   prop_ = std::make_unique<ui::ViewProp>(
       GetAcceleratedWidget(), kWindowTreeHostForAcceleratedWidget, this);
+  if (NativeWindowOcclusionTracker::
+          IsNativeWindowOcclusionTrackingAlwaysEnabled(this)) {
+    NativeWindowOcclusionTracker::EnableNativeWindowOcclusionTracking(this);
+  }
 }
 
 void WindowTreeHost::OnHostMovedInPixels(

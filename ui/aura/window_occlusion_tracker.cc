@@ -12,6 +12,7 @@
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/aura/env.h"
+#include "ui/aura/native_window_occlusion_tracker.h"
 #include "ui/aura/window_occlusion_change_builder.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/layer.h"
@@ -699,8 +700,10 @@ void WindowOcclusionTracker::TrackedWindowAddedToRoot(Window* window) {
     auto* host = root_window->GetHost();
     if (host) {
       host->AddObserver(this);
-      native_window_occlusion_tracker_.EnableNativeWindowOcclusionTracking(
-          host);
+      if (!NativeWindowOcclusionTracker::
+              IsNativeWindowOcclusionTrackingAlwaysEnabled(host)) {
+        NativeWindowOcclusionTracker::EnableNativeWindowOcclusionTracking(host);
+      }
     }
   }
   MaybeComputeOcclusion();
@@ -715,9 +718,12 @@ void WindowOcclusionTracker::TrackedWindowRemovedFromRoot(Window* window) {
   if (root_window_state_it->second.num_tracked_windows == 0) {
     RemoveObserverFromWindowAndDescendants(root_window);
     root_windows_.erase(root_window_state_it);
-    root_window->GetHost()->RemoveObserver(this);
-    native_window_occlusion_tracker_.DisableNativeWindowOcclusionTracking(
-        root_window->GetHost());
+    WindowTreeHost* host = root_window->GetHost();
+    host->RemoveObserver(this);
+    if (!NativeWindowOcclusionTracker::
+            IsNativeWindowOcclusionTrackingAlwaysEnabled(host)) {
+      NativeWindowOcclusionTracker::DisableNativeWindowOcclusionTracking(host);
+    }
   }
 }
 

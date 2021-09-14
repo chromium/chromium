@@ -273,6 +273,15 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   void DestroyCompositor();
   void DestroyDispatcher();
 
+  // Sets whether the accelerated widget has been made visible. This is called
+  // when platform specific api has been called to make the widget visible. The
+  // widget is not necessarily shown/drawn (it may be occluded or minimized),
+  // but from the OSs perspective, the window may be shown to the user.
+  //
+  // This is called from Show(), subclasses that do not call Show() must call
+  // this.
+  void OnAcceleratedWidgetMadeVisible(bool value);
+
   void CreateCompositor(
       bool force_software_compositor = false,
       bool use_external_begin_frame_control = false,
@@ -393,6 +402,8 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
 
   // Set to true if native window occlusion should be calculated.
   bool native_window_occlusion_enabled_ = false;
+
+  bool accelerated_widget_made_visible_ = false;
 
   base::WeakPtrFactory<WindowTreeHost> weak_factory_{this};
 

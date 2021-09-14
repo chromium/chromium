@@ -17,6 +17,9 @@
 namespace features {
 
 #if defined(OS_WIN)
+const base::Feature kApplyNativeOcclusionToCompositor{
+    "ApplyNativeOcclusionToCompositor", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, calculate native window occlusion - Windows-only.
 const base::Feature kCalculateNativeWinOcclusion{
     "CalculateNativeWinOcclusion", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -303,6 +306,15 @@ bool IsSwipeToMoveCursorEnabled() {
       ;
 #endif
   return enabled;
+}
+
+bool ShouldApplyNativeOcclusionToCompositor() {
+#if defined(OS_WIN)
+  return base::FeatureList::IsEnabled(kCalculateNativeWinOcclusion) &&
+         base::FeatureList::IsEnabled(kApplyNativeOcclusionToCompositor);
+#else
+  return false;
+#endif
 }
 
 }  // namespace features

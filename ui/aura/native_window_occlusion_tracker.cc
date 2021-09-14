@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/base/ui_base_features.h"
 
 #if defined(OS_WIN)
 #include "ui/aura/native_window_occlusion_tracker_win.h"
@@ -13,9 +14,7 @@
 
 namespace aura {
 
-NativeWindowOcclusionTracker::NativeWindowOcclusionTracker() = default;
-NativeWindowOcclusionTracker::~NativeWindowOcclusionTracker() = default;
-
+// static
 void NativeWindowOcclusionTracker::EnableNativeWindowOcclusionTracking(
     WindowTreeHost* host) {
 #if defined(OS_WIN)
@@ -26,6 +25,7 @@ void NativeWindowOcclusionTracker::EnableNativeWindowOcclusionTracking(
 #endif  // defined(OS_WIN)
 }
 
+// static
 void NativeWindowOcclusionTracker::DisableNativeWindowOcclusionTracking(
     WindowTreeHost* host) {
 #if defined(OS_WIN)
@@ -35,6 +35,13 @@ void NativeWindowOcclusionTracker::DisableNativeWindowOcclusionTracking(
         host->window());
   }
 #endif  // defined(OS_WIN)
+}
+
+// static
+bool NativeWindowOcclusionTracker::IsNativeWindowOcclusionTrackingAlwaysEnabled(
+    WindowTreeHost* host) {
+  return features::ShouldApplyNativeOcclusionToCompositor() &&
+         host->IsNativeWindowOcclusionEnabled();
 }
 
 }  // namespace aura

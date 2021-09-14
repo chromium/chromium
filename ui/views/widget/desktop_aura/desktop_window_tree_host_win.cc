@@ -262,8 +262,7 @@ aura::WindowTreeHost* DesktopWindowTreeHostWin::AsWindowTreeHost() {
 
 void DesktopWindowTreeHostWin::Show(ui::WindowShowState show_state,
                                     const gfx::Rect& restore_bounds) {
-  if (compositor())
-    compositor()->SetVisible(true);
+  OnAcceleratedWidgetMadeVisible(true);
 
   gfx::Rect pixel_restore_bounds;
   if (show_state == ui::SHOW_STATE_MAXIMIZED) {
@@ -511,8 +510,7 @@ void DesktopWindowTreeHostWin::SetFullscreen(bool fullscreen) {
   // directly. Instead of this should listen for visibility changes and then
   // update window.
   if (message_handler_->IsVisible() && !content_window()->TargetVisibility()) {
-    if (compositor())
-      compositor()->SetVisible(true);
+    OnAcceleratedWidgetMadeVisible(true);
     content_window()->Show();
   }
   desktop_native_widget_aura_->UpdateWindowTransparency();

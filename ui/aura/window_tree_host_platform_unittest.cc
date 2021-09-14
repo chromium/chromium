@@ -4,14 +4,34 @@
 
 #include "ui/aura/window_tree_host_platform.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/aura/window_tree_host_observer.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/platform_window/stub/stub_window.h"
 
 namespace aura {
 namespace {
 
-using WindowTreeHostPlatformTest = test::AuraTestBase;
+class WindowTreeHostPlatformTest : public test::AuraTestBase {
+ public:
+  WindowTreeHostPlatformTest() = default;
+
+  // test::AuraTestBase:
+  void SetUp() override {
+    test::AuraTestBase::SetUp();
+#if defined(OS_WIN)
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kApplyNativeOcclusionToCompositor);
+#endif
+  }
+
+ private:
+#if defined(OS_WIN)
+  base::test::ScopedFeatureList scoped_feature_list_;
+#endif
+};
 
 // Trivial WindowTreeHostPlatform implementation that installs a StubWindow as
 // the PlatformWindow.
