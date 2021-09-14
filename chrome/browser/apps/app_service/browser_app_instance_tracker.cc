@@ -215,6 +215,20 @@ const BrowserAppInstance* BrowserAppInstanceTracker::GetChromeInstance(
   return chrome_instances_.GetInstance(browser);
 }
 
+void BrowserAppInstanceTracker::ActivateTabInstance(BrowserAppInstanceId id) {
+  for (const auto& pair : app_instances_) {
+    const BrowserAppInstance& instance = *pair.second;
+    if (instance.id == id) {
+      Browser* browser = chrome::FindBrowserWithWebContents(pair.first);
+      TabStripModel* tab_strip = browser->tab_strip_model();
+      int index = tab_strip->GetIndexOfWebContents(pair.first);
+      DCHECK_NE(TabStripModel::kNoTab, index);
+      tab_strip->ActivateTabAt(index);
+      break;
+    }
+  }
+}
+
 void BrowserAppInstanceTracker::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,

@@ -1043,3 +1043,26 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, AppInstall) {
     recorder.Verify({});
   }
 }
+
+IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, ActivateTabInstance) {
+  // Setup: a browser with 2 tabs (app A and a non-app tab).
+  Browser* browser = nullptr;
+  aura::Window* window = nullptr;
+
+  content::WebContents* web_contents_a;
+  content::WebContents* web_contents_c;
+
+  // Open app A in a tab.
+  browser = CreateBrowser();
+  window = browser->window()->GetNativeWindow();
+  web_contents_a = InsertForegroundTab(browser, "https://a.example.org");
+
+  // Open a second tab with no app.
+  web_contents_c = InsertForegroundTab(browser, "https://c.example.org");
+
+  EXPECT_EQ(browser->tab_strip_model()->GetActiveWebContents(), web_contents_c);
+
+  tracker_->ActivateTabInstance(tracker_->GetAppInstance(web_contents_a)->id);
+
+  EXPECT_EQ(browser->tab_strip_model()->GetActiveWebContents(), web_contents_a);
+}

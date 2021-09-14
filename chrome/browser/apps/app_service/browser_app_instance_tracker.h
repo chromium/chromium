@@ -81,6 +81,10 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
   // Get Chrome instance running in |browser|. Returns null if not found.
   const BrowserAppInstance* GetChromeInstance(Browser* browser) const;
 
+  // Activate the given instance within its tabstrip. If the instance lives in
+  // its own window, this will have no effect.
+  void ActivateTabInstance(BrowserAppInstanceId id);
+
   void AddObserver(BrowserAppInstanceObserver* observer) {
     app_instances_.AddObserver(observer);
     chrome_instances_.AddObserver(observer);
