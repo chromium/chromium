@@ -15,9 +15,13 @@
 #include "base/memory/scoped_refptr.h"
 #include "storage/common/file_system/file_system_types.h"
 
+namespace blink {
+class StorageKey;
+}  // namespace blink
+
 namespace url {
 class Origin;
-}
+}  // namespace url
 
 namespace storage {
 
@@ -35,32 +39,38 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemQuotaUtil {
 
   // Deletes the data on the origin and reports the amount of deleted data
   // to the quota manager via |proxy|.
-  virtual base::File::Error DeleteOriginDataOnFileTaskRunner(
+  virtual base::File::Error DeleteStorageKeyDataOnFileTaskRunner(
       FileSystemContext* context,
       QuotaManagerProxy* proxy,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       FileSystemType type) = 0;
 
   virtual void PerformStorageCleanupOnFileTaskRunner(FileSystemContext* context,
                                                      QuotaManagerProxy* proxy,
                                                      FileSystemType type) = 0;
 
+  // TODO(https://crbug.com/1247726): Refactor SandboxObfuscatedOriginEnumerator
+  // to use StorageKey instead of url::Origin and access those StorageKeys
+  // below.
   virtual std::vector<url::Origin> GetOriginsForTypeOnFileTaskRunner(
       FileSystemType type) = 0;
 
+  // TODO(https://crbug.com/1247726): Refactor SandboxObfuscatedOriginEnumerator
+  // to use StorageKey instead of url::Origin and access those StorageKeys
+  // below.
   virtual std::vector<url::Origin> GetOriginsForHostOnFileTaskRunner(
       FileSystemType type,
       const std::string& host) = 0;
 
-  // Returns the amount of data used for the origin for usage tracking.
-  virtual int64_t GetOriginUsageOnFileTaskRunner(
+  // Returns the amount of data used for the `storage_key` for usage tracking.
+  virtual int64_t GetStorageKeyUsageOnFileTaskRunner(
       FileSystemContext* file_system_context,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       FileSystemType type) = 0;
 
-  // Creates new reservation object for the origin and the type.
+  // Creates new reservation object for the `storage_key` and the `type`.
   virtual scoped_refptr<QuotaReservation>
-  CreateQuotaReservationOnFileTaskRunner(const url::Origin& origin,
+  CreateQuotaReservationOnFileTaskRunner(const blink::StorageKey& storage_key,
                                          FileSystemType type) = 0;
 };
 

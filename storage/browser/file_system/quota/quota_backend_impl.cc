@@ -157,8 +157,8 @@ base::File::Error QuotaBackendImpl::GetUsageCachePath(
   DCHECK(usage_file_path);
   base::File::Error error = base::File::FILE_OK;
   *usage_file_path =
-      SandboxFileSystemBackendDelegate::GetUsageCachePathForOriginAndType(
-          obfuscated_file_util_, origin, type, &error);
+      SandboxFileSystemBackendDelegate::GetUsageCachePathForStorageKeyAndType(
+          obfuscated_file_util_, blink::StorageKey(origin), type, &error);
   return error;
 }
 

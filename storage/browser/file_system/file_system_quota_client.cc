@@ -121,8 +121,8 @@ blink::mojom::QuotaStatusCode DeleteStorageKeyOnFileTaskRunner(
   if (!provider || !provider->GetQuotaUtil())
     return blink::mojom::QuotaStatusCode::kErrorNotSupported;
   base::File::Error result =
-      provider->GetQuotaUtil()->DeleteOriginDataOnFileTaskRunner(
-          context, context->quota_manager_proxy(), storage_key.origin(), type);
+      provider->GetQuotaUtil()->DeleteStorageKeyDataOnFileTaskRunner(
+          context, context->quota_manager_proxy(), storage_key, type);
   if (result == base::File::FILE_OK)
     return blink::mojom::QuotaStatusCode::kOk;
   return blink::mojom::QuotaStatusCode::kErrorInvalidModification;
@@ -173,10 +173,10 @@ void FileSystemQuotaClient::GetStorageKeyUsage(
       file_task_runner()->PostTaskAndReplyWithResult(
           FROM_HERE,
           // It is safe to pass Unretained(quota_util) since context owns it.
-          base::BindOnce(&FileSystemQuotaUtil::GetOriginUsageOnFileTaskRunner,
-                         base::Unretained(quota_util),
-                         base::RetainedRef(file_system_context_),
-                         storage_key.origin(), type),
+          base::BindOnce(
+              &FileSystemQuotaUtil::GetStorageKeyUsageOnFileTaskRunner,
+              base::Unretained(quota_util),
+              base::RetainedRef(file_system_context_), storage_key, type),
           barrier);
     } else {
       barrier.Run(0);

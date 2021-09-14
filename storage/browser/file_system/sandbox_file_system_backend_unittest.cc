@@ -111,8 +111,8 @@ class SandboxFileSystemBackendTest
   }
 
   void CreateOriginTypeDirectory(const char* origin_url, FileSystemType type) {
-    base::FilePath target = delegate_->GetBaseDirectoryForOriginAndType(
-        url::Origin::Create(GURL(origin_url)), type, true);
+    base::FilePath target = delegate_->GetBaseDirectoryForStorageKeyAndType(
+        blink::StorageKey::CreateFromStringForTesting(origin_url), type, true);
     ASSERT_TRUE(!target.empty());
     ASSERT_TRUE(base::DirectoryExists(target));
   }
@@ -131,8 +131,8 @@ class SandboxFileSystemBackendTest
     if (error != base::File::FILE_OK)
       return false;
     base::FilePath returned_root_path =
-        delegate_->GetBaseDirectoryForOriginAndType(
-            url::Origin::Create(GURL(origin_url)), type,
+        delegate_->GetBaseDirectoryForStorageKeyAndType(
+            blink::StorageKey::CreateFromStringForTesting(origin_url), type,
             /*create=*/false);
     if (root_path)
       *root_path = returned_root_path;

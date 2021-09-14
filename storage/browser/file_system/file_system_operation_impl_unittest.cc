@@ -226,14 +226,14 @@ class FileSystemOperationImplTest : public testing::Test {
   }
 
   int64_t GetDataSizeOnDisk() {
-    return sandbox_file_system_.ComputeCurrentOriginUsage() -
+    return sandbox_file_system_.ComputeCurrentStorageKeyUsage() -
            sandbox_file_system_.ComputeCurrentDirectoryDatabaseUsage();
   }
 
   void GetUsageAndQuota(int64_t* usage, int64_t* quota) {
     blink::mojom::QuotaStatusCode status =
         AsyncFileTestHelper::GetUsageAndQuota(
-            quota_manager_.get(), sandbox_file_system_.origin(),
+            quota_manager_.get(), sandbox_file_system_.storage_key().origin(),
             sandbox_file_system_.type(), usage, quota);
     task_environment_.RunUntilIdle();
     ASSERT_EQ(blink::mojom::QuotaStatusCode::kOk, status);
@@ -257,7 +257,7 @@ class FileSystemOperationImplTest : public testing::Test {
   void GrantQuotaForCurrentUsage() {
     int64_t usage;
     GetUsageAndQuota(&usage, nullptr);
-    quota_manager()->SetQuota(blink::StorageKey(sandbox_file_system_.origin()),
+    quota_manager()->SetQuota(sandbox_file_system_.storage_key(),
                               sandbox_file_system_.storage_type(), usage);
   }
 
@@ -270,7 +270,7 @@ class FileSystemOperationImplTest : public testing::Test {
   void AddQuota(int64_t quota_delta) {
     int64_t quota;
     GetUsageAndQuota(nullptr, &quota);
-    quota_manager()->SetQuota(blink::StorageKey(sandbox_file_system_.origin()),
+    quota_manager()->SetQuota(sandbox_file_system_.storage_key(),
                               sandbox_file_system_.storage_type(),
                               quota + quota_delta);
   }

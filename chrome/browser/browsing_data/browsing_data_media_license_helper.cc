@@ -18,6 +18,7 @@
 #include "storage/browser/file_system/file_system_quota_util.h"
 #include "storage/browser/file_system/plugin_private_file_system_backend.h"
 #include "storage/common/file_system/file_system_types.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 using content::BrowserThread;
@@ -125,9 +126,11 @@ void BrowsingDataMediaLicenseHelperImpl::
   storage::FileSystemBackend* backend =
       filesystem_context_->GetFileSystemBackend(kType);
   storage::FileSystemQuotaUtil* quota_util = backend->GetQuotaUtil();
-  quota_util->DeleteOriginDataOnFileTaskRunner(
+  // TODO(https://crbug.com/1231162): determine whether EME/CDM/plugin private
+  // file system will be partitioned and use the appropriate StorageKey.
+  quota_util->DeleteStorageKeyDataOnFileTaskRunner(
       filesystem_context_.get(), filesystem_context_->quota_manager_proxy(),
-      url::Origin::Create(origin), kType);
+      blink::StorageKey(url::Origin::Create(origin)), kType);
 }
 
 }  // namespace

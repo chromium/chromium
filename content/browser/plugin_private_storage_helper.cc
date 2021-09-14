@@ -372,8 +372,11 @@ void PluginPrivateDataDeletionHelper::DecrementTaskCount(
         filesystem_context_->GetFileSystemBackend(
             storage::kFileSystemTypePluginPrivate);
     storage::FileSystemQuotaUtil* quota_util = backend->GetQuotaUtil();
-    base::File::Error result = quota_util->DeleteOriginDataOnFileTaskRunner(
-        filesystem_context_.get(), nullptr, url::Origin::Create(origin),
+    // TODO(https://crbug.com/1231162): determine whether EME/CDM/plugin private
+    // file system will be partitioned and use the appropriate StorageKey.
+    base::File::Error result = quota_util->DeleteStorageKeyDataOnFileTaskRunner(
+        filesystem_context_.get(), nullptr,
+        blink::StorageKey(url::Origin::Create(origin)),
         storage::kFileSystemTypePluginPrivate);
     ALLOW_UNUSED_LOCAL(result);
     DLOG_IF(ERROR, result != base::File::FILE_OK)

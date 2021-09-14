@@ -82,8 +82,11 @@ void FileSystemHelper::FetchFileSystemInfoInFileThread(FetchCallback callback) {
     for (const auto& current : origins) {
       if (!HasWebScheme(current.GetURL()))
         continue;  // Non-websafe state is not considered browsing data.
-      int64_t usage = quota_util->GetOriginUsageOnFileTaskRunner(
-          filesystem_context_.get(), current, type);
+      // TODO(https://crbug.com/1247726): Refactor
+      // SandboxObfuscatedOriginEnumerator to use StorageKey instead of
+      // url::Origin and access those StorageKeys below.
+      int64_t usage = quota_util->GetStorageKeyUsageOnFileTaskRunner(
+          filesystem_context_.get(), blink::StorageKey(current), type);
       auto inserted =
           file_system_info_map
               .insert(std::make_pair(current.GetURL(), FileSystemInfo(current)))

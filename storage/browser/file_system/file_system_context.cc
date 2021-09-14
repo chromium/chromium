@@ -289,9 +289,11 @@ bool FileSystemContext::DeleteDataForOriginOnFileTaskRunner(
     FileSystemBackend* backend = type_backend_pair.second;
     if (!backend->GetQuotaUtil())
       continue;
-    if (backend->GetQuotaUtil()->DeleteOriginDataOnFileTaskRunner(
-            this, quota_manager_proxy(), origin, type_backend_pair.first) !=
-        base::File::FILE_OK) {
+    // TODO(https://crbug.com/1245706): Refactor FileSystemContext to use the
+    // correct third-party StorageKey instead of in-line converting url::Origin
+    if (backend->GetQuotaUtil()->DeleteStorageKeyDataOnFileTaskRunner(
+            this, quota_manager_proxy(), blink::StorageKey(origin),
+            type_backend_pair.first) != base::File::FILE_OK) {
       // Continue the loop, but record the failure.
       success = false;
     }
@@ -308,8 +310,10 @@ FileSystemContext::CreateQuotaReservationOnFileTaskRunner(
   FileSystemBackend* backend = GetFileSystemBackend(type);
   if (!backend || !backend->GetQuotaUtil())
     return scoped_refptr<QuotaReservation>();
-  return backend->GetQuotaUtil()->CreateQuotaReservationOnFileTaskRunner(origin,
-                                                                         type);
+  // TODO(https://crbug.com/1245706): Refactor FileSystemContext to use the
+  // correct third-party StorageKey instead of in-line converting url::Origin
+  return backend->GetQuotaUtil()->CreateQuotaReservationOnFileTaskRunner(
+      blink::StorageKey(origin), type);
 }
 
 void FileSystemContext::Shutdown() {
@@ -507,10 +511,14 @@ void FileSystemContext::DeleteFileSystem(const url::Origin& origin,
   base::PostTaskAndReplyWithResult(
       default_file_task_runner(), FROM_HERE,
       // It is safe to pass Unretained(quota_util) since context owns it.
-      base::BindOnce(&FileSystemQuotaUtil::DeleteOriginDataOnFileTaskRunner,
+      // TODO(https://crbug.com/1245706): Refactor FileSystemContext to use the
+      // correct third-party StorageKey instead of in-line converting
+      // url::Origin
+      base::BindOnce(&FileSystemQuotaUtil::DeleteStorageKeyDataOnFileTaskRunner,
                      base::Unretained(backend->GetQuotaUtil()),
                      base::RetainedRef(this),
-                     base::Unretained(quota_manager_proxy()), origin, type),
+                     base::Unretained(quota_manager_proxy()),
+                     blink::StorageKey(origin), type),
       std::move(callback));
 }
 

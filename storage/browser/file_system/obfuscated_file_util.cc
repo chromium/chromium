@@ -33,6 +33,7 @@
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/common/database/database_identifier.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
 #include "url/gurl.h"
 
@@ -298,7 +299,8 @@ base::File ObfuscatedFileUtil::CreateOrOpen(FileSystemOperationContext* context,
   if (file.IsValid() && file_flags & base::File::FLAG_WRITE &&
       context->quota_limit_type() == QuotaLimitType::kUnlimited &&
       sandbox_delegate_) {
-    sandbox_delegate_->StickyInvalidateUsageCache(url.origin(), url.type());
+    sandbox_delegate_->StickyInvalidateUsageCache(url.storage_key(),
+                                                  url.type());
   }
   return file;
 }
@@ -1260,12 +1262,14 @@ base::FilePath ObfuscatedFileUtil::GetDirectoryForOrigin(
   return path;
 }
 
+// TODO(https://crbug.com/1245710): Refactor ObfuscatedFileSystem to use
+// StorageKey instead of origin and replace in-line conversion below.
 void ObfuscatedFileUtil::InvalidateUsageCache(
     FileSystemOperationContext* context,
     const url::Origin& origin,
     FileSystemType type) {
   if (sandbox_delegate_)
-    sandbox_delegate_->InvalidateUsageCache(origin, type);
+    sandbox_delegate_->InvalidateUsageCache(blink::StorageKey(origin), type);
 }
 
 void ObfuscatedFileUtil::MarkUsed() {

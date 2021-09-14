@@ -154,11 +154,13 @@ bool HasFileSystemType(ObfuscatedFileUtil::AbstractOriginEnumerator* enumerator,
 class ObfuscatedFileUtilTest : public testing::Test,
                                public ::testing::WithParamInterface<TestMode> {
  public:
+  // TODO(https://crbug.com/1245710): Refactor ObfuscatedFileSystem to use
+  // StorageKey instead of origin and replace in-line conversion below.
   ObfuscatedFileUtilTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
         origin_(Origin::Create(GURL("http://www.example.com"))),
         type_(kFileSystemTypeTemporary),
-        sandbox_file_system_(origin_, type_),
+        sandbox_file_system_(blink::StorageKey(origin_), type_),
         quota_status_(blink::mojom::QuotaStatusCode::kUnknown),
         usage_(-1) {}
 
@@ -254,8 +256,10 @@ class ObfuscatedFileUtilTest : public testing::Test,
   std::unique_ptr<SandboxFileSystemTestHelper> NewFileSystem(
       const Origin& origin,
       FileSystemType type) {
-    auto file_system =
-        std::make_unique<SandboxFileSystemTestHelper>(origin, type);
+    // TODO(https://crbug.com/1245710): Refactor ObfuscatedFileSystem to use
+    // StorageKey instead of origin and replace in-line conversion below.
+    auto file_system = std::make_unique<SandboxFileSystemTestHelper>(
+        blink::StorageKey(origin), type);
 
     file_system->SetUp(file_system_context_);
     return file_system;
@@ -282,7 +286,7 @@ class ObfuscatedFileUtilTest : public testing::Test,
   std::string type_string() const { return GetTypeString(type_); }
 
   int64_t ComputeTotalFileSize() {
-    return sandbox_file_system_.ComputeCurrentOriginUsage() -
+    return sandbox_file_system_.ComputeCurrentStorageKeyUsage() -
            sandbox_file_system_.ComputeCurrentDirectoryDatabaseUsage();
   }
 
@@ -300,7 +304,7 @@ class ObfuscatedFileUtilTest : public testing::Test,
   }
 
   int64_t SizeByQuotaUtil() {
-    return sandbox_file_system_.GetCachedOriginUsage();
+    return sandbox_file_system_.GetCachedStorageKeyUsage();
   }
 
   int64_t SizeInUsageFile() {
@@ -453,7 +457,8 @@ class ObfuscatedFileUtilTest : public testing::Test,
 
    private:
     void Check() {
-      ASSERT_EQ(expected_usage_, sandbox_file_system_->GetCachedOriginUsage());
+      ASSERT_EQ(expected_usage_,
+                sandbox_file_system_->GetCachedStorageKeyUsage());
     }
 
     std::unique_ptr<FileSystemOperationContext> context_;
@@ -464,7 +469,7 @@ class ObfuscatedFileUtilTest : public testing::Test,
 
   std::unique_ptr<UsageVerifyHelper> AllowUsageIncrease(
       int64_t requested_growth) {
-    int64_t usage = sandbox_file_system_.GetCachedOriginUsage();
+    int64_t usage = sandbox_file_system_.GetCachedStorageKeyUsage();
     return std::make_unique<UsageVerifyHelper>(LimitedContext(requested_growth),
                                                &sandbox_file_system_,
                                                usage + requested_growth, this);
@@ -472,7 +477,7 @@ class ObfuscatedFileUtilTest : public testing::Test,
 
   std::unique_ptr<UsageVerifyHelper> DisallowUsageIncrease(
       int64_t requested_growth) {
-    int64_t usage = sandbox_file_system_.GetCachedOriginUsage();
+    int64_t usage = sandbox_file_system_.GetCachedStorageKeyUsage();
     return std::make_unique<UsageVerifyHelper>(
         LimitedContext(requested_growth - 1), &sandbox_file_system_, usage,
         this);
@@ -775,7 +780,7 @@ class ObfuscatedFileUtilTest : public testing::Test,
   }
 
   int64_t ComputeCurrentUsage() {
-    return sandbox_file_system_.ComputeCurrentOriginUsage() -
+    return sandbox_file_system_.ComputeCurrentStorageKeyUsage() -
            sandbox_file_system_.ComputeCurrentDirectoryDatabaseUsage();
   }
 

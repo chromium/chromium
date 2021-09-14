@@ -22,15 +22,19 @@
 
 namespace base {
 class SequencedTaskRunner;
-}
+}  // namespace base
+
+namespace blink {
+class StorageKey;
+}  // namespace blink
 
 namespace leveldb {
 class Env;
-}
+}  // namespace leveldb
 
 namespace url {
 class Origin;
-}
+}  // namespace url
 
 namespace storage {
 
@@ -103,10 +107,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) PluginPrivateFileSystemBackend
       FileSystemType type) const override;
 
   // FileSystemQuotaUtil overrides.
-  base::File::Error DeleteOriginDataOnFileTaskRunner(
+  base::File::Error DeleteStorageKeyDataOnFileTaskRunner(
       FileSystemContext* context,
       QuotaManagerProxy* proxy,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       FileSystemType type) override;
   void PerformStorageCleanupOnFileTaskRunner(FileSystemContext* context,
                                              QuotaManagerProxy* proxy,
@@ -116,11 +120,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) PluginPrivateFileSystemBackend
   std::vector<url::Origin> GetOriginsForHostOnFileTaskRunner(
       FileSystemType type,
       const std::string& host) override;
-  int64_t GetOriginUsageOnFileTaskRunner(FileSystemContext* context,
-                                         const url::Origin& origin,
-                                         FileSystemType type) override;
+  int64_t GetStorageKeyUsageOnFileTaskRunner(
+      FileSystemContext* context,
+      const blink::StorageKey& storage_key,
+      FileSystemType type) override;
   scoped_refptr<QuotaReservation> CreateQuotaReservationOnFileTaskRunner(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       FileSystemType type) override;
 
   // Get details on the files saved for the specified |origin_url|. Returns

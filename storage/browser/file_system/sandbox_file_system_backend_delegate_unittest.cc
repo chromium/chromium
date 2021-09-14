@@ -48,11 +48,11 @@ class SandboxFileSystemBackendDelegateTest : public testing::Test {
     return delegate_->IsAccessValid(url);
   }
 
-  void OpenFileSystem(const url::Origin& origin,
+  void OpenFileSystem(const blink::StorageKey& storage_key,
                       FileSystemType type,
                       OpenFileSystemMode mode) {
     delegate_->OpenFileSystem(
-        origin, type, mode,
+        storage_key, type, mode,
         base::BindOnce(
             &SandboxFileSystemBackendDelegateTest::OpenFileSystemCallback,
             base::Unretained(this)),
@@ -120,19 +120,19 @@ TEST_F(SandboxFileSystemBackendDelegateTest, IsAccessValid) {
 }
 
 TEST_F(SandboxFileSystemBackendDelegateTest, OpenFileSystemAccessesStorage) {
-  GURL origin("http://example.com");
-
   EXPECT_EQ(quota_manager_proxy()->notify_storage_accessed_count(), 0);
   EXPECT_EQ(callback_count(), 0);
 
-  OpenFileSystem(url::Origin::Create(origin), kFileSystemTypeTemporary,
+  const blink::StorageKey& storage_key =
+      blink::StorageKey::CreateFromStringForTesting("http://example.com");
+
+  OpenFileSystem(storage_key, kFileSystemTypeTemporary,
                  OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT);
 
   EXPECT_EQ(callback_count(), 1);
   EXPECT_EQ(last_error(), base::File::FILE_OK);
   EXPECT_EQ(quota_manager_proxy()->notify_storage_accessed_count(), 1);
-  EXPECT_EQ(quota_manager_proxy()->last_notified_storage_key(),
-            blink::StorageKey(url::Origin::Create(origin)));
+  EXPECT_EQ(quota_manager_proxy()->last_notified_storage_key(), storage_key);
   EXPECT_EQ(quota_manager_proxy()->last_notified_type(),
             blink::mojom::StorageType::kTemporary);
 }

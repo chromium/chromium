@@ -233,15 +233,15 @@ FileSystemQuotaUtil* PluginPrivateFileSystemBackend::GetQuotaUtil() {
 }
 
 base::File::Error
-PluginPrivateFileSystemBackend::DeleteOriginDataOnFileTaskRunner(
+PluginPrivateFileSystemBackend::DeleteStorageKeyDataOnFileTaskRunner(
     FileSystemContext* context,
     QuotaManagerProxy* proxy,
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     FileSystemType type) {
   if (!CanHandleType(type))
     return base::File::FILE_ERROR_SECURITY;
   bool result = obfuscated_file_util()->DeleteDirectoryForOriginAndType(
-      origin, std::string());
+      storage_key.origin(), std::string());
   if (result)
     return base::File::FILE_OK;
   return base::File::FILE_ERROR_FAILED;
@@ -287,9 +287,9 @@ PluginPrivateFileSystemBackend::GetOriginsForHostOnFileTaskRunner(
   return origins;
 }
 
-int64_t PluginPrivateFileSystemBackend::GetOriginUsageOnFileTaskRunner(
+int64_t PluginPrivateFileSystemBackend::GetStorageKeyUsageOnFileTaskRunner(
     FileSystemContext* context,
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     FileSystemType type) {
   DCHECK(file_task_runner_->RunsTasksInCurrentSequence());
 
@@ -298,7 +298,7 @@ int64_t PluginPrivateFileSystemBackend::GetOriginUsageOnFileTaskRunner(
 
   int64_t total_size;
   base::Time last_modified_time;
-  GetOriginDetailsOnFileTaskRunner(context, origin, &total_size,
+  GetOriginDetailsOnFileTaskRunner(context, storage_key.origin(), &total_size,
                                    &last_modified_time);
   return total_size;
 }
@@ -367,7 +367,7 @@ void PluginPrivateFileSystemBackend::GetOriginDetailsOnFileTaskRunner(
 
 scoped_refptr<QuotaReservation>
 PluginPrivateFileSystemBackend::CreateQuotaReservationOnFileTaskRunner(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     FileSystemType type) {
   // We don't track usage on this filesystem.
   NOTREACHED();

@@ -100,9 +100,10 @@ class FileWriterDelegateTest : public PlatformTest {
 
   int64_t usage() {
     return file_system_context_->GetQuotaUtil(kFileSystemType)
-        ->GetOriginUsageOnFileTaskRunner(file_system_context_.get(),
-                                         url::Origin::Create(GURL(kOrigin)),
-                                         kFileSystemType);
+        ->GetStorageKeyUsageOnFileTaskRunner(
+            file_system_context_.get(),
+            blink::StorageKey::CreateFromStringForTesting(kOrigin),
+            kFileSystemType);
   }
 
   int64_t GetFileSizeOnDisk(const char* test_file_path) {

@@ -29,6 +29,10 @@
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/common/file_system/file_system_util.h"
 
+namespace blink {
+class StorageKey;
+}  // namespace blink
+
 namespace storage {
 
 namespace {
@@ -62,10 +66,10 @@ class TestFileSystemBackend::QuotaUtil : public FileSystemQuotaUtil,
   ~QuotaUtil() override = default;
 
   // FileSystemQuotaUtil overrides.
-  base::File::Error DeleteOriginDataOnFileTaskRunner(
+  base::File::Error DeleteStorageKeyDataOnFileTaskRunner(
       FileSystemContext* context,
       QuotaManagerProxy* proxy,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       FileSystemType type) override {
     NOTREACHED();
     return base::File::FILE_OK;
@@ -76,7 +80,7 @@ class TestFileSystemBackend::QuotaUtil : public FileSystemQuotaUtil,
                                              FileSystemType type) override {}
 
   scoped_refptr<QuotaReservation> CreateQuotaReservationOnFileTaskRunner(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       FileSystemType type) override {
     NOTREACHED();
     return scoped_refptr<QuotaReservation>();
@@ -95,9 +99,10 @@ class TestFileSystemBackend::QuotaUtil : public FileSystemQuotaUtil,
     return std::vector<url::Origin>();
   }
 
-  int64_t GetOriginUsageOnFileTaskRunner(FileSystemContext* context,
-                                         const url::Origin& origin,
-                                         FileSystemType type) override {
+  int64_t GetStorageKeyUsageOnFileTaskRunner(
+      FileSystemContext* context,
+      const blink::StorageKey& storage_key,
+      FileSystemType type) override {
     return usage_;
   }
 

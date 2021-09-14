@@ -29,12 +29,13 @@
 namespace storage {
 
 SandboxFileSystemTestHelper::SandboxFileSystemTestHelper(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     FileSystemType type)
-    : origin_(origin), type_(type), file_util_(nullptr) {}
+    : storage_key_(storage_key), type_(type), file_util_(nullptr) {}
 
 SandboxFileSystemTestHelper::SandboxFileSystemTestHelper()
-    : origin_(url::Origin::Create(GURL("http://foo.com"))),
+    : storage_key_(
+          blink::StorageKey::CreateFromStringForTesting("http://foo.com")),
       type_(kFileSystemTypeTemporary),
       file_util_(nullptr) {}
 
@@ -65,9 +66,9 @@ void SandboxFileSystemTestHelper::TearDown() {
   base::RunLoop().RunUntilIdle();
 }
 
-base::FilePath SandboxFileSystemTestHelper::GetOriginRootPath() {
+base::FilePath SandboxFileSystemTestHelper::GetStorageKeyRootPath() {
   return file_system_context_->sandbox_delegate()
-      ->GetBaseDirectoryForOriginAndType(origin_, type_, false);
+      ->GetBaseDirectoryForStorageKeyAndType(storage_key(), type_, false);
 }
 
 base::FilePath SandboxFileSystemTestHelper::GetLocalPath(
@@ -86,28 +87,26 @@ base::FilePath SandboxFileSystemTestHelper::GetLocalPathFromASCII(
 
 base::FilePath SandboxFileSystemTestHelper::GetUsageCachePath() const {
   return file_system_context_->sandbox_delegate()
-      ->GetUsageCachePathForOriginAndType(origin_, type_);
+      ->GetUsageCachePathForStorageKeyAndType(storage_key(), type_);
 }
 
 FileSystemURL SandboxFileSystemTestHelper::CreateURL(
     const base::FilePath& path) const {
-  // TODO(https://crbug.com/1236567): refactor SandboxFileSystemTestHelper to
-  // contain a StorageKey member as opposed to origin; replace conversion below
-  return file_system_context_->CreateCrackedFileSystemURL(
-      blink::StorageKey(origin_), type_, path);
+  return file_system_context_->CreateCrackedFileSystemURL(storage_key(), type_,
+                                                          path);
 }
 
-int64_t SandboxFileSystemTestHelper::GetCachedOriginUsage() const {
+int64_t SandboxFileSystemTestHelper::GetCachedStorageKeyUsage() const {
   return file_system_context_->GetQuotaUtil(type_)
-      ->GetOriginUsageOnFileTaskRunner(file_system_context_.get(), origin_,
-                                       type_);
+      ->GetStorageKeyUsageOnFileTaskRunner(file_system_context_.get(),
+                                           storage_key(), type_);
 }
 
-int64_t SandboxFileSystemTestHelper::ComputeCurrentOriginUsage() {
+int64_t SandboxFileSystemTestHelper::ComputeCurrentStorageKeyUsage() {
   usage_cache()->CloseCacheFiles();
 
   int64_t size =
-      file_util_delegate()->ComputeDirectorySize(GetOriginRootPath());
+      file_util_delegate()->ComputeDirectorySize(GetStorageKeyRootPath());
   if (file_util_delegate()->PathExists(GetUsageCachePath()))
     size -= FileSystemUsageCache::kUsageFileSize;
 
@@ -116,7 +115,7 @@ int64_t SandboxFileSystemTestHelper::ComputeCurrentOriginUsage() {
 
 int64_t SandboxFileSystemTestHelper::ComputeCurrentDirectoryDatabaseUsage() {
   return file_util_delegate()->ComputeDirectorySize(
-      GetOriginRootPath().AppendASCII("Paths"));
+      GetStorageKeyRootPath().AppendASCII("Paths"));
 }
 
 FileSystemOperationRunner* SandboxFileSystemTestHelper::operation_runner() {
@@ -163,8 +162,9 @@ void SandboxFileSystemTestHelper::SetUpFileSystem() {
   DCHECK(file_util_);
 
   // Prepare the origin's root directory.
-  file_system_context_->sandbox_delegate()->GetBaseDirectoryForOriginAndType(
-      origin_, type_, true /* create */);
+  file_system_context_->sandbox_delegate()
+      ->GetBaseDirectoryForStorageKeyAndType(storage_key(), type_,
+                                             true /* create */);
 
   base::FilePath usage_cache_path = GetUsageCachePath();
   if (!usage_cache_path.empty())

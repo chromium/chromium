@@ -21,7 +21,11 @@
 
 namespace base {
 class FilePath;
-}
+}  // namespace base
+
+namespace blink {
+class StorageKey;
+}  // namespace blink
 
 namespace storage {
 class FileSystemContext;
@@ -32,10 +36,6 @@ class ObfuscatedFileUtilDelegate;
 class QuotaManagerProxy;
 }  // namespace storage
 
-namespace url {
-class Origin;
-}
-
 namespace storage {
 
 // Filesystem test helper class that encapsulates test environment for
@@ -43,7 +43,8 @@ namespace storage {
 // file systems (Temporary or Persistent).
 class SandboxFileSystemTestHelper {
  public:
-  SandboxFileSystemTestHelper(const url::Origin& origin, FileSystemType type);
+  SandboxFileSystemTestHelper(const blink::StorageKey& storage_key,
+                              FileSystemType type);
   SandboxFileSystemTestHelper();
   ~SandboxFileSystemTestHelper();
 
@@ -57,7 +58,7 @@ class SandboxFileSystemTestHelper {
              scoped_refptr<QuotaManagerProxy> quota_manager_proxy);
   void TearDown();
 
-  base::FilePath GetOriginRootPath();
+  base::FilePath GetStorageKeyRootPath();
   base::FilePath GetLocalPath(const base::FilePath& path);
   base::FilePath GetLocalPathFromASCII(const std::string& path);
 
@@ -70,10 +71,10 @@ class SandboxFileSystemTestHelper {
   }
 
   // This returns cached usage size returned by QuotaUtil.
-  int64_t GetCachedOriginUsage() const;
+  int64_t GetCachedStorageKeyUsage() const;
 
   // This doesn't work with OFSFU.
-  int64_t ComputeCurrentOriginUsage();
+  int64_t ComputeCurrentStorageKeyUsage();
 
   int64_t ComputeCurrentDirectoryDatabaseUsage();
 
@@ -87,7 +88,7 @@ class SandboxFileSystemTestHelper {
     return file_system_context_.get();
   }
 
-  const url::Origin& origin() const { return origin_; }
+  const blink::StorageKey& storage_key() const { return storage_key_; }
   FileSystemType type() const { return type_; }
   blink::mojom::StorageType storage_type() const {
     return FileSystemTypeToQuotaStorageType(type_);
@@ -102,7 +103,7 @@ class SandboxFileSystemTestHelper {
 
   scoped_refptr<FileSystemContext> file_system_context_;
 
-  const url::Origin origin_;
+  const blink::StorageKey storage_key_;
   const FileSystemType type_;
   FileSystemFileUtil* file_util_;
 };
