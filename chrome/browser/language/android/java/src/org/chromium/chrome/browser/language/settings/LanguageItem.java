@@ -128,6 +128,14 @@ public class LanguageItem {
     }
 
     /**
+     * return String representation of the BCP-47 code for this language.
+     */
+    @Override
+    public String toString() {
+        return getCode();
+    }
+
+    /**
      * Two LanguageItems are equal if their language codes are equal.
      */
     @Override

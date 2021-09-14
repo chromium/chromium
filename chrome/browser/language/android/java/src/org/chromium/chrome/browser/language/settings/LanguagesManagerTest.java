@@ -27,6 +27,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Tests for {@link LanguagesManager} which gets language lists from native.
@@ -42,7 +43,7 @@ public class LanguagesManagerTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        // Setup fake translate and langauge preferences.
+        // Setup fake translate and language preferences.
         List<LanguageItem> chromeLanguages = FakeTranslateBridgeJni.getSimpleLanguageItemList();
         List<String> acceptLanguages = Arrays.asList("sw", "en", "en-US");
         List<String> neverLanguages = Arrays.asList("en");
@@ -126,6 +127,17 @@ public class LanguagesManagerTest {
         // Check that the fist languages are from the Accept-Languages.
         Assert.assertEquals(items.get(0).getCode(), "sw");
         Assert.assertEquals(items.get(1).getCode(), "en-US");
+    }
+
+    /**
+     * Tests for getting the all UI languages.
+     */
+    @Test
+    @SmallTest
+    public void testGetAllPossibleUiLanguages() {
+        List<LanguageItem> items = LanguagesManager.getInstance().getAllPossibleUiLanguages();
+        List<String> itemCodes = items.stream().map(i -> i.getCode()).collect(Collectors.toList());
+        Assert.assertEquals(itemCodes, Arrays.asList("af", "en-GB", "en-US", "fil", "hi", "sw"));
     }
 
     /**

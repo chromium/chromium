@@ -106,6 +106,7 @@ android_library("javatests") {
   testonly = true
 
   sources = [
+    "java/src/org/chromium/chrome/browser/language/AppLanguagePromoDialogTest.java",
     "java/src/org/chromium/chrome/browser/language/AppLocaleUtilsTest.java",
     "java/src/org/chromium/chrome/browser/language/GlobalAppLocaleControllerTest.java",
     "java/src/org/chromium/chrome/browser/language/settings/LanguageSettingsTest.java",
