@@ -99,6 +99,8 @@ void StatsCollector::ReportSurvivalRate() const {
   VLOG(2) << "quarantine size: " << quarantine_last_size_ << " -> "
           << survived_quarantine_size() << ", swept bytes: " << swept_size()
           << ", survival rate: " << survived_rate;
+  if (discarded_quarantine_size_)
+    VLOG(2) << "discarded quarantine size: " << discarded_quarantine_size_;
 }
 
 template base::TimeDelta StatsCollector::GetTimeImpl(

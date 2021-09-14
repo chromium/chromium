@@ -837,33 +837,108 @@ void PCScanTask::ScanPartitions() {
   stats_.IncreaseSurvivedQuarantineSize(scan_loop.quarantine_size());
 }
 
-void PCScanTask::SweepQuarantine() {
-  size_t swept_bytes = 0;
+namespace {
 
-  StarScanSnapshot::SweepingView sweeping_view(*snapshot_);
-  sweeping_view.VisitNonConcurrently([this,
-                                      &swept_bytes](uintptr_t super_page) {
-    auto* bitmap = StateBitmapFromPointer(reinterpret_cast<void*>(super_page));
-    auto* root = Root::FromSuperPage(reinterpret_cast<char*>(super_page));
-    bitmap->IterateUnmarkedQuarantined(
-        pcscan_epoch_, [root, &swept_bytes](uintptr_t ptr) {
-          auto* object = reinterpret_cast<void*>(ptr);
-          auto* slot_span = SlotSpan::FromSlotInnerPtr(object);
-          swept_bytes += slot_span->bucket->slot_size;
-          root->FreeNoHooksImmediate(object, slot_span);
+size_t FreeAndUnmarkInCardTable(PartitionRoot<ThreadSafe>* root,
+                                SlotSpanMetadata<ThreadSafe>* slot_span,
+                                void* object) {
+  const size_t slot_size = slot_span->bucket->slot_size;
+  root->FreeNoHooksImmediate(object, slot_span);
 #if PA_STARSCAN_USE_CARD_TABLE
-          // Reset card(s) for this quarantined object. Please note that the
-          // cards may still contain quarantined objects (which were
-          // promoted in this scan cycle), but
-          // ClearQuarantinedObjectsAndFilterSuperPages() will set them
-          // again in the next PCScan cycle.
-          QuarantineCardTable::GetFrom(ptr).Unquarantine(
-              ptr, slot_span->GetUsableSize(root));
+  // Reset card(s) for this quarantined object. Please note that the
+  // cards may still contain quarantined objects (which were
+  // promoted in this scan cycle), but
+  // ClearQuarantinedObjectsAndFilterSuperPages() will set them
+  // again in the next PCScan cycle.
+  QuarantineCardTable::GetFrom(ptr).Unquarantine(
+      ptr, slot_span->GetUsableSize(root));
 #endif
-        });
-  });
+  return slot_size;
+}
 
-  stats_.IncreaseSweptSize(swept_bytes);
+struct SweepStat {
+  // Bytes that were really swept (by calling free()).
+  size_t swept_bytes = 0;
+  // Bytes of marked quarantine memory that were discarded (by calling
+  // madvice(DONT_NEED)).
+  size_t discarded_bytes = 0;
+};
+
+void SweepSuperPage(ThreadSafePartitionRoot* root,
+                    void* super_page,
+                    size_t epoch,
+                    SweepStat& stat) {
+  auto* bitmap = StateBitmapFromPointer(super_page);
+  ThreadSafePartitionRoot::FromSuperPage(static_cast<char*>(super_page));
+  bitmap->IterateUnmarkedQuarantined(epoch, [root, &stat](uintptr_t ptr) {
+    auto* object = reinterpret_cast<void*>(ptr);
+    auto* slot_span = SlotSpanMetadata<ThreadSafe>::FromSlotInnerPtr(object);
+    stat.swept_bytes +=
+        FreeAndUnmarkInCardTable(root, slot_span, reinterpret_cast<void*>(ptr));
+  });
+}
+
+void SweepSuperPageAndDiscardMarkedQuarantine(ThreadSafePartitionRoot* root,
+                                              void* super_page,
+                                              size_t epoch,
+                                              SweepStat& stat) {
+  auto* bitmap = StateBitmapFromPointer(super_page);
+  bitmap->IterateQuarantined(epoch, [root, &stat](uintptr_t ptr,
+                                                  bool is_marked) {
+    auto* object = reinterpret_cast<void*>(ptr);
+    auto* slot_span = SlotSpanMetadata<ThreadSafe>::FromSlotInnerPtr(object);
+    if (LIKELY(!is_marked)) {
+      stat.swept_bytes += FreeAndUnmarkInCardTable(root, slot_span, object);
+      return;
+    }
+    // Otherwise, try to discard pages for marked quarantine. Since no data is
+    // stored in quarantined objects (e.g. the |next| pointer), this can be
+    // freely done.
+    const size_t slot_size = slot_span->bucket->slot_size;
+    if (slot_size >= SystemPageSize()) {
+      // Since no data is stored in quarantined objects (e.g. the |next|
+      // pointer), we can freely discard physical memory.
+      const uintptr_t discard_end =
+          bits::AlignDown(ptr + slot_size, SystemPageSize());
+      const uintptr_t discard_begin = bits::AlignUp(ptr, SystemPageSize());
+      const intptr_t discard_size = discard_end - discard_begin;
+      if (discard_size > 0) {
+        DiscardSystemPages(reinterpret_cast<void*>(discard_begin),
+                           discard_size);
+        stat.discarded_bytes += discard_size;
+      }
+    }
+  });
+}
+
+}  // namespace
+
+void PCScanTask::SweepQuarantine() {
+  // Discard marked quarantine memory on every Nth scan.
+  // TODO(bikineev): Find a better signal (e.g. memory pressure, high
+  // survival rate, etc).
+  static constexpr size_t kDiscardMarkedQuarantineFrequency = 16;
+  const bool should_discard =
+      (pcscan_epoch_ % kDiscardMarkedQuarantineFrequency == 0) &&
+      (pcscan_.clear_type_ == PCScan::ClearType::kEager);
+
+  SweepStat stat;
+  StarScanSnapshot::SweepingView sweeping_view(*snapshot_);
+  sweeping_view.VisitNonConcurrently(
+      [this, &stat, should_discard](uintptr_t super_page) {
+        void* super_page_as_void = reinterpret_cast<void*>(super_page);
+        auto* root = ThreadSafePartitionRoot::FromSuperPage(
+            static_cast<char*>(super_page_as_void));
+
+        if (UNLIKELY(should_discard && !root->allow_cookie))
+          SweepSuperPageAndDiscardMarkedQuarantine(root, super_page_as_void,
+                                                   pcscan_epoch_, stat);
+        else
+          SweepSuperPage(root, super_page_as_void, pcscan_epoch_, stat);
+      });
+
+  stats_.IncreaseSweptSize(stat.swept_bytes);
+  stats_.IncreaseDiscardedQuarantineSize(stat.discarded_bytes);
 
 #if defined(PA_THREAD_CACHE_SUPPORTED)
   // Sweeping potentially frees into the current thread's thread cache. Purge
