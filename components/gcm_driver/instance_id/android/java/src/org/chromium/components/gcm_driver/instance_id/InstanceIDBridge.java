@@ -111,7 +111,7 @@ public class InstanceIDBridge {
             @Override
             protected String doBackgroundWork() {
                 try {
-                    // TODO(knollr): Migrate stored LazySubscriptionsManager data to
+                    // TODO(crbug.com/1247170): Migrate stored LazySubscriptionsManager data to
                     // SubscriptionFlagManager.
                     LazySubscriptionsManager.storeLazinessInformation(
                             LazySubscriptionsManager.buildSubscriptionUniqueId(

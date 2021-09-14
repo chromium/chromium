@@ -257,7 +257,7 @@ void NotificationPlatformBridgeAndroid::Display(
 
   GURL origin_url(notification.origin_url().GetOrigin());
 
-  // TODO(knollr): Reconsider the meta-data system to try to remove this branch.
+  // TODO(peter): Reconsider the meta-data system to try to remove this branch.
   const PersistentNotificationMetadata* persistent_notification_metadata =
       PersistentNotificationMetadata::From(metadata.get());
 
