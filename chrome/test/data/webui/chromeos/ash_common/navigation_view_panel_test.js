@@ -4,9 +4,10 @@
 
 import {SelectorItem} from 'chrome://resources/ash/common/navigation_selector.js';
 import {NavigationViewPanelElement} from 'chrome://resources/ash/common/navigation_view_panel.js';
+import {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.js';
+import {eventToPromise, flushTasks} from '../../test_util.js';
 
 export function navigationViewPanelTestSuite() {
   /** @type {?NavigationViewPanelElement} */
@@ -82,6 +83,19 @@ export function navigationViewPanelTestSuite() {
    */
   function addNavigationSections(sections) {
     viewElement.addSelectors(sections);
+    return flushTasks();
+  }
+
+  function getDrawer() {
+    return /** @type {!CrDrawerElement} */ (
+        viewElement.shadowRoot.querySelector('#drawer'));
+  }
+
+  /**
+   * @return {!Promise}
+   */
+  function clickDrawerIcon() {
+    viewElement.shadowRoot.querySelector('#iconButton').click();
     return flushTasks();
   }
 
@@ -217,5 +231,27 @@ export function navigationViewPanelTestSuite() {
     const pageToolbar = viewElement.shadowRoot.querySelector('page-toolbar');
     const toolbarTitle = pageToolbar.$.title.textContent.trim();
     assertEquals(expectedTitle, toolbarTitle);
+  });
+
+  test('ToggleDrawer', async () => {
+    const dummyPage1 = 'dummy-page1';
+    const expectedTitle = 'title';
+    viewElement.title = expectedTitle;
+    viewElement.showToolBar = true;
+
+    await addNavigationSections([
+      viewElement.createSelectorItem('dummyPage1', dummyPage1),
+    ]);
+
+    const drawer = getDrawer();
+    drawer.openDrawer();
+    await eventToPromise('cr-drawer-opened', drawer);
+    assertTrue(drawer.open);
+
+    // Clicking the drawer icon closes the drawer.
+    await clickDrawerIcon();
+    await eventToPromise('close', drawer);
+    assertFalse(drawer.open);
+    assertTrue(drawer.wasCanceled());
   });
 }

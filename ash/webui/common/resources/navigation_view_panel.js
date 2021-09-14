@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
+import 'chrome://resources/cr_elements/icons.m.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import './navigation_shared_vars.js';
 import './page_toolbar.js';
@@ -89,6 +92,12 @@ export class NavigationViewPanelElement extends PolymerElement {
     }
   }
 
+  /** @override */
+  constructor() {
+    super();
+    window.addEventListener('menu-tap', () => this.onMenuButtonTap_());
+  }
+
   /**
    * @param {string} name
    * @param {string} pageIs
@@ -157,6 +166,11 @@ export class NavigationViewPanelElement extends PolymerElement {
     if (!this.selectedItem)
       return;
     const pageComponent = this.getPage_(this.selectedItem);
+
+    if (this.$.drawer.open) {
+      this.$.drawer.close();
+    }
+
     this.showPage_(pageComponent);
 
     this.notifyEvent(navigationPageChanged);
@@ -215,6 +229,10 @@ export class NavigationViewPanelElement extends PolymerElement {
     // Hide all existing pages.
     Array.from(components).map((c) => c.hidden = true);
     pageComponent.hidden = false;
+  }
+
+  onMenuButtonTap_() {
+    this.$.drawer.toggle();
   }
 }
 

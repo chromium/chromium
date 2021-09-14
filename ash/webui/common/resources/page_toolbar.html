@@ -12,12 +12,32 @@
     width: 100%;
   }
 
-  #title {
+  :host([is-narrow]) #leftContent {
+    align-items: center;
+    display: flex;
+    padding-inline-start: 0;
+  }
+
+  :host(:not([is-narrow])) #leftContent {
     padding-inline-start: 28px;
+  }
+
+  #title {
+    color: var(--google-grey-900);
+    font-family: Roboto;
+    font-size: 16px;
+    font-weight: 500;
   }
 </style>
 <div id="container">
   <div id="leftContent">
+    <template is="dom-if" if="[[isNarrow]]">
+      <cr-icon-button id="menuButton" class="no-overlap"
+          iron-icon="cr20:menu" on-click="onMenuTap_"
+          aria-label="[[title]]"
+          title="[[title]]">
+      </cr-icon-button>
+    </template>
     <h1 id="title">[[title]]</h1>
   </div>
 </div>
