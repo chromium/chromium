@@ -1,6 +1,6 @@
 (async function(testRunner) {
   const {session, dp} = await testRunner.startHTML(`
-    <div>Test page</div>
+    <div style="width: 400px; height: 400px;">Test page</div>
   `, 'Verifies that Overlay.setShowViewportSizeOnResize works.');
 
   await dp.DOM.enable();
@@ -62,6 +62,15 @@
   });
 
   testRunner.log('Device metrics with changed viewport:');
+  testRunner.log(await getViewportResetCommands(3));
+
+  await dp.Emulation.setDeviceMetricsOverride({
+    width: 300,
+    height: 300,
+    deviceScaleFactor: 1,
+    mobile: false,
+  });
+  testRunner.log('Device metrics with scrollbar:');
   testRunner.log(await getViewportResetCommands(3));
 
   testRunner.completeTest();
