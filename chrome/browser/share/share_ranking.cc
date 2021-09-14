@@ -108,14 +108,20 @@ std::vector<std::string> ReplaceUnavailableEntries(
 void FillGaps(std::vector<std::string>& ranking,
               const std::vector<std::string>& available,
               unsigned int length) {
-  std::vector<std::string> unused_available = available;
+  // Take the tail of the ranking (the part that won't be shown on the screen),
+  // remove items that aren't available on the system, and slot the rest into
+  // the empty slots. Note that this means that apps available on the system but
+  // not present in the current ranking can never be shown as options, which is
+  // desirable - that keeps things like the Android CTS Shim from showing up.
+  std::vector<std::string> unused_available(ranking.begin() + length,
+                                            ranking.end());
 
   unused_available.erase(
-      std::remove_if(unused_available.begin(), unused_available.end(),
-                     [&](const std::string& e) {
-                       return RankingContains(ranking, e, length);
-                     }),
+      std::remove_if(
+          unused_available.begin(), unused_available.end(),
+          [&](const std::string& e) { return !RankingContains(available, e); }),
       unused_available.end());
+
   auto next_unused = unused_available.begin();
 
   DCHECK_GE(ranking.size(), length);
