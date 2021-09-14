@@ -339,6 +339,44 @@ void PrintBackendServiceManager::GetPrinterSemanticCapsAndDefaults(
           saved_callback_id));
 }
 
+void PrintBackendServiceManager::UpdatePrintSettings(
+    const std::string& printer_name,
+    base::flat_map<std::string, base::Value> job_settings,
+    mojom::PrintBackendService::UpdatePrintSettingsCallback callback) {
+  // Need to be able to run the callback either after a successful return from
+  // the service or after the remote was disconnected, so save it here for
+  // either eventuality.
+  // Get a callback ID to represent this command.
+  auto saved_callback_id = base::UnguessableToken::Create();
+
+  // Note that `GetService()` will set state internally if this is sandboxed.
+  std::string remote_id = GetRemoteIdForPrinterName(printer_name);
+  auto& service = GetService(printer_name);
+
+  SaveCallback(
+      GetRemoteSavedUpdatePrintSettingsCallbacks(is_sandboxed_service_),
+      remote_id, saved_callback_id, std::move(callback));
+
+  if (!sandboxed_service_remote_for_test_) {
+    // TODO(1227561)  Remove local call for driver info, don't want any
+    // residual accesses left into the printer drivers from the browser
+    // process.
+    base::ScopedAllowBlocking allow_blocking;
+    scoped_refptr<PrintBackend> print_backend =
+        PrintBackend::CreateInstance(g_browser_process->GetApplicationLocale());
+    crash_keys_ = std::make_unique<crash_keys::ScopedPrinterInfo>(
+        print_backend->GetPrinterDriverInfo(printer_name));
+  }
+
+  DVLOG(1) << "Sending UpdatePrintSettings on remote `" << remote_id
+           << "`, saved callback ID of " << saved_callback_id;
+  service->UpdatePrintSettings(
+      std::move(job_settings),
+      base::BindOnce(&PrintBackendServiceManager::UpdatePrintSettingsDone,
+                     base::Unretained(this), is_sandboxed_service_, remote_id,
+                     saved_callback_id));
+}
+
 bool PrintBackendServiceManager::PrinterDriverRequiresElevatedPrivilege(
     const std::string& printer_name) const {
   return drivers_requiring_elevated_privilege_.contains(printer_name);
@@ -465,6 +503,9 @@ void PrintBackendServiceManager::OnRemoteDisconnected(
       remote_id,
       mojom::PrinterSemanticCapsAndDefaultsResult::NewResultCode(
           mojom::ResultCode::kFailed));
+  RunSavedCallbacksStructResult(
+      GetRemoteSavedUpdatePrintSettingsCallbacks(sandboxed), remote_id,
+      mojom::PrintSettingsResult::NewResultCode(mojom::ResultCode::kFailed));
 }
 
 PrintBackendServiceManager::RemoteSavedEnumeratePrintersCallbacks&
@@ -496,6 +537,13 @@ PrintBackendServiceManager::
   return sandboxed
              ? sandboxed_saved_get_printer_semantic_caps_and_defaults_callbacks_
              : unsandboxed_saved_get_printer_semantic_caps_and_defaults_callbacks_;
+}
+
+PrintBackendServiceManager::RemoteSavedUpdatePrintSettingsCallbacks&
+PrintBackendServiceManager::GetRemoteSavedUpdatePrintSettingsCallbacks(
+    bool sandboxed) {
+  return sandboxed ? sandboxed_saved_update_print_settings_callbacks_
+                   : unsandboxed_saved_update_print_settings_callbacks_;
 }
 
 template <class T, class X>
@@ -575,6 +623,18 @@ void PrintBackendServiceManager::GetPrinterSemanticCapsAndDefaultsDone(
   ServiceCallbackDone(
       GetRemoteSavedGetPrinterSemanticCapsAndDefaultsCallbacks(sandboxed),
       remote_id, saved_callback_id, std::move(printer_caps));
+}
+
+void PrintBackendServiceManager::UpdatePrintSettingsDone(
+    bool sandboxed,
+    const std::string& remote_id,
+    const base::UnguessableToken& saved_callback_id,
+    mojom::PrintSettingsResultPtr settings) {
+  DVLOG(1) << "UpdatePrintSettings completed for remote `" << remote_id
+           << "` saved callback ID " << saved_callback_id;
+
+  ServiceCallbackDone(GetRemoteSavedUpdatePrintSettingsCallbacks(sandboxed),
+                      remote_id, saved_callback_id, std::move(settings));
 }
 
 template <class T>

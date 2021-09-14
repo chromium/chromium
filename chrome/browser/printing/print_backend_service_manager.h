@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/no_destructor.h"
 #include "base/unguessable_token.h"
+#include "base/values.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -56,6 +57,10 @@ class PrintBackendServiceManager {
       const std::string& printer_name,
       mojom::PrintBackendService::GetPrinterSemanticCapsAndDefaultsCallback
           callback);
+  void UpdatePrintSettings(
+      const std::string& printer_name,
+      base::flat_map<std::string, base::Value> job_settings,
+      mojom::PrintBackendService::UpdatePrintSettingsCallback callback);
 
   // Query if printer driver has been found to require elevated privilege in
   // order to have print queries/commands succeed.
@@ -116,6 +121,8 @@ class PrintBackendServiceManager {
       RemoteSavedStructCallbacks<mojom::DefaultPrinterNameResult>;
   using RemoteSavedGetPrinterSemanticCapsAndDefaultsCallbacks =
       RemoteSavedStructCallbacks<mojom::PrinterSemanticCapsAndDefaultsResult>;
+  using RemoteSavedUpdatePrintSettingsCallbacks =
+      RemoteSavedStructCallbacks<mojom::PrintSettingsResult>;
 
   PrintBackendServiceManager();
   ~PrintBackendServiceManager();
@@ -148,6 +155,8 @@ class PrintBackendServiceManager {
   GetRemoteSavedGetDefaultPrinterNameCallbacks(bool sandboxed);
   RemoteSavedGetPrinterSemanticCapsAndDefaultsCallbacks&
   GetRemoteSavedGetPrinterSemanticCapsAndDefaultsCallbacks(bool sandboxed);
+  RemoteSavedUpdatePrintSettingsCallbacks&
+  GetRemoteSavedUpdatePrintSettingsCallbacks(bool sandboxed);
 
   // Helper function to save outstanding callbacks.
   template <class T, class X>
@@ -183,6 +192,10 @@ class PrintBackendServiceManager {
       const std::string& remote_id,
       const base::UnguessableToken& saved_callback_id,
       mojom::PrinterSemanticCapsAndDefaultsResultPtr printer_caps);
+  void UpdatePrintSettingsDone(bool sandboxed,
+                               const std::string& remote_id,
+                               const base::UnguessableToken& saved_callback_id,
+                               mojom::PrintSettingsResultPtr printer_caps);
 
   // Helper function to run outstanding callbacks when a remote has become
   // disconnected.
@@ -223,6 +236,10 @@ class PrintBackendServiceManager {
       sandboxed_saved_get_printer_semantic_caps_and_defaults_callbacks_;
   RemoteSavedGetPrinterSemanticCapsAndDefaultsCallbacks
       unsandboxed_saved_get_printer_semantic_caps_and_defaults_callbacks_;
+  RemoteSavedUpdatePrintSettingsCallbacks
+      sandboxed_saved_update_print_settings_callbacks_;
+  RemoteSavedUpdatePrintSettingsCallbacks
+      unsandboxed_saved_update_print_settings_callbacks_;
 
   // Track if next service started should be sandboxed.
   bool is_sandboxed_service_ = true;
