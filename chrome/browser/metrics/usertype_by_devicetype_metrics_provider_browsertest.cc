@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
@@ -399,6 +400,12 @@ class UserTypeByDeviceTypeMetricsProviderTest
   std::unique_ptr<ScopedDeviceSettings> settings_;
 };
 
+// Flacky on CrOS (http://crbug.com/1248669).
+#if defined(OS_CHROMEOS)
+#define MAYBE_Uma DISABLED_Uma
+#else
+#define MAYBE_Uma Uma
+#endif
 IN_PROC_BROWSER_TEST_P(UserTypeByDeviceTypeMetricsProviderTest, Uma) {
   base::HistogramTester histogram_tester;
 
