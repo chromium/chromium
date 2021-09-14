@@ -1256,13 +1256,21 @@ void AdsPageLoadMetricsObserver::MaybeTriggerHeavyAdIntervention(
   // error page. Reports will be added to ReportingObserver queues
   // synchronously when the IPC message is handled, which guarantees they will
   // be available in the the unload handler.
-  const char kReportId[] = "HeavyAdIntervention";
   std::string report_message =
       GetHeavyAdReportMessage(*frame_data, action == HeavyAdAction::kUnload);
-  for (content::RenderFrameHost* reporting_frame :
-       render_frame_host->GetFramesInSubtree()) {
-    reporting_frame->SendInterventionReport(kReportId, report_message);
-  }
+  render_frame_host->ForEachRenderFrameHost(base::BindRepeating(
+      [](const std::string& report_message, const content::Page* page,
+         content::RenderFrameHost* frame) {
+        // If `frame`'s page doesn't match the one we are associated with (for
+        // fenced frames or portals) skip the subtree.
+        if (page != &frame->GetPage())
+          return content::RenderFrameHost::FrameIterationAction::kSkipChildren;
+        const char kReportId[] = "HeavyAdIntervention";
+        if (frame->IsRenderFrameLive())
+          frame->SendInterventionReport(kReportId, report_message);
+        return content::RenderFrameHost::FrameIterationAction::kContinue;
+      },
+      report_message, &render_frame_host->GetPage()));
 
   // Report intervention to the blocklist.
   if (auto* blocklist = GetHeavyAdBlocklist()) {
