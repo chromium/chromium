@@ -4039,6 +4039,31 @@
             ]
         }
     ],
+    "GwpAsanLinux": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "AllocationSamplingRange": "16",
+                        "MaxAllocations": "70",
+                        "MaxMetadata": "255",
+                        "ProcessSamplingBoost2": "10",
+                        "ProcessSamplingProbability": "0.015"
+                    },
+                    "enable_features": [
+                        "GwpAsanMalloc",
+                        "GwpAsanPartitionAlloc"
+                    ]
+                }
+            ]
+        }
+    ],
     "HTTP2": [
         {
             "platforms": [
