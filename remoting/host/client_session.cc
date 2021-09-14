@@ -34,6 +34,8 @@
 #include "remoting/host/screen_resolution.h"
 #include "remoting/host/url_forwarder_configurator.h"
 #include "remoting/host/url_forwarder_control_message_handler.h"
+#include "remoting/host/webauthn/remote_webauthn_constants.h"
+#include "remoting/host/webauthn/remote_webauthn_message_handler.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/protocol/audio_stream.h"
@@ -213,6 +215,13 @@ void ClientSession::SetCapabilities(
         base::BindRepeating(
             &ClientSession::CreateUrlForwarderControlMessageHandler,
             base::Unretained(this)));
+  }
+
+  if (HasCapability(capabilities_, protocol::kRemoteWebAuthnCapability)) {
+    data_channel_manager_.RegisterCreateHandlerCallback(
+        kRemoteWebAuthnDataChannelName,
+        base::BindRepeating(&ClientSession::CreateRemoteWebAuthnMessageHandler,
+                            base::Unretained(this)));
   }
 
   std::vector<ActionRequest::Action> supported_actions;
@@ -401,6 +410,11 @@ void ClientSession::OnConnectionAuthenticated() {
   host_capabilities_.append(protocol::kRtcLogTransferCapability);
   host_capabilities_.append(" ");
   host_capabilities_.append(protocol::kWebrtcIceSdpRestartAction);
+
+#if !defined(NDEBUG)
+  host_capabilities_.append(" ");
+  host_capabilities_.append(protocol::kRemoteWebAuthnCapability);
+#endif
 
   // Create the object that controls the screen resolution.
   screen_controls_ = desktop_environment_->CreateScreenControls();
@@ -912,6 +926,15 @@ void ClientSession::CreateUrlForwarderControlMessageHandler(
   new UrlForwarderControlMessageHandler(
       desktop_environment_->CreateUrlForwarderConfigurator(), channel_name,
       std::move(pipe));
+}
+
+void ClientSession::CreateRemoteWebAuthnMessageHandler(
+    const std::string& channel_name,
+    std::unique_ptr<protocol::MessagePipe> pipe) {
+  // RemoteWebAuthnMessageHandler manages its own lifetime and is tied to the
+  // lifetime of |pipe|. Once |pipe| is closed, this instance will be cleaned
+  // up.
+  new RemoteWebAuthnMessageHandler(channel_name, std::move(pipe));
 }
 
 }  // namespace remoting
