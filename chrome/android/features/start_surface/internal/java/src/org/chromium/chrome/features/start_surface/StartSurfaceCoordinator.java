@@ -312,11 +312,13 @@ public class StartSurfaceCoordinator implements StartSurface {
 
     @Override
     public void onHide() {
-        if (mTasksSurface != null) {
-            mTasksSurface.onHide();
-        }
-        if (mSecondaryTasksSurface != null) {
-            mSecondaryTasksSurface.onHide();
+        if (mIsInitializedWithNative) {
+            if (mTasksSurface != null) {
+                mTasksSurface.onHide();
+            }
+            if (mSecondaryTasksSurface != null) {
+                mSecondaryTasksSurface.onHide();
+            }
         }
         if (mFeedPlaceholderCoordinator != null) {
             mFeedPlaceholderCoordinator.destroy();
