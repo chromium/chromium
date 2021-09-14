@@ -1416,6 +1416,11 @@
           'shards': 12,
         },
       },
+      'fuchsia-fyi-arm64-dbg': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.debug.content_unittests.filter',
+        ],
+      },
     },
   },
   'context_lost_passthrough_tests': {

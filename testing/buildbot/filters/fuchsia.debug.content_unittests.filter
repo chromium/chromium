@@ -1,0 +1,3 @@
+# https://crbug.com/1249304 - Times out on arm64 debug builder
+ComputePressureManagerTest.OneObserver
+ComputePressureManagerTest.ThreeObservers

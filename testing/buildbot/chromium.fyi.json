@@ -24387,7 +24387,7 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.content_unittests.filter",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.content_unittests.filter;../../testing/buildbot/filters/fuchsia.debug.content_unittests.filter",
           "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "merge": {
