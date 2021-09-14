@@ -56,6 +56,17 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
 </histogram>
 
+<histogram name="Commerce.Carts.XHRIsAddToCart" units="BooleanIsAddToCart"
+    expires_after="2022-06-01">
+  <owner>wychen@chromium.org</owner>
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records whether the XHR is to add a product to a shopping cart. This has 50%
+    chance randomized. Logged when there's an XHR about to be sent.
+  </summary>
+</histogram>
+
 <histogram name="Commerce.PriceDrop.NotificationChannelBlocked" enum="Boolean"
     expires_after="M97">
   <owner>zhiyuancai@chromium.org</owner>

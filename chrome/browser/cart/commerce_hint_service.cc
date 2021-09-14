@@ -149,6 +149,13 @@ class CommerceHintObserverImpl
     service_->OnFormSubmit(binding_url_, is_purchase);
   }
 
+  void OnWillSendRequest(bool is_addtocart) override {
+    DVLOG(1) << "Received OnWillSendRequest in the browser process";
+    if (!service_ || !binding_url_.SchemeIsHTTPOrHTTPS())
+      return;
+    service_->OnWillSendRequest(binding_url_, is_addtocart);
+  }
+
  private:
   GURL binding_url_;
   base::WeakPtr<CommerceHintService> service_;
@@ -257,6 +264,22 @@ void CommerceHintService::OnFormSubmit(const GURL& navigation_url,
       .SetIsTransaction(reported)
       .Record(ukm::UkmRecorder::Get());
   base::UmaHistogramBoolean("Commerce.Carts.FormSubmitIsTransaction", reported);
+}
+
+void CommerceHintService::OnWillSendRequest(const GURL& navigation_url,
+                                            bool is_addtocart) {
+  if (ShouldSkip(navigation_url))
+    return;
+  uint8_t bytes[1];
+  crypto::RandBytes(bytes);
+  bool report_truth = bytes[0] & 0x1;
+  bool random = (bytes[0] >> 1) & 0x1;
+  bool reported = report_truth ? is_addtocart : random;
+  ukm::builders::Shopping_WillSendRequest(
+      ukm::GetSourceIdForWebContentsDocument(web_contents_))
+      .SetIsAddToCart(reported)
+      .Record(ukm::UkmRecorder::Get());
+  base::UmaHistogramBoolean("Commerce.Carts.XHRIsAddToCart", reported);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(CommerceHintService)

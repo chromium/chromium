@@ -160,7 +160,8 @@ std::unique_ptr<net::test_server::HttpResponse> BasicResponse(
 // Tests CommerceHintAgent.
 class CommerceHintAgentTest : public PlatformBrowserTest {
  public:
-  using Entry = ukm::builders::Shopping_FormSubmitted;
+  using FormSubmittedEntry = ukm::builders::Shopping_FormSubmitted;
+  using XHREntry = ukm::builders::Shopping_WillSendRequest;
 
   void SetUpInProcessBrowserTestFixture() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
@@ -353,8 +354,8 @@ class CommerceHintAgentTest : public PlatformBrowserTest {
     std::move(closure).Run();
   }
 
-  void ExpectUKM(const std::string& metric_name) {
-    auto entries = ukm_recorder()->GetEntriesByName(Entry::kEntryName);
+  void ExpectUKM(base::StringPiece entry_name, const std::string& metric_name) {
+    auto entries = ukm_recorder()->GetEntriesByName(entry_name);
 
     ASSERT_FALSE(entries.empty());
 
@@ -390,6 +391,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, AddToCartByForm) {
   SendXHR("/wp-admin/admin-ajax.php", "action: woocommerce_add_to_cart");
 
   WaitForCartCount(kExpectedExampleFallbackCart);
+  ExpectUKM(XHREntry::kEntryName, "IsAddToCart");
 }
 
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, AddToCartByForm_WithLink) {
@@ -397,6 +399,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, AddToCartByForm_WithLink) {
   SendXHR("/wp-admin/admin-ajax.php", "action: woocommerce_add_to_cart");
 
   WaitForCartCount(kExpectedExampleLinkCart);
+  ExpectUKM(XHREntry::kEntryName, "IsAddToCart");
 }
 
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, AddToCartByForm_WithWrongLink) {
@@ -405,6 +408,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, AddToCartByForm_WithWrongLink) {
   SendXHR("/wp-admin/admin-ajax.php", "action: woocommerce_add_to_cart");
 
   WaitForCartCount(kExpectedAmazon);
+  ExpectUKM(XHREntry::kEntryName, "IsAddToCart");
 }
 
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, AddToCartByURL_XHR) {
@@ -412,6 +416,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, AddToCartByURL_XHR) {
   SendXHR("/add-to-cart", "product: 123");
 
   WaitForCartCount(kExpectedExampleFallbackCart);
+  ExpectUKM(XHREntry::kEntryName, "IsAddToCart");
 }
 
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, VisitCart) {
@@ -486,7 +491,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, PurchaseByForm) {
   content::TestNavigationObserver load_observer(web_contents());
   load_observer.WaitForNavigationFinished();
   WaitForCartCount(kEmptyExpected);
-  ExpectUKM("IsTransaction");
+  ExpectUKM(FormSubmittedEntry::kEntryName, "IsTransaction");
 }
 
 // TODO(crbug.com/1180268): CrOS multi-profiles implementation is different from

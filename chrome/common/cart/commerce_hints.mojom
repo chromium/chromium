@@ -36,4 +36,7 @@ interface CommerceHintObserver {
 
   // A form is submitted.
   OnFormSubmit(bool is_purchase);
+
+  // An XMLHttpRequest is about to be sent.
+  OnWillSendRequest(bool is_addtocart);
 };

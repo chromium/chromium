@@ -9395,6 +9395,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Adaptive icon"/>
 </enum>
 
+<enum name="BooleanIsAddToCart">
+  <int value="0" label="Not Add-to-cart"/>
+  <int value="1" label="Is Add-to-cart"/>
+</enum>
+
 <enum name="BooleanIsGenerationTriggeredManually">
   <int value="0" label="Password generation was triggered automatically"/>
   <int value="1" label="A user triggered password generation"/>
