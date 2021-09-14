@@ -96,7 +96,8 @@ void CoreTabHelper::SearchWithLensInNewTab(
       render_frame_host, src_url, kImageSearchThumbnailMinSize,
       lens::features::GetMaxPixelsForImageSearch(),
       lens::features::GetMaxPixelsForImageSearch(),
-      lens::GetQueryParameterFromEntryPoint(entry_point), use_side_panel);
+      lens::GetQueryParametersForLensRequest(entry_point, use_side_panel),
+      use_side_panel);
 }
 
 void CoreTabHelper::SearchWithLensInNewTab(gfx::Image image,
@@ -126,7 +127,7 @@ void CoreTabHelper::SearchWithLensInNewTab(gfx::Image image,
                                              image_bytes_end);
   search_args.image_original_size = image_original_size;
   search_args.additional_query_params =
-      lens::GetQueryParameterFromEntryPoint(entry_point);
+      lens::GetQueryParametersForLensRequest(entry_point, use_side_panel);
 
   TemplateURLRef::PostContent post_content;
   GURL search_url(default_provider->image_url_ref().ReplaceSearchTerms(
