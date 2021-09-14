@@ -147,7 +147,9 @@ SharedImageFactory::SharedImageFactory(
     factories_.push_back(std::move(wrapped_sk_image_factory));
   }
 
-  bool use_gl = gl::GetGLImplementation() != gl::kGLImplementationNone;
+  bool use_gl =
+      gl::GetGLImplementation() != gl::kGLImplementationNone &&
+      (!is_for_display_compositor_ || gr_context_type_ == GrContextType::kGL);
   if (use_gl) {
     auto gl_texture_backing_factory =
         std::make_unique<SharedImageBackingFactoryGLTexture>(
