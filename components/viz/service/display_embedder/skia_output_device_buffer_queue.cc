@@ -226,6 +226,7 @@ void SkiaOutputDeviceBufferQueue::FreeAllSurfaces() {
   submitted_image_ = nullptr;
   displayed_image_ = nullptr;
   available_images_.clear();
+  primary_plane_waiting_on_paint_ = true;
 }
 
 bool SkiaOutputDeviceBufferQueue::IsPrimaryPlaneOverlay() const {
