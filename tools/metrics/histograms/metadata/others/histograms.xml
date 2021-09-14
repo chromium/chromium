@@ -4662,7 +4662,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Discarding.DiscardCandidatesCount" units="tabs"
     expires_after="2021-12-12">
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>chrisha@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     The number of tabs discard candidates. This is recorded each time Chrome
@@ -4686,7 +4686,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Discarding.HighPMFPolicy.DiscardAttemptsCount" units="tabs"
     expires_after="2021-12-06">
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>chrisha@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     The number of tab discard attempts during a high-PMF session. Recorded at
@@ -4699,7 +4699,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Discarding.HighPMFPolicy.DiscardSuccess"
     units="BooleanSuccess" expires_after="2021-12-06">
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>chrisha@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     Indicates if a tab has been successfully discarded during a high-PMF
@@ -4709,7 +4709,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Discarding.HighPMFPolicy.MemoryPressureLevel"
     enum="MemoryPressureLevel" expires_after="2022-02-06">
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>chrisha@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     The memory pressure level when the High-PMF policy decides to discard a tab.
@@ -4719,7 +4719,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Discarding.HighPMFPolicy.MemoryReclaimedKbAfterDiscardingATab"
     units="KB" expires_after="2021-12-06">
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>chrisha@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     The amount of memory that has been reclaimed after discarding a tab during a
@@ -4730,7 +4730,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Discarding.HighPMFPolicy.SuccessfulDiscardsCount" units="tabs"
     expires_after="2021-12-06">
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>chrisha@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     The number of successful tab discards during a high-PMF session. Recorded at
@@ -4743,7 +4743,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Discarding.LargestTabFootprint" units="MiB"
     expires_after="2021-02-28">
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>chrisha@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     The largest tab's resident set among all the urgent discarding candidates.
@@ -4752,7 +4752,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Discarding.OldestTabFootprint" units="MiB"
     expires_after="2021-02-28">
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>chrisha@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>The resident set of the oldest urgent discarding candidate.</summary>
 </histogram>
@@ -4763,7 +4763,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Removed 03/2021, replaced by Discarding.OnCriticalPressure.TotalRSS_Mb2. The
     new histogram is now guaranteed to be recorded before discarding any tab.
   </obsolete>
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>chrisha@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     An estimate of the total resident set of Chrome when receiving a critical
@@ -4775,7 +4775,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Discarding.OnCriticalPressure.TotalRSS_Mb2" units="MB"
     expires_after="2021-10-30">
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>chrisha@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     An estimate of the total resident set of Chrome when receiving a critical
@@ -4804,7 +4804,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Discarding.OnCriticalPressure.TotalRSS_PercentOfRAM2"
     units="%" expires_after="2021-10-30">
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>chrisha@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     An estimate of the total resident set of Chrome when receiving a critical
@@ -4844,7 +4844,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Discarding.WinOSPressureSignals.AvailableMemoryMbOnLowMemoryNotification"
     units="MB" expires_after="2021-05-02">
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>chrisha@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     The amount of physical memory available when receiving a low memory
@@ -4854,7 +4854,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Discarding.WinOSPressureSignals.LowMemorySessionLength"
     units="ms" expires_after="2021-05-02">
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>chrisha@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     The time it takes to receive a high memory notification from the OS after
@@ -4865,7 +4865,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Discarding.WinOSPressureSignals.PressureLevelOnLowMemoryNotification"
     enum="MemoryPressureLevel" expires_after="2021-05-02">
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>chrisha@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     The memory pressure level when receiving a low memory notification from the
@@ -12152,7 +12152,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="PerformanceMonitor.AverageCPU2.{ProcessName}{UsageScenario}"
     units="hundredth of percent" expires_after="2022-01-30">
   <owner>fdoray@chromium.org</owner>
-  <owner>sebmarchand@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     Average CPU utilization of a process, read out at each two-minute interval.
@@ -12279,7 +12278,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PerformanceMonitor.ResourceCoalition.Availability"
     enum="CoalitionIDAvailability" expires_after="2021-11-30">
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     Details about whether or not it's possible to get coalition resource usage
@@ -12290,7 +12289,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="PerformanceMonitor.ResourceCoalition.BytesReadPerSecond{UsageScenario}"
     units="milliBytesPerSecond" expires_after="2021-11-30">
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     The IO reads reported by the resource coalition mechanism on macOS. Reported
@@ -12305,7 +12304,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="PerformanceMonitor.ResourceCoalition.BytesWrittenPerSecond{UsageScenario}"
     units="milliBytesPerSecond" expires_after="2021-11-30">
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     The IO writes reported by the resource coalition mechanism on macOS.
@@ -12336,7 +12335,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PerformanceMonitor.ResourceCoalition.CPUTime2{UsageScenario}"
     units="hundredth of percent" expires_after="2021-11-30">
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     Average CPU utilization reported by the resource coalition mechanism on
@@ -12382,7 +12381,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PerformanceMonitor.ResourceCoalition.GPUTime2{UsageScenario}"
     units="hundredth of percent" expires_after="2021-11-30">
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     Average GPU utilization reported by the resource coalition mechanism on
@@ -12398,7 +12397,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="PerformanceMonitor.ResourceCoalition.InterruptWakeupsPerSecond{UsageScenario}"
     units="milliWakeupsPerSecond" expires_after="2021-11-30">
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     The interrupt wakeup rate reported by the resource coalition mechanism on
@@ -12413,7 +12412,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="PerformanceMonitor.ResourceCoalition.PlatformIdleWakeupsPerSecond{UsageScenario}"
     units="milliWakeupsPerSecond" expires_after="2021-11-30">
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     The platform idle wakeup rate reported by the resource coalition mechanism
@@ -12427,7 +12426,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PerformanceMonitor.ResourceCoalition.Power{UsageScenario}"
     units="milliwatts" expires_after="2021-11-30">
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     The power usage reported by the resource coalition mechanism on macOS.
@@ -12441,7 +12440,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="PerformanceMonitor.ResourceCoalition.QoSLevel.{QoSLevel}{UsageScenario}"
     units="hundredth of percent" expires_after="2021-11-30">
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     Average CPU time spent in a given QoS level, as reported by the resource

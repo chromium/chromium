@@ -401,7 +401,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Startup.BrowserWindow.FirstPaint" units="ms"
     expires_after="2022-01-23">
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
   <owner>mblsha@yandex-team.ru</owner>
   <summary>
     Time from application start to the time the first Browser window has

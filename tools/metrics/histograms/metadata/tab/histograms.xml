@@ -997,7 +997,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="TabManager.Discarding.DiscardCount" units="Discards"
     expires_after="M100">
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>chrisha@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     Cumulative number of tabs discarded due to low memory conditions, recorded
@@ -1036,7 +1036,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="TabManager.Discarding.DiscardToReloadTime" units="ms"
     expires_after="M100">
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>chrisha@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     Elapsed time between a tab getting discarded to eventually being reloaded by
@@ -1046,7 +1046,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="TabManager.Discarding.InactiveToReloadTime" units="ms"
     expires_after="M100">
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>chrisha@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     Elapsed time between the time a tab switched from being active to inactive
@@ -1056,7 +1056,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="TabManager.Discarding.ReloadCount" units="Reloads"
     expires_after="M100">
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>chrisha@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     Cumulative number of discarded tabs that have been reloaded by the user,
@@ -1068,7 +1068,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="TabManager.Discarding.ReloadToCloseTime" units="ms"
     expires_after="M100">
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>chrisha@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     Elapsed time between the last time a discarded tab was reloaded and the time
@@ -1548,7 +1548,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="never">
 <!-- expires-never: https://crbug.com/966137 -->
 
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>chrisha@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     The maximum number of tabs that Chrome displays at the same time over the
@@ -1565,7 +1566,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="never">
 <!-- expires-never: https://crbug.com/966137 -->
 
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>chrisha@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     The maximum number of tabs per window that Chrome displays over the course
@@ -1582,7 +1584,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="never">
 <!-- expires-never: https://crbug.com/966137 -->
 
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>chrisha@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     The maximum number of windows existing at the same time over the course of a
@@ -1614,7 +1617,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="never">
 <!-- expires-never: https://crbug.com/966137 -->
 
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>chrisha@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     The number of tabs total at resume from sleep/hibernate. This is being
@@ -2219,7 +2223,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="never">
 <!-- expires-never: https://crbug.com/966137 -->
 
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>chrisha@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     Counts the number of tabs across all windows, reported every 5 minutes.
@@ -2767,7 +2772,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Tabs.UnusedAndClosedInInterval.Count{Tabs_TabUsageIntervalLength}"
     units="tabs" expires_after="M95">
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>chrisha@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     The number of tabs that haven't been interacted with, visible or audible
@@ -2786,7 +2792,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Tabs.UnusedInInterval.Count{Tabs_TabUsageIntervalLength}"
     units="tabs" expires_after="M95">
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>chrisha@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     The number of tabs that haven't been interacted with, visible or audible or
@@ -2806,7 +2813,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Tabs.UsedAndClosedInInterval.Count{Tabs_TabUsageIntervalLength}"
     units="tabs" expires_after="M95">
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>chrisha@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     The number of tabs that have been interacted with, visible or audible over a
@@ -2825,7 +2833,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Tabs.UsedInInterval.Count{Tabs_TabUsageIntervalLength}"
     units="tabs" expires_after="M95">
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>chrisha@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     The number of tabs that have been interacted with, visible or audible during
@@ -2846,7 +2855,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="never">
 <!-- expires-never: https://crbug.com/966137 -->
 
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     Counts the number of Chrome windows, reported every 5 minutes. Desktop only.

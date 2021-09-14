@@ -238,7 +238,6 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 <histogram name="Power.BatterySamplingDelay" units="microseconds"
     expires_after="2021-11-26">
   <owner>etiennep@chromium.org</owner>
-  <owner>sebmarchand@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <summary>
     The delay in microseconds between the time a battery charge level query was
@@ -1022,7 +1021,7 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
     Replaced by Power.MainScreenBrightness2 in July 2021. The new histogram
     allows value superior to 100% as sometime reported by the OS.
   </obsolete>
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     The level of the screen backlight in percent if it's not available. Only
@@ -1032,7 +1031,7 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 
 <histogram name="Power.MainScreenBrightness2" units="%"
     expires_after="2021-11-30">
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     The level of the screen backlight in percent if it's not available. Only
@@ -1044,7 +1043,7 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 
 <histogram name="Power.MainScreenBrightnessAvailable" units="Boolean"
     expires_after="2021-11-30">
-  <owner>sebmarchand@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     Indicates if the screen backlight level value is available. Recorded every
