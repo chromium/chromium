@@ -134,7 +134,7 @@ public class LongScreenshotsCompositorTest {
     }
 
     @Test
-    public void testSuccessfullCompositing() {
+    public void testSuccessfulCompositing() {
         Callback<Bitmap> onBitmapResult = new Callback<Bitmap>() {
             @Override
             public void onResult(Bitmap result) {
@@ -160,10 +160,11 @@ public class LongScreenshotsCompositorTest {
                 mNativePaintPreviewServiceProvider, "test_directory_key", 0, compositorCallback);
 
         // Mimic the service calling onCompositorReady
-        compositor.onCompositorReady(null, null, null, null, null, null, null, 0);
+        compositor.onCompositorReady(null, null, new int[] {1, 2}, null, null, null, null, 0);
+        Assert.assertEquals(1, compositor.getWidth());
 
         // RequestBitmap in mCompositorDelegate should match
-        compositor.requestBitmap(mRect, onErrorCallback, onBitmapResult);
+        compositor.requestBitmap(mRect, 1f, onErrorCallback, onBitmapResult);
     }
 
     @Test
@@ -195,9 +196,10 @@ public class LongScreenshotsCompositorTest {
 
         // Mimic the service calling onCompositorReady
         compositor.onCompositorReady(null, null, null, null, null, null, null, 0);
+        Assert.assertEquals(0, compositor.getWidth());
 
         // RequestBitmap in mCompositorDelegate should match
-        compositor.requestBitmap(mRect, onErrorCallback, onBitmapResult);
+        compositor.requestBitmap(mRect, 1f, onErrorCallback, onBitmapResult);
         Assert.assertTrue(mErrorThrown);
     }
 }

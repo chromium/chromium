@@ -179,4 +179,19 @@ public class ScreenshotBoundsManager {
 
         return new Rect(0, startY, 0, endY);
     }
+
+    /**
+     * Calculates the scale factor to be used for bitmaps based on the composited width of the
+     * frame at default scale.
+     * @return the scale factor to be used for generating bitmaps.
+     */
+    public float getBitmapScaleFactorFromCompositedWidth(int compositedWidth) {
+        if (mTab.getWebContents() == null || compositedWidth == 0) {
+            // If the web contents crashes/vanished during capture then assume 1f.
+            return 1f;
+        }
+
+        RenderCoordinates coords = RenderCoordinates.fromWebContents(mTab.getWebContents());
+        return coords.getLastFrameViewportWidthPixInt() / (float) compositedWidth;
+    }
 }
