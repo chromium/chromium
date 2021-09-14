@@ -34,12 +34,12 @@ class SequencedTaskRunner;
 namespace gfx {
 class ColorSpace;
 class Size;
-}
+}  // namespace gfx
 
 namespace gpu {
 class GpuMemoryBufferManager;
 class SharedImageInterface;
-}
+}  // namespace gpu
 
 namespace viz {
 class RasterContextProvider;
@@ -79,11 +79,6 @@ class MEDIA_EXPORT GpuVideoAcceleratorFactories {
 
   // Return whether GPU encoding/decoding is enabled.
   virtual bool IsGpuVideoAcceleratorEnabled() = 0;
-
-  // Return the channel token, or an empty token if the channel is unusable.
-  // This uses a sychrounous mojo call internally and may block the calling
-  // thread.
-  virtual base::UnguessableToken GetChannelToken() = 0;
 
   // Return the channel token, or an empty token if the channel is unusable.
   // |cb| could be called re-entrantly. This function is not thread safe.

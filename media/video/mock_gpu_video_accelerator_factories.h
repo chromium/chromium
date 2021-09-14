@@ -29,7 +29,6 @@ class MockGpuVideoAcceleratorFactories : public GpuVideoAcceleratorFactories {
 
   bool IsGpuVideoAcceleratorEnabled() override;
 
-  MOCK_METHOD0(GetChannelToken, base::UnguessableToken());
   MOCK_METHOD1(GetChannelToken,
                void(gpu::mojom::GpuChannel::GetChannelTokenCallback));
   MOCK_METHOD0(GetCommandBufferRouteId, int32_t());

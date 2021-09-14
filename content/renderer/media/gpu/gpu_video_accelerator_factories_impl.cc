@@ -284,19 +284,6 @@ bool GpuVideoAcceleratorFactoriesImpl::IsGpuVideoAcceleratorEnabled() {
   return video_accelerator_enabled_;
 }
 
-base::UnguessableToken GpuVideoAcceleratorFactoriesImpl::GetChannelToken() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  if (CheckContextLost())
-    return base::UnguessableToken();
-
-  if (channel_token_.is_empty()) {
-    context_provider_->GetCommandBufferProxy()->GetGpuChannel().GetChannelToken(
-        &channel_token_);
-  }
-
-  return channel_token_;
-}
-
 void GpuVideoAcceleratorFactoriesImpl::GetChannelToken(
     gpu::mojom::GpuChannel::GetChannelTokenCallback cb) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());

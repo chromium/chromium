@@ -76,7 +76,6 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
 
   // media::GpuVideoAcceleratorFactories implementation.
   bool IsGpuVideoAcceleratorEnabled() override;
-  base::UnguessableToken GetChannelToken() override;
   void GetChannelToken(
       gpu::mojom::GpuChannel::GetChannelTokenCallback cb) override;
   int32_t GetCommandBufferRouteId() override;

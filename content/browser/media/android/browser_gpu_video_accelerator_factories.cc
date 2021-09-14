@@ -83,15 +83,6 @@ bool BrowserGpuVideoAcceleratorFactories::IsGpuVideoAcceleratorEnabled() {
   return false;
 }
 
-base::UnguessableToken BrowserGpuVideoAcceleratorFactories::GetChannelToken() {
-  if (channel_token_.is_empty()) {
-    context_provider_->GetCommandBufferProxy()->GetGpuChannel().GetChannelToken(
-        &channel_token_);
-  }
-
-  return channel_token_;
-}
-
 void BrowserGpuVideoAcceleratorFactories::GetChannelToken(
     gpu::mojom::GpuChannel::GetChannelTokenCallback cb) {
   DCHECK(cb);
