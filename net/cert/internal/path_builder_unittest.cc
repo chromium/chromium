@@ -2117,6 +2117,51 @@ TEST(PathBuilderPrioritizationTest, KeyIdNameAndSerialPrioritization) {
   }
 }
 
+TEST(PathBuilderPrioritizationTest, SelfIssuedPrioritization) {
+  std::string test_dir =
+      "net/data/path_builder_unittest/self_issued_prioritization/";
+  scoped_refptr<ParsedCertificate> root1 =
+      ReadCertFromFile(test_dir + "root1.pem");
+  ASSERT_TRUE(root1);
+  scoped_refptr<ParsedCertificate> root1_cross =
+      ReadCertFromFile(test_dir + "root1_cross.pem");
+  ASSERT_TRUE(root1_cross);
+  scoped_refptr<ParsedCertificate> target =
+      ReadCertFromFile(test_dir + "target.pem");
+  ASSERT_TRUE(target);
+
+  SimplePathBuilderDelegate delegate(
+      1024, SimplePathBuilderDelegate::DigestPolicy::kWeakAllowSha1);
+  der::GeneralizedTime verify_time = {2017, 3, 1, 0, 0, 0};
+
+  TrustStoreInMemory trust_store;
+  trust_store.AddTrustAnchor(root1);
+  trust_store.AddTrustAnchor(root1_cross);
+  CertPathBuilder path_builder(
+      target, &trust_store, &delegate, verify_time, KeyPurpose::ANY_EKU,
+      InitialExplicitPolicy::kFalse, {AnyPolicy()},
+      InitialPolicyMappingInhibit::kFalse, InitialAnyPolicyInhibit::kFalse);
+  path_builder.SetExploreAllPaths(true);
+
+  CertPathBuilder::Result result = path_builder.Run();
+  EXPECT_TRUE(result.HasValidPath());
+
+  // Path builder should have built paths to both trusted roots.
+  ASSERT_EQ(2U, result.paths.size());
+
+  // |root1| should have been preferred because it is self-issued, even though
+  // the notBefore date is older than |root1_cross|.
+  EXPECT_TRUE(result.paths[0]->IsValid());
+  ASSERT_EQ(2U, result.paths[0]->certs.size());
+  EXPECT_EQ(target, result.paths[0]->certs[0]);
+  EXPECT_EQ(root1, result.paths[0]->certs[1]);
+
+  EXPECT_TRUE(result.paths[1]->IsValid());
+  ASSERT_EQ(2U, result.paths[1]->certs.size());
+  EXPECT_EQ(target, result.paths[1]->certs[0]);
+  EXPECT_EQ(root1_cross, result.paths[1]->certs[1]);
+}
+
 }  // namespace
 
 }  // namespace net

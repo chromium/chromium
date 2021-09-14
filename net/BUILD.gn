@@ -1782,8 +1782,6 @@ bundle_data("test_support_bundle_data") {
   visibility = [ ":test_support" ]
   testonly = true
   sources = [
-    "data/quic_http_response_cache_data/test.example.com/index.html",
-    "data/quic_http_response_cache_data/test.example.com/map.html",
     "data/quic_http_response_cache_data_with_push/test.example.com/favicon.ico",
     "data/quic_http_response_cache_data_with_push/test.example.com/index.html",
     "data/quic_http_response_cache_data_with_push/test.example.com/index2.html",
@@ -3048,6 +3046,10 @@ bundle_data("net_unittests_bundle_data") {
     "data/path_builder_unittest/key_id_prioritization/int_no_ski_c.pem",
     "data/path_builder_unittest/key_id_prioritization/root.pem",
     "data/path_builder_unittest/key_id_prioritization/target.pem",
+    "data/path_builder_unittest/self_issued_prioritization/root1.pem",
+    "data/path_builder_unittest/self_issued_prioritization/root1_cross.pem",
+    "data/path_builder_unittest/self_issued_prioritization/root2.pem",
+    "data/path_builder_unittest/self_issued_prioritization/target.pem",
     "data/path_builder_unittest/validity_date_prioritization/int_ac.pem",
     "data/path_builder_unittest/validity_date_prioritization/int_ad.pem",
     "data/path_builder_unittest/validity_date_prioritization/int_bc.pem",
