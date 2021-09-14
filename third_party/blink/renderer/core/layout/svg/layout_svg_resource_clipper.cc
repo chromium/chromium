@@ -22,6 +22,7 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_clipper.h"
 
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
@@ -54,6 +55,8 @@ ClipStrategy DetermineClipStrategy(const SVGGraphicsElement& element) {
   const LayoutObject* layout_object = element.GetLayoutObject();
   if (!layout_object)
     return ClipStrategy::kNone;
+  if (DisplayLockUtilities::LockedAncestorPreventingLayout(*layout_object))
+    return ClipStrategy::kNone;
   const ComputedStyle& style = layout_object->StyleRef();
   if (style.Display() == EDisplay::kNone ||
       style.Visibility() != EVisibility::kVisible)
@@ -74,8 +77,12 @@ ClipStrategy DetermineClipStrategy(const SVGElement& element) {
   // (https://drafts.fxtf.org/css-masking/#ClipPathElement)
   if (auto* svg_use_element = DynamicTo<SVGUseElement>(element)) {
     const LayoutObject* use_layout_object = element.GetLayoutObject();
-    if (!use_layout_object ||
-        use_layout_object->StyleRef().Display() == EDisplay::kNone)
+    if (!use_layout_object)
+      return ClipStrategy::kNone;
+    if (DisplayLockUtilities::LockedAncestorPreventingLayout(
+            *use_layout_object))
+      return ClipStrategy::kNone;
+    if (use_layout_object->StyleRef().Display() == EDisplay::kNone)
       return ClipStrategy::kNone;
     const SVGGraphicsElement* shape_element =
         svg_use_element->VisibleTargetGraphicsElementForClipping();
@@ -270,7 +277,7 @@ bool LayoutSVGResourceClipper::HitTestClipContent(
 FloatRect LayoutSVGResourceClipper::ResourceBoundingBox(
     const FloatRect& reference_box) {
   NOT_DESTROYED();
-  DCHECK(!NeedsLayout());
+  DCHECK(!SelfNeedsLayout());
 
   if (local_clip_bounds_.IsEmpty())
     CalculateLocalClipBounds();
