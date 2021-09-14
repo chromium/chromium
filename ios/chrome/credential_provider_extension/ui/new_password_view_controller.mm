@@ -84,7 +84,14 @@ const CGFloat kTableViewTopSpace = 14;
 
 - (NSInteger)tableView:(UITableView*)tableView
     numberOfRowsInSection:(NSInteger)section {
-  return NewPasswordTableCellTypeNumRows;
+  // If password sync is not on (represented by the user's email not being
+  // available as used in the sync disclaimer), then don't show the "Suggest
+  // Strong Password" button.
+  NSString* syncingUserEmail = [app_group::GetGroupUserDefaults()
+      stringForKey:AppGroupUserDefaultsCredentialProviderUserEmail()];
+  BOOL passwordSyncOn = syncingUserEmail != nil;
+  return (passwordSyncOn) ? NewPasswordTableCellTypeNumRows
+                          : NewPasswordTableCellTypeNumRows - 1;
 }
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
