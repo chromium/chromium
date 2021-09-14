@@ -96,14 +96,15 @@ void RecordUkmCaptureData(ukm::SourceId source_id,
 
 base::flat_set<base::UnguessableToken> CreateAcceptedTokenList(
     content::RenderFrameHost* render_frame_host) {
-  auto rfhs = render_frame_host->GetFramesInSubtree();
   std::vector<base::UnguessableToken> tokens;
-  tokens.reserve(rfhs.size());
-  for (content::RenderFrameHost* rfh : rfhs) {
-    auto maybe_token = rfh->GetEmbeddingToken();
-    if (maybe_token.has_value())
-      tokens.push_back(maybe_token.value());
-  }
+  render_frame_host->ForEachRenderFrameHost(base::BindRepeating(
+      [](std::vector<base::UnguessableToken>* tokens,
+         content::RenderFrameHost* rfh) {
+        auto maybe_token = rfh->GetEmbeddingToken();
+        if (maybe_token.has_value())
+          tokens->push_back(maybe_token.value());
+      },
+      &tokens));
   return base::flat_set<base::UnguessableToken>(std::move(tokens));
 }
 
