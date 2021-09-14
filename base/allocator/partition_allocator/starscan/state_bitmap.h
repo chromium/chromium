@@ -48,7 +48,8 @@ namespace internal {
 //                         ^           |
 //                         |  mark()   |
 //                         +-----------+
-//                           (xor 11)
+//                           (and 00)
+//                          (or 01(10))
 //
 // The bitmap can be safely accessed from multiple threads, but this doesn't
 // imply visibility on the data (i.e. no ordering guaranties, since relaxed
@@ -99,7 +100,7 @@ class StateBitmap final {
   ALWAYS_INLINE bool Quarantine(uintptr_t address, Epoch epoch);
 
   // Marks ("promotes") quarantined object.
-  ALWAYS_INLINE void MarkQuarantinedAsReachable(uintptr_t address);
+  ALWAYS_INLINE void MarkQuarantinedAsReachable(uintptr_t address, Epoch epoch);
 
   // Sets the bits corresponding to |address| as freed.
   ALWAYS_INLINE void Free(uintptr_t address);
@@ -233,17 +234,23 @@ StateBitmap<PageSize, PageAlignment, AllocationAlignment>::Quarantine(
 
 template <size_t PageSize, size_t PageAlignment, size_t AllocationAlignment>
 ALWAYS_INLINE void StateBitmap<PageSize, PageAlignment, AllocationAlignment>::
-    MarkQuarantinedAsReachable(uintptr_t address) {
-  PA_DCHECK(IsQuarantined(address));
+    MarkQuarantinedAsReachable(uintptr_t address, Epoch epoch) {
   static_assert((~static_cast<CellType>(State::kQuarantined1) & kStateMask) ==
                     (static_cast<CellType>(State::kQuarantined2) & kStateMask),
                 "kQuarantined1 must be inverted kQuarantined2");
-  static constexpr CellType kXorMask = 0b11;
+  const State quarantine_state =
+      epoch & 0b1 ? State::kQuarantined1 : State::kQuarantined2;
   size_t cell_index, object_bit;
   std::tie(cell_index, object_bit) = AllocationIndexAndBit(address);
-  const CellType mask = kXorMask << object_bit;
+  const CellType clear_mask =
+      ~(static_cast<CellType>(State::kAlloced) << object_bit);
+  const CellType set_mask = static_cast<CellType>(quarantine_state)
+                            << object_bit;
   auto& cell = AsAtomicCell(cell_index);
-  cell.fetch_xor(mask, std::memory_order_relaxed);
+  // First, clear the bits.
+  cell.fetch_and(clear_mask, std::memory_order_relaxed);
+  // Then, set the bits as qurantined according to the current epoch.
+  cell.fetch_or(set_mask, std::memory_order_relaxed);
 }
 
 template <size_t PageSize, size_t PageAlignment, size_t AllocationAlignment>

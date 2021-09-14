@@ -56,8 +56,9 @@ class PartitionAllocStateBitmapTest : public ::testing::Test {
     return page.bitmap().Quarantine(ObjectAddress(object_position), epoch);
   }
 
-  void MarkQuarantinedObject(size_t object_position) {
-    page.bitmap().MarkQuarantinedAsReachable(ObjectAddress(object_position));
+  void MarkQuarantinedObject(size_t object_position, size_t epoch) {
+    page.bitmap().MarkQuarantinedAsReachable(ObjectAddress(object_position),
+                                             epoch);
   }
 
   bool IsAllocated(size_t object_position) const {
@@ -163,7 +164,7 @@ TEST_F(PartitionAllocStateBitmapTest, StateTransititions) {
     QuarantineObject(i, kTestEpoch);
     AssertQuarantined(i);
 
-    MarkQuarantinedObject(i);
+    MarkQuarantinedObject(i, kTestEpoch);
     AssertQuarantined(i);
 
     FreeObject(i);
@@ -214,7 +215,7 @@ TEST_F(PartitionAllocStateBitmapTest, AdjacentQuarantinedObjectsAtBegin) {
   }
   // Now mark only the first object.
   {
-    MarkQuarantinedObject(0);
+    MarkQuarantinedObject(0, kTestEpoch);
 
     size_t count = 0;
     this->bitmap().IterateUnmarkedQuarantined(
@@ -248,7 +249,7 @@ TEST_F(PartitionAllocStateBitmapTest, AdjacentQuarantinedObjectsAtMiddle) {
   }
   // Now mark only the first object.
   {
-    MarkQuarantinedObject(MiddleIndex());
+    MarkQuarantinedObject(MiddleIndex(), kTestEpoch);
 
     size_t count = 0;
     this->bitmap().IterateUnmarkedQuarantined(
@@ -284,7 +285,7 @@ TEST_F(PartitionAllocStateBitmapTest, AdjacentQuarantinedObjectsAtEnd) {
   }
   // Now mark only the first object.
   {
-    MarkQuarantinedObject(LastIndex());
+    MarkQuarantinedObject(LastIndex(), kTestEpoch);
 
     size_t count = 0;
     this->bitmap().IterateUnmarkedQuarantined(
