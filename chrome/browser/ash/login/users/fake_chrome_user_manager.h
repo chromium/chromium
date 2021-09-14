@@ -175,6 +175,11 @@ class FakeChromeUserManager : public ChromeUserManager {
       const user_manager::User& active_user) const override;
   bool IsFullManagementDisclosureNeeded(
       policy::DeviceLocalAccountPolicyBroker* broker) const override;
+  void CacheRemovedUser(const std::string& user_email,
+                        user_manager::UserRemovalReason) override;
+  std::vector<std::pair<std::string, user_manager::UserRemovalReason>>
+  GetRemovedUserCache() const override;
+  void MarkReporterInitialized() override;
 
   void set_ephemeral_users_enabled(bool ephemeral_users_enabled) {
     fake_ephemeral_users_enabled_ = ephemeral_users_enabled;
@@ -254,6 +259,10 @@ class FakeChromeUserManager : public ChromeUserManager {
 
   // User avatar managers.
   UserImageManagerMap user_image_managers_;
+
+  // Fake cache of removed users. Used for reporting testing.
+  std::vector<std::pair<std::string, user_manager::UserRemovalReason>>
+      removed_user_cache_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeChromeUserManager);
 };

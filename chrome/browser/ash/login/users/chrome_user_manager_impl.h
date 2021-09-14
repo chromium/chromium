@@ -144,6 +144,11 @@ class ChromeUserManagerImpl
       const user_manager::User& active_user) const override;
   bool IsFullManagementDisclosureNeeded(
       policy::DeviceLocalAccountPolicyBroker* broker) const override;
+  void CacheRemovedUser(const std::string& user_email,
+                        user_manager::UserRemovalReason) override;
+  std::vector<std::pair<std::string, user_manager::UserRemovalReason>>
+  GetRemovedUserCache() const override;
+  void MarkReporterInitialized() override;
 
  protected:
   const std::string& GetApplicationLocale() const override;
@@ -271,6 +276,11 @@ class ChromeUserManagerImpl
 
   std::vector<std::unique_ptr<policy::CloudExternalDataPolicyHandler>>
       cloud_external_data_policy_handlers_;
+
+  std::vector<std::pair<std::string, user_manager::UserRemovalReason>>
+      removed_user_cache_;
+
+  bool user_added_removed_reporter_intialized_;
 
   base::WeakPtrFactory<ChromeUserManagerImpl> weak_factory_{this};
 

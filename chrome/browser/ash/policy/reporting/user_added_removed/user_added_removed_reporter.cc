@@ -22,12 +22,14 @@ namespace reporting {
 UserAddedRemovedReporter::UserAddedRemovedReporter(
     std::unique_ptr<UserEventReporterHelper> helper)
     : helper_(std::move(helper)) {
+  ProcessRemoveUserCache();
   managed_session_observation_.Observe(&managed_session_service_);
 }
 
 UserAddedRemovedReporter::UserAddedRemovedReporter()
     : helper_(std::make_unique<UserEventReporterHelper>(
           Destination::ADDED_REMOVED_EVENTS)) {
+  ProcessRemoveUserCache();
   managed_session_observation_.Observe(&managed_session_service_);
 }
 
@@ -98,5 +100,24 @@ void UserAddedRemovedReporter::OnUserRemoved(
   record.set_event_timestamp_sec(base::Time::Now().ToTimeT());
 
   helper_->ReportEvent(&record, ::reporting::Priority::IMMEDIATE);
+}
+
+void UserAddedRemovedReporter::ProcessRemoveUserCache() {
+  ash::ChromeUserManager* user_manager = ash::ChromeUserManager::Get();
+  auto users = user_manager->GetRemovedUserCache();
+
+  for (const auto& user : users) {
+    UserAddedRemovedRecord record;
+    record.set_event_timestamp_sec(base::Time::Now().ToTimeT());
+    record.mutable_user_removed_event()->set_reason(
+        UserRemovalReason(user.second));
+    if (user.first != "") {
+      record.mutable_user()->set_email(user.first);
+    }
+
+    helper_->ReportEvent(&record, ::reporting::Priority::IMMEDIATE);
+  }
+
+  user_manager->MarkReporterInitialized();
 }
 }  // namespace reporting

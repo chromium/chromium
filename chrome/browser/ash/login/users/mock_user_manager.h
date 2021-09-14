@@ -143,6 +143,13 @@ class MockUserManager : public ChromeUserManager {
                      bool(const user_manager::User&));
   MOCK_CONST_METHOD1(IsFullManagementDisclosureNeeded,
                      bool(policy::DeviceLocalAccountPolicyBroker*));
+  MOCK_METHOD2(CacheRemovedUser,
+               void(const std::string&, user_manager::UserRemovalReason));
+  MOCK_CONST_METHOD0(
+      GetRemovedUserCache,
+      std::vector<std::pair<std::string, user_manager::UserRemovalReason>>(
+          void));
+  MOCK_METHOD0(MarkReporterInitialized, void(void));
 
   // We cannot mock ScheduleResolveLocale directly because of
   // base::OnceClosure's removed deleter. This is a trampoline to the actual

@@ -569,7 +569,39 @@ void ChromeUserManagerImpl::RemoveUserInternal(
   g_browser_process->profile_manager()
       ->GetProfileAttributesStorage()
       .RemoveProfileByAccountId(account_id);
+  if (!user_added_removed_reporter_intialized_) {
+    CacheRemovedUser(account_id.GetUserEmail(), reason);
+  }
   RemoveNonOwnerUserInternal(account_id, reason, delegate);
+}
+
+void ChromeUserManagerImpl::CacheRemovedUser(
+    const std::string& user_email,
+    user_manager::UserRemovalReason reason) {
+  // There is only a need to cache removed users if they should be reported.
+  bool reporting_enabled = false;
+  chromeos::CrosSettings::Get()->GetBoolean(chromeos::kReportDeviceLoginLogout,
+                                            &reporting_enabled);
+  if (!reporting_enabled) {
+    return;
+  }
+
+  // Unaffiliated users should not have their email reported.
+  if (ShouldReportUser(user_email)) {
+    removed_user_cache_.push_back(std::make_pair(user_email, reason));
+  } else {
+    removed_user_cache_.push_back(std::make_pair("", reason));
+  }
+}
+
+std::vector<std::pair<std::string, user_manager::UserRemovalReason>>
+ChromeUserManagerImpl::GetRemovedUserCache() const {
+  return removed_user_cache_;
+}
+
+void ChromeUserManagerImpl::MarkReporterInitialized() {
+  removed_user_cache_.clear();
+  user_added_removed_reporter_intialized_ = true;
 }
 
 void ChromeUserManagerImpl::SaveUserOAuthStatus(

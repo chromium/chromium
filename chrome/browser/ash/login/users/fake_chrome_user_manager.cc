@@ -730,6 +730,21 @@ bool FakeChromeUserManager::IsFullManagementDisclosureNeeded(
   return true;
 }
 
+void FakeChromeUserManager::CacheRemovedUser(
+    const std::string& user_email,
+    user_manager::UserRemovalReason reason) {
+  removed_user_cache_.push_back(std::make_pair(user_email, reason));
+}
+
+std::vector<std::pair<std::string, user_manager::UserRemovalReason>>
+FakeChromeUserManager::GetRemovedUserCache() const {
+  return removed_user_cache_;
+}
+
+void FakeChromeUserManager::MarkReporterInitialized() {
+  removed_user_cache_.clear();
+}
+
 user_manager::User* FakeChromeUserManager::GetActiveUserInternal() const {
   if (active_user_ != nullptr)
     return active_user_;

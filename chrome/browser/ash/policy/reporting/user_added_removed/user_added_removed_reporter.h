@@ -35,6 +35,10 @@ class UserAddedRemovedReporter
 
   ~UserAddedRemovedReporter() override;
 
+  // Check the ChromeUserManager removed user cache for users removed before
+  // the reporter is created.
+  void ProcessRemoveUserCache();
+
   // ManagedSessionService::Observer overrides.
   // Check if login was to a new account.
   void OnLogin(Profile* profile) override;
