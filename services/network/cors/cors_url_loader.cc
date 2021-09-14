@@ -642,7 +642,6 @@ void CorsURLLoader::StartRequest() {
   // Note that even when |NeedsPreflight(request_)| holds we don't make a
   // preflight request when |fetch_cors_flag_| is false (e.g., when the origin
   // of the url is equal to the origin of the request.
-
   absl::optional<PreflightRequiredReason> needs_preflight =
       NeedsPreflight(request_);
   bool preflight_required = fetch_cors_flag_ && needs_preflight;
@@ -675,7 +674,8 @@ void CorsURLLoader::StartRequest() {
           options_ & mojom::kURLLoadOptionUseHeaderClient),
       PreflightController::WithNonWildcardRequestHeadersSupport(false),
       tainted_, net::NetworkTrafficAnnotationTag(traffic_annotation_),
-      network_loader_factory_, isolation_info_, std::move(devtools_observer));
+      network_loader_factory_, isolation_info_, std::move(devtools_observer),
+      net_log_);
 }
 
 void CorsURLLoader::StartNetworkRequest(

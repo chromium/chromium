@@ -20,6 +20,10 @@
 
 class GURL;
 
+namespace net {
+class NetLogWithSource;
+}  // namespace net
+
 namespace network {
 
 namespace cors {
@@ -49,7 +53,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightCache final {
       mojom::CredentialsMode credentials_mode,
       const std::string& method,
       const net::HttpRequestHeaders& headers,
-      bool is_revalidating);
+      bool is_revalidating,
+      const net::NetLogWithSource& net_log);
 
   // Counts cached entries for testing.
   size_t CountEntriesForTesting() const;

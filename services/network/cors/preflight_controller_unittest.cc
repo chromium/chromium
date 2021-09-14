@@ -13,6 +13,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
+#include "net/log/net_log_with_source.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -228,14 +229,14 @@ TEST(PreflightControllerOptionsTest, CheckOptions) {
       request, WithTrustedHeaderClient(false),
       WithNonWildcardRequestHeadersSupport(false), false /* tainted */,
       TRAFFIC_ANNOTATION_FOR_TESTS, &url_loader_factory, net::IsolationInfo(),
-      /*devtools_observer=*/mojo::NullRemote());
+      /*devtools_observer=*/mojo::NullRemote(), net::NetLogWithSource());
 
   preflight_controller.PerformPreflightCheck(
       base::BindOnce([](int, absl::optional<CorsErrorStatus>, bool) {}),
       request, WithTrustedHeaderClient(true),
       WithNonWildcardRequestHeadersSupport(false), false /* tainted */,
       TRAFFIC_ANNOTATION_FOR_TESTS, &url_loader_factory, net::IsolationInfo(),
-      /*devtools_observer=*/mojo::NullRemote());
+      /*devtools_observer=*/mojo::NullRemote(), net::NetLogWithSource());
 
   ASSERT_EQ(2, url_loader_factory.NumPending());
   EXPECT_EQ(mojom::kURLLoadOptionAsCorsPreflight,
@@ -442,7 +443,7 @@ class PreflightControllerTest : public testing::Test {
         request, WithTrustedHeaderClient(false),
         with_non_wildcard_request_headers_support_, tainted,
         TRAFFIC_ANNOTATION_FOR_TESTS, url_loader_factory_remote_.get(),
-        isolation_info, devtools_observer_->Bind());
+        isolation_info, devtools_observer_->Bind(), net::NetLogWithSource());
     run_loop_->Run();
   }
 

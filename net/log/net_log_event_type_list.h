@@ -3999,3 +3999,11 @@ EVENT_TYPE(CORS_REQUEST)
 //    "preflight_required_reason": <The reason why preflight is required>
 //  }
 EVENT_TYPE(CHECK_CORS_PREFLIGHT_REQUIRED)
+
+// This event is logged when PreflightController checks preflight cache.
+// It contains the following parameter:
+//  {
+//    "status": <The result of cache checking. "hit-and-pass",
+//              "hit-and-fail", "miss" or "stale">
+//  }
+EVENT_TYPE(CHECK_CORS_PREFLIGHT_CACHE)

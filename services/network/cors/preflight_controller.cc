@@ -15,6 +15,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/network_isolation_key.h"
 #include "net/http/http_request_headers.h"
+#include "net/log/net_log_with_source.h"
 #include "services/network/cors/cors_util.h"
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/constants.h"
@@ -500,7 +501,8 @@ void PreflightController::PerformPreflightCheck(
     const net::NetworkTrafficAnnotationTag& annotation_tag,
     mojom::URLLoaderFactory* loader_factory,
     const net::IsolationInfo& isolation_info,
-    mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer) {
+    mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
+    const net::NetLogWithSource& net_log) {
   DCHECK(request.request_initiator);
 
   const net::NetworkIsolationKey& network_isolation_key =
@@ -513,7 +515,7 @@ void PreflightController::PerformPreflightCheck(
       cache_.CheckIfRequestCanSkipPreflight(
           request.request_initiator.value(), request.url, network_isolation_key,
           request.credentials_mode, request.method, request.headers,
-          request.is_revalidating)) {
+          request.is_revalidating, net_log)) {
     std::move(callback).Run(net::OK, absl::nullopt, false);
     return;
   }
