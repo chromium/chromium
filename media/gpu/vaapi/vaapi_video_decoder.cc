@@ -154,16 +154,13 @@ VaapiVideoDecoder::~VaapiVideoDecoder() {
     decoder_delegate_->OnVAContextDestructionSoon();
 
   // Destroy explicitly to DCHECK() that |vaapi_wrapper_| references are held
-  // inside the accelerator in |decoder_|, by the |allocated_va_surfaces_|, by
-  // the |decode_surface_pool_for_scaling_| and of course by this class. To
-  // clear |allocated_va_surfaces_| and |decode_surface_pool_for_scaling_| we
-  // have to first DestroyContext().
+  // inside the accelerator in |decoder_|, by the |allocated_va_surfaces_| and
+  // of course by this class. To clear |allocated_va_surfaces_| we have to first
+  // DestroyContext().
   decoder_ = nullptr;
   if (vaapi_wrapper_) {
     vaapi_wrapper_->DestroyContext();
     allocated_va_surfaces_.clear();
-    while (!decode_surface_pool_for_scaling_.empty())
-      decode_surface_pool_for_scaling_.pop();
 
     DCHECK(vaapi_wrapper_->HasOneRef());
     vaapi_wrapper_ = nullptr;
@@ -202,13 +199,9 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
     decoder_ = nullptr;
     DCHECK(vaapi_wrapper_);
-    // To clear |allocated_va_surfaces_| and |decode_surface_pool_for_scaling_|
-    // we have to first DestroyContext().
+    // To clear |allocated_va_surfaces_|, we have to first DestroyContext().
     vaapi_wrapper_->DestroyContext();
     allocated_va_surfaces_.clear();
-    while (!decode_surface_pool_for_scaling_.empty())
-      decode_surface_pool_for_scaling_.pop();
-    decode_to_output_scale_factor_.reset();
 
     DCHECK(vaapi_wrapper_->HasOneRef());
     vaapi_wrapper_ = nullptr;
@@ -541,59 +534,6 @@ scoped_refptr<VASurface> VaapiVideoDecoder::CreateSurface() {
                        va_surface->format(), std::move(release_frame_cb));
 }
 
-scoped_refptr<VASurface> VaapiVideoDecoder::CreateDecodeSurface() {
-  DVLOGF(4);
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(state_, State::kDecoding);
-  DCHECK(current_decode_task_);
-
-  if (decode_surface_pool_for_scaling_.empty())
-    return nullptr;
-
-  // Get surface from pool.
-  std::unique_ptr<ScopedVASurface> surface =
-      std::move(decode_surface_pool_for_scaling_.front());
-  decode_surface_pool_for_scaling_.pop();
-  // Gather information about the surface to avoid use-after-move.
-  const VASurfaceID surface_id = surface->id();
-  const gfx::Size surface_size = surface->size();
-  const unsigned int surface_format = surface->format();
-  // Wrap the ScopedVASurface inside a VASurface indirectly.
-  VASurface::ReleaseCB release_decode_surface_cb =
-      base::BindOnce(&VaapiVideoDecoder::ReturnDecodeSurfaceToPool, weak_this_,
-                     std::move(surface));
-  return new VASurface(surface_id, surface_size, surface_format,
-                       std::move(release_decode_surface_cb));
-}
-
-bool VaapiVideoDecoder::IsScalingDecode() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(state_ == State::kDecoding || state_ == State::kChangingResolution);
-  // TODO(andrescj): this was used by the VD-SFC path for scaling protected
-  // content. Now that we have the VE-SFC path, we need to get rid of this
-  // method and related code.
-  return false;
-}
-
-const gfx::Rect VaapiVideoDecoder::GetOutputVisibleRect(
-    const gfx::Rect& decode_visible_rect,
-    const gfx::Size& output_picture_size) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(state_ == State::kDecoding || state_ == State::kChangingResolution);
-
-  if (!IsScalingDecode())
-    return decode_visible_rect;
-  DCHECK_LT(*decode_to_output_scale_factor_, 1.0f);
-  gfx::Rect output_rect =
-      ScaleToEnclosedRect(decode_visible_rect, *decode_to_output_scale_factor_);
-  // Make the dimensions even numbered to align with other requirements later in
-  // the pipeline.
-  output_rect.set_width(RoundDownToEven(output_rect.width()));
-  output_rect.set_height(RoundDownToEven(output_rect.height()));
-  CHECK(gfx::Rect(output_picture_size).Contains(output_rect));
-  return output_rect;
-}
-
 void VaapiVideoDecoder::SurfaceReady(scoped_refptr<VASurface> va_surface,
                                      int32_t buffer_id,
                                      const gfx::Rect& visible_rect,
@@ -721,17 +661,12 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
 
   // All pending decode operations will be completed before triggering a
   // resolution change, so we can safely DestroyContext() here; that, in turn,
-  // allows for clearing the |allocated_va_surfaces_| and the
-  // |decode_surface_pool_for_scaling_|.
+  // allows for clearing the |allocated_va_surfaces_|.
   vaapi_wrapper_->DestroyContext();
   allocated_va_surfaces_.clear();
 
-  while (!decode_surface_pool_for_scaling_.empty())
-    decode_surface_pool_for_scaling_.pop();
-  decode_to_output_scale_factor_.reset();
-
-  gfx::Rect decoder_visible_rect = decoder_->GetVisibleRect();
-  gfx::Size decoder_pic_size = decoder_->GetPicSize();
+  const gfx::Rect decoder_visible_rect = decoder_->GetVisibleRect();
+  const gfx::Size decoder_pic_size = decoder_->GetPicSize();
   if (decoder_pic_size.IsEmpty()) {
     SetErrorState("|decoder_| returned an empty picture size");
     return;
@@ -790,7 +725,7 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
       max_desired_size.set_height(RoundUpToEven(max_desired_size.height()));
       const auto decode_to_output_scale_factor =
           static_cast<float>(max_desired_size.width()) /
-          output_pic_size.width();
+          decoder_pic_size.width();
       output_pic_size = max_desired_size;
       output_visible_rect = ScaleToEnclosedRect(decoder_visible_rect,
                                                 decode_to_output_scale_factor);
@@ -801,43 +736,6 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
       output_visible_rect.set_height(
           RoundDownToEven(output_visible_rect.height()));
       CHECK(gfx::Rect(output_pic_size).Contains(output_visible_rect));
-
-      // Create the surface pool for decoding, the normal pool will be used for
-      // output.
-      const size_t decode_pool_size = decoder_->GetRequiredNumOfPictures();
-      const absl::optional<gfx::BufferFormat> buffer_format =
-          VideoPixelFormatToGfxBufferFormat(*format);
-      if (!buffer_format) {
-        decode_to_output_scale_factor_.reset();
-        SetErrorState(
-            base::StringPrintf("unsupported pixel format: %s",
-                               VideoPixelFormatToString(*format).c_str()));
-        return;
-      }
-      const uint32_t va_fourcc =
-          VaapiWrapper::BufferFormatToVAFourCC(*buffer_format);
-      const uint32_t va_rt_format =
-          VaapiWrapper::BufferFormatToVARTFormat(*buffer_format);
-      if (!va_fourcc || !va_rt_format) {
-        decode_to_output_scale_factor_.reset();
-        SetErrorState(
-            base::StringPrintf("VA-API does not support: %s",
-                               gfx::BufferFormatToString(*buffer_format)));
-        return;
-      }
-      const gfx::Size decoder_pic_size = decoder_->GetPicSize();
-      auto scoped_va_surfaces = vaapi_wrapper_->CreateScopedVASurfaces(
-          base::strict_cast<unsigned int>(va_rt_format), decoder_pic_size,
-          {VaapiWrapper::SurfaceUsageHint::kVideoDecoder}, decode_pool_size,
-          /*visible_size=*/absl::nullopt, va_fourcc);
-      if (scoped_va_surfaces.empty()) {
-        decode_to_output_scale_factor_.reset();
-        SetErrorState("failed creating VASurfaces");
-        return;
-      }
-
-      for (auto&& scoped_va_surface : scoped_va_surfaces)
-        decode_surface_pool_for_scaling_.push(std::move(scoped_va_surface));
     }
   }
 
@@ -862,7 +760,7 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
     vaapi_wrapper_ = std::move(new_vaapi_wrapper);
   }
 
-  if (!vaapi_wrapper_->CreateContext(decoder_->GetPicSize())) {
+  if (!vaapi_wrapper_->CreateContext(decoder_pic_size)) {
     SetErrorState("failed creating VAContext");
     return;
   }
@@ -1171,14 +1069,6 @@ void VaapiVideoDecoder::SetErrorState(std::string message) {
   if (media_log_)
     MEDIA_LOG(ERROR, media_log_) << "VaapiVideoDecoder: " << message;
   SetState(State::kError);
-}
-
-void VaapiVideoDecoder::ReturnDecodeSurfaceToPool(
-    std::unique_ptr<ScopedVASurface> surface,
-    VASurfaceID) {
-  DVLOGF(4);
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  decode_surface_pool_for_scaling_.push(std::move(surface));
 }
 
 }  // namespace media

@@ -36,7 +36,6 @@ VP9VaapiVideoDecoderDelegate::~VP9VaapiVideoDecoderDelegate() {
   DCHECK(!picture_params_);
   DCHECK(!slice_params_);
   DCHECK(!crypto_params_);
-  DCHECK(!proc_params_);
   DCHECK(!protected_params_);
 }
 
@@ -46,15 +45,7 @@ scoped_refptr<VP9Picture> VP9VaapiVideoDecoderDelegate::CreateVP9Picture() {
   if (!va_surface)
     return nullptr;
 
-  scoped_refptr<VP9Picture> pic = new VaapiVP9Picture(std::move(va_surface));
-  if (!vaapi_dec_->IsScalingDecode())
-    return pic;
-
-  // Setup the scaling buffer.
-  scoped_refptr<VASurface> scaled_surface = vaapi_dec_->CreateDecodeSurface();
-  CHECK(scaled_surface);
-  pic->AsVaapiVP9Picture()->SetDecodeSurface(std::move(scaled_surface));
-  return pic;
+  return new VaapiVP9Picture(std::move(va_surface));
 }
 
 DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(
@@ -127,7 +118,7 @@ DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(
     auto ref_pic = ref_frames.GetFrame(i);
     if (ref_pic) {
       pic_param.reference_frames[i] =
-          ref_pic->AsVaapiVP9Picture()->GetVADecodeSurfaceID();
+          ref_pic->AsVaapiVP9Picture()->GetVASurfaceID();
     } else {
       pic_param.reference_frames[i] = VA_INVALID_SURFACE;
     }
@@ -287,25 +278,11 @@ DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   const VaapiVP9Picture* vaapi_pic = pic->AsVaapiVP9Picture();
-  VAProcPipelineParameterBuffer proc_buffer;
-  if (vaapi_dec_->IsScalingDecode()) {
-    if (!proc_params_) {
-      proc_params_ = vaapi_wrapper_->CreateVABuffer(
-          VAProcPipelineParameterBufferType, sizeof(proc_buffer));
-      if (!proc_params_)
-        return DecodeStatus::kFail;
-    }
-    CHECK(gfx::Rect(vaapi_pic->GetDecodeSize()).Contains(pic->visible_rect()));
-    CHECK(FillDecodeScalingIfNeeded(
-        pic->visible_rect(), vaapi_pic->GetVADecodeSurfaceID(),
-        pic->AsVaapiVP9Picture()->va_surface(), &proc_buffer));
-    buffers.push_back(
-        {proc_params_->id(),
-         {proc_params_->type(), proc_params_->size(), &proc_buffer}});
-  }
+  CHECK(
+      gfx::Rect(vaapi_pic->va_surface()->size()).Contains(pic->visible_rect()));
 
   bool success = vaapi_wrapper_->MapAndCopyAndExecute(
-      vaapi_pic->GetVADecodeSurfaceID(), buffers);
+      vaapi_pic->GetVASurfaceID(), buffers);
   if (!success && NeedsProtectedSessionRecovery())
     return DecodeStatus::kTryAgain;
 
@@ -320,11 +297,9 @@ bool VP9VaapiVideoDecoderDelegate::OutputPicture(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const VaapiVP9Picture* vaapi_pic = pic->AsVaapiVP9Picture();
-  vaapi_dec_->SurfaceReady(
-      vaapi_pic->va_surface(), vaapi_pic->bitstream_id(),
-      vaapi_dec_->GetOutputVisibleRect(vaapi_pic->visible_rect(),
-                                       vaapi_pic->va_surface()->size()),
-      vaapi_pic->get_colorspace());
+  vaapi_dec_->SurfaceReady(vaapi_pic->va_surface(), vaapi_pic->bitstream_id(),
+                           vaapi_pic->visible_rect(),
+                           vaapi_pic->get_colorspace());
   return true;
 }
 
@@ -346,7 +321,6 @@ void VP9VaapiVideoDecoderDelegate::OnVAContextDestructionSoon() {
   picture_params_.reset();
   slice_params_.reset();
   crypto_params_.reset();
-  proc_params_.reset();
   protected_params_.reset();
 }
 

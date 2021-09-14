@@ -50,7 +50,6 @@ VaapiVideoDecoderDelegate::VaapiVideoDecoderDelegate(
           std::move(on_protected_session_update_cb)),
       encryption_scheme_(encryption_scheme),
       protected_session_state_(ProtectedSessionState::kNotCreated),
-      scaled_surface_id_(VA_INVALID_ID),
       performing_recovery_(false) {
   DCHECK(vaapi_wrapper_);
   DCHECK(vaapi_dec_);
@@ -59,8 +58,6 @@ VaapiVideoDecoderDelegate::VaapiVideoDecoderDelegate(
   if (cdm_context)
     chromeos_cdm_context_ = cdm_context->GetChromeOsCdmContext();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  memset(&src_region_, 0, sizeof(src_region_));
-  memset(&dst_region_, 0, sizeof(dst_region_));
   transcryption_ = cdm_context && VaapiWrapper::GetImplementationType() ==
                                       VAImplementation::kMesaGallium;
 }
@@ -277,40 +274,6 @@ bool VaapiVideoDecoderDelegate::NeedsProtectedSessionRecovery() {
 
 void VaapiVideoDecoderDelegate::ProtectedDecodedSucceeded() {
   performing_recovery_ = false;
-}
-
-bool VaapiVideoDecoderDelegate::FillDecodeScalingIfNeeded(
-    const gfx::Rect& decode_visible_rect,
-    VASurfaceID decode_surface_id,
-    scoped_refptr<VASurface> output_surface,
-    VAProcPipelineParameterBuffer* proc_buffer) {
-  if (!vaapi_dec_->IsScalingDecode())
-    return false;
-
-  // Submit the buffer for the inline decode scaling.
-  memset(proc_buffer, 0, sizeof(*proc_buffer));
-  src_region_.x = base::checked_cast<int16_t>(decode_visible_rect.x());
-  src_region_.y = base::checked_cast<int16_t>(decode_visible_rect.y());
-  src_region_.width = base::checked_cast<uint16_t>(decode_visible_rect.width());
-  src_region_.height =
-      base::checked_cast<uint16_t>(decode_visible_rect.height());
-
-  gfx::Rect scaled_visible_rect = vaapi_dec_->GetOutputVisibleRect(
-      decode_visible_rect, output_surface->size());
-  dst_region_.x = base::checked_cast<int16_t>(scaled_visible_rect.x());
-  dst_region_.y = base::checked_cast<int16_t>(scaled_visible_rect.y());
-  dst_region_.width = base::checked_cast<uint16_t>(scaled_visible_rect.width());
-  dst_region_.height =
-      base::checked_cast<uint16_t>(scaled_visible_rect.height());
-
-  proc_buffer->surface_region = &src_region_;
-  proc_buffer->output_region = &dst_region_;
-
-  scaled_surface_id_ = output_surface->id();
-  proc_buffer->additional_outputs = &scaled_surface_id_;
-  proc_buffer->num_additional_outputs = 1;
-  proc_buffer->surface = decode_surface_id;
-  return true;
 }
 
 std::string VaapiVideoDecoderDelegate::GetDecryptKeyId() const {

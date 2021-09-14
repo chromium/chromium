@@ -244,7 +244,6 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   static VAEntrypoint GetDefaultVaEntryPoint(CodecMode mode, VAProfile profile);
 
   static uint32_t BufferFormatToVARTFormat(gfx::BufferFormat fmt);
-  static uint32_t BufferFormatToVAFourCC(gfx::BufferFormat fmt);
 
   // Returns the current instance identifier for the protected content system.
   // This can be used to detect when protected context loss has occurred, so any

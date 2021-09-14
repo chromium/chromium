@@ -215,6 +215,28 @@ const char* VaapiFunctionName(VaapiFunctions function) {
 
 namespace {
 
+uint32_t BufferFormatToVAFourCC(gfx::BufferFormat fmt) {
+  switch (fmt) {
+    case gfx::BufferFormat::BGRX_8888:
+      return VA_FOURCC_BGRX;
+    case gfx::BufferFormat::BGRA_8888:
+      return VA_FOURCC_BGRA;
+    case gfx::BufferFormat::RGBX_8888:
+      return VA_FOURCC_RGBX;
+    case gfx::BufferFormat::RGBA_8888:
+      return VA_FOURCC_RGBA;
+    case gfx::BufferFormat::YVU_420:
+      return VA_FOURCC_YV12;
+    case gfx::BufferFormat::YUV_420_BIPLANAR:
+      return VA_FOURCC_NV12;
+    case gfx::BufferFormat::P010:
+      return VA_FOURCC_P010;
+    default:
+      NOTREACHED() << gfx::BufferFormatToString(fmt);
+      return 0;
+  }
+}
+
 media::VAImplementation VendorStringToImplementationType(
     const std::string& va_vendor_string) {
   if (base::StartsWith(va_vendor_string, "Mesa Gallium driver",
@@ -1784,29 +1806,6 @@ uint32_t VaapiWrapper::BufferFormatToVARTFormat(gfx::BufferFormat fmt) {
       return VA_RT_FORMAT_YUV420;
     case gfx::BufferFormat::P010:
       return VA_RT_FORMAT_YUV420_10BPP;
-    default:
-      NOTREACHED() << gfx::BufferFormatToString(fmt);
-      return 0;
-  }
-}
-
-// static
-uint32_t VaapiWrapper::BufferFormatToVAFourCC(gfx::BufferFormat fmt) {
-  switch (fmt) {
-    case gfx::BufferFormat::BGRX_8888:
-      return VA_FOURCC_BGRX;
-    case gfx::BufferFormat::BGRA_8888:
-      return VA_FOURCC_BGRA;
-    case gfx::BufferFormat::RGBX_8888:
-      return VA_FOURCC_RGBX;
-    case gfx::BufferFormat::RGBA_8888:
-      return VA_FOURCC_RGBA;
-    case gfx::BufferFormat::YVU_420:
-      return VA_FOURCC_YV12;
-    case gfx::BufferFormat::YUV_420_BIPLANAR:
-      return VA_FOURCC_NV12;
-    case gfx::BufferFormat::P010:
-      return VA_FOURCC_P010;
     default:
       NOTREACHED() << gfx::BufferFormatToString(fmt);
       return 0;

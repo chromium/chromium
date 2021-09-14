@@ -30,21 +30,12 @@ class VaapiH264Picture : public H264Picture {
 
   scoped_refptr<VASurface> va_surface() const { return va_surface_; }
   VASurfaceID GetVASurfaceID() const { return va_surface_->id(); }
-  void SetDecodeSurface(scoped_refptr<VASurface> decode_va_surface);
-  VASurfaceID GetVADecodeSurfaceID() const {
-    return decode_va_surface_ ? decode_va_surface_->id() : GetVASurfaceID();
-  }
-  const gfx::Size& GetDecodeSize() const {
-    return decode_va_surface_ ? decode_va_surface_->size()
-                              : va_surface_->size();
-  }
 
  protected:
   ~VaapiH264Picture() override;
 
  private:
   scoped_refptr<VASurface> va_surface_;
-  scoped_refptr<VASurface> decode_va_surface_;
 
   DISALLOW_COPY_AND_ASSIGN(VaapiH264Picture);
 };
@@ -61,21 +52,12 @@ class VaapiH265Picture : public H265Picture {
 
   scoped_refptr<VASurface> va_surface() const { return va_surface_; }
   VASurfaceID GetVASurfaceID() const { return va_surface_->id(); }
-  void SetDecodeSurface(scoped_refptr<VASurface> decode_va_surface);
-  VASurfaceID GetVADecodeSurfaceID() const {
-    return decode_va_surface_ ? decode_va_surface_->id() : GetVASurfaceID();
-  }
-  const gfx::Size& GetDecodeSize() const {
-    return decode_va_surface_ ? decode_va_surface_->size()
-                              : va_surface_->size();
-  }
 
  protected:
   ~VaapiH265Picture() override;
 
  private:
   scoped_refptr<VASurface> va_surface_;
-  scoped_refptr<VASurface> decode_va_surface_;
 };
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
 
@@ -105,14 +87,6 @@ class VaapiVP9Picture : public VP9Picture {
 
   scoped_refptr<VASurface> va_surface() const { return va_surface_; }
   VASurfaceID GetVASurfaceID() const { return va_surface_->id(); }
-  void SetDecodeSurface(scoped_refptr<VASurface> decode_va_surface);
-  VASurfaceID GetVADecodeSurfaceID() const {
-    return decode_va_surface_ ? decode_va_surface_->id() : GetVASurfaceID();
-  }
-  const gfx::Size& GetDecodeSize() const {
-    return decode_va_surface_ ? decode_va_surface_->size()
-                              : va_surface_->size();
-  }
 
  protected:
   ~VaapiVP9Picture() override;
@@ -121,7 +95,6 @@ class VaapiVP9Picture : public VP9Picture {
   scoped_refptr<VP9Picture> CreateDuplicate() override;
 
   scoped_refptr<VASurface> va_surface_;
-  scoped_refptr<VASurface> decode_va_surface_;
 
   DISALLOW_COPY_AND_ASSIGN(VaapiVP9Picture);
 };

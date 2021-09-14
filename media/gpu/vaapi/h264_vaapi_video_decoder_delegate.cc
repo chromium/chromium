@@ -65,15 +65,7 @@ scoped_refptr<H264Picture> H264VaapiVideoDecoderDelegate::CreateH264Picture() {
   if (!va_surface)
     return nullptr;
 
-  scoped_refptr<H264Picture> pic = new VaapiH264Picture(std::move(va_surface));
-  if (!vaapi_dec_->IsScalingDecode())
-    return pic;
-
-  // Setup the scaling buffer.
-  scoped_refptr<VASurface> scaled_surface = vaapi_dec_->CreateDecodeSurface();
-  CHECK(scaled_surface);
-  pic->AsVaapiH264Picture()->SetDecodeSurface(std::move(scaled_surface));
-  return pic;
+  return new VaapiH264Picture(std::move(va_surface));
 }
 
 // Fill |va_pic| with default/neutral values.
@@ -527,20 +519,11 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitDecode(
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   const VaapiH264Picture* vaapi_pic = pic->AsVaapiH264Picture();
-  CHECK(gfx::Rect(vaapi_pic->GetDecodeSize()).Contains(pic->visible_rect()));
-  VAProcPipelineParameterBuffer proc_buffer;
-  if (FillDecodeScalingIfNeeded(pic->visible_rect(),
-                                vaapi_pic->GetVADecodeSurfaceID(),
-                                vaapi_pic->va_surface(), &proc_buffer)) {
-    if (!vaapi_wrapper_->SubmitBuffer(VAProcPipelineParameterBufferType,
-                                      sizeof(proc_buffer), &proc_buffer)) {
-      DLOG(ERROR) << "Failed submitting proc buffer";
-      return DecodeStatus::kFail;
-    }
-  }
+  CHECK(
+      gfx::Rect(vaapi_pic->va_surface()->size()).Contains(pic->visible_rect()));
 
   const bool success = vaapi_wrapper_->ExecuteAndDestroyPendingBuffers(
-      vaapi_pic->GetVADecodeSurfaceID());
+      vaapi_pic->GetVASurfaceID());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   encryption_segment_info_.clear();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -557,11 +540,9 @@ bool H264VaapiVideoDecoderDelegate::OutputPicture(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const VaapiH264Picture* vaapi_pic = pic->AsVaapiH264Picture();
-  vaapi_dec_->SurfaceReady(
-      vaapi_pic->va_surface(), vaapi_pic->bitstream_id(),
-      vaapi_dec_->GetOutputVisibleRect(vaapi_pic->visible_rect(),
-                                       vaapi_pic->va_surface()->size()),
-      vaapi_pic->get_colorspace());
+  vaapi_dec_->SurfaceReady(vaapi_pic->va_surface(), vaapi_pic->bitstream_id(),
+                           vaapi_pic->visible_rect(),
+                           vaapi_pic->get_colorspace());
   return true;
 }
 
@@ -590,7 +571,7 @@ void H264VaapiVideoDecoderDelegate::FillVAPicture(
   VASurfaceID va_surface_id = VA_INVALID_SURFACE;
 
   if (!pic->nonexisting)
-    va_surface_id = pic->AsVaapiH264Picture()->GetVADecodeSurfaceID();
+    va_surface_id = pic->AsVaapiH264Picture()->GetVASurfaceID();
 
   va_pic->picture_id = va_surface_id;
   va_pic->frame_idx = pic->frame_num;

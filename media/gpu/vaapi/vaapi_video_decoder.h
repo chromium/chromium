@@ -30,7 +30,6 @@
 #include "media/base/video_frame_layout.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
 #include "media/gpu/decode_surface_handler.h"
-#include "media/gpu/vaapi/vaapi_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -76,11 +75,6 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
 
   // DecodeSurfaceHandler<VASurface> implementation.
   scoped_refptr<VASurface> CreateSurface() override;
-  scoped_refptr<VASurface> CreateDecodeSurface() override;
-  bool IsScalingDecode() override;
-  const gfx::Rect GetOutputVisibleRect(
-      const gfx::Rect& decode_visible_rect,
-      const gfx::Size& output_picture_size) override;
   void SurfaceReady(scoped_refptr<VASurface> va_surface,
                     int32_t buffer_id,
                     const gfx::Rect& visible_rect,
@@ -167,13 +161,6 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
   void ApplyResolutionChangeWithScreenSizes(
       const std::vector<gfx::Size>& screen_resolution);
 
-  // Callback for when a VASurface in the decode pool is no longer used as a
-  // reference frame and should then be returned to the pool. We ignore the
-  // VASurfaceID in the normal callback because it is retained in the |surface|
-  // object.
-  void ReturnDecodeSurfaceToPool(std::unique_ptr<ScopedVASurface> surface,
-                                 VASurfaceID);
-
   // Having too many decoder instances at once may cause us to run out of FDs
   // and subsequently crash (b/181264362). To avoid that, we limit the maximum
   // number of decoder instances that can exist at once. |num_instances_| tracks
@@ -251,15 +238,6 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
   // TODO(crbug.com/1022246): Instead of having the raw pointer here, getting
   // the pointer from AcceleratedVideoDecoder.
   VaapiVideoDecoderDelegate* decoder_delegate_ = nullptr;
-
-  // When we are doing scaled decoding, this is the pool of surfaces used by the
-  // decoder for reference frames.
-  base::queue<std::unique_ptr<ScopedVASurface>>
-      decode_surface_pool_for_scaling_;
-
-  // When we are doing scaled decoding, this is the scale factor we are using,
-  // and applies the same in both dimensions.
-  absl::optional<float> decode_to_output_scale_factor_;
 
   // This is used on AMD protected content implementations to indicate that the
   // DecoderBuffers we receive have been transcrypted and need special handling.
