@@ -1108,7 +1108,7 @@ const char kEnableLensRegionSearchFlagId[] = "enable-lens-region-search";
 const char kEnableLensRegionSearchName[] =
     "Search your screen with Google Lens";
 const char kEnableLensRegionSearchDescription[] =
-    "Right click and select \"Search part of the page with Google Lens\" to "
+    "Right click and select \"Search images with Google Lens\" to "
     "search any region of the site to learn more about the visual content you "
     "see while you browse and shop on the web.";
 
