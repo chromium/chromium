@@ -2747,6 +2747,7 @@ crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/service-workers/servi
 crbug.com/626703 [ Mac10.14 ] external/wpt/pointerevents/pointerevent_contextmenu_is_a_pointerevent.html?touch [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/pointerevents/pointerevent_contextmenu_is_a_pointerevent.html?touch [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/pointerevents/pointerevent_contextmenu_is_a_pointerevent.html?touch [ Timeout ]
+crbug.com/626703 [ Mac11-arm64 ] external/wpt/pointerevents/pointerevent_contextmenu_is_a_pointerevent.html?touch [ Timeout ]
 crbug.com/626703 external/wpt/editing/run/forwarddelete.html?6001-last [ Failure ]
 crbug.com/626703 external/wpt/selection/contenteditable/initial-selection-on-focus.tentative.html?div [ Failure ]
 crbug.com/626703 [ Mac10.13 ] wpt_internal/bluetooth/requestDevice/filter-does-not-match.https.html [ Timeout ]
@@ -2991,6 +2992,7 @@ crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc/RTCDtlsTransport-state.html [ 
 crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/RTCDtlsTransport-state.html [ Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/mediacapture-record/passthrough/MediaRecorder-passthrough.https.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/mediacapture-record/passthrough/MediaRecorder-passthrough.https.html [ Timeout ]
+crbug.com/626703 [ Mac11-arm64 ] external/wpt/mediacapture-record/passthrough/MediaRecorder-passthrough.https.html [ Pass Failure Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-simulcast.https.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-simulcast.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc/RTCIceTransport.html [ Timeout ]
@@ -5079,7 +5081,9 @@ crbug.com/1008483 virtual/transform-interop-disabled/external/wpt/css/css-transf
 # but we should keep testing that until TransformInterop is shipped.
 # 3d-point-mapping-2-transforminterop tests the new behavior.
 crbug.com/1008483 transforms/3d/point-mapping/3d-point-mapping-2.html [ Failure ]
-crbug.com/1008483 virtual/transform-interop-disabled/transforms/3d/point-mapping/3d-point-mapping-2.html [ Pass ]
+crbug.com/1008483 [ Linux ] virtual/transform-interop-disabled/transforms/3d/point-mapping/3d-point-mapping-2.html [ Pass ]
+crbug.com/1008483 [ Win ] virtual/transform-interop-disabled/transforms/3d/point-mapping/3d-point-mapping-2.html [ Pass ]
+crbug.com/1008483 [ Mac ] virtual/transform-interop-disabled/transforms/3d/point-mapping/3d-point-mapping-2.html [ Pass Failure ]
 
 crbug.com/1008483 virtual/backface-visibility-interop/external/wpt/css/css-transforms/backface-visibility-hidden-004.tentative.html [ Pass ]
 crbug.com/1008483 virtual/backface-visibility-interop/external/wpt/css/css-transforms/backface-visibility-hidden-005.tentative.html [ Pass ]
@@ -5874,7 +5878,7 @@ crbug.com/1184745 [ Mac ] external/wpt/media-source/mediasource-changetype-play.
 crbug.com/1092462 [ Linux ] http/tests/media/media-source/mediasource-duration.html [ Failure Pass ]
 crbug.com/1092462 [ Linux ] media/video-seek-past-end-paused.html [ Failure Pass ]
 crbug.com/1185675 [ Mac ] virtual/gpu-rasterization/images/color-profile-object.html [ Failure Pass ]
-crbug.com/1185676 [ Mac ] http/tests/devtools/tracing/timeline-js/timeline-js-line-level-profile-end-to-end.js [ Failure Pass ]
+crbug.com/1185676 [ Mac ] http/tests/devtools/tracing/timeline-js/timeline-js-line-level-profile-end-to-end.js [ Failure Pass Timeout Skip ]
 
 crbug.com/1185051 fast/canvas/OffscreenCanvas-Bitmaprenderer-toBlob-worker.html [ Failure Pass ]
 
@@ -6804,3 +6808,30 @@ crbug.com/1248912 virtual/threaded/external/wpt/scroll-animations/css/at-scroll-
 # WebRTC simulcast tests contineue to be flaky
 crbug.com/1230534 [ Win ] external/wpt/webrtc/simulcast/vp8.https.html [ Pass Skip Timeout ]
 crbug.com/1230534 [ Win ] external/wpt/webrtc/simulcast/h264.https.html [ Pass Skip Timeout ]
+
+# Following ref tests fail on mac11-arm64
+crbug.com/1249176 [ Mac11-arm64 ] scrollbars/hidden-scrollbars-invisible.html [ Failure ]
+crbug.com/1249176 [ Mac11-arm64 ] external/wpt/svg/extensibility/foreignObject/foreign-object-scale-scroll.html [ Failure ]
+crbug.com/1249176 [ Mac11-arm64 ] external/wpt/css/css-lists/counter-reset-reversed-list-item.html [ Failure ]
+crbug.com/1249176 [ Mac11-arm64 ] external/wpt/density-size-correction/image-set-003.html [ Failure ]
+crbug.com/1249176 [ Mac11-arm64 ] external/wpt/css/css-content/quotes-006.html [ Failure ]
+crbug.com/1249176 [ Mac11-arm64 ] external/wpt/html/dom/elements/global-attributes/dir_auto-textarea-script-N-between-Rs.html [ Failure ]
+crbug.com/1249176 [ Mac11-arm64 ] external/wpt/css/css-content/quotes-020.html [ Failure ]
+
+# Following tests timeout on mac11-arm64
+crbug.com/1249176 [ Mac11-arm64 ] external/wpt/focus/focus-already-focused-iframe-deep-same-site.html [ Timeout ] 
+crbug.com/1249176 [ Mac11-arm64 ] external/wpt/focus/focus-already-focused-iframe-different-site.html [ Timeout ]
+crbug.com/1249176 [ Mac11-arm64 ] external/wpt/focus/focus-already-focused-iframe-same-site.html [ Timeout ]
+crbug.com/1249176 [ Mac11-arm64 ] external/wpt/html/browsers/browsing-the-web/navigating-across-documents/replace-before-load/location-setter-user-click.html [ Timeout ]
+crbug.com/1249176 [ Mac11-arm64 ] external/wpt/html/browsers/browsing-the-web/navigating-across-documents/replace-before-load/location-setter-user-mouseup.html [ Timeout ]
+crbug.com/1249176 [ Mac11-arm64 ] external/wpt/selection/textcontrols/selectionchange-bubble.html [ Timeout ]
+
+# Flaky tests in mac11-arm64
+crbug.com/1249176 [ Mac11-arm64 ] http/tests/text-autosizing/wide-iframe.html [ Pass Failure ]
+crbug.com/1249176 [ Mac11-arm64 ] transforms/3d/general/cssmatrix-3d-zoom.html [ Pass Failure ]
+crbug.com/1249176 [ Mac11-arm64 ] wpt_internal/mediastream/mediastreamtrackprocessor-transfer-to-worker.html [ Pass Failure ]
+crbug.com/1249176 [ Mac11-arm64 ] http/tests/images/document-policy-lossy-images-max-bpp.php [ Pass Timeout Failure ]
+crbug.com/1249176 [ Mac11-arm64 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-simulcast.https.html [ Pass Timeout ]
+crbug.com/1249176 [ Mac11-arm64 ] fast/forms/plaintext-mode-2.html [ Pass Failure ]
+crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/color-profile-image-canvas.html [ Pass Failure ]
+crbug.com/1249176 [ Mac11-arm64 ] http/tests/inspector-protocol/page/consecutive-navigate.js [ Pass Timeout ]
