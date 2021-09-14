@@ -16,6 +16,7 @@
 #include "base/task/task_traits.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
+#include "build/build_config.h"
 #include "net/base/ip_address.h"
 #include "net/dns/dns_config.h"
 #include "net/dns/dns_config_service_posix.h"

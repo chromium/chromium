@@ -13,6 +13,7 @@
 #include "base/process/launch.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 TEST(PythonUtils, SetPythonPathInEnvironment) {
