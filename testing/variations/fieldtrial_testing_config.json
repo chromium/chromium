@@ -5552,14 +5552,14 @@
             ]
         }
     ],
-    "OfflinePageServiceTurndown": [
+    "OfflinePageServiceTurndownM91": [
         {
             "platforms": [
                 "android"
             ],
             "experiments": [
                 {
-                    "name": "Control",
+                    "name": "Turndown_Disabled",
                     "disable_features": [
                         "OfflinePagesPrefetching"
                     ]
