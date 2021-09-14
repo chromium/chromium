@@ -103,15 +103,18 @@ constexpr int kMaxIdentifiabilityStudyMaxSurfaces = 40;
 // Parameter type: Comma separated list of classes. Each class is a semicolon
 //                 separated list of surfaces. See examples below.
 //
-//                 NOTE: The first surface in the list is the representative
-//                 surface that forms the basis for determining the cost for
-//                 the entire class. I.e. the cost of the first surface in the
-//                 list is assumed to be the cost of _any subset_ of surfaces
-//                 in the set.
+// The first surface in the list is the representative surface that forms the
+// basis for determining the cost for the entire class. I.e. the cost of the
+// first surface in the list is assumed to be the cost of _any subset_ of
+// surfaces in the set.
 //
 // Every surface in an equivalence class is assumed to be pairwise perfectly
 // correlated with all other surfaces in the set. For more details see
 // definition of SurfaceSetValuation::EquivalenceClassIdentifierMap.
+//
+// It is an error for a surface to appear in more than one equivalence class.
+//
+// For more details see `SurfaceSetValuation`.
 //
 // E.g.:
 //   * "1;2;3,4;5;6" : Defines two classes: {1,2,3} and {4,5,6}. The surface
