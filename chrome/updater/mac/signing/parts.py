@@ -23,6 +23,10 @@ def get_parts(config):
         A dictionary of |model.CodeSignedProduct|. The keys are short
         identifiers that have no bearing on the actual signing operations.
     """
+    ks_bundle = (
+        '{0.app_product}.app/Contents/Helpers/{0.keystone_app_name}.bundle'.
+        format(config))
+
     return {
         'app':
         CodeSignedProduct(
@@ -32,7 +36,22 @@ def get_parts(config):
             requirements=config.codesign_requirements_outer_app,
             identifier_requirement=False,
             entitlements=None,
-            verify_options=VerifyOptions.DEEP + VerifyOptions.STRICT)
+            verify_options=VerifyOptions.DEEP + VerifyOptions.STRICT),
+        'framework':
+        # This is not really a framework but the pipeline's signing order is
+        # *, 'framework', 'app', so we name it to do recursive signing in
+        # the right order.
+        CodeSignedProduct(
+            ks_bundle,
+            config.keystone_app_name,
+            options=CodeSignOptions.FULL_HARDENED_RUNTIME_OPTIONS,
+            verify_options=VerifyOptions.DEEP + VerifyOptions.STRICT),
+        'ksadmin':
+        CodeSignedProduct(
+            ks_bundle + '/Contents/Helpers/ksadmin',
+            'ksadmin',
+            options=CodeSignOptions.FULL_HARDENED_RUNTIME_OPTIONS,
+            verify_options=VerifyOptions.DEEP + VerifyOptions.STRICT),
     }
 
 
