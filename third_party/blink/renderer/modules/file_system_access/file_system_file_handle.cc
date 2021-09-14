@@ -52,10 +52,12 @@ ScriptPromise FileSystemFileHandle::createWritable(
   mojo_ptr_->CreateFileWriter(
       options->keepExistingData(), options->autoClose(),
       WTF::Bind(
-          [](ScriptPromiseResolver* resolver,
+          [](FileSystemFileHandle*, ScriptPromiseResolver* resolver,
              mojom::blink::FileSystemAccessErrorPtr result,
              mojo::PendingRemote<mojom::blink::FileSystemAccessFileWriter>
                  writer) {
+            // Keep `this` alive so the handle will not be garbage-collected
+            // before the promise is resolved.
             ScriptState* script_state = resolver->GetScriptState();
             if (!script_state)
               return;
@@ -67,7 +69,7 @@ ScriptPromise FileSystemFileHandle::createWritable(
             resolver->Resolve(FileSystemWritableFileStream::Create(
                 script_state, std::move(writer)));
           },
-          WrapPersistent(resolver)));
+          WrapPersistent(this), WrapPersistent(resolver)));
 
   return result;
 }
@@ -83,9 +85,12 @@ ScriptPromise FileSystemFileHandle::getFile(ScriptState* script_state,
   ScriptPromise result = resolver->Promise();
 
   mojo_ptr_->AsBlob(WTF::Bind(
-      [](ScriptPromiseResolver* resolver, const String& name,
-         FileSystemAccessErrorPtr result, const base::File::Info& info,
+      [](FileSystemFileHandle*, ScriptPromiseResolver* resolver,
+         const String& name, FileSystemAccessErrorPtr result,
+         const base::File::Info& info,
          const scoped_refptr<BlobDataHandle>& blob) {
+        // Keep `this` alive so the handle will not be garbage-collected
+        // before the promise is resolved.
         if (result->status != mojom::blink::FileSystemAccessStatus::kOk) {
           file_system_access_error::Reject(resolver, *result);
           return;
@@ -93,7 +98,7 @@ ScriptPromise FileSystemFileHandle::getFile(ScriptState* script_state,
         resolver->Resolve(MakeGarbageCollected<File>(
             name, NullableTimeToOptionalTime(info.last_modified), blob));
       },
-      WrapPersistent(resolver), name()));
+      WrapPersistent(this), WrapPersistent(resolver), name()));
 
   return result;
 }
@@ -111,10 +116,13 @@ ScriptPromise FileSystemFileHandle::createSyncAccessHandle(
   ScriptPromise result = resolver->Promise();
 
   mojo_ptr_->OpenAccessHandle(WTF::Bind(
-      [](ScriptPromiseResolver* resolver, FileSystemAccessErrorPtr result,
+      [](FileSystemFileHandle*, ScriptPromiseResolver* resolver,
+         FileSystemAccessErrorPtr result,
          mojom::blink::FileSystemAccessAccessHandleFilePtr file,
          mojo::PendingRemote<mojom::blink::FileSystemAccessAccessHandleHost>
              access_handle_remote) {
+        // Keep `this` alive so the handle will not be garbage-collected
+        // before the promise is resolved.
         if (result->status != mojom::blink::FileSystemAccessStatus::kOk) {
           file_system_access_error::Reject(resolver, *result);
           return;
@@ -149,7 +157,7 @@ ScriptPromise FileSystemFileHandle::createSyncAccessHandle(
             context, std::move(file_delegate),
             std::move(access_handle_remote)));
       },
-      WrapPersistent(resolver)));
+      WrapPersistent(this), WrapPersistent(resolver)));
 
   return result;
 }

@@ -67,10 +67,12 @@ ScriptPromise FileSystemDirectoryHandle::getFileHandle(
   mojo_ptr_->GetFile(
       name, options->create(),
       WTF::Bind(
-          [](ScriptPromiseResolver* resolver, const String& name,
-             FileSystemAccessErrorPtr result,
+          [](FileSystemDirectoryHandle*, ScriptPromiseResolver* resolver,
+             const String& name, FileSystemAccessErrorPtr result,
              mojo::PendingRemote<mojom::blink::FileSystemAccessFileHandle>
                  handle) {
+            // Keep `this` alive so the handle will not be garbage-collected
+            // before the promise is resolved.
             ExecutionContext* context = resolver->GetExecutionContext();
             if (!context)
               return;
@@ -81,7 +83,7 @@ ScriptPromise FileSystemDirectoryHandle::getFileHandle(
             resolver->Resolve(MakeGarbageCollected<FileSystemFileHandle>(
                 context, name, std::move(handle)));
           },
-          WrapPersistent(resolver), name));
+          WrapPersistent(this), WrapPersistent(resolver), name));
 
   return result;
 }
@@ -102,10 +104,12 @@ ScriptPromise FileSystemDirectoryHandle::getDirectoryHandle(
   mojo_ptr_->GetDirectory(
       name, options->create(),
       WTF::Bind(
-          [](ScriptPromiseResolver* resolver, const String& name,
-             FileSystemAccessErrorPtr result,
+          [](FileSystemDirectoryHandle*, ScriptPromiseResolver* resolver,
+             const String& name, FileSystemAccessErrorPtr result,
              mojo::PendingRemote<mojom::blink::FileSystemAccessDirectoryHandle>
                  handle) {
+            // Keep `this` alive so the handle will not be garbage-collected
+            // before the promise is resolved.
             ExecutionContext* context = resolver->GetExecutionContext();
             if (!context)
               return;
@@ -116,7 +120,7 @@ ScriptPromise FileSystemDirectoryHandle::getDirectoryHandle(
             resolver->Resolve(MakeGarbageCollected<FileSystemDirectoryHandle>(
                 context, name, std::move(handle)));
           },
-          WrapPersistent(resolver), name));
+          WrapPersistent(this), WrapPersistent(resolver), name));
 
   return result;
 }
@@ -163,10 +167,13 @@ ScriptPromise FileSystemDirectoryHandle::removeEntry(
   mojo_ptr_->RemoveEntry(
       name, options->recursive(),
       WTF::Bind(
-          [](ScriptPromiseResolver* resolver, FileSystemAccessErrorPtr result) {
+          [](FileSystemDirectoryHandle*, ScriptPromiseResolver* resolver,
+             FileSystemAccessErrorPtr result) {
+            // Keep `this` alive so the handle will not be garbage-collected
+            // before the promise is resolved.
             file_system_access_error::ResolveOrReject(resolver, *result);
           },
-          WrapPersistent(resolver)));
+          WrapPersistent(this), WrapPersistent(resolver)));
 
   return result;
 }
@@ -186,8 +193,11 @@ ScriptPromise FileSystemDirectoryHandle::resolve(
   mojo_ptr_->Resolve(
       possible_child->Transfer(),
       WTF::Bind(
-          [](ScriptPromiseResolver* resolver, FileSystemAccessErrorPtr result,
+          [](FileSystemDirectoryHandle*, ScriptPromiseResolver* resolver,
+             FileSystemAccessErrorPtr result,
              const absl::optional<Vector<String>>& path) {
+            // Keep `this` alive so the handle will not be garbage-collected
+            // before the promise is resolved.
             if (result->status != mojom::blink::FileSystemAccessStatus::kOk) {
               file_system_access_error::Reject(resolver, *result);
               return;
@@ -198,7 +208,7 @@ ScriptPromise FileSystemDirectoryHandle::resolve(
             }
             resolver->Resolve(*path);
           },
-          WrapPersistent(resolver)));
+          WrapPersistent(this), WrapPersistent(resolver)));
 
   return result;
 }
