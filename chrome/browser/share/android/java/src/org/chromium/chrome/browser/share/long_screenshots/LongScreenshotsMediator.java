@@ -56,23 +56,26 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
     private final Activity mActivity;
     private final EntryManager mEntryManager;
     private Bitmap mFullBitmap;
+    private float mDisplayDensity;
 
     // Variables for tracking drag action.
     private int mDragStartEventY;
     private int mDragStartViewHeight;
+    private boolean mDragIsPossibleClick;
 
     // Amount by which tapping up/down scrolls the viewport.
-    private static final int BUTTON_SCROLL_STEP_PX = 100;
+    private static final int BUTTON_SCROLL_STEP_DP = 100;
     // Minimum selectable screenshot, vertical size.
-    private static final int MINIMUM_VERTICAL_SELECTION_PX = 50;
+    private static final int MINIMUM_VERTICAL_SELECTION_DP = 50;
     // Minimum height for mask views; should scale with ImageView margins.
-    private static final int MINIMUM_MASK_HEIGHT_PX = 20;
+    private static final int MINIMUM_MASK_HEIGHT_DP = 20;
 
     private static final String TAG = "long_screenshots";
 
     public LongScreenshotsMediator(Activity activity, EntryManager entryManager) {
         mActivity = activity;
         mEntryManager = entryManager;
+        mDisplayDensity = activity.getResources().getDisplayMetrics().density;
     }
 
     private void displayInitialScreenshot() {
@@ -164,6 +167,16 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
         mDialog.cancel();
     }
 
+    /**
+     * Converts a measurement in dp to px.
+     *
+     * @param value Input value in dp.
+     * @return |value| in px.
+     */
+    private int dpToPx(int value) {
+        return (int) (value * mDisplayDensity + 0.5f);
+    }
+
     private int getTopMaskY() {
         return mTopAreaMaskView.getHeight();
     }
@@ -190,7 +203,8 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
         int oldHeight = maskView.getHeight();
 
         // Message if we reached the extent of allowable capture.
-        if (oldHeight <= MINIMUM_MASK_HEIGHT_PX) {
+        int minimumMaskHeight = dpToPx(MINIMUM_MASK_HEIGHT_DP);
+        if (oldHeight <= minimumMaskHeight) {
             Toast.makeText(mActivity,
                          (isTop ? R.string.sharing_long_screenshot_reached_top
                                 : R.string.sharing_long_screenshot_reached_bottom),
@@ -199,7 +213,7 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
             return;
         }
 
-        int newHeight = Math.max(MINIMUM_MASK_HEIGHT_PX, oldHeight - BUTTON_SCROLL_STEP_PX);
+        int newHeight = Math.max(minimumMaskHeight, oldHeight - dpToPx(BUTTON_SCROLL_STEP_DP));
         ViewGroup.LayoutParams params = maskView.getLayoutParams();
         params.height = newHeight;
         maskView.setLayoutParams(params);
@@ -311,6 +325,7 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
                 params = maskView.getLayoutParams();
                 mDragStartEventY = y;
                 mDragStartViewHeight = params.height;
+                mDragIsPossibleClick = true;
                 handled = true;
                 mScrollView.requestDisallowInterceptTouchEvent(true);
                 break;
@@ -321,22 +336,36 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
                 params = maskView.getLayoutParams();
                 int deltaY = (isTop ? 1 : -1) * (y - mDragStartEventY);
                 params.height = mDragStartViewHeight + deltaY;
+                mDragIsPossibleClick = false;
 
                 // Prevent mask regions from overlapping.
                 int topMaskY = getTopMaskY();
                 int bottomMaskY = getBottomMaskY();
                 int layoutHeight = ((View) mBottomAreaMaskView.getParent()).getHeight();
-                if (isTop && params.height + MINIMUM_VERTICAL_SELECTION_PX > bottomMaskY) {
-                    params.height = bottomMaskY - MINIMUM_VERTICAL_SELECTION_PX;
+                int minimumVerticalSelectionPx = dpToPx(MINIMUM_VERTICAL_SELECTION_DP);
+                // Ensure masks don't overlap and are separacted by a minimum distance.
+                if (isTop && params.height + minimumVerticalSelectionPx > bottomMaskY) {
+                    params.height = bottomMaskY - minimumVerticalSelectionPx;
                 }
                 if (!isTop
-                        && params.height
-                                > layoutHeight - topMaskY - MINIMUM_VERTICAL_SELECTION_PX) {
-                    params.height = layoutHeight - topMaskY - MINIMUM_VERTICAL_SELECTION_PX;
+                        && params.height > layoutHeight - topMaskY - minimumVerticalSelectionPx) {
+                    params.height = layoutHeight - topMaskY - minimumVerticalSelectionPx;
+                }
+                // Ensure masks aren't dragged outside the ImageView bounds.
+                int minimumMaskHeightPx = dpToPx(MINIMUM_MASK_HEIGHT_DP);
+                if (params.height < minimumMaskHeightPx) {
+                    params.height = minimumMaskHeightPx;
                 }
 
                 maskView.setLayoutParams(params);
                 handled = true;
+                break;
+            case MotionEvent.ACTION_UP:
+                if (mDragIsPossibleClick) {
+                    View button = (isTop ? mUpButton : mDownButton);
+                    button.performClick();
+                    mDragIsPossibleClick = false;
+                }
                 break;
             default:
                 break;
