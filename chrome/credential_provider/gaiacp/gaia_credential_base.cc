@@ -128,6 +128,13 @@ std::wstring GetEmailDomains() {
   return email_domains_reg.empty() ? email_domains_reg_new : email_domains_reg;
 }
 
+std::vector<std::wstring> GetEmailDomainsList() {
+  return base::SplitString(base::ToLowerASCII(GetEmailDomains()),
+                           kPermittedAccountsSeparator,
+                           base::WhitespaceHandling::TRIM_WHITESPACE,
+                           base::SplitResult::SPLIT_WANT_NONEMPTY);
+}
+
 // Use WinHttpUrlFetcher to communicate with the admin sdk and fetch the active
 // directory samAccountName if available and list of local account name mapping
 // configured as custom attributes.
@@ -1190,10 +1197,12 @@ HRESULT CGaiaCredentialBase::GetGlsCommandline(
     return hr;
   }
 
-  // If email domains are specified, pass them to the GLS.
-  std::wstring email_domains = GetEmailDomains();
-  if (email_domains[0])
-    command_line->AppendSwitchNative(kEmailDomainsSwitch, email_domains);
+  // If email domains are specified, only pass them to the GLS if the size is
+  // exactly 1 so that it can be pre-populated in the sign-in screen.
+  std::vector<std::wstring> email_domains_list = GetEmailDomainsList();
+  if (GetEmailDomainsList().size() == 1)
+    command_line->AppendSwitchNative(kEmailDomainsSwitch,
+                                     email_domains_list[0]);
 
   hr = GetUserGlsCommandline(command_line);
   if (FAILED(hr)) {
