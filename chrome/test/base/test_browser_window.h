@@ -220,8 +220,6 @@ class TestBrowserWindow : public BrowserWindow {
       content::RenderFrameHost* frame,
       content::EyeDropperListener* listener) override;
 
-  void ShowInProductHelpPromo(InProductHelpFeature iph_feature) override {}
-
   void SetNativeWindow(gfx::NativeWindow window);
 
   void SetCloseCallback(base::OnceClosure close_callback);

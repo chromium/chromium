@@ -16,7 +16,6 @@
 #include "ui/views/view.h"
 
 class ToolbarView;
-enum class InProductHelpFeature;
 
 // The app menu button in the main browser window (as opposed to web app
 // windows, which is implemented in WebAppMenuButton).

@@ -544,7 +544,6 @@ class BrowserView : public BrowserWindow,
   BookmarkBarView* GetBookmarkBarView() const;
   LocationBarView* GetLocationBarView() const;
 
-  void ShowInProductHelpPromo(InProductHelpFeature iph_feature) override;
   FeaturePromoController* GetFeaturePromoController() override;
 
   void ShowIncognitoClearBrowsingDataDialog() override;

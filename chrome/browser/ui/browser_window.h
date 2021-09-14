@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
-#include "chrome/browser/ui/user_education/in_product_help.h"
 #include "chrome/common/buildflags.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/translate/core/common/translate_errors.h"
@@ -528,9 +527,6 @@ class BrowserWindow : public ui::BaseWindow {
 
   // Returns object implementing ExclusiveAccessContext interface.
   virtual ExclusiveAccessContext* GetExclusiveAccessContext() = 0;
-
-  // Shows in-product help for the given feature.
-  virtual void ShowInProductHelpPromo(InProductHelpFeature iph_feature) = 0;
 
   // Returns the platform-specific ID of the workspace the browser window
   // currently resides in.

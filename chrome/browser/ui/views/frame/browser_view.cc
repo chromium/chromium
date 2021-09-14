@@ -3744,14 +3744,6 @@ std::unique_ptr<content::EyeDropper> BrowserView::OpenEyeDropper(
   return ShowEyeDropper(frame, listener);
 }
 
-void BrowserView::ShowInProductHelpPromo(InProductHelpFeature iph_feature) {
-  // TODO(crbug.com/1133016): remove this as it is no longer used.
-  switch (iph_feature) {
-    case InProductHelpFeature::kIncognitoWindow:
-      break;
-  }
-}
-
 FeaturePromoController* BrowserView::GetFeaturePromoController() {
   return feature_promo_controller_.get();
 }
