@@ -15,6 +15,7 @@
 #import "ios/web/navigation/wk_navigation_util.h"
 #include "ios/web/public/deprecated/url_verification_constants.h"
 #import "ios/web/public/test/js_test_util.h"
+#import "ios/web/public/test/web_view_interaction_test_util.h"
 #import "ios/web/public/web_client.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
@@ -206,6 +207,12 @@ bool WebTestWithWebState::WaitUntilLoaded() {
     WaitForBackgroundTasks();
     return !web_state()->IsLoading();
   });
+}
+
+std::unique_ptr<base::Value> WebTestWithWebState::CallJavaScriptFunction(
+    const std::string& function,
+    const std::vector<base::Value>& parameters) {
+  return web::test::CallJavaScriptFunction(web_state(), function, parameters);
 }
 
 id WebTestWithWebState::ExecuteJavaScript(NSString* script) {

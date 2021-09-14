@@ -19,6 +19,8 @@
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/chrome/test/fakes/fake_language_detection_tab_helper_observer.h"
+#import "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frame_util.h"
 #include "net/base/network_change_notifier.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -138,16 +140,27 @@ class TranslateAppInterfaceHelper {
   // No need to set the |translate_script| JavaScript since it will never be
   // used by this fake object. Instead just invoke host with 'translate.ready'
   // followed by 'translate.status'.
-  _webState->ExecuteJavaScript(u"__gCrWeb.message.invokeOnHost({"
-                               u"  'command': 'translate.ready',"
-                               u"  'errorCode': 0,"
-                               u"  'loadTime': 0,"
-                               u"  'readyTime': 0});");
-  _webState->ExecuteJavaScript(u"__gCrWeb.message.invokeOnHost({"
-                               u"  'command': 'translate.status',"
-                               u"  'errorCode': 0,"
-                               u"  'pageSourceLanguage': 'fr',"
-                               u"  'translationTime': 0});");
+  base::Value translate_ready_dict(base::Value::Type::DICTIONARY);
+  translate_ready_dict.SetKey("command", base::Value("translate.ready"));
+  translate_ready_dict.SetKey("errorCode", base::Value(0));
+  translate_ready_dict.SetKey("loadTime", base::Value(0));
+  translate_ready_dict.SetKey("readyTime", base::Value(0));
+
+  std::vector<base::Value> translate_ready_params;
+  translate_ready_params.push_back(std::move(translate_ready_dict));
+  GetMainFrame(_webState)->CallJavaScriptFunction("message.invokeOnHost",
+                                                  translate_ready_params);
+
+  base::Value translate_status_dict(base::Value::Type::DICTIONARY);
+  translate_status_dict.SetKey("command", base::Value("translate.status"));
+  translate_status_dict.SetKey("errorCode", base::Value(0));
+  translate_status_dict.SetKey("pageSourceLanguage", base::Value("fr"));
+  translate_status_dict.SetKey("translationTime", base::Value(0));
+
+  std::vector<base::Value> translate_status_params;
+  translate_status_params.push_back(std::move(translate_status_dict));
+  GetMainFrame(_webState)->CallJavaScriptFunction("message.invokeOnHost",
+                                                  translate_status_params);
 }
 
 @end

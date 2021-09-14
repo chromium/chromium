@@ -218,8 +218,14 @@ TEST_F(WebFrameImplIntTest, JavaScriptMessageFromMainFrame) {
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
     return web_state()->GetWebFramesManager()->GetAllWebFrames().size() == 1;
   }));
-  ExecuteJavaScript(@"__gCrWeb.message.invokeOnHost({'command':"
-                    @"'senderFrameTestCommand.mainframe'});");
+
+  base::Value message_dict(base::Value::Type::DICTIONARY);
+  message_dict.SetKey("command",
+                      base::Value("senderFrameTestCommand.mainframe"));
+  std::vector<base::Value> params;
+  params.push_back(std::move(message_dict));
+  CallJavaScriptFunction("message.invokeOnHost", params);
+
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
     return command_received;
   }));

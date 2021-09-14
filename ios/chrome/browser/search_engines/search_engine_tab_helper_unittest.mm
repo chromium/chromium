@@ -82,22 +82,26 @@ class SearchEngineTabHelperTest : public ChromeWebTest {
 
   // Sends a message that a OSDD <link> is found in page, with |page_url| and
   // |osdd_url| as message content.
-  bool SendMessageOfOpenSearch(const GURL& page_url, const GURL& osdd_url) {
-    id result = ExecuteJavaScript([NSString
-        stringWithFormat:@"__gCrWeb.message.invokeOnHost({'command': "
-                         @"'searchEngine.openSearch', 'pageUrl' : '%s', "
-                         @"'osddUrl': '%s'}); true;",
-                         page_url.spec().c_str(), osdd_url.spec().c_str()]);
-    return [result isEqual:@YES];
+  void SendMessageOfOpenSearch(const GURL& page_url, const GURL& osdd_url) {
+    base::Value message_dict(base::Value::Type::DICTIONARY);
+    message_dict.SetKey("command", base::Value("searchEngine.openSearch"));
+    message_dict.SetKey("pageUrl", base::Value(page_url.spec().c_str()));
+    message_dict.SetKey("osddUrl", base::Value(osdd_url.spec().c_str()));
+
+    std::vector<base::Value> params;
+    params.push_back(std::move(message_dict));
+    CallJavaScriptFunction("message.invokeOnHost", params);
   }
 
   // Sends a message that |searchable_url| is generated from <form> submission.
-  bool SendMessageOfSearchableUrl(const GURL& searchable_url) {
-    id result = ExecuteJavaScript([NSString
-        stringWithFormat:@"__gCrWeb.message.invokeOnHost({'command': "
-                         @"'searchEngine.searchableUrl', 'url' : '%s'}); true;",
-                         searchable_url.spec().c_str()]);
-    return [result isEqual:@YES];
+  void SendMessageOfSearchableUrl(const GURL& searchable_url) {
+    base::Value message_dict(base::Value::Type::DICTIONARY);
+    message_dict.SetKey("command", base::Value("searchEngine.searchableUrl"));
+    message_dict.SetKey("url", base::Value(searchable_url.spec().c_str()));
+
+    std::vector<base::Value> params;
+    params.push_back(std::move(message_dict));
+    CallJavaScriptFunction("message.invokeOnHost", params);
   }
 
   net::EmbeddedTestServer server_;
@@ -117,7 +121,7 @@ TEST_F(SearchEngineTabHelperTest, AddTemplateURLByOpenSearch) {
 
   // Load an empty page, and send a message of openSearchUrl from Js.
   LoadHtml(@"<html></html>", page_url);
-  ASSERT_TRUE(SendMessageOfOpenSearch(page_url, osdd_url));
+  SendMessageOfOpenSearch(page_url, osdd_url);
 
   // Wait for TemplateURL added to TemplateURLService.
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
@@ -220,7 +224,7 @@ TEST_F(SearchEngineTabHelperIncognitoTest,
 
   // Load an empty page, and send a message of openSearchUrl from Js.
   LoadHtml(@"<html></html>", page_url);
-  ASSERT_TRUE(SendMessageOfOpenSearch(page_url, osdd_url));
+  SendMessageOfOpenSearch(page_url, osdd_url);
 
   // No new TemplateURL should be added to TemplateURLService, wait for timeout.
   ASSERT_FALSE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{

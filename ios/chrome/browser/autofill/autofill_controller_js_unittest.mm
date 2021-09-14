@@ -945,46 +945,77 @@ TEST_F(AutofillControllerJsTest, HasTagName) {
 TEST_F(AutofillControllerJsTest, CombineAndCollapseWhitespace) {
   LoadHtml(@"<html><body></body></html>");
 
-  EXPECT_NSEQ(
-      @"foobar",
-      ExecuteJavaScript([NSString
-          stringWithFormat:@"__gCrWeb.fill.combineAndCollapseWhitespace('"
-                           @"foo', 'bar', false)"]));
-  EXPECT_NSEQ(
-      @"foo bar",
-      ExecuteJavaScript([NSString
-          stringWithFormat:@"__gCrWeb.fill.combineAndCollapseWhitespace("
-                           @"'foo', 'bar', true)"]));
-  EXPECT_NSEQ(
-      @"foo bar",
-      ExecuteJavaScript([NSString
-          stringWithFormat:@"__gCrWeb.fill.combineAndCollapseWhitespace("
-                            "'foo ', 'bar', false)"]));
-  EXPECT_NSEQ(
-      @"foo bar",
-      ExecuteJavaScript([NSString
-          stringWithFormat:@"__gCrWeb.fill.combineAndCollapseWhitespace("
-                            "'foo', ' bar', false)"]));
-  EXPECT_NSEQ(
-      @"foo bar",
-      ExecuteJavaScript([NSString
-          stringWithFormat:@"__gCrWeb.fill.combineAndCollapseWhitespace("
-                            "'foo', ' bar', true)"]));
-  EXPECT_NSEQ(
-      @"foo bar",
-      ExecuteJavaScript([NSString
-          stringWithFormat:@"__gCrWeb.fill.combineAndCollapseWhitespace("
-                            "'foo  ', '  bar', false)"]));
-  EXPECT_NSEQ(
-      @"foobar ",
-      ExecuteJavaScript([NSString
-          stringWithFormat:@"__gCrWeb.fill.combineAndCollapseWhitespace("
-                            "'foo', 'bar ', false)"]));
-  EXPECT_NSEQ(
-      @" foo bar",
-      ExecuteJavaScript([NSString
-          stringWithFormat:@"__gCrWeb.fill.combineAndCollapseWhitespace("
-                            "' foo', 'bar', true)"]));
+  std::vector<base::Value> params;
+  params.push_back(base::Value("foo"));
+  params.push_back(base::Value("bar"));
+  params.push_back(base::Value(false));
+  auto result =
+      CallJavaScriptFunction("fill.combineAndCollapseWhitespace", params);
+  ASSERT_TRUE(result->is_string());
+  EXPECT_EQ("foobar", result->GetString());
+
+  params.clear();
+
+  params.push_back(base::Value("foo"));
+  params.push_back(base::Value("bar"));
+  params.push_back(base::Value(true));
+  result = CallJavaScriptFunction("fill.combineAndCollapseWhitespace", params);
+  ASSERT_TRUE(result->is_string());
+  EXPECT_EQ("foo bar", result->GetString());
+
+  params.clear();
+
+  params.push_back(base::Value("foo "));
+  params.push_back(base::Value("bar"));
+  params.push_back(base::Value(false));
+  result = CallJavaScriptFunction("fill.combineAndCollapseWhitespace", params);
+  ASSERT_TRUE(result->is_string());
+  EXPECT_EQ("foo bar", result->GetString());
+
+  params.clear();
+
+  params.push_back(base::Value("foo"));
+  params.push_back(base::Value(" bar"));
+  params.push_back(base::Value(false));
+  result = CallJavaScriptFunction("fill.combineAndCollapseWhitespace", params);
+  ASSERT_TRUE(result->is_string());
+  EXPECT_EQ("foo bar", result->GetString());
+
+  params.clear();
+
+  params.push_back(base::Value("foo"));
+  params.push_back(base::Value(" bar"));
+  params.push_back(base::Value(true));
+  result = CallJavaScriptFunction("fill.combineAndCollapseWhitespace", params);
+  ASSERT_TRUE(result->is_string());
+  EXPECT_EQ("foo bar", result->GetString());
+
+  params.clear();
+
+  params.push_back(base::Value("foo  "));
+  params.push_back(base::Value("  bar"));
+  params.push_back(base::Value(false));
+  result = CallJavaScriptFunction("fill.combineAndCollapseWhitespace", params);
+  ASSERT_TRUE(result->is_string());
+  EXPECT_EQ("foo bar", result->GetString());
+
+  params.clear();
+
+  params.push_back(base::Value("foo"));
+  params.push_back(base::Value("bar "));
+  params.push_back(base::Value(false));
+  result = CallJavaScriptFunction("fill.combineAndCollapseWhitespace", params);
+  ASSERT_TRUE(result->is_string());
+  EXPECT_EQ("foobar ", result->GetString());
+
+  params.clear();
+
+  params.push_back(base::Value(" foo"));
+  params.push_back(base::Value("bar"));
+  params.push_back(base::Value(true));
+  result = CallJavaScriptFunction("fill.combineAndCollapseWhitespace", params);
+  ASSERT_TRUE(result->is_string());
+  EXPECT_EQ(" foo bar", result->GetString());
 }
 
 void AutofillControllerJsTest::TestInputElementDataEvaluation(

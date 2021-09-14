@@ -131,6 +131,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/translate:translate",
     "//ios/chrome/test/app:test_support",
     "//ios/chrome/test/fakes:fakes",
+    "//ios/web/public/js_messaging",
     "//net:net",
   ]
 }
