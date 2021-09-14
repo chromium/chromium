@@ -9,7 +9,7 @@ mojom("mojom") {
   sources = [ "print.mojom" ]
 }
 
-if (enable_basic_printing) {
+if (enable_oop_printing) {
   mojom("printing_context") {
     if (is_linux || is_chromeos) {
       enabled_features = [ "is_linux_or_chromeos" ]

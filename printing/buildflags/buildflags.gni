@@ -36,3 +36,9 @@ declare_args() {
   # TODO(crbug.com/226176): Remove this after CUPS PPD API calls are removed.
   use_cups_ipp = use_cups && !is_linux
 }
+
+declare_args() {
+  # Enable out-of-process printing.  For now this matches the same platforms as
+  # those which support print preview.
+  enable_oop_printing = enable_print_preview
+}
