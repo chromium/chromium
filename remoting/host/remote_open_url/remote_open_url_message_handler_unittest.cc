@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/remote_open_url_message_handler.h"
+#include "remoting/host/remote_open_url/remote_open_url_message_handler.h"
 
 #include <cstdint>
 #include <memory>

@@ -20,7 +20,7 @@
 #include "remoting/host/host_window_proxy.h"
 #include "remoting/host/input_injector.h"
 #include "remoting/host/input_monitor/local_input_monitor.h"
-#include "remoting/host/remote_open_url_util.h"
+#include "remoting/host/remote_open_url/remote_open_url_util.h"
 #include "remoting/host/resizing_host_observer.h"
 #include "remoting/host/screen_controls.h"
 #include "remoting/protocol/capability_names.h"

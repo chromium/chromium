@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_URL_FORWARDER_CONFIGURATOR_LINUX_H_
-#define REMOTING_HOST_URL_FORWARDER_CONFIGURATOR_LINUX_H_
+#ifndef REMOTING_HOST_REMOTE_OPEN_URL_URL_FORWARDER_CONFIGURATOR_LINUX_H_
+#define REMOTING_HOST_REMOTE_OPEN_URL_URL_FORWARDER_CONFIGURATOR_LINUX_H_
 
 #include "base/memory/ref_counted.h"
 #include "base/sequenced_task_runner.h"
-#include "remoting/host/url_forwarder_configurator.h"
+#include "remoting/host/remote_open_url/url_forwarder_configurator.h"
 
 namespace remoting {
 
@@ -30,4 +30,4 @@ class UrlForwarderConfiguratorLinux final : public UrlForwarderConfigurator {
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_URL_FORWARDER_CONFIGURATOR_LINUX_H_
+#endif  // REMOTING_HOST_REMOTE_OPEN_URL_URL_FORWARDER_CONFIGURATOR_LINUX_H_

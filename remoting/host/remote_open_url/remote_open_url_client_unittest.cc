@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/remote_open_url_client.h"
+#include "remoting/host/remote_open_url/remote_open_url_client.h"
 
 #include <memory>
 
@@ -16,7 +16,6 @@
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "remoting/host/mojo_ipc/mojo_ipc_server.h"
 #include "remoting/host/mojo_ipc/mojo_ipc_test_util.h"
-#include "remoting/host/mojom/remote_url_opener.mojom-shared.h"
 #include "remoting/host/mojom/remote_url_opener.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

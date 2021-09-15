@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/url_forwarder_configurator.h"
+#include "remoting/host/remote_open_url/url_forwarder_configurator.h"
 
 #include "base/macros.h"
 #include "build/build_config.h"

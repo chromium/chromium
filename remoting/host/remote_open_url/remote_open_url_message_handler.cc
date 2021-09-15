@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/remote_open_url_message_handler.h"
+#include "remoting/host/remote_open_url/remote_open_url_message_handler.h"
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "remoting/base/compound_buffer.h"
 #include "remoting/host/mojo_ipc/mojo_ipc_server.h"
-#include "remoting/host/remote_open_url_constants.h"
+#include "remoting/host/remote_open_url/remote_open_url_constants.h"
 #include "remoting/protocol/message_serialization.h"
 #include "url/gurl.h"
 

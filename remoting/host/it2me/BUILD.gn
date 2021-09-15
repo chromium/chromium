@@ -294,6 +294,7 @@ if (!is_chromeos_ash && enable_remoting_host) {
         ":common",
         "//remoting/host",
         "//remoting/host:host_main_headers",
+        "//remoting/host:resources",
         "//remoting/host/native_messaging",
         "//remoting/proto",
         "//third_party/webrtc_overrides:webrtc_component",
@@ -313,9 +314,9 @@ if (!is_chromeos_ash && enable_remoting_host) {
           "//remoting/base:base",
           "//remoting/base:breakpad",
           "//remoting/host:base",
-          "//remoting/host:host_settings",
           "//remoting/host:logging",
           "//remoting/host:remoting_infoplist_strings",
+          "//remoting/host:settings",
           "//remoting/host/mac:permission_checking",
           "//remoting/resources:copy_locales",
         ]
@@ -332,7 +333,7 @@ if (!is_chromeos_ash && enable_remoting_host) {
           "//remoting/base:base",
           "//remoting/base:breakpad",
           "//remoting/host:base",
-          "//remoting/host:host_settings",
+          "//remoting/host:settings",
           "//ui/events/platform/x11:x11",
         ]
       }

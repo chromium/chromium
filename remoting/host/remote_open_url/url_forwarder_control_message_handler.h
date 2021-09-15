@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_URL_FORWARDER_CONTROL_MESSAGE_HANDLER_H_
-#define REMOTING_HOST_URL_FORWARDER_CONTROL_MESSAGE_HANDLER_H_
+#ifndef REMOTING_HOST_REMOTE_OPEN_URL_URL_FORWARDER_CONTROL_MESSAGE_HANDLER_H_
+#define REMOTING_HOST_REMOTE_OPEN_URL_URL_FORWARDER_CONTROL_MESSAGE_HANDLER_H_
 
 #include "remoting/protocol/named_message_pipe_handler.h"
 
@@ -50,4 +50,4 @@ class UrlForwarderControlMessageHandler final
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_URL_FORWARDER_CONTROL_MESSAGE_HANDLER_H_
+#endif  // REMOTING_HOST_REMOTE_OPEN_URL_URL_FORWARDER_CONTROL_MESSAGE_HANDLER_H_

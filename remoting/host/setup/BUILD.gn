@@ -34,6 +34,7 @@ source_set("common") {
     "//remoting/base:authorization",
     "//remoting/base:base",
     "//remoting/host:common",
+    "//remoting/host:resources",
     "//remoting/host/native_messaging",
     "//remoting/protocol:protocol",
     "//services/network/public/cpp",

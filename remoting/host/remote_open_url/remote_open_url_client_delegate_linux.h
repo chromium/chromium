@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_REMOTE_OPEN_URL_CLIENT_DELEGATE_LINUX_H_
-#define REMOTING_HOST_REMOTE_OPEN_URL_CLIENT_DELEGATE_LINUX_H_
+#ifndef REMOTING_HOST_REMOTE_OPEN_URL_REMOTE_OPEN_URL_CLIENT_DELEGATE_LINUX_H_
+#define REMOTING_HOST_REMOTE_OPEN_URL_REMOTE_OPEN_URL_CLIENT_DELEGATE_LINUX_H_
 
 #include <memory>
 
-#include "remoting/host/remote_open_url_client.h"
+#include "remoting/host/remote_open_url/remote_open_url_client.h"
 
 namespace base {
 class Environment;
@@ -32,4 +32,4 @@ class RemoteOpenUrlClientDelegateLinux final
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_REMOTE_OPEN_URL_CLIENT_DELEGATE_LINUX_H_
+#endif  // REMOTING_HOST_REMOTE_OPEN_URL_REMOTE_OPEN_URL_CLIENT_DELEGATE_LINUX_H_

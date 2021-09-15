@@ -5,10 +5,10 @@
 #ifndef REMOTING_HOST_IPC_URL_FORWARDER_CONFIGURATOR_H_
 #define REMOTING_HOST_IPC_URL_FORWARDER_CONFIGURATOR_H_
 
-#include "base/memory/scoped_refptr.h"
-#include "remoting/host/url_forwarder_configurator.h"
+#include "remoting/host/remote_open_url/url_forwarder_configurator.h"
 
 #include "base/callback.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace remoting {
 

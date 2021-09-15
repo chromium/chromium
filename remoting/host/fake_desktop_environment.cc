@@ -10,11 +10,11 @@
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/desktop_capturer_proxy.h"
 #include "remoting/host/fake_keyboard_layout_monitor.h"
-#include "remoting/host/fake_url_forwarder_configurator.h"
 #include "remoting/host/file_transfer/file_operations.h"
 #include "remoting/host/input_injector.h"
 #include "remoting/host/keyboard_layout_monitor.h"
-#include "remoting/host/url_forwarder_configurator.h"
+#include "remoting/host/remote_open_url/fake_url_forwarder_configurator.h"
+#include "remoting/host/remote_open_url/url_forwarder_configurator.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/protocol/fake_desktop_capturer.h"
 

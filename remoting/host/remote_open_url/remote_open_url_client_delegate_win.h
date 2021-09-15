@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_REMOTE_OPEN_URL_CLIENT_DELEGATE_WIN_H_
-#define REMOTING_HOST_REMOTE_OPEN_URL_CLIENT_DELEGATE_WIN_H_
+#ifndef REMOTING_HOST_REMOTE_OPEN_URL_REMOTE_OPEN_URL_CLIENT_DELEGATE_WIN_H_
+#define REMOTING_HOST_REMOTE_OPEN_URL_REMOTE_OPEN_URL_CLIENT_DELEGATE_WIN_H_
 
 #include "base/win/scoped_com_initializer.h"
-#include "remoting/host/remote_open_url_client.h"
+#include "remoting/host/remote_open_url/remote_open_url_client.h"
 
 namespace remoting {
 
@@ -27,4 +27,4 @@ class RemoteOpenUrlClientDelegateWin final
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_REMOTE_OPEN_URL_CLIENT_DELEGATE_WIN_H_
+#endif  // REMOTING_HOST_REMOTE_OPEN_URL_REMOTE_OPEN_URL_CLIENT_DELEGATE_WIN_H_

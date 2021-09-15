@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/remote_open_url_client.h"
+#include "remoting/host/remote_open_url/remote_open_url_client.h"
 
 #include "base/bind.h"
 #include "base/logging.h"
@@ -12,12 +12,12 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "remoting/base/logging.h"
-#include "remoting/host/remote_open_url_constants.h"
+#include "remoting/host/remote_open_url/remote_open_url_constants.h"
 
 #if defined(OS_LINUX)
-#include "remoting/host/remote_open_url_client_delegate_linux.h"
+#include "remoting/host/remote_open_url/remote_open_url_client_delegate_linux.h"
 #elif defined(OS_WIN)
-#include "remoting/host/remote_open_url_client_delegate_win.h"
+#include "remoting/host/remote_open_url/remote_open_url_client_delegate_win.h"
 #endif
 
 namespace remoting {

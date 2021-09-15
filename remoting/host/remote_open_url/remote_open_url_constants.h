@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_REMOTE_OPEN_URL_CONSTANTS_H_
-#define REMOTING_HOST_REMOTE_OPEN_URL_CONSTANTS_H_
+#ifndef REMOTING_HOST_REMOTE_OPEN_URL_REMOTE_OPEN_URL_CONSTANTS_H_
+#define REMOTING_HOST_REMOTE_OPEN_URL_REMOTE_OPEN_URL_CONSTANTS_H_
 
 #include "build/build_config.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
@@ -23,4 +23,4 @@ extern const wchar_t kUrlForwarderProgId[];
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_REMOTE_OPEN_URL_CONSTANTS_H_
+#endif  // REMOTING_HOST_REMOTE_OPEN_URL_REMOTE_OPEN_URL_CONSTANTS_H_

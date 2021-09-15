@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/url_forwarder_configurator_win.h"
+#include "remoting/host/remote_open_url/url_forwarder_configurator_win.h"
 
 #include <windows.h>
 #include <wtsapi32.h>

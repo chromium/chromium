@@ -27,7 +27,7 @@
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/windows_types.h"
 #include "remoting/base/logging.h"
-#include "remoting/host/remote_open_url_constants.h"
+#include "remoting/host/remote_open_url/remote_open_url_constants.h"
 #include "remoting/host/switches.h"
 #include "remoting/host/user_setting_keys.h"
 #include "remoting/host/user_settings.h"

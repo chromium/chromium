@@ -33,7 +33,7 @@
 #include "remoting/host/ipc_mouse_cursor_monitor.h"
 #include "remoting/host/ipc_screen_controls.h"
 #include "remoting/host/ipc_video_frame_capturer.h"
-#include "remoting/host/remote_open_url_util.h"
+#include "remoting/host/remote_open_url/remote_open_url_util.h"
 #include "remoting/proto/audio.pb.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/proto/event.pb.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/remote_open_url_main.h"
+#include "remoting/host/remote_open_url/remote_open_url_main.h"
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
@@ -16,7 +16,7 @@
 #include "remoting/base/logging.h"
 #include "remoting/host/host_settings.h"
 #include "remoting/host/logging.h"
-#include "remoting/host/remote_open_url_client.h"
+#include "remoting/host/remote_open_url/remote_open_url_client.h"
 #include "remoting/host/resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"

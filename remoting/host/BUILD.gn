@@ -35,7 +35,7 @@ group("all") {
     ]
 
     if (enable_me2me_host && (is_linux || is_win)) {
-      deps += [ "//remoting/host:remote_open_url" ]
+      deps += [ "//remoting/host/remote_open_url" ]
     }
   }
 }
@@ -84,6 +84,7 @@ source_set("host_main_headers") {
     "//remoting/host/linux:remoting_native_messaging_host",
     "//remoting/host/mac:remoting_native_messaging_host",
     "//remoting/host/mac:remoting_native_messaging_host_executable",
+    "//remoting/host/remote_open_url:remote_open_url_main_headers",
     "//remoting/host/security_key:remote_security_key_main_headers",
     "//remoting/host/webauthn:remote_webauthn_main_headers",
     "//remoting/host/win:remoting_console",
@@ -190,22 +191,14 @@ source_set("clipboard") {
   }
 }
 
-# A source set to be shared by the :common and remoting/host/win.
-source_set("remote_open_url_support") {
-  sources = [
-    "remote_open_url_constants.cc",
-    "remote_open_url_constants.h",
-  ]
-  deps = [
-    "//base",
-    "//mojo/public/cpp/platform",
-  ]
-}
-source_set("host_settings") {
+source_set("settings") {
   sources = [
     "host_setting_keys.h",
     "host_settings.cc",
     "host_settings.h",
+    "user_setting_keys.h",
+    "user_settings.cc",
+    "user_settings.h",
   ]
   deps = [
     "//base",
@@ -216,6 +209,8 @@ source_set("host_settings") {
     sources += [
       "host_settings_win.cc",
       "host_settings_win.h",
+      "user_settings_win.cc",
+      "user_settings_win.h",
     ]
   } else {
     sources += [
@@ -239,6 +234,26 @@ source_set("host_extension") {
     "host_extension.h",
     "host_extension_session.h",
   ]
+}
+
+source_set("resources") {
+  sources = [ "resources.h" ]
+  deps = [
+    "//base",
+    "//ui/base",
+  ]
+
+  if (is_linux || is_chromeos) {
+    sources += [ "resources_linux.cc" ]
+  }
+
+  if (is_mac) {
+    sources += [ "resources_mac.cc" ]
+  }
+
+  if (is_win) {
+    sources += [ "resources_win.cc" ]
+  }
 }
 
 # This must be a static library instead of a source set because
@@ -380,17 +395,10 @@ static_library("common") {
     "register_support_host_request.h",
     "remote_input_filter.cc",
     "remote_input_filter.h",
-    "remote_open_url_client.cc",
-    "remote_open_url_client.h",
-    "remote_open_url_message_handler.cc",
-    "remote_open_url_message_handler.h",
-    "remote_open_url_util.cc",
-    "remote_open_url_util.h",
     "remoting_register_support_host_request.cc",
     "remoting_register_support_host_request.h",
     "resizing_host_observer.cc",
     "resizing_host_observer.h",
-    "resources.h",
     "screen_resolution.cc",
     "server_log_entry_host.cc",
     "server_log_entry_host.h",
@@ -406,14 +414,7 @@ static_library("common") {
     "token_validator_base.h",
     "token_validator_factory_impl.cc",
     "token_validator_factory_impl.h",
-    "url_forwarder_configurator.cc",
-    "url_forwarder_configurator.h",
-    "url_forwarder_control_message_handler.cc",
-    "url_forwarder_control_message_handler.h",
     "usage_stats_consent.h",
-    "user_setting_keys.h",
-    "user_settings.cc",
-    "user_settings.h",
     "xmpp_register_support_host_request.cc",
     "xmpp_register_support_host_request.h",
     "xsession_chooser_ui.inc",
@@ -435,8 +436,8 @@ static_library("common") {
     ":client_session_control",
     ":clipboard",
     ":host_main_headers",
-    ":host_settings",
-    ":remote_open_url_support",
+    ":resources",
+    ":settings",
     "//base:i18n",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
@@ -451,6 +452,7 @@ static_library("common") {
     "//remoting/host/input_monitor",
     "//remoting/host/mojo_ipc",
     "//remoting/host/mojom",
+    "//remoting/host/remote_open_url:common",
     "//remoting/host/security_key",
     "//remoting/host/webauthn",
     "//remoting/proto/ftl/v1:ftl_messages",
@@ -532,10 +534,6 @@ static_library("common") {
     ]
   }
 
-  if (is_linux || is_chromeos) {
-    sources += [ "resources_linux.cc" ]
-  }
-
   if (is_linux && !is_chromeos_lacros) {
     sources += [
       "audio_capturer_linux.cc",
@@ -546,10 +544,6 @@ static_library("common") {
       "keyboard_layout_monitor_linux.cc",
       "pairing_registry_delegate_linux.cc",
       "pairing_registry_delegate_linux.h",
-      "remote_open_url_client_delegate_linux.cc",
-      "remote_open_url_client_delegate_linux.h",
-      "url_forwarder_configurator_linux.cc",
-      "url_forwarder_configurator_linux.h",
       "xsession_chooser_linux.cc",
     ]
   }
@@ -593,7 +587,6 @@ static_library("common") {
       "input_injector_mac.cc",
       "keyboard_layout_monitor_mac.cc",
       "pairing_registry_delegate_mac.cc",
-      "resources_mac.cc",
       "usage_stats_consent_mac.cc",
     ]
     frameworks = [
@@ -627,17 +620,10 @@ static_library("common") {
       "keyboard_layout_monitor_win.cc",
       "pairing_registry_delegate_win.cc",
       "pairing_registry_delegate_win.h",
-      "remote_open_url_client_delegate_win.cc",
-      "remote_open_url_client_delegate_win.h",
-      "resources_win.cc",
       "sas_injector_win.cc",
       "touch_injector_win.cc",
       "touch_injector_win.h",
-      "url_forwarder_configurator_win.cc",
-      "url_forwarder_configurator_win.h",
       "usage_stats_consent_win.cc",
-      "user_settings_win.cc",
-      "user_settings_win.h",
     ]
     libs += [
       "crypt32.lib",
@@ -671,8 +657,6 @@ static_library("test_support") {
     "fake_keyboard_layout_monitor.h",
     "fake_mouse_cursor_monitor.cc",
     "fake_mouse_cursor_monitor.h",
-    "fake_url_forwarder_configurator.cc",
-    "fake_url_forwarder_configurator.h",
     "host_mock_objects.cc",
     "host_mock_objects.h",
   ]
@@ -684,6 +668,8 @@ static_library("test_support") {
     ":client_session_control",
     "//remoting/codec:encoder",
     "//remoting/host/file_transfer:common",
+    "//remoting/host/remote_open_url:common",
+    "//remoting/host/remote_open_url:test_support",
     "//remoting/host/security_key:security_key",
     "//remoting/proto",
     "//remoting/protocol:protocol",
@@ -741,8 +727,6 @@ source_set("unit_tests") {
     "policy_watcher_unittest.cc",
     "process_stats_sender_unittest.cc",
     "remote_input_filter_unittest.cc",
-    "remote_open_url_client_unittest.cc",
-    "remote_open_url_message_handler_unittest.cc",
     "remoting_register_support_host_request_unittest.cc",
     "resizing_host_observer_unittest.cc",
     "resources_unittest.cc",
@@ -767,6 +751,7 @@ source_set("unit_tests") {
     ":base",
     ":client_session_control",
     ":common",
+    ":resources",
     ":test_support",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
@@ -776,11 +761,11 @@ source_set("unit_tests") {
     "//remoting/host/input_monitor:input_monitor",
     "//remoting/host/it2me:common",
     "//remoting/host/it2me:constants",
-    "//remoting/host/mojo_ipc",
-    "//remoting/host/mojo_ipc:test_support",
     "//remoting/host/mojo_ipc:unit_tests",
     "//remoting/host/mojom",
     "//remoting/host/native_messaging",
+    "//remoting/host/remote_open_url:test_support",
+    "//remoting/host/remote_open_url:unit_tests",
     "//remoting/host/security_key:unit_tests",
     "//remoting/host/setup:common",
     "//remoting/proto",
@@ -983,7 +968,7 @@ if (enable_me2me_host) {
 
     deps = [
       ":base",
-      ":host_settings",
+      ":settings",
       "//base",
       "//base:i18n",
       "//components/policy/core/common",
@@ -1047,6 +1032,7 @@ if (enable_me2me_host) {
         ":base",
         ":common",
         ":host_main_headers",
+        ":resources",
         "//base",
         "//base:debugging_buildflags",
         "//mojo/core/embedder:embedder",
@@ -1072,6 +1058,7 @@ if (enable_me2me_host) {
           ":common",
           ":host_main_headers",
           ":remoting_me2me_host_static",
+          ":resources",
           "//base",
           "//mojo/core/embedder:embedder",
           "//remoting/base:breakpad",
@@ -1110,44 +1097,6 @@ if (enable_me2me_host) {
     }
   } else {
     group("remoting_me2me_host_archive") {
-    }
-  }
-}
-
-if (enable_me2me_host && (is_linux || is_win)) {
-  executable("remote_open_url") {
-    sources = [ "remote_open_url_entry_point.cc" ]
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
-    if (is_win) {
-      sources += [ "$root_gen_dir/remoting/version.rc" ]
-
-      defines =
-          host_predefines + [ "REMOTING_HOST_BINARY=BINARY_REMOTE_OPEN_URL" ]
-
-      deps = [
-        "//build/win:default_exe_manifest",
-        "//remoting/host/win:remoting_core",
-        "//remoting/host/win:remoting_windows_resources",
-      ]
-    } else {
-      sources += [
-        "remote_open_url_main.cc",
-        "remote_open_url_main.h",
-      ]
-      deps = [
-        ":common",
-        ":host_main_headers",
-        ":host_settings",
-        ":logging",
-        ":remoting_me2me_host_static",
-        "//base",
-        "//base:i18n",
-        "//mojo/core/embedder:embedder",
-        "//remoting/host/mojom",
-        "//ui/base",
-        "//url",
-      ]
     }
   }
 }

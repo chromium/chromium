@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_FAKE_URL_FORWARDER_CONFIGURATOR_H_
-#define REMOTING_HOST_FAKE_URL_FORWARDER_CONFIGURATOR_H_
+#ifndef REMOTING_HOST_REMOTE_OPEN_URL_FAKE_URL_FORWARDER_CONFIGURATOR_H_
+#define REMOTING_HOST_REMOTE_OPEN_URL_FAKE_URL_FORWARDER_CONFIGURATOR_H_
 
-#include "remoting/host/url_forwarder_configurator.h"
+#include "remoting/host/remote_open_url/url_forwarder_configurator.h"
 
 namespace remoting {
 
@@ -26,4 +26,4 @@ class FakeUrlForwarderConfigurator final : public UrlForwarderConfigurator {
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_FAKE_URL_FORWARDER_CONFIGURATOR_H_
+#endif  // REMOTING_HOST_REMOTE_OPEN_URL_FAKE_URL_FORWARDER_CONFIGURATOR_H_
