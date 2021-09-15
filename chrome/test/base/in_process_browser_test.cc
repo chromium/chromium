@@ -637,7 +637,7 @@ void InProcessBrowserTest::PreRunTestOnMainThread() {
 
   SelectFirstBrowser();
   if (browser_) {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // There are cases where windows get created maximized by default.
     if (browser_->window()->IsMaximized())
       browser_->window()->Restore();
@@ -645,6 +645,19 @@ void InProcessBrowserTest::PreRunTestOnMainThread() {
     auto* tab = browser_->tab_strip_model()->GetActiveWebContents();
     content::WaitForLoadStop(tab);
     SetInitialWebContents(tab);
+
+    // For other platforms, they install ui controls in
+    // interactive_ui_tests_main.cc. We can't add it there because we have no
+    // WindowTreeHost initialized at the test runner level.
+    // The ozone implementation of CreateUIControlsAura differs from other
+    // implementation in that it requires a WindowTreeHost. Thus, it must be
+    // initialized here rather than earlier.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    BrowserWindow* window = browser_->window();
+    CHECK(window);
+    ui_controls::InstallUIControlsAura(
+        aura::test::CreateUIControlsAura(window->GetNativeWindow()->GetHost()));
+#endif
   }
 
 #if !defined(OS_ANDROID)

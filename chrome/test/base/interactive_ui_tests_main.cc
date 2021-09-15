@@ -66,9 +66,16 @@ class InteractiveUITestSuite : public ChromeTestSuite {
       ui::OzonePlatform::InitParams params;
       params.single_process = true;
       ui::OzonePlatform::InitializeForUI(params);
+
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+      // TODO(1134495): when ozone/wayland implements ui controls test helper,
+      // make lacros also use the ui controls created below.
+      //
+      // ui controls implementation for Ozone desktop.
       ui_controls::InstallUIControlsAura(
           views::test::CreateUIControlsDesktopAuraOzone());
       return;
+#endif
     }
 #endif
 #if defined(USE_X11)

@@ -1,33 +1,54 @@
 # TODO(crbug.com/1111979) Enable all tests on lacros.
--AppWindowTest.InitAlwaysOnTopToFullscreen
--AppWindowTest.InitFullscreenAndAlwaysOnTop
--AppWindowTest.InitFullscreenToAlwaysOnTop
--AppWindowTest.RuntimeAlwaysOnTopToFullscreen
--AppWindowTest.RuntimeFullscreenToAlwaysOnTop
+-AppWindowInteractiveTest.TestFullscreen
+-AppWindowTest*
 -BookmarkBarViewTest*
+-BrowserActionInteractiveTest.OpenPopupOnPopup
+-BrowserActionInteractiveTest.TestOpenPopup
+-BrowserActionInteractiveTest.TestOpenPopupIncognito
+-BrowserFocusTest.BackgroundBrowserDontStealFocus
 -ChromeVisibilityObserverInteractiveTest.VisibilityTest
 -ClipboardTest/PlatformClipboardTest.ReadAvailablePlatformSpecificFormatNamesTest
 -CrossSiteSubframe/DragAndDropBrowserTest*
--DesktopWidgetTestInteractive.DesktopNativeWidgetWithModalTransientChild
+-DesktopWidgetTestInteractive*
+-DevToolsManagerDelegateTest*
+-ExtensionApiTest.WindowOpen
 -ExtensionApiTest.WindowOpenFocus
+-ExtensionPointerLockTest.ExtensionPointerLockAccessPass
+-GlobalCommandsApiTest.GlobalCommand
+-KeyboardLockInteractiveBrowserTest.ActiveWithSomeKeysLocked
+-KeyboardLockInteractiveBrowserTest.RequestedButNotActive
+-MenuControllerMnemonicTestMnemonicMatch.MnemonicMatch
+-MenuControllerMnemonicTestNoMatch.NoMatch
+-MenuControllerMnemonicTestTitleMatch.TitleMatch
+-MenuControllerUITest.TestMouseOverShownMenu
+-MenuItemViewTestBasic*
+-MenuItemViewTestInsert*
+-MenuItemViewTestRemove*
+-MenuModelAdapterTest.RebuildMenu
+-MenuViewDragAndDropForDropCancel.MenuViewCancelsForOwnDrag
+-MenuViewDragAndDropForDropStayOpen.MenuViewStaysOpenForNestedDrag
 -MenuViewDragAndDropTestNestedDrag.MenuViewDragAndDropNestedDrag
 -MenuViewDragAndDropTestTestInMenuDrag.TestInMenuDrag
+-NotificationsTest.TestShouldDisplayMultiFullscreen
+-OmniboxViewTest.Paste
 -OmniboxViewViewsTest.SelectionClipboard
+-PopupBlockerBrowserTest.ModalPopUnder
 -SameSiteSubframe*
+-SettingsUIV3InteractiveTest*
+-SitePerProcessInteractiveBrowserTest.ShowAndHideDatePopupInOOPIFMultipleTimes
 -SitePerProcessInteractiveBrowserTest.TabAndMouseFocusNavigation
 -StartupBrowserCreatorTest.LastUsedProfileActivated
 -TabDragging*
--TabMetricsLoggerTest.CreateWindowFeaturesTestWindowActivation
--WidgetInputMethodInteractiveTest.Activation
--WidgetInputMethodInteractiveTest.OneWindow
--WidgetInputMethodInteractiveTest.TwoWindows
+-TabMetricsLoggerTest*
+-WidgetCaptureTest.SystemModalWindowReleasesCapture
+-WidgetInputMethodInteractiveTest*
 
 # TODO(https://crbug.com/991596): Setup guest profiles correctly for tests.
 # Lacros has restrictions on the main profile (it must match the device account
 # profile) so this test doesn't pass.
 -AllGuestProfileTypes/GuestToolbarViewTest.*
 
-# TODO(crbug.com/1122089):
+# crbug.com/1121486
 # Following tests were flaky. We disable them first until we have time to investigate.
 -BrowserCommandControllerInteractiveTest.ShortcutsShouldTakeEffectInBrowserFullscreen
 -ExtensionApiTest.DisplayModeWindowIsInFullscreen
@@ -37,21 +58,3 @@
 -PlatformNotificationServiceBrowserTest.TestShouldDisplayMultiFullscreen
 -PopupBlockerBrowserTest.BlockWebContentsCreationIncognito
 -NotificationsApiTest*
-
-# TODO(crbug.com/1195712): Implement the feature for Wayland.
--GlobalCommandsApiTest.GlobalCommand
-
-# TODO(crbug.com/1208111): Flaky test.
--MenuControllerUITest.TestMouseOverShownMenu
-
-# TODO(b/181803566): Fix modifier key interactions
--All/ActionCommandsApiTest.TriggeringCommandTriggersListener*
--All/ActionCommandsApiTest.TriggeringCommandTriggersPopup*
--CommandsApiTest.ChromeOSConversions
--CommandsApiTest.DontOverwriteSystemShortcuts
--CommandsApiTest.PageActionKeyUpdated
--CommandsApiTest.UnpinnedPageActionTriggers
--SameSiteSubframe/DragAndDropBrowserTest.DragUpdateScreenCoordinates/0
--ExtensionsToolbarInteractiveUiTest.DoubleClickToolbarActionToClose
--OmniboxViewViewsTest.TextElideStatus
--TabDragCaptureLostTest.ReleaseCaptureOnDrag

@@ -19,7 +19,6 @@ class FakeAshTestChromeBrowserMainExtraParts
       const FakeAshTestChromeBrowserMainExtraParts&) = delete;
   ~FakeAshTestChromeBrowserMainExtraParts() override;
 
-  void PreBrowserStart() override;
   void PostBrowserStart() override;
 };
 

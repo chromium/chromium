@@ -3,10 +3,7 @@
 // found in the LICENSE file.
 
 #include "fake_ash_test_chrome_browser_main_extra_parts.h"
-
-#include "ash/test/ui_controls_factory_ash.h"
 #include "chromeos/services/machine_learning/public/cpp/fake_service_connection.h"
-#include "ui/base/test/ui_controls.h"
 
 namespace test {
 
@@ -15,11 +12,6 @@ FakeAshTestChromeBrowserMainExtraParts::
 
 FakeAshTestChromeBrowserMainExtraParts::
     ~FakeAshTestChromeBrowserMainExtraParts() = default;
-
-void FakeAshTestChromeBrowserMainExtraParts::PreBrowserStart() {
-  // These are used by exo's weston-test protocol for event injection.
-  ui_controls::InstallUIControlsAura(ash::test::CreateAshUIControls());
-}
 
 void FakeAshTestChromeBrowserMainExtraParts::PostBrowserStart() {
   // Fake ML service is needed because ml service client library
