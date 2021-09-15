@@ -77,7 +77,6 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.CCT_RESIZABLE_90_MAXIMUM_HEIGHT);
                 add(ChromeFeatureList.CCT_RESIZABLE_FOR_FIRST_PARTIES);
                 add(ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES);
-                add(ChromeFeatureList.CLIPBOARD_SUGGESTION_CONTENT_HIDDEN);
                 add(ChromeFeatureList.CLOSE_TAB_SUGGESTIONS);
                 add(ChromeFeatureList.CRITICAL_PERSISTED_TAB_DATA);
                 add(ChromeFeatureList.COMMAND_LINE_ON_NON_ROOTED);

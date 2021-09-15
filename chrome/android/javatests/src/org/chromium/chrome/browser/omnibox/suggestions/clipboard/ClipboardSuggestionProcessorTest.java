@@ -31,8 +31,6 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
@@ -96,8 +94,23 @@ public class ClipboardSuggestionProcessorTest {
         mContentTextView.setId(R.id.line_2);
         mRootView.addView(mTitleTextView);
         mRootView.addView(mContentTextView);
-        CachedFeatureFlags.setForTesting(
-                ChromeFeatureList.CLIPBOARD_SUGGESTION_CONTENT_HIDDEN, false);
+    }
+
+    /** Create clipboard suggestion for test, and click the reveal button. */
+    private void createClipboardSuggestionAndClickReveal(int type, GURL url) {
+        createClipboardSuggestion(type, url, null);
+
+        // Click reveal button
+        mProcessor.revealButtonClickHandler(mSuggestion, mModel);
+    }
+
+    /** Create clipboard suggestion for test, and click the reveal button. */
+    private void createClipboardSuggestionAndClickReveal(
+            int type, GURL url, byte[] clipboardImageData) {
+        createClipboardSuggestion(type, url, clipboardImageData);
+
+        // Click reveal button
+        mProcessor.revealButtonClickHandler(mSuggestion, mModel);
     }
 
     /** Create clipboard suggestion for test. */
@@ -136,24 +149,10 @@ public class ClipboardSuggestionProcessorTest {
     @Test
     @SmallTest
     @UiThreadTest
-    public void clipboardSuggestion_doesNotRefine() {
-        createClipboardSuggestion(OmniboxSuggestionType.CLIPBOARD_URL, GURL.emptyGURL());
-        Assert.assertNull(mModel.get(BaseSuggestionViewProperties.ACTIONS));
-
-        createClipboardSuggestion(OmniboxSuggestionType.CLIPBOARD_TEXT, GURL.emptyGURL());
-        Assert.assertNull(mModel.get(BaseSuggestionViewProperties.ACTIONS));
-
-        createClipboardSuggestion(OmniboxSuggestionType.CLIPBOARD_IMAGE, GURL.emptyGURL());
-        Assert.assertNull(mModel.get(BaseSuggestionViewProperties.ACTIONS));
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
     public void clipboardSuggestion_showsFaviconWhenAvailable() {
         final ArgumentCaptor<LargeIconCallback> callback =
                 ArgumentCaptor.forClass(LargeIconCallback.class);
-        createClipboardSuggestion(OmniboxSuggestionType.CLIPBOARD_URL, TEST_URL);
+        createClipboardSuggestionAndClickReveal(OmniboxSuggestionType.CLIPBOARD_URL, TEST_URL);
         SuggestionDrawableState icon1 = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon1);
 
@@ -172,7 +171,7 @@ public class ClipboardSuggestionProcessorTest {
     public void clipboardSuggestion_showsFallbackIconWhenNoFaviconIsAvailable() {
         final ArgumentCaptor<LargeIconCallback> callback =
                 ArgumentCaptor.forClass(LargeIconCallback.class);
-        createClipboardSuggestion(OmniboxSuggestionType.CLIPBOARD_URL, TEST_URL);
+        createClipboardSuggestionAndClickReveal(OmniboxSuggestionType.CLIPBOARD_URL, TEST_URL);
         SuggestionDrawableState icon1 = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon1);
 
@@ -191,14 +190,15 @@ public class ClipboardSuggestionProcessorTest {
         final ArgumentCaptor<LargeIconCallback> callback =
                 ArgumentCaptor.forClass(LargeIconCallback.class);
         // URL
-        createClipboardSuggestion(OmniboxSuggestionType.CLIPBOARD_URL, ARABIC_URL);
+        createClipboardSuggestionAndClickReveal(OmniboxSuggestionType.CLIPBOARD_URL, ARABIC_URL);
         Assert.assertFalse(mModel.get(SuggestionViewProperties.IS_SEARCH_SUGGESTION));
         verify(mIconBridge).getLargeIconForUrl(eq(ARABIC_URL), anyInt(), callback.capture());
         callback.getValue().onLargeIconAvailable(null, 0, false, 0);
         Assert.assertEquals(TextView.TEXT_DIRECTION_LTR, mLastSetTextDirection);
 
         // Text
-        createClipboardSuggestion(OmniboxSuggestionType.CLIPBOARD_TEXT, GURL.emptyGURL());
+        createClipboardSuggestionAndClickReveal(
+                OmniboxSuggestionType.CLIPBOARD_TEXT, GURL.emptyGURL());
         Assert.assertEquals(TextView.TEXT_DIRECTION_INHERIT, mLastSetTextDirection);
     }
 
@@ -209,7 +209,7 @@ public class ClipboardSuggestionProcessorTest {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Assert.assertTrue(mBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos));
         byte[] bitmapData = baos.toByteArray();
-        createClipboardSuggestion(
+        createClipboardSuggestionAndClickReveal(
                 OmniboxSuggestionType.CLIPBOARD_IMAGE, GURL.emptyGURL(), bitmapData);
         SuggestionDrawableState icon = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon);
@@ -233,7 +233,7 @@ public class ClipboardSuggestionProcessorTest {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Assert.assertTrue(largeBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos));
         byte[] bitmapData = baos.toByteArray();
-        createClipboardSuggestion(
+        createClipboardSuggestionAndClickReveal(
                 OmniboxSuggestionType.CLIPBOARD_IMAGE, GURL.emptyGURL(), bitmapData);
         SuggestionDrawableState icon = mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(icon);
@@ -246,8 +246,6 @@ public class ClipboardSuggestionProcessorTest {
     @SmallTest
     @UiThreadTest
     public void clipboardSuggestion_revealButton() {
-        CachedFeatureFlags.setForTesting(
-                ChromeFeatureList.CLIPBOARD_SUGGESTION_CONTENT_HIDDEN, true);
         createClipboardSuggestion(OmniboxSuggestionType.CLIPBOARD_URL, GURL.emptyGURL());
         Assert.assertNotNull(mModel.get(BaseSuggestionViewProperties.ACTIONS));
         mProcessor.revealButtonClickHandler(mSuggestion, mModel);
@@ -268,8 +266,6 @@ public class ClipboardSuggestionProcessorTest {
     @SmallTest
     @UiThreadTest
     public void clipboardSuggestion_noContentByDefault() {
-        CachedFeatureFlags.setForTesting(
-                ChromeFeatureList.CLIPBOARD_SUGGESTION_CONTENT_HIDDEN, true);
         createClipboardSuggestion(OmniboxSuggestionType.CLIPBOARD_URL, GURL.emptyGURL());
         SuggestionSpannable textLine2 = mModel.get(SuggestionViewProperties.TEXT_LINE_2_TEXT);
         Assert.assertEquals(0, textLine2.length());
@@ -287,8 +283,6 @@ public class ClipboardSuggestionProcessorTest {
     @SmallTest
     @UiThreadTest
     public void clipboardSuggestion_revealAndConcealButton() {
-        CachedFeatureFlags.setForTesting(
-                ChromeFeatureList.CLIPBOARD_SUGGESTION_CONTENT_HIDDEN, true);
         createClipboardSuggestion(OmniboxSuggestionType.CLIPBOARD_URL, GURL.emptyGURL());
         SuggestionSpannable textLine2 = mModel.get(SuggestionViewProperties.TEXT_LINE_2_TEXT);
         Assert.assertEquals(0, textLine2.length());

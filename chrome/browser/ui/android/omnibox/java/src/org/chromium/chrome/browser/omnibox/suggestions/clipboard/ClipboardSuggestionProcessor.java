@@ -14,8 +14,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
@@ -73,7 +71,7 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
         model.set(SuggestionViewProperties.TEXT_LINE_1_TEXT,
                 new SuggestionSpannable(suggestion.getDescription()));
 
-        setupContentField(suggestion, model, /* showContent = */ !contentHiddenEnabled());
+        setupContentField(suggestion, model, /* showContent = */ false);
     }
 
     /**
@@ -159,10 +157,6 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
      */
     private void updateActionButton(@NonNull AutocompleteMatch suggestion,
             @NonNull PropertyModel model, boolean showContent) {
-        if (!contentHiddenEnabled()) {
-            return;
-        }
-
         int icon =
                 showContent ? R.drawable.ic_visibility_off_black : R.drawable.ic_visibility_black;
         String iconString = getContext().getResources().getString(showContent
@@ -222,13 +216,5 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
             @NonNull AutocompleteMatch suggestion, @NonNull PropertyModel model) {
         RecordUserAction.record("Omnibox.ClipboardSuggestion.Conceal");
         setupContentField(suggestion, model, /* showContent = */ false);
-    }
-
-    /**
-     * Check whether the content hidden feature is enabled.
-     * @return True if the feature is enabled.
-     */
-    private boolean contentHiddenEnabled() {
-        return CachedFeatureFlags.isEnabled(ChromeFeatureList.CLIPBOARD_SUGGESTION_CONTENT_HIDDEN);
     }
 }
