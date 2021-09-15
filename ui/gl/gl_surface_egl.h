@@ -204,6 +204,10 @@ class GL_EXPORT NativeViewGLSurfaceEGL : public GLSurfaceEGL,
   gfx::Size size_ = gfx::Size(1, 1);
   bool enable_fixed_size_angle_ = true;
 
+  GLSurfacePresentationHelper* presentation_helper() const {
+    return presentation_helper_.get();
+  }
+
   gfx::SwapResult SwapBuffersWithDamage(const std::vector<int>& rects,
                                         PresentationCallback callback);
 
