@@ -454,6 +454,11 @@ void FileSystemAccessManagerImpl::ResolveDefaultDirectory(
                   std::move(callback))));
 }
 
+void FileSystemAccessManagerImpl::Shutdown() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  permission_context_ = nullptr;
+}
+
 void FileSystemAccessManagerImpl::SetDefaultPathAndShowPicker(
     const BindingContext& context,
     blink::mojom::FilePickerOptionsPtr options,
