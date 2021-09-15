@@ -120,7 +120,6 @@ array: Array(300)
       298: 298
       299: 299
     length: 300
-    [[Prototype]]: Array(0)
 func: function() {return a + b;}
     arguments: null
     caller: null
@@ -248,7 +247,6 @@ array: Array(300)
       298: 298
       299: 299
     length: 300
-    [[Prototype]]: Array(0)
 func: function() {return a + b;}
     arguments: null
     caller: null

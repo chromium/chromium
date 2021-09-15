@@ -98,10 +98,8 @@
 
       for (var j = 0; j < children.length; ++j) {
         for (var treeElement = children[j]; treeElement; treeElement = treeElement.traverseNextTreeElement(true, null, true)) {
-          if (treeElement.listItemElement.textContent.indexOf('[[Prototype]]') === -1 &&
-              treeElement.listItemElement.textContent.indexOf('buffer') === -1) {
+          if (treeElement.listItemElement.textContent.indexOf('[[Prototype]]') === -1)
             treeElement.expand();
-          }
         }
       }
     }
