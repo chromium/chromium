@@ -28,6 +28,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/network_change_notifier.h"
 
@@ -226,11 +227,13 @@ HatsService::DelayedSurveyTask::DelayedSurveyTask(
     const std::string& trigger,
     content::WebContents* web_contents,
     const SurveyBitsData& product_specific_bits_data,
-    const SurveyStringData& product_specific_string_data)
+    const SurveyStringData& product_specific_string_data,
+    bool require_same_origin)
     : hats_service_(hats_service),
       trigger_(trigger),
       product_specific_bits_data_(product_specific_bits_data),
-      product_specific_string_data_(product_specific_string_data) {
+      product_specific_string_data_(product_specific_string_data),
+      require_same_origin_(require_same_origin) {
   Observe(web_contents);
 }
 
@@ -245,6 +248,17 @@ void HatsService::DelayedSurveyTask::Launch() {
   hats_service_->LaunchSurveyForWebContents(trigger_, web_contents(),
                                             product_specific_bits_data_,
                                             product_specific_string_data_);
+  hats_service_->RemoveTask(*this);
+}
+
+void HatsService::DelayedSurveyTask::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!require_same_origin_ || !navigation_handle ||
+      !navigation_handle->IsInPrimaryMainFrame() ||
+      navigation_handle->IsSameOrigin()) {
+    return;
+  }
+
   hats_service_->RemoveTask(*this);
 }
 
@@ -324,13 +338,14 @@ bool HatsService::LaunchDelayedSurveyForWebContents(
     content::WebContents* web_contents,
     int timeout_ms,
     const SurveyBitsData& product_specific_bits_data,
-    const SurveyStringData& product_specific_string_data) {
+    const SurveyStringData& product_specific_string_data,
+    bool require_same_origin) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!web_contents)
     return false;
-  auto result = pending_tasks_.emplace(this, trigger, web_contents,
-                                       product_specific_bits_data,
-                                       product_specific_string_data);
+  auto result = pending_tasks_.emplace(
+      this, trigger, web_contents, product_specific_bits_data,
+      product_specific_string_data, require_same_origin);
   if (!result.second)
     return false;
   auto success = base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(

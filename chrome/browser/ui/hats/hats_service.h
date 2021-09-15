@@ -133,7 +133,8 @@ class HatsService : public KeyedService {
                       const std::string& trigger,
                       content::WebContents* web_contents,
                       const SurveyBitsData& product_specific_bits_data,
-                      const SurveyStringData& product_specific_string_data);
+                      const SurveyStringData& product_specific_string_data,
+                      bool require_same_origin);
 
     // Not copyable or movable
     DelayedSurveyTask(const DelayedSurveyTask&) = delete;
@@ -146,6 +147,8 @@ class HatsService : public KeyedService {
     void Launch();
 
     // content::WebContentsObserver
+    void DidFinishNavigation(
+        content::NavigationHandle* navigation_handle) override;
     void WebContentsDestroyed() override;
 
     // Returns a weak pointer to this object.
@@ -161,6 +164,7 @@ class HatsService : public KeyedService {
     std::string trigger_;
     SurveyBitsData product_specific_bits_data_;
     SurveyStringData product_specific_string_data_;
+    bool require_same_origin_;
     base::WeakPtrFactory<DelayedSurveyTask> weak_ptr_factory_{this};
   };
 
@@ -223,13 +227,15 @@ class HatsService : public KeyedService {
   // is also cancelled if |web_contents| not visible at the time of launch.
   // Rejects (and returns false) if there is already an identical delayed-task
   // (same |trigger| and same |web_contents|) waiting to be fulfilled. Also
-  // rejects if the underlying task posting fails.
+  // rejects if the underlying task posting fails. If |require_same_origin| is
+  // set, additionally requires that |web_contents| remain on the same origin.
   virtual bool LaunchDelayedSurveyForWebContents(
       const std::string& trigger,
       content::WebContents* web_contents,
       int timeout_ms,
       const SurveyBitsData& product_specific_bits_data = {},
-      const SurveyStringData& product_specific_string_data = {});
+      const SurveyStringData& product_specific_string_data = {},
+      bool require_same_origin = false);
 
   // Updates the user preferences to record that the survey associated with
   // |survey_id| was shown to the user. |trigger_id| is the HaTS next Trigger

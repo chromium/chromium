@@ -24,11 +24,13 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "net/dns/mock_host_resolver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
@@ -124,6 +126,7 @@ class HatsServiceProbabilityOne : public HatsServiceBrowserTestBase {
 
  private:
   void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
     // Set the profile creation time to be old enough to ensure triggering.
     browser()->profile()->SetCreationTimeForTesting(
         base::Time::Now() - base::TimeDelta::FromDays(45));
@@ -380,6 +383,73 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, InvisibleWebContentsNoShow) {
   GetHatsService()->LaunchDelayedSurveyForWebContents(
       kHatsSurveyTriggerSettings, web_contents, 0);
   chrome::AddTabAt(browser(), GURL(), -1, true);
+  EXPECT_FALSE(HatsNextDialogCreated());
+}
+
+IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne,
+                       NavigatedWebContents_RequireSameOrigin) {
+  SetMetricsConsent(true);
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("a.test", "/empty.html")));
+
+  // As navigating also occurs asynchronously, a long survey delay is use to
+  // ensure it completes before the survey tries to run.
+  GetHatsService()->LaunchDelayedSurveyForWebContents(
+      kHatsSurveyTriggerSettings, web_contents, 10000, {}, {},
+      /*require_same_origin=*/true);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("b.test", "/empty.html")));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(GetHatsService()->HasPendingTasks());
+  EXPECT_FALSE(HatsNextDialogCreated());
+}
+
+IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne,
+                       NavigatedWebContents_NoRequireSameOrigin) {
+  SetMetricsConsent(true);
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("a.test", "/empty.html")));
+
+  EXPECT_FALSE(GetHatsService()->HasPendingTasks());
+  GetHatsService()->LaunchDelayedSurveyForWebContents(
+      kHatsSurveyTriggerSettings, web_contents, 10000, {}, {},
+      /*require_same_origin=*/false);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("b.test", "/empty.html")));
+  base::RunLoop().RunUntilIdle();
+
+  // The survey task should still be in the pending task queue.
+  EXPECT_TRUE(GetHatsService()->HasPendingTasks());
+  EXPECT_FALSE(HatsNextDialogCreated());
+}
+
+IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, SameOriginNavigation) {
+  SetMetricsConsent(true);
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("a.test", "/empty.html")));
+
+  EXPECT_FALSE(GetHatsService()->HasPendingTasks());
+  GetHatsService()->LaunchDelayedSurveyForWebContents(
+      kHatsSurveyTriggerSettings, web_contents, 10000, {}, {},
+      /*require_same_origin=*/true);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("a.test", "/form.html")));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(GetHatsService()->HasPendingTasks());
   EXPECT_FALSE(HatsNextDialogCreated());
 }
 
