@@ -70,9 +70,11 @@ std::string GetSandboxProfile(SandboxType sandbox_type) {
     case SandboxType::kPpapi:
       profile += kSeatbeltPolicyString_ppapi;
       break;
+#if BUILDFLAG(ENABLE_PRINTING)
     case SandboxType::kPrintBackend:
       profile += kSeatbeltPolicyString_print_backend;
       break;
+#endif
     case SandboxType::kPrintCompositor:
       profile += kSeatbeltPolicyString_print_compositor;
       break;
