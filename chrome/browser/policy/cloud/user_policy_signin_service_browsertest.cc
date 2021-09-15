@@ -467,7 +467,7 @@ class UserPolicySigninServiceSyncNotRequiredTest
 #define MAYBE_AcceptManagementDeclineSync AcceptManagementDeclineSync
 #endif
 IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceSyncNotRequiredTest,
-                       AcceptManagementDeclineSync) {
+                       MAYBE_AcceptManagementDeclineSync) {
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
 
   // Signin and show sync confirmation dialog.
