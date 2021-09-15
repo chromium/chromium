@@ -137,9 +137,6 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
   Section* GetSectionForStatus(
       ToolbarActionViewController::PageInteractionStatus status);
 
-  // Updates the states of all actions in the menu.
-  void UpdateActionStates();
-
   // Sorts the views within all sections by the name of the action.
   void SortMenuItemsByName();
 

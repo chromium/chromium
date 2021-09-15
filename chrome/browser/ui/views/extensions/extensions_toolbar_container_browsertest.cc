@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_browsertest.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -36,6 +37,7 @@
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "ui/views/test/widget_test.h"
 
@@ -552,6 +554,12 @@ class ExtensionsToolbarRuntimeHostPermissionsBrowserTest
         controller->GetContextMenu());
   }
 
+  std::u16string GetActionTooltip() {
+    return GetExtensionsToolbarContainer()
+        ->GetViewForId(extension_->id())
+        ->GetTooltipText();
+  }
+
  private:
   extensions::TestExtensionDir extension_dir_;
   scoped_refptr<const extensions::Extension> extension_;
@@ -562,6 +570,14 @@ class ExtensionsToolbarRuntimeHostPermissionsBrowserTest
 IN_PROC_BROWSER_TEST_F(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
                        ContextMenuPageAccess_RefreshRequired) {
   LoadAllUrlsExtension(ContentScriptRunLocation::DOCUMENT_START);
+  std::u16string tooltip_wants_access = base::JoinString(
+      {u"All Urls Extension",
+       l10n_util::GetStringUTF16(IDS_EXTENSIONS_WANTS_ACCESS_TO_SITE)},
+      u"\n");
+  std::u16string tooltip_has_access = base::JoinString(
+      {u"All Urls Extension",
+       l10n_util::GetStringUTF16(IDS_EXTENSIONS_HAS_ACCESS_TO_SITE)},
+      u"\n");
 
   ExtensionTestMessageListener injection_listener(kInjectionSucceededMessage,
                                                   false /* will_reply */);
@@ -585,6 +601,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
   extensions::ScriptingPermissionsModifier permissions_modifier(profile(),
                                                                 extension());
   EXPECT_FALSE(permissions_modifier.HasGrantedHostPermission(url));
+  EXPECT_EQ(tooltip_wants_access, GetActionTooltip());
   EXPECT_FALSE(injection_listener.was_satisfied());
 
   extensions::ExtensionContextMenuModel* extension_menu =
@@ -610,6 +627,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
   ASSERT_TRUE(injection_listener.WaitUntilSatisfied());
   injection_listener.Reset();
   EXPECT_TRUE(permissions_modifier.HasGrantedHostPermission(url));
+  EXPECT_EQ(tooltip_has_access, GetActionTooltip());
   EXPECT_FALSE(runner->WantsToRun(extension()));
 
   // Now navigate to a different host. The extension should have blocked
@@ -623,6 +641,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
   blocked_action_waiter.WaitAndReset();
   EXPECT_TRUE(runner->WantsToRun(extension()));
   EXPECT_FALSE(permissions_modifier.HasGrantedHostPermission(url));
+  EXPECT_EQ(tooltip_wants_access, GetActionTooltip());
   EXPECT_FALSE(injection_listener.was_satisfied());
 
   // Allow the extension to run on all sites this time. This should again show a
@@ -638,6 +657,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
   // should still be in wants-to-run state.
   EXPECT_TRUE(runner->WantsToRun(extension()));
   EXPECT_FALSE(permissions_modifier.HasGrantedHostPermission(url));
+  EXPECT_EQ(tooltip_wants_access, GetActionTooltip());
   EXPECT_FALSE(injection_listener.was_satisfied());
 }
 
@@ -646,6 +666,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
 IN_PROC_BROWSER_TEST_F(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
                        ContextMenuPageAccess_RefreshNotRequired) {
   LoadAllUrlsExtension(ContentScriptRunLocation::DOCUMENT_IDLE);
+  std::u16string tooltip_wants_access = base::JoinString(
+      {u"All Urls Extension",
+       l10n_util::GetStringUTF16(IDS_EXTENSIONS_WANTS_ACCESS_TO_SITE)},
+      u"\n");
+  std::u16string tooltip_has_access = base::JoinString(
+      {u"All Urls Extension",
+       l10n_util::GetStringUTF16(IDS_EXTENSIONS_HAS_ACCESS_TO_SITE)},
+      u"\n");
+
   ExtensionTestMessageListener injection_listener(kInjectionSucceededMessage,
                                                   false /* will_reply */);
   injection_listener.set_extension_id(extension()->id());
@@ -668,6 +697,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
   extensions::ScriptingPermissionsModifier permissions_modifier(profile(),
                                                                 extension());
   EXPECT_FALSE(permissions_modifier.HasGrantedHostPermission(url));
+  EXPECT_EQ(tooltip_wants_access, GetActionTooltip());
   EXPECT_FALSE(injection_listener.was_satisfied());
 
   extensions::ExtensionContextMenuModel* extension_menu =
@@ -683,4 +713,5 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
   ASSERT_TRUE(injection_listener.WaitUntilSatisfied());
   EXPECT_FALSE(runner->WantsToRun(extension()));
   EXPECT_TRUE(permissions_modifier.HasGrantedHostPermission(url));
+  EXPECT_EQ(tooltip_has_access, GetActionTooltip());
 }

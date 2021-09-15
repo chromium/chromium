@@ -262,11 +262,6 @@ ExtensionsMenuView::Section* ExtensionsMenuView::GetSectionForStatus(
   return section;
 }
 
-void ExtensionsMenuView::UpdateActionStates() {
-  for (ExtensionsMenuItemView* view : extensions_menu_items_)
-    view->view_controller()->UpdateState();
-}
-
 void ExtensionsMenuView::SortMenuItemsByName() {
   auto sort_section = [](Section* section) {
     if (section->menu_items->children().empty())
@@ -330,7 +325,8 @@ void ExtensionsMenuView::UpdateSectionVisibility() {
 }
 
 void ExtensionsMenuView::Update() {
-  UpdateActionStates();
+  for (ExtensionsMenuItemView* view : extensions_menu_items_)
+    view->view_controller()->UpdateState();
 
   content::WebContents* const web_contents =
       browser_->tab_strip_model()->GetActiveWebContents();
@@ -464,7 +460,7 @@ void ExtensionsMenuView::OnToolbarActionRemoved(
 
 void ExtensionsMenuView::OnToolbarActionUpdated(
     const ToolbarActionsModel::ActionId& action_id) {
-  UpdateActionStates();
+  Update();
 }
 
 void ExtensionsMenuView::OnToolbarModelInitialized() {

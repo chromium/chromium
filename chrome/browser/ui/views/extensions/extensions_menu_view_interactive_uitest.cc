@@ -30,11 +30,14 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_actions_bar_bubble_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/notification_types.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/test_extension_dir.h"
@@ -781,6 +784,109 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
 
   // TODO(devlin): Add a test for command invocation once
   // https://crbug.com/1070305 is fixed.
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
+                       MenuGetsUpdatedAfterPermissionsChange) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(R"({
+           "name": "All Urls Extension",
+           "manifest_version": 3,
+           "version": "0.1",
+           "host_permissions": ["<all_urls>"]
+         })");
+  AppendExtension(
+      extensions::ChromeTestExtensionLoader(profile()).LoadExtension(
+          test_dir.UnpackedPath()));
+  ASSERT_EQ(1u, extensions().size());
+
+  GURL url = embedded_test_server()->GetURL("example.com", "/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Open the extension menu so we can test the UI when permissions
+  // change.
+  ClickExtensionsMenuButton();
+  auto menu_items = GetExtensionsMenuItemViews();
+  ASSERT_EQ(1u, menu_items.size());
+  auto* item_button =
+      (*menu_items.begin())->primary_action_button_for_testing();
+  ASSERT_TRUE(item_button);
+
+  // The extension should have access to the site by default.
+  EXPECT_EQ(u"All Urls Extension\n" +
+                l10n_util::GetStringUTF16(IDS_EXTENSIONS_HAS_ACCESS_TO_SITE),
+            item_button->GetTooltipText());
+
+  EXPECT_EQ(base::JoinString(
+                {u"All Urls Extension",
+                 l10n_util::GetStringUTF16(IDS_EXTENSIONS_HAS_ACCESS_TO_SITE)},
+                u"\n"),
+            item_button->GetTooltipText());
+
+  std::vector<ExtensionsMenuItemView*> active_menu_items =
+      ExtensionsMenuView::GetSortedItemsForSectionForTesting(
+          ToolbarActionViewController::PageInteractionStatus::kActive);
+  ASSERT_EQ(1u, active_menu_items.size());
+  EXPECT_EQ(u"All Urls Extension", active_menu_items[0]
+                                       ->primary_action_button_for_testing()
+                                       ->label_text_for_testing());
+
+  // Change the extension permissions to run on click using the context menu.
+  auto* context_menu = static_cast<extensions::ExtensionContextMenuModel*>(
+      GetExtensionsToolbarContainer()
+          ->GetActionForId(extensions()[0]->id())
+          ->GetContextMenu());
+  ASSERT_TRUE(context_menu);
+  {
+    content::WindowedNotificationObserver permissions_observer(
+        extensions::NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED,
+        content::NotificationService::AllSources());
+    context_menu->ExecuteCommand(
+        extensions::ExtensionContextMenuModel::PAGE_ACCESS_RUN_ON_CLICK,
+        /*event_flags=*/0);
+    permissions_observer.Wait();
+  }
+
+  // The extension should not have access to the website.
+  EXPECT_EQ(
+      base::JoinString(
+          {u"All Urls Extension",
+           l10n_util::GetStringUTF16(IDS_EXTENSIONS_WANTS_ACCESS_TO_SITE)},
+          u"\n"),
+      item_button->GetTooltipText());
+  std::vector<ExtensionsMenuItemView*> pending_menu_items =
+      ExtensionsMenuView::GetSortedItemsForSectionForTesting(
+          ToolbarActionViewController::PageInteractionStatus::kPending);
+  ASSERT_EQ(1u, pending_menu_items.size());
+  EXPECT_EQ(u"All Urls Extension", pending_menu_items[0]
+                                       ->primary_action_button_for_testing()
+                                       ->label_text_for_testing());
+
+  // Change the extension permissions to run on site using the context menu.
+  {
+    content::WindowedNotificationObserver permissions_observer(
+        extensions::NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED,
+        content::NotificationService::AllSources());
+    context_menu->ExecuteCommand(
+        extensions::ExtensionContextMenuModel::PAGE_ACCESS_RUN_ON_SITE,
+        /*event_flags=*/0);
+    permissions_observer.Wait();
+  }
+
+  // The extension should have access to the site by default.
+  EXPECT_EQ(base::JoinString(
+                {u"All Urls Extension",
+                 l10n_util::GetStringUTF16(IDS_EXTENSIONS_HAS_ACCESS_TO_SITE)},
+                u"\n"),
+            item_button->GetTooltipText());
+  active_menu_items = ExtensionsMenuView::GetSortedItemsForSectionForTesting(
+      ToolbarActionViewController::PageInteractionStatus::kActive);
+  ASSERT_EQ(1u, active_menu_items.size());
+  EXPECT_EQ(u"All Urls Extension", active_menu_items[0]
+                                       ->primary_action_button_for_testing()
+                                       ->label_text_for_testing());
 }
 
 class ActivateWithReloadExtensionsMenuInteractiveUITest

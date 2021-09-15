@@ -17,6 +17,8 @@
 #include "chrome/browser/extensions/extension_management.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "content/public/browser/notification_observer.h"
+#include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -43,6 +45,7 @@ class ExtensionMessageBubbleController;
 class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
                             public extensions::ExtensionRegistryObserver,
                             public extensions::ExtensionManagement::Observer,
+                            public content::NotificationObserver,
                             public KeyedService {
  public:
   using ActionId = std::string;
@@ -66,6 +69,9 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
     virtual void OnToolbarActionRemoved(const ActionId& id) = 0;
 
     // Signals that the browser action with |id| has been updated.
+    // This method covers lots of different extension updates and could be split
+    // in different methods if needed, such as
+    // `OnToolbarActionHostPermissionsUpdated`.
     virtual void OnToolbarActionUpdated(const ActionId& id) = 0;
 
     // Signals that the toolbar model has been initialized, so that if any
@@ -139,6 +145,11 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
 
   // extensions::ExtensionManagement::Observer:
   void OnExtensionManagementSettingsChanged() override;
+
+  // content::NotificationObserver:
+  void Observe(int notification_type,
+               const content::NotificationSource& source,
+               const content::NotificationDetails& details) override;
 
   // To be called after the extension service is ready; gets loaded extensions
   // from the ExtensionRegistry, their saved order from the pref service, and
@@ -224,6 +235,9 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
   base::ScopedObservation<extensions::ExtensionManagement,
                           extensions::ExtensionManagement::Observer>
       extension_management_observation_{this};
+
+  // Registrar for receiving permission-related notifications.
+  content::NotificationRegistrar notification_registrar_;
 
   base::WeakPtrFactory<ToolbarActionsModel> weak_ptr_factory_{this};
 
