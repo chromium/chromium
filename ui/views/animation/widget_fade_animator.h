@@ -94,7 +94,7 @@ class VIEWS_EXPORT WidgetFadeAnimator : public AnimationDelegateViews,
   void AnimationEnded(const gfx::Animation* animation) override;
 
   // WidgetObserver:
-  void OnWidgetClosing(Widget* widget) override;
+  void OnWidgetDestroying(Widget* widget) override;
 
   Widget* widget_;
   base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
