@@ -271,6 +271,8 @@ std::string CookieInclusionStatus::GetDebugString() const {
             "WARN_SAMESITE_NONE_INCLUDED_BY_SAMESITE_STRICT"},
            {WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION,
             "WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION"},
+           {WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE,
+            "WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE"},
        }) {
     if (HasWarningReason(reason.first))
       base::StrAppend(&out, {reason.second, ", "});

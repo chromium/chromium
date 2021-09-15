@@ -91,8 +91,6 @@ class NET_EXPORT CookieInclusionStatus {
     // indicates that large attributes should be ignored instead of causing the
     // whole cookie to be rejected. There will be a corresponding WarningReason
     // to notify users that an attribute value was ignored in that case.
-    // TODO(crbug.com/1243783): Implement that WarningReason and then update
-    // this comment.
     EXCLUDE_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE = 20,
 
     // This should be kept last.
@@ -217,6 +215,12 @@ class NET_EXPORT CookieInclusionStatus {
     // the context was downgraded but the cookie would have been
     // included/excluded in both cases.
     WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION = 17,
+
+    // The cookie exceeded the attribute size limit. RFC6265bis indicates that
+    // large attributes should be ignored instead of causing the whole cookie
+    // to be rejected. This is applied by the code that parses cookie lines and
+    // notifies the user that an attribute value was ignored.
+    WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE = 18,
 
     // This should be kept last.
     NUM_WARNING_REASONS
