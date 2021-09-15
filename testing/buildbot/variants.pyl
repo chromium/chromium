@@ -578,54 +578,68 @@
       ],
     },
   },
-  'CROS_ATLAS_TOT': {
+  'CROS_ATLAS_LKGM': {
     'skylab': {
       'cros_board': 'atlas',
-      'cros_img': 'atlas-release/R96-14200.0.0',
+      'cros_img': 'atlas-release/R96-14216.0.0',
     },
-    'identifier': 'ATLAS_TOT',
+    'identifier': 'ATLAS_LKGM',
   },
-  'CROS_ATLAS_TOT-1': {
+  'CROS_ATLAS_DEV': {
+    'skylab': {
+      'cros_board': 'atlas',
+      'cros_img': 'atlas-release/R96-14204.0.0',
+    },
+    'identifier': 'ATLAS_DEV',
+  },
+  'CROS_ATLAS_BETA': {
     'skylab': {
       'cros_board': 'atlas',
       'cros_img': 'atlas-release/R94-14150.23.0',
     },
-    'identifier': 'ATLAS_TOT-1',
+    'identifier': 'ATLAS_BETA',
   },
-  'CROS_ATLAS_TOT-2': {
+  'CROS_ATLAS_STABLE': {
     'skylab': {
       'cros_board': 'atlas',
       'cros_img': 'atlas-release/R93-14092.46.0',
     },
-    'identifier': 'ATLAS_TOT-2',
+    'identifier': 'ATLAS_STABLE',
   },
-  'CROS_EVE_TOT': {
+  'CROS_EVE_LKGM': {
     'skylab': {
       'cros_board': 'eve',
-      'cros_img': 'eve-release/R96-14200.0.0',
+      'cros_img': 'eve-release/R96-14216.0.0',
     },
-    'identifier': 'EVE_TOT',
+    'identifier': 'EVE_LKGM',
   },
-  'CROS_EVE_TOT-1': {
+  'CROS_EVE_DEV': {
     'skylab': {
       'cros_board': 'eve',
-      'cros_img': 'eve-release/R94-14150.17.0',
+      'cros_img': 'eve-release/R96-14204.0.0',
     },
-    'identifier': 'EVE_TOT-1',
+    'identifier': 'EVE_DEV',
   },
-  'CROS_EVE_TOT-2': {
+  'CROS_EVE_BETA': {
     'skylab': {
       'cros_board': 'eve',
       'cros_img': 'eve-release/R93-14092.46.0',
     },
-    'identifier': 'EVE_TOT-2',
+    'identifier': 'EVE_BETA',
   },
-  'CROS_KEVIN_TOT': {
+  'CROS_EVE_STABLE': {
+    'skylab': {
+      'cros_board': 'eve',
+      'cros_img': 'eve-release/R92-13982.88.0',
+    },
+    'identifier': 'EVE_STABLE',
+  },
+  'CROS_KEVIN_LKGM': {
     'skylab': {
       'cros_board': 'kevin',
-      'cros_img': 'kevin-release/R96-14200.0.0',
+      'cros_img': 'kevin-release/R96-14216.0.0',
     },
-    'identifier': 'KEVIN_TOT',
+    'identifier': 'KEVIN_LKGM',
   },
   'LACROS_AMD64_GENERIC': {
     'args': [
