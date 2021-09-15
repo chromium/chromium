@@ -1127,7 +1127,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentForcedInitial"
-    enum="EnterpriseEnrollmentType" expires_after="2021-10-01">
+    enum="EnterpriseEnrollmentType" expires_after="2022-02-01">
   <owner>raleksandrov@google.com</owner>
   <owner>pmarko@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
@@ -1138,7 +1138,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentForcedInitialAttestationBased"
-    enum="EnterpriseEnrollmentType" expires_after="2021-10-01">
+    enum="EnterpriseEnrollmentType" expires_after="2022-02-01">
   <owner>raleksandrov@google.com</owner>
   <owner>pmarko@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
@@ -1149,7 +1149,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentForcedInitialManualFallback"
-    enum="EnterpriseEnrollmentType" expires_after="2021-10-01">
+    enum="EnterpriseEnrollmentType" expires_after="2022-02-01">
   <owner>raleksandrov@google.com</owner>
   <owner>pmarko@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
@@ -1170,7 +1170,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentRecovery" enum="EnterpriseEnrollmentType"
-    expires_after="2021-10-01">
+    expires_after="2022-02-01">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -1181,7 +1181,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentTime.Cancel" units="ms"
-    expires_after="2021-10-01">
+    expires_after="2022-02-01">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
