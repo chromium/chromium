@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy.secure_dns.SecureDnsSettings;
+import org.chromium.chrome.browser.privacy_review.PrivacyReviewDialog;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxReferrer;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsFragment;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -79,8 +80,15 @@ public class PrivacySettings
             return true;
         });
 
+        Preference privacyReviewPreference = findPreference(PREF_PRIVACY_REVIEW);
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_REVIEW)) {
-            getPreferenceScreen().removePreference(findPreference(PREF_PRIVACY_REVIEW));
+            getPreferenceScreen().removePreference(privacyReviewPreference);
+        } else {
+            privacyReviewPreference.setOnPreferenceClickListener(preference -> {
+                PrivacyReviewDialog dialog = new PrivacyReviewDialog(getContext());
+                dialog.show();
+                return true;
+            });
         }
 
         Preference safeBrowsingPreference = findPreference(PREF_SAFE_BROWSING);

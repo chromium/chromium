@@ -380,6 +380,7 @@ android_library("chrome_java") {
     "//chrome/browser/power_bookmarks:proto_java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/privacy:java",
+    "//chrome/browser/privacy_review/android:java",
     "//chrome/browser/privacy_sandbox/android:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/safe_browsing/android:java",
