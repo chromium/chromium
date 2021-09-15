@@ -8,6 +8,7 @@
 #include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/window_mini_view.h"
 #include "base/macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 
 namespace aura {
@@ -27,6 +28,8 @@ class ASH_EXPORT OverviewItemView
     : public WindowMiniView,
       public OverviewHighlightController::OverviewHighlightableView {
  public:
+  METADATA_HEADER(OverviewItemView);
+
   // The visibility of the header. It may be fully visible or invisible, or
   // everything but the close button is visible.
   enum class HeaderVisibility {
@@ -82,7 +85,6 @@ class ASH_EXPORT OverviewItemView
 
  protected:
   // views::View:
-  const char* GetClassName() const override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
