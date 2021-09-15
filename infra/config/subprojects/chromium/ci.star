@@ -3364,6 +3364,9 @@ ci.fyi_builder(
         category = "recipe|staging|linux",
         short_name = "bld",
     ),
+    experiments = {
+        "chromium.chromium_tests.use_gitiles_trigger": 100,
+    },
 )
 
 ci.fyi_builder(
