@@ -48,6 +48,10 @@ class GURL;
                              activityOrigin:
                                  (WindowActivityOrigin)activityOrigin;
 
+// Creates a UIAction instance configured for opening a new window using
+// |activity|.
+- (UIAction*)actionToOpenInNewWindowWithActivity:(NSUserActivity*)activity;
+
 // Creates a UIAction instance for opening an image |URL| in current tab and
 // invoke the given |completion| block after execution.
 - (UIAction*)actionOpenImageWithURL:(const GURL)URL

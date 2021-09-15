@@ -98,7 +98,20 @@
                                  (WindowActivityOrigin)activityOrigin {
   id<ApplicationCommands> windowOpener = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
+
   NSUserActivity* activity = ActivityToLoadURL(activityOrigin, URL);
+  return [self actionWithTitle:l10n_util::GetNSString(
+                                   IDS_IOS_CONTENT_CONTEXT_OPENINNEWWINDOW)
+                         image:[UIImage imageNamed:@"open_new_window"]
+                          type:MenuActionType::OpenInNewWindow
+                         block:^{
+                           [windowOpener openNewWindowWithActivity:activity];
+                         }];
+}
+
+- (UIAction*)actionToOpenInNewWindowWithActivity:(NSUserActivity*)activity {
+  id<ApplicationCommands> windowOpener = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
   return [self actionWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_CONTENT_CONTEXT_OPENINNEWWINDOW)
                          image:[UIImage imageNamed:@"open_new_window"]
