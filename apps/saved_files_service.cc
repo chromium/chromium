@@ -16,12 +16,10 @@
 #include "base/json/values_util.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/notification_service.h"
 #include "extensions/browser/api/file_system/saved_file_entry.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -188,18 +186,15 @@ SavedFilesService* SavedFilesService::Get(content::BrowserContext* context) {
 
 SavedFilesService::SavedFilesService(content::BrowserContext* context)
     : context_(context) {
-  registrar_.Add(this,
-                 extensions::NOTIFICATION_EXTENSION_HOST_DESTROYED,
-                 content::NotificationService::AllSources());
+  extension_host_registry_observation_.Observe(
+      extensions::ExtensionHostRegistry::Get(context_));
 }
 
 SavedFilesService::~SavedFilesService() = default;
 
-void SavedFilesService::Observe(int type,
-                                const content::NotificationSource& source,
-                                const content::NotificationDetails& details) {
-  DCHECK_EQ(extensions::NOTIFICATION_EXTENSION_HOST_DESTROYED, type);
-  ExtensionHost* host = content::Details<ExtensionHost>(details).ptr();
+void SavedFilesService::OnExtensionHostDestroyed(
+    content::BrowserContext* browser_context,
+    extensions::ExtensionHost* host) {
   const Extension* extension = host->extension();
   if (extension) {
     ClearQueueIfNoRetainPermission(extension);
@@ -252,9 +247,9 @@ void SavedFilesService::ClearQueue(const extensions::Extension* extension) {
 }
 
 void SavedFilesService::OnApplicationTerminating() {
-  // Stop listening to NOTIFICATION_EXTENSION_HOST_DESTROYED in particular
-  // as all extension hosts will be destroyed as a result of shutdown.
-  registrar_.RemoveAll();
+  // Stop listening to ExtensionHost shutdown as all extension hosts will be
+  // destroyed as a result of shutdown.
+  extension_host_registry_observation_.Reset();
 }
 
 SavedFilesService::SavedFiles* SavedFilesService::Get(

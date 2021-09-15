@@ -24,9 +24,9 @@ AppLifetimeMonitor::AppLifetimeMonitor(content::BrowserContext* context)
   registrar_.Add(this,
                  extensions::NOTIFICATION_EXTENSION_HOST_DID_STOP_FIRST_LOAD,
                  content::NotificationService::AllSources());
-  registrar_.Add(this,
-                 extensions::NOTIFICATION_EXTENSION_HOST_DESTROYED,
-                 content::NotificationService::AllSources());
+
+  extension_host_registry_observation_.Observe(
+      extensions::ExtensionHostRegistry::Get(context_));
 
   AppWindowRegistry* app_window_registry =
       AppWindowRegistry::Factory::GetForBrowserContext(context_,
@@ -48,27 +48,23 @@ void AppLifetimeMonitor::RemoveObserver(Observer* observer) {
 void AppLifetimeMonitor::Observe(int type,
                                 const content::NotificationSource& source,
                                 const content::NotificationDetails& details) {
-  switch (type) {
-    case extensions::NOTIFICATION_EXTENSION_HOST_DID_STOP_FIRST_LOAD: {
-      ExtensionHost* host = content::Details<ExtensionHost>(details).ptr();
-      const Extension* extension = host->extension();
-      if (!extension || !extension->is_platform_app())
-        return;
+  DCHECK_EQ(extensions::NOTIFICATION_EXTENSION_HOST_DID_STOP_FIRST_LOAD, type);
+  ExtensionHost* host = content::Details<ExtensionHost>(details).ptr();
+  const Extension* extension = host->extension();
+  if (!extension || !extension->is_platform_app())
+    return;
 
-      NotifyAppStart(extension->id());
-      break;
-    }
+  NotifyAppStart(extension->id());
+}
 
-    case extensions::NOTIFICATION_EXTENSION_HOST_DESTROYED: {
-      ExtensionHost* host = content::Details<ExtensionHost>(details).ptr();
-      const Extension* extension = host->extension();
-      if (!extension || !extension->is_platform_app())
-        return;
+void AppLifetimeMonitor::OnExtensionHostDestroyed(
+    content::BrowserContext* browser_context,
+    extensions::ExtensionHost* host) {
+  const Extension* extension = host->extension();
+  if (!extension || !extension->is_platform_app())
+    return;
 
-      NotifyAppStop(extension->id());
-      break;
-    }
-  }
+  NotifyAppStop(extension->id());
 }
 
 void AppLifetimeMonitor::OnAppWindowRemoved(AppWindow* app_window) {

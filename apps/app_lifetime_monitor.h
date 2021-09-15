@@ -9,10 +9,12 @@
 #include <vector>
 
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/app_window/app_window_registry.h"
+#include "extensions/browser/extension_host_registry.h"
 
 namespace content {
 class BrowserContext;
@@ -24,7 +26,8 @@ namespace apps {
 // events.
 class AppLifetimeMonitor : public KeyedService,
                            public content::NotificationObserver,
-                           public extensions::AppWindowRegistry::Observer {
+                           public extensions::AppWindowRegistry::Observer,
+                           public extensions::ExtensionHostRegistry::Observer {
  public:
   class Observer {
    public:
@@ -67,6 +70,10 @@ class AppLifetimeMonitor : public KeyedService,
   void OnAppWindowShown(extensions::AppWindow* app_window,
                         bool was_hidden) override;
 
+  // extensions::ExtensionHostRegistry::Observer:
+  void OnExtensionHostDestroyed(content::BrowserContext* browser_context,
+                                extensions::ExtensionHost* host) override;
+
   // KeyedService overrides:
   void Shutdown() override;
 
@@ -80,6 +87,9 @@ class AppLifetimeMonitor : public KeyedService,
   content::NotificationRegistrar registrar_;
   content::BrowserContext* context_;
   base::ObserverList<Observer>::Unchecked observers_;
+  base::ScopedObservation<extensions::ExtensionHostRegistry,
+                          extensions::ExtensionHostRegistry::Observer>
+      extension_host_registry_observation_{this};
 };
 
 }  // namespace apps
