@@ -610,8 +610,16 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
 }
 
+// TODO(crbug.com/1150349): Flaky on ChromeOS ASAN.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_OnlineSetupFlowCrosComponentFailure \
+  DISABLED_OnlineSetupFlowCrosComponentFailure
+#else
+#define MAYBE_OnlineSetupFlowCrosComponentFailure \
+  OnlineSetupFlowCrosComponentFailure
+#endif
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
-                       OnlineSetupFlowCrosComponentFailure) {
+                       MAYBE_OnlineSetupFlowCrosComponentFailure) {
   // Simulate failure to load demo resources CrOS component.
   // There is no enrollment attempt, as process fails earlier.
   enrollment_helper_.ExpectNoEnrollment();
@@ -1038,7 +1046,14 @@ class DemoSetupArcUnsupportedTest : public DemoSetupTestBase {
   DISALLOW_COPY_AND_ASSIGN(DemoSetupArcUnsupportedTest);
 };
 
-IN_PROC_BROWSER_TEST_F(DemoSetupArcUnsupportedTest, DoNotStartWithAccelerator) {
+// TODO(crbug.com/1150349): Flaky on ChromeOS ASAN.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_DoNotStartWithAccelerator DISABLED_DoNotStartWithAccelerator
+#else
+#define MAYBE_DoNotStartWithAccelerator DoNotStartWithAccelerator
+#endif
+IN_PROC_BROWSER_TEST_F(DemoSetupArcUnsupportedTest,
+                       MAYBE_DoNotStartWithAccelerator) {
   IsConfirmationDialogHidden();
 
   InvokeDemoModeWithAccelerator();
