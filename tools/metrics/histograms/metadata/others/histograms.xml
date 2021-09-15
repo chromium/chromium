@@ -18288,13 +18288,17 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Uptime.ChromeExecToLoginPromptVisibleAfterLogout" units="ms"
-    expires_after="M77">
-  <owner>hajimehoshi@chromium.org</owner>
-  <owner>kouhei@chromium.org</owner>
+    expires_after="2022-09-13">
+  <owner>alemate@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <owner>xiyuan@chromium.org</owner>
   <summary>
     Measures the time elapsed on Chrome OS between when Chrome is started, and
     when the login prompt is again visible after a logout. This statistic is
     only collected when preceeded by a logout.
+
+    Warning: this histogram was expired from M77 to M96 some data may be
+    missing.
   </summary>
 </histogram>
 
@@ -18307,51 +18311,97 @@ should be kept until we use this API.  -->
   </summary>
 </histogram>
 
+<histogram name="Uptime.LoginPromptSetupTimeAfterLogout" units="ms"
+    expires_after="2022-09-13">
+  <owner>alemate@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <owner>xiyuan@chromium.org</owner>
+  <summary>
+    Measures the time elapsed on Chrome OS for setting up for a login after a
+    logout. More specifically, it is the time between when the Cryptohome is
+    unmounted (the last step in the logout process) and when the login prompt is
+    again visible after a logout.
+
+    Warning: this histogram was expired from M85 to M96 some data may be
+    missing.
+  </summary>
+</histogram>
+
+<histogram name="Uptime.Logout" units="ms" expires_after="2022-09-13">
+  <owner>alemate@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <owner>xiyuan@chromium.org</owner>
+  <summary>
+    Measures the time elapsed on Chrome OS when performing a logout. More
+    specifically, it is the time between when a logout is initiated and when the
+    Cryptohome is unmounted, signaling the last step in the logout process. This
+    statistic is not collected when the logout is part of a restart or shutdown.
+
+    Warning: this histogram was expired from 09/2020 to M96 some data may be
+    missing.
+  </summary>
+</histogram>
+
 <histogram name="Uptime.LogoutToLoginPromptVisible" units="ms"
-    expires_after="M77">
-  <owner>hajimehoshi@chromium.org</owner>
-  <owner>kouhei@chromium.org</owner>
+    expires_after="2022-09-13">
+  <owner>alemate@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <owner>xiyuan@chromium.org</owner>
   <summary>
     Measures the time elapsed on Chrome OS between initiating a logout and the
     next time the login prompt is visible again. This statistic is not collected
     if the machine is shutdown between the logout initiation and the prompt
     becoming visible.
+
+    Warning: this histogram was expired from M77 to M96 some data may be
+    missing.
   </summary>
 </histogram>
 
 <histogram name="Uptime.LogoutToUIStopAfterLogout" units="ms"
-    expires_after="M77">
-  <owner>hajimehoshi@chromium.org</owner>
-  <owner>kouhei@chromium.org</owner>
+    expires_after="2022-09-13">
+  <owner>alemate@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <owner>xiyuan@chromium.org</owner>
   <summary>
     Measures the time elapsed on Chrome OS between when a logout is initiated
     and the UI has stopped (and Chrome has exited) during the logout process.
     This statistic is not collected if the logout is part of a restart or
     shutdown.
+
+    Warning: this histogram was expired from M77 to M96 some data may be
+    missing.
   </summary>
 </histogram>
 
 <histogram name="Uptime.OtherProcessesTerminatedToChromeExecAfterLogout"
-    units="ms" expires_after="M77">
-  <owner>hajimehoshi@chromium.org</owner>
-  <owner>kouhei@chromium.org</owner>
+    units="ms" expires_after="2022-09-13">
+  <owner>alemate@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <owner>xiyuan@chromium.org</owner>
   <summary>
     Measures the time elapsed on Chrome OS between when all user-associated
     processes have been terminated during the logout process and when Chrome is
-    started again to show the login screen. Since at least ChromeOS M62,
-    equivalent to Uptime.XTerminatedToChromeExecAfterLogout.
+    started again to show the login screen.
+
+    Warning: this histogram was expired from M77 to M96 some data may be
+    missing.
   </summary>
 </histogram>
 
 <histogram name="Uptime.UIStopToProcessesTerminatedAfterLogout" units="ms"
-    expires_after="M77">
-  <owner>hajimehoshi@chromium.org</owner>
-  <owner>kouhei@chromium.org</owner>
+    expires_after="2022-09-13">
+  <owner>alemate@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <owner>xiyuan@chromium.org</owner>
   <summary>
     Measures the time elapsed on Chrome OS between when the UI has stopped
     (Chrome has exited), and when all other associated processes have been
     terminated during the logout process. This statistic is not collected if the
     logout is part of a restart or shutdown.
+
+    Warning: this histogram was expired from M77 to M96 some data may be
+    missing.
   </summary>
 </histogram>
 

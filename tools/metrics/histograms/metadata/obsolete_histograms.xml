@@ -85712,35 +85712,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Uptime.LoginPromptSetupTimeAfterLogout" units="ms"
-    expires_after="M85">
-  <obsolete>
-    Removed 09/2020. No direct replacement.
-  </obsolete>
-  <owner>hajimehoshi@chromium.org</owner>
-  <owner>kouhei@chromium.org</owner>
-  <summary>
-    Measures the time elapsed on Chrome OS for setting up for a login after a
-    logout. More specifically, it is the time between when the Cryptohome is
-    unmounted (the last step in the logout process) and when the login prompt is
-    again visible after a logout.
-  </summary>
-</histogram>
-
-<histogram name="Uptime.Logout" units="ms" expires_after="M85">
-  <obsolete>
-    Removed 09/2020. No direct replacement.
-  </obsolete>
-  <owner>hajimehoshi@chromium.org</owner>
-  <owner>kouhei@chromium.org</owner>
-  <summary>
-    Measures the time elapsed on Chrome OS when performing a logout. More
-    specifically, it is the time between when a logout is initiated and when the
-    Cryptohome is unmounted, signaling the last step in the logout process. This
-    statistic is not collected when the logout is part of a restart or shutdown.
-  </summary>
-</histogram>
-
 <histogram name="Uptime.ProcessesTerminatedToXTerminatedAfterLogout" units="ms"
     expires_after="2018-06-06">
   <obsolete>
