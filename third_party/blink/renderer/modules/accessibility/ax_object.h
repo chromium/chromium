@@ -1403,7 +1403,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   Member<AXObjectCacheImpl> ax_object_cache_;
 
-  void UpdateDistributionForFlatTreeTraversal() const;
   bool IsARIAControlledByTextboxWithActiveDescendant() const;
   bool AncestorExposesActiveDescendant() const;
   bool IsCheckable() const;
