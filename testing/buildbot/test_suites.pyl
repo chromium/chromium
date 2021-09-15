@@ -5140,9 +5140,6 @@
           '--ui-test-action-timeout=40000',
         ],
       },
-    },
-
-    'updater_system_gtests': {
       'updater_tests_system': {
         'args': [
           # Timeouts based on empirical observations of test runtimes, 2021-07.
@@ -5153,12 +5150,40 @@
         'swarming': {
           'dimension_sets': [
             {
-              'pool': 'chromium.updater.mac',
+              'integrity': 'high',
             }
           ]
         }
       },
     },
+
+    'updater_gtests_uac': {
+      'updater_tests': {
+        'args': [
+          '--deelevate',
+          # Timeouts based on empirical observations of test runtimes, 2021-07.
+          '--test-launcher-timeout=90000',
+          '--ui-test-action-max-timeout=45000',
+          '--ui-test-action-timeout=40000',
+        ],
+      },
+      'updater_tests_system': {
+        'args': [
+          # Timeouts based on empirical observations of test runtimes, 2021-07.
+          '--test-launcher-timeout=90000',
+          '--ui-test-action-max-timeout=45000',
+          '--ui-test-action-timeout=40000',
+        ],
+        'swarming': {
+          'dimension_sets': [
+            {
+              'integrity': 'high',
+            }
+          ]
+        }
+      },
+    },
+
 
     'upload_perfetto': {
       'upload_trace_processor': {},
@@ -6855,11 +6880,6 @@
 
     'sandboxed_chromium_memory_linux_gtests': [
       'chromium_browser_tests',
-    ],
-
-    'updater_mac_gtests': [
-      'updater_gtests',
-      'updater_system_gtests',
     ],
 
     'webrtc_android_tests_with_baremetal_tests': [

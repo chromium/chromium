@@ -5737,7 +5737,7 @@
       },
       'mac10.15-updater-tester-rel': {
         'test_suites': {
-          'gtest_tests': 'updater_mac_gtests',
+          'gtest_tests': 'updater_gtests',
         },
         'swarming': {
           'dimension_sets': [
@@ -5799,7 +5799,7 @@
           'x86-64',
         ],
         'test_suites': {
-          'gtest_tests': 'updater_gtests',
+          'gtest_tests': 'updater_gtests_uac',
         },
         'swarming': {
           'dimension_sets': [
