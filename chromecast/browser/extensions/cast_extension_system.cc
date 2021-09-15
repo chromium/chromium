@@ -223,6 +223,10 @@ StateStore* CastExtensionSystem::rules_store() {
   return nullptr;
 }
 
+StateStore* CastExtensionSystem::dynamic_user_scripts_store() {
+  return nullptr;
+}
+
 scoped_refptr<value_store::ValueStoreFactory>
 CastExtensionSystem::store_factory() {
   return store_factory_;

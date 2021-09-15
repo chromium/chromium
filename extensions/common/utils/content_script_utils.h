@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "extensions/common/api/content_scripts.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_resource.h"
 #include "extensions/common/user_script.h"
@@ -17,6 +18,14 @@
 
 namespace extensions {
 namespace script_parsing {
+
+// Converts api::content_scripts::RunAt to mojom::RunLocation.
+mojom::RunLocation ConvertManifestRunLocation(
+    api::content_scripts::RunAt run_at);
+
+// Converts mojom::RunLocation to api::content_scripts::RunAt.
+api::content_scripts::RunAt ConvertRunLocationToManifestType(
+    mojom::RunLocation run_at);
 
 // Parses and validates `matches` and `exclude_matches`, and updates these
 // fields for `result`. If `wants_file_access` is not null, then it will be set

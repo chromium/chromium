@@ -35,7 +35,7 @@ class StateStore : public base::SupportsWeakPtr<StateStore>,
   typedef value_store::ValueStoreFrontend::ReadCallback ReadCallback;
 
   // The kind of extensions data stored in a backend.
-  enum class BackendType { RULES, STATE };
+  enum class BackendType { RULES, STATE, SCRIPTS };
 
   class TestObserver {
    public:

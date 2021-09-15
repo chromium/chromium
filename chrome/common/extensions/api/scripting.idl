@@ -136,6 +136,9 @@ namespace scripting {
     // Specifies when JavaScript files are injected into the web page. The
     // preferred and default value is <code>document_idle</code>.
     extensionTypes.RunAt? runAt;
+    // Specifies if this content script will persist into future sessions. The
+    // default is true.
+    boolean? persistAcrossSessions;
   };
 
   // An object used to filter content scripts for
