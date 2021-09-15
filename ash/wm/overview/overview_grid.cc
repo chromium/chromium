@@ -8,6 +8,7 @@
 #include <functional>
 #include <memory>
 #include <utility>
+
 #include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/metrics/histogram_macros.h"
 #include "ash/public/cpp/metrics_util.h"
@@ -29,6 +30,7 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/cleanup_animation_observer.h"
+#include "ash/wm/overview/desks_templates/desks_templates_grid_view.h"
 #include "ash/wm/overview/drop_target_view.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -411,6 +413,10 @@ void OverviewGrid::Shutdown() {
   }
 
   window_list_.clear();
+
+  if (desks_templates_grid_)
+    desks_templates_grid_->CloseNow();
+
   overview_session_ = nullptr;
 }
 
@@ -786,6 +792,16 @@ void OverviewGrid::OnSelectorItemDragStarted(OverviewItem* item) {
     overview_mode_item->OnSelectorItemDragStarted(item);
 }
 
+void OverviewGrid::ShowDesksTemplatesGrid() {
+  if (!desks_templates_grid_) {
+    desks_templates_grid_ =
+        DesksTemplatesGridView::CreateDesksTemplatesGridWidget(
+            root_window_, GetGridEffectiveBounds());
+  }
+
+  desks_templates_grid_->Show();
+}
+
 void OverviewGrid::OnSelectorItemDragEnded(bool snap) {
   for (auto& overview_mode_item : window_list_)
     overview_mode_item->OnSelectorItemDragEnded(snap);
@@ -930,6 +946,10 @@ void OverviewGrid::OnDisplayMetricsChanged() {
     split_view_drag_indicators_->OnDisplayBoundsChanged();
 
   UpdateCannotSnapWarningVisibility();
+
+  if (desks_templates_grid_)
+    desks_templates_grid_->SetBounds(GetGridEffectiveBounds());
+
   // In case of split view mode, the grid bounds and item positions will be
   // updated in |OnSplitViewDividerPositionChanged|.
   if (SplitViewController::Get(root_window_)->InSplitViewMode())

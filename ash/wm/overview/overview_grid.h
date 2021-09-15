@@ -23,6 +23,7 @@
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 
 namespace views {
 class Widget;
@@ -325,6 +326,9 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // Commits any on-going desk name changes if any.
   void CommitDeskNameChanges();
 
+  // Shows the grid of the desks templates. Creates the widget if needed.
+  void ShowDesksTemplatesGrid();
+
   // Returns true if the grid has no more windows.
   bool empty() const { return window_list_.empty(); }
 
@@ -509,6 +513,9 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // Weak pointer to the window that is being dragged from the top, if there is
   // one.
   aura::Window* dragged_window_ = nullptr;
+
+  // The widget that contains the view for all the existing templates.
+  views::UniqueWidgetPtr desks_templates_grid_;
 
   DISALLOW_COPY_AND_ASSIGN(OverviewGrid);
 };

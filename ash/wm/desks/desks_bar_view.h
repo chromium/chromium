@@ -64,6 +64,10 @@ class ASH_EXPORT DesksBarView : public views::View,
     return expanded_state_new_desk_button_;
   }
 
+  views::ImageButton* desks_templates_button() const {
+    return desks_templates_button_;
+  }
+
   const std::vector<DeskMiniView*>& mini_views() const { return mini_views_; }
 
   const gfx::Point& last_dragged_item_screen_location() const {
@@ -219,6 +223,8 @@ class ASH_EXPORT DesksBarView : public views::View,
   // preview is cropped at the start position of the scrollable bar.
   int GetAdjustedUncroppedScrollPosition(int position) const;
 
+  void OnTemplatesButtonPressed();
+
   // A view that shows a dark gary transparent background that can be animated
   // when the very first mini_views are created.
   views::View* background_view_;
@@ -256,6 +262,9 @@ class ASH_EXPORT DesksBarView : public views::View,
   ZeroStateDefaultDeskButton* zero_state_default_desk_button_ = nullptr;
   ZeroStateNewDeskButton* zero_state_new_desk_button_ = nullptr;
   ExpandedStateNewDeskButton* expanded_state_new_desk_button_ = nullptr;
+  // TODO(sammiequon): This is a placeholder. The final button should override
+  // DeskButtonBase so that it can be accessible.
+  views::ImageButton* desks_templates_button_ = nullptr;
   ScrollArrowButton* left_scroll_button_ = nullptr;
   ScrollArrowButton* right_scroll_button_ = nullptr;
   // Mini view whose preview is being dragged.

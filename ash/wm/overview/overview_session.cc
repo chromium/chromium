@@ -929,6 +929,11 @@ bool OverviewSession::IsWindowActiveWindowBeforeOverview(
   return window == active_window_before_overview_;
 }
 
+void OverviewSession::ShowDesksTemplatesGrids() {
+  for (auto& grid : grid_list_)
+    grid->ShowDesksTemplatesGrid();
+}
+
 void OverviewSession::OnDisplayAdded(const display::Display& display) {
   if (EndOverview(OverviewEndAction::kDisplayAdded))
     return;

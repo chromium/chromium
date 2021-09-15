@@ -1672,6 +1672,8 @@ component("ash") {
     "wm/overview/delayed_animation_observer.h",
     "wm/overview/delayed_animation_observer_impl.cc",
     "wm/overview/delayed_animation_observer_impl.h",
+    "wm/overview/desks_templates/desks_templates_grid_view.cc",
+    "wm/overview/desks_templates/desks_templates_grid_view.h",
     "wm/overview/drop_target_view.cc",
     "wm/overview/drop_target_view.h",
     "wm/overview/overview_animation_state_waiter.cc",

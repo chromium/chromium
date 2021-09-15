@@ -185,6 +185,9 @@ class DesksBarScrollViewLayout : public views::LayoutManager {
   // views::LayoutManager:
   void Layout(views::View* host) override {
     const gfx::Rect scroll_bounds = bar_view_->scroll_view_->bounds();
+
+    auto* desks_templates_button = bar_view_->desks_templates_button();
+
     // |host| here is |scroll_view_contents_|.
     if (bar_view_->IsZeroState()) {
       host->SetBoundsRect(scroll_bounds);
@@ -198,9 +201,18 @@ class DesksBarScrollViewLayout : public views::LayoutManager {
       const gfx::Size zero_state_new_desk_button_size =
           zero_state_new_desk_button->GetPreferredSize();
 
+      const gfx::Size desks_templates_button_size =
+          desks_templates_button ? desks_templates_button->GetPreferredSize()
+                                 : gfx::Size();
+      const int width_for_desks_templates_button =
+          desks_templates_button
+              ? desks_templates_button_size.width() + kZeroStateButtonSpacing
+              : 0;
+
       const int content_width = zero_state_default_desk_button_size.width() +
                                 kZeroStateButtonSpacing +
-                                zero_state_new_desk_button_size.width();
+                                zero_state_new_desk_button_size.width() +
+                                width_for_desks_templates_button;
       zero_state_default_desk_button->SetBoundsRect(gfx::Rect(
           gfx::Point((scroll_bounds.width() - content_width) / 2, kZeroStateY),
           zero_state_default_desk_button_size));
@@ -216,6 +228,14 @@ class DesksBarScrollViewLayout : public views::LayoutManager {
                          kZeroStateButtonSpacing,
                      kZeroStateY),
           zero_state_new_desk_button_size));
+
+      if (desks_templates_button) {
+        desks_templates_button->SetBoundsRect(
+            gfx::Rect(gfx::Point(zero_state_new_desk_button->bounds().right() +
+                                     kZeroStateButtonSpacing,
+                                 kZeroStateY),
+                      desks_templates_button_size));
+      }
 
       // Keep the background view's translation updated while the height of bar
       // changes. E.g, it could happens while zooming in/out the bar. Note, the
@@ -233,10 +253,12 @@ class DesksBarScrollViewLayout : public views::LayoutManager {
 
     gfx::Size mini_view_size = mini_views[0]->GetPreferredSize();
     const int mini_view_spacing = GetSpaceBetweenMiniViews(mini_views[0]);
-    // The new desk button in the expaneded bar view has the same size as mini
-    // view.
-    int content_width =
-        (mini_views.size() + 1) * (mini_view_size.width() + mini_view_spacing) -
+    // The new desk button and template button in the expanded bar view has the
+    // same size as mini view.
+    const int num_items =
+        static_cast<int>(mini_views.size()) + (desks_templates_button ? 2 : 1);
+    const int content_width =
+        num_items * (mini_view_size.width() + mini_view_spacing) -
         mini_view_spacing;
     width_ = std::max(scroll_bounds.width(), content_width);
 
@@ -254,6 +276,12 @@ class DesksBarScrollViewLayout : public views::LayoutManager {
     }
     bar_view_->expanded_state_new_desk_button()->SetBoundsRect(
         gfx::Rect(gfx::Point(x, y), mini_view_size));
+
+    if (desks_templates_button) {
+      x += (mini_view_size.width() + mini_view_spacing);
+      desks_templates_button->SetBoundsRect(
+          gfx::Rect(gfx::Point(x, y), mini_view_size));
+    }
   }
 
   // views::LayoutManager:
@@ -317,6 +345,13 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
       std::make_unique<ZeroStateDefaultDeskButton>(this));
   zero_state_new_desk_button_ = scroll_view_contents_->AddChildView(
       std::make_unique<ZeroStateNewDeskButton>(this));
+  if (features::AreDesksTemplatesEnabled()) {
+    desks_templates_button_ = scroll_view_contents_->AddChildView(
+        std::make_unique<views::ImageButton>(base::BindRepeating(
+            &DesksBarView::OnTemplatesButtonPressed, base::Unretained(this))));
+    desks_templates_button_->SetBorder(
+        views::CreateSolidBorder(/*thickness=*/2, SK_ColorGRAY));
+  }
   scroll_view_contents_->SetLayoutManager(
       std::make_unique<DesksBarScrollViewLayout>(this));
 
@@ -1050,7 +1085,7 @@ int DesksBarView::GetAdjustedUncroppedScrollPosition(int position) const {
       break;
   }
 
-  DCHECK(i < mini_views_size);
+  DCHECK_LT(i, mini_views_size);
   if ((position - mini_view_bounds.x()) < mini_view_bounds.width() / 2) {
     adjusted_position = mini_view_bounds.x();
   } else {
@@ -1059,6 +1094,12 @@ int DesksBarView::GetAdjustedUncroppedScrollPosition(int position) const {
       adjusted_position = mini_views_[i + 1]->bounds().x();
   }
   return adjusted_position;
+}
+
+void DesksBarView::OnTemplatesButtonPressed() {
+  // TODO(sammiequon): The button might be changed to be a toggle and this
+  // callback will need to be updated to reflect that.
+  overview_grid_->overview_session()->ShowDesksTemplatesGrids();
 }
 
 }  // namespace ash

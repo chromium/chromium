@@ -333,6 +333,9 @@ const base::Feature kDemoModeSWA{"DemoModeSWA",
 const base::Feature kDeskTemplateSync{"DeskTemplateSync",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kDesksTemplates{"DesksTemplates",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables the Diagnostics app.
 const base::Feature kDiagnosticsApp{"DiagnosticsApp",
                                     base::FEATURE_ENABLED_BY_DEFAULT};
@@ -1206,6 +1209,10 @@ bool AreContextualNudgesEnabled() {
   if (!IsHideShelfControlsInTabletModeEnabled())
     return false;
   return base::FeatureList::IsEnabled(kContextualNudges);
+}
+
+bool AreDesksTemplatesEnabled() {
+  return base::FeatureList::IsEnabled(kDesksTemplates);
 }
 
 bool AreImprovedScreenCaptureSettingsEnabled() {
