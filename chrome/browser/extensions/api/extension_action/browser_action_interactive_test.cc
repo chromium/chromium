@@ -34,6 +34,7 @@
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_host.h"
+#include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/notification_types.h"
 #include "extensions/common/extension.h"
@@ -191,9 +192,8 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
   // Trigger a focus loss to close the popup.
   void ClosePopupViaFocusLoss() {
     EXPECT_TRUE(ExtensionActionTestHelper::Create(browser())->HasPopup());
-    content::WindowedNotificationObserver observer(
-        extensions::NOTIFICATION_EXTENSION_HOST_DESTROYED,
-        content::NotificationService::AllSources());
+
+    ExtensionHostTestHelper host_helper(profile());
 
 #if defined(OS_MAC)
     // ClickOnView() in an inactive window is not robust on Mac. The click does
@@ -213,7 +213,7 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
 
     // Wait for the notification to achieve a consistent state and verify that
     // the popup was properly torn down.
-    observer.Wait();
+    host_helper.WaitForExtensionHostDestroyed();
     base::RunLoop().RunUntilIdle();
   }
 
@@ -390,13 +390,11 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, TabSwitchClosesPopup) {
             browser()->tab_strip_model()->GetActiveWebContents());
   OpenPopupViaAPI(false);
 
-  content::WindowedNotificationObserver observer(
-      extensions::NOTIFICATION_EXTENSION_HOST_DESTROYED,
-      content::NotificationService::AllSources());
+  ExtensionHostTestHelper host_helper(profile());
   // Change active tabs, the extension popup should close.
   browser()->tab_strip_model()->ActivateTabAt(
       0, {TabStripModel::GestureType::kOther});
-  observer.Wait();
+  host_helper.WaitForExtensionHostDestroyed();
 
   EXPECT_FALSE(ExtensionActionTestHelper::Create(browser())->HasPopup());
 }
