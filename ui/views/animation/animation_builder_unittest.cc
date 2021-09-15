@@ -327,10 +327,10 @@ TEST_F(AnimationBuilderTest, CheckStartEndCallbacks) {
 
   {
     AnimationBuilder()
-        .Once()
         .OnStarted(
             base::BindOnce([](bool* started) { *started = true; }, &started))
         .OnEnded(base::BindOnce([](bool* ended) { *ended = true; }, &ended))
+        .Once()
         .SetDuration(kDelay)
         .SetOpacity(first_animating_view, 0.4f)
         .Offset(base::TimeDelta())
@@ -363,21 +363,19 @@ TEST_F(AnimationBuilderTest, CheckOnWillRepeatCallbacks) {
 
   {
     AnimationBuilder b;
-    b.Repeatedly()
+    b.OnWillRepeat(base::BindRepeating([](int& repeat) { repeat = repeat + 1; },
+                                       std::ref(first_repeat_count)))
+        .Repeatedly()
         .SetDuration(kDelay)
-        .OnWillRepeat(
-            base::BindRepeating([](int& repeat) { repeat = repeat + 1; },
-                                std::ref(first_repeat_count)))
         .SetOpacity(first_animating_view, 0.4f)
         .Then()
         .SetDuration(kDelay)
         .SetOpacity(first_animating_view, 0.9f);
 
-    b.Repeatedly()
+    b.OnWillRepeat(base::BindRepeating([](int& repeat) { repeat = repeat + 1; },
+                                       std::ref(second_repeat_count)))
+        .Repeatedly()
         .SetDuration(kDelay)
-        .OnWillRepeat(
-            base::BindRepeating([](int& repeat) { repeat = repeat + 1; },
-                                std::ref(second_repeat_count)))
         .SetRoundedCorners(first_animating_view, first_rounded_corners)
         .Then()
         .SetDuration(kDelay)

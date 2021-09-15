@@ -77,8 +77,22 @@ class VIEWS_EXPORT AnimationBuilder {
   ~AnimationBuilder();
 
   // Options for the whole animation
+
   AnimationBuilder& SetPreemptionStrategy(
       ui::LayerAnimator::PreemptionStrategy preemption_strategy);
+  // Registers |callback| to be called when the animation starts.
+  AnimationBuilder& OnStarted(base::OnceClosure callback);
+  // Registers |callback| to be called when the animation ends. Not called if
+  // animation is aborted.
+  AnimationBuilder& OnEnded(base::OnceClosure callback);
+  // Registers |callback| to be called when a sequence repetition ends and will
+  // repeat. Not called if sequence is aborted.
+  AnimationBuilder& OnWillRepeat(base::RepeatingClosure callback);
+  // Registers |callback| to be called if animation is aborted for any reason.
+  // Should never do anything that may cause another animation to be started.
+  AnimationBuilder& OnAborted(base::OnceClosure callback);
+  // Registers |callback| to be called when the animation is scheduled.
+  AnimationBuilder& OnScheduled(base::OnceClosure callback);
 
   // Creates a new sequence (that optionally repeats).
   AnimationSequenceBlock Once();
@@ -105,18 +119,6 @@ class VIEWS_EXPORT AnimationBuilder {
   // Called when the sequence is ended. Converts `values_` to
   // `layer_animation_sequences_`.
   void TerminateSequence(base::PassKey<AnimationSequenceBlock>);
-
-  // Called through the corresponding functions on AnimationSequenceBlock.
-  void SetOnStarted(base::PassKey<AnimationSequenceBlock>,
-                    base::OnceClosure callback);
-  void SetOnEnded(base::PassKey<AnimationSequenceBlock>,
-                  base::OnceClosure callback);
-  void SetOnWillRepeat(base::PassKey<AnimationSequenceBlock>,
-                       base::RepeatingClosure callback);
-  void SetOnAborted(base::PassKey<AnimationSequenceBlock>,
-                    base::OnceClosure callback);
-  void SetOnScheduled(base::PassKey<AnimationSequenceBlock>,
-                      base::OnceClosure callback);
 
   static void SetObserverDeletedCallbackForTesting(
       base::RepeatingClosure deleted_closure);

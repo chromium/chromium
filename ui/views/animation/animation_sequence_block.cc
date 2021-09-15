@@ -224,41 +224,6 @@ AnimationSequenceBlock AnimationSequenceBlock::Then() {
   return Offset(duration_.value_or(base::TimeDelta()));
 }
 
-AnimationSequenceBlock& AnimationSequenceBlock::OnStarted(
-    base::OnceClosure callback) {
-  DCHECK(!finalized_) << "Do not access old blocks after creating new ones.";
-  owner_->SetOnStarted(PassKey(), std::move(callback));
-  return *this;
-}
-
-AnimationSequenceBlock& AnimationSequenceBlock::OnEnded(
-    base::OnceClosure callback) {
-  DCHECK(!finalized_) << "Do not access old blocks after creating new ones.";
-  owner_->SetOnEnded(PassKey(), std::move(callback));
-  return *this;
-}
-
-AnimationSequenceBlock& AnimationSequenceBlock::OnWillRepeat(
-    base::RepeatingClosure callback) {
-  DCHECK(!finalized_) << "Do not access old blocks after creating new ones.";
-  owner_->SetOnWillRepeat(PassKey(), std::move(callback));
-  return *this;
-}
-
-AnimationSequenceBlock& AnimationSequenceBlock::OnAborted(
-    base::OnceClosure callback) {
-  DCHECK(!finalized_) << "Do not access old blocks after creating new ones.";
-  owner_->SetOnAborted(PassKey(), std::move(callback));
-  return *this;
-}
-
-AnimationSequenceBlock& AnimationSequenceBlock::OnScheduled(
-    base::OnceClosure callback) {
-  DCHECK(!finalized_) << "Do not access old blocks after creating new ones.";
-  owner_->SetOnScheduled(PassKey(), std::move(callback));
-  return *this;
-}
-
 AnimationSequenceBlock::Element::Element(AnimationValue animation_value,
                                          gfx::Tween::Type tween_type)
     : animation_value_(std::move(animation_value)), tween_type_(tween_type) {}

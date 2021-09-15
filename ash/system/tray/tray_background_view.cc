@@ -537,16 +537,6 @@ void TrayBackgroundView::FadeInAnimation() {
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
-      .Once()
-      .SetDuration(kShowAnimationDelayMs)
-      .Then()
-      .SetDuration(base::TimeDelta())
-      .SetOpacity(this, 0.0f)
-      .SetTransform(this, transform)
-      .Then()
-      .SetDuration(kAnimationDurationForVisibilityMs)
-      .SetOpacity(this, 1.0f)
-      .SetTransform(this, gfx::Transform())
       .OnAborted(base::BindOnce(
           [](base::WeakPtr<TrayBackgroundView> view) {
             if (view)
@@ -558,7 +548,17 @@ void TrayBackgroundView::FadeInAnimation() {
             if (view)
               view->OnAnimationEnded();
           },
-          weak_factory_.GetWeakPtr()));
+          weak_factory_.GetWeakPtr()))
+      .Once()
+      .SetDuration(kShowAnimationDelayMs)
+      .Then()
+      .SetDuration(base::TimeDelta())
+      .SetOpacity(this, 0.0f)
+      .SetTransform(this, transform)
+      .Then()
+      .SetDuration(kAnimationDurationForVisibilityMs)
+      .SetOpacity(this, 1.0f)
+      .SetTransform(this, gfx::Transform());
 }
 
 void TrayBackgroundView::BounceInAnimation() {
@@ -598,6 +598,18 @@ void TrayBackgroundView::BounceInAnimation() {
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnAborted(base::BindOnce(
+          [](base::WeakPtr<TrayBackgroundView> view) {
+            if (view)
+              view->OnAnimationAborted();
+          },
+          weak_factory_.GetWeakPtr()))
+      .OnEnded(base::BindOnce(
+          [](base::WeakPtr<TrayBackgroundView> view) {
+            if (view)
+              view->OnAnimationEnded();
+          },
+          weak_factory_.GetWeakPtr()))
       .Once()
       .SetDuration(base::TimeDelta())
       .SetOpacity(this, 1.0)
@@ -611,19 +623,7 @@ void TrayBackgroundView::BounceInAnimation() {
       .SetTransform(this, std::move(move_down), gfx::Tween::EASE_OUT_4)
       .Then()
       .SetDuration(kAnimationDurationForBounceElement)
-      .SetTransform(this, gfx::Transform(), gfx::Tween::FAST_OUT_SLOW_IN_3)
-      .OnAborted(base::BindOnce(
-          [](base::WeakPtr<TrayBackgroundView> view) {
-            if (view)
-              view->OnAnimationAborted();
-          },
-          weak_factory_.GetWeakPtr()))
-      .OnEnded(base::BindOnce(
-          [](base::WeakPtr<TrayBackgroundView> view) {
-            if (view)
-              view->OnAnimationEnded();
-          },
-          weak_factory_.GetWeakPtr()));
+      .SetTransform(this, gfx::Transform(), gfx::Tween::FAST_OUT_SLOW_IN_3);
 }
 
 // Any visibility updates should be called after the hide animation is
@@ -639,11 +639,6 @@ void TrayBackgroundView::HideAnimation() {
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
-      .Once()
-      .SetDuration(kAnimationDurationForHideMs)
-      .SetVisibility(this, false)
-      .SetTransform(this, std::move(scale_about_pivot))
-      .SetOpacity(this, 0.0f)
       .OnAborted(base::BindOnce(
           [](base::WeakPtr<TrayBackgroundView> view) {
             if (view)
@@ -655,7 +650,12 @@ void TrayBackgroundView::HideAnimation() {
             if (view)
               view->OnAnimationEnded();
           },
-          weak_factory_.GetWeakPtr()));
+          weak_factory_.GetWeakPtr()))
+      .Once()
+      .SetDuration(kAnimationDurationForHideMs)
+      .SetVisibility(this, false)
+      .SetTransform(this, std::move(scale_about_pivot))
+      .SetOpacity(this, 0.0f);
 }
 
 void TrayBackgroundView::SetIsActive(bool is_active) {

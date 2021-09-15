@@ -186,9 +186,9 @@ void SlideOutController::SetTransformWithAnimationIfNecessary(
     // An animation starts. OnAnimationsCompleted will be called just
     // after the animation finishes.
     AnimationBuilder()
-        .Once()
         .OnEnded(base::BindOnce(&SlideOutController::OnAnimationsCompleted,
                                 base::Unretained(this)))
+        .Once()
         .SetDuration(animation_duration)
         .SetTransform(layer, transform, kSwipeTweenType);
   } else {

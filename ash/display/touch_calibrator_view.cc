@@ -794,13 +794,13 @@ void TouchCalibratorView::AnimateLayerToPosition(views::View* view,
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
-      .Once()
       // base::Unretained is safe here since the lifetime of the animated views
       // is tied to the TouchCalibratorView itself.
       .OnEnded(base::BindOnce(&TouchCalibratorView::OnStateAnimationEnded,
                               base::Unretained(this)))
       .OnAborted(base::BindOnce(&TouchCalibratorView::OnStateAnimationEnded,
                                 base::Unretained(this)))
+      .Once()
       .SetDuration(duration)
       .SetBounds(view, gfx::Rect(end_position, view->size()))
       .SetOpacity(view, opacity);

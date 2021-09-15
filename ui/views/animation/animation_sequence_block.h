@@ -134,19 +134,6 @@ class VIEWS_EXPORT AnimationSequenceBlock {
   AnimationSequenceBlock Offset(base::TimeDelta since_last_block_start);
   AnimationSequenceBlock Then();
 
-  // Called when the animation starts for this sequence block.
-  AnimationSequenceBlock& OnStarted(base::OnceClosure callback);
-  // Called when the animation ends. Not called if animation is aborted.
-  AnimationSequenceBlock& OnEnded(base::OnceClosure callback);
-  // Called when a sequence repetition ends and will repeat. Not called if
-  // sequence is aborted.
-  AnimationSequenceBlock& OnWillRepeat(base::RepeatingClosure callback);
-  // Called if animation is aborted for any reason. Should never do anything
-  // that may cause another animation to be started.
-  AnimationSequenceBlock& OnAborted(base::OnceClosure callback);
-  // Called when the animation is scheduled.
-  AnimationSequenceBlock& OnScheduled(base::OnceClosure callback);
-
  private:
   using AnimationValue = absl::variant<gfx::Rect,
                                        float,

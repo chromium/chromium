@@ -184,6 +184,32 @@ AnimationBuilder& AnimationBuilder::SetPreemptionStrategy(
   return *this;
 }
 
+AnimationBuilder& AnimationBuilder::OnStarted(base::OnceClosure callback) {
+  GetObserver()->SetOnStarted(std::move(callback));
+  return *this;
+}
+
+AnimationBuilder& AnimationBuilder::OnEnded(base::OnceClosure callback) {
+  GetObserver()->SetOnEnded(std::move(callback));
+  return *this;
+}
+
+AnimationBuilder& AnimationBuilder::OnWillRepeat(
+    base::RepeatingClosure callback) {
+  GetObserver()->SetOnWillRepeat(std::move(callback));
+  return *this;
+}
+
+AnimationBuilder& AnimationBuilder::OnAborted(base::OnceClosure callback) {
+  GetObserver()->SetOnAborted(std::move(callback));
+  return *this;
+}
+
+AnimationBuilder& AnimationBuilder::OnScheduled(base::OnceClosure callback) {
+  GetObserver()->SetOnScheduled(std::move(callback));
+  return *this;
+}
+
 AnimationSequenceBlock AnimationBuilder::Once() {
   repeating_ = false;
   return NewSequence();
@@ -192,31 +218,6 @@ AnimationSequenceBlock AnimationBuilder::Once() {
 AnimationSequenceBlock AnimationBuilder::Repeatedly() {
   repeating_ = true;
   return NewSequence();
-}
-
-void AnimationBuilder::SetOnStarted(base::PassKey<AnimationSequenceBlock>,
-                                    base::OnceClosure callback) {
-  GetObserver()->SetOnStarted(std::move(callback));
-}
-
-void AnimationBuilder::SetOnEnded(base::PassKey<AnimationSequenceBlock>,
-                                  base::OnceClosure callback) {
-  GetObserver()->SetOnEnded(std::move(callback));
-}
-
-void AnimationBuilder::SetOnWillRepeat(base::PassKey<AnimationSequenceBlock>,
-                                       base::RepeatingClosure callback) {
-  GetObserver()->SetOnWillRepeat(std::move(callback));
-}
-
-void AnimationBuilder::SetOnAborted(base::PassKey<AnimationSequenceBlock>,
-                                    base::OnceClosure callback) {
-  GetObserver()->SetOnAborted(std::move(callback));
-}
-
-void AnimationBuilder::SetOnScheduled(base::PassKey<AnimationSequenceBlock>,
-                                      base::OnceClosure callback) {
-  GetObserver()->SetOnScheduled(std::move(callback));
 }
 
 void AnimationBuilder::AddLayerAnimationElement(
