@@ -56,7 +56,10 @@ component("printing_base") {
   cflags = []
   defines = [ "IS_PRINTING_BASE_IMPL" ]
 
-  public_deps = [ "//build:chromeos_buildflags" ]
+  public_deps = [
+    "//build:chromeos_buildflags",
+    "//printing/buildflags",
+  ]
   deps = [
     "//base",
     "//third_party/icu",
@@ -65,7 +68,7 @@ component("printing_base") {
   ]
 }
 
-if (is_linux || is_chromeos) {
+if (enable_oop_printing && (is_linux || is_chromeos)) {
   source_set("printing_sandbox_hook") {
     sources = [
       "sandbox/print_backend_sandbox_hook_linux.cc",
@@ -124,7 +127,6 @@ component("printing") {
   public_deps = [
     ":printing_base",
     "//printing/backend",
-    "//printing/buildflags",
   ]
   deps = [
     "//base",
@@ -264,12 +266,9 @@ static_library("test_support") {
 
 test("printing_unittests") {
   sources = [
-    "backend/mojom/print_backend_mojom_traits_unittest.cc",
     "backend/print_backend_unittest.cc",
     "backend/print_backend_utils_unittest.cc",
-    "backend/test_print_backend_unittest.cc",
     "metafile_skia_unittest.cc",
-    "mojom/printing_context_mojom_traits_unittest.cc",
     "nup_parameters_unittest.cc",
     "page_number_unittest.cc",
     "page_range_unittest.cc",
@@ -291,10 +290,8 @@ test("printing_unittests") {
     "//mojo/public/cpp/test_support:test_utils",
     "//printing/backend",
     "//printing/backend:test_support",
-    "//printing/backend/mojom",
     "//printing/common",
     "//printing/mojom",
-    "//printing/mojom:printing_context",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base",
@@ -302,6 +299,18 @@ test("printing_unittests") {
     "//ui/gfx:test_support",
     "//ui/gfx/geometry",
   ]
+
+  if (enable_oop_printing) {
+    sources += [
+      "backend/mojom/print_backend_mojom_traits_unittest.cc",
+      "backend/test_print_backend_unittest.cc",
+      "mojom/printing_context_mojom_traits_unittest.cc",
+    ]
+    deps += [
+      "//printing/backend/mojom",
+      "//printing/mojom:printing_context",
+    ]
+  }
 
   if (is_mac) {
     sources += [ "pdf_metafile_cg_mac_unittest.cc" ]

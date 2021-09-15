@@ -5977,7 +5977,7 @@ static_library("browser") {
     if (is_linux || is_chromeos) {
       sources += [ "printing/printer_manager_dialog_linux.cc" ]
     }
-    if (is_win || is_mac || is_linux || is_chromeos) {
+    if (enable_oop_printing) {
       sources += [
         "printing/print_backend_service_manager.cc",
         "printing/print_backend_service_manager.h",
@@ -7433,7 +7433,7 @@ static_library("test_support") {
     ]
   }
 
-  if (enable_basic_printing) {
+  if (enable_oop_printing) {
     if (is_win || is_mac || is_linux || is_chromeos) {
       sources += [
         "printing/print_backend_service_test_impl.cc",

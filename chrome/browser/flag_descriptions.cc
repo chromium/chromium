@@ -5189,12 +5189,6 @@ const char kDownloadShelfWebUIDescription[] =
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
     defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
 
-const char kEnableOopPrintDriversName[] =
-    "Enables Out-of-Process Printer Drivers";
-const char kEnableOopPrintDriversDescription[] =
-    "Enables printing interactions with the operating system to be performed "
-    "out-of-process.";
-
 const char kWebUIBrandingUpdateName[] = "WebUI Branding Update";
 const char kWebUIBrandingUpdateDescription[] =
     "Changes various UI components in WebUI pages to have a more modern look.";
@@ -5275,6 +5269,14 @@ const char kNaclDescription[] =
     "Support Native Client for all web applications, even those that were not "
     "installed from the Chrome Web Store.";
 #endif  // ENABLE_NACL
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+const char kEnableOopPrintDriversName[] =
+    "Enables Out-of-Process Printer Drivers";
+const char kEnableOopPrintDriversDescription[] =
+    "Enables printing interactions with the operating system to be performed "
+    "out-of-process.";
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
 #if BUILDFLAG(ENABLE_PAINT_PREVIEW) && defined(OS_ANDROID)
 const char kPaintPreviewDemoName[] = "Paint Preview Demo";

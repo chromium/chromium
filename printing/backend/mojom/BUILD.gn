@@ -4,6 +4,9 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
+import("//printing/buildflags/buildflags.gni")
+
+assert(enable_oop_printing)
 
 mojom("mojom") {
   sources = [ "print_backend.mojom" ]
