@@ -95,6 +95,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/sessions:test_support",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/url_loading",
+    "//ios/chrome/browser/window_activities",
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",
