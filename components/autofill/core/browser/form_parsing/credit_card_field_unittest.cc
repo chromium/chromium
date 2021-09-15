@@ -149,9 +149,23 @@ TEST_F(CreditCardFieldTest, ParseMiniumCreditCard) {
 }
 
 struct CreditCardFieldYearTestCase {
-  std::vector<SelectOption> options;
+  bool with_noise;
   ServerFieldType expected_type;
 };
+
+std::vector<SelectOption> MakeOptionVector(
+    const CreditCardFieldYearTestCase& test_case) {
+  std::vector<SelectOption> options;
+  if (test_case.expected_type == CREDIT_CARD_EXP_2_DIGIT_YEAR) {
+    options = Get2DigitYears();
+  } else {
+    options = Get4DigitYears();
+  }
+  if (test_case.with_noise) {
+    options = WithNoise(options);
+  }
+  return options;
+}
 
 class CreditCardFieldYearTest
     : public CreditCardFieldTestBase,
@@ -164,7 +178,7 @@ TEST_P(CreditCardFieldYearTest, ParseMinimumCreditCardWithExpiryDateOptions) {
   AddSelectOneFormFieldDataWithLength(
       "Random Label", "Random Label",
       GetParam().expected_type == CREDIT_CARD_EXP_2_DIGIT_YEAR ? 2 : 4,
-      GetParam().options, GetParam().expected_type);
+      MakeOptionVector(GetParam()), GetParam().expected_type);
 
   ClassifyAndVerify(ParseResult::PARSED);
 }
@@ -172,14 +186,11 @@ TEST_P(CreditCardFieldYearTest, ParseMinimumCreditCardWithExpiryDateOptions) {
 INSTANTIATE_TEST_SUITE_P(
     ,
     CreditCardFieldYearTest,
-    testing::Values(CreditCardFieldYearTestCase{Get2DigitYears(),
-                                                CREDIT_CARD_EXP_2_DIGIT_YEAR},
-                    CreditCardFieldYearTestCase{Get4DigitYears(),
-                                                CREDIT_CARD_EXP_4_DIGIT_YEAR},
-                    CreditCardFieldYearTestCase{WithNoise(Get2DigitYears()),
-                                                CREDIT_CARD_EXP_2_DIGIT_YEAR},
-                    CreditCardFieldYearTestCase{WithNoise(Get4DigitYears()),
-                                                CREDIT_CARD_EXP_4_DIGIT_YEAR}));
+    testing::Values(
+        CreditCardFieldYearTestCase{false, CREDIT_CARD_EXP_2_DIGIT_YEAR},
+        CreditCardFieldYearTestCase{false, CREDIT_CARD_EXP_4_DIGIT_YEAR},
+        CreditCardFieldYearTestCase{true, CREDIT_CARD_EXP_2_DIGIT_YEAR},
+        CreditCardFieldYearTestCase{true, CREDIT_CARD_EXP_4_DIGIT_YEAR}));
 
 TEST_F(CreditCardFieldTest, ParseFullCreditCard) {
   AddTextFormFieldData("name_on_card", "Name on Card", CREDIT_CARD_NAME_FULL);

@@ -1770,47 +1770,41 @@ TEST(CreditCardTest, FullDigitsForDisplay) {
 // Verifies that a credit card should be updated.
 struct ShouldUpdateExpirationTestCase {
   bool should_update_expiration;
-  int month;
-  int year;
+  base::TimeDelta time_delta;
   CreditCard::RecordType record_type;
   CreditCard::ServerStatus server_status;
 };
 
+constexpr base::TimeDelta kCurrent = base::TimeDelta::FromDays(0);
+constexpr base::TimeDelta kOneYear = base::TimeDelta::FromDays(365);
+constexpr base::TimeDelta kOneMonth = base::TimeDelta::FromDays(31);
+
+void MonthAndYearFromDelta(const base::TimeDelta& time_delta,
+                           int& month,
+                           int& year) {
+  base::Time now = AutofillClock::Now();
+  base::Time::Exploded exploded;
+  (now + time_delta).LocalExplode(&exploded);
+  month = exploded.month;
+  year = exploded.year;
+}
+
 class ShouldUpdateExpirationTest
     : public testing::TestWithParam<ShouldUpdateExpirationTestCase> {};
-
-class TestingTimes {
- public:
-  TestingTimes() {
-    now_ = AutofillClock::Now();
-    (now_ - base::TimeDelta::FromDays(365)).LocalExplode(&last_year_);
-    (now_ - base::TimeDelta::FromDays(31)).LocalExplode(&last_month_);
-    now_.LocalExplode(&current_);
-    (now_ + base::TimeDelta::FromDays(31)).LocalExplode(&next_month_);
-    (now_ + base::TimeDelta::FromDays(365)).LocalExplode(&next_year_);
-  }
-
-  base::Time now_;
-  base::Time::Exploded last_year_;
-  base::Time::Exploded last_month_;
-  base::Time::Exploded current_;
-  base::Time::Exploded next_month_;
-  base::Time::Exploded next_year_;
-};
-
-TestingTimes testingTimes;
 
 TEST_P(ShouldUpdateExpirationTest, ShouldUpdateExpiration) {
   auto test_case = GetParam();
   CreditCard card;
-  card.SetExpirationMonth(test_case.month);
-  card.SetExpirationYear(test_case.year);
+  int month, year;
+  MonthAndYearFromDelta(test_case.time_delta, month, year);
+  card.SetExpirationMonth(month);
+  card.SetExpirationYear(year);
   card.set_record_type(test_case.record_type);
   if (card.record_type() != CreditCard::LOCAL_CARD)
     card.SetServerStatus(test_case.server_status);
 
   EXPECT_EQ(test_case.should_update_expiration,
-            card.ShouldUpdateExpiration(testingTimes.now_));
+            card.ShouldUpdateExpiration(AutofillClock::Now()));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1818,94 +1812,71 @@ INSTANTIATE_TEST_SUITE_P(
     ShouldUpdateExpirationTest,
     testing::Values(
         // Cards that expired last year should always be updated.
-        ShouldUpdateExpirationTestCase{true, testingTimes.last_year_.month,
-                                       testingTimes.last_year_.year,
-                                       CreditCard::LOCAL_CARD},
+        ShouldUpdateExpirationTestCase{true, -kOneYear, CreditCard::LOCAL_CARD},
         ShouldUpdateExpirationTestCase{
-            true, testingTimes.last_year_.month, testingTimes.last_year_.year,
-            CreditCard::FULL_SERVER_CARD, CreditCard::OK},
+            true, -kOneYear, CreditCard::FULL_SERVER_CARD, CreditCard::OK},
         ShouldUpdateExpirationTestCase{
-            true, testingTimes.last_year_.month, testingTimes.last_year_.year,
-            CreditCard::MASKED_SERVER_CARD, CreditCard::OK},
+            true, -kOneYear, CreditCard::MASKED_SERVER_CARD, CreditCard::OK},
         ShouldUpdateExpirationTestCase{
-            true, testingTimes.last_year_.month, testingTimes.last_year_.year,
-            CreditCard::FULL_SERVER_CARD, CreditCard::EXPIRED},
-        ShouldUpdateExpirationTestCase{
-            true, testingTimes.last_year_.month, testingTimes.last_year_.year,
-            CreditCard::MASKED_SERVER_CARD, CreditCard::EXPIRED},
+            true, -kOneYear, CreditCard::FULL_SERVER_CARD, CreditCard::EXPIRED},
+        ShouldUpdateExpirationTestCase{true, -kOneYear,
+                                       CreditCard::MASKED_SERVER_CARD,
+                                       CreditCard::EXPIRED},
 
         // Cards that expired last month should always be updated.
-        ShouldUpdateExpirationTestCase{true, testingTimes.last_month_.month,
-                                       testingTimes.last_month_.year,
+        ShouldUpdateExpirationTestCase{true, -kOneMonth,
                                        CreditCard::LOCAL_CARD},
         ShouldUpdateExpirationTestCase{
-            true, testingTimes.last_month_.month, testingTimes.last_month_.year,
-            CreditCard::FULL_SERVER_CARD, CreditCard::OK},
+            true, -kOneMonth, CreditCard::FULL_SERVER_CARD, CreditCard::OK},
         ShouldUpdateExpirationTestCase{
-            true, testingTimes.last_month_.month, testingTimes.last_month_.year,
-            CreditCard::MASKED_SERVER_CARD, CreditCard::OK},
-        ShouldUpdateExpirationTestCase{
-            true, testingTimes.last_month_.month, testingTimes.last_month_.year,
-            CreditCard::FULL_SERVER_CARD, CreditCard::EXPIRED},
-        ShouldUpdateExpirationTestCase{
-            true, testingTimes.last_month_.month, testingTimes.last_month_.year,
-            CreditCard::MASKED_SERVER_CARD, CreditCard::EXPIRED},
+            true, -kOneMonth, CreditCard::MASKED_SERVER_CARD, CreditCard::OK},
+        ShouldUpdateExpirationTestCase{true, -kOneMonth,
+                                       CreditCard::FULL_SERVER_CARD,
+                                       CreditCard::EXPIRED},
+        ShouldUpdateExpirationTestCase{true, -kOneMonth,
+                                       CreditCard::MASKED_SERVER_CARD,
+                                       CreditCard::EXPIRED},
 
         // Cards that expire this month should be updated only if the server
         // status is EXPIRED.
-        ShouldUpdateExpirationTestCase{false, testingTimes.current_.month,
-                                       testingTimes.current_.year,
-                                       CreditCard::LOCAL_CARD},
+        ShouldUpdateExpirationTestCase{false, kCurrent, CreditCard::LOCAL_CARD},
         ShouldUpdateExpirationTestCase{
-            false, testingTimes.current_.month, testingTimes.current_.year,
-            CreditCard::FULL_SERVER_CARD, CreditCard::OK},
+            false, kCurrent, CreditCard::FULL_SERVER_CARD, CreditCard::OK},
         ShouldUpdateExpirationTestCase{
-            false, testingTimes.current_.month, testingTimes.current_.year,
-            CreditCard::MASKED_SERVER_CARD, CreditCard::OK},
+            false, kCurrent, CreditCard::MASKED_SERVER_CARD, CreditCard::OK},
         ShouldUpdateExpirationTestCase{
-            true, testingTimes.current_.month, testingTimes.current_.year,
-            CreditCard::FULL_SERVER_CARD, CreditCard::EXPIRED},
-        ShouldUpdateExpirationTestCase{
-            true, testingTimes.current_.month, testingTimes.current_.year,
-            CreditCard::MASKED_SERVER_CARD, CreditCard::EXPIRED},
+            true, kCurrent, CreditCard::FULL_SERVER_CARD, CreditCard::EXPIRED},
+        ShouldUpdateExpirationTestCase{true, kCurrent,
+                                       CreditCard::MASKED_SERVER_CARD,
+                                       CreditCard::EXPIRED},
 
         // Cards that expire next month should be updated only if the server
         // status is EXPIRED.
-        ShouldUpdateExpirationTestCase{false, testingTimes.next_month_.month,
-                                       testingTimes.next_month_.year,
+        ShouldUpdateExpirationTestCase{false, kOneMonth,
                                        CreditCard::LOCAL_CARD},
-        ShouldUpdateExpirationTestCase{false, testingTimes.next_month_.month,
-                                       testingTimes.next_month_.year,
+        ShouldUpdateExpirationTestCase{
+            false, kOneMonth, CreditCard::MASKED_SERVER_CARD, CreditCard::OK},
+        ShouldUpdateExpirationTestCase{
+            false, kOneMonth, CreditCard::FULL_SERVER_CARD, CreditCard::OK},
+        ShouldUpdateExpirationTestCase{true, kOneMonth,
                                        CreditCard::MASKED_SERVER_CARD,
-                                       CreditCard::OK},
-        ShouldUpdateExpirationTestCase{false, testingTimes.next_month_.month,
-                                       testingTimes.next_month_.year,
-                                       CreditCard::FULL_SERVER_CARD,
-                                       CreditCard::OK},
+                                       CreditCard::EXPIRED},
         ShouldUpdateExpirationTestCase{
-            true, testingTimes.next_month_.month, testingTimes.next_month_.year,
-            CreditCard::MASKED_SERVER_CARD, CreditCard::EXPIRED},
-        ShouldUpdateExpirationTestCase{
-            true, testingTimes.next_month_.month, testingTimes.next_month_.year,
-            CreditCard::FULL_SERVER_CARD, CreditCard::EXPIRED},
+            true, kOneMonth, CreditCard::FULL_SERVER_CARD, CreditCard::EXPIRED},
 
         // Cards that expire next year should be updated only if the server
         // status is EXPIRED.
-        ShouldUpdateExpirationTestCase{false, testingTimes.next_year_.month,
-                                       testingTimes.next_year_.year,
-                                       CreditCard::LOCAL_CARD},
+        ShouldUpdateExpirationTestCase{false, kOneYear, CreditCard::LOCAL_CARD},
         ShouldUpdateExpirationTestCase{
-            false, testingTimes.next_year_.month, testingTimes.next_year_.year,
-            CreditCard::MASKED_SERVER_CARD, CreditCard::OK},
+            false, kOneYear, CreditCard::MASKED_SERVER_CARD, CreditCard::OK},
         ShouldUpdateExpirationTestCase{
-            false, testingTimes.next_year_.month, testingTimes.next_year_.year,
-            CreditCard::FULL_SERVER_CARD, CreditCard::OK},
-        ShouldUpdateExpirationTestCase{
-            true, testingTimes.next_year_.month, testingTimes.next_year_.year,
-            CreditCard::MASKED_SERVER_CARD, CreditCard::EXPIRED},
-        ShouldUpdateExpirationTestCase{
-            true, testingTimes.next_year_.month, testingTimes.next_year_.year,
-            CreditCard::FULL_SERVER_CARD, CreditCard::EXPIRED}));
+            false, kOneYear, CreditCard::FULL_SERVER_CARD, CreditCard::OK},
+        ShouldUpdateExpirationTestCase{true, kOneYear,
+                                       CreditCard::MASKED_SERVER_CARD,
+                                       CreditCard::EXPIRED},
+        ShouldUpdateExpirationTestCase{true, kOneYear,
+                                       CreditCard::FULL_SERVER_CARD,
+                                       CreditCard::EXPIRED}));
 
 #if defined(OS_ANDROID)
 class CreditCardTestForKeyboardAccessory : public testing::Test {
