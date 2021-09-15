@@ -89,6 +89,7 @@
         <include name="IDR_ARC_SUPPORT_PROGRESSBAR_CSS" file="chromeos/arc_support/progressbar.css" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_PROGRESSBAR_JS" file="chromeos/arc_support/progressbar.js" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_FOCUS_MANAGER_JS" file="chromeos/arc_support/arc_optin_focus_manager.js" type="BINDATA" />
+        <include name="IDR_ARC_SUPPORT_LAYOUT_STYLE" file="chromeos/arc_support/layout_style.css" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_MAIN" file="chromeos/arc_support/main.html" allowexternalscript="true" flattenhtml="true" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_ICON_32" file="chromeos/arc_support/icon/32.png" type="BINDATA" />
         <include name="IDR_ARC_SUPPORT_ICON_192" file="chromeos/arc_support/icon/192.png" type="BINDATA" />
