@@ -542,6 +542,7 @@ static_library("test_support") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//testing/gmock",
     "//ui/gfx:test_support",
     "//url",

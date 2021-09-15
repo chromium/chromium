@@ -80,6 +80,7 @@ source_set("common") {
   deps = [
     ":fourcc",
     "//base",
+    "//build:chromeos_buildflags",
     "//build/config/linux/libdrm",
     "//gpu/ipc/common:common",
     "//media",

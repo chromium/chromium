@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "media/base/cdm_context.h"
 #include "media/base/supported_video_decoder_config.h"
 #include "media/base/video_decoder.h"
