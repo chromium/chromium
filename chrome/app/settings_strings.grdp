@@ -1865,8 +1865,14 @@
   <message name="IDS_SETTINGS_SEARCH_ENGINES_SITE_SEARCH_EXPLANATION_STARTER_PACK" desc="Explanation for 'Site Search' section">
     To search a specific site or part of Chrome, you can use the shortcuts here. For example, to search only Gmail, type "@gmail", then press Tab or Space.
   </message>
+  <message name="IDS_SETTINGS_SEARCH_ENGINES_NO_SITES_ADDED" desc="Text shown when the 'Site Search' section is empty">
+    No sites added
+  </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_INACTIVE_SHORTCUTS" desc="Label for 'Inactive shortcuts' section">
     Inactive shortcuts
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_ENGINES_NO_INACTIVE_SHORTCUTS" desc="Text shown when the 'Inactive Shortcuts' section is empty">
+    No inactive shortcuts
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_OTHER_ENGINES" desc="Label for 'other' Search Engines section">
     Other search engines

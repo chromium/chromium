@@ -3,6 +3,11 @@
         border-top: var(--cr-separator-line);
       }
     </style>
+    <div class="cr-row first" hidden="[[!isActiveSearchEnginesFlagEnabled_]]">
+      <div class="secondary">
+          $i18n{searchEnginesPageExplanation}
+      </div>
+    </div>
     <div class="cr-row first" hidden="[[!showKeywordTriggerSetting_]]">
       <div class="flex cr-padded-text">
         $i18n{searchEnginesKeyboardShortcutsTitle}
@@ -27,8 +32,16 @@
       </settings-radio-group>
     </div>
 
-    <div class="cr-row first">
+    <div class="cr-row first" hidden="[[isActiveSearchEnginesFlagEnabled_]]">
       <h2>$i18n{searchEnginesDefault}</h2>
+    </div>
+    <div class="cr-row first" hidden="[[!isActiveSearchEnginesFlagEnabled_]]">
+      <div class="flex cr-padded-text">
+        <h2>$i18n{searchEnginesSearchEngines}</h2>
+        <div class="secondary">
+            $i18n{searchEnginesSearchEnginesExplanation}
+        </div>
+      </div>
     </div>
     <div class="no-search-results list-frame"
         hidden="[[matchingDefaultEngines_.length]]">
@@ -48,15 +61,23 @@
 
     <template is="dom-if" if="[[isActiveSearchEnginesFlagEnabled_]]">
       <div class="cr-row first">
-        <h2 class="flex">$i18n{searchEnginesActive}</h2>
+        <div class="flex cr-padded-text">
+          <h2>$i18n{searchEnginesSiteSearch}</h2>
+          <div class="secondary">$i18n{searchEnginesSiteSearchExplanation}</div>
+        </div>
         <cr-button class="secondary-button header-aligned-button"
                    on-click="onAddSearchEngineTap_" id="addActiveSearchEngine">
           $i18n{add}
         </cr-button>
       </div>
+      <div id="noActiveEngines" class="list-frame"
+           hidden="[[activeEngines.length]]">
+          $i18n{searchEnginesNoSitesAdded}
+      </div>
       <div class="no-search-results list-frame"
-           hidden="[[matchingActiveEngines_.length]]">
-           $i18n{searchNoResults}
+           hidden="[[!showNoResultsMessage_(
+          activeEngines, matchingActiveEngines_)]]">
+          $i18n{searchNoResults}
       </div>
       <settings-search-engines-list id="activeEngines"
           hidden="[[!matchingActiveEngines_.length]]"
@@ -67,13 +88,15 @@
       </settings-search-engines-list>
     </template>
 
-    <div class="cr-row first">
+    <div class="cr-row first" hidden="[[isActiveSearchEnginesFlagEnabled_]]">
       <h2 class="flex">$i18n{searchEnginesOther}</h2>
       <cr-button class="secondary-button header-aligned-button"
-                 hidden="[[isActiveSearchEnginesFlagEnabled_]]"
                  on-click="onAddSearchEngineTap_" id="addSearchEngine">
         $i18n{add}
       </cr-button>
+    </div>
+    <div class="cr-row first" hidden="[[!isActiveSearchEnginesFlagEnabled_]]">
+        <h2>$i18n{searchEnginesInactiveShortcuts}</h2>
     </div>
     <div id="noOtherEngines" class="list-frame"
         hidden="[[otherEngines.length]]">
@@ -93,7 +116,13 @@
     </settings-search-engines-list>
     <template is="dom-if" if="[[showExtensionsList_]]">
       <div class="cr-row first">
-        <h2>$i18n{searchEnginesExtension}</h2>
+        <div class="flex cr-padded-text">
+          <h2 class="flex">$i18n{searchEnginesExtension}</h2>
+          <div class="secondary"
+               hidden="[[!isActiveSearchEnginesFlagEnabled_]]">
+            $i18n{searchEnginesExtensionExplanation}
+          </div>
+        </div>
       </div>
       <div class="no-search-results list-frame"
           hidden="[[matchingExtensions_.length]]">
