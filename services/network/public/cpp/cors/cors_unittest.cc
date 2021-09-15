@@ -301,13 +301,6 @@ TEST_F(CorsTest, SafelistedSecCHPrefersColorScheme) {
                                      "\"Prefers-Color-Scheme!\""));
 }
 
-TEST_F(CorsTest, SafelistedSecCHLang) {
-  EXPECT_TRUE(IsCorsSafelistedHeader("Lang", "\"en\", \"de\""));
-
-  // TODO(mkwst): Validate that `Lang` is a structured header.
-  // https://crbug.com/924969
-}
-
 TEST_F(CorsTest, SafelistedSecCHUA) {
   EXPECT_TRUE(IsCorsSafelistedHeader("Sec-CH-UA", "\"User Agent!\""));
   EXPECT_TRUE(IsCorsSafelistedHeader("Sec-CH-UA-Platform", "\"Platform!\""));

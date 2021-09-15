@@ -339,12 +339,6 @@ bool IsCorsSafelistedHeader(const std::string& name, const std::string& value) {
       // https://wicg.github.io/responsive-image-client-hints/#sec-ch-viewport-height
       "sec-ch-viewport-height",
 
-      // The `Lang` header field is a proposed replacement for
-      // `Accept-Language`, using the Client Hints infrastructure.
-      //
-      // https://tools.ietf.org/html/draft-west-lang-client-hint
-      "lang",
-
       // The `Sec-CH-UA-*` header fields are proposed replacements for
       // `User-Agent`, using the Client Hints infrastructure.
       //

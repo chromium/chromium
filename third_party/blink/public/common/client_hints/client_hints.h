@@ -41,12 +41,6 @@ BLINK_COMMON_EXPORT extern const char* const
 
 BLINK_COMMON_EXPORT extern const size_t kWebEffectiveConnectionTypeMappingCount;
 
-// Given a comma-separated, ordered list of language codes, return the list
-// formatted as a structured header, as described in
-// https://tools.ietf.org/html/draft-west-lang-client-hint-00#section-2.1
-std::string BLINK_COMMON_EXPORT
-SerializeLangClientHint(const std::string& raw_language_list);
-
 // Indicates that a hint is sent by default, regardless of an opt-in.
 BLINK_COMMON_EXPORT
 bool IsClientHintSentByDefault(network::mojom::WebClientHintsType type);

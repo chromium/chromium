@@ -91,11 +91,6 @@
       depends_on: ["FeaturePolicyForClientHints"],
     },
     {
-      name: "ClientHintLang",
-      permissions_policy_name: "ch-lang",
-      depends_on: ["FeaturePolicyForClientHints"],
-    },
-    {
       name: "ClientHintPrefersColorScheme",
       permissions_policy_name: "ch-prefers-color-scheme",
       depends_on: ["FeaturePolicyForClientHints"],

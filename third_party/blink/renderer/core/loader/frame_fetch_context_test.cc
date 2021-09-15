@@ -544,7 +544,6 @@ class FrameFetchContextHintsTest : public FrameFetchContextTest {
   FrameFetchContextHintsTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{blink::features::kUserAgentClientHint,
-                              blink::features::kLangClientHintHeader,
                               blink::features::
                                   kPrefersColorSchemeClientHintHeader},
         /*disabled_features=*/{});
@@ -726,30 +725,6 @@ TEST_F(FrameFetchContextHintsTest, MonitorViewportWidthHints) {
   ExpectHeader("https://www.example.com/1.gif", "DPR", false, "");
 }
 
-TEST_F(FrameFetchContextHintsTest, MonitorLangHint) {
-  ExpectHeader("https://www.example.com/1.gif", "Lang", false, "");
-  ExpectHeader("http://www.example.com/1.gif", "Lang", false, "");
-
-  ClientHintsPreferences preferences;
-  preferences.SetShouldSend(network::mojom::WebClientHintsType::kLang);
-  document->GetFrame()->GetClientHintsPreferences().UpdateFrom(preferences);
-
-  document->domWindow()->navigator()->SetLanguagesForTesting("en-US");
-  ExpectHeader("https://www.example.com/1.gif", "Lang", true, "\"en-US\"");
-  ExpectHeader("http://www.example.com/1.gif", "Lang", false, "");
-
-  // TODO(crbug.com/924969): A refactoring exposed a bug in the languages
-  // override that effects the `Lang` hint.
-  document->domWindow()->navigator()->SetLanguagesForTesting("en,de,fr");
-  ExpectHeader("https://www.example.com/1.gif", "Lang", true, "\"en-US\"");
-  ExpectHeader("http://www.example.com/1.gif", "Lang", false, "");
-
-  document->domWindow()->navigator()->SetLanguagesForTesting(
-      "en-US,fr_FR,de-DE,es");
-  ExpectHeader("https://www.example.com/1.gif", "Lang", true, "\"en-US\"");
-  ExpectHeader("http://www.example.com/1.gif", "Lang", false, "");
-}
-
 TEST_F(FrameFetchContextHintsTest, MonitorUAHints) {
   // `Sec-CH-UA` is always sent for secure requests
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA", true, "");
@@ -864,7 +839,6 @@ TEST_F(FrameFetchContextHintsTest, MonitorAllHints) {
   ExpectHeader("https://www.example.com/1.gif", "rtt", false, "");
   ExpectHeader("https://www.example.com/1.gif", "downlink", false, "");
   ExpectHeader("https://www.example.com/1.gif", "ect", false, "");
-  ExpectHeader("https://www.example.com/1.gif", "Lang", false, "");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Arch", false, "");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Platform-Version",
                false, "");
@@ -890,7 +864,6 @@ TEST_F(FrameFetchContextHintsTest, MonitorAllHints) {
       network::mojom::WebClientHintsType::kDownlink_DEPRECATED);
   preferences.SetShouldSend(
       network::mojom::WebClientHintsType::kEct_DEPRECATED);
-  preferences.SetShouldSend(network::mojom::WebClientHintsType::kLang);
   preferences.SetShouldSend(network::mojom::WebClientHintsType::kUA);
   preferences.SetShouldSend(network::mojom::WebClientHintsType::kUAArch);
   preferences.SetShouldSend(
@@ -904,11 +877,6 @@ TEST_F(FrameFetchContextHintsTest, MonitorAllHints) {
   ExpectHeader("https://www.example.com/1.gif", "DPR", true, "1");
   ExpectHeader("https://www.example.com/1.gif", "Width", true, "400", 400);
   ExpectHeader("https://www.example.com/1.gif", "Viewport-Width", true, "500");
-
-  // TODO(crbug.com/924969): A refactoring exposed a bug in the languages
-  // override setup that effects the `Lang` hint.
-  document->domWindow()->navigator()->SetLanguagesForTesting("en,de,fr");
-  ExpectHeader("https://www.example.com/1.gif", "Lang", true, "\"en-US\"");
 
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA", true, "");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Arch", true, "");
@@ -944,10 +912,10 @@ TEST_F(FrameFetchContextHintsTest, MonitorAllHints) {
 TEST_F(FrameFetchContextHintsTest, MonitorAllHintsPermissionsPolicy) {
   RecreateFetchContext(
       KURL("https://www.example.com/"),
-      "ch-dpr *; ch-device-memory *; ch-downlink *; ch-ect *; ch-lang *;"
-      "ch-rtt *; ch-ua *; ch-ua-arch *; ch-ua-platform *; "
-      "ch-ua-platform-version *; ch-ua-model *;"
-      "ch-viewport-width *; ch-width *; ch-prefers-color-scheme *");
+      "ch-dpr *; ch-device-memory *; ch-downlink *; ch-ect *; ch-rtt *; ch-ua "
+      "*; ch-ua-arch *; ch-ua-platform *; ch-ua-platform-version *; "
+      "ch-ua-model *; ch-viewport-width *; ch-width *; ch-prefers-color-scheme "
+      "*");
   document->GetSettings()->SetScriptEnabled(true);
   ClientHintsPreferences preferences;
   preferences.SetShouldSend(
@@ -964,7 +932,6 @@ TEST_F(FrameFetchContextHintsTest, MonitorAllHintsPermissionsPolicy) {
       network::mojom::WebClientHintsType::kDownlink_DEPRECATED);
   preferences.SetShouldSend(
       network::mojom::WebClientHintsType::kEct_DEPRECATED);
-  preferences.SetShouldSend(network::mojom::WebClientHintsType::kLang);
   preferences.SetShouldSend(network::mojom::WebClientHintsType::kUA);
   preferences.SetShouldSend(network::mojom::WebClientHintsType::kUAArch);
   preferences.SetShouldSend(
@@ -980,10 +947,6 @@ TEST_F(FrameFetchContextHintsTest, MonitorAllHintsPermissionsPolicy) {
   ExpectHeader("https://www.example.net/1.gif", "DPR", true, "1");
   ExpectHeader("https://www.example.net/1.gif", "Device-Memory", true, "4");
 
-  // TODO(crbug.com/924969): A refactoring exposed a bug in the languages
-  // override setup that effects the `Lang` hint.
-  document->domWindow()->navigator()->SetLanguagesForTesting("en,de,fr");
-  ExpectHeader("https://www.example.net/1.gif", "Lang", true, "\"en-US\"");
   ExpectHeader("https://www.example.net/1.gif", "Sec-CH-UA", true, "");
   ExpectHeader("https://www.example.net/1.gif", "Sec-CH-UA-Arch", true, "");
   ExpectHeader("https://www.example.net/1.gif", "Sec-CH-UA-Platform", true, "");
@@ -1052,7 +1015,6 @@ TEST_F(FrameFetchContextHintsTest, MonitorSomeHintsPermissionsPolicy) {
 #else
   ExpectHeader("https://www.example.net/1.gif", "DPR", false, "");
 #endif
-  ExpectHeader("https://www.example.net/1.gif", "Lang", false, "");
   ExpectHeader("https://www.example.net/1.gif", "Sec-CH-UA-Arch", false, "");
   ExpectHeader("https://www.example.net/1.gif", "Sec-CH-UA-Platform-Version",
                false, "");

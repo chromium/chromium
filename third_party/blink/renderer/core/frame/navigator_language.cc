@@ -52,20 +52,6 @@ const Vector<String>& NavigatorLanguage::languages() {
   return empty_vector;
 }
 
-AtomicString NavigatorLanguage::SerializeLanguagesForClientHintHeader() {
-  EnsureUpdatedLanguage();
-
-  StringBuilder builder;
-  for (wtf_size_t i = 0; i < languages_.size(); i++) {
-    if (i)
-      builder.Append(", ");
-    builder.Append('"');
-    builder.Append(languages_[i]);
-    builder.Append('"');
-  }
-  return builder.ToAtomicString();
-}
-
 bool NavigatorLanguage::IsLanguagesDirty() const {
   return languages_dirty_;
 }

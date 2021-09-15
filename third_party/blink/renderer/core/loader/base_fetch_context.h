@@ -111,7 +111,6 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
       absl::optional<UserAgentMetadata> ua,
       const PermissionsPolicy* policy,
       const absl::optional<ClientHintImageInfo>& image_info,
-      const absl::optional<WTF::AtomicString>& lang,
       const absl::optional<WTF::AtomicString>& prefers_color_scheme,
       ResourceRequest& request);
 

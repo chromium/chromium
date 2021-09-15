@@ -17,21 +17,6 @@ using testing::UnorderedElementsAre;
 
 namespace blink {
 
-TEST(ClientHintsTest, SerializeLangClientHint) {
-  std::string header = SerializeLangClientHint("");
-  EXPECT_TRUE(header.empty());
-
-  header = SerializeLangClientHint("es");
-  EXPECT_EQ(std::string("\"es\""), header);
-
-  header = SerializeLangClientHint("en-US,fr,de");
-  EXPECT_EQ(std::string("\"en-US\", \"fr\", \"de\""), header);
-
-  header = SerializeLangClientHint("en-US,fr,de,ko,zh-CN,ja");
-  EXPECT_EQ(std::string("\"en-US\", \"fr\", \"de\", \"ko\", \"zh-CN\", \"ja\""),
-            header);
-}
-
 // Checks that the removed header list doesn't include legacy headers nor the
 // on-by-default ones, when the kAllowClientHintsToThirdParty flag is on.
 TEST(ClientHintsTest, FindClientHintsToRemoveLegacy) {
@@ -40,13 +25,12 @@ TEST(ClientHintsTest, FindClientHintsToRemoveLegacy) {
       features::kAllowClientHintsToThirdParty);
   std::vector<std::string> removed_headers;
   FindClientHintsToRemove(nullptr, GURL(), &removed_headers);
-  EXPECT_THAT(
-      removed_headers,
-      UnorderedElementsAre("rtt", "downlink", "ect", "lang", "sec-ch-ua-arch",
-                           "sec-ch-ua-model", "sec-ch-ua-full-version",
-                           "sec-ch-ua-platform-version",
-                           "sec-ch-prefers-color-scheme", "sec-ch-ua-bitness",
-                           "sec-ch-ua-reduced", "sec-ch-viewport-height"));
+  EXPECT_THAT(removed_headers,
+              UnorderedElementsAre(
+                  "rtt", "downlink", "ect", "sec-ch-ua-arch", "sec-ch-ua-model",
+                  "sec-ch-ua-full-version", "sec-ch-ua-platform-version",
+                  "sec-ch-prefers-color-scheme", "sec-ch-ua-bitness",
+                  "sec-ch-ua-reduced", "sec-ch-viewport-height"));
 }
 
 // Checks that the removed header list includes legacy headers but not the
@@ -59,11 +43,10 @@ TEST(ClientHintsTest, FindClientHintsToRemoveNoLegacy) {
   FindClientHintsToRemove(nullptr, GURL(), &removed_headers);
   EXPECT_THAT(
       removed_headers,
-      UnorderedElementsAre("device-memory", "dpr", "width", "viewport-width",
-                           "rtt", "downlink", "ect", "lang", "sec-ch-ua-arch",
-                           "sec-ch-ua-model", "sec-ch-ua-full-version",
-                           "sec-ch-ua-platform-version",
-                           "sec-ch-prefers-color-scheme", "sec-ch-ua-bitness",
-                           "sec-ch-ua-reduced", "sec-ch-viewport-height"));
+      UnorderedElementsAre(
+          "device-memory", "dpr", "width", "viewport-width", "rtt", "downlink",
+          "ect", "sec-ch-ua-arch", "sec-ch-ua-model", "sec-ch-ua-full-version",
+          "sec-ch-ua-platform-version", "sec-ch-prefers-color-scheme",
+          "sec-ch-ua-bitness", "sec-ch-ua-reduced", "sec-ch-viewport-height"));
 }
 }  // namespace blink

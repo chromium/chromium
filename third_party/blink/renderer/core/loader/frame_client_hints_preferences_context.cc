@@ -38,7 +38,6 @@ ClientHintToWebFeatureMap MakeClientHintToWebFeatureMap() {
        WebFeature::kClientHintsDownlink_DEPRECATED},
       {network::mojom::WebClientHintsType::kEct_DEPRECATED,
        WebFeature::kClientHintsEct_DEPRECATED},
-      {network::mojom::WebClientHintsType::kLang, WebFeature::kClientHintsLang},
       {network::mojom::WebClientHintsType::kUA, WebFeature::kClientHintsUA},
       {network::mojom::WebClientHintsType::kUAArch,
        WebFeature::kClientHintsUAArch},

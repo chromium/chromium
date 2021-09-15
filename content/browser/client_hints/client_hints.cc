@@ -367,13 +367,6 @@ void AddEctHeader(net::HttpRequestHeaders* headers,
       blink::kWebEffectiveConnectionTypeMapping[effective_connection_type]);
 }
 
-void AddLangHeader(net::HttpRequestHeaders* headers, BrowserContext* context) {
-  SetHeaderToString(
-      headers, WebClientHintsType::kLang,
-      blink::SerializeLangClientHint(
-          GetContentClient()->browser()->GetAcceptLangs(context)));
-}
-
 void AddPrefersColorSchemeHeader(net::HttpRequestHeaders* headers,
                                  FrameTreeNode* frame_tree_node) {
   if (!frame_tree_node)
@@ -671,9 +664,6 @@ void AddRequestClientHintsHeaders(
   }
   if (ShouldAddClientHint(data, WebClientHintsType::kEct_DEPRECATED)) {
     AddEctHeader(headers, network_quality_tracker, url);
-  }
-  if (ShouldAddClientHint(data, WebClientHintsType::kLang)) {
-    AddLangHeader(headers, context);
   }
 
   if (UserAgentClientHintEnabled()) {

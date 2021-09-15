@@ -22,8 +22,6 @@ def main(request, response):
         response.headers.set(b"downlink-received", request.headers.get(b"downlink"))
     if b"ect" in request.headers:
         response.headers.set(b"ect-received", request.headers.get(b"ect"))
-    if b"Lang" in request.headers:
-        response.headers.set(b"lang-received", request.headers.get(b"Lang"))
     if b"sec-ch-ua-mobile" in request.headers:
         response.headers.set(b"mobile-received", request.headers.get(b"sec-ch-ua-mobile"))
     if b"sec-ch-prefers-color-scheme" in request.headers:

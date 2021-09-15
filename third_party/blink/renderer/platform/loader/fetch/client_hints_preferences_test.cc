@@ -19,7 +19,6 @@ class ClientHintsPreferencesTest : public testing::Test {
   ClientHintsPreferencesTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{blink::features::kUserAgentClientHint,
-                              blink::features::kLangClientHintHeader,
                               blink::features::
                                   kPrefersColorSchemeClientHintHeader},
         /*disabled_features=*/{});
@@ -38,7 +37,6 @@ TEST_F(ClientHintsPreferencesTest, BasicSecure) {
     bool expectation_rtt;
     bool expectation_downlink;
     bool expectation_ect;
-    bool expectation_lang;
     bool expectation_ua;
     bool expectation_ua_arch;
     bool expectation_ua_platform;
@@ -47,34 +45,34 @@ TEST_F(ClientHintsPreferencesTest, BasicSecure) {
     bool expectation_prefers_color_scheme;
   } cases[] = {
       {"width, dpr, viewportWidth", true, true, false, false, false, false,
-       false, false, false, false, false, false, false},
-      {"WiDtH, dPr, viewport-width, rtt, downlink, ect, lang, "
+       false, false, false, false, false, false},
+      {"WiDtH, dPr, viewport-width, rtt, downlink, ect, "
        "sec-ch-prefers-color-scheme",
-       true, true, true, true, true, true, true, false, false, false, false,
-       false, true},
+       true, true, true, true, true, true, false, false, false, false, false,
+       true},
       {"WiDtH, dPr, viewport-width, rtt, downlink, effective-connection-type",
        true, true, true, true, true, false, false, false, false, false, false,
-       false, false},
+       false},
       {"WIDTH, DPR, VIWEPROT-Width", true, true, false, false, false, false,
-       false, false, false, false, false, false, false},
+       false, false, false, false, false, false},
       {"VIewporT-Width, wutwut, width", true, false, true, false, false, false,
-       false, false, false, false, false, false, false},
+       false, false, false, false, false, false},
       {"dprw", false, false, false, false, false, false, false, false, false,
-       false, false, false, false},
+       false, false, false},
       {"DPRW", false, false, false, false, false, false, false, false, false,
+       false, false, false},
+      {"sec-ch-ua", false, false, false, false, false, false, true, false,
        false, false, false, false},
-      {"sec-ch-ua", false, false, false, false, false, false, false, true,
-       false, false, false, false, false},
-      {"sec-ch-ua-arch", false, false, false, false, false, false, false, false,
-       true, false, false, false, false},
+      {"sec-ch-ua-arch", false, false, false, false, false, false, false, true,
+       false, false, false, false},
       {"sec-ch-ua-platform", false, false, false, false, false, false, false,
-       false, false, true, false, false, false},
+       false, true, false, false, false},
       {"sec-ch-ua-model", false, false, false, false, false, false, false,
-       false, false, false, true, false, false},
+       false, false, true, false, false},
       {"sec-ch-ua, sec-ch-ua-arch, sec-ch-ua-platform, sec-ch-ua-model, "
        "sec-ch-ua-full-version",
-       false, false, false, false, false, false, false, true, true, true, true,
-       true, false},
+       false, false, false, false, false, false, true, true, true, true, true,
+       false},
   };
 
   for (const auto& test_case : cases) {
@@ -103,9 +101,6 @@ TEST_F(ClientHintsPreferencesTest, BasicSecure) {
     EXPECT_EQ(test_case.expectation_ect,
               preferences.ShouldSend(
                   network::mojom::WebClientHintsType::kEct_DEPRECATED));
-    EXPECT_EQ(
-        test_case.expectation_lang,
-        preferences.ShouldSend(network::mojom::WebClientHintsType::kLang));
     EXPECT_EQ(test_case.expectation_ua,
               preferences.ShouldSend(network::mojom::WebClientHintsType::kUA));
     EXPECT_EQ(
@@ -173,8 +168,6 @@ TEST_F(ClientHintsPreferencesTest, SecureEnabledTypesMerge) {
       network::mojom::WebClientHintsType::kDownlink_DEPRECATED));
   EXPECT_FALSE(preferences.ShouldSend(
       network::mojom::WebClientHintsType::kEct_DEPRECATED));
-  EXPECT_FALSE(
-      preferences.ShouldSend(network::mojom::WebClientHintsType::kLang));
   EXPECT_FALSE(preferences.ShouldSend(network::mojom::WebClientHintsType::kUA));
   EXPECT_FALSE(
       preferences.ShouldSend(network::mojom::WebClientHintsType::kUAArch));
@@ -196,8 +189,6 @@ TEST_F(ClientHintsPreferencesTest, SecureEnabledTypesMerge) {
       network::mojom::WebClientHintsType::kDownlink_DEPRECATED));
   EXPECT_FALSE(preferences.ShouldSend(
       network::mojom::WebClientHintsType::kEct_DEPRECATED));
-  EXPECT_FALSE(
-      preferences.ShouldSend(network::mojom::WebClientHintsType::kLang));
   EXPECT_FALSE(preferences.ShouldSend(network::mojom::WebClientHintsType::kUA));
   EXPECT_FALSE(
       preferences.ShouldSend(network::mojom::WebClientHintsType::kUAArch));
@@ -219,8 +210,6 @@ TEST_F(ClientHintsPreferencesTest, SecureEnabledTypesMerge) {
       network::mojom::WebClientHintsType::kDownlink_DEPRECATED));
   EXPECT_FALSE(preferences.ShouldSend(
       network::mojom::WebClientHintsType::kEct_DEPRECATED));
-  EXPECT_FALSE(
-      preferences.ShouldSend(network::mojom::WebClientHintsType::kLang));
   EXPECT_FALSE(preferences.ShouldSend(network::mojom::WebClientHintsType::kUA));
   EXPECT_FALSE(
       preferences.ShouldSend(network::mojom::WebClientHintsType::kUAArch));
@@ -242,8 +231,6 @@ TEST_F(ClientHintsPreferencesTest, SecureEnabledTypesMerge) {
       network::mojom::WebClientHintsType::kDownlink_DEPRECATED));
   EXPECT_FALSE(preferences.ShouldSend(
       network::mojom::WebClientHintsType::kEct_DEPRECATED));
-  EXPECT_FALSE(
-      preferences.ShouldSend(network::mojom::WebClientHintsType::kLang));
   EXPECT_FALSE(preferences.ShouldSend(network::mojom::WebClientHintsType::kUA));
   EXPECT_FALSE(
       preferences.ShouldSend(network::mojom::WebClientHintsType::kUAArch));
@@ -280,7 +267,6 @@ TEST_F(ClientHintsPreferencesTest, ParseHeaders) {
     bool expect_rtt;
     bool expect_downlink;
     bool expect_ect;
-    bool expect_lang;
     bool expect_ua;
     bool expect_ua_arch;
     bool expect_ua_platform;
@@ -288,25 +274,25 @@ TEST_F(ClientHintsPreferencesTest, ParseHeaders) {
     bool expect_ua_full_version;
     bool expect_prefers_color_scheme;
   } test_cases[] = {
-      {"width, dpr, viewportWidth, lang, sec-ch-prefers-color-scheme", false,
-       true, true, false, false, false, false, true, false, false, false, false,
-       false, true},
+      {"width, dpr, viewportWidth, sec-ch-prefers-color-scheme", false, true,
+       true, false, false, false, false, false, false, false, false, false,
+       true},
       {"width, dpr, viewportWidth", false, true, true, false, false, false,
-       false, false, false, false, false, false, false, false},
+       false, false, false, false, false, false, false},
       {"width, dpr, viewportWidth", false, true, true, false, false, false,
-       false, false, false, false, false, false, false, false},
+       false, false, false, false, false, false, false},
       {"width, dpr, viewportWidth", false, true, true, false, false, false,
-       false, false, false, false, false, false, false, false},
+       false, false, false, false, false, false, false},
       {"width, dpr, rtt, downlink, ect", false, true, true, false, true, true,
-       true, false, false, false, false, false, false, false},
+       true, false, false, false, false, false, false},
       {"device-memory", true, false, false, false, false, false, false, false,
-       false, false, false, false, false, false},
-      {"dpr rtt", false, false, false, false, false, false, false, false, false,
        false, false, false, false, false},
+      {"dpr rtt", false, false, false, false, false, false, false, false, false,
+       false, false, false, false},
       {"sec-ch-ua, sec-ch-ua-arch, sec-ch-ua-platform, sec-ch-ua-model, "
        "sec-ch-ua-full-version",
-       false, false, false, false, false, false, false, false, true, true, true,
-       true, true, false},
+       false, false, false, false, false, false, false, true, true, true, true,
+       true, false},
   };
 
   for (const auto& test : test_cases) {
@@ -326,8 +312,6 @@ TEST_F(ClientHintsPreferencesTest, ParseHeaders) {
         network::mojom::WebClientHintsType::kDownlink_DEPRECATED));
     EXPECT_FALSE(enabled_types.IsEnabled(
         network::mojom::WebClientHintsType::kEct_DEPRECATED));
-    EXPECT_FALSE(
-        enabled_types.IsEnabled(network::mojom::WebClientHintsType::kLang));
     EXPECT_FALSE(
         enabled_types.IsEnabled(network::mojom::WebClientHintsType::kUA));
     EXPECT_FALSE(
@@ -369,8 +353,6 @@ TEST_F(ClientHintsPreferencesTest, ParseHeaders) {
     EXPECT_EQ(test.expect_ect,
               enabled_types.IsEnabled(
                   network::mojom::WebClientHintsType::kEct_DEPRECATED));
-    EXPECT_EQ(test.expect_lang, enabled_types.IsEnabled(
-                                    network::mojom::WebClientHintsType::kLang));
     EXPECT_EQ(test.expect_ua,
               enabled_types.IsEnabled(network::mojom::WebClientHintsType::kUA));
     EXPECT_EQ(
@@ -382,9 +364,6 @@ TEST_F(ClientHintsPreferencesTest, ParseHeaders) {
     EXPECT_EQ(
         test.expect_ua_model,
         enabled_types.IsEnabled(network::mojom::WebClientHintsType::kUAModel));
-    EXPECT_EQ(test.expect_lang,
-              enabled_types.IsEnabled(
-                  network::mojom::WebClientHintsType::kPrefersColorScheme));
   }
 }
 

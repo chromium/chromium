@@ -20,10 +20,6 @@ using ::network::mojom::WebClientHintsType;
 
 bool IsDisabledByFeature(const WebClientHintsType type) {
   switch (type) {
-    case WebClientHintsType::kLang:
-      if (!base::FeatureList::IsEnabled(features::kLangClientHintHeader))
-        return true;
-      break;
     case WebClientHintsType::kUA:
     case WebClientHintsType::kUAArch:
     case WebClientHintsType::kUAPlatform:

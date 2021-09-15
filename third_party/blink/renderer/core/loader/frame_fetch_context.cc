@@ -471,7 +471,6 @@ void FrameFetchContext::AddClientHintsIfNecessary(
   absl::optional<UserAgentMetadata> ua = GetUserAgentMetadata();
 
   absl::optional<ClientHintImageInfo> image_info;
-  absl::optional<WTF::AtomicString> lang;
   absl::optional<WTF::AtomicString> prefers_color_scheme;
 
   if (document_) {  // Only get frame info if the frame is not detached
@@ -483,23 +482,11 @@ void FrameFetchContext::AddClientHintsIfNecessary(
       image_info->viewport_height = GetFrame()->View()->ViewportHeight();
     }
 
-    lang = GetFrame()
-               ->DomWindow()
-               ->navigator()
-               ->SerializeLanguagesForClientHintHeader();
-
     MediaValues* media_values =
         MediaValues::CreateDynamicIfFrameExists(GetFrame());
     bool is_dark_mode = media_values->GetPreferredColorScheme() ==
                         mojom::blink::PreferredColorScheme::kDark;
     prefers_color_scheme = is_dark_mode ? "dark" : "light";
-
-    // TODO(crbug.com/1151050): |SerializeLanguagesForClientHintHeader| getter
-    // affects later calls if there is a DevTools override. The following blink
-    // test fails unless set to "dirty" to manually reset languages:
-    //
-    // http/tests/inspector-protocol/emulation/emulation-user-agent-override.js
-    GetFrame()->DomWindow()->navigator()->SetLanguagesDirty();
   }
 
   // |hints_preferences| is used only in case of the preload scanner;
@@ -511,7 +498,7 @@ void FrameFetchContext::AddClientHintsIfNecessary(
   prefs.CombineWith(GetClientHintsPreferences());
 
   BaseFetchContext::AddClientHintsIfNecessary(
-      prefs, resource_origin, is_1p_origin, ua, policy, image_info, lang,
+      prefs, resource_origin, is_1p_origin, ua, policy, image_info,
       prefers_color_scheme, request);
 }
 

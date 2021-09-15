@@ -61,7 +61,6 @@
     "Resource-Freshness",
     "Require-Document-Policy",
     "Save-Data",
-    "Lang",
     "Server-Timing",
     "SourceMap",
     "Timing-Allow-Origin",

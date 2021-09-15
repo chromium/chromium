@@ -25,7 +25,7 @@ enum WebClientHintsType {
   kRtt_DEPRECATED = 4,
   kDownlink_DEPRECATED = 5,
   kEct_DEPRECATED = 6,
-  kLang = 7,
+  // kLang = 7, Removed in M96
   kUA = 8,
   kUAArch = 9,
   kUAPlatform = 10,

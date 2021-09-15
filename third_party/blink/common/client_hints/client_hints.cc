@@ -42,8 +42,6 @@ ClientHintToPolicyFeatureMap MakeClientHintToPolicyFeatureMap() {
        mojom::PermissionsPolicyFeature::kClientHintDownlink},
       {network::mojom::WebClientHintsType::kEct_DEPRECATED,
        mojom::PermissionsPolicyFeature::kClientHintECT},
-      {network::mojom::WebClientHintsType::kLang,
-       mojom::PermissionsPolicyFeature::kClientHintLang},
       {network::mojom::WebClientHintsType::kUA,
        mojom::PermissionsPolicyFeature::kClientHintUA},
       {network::mojom::WebClientHintsType::kUAArch,
@@ -84,17 +82,6 @@ const char* const kWebEffectiveConnectionTypeMapping[] = {
 
 const size_t kWebEffectiveConnectionTypeMappingCount =
     base::size(kWebEffectiveConnectionTypeMapping);
-
-std::string SerializeLangClientHint(const std::string& raw_language_list) {
-  base::StringTokenizer t(raw_language_list, ",");
-  std::string result;
-  while (t.GetNext()) {
-    if (!result.empty())
-      result.append(", ");
-    base::StrAppend(&result, {"\"", t.token_piece(), "\""});
-  }
-  return result;
-}
 
 bool IsClientHintSentByDefault(network::mojom::WebClientHintsType type) {
   switch (type) {

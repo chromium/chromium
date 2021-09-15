@@ -47,11 +47,12 @@ class EnabledClientHintsTest : public testing::Test {
  public:
   EnabledClientHintsTest()
       : response_headers_(base::MakeRefCounted<net::HttpResponseHeaders>("")) {
-    // The UserAgentClientHint feature is enabled, and the LangClientHintHeader
-    // feature is disabled.
+    // The UserAgentClientHint feature is enabled, and the
+    // PrefersColorSchemeClientHintHeader feature is disabled.
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{blink::features::kUserAgentClientHint},
-        /*disabled_features=*/{blink::features::kLangClientHintHeader});
+        /*disabled_features=*/{
+            blink::features::kPrefersColorSchemeClientHintHeader});
     TrialTokenValidator::SetOriginTrialPolicyGetter(
         base::BindRepeating([](OriginTrialPolicy* policy) { return policy; },
                             base::Unretained(&policy_)));
@@ -111,10 +112,10 @@ TEST_F(EnabledClientHintsTest, DisabledClientHint) {
 
 TEST_F(EnabledClientHintsTest, EnabledClientHintOnDisabledFeature) {
   EnabledClientHints hints;
-  // Attempting to enable the lang client hint, but the runtime flag for it is
-  // disabled.
-  hints.SetIsEnabled(WebClientHintsType::kLang, true);
-  EXPECT_FALSE(hints.IsEnabled(WebClientHintsType::kLang));
+  // Attempting to enable the PrefersColorScheme client hint, but the runtime
+  // flag for it is disabled.
+  hints.SetIsEnabled(WebClientHintsType::kPrefersColorScheme, true);
+  EXPECT_FALSE(hints.IsEnabled(WebClientHintsType::kPrefersColorScheme));
 }
 
 TEST_F(EnabledClientHintsTest,

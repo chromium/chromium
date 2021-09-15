@@ -2121,7 +2121,7 @@ enum WebFeature {
   kNoSysexWebMIDIOnInsecureOrigin = 2771,
   kApplicationCacheInstalledButNoManifest = 2772,
   kCustomCursorIntersectsViewport = 2776,
-  kClientHintsLang = 2777,
+  kOBSOLETE_ClientHintsLang = 2777,
   kLinkRelPreloadImageSrcset = 2778,
   kV8HTMLMediaElement_Remote_AttributeGetter = 2779,
   kV8RemotePlayback_WatchAvailability_Method = 2780,

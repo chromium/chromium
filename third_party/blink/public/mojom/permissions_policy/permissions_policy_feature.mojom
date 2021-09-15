@@ -72,7 +72,6 @@ enum PermissionsPolicyFeature {
   kClientHintDeviceMemory = 54,
   kClientHintDownlink = 55,
   kClientHintECT = 56,
-  kClientHintLang = 57,
   kClientHintRTT = 58,
   kClientHintUA = 59,
   kClientHintUAArch = 60,

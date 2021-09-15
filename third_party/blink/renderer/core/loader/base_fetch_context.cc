@@ -135,7 +135,6 @@ void BaseFetchContext::AddClientHintsIfNecessary(
     absl::optional<UserAgentMetadata> ua,
     const PermissionsPolicy* policy,
     const absl::optional<ClientHintImageInfo>& image_info,
-    const absl::optional<WTF::AtomicString>& lang,
     const absl::optional<WTF::AtomicString>& prefers_color_scheme,
     ResourceRequest& request) {
   // If the feature is enabled, then client hints are allowed only on secure
@@ -304,18 +303,6 @@ void BaseFetchContext::AddClientHintsIfNecessary(
             .c_str(),
         AtomicString(NetworkStateNotifier::EffectiveConnectionTypeToString(
             holdback_ect.value())));
-  }
-
-  if (ShouldSendClientHint(ClientHintsMode::kStandard, policy, resource_origin,
-                           is_1p_origin,
-                           network::mojom::blink::WebClientHintsType::kLang,
-                           hints_preferences) &&
-      lang) {
-    request.SetHttpHeaderField(
-        network::GetClientHintToNameMap()
-            .at(network::mojom::blink::WebClientHintsType::kLang)
-            .c_str(),
-        lang.value());
   }
 
   // Only send User Agent hints if the info is available

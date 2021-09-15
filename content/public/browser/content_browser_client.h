@@ -644,7 +644,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual std::string GetApplicationLocale();
 
   // Returns a comma-separate list of language codes, in order of preference.
-  // The value is used to report the "lang" to sites, if requested.
   // The legacy "accept-language" header is not affected by this setting (see
   // |ConfigureNetworkContextParams()| below).
   // (Not called GetAcceptLanguages so it doesn't clash with win32).

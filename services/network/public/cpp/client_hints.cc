@@ -28,8 +28,6 @@ ClientHintToNameMap MakeClientHintToNameMap() {
       {network::mojom::WebClientHintsType::kRtt_DEPRECATED, "rtt"},
       {network::mojom::WebClientHintsType::kDownlink_DEPRECATED, "downlink"},
       {network::mojom::WebClientHintsType::kEct_DEPRECATED, "ect"},
-      // TODO(https://https://crbug.com/1227043) Remove lang client hint.
-      {network::mojom::WebClientHintsType::kLang, "lang"},
       {network::mojom::WebClientHintsType::kUA, "sec-ch-ua"},
       {network::mojom::WebClientHintsType::kUAArch, "sec-ch-ua-arch"},
       {network::mojom::WebClientHintsType::kUAPlatform, "sec-ch-ua-platform"},

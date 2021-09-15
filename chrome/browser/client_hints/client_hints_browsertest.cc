@@ -73,7 +73,7 @@ using ::content::URLLoaderInterceptor;
 using ::testing::Eq;
 using ::testing::Optional;
 
-constexpr unsigned expected_client_hints_number = 14u;
+constexpr unsigned expected_client_hints_number = 13u;
 constexpr int32_t uma_histogram_max_value = 1471228928;
 
 // An interceptor that records count of fetches and client hint headers for
@@ -276,7 +276,7 @@ class ClientHintsBrowserTest : public InProcessBrowserTest,
   virtual std::unique_ptr<base::FeatureList> EnabledFeatures() {
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
     feature_list->InitializeFromCommandLine(
-        "UserAgentClientHint,LangClientHintHeader,CriticalClientHint,"
+        "UserAgentClientHint,CriticalClientHint,"
         "AcceptCHFrame,PrefersColorSchemeClientHintHeader,"
         "ViewportHeightClientHintHeader",
         "");
@@ -852,8 +852,7 @@ class ClientHintsAllowThirdPartyBrowserTest : public ClientHintsBrowserTest {
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
     feature_list->InitializeFromCommandLine(
         "AllowClientHintsToThirdParty,UserAgentClientHint,"
-        "LangClientHintHeader,PrefersColorSchemeClientHintHeader,"
-        "ViewportHeightClientHintHeader",
+        "PrefersColorSchemeClientHintHeader,ViewportHeightClientHintHeader",
         "");
     return feature_list;
   }
@@ -2137,8 +2136,8 @@ class ClientHintsWebHoldbackBrowserTest : public ClientHintsBrowserTest {
 
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
     feature_list->InitializeFromCommandLine(
-        "UserAgentClientHint,LangClientHintHeader,"
-        "PrefersColorSchemeClientHintHeader,ViewportHeightClientHintHeader",
+        "UserAgentClientHint,PrefersColorSchemeClientHintHeader,"
+        "ViewportHeightClientHintHeader",
         "");
     feature_list->RegisterFieldTrialOverride(
         features::kNetworkQualityEstimatorWebHoldback.name,
@@ -2328,12 +2327,10 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
   void SetUp() override {
     std::unique_ptr<base::FeatureList> feature_list =
         std::make_unique<base::FeatureList>();
-    // Don't include LangClientHintHeader in the enabled features; we will
-    // verify that the Lang header is not included.
+    // Don't include PrefersColorSchemeClientHintHeader in the enabled
+    // features; we will verify that PrefersColorScheme is not included.
     feature_list->InitializeFromCommandLine(
-        "UserAgentClientHint,CriticalClientHint,AcceptCHFrame,"
-        "PrefersColorSchemeClientHintHeader",
-        "");
+        "UserAgentClientHint,CriticalClientHint,AcceptCHFrame", "");
     scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
 
     InProcessBrowserTest::SetUp();
@@ -2349,8 +2346,8 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
     return https_server_.GetURL("/critical_ch_ua_full_version.html");
   }
 
-  GURL critical_ch_lang_url() const {
-    return https_server_.GetURL("/critical_ch_lang.html");
+  GURL critical_ch_prefers_color_scheme_url() const {
+    return https_server_.GetURL("/critical_ch_prefers-color-scheme.html");
   }
 
   const absl::optional<std::string>& observed_ch_ua_full_version() {
@@ -2358,9 +2355,9 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
     return ch_ua_full_version_;
   }
 
-  const absl::optional<std::string>& observed_ch_lang() {
-    base::AutoLock lock(ch_lang_lock_);
-    return ch_lang_;
+  const absl::optional<std::string>& observed_ch_prefers_color_scheme() {
+    base::AutoLock lock(ch_prefers_color_scheme_lock_);
+    return ch_prefers_color_scheme_;
   }
 
   void MonitorResourceRequest(const net::test_server::HttpRequest& request) {
@@ -2368,8 +2365,8 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
         request.headers.end()) {
       SetChUaFullVersion(request.headers.at("sec-ch-ua-full-version"));
     }
-    if (request.headers.find("lang") != request.headers.end()) {
-      SetChLang(request.headers.at("lang"));
+    if (request.headers.find("prefers-color-scheme") != request.headers.end()) {
+      SetChPrefersColorScheme(request.headers.at("prefers-color-scheme"));
     }
   }
 
@@ -2379,9 +2376,9 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
     ch_ua_full_version_ = ch_ua_full_version;
   }
 
-  void SetChLang(const std::string& ch_lang) {
-    base::AutoLock lock(ch_lang_lock_);
-    ch_lang_ = ch_lang;
+  void SetChPrefersColorScheme(const std::string& ch_prefers_color_scheme) {
+    base::AutoLock lock(ch_prefers_color_scheme_lock_);
+    ch_prefers_color_scheme_ = ch_prefers_color_scheme;
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -2389,8 +2386,9 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
   base::Lock ch_ua_full_version_lock_;
   absl::optional<std::string> ch_ua_full_version_
       GUARDED_BY(ch_ua_full_version_lock_);
-  base::Lock ch_lang_lock_;
-  absl::optional<std::string> ch_lang_ GUARDED_BY(ch_lang_lock_);
+  base::Lock ch_prefers_color_scheme_lock_;
+  absl::optional<std::string> ch_prefers_color_scheme_
+      GUARDED_BY(ch_prefers_color_scheme_lock_);
 };
 
 // Verify that setting Critical-CH in the response header causes the request to
@@ -2405,24 +2403,22 @@ IN_PROC_BROWSER_TEST_F(CriticalClientHintsBrowserTest,
   const std::string expected_ch_ua_full_version = "\"" + ua.full_version + "\"";
   EXPECT_THAT(observed_ch_ua_full_version(),
               Optional(Eq(expected_ch_ua_full_version)));
-  EXPECT_EQ(observed_ch_lang(), absl::nullopt);
+  EXPECT_EQ(observed_ch_prefers_color_scheme(), absl::nullopt);
 }
 
 // Verify that setting Critical-CH in the response header with a client hint
 // that is filtered out of Accept-CH causes the request to *not* be resent and
 // the critical client hint is not included.
-//
-// NB: When the LangClientHintHeader feature is removed, this test needs to be
-// updated.
 IN_PROC_BROWSER_TEST_F(
     CriticalClientHintsBrowserTest,
     CriticalClientHintFilteredOutOfAcceptChNotInRequestHeader) {
   // On the first navigation request, the client hints in the Critical-CH
   // should be set on the request header, but in this case, the
-  // LangClientHintHeader is not enabled, so the critical client hint won't be
-  // set in the request header.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), critical_ch_lang_url()));
-  EXPECT_EQ(observed_ch_lang(), absl::nullopt);
+  // kPrefersColorSchemeClientHintHeader is not enabled, so the critical client
+  // hint won't be set in the request header.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), critical_ch_prefers_color_scheme_url()));
+  EXPECT_EQ(observed_ch_prefers_color_scheme(), absl::nullopt);
   // The request should not have been resent, so ch-ua-full-version should also
   // not be present.
   EXPECT_EQ(observed_ch_ua_full_version(), absl::nullopt);
