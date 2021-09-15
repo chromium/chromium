@@ -200,9 +200,9 @@ class ExpectWriteBarrierFires : public IncrementalMarkingScope {
     }
     EXPECT_TRUE(objects_.IsEmpty());
     // All headers of objects watched should be marked at this point.
-    for (HeapObjectHeader* header : headers_) {
-      EXPECT_TRUE(header->IsMarked());
-      header->Unmark();
+    for (HeapObjectHeader* hdr : headers_) {
+      EXPECT_TRUE(hdr->IsMarked());
+      hdr->Unmark();
     }
     EXPECT_TRUE(marking_worklist_->IsGlobalEmpty());
     EXPECT_TRUE(write_barrier_worklist_->IsGlobalEmpty());
@@ -532,9 +532,9 @@ TEST_F(IncrementalMarkingInternalsTest, WriteBarrierDuringMixinConstruction) {
       WorklistTaskId::MutatorThread, &partial_item)) {
     if (object == partial_item)
       found_mixin_object = true;
-    HeapObjectHeader* header = HeapObjectHeader::FromPayload(partial_item);
-    if (header->IsMarked())
-      header->Unmark();
+    HeapObjectHeader* hdr = HeapObjectHeader::FromPayload(partial_item);
+    if (hdr->IsMarked())
+      hdr->Unmark();
   }
   EXPECT_TRUE(found_mixin_object);
   EXPECT_TRUE(scope.not_fully_constructed_worklist()->IsGlobalEmpty());

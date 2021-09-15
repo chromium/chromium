@@ -460,7 +460,7 @@ TEST(ResourceTest, GarbageCollection) {
 
   // Garbage collect the client.
   // This shouldn't crash due to checks around GC and prefinalizers.
-  WeakPersistent<MockResourceClient> weak_client = client;
+  WeakPersistent<MockResourceClient> weak_client = client.Get();
   client = nullptr;
   ThreadState::Current()->CollectAllGarbageForTesting(
       BlinkGC::kNoHeapPointersOnStack);
@@ -475,9 +475,9 @@ TEST(ResourceTest, GarbageCollection) {
   EXPECT_TRUE(resource->IsAlive());
 
   // Garbage collect the client and resource together.
-  weak_client = client;
+  weak_client = client.Get();
   client = nullptr;
-  WeakPersistent<MockResource> weak_resource = resource;
+  WeakPersistent<MockResource> weak_resource = resource.Get();
   resource = nullptr;
   ThreadState::Current()->CollectAllGarbageForTesting(
       BlinkGC::kNoHeapPointersOnStack);
