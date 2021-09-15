@@ -141,6 +141,19 @@ class FormDataImporter {
                         bool should_return_local_card,
                         std::unique_ptr<CreditCard>* imported_credit_card);
 
+  // Tries to initiate the saving of |imported_credit_card| if applicable.
+  // |submitted_form| is the form from which the card was imported.
+  // If a UPI id was found it is stored in |detected_upi_id|.
+  // |credit_card_autofill_enabled| indicates if credit card filling is enabled
+  // and |is_credit_card_upstream_enabled| indicates if server card storage is
+  // enabled. Returns true if a save is initiated.
+  bool ProcessCreditCardImportCandidate(
+      const FormStructure& submitted_form,
+      std::unique_ptr<CreditCard> imported_credit_card,
+      absl::optional<std::string> detected_upi_id,
+      bool credit_card_autofill_enabled,
+      bool is_credit_card_upstream_enabled);
+
   // Extracts credit card from the form structure. |hasDuplicateFieldType| will
   // be set as true if there are duplicated field types in the form.
   CreditCard ExtractCreditCardFromForm(const FormStructure& form,
