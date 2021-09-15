@@ -162,7 +162,7 @@ void GetCompositorKeyframeOffset(const PropertySpecificKeyframe* frame,
   offsets.push_back(value.ToDouble());
 }
 
-// TODO(crbug.com/686074): Introduce helper functions commonly used by
+// TODO(crbug.com/1248605): Introduce helper functions commonly used by
 // background-color and clip-path animations.
 bool CanGetValueFromKeyframe(const PropertySpecificKeyframe* frame,
                              const KeyframeEffectModelBase* model) {
@@ -198,7 +198,7 @@ struct DowncastTraits<ClipPathPaintWorkletInput> {
   }
 };
 
-// TODO(crbug.com/686074): Introduce helper functions commonly used by
+// TODO(crbug.com/1248605): Introduce helper functions commonly used by
 // background-color and clip-path animations.
 Animation* ClipPathPaintDefinition::GetAnimationIfCompositable(
     const Element* element) {

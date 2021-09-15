@@ -6831,6 +6831,9 @@ crbug.com/1110752 http/tests/devtools/application-panel/resources-panel-websql.j
 # Credentials in same-origin Reporting-API reports are currently not implemented.
 crbug.com/1163645 external/wpt/reporting/same-origin-report-credentials.https.sub.html [ Failure ]
 
+# [CompositeClipPathAnimations] failing test
+crbug.com/1249071 virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-animation-filter.html [ Crash Pass Failure ]
+
 # Sheriff 2021-09-08
 crbug.com/1233826 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/valid-image-before-load.https.html [ Crash Failure Pass ]
 crbug.com/1233826 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/valid-image-after-load.https.html [ Crash Failure Pass ]

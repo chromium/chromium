@@ -96,7 +96,7 @@ static void PaintWorkletBasedClip(GraphicsContext& context,
   scoped_refptr<Image> paint_worklet_image =
       generator->Paint(zoom, reference_box, *clip_path_owner.GetNode());
 
-  // TODO(crbug.com/1223975): Fix bounding box. It should enclose affected area
+  // TODO(crbug.com/1248610): Fix bounding box. It should enclose affected area
   // of the animation.
   absl::optional<FloatRect> bounding_box =
       ClipPathClipper::LocalClipPathBoundingBox(clip_path_owner);
@@ -218,7 +218,7 @@ void ClipPathClipper::PaintClipPathAsMaskImage(
                                                   DisplayItem::kSVGClip))
     return;
 
-  // TODO(crbug.com/1223975): Fix paint rectangle for
+  // TODO(crbug.com/1248610): Fix paint rectangle for
   // CompositeClipPathAnimation.
   DrawingRecorder recorder(
       context, display_item_client, DisplayItem::kSVGClip,
@@ -297,7 +297,7 @@ bool ClipPathClipper::ShouldUseMaskBasedClip(const LayoutObject& object) {
 
 absl::optional<Path> ClipPathClipper::PathBasedClip(
     const LayoutObject& clip_path_owner) {
-  // TODO(crbug.com/1223975): Currently HasCompositeClipPathAnimation is called
+  // TODO(crbug.com/1248622): Currently HasCompositeClipPathAnimation is called
   // multiple times, which is not efficient. Cache
   // HasCompositeClipPathAnimation value as part of fragment_data, similarly to
   // FragmentData::ClipPathPath().
