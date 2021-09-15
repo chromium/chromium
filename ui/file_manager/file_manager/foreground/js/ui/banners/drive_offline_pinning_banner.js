@@ -33,7 +33,7 @@ export class DriveOfflinePinningBanner extends EducationalBanner {
 
   /**
    * The Drive offline pinning banner uses a templatised string to ensure the
-   * toggle name is a reference. This can't be achieved with C++ $i18n{}
+   * toggle name is a reference. This can't be achieved with C++ template
    * replacements, so set it once the web component has been connected to the
    * DOM.
    */
