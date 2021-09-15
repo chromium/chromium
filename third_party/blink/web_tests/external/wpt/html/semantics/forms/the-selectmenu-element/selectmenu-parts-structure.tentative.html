@@ -88,6 +88,15 @@
   <option>one</option>
 </selectmenu>
 
+<selectmenu id="selectMenu9">
+  <div slot="listbox" id="selectMenu9-listbox-slot">
+    <popup part="listbox" id="selectMenu9-originalListbox">
+      <option>one</option>
+      <option id="selectMenu9-option2">two</option>
+    </popup>
+  </div>
+</selectmenu>
+
 <script>
   function clickOn(element) {
     const actions = new test_driver.Actions();
@@ -223,4 +232,32 @@ promise_test(async () => {
     assert_equals(selectMenu5SelectedValue0.innerText, "two", "first selected-value part in flat tree order should get controller code");
     assert_equals(selectedValue1.innerText, "", "Dynamically inserted selected-value part shouldn't get controller code if it's not first in flat tree order");
   }, "selected-value controller code should be applied in flat tree traversal order regardless of dynamic insertion order");
+
+  promise_test(async () => {
+    const selectMenu = document.getElementById("selectMenu9");
+    const originalListbox = document.getElementById("selectMenu9-originalListbox");
+    const option2 = document.getElementById("selectMenu9-option2");
+    assert_equals(selectMenu.value, "one", "Initial value should be the first option");
+
+    let newListbox = document.createElement("popup");
+    newListbox.setAttribute("part", "listbox");
+    let newOption = document.createElement("option");
+    newOption.innerText = "three";
+    newListbox.appendChild(newOption);
+    let newOption2 = document.createElement("option");
+    newOption2.innerText = "four";
+    newListbox.appendChild(newOption2);
+    originalListbox.parentElement.insertBefore(newListbox, originalListbox);
+
+    await clickOn(selectMenu);
+    assert_true(selectMenu.open, "Menu should open when clicked");
+
+    option2.click(); // clickOn doesn't work because the old options are not displayed
+    assert_equals(selectMenu.value, "three", "Elements in second popup should no longer be option parts");
+    assert_true(selectMenu.open, "Clicking non-part options shouldn't close the popup");
+
+    await clickOn(newOption2);
+    assert_false(selectMenu.open);
+    assert_equals(selectMenu.value, "four", "New options should get controller code after listbox switch");
+    }, "Ensure that option controller code is updated when listbox changes");
 </script>

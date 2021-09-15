@@ -524,8 +524,29 @@ void HTMLSelectMenuElement::ListboxPartRemoved(Element* listbox_part) {
 }
 
 void HTMLSelectMenuElement::UpdateListboxPart() {
-  SetListboxPart(DynamicTo<HTMLPopupElement>(FirstValidListboxPart()));
-  // TODO(crbug.com/1121840) Should the current option parts be revalidated?
+  auto* new_listbox_part = DynamicTo<HTMLPopupElement>(FirstValidListboxPart());
+  if (listbox_part_ == new_listbox_part) {
+    return;
+  }
+
+  SetListboxPart(new_listbox_part);
+
+  ResetOptionParts();
+}
+
+void HTMLSelectMenuElement::ResetOptionParts() {
+  // Remove part status from all current option parts
+  while (!option_parts_.IsEmpty()) {
+    OptionPartRemoved(option_parts_.back());
+  }
+
+  // Find new option parts under the new listbox
+  for (Node* node = SelectMenuPartTraversal::FirstChild(*this); node;
+       node = SelectMenuPartTraversal::Next(*node, this)) {
+    if (IsValidOptionPart(node, /*show_warning=*/false)) {
+      OptionPartInserted(DynamicTo<Element>(node));
+    }
+  }
 }
 
 void HTMLSelectMenuElement::OptionPartInserted(Element* new_option_part) {

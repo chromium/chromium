@@ -64,6 +64,7 @@ class HTMLSelectMenuElement final : public HTMLElement {
   void UpdateListboxPart();
   void OptionPartInserted(Element*);
   void OptionPartRemoved(Element*);
+  void ResetOptionParts();
 
   bool IsValidButtonPart(const Node* node, bool show_warning) const;
   bool IsValidListboxPart(const Node* node, bool show_warning) const;
