@@ -8,9 +8,10 @@
 Usage: tools/boilerplate.py path/to/file.{h,cc}
 """
 
-from __future__ import print_function
+from __future__ import print_function, unicode_literals
 
 from datetime import date
+import io
 import os
 import os.path
 import sys
@@ -135,9 +136,8 @@ def _CreateFile(filename):
   elif filename.endswith('.mm'):
     contents += _ObjCppImplementation(filename)
 
-  fd = open(filename, 'wb')
-  fd.write(contents)
-  fd.close()
+  with io.open(filename, mode='w', newline='\n') as fd:
+    fd.write(contents)
 
 
 def Main():
