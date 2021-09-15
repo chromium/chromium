@@ -92,6 +92,14 @@ bool IsPortraitOrientation(OrientationLockType type);
 // Returns true if the current layout of |display| is horizontal.
 bool IsDisplayLayoutHorizontal(const display::Display& display);
 
+// Returns whether the rotation of the source display (internal display) should
+// be undone in the destination display (external display). Returning true makes
+// the destination display to show in an orientation independent of the source
+// display. Currently, this returns true when mirror mode is enabled in tablet
+// mode (https://crbug.com/824417), or the device is in physical tablet mode
+// (https://crbug.com/1180809).
+bool ShouldUndoRotationForMirror();
+
 }  // namespace ash
 
 #endif  // ASH_DISPLAY_DISPLAY_UTIL_H_

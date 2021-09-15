@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/display/cursor_window_controller.h"
+#include "ash/display/display_util.h"
 #include "ash/display/root_window_transformers.h"
 #include "ash/display/screen_position_controller.h"
 #include "ash/display/window_tree_host_manager.h"
@@ -28,7 +29,6 @@
 #include "ui/compositor/layer.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/display_transform.h"
-#include "ui/display/manager/display_layout_store.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/screen.h"
@@ -252,15 +252,7 @@ void MirrorWindowController::UpdateWindow(
 
     auto* mirroring_host_info = mirroring_host_info_map_[display_info.id()];
 
-    // The rotation of the source display (internal display) should be undone in
-    // the destination display (external display) if mirror mode is enabled in
-    // tablet mode. This allows the destination display to show in an
-    // orientation independent of the source display.
-    // See https://crbug.com/824417
-    const bool should_undo_rotation = Shell::Get()
-                                          ->display_manager()
-                                          ->layout_store()
-                                          ->forced_mirror_mode_for_tablet();
+    const bool should_undo_rotation = ShouldUndoRotationForMirror();
     if (!should_undo_rotation) {
       // Use the rotation from source display without panel orientation
       // applied instead of the display transform hint in |source_compositor|

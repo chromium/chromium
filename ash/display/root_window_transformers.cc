@@ -7,13 +7,13 @@
 #include <cmath>
 
 #include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
+#include "ash/display/display_util.h"
 #include "ash/host/root_window_transformer.h"
 #include "ash/shell.h"
 #include "ash/utility/transformer_util.h"
 #include "base/command_line.h"
 #include "base/system/sys_info.h"
 #include "ui/display/display.h"
-#include "ui/display/manager/display_layout_store.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/insets.h"
@@ -204,13 +204,7 @@ class MirrorRootWindowTransformer : public RootWindowTransformer {
     display::Display::Rotation active_root_rotation =
         source_display_info.GetActiveRotation();
 
-    // The rotation of the source display (internal display) should be undone in
-    // the destination display (external display) if mirror mode is enabled in
-    // tablet mode.
-    bool should_undo_rotation = Shell::Get()
-                                    ->display_manager()
-                                    ->layout_store()
-                                    ->forced_mirror_mode_for_tablet();
+    const bool should_undo_rotation = ShouldUndoRotationForMirror();
     gfx::Transform rotation_transform;
     if (should_undo_rotation) {
       // Calculate the transform to undo the rotation and apply it to the

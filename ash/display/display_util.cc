@@ -18,6 +18,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -28,6 +29,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/display.h"
+#include "ui/display/manager/display_layout_store.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/gfx/geometry/point.h"
@@ -272,6 +274,14 @@ bool IsDisplayLayoutHorizontal(const display::Display& display) {
           display.id());
   return IsLandscapeOrientation(
       RotationToOrientation(GetDisplayNaturalOrientation(display), rotation));
+}
+
+bool ShouldUndoRotationForMirror() {
+  return Shell::Get()
+             ->display_manager()
+             ->layout_store()
+             ->forced_mirror_mode_for_tablet() ||
+         Shell::Get()->tablet_mode_controller()->is_in_tablet_physical_state();
 }
 
 }  // namespace ash
