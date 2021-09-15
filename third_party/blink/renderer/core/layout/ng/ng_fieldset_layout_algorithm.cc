@@ -285,11 +285,8 @@ void NGFieldsetLayoutAlgorithm::LayoutLegend(NGBlockNode& legend) {
   // offset of the legend margin box instead of the border.
   LayoutUnit legend_margin_end_offset =
       block_offset + legend_margin_box_block_size - legend_margins.block_start;
-  if (legend_margin_end_offset > borders_.block_start) {
+  if (legend_margin_end_offset > borders_.block_start)
     intrinsic_block_size_ = legend_margin_end_offset;
-
-    is_legend_past_border_ = true;
-  }
 
   // If the margin box of the legend is at least as tall as the fieldset
   // block-start border width, it will start at the block-start border edge
@@ -380,12 +377,10 @@ NGBreakStatus NGFieldsetLayoutAlgorithm::LayoutFieldsetContent(
 
   NGBreakStatus break_status = NGBreakStatus::kContinue;
   if (ConstraintSpace().HasBlockFragmentation() && !early_break_) {
-    bool has_container_separation = is_legend_past_border_;
-    // TODO(almaher): The legend should be treated as out-of-flow.
     break_status = BreakBeforeChildIfNeeded(
         ConstraintSpace(), fieldset_content, *result.get(),
         ConstraintSpace().FragmentainerOffsetAtBfc() + intrinsic_block_size_,
-        has_container_separation, &container_builder_);
+        /* has_container_separation */ false, &container_builder_);
   }
 
   if (break_status == NGBreakStatus::kContinue) {
