@@ -211,6 +211,18 @@ GetPageContentModelsToExecute();
 // loaded for each execution, and then unloaded once complete.
 bool LoadModelFileForEachExecution();
 
+// The time to wait beyond the onload event before sending the hints request for
+// link predictions.
+base::TimeDelta GetOnloadDelayForHintsFetching();
+
+// The number of bits used for RAPPOR-style metrics reporting on content
+// annotation models. Must be at least 1 bit.
+int NumBitsForRAPPORMetrics();
+
+// The probability of a bit flip a score with RAPPOR-style metrics reporting.
+// Must be between 0 and 1.
+double NoiseProbabilityForRAPPORMetrics();
+
 }  // namespace features
 }  // namespace optimization_guide
 

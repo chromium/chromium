@@ -24,8 +24,11 @@
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/optimization_guide/proto/page_topics_model_metadata.pb.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_source.h"
 
 namespace optimization_guide {
 
@@ -226,6 +229,7 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
                        ModelExecutes) {
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -261,6 +265,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
 #endif
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+
   RetryForHistogramUntilCountReached(
       &histogram_tester,
       "OptimizationGuide.PageContentAnnotationsService."
@@ -280,6 +285,11 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
   EXPECT_EQ(
       123,
       got_content_annotations->model_annotations.page_topics_model_version);
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::PageContentAnnotations::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 }
 
@@ -403,6 +413,7 @@ class PageContentAnnotationsServiceLoadEachExecutionTest
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceLoadEachExecutionTest,
                        MAYBE_ModelLoadsAndExecutes) {
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -452,6 +463,9 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceLoadEachExecutionTest,
   EXPECT_EQ(
       123,
       got_content_annotations->model_annotations.page_topics_model_version);
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::PageContentAnnotations::kEntryName);
+  ASSERT_EQ(1u, entries.size());
 }
 
 class PageContentAnnotationsServiceLoadEachExecutionNotStartupTest

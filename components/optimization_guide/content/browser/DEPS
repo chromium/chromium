@@ -9,6 +9,7 @@ include_rules = [
   "+content/public/browser",
   "+content/public/test",
   "+mojo/public",
+  "+services/metrics/public/cpp",
   "+services/service_manager/public",
   "+third_party/blink/public",
 ]

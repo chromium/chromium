@@ -57,7 +57,8 @@ void PageContentAnnotationsWebContentsObserver::DidFinishNavigation(
 
   page_content_annotations_service_->ExtractRelatedSearches(
       optimization_guide::PageContentAnnotationsService::
-          CreateHistoryVisitFromWebContents(web_contents()),
+          CreateHistoryVisitFromWebContents(
+              web_contents(), navigation_handle->GetNavigationId()),
       web_contents());
 }
 
@@ -84,7 +85,8 @@ PageContentAnnotationsWebContentsObserver::MaybeRequestFrameTextDump(
       &PageContentAnnotationsWebContentsObserver::OnTextDumpReceived,
       weak_ptr_factory_.GetWeakPtr(),
       PageContentAnnotationsService::CreateHistoryVisitFromWebContents(
-          navigation_handle->GetWebContents()));
+          navigation_handle->GetWebContents(),
+          navigation_handle->GetNavigationId()));
   return request;
 }
 

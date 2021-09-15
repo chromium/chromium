@@ -41,6 +41,7 @@ class PageContentAnnotationsModelManager;
 struct HistoryVisit {
   base::Time nav_entry_timestamp;
   GURL url;
+  int64_t navigation_id;
 
   struct Comp {
     bool operator()(const HistoryVisit& lhs, const HistoryVisit& rhs) const {
@@ -65,7 +66,8 @@ class PageContentAnnotationsService : public KeyedService,
 
   // Creates a HistoryVisit based on the current state of |web_contents|.
   static HistoryVisit CreateHistoryVisitFromWebContents(
-      content::WebContents* web_contents);
+      content::WebContents* web_contents,
+      int64_t navigation_id);
 
   // Requests to annotate |text|, which is associated with |web_contents|.
   //

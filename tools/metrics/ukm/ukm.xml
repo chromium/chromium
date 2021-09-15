@@ -11292,6 +11292,28 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="PageContentAnnotations" singular="True">
+  <owner>chrome-intelligence-core@google.com</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Metrics on the content annotations of the page, one record per page load
+    commit and has an annotation calculated on it. The metrics are recorded in a
+    RAPPOR-style with low-entropy so only aggregate analysis can be performed.
+  </summary>
+  <metric name="VisibilityScore">
+    <summary>
+      Records a low entropy respresentation of the visibility score output by a
+      content annotations model. The low entropy value is calculated using a
+      RAPPOR-style calculation to enable analysis only on aggregated results.
+      The raw score is between 0 and 1, scaled to between 0 and 100. The score
+      is then placed into one of 16 linearly spaced buckets by dividing the
+      score by the bucket size and taking the floor. The resulting bucket value
+      has noise added with a probability of .5 where the noise is randomly
+      applied to each individual bit.
+    </summary>
+  </metric>
+</event>
+
 <event name="PageDomainInfo">
   <owner>uthakore@chromium.org</owner>
   <owner>invernizzi@chromium.org</owner>

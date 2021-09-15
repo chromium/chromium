@@ -408,5 +408,25 @@ bool LoadModelFileForEachExecution() {
   return base::FeatureList::IsEnabled(kLoadModelFileForEachExecution);
 }
 
+base::TimeDelta GetOnloadDelayForHintsFetching() {
+  return base::TimeDelta::FromMilliseconds(GetFieldTrialParamByFeatureAsInt(
+      kRemoteOptimizationGuideFetching, "onload_delay_for_hints_fetching_ms",
+      0));
+}
+
+int NumBitsForRAPPORMetrics() {
+  // The number of bits must be at least 1.
+  return std::max(
+      1, GetFieldTrialParamByFeatureAsInt(kPageContentAnnotations,
+                                          "num_bits_for_rappor_metrics", 4));
+}
+
+double NoiseProbabilityForRAPPORMetrics() {
+  // The noise probability must be between 0 and 1.
+  return std::max(0.0, std::min(1.0, GetFieldTrialParamByFeatureAsDouble(
+                                         kPageContentAnnotations,
+                                         "noise_prob_for_rappor_metrics", .5)));
+}
+
 }  // namespace features
 }  // namespace optimization_guide
