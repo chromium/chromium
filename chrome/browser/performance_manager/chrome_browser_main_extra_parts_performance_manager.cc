@@ -174,8 +174,11 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
 
   // TODO(crbug.com/1225070): Consider using this policy on Android.
 #if !defined(OS_ANDROID)
-  graph->PassToGraph(
-      std::make_unique<performance_manager::policies::BFCachePolicy>());
+  if (base::FeatureList::IsEnabled(
+          performance_manager::features::kBFCachePerformanceManagerPolicy)) {
+    graph->PassToGraph(
+        std::make_unique<performance_manager::policies::BFCachePolicy>());
+  }
 #endif
 }
 

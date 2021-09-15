@@ -30,13 +30,13 @@ class BFCachePolicy : public GraphOwned,
   BFCachePolicy& operator=(BFCachePolicy&&) = delete;
   ~BFCachePolicy() override;
 
-  static base::TimeDelta
-  GetDelayBeforeFlushingBFCacheAfterBackgroundForTesting();
-
  protected:
   // Try to flush the BFCache associated with |page_node|. This will be a no-op
   // if there's a pending navigation.
   virtual void MaybeFlushBFCache(const PageNode* page_node);
+
+  bool flush_on_moderate_pressure_;
+  base::TimeDelta delay_to_flush_background_tab_;
 
  private:
   // GraphOwned implementation:

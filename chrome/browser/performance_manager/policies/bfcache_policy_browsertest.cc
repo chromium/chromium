@@ -116,7 +116,7 @@ class BFCachePolicyBrowserTest
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_P(BFCachePolicyBrowserTest, CacheFlushed) {
+IN_PROC_BROWSER_TEST_P(BFCachePolicyBrowserTest, DISABLED_CacheFlushed) {
   memory_pressure::test::FakeMemoryPressureMonitor fake_memory_pressure_monitor;
   const GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   const GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));

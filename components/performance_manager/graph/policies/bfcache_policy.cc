@@ -24,9 +24,6 @@ namespace policies {
 
 namespace {
 
-constexpr base::TimeDelta kDelayBeforeFlushingBFCacheAfterBackground =
-    base::TimeDelta::FromSeconds(5);
-
 bool PageMightHaveFramesInBFCache(const PageNode* page_node) {
   // TODO(crbug.com/1211368): Use PageState when that actually works.
   auto main_frame_nodes = page_node->GetMainFrameNodes();
@@ -55,15 +52,16 @@ void MaybeFlushBFCacheOnUIThread(const WebContentsProxy& contents_proxy) {
 
 }  // namespace
 
-BFCachePolicy::BFCachePolicy() = default;
+BFCachePolicy::BFCachePolicy()
+    : flush_on_moderate_pressure_{features::
+                                      BFCachePerformanceManagerPolicyParams::
+                                          GetParams()
+                                              .flush_on_moderate_pressure()},
+      delay_to_flush_background_tab_{
+          features::BFCachePerformanceManagerPolicyParams::GetParams()
+              .delay_to_flush_background_tab()} {}
 
 BFCachePolicy::~BFCachePolicy() = default;
-
-// static
-base::TimeDelta
-BFCachePolicy::GetDelayBeforeFlushingBFCacheAfterBackgroundForTesting() {
-  return kDelayBeforeFlushingBFCacheAfterBackground;
-}
 
 void BFCachePolicy::MaybeFlushBFCache(const PageNode* page_node) {
   DCHECK(page_node);
@@ -86,13 +84,16 @@ void BFCachePolicy::OnTakenFromGraph(Graph* graph) {
 }
 
 void BFCachePolicy::OnIsVisibleChanged(const PageNode* page_node) {
+  if (delay_to_flush_background_tab_.InSeconds() < 0)
+    return;
+
   // Try to flush the BFCache of pages when they become non-visible. This could
   // fail if the page still has a pending navigation.
   if (page_node->GetPageState() == PageState::kActive &&
       !page_node->IsVisible() && PageMightHaveFramesInBFCache(page_node)) {
     DCHECK(!base::Contains(page_to_flush_timer_, page_node));
     page_to_flush_timer_[page_node].Start(
-        FROM_HERE, kDelayBeforeFlushingBFCacheAfterBackground,
+        FROM_HERE, delay_to_flush_background_tab_,
         base::BindOnce(&BFCachePolicy::MaybeFlushBFCache,
                        base::Unretained(this), page_node));
   } else if (page_node->IsVisible()) {
@@ -102,6 +103,9 @@ void BFCachePolicy::OnIsVisibleChanged(const PageNode* page_node) {
 }
 
 void BFCachePolicy::OnLoadingStateChanged(const PageNode* page_node) {
+  if (delay_to_flush_background_tab_.InSeconds() < 0)
+    return;
+
   // Flush the BFCache of pages that finish a navigation while in background.
   // TODO(sebmarchand): Check if this is really needed.
   if (!page_node->IsVisible() &&
@@ -109,7 +113,7 @@ void BFCachePolicy::OnLoadingStateChanged(const PageNode* page_node) {
       PageMightHaveFramesInBFCache(page_node)) {
     if (!base::Contains(page_to_flush_timer_, page_node)) {
       page_to_flush_timer_[page_node].Start(
-          FROM_HERE, kDelayBeforeFlushingBFCacheAfterBackground,
+          FROM_HERE, delay_to_flush_background_tab_,
           base::BindOnce(&BFCachePolicy::MaybeFlushBFCache,
                          base::Unretained(this), page_node));
     }
@@ -130,10 +134,8 @@ void BFCachePolicy::OnMemoryPressure(
   }
 
   if (new_level == base::MemoryPressureListener::MemoryPressureLevel::
-                       MEMORY_PRESSURE_LEVEL_NONE &&
-      !performance_manager::features::BFCachePerformanceManagerPolicyParams::
-           GetParams()
-               .flush_on_moderate_pressure()) {
+                       MEMORY_PRESSURE_LEVEL_MODERATE &&
+      !flush_on_moderate_pressure_) {
     return;
   }
 
