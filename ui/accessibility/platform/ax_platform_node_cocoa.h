@@ -32,6 +32,9 @@ struct AXAnnouncementSpec {
 AX_EXPORT
 @interface AXPlatformNodeCocoa : NSAccessibilityElement <NSAccessibility>
 
+// Determines if this object is alive, i.e. it hasn't been detached.
+- (BOOL)instanceActive;
+
 // Maps AX roles to native roles. Returns NSAccessibilityUnknownRole if not
 // found.
 + (NSString*)nativeRoleFromAXRole:(ax::mojom::Role)role;

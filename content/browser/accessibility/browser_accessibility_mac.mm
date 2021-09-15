@@ -41,16 +41,17 @@ void BrowserAccessibilityMac::OnDataChanged() {
 // Replace a native object and refocus if it had focus.
 // This will force VoiceOver to re-announce it, and refresh Braille output.
 void BrowserAccessibilityMac::ReplaceNativeObject() {
+  // We should never enter here when no native object is created, but
+  // keep a null check just in case.
+  DCHECK(browser_accessibility_cocoa_);
+  if (!browser_accessibility_cocoa_) {
+    return;
+  }
+
   // The old native wrapper kungu death grip: keep the object alive until we
   // set up everything for the new native wrapper.
-  base::scoped_nsobject<BrowserAccessibilityCocoa> old_native_obj(
-      [browser_accessibility_cocoa_ retain]);
-
-  if (browser_accessibility_cocoa_) {
-    CreatePlatformCocoaNode();
-  } else {
-    CreatePlatformNodes();
-  }
+  base::scoped_nsobject<AXPlatformNodeCocoa> old_native_obj;
+  CreatePlatformCocoaNode(old_native_obj);
 
   // Replace child in parent.
   BrowserAccessibility* parent = PlatformGetParent();
@@ -61,7 +62,7 @@ void BrowserAccessibilityMac::ReplaceNativeObject() {
   NSArray* old_children = [ToBrowserAccessibilityCocoa(parent) children];
   for (uint i = 0; i < [old_children count]; ++i) {
     BrowserAccessibilityCocoa* child = [old_children objectAtIndex:i];
-    if (child == old_native_obj)
+    if (child == old_native_obj.get())
       [new_children addObject:browser_accessibility_cocoa_];
     else
       [new_children addObject:child];
@@ -84,11 +85,10 @@ void BrowserAccessibilityMac::ReplaceNativeObject() {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
-          [](base::scoped_nsobject<BrowserAccessibilityCocoa> destroyed) {
+          [](base::scoped_nsobject<AXPlatformNodeCocoa> destroyed) {
             if (destroyed && [destroyed instanceActive]) {
               // Follow destruction pattern from NativeReleaseReference().
               [destroyed detach];
-              [destroyed release];
             }
           },
           std::move(old_native_obj)),
@@ -179,18 +179,21 @@ void BrowserAccessibilityMac::CreatePlatformNodes() {
   platform_node_ =
       static_cast<ui::AXPlatformNodeMac*>(ui::AXPlatformNode::Create(this));
 
-  CreatePlatformCocoaNode();
+  base::scoped_nsobject<AXPlatformNodeCocoa> unused;
+  CreatePlatformCocoaNode(unused);
 }
 
-void BrowserAccessibilityMac::CreatePlatformCocoaNode() {
+void BrowserAccessibilityMac::CreatePlatformCocoaNode(
+    base::scoped_nsobject<AXPlatformNodeCocoa>& swap_node) {
   DCHECK(platform_node_);
 
   browser_accessibility_cocoa_ =
       [[BrowserAccessibilityCocoa alloc] initWithObject:this
                                        withPlatformNode:platform_node_];
 
-  // platform_node_ take ownership of the Cocoa object here
-  platform_node_->TakeNodeCocoa(browser_accessibility_cocoa_);
+  // platform_node_ take ownership of the Cocoa object here.
+  swap_node.reset(browser_accessibility_cocoa_);
+  platform_node_->SwapNodeCocoa(swap_node);
 }
 
 const BrowserAccessibilityCocoa* ToBrowserAccessibilityCocoa(

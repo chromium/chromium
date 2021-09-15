@@ -10,6 +10,14 @@
 #include "content/common/content_export.h"
 
 @class BrowserAccessibilityCocoa;
+@class AXPlatformNodeCocoa;
+
+namespace base {
+
+template <typename NST>
+class scoped_nsobject;
+
+}  // namespace base
 
 namespace ui {
 
@@ -57,8 +65,9 @@ class BrowserAccessibilityMac : public BrowserAccessibility {
   // Creates platform and cocoa node if not yet created.
   void CreatePlatformNodes();
 
-  // Creates new cocoa node.
-  void CreatePlatformCocoaNode();
+  // Creates a new cocoa node. Returns an old node in the swap_node.
+  void CreatePlatformCocoaNode(
+      base::scoped_nsobject<AXPlatformNodeCocoa>& swap_node);
 
   // Allows access to the BrowserAccessibilityCocoa which wraps this.
   // BrowserAccessibility.

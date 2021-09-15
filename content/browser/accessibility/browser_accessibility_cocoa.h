@@ -108,9 +108,6 @@ id AXTextMarkerRangeFrom(id anchor_text_marker, id focus_text_marker);
 // Computes the text that was added or deleted in a text field after an edit.
 - (content::AXTextEdit)computeTextEdit;
 
-// Determines if this object is alive, i.e. it hasn't been detached.
-- (BOOL)instanceActive;
-
 // Convert from the view's local coordinate system (with the origin in the upper
 // left) to the primary NSScreen coordinate system (with the origin in the lower
 // left).

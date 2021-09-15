@@ -374,6 +374,10 @@ bool IsAXSetter(SEL selector) {
 
 @synthesize node = _node;
 
+- (BOOL)instanceActive {
+  return _node != nullptr;
+}
+
 + (NSString*)nativeRoleFromAXRole:(ax::mojom::Role)role {
   static const base::NoDestructor<RoleMap> role_map(BuildRoleMap());
   RoleMap::const_iterator it = role_map->find(role);
