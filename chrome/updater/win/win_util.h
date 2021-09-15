@@ -25,11 +25,14 @@ namespace updater {
 HRESULT HRESULTFromLastError();
 
 // Returns an HRESULT with a custom facility code representing an updater error.
+// The updater error should be a small positive or a small negative 16-bit
+// integral value.
 template <typename Error>
 HRESULT HRESULTFromUpdaterError(Error error) {
+  constexpr ULONG kSeverityError = 0x80000000;
   constexpr ULONG kCustomerBit = 0x20000000;
   constexpr ULONG kFacilityOmaha = 67;
-  return static_cast<HRESULT>(ULONG{SEVERITY_ERROR} | kCustomerBit |
+  return static_cast<HRESULT>(kSeverityError | kCustomerBit |
                               (kFacilityOmaha << 16) |
                               static_cast<ULONG>(error));
 }
