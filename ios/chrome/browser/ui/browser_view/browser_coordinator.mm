@@ -1127,7 +1127,9 @@
 }
 
 - (void)showEnterpriseSignout {
-  if (self.active) {
+  SceneState* sceneState =
+      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+  if (sceneState.activationLevel >= SceneActivationLevelForegroundActive) {
     if (!self.enterpriseSignoutCoordinator) {
       self.enterpriseSignoutCoordinator = [[EnterpriseSignoutCoordinator alloc]
           initWithBaseViewController:self.viewController
