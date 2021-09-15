@@ -70,7 +70,9 @@ class SettingsSearchEngineEntryElement extends
 
   private onDotsTap_() {
     this.shadowRoot!.querySelector('cr-action-menu')!.showAt(
-        assert(this.shadowRoot!.querySelector('cr-icon-button')!), {
+        assert(this.shadowRoot!.querySelector('cr-icon-button.icon-more-vert')!
+               ),
+        {
           anchorAlignmentY: AnchorAlignment.AFTER_END,
         });
   }

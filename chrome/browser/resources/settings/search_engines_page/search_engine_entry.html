@@ -38,6 +38,10 @@
              hidden="[[!engine.canBeActivated]]" id="activate">
           $i18n{searchEnginesActivate}
         </cr-button>
+        <cr-icon-button class="icon-edit" on-click="onEditTap_"
+            title="$i18n{edit}" hidden="[[engine.canBeActivated]]"
+            disabled$="[[!engine.canBeEdited]]" id="editIconButton">
+        </cr-icon-button>
       </template>
       <cr-icon-button class="icon-more-vert" on-click="onDotsTap_"
           title="$i18n{moreActions}" focus-row-control
@@ -54,6 +58,7 @@
           </button>
         </template>
         <button class="dropdown-item" on-click="onEditTap_"
+            hidden="[[isActiveSearchEnginesFlagEnabled]]"
             disabled$="[[!engine.canBeEdited]]" id="edit">
           $i18n{edit}
         </button>

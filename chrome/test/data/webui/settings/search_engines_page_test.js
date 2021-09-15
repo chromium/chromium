@@ -234,10 +234,10 @@ suite('SearchEngineEntryTests', function() {
         });
   });
 
-  // Test that clicking the "edit" fires edit event.
+  // Test that clicking the "edit" menu item fires an edit event.
   test('Edit_Enabled', function() {
     // Open action menu.
-    entry.$$('cr-icon-button').click();
+    entry.$$('cr-icon-button.icon-more-vert').click();
     const menu = entry.$$('cr-action-menu');
     assertTrue(menu.open);
 
