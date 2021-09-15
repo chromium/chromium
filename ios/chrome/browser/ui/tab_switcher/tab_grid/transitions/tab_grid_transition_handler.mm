@@ -52,6 +52,7 @@ const CGFloat kReducedMotionDuration = 0.25;
                                  withCompletion:^{
                                    [browser.view removeFromSuperview];
                                    [browser removeFromParentViewController];
+                                   [tabGrid setNeedsStatusBarAppearanceUpdate];
                                    if (completion)
                                      completion();
                                  }];
@@ -121,6 +122,7 @@ const CGFloat kReducedMotionDuration = 0.25;
                                  withCompletion:^{
                                    [browser
                                        didMoveToParentViewController:tabGrid];
+                                   [tabGrid setNeedsStatusBarAppearanceUpdate];
                                    if (completion)
                                      completion();
                                  }];
