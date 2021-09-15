@@ -31,6 +31,7 @@ static_library("projector_app") {
     "//chromeos/strings",
     "//components/signin/public/identity_manager",
     "//content/public/browser",
+    "//ui/resources",
     "//ui/webui",
   ]
 }

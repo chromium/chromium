@@ -54,6 +54,20 @@ export let OAuthToken;
  */
 export class ProjectorBrowserProxy {
   /**
+   * Notifies the embedder content that tool has been set for annotator.
+   * @param {!projectorApp.AnnotatorToolParams} tool
+   */
+  onToolSet(tool) {}
+
+  /**
+   * Notifies the embedder content that undo/redo availability changed for
+   * annotator.
+   * @param {boolean} undoAvailable
+   * @param {boolean} redoAvailable
+   */
+  onUndoRedoAvailabilityChanged(undoAvailable, redoAvailable) {}
+
+  /**
    * Gets the list of primary and secondary accounts currently available on the
    * device.
    * @return {Promise<Array<Account>>}
@@ -95,6 +109,17 @@ export class ProjectorBrowserProxy {
  * @implements {ProjectorBrowserProxy}
  */
 export class ProjectorBrowserProxyImpl {
+  /** @override */
+  onToolSet(tool) {
+    return chrome.send('onToolSet', [tool]);
+  }
+
+  /** @override */
+  onUndoRedoAvailabilityChanged(undoAvailable, redoAvailable) {
+    return chrome.send(
+        'onUndoRedoAvailabilityChanged', [undoAvailable, redoAvailable]);
+  }
+
   /** @override */
   getAccounts() {
     return sendWithPromise('getAccounts');

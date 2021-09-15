@@ -11,25 +11,18 @@ assert(is_chromeos_ash, "Projector is ChromeOS only")
 
 js_type_check("closure_compile") {
   is_polymer3 = true
+  closure_flags = default_closure_args + [
+                    "browser_resolver_prefix_replacements=\"chrome-untrusted://projector/js/post_message_api_client.m.js=./js/post_message_api_client.m.js\"",
+                    "browser_resolver_prefix_replacements=\"chrome-untrusted://projector/js/post_message_api_request_handler.m.js=./js/post_message_api_request_handler.m.js\"",
+                  ]
   deps = [
-    ":annotator_embedder_impl",
-    ":embedder",
     ":message_types.m",
     ":projector_browser_proxy",
     ":selfie_cam",
+    ":trusted_annotator_closure_compile",
+    ":trusted_app_closure_compile",
+    ":untrusted_annotator_closure_compile",
   ]
-}
-
-js_library("annotator_embedder_impl") {
-  sources = [ "annotator/annotator_embedder_impl.js" ]
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-  ]
-}
-
-js_library("embedder") {
-  sources = [ "embedder.js" ]
 }
 
 js_library("projector_browser_proxy") {
@@ -53,8 +46,42 @@ js_library("message_types.m") {
   extra_deps = [ ":modulize" ]
 }
 
+js_library("trusted_annotator_closure_compile") {
+  sources = [
+    "annotator/annotator_embedder_impl.js",
+    "annotator/trusted/trusted_annotator_comm_factory.js",
+  ]
+  deps = [
+    ":message_types",
+    ":projector_browser_proxy",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:post_message_api_client.m",
+    "//ui/webui/resources/js:post_message_api_request_handler.m",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
+  ]
+  externs_list = [ "communication/projector_app.externs.js" ]
+}
+
+js_library("trusted_app_closure_compile") {
+  sources = [ "embedder.js" ]
+}
+
+js_library("untrusted_annotator_closure_compile") {
+  sources = [ "annotator/untrusted/untrusted_annotator_comm_factory.js" ]
+  deps = [
+    ":message_types",
+    "//ui/webui/resources/js:post_message_api_client.m",
+    "//ui/webui/resources/js:post_message_api_request_handler.m",
+  ]
+  externs_list = [ "communication/projector_app.externs.js" ]
+}
+
 generate_grd("build_untrusted_grd") {
-  input_files = [ "annotator/annotator.html" ]
+  input_files = [
+    "annotator/annotator.html",
+    "annotator/untrusted/untrusted_annotator_comm_factory.js",
+  ]
+
   input_files_base_dir = rebase_path(".", "//")
   grd_prefix = "chromeos_projector_app_untrusted"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
@@ -65,6 +92,7 @@ generate_grd("build_trusted_grd") {
     "annotator/annotator_embedder.html",
     "annotator/annotator_embedder.css",
     "annotator/annotator_embedder_impl.js",
+    "annotator/trusted/trusted_annotator_comm_factory.js",
     "communication/projector_browser_proxy.js",
     "embedder.html",
     "embedder.css",

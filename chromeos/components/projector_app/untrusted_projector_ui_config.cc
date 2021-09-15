@@ -13,6 +13,8 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
+#include "ui/resources/grit/webui_generated_resources.h"
+#include "ui/resources/grit/webui_generated_resources_map.h"
 #include "url/gurl.h"
 
 namespace chromeos {
@@ -31,12 +33,20 @@ content::WebUIDataSource* CreateProjectorHTMLSource() {
                       kChromeosProjectorAppBundleResourcesSize));
   source->AddResourcePath("", IDR_PROJECTOR_APP_INDEX_HTML);
 
+  // Allows WebUI resources like Polymer and PostMessageAPI to be accessible
+  // inside the untrusted iframe.
+  source->AddResourcePaths(
+      base::make_span(kWebuiGeneratedResources, kWebuiGeneratedResourcesSize));
+
+  // Provide a list of specific script resources(javascript files and inlined
+  // scripts inside html) or their sha-256 hashes to allow to be executed.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
+      // Allows loading javascript files from the current origin
       "script-src 'self' "
-      // Mock index.html.
+      // Allows Mock index.html's inlined script to be executed.
       "'sha256-vunvdG/aGKMFmosUfnXnaOfAKJ1vqzY/TjBlJ8/SEqY=' "
-      // Prod index.html.
+      // Allows Prod index.html's inlined script to be executed.
       "'sha256-yTOCd/3yFekoT/PpJwcLz8Hkw89nnlVBtq7cgEag574=';");
 
   source->OverrideContentSecurityPolicy(
