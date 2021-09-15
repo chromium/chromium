@@ -103,6 +103,7 @@ GPUExternalTexture* GPUExternalTexture::FromVideo(
 
   WGPUTextureViewDescriptor viewDesc = {};
   viewDesc.arrayLayerCount = WGPU_ARRAY_LAYER_COUNT_UNDEFINED;
+  viewDesc.mipLevelCount = WGPU_MIP_LEVEL_COUNT_UNDEFINED;
   WGPUTextureView plane0 = device->GetProcs().textureCreateView(
       mailbox_texture->GetTexture(), &viewDesc);
 

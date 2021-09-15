@@ -64,12 +64,16 @@ WGPUTextureViewDescriptor AsDawnType(
         AsDawnEnum<WGPUTextureViewDimension>(webgpu_desc->dimension());
   }
   dawn_desc.baseMipLevel = webgpu_desc->baseMipLevel();
-  dawn_desc.mipLevelCount = webgpu_desc->mipLevelCount();
+  dawn_desc.mipLevelCount = WGPU_MIP_LEVEL_COUNT_UNDEFINED;
+  if (webgpu_desc->hasMipLevelCount()) {
+    dawn_desc.mipLevelCount =
+        std::min(webgpu_desc->mipLevelCount(), dawn_desc.mipLevelCount - 1u);
+  }
   dawn_desc.baseArrayLayer = webgpu_desc->baseArrayLayer();
+  dawn_desc.arrayLayerCount = WGPU_ARRAY_LAYER_COUNT_UNDEFINED;
   if (webgpu_desc->hasArrayLayerCount()) {
-    dawn_desc.arrayLayerCount = webgpu_desc->arrayLayerCount();
-  } else {
-    dawn_desc.arrayLayerCount = WGPU_ARRAY_LAYER_COUNT_UNDEFINED;
+    dawn_desc.arrayLayerCount = std::min(webgpu_desc->arrayLayerCount(),
+                                         dawn_desc.arrayLayerCount - 1u);
   }
   dawn_desc.aspect = AsDawnEnum<WGPUTextureAspect>(webgpu_desc->aspect());
   if (webgpu_desc->hasLabel()) {
