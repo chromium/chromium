@@ -88,6 +88,14 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
   onBluetoothDiscoveryStopped() {
     // TODO(crbug.com/1010321): Implement this function.
   }
+
+  /**
+   * @param {!CustomEvent<!{deviceId: string}>} event
+   * @private
+   */
+  onPairDevice_(event) {
+    // TODO(crbug.com/1010321): Implement this function and add test.
+  }
 }
 
 customElements.define(

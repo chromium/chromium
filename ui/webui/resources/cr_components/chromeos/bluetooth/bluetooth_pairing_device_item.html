@@ -15,7 +15,9 @@
     padding: 0;
   }
 </style>
-<div id="container" class="cr-row continuation">
+<div id="container" class="cr-row continuation"
+    on-click="onSelected_"
+    on-keydown="onKeydown_">
   <bluetooth-icon device="[[device]]"></bluetooth-icon>
   <div id="deviceName" class="text-row">
     [[getDeviceName_(device.*)]]

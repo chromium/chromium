@@ -43,6 +43,37 @@ export class SettingsBluetoothPairingDeviceItemElement extends PolymerElement {
 
     return mojoString16ToString(this.device.publicName);
   }
+
+  /**
+   * @param {!Event} event
+   * @private
+   */
+  onSelected_(event) {
+    this.dispatchPairDeviceEvent_();
+    event.stopPropagation();
+  }
+
+  /**
+   * @param {!KeyboardEvent} event
+   * @private
+   */
+  onKeydown_(event) {
+    if (event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
+
+    this.dispatchPairDeviceEvent_();
+    event.stopPropagation();
+  }
+
+  /** @private */
+  dispatchPairDeviceEvent_() {
+    this.dispatchEvent(new CustomEvent('pair-device', {
+      bubbles: true,
+      composed: true,
+      detail: {deviceId: this.device.id},
+    }));
+  }
 }
 
 customElements.define(
