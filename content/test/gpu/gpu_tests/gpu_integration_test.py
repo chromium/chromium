@@ -262,12 +262,35 @@ class GpuIntegrationTest(
     # by a bad combination of command-line arguments. So reset to the original
     # options in attempt to successfully launch a browser.
     if cls.browser is None:
+      cls._RestartTsProxyServerIfNecessary()
       cls.SetBrowserOptions(cls.GetOriginalFinderOptions())
       cls.StartBrowser()
     else:
       cls.StopBrowser()
+      cls._RestartTsProxyServerIfNecessary()
       cls.SetBrowserOptions(cls._finder_options)
       cls.StartBrowser()
+
+  @classmethod
+  def _RestartTsProxyServerIfNecessary(cls):
+    """Restarts the TsProxyServer on remote platforms.
+
+    If something goes wrong with the connection to the remote device (SSH, adb,
+    etc.), then the forwarder between the device and the host will potentially
+    break, breaking all further network connectivity. So, restart the server
+    and its forwarder.
+    """
+    # TODO(crbug.com/1245346): Move this into Telemetry itself once it is
+    # shown to work.
+    os_name = cls.platform.GetOSName()
+    if os_name == 'android' or os_name == 'chromeos':
+      logging.warning(
+          'Restarting TsProxyServer due to being on a remote platform')
+      network_controller_backend = (
+          cls.platform._platform_backend.network_controller_backend)
+      wpr_mode = network_controller_backend._wpr_mode
+      network_controller_backend.Close()
+      network_controller_backend.Open(wpr_mode)
 
   def _RunGpuTest(self, url, test_name, *args):
     expected_results, should_retry_on_failure = (
