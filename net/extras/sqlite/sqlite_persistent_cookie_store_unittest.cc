@@ -25,6 +25,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -2230,6 +2231,104 @@ TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion16) {
   std::vector<std::unique_ptr<CanonicalCookie>> read_in_cookies;
   CreateAndLoad(false, false, &read_in_cookies);
   ConfirmCookiesAfterMigrationTest(std::move(read_in_cookies), true);
+}
+
+class PartitionedCookiesSQLitePersistentCookieStoreTest
+    : public SQLitePersistentCookieStoreTest,
+      public testing::WithParamInterface<bool> {
+ protected:
+  // testing::Test
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatureState(features::kPartitionedCookies,
+                                              PartitionedCookiesEnabled());
+    SQLitePersistentCookieStoreTest::SetUp();
+  }
+
+  bool PartitionedCookiesEnabled() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(/* no label */,
+                         PartitionedCookiesSQLitePersistentCookieStoreTest,
+                         testing::Bool());
+
+TEST_P(PartitionedCookiesSQLitePersistentCookieStoreTest,
+       SavingPartitionedCookies) {
+  InitializeStore(false, false);
+
+  store_->AddCookie(*CanonicalCookie::CreateUnsafeCookieForTesting(
+      "__Host-foo", "bar", GURL("https://example.com/").host(), "/",
+      base::Time::Now(), base::Time::Now() + base::TimeDelta::FromDays(1),
+      base::Time::Now(), true /* secure */, false /* httponly */,
+      CookieSameSite::UNSPECIFIED, COOKIE_PRIORITY_DEFAULT,
+      false /* sameparty */,
+      CookiePartitionKey::FromURLForTesting(GURL("https://toplevelsite.com"))));
+  Flush();
+
+  std::string got_db_content(ReadRawDBContents());
+  EXPECT_EQ(PartitionedCookiesEnabled(),
+            got_db_content.find("__Host-foo") != std::string::npos);
+
+  DestroyStore();
+}
+
+TEST_P(PartitionedCookiesSQLitePersistentCookieStoreTest,
+       LoadingPartitionedCookies) {
+  InitializeStore(false, false);
+  DestroyStore();
+
+  // Insert a partitioned cookie into the database manually.
+  base::FilePath store_name(temp_dir_.GetPath().Append(kCookieFilename));
+  std::unique_ptr<sql::Database> db(std::make_unique<sql::Database>());
+  ASSERT_TRUE(db->Open(store_name));
+
+  sql::Statement stmt(db->GetUniqueStatement(
+      "INSERT INTO cookies (creation_utc, host_key, top_frame_site_key, name, "
+      "value, encrypted_value, path, expires_utc, is_secure, is_httponly, "
+      "samesite, last_access_utc, has_expires, is_persistent, priority, "
+      "source_scheme, source_port, is_same_party) "
+      "VALUES (?,?,?,?,?,'',?,?,1,0,0,?,1,1,0,?,?,0)"));
+  ASSERT_TRUE(stmt.is_valid());
+
+  base::Time creation(base::Time::Now());
+  base::Time expiration(creation + base::TimeDelta::FromDays(1));
+  base::Time last_access(base::Time::Now());
+
+  stmt.BindTime(0, creation);
+  stmt.BindString(1, GURL("https://www.example.com/").host());
+  stmt.BindString(2, "https://toplevelsite.com");
+  stmt.BindString(3, "__Host-foo");
+  stmt.BindString(4, "bar");
+  stmt.BindString(5, "/");
+  stmt.BindTime(6, expiration);
+  stmt.BindTime(7, last_access);
+  stmt.BindInt(8, static_cast<int>(CookieSourceScheme::kUnset));
+  stmt.BindInt(9, SQLitePersistentCookieStore::kDefaultUnknownPort);
+  ASSERT_TRUE(stmt.Run());
+  stmt.Clear();
+
+  CanonicalCookieVector cookies;
+  CreateAndLoad(false, false, &cookies);
+
+  if (PartitionedCookiesEnabled()) {
+    EXPECT_EQ(1u, cookies.size());
+    auto cc = std::move(cookies[0]);
+    EXPECT_EQ("__Host-foo", cc->Name());
+    EXPECT_EQ("bar", cc->Value());
+    EXPECT_EQ(GURL("https://www.example.com/").host(), cc->Domain());
+    EXPECT_TRUE(cc->IsPartitioned());
+    EXPECT_EQ(
+        CookiePartitionKey::FromURLForTesting(GURL("https://toplevelsite.com")),
+        cc->PartitionKey());
+  } else {
+    EXPECT_EQ(0u, cookies.size());
+    // If Partitioned cookies are disabled, then we should delete any
+    // Partitioned cookie we tried to load.
+    std::string db_content(ReadRawDBContents());
+    EXPECT_EQ(db_content.find("__Host-foo"), std::string::npos);
+  }
 }
 
 }  // namespace net

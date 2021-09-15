@@ -46,6 +46,8 @@ bool CookiePartitionKey::Serialize(const absl::optional<CookiePartitionKey>& in,
     out = kEmptyCookiePartitionKey;
     return true;
   }
+  if (!base::FeatureList::IsEnabled(features::kPartitionedCookies))
+    return false;
   if (in->site_.GetURL().SchemeIsFile()) {
     out = in->site_.SerializeFileSiteWithHost();
     return true;
@@ -63,6 +65,8 @@ bool CookiePartitionKey::Deserialize(const std::string& in,
     out = absl::nullopt;
     return true;
   }
+  if (!base::FeatureList::IsEnabled(features::kPartitionedCookies))
+    return false;
   auto schemeful_site = SchemefulSite::Deserialize(in);
   // SchemfulSite is opaque if the input is invalid.
   if (schemeful_site.opaque())

@@ -63,8 +63,15 @@ TEST_P(CookiePartitionKeyTest, Serialization) {
 
   for (const auto& tc : cases) {
     std::string got;
-    EXPECT_EQ(tc.expected_ret, CookiePartitionKey::Serialize(tc.input, got));
-    EXPECT_EQ(tc.expected_output, got);
+    if (PartitionedCookiesEnabled()) {
+      EXPECT_EQ(tc.expected_ret, CookiePartitionKey::Serialize(tc.input, got));
+      EXPECT_EQ(tc.expected_output, got);
+    } else {
+      // Serialize should only return true for unpartitioned cookies if the
+      // feature is disabled.
+      EXPECT_NE(tc.input.has_value(),
+                CookiePartitionKey::Serialize(tc.input, got));
+    }
   }
 }
 
@@ -83,12 +90,20 @@ TEST_P(CookiePartitionKeyTest, Deserialization) {
 
   for (const auto& tc : cases) {
     absl::optional<CookiePartitionKey> got;
-    EXPECT_EQ(tc.expected_ret, CookiePartitionKey::Deserialize(tc.input, got));
-    if (tc.expected_output.has_value()) {
-      EXPECT_TRUE(got.has_value());
-      EXPECT_EQ(tc.expected_output.value(), got.value());
+    if (PartitionedCookiesEnabled()) {
+      EXPECT_EQ(tc.expected_ret,
+                CookiePartitionKey::Deserialize(tc.input, got));
+      if (tc.expected_output.has_value()) {
+        EXPECT_TRUE(got.has_value());
+        EXPECT_EQ(tc.expected_output.value(), got.value());
+      } else {
+        EXPECT_FALSE(got.has_value());
+      }
     } else {
-      EXPECT_FALSE(got.has_value());
+      // Deserialize should only return true for unpartitioned cookies if the
+      // feature is disabled.
+      EXPECT_EQ(tc.input == kEmptyCookiePartitionKey,
+                CookiePartitionKey::Deserialize(tc.input, got));
     }
   }
 }

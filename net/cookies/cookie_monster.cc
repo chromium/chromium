@@ -1390,9 +1390,7 @@ CookieMonster::InternalInsertPartitionedCookie(
                       return NetLogCookieMonsterCookieAdded(
                           cc.get(), sync_to_store, capture_mode);
                     });
-  // TODO(crbug.com/1225444) Use |sync_to_store| instead of Boolean literal when
-  // we support persistent Partitioned cookies.
-  if (ShouldUpdatePersistentStore(cc_ptr) && (/*sync_to_store*/ false))
+  if (ShouldUpdatePersistentStore(cc_ptr) && sync_to_store)
     store_->AddCookie(*cc_ptr);
 
   CookiePartitionKey partition_key(cc->PartitionKey().value());
@@ -1721,9 +1719,7 @@ void CookieMonster::InternalDeletePartitionedCookie(
                       });
   }
 
-  // TODO(crbug.com/1225444) Use |sync_to_store| instead of Boolean literal when
-  // we support persistent Partitioned cookies.
-  if (ShouldUpdatePersistentStore(cc) && (/*sync_to_store*/ false))
+  if (ShouldUpdatePersistentStore(cc) && sync_to_store)
     store_->DeleteCookie(*cc);
 
   change_dispatcher_.DispatchChange(
