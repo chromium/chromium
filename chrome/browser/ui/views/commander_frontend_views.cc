@@ -35,6 +35,7 @@
 namespace {
 constexpr gfx::Size kDefaultSize(512, 48);
 constexpr int kTopContainerOverlapMargin = 12;
+constexpr int kCornerRadius = 8;
 
 //
 void AnchorToBrowser(gfx::Rect* bounds, Browser* browser) {
@@ -87,6 +88,11 @@ class CommanderWebView : public views::WebView {
       const content::NativeWebKeyboardEvent& event) override {
     CHECK(owner_);
     return event_handler_.HandleKeyboardEvent(event, owner_->GetFocusManager());
+  }
+
+  void AddedToWidget() override {
+    views::WebView::AddedToWidget();
+    holder()->SetCornerRadii(gfx::RoundedCornersF(kCornerRadius));
   }
 
   void SetOwner(views::View* owner) {
