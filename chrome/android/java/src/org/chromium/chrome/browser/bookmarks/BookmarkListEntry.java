@@ -26,7 +26,7 @@ final class BookmarkListEntry {
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({ViewType.INVALID, ViewType.PERSONALIZED_SIGNIN_PROMO, ViewType.PERSONALIZED_SYNC_PROMO,
             ViewType.SYNC_PROMO, ViewType.FOLDER, ViewType.BOOKMARK, ViewType.DIVIDER,
-            ViewType.SECTION_HEADER})
+            ViewType.SECTION_HEADER, ViewType.SHOPPING_POWER_BOOKMARK})
     @interface ViewType {
         int INVALID = -1;
         int PERSONALIZED_SIGNIN_PROMO = 0;
@@ -36,6 +36,7 @@ final class BookmarkListEntry {
         int BOOKMARK = 4;
         int DIVIDER = 5;
         int SECTION_HEADER = 6;
+        int SHOPPING_POWER_BOOKMARK = 7;
     }
 
     /**
@@ -100,7 +101,8 @@ final class BookmarkListEntry {
      * @param viewType The type of the view in the bookmark list UI.
      */
     static boolean isBookmarkEntry(@ViewType int viewType) {
-        return viewType == ViewType.BOOKMARK || viewType == ViewType.FOLDER;
+        return viewType == ViewType.BOOKMARK || viewType == ViewType.FOLDER
+                || viewType == ViewType.SHOPPING_POWER_BOOKMARK;
     }
 
     /**

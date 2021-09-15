@@ -29,11 +29,15 @@ import org.chromium.chrome.browser.signin.ui.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
+import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableListAdapter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.components.image_fetcher.ImageFetcherConfig;
+import org.chromium.components.image_fetcher.ImageFetcherFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +50,7 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
     private static final int MAXIMUM_NUMBER_OF_SEARCH_RESULTS = 500;
     private static final String EMPTY_QUERY = null;
 
+    private final ImageFetcher mImageFetcher;
     private final List<BookmarkId> mTopLevelFolders = new ArrayList<>();
 
     // There can only be one promo header at a time. This takes on one of the values:
@@ -111,6 +116,11 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
         super(context);
         mSyncService = SyncService.get();
         mSyncService.addSyncStateChangedListener(this);
+
+        mImageFetcher =
+                ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.IN_MEMORY_WITH_DISK_CACHE,
+                        Profile.getLastUsedRegularProfile().getProfileKey(),
+                        GlobalDiscardableReferencePool.getReferencePool());
     }
 
     /**
@@ -194,6 +204,11 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
                 return createViewHolderHelper(parent, R.layout.bookmark_folder_row);
             case ViewType.BOOKMARK:
                 return createViewHolderHelper(parent, R.layout.bookmark_item_row);
+            case ViewType.SHOPPING_POWER_BOOKMARK:
+                ViewHolder vh =
+                        createViewHolderHelper(parent, R.layout.power_bookmark_shopping_item_row);
+                ((PowerBookmarkShoppingItemRow) vh.itemView).init(mImageFetcher);
+                return vh;
             case ViewType.DIVIDER:
                 return new ViewHolder(
                         LayoutInflater.from(parent.getContext())

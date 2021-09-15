@@ -9,6 +9,8 @@ import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -43,6 +45,11 @@ public abstract class SelectableItemView<E> extends SelectableItemViewBase<E> {
      * An icon displayed at the start of the item row.
      */
     protected ImageView mStartIconView;
+
+    /**
+     * An optional button displayed at the before the end button, GONE by default.
+     */
+    protected AppCompatImageButton mEndStartButtonView;
 
     /**
      * An optional button displayed at the end of the item row, GONE by default.
@@ -85,6 +92,11 @@ public abstract class SelectableItemView<E> extends SelectableItemViewBase<E> {
      * Tracks if the visual refresh is enabled.
      */
     private boolean mVisualRefreshEnabled;
+
+    /**
+     * Container for custom content to be set on the view.
+     */
+    private ViewGroup mCustomContentContainer;
 
     /**
      * Constructor for inflating from XML.
@@ -137,6 +149,11 @@ public abstract class SelectableItemView<E> extends SelectableItemViewBase<E> {
             mStartIconView.setBackgroundResource(mStartIconBackgroundRes);
             ApiCompatibilityUtils.setImageTintList(mStartIconView, getDefaultStartIconTint());
         }
+
+        if (isVisualRefreshEnabled()) {
+            mEndStartButtonView = findViewById(R.id.optional_button);
+            mCustomContentContainer = findViewById(R.id.custom_content_container);
+        }
     }
 
     /**
@@ -153,6 +170,22 @@ public abstract class SelectableItemView<E> extends SelectableItemViewBase<E> {
      */
     protected Drawable getStartIconDrawable() {
         return mStartIconDrawable;
+    }
+
+    /**
+     * Sets a custom content view.
+     * @param view The custom view or null to clear it.
+     */
+    protected void setCustomContent(@Nullable View view) {
+        assert isVisualRefreshEnabled()
+            : "Specifying custom content is only allowed when visual refresh is enabled";
+
+        // Custom content is allowed only with the visual refresh.
+        if (!isVisualRefreshEnabled()) return;
+
+        mCustomContentContainer.removeAllViews();
+        if (view == null) return;
+        mCustomContentContainer.addView(view);
     }
 
     /**

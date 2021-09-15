@@ -35,7 +35,18 @@
             android:maxLines="1"
             android:ellipsize="end"
             android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+        <FrameLayout
+            android:id="@+id/custom_content_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
     </LinearLayout>
+
+    <!-- TODO(crbug.com/1241509): Allow an arbitrary amount of buttons to be added here. -->
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/optional_button"
+        android:visibility="gone"
+        style="@style/ListItemEndIcon" />
 
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/end_button"
