@@ -75,6 +75,14 @@ export class ShortcutsPageElement extends PolymerElement {
     }
     this.subcategories_ = subcategories;
   }
+
+  updateSubsections() {
+    const subsections =
+        this.shadowRoot.querySelectorAll('accelerator-subsection');
+    for (const subsection of subsections) {
+      subsection.updateSubsection();
+    }
+  }
 }
 
 customElements.define(ShortcutsPageElement.is, ShortcutsPageElement);

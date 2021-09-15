@@ -16,7 +16,7 @@
   </div>
   <div slot="body">
     <div id="acceleratorViewList">
-      <template is="dom-repeat" items=[[acceleratorInfos]]>
+      <template id="viewList" is="dom-repeat" items="[[acceleratorInfos]]">
         <accelerator-edit-view class="acceleratorItem"
             accelerator-info=[[item]]>
         </accelerator-edit-view>

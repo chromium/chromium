@@ -46,6 +46,24 @@ export function shortcutCustomizationAppTest() {
     return subPage.shadowRoot.querySelectorAll('accelerator-subsection');
   }
 
+  /**
+   * @param {number} subsectionIndex
+   */
+  async function openDialogForAcceleratorInSubsection_(subsectionIndex) {
+    // The edit dialog should not be stamped and visible.
+    let editDialog = page.shadowRoot.querySelector('#editDialog');
+    assertFalse(!!editDialog);
+
+    const subSections = getSubsections_('chromeos-page-id');
+    const accelerators =
+        subSections[subsectionIndex].shadowRoot.querySelectorAll(
+            'accelerator-row');
+
+    // Click on the first accelerator, expect the edit dialog to open.
+    accelerators[0].click();
+    await flushTasks();
+  }
+
   test('LoadFakeChromeOSPage', async () => {
     await flushTasks();
 
@@ -158,6 +176,65 @@ export function shortcutCustomizationAppTest() {
     await flushTasks();
 
     assertFalse(dialog.open);
+  });
+
+  test('ReplaceAccelerator', async () => {
+    await flushTasks();
+
+    // Open dialog for first accelerator in View Desk subsection.
+    await openDialogForAcceleratorInSubsection_(/*View Desk*/ 1);
+    let editDialog = page.shadowRoot.querySelector('#editDialog');
+    assertTrue(!!editDialog);
+
+    // Grab the first accelerator from Virtual Desks subsection.
+    const editView = editDialog.shadowRoot.querySelector('cr-dialog')
+                         .querySelectorAll('accelerator-edit-view')[0];
+
+    // Click on edit button.
+    editView.shadowRoot.querySelector('#editButton').click();
+
+    await flushTasks();
+
+    const accelViewElement =
+        editView.shadowRoot.querySelector('#acceleratorItem');
+
+    // Assert no error has occurred prior to pressing a shortcut.
+    assertFalse(editView.hasError);
+
+    // Alt + ']' is a conflict, expect the error message to appear.
+    accelViewElement.dispatchEvent(new KeyboardEvent('keydown', {
+      key: ']',
+      keyCode: '221',
+      code: 'Key]',
+      ctrlKey: false,
+      altKey: true,
+      shiftKey: false,
+      metaKey: false,
+    }));
+
+    await flushTasks();
+
+    assertTrue(editView.hasError);
+
+    // Press the shortcut again, this time it will replace the preexsting
+    // accelerator.
+    accelViewElement.dispatchEvent(new KeyboardEvent('keydown', {
+      key: ']',
+      keyCode: '221',
+      code: 'Key]',
+      ctrlKey: false,
+      altKey: true,
+      shiftKey: false,
+      metaKey: false,
+    }));
+
+    await flushTasks();
+
+    // Assert that the accelerator was updated with the new shortcut (Alt + ']')
+    const actualAccelerator = accelViewElement.acceleratorInfo.accelerator;
+    assertEquals(Modifier.ALT, actualAccelerator.modifiers);
+    assertEquals(221, actualAccelerator.key);
+    assertEquals(']', actualAccelerator.key_display);
   });
 
   suite('FakeMojoProviderTest', () => {

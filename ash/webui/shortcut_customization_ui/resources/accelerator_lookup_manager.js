@@ -230,6 +230,7 @@ export class AcceleratorLookupManager {
 
   reset() {
     this.acceleratorLookup_.clear();
+    this.acceleratorNameLookup_.clear();
     this.acceleratorLayoutLookup_.clear();
   }
 }

@@ -76,6 +76,9 @@ export class ShortcutCustomizationAppElement extends PolymerElement {
     window.addEventListener('show-edit-dialog',
         (e) => this.showDialog_(e.detail));
     window.addEventListener('edit-dialog-closed', () => this.onDialogClosed_());
+    window.addEventListener(
+        'request-update-accelerator',
+        (e) => this.onRequestUpdateAccelerators_(e.detail));
   }
 
   /** @override */
@@ -155,6 +158,18 @@ export class ShortcutCustomizationAppElement extends PolymerElement {
     this.showEditDialog_ = false;
     this.dialogShortcutTitle_ = '';
     this.dialogAccelerators_ = [];
+  }
+
+  /**
+   * @param {!Object<number, number>} detail
+   * @private
+   */
+  onRequestUpdateAccelerators_(detail) {
+    this.$.navigationPanel.notifyEvent('updateSubsections');
+    const updatedAccels = this.acceleratorLookupManager_.getAccelerators(
+        detail.source, detail.action);
+    this.shadowRoot.querySelector('#editDialog')
+        .updateDialogAccelerators(updatedAccels);
   }
 }
 

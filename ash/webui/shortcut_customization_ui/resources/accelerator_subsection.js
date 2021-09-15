@@ -64,6 +64,15 @@ export class AcceleratorSubsectionElement extends PolymerElement {
     this.lookupManager_ = AcceleratorLookupManager.getInstance();
   }
 
+  updateSubsection() {
+    // Force the rendered list to reset, Polymer's dom-repeat does not perform
+    // a deep check on objects so it won't detect changes to same size length
+    // array of objects.
+    this.set('acceleratorContainer', []);
+    this.$.list.render();
+    this.onCategoryUpdated_();
+  }
+
   /** @protected */
   onCategoryUpdated_() {
     if (this.subcategory === null) {

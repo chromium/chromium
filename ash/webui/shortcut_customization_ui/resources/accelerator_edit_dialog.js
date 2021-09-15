@@ -55,6 +55,15 @@ export class AcceleratorEditDialogElement extends PolymerElement {
     this.$.editDialog.showModal();
   }
 
+  /**
+   * @param {!Array<AcceleratorInfo>} updatedAccels
+   */
+  updateDialogAccelerators(updatedAccels) {
+    this.set('acceleratorInfos', []);
+    this.shadowRoot.querySelector('#viewList').render();
+    this.acceleratorInfos = updatedAccels;
+  }
+
   /** @protected */
   onDoneButtonClicked_() {
     this.$.editDialog.close();

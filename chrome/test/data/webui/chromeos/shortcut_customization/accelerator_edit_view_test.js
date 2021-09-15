@@ -98,9 +98,9 @@ export function acceleratorEditViewTest() {
   test('DetectShortcutConflict', async () => {
     /** @type {!AcceleratorInfo} */
     const acceleratorInfo = CreateDefaultAccelerator(
-        Modifier.CONTROL | Modifier.SHIFT,
-        /*key=*/ 71,
-        /*key_display=*/ 'g');
+        Modifier.ALT,
+        /*key=*/ 221,
+        /*key_display=*/ ']');
 
     editViewElement.acceleratorInfo = acceleratorInfo;
     await flushTasks();

@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {AcceleratorLookupManager} from 'chrome://shortcut-customization/accelerator_lookup_manager.js';
 import {AcceleratorViewElement, ViewState} from 'chrome://shortcut-customization/accelerator_view.js';
+import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/fake_data.js';
 import {AcceleratorInfo, AcceleratorKeys, AcceleratorState, AcceleratorType, Modifier} from 'chrome://shortcut-customization/shortcut_types.js';
 
 import {assertEquals, assertTrue} from '../../chai_assert.js';
@@ -14,13 +16,22 @@ export function acceleratorViewTest() {
   /** @type {?AcceleratorViewElement} */
   let viewElement = null;
 
+  /** @type {?AcceleratorLookupManager} */
+  let manager = null;
+
   setup(() => {
+    manager = AcceleratorLookupManager.getInstance();
+    manager.setAcceleratorLookup(fakeAcceleratorConfig);
+    manager.setAcceleratorLayoutLookup(fakeLayoutInfo);
+
     viewElement = /** @type {!AcceleratorViewElement} */ (
         document.createElement('accelerator-view'));
     document.body.appendChild(viewElement);
   });
 
   teardown(() => {
+    manager.reset();
+
     viewElement.remove();
     viewElement = null;
   });
@@ -50,9 +61,9 @@ export function acceleratorViewTest() {
   test('EditableAccelerator', async () => {
     /** @type {!AcceleratorInfo} */
     const acceleratorInfo = CreateDefaultAccelerator(
-        Modifier.CONTROL | Modifier.SHIFT,
-        /*key=*/ 71,
-        /*key_display=*/ 'g');
+        Modifier.ALT,
+        /*key=*/ 221,
+        /*key_display=*/ ']');
 
     viewElement.acceleratorInfo = acceleratorInfo;
     await flush();
