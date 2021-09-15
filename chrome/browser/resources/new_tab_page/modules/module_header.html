@@ -94,9 +94,11 @@
         on-click="onInfoButtonClick_">
     </cr-icon-button>
   </template>
-  <cr-icon-button id="menuButton" title="[[i18n('moreActions')]]"
-      class="icon-more-vert" on-click="onMenuButtonClick_">
-  </cr-icon-button>
+  <template is="dom-if" if="[[!hideMenuButton]]" restamp>
+    <cr-icon-button id="menuButton" title="[[i18n('moreActions')]]"
+        class="icon-more-vert" on-click="onMenuButtonClick_">
+    </cr-icon-button>
+  </template>
 </div>
 <template is="dom-if" if="[[descriptionText]]">
   <span id="description">[[descriptionText]]</span>
