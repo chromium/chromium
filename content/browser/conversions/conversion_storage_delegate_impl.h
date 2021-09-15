@@ -16,8 +16,6 @@ class Time;
 
 namespace content {
 
-struct ConversionReport;
-
 // Implementation of the storage delegate. This class handles assigning
 // report times to newly created conversion reports. It
 // also controls constants for ConversionStorage. This is owned by
@@ -37,7 +35,8 @@ class CONTENT_EXPORT ConversionStorageDelegateImpl
   ~ConversionStorageDelegateImpl() override = default;
 
   // ConversionStorageDelegate:
-  base::Time GetReportTime(const ConversionReport& report) const override;
+  base::Time GetReportTime(const StorableImpression& impression,
+                           base::Time conversion_time) const override;
   int GetMaxConversionsPerImpression(
       StorableImpression::SourceType source_type) const override;
   int GetMaxImpressionsPerOrigin() const override;

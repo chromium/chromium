@@ -358,12 +358,15 @@ void ConversionStorageSql::StoreImpression(
     uint64_t event_source_trigger_data =
         delegate_->GetFakeEventSourceTriggerData();
 
+    const base::Time conversion_time = impression.impression_time();
+    const base::Time report_time =
+        delegate_->GetReportTime(impression, conversion_time);
+
     ConversionReport report(impression, event_source_trigger_data,
-                            /*conversion_time=*/impression.impression_time(),
-                            /*report_time=*/impression.impression_time(),
+                            /*conversion_time=*/conversion_time,
+                            /*report_time=*/report_time,
                             /*priority=*/0,
                             /*conversion_id=*/absl::nullopt);
-    report.report_time = delegate_->GetReportTime(report);
 
     if (!StoreConversionReport(report, impression_id))
       return;
@@ -548,13 +551,14 @@ CreateReportStatus ConversionStorageSql::MaybeCreateAndStoreConversionReport(
           ? conversion.event_source_trigger_data()
           : conversion.conversion_data();
 
+  const base::Time report_time =
+      delegate_->GetReportTime(impression_to_attribute->impression,
+                               /*conversion_time=*/current_time);
   ConversionReport report(std::move(impression_to_attribute->impression),
                           conversion_data,
                           /*conversion_time=*/current_time,
-                          /*report_time=*/current_time, conversion.priority(),
+                          /*report_time=*/report_time, conversion.priority(),
                           /*conversion_id=*/absl::nullopt);
-
-  report.report_time = delegate_->GetReportTime(report);
 
   switch (
       rate_limit_table_.AttributionAllowed(db_.get(), report, current_time)) {

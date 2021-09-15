@@ -43,7 +43,8 @@ TEST_F(ConversionStorageDelegateImplTest, ImmediateConversion_FirstWindowUsed) {
   const ConversionReport report =
       GetReport(impression_time, /*conversion_time=*/impression_time);
   EXPECT_EQ(impression_time + base::TimeDelta::FromDays(2),
-            ConversionStorageDelegateImpl().GetReportTime(report));
+            ConversionStorageDelegateImpl().GetReportTime(
+                report.impression, report.conversion_time));
 }
 
 TEST_F(ConversionStorageDelegateImplTest,
@@ -53,7 +54,8 @@ TEST_F(ConversionStorageDelegateImplTest,
                                base::TimeDelta::FromMinutes(1);
   const ConversionReport report = GetReport(impression_time, conversion_time);
   EXPECT_EQ(impression_time + base::TimeDelta::FromDays(7),
-            ConversionStorageDelegateImpl().GetReportTime(report));
+            ConversionStorageDelegateImpl().GetReportTime(
+                report.impression, report.conversion_time));
 }
 
 TEST_F(ConversionStorageDelegateImplTest,
@@ -66,7 +68,8 @@ TEST_F(ConversionStorageDelegateImplTest,
                                base::TimeDelta::FromMinutes(61);
   const ConversionReport report = GetReport(impression_time, conversion_time);
   EXPECT_EQ(impression_time + base::TimeDelta::FromDays(2),
-            ConversionStorageDelegateImpl().GetReportTime(report));
+            ConversionStorageDelegateImpl().GetReportTime(
+                report.impression, report.conversion_time));
 }
 
 TEST_F(ConversionStorageDelegateImplTest,
@@ -79,7 +82,8 @@ TEST_F(ConversionStorageDelegateImplTest,
       GetReport(impression_time, conversion_time,
                 /*expiry=*/base::TimeDelta::FromHours(2));
   EXPECT_EQ(impression_time + base::TimeDelta::FromDays(2),
-            ConversionStorageDelegateImpl().GetReportTime(report));
+            ConversionStorageDelegateImpl().GetReportTime(
+                report.impression, report.conversion_time));
 }
 
 TEST_F(ConversionStorageDelegateImplTest,
@@ -95,7 +99,8 @@ TEST_F(ConversionStorageDelegateImplTest,
   // The expiry window is reported one hour after expiry time.
   EXPECT_EQ(impression_time + base::TimeDelta::FromDays(4) +
                 base::TimeDelta::FromHours(1),
-            ConversionStorageDelegateImpl().GetReportTime(report));
+            ConversionStorageDelegateImpl().GetReportTime(
+                report.impression, report.conversion_time));
 }
 
 TEST_F(ConversionStorageDelegateImplTest,
@@ -111,7 +116,8 @@ TEST_F(ConversionStorageDelegateImplTest,
   // The expiry window is reported one hour after expiry time.
   EXPECT_EQ(impression_time + base::TimeDelta::FromDays(9) +
                 base::TimeDelta::FromHours(1),
-            ConversionStorageDelegateImpl().GetReportTime(report));
+            ConversionStorageDelegateImpl().GetReportTime(
+                report.impression, report.conversion_time));
 }
 
 TEST_F(ConversionStorageDelegateImplTest,
@@ -124,7 +130,8 @@ TEST_F(ConversionStorageDelegateImplTest,
                 StorableImpression::SourceType::kEvent);
   EXPECT_EQ(impression_time + base::TimeDelta::FromDays(2) +
                 base::TimeDelta::FromHours(1),
-            ConversionStorageDelegateImpl().GetReportTime(report));
+            ConversionStorageDelegateImpl().GetReportTime(
+                report.impression, report.conversion_time));
 }
 
 TEST_F(ConversionStorageDelegateImplTest,
@@ -137,7 +144,8 @@ TEST_F(ConversionStorageDelegateImplTest,
                 StorableImpression::SourceType::kEvent);
   EXPECT_EQ(impression_time + base::TimeDelta::FromDays(4) +
                 base::TimeDelta::FromHours(1),
-            ConversionStorageDelegateImpl().GetReportTime(report));
+            ConversionStorageDelegateImpl().GetReportTime(
+                report.impression, report.conversion_time));
 }
 
 }  // namespace content

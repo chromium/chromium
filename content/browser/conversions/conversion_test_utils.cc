@@ -91,8 +91,9 @@ ConfigurableStorageDelegate::ConfigurableStorageDelegate() = default;
 ConfigurableStorageDelegate::~ConfigurableStorageDelegate() = default;
 
 base::Time ConfigurableStorageDelegate::GetReportTime(
-    const ConversionReport& report) const {
-  return report.impression.impression_time() +
+    const StorableImpression& impression,
+    base::Time conversion_time) const {
+  return impression.impression_time() +
          base::TimeDelta::FromMilliseconds(report_time_ms_);
 }
 

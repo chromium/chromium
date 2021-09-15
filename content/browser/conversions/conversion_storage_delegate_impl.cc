@@ -7,7 +7,6 @@
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "content/browser/conversions/conversion_policy.h"
-#include "content/browser/conversions/conversion_report.h"
 
 namespace content {
 
@@ -89,15 +88,15 @@ ConversionStorageDelegateImpl::GetDeleteExpiredRateLimitsFrequency() const {
 }
 
 base::Time ConversionStorageDelegateImpl::GetReportTime(
-    const ConversionReport& report) const {
+    const StorableImpression& impression,
+    base::Time conversion_time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  //  |report.report_time| is roughly ~now, for newly created conversion
-  //  reports. If in debug mode, the report should be sent immediately.
+  // If in debug mode, the report should be sent immediately.
   if (debug_mode_)
-    return report.report_time;
+    return conversion_time;
 
   base::TimeDelta expiry_deadline =
-      report.impression.expiry_time() - report.impression.impression_time();
+      impression.expiry_time() - impression.impression_time();
 
   constexpr base::TimeDelta kMinExpiryDeadline = base::TimeDelta::FromDays(2);
   if (expiry_deadline < kMinExpiryDeadline)
@@ -124,7 +123,7 @@ base::Time ConversionStorageDelegateImpl::GetReportTime(
       base::TimeDelta::FromHours(1);
 
   std::vector<base::TimeDelta> early_deadlines;
-  switch (report.impression.source_type()) {
+  switch (impression.source_type()) {
     case StorableImpression::SourceType::kNavigation:
       early_deadlines = {base::TimeDelta::FromDays(2) - kWindowDeadlineOffset,
                          base::TimeDelta::FromDays(7) - kWindowDeadlineOffset};
@@ -136,15 +135,12 @@ base::Time ConversionStorageDelegateImpl::GetReportTime(
 
   base::TimeDelta deadline_to_use = expiry_deadline;
 
-  // Given a conversion report that was created at |report.report_time|, find
-  // the first applicable reporting window this conversion should be reported
-  // at.
+  // Given a conversion that happened at `conversion_time`, find the first
+  // applicable reporting window this conversion should be reported at.
   for (base::TimeDelta early_deadline : early_deadlines) {
-    // If this window is valid for the conversion, use it. |report.report_time|
-    // is roughly ~now, as the conversion time is used as the default value for
-    // newly created reports that have not had a report time set.
-    if (report.impression.impression_time() + early_deadline >=
-            report.report_time &&
+    // If this window is valid for the conversion, use it.
+    // |conversion_time| is roughly ~now.
+    if (impression.impression_time() + early_deadline >= conversion_time &&
         early_deadline < deadline_to_use) {
       deadline_to_use = early_deadline;
       break;
@@ -154,8 +150,7 @@ base::Time ConversionStorageDelegateImpl::GetReportTime(
   // Valid conversion reports should always have a valid reporting deadline.
   DCHECK(!deadline_to_use.is_zero());
 
-  return report.impression.impression_time() + deadline_to_use +
-         kWindowDeadlineOffset;
+  return impression.impression_time() + deadline_to_use + kWindowDeadlineOffset;
 }
 
 }  // namespace content
