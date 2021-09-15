@@ -2117,7 +2117,7 @@
     {
       name: "SVGTextNG",
       depends_on: ["LayoutNG"],
-      status: "experimental"
+      status: "stable"
     },
     {
       // Synchronously load web fonts inlined as data urls (crbug.com/1236283)
