@@ -149,6 +149,12 @@ struct MakeCredentialAuthenticatorResponse {
 struct GetAssertionAuthenticatorResponse {
   CommonCredentialInfo info;
 
+  // True if transport exists. False if transport does not exist, e.g. on old
+  // Windows.
+  bool has_transport;
+  // The transport method used to authenticate, cannot be optional, because it is an enum.
+  AuthenticatorTransport transport;
+
   // Cryptographic signature proving possession of the credential private key.
   array<uint8> signature;
 

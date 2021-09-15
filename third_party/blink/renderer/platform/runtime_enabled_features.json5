@@ -2395,6 +2395,10 @@
       name: "WebAuth",
       status: "stable",
     },
+    // When enabled adds the transport used for authentication to the assertion payload.
+    {
+      name: "WebAuthAssertionTransport",
+    },
     // A more subtle UI for WebAuthn that is web exposed. Under development.
     // It's controlled by the corresponding Chromium feature which needs to
     // be enabled to make the whole feature work.

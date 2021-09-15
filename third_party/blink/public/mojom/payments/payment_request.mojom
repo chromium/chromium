@@ -36,6 +36,8 @@ struct PaymentResponse {
 struct SecurePaymentConfirmationResponse {
   blink.mojom.CommonCredentialInfo credential_info;
   array<uint8> signature;
+  bool has_transport;
+  blink.mojom.AuthenticatorTransport transport;
   array<uint8>? user_handle;
 };
 

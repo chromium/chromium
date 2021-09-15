@@ -396,6 +396,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"WebAppTabStrip", features::kDesktopPWAsTabStrip},
           {"WebAppWindowControlsOverlay",
            features::kWebAppWindowControlsOverlay},
+          {"WebAuthAssertionTransport", features::kWebAuthAssertionTransport},
           {"WebAuthenticationConditionalUI", features::kWebAuthConditionalUI},
           {"SyncLoadDataUrlFonts", blink::features::kSyncLoadDataUrlFonts},
       };

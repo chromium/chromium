@@ -70,6 +70,7 @@
 #include "third_party/blink/renderer/platform/weborigin/origin_access_entry.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 #if defined(OS_ANDROID)
@@ -662,7 +663,13 @@ void OnGetAssertionComplete(
         MakeGarbageCollected<AuthenticatorAssertionResponse>(
             std::move(credential->info->client_data_json),
             std::move(credential->info->authenticator_data),
-            std::move(credential->signature), credential->user_handle);
+            std::move(credential->signature),
+            credential->has_transport
+                ? absl::make_optional(
+                      mojo::ConvertTo<String>(credential->transport))
+                : absl::nullopt,
+            credential->user_handle);
+
     AuthenticationExtensionsClientOutputs* extension_outputs =
         AuthenticationExtensionsClientOutputs::Create();
     if (credential->echo_appid_extension) {

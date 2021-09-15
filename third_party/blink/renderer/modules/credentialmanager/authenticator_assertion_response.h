@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/modules/credentialmanager/authenticator_response.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -29,11 +30,13 @@ class MODULES_EXPORT AuthenticatorAssertionResponse final
       const Vector<uint8_t> client_data_json,
       const Vector<uint8_t> authenticator_data,
       const Vector<uint8_t> signature,
+      const absl::optional<String> transport,
       const absl::optional<Vector<uint8_t>> optional_user_handle);
 
   AuthenticatorAssertionResponse(DOMArrayBuffer* client_data_json,
                                  DOMArrayBuffer* authenticator_data,
                                  DOMArrayBuffer* signature,
+                                 absl::optional<String> transport,
                                  DOMArrayBuffer* user_handle);
   ~AuthenticatorAssertionResponse() override;
 
@@ -43,6 +46,8 @@ class MODULES_EXPORT AuthenticatorAssertionResponse final
 
   DOMArrayBuffer* signature() const { return signature_.Get(); }
 
+  absl::optional<String> transport() const { return transport_; }
+
   DOMArrayBuffer* userHandle() const { return user_handle_.Get(); }
 
   void Trace(Visitor*) const override;
@@ -50,6 +55,7 @@ class MODULES_EXPORT AuthenticatorAssertionResponse final
  private:
   const Member<DOMArrayBuffer> authenticator_data_;
   const Member<DOMArrayBuffer> signature_;
+  const absl::optional<String> transport_;
   const Member<DOMArrayBuffer> user_handle_;
 };
 

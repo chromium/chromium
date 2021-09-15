@@ -218,9 +218,10 @@ mojom::PaymentResponsePtr
 SecurePaymentConfirmationApp::SetAppSpecificResponseFields(
     mojom::PaymentResponsePtr response) const {
   response->secure_payment_confirmation =
-      mojom::SecurePaymentConfirmationResponse::New(response_->info.Clone(),
-                                                    response_->signature,
-                                                    response_->user_handle);
+      mojom::SecurePaymentConfirmationResponse::New(
+          response_->info.Clone(), response_->signature,
+          response_->has_transport, response_->transport,
+          response_->user_handle);
   return response;
 }
 

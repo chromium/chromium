@@ -12,11 +12,13 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_validation_errors.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/credentialmanager/authenticator_assertion_response.h"
+#include "third_party/blink/renderer/modules/credentialmanager/credential_manager_type_converters.h"
 #include "third_party/blink/renderer/modules/credentialmanager/public_key_credential.h"
 #include "third_party/blink/renderer/modules/payments/payment_address.h"
 #include "third_party/blink/renderer/modules/payments/payment_state_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 namespace {
@@ -34,6 +36,10 @@ v8::Local<v8::Value> BuildDetails(
             std::move(info->client_data_json),
             std::move(info->authenticator_data),
             std::move(secure_payment_confirmation->signature),
+            secure_payment_confirmation->has_transport
+                ? absl::make_optional(mojo::ConvertTo<String>(
+                      secure_payment_confirmation->transport))
+                : absl::nullopt,
             secure_payment_confirmation->user_handle);
 
     auto* result = MakeGarbageCollected<PublicKeyCredential>(
