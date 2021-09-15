@@ -14,6 +14,8 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -89,22 +91,19 @@ class ToggleButton::ThumbView : public View {
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override {
     const float dsf = canvas->UndoDeviceScaleFactor();
-    const ui::NativeTheme* theme = GetNativeTheme();
+    const ui::ColorProvider* color_provider = GetColorProvider();
     std::vector<gfx::ShadowValue> shadows;
     gfx::ShadowValue shadow(
         gfx::Vector2d(kShadowOffsetX, kShadowOffsetY), 2 * kShadowBlur,
-        theme->GetSystemColor(
-            ui::NativeTheme::kColorId_ToggleButtonShadowColor));
+        color_provider->GetColor(ui::kColorToggleButtonShadow));
     shadows.push_back(shadow.Scale(dsf));
     cc::PaintFlags thumb_flags;
     thumb_flags.setLooper(gfx::CreateShadowDrawLooper(shadows));
     thumb_flags.setAntiAlias(true);
-    const SkColor thumb_on_color =
-        thumb_on_color_.value_or(theme->GetSystemColor(
-            ui::NativeTheme::kColorId_ToggleButtonThumbColorOn));
-    const SkColor thumb_off_color =
-        thumb_off_color_.value_or(theme->GetSystemColor(
-            ui::NativeTheme::kColorId_ToggleButtonThumbColorOff));
+    const SkColor thumb_on_color = thumb_on_color_.value_or(
+        color_provider->GetColor(ui::kColorToggleButtonThumbOn));
+    const SkColor thumb_off_color = thumb_off_color_.value_or(
+        color_provider->GetColor(ui::kColorToggleButtonThumbOff));
     thumb_flags.setColor(
         color_utils::AlphaBlend(thumb_on_color, thumb_off_color, color_ratio_));
 
@@ -119,7 +118,7 @@ class ToggleButton::ThumbView : public View {
                        thumb_flags);
   }
 
-  // Colors used for the thumb, defaults to NativeTheme if not set explicitly.
+  // Colors used for the thumb.
   absl::optional<SkColor> thumb_on_color_;
   absl::optional<SkColor> thumb_off_color_;
 
@@ -284,9 +283,8 @@ void ToggleButton::UpdateThumb() {
 
 SkColor ToggleButton::GetTrackColor(bool is_on) const {
   absl::optional<SkColor> color = is_on ? track_on_color_ : track_off_color_;
-  return color.value_or(GetNativeTheme()->GetSystemColor(
-      is_on ? ui::NativeTheme::kColorId_ToggleButtonTrackColorOn
-            : ui::NativeTheme::kColorId_ToggleButtonTrackColorOff));
+  return color.value_or(GetColorProvider()->GetColor(
+      is_on ? ui::kColorToggleButtonTrackOn : ui::kColorToggleButtonTrackOff));
 }
 
 bool ToggleButton::CanAcceptEvent(const ui::Event& event) {

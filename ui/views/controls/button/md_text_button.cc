@@ -13,6 +13,8 @@
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -211,33 +213,31 @@ void MdTextButton::UpdateTextColor() {
 
 void MdTextButton::UpdateBackgroundColor() {
   bool is_disabled = GetVisualState() == STATE_DISABLED;
-  ui::NativeTheme* theme = GetNativeTheme();
-  SkColor bg_color =
-      theme->GetSystemColor(ui::NativeTheme::kColorId_ButtonColor);
+  const ui::ColorProvider* color_provider = GetColorProvider();
+  SkColor bg_color = color_provider->GetColor(ui::kColorButtonBackground);
 
   if (bg_color_override_) {
     bg_color = *bg_color_override_;
   } else if (is_prominent_) {
-    bg_color = theme->GetSystemColor(
-        HasFocus() ? ui::NativeTheme::kColorId_ProminentButtonFocusedColor
-                   : ui::NativeTheme::kColorId_ProminentButtonColor);
+    bg_color = color_provider->GetColor(
+        HasFocus() ? ui::kColorButtonBackgroundProminentFocused
+                   : ui::kColorButtonBackgroundProminent);
     if (is_disabled) {
-      bg_color = theme->GetSystemColor(
-          ui::NativeTheme::kColorId_ProminentButtonDisabledColor);
+      bg_color =
+          color_provider->GetColor(ui::kColorButtonBackgroundProminentDisabled);
     }
   }
 
   if (GetState() == STATE_PRESSED) {
-    bg_color = theme->GetSystemButtonPressedColor(bg_color);
+    bg_color = GetNativeTheme()->GetSystemButtonPressedColor(bg_color);
   }
 
   SkColor stroke_color;
   if (is_prominent_) {
     stroke_color = SK_ColorTRANSPARENT;
   } else {
-    stroke_color = theme->GetSystemColor(
-        is_disabled ? ui::NativeTheme::kColorId_DisabledButtonBorderColor
-                    : ui::NativeTheme::kColorId_ButtonBorderColor);
+    stroke_color = color_provider->GetColor(
+        is_disabled ? ui::kColorButtonBorderDisabled : ui::kColorButtonBorder);
   }
 
   SetBackground(

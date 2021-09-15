@@ -18,11 +18,12 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/skia_util.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
@@ -151,8 +152,7 @@ SkColor ProgressBar::GetForegroundColor() const {
   if (foreground_color_)
     return foreground_color_.value();
 
-  return GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_ProminentButtonColor);
+  return GetColorProvider()->GetColor(ui::kColorProgressBar);
 }
 
 void ProgressBar::SetForegroundColor(SkColor color) {

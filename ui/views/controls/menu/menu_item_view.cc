@@ -24,6 +24,8 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/gfx/animation/animation.h"
@@ -110,8 +112,7 @@ VerticalSeparator::VerticalSeparator() {
 
 void VerticalSeparator::OnThemeChanged() {
   Separator::OnThemeChanged();
-  SetColor(GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_MenuSeparatorColor));
+  SetColor(GetColorProvider()->GetColor(ui::kColorMenuSeparator));
 }
 
 BEGIN_METADATA(VerticalSeparator, Separator)
@@ -993,9 +994,9 @@ void MenuItemView::PaintButton(gfx::Canvas* canvas, PaintButtonMode mode) {
     const bool toggled = delegate && delegate->IsItemChecked(GetCommand());
     const gfx::VectorIcon& radio_icon =
         toggled ? kMenuRadioSelectedIcon : kMenuRadioEmptyIcon;
-    const SkColor radio_icon_color = GetNativeTheme()->GetSystemColor(
-        toggled ? ui::NativeTheme::kColorId_ButtonCheckedColor
-                : ui::NativeTheme::kColorId_ButtonUncheckedColor);
+    const SkColor radio_icon_color = GetColorProvider()->GetColor(
+        toggled ? ui::kColorButtonForegroundChecked
+                : ui::kColorButtonForegroundUnchecked);
     radio_check_image_view_->SetImage(
         gfx::CreateVectorIcon(radio_icon, kMenuCheckSize, radio_icon_color));
   }
@@ -1042,20 +1043,18 @@ void MenuItemView::PaintBackground(gfx::Canvas* canvas,
   if (type_ == Type::kHighlighted || is_alerted_) {
     SkColor color = gfx::kPlaceholderColor;
 
+    ui::ColorProvider* color_provider = GetColorProvider();
     if (type_ == Type::kHighlighted) {
-      const ui::NativeTheme::ColorId color_id =
-          render_selection
-              ? ui::NativeTheme::kColorId_FocusedMenuItemBackgroundColor
-              : ui::NativeTheme::kColorId_HighlightedMenuItemBackgroundColor;
-      color = GetNativeTheme()->GetSystemColor(color_id);
+      const ui::ColorId color_id =
+          render_selection ? ui::kColorMenuItemBackgroundSelected
+                           : ui::kColorMenuItemBackgroundHighlighted;
+      color = color_provider->GetColor(color_id);
     } else {
       const auto* animation = GetMenuController()->GetAlertAnimation();
       color = gfx::Tween::ColorValueBetween(
           animation->GetCurrentValue(),
-          GetNativeTheme()->GetSystemColor(
-              ui::NativeTheme::kColorId_MenuItemInitialAlertBackgroundColor),
-          GetNativeTheme()->GetSystemColor(
-              ui::NativeTheme::kColorId_MenuItemTargetAlertBackgroundColor));
+          color_provider->GetColor(ui::kColorMenuItemBackgroundAlertedInitial),
+          color_provider->GetColor(ui::kColorMenuItemBackgroundAlertedTarget));
     }
 
     DCHECK_NE(color, gfx::kPlaceholderColor);

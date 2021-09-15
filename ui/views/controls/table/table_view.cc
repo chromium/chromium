@@ -25,6 +25,8 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -32,7 +34,6 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/skia_util.h"
 #include "ui/gfx/text_utils.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/ax_virtual_view.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -76,16 +77,15 @@ void GetModelIndexToRangeStart(TableGrouper* grouper,
 
 // Returns the color id for the background of selected text. |has_focus|
 // indicates if the table has focus.
-ui::NativeTheme::ColorId text_background_color_id(bool has_focus) {
-  return has_focus
-             ? ui::NativeTheme::kColorId_TableSelectionBackgroundFocused
-             : ui::NativeTheme::kColorId_TableSelectionBackgroundUnfocused;
+ui::ColorId text_background_color_id(bool has_focus) {
+  return has_focus ? ui::kColorTableBackgroundSelectedFocused
+                   : ui::kColorTableBackgroundSelectedUnfocused;
 }
 
 // Returns the color id for text. |has_focus| indicates if the table has focus.
-ui::NativeTheme::ColorId selected_text_color_id(bool has_focus) {
-  return has_focus ? ui::NativeTheme::kColorId_TableSelectedText
-                   : ui::NativeTheme::kColorId_TableSelectedTextUnfocused;
+ui::ColorId selected_text_color_id(bool has_focus) {
+  return has_focus ? ui::kColorTableForegroundSelectedFocused
+                   : ui::kColorTableForegroundSelectedUnfocused;
 }
 
 // Whether the platform "command" key is down.
@@ -902,8 +902,9 @@ void TableView::OnPaintImpl(gfx::Canvas* canvas) {
   if (sort_on_paint_)
     SortItemsAndUpdateMapping(/*schedule_paint=*/false);
 
-  const SkColor default_bg_color = GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_TableBackground);
+  ui::ColorProvider* color_provider = GetColorProvider();
+  const SkColor default_bg_color =
+      color_provider->GetColor(ui::kColorTableBackground);
   canvas->DrawColor(default_bg_color);
 
   if (!GetRowCount() || visible_columns_.empty())
@@ -914,13 +915,12 @@ void TableView::OnPaintImpl(gfx::Canvas* canvas) {
     return;  // No need to paint anything.
 
   const SkColor selected_bg_color =
-      GetNativeTheme()->GetSystemColor(text_background_color_id(HasFocus()));
-  const SkColor fg_color =
-      GetNativeTheme()->GetSystemColor(ui::NativeTheme::kColorId_TableText);
+      color_provider->GetColor(text_background_color_id(HasFocus()));
+  const SkColor fg_color = color_provider->GetColor(ui::kColorTableForeground);
   const SkColor selected_fg_color =
-      GetNativeTheme()->GetSystemColor(selected_text_color_id(HasFocus()));
-  const SkColor alternate_bg_color = GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_TableBackgroundAlternate);
+      color_provider->GetColor(selected_text_color_id(HasFocus()));
+  const SkColor alternate_bg_color =
+      color_provider->GetColor(ui::kColorTableBackgroundAlternate);
   const int cell_margin = GetCellMargin();
   const int cell_element_spacing = GetCellElementSpacing();
   for (int i = region.min_row; i < region.max_row; ++i) {
@@ -970,8 +970,8 @@ void TableView::OnPaintImpl(gfx::Canvas* canvas) {
   if (!grouper_ || region.min_column > 0)
     return;
 
-  const SkColor grouping_color = GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_TableGroupingIndicatorColor);
+  const SkColor grouping_color =
+      color_provider->GetColor(ui::kColorTableGroupingIndicator);
   cc::PaintFlags grouping_flags;
   grouping_flags.setColor(grouping_color);
   grouping_flags.setStyle(cc::PaintFlags::kFill_Style);

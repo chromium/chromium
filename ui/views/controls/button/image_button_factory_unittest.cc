@@ -8,9 +8,10 @@
 #include <utility>
 
 #include "components/vector_icons/vector_icons.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/test/ink_drop_host_view_test_api.h"
 #include "ui/views/controls/button/button.h"
@@ -45,7 +46,7 @@ class ImageButtonFactoryWidgetTest : public ViewsTestBase {
   void SetUp() override {
     ViewsTestBase::SetUp();
 
-    // Create a widget so that buttons can get access to their NativeTheme
+    // Create a widget so that buttons can get access to their ColorProvider
     // instance.
     widget_ = std::make_unique<Widget>();
     Widget::InitParams params =
@@ -80,8 +81,7 @@ class ImageButtonFactoryWidgetTest : public ViewsTestBase {
 TEST_F(ImageButtonFactoryWidgetTest, CreateVectorImageButtonWithNativeTheme) {
   AddImageButton(CreateVectorImageButtonWithNativeTheme(
       Button::PressedCallback(), vector_icons::kCloseRoundedIcon));
-  EXPECT_EQ(button()->GetNativeTheme()->GetSystemColor(
-                ui::NativeTheme::kColorId_DefaultIconColor),
+  EXPECT_EQ(button()->GetColorProvider()->GetColor(ui::kColorIcon),
             InkDrop::Get(button())->GetBaseColor());
 }
 

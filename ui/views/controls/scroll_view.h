@@ -12,8 +12,8 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer_type.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/scrollbar/scroll_bar.h"
 #include "ui/views/controls/separator.h"
@@ -145,9 +145,8 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   absl::optional<SkColor> GetBackgroundColor() const;
   void SetBackgroundColor(const absl::optional<SkColor>& color);
 
-  absl::optional<ui::NativeTheme::ColorId> GetBackgroundThemeColorId() const;
-  void SetBackgroundThemeColorId(
-      const absl::optional<ui::NativeTheme::ColorId>& color_id);
+  absl::optional<ui::ColorId> GetBackgroundThemeColorId() const;
+  void SetBackgroundThemeColorId(const absl::optional<ui::ColorId>& color_id);
 
   // Returns the visible region of the content View.
   gfx::Rect GetVisibleRect() const;
@@ -348,8 +347,7 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
 
   // See description of SetBackgroundColor() for details.
   absl::optional<SkColor> background_color_;
-  absl::optional<ui::NativeTheme::ColorId> background_color_id_ =
-      ui::NativeTheme::kColorId_DialogBackground;
+  absl::optional<ui::ColorId> background_color_id_ = ui::kColorDialogBackground;
 
   // How to handle the case when the contents overflow the viewport.
   ScrollBarMode horizontal_scroll_bar_mode_ = ScrollBarMode::kEnabled;
@@ -390,8 +388,7 @@ VIEW_BUILDER_VIEW_TYPE_PROPERTY(View, Contents)
 VIEW_BUILDER_PROPERTY(ui::LayerType, ContentsLayerType)
 VIEW_BUILDER_VIEW_TYPE_PROPERTY(View, Header)
 VIEW_BUILDER_PROPERTY(bool, AllowKeyboardScrolling)
-VIEW_BUILDER_PROPERTY(absl::optional<ui::NativeTheme::ColorId>,
-                      BackgroundThemeColorId)
+VIEW_BUILDER_PROPERTY(absl::optional<ui::ColorId>, BackgroundThemeColorId)
 VIEW_BUILDER_PROPERTY(ScrollView::ScrollBarMode, HorizontalScrollBarMode)
 VIEW_BUILDER_PROPERTY(ScrollView::ScrollBarMode, VerticalScrollBarMode)
 VIEW_BUILDER_PROPERTY(bool, TreatAllScrollEventsAsHorizontal)

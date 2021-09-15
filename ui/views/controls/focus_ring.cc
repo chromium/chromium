@@ -16,6 +16,8 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
@@ -46,9 +48,10 @@ bool IsPathUsable(const SkPath& path) {
 }
 
 SkColor GetColor(View* focus_ring, bool valid) {
-  if (!valid)
-    return focus_ring->GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_AlertSeverityHigh);
+  if (!valid) {
+    return focus_ring->GetColorProvider()->GetColor(
+        ui::kColorAlertHighSeverity);
+  }
   return GetCascadingAccentColor(focus_ring);
 }
 

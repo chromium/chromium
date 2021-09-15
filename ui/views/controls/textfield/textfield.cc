@@ -33,6 +33,8 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/base/ui_base_switches_util.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/canvas_painter.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -45,7 +47,6 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/selection_bound.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -404,10 +405,9 @@ void Textfield::SetTextColor(SkColor color) {
 }
 
 SkColor Textfield::GetBackgroundColor() const {
-  return background_color_.value_or(GetNativeTheme()->GetSystemColor(
-      GetReadOnly() || !GetEnabled()
-          ? ui::NativeTheme::kColorId_TextfieldReadOnlyBackground
-          : ui::NativeTheme::kColorId_TextfieldDefaultBackground));
+  return background_color_.value_or(GetColorProvider()->GetColor(
+      GetReadOnly() || !GetEnabled() ? ui::kColorTextfieldBackgroundDisabled
+                                     : ui::kColorTextfieldBackground));
 }
 
 void Textfield::SetBackgroundColor(SkColor color) {
@@ -417,8 +417,8 @@ void Textfield::SetBackgroundColor(SkColor color) {
 }
 
 SkColor Textfield::GetSelectionTextColor() const {
-  return selection_text_color_.value_or(GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_TextfieldSelectionColor));
+  return selection_text_color_.value_or(
+      GetColorProvider()->GetColor(ui::kColorTextfieldSelectionForeground));
 }
 
 void Textfield::SetSelectionTextColor(SkColor color) {
@@ -427,8 +427,8 @@ void Textfield::SetSelectionTextColor(SkColor color) {
 }
 
 SkColor Textfield::GetSelectionBackgroundColor() const {
-  return selection_background_color_.value_or(GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_TextfieldSelectionBackgroundFocused));
+  return selection_background_color_.value_or(
+      GetColorProvider()->GetColor(ui::kColorTextfieldSelectionBackground));
 }
 
 void Textfield::SetSelectionBackgroundColor(SkColor color) {
@@ -2365,7 +2365,7 @@ void Textfield::UpdateBorder() {
       extra_insets_.right() + provider->GetDistanceMetric(
                                   DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING));
   if (invalid_)
-    border->SetColorId(ui::NativeTheme::kColorId_AlertSeverityHigh);
+    border->SetColorId(ui::kColorAlertHighSeverity);
   View::SetBorder(std::move(border));
 }
 

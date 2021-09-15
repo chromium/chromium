@@ -15,6 +15,8 @@
 #include "ui/base/ime/input_method.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
@@ -231,8 +233,8 @@ void SubmenuView::PaintChildren(const PaintInfo& paint_info) {
   if (paint_drop_indicator) {
     gfx::Rect bounds = CalculateDropIndicatorBounds(drop_item_, drop_position_);
     ui::PaintRecorder recorder(paint_info.context(), size());
-    const SkColor drop_indicator_color = GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_MenuDropIndicator);
+    const SkColor drop_indicator_color =
+        GetColorProvider()->GetColor(ui::kColorMenuDropmarker);
     recorder.canvas()->FillRect(bounds, drop_indicator_color);
   }
 }

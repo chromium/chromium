@@ -24,11 +24,12 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
@@ -436,22 +437,18 @@ void Slider::OnGestureEvent(ui::GestureEvent* event) {
 SkColor Slider::GetThumbColor() const {
   switch (style_) {
     case RenderingStyle::kDefaultStyle:
-      return GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_SliderThumbDefault);
+      return GetColorProvider()->GetColor(ui::kColorSliderThumb);
     case RenderingStyle::kMinimalStyle:
-      return GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_SliderThumbMinimal);
+      return GetColorProvider()->GetColor(ui::kColorSliderThumbMinimal);
   }
 }
 
 SkColor Slider::GetTroughColor() const {
   switch (style_) {
     case RenderingStyle::kDefaultStyle:
-      return GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_SliderTroughDefault);
+      return GetColorProvider()->GetColor(ui::kColorSliderTrack);
     case RenderingStyle::kMinimalStyle:
-      return GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_SliderTroughMinimal);
+      return GetColorProvider()->GetColor(ui::kColorSliderTrackMinimal);
   }
 }
 

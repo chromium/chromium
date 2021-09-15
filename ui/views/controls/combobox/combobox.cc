@@ -19,13 +19,13 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/text_utils.h"
-#include "ui/native_theme/native_theme.h"
-#include "ui/native_theme/themed_vector_icon.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_impl.h"
@@ -76,8 +76,7 @@ class TransparentButton : public Button {
           return std::make_unique<views::FloodFillInkDropRipple>(
               host->size(),
               InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
-              host->GetNativeTheme()->GetSystemColor(
-                  ui::NativeTheme::kColorId_LabelEnabledColor),
+              host->GetColorProvider()->GetColor(ui::kColorLabelForeground),
               InkDrop::Get(host)->GetVisibleOpacity());
         },
         this));
@@ -363,8 +362,7 @@ void Combobox::OnThemeChanged() {
   View::OnThemeChanged();
   SetBackground(
       CreateBackgroundFromPainter(Painter::CreateSolidRoundRectPainter(
-          GetNativeTheme()->GetSystemColor(
-              ui::NativeTheme::kColorId_TextfieldDefaultBackground),
+          GetColorProvider()->GetColor(ui::kColorTextfieldBackground),
           FocusableBorder::kCornerRadiusDp)));
   OnContentSizeMaybeChanged();
 }
@@ -583,7 +581,7 @@ const std::unique_ptr<ui::ComboboxModel>& Combobox::GetOwnedModel() const {
 void Combobox::UpdateBorder() {
   std::unique_ptr<FocusableBorder> border(new FocusableBorder());
   if (invalid_)
-    border->SetColorId(ui::NativeTheme::kColorId_AlertSeverityHigh);
+    border->SetColorId(ui::kColorAlertHighSeverity);
   SetBorder(std::move(border));
 }
 

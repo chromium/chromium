@@ -19,6 +19,8 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/border.h"
@@ -31,8 +33,6 @@
 #include "ui/views/round_rect_painter.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
-
-using ui::NativeTheme;
 
 namespace views {
 
@@ -64,8 +64,7 @@ class MenuScrollButton : public View {
 
   void OnThemeChanged() override {
     View::OnThemeChanged();
-    arrow_color_ = GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_EnabledMenuItemForegroundColor);
+    arrow_color_ = GetColorProvider()->GetColor(ui::kColorMenuItemForeground);
   }
 
   bool CanDrop(const OSExchangeData& data) override {
@@ -102,10 +101,10 @@ class MenuScrollButton : public View {
 
     // The background.
     gfx::Rect item_bounds(0, 0, width(), height());
-    NativeTheme::ExtraParams extra;
+    ui::NativeTheme::ExtraParams extra;
     GetNativeTheme()->Paint(canvas->sk_canvas(),
-                            NativeTheme::kMenuItemBackground,
-                            NativeTheme::kNormal, item_bounds, extra);
+                            ui::NativeTheme::kMenuItemBackground,
+                            ui::NativeTheme::kNormal, item_bounds, extra);
 
     // Then the arrow.
     int x = width() / 2;
@@ -283,13 +282,13 @@ void MenuScrollViewContainer::OnPaintBackground(gfx::Canvas* canvas) {
   }
 
   gfx::Rect bounds(0, 0, width(), height());
-  NativeTheme::ExtraParams extra;
+  ui::NativeTheme::ExtraParams extra;
   const MenuConfig& menu_config = MenuConfig::instance();
   extra.menu_background.corner_radius = menu_config.CornerRadiusForMenu(
       content_view_->GetMenuItem()->GetMenuController());
   GetNativeTheme()->Paint(canvas->sk_canvas(),
-                          NativeTheme::kMenuPopupBackground,
-                          NativeTheme::kNormal, bounds, extra);
+                          ui::NativeTheme::kMenuPopupBackground,
+                          ui::NativeTheme::kNormal, bounds, extra);
 }
 
 void MenuScrollViewContainer::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -368,9 +367,9 @@ void MenuScrollViewContainer::CreateDefaultBorder() {
   int bottom_inset = GetFootnote() ? 0 : vertical_inset;
 
   if (menu_config.use_outer_border) {
-    SkColor color = GetWidget() ? GetNativeTheme()->GetSystemColor(
-                                      ui::NativeTheme::kColorId_MenuBorderColor)
-                                : gfx::kPlaceholderColor;
+    SkColor color = GetWidget()
+                        ? GetColorProvider()->GetColor(ui::kColorMenuBorder)
+                        : gfx::kPlaceholderColor;
     SetBorder(views::CreateBorderPainter(
         std::make_unique<views::RoundRectPainter>(color, corner_radius_),
         gfx::Insets(vertical_inset, horizontal_inset, bottom_inset,
@@ -382,10 +381,9 @@ void MenuScrollViewContainer::CreateDefaultBorder() {
 }
 
 void MenuScrollViewContainer::CreateBubbleBorder() {
-  const SkColor color = GetWidget()
-                            ? GetNativeTheme()->GetSystemColor(
-                                  ui::NativeTheme::kColorId_MenuBackgroundColor)
-                            : gfx::kPlaceholderColor;
+  const SkColor color =
+      GetWidget() ? GetColorProvider()->GetColor(ui::kColorMenuBackground)
+                  : gfx::kPlaceholderColor;
   auto bubble_border = std::make_unique<BubbleBorder>(
       arrow_, BubbleBorder::STANDARD_SHADOW, color);
   if (content_view_->GetMenuItem()

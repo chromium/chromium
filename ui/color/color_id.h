@@ -145,6 +145,7 @@
     NativeTheme::kColorId_OverlayScrollbarThumbStroke) \
   E(kColorOverlayScrollbarStrokeHovered, \
     NativeTheme::kColorId_OverlayScrollbarThumbHoveredStroke) \
+  E_CPONLY(kColorProgressBar) \
   E(kColorPwaSecurityChipForeground, \
     NativeTheme::kColorId_CustomTabBarSecurityChipDefaultColor) \
   E(kColorPwaSecurityChipForegroundDangerous, \

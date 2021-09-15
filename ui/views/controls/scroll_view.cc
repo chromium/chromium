@@ -19,6 +19,8 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/compositor/overscroll/scroll_input_handler.h"
@@ -309,7 +311,7 @@ void ScrollView::SetBackgroundColor(const absl::optional<SkColor>& color) {
 }
 
 void ScrollView::SetBackgroundThemeColorId(
-    const absl::optional<ui::NativeTheme::ColorId>& color_id) {
+    const absl::optional<ui::ColorId>& color_id) {
   if (background_color_id_ == color_id && !background_color_)
     return;
   background_color_id_ = color_id;
@@ -1116,10 +1118,9 @@ void ScrollView::UpdateBorder() {
     return;
 
   SetBorder(CreateSolidBorder(
-      1, GetNativeTheme()->GetSystemColor(
-             draw_focus_indicator_
-                 ? ui::NativeTheme::kColorId_FocusedBorderColor
-                 : ui::NativeTheme::kColorId_UnfocusedBorderColor)));
+      1, GetColorProvider()->GetColor(
+             draw_focus_indicator_ ? ui::kColorFocusableBorderFocused
+                                   : ui::kColorFocusableBorderUnfocused)));
 }
 
 void ScrollView::UpdateBackground() {
@@ -1153,12 +1154,11 @@ void ScrollView::UpdateBackground() {
 
 absl::optional<SkColor> ScrollView::GetBackgroundColor() const {
   return background_color_id_
-             ? GetNativeTheme()->GetSystemColor(background_color_id_.value())
+             ? GetColorProvider()->GetColor(background_color_id_.value())
              : background_color_;
 }
 
-absl::optional<ui::NativeTheme::ColorId> ScrollView::GetBackgroundThemeColorId()
-    const {
+absl::optional<ui::ColorId> ScrollView::GetBackgroundThemeColorId() const {
   return background_color_id_;
 }
 
@@ -1208,8 +1208,7 @@ ADD_READONLY_PROPERTY_METADATA(int, MinHeight)
 ADD_READONLY_PROPERTY_METADATA(int, MaxHeight)
 ADD_PROPERTY_METADATA(bool, AllowKeyboardScrolling)
 ADD_PROPERTY_METADATA(absl::optional<SkColor>, BackgroundColor)
-ADD_PROPERTY_METADATA(absl::optional<ui::NativeTheme::ColorId>,
-                      BackgroundThemeColorId)
+ADD_PROPERTY_METADATA(absl::optional<ui::ColorId>, BackgroundThemeColorId)
 ADD_PROPERTY_METADATA(bool, DrawOverflowIndicator)
 ADD_PROPERTY_METADATA(bool, HasFocusIndicator)
 ADD_PROPERTY_METADATA(ScrollView::ScrollBarMode, HorizontalScrollBarMode)

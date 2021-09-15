@@ -12,12 +12,13 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/font_list.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/native_cursor.h"
 #include "ui/views/style/platform_style.h"
 
@@ -39,17 +40,16 @@ Link::~Link() = default;
 
 SkColor Link::GetColor() const {
   // TODO(tapted): Use style::GetColor().
-  const ui::NativeTheme* theme = GetNativeTheme();
-  DCHECK(theme);
+  const ui::ColorProvider* color_provider = GetColorProvider();
+  DCHECK(color_provider);
   if (!GetEnabled())
-    return theme->GetSystemColor(ui::NativeTheme::kColorId_LinkDisabled);
+    return color_provider->GetColor(ui::kColorLinkForegroundDisabled);
 
   if (requested_enabled_color_.has_value())
     return requested_enabled_color_.value();
 
-  return GetNativeTheme()->GetSystemColor(
-      pressed_ ? ui::NativeTheme::kColorId_LinkPressed
-               : ui::NativeTheme::kColorId_LinkEnabled);
+  return color_provider->GetColor(pressed_ ? ui::kColorLinkForegroundPressed
+                                           : ui::kColorLinkForeground);
 }
 
 void Link::SetForceUnderline(bool force_underline) {

@@ -12,6 +12,8 @@
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/canvas.h"
@@ -66,9 +68,9 @@ void OverlayScrollBar::Thumb::OnPaint(gfx::Canvas* canvas) {
   const bool hovered = GetState() != Button::STATE_NORMAL;
   cc::PaintFlags fill_flags;
   fill_flags.setStyle(cc::PaintFlags::kFill_Style);
-  fill_flags.setColor(GetNativeTheme()->GetSystemColor(
-      hovered ? ui::NativeTheme::kColorId_OverlayScrollbarThumbHoveredFill
-              : ui::NativeTheme::kColorId_OverlayScrollbarThumbFill));
+  fill_flags.setColor(GetColorProvider()->GetColor(
+      hovered ? ui::kColorOverlayScrollbarFillHovered
+              : ui::kColorOverlayScrollbarFill));
   gfx::RectF fill_bounds(GetLocalBounds());
   fill_bounds.Inset(gfx::InsetsF(IsHorizontal() ? kThumbHoverOffset : 0,
                                  IsHorizontal() ? 0 : kThumbHoverOffset, 0, 0));
@@ -79,9 +81,9 @@ void OverlayScrollBar::Thumb::OnPaint(gfx::Canvas* canvas) {
 
   cc::PaintFlags stroke_flags;
   stroke_flags.setStyle(cc::PaintFlags::kStroke_Style);
-  stroke_flags.setColor(GetNativeTheme()->GetSystemColor(
-      hovered ? ui::NativeTheme::kColorId_OverlayScrollbarThumbHoveredStroke
-              : ui::NativeTheme::kColorId_OverlayScrollbarThumbStroke));
+  stroke_flags.setColor(GetColorProvider()->GetColor(
+      hovered ? ui::kColorOverlayScrollbarStrokeHovered
+              : ui::kColorOverlayScrollbarStroke));
   stroke_flags.setStrokeWidth(kThumbStrokeVisualSize);
   stroke_flags.setStrokeCap(cc::PaintFlags::kSquare_Cap);
 

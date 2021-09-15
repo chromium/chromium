@@ -912,6 +912,7 @@ absl::optional<SkColor> SkColorFromColorId(ui::ColorId color_id) {
     case ui::kColorButtonBackgroundProminent:
     case ui::kColorButtonBackgroundProminentFocused:
     case ui::kColorNotificationInputBackground:
+    case ui::kColorProgressBar:
       return GetBgColor(
           "GtkTreeView#treeview.view "
           "GtkTreeView#treeview.view.cell:selected:focus");

@@ -105,6 +105,7 @@ void AddUiColorMixer(ColorProvider* provider,
       SetAlpha(kColorEndpointBackground, gfx::kGoogleGreyAlpha400);
   mixer[kColorOverlayScrollbarStrokeHovered] =
       SetAlpha(kColorEndpointBackground, gfx::kGoogleGreyAlpha500);
+  mixer[kColorProgressBar] = {kColorAccent};
   mixer[kColorPwaSecurityChipForeground] = {kColorSecondaryForeground};
   mixer[kColorPwaSecurityChipForegroundDangerous] = {kColorAlertHighSeverity};
   mixer[kColorPwaSecurityChipForegroundPolicyCert] = {kColorDisabledForeground};
