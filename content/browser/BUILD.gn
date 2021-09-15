@@ -1329,6 +1329,8 @@ source_set("browser") {
     "prerender/prerender_host.h",
     "prerender/prerender_host_registry.cc",
     "prerender/prerender_host_registry.h",
+    "prerender/prerender_internals_ui.cc",
+    "prerender/prerender_internals_ui.h",
     "prerender/prerender_metrics.cc",
     "prerender/prerender_metrics.h",
     "prerender/prerender_navigation_throttle.cc",
