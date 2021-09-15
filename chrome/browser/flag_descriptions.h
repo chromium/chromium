@@ -3006,6 +3006,9 @@ extern const char kDownloadShelfWebUIDescription[];
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
     defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
 
+extern const char kEnableOopPrintDriversName[];
+extern const char kEnableOopPrintDriversDescription[];
+
 extern const char kWebUIBrandingUpdateName[];
 extern const char kWebUIBrandingUpdateDescription[];
 
@@ -3064,11 +3067,6 @@ extern const char kEnableJXLDescription[];
 extern const char kNaclName[];
 extern const char kNaclDescription[];
 #endif  // ENABLE_NACL
-
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
-extern const char kEnableOopPrintDriversName[];
-extern const char kEnableOopPrintDriversDescription[];
-#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
 #if BUILDFLAG(ENABLE_PAINT_PREVIEW) && defined(OS_ANDROID)
 extern const char kPaintPreviewDemoName[];

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//mojo/public/tools/bindings/mojom.gni")
-import("//printing/buildflags/buildflags.gni")
 
 mojom("mojom") {
   sources = [
@@ -62,6 +61,7 @@ mojom("mojom") {
     "//media/capture/mojom:image_capture",
     "//media/capture/mojom:video_capture_types",
     "//mojo/public/mojom/base",
+    "//printing/backend/mojom",
     "//printing/mojom",
     "//remoting/host/mojom:mojom",
     "//services/device/public/mojom:mojom",
@@ -74,10 +74,6 @@ mojom("mojom") {
     "//ui/gfx/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
-
-  if (enable_oop_printing) {
-    public_deps += [ "//printing/backend/mojom" ]
-  }
 
   cpp_typemaps = [
     {

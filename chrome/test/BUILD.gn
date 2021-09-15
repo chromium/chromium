@@ -3883,7 +3883,8 @@ if (!is_android && !is_fuchsia) {
         "//third_party/widevine/cdm",
       ]
     }
-    if (enable_oop_printing) {
+    if (enable_basic_printing &&
+        (is_win || is_mac || is_linux || is_chromeos)) {
       sources += [ "../browser/printing/print_backend_browsertest.cc" ]
       deps += [
         "//chrome/services/printing:lib",
