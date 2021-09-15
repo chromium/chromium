@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<style>
-.box {
-  width: 600px;
-  height: 600px;
-  background-color: rgba(75, 125, 0, 0.8);
-}
-</style>
+<html>
 <body>
-  <div class='box'></div>
+<canvas id ="canvas" width="500" height="500"></canvas>
+<script>
+var canvas = document.getElementById('canvas');
+var context = canvas.getContext("2d");
+context.fillStyle = 'rgba(75, 125, 0, 0.8)';
+context.fillRect(0, 0, 500, 500);
+</script>
 </body>
+</html>
