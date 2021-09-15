@@ -94,13 +94,10 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoBubbleViewInteractiveTest,
   auto* const bubble = FeaturePromoBubbleView::Create(std::move(params));
   views::test::WidgetVisibleWaiter(bubble->GetWidget()).Wait();
 
-  // Check that the timeout exists in the bubble.
-  FeaturePromoBubbleTimeout* timeout = bubble->GetTimeoutForTesting();
-  EXPECT_NE(nullptr, timeout);
   EXPECT_EQ(0, timeout_target.count);
 
   // Force the timeout codepath to be called
-  timeout->OnTimeout();
+  bubble->ForceAutoCloseForTesting();
 
   // Check that the timeout has occurred
   EXPECT_EQ(1, timeout_target.count);

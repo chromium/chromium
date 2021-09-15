@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_params.h"
 
-#include "chrome/browser/ui/views/user_education/feature_promo_bubble_timeout.h"
-
 FeaturePromoBubbleParams::FeaturePromoBubbleParams() = default;
 FeaturePromoBubbleParams::~FeaturePromoBubbleParams() = default;
 FeaturePromoBubbleParams::FeaturePromoBubbleParams(

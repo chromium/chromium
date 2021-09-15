@@ -86,7 +86,11 @@ struct FeaturePromoBubbleParams {
   // intended to be true for tutorial use cases.
   bool show_close_button = false;
 
-  // Changes the bubble timeout. Intended for tests, avoid use.
+  // Changes the bubble timeout before and after hovering the bubble,
+  // respectively. If a timeout is not provided a default will be used. If
+  // |timeout_after_interaction| is 0, |timeout_no_interaction| is used in
+  // both cases. If both are 0, the bubble never times out. A bubble with
+  // buttons never times out regardless of the values.
   absl::optional<base::TimeDelta> timeout_no_interaction;
   absl::optional<base::TimeDelta> timeout_after_interaction;
 };

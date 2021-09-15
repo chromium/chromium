@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_params.h"
-#include "chrome/browser/ui/views/user_education/feature_promo_bubble_timeout.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/variations/variations_associated_data.h"
@@ -249,12 +248,13 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
 
   // Bubble will not auto-dismiss if there's buttons.
   if (params.buttons.empty()) {
-    feature_promo_bubble_timeout_ = std::make_unique<FeaturePromoBubbleTimeout>(
-        params.timeout_no_interaction ? *params.timeout_no_interaction
-                                      : kDelayDefault,
-        params.timeout_after_interaction ? *params.timeout_after_interaction
-                                         : kDelayShort,
-        params.timeout_callback);
+    timeout_no_interaction_ = params.timeout_no_interaction
+                                  ? *params.timeout_no_interaction
+                                  : kDelayDefault;
+    timeout_after_interaction_ = params.timeout_after_interaction
+                                     ? *params.timeout_after_interaction
+                                     : kDelayShort;
+    timeout_callback_ = std::move(params.timeout_callback);
   }
 
   const std::u16string body_text = std::move(params.body_text);
@@ -509,8 +509,9 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
   else
     widget->ShowInactive();
 
-  if (feature_promo_bubble_timeout_)
-    feature_promo_bubble_timeout_->OnBubbleShown(this);
+  // Start auto close timer if a timeout is enabled.
+  if (!timeout_no_interaction_.is_zero())
+    StartAutoCloseTimer(timeout_no_interaction_);
 }
 
 FeaturePromoBubbleView::~FeaturePromoBubbleView() = default;
@@ -536,8 +537,16 @@ FeaturePromoBubbleView* FeaturePromoBubbleView::Create(CreateParams params) {
   return new FeaturePromoBubbleView(std::move(params));
 }
 
-FeaturePromoBubbleTimeout* FeaturePromoBubbleView::GetTimeoutForTesting() {
-  return feature_promo_bubble_timeout_.get();
+void FeaturePromoBubbleView::StartAutoCloseTimer(
+    base::TimeDelta auto_close_duration) {
+  auto_close_timer_.Start(FROM_HERE, auto_close_duration, this,
+                          &FeaturePromoBubbleView::OnTimeout);
+}
+
+void FeaturePromoBubbleView::OnTimeout() {
+  if (timeout_callback_)
+    timeout_callback_.Run();
+  CloseBubble();
 }
 
 void FeaturePromoBubbleView::CloseBubble() {
@@ -551,13 +560,17 @@ bool FeaturePromoBubbleView::OnMousePressed(const ui::MouseEvent& event) {
 }
 
 void FeaturePromoBubbleView::OnMouseEntered(const ui::MouseEvent& event) {
-  if (feature_promo_bubble_timeout_)
-    feature_promo_bubble_timeout_->OnMouseEntered();
+  // While user is hovering the bubble, do not autoclose.
+  auto_close_timer_.Stop();
 }
 
 void FeaturePromoBubbleView::OnMouseExited(const ui::MouseEvent& event) {
-  if (feature_promo_bubble_timeout_)
-    feature_promo_bubble_timeout_->OnMouseExited();
+  if (timeout_after_interaction_.is_zero() && timeout_no_interaction_.is_zero())
+    return;
+
+  StartAutoCloseTimer(timeout_after_interaction_.is_zero()
+                          ? timeout_no_interaction_
+                          : timeout_after_interaction_);
 }
 
 std::u16string FeaturePromoBubbleView::GetAccessibleWindowTitle() const {
@@ -583,6 +596,10 @@ gfx::Size FeaturePromoBubbleView::CalculatePreferredSize() const {
 
 views::Button* FeaturePromoBubbleView::GetButtonForTesting(int index) const {
   return buttons_[index];
+}
+
+void FeaturePromoBubbleView::ForceAutoCloseForTesting() {
+  auto_close_timer_.FireNow();
 }
 
 BEGIN_METADATA(FeaturePromoBubbleView, views::BubbleDialogDelegateView)
