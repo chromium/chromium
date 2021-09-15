@@ -28,7 +28,7 @@ static constexpr char kModelGesture[] = "gesture_in_context";
 // Model descriptors.
 handwriting::mojom::QueryHandwritingRecognizerResultPtr
 CreateEnglishModelDescriptor() {
-  handwriting::mojom::QueryHandwritingRecognizerResultPtr desc;
+  auto desc = handwriting::mojom::QueryHandwritingRecognizerResult::New();
   desc->text_alternatives = true;
   desc->text_segmentation = true;
   desc->hints = handwriting::mojom::HandwritingHintsQueryResult::New();
