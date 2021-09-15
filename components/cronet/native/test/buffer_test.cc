@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "components/cronet/native/test/test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -74,12 +75,16 @@ TEST_F(BufferTest, TestInitWithAlloc) {
   ASSERT_FALSE(on_destroy_called());
 }
 
-#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
-    defined(THREAD_SANITIZER) || defined(OS_FUCHSIA) ||        \
-    BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-// ASAN and MSAN malloc by default triggers crash instead of returning null on
-// failure. Fuchsia malloc() also crashes on allocation failure in some kernel
-// builds. PartitionAlloc malloc also crashes on allocation failure by design.
+#if defined(ARCH_CPU_64_BITS) &&                                              \
+    (defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) ||               \
+     defined(THREAD_SANITIZER) || BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || \
+     defined(OS_CHROMEOS) || defined(OS_LINUX) || defined(OS_FUCHSIA))
+// - ASAN and MSAN malloc by default triggers crash instead of returning null on
+//   failure.
+// - PartitionAlloc malloc also crashes on allocation failure by design.
+// - Fuchsia malloc() also crashes on allocation failure in some kernel builds.
+// - On Linux and Chrome OS, the allocator shims crash for large allocations, on
+//   purpose.
 #define MAYBE_TestInitWithHugeAllocFails DISABLED_TestInitWithHugeAllocFails
 #else
 #define MAYBE_TestInitWithHugeAllocFails TestInitWithHugeAllocFails
