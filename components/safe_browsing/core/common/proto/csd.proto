@@ -85,6 +85,9 @@ message ChromeUserPopulation {
   // were open the last time Chrome was running. Profiles that fail to
   // initialize are skipped.
   optional int32 number_of_open_profiles = 12;
+
+  // Server-side only field.
+  reserved 13;
 }
 
 message ClientPhishingRequest {
@@ -129,6 +132,7 @@ message ClientPhishingRequest {
   optional int32 model_version = 6;
 
   // Field 7 is only used on the server.
+  reserved 7;
 
   // List of features that are extracted in the client but are not used in the
   // machine learning model.
@@ -140,6 +144,7 @@ message ClientPhishingRequest {
   optional string OBSOLETE_referrer_url = 9;
 
   // Field 11 is only used on the server.
+  reserved 11;
 
   // List of shingle hashes we extracted.
   repeated uint32 shingle_hashes = 12 [packed = true];
@@ -619,6 +624,7 @@ message ClientDownloadRequest {
       // DER-encoded X.509 representation of the certificate.
       optional bytes certificate = 1;
       // Fields 2 - 7 are only used on the server.
+      reserved 2 to 7;
     }
     repeated Element element = 1;
   }
@@ -664,6 +670,7 @@ message ClientDownloadRequest {
   optional bool user_initiated = 6;
 
   // Fields 7 and 8 are only used on the server.
+  reserved 7, 8;
 
   // Name of the file where the download would be stored if the
   // download completes.  E.g., "bla.exe".
@@ -755,11 +762,13 @@ message ClientDownloadRequest {
 
   // Fields 12-17 are reserved for server-side use and are never sent by the
   // client.
+  reserved 12 to 17;
 
   optional ImageHeaders image_headers = 18;
 
   // Fields 19-21 are reserved for server-side use and are never sent by the
   // client.
+  reserved 19 to 21;
 
   // A binary or archive contained in an archive (e.g., a .exe in a .zip
   // archive, or a .zip inside a .zip).
