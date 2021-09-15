@@ -110,6 +110,7 @@ if (is_chromeos_ash) {
     "login_screen_ui.idl",
     "login_state.idl",
     "quick_unlock_private.idl",
+    "speech_recognition_private.idl",
     "terminal_private.json",
     "users_private.idl",
     "wallpaper.json",

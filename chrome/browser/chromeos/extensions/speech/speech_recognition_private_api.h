@@ -1,0 +1,28 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_SPEECH_SPEECH_RECOGNITION_PRIVATE_API_H_
+#define CHROME_BROWSER_CHROMEOS_EXTENSIONS_SPEECH_SPEECH_RECOGNITION_PRIVATE_API_H_
+
+#include "extensions/browser/extension_function.h"
+#include "extensions/browser/extension_function_histogram_value.h"
+
+namespace extensions {
+
+// An API function that starts speech recognition.
+class SpeechRecognitionPrivateStartFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("speechRecognitionPrivate.start",
+                             SPEECHRECOGNITIONPRIVATE_START)
+  // A callback that is run when the speech recognition service starts.
+  void OnStart();
+
+ protected:
+  ~SpeechRecognitionPrivateStartFunction() override {}
+  ResponseAction Run() override;
+};
+
+}  // namespace extensions
+
+#endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_SPEECH_SPEECH_RECOGNITION_PRIVATE_API_H_

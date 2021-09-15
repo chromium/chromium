@@ -258,6 +258,7 @@ enum APIPermissionID {
   kWebAuthenticationProxy = 232,
   kDeclarativeNetRequestWithHostAccess = 233,
   kChromeOSTelemetry = 234,
+  kSpeechRecognitionPrivate = 235,
 
   // Add new entries at the end of the enum and be sure to update the
   // "ExtensionPermission3" enum in tools/metrics/histograms/enums.xml

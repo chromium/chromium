@@ -1,0 +1,29 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// The <code>chrome.speechRecognitionPrivate</code> API allows internal
+// extensions to use either network-based or on-device speech recognition.
+[platforms=("chromeos"), implemented_in="chrome/browser/chromeos/extensions/speech/speech_recognition_private_api.h"]
+
+namespace speechRecognitionPrivate {
+  // Interface for options used when starting speech recognition.
+  dictionary StartOptions {
+    // An optional ID to specify the client.
+    long? clientId;
+    // The locale, in BCP-47 format e.g. "en-US", to use for speech recognition.
+    DOMString? locale;
+    // Whether interim speech results should be returned.
+    boolean? interimResults;
+  };
+
+  // Called when speech recognition has begun listening to the user's audio.
+  callback OnStartCallback = void();
+
+  interface Functions {
+    // Starts listening to audio from the user. The callback is invoked when
+    // speech recognition has started.
+    [supportsPromises] static void start(StartOptions options,
+                                         OnStartCallback callback);
+  };
+};

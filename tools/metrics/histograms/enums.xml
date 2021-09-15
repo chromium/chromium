@@ -29261,6 +29261,7 @@ Called by update_extension_histograms.py.-->
   <int value="1587" label="FILEMANAGERPRIVATE_OPENWINDOW"/>
   <int value="1588" label="OS_DIAGNOSTICS_RUNMEMORYROUTINE"/>
   <int value="1589" label="OS_DIAGNOSTICS_GETROUTINEUPDATE"/>
+  <int value="1590" label="SPEECHRECOGNITIONPRIVATE_START"/>
 </enum>
 
 <enum name="ExtensionIconState">
@@ -29885,6 +29886,7 @@ Called by update_extension_permission.py.-->
   <int value="232" label="kWebAuthenticationProxy"/>
   <int value="233" label="kDeclarativeNetRequestWithHostAccess"/>
   <int value="234" label="kChromeOSTelemetry"/>
+  <int value="235" label="kSpeechRecognitionPrivate"/>
 </enum>
 
 <enum name="ExtensionPointEnableState">

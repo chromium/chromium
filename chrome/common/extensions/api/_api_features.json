@@ -781,6 +781,10 @@
     "dependencies": ["permission:signedInDevices"],
     "contexts": ["blessed_extension"]
   },
+  "speechRecognitionPrivate": {
+    "dependencies": ["permission:speechRecognitionPrivate"],
+    "contexts": ["blessed_extension"]
+  },
   "systemIndicator": {
     "dependencies": ["manifest:system_indicator"],
     "contexts": ["blessed_extension"]
