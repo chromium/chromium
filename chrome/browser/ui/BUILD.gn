@@ -1411,6 +1411,8 @@ static_library("ui") {
       "webui/history_clusters/history_clusters_handler.h",
       "webui/identity_internals_ui.cc",
       "webui/identity_internals_ui.h",
+      "webui/image_editor/editor_untrusted_source.cc",
+      "webui/image_editor/editor_untrusted_source.h",
       "webui/image_editor/image_editor_ui.cc",
       "webui/image_editor/image_editor_ui.h",
       "webui/inspect_ui.cc",

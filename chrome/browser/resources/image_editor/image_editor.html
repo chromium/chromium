@@ -1,12 +1,16 @@
 <!doctype html>
 <html dir="$i18n{textdirection}" lang="$i18n{language}">
-<head>
-  <meta charset="utf-8">
-  <title>Screenshot Image Editor</title>
-</head>
-<body>
-  <pre id="content">
-    Placeholder text
-  </pre>
-</body>
+  <head>
+    <meta charset="utf-8">
+    <title>Screenshot Image Editor</title>
+    <style>
+      body {
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <iframe id="content" src="chrome-untrusted://image-editor/placeholder">
+    </iframe>
+  </body>
 </html>

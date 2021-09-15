@@ -8,6 +8,8 @@
 #include "base/macros.h"
 #include "content/public/browser/web_ui_controller.h"
 
+class Profile;
+
 // This UI and the chrome://image-editor page acts as a wrapper, using an
 // <iframe> to display an app hosted from chrome-untrusted://image-editor. The
 // mojo interface to handle the user-generated screenshot content will exist
@@ -19,6 +21,9 @@ class ImageEditorUI : public content::WebUIController {
   ImageEditorUI(const ImageEditorUI&) = delete;
   ImageEditorUI& operator=(const ImageEditorUI&) = delete;
   ~ImageEditorUI() override = default;
+
+ private:
+  Profile* profile_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_IMAGE_EDITOR_IMAGE_EDITOR_UI_H_

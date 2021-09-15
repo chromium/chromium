@@ -4,15 +4,26 @@
 
 #include "chrome/browser/ui/webui/image_editor/image_editor_ui.h"
 
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/image_editor/editor_untrusted_source.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
+#include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 
-ImageEditorUI::ImageEditorUI(content::WebUI* web_ui) : WebUIController(web_ui) {
+ImageEditorUI::ImageEditorUI(content::WebUI* web_ui)
+    : WebUIController(web_ui), profile_(Profile::FromWebUI(web_ui)) {
   // Set up the chrome://image-editor source.
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::Create(chrome::kChromeUIImageEditorHost);
   html_source->SetDefaultResource(IDR_IMAGE_EDITOR_HTML);
-  content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), html_source);
+  html_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::FrameSrc,
+      base::StringPrintf("frame-src %s;",
+                         chrome::kChromeUIUntrustedImageEditorURL));
+  content::WebUIDataSource::Add(profile_, html_source);
+  content::URLDataSource::Add(
+      profile_, std::make_unique<EditorUntrustedSource>(profile_));
+  web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
 }
