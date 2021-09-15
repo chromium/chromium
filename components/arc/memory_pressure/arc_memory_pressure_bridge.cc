@@ -86,11 +86,9 @@ void ArcMemoryPressureBridge::OnMemoryPressure(
       break;
 
     case chromeos::ResourcedClient::PressureLevelArcVm::PERCEPTIBLE:
+    case chromeos::ResourcedClient::PressureLevelArcVm::FOREGROUND:
       arc_level = mojom::ProcessState::R_TOP;
       break;
-
-    case chromeos::ResourcedClient::PressureLevelArcVm::FOREGROUND:
-      return;
   }
   auto* process_instance = ARC_GET_INSTANCE_FOR_METHOD(
       arc_bridge_service_->process(), ApplyHostMemoryPressure);

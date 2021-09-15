@@ -130,8 +130,7 @@ TEST_F(ArcMemoryPressureBridgeTest, PressureCached) {
       1 /* count */, 5242880 /* estimated_freed_kb */));
 }
 
-// Tests that PERCEPTIBLE memory pressure triggers kills of
-// R_IMPORTANT_FOREGROUND priority.
+// Tests that PERCEPTIBLE memory pressure triggers kills of R_TOP priority.
 TEST_F(ArcMemoryPressureBridgeTest, PressurePerceptible) {
   ASSERT_NE(nullptr, bridge());
   resourced().FakeArcVmMemoryPressure(
@@ -151,7 +150,12 @@ TEST_F(ArcMemoryPressureBridgeTest, PressureForeground) {
   resourced().FakeArcVmMemoryPressure(
       chromeos::ResourcedClient::PressureLevelArcVm::FOREGROUND,
       1 /* reclaim_target_kb */);
-  ASSERT_TRUE(process_instance().IsLastHostMemoryPressureChecked());
+  ASSERT_TRUE(process_instance().CheckLastHostMemoryPressure(
+      mojom::ProcessState::R_TOP, 1024 /* reclaim_target */));
+  process_instance().RunHostMemoryPressureCallback(1 /* killed */,
+                                                   2048 /* reclaimed */);
+  ASSERT_TRUE(kill_observer().CheckLastMemoryPressureKill(
+      1 /* count */, 2 /* estimated_freed_kb */));
 }
 
 // Tests that multiple ArcVmMemoryPressure signals before the first completes
