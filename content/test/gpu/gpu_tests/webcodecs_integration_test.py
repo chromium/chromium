@@ -15,7 +15,7 @@ html_path = os.path.join(path_util.GetChromiumSrcDir(), 'content', 'test',
 data_path = os.path.join(path_util.GetChromiumSrcDir(), 'media', 'test', 'data')
 
 frame_sources = ["camera", "capture", "offscreen", "hw_decoder", "sw_decoder"]
-codecs = ["avc1.42001E", "vp8", "vp09.00.10.08"]
+codecs = ["avc1.42001E"]
 accelerations = ["prefer-hardware", "prefer-software"]
 
 
@@ -50,6 +50,12 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         yield ('WebCodecs_Realtime_%s_%s_%s' % args, 'realtime.html',
                ('{ source_type : "%s", codec : "%s", acceleration : "%s" }' %
                 args))
+
+    for codec in codecs:
+      for layers in [2, 3]:
+        args = (codec, layers)
+        yield ('WebCodecs_SVC_%s_layers_%d' % args, 'svc.html',
+               ('{ codec : "%s", layers: %d }' % args))
 
   def RunActualGpuTest(self, test_path, *args):
     url = self.UrlOfStaticFilePath(html_path + '/' + test_path)
