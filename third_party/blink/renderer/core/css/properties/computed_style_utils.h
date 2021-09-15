@@ -247,6 +247,9 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* ValuesForFontVariantProperty(const ComputedStyle&,
                                                 const LayoutObject*,
                                                 bool allow_visited_style);
+  static CSSValue* ValuesForFontSynthesisProperty(const ComputedStyle&,
+                                                  const LayoutObject*,
+                                                  bool allow_visited_style);
   static CSSValueList* ValuesForContainerShorthand(const ComputedStyle&,
                                                    const LayoutObject*,
                                                    bool allow_visited_style);

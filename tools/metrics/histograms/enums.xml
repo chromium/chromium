@@ -54216,6 +54216,7 @@ Called by update_use_counter_css.py.-->
   <int value="701" label="font-synthesis-style"/>
   <int value="702" label="app-region"/>
   <int value="703" label="font-synthesis-small-caps"/>
+  <int value="704" label="font-synthesis"/>
 </enum>
 
 <enum name="MappedEditingCommands">

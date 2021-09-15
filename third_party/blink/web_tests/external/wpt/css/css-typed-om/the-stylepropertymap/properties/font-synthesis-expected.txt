@@ -1,21 +1,32 @@
 This is a testharness.js-based test.
-FAIL Can set 'font-synthesis' to CSS-wide keywords Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-synthesis
-FAIL Can set 'font-synthesis' to var() references Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-synthesis
-FAIL Can set 'font-synthesis' to the 'none' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-synthesis
-FAIL Can set 'font-synthesis' to the 'weight' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-synthesis
-FAIL Can set 'font-synthesis' to the 'style' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-synthesis
-FAIL Can set 'font-synthesis' to the 'small-caps' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: font-synthesis
-PASS Setting 'font-synthesis' to a length throws TypeError
-PASS Setting 'font-synthesis' to a percent throws TypeError
-PASS Setting 'font-synthesis' to a time throws TypeError
-PASS Setting 'font-synthesis' to an angle throws TypeError
-PASS Setting 'font-synthesis' to a flexible length throws TypeError
-PASS Setting 'font-synthesis' to a number throws TypeError
-PASS Setting 'font-synthesis' to a position throws TypeError
-PASS Setting 'font-synthesis' to a URL throws TypeError
-PASS Setting 'font-synthesis' to a transform throws TypeError
-FAIL 'font-synthesis' does not supported 'weight style' Failed to execute 'get' on 'StylePropertyMapReadOnly': Invalid propertyName: font-synthesis
-FAIL 'font-synthesis' does not supported 'style small-caps' Failed to execute 'get' on 'StylePropertyMapReadOnly': Invalid propertyName: font-synthesis
-FAIL 'font-synthesis' does not supported 'small-caps weight style' Failed to execute 'get' on 'StylePropertyMapReadOnly': Invalid propertyName: font-synthesis
+PASS Can set 'font-synthesis-weight' to CSS-wide keywords
+PASS Can set 'font-synthesis-weight' to var() references
+PASS Can set 'font-synthesis-weight' to the 'auto' keyword
+PASS Can set 'font-synthesis-weight' to the 'none' keyword
+PASS Setting 'font-synthesis-weight' to a length throws TypeError
+PASS Setting 'font-synthesis-weight' to a percent throws TypeError
+PASS Setting 'font-synthesis-weight' to a time throws TypeError
+PASS Setting 'font-synthesis-weight' to an angle throws TypeError
+PASS Setting 'font-synthesis-weight' to a flexible length throws TypeError
+PASS Setting 'font-synthesis-weight' to a number throws TypeError
+PASS Setting 'font-synthesis-weight' to a position throws TypeError
+PASS Setting 'font-synthesis-weight' to a URL throws TypeError
+PASS Setting 'font-synthesis-weight' to a transform throws TypeError
+PASS Can set 'font-synthesis-style' to CSS-wide keywords
+PASS Can set 'font-synthesis-style' to var() references
+PASS Can set 'font-synthesis-style' to the 'auto' keyword
+PASS Can set 'font-synthesis-style' to the 'none' keyword
+PASS Setting 'font-synthesis-style' to a length throws TypeError
+PASS Setting 'font-synthesis-style' to a percent throws TypeError
+PASS Setting 'font-synthesis-style' to a time throws TypeError
+PASS Setting 'font-synthesis-style' to an angle throws TypeError
+PASS Setting 'font-synthesis-style' to a flexible length throws TypeError
+PASS Setting 'font-synthesis-style' to a number throws TypeError
+PASS Setting 'font-synthesis-style' to a position throws TypeError
+PASS Setting 'font-synthesis-style' to a URL throws TypeError
+PASS Setting 'font-synthesis-style' to a transform throws TypeError
+PASS 'font-synthesis' does not supported 'weight style'
+FAIL 'font-synthesis' does not supported 'style small-caps' assert_not_equals: Unsupported value must not be null got disallowed value null
+FAIL 'font-synthesis' does not supported 'small-caps weight style' assert_not_equals: Unsupported value must not be null got disallowed value null
 Harness: the test ran to completion.
 

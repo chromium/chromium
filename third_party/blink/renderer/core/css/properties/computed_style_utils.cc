@@ -2697,6 +2697,57 @@ CSSValue* ComputedStyleUtils::ValuesForFontVariantProperty(
   }
 }
 
+CSSValue* ComputedStyleUtils::ValuesForFontSynthesisProperty(
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style) {
+  enum FontSynthesisShorthandCases { kAllNone, kConcatenateAuto };
+  StylePropertyShorthand shorthand = fontSynthesisShorthand();
+  FontSynthesisShorthandCases shorthand_case = kAllNone;
+  for (unsigned i = 0; i < shorthand.length(); ++i) {
+    const CSSValue* value =
+        shorthand.properties()[i]->CSSValueFromComputedStyle(
+            style, layout_object, allow_visited_style);
+    auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+    if (shorthand.properties()[i]->IDEquals(
+            CSSPropertyID::kFontSynthesisWeight) &&
+        identifier_value->GetValueID() == CSSValueID::kAuto) {
+      shorthand_case = kConcatenateAuto;
+    } else if (shorthand.properties()[i]->IDEquals(
+                   CSSPropertyID::kFontSynthesisStyle) &&
+               identifier_value->GetValueID() == CSSValueID::kAuto) {
+      shorthand_case = kConcatenateAuto;
+    }
+  }
+
+  switch (shorthand_case) {
+    case kAllNone:
+      return CSSIdentifierValue::Create(CSSValueID::kNone);
+    case kConcatenateAuto: {
+      CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+      for (unsigned i = 0; i < shorthand.length(); ++i) {
+        const CSSValue* value =
+            shorthand.properties()[i]->CSSValueFromComputedStyle(
+                style, layout_object, allow_visited_style);
+        auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+        if (shorthand.properties()[i]->IDEquals(
+                CSSPropertyID::kFontSynthesisWeight) &&
+            identifier_value->GetValueID() == CSSValueID::kAuto) {
+          list->Append(*CSSIdentifierValue::Create(CSSValueID::kWeight));
+        } else if (shorthand.properties()[i]->IDEquals(
+                       CSSPropertyID::kFontSynthesisStyle) &&
+                   identifier_value->GetValueID() == CSSValueID::kAuto) {
+          list->Append(*CSSIdentifierValue::Create(CSSValueID::kStyle));
+        }
+      }
+      return list;
+    }
+    default:
+      NOTREACHED();
+      return nullptr;
+  }
+}
+
 CSSValueList* ComputedStyleUtils::ValuesForContainerShorthand(
     const ComputedStyle& style,
     const LayoutObject* layout_object,

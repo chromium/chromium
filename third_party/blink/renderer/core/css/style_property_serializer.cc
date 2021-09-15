@@ -524,6 +524,8 @@ String StylePropertySerializer::SerializeShorthand(
       return Get2Values(placeSelfShorthand());
     case CSSPropertyID::kFont:
       return FontValue();
+    case CSSPropertyID::kFontSynthesis:
+      return FontSynthesisValue();
     case CSSPropertyID::kFontVariant:
       return FontVariantValue();
     case CSSPropertyID::kMargin:
@@ -832,6 +834,50 @@ String StylePropertySerializer::FontVariantValue() const {
   if (result.IsEmpty()) {
     return "normal";
   }
+
+  return result.ToString();
+}
+
+String StylePropertySerializer::FontSynthesisValue() const {
+  StringBuilder result;
+
+  int font_synthesis_weight_property_index =
+      property_set_.FindPropertyIndex(GetCSSPropertyFontSynthesisWeight());
+  int font_synthesis_style_property_index =
+      property_set_.FindPropertyIndex(GetCSSPropertyFontSynthesisStyle());
+  DCHECK_NE(font_synthesis_weight_property_index, -1);
+  DCHECK_NE(font_synthesis_style_property_index, -1);
+
+  PropertyValueForSerializer font_synthesis_weight_property =
+      property_set_.PropertyAt(font_synthesis_weight_property_index);
+  PropertyValueForSerializer font_synthesis_style_property =
+      property_set_.PropertyAt(font_synthesis_style_property_index);
+
+  const CSSValue* font_synthesis_weight_value =
+      font_synthesis_weight_property.Value();
+  const CSSValue* font_synthesis_style_value =
+      font_synthesis_style_property.Value();
+
+  auto* font_synthesis_weight_identifier_value =
+      DynamicTo<CSSIdentifierValue>(font_synthesis_weight_value);
+  if (font_synthesis_weight_identifier_value &&
+      font_synthesis_weight_identifier_value->GetValueID() ==
+          CSSValueID::kAuto) {
+    result.Append("weight");
+  }
+
+  auto* font_synthesis_style_identifier_value =
+      DynamicTo<CSSIdentifierValue>(font_synthesis_style_value);
+  if (font_synthesis_style_identifier_value &&
+      font_synthesis_style_identifier_value->GetValueID() ==
+          CSSValueID::kAuto) {
+    if (!result.IsEmpty())
+      result.Append(' ');
+    result.Append("style");
+  }
+
+  if (result.IsEmpty())
+    return "none";
 
   return result.ToString();
 }

@@ -1312,6 +1312,68 @@ const CSSValue* FontVariant::CSSValueFromComputedStyleInternal(
                                                           allow_visited_style);
 }
 
+bool FontSynthesis::ParseShorthand(
+    bool important,
+    CSSParserTokenRange& range,
+    const CSSParserContext&,
+    const CSSParserLocalContext&,
+    HeapVector<CSSPropertyValue, 256>& properties) const {
+  if (range.Peek().Id() == CSSValueID::kNone) {
+    range.ConsumeIncludingWhitespace();
+    css_parsing_utils::AddProperty(
+        CSSPropertyID::kFontSynthesisWeight, CSSPropertyID::kFontSynthesis,
+        *CSSIdentifierValue::Create(CSSValueID::kNone), important,
+        css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+    css_parsing_utils::AddProperty(
+        CSSPropertyID::kFontSynthesisStyle, CSSPropertyID::kFontSynthesis,
+        *CSSIdentifierValue::Create(CSSValueID::kNone), important,
+        css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+    return range.AtEnd();
+  }
+
+  CSSValue* font_synthesis_weight = nullptr;
+  CSSValue* font_synthesis_style = nullptr;
+  do {
+    CSSValueID id = range.ConsumeIncludingWhitespace().Id();
+    switch (id) {
+      case CSSValueID::kWeight:
+        if (font_synthesis_weight)
+          return false;
+        font_synthesis_weight = CSSIdentifierValue::Create(CSSValueID::kAuto);
+        break;
+      case CSSValueID::kStyle:
+        if (font_synthesis_style)
+          return false;
+        font_synthesis_style = CSSIdentifierValue::Create(CSSValueID::kAuto);
+        break;
+      default:
+        return false;
+    }
+  } while (!range.AtEnd());
+
+  css_parsing_utils::AddProperty(
+      CSSPropertyID::kFontSynthesisWeight, CSSPropertyID::kFontSynthesis,
+      font_synthesis_weight ? *font_synthesis_weight
+                            : *CSSIdentifierValue::Create(CSSValueID::kNone),
+      important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
+      properties);
+  css_parsing_utils::AddProperty(
+      CSSPropertyID::kFontSynthesisStyle, CSSPropertyID::kFontSynthesis,
+      font_synthesis_style ? *font_synthesis_style
+                           : *CSSIdentifierValue::Create(CSSValueID::kNone),
+      important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
+      properties);
+  return true;
+}
+
+const CSSValue* FontSynthesis::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style) const {
+  return ComputedStyleUtils::ValuesForFontSynthesisProperty(
+      style, layout_object, allow_visited_style);
+}
+
 bool Gap::ParseShorthand(bool important,
                          CSSParserTokenRange& range,
                          const CSSParserContext& context,

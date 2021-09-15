@@ -58,6 +58,7 @@ class StylePropertySerializer {
                            String separator = " ") const;
   String ContainerValue() const;
   String FontValue() const;
+  String FontSynthesisValue() const;
   String FontVariantValue() const;
   bool AppendFontLonghandValueIfNotNormal(const CSSProperty&,
                                           StringBuilder& result) const;

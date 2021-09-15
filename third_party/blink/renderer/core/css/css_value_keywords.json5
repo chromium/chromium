@@ -109,6 +109,11 @@
     "bolder",
     "lighter",
 
+    // font-synthesis
+    // none
+    // style
+    "weight",
+
     //
     // font-stretch
     //

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 58 tests; 51 PASS, 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 58 tests; 52 PASS, 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Property font value 'italic small-caps 900 expanded 25px / 50px Ahem' in ::marker
 PASS Property font-family value 'Ahem' in ::marker
 PASS Property font-feature-settings value '"smcp"' in ::marker
@@ -8,7 +8,7 @@ PASS Property font-size value '25px' in ::marker
 PASS Property font-size-adjust value '1' in ::marker
 PASS Property font-stretch value 'expanded' in ::marker
 PASS Property font-style value 'italic' in ::marker
-FAIL Property font-synthesis value 'none' in ::marker assert_true: font-synthesis doesn't seem to be supported in the computed style expected true got false
+PASS Property font-synthesis value 'none' in ::marker
 PASS Property font-variant value 'small-caps' in ::marker
 PASS Property font-variant-caps value 'small-caps' in ::marker
 PASS Property font-variant-east-asian value 'full-width' in ::marker
