@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/public/common/content_client.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
@@ -80,6 +81,8 @@ void ManifestManagerHost::OnRequestManifestResponse(
     int request_id,
     const GURL& url,
     blink::mojom::ManifestPtr manifest) {
+  GetContentClient()->browser()->MaybeOverrideManifest(manifest_manager_frame_,
+                                                       manifest);
   auto callback = std::move(*callbacks_.Lookup(request_id));
   callbacks_.Remove(request_id);
   std::move(callback).Run(url, std::move(manifest));

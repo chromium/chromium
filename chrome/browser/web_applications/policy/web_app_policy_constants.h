@@ -14,6 +14,9 @@ extern const char kDefaultLaunchContainerWindowValue[];
 extern const char kDefaultLaunchContainerTabValue[];
 extern const char kCreateDesktopShortcutKey[];
 extern const char kFallbackAppNameKey[];
+extern const char kCustomNameKey[];
+extern const char kCustomIconKey[];
+extern const char kCustomIconURLKey[];
 
 extern const char kWildcard[];
 

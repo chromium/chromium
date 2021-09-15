@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager_observer.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "content/public/browser/render_frame_host.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -91,6 +92,10 @@ class WebAppPolicyManager {
   void SetRefreshPolicySettingsCompletedCallbackForTesting(
       base::OnceClosure callback);
 
+  // Changes the manifest to conform to the WebAppInstallForceList policy.
+  void MaybeOverrideManifest(content::RenderFrameHost* frame_host,
+                             blink::mojom::ManifestPtr& manifest);
+
  private:
   friend class WebAppPolicyManagerTest;
 
@@ -106,6 +111,20 @@ class WebAppPolicyManager {
     RunOnOsLoginPolicy run_on_os_login_policy;
   };
 
+  struct CustomManifestValues {
+    // The constructors and destructors have the "= default" implementations,
+    // but they cannot be inlined.
+    CustomManifestValues();
+    CustomManifestValues(const CustomManifestValues&);
+    ~CustomManifestValues();
+
+    void SetName(const std::string& utf8_name);
+    void SetIcon(const std::string& icon_url);
+
+    absl::optional<std::u16string> name;
+    absl::optional<std::vector<blink::Manifest::ImageResource>> icons;
+  };
+
   void InitChangeRegistrarAndRefreshPolicy();
 
   void RefreshPolicyInstalledApps();
@@ -115,6 +134,11 @@ class WebAppPolicyManager {
           install_results,
       std::map<GURL, bool> uninstall_results);
   void ApplyPolicySettings();
+
+  // Parses install options from a Value, which represents one entry of the
+  // kWepAppInstallForceList. If the value contains a custom_name or
+  // custom_icon, it is inserted into the custom_manifest_values_by_url_ map.
+  ExternalInstallOptions ParseInstallPolicyEntry(const base::Value& entry);
 
   void ObserveDisabledSystemFeaturesPolicy();
 
@@ -150,6 +174,7 @@ class WebAppPolicyManager {
   bool needs_refresh_ = false;
 
   base::flat_map<GURL, WebAppSetting> settings_by_url_;
+  base::flat_map<GURL, CustomManifestValues> custom_manifest_values_by_url_;
   std::unique_ptr<WebAppSetting> default_settings_;
   base::ObserverList<WebAppPolicyManagerObserver, /*check_empty=*/true>
       observers_;

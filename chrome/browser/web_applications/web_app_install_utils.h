@@ -77,6 +77,8 @@ webapps::WebappUninstallSource ConvertExternalInstallSourceToUninstallSource(
 Source::Type InferSourceFromMetricsInstallSource(
     webapps::WebappInstallSource install_source);
 
+void CreateWebAppInstallTabHelpers(content::WebContents* web_contents);
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_INSTALL_UTILS_H_

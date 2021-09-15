@@ -13,6 +13,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
+#include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/web_app_file_handler_registration.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
@@ -21,11 +23,16 @@
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
+#include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+
+#if defined(OS_CHROMEOS)
+#include "chrome/browser/web_applications/policy/pre_redirection_url_observer.h"
+#endif
 
 namespace web_app {
 
@@ -651,6 +658,15 @@ Source::Type InferSourceFromMetricsInstallSource(
       NOTREACHED();
       return Source::kSync;
   }
+}
+
+void CreateWebAppInstallTabHelpers(content::WebContents* web_contents) {
+  webapps::InstallableManager::CreateForWebContents(web_contents);
+  SecurityStateTabHelper::CreateForWebContents(web_contents);
+  favicon::CreateContentFaviconDriverForWebContents(web_contents);
+#if defined(OS_CHROMEOS)
+  webapps::PreRedirectionURLObserver::CreateForWebContents(web_contents);
+#endif
 }
 
 }  // namespace web_app

@@ -142,6 +142,7 @@
 #include "chrome/browser/ui/webui/log_web_ui_url.h"
 #include "chrome/browser/usb/frame_usb_services.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
+#include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -3099,6 +3100,19 @@ ChromeContentBrowserClient::GetTtsControllerDelegate() {
   return TtsControllerDelegateImpl::GetInstance();
 }
 #endif
+
+void ChromeContentBrowserClient::MaybeOverrideManifest(
+    content::RenderFrameHost* render_frame_host,
+    blink::mojom::ManifestPtr& manifest) {
+#if defined(OS_CHROMEOS)
+  Profile* profile =
+      Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
+  if (provider)
+    provider->policy_manager().MaybeOverrideManifest(render_frame_host,
+                                                     manifest);
+#endif
+}
 
 content::TtsPlatform* ChromeContentBrowserClient::GetTtsPlatform() {
 #if !defined(OS_ANDROID)

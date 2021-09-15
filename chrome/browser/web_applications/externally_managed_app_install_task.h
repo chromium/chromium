@@ -42,9 +42,6 @@ class ExternallyManagedAppInstallTask {
       absl::optional<AppId> app_id,
       ExternallyManagedAppManager::InstallResult result)>;
 
-  // Ensures the tab helpers necessary for installing an app are present.
-  static void CreateTabHelpers(content::WebContents* web_contents);
-
   // Constructs a task that will install a Web App for |profile|.
   // |install_options| will be used to decide some of the properties of the
   // installed app e.g. open in a tab vs. window, installed by policy, etc.

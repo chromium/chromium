@@ -343,6 +343,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   content::TtsControllerDelegate* GetTtsControllerDelegate() override;
 #endif
+  void MaybeOverrideManifest(content::RenderFrameHost* render_frame_host,
+                             blink::mojom::ManifestPtr& manifest) override;
   content::TtsPlatform* GetTtsPlatform() override;
   void OverrideWebkitPrefs(content::WebContents* web_contents,
                            blink::web_pref::WebPreferences* prefs) override;

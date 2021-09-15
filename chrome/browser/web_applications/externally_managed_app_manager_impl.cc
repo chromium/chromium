@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/externally_managed_app_registration_task.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/common/chrome_features.h"
@@ -261,7 +262,7 @@ void ExternallyManagedAppManagerImpl::CreateWebContentsIfNecessary() {
 
   web_contents_ = content::WebContents::Create(
       content::WebContents::CreateParams(profile_));
-  ExternallyManagedAppInstallTask::CreateTabHelpers(web_contents_.get());
+  CreateWebAppInstallTabHelpers(web_contents_.get());
 }
 
 void ExternallyManagedAppManagerImpl::OnInstalled(

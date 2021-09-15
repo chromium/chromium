@@ -184,6 +184,7 @@
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/ui/web_applications/web_app_metrics.h"
 #include "chrome/browser/ui/web_applications/web_app_metrics_tab_helper.h"
+#include "chrome/browser/web_applications/policy/pre_redirection_url_observer.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "extensions/browser/view_type_utils.h"
@@ -436,6 +437,10 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   WebContentsCanGoBackObserver::CreateForWebContents(web_contents);
+#endif
+
+#if defined(OS_CHROMEOS)
+  webapps::PreRedirectionURLObserver::CreateForWebContents(web_contents);
 #endif
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch

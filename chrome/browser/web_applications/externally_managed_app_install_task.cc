@@ -14,7 +14,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -27,16 +26,9 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/installable/installable_params.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_contents.h"
 
 namespace web_app {
-
-// static
-void ExternallyManagedAppInstallTask::CreateTabHelpers(
-    content::WebContents* web_contents) {
-  webapps::InstallableManager::CreateForWebContents(web_contents);
-  SecurityStateTabHelper::CreateForWebContents(web_contents);
-  favicon::CreateContentFaviconDriverForWebContents(web_contents);
-}
 
 ExternallyManagedAppInstallTask::ExternallyManagedAppInstallTask(
     Profile* profile,

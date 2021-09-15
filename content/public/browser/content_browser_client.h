@@ -59,6 +59,7 @@
 #include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/federated_learning/floc.mojom-forward.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -935,6 +936,11 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Allows the embedder to return a delegate for the TtsController.
   virtual TtsControllerDelegate* GetTtsControllerDelegate();
 #endif
+
+  // Applies policy-dictated changes to the manifest that was loaded from the
+  // provided render_frame_host.
+  virtual void MaybeOverrideManifest(RenderFrameHost* render_frame_host,
+                                     blink::mojom::ManifestPtr& manifest) {}
 
   // Allows the embedder to return a TTS platform implementation.
   virtual TtsPlatform* GetTtsPlatform();
