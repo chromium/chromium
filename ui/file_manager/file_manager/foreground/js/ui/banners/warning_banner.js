@@ -96,7 +96,7 @@ export class WarningBanner extends Banner {
    * hours.
    * @returns {number}
    */
-  hideAfterDismissedDuration() {
+  hideAfterDismissedDurationSeconds() {
     return 36 * 60 * 60;  // 36 hours, 129,600 seconds.
   }
 

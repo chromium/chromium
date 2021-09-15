@@ -81,7 +81,7 @@ export async function testAdditionalButtonCanBeClicked() {
  */
 export function testWarningBannerDefaults() {
   // Ensure the warning banner default timeout is 36 hours.
-  assertEquals(warningBanner.hideAfterDismissedDuration(), 36 * 60 * 60);
+  assertEquals(warningBanner.hideAfterDismissedDurationSeconds(), 36 * 60 * 60);
 
   // Ensure the default allowed volume type is empty. This ensures any
   // banners that don't override this property do not show by default.
