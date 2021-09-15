@@ -356,7 +356,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, MAYBE_GetViewsOfCreatedPopup) {
 #else
 #define MAYBE_GetViewsOfCreatedWindow GetViewsOfCreatedWindow
 #endif
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, GetViewsOfCreatedWindow) {
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, MAYBE_GetViewsOfCreatedWindow) {
   ASSERT_TRUE(
       RunExtensionTest("tabs/basics", {.page_url = "get_views_window.html"}))
       << message_;
