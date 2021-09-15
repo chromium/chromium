@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<div style="height:2000px"></div>
+
+<details id=detailselement>
+  <summary>summary</summary>
+  details
+</details>
+
+<script>
+async_test(t => {
+  assert_false(detailselement.open, `details should be closed at the start of the test.`);
+  assert_equals(window.pageYOffset, 0, `page should be scrolled to the top at the start of the test.`);
+
+  detailselement.addEventListener('toggle', t.step_func_done(() => {
+    assert_true(detailselement.open, `find-in-page should open the details element.`);
+    assert_not_equals(window.pageYOffset, 0, `find-in-page should scroll to the details element.`);
+  }));
+
+  testRunner.findString('details', ['Async']);
+}, `Verifies that find-in-page expands details elements when the target text is inside of them.`);
+</script>

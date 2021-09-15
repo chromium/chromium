@@ -33,8 +33,8 @@ rootWebArea name='Action verbs'
 ++++++++++++++staticText ignored name='%E2%96%B8 '
 ++++++++++++staticText name='Summary'
 ++++++++++++++inlineTextBox name='Summary'
-++++++++genericContainer ignored invisible
-++++++++++staticText ignored name='Details'
+++++++++genericContainer ignored
+++++++++++staticText ignored invisible name='Details'
 ++++++popUpButton collapsed value='Pop-up button' defaultActionVerb=open haspopup=menu
 ++++++++menuListPopup invisible
 ++++++++++menuListOption name='Pop-up button' defaultActionVerb=select selected=true

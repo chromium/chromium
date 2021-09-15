@@ -1048,7 +1048,9 @@
               "external/wpt/accessibility/crashtests/map-inside-map-2.html",
               "external/wpt/accessibility/crashtests/move-owned-inside-another-owned.html",
               "external/wpt/accessibility/crashtests/slot-assignment-lockup.html",
-              "external/wpt/accessibility/crashtests/validation-message.html"],
+              "external/wpt/accessibility/crashtests/validation-message.html",
+              "editing/text-iterator/auto-expand-details.html",
+              "editing/text-iterator/auto-expand-details-shadowdom.html"],
     "args": ["--force-renderer-accessibility"]
   },
   {
