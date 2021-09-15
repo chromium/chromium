@@ -190,6 +190,52 @@ class QuotaManagerImplTest : public testing::Test {
     run_loop.Run();
   }
 
+  QuotaErrorOr<std::set<BucketInfo>> GetBucketsForType(
+      blink::mojom::StorageType storage_type) {
+    base::RunLoop run_loop;
+    QuotaErrorOr<std::set<BucketInfo>> buckets;
+    quota_manager_impl_->GetBucketsForType(
+        storage_type, base::BindLambdaForTesting(
+                          [&](QuotaErrorOr<std::set<BucketInfo>> result) {
+                            buckets = std::move(result);
+                            run_loop.Quit();
+                          }));
+    run_loop.Run();
+    return buckets;
+  }
+
+  QuotaErrorOr<std::set<BucketInfo>> GetBucketsForHost(
+      const std::string& host,
+      blink::mojom::StorageType storage_type) {
+    base::RunLoop run_loop;
+    QuotaErrorOr<std::set<BucketInfo>> buckets;
+    quota_manager_impl_->GetBucketsForHost(
+        host, storage_type,
+        base::BindLambdaForTesting(
+            [&](QuotaErrorOr<std::set<BucketInfo>> result) {
+              buckets = std::move(result);
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+    return buckets;
+  }
+
+  QuotaErrorOr<std::set<BucketInfo>> GetBucketsForStorageKey(
+      const StorageKey& storage_key,
+      blink::mojom::StorageType storage_type) {
+    base::RunLoop run_loop;
+    QuotaErrorOr<std::set<BucketInfo>> buckets;
+    quota_manager_impl_->GetBucketsForStorageKey(
+        storage_key, storage_type,
+        base::BindLambdaForTesting(
+            [&](QuotaErrorOr<std::set<BucketInfo>> result) {
+              buckets = std::move(result);
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+    return buckets;
+  }
+
   void GetUsageInfo() {
     usage_info_.clear();
     quota_manager_impl_->GetUsageInfo(base::BindOnce(
@@ -746,6 +792,110 @@ TEST_F(QuotaManagerImplTest, GetStorageKeysForTypeWithDatabaseError) {
   // Return empty set when error is encountered.
   GetStorageKeysForType(kTemp);
   EXPECT_TRUE(storage_keys_.value().empty());
+}
+
+TEST_F(QuotaManagerImplTest, GetBucketsForType) {
+  StorageKey storage_key_a = ToStorageKey("http://a.com/");
+  StorageKey storage_key_b = ToStorageKey("http://b.com/");
+  StorageKey storage_key_c = ToStorageKey("http://c.com/");
+
+  CreateBucketForTesting(storage_key_a, "bucket_a", kTemp);
+  EXPECT_TRUE(bucket_.ok());
+  BucketInfo bucket_a = bucket_.value();
+
+  CreateBucketForTesting(storage_key_b, "bucket_b", kTemp);
+  EXPECT_TRUE(bucket_.ok());
+  BucketInfo bucket_b = bucket_.value();
+
+  CreateBucketForTesting(storage_key_c, "bucket_c", kPerm);
+  EXPECT_TRUE(bucket_.ok());
+  BucketInfo bucket_c = bucket_.value();
+
+  QuotaErrorOr<std::set<BucketInfo>> result = GetBucketsForType(kTemp);
+  EXPECT_TRUE(result.ok());
+
+  std::set<BucketInfo> buckets = result.value();
+  EXPECT_EQ(2U, buckets.size());
+  EXPECT_EQ(1U, buckets.count(bucket_a));
+  EXPECT_EQ(1U, buckets.count(bucket_b));
+
+  result = GetBucketsForType(kPerm);
+  buckets = result.value();
+  EXPECT_EQ(1U, buckets.size());
+  EXPECT_EQ(1U, buckets.count(bucket_c));
+}
+
+TEST_F(QuotaManagerImplTest, GetBucketsForHost) {
+  StorageKey host_a_storage_key_1 = ToStorageKey("http://a.com/");
+  StorageKey host_a_storage_key_2 = ToStorageKey("https://a.com:123/");
+  StorageKey host_b_storage_key = ToStorageKey("http://b.com/");
+
+  CreateBucketForTesting(host_a_storage_key_1, kDefaultBucketName, kTemp);
+  EXPECT_TRUE(bucket_.ok());
+  BucketInfo host_a_bucket_1 = bucket_.value();
+
+  CreateBucketForTesting(host_a_storage_key_2, "test", kTemp);
+  EXPECT_TRUE(bucket_.ok());
+  BucketInfo host_a_bucket_2 = bucket_.value();
+
+  CreateBucketForTesting(host_b_storage_key, kDefaultBucketName, kPerm);
+  EXPECT_TRUE(bucket_.ok());
+  BucketInfo host_b_bucket = bucket_.value();
+
+  QuotaErrorOr<std::set<BucketInfo>> result = GetBucketsForHost("a.com", kTemp);
+  EXPECT_TRUE(result.ok());
+
+  std::set<BucketInfo> buckets = result.value();
+  EXPECT_EQ(2U, buckets.size());
+  EXPECT_EQ(1U, buckets.count(host_a_bucket_1));
+  EXPECT_EQ(1U, buckets.count(host_a_bucket_2));
+
+  result = GetBucketsForHost("b.com", kPerm);
+  buckets = result.value();
+  EXPECT_EQ(1U, buckets.size());
+  EXPECT_EQ(1U, buckets.count(host_b_bucket));
+}
+
+TEST_F(QuotaManagerImplTest, GetBucketsForStorageKey) {
+  StorageKey storage_key_a = ToStorageKey("http://a.com/");
+  StorageKey storage_key_b = ToStorageKey("http://b.com/");
+  StorageKey storage_key_c = ToStorageKey("http://c.com/");
+
+  CreateBucketForTesting(storage_key_a, "bucket_a1", kTemp);
+  EXPECT_TRUE(bucket_.ok());
+  BucketInfo bucket_a1 = bucket_.value();
+
+  CreateBucketForTesting(storage_key_a, "bucket_a2", kTemp);
+  EXPECT_TRUE(bucket_.ok());
+  BucketInfo bucket_a2 = bucket_.value();
+
+  CreateBucketForTesting(storage_key_b, "bucket_b", kTemp);
+  EXPECT_TRUE(bucket_.ok());
+  BucketInfo bucket_b = bucket_.value();
+
+  CreateBucketForTesting(storage_key_c, "bucket_c", kPerm);
+  EXPECT_TRUE(bucket_.ok());
+  BucketInfo bucket_c = bucket_.value();
+
+  QuotaErrorOr<std::set<BucketInfo>> result =
+      GetBucketsForStorageKey(storage_key_a, kTemp);
+  EXPECT_TRUE(result.ok());
+
+  std::set<BucketInfo> buckets = result.value();
+  EXPECT_EQ(2U, buckets.size());
+  EXPECT_EQ(1U, buckets.count(bucket_a1));
+  EXPECT_EQ(1U, buckets.count(bucket_a2));
+
+  result = GetBucketsForStorageKey(storage_key_a, kPerm);
+  EXPECT_TRUE(result.ok());
+  EXPECT_TRUE(result.value().empty());
+
+  result = GetBucketsForStorageKey(storage_key_c, kPerm);
+  EXPECT_TRUE(result.ok());
+
+  buckets = result.value();
+  EXPECT_EQ(1U, buckets.size());
+  EXPECT_EQ(1U, buckets.count(bucket_c));
 }
 
 TEST_F(QuotaManagerImplTest, GetUsageAndQuota_Simple) {

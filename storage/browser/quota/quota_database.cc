@@ -238,6 +238,36 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::GetBucket(
                     statement.ColumnInt(2));
 }
 
+QuotaErrorOr<std::set<BucketInfo>> QuotaDatabase::GetBucketsForType(
+    StorageType type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  QuotaError open_error = LazyOpen(LazyOpenMode::kFailIfNotFound);
+  if (open_error != QuotaError::kNone)
+    return open_error;
+
+  // clang-format off
+  static constexpr char kSql[] =
+      "SELECT id, storage_key, name, expiration, quota "
+        "FROM buckets "
+        "WHERE type = ?";
+  // clang-format on
+
+  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
+  statement.BindInt(0, static_cast<int>(type));
+
+  std::set<BucketInfo> buckets;
+  while (statement.Step()) {
+    absl::optional<StorageKey> read_storage_key =
+        StorageKey::Deserialize(statement.ColumnString(1));
+    if (!read_storage_key.has_value())
+      continue;
+    buckets.emplace(BucketId(statement.ColumnInt64(0)),
+                    read_storage_key.value(), type, statement.ColumnString(2),
+                    statement.ColumnTime(3), statement.ColumnInt(4));
+  }
+  return buckets;
+}
+
 QuotaErrorOr<std::set<BucketInfo>> QuotaDatabase::GetBucketsForHost(
     const std::string& host,
     blink::mojom::StorageType storage_type) {
@@ -266,6 +296,34 @@ QuotaErrorOr<std::set<BucketInfo>> QuotaDatabase::GetBucketsForHost(
                     read_storage_key.value(), storage_type,
                     statement.ColumnString(2), statement.ColumnTime(3),
                     statement.ColumnInt(4));
+  }
+  return buckets;
+}
+
+QuotaErrorOr<std::set<BucketInfo>> QuotaDatabase::GetBucketsForStorageKey(
+    const StorageKey& storage_key,
+    StorageType type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  QuotaError open_error = LazyOpen(LazyOpenMode::kFailIfNotFound);
+  if (open_error != QuotaError::kNone)
+    return open_error;
+
+  // clang-format off
+  static constexpr char kSql[] =
+      "SELECT id, name, expiration, quota "
+        "FROM buckets "
+        "WHERE storage_key = ? AND type = ?";
+  // clang-format on
+
+  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
+  statement.BindString(0, storage_key.Serialize());
+  statement.BindInt(1, static_cast<int>(type));
+
+  std::set<BucketInfo> buckets;
+  while (statement.Step()) {
+    buckets.emplace(BucketId(statement.ColumnInt64(0)), storage_key, type,
+                    statement.ColumnString(1), statement.ColumnTime(2),
+                    statement.ColumnInt(3));
   }
   return buckets;
 }
@@ -647,10 +705,9 @@ QuotaErrorOr<std::set<BucketInfo>> QuotaDatabase::GetBucketsModifiedBetween(
         StorageKey::Deserialize(statement.ColumnString(1));
     if (!read_storage_key.has_value())
       continue;
-    buckets.emplace(
-        BucketInfo(BucketId(statement.ColumnInt64(0)), read_storage_key.value(),
-                   type, statement.ColumnString(2), statement.ColumnTime(3),
-                   statement.ColumnInt(4)));
+    buckets.emplace(BucketId(statement.ColumnInt64(0)),
+                    read_storage_key.value(), type, statement.ColumnString(2),
+                    statement.ColumnTime(3), statement.ColumnInt(4));
   }
   return buckets;
 }

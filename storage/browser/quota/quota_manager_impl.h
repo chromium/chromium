@@ -198,10 +198,30 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
                  blink::mojom::StorageType type,
                  base::OnceCallback<void(QuotaErrorOr<BucketInfo>)>);
 
-  // Retrieves all storage keys for `type` that are in the bucket database.
+  // Retrieves all storage keys for `type` that are in the buckets table.
   // Used for listing storage keys when showing storage key quota usage.
   void GetStorageKeysForType(blink::mojom::StorageType type,
                              GetStorageKeysCallback callback);
+
+  // Retrieves all buckets for `type` that are in the buckets table.
+  // Used for retrieving global usage data in the UsageTracker.
+  void GetBucketsForType(
+      blink::mojom::StorageType type,
+      base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback);
+
+  // Retrieves all buckets for `host` and `type` that are in the buckets table.
+  // Used for retrieving host usage data in the UsageTracker.
+  void GetBucketsForHost(
+      const std::string& host,
+      blink::mojom::StorageType type,
+      base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback);
+
+  // Retrieves all buckets for `storage_key` and `type` that are in the buckets
+  // table. Used for retrieving storage key usage data in the UsageTracker.
+  void GetBucketsForStorageKey(
+      const blink::StorageKey& storage_key,
+      blink::mojom::StorageType type,
+      base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback);
 
   // Called by clients or webapps. Returns usage per host.
   void GetUsageInfo(GetUsageInfoCallback callback);
@@ -559,6 +579,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
                                QuotaErrorOr<BucketInfo> result);
   void DidGetStorageKeys(GetStorageKeysCallback callback,
                          QuotaErrorOr<std::set<blink::StorageKey>> result);
+  void DidGetBuckets(
+      base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback,
+      QuotaErrorOr<std::set<BucketInfo>> result);
   void DidGetModifiedBetween(GetBucketsCallback callback,
                              blink::mojom::StorageType type,
                              QuotaErrorOr<std::set<BucketInfo>> result);

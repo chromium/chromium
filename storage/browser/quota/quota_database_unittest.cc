@@ -266,6 +266,49 @@ TEST_P(QuotaDatabaseTest, GetBucket) {
   EXPECT_EQ(result.error(), QuotaError::kNotFound);
 }
 
+TEST_P(QuotaDatabaseTest, GetBucketsForType) {
+  QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
+  EXPECT_TRUE(LazyOpen(&db, LazyOpenMode::kCreateIfNotFound));
+
+  const StorageKey storage_key1 =
+      StorageKey::CreateFromStringForTesting("http://example-a/");
+  const StorageKey storage_key2 =
+      StorageKey::CreateFromStringForTesting("http://example-b/");
+  const StorageKey storage_key3 =
+      StorageKey::CreateFromStringForTesting("http://example-c/");
+
+  QuotaErrorOr<BucketInfo> bucket_result =
+      db.CreateBucketForTesting(storage_key1, "temp_bucket", kTemp);
+  ASSERT_TRUE(bucket_result.ok());
+  BucketInfo temp_bucket1 = bucket_result.value();
+
+  bucket_result = db.CreateBucketForTesting(storage_key2, "temp_bucket", kTemp);
+  ASSERT_TRUE(bucket_result.ok());
+  BucketInfo temp_bucket2 = bucket_result.value();
+
+  bucket_result = db.CreateBucketForTesting(storage_key1, "perm_bucket", kPerm);
+  ASSERT_TRUE(bucket_result.ok());
+  BucketInfo perm_bucket1 = bucket_result.value();
+
+  bucket_result = db.CreateBucketForTesting(storage_key3, "perm_bucket", kPerm);
+  ASSERT_TRUE(bucket_result.ok());
+  BucketInfo perm_bucket2 = bucket_result.value();
+
+  QuotaErrorOr<std::set<BucketInfo>> result = db.GetBucketsForType(kTemp);
+  ASSERT_TRUE(result.ok());
+  std::set<BucketInfo> buckets = result.value();
+  ASSERT_EQ(2U, buckets.size());
+  EXPECT_EQ(1U, buckets.count(temp_bucket1));
+  EXPECT_EQ(1U, buckets.count(temp_bucket2));
+
+  result = db.GetBucketsForType(kPerm);
+  ASSERT_TRUE(result.ok());
+  buckets = result.value();
+  ASSERT_EQ(2U, buckets.size());
+  EXPECT_EQ(1U, buckets.count(perm_bucket1));
+  EXPECT_EQ(1U, buckets.count(perm_bucket2));
+}
+
 TEST_P(QuotaDatabaseTest, GetBucketsForHost) {
   QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
   EXPECT_TRUE(LazyOpen(&db, LazyOpenMode::kCreateIfNotFound));
@@ -303,6 +346,47 @@ TEST_P(QuotaDatabaseTest, GetBucketsForHost) {
   ASSERT_TRUE(result.ok());
   ASSERT_EQ(result->size(), 1U);
   EXPECT_TRUE(base::Contains(result.value(), temp_google_bucket2.value()));
+}
+
+TEST_P(QuotaDatabaseTest, GetBucketsForStorageKey) {
+  QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
+  EXPECT_TRUE(LazyOpen(&db, LazyOpenMode::kCreateIfNotFound));
+
+  const StorageKey storage_key1 =
+      StorageKey::CreateFromStringForTesting("http://example-a/");
+  const StorageKey storage_key2 =
+      StorageKey::CreateFromStringForTesting("http://example-b/");
+
+  QuotaErrorOr<BucketInfo> bucket_result =
+      db.CreateBucketForTesting(storage_key1, "temp_test1", kTemp);
+  ASSERT_TRUE(bucket_result.ok());
+  BucketInfo temp_bucket1 = bucket_result.value();
+
+  bucket_result = db.CreateBucketForTesting(storage_key1, "temp_test2", kTemp);
+  ASSERT_TRUE(bucket_result.ok());
+  BucketInfo temp_bucket2 = bucket_result.value();
+
+  bucket_result = db.CreateBucketForTesting(storage_key1, "perm_test", kPerm);
+  ASSERT_TRUE(bucket_result.ok());
+  BucketInfo perm_bucket1 = bucket_result.value();
+
+  bucket_result = db.CreateBucketForTesting(storage_key2, "perm_test", kPerm);
+  ASSERT_TRUE(bucket_result.ok());
+  BucketInfo perm_bucket2 = bucket_result.value();
+
+  QuotaErrorOr<std::set<BucketInfo>> result =
+      db.GetBucketsForStorageKey(storage_key1, kTemp);
+  ASSERT_TRUE(result.ok());
+  std::set<BucketInfo> buckets = result.value();
+  ASSERT_EQ(2U, buckets.size());
+  EXPECT_EQ(1U, buckets.count(temp_bucket1));
+  EXPECT_EQ(1U, buckets.count(temp_bucket2));
+
+  result = db.GetBucketsForStorageKey(storage_key2, kPerm);
+  ASSERT_TRUE(result.ok());
+  buckets = result.value();
+  ASSERT_EQ(1U, buckets.size());
+  EXPECT_EQ(1U, buckets.count(perm_bucket2));
 }
 
 TEST_P(QuotaDatabaseTest, GetBucketWithNoDb) {
@@ -483,14 +567,10 @@ TEST_P(QuotaDatabaseTest, GetStorageKeysForType) {
   const StorageKey storage_key3 =
       StorageKey::CreateFromStringForTesting("http://example-c/");
 
-  QuotaErrorOr<BucketInfo> temp_bucket1 =
-      db.CreateBucketForTesting(storage_key1, "bucket_a", kTemp);
-  QuotaErrorOr<BucketInfo> temp_bucket2 =
-      db.CreateBucketForTesting(storage_key2, "bucket_b", kTemp);
-  QuotaErrorOr<BucketInfo> perm_bucket1 =
-      db.CreateBucketForTesting(storage_key2, "bucket_b", kPerm);
-  QuotaErrorOr<BucketInfo> perm_bucket2 =
-      db.CreateBucketForTesting(storage_key3, "bucket_b", kPerm);
+  db.CreateBucketForTesting(storage_key1, "bucket_a", kTemp);
+  db.CreateBucketForTesting(storage_key2, "bucket_b", kTemp);
+  db.CreateBucketForTesting(storage_key2, "bucket_b", kPerm);
+  db.CreateBucketForTesting(storage_key3, "bucket_c", kPerm);
 
   QuotaErrorOr<std::set<StorageKey>> result = db.GetStorageKeysForType(kTemp);
   ASSERT_TRUE(result.ok());

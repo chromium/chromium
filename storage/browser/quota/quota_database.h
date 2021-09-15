@@ -121,10 +121,21 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
                                      const std::string& bucket_name,
                                      blink::mojom::StorageType storage_type);
 
+  // Returns all buckets for `type` in the buckets table. Returns a QuotaError
+  // if the operation has failed.
+  QuotaErrorOr<std::set<BucketInfo>> GetBucketsForType(
+      blink::mojom::StorageType type);
+
   // Retrieves all buckets for `host` and `type`. Returns a QuotaError if the
   // operation has failed.
   QuotaErrorOr<std::set<BucketInfo>> GetBucketsForHost(
       const std::string& host,
+      blink::mojom::StorageType type);
+
+  // Returns all buckets for `storage_key` in the buckets table. Returns a
+  // QuotaError if the operation has failed.
+  QuotaErrorOr<std::set<BucketInfo>> GetBucketsForStorageKey(
+      const blink::StorageKey& storage_key,
       blink::mojom::StorageType type);
 
   // TODO(crbug.com/1202167): Remove once all usages have updated to use
@@ -182,7 +193,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
       const std::set<BucketId>& bucket_exceptions,
       SpecialStoragePolicy* special_storage_policy);
 
-  // Returns all storage keys for `type` in the bucket database.
+  // Returns all storage keys for `type` in the buckets table.
   QuotaErrorOr<std::set<blink::StorageKey>> GetStorageKeysForType(
       blink::mojom::StorageType type);
 

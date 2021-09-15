@@ -127,6 +127,29 @@ QuotaErrorOr<std::set<StorageKey>> GetStorageKeysForTypeOnDBThread(
   return database->GetStorageKeysForType(type);
 }
 
+QuotaErrorOr<std::set<BucketInfo>> GetBucketsForTypeOnDBThread(
+    StorageType type,
+    QuotaDatabase* database) {
+  DCHECK(database);
+  return database->GetBucketsForType(type);
+}
+
+QuotaErrorOr<std::set<BucketInfo>> GetBucketsForHostOnDBThread(
+    const std::string& host,
+    StorageType type,
+    QuotaDatabase* database) {
+  DCHECK(database);
+  return database->GetBucketsForHost(host, type);
+}
+
+QuotaErrorOr<std::set<BucketInfo>> GetBucketsForStorageKeyOnDBThread(
+    const StorageKey& storage_key,
+    StorageType type,
+    QuotaDatabase* database) {
+  DCHECK(database);
+  return database->GetBucketsForStorageKey(storage_key, type);
+}
+
 QuotaErrorOr<std::set<BucketInfo>> GetModifiedBetweenOnDBThread(
     StorageType type,
     base::Time begin,
@@ -1118,6 +1141,44 @@ void QuotaManagerImpl::GetStorageKeysForType(blink::mojom::StorageType type,
   PostTaskAndReplyWithResultForDBThread(
       base::BindOnce(&GetStorageKeysForTypeOnDBThread, type),
       base::BindOnce(&QuotaManagerImpl::DidGetStorageKeys,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void QuotaManagerImpl::GetBucketsForType(
+    blink::mojom::StorageType type,
+    base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  EnsureDatabaseOpened();
+
+  PostTaskAndReplyWithResultForDBThread(
+      base::BindOnce(&GetBucketsForTypeOnDBThread, type),
+      base::BindOnce(&QuotaManagerImpl::DidGetBuckets,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void QuotaManagerImpl::GetBucketsForHost(
+    const std::string& host,
+    blink::mojom::StorageType type,
+    base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  EnsureDatabaseOpened();
+
+  PostTaskAndReplyWithResultForDBThread(
+      base::BindOnce(&GetBucketsForHostOnDBThread, host, type),
+      base::BindOnce(&QuotaManagerImpl::DidGetBuckets,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void QuotaManagerImpl::GetBucketsForStorageKey(
+    const StorageKey& storage_key,
+    blink::mojom::StorageType type,
+    base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  EnsureDatabaseOpened();
+
+  PostTaskAndReplyWithResultForDBThread(
+      base::BindOnce(&GetBucketsForStorageKeyOnDBThread, storage_key, type),
+      base::BindOnce(&QuotaManagerImpl::DidGetBuckets,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
@@ -2229,6 +2290,14 @@ void QuotaManagerImpl::DidGetStorageKeys(
     return;
   }
   std::move(callback).Run(std::move(result.value()));
+}
+
+void QuotaManagerImpl::DidGetBuckets(
+    base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback,
+    QuotaErrorOr<std::set<BucketInfo>> result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DidDatabaseWork(result.ok() || result.error() != QuotaError::kDatabaseError);
+  std::move(callback).Run(std::move(result));
 }
 
 void QuotaManagerImpl::DidGetModifiedBetween(
