@@ -29,12 +29,26 @@ absl::optional<ChromeUserPopulation>& GetCachedUserPopulation(
   return (*instance)[profile];
 }
 
+NoCachedPopulationReason& GetNoCachedPopulationReason(Profile* profile) {
+  static base::NoDestructor<std::map<Profile*, NoCachedPopulationReason>>
+      instance;
+  auto it = instance->find(profile);
+  if (it == instance->end()) {
+    (*instance)[profile] = NoCachedPopulationReason::kStartup;
+  }
+
+  return (*instance)[profile];
+}
+
 void ComparePopulationWithCache(Profile* profile,
                                 const ChromeUserPopulation& population) {
   const absl::optional<ChromeUserPopulation>& cached_population =
       GetCachedUserPopulation(profile);
-  if (!cached_population)
+  if (!cached_population) {
+    base::UmaHistogramEnumeration("SafeBrowsing.NoCachedPopulationReason",
+                                  GetNoCachedPopulationReason(profile));
     return;
+  }
 
   base::UmaHistogramBoolean(
       "SafeBrowsing.PopulationMatchesCachedValue.Population",
@@ -49,8 +63,10 @@ void ComparePopulationWithCache(Profile* profile,
 
 }  // namespace
 
-void ClearCachedUserPopulation(Profile* profile) {
+void ClearCachedUserPopulation(Profile* profile,
+                               NoCachedPopulationReason reason) {
   GetCachedUserPopulation(profile) = absl::nullopt;
+  GetNoCachedPopulationReason(profile) = reason;
 }
 
 ChromeUserPopulation GetUserPopulationForProfile(Profile* profile) {

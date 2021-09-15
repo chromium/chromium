@@ -403,14 +403,18 @@ void SafeBrowsingService::OnProfileAdded(Profile* profile) {
   registrar = std::make_unique<PrefChangeRegistrar>();
   registrar->Init(pref_service);
   registrar->Add(prefs::kSafeBrowsingEnabled,
-                 base::BindRepeating(&ClearCachedUserPopulation, profile));
+                 base::BindRepeating(&ClearCachedUserPopulation, profile,
+                                     NoCachedPopulationReason::kChangeSbPref));
   registrar->Add(prefs::kSafeBrowsingScoutReportingEnabled,
-                 base::BindRepeating(&ClearCachedUserPopulation, profile));
+                 base::BindRepeating(&ClearCachedUserPopulation, profile,
+                                     NoCachedPopulationReason::kChangeSbPref));
   registrar->Add(prefs::kSafeBrowsingEnhanced,
-                 base::BindRepeating(&ClearCachedUserPopulation, profile));
+                 base::BindRepeating(&ClearCachedUserPopulation, profile,
+                                     NoCachedPopulationReason::kChangeSbPref));
   registrar->Add(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
-      base::BindRepeating(&ClearCachedUserPopulation, profile));
+      base::BindRepeating(&ClearCachedUserPopulation, profile,
+                          NoCachedPopulationReason::kChangeMbbPref));
   user_population_prefs_[pref_service] = std::move(registrar);
 
   // Record the current pref state for standard protection.

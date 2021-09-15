@@ -72572,6 +72572,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="4" label="Scan failure"/>
 </enum>
 
+<enum name="SafeBrowsingNoCachedPopulationReason">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Not populated due to startup"/>
+  <int value="2" label="Not populated due to MBB pref changing"/>
+  <int value="3" label="Not populated due to SB pref changing"/>
+</enum>
+
 <enum name="SafeBrowsingParseV4HashResult">
   <int value="0" label="PARSE_FROM_STRING_ERROR"/>
   <int value="1" label="UNEXPECTED_THREAT_ENTRY_TYPE_ERROR"/>
