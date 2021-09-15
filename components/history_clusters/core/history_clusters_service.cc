@@ -30,6 +30,7 @@
 #include "components/history_clusters/core/history_clusters_buildflags.h"
 #include "components/history_clusters/core/memories_features.h"
 #include "components/history_clusters/core/remote_clustering_backend.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/url_formatter/url_formatter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/time_format.h"
@@ -371,13 +372,15 @@ std::string GetDebugJSONForClusters(
 
 HistoryClustersService::HistoryClustersService(
     history::HistoryService* history_service,
+    TemplateURLService* template_url_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : history_service_(history_service) {
   DCHECK(history_service_);
 
 #if BUILDFLAG(BUILD_WITH_ON_DEVICE_CLUSTERING_BACKEND)
   if (kUseOnDeviceClusteringBackend.Get()) {
-    backend_ = std::make_unique<OnDeviceClusteringBackend>();
+    backend_ =
+        std::make_unique<OnDeviceClusteringBackend>(template_url_service);
   }
 #endif
 

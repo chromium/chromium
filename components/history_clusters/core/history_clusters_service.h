@@ -24,6 +24,8 @@
 #include "components/query_parser/query_parser.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+class TemplateURLService;
+
 namespace history_clusters {
 
 // This Service is the API for UIs to fetch Chrome Memories.
@@ -41,8 +43,9 @@ class HistoryClustersService : public KeyedService {
   // `url_loader_factory` is allowed to be nullptr, like in unit tests.
   // In that case, HistoryClustersService will never instantiate a clustering
   // backend that requires it, such as the RemoteClusteringBackend.
-  explicit HistoryClustersService(
+  HistoryClustersService(
       history::HistoryService* history_service,
+      TemplateURLService* template_url_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   HistoryClustersService(const HistoryClustersService&) = delete;
   HistoryClustersService& operator=(const HistoryClustersService&) = delete;
