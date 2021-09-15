@@ -2526,7 +2526,19 @@ HRESULT CGaiaCredentialBase::OnUserAuthenticated(BSTR authentication_info,
       return hr;
     }
 
-    std::wstring email = GetDictString(*properties, kKeyEmail);
+    const std::wstring email = GetDictString(*properties, kKeyEmail);
+    const std::wstring email_domain = email.substr(email.find(L"@") + 1);
+    const std::vector<std::wstring> allowed_domains = GetEmailDomainsList();
+
+    if (std::find(allowed_domains.begin(), allowed_domains.end(),
+                  email_domain) == allowed_domains.end()) {
+      LOGFN(VERBOSE) << "Account " << email
+                     << " isn't in a domain from allowed domains.";
+      *status_text =
+          CGaiaCredentialBase::AllocErrorString(IDS_INVALID_EMAIL_DOMAIN_BASE);
+      return E_FAIL;
+    }
+
     std::vector<std::wstring> permitted_accounts = GetPermittedAccounts();
     if (!permitted_accounts.empty() &&
         std::find(permitted_accounts.begin(), permitted_accounts.end(),
