@@ -25,7 +25,7 @@ from blinkpy.common.system.executive import ScriptError
 from blinkpy.common.system.log_utils import configure_logging
 from blinkpy.w3c.wpt_manifest import WPTManifest, BASE_MANIFEST_NAME
 from blinkpy.web_tests.models.test_expectations import (
-    SystemConfigurationRemover, TestExpectations)
+    ParseError, SystemConfigurationRemover, TestExpectations)
 from blinkpy.web_tests.models.typ_types import ResultType
 from blinkpy.web_tests.port.android import (
     PRODUCTS, PRODUCTS_TO_EXPECTATION_FILE_PATHS, WPT_SMOKE_TESTS_FILE)
@@ -865,7 +865,12 @@ class WPTExpectationsUpdater(object):
         """Skip any Slow and Timeout tests found in TestExpectations.
         """
         _log.info('Skip Slow and Timeout tests.')
-        test_expectations = TestExpectations(port)
+        try:
+            test_expectations = TestExpectations(port)
+        except ParseError as err:
+            _log.warning('Error when parsing TestExpectations\n%s', str(err))
+            return False
+
         path = port.path_to_generic_test_expectations_file()
         changed = False
         for line in test_expectations.get_updated_lines(path):

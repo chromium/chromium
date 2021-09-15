@@ -186,9 +186,6 @@ class TestImporter(object):
             _log.info('Only manifest was updated; skipping the import.')
             return 0
 
-        _log.info('removing third_party/blink/web_tests/external/wpt/WebIDL')
-        self.chromium_git.run(['rm', '-r', self.fs.join(self.dest_path, 'WebIDL')])
-
         with self._expectations_updater.prepare_smoke_tests(self.chromium_git):
             self._commit_changes(commit_message)
             _log.info('Changes imported and committed.')
