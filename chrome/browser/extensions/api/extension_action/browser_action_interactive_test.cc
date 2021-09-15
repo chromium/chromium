@@ -571,7 +571,13 @@ class MainFrameSizeWaiter : public content::WebContentsObserver {
   base::RunLoop run_loop_;
 };
 
-IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, BrowserActionPopup) {
+// TODO(crbug.com/1249851): Test crashes on Windows
+#if defined(OS_WIN)
+#define MAYBE_BrowserActionPopup DISABLED_BrowserActionPopup
+#else
+#define MAYBE_BrowserActionPopup BrowserActionPopup
+#endif
+IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, MAYBE_BrowserActionPopup) {
   ASSERT_TRUE(
       LoadExtension(test_data_dir_.AppendASCII("browser_action/popup")));
   const Extension* extension = GetSingleLoadedExtension();
