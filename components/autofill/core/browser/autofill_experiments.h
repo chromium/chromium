@@ -44,6 +44,11 @@ bool IsCreditCardMigrationEnabled(PersonalDataManager* personal_data_manager,
 // disables providing suggestions.
 bool IsInAutofillSuggestionsDisabledExperiment();
 
+// Returns true if the feature is explicitly enabled by the corresponding Finch
+// flag, or if launched in general for this platform, which is true for Windows,
+// Android, and Mac OS X >= 10.13.
+bool IsCreditCardFidoAuthenticationEnabled();
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_EXPERIMENTS_H_

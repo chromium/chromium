@@ -1292,8 +1292,7 @@ void BrowserAutofillManager::DidShowSuggestions(bool has_autofill_suggestions,
   }
 
   if (autofill_field->Type().group() == FieldTypeGroup::kCreditCard &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillCreditCardAuthentication)) {
+      ::autofill::IsCreditCardFidoAuthenticationEnabled()) {
     credit_card_access_manager_->PrepareToFetchCreditCard();
   }
 }

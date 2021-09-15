@@ -35,6 +35,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 
+#if defined(OS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 namespace autofill {
 namespace {
 void LogCardUploadDisabled(LogManager* log_manager, std::string context) {
@@ -244,6 +248,23 @@ bool IsInAutofillSuggestionsDisabledExperiment() {
   std::string group_name =
       base::FieldTrialList::FindFullName("AutofillEnabled");
   return group_name == "Disabled";
+}
+
+bool IsCreditCardFidoAuthenticationEnabled() {
+  // The feature is enabled if the flag is enabled.
+  if (base::FeatureList::IsEnabled(features::kAutofillCreditCardAuthentication))
+    return true;
+
+#if defined(OS_WIN) || defined(OS_ANDROID)
+  // Better Auth project is fully launched on Windows and Clank.
+  return true;
+#elif defined(OS_MAC)
+  // Mac OS X 10.12 and earlier has a OS-level bug that causes crashes,
+  // therefore only enable for 10.13+.
+  return base::mac::IsAtLeastOS10_13();
+#else
+  return false;
+#endif
 }
 
 }  // namespace autofill

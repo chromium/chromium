@@ -145,16 +145,12 @@ void CardUnmaskPromptControllerImpl::OnUnmaskPromptAccepted(
     pending_details_.exp_year = exp_year;
   }
 
-  // On Android, the FIDO authentication checkbox is only shown when the flag is
-  // turned on. If it is shown, then remember the last choice the user made on
-  // this device.
+  // On Android, FIDO authentication is fully launched and its checkbox should
+  // always be shown. Remember the last choice the user made on this device.
 #if defined(OS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillCreditCardAuthentication)) {
-    pending_details_.enable_fido_auth = enable_fido_auth;
-    pref_service_->SetBoolean(
-        prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, enable_fido_auth);
-  }
+  pending_details_.enable_fido_auth = enable_fido_auth;
+  pref_service_->SetBoolean(
+      prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, enable_fido_auth);
 #endif
 
   // There is a chance the delegate has disappeared (i.e. tab closed) before the

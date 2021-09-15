@@ -32,6 +32,7 @@
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/address_normalizer.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
+#include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
@@ -852,9 +853,8 @@ jboolean PersonalDataManagerAndroid::IsFidoAuthenticationAvailable(
           autofill::AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled) {
     return false;
   }
-  // Show the toggle switch only if the authentication flag is enabled.
-  return base::FeatureList::IsEnabled(
-      autofill::features::kAutofillCreditCardAuthentication);
+  // Show the toggle switch only if FIDO authentication is available.
+  return ::autofill::IsCreditCardFidoAuthenticationEnabled();
 }
 
 void PersonalDataManagerAndroid::StartRegionSubKeysRequest(

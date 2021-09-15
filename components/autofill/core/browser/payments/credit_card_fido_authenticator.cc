@@ -17,6 +17,7 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/fido_authentication_strike_database.h"
@@ -140,8 +141,7 @@ void CreditCardFIDOAuthenticator::OptOut() {
 
 void CreditCardFIDOAuthenticator::IsUserVerifiable(
     base::OnceCallback<void(bool)> callback) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillCreditCardAuthentication) ||
+  if (!::autofill::IsCreditCardFidoAuthenticationEnabled() ||
       !authenticator()) {
     std::move(callback).Run(false);
     return;
@@ -160,8 +160,7 @@ void CreditCardFIDOAuthenticator::IsUserVerifiable(
 }
 
 bool CreditCardFIDOAuthenticator::IsUserOptedIn() {
-  return base::FeatureList::IsEnabled(
-             features::kAutofillCreditCardAuthentication) &&
+  return ::autofill::IsCreditCardFidoAuthenticationEnabled() &&
          ::autofill::prefs::IsCreditCardFIDOAuthEnabled(
              autofill_client_->GetPrefs());
 }
