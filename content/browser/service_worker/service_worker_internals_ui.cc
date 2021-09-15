@@ -58,12 +58,6 @@ using GetRegistrationsCallback =
 void OperationCompleteCallback(WeakPtr<ServiceWorkerInternalsHandler> internals,
                                const std::string& callback_id,
                                blink::ServiceWorkerStatusCode status) {
-  if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(OperationCompleteCallback, internals,
-                                  callback_id, status));
-    return;
-  }
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (internals) {
     internals->OnOperationComplete(static_cast<int>(status), callback_id);
@@ -206,39 +200,15 @@ base::Value::ListStorage GetVersionListValue(
   return result;
 }
 
-void DidGetStoredRegistrationsOnCoreThread(
+void DidGetStoredRegistrations(
     scoped_refptr<ServiceWorkerContextWrapper> context,
     GetRegistrationsCallback callback,
     blink::ServiceWorkerStatusCode status,
     const std::vector<ServiceWorkerRegistrationInfo>& stored_registrations) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), context->GetAllLiveRegistrationInfo(),
-                     context->GetAllLiveVersionInfo(), stored_registrations));
-}
-
-void GetRegistrationsOnCoreThread(
-    scoped_refptr<ServiceWorkerContextWrapper> context,
-    GetRegistrationsCallback callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
-  context->GetAllRegistrations(base::BindOnce(
-      DidGetStoredRegistrationsOnCoreThread, context, std::move(callback)));
-}
-
-void DidGetRegistrations(
-    WeakPtr<ServiceWorkerInternalsHandler> internals,
-    int partition_id,
-    const base::FilePath& context_path,
-    const std::vector<ServiceWorkerRegistrationInfo>& live_registrations,
-    const std::vector<ServiceWorkerVersionInfo>& live_versions,
-    const std::vector<ServiceWorkerRegistrationInfo>& stored_registrations) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (internals) {
-    internals->OnDidGetRegistrations(live_registrations, live_versions,
-                                     stored_registrations, partition_id,
-                                     context_path);
-  }
+  std::move(callback).Run(context->GetAllLiveRegistrationInfo(),
+                          context->GetAllLiveVersionInfo(),
+                          stored_registrations);
 }
 
 }  // namespace
@@ -458,11 +428,11 @@ void ServiceWorkerInternalsHandler::OnRegistrationEvent(
 }
 
 void ServiceWorkerInternalsHandler::OnDidGetRegistrations(
+    int partition_id,
+    const base::FilePath& context_path,
     const std::vector<ServiceWorkerRegistrationInfo>& live_registrations,
     const std::vector<ServiceWorkerVersionInfo>& live_versions,
-    const std::vector<ServiceWorkerRegistrationInfo>& stored_registrations,
-    int partition_id,
-    const base::FilePath& context_path) {
+    const std::vector<ServiceWorkerRegistrationInfo>& stored_registrations) {
   base::Value registrations(base::Value::Type::DICTIONARY);
   registrations.SetKey(
       "liveRegistrations",
@@ -546,14 +516,12 @@ void ServiceWorkerInternalsHandler::AddContextFromStoragePartition(
         std::move(new_observer);
   }
 
-  RunOrPostTaskOnThread(
-      FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
+  context->GetAllRegistrations(base::BindOnce(
+      &DidGetStoredRegistrations, context,
       base::BindOnce(
-          GetRegistrationsOnCoreThread, context,
-          base::BindOnce(DidGetRegistrations, weak_ptr_factory_.GetWeakPtr(),
-                         partition_id,
-                         context->is_incognito() ? base::FilePath()
-                                                 : partition->GetPath())));
+          &ServiceWorkerInternalsHandler::OnDidGetRegistrations,
+          weak_ptr_factory_.GetWeakPtr(), partition_id,
+          context->is_incognito() ? base::FilePath() : partition->GetPath())));
 }
 
 void ServiceWorkerInternalsHandler::RemoveObserverFromStoragePartition(
@@ -690,16 +658,7 @@ void ServiceWorkerInternalsHandler::StopWorkerWithId(
     scoped_refptr<ServiceWorkerContextWrapper> context,
     int64_t version_id,
     StatusCallback callback) {
-  if (!BrowserThread::CurrentlyOn(ServiceWorkerContext::GetCoreThreadId())) {
-    BrowserThread::GetTaskRunnerForThread(
-        ServiceWorkerContext::GetCoreThreadId())
-        ->PostTask(
-            FROM_HERE,
-            base::BindOnce(&ServiceWorkerInternalsHandler::StopWorkerWithId,
-                           base::Unretained(this), context, version_id,
-                           std::move(callback)));
-    return;
-  }
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   scoped_refptr<ServiceWorkerVersion> version =
       context->GetLiveVersion(version_id);
@@ -718,16 +677,7 @@ void ServiceWorkerInternalsHandler::UnregisterWithScope(
     scoped_refptr<ServiceWorkerContextWrapper> context,
     const GURL& scope,
     ServiceWorkerInternalsHandler::StatusCallback callback) const {
-  if (!BrowserThread::CurrentlyOn(ServiceWorkerContext::GetCoreThreadId())) {
-    BrowserThread::GetTaskRunnerForThread(
-        ServiceWorkerContext::GetCoreThreadId())
-        ->PostTask(
-            FROM_HERE,
-            base::BindOnce(&ServiceWorkerInternalsHandler::UnregisterWithScope,
-                           base::Unretained(this), context, scope,
-                           std::move(callback)));
-    return;
-  }
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!context->context()) {
     std::move(callback).Run(blink::ServiceWorkerStatusCode::kErrorAbort);

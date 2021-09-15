@@ -247,10 +247,8 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithRegistration(
           container_host_->top_frame_origin(), /*script_url=*/GURL(),
           browser_context_);
 
-  RunOrPostTaskOnThread(
-      FROM_HERE, BrowserThread::UI,
-      base::BindOnce(service_worker_accessed_callback_, registration->scope(),
-                     allow_service_worker));
+  std::move(service_worker_accessed_callback_)
+      .Run(registration->scope(), allow_service_worker);
 
   if (!allow_service_worker) {
     TRACE_EVENT_WITH_FLOW1(
