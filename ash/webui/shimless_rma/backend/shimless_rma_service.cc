@@ -307,9 +307,8 @@ void ShimlessRmaService::GetComponentList(GetComponentListCallback callback) {
                << state_proto_.state_case();
   } else {
     components.reserve(state_proto_.components_repair().components_size());
-    for (auto component : state_proto_.components_repair().components()) {
-      components.push_back(component);
-    }
+    components.assign(state_proto_.components_repair().components().begin(),
+                      state_proto_.components_repair().components().end());
   }
   std::move(callback).Run(std::move(components));
 }
