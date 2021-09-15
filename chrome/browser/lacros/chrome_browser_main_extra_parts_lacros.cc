@@ -11,6 +11,7 @@
 #include "chrome/browser/lacros/download_controller_client_lacros.h"
 #include "chrome/browser/lacros/drivefs_cache.h"
 #include "chrome/browser/lacros/field_trial_observer.h"
+#include "chrome/browser/lacros/lacros_butter_bar.h"
 #include "chrome/browser/lacros/lacros_extension_apps_controller.h"
 #include "chrome/browser/lacros/lacros_extension_apps_publisher.h"
 #include "chrome/browser/lacros/lacros_memory_pressure_evaluator.h"
@@ -33,6 +34,7 @@ ChromeBrowserMainExtraPartsLacros::~ChromeBrowserMainExtraPartsLacros() =
 void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
   automation_manager_ = std::make_unique<AutomationManagerLacros>();
   browser_service_ = std::make_unique<BrowserServiceLacros>();
+  butter_bar_ = std::make_unique<LacrosButterBar>();
   download_controller_client_ =
       std::make_unique<DownloadControllerClientLacros>();
   task_manager_provider_ = std::make_unique<crosapi::TaskManagerLacros>();

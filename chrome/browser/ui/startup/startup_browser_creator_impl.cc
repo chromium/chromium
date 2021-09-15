@@ -89,8 +89,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/account_manager/account_manager_util.h"
-#include "chrome/browser/lacros/lacros_prefs.h"
-#include "chrome/browser/lacros/lacros_startup_infobar_delegate.h"
 #include "chromeos/lacros/lacros_service.h"
 #endif
 
@@ -674,26 +672,6 @@ void StartupBrowserCreatorImpl::AddInfoBarsIfNecessary(
 
     infobars::ContentInfoBarManager* infobar_manager =
         infobars::ContentInfoBarManager::FromWebContents(web_contents);
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    PrefService* local_state = g_browser_process->local_state();
-    if (local_state) {
-      // We show the banner if it's never shown before.
-      bool should_show_banner =
-          !local_state->GetBoolean(lacros_prefs::kShowedExperimentalBannerPref);
-      // If Lacros is not the primary browser, we always show the banner.
-      should_show_banner |= !chromeos::LacrosService::Get()
-                                 ->init_params()
-                                 ->standalone_browser_is_primary;
-
-      if (should_show_banner) {
-        LacrosStartupInfoBarDelegate::Create(infobar_manager);
-
-        local_state->SetBoolean(lacros_prefs::kShowedExperimentalBannerPref,
-                                true);
-      }
-    }
-#endif
 
     if (!google_apis::HasAPIKeyConfigured())
       GoogleApiKeysInfoBarDelegate::Create(infobar_manager);

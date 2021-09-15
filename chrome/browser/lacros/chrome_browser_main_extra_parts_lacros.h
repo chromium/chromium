@@ -13,6 +13,7 @@ class AutomationManagerLacros;
 class BrowserServiceLacros;
 class DriveFsCache;
 class DownloadControllerClientLacros;
+class LacrosButterBar;
 class LacrosExtensionAppsController;
 class LacrosExtensionAppsPublisher;
 class KioskSessionServiceLacros;
@@ -66,6 +67,9 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
 
   // Receiver of field trial updates.
   std::unique_ptr<FieldTrialObserver> field_trial_observer_;
+
+  // Shows a butter bar on the first window.
+  std::unique_ptr<LacrosButterBar> butter_bar_;
 };
 
 #endif  // CHROME_BROWSER_LACROS_CHROME_BROWSER_MAIN_EXTRA_PARTS_LACROS_H_
