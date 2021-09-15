@@ -646,7 +646,7 @@ void PasswordSaveUpdateView::MaybeShowIPH(IPHType type) {
 
   FeaturePromoBubbleParams bubble_params;
   bubble_params.anchor_view = destination_dropdown_;
-  bubble_params.arrow = views::BubbleBorder::RIGHT_CENTER;
+  bubble_params.arrow = FeaturePromoBubbleParams::Arrow::RIGHT_CENTER;
   bubble_params.focus_on_create = true;
   bubble_params.persist_on_blur = false;
   bubble_params.preferred_width = kAccountStoragePromoWidth;

@@ -80,7 +80,7 @@ class FeaturePromoControllerViewsTest : public TestWithBrowserView {
     FeaturePromoBubbleParams params;
     params.body_string_specifier = IDS_REOPEN_TAB_PROMO;
     params.anchor_view = GetAnchorView();
-    params.arrow = views::BubbleBorder::TOP_RIGHT;
+    params.arrow = FeaturePromoBubbleParams::Arrow::TOP_RIGHT;
     return params;
   }
 

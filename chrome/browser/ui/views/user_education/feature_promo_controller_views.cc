@@ -26,8 +26,44 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/bubble/bubble_border.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/view.h"
+
+namespace {
+
+views::BubbleBorder::Arrow MapToBubbleBorderArrow(
+    FeaturePromoBubbleParams::Arrow arrow) {
+  using Arrow = FeaturePromoBubbleParams::Arrow;
+  switch (arrow) {
+    case Arrow::TOP_LEFT:
+      return views::BubbleBorder::Arrow::TOP_LEFT;
+    case Arrow::TOP_RIGHT:
+      return views::BubbleBorder::Arrow::TOP_RIGHT;
+    case Arrow::BOTTOM_LEFT:
+      return views::BubbleBorder::Arrow::BOTTOM_LEFT;
+    case Arrow::BOTTOM_RIGHT:
+      return views::BubbleBorder::Arrow::BOTTOM_RIGHT;
+    case Arrow::LEFT_TOP:
+      return views::BubbleBorder::Arrow::LEFT_TOP;
+    case Arrow::RIGHT_TOP:
+      return views::BubbleBorder::Arrow::RIGHT_TOP;
+    case Arrow::LEFT_BOTTOM:
+      return views::BubbleBorder::Arrow::LEFT_BOTTOM;
+    case Arrow::RIGHT_BOTTOM:
+      return views::BubbleBorder::Arrow::RIGHT_BOTTOM;
+    case Arrow::TOP_CENTER:
+      return views::BubbleBorder::Arrow::TOP_CENTER;
+    case Arrow::BOTTOM_CENTER:
+      return views::BubbleBorder::Arrow::BOTTOM_CENTER;
+    case Arrow::LEFT_CENTER:
+      return views::BubbleBorder::Arrow::LEFT_CENTER;
+    case Arrow::RIGHT_CENTER:
+      return views::BubbleBorder::Arrow::RIGHT_CENTER;
+  }
+}
+
+}  // namespace
 
 FeaturePromoControllerViews::FeaturePromoControllerViews(
     BrowserView* browser_view,
@@ -292,7 +328,7 @@ FeaturePromoControllerViews::GetBaseCreateParams(
   create_params.focus_on_create = params.focus_on_create;
   create_params.persist_on_blur = params.persist_on_blur;
 
-  create_params.arrow = params.arrow;
+  create_params.arrow = MapToBubbleBorderArrow(params.arrow);
   create_params.preferred_width = params.preferred_width;
 
   if (params.allow_snooze) {
