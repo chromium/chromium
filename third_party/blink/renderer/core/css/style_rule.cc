@@ -423,6 +423,7 @@ MutableCSSPropertyValueSet& StyleRuleFontFace::MutableProperties() {
 
 void StyleRuleFontFace::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(properties_);
+  visitor->Trace(layer_);
   StyleRuleBase::TraceAfterDispatch(visitor);
 }
 

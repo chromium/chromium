@@ -73,8 +73,8 @@ CounterStyleMap& ScopedStyleResolver::EnsureCounterStyleMap() {
 }
 
 void ScopedStyleResolver::AddFontFaceRules(const RuleSet& rule_set) {
-  // FIXME(BUG 72461): We don't add @font-face rules of scoped style sheets for
-  // the moment.
+  // TODO(crbug.com/336876): We don't add @font-face rules of scoped style
+  // sheets for the moment.
   if (!GetTreeScope().RootNode().IsDocumentNode())
     return;
 
@@ -84,7 +84,8 @@ void ScopedStyleResolver::AddFontFaceRules(const RuleSet& rule_set) {
   const HeapVector<Member<StyleRuleFontFace>> font_face_rules =
       rule_set.FontFaceRules();
   for (auto& font_face_rule : font_face_rules) {
-    if (FontFace* font_face = FontFace::Create(&document, font_face_rule))
+    if (FontFace* font_face = FontFace::Create(&document, font_face_rule,
+                                               false /* is_user_style */))
       css_font_selector->GetFontFaceCache()->Add(font_face_rule, font_face);
   }
   if (font_face_rules.size())

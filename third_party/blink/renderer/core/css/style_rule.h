@@ -172,10 +172,14 @@ class CORE_EXPORT StyleRuleFontFace : public StyleRuleBase {
     return MakeGarbageCollected<StyleRuleFontFace>(*this);
   }
 
+  void SetCascadeLayer(const CascadeLayer* layer) { layer_ = layer; }
+  const CascadeLayer* GetCascadeLayer() const { return layer_; }
+
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
   Member<CSSPropertyValueSet> properties_;  // Cannot be null.
+  Member<const CascadeLayer> layer_;
 };
 
 class StyleRulePage : public StyleRuleBase {

@@ -27,8 +27,11 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "third_party/blink/renderer/core/css/cascade_layer_map.h"
 #include "third_party/blink/renderer/core/css/css_font_face.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
+#include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_face_creation_params.h"
@@ -238,12 +241,52 @@ bool FontFaceList::IsEmpty() const {
   return css_connected_face_.IsEmpty() && non_css_connected_face_.IsEmpty();
 }
 
-void FontFaceList::Insert(FontFace* font_face, bool css_connected) {
-  if (css_connected) {
-    css_connected_face_.insert(font_face);
-  } else {
-    non_css_connected_face_.insert(font_face);
+namespace {
+
+bool CascadePriorityHigherThan(const FontFace& new_font_face,
+                               const FontFace& existing_font_face) {
+  // We should reach here only for CSS-connected font faces, which must have an
+  // owner document.
+  DCHECK(new_font_face.GetDocument());
+  DCHECK_EQ(new_font_face.GetDocument(), existing_font_face.GetDocument());
+  DCHECK(new_font_face.GetStyleRule());
+  DCHECK(existing_font_face.GetStyleRule());
+  if (new_font_face.IsUserStyle() != existing_font_face.IsUserStyle())
+    return existing_font_face.IsUserStyle();
+  const CascadeLayerMap* map = nullptr;
+  if (new_font_face.IsUserStyle()) {
+    map =
+        new_font_face.GetDocument()->GetStyleEngine().GetUserCascadeLayerMap();
+  } else if (new_font_face.GetDocument()->GetScopedStyleResolver()) {
+    map = new_font_face.GetDocument()
+              ->GetScopedStyleResolver()
+              ->GetCascadeLayerMap();
   }
+  if (!map)
+    return true;
+  return map->CompareLayerOrder(
+             existing_font_face.GetStyleRule()->GetCascadeLayer(),
+             new_font_face.GetStyleRule()->GetCascadeLayer()) <= 0;
+}
+
+}  // namespace
+
+void FontFaceList::Insert(FontFace* font_face, bool css_connected) {
+  if (!css_connected) {
+    non_css_connected_face_.insert(font_face);
+    return;
+  }
+
+  auto it = css_connected_face_.end();
+  while (it != css_connected_face_.begin()) {
+    auto prev = it;
+    --prev;
+    if (CascadePriorityHigherThan(*font_face, **prev))
+      break;
+    it = prev;
+  }
+
+  css_connected_face_.InsertBefore(it, font_face);
 }
 
 bool FontFaceList::Erase(FontFace* font_face) {

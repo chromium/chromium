@@ -414,6 +414,7 @@ void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
                       container_query, cascade_layer);
       }
     } else if (auto* font_face_rule = DynamicTo<StyleRuleFontFace>(rule)) {
+      font_face_rule->SetCascadeLayer(cascade_layer);
       AddFontFaceRule(font_face_rule);
     } else if (auto* keyframes_rule = DynamicTo<StyleRuleKeyframes>(rule)) {
       keyframes_rule->SetCascadeLayer(cascade_layer);

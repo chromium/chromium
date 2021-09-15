@@ -191,7 +191,8 @@ FontFace* FontFace::Create(ExecutionContext* context,
 }
 
 FontFace* FontFace::Create(Document* document,
-                           const StyleRuleFontFace* font_face_rule) {
+                           const StyleRuleFontFace* font_face_rule,
+                           bool is_user_style) {
   const CSSPropertyValueSet& properties = font_face_rule->Properties();
 
   // Obtain the font-family property and the src property. Both must be defined.
@@ -203,8 +204,8 @@ FontFace* FontFace::Create(Document* document,
   if (!src || !src->IsValueList())
     return nullptr;
 
-  FontFace* font_face =
-      MakeGarbageCollected<FontFace>(document->GetExecutionContext());
+  FontFace* font_face = MakeGarbageCollected<FontFace>(
+      document->GetExecutionContext(), font_face_rule, is_user_style);
   font_face->SetFamilyValue(*family);
 
   if (font_face->SetPropertyFromStyle(properties,
@@ -237,8 +238,13 @@ FontFace* FontFace::Create(Document* document,
   return nullptr;
 }
 
-FontFace::FontFace(ExecutionContext* context)
-    : ExecutionContextClient(context), status_(kUnloaded) {}
+FontFace::FontFace(ExecutionContext* context,
+                   const StyleRuleFontFace* style_rule,
+                   bool is_user_style)
+    : ExecutionContextClient(context),
+      status_(kUnloaded),
+      style_rule_(style_rule),
+      is_user_style_(is_user_style) {}
 
 FontFace::FontFace(ExecutionContext* context,
                    const AtomicString& family,
@@ -879,6 +885,7 @@ void FontFace::Trace(Visitor* visitor) const {
   visitor->Trace(loaded_property_);
   visitor->Trace(css_font_face_);
   visitor->Trace(callbacks_);
+  visitor->Trace(style_rule_);
   ScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
 }
@@ -922,6 +929,11 @@ FontMetricsOverride FontFace::GetFontMetricsOverride() const {
 float FontFace::GetSizeAdjust() const {
   DCHECK(size_adjust_);
   return To<CSSPrimitiveValue>(*size_adjust_).GetFloatValue() / 100;
+}
+
+Document* FontFace::GetDocument() const {
+  auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext());
+  return window ? window->document() : nullptr;
 }
 
 }  // namespace blink

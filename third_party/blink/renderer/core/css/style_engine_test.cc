@@ -4615,4 +4615,121 @@ TEST_F(StyleEngineTest, UserAndAuthorScrollTimelineOverrideWithCascadeLayers) {
   Element* target = GetDocument().getElementById("target");
   EXPECT_EQ(150, target->OffsetWidth());
 }
+
+TEST_F(StyleEngineSimTest, UserFontFaceOverrideWithCascadeLayers) {
+  ScopedCSSCascadeLayersForTest layer_enabled_scope(true);
+  ScopedCSSFontFaceSizeAdjustForTest size_adjust_enabled_scope(true);
+
+  SimRequest main_resource("https://example.com", "text/html");
+  SimSubresourceRequest ahem_resource("https://example.com/ahem.woff2",
+                                      "font/woff2");
+
+  LoadURL("https://example.com");
+
+  main_resource.Complete(R"HTML(
+    <!doctype html>
+    <div id=target>Test</div>
+  )HTML");
+
+  auto* user_sheet = MakeGarbageCollected<StyleSheetContents>(
+      MakeGarbageCollected<CSSParserContext>(GetDocument()));
+  user_sheet->ParseString(R"CSS(
+    @layer base, override;
+
+    @layer override {
+      @font-face {
+        font-family: custom-font;
+        src: url('ahem.woff2') format('woff2');
+      }
+    }
+
+    @layer base {
+      @font-face {
+        font-family: custom-font;
+        src: url('ahem.woff2') format('woff2');
+        size-adjust: 200%; /* To distinguish with the other @font-face */
+      }
+    }
+
+    #target {
+      font: 20px/1 custom-font;
+      width: min-content;
+    }
+  )CSS");
+  StyleSheetKey key("user");
+  GetDocument().GetStyleEngine().InjectSheet(key, user_sheet,
+                                             WebDocument::kUserOrigin);
+
+  Compositor().BeginFrame();
+
+  ahem_resource.Complete(
+      test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2"))
+          ->CopyAs<Vector<char>>());
+
+  test::RunPendingTasks();
+  Compositor().BeginFrame();
+
+  Element* target = GetDocument().getElementById("target");
+  EXPECT_EQ(80, target->OffsetWidth());
+}
+
+TEST_F(StyleEngineSimTest, UserAndAuthorFontFaceOverrideWithCascadeLayers) {
+  ScopedCSSCascadeLayersForTest layer_enabled_scope(true);
+  ScopedCSSFontFaceSizeAdjustForTest size_adjust_enabled_scope(true);
+
+  SimRequest main_resource("https://example.com", "text/html");
+  SimSubresourceRequest ahem_resource("https://example.com/ahem.woff2",
+                                      "font/woff2");
+
+  LoadURL("https://example.com");
+
+  main_resource.Complete(R"HTML(
+    <!doctype html>
+    <style>
+      @font-face {
+        font-family: custom-font;
+        src: url('ahem.woff2') format('woff2');
+      }
+
+      #target {
+        font: 20px/1 custom-font;
+        width: min-content;
+      }
+    </style>
+    <div id=target>Test</div>
+  )HTML");
+
+  auto* user_sheet = MakeGarbageCollected<StyleSheetContents>(
+      MakeGarbageCollected<CSSParserContext>(GetDocument()));
+  user_sheet->ParseString(R"CSS(
+    @layer base, override;
+
+    @layer override {
+      @font-face {
+        font-family: custom-font;
+        src: url('ahem.woff2') format('woff2');
+        size-adjust: 200%; /* To distinguish with the other @font-face */
+      }
+    }
+
+  )CSS");
+  StyleSheetKey key("user");
+  GetDocument().GetStyleEngine().InjectSheet(key, user_sheet,
+                                             WebDocument::kUserOrigin);
+
+  Compositor().BeginFrame();
+
+  ahem_resource.Complete(
+      test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2"))
+          ->CopyAs<Vector<char>>());
+
+  test::RunPendingTasks();
+  Compositor().BeginFrame();
+
+  // User-defined font faces should not override author-defined font faces
+  // regardless of cascade layers.
+  Element* target = GetDocument().getElementById("target");
+  EXPECT_EQ(80, target->OffsetWidth());
+}
+
 }  // namespace blink
