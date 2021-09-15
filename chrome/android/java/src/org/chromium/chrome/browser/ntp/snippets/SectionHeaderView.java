@@ -164,22 +164,27 @@ public class SectionHeaderView extends LinearLayout {
             mEnabledIndicatorDrawable = mTabLayout.getTabSelectedIndicator();
         }
 
-        int touchPadding;
+        int touchSize;
         // If we are animating padding, add additional touch area around the menu.
         if (mAnimatePaddingWhenDisabled) {
-            touchPadding =
-                    getResources().getDimensionPixelSize(R.dimen.feed_v2_header_menu_touch_padding);
+            touchSize =
+                    getResources().getDimensionPixelSize(R.dimen.feed_v2_header_menu_touch_size);
         } else {
-            touchPadding = 0;
+            touchSize = 0;
         }
+
+        // TODO(crbug.com/1249623): maybe remove post.
         post(() -> {
             Rect rect = new Rect();
             mMenuView.getHitRect(rect);
 
-            rect.top -= touchPadding;
-            rect.bottom += touchPadding;
-            rect.left -= touchPadding;
-            rect.right += touchPadding;
+            int halfWidthDelta = Math.max((touchSize - mMenuView.getWidth()) / 2, 0);
+            int halfHeightDelta = Math.max((touchSize - mMenuView.getHeight()) / 2, 0);
+
+            rect.left -= halfWidthDelta;
+            rect.right += halfWidthDelta;
+            rect.top -= halfHeightDelta;
+            rect.bottom += halfHeightDelta;
 
             setTouchDelegate(new TouchDelegate(rect, mMenuView));
         });
@@ -341,8 +346,8 @@ public class SectionHeaderView extends LinearLayout {
     /** Collapse the header to indicate the section has been disabled. */
     void collapseHeader() {
         if (mAnimatePaddingWhenDisabled) {
-            int finalHorizontalPadding = getResources().getDimensionPixelSize(
-                    R.dimen.feed_v2_header_menu_disabled_padding);
+            int finalHorizontalPadding =
+                    getResources().getDimensionPixelSize(R.dimen.feed_v2_header_disabled_padding);
             ValueAnimator animator = ValueAnimator.ofInt(getPaddingLeft(), finalHorizontalPadding);
             animator.addUpdateListener((ValueAnimator animation) -> {
                 int horizontalPadding = (Integer) animation.getAnimatedValue();
