@@ -27,6 +27,7 @@ import org.chromium.url.GURL;
 public class LongScreenshotsCompositor {
     private PlayerCompositorDelegate mDelegate;
     private Callback<Integer> mCompositorCallback;
+    private int mCompositedWidth;
 
     private static PlayerCompositorDelegate.Factory sCompositorDelegateFactory =
             new CompositorDelegateFactory();
@@ -65,6 +66,9 @@ public class LongScreenshotsCompositor {
     protected void onCompositorReady(UnguessableToken rootFrameGuid, UnguessableToken[] frameGuids,
             int[] frameContentSize, int[] scrollOffsets, int[] subFramesCount,
             UnguessableToken[] subFrameGuids, int[] subFrameClipRects, long nativeAxTree) {
+        mCompositedWidth = (frameContentSize != null && frameContentSize.length >= 2)
+                ? frameContentSize[0]
+                : 0;
         mCompositorCallback.onResult(CompositorStatus.OK);
     }
 
@@ -76,9 +80,10 @@ public class LongScreenshotsCompositor {
      * @param bitmapCallback Called when a bitmap was successfully generated.
      * @return id for the request.
      */
-    public int requestBitmap(Rect rect, Runnable errorCallback, Callback<Bitmap> bitmapCallback) {
+    public int requestBitmap(
+            Rect rect, float scaleFactor, Runnable errorCallback, Callback<Bitmap> bitmapCallback) {
         // Check that the rect is within the bounds.
-        return mDelegate.requestBitmap(rect, 1, bitmapCallback, errorCallback);
+        return mDelegate.requestBitmap(rect, scaleFactor, bitmapCallback, errorCallback);
     }
 
     public void destroy() {
@@ -86,6 +91,10 @@ public class LongScreenshotsCompositor {
             mDelegate.destroy();
             mDelegate = null;
         }
+    }
+
+    public int getWidth() {
+        return mCompositedWidth;
     }
 
     static class CompositorDelegateFactory implements PlayerCompositorDelegate.Factory {
