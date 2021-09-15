@@ -78,9 +78,9 @@ It should be obvious that the above code is both shorter and more immediately cl
 
 ### API Reference
 
-Currently AnimationBuilder operates only on a LayerOwner or directly on a Layer. Since views::View is also a LayerOwner, it will also operate directly on Views (once the view has enabled painting to a layer).
+Currently AnimationBuilder operates only on a LayerOwner or directly on a Layer. Since views::View is also a LayerOwner, it will also operate directly on Views. To animate a View, the View must first paint to it’s layer by calling View::SetPaintToLayer.
 
-The AnimationBuilder is a scoped object. It is intended to be constructed within a given scope such that as the destructor is run, the animation primitives are constructed and scheduled. This can be done as a single statement (as shown above) or across multiple statements with local temps.
+The AnimationBuilder is a scoped object that starts the animations after the AnimationBuilder goes out of scope. This can be done as a single statement (as shown above) or across multiple statements with local temps.
 
 NOTE: It is generally _not_ recommended to hold onto an AnimationBuilder instance beyond the current scope or store it in instance variables. This could lead to UAFs or other undesirable behaviors. Simply construct the animation at the point at which it is needed.
 
@@ -91,9 +91,15 @@ To use AnimationBuilder include the following header:
 #include "ui/views/animation/animation_builder.h"
 ```
 
+The AnimationBuilder consists of the main object along with an inner AnimationSequenceBlock.
 
-The AnimationBuilder consists of the main object along with an inner AnimationSequenceBlock which provides most of the primitives.
+An AnimationSequenceBlock is a single unit of a larger animation sequence, which has a start time, duration, and zero or more (target, property) animations.
+* There may be multiple properties animating on a single target, and/or multiple targets animating, but the same property on the same target may only be animated at most once per block. Animations can be added by calling SetXXX().
+* Calling At(), Offset(), or Then() creates a new block. All animations in the same AnimationSequenceBlock will run in parallel. Create multiple AnimationSequenceBlocks to run animations in sequence.
 
+Calls on AnimationBuilder affect the whole animations and calls on AnimationSequenceBlock affect only that particular block.
+
+When setting callbacks for the animations note that the AnimationBuilder’s observer that calls these callbacks may outlive the callback's parameters. Developers may need to use weak pointers or force animations to be cancelled in the object’s destructor to prevent accessing destroyed objects.
 
 ``` cpp
 class VIEWS_EXPORT AnimationBuilder {
@@ -102,8 +108,21 @@ class VIEWS_EXPORT AnimationBuilder {
   ~AnimationBuilder();
 
   // Options for the whole animation
+
   AnimationBuilder& SetPreemptionStrategy(
       ui::LayerAnimator::PreemptionStrategy preemption_strategy);
+  // Called when the animation starts.
+  AnimationBuilder& OnStarted(base::OnceClosure callback);
+  // Called when the animation ends. Not called if animation is aborted.
+  AnimationBuilder& OnEnded(base::OnceClosure callback);
+  // Called when a sequence repetition ends and will repeat. Not called if
+  // sequence is aborted.
+  AnimationBuilder& OnWillRepeat(base::RepeatingClosure callback);
+  // Called if animation is aborted for any reason. Should never do anything
+  // that may cause another animation to be started.
+  AnimationBuilder& OnAborted(base::OnceClosure callback);
+  // Called when the animation is scheduled.
+  AnimationBuilder& OnScheduled(base::OnceClosure callback);
 
   // Creates a new sequence (that optionally repeats).
   AnimationSequenceBlock Once();
@@ -116,12 +135,7 @@ class VIEWS_EXPORT AnimationBuilder {
   std::unique_ptr<AnimationAbortHandle> GetAbortHandle();
 };
 
-// An animation sequence block is a single unit of a larger animation sequence,
-// which has a start time, duration, and zero or more (target, property)
-// animations. There may be multiple properties animating on a single target,
-// and/or multiple targets animating, but the same property on the same target
-// may only be animated at most once per block. Animations can be added by
-// calling SetXXX(). Calling At(), Offset(), or Then() create a new block.
+
 class VIEWS_EXPORT AnimationSequenceBlock {
  public:
   AnimationSequenceBlock(base::PassKey<AnimationBuilder> builder_key,
@@ -137,73 +151,38 @@ class VIEWS_EXPORT AnimationSequenceBlock {
 
   // Adds animation elements to this block.  Each (target, property) pair may be
   // added at most once.
-  AnimationSequenceBlock& SetBounds(
-      ui::Layer* target,
-      const gfx::Rect& bounds,
-      gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
+  // These property setter methods can also take in a ui::Layer as the target.
   AnimationSequenceBlock& SetBounds(
       ui::LayerOwner* target,
       const gfx::Rect& bounds,
-      gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
-  AnimationSequenceBlock& SetBrightness(
-      ui::Layer* target,
-      float brightness,
       gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
   AnimationSequenceBlock& SetBrightness(
       ui::LayerOwner* target,
       float brightness,
       gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
   AnimationSequenceBlock& SetClipRect(
-      ui::Layer* target,
-      const gfx::Rect& clip_rect,
-      gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
-  AnimationSequenceBlock& SetClipRect(
       ui::LayerOwner* target,
       const gfx::Rect& clip_rect,
-      gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
-  AnimationSequenceBlock& SetColor(
-      ui::Layer* target,
-      SkColor color,
       gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
   AnimationSequenceBlock& SetColor(
       ui::LayerOwner* target,
       SkColor color,
       gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
   AnimationSequenceBlock& SetGrayscale(
-      ui::Layer* target,
-      float grayscale,
-      gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
-  AnimationSequenceBlock& SetGrayscale(
       ui::LayerOwner* target,
       float grayscale,
-      gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
-  AnimationSequenceBlock& SetOpacity(
-      ui::Layer* target,
-      float opacity,
       gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
   AnimationSequenceBlock& SetOpacity(
       ui::LayerOwner* target,
       float opacity,
       gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
   AnimationSequenceBlock& SetTransform(
-      ui::Layer* target,
-      gfx::Transform transform,
-      gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
-  AnimationSequenceBlock& SetTransform(
       ui::LayerOwner* target,
       gfx::Transform transform,
       gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
   AnimationSequenceBlock& SetRoundedCorners(
-      ui::Layer* target,
-      const gfx::RoundedCornersF& rounded_corners,
-      gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
-  AnimationSequenceBlock& SetRoundedCorners(
       ui::LayerOwner* target,
       const gfx::RoundedCornersF& rounded_corners,
-      gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
-  AnimationSequenceBlock& SetVisibility(
-      ui::Layer* target,
-      bool visible,
       gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
   AnimationSequenceBlock& SetVisibility(
       ui::LayerOwner* target,
@@ -214,19 +193,6 @@ class VIEWS_EXPORT AnimationSequenceBlock {
   AnimationSequenceBlock At(base::TimeDelta since_sequence_start);
   AnimationSequenceBlock Offset(base::TimeDelta since_last_block_start);
   AnimationSequenceBlock Then();
-
-  // Called when the animation starts for this sequence block.
-  AnimationSequenceBlock& OnStarted(base::OnceClosure callback);
-  // Called when the animation ends. Not called if animation is aborted.
-  AnimationSequenceBlock& OnEnded(base::OnceClosure callback);
-  // Called when a sequence repetition ends and will repeat. Not called if
-  // sequence is aborted.
-  AnimationSequenceBlock& OnWillRepeat(base::RepeatingClosure callback);
-  // Called if animation is aborted for any reason. Should never do anything
-  // that may cause another animation to be started.
-  AnimationSequenceBlock& OnAborted(base::OnceClosure callback);
-  // Called when the animation is scheduled.
-  AnimationSequenceBlock& OnScheduled(base::OnceClosure callback);
 };
 ```
 
