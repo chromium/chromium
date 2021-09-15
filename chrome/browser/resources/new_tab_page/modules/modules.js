@@ -75,7 +75,8 @@ export class ModulesElement extends mixinBehaviors
       /** @private */
       dragEnabled_: {
         type: Boolean,
-        value: loadTimeData.getBoolean('modulesDragAndDropEnabled'),
+        value: () => loadTimeData.getBoolean('modulesDragAndDropEnabled'),
+        reflectToAttribute: true,
       },
     };
   }
@@ -131,10 +132,11 @@ export class ModulesElement extends mixinBehaviors
       modules.forEach(module => {
         const moduleWrapper = new ModuleWrapperElement();
         moduleWrapper.module = module;
-        moduleWrapper.setAttribute('draggable', this.dragEnabled_);
-        moduleWrapper.addEventListener('mousedown', event => {
-          this.onDragStart_(/** @type {!DragEvent} */ (event));
-        });
+        if (this.dragEnabled_) {
+          moduleWrapper.addEventListener('mousedown', event => {
+            this.onDragStart_(/** @type {!DragEvent} */ (event));
+          });
+        }
         moduleWrapper.addEventListener('dismiss-module', event => {
           this.onDismissModule_(
               /**

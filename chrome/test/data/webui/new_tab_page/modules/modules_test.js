@@ -85,6 +85,8 @@ suite('NewTabPageModulesModulesTest', () => {
       }
       assertNotStyle(moduleWrappers[1], 'display', 'none');
       assertStyle(moduleWrapperContainers[1], 'display', 'none');
+      assertNotStyle(moduleWrappers[0], 'cursor', 'grab');
+      assertNotStyle(moduleWrappers[1], 'cursor', 'grab');
       const histogram = 'NewTabPage.Modules.EnabledOnNTPLoad';
       assertEquals(1, metrics.count(`${histogram}.foo`, visible));
       assertEquals(1, metrics.count(`${histogram}.bar`, false));
@@ -287,6 +289,9 @@ suite('NewTabPageModulesModulesTest', () => {
       assertTrue(!!firstModule);
       assertTrue(!!secondModule);
       assertTrue(!!thirdModule);
+      assertStyle(firstModule, 'cursor', 'grab');
+      assertStyle(secondModule, 'cursor', 'grab');
+      assertStyle(thirdModule, 'cursor', 'grab');
 
       const firstPositionRect = moduleWrappers[0].getBoundingClientRect();
       const secondPositionRect = moduleWrappers[1].getBoundingClientRect();
