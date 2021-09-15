@@ -21,15 +21,13 @@ TEST(MemoryInfraBackgroundAllowlist, Allowlist) {
   EXPECT_FALSE(IsMemoryAllocatorDumpNameInAllowlist("shared_memory/GHIJK"));
 
   // Test a couple that contain pointer values.
-  EXPECT_TRUE(IsMemoryAllocatorDumpNameInAllowlist("net/url_request_context"));
+  EXPECT_TRUE(IsMemoryAllocatorDumpNameInAllowlist("blink_gc/main/heap"));
   EXPECT_TRUE(IsMemoryAllocatorDumpNameInAllowlist(
-      "net/url_request_context/app_request/0x123/cookie_monster"));
-  EXPECT_TRUE(
-      IsMemoryAllocatorDumpNameInAllowlist("net/http_network_session_0x123"));
+      "blink_gc/workers/worker_0x123/heap"));
+  EXPECT_TRUE(IsMemoryAllocatorDumpNameInAllowlist(
+      "blink_gc/workers/heap/worker_0x123"));
   EXPECT_FALSE(
-      IsMemoryAllocatorDumpNameInAllowlist("net/http_network_session/0x123"));
-  EXPECT_TRUE(IsMemoryAllocatorDumpNameInAllowlist(
-      "net/http_network_session_0x123/quic_stream_factory"));
+      IsMemoryAllocatorDumpNameInAllowlist("blink_gc/main/heap/0x123"));
 }
 
 }  // namespace trace_event

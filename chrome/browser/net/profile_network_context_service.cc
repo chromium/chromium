@@ -646,8 +646,6 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
       ->ConfigureDefaultNetworkContextParams(network_context_params,
                                              cert_verifier_creation_params);
 
-  network_context_params->context_name = std::string("main");
-
   network_context_params->accept_language = ComputeAcceptLanguage();
   network_context_params->enable_referrers = enable_referrers_.GetValue();
 

@@ -256,8 +256,6 @@ CastNetworkContexts::CreateSystemNetworkContextParams() {
       network::mojom::NetworkContextParams::New();
   ConfigureDefaultNetworkContextParams(network_context_params.get());
 
-  network_context_params->context_name = std::string("system");
-
   network_context_params->cert_verifier_params = content::GetCertVerifierParams(
       cert_verifier::mojom::CertVerifierCreationParams::New());
 

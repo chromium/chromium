@@ -109,9 +109,6 @@ network::mojom::NetworkContextParamsPtr
 SystemNetworkContextManager::CreateSystemNetworkContextManagerParams() {
   network::mojom::NetworkContextParamsPtr network_context_params =
       CreateDefaultNetworkContextParams(user_agent_);
-
-  network_context_params->context_name = std::string("system");
-
   return network_context_params;
 }
 

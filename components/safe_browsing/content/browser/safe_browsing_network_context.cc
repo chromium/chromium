@@ -115,8 +115,6 @@ class SafeBrowsingNetworkContext::SharedURLLoaderFactory
     network::mojom::NetworkContextParamsPtr network_context_params =
         network_context_params_factory_.Run();
 
-    network_context_params->context_name = std::string("safe_browsing");
-
     network_context_params->http_cache_enabled = false;
 
     network_context_params->file_paths =

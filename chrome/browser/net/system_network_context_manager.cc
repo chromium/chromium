@@ -775,8 +775,6 @@ SystemNetworkContextManager::CreateNetworkContextParams() {
   network::mojom::NetworkContextParamsPtr network_context_params =
       CreateDefaultNetworkContextParams();
 
-  network_context_params->context_name = std::string("system");
-
   network_context_params->enable_referrers = enable_referrers_.GetValue();
 
   network_context_params->http_cache_enabled = false;
