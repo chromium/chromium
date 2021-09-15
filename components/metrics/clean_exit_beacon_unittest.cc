@@ -141,6 +141,9 @@ TEST_F(CleanExitBeaconTest,
                                        1);
 }
 
+#if !defined(OS_ANDROID)
+// TODO(crbug/1248239): Run these tests on Android once the Extended Variations
+// Safe Mode experiment is enabled on Clank.
 INSTANTIATE_TEST_SUITE_P(
     All,
     CleanExitBeaconParameterizedTest,
@@ -252,6 +255,49 @@ TEST_F(CleanExitBeaconTest, CtorWithCrashAndVariationsFile) {
   histogram_tester_.ExpectUniqueSample("Variations.SafeMode.Streak.Crashes",
                                        updated_num_crashes, 1);
 }
+#endif  // !defined(OS_ANDROID)
+
+#if defined(OS_ANDROID)
+// TODO(crbug/1248239): Remove this test once the Extended Variations Safe Mode
+// experiment is enabled on Clank.
+
+// Verify that the beacon file, if any, is ignored on Android.
+TEST_F(CleanExitBeaconTest, BeaconFileIgnoredOnAndroid) {
+  // Set up the beacon file such that the previous session did not exit cleanly
+  // and the running crash streak is 2. The file (and thus these values) are
+  // expected to be ignored.
+  const base::FilePath user_data_dir_path = user_data_dir_.GetPath();
+  const base::FilePath temp_beacon_file_path =
+      user_data_dir_path.Append(variations::kVariationsFilename);
+  const int last_session_num_crashes = 2;
+  const std::string contents = base::StringPrintf(
+      "{\n"
+      "  \"user_experience_metrics.stability.exited_cleanly\": false,\n"
+      "  \"variations_crash_streak\": %s\n"
+      "}",
+      base::NumberToString(last_session_num_crashes).data());
+  ASSERT_LT(0, base::WriteFile(temp_beacon_file_path, contents.data()));
+
+  // Set up the PrefService such that the previous session exited cleanly and
+  // the running crash streak is 0. The PrefService (and thus these values) are
+  // expected to be used.
+  CleanExitBeacon::SetStabilityExitedCleanlyForTesting(&prefs_, true);
+  const int expected_num_crashes = 0;
+  prefs_.SetInteger(variations::prefs::kVariationsCrashStreak,
+                    expected_num_crashes);
+
+  CleanExitBeacon clean_exit_beacon(kDummyWindowsRegistryKey,
+                                    user_data_dir_path, &prefs_);
+
+  // Verify that (a) the GotVariationsFileContents metric was not emitted and
+  // (b) the PrefService was used (and not the beacon file).
+  histogram_tester_.ExpectTotalCount(
+      "Variations.ExtendedSafeMode.GotVariationsFileContents", 0);
+  EXPECT_TRUE(clean_exit_beacon.exited_cleanly());
+  histogram_tester_.ExpectUniqueSample("Variations.SafeMode.Streak.Crashes",
+                                       expected_num_crashes, 1);
+}
+#endif  // defined(OS_ANDROID)
 
 // Verify that attempting to write synchronously is a no-op for clients that do
 // not belong to specific Extended Variations Safe Mode experiment groups.
