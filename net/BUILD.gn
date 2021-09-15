@@ -1782,6 +1782,8 @@ bundle_data("test_support_bundle_data") {
   visibility = [ ":test_support" ]
   testonly = true
   sources = [
+    "data/quic_http_response_cache_data/test.example.com/index.html",
+    "data/quic_http_response_cache_data/test.example.com/map.html",
     "data/quic_http_response_cache_data_with_push/test.example.com/favicon.ico",
     "data/quic_http_response_cache_data_with_push/test.example.com/index.html",
     "data/quic_http_response_cache_data_with_push/test.example.com/index2.html",
