@@ -8964,6 +8964,26 @@
             ]
         }
     ],
+    "UserMediaCaptureOnFocus": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "UserMediaCaptureOnFocus",
+                    "enable_features": [
+                        "UserMediaCaptureOnFocus"
+                    ]
+                }
+            ]
+        }
+    ],
     "UsernameFirstFlow": [
         {
             "platforms": [
