@@ -15,7 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia.h"
@@ -285,9 +284,6 @@ class VIEWS_EXPORT MenuItemView : public View {
   }
   const std::u16string& accessible_name() const { return accessible_name_; }
 
-  // Called when the drop status of this item changes.
-  void OnDropStatusChanged();
-
   // Paints the menu item.
   void OnPaint(gfx::Canvas* canvas) override;
 
@@ -383,9 +379,6 @@ class VIEWS_EXPORT MenuItemView : public View {
 
   // View:
   void ChildPreferredSizeChanged(View* child) override;
-  void OnThemeChanged() override;
-  void ViewHierarchyChanged(
-      const ViewHierarchyChangedDetails& details) override;
 
   // Returns the preferred size (and padding) of any children.
   virtual gfx::Size GetChildPreferredSize() const;
@@ -400,14 +393,7 @@ class VIEWS_EXPORT MenuItemView : public View {
   friend class test::TestMenuItemViewNotShown;  // for access to |submenu_|;
   friend class TestMenuItemView;  // For access to AddEmptyMenus();
 
-  enum class PaintMode { kNormal, kForDrag };
-
-  // The set of colors used in painting the MenuItemView.
-  struct Colors {
-    SkColor fg_color = SK_ColorTRANSPARENT;
-    SkColor icon_color = SK_ColorTRANSPARENT;
-    SkColor minor_fg_color = SK_ColorTRANSPARENT;
-  };
+  enum class PaintButtonMode { kNormal, kForDrag };
 
   // Calculates all sizes that we can from the OS.
   //
@@ -442,17 +428,15 @@ class VIEWS_EXPORT MenuItemView : public View {
   // necessary.
   void AdjustBoundsForRTLUI(gfx::Rect* rect) const;
 
-  // Paints the MenuItemView for a drag operation.
-  void PaintForDrag(gfx::Canvas* canvas);
+  // Actual paint implementation. If mode is kForDrag, portions of the menu are
+  // not rendered.
+  void PaintButton(gfx::Canvas* canvas, PaintButtonMode mode);
 
-  // Actual paint implementation.
-  void OnPaintImpl(gfx::Canvas* canvas, PaintMode mode);
-
-  // Helper function for OnPaintImpl() that is responsible for drawing the
-  // background.
+  // Helper function for PaintButton(), draws the background for the button if
+  // appropriate.
   void PaintBackground(gfx::Canvas* canvas,
-                       PaintMode mode,
-                       bool paint_as_selected);
+                       PaintButtonMode mode,
+                       bool render_selection);
 
   // Paints the right-side icon and text.
   void PaintMinorIconAndText(gfx::Canvas* canvas, SkColor color);
@@ -470,10 +454,7 @@ class VIEWS_EXPORT MenuItemView : public View {
 
   // Returns the text color for the current state.  |minor| specifies if the
   // minor text or the normal text is desired.
-  SkColor GetTextColor(bool minor, bool paint_as_selected) const;
-
-  // Returns the colors used in painting.
-  Colors CalculateColors(bool paint_as_selected) const;
+  SkColor GetTextColor(bool minor, bool render_selection) const;
 
   // Returns the accessible name for this menu item.
   std::u16string GetAccessibleName() const;
@@ -525,15 +506,6 @@ class VIEWS_EXPORT MenuItemView : public View {
   void invalidate_dimensions() { dimensions_.height = 0; }
   bool is_dimensions_valid() const { return dimensions_.height > 0; }
 
-  // Calls UpdateSelectionBasedState() if the the selection state changed.
-  void UpdateSelectionBasedStateIfChanged(PaintMode mode);
-
-  // Updates any state that may changed based on the selection state.
-  void UpdateSelectionBasedState(bool should_paint_as_selected);
-
-  // Returns true if the MenuItemView should be painted as selected.
-  bool ShouldPaintAsSelected(PaintMode mode) const;
-
   // The delegate. This is only valid for the root menu item. You shouldn't
   // use this directly, instead use GetDelegate() which walks the tree as
   // as necessary.
@@ -554,8 +526,6 @@ class VIEWS_EXPORT MenuItemView : public View {
 
   // Whether we're selected.
   bool selected_ = false;
-
-  bool last_paint_as_selected_ = false;
 
   // Whether the submenu area of an ACTIONABLE_SUBMENU is selected.
   bool submenu_area_of_actionable_submenu_selected_ = false;

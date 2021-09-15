@@ -8,6 +8,7 @@
 
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
+#include "ui/views/test/test_views_delegate.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
