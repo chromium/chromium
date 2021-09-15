@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.autofill;
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -91,10 +90,9 @@ public class AutofillExpirationDateFixFlowPrompt
     private AutofillExpirationDateFixFlowPrompt(Context context,
             AutofillExpirationDateFixFlowPromptDelegate delegate, String title, int drawableId,
             String cardLabel, String confirmButtonLabel, boolean filledConfirmButton) {
-        super(delegate);
+        super(context, delegate, R.layout.autofill_expiration_date_fix_flow, title, drawableId,
+                confirmButtonLabel, filledConfirmButton);
         mDelegate = delegate;
-        LayoutInflater inflater = LayoutInflater.from(context);
-        mDialogView = inflater.inflate(R.layout.autofill_expiration_date_fix_flow, null);
         mErrorMessage = (TextView) mDialogView.findViewById(R.id.error_message);
         TextView cardDetailsMasked = (TextView) mDialogView.findViewById(R.id.cc_details_masked);
         cardDetailsMasked.setText(cardLabel);
@@ -112,23 +110,6 @@ public class AutofillExpirationDateFixFlowPrompt
         mYearInput.setOnFocusChangeListener((view, hasFocus) -> {
             mDidFocusOnYear |= hasFocus;
         });
-
-        PropertyModel.Builder builder =
-                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                        .with(ModalDialogProperties.CONTROLLER, this)
-                        .with(ModalDialogProperties.TITLE, title)
-                        .with(ModalDialogProperties.CUSTOM_VIEW, mDialogView)
-                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, confirmButtonLabel)
-                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, context.getResources(),
-                                R.string.cancel)
-                        .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, false)
-                        .with(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true)
-                        .with(ModalDialogProperties.PRIMARY_BUTTON_FILLED, filledConfirmButton);
-        if (drawableId != 0) {
-            builder.with(ModalDialogProperties.TITLE_ICON, context, drawableId);
-        }
-        mDialogModel = builder.build();
-        mContext = context;
     }
 
     private AutofillExpirationDateFixFlowPrompt(Context context,

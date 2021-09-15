@@ -10,11 +10,16 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewStub;
 import android.widget.TextView;
 
+import androidx.annotation.DrawableRes;
+import androidx.annotation.LayoutRes;
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.R;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -49,8 +54,44 @@ public abstract class AutofillSaveCardPromptBase implements ModalDialogPropertie
         void onUserDismiss();
     }
 
-    protected AutofillSaveCardPromptBase(AutofillSaveCardPromptBaseDelegate delegate) {
+    /**
+     * @param context The {@link Context} to inflate layout xml.
+     * @param delegate A {@link AutofillSaveCardPromptBaseDelegate} to handle events.
+     * @param contentLayoutId The content of the prompt dialog. Set 0 to make content empty.
+     * @param title Title of the prompt dialog.
+     * @param titleIcon Icon near the title. Set 0 to ignore this icon.
+     * @param confirmButtonLabel The text of confirm button.
+     * @param filledConfirmButton Whether to use a button of filled style.
+     */
+    protected AutofillSaveCardPromptBase(Context context,
+            AutofillSaveCardPromptBaseDelegate delegate, @LayoutRes int contentLayoutId,
+            String title, @DrawableRes int titleIcon, String confirmButtonLabel,
+            boolean filledConfirmButton) {
         mBaseDelegate = delegate;
+        LayoutInflater inflater = LayoutInflater.from(context);
+        mDialogView = inflater.inflate(R.layout.autofill_save_card_base_layout, null);
+        if (contentLayoutId != 0) {
+            ViewStub stub = mDialogView.findViewById(R.id.autofill_save_card_content_stub);
+            stub.setLayoutResource(contentLayoutId);
+            stub.inflate();
+        }
+
+        PropertyModel.Builder builder =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(ModalDialogProperties.CONTROLLER, this)
+                        .with(ModalDialogProperties.TITLE, title)
+                        .with(ModalDialogProperties.CUSTOM_VIEW, mDialogView)
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, confirmButtonLabel)
+                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, context.getResources(),
+                                R.string.cancel)
+                        .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, false)
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true)
+                        .with(ModalDialogProperties.PRIMARY_BUTTON_FILLED, filledConfirmButton);
+        if (titleIcon != 0) {
+            builder.with(ModalDialogProperties.TITLE_ICON, context, titleIcon);
+        }
+        mDialogModel = builder.build();
+        mContext = context;
     }
 
     /**
@@ -78,7 +119,7 @@ public abstract class AutofillSaveCardPromptBase implements ModalDialogPropertie
                 }
             }, link.start, link.end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
         }
-        TextView legalMessage = mDialogView.findViewById(org.chromium.chrome.R.id.legal_message);
+        TextView legalMessage = mDialogView.findViewById(R.id.legal_message);
         legalMessage.setText(text);
         legalMessage.setMovementMethod(LinkMovementMethod.getInstance());
         legalMessage.setVisibility(View.VISIBLE);

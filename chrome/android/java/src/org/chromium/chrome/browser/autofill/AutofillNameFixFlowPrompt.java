@@ -8,7 +8,6 @@ import android.content.Context;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
@@ -26,6 +25,7 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Locale;
+
 /**
  * Prompt that asks users to confirm user's name before saving card to Google.
  */
@@ -91,14 +91,13 @@ public class AutofillNameFixFlowPrompt extends AutofillSaveCardPromptBase implem
     private AutofillNameFixFlowPrompt(Context context, AutofillNameFixFlowPromptDelegate delegate,
             String inferredName, String title, int drawableId, String confirmButtonLabel,
             boolean filledConfirmButton) {
-        super(delegate);
+        super(context, delegate, R.layout.autofill_name_fixflow, title, drawableId,
+                confirmButtonLabel, filledConfirmButton);
         mDelegate = delegate;
-        LayoutInflater inflater = LayoutInflater.from(context);
-        mDialogView = inflater.inflate(R.layout.autofill_name_fixflow, null);
-
         mUserNameInput = (EditText) mDialogView.findViewById(R.id.cc_name_edit);
         mUserNameInput.setText(inferredName, BufferType.EDITABLE);
         mNameFixFlowTooltipIcon = (ImageView) mDialogView.findViewById(R.id.cc_name_tooltip_icon);
+        mDialogModel.set(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, inferredName.isEmpty());
 
         // Do not show tooltip if inferred name is empty.
         if (TextUtils.isEmpty(inferredName)) {
@@ -106,23 +105,6 @@ public class AutofillNameFixFlowPrompt extends AutofillSaveCardPromptBase implem
         } else {
             mNameFixFlowTooltipIcon.setOnClickListener((view) -> onTooltipIconClicked());
         }
-
-        PropertyModel.Builder builder =
-                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                        .with(ModalDialogProperties.CONTROLLER, this)
-                        .with(ModalDialogProperties.TITLE, title)
-                        .with(ModalDialogProperties.CUSTOM_VIEW, mDialogView)
-                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, confirmButtonLabel)
-                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, context.getResources(),
-                                R.string.cancel)
-                        .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, false)
-                        .with(ModalDialogProperties.POSITIVE_BUTTON_DISABLED,
-                                inferredName.isEmpty())
-                        .with(ModalDialogProperties.PRIMARY_BUTTON_FILLED, filledConfirmButton);
-        if (drawableId != 0) {
-            builder.with(ModalDialogProperties.TITLE_ICON, context, drawableId);
-        }
-        mDialogModel = builder.build();
 
         // Hitting the "submit" button on the software keyboard should submit, unless the name field
         // is empty.

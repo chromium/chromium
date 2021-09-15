@@ -159,7 +159,7 @@ void SaveCardMessageControllerAndroid::DismissMessage() {
 void SaveCardMessageControllerAndroid::MaybeShowDialog() {
   reprompt_required_ = false;
   if (is_upload_ && !request_more_info_) {
-    // If we already know all the info, confirm the date to show  other info
+    // If we already know all the info, confirm the date to show other info
     // such as legal terms, and then run callback after user confirms.
     ConfirmDate(expiration_date_month_, expiration_date_year_);
   } else if (options_.should_request_name_from_user) {
