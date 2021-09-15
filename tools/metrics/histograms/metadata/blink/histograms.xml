@@ -1655,9 +1655,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.ImageDecoders.IncrementalDecodeNeeded"
-    enum="IncrementalDecodeNeeded" expires_after="2021-09-05">
-  <owner>mbarowsky@chromium.org</owner>
+    enum="IncrementalDecodeNeeded" expires_after="2022-09-15">
   <owner>andrescj@chromium.org</owner>
+  <owner>chromeos-gfx@google.com</owner>
   <summary>
     For JPEG and WebP images, whether all image data has been received before
     decoding begins or whether we are still receiving data and will need to send
