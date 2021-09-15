@@ -287,6 +287,7 @@
 <translation id="3549797760399244642">drive.google.com मा जानुहोस् ...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> मार्फत फाइलहरू खोल्न सर्वप्रथम ती फाइलहरू कपी गरेर 'Windows फाइलहरू' फोल्डरमा पेस्ट गर्नुहोस्।</translation>
 <translation id="3556731189587832921">अङ्ग्रेजी (सं. रा. अमेरिकी) अन्तर्राष्ट्रिय PC किबोर्ड</translation>
+<translation id="3567221313191587603">तपाईं आफ्ना फाइल इन्टरनेट नभएका बेलामा पनि प्रयोग गर्न चाहनुहुन्छ भने उक्त फाइल चयन गर्नुहोस् र <ph name="OFFLINE_CHECKBOX_NAME" /> टगल गरी अन गर्नुहोस्।</translation>
 <translation id="357479282490346887">लिथुएनियन</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> इन्टरनेट नभएका बेला प्रयोग गर्ने प्रयोजनका लागि डाउनलोड गर्न सकिएन</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -397,6 +398,7 @@
 <translation id="4642769377300286600">मोबाइल प्रोफाइल इन्स्टल गरिँदै छ। यो प्रोफाइल <ph name="NETWORK_PROVIDER_NAME" /> ले उपलब्ध गराएको <ph name="NETWORK_NAME" /> नेटवर्कको <ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क हो।</translation>
 <translation id="4646813851450205600">चेक Qwerty किबोर्ड</translation>
 <translation id="4656293982926141856">यो कम्प्युटर</translation>
+<translation id="4656777537938206294">फाइलहरू अफलाइन उपलब्ध गराउनुहोस्</translation>
 <translation id="4669606053856530811">यी वस्तुहरूलाई '<ph name="SOURCE_NAME" />' का सदस्यहरूसँग आदान प्रदान नगरेसम्म तिनीहरू ले यी वस्तुहरूमाथिको पहुँच गुमाउनुहुनेछन्।</translation>
 <translation id="4690246192099372265">&amp;#2360;&amp;#2381;&amp;#2357;&amp;#2367;&amp;#2337;&amp;#2367;&amp;#2358;</translation>
 <translation id="4693155481716051732">सुसी</translation>

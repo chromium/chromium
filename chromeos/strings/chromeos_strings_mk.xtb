@@ -162,6 +162,7 @@
 <translation id="4238516577297848345">Нема задачи за печатење во тек</translation>
 <translation id="4244962993387259361">Потребен ви е слободен капацитет од најмалку 500 MB за да извршите тестирање на меморијата. За да ослободите простор, одете во „Поставки &gt; Управување со капацитетот“.</translation>
 <translation id="4258281355379922695">Латенција на HTTP</translation>
+<translation id="4271957103967917607">Приказ на цел екран</translation>
 <translation id="4289540628985791613">Преглед</translation>
 <translation id="4297501883039923494">Запрено - непозната грешка</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> слики</translation>
@@ -373,6 +374,7 @@
 <translation id="7550715992156305117">Дијагностички рутини</translation>
 <translation id="7561454561030345039">Администраторот управува со дејствово</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7574732568136198983">ARC пинг</translation>
 <translation id="7595982850646262331">Уште <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Дознајте повеќе во „Центарот за помош“</translation>
 <translation id="763165478673169849">Време на последно ресетирање</translation>

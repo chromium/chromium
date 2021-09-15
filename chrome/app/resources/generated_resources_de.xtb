@@ -2097,6 +2097,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3183143381919926261">Mobile Datennetzwerke</translation>
 <translation id="3183944777708523606">Monitoranordnung</translation>
 <translation id="3184536091884214176">CUPS-Drucker einrichten oder verwalten. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
+<translation id="3185014249447200271">{NUM_APPS,plural, =1{Diese App ist blockiert}other{Einige Apps sind blockiert}}</translation>
 <translation id="3188257591659621405">Meine Dateien</translation>
 <translation id="3188465121994729530">Gleitender Durchschnitt</translation>
 <translation id="3189187154924005138">Großer Cursor</translation>
@@ -3057,6 +3058,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4220648711404560261">Bei der Aktivierung ist ein Fehler aufgetreten.</translation>
 <translation id="4225020013797061859">Drücken Sie zum Zuweisen von „<ph name="ACTION" />“ einen Schalter oder eine Taste</translation>
 <translation id="4225397296022057997">Auf allen Websites</translation>
+<translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Diese Erweiterung ist nicht zulässig}other{Einige Erweiterungen sind nicht zulässig}}</translation>
 <translation id="4231095370974836764">Apps und Spiele von Google Play auf dem <ph name="DEVICE_TYPE" /> installieren. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos konfigurieren</translation>
 <translation id="4235965441080806197">Anmeldung abbrechen</translation>
@@ -4301,6 +4303,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5604884720628869833">Gerät <ph name="DEVICE_INDEX" /> von <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, Tastatur</translation>
 <translation id="5605623530403479164">Andere Suchmaschinen</translation>
 <translation id="5605758115928394442">An Ihr Smartphone wurde eine Benachrichtigung gesendet, um Ihre Identität zu bestätigen.</translation>
+<translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Diese Erweiterung ist blockiert}other{Diese Erweiterungen sind blockiert}}</translation>
 <translation id="560834977503641186">Weitere Informationen zur WLAN-Synchronisation</translation>
 <translation id="5608580678041221894">Tippen Sie auf die folgenden Tasten, um den Overscan-Bereich anzupassen oder zu verschieben</translation>
 <translation id="5609231933459083978">Die Anwendung ist anscheinend ungültig.</translation>
@@ -5047,6 +5050,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6434325376267409267">Ihr Gerät muss aktualisiert werden, bevor Sie <ph name="APP_NAME" /> verwenden können.</translation>
 <translation id="6436164536244065364">Im Web Store ansehen</translation>
 <translation id="6436610005579237680">Google Assistant darf auf einen Screenshot meines Bildschirms zugreifen, um mir relevantere Antworten auf meine Fragen zu geben. Assistant darf auch Informationen über abgespielte Lieder oder Videos verwenden.</translation>
+<translation id="6436778875248895551">Die Erweiterung „<ph name="EXTENSION_NAME" />“ wurde von Ihrem Administrator blockiert</translation>
 <translation id="6438234780621650381">Einstellungen zurücksetzen</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – Audiowiedergabe</translation>
 <translation id="6442187272350399447">Smiley</translation>
@@ -5198,6 +5202,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6596816719288285829">IP-Adresse</translation>
 <translation id="6597017209724497268">Proben</translation>
 <translation id="6597148444736186483">Wenn Sie sich auf diesem Gerät aus dem primären Konto abmelden möchten, klicken Sie auf dem Bildschirm auf die Uhrzeit. Klicken Sie dann im eingeblendeten Menü auf "Abmelden".</translation>
+<translation id="6597331566371766302">Die folgenden Erweiterungen wurden von Ihrem Administrator blockiert:</translation>
 <translation id="6601395831301182804">Möchtest du ChromeVox, den integrierten Screenreader für Chrome OS, aktivieren? Falls ja, drücke die Leertaste.</translation>
 <translation id="6601612474695404578">Manche Websites verwenden Drittanbieter-Cookies, um ihre Seiten zu laden. Wenn eine Website nicht richtig funktioniert, können Sie versuchen, Cookies zuzulassen.</translation>
 <translation id="6602937173026466876">Zugriff auf Ihre Drucker</translation>
@@ -5331,6 +5336,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6757101664402245801">URL kopiert</translation>
 <translation id="6758056191028427665">Teilen Sie uns mit, wie zufrieden Sie mit uns sind.</translation>
 <translation id="6759193508432371551">Zurücksetzen auf Werkseinstellungen</translation>
+<translation id="676158322851696513">„<ph name="EXTENSION_NAME" />“</translation>
 <translation id="6762833852331690540">An</translation>
 <translation id="676560328519657314">Ihre Zahlungsmethoden in Google Pay</translation>
 <translation id="6767566652486411142">Andere Sprache auswählen…</translation>
@@ -6210,6 +6216,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7691698019618282776">Crostini-Upgrade</translation>
 <translation id="7696063401938172191">Auf Ihrem <ph name="PHONE_NAME" />:</translation>
 <translation id="7697166915480294040">Details sind während des Bildschirmteilens verborgen</translation>
+<translation id="7698507637739331665">Einige Elemente sind blockiert</translation>
 <translation id="7701040980221191251">Keine</translation>
 <translation id="7701869757853594372">NUTZER-Handles</translation>
 <translation id="7702574632857388784"><ph name="FILE_NAME" /> aus der Liste entfernen</translation>
@@ -6388,6 +6395,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7861215335140947162">&amp;Downloads</translation>
 <translation id="7861846108263890455">Sprache des Google-Kontos</translation>
 <translation id="7864539943188674973">Bluetooth deaktivieren</translation>
+<translation id="7865127013871431856">Übersetzungsoptionen</translation>
 <translation id="7866230141401327032">Mit Google Lens auf einem Teil der Seite suchen</translation>
 <translation id="7869143217755017858">Dunklen Modus deaktivieren</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – gekoppelt</translation>

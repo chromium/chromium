@@ -162,6 +162,7 @@
 <translation id="4238516577297848345">実行中の印刷ジョブはありません</translation>
 <translation id="4244962993387259361">メモリテストを実行するには 500 MB 以上の空き容量が必要です。空き容量を増やすには、[設定] &gt; [ストレージ管理] に移動します。</translation>
 <translation id="4258281355379922695">HTTP レイテンシ</translation>
+<translation id="4271957103967917607">全画面表示</translation>
 <translation id="4289540628985791613">概要</translation>
 <translation id="4297501883039923494">停止 - 不明なエラー</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> 件の画像</translation>
@@ -373,6 +374,7 @@
 <translation id="7550715992156305117">ルーティン診断</translation>
 <translation id="7561454561030345039">この操作は管理者によって管理されています</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7574732568136198983">ARC ping</translation>
 <translation id="7595982850646262331">あと <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">詳しくはヘルプセンターをご覧ください</translation>
 <translation id="763165478673169849">前回のリセット時間</translation>

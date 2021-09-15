@@ -162,6 +162,7 @@
 <translation id="4238516577297848345">Aucune tâche d'impression en cours</translation>
 <translation id="4244962993387259361">Vous devez avoir au moins 500 Mo d'espace disponible pour exécuter un test de mémoire. Pour libérer de l'espace, allez dans Paramètres &gt; Gestion du stockage.</translation>
 <translation id="4258281355379922695">Latence HTTP</translation>
+<translation id="4271957103967917607">Afficher en plein écran</translation>
 <translation id="4289540628985791613">Présentation</translation>
 <translation id="4297501883039923494">Tâche suspendue - Erreur inconnue</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> images</translation>
@@ -373,6 +374,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="7550715992156305117">Routines de diagnostics</translation>
 <translation id="7561454561030345039">Cette action est gérée par votre administrateur</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7574732568136198983">ARC Ping</translation>
 <translation id="7595982850646262331">Il reste <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">En savoir plus sur le centre d'aide</translation>
 <translation id="763165478673169849">Heure de la dernière réinitialisation</translation>

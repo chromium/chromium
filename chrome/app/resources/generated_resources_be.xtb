@@ -2102,6 +2102,7 @@
 <translation id="3183143381919926261">Сеткі мабільнай перадачы даных</translation>
 <translation id="3183944777708523606">Размяшчэнне манітораў</translation>
 <translation id="3184536091884214176">Наладжванне прынтараў CUPS і кіраванне імі. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
+<translation id="3185014249447200271">{NUM_APPS,plural, =1{Гэта праграма заблакіравана}one{Некаторыя праграмы заблакіраваны}few{Некаторыя праграмы заблакіраваны}many{Некаторыя праграмы заблакіраваны}other{Некаторыя праграмы заблакіраваны}}</translation>
 <translation id="3188257591659621405">Мае файлы</translation>
 <translation id="3188465121994729530">Рухомае сярэдняе</translation>
 <translation id="3189187154924005138">Вялікі курсор</translation>
@@ -3062,6 +3063,7 @@
 <translation id="4220648711404560261">Падчас актывацыі ўзнікла памылка.</translation>
 <translation id="4225020013797061859">Націсніце пераключальнік або клавішу, каб прызначыць іх для дзеяння "<ph name="ACTION" />"</translation>
 <translation id="4225397296022057997">На ўсіх сайтах</translation>
+<translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Гэта пашырэнне забаронена}one{Некаторыя пашырэнні забаронены}few{Некаторыя пашырэнні забаронены}many{Некаторыя пашырэнні забаронены}other{Некаторыя пашырэнні забаронены}}</translation>
 <translation id="4231095370974836764">Усталёўвайце праграмы і гульні з Google Play на сваёй прыладзе "<ph name="DEVICE_TYPE" />". <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Канфігурацыя Kerberos</translation>
 <translation id="4235965441080806197">Скасаваць уваход</translation>
@@ -4306,6 +4308,7 @@
 <translation id="5604884720628869833">Прылада <ph name="DEVICE_INDEX" /> з <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, клавіятура</translation>
 <translation id="5605623530403479164">Іншыя пошукавыя сістэмы</translation>
 <translation id="5605758115928394442">Вам на тэлефон для пацвярджэння вашай асобы адпраўлена апавяшчэнне.</translation>
+<translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Гэта пашырэнне заблакіравана}one{Гэтыя пашырэнні заблакіраваны}few{Гэтыя пашырэнні заблакіраваны}many{Гэтыя пашырэнні заблакіраваны}other{Гэтыя пашырэнні заблакіраваны}}</translation>
 <translation id="560834977503641186">Сінхранізацыя параметраў Wi-Fi, даведацца больш</translation>
 <translation id="5608580678041221894">Каб змяніць або перамясціць вобласць абрэзкі, выкарыстоўвайце наступныя клавішы</translation>
 <translation id="5609231933459083978">Здаецца, праграма недапушчальная.</translation>
@@ -5052,6 +5055,7 @@
 <translation id="6434325376267409267">Каб выкарыстоўваць праграму <ph name="APP_NAME" />, прыладу трэба абнавіць.</translation>
 <translation id="6436164536244065364">Прагледзець у Вэб-краме</translation>
 <translation id="6436610005579237680">Каб атрымліваць больш дакладныя адказы на свае пытанні, дазвольце Памочніку Google выкарыстоўваць інфармацыю на вашым экране. Памочнік таксама можа выкарыстоўваць інфармацыю аб кампазіцыях і відэа, якія прайграюцца.</translation>
+<translation id="6436778875248895551">Пашырэнне "<ph name="EXTENSION_NAME" />" заблакіравана адміністратарам</translation>
 <translation id="6438234780621650381">Скід налад</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – прайграецца гук</translation>
 <translation id="6442187272350399447">Шыкоўна</translation>
@@ -5203,6 +5207,7 @@
 <translation id="6596816719288285829">IP-адрас</translation>
 <translation id="6597017209724497268">Узоры</translation>
 <translation id="6597148444736186483">Каб выйсці з асноўнага ўліковага запісу на гэтай прыладзе, націсніце час на экране. У меню, якое паявіцца, націсніце "Выйсці".</translation>
+<translation id="6597331566371766302">Наступныя пашырэнні заблакіраваны адміністратарам:</translation>
 <translation id="6601395831301182804">Актываваць ChromeVox – убудаваную праграму чытання з экрана для Chrome OS? Для актывацыі націсніце клавішу прабелу.</translation>
 <translation id="6601612474695404578">Некаторыя сайты выкарыстоўваюць староннія файлы cookie для загрузкі сваіх старонак. Калі сайт не працуе, паспрабуйце дазволіць файлы cookie.</translation>
 <translation id="6602937173026466876">Доступ да прынтараў</translation>
@@ -5336,6 +5341,7 @@
 <translation id="6757101664402245801">URL-адрас скапіраваны</translation>
 <translation id="6758056191028427665">Паведаміце нам, што вы думаеце пра наш прадукт.</translation>
 <translation id="6759193508432371551">Скід да заводскіх налад</translation>
+<translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6762833852331690540">Уключана</translation>
 <translation id="676560328519657314">Вашы спосабы аплаты ў Google Pay</translation>
 <translation id="6767566652486411142">Выбраць іншую мову...</translation>
@@ -6215,6 +6221,7 @@
 <translation id="7691698019618282776">Абнаўленне Crostini</translation>
 <translation id="7696063401938172191">На тэлефоне "<ph name="PHONE_NAME" />":</translation>
 <translation id="7697166915480294040">Пакуль ваш экран абагульваецца, падрабязныя звесткі не будуць паказвацца</translation>
+<translation id="7698507637739331665">Некаторыя элементы заблакіраваны</translation>
 <translation id="7701040980221191251">Няма</translation>
 <translation id="7701869757853594372">Маркеры КАРЫСТАЛЬНІКА</translation>
 <translation id="7702574632857388784">Выдаліць "<ph name="FILE_NAME" />" са спіса</translation>
@@ -6393,6 +6400,7 @@
 <translation id="7861215335140947162">&amp;Спампоўкі</translation>
 <translation id="7861846108263890455">Мова Уліковага запісу Google</translation>
 <translation id="7864539943188674973">Адключыць Bluetooth</translation>
+<translation id="7865127013871431856">Параметры Перакладчыка</translation>
 <translation id="7866230141401327032">Выканаць пошук па частцы старонкі з дапамогай Google Аб'ектыва</translation>
 <translation id="7869143217755017858">Адключыць цёмны рэжым</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – спалучана</translation>

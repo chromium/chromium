@@ -2096,6 +2096,7 @@
 <translation id="3183143381919926261">Мобильдік интернет желілері</translation>
 <translation id="3183944777708523606">Мониторды реттеу</translation>
 <translation id="3184536091884214176">CUPS принтерлерін реттеу және басқару. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
+<translation id="3185014249447200271">{NUM_APPS,plural, =1{Бұл қолданба бөгелді}other{Кейбір қолданба бөгелді}}</translation>
 <translation id="3188257591659621405">Файлдарым</translation>
 <translation id="3188465121994729530">Орташа мәнді жылжыту</translation>
 <translation id="3189187154924005138">Үлкен көрсеткі</translation>
@@ -3056,6 +3057,7 @@
 <translation id="4220648711404560261">Іске қосу кезінде қате шықты.</translation>
 <translation id="4225020013797061859">"<ph name="ACTION" />" әрекетін тағайындау үшін ауыстырғышты немесе пернені басыңыз.</translation>
 <translation id="4225397296022057997">Барлық сайттарда</translation>
+<translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Бұл кеңейтімге рұқсат берілмеді}other{Кейбір кеңейтімге рұқсат берілмеді}}</translation>
 <translation id="4231095370974836764">Google Play дүкеніндегі қолданбалар мен ойындарды <ph name="DEVICE_TYPE" /> құрылғысына орнатыңыз. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos билетін конфигурациялау</translation>
 <translation id="4235965441080806197">Жүйеге кіруден бас тарту</translation>
@@ -4302,6 +4304,7 @@
 <translation id="5604884720628869833"><ph name="DEVICE_INDEX" />/<ph name="DEVICE_COUNT" /> құрылғы, <ph name="DEVICE_NAME" />, пернетақта</translation>
 <translation id="5605623530403479164">Басқа іздеу жүйелері</translation>
 <translation id="5605758115928394442">Жеке басыңызды растау үшін телефоныңызға хабарландыру жіберілді.</translation>
+<translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Бұл кеңейтім бөгелді}other{Бұл кеңейтімдер бөгелді}}</translation>
 <translation id="560834977503641186">Wi-Fi деректерін синхрондау, толығырақ</translation>
 <translation id="5608580678041221894">Қию аймағын реттеу не жылжыту үшін келесі пернелерді түртіңіз</translation>
 <translation id="5609231933459083978">Қолданба жарамсыз.</translation>
@@ -5048,6 +5051,7 @@
 <translation id="6434325376267409267"><ph name="APP_NAME" /> пайдаланылмас бұрын, құрылғы жаңартылуы керек.</translation>
 <translation id="6436164536244065364">Веб-дүкенде көру</translation>
 <translation id="6436610005579237680">Сұрақ қойғанда, өзіңізге қатысты жауаптар алу үшін Google Assistant-ке экранда көрсетілген ақпаратты пайдалануға рұқсат етіңіз. Assistant ойнап тұрған әндер немесе бейнелер туралы ақпаратты да пайдалануы мүмкін.</translation>
+<translation id="6436778875248895551">Әкімші "<ph name="EXTENSION_NAME" />" кеңейтімін бөгеген.</translation>
 <translation id="6438234780621650381">Параметрлерді қалпына келтіру</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – аудиомазмұн ойнату</translation>
 <translation id="6442187272350399447">Керемет</translation>
@@ -5199,6 +5203,7 @@
 <translation id="6596816719288285829">IP мекенжайы</translation>
 <translation id="6597017209724497268">Үлгілер</translation>
 <translation id="6597148444736186483">Құрылғыдағы негізгі аккаунттан шығу үшін экрандағы сағатты басыңыз. Мәзірдегі "Шығу" опциясын таңдаңыз.</translation>
+<translation id="6597331566371766302">Әкімші келесі кеңейтімдерді бөгеген:</translation>
 <translation id="6601395831301182804">Chrome OS-ке арналған ендірілген ChromeVox экранды оқу құралын іске қосқыңыз келе ме? Іске қосқыңыз келсе, бос орын түймесін басыңыз.</translation>
 <translation id="6601612474695404578">Кейбір сайттар беттерін жүктеу үшін үшінші тараптың cookie файлдарын пайдаланады. Сайт жұмыс істемесе, cookie файлдарына рұқсат берсеңіз болады.</translation>
 <translation id="6602937173026466876">Принтерлерді пайдалану</translation>
@@ -5332,6 +5337,7 @@
 <translation id="6757101664402245801">URL мекенжайы көшірілді</translation>
 <translation id="6758056191028427665">Қал-жағдайыңызды айтып беріңіз.</translation>
 <translation id="6759193508432371551">Зауыттық параметрлерге қайта орнату</translation>
+<translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6762833852331690540">Қосулы</translation>
 <translation id="676560328519657314">Google Pay қызметіндегі төлеу әдістеріңіз</translation>
 <translation id="6767566652486411142">Басқа тіл таңдау...</translation>
@@ -6211,6 +6217,7 @@
 <translation id="7691698019618282776">Crostini жүйесін жаңарту</translation>
 <translation id="7696063401938172191">"<ph name="PHONE_NAME" />" телефонында:</translation>
 <translation id="7697166915480294040">Экраныңызды бөлісіп жатқанда, мәліметтер жасырын тұрады.</translation>
+<translation id="7698507637739331665">Кейбір элемент бөгелді</translation>
 <translation id="7701040980221191251">Жоқ</translation>
 <translation id="7701869757853594372">USER өңдегіштері</translation>
 <translation id="7702574632857388784"><ph name="FILE_NAME" /> файлын тізімнен өшіру</translation>
@@ -6389,6 +6396,7 @@
 <translation id="7861215335140947162">&amp;Жүктеулер</translation>
 <translation id="7861846108263890455">Google аккаунтының тілі</translation>
 <translation id="7864539943188674973">Bluetooth өшіру</translation>
+<translation id="7865127013871431856">Аудару опциялары</translation>
 <translation id="7866230141401327032">Бет бөлігін Google Lens арқылы іздеу</translation>
 <translation id="7869143217755017858">Қараңғы режимді өшіру</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – жұпталды</translation>

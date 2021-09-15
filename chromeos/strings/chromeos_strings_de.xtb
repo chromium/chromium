@@ -162,6 +162,7 @@
 <translation id="4238516577297848345">Keine laufenden Druckaufträge</translation>
 <translation id="4244962993387259361">Zum Ausführen eines Speichertests müssen mindestens 500 MB frei sein. Unter „Einstellungen“ &gt; „Speicherplatzverwaltung“ können Sie Speicherplatz freigeben.</translation>
 <translation id="4258281355379922695">HTTP-Latenz</translation>
+<translation id="4271957103967917607">Vollbildmodus aufrufen</translation>
 <translation id="4289540628985791613">Übersicht</translation>
 <translation id="4297501883039923494">Angehalten – Unbekannter Fehler</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Bilder</translation>
@@ -373,6 +374,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="7550715992156305117">Diagnoseroutinen</translation>
 <translation id="7561454561030345039">Diese Aktion wird von Ihrem Administrator verwaltet</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7574732568136198983">ARC-Ping</translation>
 <translation id="7595982850646262331">Noch <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Weitere Informationen in der Hilfe</translation>
 <translation id="763165478673169849">Zuletzt zurückgesetzt</translation>

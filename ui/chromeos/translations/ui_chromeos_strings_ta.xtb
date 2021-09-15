@@ -287,6 +287,7 @@
 <translation id="3549797760399244642">drive.google.com க்குச் செல்...</translation>
 <translation id="3553048479571901246">கோப்புகளை <ph name="APP_NAME" /> ஆப்ஸில் திறக்க, முதலில் அவற்றை Windows ஃபைல்கள்  கோப்புறைக்கு நகலெடுக்கவும்.</translation>
 <translation id="3556731189587832921">ஆங்கிலம் (யூஎஸ்) - சர்வதேச PC கீபோர்டு</translation>
+<translation id="3567221313191587603">ஃபைல்களை ஆஃப்லைனில் பயன்படுத்த, ஃபைலைத் தேர்ந்தெடுத்து <ph name="OFFLINE_CHECKBOX_NAME" /> என்பதை இயக்கவும்.</translation>
 <translation id="357479282490346887">லிதுவேனியன்</translation>
 <translation id="3592251141500063301">ஆஃப்லைனில் அணுகும் வகையில் <ph name="FILE_NAME" /> ஃபைலை அமைக்க முடியவில்லை</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -397,6 +398,7 @@
 <translation id="4642769377300286600">மொபைல் சுயவிவரத்தை நிறுவுகிறது: நெட்வொர்க் <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">செக் - Qwerty கீபோர்டு</translation>
 <translation id="4656293982926141856">இந்தக் கம்ப்யூட்டர்</translation>
+<translation id="4656777537938206294">ஃபைல்களை ஆஃப்லைனில் பயன்படுத்தலாம்</translation>
 <translation id="4669606053856530811">இந்தக் கோப்புகளை '<ph name="SOURCE_NAME" />' இன் உறுப்பினர்களுடன் பகிரவில்லை எனில், அவர்கள் அவற்றுக்கான அணுகலை இழப்பார்கள்.</translation>
 <translation id="4690246192099372265">ஸ்வீடிஷ்</translation>
 <translation id="4693155481716051732">சூஷி</translation>

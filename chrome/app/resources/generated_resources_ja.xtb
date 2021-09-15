@@ -2099,6 +2099,7 @@
 <translation id="3183143381919926261">モバイルデータ ネットワーク</translation>
 <translation id="3183944777708523606">モニターの配置</translation>
 <translation id="3184536091884214176">CUPS プリンタを設定または管理します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
+<translation id="3185014249447200271">{NUM_APPS,plural, =1{このアプリはブロックされています}other{一部のアプリはブロックされています}}</translation>
 <translation id="3188257591659621405">マイファイル</translation>
 <translation id="3188465121994729530">移動平均</translation>
 <translation id="3189187154924005138">大きいカーソル</translation>
@@ -3059,6 +3060,7 @@
 <translation id="4220648711404560261">有効化中にエラーが発生しました。</translation>
 <translation id="4225020013797061859">「<ph name="ACTION" />」を割り当てるスイッチまたはキーを押してください</translation>
 <translation id="4225397296022057997">すべてのサイト</translation>
+<translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{この拡張機能は許可されていません}other{一部の拡張機能は許可されていません}}</translation>
 <translation id="4231095370974836764">Google Play のアプリとゲームを <ph name="DEVICE_TYPE" /> にインストールします。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos の設定</translation>
 <translation id="4235965441080806197">ログインをキャンセル</translation>
@@ -4305,6 +4307,7 @@
 <translation id="5604884720628869833">デバイス <ph name="DEVICE_INDEX" /> / <ph name="DEVICE_COUNT" />、<ph name="DEVICE_NAME" />、キーボード</translation>
 <translation id="5605623530403479164">その他の検索エンジン</translation>
 <translation id="5605758115928394442">本人確認の通知をご使用のスマートフォンに送信しました。</translation>
+<translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{この拡張機能はブロックされています}other{これらの拡張機能はブロックされています}}</translation>
 <translation id="560834977503641186">Wi-Fi 同期の詳細</translation>
 <translation id="5608580678041221894">トリミング範囲を調整または移動するには次のキーをタップします</translation>
 <translation id="5609231933459083978">アプリケーションが無効になっているようです。</translation>
@@ -5051,6 +5054,7 @@
 <translation id="6434325376267409267"><ph name="APP_NAME" /> を使用するには、先にデバイスを更新する必要があります。</translation>
 <translation id="6436164536244065364">ウェブストアで見る</translation>
 <translation id="6436610005579237680">質問時の画面上の情報のスクリーンショットへのアクセスを Google アシスタントに許可すると、より適切な回答が得られます。再生中の曲や動画に関する情報も使用される可能性があります。</translation>
+<translation id="6436778875248895551">拡張機能「<ph name="EXTENSION_NAME" />」は管理者によってブロックされました</translation>
 <translation id="6438234780621650381">設定のリセット</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - オーディオ再生中です</translation>
 <translation id="6442187272350399447">ビックリ</translation>
@@ -5202,6 +5206,7 @@
 <translation id="6596816719288285829">IP アドレス</translation>
 <translation id="6597017209724497268">サンプル</translation>
 <translation id="6597148444736186483">このデバイスでメイン アカウントからログアウトするには、画面上にある時間をクリックすると表示されるメニューで [ログアウト] をクリックします。</translation>
+<translation id="6597331566371766302">次の拡張機能は管理者によってブロックされました。</translation>
 <translation id="6601395831301182804">ChromeVox を有効にしますか？ChromeVox は Chrome OS 向けの組み込みのスクリーン リーダーです。有効にする場合は、スペースキーを押してください。</translation>
 <translation id="6601612474695404578">一部のサイトでは、ページの読み込みにサードパーティの Cookie が使用されます。サイトが動作しない場合は、Cookie を許可してみてください。</translation>
 <translation id="6602937173026466876">プリンタへのアクセス</translation>
@@ -5335,6 +5340,7 @@
 <translation id="6757101664402245801">URL がコピーされました</translation>
 <translation id="6758056191028427665">アンケートにご協力ください。</translation>
 <translation id="6759193508432371551">初期状態へのリセット</translation>
+<translation id="676158322851696513">「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="6762833852331690540">オン</translation>
 <translation id="676560328519657314">Google Pay でのお支払い方法</translation>
 <translation id="6767566652486411142">別の言語を選択...</translation>
@@ -6214,6 +6220,7 @@
 <translation id="7691698019618282776">Crostini のアップグレード</translation>
 <translation id="7696063401938172191">「<ph name="PHONE_NAME" />」で次の操作を行います。</translation>
 <translation id="7697166915480294040">画面の共有中は詳細が表示されません</translation>
+<translation id="7698507637739331665">一部のアイテムはブロックされています</translation>
 <translation id="7701040980221191251">なし</translation>
 <translation id="7701869757853594372">USER の操作</translation>
 <translation id="7702574632857388784"><ph name="FILE_NAME" /> をリストから削除</translation>
@@ -6392,6 +6399,7 @@
 <translation id="7861215335140947162">ダウンロード(&amp;D)</translation>
 <translation id="7861846108263890455">Google アカウントの言語</translation>
 <translation id="7864539943188674973">Bluetooth を無効にする</translation>
+<translation id="7865127013871431856">翻訳オプション</translation>
 <translation id="7866230141401327032">Google レンズでページの一部を検索</translation>
 <translation id="7869143217755017858">ダークモードを無効にする</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - ペア設定済み</translation>

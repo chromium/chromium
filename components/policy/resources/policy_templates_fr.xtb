@@ -328,6 +328,15 @@
 
       Si vous activez les fonctionnalités d'accessibilité par d'autres moyens (par exemple, une combinaison de touches), les options d'accessibilité restent affichées dans le menu de la barre d'état système.</translation>
 <translation id="1449777485284610883">Autoriser l'installation et la mise à jour d'extensions hébergées en dehors du Chrome Web Store</translation>
+<translation id="1451113827539677573">Permet de spécifier le mode d'impression de <ph name="PRODUCT_NAME" /> sous <ph name="MS_WIN_NAME" />.
+
+      Lorsqu'il s'agit d'une imprimante non compatible PostScript sous <ph name="MS_WIN_NAME" />, certaines tâches d'impression doivent être rastérisées pour être imprimées correctement.
+
+      Si cette règle est définie sur "Full", <ph name="PRODUCT_NAME" /> rastérise toute la page si nécessaire.
+
+      Si elle est définie sur "Fast", <ph name="PRODUCT_NAME" /> évite la rastérisation autant que possible, ce qui permet de réduire la taille des tâches d'impression et d'augmenter la vitesse d'impression.
+
+      Si cette règle n'est pas définie, <ph name="PRODUCT_NAME" /> fonctionne en mode "Full".</translation>
 <translation id="1456822151187621582">Windows (clients <ph name="PRODUCT_OS_NAME" />) :</translation>
 <translation id="1464848559468748897">Contrôle le comportement des utilisateurs dans une session multiprofil sur des appareils <ph name="PRODUCT_OS_NAME" />.
 
@@ -1137,6 +1146,13 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="2355876547176311490">Désactiver l'utilisation des serveurs de relais pour l'hôte d'accès à distance</translation>
 <translation id="2358176879566587521">Cette règle est supprimée. Elle n'est pas compatible avec cette version de <ph name="PRODUCT_NAME" />. Pour en savoir plus, rendez-vous sur https://support.google.com/chrome/a/answer/7643500.</translation>
 <translation id="2362469626417133796">Fenêtre de redémarrage</translation>
+<translation id="2363928351203698966">Si cette règle est définie sur une valeur valide, <ph name="PRODUCT_NAME" /> n'utilise pas de versions SSL/TLS antérieures à la version spécifiée. Les valeurs non reconnues sont ignorées.
+
+      Si cette règle n'est pas configurée, un message d'erreur concernant TLS 1.0 et TLS 1.1 s'affiche dans <ph name="PRODUCT_NAME" />. Toutefois, l'utilisateur peut contourner le processus.
+
+      Si elle est configurée sur "tls1.2", l'utilisateur ne pourra pas contourner cette erreur.
+
+      La compatibilité de cette règle avec "tls1" ou "tls1.1" a été supprimée dans la version 91. La suppression de l'avertissement TLS 1.0/1.1 n'est plus disponible.</translation>
 <translation id="2364639863953745682">Mode du processus de prise en main de l'Assistant</translation>
 <translation id="2384233438419344179">Si cette règle est activée, les éléments de page Web qui ne font pas partie du domaine indiqué dans la barre d'adresse du navigateur ne peuvent pas placer de cookies. Si cette règle est désactivée, ces éléments sont autorisés à placer des cookies, et les utilisateurs ne peuvent pas modifier ce paramètre.
 
@@ -1827,6 +1843,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="3146711617256415776">Ne pas autoriser la synthèse vocale améliorée via le réseau pour Sélectionner pour prononcer</translation>
 <translation id="3152425128389603870">Rendre le mode bureau unifié disponible et l'activer par défaut</translation>
 <translation id="3159375329008977062">L'utilisateur est autorisé à exporter/importer des conteneurs Crostini via l'UI</translation>
+<translation id="3164531087779621747">Mode d'impression PostScript</translation>
 <translation id="3165808775394012744">Ces règles sont incluses ici pour faciliter leur suppression.</translation>
 <translation id="3166210414652928099">Autoriser l'utilisateur à se servir des applications Android provenant de sources non approuvées</translation>
 <translation id="316778957754360075">Ce paramètre a été supprimé à partir de la version 29 de <ph name="PRODUCT_NAME" />. Pour configurer des collections d'extensions et d'applications hébergées par l'organisation, il est recommandé d'inclure le site hébergeant les packages CRX dans ExtensionInstallSources et d'insérer des liens directs de téléchargement dans les packages sur une page Web. Il est possible de créer un lanceur d'applications pour cette page à l'aide de la règle ExtensionInstallForcelist.</translation>
@@ -3365,6 +3382,15 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 <translation id="5213038356678567351">Sites Web qui ne doivent jamais déclencher un changement de navigateur.</translation>
 <translation id="5219844027738217407">Cette règle ne s'applique qu'au micro pour les applications Android. Lorsqu'elle est définie sur "True", le son du micro est coupé pour toutes les applications Android sans exception.</translation>
 <translation id="5220594484746830711">Autoriser les pop-ups avec une cible "<ph name="BLANK_PAGE_NAME" />" à interagir avec la page sur laquelle ils ont été ouverts uniquement si celle-ci accepte explicitement ce type d'interaction</translation>
+<translation id="5227124062673546005">Permet de spécifier le mode d'impression de <ph name="PRODUCT_NAME" /> sous <ph name="MS_WIN_NAME" />.
+
+      Lorsqu'il s'agit d'une imprimante compatible PostScript sous <ph name="MS_WIN_NAME" />, plusieurs méthodes de génération PostScript peuvent affecter les performances d'impression.
+
+      Si cette règle est définie sur "Par défaut", <ph name="PRODUCT_NAME" /> applique un ensemble d'options par défaut lors de la génération PostScript. Le rendu du texte se fera toujours avec des polices de type 3.
+
+      Si cette règle est définie sur "Type 42", <ph name="PRODUCT_NAME" /> effectue le rendu du texte à l'aide de polices de type 42 dans la mesure du possible. Cela devrait augmenter la vitesse d'impression de certaines imprimantes PostScript.
+
+      Si cette règle n'est pas définie, <ph name="PRODUCT_NAME" /> fonctionne en mode "Par défaut".</translation>
 <translation id="5227647876065695164">Cette règle définit le comportement de retour à une version antérieure sur les appareils enregistrés. Par "retour à une version antérieure", nous voulons dire "retour à une version plus stable" (de la version bêta à la version stable, par exemple).
 
       La valeur de cette règle concerne aussi bien les retours à une version antérieure lancés par l'utilisateur que ceux initiés par l'administrateur.
@@ -4343,6 +4369,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
       Cependant, ces notifications ne s'affichent que si le fournisseur d'identité SAML envoie à l'appareil des infos sur l'expiration du mot de passe lors du processus de connexion SAML.
 
       Si cette règle est désactivée ou non définie, le mot de passe SAML n'est pas modifiable sur la page chrome://password-change, et aucune notification ne s'affiche en cas d'expiration imminente.</translation>
+<translation id="6457477291648119596">Type 42</translation>
 <translation id="6458361632497500815">Si cette règle est activée ou qu'elle n'est pas configurée, tous les utilisateurs sont autorisés à utiliser <ph name="PRODUCT_CROSTINI_NAME" /> tant que les trois règles <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" />, <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> et <ph name="DEVICE_UNAFFILIATED_CROSTINI_ALLOWED_POLICY_NAME" /> sont activées. Si elle est désactivée, les utilisateurs non affiliés ne sont pas autorisés à utiliser <ph name="PRODUCT_CROSTINI_NAME" />. Si vous la désactivez, elle est appliquée aux conteneurs <ph name="PRODUCT_CROSTINI_NAME" /> qui vont être lancés, mais pas à ceux qui le sont déjà.</translation>
 <translation id="6464074037294098618">Activer la saisie automatique pour les adresses</translation>
 <translation id="6467613372414922590">Autoriser les hôtes de messagerie natifs au niveau de l'utilisateur (installés sans l'autorisation d'un administrateur)</translation>

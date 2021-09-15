@@ -2114,6 +2114,7 @@
 <translation id="3183143381919926261">流動數據網絡</translation>
 <translation id="3183944777708523606">顯示器排列</translation>
 <translation id="3184536091884214176">設定或管理 CUPS 打印機。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="3185014249447200271">{NUM_APPS,plural, =1{已封鎖這個應用程式}other{已封鎖部分應用程式}}</translation>
 <translation id="3188257591659621405">我的檔案</translation>
 <translation id="3188465121994729530">移動平均</translation>
 <translation id="3189187154924005138">大型游標</translation>
@@ -3074,6 +3075,7 @@
 <translation id="4220648711404560261">啟用時發生錯誤。</translation>
 <translation id="4225020013797061859">請按下要為「<ph name="ACTION" />」動作指派的按鈕裝置或按鍵</translation>
 <translation id="4225397296022057997">在所有網站上</translation>
+<translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{不允許這個擴充程式}other{不允許部分擴充程式}}</translation>
 <translation id="4231095370974836764">在 <ph name="DEVICE_TYPE" /> 上透過 Google Play 安裝應用程式和遊戲。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">設定 Kerberos</translation>
 <translation id="4235965441080806197">取消登入</translation>
@@ -4321,6 +4323,7 @@
 <translation id="5604884720628869833"><ph name="DEVICE_COUNT" /> 個裝置入面嘅第 <ph name="DEVICE_INDEX" /> 個，<ph name="DEVICE_NAME" />，鍵盤</translation>
 <translation id="5605623530403479164">其他搜尋引擎</translation>
 <translation id="5605758115928394442">已將通知傳送至您的手機，以確認您的身分。</translation>
+<translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{已封鎖這個擴充程式}other{已封鎖這些擴充程式}}</translation>
 <translation id="560834977503641186">Wi-Fi Sync，了解詳情</translation>
 <translation id="5608580678041221894">輕按以下按鍵即可調整或移動裁剪區域</translation>
 <translation id="5609231933459083978">這似乎是無效的應用程式。</translation>
@@ -5067,6 +5070,7 @@
 <translation id="6434325376267409267">您需要先更新裝置，才能使用 <ph name="APP_NAME" />。</translation>
 <translation id="6436164536244065364">在網上商店中檢視</translation>
 <translation id="6436610005579237680">如要取得更貼近您需要的回覆，請讓「Google 助理」在您問問題時存取包含畫面上資料的螢幕截圖，包括正在播放歌曲或影片的相關資料。</translation>
+<translation id="6436778875248895551">管理員已封鎖「<ph name="EXTENSION_NAME" />」擴充程式</translation>
 <translation id="6438234780621650381">重設設定</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - 正在播放音訊</translation>
 <translation id="6442187272350399447">太棒了</translation>
@@ -5218,6 +5222,7 @@
 <translation id="6596816719288285829">IP 地址</translation>
 <translation id="6597017209724497268">樣本數目</translation>
 <translation id="6597148444736186483">如要登出此裝置上的主要帳戶，請按一下螢幕上的時間。當畫面顯示選單時，按一下 [登出]。</translation>
+<translation id="6597331566371766302">管理員已封鎖以下擴充程式：</translation>
 <translation id="6601395831301182804">係咪要啟動 Chrome 作業系統內置嘅螢幕閱讀器 ChromeVox？要嘅話請㩒空格鍵。</translation>
 <translation id="6601612474695404578">有些網站會使用第三方 Cookie 載入頁面。如果網站無法正常運作，您可嘗試允許 Cookie。</translation>
 <translation id="6602937173026466876">存取打印機</translation>
@@ -5351,6 +5356,7 @@
 <translation id="6757101664402245801">已複製網址</translation>
 <translation id="6758056191028427665">請讓我們瞭解您的滿意度。</translation>
 <translation id="6759193508432371551">恢復原廠設定</translation>
+<translation id="676158322851696513">「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="6762833852331690540">開啟</translation>
 <translation id="676560328519657314">您喺 Google Pay 入面嘅付款方法</translation>
 <translation id="6767566652486411142">選擇其他語言…</translation>
@@ -6230,6 +6236,7 @@
 <translation id="7691698019618282776">Crostini 升級</translation>
 <translation id="7696063401938172191">在您的 <ph name="PHONE_NAME" /> 上：</translation>
 <translation id="7697166915480294040">分享螢幕畫面時會隱藏詳細資料</translation>
+<translation id="7698507637739331665">已封鎖部分項目</translation>
 <translation id="7701040980221191251">沒有</translation>
 <translation id="7701869757853594372">USER 控制代碼</translation>
 <translation id="7702574632857388784">從清單中移除 <ph name="FILE_NAME" /></translation>
@@ -6408,6 +6415,7 @@
 <translation id="7861215335140947162">下載(&amp;D)</translation>
 <translation id="7861846108263890455">Google 帳戶語言</translation>
 <translation id="7864539943188674973">停用藍牙</translation>
+<translation id="7865127013871431856">翻譯選項</translation>
 <translation id="7866230141401327032">透過「Google 智能鏡頭」搜尋頁面的一部分</translation>
 <translation id="7869143217755017858">停用夜間模式</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - 已配對</translation>

@@ -287,6 +287,7 @@
 <translation id="3549797760399244642">Accéder à drive.google.com…</translation>
 <translation id="3553048479571901246">Pour ouvrir des fichiers avec <ph name="APP_NAME" />, copiez-les d'abord dans le dossier "Fichiers Windows".</translation>
 <translation id="3556731189587832921">Anglais (États-Unis) avec clavier international (PC)</translation>
+<translation id="3567221313191587603">Sélectionnez un fichier, puis activez/désactivez <ph name="OFFLINE_CHECKBOX_NAME" /> pour l'accès à vos fichiers hors connexion.</translation>
 <translation id="357479282490346887">Lituanien</translation>
 <translation id="3592251141500063301">Impossible de mettre <ph name="FILE_NAME" /> à disposition hors connexion</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -397,6 +398,7 @@
 <translation id="4642769377300286600">Installation du profil mobile, réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />…</translation>
 <translation id="4646813851450205600">Tchèque avec clavier Qwerty</translation>
 <translation id="4656293982926141856">Cet ordinateur</translation>
+<translation id="4656777537938206294">Rendre des fichiers accessibles hors connexion</translation>
 <translation id="4669606053856530811">Les membres de "<ph name="SOURCE_NAME" />" n'auront plus accès à ces éléments, à moins qu'ils ne soient partagés avec eux.</translation>
 <translation id="4690246192099372265">Suédois</translation>
 <translation id="4693155481716051732">Sushi</translation>

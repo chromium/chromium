@@ -357,6 +357,7 @@
 <translation id="4619564267100705184">本人確認</translation>
 <translation id="4619615317237390068">他のデバイスからのタブ</translation>
 <translation id="4620246317052452550">既読のページ</translation>
+<translation id="4620888520263267479">リンク プレビューを表示</translation>
 <translation id="4630540211544979320">ページの翻訳</translation>
 <translation id="4634124774493850572">パスワードを使用</translation>
 <translation id="4636930964841734540">情報</translation>
@@ -662,6 +663,7 @@
 <translation id="7336264872878993241"><ph name="PERCENT" />%ダウンロード</translation>
 <translation id="7340958967809483333">Discover のオプション</translation>
 <translation id="7346909386216857016">OK</translation>
+<translation id="7347393021726115275">ログインできるアカウントは、管理者によって承認されているアカウントのみです。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="734758817008927353">カードの保存オプション</translation>
 <translation id="7348502496356775519">ブックマーク</translation>
 <translation id="7353432112255316844">本人確認</translation>

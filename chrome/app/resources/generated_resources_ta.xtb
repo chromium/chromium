@@ -2115,6 +2115,7 @@
 <translation id="3183143381919926261">மொபைல் டேட்டா நெட்வொர்க்குகள்</translation>
 <translation id="3183944777708523606">மானிட்டரை ஒழுங்கமைத்தல்</translation>
 <translation id="3184536091884214176">CUPS பிரிண்டர்களை அமைத்தல் அல்லது நிர்வகித்தல். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
+<translation id="3185014249447200271">{NUM_APPS,plural, =1{இந்த ஆப்ஸ் தடுக்கப்பட்டுள்ளது}other{சில ஆப்ஸ் தடுக்கப்பட்டுள்ளன}}</translation>
 <translation id="3188257591659621405">எனது ஃபைல்கள் </translation>
 <translation id="3188465121994729530">நகரும் சராசரி</translation>
 <translation id="3189187154924005138">பெரிய கர்சர்</translation>
@@ -3075,6 +3076,7 @@
 <translation id="4220648711404560261">செயலாக்கும் போது பிழை ஏற்பட்டது.</translation>
 <translation id="4225020013797061859">ஒரு ஸ்விட்சையோ பட்டனையோ அழுத்தி "<ph name="ACTION" />" செயலுக்கு அதை ஒதுக்கவும்</translation>
 <translation id="4225397296022057997">எல்லாத் தளங்களிலும்</translation>
+<translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{இந்த நீட்டிப்பிற்கு அனுமதி இல்லை}other{சில நீட்டிப்புகளுக்கு அனுமதி இல்லை}}</translation>
 <translation id="4231095370974836764">Google Playயிலிருந்து உங்கள் <ph name="DEVICE_TYPE" /> சாதனத்தில் ஆப்ஸையும் கேம்களையும் நிறுவலாம். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberosஸை உள்ளமைத்தல்</translation>
 <translation id="4235965441080806197">உள்நுழைவை ரத்துசெய்</translation>
@@ -4322,6 +4324,7 @@
 <translation id="5604884720628869833"><ph name="DEVICE_COUNT" /> சாதனங்களில் <ph name="DEVICE_INDEX" />வது சாதனம், <ph name="DEVICE_NAME" />, கீபோர்டு</translation>
 <translation id="5605623530403479164">பிற தேடல் இன்ஜின்கள்</translation>
 <translation id="5605758115928394442">அது நீங்கள்தான் என்பதை உறுதிப்படுத்த உங்கள் ஃபோனுக்கு ஓர் அறிவிப்பு அனுப்பப்பட்டுள்ளது.</translation>
+<translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{இந்த நீட்டிப்பு தடுக்கப்பட்டுள்ளது}other{இந்த நீட்டிப்புகள் தடுக்கப்பட்டுள்ளன}}</translation>
 <translation id="560834977503641186">வைஃபை ஒத்திசைவு, மேலும் அறிக</translation>
 <translation id="5608580678041221894">செதுக்கும் பகுதியைச் சரிசெய்ய அல்லது நகர்த்த, பின்வரும் விசைகளைத் தட்டவும்</translation>
 <translation id="5609231933459083978">ஆப்ஸ் தவறானது என்பதுபோல் தெரிகிறது.</translation>
@@ -5069,6 +5072,7 @@
 <translation id="6434325376267409267"><ph name="APP_NAME" /> ஆப்ஸைப் பயன்படுத்துவதற்கு முன்னர் உங்கள் சாதனத்தைப் புதுப்பிக்க வேண்டும்.</translation>
 <translation id="6436164536244065364">இணைய அங்காடியில் காண்க</translation>
 <translation id="6436610005579237680">கேள்விகளைக் கேட்கும்போது மிகவும் பொருத்தமான பதில்களைப் பெற, உங்கள் திரையில் உள்ளவற்றைப் பயன்படுத்த Google Assistantடை அனுமதிக்கவும். பிளே ஆகிக் கொண்டிருக்கும் பாடல்கள், வீடியோக்கள் குறித்த தகவல்களையும் அது பயன்படுத்தக்கூடும்.</translation>
+<translation id="6436778875248895551">"<ph name="EXTENSION_NAME" />" நீட்டிப்பு உங்கள் நிர்வாகியால் தடுக்கப்பட்டுள்ளது</translation>
 <translation id="6438234780621650381">அமைப்புகளை மீட்டமை</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - ஆடியோ இயக்கப்படுகிறது</translation>
 <translation id="6442187272350399447">அற்புதம்</translation>
@@ -5220,6 +5224,7 @@
 <translation id="6596816719288285829">IP முகவரி</translation>
 <translation id="6597017209724497268">மாதிரிகள்</translation>
 <translation id="6597148444736186483">இந்தச் சாதனத்தின் முதன்மைக் கணக்கிலிருந்து வெளியேற உங்கள் திரையிலுள்ள நேரத்தை கிளிக் செய்யவும். தோன்றுகிற மெனுவிலுள்ள "வெளியேறு" என்பதை கிளிக் செய்யவும்.</translation>
+<translation id="6597331566371766302">பின்வரும் நீட்டிப்புகள் உங்கள் நிர்வாகியால் தடுக்கப்பட்டுள்ளன:</translation>
 <translation id="6601395831301182804">Chrome OSஸுக்கான ChromeVox எனும் உள்ளமைந்த ஸ்கிரீன் ரீடரை இயக்க விரும்புகிறீர்களா? ஆம் என்றால் space விசையை அழுத்தவும்.</translation>
 <translation id="6601612474695404578">சில தளங்கள் தங்களின் பக்கங்களை ஏற்றுவதற்கு மூன்றாம் தரப்பு குக்கீகளைப் பயன்படுத்துகின்றன. தளம் இயங்கவில்லை எனில் நீங்கள் குக்கீகளை அனுமதிக்கலாம்.</translation>
 <translation id="6602937173026466876">உங்கள் பிரிண்டர்களை அணுகலாம்</translation>
@@ -5353,6 +5358,7 @@
 <translation id="6757101664402245801">URL நகலெடுக்கப்பட்டது</translation>
 <translation id="6758056191028427665">எவ்வாறு செயல்படுகிறோம் என்பதை எங்களுக்குத் தெரிவிக்கவும்.</translation>
 <translation id="6759193508432371551">தொழிற்சாலை மீட்டமைவு</translation>
+<translation id="676158322851696513">“<ph name="EXTENSION_NAME" />”</translation>
 <translation id="6762833852331690540">ஆன் செய்யப்பட்டுள்ளது</translation>
 <translation id="676560328519657314">Google Payயில் உள்ள உங்கள் கட்டண முறைகள்</translation>
 <translation id="6767566652486411142">மற்றொரு மொழியைத் தேர்வுசெய்க...</translation>
@@ -6232,6 +6238,7 @@
 <translation id="7691698019618282776">Crostini மேம்பாடு</translation>
 <translation id="7696063401938172191">உங்கள் '<ph name="PHONE_NAME" />' இல்:</translation>
 <translation id="7697166915480294040">திரையைப் பகிரும்போது விவரங்கள் மறைக்கப்படும்</translation>
+<translation id="7698507637739331665">சில ஆப்ஸும் நீட்டிப்புகளும் தடுக்கப்பட்டுள்ளன</translation>
 <translation id="7701040980221191251">எதுவுமில்லை</translation>
 <translation id="7701869757853594372">USER ஹேண்டில்ஸ்</translation>
 <translation id="7702574632857388784">பட்டியலிலிருந்து <ph name="FILE_NAME" />ஐ அகற்று</translation>
@@ -6410,6 +6417,7 @@
 <translation id="7861215335140947162">&amp;பதிவிறக்கங்கள்</translation>
 <translation id="7861846108263890455">Google கணக்கின் மொழி</translation>
 <translation id="7864539943188674973">புளூடூத்தை முடக்கு</translation>
+<translation id="7865127013871431856">Translate விருப்பங்கள்</translation>
 <translation id="7866230141401327032">Google Lens மூலம் பக்கத்தின் ஒரு பகுதியைத் தேடு</translation>
 <translation id="7869143217755017858">டார்க் பயன்முறையை முடக்குதல்</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - இணைக்கப்பட்டது</translation>

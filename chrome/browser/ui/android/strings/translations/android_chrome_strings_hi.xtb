@@ -858,6 +858,7 @@
 <translation id="6277522088822131679">पेज को प्रिंट करने में समस्या थी. कृपया फिर से प्रयास करें.</translation>
 <translation id="6278428485366576908">थीम</translation>
 <translation id="6292420053234093573">Chrome इस्तेमाल करने का मतलब है कि आप <ph name="BEGIN_LINK1" />Google की सेवा की शर्तों<ph name="END_LINK1" /> और <ph name="BEGIN_LINK2" />Google Chrome और Chrome OS की सेवा की अतिरिक्त शर्तों<ph name="END_LINK2" /> से सहमत हैं.</translation>
+<translation id="6294610283659775533">आप उन डिवाइसों के बीच टैब शेयर कर सकते हैं जिन पर एक ही Google खाते से साइन इन किया हो</translation>
 <translation id="6297765934698848803">आपके डिवाइस काे प्रबंधित करने वाले संगठन ने आपका कैमरा बंद कर दिया है.</translation>
 <translation id="6301525844455696527">पढ़ने की चीज़ों की सूची में आपके लिए बहुत कुछ नया है</translation>
 <translation id="6303969859164067831">साइन आउट करें और सिंक बंद करें</translation>
@@ -1007,6 +1008,7 @@
 <translation id="7077143737582773186">SD कार्ड</translation>
 <translation id="7080806333218412752">जांच करने के लिए, सुरक्षित ब्राउज़िंग की सेवा को यूआरएल भेजता है. नए खतरों का पता लगाने के लिए पेज के नमूने, डाउनलोड, एक्सटेंशन की गतिविधि, और सिस्टम की जानकारी भी भेजता है. आपके साइन इन होने पर, थोड़ी देर के लिए इस डेटा को आपके Google खाते से जोड़ता है. ऐसा सभी Google ऐप्लिकेशन पर आपको सुरक्षित रखने के लिए किया जाता है.</translation>
 <translation id="7088681679121566888">Chrome अप-टू-डेट है</translation>
+<translation id="7093803425429738190">भावना जोड़ें</translation>
 <translation id="7106762743910369165">आपका संगठन आपके ब्राउज़र को प्रबंधित करता है</translation>
 <translation id="7121362699166175603">पता बार मेंअपने-आपपूर्णता और इतिहास को हटाता है. आपके Google खाते में <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> पर अन्य प्रकार के ब्राउज़िंग इतिहास हो सकतेे हैं.</translation>
 <translation id="7138678301420049075">अन्य</translation>
@@ -1292,6 +1294,7 @@
 <translation id="8730621377337864115">हो गया</translation>
 <translation id="8746155870861185046">हाइलाइट किया गया टेक्स्ट शेयर करें</translation>
 <translation id="8748850008226585750">छिपी हुई सामग्री</translation>
+<translation id="8766529642647037772">क्या आप हाइलाइट किया गया ऐसा लिंक बनाना चाहते हैं?</translation>
 <translation id="8773160212632396039">अनुरोध को प्रोसेस किया जा रहा है</translation>
 <translation id="8788265440806329501">नेविगेशन का इतिहास बंद है</translation>
 <translation id="8788968922598763114">अभी बंद किया हुआ टैब खोलें</translation>

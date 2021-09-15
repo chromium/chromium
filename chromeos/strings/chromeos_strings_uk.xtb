@@ -162,6 +162,7 @@
 <translation id="4238516577297848345">Немає активних завдань друку</translation>
 <translation id="4244962993387259361">Щоб виконати перевірку пам’яті, потрібно принаймні 500 МБ вільного місця. Щоб звільнити пам’ять, перейдіть у розділ "Налаштування" &gt; "Керування пам’яттю".</translation>
 <translation id="4258281355379922695">Затримка HTTP</translation>
+<translation id="4271957103967917607">Переглянути в повноекранному режимі</translation>
 <translation id="4289540628985791613">Огляд</translation>
 <translation id="4297501883039923494">Зупинено – невідома помилка</translation>
 <translation id="4300073214558989">Зображень: <ph name="IMAGE_COUNT" /></translation>
@@ -373,6 +374,7 @@
 <translation id="7550715992156305117">Послідовності дій для діагностики</translation>
 <translation id="7561454561030345039">Цією дією керує адміністратор</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7574732568136198983">Перевірити ARC</translation>
 <translation id="7595982850646262331">Ще <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Дізнатися більше в Довідковому центрі</translation>
 <translation id="763165478673169849">Час останнього скидання</translation>

@@ -2115,6 +2115,7 @@
 <translation id="3183143381919926261">모바일 데이터 네트워크</translation>
 <translation id="3183944777708523606">모니터 배치</translation>
 <translation id="3184536091884214176">CUPS 프린터를 설정하거나 관리합니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
+<translation id="3185014249447200271">{NUM_APPS,plural, =1{앱이 차단됨}other{일부 앱이 차단됨}}</translation>
 <translation id="3188257591659621405">내 파일</translation>
 <translation id="3188465121994729530">이동 평균</translation>
 <translation id="3189187154924005138">큰 커서</translation>
@@ -3073,6 +3074,7 @@
 <translation id="4220648711404560261">활성화 중 오류가 발생했습니다.</translation>
 <translation id="4225020013797061859">"<ph name="ACTION" />" 작업을 할당할 스위치 또는 키를 누르세요.</translation>
 <translation id="4225397296022057997">모든 사이트에서</translation>
+<translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{확장 프로그램이 허용되지 않음}other{일부 확장 프로그램이 허용되지 않음}}</translation>
 <translation id="4231095370974836764"><ph name="DEVICE_TYPE" />에서 Google Play 앱 및 게임을 설치하세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos 설정</translation>
 <translation id="4235965441080806197">로그인 취소</translation>
@@ -4319,6 +4321,7 @@
 <translation id="5604884720628869833">기기 <ph name="DEVICE_COUNT" />대 중 <ph name="DEVICE_INDEX" />번째, <ph name="DEVICE_NAME" />, 키보드</translation>
 <translation id="5605623530403479164">기타 검색엔진</translation>
 <translation id="5605758115928394442">휴대전화로 본인 인증을 위한 알림이 전송되었습니다.</translation>
+<translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{확장 프로그램이 차단됨}other{확장 프로그램이 차단됨}}</translation>
 <translation id="560834977503641186">Wi-Fi 동기화, 자세히 알아보기</translation>
 <translation id="5608580678041221894">다음 키를 탭하여 자르기 영역을 조정하거나 이동하세요.</translation>
 <translation id="5609231933459083978">애플리케이션이 잘못된 것 같습니다.</translation>
@@ -5065,6 +5068,7 @@
 <translation id="6434325376267409267"><ph name="APP_NAME" /> 앱을 사용하려면 기기를 업데이트해야 합니다.</translation>
 <translation id="6436164536244065364">웹 스토어에서 보기</translation>
 <translation id="6436610005579237680">나에게 맞는 답변을 듣고 싶다면 내가 질문할 때 Google 어시스턴트가 화면에 표시된 항목의 스크린샷에 액세스하도록 허용하세요. 어시스턴트는 재생 중인 노래나 동영상에 관한 정보를 사용할 수도 있습니다.</translation>
+<translation id="6436778875248895551">관리자가 "<ph name="EXTENSION_NAME" />" 확장 프로그램을 차단했습니다.</translation>
 <translation id="6438234780621650381">설정 초기화</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - 오디오 재생</translation>
 <translation id="6442187272350399447">멋쟁이</translation>
@@ -5216,6 +5220,7 @@
 <translation id="6596816719288285829">IP 주소</translation>
 <translation id="6597017209724497268">샘플</translation>
 <translation id="6597148444736186483">이 기기의 기본 계정에서 로그아웃하려면 화면에 표시된 시간을 클릭합니다. 표시되는 메뉴에서 '로그아웃'을 클릭합니다.</translation>
+<translation id="6597331566371766302">관리자가 다음 확장 프로그램을 차단했습니다.</translation>
 <translation id="6601395831301182804">Chrome OS에 기본 제공되는 스크린 리더인 ChromeVox를 활성화하시겠습니까? 활성화하려면 스페이스바를 누르세요.</translation>
 <translation id="6601612474695404578">일부 사이트에서는 타사 쿠키를 사용하여 페이지를 로드합니다. 사이트가 작동하지 않으면 쿠키를 허용해 보세요.</translation>
 <translation id="6602937173026466876">프린터에 액세스</translation>
@@ -5349,6 +5354,7 @@
 <translation id="6757101664402245801">URL을 복사했습니다</translation>
 <translation id="6758056191028427665">개선할 점이나 격려하고 싶은 점을 알려주세요.</translation>
 <translation id="6759193508432371551">초기화</translation>
+<translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6762833852331690540">사용</translation>
 <translation id="676560328519657314">Google Pay 결제 수단</translation>
 <translation id="6767566652486411142">다른 언어 선택...</translation>
@@ -6228,6 +6234,7 @@
 <translation id="7691698019618282776">Crostini 업그레이드</translation>
 <translation id="7696063401938172191">'<ph name="PHONE_NAME" />'에서 다음과 같이 설정하세요.</translation>
 <translation id="7697166915480294040">화면을 공유하는 동안에는 세부정보가 표시되지 않습니다.</translation>
+<translation id="7698507637739331665">일부 항목이 차단됨</translation>
 <translation id="7701040980221191251">없음</translation>
 <translation id="7701869757853594372">사용자 처리</translation>
 <translation id="7702574632857388784">목록에서 <ph name="FILE_NAME" /> 삭제</translation>
@@ -6406,6 +6413,7 @@
 <translation id="7861215335140947162">다운로드(&amp;D)</translation>
 <translation id="7861846108263890455">Google 계정 언어</translation>
 <translation id="7864539943188674973">블루투스 사용 안 함</translation>
+<translation id="7865127013871431856">번역 옵션</translation>
 <translation id="7866230141401327032">Google 렌즈로 페이지 일부 검색</translation>
 <translation id="7869143217755017858">어두운 모드 사용 중지</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - 페어링됨</translation>

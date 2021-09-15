@@ -2114,6 +2114,7 @@
 <translation id="3183143381919926261">మొబైల్ డేటా నెట్‌వర్క్‌లు</translation>
 <translation id="3183944777708523606">మానిటర్ అమరిక</translation>
 <translation id="3184536091884214176">CUPS ప్రింటర్‌లను సెటప్ చేయండి లేదా నిర్వహించండి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
+<translation id="3185014249447200271">{NUM_APPS,plural, =1{ఈ యాప్ బ్లాక్ చేయబడింది}other{కొన్ని యాప్‌లు బ్లాక్ చేయబడ్డాయి}}</translation>
 <translation id="3188257591659621405">నా ఫైళ్లు</translation>
 <translation id="3188465121994729530">తరలించే సగటు</translation>
 <translation id="3189187154924005138">పెద్ద కర్సర్</translation>
@@ -3074,6 +3075,7 @@
 <translation id="4220648711404560261">యాక్టివేషన్ సమయంలో ఎర్రర్ సంభవించింది.</translation>
 <translation id="4225020013797061859">"<ph name="ACTION" />"ను కేటాయించడానికి ఏదైనా స్విచ్ లేదా కీని నొక్కండి</translation>
 <translation id="4225397296022057997">అన్ని సైట్‌లలో</translation>
+<translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{ఈ ఎక్స్‌టెన్షన్ అనుమతించబడదు}other{కొన్ని ఎక్స్‌టెన్షన్‌లు అనుమతించబడవు}}</translation>
 <translation id="4231095370974836764">మీ <ph name="DEVICE_TYPE" />లో Google Play నుండి యాప్‌లు, గేమ్‌లను ఇన్‌స్టాల్ చేయండి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberosను కాన్ఫిగర్ చేయండి</translation>
 <translation id="4235965441080806197">సైన్ ఇన్‌ను రద్దు చేయి</translation>
@@ -4321,6 +4323,7 @@
 <translation id="5604884720628869833"><ph name="DEVICE_COUNT" />లో <ph name="DEVICE_INDEX" /> పరికరం, <ph name="DEVICE_NAME" />, కీబోర్డ్</translation>
 <translation id="5605623530403479164">ఇతర సెర్చ్ ఇంజిన్‌లు</translation>
 <translation id="5605758115928394442">మీరేనని నిర్ధారించుకోవడానికి మీ ఫోన్‌కు ఒక నోటిఫికేషన్ పంపబడింది.</translation>
+<translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{ఈ ఎక్స్‌టెన్షన్ బ్లాక్ చేయబడింది}other{ఈ ఎక్స్‌టెన్షన్‌లు బ్లాక్ చేయబడ్డాయి}}</translation>
 <translation id="560834977503641186">Wi-Fi సింక్, మరింత తెలుసుకోండి</translation>
 <translation id="5608580678041221894">కత్తిరింపు ప్రాంతాన్ని సర్దుబాటు చేయడానికి లేదా తరలించడానికి కింది కీలను నొక్కండి</translation>
 <translation id="5609231933459083978">అప్లికేష‌న్‌ చెల్లనిదిగా కనిపిస్తోంది.</translation>
@@ -5067,6 +5070,7 @@
 <translation id="6434325376267409267">మీరు <ph name="APP_NAME" />ను ఉపయోగించడానికి ముందు మీ పరికరాన్ని అప్‌డేట్ చేయాలి.</translation>
 <translation id="6436164536244065364">వెబ్ స్టోర్‌లో చూడండి</translation>
 <translation id="6436610005579237680">మీరు మరింత అనుకూలంగా ఉన్న సమాధానాలను పొందడం కోసం, మీరు ప్రశ్నలు అడిగినప్పుడు మీ స్క్రీన్‌పై ఉన్న దాని స్క్రీన్‌షాట్‌ను యాక్సెస్ చేయడానికి Google Assistantను అనుమతించండి. ప్లే అవుతున్న పాటలు లేదా వీడియోల గురించి సమాచారాన్ని కూడా మీ Assistant ఉపయోగించవచ్చు.</translation>
+<translation id="6436778875248895551">మీ అడ్మినిస్ట్రేటర్ "<ph name="EXTENSION_NAME" />" ఎక్స్‌టెన్షన్‌ను బ్లాక్ చేశారు</translation>
 <translation id="6438234780621650381">సెట్టింగ్‌లను రీసెట్ చేయండి</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - ఆడియో ప్లే చేస్తోంది</translation>
 <translation id="6442187272350399447">ఆసమ్</translation>
@@ -5218,6 +5222,7 @@
 <translation id="6596816719288285829">IP అడ్రస్‌</translation>
 <translation id="6597017209724497268">నమూనాలు</translation>
 <translation id="6597148444736186483">ఈ పరికరంలోని ప్రాధమిక ఖాతా నుండి సైన్ అవుట్ చేయడానికి, మీ స్క్రీన్‌పై సమయాన్ని క్లిక్ చేయండి. అది కనిపించే మెనూలో, "సైన్ అవుట్" క్లిక్ చేయండి.</translation>
+<translation id="6597331566371766302">మీ అడ్మినిస్ట్రేటర్ ఈ కింది ఎక్స్‌టెన్షన్‌లను బ్లాక్ చేశారు:</translation>
 <translation id="6601395831301182804">Chrome OSకు బిల్ట్-ఇన్ స్క్రీన్ రీడర్ అయిన ChromeVoxను యాక్టివేట్ చేసుకోవాలనుకుంటున్నారా? యాక్టివేట్ చేసుకోవాలనుకుంటే, స్పేస్ బార్‌ను నొక్కండి.</translation>
 <translation id="6601612474695404578">కొన్ని సైట్‌లు వాటి పేజీలను లోడ్ చేయడానికి థర్డ్-పార్టీ కుక్కీలను ఉపయోగిస్తాయి. ఏదైనా ఒక సైట్ పని చేయకపోతే, మీరు కుక్కీలను అనుమతించి ప్రయత్నించవచ్చు.</translation>
 <translation id="6602937173026466876">మీ ప్రింటర్‌లను యాక్సెస్ చేయండి</translation>
@@ -5351,6 +5356,7 @@
 <translation id="6757101664402245801">URL కాపీ చేయబడింది</translation>
 <translation id="6758056191028427665">మేము అందించే సేవలు ఎలా ఉన్నాయో మాకు తెలియజేయండి.</translation>
 <translation id="6759193508432371551">ఫ్యాక్టరీ రీసెట్</translation>
+<translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6762833852331690540">ఆన్‌లో ఉంది</translation>
 <translation id="676560328519657314">Google Payలో మీ పేమెంట్ ఆప్షన్‌లు</translation>
 <translation id="6767566652486411142">మరొక భాషను ఎంచుకోండి...</translation>
@@ -6230,6 +6236,7 @@
 <translation id="7691698019618282776">Crostini అప్‌గ్రేడ్</translation>
 <translation id="7696063401938172191">మీ '<ph name="PHONE_NAME" />'లో:</translation>
 <translation id="7697166915480294040">మీరు స్క్రీన్‌ను షేర్ చేస్తున్నప్పుడు వివరాలు దాచబడతాయి</translation>
+<translation id="7698507637739331665">కోన్ని ఐటెమ్‌లు బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="7701040980221191251">ఏదీ లేదు</translation>
 <translation id="7701869757853594372">వినియోగదారు నిర్వహించేవి</translation>
 <translation id="7702574632857388784">లిస్ట్‌ నుంచి <ph name="FILE_NAME" />ని తొలగించు</translation>
@@ -6407,6 +6414,7 @@
 <translation id="7861215335140947162">&amp;డౌన్‌లోడ్‌లు</translation>
 <translation id="7861846108263890455">Google ఖాతా భాష</translation>
 <translation id="7864539943188674973">Bluetoothని నిలిపివేయి</translation>
+<translation id="7865127013871431856">Translate ఆప్షన్‌లు</translation>
 <translation id="7866230141401327032">Google Lens సహాయంతో పేజీలోని భాగాన్ని సెర్చ్ చేయండి</translation>
 <translation id="7869143217755017858">డార్క్ మోడ్‌ను డిజేబుల్ చేయండి</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - జత చేయబడింది</translation>

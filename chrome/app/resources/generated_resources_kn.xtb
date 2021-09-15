@@ -2107,6 +2107,7 @@
 <translation id="3183143381919926261">ಮೊಬೈಲ್ ಡೇಟಾ ನೆಟ್‌ವರ್ಕ್‌ಗಳು</translation>
 <translation id="3183944777708523606">ಮಾನಿಟರ್ ಜೋಡಣೆ</translation>
 <translation id="3184536091884214176">CUPS ಪ್ರಿಂಟರ್‌ಗಳನ್ನು ಸೆಟಪ್ ಮಾಡಿ ಅಥವಾ ನಿರ್ವಹಿಸಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
+<translation id="3185014249447200271">{NUM_APPS,plural, =1{ಈ ಆ್ಯಪ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}one{ಕೆಲವು ಆ್ಯಪ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}other{ಕೆಲವು ಆ್ಯಪ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}}</translation>
 <translation id="3188257591659621405">ನನ್ನ ಫೈಲ್‌ಗಳು</translation>
 <translation id="3188465121994729530">ಸರಿಸುವಿಕೆ ಸರಾಸರಿ</translation>
 <translation id="3189187154924005138">ದೊಡ್ಡ ಕರ್ಸರ್</translation>
@@ -3068,6 +3069,7 @@
 <translation id="4220648711404560261">ಸಕ್ರಿಯಗೊಳಿಸುವಾಗ, ದೋಷ ಸಂಭವಿಸಿದೆ.</translation>
 <translation id="4225020013797061859">"<ph name="ACTION" />" ನಿಯೋಜಿಸಲು ಸ್ವಿಚ್ ಅಥವಾ ಕೀ ಅನ್ನು ಒತ್ತಿರಿ</translation>
 <translation id="4225397296022057997">ಎಲ್ಲಾ ಸೈಟ್‌ಗಳಲ್ಲಿ</translation>
+<translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{ಈ ವಿಸ್ತರಣೆಯನ್ನು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ}one{ಕೆಲವು ವಿಸ್ತರಣೆಗಳನ್ನು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ}other{ಕೆಲವು ವಿಸ್ತರಣೆಗಳನ್ನು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ}}</translation>
 <translation id="4231095370974836764">Google Play ನಿಂದ ಆ್ಯಪ್‌ಗಳು ಹಾಗೂ ಗೇಮ್‌ಗಳನ್ನು ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos ಕಾನ್ಫಿಗರ್ ಮಾಡಿ</translation>
 <translation id="4235965441080806197">ಸೈನ್‌ ಇನ್ ಮಾಡುವುದನ್ನು ರದ್ದುಮಾಡಿ</translation>
@@ -4315,6 +4317,7 @@
 <translation id="5604884720628869833"><ph name="DEVICE_COUNT" /> ರಲ್ಲಿ <ph name="DEVICE_INDEX" /> ಸಾಧನ, <ph name="DEVICE_NAME" />, ಕೀಬೋರ್ಡ್</translation>
 <translation id="5605623530403479164">ಇತರ ಹುಡುಕಾಟದ ಇಂಜಿನ್‌ಗಳು</translation>
 <translation id="5605758115928394442">ಇದು ನೀವೇ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಲು ನಿಮ್ಮ ಫೋನ್‌ಗೆ ಒಂದು ಅಧಿಸೂಚನೆಯನ್ನು ಕಳುಹಿಸಲಾಗಿದೆ.</translation>
+<translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{ಈ ವಿಸ್ತರಣೆಯನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}one{ಈ ವಿಸ್ತರಣೆಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}other{ಈ ವಿಸ್ತರಣೆಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}}</translation>
 <translation id="560834977503641186">Wi-Fi ಸಿಂಕ್, ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="5608580678041221894">ಕ್ರಾಪ್ ಮಾಡಿರುವ ಪ್ರದೇಶವನ್ನು ಸರಿಹೊಂದಿಸಲು ಅಥವಾ ಸರಿಸಲು ಈ ಮುಂದಿನ ಕೀಗಳನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="5609231933459083978">ಅಪ್ಲಿಕೇಶನ್ ಅಮಾನ್ಯವಾಗಿರುವಂತೆ ತೋರುತ್ತಿದೆ.</translation>
@@ -5062,6 +5065,7 @@
 <translation id="6434325376267409267">ನೀವು <ph name="APP_NAME" /> ಅನ್ನು ಬಳಸುವ ಮೊದಲು ನಿಮ್ಮ ಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡುವ ಅಗತ್ಯವಿದೆ.</translation>
 <translation id="6436164536244065364">ವೆಬ್ ಅಂಗಡಿಯಲ್ಲಿ ವೀಕ್ಷಿಸಿ</translation>
 <translation id="6436610005579237680">ನಿಮಗೆ ಹೆಚ್ಚು ವೈಯಕ್ತಿಗೊಳಿಸಿದ ಪ್ರತಿಕ್ರಿಯೆಗಳನ್ನು ಪಡೆಯಲು, ನೀವು ಪ್ರಶ್ನೆಗಳನ್ನು ಕೇಳಿದಾಗ ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ನಲ್ಲಿ ಏನಿದೆ ಎಂಬುದರ ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಅನ್ನು ಪ್ರವೇಶಿಸಲು ನಿಮ್ಮ Google Assistant ಗೆ ಅನುಮತಿಸಿ. ನಿಮ್ಮ Assistant, ಪ್ಲೇ ಆಗುತ್ತಿರುವ ಹಾಡುಗಳು ಅಥವಾ ವೀಡಿಯೊಗಳ ಮಾಹಿತಿಯನ್ನು ಬಳಸಬಹುದು.</translation>
+<translation id="6436778875248895551">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು "<ph name="EXTENSION_NAME" />" ವಿಸ್ತರಣೆಯನ್ನು ನಿರ್ಬಂಧಿಸಿದ್ದಾರೆ</translation>
 <translation id="6438234780621650381">ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಮರುಹೊಂದಿಸಿ</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - ಆಡಿಯೋ ಪ್ಲೇ ಆಗುತ್ತಿದೆ</translation>
 <translation id="6442187272350399447">ಆಕರ್ಷಕ</translation>
@@ -5213,6 +5217,7 @@
 <translation id="6596816719288285829">IP ವಿಳಾಸ</translation>
 <translation id="6597017209724497268">ಮಾದರಿಗಳು</translation>
 <translation id="6597148444736186483">ಈ ಸಾಧನದಲ್ಲಿ ಪ್ರಾಥಮಿಕ ಖಾತೆಯಿಂದ ಸೈನ್ ಔಟ್ ಆಗಲು, ಸ್ಕ್ರೀನ್ ಮೇಲಿರುವ ಸಮಯವನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ. ನಂತರ ಕಾಣಿಸಿಕೊಳ್ಳುವ ಮೆನುವಿನಲ್ಲಿ "ಸೈನ್ ಔಟ್" ಅನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
+<translation id="6597331566371766302">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಕೆಳಗಿನ ವಿಸ್ತರಣೆಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿದ್ದಾರೆ:</translation>
 <translation id="6601395831301182804">ChromeVox, Chrome OS ಗಾಗಿ ಅಂತರ್ನಿರ್ಮಿತ ಸ್ಕ್ರೀನ್ ರೀಡರ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ನೀವು ಬಯಸುವಿರಾ? ಹಾಗಿದ್ದರೆ, ಸ್ಪೇಸ್ ಬಾರ್ ಅನ್ನು ಒತ್ತಿ.</translation>
 <translation id="6601612474695404578">ಕೆಲವು ಸೈಟ್‌ಗಳು ತಮ್ಮ ಪುಟಗಳನ್ನು ಲೋಡ್ ಮಾಡಲು ಥರ್ಡ್ ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ಬಳಸುತ್ತವೆ. ಸೈಟ್ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತಿಲ್ಲದಿದ್ದರೆ, ಕುಕೀಗಳನ್ನು ಅನುಮತಿಸುವ ಮೂಲಕ ನೀವು ಪ್ರಯತ್ನಿಸಬಹುದು.</translation>
 <translation id="6602937173026466876">ನಿಮ್ಮ ಪ್ರಿಂಟರ್‌ಗಳನ್ನು ಪ್ರವೇಶಿಸಿ</translation>
@@ -5346,6 +5351,7 @@
 <translation id="6757101664402245801">URL ನಕಲಿಸಲಾಗಿದೆ</translation>
 <translation id="6758056191028427665">ನಮ್ಮ ಕೆಲಸದ ಕುರಿತು ನಿಮ್ಮ ಅಭಿಪ್ರಾಯವನ್ನು ತಿಳಿಸಿ.</translation>
 <translation id="6759193508432371551">ಫ್ಯಾಕ್ಟರಿ ರಿಸೆಟ್‌</translation>
+<translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6762833852331690540">ಆನ್‌ ಆಗಿದೆ</translation>
 <translation id="676560328519657314">Google Pay ನಲ್ಲಿರುವ ನಿಮ್ಮ ಪಾವತಿ ವಿಧಾನಗಳು</translation>
 <translation id="6767566652486411142">ಬೇರೊಂದು ಭಾಷೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ...</translation>
@@ -6226,6 +6232,7 @@
 <translation id="7691698019618282776">Crostini ಅನ್ನು ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಿ</translation>
 <translation id="7696063401938172191">ನಿಮ್ಮ'<ph name="PHONE_NAME" />' ನಲ್ಲಿ:</translation>
 <translation id="7697166915480294040">ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳುವಾಗ ವಿವರಗಳನ್ನು ಮರೆಮಾಡಲಾಗುತ್ತದೆ</translation>
+<translation id="7698507637739331665">ಕೆಲವು ಐಟಂಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="7701040980221191251">ಯಾವುದೂ ಇಲ್ಲ</translation>
 <translation id="7701869757853594372">ಬಳಕೆದಾರರು ನಿರ್ವಹಿಸುತ್ತಾರೆ</translation>
 <translation id="7702574632857388784">ಪಟ್ಟಿಯಿಂದ <ph name="FILE_NAME" /> ತೆಗೆದುಹಾಕಿ</translation>
@@ -6403,6 +6410,7 @@
 <translation id="7861215335140947162">&amp;ಡೌನ್‌ಲೋಡ್‌ಗಳು</translation>
 <translation id="7861846108263890455">Google ಖಾತೆಯ ಭಾಷೆ</translation>
 <translation id="7864539943188674973">ಬ್ಲೂಟೂತ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
+<translation id="7865127013871431856">ಅನುವಾದ ಆಯ್ಕೆಗಳು</translation>
 <translation id="7866230141401327032">Google Lens ಬಳಸಿಕೊಂಡು ಪುಟದ ಭಾಗವನ್ನು ಹುಡುಕಿ</translation>
 <translation id="7869143217755017858">ಕತ್ತಲೆ ಮೋಡ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - ಜೋಡಿಸಲಾಗಿದೆ</translation>

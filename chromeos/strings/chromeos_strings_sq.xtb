@@ -162,6 +162,7 @@
 <translation id="4238516577297848345">Nuk ka printime në vazhdim</translation>
 <translation id="4244962993387259361">Të duhen të paktën 500 MB hapësirë e lirë për ekzekutimin e një testi të memories. Për të liruar hapësirën, shko te Cilësimet &gt; Menaxhimi i hapësirës ruajtëse.</translation>
 <translation id="4258281355379922695">Vonesa e HTTP-së</translation>
+<translation id="4271957103967917607">Shiko në ekranin e plotë</translation>
 <translation id="4289540628985791613">Përmbledhje</translation>
 <translation id="4297501883039923494">Ndaloi - Gabim i panjohur</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imazhe</translation>
@@ -372,6 +373,7 @@
 <translation id="7550715992156305117">Rutinat diagnostikuese</translation>
 <translation id="7561454561030345039">Ky veprim menaxhohet nga administratori yt</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7574732568136198983">ARC Ping</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> të mbetura</translation>
 <translation id="7620771111601174153">Mëso më shumë në "Qendrën e ndihmës"</translation>
 <translation id="763165478673169849">Koha e rivendosjes së fundit</translation>

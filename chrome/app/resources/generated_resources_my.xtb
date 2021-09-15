@@ -2113,6 +2113,7 @@
 <translation id="3183143381919926261">မိုဘိုင်းဒေတာ ကွန်ရက်များ</translation>
 <translation id="3183944777708523606">မော်နီတာ အစီအစဉ်</translation>
 <translation id="3184536091884214176">CUPS ပုံနှိပ်စက်များကို စနစ်ထည့်သွင်းပါ သို့မဟုတ် စီမံပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
+<translation id="3185014249447200271">{NUM_APPS,plural, =1{ဤအက်ပ်ကို ပိတ်ထားသည်}other{အက်ပ်အချို့ကို ပိတ်ထားသည်}}</translation>
 <translation id="3188257591659621405">ကျွန်ုပ်၏ဖိုင်များ</translation>
 <translation id="3188465121994729530">ပျမ်းမျှ ရွေ့ပေးနေ</translation>
 <translation id="3189187154924005138">ကာဆာ အကြီး</translation>
@@ -3072,6 +3073,7 @@
 <translation id="4220648711404560261">စတင်နေစဉ်အတွင်း အမှားဖြစ်သွားသည်။</translation>
 <translation id="4225020013797061859">“<ph name="ACTION" />” အတွက် သတ်မှတ်ရန် အသွင်တူ ခလုတ် (သို့) ကီးကို နှိပ်ပါ</translation>
 <translation id="4225397296022057997">ဝဘ်ဆိုက်များ အားလုံးတွင်</translation>
+<translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{ဤနောက်ဆက်တွဲကို ခွင့်မပြုပါ}other{နောက်ဆက်တွဲအချို့ကို ခွင့်မပြုပါ}}</translation>
 <translation id="4231095370974836764">သင်၏ <ph name="DEVICE_TYPE" /> တွင် Google Play မှ အက်ပ်နှင့် ဂိမ်းများ ထည့်သွင်းပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos ကို စီစဉ်သတ်မှတ်ပါ</translation>
 <translation id="4235965441080806197">လက်မှတ်ထိုးဝင်ခြင်းကို ပယ်ဖျက်ရန်</translation>
@@ -4319,6 +4321,7 @@
 <translation id="5604884720628869833">စက် <ph name="DEVICE_COUNT" /> ခုမှ <ph name="DEVICE_INDEX" /> ခုမြောက်၊ <ph name="DEVICE_NAME" />၊ ကီးဘုတ်</translation>
 <translation id="5605623530403479164">အခြား ရှာဖွေရေး အင်ဂျင်များ</translation>
 <translation id="5605758115928394442">သင်ဖြစ်ကြောင်း အတည်ပြုရန် သင့်ဖုန်းသို့ အကြောင်းကြားချက်တစ်ခု ပို့ထားသည်။</translation>
+<translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{ဤနောက်ဆက်တွဲကို ပိတ်ထားသည်}other{ဤနောက်ဆက်တွဲများကို ပိတ်ထားသည်}}</translation>
 <translation id="560834977503641186">Wi-Fi စင့်ခ်၊ ပိုမိုလေ့လာရန်</translation>
 <translation id="5608580678041221894">ဖြတ်ညှိရန်နေရာကို ချိန်ညှိရန် သို့မဟုတ် ရွှေ့ရန် အောက်ပါခလုတ်များကို တို့ပါ</translation>
 <translation id="5609231933459083978">အပလီကေးရှင်း မမှန်ကန်နိုင်ပါ။</translation>
@@ -5065,6 +5068,7 @@
 <translation id="6434325376267409267"><ph name="APP_NAME" /> အသုံးမပြုမီ သင့်စက်ကို အပ်ဒိတ်လုပ်ရန် လိုအပ်သည်။</translation>
 <translation id="6436164536244065364">ဝဘ်စတိုးမှာ ကြည့်ရန်</translation>
 <translation id="6436610005579237680">မေးခွန်းများမေးသောအခါ သင့်အတွက် ပိုမိုရွေးချယ်စီစဉ်ထားသော အဖြေများရရှိရန် Google Assistant ကို သင့်ဖန်သားပြင်ပေါ်ရှိ အဖြစ်အပျက်ကို ရိုက်ထားသော ဖန်သားပြင်ဓာတ်ပုံ သုံးခွင့်ပြုပါ။ သင်၏ Assistant သည် ဖွင့်ထားသော သီချင်း (သို့) ဗီဒီယိုများအကြောင်း အချက်အလက်ကိုလည်း အသုံးပြုနိုင်သည်။</translation>
+<translation id="6436778875248895551">“<ph name="EXTENSION_NAME" />” နောက်ဆက်တွဲကို သင့်စီမံသူက ပိတ်ထားသည်</translation>
 <translation id="6438234780621650381">ဆက်တင်များ ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - အသံဖွင့်ခြင်း</translation>
 <translation id="6442187272350399447">အံ့ဩဖွယ်</translation>
@@ -5214,6 +5218,7 @@
 <translation id="6596816719288285829">IP လိပ်စာ</translation>
 <translation id="6597017209724497268">နမူနာများ</translation>
 <translation id="6597148444736186483">ဤစက်ရှိ ပင်မအကောင့်မှထွက်ရန် ဖန်သားပြင်ပေါ်ရှိ အချိန်ကို နှိပ်ပါ။ ပေါ်လာသည့် မီနူးတွင် "ထွက်ရန်" ကို နှိပ်ပါ။</translation>
+<translation id="6597331566371766302">အောက်ပါနောက်ဆက်တွဲများကို သင့်စီမံသူက ပိတ်ထားသည်-</translation>
 <translation id="6601395831301182804">Chrome OS ၏ အသင့်ပါ ဖန်သားပြင်ဖတ်အက်ပ် ChromeVox ကို စသုံးလိုသလား။ သုံးလိုပါက နေရာခြားခလုတ်ကို နှိပ်ပါ။</translation>
 <translation id="6601612474695404578">အချို့ဝဘ်ဆိုက်များက ၎င်းတို့၏စာမျက်နှာများ ဖွင့်ရန် ပြင်ပအဖွဲ့အစည်း၏ ကွတ်ကီးများကို အသုံးပြုသည်။ ဝဘ်ဆိုက်တစ်ခု အလုပ်မလုပ်ပါက ကွတ်ကီးများကို ခွင့်ပြုကြည့်နိုင်ပါသည်။</translation>
 <translation id="6602937173026466876">သင့်ပုံနှိပ်စက်များကို အသုံးပြုရန်</translation>
@@ -5347,6 +5352,7 @@
 <translation id="6757101664402245801">URL ကို မိတ္တူကူးပြီးပါပြီ</translation>
 <translation id="6758056191028427665">ကျွန်ုပ်တို့၏ ဝန်ဆောင်မှုများအတွက် စိတ်ကျေနပ်မှုမည်မျှရှိကြောင်း ပြောပြပေးပါ။</translation>
 <translation id="6759193508432371551">စက်ရုံဆက်တင် ပြန်လည်သပ်မှတ်</translation>
+<translation id="676158322851696513">“<ph name="EXTENSION_NAME" />”</translation>
 <translation id="6762833852331690540">ဖွင့်ထားသည်</translation>
 <translation id="676560328519657314">Google Pay ရှိ သင်၏ငွေပေးချေနည်းလမ်းများ</translation>
 <translation id="6767566652486411142">အခြားဘာသာစကားတစ်ခု ရွေးရန်...</translation>
@@ -6226,6 +6232,7 @@
 <translation id="7691698019618282776">Crostini အဆင့်မြှင့်ရန်</translation>
 <translation id="7696063401938172191">သင့် '<ph name="PHONE_NAME" />' ပေါ်တွင်−</translation>
 <translation id="7697166915480294040">သင်၏ဖန်သားပြင်ကို မျှဝေနေစဉ် အသေးစိတ်ကို ဖျောက်ထားသည်</translation>
+<translation id="7698507637739331665">အချို့အရာများကို ပိတ်ထားသည်</translation>
 <translation id="7701040980221191251">မရှိ</translation>
 <translation id="7701869757853594372">အသုံးပြုသူ ကိုင်တွယ်</translation>
 <translation id="7702574632857388784"><ph name="FILE_NAME" /> ကို စာရင်းထဲမှနေ၍ ဖယ်ရှားရန်</translation>
@@ -6404,6 +6411,7 @@
 <translation id="7861215335140947162">&amp;​ဒေါင်းလုဒ်များ</translation>
 <translation id="7861846108263890455">Google Account ဘာသာစကား</translation>
 <translation id="7864539943188674973">ဘလူးတုရှ် ပိတ်ရန်</translation>
+<translation id="7865127013871431856">ဘာသာပြန်ရန် ရွေးစရာများ</translation>
 <translation id="7866230141401327032">Google Lens ဖြင့် စာမျက်နှာ တစ်စိတ်တစ်ဒေသကို ရှာပါ</translation>
 <translation id="7869143217755017858">အမှောင်မုဒ် ပိတ်ရန်</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - တွဲချိတ်ပြီးပါပြီ</translation>

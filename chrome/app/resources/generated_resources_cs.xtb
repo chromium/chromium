@@ -2101,6 +2101,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3183143381919926261">Mobilní datové sítě</translation>
 <translation id="3183944777708523606">Uspořádání monitorů</translation>
 <translation id="3184536091884214176">Nastavení nebo správa tiskáren CUPS. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
+<translation id="3185014249447200271">{NUM_APPS,plural, =1{Tato aplikace je blokována}few{Některé aplikace jsou blokovány}many{Některé aplikace jsou blokovány}other{Některé aplikace jsou blokovány}}</translation>
 <translation id="3188257591659621405">Moje soubory</translation>
 <translation id="3188465121994729530">Plovoucí průměr</translation>
 <translation id="3189187154924005138">Velký kurzor</translation>
@@ -3060,6 +3061,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4220648711404560261">Při aktivaci došlo k chybě.</translation>
 <translation id="4225020013797061859">Stisknutím přepínače nebo klávesy přiřadíte akci <ph name="ACTION" /></translation>
 <translation id="4225397296022057997">Na všech webech</translation>
+<translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Toto rozšíření není povoleno}few{Některá rozšíření nejsou povolena}many{Některá rozšíření nejsou povolena}other{Některá rozšíření nejsou povolena}}</translation>
 <translation id="4231095370974836764">Instalujte do svého zařízení <ph name="DEVICE_TYPE" /> aplikace a hry z Google Play. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Nakonfigurovat Kerberos</translation>
 <translation id="4235965441080806197">Zrušit přihlášení</translation>
@@ -4306,6 +4308,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5604884720628869833">Zařízení <ph name="DEVICE_INDEX" /> z <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, klávesnice</translation>
 <translation id="5605623530403479164">Jiné vyhledávače</translation>
 <translation id="5605758115928394442">Odeslali jsme vám na telefon oznámení, abychom si ověřili, zda jste to skutečně vy.</translation>
+<translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Toto rozšíření je blokováno}few{Tato rozšíření jsou blokována}many{Tato rozšíření jsou blokována}other{Tato rozšíření jsou blokována}}</translation>
 <translation id="560834977503641186">Synchronizace Wi-Fi, další informace</translation>
 <translation id="5608580678041221894">Oblast oříznutí můžete upravit nebo přesunout klepnutím na následující klávesy</translation>
 <translation id="5609231933459083978">Aplikace je pravděpodobně neplatná.</translation>
@@ -5052,6 +5055,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6434325376267409267">Aplikaci <ph name="APP_NAME" /> budete moci používat až poté, co zařízení aktualizujete.</translation>
 <translation id="6436164536244065364">Zobrazit v Internetovém obchodu</translation>
 <translation id="6436610005579237680">Pokud chcete dostávat lépe přizpůsobené odpovědi, umožněte Asistentovi Google přístup ke snímku obsahu na obrazovce, když se na něco zeptáte. Asistent také může používat informace o přehrávaných skladbách nebo videích.</translation>
+<translation id="6436778875248895551">Rozšíření <ph name="EXTENSION_NAME" /> váš administrátor zablokoval:</translation>
 <translation id="6438234780621650381">Reset nastavení</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – přehrává se zvuk</translation>
 <translation id="6442187272350399447">Paráda</translation>
@@ -5203,6 +5207,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6596816719288285829">IP adresa</translation>
 <translation id="6597017209724497268">Vzory</translation>
 <translation id="6597148444736186483">Chcete-li se v tomto zařízení odhlásit od primárního účtu, klikněte na čas na obrazovce. V nabídce, která se zobrazí, klikněte na Odhlásit se.</translation>
+<translation id="6597331566371766302">Následující rozšíření váš administrátor zablokoval:</translation>
 <translation id="6601395831301182804">Chcete aktivovat čtečku ChromeVox, integrovanou čtečku obrazovky pro Chrome OS? Pokud ano, stiskněte mezerník.</translation>
 <translation id="6601612474695404578">Některé weby k načítání svých stránek používají soubory cookie třetích stran. Pokud web nefunguje, můžete zkusit povolit soubory cookie.</translation>
 <translation id="6602937173026466876">Přístup k vašim tiskárnám</translation>
@@ -5336,6 +5341,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6757101664402245801">Adresa URL byla zkopírována</translation>
 <translation id="6758056191028427665">Sdělte nám, jak si vedeme.</translation>
 <translation id="6759193508432371551">Tovární nastavení</translation>
+<translation id="676158322851696513"><ph name="EXTENSION_NAME" /></translation>
 <translation id="6762833852331690540">Zapnuto</translation>
 <translation id="676560328519657314">Vaše platební metody ve službě Google Pay</translation>
 <translation id="6767566652486411142">Vybrat jiný jazyk...</translation>
@@ -6215,6 +6221,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7691698019618282776">Upgradovat Crostini</translation>
 <translation id="7696063401938172191">Na telefonu <ph name="PHONE_NAME" />:</translation>
 <translation id="7697166915480294040">Podrobnosti jsou při sdílení obrazovky skryty</translation>
+<translation id="7698507637739331665">Některé položky jsou blokovány</translation>
 <translation id="7701040980221191251">Žádné</translation>
 <translation id="7701869757853594372">Popisovače – UŽIVATEL</translation>
 <translation id="7702574632857388784">Odstranit ze seznamu soubor <ph name="FILE_NAME" /></translation>
@@ -6393,6 +6400,7 @@ V zařízení se systémem Chrome OS můžete aktivovat funkce ladění, abyste
 <translation id="7861215335140947162">&amp;Stažené soubory</translation>
 <translation id="7861846108263890455">Jazyk účtu Google</translation>
 <translation id="7864539943188674973">Vypnout Bluetooth</translation>
+<translation id="7865127013871431856">Možnosti Překladače</translation>
 <translation id="7866230141401327032">Prohledat část stránky pomocí Google Lens</translation>
 <translation id="7869143217755017858">Deaktivovat tmavý režim</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – spárováno</translation>

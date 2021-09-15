@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mr">
-<translation id="102360288709523007">वापर आकडेवारी आणि क्रॅश अहवाल Google कडे पाठवून Chromium ला अधिक चांगले करण्यास मदत करा.</translation>
+<translation id="102360288709523007">वापरविषयक आकडेवारी आणि क्रॅश अहवाल Google कडे पाठवून Chromium ला अधिक चांगले करण्यास मदत करा.</translation>
 <translation id="1185134272377778587">Chromium बद्दल</translation>
 <translation id="1257458525759135959">इमेज सेव्ह करण्यासाठी, तुमच्या फोटोंमध्ये Chromium ला जोडण्यासाठी सेटिंग्ज वर टॅप करा</translation>
 <translation id="1289216811211435351">Chromium वर स्विच करा</translation>
@@ -44,7 +44,7 @@
 <translation id="4585809515399340748">तुम्ही आता केव्हाही मेसेज, दस्तऐवज आणि इतर अ‍ॅप्समध्ये लिंकवर टॅप केल्यास, Chromium वापरू शकता.</translation>
 <translation id="4681781466797808448">Chromium स्कॅनर सुरू करा</translation>
 <translation id="4736424910885271643">तुमचे खाते <ph name="HOSTED_DOMAIN" /> द्वारे व्यवस्थापित केले जात असल्याने, या डिव्हाइसवरून तुमचा Chromium डेटा साफ केला जाईल</translation>
-<translation id="4806326830773390517">Google कडे वापर आकडेवारी आणि क्रॅश अहवाल पाठवून Chromium मध्ये सुधारणा करण्यात मदत करा</translation>
+<translation id="4806326830773390517">Google कडे वापरविषयक आकडेवारी आणि क्रॅश अहवाल पाठवून Chromium मध्ये सुधारणा करण्यात मदत करा</translation>
 <translation id="4828317641996116749">Chromium ला सर्व पासवर्ड तपासता आले नाहीत. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="4985291216379576555">ऑफलाइन, Chromium अपडेट तपासू शकत नाही</translation>
 <translation id="4999538639245140991">तुम्ही <ph name="SIGNOUT_MANAGED_DOMAIN" /> द्वारे व्यवस्थापित केलेल्या खात्यातून साइन आउट केले आहे, तुमचा Chromium डेटा या डिव्हाइसवरून हटवला जाईल. तुमचा डेटा तुमच्या Google खाते मध्ये असेल.</translation>

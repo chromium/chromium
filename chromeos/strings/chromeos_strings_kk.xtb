@@ -162,6 +162,7 @@
 <translation id="4238516577297848345">Ешқандай баспа жұмысы орындалып жатқан жоқ.</translation>
 <translation id="4244962993387259361">Жад тексерісін іске қосу үшін кемінде 500 МБ бос орын керек. Орын босату үшін, "Параметрлер &gt; Жадты басқару" бөліміне өтіңіз.</translation>
 <translation id="4258281355379922695">HTTP кідірісі</translation>
+<translation id="4271957103967917607">Толық экран режимі</translation>
 <translation id="4289540628985791613">Шолу</translation>
 <translation id="4297501883039923494">Тоқтатылды: белгісіз қате</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> сурет</translation>
@@ -372,6 +373,7 @@
 <translation id="7550715992156305117">Диагностикалық режим</translation>
 <translation id="7561454561030345039">Бұл әрекетті әкімшіңіз басқарады.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7574732568136198983">ARC байланысын тексеру</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> қалды</translation>
 <translation id="7620771111601174153">Толығырақ ақпаратты Анықтамалық орталықтан қарау</translation>
 <translation id="763165478673169849">Соңғы рет нөлденген уақыт</translation>

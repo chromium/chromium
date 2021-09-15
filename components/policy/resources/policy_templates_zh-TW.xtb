@@ -326,6 +326,15 @@
 
       如果透過其他方式 (例如按鍵組合) 啟用無障礙功能，系統匣選單中一律會顯示無障礙工具選項。</translation>
 <translation id="1449777485284610883">允許安裝及更新不是 Chrome 線上應用程式商店所代管的擴充功能</translation>
+<translation id="1451113827539677573">控管 <ph name="PRODUCT_NAME" /> 在 <ph name="MS_WIN_NAME" /> 上的列印方式。
+
+      在 <ph name="MS_WIN_NAME" /> 上透過非 PostScript 印表機進行列印時，有時需要將列印工作點陣化才能正確列印。
+
+      如果將這項政策設為 Full，<ph name="PRODUCT_NAME" /> 會視需要將整個頁面點陣化。
+
+      如果將這項政策設為 Fast，<ph name="PRODUCT_NAME" /> 會盡可能避免執行點陣化。減少點陣化作業量有助於降低列印工作大小及提升列印速度。
+
+      如果不設定這項政策，<ph name="PRODUCT_NAME" /> 會採用 Full 模式。</translation>
 <translation id="1456822151187621582">Windows (<ph name="PRODUCT_OS_NAME" />用戶端)：</translation>
 <translation id="1464848559468748897">針對使用者在 <ph name="PRODUCT_OS_NAME" /> 裝置多重設定檔工作階段中的行為進行控制。
 
@@ -1119,6 +1128,13 @@
 <translation id="2355876547176311490">停用遠端存取主機所使用的轉送伺服器</translation>
 <translation id="2358176879566587521">這項政策已遭到移除，因此與這個版本的 <ph name="PRODUCT_NAME" /> 不相容。詳情請參閱 https://support.google.com/chrome/a/answer/7643500</translation>
 <translation id="2362469626417133796">重新啟動時間範圍</translation>
+<translation id="2363928351203698966">如果將這項政策設為有效值，<ph name="PRODUCT_NAME" /> 只會使用指定版本以上的安全資料傳輸層 (SSL)/傳輸層安全標準 (TLS) 版本。系統會忽略無法辨識的值。
+
+      如果不設定這項政策，<ph name="PRODUCT_NAME" /> 會針對 TLS 1.0 和 TLS 1.1 顯示錯誤訊息，但使用者可略過該訊息。
+
+      如果將這項政策設為「tls1.2」，使用者就無法略過此錯誤訊息。
+
+      Chrome 已在第 91 版停止支援將本政策設為「tls1」或「tls1.1」，目前則不再支援隱藏 TLS 1.0/1.1 警告。</translation>
 <translation id="2364639863953745682">Google 助理入門使用體驗的模式</translation>
 <translation id="2384233438419344179">如果將這項政策設為啟用，網頁元素只要不屬於瀏覽器網址列中的網域，就無法設定 Cookie。如果將這項政策設為停用，這類元素將可設定 Cookie，且使用者無法變更這項設定。
 
@@ -1800,6 +1816,7 @@
 <translation id="3146711617256415776">禁止在使用隨選朗讀時使用加強型網路文字轉語音功能</translation>
 <translation id="3152425128389603870">允許使用整合桌面並預設為啟用。</translation>
 <translation id="3159375329008977062">允許使用者透過 UI 匯出/匯入 Crostini 容器</translation>
+<translation id="3164531087779621747">列印 PostScript 模式</translation>
 <translation id="3165808775394012744">這些政策全部集中在這個資料夾裡，方便輕鬆移除。</translation>
 <translation id="3166210414652928099">允許使用者使用來源不受信任的 Android 應用程式</translation>
 <translation id="316778957754360075">我們已於 <ph name="PRODUCT_NAME" /> 版本 29 移除這項設定。如要設定機構代管的擴充功能/應用程式系列，建議你將代管 CRX 封裝檔的網站加入 ExtensionInstallSources 中，並在網頁上提供該封裝檔的直接下載連結。你可以透過 ExtensionInstallForcelist 政策建立該網頁專用的啟動器。</translation>
@@ -3323,6 +3340,15 @@
 <translation id="5213038356678567351">完全不該觸發瀏覽器切換的網站。</translation>
 <translation id="5219844027738217407">這項政策對 Android 應用程式的影響僅限於麥克風。將這項政策設為 true 時，所有 Android 應用程式皆無法使用麥克風 (設為靜音)，沒有任何例外。</translation>
 <translation id="5220594484746830711">只有在要求開啟彈出式視窗的網頁明確同意與該彈出式視窗互動時，才允許透過 <ph name="BLANK_PAGE_NAME" /> 連結目標開啟的彈出式視窗進行這類互動</translation>
+<translation id="5227124062673546005">控管 <ph name="PRODUCT_NAME" /> 在 <ph name="MS_WIN_NAME" /> 上的列印方式。
+
+      在 <ph name="MS_WIN_NAME" /> 上透過 PostScript 印表機進行列印時，不同的 PostScript 產生方法可能會影響列印效果。
+
+      如果將這項政策設為 Default，<ph name="PRODUCT_NAME" /> 會在產生 PostScript 時使用一組預設選項，尤其一律會以 Type 3 字型顯示文字。
+
+      如果將這項政策設為 Type42，<ph name="PRODUCT_NAME" /> 會盡可能以 Type 42 字型顯示文字，這種做法應該能提升部分 PostScript 印表機的列印速度。
+
+      如果不設定這項政策，<ph name="PRODUCT_NAME" /> 會採用 Default 模式。</translation>
 <translation id="5227647876065695164">這項政策會指定已註冊裝置上的版本降級行為。版本降級指的是切換至更穩定的版本，例如從 Beta 版切換至穩定版。
 
       這項政策的值會影響由使用者啟動的版本降級，以及由管理員啟動的版本降級。
@@ -4251,6 +4277,7 @@
       不過，只有當 SAML 識別資訊提供者在 SAML 登入流程中將密碼到期資訊傳送至裝置時，系統才會顯示這些通知。
 
       如果將這項政策設為「停用」或不設定，則無法在 chrome://password-change 變更 SAML 密碼；當 SAML 密碼即將到期時，系統也不會顯示通知。</translation>
+<translation id="6457477291648119596">Type42</translation>
 <translation id="6458361632497500815">如果將這項政策設為啟用或不設定，只要 <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" />、<ph name="CROSTINI_ALLOWED_POLICY_NAME" /> 和 <ph name="DEVICE_UNAFFILIATED_CROSTINI_ALLOWED_POLICY_NAME" /> 這 3 項政策都設為啟用，所有使用者將可使用 <ph name="PRODUCT_CROSTINI_NAME" />。如果將這項政策設為停用，無關聯的使用者將無法使用 <ph name="PRODUCT_CROSTINI_NAME" />。變更為停用後，系統會開始將這項政策套用到新的 <ph name="PRODUCT_CROSTINI_NAME" /> 容器，不會套用到已經在執行的這類容器。</translation>
 <translation id="6464074037294098618">啟用地址的自動填入功能</translation>
 <translation id="6467613372414922590">允許使用者層級的內建訊息傳遞主機 (在無管理員權限的情況下安裝)。</translation>
