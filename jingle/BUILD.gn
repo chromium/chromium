@@ -6,6 +6,15 @@ import("//build/config/features.gni")
 import("//testing/test.gni")
 
 source_set("webrtc_glue") {
+  visibility = [
+    ":*",
+    "//chrome/services/sharing/nearby/platform",
+    "//chrome/services/sharing/webrtc",
+    "//remoting/*",
+    "//third_party/blink/renderer/modules",
+    "//third_party/blink/renderer/modules/peerconnection",
+    "//third_party/blink/renderer/platform",
+  ]
   sources = [
     "glue/thread_wrapper.cc",
     "glue/thread_wrapper.h",
@@ -20,6 +29,12 @@ source_set("webrtc_glue") {
 }
 
 static_library("jingle_glue") {
+  visibility = [
+    ":*",
+    "//content/test:*",
+    "//remoting/protocol",
+    "//remoting/signaling",
+  ]
   sources = [
     "glue/network_service_async_socket.cc",
     "glue/network_service_async_socket.h",
@@ -48,6 +63,10 @@ static_library("jingle_glue") {
 # These files are separated into their own target to avoid a circular dependency
 # since services/network depends on this.
 source_set("fake_ssl_socket") {
+  visibility = [
+    ":*",
+    "//services/network:*",
+  ]
   sources = [
     "glue/fake_ssl_client_socket.cc",
     "glue/fake_ssl_client_socket.h",
@@ -61,6 +80,10 @@ source_set("fake_ssl_socket") {
 
 # A library for sending and receiving peer-issued notifications.
 static_library("notifier") {
+  visibility = [
+    ":*",
+    "//chrome/service",
+  ]
   sources = [
     "notifier/base/const_communicator.h",
     "notifier/base/gaia_constants.cc",
@@ -128,6 +151,7 @@ static_library("notifier") {
 }
 
 static_library("notifier_test_util") {
+  visibility = [ ":*" ]
   testonly = true
   sources = [
     "glue/network_service_config_test_util.cc",
