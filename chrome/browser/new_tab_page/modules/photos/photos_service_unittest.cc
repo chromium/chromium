@@ -69,23 +69,27 @@ TEST_F(PhotosServiceTest, PassesDataOnSuccess) {
 
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       "https://photosfirstparty-pa.googleapis.com/chrome_ntp/"
-      "read_reminiscing_content",
+      "read_memories",
       R"(
         {
-          "bundle": [
+          "memory": [
             {
-              "bundleKey": "key1",
+              "memoryMediaKey": "key1",
               "title": {
                 "header": "Title 1",
                 "subheader": "Something something 1"
-              }
+              },
+              "coverMediaKey": "coverKey1",
+              "coverUrl": "https://photos.google.com/img/coverKey1"
             },
             {
-              "bundleKey": "key2",
+              "memoryMediaKey": "key2",
               "title": {
                 "header": "Title 2",
                 "subheader": "Something something 2"
-              }
+              },
+              "coverMediaKey": "coverKey2",
+              "coverUrl": "https://photos.google.com/img/coverKey2"
             }
           ]
         }
@@ -96,8 +100,16 @@ TEST_F(PhotosServiceTest, PassesDataOnSuccess) {
   EXPECT_EQ(2u, actual_memories.size());
   EXPECT_EQ("Title 1", actual_memories.at(0)->title);
   EXPECT_EQ("key1", actual_memories.at(0)->id);
+  EXPECT_EQ("https://photos.google.com/memory/featured/key1/photo/coverKey1",
+            actual_memories.at(0)->item_url);
+  EXPECT_EQ("https://photos.google.com/img/coverKey1?access_token=foo",
+            actual_memories.at(0)->cover_url);
   EXPECT_EQ("Title 2", actual_memories.at(1)->title);
   EXPECT_EQ("key2", actual_memories.at(1)->id);
+  EXPECT_EQ("https://photos.google.com/memory/featured/key2/photo/coverKey2",
+            actual_memories.at(1)->item_url);
+  EXPECT_EQ("https://photos.google.com/img/coverKey2?access_token=foo",
+            actual_memories.at(1)->cover_url);
 }
 
 TEST_F(PhotosServiceTest, PassesDataToMultipleRequestsToPhotosService) {
@@ -144,16 +156,18 @@ TEST_F(PhotosServiceTest, PassesDataToMultipleRequestsToPhotosService) {
 
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       "https://photosfirstparty-pa.googleapis.com/chrome_ntp/"
-      "read_reminiscing_content",
+      "read_memories",
       R"(
         {
-          "bundle": [
+          "memory": [
             {
-              "bundleKey": "key1",
+              "memoryMediaKey": "key1",
               "title": {
                 "header": "Title 1",
                 "subheader": "Something something 1"
-              }
+              },
+              "coverMediaKey": "coverKey1",
+              "coverUrl": "https://photos.google.com/img/coverKey1"
             }
           ]
         }
@@ -219,7 +233,7 @@ TEST_F(PhotosServiceTest, PassesNoDataOnNetError) {
       "Content-Type: application/json\r\nAuthorization: Bearer foo\r\n\r\n");
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       "https://photosfirstparty-pa.googleapis.com/chrome_ntp/"
-      "read_reminiscing_content",
+      "read_memories",
       std::string(), net::HTTP_BAD_REQUEST,
       network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix);
 
@@ -244,7 +258,7 @@ TEST_F(PhotosServiceTest, PassesNoDataOnEmptyResponse) {
 
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       "https://photosfirstparty-pa.googleapis.com/chrome_ntp/"
-      "read_reminiscing_content",
+      "read_memories",
       "", net::HTTP_OK,
       network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix);
 
@@ -269,10 +283,10 @@ TEST_F(PhotosServiceTest, PassesNoDataOnMissingItemKey) {
 
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       "https://photosfirstparty-pa.googleapis.com/chrome_ntp/"
-      "read_reminiscing_content",
+      "read_memories",
       R"(
         {
-          "bundle": [],
+          "memory": [],
         }
       )",
       net::HTTP_OK,

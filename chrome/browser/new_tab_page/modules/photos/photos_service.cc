@@ -22,8 +22,7 @@ constexpr char kPhotosImgScope[] =
 // Maximum accepted size of an API response. 1MB.
 constexpr int kMaxResponseSize = 1024 * 1024;
 const char server_url[] =
-    "https://photosfirstparty-pa.googleapis.com/chrome_ntp/"
-    "read_reminiscing_content";
+    "https://photosfirstparty-pa.googleapis.com/chrome_ntp/read_memories";
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("photos_service", R"(
       semantics {
@@ -160,7 +159,7 @@ void PhotosService::OnJsonParsed(
     return;
   }
 
-  auto* memories = result.value->FindListPath("bundle");
+  auto* memories = result.value->FindListPath("memory");
   if (!memories) {
     for (auto& callback : callbacks_) {
       std::move(callback).Run(std::vector<photos::mojom::MemoryPtr>());
@@ -171,13 +170,18 @@ void PhotosService::OnJsonParsed(
   std::vector<photos::mojom::MemoryPtr> memory_list;
   for (const auto& memory : memories->GetList()) {
     auto* title = memory.FindStringPath("title.header");
-    auto* memory_id = memory.FindStringPath("bundleKey");
-    if (!title || !memory_id) {
+    auto* memory_id = memory.FindStringPath("memoryMediaKey");
+    auto* cover_id = memory.FindStringPath("coverMediaKey");
+    auto* cover_url = memory.FindStringPath("coverUrl");
+    if (!title || !memory_id || !cover_id || !cover_url) {
       continue;
     }
     auto mojo_memory = photos::mojom::Memory::New();
-    mojo_memory->title = *title;
     mojo_memory->id = *memory_id;
+    mojo_memory->title = *title;
+    mojo_memory->item_url = GURL("https://photos.google.com/memory/featured/" +
+                                 *memory_id + "/photo/" + *cover_id);
+    mojo_memory->cover_url = GURL(*cover_url + "?access_token=" + token);
 
     memory_list.push_back(std::move(mojo_memory));
   }
