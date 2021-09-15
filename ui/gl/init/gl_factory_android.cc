@@ -35,7 +35,7 @@ class GLNonOwnedContext : public GLContextReal {
                   const GLContextAttribs& attribs) override;
   bool MakeCurrentImpl(GLSurface* surface) override;
   void ReleaseCurrent(GLSurface* surface) override {}
-  bool IsCurrent(GLSurface* surface) override { return true; }
+  bool IsCurrent(GLSurface* surface) override;
   void* GetHandle() override { return nullptr; }
 
  protected:
@@ -61,6 +61,10 @@ bool GLNonOwnedContext::MakeCurrentImpl(GLSurface* surface) {
   SetCurrent(surface);
   InitializeDynamicBindings();
   return true;
+}
+
+bool GLNonOwnedContext::IsCurrent(GLSurface* surface) {
+  return GetRealCurrent() == this;
 }
 
 }  // namespace
