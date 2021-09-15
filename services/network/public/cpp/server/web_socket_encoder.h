@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/component_export.h"
 #include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "net/websockets/websocket_deflater.h"
@@ -23,7 +24,7 @@ namespace network {
 
 namespace server {
 
-class WebSocketEncoder final {
+class COMPONENT_EXPORT(NETWORK_CPP) WebSocketEncoder final {
  public:
   static const char kClientExtensions[];
 

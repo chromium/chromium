@@ -417,7 +417,10 @@ source_set("tests") {
   ]
 
   if (!is_ios) {
-    sources += [ "server/http_server_unittest.cc" ]
+    sources += [
+      "server/http_server_unittest.cc",
+      "server/web_socket_encoder_unittest.cc",
+    ]
   }
 
   deps = [
