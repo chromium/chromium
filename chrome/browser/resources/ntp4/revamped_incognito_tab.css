@@ -130,9 +130,11 @@ em {
 
 /* Align the content, icon, and title to to the center. */
 .content {
+  --content-max-width: 680px;
+  --description-item-spacing: 16px;
   margin-inline-end: auto;
   margin-inline-start: auto;
-  max-width: 680px;
+  max-width: var(--content-max-width);
 }
 
 .icon {
@@ -148,13 +150,13 @@ em {
 }
 
 .descriptions {
-  flex-basis: 325px;  /* (680px - 30px) / 2. */
+  flex-basis: calc((var(--content-max-width) - var(--description-item-spacing)) / 2);
   flex-grow: 1;
   flex-shrink: 0;
 }
 
 .descriptions.first {
-  margin-inline-end: 30px;
+  margin-inline-end: var(--description-item-spacing);
 }
 
 h1,
@@ -167,8 +169,8 @@ h1,
 /* On narrow screens, align everything to the left. */
 @media (max-width: 720px) {
   .content {
-    max-width: 680px !important;  /* must override the rule set by JS which
-                                   * is only valid for width > 720px cases. */
+    max-width: var(--content-max-width) !important;  /* must override the rule set by JS which
+                                                      * is only valid for width > 720px cases. */
     text-align: start;
   }
 
