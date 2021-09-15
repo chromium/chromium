@@ -2551,6 +2551,24 @@
             ]
         }
     ],
+    "ContextualSearchMaintenanceMode": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Launch-candidate_20210915",
+                    "enable_features": [
+                        "ContextualSearchLongpressResolve"
+                    ],
+                    "disable_features": [
+                        "ContextualSearchLiteralSearchTap"
+                    ]
+                }
+            ]
+        }
+    ],
     "ContextualSearchTranslations": [
         {
             "platforms": [
@@ -2558,21 +2576,9 @@
             ],
             "experiments": [
                 {
-                    "name": "TranslationsCaption_20210422",
-                    "params": {
-                        "availability": "any",
-                        "event_trigger": "name:contextual_search_in_panel_help_shown;comparator:<3;window:30;storage:180",
-                        "event_used": "name:contextual_search_acknowledged_in_panel_help;comparator:=<1;window:60;storage:180",
-                        "session_rate": "<1"
-                    },
+                    "name": "Launch-candidate_20210915",
                     "enable_features": [
-                        "ContextualSearchForceCaption",
-                        "ContextualSearchLiteralSearchTap",
-                        "ContextualSearchTranslations",
-                        "IPH_ContextualSearchInPanelHelp"
-                    ],
-                    "disable_features": [
-                        "ContextualSearchLongpressResolve"
+                        "ContextualSearchTranslations"
                     ]
                 }
             ]
@@ -7371,7 +7377,7 @@
             ],
             "experiments": [
                 {
-                    "name": "MVP_20210809",
+                    "name": "MVP_20210915",
                     "params": {
                         "default_query_chip": "true",
                         "default_query_max_width_sp": "115",

@@ -4189,6 +4189,7 @@ public class ContextualSearchManagerTest {
     @SmallTest
     @Feature({"ContextualSearch"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @DisabledTest(message = "Enable when rolling out the Forced Caption Features")
     public void testNonResolveCaption() throws Exception {
         // Simulate a non-resolve search and make sure no Caption is shown.
         FeatureList.setTestFeatures(DISABLE_FORCE_CAPTION);
