@@ -24,7 +24,11 @@ void SkipLine(re2::StringPiece* contents) {
   RE2::Consume(contents, *kSkipLine);
 }
 
-const LazyRE2 kChromeExePathMatcher = {R"(/opt/google/chrome/chrome\s*)"};
+// Matches both Ash-Chrome and Lacros binaries.
+const LazyRE2 kChromeExePathMatcher = {
+    R"(/(opt/google/chrome|)"
+    R"(run/lacros|)"
+    R"(run/imageloader/lacros\S*/[\d.]*)/chrome\s*)"};
 
 }  // namespace
 
