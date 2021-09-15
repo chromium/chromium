@@ -1032,6 +1032,11 @@ TEST_F(TraceEventDataSourceTest, BasicTraceEvent) {
 
   ExpectEventCategories(e_packet, {{1u, kCategoryGroup}});
   ExpectInternedEventNames(e_packet, {{1u, "bar"}});
+
+// producer_client() is null under USE_PERFETTO_CLIENT_LIBRARY.
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  EXPECT_EQ(producer_client()->empty_finalized_packets_count(), 0);
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 }
 
 TEST_F(TraceEventDataSourceTest, TimestampedTraceEvent) {
@@ -2463,8 +2468,7 @@ TEST_F(TraceEventDataSourceTest, EmptyPacket) {
 // PERFETTO_INTERNAL_ADD_EMPTY_EVENT macro is instead tested in Perfetto's API
 // integration tests.
 #if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  auto* empty_packet = GetFinalizedPacket(packet_index++);
-  EXPECT_EQ(empty_packet->ByteSize(), 0);
+  EXPECT_EQ(producer_client()->empty_finalized_packets_count(), 1);
 #endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 }
 

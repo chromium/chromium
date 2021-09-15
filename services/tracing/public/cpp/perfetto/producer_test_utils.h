@@ -59,12 +59,19 @@ class TestProducerClient : public ProducerClient {
     return finalized_packets_;
   }
 
+  int empty_finalized_packets_count() const {
+    return empty_finalized_packets_count_;
+  }
+
   TestProducerClient(TestProducerClient&&) = delete;
   TestProducerClient& operator=(TestProducerClient&&) = delete;
 
  private:
   std::vector<std::unique_ptr<perfetto::protos::TracePacket>>
       finalized_packets_;
+  // A count of finalized packets not added to |finalized_packets_| per being
+  // empty.
+  int empty_finalized_packets_count_ = 0;
   std::vector<std::unique_ptr<perfetto::protos::TracePacket>>
       legacy_metadata_packets_;
   std::vector<std::unique_ptr<perfetto::protos::TracePacket>>

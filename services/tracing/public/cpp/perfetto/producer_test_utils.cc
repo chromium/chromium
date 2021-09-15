@@ -97,8 +97,10 @@ void TestProducerClient::FlushPacketIfPossible() {
     legacy_metadata_packets_.push_back(std::move(proto));
   } else if (proto->has_chrome_metadata()) {
     proto_metadata_packets_.push_back(std::move(proto));
-  } else {
+  } else if (message_size > 0) {
     finalized_packets_.push_back(std::move(proto));
+  } else {
+    ++empty_finalized_packets_count_;
   }
 
   stream_.Reset(buffer);

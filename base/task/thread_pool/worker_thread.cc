@@ -362,6 +362,8 @@ void WorkerThread::RunWorker() {
         break;
 
       TRACE_EVENT_END0("base", "WorkerThread active");
+      // TODO(crbug.com/1021571): Remove this once fixed.
+      PERFETTO_INTERNAL_ADD_EMPTY_EVENT();
       hang_watch_scope.reset();
       delegate_->WaitForWork(&wake_up_event_);
       TRACE_EVENT_BEGIN0("base", "WorkerThread active");
@@ -407,6 +409,8 @@ void WorkerThread::RunWorker() {
 
   TRACE_EVENT_END0("base", "WorkerThread active");
   TRACE_EVENT_INSTANT0("base", "WorkerThread dead", TRACE_EVENT_SCOPE_THREAD);
+  // TODO(crbug.com/1021571): Remove this once fixed.
+  PERFETTO_INTERNAL_ADD_EMPTY_EVENT();
 }
 
 }  // namespace internal

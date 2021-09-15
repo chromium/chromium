@@ -17,6 +17,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/typed_macros.h"
+#include "build/build_config.h"
 #include "cc/base/math_util.h"
 #include "cc/raster/task_category.h"
 #include "ui/gfx/rendering_pipeline.h"
@@ -307,6 +308,11 @@ void CategorizedWorkerPool::Run(
       // We are no longer running tasks, which may allow another category to
       // start running. Signal other worker threads.
       SignalHasReadyToRunTasksWithLockAcquired();
+
+      // Make sure the END of the last trace event emitted before going idle
+      // is flushed to perfetto.
+      // TODO(crbug.com/1021571): Remove this once fixed.
+      PERFETTO_INTERNAL_ADD_EMPTY_EVENT();
 
       // Exit when shutdown is set and no more tasks are pending.
       if (shutdown_)
