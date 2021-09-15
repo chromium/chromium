@@ -19,12 +19,12 @@ using blink::CanvasResourceProvider;
 const char* const kHostTypeName_Canvas = ".Canvas";
 const char* const kHostTypeName_OffscreenCanvas = ".OffscreenCanvas";
 
-const char* const kContextTypeName_2D_Accelerated = ".2D.Accelerated";
-const char* const kContextTypeName_2D_Unaccelerated = ".2D.Unaccelerated";
-const char* const kContextTypeName_WebGL = ".WebGL";
-const char* const kContextTypeName_WebGL2 = ".WebGL2";
-const char* const kContextTypeName_WebGPU = ".WebGPU";
-const char* const kContextTypeName_ImageBitmap = ".ImageBitmap";
+const char* const kRenderingAPIName_2D_Accelerated = ".2D.Accelerated";
+const char* const kRenderingAPIName_2D_Unaccelerated = ".2D.Unaccelerated";
+const char* const kRenderingAPIName_WebGL = ".WebGL";
+const char* const kRenderingAPIName_WebGL2 = ".WebGL2";
+const char* const kRenderingAPIName_WebGPU = ".WebGPU";
+const char* const kRenderingAPIName_ImageBitmap = ".ImageBitmap";
 
 const char* const kFilterName_All = ".All";
 const char* const kFilterName_Animation = ".Animation";
@@ -54,19 +54,19 @@ class RenderingContextDescriptionCodec {
 
   bool IsOffscreen() const { return key_.get<IsOffscreenField>(); }
   bool IsAccelerated() const { return key_.get<IsAcceleratedField>(); }
-  CanvasRenderingContext::ContextType ContextType() const;
+  CanvasRenderingContext::CanvasRenderingAPI GetRenderingAPI() const;
   uint32_t GetKey() const { return key_.bits(); }
   bool IsValid() const { return is_valid_; }
 
   const char* GetHostTypeName() const;
-  const char* GetContextTypeName() const;
+  const char* GetRenderingAPIName() const;
 
  private:
   using Key = WTF::SingleThreadedBitField<uint32_t>;
   using IsOffscreenField = Key::DefineFirstValue<bool, 1>;
   using IsAcceleratedField = IsOffscreenField::DefineNextValue<bool, 1>;
-  using ContextTypeField = IsAcceleratedField::DefineNextValue<uint32_t, 8>;
-  using PaddingField = ContextTypeField::DefineNextValue<bool, 1>;
+  using RenderingAPIField = IsAcceleratedField::DefineNextValue<uint32_t, 8>;
+  using PaddingField = RenderingAPIField::DefineNextValue<bool, 1>;
 
   Key key_;
   bool is_valid_;
@@ -80,7 +80,8 @@ RenderingContextDescriptionCodec::RenderingContextDescriptionCodec(
 
   key_.set<IsOffscreenField>(context->Host()->IsOffscreenCanvas());
   key_.set<IsAcceleratedField>(context->IsAccelerated());
-  key_.set<ContextTypeField>(context->GetContextType());
+  key_.set<RenderingAPIField>(
+      static_cast<uint32_t>(context->GetRenderingAPI()));
   // The padding field ensures at least one bit is set in the key in order
   // to avoid a key == 0, which is not supported by WTF::HashSet
   key_.set<PaddingField>(true);
@@ -90,30 +91,29 @@ RenderingContextDescriptionCodec::RenderingContextDescriptionCodec(
     const uint32_t& key)
     : key_(key), is_valid_(true) {}
 
-CanvasRenderingContext::ContextType
-RenderingContextDescriptionCodec::ContextType() const {
-  return static_cast<CanvasRenderingContext::ContextType>(
-      key_.get<ContextTypeField>());
+CanvasRenderingContext::CanvasRenderingAPI
+RenderingContextDescriptionCodec::GetRenderingAPI() const {
+  return static_cast<CanvasRenderingContext::CanvasRenderingAPI>(
+      key_.get<RenderingAPIField>());
 }
 
 const char* RenderingContextDescriptionCodec::GetHostTypeName() const {
   return IsOffscreen() ? kHostTypeName_OffscreenCanvas : kHostTypeName_Canvas;
 }
 
-const char* RenderingContextDescriptionCodec::GetContextTypeName() const {
-  switch (ContextType()) {
-    case CanvasRenderingContext::kContext2D:
-      return IsAccelerated() ? kContextTypeName_2D_Accelerated
-                             : kContextTypeName_2D_Unaccelerated;
-    case CanvasRenderingContext::kContextExperimentalWebgl:
-    case CanvasRenderingContext::kContextWebgl:
-      return kContextTypeName_WebGL;
-    case CanvasRenderingContext::kContextWebgl2:
-      return kContextTypeName_WebGL2;
-    case CanvasRenderingContext::kContextWebGPU:
-      return kContextTypeName_WebGPU;
-    case CanvasRenderingContext::kContextImageBitmap:
-      return kContextTypeName_ImageBitmap;
+const char* RenderingContextDescriptionCodec::GetRenderingAPIName() const {
+  switch (GetRenderingAPI()) {
+    case CanvasRenderingContext::CanvasRenderingAPI::k2D:
+      return IsAccelerated() ? kRenderingAPIName_2D_Accelerated
+                             : kRenderingAPIName_2D_Unaccelerated;
+    case CanvasRenderingContext::CanvasRenderingAPI::kWebgl:
+      return kRenderingAPIName_WebGL;
+    case CanvasRenderingContext::CanvasRenderingAPI::kWebgl2:
+      return kRenderingAPIName_WebGL2;
+    case CanvasRenderingContext::CanvasRenderingAPI::kWebgpu:
+      return kRenderingAPIName_WebGPU;
+    case CanvasRenderingContext::CanvasRenderingAPI::kBitmaprenderer:
+      return kRenderingAPIName_ImageBitmap;
     default:
       NOTREACHED();
       return "";
@@ -189,7 +189,8 @@ void CanvasPerformanceMonitor::RecordMetrics(TimeTicks start_time,
     // info.
     WTF::String histogram_name_prefix =
         WTF::String("Blink") + desc.GetHostTypeName();
-    WTF::String histogram_name_radical = WTF::String(desc.GetContextTypeName());
+    WTF::String histogram_name_radical =
+        WTF::String(desc.GetRenderingAPIName());
 
     // Render task duration metric for all render tasks.
     {
@@ -210,7 +211,8 @@ void CanvasPerformanceMonitor::RecordMetrics(TimeTicks start_time,
     }
 
     // Filtered histograms that apply to 2D canvases
-    if (desc.ContextType() == CanvasRenderingContext::kContext2D) {
+    if (desc.GetRenderingAPI() ==
+        CanvasRenderingContext::CanvasRenderingAPI::k2D) {
       if (draw_types_ & static_cast<uint32_t>(DrawType::kPath)) {
         WTF::String histogram_name = histogram_name_prefix +
                                      kMeasurementName_RenderTaskDuration +
@@ -246,10 +248,10 @@ void CanvasPerformanceMonitor::RecordMetrics(TimeTicks start_time,
         base::UmaHistogramMicrosecondsTimes(histogram_name.Latin1(),
                                             elapsed_time);
       }
-    } else if (desc.ContextType() == CanvasRenderingContext::kContextWebgl ||
-               desc.ContextType() == CanvasRenderingContext::kContextWebgl2 ||
-               desc.ContextType() ==
-                   CanvasRenderingContext::kContextExperimentalWebgl) {
+    } else if (desc.GetRenderingAPI() ==
+                   CanvasRenderingContext::CanvasRenderingAPI::kWebgl ||
+               desc.GetRenderingAPI() ==
+                   CanvasRenderingContext::CanvasRenderingAPI::kWebgl2) {
       // Filtered histograms that apply to WebGL canvases
       if (draw_types_ & static_cast<uint32_t>(DrawType::kDrawArrays)) {
         WTF::String histogram_name =

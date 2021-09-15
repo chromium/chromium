@@ -83,8 +83,9 @@ class MODULES_EXPORT CanvasRenderingContext2D final
         CanvasRenderingContextHost* host,
         const CanvasContextCreationAttributesCore& attrs) override;
 
-    CanvasRenderingContext::ContextType GetContextType() const override {
-      return CanvasRenderingContext::kContext2D;
+    CanvasRenderingContext::CanvasRenderingAPI GetRenderingAPI()
+        const override {
+      return CanvasRenderingContext::CanvasRenderingAPI::k2D;
     }
 
    private:
@@ -282,10 +283,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   bool FocusRingCallIsValid(const Path&, Element*);
   void DrawFocusRing(const Path&, Element*);
   void UpdateElementAccessibility(const Path&, Element*);
-
-  CanvasRenderingContext::ContextType GetContextType() const override {
-    return CanvasRenderingContext::kContext2D;
-  }
 
   bool IsComposited() const override;
   bool IsAccelerated() const override;

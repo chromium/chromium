@@ -75,8 +75,9 @@ class WebGLRenderingContext final : public WebGLRenderingContextBase {
         CanvasRenderingContextHost*,
         const CanvasContextCreationAttributesCore&) override;
 
-    CanvasRenderingContext::ContextType GetContextType() const override {
-      return CanvasRenderingContext::kContextWebgl;
+    CanvasRenderingContext::CanvasRenderingAPI GetRenderingAPI()
+        const override {
+      return CanvasRenderingContext::CanvasRenderingAPI::kWebgl;
     }
     void OnError(HTMLCanvasElement*, const String& error) override;
 
@@ -89,9 +90,6 @@ class WebGLRenderingContext final : public WebGLRenderingContextBase {
                         const Platform::GraphicsInfo&,
                         const CanvasContextCreationAttributesCore&);
 
-  CanvasRenderingContext::ContextType GetContextType() const override {
-    return CanvasRenderingContext::kContextWebgl;
-  }
   ImageBitmap* TransferToImageBitmap(ScriptState*) final;
   String ContextName() const override { return "WebGLRenderingContext"; }
   void RegisterContextExtensions() override;

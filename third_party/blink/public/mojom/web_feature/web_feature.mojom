@@ -3332,6 +3332,16 @@ enum WebFeature {
   kMediaSourceExtensionsForWebCodecs = 4021,
   kPaymentRequestResponse = 4023,
   kPaymentRequestComplete = 4024,
+  kHTMLCanvasElement_2D = 4025,
+  kHTMLCanvasElement_WebGL = 4026,
+  kHTMLCanvasElement_WebGL2 = 4027,
+  kHTMLCanvasElement_BitmapRenderer = 4028,
+  kHTMLCanvasElement_WebGPU = 4029,
+  kOffscreenCanvas_2D = 4030,
+  kOffscreenCanvas_WebGL = 4031,
+  kOffscreenCanvas_WebGL2 = 4032,
+  kOffscreenCanvas_BitmapRenderer = 4033,
+  kOffscreenCanvas_WebGPU = 4034,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

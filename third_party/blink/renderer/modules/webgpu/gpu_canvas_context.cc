@@ -29,9 +29,9 @@ CanvasRenderingContext* GPUCanvasContext::Factory::Create(
   return rendering_context;
 }
 
-CanvasRenderingContext::ContextType GPUCanvasContext::Factory::GetContextType()
-    const {
-  return CanvasRenderingContext::kContextWebGPU;
+CanvasRenderingContext::CanvasRenderingAPI
+GPUCanvasContext::Factory::GetRenderingAPI() const {
+  return CanvasRenderingContext::CanvasRenderingAPI::kWebgpu;
 }
 
 GPUCanvasContext::GPUCanvasContext(
@@ -48,10 +48,6 @@ void GPUCanvasContext::Trace(Visitor* visitor) const {
 }
 
 // CanvasRenderingContext implementation
-CanvasRenderingContext::ContextType GPUCanvasContext::GetContextType() const {
-  return CanvasRenderingContext::kContextWebGPU;
-}
-
 V8RenderingContext* GPUCanvasContext::AsV8RenderingContext() {
   return MakeGarbageCollected<V8RenderingContext>(this);
 }

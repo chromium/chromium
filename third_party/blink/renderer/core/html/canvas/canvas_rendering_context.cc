@@ -28,6 +28,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/animation_frame/worker_animation_frame_provider.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_image_source.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
@@ -88,6 +89,57 @@ void CanvasRenderingContext::DidProcessTask(
     Host()->PostFinalizeFrame();
 }
 
+void CanvasRenderingContext::RecordUMACanvasRenderingAPI() {
+  if (auto* window =
+          DynamicTo<LocalDOMWindow>(Host()->GetTopExecutionContext())) {
+    WebFeature feature;
+    if (Host()->IsOffscreenCanvas()) {
+      switch (canvas_rendering_type_) {
+        default:
+          NOTREACHED();
+          U_FALLTHROUGH;
+        case CanvasRenderingContext::CanvasRenderingAPI::k2D:
+          feature = WebFeature::kOffscreenCanvas_2D;
+          break;
+        case CanvasRenderingContext::CanvasRenderingAPI::kWebgl:
+          feature = WebFeature::kOffscreenCanvas_WebGL;
+          break;
+        case CanvasRenderingContext::CanvasRenderingAPI::kWebgl2:
+          feature = WebFeature::kOffscreenCanvas_WebGL2;
+          break;
+        case CanvasRenderingContext::CanvasRenderingAPI::kBitmaprenderer:
+          feature = WebFeature::kOffscreenCanvas_BitmapRenderer;
+          break;
+        case CanvasRenderingContext::CanvasRenderingAPI::kWebgpu:
+          feature = WebFeature::kOffscreenCanvas_WebGPU;
+          break;
+      }
+    } else {
+      switch (canvas_rendering_type_) {
+        default:
+          NOTREACHED();
+          U_FALLTHROUGH;
+        case CanvasRenderingContext::CanvasRenderingAPI::k2D:
+          feature = WebFeature::kHTMLCanvasElement_2D;
+          break;
+        case CanvasRenderingContext::CanvasRenderingAPI::kWebgl:
+          feature = WebFeature::kHTMLCanvasElement_WebGL;
+          break;
+        case CanvasRenderingContext::CanvasRenderingAPI::kWebgl2:
+          feature = WebFeature::kHTMLCanvasElement_WebGL2;
+          break;
+        case CanvasRenderingContext::CanvasRenderingAPI::kBitmaprenderer:
+          feature = WebFeature::kHTMLCanvasElement_BitmapRenderer;
+          break;
+        case CanvasRenderingContext::CanvasRenderingAPI::kWebgpu:
+          feature = WebFeature::kHTMLCanvasElement_WebGPU;
+          break;
+      }
+    }
+    UseCounter::Count(window->document(), feature);
+  }
+}
+
 void CanvasRenderingContext::RecordUKMCanvasRenderingAPI() {
   DCHECK(Host());
   const auto& ukm_params = Host()->GetUkmParameters();
@@ -119,31 +171,24 @@ void CanvasRenderingContext::RecordUKMCanvasDrawnToRenderingAPI() {
   }
 }
 
-CanvasRenderingContext::ContextType CanvasRenderingContext::ContextTypeFromId(
+CanvasRenderingContext::CanvasRenderingAPI
+CanvasRenderingContext::RenderingAPIFromId(
     const String& id,
     const ExecutionContext* execution_context) {
   if (id == "2d")
-    return kContext2D;
+    return CanvasRenderingAPI::k2D;
   if (id == "experimental-webgl")
-    return kContextExperimentalWebgl;
+    return CanvasRenderingAPI::kWebgl;
   if (id == "webgl")
-    return kContextWebgl;
+    return CanvasRenderingAPI::kWebgl;
   if (id == "webgl2")
-    return kContextWebgl2;
+    return CanvasRenderingAPI::kWebgl2;
   if (id == "bitmaprenderer")
-    return kContextImageBitmap;
+    return CanvasRenderingAPI::kBitmaprenderer;
   if ((id == "webgpu") &&
       RuntimeEnabledFeatures::WebGPUEnabled(execution_context))
-    return kContextWebGPU;
-  return kContextTypeUnknown;
-}
-
-CanvasRenderingContext::ContextType
-CanvasRenderingContext::ResolveContextTypeAliases(
-    CanvasRenderingContext::ContextType type) {
-  if (type == kContextExperimentalWebgl)
-    return kContextWebgl;
-  return type;
+    return CanvasRenderingAPI::kWebgpu;
+  return CanvasRenderingAPI::kUnknown;
 }
 
 bool CanvasRenderingContext::WouldTaintOrigin(CanvasImageSource* image_source) {

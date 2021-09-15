@@ -30,8 +30,9 @@ class MODULES_EXPORT ImageBitmapRenderingContext final
     CanvasRenderingContext* Create(
         CanvasRenderingContextHost*,
         const CanvasContextCreationAttributesCore&) override;
-    CanvasRenderingContext::ContextType GetContextType() const override {
-      return CanvasRenderingContext::kContextImageBitmap;
+    CanvasRenderingContext::CanvasRenderingAPI GetRenderingAPI()
+        const override {
+      return CanvasRenderingContext::CanvasRenderingAPI::kBitmaprenderer;
     }
 
    private:
@@ -45,9 +46,6 @@ class MODULES_EXPORT ImageBitmapRenderingContext final
   void transferFromImageBitmap(ImageBitmap*, ExceptionState&);
 
   // CanvasRenderingContext implementation
-  ContextType GetContextType() const override {
-    return CanvasRenderingContext::kContextImageBitmap;
-  }
   ImageBitmap* TransferToImageBitmap(ScriptState*) override;
 
   V8RenderingContext* AsV8RenderingContext() final;

@@ -62,33 +62,20 @@ class CORE_EXPORT CanvasRenderingContext
   CanvasRenderingContext& operator=(const CanvasRenderingContext&) = delete;
   ~CanvasRenderingContext() override = default;
 
-  // A Canvas can either be "2D" or "webgl" but never both. Requesting a context
-  // with a type different from an existing will destroy the latter.
-  enum ContextType {
-    // These values are mirrored in tools/metrics/histograms/enums.xml. Do
-    // not change assigned numbers of existing items and add new features to the
-    // end of the list.
-    kContext2D = 0,
-    kContextExperimentalWebgl = 2,
-    kContextWebgl = 3,
-    kContextWebgl2 = 4,
-    kContextImageBitmap = 5,
-    kContextXRPresent = 6,
-    // WebGL2Compute used to be 7.
-    kContextWebGPU = 8,  // WebGPU
-    kContextTypeUnknown = 9,
-    kMaxValue = kContextTypeUnknown,
-  };
-
   // Correspond to CanvasRenderingAPI defined in
   // tools/metrics/histograms/enums.xml
   enum class CanvasRenderingAPI {
+    kUnknown = -1,  // Not used by histogram.
     k2D = 0,
     kWebgl = 1,
     kWebgl2 = 2,
     kBitmaprenderer = 3,
     kWebgpu = 4,
+
+    kMaxValue = kWebgpu,
   };
+
+  CanvasRenderingAPI GetRenderingAPI() const { return canvas_rendering_type_; }
 
   bool IsRenderingContext2D() const {
     return canvas_rendering_type_ == CanvasRenderingAPI::k2D;
@@ -120,14 +107,14 @@ class CORE_EXPORT CanvasRenderingContext
   }
 
   void RecordUKMCanvasRenderingAPI();
+  void RecordUMACanvasRenderingAPI();
 
   // This is only used in WebGL
   void RecordUKMCanvasDrawnToRenderingAPI();
 
-  static ContextType ContextTypeFromId(
+  static CanvasRenderingAPI RenderingAPIFromId(
       const String& id,
       const ExecutionContext* execution_context);
-  static ContextType ResolveContextTypeAliases(ContextType);
 
   CanvasRenderingContextHost* Host() const { return host_; }
 
@@ -138,7 +125,6 @@ class CORE_EXPORT CanvasRenderingContext
   }
 
   virtual scoped_refptr<StaticBitmapImage> GetImage() = 0;
-  virtual ContextType GetContextType() const = 0;
   virtual bool IsComposited() const = 0;
   virtual bool IsAccelerated() const = 0;
   virtual bool IsOriginTopLeft() const {

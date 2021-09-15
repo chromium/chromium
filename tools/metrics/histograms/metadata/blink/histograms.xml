@@ -122,6 +122,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Blink.Canvas.ContextType" enum="CanvasContextType"
     expires_after="2022-01-31">
+  <obsolete>
+    Retired in M96, replaced by HTMLCanvasElement_* buckets in
+    Blink.UseCounter.Features wich records at most one count per page visit per
+    context type, as opposed to one count per context creation.
+  </obsolete>
   <owner>fserb@chromium.org</owner>
   <owner>aaronhk@chromium.org</owner>
   <summary>
@@ -2389,6 +2394,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Blink.OffscreenCanvas.ContextType" enum="CanvasContextType"
     expires_after="2021-10-17">
+  <obsolete>
+    Retired in M96, replaced by OffscreenCanvas_* buckets in
+    Blink.UseCounter.Features wich records at most one count per page visit per
+    context type, as opposed to one count per context creation.
+  </obsolete>
   <owner>aaronhk@chromium.org</owner>
   <owner>fserb@chromium.org</owner>
   <summary>

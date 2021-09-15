@@ -10586,6 +10586,10 @@ Called by update_bad_message_reasons.py.-->
 </enum>
 
 <enum name="CanvasContextType">
+  <obsolete>
+    Deprecated 09/2021 with the removal of the Blink.Canvas.ContextType and
+    Blink.OffscreenCanvas.ContextType histograms
+  </obsolete>
   <int value="0" label="2d"/>
   <int value="1" label="(obsolete) webkit-3d"/>
   <int value="2" label="experimental-webgl"/>
@@ -34548,6 +34552,16 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4021" label="MediaSourceExtensionsForWebCodecs"/>
   <int value="4023" label="PaymentRequestResponse"/>
   <int value="4024" label="PaymentRequestComplete"/>
+  <int value="4025" label="HTMLCanvasElement_2D"/>
+  <int value="4026" label="HTMLCanvasElement_WebGL"/>
+  <int value="4027" label="HTMLCanvasElement_WebGL2"/>
+  <int value="4028" label="HTMLCanvasElement_BitmapRenderer"/>
+  <int value="4029" label="HTMLCanvasElement_WebGPU"/>
+  <int value="4030" label="OffscreenCanvas_2D"/>
+  <int value="4031" label="OffscreenCanvas_WebGL"/>
+  <int value="4032" label="OffscreenCanvas_WebGL2"/>
+  <int value="4033" label="OffscreenCanvas_BitmapRenderer"/>
+  <int value="4034" label="OffscreenCanvas_WebGPU"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

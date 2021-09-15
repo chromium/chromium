@@ -36,7 +36,7 @@ class GPUCanvasContext : public CanvasRenderingContext {
     CanvasRenderingContext* Create(
         CanvasRenderingContextHost*,
         const CanvasContextCreationAttributesCore&) override;
-    CanvasRenderingContext::ContextType GetContextType() const override;
+    CanvasRenderingContext::CanvasRenderingAPI GetRenderingAPI() const override;
   };
 
   GPUCanvasContext(CanvasRenderingContextHost*,
@@ -46,7 +46,6 @@ class GPUCanvasContext : public CanvasRenderingContext {
   void Trace(Visitor*) const override;
 
   // CanvasRenderingContext implementation
-  ContextType GetContextType() const override;
   V8RenderingContext* AsV8RenderingContext() final;
   V8OffscreenRenderingContext* AsV8OffscreenRenderingContext() final;
   scoped_refptr<StaticBitmapImage> GetImage() final;
