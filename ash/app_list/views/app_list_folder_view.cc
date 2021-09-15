@@ -72,8 +72,9 @@ constexpr int kOnscreenKeyboardTopPadding = 16;
 
 constexpr int kTileSpacingInFolder = 8;
 
-// Insets for the vertical scroll bar.
-constexpr gfx::Insets kVerticalScrollInsets(1, 0, 1, 1);
+// Insets for the vertical scroll bar. The top is pushed down slightly to align
+// with the icons, which keeps the scroll bar out of the rounded corner area.
+constexpr gfx::Insets kVerticalScrollInsets(kTileSpacingInFolder, 0, 1, 1);
 
 // Duration for fading in the target page when opening
 // or closing a folder, and the duration for the top folder icon animation
