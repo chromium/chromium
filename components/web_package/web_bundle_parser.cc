@@ -658,8 +658,12 @@ class WebBundleParser::MetadataParser
   }
 
   // https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#name-the-index-section
+  // For 'b1' bundles, index section has the following structure:
   //   index = {* whatwg-url => [ variants-value, +location-in-responses ] }
   //   variants-value = bstr
+  //   location-in-responses = (offset: uint, length: uint)
+  // For 'b2' bundles however, it's different:
+  //   index = {* whatwg-url => [ location-in-responses ] }
   //   location-in-responses = (offset: uint, length: uint)
   bool ParseIndexSection(const cbor::Value& section_value) {
     // |section_value| of index section must be a map.
@@ -695,38 +699,56 @@ class WebBundleParser::MetadataParser
         return false;
       }
 
-      // Parse |variants_value|.
-      if (responses_array.empty() || !responses_array[0].is_bytestring()) {
-        RunErrorCallbackAndDestroy(
-            "Index section: the first element of responses array must be a "
-            "bytestring.");
-        return false;
-      }
-      base::StringPiece variants_value =
-          responses_array[0].GetBytestringAsString();
-      if (variants_value.empty()) {
-        // When |variants_value| is an empty string, the length of responses
-        // must be 3 (variants-value, offset, length).
-        if (responses_array.size() != 3) {
+      // To support BundleIndexValue with |variants_value| defined and without
+      // we first initialize it as an empty string (default value for 'b2'
+      // version) and then fill it with an actual value if present (in 'b1'
+      // bundles).
+      base::StringPiece variants_value = "";
+      if (bundle_version_is_b1_) {
+        // Parse |variants_value|.
+        if (responses_array.empty() || !responses_array[0].is_bytestring()) {
           RunErrorCallbackAndDestroy(
-              "Index section: unexpected size of responses array.");
+              "Index section: the first element of responses array must be a "
+              "bytestring.");
           return false;
         }
+        variants_value = responses_array[0].GetBytestringAsString();
+        if (variants_value.empty()) {
+          // When |variants_value| is an empty string, the length of responses
+          // must be 3 (variants-value, offset, length).
+          if (responses_array.size() != 3) {
+            RunErrorCallbackAndDestroy(
+                "Index section: unexpected size of responses array.");
+            return false;
+          }
+        } else {
+          // TODO(crbug.com/969596): Parse variants_value to compute the number
+          // of variantKeys, and check that responses_array has (2 *
+          // #variantKeys + 1) elements.
+          if (responses_array.size() < 3 || responses_array.size() % 2 != 1) {
+            RunErrorCallbackAndDestroy(
+                "Index section: unexpected size of responses array.");
+            return false;
+          }
+        }
       } else {
-        // TODO(crbug.com/969596): Parse variants_value to compute the number of
-        // variantKeys, and check that responses_array has
-        // (2 * #variantKeys + 1) elements.
-        if (responses_array.size() < 3 || responses_array.size() % 2 != 1) {
+        if (responses_array.size() != 2) {
           RunErrorCallbackAndDestroy(
-              "Index section: unexpected size of responses array.");
+              "Index section: the size of a response array per URL should be "
+              "exactly 2 for bundles without variant support ('b2').");
           return false;
         }
       }
       // Instead of constructing a map from Variant-Keys to location-in-stream,
       // this implementation just returns the responses array's structure as
       // a BundleIndexValue.
+      // When parsing a 'b1' bundle, we start the array lookup from 1, as the
+      // first element is |variants_value|. For 'b2' bundles and forward, we
+      // start from zero, as the array only consists of 2 values: offset and
+      // length.
       std::vector<mojom::BundleResponseLocationPtr> response_locations;
-      for (size_t i = 1; i < responses_array.size(); i += 2) {
+      for (size_t i = bundle_version_is_b1_ ? 1 : 0; i < responses_array.size();
+           i += 2) {
         if (!responses_array[i].is_unsigned() ||
             !responses_array[i + 1].is_unsigned()) {
           RunErrorCallbackAndDestroy(

@@ -696,6 +696,39 @@ TEST_F(WebBundleParserTest, ParseGoldenFile) {
   EXPECT_TRUE(responses["https://test.example.org/script.js"]);
 }
 
+TEST_F(WebBundleParserTest, ParseGoldenFileB2Version) {
+  TestDataSource data_source(base::FilePath(FILE_PATH_LITERAL("hello_b2.wbn")));
+
+  mojom::BundleMetadataPtr metadata = ParseBundle(&data_source).first;
+  ASSERT_TRUE(metadata);
+  ASSERT_EQ(metadata->requests.size(), 4u);
+  EXPECT_EQ(metadata->manifest_url,
+            "https://test.example.org/manifest.webmanifest");
+  EXPECT_EQ(metadata->primary_url, "https://test.example.org/");
+
+  std::map<std::string, mojom::BundleResponsePtr> responses;
+  for (const auto& item : metadata->requests) {
+    auto location = FindResponse(metadata, item.first);
+    ASSERT_TRUE(location);
+    auto resp = ParseResponse(&data_source, location);
+    ASSERT_TRUE(resp);
+    responses[item.first.spec()] = std::move(resp);
+  }
+
+  ASSERT_TRUE(responses["https://test.example.org/"]);
+  EXPECT_EQ(responses["https://test.example.org/"]->response_code, 200);
+  EXPECT_EQ(
+      responses["https://test.example.org/"]->response_headers["content-type"],
+      "text/html; charset=utf-8");
+  EXPECT_EQ(data_source.GetPayload(responses["https://test.example.org/"]),
+            GetTestFileContents(
+                base::FilePath(FILE_PATH_LITERAL("hello/index.html"))));
+
+  EXPECT_TRUE(responses["https://test.example.org/index.html"]);
+  EXPECT_TRUE(responses["https://test.example.org/manifest.webmanifest"]);
+  EXPECT_TRUE(responses["https://test.example.org/script.js"]);
+}
+
 TEST_F(WebBundleParserTest, ParseSignedFile) {
   TestDataSource data_source(
       base::FilePath(FILE_PATH_LITERAL("hello_signed.wbn")));

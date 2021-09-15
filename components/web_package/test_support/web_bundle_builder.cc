@@ -70,7 +70,12 @@ void WebBundleBuilder::AddIndexEntry(
     base::StringPiece variants_value,
     std::vector<ResponseLocation> response_locations) {
   cbor::Value::ArrayValue index_value_array;
-  index_value_array.emplace_back(CreateByteString(variants_value));
+  // 'b2' version does not include |variants_value| in the response array.
+  if (version_ == BundleVersion::kB1) {
+    index_value_array.emplace_back(CreateByteString(variants_value));
+  } else {
+    DCHECK_EQ(response_locations.size(), 1u);
+  }
   for (const auto& location : response_locations) {
     index_value_array.emplace_back(location.offset);
     index_value_array.emplace_back(location.length);

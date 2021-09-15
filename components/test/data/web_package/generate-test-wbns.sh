@@ -27,6 +27,14 @@ gen-bundle \
   -o hello.wbn
 
 gen-bundle \
+  -version b2 \
+  -baseURL https://test.example.org/ \
+  -primaryURL https://test.example.org/ \
+  -dir hello/ \
+  -manifestURL https://test.example.org/manifest.webmanifest \
+  -o hello_b2.wbn
+
+gen-bundle \
   -har simple.har \
   -o simple.wbn \
   -primaryURL https://test.example.org/ \
