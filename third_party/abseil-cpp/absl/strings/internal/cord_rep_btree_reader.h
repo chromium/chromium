@@ -31,9 +31,7 @@ namespace cord_internal {
 // References to the underlying data are returned as absl::string_view values.
 // The most typical use case is a forward only iteration over tree data.
 // The class also provides `Skip()`, `Seek()` and `Read()` methods similar to
-// CordRepBtreeNavigator that allow more advanced navigation. The class provides
-// a `consumed` property which contains the end offset of the chunk last
-// returned to the user which is useful in cord iteration logic.
+// CordRepBtreeNavigator that allow more advanced navigation.
 //
 // Example: iterate over all data inside a cord btree:
 //
@@ -61,9 +59,9 @@ namespace cord_internal {
 //     absl::string_view sv = reader.Next();
 //   }
 //
-// It is important to notice that `consumed` represents the end position of the
-// last data edge returned to the caller, not the cumulative data returned to
-// the caller which can be less in cases of skipping or seeking over data.
+// It is important to notice that `remaining` is based on the end position of
+// the last data edge returned to the caller, not the cumulative data returned
+// to the caller which can be less in cases of skipping or seeking over data.
 //
 // For example, consider a cord btree with five data edges: "abc", "def", "ghi",
 // "jkl" and "mno":
@@ -71,14 +69,12 @@ namespace cord_internal {
 //   absl::string_view sv;
 //   CordRepBtreeReader reader;
 //
-//   sv = reader.Init(tree); // sv = "abc", reader.consumed() = 3
-//   sv = reader.Skip(4);    // sv = "hi",  reader.consumed() = 9
-//   sv = reader.Skip(2);    // sv = "l",   reader.consumed() = 12
-//   sv = reader.Next();     // sv = "mno", reader.consumed() = 15
+//   sv = reader.Init(tree); // sv = "abc", remaining = 12
+//   sv = reader.Skip(4);    // sv = "hi",  remaining = 6
+//   sv = reader.Skip(2);    // sv = "l",   remaining = 3
+//   sv = reader.Next();     // sv = "mno", remaining = 0
+//   sv = reader.Seek(1);    // sv = "bc", remaining = 12
 //
-// In the above example, `reader.consumed()` reflects the data edges iterated
-// over or skipped by the reader, not the amount of data 'consumed' by the
-// caller.
 class CordRepBtreeReader {
  public:
   using ReadResult = CordRepBtreeNavigator::ReadResult;
@@ -98,13 +94,14 @@ class CordRepBtreeReader {
   // Requires that the current instance is not empty.
   size_t length() const;
 
-  // Returns the end offset of the last navigated to chunk, which represents the
-  // total bytes 'consumed' relative to the start of the tree. The returned
-  // value is never zero. For example, initializing a reader with a tree with a
-  // first data edge of 19 bytes will return `consumed() = 19`. See also the
-  // class comments on the meaning of `consumed`.
-  // Requires that the current instance is not empty.
-  size_t consumed() const;
+  // Returns the number of remaining bytes available for iteration, which is the
+  // number of bytes directly following the end of the last chunk returned.
+  // This value will be zero if we iterated over the last edge in the bound
+  // tree, in which case any call to Next() or Skip() will return an empty
+  // string_view reflecting the EOF state.
+  // Note that a call to `Seek()` resets `remaining` to a value based on the
+  // end position of the chunk returned by that call.
+  size_t remaining() const { return remaining_; }
 
   // Resets this instance to an empty value.
   void Reset() { navigator_.Reset(); }
@@ -157,7 +154,7 @@ class CordRepBtreeReader {
   absl::string_view Seek(size_t offset);
 
  private:
-  size_t consumed_;
+  size_t remaining_ = 0;
   CordRepBtreeNavigator navigator_;
 };
 
@@ -166,23 +163,18 @@ inline size_t CordRepBtreeReader::length() const {
   return btree()->length;
 }
 
-inline size_t CordRepBtreeReader::consumed() const {
-  assert(btree() != nullptr);
-  return consumed_;
-}
-
 inline absl::string_view CordRepBtreeReader::Init(CordRepBtree* tree) {
   assert(tree != nullptr);
   const CordRep* edge = navigator_.InitFirst(tree);
-  consumed_ = edge->length;
+  remaining_ = tree->length - edge->length;
   return CordRepBtree::EdgeData(edge);
 }
 
 inline absl::string_view CordRepBtreeReader::Next() {
-  assert(consumed() < length());
+  if (remaining_ == 0) return {};
   const CordRep* edge = navigator_.Next();
   assert(edge != nullptr);
-  consumed_ += edge->length;
+  remaining_ -= edge->length;
   return CordRepBtree::EdgeData(edge);
 }
 
@@ -192,23 +184,23 @@ inline absl::string_view CordRepBtreeReader::Skip(size_t skip) {
   const size_t edge_length = navigator_.Current()->length;
   CordRepBtreeNavigator::Position pos = navigator_.Skip(skip + edge_length);
   if (ABSL_PREDICT_FALSE(pos.edge == nullptr)) {
-    consumed_ = length();
+    remaining_ = 0;
     return {};
   }
   // The combined length of all edges skipped before `pos.edge` is `skip -
   // pos.offset`, all of which are 'consumed', as well as the current edge.
-  consumed_ += skip - pos.offset + pos.edge->length;
+  remaining_ -= skip - pos.offset + pos.edge->length;
   return CordRepBtree::EdgeData(pos.edge).substr(pos.offset);
 }
 
 inline absl::string_view CordRepBtreeReader::Seek(size_t offset) {
   const CordRepBtreeNavigator::Position pos = navigator_.Seek(offset);
   if (ABSL_PREDICT_FALSE(pos.edge == nullptr)) {
-    consumed_ = length();
+    remaining_ = 0;
     return {};
   }
   absl::string_view chunk = CordRepBtree::EdgeData(pos.edge).substr(pos.offset);
-  consumed_ = offset + chunk.length();
+  remaining_ = length() - offset - chunk.length();
   return chunk;
 }
 

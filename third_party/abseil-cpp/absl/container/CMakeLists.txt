@@ -548,6 +548,7 @@ absl_cc_library(
     absl::base
     absl::exponential_biased
     absl::have_sse
+    absl::sample_recorder
     absl::synchronization
 )
 

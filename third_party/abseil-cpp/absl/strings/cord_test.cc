@@ -1591,7 +1591,7 @@ TEST_P(CordTest, CordChunkIteratorOperations) {
   VerifyChunkIterator(subcords, 128);
 }
 
-TEST(CordCharIterator, Traits) {
+TEST_P(CordTest, CharIteratorTraits) {
   static_assert(std::is_copy_constructible<absl::Cord::CharIterator>::value,
                 "");
   static_assert(std::is_copy_assignable<absl::Cord::CharIterator>::value, "");
@@ -1700,7 +1700,7 @@ static void VerifyCharIterator(const absl::Cord& cord) {
   }
 }
 
-TEST(CordCharIterator, Operations) {
+TEST_P(CordTest, CharIteratorOperations) {
   absl::Cord empty_cord;
   VerifyCharIterator(empty_cord);
 
@@ -1727,6 +1727,41 @@ TEST(CordCharIterator, Operations) {
   absl::Cord subcords;
   for (int i = 0; i < 4; ++i) subcords.Prepend(flat_cord.Subcord(16 * i, 128));
   VerifyCharIterator(subcords);
+}
+
+TEST_P(CordTest, CharIteratorAdvanceAndRead) {
+  // Create a Cord holding 6 flats of 2500 bytes each, and then iterate over it
+  // reading 150, 1500, 2500 and 3000 bytes. This will result in all possible
+  // partial, full and straddled read combinations including reads below
+  // kMaxBytesToCopy. b/197776822 surfaced a bug for a specific partial, small
+  // read 'at end' on Cord which caused a failure on attempting to read past the
+  // end in CordRepBtreeReader which was not covered by any existing test.
+  constexpr int kBlocks = 6;
+  constexpr size_t kBlockSize = 2500;
+  constexpr size_t kChunkSize1 = 1500;
+  constexpr size_t kChunkSize2 = 2500;
+  constexpr size_t kChunkSize3 = 3000;
+  constexpr size_t kChunkSize4 = 150;
+  RandomEngine rng;
+  std::string data = RandomLowercaseString(&rng, kBlocks * kBlockSize);
+  absl::Cord cord;
+  for (int i = 0; i < kBlocks; ++i) {
+    const std::string block = data.substr(i * kBlockSize, kBlockSize);
+    cord.Append(absl::Cord(block));
+  }
+
+  for (size_t chunk_size :
+       {kChunkSize1, kChunkSize2, kChunkSize3, kChunkSize4}) {
+    absl::Cord::CharIterator it = cord.char_begin();
+    size_t offset = 0;
+    while (offset < data.length()) {
+      const size_t n = std::min<size_t>(data.length() - offset, chunk_size);
+      absl::Cord chunk = cord.AdvanceAndRead(&it, n);
+      ASSERT_EQ(chunk.size(), n);
+      ASSERT_EQ(chunk.Compare(data.substr(offset, n)), 0);
+      offset += n;
+    }
+  }
 }
 
 TEST_P(CordTest, StreamingOutput) {
@@ -1778,7 +1813,7 @@ TEST_P(CordTest, Format) {
   EXPECT_EQ(c, "There were 0003 little pigs.And 1   bad wolf!");
 }
 
-TEST(CordDeathTest, Hardening) {
+TEST_P(CordTest, Hardening) {
   absl::Cord cord("hello");
   // These statement should abort the program in all builds modes.
   EXPECT_DEATH_IF_SUPPORTED(cord.RemovePrefix(6), "");

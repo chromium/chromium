@@ -22,6 +22,7 @@
 #include "gtest/gtest.h"
 #include "absl/base/attributes.h"
 #include "absl/container/internal/have_sse.h"
+#include "absl/profiling/internal/sample_recorder.h"
 #include "absl/synchronization/blocking_counter.h"
 #include "absl/synchronization/internal/thread_pool.h"
 #include "absl/synchronization/mutex.h"
@@ -232,7 +233,7 @@ TEST(HashtablezSamplerTest, Sample) {
 }
 
 TEST(HashtablezSamplerTest, Handle) {
-  auto& sampler = HashtablezSampler::Global();
+  auto& sampler = GlobalHashtablezSampler();
   HashtablezInfoHandle h(sampler.Register());
   auto* info = HashtablezInfoHandlePeer::GetInfo(&h);
   info->hashes_bitwise_and.store(0x12345678, std::memory_order_relaxed);

@@ -58,22 +58,26 @@ TEST(CordRepBtreeReaderTest, Next) {
     CordRepBtree* node = CordRepBtreeFromFlats(flats);
 
     CordRepBtreeReader reader;
+    size_t remaining = data.length();
     absl::string_view chunk = reader.Init(node);
     EXPECT_THAT(chunk, Eq(data.substr(0, chunk.length())));
 
-    size_t consumed = chunk.length();
-    EXPECT_THAT(reader.consumed(), Eq(consumed));
+    remaining -= chunk.length();
+    EXPECT_THAT(reader.remaining(), Eq(remaining));
 
-    while (consumed < data.length()) {
+    while (remaining > 0) {
+      const size_t offset = data.length() - remaining;
       chunk = reader.Next();
-      EXPECT_THAT(chunk, Eq(data.substr(consumed, chunk.length())));
+      EXPECT_THAT(chunk, Eq(data.substr(offset, chunk.length())));
 
-      consumed += chunk.length();
-      EXPECT_THAT(reader.consumed(), Eq(consumed));
+      remaining -= chunk.length();
+      EXPECT_THAT(reader.remaining(), Eq(remaining));
     }
 
-    EXPECT_THAT(consumed, Eq(data.length()));
-    EXPECT_THAT(reader.consumed(), Eq(data.length()));
+    EXPECT_THAT(reader.remaining(), Eq(0));
+
+    // Verify trying to read beyond EOF returns empty string_view
+    EXPECT_THAT(reader.Next(), testing::IsEmpty());
 
     CordRep::Unref(node);
   }
@@ -92,19 +96,22 @@ TEST(CordRepBtreeReaderTest, Skip) {
     for (size_t skip1 = 0; skip1 < data.length() - kChars; ++skip1) {
       for (size_t skip2 = 0; skip2 < data.length() - kChars; ++skip2) {
         CordRepBtreeReader reader;
+        size_t remaining = data.length();
         absl::string_view chunk = reader.Init(node);
-        size_t consumed = chunk.length();
+        remaining -= chunk.length();
 
         chunk = reader.Skip(skip1);
-        ASSERT_THAT(chunk, Eq(data.substr(consumed + skip1, chunk.length())));
-        consumed += chunk.length() + skip1;
-        ASSERT_THAT(reader.consumed(), Eq(consumed));
+        size_t offset = data.length() - remaining;
+        ASSERT_THAT(chunk, Eq(data.substr(offset + skip1, chunk.length())));
+        remaining -= chunk.length() + skip1;
+        ASSERT_THAT(reader.remaining(), Eq(remaining));
 
-        if (consumed >= data.length()) continue;
+        if (remaining == 0) continue;
 
-        size_t skip = std::min(data.length() - consumed - 1, skip2);
+        size_t skip = std::min(remaining - 1, skip2);
         chunk = reader.Skip(skip);
-        ASSERT_THAT(chunk, Eq(data.substr(consumed + skip, chunk.length())));
+        offset = data.length() - remaining;
+        ASSERT_THAT(chunk, Eq(data.substr(offset + skip, chunk.length())));
       }
     }
 
@@ -118,7 +125,7 @@ TEST(CordRepBtreeReaderTest, SkipBeyondLength) {
   CordRepBtreeReader reader;
   reader.Init(tree);
   EXPECT_THAT(reader.Skip(100), IsEmpty());
-  EXPECT_THAT(reader.consumed(), Eq(6));
+  EXPECT_THAT(reader.remaining(), Eq(0));
   CordRep::Unref(tree);
 }
 
@@ -138,7 +145,8 @@ TEST(CordRepBtreeReaderTest, Seek) {
       absl::string_view chunk = reader.Seek(seek);
       ASSERT_THAT(chunk, Not(IsEmpty()));
       ASSERT_THAT(chunk, Eq(data.substr(seek, chunk.length())));
-      ASSERT_THAT(reader.consumed(), Eq(seek + chunk.length()));
+      ASSERT_THAT(reader.remaining(),
+                  Eq(data.length() - seek - chunk.length()));
     }
 
     CordRep::Unref(node);
@@ -151,9 +159,9 @@ TEST(CordRepBtreeReaderTest, SeekBeyondLength) {
   CordRepBtreeReader reader;
   reader.Init(tree);
   EXPECT_THAT(reader.Seek(6), IsEmpty());
-  EXPECT_THAT(reader.consumed(), Eq(6));
+  EXPECT_THAT(reader.remaining(), Eq(0));
   EXPECT_THAT(reader.Seek(100), IsEmpty());
-  EXPECT_THAT(reader.consumed(), Eq(6));
+  EXPECT_THAT(reader.remaining(), Eq(0));
   CordRep::Unref(tree);
 }
 
@@ -171,7 +179,7 @@ TEST(CordRepBtreeReaderTest, Read) {
   chunk = reader.Read(0, chunk.length(), tree);
   EXPECT_THAT(tree, Eq(nullptr));
   EXPECT_THAT(chunk, Eq("abcde"));
-  EXPECT_THAT(reader.consumed(), Eq(5));
+  EXPECT_THAT(reader.remaining(), Eq(10));
   EXPECT_THAT(reader.Next(), Eq("fghij"));
 
   // Read in full
@@ -180,7 +188,7 @@ TEST(CordRepBtreeReaderTest, Read) {
   EXPECT_THAT(tree, Ne(nullptr));
   EXPECT_THAT(CordToString(tree), Eq("abcdefghijklmno"));
   EXPECT_THAT(chunk, Eq(""));
-  EXPECT_THAT(reader.consumed(), Eq(15));
+  EXPECT_THAT(reader.remaining(), Eq(0));
   CordRep::Unref(tree);
 
   // Read < chunk bytes
@@ -189,7 +197,7 @@ TEST(CordRepBtreeReaderTest, Read) {
   ASSERT_THAT(tree, Ne(nullptr));
   EXPECT_THAT(CordToString(tree), Eq("abc"));
   EXPECT_THAT(chunk, Eq("de"));
-  EXPECT_THAT(reader.consumed(), Eq(5));
+  EXPECT_THAT(reader.remaining(), Eq(10));
   EXPECT_THAT(reader.Next(), Eq("fghij"));
   CordRep::Unref(tree);
 
@@ -199,7 +207,7 @@ TEST(CordRepBtreeReaderTest, Read) {
   ASSERT_THAT(tree, Ne(nullptr));
   EXPECT_THAT(CordToString(tree), Eq("cd"));
   EXPECT_THAT(chunk, Eq("e"));
-  EXPECT_THAT(reader.consumed(), Eq(5));
+  EXPECT_THAT(reader.remaining(), Eq(10));
   EXPECT_THAT(reader.Next(), Eq("fghij"));
   CordRep::Unref(tree);
 
@@ -209,7 +217,7 @@ TEST(CordRepBtreeReaderTest, Read) {
   ASSERT_THAT(tree, Ne(nullptr));
   EXPECT_THAT(CordToString(tree), Eq("fgh"));
   EXPECT_THAT(chunk, Eq("ij"));
-  EXPECT_THAT(reader.consumed(), Eq(10));
+  EXPECT_THAT(reader.remaining(), Eq(5));
   EXPECT_THAT(reader.Next(), Eq("klmno"));
   CordRep::Unref(tree);
 
@@ -219,7 +227,7 @@ TEST(CordRepBtreeReaderTest, Read) {
   ASSERT_THAT(tree, Ne(nullptr));
   EXPECT_THAT(CordToString(tree), Eq("cdefghijklmn"));
   EXPECT_THAT(chunk, Eq("o"));
-  EXPECT_THAT(reader.consumed(), Eq(15));
+  EXPECT_THAT(reader.remaining(), Eq(0));
   CordRep::Unref(tree);
 
   // Read across chunks landing on exact edge boundary
@@ -228,7 +236,7 @@ TEST(CordRepBtreeReaderTest, Read) {
   ASSERT_THAT(tree, Ne(nullptr));
   EXPECT_THAT(CordToString(tree), Eq("cdefghij"));
   EXPECT_THAT(chunk, Eq("klmno"));
-  EXPECT_THAT(reader.consumed(), Eq(15));
+  EXPECT_THAT(reader.remaining(), Eq(0));
   CordRep::Unref(tree);
 
   CordRep::Unref(node);
@@ -264,7 +272,7 @@ TEST(CordRepBtreeReaderTest, ReadExhaustive) {
 
         consumed += n;
         remaining -= n;
-        EXPECT_THAT(reader.consumed(), Eq(consumed + chunk.length()));
+        EXPECT_THAT(reader.remaining(), Eq(remaining - chunk.length()));
 
         if (remaining > 0) {
           ASSERT_FALSE(chunk.empty());

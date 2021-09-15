@@ -52,14 +52,14 @@ absl::string_view CordRepBtreeReader::Read(size_t n, size_t chunk_size,
   // data, calling `navigator_.Current()` is not safe before checking if we
   // already consumed all remaining data.
   const size_t consumed_by_read = n - chunk_size - result.n;
-  if (consumed_ + consumed_by_read >= length()) {
-    consumed_ = length();
+  if (consumed_by_read >= remaining_) {
+    remaining_ = 0;
     return {};
   }
 
   // We did not read all data, return remaining data from current edge.
   edge = navigator_.Current();
-  consumed_ += consumed_by_read + edge->length;
+  remaining_ -= consumed_by_read + edge->length;
   return CordRepBtree::EdgeData(edge).substr(result.n);
 }
 

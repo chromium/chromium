@@ -211,7 +211,7 @@ inline ABSL_TARGET_CRYPTO void SwapEndian(void*) {}
 
 #elif defined(ABSL_ARCH_X86_64) || defined(ABSL_ARCH_X86_32)
 // On x86 we rely on the aesni instructions
-#include <wmmintrin.h>
+#include <immintrin.h>
 
 namespace {
 

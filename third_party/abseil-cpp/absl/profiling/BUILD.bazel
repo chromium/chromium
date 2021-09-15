@@ -12,6 +12,40 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+load(
+    "//absl:copts/configure_copts.bzl",
+    "ABSL_DEFAULT_COPTS",
+    "ABSL_DEFAULT_LINKOPTS",
+)
+
 package(default_visibility = ["//visibility:private"])
 
 licenses(["notice"])
+
+cc_library(
+    name = "sample_recorder",
+    hdrs = ["internal/sample_recorder.h"],
+    copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = ["//absl:__subpackages__"],
+    deps = [
+        "//absl/base:config",
+        "//absl/base:core_headers",
+        "//absl/synchronization",
+        "//absl/time",
+    ],
+)
+
+cc_test(
+    name = "sample_recorder_test",
+    srcs = ["internal/sample_recorder_test.cc"],
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        ":sample_recorder",
+        "//absl/base:core_headers",
+        "//absl/synchronization",
+        "//absl/synchronization:thread_pool",
+        "//absl/time",
+        "@com_google_googletest//:gtest_main",
+    ],
+)

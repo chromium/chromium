@@ -175,6 +175,7 @@ absl_source_set("hashtablez_sampler") {
     "//third_party/abseil-cpp/absl/base:exponential_biased",
     "//third_party/abseil-cpp/absl/debugging:stacktrace",
     "//third_party/abseil-cpp/absl/memory",
+    "//third_party/abseil-cpp/absl/profiling:sample_recorder",
     "//third_party/abseil-cpp/absl/synchronization",
     "//third_party/abseil-cpp/absl/utility",
   ]

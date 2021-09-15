@@ -12,3 +12,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+absl_cc_library(
+  NAME
+    sample_recorder
+  HDRS
+    "internal/sample_recorder.h"
+  COPTS
+    ${ABSL_DEFAULT_COPTS}
+  DEPS
+    absl::base
+    absl::synchronization
+)
+
+absl_cc_test(
+  NAME
+    sample_recorder_test
+  SRCS
+    "internal/sample_recorder_test.cc"
+  COPTS
+    ${ABSL_TEST_COPTS}
+  DEPS
+    absl::sample_recorder
+    absl::time
+    GTest::gmock_main
+)
+

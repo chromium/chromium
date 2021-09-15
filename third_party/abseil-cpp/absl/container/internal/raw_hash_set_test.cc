@@ -2038,7 +2038,7 @@ TEST(RawHashSamplerTest, Sample) {
   SetHashtablezEnabled(true);
   SetHashtablezSampleParameter(100);
 
-  auto& sampler = HashtablezSampler::Global();
+  auto& sampler = GlobalHashtablezSampler();
   size_t start_size = 0;
   std::unordered_set<const HashtablezInfo*> preexisting_info;
   start_size += sampler.Iterate([&](const HashtablezInfo& info) {
@@ -2076,7 +2076,7 @@ TEST(RawHashSamplerTest, DoNotSampleCustomAllocators) {
   SetHashtablezEnabled(true);
   SetHashtablezSampleParameter(100);
 
-  auto& sampler = HashtablezSampler::Global();
+  auto& sampler = GlobalHashtablezSampler();
   size_t start_size = 0;
   start_size += sampler.Iterate([&](const HashtablezInfo&) { ++start_size; });
 
