@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/cart/fetch_discount_worker.h"
+#include "base/containers/flat_map.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/cart/cart_discount_fetcher.h"
@@ -10,6 +11,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/search/ntp_features.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/variations/variations.mojom.h"
+#include "components/variations/variations_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -85,7 +88,8 @@ class FakeCartDiscountFetcher : public CartDiscountFetcher {
       std::vector<CartDB::KeyAndValue> proto_pairs,
       const bool is_oauth_fetch,
       const std::string access_token_str,
-      const std::string fetch_for_locale) override {
+      const std::string fetch_for_locale,
+      const std::string variation_headers) override {
     FakeCartDiscountFetcher::fetcher_fetch_count_++;
     // Only oauth fetch has a chance to be a tester.
     bool is_tester = is_tester_ && is_oauth_fetch;
@@ -120,7 +124,8 @@ class MockCartDiscountFetcher : public CartDiscountFetcher {
        std::vector<CartDB::KeyAndValue> proto_pairs,
        const bool is_oauth_fetch,
        const std::string access_token_str,
-       const std::string fetch_for_locale),
+       const std::string fetch_for_locale,
+       const std::string variation_headers),
       (override));
 
   void DelegateToFake(CartDiscountMap fake_result, bool is_tester) {
@@ -135,11 +140,13 @@ class MockCartDiscountFetcher : public CartDiscountFetcher {
                    std::vector<CartDB::KeyAndValue> proto_pairs,
                    const bool is_oauth_fetch,
                    const std::string access_token_str,
-                   const std::string fetch_for_locale) {
+                   const std::string fetch_for_locale,
+                   const std::string variation_headers) {
               return fake_cart_discount_fetcher_.Fetch(
                   std::move(pending_factory), std::move(callback),
                   std::move(proto_pairs), is_oauth_fetch,
-                  std::move(access_token_str), std::move(fetch_for_locale));
+                  std::move(access_token_str), std::move(fetch_for_locale),
+                  std::move(variation_headers));
             });
   }
 
@@ -280,6 +287,19 @@ class FakeCartLoaderAndUpdaterFactory : public CartLoaderAndUpdaterFactory {
   bool expected_tester_;
 };
 
+class FakeVariationsClient : public variations::VariationsClient {
+ public:
+  bool IsOffTheRecord() const override { return false; }
+
+  variations::mojom::VariationsHeadersPtr GetVariationsHeaders()
+      const override {
+    base::flat_map<variations::mojom::GoogleWebVisibility, std::string>
+        headers = {
+            {variations::mojom::GoogleWebVisibility::FIRST_PARTY, "xyz456"}};
+    return variations::mojom::VariationsHeaders::New(headers);
+  }
+};
+
 class FetchDiscountWorkerTest : public testing::Test {
  public:
   FetchDiscountWorkerTest() {
@@ -297,6 +317,8 @@ class FetchDiscountWorkerTest : public testing::Test {
 
     fake_cart_loader_and_updater_factory_ =
         std::make_unique<FakeCartLoaderAndUpdaterFactory>(&profile_);
+
+    fake_variations_client_ = std::make_unique<FakeVariationsClient>();
   }
 
   void TearDown() override {
@@ -324,7 +346,8 @@ class FetchDiscountWorkerTest : public testing::Test {
         std::move(test_shared_url_loader_factory_),
         std::move(fake_cart_discount_fetcher_factory_),
         std::move(fake_cart_loader_and_updater_factory_),
-        is_signin_and_sync_ ? identity_test_env_.identity_manager() : nullptr);
+        is_signin_and_sync_ ? identity_test_env_.identity_manager() : nullptr,
+        fake_variations_client_.get());
   }
 
   void SignInAndSync() {
@@ -355,6 +378,8 @@ class FetchDiscountWorkerTest : public testing::Test {
 
   std::unique_ptr<FakeCartLoaderAndUpdaterFactory>
       fake_cart_loader_and_updater_factory_;
+
+  std::unique_ptr<FakeVariationsClient> fake_variations_client_;
 
   TestingProfile profile_;
   bool is_signin_and_sync_ = false;

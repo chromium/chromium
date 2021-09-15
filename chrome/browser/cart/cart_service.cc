@@ -861,7 +861,8 @@ void CartService::StartGettingDiscount() {
           ->GetURLLoaderFactoryForBrowserProcess(),
       std::make_unique<CartDiscountFetcherFactory>(),
       std::make_unique<CartLoaderAndUpdaterFactory>(profile_),
-      IdentityManagerFactory::GetForProfile(profile_));
+      IdentityManagerFactory::GetForProfile(profile_),
+      profile_->GetVariationsClient());
 
   fetch_discount_worker_->Start(
       base::TimeDelta::FromMilliseconds(kDelayStartMs));

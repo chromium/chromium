@@ -44,6 +44,7 @@ const char kMockMerchantARawOfferIdOne[] = "offerId1";
 const char kMockMerchantARawOfferIdTwo[] = "offerId2";
 const char kConfigurableEndpoint[] = "https://testing_endpoint.com/discounts";
 const char kLocales[] = "en-US";
+const char kVariationHeaders[] = "variationsHeaders";
 
 const char kEndpointResponse[] =
     "{ "
@@ -110,7 +111,7 @@ class CartDiscountFetcherTest {
       const std::string fetch_for_locale) {
     return CartDiscountFetcher::CreateEndpointFetcher(
         std::move(pending_factory), std::move(proto_pairs), is_oauth_fetch,
-        fetch_for_locale);
+        fetch_for_locale, kVariationHeaders);
   }
 
   static void OnDiscountsAvailable(
