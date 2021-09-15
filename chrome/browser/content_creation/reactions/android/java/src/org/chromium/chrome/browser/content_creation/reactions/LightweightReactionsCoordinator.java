@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.content_creation.reactions;
 
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+
 /**
  * Public interface for the lightweight reactions component that is responsible for the UI.
  */
-public interface LightweightReactionsCoordinator {
+public interface LightweightReactionsCoordinator extends BottomSheetObserver {
     /**
      * Displays the scene editor in a fullscreen dialog.
      */

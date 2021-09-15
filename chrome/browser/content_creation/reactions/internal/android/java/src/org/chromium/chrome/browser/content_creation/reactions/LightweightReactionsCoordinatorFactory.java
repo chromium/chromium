@@ -8,6 +8,7 @@ import android.app.Activity;
 
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 /**
  * Factory for creating instances of the LightweightReactionsCoordinatorImpl.
@@ -17,8 +18,9 @@ public class LightweightReactionsCoordinatorFactory {
      * @return a LightweightReactionsCoordinator instance.
      */
     public static LightweightReactionsCoordinator create(Activity activity, Tab tab,
-            String shareUrl, ChromeOptionShareCallback chromeOptionShareCallback) {
+            String shareUrl, ChromeOptionShareCallback chromeOptionShareCallback,
+            BottomSheetController sheetController) {
         return new LightweightReactionsCoordinatorImpl(
-                activity, tab, chromeOptionShareCallback, shareUrl);
+                activity, tab, shareUrl, chromeOptionShareCallback, sheetController);
     }
 }

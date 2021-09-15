@@ -6,28 +6,39 @@ package org.chromium.chrome.browser.content_creation.reactions;
 
 import android.app.Activity;
 
+import org.chromium.chrome.browser.share.BaseScreenshotCoordinator;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 /**
  * Responsible for notes main UI and its subcomponents.
  */
-public class LightweightReactionsCoordinatorImpl implements LightweightReactionsCoordinator {
-    private final Activity mActivity;
-    private final Tab mTab;
-    private final ChromeOptionShareCallback mChromeOptionShareCallback;
-    private final String mShareUrl;
-
-    public LightweightReactionsCoordinatorImpl(Activity activity, Tab tab,
-            ChromeOptionShareCallback chromeOptionShareCallback, String shareUrl) {
-        mActivity = activity;
-        mTab = tab;
-        mChromeOptionShareCallback = chromeOptionShareCallback;
-        mShareUrl = shareUrl;
+public class LightweightReactionsCoordinatorImpl
+        extends BaseScreenshotCoordinator implements LightweightReactionsCoordinator {
+    /**
+     * Constructs a new LightweightReactionsCoordinatorImpl which initializes and displays the
+     * Lightweight Reactions scene.
+     *
+     * @param activity The parent activity.
+     * @param tab The Tab which contains the content to share.
+     * @param shareUrl The URL associated with the screenshot.
+     * @param chromeOptionShareCallback An interface to share sheet APIs.
+     * @param sheetController The {@link BottomSheetController} for the current activity.
+     */
+    public LightweightReactionsCoordinatorImpl(Activity activity, Tab tab, String shareUrl,
+            ChromeOptionShareCallback chromeOptionShareCallback,
+            BottomSheetController sheetController) {
+        super(activity, tab, shareUrl, chromeOptionShareCallback, sheetController);
     }
 
     @Override
     public void showDialog() {
+        // No-op for now
+    }
+
+    @Override
+    protected void handleScreenshot() {
         // No-op for now
     }
 }

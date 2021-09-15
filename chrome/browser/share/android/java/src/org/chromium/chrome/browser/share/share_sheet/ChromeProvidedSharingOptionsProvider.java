@@ -434,11 +434,17 @@ public class ChromeProvidedSharingOptionsProvider {
                 .setIcon(R.drawable.lightweight_reactions_icon,
                         R.string.sharing_lightweight_reactions)
                 .setFeatureNameForMetrics("SharingHubAndroid.LightweightReactions")
+                .setDisableForMultiWindow(true)
+                .setHideBottomSheetContentOnTap(false)
                 .setOnClickCallback((view) -> {
                     LightweightReactionsCoordinator coordinator =
                             LightweightReactionsCoordinatorFactory.create(mActivity,
-                                    mTabProvider.get(), mUrl, mChromeOptionShareCallback);
-                    coordinator.showDialog();
+                                    mTabProvider.get(), mUrl, mChromeOptionShareCallback,
+                                    mBottomSheetController);
+                    // Capture a screenshot once the bottom sheet is fully hidden. The
+                    // observer will then remove itself.
+                    mBottomSheetController.addObserver(coordinator);
+                    mBottomSheetController.hideContent(mBottomSheetContent, true);
                 })
                 .build();
     }
