@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/guid.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1381,12 +1382,7 @@ mojom::WireGuardPeerPropertiesPtr GetWireGuardPeerProperties(
   auto peer = mojom::WireGuardPeerProperties::New();
   peer->public_key = GetRequiredString(dict, ::onc::wireguard::kPublicKey);
   peer->preshared_key = GetString(dict, ::onc::wireguard::kPresharedKey);
-  absl::optional<std::string> allowed_ips =
-      GetString(dict, ::onc::wireguard::kAllowedIPs);
-  if (allowed_ips) {
-    peer->allowed_ips = base::SplitString(
-        *allowed_ips, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  }
+  peer->allowed_ips = GetString(dict, ::onc::wireguard::kAllowedIPs);
   peer->endpoint = GetString(dict, ::onc::wireguard::kEndpoint);
   peer->persistent_keepalive_interval =
       GetInt32(dict, ::onc::wireguard::kPersistentKeepalive);
@@ -1906,6 +1902,37 @@ std::unique_ptr<base::DictionaryValue> GetOncFromConfigProperties(
                 open_vpn.user_authentication_type, &open_vpn_dict);
       type_dict.SetKey(::onc::vpn::kOpenVPN, std::move(open_vpn_dict));
     }
+    if (vpn.wireguard &&
+        base::FeatureList::IsEnabled(ash::features::kEnableWireGuard)) {
+      const mojom::WireGuardConfigProperties& wireguard = *vpn.wireguard;
+      base::Value wireguard_dict(base::Value::Type::DICTIONARY);
+      SetString(::onc::wireguard::kPrivateKey, wireguard.private_key,
+                &wireguard_dict);
+
+      base::Value peer_list(base::Value::Type::LIST);
+      if (wireguard.peers) {
+        for (auto const& peer : *wireguard.peers) {
+          base::Value peer_dict(base::Value::Type::DICTIONARY);
+          peer_dict.SetStringKey(::onc::wireguard::kPublicKey,
+                                 peer->public_key);
+          SetString(::onc::wireguard::kPresharedKey, peer->preshared_key,
+                    &peer_dict);
+          SetString(::onc::wireguard::kEndpoint, peer->endpoint, &peer_dict);
+          SetString(::onc::wireguard::kAllowedIPs, peer->allowed_ips,
+                    &peer_dict);
+          if (peer->persistent_keepalive_interval) {
+            peer_dict.SetStringKey(
+                ::onc::wireguard::kPersistentKeepalive,
+                base::NumberToString(peer->persistent_keepalive_interval));
+          }
+          peer_list.Append(std::move(peer_dict));
+        }
+      }
+      wireguard_dict.SetKey(::onc::wireguard::kPeers, std::move(peer_list));
+      wireguard_dict.SetBoolKey(::onc::vpn::kSaveCredentials, true);
+      type_dict.SetKey(::onc::vpn::kWireGuard, std::move(wireguard_dict));
+    }
+
     if (vpn.type) {
       SetString(::onc::vpn::kType, MojoVpnTypeToOnc(vpn.type->value),
                 &type_dict);

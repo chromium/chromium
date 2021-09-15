@@ -527,7 +527,10 @@
   getSupportedVpnTypes() {
     return new Promise(resolve => {
       this.methodCalled('getSupportedVpnTypes');
-      resolve({vpnTypes: ['l2tpipsec', 'openvpn', 'thirdpartyvpn', 'arcvpn']});
+      resolve({
+        vpnTypes:
+            ['l2tpipsec', 'openvpn', 'thirdpartyvpn', 'arcvpn', 'wireguard']
+      });
     });
   }
 

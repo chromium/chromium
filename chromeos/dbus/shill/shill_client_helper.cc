@@ -385,10 +385,8 @@ enum DictionaryType { DICTIONARY_TYPE_VARIANT, DICTIONARY_TYPE_STRING };
 // strings.
 void AppendStringDictionary(const base::Value& dictionary,
                             dbus::MessageWriter* writer) {
-  dbus::MessageWriter variant_writer(nullptr);
-  writer->OpenVariant("a{ss}", &variant_writer);
   dbus::MessageWriter array_writer(nullptr);
-  variant_writer.OpenArray("{ss}", &array_writer);
+  writer->OpenArray("{ss}", &array_writer);
   for (const auto it : dictionary.DictItems()) {
     dbus::MessageWriter entry_writer(nullptr);
     array_writer.OpenDictEntry(&entry_writer);
@@ -403,8 +401,7 @@ void AppendStringDictionary(const base::Value& dictionary,
     entry_writer.AppendString(value_string);
     array_writer.CloseContainer(&entry_writer);
   }
-  variant_writer.CloseContainer(&array_writer);
-  writer->CloseContainer(&variant_writer);
+  writer->CloseContainer(&array_writer);
 }
 
 void AppendValueDataAsVariantInternal(dbus::MessageWriter* writer,
@@ -416,7 +413,10 @@ void AppendValueDataAsVariantInternal(dbus::MessageWriter* writer,
       if (dictionary_type == DICTIONARY_TYPE_STRING) {
         // AppendStringDictionary uses a{ss} to support Cellular.APN which
         // expects a string -> string dictionary.
+        dbus::MessageWriter variant_writer(nullptr);
+        writer->OpenVariant("a{ss}", &variant_writer);
         AppendStringDictionary(value, writer);
+        writer->CloseContainer(&variant_writer);
       } else {
         dbus::MessageWriter variant_writer(nullptr);
         writer->OpenVariant("a{sv}", &variant_writer);
@@ -426,11 +426,26 @@ void AppendValueDataAsVariantInternal(dbus::MessageWriter* writer,
       break;
     }
     case base::Value::Type::LIST: {
+      // Support list of string and list of string-to-string dictionary.
+      const auto& list_view = value.GetList();
+      if (list_view.size() > 0 && list_view.front().is_dict()) {
+        // aa{ss} to support WireGuard.Peers
+        dbus::MessageWriter variant_writer(nullptr);
+        writer->OpenVariant("aa{ss}", &variant_writer);
+        dbus::MessageWriter array_writer(nullptr);
+        variant_writer.OpenArray("a{ss}", &array_writer);
+        for (const auto& value : list_view) {
+          AppendStringDictionary(value, &array_writer);
+        }
+        variant_writer.CloseContainer(&array_writer);
+        writer->CloseContainer(&variant_writer);
+        break;
+      }
       dbus::MessageWriter variant_writer(nullptr);
       writer->OpenVariant("as", &variant_writer);
       dbus::MessageWriter array_writer(nullptr);
       variant_writer.OpenArray("s", &array_writer);
-      for (const auto& inner_value : value.GetList()) {
+      for (const auto& inner_value : list_view) {
         std::string value_string;
         if (inner_value.is_string()) {
           value_string = inner_value.GetString();

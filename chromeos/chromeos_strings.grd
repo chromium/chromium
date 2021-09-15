@@ -1201,8 +1201,41 @@ Try tapping the mic to ask me anything.
       <message name="IDS_ONC_VPN_TYPE_OPENVPN" desc="Label for OpenVPN entry of provider type dropdown in Join VPN Network dialog in OS Settings. Note: OpenVPN is a brand name.">
         OpenVPN
       </message>
+      <message name="IDS_ONC_VPN_TYPE_WIREGUARD" desc="Label for WireGuard entry of provider type dropdown in Join VPN Network dialog in OS Settings.">
+        WireGuard
+      </message>
       <message name="IDS_ONC_VPN_TYPE_ARCVPN" desc="ONC Property label for VPN.Type.ARCVPN">
         Android VPN
+      </message>
+      <message name="IDS_ONC_VPN_WIREGUARD_IP_ADDRESS" desc="Label for WireGuard local address.">
+        Client IP address
+      </message>
+      <message name="IDS_ONC_VPN_WIREGUARD_DNS" desc="Label for name servers config on a WireGuard connection.">
+        Name servers
+      </message>
+      <message name="IDS_ONC_VPN_WIREGUARD_MTU" desc="Label for MTU config on a WireGuard connection.">
+        MTU
+      </message>
+      <message name="IDS_ONC_VPN_WIREGUARD_PRIVATE_KEY" desc="Label for WireGuard private key">
+        Private key
+      </message>
+      <message name="IDS_ONC_VPN_WIREGUARD_PUBLIC_KEY" desc="Label for WireGuard local public key or peer public key.">
+        Public key
+      </message>
+      <message name="IDS_ONC_VPN_WIREGUARD_PEER" desc="Label for per-peer properties of a Wireguard connection.">
+        Peer
+      </message>
+      <message name="IDS_ONC_VPN_WIREGUARD_PRESHARED_KEY" desc="Label for WireGuard per-peer preshared key.">
+        Preshared key
+      </message>
+      <message name="IDS_ONC_VPN_WIREGUARD_PERSISTENT_KEEPALIVE" desc="Label for WireGuard persistent keepalive interval.">
+        Persistent keepalive Interval
+      </message>
+      <message name="IDS_ONC_VPN_WIREGUARD_ENDPOINT" desc="Label for WireGuard endpoint.">
+        Endpoint
+      </message>
+      <message name="IDS_ONC_VPN_WIREGUARD_ALLOWED_IP" desc="Label for WireGuard peer allowed ip range.">
+        Allowed IPs
       </message>
       <message name="IDS_ONC_CELLULAR_ACTIVATION_STATE" desc="ONC Property label for Cellular.ActivationState">
         Activation status
