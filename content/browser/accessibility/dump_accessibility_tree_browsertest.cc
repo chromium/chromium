@@ -47,9 +47,12 @@ using ui::AXTreeFormatter;
 std::vector<ui::AXPropertyFilter> DumpAccessibilityTreeTest::DefaultFilters()
     const {
   std::vector<AXPropertyFilter> property_filters;
+  if (GetParam() == AXInspectFactory::kMac)
+    return property_filters;
+
   property_filters.emplace_back("value='*'", AXPropertyFilter::ALLOW);
-  // The value attribute on the document object contains the URL of the current
-  // page which will not be the same every time the test is run.
+  // The value attribute on the document object contains the URL of the
+  // current page which will not be the same every time the test is run.
   property_filters.emplace_back("value='http*'", AXPropertyFilter::DENY);
   // Object attributes.value
   property_filters.emplace_back("layout-guess:*", AXPropertyFilter::ALLOW);
@@ -62,9 +65,10 @@ std::vector<ui::AXPropertyFilter> DumpAccessibilityTreeTest::DefaultFilters()
   property_filters.emplace_back("multiselectable", AXPropertyFilter::ALLOW);
   property_filters.emplace_back("placeholder=*", AXPropertyFilter::ALLOW);
 
-  // Deny most empty values
+  // Deny most empty values.
   property_filters.emplace_back("*=''", AXPropertyFilter::DENY);
-  // After denying empty values, because we want to allow name=''
+  // After denying empty values, we need to add the following filter because we
+  // want to allow name=''.
   property_filters.emplace_back("name=*", AXPropertyFilter::ALLOW_EMPTY);
   return property_filters;
 }

@@ -28,6 +28,9 @@ class DumpAccessibilityNodeTest : public DumpAccessibilityTestBase {
 
   std::vector<ui::AXPropertyFilter> DefaultFilters() const override {
     std::vector<AXPropertyFilter> property_filters;
+    if (GetParam() == AXInspectFactory::kMac)
+      return property_filters;
+
     property_filters.emplace_back("value='*'", AXPropertyFilter::ALLOW);
     property_filters.emplace_back("value='http*'", AXPropertyFilter::DENY);
     property_filters.emplace_back("layout-guess:*", AXPropertyFilter::ALLOW);
