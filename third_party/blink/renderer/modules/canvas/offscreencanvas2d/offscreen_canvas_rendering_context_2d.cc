@@ -296,10 +296,7 @@ cc::PaintCanvas* OffscreenCanvasRenderingContext2D::GetPaintCanvasForDraw(
   dirty_rect_for_commit_.join(dirty_rect);
   GetCanvasPerformanceMonitor().DidDraw(draw_type);
   Host()->DidDraw(dirty_rect_for_commit_);
-  if (GetCanvasResourceProvider() &&
-      GetCanvasResourceProvider()->needs_flush()) {
-    FinalizeFrame();
-  } else if (!layer_count_) {
+  if (!layer_count_) {
     // TODO(crbug.com/1246486): Make auto-flushing layer friendly.
     GetCanvasResourceProvider()->FlushIfRecordingLimitExceeded();
   }

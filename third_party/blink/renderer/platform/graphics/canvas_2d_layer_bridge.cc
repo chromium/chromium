@@ -640,8 +640,6 @@ cc::Layer* Canvas2DLayerBridge::Layer() {
 }
 
 void Canvas2DLayerBridge::DidDraw() {
-  if (ResourceProvider() && ResourceProvider()->needs_flush())
-    FinalizeFrame();
   have_recorded_draw_commands_ = true;
 }
 

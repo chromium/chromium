@@ -243,7 +243,6 @@ TEST(VideoFrameImageUtilTest, FlushedAcceleratedImage) {
                                     provider.get());
   EXPECT_TRUE(image->IsTextureBacked());
 
-  ASSERT_FALSE(provider->needs_flush());
   ASSERT_FALSE(provider->HasRecordedDrawOps());
 }
 

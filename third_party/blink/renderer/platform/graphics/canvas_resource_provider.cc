@@ -1277,6 +1277,10 @@ CanvasResourceProvider::GetOrCreateCanvasImageProvider() {
   return canvas_image_provider_.get();
 }
 
+void CanvasResourceProvider::DidPinImage(size_t bytes) {
+  total_pinned_image_bytes_ += bytes;
+}
+
 cc::PaintCanvas* CanvasResourceProvider::Canvas(bool needs_will_draw) {
   // TODO(https://crbug.com/1211912): Video frames don't work without
   // WillDrawIfNeeded(), but we are getting memory leak on CreatePattern
@@ -1287,8 +1291,7 @@ cc::PaintCanvas* CanvasResourceProvider::Canvas(bool needs_will_draw) {
   if (!recorder_) {
     // A raw pointer is safe here because the callback is only used by the
     // |recorder_|.
-    recorder_ = std::make_unique<MemoryManagedPaintRecorder>(WTF::BindRepeating(
-        &CanvasResourceProvider::SetNeedsFlush, WTF::Unretained(this)));
+    recorder_ = std::make_unique<MemoryManagedPaintRecorder>(this);
 
     return recorder_->beginRecording(Size().Width(), Size().Height());
   }
@@ -1372,7 +1375,7 @@ sk_sp<cc::PaintRecord> CanvasResourceProvider::FlushCanvas() {
     return nullptr;
   sk_sp<cc::PaintRecord> last_recording = recorder_->finishRecordingAsPicture();
   RasterRecord(last_recording);
-  needs_flush_ = false;
+  total_pinned_image_bytes_ = 0;
   cc::PaintCanvas* canvas =
       recorder_->beginRecording(Size().Width(), Size().Height());
   if (restore_clip_stack_callback_)
@@ -1577,6 +1580,7 @@ void CanvasResourceProvider::SkipQueuedDrawCommands() {
   recorder_->finishRecordingAsPicture();
   cc::PaintCanvas* canvas =
       recorder_->beginRecording(Size().Width(), Size().Height());
+  total_pinned_image_bytes_ = 0;
   if (restore_clip_stack_callback_)
     restore_clip_stack_callback_.Run(canvas);
 }
