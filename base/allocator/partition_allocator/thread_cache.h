@@ -33,9 +33,33 @@ namespace internal {
 
 namespace tools {
 
+// This is used from ThreadCacheInspector, which runs in a different process. It
+// scans the process memory looking for the two needles, to locate the thread
+// cache registry instance.
+//
+// These two values were chosen randomly, and in particular neither is a valid
+// pointer on most 64 bit architectures.
+#if defined(PA_HAS_64_BITS_POINTERS)
+constexpr uintptr_t kNeedle1 = 0xe69e32f3ad9ea63;
+constexpr uintptr_t kNeedle2 = 0x9615ee1c5eb14caf;
+#else
+constexpr uintptr_t kNeedle1 = 0xe69e32f3;
+constexpr uintptr_t kNeedle2 = 0x9615ee1c;
+#endif
+
+// This array contains, in order:
+// - kNeedle1
+// - &ThreadCacheRegistry::Instance()
+// - kNeedle2
+//
+// It is refererenced in the thread cache constructor to make sure it is not
+// removed by the compiler. It is also not const to make sure it ends up in
+// .data.
+extern uintptr_t kThreadCacheNeedleArray[3];
+
 class ThreadCacheInspector;
 
-}
+}  // namespace tools
 
 class ThreadCache;
 

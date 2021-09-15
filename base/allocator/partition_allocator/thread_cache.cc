@@ -28,6 +28,11 @@ namespace {
 
 ThreadCacheRegistry g_instance;
 
+}  // namespace
+
+namespace tools {
+uintptr_t kThreadCacheNeedleArray[3] = {
+    kNeedle1, reinterpret_cast<uintptr_t>(&g_instance), kNeedle2};
 }
 
 BASE_EXPORT PartitionTlsKey g_thread_cache_key;
@@ -417,6 +422,9 @@ void ThreadCache::SetLargestCachedSize(size_t size) {
 // static
 ThreadCache* ThreadCache::Create(PartitionRoot<internal::ThreadSafe>* root) {
   PA_CHECK(root);
+  // See comment in thread_cache.h, this is used to make sure
+  // kThreadCacheNeedleArray is kept in the final binary.
+  PA_CHECK(tools::kThreadCacheNeedleArray[0] == tools::kNeedle1);
 
   // Placement new and RawAlloc() are used, as otherwise when this partition is
   // the malloc() implementation, the memory allocated for the new thread cache

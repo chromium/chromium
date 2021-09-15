@@ -6,20 +6,26 @@
 // caches.
 
 #include <fcntl.h>
+#include <signal.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <algorithm>
 #include <cstring>
+#include <ios>
 #include <iostream>
 #include <map>
+#include <string>
 #include <vector>
 
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/check_op.h"
+#include "base/debug/proc_maps_linux.h"
+#include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
+#include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/thread_annotations.h"
@@ -32,6 +38,16 @@
 
 namespace {
 
+// SIGSTOPs a process.
+class ScopedSigStopper {
+ public:
+  explicit ScopedSigStopper(pid_t pid) : pid_(pid) { kill(pid_, SIGSTOP); }
+  ~ScopedSigStopper() { kill(pid_, SIGCONT); }
+
+ private:
+  const pid_t pid_;
+};
+
 base::ScopedFD OpenProcMem(pid_t pid) {
   std::string path = base::StringPrintf("/proc/%d/mem", pid);
   int fd = open(path.c_str(), O_RDONLY);
@@ -43,10 +59,87 @@ base::ScopedFD OpenProcMem(pid_t pid) {
 
 // Reads a remote process memory.
 bool ReadMemory(int fd, unsigned long address, size_t size, char* buffer) {
-  if (pread(fd, buffer, size, address) == static_cast<ssize_t>(size))
+  if (HANDLE_EINTR(pread(fd, buffer, size, address)) ==
+      static_cast<ssize_t>(size)) {
     return true;
+  }
 
   return false;
+}
+
+// Scans the process memory to look for the thread cache registry address. This
+// does not need symbols.
+uintptr_t FindThreadCacheRegistry(pid_t pid, int mem_fd) {
+  std::vector<base::debug::MappedMemoryRegion> regions;
+
+  {
+    // Ensures that the mappings are not going to change.
+    ScopedSigStopper stop{pid};
+
+    // There are subtleties when trying to read this file, which we blissfully
+    // ignore here. See //base/debug/proc_maps_linux.h for details. We don't use
+    // it, since we don't read the maps for ourselves, and everything is already
+    // extremely racy. At worst we have to retry.
+    LOG(INFO) << "Opening /proc/PID/maps";
+    std::string path = base::StringPrintf("/proc/%d/maps", pid);
+    auto file = base::File(base::FilePath(path),
+                           base::File::FLAG_OPEN | base::File::FLAG_READ);
+    CHECK(file.IsValid());
+    std::vector<char> data(1e7);
+    int bytes_read =
+        file.ReadAtCurrentPos(&data[0], static_cast<int>(data.size()) - 1);
+    CHECK_GT(bytes_read, 0) << "Cannot read " << path;
+    data[bytes_read] = '\0';
+    std::string proc_maps(&data[0]);
+
+    LOG(INFO) << "Parsing the maps";
+    CHECK(base::debug::ParseProcMaps(proc_maps, &regions));
+    LOG(INFO) << "Found " << regions.size() << " regions";
+  }
+
+  for (auto& region : regions) {
+    using base::debug::MappedMemoryRegion;
+
+    // The array is in .data, meaning that it's mapped from the executable, and
+    // has rw-p permissions. For Chrome, .data is quite small, hence the size
+    // limit.
+    uint8_t expected_permissions = MappedMemoryRegion::Permission::READ |
+                                   MappedMemoryRegion::Permission::WRITE |
+                                   MappedMemoryRegion::Permission::PRIVATE;
+    size_t region_size = region.end - region.start;
+    if (region.permissions != expected_permissions || region_size > 1e7 ||
+        region.path.empty()) {
+      continue;
+    }
+
+    LOG(INFO) << "Found a candidate region between " << std::hex << region.start
+              << " and " << region.end << std::dec
+              << " (size = " << region.end - region.start
+              << ") path = " << region.path;
+    // Scan the region, looking for the needles.
+    uintptr_t needle_array_candidate[3];
+    for (uintptr_t address = region.start;
+         address < region.end - sizeof(needle_array_candidate);
+         address += sizeof(uintptr_t)) {
+      bool ok = ReadMemory(mem_fd, reinterpret_cast<unsigned long>(address),
+                           sizeof(needle_array_candidate),
+                           reinterpret_cast<char*>(needle_array_candidate));
+      if (!ok) {
+        LOG(WARNING) << "Failed to read";
+        continue;
+      }
+
+      if (needle_array_candidate[0] == base::internal::tools::kNeedle1 &&
+          needle_array_candidate[2] == base::internal::tools::kNeedle2) {
+        LOG(INFO) << "Got it! Address = 0x" << std::hex
+                  << needle_array_candidate[1];
+        return needle_array_candidate[1];
+      }
+    }
+  }
+
+  LOG(ERROR) << "Failed to find the address";
+  return 0;
 }
 
 // Allows to access an object copied from remote memory "as if" it were
@@ -231,17 +324,24 @@ ThreadCacheInspector::AccumulateThreadCacheBuckets() {
 int main(int argc, char** argv) {
   if (argc < 2) {
     LOG(ERROR) << "Usage:" << argv[0] << " <PID> "
-               << "[address]";
+               << "[address. 0 to scan the process memory]";
     return 1;
   }
 
   int pid = atoi(argv[1]);
   uintptr_t registry_address = 0;
 
+  auto mem_fd = OpenProcMem(pid);
+
   if (argc == 3) {
     uint64_t address;
     CHECK(base::StringToUint64(argv[2], &address));
     registry_address = static_cast<uintptr_t>(address);
+
+    // Scan the memory.
+    if (!registry_address) {
+      registry_address = FindThreadCacheRegistry(pid, mem_fd.get());
+    }
   } else {
 #if defined(HAS_LOCAL_ELFUTILS)
     registry_address =
@@ -252,7 +352,6 @@ int main(int argc, char** argv) {
   CHECK(registry_address);
 
   LOG(INFO) << "Getting the thread cache registry";
-  auto mem_fd = OpenProcMem(pid);
   base::internal::tools::ThreadCacheInspector inspector{registry_address,
                                                         std::move(mem_fd)};
 
