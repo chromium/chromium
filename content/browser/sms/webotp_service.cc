@@ -20,6 +20,7 @@
 #include "content/browser/sms/user_consent_handler.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_type.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/sms_fetcher.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -203,7 +204,13 @@ void WebOTPService::OnReceive(const OriginList& origin_list,
                          render_frame_host()->GetPageUkmSourceId());
 
   one_time_code_ = one_time_code;
-
+  // This function cannot get called during prerendering because WebOTPService
+  // is deferred during prerendering by MojoBinderPolicyApplier. This DCHECK
+  // proves we don't have to worry about prerendering when using
+  // WebContents::FromRenderFrameHost() below (see function comments for
+  // WebContents::FromRenderFrameHost() for more details).
+  DCHECK_NE(render_frame_host()->GetLifecycleState(),
+            RenderFrameHost::LifecycleState::kPrerendering);
   WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host());
   // With UserConsent API, users can see and interact with the permission prompt
