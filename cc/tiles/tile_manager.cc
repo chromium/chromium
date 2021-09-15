@@ -896,8 +896,6 @@ TileManager::PrioritizedWorkToSchedule TileManager::AssignGpuMemoryToTiles() {
     }
   }
 
-  UMA_HISTOGRAM_BOOLEAN("TileManager.ExceededMemoryBudget",
-                        !had_enough_memory_to_schedule_tiles_needed_now);
   did_oom_on_last_assign_ = !had_enough_memory_to_schedule_tiles_needed_now;
 
   memory_stats_from_last_assign_.total_budget_in_bytes =

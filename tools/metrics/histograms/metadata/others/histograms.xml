@@ -17635,6 +17635,9 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="TileManager.ExceededMemoryBudget" enum="TileMemoryBudget"
     expires_after="2021-10-25">
+  <obsolete>
+    Removed Sept 2021 due to lack of use.
+  </obsolete>
   <owner>pdr@chromium.org</owner>
   <owner>vmpstr@chromium.org</owner>
   <summary>
