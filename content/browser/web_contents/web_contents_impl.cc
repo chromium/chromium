@@ -3332,7 +3332,14 @@ void WebContentsImpl::FullscreenStateChanged(
   // See https://fullscreen.spec.whatwg.org.
   size_t size_before_deletion = fullscreen_frames_.size();
   base::EraseIf(fullscreen_frames_, [&](RenderFrameHostImpl* current) {
-    return (current == rfh || current->IsDescendantOf(rfh));
+    while (current) {
+      if (current == rfh)
+        return true;
+      // We only look for direct parents. fencedframes and portals will not
+      // enter fullscreen.
+      current = current->GetParent();
+    }
+    return false;
   });
 
   if (size_before_deletion != fullscreen_frames_.size())
