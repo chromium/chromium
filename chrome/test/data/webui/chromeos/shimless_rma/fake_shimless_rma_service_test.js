@@ -5,7 +5,7 @@
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, ComponentRepairStatus, ComponentType, ErrorObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStep, RmadErrorCode, RmaState} from 'chrome://shimless-rma/shimless_rma_types.js';
 
-import {assertDeepEquals, assertEquals} from '../../chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
 export function fakeShimlessRmaServiceTestSuite() {
   /** @type {?FakeShimlessRmaService} */
@@ -29,12 +29,19 @@ export function fakeShimlessRmaServiceTestSuite() {
 
   test('GetCurrentStateWelcomeOk', () => {
     let states = [
-      {state: RmaState.kWelcomeScreen, error: RmadErrorCode.kOk},
+      {
+        state: RmaState.kWelcomeScreen,
+        canCancel: true,
+        canGoBack: false,
+        error: RmadErrorCode.kOk
+      },
     ];
     service.setStates(states);
 
     return service.getCurrentState().then((state) => {
       assertEquals(state.state, RmaState.kWelcomeScreen);
+      assertTrue(state.canCancel);
+      assertFalse(state.canGoBack);
       assertEquals(state.error, RmadErrorCode.kOk);
     });
   });

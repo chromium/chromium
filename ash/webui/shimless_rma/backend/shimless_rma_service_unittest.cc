@@ -162,9 +162,13 @@ class ShimlessRmaServiceTest : public testing::Test {
   }
 
   rmad::GetStateReply CreateStateReply(rmad::RmadState::StateCase state,
-                                       rmad::RmadErrorCode error) {
+                                       rmad::RmadErrorCode error,
+                                       bool can_abort = false,
+                                       bool can_go_back = false) {
     rmad::GetStateReply reply;
     reply.set_allocated_state(CreateState(state));
+    reply.set_can_abort(can_abort);
+    reply.set_can_go_back(can_go_back);
     reply.set_error(error);
     return reply;
   }
@@ -200,6 +204,52 @@ class ShimlessRmaServiceTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 };
 
+TEST_F(ShimlessRmaServiceTest, AbortAndGoBackStatePassedCorrectly) {
+  SetupWiFiNetwork();
+  std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kDeviceDestination, rmad::RMAD_ERROR_OK,
+                       /*can_abort*/ true, /*can_go_back*/ false),
+      CreateStateReply(rmad::RmadState::kComponentsRepair, rmad::RMAD_ERROR_OK,
+                       /*can_abort*/ false, /*can_go_back*/ true)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+
+  base::RunLoop run_loop;
+
+  // Initialize current state, can_cancel=true, can_go_back=false
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+        EXPECT_EQ(can_cancel, true);
+        EXPECT_EQ(can_go_back, false);
+      }));
+  run_loop.RunUntilIdle();
+
+  // Next state, can_cancel=false, can_go_back=true
+  shimless_rma_provider_->SetSameOwner(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kSelectComponents);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+        EXPECT_EQ(can_cancel, false);
+        EXPECT_EQ(can_go_back, true);
+      }));
+  run_loop.RunUntilIdle();
+  // Previous state, can_cancel=true, can_go_back=false
+  shimless_rma_provider_->TransitionPreviousState(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+        EXPECT_EQ(can_cancel, true);
+        EXPECT_EQ(can_go_back, false);
+        run_loop.Quit();
+      }));
+
+  run_loop.Run();
+}
+
 TEST_F(ShimlessRmaServiceTest, WelcomeHasNetworkConnection) {
   SetupWiFiNetwork();
   std::vector<rmad::GetStateReply> fake_states = {
@@ -212,7 +262,8 @@ TEST_F(ShimlessRmaServiceTest, WelcomeHasNetworkConnection) {
 
   // Initialize current state
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kWelcomeScreen);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
@@ -220,7 +271,8 @@ TEST_F(ShimlessRmaServiceTest, WelcomeHasNetworkConnection) {
 
   // With a WiFi network it should redirect to kUpdateOs
   shimless_rma_provider_->BeginFinalization(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kUpdateOs);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
         run_loop.Quit();
@@ -239,7 +291,8 @@ TEST_F(ShimlessRmaServiceTest, WelcomeHasNoNetworkConnection) {
 
   // Initialize current state
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kWelcomeScreen);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
@@ -247,7 +300,8 @@ TEST_F(ShimlessRmaServiceTest, WelcomeHasNoNetworkConnection) {
 
   // No network should prompt select network page
   shimless_rma_provider_->BeginFinalization(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kConfigureNetwork);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
         run_loop.Quit();
@@ -266,7 +320,8 @@ TEST_F(ShimlessRmaServiceTest, ChooseNetworkHasNetworkConnection) {
 
   // Initialize current state
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kWelcomeScreen);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
@@ -275,7 +330,8 @@ TEST_F(ShimlessRmaServiceTest, ChooseNetworkHasNetworkConnection) {
 
   // No network should prompt select network page
   shimless_rma_provider_->BeginFinalization(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kConfigureNetwork);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
@@ -285,7 +341,8 @@ TEST_F(ShimlessRmaServiceTest, ChooseNetworkHasNetworkConnection) {
 
   // With a WiFi network it should redirect to kUpdateOs
   shimless_rma_provider_->NetworkSelectionComplete(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kUpdateOs);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
         run_loop.Quit();
@@ -305,7 +362,8 @@ TEST_F(ShimlessRmaServiceTest, ChooseNetworkHasNoNetworkConnection) {
 
   // Initialize current state
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kWelcomeScreen);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
@@ -313,7 +371,8 @@ TEST_F(ShimlessRmaServiceTest, ChooseNetworkHasNoNetworkConnection) {
 
   // No network should prompt select network page
   shimless_rma_provider_->BeginFinalization(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kConfigureNetwork);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
@@ -324,7 +383,8 @@ TEST_F(ShimlessRmaServiceTest, ChooseNetworkHasNoNetworkConnection) {
   // that updating may fix validation issues can be displayed.
   // With no network it should still redirect to kUpdateOs
   shimless_rma_provider_->NetworkSelectionComplete(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kUpdateOs);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
         run_loop.Quit();
@@ -344,7 +404,8 @@ TEST_F(ShimlessRmaServiceTest, GetCurrentState) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RMAD_ERROR_OK);
         run_loop.Quit();
@@ -357,7 +418,8 @@ TEST_F(ShimlessRmaServiceTest, GetCurrentStateNoRma) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kUnknown);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_RMA_NOT_REQUIRED);
         run_loop.Quit();
@@ -374,13 +436,15 @@ TEST_F(ShimlessRmaServiceTest, TransitionNextState) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
   shimless_rma_provider_->TransitionNextState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kSelectComponents);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
         run_loop.Quit();
@@ -397,7 +461,8 @@ TEST_F(ShimlessRmaServiceTest, TransitionNextStateWithoutCurrentStateInvalid) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->TransitionNextState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
         run_loop.Quit();
@@ -411,13 +476,15 @@ TEST_F(ShimlessRmaServiceTest, TransitionNextStateWithNoNextStateFails) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
   shimless_rma_provider_->TransitionNextState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_TRANSITION_FAILED);
         run_loop.Quit();
@@ -434,19 +501,22 @@ TEST_F(ShimlessRmaServiceTest, TransitionPreviousState) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
   shimless_rma_provider_->TransitionNextState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kSelectComponents);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
   shimless_rma_provider_->TransitionPreviousState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
         run_loop.Quit();
@@ -464,7 +534,8 @@ TEST_F(ShimlessRmaServiceTest,
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->TransitionPreviousState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_TRANSITION_FAILED);
         run_loop.Quit();
@@ -478,13 +549,15 @@ TEST_F(ShimlessRmaServiceTest, TransitionPreviousStateWithNoPrevStateFails) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
   shimless_rma_provider_->TransitionPreviousState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_TRANSITION_FAILED);
         run_loop.Quit();
@@ -534,14 +607,16 @@ TEST_F(ShimlessRmaServiceTest, SetSameOwner) {
       });
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->SetSameOwner(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kRestock);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
         run_loop.Quit();
@@ -555,14 +630,16 @@ TEST_F(ShimlessRmaServiceTest, SetSameOwnerFromWrongStateFails) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kRestock);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->SetSameOwner(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kRestock);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
         run_loop.Quit();
@@ -584,14 +661,16 @@ TEST_F(ShimlessRmaServiceTest, SetDifferentOwner) {
       });
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->SetDifferentOwner(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kRestock);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
         run_loop.Quit();
@@ -605,13 +684,15 @@ TEST_F(ShimlessRmaServiceTest, SetDifferentOwnerFromWrongStateFails) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kRestock);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
   shimless_rma_provider_->SetDifferentOwner(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kRestock);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
         run_loop.Quit();
@@ -634,19 +715,21 @@ TEST_F(ShimlessRmaServiceTest, SetManuallyDisableWriteProtect) {
       });
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseWriteProtectDisableMethod);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->ChooseManuallyDisableWriteProtect(
-      base::BindLambdaForTesting(
-          [&](mojom::RmaState state, rmad::RmadErrorCode error) {
-            EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
-            EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
-            run_loop.Quit();
-          }));
+      base::BindLambdaForTesting([&](mojom::RmaState state, bool can_cancel,
+                                     bool can_go_back,
+                                     rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+        run_loop.Quit();
+      }));
   run_loop.Run();
 }
 
@@ -657,19 +740,21 @@ TEST_F(ShimlessRmaServiceTest,
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->ChooseManuallyDisableWriteProtect(
-      base::BindLambdaForTesting(
-          [&](mojom::RmaState state, rmad::RmadErrorCode error) {
-            EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
-            EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
-            run_loop.Quit();
-          }));
+      base::BindLambdaForTesting([&](mojom::RmaState state, bool can_cancel,
+                                     bool can_go_back,
+                                     rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
+        run_loop.Quit();
+      }));
   run_loop.Run();
 }
 
@@ -687,19 +772,21 @@ TEST_F(ShimlessRmaServiceTest, SetRsuDisableWriteProtect) {
       });
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseWriteProtectDisableMethod);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->ChooseRsuDisableWriteProtect(
-      base::BindLambdaForTesting(
-          [&](mojom::RmaState state, rmad::RmadErrorCode error) {
-            EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
-            EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
-            run_loop.Quit();
-          }));
+      base::BindLambdaForTesting([&](mojom::RmaState state, bool can_cancel,
+                                     bool can_go_back,
+                                     rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+        run_loop.Quit();
+      }));
   run_loop.Run();
 }
 
@@ -709,19 +796,21 @@ TEST_F(ShimlessRmaServiceTest, SetRsuDisableWriteProtectFromWrongStateFails) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->ChooseRsuDisableWriteProtect(
-      base::BindLambdaForTesting(
-          [&](mojom::RmaState state, rmad::RmadErrorCode error) {
-            EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
-            EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
-            run_loop.Quit();
-          }));
+      base::BindLambdaForTesting([&](mojom::RmaState state, bool can_cancel,
+                                     bool can_go_back,
+                                     rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
+        run_loop.Quit();
+      }));
   run_loop.Run();
 }
 
@@ -736,7 +825,8 @@ TEST_F(ShimlessRmaServiceTest, GetRsuDisableWriteProtectChallenge) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kEnterRSUWPDisableCode);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
@@ -761,7 +851,8 @@ TEST_F(ShimlessRmaServiceTest, GetRsuDisableWriteProtectHwid) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kEnterRSUWPDisableCode);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
@@ -786,7 +877,8 @@ TEST_F(ShimlessRmaServiceTest, GetRsuDisableWriteProtectChallengeQrCode) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kEnterRSUWPDisableCode);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
@@ -814,7 +906,8 @@ TEST_F(ShimlessRmaServiceTest, SetRsuDisableWriteProtectCode) {
       });
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kEnterRSUWPDisableCode);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
@@ -822,12 +915,13 @@ TEST_F(ShimlessRmaServiceTest, SetRsuDisableWriteProtectCode) {
 
   shimless_rma_provider_->SetRsuDisableWriteProtectCode(
       "test RSU unlock code",
-      base::BindLambdaForTesting(
-          [&](mojom::RmaState state, rmad::RmadErrorCode error) {
-            EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
-            EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
-            run_loop.Quit();
-          }));
+      base::BindLambdaForTesting([&](mojom::RmaState state, bool can_cancel,
+                                     bool can_go_back,
+                                     rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+        run_loop.Quit();
+      }));
   run_loop.Run();
 }
 
@@ -838,7 +932,8 @@ TEST_F(ShimlessRmaServiceTest,
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
@@ -846,12 +941,13 @@ TEST_F(ShimlessRmaServiceTest,
 
   shimless_rma_provider_->SetRsuDisableWriteProtectCode(
       "test RSU unlock code",
-      base::BindLambdaForTesting(
-          [&](mojom::RmaState state, rmad::RmadErrorCode error) {
-            EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
-            EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
-            run_loop.Quit();
-          }));
+      base::BindLambdaForTesting([&](mojom::RmaState state, bool can_cancel,
+                                     bool can_go_back,
+                                     rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
+        run_loop.Quit();
+      }));
   run_loop.Run();
 }
 
@@ -882,7 +978,8 @@ TEST_F(ShimlessRmaServiceTest, GetComponentList) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kSelectComponents);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
@@ -913,7 +1010,8 @@ TEST_F(ShimlessRmaServiceTest, GetComponentListFromWrongStateEmpty) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
@@ -970,7 +1068,8 @@ TEST_F(ShimlessRmaServiceTest, SetComponentList) {
       });
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kSelectComponents);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
@@ -988,12 +1087,13 @@ TEST_F(ShimlessRmaServiceTest, SetComponentList) {
 
   shimless_rma_provider_->SetComponentList(
       std::move(components),
-      base::BindLambdaForTesting(
-          [&](mojom::RmaState state, rmad::RmadErrorCode error) {
-            EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
-            EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
-            run_loop.Quit();
-          }));
+      base::BindLambdaForTesting([&](mojom::RmaState state, bool can_cancel,
+                                     bool can_go_back,
+                                     rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+        run_loop.Quit();
+      }));
   run_loop.Run();
 }
 
@@ -1003,7 +1103,8 @@ TEST_F(ShimlessRmaServiceTest, SetComponentListFromWrongStateFails) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
@@ -1017,12 +1118,13 @@ TEST_F(ShimlessRmaServiceTest, SetComponentListFromWrongStateFails) {
 
   shimless_rma_provider_->SetComponentList(
       std::move(components),
-      base::BindLambdaForTesting(
-          [&](mojom::RmaState state, rmad::RmadErrorCode error) {
-            EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
-            EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
-            run_loop.Quit();
-          }));
+      base::BindLambdaForTesting([&](mojom::RmaState state, bool can_cancel,
+                                     bool can_go_back,
+                                     rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
+        run_loop.Quit();
+      }));
   run_loop.Run();
 }
 
@@ -1058,14 +1160,16 @@ TEST_F(ShimlessRmaServiceTest, ReworkMainboard) {
       });
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kSelectComponents);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->ReworkMainboard(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
         run_loop.Quit();
@@ -1079,14 +1183,16 @@ TEST_F(ShimlessRmaServiceTest, ReworkMainboardFromWrongStateFails) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->ReworkMainboard(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
         run_loop.Quit();
@@ -1102,7 +1208,8 @@ TEST_F(ShimlessRmaServiceTest, ReimageRequiredTrue) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseFirmwareReimageMethod);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
@@ -1129,7 +1236,8 @@ TEST_F(ShimlessRmaServiceTest, ReimageRequiredFalse) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseFirmwareReimageMethod);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
@@ -1149,7 +1257,8 @@ TEST_F(ShimlessRmaServiceTest, ReimageRequiredFromWrongStateTrue) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
@@ -1183,14 +1292,16 @@ TEST_F(ShimlessRmaServiceTest, ReimageSkipped) {
       });
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseFirmwareReimageMethod);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->ReimageSkipped(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
         run_loop.Quit();
@@ -1206,14 +1317,16 @@ TEST_F(ShimlessRmaServiceTest, ReimageSkippedWhenRequiredFails) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseFirmwareReimageMethod);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->ReimageSkipped(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseFirmwareReimageMethod);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
         run_loop.Quit();
@@ -1227,7 +1340,8 @@ TEST_F(ShimlessRmaServiceTest, ReimageSkippedFromWrongStateFails) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
@@ -1256,14 +1370,16 @@ TEST_F(ShimlessRmaServiceTest, ReimageFromDownload) {
       });
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseFirmwareReimageMethod);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->ReimageFromDownload(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
         run_loop.Quit();
@@ -1277,14 +1393,16 @@ TEST_F(ShimlessRmaServiceTest, ReimageFromDownloadFromWrongStateFails) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->ReimageFromDownload(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
         run_loop.Quit();
@@ -1308,14 +1426,16 @@ TEST_F(ShimlessRmaServiceTest, ReimageFromUsb) {
       });
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseFirmwareReimageMethod);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->ReimageFromUsb(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
         run_loop.Quit();
@@ -1329,14 +1449,16 @@ TEST_F(ShimlessRmaServiceTest, ReimageFromUsbFromWrongStateFails) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->ReimageFromUsb(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
         run_loop.Quit();
@@ -1358,14 +1480,16 @@ TEST_F(ShimlessRmaServiceTest, ShutdownForRestock) {
       });
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kRestock);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->ShutdownForRestock(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
         run_loop.Quit();
@@ -1379,14 +1503,16 @@ TEST_F(ShimlessRmaServiceTest, ShutdownForRestockFromWrongStateFails) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->ShutdownForRestock(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
         run_loop.Quit();
@@ -1408,19 +1534,21 @@ TEST_F(ShimlessRmaServiceTest, ContinueFinalizationAfterRestock) {
       });
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kRestock);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->ContinueFinalizationAfterRestock(
-      base::BindLambdaForTesting(
-          [&](mojom::RmaState state, rmad::RmadErrorCode error) {
-            EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
-            EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
-            run_loop.Quit();
-          }));
+      base::BindLambdaForTesting([&](mojom::RmaState state, bool can_cancel,
+                                     bool can_go_back,
+                                     rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+        run_loop.Quit();
+      }));
   run_loop.Run();
 }
 
@@ -1431,19 +1559,21 @@ TEST_F(ShimlessRmaServiceTest,
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->ContinueFinalizationAfterRestock(
-      base::BindLambdaForTesting(
-          [&](mojom::RmaState state, rmad::RmadErrorCode error) {
-            EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
-            EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
-            run_loop.Quit();
-          }));
+      base::BindLambdaForTesting([&](mojom::RmaState state, bool can_cancel,
+                                     bool can_go_back,
+                                     rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
+        run_loop.Quit();
+      }));
   run_loop.Run();
 }
 
@@ -1463,7 +1593,8 @@ TEST_F(ShimlessRmaServiceTest, GetOriginalSerialNumber) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kUpdateDeviceInformation);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
@@ -1483,7 +1614,8 @@ TEST_F(ShimlessRmaServiceTest, GetOriginalSerialNumberFromWrongStateEmpty) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
@@ -1513,7 +1645,8 @@ TEST_F(ShimlessRmaServiceTest, GetOriginalRegion) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kUpdateDeviceInformation);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
@@ -1533,7 +1666,8 @@ TEST_F(ShimlessRmaServiceTest, GetOriginalRegionFromWrongStateEmpty) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
@@ -1563,7 +1697,8 @@ TEST_F(ShimlessRmaServiceTest, GetOriginalSku) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kUpdateDeviceInformation);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
@@ -1583,7 +1718,8 @@ TEST_F(ShimlessRmaServiceTest, GetOriginalSkuFromWrongStateEmpty) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
@@ -1612,7 +1748,8 @@ TEST_F(ShimlessRmaServiceTest, SetDeviceInformation) {
       });
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kUpdateDeviceInformation);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
@@ -1620,12 +1757,13 @@ TEST_F(ShimlessRmaServiceTest, SetDeviceInformation) {
 
   shimless_rma_provider_->SetDeviceInformation(
       "serial number", 1, 2,
-      base::BindLambdaForTesting(
-          [&](mojom::RmaState state, rmad::RmadErrorCode error) {
-            EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
-            EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
-            run_loop.Quit();
-          }));
+      base::BindLambdaForTesting([&](mojom::RmaState state, bool can_cancel,
+                                     bool can_go_back,
+                                     rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+        run_loop.Quit();
+      }));
   run_loop.Run();
 }
 
@@ -1635,7 +1773,8 @@ TEST_F(ShimlessRmaServiceTest, SetDeviceInformationFromWrongStateFails) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
@@ -1643,12 +1782,13 @@ TEST_F(ShimlessRmaServiceTest, SetDeviceInformationFromWrongStateFails) {
 
   shimless_rma_provider_->SetDeviceInformation(
       "serial number", 1, 2,
-      base::BindLambdaForTesting(
-          [&](mojom::RmaState state, rmad::RmadErrorCode error) {
-            EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
-            EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
-            run_loop.Quit();
-          }));
+      base::BindLambdaForTesting([&](mojom::RmaState state, bool can_cancel,
+                                     bool can_go_back,
+                                     rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
+        run_loop.Quit();
+      }));
   run_loop.Run();
 }
 
@@ -1674,7 +1814,8 @@ TEST_F(ShimlessRmaServiceTest, GetCalibrationComponentList) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kCheckCalibration);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
@@ -1695,7 +1836,8 @@ TEST_F(ShimlessRmaServiceTest, GetCalibrationComponentListWrongStateEmpty) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
@@ -1725,7 +1867,8 @@ TEST_F(ShimlessRmaServiceTest, GetCalibrationSetupInstructions) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kSetupCalibration);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
@@ -1750,7 +1893,8 @@ TEST_F(ShimlessRmaServiceTest,
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
@@ -1774,14 +1918,16 @@ TEST_F(ShimlessRmaServiceTest, StartCalibration) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kCheckCalibration);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->StartCalibration(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
         run_loop.Quit();
@@ -1795,14 +1941,16 @@ TEST_F(ShimlessRmaServiceTest, StartCalibrationFromWrongStateFails) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->StartCalibration(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
         run_loop.Quit();
@@ -1819,14 +1967,16 @@ TEST_F(ShimlessRmaServiceTest, RunCalibrationStep) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kSetupCalibration);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->RunCalibrationStep(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
         run_loop.Quit();
@@ -1840,14 +1990,16 @@ TEST_F(ShimlessRmaServiceTest, RunCalibrationStepFromWrongStateFails) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->RunCalibrationStep(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
         run_loop.Quit();
@@ -1863,14 +2015,16 @@ TEST_F(ShimlessRmaServiceTest, ContinueCalibration) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kRunCalibration);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->ContinueCalibration(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
         run_loop.Quit();
@@ -1884,14 +2038,16 @@ TEST_F(ShimlessRmaServiceTest, ContinueCalibrationFromWrongStateFails) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->ContinueCalibration(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
         run_loop.Quit();
@@ -1908,14 +2064,16 @@ TEST_F(ShimlessRmaServiceTest, CalibrationComplete) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kRunCalibration);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->CalibrationComplete(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
         run_loop.Quit();
@@ -1929,14 +2087,16 @@ TEST_F(ShimlessRmaServiceTest, CalibrationCompleteFromWrongStateFails) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->CalibrationComplete(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
         run_loop.Quit();
@@ -1958,14 +2118,16 @@ TEST_F(ShimlessRmaServiceTest, FinalizeAndReboot) {
       });
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kRepairComplete);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->FinalizeAndReboot(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
         run_loop.Quit();
@@ -1979,14 +2141,16 @@ TEST_F(ShimlessRmaServiceTest, FinalizeAndRebootFromWrongStateFails) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->FinalizeAndReboot(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
         run_loop.Quit();
@@ -2008,14 +2172,16 @@ TEST_F(ShimlessRmaServiceTest, FinalizeAndShutdown) {
       });
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kRepairComplete);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->FinalizeAndShutdown(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
         run_loop.Quit();
@@ -2029,14 +2195,16 @@ TEST_F(ShimlessRmaServiceTest, FinalizeAndShutdownFromWrongStateFails) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->FinalizeAndShutdown(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
         run_loop.Quit();
@@ -2058,14 +2226,16 @@ TEST_F(ShimlessRmaServiceTest, CutoffBattery) {
       });
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kRepairComplete);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->CutoffBattery(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
         run_loop.Quit();
@@ -2079,14 +2249,16 @@ TEST_F(ShimlessRmaServiceTest, CutoffBatteryFromWrongStateFails) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->CutoffBattery(base::BindLambdaForTesting(
-      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+      [&](mojom::RmaState state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
         run_loop.Quit();

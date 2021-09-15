@@ -156,6 +156,8 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
                                 int64_t update_size);
 
   rmad::RmadState state_proto_;
+  bool can_abort_ = false;
+  bool can_go_back_ = false;
 
   mojo::Remote<mojom::ErrorObserver> error_observer_;
   mojo::Remote<mojom::OsUpdateObserver> os_update_observer_;

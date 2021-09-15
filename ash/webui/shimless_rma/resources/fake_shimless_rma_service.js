@@ -90,13 +90,14 @@ export class FakeShimlessRmaService {
     // of this function the result must be set at the time of the call.
     if (this.states_.length === 0) {
       this.setFakeCurrentState_(
-          RmaState.kUnknown, RmadErrorCode.kRmaNotRequired);
+          RmaState.kUnknown, false, false, RmadErrorCode.kRmaNotRequired);
     } else {
       // It should not be possible for stateIndex_ to be out of range unless
       // there is a bug in the fake.
       assert(this.stateIndex_ < this.states_.length);
       let state = this.states_[this.stateIndex_];
-      this.setFakeCurrentState_(state.state, state.error);
+      this.setFakeCurrentState_(
+          state.state, state.canCancel, state.canGoBack, state.error);
     }
     return this.methods_.resolveMethod('getCurrentState');
   }
@@ -108,17 +109,21 @@ export class FakeShimlessRmaService {
     // As transitionNextState and transitionPreviousState can modify the result
     // of this function the result must be set at the time of the call.
     if (this.states_.length === 0) {
-      this.setFakeNextState_(RmaState.kUnknown, RmadErrorCode.kRmaNotRequired);
+      this.setFakeNextState_(
+          RmaState.kUnknown, false, false, RmadErrorCode.kRmaNotRequired);
     } else if (this.stateIndex_ >= this.states_.length - 1) {
       // It should not be possible for stateIndex_ to be out of range unless
       // there is a bug in the fake.
       assert(this.stateIndex_ < this.states_.length);
       let state = this.states_[this.stateIndex_];
-      this.setFakeNextState_(state.state, RmadErrorCode.kTransitionFailed);
+      this.setFakeNextState_(
+          state.state, state.canCancel, state.canGoBack,
+          RmadErrorCode.kTransitionFailed);
     } else {
       this.stateIndex_++;
       let state = this.states_[this.stateIndex_];
-      this.setFakeNextState_(state.state, state.error);
+      this.setFakeNextState_(
+          state.state, state.canCancel, state.canGoBack, state.error);
     }
     return this.methods_.resolveMethod('transitionNextState');
   }
@@ -130,17 +135,21 @@ export class FakeShimlessRmaService {
     // As transitionNextState and transitionPreviousState can modify the result
     // of this function the result must be set at the time of the call.
     if (this.states_.length === 0) {
-      this.setFakePrevState_(RmaState.kUnknown, RmadErrorCode.kRmaNotRequired);
+      this.setFakePrevState_(
+          RmaState.kUnknown, false, false, RmadErrorCode.kRmaNotRequired);
     } else if (this.stateIndex_ === 0) {
       // It should not be possible for stateIndex_ to be out of range unless
       // there is a bug in the fake.
       assert(this.stateIndex_ < this.states_.length);
       let state = this.states_[this.stateIndex_];
-      this.setFakePrevState_(state.state, RmadErrorCode.kTransitionFailed);
+      this.setFakePrevState_(
+          state.state, state.canCancel, state.canGoBack,
+          RmadErrorCode.kTransitionFailed);
     } else {
       this.stateIndex_--;
       let state = this.states_[this.stateIndex_];
-      this.setFakePrevState_(state.state, state.error);
+      this.setFakePrevState_(
+          state.state, state.canCancel, state.canGoBack, state.error);
     }
     return this.methods_.resolveMethod('transitionPreviousState');
   }
@@ -854,6 +863,9 @@ export class FakeShimlessRmaService {
 
     this.methods_.register('abortRma');
 
+    this.methods_.register('canCancel');
+    this.methods_.register('canGoBack');
+
     this.methods_.register('beginFinalization');
 
     this.methods_.register('networkSelectionComplete');
@@ -933,24 +945,28 @@ export class FakeShimlessRmaService {
   getNextStateForMethod_(method, expectedState) {
     if (this.states_.length === 0) {
       this.setFakeStateForMethod_(
-          method, RmaState.kUnknown, RmadErrorCode.kRmaNotRequired);
+          method, RmaState.kUnknown, false, false,
+          RmadErrorCode.kRmaNotRequired);
     } else if (this.stateIndex_ >= this.states_.length - 1) {
       // It should not be possible for stateIndex_ to be out of range unless
       // there is a bug in the fake.
       assert(this.stateIndex_ < this.states_.length);
       let state = this.states_[this.stateIndex_];
       this.setFakeStateForMethod_(
-          method, state.state, RmadErrorCode.kTransitionFailed);
+          method, state.state, state.canCancel, state.canGoBack,
+          RmadErrorCode.kTransitionFailed);
     } else if (this.states_[this.stateIndex_].state !== expectedState) {
       // Error: Called in wrong state.
       let state = this.states_[this.stateIndex_];
       this.setFakeStateForMethod_(
-          method, state.state, RmadErrorCode.kRequestInvalid);
+          method, state.state, state.canCancel, state.canGoBack,
+          RmadErrorCode.kRequestInvalid);
     } else {
       // Success.
       this.stateIndex_++;
       let state = this.states_[this.stateIndex_];
-      this.setFakeStateForMethod_(method, state.state, state.error);
+      this.setFakeStateForMethod_(
+          method, state.state, state.canCancel, state.canGoBack, state.error);
     }
     return this.methods_.resolveMethod(method);
   }
@@ -959,20 +975,26 @@ export class FakeShimlessRmaService {
    * Sets the value that will be returned when calling getCurrent().
    * @private
    * @param {!RmaState} state
+   * @param {boolean} canCancel,
+   * @param {boolean} canGoBack,
    * @param {!RmadErrorCode} error
    */
-  setFakeCurrentState_(state, error) {
-    this.setFakeStateForMethod_('getCurrentState', state, error);
+  setFakeCurrentState_(state, canCancel, canGoBack, error) {
+    this.setFakeStateForMethod_(
+        'getCurrentState', state, canCancel, canGoBack, error);
   }
 
   /**
    * Sets the value that will be returned when calling transitionNextState().
    * @private
    * @param {!RmaState} state
+   * @param {boolean} canCancel,
+   * @param {boolean} canGoBack,
    * @param {!RmadErrorCode} error
    */
-  setFakeNextState_(state, error) {
-    this.setFakeStateForMethod_('transitionNextState', state, error);
+  setFakeNextState_(state, canCancel, canGoBack, error) {
+    this.setFakeStateForMethod_(
+        'transitionNextState', state, canCancel, canGoBack, error);
   }
 
   /**
@@ -980,10 +1002,13 @@ export class FakeShimlessRmaService {
    * transitionPreviousState().
    * @private
    * @param {!RmaState} state
+   * @param {boolean} canCancel,
+   * @param {boolean} canGoBack,
    * @param {!RmadErrorCode} error
    */
-  setFakePrevState_(state, error) {
-    this.setFakeStateForMethod_('transitionPreviousState', state, error);
+  setFakePrevState_(state, canCancel, canGoBack, error) {
+    this.setFakeStateForMethod_(
+        'transitionPreviousState', state, canCancel, canGoBack, error);
   }
 
   /**
@@ -992,10 +1017,16 @@ export class FakeShimlessRmaService {
    * @private
    * @param {string} method
    * @param {!RmaState} state
+   * @param {boolean} canCancel,
+   * @param {boolean} canGoBack,
    * @param {!RmadErrorCode} error
    */
-  setFakeStateForMethod_(method, state, error) {
-    this.methods_.setResult(
-        method, /** @type {!StateResult} */ ({state: state, error: error}));
+  setFakeStateForMethod_(method, state, canCancel, canGoBack, error) {
+    this.methods_.setResult(method, /** @type {!StateResult} */ ({
+                              state: state,
+                              canCancel: canCancel,
+                              canGoBack: canGoBack,
+                              error: error
+                            }));
   }
 }

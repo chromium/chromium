@@ -358,17 +358,23 @@ interface ShimlessRmaService {
   // Returns the current RMA state.
   // Used on application start to determine the location in the RMA flow.
   // Due to reboots it may not always be the welcome screen.
-  GetCurrentState() => (RmaState state, RmadErrorCode error);
+  GetCurrentState()
+      => (RmaState state, bool can_cancel, bool can_go_back,
+          RmadErrorCode error);
   // Attempts to progress the RMA state.
   // Returns the next state to display and an error code.
   // TODO(crbug.com/1218180): For development only. Remove when all state
   // specific functions implemented.
-  TransitionNextState() => (RmaState state, RmadErrorCode error);
+  TransitionNextState()
+      => (RmaState state, bool can_cancel, bool can_go_back,
+          RmadErrorCode error);
   // Attempt to roll back to the previous RMA state.
   // Returns the updated state to display and an error code.
   // TODO(crbug.com/1218175): Rename TransitionNextState for consistency with
   // rmad d-bus API.
-  TransitionPreviousState() => (RmaState state, RmadErrorCode error);
+  TransitionPreviousState()
+      => (RmaState state, bool can_cancel, bool can_go_back,
+          RmadErrorCode error);
 
   // Attempts to abort the RMA.
   AbortRma() => (RmadErrorCode error);
@@ -378,14 +384,18 @@ interface ShimlessRmaService {
   // Methods for kWelcomeScreen state.
   //
   // User has confirmed they wish to finalize RMA.
-  BeginFinalization() => (RmaState state, RmadErrorCode error);
+  BeginFinalization()
+      => (RmaState state, bool can_cancel, bool can_go_back,
+          RmadErrorCode error);
 
   ///////////////////////////////////////
   // Methods for kConfigureNetwork state.
   //
   // Called when next is clicked after a network is successfully connected or
   // the user skips connecting to a network.
-  NetworkSelectionComplete() => (RmaState state, RmadErrorCode error);
+  NetworkSelectionComplete()
+      => (RmaState state, bool can_cancel, bool can_go_back,
+          RmadErrorCode error);
 
   ///////////////////////////////////////
   // Methods for kUpdateOs state.
@@ -397,17 +407,23 @@ interface ShimlessRmaService {
   // Attempts to start a Chrome OS update.
   UpdateOs() => (bool update_started);
   // Skips OS update.
-  UpdateOsSkipped() => (RmaState state, RmadErrorCode error);
+  UpdateOsSkipped()
+      => (RmaState state, bool can_cancel, bool can_go_back,
+          RmadErrorCode error);
 
   ///////////////////////////////////////
   // Methods for kChooseDestination state.
   //
   // Set the RMA state for the device to be kept by the current owner.
   // Returns the next state to display and an error code.
-  SetSameOwner() => (RmaState state, RmadErrorCode error);
+  SetSameOwner()
+      => (RmaState state, bool can_cancel, bool can_go_back,
+          RmadErrorCode error);
   // Set the RMA state for the device to be given to a different owner.
   // Returns the next state to display and an error code.
-  SetDifferentOwner() => (RmaState state, RmadErrorCode error);
+  SetDifferentOwner()
+      => (RmaState state, bool can_cancel, bool can_go_back,
+          RmadErrorCode error);
 
   ///////////////////////////////////////
   // Methods for kChooseWriteProtectDisableMethod state.
@@ -417,12 +433,16 @@ interface ShimlessRmaService {
   // HardwareWriteProtectionStateObserver when HWWP is disabled.
   // TODO(crbug.com/1218175): Rename SetManuallyDisableWriteProtect for
   // consistency with other methods.
-  ChooseManuallyDisableWriteProtect() => (RmaState state, RmadErrorCode error);
+  ChooseManuallyDisableWriteProtect()
+      => (RmaState state, bool can_cancel, bool can_go_back,
+          RmadErrorCode error);
   // Choose to disable HWWP using the RSU code method.
   // Returns the next state to display and an error code.
   // TODO(crbug.com/1218175): Rename SetRsuDisableWriteProtect for
   // consistency with other methods.
-  ChooseRsuDisableWriteProtect() => (RmaState state, RmadErrorCode error);
+  ChooseRsuDisableWriteProtect()
+      => (RmaState state, bool can_cancel, bool can_go_back,
+          RmadErrorCode error);
 
   ///////////////////////////////////////
   // Methods for kEnterRSUWPDisableCode state.
@@ -439,7 +459,8 @@ interface ShimlessRmaService {
   // Attempt to disable HWWP using a RSU code.
   // Returns the next state to display and an error code.
   SetRsuDisableWriteProtectCode(string code)
-      => (RmaState state, RmadErrorCode error);
+      => (RmaState state, bool can_cancel, bool can_go_back,
+          RmadErrorCode error);
 
   ///////////////////////////////////////
   // Methods for kSelectComponents state.
@@ -452,9 +473,12 @@ interface ShimlessRmaService {
   // This list only needs to contain the components set as repaired (any others
   // included will be ignored by rmad service).
   SetComponentList(array<Component> components)
-      => (RmaState state, RmadErrorCode error);
+      => (RmaState state, bool can_cancel, bool can_go_back,
+          RmadErrorCode error);
   // Go to rework flow.
-  ReworkMainboard() => (RmaState state, RmadErrorCode error);
+  ReworkMainboard()
+      => (RmaState state, bool can_cancel, bool can_go_back,
+          RmadErrorCode error);
 
   ///////////////////////////////////////
   // Methods for kChooseFirmwareReimageMethod state.
@@ -464,23 +488,33 @@ interface ShimlessRmaService {
   // Indicate that the user has chosen to skip device reimaging and move to the
   // next state.
   // Returns the next state to display and an error code.
-  ReimageSkipped() => (RmaState state, RmadErrorCode error);
+  ReimageSkipped()
+      => (RmaState state, bool can_cancel, bool can_go_back,
+          RmadErrorCode error);
   // TODO(gavindod): Does reimaging require an observer?
   // Attempt to reimage by downloading the firmware.
   // Returns the next state to display and an error code.
-  ReimageFromDownload() => (RmaState state, RmadErrorCode error);
+  ReimageFromDownload()
+      => (RmaState state, bool can_cancel, bool can_go_back,
+          RmadErrorCode error);
   // Attempt to reimage with firmware loaded from a USB drive.
   // Returns the next state to display and an error code.
-  ReimageFromUsb() => (RmaState state, RmadErrorCode error);
+  ReimageFromUsb()
+      => (RmaState state, bool can_cancel, bool can_go_back,
+          RmadErrorCode error);
 
   ///////////////////////////////////////
   // Methods for kRestock state.
   //
   // Shutdown the device so mainboard can be restocked.
   // Note: This will only return a result if there is an error.
-  ShutdownForRestock() => (RmaState state, RmadErrorCode error);
+  ShutdownForRestock()
+      => (RmaState state, bool can_cancel, bool can_go_back,
+          RmadErrorCode error);
   // Continue RMA finalization after mainboard is used in another device.
-  ContinueFinalizationAfterRestock() => (RmaState state, RmadErrorCode error);
+  ContinueFinalizationAfterRestock()
+      => (RmaState state, bool can_cancel, bool can_go_back,
+          RmadErrorCode error);
 
   ///////////////////////////////////////
   // Methods for kUpdateDeviceInformation state.
@@ -499,7 +533,8 @@ interface ShimlessRmaService {
   // Returns the next state to display and an error code.
   SetDeviceInformation(
       string serial_number, uint8 region_index, uint8 sku_index)
-          => (RmaState state, RmadErrorCode error);
+          => (RmaState state, bool can_cancel, bool can_go_back,
+              RmadErrorCode error);
 
   ///////////////////////////////////////
   // Methods for kCheckCalibration state.
@@ -523,28 +558,42 @@ interface ShimlessRmaService {
   // Request transition to the begin calibration.
   // Next state will be kSetupCalibration if setup is required, or
   // kRunCalibration if not.
-  StartCalibration() => (RmaState state, RmadErrorCode error);
+  StartCalibration()
+      => (RmaState state, bool can_cancel, bool can_go_back,
+          RmadErrorCode error);
   // Request transition from kSetupCalibration to run this calibration step.
-  RunCalibrationStep() => (RmaState state, RmadErrorCode error);
+  RunCalibrationStep()
+      => (RmaState state, bool can_cancel, bool can_go_back,
+          RmadErrorCode error);
   // Request transition from kRunCalibration to the next setup state.
-  ContinueCalibration() => (RmaState state, RmadErrorCode error);
+  ContinueCalibration()
+      => (RmaState state, bool can_cancel, bool can_go_back,
+          RmadErrorCode error);
   // Request transition from kRunCalibratoin to the next RMA state.
   // This can only be called after kCalibrationOverallComplete has been
   // observed.
-  CalibrationComplete() => (RmaState state, RmadErrorCode error);
+  CalibrationComplete()
+      => (RmaState state, bool can_cancel, bool can_go_back,
+          RmadErrorCode error);
 
   ///////////////////////////////////////
   // Methods for kRepairComplete state.
   //
   // Complete RMA and reboot.
   // Returns an error indicating success or a failure.
-  FinalizeAndReboot() => (RmaState state, RmadErrorCode error);
+  FinalizeAndReboot()
+      => (RmaState state, bool can_cancel, bool can_go_back,
+          RmadErrorCode error);
   // Complete RMA and shutdown.
   // Returns an error indicating success or a failure.
-  FinalizeAndShutdown() => (RmaState state, RmadErrorCode error);
+  FinalizeAndShutdown()
+      => (RmaState state, bool can_cancel, bool can_go_back,
+          RmadErrorCode error);
   // Attempt to cut off the device battery and shutdown.
   // Returns an error indicating success or a failure.
-  CutoffBattery() => (RmaState state, RmadErrorCode error);
+  CutoffBattery()
+      => (RmaState state, bool can_cancel, bool can_go_back,
+          RmadErrorCode error);
 
   ///////////////////////////////////////
   // Observers

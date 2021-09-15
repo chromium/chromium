@@ -84,11 +84,17 @@ export function shimlessRMAAppTest() {
 
   test('ShimlessRMABasicNavigation', async () => {
     await initializeShimlessRMAApp(fakeStates, fakeChromeVersion[0]);
+    const prevButton = component.shadowRoot.querySelector('#back');
+    const cancelButton = component.shadowRoot.querySelector('#cancel');
+    assertTrue(!!prevButton);
+    assertTrue(!!cancelButton);
 
     const initialPage =
         component.shadowRoot.querySelector('onboarding-landing-page');
     assertTrue(!!initialPage);
     assertFalse(initialPage.hidden);
+    assertTrue(prevButton.hidden);
+    assertFalse(cancelButton.hidden);
 
     await clickNext();
 
@@ -98,8 +104,9 @@ export function shimlessRMAAppTest() {
     assertFalse(selectNetworkPage.hidden);
     assertTrue(!!initialPage);
     assertTrue(initialPage.hidden);
+    assertFalse(prevButton.hidden);
+    assertFalse(cancelButton.hidden);
 
-    const prevButton = component.shadowRoot.querySelector('#back');
     prevButton.click();
     await flushTasks();
 
@@ -107,6 +114,8 @@ export function shimlessRMAAppTest() {
     assertTrue(!!selectNetworkPage);
     assertTrue(selectNetworkPage.hidden);
     assertFalse(initialPage.hidden);
+    assertTrue(prevButton.hidden);
+    assertFalse(cancelButton.hidden);
   });
 
   test('ShimlessRMACancellation', async () => {

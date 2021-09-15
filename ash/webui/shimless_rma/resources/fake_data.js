@@ -8,26 +8,106 @@ import {Component, ComponentRepairStatus, ComponentType, Network, QrCode, RmadEr
 
 /** @type {!Array<!StateResult>} */
 export const fakeStates = [
-  {state: RmaState.kWelcomeScreen, error: RmadErrorCode.kOk},
-  {state: RmaState.kConfigureNetwork, error: RmadErrorCode.kOk},
-  {state: RmaState.kUpdateOs, error: RmadErrorCode.kOk},
-  {state: RmaState.kSelectComponents, error: RmadErrorCode.kOk},
-  {state: RmaState.kChooseDestination, error: RmadErrorCode.kOk},
-  {state: RmaState.kChooseWriteProtectDisableMethod, error: RmadErrorCode.kOk},
-  {state: RmaState.kEnterRSUWPDisableCode, error: RmadErrorCode.kOk},
-  {state: RmaState.kVerifyRsu, error: RmadErrorCode.kOk},
-  {state: RmaState.kWaitForManualWPDisable, error: RmadErrorCode.kOk},
-  {state: RmaState.kWPDisableComplete, error: RmadErrorCode.kOk},
-  {state: RmaState.kChooseFirmwareReimageMethod, error: RmadErrorCode.kOk},
+  {
+    state: RmaState.kWelcomeScreen,
+    canCancel: true,
+    canGoBack: false,
+    error: RmadErrorCode.kOk
+  },
+  {
+    state: RmaState.kConfigureNetwork,
+    canCancel: true,
+    canGoBack: true,
+    error: RmadErrorCode.kOk
+  },
+  {
+    state: RmaState.kUpdateOs,
+    canCancel: true,
+    canGoBack: true,
+    error: RmadErrorCode.kOk
+  },
+  {
+    state: RmaState.kSelectComponents,
+    canCancel: true,
+    canGoBack: true,
+    error: RmadErrorCode.kOk
+  },
+  {
+    state: RmaState.kChooseDestination,
+    canCancel: true,
+    canGoBack: true,
+    error: RmadErrorCode.kOk
+  },
+  {
+    state: RmaState.kChooseWriteProtectDisableMethod,
+    canCancel: true,
+    canGoBack: true,
+    error: RmadErrorCode.kOk
+  },
+  {
+    state: RmaState.kEnterRSUWPDisableCode,
+    canCancel: true,
+    canGoBack: true,
+    error: RmadErrorCode.kOk
+  },
+  {
+    state: RmaState.kVerifyRsu,
+    canCancel: true,
+    canGoBack: true,
+    error: RmadErrorCode.kOk
+  },
+  {
+    state: RmaState.kWaitForManualWPDisable,
+    canCancel: true,
+    canGoBack: true,
+    error: RmadErrorCode.kOk
+  },
+  {
+    state: RmaState.kWPDisableComplete,
+    canCancel: true,
+    canGoBack: true,
+    error: RmadErrorCode.kOk
+  },
+  {
+    state: RmaState.kChooseFirmwareReimageMethod,
+    canCancel: true,
+    canGoBack: true,
+    error: RmadErrorCode.kOk
+  },
   // TODO(gavindodd): RmaState.kRestock
-  {state: RmaState.kUpdateDeviceInformation, error: RmadErrorCode.kOk},
-  {state: RmaState.kRestock, error: RmadErrorCode.kOk},
-  {state: RmaState.kCheckCalibration, error: RmadErrorCode.kOk},
+  {
+    state: RmaState.kUpdateDeviceInformation,
+    canCancel: true,
+    canGoBack: true,
+    error: RmadErrorCode.kOk
+  },
+  {
+    state: RmaState.kRestock,
+    canCancel: true,
+    canGoBack: true,
+    error: RmadErrorCode.kOk
+  },
+  {
+    state: RmaState.kCheckCalibration,
+    canCancel: true,
+    canGoBack: true,
+    error: RmadErrorCode.kOk
+  },
   // TODO(gavindodd): RmaState.kSetupCalibration
   // TODO(gavindodd): RmaState.kRunCalibration
-  {state: RmaState.kProvisionDevice, error: RmadErrorCode.kOk},
+  {
+    state: RmaState.kProvisionDevice,
+    canCancel: true,
+    canGoBack: true,
+    error: RmadErrorCode.kOk
+  },
   // TODO(gavindodd): RmaState.kWaitForManualWPEnable
-  {state: RmaState.kRepairComplete, error: RmadErrorCode.kOk},
+  {
+    state: RmaState.kRepairComplete,
+    canCancel: true,
+    canGoBack: true,
+    error: RmadErrorCode.kOk
+  },
 ];
 
 /** @type {!Array<string>} */

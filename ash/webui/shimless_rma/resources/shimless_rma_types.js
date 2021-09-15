@@ -17,7 +17,12 @@ import './mojom/shimless_rma.mojom-lite.js';
  * Return type from state progression methods.
  * Convenience type as mojo-lite does not define types for method results and
  * this is used frequently.
- * @typedef {{state: !RmaState, error: !RmadErrorCode}}
+ * @typedef {{
+ *   state: !RmaState,
+ *   canCancel: boolean,
+ *   canGoBack: boolean,
+ *   error: !RmadErrorCode
+ * }}
  */
 export let StateResult;
 
