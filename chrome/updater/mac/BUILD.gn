@@ -108,11 +108,35 @@ executable("ksadmin") {
   frameworks = [ "CoreFoundation.framework" ]
 }
 
+executable("ksinstall") {
+  output_name = "ksinstall"
+  sources = [
+    "keystone/ksinstall.h",
+    "keystone/ksinstall.mm",
+    "keystone/ksinstall_main.cc",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/updater:base",
+    "//chrome/updater:constants_prod",
+    "//chrome/updater:version_header",
+  ]
+
+  frameworks = [ "CoreFoundation.framework" ]
+}
+
 bundle_data("keystone_helpers") {
-  sources = [ "$root_out_dir/ksadmin" ]
+  sources = [
+    "$root_out_dir/ksadmin",
+    "$root_out_dir/ksinstall",
+  ]
 
   outputs = [ "{{bundle_contents_dir}}/Helpers/{{source_file_part}}" ]
-  public_deps = [ ":ksadmin" ]
+  public_deps = [
+    ":ksadmin",
+    ":ksinstall",
+  ]
 }
 
 mac_app_bundle("keystone_bundle") {

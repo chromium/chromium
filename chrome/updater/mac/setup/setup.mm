@@ -20,6 +20,7 @@
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -386,10 +387,6 @@ bool DeleteDataFolder(UpdaterScope scope) {
   return DeleteFolder(GetBaseDirectory(scope));
 }
 
-bool DeleteKeystoneFolder(UpdaterScope scope) {
-  return DeleteFolder(GetKeystoneFolderPath(scope));
-}
-
 void CleanAfterInstallFailure(UpdaterScope scope) {
   // If install fails at any point, attempt to clean the install.
   DeleteCandidateInstallFolder(scope);
@@ -452,6 +449,45 @@ int DoSetup(UpdaterScope scope) {
     return setup_exit_codes::kFailedToStartLaunchdWakeJob;
 
   return setup_exit_codes::kSuccess;
+}
+
+void UninstallKeystone(UpdaterScope scope) {
+  const absl::optional<base::FilePath> keystone_folder_path =
+      GetKeystoneFolderPath(scope);
+  if (!keystone_folder_path) {
+    LOG(ERROR) << "Can't find Keystone path.";
+    return;
+  }
+  if (!base::PathExists(*keystone_folder_path)) {
+    LOG(ERROR) << "Keystone path '" << *keystone_folder_path
+               << "' doesn't exist.";
+    return;
+  }
+
+  base::FilePath ksinstall_path =
+      keystone_folder_path->Append(FILE_PATH_LITERAL(KEYSTONE_NAME ".bundle"))
+          .Append(FILE_PATH_LITERAL("Contents"))
+          .Append(FILE_PATH_LITERAL("Helpers"))
+          .Append(FILE_PATH_LITERAL("ksinstall"));
+  base::CommandLine command_line(ksinstall_path);
+  command_line.AppendSwitch("uninstall");
+  if (scope == UpdaterScope::kSystem)
+    command_line = MakeElevated(command_line);
+  base::Process process = base::LaunchProcess(command_line, {});
+  if (!process.IsValid()) {
+    LOG(ERROR) << "Failed to launch ksinstall.";
+    return;
+  }
+  int exit_code = 0;
+
+  if (!process.WaitForExitWithTimeout(base::TimeDelta::FromSeconds(30),
+                                      &exit_code)) {
+    LOG(ERROR) << "Uninstall Keystone didn't finish in the allowed time.";
+    return;
+  }
+  if (exit_code != 0) {
+    LOG(ERROR) << "Uninstall Keystone returned exit code: " << exit_code << ".";
+  }
 }
 
 }  // namespace
@@ -517,7 +553,9 @@ int Uninstall(UpdaterScope scope) {
   if (!DeleteInstallFolder(scope))
     return setup_exit_codes::kFailedToDeleteFolder;
 
-  DeleteKeystoneFolder(scope);
+  base::ThreadPool::PostTask(FROM_HERE,
+                             {base::MayBlock(), base::WithBaseSyncPrimitives()},
+                             base::BindOnce(&UninstallKeystone, scope));
 
   // Deleting the data folder is best-effort. Current running processes such as
   // the crash handler process may still write to the updater log file, thus
