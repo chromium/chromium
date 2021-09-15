@@ -4836,7 +4836,7 @@
   {
     "name": "safe-browsing-enhanced-protection-promo-android",
     "owners": [ "bdea", "chrome-safebrowsing-core@google.com" ],
-    "expiry_milestone": 93
+    "expiry_milestone": 100
   },
   {
     "name": "safe-browsing-password-protection-for-signed-in-users",

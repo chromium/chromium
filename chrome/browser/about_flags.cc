@@ -1854,6 +1854,21 @@ const FeatureEntry::FeatureParam kStartSurfaceAndroid_CandidateA[] = {
     {"hide_switch_when_no_incognito_tabs", "true"},
     {"tab_count_button_on_start_surface", "true"}};
 
+const FeatureEntry::FeatureParam kStartSurfaceAndroid_CandidateA_SyncCheck[] = {
+    {"start_surface_variation", "single"},
+    {"show_last_active_tab_only", "true"},
+    {"hide_switch_when_no_incognito_tabs", "true"},
+    {"tab_count_button_on_start_surface", "true"},
+    {"check_sync_before_show_start_at_startup", "true"}};
+
+const FeatureEntry::FeatureParam
+    kStartSurfaceAndroid_CandidateA_SigninPromoTimeLimit[] = {
+        {"start_surface_variation", "single"},
+        {"show_last_active_tab_only", "true"},
+        {"hide_switch_when_no_incognito_tabs", "true"},
+        {"tab_count_button_on_start_surface", "true"},
+        {"sign_in_promo_show_since_last_background_limit_ms", "30000"}};
+
 const FeatureEntry::FeatureParam kStartSurfaceAndroid_CandidateB[] = {
     {"start_surface_variation", "single"},
     {"show_last_active_tab_only", "true"},
@@ -1864,6 +1879,11 @@ const FeatureEntry::FeatureParam kStartSurfaceAndroid_CandidateB[] = {
 const FeatureEntry::FeatureVariation kStartSurfaceAndroidVariations[] = {
     {"Canidate A", kStartSurfaceAndroid_CandidateA,
      base::size(kStartSurfaceAndroid_CandidateA), nullptr},
+    {"Canidate A + Sync check", kStartSurfaceAndroid_CandidateA_SyncCheck,
+     base::size(kStartSurfaceAndroid_CandidateA_SyncCheck), nullptr},
+    {"Canidate A + Sign in promo backgrounded time limit",
+     kStartSurfaceAndroid_CandidateA_SigninPromoTimeLimit,
+     base::size(kStartSurfaceAndroid_CandidateA_SigninPromoTimeLimit), nullptr},
     {"Canidate B", kStartSurfaceAndroid_CandidateB,
      base::size(kStartSurfaceAndroid_CandidateB), nullptr},
     {"Single Surface", kStartSurfaceAndroid_SingleSurface,
@@ -1906,6 +1926,24 @@ const FeatureEntry::FeatureVariation kConditionalTabStripAndroidVariations[] = {
      base::size(kConditionalTabStripAndroid_Immediate), nullptr},
     {"60 minutes", kConditionalTabStripAndroid_60Minutes,
      base::size(kConditionalTabStripAndroid_60Minutes), nullptr},
+};
+
+const FeatureEntry::FeatureParam
+    kEnhancedProtectionPromoCard_SigninPromoImpressions_Count1[] = {
+        {"MaxSigninPromoImpressions", "1"}};
+const FeatureEntry::FeatureParam
+    kEnhancedProtectionPromoCard_SigninPromoImpressions_Count5[] = {
+        {"MaxSigninPromoImpressions", "5"}};
+const FeatureEntry::FeatureVariation kEnhancedProtectionPromoCardVariations[] =
+    {
+        {"Max Impressions 1",
+         kEnhancedProtectionPromoCard_SigninPromoImpressions_Count1,
+         base::size(kEnhancedProtectionPromoCard_SigninPromoImpressions_Count1),
+         nullptr},
+        {"Max Impressions 5",
+         kEnhancedProtectionPromoCard_SigninPromoImpressions_Count5,
+         base::size(kEnhancedProtectionPromoCard_SigninPromoImpressions_Count5),
+         nullptr},
 };
 #endif  // OS_ANDROID
 
@@ -5841,7 +5879,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"safe-browsing-enhanced-protection-promo-android",
      flag_descriptions::kEnhancedProtectionPromoAndroidName,
      flag_descriptions::kEnhancedProtectionPromoAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kEnhancedProtectionPromoCard)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kEnhancedProtectionPromoCard,
+         kEnhancedProtectionPromoCardVariations,
+         "EnhancedProtectionPromoCard")},
 
     {"safe-browsing-passwordcheck-integration-for-saved-passwords-android",
      flag_descriptions::
