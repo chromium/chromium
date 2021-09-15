@@ -279,14 +279,6 @@ const base::Feature kDesktopPWAsRunOnOsLogin {
 #endif
 };
 
-// Enables or disables usage of shared LevelDB instance (ModelTypeStoreService).
-// If this flag is disabled, the new Web Apps system uses its own isolated
-// LevelDB instance for manual testing purposes.
-//
-// TODO(crbug.com/1065748): Delete this feature flag.
-const base::Feature kDesktopPWAsSharedStoreService{
-    "DesktopPWAsSharedStoreService", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // API that allows installed PWAs to add additional shortcuts by means of
 // installing sub app components.
 const base::Feature kDesktopPWAsSubApps{"DesktopPWAsSubApps",
