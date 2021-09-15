@@ -371,6 +371,8 @@ void WaylandToplevelWindow::HandleToplevelConfigure(int32_t width_dip,
 
   if (did_active_change)
     delegate()->OnActivationChanged(is_active_);
+
+  state_change_in_transit_ = false;
 }
 
 void WaylandToplevelWindow::HandleSurfaceConfigure(uint32_t serial) {
@@ -489,6 +491,12 @@ void WaylandToplevelWindow::SetWindowGeometry(gfx::Rect bounds_dip) {
         gfx::ScaleToRoundedInsets(*frame_insets_px(), 1.f / window_scale()));
   }
   shell_toplevel_->SetWindowGeometry(bounds_dip);
+}
+
+void WaylandToplevelWindow::UpdateDecorations() {
+  if (!state_change_in_transit_) {
+    SetWindowGeometry(GetBoundsInDIP());
+  }
 }
 
 void WaylandToplevelWindow::OcclusionChanged(void* data,
@@ -710,6 +718,8 @@ void WaylandToplevelWindow::TriggerStateChanges() {
   } else if (state_ == PlatformWindowState::kNormal) {
     shell_toplevel_->UnSetMaximized();
   }
+
+  state_change_in_transit_ = (previous_state_ != state_);
 
   delegate()->OnWindowStateChanged(previous_state_, state_);
 

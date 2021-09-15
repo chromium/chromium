@@ -217,6 +217,9 @@ class WaylandWindow : public PlatformWindow,
   // Sets the window geometry.
   virtual void SetWindowGeometry(gfx::Rect bounds);
 
+  // Updates the window decorations, if possible at the moment.
+  virtual void UpdateDecorations();
+
   // Returns a root parent window within the same hierarchy.
   WaylandWindow* GetRootParentWindow();
 

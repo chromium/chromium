@@ -94,6 +94,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   bool IsActive() const override;
   bool IsSurfaceConfigured() override;
   void SetWindowGeometry(gfx::Rect bounds) override;
+  void UpdateDecorations() override;
 
   // zaura_surface listeners
   static void OcclusionChanged(void* data,
@@ -251,6 +252,18 @@ class WaylandToplevelWindow : public WaylandWindow,
   // (PlatformWindowDelegate) more than once, for the same window show state
   // change.
   uint32_t requested_window_show_state_count_ = 0;
+  // Prevents the window geometry from being changed during transitions of the
+  // window state.
+  //
+  // Due to expectations of the higher levels, when the window changes its
+  // state, the DWTH is notified about the state change before the one actually
+  // happens, see TriggerStateChanges().  However, one of consequences of the
+  // DWTH being notified is that it wants to update the decoration insets, which
+  // implies updating the window geometry.  This flag is used to skip updating
+  // the geometry until new window bounds are applied.
+  //
+  // See https://crbug.com/1223005
+  bool state_change_in_transit_ = false;
 
   // The desk index for the window.
   // If |workspace_| is -1, window is visible on all workspaces.

@@ -379,8 +379,8 @@ void WaylandWindow::SetDecorationInsets(gfx::Insets insets_px) {
   if (frame_insets_px_ == insets_px)
     return;
   frame_insets_px_ = insets_px;
-  SetWindowGeometry(gfx::ScaleToRoundedRect(GetBounds(), 1.f / window_scale()));
-  connection()->ScheduleFlush();
+  UpdateDecorations();
+  connection_->ScheduleFlush();
 }
 
 void WaylandWindow::SetWindowIcons(const gfx::ImageSkia& window_icon,
@@ -588,6 +588,8 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
 }
 
 void WaylandWindow::SetWindowGeometry(gfx::Rect bounds) {}
+
+void WaylandWindow::UpdateDecorations() {}
 
 WaylandWindow* WaylandWindow::GetRootParentWindow() {
   return parent_window_ ? parent_window_->GetRootParentWindow() : this;
