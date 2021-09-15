@@ -55,14 +55,11 @@
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom-test-utils.h"
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
 #include "third_party/blink/public/mojom/dom_storage/dom_storage.mojom-test-utils.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace content {
 
@@ -3278,12 +3275,8 @@ class StoragePartitonInterceptor
   StoragePartitonInterceptor(
       RenderProcessHostImpl* rph,
       mojo::PendingReceiver<blink::mojom::DomStorage> receiver,
-      absl::optional<url::Origin> local_frame_origin_to_inject,
-      absl::optional<blink::LocalFrameToken> local_frame_token_to_inject,
-      bool inject_first_local_frame_token)
-      : local_frame_origin_to_inject_(local_frame_origin_to_inject),
-        local_frame_token_to_inject_(local_frame_token_to_inject),
-        save_first_local_frame_token_(inject_first_local_frame_token) {
+      const url::Origin& origin_to_inject)
+      : origin_to_inject_(origin_to_inject) {
     StoragePartitionImpl* storage_partition =
         static_cast<StoragePartitionImpl*>(rph->GetStoragePartition());
 
@@ -3325,135 +3318,27 @@ class StoragePartitonInterceptor
   // renderer process sending incorrect data to the browser process, so
   // security checks can be tested.
   void OpenLocalStorage(
-      const url::Origin& local_frame_origin,
-      const blink::LocalFrameToken& local_frame_token,
+      const url::Origin& origin,
       mojo::PendingReceiver<blink::mojom::StorageArea> receiver) override {
-    if (save_first_local_frame_token_ && !saved_first_local_frame_token_)
-      saved_first_local_frame_token_ = local_frame_token;
-    if (saved_first_local_frame_token_ && !local_frame_token_to_inject_)
-      local_frame_token_to_inject_ = saved_first_local_frame_token_;
-    GetForwardingInterface()->OpenLocalStorage(
-        local_frame_origin_to_inject_ ? *local_frame_origin_to_inject_
-                                      : local_frame_origin,
-        local_frame_token_to_inject_ ? *local_frame_token_to_inject_
-                                     : local_frame_token,
-        std::move(receiver));
+    GetForwardingInterface()->OpenLocalStorage(origin_to_inject_,
+                                               std::move(receiver));
   }
 
  private:
   // Keep a pointer to the original implementation of the service, so all
   // calls can be forwarded to it.
   blink::mojom::DomStorage* dom_storage_;
-  absl::optional<url::Origin> local_frame_origin_to_inject_;
-  absl::optional<blink::LocalFrameToken> local_frame_token_to_inject_;
-  bool save_first_local_frame_token_;
-  static absl::optional<blink::LocalFrameToken> saved_first_local_frame_token_;
+
+  url::Origin origin_to_inject_;
 };
 
-absl::optional<blink::LocalFrameToken>
-    StoragePartitonInterceptor::saved_first_local_frame_token_ = absl::nullopt;
-
-// Use this to save the first token used in DOM storage IPC and inject it into
-// all future calls.
-void CreateTestDomStorageBackendToSaveFirstFrame(
+void CreateTestDomStorageBackend(
+    const url::Origin& origin_to_inject,
     RenderProcessHostImpl* rph,
     mojo::PendingReceiver<blink::mojom::DomStorage> receiver) {
   // This object will register as RenderProcessHostObserver, so it will
   // clean itself automatically on process exit.
-  new StoragePartitonInterceptor(rph, std::move(receiver), absl::nullopt,
-                                 absl::nullopt,
-                                 /* save_first_local_frame_token_ */ true);
-}
-
-// Use this to inject (or not if null) an origin and token into DOM storage IPC.
-void CreateTestDomStorageBackendToInjectValues(
-    absl::optional<url::Origin> local_frame_origin_to_inject,
-    absl::optional<blink::LocalFrameToken> local_frame_token_to_inject,
-    RenderProcessHostImpl* rph,
-    mojo::PendingReceiver<blink::mojom::DomStorage> receiver) {
-  // This object will register as RenderProcessHostObserver, so it will
-  // clean itself automatically on process exit.
-  new StoragePartitonInterceptor(rph, std::move(receiver),
-                                 local_frame_origin_to_inject,
-                                 local_frame_token_to_inject,
-                                 /* save_first_local_frame_token_ */ false);
-}
-
-// Verify cross frame calls (wrong `local_frame_token`) causes an exit.
-IN_PROC_BROWSER_TEST_F(IsolatedOriginTest,
-                       LocalStorageOriginEnforcement_WrongLocalFrameToken) {
-  RenderProcessHostImpl::SetDomStorageBinderForTesting(
-      base::BindRepeating(&CreateTestDomStorageBackendToSaveFirstFrame));
-  GURL iframe_url(embedded_test_server()->GetURL(
-      "foo.com", "/cross_site_iframe_factory.html?foo.com(bar.com)"));
-  EXPECT_TRUE(NavigateToURL(shell(), iframe_url));
-
-  // This executes properly, but the frame id sent is then saved in the
-  // backend and used on subsiquent requests. This causes the second call to
-  // crash.
-  EXPECT_TRUE(
-      ExecJs(shell()->web_contents()->GetMainFrame(), "localStorage.length;"));
-
-  content::RenderProcessHostBadIpcMessageWaiter kill_waiter(
-      shell()->web_contents()->GetAllFrames()[1]->GetProcess());
-  // Use ignore_result here, since on Android the renderer process is
-  // terminated, but ExecuteScript still returns true. It properly returns
-  // false on all other platforms.
-  ignore_result(ExecJs(shell()->web_contents()->GetAllFrames()[1],
-                       "localStorage.length;"));
-  EXPECT_EQ(bad_message::RPH_MOJO_PROCESS_ERROR, kill_waiter.Wait());
-
-  #if !defined(OS_ANDROID)
-  // The subframe has crashed, but the main frame should still be alive and
-  // working.
-  EXPECT_TRUE(
-      ExecJs(shell()->web_contents()->GetMainFrame(), "localStorage.length;"));
-  #endif
-}
-
-// Verify that an empty `local_frame_token` causes an exit with error.
-IN_PROC_BROWSER_TEST_F(IsolatedOriginTest,
-                       LocalStorageOriginEnforcement_EmptyLocalFrameToken) {
-  blink::LocalFrameToken wrong_token;
-  RenderProcessHostImpl::SetDomStorageBinderForTesting(base::BindRepeating(
-      &CreateTestDomStorageBackendToInjectValues, absl::nullopt, wrong_token));
-
-  GURL page_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
-
-  EXPECT_TRUE(NavigateToURL(shell(), page_url));
-
-  content::RenderProcessHostBadIpcMessageWaiter kill_waiter(
-      shell()->web_contents()->GetMainFrame()->GetProcess());
-  // Use ignore_result here, since on Android the renderer process is
-  // terminated, but ExecuteScript still returns true. It properly returns
-  // false on all other platforms.
-  ignore_result(
-      ExecJs(shell()->web_contents()->GetMainFrame(), "localStorage.length;"));
-  EXPECT_EQ(bad_message::RPH_MOJO_PROCESS_ERROR, kill_waiter.Wait());
-}
-
-// Verify that the wrong `local_frame_origin causes` an exit with error.
-IN_PROC_BROWSER_TEST_F(IsolatedOriginTest,
-                       LocalStorageOriginEnforcement_OpaqueLocalFrameOrigin) {
-  url::Origin opaque_origin;
-  RenderProcessHostImpl::SetDomStorageBinderForTesting(
-      base::BindRepeating(&CreateTestDomStorageBackendToInjectValues,
-                          opaque_origin, absl::nullopt));
-
-  GURL isolated_url(
-      embedded_test_server()->GetURL("isolated.foo.com", "/title1.html"));
-  EXPECT_TRUE(IsIsolatedOrigin(url::Origin::Create(isolated_url)));
-
-  EXPECT_TRUE(NavigateToURL(shell(), isolated_url));
-
-  content::RenderProcessHostBadIpcMessageWaiter kill_waiter(
-      shell()->web_contents()->GetMainFrame()->GetProcess());
-  // Use ignore_result here, since on Android the renderer process is
-  // terminated, but ExecuteScript still returns true. It properly returns
-  // false on all other platforms.
-  ignore_result(
-      ExecJs(shell()->web_contents()->GetMainFrame(), "localStorage.length;"));
-  EXPECT_EQ(bad_message::RPH_MOJO_PROCESS_ERROR, kill_waiter.Wait());
+  new StoragePartitonInterceptor(rph, std::move(receiver), origin_to_inject);
 }
 
 // Verify that an isolated renderer process cannot read localStorage of an
@@ -3464,8 +3349,7 @@ IN_PROC_BROWSER_TEST_F(
   auto mismatched_origin = url::Origin::Create(GURL("http://abc.foo.com"));
   EXPECT_FALSE(IsIsolatedOrigin(mismatched_origin));
   RenderProcessHostImpl::SetDomStorageBinderForTesting(
-      base::BindRepeating(&CreateTestDomStorageBackendToInjectValues,
-                          mismatched_origin, absl::nullopt));
+      base::BindRepeating(&CreateTestDomStorageBackend, mismatched_origin));
 
   GURL isolated_url(
       embedded_test_server()->GetURL("isolated.foo.com", "/title1.html"));
@@ -3509,8 +3393,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(IsIsolatedOrigin(url::Origin::Create(nonisolated_url)));
 
   RenderProcessHostImpl::SetDomStorageBinderForTesting(
-      base::BindRepeating(&CreateTestDomStorageBackendToInjectValues,
-                          isolated_origin, absl::nullopt));
+      base::BindRepeating(&CreateTestDomStorageBackend, isolated_origin));
   EXPECT_TRUE(NavigateToURL(shell(), nonisolated_url));
 
   content::RenderProcessHostBadIpcMessageWaiter kill_waiter(
@@ -3531,8 +3414,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest,
       url::Origin::Create(GURL("https://non-isolated.com"));
   url::Origin opaque_origin = precursor_origin.DeriveNewOpaqueOrigin();
   RenderProcessHostImpl::SetDomStorageBinderForTesting(
-      base::BindRepeating(&CreateTestDomStorageBackendToInjectValues,
-                          opaque_origin, absl::nullopt));
+      base::BindRepeating(&CreateTestDomStorageBackend, opaque_origin));
 
   GURL isolated_url(
       embedded_test_server()->GetURL("isolated.foo.com", "/title1.html"));

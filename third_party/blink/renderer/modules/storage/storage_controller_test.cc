@@ -36,16 +36,14 @@ class MockDomStorage : public mojom::blink::DomStorage {
  public:
   // mojom::blink::DomStorage implementation:
   void OpenLocalStorage(
-      const scoped_refptr<const SecurityOrigin>& local_frame_origin,
-      const blink::LocalFrameToken& local_frame_token,
+      const scoped_refptr<const SecurityOrigin>& origin,
       mojo::PendingReceiver<mojom::blink::StorageArea> receiver) override {}
   void BindSessionStorageNamespace(
       const String& namespace_id,
       mojo::PendingReceiver<mojom::blink::SessionStorageNamespace> receiver)
       override {}
   void BindSessionStorageArea(
-      const scoped_refptr<const SecurityOrigin>& local_frame_origin,
-      const blink::LocalFrameToken& local_frame_token,
+      const scoped_refptr<const SecurityOrigin>& origin,
       const String& namespace_id,
       mojo::PendingReceiver<mojom::blink::StorageArea> receiver) override {
     session_storage_opens++;

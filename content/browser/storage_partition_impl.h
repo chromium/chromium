@@ -42,20 +42,15 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/dom_storage/dom_storage.mojom.h"
 
 namespace leveldb_proto {
 class ProtoDatabaseProvider;
-}  // namespace leveldb_proto
+}
 
 namespace net {
 class IsolationInfo;
-}  // namespace net
-
-namespace url {
-class Origin;
-}  // namespace url
+}
 
 namespace content {
 
@@ -233,16 +228,14 @@ class CONTENT_EXPORT StoragePartitionImpl
 
   // blink::mojom::DomStorage interface.
   void OpenLocalStorage(
-      const url::Origin& local_frame_origin,
-      const blink::LocalFrameToken& local_frame_token,
+      const url::Origin& origin,
       mojo::PendingReceiver<blink::mojom::StorageArea> receiver) override;
   void BindSessionStorageNamespace(
       const std::string& namespace_id,
       mojo::PendingReceiver<blink::mojom::SessionStorageNamespace> receiver)
       override;
   void BindSessionStorageArea(
-      const url::Origin& local_frame_origin,
-      const blink::LocalFrameToken& local_frame_token,
+      const url::Origin& origin,
       const std::string& namespace_id,
       mojo::PendingReceiver<blink::mojom::StorageArea> receiver) override;
 
