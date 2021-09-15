@@ -4,6 +4,7 @@ mek@chromium.org
 # Secondary:
 jsbell@chromium.org
 pwnall@chromium.org
+wanderview@chromium.org
 
 per-file *_mojom_traits*.*=set noparent
 per-file *_mojom_traits*.*=file://ipc/SECURITY_OWNERS
