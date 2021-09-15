@@ -40,6 +40,10 @@ class BASE_EXPORT MessagePumpFuchsia : public MessagePump,
   class ZxHandleWatchController : public async_wait_t {
    public:
     explicit ZxHandleWatchController(const Location& from_here);
+
+    ZxHandleWatchController(const ZxHandleWatchController&) = delete;
+    ZxHandleWatchController& operator=(const ZxHandleWatchController&) = delete;
+
     // Deleting the Controller implicitly calls StopWatchingZxHandle.
     virtual ~ZxHandleWatchController();
 
@@ -80,8 +84,6 @@ class BASE_EXPORT MessagePumpFuchsia : public MessagePump,
     // A watch may be marked as persistent, which means it remains active even
     // after triggering.
     bool persistent_ = false;
-
-    DISALLOW_COPY_AND_ASSIGN(ZxHandleWatchController);
   };
 
   class FdWatchController : public FdWatchControllerInterface,
@@ -89,6 +91,10 @@ class BASE_EXPORT MessagePumpFuchsia : public MessagePump,
                             public ZxHandleWatcher {
    public:
     explicit FdWatchController(const Location& from_here);
+
+    FdWatchController(const FdWatchController&) = delete;
+    FdWatchController& operator=(const FdWatchController&) = delete;
+
     ~FdWatchController() override;
 
     // FdWatchControllerInterface:
@@ -111,8 +117,6 @@ class BASE_EXPORT MessagePumpFuchsia : public MessagePump,
     // Set by WatchFileDescriptor() to hold a reference to the descriptor's
     // fdio.
     fdio_t* io_ = nullptr;
-
-    DISALLOW_COPY_AND_ASSIGN(FdWatchController);
   };
 
   enum Mode {

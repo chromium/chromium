@@ -23,12 +23,13 @@ namespace {
 class ThreadRestrictionsTest : public testing::Test {
  public:
   ThreadRestrictionsTest() = default;
+
+  ThreadRestrictionsTest(const ThreadRestrictionsTest&) = delete;
+  ThreadRestrictionsTest& operator=(const ThreadRestrictionsTest&) = delete;
+
   ~ThreadRestrictionsTest() override {
     internal::ResetThreadRestrictionsForTesting();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ThreadRestrictionsTest);
 };
 
 }  // namespace

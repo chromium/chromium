@@ -35,6 +35,9 @@ class BASE_EXPORT SharedMemoryMapping {
   SharedMemoryMapping(SharedMemoryMapping&& mapping) noexcept;
   SharedMemoryMapping& operator=(SharedMemoryMapping&& mapping) noexcept;
 
+  SharedMemoryMapping(const SharedMemoryMapping&) = delete;
+  SharedMemoryMapping& operator=(const SharedMemoryMapping&) = delete;
+
   // Unmaps the region if the mapping is valid.
   virtual ~SharedMemoryMapping();
 
@@ -80,8 +83,6 @@ class BASE_EXPORT SharedMemoryMapping {
   size_t size_ = 0;
   size_t mapped_size_ = 0;
   UnguessableToken guid_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedMemoryMapping);
 };
 
 // Class modeling a read-only mapping of a shared memory region into the

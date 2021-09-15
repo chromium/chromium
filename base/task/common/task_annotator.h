@@ -34,6 +34,10 @@ class BASE_EXPORT TaskAnnotator {
   static const PendingTask* CurrentTaskForThread();
 
   TaskAnnotator();
+
+  TaskAnnotator(const TaskAnnotator&) = delete;
+  TaskAnnotator& operator=(const TaskAnnotator&) = delete;
+
   ~TaskAnnotator();
 
   // Called to indicate that a task is about to be queued to run in the future,
@@ -63,8 +67,6 @@ class BASE_EXPORT TaskAnnotator {
   // responsible to ensure thread-safety.
   static void RegisterObserverForTesting(ObserverForTesting* observer);
   static void ClearObserverForTesting();
-
-  DISALLOW_COPY_AND_ASSIGN(TaskAnnotator);
 };
 
 class BASE_EXPORT TaskAnnotator::ScopedSetIpcHash {
@@ -74,6 +76,10 @@ class BASE_EXPORT TaskAnnotator::ScopedSetIpcHash {
   // Compile-time-const string identifying the current IPC context. Not always
   // available due to binary size constraints, so IPC hash might be set instead.
   explicit ScopedSetIpcHash(const char* ipc_interface_name);
+
+  ScopedSetIpcHash(const ScopedSetIpcHash&) = delete;
+  ScopedSetIpcHash& operator=(const ScopedSetIpcHash&) = delete;
+
   ~ScopedSetIpcHash();
 
   uint32_t GetIpcHash() const { return ipc_hash_; }
@@ -86,8 +92,6 @@ class BASE_EXPORT TaskAnnotator::ScopedSetIpcHash {
   ScopedSetIpcHash* old_scoped_ipc_hash_ = nullptr;
   uint32_t ipc_hash_ = 0;
   const char* ipc_interface_name_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSetIpcHash);
 };
 
 }  // namespace base

@@ -32,6 +32,9 @@ class ScopedGetDC {
     }
   }
 
+  ScopedGetDC(const ScopedGetDC&) = delete;
+  ScopedGetDC& operator=(const ScopedGetDC&) = delete;
+
   ~ScopedGetDC() {
     if (hdc_)
       ReleaseDC(hwnd_, hdc_);
@@ -42,8 +45,6 @@ class ScopedGetDC {
  private:
   HWND hwnd_;
   HDC hdc_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedGetDC);
 };
 
 // Like ScopedHandle but for HDC.  Only use this on HDCs returned from

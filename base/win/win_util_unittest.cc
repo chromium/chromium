@@ -25,12 +25,14 @@ namespace {
 class ThreadLocaleSaver {
  public:
   ThreadLocaleSaver() : original_locale_id_(GetThreadLocale()) {}
+
+  ThreadLocaleSaver(const ThreadLocaleSaver&) = delete;
+  ThreadLocaleSaver& operator=(const ThreadLocaleSaver&) = delete;
+
   ~ThreadLocaleSaver() { SetThreadLocale(original_locale_id_); }
 
  private:
   LCID original_locale_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadLocaleSaver);
 };
 
 }  // namespace

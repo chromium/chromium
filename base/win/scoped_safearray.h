@@ -58,6 +58,9 @@ class BASE_EXPORT ScopedSafearray {
       return *this;
     }
 
+    LockScope(const LockScope&) = delete;
+    LockScope& operator=(const LockScope&) = delete;
+
     ~LockScope() { Reset(); }
 
     VARTYPE Type() const { return vartype_; }
@@ -109,7 +112,6 @@ class BASE_EXPORT ScopedSafearray {
     size_t array_size_ = 0U;
 
     friend class ScopedSafearray;
-    DISALLOW_COPY_AND_ASSIGN(LockScope);
   };
 
   explicit ScopedSafearray(SAFEARRAY* safearray = nullptr)

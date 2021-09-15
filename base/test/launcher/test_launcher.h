@@ -126,6 +126,10 @@ class TestLauncher {
   TestLauncher(TestLauncherDelegate* launcher_delegate,
                size_t parallel_jobs,
                size_t retry_limit = 1U);
+
+  TestLauncher(const TestLauncher&) = delete;
+  TestLauncher& operator=(const TestLauncher&) = delete;
+
   // virtual to mock in testing.
   virtual ~TestLauncher();
 
@@ -321,8 +325,6 @@ class TestLauncher {
   // 1 if gtest_repeat is not specified or gtest_break_on_failure is specified.
   // Otherwise it matches gtest_repeat value.
   int repeats_per_iteration_ = 1;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLauncher);
 };
 
 // Return the number of parallel jobs to use, or 0U in case of error.

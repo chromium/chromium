@@ -160,10 +160,11 @@ class SCOPED_LOCKABLE ScopedValidateThreadChecker {
                      : "");
   }
 
-  ~ScopedValidateThreadChecker() UNLOCK_FUNCTION() {}
+  ScopedValidateThreadChecker(const ScopedValidateThreadChecker&) = delete;
+  ScopedValidateThreadChecker& operator=(const ScopedValidateThreadChecker&) =
+      delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedValidateThreadChecker);
+  ~ScopedValidateThreadChecker() UNLOCK_FUNCTION() {}
 };
 #endif
 

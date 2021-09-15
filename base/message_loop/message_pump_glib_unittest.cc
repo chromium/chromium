@@ -46,6 +46,9 @@ class EventInjector {
     g_source_set_can_recurse(source_, TRUE);
   }
 
+  EventInjector(const EventInjector&) = delete;
+  EventInjector& operator=(const EventInjector&) = delete;
+
   ~EventInjector() {
     g_source_destroy(source_);
     g_source_unref(source_);
@@ -141,7 +144,6 @@ class EventInjector {
   std::vector<Event> events_;
   int processed_events_;
   static GSourceFuncs SourceFuncs;
-  DISALLOW_COPY_AND_ASSIGN(EventInjector);
 };
 
 GSourceFuncs EventInjector::SourceFuncs = {EventInjector::Prepare,

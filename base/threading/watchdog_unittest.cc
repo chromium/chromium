@@ -27,6 +27,9 @@ class WatchdogCounter : public Watchdog {
         alarm_counter_(0) {
   }
 
+  WatchdogCounter(const WatchdogCounter&) = delete;
+  WatchdogCounter& operator=(const WatchdogCounter&) = delete;
+
   ~WatchdogCounter() override = default;
 
   void Alarm() override {
@@ -38,8 +41,6 @@ class WatchdogCounter : public Watchdog {
 
  private:
   int alarm_counter_;
-
-  DISALLOW_COPY_AND_ASSIGN(WatchdogCounter);
 };
 
 class WatchdogTest : public testing::Test {

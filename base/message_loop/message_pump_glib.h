@@ -28,6 +28,10 @@ class BASE_EXPORT MessagePumpGlib : public MessagePump,
   class FdWatchController : public FdWatchControllerInterface {
    public:
     explicit FdWatchController(const Location& from_here);
+
+    FdWatchController(const FdWatchController&) = delete;
+    FdWatchController& operator=(const FdWatchController&) = delete;
+
     ~FdWatchController() override;
 
     // FdWatchControllerInterface:
@@ -65,8 +69,6 @@ class BASE_EXPORT MessagePumpGlib : public MessagePump,
     // If this pointer is non-null, the pointee is set to true in the
     // destructor.
     bool* was_destroyed_ = nullptr;
-
-    DISALLOW_COPY_AND_ASSIGN(FdWatchController);
   };
 
   MessagePumpGlib();

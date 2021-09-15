@@ -39,6 +39,9 @@ class TestConsumer : public EtwTraceConsumerBase<TestConsumer> {
     ClearQueue();
   }
 
+  TestConsumer(const TestConsumer&) = delete;
+  TestConsumer& operator=(const TestConsumer&) = delete;
+
   ~TestConsumer() {
     ClearQueue();
     sank_event_.Close();
@@ -70,9 +73,6 @@ class TestConsumer : public EtwTraceConsumerBase<TestConsumer> {
 
   static ScopedHandle sank_event_;
   static EventQueue events_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestConsumer);
 };
 
 ScopedHandle TestConsumer::sank_event_;

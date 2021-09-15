@@ -116,6 +116,9 @@ class BASE_EXPORT StackSamplingProfiler {
                         std::unique_ptr<ProfileBuilder> profile_builder,
                         std::unique_ptr<StackSampler> sampler);
 
+  StackSamplingProfiler(const StackSamplingProfiler&) = delete;
+  StackSamplingProfiler& operator=(const StackSamplingProfiler&) = delete;
+
   // Stops any profiling currently taking place before destroying the profiler.
   // This will block until profile_builder_'s OnProfileCompleted function has
   // executed if profiling has started but not already finished.
@@ -217,8 +220,6 @@ class BASE_EXPORT StackSamplingProfiler {
   // An ID uniquely identifying this profiler to the sampling thread. This
   // will be an internal "null" value when no collection has been started.
   int profiler_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(StackSamplingProfiler);
 };
 
 }  // namespace base

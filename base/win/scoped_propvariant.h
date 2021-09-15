@@ -19,6 +19,9 @@ class ScopedPropVariant {
  public:
   ScopedPropVariant() { PropVariantInit(&pv_); }
 
+  ScopedPropVariant(const ScopedPropVariant&) = delete;
+  ScopedPropVariant& operator=(const ScopedPropVariant&) = delete;
+
   ~ScopedPropVariant() { Reset(); }
 
   // Returns a pointer to the underlying PROPVARIANT for use as an out param in
@@ -45,7 +48,6 @@ class ScopedPropVariant {
   // Comparison operators for ScopedPropVariant are not supported at this point.
   bool operator==(const ScopedPropVariant&) const;
   bool operator!=(const ScopedPropVariant&) const;
-  DISALLOW_COPY_AND_ASSIGN(ScopedPropVariant);
 };
 
 }  // namespace win

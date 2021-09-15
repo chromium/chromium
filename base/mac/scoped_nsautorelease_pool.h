@@ -27,6 +27,10 @@ namespace mac {
 class BASE_EXPORT ScopedNSAutoreleasePool {
  public:
   ScopedNSAutoreleasePool();
+
+  ScopedNSAutoreleasePool(const ScopedNSAutoreleasePool&) = delete;
+  ScopedNSAutoreleasePool& operator=(const ScopedNSAutoreleasePool&) = delete;
+
   ~ScopedNSAutoreleasePool();
 
   // Clear out the pool in case its position on the stack causes it to be
@@ -36,9 +40,6 @@ class BASE_EXPORT ScopedNSAutoreleasePool {
   void Recycle();
  private:
   NSAutoreleasePool* autorelease_pool_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedNSAutoreleasePool);
 };
 
 }  // namespace mac

@@ -127,14 +127,17 @@ class SCOPED_LOCKABLE AnnotateAcquiredLockAlias {
     DCHECK_EQ(&acquired_lock, &lock_alias);
     acquired_lock_.AssertAcquired();
   }
+
+  AnnotateAcquiredLockAlias(const AnnotateAcquiredLockAlias&) = delete;
+  AnnotateAcquiredLockAlias& operator=(const AnnotateAcquiredLockAlias&) =
+      delete;
+
   ~AnnotateAcquiredLockAlias() UNLOCK_FUNCTION() {
     acquired_lock_.AssertAcquired();
   }
 
  private:
   const CheckedLock& acquired_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(AnnotateAcquiredLockAlias);
 };
 
 }  // namespace internal

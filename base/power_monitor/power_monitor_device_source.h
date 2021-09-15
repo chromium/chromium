@@ -38,6 +38,10 @@ namespace base {
 class BASE_EXPORT PowerMonitorDeviceSource : public PowerMonitorSource {
  public:
   PowerMonitorDeviceSource();
+
+  PowerMonitorDeviceSource(const PowerMonitorDeviceSource&) = delete;
+  PowerMonitorDeviceSource& operator=(const PowerMonitorDeviceSource&) = delete;
+
   ~PowerMonitorDeviceSource() override;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -136,7 +140,6 @@ class BASE_EXPORT PowerMonitorDeviceSource : public PowerMonitorSource {
   PowerThermalObserver::DeviceThermalState current_thermal_state_ =
       PowerThermalObserver::DeviceThermalState::kUnknown;
 #endif
-  DISALLOW_COPY_AND_ASSIGN(PowerMonitorDeviceSource);
 };
 
 }  // namespace base

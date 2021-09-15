@@ -35,6 +35,10 @@ class BASE_EXPORT PersistentHistogramStorage {
   PersistentHistogramStorage(StringPiece allocator_name,
                              StorageDirManagement storage_dir_management);
 
+  PersistentHistogramStorage(const PersistentHistogramStorage&) = delete;
+  PersistentHistogramStorage& operator=(const PersistentHistogramStorage&) =
+      delete;
+
   ~PersistentHistogramStorage();
 
   // The storage directory isn't always known during initial construction so
@@ -59,8 +63,6 @@ class BASE_EXPORT PersistentHistogramStorage {
   // but can be set to true by the caller who decides to throw away its
   // histogram data.
   bool disabled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PersistentHistogramStorage);
 };
 
 }  // namespace base

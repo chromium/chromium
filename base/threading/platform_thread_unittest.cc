@@ -117,6 +117,10 @@ class FunctionTestThread : public PlatformThread::Delegate {
         terminate_thread_(WaitableEvent::ResetPolicy::MANUAL,
                           WaitableEvent::InitialState::NOT_SIGNALED),
         done_(false) {}
+
+  FunctionTestThread(const FunctionTestThread&) = delete;
+  FunctionTestThread& operator=(const FunctionTestThread&) = delete;
+
   ~FunctionTestThread() override {
     EXPECT_TRUE(terminate_thread_.IsSignaled())
         << "Need to mark thread for termination and join the underlying thread "
@@ -168,8 +172,6 @@ class FunctionTestThread : public PlatformThread::Delegate {
   mutable WaitableEvent termination_ready_;
   WaitableEvent terminate_thread_;
   bool done_;
-
-  DISALLOW_COPY_AND_ASSIGN(FunctionTestThread);
 };
 
 }  // namespace
@@ -235,6 +237,10 @@ class ThreadPriorityTestThread : public FunctionTestThread {
  public:
   explicit ThreadPriorityTestThread(ThreadPriority from, ThreadPriority to)
       : from_(from), to_(to) {}
+
+  ThreadPriorityTestThread(const ThreadPriorityTestThread&) = delete;
+  ThreadPriorityTestThread& operator=(const ThreadPriorityTestThread&) = delete;
+
   ~ThreadPriorityTestThread() override = default;
 
  private:
@@ -255,8 +261,6 @@ class ThreadPriorityTestThread : public FunctionTestThread {
 
   const ThreadPriority from_;
   const ThreadPriority to_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadPriorityTestThread);
 };
 
 void TestSetCurrentThreadPriority() {

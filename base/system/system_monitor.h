@@ -28,6 +28,10 @@ class BASE_EXPORT SystemMonitor {
   // Create SystemMonitor. Only one SystemMonitor instance per application
   // is allowed.
   SystemMonitor();
+
+  SystemMonitor(const SystemMonitor&) = delete;
+  SystemMonitor& operator=(const SystemMonitor&) = delete;
+
   ~SystemMonitor();
 
   // Get the application-wide SystemMonitor (if not present, returns NULL).
@@ -66,8 +70,6 @@ class BASE_EXPORT SystemMonitor {
 
   scoped_refptr<ObserverListThreadSafe<DevicesChangedObserver>>
       devices_changed_observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemMonitor);
 };
 
 }  // namespace base

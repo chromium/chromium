@@ -42,6 +42,9 @@ class BASE_EXPORT ScopedServiceBinding {
                        base::StringPiece name = Interface::Name_)
       : publisher_(pseudo_dir, bindings_.GetHandler(impl), name) {}
 
+  ScopedServiceBinding(const ScopedServiceBinding&) = delete;
+  ScopedServiceBinding& operator=(const ScopedServiceBinding&) = delete;
+
   ~ScopedServiceBinding() = default;
 
   // |on_last_client_callback| will be called every time the number of connected
@@ -56,8 +59,6 @@ class BASE_EXPORT ScopedServiceBinding {
  private:
   fidl::BindingSet<Interface> bindings_;
   ScopedServicePublisher<Interface> publisher_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedServiceBinding);
 };
 
 // Scoped service binding which allows only a single client to be connected
@@ -85,6 +86,11 @@ class BASE_EXPORT ScopedSingleClientServiceBinding {
     binding_.set_error_handler(fit::bind_member(
         this, &ScopedSingleClientServiceBinding::OnBindingEmpty));
   }
+
+  ScopedSingleClientServiceBinding(const ScopedSingleClientServiceBinding&) =
+      delete;
+  ScopedSingleClientServiceBinding& operator=(
+      const ScopedSingleClientServiceBinding&) = delete;
 
   ~ScopedSingleClientServiceBinding() = default;
 
@@ -120,8 +126,6 @@ class BASE_EXPORT ScopedSingleClientServiceBinding {
   fidl::Binding<Interface> binding_;
   absl::optional<ScopedServicePublisher<Interface>> publisher_;
   base::OnceClosure on_last_client_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSingleClientServiceBinding);
 };
 
 }  // namespace base

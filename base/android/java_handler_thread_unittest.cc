@@ -35,6 +35,9 @@ class DummyTaskObserver : public TaskObserver {
         num_tasks_processed_(0),
         num_tasks_(num_tasks) {}
 
+  DummyTaskObserver(const DummyTaskObserver&) = delete;
+  DummyTaskObserver& operator=(const DummyTaskObserver&) = delete;
+
   ~DummyTaskObserver() override = default;
 
   void WillProcessTask(const PendingTask& /* pending_task */,
@@ -57,8 +60,6 @@ class DummyTaskObserver : public TaskObserver {
   int num_tasks_started_;
   int num_tasks_processed_;
   const int num_tasks_;
-
-  DISALLOW_COPY_AND_ASSIGN(DummyTaskObserver);
 };
 
 void PostNTasks(int posts_remaining) {

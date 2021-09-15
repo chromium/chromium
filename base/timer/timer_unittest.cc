@@ -65,6 +65,9 @@ class OneShotTimerTesterBase {
       const TimeDelta& delay = TimeDelta::FromMilliseconds(10))
       : did_run_(did_run), delay_(delay) {}
 
+  OneShotTimerTesterBase(const OneShotTimerTesterBase&) = delete;
+  OneShotTimerTesterBase& operator=(const OneShotTimerTesterBase&) = delete;
+
   virtual ~OneShotTimerTesterBase() = default;
 
   void Start() {
@@ -91,8 +94,6 @@ class OneShotTimerTesterBase {
   WaitableEvent* const did_run_;
   const TimeDelta delay_;
   TimeTicks started_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(OneShotTimerTesterBase);
 };
 
 // Extends functionality of OneShotTimerTesterBase with the abilities to wait
@@ -105,6 +106,9 @@ class OneShotTimerTester : public OneShotTimerTesterBase {
       const TimeDelta& delay = TimeDelta::FromMilliseconds(10))
       : OneShotTimerTesterBase(did_run, delay),
         quit_closure_(run_loop_.QuitClosure()) {}
+
+  OneShotTimerTester(const OneShotTimerTester&) = delete;
+  OneShotTimerTester& operator=(const OneShotTimerTester&) = delete;
 
   ~OneShotTimerTester() override = default;
 
@@ -141,8 +145,6 @@ class OneShotTimerTester : public OneShotTimerTesterBase {
 
   RunLoop run_loop_;
   OnceClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(OneShotTimerTester);
 };
 
 class OneShotSelfDeletingTimerTester : public OneShotTimerTester {

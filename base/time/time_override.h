@@ -40,6 +40,9 @@ class BASE_EXPORT ScopedTimeClockOverrides {
                            TimeTicksNowFunction time_ticks_override,
                            ThreadTicksNowFunction thread_ticks_override);
 
+  ScopedTimeClockOverrides(const ScopedTimeClockOverrides&) = delete;
+  ScopedTimeClockOverrides& operator=(const ScopedTimeClockOverrides&) = delete;
+
   // Restores the platform default Now() functions.
   ~ScopedTimeClockOverrides();
 
@@ -47,8 +50,6 @@ class BASE_EXPORT ScopedTimeClockOverrides {
 
  private:
   static bool overrides_active_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedTimeClockOverrides);
 };
 
 // These methods return the platform default Time::Now / TimeTicks::Now /

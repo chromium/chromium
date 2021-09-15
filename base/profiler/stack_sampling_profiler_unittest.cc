@@ -103,6 +103,9 @@ class TestProfileBuilder : public ProfileBuilder {
   TestProfileBuilder(ModuleCache* module_cache,
                      ProfileCompletedCallback callback);
 
+  TestProfileBuilder(const TestProfileBuilder&) = delete;
+  TestProfileBuilder& operator=(const TestProfileBuilder&) = delete;
+
   ~TestProfileBuilder() override;
 
   // ProfileBuilder:
@@ -132,8 +135,6 @@ class TestProfileBuilder : public ProfileBuilder {
 
   // Callback made when sampling a profile completes.
   ProfileCompletedCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestProfileBuilder);
 };
 
 TestProfileBuilder::TestProfileBuilder(ModuleCache* module_cache,

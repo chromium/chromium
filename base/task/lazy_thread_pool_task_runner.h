@@ -193,6 +193,12 @@ class BASE_EXPORT LazyThreadPoolTaskRunner {
 class BASE_EXPORT ScopedLazyTaskRunnerListForTesting {
  public:
   ScopedLazyTaskRunnerListForTesting();
+
+  ScopedLazyTaskRunnerListForTesting(
+      const ScopedLazyTaskRunnerListForTesting&) = delete;
+  ScopedLazyTaskRunnerListForTesting& operator=(
+      const ScopedLazyTaskRunnerListForTesting&) = delete;
+
   ~ScopedLazyTaskRunnerListForTesting();
 
  private:
@@ -210,8 +216,6 @@ class BASE_EXPORT ScopedLazyTaskRunnerListForTesting {
 
   // List of callbacks to run on destruction.
   std::vector<OnceClosure> callbacks_ GUARDED_BY(lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedLazyTaskRunnerListForTesting);
 };
 
 }  // namespace internal

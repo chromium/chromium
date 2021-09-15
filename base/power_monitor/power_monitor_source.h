@@ -18,6 +18,10 @@ namespace base {
 class BASE_EXPORT PowerMonitorSource {
  public:
   PowerMonitorSource();
+
+  PowerMonitorSource(const PowerMonitorSource&) = delete;
+  PowerMonitorSource& operator=(const PowerMonitorSource&) = delete;
+
   virtual ~PowerMonitorSource();
 
   // Normalized list of power events.
@@ -58,9 +62,6 @@ class BASE_EXPORT PowerMonitorSource {
   static void ProcessPowerEvent(PowerEvent event_id);
   static void ProcessThermalEvent(
       PowerThermalObserver::DeviceThermalState new_thermal_state);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PowerMonitorSource);
 };
 
 }  // namespace base

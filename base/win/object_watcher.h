@@ -65,6 +65,10 @@ class BASE_EXPORT ObjectWatcher {
   };
 
   ObjectWatcher();
+
+  ObjectWatcher(const ObjectWatcher&) = delete;
+  ObjectWatcher& operator=(const ObjectWatcher&) = delete;
+
   ~ObjectWatcher();
 
   // When the object is signaled, the given delegate is notified on the sequence
@@ -130,8 +134,6 @@ class BASE_EXPORT ObjectWatcher {
   bool run_once_ = true;
 
   WeakPtrFactory<ObjectWatcher> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ObjectWatcher);
 };
 
 }  // namespace win

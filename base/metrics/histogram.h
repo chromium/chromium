@@ -105,6 +105,9 @@ class BASE_EXPORT Histogram : public HistogramBase {
 
   typedef std::vector<Count> Counts;
 
+  Histogram(const Histogram&) = delete;
+  Histogram& operator=(const Histogram&) = delete;
+
   ~Histogram() override;
 
   //----------------------------------------------------------------------------
@@ -299,8 +302,6 @@ class BASE_EXPORT Histogram : public HistogramBase {
   // used to DCHECK that a final delta is not created multiple times.
   mutable bool final_delta_created_ = false;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(Histogram);
 };
 
 //------------------------------------------------------------------------------
@@ -309,6 +310,9 @@ class BASE_EXPORT Histogram : public HistogramBase {
 // buckets.
 class BASE_EXPORT LinearHistogram : public Histogram {
  public:
+  LinearHistogram(const LinearHistogram&) = delete;
+  LinearHistogram& operator=(const LinearHistogram&) = delete;
+
   ~LinearHistogram() override;
 
   /* minimum should start from 1. 0 is as minimum is invalid. 0 is an implicit
@@ -405,8 +409,6 @@ class BASE_EXPORT LinearHistogram : public Histogram {
   // to provide a description.
   typedef std::map<Sample, std::string> BucketDescriptionMap;
   BucketDescriptionMap bucket_description_;
-
-  DISALLOW_COPY_AND_ASSIGN(LinearHistogram);
 };
 
 //------------------------------------------------------------------------------
@@ -438,6 +440,9 @@ class BASE_EXPORT ScaledLinearHistogram {
                         int32_t scale,
                         int32_t flags);
 
+  ScaledLinearHistogram(const ScaledLinearHistogram&) = delete;
+  ScaledLinearHistogram& operator=(const ScaledLinearHistogram&) = delete;
+
   ~ScaledLinearHistogram();
 
   // Like AddCount() but actually accumulates |count|/|scale| and increments
@@ -461,8 +466,6 @@ class BASE_EXPORT ScaledLinearHistogram {
   // may be negative as the scaled count is actually bumped once the
   // remainder is 1/2 way to the scale value (thus "rounding").
   std::vector<AtomicCount> remainders_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScaledLinearHistogram);
 };
 
 //------------------------------------------------------------------------------

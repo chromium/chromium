@@ -94,6 +94,10 @@ class TraceEventDataConverter {
       : name_(ConvertJavaStringToUTF8(env, jname)),
         has_arg_(jarg != nullptr),
         arg_(jarg ? ConvertJavaStringToUTF8(env, jarg) : "") {}
+
+  TraceEventDataConverter(const TraceEventDataConverter&) = delete;
+  TraceEventDataConverter& operator=(const TraceEventDataConverter&) = delete;
+
   ~TraceEventDataConverter() = default;
 
   // Return saved values to pass to TRACE_EVENT macros.
@@ -105,8 +109,6 @@ class TraceEventDataConverter {
   std::string name_;
   bool has_arg_;
   std::string arg_;
-
-  DISALLOW_COPY_AND_ASSIGN(TraceEventDataConverter);
 };
 
 }  // namespace

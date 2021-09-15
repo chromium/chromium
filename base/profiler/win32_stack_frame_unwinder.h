@@ -46,6 +46,9 @@ class BASE_EXPORT Win32StackFrameUnwinder {
   // on. Provides a seam for testing.
   class BASE_EXPORT UnwindFunctions {
    public:
+    UnwindFunctions(const UnwindFunctions&) = delete;
+    UnwindFunctions& operator=(const UnwindFunctions&) = delete;
+
     virtual ~UnwindFunctions();
 
     virtual PRUNTIME_FUNCTION LookupFunctionEntry(DWORD64 program_counter,
@@ -57,9 +60,6 @@ class BASE_EXPORT Win32StackFrameUnwinder {
 
    protected:
     UnwindFunctions();
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(UnwindFunctions);
   };
 
   explicit Win32StackFrameUnwinder();

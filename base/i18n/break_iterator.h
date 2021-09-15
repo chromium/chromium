@@ -102,6 +102,10 @@ class BASE_I18N_EXPORT BreakIterator {
   // "(const std::u16string& str, const std::u16string& locale)". We should do
   // something better.
   BreakIterator(const StringPiece16& str, const std::u16string& rules);
+
+  BreakIterator(const BreakIterator&) = delete;
+  BreakIterator& operator=(const BreakIterator&) = delete;
+
   ~BreakIterator();
 
   // Init() must be called before any of the iterators are valid.
@@ -186,8 +190,6 @@ class BASE_I18N_EXPORT BreakIterator {
 
   // Previous and current iterator positions.
   size_t prev_, pos_;
-
-  DISALLOW_COPY_AND_ASSIGN(BreakIterator);
 };
 
 }  // namespace i18n

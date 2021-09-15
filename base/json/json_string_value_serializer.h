@@ -20,6 +20,10 @@ class BASE_EXPORT JSONStringValueSerializer : public base::ValueSerializer {
   // string. |json_string| must not be null.
   explicit JSONStringValueSerializer(std::string* json_string);
 
+  JSONStringValueSerializer(const JSONStringValueSerializer&) = delete;
+  JSONStringValueSerializer& operator=(const JSONStringValueSerializer&) =
+      delete;
+
   ~JSONStringValueSerializer() override;
 
   // Attempt to serialize the data structure represented by Value into
@@ -40,8 +44,6 @@ class BASE_EXPORT JSONStringValueSerializer : public base::ValueSerializer {
   // Owned by the caller of the constructor.
   std::string* json_string_;
   bool pretty_print_;  // If true, serialization will span multiple lines.
-
-  DISALLOW_COPY_AND_ASSIGN(JSONStringValueSerializer);
 };
 
 class BASE_EXPORT JSONStringValueDeserializer : public base::ValueDeserializer {
@@ -51,6 +53,10 @@ class BASE_EXPORT JSONStringValueDeserializer : public base::ValueDeserializer {
   // JSONParserOptions.
   explicit JSONStringValueDeserializer(const base::StringPiece& json_string,
                                        int options = 0);
+
+  JSONStringValueDeserializer(const JSONStringValueDeserializer&) = delete;
+  JSONStringValueDeserializer& operator=(const JSONStringValueDeserializer&) =
+      delete;
 
   ~JSONStringValueDeserializer() override;
 
@@ -68,8 +74,6 @@ class BASE_EXPORT JSONStringValueDeserializer : public base::ValueDeserializer {
   // Data is owned by the caller of the constructor.
   base::StringPiece json_string_;
   const int options_;
-
-  DISALLOW_COPY_AND_ASSIGN(JSONStringValueDeserializer);
 };
 
 #endif  // BASE_JSON_JSON_STRING_VALUE_SERIALIZER_H_

@@ -29,6 +29,9 @@ class PostTaskAndReplyRelay {
         reply_task_runner_(std::move(reply_task_runner)) {}
   PostTaskAndReplyRelay(PostTaskAndReplyRelay&&) = default;
 
+  PostTaskAndReplyRelay(const PostTaskAndReplyRelay&) = delete;
+  PostTaskAndReplyRelay& operator=(const PostTaskAndReplyRelay&) = delete;
+
   // It is important that |reply_| always be deleted on the origin sequence
   // (|reply_task_runner_|) since its destructor can be affine to it. More
   // sutbly, it is also important that |task_| be destroyed on the origin
@@ -120,8 +123,6 @@ class PostTaskAndReplyRelay {
   OnceClosure reply_;
   // Not const to allow moving.
   scoped_refptr<SequencedTaskRunner> reply_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(PostTaskAndReplyRelay);
 };
 
 }  // namespace

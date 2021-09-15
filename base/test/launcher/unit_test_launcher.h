@@ -126,6 +126,10 @@ class UnitTestLauncherDelegate : public TestLauncherDelegate {
   UnitTestLauncherDelegate(UnitTestPlatformDelegate* delegate,
                            size_t batch_limit,
                            bool use_job_objects);
+
+  UnitTestLauncherDelegate(const UnitTestLauncherDelegate&) = delete;
+  UnitTestLauncherDelegate& operator=(const UnitTestLauncherDelegate&) = delete;
+
   ~UnitTestLauncherDelegate() override;
 
  private:
@@ -153,8 +157,6 @@ class UnitTestLauncherDelegate : public TestLauncherDelegate {
 
   // Determines whether we use job objects on Windows.
   bool use_job_objects_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnitTestLauncherDelegate);
 };
 
 }   // namespace base

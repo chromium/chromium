@@ -59,6 +59,9 @@ class ThreadLocalStorageRunner : public DelegateSimpleThread::Delegate {
   explicit ThreadLocalStorageRunner(int* tls_value_ptr)
       : tls_value_ptr_(tls_value_ptr) {}
 
+  ThreadLocalStorageRunner(const ThreadLocalStorageRunner&) = delete;
+  ThreadLocalStorageRunner& operator=(const ThreadLocalStorageRunner&) = delete;
+
   ~ThreadLocalStorageRunner() override = default;
 
   void Run() override {
@@ -79,7 +82,6 @@ class ThreadLocalStorageRunner : public DelegateSimpleThread::Delegate {
 
  private:
   int* tls_value_ptr_;
-  DISALLOW_COPY_AND_ASSIGN(ThreadLocalStorageRunner);
 };
 
 

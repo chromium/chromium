@@ -124,6 +124,10 @@ class ThreadLocalOwnedPointer {
 class ThreadLocalBoolean {
  public:
   ThreadLocalBoolean() = default;
+
+  ThreadLocalBoolean(const ThreadLocalBoolean&) = delete;
+  ThreadLocalBoolean& operator=(const ThreadLocalBoolean&) = delete;
+
   ~ThreadLocalBoolean() = default;
 
   bool Get() const { return tlp_.Get() != nullptr; }
@@ -132,8 +136,6 @@ class ThreadLocalBoolean {
 
  private:
   ThreadLocalPointer<void> tlp_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadLocalBoolean);
 };
 
 }  // namespace base

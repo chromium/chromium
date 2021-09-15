@@ -231,11 +231,15 @@ BASE_EXPORT bool IsCurrentSessionRemote();
 class BASE_EXPORT ScopedDomainStateForTesting {
  public:
   explicit ScopedDomainStateForTesting(bool state);
+
+  ScopedDomainStateForTesting(const ScopedDomainStateForTesting&) = delete;
+  ScopedDomainStateForTesting& operator=(const ScopedDomainStateForTesting&) =
+      delete;
+
   ~ScopedDomainStateForTesting();
 
  private:
   bool initial_state_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedDomainStateForTesting);
 };
 
 // Allows changing the management registration state for the life time of the
@@ -243,11 +247,16 @@ class BASE_EXPORT ScopedDomainStateForTesting {
 class BASE_EXPORT ScopedDeviceRegisteredWithManagementForTesting {
  public:
   explicit ScopedDeviceRegisteredWithManagementForTesting(bool state);
+
+  ScopedDeviceRegisteredWithManagementForTesting(
+      const ScopedDeviceRegisteredWithManagementForTesting&) = delete;
+  ScopedDeviceRegisteredWithManagementForTesting& operator=(
+      const ScopedDeviceRegisteredWithManagementForTesting&) = delete;
+
   ~ScopedDeviceRegisteredWithManagementForTesting();
 
  private:
   bool initial_state_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedDeviceRegisteredWithManagementForTesting);
 };
 
 }  // namespace win

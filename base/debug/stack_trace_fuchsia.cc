@@ -90,6 +90,10 @@ class SymbolMap {
   };
 
   SymbolMap();
+
+  SymbolMap(const SymbolMap&) = delete;
+  SymbolMap& operator=(const SymbolMap&) = delete;
+
   ~SymbolMap() = default;
 
   // Gets all entries for the symbol map.
@@ -107,8 +111,6 @@ class SymbolMap {
 
   size_t count_ = 0;
   bool valid_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(SymbolMap);
 };
 
 SymbolMap::SymbolMap() {

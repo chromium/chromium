@@ -23,6 +23,10 @@ namespace {
 class Win32UnwindFunctions : public Win32StackFrameUnwinder::UnwindFunctions {
  public:
   Win32UnwindFunctions();
+
+  Win32UnwindFunctions(const Win32UnwindFunctions&) = delete;
+  Win32UnwindFunctions& operator=(const Win32UnwindFunctions&) = delete;
+
   ~Win32UnwindFunctions() override;
 
   PRUNTIME_FUNCTION LookupFunctionEntry(DWORD64 program_counter,
@@ -32,9 +36,6 @@ class Win32UnwindFunctions : public Win32StackFrameUnwinder::UnwindFunctions {
                      DWORD64 program_counter,
                      PRUNTIME_FUNCTION runtime_function,
                      CONTEXT* context) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Win32UnwindFunctions);
 };
 
 Win32UnwindFunctions::Win32UnwindFunctions() {}

@@ -39,6 +39,10 @@ class BASE_I18N_EXPORT MessageArg {
   MessageArg(int64_t i);
   MessageArg(double d);
   MessageArg(const Time& t);
+
+  MessageArg(const MessageArg&) = delete;
+  MessageArg& operator=(const MessageArg&) = delete;
+
   ~MessageArg();
 
  private:
@@ -47,7 +51,6 @@ class BASE_I18N_EXPORT MessageArg {
   // Tests if this argument has a value, and if so increments *count.
   bool has_value(int* count) const;
   std::unique_ptr<icu::Formattable> formattable;
-  DISALLOW_COPY_AND_ASSIGN(MessageArg);
 };
 
 }  // namespace internal

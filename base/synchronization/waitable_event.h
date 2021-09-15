@@ -74,6 +74,9 @@ class BASE_EXPORT WaitableEvent {
   explicit WaitableEvent(win::ScopedHandle event_handle);
 #endif
 
+  WaitableEvent(const WaitableEvent&) = delete;
+  WaitableEvent& operator=(const WaitableEvent&) = delete;
+
   ~WaitableEvent();
 
   // Put the event in the un-signaled state.
@@ -284,8 +287,6 @@ class BASE_EXPORT WaitableEvent {
   // Whether a thread invoking Wait() on this WaitableEvent should be considered
   // blocked as opposed to idle (and potentially replaced if part of a pool).
   bool waiting_is_blocking_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(WaitableEvent);
 };
 
 }  // namespace base

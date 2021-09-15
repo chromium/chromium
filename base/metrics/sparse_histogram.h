@@ -40,6 +40,9 @@ class BASE_EXPORT SparseHistogram : public HistogramBase {
       HistogramSamples::Metadata* meta,
       HistogramSamples::Metadata* logged_meta);
 
+  SparseHistogram(const SparseHistogram&) = delete;
+  SparseHistogram& operator=(const SparseHistogram&) = delete;
+
   ~SparseHistogram() override;
 
   // HistogramBase implementation:
@@ -88,8 +91,6 @@ class BASE_EXPORT SparseHistogram : public HistogramBase {
 
   std::unique_ptr<HistogramSamples> unlogged_samples_;
   std::unique_ptr<HistogramSamples> logged_samples_;
-
-  DISALLOW_COPY_AND_ASSIGN(SparseHistogram);
 };
 
 }  // namespace base

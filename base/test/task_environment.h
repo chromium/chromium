@@ -213,6 +213,9 @@ class TaskEnvironment {
                                     TaskEnvironmentTraits...>(),
             trait_helpers::NotATraitTag()) {}
 
+  TaskEnvironment(const TaskEnvironment&) = delete;
+  TaskEnvironment& operator=(const TaskEnvironment&) = delete;
+
   // Waits until no undelayed ThreadPool tasks remain. Then, unregisters the
   // ThreadPoolInstance and the (Thread|Sequenced)TaskRunnerHandle.
   virtual ~TaskEnvironment();
@@ -427,8 +430,6 @@ class TaskEnvironment {
   // thread. This is the case for anything that modifies or drives the
   // |sequence_manager_|.
   THREAD_CHECKER(main_thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(TaskEnvironment);
 };
 
 // SingleThreadTaskEnvironment takes the same traits as TaskEnvironment and is

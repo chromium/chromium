@@ -33,14 +33,17 @@ class BASE_EXPORT SequencedTaskRunnerHandle {
   // Binds |task_runner| to the current thread.
   explicit SequencedTaskRunnerHandle(
       scoped_refptr<SequencedTaskRunner> task_runner);
+
+  SequencedTaskRunnerHandle(const SequencedTaskRunnerHandle&) = delete;
+  SequencedTaskRunnerHandle& operator=(const SequencedTaskRunnerHandle&) =
+      delete;
+
   ~SequencedTaskRunnerHandle();
 
  private:
   friend class ThreadTaskRunnerHandleOverride;
 
   scoped_refptr<SequencedTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(SequencedTaskRunnerHandle);
 };
 
 }  // namespace base

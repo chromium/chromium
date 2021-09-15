@@ -62,10 +62,13 @@ class BASE_EXPORT ScopedMockElapsedTimersForTest {
   // in a test before other threads begin using ElapsedTimers; and it must
   // conversely outlive any usage of ElapsedTimer in that test).
   ScopedMockElapsedTimersForTest();
-  ~ScopedMockElapsedTimersForTest();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedMockElapsedTimersForTest);
+  ScopedMockElapsedTimersForTest(const ScopedMockElapsedTimersForTest&) =
+      delete;
+  ScopedMockElapsedTimersForTest& operator=(
+      const ScopedMockElapsedTimersForTest&) = delete;
+
+  ~ScopedMockElapsedTimersForTest();
 };
 
 }  // namespace base

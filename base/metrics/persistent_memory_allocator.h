@@ -695,6 +695,12 @@ class BASE_EXPORT LocalPersistentMemoryAllocator
  public:
   LocalPersistentMemoryAllocator(size_t size, uint64_t id,
                                  base::StringPiece name);
+
+  LocalPersistentMemoryAllocator(const LocalPersistentMemoryAllocator&) =
+      delete;
+  LocalPersistentMemoryAllocator& operator=(
+      const LocalPersistentMemoryAllocator&) = delete;
+
   ~LocalPersistentMemoryAllocator() override;
 
  private:
@@ -705,8 +711,6 @@ class BASE_EXPORT LocalPersistentMemoryAllocator
 
   // Deallocates a block of local |memory| of the specified |size|.
   static void DeallocateLocalMemory(void* memory, size_t size, MemoryType type);
-
-  DISALLOW_COPY_AND_ASSIGN(LocalPersistentMemoryAllocator);
 };
 
 
@@ -719,6 +723,12 @@ class BASE_EXPORT WritableSharedPersistentMemoryAllocator
       base::WritableSharedMemoryMapping memory,
       uint64_t id,
       base::StringPiece name);
+
+  WritableSharedPersistentMemoryAllocator(
+      const WritableSharedPersistentMemoryAllocator&) = delete;
+  WritableSharedPersistentMemoryAllocator& operator=(
+      const WritableSharedPersistentMemoryAllocator&) = delete;
+
   ~WritableSharedPersistentMemoryAllocator() override;
 
   // Ensure that the memory isn't so invalid that it would crash when passing it
@@ -730,8 +740,6 @@ class BASE_EXPORT WritableSharedPersistentMemoryAllocator
 
  private:
   base::WritableSharedMemoryMapping shared_memory_;
-
-  DISALLOW_COPY_AND_ASSIGN(WritableSharedPersistentMemoryAllocator);
 };
 
 // This allocator takes a read-only shared memory mapping object and performs
@@ -743,6 +751,12 @@ class BASE_EXPORT ReadOnlySharedPersistentMemoryAllocator
       base::ReadOnlySharedMemoryMapping memory,
       uint64_t id,
       base::StringPiece name);
+
+  ReadOnlySharedPersistentMemoryAllocator(
+      const ReadOnlySharedPersistentMemoryAllocator&) = delete;
+  ReadOnlySharedPersistentMemoryAllocator& operator=(
+      const ReadOnlySharedPersistentMemoryAllocator&) = delete;
+
   ~ReadOnlySharedPersistentMemoryAllocator() override;
 
   // Ensure that the memory isn't so invalid that it would crash when passing it
@@ -754,8 +768,6 @@ class BASE_EXPORT ReadOnlySharedPersistentMemoryAllocator
 
  private:
   base::ReadOnlySharedMemoryMapping shared_memory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReadOnlySharedPersistentMemoryAllocator);
 };
 
 #if !defined(OS_NACL)  // NACL doesn't support any kind of file access in build.
@@ -772,6 +784,11 @@ class BASE_EXPORT FilePersistentMemoryAllocator
                                 uint64_t id,
                                 base::StringPiece name,
                                 bool read_only);
+
+  FilePersistentMemoryAllocator(const FilePersistentMemoryAllocator&) = delete;
+  FilePersistentMemoryAllocator& operator=(
+      const FilePersistentMemoryAllocator&) = delete;
+
   ~FilePersistentMemoryAllocator() override;
 
   // Ensure that the file isn't so invalid that it would crash when passing it
@@ -794,8 +811,6 @@ class BASE_EXPORT FilePersistentMemoryAllocator
 
  private:
   std::unique_ptr<MemoryMappedFile> mapped_file_;
-
-  DISALLOW_COPY_AND_ASSIGN(FilePersistentMemoryAllocator);
 };
 #endif  // !defined(OS_NACL)
 

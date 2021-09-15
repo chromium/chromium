@@ -46,6 +46,11 @@ class BASE_EXPORT PersistentSparseHistogramDataManager {
   explicit PersistentSparseHistogramDataManager(
       PersistentMemoryAllocator* allocator);
 
+  PersistentSparseHistogramDataManager(
+      const PersistentSparseHistogramDataManager&) = delete;
+  PersistentSparseHistogramDataManager& operator=(
+      const PersistentSparseHistogramDataManager&) = delete;
+
   ~PersistentSparseHistogramDataManager();
 
   // Returns the object that manages the persistent-sample-map records for a
@@ -89,8 +94,6 @@ class BASE_EXPORT PersistentSparseHistogramDataManager {
       sample_records_ GUARDED_BY(lock_);
 
   base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(PersistentSparseHistogramDataManager);
 };
 
 
@@ -107,6 +110,10 @@ class BASE_EXPORT PersistentSampleMapRecords {
   // manager instance.
   PersistentSampleMapRecords(PersistentSparseHistogramDataManager* data_manager,
                              uint64_t sample_map_id);
+
+  PersistentSampleMapRecords(const PersistentSampleMapRecords&) = delete;
+  PersistentSampleMapRecords& operator=(const PersistentSampleMapRecords&) =
+      delete;
 
   ~PersistentSampleMapRecords();
 
@@ -165,8 +172,6 @@ class BASE_EXPORT PersistentSampleMapRecords {
   // is appended in bulk to "records". Access to this vector can be done
   // only while holding the parent manager's lock.
   std::vector<PersistentMemoryAllocator::Reference> found_;
-
-  DISALLOW_COPY_AND_ASSIGN(PersistentSampleMapRecords);
 };
 
 
@@ -337,6 +342,9 @@ class BASE_EXPORT PersistentHistogramAllocator {
 class BASE_EXPORT GlobalHistogramAllocator
     : public PersistentHistogramAllocator {
  public:
+  GlobalHistogramAllocator(const GlobalHistogramAllocator&) = delete;
+  GlobalHistogramAllocator& operator=(const GlobalHistogramAllocator&) = delete;
+
   ~GlobalHistogramAllocator() override;
 
   // Create a global allocator using the passed-in memory |base|, |size|, and
@@ -480,8 +488,6 @@ class BASE_EXPORT GlobalHistogramAllocator
 
   // The location to which the data should be persisted.
   FilePath persistent_location_;
-
-  DISALLOW_COPY_AND_ASSIGN(GlobalHistogramAllocator);
 };
 
 }  // namespace base

@@ -38,6 +38,10 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& story_name) {
 class TraceWaitableEvent {
  public:
   TraceWaitableEvent() = default;
+
+  TraceWaitableEvent(const TraceWaitableEvent&) = delete;
+  TraceWaitableEvent& operator=(const TraceWaitableEvent&) = delete;
+
   ~TraceWaitableEvent() = default;
 
   void Signal() {
@@ -77,8 +81,6 @@ class TraceWaitableEvent {
 
   size_t signal_samples_ = 0U;
   size_t wait_samples_ = 0U;
-
-  DISALLOW_COPY_AND_ASSIGN(TraceWaitableEvent);
 };
 
 class SignalerThread : public SimpleThread {
@@ -87,6 +89,9 @@ class SignalerThread : public SimpleThread {
       : SimpleThread("WaitableEventPerfTest signaler"),
         waiter_(waiter),
         signaler_(signaler) {}
+
+  SignalerThread(const SignalerThread&) = delete;
+  SignalerThread& operator=(const SignalerThread&) = delete;
 
   ~SignalerThread() override = default;
 
@@ -107,7 +112,6 @@ class SignalerThread : public SimpleThread {
   WaitableEvent stop_event_;
   TraceWaitableEvent* waiter_;
   TraceWaitableEvent* signaler_;
-  DISALLOW_COPY_AND_ASSIGN(SignalerThread);
 };
 
 void PrintPerfWaitableEvent(const TraceWaitableEvent* event,

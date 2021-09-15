@@ -119,6 +119,10 @@ class BASE_EXPORT ThreadLocalStorage {
     // |destructor| is a pointer to a function to perform per-thread cleanup of
     // this object.  If set to nullptr, no cleanup is done for this TLS slot.
     explicit Slot(TLSDestructorFunc destructor = nullptr);
+
+    Slot(const Slot&) = delete;
+    Slot& operator=(const Slot&) = delete;
+
     // If a destructor was set for this slot, removes the destructor so that
     // remaining threads exiting will not free data.
     ~Slot();
@@ -138,8 +142,6 @@ class BASE_EXPORT ThreadLocalStorage {
     static constexpr int kInvalidSlotValue = -1;
     int slot_ = kInvalidSlotValue;
     uint32_t version_ = 0;
-
-    DISALLOW_COPY_AND_ASSIGN(Slot);
   };
 
  private:

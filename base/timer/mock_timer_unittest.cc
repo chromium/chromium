@@ -56,10 +56,11 @@ TEST(MockTimerTest, Stops) {
 class HasWeakPtr : public base::SupportsWeakPtr<HasWeakPtr> {
  public:
   HasWeakPtr() = default;
-  virtual ~HasWeakPtr() = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(HasWeakPtr);
+  HasWeakPtr(const HasWeakPtr&) = delete;
+  HasWeakPtr& operator=(const HasWeakPtr&) = delete;
+
+  virtual ~HasWeakPtr() = default;
 };
 
 TEST(MockTimerTest, DoesNotRetainClosure) {

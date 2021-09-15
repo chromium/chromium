@@ -21,6 +21,11 @@ class BASE_EXPORT HighResolutionTimerManager
       public base::PowerStateObserver {
  public:
   HighResolutionTimerManager();
+
+  HighResolutionTimerManager(const HighResolutionTimerManager&) = delete;
+  HighResolutionTimerManager& operator=(const HighResolutionTimerManager&) =
+      delete;
+
   ~HighResolutionTimerManager() override;
 
   // base::PowerStateObserver methods.
@@ -42,8 +47,6 @@ class BASE_EXPORT HighResolutionTimerManager
   // Timer for polling the high resolution timer usage.
   base::RepeatingTimer timer_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(HighResolutionTimerManager);
 };
 
 }  // namespace base

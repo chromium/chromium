@@ -42,6 +42,10 @@ class BASE_EXPORT ThreadTaskRunnerHandle {
   // to the current thread for this to succeed.
   explicit ThreadTaskRunnerHandle(
       scoped_refptr<SingleThreadTaskRunner> task_runner);
+
+  ThreadTaskRunnerHandle(const ThreadTaskRunnerHandle&) = delete;
+  ThreadTaskRunnerHandle& operator=(const ThreadTaskRunnerHandle&) = delete;
+
   ~ThreadTaskRunnerHandle();
 
  private:
@@ -51,8 +55,6 @@ class BASE_EXPORT ThreadTaskRunnerHandle {
   // Registers |task_runner_|'s SequencedTaskRunner interface as the
   // SequencedTaskRunnerHandle on this thread.
   SequencedTaskRunnerHandle sequenced_task_runner_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadTaskRunnerHandle);
 };
 
 // ThreadTaskRunnerHandleOverride overrides the task runner returned by

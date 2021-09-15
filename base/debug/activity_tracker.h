@@ -193,6 +193,12 @@ class BASE_EXPORT ActivityTrackerMemoryAllocator {
                                  size_t object_size,
                                  size_t cache_size,
                                  bool make_iterable);
+
+  ActivityTrackerMemoryAllocator(const ActivityTrackerMemoryAllocator&) =
+      delete;
+  ActivityTrackerMemoryAllocator& operator=(
+      const ActivityTrackerMemoryAllocator&) = delete;
+
   ~ActivityTrackerMemoryAllocator();
 
   // Gets a reference to an object of the configured type. This can return
@@ -231,8 +237,6 @@ class BASE_EXPORT ActivityTrackerMemoryAllocator {
   // The cache of released object memories.
   std::unique_ptr<Reference[]> cache_values_;
   size_t cache_used_;
-
-  DISALLOW_COPY_AND_ASSIGN(ActivityTrackerMemoryAllocator);
 };
 
 
@@ -632,6 +636,10 @@ class BASE_EXPORT ThreadActivityTracker {
                    const void* origin,
                    Activity::Type type,
                    const ActivityData& data);
+
+    ScopedActivity(const ScopedActivity&) = delete;
+    ScopedActivity& operator=(const ScopedActivity&) = delete;
+
     ~ScopedActivity();
 
     // Indicates if this activity is actually being recorded. It may not be if
@@ -649,9 +657,6 @@ class BASE_EXPORT ThreadActivityTracker {
 
     // An identifier that indicates a specific activity on the stack.
     ActivityId activity_id_;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ScopedActivity);
   };
 
   // A ThreadActivityTracker runs on top of memory that is managed externally.
@@ -859,6 +864,10 @@ class BASE_EXPORT GlobalActivityTracker {
                          Activity::Type type,
                          const ActivityData& data,
                          bool lock_allowed);
+
+    ScopedThreadActivity(const ScopedThreadActivity&) = delete;
+    ScopedThreadActivity& operator=(const ScopedThreadActivity&) = delete;
+
     ~ScopedThreadActivity();
 
     // Returns an object for manipulating user data.
@@ -883,8 +892,6 @@ class BASE_EXPORT GlobalActivityTracker {
 
     // An object that manages additional user data, created only upon request.
     std::unique_ptr<ActivityUserData> user_data_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedThreadActivity);
   };
 
   ~GlobalActivityTracker();
@@ -1077,6 +1084,10 @@ class BASE_EXPORT GlobalActivityTracker {
   class ThreadSafeUserData : public ActivityUserData {
    public:
     ThreadSafeUserData(void* memory, size_t size, int64_t pid = 0);
+
+    ThreadSafeUserData(const ThreadSafeUserData&) = delete;
+    ThreadSafeUserData& operator=(const ThreadSafeUserData&) = delete;
+
     ~ThreadSafeUserData() override;
 
    private:
@@ -1086,8 +1097,6 @@ class BASE_EXPORT GlobalActivityTracker {
               size_t size) override;
 
     Lock data_lock_;
-
-    DISALLOW_COPY_AND_ASSIGN(ThreadSafeUserData);
   };
 
   // State of a module as stored in persistent memory. This supports a single
@@ -1142,6 +1151,10 @@ class BASE_EXPORT GlobalActivityTracker {
     ManagedActivityTracker(PersistentMemoryAllocator::Reference mem_reference,
                            void* base,
                            size_t size);
+
+    ManagedActivityTracker(const ManagedActivityTracker&) = delete;
+    ManagedActivityTracker& operator=(const ManagedActivityTracker&) = delete;
+
     ~ManagedActivityTracker() override;
 
     // The reference into persistent memory from which the thread-tracker's
@@ -1150,9 +1163,6 @@ class BASE_EXPORT GlobalActivityTracker {
 
     // The physical address used for the thread-tracker's memory.
     void* const mem_base_;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ManagedActivityTracker);
   };
 
   // Creates a global tracker using a given persistent-memory |allocator| and
@@ -1266,6 +1276,9 @@ class BASE_EXPORT ScopedActivity
       : ScopedActivity(from_here.program_counter(), action, id, info) {}
   ScopedActivity() : ScopedActivity(0, 0, 0) {}
 
+  ScopedActivity(const ScopedActivity&) = delete;
+  ScopedActivity& operator=(const ScopedActivity&) = delete;
+
   // Changes the |action| and/or |info| of this activity on the stack. This
   // is useful for tracking progress through a function, updating the action
   // to indicate "milestones" in the block (max 16 milestones: 0-15) or the
@@ -1285,8 +1298,6 @@ class BASE_EXPORT ScopedActivity
   // A copy of the ID code so it doesn't have to be passed by the caller when
   // changing the |info| field.
   uint32_t id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedActivity);
 };
 
 

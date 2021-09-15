@@ -80,6 +80,9 @@ class BASE_EXPORT WaitableEventWatcher
 
   WaitableEventWatcher();
 
+  WaitableEventWatcher(const WaitableEventWatcher&) = delete;
+  WaitableEventWatcher& operator=(const WaitableEventWatcher&) = delete;
+
 #if defined(OS_WIN)
   ~WaitableEventWatcher() override;
 #else
@@ -151,8 +154,6 @@ class BASE_EXPORT WaitableEventWatcher
   // sequence.
   SequenceChecker sequence_checker_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(WaitableEventWatcher);
 };
 
 }  // namespace base

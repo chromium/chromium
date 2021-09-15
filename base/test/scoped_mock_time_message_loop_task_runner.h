@@ -28,6 +28,12 @@ class SingleThreadTaskRunner;
 class ScopedMockTimeMessageLoopTaskRunner {
  public:
   ScopedMockTimeMessageLoopTaskRunner();
+
+  ScopedMockTimeMessageLoopTaskRunner(
+      const ScopedMockTimeMessageLoopTaskRunner&) = delete;
+  ScopedMockTimeMessageLoopTaskRunner& operator=(
+      const ScopedMockTimeMessageLoopTaskRunner&) = delete;
+
   ~ScopedMockTimeMessageLoopTaskRunner();
 
   TestMockTimeTaskRunner* task_runner() { return task_runner_.get(); }
@@ -36,8 +42,6 @@ class ScopedMockTimeMessageLoopTaskRunner {
  private:
   const scoped_refptr<TestMockTimeTaskRunner> task_runner_;
   scoped_refptr<SingleThreadTaskRunner> previous_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedMockTimeMessageLoopTaskRunner);
 };
 
 }  // namespace base

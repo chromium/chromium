@@ -136,6 +136,9 @@ class BASE_EXPORT GlobalActivityAnalyzer {
   explicit GlobalActivityAnalyzer(
       std::unique_ptr<PersistentMemoryAllocator> allocator);
 
+  GlobalActivityAnalyzer(const GlobalActivityAnalyzer&) = delete;
+  GlobalActivityAnalyzer& operator=(const GlobalActivityAnalyzer&) = delete;
+
   ~GlobalActivityAnalyzer();
 
   // Creates a global analyzer using a given persistent-memory |allocator|.
@@ -247,8 +250,6 @@ class BASE_EXPORT GlobalActivityAnalyzer {
   // first/next iteration.
   AnalyzerMap::iterator analyzers_iterator_;
   int64_t analyzers_iterator_pid_;
-
-  DISALLOW_COPY_AND_ASSIGN(GlobalActivityAnalyzer);
 };
 
 }  // namespace debug

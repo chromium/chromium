@@ -19,6 +19,10 @@ namespace {
 class SetIntRunner : public DelegateSimpleThread::Delegate {
  public:
   SetIntRunner(int* ptr, int val) : ptr_(ptr), val_(val) { }
+
+  SetIntRunner(const SetIntRunner&) = delete;
+  SetIntRunner& operator=(const SetIntRunner&) = delete;
+
   ~SetIntRunner() override = default;
 
  private:
@@ -26,8 +30,6 @@ class SetIntRunner : public DelegateSimpleThread::Delegate {
 
   int* ptr_;
   int val_;
-
-  DISALLOW_COPY_AND_ASSIGN(SetIntRunner);
 };
 
 // Signals |started_| when Run() is invoked and waits until |released_| is
@@ -42,6 +44,9 @@ class ControlledRunner : public DelegateSimpleThread::Delegate {
                   WaitableEvent::InitialState::NOT_SIGNALED),
         done_(WaitableEvent::ResetPolicy::MANUAL,
               WaitableEvent::InitialState::NOT_SIGNALED) {}
+
+  ControlledRunner(const ControlledRunner&) = delete;
+  ControlledRunner& operator=(const ControlledRunner&) = delete;
 
   ~ControlledRunner() override { ReleaseAndWaitUntilDone(); }
 
@@ -62,13 +67,15 @@ class ControlledRunner : public DelegateSimpleThread::Delegate {
   WaitableEvent started_;
   WaitableEvent released_;
   WaitableEvent done_;
-
-  DISALLOW_COPY_AND_ASSIGN(ControlledRunner);
 };
 
 class WaitEventRunner : public DelegateSimpleThread::Delegate {
  public:
   explicit WaitEventRunner(WaitableEvent* event) : event_(event) { }
+
+  WaitEventRunner(const WaitEventRunner&) = delete;
+  WaitEventRunner& operator=(const WaitEventRunner&) = delete;
+
   ~WaitEventRunner() override = default;
 
  private:
@@ -79,8 +86,6 @@ class WaitEventRunner : public DelegateSimpleThread::Delegate {
   }
 
   WaitableEvent* event_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaitEventRunner);
 };
 
 class SeqRunner : public DelegateSimpleThread::Delegate {

@@ -1270,6 +1270,10 @@ TEST_F(ProcessUtilTest, GetParentProcessId) {
 class WriteToPipeDelegate : public LaunchOptions::PreExecDelegate {
  public:
   explicit WriteToPipeDelegate(int fd) : fd_(fd) {}
+
+  WriteToPipeDelegate(const WriteToPipeDelegate&) = delete;
+  WriteToPipeDelegate& operator=(const WriteToPipeDelegate&) = delete;
+
   ~WriteToPipeDelegate() override = default;
   void RunAsyncSafe() override {
     RAW_CHECK(HANDLE_EINTR(write(fd_, &kPipeValue, 1)) == 1);
@@ -1278,7 +1282,6 @@ class WriteToPipeDelegate : public LaunchOptions::PreExecDelegate {
 
  private:
   int fd_;
-  DISALLOW_COPY_AND_ASSIGN(WriteToPipeDelegate);
 };
 
 TEST_F(ProcessUtilTest, PreExecHook) {

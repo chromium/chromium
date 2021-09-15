@@ -26,6 +26,10 @@ class BASE_EXPORT SuspendableThreadDelegateWin
       : public SuspendableThreadDelegate::ScopedSuspendThread {
    public:
     explicit ScopedSuspendThread(HANDLE thread_handle);
+
+    ScopedSuspendThread(const ScopedSuspendThread&) = delete;
+    ScopedSuspendThread& operator=(const ScopedSuspendThread&) = delete;
+
     ~ScopedSuspendThread() override;
 
     bool WasSuccessful() const override;
@@ -33,8 +37,6 @@ class BASE_EXPORT SuspendableThreadDelegateWin
    private:
     HANDLE thread_handle_;
     bool was_successful_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedSuspendThread);
   };
 
   explicit SuspendableThreadDelegateWin(

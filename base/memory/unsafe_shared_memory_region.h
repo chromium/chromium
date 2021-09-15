@@ -56,6 +56,9 @@ class BASE_EXPORT UnsafeSharedMemoryRegion {
   UnsafeSharedMemoryRegion(UnsafeSharedMemoryRegion&&);
   UnsafeSharedMemoryRegion& operator=(UnsafeSharedMemoryRegion&&);
 
+  UnsafeSharedMemoryRegion(const UnsafeSharedMemoryRegion&) = delete;
+  UnsafeSharedMemoryRegion& operator=(const UnsafeSharedMemoryRegion&) = delete;
+
   // Destructor closes shared memory region if valid.
   // All created mappings will remain valid.
   ~UnsafeSharedMemoryRegion();
@@ -111,8 +114,6 @@ class BASE_EXPORT UnsafeSharedMemoryRegion {
   static CreateFunction* create_hook_;
 
   subtle::PlatformSharedMemoryRegion handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnsafeSharedMemoryRegion);
 };
 
 }  // namespace base

@@ -28,6 +28,10 @@ class TraceEvent;
 class BASE_EXPORT TraceEventFilter {
  public:
   TraceEventFilter();
+
+  TraceEventFilter(const TraceEventFilter&) = delete;
+  TraceEventFilter& operator=(const TraceEventFilter&) = delete;
+
   virtual ~TraceEventFilter();
 
   // If the category is ENABLED_FOR_RECORDING, the event is added iff all the
@@ -38,9 +42,6 @@ class BASE_EXPORT TraceEventFilter {
   // Notifies the end of a duration event when the RAII macro goes out of scope.
   virtual void EndEvent(const char* category_name,
                         const char* event_name) const;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TraceEventFilter);
 };
 
 }  // namespace trace_event

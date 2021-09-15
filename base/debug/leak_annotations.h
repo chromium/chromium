@@ -26,9 +26,12 @@
 class ScopedLeakSanitizerDisabler {
  public:
   ScopedLeakSanitizerDisabler() { __lsan_disable(); }
+
+  ScopedLeakSanitizerDisabler(const ScopedLeakSanitizerDisabler&) = delete;
+  ScopedLeakSanitizerDisabler& operator=(const ScopedLeakSanitizerDisabler&) =
+      delete;
+
   ~ScopedLeakSanitizerDisabler() { __lsan_enable(); }
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedLeakSanitizerDisabler);
 };
 
 #define ANNOTATE_SCOPED_MEMORY_LEAK \

@@ -52,6 +52,10 @@ class SleepInsideInitThread : public Thread {
     ANNOTATE_BENIGN_RACE(
         this, "Benign test-only data race on vptr - http://crbug.com/98219");
   }
+
+  SleepInsideInitThread(const SleepInsideInitThread&) = delete;
+  SleepInsideInitThread& operator=(const SleepInsideInitThread&) = delete;
+
   ~SleepInsideInitThread() override { Stop(); }
 
   void Init() override {
@@ -62,8 +66,6 @@ class SleepInsideInitThread : public Thread {
 
  private:
   bool init_called_;
-
-  DISALLOW_COPY_AND_ASSIGN(SleepInsideInitThread);
 };
 
 enum ThreadEvent {
@@ -92,6 +94,9 @@ class CaptureToEventList : public Thread {
         event_list_(event_list) {
   }
 
+  CaptureToEventList(const CaptureToEventList&) = delete;
+  CaptureToEventList& operator=(const CaptureToEventList&) = delete;
+
   ~CaptureToEventList() override { Stop(); }
 
   void Init() override { event_list_->push_back(THREAD_EVENT_INIT); }
@@ -100,8 +105,6 @@ class CaptureToEventList : public Thread {
 
  private:
   EventList* event_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(CaptureToEventList);
 };
 
 // Observer that writes a value into |event_list| when a message loop has been
@@ -559,6 +562,10 @@ class SequenceManagerThreadDelegate : public Thread::Delegate {
     sequence_manager_->SetDefaultTaskRunner(GetDefaultTaskRunner());
   }
 
+  SequenceManagerThreadDelegate(const SequenceManagerThreadDelegate&) = delete;
+  SequenceManagerThreadDelegate& operator=(
+      const SequenceManagerThreadDelegate&) = delete;
+
   ~SequenceManagerThreadDelegate() override {}
 
   // Thread::Delegate:
@@ -576,8 +583,6 @@ class SequenceManagerThreadDelegate : public Thread::Delegate {
  private:
   std::unique_ptr<base::sequence_manager::SequenceManager> sequence_manager_;
   scoped_refptr<base::sequence_manager::TaskQueue> task_queue_;
-
-  DISALLOW_COPY_AND_ASSIGN(SequenceManagerThreadDelegate);
 };
 
 }  // namespace

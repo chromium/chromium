@@ -61,6 +61,12 @@ class BASE_EXPORT MadvFreeDiscardableMemoryPosix : public DiscardableMemory {
  public:
   MadvFreeDiscardableMemoryPosix(size_t size_in_pages,
                                  std::atomic<size_t>* allocator_byte_count);
+
+  MadvFreeDiscardableMemoryPosix(const MadvFreeDiscardableMemoryPosix&) =
+      delete;
+  MadvFreeDiscardableMemoryPosix& operator=(
+      const MadvFreeDiscardableMemoryPosix&) = delete;
+
   ~MadvFreeDiscardableMemoryPosix() override;
 
   bool Lock() override;
@@ -117,8 +123,6 @@ class BASE_EXPORT MadvFreeDiscardableMemoryPosix : public DiscardableMemory {
   std::vector<std::atomic<intptr_t>> page_first_word_;
 
   DFAKE_MUTEX(thread_collision_warner_);
-
-  DISALLOW_COPY_AND_ASSIGN(MadvFreeDiscardableMemoryPosix);
 };
 
 enum class MadvFreeSupport { kUnsupported, kSupported };

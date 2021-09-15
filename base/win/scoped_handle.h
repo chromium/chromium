@@ -53,6 +53,9 @@ class GenericScopedHandle {
     Set(other.Take());
   }
 
+  GenericScopedHandle(const GenericScopedHandle&) = delete;
+  GenericScopedHandle& operator=(const GenericScopedHandle&) = delete;
+
   ~GenericScopedHandle() { Close(); }
 
   bool IsValid() const { return Traits::IsHandleValid(handle_); }
@@ -106,8 +109,6 @@ class GenericScopedHandle {
   FRIEND_TEST_ALL_PREFIXES(ScopedHandleTest, HandleVerifierWrongOwner);
   FRIEND_TEST_ALL_PREFIXES(ScopedHandleTest, HandleVerifierUntrackedHandle);
   Handle handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(GenericScopedHandle);
 };
 
 #undef BASE_WIN_GET_CALLER

@@ -64,6 +64,10 @@ class BASE_EXPORT ApplicationStatusListener {
   using ApplicationStateChangeCallback =
       base::RepeatingCallback<void(ApplicationState)>;
 
+  ApplicationStatusListener(const ApplicationStatusListener&) = delete;
+  ApplicationStatusListener& operator=(const ApplicationStatusListener&) =
+      delete;
+
   virtual ~ApplicationStatusListener();
 
   // Sets the callback to call when application state changes.
@@ -87,9 +91,6 @@ class BASE_EXPORT ApplicationStatusListener {
 
  protected:
   ApplicationStatusListener();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ApplicationStatusListener);
 };
 
 }  // namespace android

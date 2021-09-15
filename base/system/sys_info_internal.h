@@ -16,14 +16,15 @@ class LazySysInfoValue {
  public:
   LazySysInfoValue() : value_(F()) {}
 
+  LazySysInfoValue(const LazySysInfoValue&) = delete;
+  LazySysInfoValue& operator=(const LazySysInfoValue&) = delete;
+
   ~LazySysInfoValue() = default;
 
   T value() { return value_; }
 
  private:
   const T value_;
-
-  DISALLOW_COPY_AND_ASSIGN(LazySysInfoValue);
 };
 
 }  // namespace internal

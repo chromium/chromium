@@ -31,6 +31,10 @@ class HistogramFlattener;
 class BASE_EXPORT HistogramSnapshotManager final {
  public:
   explicit HistogramSnapshotManager(HistogramFlattener* histogram_flattener);
+
+  HistogramSnapshotManager(const HistogramSnapshotManager&) = delete;
+  HistogramSnapshotManager& operator=(const HistogramSnapshotManager&) = delete;
+
   ~HistogramSnapshotManager();
 
   // Snapshot all histograms, and ask |histogram_flattener_| to record the
@@ -81,8 +85,6 @@ class BASE_EXPORT HistogramSnapshotManager final {
   // Checker is not sufficient because it may be guarded by at outside lock
   // (as is the case with cronet).
   std::atomic<bool> is_active_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistogramSnapshotManager);
 };
 
 }  // namespace base

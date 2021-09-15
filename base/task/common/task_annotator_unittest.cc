@@ -55,6 +55,11 @@ class TaskAnnotatorBacktraceIntegrationTest
 
   TaskAnnotatorBacktraceIntegrationTest() = default;
 
+  TaskAnnotatorBacktraceIntegrationTest(
+      const TaskAnnotatorBacktraceIntegrationTest&) = delete;
+  TaskAnnotatorBacktraceIntegrationTest& operator=(
+      const TaskAnnotatorBacktraceIntegrationTest&) = delete;
+
   ~TaskAnnotatorBacktraceIntegrationTest() override = default;
 
   // TaskAnnotator::ObserverForTesting:
@@ -147,8 +152,6 @@ class TaskAnnotatorBacktraceIntegrationTest
       last_task_backtrace_ = {};
 
   uint32_t last_ipc_hash_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskAnnotatorBacktraceIntegrationTest);
 };
 
 // Ensure the task backtrace populates correctly.

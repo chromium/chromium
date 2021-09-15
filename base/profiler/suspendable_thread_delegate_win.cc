@@ -125,14 +125,17 @@ bool PointsToGuardPage(uintptr_t stack_pointer) {
 class ScopedDisablePriorityBoost {
  public:
   ScopedDisablePriorityBoost(HANDLE thread_handle);
+
+  ScopedDisablePriorityBoost(const ScopedDisablePriorityBoost&) = delete;
+  ScopedDisablePriorityBoost& operator=(const ScopedDisablePriorityBoost&) =
+      delete;
+
   ~ScopedDisablePriorityBoost();
 
  private:
   HANDLE thread_handle_;
   BOOL got_previous_boost_state_;
   BOOL boost_state_was_disabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedDisablePriorityBoost);
 };
 
 // NO HEAP ALLOCATIONS.

@@ -86,6 +86,9 @@ class BASE_EXPORT ConditionVariable {
   // Construct a cv for use with ONLY one user lock.
   explicit ConditionVariable(Lock* user_lock);
 
+  ConditionVariable(const ConditionVariable&) = delete;
+  ConditionVariable& operator=(const ConditionVariable&) = delete;
+
   ~ConditionVariable();
 
   // Wait() releases the caller's critical section atomically as it starts to
@@ -126,8 +129,6 @@ class BASE_EXPORT ConditionVariable {
   // considered blocked as opposed to idle (and potentially replaced if part of
   // a pool).
   bool waiting_is_blocking_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(ConditionVariable);
 };
 
 }  // namespace base

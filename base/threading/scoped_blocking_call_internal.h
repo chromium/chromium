@@ -172,6 +172,11 @@ class BASE_EXPORT UncheckedScopedBlockingCall {
   explicit UncheckedScopedBlockingCall(const Location& from_here,
                                        BlockingType blocking_type,
                                        BlockingCallType blocking_call_type);
+
+  UncheckedScopedBlockingCall(const UncheckedScopedBlockingCall&) = delete;
+  UncheckedScopedBlockingCall& operator=(const UncheckedScopedBlockingCall&) =
+      delete;
+
   ~UncheckedScopedBlockingCall();
 
  private:
@@ -189,8 +194,6 @@ class BASE_EXPORT UncheckedScopedBlockingCall {
   // Non-nullopt for non-nested blocking calls of type MAY_BLOCK on foreground
   // threads which we monitor for I/O jank.
   absl::optional<IOJankMonitoringWindow::ScopedMonitoredCall> monitored_call_;
-
-  DISALLOW_COPY_AND_ASSIGN(UncheckedScopedBlockingCall);
 };
 
 }  // namespace internal

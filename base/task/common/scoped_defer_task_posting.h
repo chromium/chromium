@@ -33,6 +33,10 @@ class BASE_EXPORT ScopedDeferTaskPosting {
   static bool IsPresent();
 
   ScopedDeferTaskPosting();
+
+  ScopedDeferTaskPosting(const ScopedDeferTaskPosting&) = delete;
+  ScopedDeferTaskPosting& operator=(const ScopedDeferTaskPosting&) = delete;
+
   ~ScopedDeferTaskPosting();
 
  private:
@@ -68,8 +72,6 @@ class BASE_EXPORT ScopedDeferTaskPosting {
   // to another task runner), so we want to know whether the scope is top-level
   // or not.
   bool top_level_scope_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedDeferTaskPosting);
 };
 
 }  // namespace base

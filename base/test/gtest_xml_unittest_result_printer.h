@@ -21,6 +21,10 @@ class FilePath;
 class XmlUnitTestResultPrinter : public testing::EmptyTestEventListener {
  public:
   XmlUnitTestResultPrinter();
+
+  XmlUnitTestResultPrinter(const XmlUnitTestResultPrinter&) = delete;
+  XmlUnitTestResultPrinter& operator=(const XmlUnitTestResultPrinter&) = delete;
+
   ~XmlUnitTestResultPrinter() override;
 
   static XmlUnitTestResultPrinter* Get();
@@ -56,8 +60,6 @@ class XmlUnitTestResultPrinter : public testing::EmptyTestEventListener {
   FILE* output_file_{nullptr};
   bool open_failed_{false};
   ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(XmlUnitTestResultPrinter);
 };
 
 }  // namespace base

@@ -25,6 +25,10 @@ class TimeTicks;
 class UserActionTester {
  public:
   UserActionTester();
+
+  UserActionTester(const UserActionTester&) = delete;
+  UserActionTester& operator=(const UserActionTester&) = delete;
+
   ~UserActionTester();
 
   // Returns the number of times the given |user_action| occurred.
@@ -51,8 +55,6 @@ class UserActionTester {
 
   // The callback that is added to the global action callback list.
   base::ActionCallback action_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserActionTester);
 };
 
 }  // namespace base

@@ -70,6 +70,10 @@ class BASE_EXPORT JSONReader {
     ValueWithError();
     ValueWithError(ValueWithError&& other);
     ValueWithError& operator=(ValueWithError&& other);
+
+    ValueWithError(const ValueWithError&) = delete;
+    ValueWithError& operator=(const ValueWithError&) = delete;
+
     ~ValueWithError();
 
     absl::optional<Value> value;
@@ -79,8 +83,6 @@ class BASE_EXPORT JSONReader {
     std::string error_message;
     int error_line = 0;
     int error_column = 0;
-
-    DISALLOW_COPY_AND_ASSIGN(ValueWithError);
   };
 
   // Reads and parses |json|, returning a Value.

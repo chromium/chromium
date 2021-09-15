@@ -33,6 +33,9 @@ class FieldTrialParamsTest : public ::testing::Test {
  public:
   FieldTrialParamsTest() = default;
 
+  FieldTrialParamsTest(const FieldTrialParamsTest&) = delete;
+  FieldTrialParamsTest& operator=(const FieldTrialParamsTest&) = delete;
+
   ~FieldTrialParamsTest() override {
     // Ensure that the maps are cleared between tests, since they are stored as
     // process singletons.
@@ -50,8 +53,6 @@ class FieldTrialParamsTest : public ::testing::Test {
 
  private:
   test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(FieldTrialParamsTest);
 };
 
 TEST_F(FieldTrialParamsTest, AssociateFieldTrialParams) {

@@ -30,6 +30,10 @@ class BASE_EXPORT MessagePumpKqueue : public MessagePump,
   class FdWatchController : public FdWatchControllerInterface {
    public:
     explicit FdWatchController(const Location& from_here);
+
+    FdWatchController(const FdWatchController&) = delete;
+    FdWatchController& operator=(const FdWatchController&) = delete;
+
     ~FdWatchController() override;
 
     // FdWatchControllerInterface:
@@ -53,8 +57,6 @@ class BASE_EXPORT MessagePumpKqueue : public MessagePump,
     int mode_ = 0;
     FdWatcher* watcher_ = nullptr;
     WeakPtr<MessagePumpKqueue> pump_;
-
-    DISALLOW_COPY_AND_ASSIGN(FdWatchController);
   };
 
   // Delegate interface that provides notifications of Mach message receive
@@ -70,6 +72,10 @@ class BASE_EXPORT MessagePumpKqueue : public MessagePump,
   class MachPortWatchController {
    public:
     explicit MachPortWatchController(const Location& from_here);
+
+    MachPortWatchController(const MachPortWatchController&) = delete;
+    MachPortWatchController& operator=(const MachPortWatchController&) = delete;
+
     ~MachPortWatchController();
 
     bool StopWatchingMachPort();
@@ -90,8 +96,6 @@ class BASE_EXPORT MessagePumpKqueue : public MessagePump,
     MachPortWatcher* watcher_ = nullptr;
     WeakPtr<MessagePumpKqueue> pump_;
     const Location from_here_;
-
-    DISALLOW_COPY_AND_ASSIGN(MachPortWatchController);
   };
 
   MessagePumpKqueue();

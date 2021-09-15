@@ -96,6 +96,10 @@ template<typename StructType>
 class FieldConverterBase {
  public:
   explicit FieldConverterBase(const std::string& path) : field_path_(path) {}
+
+  FieldConverterBase(const FieldConverterBase&) = delete;
+  FieldConverterBase& operator=(const FieldConverterBase&) = delete;
+
   virtual ~FieldConverterBase() = default;
   virtual bool ConvertField(const base::Value& value, StructType* obj)
       const = 0;
@@ -103,7 +107,6 @@ class FieldConverterBase {
 
  private:
   std::string field_path_;
-  DISALLOW_COPY_AND_ASSIGN(FieldConverterBase);
 };
 
 template <typename FieldType>

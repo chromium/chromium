@@ -88,6 +88,10 @@ class BASE_EXPORT EtwTraceProperties {
 class BASE_EXPORT EtwTraceController {
  public:
   EtwTraceController();
+
+  EtwTraceController(const EtwTraceController&) = delete;
+  EtwTraceController& operator=(const EtwTraceController&) = delete;
+
   ~EtwTraceController();
 
   // Start a session with given name and properties.
@@ -143,8 +147,6 @@ class BASE_EXPORT EtwTraceController {
  private:
   std::wstring session_name_;
   TRACEHANDLE session_ = NULL;
-
-  DISALLOW_COPY_AND_ASSIGN(EtwTraceController);
 };
 
 }  // namespace win

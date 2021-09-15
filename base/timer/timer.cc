@@ -58,6 +58,9 @@ class TaskDestructionDetector {
  public:
   explicit TaskDestructionDetector(TimerBase* timer) : timer_(timer) {}
 
+  TaskDestructionDetector(const TaskDestructionDetector&) = delete;
+  TaskDestructionDetector& operator=(const TaskDestructionDetector&) = delete;
+
   ~TaskDestructionDetector() {
     // If this instance is getting destroyed before it was disabled, notify the
     // timer.
@@ -71,8 +74,6 @@ class TaskDestructionDetector {
 
  private:
   TimerBase* timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskDestructionDetector);
 };
 
 TimerBase::TimerBase() : TimerBase(nullptr) {}

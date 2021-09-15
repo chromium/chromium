@@ -26,6 +26,12 @@ class BASE_EXPORT MadvFreeDiscardableMemoryAllocatorPosix
       public base::trace_event::MemoryDumpProvider {
  public:
   MadvFreeDiscardableMemoryAllocatorPosix();
+
+  MadvFreeDiscardableMemoryAllocatorPosix(
+      const MadvFreeDiscardableMemoryAllocatorPosix&) = delete;
+  MadvFreeDiscardableMemoryAllocatorPosix& operator=(
+      const MadvFreeDiscardableMemoryAllocatorPosix&) = delete;
+
   ~MadvFreeDiscardableMemoryAllocatorPosix() override;
 
   std::unique_ptr<DiscardableMemory> AllocateLockedDiscardableMemory(
@@ -43,8 +49,6 @@ class BASE_EXPORT MadvFreeDiscardableMemoryAllocatorPosix
 
  private:
   std::atomic<size_t> bytes_allocated_{0};
-
-  DISALLOW_COPY_AND_ASSIGN(MadvFreeDiscardableMemoryAllocatorPosix);
 };
 }  // namespace base
 

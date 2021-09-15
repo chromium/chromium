@@ -155,6 +155,9 @@ class FlagOnDelete {
     other.deleted_ = nullptr;
   }
 
+  FlagOnDelete(const FlagOnDelete&) = delete;
+  FlagOnDelete& operator=(const FlagOnDelete&) = delete;
+
   ~FlagOnDelete() {
     if (deleted_) {
       EXPECT_FALSE(*deleted_);
@@ -164,7 +167,6 @@ class FlagOnDelete {
 
  private:
   bool* deleted_;
-  DISALLOW_COPY_AND_ASSIGN(FlagOnDelete);
 };
 
 }  // namespace

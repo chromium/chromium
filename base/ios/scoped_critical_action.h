@@ -28,6 +28,10 @@ namespace ios {
 class ScopedCriticalAction {
  public:
   ScopedCriticalAction(StringPiece task_name);
+
+  ScopedCriticalAction(const ScopedCriticalAction&) = delete;
+  ScopedCriticalAction& operator=(const ScopedCriticalAction&) = delete;
+
   ~ScopedCriticalAction();
 
  private:
@@ -65,8 +69,6 @@ class ScopedCriticalAction {
 
   // The instance of the core that drives the background task.
   scoped_refptr<Core> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedCriticalAction);
 };
 
 }  // namespace ios

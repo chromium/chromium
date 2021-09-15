@@ -115,12 +115,15 @@ class TestMockTimeTaskRunner : public SingleThreadTaskRunner,
     // pending tasks (the contrary would break the SequencedTaskRunner
     // contract).
     explicit ScopedContext(scoped_refptr<TestMockTimeTaskRunner> scope);
+
+    ScopedContext(const ScopedContext&) = delete;
+    ScopedContext& operator=(const ScopedContext&) = delete;
+
     ~ScopedContext();
 
    private:
     ThreadTaskRunnerHandleOverrideForTesting
         thread_task_runner_handle_override_;
-    DISALLOW_COPY_AND_ASSIGN(ScopedContext);
   };
 
   enum class Type {

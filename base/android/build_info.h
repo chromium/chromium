@@ -43,6 +43,9 @@ enum SdkVersion {
 // primarily in crash reporting.
 class BASE_EXPORT BuildInfo {
  public:
+  BuildInfo(const BuildInfo&) = delete;
+  BuildInfo& operator=(const BuildInfo&) = delete;
+
   ~BuildInfo() {}
 
   // Static factory method for getting the singleton BuildInfo instance.
@@ -171,8 +174,6 @@ class BASE_EXPORT BuildInfo {
   const bool is_debug_android_;
   const bool is_tv_;
   const char* const version_incremental_;
-
-  DISALLOW_COPY_AND_ASSIGN(BuildInfo);
 };
 
 }  // namespace android

@@ -24,12 +24,14 @@ class BASE_EXPORT ZxLogMessage : public logging::LogMessage {
                int line,
                LogSeverity severity,
                zx_status_t zx_err);
+
+  ZxLogMessage(const ZxLogMessage&) = delete;
+  ZxLogMessage& operator=(const ZxLogMessage&) = delete;
+
   ~ZxLogMessage() override;
 
  private:
   zx_status_t zx_err_;
-
-  DISALLOW_COPY_AND_ASSIGN(ZxLogMessage);
 };
 
 }  // namespace logging

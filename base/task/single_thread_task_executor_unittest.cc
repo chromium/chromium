@@ -256,6 +256,9 @@ class DummyTaskObserver : public TaskObserver {
         num_tasks_processed_(0),
         num_tasks_(num_tasks) {}
 
+  DummyTaskObserver(const DummyTaskObserver&) = delete;
+  DummyTaskObserver& operator=(const DummyTaskObserver&) = delete;
+
   ~DummyTaskObserver() override = default;
 
   void WillProcessTask(const PendingTask& pending_task,
@@ -278,8 +281,6 @@ class DummyTaskObserver : public TaskObserver {
   int num_tasks_started_;
   int num_tasks_processed_;
   const int num_tasks_;
-
-  DISALLOW_COPY_AND_ASSIGN(DummyTaskObserver);
 };
 
 // A method which reposts itself |depth| times.
@@ -509,6 +510,12 @@ class SingleThreadTaskExecutorTypedTest
     : public ::testing::TestWithParam<MessagePumpType> {
  public:
   SingleThreadTaskExecutorTypedTest() = default;
+
+  SingleThreadTaskExecutorTypedTest(const SingleThreadTaskExecutorTypedTest&) =
+      delete;
+  SingleThreadTaskExecutorTypedTest& operator=(
+      const SingleThreadTaskExecutorTypedTest&) = delete;
+
   ~SingleThreadTaskExecutorTypedTest() = default;
 
   static std::string ParamInfoToString(
@@ -538,9 +545,6 @@ class SingleThreadTaskExecutorTypedTest
     NOTREACHED();
     return "";
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SingleThreadTaskExecutorTypedTest);
 };
 
 TEST_P(SingleThreadTaskExecutorTypedTest, PostTask) {
@@ -2133,6 +2137,10 @@ namespace {
 class PostTaskOnDestroy {
  public:
   PostTaskOnDestroy(int times) : times_remaining_(times) {}
+
+  PostTaskOnDestroy(const PostTaskOnDestroy&) = delete;
+  PostTaskOnDestroy& operator=(const PostTaskOnDestroy&) = delete;
+
   ~PostTaskOnDestroy() { PostTaskWithPostingDestructor(times_remaining_); }
 
   // Post a task that will repost itself on destruction |times| times.
@@ -2146,8 +2154,6 @@ class PostTaskOnDestroy {
 
  private:
   const int times_remaining_;
-
-  DISALLOW_COPY_AND_ASSIGN(PostTaskOnDestroy);
 };
 
 }  // namespace

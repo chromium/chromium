@@ -69,6 +69,9 @@ class BASE_EXPORT CancelableTaskTracker {
 
   CancelableTaskTracker();
 
+  CancelableTaskTracker(const CancelableTaskTracker&) = delete;
+  CancelableTaskTracker& operator=(const CancelableTaskTracker&) = delete;
+
   // Cancels all tracked tasks.
   ~CancelableTaskTracker();
 
@@ -160,8 +163,6 @@ class BASE_EXPORT CancelableTaskTracker {
   // TODO(https://crbug.com/1009795): Remove once crasher is resolved.
   base::WeakPtr<CancelableTaskTracker> weak_this_;
   base::WeakPtrFactory<CancelableTaskTracker> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CancelableTaskTracker);
 };
 
 }  // namespace base

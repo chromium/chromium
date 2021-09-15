@@ -397,14 +397,16 @@ INLINE_IF_DCHECK_IS_OFF void DisallowBlocking() EMPTY_BODY_IF_DCHECK_IS_OFF;
 class BASE_EXPORT ScopedDisallowBlocking {
  public:
   ScopedDisallowBlocking() EMPTY_BODY_IF_DCHECK_IS_OFF;
+
+  ScopedDisallowBlocking(const ScopedDisallowBlocking&) = delete;
+  ScopedDisallowBlocking& operator=(const ScopedDisallowBlocking&) = delete;
+
   ~ScopedDisallowBlocking() EMPTY_BODY_IF_DCHECK_IS_OFF;
 
  private:
 #if DCHECK_IS_ON()
   std::unique_ptr<BooleanWithStack> was_disallowed_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedDisallowBlocking);
 };
 
 class BASE_EXPORT ScopedAllowBlocking {
@@ -474,14 +476,17 @@ class BASE_EXPORT ScopedAllowBlocking {
 class ScopedAllowBlockingForTesting {
  public:
   ScopedAllowBlockingForTesting() {}
+
+  ScopedAllowBlockingForTesting(const ScopedAllowBlockingForTesting&) = delete;
+  ScopedAllowBlockingForTesting& operator=(
+      const ScopedAllowBlockingForTesting&) = delete;
+
   ~ScopedAllowBlockingForTesting() {}
 
  private:
 #if DCHECK_IS_ON()
   ScopedAllowBlocking scoped_allow_blocking_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedAllowBlockingForTesting);
 };
 
 INLINE_IF_DCHECK_IS_OFF void DisallowBaseSyncPrimitives()
@@ -642,14 +647,18 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitivesOutsideBlockingScope {
 class BASE_EXPORT ScopedAllowBaseSyncPrimitivesForTesting {
  public:
   ScopedAllowBaseSyncPrimitivesForTesting() EMPTY_BODY_IF_DCHECK_IS_OFF;
+
+  ScopedAllowBaseSyncPrimitivesForTesting(
+      const ScopedAllowBaseSyncPrimitivesForTesting&) = delete;
+  ScopedAllowBaseSyncPrimitivesForTesting& operator=(
+      const ScopedAllowBaseSyncPrimitivesForTesting&) = delete;
+
   ~ScopedAllowBaseSyncPrimitivesForTesting() EMPTY_BODY_IF_DCHECK_IS_OFF;
 
  private:
 #if DCHECK_IS_ON()
   std::unique_ptr<BooleanWithStack> was_disallowed_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedAllowBaseSyncPrimitivesForTesting);
 };
 
 // Counterpart to base::DisallowUnresponsiveTasks() for tests to allow them to
@@ -657,6 +666,12 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitivesForTesting {
 class BASE_EXPORT ScopedAllowUnresponsiveTasksForTesting {
  public:
   ScopedAllowUnresponsiveTasksForTesting() EMPTY_BODY_IF_DCHECK_IS_OFF;
+
+  ScopedAllowUnresponsiveTasksForTesting(
+      const ScopedAllowUnresponsiveTasksForTesting&) = delete;
+  ScopedAllowUnresponsiveTasksForTesting& operator=(
+      const ScopedAllowUnresponsiveTasksForTesting&) = delete;
+
   ~ScopedAllowUnresponsiveTasksForTesting() EMPTY_BODY_IF_DCHECK_IS_OFF;
 
  private:
@@ -665,8 +680,6 @@ class BASE_EXPORT ScopedAllowUnresponsiveTasksForTesting {
   std::unique_ptr<BooleanWithStack> was_disallowed_blocking_;
   std::unique_ptr<BooleanWithStack> was_disallowed_cpu_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedAllowUnresponsiveTasksForTesting);
 };
 
 namespace internal {
@@ -698,14 +711,16 @@ class BASE_EXPORT ThreadRestrictions {
   class BASE_EXPORT ScopedAllowIO {
    public:
     ScopedAllowIO(const Location& from_here = Location::Current());
+
+    ScopedAllowIO(const ScopedAllowIO&) = delete;
+    ScopedAllowIO& operator=(const ScopedAllowIO&) = delete;
+
     ~ScopedAllowIO();
 
    private:
 #if DCHECK_IS_ON()
     std::unique_ptr<BooleanWithStack> was_disallowed_;
 #endif
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedAllowIO);
   };
 
 #if DCHECK_IS_ON()

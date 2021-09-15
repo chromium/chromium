@@ -35,6 +35,9 @@ class BASE_EXPORT SingleThreadTaskExecutor {
   // The above constructor using MessagePumpType is generally preferred.
   explicit SingleThreadTaskExecutor(std::unique_ptr<MessagePump> pump);
 
+  SingleThreadTaskExecutor(const SingleThreadTaskExecutor&) = delete;
+  SingleThreadTaskExecutor& operator=(const SingleThreadTaskExecutor&) = delete;
+
   // Shuts down the SingleThreadTaskExecutor, after this no tasks can be
   // executed and the base::TaskExecutor APIs are non-functional but won't crash
   // if called.
@@ -58,8 +61,6 @@ class BASE_EXPORT SingleThreadTaskExecutor {
   scoped_refptr<sequence_manager::TaskQueue> default_task_queue_;
   MessagePumpType type_;
   SimpleTaskExecutor simple_task_executor_;
-
-  DISALLOW_COPY_AND_ASSIGN(SingleThreadTaskExecutor);
 };
 
 }  // namespace base

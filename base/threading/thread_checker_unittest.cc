@@ -204,12 +204,14 @@ class ThreadCheckerOwner {
     if (detach_from_thread)
       checker_.DetachFromThread();
   }
+
+  ThreadCheckerOwner(const ThreadCheckerOwner&) = delete;
+  ThreadCheckerOwner& operator=(const ThreadCheckerOwner&) = delete;
+
   ~ThreadCheckerOwner() { EXPECT_TRUE(checker_.CalledOnValidThread()); }
 
  private:
   ThreadCheckerImpl checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadCheckerOwner);
 };
 
 // Verifies ThreadCheckerImpl::CalledOnValidThread() returns true if called

@@ -25,6 +25,10 @@ class StackMarker {
     ++(*depth_);
     DCHECK_LE(*depth_, max_depth_);
   }
+
+  StackMarker(const StackMarker&) = delete;
+  StackMarker& operator=(const StackMarker&) = delete;
+
   ~StackMarker() { --(*depth_); }
 
   bool IsTooDeep() const { return *depth_ >= max_depth_; }
@@ -32,8 +36,6 @@ class StackMarker {
  private:
   const size_t max_depth_;
   size_t* const depth_;
-
-  DISALLOW_COPY_AND_ASSIGN(StackMarker);
 };
 
 }  // namespace internal

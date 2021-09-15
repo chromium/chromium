@@ -104,6 +104,10 @@ class BASE_EXPORT EtwTraceProvider {
   // Creates an unnamed event trace provider, the provider must be given
   // a name before registration.
   EtwTraceProvider();
+
+  EtwTraceProvider(const EtwTraceProvider&) = delete;
+  EtwTraceProvider& operator=(const EtwTraceProvider&) = delete;
+
   virtual ~EtwTraceProvider();
 
   // Registers the trace provider with Event Tracing for Windows.
@@ -185,8 +189,6 @@ class BASE_EXPORT EtwTraceProvider {
   // We don't use this, but on XP we're obliged to pass one in to
   // RegisterTraceGuids. Non-const, because that's how the API needs it.
   static TRACE_GUID_REGISTRATION obligatory_guid_registration_;
-
-  DISALLOW_COPY_AND_ASSIGN(EtwTraceProvider);
 };
 
 }  // namespace win

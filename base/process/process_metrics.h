@@ -85,6 +85,9 @@ BASE_EXPORT int64_t TimeValToMicroseconds(const struct timeval& tv);
 // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/README.md#Memory
 class BASE_EXPORT ProcessMetrics {
  public:
+  ProcessMetrics(const ProcessMetrics&) = delete;
+  ProcessMetrics& operator=(const ProcessMetrics&) = delete;
+
   ~ProcessMetrics();
 
   // Creates a ProcessMetrics for the specified process.
@@ -292,8 +295,6 @@ class BASE_EXPORT ProcessMetrics {
 
   PortProvider* port_provider_;
 #endif  // defined(OS_MAC)
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessMetrics);
 };
 
 // Returns the memory committed by the system in KBytes.

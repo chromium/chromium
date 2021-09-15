@@ -56,6 +56,10 @@ class BASE_EXPORT ReadOnlySharedMemoryRegion {
   ReadOnlySharedMemoryRegion(ReadOnlySharedMemoryRegion&&);
   ReadOnlySharedMemoryRegion& operator=(ReadOnlySharedMemoryRegion&&);
 
+  ReadOnlySharedMemoryRegion(const ReadOnlySharedMemoryRegion&) = delete;
+  ReadOnlySharedMemoryRegion& operator=(const ReadOnlySharedMemoryRegion&) =
+      delete;
+
   // Destructor closes shared memory region if valid.
   // All created mappings will remain valid.
   ~ReadOnlySharedMemoryRegion();
@@ -112,8 +116,6 @@ class BASE_EXPORT ReadOnlySharedMemoryRegion {
   static CreateFunction* create_hook_;
 
   subtle::PlatformSharedMemoryRegion handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReadOnlySharedMemoryRegion);
 };
 
 // Helper struct for return value of ReadOnlySharedMemoryRegion::Create().
