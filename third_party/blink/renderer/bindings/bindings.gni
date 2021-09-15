@@ -228,8 +228,6 @@ bindings_unittest_files = get_path_info(
           "core/v8/serialization/serialized_script_value_test.cc",
           "core/v8/serialization/serialized_script_value_threaded_test.cc",
           "core/v8/serialization/v8_script_value_serializer_test.cc",
-          "core/v8/v8_extras_test_utils.cc",
-          "core/v8/v8_extras_test_utils.h",
           "core/v8/script_promise_tester.cc",
           "core/v8/script_promise_tester.h",
           "modules/v8/serialization/v8_script_value_serializer_for_modules_test.cc",

@@ -2,20 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/bindings/core/v8/v8_extras_test_utils.h"
+#include "third_party/blink/renderer/core/streams/test_utils.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
+#include "v8/include/v8.h"
 
 namespace blink {
 
-TryCatchScope::TryCatchScope(v8::Isolate* isolate) : trycatch_(isolate) {}
-
-TryCatchScope::~TryCatchScope() {
-  EXPECT_FALSE(trycatch_.HasCaught());
-}
+namespace {
 
 ScriptValue Eval(V8TestingScope* scope, const char* script_as_string) {
   v8::Local<v8::String> source;
@@ -35,6 +32,8 @@ ScriptValue Eval(V8TestingScope* scope, const char* script_as_string) {
   }
   return ScriptValue(scope->GetIsolate(), script->Run(scope->GetContext()));
 }
+
+}  // namespace
 
 ScriptValue EvalWithPrintingError(V8TestingScope* scope, const char* script) {
   v8::TryCatch block(scope->GetIsolate());
