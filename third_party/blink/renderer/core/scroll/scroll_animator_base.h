@@ -81,7 +81,7 @@ class CORE_EXPORT ScrollAnimatorBase
   ScrollableArea* GetScrollableArea() const override {
     return scrollable_area_;
   }
-  void TickAnimation(double monotonic_time) override {}
+  void TickAnimation(base::TimeTicks monotonic_time) override {}
   void CancelAnimation() override {}
   void TakeOverCompositorAnimation() override {}
   void UpdateCompositorAnimations() override {}

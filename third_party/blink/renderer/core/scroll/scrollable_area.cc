@@ -686,13 +686,15 @@ void ScrollableArea::MainThreadScrollingDidChange() {
 void ScrollableArea::ServiceScrollAnimations(double monotonic_time) {
   bool requires_animation_service = false;
   if (ScrollAnimatorBase* scroll_animator = ExistingScrollAnimator()) {
-    scroll_animator->TickAnimation(monotonic_time);
+    scroll_animator->TickAnimation(
+        base::TimeDelta::FromSecondsD(monotonic_time) + base::TimeTicks());
     if (scroll_animator->HasAnimationThatRequiresService())
       requires_animation_service = true;
   }
   if (ProgrammaticScrollAnimator* programmatic_scroll_animator =
           ExistingProgrammaticScrollAnimator()) {
-    programmatic_scroll_animator->TickAnimation(monotonic_time);
+    programmatic_scroll_animator->TickAnimation(
+        base::TimeDelta::FromSecondsD(monotonic_time) + base::TimeTicks());
     if (programmatic_scroll_animator->HasAnimationThatRequiresService())
       requires_animation_service = true;
   }

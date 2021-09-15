@@ -49,8 +49,9 @@ using testing::_;
 
 namespace {
 
-double NowTicksInSeconds(const base::TestMockTimeTaskRunner* task_runner) {
-  return task_runner->NowTicks().since_origin().InSecondsF();
+base::TimeTicks NowTicksInSeconds(
+    const base::TestMockTimeTaskRunner* task_runner) {
+  return task_runner->NowTicks();
 }
 
 }  // namespace

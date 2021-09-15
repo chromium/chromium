@@ -242,18 +242,17 @@ void ScrollAnimator::ScrollToOffsetWithoutAnimation(
   NotifyOffsetChanged();
 }
 
-void ScrollAnimator::TickAnimation(double monotonic_time) {
+void ScrollAnimator::TickAnimation(base::TimeTicks monotonic_time) {
   if (run_state_ != RunState::kRunningOnMainThread)
     return;
 
   TRACE_EVENT0("blink", "ScrollAnimator::tickAnimation");
-  double elapsed_time =
-      monotonic_time - start_time_.since_origin().InSecondsF();
+  base::TimeDelta elapsed_time = monotonic_time - start_time_;
 
   bool is_finished = (elapsed_time > animation_curve_->Duration());
   ScrollOffset offset = BlinkOffsetFromCompositorOffset(
       is_finished ? animation_curve_->TargetValue()
-                  : animation_curve_->GetValue(elapsed_time));
+                  : animation_curve_->GetValue(elapsed_time.InSecondsF()));
 
   offset = scrollable_area_->ClampScrollOffset(offset);
 

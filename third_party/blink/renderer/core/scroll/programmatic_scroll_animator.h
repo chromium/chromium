@@ -45,7 +45,7 @@ class ProgrammaticScrollAnimator : public ScrollAnimatorCompositorCoordinator {
   ScrollableArea* GetScrollableArea() const override {
     return scrollable_area_;
   }
-  void TickAnimation(double monotonic_time) override;
+  void TickAnimation(base::TimeTicks monotonic_time) override;
   void UpdateCompositorAnimations() override;
   void NotifyCompositorAnimationFinished(int group_id) override;
   void NotifyCompositorAnimationAborted(int group_id) override {}
@@ -60,7 +60,7 @@ class ProgrammaticScrollAnimator : public ScrollAnimatorCompositorCoordinator {
   Member<ScrollableArea> scrollable_area_;
   std::unique_ptr<CompositorScrollOffsetAnimationCurve> animation_curve_;
   ScrollOffset target_offset_;
-  double start_time_;
+  base::TimeTicks start_time_;
   // is_sequenced_scroll_ is true for the entire duration of an animated scroll
   // as well as during an instant scroll if that scroll is part of a sequence.
   // It resets to false at the end of the scroll. It controls whether we should

@@ -44,8 +44,8 @@ void CompositorScrollOffsetAnimationCurve::ApplyAdjustment(IntSize adjustment) {
       gfx::Vector2dF(adjustment.Width(), adjustment.Height()));
 }
 
-double CompositorScrollOffsetAnimationCurve::Duration() const {
-  return curve_->Duration().InSecondsF();
+base::TimeDelta CompositorScrollOffsetAnimationCurve::Duration() const {
+  return curve_->Duration();
 }
 
 FloatPoint CompositorScrollOffsetAnimationCurve::TargetValue() const {
