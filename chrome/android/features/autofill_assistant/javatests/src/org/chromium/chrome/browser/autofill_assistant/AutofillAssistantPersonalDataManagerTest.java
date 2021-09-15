@@ -45,6 +45,8 @@ import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUi
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewInRootMatchesCondition;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.withTextId;
+import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.buildRequiredDataPiece;
+import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.buildValueExpression;
 import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCssSelector;
 
 import android.widget.RadioButton;
@@ -71,13 +73,10 @@ import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.CollectUserDataProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ContactDetailsProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.RequiredDataPiece;
 import org.chromium.chrome.browser.autofill_assistant.proto.RequiredFieldProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto.PresentationProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.UseAddressProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.ValueExpression;
-import org.chromium.chrome.browser.autofill_assistant.proto.ValueExpression.Chunk;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -149,20 +148,12 @@ public class AutofillAssistantPersonalDataManagerTest {
                                         .setFormFieldElement(toCssSelector("#profile_name"))
                                         .addRequiredFields(
                                                 RequiredFieldProto.newBuilder()
-                                                        .setValueExpression(
-                                                                ValueExpression.newBuilder()
-                                                                        .addChunk(
-                                                                                Chunk.newBuilder()
-                                                                                        .setKey(7)))
+                                                        .setValueExpression(buildValueExpression(7))
                                                         .setElement(toCssSelector("#profile_name"))
                                                         .setForced(true))
                                         .addRequiredFields(
                                                 RequiredFieldProto.newBuilder()
-                                                        .setValueExpression(
-                                                                ValueExpression.newBuilder()
-                                                                        .addChunk(
-                                                                                Chunk.newBuilder()
-                                                                                        .setKey(9)))
+                                                        .setValueExpression(buildValueExpression(9))
                                                         .setElement(toCssSelector("#email"))
                                                         .setForced(true)))
                         .build());
@@ -1138,12 +1129,6 @@ public class AutofillAssistantPersonalDataManagerTest {
                 .perform(click());
         waitUntilViewMatchesCondition(
                 withContentDescription("Continue"), allOf(isDisplayed(), isEnabled()));
-    }
-
-    private RequiredDataPiece.Builder buildRequiredDataPiece(String message, int key) {
-        return RequiredDataPiece.newBuilder().setErrorMessage(message).setCondition(
-                RequiredDataPiece.Condition.newBuilder().setKey(key).setNotEmpty(
-                        RequiredDataPiece.NotEmptyCondition.newBuilder()));
     }
 
     private void runScript(AutofillAssistantTestScript script) {

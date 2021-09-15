@@ -22,7 +22,8 @@ import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUi
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntil;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewAssertionTrue;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
-import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toClientId;
+import static org.chromium.chrome.browser.autofill_assistant.MiniActionTestUtil.addClickSteps;
+import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.buildValueExpression;
 import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCssSelector;
 
 import androidx.test.filters.MediumTest;
@@ -41,7 +42,6 @@ import org.chromium.chrome.browser.autofill_assistant.proto.AutofillFormatProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.CallbackProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipType;
-import org.chromium.chrome.browser.autofill_assistant.proto.ClientIdProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ComputeValueProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ConfigureUiStateProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ConfigureUiStateProto.OverlayBehavior;
@@ -59,9 +59,7 @@ import org.chromium.chrome.browser.autofill_assistant.proto.OnUserActionCalled;
 import org.chromium.chrome.browser.autofill_assistant.proto.ProcessedActionStatusProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ScriptPreconditionProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.ScrollIntoViewProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SelectorProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.SendClickEventProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SetUserActionsProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ShowGenericUiProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.StringList;
@@ -71,12 +69,9 @@ import org.chromium.chrome.browser.autofill_assistant.proto.TextViewProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ToStringProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.UserActionList;
 import org.chromium.chrome.browser.autofill_assistant.proto.UserActionProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.ValueExpression;
-import org.chromium.chrome.browser.autofill_assistant.proto.ValueExpression.Chunk;
 import org.chromium.chrome.browser.autofill_assistant.proto.ValueProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ValueReferenceProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ViewProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.WaitForDomProto;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -136,23 +131,7 @@ public class AutofillAssistantInterruptIntegrationTest {
         scripts.add(script);
 
         ArrayList<ActionProto> interruptActionList = new ArrayList<>();
-        ClientIdProto clientId = toClientId("e");
-        interruptActionList.add(
-                ActionProto.newBuilder()
-                        .setWaitForDom(
-                                WaitForDomProto.newBuilder().setTimeoutMs(1000).setWaitCondition(
-                                        ElementConditionProto.newBuilder()
-                                                .setMatch(touch_area_one)
-                                                .setClientId(clientId)))
-                        .build());
-        interruptActionList.add(
-                ActionProto.newBuilder()
-                        .setScrollIntoView(ScrollIntoViewProto.newBuilder().setClientId(clientId))
-                        .build());
-        interruptActionList.add(
-                ActionProto.newBuilder()
-                        .setSendClickEvent(SendClickEventProto.newBuilder().setClientId(clientId))
-                        .build());
+        addClickSteps(touch_area_one, interruptActionList);
         interruptActionList.add(
                 ActionProto.newBuilder()
                         .setPrompt(PromptProto.newBuilder().addChoices(
@@ -281,23 +260,7 @@ public class AutofillAssistantInterruptIntegrationTest {
         scripts.add(script);
 
         ArrayList<ActionProto> interruptActionList = new ArrayList<>();
-        ClientIdProto clientId = toClientId("e");
-        interruptActionList.add(
-                ActionProto.newBuilder()
-                        .setWaitForDom(
-                                WaitForDomProto.newBuilder().setTimeoutMs(1000).setWaitCondition(
-                                        ElementConditionProto.newBuilder()
-                                                .setMatch(touch_area_one)
-                                                .setClientId(clientId)))
-                        .build());
-        interruptActionList.add(
-                ActionProto.newBuilder()
-                        .setScrollIntoView(ScrollIntoViewProto.newBuilder().setClientId(clientId))
-                        .build());
-        interruptActionList.add(
-                ActionProto.newBuilder()
-                        .setSendClickEvent(SendClickEventProto.newBuilder().setClientId(clientId))
-                        .build());
+        addClickSteps(touch_area_one, interruptActionList);
         interruptActionList.add(
                 ActionProto.newBuilder()
                         .setPrompt(PromptProto.newBuilder().addChoices(
@@ -540,8 +503,7 @@ public class AutofillAssistantInterruptIntegrationTest {
                         .setValue(ValueReferenceProto.newBuilder().setModelIdentifier(
                                 "credit_cards[0]"))
                         .setAutofillFormat(AutofillFormatProto.newBuilder().setValueExpression(
-                                ValueExpression.newBuilder().addChunk(
-                                        Chunk.newBuilder().setKey(51))));
+                                buildValueExpression(51)));
         CallbackProto autofillFormatCallback =
                 CallbackProto.newBuilder()
                         .setComputeValue(ComputeValueProto.newBuilder()

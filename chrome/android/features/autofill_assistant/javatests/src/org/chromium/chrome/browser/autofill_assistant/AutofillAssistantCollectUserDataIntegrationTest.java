@@ -40,6 +40,7 @@ import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUi
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.tapElement;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilKeyboardMatchesCondition;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
+import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.buildValueExpression;
 import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCssSelector;
 import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toVisibleCssSelector;
 
@@ -94,8 +95,6 @@ import org.chromium.chrome.browser.autofill_assistant.proto.TextInputProto.Input
 import org.chromium.chrome.browser.autofill_assistant.proto.TextInputSectionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.UseCreditCardProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.UserFormSectionProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.ValueExpression;
-import org.chromium.chrome.browser.autofill_assistant.proto.ValueExpression.Chunk;
 import org.chromium.chrome.browser.autofill_assistant.proto.ValueProto;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -160,23 +159,20 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
         RequiredFieldProto fallbackTextField =
                 RequiredFieldProto.newBuilder()
                         .setForced(true) // Make sure we do actual work.
-                        .setValueExpression(ValueExpression.newBuilder().addChunk(
-                                Chunk.newBuilder().setKey(57)))
+                        .setValueExpression(buildValueExpression(57))
                         .setElement(toCssSelector("#fallback_entry"))
                         .setFillStrategy(KeyboardValueFillStrategy.SIMULATE_KEY_PRESSES)
                         .build();
         RequiredFieldProto fallbackDropdownField =
                 RequiredFieldProto.newBuilder()
                         .setForced(true) // Make sure we do actual work.
-                        .setValueExpression(ValueExpression.newBuilder().addChunk(
-                                Chunk.newBuilder().setKey(-2)))
+                        .setValueExpression(buildValueExpression(-2))
                         .setElement(toCssSelector("#fallback_dropdown"))
                         .setSelectStrategy(DropdownSelectStrategy.VALUE_MATCH)
                         .build();
         RequiredFieldProto fallbackJsDropdownField =
                 RequiredFieldProto.newBuilder()
-                        .setValueExpression(ValueExpression.newBuilder().addChunk(
-                                Chunk.newBuilder().setKey(55)))
+                        .setValueExpression(buildValueExpression(55))
                         .setElement(toCssSelector("#js_dropdown_value"))
                         .setOptionElementToClick(toVisibleCssSelector("#js_dropdown_options li"))
                         .setClickType(ClickType.TAP)
@@ -249,9 +245,8 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
         RequiredFieldProto fallbackTextField =
                 RequiredFieldProto.newBuilder()
                         .setForced(true) // Make sure we fail here while trying to fill the field.
-                        .setValueExpression(
-                                ValueExpression.newBuilder().addChunk(Chunk.newBuilder().setKey(
-                                        -99))) // Use non-existent key to force an error.
+                        .setValueExpression(buildValueExpression(
+                                -99)) // Use non-existent key to force an error.
                         .setElement(toCssSelector("#fallback_entry"))
                         .setFillStrategy(KeyboardValueFillStrategy.SIMULATE_KEY_PRESSES)
                         .build();
