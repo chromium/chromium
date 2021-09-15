@@ -11,8 +11,11 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings.h"
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings_factory.h"
+#include "chrome/browser/lite_video/lite_video_decider.h"
 #include "chrome/browser/lite_video/lite_video_features.h"
 #include "chrome/browser/lite_video/lite_video_hint.h"
+#include "chrome/browser/lite_video/lite_video_keyed_service.h"
+#include "chrome/browser/lite_video/lite_video_keyed_service_factory.h"
 #include "chrome/browser/lite_video/lite_video_navigation_metrics.h"
 #include "chrome/browser/lite_video/lite_video_switches.h"
 #include "chrome/browser/lite_video/lite_video_user_blocklist.h"
@@ -796,6 +799,85 @@ IN_PROC_BROWSER_TEST_P(
   ukm_recorder.ExpectEntryMetric(
       entry, ukm::builders::LiteVideo::kBlocklistReasonName,
       static_cast<int>(lite_video::LiteVideoBlocklistReason::kUnknown));
+}
+
+class LiteVideoDeciderPrerenderBrowserTest : public LiteVideoBrowserTest {
+ public:
+  LiteVideoDeciderPrerenderBrowserTest()
+      : LiteVideoBrowserTest(true /*enable_lite_mode*/,
+                             true /*enable_lite_video_feature*/),
+        prerender_helper_(base::BindRepeating(
+            &LiteVideoDeciderPrerenderBrowserTest::GetWebContents,
+            base::Unretained(this))) {}
+  ~LiteVideoDeciderPrerenderBrowserTest() override = default;
+  LiteVideoDeciderPrerenderBrowserTest(
+      const LiteVideoDeciderPrerenderBrowserTest&) = delete;
+
+  LiteVideoDeciderPrerenderBrowserTest& operator=(
+      const LiteVideoDeciderPrerenderBrowserTest&) = delete;
+
+  void SetUp() override {
+    prerender_helper_.SetUp(&http_server_);
+    LiteVideoBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    LiteVideoBrowserTest::SetUpOnMainThread();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    LiteVideoBrowserTest::SetUpCommandLine(command_line);
+    command_line->RemoveSwitch(
+        lite_video::switches::kLiteVideoForceOverrideDecision);
+    command_line->RemoveSwitch(
+        lite_video::switches::kLiteVideoIgnoreNetworkConditions);
+  }
+
+  content::test::PrerenderTestHelper& prerender_test_helper() {
+    return prerender_helper_;
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  net::EmbeddedTestServer* http_server() { return &http_server_; }
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(LiteVideoDeciderPrerenderBrowserTest,
+                       PrerenderingShouldNotRecordLiteVideoDecisionMetrics) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  TestMSEPlayback("bear-vp9.webm", "2700", "500", false);
+
+  // Set the network type to 4G network to test |is_in_primary_main_frame|
+  // behavior in LiteVideoDecider::CanApplyLiteVideo method.
+  Profile* profile =
+      Profile::FromBrowserContext(GetWebContents()->GetBrowserContext());
+  ASSERT_TRUE(profile);
+  lite_video::LiteVideoDecider* lite_video_decider =
+      LiteVideoKeyedServiceFactory::GetForProfile(profile)
+          ->lite_video_decider();
+  lite_video_decider->OnConnectionChanged(
+      network::mojom::ConnectionType::CONNECTION_4G);
+
+  // Load a test page in the prerender.
+  const int host_id = prerender_test_helper().AddPrerender(media_url());
+  content::RenderFrameHost* render_frame_host =
+      prerender_test_helper().GetPrerenderedMainFrameHost(host_id);
+  ASSERT_TRUE(render_frame_host);
+  histogram_tester().ExpectUniqueSample(
+      "LiteVideo.CanApplyLiteVideo.UserBlocklist.MainFrame",
+      lite_video::LiteVideoBlocklistReason::kAllowed, 0);
+
+  // Activate the prerendered page.
+  prerender_test_helper().NavigatePrimaryPage(media_url());
+  histogram_tester().ExpectUniqueSample(
+      "LiteVideo.CanApplyLiteVideo.UserBlocklist.MainFrame",
+      lite_video::LiteVideoBlocklistReason::kAllowed, 1);
 }
 
 }  // namespace
