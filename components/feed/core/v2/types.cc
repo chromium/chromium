@@ -4,7 +4,6 @@
 
 #include "components/feed/core/v2/types.h"
 
-#include <ostream>
 #include <utility>
 
 #include "base/base64.h"
@@ -206,14 +205,6 @@ bool ContentIdSet::IsEmpty() const {
 }
 bool ContentIdSet::operator==(const ContentIdSet& rhs) const {
   return content_ids_ == rhs.content_ids_;
-}
-std::ostream& operator<<(std::ostream& s, const ContentIdSet& id_set) {
-  s << "{";
-  for (int64_t id : id_set.values()) {
-    s << id << ", ";
-  }
-  s << "}";
-  return s;
 }
 
 LaunchResult::LaunchResult(LoadStreamStatus load_stream_status,
