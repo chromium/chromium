@@ -69,7 +69,7 @@ export class WarningBanner extends Banner {
     const overridenDismissButton =
         this.querySelector('[slot="dismiss-button"]');
     const defaultDismissButton =
-        this.shadowRoot.querySelector('.dismiss-button');
+        this.shadowRoot.querySelector('#dismiss-button');
     if (overridenDismissButton) {
       overridenDismissButton.addEventListener(
           'click', this.onDismissClickHandler_.bind(this));

@@ -12,7 +12,7 @@
     width: 100%;
   }
 
-  .educational-text-group {
+  #educational-text-group {
     align-items: flex-start;
     display: flex;
     flex-direction: column;
@@ -66,7 +66,7 @@
   }
 
   ::slotted(cr-button),
-  .dismiss-button {
+  #dismiss-button {
     border: 0;
     box-shadow: none;
     height: 32px;
@@ -78,11 +78,11 @@
 <div class="educational-banner">
   <div class="educational-text-icon">
     <div class="feature-icon"></div>
-    <div class="educational-text-group" tabindex="0">
+    <div id="educational-text-group" tabindex="0">
       <div class="title headline2">
         <slot name="title"></slot>
       </div>
-      <div class="subtitle body2-primary" tabindex="0">
+      <div class="subtitle body2-primary">
         <slot name="subtitle"></slot>
       </div>
     </div>
@@ -90,7 +90,7 @@
   <div class="button-group">
     <slot name="extra-button"></slot>
     <slot name="dismiss-button">
-      <cr-button class="dismiss-button">
+      <cr-button id="dismiss-button">
         $i18n{DRIVE_WELCOME_DISMISS}
       </cr-button>
     </slot>

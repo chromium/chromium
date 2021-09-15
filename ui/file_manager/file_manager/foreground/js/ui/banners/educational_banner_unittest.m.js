@@ -19,7 +19,7 @@ export function setUp() {
       <button slot="extra-button" href="http://test.com">
         Test Banner
       </button>
-      <button slot="dismiss-button" class="dismiss-button">
+      <button slot="dismiss-button" id="dismiss-button">
         Dismiss
       </button>
     </educational-banner>
@@ -64,7 +64,7 @@ export async function testDefaultDismissButtonEmitsEvent(done) {
   };
   educationalBanner.addEventListener(
       Banner.Event.BANNER_DISMISSED_FOREVER, handler);
-  educationalBanner.shadowRoot.querySelector('.dismiss-button').click();
+  educationalBanner.shadowRoot.querySelector('#dismiss-button').click();
 }
 
 /**

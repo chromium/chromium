@@ -11,7 +11,7 @@
     width: 100%;
   }
 
-  .warning-text-group {
+  #warning-text-group {
     align-items: center;
     display: flex;
     flex-direction: row;
@@ -42,7 +42,7 @@
   }
 
   ::slotted(cr-button),
-  .dismiss-button {
+  #dismiss-button {
     border: 0;
     box-shadow: none;
     height: 32px;
@@ -52,16 +52,16 @@
   }
 </style>
 <div class="warning-banner">
-  <div class="warning-text-group">
+  <div id="warning-text-group" tabindex="0">
     <div class="warning-icon"></div>
     <div class="warning-message body2-primary">
-      <slot name="text" tabindex="0"></slot>
+      <slot name="text"></slot>
     </div>
   </div>
   <div class="button-group">
     <slot name="extra-button"></slot>
     <slot name="dismiss-button">
-      <cr-button class="dismiss-button">
+      <cr-button id="dismiss-button">
         $i18n{DRIVE_WELCOME_DISMISS}
       </cr-button>
     </slot>

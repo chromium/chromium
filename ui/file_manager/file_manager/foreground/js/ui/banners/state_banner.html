@@ -11,7 +11,7 @@
     width: 100%;
   }
 
-  .state-text-group {
+  #state-text-group {
     align-items: center;
     display: flex;
     flex-direction: row;
@@ -51,10 +51,10 @@
   }
 </style>
 <div class="state-banner">
-  <div class="state-text-group">
+  <div id="state-text-group" tabindex="0">
     <div class="state-icon"></div>
     <div class="state-message body2-primary">
-      <slot name="text" tabindex="0"></slot>
+      <slot name="text"></slot>
     </div>
   </div>
   <div class="button-group">
