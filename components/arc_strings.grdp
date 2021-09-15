@@ -16,6 +16,9 @@
   <message name="IDS_ASH_ARC_APP_COMPAT_RESIZE_CONFIRM_DONT_ASK_ME" desc="Label for check box that prevents the dialog from being shown in the future">
     Don’t ask again for this app
   </message>
+  <message name="IDS_ASH_ARC_NEARBY_SHARE_FILE_PREPARATION_PROGRESS" desc="Label for progress bar that shows file preparation progress during Nearby Share from the ARC application.">
+    Preparing file
+  </message>
   <message name="IDS_ASH_ARC_NEARBY_SHARE_FILES_PREPARATION_PROGRESS" desc="Label for progress bar that shows files preparation progress during Nearby Share from the ARC application.">
     Preparing files
   </message>

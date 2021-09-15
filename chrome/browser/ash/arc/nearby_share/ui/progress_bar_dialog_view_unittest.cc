@@ -19,8 +19,8 @@ class ProgressBarDialogViewTest : public CompatModeTestBase {
   void SetUp() override {
     CompatModeTestBase::SetUp();
     widget_ = CreateTestWidget();
-    dialog_view_ =
-        widget_->SetContentsView(std::make_unique<ProgressBarDialogView>());
+    dialog_view_ = widget_->SetContentsView(
+        std::make_unique<ProgressBarDialogView>(/*is_multiple_files=*/false));
     widget_->Show();
     EXPECT_TRUE(widget_->IsVisible());
   }

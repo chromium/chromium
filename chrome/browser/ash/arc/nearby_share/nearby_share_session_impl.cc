@@ -286,7 +286,9 @@ void NearbyShareSessionImpl::OnFileStreamingStarted(
   // |kShowProgressBarMinSizeInBytes|, otherwise minimize unnecessary
   // UI step as the file streaming time should be < 1 second.
   if (file_handler_->GetTotalSizeOfFiles() > kShowProgressBarMinSizeInBytes) {
-    progress_bar_view_ = std::make_unique<ProgressBarDialogView>();
+    const bool is_multiple_files = file_handler_->GetNumberOfFiles() > 1;
+    progress_bar_view_ =
+        std::make_unique<ProgressBarDialogView>(is_multiple_files);
     ProgressBarDialogView::Show(window, progress_bar_view_.get());
 
     // Keep updating the progress bar if the interval timer elapsed to update
