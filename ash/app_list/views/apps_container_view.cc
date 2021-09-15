@@ -265,25 +265,30 @@ void AppsContainerView::ShowFolderForItemView(
   // silently focus the first item in the folder to avoid showing the selection
   // highlight or announcing to A11y, but still ensuring the arrow keys navigate
   // from the first item.
-  AppListItemView* first_item_view_in_folder_grid =
-      app_list_folder_view_->items_grid_view()->view_model()->view_at(0);
-  if (!apps_grid_view()->has_selected_view()) {
-    first_item_view_in_folder_grid->SilentlyRequestFocus();
-  } else {
-    first_item_view_in_folder_grid->RequestFocus();
-  }
+  const bool silently = !apps_grid_view()->has_selected_view();
+  app_list_folder_view_->FocusFirstItem(silently);
+
   // Disable all the items behind the folder so that they will not be reached
   // during focus traversal.
-
   DisableFocusForShowingActiveFolder(true);
 }
 
-void AppsContainerView::ShowApps(AppListFolderItem* folder_item) {
+void AppsContainerView::ShowApps(AppListItemView* folder_item_view,
+                                 bool select_folder) {
   if (app_list_folder_view_->IsAnimationRunning())
     return;
 
-  SetShowState(SHOW_APPS, folder_item ? true : false);
+  const bool animate = !!folder_item_view;
+  SetShowState(SHOW_APPS, animate);
   DisableFocusForShowingActiveFolder(false);
+  if (folder_item_view) {
+    // Focus `folder_item_view` but only show the selection highlight if there
+    // was already one showing.
+    if (select_folder)
+      folder_item_view->RequestFocus();
+    else
+      folder_item_view->SilentlyRequestFocus();
+  }
 }
 
 void AppsContainerView::ResetForShowApps() {

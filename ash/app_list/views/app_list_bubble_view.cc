@@ -36,6 +36,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 
@@ -292,12 +293,21 @@ void AppListBubbleView::ShowFolderForItemView(
   folder_background_view_->SetVisible(true);
   folder_view_->ScheduleShowHideAnimation(/*show=*/true,
                                           /*hide_for_reparent=*/false);
-  // TODO(crbug.com/1214064): Disable items behind the folder so they will not
-  // be reached in focus traversal. See
-  // AppsContainerView::DisableFocusForShowingActiveFolder().
+  if (apps_page_->scrollable_apps_grid_view()->has_selected_view()) {
+    // If the user is keyboard navigating, move focus into the folder.
+    folder_view_->FocusFirstItem(/*silently=*/false);
+  } else {
+    // Release focus so that disabling the views below does not shift focus
+    // into the folder grid.
+    GetFocusManager()->ClearFocus();
+  }
+  // Disable items behind the folder so they will not be reached in focus
+  // traversal.
+  DisableFocusForShowingActiveFolder(true);
 }
 
-void AppListBubbleView::ShowApps(AppListFolderItem* folder_item) {
+void AppListBubbleView::ShowApps(AppListItemView* folder_item_view,
+                                 bool select_folder) {
   DVLOG(1) << __FUNCTION__;
   if (folder_view_->IsAnimationRunning())
     return;
@@ -307,12 +317,17 @@ void AppListBubbleView::ShowApps(AppListFolderItem* folder_item) {
   folder_background_view_->SetVisible(false);
   apps_page_->scrollable_apps_grid_view()->ResetForShowApps();
   folder_view_->ResetItemsGridForClose();
-  if (folder_item) {
+  if (folder_item_view) {
     folder_view_->ScheduleShowHideAnimation(/*show=*/false,
                                             /*hide_for_reparent=*/false);
   } else {
     folder_view_->HideViewImmediately();
   }
+  DisableFocusForShowingActiveFolder(false);
+  if (folder_item_view && select_folder)
+    folder_item_view->RequestFocus();
+  else
+    search_box_view_->search_box()->RequestFocus();
 }
 
 void AppListBubbleView::ReparentFolderItemTransit(
@@ -326,11 +341,17 @@ void AppListBubbleView::ReparentFolderItemTransit(
   folder_background_view_->SetVisible(false);
   folder_view_->ScheduleShowHideAnimation(/*show=*/false,
                                           /*hide_for_reparent=*/true);
+  DisableFocusForShowingActiveFolder(false);
 }
 
 void AppListBubbleView::ReparentDragEnded() {
   DVLOG(1) << __FUNCTION__;
   // Nothing to do.
+}
+
+void AppListBubbleView::DisableFocusForShowingActiveFolder(bool disabled) {
+  search_box_view_->SetEnabled(!disabled);
+  apps_page_->DisableFocusForShowingActiveFolder(disabled);
 }
 
 }  // namespace ash

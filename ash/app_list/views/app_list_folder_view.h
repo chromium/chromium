@@ -85,6 +85,10 @@ class ASH_EXPORT AppListFolderView : public views::View,
   // Closes the folder page and goes back the top level page.
   void CloseFolderPage();
 
+  // Focuses the first app item. Does not set the selection or perform a11y
+  // announce if `silently` is true.
+  void FocusFirstItem(bool silently);
+
   // views::View
   void Layout() override;
   void ChildPreferredSizeChanged(View* child) override;
@@ -203,6 +207,8 @@ class ASH_EXPORT AppListFolderView : public views::View,
   AppListModel* const model_;
   AppListViewDelegate* const view_delegate_;
   AppListFolderItem* folder_item_ = nullptr;  // Not owned.
+
+  // The folder item in the root apps grid associated with this folder.
   AppListItemView* folder_item_view_ = nullptr;
 
   // The bounds of the activated folder item icon relative to this view.

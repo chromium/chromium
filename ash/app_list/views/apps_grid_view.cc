@@ -586,11 +586,14 @@ void AppsGridView::UpdateDrag(Pointer pointer, const gfx::Point& point) {
 }
 
 void AppsGridView::EndDrag(bool cancel) {
-  DVLOG(1) << __func__;
+  DVLOG(1) << "EndDrag cancel=" << cancel;
 
   // EndDrag was called before if |drag_view_| is nullptr.
   if (!drag_item_)
     return;
+
+  // Whether an icon was actually dragged (and not just clicked).
+  const bool was_dragging = IsDragging();
 
   // Coming here a drag and drop was in progress.
   const bool landed_in_drag_and_drop_host =
@@ -636,7 +639,7 @@ void AppsGridView::EndDrag(bool cancel) {
       return;
     }
 
-    if (!cancel && IsDragging()) {
+    if (!cancel && was_dragging) {
       // Regular drag ending path, ie, not for reparenting.
       UpdateDropTargetRegion();
       if (drop_target_region_ == ON_ITEM && DraggedItemCanEnterFolder() &&
@@ -703,7 +706,8 @@ void AppsGridView::EndDrag(bool cancel) {
   BeginHideCurrentGhostImageView();
   MaybeStopPageFlip();
   StopAutoScroll();
-  SetFocusAfterEndDrag();  // Maybe focus the search box.
+  if (was_dragging)
+    SetFocusAfterEndDrag();  // Maybe focus the search box.
 
   AnimateDragIconToTargetPosition(reparented_into_folder, drag_item,
                                   folder_item_view);

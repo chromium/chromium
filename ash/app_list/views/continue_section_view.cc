@@ -77,6 +77,10 @@ size_t ContinueSectionView::GetTasksSuggestionsCount() const {
   return static_cast<size_t>(suggestions_container_->num_results());
 }
 
+void ContinueSectionView::DisableFocusForShowingActiveFolder(bool disabled) {
+  suggestions_container_->DisableFocusForShowingActiveFolder(disabled);
+}
+
 ContinueTaskView* ContinueSectionView::GetTaskViewAtForTesting(
     size_t index) const {
   DCHECK_GT(GetTasksSuggestionsCount(), index);

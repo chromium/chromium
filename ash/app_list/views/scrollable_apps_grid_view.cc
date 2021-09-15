@@ -272,8 +272,15 @@ void ScrollableAppsGridView::SetFocusAfterEndDrag() {
   if (!focus_manager)  // Does not exist during widget close.
     return;
 
-  // Focus the first focusable view in the widget (the search box).
+  // Release focus from the dragged item (so it won't stay selected).
   focus_manager->ClearFocus();
+
+  // When a folder is open, don't move focus to search box, since it may be
+  // behind the folder.
+  if (IsInFolder())
+    return;
+
+  // Focus the first focusable view in the widget (the search box).
   focus_manager->AdvanceFocus(/*reverse=*/false);
 }
 

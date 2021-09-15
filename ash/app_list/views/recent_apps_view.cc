@@ -177,6 +177,11 @@ RecentAppsView::RecentAppsView(AppListViewDelegate* view_delegate)
 
 RecentAppsView::~RecentAppsView() = default;
 
+void RecentAppsView::DisableFocusForShowingActiveFolder(bool disabled) {
+  for (views::View* child : children())
+    child->SetEnabled(!disabled);
+}
+
 AppListItemView* RecentAppsView::GetItemViewForTest(int index) {
   return static_cast<AppListItemView*>(children()[index]);
 }

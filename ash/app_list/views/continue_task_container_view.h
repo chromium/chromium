@@ -50,6 +50,9 @@ class ASH_EXPORT ContinueTaskContainerView : public ui::ListModelObserver,
 
   void SetResults(SearchModel::SearchResults* results);
 
+  // See AppsGridView::DisableFocusForShowingActiveFolder().
+  void DisableFocusForShowingActiveFolder(bool disabled);
+
  private:
   void ScheduleUpdate();
 

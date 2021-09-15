@@ -377,9 +377,12 @@ gfx::Size SearchBoxViewBase::CalculatePreferredSize() const {
 }
 
 void SearchBoxViewBase::OnEnabledChanged() {
-  search_box_->SetEnabled(GetEnabled());
+  bool enabled = GetEnabled();
+  search_box_->SetEnabled(enabled);
   if (close_button_)
-    close_button_->SetEnabled(GetEnabled());
+    close_button_->SetEnabled(enabled);
+  if (assistant_button_)
+    assistant_button_->SetEnabled(enabled);
 }
 
 const char* SearchBoxViewBase::GetClassName() const {

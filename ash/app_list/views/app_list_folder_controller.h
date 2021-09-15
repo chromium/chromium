@@ -25,10 +25,12 @@ class AppListFolderController {
   // the associated folder item (`folder_item_view->item()`).
   virtual void ShowFolderForItemView(AppListItemView* folder_item_view) = 0;
 
-  // Shows the root level apps list. Called when the UI navigates back from
-  // a folder view with |folder_item|. If |folder_item| is nullptr skips
-  // animation.
-  virtual void ShowApps(AppListFolderItem* folder_item) = 0;
+  // Shows the root level apps list. Called when the UI navigates back from the
+  // folder for `folder_item_view`. If `folder_item_view` is nullptr skips
+  // animation. If `folder_item_view` is non-null and `select_folder` is true,
+  // the folder item is selected (e.g. for keyboard navigation).
+  virtual void ShowApps(AppListItemView* folder_item_view,
+                        bool select_folder) = 0;
 
   // Transits the UI from folder view to root level apps grid view when
   // re-parenting a child item of |folder_item|.

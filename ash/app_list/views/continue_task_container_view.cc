@@ -145,6 +145,12 @@ void ContinueTaskContainerView::SetResults(
   Update();
 }
 
+void ContinueTaskContainerView::DisableFocusForShowingActiveFolder(
+    bool disabled) {
+  for (views::View* child : suggestion_tasks_views_)
+    child->SetEnabled(!disabled);
+}
+
 void ContinueTaskContainerView::ScheduleUpdate() {
   // When search results are added one by one, each addition generates an update
   // request. Consolidates those update requests into one Update call.

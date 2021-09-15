@@ -29,6 +29,9 @@ class ASH_EXPORT RecentAppsView : public views::View {
   RecentAppsView& operator=(const RecentAppsView&) = delete;
   ~RecentAppsView() override;
 
+  // See AppsGridView::DisableFocusForShowingActiveFolder().
+  void DisableFocusForShowingActiveFolder(bool disabled);
+
   AppListItemView* GetItemViewForTest(int index);
 
  private:

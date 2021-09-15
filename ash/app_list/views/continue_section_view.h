@@ -33,6 +33,9 @@ class ASH_EXPORT ContinueSectionView : public views::View {
   void UpdateSuggestionTasks();
 
   size_t GetTasksSuggestionsCount() const;
+
+  void DisableFocusForShowingActiveFolder(bool disabled);
+
   ContinueTaskView* GetTaskViewAtForTesting(size_t index) const;
 
  private:

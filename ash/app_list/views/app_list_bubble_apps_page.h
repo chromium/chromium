@@ -37,6 +37,10 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View {
   AppListBubbleAppsPage& operator=(const AppListBubbleAppsPage&) = delete;
   ~AppListBubbleAppsPage() override;
 
+  // Disables all children so they cannot be focused, allowing the open folder
+  // view to handle focus.
+  void DisableFocusForShowingActiveFolder(bool disabled);
+
   views::ScrollView* scroll_view() { return scroll_view_; }
   ScrollableAppsGridView* scrollable_apps_grid_view() {
     return scrollable_apps_grid_view_;

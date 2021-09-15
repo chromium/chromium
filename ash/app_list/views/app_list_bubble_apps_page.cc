@@ -109,6 +109,12 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
 
 AppListBubbleAppsPage::~AppListBubbleAppsPage() = default;
 
+void AppListBubbleAppsPage::DisableFocusForShowingActiveFolder(bool disabled) {
+  continue_section_->DisableFocusForShowingActiveFolder(disabled);
+  recent_apps_->DisableFocusForShowingActiveFolder(disabled);
+  scrollable_apps_grid_view_->DisableFocusForShowingActiveFolder(disabled);
+}
+
 BEGIN_METADATA(AppListBubbleAppsPage, views::View)
 END_METADATA
 

@@ -773,8 +773,10 @@ void AppListFolderView::OnViewIsDeleting(views::View* view) {
   const bool hidden_for_reparent = hide_for_reparent_;
   ResetState(/*restore_folder_item_view_state=*/false);
 
-  if (!hidden_for_reparent)
-    folder_controller_->ShowApps(nullptr);
+  if (!hidden_for_reparent) {
+    folder_controller_->ShowApps(/*folder_item_view=*/nullptr,
+                                 /*select_folder=*/false);
+  }
 }
 
 void AppListFolderView::OnAppListItemWillBeDeleted(AppListItem* item) {
@@ -793,7 +795,8 @@ void AppListFolderView::OnAppListItemWillBeDeleted(AppListItem* item) {
     // the container view to show the app list instead.
     // Pass nullptr to ShowApps() to avoid triggering animation from the deleted
     // folder.
-    folder_controller_->ShowApps(nullptr);
+    folder_controller_->ShowApps(/*folder_item_view=*/nullptr,
+                                 /*select_folder=*/false);
   }
 }
 
@@ -991,21 +994,22 @@ void AppListFolderView::ResetItemsGridForClose() {
 }
 
 void AppListFolderView::CloseFolderPage() {
-  // When a folder is closed focus |activated_folder_item_view_| but only show
-  // the selection highlight if there is already one showing.
-  const bool should_show_focus_ring_on_hide =
-      items_grid_view()->has_selected_view();
+  DVLOG(1) << __FUNCTION__;
+  // When a folder closes only show the selection highlight if there was already
+  // one showing.
+  const bool select_folder = items_grid_view()->has_selected_view();
   ResetItemsGridForClose();
+  folder_controller_->ShowApps(folder_item_view_, select_folder);
+}
 
-  // `ShowApps()` may reset `folder_item_view_`.
-  AppListItemView* view_to_focus = folder_item_view_;
-
-  folder_controller_->ShowApps(folder_item_);
-
-  if (should_show_focus_ring_on_hide) {
-    view_to_focus->RequestFocus();
+void AppListFolderView::FocusFirstItem(bool silent) {
+  DVLOG(1) << __FUNCTION__;
+  AppListItemView* first_item_view =
+      items_grid_view()->view_model()->view_at(0);
+  if (silent) {
+    first_item_view->SilentlyRequestFocus();
   } else {
-    view_to_focus->SilentlyRequestFocus();
+    first_item_view->RequestFocus();
   }
 }
 

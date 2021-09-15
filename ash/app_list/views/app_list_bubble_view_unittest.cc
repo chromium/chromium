@@ -20,6 +20,7 @@
 #include "ash/app_list/views/assistant/app_list_bubble_assistant_page.h"
 #include "ash/app_list/views/continue_section_view.h"
 #include "ash/app_list/views/recent_apps_view.h"
+#include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/color_provider.h"
@@ -132,12 +133,28 @@ class AppListBubbleViewTest : public AshTestBase {
     return GetAppListTestHelper()->GetBubbleAppsPage();
   }
 
+  ScrollableAppsGridView* GetAppsGridView() {
+    return GetAppListTestHelper()->GetScrollableAppsGridView();
+  }
+
   AppListBubbleSearchPage* GetSearchPage() {
     return GetAppListTestHelper()->GetBubbleSearchPage();
   }
 
   AppListBubbleAssistantPage* GetAssistantPage() {
     return GetAppListTestHelper()->GetBubbleAssistantPage();
+  }
+
+  views::View* GetFocusedView() {
+    return GetAppListTestHelper()
+        ->GetBubbleView()
+        ->GetFocusManager()
+        ->GetFocusedView();
+  }
+
+  const char* GetFocusedViewName() {
+    auto* view = GetFocusedView();
+    return view ? view->GetClassName() : "none";
   }
 
   base::test::ScopedFeatureList scoped_features_;
@@ -411,8 +428,7 @@ TEST_F(AppListBubbleViewTest, ClickOnFolderOpensFolder) {
   app_list_test_model_->CreateAndPopulateFolderWithApps(3);
   ShowAppList();
 
-  AppListItemView* folder_item =
-      GetAppListTestHelper()->GetScrollableAppsGridView()->GetItemViewAt(0);
+  AppListItemView* folder_item = GetAppsGridView()->GetItemViewAt(0);
   LeftClickOn(folder_item);
 
   // Folder opened.
@@ -491,6 +507,129 @@ TEST_F(AppListBubbleViewTest, ReparentDragOutOfFolderClosesFolder) {
   // End the drag.
   generator->ReleaseLeftButton();
   EXPECT_FALSE(GetAppListTestHelper()->GetBubbleFolderView()->GetVisible());
+}
+
+TEST_F(AppListBubbleViewTest, DragItemInsideFolderDoesNotSelectItem) {
+  app_list_test_model_->CreateAndPopulateFolderWithApps(3);
+  ShowAppList();
+
+  AppListItemView* folder_item =
+      GetAppListTestHelper()->GetScrollableAppsGridView()->GetItemViewAt(0);
+  LeftClickOn(folder_item);
+
+  // Drag the first app inside the folder's app grid.
+  auto* folder_view = GetAppListTestHelper()->GetBubbleFolderView();
+  AppListItemView* first_app = folder_view->items_grid_view()->GetItemViewAt(0);
+  auto* generator = GetEventGenerator();
+  generator->MoveMouseTo(first_app->GetBoundsInScreen().CenterPoint());
+  generator->PressLeftButton();
+  first_app->FireMouseDragTimerForTest();
+  generator->MoveMouseBy(100, 100);
+  generator->ReleaseLeftButton();
+
+  // Nothing is selected or focused.
+  EXPECT_FALSE(folder_view->items_grid_view()->has_selected_view());
+  EXPECT_FALSE(GetFocusedView()) << GetFocusedViewName();
+}
+
+TEST_F(AppListBubbleViewTest, OpenFolderWithMouseDoesNotFocusItem) {
+  app_list_test_model_->CreateAndPopulateFolderWithApps(3);
+  ShowAppList();
+
+  AppListItemView* folder_item = GetAppsGridView()->GetItemViewAt(0);
+  LeftClickOn(folder_item);
+
+  AppsGridView* items_grid_view =
+      GetAppListTestHelper()->GetBubbleFolderView()->items_grid_view();
+  EXPECT_FALSE(items_grid_view->has_selected_view());
+  EXPECT_FALSE(GetFocusedView()) << GetFocusedViewName();
+}
+
+TEST_F(AppListBubbleViewTest, PressingTabMovesFocusInsideFolder) {
+  app_list_test_model_->CreateAndPopulateFolderWithApps(3);
+  ShowAppList();
+
+  AppListItemView* folder_item = GetAppsGridView()->GetItemViewAt(0);
+  LeftClickOn(folder_item);
+
+  PressAndReleaseKey(ui::VKEY_TAB);
+
+  // First item is selected.
+  auto* folder_view = GetAppListTestHelper()->GetBubbleFolderView();
+  AppsGridView* items_grid_view = folder_view->items_grid_view();
+  EXPECT_TRUE(items_grid_view->has_selected_view());
+  EXPECT_EQ(items_grid_view->GetItemViewAt(0), GetFocusedView())
+      << GetFocusedViewName();
+
+  // Repeatedly pressing tab keeps focus inside the folder view.
+  for (int i = 0; i < 10; i++) {
+    PressAndReleaseKey(ui::VKEY_TAB);
+    EXPECT_TRUE(folder_view->Contains(GetFocusedView()))
+        << GetFocusedViewName();
+  }
+}
+
+TEST_F(AppListBubbleViewTest, OpenFolderWithKeyboardFocusesFirstItem) {
+  app_list_test_model_->CreateAndPopulateFolderWithApps(3);
+  ShowAppList();
+
+  AppListItemView* folder_item = GetAppsGridView()->GetItemViewAt(0);
+  folder_item->RequestFocus();
+  PressAndReleaseKey(ui::VKEY_RETURN);
+
+  // First item is selected and focused.
+  AppsGridView* items_grid_view =
+      GetAppListTestHelper()->GetBubbleFolderView()->items_grid_view();
+  AppListItemView* first_item = items_grid_view->GetItemViewAt(0);
+  EXPECT_TRUE(items_grid_view->has_selected_view());
+  EXPECT_TRUE(items_grid_view->IsSelectedView(first_item));
+  EXPECT_TRUE(first_item->HasFocus()) << GetFocusedViewName();
+}
+
+TEST_F(AppListBubbleViewTest, CloseFolderWithNoSelectedItemFocusesSearchBox) {
+  app_list_test_model_->CreateAndPopulateFolderWithApps(3);
+  ShowAppList();
+
+  AppListItemView* folder_item = GetAppsGridView()->GetItemViewAt(0);
+  LeftClickOn(folder_item);
+
+  auto* folder_view = GetAppListTestHelper()->GetBubbleFolderView();
+  ASSERT_FALSE(folder_view->items_grid_view()->has_selected_view());
+
+  // TODO(jamescook): Switch to using keyboard to close folder.
+  gfx::Point outside_view =
+      folder_view->GetBoundsInScreen().bottom_right() + gfx::Vector2d(10, 10);
+  GetEventGenerator()->MoveMouseTo(outside_view);
+  GetEventGenerator()->ClickLeftButton();
+
+  SearchBoxView* search_box_view = GetSearchBoxView();
+  EXPECT_TRUE(search_box_view->search_box()->HasFocus())
+      << GetFocusedViewName();
+  EXPECT_TRUE(search_box_view->is_search_box_active());
+}
+
+TEST_F(AppListBubbleViewTest, CloseFolderWithSelectedItemFocusesFolderItem) {
+  app_list_test_model_->CreateAndPopulateFolderWithApps(3);
+  ShowAppList();
+
+  AppListItemView* folder_item = GetAppsGridView()->GetItemViewAt(0);
+  LeftClickOn(folder_item);
+
+  auto* folder_view = GetAppListTestHelper()->GetBubbleFolderView();
+  folder_view->items_grid_view()->GetItemViewAt(0)->RequestFocus();
+  ASSERT_TRUE(folder_view->items_grid_view()->has_selected_view());
+
+  // TODO(jamescook): Switch to using keyboard to close folder.
+  gfx::Point outside_view =
+      folder_view->GetBoundsInScreen().bottom_right() + gfx::Vector2d(10, 10);
+  GetEventGenerator()->MoveMouseTo(outside_view);
+  GetEventGenerator()->ClickLeftButton();
+
+  // Folder item is selected and focused.
+  auto* root_apps_grid_view = GetAppsGridView();
+  EXPECT_TRUE(root_apps_grid_view->has_selected_view());
+  EXPECT_TRUE(root_apps_grid_view->IsSelectedView(folder_item));
+  EXPECT_TRUE(folder_item->HasFocus()) << GetFocusedViewName();
 }
 
 }  // namespace

@@ -107,7 +107,7 @@ class ASH_EXPORT AppsContainerView : public AppListPage,
 
   // AppListFolderController:
   void ShowFolderForItemView(AppListItemView* folder_item_view) override;
-  void ShowApps(AppListFolderItem* folder_item) override;
+  void ShowApps(AppListItemView* folder_item_view, bool select_folder) override;
   void ReparentFolderItemTransit(AppListFolderItem* folder_item) override;
   void ReparentDragEnded() override;
 

@@ -72,7 +72,7 @@ class ASH_EXPORT AppListBubbleView : public views::View,
 
   // AppListFolderController:
   void ShowFolderForItemView(AppListItemView* folder_item_view) override;
-  void ShowApps(AppListFolderItem* folder_item) override;
+  void ShowApps(AppListItemView* folder_item_view, bool select_folder) override;
   void ReparentFolderItemTransit(AppListFolderItem* folder_item) override;
   void ReparentDragEnded() override;
 
@@ -88,6 +88,10 @@ class ASH_EXPORT AppListBubbleView : public views::View,
 
   // Initializes the folder view, which appears on top of all other views.
   void InitFolderView();
+
+  // Makes the root apps grid view and other top-level views unfocusable if
+  // `disabled` is true, such that focus is contained in the folder view.
+  void DisableFocusForShowingActiveFolder(bool disabled);
 
   AppListViewDelegate* const view_delegate_;
   std::unique_ptr<AppListA11yAnnouncer> a11y_announcer_;
