@@ -39,6 +39,12 @@ Polymer({
   /** @private {?ScanningBrowserProxy}*/
   browserProxy_: null,
 
+  /** @private {?Function} */
+  onWindowResized_: null,
+
+  /** @private {?Function} */
+  onDialogActionClick_: null,
+
   properties: {
     /** @type {!AppState} */
     appState: {
@@ -137,9 +143,6 @@ Polymer({
 
     /** @private {string} */
     dialogConfirmationText_: String,
-
-    /** @private {?Function} */
-    onWindowResized_: Object,
 
     /**
      * True when |appState| is MULTI_PAGE_SCANNING.
@@ -459,10 +462,12 @@ Polymer({
    */
   showRemoveOrRescanDialog_(isRemovePageDialog, pageNumber) {
     // Configure the on-click action.
-    this.$$('#actionButton').addEventListener('click', () => {
+    this.onDialogActionClick_ = () => {
       this.fireDialogAction_(
           isRemovePageDialog ? 'remove-page' : 'rescan-page', pageNumber);
-    }, {once: true});
+    };
+    this.$$('#actionButton')
+        .addEventListener('click', this.onDialogActionClick_, {once: true});
 
     // Configure the dialog strings for the requested mode (Remove or Rescan).
     const buttonLabelKey =
@@ -501,6 +506,8 @@ Polymer({
   /**  @private */
   closeDialog_() {
     this.$$('#scanPreviewDialog').close();
+    this.$$('#actionButton')
+        .removeEventListener('click', this.onDialogActionClick_);
   },
 
   /**
