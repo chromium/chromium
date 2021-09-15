@@ -45,7 +45,8 @@
 namespace {
 
 constexpr char kNearbyNotificationId[] = "chrome://nearby";
-constexpr char kNearbyOnboardingNotificationId[] = "chrome://nearby/onboarding";
+constexpr char kNearbyDeviceTryingToShareNotificationId[] =
+    "chrome://nearby/nearby_device_trying_to_share";
 constexpr char kNearbyNotifier[] = "nearby";
 
 // Creates a default Nearby Share notification with empty content.
@@ -533,35 +534,52 @@ class SuccessNotificationDelegate : public NearbyNotificationDelegate {
       testing_callback_;
 };
 
-class OnboardingNotificationDelegate : public NearbyNotificationDelegate {
+class NearbyDeviceTryingToShareNotificationDelegate
+    : public NearbyNotificationDelegate {
  public:
-  explicit OnboardingNotificationDelegate(NearbyNotificationManager* manager)
+  explicit NearbyDeviceTryingToShareNotificationDelegate(
+      NearbyNotificationManager* manager)
       : manager_(manager) {}
-  ~OnboardingNotificationDelegate() override = default;
+  ~NearbyDeviceTryingToShareNotificationDelegate() override = default;
 
   // NearbyNotificationDelegate:
   void OnClick(const std::string& notification_id,
                const absl::optional<int>& action_index) override {
-    manager_->OnOnboardingClicked();
+    if (!action_index) {
+      return;
+    }
+
+    switch (*action_index) {
+      case 0:
+        manager_->OnNearbyDeviceTryingToShareClicked();
+        break;
+      case 1:
+        manager_->OnNearbyDeviceTryingToShareDismissed();
+        break;
+      default:
+        NOTREACHED();
+        break;
+    }
   }
 
   void OnClose(const std::string& notification_id) override {
-    manager_->OnOnboardingDismissed();
+    manager_->OnNearbyDeviceTryingToShareDismissed();
   }
 
  private:
   NearbyNotificationManager* manager_;
 };
 
-bool ShouldShowOnboardingNotification(PrefService* pref_service) {
+bool ShouldShowNearbyDeviceTryingToShareNotification(
+    PrefService* pref_service) {
   base::Time last_dismissed = pref_service->GetTime(
-      prefs::kNearbySharingOnboardingDismissedTimePrefName);
+      prefs::kNearbySharingNearbyDeviceTryingToShareDismissedTimePrefName);
   if (last_dismissed.is_null())
     return true;
 
   base::TimeDelta last_dismissed_delta = base::Time::Now() - last_dismissed;
   if (last_dismissed_delta <
-      NearbyNotificationManager::kOnboardingDismissedTimeout) {
+      NearbyNotificationManager::kNearbyDeviceTryingToShareDismissedTimeout) {
     NS_LOG(VERBOSE) << "Not showing onboarding notification: the user recently "
                        "dismissed the notification.";
     return false;
@@ -570,9 +588,10 @@ bool ShouldShowOnboardingNotification(PrefService* pref_service) {
   return true;
 }
 
-void UpdateOnboardingDismissedTime(PrefService* pref_service) {
-  pref_service->SetTime(prefs::kNearbySharingOnboardingDismissedTimePrefName,
-                        base::Time::Now());
+void UpdateNearbyDeviceTryingToShareDismissedTime(PrefService* pref_service) {
+  pref_service->SetTime(
+      prefs::kNearbySharingNearbyDeviceTryingToShareDismissedTimePrefName,
+      base::Time::Now());
 }
 
 bool ShouldClearNotification(
@@ -597,7 +616,14 @@ bool ShouldClearNotification(
 
 // static
 constexpr base::TimeDelta
-    NearbyNotificationManager::kOnboardingDismissedTimeout;
+    NearbyNotificationManager::kNearbyDeviceTryingToShareDismissedTimeout;
+
+void NearbyNotificationManager::SettingsOpener::ShowSettingsPage(
+    Profile* profile,
+    const std::string& sub_page) {
+  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(profile,
+                                                               sub_page);
+}
 
 NearbyNotificationManager::NearbyNotificationManager(
     NotificationDisplayService* notification_display_service,
@@ -607,7 +633,8 @@ NearbyNotificationManager::NearbyNotificationManager(
     : notification_display_service_(notification_display_service),
       nearby_service_(nearby_service),
       pref_service_(pref_service),
-      profile_(profile) {
+      profile_(profile),
+      settings_opener_(std::make_unique<SettingsOpener>()) {
   DCHECK(notification_display_service_);
   DCHECK(nearby_service_);
   DCHECK(pref_service_);
@@ -722,17 +749,17 @@ void NearbyNotificationManager::OnNearbyProcessStopped() {
 }
 
 void NearbyNotificationManager::OnFastInitiationDeviceFound() {
-  ShowOnboarding();
+  ShowNearbyDeviceTryingToShare();
 }
 
 void NearbyNotificationManager::OnFastInitiationDeviceLost() {
   if (!nearby_service_->AreFastInitiationDevicesDetected()) {
-    CloseOnboarding();
+    CloseNearbyDeviceTryingToShare();
   }
 }
 
 void NearbyNotificationManager::OnFastInitiationScanningStopped() {
-  CloseOnboarding();
+  CloseNearbyDeviceTryingToShare();
 }
 
 void NearbyNotificationManager::ShowProgress(
@@ -797,20 +824,33 @@ void NearbyNotificationManager::ShowConnectionRequest(
       /*metadata=*/nullptr);
 }
 
-void NearbyNotificationManager::ShowOnboarding() {
+void NearbyNotificationManager::ShowNearbyDeviceTryingToShare() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!ShouldShowOnboardingNotification(pref_service_))
+  if (!ShouldShowNearbyDeviceTryingToShareNotification(pref_service_))
     return;
 
   message_center::Notification notification =
-      CreateNearbyNotification(kNearbyOnboardingNotificationId);
+      CreateNearbyNotification(kNearbyDeviceTryingToShareNotificationId);
+
+  bool is_onboarding_complete = pref_service_->GetBoolean(
+      prefs::kNearbySharingOnboardingCompletePrefName);
+
   notification.set_title(
       l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_ONBOARDING_TITLE));
-  notification.set_message(
-      l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_ONBOARDING_MESSAGE));
+  notification.set_message(l10n_util::GetStringUTF16(
+      is_onboarding_complete ? IDS_NEARBY_NOTIFICATION_GO_VISIBLE_MESSAGE
+                             : IDS_NEARBY_NOTIFICATION_ONBOARDING_MESSAGE));
 
-  delegate_map_[kNearbyOnboardingNotificationId] =
-      std::make_unique<OnboardingNotificationDelegate>(this);
+  std::vector<message_center::ButtonInfo> notification_actions;
+  notification_actions.emplace_back(l10n_util::GetStringUTF16(
+      is_onboarding_complete ? IDS_NEARBY_NOTIFICATION_GO_VISIBLE_ACTION
+                             : IDS_NEARBY_NOTIFICATION_SET_UP_ACTION));
+  notification_actions.emplace_back(
+      l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_DISMISS_ACTION));
+  notification.set_buttons(notification_actions);
+
+  delegate_map_[kNearbyDeviceTryingToShareNotificationId] =
+      std::make_unique<NearbyDeviceTryingToShareNotificationDelegate>(this);
 
   notification_display_service_->Display(
       NotificationHandler::Type::NEARBY_SHARE, notification,
@@ -954,10 +994,11 @@ void NearbyNotificationManager::CloseTransfer() {
                                        kNearbyNotificationId);
 }
 
-void NearbyNotificationManager::CloseOnboarding() {
-  delegate_map_.erase(kNearbyOnboardingNotificationId);
-  notification_display_service_->Close(NotificationHandler::Type::NEARBY_SHARE,
-                                       kNearbyOnboardingNotificationId);
+void NearbyNotificationManager::CloseNearbyDeviceTryingToShare() {
+  delegate_map_.erase(kNearbyDeviceTryingToShareNotificationId);
+  notification_display_service_->Close(
+      NotificationHandler::Type::NEARBY_SHARE,
+      kNearbyDeviceTryingToShareNotificationId);
 }
 
 NearbyNotificationDelegate* NearbyNotificationManager::GetNotificationDelegate(
@@ -988,22 +1029,18 @@ void NearbyNotificationManager::AcceptTransfer() {
   nearby_service_->Accept(*share_target_, base::DoNothing());
 }
 
-void NearbyNotificationManager::OnOnboardingClicked() {
-  CloseOnboarding();
+void NearbyNotificationManager::OnNearbyDeviceTryingToShareClicked() {
+  CloseNearbyDeviceTryingToShare();
 
-  if (base::FeatureList::IsEnabled(
-          features::kNearbySharingBackgroundScanning)) {
-    std::string path =
-        std::string(chromeos::settings::mojom::kNearbyShareSubpagePath) +
-        "?receive";
-    chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(profile_,
-                                                                 path);
-  }
+  std::string path =
+      std::string(chromeos::settings::mojom::kNearbyShareSubpagePath) +
+      "?receive";
+  settings_opener_->ShowSettingsPage(profile_, path);
 }
 
-void NearbyNotificationManager::OnOnboardingDismissed() {
-  CloseOnboarding();
-  UpdateOnboardingDismissedTime(pref_service_);
+void NearbyNotificationManager::OnNearbyDeviceTryingToShareDismissed() {
+  CloseNearbyDeviceTryingToShare();
+  UpdateNearbyDeviceTryingToShareDismissedTime(pref_service_);
 }
 
 void NearbyNotificationManager::CloseSuccessNotification() {
@@ -1015,4 +1052,9 @@ void NearbyNotificationManager::CloseSuccessNotification() {
 void NearbyNotificationManager::SetOnSuccessClickedForTesting(
     base::OnceCallback<void(SuccessNotificationAction)> callback) {
   success_action_test_callback_ = std::move(callback);
+}
+
+void NearbyNotificationManager::SetSettingsOpenerForTesting(
+    std::unique_ptr<SettingsOpener> settings_opener) {
+  settings_opener_ = std::move(settings_opener);
 }

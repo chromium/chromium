@@ -60,6 +60,7 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/strings/grit/ui_strings.h"
 
+using ::testing::_;
 using testing::Return;
 
 namespace {
@@ -70,6 +71,14 @@ const char kTextUrl[] = "https://google.com";
 MATCHER_P(MatchesTarget, target, "") {
   return arg.id == target.id;
 }
+
+class MockSettingsOpener : public NearbyNotificationManager::SettingsOpener {
+ public:
+  MOCK_METHOD(void,
+              ShowSettingsPage,
+              (Profile*, const std::string&),
+              (override));
+};
 
 TextAttachment CreateTextAttachment(TextAttachment::Type type) {
   return TextAttachment(type, kTextBody, /*title=*/absl::nullopt,
@@ -143,6 +152,12 @@ class NearbyNotificationManagerTest : public testing::Test {
         std::make_unique<NotificationDisplayServiceTester>(&profile_);
     nearby_service_ = CreateAndUseMockNearbySharingService(&profile_);
     manager_ = CreateManager();
+
+    std::unique_ptr<MockSettingsOpener> settings_opener =
+        std::make_unique<MockSettingsOpener>();
+    settings_opener_ = settings_opener.get();
+    manager_->SetSettingsOpenerForTesting(std::move(settings_opener));
+
     EXPECT_CALL(*nearby_service_, GetNotificationDelegate(testing::_))
         .WillRepeatedly(
             testing::Invoke([&](const std::string& notification_id) {
@@ -232,6 +247,7 @@ class NearbyNotificationManagerTest : public testing::Test {
   std::unique_ptr<base::ScopedDisallowBlocking> disallow_blocking_;
   std::unique_ptr<NearbyNotificationManager> manager_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
+  MockSettingsOpener* settings_opener_;
 };
 
 struct AttachmentsTestParamInternal {
@@ -666,8 +682,9 @@ TEST_F(NearbyNotificationManagerTest,
   EXPECT_TRUE(message.find(share_target.device_name) != std::string::npos);
 }
 
-TEST_F(NearbyNotificationManagerTest, ShowOnboarding_ShowsNotification) {
-  manager()->ShowOnboarding();
+TEST_F(NearbyNotificationManagerTest,
+       ShowNearbyDeviceTryingToShare_ShowsNotification) {
+  manager()->ShowNearbyDeviceTryingToShare();
 
   std::vector<message_center::Notification> notifications =
       GetDisplayedNotifications();
@@ -687,11 +704,65 @@ TEST_F(NearbyNotificationManagerTest, ShowOnboarding_ShowsNotification) {
   EXPECT_EQ(&kNearbyShareIcon, &notification.vector_small_image());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_SOURCE),
             notification.display_source());
-  EXPECT_EQ(0u, notification.buttons().size());
+  EXPECT_EQ(2u, notification.buttons().size());
+
+  std::vector<std::u16string> expected_button_titles;
+  expected_button_titles.push_back(
+      l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_SET_UP_ACTION));
+  expected_button_titles.push_back(
+      l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_DISMISS_ACTION));
+
+  const std::vector<message_center::ButtonInfo>& buttons =
+      notification.buttons();
+  ASSERT_EQ(expected_button_titles.size(), buttons.size());
+
+  for (size_t i = 0; i < expected_button_titles.size(); ++i)
+    EXPECT_EQ(expected_button_titles[i], buttons[i].title);
+}
+
+TEST_F(
+    NearbyNotificationManagerTest,
+    ShowNearbyDeviceTryingToShare_AlreadyOnboarded_ShowsGoVisibleNotification) {
+  pref_service_.SetBoolean(prefs::kNearbySharingOnboardingCompletePrefName,
+                           true);
+  manager()->ShowNearbyDeviceTryingToShare();
+
+  std::vector<message_center::Notification> notifications =
+      GetDisplayedNotifications();
+  ASSERT_EQ(1u, notifications.size());
+
+  const message_center::Notification& notification = notifications[0];
+  EXPECT_EQ(message_center::NOTIFICATION_TYPE_SIMPLE, notification.type());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_ONBOARDING_TITLE),
+            notification.title());
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_GO_VISIBLE_MESSAGE),
+      notification.message());
+  EXPECT_TRUE(notification.icon().IsEmpty());
+  EXPECT_EQ(GURL(), notification.origin_url());
+  EXPECT_FALSE(notification.never_timeout());
+  EXPECT_FALSE(notification.renotify());
+  EXPECT_EQ(&kNearbyShareIcon, &notification.vector_small_image());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_SOURCE),
+            notification.display_source());
+  EXPECT_EQ(2u, notification.buttons().size());
+
+  std::vector<std::u16string> expected_button_titles;
+  expected_button_titles.push_back(
+      l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_GO_VISIBLE_ACTION));
+  expected_button_titles.push_back(
+      l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_DISMISS_ACTION));
+
+  const std::vector<message_center::ButtonInfo>& buttons =
+      notification.buttons();
+  ASSERT_EQ(expected_button_titles.size(), buttons.size());
+
+  for (size_t i = 0; i < expected_button_titles.size(); ++i)
+    EXPECT_EQ(expected_button_titles[i], buttons[i].title);
 }
 
 TEST_F(NearbyNotificationManagerTest,
-       FastInitiationDeviceFound_ShowsOnboarding) {
+       FastInitiationDeviceFound_ShowsNearbyDeviceTryingToShare) {
   manager()->OnFastInitiationDeviceFound();
 
   std::vector<message_center::Notification> notifications =
@@ -709,7 +780,7 @@ TEST_F(NearbyNotificationManagerTest,
 }
 
 TEST_F(NearbyNotificationManagerTest,
-       FastInitiationDeviceLost_ClosesOnboarding) {
+       FastInitiationDeviceLost_ClosesNearbyDeviceTryingToShare) {
   manager()->OnFastInitiationDeviceFound();
   EXPECT_EQ(1u, GetDisplayedNotifications().size());
 
@@ -729,7 +800,7 @@ TEST_F(NearbyNotificationManagerTest,
 }
 
 TEST_F(NearbyNotificationManagerTest,
-       FastInitiationScanningStopped_ClosesOnboarding) {
+       FastInitiationScanningStopped_ClosesNearbyDeviceTryingToShare) {
   manager()->OnFastInitiationDeviceFound();
   EXPECT_EQ(1u, GetDisplayedNotifications().size());
 
@@ -849,8 +920,8 @@ TEST_F(NearbyNotificationManagerTest,
 }
 
 TEST_F(NearbyNotificationManagerTest,
-       CloseProgressNotification_KeepsOnboardingNotification) {
-  manager()->ShowOnboarding();
+       CloseProgressNotification_KeepsNearbyDeviceTryingToShareNotification) {
+  manager()->ShowNearbyDeviceTryingToShare();
 
   manager()->CloseTransfer();
   EXPECT_EQ(1u, GetDisplayedNotifications().size());
@@ -1050,24 +1121,25 @@ TEST_F(NearbyNotificationManagerTest, ConnectionRequest_Close) {
   EXPECT_EQ(0u, GetDisplayedNotifications().size());
 }
 
-TEST_F(NearbyNotificationManagerTest, Onboarding_Click) {
-  manager()->ShowOnboarding();
+TEST_F(NearbyNotificationManagerTest, NearbyDeviceTryingToShare_Click) {
+  manager()->ShowNearbyDeviceTryingToShare();
   std::vector<message_center::Notification> notifications =
       GetDisplayedNotifications();
   ASSERT_EQ(1u, notifications.size());
-
+  EXPECT_CALL(*settings_opener_, ShowSettingsPage(_, _));
   notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
                                       notifications[0].id(),
-                                      /*action_index=*/absl::nullopt,
+                                      /*action_index=*/0,
                                       /*reply=*/absl::nullopt);
 
   // Notification should be closed.
   EXPECT_EQ(0u, GetDisplayedNotifications().size());
 }
 
-TEST_F(NearbyNotificationManagerTest, Onboarding_DismissTimeout) {
+TEST_F(NearbyNotificationManagerTest,
+       NearbyDeviceTryingToShare_OnClose_DismissTimeout) {
   // First notification should be shown by default.
-  manager()->ShowOnboarding();
+  manager()->ShowNearbyDeviceTryingToShare();
   std::vector<message_center::Notification> notifications =
       GetDisplayedNotifications();
   ASSERT_EQ(1u, notifications.size());
@@ -1078,13 +1150,38 @@ TEST_F(NearbyNotificationManagerTest, Onboarding_DismissTimeout) {
   EXPECT_EQ(0u, GetDisplayedNotifications().size());
 
   // Second notification should be blocked if shown before the timeout passed.
-  manager()->ShowOnboarding();
+  manager()->ShowNearbyDeviceTryingToShare();
   EXPECT_EQ(0u, GetDisplayedNotifications().size());
 
   // Fast forward by the timeout until we can show the notification again.
   task_environment_.FastForwardBy(
-      NearbyNotificationManager::kOnboardingDismissedTimeout);
-  manager()->ShowOnboarding();
+      NearbyNotificationManager::kNearbyDeviceTryingToShareDismissedTimeout);
+  manager()->ShowNearbyDeviceTryingToShare();
+  EXPECT_EQ(1u, GetDisplayedNotifications().size());
+}
+
+TEST_F(NearbyNotificationManagerTest,
+       NearbyDeviceTryingToShare_OnDismissClicked_DismissTimeout) {
+  // First notification should be shown by default.
+  manager()->ShowNearbyDeviceTryingToShare();
+  std::vector<message_center::Notification> notifications =
+      GetDisplayedNotifications();
+  ASSERT_EQ(1u, notifications.size());
+
+  notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
+                                      notifications[0].id(),
+                                      /*action_index=*/1,
+                                      /*reply=*/absl::nullopt);
+  EXPECT_EQ(0u, GetDisplayedNotifications().size());
+
+  // Second notification should be blocked if shown before the timeout passed.
+  manager()->ShowNearbyDeviceTryingToShare();
+  EXPECT_EQ(0u, GetDisplayedNotifications().size());
+
+  // Fast forward by the timeout until we can show the notification again.
+  task_environment_.FastForwardBy(
+      NearbyNotificationManager::kNearbyDeviceTryingToShareDismissedTimeout);
+  manager()->ShowNearbyDeviceTryingToShare();
   EXPECT_EQ(1u, GetDisplayedNotifications().size());
 }
 
