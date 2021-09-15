@@ -22,6 +22,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
@@ -335,6 +336,7 @@ ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcess() {
 
 ProcessSingleton::NotifyResult
 ProcessSingleton::NotifyOtherProcessOrCreate() {
+  TRACE_EVENT0("startup", "ProcessSingleton::NotifyOtherProcessOrCreate");
   const base::TimeTicks begin_ticks = base::TimeTicks::Now();
   for (int i = 0; i < 2; ++i) {
     if (Create()) {
