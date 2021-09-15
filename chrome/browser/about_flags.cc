@@ -7611,6 +7611,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kShareUsageRankingFixedMore)},
 #endif
 
+    {"share-context-menu", flag_descriptions::kShareContextMenuName,
+     flag_descriptions::kShareContextMenuDescription, kOsAll,
+     FEATURE_VALUE_TYPE(sharing::kShareMenu)},
+
     {"enable-safe-browsing-per-profile-network-contexts",
      flag_descriptions::kSafeBrowsingPerProfileNetworkContextsName,
      flag_descriptions::kSafeBrowsingPerProfileNetworkContextsDescription,

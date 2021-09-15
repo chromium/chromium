@@ -5028,6 +5028,11 @@
     "expiry_milestone": 92
   },
   {
+    "name": "share-context-menu",
+    "owners": [ "ellyjones", "chrome-sharing-eng@google.com" ],
+    "expiry_milestone": 97
+  },
+  {
     "name": "share-usage-ranking",
     "owners": [ "ellyjones", "chrome-sharing-eng@google.com" ],
     "expiry_milestone": 96
