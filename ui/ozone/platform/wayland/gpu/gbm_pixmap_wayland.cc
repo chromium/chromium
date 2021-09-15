@@ -165,6 +165,7 @@ bool GbmPixmapWayland::ScheduleOverlayPlane(
     bool enable_blend,
     const gfx::Rect& damage_rect,
     float opacity,
+    gfx::OverlayPriorityHint priority_hint,
     std::vector<gfx::GpuFence> acquire_fences,
     std::vector<gfx::GpuFence> release_fences) {
   DCHECK_NE(widget, gfx::kNullAcceleratedWidget);
@@ -198,7 +199,7 @@ bool GbmPixmapWayland::ScheduleOverlayPlane(
                                           : std::make_unique<gfx::GpuFence>(
                                                 std::move(acquire_fences[0])),
                    plane_z_order, plane_transform, display_bounds, crop_rect,
-                   enable_blend, damage_rect, opacity),
+                   enable_blend, damage_rect, opacity, priority_hint),
       buffer_id_);
   return true;
 }

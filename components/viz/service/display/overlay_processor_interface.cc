@@ -75,6 +75,16 @@ void OverlayProcessorInterface::RecordOverlayDamageRectHistograms(
   }
 }
 
+OverlayProcessorInterface::OutputSurfaceOverlayPlane::
+    OutputSurfaceOverlayPlane() = default;
+OverlayProcessorInterface::OutputSurfaceOverlayPlane::OutputSurfaceOverlayPlane(
+    const OutputSurfaceOverlayPlane&) = default;
+OverlayProcessorInterface::OutputSurfaceOverlayPlane&
+OverlayProcessorInterface::OutputSurfaceOverlayPlane::operator=(
+    const OutputSurfaceOverlayPlane&) = default;
+OverlayProcessorInterface::OutputSurfaceOverlayPlane::
+    ~OutputSurfaceOverlayPlane() = default;
+
 std::unique_ptr<OverlayProcessorInterface>
 OverlayProcessorInterface::CreateOverlayProcessor(
     OutputSurface* output_surface,

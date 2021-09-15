@@ -59,10 +59,11 @@ bool GbmSurfacelessWayland::ScheduleOverlayPlane(
     bool enable_blend,
     const gfx::Rect& damage_rect,
     float opacity,
-    std::unique_ptr<gfx::GpuFence> gpu_fence) {
+    std::unique_ptr<gfx::GpuFence> gpu_fence,
+    gfx::OverlayPriorityHint priority_hint) {
   unsubmitted_frames_.back()->overlays.emplace_back(
       z_order, transform, image, bounds_rect, crop_rect, enable_blend,
-      damage_rect, opacity, std::move(gpu_fence));
+      damage_rect, opacity, std::move(gpu_fence), priority_hint);
   return true;
 }
 

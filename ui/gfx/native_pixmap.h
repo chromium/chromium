@@ -12,6 +12,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_pixmap_handle.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gfx/overlay_transform.h"
 
 namespace gfx {
@@ -64,6 +65,8 @@ class NativePixmap : public base::RefCountedThreadSafe<NativePixmap> {
   // the pixmap.
   // |release_fences| specifies gpu fences that are signalled when the pixmap
   // has been displayed and is ready for reuse.
+  // |priority_hint| specifies overlay priority that delegated compositor can
+  // use as a hint for overlay prioritization.
   virtual bool ScheduleOverlayPlane(
       gfx::AcceleratedWidget widget,
       int plane_z_order,
@@ -73,6 +76,7 @@ class NativePixmap : public base::RefCountedThreadSafe<NativePixmap> {
       bool enable_blend,
       const gfx::Rect& damage_rect,
       float opacity,
+      gfx::OverlayPriorityHint priority_hint,
       std::vector<gfx::GpuFence> acquire_fences,
       std::vector<gfx::GpuFence> release_fences) = 0;
 

@@ -18,6 +18,7 @@
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "gpu/ipc/gpu_task_scheduler_helper.h"
+#include "ui/gfx/overlay_priority_hint.h"
 
 #if defined(OS_WIN)
 #include "components/viz/service/display/dc_layer_overlay.h"
@@ -76,6 +77,10 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
   // default values for the primary plane, this is a partial list of
   // OverlayCandidate.
   struct VIZ_SERVICE_EXPORT OutputSurfaceOverlayPlane {
+    OutputSurfaceOverlayPlane();
+    OutputSurfaceOverlayPlane(const OutputSurfaceOverlayPlane&);
+    OutputSurfaceOverlayPlane& operator=(const OutputSurfaceOverlayPlane&);
+    ~OutputSurfaceOverlayPlane();
     // Display's rotation information.
     gfx::OverlayTransform transform;
     // Rect on the display to position to. This takes in account of Display's
@@ -97,6 +102,8 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
     unsigned gpu_fence_id;
     // Mailbox corresponding to the buffer backing the primary plane.
     gpu::Mailbox mailbox;
+    // Hints for overlay prioritization.
+    gfx::OverlayPriorityHint priority_hint;
   };
 
   // TODO(weiliangc): Eventually the asymmetry between primary plane and

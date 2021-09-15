@@ -252,7 +252,7 @@ void SurfacelessSkiaGlRenderer::RenderFrame() {
         0, gfx::OVERLAY_TRANSFORM_NONE, buffers_[back_buffer_]->image(),
         primary_plane_rect_, unity_rect, /* enable_blend */ true,
         gfx::Rect(buffers_[back_buffer_]->size()), /* opacity */ 1.0f,
-        /* gpu_fence */ nullptr);
+        /* gpu_fence */ nullptr, gfx::OverlayPriorityHint::kNone);
   }
 
   if (overlay_buffer_[0] && overlay_list.back().overlay_handled) {
@@ -260,7 +260,7 @@ void SurfacelessSkiaGlRenderer::RenderFrame() {
         1, gfx::OVERLAY_TRANSFORM_NONE, overlay_buffer_[back_buffer_]->image(),
         overlay_rect, unity_rect, /* enable_blend */ true,
         gfx::Rect(buffers_[back_buffer_]->size()), /* opacity */ 1.0f,
-        /* gpu_fence */ nullptr);
+        /* gpu_fence */ nullptr, gfx::OverlayPriorityHint::kNone);
   }
 
   back_buffer_ ^= 1;

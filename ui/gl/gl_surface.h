@@ -19,6 +19,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/surface_origin.h"
@@ -243,7 +244,8 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
                                     bool enable_blend,
                                     const gfx::Rect& damage_rect,
                                     float opacity,
-                                    std::unique_ptr<gfx::GpuFence> gpu_fence);
+                                    std::unique_ptr<gfx::GpuFence> gpu_fence,
+                                    gfx::OverlayPriorityHint priority_hint);
 
   // Schedule a CALayer to be shown at swap time.
   // All arguments correspond to their CALayer properties.
@@ -407,7 +409,8 @@ class GL_EXPORT GLSurfaceAdapter : public GLSurface {
                             bool enable_blend,
                             const gfx::Rect& damage_rect,
                             float opacity,
-                            std::unique_ptr<gfx::GpuFence> gpu_fence) override;
+                            std::unique_ptr<gfx::GpuFence> gpu_fence,
+                            gfx::OverlayPriorityHint priority_hint) override;
   bool ScheduleDCLayer(
       std::unique_ptr<ui::DCRendererLayerParams> params) override;
   bool SetEnableDCLayers(bool enable) override;

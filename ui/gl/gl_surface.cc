@@ -156,7 +156,8 @@ bool GLSurface::ScheduleOverlayPlane(int z_order,
                                      bool enable_blend,
                                      const gfx::Rect& damage_rect,
                                      float opacity,
-                                     std::unique_ptr<gfx::GpuFence> gpu_fence) {
+                                     std::unique_ptr<gfx::GpuFence> gpu_fence,
+                                     gfx::OverlayPriorityHint priority_hint) {
   NOTIMPLEMENTED();
   return false;
 }
@@ -455,10 +456,11 @@ bool GLSurfaceAdapter::ScheduleOverlayPlane(
     bool enable_blend,
     const gfx::Rect& damage_rect,
     float opacity,
-    std::unique_ptr<gfx::GpuFence> gpu_fence) {
-  return surface_->ScheduleOverlayPlane(z_order, transform, image, bounds_rect,
-                                        crop_rect, enable_blend, damage_rect,
-                                        opacity, std::move(gpu_fence));
+    std::unique_ptr<gfx::GpuFence> gpu_fence,
+    gfx::OverlayPriorityHint priority_hint) {
+  return surface_->ScheduleOverlayPlane(
+      z_order, transform, image, bounds_rect, crop_rect, enable_blend,
+      damage_rect, opacity, std::move(gpu_fence), priority_hint);
 }
 
 bool GLSurfaceAdapter::ScheduleDCLayer(

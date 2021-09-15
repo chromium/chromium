@@ -21,7 +21,8 @@ GLSurfaceOverlay::GLSurfaceOverlay(int z_order,
                                    bool enable_blend,
                                    const gfx::Rect& damage_rect,
                                    float opacity,
-                                   std::unique_ptr<gfx::GpuFence> gpu_fence)
+                                   std::unique_ptr<gfx::GpuFence> gpu_fence,
+                                   gfx::OverlayPriorityHint priority_hint)
     : z_order_(z_order),
       transform_(transform),
       image_(image),
@@ -30,7 +31,8 @@ GLSurfaceOverlay::GLSurfaceOverlay(int z_order,
       enable_blend_(enable_blend),
       damage_rect_(damage_rect),
       opacity_(opacity),
-      gpu_fence_(std::move(gpu_fence)) {}
+      gpu_fence_(std::move(gpu_fence)),
+      priority_hint_(priority_hint) {}
 
 GLSurfaceOverlay::GLSurfaceOverlay(GLSurfaceOverlay&& other) = default;
 
@@ -45,7 +47,7 @@ bool GLSurfaceOverlay::ScheduleOverlayPlane(gfx::AcceleratedWidget widget) {
   DCHECK(pixmap);
   return pixmap->ScheduleOverlayPlane(
       widget, z_order_, transform_, bounds_rect_, crop_rect_, enable_blend_,
-      damage_rect_, opacity_, std::move(acquire_fences), {});
+      damage_rect_, opacity_, priority_hint_, std::move(acquire_fences), {});
 }
 
 void GLSurfaceOverlay::Flush() const {

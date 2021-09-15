@@ -99,7 +99,8 @@ bool GLSurfaceCast::ScheduleOverlayPlane(
     bool enable_blend,
     const gfx::Rect& damage_rect,
     float opacity,
-    std::unique_ptr<gfx::GpuFence> gpu_fence) {
+    std::unique_ptr<gfx::GpuFence> gpu_fence,
+    gfx::OverlayPriorityHint priority_hint) {
   // Currently the Ozone-Cast platform doesn't use the gpu_fence, so we don't
   // propagate it further. If this changes we will need to store the gpu fence
   // to ensure it stays valid for as long as the operation needs it, and pass a

@@ -457,9 +457,8 @@ void OutputPresenterFuchsia::PresentNextFrame() {
         dependency_->GetSurfaceHandle(), overlay.plane_z_order,
         overlay.transform, gfx::ToRoundedRect(overlay.display_rect),
         overlay.uv_rect, !overlay.is_opaque,
-        gfx::ToRoundedRect(overlay.damage_rect),
-        overlay.opacity,
-        ZxEventsToGpuFences(frame.acquire_fences),
+        gfx::ToRoundedRect(overlay.damage_rect), overlay.opacity,
+        overlay.priority_hint, ZxEventsToGpuFences(frame.acquire_fences),
         /*release_fences=*/{});
   }
 

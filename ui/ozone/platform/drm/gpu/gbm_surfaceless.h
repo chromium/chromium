@@ -50,7 +50,8 @@ class GbmSurfaceless : public gl::SurfacelessEGL {
                             bool enable_blend,
                             const gfx::Rect& damage_rect,
                             float opacity,
-                            std::unique_ptr<gfx::GpuFence> gpu_fence) override;
+                            std::unique_ptr<gfx::GpuFence> gpu_fence,
+                            gfx::OverlayPriorityHint priority_hint) override;
   bool Resize(const gfx::Size& size,
               float scale_factor,
               const gfx::ColorSpace& color_space,

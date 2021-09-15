@@ -77,6 +77,7 @@ bool GbmPixmap::ScheduleOverlayPlane(
     bool enable_blend,
     const gfx::Rect& damage_rect,
     float opacity,
+    gfx::OverlayPriorityHint priority_hint,
     std::vector<gfx::GpuFence> acquire_fences,
     std::vector<gfx::GpuFence> release_fences) {
   DCHECK(buffer_->GetFlags() & GBM_BO_USE_SCANOUT);

@@ -18,7 +18,8 @@ OverlayPlane::OverlayPlane(scoped_refptr<gfx::NativePixmap> pixmap,
                            const gfx::RectF& crop_rect,
                            bool enable_blend,
                            const gfx::Rect& damage_rect,
-                           float opacity)
+                           float opacity,
+                           gfx::OverlayPriorityHint priority_hint)
     : pixmap(std::move(pixmap)),
       gpu_fence(std::move(gpu_fence)),
       z_order(z_order),
@@ -27,7 +28,8 @@ OverlayPlane::OverlayPlane(scoped_refptr<gfx::NativePixmap> pixmap,
       crop_rect(crop_rect),
       enable_blend(enable_blend),
       damage_rect(damage_rect),
-      opacity(opacity) {}
+      opacity(opacity),
+      priority_hint(priority_hint) {}
 
 OverlayPlane::OverlayPlane(OverlayPlane&& other) = default;
 

@@ -33,7 +33,8 @@ struct COMPONENT_EXPORT(OZONE_BASE) OverlayPlane {
                const gfx::RectF& crop_rect,
                bool enable_blend,
                const gfx::Rect& damage_rect,
-               float opacity);
+               float opacity,
+               gfx::OverlayPriorityHint priority_hint);
   OverlayPlane(OverlayPlane&& other);
   OverlayPlane& operator=(OverlayPlane&& other);
   ~OverlayPlane();
@@ -69,6 +70,9 @@ struct COMPONENT_EXPORT(OZONE_BASE) OverlayPlane {
   // Opacity of overlay plane. For a blending buffer (|enable_blend|) the total
   // transparency will by = channel alpha * |opacity|.
   float opacity = 1.0f;
+
+  // Hints for overlay prioritization when delegated composition is used.
+  gfx::OverlayPriorityHint priority_hint;
 };
 
 }  // namespace ui

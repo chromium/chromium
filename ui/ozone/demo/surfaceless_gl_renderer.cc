@@ -269,7 +269,8 @@ void SurfacelessGlRenderer::RenderFrame() {
         0, gfx::OVERLAY_TRANSFORM_NONE, buffers_[back_buffer_]->image(),
         primary_plane_rect_, unity_rect, false,
         gfx::Rect(buffers_[back_buffer_]->size()), 1.0f,
-        gl_fence ? gl_fence->GetGpuFence() : nullptr);
+        gl_fence ? gl_fence->GetGpuFence() : nullptr,
+        gfx::OverlayPriorityHint::kNone);
   }
 
   for (size_t i = 0; i < overlay_cnt_; ++i) {
@@ -279,7 +280,7 @@ void SurfacelessGlRenderer::RenderFrame() {
           overlay_buffers_[i][back_buffer_]->image(), overlay_rect[i],
           unity_rect, false,
           gfx::Rect(overlay_buffers_[i][back_buffer_]->size()), 1.0f,
-          /* gpu_fence */ nullptr);
+          /* gpu_fence */ nullptr, gfx::OverlayPriorityHint::kNone);
     }
   }
 

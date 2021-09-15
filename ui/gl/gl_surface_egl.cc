@@ -2092,14 +2092,15 @@ bool NativeViewGLSurfaceEGL::ScheduleOverlayPlane(
     bool enable_blend,
     const gfx::Rect& damage_rect,
     float opacity,
-    std::unique_ptr<gfx::GpuFence> gpu_fence) {
+    std::unique_ptr<gfx::GpuFence> gpu_fence,
+    gfx::OverlayPriorityHint priority_hint) {
 #if !defined(OS_ANDROID)
   NOTIMPLEMENTED();
   return false;
 #else
-  pending_overlays_.push_back(
-      GLSurfaceOverlay(z_order, transform, image, bounds_rect, crop_rect, true,
-                       damage_rect, opacity, std::move(gpu_fence)));
+  pending_overlays_.push_back(GLSurfaceOverlay(
+      z_order, transform, image, bounds_rect, crop_rect, true, damage_rect,
+      opacity, std::move(gpu_fence), priority_hint));
   return true;
 #endif
 }

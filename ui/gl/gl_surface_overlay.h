@@ -32,7 +32,8 @@ class GL_EXPORT GLSurfaceOverlay {
                    bool enable_blend,
                    const gfx::Rect& damage_rect,
                    float opacity,
-                   std::unique_ptr<gfx::GpuFence> gpu_fence);
+                   std::unique_ptr<gfx::GpuFence> gpu_fence,
+                   gfx::OverlayPriorityHint priority_hint);
   GLSurfaceOverlay(GLSurfaceOverlay&& other);
   ~GLSurfaceOverlay();
 
@@ -57,6 +58,7 @@ class GL_EXPORT GLSurfaceOverlay {
   gfx::Rect damage_rect_;
   float opacity_;
   std::unique_ptr<gfx::GpuFence> gpu_fence_;
+  gfx::OverlayPriorityHint priority_hint_;
 };
 
 }  // namespace gl

@@ -502,6 +502,8 @@ bool OverlayCandidate::FromTextureQuad(
     HandleClipAndSubsampling(candidate, primary_rect);
     candidate->hw_protected_validation_id = quad->hw_protected_validation_id;
   }
+
+  candidate->priority_hint = gfx::OverlayPriorityHint::kRegular;
   return true;
 }
 

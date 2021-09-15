@@ -567,6 +567,7 @@ source_set("memory_buffer_sources") {
     "hdr_metadata.cc",
     "hdr_metadata.h",
     "native_pixmap.h",
+    "overlay_priority_hint.h",
     "overlay_transform.h",
     "surface_origin.h",
   ]
