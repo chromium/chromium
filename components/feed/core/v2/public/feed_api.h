@@ -157,7 +157,8 @@ class FeedApi {
                                  const std::string& slice_id) = 0;
   // Some feed content has been loaded and is now available to the user on the
   // feed surface. Reported only once after a surface is attached.
-  virtual void ReportFeedViewed(SurfaceId surface_id) = 0;
+  virtual void ReportFeedViewed(const StreamType& stream_type,
+                                SurfaceId surface_id) = 0;
   // A web page was loaded in response to opening a link from the Feed.
   virtual void ReportPageLoaded() = 0;
   // The user triggered the default open action, usually by tapping the card.

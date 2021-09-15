@@ -30,6 +30,7 @@
 #include "components/feed/core/v2/stream/notice_card_tracker.h"
 #include "components/feed/core/v2/stream/upload_criteria.h"
 #include "components/feed/core/v2/stream_model.h"
+#include "components/feed/core/v2/stream_surface_set.h"
 #include "components/feed/core/v2/tasks/load_more_task.h"
 #include "components/feed/core/v2/tasks/load_stream_task.h"
 #include "components/feed/core/v2/tasks/wait_for_store_initialize_task.h"
@@ -140,7 +141,8 @@ class FeedStream : public FeedApi,
   void ReportSliceViewed(SurfaceId surface_id,
                          const StreamType& stream_type,
                          const std::string& slice_id) override;
-  void ReportFeedViewed(SurfaceId surface_id) override;
+  void ReportFeedViewed(const StreamType& stream_type,
+                        SurfaceId surface_id) override;
   void ReportPageLoaded() override;
   void ReportOpenAction(const GURL& url,
                         const StreamType& stream_type,
@@ -300,7 +302,7 @@ class FeedStream : public FeedApi,
   using UnreadContentNotifier = feed_stream::UnreadContentNotifier;
 
   struct Stream {
-    Stream();
+    explicit Stream(const StreamType& stream_type);
     ~Stream();
     Stream(const Stream&) = delete;
     Stream& operator=(const Stream&) = delete;
@@ -308,6 +310,7 @@ class FeedStream : public FeedApi,
     // Whether the model is being loaded. Used to prevent multiple simultaneous
     // attempts to load the model.
     bool model_loading_in_progress = false;
+    StreamSurfaceSet surfaces;
     std::unique_ptr<SurfaceUpdater> surface_updater;
     // The stream model. Null if not yet loaded.
     // Internally, this should only be changed by |LoadModel()| and

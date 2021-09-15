@@ -6,6 +6,7 @@
 #define COMPONENTS_FEED_CORE_V2_TYPES_H_
 
 #include <cstdint>
+#include <iosfwd>
 #include <string>
 
 #include "base/containers/flat_set.h"
@@ -123,6 +124,8 @@ class ContentIdSet {
   // `id` is unique enough given these are only `feedstore::Content` ids.
   base::flat_set<int64_t> content_ids_;
 };
+
+std::ostream& operator<<(std::ostream& s, const ContentIdSet& id_set);
 
 struct ContentStats {
   int card_count = 0;

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_FEED_CORE_V2_SURFACE_UPDATER_H_
 #define COMPONENTS_FEED_CORE_V2_SURFACE_UPDATER_H_
 
+#include <deque>
 #include <map>
 #include <string>
 #include <vector>
@@ -16,6 +17,7 @@
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/launch_reliability_logger.h"
 #include "components/feed/core/v2/stream_model.h"
+#include "components/feed/core/v2/stream_surface_set.h"
 
 namespace feedui {
 class StreamUpdate;
@@ -27,9 +29,11 @@ class MetricsReporter;
 // Keeps the UI up to date by calling |FeedStreamSurface::StreamUpdate()|.
 // Updates are triggered when |StreamModel| changes, or when loading state
 // changes (for spinners and zero-state).
-class SurfaceUpdater : public StreamModel::Observer {
+class SurfaceUpdater : public StreamModel::Observer,
+                       public StreamSurfaceSet::Observer {
  public:
-  explicit SurfaceUpdater(MetricsReporter* metrics_reporter);
+  explicit SurfaceUpdater(MetricsReporter* metrics_reporter,
+                          StreamSurfaceSet* surfaces);
   ~SurfaceUpdater() override;
   SurfaceUpdater(const SurfaceUpdater&) = delete;
   SurfaceUpdater& operator=(const SurfaceUpdater&) = delete;
@@ -44,10 +48,12 @@ class SurfaceUpdater : public StreamModel::Observer {
   // StreamModel::Observer.
   void OnUiUpdate(const StreamModel::UiUpdate& update) override;
 
-  // Signals from |FeedStream|.
-  void SurfaceAdded(FeedStreamSurface* surface,
-                    feedwire::DiscoverLaunchResult loading_not_allowed_reason);
-  void SurfaceRemoved(FeedStreamSurface* surface);
+  // StreamSurfaceSet::Observer.
+  void SurfaceAdded(
+      FeedStreamSurface* surface,
+      feedwire::DiscoverLaunchResult loading_not_allowed_reason) override;
+  void SurfaceRemoved(FeedStreamSurface* surface) override;
+
   // Called to indicate the initial model load is in progress.
   void LoadStreamStarted(bool manual_refreshing);
   void LoadStreamComplete(bool success,
@@ -60,9 +66,6 @@ class SurfaceUpdater : public StreamModel::Observer {
   // Returns the 0-based index of the slice in the stream, or -1 if the slice is
   // not found. Ignores all non-content slices.
   int GetSliceIndexFromSliceId(const std::string& slice_id);
-
-  // Returns whether or not at least one surface is attached.
-  bool HasSurfaceAttached() const;
 
   void SetOfflinePageAvailability(const std::string& badge_id,
                                   bool available_offline);
@@ -94,6 +97,10 @@ class SurfaceUpdater : public StreamModel::Observer {
   void InsertDatastoreEntry(const std::string& key, const std::string& value);
   void RemoveDatastoreEntry(const std::string& key);
 
+  // Owned by |FeedStream|.
+  MetricsReporter* metrics_reporter_;
+  StreamSurfaceSet* surfaces_;
+
   // Members that affect what is sent to surfaces. A value change of these may
   // require sending an update to surfaces.
   bool loading_more_ = false;
@@ -113,14 +120,9 @@ class SurfaceUpdater : public StreamModel::Observer {
 
   // Owned by |FeedStream|. Null when the model is not loaded.
   StreamModel* model_ = nullptr;
-  // Owned by |FeedStream|.
-  MetricsReporter* metrics_reporter_;
 
   LaunchReliabilityLogger launch_reliability_logger_;
   bool load_stream_started_ = false;
-
-  // Attached surfaces.
-  base::ObserverList<FeedStreamSurface> surfaces_;
 };
 }  // namespace feed
 

@@ -80,6 +80,8 @@ source_set("feed_core_v2") {
     "stream_model/ephemeral_change.h",
     "stream_model/feature_tree.cc",
     "stream_model/feature_tree.h",
+    "stream_surface_set.cc",
+    "stream_surface_set.h",
     "surface_updater.cc",
     "surface_updater.h",
     "tasks/clear_all_task.cc",
