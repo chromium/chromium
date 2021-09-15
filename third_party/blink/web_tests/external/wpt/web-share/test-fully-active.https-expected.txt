@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-FAIL calling share() on non-fully active document returns a promise rejected with InvalidStateError promise_rejects_dom: Expected promise rejected with InvalidStateError from .share() function "function() { throw e }" threw object "AbortError: Failed to execute 'share' on 'Navigator': Internal error: window frame is missing (the navigator may be detached)." that is not a DOMException InvalidStateError: property "code" is equal to 20, expected 11
-FAIL calling share() with transient activation on non-fully active document returns a promise rejected with InvalidStateError promise_rejects_dom: Expected promise rejected with InvalidStateError from .share() function "function() { throw e }" threw object "AbortError: Failed to execute 'share' on 'Navigator': Internal error: window frame is missing (the navigator may be detached)." that is not a DOMException InvalidStateError: property "code" is equal to 20, expected 11
-PASS calling canShare() on a non-fully active document returns false
-Harness: the test ran to completion.
-

@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
-FAIL PaymentRequest.show() aborts if the document is not active. promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'abort' on 'PaymentRequest': No show() or retry() in progress, so nothing to abort"
-PASS PaymentRequest.show() aborts if the document is active, but not fully active.
+FAIL If a payment request is showing, but its document is navigated away (so no longer fully active), the payment sheet is dismissed. promise_rejects_dom: Show promise should abort. function "function() { throw e }" threw object "InvalidStateError: Failed to execute 'show' on 'PaymentRequest': Already called show() once" that is not a DOMException AbortError: property "code" is equal to 11, expected 20
 Harness: the test ran to completion.
 

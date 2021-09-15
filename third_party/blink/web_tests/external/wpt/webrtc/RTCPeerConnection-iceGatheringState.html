@@ -91,9 +91,8 @@
     t.add_cleanup(() => pc1.close());
     const pc2 = new RTCPeerConnection();
     t.add_cleanup(() => pc2.close());
-    pc1.addTransceiver('audio', { direction: 'recvonly' });
     await initialOfferAnswerWithIceGatheringStateTransitions(
-        pc1, pc2);
+        pc1, pc2, {offerToReceiveAudio: true});
 
     expectNoMoreGatheringStateChanges(t, pc1);
     expectNoMoreGatheringStateChanges(t, pc2);
@@ -120,9 +119,8 @@
     t.add_cleanup(() => pc1.close());
     const pc2 = new RTCPeerConnection();
     t.add_cleanup(() => pc2.close());
-    pc1.addTransceiver('audio', { direction: 'recvonly' });
     await initialOfferAnswerWithIceGatheringStateTransitions(
-        pc1, pc2);
+        pc1, pc2, {offerToReceiveAudio:true});
     await pc1.setLocalDescription(await pc1.createOffer({iceRestart: true}));
     await iceGatheringStateTransitions(pc1, 'gathering', 'complete');
   }, 'setLocalDescription(reoffer) with a new transport should cause iceGatheringState to go to "checking" and then "complete"');
@@ -133,8 +131,7 @@
     const pc2 = new RTCPeerConnection();
     t.add_cleanup(() => pc2.close());
     expectNoMoreGatheringStateChanges(t, pc2);
-    pc1.addTransceiver('audio', { direction: 'recvonly' });
-    const offer = await pc1.createOffer();
+    const offer = await pc1.createOffer({offerToReceiveAudio: true});
     await pc2.setRemoteDescription(offer);
     await pc2.setRemoteDescription(offer);
     await pc2.setRemoteDescription({type: 'rollback'});
@@ -146,9 +143,8 @@
     t.add_cleanup(() => pc1.close());
     const pc2 = new RTCPeerConnection();
     t.add_cleanup(() => pc2.close());
-    pc1.addTransceiver('audio', { direction: 'recvonly' });
     await initialOfferAnswerWithIceGatheringStateTransitions(
-        pc1, pc2);
+        pc1, pc2, {offerToReceiveAudio: true});
 
     const pc1waiter = iceGatheringStateTransitions(pc1, 'new');
     const pc2waiter = iceGatheringStateTransitions(pc2, 'new');

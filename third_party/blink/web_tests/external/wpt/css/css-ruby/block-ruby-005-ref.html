@@ -3,16 +3,16 @@
      Any copyright is dedicated to the Public Domain.
      http://creativecommons.org/publicdomain/zero/1.0/
   -->
-<html>
+<html lang="ja">
 <meta charset="utf-8">
-<title>CSS Reference File</title>
+<title>Reference: DIV append in 'display:ruby/block ruby'.</title>
 <link rel="author" title="Mats Palmgren" href="mailto:mats@mozilla.com">
 <style>
-body {
-  font:10px/1 monospace;
+html,body {
+  color:black; background-color:white; font:10px/1 monospace; padding:0; margin:0;
 }
 
-rbb, ruby { background:lightblue; }
+rbb, ruby { background:lightblue; text-overflow:ellipses; }
 ruby { display: ruby; }
 rbb { display: block ruby; }
 grid { display: grid; }

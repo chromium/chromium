@@ -1288,8 +1288,6 @@ crbug.com/591099 virtual/shared_array_buffer_on_desktop/http/tests/devtools/weba
 
 #unblock wpt-importer
 crbug.com/591099 external/wpt/css/css-overflow/scrollable-overflow-input-001.html [ Failure ]
-crbug.com/591099 external/wpt/editing/run/delete.html?7001-last [ Failure ]
-crbug.com/591099 external/wpt/mimesniff/media/media-sniff.window.html [ Failure ]
 
 # Backgrounds and border tests fail only with legacy layout.
 crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-042.xht [ Failure ]

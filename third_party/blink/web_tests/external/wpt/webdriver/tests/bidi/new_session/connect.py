@@ -1,4 +1,5 @@
 import pytest
+import asyncio
 import websockets
 import webdriver
 

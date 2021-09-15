@@ -4,8 +4,8 @@ PASS setLocalDescription with type offer and null sdp should use lastOffer gener
 PASS setLocalDescription() with offer not created by own createOffer() should reject with InvalidModificationError
 FAIL Set created offer other than last offer should reject with InvalidModificationError assert_unreached: Should have rejected: undefined Reached unreachable code
 PASS Creating and setting offer multiple times should succeed
-FAIL Setting previously generated offer after a call to createAnswer should work promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
-FAIL Negotiation works when there has been a repeated setLocalDescription(offer) promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
-FAIL setLocalDescription(offer) should update internal state with a queued task, in the right order promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+FAIL Setting previously generated offer after a call to createAnswer should work promise_test: Unhandled rejection with value: object "OperationError: Failed to execute 'setRemoteDescription' on 'RTCPeerConnection': Rollback not supported in Plan B"
+FAIL Negotiation works when there has been a repeated setLocalDescription(offer) assert_equals: expected 1 but got 0
+PASS setLocalDescription(offer) should update internal state with a queued task, in the right order
 Harness: the test ran to completion.
 

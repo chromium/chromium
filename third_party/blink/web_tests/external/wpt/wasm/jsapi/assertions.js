@@ -17,13 +17,8 @@ function assert_function_length(fn, length, description) {
 }
 
 function assert_exported_function(fn, { name, length }, description) {
-  if (WebAssembly.Function === undefined) {
-    assert_equals(Object.getPrototypeOf(fn), Function.prototype,
-                  `${description}: prototype`);
-  } else {
-    assert_equals(Object.getPrototypeOf(fn), WebAssembly.Function.prototype,
-                  `${description}: prototype`);
-  }
+  assert_equals(Object.getPrototypeOf(fn), Function.prototype,
+                `${description}: prototype`);
 
   assert_function_name(fn, name, description);
   assert_function_length(fn, length, description);

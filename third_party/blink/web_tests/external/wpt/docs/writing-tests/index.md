@@ -87,5 +87,4 @@ make sure you run the [`lint` script](lint-tool) before opening a pull request!
    tools
    test-templates
    github-intro
-   ../tools/webtransport/README.md
 ```

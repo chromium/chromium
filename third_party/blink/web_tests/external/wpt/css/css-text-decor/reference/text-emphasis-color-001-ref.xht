@@ -5,6 +5,11 @@
 		<title>CSS Test: text-emphasis - color - basic cases Reftest Reference</title>
 		<link rel="author" title="Makoto Kikuchi" href="mailto:kikuchi@est.co.jp" />
 		<style type="text/css"><![CDATA[
+			.common
+			{
+				line-height: 1em;
+				position: relative;
+			}
 			.margin
 			{
 				margin: 0.6em 0 0;
@@ -12,26 +17,51 @@
 			.parent
 			{
 				border: solid 1px gray;
-				font: 1.5em monospace;
+				font-size: 2em;
 				width: 10em;
 			}
-			.ref1 rt
+			.refcommon
+			{
+				font-size: 0.5em;
+				left: 0em;
+				position: absolute;
+				top: -1.5em;
+			}
+			.black
 			{
 				color: black;
 			}
-			.ref2 rt
+			.blue
 			{
 				color: blue;
 			}
-			.ref3 rt
+			.green
 			{
 				color: green;
 			}
-			.ref4 rt
+			.red
 			{
 				color: red;
 			}
 		]]></style>
+		<script type="text/javascript">
+			//	<![CDATA[
+					// Set Font Family to 'IPAMincho'
+					function setFontFamily () {
+						var fontName = 'IPAMincho';
+						var divs = document.getElementsByTagName('div');
+						var i = 0;
+						var div;
+						while (i < divs.length) {
+							div = divs.item(i);
+							if (div.className == 'parent') {
+								div.style.fontFamily = fontName;
+							}
+							i++;
+						}
+					}
+			//	]]>
+		</script>
 	</head>
 	<body>
 		<div>
@@ -39,11 +69,12 @@
 			black
 			<div class="parent">
 				<div class="margin">
-					<ruby class="ref1"><rb>F</rb><rt>&#x25CF;</rt><rb>i</rb><rt>&#x25CF;</rt><rb>l</rb><rt>&#x25CF;</rt><rb>l</rb><rt>&#x25CF;</rt><rb>e</rb><rt>&#x25CF;</rt><rb>r</rb><rt>&#x25CF;</rt></ruby>
+					<span class="common">F<span class="black refcommon">&#x25CF;</span></span><span class="common">i<span class="black refcommon">&#x25CF;</span></span><span class="common">l<span class="black refcommon">&#x25CF;</span></span><span class="common">l<span class="black refcommon">&#x25CF;</span></span><span class="common">e<span class="black refcommon">&#x25CF;</span></span><span class="common">r<span class="black refcommon">&#x25CF;</span></span>
 					Text
 				</div>
+				<br />
 				<div>
-					<ruby class="ref1"><rb>F</rb><rt>&#x25CF;</rt><rb>i</rb><rt>&#x25CF;</rt><rb>l</rb><rt>&#x25CF;</rt><rb>l</rb><rt>&#x25CF;</rt><rb>e</rb><rt>&#x25CF;</rt><rb>r</rb><rt>&#x25CF;</rt></ruby>
+					<span class="common">F<span class="black refcommon">&#x25CF;</span></span><span class="common">i<span class="black refcommon">&#x25CF;</span></span><span class="common">l<span class="black refcommon">&#x25CF;</span></span><span class="common">l<span class="black refcommon">&#x25CF;</span></span><span class="common">e<span class="black refcommon">&#x25CF;</span></span><span class="common">r<span class="black refcommon">&#x25CF;</span></span>
 					Text
 				</div>
 			</div>
@@ -51,11 +82,12 @@
 			blue
 			<div class="parent">
 				<div class="margin">
-					<ruby class="ref2"><rb>F</rb><rt>&#x25CF;</rt><rb>i</rb><rt>&#x25CF;</rt><rb>l</rb><rt>&#x25CF;</rt><rb>l</rb><rt>&#x25CF;</rt><rb>e</rb><rt>&#x25CF;</rt><rb>r</rb><rt>&#x25CF;</rt></ruby>
+					<span class="common">F<span class="blue refcommon">&#x25CF;</span></span><span class="common">i<span class="blue refcommon">&#x25CF;</span></span><span class="common">l<span class="blue refcommon">&#x25CF;</span></span><span class="common">l<span class="blue refcommon">&#x25CF;</span></span><span class="common">e<span class="blue refcommon">&#x25CF;</span></span><span class="common">r<span class="blue refcommon">&#x25CF;</span></span>
 					Text
 				</div>
+				<br />
 				<div>
-					<ruby class="ref2"><rb>F</rb><rt>&#x25CF;</rt><rb>i</rb><rt>&#x25CF;</rt><rb>l</rb><rt>&#x25CF;</rt><rb>l</rb><rt>&#x25CF;</rt><rb>e</rb><rt>&#x25CF;</rt><rb>r</rb><rt>&#x25CF;</rt></ruby>
+					<span class="common">F<span class="blue refcommon">&#x25CF;</span></span><span class="common">i<span class="blue refcommon">&#x25CF;</span></span><span class="common">l<span class="blue refcommon">&#x25CF;</span></span><span class="common">l<span class="blue refcommon">&#x25CF;</span></span><span class="common">e<span class="blue refcommon">&#x25CF;</span></span><span class="common">r<span class="blue refcommon">&#x25CF;</span></span>
 					Text
 				</div>
 			</div>
@@ -63,11 +95,12 @@
 			green
 			<div class="parent">
 				<div class="margin">
-					<ruby class="ref3"><rb>F</rb><rt>&#x25CF;</rt><rb>i</rb><rt>&#x25CF;</rt><rb>l</rb><rt>&#x25CF;</rt><rb>l</rb><rt>&#x25CF;</rt><rb>e</rb><rt>&#x25CF;</rt><rb>r</rb><rt>&#x25CF;</rt></ruby>
+					<span class="common">F<span class="green refcommon">&#x25CF;</span></span><span class="common">i<span class="green refcommon">&#x25CF;</span></span><span class="common">l<span class="green refcommon">&#x25CF;</span></span><span class="common">l<span class="green refcommon">&#x25CF;</span></span><span class="common">e<span class="green refcommon">&#x25CF;</span></span><span class="common">r<span class="green refcommon">&#x25CF;</span></span>
 					Text
 				</div>
+				<br />
 				<div>
-					<ruby class="ref3"><rb>F</rb><rt>&#x25CF;</rt><rb>i</rb><rt>&#x25CF;</rt><rb>l</rb><rt>&#x25CF;</rt><rb>l</rb><rt>&#x25CF;</rt><rb>e</rb><rt>&#x25CF;</rt><rb>r</rb><rt>&#x25CF;</rt></ruby>
+					<span class="common">F<span class="green refcommon">&#x25CF;</span></span><span class="common">i<span class="green refcommon">&#x25CF;</span></span><span class="common">l<span class="green refcommon">&#x25CF;</span></span><span class="common">l<span class="green refcommon">&#x25CF;</span></span><span class="common">e<span class="green refcommon">&#x25CF;</span></span><span class="common">r<span class="green refcommon">&#x25CF;</span></span>
 					Text
 				</div>
 			</div>
@@ -75,11 +108,12 @@
 			red
 			<div class="parent">
 				<div class="margin">
-					<ruby class="ref4"><rb>F</rb><rt>&#x25CF;</rt><rb>i</rb><rt>&#x25CF;</rt><rb>l</rb><rt>&#x25CF;</rt><rb>l</rb><rt>&#x25CF;</rt><rb>e</rb><rt>&#x25CF;</rt><rb>r</rb><rt>&#x25CF;</rt></ruby>
+					<span class="common">F<span class="red refcommon">&#x25CF;</span></span><span class="common">i<span class="red refcommon">&#x25CF;</span></span><span class="common">l<span class="red refcommon">&#x25CF;</span></span><span class="common">l<span class="red refcommon">&#x25CF;</span></span><span class="common">e<span class="red refcommon">&#x25CF;</span></span><span class="common">r<span class="red refcommon">&#x25CF;</span></span>
 					Text
 				</div>
+				<br />
 				<div>
-					<ruby class="ref4"><rb>F</rb><rt>&#x25CF;</rt><rb>i</rb><rt>&#x25CF;</rt><rb>l</rb><rt>&#x25CF;</rt><rb>l</rb><rt>&#x25CF;</rt><rb>e</rb><rt>&#x25CF;</rt><rb>r</rb><rt>&#x25CF;</rt></ruby>
+					<span class="common">F<span class="red refcommon">&#x25CF;</span></span><span class="common">i<span class="red refcommon">&#x25CF;</span></span><span class="common">l<span class="red refcommon">&#x25CF;</span></span><span class="common">l<span class="red refcommon">&#x25CF;</span></span><span class="common">e<span class="red refcommon">&#x25CF;</span></span><span class="common">r<span class="red refcommon">&#x25CF;</span></span>
 					Text
 				</div>
 			</div>
@@ -87,14 +121,26 @@
 			current-color
 			<div class="parent">
 				<div class="margin">
-					<ruby><rb>F</rb><rt>&#x25CF;</rt><rb>i</rb><rt>&#x25CF;</rt><rb>l</rb><rt>&#x25CF;</rt><rb>l</rb><rt>&#x25CF;</rt><rb>e</rb><rt>&#x25CF;</rt><rb>r</rb><rt>&#x25CF;</rt></ruby>
+					<span class="common">F<span class="refcommon">&#x25CF;</span></span><span class="common">i<span class="refcommon">&#x25CF;</span></span><span class="common">l<span class="refcommon">&#x25CF;</span></span><span class="common">l<span class="refcommon">&#x25CF;</span></span><span class="common">e<span class="refcommon">&#x25CF;</span></span><span class="common">r<span class="refcommon">&#x25CF;</span></span>
 					Text
 				</div>
+				<br />
 				<div>
-					<ruby><rb>F</rb><rt>&#x25CF;</rt><rb>i</rb><rt>&#x25CF;</rt><rb>l</rb><rt>&#x25CF;</rt><rb>l</rb><rt>&#x25CF;</rt><rb>e</rb><rt>&#x25CF;</rt><rb>r</rb><rt>&#x25CF;</rt></ruby>
+					<span class="common">F<span class="refcommon">&#x25CF;</span></span><span class="common">i<span class="refcommon">&#x25CF;</span></span><span class="common">l<span class="refcommon">&#x25CF;</span></span><span class="common">l<span class="refcommon">&#x25CF;</span></span><span class="common">e<span class="refcommon">&#x25CF;</span></span><span class="common">r<span class="refcommon">&#x25CF;</span></span>
 					Text
 				</div>
 			</div>
+			<p class="fontChange" style="display: block;">
+				If you are unable to see font glyphs for certain characters using the browsers default font, install the <a href="http://ossipedia.ipa.go.jp/ipafont/">IPA Font(http://ossipedia.ipa.go.jp/ipafont/)</a> and apply it.
+				<button type="button" onclick="setFontFamily()">
+					Apply
+				</button>
+			</p>
+			<script type="text/javascript">
+				if (document.getElementById) {
+					document.getElementById('fontChange').style.display = 'block'
+				}
+			</script>
 		</div>
 	</body>
 </html>

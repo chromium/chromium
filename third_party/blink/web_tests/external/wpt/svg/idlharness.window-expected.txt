@@ -1,13 +1,11 @@
 This is a testharness.js-based test.
-Found 1809 tests; 1644 PASS, 165 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1633 tests; 1493 PASS, 140 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
 PASS Partial interface Document: member names are unique
 PASS Partial interface SVGAElement: original interface defined
 PASS Partial interface SVGAElement: member names are unique
-PASS Partial interface SVGSVGElement: original interface defined
-PASS Partial interface SVGSVGElement: member names are unique
 PASS Partial interface Document[2]: member names are unique
 PASS Partial interface Document[3]: member names are unique
 PASS Partial interface Document[4]: member names are unique
@@ -32,8 +30,6 @@ PASS SVGPatternElement includes SVGURIReference: member names are unique
 PASS SVGScriptElement includes SVGURIReference: member names are unique
 PASS SVGAElement includes SVGURIReference: member names are unique
 PASS SVGViewElement includes SVGFitToViewBox: member names are unique
-PASS SVGAnimationElement includes SVGTests: member names are unique
-PASS SVGMPathElement includes SVGURIReference: member names are unique
 PASS SVGElement includes ElementCSSInlineStyle: member names are unique
 PASS Element includes Animatable: member names are unique
 PASS Document includes GlobalEventHandlers: member names are unique
@@ -424,11 +420,6 @@ PASS SVGSVGElement interface: operation suspendRedraw(unsigned long)
 PASS SVGSVGElement interface: operation unsuspendRedraw(unsigned long)
 PASS SVGSVGElement interface: operation unsuspendRedrawAll()
 PASS SVGSVGElement interface: operation forceRedraw()
-PASS SVGSVGElement interface: operation pauseAnimations()
-PASS SVGSVGElement interface: operation unpauseAnimations()
-PASS SVGSVGElement interface: operation animationsPaused()
-PASS SVGSVGElement interface: operation getCurrentTime()
-PASS SVGSVGElement interface: operation setCurrentTime(float)
 PASS SVGSVGElement interface: attribute viewBox
 PASS SVGSVGElement interface: attribute preserveAspectRatio
 PASS SVGSVGElement must be primary interface of objects.svg
@@ -465,12 +456,6 @@ PASS SVGSVGElement interface: objects.svg must inherit property "unsuspendRedraw
 PASS SVGSVGElement interface: calling unsuspendRedraw(unsigned long) on objects.svg with too few arguments must throw TypeError
 PASS SVGSVGElement interface: objects.svg must inherit property "unsuspendRedrawAll()" with the proper type
 PASS SVGSVGElement interface: objects.svg must inherit property "forceRedraw()" with the proper type
-PASS SVGSVGElement interface: objects.svg must inherit property "pauseAnimations()" with the proper type
-PASS SVGSVGElement interface: objects.svg must inherit property "unpauseAnimations()" with the proper type
-PASS SVGSVGElement interface: objects.svg must inherit property "animationsPaused()" with the proper type
-PASS SVGSVGElement interface: objects.svg must inherit property "getCurrentTime()" with the proper type
-PASS SVGSVGElement interface: objects.svg must inherit property "setCurrentTime(float)" with the proper type
-PASS SVGSVGElement interface: calling setCurrentTime(float) on objects.svg with too few arguments must throw TypeError
 PASS SVGSVGElement interface: objects.svg must inherit property "viewBox" with the proper type
 PASS SVGSVGElement interface: objects.svg must inherit property "preserveAspectRatio" with the proper type
 PASS SVGGraphicsElement interface: objects.svg must inherit property "transform" with the proper type
@@ -1647,167 +1632,6 @@ PASS SVGElement interface: objects.view must inherit property "ownerSVGElement" 
 PASS SVGElement interface: objects.view must inherit property "viewportElement" with the proper type
 FAIL SVGElement interface: objects.view must inherit property "correspondingElement" with the proper type assert_inherits: property "correspondingElement" not found in prototype chain
 FAIL SVGElement interface: objects.view must inherit property "correspondingUseElement" with the proper type assert_inherits: property "correspondingUseElement" not found in prototype chain
-FAIL TimeEvent interface: existence and properties of interface object assert_own_property: self does not have own property "TimeEvent" expected property "TimeEvent" missing
-FAIL TimeEvent interface object length assert_own_property: self does not have own property "TimeEvent" expected property "TimeEvent" missing
-FAIL TimeEvent interface object name assert_own_property: self does not have own property "TimeEvent" expected property "TimeEvent" missing
-FAIL TimeEvent interface: existence and properties of interface prototype object assert_own_property: self does not have own property "TimeEvent" expected property "TimeEvent" missing
-FAIL TimeEvent interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "TimeEvent" expected property "TimeEvent" missing
-FAIL TimeEvent interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "TimeEvent" expected property "TimeEvent" missing
-FAIL TimeEvent interface: attribute view assert_own_property: self does not have own property "TimeEvent" expected property "TimeEvent" missing
-FAIL TimeEvent interface: attribute detail assert_own_property: self does not have own property "TimeEvent" expected property "TimeEvent" missing
-FAIL TimeEvent interface: operation initTimeEvent(DOMString, Window?, long) assert_own_property: self does not have own property "TimeEvent" expected property "TimeEvent" missing
-PASS SVGAnimationElement interface: existence and properties of interface object
-PASS SVGAnimationElement interface object length
-PASS SVGAnimationElement interface object name
-PASS SVGAnimationElement interface: existence and properties of interface prototype object
-PASS SVGAnimationElement interface: existence and properties of interface prototype object's "constructor" property
-PASS SVGAnimationElement interface: existence and properties of interface prototype object's @@unscopables property
-PASS SVGAnimationElement interface: attribute targetElement
-PASS SVGAnimationElement interface: attribute onbegin
-PASS SVGAnimationElement interface: attribute onend
-PASS SVGAnimationElement interface: attribute onrepeat
-PASS SVGAnimationElement interface: operation getStartTime()
-PASS SVGAnimationElement interface: operation getCurrentTime()
-PASS SVGAnimationElement interface: operation getSimpleDuration()
-PASS SVGAnimationElement interface: operation beginElement()
-PASS SVGAnimationElement interface: operation beginElementAt(float)
-PASS SVGAnimationElement interface: operation endElement()
-PASS SVGAnimationElement interface: operation endElementAt(float)
-PASS SVGAnimationElement interface: attribute requiredExtensions
-PASS SVGAnimationElement interface: attribute systemLanguage
-PASS SVGAnimateElement interface: existence and properties of interface object
-PASS SVGAnimateElement interface object length
-PASS SVGAnimateElement interface object name
-PASS SVGAnimateElement interface: existence and properties of interface prototype object
-PASS SVGAnimateElement interface: existence and properties of interface prototype object's "constructor" property
-PASS SVGAnimateElement interface: existence and properties of interface prototype object's @@unscopables property
-PASS SVGAnimateElement must be primary interface of objects.animate
-PASS Stringification of objects.animate
-PASS SVGAnimationElement interface: objects.animate must inherit property "targetElement" with the proper type
-PASS SVGAnimationElement interface: objects.animate must inherit property "onbegin" with the proper type
-PASS SVGAnimationElement interface: objects.animate must inherit property "onend" with the proper type
-PASS SVGAnimationElement interface: objects.animate must inherit property "onrepeat" with the proper type
-PASS SVGAnimationElement interface: objects.animate must inherit property "getStartTime()" with the proper type
-PASS SVGAnimationElement interface: objects.animate must inherit property "getCurrentTime()" with the proper type
-PASS SVGAnimationElement interface: objects.animate must inherit property "getSimpleDuration()" with the proper type
-PASS SVGAnimationElement interface: objects.animate must inherit property "beginElement()" with the proper type
-PASS SVGAnimationElement interface: objects.animate must inherit property "beginElementAt(float)" with the proper type
-PASS SVGAnimationElement interface: calling beginElementAt(float) on objects.animate with too few arguments must throw TypeError
-PASS SVGAnimationElement interface: objects.animate must inherit property "endElement()" with the proper type
-PASS SVGAnimationElement interface: objects.animate must inherit property "endElementAt(float)" with the proper type
-PASS SVGAnimationElement interface: calling endElementAt(float) on objects.animate with too few arguments must throw TypeError
-PASS SVGAnimationElement interface: objects.animate must inherit property "requiredExtensions" with the proper type
-PASS SVGAnimationElement interface: objects.animate must inherit property "systemLanguage" with the proper type
-PASS SVGElement interface: objects.animate must inherit property "className" with the proper type
-PASS SVGElement interface: objects.animate must inherit property "ownerSVGElement" with the proper type
-PASS SVGElement interface: objects.animate must inherit property "viewportElement" with the proper type
-FAIL SVGElement interface: objects.animate must inherit property "correspondingElement" with the proper type assert_inherits: property "correspondingElement" not found in prototype chain
-FAIL SVGElement interface: objects.animate must inherit property "correspondingUseElement" with the proper type assert_inherits: property "correspondingUseElement" not found in prototype chain
-PASS SVGSetElement interface: existence and properties of interface object
-PASS SVGSetElement interface object length
-PASS SVGSetElement interface object name
-PASS SVGSetElement interface: existence and properties of interface prototype object
-PASS SVGSetElement interface: existence and properties of interface prototype object's "constructor" property
-PASS SVGSetElement interface: existence and properties of interface prototype object's @@unscopables property
-PASS SVGSetElement must be primary interface of objects.set
-PASS Stringification of objects.set
-PASS SVGAnimationElement interface: objects.set must inherit property "targetElement" with the proper type
-PASS SVGAnimationElement interface: objects.set must inherit property "onbegin" with the proper type
-PASS SVGAnimationElement interface: objects.set must inherit property "onend" with the proper type
-PASS SVGAnimationElement interface: objects.set must inherit property "onrepeat" with the proper type
-PASS SVGAnimationElement interface: objects.set must inherit property "getStartTime()" with the proper type
-PASS SVGAnimationElement interface: objects.set must inherit property "getCurrentTime()" with the proper type
-PASS SVGAnimationElement interface: objects.set must inherit property "getSimpleDuration()" with the proper type
-PASS SVGAnimationElement interface: objects.set must inherit property "beginElement()" with the proper type
-PASS SVGAnimationElement interface: objects.set must inherit property "beginElementAt(float)" with the proper type
-PASS SVGAnimationElement interface: calling beginElementAt(float) on objects.set with too few arguments must throw TypeError
-PASS SVGAnimationElement interface: objects.set must inherit property "endElement()" with the proper type
-PASS SVGAnimationElement interface: objects.set must inherit property "endElementAt(float)" with the proper type
-PASS SVGAnimationElement interface: calling endElementAt(float) on objects.set with too few arguments must throw TypeError
-PASS SVGAnimationElement interface: objects.set must inherit property "requiredExtensions" with the proper type
-PASS SVGAnimationElement interface: objects.set must inherit property "systemLanguage" with the proper type
-PASS SVGElement interface: objects.set must inherit property "className" with the proper type
-PASS SVGElement interface: objects.set must inherit property "ownerSVGElement" with the proper type
-PASS SVGElement interface: objects.set must inherit property "viewportElement" with the proper type
-FAIL SVGElement interface: objects.set must inherit property "correspondingElement" with the proper type assert_inherits: property "correspondingElement" not found in prototype chain
-FAIL SVGElement interface: objects.set must inherit property "correspondingUseElement" with the proper type assert_inherits: property "correspondingUseElement" not found in prototype chain
-PASS SVGAnimateMotionElement interface: existence and properties of interface object
-PASS SVGAnimateMotionElement interface object length
-PASS SVGAnimateMotionElement interface object name
-PASS SVGAnimateMotionElement interface: existence and properties of interface prototype object
-PASS SVGAnimateMotionElement interface: existence and properties of interface prototype object's "constructor" property
-PASS SVGAnimateMotionElement interface: existence and properties of interface prototype object's @@unscopables property
-PASS SVGAnimateMotionElement must be primary interface of objects.animateMotion
-PASS Stringification of objects.animateMotion
-PASS SVGAnimationElement interface: objects.animateMotion must inherit property "targetElement" with the proper type
-PASS SVGAnimationElement interface: objects.animateMotion must inherit property "onbegin" with the proper type
-PASS SVGAnimationElement interface: objects.animateMotion must inherit property "onend" with the proper type
-PASS SVGAnimationElement interface: objects.animateMotion must inherit property "onrepeat" with the proper type
-PASS SVGAnimationElement interface: objects.animateMotion must inherit property "getStartTime()" with the proper type
-PASS SVGAnimationElement interface: objects.animateMotion must inherit property "getCurrentTime()" with the proper type
-PASS SVGAnimationElement interface: objects.animateMotion must inherit property "getSimpleDuration()" with the proper type
-PASS SVGAnimationElement interface: objects.animateMotion must inherit property "beginElement()" with the proper type
-PASS SVGAnimationElement interface: objects.animateMotion must inherit property "beginElementAt(float)" with the proper type
-PASS SVGAnimationElement interface: calling beginElementAt(float) on objects.animateMotion with too few arguments must throw TypeError
-PASS SVGAnimationElement interface: objects.animateMotion must inherit property "endElement()" with the proper type
-PASS SVGAnimationElement interface: objects.animateMotion must inherit property "endElementAt(float)" with the proper type
-PASS SVGAnimationElement interface: calling endElementAt(float) on objects.animateMotion with too few arguments must throw TypeError
-PASS SVGAnimationElement interface: objects.animateMotion must inherit property "requiredExtensions" with the proper type
-PASS SVGAnimationElement interface: objects.animateMotion must inherit property "systemLanguage" with the proper type
-PASS SVGElement interface: objects.animateMotion must inherit property "className" with the proper type
-PASS SVGElement interface: objects.animateMotion must inherit property "ownerSVGElement" with the proper type
-PASS SVGElement interface: objects.animateMotion must inherit property "viewportElement" with the proper type
-FAIL SVGElement interface: objects.animateMotion must inherit property "correspondingElement" with the proper type assert_inherits: property "correspondingElement" not found in prototype chain
-FAIL SVGElement interface: objects.animateMotion must inherit property "correspondingUseElement" with the proper type assert_inherits: property "correspondingUseElement" not found in prototype chain
-PASS SVGMPathElement interface: existence and properties of interface object
-PASS SVGMPathElement interface object length
-PASS SVGMPathElement interface object name
-PASS SVGMPathElement interface: existence and properties of interface prototype object
-PASS SVGMPathElement interface: existence and properties of interface prototype object's "constructor" property
-PASS SVGMPathElement interface: existence and properties of interface prototype object's @@unscopables property
-PASS SVGMPathElement interface: attribute href
-PASS SVGMPathElement must be primary interface of objects.mpath
-PASS Stringification of objects.mpath
-PASS SVGMPathElement interface: objects.mpath must inherit property "href" with the proper type
-PASS SVGElement interface: objects.mpath must inherit property "className" with the proper type
-PASS SVGElement interface: objects.mpath must inherit property "ownerSVGElement" with the proper type
-PASS SVGElement interface: objects.mpath must inherit property "viewportElement" with the proper type
-FAIL SVGElement interface: objects.mpath must inherit property "correspondingElement" with the proper type assert_inherits: property "correspondingElement" not found in prototype chain
-FAIL SVGElement interface: objects.mpath must inherit property "correspondingUseElement" with the proper type assert_inherits: property "correspondingUseElement" not found in prototype chain
-PASS SVGAnimateTransformElement interface: existence and properties of interface object
-PASS SVGAnimateTransformElement interface object length
-PASS SVGAnimateTransformElement interface object name
-PASS SVGAnimateTransformElement interface: existence and properties of interface prototype object
-PASS SVGAnimateTransformElement interface: existence and properties of interface prototype object's "constructor" property
-PASS SVGAnimateTransformElement interface: existence and properties of interface prototype object's @@unscopables property
-PASS SVGAnimateTransformElement must be primary interface of objects.animateTransform
-PASS Stringification of objects.animateTransform
-PASS SVGAnimationElement interface: objects.animateTransform must inherit property "targetElement" with the proper type
-PASS SVGAnimationElement interface: objects.animateTransform must inherit property "onbegin" with the proper type
-PASS SVGAnimationElement interface: objects.animateTransform must inherit property "onend" with the proper type
-PASS SVGAnimationElement interface: objects.animateTransform must inherit property "onrepeat" with the proper type
-PASS SVGAnimationElement interface: objects.animateTransform must inherit property "getStartTime()" with the proper type
-PASS SVGAnimationElement interface: objects.animateTransform must inherit property "getCurrentTime()" with the proper type
-PASS SVGAnimationElement interface: objects.animateTransform must inherit property "getSimpleDuration()" with the proper type
-PASS SVGAnimationElement interface: objects.animateTransform must inherit property "beginElement()" with the proper type
-PASS SVGAnimationElement interface: objects.animateTransform must inherit property "beginElementAt(float)" with the proper type
-PASS SVGAnimationElement interface: calling beginElementAt(float) on objects.animateTransform with too few arguments must throw TypeError
-PASS SVGAnimationElement interface: objects.animateTransform must inherit property "endElement()" with the proper type
-PASS SVGAnimationElement interface: objects.animateTransform must inherit property "endElementAt(float)" with the proper type
-PASS SVGAnimationElement interface: calling endElementAt(float) on objects.animateTransform with too few arguments must throw TypeError
-PASS SVGAnimationElement interface: objects.animateTransform must inherit property "requiredExtensions" with the proper type
-PASS SVGAnimationElement interface: objects.animateTransform must inherit property "systemLanguage" with the proper type
-PASS SVGElement interface: objects.animateTransform must inherit property "className" with the proper type
-PASS SVGElement interface: objects.animateTransform must inherit property "ownerSVGElement" with the proper type
-PASS SVGElement interface: objects.animateTransform must inherit property "viewportElement" with the proper type
-FAIL SVGElement interface: objects.animateTransform must inherit property "correspondingElement" with the proper type assert_inherits: property "correspondingElement" not found in prototype chain
-FAIL SVGElement interface: objects.animateTransform must inherit property "correspondingUseElement" with the proper type assert_inherits: property "correspondingUseElement" not found in prototype chain
-FAIL SVGDiscardElement interface: existence and properties of interface object assert_own_property: self does not have own property "SVGDiscardElement" expected property "SVGDiscardElement" missing
-FAIL SVGDiscardElement interface object length assert_own_property: self does not have own property "SVGDiscardElement" expected property "SVGDiscardElement" missing
-FAIL SVGDiscardElement interface object name assert_own_property: self does not have own property "SVGDiscardElement" expected property "SVGDiscardElement" missing
-FAIL SVGDiscardElement interface: existence and properties of interface prototype object assert_own_property: self does not have own property "SVGDiscardElement" expected property "SVGDiscardElement" missing
-FAIL SVGDiscardElement interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "SVGDiscardElement" expected property "SVGDiscardElement" missing
-FAIL SVGDiscardElement interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "SVGDiscardElement" expected property "SVGDiscardElement" missing
 PASS Document interface: attribute rootElement
 Harness: the test ran to completion.
 

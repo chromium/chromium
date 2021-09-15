@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Speculative parsing, page load: svg-script-src Unhandled rejection: assert_equals: speculative case incorrectly fetched expected "" but got "param-encodingcheck: %C4%9E\r\nHost: web-platform.test:8001\nConnection: keep-alive\nUser-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/999.77.34.5 Safari/537.36\nAccept: */*\nReferer: http://web-platform.test:8001/html/syntax/speculative-parsing/generated/page-load/resources/svg-script-src-framed.sub.html?uuid=6f2b6bc6-5ce2-4f26-b5c8-63fac41b7a52\nAccept-Encoding: gzip, deflate\nAccept-Language: en-us,en\n\n"
-Harness: the test ran to completion.
-

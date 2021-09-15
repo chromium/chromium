@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<title>-webkit-image-set is a parse-time alias of image-set</title>
+<link rel="author" title="Emilio Cobos Álvarez" href="mailto:emilio@crisal.io">
+<link rel="help" href="https://drafts.csswg.org/css-images-4/#image-set-notation">
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/6285">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="support/image-set-parsing-tests.js"></script>
+<body>
+<script>
+function check_image_set(tst) {
+  var div = document.createElement('div');
+  div.setAttribute("style", `${tst.property}: -webkit-image-set(${tst.imageSet})`)
+
+  var inline_style = div.style.getPropertyValue(tst.property);
+  assert_equals(inline_style.startsWith('image-set'), tst.valid);
+
+  document.body.appendChild(div);
+  var computed_style = getComputedStyle(div).getPropertyValue(tst.property);
+  assert_equals(computed_style.startsWith('image-set'), tst.valid);
+
+  div.remove();
+}
+
+kImageSetTests.forEach(tst => {
+  test(() => {
+    check_image_set(tst);
+  }, `${tst.property}: -webkit-image-set(${tst.imageSet}) ${tst.valid ? "[ parsable ]" : "[ unparsable ]"}`)
+});
+</script>

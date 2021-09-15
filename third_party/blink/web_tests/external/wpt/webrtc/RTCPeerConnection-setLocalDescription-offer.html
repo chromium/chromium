@@ -163,10 +163,8 @@
     const pc2 = new RTCPeerConnection();
     t.add_cleanup(() => pc2.close());
 
-    pc1.addTransceiver('audio', { direction: 'recvonly' });
-    const offer = await pc1.createOffer(); // [[LastOffer]] set
-    pc2.addTransceiver('video', { direction: 'recvonly' });
-    const offer2 = await pc2.createOffer();
+    const offer = await pc1.createOffer({offerToReceiveAudio: true}); // [[LastOffer]] set
+    const offer2 = await pc2.createOffer({offerToReceiveVideo: true});
     await pc1.setRemoteDescription(offer2);
     await pc1.createAnswer(); // [[LastAnswer]] set
     await pc1.setRemoteDescription({type: "rollback"});
@@ -179,8 +177,7 @@
     const pc2 = new RTCPeerConnection();
     t.add_cleanup(() => pc2.close());
 
-    pc1.addTransceiver('audio', { direction: 'recvonly' });
-    await pc1.setLocalDescription(await pc1.createOffer());
+    await pc1.setLocalDescription(await pc1.createOffer({offerToReceiveAudio: true}));
 
     const offer = await pc1.createOffer();
     await pc1.setLocalDescription(offer);
@@ -199,8 +196,7 @@
     const pc = new RTCPeerConnection();
     t.add_cleanup(() => pc.close());
 
-    pc.addTransceiver('audio', { direction: 'recvonly' });
-    const sldPromise = pc.setLocalDescription(await pc.createOffer());
+    const sldPromise = pc.setLocalDescription(await pc.createOffer({offerToReceiveAudio: true}));
 
     assert_equals(pc.signalingState, "stable", "signalingState should not be set synchronously after a call to sLD");
 
