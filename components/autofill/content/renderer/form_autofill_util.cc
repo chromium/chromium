@@ -1085,6 +1085,16 @@ std::vector<WebFormControlElement> ForEachMatchingFormFieldCommon(
   // Prepare for binary search.
   SortByFieldRendererIds(control_elements);
 
+  // If this is a preview filling, prevent already autofilled fields from being
+  // highlighted.
+  if (action == mojom::RendererFormDataAction::kPreview &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillHighlightOnlyChangedValuesInPreviewMode)) {
+    for (auto& element : control_elements) {
+      element.SetPreventHighlightingOfAutofilledFields(true);
+    }
+  }
+
   for (size_t i = 0; i < data.fields.size(); ++i) {
     if (matching_fields.size() == control_elements.size())
       break;  // All possible matches are already found.
@@ -1119,7 +1129,15 @@ std::vector<WebFormControlElement> ForEachMatchingFormFieldCommon(
         initially_focused_element = &element;
 
       matching_fields.push_back(element);
-      callback(data.fields[i], is_initiating_element, &element);
+      // In preview mode, only fill the field if it changes the fields value.
+      // With this, the WebAutofillState is not changed from kAutofilled to
+      // kPreviewed. This prevents the highlighting to change.
+      if (action == mojom::RendererFormDataAction::kFill ||
+          data.fields[i].value != element.Value().Utf16() ||
+          !base::FeatureList::IsEnabled(
+              features::kAutofillHighlightOnlyChangedValuesInPreviewMode)) {
+        callback(data.fields[i], is_initiating_element, &element);
+      }
       continue;
     }
 
@@ -2321,6 +2339,14 @@ void ClearPreviewedElements(
     std::vector<blink::WebFormControlElement>& previewed_elements,
     const WebFormControlElement& initiating_element,
     blink::WebAutofillState old_autofill_state) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillHighlightOnlyChangedValuesInPreviewMode)) {
+    for (auto& element :
+         ExtractAutofillableElementsInForm(initiating_element.Form())) {
+      element.SetPreventHighlightingOfAutofilledFields(false);
+    }
+  }
+
   for (WebFormControlElement& control_element : previewed_elements) {
     if (control_element.IsNull())
       continue;

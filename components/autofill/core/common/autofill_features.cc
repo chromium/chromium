@@ -236,6 +236,12 @@ const base::Feature kAutofillFixFillableFieldTypes{
 const base::Feature kAutofillIgnoreAutocompleteForImport{
     "AutofillIgnoreAutocompleteForImport", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// When enabled, only changed values are highlighted in preview mode.
+// TODO(crbug/1248585): Remove when launched.
+const base::Feature kAutofillHighlightOnlyChangedValuesInPreviewMode{
+    "AutofillHighlightOnlyChangedValuesInPreviewMode",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls if a server prediction with a prediction source |OVERRIDE| is
 // granted precedence over html type attributes.
 // TODO(crbug.com/1170384) Remove once launched

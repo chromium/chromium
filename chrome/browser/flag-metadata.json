@@ -438,6 +438,11 @@
     "expiry_milestone": 97
   },
   {
+    "name": "autofill-highlight-only-changed-value-in-preview-mode",
+    "owners": [ "koerber", "mamir" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "autofill-ios-delay-between-fields",
     "owners": [ "olivierrobin", "bling-flags@google.com" ],
     "expiry_milestone": 86

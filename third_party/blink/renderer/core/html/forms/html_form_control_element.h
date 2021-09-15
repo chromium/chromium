@@ -107,7 +107,16 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   bool IsAutofilled() const {
     return autofill_state_ != WebAutofillState::kNotFilled;
   }
+  bool HighlightAutofilled() const {
+    return autofill_state_ == WebAutofillState::kPreviewed ||
+           (autofill_state_ == WebAutofillState::kAutofilled &&
+            !PreventHighlightingOfAutofilledFields());
+  }
   void SetAutofillState(WebAutofillState = WebAutofillState::kAutofilled);
+  void SetPreventHighlightingOfAutofilledFields(bool prevent_highlighting);
+  bool PreventHighlightingOfAutofilledFields() const {
+    return prevent_highlighting_of_autofilled_fields_;
+  }
 
   // The autofill section to which this element belongs (e.g. billing address,
   // shipping address, .. .)
@@ -165,6 +174,7 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
 
   WebString autofill_section_;
   enum WebAutofillState autofill_state_;
+  bool prevent_highlighting_of_autofilled_fields_ : 1;
 
   bool blocks_form_submission_ : 1;
 };

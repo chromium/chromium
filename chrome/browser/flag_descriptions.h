@@ -203,6 +203,9 @@ extern const char kAutofillFillMerchantPromoCodeFieldsDescription[];
 extern const char kAutofillFixOfferInIncognitoName[];
 extern const char kAutofillFixOfferInIncognitoDescription[];
 
+extern const char kAutofillHighlightOnlyChangedValuesInPreviewModeName[];
+extern const char kAutofillHighlightOnlyChangedValuesInPreviewModeDescription[];
+
 extern const char kAutofillParseMerchantPromoCodeFieldsName[];
 extern const char kAutofillParseMerchantPromoCodeFieldsDescription[];
 
