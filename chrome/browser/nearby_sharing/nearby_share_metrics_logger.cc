@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
+#include "chrome/browser/nearby_sharing/nearby_share_feature_status.h"
 #include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "chromeos/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "components/policy/core/common/policy_service.h"
@@ -352,8 +353,7 @@ void RecordNearbySharePayloadAttachmentTypeMetric(
 
 }  // namespace
 
-void RecordNearbyShareEnabledMetric(
-    NearbyShareFeatureUsageMetrics::NearbyShareEnabledState state) {
+void RecordNearbyShareEnabledMetric(NearbyShareEnabledState state) {
   base::UmaHistogramEnumeration("Nearby.Share.Enabled", state);
 }
 

@@ -14,26 +14,12 @@ class PrefService;
 class NearbyShareFeatureUsageMetrics final
     : public feature_usage::FeatureUsageMetrics::Delegate {
  public:
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused. If entries are added, kMaxValue
-  // should be updated.
-  enum class NearbyShareEnabledState {
-    kEnabledAndOnboarded = 0,
-    kEnabledAndNotOnboarded = 1,
-    kDisabledAndOnboarded = 2,
-    kDisabledAndNotOnboarded = 3,
-    kDisallowedByPolicy = 4,
-    kMaxValue = kDisallowedByPolicy
-  };
-
   explicit NearbyShareFeatureUsageMetrics(PrefService* pref_service);
   ~NearbyShareFeatureUsageMetrics() override;
 
   // feature_usage::FeatureUsageMetrics::Delegate:
   bool IsEligible() const override;
   bool IsEnabled() const override;
-
-  NearbyShareEnabledState GetNearbyShareEnabledState() const;
   void RecordUsage(bool success);
 
  private:

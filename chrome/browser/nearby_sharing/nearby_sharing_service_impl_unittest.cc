@@ -43,6 +43,7 @@
 #include "chrome/browser/nearby_sharing/local_device_data/fake_nearby_share_local_device_data_manager.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager_impl.h"
 #include "chrome/browser/nearby_sharing/nearby_connections_manager.h"
+#include "chrome/browser/nearby_sharing/nearby_share_feature_status.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/nearby_sharing/power_client.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
@@ -561,6 +562,13 @@ class NearbySharingServiceImplTest : public testing::Test {
     NearbyShareContactManagerImpl::Factory::SetFactoryForTesting(nullptr);
     NearbyShareCertificateManagerImpl::Factory::SetFactoryForTesting(nullptr);
     FastInitiationAdvertiser::Factory::SetFactoryForTesting(nullptr);
+  }
+
+  void SetManagedEnabled(bool is_enabled) {
+    prefs_.SetManagedPref(prefs::kNearbySharingEnabledPrefName,
+                          std::make_unique<base::Value>(is_enabled));
+    ASSERT_TRUE(
+        prefs_.IsManagedPreference(prefs::kNearbySharingEnabledPrefName));
   }
 
   std::unique_ptr<NearbySharingServiceImpl> CreateService() {
@@ -4653,6 +4661,19 @@ TEST_F(NearbySharingServiceImplTest, FastInitiationScanning_StartAndStop) {
   // Trigger a call to StartFastInitiationScanning().
   SetBluetoothIsPowered(true);
   EXPECT_EQ(2u, fast_initiation_scanner_factory_->scanner_created_count());
+  EXPECT_EQ(1u, fast_initiation_scanner_factory_->scanner_destroyed_count());
+}
+
+TEST_F(NearbySharingServiceImplTest,
+       FastInitiationScanning_DisallowedByPolicy) {
+  EXPECT_EQ(1u, fast_initiation_scanner_factory_->scanner_created_count());
+  EXPECT_EQ(0u, fast_initiation_scanner_factory_->scanner_destroyed_count());
+
+  SetManagedEnabled(false);
+  base::RunLoop().RunUntilIdle();
+  SetConnectionType(net::NetworkChangeNotifier::CONNECTION_BLUETOOTH);
+
+  EXPECT_EQ(1u, fast_initiation_scanner_factory_->scanner_created_count());
   EXPECT_EQ(1u, fast_initiation_scanner_factory_->scanner_destroyed_count());
 }
 

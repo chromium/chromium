@@ -39,6 +39,7 @@
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager_impl.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/nearby_connections_manager.h"
+#include "chrome/browser/nearby_sharing/nearby_share_feature_status.h"
 #include "chrome/browser/nearby_sharing/nearby_share_metrics_logger.h"
 #include "chrome/browser/nearby_sharing/paired_key_verification_runner.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata.h"
@@ -314,8 +315,7 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
   DCHECK(nearby_connections_manager_);
   DCHECK(power_client_);
 
-  RecordNearbyShareEnabledMetric(
-      feature_usage_metrics_.GetNearbyShareEnabledState());
+  RecordNearbyShareEnabledMetric(GetNearbyShareEnabledState(prefs_));
 
   auto* session_controller = ash::SessionController::Get();
   if (session_controller) {
@@ -1197,8 +1197,7 @@ void NearbySharingServiceImpl::FlushMojoForTesting() {
 
 void NearbySharingServiceImpl::OnEnabledChanged(bool enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  RecordNearbyShareEnabledMetric(
-      feature_usage_metrics_.GetNearbyShareEnabledState());
+  RecordNearbyShareEnabledMetric(GetNearbyShareEnabledState(prefs_));
   base::UmaHistogramBoolean("Nearby.Share.EnabledStateChanged", enabled);
   if (enabled) {
     NS_LOG(VERBOSE) << __func__ << ": Nearby sharing enabled!";
@@ -2116,6 +2115,15 @@ void NearbySharingServiceImpl::InvalidateFastInitiationScanning() {
     NS_LOG(VERBOSE) << __func__
                     << ": Stopping background scanning fast initiation "
                        "notification is disabled";
+    StopFastInitiationScanning();
+    return;
+  }
+
+  if (GetNearbyShareEnabledState(prefs_) ==
+      NearbyShareEnabledState::kDisallowedByPolicy) {
+    NS_LOG(VERBOSE) << __func__
+                    << ": Stopping background scanning because Nearby Sharing "
+                       "is disallowed by policy ";
     StopFastInitiationScanning();
     return;
   }

@@ -15,6 +15,7 @@
 #include "chrome/browser/chromeos/android_sms/android_sms_pairing_state_tracker_impl.h"
 #include "chrome/browser/chromeos/android_sms/android_sms_urls.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
+#include "chrome/browser/nearby_sharing/nearby_share_feature_status.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_dialog.h"
@@ -505,19 +506,11 @@ MultideviceHandler::GeneratePageContentDataDictionary() {
   page_content_dictionary->SetInteger(kNotificationAccessStatus,
                                       static_cast<int32_t>(access_status));
 
-  // A managed pref is set by an admin policy, and because managed prefs
-  // have the highest priority, this also indicates whether the pref is
-  // actually being controlled by the policy setting. We only care when
-  // Nearby Share is disallowed by policy because the feature needs to be
-  // off and unchangeable by the user. If the Nearby Share is allowed by
-  // policy, the user can choose whether to enable or disable.
   bool is_nearby_share_disallowed_by_policy =
       NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
-          Profile::FromWebUI(web_ui()))
-          ? !prefs_->GetBoolean(::prefs::kNearbySharingEnabledPrefName) &&
-                prefs_->IsManagedPreference(
-                    ::prefs::kNearbySharingEnabledPrefName)
-          : false;
+          Profile::FromWebUI(web_ui())) &&
+      (GetNearbyShareEnabledState(prefs_) ==
+       NearbyShareEnabledState::kDisallowedByPolicy);
   page_content_dictionary->SetBoolean(kIsNearbyShareDisallowedByPolicy,
                                       is_nearby_share_disallowed_by_policy);
 
