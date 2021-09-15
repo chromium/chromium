@@ -6442,25 +6442,6 @@
             ]
         }
     ],
-    "PartitionAllocLargeThreadCacheSize": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PartitionAllocLargeThreadCacheSize"
-                    ]
-                }
-            ]
-        }
-    ],
     "PartitionConnectionsByNetworkIsolationKey": [
         {
             "platforms": [

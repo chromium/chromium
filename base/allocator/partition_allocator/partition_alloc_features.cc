@@ -28,7 +28,7 @@ const Feature kPartitionAllocBackupRefPtrControl{
 
 // Use a larger maximum thread cache cacheable bucket size.
 const Feature kPartitionAllocLargeThreadCacheSize{
-    "PartitionAllocLargeThreadCacheSize", FEATURE_DISABLED_BY_DEFAULT};
+    "PartitionAllocLargeThreadCacheSize", FEATURE_ENABLED_BY_DEFAULT};
 
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
