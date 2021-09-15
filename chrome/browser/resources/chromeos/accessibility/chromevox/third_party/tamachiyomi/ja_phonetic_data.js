@@ -12,12 +12,12 @@ JaPhoneticData = class {
 
   /**
    * Initialize phoneticMap_ by |map|.
-   * @param {Object<string, string>} map
+   * @param {Map<string, string>} map
    */
   static init(map) {
     /**
-     * An object containing phonetic disambiguation data for Japanese.
-     * @private {Object<string, string>}
+     * A map containing phonetic disambiguation data for Japanese.
+     * @private {Map<string, string>}
      */
     this.phoneticMap_ = map;
   }
@@ -33,7 +33,7 @@ JaPhoneticData = class {
       const prefix = JaPhoneticData.getDefaultPrefix(characterSet);
       return prefix + ' ' + JaPhoneticData.maybeGetLargeLetterKana(char);
     }
-    return JaPhoneticData.phoneticMap_[char] || char;
+    return JaPhoneticData.phoneticMap_.get(char) || char;
   }
 
   /**
@@ -62,7 +62,7 @@ JaPhoneticData = class {
           }
         }
       } else {
-        result.push(JaPhoneticData.phoneticMap_[char] || char);
+        result.push(JaPhoneticData.phoneticMap_.get(char) || char);
       }
 
       lastCharacterSet = currentCharacterSet;

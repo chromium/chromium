@@ -25,19 +25,14 @@ ChromeVoxPhoneticDataTest.prototype.extraLibraries = [
  * This map is not always used for determining phonetic readings. For example,
  * sometimes only a character type is prepended to a character from the
  * alphabet.
- * @type {Object<string, string>}
+ * @type {Map<string, string>}
  * @const
  */
-JA_TEST_MAP = {
-  'A': 'エイ アニマル',
-  'a': 'エイ アニマル',
-  '1': 'イチ',
-  'Ａ': 'エイ アニマル',
-  'ａ': 'エイ アニマル',
-  '１': 'イチ',
-  '亜': 'アジア ノ ア',
-  'ー': 'チョウオン'
-};
+JA_TEST_MAP = new Map([
+  ['A', 'エイ アニマル'], ['a', 'エイ アニマル'], ['1', 'イチ'],
+  ['Ａ', 'エイ アニマル'], ['ａ', 'エイ アニマル'], ['１', 'イチ'],
+  ['亜', 'アジア ノ ア'], ['ー', 'チョウオン']
+]);
 
 // TODO(crbug/1195393): Polish phonetic readings so that users can disambiguate
 // more precisely.
