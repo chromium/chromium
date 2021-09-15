@@ -204,6 +204,10 @@ class CrosapiAsh : public mojom::Crosapi {
     return keystore_service_ash_.get();
   }
 
+  StructuredMetricsServiceAsh* structured_metrics_service_ash() {
+    return structured_metrics_service_ash_.get();
+  }
+
  private:
   // Called when a connection is lost.
   void OnDisconnected();
