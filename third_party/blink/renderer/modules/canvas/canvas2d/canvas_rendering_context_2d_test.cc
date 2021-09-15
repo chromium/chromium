@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/viz/test/test_context_provider.h"
@@ -18,6 +19,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_float32array_uint16array_uint8clampedarray.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_canvasfilter_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_csscolorvalue_canvasgradient_canvaspattern_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_cssimagevalue_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_offscreencanvas_svgimageelement_videoframe.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -147,8 +149,13 @@ class CanvasRenderingContext2DTest : public ::testing::Test,
       OpacityMode,
       LatencyMode = kNormalLatency,
       ReadFrequencyMode = ReadFrequencyMode::kWillNotReadFrequency);
+
   ScriptState* GetScriptState() {
     return ToScriptStateForMainWorld(canvas_element_->DomWindow()->GetFrame());
+  }
+
+  ExecutionContext* GetExecutionContext() {
+    return GetDocument().GetExecutionContext();
   }
 
   void TearDown() override;
@@ -375,229 +382,711 @@ class MockImageBufferSurfaceForOverwriteTesting : public Canvas2DLayerBridge {
 
 //============================================================================
 
-#define TEST_OVERDRAW_SETUP(EXPECTED_OVERDRAWS)                                \
-  IntSize size(10, 10);                                                        \
-  std::unique_ptr<MockImageBufferSurfaceForOverwriteTesting> mock_surface =    \
-      std::make_unique<MockImageBufferSurfaceForOverwriteTesting>(             \
-          size, CanvasColorParams());                                          \
-  MockImageBufferSurfaceForOverwriteTesting* surface_ptr = mock_surface.get(); \
-  CanvasElement().SetResourceProviderForTesting(                               \
-      nullptr, std::move(mock_surface), size);                                 \
-  EXPECT_CALL(*surface_ptr, WillOverwriteCanvas()).Times(EXPECTED_OVERDRAWS);  \
+typedef std::unordered_set<BaseRenderingContext2D::OverdrawOp>
+    OverdrawHistogramBuckets;
+
+class CanvasRenderingContext2DOverdrawTest
+    : public CanvasRenderingContext2DTest {
+ public:
+  void ExpectNoOverdraw();
+  void ExpectOverdraw(
+      std::initializer_list<BaseRenderingContext2D::OverdrawOp>);
+  void VerifyExpectations();
+
+ protected:
+  void SetUp() override;
+  void TearDown() override;
+
+ private:
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
+  MockImageBufferSurfaceForOverwriteTesting* surface_ptr_;
+  OverdrawHistogramBuckets expected_buckets_;
+};
+
+void CanvasRenderingContext2DOverdrawTest::SetUp() {
+  CanvasRenderingContext2DTest::SetUp();
+  histogram_tester_ = std::make_unique<base::HistogramTester>();
+  CreateContext(kNonOpaque);
+  IntSize size(10, 10);
+  std::unique_ptr<MockImageBufferSurfaceForOverwriteTesting> mock_surface =
+      std::make_unique<MockImageBufferSurfaceForOverwriteTesting>(
+          size, CanvasColorParams());
+  surface_ptr_ = mock_surface.get();
+  CanvasElement().SetResourceProviderForTesting(nullptr,
+                                                std::move(mock_surface), size);
   Context2D()->save();
+}
 
-#define TEST_OVERDRAW_FINALIZE \
-  Context2D()->restore();      \
-  Mock::VerifyAndClearExpectations(surface_ptr);
+INSTANTIATE_PAINT_TEST_SUITE_P(CanvasRenderingContext2DOverdrawTest);
 
-#define TEST_OVERDRAW_1(EXPECTED_OVERDRAWS, CALL1) \
-  do {                                             \
-    TEST_OVERDRAW_SETUP(EXPECTED_OVERDRAWS)        \
-    Context2D()->CALL1;                            \
-    TEST_OVERDRAW_FINALIZE                         \
-  } while (0)
+void CanvasRenderingContext2DOverdrawTest::TearDown() {
+  Context2D()->restore();
 
-#define TEST_OVERDRAW_2(EXPECTED_OVERDRAWS, CALL1, CALL2) \
-  do {                                                    \
-    TEST_OVERDRAW_SETUP(EXPECTED_OVERDRAWS)               \
-    Context2D()->CALL1;                                   \
-    Context2D()->CALL2;                                   \
-    TEST_OVERDRAW_FINALIZE                                \
-  } while (0)
+  histogram_tester_.reset();
+  surface_ptr_ = nullptr;
+  expected_buckets_.clear();
 
-#define TEST_OVERDRAW_3(EXPECTED_OVERDRAWS, CALL1, CALL2, CALL3) \
-  do {                                                           \
-    TEST_OVERDRAW_SETUP(EXPECTED_OVERDRAWS)                      \
-    Context2D()->CALL1;                                          \
-    Context2D()->CALL2;                                          \
-    Context2D()->CALL3;                                          \
-    TEST_OVERDRAW_FINALIZE                                       \
-  } while (0)
+  CanvasRenderingContext2DTest::TearDown();
+}
 
-#define TEST_OVERDRAW_4(EXPECTED_OVERDRAWS, CALL1, CALL2, CALL3, CALL4) \
-  do {                                                                  \
-    TEST_OVERDRAW_SETUP(EXPECTED_OVERDRAWS)                             \
-    Context2D()->CALL1;                                                 \
-    Context2D()->CALL2;                                                 \
-    Context2D()->CALL3;                                                 \
-    Context2D()->CALL4;                                                 \
-    TEST_OVERDRAW_FINALIZE                                              \
-  } while (0)
+void CanvasRenderingContext2DOverdrawTest::ExpectNoOverdraw() {
+  EXPECT_CALL(*surface_ptr_, WillOverwriteCanvas()).Times(0);
+}
+
+void CanvasRenderingContext2DOverdrawTest::ExpectOverdraw(
+    std::initializer_list<BaseRenderingContext2D::OverdrawOp>
+        expected_buckets) {
+  EXPECT_CALL(*surface_ptr_, WillOverwriteCanvas()).Times(1);
+  expected_buckets_ = expected_buckets;
+  EXPECT_FALSE(expected_buckets_.empty());
+  // Validate that all buckets are valid (and that kMaxValue is up to date).
+  for (auto bucket : expected_buckets_) {
+    EXPECT_LE(bucket, BaseRenderingContext2D::OverdrawOp::kMaxValue);
+  }
+}
+
+void CanvasRenderingContext2DOverdrawTest::VerifyExpectations() {
+  // Verify that WillOverwriteCanvas was call the expected number of times.
+  Mock::VerifyAndClearExpectations(surface_ptr_);
+
+  // Verify that the expected histogram buckets received hits.
+  constexpr int last_bucket =
+      static_cast<int>(BaseRenderingContext2D::OverdrawOp::kMaxValue);
+  for (int bucket = 0; bucket <= last_bucket; ++bucket) {
+    histogram_tester_->ExpectBucketCount(
+        "Blink.Canvas.OverdrawOp", bucket,
+        static_cast<base::HistogramBase::Count>(expected_buckets_.count(
+            static_cast<BaseRenderingContext2D::OverdrawOp>(bucket))));
+  }
+}
 
 //============================================================================
 
-TEST_P(CanvasRenderingContext2DTest, detectOverdrawWithFillRect) {
-  CreateContext(kNonOpaque);
-
-  TEST_OVERDRAW_1(1, fillRect(-1, -1, 12, 12));
-  TEST_OVERDRAW_1(1, fillRect(0, 0, 10, 10));
-  TEST_OVERDRAW_1(
-      0, strokeRect(0, 0, 10,
-                    10));  // stroking instead of filling does not overwrite
-  TEST_OVERDRAW_2(0, setGlobalAlpha(0.5f), fillRect(0, 0, 10, 10));
-  TEST_OVERDRAW_1(0, fillRect(0, 0, 9, 9));
-  TEST_OVERDRAW_2(0, translate(1, 1), fillRect(0, 0, 10, 10));
-  TEST_OVERDRAW_2(1, translate(1, 1), fillRect(-1, -1, 10, 10));
-  TEST_OVERDRAW_2(1, setFillStyle(OpaqueGradient()), fillRect(0, 0, 10, 10));
-  TEST_OVERDRAW_2(0, setFillStyle(AlphaGradient()), fillRect(0, 0, 10, 10));
-  TEST_OVERDRAW_3(0, setGlobalAlpha(0.5), setFillStyle(OpaqueGradient()),
-                  fillRect(0, 0, 10, 10));
-  TEST_OVERDRAW_3(1, setGlobalAlpha(0.5f),
-                  setGlobalCompositeOperation(String("copy")),
-                  fillRect(0, 0, 10, 10));
-  TEST_OVERDRAW_2(1, setGlobalCompositeOperation(String("copy")),
-                  fillRect(0, 0, 9, 9));
-  TEST_OVERDRAW_3(0, rect(0, 0, 5, 5), clip(), fillRect(0, 0, 10, 10));
-  TEST_OVERDRAW_4(0, rect(0, 0, 5, 5), clip(),
-                  setGlobalCompositeOperation(String("copy")),
-                  fillRect(0, 0, 10, 10));
+TEST_P(CanvasRenderingContext2DOverdrawTest, FillRect_FullCoverage) {
+  ExpectOverdraw({BaseRenderingContext2D::OverdrawOp::kTotal,
+                  BaseRenderingContext2D::OverdrawOp::kFillRect,
+                  BaseRenderingContext2D::OverdrawOp::kSourceOverBlendMode});
+  Context2D()->fillRect(-1, -1, 12, 12);
+  VerifyExpectations();
 }
 
-TEST_P(CanvasRenderingContext2DTest, detectOverdrawWithClearRect) {
-  CreateContext(kNonOpaque);
-
-  TEST_OVERDRAW_1(1, clearRect(0, 0, 10, 10));
-  TEST_OVERDRAW_1(0, clearRect(0, 0, 9, 9));
-  TEST_OVERDRAW_2(1, setGlobalAlpha(0.5f), clearRect(0, 0, 10, 10));
-  TEST_OVERDRAW_2(1, setFillStyle(AlphaGradient()), clearRect(0, 0, 10, 10));
-  TEST_OVERDRAW_2(0, translate(1, 1), clearRect(0, 0, 10, 10));
-  TEST_OVERDRAW_2(1, translate(1, 1), clearRect(-1, -1, 10, 10));
-  TEST_OVERDRAW_2(1, setGlobalCompositeOperation(String("destination-in")),
-                  clearRect(0, 0, 10, 10));  // composite op ignored
-  TEST_OVERDRAW_3(0, rect(0, 0, 5, 5), clip(), clearRect(0, 0, 10, 10));
+TEST_P(CanvasRenderingContext2DOverdrawTest, FillRect_ExactCoverage) {
+  ExpectOverdraw({BaseRenderingContext2D::OverdrawOp::kTotal,
+                  BaseRenderingContext2D::OverdrawOp::kFillRect,
+                  BaseRenderingContext2D::OverdrawOp::kSourceOverBlendMode});
+  Context2D()->fillRect(0, 0, 10, 10);
+  VerifyExpectations();
 }
 
-TEST_P(CanvasRenderingContext2DTest, detectOverdrawWithDrawImage) {
-  CreateContext(kNonOpaque);
+TEST_P(CanvasRenderingContext2DOverdrawTest, FillRect_Stroke) {
+  ExpectNoOverdraw();
+  Context2D()->strokeRect(0, 0, 10, 10);
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, FillRect_GlobalAlpha) {
+  ExpectNoOverdraw();
+  Context2D()->setGlobalAlpha(0.5f);
+  Context2D()->fillRect(0, 0, 10, 10);
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, FillRect_Filter) {
+  ExpectNoOverdraw();
+  V8UnionCanvasFilterOrString* filter =
+      MakeGarbageCollected<V8UnionCanvasFilterOrString>("blur(4px)");
+  Context2D()->setFilter(GetExecutionContext(), filter);
+  Context2D()->fillRect(0, 0, 10, 10);
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, FillRect_PartialCoverage) {
+  ExpectNoOverdraw();
+  Context2D()->fillRect(0, 0, 9, 9);
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest,
+       FillRect_PartialCoverageTransform) {
+  ExpectNoOverdraw();
+  Context2D()->translate(1, 1);
+  Context2D()->fillRect(0, 0, 10, 10);
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest,
+       FillRect_CompleteCoverageTransform) {
+  ExpectOverdraw({BaseRenderingContext2D::OverdrawOp::kTotal,
+                  BaseRenderingContext2D::OverdrawOp::kFillRect,
+                  BaseRenderingContext2D::OverdrawOp::kSourceOverBlendMode,
+                  BaseRenderingContext2D::OverdrawOp::kHasTransform});
+  Context2D()->translate(1, 1);
+  Context2D()->fillRect(-1, -1, 10, 10);
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, FillRect_OpaqueGradient) {
+  ExpectOverdraw({BaseRenderingContext2D::OverdrawOp::kTotal,
+                  BaseRenderingContext2D::OverdrawOp::kFillRect,
+                  BaseRenderingContext2D::OverdrawOp::kSourceOverBlendMode,
+                  BaseRenderingContext2D::OverdrawOp::kHasOpaqueShader});
+  Context2D()->setFillStyle(OpaqueGradient());
+  Context2D()->fillRect(0, 0, 10, 10);
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, FillRect_TransparentGradient) {
+  ExpectNoOverdraw();
+  Context2D()->setFillStyle(AlphaGradient());
+  Context2D()->fillRect(0, 0, 10, 10);
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest,
+       FillRect_OpaqueGradientGlobalAlpha) {
+  ExpectNoOverdraw();
+  Context2D()->setGlobalAlpha(0.5);
+  Context2D()->setFillStyle(OpaqueGradient());
+  Context2D()->fillRect(0, 0, 10, 10);
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest,
+       FillRect_CopyTransformPartialCoverage) {
+  ExpectOverdraw({
+      BaseRenderingContext2D::OverdrawOp::kTotal,
+      BaseRenderingContext2D::OverdrawOp::kClearForSrcBlendMode,
+  });
+  Context2D()->setGlobalCompositeOperation(String("copy"));
+  Context2D()->translate(1, 1);
+  Context2D()->fillRect(0, 0, 9, 9);
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, FillRect_Clipped) {
+  ExpectNoOverdraw();
+  Context2D()->rect(0, 0, 5, 5);
+  Context2D()->clip();
+  Context2D()->fillRect(0, 0, 10, 10);
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, FillRect_CopyClipped) {
+  ExpectNoOverdraw();
+  Context2D()->rect(0, 0, 5, 5);
+  Context2D()->clip();
+  Context2D()->setGlobalCompositeOperation(String("copy"));
+  Context2D()->fillRect(0, 0, 10, 10);
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, ClearRect_ExactCoverage) {
+  ExpectOverdraw({
+      BaseRenderingContext2D::OverdrawOp::kTotal,
+      BaseRenderingContext2D::OverdrawOp::kClearRect,
+  });
+  Context2D()->clearRect(0, 0, 10, 10);
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, ClearRect_PartialCoverage) {
+  ExpectNoOverdraw();
+  Context2D()->clearRect(0, 0, 9, 9);
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, ClearRect_GlobalAlpha) {
+  ExpectOverdraw({
+      BaseRenderingContext2D::OverdrawOp::kTotal,
+      BaseRenderingContext2D::OverdrawOp::kClearRect,
+  });
+  Context2D()->setGlobalAlpha(0.5f);
+  Context2D()->clearRect(0, 0, 10, 10);
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, ClearRect_TransparentGradient) {
+  ExpectOverdraw({
+      BaseRenderingContext2D::OverdrawOp::kTotal,
+      BaseRenderingContext2D::OverdrawOp::kClearRect,
+  });
+  Context2D()->setFillStyle(AlphaGradient()),
+      Context2D()->clearRect(0, 0, 10, 10);
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, ClearRect_Filter) {
+  ExpectOverdraw({
+      BaseRenderingContext2D::OverdrawOp::kTotal,
+      BaseRenderingContext2D::OverdrawOp::kClearRect,
+  });
+  V8UnionCanvasFilterOrString* filter =
+      MakeGarbageCollected<V8UnionCanvasFilterOrString>("blur(4px)");
+  Context2D()->setFilter(GetExecutionContext(), filter);
+  Context2D()->clearRect(0, 0, 10, 10);
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest,
+       ClearRect_TransformPartialCoverage) {
+  ExpectNoOverdraw();
+  Context2D()->translate(1, 1);
+  Context2D()->clearRect(0, 0, 10, 10);
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest,
+       ClearRect_TransformCompleteCoverage) {
+  ExpectOverdraw({
+      BaseRenderingContext2D::OverdrawOp::kTotal,
+      BaseRenderingContext2D::OverdrawOp::kClearRect,
+      BaseRenderingContext2D::OverdrawOp::kHasTransform,
+  });
+  Context2D()->translate(1, 1);
+  Context2D()->clearRect(-1, -1, 10, 10);
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, ClearRect_IgnoreCompositeOp) {
+  ExpectOverdraw({
+      BaseRenderingContext2D::OverdrawOp::kTotal,
+      BaseRenderingContext2D::OverdrawOp::kClearRect,
+  });
+  Context2D()->setGlobalCompositeOperation(String("destination-in"));
+  Context2D()->clearRect(0, 0, 10, 10);
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, ClearRect_Clipped) {
+  ExpectNoOverdraw();
+  Context2D()->rect(0, 0, 5, 5);
+  Context2D()->clip();
+  Context2D()->clearRect(0, 0, 10, 10);
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, DrawImage_ExactCoverage) {
+  ExpectOverdraw({
+      BaseRenderingContext2D::OverdrawOp::kTotal,
+      BaseRenderingContext2D::OverdrawOp::kDrawImage,
+      BaseRenderingContext2D::OverdrawOp::kSourceOverBlendMode,
+  });
   NonThrowableExceptionState exception_state;
-
-  TEST_OVERDRAW_1(1, drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10,
-                               0, 0, 10, 10, exception_state));
+  Context2D()->drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 0, 0,
+                         10, 10, exception_state);
   EXPECT_FALSE(exception_state.HadException());
-  TEST_OVERDRAW_1(1, drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 1, 1, 0,
-                               0, 10, 10, exception_state));
-  EXPECT_FALSE(exception_state.HadException());
-  TEST_OVERDRAW_2(0, setGlobalAlpha(0.5f),
-                  drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 0,
-                            0, 10, 10, exception_state));
-  EXPECT_FALSE(exception_state.HadException());
-  TEST_OVERDRAW_1(0, drawImage(GetScriptState(), &alpha_bitmap_, 0, 0, 10, 10,
-                               0, 0, 10, 10, exception_state));
-  EXPECT_FALSE(exception_state.HadException());
-  TEST_OVERDRAW_2(0, setGlobalAlpha(0.5f),
-                  drawImage(GetScriptState(), &alpha_bitmap_, 0, 0, 10, 10, 0,
-                            0, 10, 10, exception_state));
-  EXPECT_FALSE(exception_state.HadException());
-  TEST_OVERDRAW_1(0, drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10,
-                               1, 0, 10, 10, exception_state));
-  EXPECT_FALSE(exception_state.HadException());
-  TEST_OVERDRAW_1(0, drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10,
-                               0, 0, 9, 9, exception_state));
-  EXPECT_FALSE(exception_state.HadException());
-  TEST_OVERDRAW_1(1, drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10,
-                               0, 0, 11, 11, exception_state));
-  EXPECT_FALSE(exception_state.HadException());
-  TEST_OVERDRAW_2(1, translate(-1, 0),
-                  drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 1,
-                            0, 10, 10, exception_state));
-  EXPECT_FALSE(exception_state.HadException());
-  TEST_OVERDRAW_2(0, translate(-1, 0),
-                  drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 0,
-                            0, 10, 10, exception_state));
-  EXPECT_FALSE(exception_state.HadException());
-  TEST_OVERDRAW_2(
-      0, setFillStyle(OpaqueGradient()),
-      drawImage(GetScriptState(), &alpha_bitmap_, 0, 0, 10, 10, 0, 0, 10, 10,
-                exception_state));  // fillStyle ignored by drawImage
-  EXPECT_FALSE(exception_state.HadException());
-  TEST_OVERDRAW_2(
-      1, setFillStyle(AlphaGradient()),
-      drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 0, 0, 10, 10,
-                exception_state));  // fillStyle ignored by drawImage
-  EXPECT_FALSE(exception_state.HadException());
-  TEST_OVERDRAW_2(1, setGlobalCompositeOperation(String("copy")),
-                  drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 1,
-                            0, 10, 10, exception_state));
-  EXPECT_FALSE(exception_state.HadException());
-  TEST_OVERDRAW_3(0, rect(0, 0, 5, 5), clip(),
-                  drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 0,
-                            0, 10, 10, exception_state));
-  EXPECT_FALSE(exception_state.HadException());
+  VerifyExpectations();
 }
 
-TEST_P(CanvasRenderingContext2DTest, detectOverdrawWithPutImageData) {
-  CreateContext(kNonOpaque);
+TEST_P(CanvasRenderingContext2DOverdrawTest, DrawImage_Magnified) {
+  ExpectOverdraw({
+      BaseRenderingContext2D::OverdrawOp::kTotal,
+      BaseRenderingContext2D::OverdrawOp::kDrawImage,
+      BaseRenderingContext2D::OverdrawOp::kSourceOverBlendMode,
+  });
   NonThrowableExceptionState exception_state;
-
-  // Test putImageData
-  TEST_OVERDRAW_1(1,
-                  putImageData(full_image_data_.Get(), 0, 0, exception_state));
+  Context2D()->drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 1, 1, 0, 0,
+                         10, 10, exception_state);
   EXPECT_FALSE(exception_state.HadException());
-  TEST_OVERDRAW_1(1, putImageData(full_image_data_.Get(), 0, 0, 0, 0, 10, 10,
-                                  exception_state));
-  EXPECT_FALSE(exception_state.HadException());
-  TEST_OVERDRAW_1(0, putImageData(full_image_data_.Get(), 0, 0, 1, 1, 8, 8,
-                                  exception_state));
-  EXPECT_FALSE(exception_state.HadException());
-  TEST_OVERDRAW_2(1, setGlobalAlpha(0.5f),
-                  putImageData(full_image_data_.Get(), 0, 0,
-                               exception_state));  // alpha has no effect
-  EXPECT_FALSE(exception_state.HadException());
-  TEST_OVERDRAW_1(
-      0, putImageData(partial_image_data_.Get(), 0, 0, exception_state));
-  EXPECT_FALSE(exception_state.HadException());
-  TEST_OVERDRAW_2(1, translate(1, 1),
-                  putImageData(full_image_data_.Get(), 0, 0,
-                               exception_state));  // ignores tranforms
-  EXPECT_FALSE(exception_state.HadException());
-  TEST_OVERDRAW_1(0,
-                  putImageData(full_image_data_.Get(), 1, 0, exception_state));
-  EXPECT_FALSE(exception_state.HadException());
-  TEST_OVERDRAW_3(1, rect(0, 0, 5, 5), clip(),
-                  putImageData(full_image_data_.Get(), 0, 0,
-                               exception_state));  // ignores clip
-  EXPECT_FALSE(exception_state.HadException());
+  VerifyExpectations();
 }
 
-TEST_P(CanvasRenderingContext2DTest, detectOverdrawWithCompositeOperations) {
-  CreateContext(kNonOpaque);
-
-  // Test composite operators with an opaque rect that covers the entire canvas
-  // Note: all the untested composite operations take the same code path as
-  // source-in, which assumes that the destination may not be overwritten
-  TEST_OVERDRAW_2(1, setGlobalCompositeOperation(String("clear")),
-                  fillRect(0, 0, 10, 10));
-  TEST_OVERDRAW_2(1, setGlobalCompositeOperation(String("copy")),
-                  fillRect(0, 0, 10, 10));
-  TEST_OVERDRAW_2(1, setGlobalCompositeOperation(String("source-over")),
-                  fillRect(0, 0, 10, 10));
-  TEST_OVERDRAW_2(0, setGlobalCompositeOperation(String("source-in")),
-                  fillRect(0, 0, 10, 10));
-  // Test composite operators with a transparent rect that covers the entire
-  // canvas
-  TEST_OVERDRAW_3(1, setGlobalAlpha(0.5f),
-                  setGlobalCompositeOperation(String("clear")),
-                  fillRect(0, 0, 10, 10));
-  TEST_OVERDRAW_3(1, setGlobalAlpha(0.5f),
-                  setGlobalCompositeOperation(String("copy")),
-                  fillRect(0, 0, 10, 10));
-  TEST_OVERDRAW_3(0, setGlobalAlpha(0.5f),
-                  setGlobalCompositeOperation(String("source-over")),
-                  fillRect(0, 0, 10, 10));
-  TEST_OVERDRAW_3(0, setGlobalAlpha(0.5f),
-                  setGlobalCompositeOperation(String("source-in")),
-                  fillRect(0, 0, 10, 10));
-  // Test composite operators with an opaque rect that does not cover the entire
-  // canvas
-  TEST_OVERDRAW_2(0, setGlobalCompositeOperation(String("clear")),
-                  fillRect(0, 0, 5, 5));
-  TEST_OVERDRAW_2(1, setGlobalCompositeOperation(String("copy")),
-                  fillRect(0, 0, 5, 5));
-  TEST_OVERDRAW_2(0, setGlobalCompositeOperation(String("source-over")),
-                  fillRect(0, 0, 5, 5));
-  TEST_OVERDRAW_2(0, setGlobalCompositeOperation(String("source-in")),
-                  fillRect(0, 0, 5, 5));
+TEST_P(CanvasRenderingContext2DOverdrawTest, DrawImage_GlobalAlpha) {
+  ExpectNoOverdraw();
+  NonThrowableExceptionState exception_state;
+  Context2D()->setGlobalAlpha(0.5f);
+  Context2D()->drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 0, 0,
+                         10, 10, exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+  VerifyExpectations();
 }
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, DrawImage_TransparentBitmap) {
+  ExpectNoOverdraw();
+  NonThrowableExceptionState exception_state;
+  Context2D()->drawImage(GetScriptState(), &alpha_bitmap_, 0, 0, 10, 10, 0, 0,
+                         10, 10, exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, DrawImage_Filter) {
+  ExpectNoOverdraw();
+  NonThrowableExceptionState exception_state;
+  V8UnionCanvasFilterOrString* filter =
+      MakeGarbageCollected<V8UnionCanvasFilterOrString>("blur(4px)");
+  Context2D()->setFilter(GetExecutionContext(), filter);
+  Context2D()->drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 0, 0,
+                         10, 10, exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, DrawImage_PartialCoverage1) {
+  ExpectNoOverdraw();
+  NonThrowableExceptionState exception_state;
+  Context2D()->drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 1, 0,
+                         10, 10, exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, DrawImage_PartialCoverage2) {
+  ExpectNoOverdraw();
+  NonThrowableExceptionState exception_state;
+  Context2D()->drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 0, 0,
+                         9, 9, exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, DrawImage_FullCoverage) {
+  ExpectOverdraw({
+      BaseRenderingContext2D::OverdrawOp::kTotal,
+      BaseRenderingContext2D::OverdrawOp::kDrawImage,
+      BaseRenderingContext2D::OverdrawOp::kSourceOverBlendMode,
+  });
+  NonThrowableExceptionState exception_state;
+  Context2D()->drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 0, 0,
+                         11, 11, exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, DrawImage_TransformFullCoverage) {
+  ExpectOverdraw({
+      BaseRenderingContext2D::OverdrawOp::kTotal,
+      BaseRenderingContext2D::OverdrawOp::kDrawImage,
+      BaseRenderingContext2D::OverdrawOp::kHasTransform,
+      BaseRenderingContext2D::OverdrawOp::kSourceOverBlendMode,
+  });
+  NonThrowableExceptionState exception_state;
+  Context2D()->translate(-1, 0),
+      Context2D()->drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 1,
+                             0, 10, 10, exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest,
+       DrawImage_TransformPartialCoverage) {
+  ExpectNoOverdraw();
+  NonThrowableExceptionState exception_state;
+  Context2D()->translate(-1, 0),
+      Context2D()->drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 0,
+                             0, 10, 10, exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest,
+       DrawImage_TransparenBitmapOpaqueGradient) {
+  ExpectNoOverdraw();
+  NonThrowableExceptionState exception_state;
+  Context2D()->setFillStyle(OpaqueGradient());
+  Context2D()->drawImage(GetScriptState(), &alpha_bitmap_, 0, 0, 10, 10, 0, 0,
+                         10, 10, exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest,
+       DrawImage_OpaqueBitmapTransparentGradient) {
+  ExpectOverdraw({
+      BaseRenderingContext2D::OverdrawOp::kTotal,
+      BaseRenderingContext2D::OverdrawOp::kDrawImage,
+      BaseRenderingContext2D::OverdrawOp::kSourceOverBlendMode,
+  });
+  NonThrowableExceptionState exception_state;
+  Context2D()->setFillStyle(AlphaGradient());
+  Context2D()->drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 0, 0,
+                         10, 10, exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, DrawImage_CopyPartialCoverage) {
+  ExpectOverdraw({
+      BaseRenderingContext2D::OverdrawOp::kTotal,
+      BaseRenderingContext2D::OverdrawOp::kClearForSrcBlendMode,
+  });
+  NonThrowableExceptionState exception_state;
+  Context2D()->setGlobalCompositeOperation(String("copy"));
+  Context2D()->drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 1, 0,
+                         10, 10, exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest,
+       DrawImage_CopyTransformPartialCoverage) {
+  ExpectOverdraw({
+      BaseRenderingContext2D::OverdrawOp::kTotal,
+      BaseRenderingContext2D::OverdrawOp::kClearForSrcBlendMode,
+  });
+  NonThrowableExceptionState exception_state;
+  Context2D()->setGlobalCompositeOperation(String("copy"));
+  Context2D()->translate(1, 1);
+  Context2D()->drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 1, 0,
+                         10, 10, exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, DrawImage_Clipped) {
+  ExpectNoOverdraw();
+  NonThrowableExceptionState exception_state;
+  Context2D()->rect(0, 0, 5, 5);
+  Context2D()->clip();
+  Context2D()->drawImage(GetScriptState(), &opaque_bitmap_, 0, 0, 10, 10, 0, 0,
+                         10, 10, exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, PutImageData_FullCoverage1) {
+  ExpectOverdraw({
+      BaseRenderingContext2D::OverdrawOp::kTotal,
+      BaseRenderingContext2D::OverdrawOp::kPutImageData,
+  });
+  NonThrowableExceptionState exception_state;
+  Context2D()->putImageData(full_image_data_.Get(), 0, 0, exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, PutImageData_FullCoverage2) {
+  ExpectOverdraw({
+      BaseRenderingContext2D::OverdrawOp::kTotal,
+      BaseRenderingContext2D::OverdrawOp::kPutImageData,
+  });
+  NonThrowableExceptionState exception_state;
+  Context2D()->putImageData(full_image_data_.Get(), 0, 0, 0, 0, 10, 10,
+                            exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, PutImageData_PartialCoverage1) {
+  ExpectNoOverdraw();
+  NonThrowableExceptionState exception_state;
+  Context2D()->putImageData(full_image_data_.Get(), 0, 0, 1, 1, 8, 8,
+                            exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, PutImageData_PartialCoverage2) {
+  ExpectNoOverdraw();
+  NonThrowableExceptionState exception_state;
+  Context2D()->putImageData(partial_image_data_.Get(), 0, 0, exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, PutImageData_PartialCoverage3) {
+  ExpectNoOverdraw();
+  NonThrowableExceptionState exception_state;
+  Context2D()->putImageData(full_image_data_.Get(), 1, 0, exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, PutImageData_GlobalAlphaIgnored) {
+  ExpectOverdraw({
+      BaseRenderingContext2D::OverdrawOp::kTotal,
+      BaseRenderingContext2D::OverdrawOp::kPutImageData,
+  });
+  NonThrowableExceptionState exception_state;
+  Context2D()->setGlobalAlpha(0.5f);
+  Context2D()->putImageData(full_image_data_.Get(), 0, 0, exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest,
+       PutImageData_TransparentGradientIgnored) {
+  ExpectOverdraw({
+      BaseRenderingContext2D::OverdrawOp::kTotal,
+      BaseRenderingContext2D::OverdrawOp::kPutImageData,
+  });
+  NonThrowableExceptionState exception_state;
+  Context2D()->setFillStyle(AlphaGradient());
+  Context2D()->putImageData(full_image_data_.Get(), 0, 0, exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, PutImageData_FilterIgnored) {
+  ExpectOverdraw({
+      BaseRenderingContext2D::OverdrawOp::kTotal,
+      BaseRenderingContext2D::OverdrawOp::kPutImageData,
+  });
+  NonThrowableExceptionState exception_state;
+  V8UnionCanvasFilterOrString* filter =
+      MakeGarbageCollected<V8UnionCanvasFilterOrString>("blur(4px)");
+  Context2D()->setFilter(GetExecutionContext(), filter);
+  Context2D()->putImageData(full_image_data_.Get(), 0, 0, exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, PutImageData_TransformIgnored) {
+  ExpectOverdraw({
+      BaseRenderingContext2D::OverdrawOp::kTotal,
+      BaseRenderingContext2D::OverdrawOp::kPutImageData,
+  });
+  NonThrowableExceptionState exception_state;
+  Context2D()->translate(1, 1);
+  Context2D()->putImageData(full_image_data_.Get(), 0, 0, exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, PutImageData_ClipIgnored) {
+  ExpectOverdraw({
+      BaseRenderingContext2D::OverdrawOp::kTotal,
+      BaseRenderingContext2D::OverdrawOp::kPutImageData,
+  });
+  NonThrowableExceptionState exception_state;
+  Context2D()->rect(0, 0, 5, 5);
+  Context2D()->clip();
+  Context2D()->putImageData(full_image_data_.Get(), 0, 0, exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, FillRect_ClearFullCoverage) {
+  ExpectOverdraw({
+      BaseRenderingContext2D::OverdrawOp::kTotal,
+      BaseRenderingContext2D::OverdrawOp::kFillRect,
+      BaseRenderingContext2D::OverdrawOp::kClearBlendMode,
+  });
+  Context2D()->setGlobalCompositeOperation(String("clear"));
+  Context2D()->fillRect(0, 0, 10, 10);
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, FillRect_CopyFullCoverage) {
+  ExpectOverdraw({
+      BaseRenderingContext2D::OverdrawOp::kTotal,
+      BaseRenderingContext2D::OverdrawOp::kClearForSrcBlendMode,
+  });
+  Context2D()->setGlobalCompositeOperation(String("copy"));
+  Context2D()->fillRect(0, 0, 10, 10);
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, FillRect_SourceOverFullCoverage) {
+  ExpectOverdraw({
+      BaseRenderingContext2D::OverdrawOp::kTotal,
+      BaseRenderingContext2D::OverdrawOp::kFillRect,
+      BaseRenderingContext2D::OverdrawOp::kSourceOverBlendMode,
+  });
+  Context2D()->setGlobalCompositeOperation(String("source-over"));
+  Context2D()->fillRect(0, 0, 10, 10);
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, FillRect_SourceInFullCoverage) {
+  ExpectNoOverdraw();
+  Context2D()->setGlobalCompositeOperation(String("source-in"));
+  Context2D()->fillRect(0, 0, 10, 10);
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, FillRect_ClearGlobalAlpha) {
+  ExpectOverdraw({
+      BaseRenderingContext2D::OverdrawOp::kTotal,
+      BaseRenderingContext2D::OverdrawOp::kFillRect,
+      BaseRenderingContext2D::OverdrawOp::kClearBlendMode,
+  });
+  Context2D()->setGlobalCompositeOperation(String("clear"));
+  Context2D()->setGlobalAlpha(0.5f);
+  Context2D()->fillRect(0, 0, 10, 10);
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, FillRect_CopyGlobalAlpha) {
+  ExpectOverdraw({
+      BaseRenderingContext2D::OverdrawOp::kTotal,
+      BaseRenderingContext2D::OverdrawOp::kClearForSrcBlendMode,
+  });
+  Context2D()->setGlobalCompositeOperation(String("copy"));
+  Context2D()->setGlobalAlpha(0.5f);
+  Context2D()->fillRect(0, 0, 10, 10);
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, FillRect_SourceOverGlobalAlpha) {
+  ExpectNoOverdraw();
+  Context2D()->setGlobalCompositeOperation(String("source-over"));
+  Context2D()->setGlobalAlpha(0.5f);
+  Context2D()->fillRect(0, 0, 10, 10);
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, FillRect_SourceInGlobalAlpha) {
+  ExpectNoOverdraw();
+  Context2D()->setGlobalCompositeOperation(String("source-in"));
+  Context2D()->setGlobalAlpha(0.5f);
+  Context2D()->fillRect(0, 0, 10, 10);
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, FillRect_ClearPartialCoverage) {
+  ExpectNoOverdraw();
+  Context2D()->setGlobalCompositeOperation(String("clear"));
+  Context2D()->fillRect(0, 0, 1, 10);
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, FillRect_CopyPartialCoverage) {
+  ExpectOverdraw({
+      BaseRenderingContext2D::OverdrawOp::kTotal,
+      BaseRenderingContext2D::OverdrawOp::kClearForSrcBlendMode,
+  });
+  Context2D()->setGlobalCompositeOperation(String("copy"));
+  Context2D()->fillRect(0, 0, 1, 10);
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest,
+       FillRect_SourceOverPartialCoverage) {
+  ExpectNoOverdraw();
+  Context2D()->setGlobalCompositeOperation(String("source-over"));
+  Context2D()->fillRect(0, 0, 1, 10);
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, FillRect_SourceInPartialCoverage) {
+  ExpectNoOverdraw();
+  Context2D()->setGlobalCompositeOperation(String("source-in"));
+  Context2D()->fillRect(0, 0, 1, 10);
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, Path_FullCoverage) {
+  // This case is an overdraw but the currentl detection logic rejects all
+  // paths unless the copy composite op is used.
+  ExpectNoOverdraw();
+  Context2D()->rect(-1, -1, 12, 12);
+  Context2D()->fill();
+  VerifyExpectations();
+}
+
+TEST_P(CanvasRenderingContext2DOverdrawTest, Path_CopyPartialCoverage) {
+  ExpectOverdraw({
+      BaseRenderingContext2D::OverdrawOp::kTotal,
+      BaseRenderingContext2D::OverdrawOp::kClearForSrcBlendMode,
+  });
+  Context2D()->setGlobalCompositeOperation(String("copy"));
+  Context2D()->rect(0, 0, 1, 10);
+  Context2D()->fill();
+  VerifyExpectations();
+}
+
+//==============================================================================
 
 TEST_P(CanvasRenderingContext2DTest, ImageResourceLifetime) {
   auto* canvas = To<HTMLCanvasElement>(

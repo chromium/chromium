@@ -10707,6 +10707,21 @@ Called by update_bad_message_reasons.py.-->
   <int value="11" label="Aborted because there was no surface"/>
 </enum>
 
+<enum name="CanvasOverdrawOp">
+  <int value="0" label="None (should have 0 counts)"/>
+  <int value="1" label="Total ops"/>
+  <int value="2" label="ClearRect op"/>
+  <int value="3" label="FillRect op"/>
+  <int value="4" label="PutImageData op"/>
+  <int value="5" label="DrawImage op"/>
+  <int value="6" label="ContextReset op"/>
+  <int value="7" label="ClearForSrcBlendMode op"/>
+  <int value="8" label="Has opaque shader"/>
+  <int value="9" label="Has transform"/>
+  <int value="10" label="Has source-over blend mode"/>
+  <int value="11" label="Has clear blend mode"/>
+</enum>
+
 <enum name="CanvasRenderingAPI">
   <int value="0" label="2d"/>
   <int value="1" label="webgl"/>
@@ -34562,6 +34577,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4032" label="OffscreenCanvas_WebGL2"/>
   <int value="4033" label="OffscreenCanvas_BitmapRenderer"/>
   <int value="4034" label="OffscreenCanvas_WebGPU"/>
+  <int value="4035" label="CanvasRenderingContext2DHasOverdraw"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

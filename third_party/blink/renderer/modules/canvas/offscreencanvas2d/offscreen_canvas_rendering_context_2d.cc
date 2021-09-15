@@ -717,7 +717,7 @@ void OffscreenCanvasRenderingContext2D::DrawTextInternal(
     location = FloatPoint();
   }
 
-  Draw(
+  Draw<OverdrawOp::kNone>(
       [this, text = std::move(text), direction, location](
           cc::PaintCanvas* paint_canvas,
           const PaintFlags* flags) /* draw lambda */ {

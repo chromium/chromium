@@ -10,6 +10,7 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metrics.h"
@@ -66,6 +67,9 @@ const char BaseRenderingContext2D::kOptimizeLegibilityRendering[] =
     "optimizelegibility";
 const char BaseRenderingContext2D::kGeometricPrecisionRendering[] =
     "geometricprecision";
+
+// Dummy overdraw test for ops that do not support overdraw detection
+const auto kNoOverdraw = [](const SkIRect& clip_bounds) { return false; };
 
 // After context lost, it waits |kTryRestoreContextInterval| before start the
 // restore the context. This wait needs to be long enough to avoid spamming the
@@ -321,7 +325,7 @@ void BaseRenderingContext2D::ResetInternal() {
 #endif
     // We only want to clear the backing buffer if the surface exists because
     // this function is also used when the context is lost.
-    clearRect(0, 0, Width(), Height());
+    clearRect(0, 0, Width(), Height(), /*for_reset=*/true);
   }
   ValidateStateStack();
   origin_tainted_by_content_ = false;
@@ -1251,16 +1255,17 @@ void BaseRenderingContext2D::DrawPathInternal(
   if (!GetOrCreatePaintCanvas())
     return;
 
-  Draw([sk_path, use_paint_cache](cc::PaintCanvas* c,
-                                  const PaintFlags* flags)  // draw lambda
-       { c->drawPath(sk_path, *flags, use_paint_cache); },
-       [](const SkIRect& rect)  // overdraw test lambda
-       { return false; },
-       bounds, paint_type,
-       GetState().HasPattern(paint_type)
-           ? CanvasRenderingContext2DState::kNonOpaqueImage
-           : CanvasRenderingContext2DState::kNoImage,
-       CanvasPerformanceMonitor::DrawType::kPath);
+  Draw<OverdrawOp::kNone>(
+      [sk_path, use_paint_cache](cc::PaintCanvas* c,
+                                 const PaintFlags* flags)  // draw lambda
+      { c->drawPath(sk_path, *flags, use_paint_cache); },
+      [](const SkIRect& rect)  // overdraw test lambda
+      { return false; },
+      bounds, paint_type,
+      GetState().HasPattern(paint_type)
+          ? CanvasRenderingContext2DState::kNonOpaqueImage
+          : CanvasRenderingContext2DState::kNoImage,
+      CanvasPerformanceMonitor::DrawType::kPath);
 }
 
 static SkPathFillType ParseWinding(const String& winding_rule_string) {
@@ -1350,15 +1355,16 @@ void BaseRenderingContext2D::fillRect(double x,
   }
 
   SkRect rect = SkRect::MakeXYWH(fx, fy, fwidth, fheight);
-  Draw([rect](cc::PaintCanvas* c, const PaintFlags* flags)  // draw lambda
-       { c->drawRect(rect, *flags); },
-       [rect, this](const SkIRect& clip_bounds)  // overdraw test lambda
-       { return RectContainsTransformedRect(rect, clip_bounds); },
-       rect, CanvasRenderingContext2DState::kFillPaintType,
-       GetState().HasPattern(CanvasRenderingContext2DState::kFillPaintType)
-           ? CanvasRenderingContext2DState::kNonOpaqueImage
-           : CanvasRenderingContext2DState::kNoImage,
-       CanvasPerformanceMonitor::DrawType::kRectangle);
+  Draw<OverdrawOp::kFillRect>(
+      [rect](cc::PaintCanvas* c, const PaintFlags* flags)  // draw lambda
+      { c->drawRect(rect, *flags); },
+      [rect, this](const SkIRect& clip_bounds)  // overdraw test lambda
+      { return RectContainsTransformedRect(rect, clip_bounds); },
+      rect, CanvasRenderingContext2DState::kFillPaintType,
+      GetState().HasPattern(CanvasRenderingContext2DState::kFillPaintType)
+          ? CanvasRenderingContext2DState::kNonOpaqueImage
+          : CanvasRenderingContext2DState::kNoImage,
+      CanvasPerformanceMonitor::DrawType::kRectangle);
 }
 
 static void StrokeRectOnCanvas(const FloatRect& rect,
@@ -1406,15 +1412,14 @@ void BaseRenderingContext2D::strokeRect(double x,
                              bounds.Height()))
     return;
 
-  Draw([rect](cc::PaintCanvas* c, const PaintFlags* flags)  // draw lambda
-       { StrokeRectOnCanvas(rect, c, flags); },
-       [](const SkIRect& clip_bounds)  // overdraw test lambda
-       { return false; },
-       bounds, CanvasRenderingContext2DState::kStrokePaintType,
-       GetState().HasPattern(CanvasRenderingContext2DState::kStrokePaintType)
-           ? CanvasRenderingContext2DState::kNonOpaqueImage
-           : CanvasRenderingContext2DState::kNoImage,
-       CanvasPerformanceMonitor::DrawType::kRectangle);
+  Draw<OverdrawOp::kNone>(
+      [rect](cc::PaintCanvas* c, const PaintFlags* flags)  // draw lambda
+      { StrokeRectOnCanvas(rect, c, flags); },
+      kNoOverdraw, bounds, CanvasRenderingContext2DState::kStrokePaintType,
+      GetState().HasPattern(CanvasRenderingContext2DState::kStrokePaintType)
+          ? CanvasRenderingContext2DState::kNonOpaqueImage
+          : CanvasRenderingContext2DState::kNoImage,
+      CanvasPerformanceMonitor::DrawType::kRectangle);
 }
 
 void BaseRenderingContext2D::ClipInternal(const Path& path,
@@ -1529,7 +1534,8 @@ bool BaseRenderingContext2D::IsPointInStrokeInternal(const Path& path,
 void BaseRenderingContext2D::clearRect(double x,
                                        double y,
                                        double width,
-                                       double height) {
+                                       double height,
+                                       bool for_reset) {
   if (!ValidateRectForCanvas(x, y, width, height))
     return;
 
@@ -1560,8 +1566,15 @@ void BaseRenderingContext2D::clearRect(double x,
 
   FloatRect rect(fx, fy, fwidth, fheight);
   if (RectContainsTransformedRect(rect, clip_bounds)) {
-    CheckOverdraw(rect, &clear_flags, CanvasRenderingContext2DState::kNoImage,
-                  kClipFill);
+    if (for_reset) {
+      // In the reset case, we can use kUntransformedUnclippedFill because we
+      // know the state state was reset.
+      CheckOverdraw(rect, &clear_flags, CanvasRenderingContext2DState::kNoImage,
+                    OverdrawOp::kContextReset, kUntransformedUnclippedFill);
+    } else {
+      CheckOverdraw(rect, &clear_flags, CanvasRenderingContext2DState::kNoImage,
+                    OverdrawOp::kClearRect, kClipFill);
+    }
     GetPaintCanvasForDraw(clip_bounds,
                           CanvasPerformanceMonitor::DrawType::kOther)
         ->drawRect(rect, clear_flags);
@@ -1894,7 +1907,7 @@ void BaseRenderingContext2D::drawImage(ScriptState* script_state,
   if (!origin_tainted_by_content_ && WouldTaintOrigin(image_source))
     SetOriginTaintedByContent();
 
-  Draw(
+  Draw<OverdrawOp::kDrawImage>(
       [this, image_source, image, src_rect, dst_rect](
           cc::PaintCanvas* c, const PaintFlags* flags)  // draw lambda
       {
@@ -1913,10 +1926,10 @@ void BaseRenderingContext2D::drawImage(ScriptState* script_state,
       CanvasPerformanceMonitor::DrawType::kImage);
 }
 
-void BaseRenderingContext2D::ClearCanvas() {
+void BaseRenderingContext2D::ClearCanvasForSrcCompositeOp() {
   FloatRect canvas_rect(0, 0, Width(), Height());
   CheckOverdraw(canvas_rect, nullptr, CanvasRenderingContext2DState::kNoImage,
-                kClipFill);
+                OverdrawOp::kClearForSrcBlendMode, kClipFill);
   cc::PaintCanvas* c = GetOrCreatePaintCanvas();
   if (c)
     c->clear(HasAlpha() ? SK_ColorTRANSPARENT : SK_ColorBLACK);
@@ -2348,7 +2361,7 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
   source_rect.Move(-dest_offset);
 
   CheckOverdraw(dest_rect, nullptr, CanvasRenderingContext2DState::kNoImage,
-                kUntransformedUnclippedFill);
+                OverdrawOp::kPutImageData, kUntransformedUnclippedFill);
 
   // Color / format convert ImageData to context 2D settings if needed. Color /
   // format conversion is not needed only if context 2D and ImageData are both
@@ -2472,70 +2485,6 @@ void BaseRenderingContext2D::setImageSmoothingQuality(const String& quality) {
   GetState().SetImageSmoothingQuality(quality);
 }
 
-void BaseRenderingContext2D::CheckOverdraw(
-    const SkRect& rect,
-    const PaintFlags* flags,
-    CanvasRenderingContext2DState::ImageType image_type,
-    DrawType draw_type) {
-  cc::PaintCanvas* c = GetOrCreatePaintCanvas();
-  if (!c)
-    return;
-
-  SkRect device_rect;
-  if (draw_type == kUntransformedUnclippedFill) {
-    device_rect = rect;
-  } else {
-    DCHECK_EQ(draw_type, kClipFill);
-    if (GetState().HasComplexClip())
-      return;
-
-    SkIRect sk_i_bounds;
-    if (!c->getDeviceClipBounds(&sk_i_bounds))
-      return;
-    device_rect = SkRect::Make(sk_i_bounds);
-  }
-
-  const SkImageInfo& image_info = c->imageInfo();
-  if (!device_rect.contains(
-          SkRect::MakeWH(image_info.width(), image_info.height())))
-    return;
-
-  bool is_source_over = true;
-  unsigned alpha = 0xFF;
-  if (flags) {
-    if (flags->getLooper() || flags->getImageFilter() || flags->getMaskFilter())
-      return;
-
-    SkBlendMode mode = flags->getBlendMode();
-    is_source_over = mode == SkBlendMode::kSrcOver;
-    if (!is_source_over && mode != SkBlendMode::kSrc &&
-        mode != SkBlendMode::kClear)
-      return;  // The code below only knows how to handle Src, SrcOver, and
-               // Clear
-
-    alpha = flags->getAlpha();
-
-    if (is_source_over &&
-        image_type == CanvasRenderingContext2DState::kNoImage) {
-      if (flags->HasShader()) {
-        if (flags->ShaderIsOpaque() && alpha == 0xFF)
-          WillOverwriteCanvas();
-        return;
-      }
-    }
-  }
-
-  if (is_source_over) {
-    // With source over, we need to certify that alpha == 0xFF for all pixels
-    if (image_type == CanvasRenderingContext2DState::kNonOpaqueImage)
-      return;
-    if (alpha < 0xFF)
-      return;
-  }
-
-  WillOverwriteCanvas();
-}
-
 double BaseRenderingContext2D::letterSpacing() const {
   return GetState().GetLetterSpacing();
 }
@@ -2630,5 +2579,50 @@ BaseRenderingContext2D::UsageCounters::UsageCounters()
       num_clear_rect_calls(0),
       num_draw_focus_calls(0),
       num_frames_since_reset(0) {}
+
+namespace {
+
+void CanvasOverdrawHistogram(BaseRenderingContext2D::OverdrawOp op) {
+  UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.OverdrawOp", op);
+}
+
+}  // unnamed namespace
+
+void BaseRenderingContext2D::WillOverwriteCanvas(
+    BaseRenderingContext2D::OverdrawOp op,
+    SkBlendMode blend_mode,
+    bool has_opaque_shader) {
+  auto* host = GetCanvasRenderingContextHost();
+  if (host) {  // CSS paint use cases not counted.
+    UseCounter::Count(GetCanvasRenderingContextHost()->GetTopExecutionContext(),
+                      WebFeature::kCanvasRenderingContext2DHasOverdraw);
+  }
+  CanvasOverdrawHistogram(op);
+  CanvasOverdrawHistogram(OverdrawOp::kTotal);
+
+  // We only hit the blend mode buckets if the op is affected by blend modes.
+  if (op == OverdrawOp::kDrawImage || op == OverdrawOp::kFillRect) {
+    if (blend_mode == SkBlendMode::kSrcOver) {
+      CanvasOverdrawHistogram(OverdrawOp::kSourceOverBlendMode);
+    } else if (blend_mode == SkBlendMode::kClear) {
+      CanvasOverdrawHistogram(OverdrawOp::kClearBlendMode);
+    }
+  }
+
+  // We only hit the kHasTransform bucket if the op is affected by transforms.
+  if (op == OverdrawOp::kClearRect || op == OverdrawOp::kDrawImage ||
+      op == OverdrawOp::kFillRect) {
+    if (!GetState().GetTransform().IsIdentity()) {
+      CanvasOverdrawHistogram(OverdrawOp::kHasTransform);
+    }
+  }
+
+  if (has_opaque_shader) {
+    DCHECK(op == OverdrawOp::kFillRect);
+    CanvasOverdrawHistogram(OverdrawOp::kHasOpaqueShader);
+  }
+
+  WillOverwriteCanvas();
+}
 
 }  // namespace blink

@@ -985,12 +985,13 @@ void CanvasRenderingContext2D::fillFormattedText(
   sk_sp<PaintRecord> recording = formatted_text->PaintFormattedText(
       canvas()->GetDocument(), GetState().GetFontDescription(), x, y,
       wrap_width, bounds);
-  Draw([recording](cc::PaintCanvas* c, const PaintFlags* flags)  // draw lambda
-       { c->drawPicture(recording); },
-       [](const SkIRect& rect) { return false; }, bounds,
-       CanvasRenderingContext2DState::PaintType::kFillPaintType,
-       CanvasRenderingContext2DState::kNoImage,
-       CanvasPerformanceMonitor::DrawType::kText);
+  Draw<OverdrawOp::kNone>(
+      [recording](cc::PaintCanvas* c, const PaintFlags* flags)  // draw lambda
+      { c->drawPicture(recording); },
+      [](const SkIRect& rect) { return false; }, bounds,
+      CanvasRenderingContext2DState::PaintType::kFillPaintType,
+      CanvasRenderingContext2DState::kNoImage,
+      CanvasPerformanceMonitor::DrawType::kText);
 }
 
 void CanvasRenderingContext2D::DrawTextInternal(
@@ -1091,7 +1092,7 @@ void CanvasRenderingContext2D::DrawTextInternal(
     location.SetX(location.X() / clampTo<float>(width / font_width));
   }
 
-  Draw(
+  Draw<OverdrawOp::kNone>(
       [this, text = std::move(text), direction, bidi_override, location](
           cc::PaintCanvas* c, const PaintFlags* flags)  // draw lambda
       {
