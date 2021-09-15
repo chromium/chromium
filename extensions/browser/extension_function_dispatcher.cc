@@ -245,6 +245,9 @@ void ExtensionFunctionDispatcher::Dispatch(
     mojo::ReportBadMessage(kBadMessage);
     return;
   }
+
+  // TODO(https://crbug.com/1227812): Validate (or remove) `params.source_url`.
+
   // Extension API from a non Service Worker context, e.g. extension page,
   // background page, content script.
   std::unique_ptr<ResponseCallbackWrapper>& callback_wrapper =
@@ -309,28 +312,34 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
     return;
   }
 
-  ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
-  const Extension* extension =
-      registry->enabled_extensions().GetByID(params.extension_id);
-  if (!extension) {
-    extension =
-        registry->enabled_extensions().GetHostedAppByURL(params.source_url);
-  }
-
-  const GURL* rfh_url =
-      render_frame_host ? &render_frame_host->GetLastCommittedURL() : nullptr;
+  const GURL* rfh_url = nullptr;
   if (render_frame_host) {
+    rfh_url = &render_frame_host->GetLastCommittedURL();
     DCHECK_EQ(render_process_id, render_frame_host->GetProcess()->GetID());
   }
 
+  ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
+  const Extension* extension =
+      registry->enabled_extensions().GetByID(params.extension_id);
+  // Check if the call is from a hosted app. Hosted apps can only make call from
+  // render frames, so we can use `rfh_url`.
+  // TODO(devlin): Isn't `params.extension_id` still populated for hosted app
+  // calls?
+  if (!extension && rfh_url) {
+    extension = registry->enabled_extensions().GetHostedAppByURL(*rfh_url);
+  }
+
+  const bool is_worker_request = IsRequestFromServiceWorker(params);
+
   scoped_refptr<ExtensionFunction> function = CreateExtensionFunction(
-      params, extension, render_process_id, rfh_url, *process_map,
-      ExtensionAPI::GetSharedInstance(), browser_context_, std::move(callback));
+      params, extension, render_process_id, is_worker_request, rfh_url,
+      *process_map, ExtensionAPI::GetSharedInstance(), browser_context_,
+      std::move(callback));
   if (!function.get())
     return;
 
   function->set_worker_thread_id(params.worker_thread_id);
-  if (IsRequestFromServiceWorker(params)) {
+  if (is_worker_request) {
     function->set_service_worker_version_id(params.service_worker_version_id);
   } else {
     function->SetRenderFrameHost(render_frame_host);
@@ -491,6 +500,7 @@ ExtensionFunctionDispatcher::CreateExtensionFunction(
     const mojom::RequestParams& params,
     const Extension* extension,
     int requesting_process_id,
+    bool is_worker_request,
     const GURL* rfh_url,
     const ProcessMap& process_map,
     ExtensionAPI* api,
@@ -508,15 +518,31 @@ ExtensionFunctionDispatcher::CreateExtensionFunction(
   }
 
   function->SetArgs(params.arguments.Clone());
-  function->set_source_url(params.source_url);
+
+  const Feature::Context context_type = process_map.GetMostLikelyContextType(
+      extension, requesting_process_id, rfh_url);
+
+  // Determine the source URL. When possible, prefer fetching this value from
+  // the RenderFrameHost, but fallback to the value in the `params` object if
+  // necessary.
+  // We can't use the frame URL in the case of a worker-based request (where
+  // there is no frame).
+  if (is_worker_request) {
+    // TODO(https://crbug.com/1227812): Validate this URL further. Or, better,
+    // remove it from `mojom::RequestParams`.
+    function->set_source_url(params.source_url);
+  } else {
+    DCHECK(rfh_url);
+    function->set_source_url(*rfh_url);
+  }
+
   function->set_request_id(params.request_id);
   function->set_has_callback(params.has_callback);
   function->set_user_gesture(params.user_gesture);
   function->set_extension(extension);
   function->set_profile_id(profile_id);
   function->set_response_callback(std::move(callback));
-  function->set_source_context_type(process_map.GetMostLikelyContextType(
-      extension, requesting_process_id, rfh_url));
+  function->set_source_context_type(context_type);
   function->set_source_process_id(requesting_process_id);
 
   if (!function->HasPermission()) {
