@@ -214,10 +214,12 @@ absl::optional<UserSelectableOsType> GetUserSelectableOsTypeFromString(
 
   // Some pref types migrated from browser prefs to OS prefs. Map the browser
   // type name to the OS type so that enterprise policy SyncTypesListDisabled
-  // still applies to the migrated names during SplitSettingsSync roll-out.
+  // still applies to the migrated names during SyncSettingsCategorization
+  // roll-out.
   // TODO(https://crbug.com/1059309): Rename "osApps" to "apps" and
-  // "osWifiConfigurations" to "wifiConfigurations" after SplitSettingsSync is
-  // the default, and remove the mapping for "preferences".
+  // "osWifiConfigurations" to "wifiConfigurations" after
+  // SyncSettingsCategorization is the default, and remove the mapping for
+  // "preferences".
   if (type == kAppsTypeName) {
     return UserSelectableOsType::kOsApps;
   }

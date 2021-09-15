@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPrintersSyncTest, AddPrintServerPrinter) {
   EXPECT_EQ(kServerAddress, spec_printer->print_server_uri());
 }
 
-// Tests for SplitSettingsSync.
+// Tests for SyncConsentOptional.
 class SingleClientPrintersOsSyncTest : public SyncConsentOptionalSyncTest {
  public:
   SingleClientPrintersOsSyncTest()
