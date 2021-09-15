@@ -1023,7 +1023,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openFileDialogFileListShowContextMenu")
             .WithBrowser()
             .FilesSwa(),
-        TestCase("openFileDialogSelectAllDisabled").WithBrowser(),
+        // TODO(crbug.com/1249726): Remove flakiness and enable this test.
+        // TestCase("openFileDialogSelectAllDisabled").WithBrowser(),
         TestCase("openFileDialogSelectAllDisabled").WithBrowser().FilesSwa(),
         TestCase("openMultiFileDialogSelectAllEnabled").WithBrowser(),
         TestCase("openMultiFileDialogSelectAllEnabled")
