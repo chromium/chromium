@@ -125,11 +125,18 @@ class GpuArcVideoDecodeAccelerator
   void OnAssignPictureBuffersCalled(const gfx::Size& dimensions,
                                     uint32_t count);
 
-  // Global counter that keeps track of the number of active clients (i.e., how
-  // many VDAs in use by this class).
+  // Global counter that keeps track of the number of concurrent
+  // GpuArcVideoDecodeAccelerator instances.
   // Since this class only works on the same thread, it's safe to access
-  // |client_count_| without lock.
-  static size_t client_count_;
+  // |instance_count_| without lock.
+  static int instance_count_;
+
+  // Similar to |instance_count_| but only counts the number of concurrent
+  // initialized GpuArcVideoDecodeAccelerator instances (i.e., instances that
+  // have a |vda_|.
+  // Since this class only works on the same thread, it's safe to access
+  // |initialized_instance_count_| without lock.
+  static int initialized_instance_count_;
 
   // |error_state_| is true, if GAVDA gets an error from VDA.
   // All the pending functions are cancelled and the callbacks are

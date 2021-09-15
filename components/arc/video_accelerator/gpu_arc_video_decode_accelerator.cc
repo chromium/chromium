@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/files/scoped_file.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -57,7 +58,7 @@ constexpr size_t kMaxOutputBufferCount = 32;
 // Maximum number of concurrent ARC video clients.
 // Currently we have no way to know the resources are not enough to create more
 // VDAs. Arbitrarily chosen a reasonable constant as the limit.
-constexpr size_t kMaxConcurrentClients = 8;
+constexpr int kMaxConcurrentClients = 8;
 
 arc::mojom::VideoDecodeAccelerator::Result ConvertErrorCode(
     media::VideoDecodeAccelerator::Error error) {
@@ -81,7 +82,10 @@ arc::mojom::VideoDecodeAccelerator::Result ConvertErrorCode(
 namespace arc {
 
 // static
-size_t GpuArcVideoDecodeAccelerator::client_count_ = 0;
+int GpuArcVideoDecodeAccelerator::instance_count_ = 0;
+
+// static
+int GpuArcVideoDecodeAccelerator::initialized_instance_count_ = 0;
 
 GpuArcVideoDecodeAccelerator::GpuArcVideoDecodeAccelerator(
     const gpu::GpuPreferences& gpu_preferences,
@@ -89,15 +93,23 @@ GpuArcVideoDecodeAccelerator::GpuArcVideoDecodeAccelerator(
     scoped_refptr<ProtectedBufferManager> protected_buffer_manager)
     : gpu_preferences_(gpu_preferences),
       gpu_workarounds_(gpu_workarounds),
-      protected_buffer_manager_(std::move(protected_buffer_manager)) {}
+      protected_buffer_manager_(std::move(protected_buffer_manager)) {
+  CHECK_LT(instance_count_, std::numeric_limits<int>::max());
+  instance_count_++;
+  base::UmaHistogramExactLinear(
+      "Media.GpuArcVideoDecodeAccelerator.InstanceCount.All", instance_count_,
+      /*exclusive_max=*/50);
+}
 
 GpuArcVideoDecodeAccelerator::~GpuArcVideoDecodeAccelerator() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  // Normally client_count_ should always be > 0 if vda_ is set, but if it
-  // isn't and we underflow then we won't be able to create any new decoder
-  // forever (b/173700103). So let's use an extra check to avoid this...
-  if (vda_ && client_count_ > 0)
-    client_count_--;
+  // Normally |initialized_instance_count_| should always be > 0 if vda_ is set,
+  // but if it isn't and we underflow then we won't be able to create any new
+  // decoder forever (b/173700103). So let's use an extra check to avoid this...
+  if (vda_ && initialized_instance_count_ > 0)
+    initialized_instance_count_--;
+  DCHECK_GT(instance_count_, 0);
+  instance_count_--;
 }
 
 void GpuArcVideoDecodeAccelerator::ProvidePictureBuffers(
@@ -318,9 +330,9 @@ void GpuArcVideoDecodeAccelerator::InitializeTask(
         mojom::VideoDecodeAccelerator::Result::ILLEGAL_STATE);
   }
 
-  if (client_count_ >= kMaxConcurrentClients) {
+  if (initialized_instance_count_ >= kMaxConcurrentClients) {
     VLOGF(1) << "Reject to Initialize() due to too many clients: "
-             << client_count_;
+             << initialized_instance_count_;
     return OnInitializeDone(
         mojom::VideoDecodeAccelerator::Result::INSUFFICIENT_RESOURCES);
   }
@@ -351,8 +363,11 @@ void GpuArcVideoDecodeAccelerator::InitializeTask(
         mojom::VideoDecodeAccelerator::Result::PLATFORM_FAILURE);
   }
 
-  client_count_++;
-  VLOGF(2) << "Number of concurrent clients: " << client_count_;
+  initialized_instance_count_++;
+  VLOGF(2) << "Number of concurrent clients: " << initialized_instance_count_;
+  base::UmaHistogramExactLinear(
+      "Media.GpuArcVideoDecodeAccelerator.InstanceCount.Initialized",
+      initialized_instance_count_, /*exclusive_max=*/50);
 
   secure_mode_ = absl::nullopt;
   error_state_ = false;
