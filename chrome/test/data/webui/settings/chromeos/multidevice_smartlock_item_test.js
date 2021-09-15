@@ -58,6 +58,14 @@ suite('Multidevice', function() {
   }
 
   /**
+   * @param {settings.MultiDeviceFeatureState} newState
+   */
+  function setBetterTogetherState(newState) {
+    setPageContentData(Object.assign(
+        {}, smartLockItem.pageContentData, {betterTogetherState: newState}));
+  }
+
+  /**
    * Clicks an element, and asserts that the route has changed to
    * |expectedRoute|, then navigates back to |initialRoute|.
    * @param {HTMLElement} element. Target of click.
@@ -125,6 +133,7 @@ suite('Multidevice', function() {
 
     initialRoute = settings.routes.LOCK_SCREEN;
     setHostData(settings.MultiDeviceSettingsMode.HOST_SET_VERIFIED);
+    setBetterTogetherState(settings.MultiDeviceFeatureState.ENABLED_BY_USER);
     setSmartLockState(settings.MultiDeviceFeatureState.ENABLED_BY_USER);
 
     return browserProxy.whenCalled('getPageContentData');
@@ -138,6 +147,7 @@ suite('Multidevice', function() {
   test('settings row visibile only if host is verified', function() {
     for (const mode of ALL_MODES) {
       setHostData(mode);
+      setBetterTogetherState(settings.MultiDeviceFeatureState.ENABLED_BY_USER);
       setSmartLockState(settings.MultiDeviceFeatureState.ENABLED_BY_USER);
       const featureItem = smartLockItem.$$('#smartLockItem');
       if (mode === settings.MultiDeviceSettingsMode.HOST_SET_VERIFIED) {
@@ -163,6 +173,17 @@ suite('Multidevice', function() {
     featureItem = smartLockItem.$$('#smartLockItem');
     assertFalse(!!featureItem);
   });
+
+  test(
+      'settings row visibile only if better together suite is enabled',
+      function() {
+        let featureItem = smartLockItem.$$('#smartLockItem');
+        assertTrue(!!featureItem);
+        setBetterTogetherState(
+            settings.MultiDeviceFeatureState.DISABLED_BY_USER);
+        featureItem = smartLockItem.$$('#smartLockItem');
+        assertFalse(!!featureItem);
+      });
 
   test('clicking item with verified host opens subpage', function() {
     const featureItem = smartLockItem.$$('#smartLockItem');

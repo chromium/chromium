@@ -49,12 +49,16 @@
            actionable$="[[isRowClickable_(
                feature, pageContentData, subpageRoute)]]"
            on-click="handleItemClick_">
-        <slot name="icon">
-          <iron-icon id="feature-icon" icon="[[getIconName(feature)]]"
-              aria-hidden="true">
-          </iron-icon>
-        </slot>
-        <div id="item-text-container" class="middle" aria-hidden="true">
+        <template is="dom-if" if="[[!isFeatureIconHidden]]">
+          <slot name="icon">
+            <iron-icon id="feature-icon" icon="[[getIconName(feature)]]"
+                aria-hidden="true">
+            </iron-icon>
+          </slot>
+        </template>
+        <div id="item-text-container"
+          class$="[[getItemTextContainerClassName_(isFeatureIconHidden)]]" 
+          aria-hidden="true">
           <div id="featureName">[[getFeatureName(feature)]]</div>
           <slot name="feature-summary">
             <localized-link

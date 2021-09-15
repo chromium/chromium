@@ -73,9 +73,12 @@ Polymer({
    * @private
    */
   shouldShowFeature_() {
+    // We only show the feature when it is editable, because a disabled toggle
+    // is confusing for the user without greater context.
     return this.isFeatureSupported(settings.MultiDeviceFeature.SMART_LOCK) &&
         this.pageContentData.mode ===
-        settings.MultiDeviceSettingsMode.HOST_SET_VERIFIED;
+        settings.MultiDeviceSettingsMode.HOST_SET_VERIFIED &&
+        this.isFeatureStateEditable(settings.MultiDeviceFeature.SMART_LOCK);
   },
 
   /**
