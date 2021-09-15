@@ -29,7 +29,6 @@
 
 namespace optimization_guide {
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 // A HistoryDBTask that retrieves content annotations.
 class GetContentAnnotationsTask : public history::HistoryDBTask {
  public:
@@ -86,7 +85,6 @@ class PageContentAnnotationsServiceDisabledBrowserTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceDisabledBrowserTest,
                        KeyedServiceEnabledButFeaturesDisabled) {
