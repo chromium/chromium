@@ -31,12 +31,14 @@ llvm_bindir = os.path.join(os.path.dirname(sys.argv[0]), '..', '..',
 def ExtractAllowlistFromFile(path, resource_ids):
   with open(path, 'rb') as f:
     data = f.read()
-  prefix = b'AllowlistedResource<'
+  # When symbol_level=0, only mangled names exist.
+  # E.g.: _ZN2ui19AllowlistedResourceILi22870EEEvv
+  prefix = b'AllowlistedResourceILi'
   start_idx = 0
   while start_idx != -1:
     start_idx = data.find(prefix, start_idx)
     if start_idx != -1:
-      end_idx = data.find(b'>', start_idx)
+      end_idx = data.find(b'E', start_idx)
       resource_ids.add(int(data[start_idx + len(prefix):end_idx]))
       start_idx = end_idx
 
@@ -133,9 +135,11 @@ def WriteResourceAllowlist(args):
 
     resource_ids.update(func(input))
 
-  if len(resource_ids) == 0:
-    raise Exception('No debug info was dumped. Ensure GN arg "symbol_level" '
-                    '!= 0 and that the file is not stripped.')
+  # The last time this broke, exactly two resources were still being found.
+  if len(resource_ids) < 100:
+    raise Exception('Suspiciously few resources found. Likely an issue with '
+                    'the regular expression in this script. Found: ' +
+                    ','.join(sorted(resource_ids)))
   for id in sorted(resource_ids):
     args.output.write(str(id) + '\n')
 
