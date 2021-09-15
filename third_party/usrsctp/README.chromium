@@ -3,7 +3,7 @@ URL: http://github.com/sctplab/usrsctp
 Version: 0
 CPEPrefix: cpe:/a:usrsctp_project:usrsctp:2019-12-20
 Date: July 1, 2021
-Revision: f2c2b601285fec3289c483088ffef255598b585f
+Revision: 62d7d0c928c9a040dce96aa2f16c00e7e67d59cb
 License: New BSD
 License File: LICENSE
 Security Critical: yes
