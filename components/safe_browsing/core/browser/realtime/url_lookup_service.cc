@@ -94,6 +94,9 @@ void RealTimeUrlLookupService::OnGetAccessToken(
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::TimeTicks get_token_start_time,
     const std::string& access_token) {
+  if (shutting_down_)
+    return;
+
   base::UmaHistogramTimes("SafeBrowsing.RT.GetToken.Time",
                           base::TimeTicks::Now() - get_token_start_time);
   base::UmaHistogramBoolean("SafeBrowsing.RT.HasTokenFromFetcher",
@@ -141,6 +144,8 @@ bool RealTimeUrlLookupService::CanCheckSafeBrowsingDb() const {
 }
 
 void RealTimeUrlLookupService::Shutdown() {
+  shutting_down_ = true;
+
   // Clear state that was potentially bound to the lifetime of other
   // KeyedServices by the embedder.
   token_fetcher_.reset();

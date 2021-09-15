@@ -128,6 +128,10 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   // location.
   variations::VariationsService* variations_;
 
+  // True if Shutdown() has already been called, or started running. This allows
+  // us to skip unnecessary calls to SendRequest().
+  bool shutting_down_ = false;
+
   friend class RealTimeUrlLookupServiceTest;
 
   base::WeakPtrFactory<RealTimeUrlLookupService> weak_factory_{this};
