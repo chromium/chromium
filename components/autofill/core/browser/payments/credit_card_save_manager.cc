@@ -94,9 +94,9 @@ CreditCardSaveManager::CreditCardSaveManager(
       personal_data_manager_(personal_data_manager) {
 }
 
-CreditCardSaveManager::~CreditCardSaveManager() {}
+CreditCardSaveManager::~CreditCardSaveManager() = default;
 
-void CreditCardSaveManager::AttemptToOfferCardLocalSave(
+bool CreditCardSaveManager::AttemptToOfferCardLocalSave(
     bool from_dynamic_change_form,
     bool has_non_focusable_field,
     const CreditCard& card) {
@@ -114,13 +114,14 @@ void CreditCardSaveManager::AttemptToOfferCardLocalSave(
       local_card_save_candidate_
           .GetInfo(AutofillType(CREDIT_CARD_EXP_4_DIGIT_YEAR), app_locale_)
           .empty())
-    return;
+    return false;
   // Query the Autofill StrikeDatabase on if we should pop up the
   // offer-to-save prompt for this card.
   show_save_prompt_ =
       !GetCreditCardSaveStrikeDatabase()->IsMaxStrikesLimitReached(
           base::UTF16ToUTF8(local_card_save_candidate_.LastFourDigits()));
   OfferCardLocalSave();
+  return show_save_prompt_.value_or(false);
 }
 
 void CreditCardSaveManager::AttemptToOfferCardUploadSave(
@@ -585,7 +586,15 @@ void CreditCardSaveManager::SetProfilesForCreditCardUpload(
   upload_decision_metrics_ = 0;
   bool has_profile = false;
 
-  // First, collect all of the addresses used or modified recently.
+  // First, process address profiles that have been preliminarily imported.
+  for (const AutofillProfile& profile :
+       preliminarily_imported_address_profiles_) {
+    has_profile = true;
+    candidate_profiles.push_back(profile);
+  }
+
+  // Second, collect all of the already stored addresses used or modified
+  // recently.
   for (AutofillProfile* profile : personal_data_manager_->GetProfiles()) {
     has_profile = true;
     if ((now - profile->use_date()) < fifteen_minutes ||
