@@ -170,8 +170,8 @@ class WebFeedSubscriptionModel {
   void UpdateSubscribedFeeds(
       std::vector<feedstore::WebFeedInfo> subscribed_web_feeds) {
     feedstore::SubscribedWebFeeds store_index;
-    update_time_millis_ = feedstore::ToTimestampMillis(base::Time::Now());
-    store_index.set_update_time_millis(update_time_millis_);
+    store_index.set_update_time_millis(
+        feedstore::ToTimestampMillis(base::Time::Now()));
     for (const feedstore::WebFeedInfo& info : subscribed_web_feeds) {
       *store_index.add_feeds() = info;
     }

@@ -1039,7 +1039,6 @@ TEST_F(FeedApiTest, NetworkFetchWithNoNewContentDoesNotProvideUnreadContent) {
     TestForYouSurface surface(stream_.get());
     WaitForIdleTaskQueue();
 
-    stream_->ReportFeedViewed(surface.GetStreamType(), surface.GetSurfaceId());
     stream_->ReportSliceViewed(
         surface.GetSurfaceId(), surface.GetStreamType(),
         surface.initial_state->updated_slices(1).slice().slice_id());
@@ -1091,75 +1090,16 @@ TEST_F(FeedApiTest, HasUnreadContentAfterLoadFromStore) {
   EXPECT_EQ(std::vector<bool>({true}), observer.calls);
 }
 
-TEST_F(FeedApiTest, FollowForcesRefreshWhileSurfaceAttached_NotWorking) {
-  // Load the web feed stream.
-  network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
-  response_translator_.InjectResponse(MakeTypicalInitialModelState());
-  TestWebFeedSurface surface(stream_.get());
-  WaitForIdleTaskQueue();
-  ASSERT_EQ("loading -> 2 slices", surface.DescribeUpdates());
-
-  // Follow a web feed.
-  network_.InjectResponse(SuccessfulFollowResponse("dogs"));
-  response_translator_.InjectResponse(MakeTypicalRefreshModelState());
-  WebFeedPageInformation page_info =
-      MakeWebFeedPageInformation("http://dogs.com");
-  CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> callback;
-  stream_->subscriptions().FollowWebFeed(page_info, callback.Bind());
-
-  ASSERT_EQ(WebFeedSubscriptionRequestStatus::kSuccess,
-            callback.RunAndGetResult().request_status);
-
-  // Content should refresh, but this is not implemented yet.
-  // ASSERT_EQ("loading -> 3 slices", surface.DescribeUpdates());
-  ASSERT_EQ("", surface.DescribeUpdates());
-}
-
-// Verify that following a web feed triggers a refresh.
-// Also verify the unread content observer events.
-TEST_F(FeedApiTest, FollowForcesRefresh) {
-  TestUnreadContentObserver unread_observer;
-  stream_->AddUnreadContentObserver(kWebFeedStream, &unread_observer);
-
-  // Load the web feed stream and view it.
-  network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
-  response_translator_.InjectResponse(MakeTypicalInitialModelState());
-  TestWebFeedSurface surface(stream_.get());
-  WaitForIdleTaskQueue();
-  ASSERT_EQ("loading -> 2 slices", surface.DescribeUpdates());
-  stream_->ReportFeedViewed(surface.GetStreamType(), surface.GetSurfaceId());
-
-  // Detach the surface.
-  surface.Detach();
-
-  // Follow a web feed.
-  network_.InjectResponse(SuccessfulFollowResponse("dogs"));
-  response_translator_.InjectResponse(MakeTypicalRefreshModelState());
-  WebFeedPageInformation page_info =
-      MakeWebFeedPageInformation("http://dogs.com");
-  CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> callback;
-  stream_->subscriptions().FollowWebFeed(page_info, callback.Bind());
-
-  ASSERT_EQ(WebFeedSubscriptionRequestStatus::kSuccess,
-            callback.RunAndGetResult().request_status);
-
-  // Wait for model to unload and reattach surface. New content is loaded.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(5));
-  surface.Attach(stream_.get());
-  WaitForIdleTaskQueue();
-  ASSERT_EQ("loading -> 3 slices", surface.DescribeUpdates());
-  EXPECT_EQ(std::vector<bool>({false, true, false, true}),
-            unread_observer.calls);
-}
-
-TEST_F(FeedApiTest, ReportFeedViewedUpdatesObservers) {
+TEST_F(FeedApiTest, ReportSliceViewedUpdatesObservers) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestForYouSurface surface(stream_.get());
   TestUnreadContentObserver observer;
   stream_->AddUnreadContentObserver(kForYouStream, &observer);
   WaitForIdleTaskQueue();
 
-  stream_->ReportFeedViewed(surface.GetStreamType(), surface.GetSurfaceId());
+  stream_->ReportSliceViewed(
+      surface.GetSurfaceId(), surface.GetStreamType(),
+      surface.initial_state->updated_slices(1).slice().slice_id());
   task_environment_.RunUntilIdle();
 
   EXPECT_EQ(std::vector<bool>({true, false}), observer.calls);
@@ -2338,30 +2278,16 @@ TEST_F(FeedApiTest, StreamDataOverwritesOldStream) {
   EXPECT_EQ("new-frame-data", stored_data->content[0].frame());
 }
 
-TEST_F(FeedApiTest, HasUnreadContentIsFalseAfterFeedViewed) {
+TEST_F(FeedApiTest, HasUnreadContentIsFalseAfterSliceView) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
   EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
   ASSERT_TRUE(stream_->HasUnreadContent(kForYouStream));
-  stream_->ReportFeedViewed(surface.GetStreamType(), surface.GetSurfaceId());
+  stream_->ReportSliceViewed(
+      surface.GetSurfaceId(), surface.GetStreamType(),
+      surface.initial_state->updated_slices(1).slice().slice_id());
 
-  EXPECT_FALSE(stream_->HasUnreadContent(kForYouStream));
-}
-
-TEST_F(FeedApiTest, HasUnreadContentRemainsFalseIfFeedViewedBeforeRefresh) {
-  response_translator_.InjectResponse(MakeTypicalInitialModelState());
-  TestForYouSurface surface(stream_.get());
-  WaitForIdleTaskQueue();
-  ASSERT_TRUE(stream_->HasUnreadContent(kForYouStream));
-  stream_->ReportFeedViewed(surface.GetStreamType(), surface.GetSurfaceId());
-
-  response_translator_.InjectResponse(MakeTypicalRefreshModelState());
-  stream_->ManualRefresh(kForYouStream, base::DoNothing());
-
-  WaitForIdleTaskQueue();
-
-  EXPECT_EQ("loading -> 2 slices -> 3 slices", surface.DescribeUpdates());
   EXPECT_FALSE(stream_->HasUnreadContent(kForYouStream));
 }
 

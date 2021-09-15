@@ -217,8 +217,7 @@ void FeedStream::ReportFeedViewed(
     const base::android::JavaParamRef<jobject>& obj) {
   if (!feed_stream_api_)
     return;
-  feed_stream_api_->ReportFeedViewed(GetStreamType(),
-                                     FeedStreamSurface::GetSurfaceId());
+  feed_stream_api_->ReportFeedViewed(FeedStreamSurface::GetSurfaceId());
 }
 
 void FeedStream::ReportPageLoaded(JNIEnv* env,
