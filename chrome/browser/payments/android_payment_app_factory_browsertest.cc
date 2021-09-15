@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -26,8 +28,25 @@ class AndroidPaymentAppFactoryTest
 
   ~AndroidPaymentAppFactoryTest() override = default;
 
+  void SetUpOnMainThread() override {
+    PaymentRequestPlatformBrowserTestBase::SetUpOnMainThread();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    overlay_manager_ = std::make_unique<ash::ArcOverlayManager>();
+#endif
+  }
+
+  // PaymentRequestTestObserver:
+  void OnUIDisplayed() override {
+    PaymentRequestPlatformBrowserTestBase::OnUIDisplayed();
+    FAIL() << "Browser UI should never be displayed for Android payment apps "
+              "invoked here.";
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<ash::ArcOverlayManager> overlay_manager_;
+#endif
 };
 
 // Even if a service worker app for app store payment method is installed, it
@@ -50,10 +69,6 @@ IN_PROC_BROWSER_TEST_F(AndroidPaymentAppFactoryTest,
 // goods purchase.
 IN_PROC_BROWSER_TEST_F(AndroidPaymentAppFactoryTest,
                        IgnoreOtherPaymentAppsInTwaWhenHaveAppStoreBilling) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::ArcOverlayManager overlay_manager_;
-#endif
-
   std::string method_name = https_server()->GetURL("a.com", "/").spec();
   method_name = method_name.substr(0, method_name.length() - 1);
   ASSERT_NE('/', method_name[method_name.length() - 1]);
@@ -86,6 +101,56 @@ IN_PROC_BROWSER_TEST_F(AndroidPaymentAppFactoryTest,
                 content::JsReplace(
                     "getStatusList(['https://play.google.com/billing', $1])",
                     method_name)));
+}
+
+// Passing a promise into PaymentRequest.show() should skip browser sheet with
+// https://play.google.com/billing payment method.
+IN_PROC_BROWSER_TEST_F(AndroidPaymentAppFactoryTest,
+                       ShowPromiseShouldSkipBrowserPaymentSheet) {
+  std::string response = "App store payment method app response for test.";
+  test_controller()->SetTwaPackageName("com.example.app");
+  test_controller()->SetTwaPaymentApp("https://play.google.com/billing",
+                                      "{\"status\": \"" + response + "\"}");
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::string expected_response = response;
+#else
+  std::string expected_response =
+      "The payment method \"https://play.google.com/billing\" is not "
+      "supported.";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  NavigateTo("b.com", "/payment_handler_status.html");
+  ASSERT_EQ(expected_response,
+            content::EvalJs(
+                GetActiveWebContents(),
+                "getStatusForMethodDataWithShowPromise([{supportedMethods:"
+                "'https://play.google.com/billing'}])"));
+}
+
+// PaymentRequest.show(Promise.resolve({})) should skip browser sheet with
+// https://play.google.com/billing payment method.
+IN_PROC_BROWSER_TEST_F(AndroidPaymentAppFactoryTest,
+                       EmptyShowPromiseShouldSkipBrowserPaymentSheet) {
+  std::string response = "App store payment method app response for test.";
+  test_controller()->SetTwaPackageName("com.example.app");
+  test_controller()->SetTwaPaymentApp("https://play.google.com/billing",
+                                      "{\"status\": \"" + response + "\"}");
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::string expected_response = response;
+#else
+  std::string expected_response =
+      "The payment method \"https://play.google.com/billing\" is not "
+      "supported.";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  NavigateTo("b.com", "/payment_handler_status.html");
+  ASSERT_EQ(expected_response,
+            content::EvalJs(
+                GetActiveWebContents(),
+                "getStatusForMethodDataWithEmptyShowPromise([{supportedMethods:"
+                "'https://play.google.com/billing'}])"));
 }
 
 }  // namespace

@@ -91,3 +91,26 @@ async function getStatusForMethodDataWithShowPromise(methodData) { // eslint-dis
     return e.message;
   }
 }
+
+/**
+ * Returns the status field from the payment handler's response for given
+ * payment method data. Passes an empty Promise.resolve({}) promise into
+ * PaymentRequest.show().
+ * @param {array<PaymentMethodData>} methodData - The method data to use.
+ * @return {string} - The status field or error message.
+ */
+async function getStatusForMethodDataWithEmptyShowPromise(methodData) { // eslint-disable-line no-unused-vars, max-len
+  try {
+    const details = {total: {label: 'TEST',
+        amount: {currency: 'USD', value: '0.01'}}};
+    const request = new PaymentRequest(methodData, details);
+    const response = await request.show(Promise.resolve({}));
+    await response.complete();
+    if (!response.details.status) {
+      return 'Payment handler did not specify the status.';
+    }
+    return response.details.status;
+  } catch (e) {
+    return e.message;
+  }
+}
