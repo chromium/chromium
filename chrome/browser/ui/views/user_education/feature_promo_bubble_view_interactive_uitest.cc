@@ -70,35 +70,3 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoBubbleViewInteractiveTest,
   // Browser view should lose activation.
   EXPECT_FALSE(browser_view->GetWidget()->IsActive());
 }
-
-namespace {
-struct MockTimeoutTarget {
-  int count = 0;
-
-  void OnTimeout() { count++; }
-};
-}  // namespace
-
-IN_PROC_BROWSER_TEST_F(FeaturePromoBubbleViewInteractiveTest,
-                       FeaturePromoBubbleTimeout) {
-  auto params = GetBubbleParams();
-
-  base::TimeDelta interaction_time = base::TimeDelta::FromMilliseconds(1);
-  params.timeout_no_interaction = interaction_time;
-  params.timeout_after_interaction = interaction_time;
-
-  MockTimeoutTarget timeout_target;
-  params.timeout_callback = base::BindRepeating(
-      &MockTimeoutTarget::OnTimeout, base::Unretained(&timeout_target));
-
-  auto* const bubble = FeaturePromoBubbleView::Create(std::move(params));
-  views::test::WidgetVisibleWaiter(bubble->GetWidget()).Wait();
-
-  EXPECT_EQ(0, timeout_target.count);
-
-  // Force the timeout codepath to be called
-  bubble->ForceAutoCloseForTesting();
-
-  // Check that the timeout has occurred
-  EXPECT_EQ(1, timeout_target.count);
-}

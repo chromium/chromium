@@ -107,9 +107,6 @@ class FeaturePromoBubbleView : public views::BubbleDialogDelegateView {
 
   views::Button* GetButtonForTesting(int index) const;
 
-  // Run the auto close code path as if the bubble timed out.
-  void ForceAutoCloseForTesting();
-
  private:
   explicit FeaturePromoBubbleView(CreateParams params);
 

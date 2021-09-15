@@ -598,9 +598,5 @@ views::Button* FeaturePromoBubbleView::GetButtonForTesting(int index) const {
   return buttons_[index];
 }
 
-void FeaturePromoBubbleView::ForceAutoCloseForTesting() {
-  auto_close_timer_.FireNow();
-}
-
 BEGIN_METADATA(FeaturePromoBubbleView, views::BubbleDialogDelegateView)
 END_METADATA

@@ -18,6 +18,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -99,4 +100,85 @@ TEST_F(FeaturePromoBubbleViewTest, NoAutoDismissWithButtons) {
   // WidgetObserver checks if it is in an observer list in its destructor.
   // Need to remove it from widget manually.
   bubble->GetWidget()->RemoveObserver(&dismiss_observer);
+}
+
+TEST_F(FeaturePromoBubbleViewTest, TimeoutCallback) {
+  base::MockRepeatingClosure timeout_callback;
+
+  FeaturePromoBubbleView::CreateParams params =
+      GetBubbleParams(base::RepeatingClosure());
+  params.timeout_no_interaction = base::TimeDelta::FromSeconds(10);
+  params.timeout_after_interaction = base::TimeDelta::FromSeconds(10);
+  params.timeout_callback = timeout_callback.Get();
+
+  FeaturePromoBubbleView::Create(std::move(params));
+
+  EXPECT_CALL(timeout_callback, Run()).Times(1);
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(10));
+}
+
+TEST_F(FeaturePromoBubbleViewTest, NoTimeoutIfSetToZero) {
+  base::MockRepeatingClosure timeout_callback;
+
+  FeaturePromoBubbleView::CreateParams params =
+      GetBubbleParams(base::RepeatingClosure());
+  params.timeout_no_interaction = base::TimeDelta();
+  params.timeout_after_interaction = base::TimeDelta();
+  params.timeout_callback = timeout_callback.Get();
+
+  FeaturePromoBubbleView::Create(std::move(params));
+
+  EXPECT_CALL(timeout_callback, Run()).Times(0);
+
+  // Fast forward by a long time to check bubble does not time out.
+  task_environment()->FastForwardBy(base::TimeDelta::FromHours(1));
+}
+
+TEST_F(FeaturePromoBubbleViewTest, RespectsProvidedTimeoutBeforeHover) {
+  base::MockRepeatingClosure timeout_callback;
+
+  FeaturePromoBubbleView::CreateParams params =
+      GetBubbleParams(base::RepeatingClosure());
+  params.timeout_no_interaction = base::TimeDelta::FromSeconds(20);
+  params.timeout_after_interaction = base::TimeDelta::FromSeconds(5);
+  params.timeout_callback = timeout_callback.Get();
+
+  FeaturePromoBubbleView::Create(std::move(params));
+
+  EXPECT_CALL(timeout_callback, Run()).Times(0);
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(19));
+
+  EXPECT_CALL(timeout_callback, Run()).Times(1);
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+}
+
+TEST_F(FeaturePromoBubbleViewTest, RespectsProvidedTimeoutAfterHover) {
+  base::MockRepeatingClosure timeout_callback;
+
+  FeaturePromoBubbleView::CreateParams params =
+      GetBubbleParams(base::RepeatingClosure());
+  params.timeout_no_interaction = base::TimeDelta::FromSeconds(20);
+  params.timeout_after_interaction = base::TimeDelta::FromSeconds(5);
+  params.timeout_callback = timeout_callback.Get();
+
+  FeaturePromoBubbleView* bubble =
+      FeaturePromoBubbleView::Create(std::move(params));
+
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(19));
+
+  // Simulate mouse hovering and leaving bubble.
+  ui::MouseEvent mouse_enter(ui::ET_MOUSE_ENTERED, gfx::Point(), gfx::Point(),
+                             ui::EventTimeForNow(), 0, 0);
+  static_cast<views::View*>(bubble)->OnMouseEntered(mouse_enter);
+
+  ui::MouseEvent mouse_exit(ui::ET_MOUSE_EXITED, gfx::Point(), gfx::Point(),
+                            ui::EventTimeForNow(), 0, 0);
+  static_cast<views::View*>(bubble)->OnMouseExited(mouse_exit);
+
+  // The bubble should time out with the shorter interval.
+  EXPECT_CALL(timeout_callback, Run()).Times(0);
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(4));
+
+  EXPECT_CALL(timeout_callback, Run()).Times(1);
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
 }
