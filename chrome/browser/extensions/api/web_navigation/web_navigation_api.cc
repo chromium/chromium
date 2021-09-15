@@ -435,17 +435,17 @@ void WebNavigationTabObserver::RenderFrameHostPendingDeletion(
   // The |pending_delete_rfh| and its children are now pending deletion.
   // Stop tracking them.
 
-  web_contents()->ForEachFrame(base::BindRepeating(
-      [](content::RenderFrameHost* pending_delete_rfh,
-         WebNavigationTabObserver* observer,
+  pending_delete_rfh->ForEachRenderFrameHost(base::BindRepeating(
+      [](WebNavigationTabObserver* observer,
          content::RenderFrameHost* render_frame_host) {
-        if (render_frame_host == pending_delete_rfh ||
-            render_frame_host->IsDescendantOf(pending_delete_rfh)) {
+        auto* navigation_state =
+            FrameNavigationState::GetForCurrentDocument(render_frame_host);
+        if (navigation_state) {
           observer->RenderFrameDeleted(render_frame_host);
           FrameNavigationState::DeleteForCurrentDocument(render_frame_host);
         }
       },
-      pending_delete_rfh, this));
+      this));
 }
 
 ExtensionFunction::ResponseAction WebNavigationGetFrameFunction::Run() {
