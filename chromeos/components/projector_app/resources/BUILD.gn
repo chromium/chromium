@@ -5,6 +5,7 @@
 import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
 
 assert(is_chromeos_ash, "Projector is ChromeOS only")
 
@@ -13,6 +14,7 @@ js_type_check("closure_compile") {
   deps = [
     ":annotator_embedder_impl",
     ":embedder",
+    ":message_types.m",
     ":projector_browser_proxy",
     ":selfie_cam",
   ]
@@ -36,6 +38,19 @@ js_library("projector_browser_proxy") {
 
 js_library("selfie_cam") {
   sources = [ "selfie_cam/selfie_cam.js" ]
+}
+
+js_modulizer("modulize") {
+  input_files = [ "communication/message_types.js" ]
+}
+
+js_library("message_types") {
+  sources = [ "communication/message_types.js" ]
+}
+
+js_library("message_types.m") {
+  sources = [ "$root_gen_dir/chromeos/components/projector_app/resources/message_types.m.js" ]
+  extra_deps = [ ":modulize" ]
 }
 
 generate_grd("build_untrusted_grd") {
