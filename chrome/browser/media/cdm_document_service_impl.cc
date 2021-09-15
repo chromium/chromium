@@ -333,8 +333,10 @@ void CdmDocumentServiceImpl::GetMediaFoundationCdmData(
   std::unique_ptr<CdmPrefData> pref_data =
       CdmPrefServiceHelper::GetCdmPrefData(user_prefs, cdm_origin);
 
-  if (!pref_data)
+  if (!pref_data) {
     std::move(callback).Run(nullptr);
+    return;
+  }
 
   // PostTask because the task is doing IO operation that can block.
   base::ThreadPool::PostTaskAndReplyWithResult(
