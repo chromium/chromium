@@ -114,6 +114,9 @@ class FREBottomGroupMediator implements AccountsChangeObserver, ProfileDataCache
         if (mSelectedAccountName == null) {
             mListener.addAccount();
             return;
+        } else if (mModel.get(FREBottomGroupProperties.IS_SELECTED_ACCOUNT_SUPERVISED)) {
+            mListener.advanceToNextPage();
+            return;
         }
         assert mModel.get(FREBottomGroupProperties.ARE_NATIVE_AND_POLICY_LOADED)
             : "The continue button shouldn't be visible before the native is not initialize!";

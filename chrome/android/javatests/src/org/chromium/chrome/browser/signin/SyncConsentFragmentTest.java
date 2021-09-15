@@ -262,7 +262,7 @@ public class SyncConsentFragmentTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    public void testSigninFragmentForcedSigninWithRegularChild() throws IOException {
+    public void testFragmentWithRegularChildAccount() throws IOException {
         HistogramDelta countHistogram =
                 new HistogramDelta("Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", 1);
         HistogramDelta startPageHistogram =
@@ -279,13 +279,13 @@ public class SyncConsentFragmentTest {
         Assert.assertEquals(1, countHistogram.getDelta());
         Assert.assertEquals(1, startPageHistogram.getDelta());
         mRenderTestRule.render(mActivityTestRule.getActivity().findViewById(android.R.id.content),
-                "signin_fragment_forced_signin_with_regular_child");
+                "sync_consent_fragment_with_regular_child");
     }
 
     @Test
     @LargeTest
     @Feature("RenderTest")
-    public void testSigninFragmentForcedSigninWithUSMChild() throws IOException {
+    public void testFragmentWithUSMChildAccount() throws IOException {
         HistogramDelta countHistogram =
                 new HistogramDelta("Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", 1);
         HistogramDelta startPageHistogram =
@@ -302,7 +302,55 @@ public class SyncConsentFragmentTest {
         Assert.assertEquals(1, countHistogram.getDelta());
         Assert.assertEquals(1, startPageHistogram.getDelta());
         mRenderTestRule.render(mActivityTestRule.getActivity().findViewById(android.R.id.content),
-                "signin_fragment_forced_signin_with_usm_child");
+                "sync_consent_fragment_with_usm_child");
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    public void testFragmentWithRegularChildAccountLegacy() throws IOException {
+        FREMobileIdentityConsistencyFieldTrial.disableForTesting();
+        HistogramDelta countHistogram =
+                new HistogramDelta("Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", 1);
+        HistogramDelta startPageHistogram =
+                new HistogramDelta("Signin.SigninStartedAccessPoint", SigninAccessPoint.START_PAGE);
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        CustomSyncConsentFirstRunFragment fragment = new CustomSyncConsentFirstRunFragment();
+        Bundle bundle = new Bundle();
+        bundle.putInt(
+                SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS, ChildAccountStatus.REGULAR_CHILD);
+        when(mFirstRunPageDelegateMock.getProperties()).thenReturn(bundle);
+        fragment.setPageDelegate(mFirstRunPageDelegateMock);
+
+        launchActivityWithFragment(fragment);
+        Assert.assertEquals(1, countHistogram.getDelta());
+        Assert.assertEquals(1, startPageHistogram.getDelta());
+        mRenderTestRule.render(mActivityTestRule.getActivity().findViewById(android.R.id.content),
+                "sync_consent_fragment_with_regular_child_legacy");
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    public void testFragmentWithUSMChildAccountLegacy() throws IOException {
+        FREMobileIdentityConsistencyFieldTrial.disableForTesting();
+        HistogramDelta countHistogram =
+                new HistogramDelta("Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", 1);
+        HistogramDelta startPageHistogram =
+                new HistogramDelta("Signin.SigninStartedAccessPoint", SigninAccessPoint.START_PAGE);
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        CustomSyncConsentFirstRunFragment fragment = new CustomSyncConsentFirstRunFragment();
+        Bundle bundle = new Bundle();
+        bundle.putInt(
+                SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS, ChildAccountStatus.USM_CHILD);
+        when(mFirstRunPageDelegateMock.getProperties()).thenReturn(bundle);
+        fragment.setPageDelegate(mFirstRunPageDelegateMock);
+
+        launchActivityWithFragment(fragment);
+        Assert.assertEquals(1, countHistogram.getDelta());
+        Assert.assertEquals(1, startPageHistogram.getDelta());
+        mRenderTestRule.render(mActivityTestRule.getActivity().findViewById(android.R.id.content),
+                "sync_consent_fragment_with_usm_child_legacy");
     }
 
     @Test

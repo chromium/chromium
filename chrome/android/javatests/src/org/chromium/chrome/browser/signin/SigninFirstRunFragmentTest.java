@@ -79,6 +79,7 @@ public class SigninFirstRunFragmentTest {
      */
     public static class CustomSigninFirstRunFragment extends SigninFirstRunFragment {
         private FirstRunPageDelegate mFirstRunPageDelegate;
+        private boolean mIsAdvanceToNextPageCalled;
 
         @Override
         public FirstRunPageDelegate getPageDelegate() {
@@ -87,6 +88,12 @@ public class SigninFirstRunFragmentTest {
 
         private void setPageDelegate(FirstRunPageDelegate delegate) {
             mFirstRunPageDelegate = delegate;
+        }
+
+        @Override
+        public void advanceToNextPage() {
+            super.advanceToNextPage();
+            mIsAdvanceToNextPageCalled = true;
         }
     }
 
@@ -217,6 +224,29 @@ public class SigninFirstRunFragmentTest {
                             .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
                 });
         Assert.assertEquals(TEST_EMAIL1, primaryAccount.getEmail());
+    }
+
+    @Test
+    @MediumTest
+    public void testContinueButtonWithSupervisedAccount() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
+        mAccountManagerTestRule.addAccount(
+                CHILD_EMAIL, CHILD_FULL_NAME, /* givenName= */ null, /* avatar= */ null);
+        launchActivityWithFragment();
+        final String continueAsText = mChromeActivityTestRule.getActivity().getString(
+                R.string.signin_promo_continue_as, CHILD_FULL_NAME);
+
+        onView(withText(continueAsText)).perform(click());
+
+        CriteriaHelper.pollUiThread(() -> { return mFragment.mIsAdvanceToNextPageCalled; });
+        final CoreAccountInfo primaryAccount =
+                TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+                    return IdentityServicesProvider.get()
+                            .getIdentityManager(Profile.getLastUsedRegularProfile())
+                            .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+                });
+        Assert.assertNull(primaryAccount);
+        verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
     }
 
     @Test
