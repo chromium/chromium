@@ -467,11 +467,6 @@ void CrossThreadMediaSourceAttachment::Unregister() {
   DVLOG(1) << __func__ << " this=" << this
            << ", IsMainThread=" << IsMainThread();
 
-  // The only expected caller is a MediaSourceRegistryImpl on the main thread
-  // (or possibly on the worker thread, if MediaSourceInWorkers is enabled).
-  DCHECK(IsMainThread() ||
-         RuntimeEnabledFeatures::MediaSourceInWorkersEnabled());
-
   // Release our strong reference to the MediaSource. Note that revokeObjectURL
   // of the url associated with this attachment could commonly follow this path
   // while the MediaSource (and any attachment to an HTMLMediaElement) may still
@@ -487,6 +482,13 @@ void CrossThreadMediaSourceAttachment::Unregister() {
   {
     MutexLocker lock(attachment_state_lock_);
     DCHECK(registered_media_source_);
+
+    // The only expected caller is a MediaSourceRegistryImpl on the main thread
+    // (or possibly on the worker thread, if MediaSourceInWorkers is enabled).
+    DCHECK(IsMainThread() ||
+           RuntimeEnabledFeatures::MediaSourceInWorkersEnabled(
+               registered_media_source_->GetExecutionContext()));
+
     registered_media_source_ = nullptr;
   }
 }

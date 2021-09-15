@@ -106,7 +106,7 @@ class MediaSource final : public EventTargetWithInlineData,
                                       const String& type,
                                       bool enforce_codec_specificity);
 
-  static bool canConstructInDedicatedWorker();
+  static bool canConstructInDedicatedWorker(ExecutionContext* context);
 
   // Methods needed by a MediaSourceAttachmentSupplement to service operations
   // proxied from an HTMLMediaElement.
