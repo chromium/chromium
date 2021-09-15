@@ -215,7 +215,7 @@ struct IconValue {
 };
 
 // Enumeration of possible app launch sources.
-// This should be kept in sync with histogram_suffixes_list.xml, and
+// This should be kept in sync with metadata/apps/histograms.xml, and
 // LaunchSource in enums.xml.
 // Note the enumeration is used in UMA histogram so entries should not be
 // re-ordered or removed. New entries should be added at the bottom.
@@ -231,7 +231,7 @@ enum LaunchSource {
                                       // Per App time notification.
   kFromShelf = 7,                     // Shelf.
   kFromFileManager = 8,               // FileManager.
-  kFromLink = 9,                      // Left-licking on links in the browser.
+  kFromLink = 9,                      // Left-clicking on links in the browser.
   kFromOmnibox = 10,                  // Enter URL in the Omnibox in the
                                       // browser.
   kFromChromeInternal = 11,           // Chrome internal call.

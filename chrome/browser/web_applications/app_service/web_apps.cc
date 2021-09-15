@@ -41,8 +41,10 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/components/projector_app/projector_app_constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
+#include "components/services/app_service/public/cpp/intent_filter_util.h"
 #endif
 
 using apps::IconEffects;
@@ -75,6 +77,20 @@ bool ShouldObserveMediaRequests() {
   return true;
 #endif
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Make |app_id| the preferred app for handling |url|, without needing the user
+// to choose the app through an intent picker. This function must be called
+// after the corresponding intent filter has already been registered.
+void AddDefaultPreferredApp(const std::string& app_id,
+                            const GURL& url,
+                            apps::mojom::AppService* app_service) {
+  auto intent_filter = apps_util::CreateIntentFilterForUrlScope(url);
+  app_service->AddPreferredApp(GetWebAppType(), app_id,
+                               std::move(intent_filter),
+                               /*intent=*/nullptr, /*from_publisher=*/true);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -207,6 +223,16 @@ void WebApps::OpenNativeSettings(const std::string& app_id) {
 }
 
 void WebApps::PublishWebApps(std::vector<apps::mojom::AppPtr> apps) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const WebApp* web_app =
+      GetWebApp(chromeos::kChromeUITrustedProjectorSwaAppId);
+  if (web_app) {
+    AddDefaultPreferredApp(chromeos::kChromeUITrustedProjectorSwaAppId,
+                           GURL(chromeos::kChromeUIUntrustedProjectorPwaUrl),
+                           app_service_);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   const bool should_notify_initialized = false;
   if (subscribers_.size() == 1) {
     auto& subscriber = *subscribers_.begin();
@@ -223,6 +249,18 @@ void WebApps::PublishWebApps(std::vector<apps::mojom::AppPtr> apps) {
 }
 
 void WebApps::PublishWebApp(apps::mojom::AppPtr app) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (app->app_id == chromeos::kChromeUITrustedProjectorSwaAppId) {
+    // After OOBE, PublishWebApps() above could execute before the intent filter
+    // has been registered. Since we need to call AddDefaultPreferredApp() after
+    // the intent filter has been registered, we need this call for the OOBE
+    // case.
+    AddDefaultPreferredApp(chromeos::kChromeUITrustedProjectorSwaAppId,
+                           GURL(chromeos::kChromeUIUntrustedProjectorPwaUrl),
+                           app_service_);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   Publish(std::move(app), subscribers_);
 }
 

@@ -36,6 +36,7 @@ source_set("app_service") {
       "//ash/public/cpp",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/chromeos",
+      "//chromeos/components/projector_app",
       "//components/app_restore",
       "//components/arc:arc_base",
       "//components/services/app_service/public/cpp:instance_update",

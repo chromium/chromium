@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/projector/projector_navigation_throttle.h"
-
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/apps/app_service/app_service_metrics.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
@@ -21,6 +23,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/common/page_type.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
@@ -58,24 +61,57 @@ class ProjectorNavigationThrottleTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+class ProjectorNavigationThrottleTestParameterized
+    : public ProjectorNavigationThrottleTest,
+      public testing::WithParamInterface<bool> {
+ protected:
+  bool navigate_from_link() const { return GetParam(); }
+};
+
 // Verifies that navigating to https://projector.apps.chrome/xyz redirects to
 // chrome://projector/xyz and launches the SWA.
-IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleTest,
+IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleTestParameterized,
                        PwaNavigationRedirects) {
+  base::HistogramTester histogram_tester;
+
   std::string url = chromeos::kChromeUIUntrustedProjectorPwaUrl;
   url += "/";
   url += kFilePath;
   GURL gurl(url);
 
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), gurl, WindowOpenDisposition::NEW_WINDOW,
-      ui_test_utils::BrowserTestWaitFlags::BROWSER_TEST_WAIT_FOR_BROWSER);
+  // Prior to navigation, there is only one browser available.
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  Browser* old_browser = browser();
+
+  if (navigate_from_link()) {
+    // Simulate the user clicking a link.
+    NavigateParams params(browser(), gurl,
+                          ui::PageTransition::PAGE_TRANSITION_LINK);
+    ui_test_utils::NavigateToURL(&params);
+  } else {
+    // Simulate the user typing the url into the omnibox.
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), gurl, WindowOpenDisposition::CURRENT_TAB,
+        ui_test_utils::BrowserTestWaitFlags::BROWSER_TEST_WAIT_FOR_BROWSER);
+  }
   web_app::FlushSystemWebAppLaunchesForTesting(profile());
+
+  // During the navigation, we closed the previous browser to prevent dangling
+  // about:blank pages and opened a new app browser for the Projector SWA.
+  // There is still only one browser available.
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  // Select the first available browser, which should be the SWA.
+  SelectFirstBrowser();
+  Browser* new_browser = browser();
+  // However, the new browser is not the same as the previous browser because
+  // the previous one closed.
+  EXPECT_NE(old_browser, new_browser);
 
   Browser* app_browser =
       FindSystemWebAppBrowser(profile(), web_app::SystemAppType::PROJECTOR);
   // Projector SWA is now open.
   ASSERT_TRUE(app_browser);
+  EXPECT_EQ(app_browser, new_browser);
   content::WebContents* tab =
       app_browser->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(tab);
@@ -86,7 +122,18 @@ IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleTest,
   std::string expected_url = chromeos::kChromeUITrustedProjectorAppUrl;
   expected_url += kFilePath;
   EXPECT_EQ(tab->GetVisibleURL().spec(), expected_url);
+
+  std::string histogram_name = navigate_from_link()
+                                   ? "Apps.DefaultAppLaunch.FromLink"
+                                   : "Apps.DefaultAppLaunch.FromOmnibox";
+  histogram_tester.ExpectUniqueSample(
+      histogram_name,
+      /*sample=*/apps::DefaultAppName::kProjector, /*count=*/1);
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         ProjectorNavigationThrottleTestParameterized,
+                         /*navigate_from_link=*/testing::Bool());
 
 // Verifies that navigating to chrome-untrusted://projector does not redirect.
 IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleTest,

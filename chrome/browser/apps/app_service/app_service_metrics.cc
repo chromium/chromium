@@ -18,64 +18,12 @@
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
+#include "chromeos/components/projector_app/projector_app_constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
-// The default app's histogram name. This is used for logging so do
-// not change the order of this enum.
-// https://docs.google.com/document/d/1WJ-BjlVOM87ygIsdDBCyXxdKw3iS5EtNGm1fWiWhfIs
-// If you're adding to this enum with the intention that it will be logged,
-// update the DefaultAppName enum listing in tools/metrics/histograms/enums.xml.
-enum class DefaultAppName {
-  kCalculator = 10,
-  kText = 11,
-  kGetHelp = 12,
-  // Gallery was replaced by MediaApp in M86 and deleted in M91.
-  kDeletedGalleryChromeApp = 13,
-  kVideoPlayer = 14,
-  kAudioPlayer = 15,
-  kChromeCanvas = 16,
-  kCamera = 17,
-  kHelpApp = 18,
-  kMediaApp = 19,
-  kChrome = 20,
-  kDocs = 21,
-  kDrive = 22,
-  kDuo = 23,
-  kFiles = 24,
-  kGmail = 25,
-  kKeep = 26,
-  kPhotos = 27,
-  kPlayBooks = 28,
-  kPlayGames = 29,
-  kPlayMovies = 30,
-  kPlayMusic = 31,
-  kPlayStore = 32,
-  kSettings = 33,
-  kSheets = 34,
-  kSlides = 35,
-  kWebStore = 36,
-  kYouTube = 37,
-  kYouTubeMusic = 38,
-  // This is our test SWA. It's only installed in tests.
-  kMockSystemApp = 39,
-  kStadia = 40,
-  kScanningApp = 41,
-  kDiagnosticsApp = 42,
-  kPrintManagementApp = 43,
-  kShortcutCustomizationApp = 44,
-  kShimlessRMAApp = 45,
-  kOsFeedbackApp = 46,
-  kCursive = 47,
-  kMediaAppAudio = 48,
-
-  // Add any new values above this one, and update kMaxValue to the highest
-  // enumerator value.
-  kMaxValue = kMediaAppAudio,
-};
-
-void RecordDefaultAppLaunch(DefaultAppName default_app_name,
+void RecordDefaultAppLaunch(apps::DefaultAppName default_app_name,
                             apps::mojom::LaunchSource launch_source) {
   switch (launch_source) {
     case apps::mojom::LaunchSource::kUnknown:
@@ -300,6 +248,8 @@ void RecordAppLaunch(const std::string& app_id,
                            launch_source);
   } else if (app_id == web_app::kShimlessRMAAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kShimlessRMAApp, launch_source);
+  } else if (app_id == chromeos::kChromeUITrustedProjectorSwaAppId) {
+    RecordDefaultAppLaunch(DefaultAppName::kProjector, launch_source);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 

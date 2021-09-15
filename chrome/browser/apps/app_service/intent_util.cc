@@ -19,7 +19,9 @@
 #include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
+#include "chromeos/components/projector_app/projector_app_constants.h"
 #include "components/arc/intent_helper/intent_constants.h"
 #include "components/arc/mojom/intent_helper.mojom.h"
 #endif
@@ -202,7 +204,7 @@ const char* ConvertAppServiceToArcIntentAction(const std::string& action) {
     return arc::kIntentActionView;
   }
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -221,6 +223,14 @@ std::vector<apps::mojom::IntentFilterPtr> CreateWebAppIntentFilters(
 
   if (IsNoteTakingWebApp(web_app))
     filters.push_back(CreateNoteTakingIntentFilter(web_app));
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (ash::features::IsProjectorEnabled() &&
+      web_app.app_id() == chromeos::kChromeUITrustedProjectorSwaAppId) {
+    filters.push_back(CreateIntentFilterForUrlScope(
+        GURL(chromeos::kChromeUIUntrustedProjectorPwaUrl)));
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return filters;
 }

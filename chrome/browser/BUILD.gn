@@ -4782,6 +4782,7 @@ static_library("browser") {
       "//chrome/services/sharing/public/proto",
       "//chrome/services/speech:lib",
       "//chromeos/components/feature_usage",
+      "//chromeos/components/projector_app",
       "//chromeos/components/sync_wifi",
       "//chromeos/crosapi/cpp",
       "//chromeos/crosapi/mojom",

@@ -14,6 +14,60 @@ namespace apps {
 
 class AppUpdate;
 
+// The default app's histogram name. This is used for logging so do
+// not change the order of this enum.
+// https://docs.google.com/document/d/1WJ-BjlVOM87ygIsdDBCyXxdKw3iS5EtNGm1fWiWhfIs
+// If you're adding to this enum with the intention that it will be logged,
+// update the DefaultAppName enum listing in tools/metrics/histograms/enums.xml.
+enum class DefaultAppName {
+  kCalculator = 10,
+  kText = 11,
+  kGetHelp = 12,
+  // Gallery was replaced by MediaApp in M86 and deleted in M91.
+  kDeletedGalleryChromeApp = 13,
+  kVideoPlayer = 14,
+  kAudioPlayer = 15,
+  kChromeCanvas = 16,
+  kCamera = 17,
+  kHelpApp = 18,
+  kMediaApp = 19,
+  kChrome = 20,
+  kDocs = 21,
+  kDrive = 22,
+  kDuo = 23,
+  kFiles = 24,
+  kGmail = 25,
+  kKeep = 26,
+  kPhotos = 27,
+  kPlayBooks = 28,
+  kPlayGames = 29,
+  kPlayMovies = 30,
+  kPlayMusic = 31,
+  kPlayStore = 32,
+  kSettings = 33,
+  kSheets = 34,
+  kSlides = 35,
+  kWebStore = 36,
+  kYouTube = 37,
+  kYouTubeMusic = 38,
+  // This is our test SWA. It's only installed in tests.
+  kMockSystemApp = 39,
+  kStadia = 40,
+  kScanningApp = 41,
+  kDiagnosticsApp = 42,
+  kPrintManagementApp = 43,
+  kShortcutCustomizationApp = 44,
+  kShimlessRMAApp = 45,
+  kOsFeedbackApp = 46,
+  kCursive = 47,
+  kMediaAppAudio = 48,
+  kProjector = 49,
+
+  // Add any new values above this one, and update kMaxValue to the highest
+  // enumerator value.
+  kMaxValue = kProjector,
+};
+
 // The built-in app's histogram name. This is used for logging so do not change
 // the order of this enum.
 enum class BuiltInAppName {

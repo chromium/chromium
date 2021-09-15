@@ -19261,6 +19261,7 @@ Called by update_debug_scenarios.py.-->
   <int value="46" label="OSFeedbackApp"/>
   <int value="47" label="Cursive"/>
   <int value="48" label="Media App Audio"/>
+  <int value="49" label="Projector"/>
 </enum>
 
 <enum name="DefaultBrowserAsyncAttemptResult">

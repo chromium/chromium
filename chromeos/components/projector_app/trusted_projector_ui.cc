@@ -56,7 +56,7 @@ TrustedProjectorUI::TrustedProjectorUI(content::WebUI* web_ui, const GURL& url)
   // chrome-untrusted:// iframe.
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
 
-  if (url == GURL(kChromeUITrustedAnnotatorURL)) {
+  if (url == GURL(kChromeUITrustedAnnotatorUrl)) {
     web_ui->AddMessageHandler(std::make_unique<AnnotatorMessageHandler>());
     return;
   }

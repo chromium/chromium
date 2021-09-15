@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/apps/intent_helper/common_apps_navigation_throttle.h"
 
+#include <string>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -18,11 +19,14 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/browser_resources.h"
+#include "chromeos/components/projector_app/projector_app_constants.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -82,6 +86,55 @@ bool IsAppDisabled(const std::string& app_id) {
   return base::Contains(disabled_system_features, base::Value(system_feature));
 }
 
+// Usually we want to only capture navigations from clicking a link. For a
+// subset of apps, we want to capture typing into the omnibox as well.
+bool ShouldOnlyCaptureLinks(const std::vector<std::string>& app_ids) {
+  for (auto app_id : app_ids) {
+    if (app_id == chromeos::kChromeUITrustedProjectorSwaAppId)
+      return false;
+  }
+  return true;
+}
+
+bool IsSystemWebApp(Profile* profile, const std::string& app_id) {
+  bool is_system_web_app = false;
+  apps::AppServiceProxyFactory::GetForProfile(profile)
+      ->AppRegistryCache()
+      .ForOneApp(app_id, [&is_system_web_app](const apps::AppUpdate& update) {
+        if (update.InstallSource() == apps::mojom::InstallSource::kSystem) {
+          is_system_web_app = true;
+        }
+      });
+  return is_system_web_app;
+}
+
+// This function redirects an external untrusted |url| to a privileged trusted
+// one for SWAs, if applicable.
+GURL RedirectUrlIfSwa(Profile* profile,
+                      const std::string& app_id,
+                      const GURL& url) {
+  if (!IsSystemWebApp(profile, app_id))
+    return url;
+
+  // Projector:
+  if (app_id == chromeos::kChromeUITrustedProjectorSwaAppId &&
+      url.GetOrigin() ==
+          GURL(chromeos::kChromeUIUntrustedProjectorPwaUrl).GetOrigin()) {
+    std::string override_url = chromeos::kChromeUITrustedProjectorAppUrl;
+    // TODO(b/195975836): Redirect to chrome://projector/app/path instead to
+    // prevent access to the annotator and selfie cam.
+    if (url.path().length() > 1)
+      override_url += url.path().substr(1);
+    GURL result(override_url);
+    DCHECK(result.is_valid());
+    return result;
+  }
+  // Add redirects for other SWAs above this line.
+
+  // No matching SWAs found, returning original url.
+  return url;
+}
+
 }  // namespace
 
 // static
@@ -128,7 +181,7 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
   if (app_ids.empty())
     return false;
 
-  if (!navigate_from_link())
+  if (ShouldOnlyCaptureLinks(app_ids) && !navigate_from_link())
     return false;
 
   absl::optional<std::string> preferred_app_id =
@@ -143,7 +196,8 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
       proxy->AppRegistryCache().GetAppType(preferred_app_id.value());
   if (app_type != apps::mojom::AppType::kArc &&
       (app_type != apps::mojom::AppType::kWeb ||
-       !base::FeatureList::IsEnabled(features::kIntentPickerPWAPersistence))) {
+       !base::FeatureList::IsEnabled(features::kIntentPickerPWAPersistence)) &&
+      !IsSystemWebApp(profile, preferred_app_id.value())) {
     return false;
   }
 
@@ -154,13 +208,18 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
       return false;
   }
 
-  auto launch_source = apps::mojom::LaunchSource::kFromLink;
+  auto launch_source = navigate_from_link()
+                           ? apps::mojom::LaunchSource::kFromLink
+                           : apps::mojom::LaunchSource::kFromOmnibox;
+  GURL redirected_url =
+      RedirectUrlIfSwa(profile, preferred_app_id.value(), url);
   proxy->LaunchAppWithUrl(
       preferred_app_id.value(),
       GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerWindow,
                     WindowOpenDisposition::NEW_WINDOW,
                     /*prefer_container=*/true),
-      url, launch_source, apps::MakeWindowInfo(display::kDefaultDisplayId));
+      redirected_url, launch_source,
+      apps::MakeWindowInfo(display::kDefaultDisplayId));
 
   const GURL& last_committed_url = web_contents->GetLastCommittedURL();
   if (!last_committed_url.is_valid() || last_committed_url.IsAboutBlank())

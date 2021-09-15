@@ -21,14 +21,8 @@ namespace ash {
 std::unique_ptr<ProjectorNavigationThrottle>
 ProjectorNavigationThrottle::MaybeCreateThrottleFor(
     content::NavigationHandle* navigation_handle) {
-  if (!features::IsProjectorEnabled())
-    return nullptr;
-
-  if (!navigation_handle->IsInMainFrame())
-    return nullptr;
-
-  // Can't use std::make_unique because the constructor is private.
-  return base::WrapUnique(new ProjectorNavigationThrottle(navigation_handle));
+  // TODO(b/195975836): Remove this ProjectorNavigationThrottle class.
+  return nullptr;
 }
 
 ProjectorNavigationThrottle::~ProjectorNavigationThrottle() = default;
