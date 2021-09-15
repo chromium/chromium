@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -92,6 +93,14 @@ const char* GetAppsCountHistogramName(apps::mojom::AppType app_type) {
 
 }  // namespace
 
+// static
+std::unique_ptr<FamilyUserAppMetrics> FamilyUserAppMetrics::Create(
+    Profile* profile) {
+  auto metrics = base::WrapUnique(new FamilyUserAppMetrics(profile));
+  metrics->Init();
+  return metrics;
+}
+
 FamilyUserAppMetrics::FamilyUserAppMetrics(Profile* profile)
     : extension_registry_(extensions::ExtensionRegistry::Get(profile)),
       app_registry_(&apps::AppServiceProxyFactory::GetForProfile(profile)
@@ -122,6 +131,12 @@ FamilyUserAppMetrics::GetEnabledExtensionsCountHistogramNameForTest() {
 const char* FamilyUserAppMetrics::GetAppsCountHistogramNameForTest(
     apps::mojom::AppType app_type) {
   return GetAppsCountHistogramName(app_type);
+}
+
+void FamilyUserAppMetrics::Init() {
+  for (const auto app_type : app_registry_->GetInitializedAppTypes()) {
+    OnAppTypeInitialized(app_type);
+  }
 }
 
 void FamilyUserAppMetrics::OnNewDay() {

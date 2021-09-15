@@ -74,21 +74,61 @@ void WebApkManager::StartOrStopObserving() {
       profile_->GetPrefs()->GetBoolean(webapk_prefs::kGeneratedWebApksEnabled);
 
   if (arc_enabled && policy_enabled) {
-    Observe(&proxy_->AppRegistryCache());
-  } else {
-    Observe(nullptr);
+    auto* cache = &proxy_->AppRegistryCache();
+    Observe(cache);
 
-    if (!policy_enabled) {
-      // Remove any WebAPKs which were installed before the policy was enacted.
-      // Ensures we don't end up in a confusing half-state with apps which can
-      // never update, and allows us to start from scratch if the feature is
-      // re-enabled.
-      base::flat_set<std::string> current_installs =
-          webapk_prefs::GetWebApkAppIds(profile_);
-      for (const std::string& id : current_installs) {
-        QueueUninstall(id);
-      }
+    if (cache->IsAppTypeInitialized(apps::mojom::AppType::kWeb)) {
+      Synchronize();
     }
+    return;
+  }
+
+  Observe(nullptr);
+  initialized_ = false;
+
+  if (!policy_enabled) {
+    // Remove any WebAPKs which were installed before the policy was enacted.
+    // Ensures we don't end up in a confusing half-state with apps which can
+    // never update, and allows us to start from scratch if the feature is
+    // re-enabled.
+    base::flat_set<std::string> current_installs =
+        webapk_prefs::GetWebApkAppIds(profile_);
+    for (const std::string& id : current_installs) {
+      QueueUninstall(id);
+    }
+  }
+}
+
+void WebApkManager::Synchronize() {
+  initialized_ = true;
+  base::flat_set<std::string> current_installs =
+      webapk_prefs::GetWebApkAppIds(profile_);
+  base::flat_set<std::string> eligible_installs;
+
+  proxy_->AppRegistryCache().ForEachApp([&](const apps::AppUpdate& update) {
+    if (IsAppEligibleForWebApk(update)) {
+      eligible_installs.insert(update.AppId());
+    }
+  });
+
+  // Install any WebAPK which should be installed but currently isn't.
+  for (const std::string& id : eligible_installs) {
+    if (!current_installs.contains(id)) {
+      QueueInstall(id);
+    }
+  }
+
+  // Uninstall any WebAPK which shouldn't be installed but currently is.
+  for (const std::string& id : current_installs) {
+    if (!eligible_installs.contains(id)) {
+      QueueUninstall(id);
+    }
+  }
+
+  // Update any WebAPK for which an update was previously queued but
+  // unsuccessful.
+  for (const std::string& id : webapk_prefs::GetUpdateNeededAppIds(profile_)) {
+    QueueUpdate(id);
   }
 }
 
@@ -125,37 +165,7 @@ void WebApkManager::OnAppUpdate(const AppUpdate& update) {
 // initialized.
 void WebApkManager::OnAppTypeInitialized(apps::mojom::AppType type) {
   if (type == apps::mojom::AppType::kWeb) {
-    initialized_ = true;
-    base::flat_set<std::string> current_installs =
-        webapk_prefs::GetWebApkAppIds(profile_);
-    base::flat_set<std::string> eligible_installs;
-
-    proxy_->AppRegistryCache().ForEachApp([&](const apps::AppUpdate& update) {
-      if (IsAppEligibleForWebApk(update)) {
-        eligible_installs.insert(update.AppId());
-      }
-    });
-
-    // Install any WebAPK which should be installed but currently isn't.
-    for (const std::string& id : eligible_installs) {
-      if (!current_installs.contains(id)) {
-        QueueInstall(id);
-      }
-    }
-
-    // Uninstall any WebAPK which shouldn't be installed but currently is.
-    for (const std::string& id : current_installs) {
-      if (!eligible_installs.contains(id)) {
-        QueueUninstall(id);
-      }
-    }
-
-    // Update any WebAPK for which an update was previously queued but
-    // unsuccessful.
-    for (const std::string& id :
-         webapk_prefs::GetUpdateNeededAppIds(profile_)) {
-      QueueUpdate(id);
-    }
+    Synchronize();
   }
 }
 

@@ -692,8 +692,6 @@ void AppPlatformMetrics::OnAppTypeInitialized(apps::mojom::AppType app_type) {
   if (should_record_metrics_on_new_day_) {
     RecordAppsCount(app_type);
   }
-
-  initialized_app_types.insert(app_type);
 }
 
 void AppPlatformMetrics::OnAppRegistryCacheWillBeDestroyed(
@@ -712,7 +710,7 @@ void AppPlatformMetrics::OnAppUpdate(const apps::AppUpdate& update) {
   }
 
   InstallTime install_time =
-      base::Contains(initialized_app_types, update.AppType())
+      app_registry_cache_.IsAppTypeInitialized(update.AppType())
           ? InstallTime::kRunning
           : InstallTime::kInit;
   RecordAppsInstallUkm(update, install_time);

@@ -48,8 +48,7 @@ FamilyUserMetricsService::FamilyUserMetricsService(
   family_user_metrics_.push_back(
       std::make_unique<FamilyUserSessionMetrics>(pref_service_));
   Profile* profile = Profile::FromBrowserContext(context);
-  family_user_metrics_.push_back(
-      std::make_unique<FamilyUserAppMetrics>(profile));
+  family_user_metrics_.push_back(FamilyUserAppMetrics::Create(profile));
   family_user_metrics_.push_back(
       std::make_unique<FamilyUserChromeActivityMetrics>(profile));
   family_user_metrics_.push_back(std::make_unique<FamilyUserDeviceMetrics>());

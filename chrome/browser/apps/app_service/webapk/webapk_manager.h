@@ -45,6 +45,9 @@ class WebApkManager : public AppRegistryCache::Observer,
   // starts/stops observing app changes as appropriate.
   void StartOrStopObserving();
 
+  // Called to synchronize installed WebAPKs with the currently installed apps.
+  void Synchronize();
+
   bool IsAppEligibleForWebApk(const AppUpdate& app);
   void QueueInstall(const std::string& app_id);
   void QueueUpdate(const std::string& app_id);

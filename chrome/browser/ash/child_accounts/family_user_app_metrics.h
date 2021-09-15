@@ -27,10 +27,11 @@ namespace ash {
 class FamilyUserAppMetrics : public FamilyUserMetricsService::Observer,
                              public apps::AppRegistryCache::Observer {
  public:
-  explicit FamilyUserAppMetrics(Profile* profile);
   FamilyUserAppMetrics(const FamilyUserAppMetrics&) = delete;
   FamilyUserAppMetrics& operator=(const FamilyUserAppMetrics&) = delete;
   ~FamilyUserAppMetrics() override;
+
+  static std::unique_ptr<FamilyUserAppMetrics> Create(Profile* profile);
 
   // UMA metrics for a snapshot count of installed and enabled extensions for a
   // given family user.
@@ -44,6 +45,9 @@ class FamilyUserAppMetrics : public FamilyUserMetricsService::Observer,
 
  protected:
   // These methods are marked protected for visibility to derived test class.
+  explicit FamilyUserAppMetrics(Profile* profile);
+
+  void Init();
 
   // FamilyUserMetricsService::Observer:
   void OnNewDay() override;

@@ -288,8 +288,6 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   std::map<AppTypeNameV2, base::TimeDelta>
       app_type_v2_running_time_per_five_minutes_;
   std::map<aura::Window*, UsageTime> usage_time_per_five_minutes_;
-
-  std::set<apps::mojom::AppType> initialized_app_types;
 };
 
 }  // namespace apps
