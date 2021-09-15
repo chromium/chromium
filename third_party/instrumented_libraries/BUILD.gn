@@ -768,6 +768,10 @@ if (use_locally_built_instrumented_libraries) {
 
   target("instrumented_library", librtmp_package_) {
     build_method = "debian"
+    if (instrumented_libraries_platform == "xenial") {
+      # Ensure we build with clang.
+      patches = [ "patches/librtmp1.patch" ]
+    }
   }
 
   instrumented_library("libsasl2-2") {
@@ -957,6 +961,11 @@ if (use_locally_built_instrumented_libraries) {
       # this even impacts x86-64 builds.
       "--disable-neon-opt",
     ]
+    if (instrumented_libraries_platform == "xenial") {
+      # There's a build failure caused (I think) by a missing include, so skip
+      # building the offending file to avoid maintaining a patch.
+      extra_configure_flags += [ "--disable-android-hal" ]
+    }
     pre_build = "scripts/pre-build/pulseaudio.sh"
   }
 
