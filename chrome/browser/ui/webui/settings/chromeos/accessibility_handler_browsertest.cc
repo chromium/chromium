@@ -158,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityHandlerTest, OnSodaInstalledNotification) {
   AssertWebUICalls(num_calls + 1);
   ASSERT_TRUE(WasWebUIListenerCalledWithStringArgument(
       "dictation-locale-menu-subtitle-changed",
-      "French (France) is processed locally and works offline."));
+      "French (France) is processed locally and works offline"));
 }
 
 // Verifies that the correct string is sent to the JavaScript end of the web UI.

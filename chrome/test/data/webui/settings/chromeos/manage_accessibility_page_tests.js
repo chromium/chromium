@@ -312,7 +312,7 @@ suite('ManageAccessibilityPageTests', function() {
     assertTrue(!!dictationLocaleMenuSubtitle);
     assertEquals('Language', dictationLocaleMenuLabel.innerText);
     assertEquals(
-        'English (United States) is processed locally and works offline.',
+        'English (United States) is processed locally and works offline',
         dictationLocaleMenuSubtitle.innerText);
 
     // Fake a request to change the dictation locale menu subtitle.
@@ -349,7 +349,7 @@ suite('ManageAccessibilityPageTests', function() {
     page.dictationLocaleSubtitleOverride_ = 'Testing';
     Polymer.dom.flush();
     assertEquals(
-        'English (United States) is processed locally and works offline.',
+        'English (United States) is processed locally and works offline',
         page.computeDictationLocaleSubtitle_());
 
     // Changing the Dictation locale pref should change the subtitle
