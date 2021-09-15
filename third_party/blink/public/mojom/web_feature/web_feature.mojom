@@ -3328,6 +3328,7 @@ enum WebFeature {
   kV8FileSystemSyncAccessHandle_Flush_Method = 4017,
   kV8FileSystemSyncAccessHandle_GetSize_Method = 4018,
   kV8FileSystemSyncAccessHandle_Truncate_Method = 4019,
+  kV8SharedArrayBufferConstructedInExtensionWithoutIsolation = 4020,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
