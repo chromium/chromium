@@ -20,7 +20,7 @@
 // TODO(https://crbug.com/1164001): use forward declaration.
 #include "chrome/browser/ash/login/mojo_system_info_dispatcher.h"
 #include "chrome/browser/ash/login/screens/user_selection_screen.h"
-#include "chrome/browser/ash/login/security_token_pin_dialog_host_ash_impl.h"
+#include "chrome/browser/ash/login/security_token_pin_dialog_host_impl.h"
 #include "chrome/browser/ash/login/ui/login_display_host_common.h"
 #include "chrome/browser/ash/login/ui/oobe_ui_dialog_delegate.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
@@ -221,7 +221,7 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
 
   ChallengeResponseAuthKeysLoader challenge_response_auth_keys_loader_;
 
-  SecurityTokenPinDialogHostAshImpl security_token_pin_dialog_host_ash_impl_;
+  SecurityTokenPinDialogHostImpl security_token_pin_dialog_host_impl_;
 
   // Set if this has been added as a `OobeUI::Observer`.
   bool added_as_oobe_observer_ = false;

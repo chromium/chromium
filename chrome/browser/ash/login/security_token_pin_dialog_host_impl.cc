@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/login/security_token_pin_dialog_host_ash_impl.h"
+#include "chrome/browser/ash/login/security_token_pin_dialog_host_impl.h"
 
 #include <utility>
 
@@ -14,13 +14,11 @@
 
 namespace chromeos {
 
-SecurityTokenPinDialogHostAshImpl::SecurityTokenPinDialogHostAshImpl() =
-    default;
+SecurityTokenPinDialogHostImpl::SecurityTokenPinDialogHostImpl() = default;
 
-SecurityTokenPinDialogHostAshImpl::~SecurityTokenPinDialogHostAshImpl() =
-    default;
+SecurityTokenPinDialogHostImpl::~SecurityTokenPinDialogHostImpl() = default;
 
-void SecurityTokenPinDialogHostAshImpl::ShowSecurityTokenPinDialog(
+void SecurityTokenPinDialogHostImpl::ShowSecurityTokenPinDialog(
     const std::string& /*caller_extension_name*/,
     security_token_pin::CodeType code_type,
     bool enable_user_input,
@@ -54,23 +52,23 @@ void SecurityTokenPinDialogHostAshImpl::ShowSecurityTokenPinDialog(
   request.error_label = error_label;
   request.attempts_left = attempts_left;
   request.pin_entered_callback =
-      base::BindOnce(&SecurityTokenPinDialogHostAshImpl::OnUserInputReceived,
+      base::BindOnce(&SecurityTokenPinDialogHostImpl::OnUserInputReceived,
                      weak_ptr_factory_.GetWeakPtr());
   request.pin_ui_closed_callback =
-      base::BindOnce(&SecurityTokenPinDialogHostAshImpl::OnClosedByUser,
+      base::BindOnce(&SecurityTokenPinDialogHostImpl::OnClosedByUser,
                      weak_ptr_factory_.GetWeakPtr());
 
   ash::LoginScreen::Get()->RequestSecurityTokenPin(std::move(request));
 }
 
-void SecurityTokenPinDialogHostAshImpl::CloseSecurityTokenPinDialog() {
+void SecurityTokenPinDialogHostImpl::CloseSecurityTokenPinDialog() {
   DCHECK(is_request_running());
 
   Reset();
   ash::LoginScreen::Get()->ClearSecurityTokenPinRequest();
 }
 
-void SecurityTokenPinDialogHostAshImpl::OnUserInputReceived(
+void SecurityTokenPinDialogHostImpl::OnUserInputReceived(
     const std::string& user_input) {
   DCHECK(is_request_running());
   DCHECK(!user_input.empty());
@@ -78,7 +76,7 @@ void SecurityTokenPinDialogHostAshImpl::OnUserInputReceived(
   std::move(pin_entered_callback_).Run(user_input);
 }
 
-void SecurityTokenPinDialogHostAshImpl::OnClosedByUser() {
+void SecurityTokenPinDialogHostImpl::OnClosedByUser() {
   DCHECK(is_request_running());
 
   auto closed_callback = std::move(pin_dialog_closed_callback_);
@@ -86,7 +84,7 @@ void SecurityTokenPinDialogHostAshImpl::OnClosedByUser() {
   std::move(closed_callback).Run();
 }
 
-void SecurityTokenPinDialogHostAshImpl::Reset() {
+void SecurityTokenPinDialogHostImpl::Reset() {
   pin_entered_callback_.Reset();
   pin_dialog_closed_callback_.Reset();
   weak_ptr_factory_.InvalidateWeakPtrs();

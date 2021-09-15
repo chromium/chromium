@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_LOGIN_SECURITY_TOKEN_PIN_DIALOG_HOST_ASH_IMPL_H_
-#define CHROME_BROWSER_ASH_LOGIN_SECURITY_TOKEN_PIN_DIALOG_HOST_ASH_IMPL_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_SECURITY_TOKEN_PIN_DIALOG_HOST_IMPL_H_
+#define CHROME_BROWSER_ASH_LOGIN_SECURITY_TOKEN_PIN_DIALOG_HOST_IMPL_H_
 
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/certificate_provider/security_token_pin_dialog_host.h"
 
@@ -16,11 +15,14 @@ namespace chromeos {
 
 // The Ash Login/Lock screen implementation of the security token PIN dialog
 // host. It displays the PIN request embedded into the user pod.
-class SecurityTokenPinDialogHostAshImpl final
-    : public SecurityTokenPinDialogHost {
+class SecurityTokenPinDialogHostImpl final : public SecurityTokenPinDialogHost {
  public:
-  SecurityTokenPinDialogHostAshImpl();
-  ~SecurityTokenPinDialogHostAshImpl() override;
+  SecurityTokenPinDialogHostImpl();
+  SecurityTokenPinDialogHostImpl(const SecurityTokenPinDialogHostImpl&) =
+      delete;
+  SecurityTokenPinDialogHostImpl& operator=(
+      const SecurityTokenPinDialogHostImpl&) = delete;
+  ~SecurityTokenPinDialogHostImpl() override;
 
   // SecurityTokenPinDialogHost:
   void ShowSecurityTokenPinDialog(
@@ -57,10 +59,7 @@ class SecurityTokenPinDialogHostAshImpl final
   // Is non-empty iff the dialog is active.
   SecurityTokenPinDialogClosedCallback pin_dialog_closed_callback_;
 
-  base::WeakPtrFactory<SecurityTokenPinDialogHostAshImpl> weak_ptr_factory_{
-      this};
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityTokenPinDialogHostAshImpl);
+  base::WeakPtrFactory<SecurityTokenPinDialogHostImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace chromeos
@@ -68,7 +67,7 @@ class SecurityTokenPinDialogHostAshImpl final
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
 namespace ash {
-using ::chromeos::SecurityTokenPinDialogHostAshImpl;
+using ::chromeos::SecurityTokenPinDialogHostImpl;
 }
 
-#endif  // CHROME_BROWSER_ASH_LOGIN_SECURITY_TOKEN_PIN_DIALOG_HOST_ASH_IMPL_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_SECURITY_TOKEN_PIN_DIALOG_HOST_IMPL_H_

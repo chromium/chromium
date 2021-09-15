@@ -189,7 +189,7 @@ ScreenLocker::ScreenLocker(const user_manager::UserList& users)
       fingerprint_observer_receiver_.BindNewPipeAndPassRemote());
 
   GetLoginScreenCertProviderService()->pin_dialog_manager()->AddPinDialogHost(
-      &security_token_pin_dialog_host_ash_impl_);
+      &security_token_pin_dialog_host_impl_);
   user_manager::UserManager::Get()->AddSessionStateObserver(this);
 
   if (g_clock_for_testing_ && g_tick_clock_for_testing_) {
@@ -719,7 +719,7 @@ ScreenLocker::~ScreenLocker() {
 
   GetLoginScreenCertProviderService()
       ->pin_dialog_manager()
-      ->RemovePinDialogHost(&security_token_pin_dialog_host_ash_impl_);
+      ->RemovePinDialogHost(&security_token_pin_dialog_host_impl_);
 
   if (authenticator_)
     authenticator_->SetConsumer(nullptr);

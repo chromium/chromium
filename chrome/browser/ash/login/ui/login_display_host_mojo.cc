@@ -131,7 +131,7 @@ LoginDisplayHostMojo::~LoginDisplayHostMojo() {
 
   GetLoginScreenCertProviderService()
       ->pin_dialog_manager()
-      ->RemovePinDialogHost(&security_token_pin_dialog_host_ash_impl_);
+      ->RemovePinDialogHost(&security_token_pin_dialog_host_impl_);
   dialog_->GetOobeUI()->signin_screen_handler()->SetDelegate(nullptr);
   StopObservingOobeUI();
   dialog_->Close();
@@ -649,7 +649,7 @@ void LoginDisplayHostMojo::EnsureOobeDialogLoaded() {
   wizard_controller_ = std::make_unique<WizardController>(wizard_context());
 
   GetLoginScreenCertProviderService()->pin_dialog_manager()->AddPinDialogHost(
-      &security_token_pin_dialog_host_ash_impl_);
+      &security_token_pin_dialog_host_impl_);
 
   // Update status of add user button in the shelf.
   UpdateAddUserButtonStatus();
