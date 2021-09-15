@@ -8,7 +8,9 @@
 #import "base/test/ios/wait_util.h"
 #import "components/signin/ios/browser/features.h"
 #include "components/signin/public/base/account_consistency_method.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/metrics/metrics_app_interface.h"
 #include "ios/chrome/browser/policy/policy_util.h"
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -102,6 +104,30 @@ void ChooseImportOrKeepDataSepareteDialog(id<GREYMatcher> choiceButtonMatcher) {
       performAction:grey_tap()];
 }
 
+void ExpectSigninConsentHistogram(
+    signin_metrics::SigninAccountType signinAccountType) {
+  NSError* error = [MetricsAppInterface
+      expectTotalCount:1
+          forHistogram:@"Signin.AccountType.SigninConsent"];
+  GREYAssertNil(error, @"Failed to record show count histogram");
+  error = [MetricsAppInterface expectCount:1
+                                 forBucket:static_cast<int>(signinAccountType)
+                              forHistogram:@"Signin.AccountType.SigninConsent"];
+  GREYAssertNil(error, @"Failed to record show count histogram");
+}
+
+void ExpectSyncConsentHistogram(
+    signin_metrics::SigninAccountType signinAccountType) {
+  NSError* error =
+      [MetricsAppInterface expectTotalCount:1
+                               forHistogram:@"Signin.AccountType.SyncConsent"];
+  GREYAssertNil(error, @"Failed to record show count histogram");
+  error = [MetricsAppInterface expectCount:1
+                                 forBucket:static_cast<int>(signinAccountType)
+                              forHistogram:@"Signin.AccountType.SyncConsent"];
+  GREYAssertNil(error, @"Failed to record show count histogram");
+}
+
 }  // namespace
 
 // Sign-in interaction tests that work both with Unified Consent enabled or
@@ -116,6 +142,14 @@ void ChooseImportOrKeepDataSepareteDialog(id<GREYMatcher> choiceButtonMatcher) {
   // Remove closed tab history to make sure the sign-in promo is always visible
   // in recent tabs.
   [ChromeEarlGrey clearBrowsingHistory];
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Failed to set up histogram tester.");
+}
+
+- (void)tearDown {
+  [super tearDown];
+  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                @"Cannot reset histogram tester.");
 }
 
 // Tests that opening the sign-in screen from the Settings and signing in works
@@ -127,6 +161,8 @@ void ChooseImportOrKeepDataSepareteDialog(id<GREYMatcher> choiceButtonMatcher) {
 
   // Check |fakeIdentity| is signed-in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+  ExpectSigninConsentHistogram(signin_metrics::SigninAccountType::kRegular);
+  ExpectSyncConsentHistogram(signin_metrics::SigninAccountType::kRegular);
 }
 
 // Tests signing in with one account, switching sync account to a second and
@@ -157,6 +193,8 @@ void ChooseImportOrKeepDataSepareteDialog(id<GREYMatcher> choiceButtonMatcher) {
   // Sign-in with a managed account.
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeManagedIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  ExpectSigninConsentHistogram(signin_metrics::SigninAccountType::kManaged);
+  ExpectSyncConsentHistogram(signin_metrics::SigninAccountType::kManaged);
 
   // Sign out.
   [SigninEarlGreyUI

@@ -189,11 +189,8 @@
 
 #pragma mark - SyncScreenMediatorDelegate
 
-- (void)syncScreenMediator:(SyncScreenMediator*)mediator
-    didFinishSigninWithResult:(SigninCoordinatorResult)result {
-  if (result != SigninCoordinatorResultSuccess)
-    return;
-
+- (void)syncScreenMediatorDidSuccessfulyFinishSignin:
+    (SyncScreenMediator*)mediator {
   if (self.advancedSettingsRequested) {
     base::UmaHistogramEnumeration(
         "FirstRun.Stage", first_run::kSyncScreenCompletionWithSyncSettings);
@@ -254,11 +251,14 @@
           self.browser->GetBrowserState())
           ->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
 
+  PostSignInAction postSignInAction = advancedSettings
+                                          ? POST_SIGNIN_ACTION_NONE
+                                          : POST_SIGNIN_ACTION_COMMIT_SYNC;
   AuthenticationFlow* authenticationFlow =
       [[AuthenticationFlow alloc] initWithBrowser:self.browser
                                          identity:identity
                                   shouldClearData:SHOULD_CLEAR_DATA_MERGE_DATA
-                                 postSignInAction:POST_SIGNIN_ACTION_NONE
+                                 postSignInAction:postSignInAction
                          presentingViewController:self.viewController];
   authenticationFlow.dispatcher = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), BrowsingDataCommands);

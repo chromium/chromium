@@ -182,8 +182,8 @@ TEST_F(SyncScreenMediatorTest, TestAuthenticationFlow) {
   EXPECT_FALSE(consumer_.UIEnabled);
   ASSERT_NE(nil, completion);
 
-  OCMExpect([mock_delegate syncScreenMediator:mediator_
-                    didFinishSigninWithResult:SigninCoordinatorResultSuccess]);
+  OCMExpect(
+      [mock_delegate syncScreenMediatorDidSuccessfulyFinishSignin:mediator_]);
 
   EXPECT_FALSE(browser_state_->GetPrefs()->GetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled));

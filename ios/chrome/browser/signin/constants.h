@@ -33,7 +33,7 @@ typedef enum {
 // the user is successfully signed in.
 typedef enum {
   POST_SIGNIN_ACTION_NONE,
-  POST_SIGNIN_ACTION_START_SYNC,
+  POST_SIGNIN_ACTION_COMMIT_SYNC,
 } PostSignInAction;
 
 // Enum for identity avatar size. See GetSizeForIdentityAvatarSize() to convert

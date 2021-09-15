@@ -113,7 +113,7 @@ class UserSigninMediatorTest : public PlatformTest {
                  initWithBrowser:browser_.get()
                         identity:identity_
                  shouldClearData:SHOULD_CLEAR_DATA_USER_CHOICE
-                postSignInAction:POST_SIGNIN_ACTION_NONE
+                postSignInAction:POST_SIGNIN_ACTION_COMMIT_SYNC
         presentingViewController:presenting_view_controller_mock_];
     [authentication_flow_ setPerformerForTesting:performer_mock_];
   }
@@ -135,6 +135,7 @@ class UserSigninMediatorTest : public PlatformTest {
                   shouldHandleMergeCaseForIdentity:identity_
                                       browserState:browser_state_.get()])
         .andReturn(NO);
+    OCMExpect([performer_mock_ commitSyncForBrowserState:browser_state_.get()]);
   }
 
   // Sets up the sign-in failure expectations for the

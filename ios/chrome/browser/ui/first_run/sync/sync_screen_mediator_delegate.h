@@ -12,9 +12,9 @@
 // Delegate for the Sync mediator.
 @protocol SyncScreenMediatorDelegate
 
-// Notifies the delegate that |mediator| has finished sign in with |result|.
-- (void)syncScreenMediator:(SyncScreenMediator*)mediator
-    didFinishSigninWithResult:(SigninCoordinatorResult)result;
+// Notifies the delegate that |mediator| has finished sign in with success.
+- (void)syncScreenMediatorDidSuccessfulyFinishSignin:
+    (SyncScreenMediator*)mediator;
 
 // Notifies the delegate that the user has been removed.
 - (void)userRemoved;

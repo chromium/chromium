@@ -600,11 +600,15 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
 - (void)startSigninFlow {
   DCHECK(self.unifiedConsentCoordinator);
   DCHECK(self.unifiedConsentCoordinator.selectedIdentity);
+  PostSignInAction postSignInAction =
+      self.userSigninMediatorGetSettingsLinkWasTapped
+          ? POST_SIGNIN_ACTION_NONE
+          : POST_SIGNIN_ACTION_COMMIT_SYNC;
   AuthenticationFlow* authenticationFlow = [[AuthenticationFlow alloc]
                initWithBrowser:self.browser
                       identity:self.unifiedConsentCoordinator.selectedIdentity
                shouldClearData:[self shouldClearData]
-              postSignInAction:POST_SIGNIN_ACTION_NONE
+              postSignInAction:postSignInAction
       presentingViewController:self.viewController];
   authenticationFlow.dispatcher = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), BrowsingDataCommands);
