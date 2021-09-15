@@ -45961,6 +45961,14 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="9" label="Disabled"/>
   <int value="10" label="Error: additional web context malformed (nonfatal)"/>
   <int value="11" label="Success: Image is translatable"/>
+  <int value="12" label="Error: user context changed"/>
+  <int value="13" label="Disabled: user context changed"/>
+  <int value="14" label="Error: unexpected state"/>
+  <int value="15" label="Disabled: AGSA out of date"/>
+  <int value="16" label="Disabled: OS out of date"/>
+  <int value="17" label="Disabled: user not signed in"/>
+  <int value="18" label="Disabled: UMA reporting is disabled"/>
+  <int value="19" label="Disabled: user is in Incognito mode"/>
 </enum>
 
 <enum name="LensRegionSearchAspectRatio">
