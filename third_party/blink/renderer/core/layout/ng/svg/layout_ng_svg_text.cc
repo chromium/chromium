@@ -246,6 +246,11 @@ void LayoutNGSVGText::AbsoluteQuads(Vector<FloatQuad>& quads,
   quads.push_back(LocalToAbsoluteQuad(StrokeBoundingBox(), mode));
 }
 
+FloatRect LayoutNGSVGText::LocalBoundingBoxRectForAccessibility() const {
+  NOT_DESTROYED();
+  return StrokeBoundingBox();
+}
+
 bool LayoutNGSVGText::NodeAtPoint(HitTestResult& result,
                                   const HitTestLocation& hit_test_location,
                                   const PhysicalOffset& accumulated_offset,

@@ -1193,5 +1193,27 @@ TEST_F(AccessibilityTest, IsSelectedFromFocusSupported) {
   EXPECT_TRUE(option5->IsSelectedFromFocusSupported());
 }
 
+TEST_F(AccessibilityTest, GetBoundsInFrameCoordinatesSvgText) {
+  // This test doesn't work with the legacy SVG text.
+  if (!RuntimeEnabledFeatures::SVGTextNGEnabled())
+    return;
+  SetBodyInnerHTML(R"HTML(
+  <svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+    <text id="t1" x="100">Text1</text>
+    <text id="t2" x="50">Text1</text>
+  </svg>)HTML");
+
+  AXObject* text1 = GetAXObjectByElementId("t1");
+  ASSERT_NE(text1, nullptr);
+  AXObject* text2 = GetAXObjectByElementId("t2");
+  ASSERT_NE(text2, nullptr);
+  LayoutRect bounds1 = text1->GetBoundsInFrameCoordinates();
+  LayoutRect bounds2 = text2->GetBoundsInFrameCoordinates();
+
+  // Check if bounding boxes for SVG <text> respect to positioning
+  // attributes such as 'x'.
+  EXPECT_GT(bounds1.X(), bounds2.X());
+}
+
 }  // namespace test
 }  // namespace blink
