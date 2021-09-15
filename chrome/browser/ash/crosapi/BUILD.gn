@@ -67,6 +67,8 @@ source_set("crosapi") {
     "keystore_service_ash.h",
     "keystore_service_factory_ash.cc",
     "keystore_service_factory_ash.h",
+    "kiosk_session_service_ash.cc",
+    "kiosk_session_service_ash.h",
     "local_printer_ash.cc",
     "local_printer_ash.h",
     "message_center_ash.cc",

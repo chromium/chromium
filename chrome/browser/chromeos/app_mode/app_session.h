@@ -31,6 +31,7 @@ class KioskSessionPluginHandler;
 class AppSession : public KioskSessionPluginHandlerDelegate {
  public:
   AppSession();
+  explicit AppSession(base::OnceClosure attempt_user_exit);
   AppSession(const AppSession&) = delete;
   AppSession& operator=(const AppSession&) = delete;
   ~AppSession() override;

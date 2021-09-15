@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "chrome/browser/chromeos/app_mode/app_session.h"
 #include "chrome/browser/ui/browser.h"
+#include "chromeos/lacros/lacros_service.h"
 
 namespace {
 
@@ -23,7 +24,6 @@ KioskSessionServiceLacros* KioskSessionServiceLacros::Get() {
 }
 
 KioskSessionServiceLacros::KioskSessionServiceLacros() {
-  CHECK(!g_kiosk_session_service);  // Only one instance is allowed.
   g_kiosk_session_service = this;
 }
 
@@ -33,6 +33,19 @@ KioskSessionServiceLacros::~KioskSessionServiceLacros() {
 
 void KioskSessionServiceLacros::InitWebKioskSession(Browser* browser) {
   LOG_IF(FATAL, app_session_) << "Web Kiosk session is already initialized.";
-  app_session_ = std::make_unique<chromeos::AppSession>();
+  app_session_ = std::make_unique<chromeos::AppSession>(base::BindOnce(
+      &KioskSessionServiceLacros::AttemptUserExit, weak_factory_.GetWeakPtr()));
   app_session_->InitForWebKiosk(browser);
+}
+
+void KioskSessionServiceLacros::AttemptUserExit() {
+  chromeos::LacrosService* service = chromeos::LacrosService::Get();
+  CHECK(service);
+
+  if (!service->IsAvailable<crosapi::mojom::KioskSessionService>()) {
+    LOG(ERROR) << "Kiosk session service is not available.";
+    return;
+  }
+
+  service->GetRemote<crosapi::mojom::KioskSessionService>()->AttemptUserExit();
 }

@@ -2305,6 +2305,7 @@ if (!is_android && !is_fuchsia) {
 
     if (is_chromeos_lacros) {
       sources += [
+        "../browser/lacros/app_mode/kiosk_session_service_browsertest.cc",
         "../browser/lacros/lacros_extension_apps_controller_browsertest.cc",
         "../browser/lacros/lacros_extension_apps_publisher_browsertest.cc",
         "../browser/web_applications/app_service/web_apps_publisher_host_browsertest.cc",

@@ -31,6 +31,7 @@ mojom("mojom") {
     "image_writer.mojom",
     "keystore_error.mojom",
     "keystore_service.mojom",
+    "kiosk_session_service.mojom",
     "local_printer.mojom",
     "message_center.mojom",
     "metrics_reporting.mojom",

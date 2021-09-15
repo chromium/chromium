@@ -251,6 +251,8 @@ class AppSession::BrowserWindowHandler : public BrowserListObserver {
 
 AppSession::AppSession()
     : attempt_user_exit_(base::BindOnce(chrome::AttemptUserExit)) {}
+AppSession::AppSession(base::OnceClosure attempt_user_exit)
+    : attempt_user_exit_(std::move(attempt_user_exit)) {}
 AppSession::~AppSession() {}
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

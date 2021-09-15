@@ -7,6 +7,9 @@
 
 #include <memory>
 
+#include "chromeos/crosapi/mojom/kiosk_session_service.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
+
 namespace chromeos {
 class AppSession;
 }
@@ -24,16 +27,25 @@ class KioskSessionServiceLacros {
   KioskSessionServiceLacros(const KioskSessionServiceLacros&) = delete;
   KioskSessionServiceLacros& operator=(const KioskSessionServiceLacros&) =
       delete;
-  ~KioskSessionServiceLacros();
+  virtual ~KioskSessionServiceLacros();
 
   // Initialize the current Web Kiosk session with the browser that is running
   // the app.
   void InitWebKioskSession(Browser* browser);
 
- private:
+ protected:
+  // Tell the ash-chrome to end the kiosk session and return the current user
+  // to the login screen by calling the API provided by
+  // `kiosk_session_service_`. Virtual for tesitng.
+  virtual void AttemptUserExit();
+
   // The app session instance to observe the window status, and take action if
   // necessary.
   std::unique_ptr<chromeos::AppSession> app_session_;
+
+  // Note: This should remain the last member so it'll be destroyed and
+  // invalidate its weak pointers before any other members are destroyed.
+  base::WeakPtrFactory<KioskSessionServiceLacros> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_LACROS_APP_MODE_KIOSK_SESSION_SERVICE_LACROS_H_

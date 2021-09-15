@@ -37,6 +37,7 @@ class GeolocationServiceAsh;
 class IdleServiceAsh;
 class ImageWriterAsh;
 class KeystoreServiceAsh;
+class KioskSessionServiceAsh;
 class LocalPrinterAsh;
 class MessageCenterAsh;
 class MetricsReportingAsh;
@@ -115,6 +116,8 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::ImageWriter> receiver) override;
   void BindKeystoreService(
       mojo::PendingReceiver<mojom::KeystoreService> receiver) override;
+  void BindKioskSessionService(
+      mojo::PendingReceiver<mojom::KioskSessionService> receiver) override;
   void BindLocalPrinter(
       mojo::PendingReceiver<mojom::LocalPrinter> receiver) override;
   void BindMessageCenter(
@@ -186,6 +189,10 @@ class CrosapiAsh : public mojom::Crosapi {
     return download_controller_ash_.get();
   }
 
+  KioskSessionServiceAsh* kiosk_session_service() {
+    return kiosk_session_service_ash_.get();
+  }
+
   WebPageInfoFactoryAsh* web_page_info_factory_ash() {
     return web_page_info_factory_ash_.get();
   }
@@ -230,6 +237,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<IdleServiceAsh> idle_service_ash_;
   std::unique_ptr<ImageWriterAsh> image_writer_ash_;
   std::unique_ptr<KeystoreServiceAsh> keystore_service_ash_;
+  std::unique_ptr<KioskSessionServiceAsh> kiosk_session_service_ash_;
   std::unique_ptr<LocalPrinterAsh> local_printer_ash_;
   std::unique_ptr<MessageCenterAsh> message_center_ash_;
   std::unique_ptr<MetricsReportingAsh> metrics_reporting_ash_;

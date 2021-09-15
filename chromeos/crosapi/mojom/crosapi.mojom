@@ -44,6 +44,7 @@ import "chromeos/crosapi/mojom/test_controller.mojom";
 import "chromeos/crosapi/mojom/url_handler.mojom";
 import "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom";
 import "chromeos/crosapi/mojom/video_capture.mojom";
+import "chromeos/crosapi/mojom/kiosk_session_service.mojom";
 import "chromeos/crosapi/mojom/web_page_info.mojom";
 import "mojo/public/mojom/base/big_string.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
@@ -74,8 +75,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 49
-// Next method id: 53
+// Next version: 50
+// Next method id: 54
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -333,6 +334,12 @@ interface Crosapi {
   // Added in M90.
   [MinVersion=20] BindVideoCaptureDeviceFactory@25(
       pending_receiver<crosapi.mojom.VideoCaptureDeviceFactory> receiver);
+
+  // Binds the Kiosk session service which sends session status changes from
+  // lacros to ash.
+  // Added in M96.
+  [MinVersion=49] BindKioskSessionService@53(
+    pending_receiver<KioskSessionService> receiver);
 
   // Binds the web page info factory interface which allows ash to request web
   // page info from Lacros.
