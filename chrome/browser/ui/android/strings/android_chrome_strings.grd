@@ -473,6 +473,24 @@ CHAR_LIMIT guidelines:
       <message name="IDS_AUTOFILL_DESCRIBE_LOCAL_COPY" desc="Text label that describes a Wallet credit card which has been copied to the local Chrome instance.">
          Copied to Chrome
       </message>
+      <message name="IDS_AUTOFILL_PAYMENTS_AUTHENTICATOR_SELECTION_DIALOG_TITLE" desc="Title for the dialog where the user selects an authenticator from a list of options.">
+        Verify your card
+      </message>
+      <message name="IDS_AUTOFILL_PAYMENTS_AUTHENTICATOR_SELECTION_DIALOG_HEADER" desc="Header for the dialog where the user selects an authenticator from a list of options.">
+        Your bank wants to confirm it\u2019s you.
+      </message>
+      <message name="IDS_AUTOFILL_PAYMENTS_AUTHENTICATOR_SELECTION_DIALOG_FOOTER" desc="Footer for the dialog where the user selects an authenticator from a list of options.">
+        Not seeing your current info? Please contact your bank to update it.
+      </message>
+      <message name="IDS_AUTOFILL_PAYMENTS_AUTHENTICATOR_SELECTION_DIALOG_PROGRESS_BAR_MESSAGE" desc="Message shown on the progress bar after the user selects an authenticator from a list of options and proceeds.">
+        Contacting your bank\u2026
+      </message>
+      <message name="IDS_AUTOFILL_PAYMENTS_AUTHENTICATOR_SELECTION_DIALOG_POSITIVE_BUTTON_LABEL" desc="Positive button label for the dialog where the user selects an authenticator from a list of options.">
+        Continue
+      </message>
+      <message name="IDS_AUTOFILL_PAYMENTS_AUTHENTICATOR_SELECTION_DIALOG_NEGATIVE_BUTTON_LABEL" desc="Negative button label for the dialog where the user selects an authenticator from a list of options.">
+        Cancel
+      </message>
 
        <!-- Payment Request section preview strings -->
        <message name="IDS_PAYMENT_REQUEST_PAYMENT_METHODS_PREVIEW" desc="This is a snippet of a payment method a user has saved to Chrome, plus an indication of the number of additional payment methods the user has saved.
