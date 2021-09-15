@@ -695,7 +695,10 @@ std::vector<url::Origin> DialMediaRouteProvider::GetOrigins(
       base::flat_map<std::string, std::vector<url::Origin>>>
       origin_allowlist(
           {{"YouTube",
-            {CreateOrigin("https://tv.youtube.com"),
+            {CreateOrigin("https://music.youtube.com/"),
+             CreateOrigin("https://music-green-qa.youtube.com/"),
+             CreateOrigin("https://music-release-qa.youtube.com/"),
+             CreateOrigin("https://tv.youtube.com"),
              CreateOrigin("https://tv-green-qa.youtube.com"),
              CreateOrigin("https://tv-release-qa.youtube.com"),
              CreateOrigin("https://web-green-qa.youtube.com"),

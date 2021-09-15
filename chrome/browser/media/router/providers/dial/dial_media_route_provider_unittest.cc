@@ -432,6 +432,9 @@ class DialMediaRouteProviderTest : public ::testing::Test {
 
 TEST_F(DialMediaRouteProviderTest, AddRemoveSinkQuery) {
   std::vector<url::Origin> youtube_origins = {
+      url::Origin::Create(GURL("https://music.youtube.com/")),
+      url::Origin::Create(GURL("https://music-green-qa.youtube.com/")),
+      url::Origin::Create(GURL("https://music-release-qa.youtube.com/")),
       url::Origin::Create(GURL("https://tv.youtube.com")),
       url::Origin::Create(GURL("https://tv-green-qa.youtube.com")),
       url::Origin::Create(GURL("https://tv-release-qa.youtube.com")),
