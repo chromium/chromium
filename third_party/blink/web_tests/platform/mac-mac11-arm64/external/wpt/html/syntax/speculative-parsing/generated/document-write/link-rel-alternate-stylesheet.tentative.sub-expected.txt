@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Speculative parsing, document.write(): link-rel-alternate-stylesheet Unhandled rejection: assert_equals: non-speculative case incorrectly fetched expected "" but got "param-encodingcheck: %C4%9E\r\nHost: web-platform.test:8001\nConnection: keep-alive\nUser-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/999.77.34.5 Safari/537.36\nAccept: text/css,*/*;q=0.1\nReferer: http://web-platform.test:8001/html/syntax/speculative-parsing/generated/resources/link-rel-alternate-stylesheet-nonspeculative.sub.html?uuid=a592f964-280a-4c58-9f6e-e3fcf158d42d\nAccept-Encoding: gzip, deflate\nAccept-Language: en-us,en\n\n"
+Harness: the test ran to completion.
+

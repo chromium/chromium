@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS Has %IteratorPrototype% as prototype
+PASS next() exists and is writable, enumerable, and configurable
+FAIL next() throws TypeError when called on ineligible receiver assert_throws_js: function "() => {
+    iteratorProto.next.call(new Headers().entries());
+  }" did not throw
+FAIL Is specific to an interface assert_not_equals: got disallowed value object "[object Iterator]"
+Harness: the test ran to completion.
+

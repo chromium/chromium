@@ -38,14 +38,6 @@ const defaultDetails = Object.freeze({
 promise_test(async (t) => {
   const request = new PaymentRequest(defaultMethods, defaultDetails);
   const acceptPromise = request.show();
-  // Abort the request after 2 seconds if it has not rejected. This allows the
-  // other tests in this file to run even if a non-compliant browser shows the
-  // payment sheet without user activation.
-  t.step_timeout(() => {
-    t.force_timeout();
-    request.abort();
-  }, 2000);
-
   await promise_rejects_dom(t, "SecurityError", acceptPromise);
 }, `Calling show() without being triggered by user interaction throws`);
 
@@ -54,9 +46,9 @@ promise_test(async (t) => {
   await promise_rejects_dom(t, "SecurityError", request.show());
 
   await test_driver.bless();
-  const acceptPromise = request.show(); // Sets state to "interactive"
-
-  await promise_rejects_dom(t, "InvalidStateError", request.show());
+  // Sets state to "interactive", but consumes user interaction.
+  const acceptPromise = request.show();
+  await promise_rejects_dom(t, "SecurityError", request.show());
 
   // With user activation, but already showing the sheet...
   await test_driver.bless();

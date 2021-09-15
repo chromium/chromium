@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+FAIL Cross-realm global object's getter throws when called on incompatible object assert_throws_js: function "() => { Object.create(other).window; }" did not throw
+PASS Cross-realm global object's setter throws when called on incompatible object
+PASS Cross-realm global object's operation throws when called on incompatible object
+PASS Cross-realm global object's getter called on null / undefined
+PASS Cross-realm global object's setter called on null / undefined
+PASS Cross-realm global object's operation called on null / undefined
+Harness: the test ran to completion.
+

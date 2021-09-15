@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Speculative parsing, page load: link-rel-stylesheet-disabled Unhandled rejection: assert_equals: speculative case incorrectly fetched expected "" but got "param-encodingcheck: %C4%9E\r\nHost: web-platform.test:8001\nConnection: keep-alive\nUser-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/999.77.34.5 Safari/537.36\nAccept: text/css,*/*;q=0.1\nReferer: http://web-platform.test:8001/html/syntax/speculative-parsing/generated/page-load/resources/link-rel-stylesheet-disabled-framed.sub.html?uuid=834a1e7c-8e90-4234-9157-94ce84cc5c61\nAccept-Encoding: gzip, deflate\nAccept-Language: en-us,en\n\n"
+Harness: the test ran to completion.
+

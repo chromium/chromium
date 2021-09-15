@@ -70,6 +70,7 @@ async function checkForExpectedReport(expectedReport) {
             expectedReport.report)){
           expectedReport.endpoint.reports.splice(j,1);
           resolve();
+          return;
         }
       };
       await wait(waitTime);

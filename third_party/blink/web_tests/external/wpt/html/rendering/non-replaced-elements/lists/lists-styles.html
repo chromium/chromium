@@ -9,7 +9,7 @@
 @namespace url(urn:not-html);
 
 dir, dd, dl, dt, menu, ol, ul { display: block; }
-li { display: list-item; }
+li { display: list-item; text-align: match-parent; }
 
 dir, dl, menu, ol, ul { margin-block-start: 1em; margin-block-end: 1em; }
 
@@ -48,6 +48,10 @@ ul[type=square i], li[type=square i] { list-style-type: square; }
 li[value="10"], li[value="10xyz"], li[value="10e10"] { counter-set: list-item 10; }
 ol[start="10"], ol[start="10xyz"], ol[start="10e10"] { counter-reset: list-item 9; }
 ol[reversed][start="20"], ol[reversed][start="20xyz"], ol[reversed][start="20e10"] { counter-reset: reversed(list-item) 21; }
+
+/* dir="" */
+[dir=ltr] { direction: ltr; }
+[dir=rtl] { direction: rtl; }
 </style>
 
 <div id="log"></div>
@@ -181,6 +185,9 @@ ol[reversed][start="20"], ol[reversed][start="20xyz"], ol[reversed][start="20e10
   <ol reversed start="20e10"><li></li></ol>
   <ol reversed start="xyz"><li></li></ol>
 
+  <ul data-skip dir="rtl"><li dir="ltr"></li></ul>
+  <ul data-skip dir="ltr"><li dir="rtl"></li></ul>
+
 </div>
 
 <div id="refs"></div>
@@ -200,7 +207,7 @@ ol[reversed][start="20"], ol[reversed][start="20xyz"], ol[reversed][start="20e10
     'counter-set',
     'counter-reset',
     'counter-increment',
-
+    'text-align',
   ];
   runUAStyleTests(props);
 

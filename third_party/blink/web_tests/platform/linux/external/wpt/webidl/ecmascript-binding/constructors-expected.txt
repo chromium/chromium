@@ -1,0 +1,18 @@
+This is a testharness.js-based test.
+PASS Realm for constructed objects
+PASS Normal constructor in parent window
+PASS Normal constructor in child window
+PASS Constructor in child window with normal NewTarget from parent window
+PASS Constructor in parent window with normal NewTarget from child window
+PASS Subclass constructor in parent window
+PASS Subclass constructor in child window
+PASS Subclass constructor in parent window with parent class in child window
+PASS Subclass constructor in child window with parent class in parent window
+FAIL Constructor in child window with bad NewTarget from parent window assert_equals: expected object "[object DOMParser]" but got object "[object Object]"
+FAIL Constructor in parent window with bad NewTarget from child window assert_equals: expected object "[object DOMParser]" but got object "[object Object]"
+FAIL Constructor in parent window with bad NewTarget from parent window that's a bound child window function assert_equals: expected object "[object DOMParser]" but got object "[object Object]"
+FAIL Constructor in child window with bad NewTarget from child window that's a bound parent window function assert_equals: expected object "[object DOMParser]" but got object "[object Object]"
+FAIL Constructor in parent window with bad NewTarget from parent window that's a proxy for a child window function assert_equals: expected object "[object DOMParser]" but got object "[object Object]"
+FAIL Constructor in child window with bad NewTarget from child window that's a proxy for a parent window function assert_equals: expected object "[object DOMParser]" but got object "[object Object]"
+Harness: the test ran to completion.
+
