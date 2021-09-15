@@ -7,26 +7,25 @@
  * interact with the browser. Used on operating system that is not Chrome OS.
  */
 
-// clang-format off
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
-// clang-format on
-
-/** @interface */
-export class CaptionsBrowserProxy {
+export interface CaptionsBrowserProxy {
   /**
    * Open the native captions system dialog.
    */
-  openSystemCaptionsDialog() {}
+  openSystemCaptionsDialog(): void;
 }
 
-/**
- * @implements {CaptionsBrowserProxy}
- */
-export class CaptionsBrowserProxyImpl {
-  /** @override */
+export class CaptionsBrowserProxyImpl implements CaptionsBrowserProxy {
   openSystemCaptionsDialog() {
     chrome.send('openSystemCaptionsDialog');
   }
+
+  static getInstance(): CaptionsBrowserProxy {
+    return instance || (instance = new CaptionsBrowserProxyImpl());
+  }
+
+  static setInstance(obj: CaptionsBrowserProxy) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(CaptionsBrowserProxyImpl);
+let instance: CaptionsBrowserProxy|null = null;

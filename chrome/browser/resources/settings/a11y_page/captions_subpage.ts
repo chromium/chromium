@@ -15,39 +15,16 @@ import './live_caption_section.js';
 
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {FontsBrowserProxyImpl} from '../appearance_page/fonts_browser_proxy.js';
+import {FontsBrowserProxy, FontsBrowserProxyImpl, FontsData} from '../appearance_page/fonts_browser_proxy.js';
 import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
+import {SettingsToggleButtonElement} from '../controls/settings_toggle_button_ts.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs/prefs_behavior.js';
 
-// TODO(crbug.com/1234307): Delete FontsData and FontsBrowserProxy definitions
-// when captions_subpage.js is migrated to TypeScript.
-
-/**
- * @typedef {{
- *   fontList: !Array<{
- *       0: string,
- *       1: (string|undefined),
- *       2: (string|undefined)}>,
- * }}
- */
-let FontsData;
-
-/** @interface */
-class FontsBrowserProxy {
-  /** @return {!Promise<!FontsData>} */
-  fetchFontsData() {}
-}
-
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {PrefsBehaviorInterface}
- */
 const SettingsCaptionsElementBase =
-    mixinBehaviors([PrefsBehavior], PolymerElement);
+    mixinBehaviors([PrefsBehavior], PolymerElement) as
+    {new (): PolymerElement & PrefsBehaviorInterface};
 
-/** @polymer */
 class SettingsCaptionsElement extends SettingsCaptionsElementBase {
   static get is() {
     return 'settings-captions';
@@ -66,7 +43,6 @@ class SettingsCaptionsElement extends SettingsCaptionsElementBase {
 
       /**
        * List of options for the background opacity drop-down menu.
-       * @type {!DropdownMenuOptionList}
        */
       backgroundOpacityOptions_: {
         readOnly: true,
@@ -91,7 +67,6 @@ class SettingsCaptionsElement extends SettingsCaptionsElementBase {
 
       /**
        * List of options for the color drop-down menu.
-       * @type {!DropdownMenuOptionList}
        */
       colorOptions_: {
         readOnly: true,
@@ -137,13 +112,11 @@ class SettingsCaptionsElement extends SettingsCaptionsElementBase {
 
       /**
        * List of fonts populated by the fonts browser proxy.
-       * @private {!DropdownMenuOptionList}
        */
       textFontOptions_: Object,
 
       /**
        * List of options for the text opacity drop-down menu.
-       * @type {!DropdownMenuOptionList}
        */
       textOpacityOptions_: {
         readOnly: true,
@@ -168,7 +141,6 @@ class SettingsCaptionsElement extends SettingsCaptionsElementBase {
 
       /**
        * List of options for the text shadow drop-down menu.
-       * @type {!DropdownMenuOptionList}
        */
       textShadowOptions_: {
         readOnly: true,
@@ -199,7 +171,6 @@ class SettingsCaptionsElement extends SettingsCaptionsElementBase {
 
       /**
        * List of options for the text size drop-down menu.
-       * @type {!DropdownMenuOptionList}
        */
       textSizeOptions_: {
         readOnly: true,
@@ -218,7 +189,6 @@ class SettingsCaptionsElement extends SettingsCaptionsElementBase {
         },
       },
 
-      /** @private */
       enableLiveCaption_: {
         type: Boolean,
         value: function() {
@@ -228,29 +198,34 @@ class SettingsCaptionsElement extends SettingsCaptionsElementBase {
     };
   }
 
-  /** @override */
+  private readonly backgroundOpacityOptions_: DropdownMenuOptionList;
+  private readonly colorOptions_: DropdownMenuOptionList;
+  private textFontOptions_: DropdownMenuOptionList;
+  private readonly textOpacityOptions_: DropdownMenuOptionList;
+  private readonly textShadowOptions_: DropdownMenuOptionList;
+  private readonly textSizeOptions_: DropdownMenuOptionList;
+  private enableLiveCaption_: boolean;
+
   ready() {
     super.ready();
     FontsBrowserProxyImpl.getInstance().fetchFontsData().then(
-        this.setFontsData_.bind(this));
+        (response: FontsData) => this.setFontsData_(response));
   }
 
   /**
-   * Returns the Live Caption toggle element.
-   * @return {?CrToggleElement}
+   * @return the Live Caption toggle element.
    */
-  getLiveCaptionToggle() {
+  getLiveCaptionToggle(): SettingsToggleButtonElement|null {
     const liveCaptionSection =
-        this.shadowRoot.querySelector('settings-live-caption');
+        this.shadowRoot!.querySelector('settings-live-caption');
     return liveCaptionSection ? liveCaptionSection.getLiveCaptionToggle() :
                                 null;
   }
 
   /**
-   * @param {!FontsData} response A list of fonts.
-   * @private
+   * @param response A list of fonts.
    */
-  setFontsData_(response) {
+  private setFontsData_(response: FontsData) {
     const fontMenuOptions =
         [{value: '', name: loadTimeData.getString('captionsDefaultSetting')}];
     for (const fontData of response.fontList) {
@@ -260,24 +235,20 @@ class SettingsCaptionsElement extends SettingsCaptionsElementBase {
   }
 
   /**
-   * Get the font family as a CSS property value.
-   * @return {string}
-   * @private
+   * @return the font family as a CSS property value.
    */
-  getFontFamily_() {
+  private getFontFamily_(): string {
     const fontFamily = this.getPref('accessibility.captions.text_font').value;
 
     // Return the preference value or the default font family for
     // video::-webkit-media-text-track-container defined in mediaControls.css.
-    return /** @type {string} */ (fontFamily || 'sans-serif');
+    return fontFamily || 'sans-serif';
   }
 
   /**
-   * Get the background color as a RGBA string.
-   * @return {string}
-   * @private
+   * @return the background color as a RGBA string.
    */
-  computeBackgroundColor_() {
+  private computeBackgroundColor_(): string {
     const backgroundColor = this.formatRGAString_(
         'accessibility.captions.background_color',
         'accessibility.captions.background_opacity');
@@ -288,11 +259,9 @@ class SettingsCaptionsElement extends SettingsCaptionsElementBase {
   }
 
   /**
-   * Get the text color as a RGBA string.
-   * @return {string}
-   * @private
+   * @return the text color as a RGBA string.
    */
-  computeTextColor_() {
+  private computeTextColor_(): string {
     const textColor = this.formatRGAString_(
         'accessibility.captions.text_color',
         'accessibility.captions.text_opacity');
@@ -304,14 +273,14 @@ class SettingsCaptionsElement extends SettingsCaptionsElementBase {
 
   /**
    * Formats the color as an RGBA string.
-   * @param {string} colorPreference The name of the preference containing the
-   * RGB values as a comma-separated string.
-   * @param {string} opacityPreference The name of the preference containing
-   * the opacity value as a percentage.
-   * @return {string} The formatted RGBA string.
-   * @private
+   * @param colorPreference The name of the preference containing the RGB values
+   *     as a comma-separated string.
+   * @param opacityPreference The name of the preference containing the opacity
+   *     value as a percentage.
+   * @return The formatted RGBA string.
    */
-  formatRGAString_(colorPreference, opacityPreference) {
+  private formatRGAString_(colorPreference: string, opacityPreference: string):
+      string {
     const color = this.getPref(colorPreference).value;
 
     if (!color) {
@@ -323,11 +292,10 @@ class SettingsCaptionsElement extends SettingsCaptionsElementBase {
   }
 
   /**
-   * @param {string} size The font size of the captions text as a percentage.
-   * @return {string} The padding around the captions text as a percentage.
-   * @private
+   * @param size The font size of the captions text as a percentage.
+   * @return The padding around the captions text as a percentage.
    */
-  computePadding_(size) {
+  private computePadding_(size: string): string {
     if (size === '') {
       return '1%';
     }

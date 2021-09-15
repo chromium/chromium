@@ -22,9 +22,10 @@ import '../settings_page/settings_subpage.js';
 import './live_caption_section.js';
 // </if>
 
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SettingsToggleButtonElement} from '../controls/settings_toggle_button_ts.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
@@ -33,15 +34,10 @@ import {Router} from '../router.js';
 import {CaptionsBrowserProxyImpl} from './captions_browser_proxy.js';
 // </if>
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {WebUIListenerBehaviorInterface}
- */
 const SettingsA11YPageElementBase =
-    mixinBehaviors([WebUIListenerBehavior], PolymerElement);
+    mixinBehaviors([WebUIListenerBehavior], PolymerElement) as
+    {new (): PolymerElement & WebUIListenerBehavior};
 
-/** @polymer */
 class SettingsA11YPageElement extends SettingsA11YPageElementBase {
   static get is() {
     return 'settings-a11y-page';
@@ -133,34 +129,38 @@ class SettingsA11YPageElement extends SettingsA11YPageElementBase {
     };
   }
 
+  // <if expr="not chromeos">
+  private enableLiveCaption_: boolean;
+  private showFocusHighlightOption_: boolean;
+  // </if>
+
+  private showAccessibilityLabelsSetting_: boolean;
+  private captionSettingsOpensExternally_: boolean;
+
   /** @override */
   ready() {
     super.ready();
 
     this.addWebUIListener(
         'screen-reader-state-changed',
-        this.onScreenReaderStateChanged_.bind(this));
+        (hasScreenReader: boolean) =>
+            this.onScreenReaderStateChanged_(hasScreenReader));
 
     // Enables javascript and gets the screen reader state.
     chrome.send('a11yPageReady');
   }
 
   /**
-   * @private
-   * @param {boolean} hasScreenReader Whether a screen reader is enabled.
+   * @param hasScreenReader Whether a screen reader is enabled.
    */
-  onScreenReaderStateChanged_(hasScreenReader) {
+  private onScreenReaderStateChanged_(hasScreenReader: boolean) {
     // TODO(katie): Remove showExperimentalA11yLabels flag before launch.
     this.showAccessibilityLabelsSetting_ = hasScreenReader &&
         loadTimeData.getBoolean('showExperimentalA11yLabels');
   }
 
-  /**
-   * @private
-   * @param {!Event} event
-   */
-  onA11yCaretBrowsingChange_(event) {
-    if (event.target.checked) {
+  private onA11yCaretBrowsingChange_(event: Event) {
+    if ((event.target as SettingsToggleButtonElement).checked) {
       chrome.metricsPrivate.recordUserAction(
           'Accessibility.CaretBrowsing.EnableWithSettings');
     } else {
@@ -169,45 +169,40 @@ class SettingsA11YPageElement extends SettingsA11YPageElementBase {
     }
   }
 
-  /**
-   * @private
-   * @param {!Event} event
-   */
-  onA11yImageLabelsChange_(event) {
-    const a11yImageLabelsOn = event.target.checked;
+  private onA11yImageLabelsChange_(event: Event) {
+    const a11yImageLabelsOn =
+        (event.target as SettingsToggleButtonElement).checked;
     if (a11yImageLabelsOn) {
       chrome.send('confirmA11yImageLabels');
     }
   }
 
   // <if expr="not chromeos">
-  /**
-   * @private
-   * @param {!Event} event
-   */
-  onFocusHighlightChange_(event) {
+  private onFocusHighlightChange_(event: Event) {
     chrome.metricsPrivate.recordBoolean(
-        'Accessibility.FocusHighlight.ToggleEnabled', event.target.checked);
+        'Accessibility.FocusHighlight.ToggleEnabled',
+        (event.target as SettingsToggleButtonElement).checked);
   }
   // </if>
 
   // <if expr="chromeos">
-  /** @private */
-  onManageSystemAccessibilityFeaturesTap_() {
+  private onManageSystemAccessibilityFeaturesTap_() {
     window.location.href = 'chrome://os-settings/manageAccessibility';
   }
   // </if>
 
   /** private */
-  onMoreFeaturesLinkClick_() {
+  private onMoreFeaturesLinkClick_() {
     window.open(
         'https://chrome.google.com/webstore/category/collection/3p_accessibility_extensions');
   }
 
   /** @private */
-  onCaptionsClick_() {
+  private onCaptionsClick_() {
     if (this.captionSettingsOpensExternally_) {
+      // <if expr="is_win or is_macosx">
       CaptionsBrowserProxyImpl.getInstance().openSystemCaptionsDialog();
+      // </if>
     } else {
       Router.getInstance().navigateTo(routes.CAPTIONS);
     }

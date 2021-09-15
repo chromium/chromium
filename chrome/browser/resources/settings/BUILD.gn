@@ -103,7 +103,7 @@ preprocess_if_expr("preprocess") {
   in_folder = "./"
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = [
-    "a11y_page/captions_browser_proxy.js",
+    "a11y_page/captions_browser_proxy.ts",
     "about_page/about_page_browser_proxy.ts",
     "appearance_page/appearance_browser_proxy.ts",
     "appearance_page/fonts_browser_proxy.ts",
@@ -200,9 +200,9 @@ preprocess_if_expr("preprocess_generated") {
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = [
-    "a11y_page/a11y_page.js",
-    "a11y_page/captions_subpage.js",
-    "a11y_page/live_caption_section.js",
+    "a11y_page/a11y_page.ts",
+    "a11y_page/captions_subpage.ts",
+    "a11y_page/live_caption_section.ts",
     "about_page/about_page.ts",
     "appearance_page/appearance_fonts_page.ts",
     "appearance_page/appearance_page.ts",
@@ -386,7 +386,6 @@ grit("resources") {
 group("closure_compile") {
   deps = [
     ":closure_compile_local",
-    "a11y_page:closure_compile",
     "basic_page:closure_compile",
     "controls:closure_compile",
     "people_page:closure_compile",
@@ -629,10 +628,10 @@ ts_library("build_ts") {
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
   in_files = [
-    "a11y_page/a11y_page.js",
-    "a11y_page/captions_browser_proxy.js",
-    "a11y_page/captions_subpage.js",
-    "a11y_page/live_caption_section.js",
+    "a11y_page/a11y_page.ts",
+    "a11y_page/captions_browser_proxy.ts",
+    "a11y_page/captions_subpage.ts",
+    "a11y_page/live_caption_section.ts",
     "about_page/about_page_browser_proxy.ts",
     "about_page/about_page.ts",
     "appearance_page/appearance_browser_proxy.ts",

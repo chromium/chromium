@@ -14,9 +14,10 @@ import '//resources/cr_elements/shared_style_css.m.js';
 import '../controls/settings_toggle_button.js';
 import '../settings_shared_css.js';
 
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from '//resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SettingsToggleButtonElement} from '../controls/settings_toggle_button_ts.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {PrefsBehavior} from '../prefs/prefs_behavior.js';
 
@@ -26,30 +27,20 @@ import {PrefsBehavior} from '../prefs/prefs_behavior.js';
  * |code| is the language code, ex. de-DE.
  * |downloadProgress| is the display-friendly download progress as the language
  *     model is being downloaded.
- * @typedef {{
- *   display_name: string,
- *   code: string,
- *   downloadProgress: string,
- * }}
  */
-let LiveCaptionLanguage;
+type LiveCaptionLanguage = {
+  display_name: string,
+  code: string,
+  downloadProgress: string,
+};
 
-/**
- * @typedef {!Array<!LiveCaptionLanguage>}
- */
-let LiveCaptionLanguageList;
+type LiveCaptionLanguageList = Array<LiveCaptionLanguage>;
 
-
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {WebUIListenerBehaviorInterface}
- */
 const SettingsLiveCaptionElementBase =
-    mixinBehaviors([WebUIListenerBehavior, PrefsBehavior], PolymerElement);
+    mixinBehaviors([WebUIListenerBehavior, PrefsBehavior], PolymerElement) as
+    {new (): PolymerElement & WebUIListenerBehavior};
 
-/** @polymer */
-class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
+export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
   static get is() {
     return 'settings-live-caption';
   }
@@ -65,7 +56,6 @@ class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
         notify: true,
       },
 
-      /** @private */
       enableLiveCaptionMultiLanguage_: {
         type: Boolean,
         value: function() {
@@ -77,7 +67,6 @@ class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
        * The subtitle to display under the Live Caption heading. Generally, this
        * is a generic subtitle describing the feature. While the SODA model is
        * being downloading, this displays the download progress.
-       * @private
        */
       enableLiveCaptionSubtitle_: {
         type: String,
@@ -86,8 +75,6 @@ class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
 
       /**
        * List of languages available for Live Caption.
-       * @type {!LiveCaptionLanguageList}
-       * @private
        */
       liveCaptionLanguages_: {
         type: Array,
@@ -135,31 +122,32 @@ class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
     };
   }
 
-  /** @override */
+  private enableLiveCaptionMultiLanguage_: boolean;
+  private enableLiveCaptionSubtitle_: string;
+  private liveCaptionLanguages_: LiveCaptionLanguageList;
+
   ready() {
     super.ready();
 
     this.addWebUIListener(
         'soda-download-progress-changed',
-        this.onSodaDownloadProgressChanged_.bind(this));
+        (sodaDownloadProgress: string, languageCode: string) =>
+            this.onSodaDownloadProgressChanged_(
+                sodaDownloadProgress, languageCode));
     chrome.send('liveCaptionSectionReady');
   }
 
   /**
-   * Returns the Live Caption toggle element.
-   * @return {?CrToggleElement}
+   * @return the Live Caption toggle element.
    */
-  getLiveCaptionToggle() {
-    return /** @type {?CrToggleElement} */ (
-        this.shadowRoot.querySelector('#liveCaptionToggleButton'));
+  getLiveCaptionToggle(): SettingsToggleButtonElement {
+    return this.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        '#liveCaptionToggleButton')!;
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onLiveCaptionEnabledChanged_(event) {
-    const liveCaptionEnabled = event.target.checked;
+  private onLiveCaptionEnabledChanged_(event: Event) {
+    const liveCaptionEnabled =
+        (event.target as SettingsToggleButtonElement).checked;
     chrome.metricsPrivate.recordBoolean(
         'Accessibility.LiveCaption.EnableFromSettings', liveCaptionEnabled);
   }
@@ -170,13 +158,13 @@ class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
    * the kLiveCaptionEnabled pref is true, download progress should appear next
    * to the selected language. Otherwise, the download progress appears as a
    * subtitle below the Live Caption toggle.
-   * @param {!string} sodaDownloadProgress The message sent from the webui
-   *     to be displayed as download progress for Live Caption.
-   * @param {!string} languageCode The language code indicating which language
-   *     pack the message applies to.
-   * @private
+   * @param sodaDownloadProgress The message sent from the webui to be displayed
+   *     as download progress for Live Caption.
+   * @param languageCode The language code indicating which language pack the
+   *     message applies to.
    */
-  onSodaDownloadProgressChanged_(sodaDownloadProgress, languageCode) {
+  private onSodaDownloadProgressChanged_(
+      sodaDownloadProgress: string, languageCode: string) {
     if (this.enableLiveCaptionMultiLanguage_) {
       for (let i = 0; i < this.liveCaptionLanguages_.length; i++) {
         const language = this.liveCaptionLanguages_[i];
@@ -189,6 +177,12 @@ class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
     } else {
       this.enableLiveCaptionSubtitle_ = sodaDownloadProgress;
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-live-caption': SettingsLiveCaptionElement;
   }
 }
 

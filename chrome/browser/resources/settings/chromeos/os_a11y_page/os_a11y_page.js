@@ -21,11 +21,21 @@ import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {Route, RouteObserverBehavior, Router} from '../../router.js';
 import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
 import {routes} from '../os_route.m.js';
 
 import {OsA11yPageBrowserProxy, OsA11yPageBrowserProxyImpl} from './os_a11y_page_browser_proxy.js';
+
+/**
+ * TODO(dpapad): Remove this when os_a11y_page.js is migrated to TypeScript.
+ * @interface
+ */
+class SettingsCaptionsElement {
+  /** @return {SettingsToggleButtonElement} */
+  getLiveCaptionToggle() {}
+}
 
 Polymer({
   _template: html`{__html_template__}`,
@@ -125,9 +135,11 @@ Polymer({
   beforeDeepLinkAttempt(settingId) {
     if (settingId === chromeos.settings.mojom.Setting.kLiveCaption) {
       afterNextRender(this, () => {
-        const captionsSubpage = this.$$('settings-captions');
+        const captionsSubpage = /** @type {?SettingsCaptionsElement} */ (
+            this.$$('settings-captions'));
         if (captionsSubpage && captionsSubpage.getLiveCaptionToggle()) {
-          this.showDeepLinkElement(captionsSubpage.getLiveCaptionToggle());
+          this.showDeepLinkElement(/** @type {!SettingsToggleButtonElement} */ (
+              captionsSubpage.getLiveCaptionToggle()));
           return;
         }
         console.warn(`Element with deep link id ${settingId} not focusable.`);

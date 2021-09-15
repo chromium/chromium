@@ -2,57 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/html_to_js.gni")
-import("../settings.gni")
-
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags = settings_closure_flags
-  deps = [
-    ":a11y_page",
-    ":captions_browser_proxy",
-    ":captions_subpage",
-    ":live_caption_section",
-  ]
-}
-
-js_library("a11y_page") {
-  deps = [
-    ":captions_browser_proxy",
-    "..:route",
-    "..:router",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-  ]
-}
-
-js_library("captions_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-}
-
-js_library("captions_subpage") {
-  deps = [
-    "../controls:settings_dropdown_menu",
-    "../prefs:prefs_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("live_caption_section") {
-  deps = [
-    "../controls:settings_toggle_button",
-    "../prefs:prefs_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-  ]
-}
 
 html_to_js("web_components") {
   js_files = [
-    "a11y_page.js",
-    "captions_subpage.js",
-    "live_caption_section.js",
+    "a11y_page.ts",
+    "captions_subpage.ts",
+    "live_caption_section.ts",
   ]
 }
