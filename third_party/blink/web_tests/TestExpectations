@@ -832,6 +832,9 @@ crbug.com/722825 media/controls/video-enter-exit-fullscreen-while-hovering-shows
 #### crbug.com/783229 overflow
 crbug.com/724701 overflow/overflow-basic-004.html [ Failure ]
 
+# Temporary failure as trying to ship inline-end padding for overflow.
+crbug.com/1245722 external/wpt/css/cssom-view/scrollWidthHeight.xht [ Failure ]
+
 crbug.com/846753 [ Mac ] http/tests/media/reload-after-dialog.html [ Failure Pass Timeout ]
 
 ### external/wpt/css/css-tables/

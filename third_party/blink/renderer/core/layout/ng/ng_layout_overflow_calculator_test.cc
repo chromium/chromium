@@ -9,7 +9,7 @@ namespace blink {
 class NGLayoutOverflowCalculatorTest : public RenderingTest {};
 
 TEST_F(NGLayoutOverflowCalculatorTest,
-       NewLayoutOverflowDifferentAndAlreadyScrollsBlock) {
+       DISABLED_NewLayoutOverflowDifferentAndAlreadyScrollsBlock) {
   if (!RuntimeEnabledFeatures::LayoutNGEnabled())
     return;
   SetBodyInnerHTML(R"HTML(

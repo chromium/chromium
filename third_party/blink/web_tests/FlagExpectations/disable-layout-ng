@@ -1291,6 +1291,9 @@ crbug.com/591099 external/wpt/css/css-overflow/scrollable-overflow-input-001.htm
 crbug.com/591099 external/wpt/editing/run/delete.html?7001-last [ Failure ]
 crbug.com/591099 external/wpt/mimesniff/media/media-sniff.window.html [ Failure ]
 
+# inline-end overflow
+crbug.com/1245722 overflow/overflow-basic-002.html [ Failure ]
+
 # Backgrounds and border tests fail only with legacy layout.
 crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-042.xht [ Failure ]
 crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-045.xht [ Failure ]
