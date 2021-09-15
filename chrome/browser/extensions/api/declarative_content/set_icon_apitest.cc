@@ -104,12 +104,12 @@ IN_PROC_BROWSER_TEST_F(SetIconAPITest, Overview) {
     ASSERT_EQ(1u, rules.size());
     ASSERT_EQ(rules[0]->actions.size(), 1u);
 
-    base::Value& action = *rules[0]->actions[0];
-    base::Value* action_instance_type = action.FindPath("instanceType");
+    base::Value& action_value = *rules[0]->actions[0];
+    base::Value* action_instance_type = action_value.FindPath("instanceType");
     ASSERT_TRUE(action_instance_type);
     EXPECT_EQ("declarativeContent.SetIcon", action_instance_type->GetString());
 
-    base::Value* image_data_value = action.FindPath({"imageData", "1"});
+    base::Value* image_data_value = action_value.FindPath({"imageData", "1"});
     ASSERT_TRUE(image_data_value);
     EXPECT_EQ(kOneByOneImageData, image_data_value->GetString());
   }

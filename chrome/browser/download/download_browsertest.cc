@@ -4177,7 +4177,6 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadTest_Renaming) {
         (index == 0 ? std::string(".zip") :
                       base::StringPrintf(" (%d).zip", index)),
               target_path.BaseName().AsUTF8Unsafe());
-    base::ScopedAllowBlockingForTesting allow_blocking;
     ASSERT_TRUE(base::PathExists(target_path));
     ASSERT_TRUE(VerifyFile(target_path, origin_contents,
                            origin_contents.size()));

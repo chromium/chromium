@@ -165,22 +165,23 @@ class ActiveTabTest : public ChromeRenderViewHostTestHarness {
         active_tab_permission_granter();
   }
 
-  bool IsAllowed(const scoped_refptr<const Extension>& extension,
+  bool IsAllowed(const scoped_refptr<const Extension>& extension_refptr,
                  const GURL& url) {
-    return IsAllowed(extension, url, PERMITTED_BOTH, tab_id());
+    return IsAllowed(extension_refptr, url, PERMITTED_BOTH, tab_id());
   }
 
-  bool IsAllowed(const scoped_refptr<const Extension>& extension,
+  bool IsAllowed(const scoped_refptr<const Extension>& extension_refptr,
                  const GURL& url,
                  PermittedFeature feature) {
-    return IsAllowed(extension, url, feature, tab_id());
+    return IsAllowed(extension_refptr, url, feature, tab_id());
   }
 
-  bool IsAllowed(const scoped_refptr<const Extension>& extension,
+  bool IsAllowed(const scoped_refptr<const Extension>& extension_refptr,
                  const GURL& url,
                  PermittedFeature feature,
                  int tab_id) {
-    const PermissionsData* permissions_data = extension->permissions_data();
+    const PermissionsData* permissions_data =
+        extension_refptr->permissions_data();
     bool script =
         permissions_data->CanAccessPage(url, tab_id, nullptr) &&
         permissions_data->CanRunContentScriptOnPage(url, tab_id, nullptr);
@@ -200,30 +201,31 @@ class ActiveTabTest : public ChromeRenderViewHostTestHarness {
     return false;
   }
 
-  bool IsBlocked(const scoped_refptr<const Extension>& extension,
+  bool IsBlocked(const scoped_refptr<const Extension>& extension_refptr,
                  const GURL& url) {
-    return IsBlocked(extension, url, tab_id());
+    return IsBlocked(extension_refptr, url, tab_id());
   }
 
-  bool IsBlocked(const scoped_refptr<const Extension>& extension,
+  bool IsBlocked(const scoped_refptr<const Extension>& extension_refptr,
                  const GURL& url,
                  int tab_id) {
-    return IsAllowed(extension, url, PERMITTED_NONE, tab_id);
+    return IsAllowed(extension_refptr, url, PERMITTED_NONE, tab_id);
   }
 
-  bool HasTabsPermission(const scoped_refptr<const Extension>& extension) {
-    return HasTabsPermission(extension, tab_id());
+  bool HasTabsPermission(
+      const scoped_refptr<const Extension>& extension_refptr) {
+    return HasTabsPermission(extension_refptr, tab_id());
   }
 
-  bool HasTabsPermission(const scoped_refptr<const Extension>& extension,
+  bool HasTabsPermission(const scoped_refptr<const Extension>& extension_refptr,
                          int tab_id) {
-    return extension->permissions_data()->HasAPIPermissionForTab(
+    return extension_refptr->permissions_data()->HasAPIPermissionForTab(
         tab_id, APIPermissionID::kTab);
   }
 
-  bool IsGrantedForTab(const Extension* extension,
+  bool IsGrantedForTab(const Extension* extension_refptr,
                        const content::WebContents* web_contents) {
-    return extension->permissions_data()->HasAPIPermissionForTab(
+    return extension_refptr->permissions_data()->HasAPIPermissionForTab(
         sessions::SessionTabHelper::IdForTab(web_contents).id(),
         APIPermissionID::kTab);
   }

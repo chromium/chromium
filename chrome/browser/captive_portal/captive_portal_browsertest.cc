@@ -1037,9 +1037,9 @@ bool CaptivePortalBrowserTest::OnIntercept(
 
     if (behind_captive_portal_) {
       if (url_string == kMockHttpsQuickTimeoutUrl) {
-        network::URLLoaderCompletionStatus status;
-        status.error_code = net::ERR_CONNECTION_TIMED_OUT;
-        params->client->OnComplete(status);
+        network::URLLoaderCompletionStatus completion_status;
+        completion_status.error_code = net::ERR_CONNECTION_TIMED_OUT;
+        params->client->OnComplete(completion_status);
       } else {
         ongoing_mock_requests_.emplace_back(std::move(*params));
         if (num_jobs_to_wait_for_ ==

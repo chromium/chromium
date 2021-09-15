@@ -43,7 +43,7 @@ const int kMaxCacheEntries = 0;
 const int kMaxCacheEntries = 16;
 #endif
 
-constexpr net::NetworkTrafficAnnotationTag traffic_annotation =
+constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("omnibox_result_change", R"(
         semantics {
           sender: "Omnibox"
@@ -196,7 +196,7 @@ BitmapFetcherService::RequestId BitmapFetcherService::RequestImageImpl(
 
 void BitmapFetcherService::Prefetch(const GURL& url) {
   if (url.is_valid() && !IsCached(url))
-    EnsureFetcherForUrl(url, traffic_annotation);
+    EnsureFetcherForUrl(url, kTrafficAnnotation);
 }
 
 bool BitmapFetcherService::IsCached(const GURL& url) {
@@ -222,7 +222,7 @@ std::unique_ptr<BitmapFetcher> BitmapFetcherService::CreateFetcher(
 BitmapFetcherService::RequestId BitmapFetcherService::RequestImage(
     const GURL& url,
     BitmapFetchedCallback callback) {
-  return RequestImageImpl(url, std::move(callback), traffic_annotation);
+  return RequestImageImpl(url, std::move(callback), kTrafficAnnotation);
 }
 
 const BitmapFetcher* BitmapFetcherService::EnsureFetcherForUrl(

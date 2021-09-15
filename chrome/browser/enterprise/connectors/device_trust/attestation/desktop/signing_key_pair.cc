@@ -134,8 +134,9 @@ bool SigningKeyPair::RotateWithAdminRights(const std::string& dm_token) {
     new_trust_level = BPKUR::CHROME_BROWSER_TPM_KEY;
   } else {
     new_trust_level = BPKUR::CHROME_BROWSER_OS_KEY;
-    ECSigningKeyProvider provider;
-    new_key_pair = provider.GenerateSigningKeySlowly(acceptable_algorithms);
+    ECSigningKeyProvider ec_signing_provider;
+    new_key_pair =
+        ec_signing_provider.GenerateSigningKeySlowly(acceptable_algorithms);
   }
   if (!new_key_pair)
     return false;

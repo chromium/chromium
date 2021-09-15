@@ -405,12 +405,12 @@ TEST_P(CastRemotingConnectorFullSessionTest, GoesThroughAllTheMotions) {
 
       // Since remoting is stopped, any further messaging in either direction
       // must be dropped.
-      const std::vector<uint8_t> message_to_sink = { 1, 6, 1, 8, 0, 3 };
-      const std::vector<uint8_t> message_to_source = { 6, 2, 8, 3, 1, 8 };
+      const std::vector<uint8_t> dropped_message_to_sink = {1, 6, 1, 8, 0, 3};
+      const std::vector<uint8_t> dropped_message_to_source = {6, 2, 8, 3, 1, 8};
       EXPECT_CALL(*source, OnMessageFromSink(_)).Times(0);
       EXPECT_CALL(*media_remoter, SendMessageToSink(_)).Times(0);
-      remoter->SendMessageToSink(message_to_sink);
-      media_remoter->SendMessageToSource(message_to_source);
+      remoter->SendMessageToSink(dropped_message_to_sink);
+      media_remoter->SendMessageToSource(dropped_message_to_source);
       RunUntilIdle();
 
       // When the sink is ready, the Cast Provider sends a notification to the
@@ -483,12 +483,12 @@ TEST_P(CastRemotingConnectorFullSessionTest, GoesThroughAllTheMotions) {
 
       // Since remoting is stopped, any further messaging in either direction
       // must be dropped.
-      const std::vector<uint8_t> message_to_sink = { 1, 6, 1, 8, 0, 3 };
-      const std::vector<uint8_t> message_to_source = { 6, 2, 8, 3, 1, 8 };
+      const std::vector<uint8_t> dropped_message_to_sink = {1, 6, 1, 8, 0, 3};
+      const std::vector<uint8_t> dropped_message_to_source = {6, 2, 8, 3, 1, 8};
       EXPECT_CALL(*source, OnMessageFromSink(_)).Times(0);
       EXPECT_CALL(*media_remoter, SendMessageToSink(_)).Times(0);
-      remoter->SendMessageToSink(message_to_sink);
-      media_remoter->SendMessageToSource(message_to_source);
+      remoter->SendMessageToSink(dropped_message_to_sink);
+      media_remoter->SendMessageToSource(dropped_message_to_source);
       RunUntilIdle();
 
       // When the sink is no longer available, the Cast Provider notifies the

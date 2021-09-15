@@ -207,28 +207,30 @@ TEST_P(FileSystemServiceSettingsTest, Test) {
   ServiceProviderConfig config(kServiceProviderConfig);
   FileSystemServiceSettings service_settings(settings.value(), config);
 
-  auto file_system_settings = service_settings.GetSettings(url());
+  auto file_system_settings_opt = service_settings.GetSettings(url());
   bool has_expected_mime_types = expected_mime_types() != nullptr;
-  ASSERT_EQ(has_expected_mime_types, file_system_settings.has_value())
+  ASSERT_EQ(has_expected_mime_types, file_system_settings_opt.has_value())
       << settings_value();
-  if (file_system_settings.has_value()) {
+  if (file_system_settings_opt.has_value()) {
     const ServiceProviderConfig::ServiceProvider* provider =
         config.GetServiceProvider("box");
     ASSERT_NE(nullptr, provider);
 
-    const auto& settings = file_system_settings.value();
+    const auto& file_system_settings = file_system_settings_opt.value();
 
-    ASSERT_EQ(settings.mime_types, *expected_mime_types());
-    ASSERT_EQ(settings.home, GURL(provider->fs_home_url()));
-    ASSERT_EQ(settings.authorization_endpoint,
+    ASSERT_EQ(file_system_settings.mime_types, *expected_mime_types());
+    ASSERT_EQ(file_system_settings.home, GURL(provider->fs_home_url()));
+    ASSERT_EQ(file_system_settings.authorization_endpoint,
               GURL(provider->fs_authorization_endpoint()));
-    ASSERT_EQ(settings.token_endpoint, GURL(provider->fs_token_endpoint()));
-    ASSERT_EQ(settings.enterprise_id, "1234567890");
-    ASSERT_EQ(settings.max_direct_size, provider->fs_max_direct_size());
-    ASSERT_EQ(settings.scopes, provider->fs_scopes());
+    ASSERT_EQ(file_system_settings.token_endpoint,
+              GURL(provider->fs_token_endpoint()));
+    ASSERT_EQ(file_system_settings.enterprise_id, "1234567890");
+    ASSERT_EQ(file_system_settings.max_direct_size,
+              provider->fs_max_direct_size());
+    ASSERT_EQ(file_system_settings.scopes, provider->fs_scopes());
 
-    if (!settings.email_domain.empty())
-      ASSERT_EQ(settings.email_domain, "example.com");
+    if (!file_system_settings.email_domain.empty())
+      ASSERT_EQ(file_system_settings.email_domain, "example.com");
   }
 }
 

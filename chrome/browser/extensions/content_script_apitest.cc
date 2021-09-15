@@ -338,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, FetchExemptFromCSP) {
 
   // Create and load an extension that will inject a content script which does a
   // fetch based on the host document's "fetchUrl" url search parameter.
-  constexpr char kManifest[] =
+  constexpr char kFetchManifest[] =
       R"(
       {
         "name":"Fetch redirect test",
@@ -362,7 +362,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, FetchExemptFromCSP) {
   )";
 
   TestExtensionDir test_dir;
-  test_dir.WriteManifest(kManifest);
+  test_dir.WriteManifest(kFetchManifest);
   test_dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), kContentScript);
   ASSERT_TRUE(LoadExtension(test_dir.UnpackedPath()));
 
@@ -1308,7 +1308,7 @@ void ContentScriptRelatedFrameTest::SetUpOnMainThread() {
       embedded_test_server()->GetURL("path-test.example", "/iframe.html");
   data_url_ = GURL("data:text/html,<html>Hi</html>");
 
-  constexpr char kManifest[] =
+  constexpr char kContentScriptManifest[] =
       R"({
            "name": "Content Script injection in related frames",
            "manifest_version": 2,
@@ -1332,8 +1332,8 @@ void ContentScriptRelatedFrameTest::SetUpOnMainThread() {
   const char* extra_property = "";
   if (IncludeMatchOriginAsFallback())
     extra_property = R"("match_origin_as_fallback": true,)";
-  std::string manifest =
-      base::StringPrintf(kManifest, extra_property, extra_property);
+  std::string manifest = base::StringPrintf(kContentScriptManifest,
+                                            extra_property, extra_property);
   test_extension_dir_.WriteManifest(manifest);
 
   std::string script = base::StringPrintf(

@@ -288,8 +288,6 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
                        NoVisitsForUrlInHistory) {
-  base::HistogramTester histogram_tester;
-
   PageContentAnnotationsService* service =
       PageContentAnnotationsServiceFactory::GetForProfile(browser()->profile());
 

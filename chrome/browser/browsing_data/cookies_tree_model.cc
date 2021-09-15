@@ -197,105 +197,103 @@ CookieTreeNode::DetailedInfo& CookieTreeNode::DetailedInfo::Init(
 }
 
 CookieTreeNode::DetailedInfo& CookieTreeNode::DetailedInfo::InitHost(
-    const GURL& origin) {
+    const GURL& host) {
   Init(TYPE_HOST);
-  this->origin = url::Origin::Create(origin);
+  origin = url::Origin::Create(host);
   return *this;
 }
 
 CookieTreeNode::DetailedInfo& CookieTreeNode::DetailedInfo::InitCookie(
-    const net::CanonicalCookie* cookie) {
+    const net::CanonicalCookie* canonical_cookie) {
   Init(TYPE_COOKIE);
-  this->cookie = cookie;
+  cookie = canonical_cookie;
   return *this;
 }
 
 CookieTreeNode::DetailedInfo& CookieTreeNode::DetailedInfo::InitDatabase(
-    const content::StorageUsageInfo* usage_info) {
+    const content::StorageUsageInfo* storage_usage_info) {
   Init(TYPE_DATABASE);
-  this->usage_info = usage_info;
+  usage_info = storage_usage_info;
   origin = usage_info->origin;
   return *this;
 }
 
 CookieTreeNode::DetailedInfo& CookieTreeNode::DetailedInfo::InitLocalStorage(
-    const content::StorageUsageInfo* usage_info) {
+    const content::StorageUsageInfo* storage_usage_info) {
   Init(TYPE_LOCAL_STORAGE);
-  this->usage_info = usage_info;
+  usage_info = storage_usage_info;
   origin = usage_info->origin;
   return *this;
 }
 
 CookieTreeNode::DetailedInfo& CookieTreeNode::DetailedInfo::InitSessionStorage(
-    const content::StorageUsageInfo* usage_info) {
+    const content::StorageUsageInfo* storage_usage_info) {
   Init(TYPE_SESSION_STORAGE);
-  this->usage_info = usage_info;
+  usage_info = storage_usage_info;
   origin = usage_info->origin;
   return *this;
 }
 
 CookieTreeNode::DetailedInfo& CookieTreeNode::DetailedInfo::InitAppCache(
-    const content::StorageUsageInfo* usage_info) {
+    const content::StorageUsageInfo* storage_usage_info) {
   Init(TYPE_APPCACHE);
-  this->usage_info = usage_info;
+  usage_info = storage_usage_info;
   origin = usage_info->origin;
   return *this;
 }
 
 CookieTreeNode::DetailedInfo& CookieTreeNode::DetailedInfo::InitIndexedDB(
-    const content::StorageUsageInfo* usage_info) {
+    const content::StorageUsageInfo* storage_usage_info) {
   Init(TYPE_INDEXED_DB);
-  this->usage_info = usage_info;
-  this->origin = usage_info->origin;
+  usage_info = storage_usage_info;
+  origin = usage_info->origin;
   return *this;
 }
 
 CookieTreeNode::DetailedInfo& CookieTreeNode::DetailedInfo::InitFileSystem(
-    const browsing_data::FileSystemHelper::FileSystemInfo* file_system_info) {
+    const browsing_data::FileSystemHelper::FileSystemInfo* file_system) {
   Init(TYPE_FILE_SYSTEM);
-  this->file_system_info = file_system_info;
-  this->origin = file_system_info->origin;
+  file_system_info = file_system;
+  origin = file_system_info->origin;
   return *this;
 }
 
 CookieTreeNode::DetailedInfo& CookieTreeNode::DetailedInfo::InitQuota(
-    const BrowsingDataQuotaHelper::QuotaInfo* quota_info) {
+    const BrowsingDataQuotaHelper::QuotaInfo* quota) {
   Init(TYPE_QUOTA);
-  this->quota_info = quota_info;
+  quota_info = quota;
   return *this;
 }
 
 CookieTreeNode::DetailedInfo& CookieTreeNode::DetailedInfo::InitServiceWorker(
-    const content::StorageUsageInfo* usage_info) {
+    const content::StorageUsageInfo* storage_usage_info) {
   Init(TYPE_SERVICE_WORKER);
-  this->usage_info = usage_info;
-  this->origin = usage_info->origin;
+  usage_info = storage_usage_info;
+  origin = usage_info->origin;
   return *this;
 }
 
 CookieTreeNode::DetailedInfo& CookieTreeNode::DetailedInfo::InitSharedWorker(
-    const browsing_data::SharedWorkerHelper::SharedWorkerInfo*
-        shared_worker_info) {
+    const browsing_data::SharedWorkerHelper::SharedWorkerInfo* shared_worker) {
   Init(TYPE_SHARED_WORKER);
-  this->shared_worker_info = shared_worker_info;
-  this->origin = url::Origin::Create(shared_worker_info->worker.GetOrigin());
+  shared_worker_info = shared_worker;
+  origin = url::Origin::Create(shared_worker_info->worker.GetOrigin());
   return *this;
 }
 
 CookieTreeNode::DetailedInfo& CookieTreeNode::DetailedInfo::InitCacheStorage(
-    const content::StorageUsageInfo* usage_info) {
+    const content::StorageUsageInfo* storage_usage_info) {
   Init(TYPE_CACHE_STORAGE);
-  this->usage_info = usage_info;
-  this->origin = usage_info->origin;
+  usage_info = storage_usage_info;
+  origin = usage_info->origin;
   return *this;
 }
 
 CookieTreeNode::DetailedInfo& CookieTreeNode::DetailedInfo::InitMediaLicense(
-    const BrowsingDataMediaLicenseHelper::MediaLicenseInfo*
-        media_license_info) {
+    const BrowsingDataMediaLicenseHelper::MediaLicenseInfo* media_license) {
   Init(TYPE_MEDIA_LICENSE);
-  this->media_license_info = media_license_info;
-  this->origin = url::Origin::Create(media_license_info->origin);
+  media_license_info = media_license;
+  origin = url::Origin::Create(media_license_info->origin);
   return *this;
 }
 

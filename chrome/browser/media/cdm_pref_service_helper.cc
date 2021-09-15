@@ -245,11 +245,11 @@ std::unique_ptr<CdmPrefData> CdmPrefServiceHelper::GetCdmPrefData(
   // to get a valid origin ID from `FromDictValue()`.
   if (!cdm_pref_data) {
     DictionaryPrefUpdate update(user_prefs, prefs::kMediaCdmOriginData);
-    base::DictionaryValue* dict = update.Get();
+    base::DictionaryValue* update_dict = update.Get();
 
     cdm_pref_data = std::make_unique<CdmPrefData>(
         base::UnguessableToken::Create(), base::Time::Now());
-    dict->SetKey(serialized_cdm_origin, ToDictValue(*cdm_pref_data));
+    update_dict->SetKey(serialized_cdm_origin, ToDictValue(*cdm_pref_data));
   }
 
   return cdm_pref_data;

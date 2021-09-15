@@ -842,7 +842,6 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckManifestAndIcon) {
 
 IN_PROC_BROWSER_TEST_P(InstallableManagerOfflineCapabilityBrowserTest,
                        CheckWebapp) {
-  auto params = GetWebAppParams();
   // Request everything except splash icon.
   {
     base::HistogramTester histograms;

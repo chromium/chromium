@@ -150,7 +150,6 @@ bool PollingWaitUntil(const std::string& javascript,
   std::string result;
 
   while (base::Time::Now() - start_time < timeout) {
-    std::string result;
     if (!content::ExecuteScriptAndExtractString(tab_contents, javascript,
                                                 &result)) {
       LOG(ERROR) << "Failed to execute javascript " << javascript;

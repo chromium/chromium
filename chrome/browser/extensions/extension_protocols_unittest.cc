@@ -689,7 +689,6 @@ TEST_F(ExtensionProtocolsTest, VerificationSeenForZeroByteFile) {
   // TODO(lazyboy): The behavior is probably incorrect.
   {
     TestContentVerifySingleJobObserver observer(extension_id, kRelativePath);
-    base::FilePath file_path = unzipped_path.AppendASCII(kEmptyJs);
     ASSERT_TRUE(base::MakeFileUnreadable(file_path));
     EXPECT_EQ(net::ERR_ACCESS_DENIED,
               DoRequestOrLoad(extension, kEmptyJs).result());
@@ -702,7 +701,6 @@ TEST_F(ExtensionProtocolsTest, VerificationSeenForZeroByteFile) {
   // TODO(lazyboy): The behavior is probably incorrect.
   {
     TestContentVerifySingleJobObserver observer(extension_id, kRelativePath);
-    base::FilePath file_path = unzipped_path.AppendASCII(kEmptyJs);
     ASSERT_TRUE(base::DieFileDie(file_path, false));
     EXPECT_EQ(net::ERR_FILE_NOT_FOUND,
               DoRequestOrLoad(extension, kEmptyJs).result());

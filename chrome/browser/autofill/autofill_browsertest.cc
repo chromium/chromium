@@ -259,21 +259,21 @@ class AutofillTest : public InProcessBrowserTest {
       ++parsed_profiles;
       CHECK_EQ(12u, fields.size());
 
-      FormMap data;
-      data["NAME_FIRST"] = fields[0];
-      data["NAME_MIDDLE"] = fields[1];
-      data["NAME_LAST"] = fields[2];
-      data["EMAIL_ADDRESS"] = fields[3];
-      data["COMPANY_NAME"] = fields[4];
-      data["ADDRESS_HOME_LINE1"] = fields[5];
-      data["ADDRESS_HOME_LINE2"] = fields[6];
-      data["ADDRESS_HOME_CITY"] = fields[7];
-      data["ADDRESS_HOME_STATE"] = fields[8];
-      data["ADDRESS_HOME_ZIP"] = fields[9];
-      data["ADDRESS_HOME_COUNTRY"] = fields[10];
-      data["PHONE_HOME_WHOLE_NUMBER"] = fields[11];
+      FormMap form;
+      form["NAME_FIRST"] = fields[0];
+      form["NAME_MIDDLE"] = fields[1];
+      form["NAME_LAST"] = fields[2];
+      form["EMAIL_ADDRESS"] = fields[3];
+      form["COMPANY_NAME"] = fields[4];
+      form["ADDRESS_HOME_LINE1"] = fields[5];
+      form["ADDRESS_HOME_LINE2"] = fields[6];
+      form["ADDRESS_HOME_CITY"] = fields[7];
+      form["ADDRESS_HOME_STATE"] = fields[8];
+      form["ADDRESS_HOME_ZIP"] = fields[9];
+      form["ADDRESS_HOME_COUNTRY"] = fields[10];
+      form["PHONE_HOME_WHOLE_NUMBER"] = fields[11];
 
-      FillFormAndSubmit("duplicate_profiles_test.html", data);
+      FillFormAndSubmit("duplicate_profiles_test.html", form);
     }
     return parsed_profiles;
   }

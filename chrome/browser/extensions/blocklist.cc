@@ -301,8 +301,8 @@ void Blocklist::OnBlocklistStateReceived(const std::string& id,
     const std::vector<std::string>& ids = requests_it->first;
 
     bool have_all_in_cache = true;
-    for (const auto& id : ids) {
-      if (!base::Contains(blocklist_state_cache_, id)) {
+    for (const auto& id_str : ids) {
+      if (!base::Contains(blocklist_state_cache_, id_str)) {
         have_all_in_cache = false;
         break;
       }

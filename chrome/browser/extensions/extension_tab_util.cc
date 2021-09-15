@@ -277,11 +277,11 @@ base::DictionaryValue* ExtensionTabUtil::OpenTab(ExtensionFunction* function,
       (!function->extension() ||
        !IncognitoInfo::IsSplitMode(function->extension())) &&
       browser->profile()->IsOffTheRecord()) {
-    Profile* profile = browser->profile()->GetOriginalProfile();
+    Profile* original_profile = browser->profile()->GetOriginalProfile();
 
-    browser = chrome::FindTabbedBrowser(profile, false);
+    browser = chrome::FindTabbedBrowser(original_profile, false);
     if (!browser) {
-      browser = CreateBrowser(profile, user_gesture);
+      browser = CreateBrowser(original_profile, user_gesture);
       if (!browser) {
         *error = tabs_constants::kBrowserWindowNotAllowed;
         return nullptr;

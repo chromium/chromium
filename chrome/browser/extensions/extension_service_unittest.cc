@@ -3018,23 +3018,25 @@ TEST_F(ExtensionServiceTest, UpdateExtensionPreservesState) {
 
   base::FilePath path = data_dir().AppendASCII("good.crx");
 
-  const Extension* good = InstallCRX(path, INSTALL_NEW);
-  ASSERT_EQ("1.0.0.0", good->VersionString());
-  ASSERT_EQ(good_crx, good->id());
+  const Extension* goodext = InstallCRX(path, INSTALL_NEW);
+  ASSERT_EQ("1.0.0.0", goodext->VersionString());
+  ASSERT_EQ(good_crx, goodext->id());
 
   // Disable it and allow it to run in incognito. These settings should carry
   // over to the updated version.
-  service()->DisableExtension(good->id(), disable_reason::DISABLE_USER_ACTION);
-  util::SetIsIncognitoEnabled(good->id(), profile(), true);
+  service()->DisableExtension(goodext->id(),
+                              disable_reason::DISABLE_USER_ACTION);
+  util::SetIsIncognitoEnabled(goodext->id(), profile(), true);
 
   path = data_dir().AppendASCII("good2.crx");
   UpdateExtension(good_crx, path, INSTALLED);
   ASSERT_EQ(1u, registry()->disabled_extensions().size());
-  const Extension* good2 = registry()->disabled_extensions().GetByID(good_crx);
-  ASSERT_EQ("1.0.0.1", good2->version().GetString());
-  EXPECT_TRUE(util::IsIncognitoEnabled(good2->id(), profile()));
+  const Extension* goodext2 =
+      registry()->disabled_extensions().GetByID(good_crx);
+  ASSERT_EQ("1.0.0.1", goodext2->version().GetString());
+  EXPECT_TRUE(util::IsIncognitoEnabled(goodext2->id(), profile()));
   EXPECT_EQ(disable_reason::DISABLE_USER_ACTION,
-            ExtensionPrefs::Get(profile())->GetDisableReasons(good2->id()));
+            ExtensionPrefs::Get(profile())->GetDisableReasons(goodext2->id()));
 }
 
 // Tests that updating preserves extension location.
@@ -3042,18 +3044,19 @@ TEST_F(ExtensionServiceTest, UpdateExtensionPreservesLocation) {
   InitializeEmptyExtensionService();
   base::FilePath path = data_dir().AppendASCII("good.crx");
 
-  const Extension* good =
+  const Extension* goodext =
       InstallCRX(path, mojom::ManifestLocation::kExternalPref, INSTALL_NEW,
                  Extension::NO_FLAGS);
 
-  ASSERT_EQ("1.0.0.0", good->VersionString());
-  ASSERT_EQ(good_crx, good->id());
+  ASSERT_EQ("1.0.0.0", goodext->VersionString());
+  ASSERT_EQ(good_crx, goodext->id());
 
   path = data_dir().AppendASCII("good2.crx");
   UpdateExtension(good_crx, path, ENABLED);
-  const Extension* good2 = registry()->enabled_extensions().GetByID(good_crx);
-  ASSERT_EQ("1.0.0.1", good2->version().GetString());
-  EXPECT_EQ(good2->location(), ManifestLocation::kExternalPref);
+  const Extension* goodext2 =
+      registry()->enabled_extensions().GetByID(good_crx);
+  ASSERT_EQ("1.0.0.1", goodext2->version().GetString());
+  EXPECT_EQ(goodext2->location(), ManifestLocation::kExternalPref);
 }
 
 // Makes sure that LOAD extension types can downgrade.

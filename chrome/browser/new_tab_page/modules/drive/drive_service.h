@@ -44,7 +44,7 @@ class DriveService : public KeyedService {
 
   using GetFilesCallback = drive::mojom::DriveHandler::GetFilesCallback;
   // Retrieves Google Drive document suggestions from ItemSuggest API.
-  void GetDriveFiles(GetFilesCallback callback);
+  void GetDriveFiles(GetFilesCallback get_files_callback);
   // Makes the service not return data for a specified amount of time.
   void DismissModule();
   // Makes the service return data again even if dimiss time is not yet over.

@@ -193,9 +193,9 @@ void DevToolsFileWatcher::SharedFileWatcher::DispatchNotifications() {
   std::vector<std::string> removed_paths;
   std::vector<std::string> changed_paths;
 
-  for (const auto& path : pending_paths_) {
-    FilePathTimesMap& old_times = file_path_times_[path];
-    FilePathTimesMap current_times = GetModificationTimes(path);
+  for (const auto& pending_path : pending_paths_) {
+    FilePathTimesMap& old_times = file_path_times_[pending_path];
+    FilePathTimesMap current_times = GetModificationTimes(pending_path);
     for (const auto& path_time : current_times) {
       const base::FilePath& path = path_time.first;
       auto old_timestamp = old_times.find(path);

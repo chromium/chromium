@@ -529,8 +529,8 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogCancelPendingScanBrowserTest,
       base::BindOnce(
           [](bool* called, const ContentAnalysisDelegate::Data& data,
              const ContentAnalysisDelegate::Result& result) {
-            for (bool result : result.paths_results)
-              ASSERT_FALSE(result);
+            for (bool paths_result : result.paths_results)
+              ASSERT_FALSE(paths_result);
             *called = true;
           },
           &called),
@@ -636,8 +636,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDialogAppearanceBrowserTest, Test) {
       base::BindLambdaForTesting(
           [this, &called](const ContentAnalysisDelegate::Data& data,
                           const ContentAnalysisDelegate::Result& result) {
-            for (bool result : result.paths_results)
-              ASSERT_EQ(result, success());
+            for (bool paths_result : result.paths_results)
+              ASSERT_EQ(paths_result, success());
             called = true;
           }),
       access_point());
@@ -695,8 +695,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDialogCustomMessageAppearanceBrowserTest,
       base::BindLambdaForTesting(
           [this, &called](const ContentAnalysisDelegate::Data& data,
                           const ContentAnalysisDelegate::Result& result) {
-            for (bool result : result.paths_results)
-              ASSERT_EQ(result, success());
+            for (bool paths_result : result.paths_results)
+              ASSERT_EQ(paths_result, success());
             called = true;
           }),
       access_point());

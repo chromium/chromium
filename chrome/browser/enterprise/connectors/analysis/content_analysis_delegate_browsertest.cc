@@ -581,8 +581,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Throttled) {
                     const ContentAnalysisDelegate::Result& result) {
             ASSERT_TRUE(result.text_results.empty());
             ASSERT_EQ(result.paths_results.size(), 3u);
-            for (bool result : result.paths_results)
-              ASSERT_TRUE(result);
+            for (bool paths_result : result.paths_results)
+              ASSERT_TRUE(paths_result);
             called = true;
           }),
       safe_browsing::DeepScanAccessPoint::UPLOAD);

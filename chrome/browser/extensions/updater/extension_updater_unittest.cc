@@ -1852,11 +1852,12 @@ class ExtensionUpdaterTest : public testing::Test {
     base::Version version("0.0.1");
     std::set<int> requests;
     requests.insert(0);
-    std::unique_ptr<ExtensionDownloader::ExtensionFetch> fetch =
+    std::unique_ptr<ExtensionDownloader::ExtensionFetch> extension_fetch =
         std::make_unique<ExtensionDownloader::ExtensionFetch>(
             id, test_url, hash, version.GetString(), requests,
             ManifestFetchData::FetchPriority::BACKGROUND);
-    updater.downloader_->FetchUpdatedExtension(std::move(fetch), absl::nullopt);
+    updater.downloader_->FetchUpdatedExtension(std::move(extension_fetch),
+                                               absl::nullopt);
 
     EXPECT_EQ(
         kExpectedLoadFlags,

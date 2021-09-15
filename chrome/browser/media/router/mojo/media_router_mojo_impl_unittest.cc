@@ -1034,8 +1034,8 @@ TEST_F(MediaRouterMojoImplTest, RouteMessagesMultipleObservers) {
 TEST_F(MediaRouterMojoImplTest, PresentationConnectionStateChangedCallback) {
   MediaRoute::Id route_id("route-id");
   const GURL presentation_url("http://www.example.com/presentation.html");
-  const std::string kPresentationId("pid");
-  blink::mojom::PresentationInfo connection(presentation_url, kPresentationId);
+  const std::string presentation_id("pid");
+  blink::mojom::PresentationInfo connection(presentation_url, presentation_id);
   base::MockCallback<content::PresentationConnectionStateChangedCallback>
       callback;
   base::CallbackListSubscription subscription =

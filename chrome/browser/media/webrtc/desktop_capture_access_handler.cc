@@ -244,12 +244,12 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
               ? IDS_MEDIA_SCREEN_CAPTURE_CONFIRMATION_TEXT
               : IDS_MEDIA_SCREEN_AND_AUDIO_CAPTURE_CONFIRMATION_TEXT,
           application_name);
-      chrome::MessageBoxResult result = chrome::ShowQuestionMessageBoxSync(
+      chrome::MessageBoxResult mb_result = chrome::ShowQuestionMessageBoxSync(
           parent_window,
           l10n_util::GetStringFUTF16(
               IDS_MEDIA_SCREEN_CAPTURE_CONFIRMATION_TITLE, application_name),
           confirmation_text);
-      is_approved = (result == chrome::MESSAGE_BOX_RESULT_YES);
+      is_approved = (mb_result == chrome::MESSAGE_BOX_RESULT_YES);
     }
 
     if (is_approved) {

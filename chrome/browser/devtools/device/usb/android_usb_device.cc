@@ -496,8 +496,9 @@ void AndroidUsbDevice::Terminate() {
 
   // Iterate over copy.
   AndroidUsbSockets sockets(sockets_);
-  for (auto it = sockets.begin(); it != sockets.end(); ++it) {
-    it->second->Terminated(true);
+  for (auto socket_it = sockets.begin(); socket_it != sockets.end();
+       ++socket_it) {
+    socket_it->second->Terminated(true);
   }
   DCHECK(sockets_.empty());
 

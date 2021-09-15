@@ -252,10 +252,10 @@ void HandleAccessibilityRequestCallback(
   data.SetString(kInternal, show_internal ? kOn : kOff);
 
   std::unique_ptr<base::ListValue> rvh_list(new base::ListValue());
-  std::unique_ptr<content::RenderWidgetHostIterator> widgets(
+  std::unique_ptr<content::RenderWidgetHostIterator> widget_iter(
       content::RenderWidgetHost::GetRenderWidgetHosts());
 
-  while (content::RenderWidgetHost* widget = widgets->GetNextHost()) {
+  while (content::RenderWidgetHost* widget = widget_iter->GetNextHost()) {
     // Ignore processes that don't have a connection, such as crashed tabs.
     if (!widget->GetProcess()->IsInitializedAndNotDead())
       continue;

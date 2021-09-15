@@ -117,15 +117,16 @@ TEST_F(ChromeComponentUpdaterConfiguratorTest, TestEnabledCupSigning) {
 
 TEST_F(ChromeComponentUpdaterConfiguratorTest, TestUseEncryption) {
   base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
-  const auto config(
-      MakeChromeComponentUpdaterConfigurator(cmdline, pref_service()));
 
-  const auto urls = config->UpdateUrl();
-  ASSERT_EQ(2u, urls.size());
-  ASSERT_STREQ(kUpdaterJSONDefaultUrl, urls[0].spec().c_str());
-  ASSERT_STREQ(kUpdaterJSONFallbackUrl, urls[1].spec().c_str());
-
-  ASSERT_EQ(config->UpdateUrl(), config->PingUrl());
+  {
+    const auto config(
+        MakeChromeComponentUpdaterConfigurator(cmdline, pref_service()));
+    const auto urls = config->UpdateUrl();
+    ASSERT_EQ(2u, urls.size());
+    ASSERT_STREQ(kUpdaterJSONDefaultUrl, urls[0].spec().c_str());
+    ASSERT_STREQ(kUpdaterJSONFallbackUrl, urls[1].spec().c_str());
+    ASSERT_EQ(config->UpdateUrl(), config->PingUrl());
+  }
 
   // Use the configurator implementation to test the filtering of
   // unencrypted URLs.

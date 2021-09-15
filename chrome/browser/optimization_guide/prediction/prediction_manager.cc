@@ -381,9 +381,9 @@ base::flat_map<std::string, float> PredictionManager::BuildFeatureMap(
   for (const auto& model_feature : model_features) {
     absl::optional<float> value;
     if (host_model_features) {
-      const auto it = host_model_features->find(model_feature);
-      if (it != host_model_features->end())
-        value = it->second;
+      const auto feature_it = host_model_features->find(model_feature);
+      if (feature_it != host_model_features->end())
+        value = feature_it->second;
     }
     feature_map.emplace_back(model_feature, value.value_or(-1.0f));
   }
@@ -631,10 +631,10 @@ void PredictionManager::UpdateHostModelFeatures(
               features::PredictionModelFetchInterval(),
           /*expiry_time=*/clock_->Now() +
               features::StoredHostModelFeaturesFreshnessDuration());
-  for (const auto& host_model_features : host_model_features) {
-    if (ProcessAndStoreHostModelFeatures(host_model_features)) {
+  for (const auto& features : host_model_features) {
+    if (ProcessAndStoreHostModelFeatures(features)) {
       host_model_features_update_data->CopyHostModelFeaturesIntoUpdateData(
-          host_model_features);
+          features);
     }
   }
 

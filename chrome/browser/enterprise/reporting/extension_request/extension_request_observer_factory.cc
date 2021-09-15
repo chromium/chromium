@@ -18,8 +18,8 @@ ExtensionRequestObserverFactory::ExtensionRequestObserverFactory(
   } else {
     ProfileManager* profile_manager = g_browser_process->profile_manager();
     profile_manager->AddObserver(this);
-    for (Profile* profile : profile_manager->GetLoadedProfiles())
-      OnProfileAdded(profile);
+    for (Profile* loaded_profile : profile_manager->GetLoadedProfiles())
+      OnProfileAdded(loaded_profile);
   }
 }
 

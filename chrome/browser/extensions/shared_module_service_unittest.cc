@@ -39,8 +39,8 @@ scoped_refptr<const Extension> CreateExtensionImportingModules(
          .Set("manifest_version", 2);
   if (!import_ids.empty()) {
     ListBuilder import_list;
-    for (const std::string& id : import_ids)
-      import_list.Append(DictionaryBuilder().Set("id", id).Build());
+    for (const std::string& import_id : import_ids)
+      import_list.Append(DictionaryBuilder().Set("id", import_id).Build());
     builder.Set("import", import_list.Build());
   }
   return ExtensionBuilder()

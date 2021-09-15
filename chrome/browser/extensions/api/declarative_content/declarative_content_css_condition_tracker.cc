@@ -175,10 +175,10 @@ void DeclarativeContentCssConditionTracker::StopTrackingPredicates(
     const std::vector<const void*>& predicate_groups) {
   bool watched_selectors_updated = false;
   for (const void* group : predicate_groups) {
-    auto loc = tracked_predicates_.find(group);
-    if (loc == tracked_predicates_.end())
+    auto it = tracked_predicates_.find(group);
+    if (it == tracked_predicates_.end())
       continue;
-    for (const DeclarativeContentCssPredicate* predicate : loc->second) {
+    for (const DeclarativeContentCssPredicate* predicate : it->second) {
       for (const std::string& selector : predicate->css_selectors()) {
         auto loc = watched_css_selector_predicate_count_.find(selector);
         DCHECK(loc != watched_css_selector_predicate_count_.end());

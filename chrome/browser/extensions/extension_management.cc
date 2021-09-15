@@ -487,9 +487,9 @@ void ExtensionManagement::Refresh() {
     for (const auto& entry : install_sources_pref->GetList()) {
       if (entry.is_string()) {
         std::string url_pattern = entry.GetString();
-        URLPattern entry(URLPattern::SCHEME_ALL);
-        if (entry.Parse(url_pattern) == URLPattern::ParseResult::kSuccess) {
-          global_settings_->install_sources.AddPattern(entry);
+        URLPattern pattern(URLPattern::SCHEME_ALL);
+        if (pattern.Parse(url_pattern) == URLPattern::ParseResult::kSuccess) {
+          global_settings_->install_sources.AddPattern(pattern);
         } else {
           LOG(WARNING) << "Invalid URL pattern in for preference "
                        << pref_names::kAllowedInstallSites << ": "

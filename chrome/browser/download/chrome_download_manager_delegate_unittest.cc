@@ -492,9 +492,10 @@ void ExpectExtensionOnlyIn(const InsecureDownloadExtensions& ext,
       kInsecureDownloadHistogramTargetInsecure};
 
   std::vector<const std::string> histograms;
-  for (auto* initiator : initiator_types) {
-    for (auto* download : download_types) {
-      histograms.push_back(GetDLBlockingHistogramName(initiator, download));
+  for (auto* initiator_init : initiator_types) {
+    for (auto* download_init : download_types) {
+      histograms.push_back(
+          GetDLBlockingHistogramName(initiator_init, download_init));
     }
   }
 

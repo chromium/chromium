@@ -900,10 +900,10 @@ TEST_F(DeveloperPrivateApiUnitTest, ReloadBadExtensionToLoadUnpackedRetry) {
                                 "retryGuid": "%s"}])",
                            retry_guid.c_str());
     api_test_utils::RunFunction(function.get(), args, profile());
-    scoped_refptr<const Extension> extension =
+    scoped_refptr<const Extension> reloaded_extension =
         observer.WaitForExtensionLoaded();
-    ASSERT_TRUE(extension);
-    EXPECT_EQ(extension->path(), path);
+    ASSERT_TRUE(reloaded_extension);
+    EXPECT_EQ(reloaded_extension->path(), path);
     EXPECT_TRUE(registry()->enabled_extensions().Contains(id));
   }
 }

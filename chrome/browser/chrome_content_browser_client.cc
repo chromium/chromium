@@ -2549,7 +2549,6 @@ void ChromeContentBrowserClient::GuestPermissionRequestHelper(
     bool allow) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::map<int, int> process_map;
-  std::map<int, int>::const_iterator it;
   bool has_web_view_guest = false;
   // Record access to file system for potential display in UI.
   for (const auto& it : render_frames) {
@@ -2566,7 +2565,7 @@ void ChromeContentBrowserClient::GuestPermissionRequestHelper(
     return;
   }
   DCHECK_EQ(1U, process_map.size());
-  it = process_map.begin();
+  std::map<int, int>::const_iterator it = process_map.begin();
 
   extensions::WebViewPermissionHelper* web_view_permission_helper =
       extensions::WebViewPermissionHelper::FromFrameID(it->first, it->second);

@@ -381,8 +381,6 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, SpecifiedFrames) {
         GURL() /* webview_src */, helper.GetCallback());
     helper.Wait();
 
-    base::Value frame1_result("Frame 1");
-    base::Value frame2_result("Frame 2");
     EXPECT_THAT(helper.results(),
                 testing::UnorderedElementsAre(
                     get_result_matcher(frame1_result, frame1_id, frame1_url),

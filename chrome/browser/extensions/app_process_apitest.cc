@@ -706,11 +706,13 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, NavigatePopupFromAppToOutsideApp) {
 
   // Do a renderer-initiated navigation in the popup to a URL outside the app.
   GURL non_app_url(base_url.Resolve("path3/empty.html"));
-  content::TestNavigationObserver observer(popup_contents);
-  EXPECT_TRUE(ExecuteScript(
-      popup_contents,
-      base::StringPrintf("location = '%s';", non_app_url.spec().c_str())));
-  observer.Wait();
+  {
+    content::TestNavigationObserver observer(popup_contents);
+    EXPECT_TRUE(ExecuteScript(
+        popup_contents,
+        base::StringPrintf("location = '%s';", non_app_url.spec().c_str())));
+    observer.Wait();
+  }
 
   // The popup will stay in the same SiteInstance, even in
   // --site-per-process mode, because the popup is still same-site with its

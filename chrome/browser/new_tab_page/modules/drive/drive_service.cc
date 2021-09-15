@@ -158,9 +158,9 @@ void DriveService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(kLastDismissedTimePrefName, base::Time());
 }
 
-void DriveService::GetDriveFiles(GetFilesCallback callback) {
+void DriveService::GetDriveFiles(GetFilesCallback get_files_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  callbacks_.push_back(std::move(callback));
+  callbacks_.push_back(std::move(get_files_callback));
   if (callbacks_.size() > 1) {
     return;
   }

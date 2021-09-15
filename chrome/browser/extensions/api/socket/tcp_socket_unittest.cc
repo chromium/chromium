@@ -680,14 +680,16 @@ TEST_F(TCPSocketServerTest, ReadAndWrite) {
   // Create a server socket.
   std::unique_ptr<TCPSocket> socket = CreateSocket();
   net::TestCompletionCallback callback;
-  base::RunLoop run_loop;
-  socket->Listen(
-      "127.0.0.1", 0 /* port */, 1 /* backlog */,
-      base::BindLambdaForTesting([&](int result, const std::string& error_msg) {
-        EXPECT_EQ(net::OK, result);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
+  {
+    base::RunLoop run_loop;
+    socket->Listen("127.0.0.1", 0 /* port */, 1 /* backlog */,
+                   base::BindLambdaForTesting(
+                       [&](int result, const std::string& error_msg) {
+                         EXPECT_EQ(net::OK, result);
+                         run_loop.Quit();
+                       }));
+    run_loop.Run();
+  }
   net::IPEndPoint server_addr;
   EXPECT_TRUE(socket->GetLocalAddress(&server_addr));
 

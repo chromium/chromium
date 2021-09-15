@@ -299,9 +299,9 @@ class NotificationPlatformBridgeWinImpl
       std::vector<mswr::ComPtr<winui::Notifications::IToastNotification>>
           notifications = GetNotifications();
 
-      for (const auto& notification : notifications) {
+      for (const auto& n : notifications) {
         mswr::ComPtr<winui::Notifications::IToastNotification2> t2;
-        HRESULT hr = notification->QueryInterface(IID_PPV_ARGS(&t2));
+        hr = n->QueryInterface(IID_PPV_ARGS(&t2));
         if (FAILED(hr))
           continue;
 

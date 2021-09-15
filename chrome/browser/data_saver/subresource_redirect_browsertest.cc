@@ -1538,8 +1538,10 @@ class SubresourceRedirectWithHintsServerBrowserTest
         optimization_guide::proto::OptimizationType::COMPRESS_PUBLIC_IMAGES);
     auto* public_image_metadata = optimization->mutable_public_image_metadata();
 
-    for (const auto& url : public_image_paths)
-      public_image_metadata->add_url(HttpsURLWithPath(url).spec());
+    for (const auto& public_image_path : public_image_paths) {
+      public_image_metadata->add_url(
+          HttpsURLWithPath(public_image_path).spec());
+    }
 
     base::AutoLock lock(lock_);
     get_hints_response.SerializeToString(&get_hints_response_);

@@ -2158,12 +2158,12 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   content::ServiceWorkerContext* context =
       storage_partition->GetServiceWorkerContext();
 
-  const ExtensionId kTestExtensionId("iegclhlplifhodhkoafiokenjoapiobj");
+  const ExtensionId test_extension_id("iegclhlplifhodhkoafiokenjoapiobj");
   // Set up an observer to wait for worker to start and then stop.
-  TestWorkerObserver observer(context, kTestExtensionId);
+  TestWorkerObserver observer(context, test_extension_id);
 
   TestExtensionDir test_dir;
-  // Key for extension id |kTestExtensionId|.
+  // Key for extension id |test_extension_id|.
   constexpr const char kKey[] =
       "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjzv7dI7Ygyh67VHE1DdidudpYf8P"
       "Ffv8iucWvzO+3xpF/Dm5xNo7aQhPNiEaNfHwJQ7lsp4gc+C+4bbaVewBFspTruoSJhZc5uEf"
@@ -2189,7 +2189,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   test_dir.WriteFile(FILE_PATH_LITERAL("script.js"), kScript);
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
-  ASSERT_EQ(kTestExtensionId, extension->id());
+  ASSERT_EQ(test_extension_id, extension->id());
   LazyContextId context_id(browser()->profile(), extension->id(),
                            extension->url());
   // Let the worker start so it rejects 'install' event. This causes the worker

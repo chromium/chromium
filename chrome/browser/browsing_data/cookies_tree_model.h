@@ -103,29 +103,30 @@ class CookieTreeNode : public ui::TreeNode<CookieTreeNode> {
     ~DetailedInfo();
 
     DetailedInfo& Init(NodeType type);
-    DetailedInfo& InitHost(const GURL& origin);
-    DetailedInfo& InitCookie(const net::CanonicalCookie* cookie);
-    DetailedInfo& InitDatabase(const content::StorageUsageInfo* usage_info);
+    DetailedInfo& InitHost(const GURL& host);
+    DetailedInfo& InitCookie(const net::CanonicalCookie* canonical_cookie);
+    DetailedInfo& InitDatabase(
+        const content::StorageUsageInfo* storage_usage_info);
     DetailedInfo& InitLocalStorage(
-        const content::StorageUsageInfo* local_storage_info);
+        const content::StorageUsageInfo* storage_usage_info);
     DetailedInfo& InitSessionStorage(
-        const content::StorageUsageInfo* session_storage_info);
-    DetailedInfo& InitAppCache(const content::StorageUsageInfo* usage_info);
-    DetailedInfo& InitIndexedDB(const content::StorageUsageInfo* usage_info);
+        const content::StorageUsageInfo* storage_usage_info);
+    DetailedInfo& InitAppCache(
+        const content::StorageUsageInfo* storage_usage_info);
+    DetailedInfo& InitIndexedDB(
+        const content::StorageUsageInfo* storage_usage_info);
     DetailedInfo& InitFileSystem(
-        const browsing_data::FileSystemHelper::FileSystemInfo*
-            file_system_info);
-    DetailedInfo& InitQuota(
-        const BrowsingDataQuotaHelper::QuotaInfo* quota_info);
+        const browsing_data::FileSystemHelper::FileSystemInfo* file_system);
+    DetailedInfo& InitQuota(const BrowsingDataQuotaHelper::QuotaInfo* quota);
     DetailedInfo& InitServiceWorker(
-        const content::StorageUsageInfo* usage_info);
+        const content::StorageUsageInfo* storage_usage_info);
     DetailedInfo& InitSharedWorker(
         const browsing_data::SharedWorkerHelper::SharedWorkerInfo*
-            shared_worker_info);
-    DetailedInfo& InitCacheStorage(const content::StorageUsageInfo* usage_info);
+            shared_worker);
+    DetailedInfo& InitCacheStorage(
+        const content::StorageUsageInfo* storage_usage_info);
     DetailedInfo& InitMediaLicense(
-        const BrowsingDataMediaLicenseHelper::MediaLicenseInfo*
-            media_license_info);
+        const BrowsingDataMediaLicenseHelper::MediaLicenseInfo* media_license);
 
     NodeType node_type;
     url::Origin origin;

@@ -279,7 +279,6 @@ bool PendingExtensionManager::AddFromExternalFile(
 
 std::list<std::string> PendingExtensionManager::GetPendingIdsForUpdateCheck()
     const {
-  PendingExtensionList::const_iterator iter;
   std::list<std::string> result;
 
   // Add the extensions that need repairing but are not necessarily from an
@@ -287,9 +286,9 @@ std::list<std::string> PendingExtensionManager::GetPendingIdsForUpdateCheck()
   for (const auto& iter : expected_reinstalls_)
     result.push_back(iter.first);
 
-  for (iter = pending_extension_list_.begin();
-       iter != pending_extension_list_.end();
-       ++iter) {
+  for (PendingExtensionList::const_iterator iter =
+           pending_extension_list_.begin();
+       iter != pending_extension_list_.end(); ++iter) {
     ManifestLocation install_source = iter->install_source();
 
     // Some install sources read a CRX from the filesystem.  They can

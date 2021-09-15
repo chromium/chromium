@@ -393,7 +393,7 @@ std::u16string MediaGalleryPrefInfo::GetGalleryDisplayName() const {
     // name, or in the case of a root directory, the root directory name.
     // Exception: ChromeOS -- the full pathname isn't visible there, so only
     // the directory name is used.
-    base::FilePath path = AbsolutePath();
+    base::FilePath absolute_path = AbsolutePath();
     if (!display_name.empty())
       return display_name;
 
@@ -403,12 +403,12 @@ std::u16string MediaGalleryPrefInfo::GetGalleryDisplayName() const {
     if (base::PathService::Get(chrome::DIR_DEFAULT_DOWNLOADS_SAFE,
                                &download_path)) {
       base::FilePath relative;
-      if (download_path.AppendRelativePath(path, &relative))
+      if (download_path.AppendRelativePath(absolute_path, &relative))
         return relative.LossyDisplayName();
     }
-    return path.BaseName().LossyDisplayName();
+    return absolute_path.BaseName().LossyDisplayName();
 #else
-    return path.LossyDisplayName();
+    return absolute_path.LossyDisplayName();
 #endif
   }
 
