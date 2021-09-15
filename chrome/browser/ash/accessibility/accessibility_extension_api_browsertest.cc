@@ -50,12 +50,6 @@ IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest,
   ASSERT_TRUE(RunSubtest("testGetDisplayNameForLocale")) << message_;
 }
 
-// Flaky on a debug build, see crbug.com/1030507.
-#if !defined(NDEBUG)
-#define MAYBE_OpenSettingsSubpage DISABLED_OpenSettingsSubpage
-#else
-#define MAYBE_OpenSettingsSubpage OpenSettingsSubpage
-#endif
 IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, OpenSettingsSubpage) {
   Profile* profile = AccessibilityManager::Get()->profile();
 
