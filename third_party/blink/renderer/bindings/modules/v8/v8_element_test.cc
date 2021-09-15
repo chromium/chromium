@@ -43,9 +43,9 @@ TEST_F(V8ElementTest, SetAttributeOperationCallback) {
 
 #if DCHECK_IS_ON()
   AtomicString test_attribute("test-attribute");
-  EXPECT_EQ(test_attribute.Impl()->RefCountChangeCountForTesting(), 27u);
+  EXPECT_EQ(test_attribute.Impl()->RefCountChangeCountForTesting(), 19u);
   AtomicString test_value("test-value");
-  EXPECT_EQ(test_value.Impl()->RefCountChangeCountForTesting(), 15u);
+  EXPECT_EQ(test_value.Impl()->RefCountChangeCountForTesting(), 11u);
 #endif
 
   // Trigger a low memory notification. This will signal V8 to clear its
@@ -64,7 +64,7 @@ TEST_F(V8ElementTest, GetAttributeOperationCallback_NonExisting) {
 
 #if DCHECK_IS_ON()
   AtomicString test_attribute("test-attribute");
-  EXPECT_EQ(test_attribute.Impl()->RefCountChangeCountForTesting(), 14u);
+  EXPECT_EQ(test_attribute.Impl()->RefCountChangeCountForTesting(), 10u);
 #endif
 
   // Trigger a low memory notification. This will signal V8 to clear its
@@ -91,8 +91,8 @@ TEST_F(V8ElementTest, GetAttributeOperationCallback_Existing) {
   Eval("document.body.getAttribute('test-attribute')", scope);
 
 #if DCHECK_IS_ON()
-  EXPECT_EQ(test_attribute.Impl()->RefCountChangeCountForTesting(), 9u);
-  EXPECT_EQ(test_value.Impl()->RefCountChangeCountForTesting(), 6u);
+  EXPECT_EQ(test_attribute.Impl()->RefCountChangeCountForTesting(), 6u);
+  EXPECT_EQ(test_value.Impl()->RefCountChangeCountForTesting(), 5u);
 #endif
 
   // Trigger a low memory notification. This will signal V8 to clear its

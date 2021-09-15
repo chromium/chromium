@@ -284,7 +284,6 @@ class WTF_EXPORT StringImpl {
 #if DCHECK_IS_ON()
     DCHECK(IsStatic() || verifier_.OnDeref(ref_count_))
         << AsciiForDebugging() << " " << CurrentThread();
-    ref_count_change_count_++;
 #endif
 
     if (!IsStatic()) {
