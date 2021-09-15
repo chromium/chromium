@@ -22,7 +22,11 @@
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-persistent-handle.h"
+
+namespace v8 {
+class UnboundScript;
+}  // namespace v8
 
 namespace auction_worklet {
 

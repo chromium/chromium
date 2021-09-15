@@ -18,7 +18,6 @@
 #include "base/thread_annotations.h"
 #include "base/values.h"
 #include "v8/include/v8-inspector.h"
-#include "v8/include/v8.h"
 
 namespace auction_worklet {
 

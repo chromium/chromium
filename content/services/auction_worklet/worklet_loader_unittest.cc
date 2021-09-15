@@ -22,7 +22,6 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-#include "v8/include/v8.h"
 
 using testing::HasSubstr;
 using testing::StartsWith;

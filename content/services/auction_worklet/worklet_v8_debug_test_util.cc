@@ -22,7 +22,7 @@
 #include "base/values.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "v8/include/v8-inspector.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-locker.h"
 
 namespace auction_worklet {
 

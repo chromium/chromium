@@ -28,8 +28,17 @@
 #include "gin/gin_features.h"
 #include "gin/public/isolate_holder.h"
 #include "gin/v8_initializer.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-exception.h"
+#include "v8/include/v8-function.h"
+#include "v8/include/v8-initialization.h"
 #include "v8/include/v8-inspector.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-json.h"
+#include "v8/include/v8-message.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-primitive.h"
+#include "v8/include/v8-script.h"
+#include "v8/include/v8-template.h"
 
 namespace auction_worklet {
 

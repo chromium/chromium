@@ -14,7 +14,10 @@
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "gin/converter.h"
 #include "url/gurl.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-exception.h"
+#include "v8/include/v8-external.h"
+#include "v8/include/v8-function-callback.h"
+#include "v8/include/v8-template.h"
 
 namespace auction_worklet {
 

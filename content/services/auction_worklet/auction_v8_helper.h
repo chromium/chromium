@@ -22,7 +22,14 @@
 #include "gin/public/isolate_holder.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
+#include "v8/include/v8-isolate.h"
+#include "v8/include/v8-locker.h"
+#include "v8/include/v8-persistent-handle.h"
+
+namespace v8 {
+class UnboundScript;
+}  // namespace v8
 
 namespace v8_inspector {
 class V8Inspector;
@@ -93,8 +100,8 @@ class AuctionV8Helper
   // not is remove access the Date object. It also (for now) installs some
   // rudimentary console emulation.
   v8::Local<v8::Context> CreateContext(
-      v8::Handle<v8::ObjectTemplate> global_template =
-          v8::Handle<v8::ObjectTemplate>());
+      v8::Local<v8::ObjectTemplate> global_template =
+          v8::Local<v8::ObjectTemplate>());
 
   // Creates a v8::String from an ASCII string literal, which should never fail.
   v8::Local<v8::String> CreateStringFromLiteral(const char* ascii_string);
