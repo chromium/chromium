@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/toolbar/chrome_labs_utils.h"
 #include "base/containers/contains.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/flag_descriptions.h"

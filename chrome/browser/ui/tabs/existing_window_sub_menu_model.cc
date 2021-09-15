@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tabs/existing_window_sub_menu_model.h"
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
