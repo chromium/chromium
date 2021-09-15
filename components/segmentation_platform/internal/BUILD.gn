@@ -90,7 +90,7 @@ static_library("internal") {
 
     deps += [
       "//third_party/tflite:tflite_public_headers",
-      "//third_party/tflite-support",
+      "//third_party/tflite_support",
     ]
   }
 

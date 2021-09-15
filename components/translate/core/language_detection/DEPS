@@ -4,6 +4,6 @@ include_rules = [
   "+third_party/flatbuffers",
   "+third_party/smhasher",
   "+third_party/tflite",
-  "+third_party/tflite-support",
+  "+third_party/tflite_support",
   "+third_party/utf",
 ]

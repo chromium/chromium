@@ -6,7 +6,7 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_BERT_MODEL_EXECUTOR_H_
 
 #include "components/optimization_guide/core/model_executor.h"
-#include "third_party/tflite-support/src/tensorflow_lite_support/cc/task/core/category.h"
+#include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/category.h"
 
 namespace optimization_guide {
 

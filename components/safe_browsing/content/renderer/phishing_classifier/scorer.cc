@@ -26,10 +26,10 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-#include "third_party/tflite-support/src/tensorflow_lite_support/cc/task/core/task_api_factory.h"
-#include "third_party/tflite-support/src/tensorflow_lite_support/cc/task/vision/image_classifier.h"
 #include "third_party/tflite/src/tensorflow/lite/kernels/builtin_op_kernels.h"
 #include "third_party/tflite/src/tensorflow/lite/op_resolver.h"
+#include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/task_api_factory.h"
+#include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_classifier.h"
 #endif
 
 namespace safe_browsing {

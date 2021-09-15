@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "components/optimization_guide/core/entity_metadata.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/tflite-support/src/tensorflow_lite_support/cc/task/core/category.h"
+#include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/category.h"
 
 namespace optimization_guide {
 

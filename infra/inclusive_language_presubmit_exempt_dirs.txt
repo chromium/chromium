@@ -176,9 +176,9 @@ third_party/tcmalloc/chromium/src/gperftools 1 1
 third_party/tcmalloc/vendor/src 1 1
 third_party/tcmalloc/vendor/src/gperftools 1 1
 third_party/tensorflow-text/src/tensorflow_text/python/benchmarks/test_data/uncased_L-12_H-768_A-12 1 1
-third_party/tflite-support/src/tensorflow_lite_support/cc/task/vision 9 4
-third_party/tflite-support/src/tensorflow_lite_support/cc/task/vision/proto 4 2
-third_party/tflite-support/src/tensorflow_lite_support/examples/task/vision/desktop 4 2
+third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision 9 4
+third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/proto 4 2
+third_party/tflite_support/src/tensorflow_lite_support/examples/task/vision/desktop 4 2
 third_party/woff2/src 1 1
 third_party/wuffs 1 1
 tools/android/kerberos 1 1

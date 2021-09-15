@@ -107,8 +107,8 @@ static_library("core") {
       "//components/optimization_guide/core:machine_learning",
       "//third_party/tflite",
       "//third_party/tflite:tflite_public_headers",
-      "//third_party/tflite-support",
-      "//third_party/tflite-support:tflite-support-proto",
+      "//third_party/tflite_support",
+      "//third_party/tflite_support:tflite_support_proto",
     ]
   }
 
@@ -229,8 +229,8 @@ source_set("unit_tests") {
     deps += [
       "//third_party/tflite",
       "//third_party/tflite:tflite_public_headers",
-      "//third_party/tflite-support",
-      "//third_party/tflite-support:tflite-support-proto",
+      "//third_party/tflite_support",
+      "//third_party/tflite_support:tflite_support_proto",
     ]
   }
 }

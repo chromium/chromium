@@ -13,7 +13,7 @@ config("tflite_support_config") {
   ]
 }
 
-proto_library("tflite-support-proto") {
+proto_library("tflite_support_proto") {
   proto_in_dir = "src"
   sources = [
     "src/tensorflow_lite_support/cc/task/core/proto/external_file.proto",
@@ -47,7 +47,7 @@ flatbuffer("metadata_schema") {
   args = [ "--no-warnings" ]
 }
 
-static_library("tflite-support") {
+static_library("tflite_support") {
   sources = [
     "src/tensorflow_lite_support/cc/common.cc",
     "src/tensorflow_lite_support/cc/common.h",
@@ -105,7 +105,7 @@ static_library("tflite-support") {
 
   deps = [
     ":metadata_schema",
-    ":tflite-support-proto",
+    ":tflite_support_proto",
     "//base",
     "//third_party/flatbuffers",
     "//third_party/libyuv",

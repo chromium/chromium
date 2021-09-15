@@ -7,7 +7,7 @@
 #include "base/trace_event/trace_event.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/tflite_op_resolver.h"
-#include "third_party/tflite-support/src/tensorflow_lite_support/cc/task/text/nlclassifier/bert_nl_classifier.h"
+#include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/bert_nl_classifier.h"
 
 namespace optimization_guide {
 

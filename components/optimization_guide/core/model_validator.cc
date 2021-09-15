@@ -7,8 +7,8 @@
 #include <memory>
 #include <vector>
 
-#include "third_party/tflite-support/src/tensorflow_lite_support/cc/task/core/task_utils.h"
 #include "third_party/tflite/src/tensorflow/lite/c/common.h"
+#include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/task_utils.h"
 
 namespace optimization_guide {
 

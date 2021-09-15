@@ -21,8 +21,8 @@
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/tflite-support/src/tensorflow_lite_support/cc/task/core/base_task_api.h"
 #include "third_party/tflite/src/tensorflow/lite/c/common.h"
+#include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/base_task_api.h"
 
 namespace optimization_guide {
 
