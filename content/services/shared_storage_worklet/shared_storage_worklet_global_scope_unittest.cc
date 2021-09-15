@@ -541,6 +541,15 @@ class SharedStorageRunOperationTest
   uint32_t url_selection_operation_index_ = -1;
 };
 
+TEST_F(SharedStorageRunOperationTest, UnnamedOperation_BeforeAddModuleFinish) {
+  SimulateRunOperation("test-operation-1", /*serialized_data=*/{});
+
+  EXPECT_TRUE(unnamed_operation_finished());
+  EXPECT_FALSE(unnamed_operation_success());
+  EXPECT_EQ(unnamed_operation_error_message(),
+            "The module script hasn't been loaded.");
+}
+
 TEST_F(SharedStorageRunOperationTest,
        UnnamedOperation_OperationNameNotRegistered) {
   SimulateAddModule(R"(

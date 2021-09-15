@@ -172,6 +172,17 @@ void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
     const std::vector<uint8_t>& serialized_data,
     mojom::SharedStorageWorkletService::RunURLSelectionOperationCallback
         callback) {
+  if (!isolate_holder_) {
+    // TODO(yaoxia): if this operation comes while fetching the module script,
+    // we might want to queue the operation to be handled later after addModule
+    // completes. http://crbug/1249581
+    std::move(callback).Run(
+        /*success=*/false,
+        /*error_message=*/"The module script hasn't been loaded.",
+        /*length=*/0);
+    return;
+  }
+
   WorkletV8Helper::HandleScope scope(Isolate());
   url_selection_operation_handler_->RunOperation(
       LocalContext(), name, urls, serialized_data, std::move(callback));
@@ -181,6 +192,16 @@ void SharedStorageWorkletGlobalScope::RunOperation(
     const std::string& name,
     const std::vector<uint8_t>& serialized_data,
     mojom::SharedStorageWorkletService::RunOperationCallback callback) {
+  if (!isolate_holder_) {
+    // TODO(yaoxia): if this operation comes while fetching the module script,
+    // we might want to queue the operation to be handled later after addModule
+    // completes. http://crbug/1249581
+    std::move(callback).Run(
+        /*success=*/false,
+        /*error_message=*/"The module script hasn't been loaded.");
+    return;
+  }
+
   WorkletV8Helper::HandleScope scope(Isolate());
   unnamed_operation_handler_->RunOperation(
       LocalContext(), name, serialized_data, std::move(callback));
