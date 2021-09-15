@@ -54,6 +54,9 @@ interface PageHandler {
   // Shows a context menu for a read later entry.
   ShowContextMenuForURL(url.mojom.Url url, int32 x, int32 y);
 
+  // Updates the reading list current page action button state.
+  UpdateCurrentPageActionButtonState();
+
   // Notify the backend that the UI is ready to be shown.
   ShowUI();
 
