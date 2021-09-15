@@ -17,13 +17,11 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
-import org.robolectric.annotation.Resetter;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.payments.test_support.PaymentRequestServiceBuilder;
+import org.chromium.components.payments.test_support.ShadowPaymentFeatureList;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.mojo.system.MojoException;
 import org.chromium.payments.mojom.PayerDetail;
@@ -42,8 +40,7 @@ import java.util.Set;
 
 /** A test for PaymentRequestService. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE,
-        shadows = {PaymentRequestServiceTest.ShadowPaymentFeatureList.class})
+@Config(manifest = Config.NONE, shadows = {ShadowPaymentFeatureList.class})
 public class PaymentRequestServiceTest implements PaymentRequestClient {
     private static final int NO_PAYMENT_ERROR = PaymentErrorReason.MIN_VALUE;
     private final BrowserPaymentRequest mBrowserPaymentRequest;
@@ -73,26 +70,6 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     private PaymentAppService mPaymentAppService;
     private PaymentAppFactoryDelegate mPaymentAppFactoryDelegate;
     private JourneyLogger mJourneyLogger;
-
-    /** The shadow of PaymentFeatureList. Not to use outside the test. */
-    @Implements(PaymentFeatureList.class)
-    /* package */ static class ShadowPaymentFeatureList {
-        private static Set<String> sEnabledFeatures = new HashSet<>();
-
-        @Resetter
-        public static void reset() {
-            sEnabledFeatures.clear();
-        }
-
-        @Implementation
-        public static boolean isEnabled(String featureName) {
-            return sEnabledFeatures.contains(featureName);
-        }
-
-        private static void setEnabledFeature(String featureName) {
-            sEnabledFeatures.add(featureName);
-        }
-    }
 
     public PaymentRequestServiceTest() {
         mPaymentAppService = Mockito.mock(PaymentAppService.class);
@@ -155,8 +132,9 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     @Before
     public void setUp() {
         PaymentRequestService.resetShowingPaymentRequestForTest();
-        ShadowPaymentFeatureList.setEnabledFeature(
-                PaymentFeatureList.WEB_PAYMENTS_SINGLE_APP_UI_SKIP);
+        ShadowPaymentFeatureList.setDefaultStatuses();
+        ShadowPaymentFeatureList.setFeatureEnabled(
+                PaymentFeatureList.WEB_PAYMENTS_EXPERIMENTAL_FEATURES, false);
     }
 
     @After
@@ -714,14 +692,16 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     @Test
     @Feature({"Payments"})
     public void testSpcCanOnlyBeRequestedAlone_success() {
-        ShadowPaymentFeatureList.setEnabledFeature(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION);
+        ShadowPaymentFeatureList.setFeatureEnabled(
+                PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION, true);
         Assert.assertNotNull(defaultBuilder().setOnlySpcMethodWithoutPaymentOptions().build());
     }
 
     @Test
     @Feature({"Payments"})
     public void testSpcCanOnlyBeRequestedAlone_failedForHavingOptions() {
-        ShadowPaymentFeatureList.setEnabledFeature(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION);
+        ShadowPaymentFeatureList.setFeatureEnabled(
+                PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION, true);
         PaymentOptions options = new PaymentOptions();
         options.requestShipping = true;
         Assert.assertNull(defaultBuilder()
@@ -736,6 +716,8 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     @Test
     @Feature({"Payments"})
     public void testSpcCanOnlyBeRequestedAlone_notApplicableWhenSpcDisabled() {
+        ShadowPaymentFeatureList.setFeatureEnabled(
+                PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION, false);
         PaymentOptions options = new PaymentOptions();
         options.requestShipping = true;
         Assert.assertNotNull(defaultBuilder()
