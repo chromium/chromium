@@ -222,6 +222,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
   void AddObserver(AppRegistrarObserver* observer);
   void RemoveObserver(AppRegistrarObserver* observer);
 
+  void NotifyWebAppApprovedProtocolsChanged();
   void NotifyWebAppInstalled(const AppId& app_id);
   void NotifyWebAppManifestUpdated(const AppId& app_id,
                                    base::StringPiece old_name);

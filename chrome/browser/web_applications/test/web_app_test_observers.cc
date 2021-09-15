@@ -79,6 +79,12 @@ void WebAppTestRegistryObserverAdapter::SetWebAppLastBadgingTimeChangedDelegate(
   app_last_badging_time_changed_delegate_ = delegate;
 }
 
+void WebAppTestRegistryObserverAdapter::
+    SetWebAppApprovedProtocolsChangedDelegate(
+        WebAppApprovedProtocolsChangedDelegate delegate) {
+  app_approved_protocols_changed_delegate_ = delegate;
+}
+
 void WebAppTestRegistryObserverAdapter::OnWebAppInstalled(const AppId& app_id) {
   if (app_installed_delegate_)
     app_installed_delegate_.Run(app_id);
@@ -126,6 +132,11 @@ void WebAppTestRegistryObserverAdapter::OnWebAppLastBadgingTimeChanged(
     const base::Time& time) {
   if (app_last_badging_time_changed_delegate_)
     app_last_badging_time_changed_delegate_.Run(app_id, time);
+}
+
+void WebAppTestRegistryObserverAdapter::OnWebAppApprovedProtocolsChanged() {
+  if (app_approved_protocols_changed_delegate_)
+    app_approved_protocols_changed_delegate_.Run();
 }
 
 void WebAppTestRegistryObserverAdapter::SignalRunLoopAndStoreAppId(

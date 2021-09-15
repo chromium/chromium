@@ -64,6 +64,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
+#include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -2503,6 +2504,10 @@ IN_PROC_BROWSER_TEST_F(
   protocol_handler.url = GURL(handler_url);
   protocol_handler.protocol = "web+test";
   web_app::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
+  bool approved_protocols_notified = false;
+  web_app::WebAppTestRegistryObserverAdapter observer(browser()->profile());
+  observer.SetWebAppApprovedProtocolsChangedDelegate(base::BindLambdaForTesting(
+      [&]() { approved_protocols_notified = true; }));
 
   WebAppProtocolHandlerIntentPickerView::SetDefaultRememberSelectionForTesting(
       true);
@@ -2523,6 +2528,7 @@ IN_PROC_BROWSER_TEST_F(
   // on accept.
   web_app::WebAppRegistrar& registrar = provider()->registrar();
   EXPECT_TRUE(registrar.IsApprovedLaunchProtocol(app_id, "web+test"));
+  EXPECT_TRUE(approved_protocols_notified);
 
   // Check for new app window.
   ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));

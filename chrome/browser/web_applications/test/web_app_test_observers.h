@@ -72,6 +72,11 @@ class WebAppTestRegistryObserverAdapter : public AppRegistrarObserver {
   void SetWebAppLastBadgingTimeChangedDelegate(
       WebAppLastBadgingTimeChangedDelegate delegate);
 
+  using WebAppApprovedProtocolsChangedDelegate =
+      base::RepeatingCallback<void()>;
+  void SetWebAppApprovedProtocolsChangedDelegate(
+      WebAppApprovedProtocolsChangedDelegate delegate);
+
   // AppRegistrarObserver:
   void OnWebAppInstalled(const AppId& app_id) override;
   void OnWebAppInstalledWithOsHooks(const AppId& app_id) override;
@@ -84,6 +89,7 @@ class WebAppTestRegistryObserverAdapter : public AppRegistrarObserver {
   void OnWebAppProfileWillBeDeleted(const AppId& app_id) override;
   void OnWebAppLastBadgingTimeChanged(const web_app::AppId& app_id,
                                       const base::Time& time) override;
+  void OnWebAppApprovedProtocolsChanged() override;
 
  protected:
   // Helper method for subclasses to allow easy waiting on `wait_loop_`.
@@ -106,6 +112,8 @@ class WebAppTestRegistryObserverAdapter : public AppRegistrarObserver {
   WebAppWillBeUninstalledDelegate app_will_be_uninstalled_delegate_;
   WebAppProfileWillBeDeletedDelegate app_profile_will_be_deleted_delegate_;
   WebAppLastBadgingTimeChangedDelegate app_last_badging_time_changed_delegate_;
+  WebAppApprovedProtocolsChangedDelegate
+      app_approved_protocols_changed_delegate_;
 
   base::ScopedObservation<WebAppRegistrar, AppRegistrarObserver> observation_{
       this};

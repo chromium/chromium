@@ -51,6 +51,7 @@ class AppRegistrarObserver : public base::CheckedObserver {
 
   virtual void OnAppRegistrarDestroyed() {}
 
+  virtual void OnWebAppApprovedProtocolsChanged() {}
   virtual void OnWebAppLocallyInstalledStateChanged(const AppId& app_id,
                                                     bool is_locally_installed) {
   }

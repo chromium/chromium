@@ -78,6 +78,11 @@ void WebAppRegistrar::RemoveObserver(AppRegistrarObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void WebAppRegistrar::NotifyWebAppApprovedProtocolsChanged() {
+  for (AppRegistrarObserver& observer : observers_)
+    observer.OnWebAppApprovedProtocolsChanged();
+}
+
 void WebAppRegistrar::NotifyWebAppInstalled(const AppId& app_id) {
   for (AppRegistrarObserver& observer : observers_)
     observer.OnWebAppInstalled(app_id);

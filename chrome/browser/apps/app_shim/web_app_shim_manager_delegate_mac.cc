@@ -56,13 +56,9 @@ void OnProtocolHandlerDialogCompleted(apps::AppLaunchParams params,
     if (remember_user_choice) {
       web_app::WebAppProvider* provider =
           web_app::WebAppProvider::GetForWebApps(profile);
-      web_app::ScopedRegistryUpdate update(&provider->sync_bridge());
-      web_app::WebApp* app_to_update = update->UpdateApp(params.app_id);
-      base::flat_set<std::string> protocol_handlers(
-          app_to_update->approved_launch_protocols());
-      protocol_handlers.insert(
+      provider->sync_bridge().AddApprovedLaunchProtocol(
+          params.app_id,
           params.protocol_handler_launch_url.value().scheme());
-      app_to_update->SetApprovedLaunchProtocols(std::move(protocol_handlers));
     }
     LaunchAppWithParams(profile, std::move(params));
   } else {

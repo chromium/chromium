@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/metrics/user_metrics.h"
@@ -341,6 +342,34 @@ void WebAppSyncBridge::SetUserLaunchOrdinal(
   WebApp* web_app = update->UpdateApp(app_id);
   if (web_app)
     web_app->SetUserLaunchOrdinal(launch_ordinal);
+}
+
+void WebAppSyncBridge::AddApprovedLaunchProtocol(
+    const AppId& app_id,
+    const std::string& protocol_scheme) {
+  ScopedRegistryUpdate update(this);
+  web_app::WebApp* app_to_update = update->UpdateApp(app_id);
+  base::flat_set<std::string> protocol_handlers(
+      app_to_update->approved_launch_protocols());
+
+  DCHECK(!base::Contains(protocol_handlers, protocol_scheme));
+  protocol_handlers.insert(protocol_scheme);
+  app_to_update->SetApprovedLaunchProtocols(std::move(protocol_handlers));
+  // Notify observers that the list of approved protocols was updated.
+  registrar_->NotifyWebAppApprovedProtocolsChanged();
+}
+
+void WebAppSyncBridge::RemoveApprovedLaunchProtocol(
+    const AppId& app_id,
+    const std::string& protocol_scheme) {
+  ScopedRegistryUpdate update(this);
+  web_app::WebApp* app_to_update = update->UpdateApp(app_id);
+  base::flat_set<std::string> protocol_handlers(
+      app_to_update->approved_launch_protocols());
+  protocol_handlers.erase(protocol_scheme);
+  app_to_update->SetApprovedLaunchProtocols(std::move(protocol_handlers));
+  // Notify observers that the list of approved protocols was updated.
+  registrar_->NotifyWebAppApprovedProtocolsChanged();
 }
 
 void WebAppSyncBridge::CheckRegistryUpdateData(

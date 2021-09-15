@@ -109,6 +109,15 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
   void SetUserLaunchOrdinal(const AppId& app_id,
                             syncer::StringOrdinal user_launch_ordinal);
 
+  // These methods are used by web apps to add or remove approved
+  // protocol schemes based on user approval or withdrawal of that approval.
+  // Approved protocol schemes will allow web apps to handle launches from
+  // urls that start with that scheme without asking the user.
+  void AddApprovedLaunchProtocol(const AppId& app_id,
+                                 const std::string& protocol_scheme);
+  void RemoveApprovedLaunchProtocol(const AppId& app_id,
+                                    const std::string& protocol_scheme);
+
   // An access to read-only registry. Does an upcast to read-only type.
   const WebAppRegistrar& registrar() const { return *registrar_; }
 
