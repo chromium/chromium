@@ -35,6 +35,9 @@ struct PowerBookmarkQueryFields : bookmarks::QueryFields {
   ~PowerBookmarkQueryFields();
 
   std::vector<std::u16string> tags;
+
+  // If his field is left null, the root of the bookmark model will be searched.
+  const bookmarks::BookmarkNode* folder{nullptr};
 };
 
 // This is the key for the storage of PowerBookmarkMeta in bookmarks' meta_info

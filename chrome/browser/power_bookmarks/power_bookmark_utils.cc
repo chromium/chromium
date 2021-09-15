@@ -196,6 +196,10 @@ void GetBookmarksMatchingProperties(
   if (query.word_phrase_query && query_words.empty() && query.tags.empty())
     return;
 
+  const bookmarks::BookmarkNode* search_folder = model->root_node();
+  if (query.folder && query.folder->is_folder())
+    search_folder = query.folder;
+
   if (query.url) {
     // Shortcut into the BookmarkModel if searching for URL.
     GURL url(*query.url);
@@ -206,8 +210,7 @@ void GetBookmarksMatchingProperties(
     GetBookmarksMatchingPropertiesImpl<bookmarks::VectorIterator>(
         iterator, model, query, query_words, max_count, nodes);
   } else {
-    ui::TreeNodeIterator<const bookmarks::BookmarkNode> iterator(
-        model->root_node());
+    ui::TreeNodeIterator<const bookmarks::BookmarkNode> iterator(search_folder);
     GetBookmarksMatchingPropertiesImpl<
         ui::TreeNodeIterator<const bookmarks::BookmarkNode>>(
         iterator, model, query, query_words, max_count, nodes);

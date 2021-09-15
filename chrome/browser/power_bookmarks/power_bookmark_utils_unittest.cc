@@ -287,5 +287,38 @@ TEST_F(PowerBookmarkUtilsTest, GetBookmarksMatchingPropertiesStringSearch) {
   nodes.clear();
 }
 
+TEST_F(PowerBookmarkUtilsTest, GetBookmarksMatchingPropertiesFolderSearch) {
+  std::unique_ptr<bookmarks::BookmarkModel> model(
+      bookmarks::TestBookmarkClient::CreateModel());
+  model->AddURL(model->other_node(), 0, u"foo example",
+                GURL("http://www.google.com"));
+
+  model->AddURL(model->other_node(), 0, u"baz example",
+                GURL("http://www.cnn.com"));
+
+  const bookmarks::BookmarkNode* folder =
+      model->AddFolder(model->other_node(), 0, u"test folder");
+
+  const bookmarks::BookmarkNode* node =
+      model->AddURL(folder, 0, u"buz example", GURL("http://www.example.com"));
+
+  std::vector<const bookmarks::BookmarkNode*> nodes;
+  PowerBookmarkQueryFields query;
+  query.word_phrase_query = std::make_unique<std::u16string>();
+
+  *query.word_phrase_query = u"example";
+  query.folder = nullptr;
+  GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
+  ASSERT_EQ(3U, nodes.size());
+  nodes.clear();
+
+  *query.word_phrase_query = u"example";
+  query.folder = folder;
+  GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
+  ASSERT_EQ(1U, nodes.size());
+  EXPECT_TRUE(node == nodes[0]);
+  nodes.clear();
+}
+
 }  // namespace
 }  // namespace power_bookmarks
