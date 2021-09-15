@@ -383,10 +383,6 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
          !oof_data->oof_positioned_fragmentainer_descendants.IsEmpty());
   const NGPhysicalBoxFragment* box_fragment =
       DynamicTo<NGPhysicalBoxFragment>(&fragment);
-  // TODO(kojii): We should propagate from line boxes too, but I'm doing it in a
-  // following patch to separate changes of the behavior.
-  if (!box_fragment)
-    return;
 
   if (!oof_data->multicols_with_pending_oofs.IsEmpty()) {
     const auto& multicols_with_pending_oofs =
@@ -398,10 +394,11 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
 
       const NGPhysicalFragment* fixedpos_containing_block_fragment =
           multicol_info.fixedpos_containing_block.fragment.get();
-      if (!fixedpos_containing_block_fragment &&
-          box_fragment->GetLayoutObject() &&
-          box_fragment->GetLayoutObject()->CanContainFixedPositionObjects())
+      if (!fixedpos_containing_block_fragment && fragment.GetLayoutObject() &&
+          fragment.GetLayoutObject()->CanContainFixedPositionObjects()) {
+        DCHECK(box_fragment);  // shouldn't be line box by |GetLayoutObject()|.
         fixedpos_containing_block_fragment = box_fragment;
+      }
 
       // If a fixedpos containing block was found, the |multicol_offset|
       // should remain relative to the fixedpos containing block. Otherwise,
@@ -423,7 +420,7 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
         // fragmentainers. The block contribution from previous fragmentainers
         // has already been applied. As such, avoid unnecessarily adding an
         // additional inline/block offset of any fragmentainers.
-        if (!box_fragment->IsFragmentainerBox())
+        if (!fragment.IsFragmentainerBox())
           fixedpos_containing_block_offset += offset;
         fixedpos_containing_block_offset.block_offset +=
             containing_block_adjustment;
@@ -449,8 +446,9 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
     const NGPhysicalFragment* containing_block_fragment =
         descendant.containing_block.fragment.get();
     if (!containing_block_fragment) {
+      DCHECK(box_fragment);
       containing_block_fragment = box_fragment;
-    } else if (box_fragment->IsFragmentationContextRoot()) {
+    } else if (box_fragment && box_fragment->IsFragmentationContextRoot()) {
       // If we find a multicol with OOF positioned fragmentainer descendants,
       // then that multicol is an inner multicol with pending OOFs. Those OOFs
       // will be laid out inside the inner multicol when we reach the outermost
@@ -465,16 +463,17 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
         converter.ToLogical(descendant.containing_block.relative_offset,
                             containing_block_fragment->Size());
     containing_block_rel_offset += relative_offset;
-    if (!box_fragment->IsFragmentainerBox())
+    if (!fragment.IsFragmentainerBox())
       containing_block_offset += offset;
     containing_block_offset.block_offset += containing_block_adjustment;
 
     const NGPhysicalFragment* fixedpos_containing_block_fragment =
         descendant.fixedpos_containing_block.fragment.get();
-    if (!fixedpos_containing_block_fragment &&
-        box_fragment->GetLayoutObject() &&
-        box_fragment->GetLayoutObject()->CanContainFixedPositionObjects())
+    if (!fixedpos_containing_block_fragment && fragment.GetLayoutObject() &&
+        fragment.GetLayoutObject()->CanContainFixedPositionObjects()) {
+      DCHECK(box_fragment);  // shouldn't ba line box by |GetLayoutObject()|.
       fixedpos_containing_block_fragment = box_fragment;
+    }
 
     LogicalOffset fixedpos_containing_block_offset;
     LogicalOffset fixedpos_containing_block_rel_offset;
@@ -486,7 +485,7 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
           descendant.fixedpos_containing_block.relative_offset,
           fixedpos_containing_block_fragment->Size());
       fixedpos_containing_block_rel_offset += relative_offset;
-      if (!box_fragment->IsFragmentainerBox())
+      if (!fragment.IsFragmentainerBox())
         fixedpos_containing_block_offset += offset;
       fixedpos_containing_block_offset.block_offset +=
           containing_block_adjustment;
@@ -516,7 +515,7 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
     // The relative offset should be applied after fragmentation. Subtract out
     // the accumulated relative offset from the inline container to the
     // containing block so that it can be re-applied at the correct time.
-    if (new_inline_container.container &&
+    if (new_inline_container.container && box_fragment &&
         containing_block_fragment == box_fragment)
       static_position.offset -= inline_relative_offset;
 
