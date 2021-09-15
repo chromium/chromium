@@ -88,9 +88,11 @@ void DatabaseImpl::RenameObjectStore(int64_t transaction_id,
   }
 
   if (!transaction->IsAcceptingRequests()) {
-    mojo::ReportBadMessage(
-        "RenameObjectStore was called after committing or aborting the "
-        "transaction");
+    // TODO(https://crbug.com/1249908): If the transaction was already committed
+    // (or is in the process of being committed) we should kill the renderer.
+    // This branch however also includes cases where the browser process aborted
+    // the transaction, as currently we don't distinguish that state from the
+    // transaction having been committed. So for now simply ignore the request.
     return;
   }
 
@@ -183,8 +185,11 @@ void DatabaseImpl::Get(int64_t transaction_id,
   }
 
   if (!transaction->IsAcceptingRequests()) {
-    mojo::ReportBadMessage(
-        "Get was called after committing or aborting the transaction");
+    // TODO(https://crbug.com/1249908): If the transaction was already committed
+    // (or is in the process of being committed) we should kill the renderer.
+    // This branch however also includes cases where the browser process aborted
+    // the transaction, as currently we don't distinguish that state from the
+    // transaction having been committed. So for now simply ignore the request.
     return;
   }
 
@@ -239,8 +244,11 @@ void DatabaseImpl::GetAll(int64_t transaction_id,
   }
 
   if (!transaction->IsAcceptingRequests()) {
-    mojo::ReportBadMessage(
-        "GetAll was called after committing or aborting the transaction");
+    // TODO(https://crbug.com/1249908): If the transaction was already committed
+    // (or is in the process of being committed) we should kill the renderer.
+    // This branch however also includes cases where the browser process aborted
+    // the transaction, as currently we don't distinguish that state from the
+    // transaction having been committed. So for now simply ignore the request.
     return;
   }
 
@@ -284,8 +292,11 @@ void DatabaseImpl::SetIndexKeys(
   }
 
   if (!transaction->IsAcceptingRequests()) {
-    mojo::ReportBadMessage(
-        "SetIndexKeys was called after committing or aborting the transaction");
+    // TODO(https://crbug.com/1249908): If the transaction was already committed
+    // (or is in the process of being committed) we should kill the renderer.
+    // This branch however also includes cases where the browser process aborted
+    // the transaction, as currently we don't distinguish that state from the
+    // transaction having been committed. So for now simply ignore the request.
     return;
   }
 
@@ -316,9 +327,11 @@ void DatabaseImpl::SetIndexesReady(int64_t transaction_id,
   }
 
   if (!transaction->IsAcceptingRequests()) {
-    mojo::ReportBadMessage(
-        "SetIndexesReady was called after committing or aborting the "
-        "transaction");
+    // TODO(https://crbug.com/1249908): If the transaction was already committed
+    // (or is in the process of being committed) we should kill the renderer.
+    // This branch however also includes cases where the browser process aborted
+    // the transaction, as currently we don't distinguish that state from the
+    // transaction having been committed. So for now simply ignore the request.
     return;
   }
 
@@ -360,8 +373,11 @@ void DatabaseImpl::OpenCursor(
   }
 
   if (!transaction->IsAcceptingRequests()) {
-    mojo::ReportBadMessage(
-        "OpenCursor was called after committing or aborting the transaction");
+    // TODO(https://crbug.com/1249908): If the transaction was already committed
+    // (or is in the process of being committed) we should kill the renderer.
+    // This branch however also includes cases where the browser process aborted
+    // the transaction, as currently we don't distinguish that state from the
+    // transaction having been committed. So for now simply ignore the request.
     return;
   }
 
@@ -415,8 +431,11 @@ void DatabaseImpl::Count(
     return;
 
   if (!transaction->IsAcceptingRequests()) {
-    mojo::ReportBadMessage(
-        "Count was called after committing or aborting the transaction");
+    // TODO(https://crbug.com/1249908): If the transaction was already committed
+    // (or is in the process of being committed) we should kill the renderer.
+    // This branch however also includes cases where the browser process aborted
+    // the transaction, as currently we don't distinguish that state from the
+    // transaction having been committed. So for now simply ignore the request.
     return;
   }
 
@@ -446,8 +465,11 @@ void DatabaseImpl::DeleteRange(
     return;
 
   if (!transaction->IsAcceptingRequests()) {
-    mojo::ReportBadMessage(
-        "DeleteRange was called after committing or aborting the transaction");
+    // TODO(https://crbug.com/1249908): If the transaction was already committed
+    // (or is in the process of being committed) we should kill the renderer.
+    // This branch however also includes cases where the browser process aborted
+    // the transaction, as currently we don't distinguish that state from the
+    // transaction having been committed. So for now simply ignore the request.
     return;
   }
 
@@ -475,9 +497,11 @@ void DatabaseImpl::GetKeyGeneratorCurrentNumber(
     return;
 
   if (!transaction->IsAcceptingRequests()) {
-    mojo::ReportBadMessage(
-        "GetKeyGeneratorCurrentNumber was called after committing or aborting "
-        "the transaction");
+    // TODO(https://crbug.com/1249908): If the transaction was already committed
+    // (or is in the process of being committed) we should kill the renderer.
+    // This branch however also includes cases where the browser process aborted
+    // the transaction, as currently we don't distinguish that state from the
+    // transaction having been committed. So for now simply ignore the request.
     return;
   }
 
@@ -505,8 +529,11 @@ void DatabaseImpl::Clear(
     return;
 
   if (!transaction->IsAcceptingRequests()) {
-    mojo::ReportBadMessage(
-        "Clear was called after committing or aborting the transaction");
+    // TODO(https://crbug.com/1249908): If the transaction was already committed
+    // (or is in the process of being committed) we should kill the renderer.
+    // This branch however also includes cases where the browser process aborted
+    // the transaction, as currently we don't distinguish that state from the
+    // transaction having been committed. So for now simply ignore the request.
     return;
   }
 
@@ -538,8 +565,11 @@ void DatabaseImpl::CreateIndex(int64_t transaction_id,
   }
 
   if (!transaction->IsAcceptingRequests()) {
-    mojo::ReportBadMessage(
-        "CreateIndex was called after committing or aborting the transaction");
+    // TODO(https://crbug.com/1249908): If the transaction was already committed
+    // (or is in the process of being committed) we should kill the renderer.
+    // This branch however also includes cases where the browser process aborted
+    // the transaction, as currently we don't distinguish that state from the
+    // transaction having been committed. So for now simply ignore the request.
     return;
   }
 
@@ -569,8 +599,11 @@ void DatabaseImpl::DeleteIndex(int64_t transaction_id,
   }
 
   if (!transaction->IsAcceptingRequests()) {
-    mojo::ReportBadMessage(
-        "DeleteIndex was called after committing or aborting the transaction");
+    // TODO(https://crbug.com/1249908): If the transaction was already committed
+    // (or is in the process of being committed) we should kill the renderer.
+    // This branch however also includes cases where the browser process aborted
+    // the transaction, as currently we don't distinguish that state from the
+    // transaction having been committed. So for now simply ignore the request.
     return;
   }
 
@@ -599,8 +632,11 @@ void DatabaseImpl::RenameIndex(int64_t transaction_id,
   }
 
   if (!transaction->IsAcceptingRequests()) {
-    mojo::ReportBadMessage(
-        "RenameIndex was called after committing or aborting the transaction");
+    // TODO(https://crbug.com/1249908): If the transaction was already committed
+    // (or is in the process of being committed) we should kill the renderer.
+    // This branch however also includes cases where the browser process aborted
+    // the transaction, as currently we don't distinguish that state from the
+    // transaction having been committed. So for now simply ignore the request.
     return;
   }
 
