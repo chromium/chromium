@@ -83,8 +83,10 @@ if (use_locally_built_instrumented_libraries) {
 
   if (instrumented_libraries_platform == "trusty") {
     libgcrypt_package_ = "libgcrypt11"
+    librtmp_package_ = "librtmp0"
   } else {
     libgcrypt_package_ = "libgcrypt20"
+    librtmp_package_ = "librtmp1"
   }
 
   group("locally_built") {
@@ -127,7 +129,6 @@ if (use_locally_built_instrumented_libraries) {
       ":libpci3",
       ":libpcre3",
       ":libpixman-1-0",
-      ":librtmp0",
       ":libsasl2-2",
       ":libsecret",
       ":libtasn1-6",
@@ -156,6 +157,7 @@ if (use_locally_built_instrumented_libraries) {
       ":udev",
       ":zlib1g",
       ":" + libgcrypt_package_,
+      ":" + librtmp_package_,
     ]
     if (is_msan) {
       deps += [
@@ -458,6 +460,7 @@ if (use_locally_built_instrumented_libraries) {
 
       # From debian/rules.
       "--disable-libaudit",
+      "--enable-apparmor",
       "--enable-systemd",
       "--libexecdir=/lib/dbus-1.0",
       "--with-systemdsystemunitdir=/lib/systemd/system",
@@ -468,12 +471,6 @@ if (use_locally_built_instrumented_libraries) {
       "--prefix=/usr",
       "--localstatedir=/var",
     ]
-    if (instrumented_libraries_platform == "trusty") {
-      extra_configure_flags += [ "--enable-apparmor" ]
-    } else {
-      # This is required for building with clang.
-      extra_configure_flags += [ "--disable-apparmor" ]
-    }
   }
 
   instrumented_library("libdbus-glib-1-2") {
@@ -769,7 +766,7 @@ if (use_locally_built_instrumented_libraries) {
     extra_configure_flags = [ "--disable-static" ]
   }
 
-  instrumented_library("librtmp0") {
+  target("instrumented_library", librtmp_package_) {
     build_method = "debian"
   }
 
@@ -817,7 +814,10 @@ if (use_locally_built_instrumented_libraries) {
 
     # Backport a use-after-free fix:
     # http://cgit.freedesktop.org/libva/diff/va/va.c?h=staging&id=d4988142a3f2256e38c5c5cdcdfc1b4f5f3c1ea9
-    patches = [ "patches/libva1.diff" ]
+    # The patch is in upstream Xenial.
+    if (instrumented_libraries_platform == "trusty") {
+      patches = [ "patches/libva1.diff" ]
+    }
     pre_build = "scripts/pre-build/libva1.sh"
   }
 
@@ -961,14 +961,18 @@ if (use_locally_built_instrumented_libraries) {
   }
 
   instrumented_library("udev") {
-    extra_configure_flags = [
-      "--disable-static",
+    if (instrumented_libraries_platform == "trusty") {
+      extra_configure_flags = [
+        "--disable-static",
 
-      # Without this flag there's a linking step that doesn't honor LDFLAGS
-      # and fails.
-      # TODO(eugenis): find a better fix.
-      "--disable-gudev",
-    ]
+        # Without this flag there's a linking step that doesn't honor LDFLAGS
+        # and fails.
+        # TODO(eugenis): find a better fix.
+        "--disable-gudev",
+      ]
+    } else {
+      build_method = "debian"
+    }
     pre_build = "scripts/pre-build/udev.sh"
   }
 

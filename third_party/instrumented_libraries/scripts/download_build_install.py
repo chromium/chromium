@@ -289,7 +289,8 @@ class DebianBuilder(InstrumentedPackageBuilder):
     self._build_env['DEB_CFLAGS_APPEND'] = self._cflags
     self._build_env['DEB_CXXFLAGS_APPEND'] = self._cflags
     self._build_env['DEB_LDFLAGS_APPEND'] = self._ldflags
-    self._build_env['DEB_BUILD_OPTIONS'] = 'nocheck notest nodoc nostrip'
+    self._build_env['DEB_BUILD_OPTIONS'] = \
+      'nocheck notest nodoc nostrip parallel=%d' % os.cpu_count()
 
     self.set_asan_options()
 

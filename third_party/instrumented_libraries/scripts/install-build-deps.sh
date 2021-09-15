@@ -121,3 +121,8 @@ if test "$ubuntu_release" = "trusty" ; then
   # install-build-deps.sh to reinstall those that have been removed.
   $(dirname ${BASH_SOURCE[0]})/../../../build/install-build-deps.sh --no-prompt
 fi
+
+# Work around an issue where clang builds search for libapparmor.so in the wrong
+# path.  This is required for building udev, pulseaudio, and libdbus-1-3.
+sudo ln -s /usr/lib/x86_64-linux-gnu/libapparmor.so \
+	 /lib/x86_64-linux-gnu/libapparmor.so
