@@ -1,4 +1,0 @@
-include_rules = [
-  # Each directory in ash/services should have DEPS to launch their own process.
-  "-ash",
-]
