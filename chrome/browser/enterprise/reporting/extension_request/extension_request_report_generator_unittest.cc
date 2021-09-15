@@ -7,6 +7,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/reporting/extension_request/extension_request_report_throttler_test.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/common/extensions/extension_constants.h"
