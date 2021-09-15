@@ -4,14 +4,16 @@
 
 package com.android.webview.chromium;
 
-import android.net.ParseException;
 import android.net.WebAddress;
 import android.webkit.CookieManager;
 import android.webkit.ValueCallback;
 import android.webkit.WebView;
 
 import org.chromium.android_webview.AwCookieManager;
+import org.chromium.android_webview.WebAddressParser;
 import org.chromium.base.Log;
+
+import java.net.URISyntaxException;
 
 /**
  * Chromium implementation of CookieManager -- forwards calls to the
@@ -56,7 +58,7 @@ public class CookieManagerAdapter extends CookieManager {
 
         try {
             mChromeCookieManager.setCookie(fixupUrl(url), value);
-        } catch (ParseException e) {
+        } catch (URISyntaxException e) {
             Log.e(TAG, "Not setting cookie due to error parsing URL: %s", url, e);
         }
     }
@@ -71,7 +73,7 @@ public class CookieManagerAdapter extends CookieManager {
         try {
             mChromeCookieManager.setCookie(
                     fixupUrl(url), value, CallbackConverter.fromValueCallback(callback));
-        } catch (ParseException e) {
+        } catch (URISyntaxException e) {
             Log.e(TAG, "Not setting cookie due to error parsing URL: %s", url, e);
         }
     }
@@ -80,7 +82,7 @@ public class CookieManagerAdapter extends CookieManager {
     public String getCookie(String url) {
         try {
             return mChromeCookieManager.getCookie(fixupUrl(url));
-        } catch (ParseException e) {
+        } catch (URISyntaxException e) {
             Log.e(TAG, "Unable to get cookies due to error parsing URL: %s", url, e);
             return null;
         }
@@ -152,11 +154,14 @@ public class CookieManagerAdapter extends CookieManager {
         mChromeCookieManager.setAcceptFileSchemeCookies(accept);
     }
 
-    private static String fixupUrl(String url) throws ParseException {
-        // WebAddress is a private API in the android framework and a "quirk"
-        // of the Classic WebView implementation that allowed embedders to
-        // be relaxed about what URLs they passed into the CookieManager, so we
-        // do the same normalisation before entering the chromium stack.
-        return new WebAddress(url).toString();
+    private static String fixupUrl(String url) throws URISyntaxException {
+        // WebAddressParser is a copy of the  private API WebAddress in the android framework and a
+        // "quirk" of the Classic WebView implementation that allowed embedders to be relaxed about
+        // what URLs they passed into the CookieManager, so we do the same normalisation before
+        // entering the chromium stack.
+        //
+        // The implementation of WebAddressParser isn't ideal, we should remove its usage and
+        // replace it with UrlFormatter or similar URL parser.
+        return new WebAddressParser(url).toString();
     }
 }
