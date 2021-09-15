@@ -56,7 +56,7 @@ suite('OsBluetoothChangeDeviceNameDialogTest', function() {
         /*id=*/ '12//345&6789',
         /*publicName=*/ 'BeatsX',
         /*connected=*/ true,
-        /*nickname=*/ 'device1');
+        /*opt_nickname=*/ 'device1');
 
     bluetoothDeviceChangeNameDialog.device = {...device1};
     await flushAsync();
@@ -71,7 +71,7 @@ suite('OsBluetoothChangeDeviceNameDialogTest', function() {
         /*id=*/ '12//345&6789',
         /*publicName=*/ 'BeatsX',
         /*connected=*/ true,
-        /*nickname=*/ 'device1');
+        /*opt_nickname=*/ 'device1');
 
     bluetoothDeviceChangeNameDialog.device = {...device1};
     await flushAsync();

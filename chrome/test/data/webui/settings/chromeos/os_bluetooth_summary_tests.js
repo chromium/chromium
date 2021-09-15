@@ -152,12 +152,12 @@ suite('OsBluetoothSummaryTest', function() {
 
     const device1 = createDefaultBluetoothDevice(
         /*id=*/ '123456789', /*publicName=*/ 'BeatsX', /*connected=*/ true,
-        /*nickname=*/ 'device1');
+        /*opt_nickname=*/ 'device1');
     const device2 = createDefaultBluetoothDevice(
         /*id=*/ '987654321', /*publicName=*/ 'MX 3', /*connected=*/ true);
     const device3 = createDefaultBluetoothDevice(
         /*id=*/ '456789', /*publicName=*/ 'Radio head', /*connected=*/ true,
-        /*nickname=*/ 'device3');
+        /*opt_nickname=*/ 'device3');
 
     const mockPairedBluetoothDeviceProperties = [
       device1,

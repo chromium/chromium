@@ -191,6 +191,7 @@
 #include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision_ui.h"
 #include "chrome/browser/ui/webui/chromeos/audio/audio.mojom.h"
 #include "chrome/browser/ui/webui/chromeos/audio/audio_ui.h"
+#include "chrome/browser/ui/webui/chromeos/bluetooth_pairing_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/crostini_installer/crostini_installer.mojom.h"
 #include "chrome/browser/ui/webui/chromeos/crostini_installer/crostini_installer_ui.h"
 #include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader.mojom.h"
@@ -936,7 +937,8 @@ void PopulateChromeWebUIFrameBinders(
   if (ash::features::IsBluetoothRevampEnabled()) {
     RegisterWebUIControllerInterfaceBinder<
         chromeos::bluetooth_config::mojom::CrosBluetoothConfig,
-        chromeos::settings::OSSettingsUI>(map);
+        chromeos::BluetoothPairingDialogUI, chromeos::settings::OSSettingsUI>(
+        map);
   }
 
   RegisterWebUIControllerInterfaceBinder<audio::mojom::PageHandlerFactory,

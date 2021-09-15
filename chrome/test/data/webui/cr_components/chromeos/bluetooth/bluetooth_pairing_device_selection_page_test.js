@@ -6,11 +6,11 @@
 import 'chrome://bluetooth-pairing/strings.m.js';
 
 import {SettingsBluetoothPairingDeviceSelectionPageElement} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_pairing_device_selection_page.js';
+import {setBluetoothConfigForTesting} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import { assertEquals, assertFalse, assertTrue} from '../../../chai_assert.js';
-
-import {createDefaultBluetoothDevice} from './fake_bluetooth_config.js';
+import {assertEquals, assertFalse, assertTrue} from '../../../chai_assert.js';
+import {createDefaultBluetoothDevice, FakeBluetoothConfig} from './fake_bluetooth_config.js';
+import {FakeBluetoothDiscoveryDelegate} from './fake_bluetooth_discovery_delegate.js';
 
 // clang-format on
 
@@ -20,13 +20,36 @@ suite('CrComponentsBluetoothPairingDeviceSelectionPageTest', function() {
   /** @type {?SettingsBluetoothPairingDeviceSelectionPageElement} */
   let deviceSelectionPage;
 
+  /** @type {!FakeBluetoothConfig} */
+  let bluetoothConfig;
+
+  /**
+   * @type {!FakeBluetoothDiscoveryDelegate}
+   */
+  let discoveryDelegate;
+
   setup(function() {
+    bluetoothConfig = new FakeBluetoothConfig();
+    setBluetoothConfigForTesting(bluetoothConfig);
+
     deviceSelectionPage =
         /** @type {?SettingsBluetoothPairingDeviceSelectionPageElement} */ (
             document.createElement('bluetooth-pairing-device-selection-page'));
     document.body.appendChild(deviceSelectionPage);
     flush();
+
+    discoveryDelegate = new FakeBluetoothDiscoveryDelegate();
+    discoveryDelegate.addDeviceListChangedCallback(onDeviceListChanged);
+    bluetoothConfig.startDiscovery(discoveryDelegate);
   });
+
+  /**
+   * @param {!Array<!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties>}
+   *     discoveredDevices
+   */
+  function onDeviceListChanged(discoveredDevices) {
+    deviceSelectionPage.devices = discoveredDevices;
+  }
 
   async function flushAsync() {
     flush();
@@ -57,11 +80,12 @@ suite('CrComponentsBluetoothPairingDeviceSelectionPageTest', function() {
         /*id=*/ '12//345&6789',
         /*publicName=*/ 'BeatsX',
         /*connected=*/ true,
-        /*nickname=*/ 'device1',
-        /*audioCapability=*/ mojom.AudioOutputCapability.kCapableOfAudioOutput,
-        /*deviceType=*/ mojom.DeviceType.kMouse);
+        /*opt_nickname=*/ 'device1',
+        /*opt_audioCapability=*/
+        mojom.AudioOutputCapability.kCapableOfAudioOutput,
+        /*opt_deviceType=*/ mojom.DeviceType.kMouse);
 
-    deviceSelectionPage.devices = [device.deviceProperties];
+    bluetoothConfig.appendToDiscoveredDeviceList([device.deviceProperties]);
 
     await flushAsync();
 

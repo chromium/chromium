@@ -18,27 +18,27 @@ const mojom = chromeos.bluetoothConfig.mojom;
  * @param {string} id
  * @param {string} publicName
  * @param {boolean} connected
- * @param {string|undefined} nickname
- * @param {?chromeos.bluetoothConfig.mojom.AudioOutputCapability}
- *     audioCapability
- * @param {?chromeos.bluetoothConfig.mojom.DeviceType}
- *     deviceType
+ * @param {string=} opt_nickname
+ * @param {!chromeos.bluetoothConfig.mojom.AudioOutputCapability=}
+ *     opt_audioCapability
+ * @param {!chromeos.bluetoothConfig.mojom.DeviceType=}
+ *     opt_deviceType
  * @return {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
  */
 export function createDefaultBluetoothDevice(
-    id, publicName, connected, nickname = undefined,
-    audioCapability = mojom.AudioOutputCapability.kNotCapableOfAudio,
-    deviceType = mojom.DeviceType.kUnknown) {
+    id, publicName, connected, opt_nickname = undefined,
+    opt_audioCapability = mojom.AudioOutputCapability.kNotCapableOfAudioOutput,
+    opt_deviceType = mojom.DeviceType.kUnknown) {
   return {
     deviceProperties: {
       id: id,
       publicName: stringToMojoString16(publicName),
-      deviceType: deviceType,
-      audioCapability: audioCapability,
+      deviceType: opt_deviceType,
+      audioCapability: opt_audioCapability,
       connectionState: connected ? mojom.DeviceConnectionState.kConnected :
                                    mojom.DeviceConnectionState.kNotConnected,
     },
-    nickname: nickname,
+    nickname: opt_nickname,
   };
 }
 
@@ -57,19 +57,42 @@ export class FakeBluetoothConfig {
     };
 
     /**
+     * @private {!Array<!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties>}
+     */
+    this.discoveredDevices_ = [];
+
+    /**
      * @private {!Array<
-     *     !chromeos.bluetoothConfig.mojom.SystemPropertiesObserver>}
+     *     !chromeos.bluetoothConfig.mojom.SystemPropertiesObserverInterface>}
      */
     this.observers_ = [];
+
+    /**
+     * @private {!Array<
+     *     !chromeos.bluetoothConfig.mojom.BluetoothDiscoveryDelegateInterface>}
+     */
+    this.discoveryDelegates_ = [];
   }
 
   /**
    * @override
-   * @param {SystemPropertiesObserver} observer
+   * @param {!chromeos.bluetoothConfig.mojom.SystemPropertiesObserverInterface}
+   *     observer
    */
   observeSystemProperties(observer) {
     this.observers_.push(observer);
     this.notifyObserversPropertiesUpdated_();
+  }
+
+
+  /**
+   * @override
+   * @param {!chromeos.bluetoothConfig.mojom.BluetoothDiscoveryDelegateInterface}
+   *     delegate
+   */
+  startDiscovery(delegate) {
+    this.discoveryDelegates_.push(delegate);
+    this.notifyDelegatesPropertiesUpdated_();
   }
 
   /**
@@ -100,6 +123,11 @@ export class FakeBluetoothConfig {
    */
   setSystemState(systemState) {
     this.systemProperties_.systemState = systemState;
+    this.systemProperties_ =
+        /**
+         * @type {!chromeos.bluetoothConfig.mojom.BluetoothSystemProperties}
+         */
+        (Object.assign({}, this.systemProperties_));
     this.notifyObserversPropertiesUpdated_();
   }
 
@@ -143,7 +171,12 @@ export class FakeBluetoothConfig {
     }
 
     this.systemProperties_.pairedDevices =
-        this.systemProperties_.pairedDevices.concat(devices);
+        [...this.systemProperties_.pairedDevices, ...devices];
+    this.systemProperties_ =
+        /**
+         * @type {!chromeos.bluetoothConfig.mojom.BluetoothSystemProperties}
+         */
+        (Object.assign({}, this.systemProperties_));
     this.notifyObserversPropertiesUpdated_();
   }
 
@@ -153,27 +186,30 @@ export class FakeBluetoothConfig {
    *     device
    */
   removePairedDevice(device) {
-    this.systemProperties_.pairedDevices.splice(
-        this.getDeviceIndex_(device), 1);
+    const pairedDevices = this.systemProperties_.pairedDevices.filter(
+        d => d.deviceProperties.id !== device.deviceProperties.id);
+    this.systemProperties_.pairedDevices = pairedDevices;
+    this.systemProperties_ =
+        /**
+         * @type {!chromeos.bluetoothConfig.mojom.BluetoothSystemProperties}
+         */
+        (Object.assign({}, this.systemProperties_));
     this.notifyObserversPropertiesUpdated_();
   }
 
   /**
-   * @param {chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
-   *     device
-   * @return {number}
-   * @private
+   * Adds a list of devices to the current list of discovered devices in
+   * |discoveredDevices_|.
+   * @param {Array<!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties>}
+   *     devices
    */
-  getDeviceIndex_(device) {
-    const foundDeviceIndex = this.systemProperties_.pairedDevices.findIndex(
-        pairedDevice =>
-            pairedDevice.deviceProperties.id === device.deviceProperties.id);
+  appendToDiscoveredDeviceList(devices) {
+    if (!devices.length) {
+      return;
+    }
 
-    assert(
-        foundDeviceIndex !== -1, `Device with id: ${device.deviceProperties.id}
-                was not found.`);
-
-    return foundDeviceIndex;
+    this.discoveredDevices_ = [...this.discoveredDevices_, ...devices];
+    this.notifyDelegatesPropertiesUpdated_();
   }
 
   /**
@@ -182,8 +218,15 @@ export class FakeBluetoothConfig {
    *     device
    */
   updatePairedDevice(device) {
-    this.systemProperties_.pairedDevices.splice(
-        this.getDeviceIndex_(device), 1, {...device});
+    const pairedDevices = this.systemProperties_.pairedDevices.filter(
+        d => d.deviceProperties.id !== device.deviceProperties.id);
+    this.systemProperties_.pairedDevices =
+        [...pairedDevices, Object.assign({}, device)];
+    this.systemProperties_ =
+        /**
+         * @type {!chromeos.bluetoothConfig.mojom.BluetoothSystemProperties}
+         */
+        (Object.assign({}, this.systemProperties_));
     this.notifyObserversPropertiesUpdated_();
   }
 
@@ -192,7 +235,15 @@ export class FakeBluetoothConfig {
    * Notifies the observer list that systemProperties_ has changed.
    */
   notifyObserversPropertiesUpdated_() {
-    this.observers_.forEach(
-        o => o.onPropertiesUpdated({...this.systemProperties_}));
+    this.observers_.forEach(o => o.onPropertiesUpdated(this.systemProperties_));
+  }
+
+  /**
+   * @private
+   * Notifies the delegates list that discoveredDevices_ has changed.
+   */
+  notifyDelegatesPropertiesUpdated_() {
+    this.discoveryDelegates_.forEach(
+        d => d.onDiscoveredDevicesListChanged([...this.discoveredDevices_]));
   }
 }

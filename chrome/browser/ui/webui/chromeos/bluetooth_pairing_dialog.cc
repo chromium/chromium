@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/chromeos/bluetooth_pairing_dialog.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/bluetooth_config_service.h"
 #include "base/json/json_writer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chromeos/bluetooth_shared_load_time_data_provider.h"
@@ -114,7 +115,7 @@ std::string BluetoothPairingDialog::GetDialogArgs() const {
 // BluetoothPairingUI
 
 BluetoothPairingDialogUI::BluetoothPairingDialogUI(content::WebUI* web_ui)
-    : ui::WebDialogUI(web_ui) {
+    : ui::MojoWebDialogUI(web_ui) {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUIBluetoothPairingHost);
 
@@ -132,5 +133,14 @@ BluetoothPairingDialogUI::BluetoothPairingDialogUI(content::WebUI* web_ui)
 }
 
 BluetoothPairingDialogUI::~BluetoothPairingDialogUI() = default;
+
+void BluetoothPairingDialogUI::BindInterface(
+    mojo::PendingReceiver<
+        chromeos::bluetooth_config::mojom::CrosBluetoothConfig> receiver) {
+  DCHECK(features::IsBluetoothRevampEnabled());
+  ash::GetBluetoothConfigService(std::move(receiver));
+}
+
+WEB_UI_CONTROLLER_TYPE_IMPL(BluetoothPairingDialogUI)
 
 }  // namespace chromeos

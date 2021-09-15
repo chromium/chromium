@@ -12,6 +12,7 @@ import './bluetooth_base_page.js';
 import './bluetooth_pairing_device_selection_page.js';
 
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getBluetoothConfig} from './cros_bluetooth_config.js';
 
 /** @enum {string} */
 const BluetoothPairingSubpageId = {
@@ -19,7 +20,10 @@ const BluetoothPairingSubpageId = {
   DEVICE_SELECTION_PAGE: 'deviceSelectionPage',
 };
 
-/** @polymer */
+/**
+ * @implements {chromeos.bluetoothConfig.mojom.BluetoothDiscoveryDelegateInterface}
+ * @polymer
+ */
 export class SettingsBluetoothPairingUiElement extends PolymerElement {
   static get is() {
     return 'bluetooth-pairing-ui';
@@ -39,7 +43,50 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
         type: String,
         value: BluetoothPairingSubpageId.DEVICE_SELECTION_PAGE,
       },
+
+      /**
+       * @private {Array<!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties>}
+       */
+      discoveredDevices_: {
+        type: Array,
+        value: [],
+      }
     };
+  }
+
+  constructor() {
+    super();
+    /**
+     * @private {!chromeos.bluetoothConfig.mojom.BluetoothDiscoveryDelegateReceiver}
+     */
+    this.bluetoothDiscoveryDelegateReceiver_ =
+        new chromeos.bluetoothConfig.mojom.BluetoothDiscoveryDelegateReceiver(
+            this);
+  }
+
+  ready() {
+    super.ready();
+    getBluetoothConfig().startDiscovery(
+        this.bluetoothDiscoveryDelegateReceiver_.$.bindNewPipeAndPassRemote());
+  }
+
+  /**
+   * @override
+   * @param {Array<!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties>}
+   *     discoveredDevices
+   */
+  onDiscoveredDevicesListChanged(discoveredDevices) {
+    this.discoveredDevices_ = discoveredDevices;
+  }
+
+  /** @override */
+  onBluetoothDiscoveryStarted() {
+    // TODO(crbug.com/1010321): Implement this function.
+  }
+
+  /** @override */
+  onBluetoothDiscoveryStopped() {
+    // TODO(crbug.com/1010321): Implement this function.
   }
 }
 

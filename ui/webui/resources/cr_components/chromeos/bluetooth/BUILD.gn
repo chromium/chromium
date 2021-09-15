@@ -84,6 +84,7 @@ js_library("bluetooth_pairing_device_selection_page") {
 js_library("bluetooth_pairing_ui") {
   deps = [
     ":bluetooth_pairing_device_selection_page",
+    ":cros_bluetooth_config",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }

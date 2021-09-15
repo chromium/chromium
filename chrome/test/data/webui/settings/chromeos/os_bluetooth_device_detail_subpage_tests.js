@@ -80,9 +80,10 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
         /*id=*/ '12//345&6789',
         /*publicName=*/ 'BeatsX',
         /*connected=*/ true,
-        /*nickname=*/ 'device1',
-        /*audioCapability=*/ mojom.AudioOutputCapability.kCapableOfAudioOutput,
-        /*deviceType=*/ mojom.DeviceType.kMouse);
+        /*opt_nickname=*/ 'device1',
+        /*opt_audioCapability=*/
+        mojom.AudioOutputCapability.kCapableOfAudioOutput,
+        /*opt_deviceType=*/ mojom.DeviceType.kMouse);
 
     bluetoothConfig.appendToPairedDeviceList([device1]);
     await flushAsync();
@@ -114,17 +115,19 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
         /*id=*/ '12345/6789&',
         /*publicName=*/ 'BeatsX',
         /*connected=*/ true,
-        /*nickname=*/ 'device1',
-        /*audioCapability=*/ mojom.AudioOutputCapability.kCapableOfAudioOutput,
-        /*deviceType=*/ mojom.DeviceType.kMouse);
+        /*opt_nickname=*/ 'device1',
+        /*opt_audioCapability=*/
+        mojom.AudioOutputCapability.kCapableOfAudioOutput,
+        /*opt_deviceType=*/ mojom.DeviceType.kMouse);
 
     const device2 = createDefaultBluetoothDevice(
         /*id=*/ '987654321',
         /*publicName=*/ 'MX 3',
         /*connected=*/ true,
-        /*nickname=*/ 'device2',
-        /*audioCapability=*/ mojom.AudioOutputCapability.kCapableOfAudioOutput,
-        /*deviceType=*/ mojom.DeviceType.kMouse);
+        /*opt_nickname=*/ 'device2',
+        /*opt_audioCapability=*/
+        mojom.AudioOutputCapability.kCapableOfAudioOutput,
+        /*opt_deviceType=*/ mojom.DeviceType.kMouse);
 
     bluetoothConfig.appendToPairedDeviceList([device1, device2]);
     await flushAsync();
@@ -168,9 +171,10 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
         /*id=*/ '123456789',
         /*publicName=*/ 'BeatsX',
         /*connected=*/ true,
-        /*nickname=*/ 'device1',
-        /*audioCapability=*/ mojom.AudioOutputCapability.kCapableOfAudioOutput,
-        /*deviceType=*/ mojom.DeviceType.kHeadset);
+        /*opt_nickname=*/ 'device1',
+        /*opt_udioCapability=*/
+        mojom.AudioOutputCapability.kCapableOfAudioOutput,
+        /*opt_deviceType=*/ mojom.DeviceType.kHeadset);
 
     device1.deviceProperties.batteryInfo = {
       defaultProperties: {batteryPercentage: 90}
@@ -225,10 +229,10 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
             /*id=*/ '12//345&6789',
             /*publicName=*/ 'BeatsX',
             /*connected=*/ true,
-            /*nickname=*/ 'device1',
-            /*audioCapability=*/
+            /*opt_nickname=*/ 'device1',
+            /*opt_audioCapability=*/
             mojom.AudioOutputCapability.kCapableOfAudioOutput,
-            /*deviceType=*/ mojom.DeviceType.kMouse);
+            /*opt_deviceType=*/ mojom.DeviceType.kMouse);
 
         bluetoothConfig.appendToPairedDeviceList([device1]);
         await flushAsync();

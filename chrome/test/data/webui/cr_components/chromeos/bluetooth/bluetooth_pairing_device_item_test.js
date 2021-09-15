@@ -34,9 +34,10 @@ suite('CrComponentsBluetoothPairingDeviceItemTest', function() {
         /*id=*/ '12//345&6789',
         /*publicName=*/ 'BeatsX',
         /*connected=*/ true,
-        /*nickname=*/ 'device1',
-        /*audioCapability=*/ mojom.AudioOutputCapability.kCapableOfAudioOutput,
-        /*deviceType=*/ mojom.DeviceType.kMouse);
+        /*opt_nickname=*/ 'device1',
+        /*opt_audioCapability=*/
+        mojom.AudioOutputCapability.kCapableOfAudioOutput,
+        /*opt_deviceType=*/ mojom.DeviceType.kMouse);
 
     bluetoothPairingDeviceItem.device = device.deviceProperties;
     await flushAsync();
