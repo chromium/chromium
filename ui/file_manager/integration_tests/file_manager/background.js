@@ -166,7 +166,7 @@ export async function openAndWaitForClosingDialog(
   await closeDialog(appId);
   await repeatUntil(async () => {
     const windows = await remoteCall.getWindows();
-    if (windows[appId]) {
+    if (windows[appId] === appId) {
       return pending(caller, 'Waiting for Window %s to hide.', appId);
     }
   });
