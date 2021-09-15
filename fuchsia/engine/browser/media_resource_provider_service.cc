@@ -13,6 +13,7 @@
 #include "base/fuchsia/process_context.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/document_service_base.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/provision_fetcher_factory.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -110,11 +111,12 @@ void MediaResourceProviderImpl::CreateAudioCapturer(
     return;
   }
 
-  if (FrameImpl::FromRenderFrameHost(render_frame_host())
-          ->permission_controller()
-          ->GetPermissionState(content::PermissionType::AUDIO_CAPTURE,
-                               origin()) !=
-      blink::mojom::PermissionStatus::GRANTED) {
+  if (render_frame_host()
+          ->GetBrowserContext()
+          ->GetPermissionController()
+          ->GetPermissionStatusForFrame(
+              content::PermissionType::AUDIO_CAPTURE, render_frame_host(),
+              origin().GetURL()) != blink::mojom::PermissionStatus::GRANTED) {
     DLOG(WARNING)
         << "Received CreateAudioCapturer request from an origin that doesn't "
            "have AUDIO_CAPTURE permission.";
