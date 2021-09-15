@@ -100,7 +100,7 @@ class ResultSinkClient(object):
             },
             {
                 # Status before getting mapped to result_db statuses.
-                'key': 'android_test_runner_status',
+                'key': 'raw_status',
                 'value': status,
             }
         ],
