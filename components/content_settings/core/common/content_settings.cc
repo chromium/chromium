@@ -188,7 +188,8 @@ bool RendererContentSettingRules::IsRendererContentSetting(
          content_type == ContentSettingsType::JAVASCRIPT ||
          content_type == ContentSettingsType::CLIENT_HINTS ||
          content_type == ContentSettingsType::POPUPS ||
-         content_type == ContentSettingsType::MIXEDSCRIPT;
+         content_type == ContentSettingsType::MIXEDSCRIPT ||
+         content_type == ContentSettingsType::AUTO_DARK_WEB_CONTENT;
 }
 
 RendererContentSettingRules::RendererContentSettingRules() {}

@@ -68,6 +68,11 @@ class WebContentSettingsClient {
     return enabled_per_settings;
   }
 
+  // Controls whether auto dark web content is allowed for this frame.
+  virtual bool AllowAutoDarkWebContent(bool enabled_per_settings) {
+    return enabled_per_settings;
+  }
+
   // Controls whether access to read the clipboard is allowed for this frame.
   virtual bool AllowReadFromClipboard(bool default_value) {
     return default_value;

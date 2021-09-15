@@ -33,8 +33,8 @@ namespace {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
-// By default, JavaScript and images are enabled, and blockable mixed content is
-// blocked in guest content
+// By default, JavaScript, images and auto dark are allowed, and blockable mixed
+// content is blocked in guest content
 void GetGuestViewDefaultContentSettingRules(
     bool incognito,
     RendererContentSettingRules* rules) {
@@ -43,7 +43,11 @@ void GetGuestViewDefaultContentSettingRules(
       base::Value::FromUniquePtrValue(
           content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW)),
       std::string(), incognito));
-
+  rules->auto_dark_content_rules.push_back(ContentSettingPatternSource(
+      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
+      base::Value::FromUniquePtrValue(
+          content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW)),
+      std::string(), incognito));
   rules->script_rules.push_back(ContentSettingPatternSource(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
       base::Value::FromUniquePtrValue(

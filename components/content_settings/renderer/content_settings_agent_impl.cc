@@ -382,6 +382,22 @@ bool ContentSettingsAgentImpl::AllowScriptFromSource(
   return allow || IsAllowlistedForContentSettings();
 }
 
+bool ContentSettingsAgentImpl::AllowAutoDarkWebContent(
+    bool enabled_per_settings) {
+  if (!enabled_per_settings)
+    return false;
+
+  bool allow = true;
+  if (content_setting_rules_) {
+    ContentSetting setting = GetContentSettingFromRules(
+        content_setting_rules_->auto_dark_content_rules,
+        render_frame()->GetWebFrame(), GURL());
+    allow = setting != CONTENT_SETTING_BLOCK;
+  }
+  allow = allow || IsAllowlistedForContentSettings();
+  return allow;
+}
+
 bool ContentSettingsAgentImpl::AllowReadFromClipboard(bool default_value) {
   return delegate_->AllowReadFromClipboard().value_or(default_value);
 }
