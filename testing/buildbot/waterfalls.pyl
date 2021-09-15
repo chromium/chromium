@@ -2120,6 +2120,10 @@
           'limited_capacity_bot',
           'mac_mini_intel_uhd_630_gpu_stable',
         ],
+        'test_suites': {
+          'gtest_tests': 'gpu_dawn_integration_gtests_validating',
+          'isolated_scripts': 'gpu_dawn_isolated_scripts',
+        },
       },
       'Dawn Mac x64 Release (AMD)': {
         'os_type': 'mac',

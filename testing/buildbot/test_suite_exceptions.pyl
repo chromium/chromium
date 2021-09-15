@@ -3296,6 +3296,22 @@
         ],
       },
     },
+    'replacements': {
+      'Dawn Mac x64 Experimental Release (Intel)': {
+        'args': {
+          '--platform': 'mac-mac11.5',
+        },
+      }
+    },
+  },
+  'webgpu_blink_web_tests_with_backend_validation': {
+    'replacements': {
+      'Dawn Mac x64 Experimental Release (Intel)': {
+        'args': {
+          '--platform': 'mac-mac11.5',
+        },
+      },
+    },
   },
   'webkit_unit_tests': {
     'remove_from': [
