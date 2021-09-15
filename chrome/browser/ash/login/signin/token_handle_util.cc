@@ -260,7 +260,7 @@ void TokenHandleUtil::TokenDelegate::OnNetworkError(int response_code) {
 void TokenHandleUtil::TokenDelegate::OnGetTokenInfoResponse(
     std::unique_ptr<base::DictionaryValue> token_info) {
   TokenHandleStatus outcome = UNKNOWN;
-  if (!token_info->HasKey("error")) {
+  if (!token_info->FindKey("error")) {
     int expires_in = 0;
     if (token_info->GetInteger("expires_in", &expires_in))
       outcome = (expires_in < 0) ? INVALID : VALID;

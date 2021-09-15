@@ -316,16 +316,20 @@ TEST_F(ServicesCustomizationDocumentTest, Basic) {
   ASSERT_TRUE(default_apps->GetDictionary("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
                                           &app_entry));
   EXPECT_EQ(app_entry->DictSize(), 1u);
-  EXPECT_TRUE(
-      app_entry->HasKey(extensions::ExternalProviderImpl::kExternalUpdateUrl));
+  EXPECT_TRUE(app_entry->FindKey(
+                  extensions::ExternalProviderImpl::kExternalUpdateUrl) !=
+              nullptr);
 
   ASSERT_TRUE(default_apps->GetDictionary("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
                                           &app_entry));
   EXPECT_EQ(app_entry->DictSize(), 2u);
+  EXPECT_TRUE(app_entry->FindKey(
+                  extensions::ExternalProviderImpl::kExternalUpdateUrl) !=
+              nullptr);
   EXPECT_TRUE(
-      app_entry->HasKey(extensions::ExternalProviderImpl::kExternalUpdateUrl));
-  EXPECT_TRUE(app_entry->HasKey(
-      extensions::ExternalProviderImpl::kDoNotInstallForEnterprise));
+      app_entry->FindKey(
+          extensions::ExternalProviderImpl::kDoNotInstallForEnterprise) !=
+      nullptr);
 
   EXPECT_EQ("EN-US OEM Name", doc->GetOemAppsFolderName("en-US"));
   EXPECT_EQ("EN OEM Name", doc->GetOemAppsFolderName("en"));

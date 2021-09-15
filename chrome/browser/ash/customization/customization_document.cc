@@ -722,7 +722,7 @@ ServicesCustomizationDocument::GetDefaultAppsInProviderFormat(
         prefs->Clear();
         break;
       }
-      if (!entry->HasKey(
+      if (!entry->FindKey(
               extensions::ExternalProviderImpl::kExternalUpdateUrl)) {
         entry->SetString(extensions::ExternalProviderImpl::kExternalUpdateUrl,
                          extension_urls::GetWebstoreUpdateUrl().spec());

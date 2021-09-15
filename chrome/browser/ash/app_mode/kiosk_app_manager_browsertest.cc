@@ -552,11 +552,11 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, ClearAppData) {
       local_state->GetDictionary(KioskAppManager::kKioskDictionaryName);
   const base::DictionaryValue* apps_dict;
   EXPECT_TRUE(dict->GetDictionary(KioskAppDataBase::kKeyApps, &apps_dict));
-  EXPECT_TRUE(apps_dict->HasKey("app_1"));
+  EXPECT_TRUE(apps_dict->FindKey("app_1") != nullptr);
 
   manager()->ClearAppData("app_1");
 
-  EXPECT_FALSE(apps_dict->HasKey("app_1"));
+  EXPECT_EQ(apps_dict->FindKey("app_1"), nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, UpdateAppDataFromProfile) {

@@ -188,7 +188,7 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
 
   // Whether the custom icon is set and it has a tooltip.
   bool CustomIconHasTooltip() const {
-    return last_custom_icon_ && last_custom_icon_->HasKey("tooltip");
+    return last_custom_icon_ && last_custom_icon_->FindKey("tooltip");
   }
 
   // Gets the custom icon's tooltip text, if one is set.
@@ -222,9 +222,9 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
   void ValidateCustomIcon() {
     ASSERT_TRUE(last_custom_icon_.get());
 
-    EXPECT_TRUE(last_custom_icon_->HasKey("id"));
+    EXPECT_TRUE(last_custom_icon_->FindKey("id") != nullptr);
 
-    if (last_custom_icon_->HasKey("tooltip")) {
+    if (last_custom_icon_->FindKey("tooltip")) {
       std::u16string tooltip;
       EXPECT_TRUE(last_custom_icon_->GetString("tooltip.text", &tooltip));
       EXPECT_FALSE(tooltip.empty());

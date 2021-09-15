@@ -924,7 +924,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, CachedDisplayName) {
   auto* dict = g_browser_process->local_state()->GetDictionary(
       policy::key::kUserDisplayName);
   ASSERT_TRUE(dict);
-  ASSERT_TRUE(dict->HasKey(account_id_1_.GetUserEmail()));
+  ASSERT_TRUE(dict->FindKey(account_id_1_.GetUserEmail()) != nullptr);
   EXPECT_EQ(kDisplayName1, *dict->FindStringKey(account_id_1_.GetUserEmail()));
 }
 

@@ -571,10 +571,11 @@ TEST_F(GuestOsRegistryServiceTest, MigrateTerminal) {
       testing::UnorderedElementsAre(crostini::kCrostiniTerminalSystemAppId));
 
   // Deleted terminal removed from prefs.
-  EXPECT_FALSE(profile()
-                   ->GetPrefs()
-                   ->GetDictionary(guest_os::prefs::kGuestOsRegistry)
-                   ->HasKey(crostini::kCrostiniDeletedTerminalId));
+  EXPECT_EQ(profile()
+                ->GetPrefs()
+                ->GetDictionary(guest_os::prefs::kGuestOsRegistry)
+                ->FindKey(crostini::kCrostiniDeletedTerminalId),
+            nullptr);
 }
 
 // Validates crash fix from crbug.com/1113477.

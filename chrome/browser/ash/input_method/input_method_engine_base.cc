@@ -90,7 +90,7 @@ void InputMethodEngineBase::OnInputMethodOptionsChanged() {
   const base::DictionaryValue& old_settings =
       base::Value::AsDictionaryValue(input_method_settings_snapshot_);
   for (const auto it : new_settings->DictItems()) {
-    if (old_settings.HasKey(it.first)) {
+    if (old_settings.FindKey(it.first)) {
       if (*(old_settings.FindPath(it.first)) !=
           *(new_settings->FindPath(it.first))) {
         observer_->OnInputMethodOptionsChanged(it.first);

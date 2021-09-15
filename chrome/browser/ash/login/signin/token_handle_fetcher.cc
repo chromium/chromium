@@ -135,7 +135,7 @@ void TokenHandleFetcher::OnNetworkError(int response_code) {
 void TokenHandleFetcher::OnGetTokenInfoResponse(
     std::unique_ptr<base::DictionaryValue> token_info) {
   bool success = false;
-  if (!token_info->HasKey("error")) {
+  if (!token_info->FindKey("error")) {
     std::string handle;
     if (token_info->GetString("token_handle", &handle)) {
       success = true;

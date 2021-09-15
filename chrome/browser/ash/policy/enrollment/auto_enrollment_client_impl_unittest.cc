@@ -428,7 +428,7 @@ class AutoEnrollmentClientImplTest
       EXPECT_TRUE(
           state_dict->GetString(kDeviceStateMode, &actual_restore_mode));
     } else {
-      EXPECT_FALSE(state_dict->HasKey(kDeviceStateMode));
+      EXPECT_EQ(state_dict->FindKey(kDeviceStateMode), nullptr);
     }
   }
 
