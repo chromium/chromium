@@ -76,6 +76,8 @@ public class SyncPromoPreference extends Preference
         signinManager.addSignInStateObserver(this);
         mProfileDataCache.addObserver(this);
         FirstRunSignInProcessor.updateSigninManagerFirstRunCheckDone();
+        mSigninPromoController = new SigninPromoController(
+                SigninAccessPoint.SETTINGS, SyncConsentActivityLauncherImpl.get());
 
         update();
     }
@@ -89,6 +91,7 @@ public class SyncPromoPreference extends Preference
         mAccountManagerFacade.removeObserver(this);
         signinManager.removeSignInStateObserver(this);
         mProfileDataCache.removeObserver(this);
+        mSigninPromoController = null;
     }
 
     /**
@@ -149,18 +152,11 @@ public class SyncPromoPreference extends Preference
         setState(state);
         setSelectable(false);
         setVisible(true);
-
-        if (mSigninPromoController == null) {
-            mSigninPromoController = new SigninPromoController(
-                    SigninAccessPoint.SETTINGS, SyncConsentActivityLauncherImpl.get());
-        }
-
         notifyChanged();
     }
 
     private void setupPromoHidden() {
         setState(State.PROMO_HIDDEN);
-        mSigninPromoController = null;
         setVisible(false);
     }
 
@@ -168,9 +164,8 @@ public class SyncPromoPreference extends Preference
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
 
-        if (mSigninPromoController == null) {
-            return;
-        }
+        if (mState == State.PROMO_HIDDEN) return;
+
         PersonalizedSigninPromoView syncPromoView =
                 (PersonalizedSigninPromoView) holder.findViewById(R.id.signin_promo_view_container);
         mSigninPromoController.setUpSyncPromoView(
