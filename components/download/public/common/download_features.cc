@@ -10,7 +10,7 @@ namespace download {
 namespace features {
 
 const base::Feature kUseDownloadOfflineContentProvider{
-    "UseDownloadOfflineContentProvider", base::FEATURE_DISABLED_BY_DEFAULT};
+    "UseDownloadOfflineContentProvider", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kDownloadAutoResumptionNative {
   "DownloadsAutoResumptionNative",
