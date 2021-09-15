@@ -152,6 +152,7 @@
 <translation id="39823212440917567">Завдання друку, старіші за <ph name="NUMBER_OF_DAYS" /> дн., буде вилучено</translation>
 <translation id="4003384961948020559">Не надруковано – вихідний лоток заповнений</translation>
 <translation id="4034824040120875894">Принтер</translation>
+<translation id="4050980775484079270">Перетворення DNS у технології ARC</translation>
 <translation id="409427325554347132">Зберегти дані перевірки</translation>
 <translation id="4131410914670010031">Чорно-білий</translation>
 <translation id="4145784616224233563">Брандмауер HTTP</translation>
@@ -162,6 +163,7 @@
 <translation id="4238516577297848345">Немає активних завдань друку</translation>
 <translation id="4244962993387259361">Щоб виконати перевірку пам’яті, потрібно принаймні 500 МБ вільного місця. Щоб звільнити пам’ять, перейдіть у розділ "Налаштування" &gt; "Керування пам’яттю".</translation>
 <translation id="4258281355379922695">Затримка HTTP</translation>
+<translation id="4271957103967917607">Переглянути в повноекранному режимі</translation>
 <translation id="4289540628985791613">Огляд</translation>
 <translation id="4297501883039923494">Зупинено – невідома помилка</translation>
 <translation id="4300073214558989">Зображень: <ph name="IMAGE_COUNT" /></translation>
@@ -373,6 +375,7 @@
 <translation id="7550715992156305117">Послідовності дій для діагностики</translation>
 <translation id="7561454561030345039">Цією дією керує адміністратор</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7574732568136198983">Перевірити ARC</translation>
 <translation id="7595982850646262331">Ще <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Дізнатися більше в Довідковому центрі</translation>
 <translation id="763165478673169849">Час останнього скидання</translation>

@@ -252,7 +252,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1736420071277903564">Máy tính</translation>
 <translation id="1740951997222943430">Nhập tháng hết hạn hợp lệ</translation>
 <translation id="1741613555002899862">Phải được chỉ định và là một chuỗi hợp lệ khi DnsOverHttpsMode là <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
-<translation id="1743570585616704562">Không nhận dạng được</translation>
 <translation id="1745880797583122200">Trình duyệt của bạn được quản lý</translation>
 <translation id="1746113442205726301">Trục Y của hình ảnh</translation>
 <translation id="17513872634828108">Thẻ đang mở</translation>
@@ -531,7 +530,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2713444072780614174">Trắng</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn phím Tab rồi nhấn Enter để quản lý thông tin thanh toán và thẻ tín dụng trong phần cài đặt của Chrome</translation>
 <translation id="2721148159707890343">Yêu cầu đã thành công</translation>
-<translation id="272451190272506600">Chạm vào cảm biến để thanh toán</translation>
 <translation id="2728127805433021124">Chứng chỉ của máy chủ đã được ký bằng thuật toán chữ ký yếu.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Chạy Chẩn đoán kết nối<ph name="END_LINK" /></translation>
 <translation id="2738330467931008676">Chọn địa chỉ nhận hàng</translation>
@@ -642,7 +640,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
       sử dụng máy chủ proxy:
       <ph name="PLATFORM_TEXT" /></translation>
 <translation id="317878711435188021">Biết khi bạn đang sử dụng thiết bị này</translation>
-<translation id="3188393374551744535">Số dư tài khoản</translation>
 <translation id="3194737229810486521"><ph name="URL" /> muốn lưu trữ vĩnh viễn dữ liệu trên thiết bị của bạn</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> trên <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Trang web có thể yêu cầu được biết khi bạn đang dùng thiết bị này</translation>
@@ -1027,7 +1024,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4363178190432472170">Tìm điện thoại</translation>
 <translation id="4367563149485757821">Number-12 (Phong bì)</translation>
 <translation id="437040971055499437">Xảy ra sự kiện bảo mật</translation>
-<translation id="437058704415269440">Số dư tài khoản</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Giá trị <ph name="VALUE_TYPE" /> mong đợi.</translation>
 <translation id="4377125064752653719">Bạn đã cố truy cập vào <ph name="DOMAIN" /> nhưng chứng chỉ mà máy chủ xuất trình đã bị nhà phát hành thu hồi. Điều này có nghĩa là giấy ủy nhiệm bảo mật mà máy chủ xuất trình hoàn toàn không đáng tin cậy. Bạn có thể đang giao tiếp với kẻ tấn công.</translation>
@@ -1292,7 +1288,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5252000469029418751">C7 (Phong bì)</translation>
 <translation id="5254043433801397071">Tối ưu hóa nội dung in</translation>
 <translation id="5254958791078852567">E1</translation>
-<translation id="5261548214279761072">Thanh toán hoàn tất</translation>
 <translation id="5265446478903775694">Quản lý quyền riêng tư của tôi trên Google</translation>
 <translation id="5266128565379329178">Đóng gáy trên cùng</translation>
 <translation id="5269225904387178860">Đục 4 lỗ dưới cùng</translation>
@@ -2045,7 +2040,6 @@ Thông tin chi tiết bổ sung:
 <translation id="793209273132572360">Cập nhật địa chỉ?</translation>
 <translation id="7932579305932748336">Phủ</translation>
 <translation id="79338296614623784">Nhập số điện thoại hợp lệ</translation>
-<translation id="7934052535022478634">Thanh toán hoàn tất</translation>
 <translation id="7934414805353235750"><ph name="URL" /> muốn phát nội dung được bảo vệ. Thông tin định danh thiết bị của bạn sẽ được Google xác minh.</translation>
 <translation id="7935031712718413217">URL này có khả năng là giả mạo</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>

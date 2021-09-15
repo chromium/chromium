@@ -170,6 +170,7 @@
 આ પરવાનગી આપવા માટે નીચે '<ph name="BUTTON_NAME" />' બટન પર ક્લિક કરો. 'ઍક્સેસિબિલિટી'ની પસંદગીઓનું જે પૅન ખૂલે છે, '<ph name="SERVICE_SCRIPT_NAME" />'ની એકદમ બાજુમાંના બૉક્સને ચેક કરો.
 
 જો '<ph name="SERVICE_SCRIPT_NAME" />' પહેલેથી જ ચેક કરેલું હોય, તો તેને અનચેક કરીને ફરી ચેક કરો.</translation>
+<translation id="8305209735512572429">વેબનું પ્રમાણીકરણ કરવાની રિમોટિંગ પ્રક્રિયા</translation>
 <translation id="8383794970363966105">Chromoting નો ઉપયોગ કરવા માટે, તમારે તમારા ડિવાઇસ પર એક Google એકાઉન્ટ ઉમેરવાની જરૂર છે.</translation>
 <translation id="8386846956409881180">હોસ્ટ અમાન્ય OAuth ઓળખપત્રો સાથે ગોઠવાયું છે.</translation>
 <translation id="8397385476380433240"><ph name="PRODUCT_NAME" />ને પરવાનગી આપો</translation>

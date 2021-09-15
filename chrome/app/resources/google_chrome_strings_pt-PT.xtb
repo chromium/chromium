@@ -35,7 +35,6 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="174539241580958092">O Google Chrome não conseguiu sincronizar os dados devido a um erro no início de sessão.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Certifique-se de que tem sessão iniciada no Chrome no seu <ph name="TARGET_DEVICE_NAME" /> e, em seguida, tente enviar novamente.</translation>
-<translation id="1810203443153428607">A instalação do Chrome OS substitui todos os dados no seu dispositivo.</translation>
 <translation id="1812689907177901597">Ao desativar esta opção, pode iniciar sessão nos sites da Google como o Gmail sem iniciar sessão no Chrome.</translation>
 <translation id="1860536484129686729">O Chrome necessita de autorização de acesso à câmara para este site.</translation>
 <translation id="1873233029667955273">O Google Chrome não é o seu navegador predefinido.</translation>
@@ -176,10 +175,6 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="5386244825306882791">Também controla a página apresentada quando inicia o Chrome ou pesquisa a partir da Caixa geral.</translation>
 <translation id="5394833366792865639">Partilhe um separador do Chrome</translation>
 <translation id="5430073640787465221">O ficheiro de preferências está danificado ou não é válido. O Google Chrome não consegue recuperar as suas definições.</translation>
-<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />Antes de começarmos, certifique-se de que tem uma cópia de segurança atualizada dos seus dados. A instalação do Chrome OS substitui todos os dados no seu disco rígido.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />A Google não é responsável por qualquer perda de dados e não garante que o Chrome OS irá funcionar em modelos não certificados. Visite [TBD] para saber mais acerca dos modelos certificados.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Saiba mais acerca da instalação do Chrome OS e da eliminação dos dados: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />Se quiser continuar, clique em "Instalar o Chrome OS" e iremos mostrar-lhe como efetuar a instalação em apenas alguns passos simples. Terá outra oportunidade de confirmar antes de efetuarmos quaisquer alterações ao seu computador.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">Instalar o Chrome OS</translation>
 <translation id="556024056938947818">O Google Chrome está a tentar mostrar palavras-passe.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>

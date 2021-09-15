@@ -202,11 +202,6 @@ Nhấn vào từ bất kỳ để tìm kiếm. Để điều chỉnh nội dung 
 <translation id="2321958826496381788">Kéo thanh trượt cho đến khi bạn có thể đọc nội dung này thoải mái. Chữ tối thiểu phải to như này sau khi bấm đúp vào một đoạn.</translation>
 <translation id="2323763861024343754">Bộ nhớ trang web</translation>
 <translation id="2328985652426384049">Không thể đăng nhập</translation>
-<translation id="2336549603503100420">Khi bạn bật Hộp cát về quyền riêng tư, các trang web có thể dùng kỹ thuật bảo vệ quyền riêng tư theo mô tả ở đây để cung cấp nội dung và dịch vụ của mình. Các kỹ thuật này gồm có những biện pháp thay thế cho hoạt động theo dõi trên nhiều trang web. Theo thời gian, chúng tôi có thể có thêm nhiều tính năng dùng thử.
-
-<ph name="BEGIN_LIST_ITEM1" />Các nhà quảng cáo có thể xác định khi nào hàng nghìn người dùng có cùng một mối quan tâm – tương tự như đám đông trong một buổi hòa nhạc – và chọn quảng cáo cho đám đông đó thay vì cho một cá nhân.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Các nhà quảng cáo có thể nghiên cứu tính hiệu quả của quảng cáo mà không cần theo dõi bạn trên các trang web.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="2337236196941929873">Tải trước các trang mà Chrome cho rằng bạn có thể truy cập. Để làm điều này, Chrome có thể dùng cookie nếu bạn cho phép cookie. Chrome cũng có thể mã hóa và gửi các trang qua Google để ẩn danh tính của bạn trên các trang web.</translation>
 <translation id="234265804618409743">Không thể mở máy ảnh. Đã xảy ra lỗi.</translation>
 <translation id="2345671828921229300">Để tìm kiếm, hãy chạm và giữ một từ</translation>
@@ -396,13 +391,6 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="3429160811076349561">Các tính năng dùng thử đang tắt</translation>
 <translation id="3440975416244667276">Chạm và giữ để biết thêm thông tin liên quan</translation>
 <translation id="3443221991560634068">Tải lại trang hiện tại</translation>
-<translation id="3451542610083122179">Hộp cát về quyền riêng tư là một sáng kiến đang được thực hiện nhằm bảo vệ web mở. Sáng kiến này sẽ giúp bảo vệ bạn khỏi các cơ chế theo dõi.
-
-Ngày nay, các trang web dùng nhiều công nghệ (ví dụ như cookie của bên thứ ba) cho các dịch vụ quan trọng, chẳng hạn như hiển thị quảng cáo phù hợp và đo lường hiệu suất của trang web.
-
-Hộp cát về quyền riêng tư duy trì sức mạnh của môi trường web mở bằng cách tạo ra các cách thức hiệu quả hơn để cung cấp những dịch vụ này mà không làm ảnh hưởng đến các trang web, đồng thời giúp bạn không bị bí mật theo dõi trên web.
-
-Hộp cát về quyền riêng tư vẫn đang trong giai đoạn phát triển và được cung cấp ở một số khu vực. Các trang web hiện có thể dùng thử Hộp cát về quyền riêng tư trong khi tiếp tục sử dụng các công nghệ web hiện tại như cookie của bên thứ ba. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{Đã lên lịch 1 quá trình tải xuống}other{Đã lên lịch # quá trình tải xuống}}</translation>
 <translation id="3478363558367712427">Bạn có thể chọn công cụ tìm kiếm theo ý mình</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /> về nội dung đề xuất</translation>

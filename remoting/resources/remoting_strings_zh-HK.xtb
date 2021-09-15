@@ -170,7 +170,7 @@ host_ip =「<ph name="HOST_IP_ADDRESS_AND_PORT" />」版本=「<ph name="CHANNEL
 如要授予此權限，請按一下下方的「<ph name="BUTTON_NAME" />」。在開啟的「無障礙功能」偏好設定窗格中，勾選「<ph name="SERVICE_SCRIPT_NAME" />」旁的方框。
 
 如果已勾選「<ph name="SERVICE_SCRIPT_NAME" />」，則需要取消勾選，然後再次勾選。</translation>
-<translation id="8305209735512572429">網路驗證遠端處理程序</translation>
+<translation id="8305209735512572429">網絡驗證遠端處理程序</translation>
 <translation id="8383794970363966105">您必須在裝置上新增 Google 帳戶，才能使用 Chromoting。</translation>
 <translation id="8386846956409881180">主機設定的 OAuth 憑證無效。</translation>
 <translation id="8397385476380433240">授予權限給「<ph name="PRODUCT_NAME" />」</translation>

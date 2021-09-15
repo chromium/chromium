@@ -202,11 +202,6 @@ Mag-tap ng anumang salita para maghanap. Para pinuhin ang iyong paghahanap, pind
 <translation id="2321958826496381788">I-drag ang slider hanggang sa mabasa mo ito nang kumportable. Dapat ay halos ganito kalaki ang text pagkatapos mag-double tap sa isang talata.</translation>
 <translation id="2323763861024343754">Storage ng site</translation>
 <translation id="2328985652426384049">Hindi makapag-sign in</translation>
-<translation id="2336549603503100420">Kapag naka-enable ito, posibleng gamitin ng mga site ang mga technique sa pagpapanatili ng privacy na ipinapakita rito para maibigay ang content at mga serbisyo ng mga ito. Kasama sa mga ito ang mga alternatibo sa cross-site na pagsubaybay. Posibleng magdagdag ng higit pang trial sa paglipas ng panahon.
-
-<ph name="BEGIN_LIST_ITEM1" />Magagawa ng mga advertiser na malaman kapag pareho ang interes ng libo-libong user – gaya ng mga tao sa isang concert — at pumili ng mga ad para sa mga tao, sa halip na para sa indibidwal na tao.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Mapag-aaralan ng mga advertiser ang bisa ng mga ad sa paraang hindi nangangailangan ng pagsubaybay sa iyo sa lahat ng site.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="2337236196941929873">Pine-preload ang mga page na sa tingin ng Chrome ay posibleng bisitahin mo. Para magawa ito, posibleng gumamit ng cookies ang Chrome, kung papayagan mo ang cookies, at posible itong mag-encrypt at magpadala ng mga page sa pamamagitan ng Google para itago ang iyong pagkakakilanlan mula sa mga site.</translation>
 <translation id="234265804618409743">Hindi mabuksan ang iyong camera. Nagkaproblema.</translation>
 <translation id="2345671828921229300">Para maghanap, pindutin nang matagal ang isang salita</translation>
@@ -396,13 +391,6 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="3429160811076349561">Naka-off ang mga feature ng trial</translation>
 <translation id="3440975416244667276">Pindutin nang matagal para sa higit pang nauugnay na impormasyon</translation>
 <translation id="3443221991560634068">I-reload ang kasalukuyang page</translation>
-<translation id="3451542610083122179">Ang Privacy Sandbox ay isang kasalukuyang inisyatiba para mapanatili ang bukas na web na makakatulong na maprotektahan ka laban sa mga mekanismo sa pagsubaybay.
-
-Sa kasalukuyan, umaasa ang mga website sa maraming teknolohiya, tulad ng third-party na cookies, para sa mahahalagang serbisyo tulad ng pagpapakita ng mga nauugnay na ad at pagsukat sa performance ng site.
-
-Pinapanatili ng Privacy Sandbox ang sigla ng bukas na web sa pamamagitan ng paggawa ng mas mahuhusay na paraan para maisagawa ang mga serbisyong ito – nang hindi sinisira ang mga site, at habang pinipigilan kang palihim na masubaybayan sa buong web.
-
-Kasalukuyan pa ring dine-develop ang Privacy Sandbox at available ito sa mga piling rehiyon. Sa ngayon, puwedeng subukan ng mga site ang Privacy Sandbox habang patuloy na gumagamit ng mga kasalukuyang teknolohiya sa web tulad ng third-party na cookies. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 download ang nakaiskedyul}one{# download ang nakaiskedyul}other{# na download ang nakaiskedyul}}</translation>
 <translation id="3478363558367712427">Puwede mong piliin ang iyong search engine</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /> tungkol sa iminumungkahing content</translation>

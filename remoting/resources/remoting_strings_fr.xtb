@@ -170,6 +170,7 @@ Si la case "<ph name="SERVICE_SCRIPT_NAME" />" est déjà cochée, décochez-la,
 Pour accorder cette autorisation, cliquez sur "<ph name="BUTTON_NAME" />" ci-dessous. Dans le volet des préférences "Accessibilité" qui s'ouvre, cochez la case "<ph name="SERVICE_SCRIPT_NAME" />".
 
 Si la case "<ph name="SERVICE_SCRIPT_NAME" />" est déjà cochée, décochez-la, puis cochez-la de nouveau.</translation>
+<translation id="8305209735512572429">Processus d'authentification Web à distance</translation>
 <translation id="8383794970363966105">Pour utiliser Chromoting, vous devez ajouter un compte Google à votre appareil.</translation>
 <translation id="8386846956409881180">L'hôte est configuré avec des identifiants OAuth incorrects.</translation>
 <translation id="8397385476380433240">Accorder l'accès à <ph name="PRODUCT_NAME" /></translation>

@@ -170,6 +170,7 @@
 यो अनुमति दिन, तलको '<ph name="BUTTON_NAME" />' नामक बटनमा क्लिक गर्नुहोस्। त्यसपछि खुल्ने 'पहुँच' सम्बन्धी प्राथमिकताहरूको पेनमा '<ph name="SERVICE_SCRIPT_NAME" />' को छेउमा रहेको बाकसमा चिन्ह लगाउनुहोस्।'
 
 '<ph name="SERVICE_SCRIPT_NAME" />' मा पहिले नै चिन्ह लगाइएको छ भने उक्त चिन्ह हटाउनुहोस् र फेरि चिन्ह लगाउनुहोस्।</translation>
+<translation id="8305209735512572429">Web Authentication Remoting नामक प्रक्रिया</translation>
 <translation id="8383794970363966105">Chromoting प्रयोग गर्न, तपाईँले आफ्नो यन्त्रमा Google खाता थप्न आवश्यक छ।</translation>
 <translation id="8386846956409881180">होस्टलाई अमान्य OAuth प्रमाणहरूमार्फत कन्फिगर गरिएको छ।</translation>
 <translation id="8397385476380433240"><ph name="PRODUCT_NAME" /> लाई अनुमति दिनुहोस्</translation>

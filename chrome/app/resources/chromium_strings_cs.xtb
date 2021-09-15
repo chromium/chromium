@@ -239,10 +239,6 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="7585853947355360626">Pokud některé nastavení na této stránce není zobrazeno, podívejte se do <ph name="LINK_BEGIN" />nastavení systému Chromium OS<ph name="LINK_END" /></translation>
 <translation id="761356813943268536">Chromium používá vaši kameru a mikrofon.</translation>
 <translation id="7617377681829253106">Prohlížeč Chromium je opět o něco lepší</translation>
-<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Před zahájením si vytvořte aktuální zálohu dat. Při instalaci systému Chromium OS se všechna data na pevném disku přepíšou.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Společnost Google nenese odpovědnost za ztrátu dat a nezaručuje, že systém Chromium OS bude fungovat na necertifikovaných modelech. Další informace o certifikovaných modelech najdete na stránce [TBD].<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Informace ohledně instalace systému Chromium OS a smazání dat: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />Pokud jste připraveni pokračovat, klikněte na Nainstalovat Chromium OS. Instalace zahrnuje pouze několik jednoduchých kroků, kterými vás provedeme. Před provedením jakýchkoliv změn na počítači vás ještě jednou požádáme o potvrzení.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium není vaším výchozím prohlížečem</translation>
 <translation id="7689606757190482937">Synchronizujte a upravte si Chromium na různých zařízeních</translation>
 <translation id="7729447699958282447">Prohlížeč Chromium nemůže synchronizovat data, protože ve vaší doméně není k dispozici Synchronizace.</translation>

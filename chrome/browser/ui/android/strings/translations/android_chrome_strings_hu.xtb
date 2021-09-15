@@ -202,11 +202,6 @@ A kereséshez koppintson a kívánt szóra. A keresés finomításához ujja nyo
 <translation id="2321958826496381788">Húzza a csúszkát, amíg kényelmesen nem tudja olvasni a szöveget. A szövegnek legalább ekkorának kell lennie, miután duplán koppint egy bekezdésre.</translation>
 <translation id="2323763861024343754">Webhely tárhelye</translation>
 <translation id="2328985652426384049">Nem sikerült a bejelentkezés</translation>
-<translation id="2336549603503100420">Ha engedélyezve van, a webhelyek használhatják az itt bemutatott adatvédelem-biztosítási technikákat a tartalmaiknál és szolgáltatásaiknál. A technikák közt találhatók a webhelyeken átnyúló nyomon követés helyett alkalmazható alternatívák is. Később további próbafunkciók is belekerülhetnek.
-
-<ph name="BEGIN_LIST_ITEM1" />A hirdetők tudomást szerezhetnek arról, ha több ezer felhasználó érdeklődési köre egyezik – pl. egy koncert közönségében –, és az egyes személyek helyett a teljes tömeg számára választhatnak ki hirdetéseket.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />A hirdetők úgy tanulmányozhatják a hirdetések hatékonyságát, hogy nem követik nyomon Önt a webhelyeken.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="2337236196941929873">Azoknak az oldalaknak az előtöltése, amelyeket a Chrome szerint Ön felkereshet. Ehhez a Chrome cookie-kat használhat, ha Ön engedélyezte őket, valamint titkosíthatja és a Google-on keresztül elküldheti az oldalakat, hogy elrejtse az Ön személyazonosságát a webhelyek elől.</translation>
 <translation id="234265804618409743">Nem lehet megnyitni a kamerát. Hiba történt.</translation>
 <translation id="2345671828921229300">A kereséshez tartsa lenyomva a kívánt szót</translation>
@@ -396,13 +391,6 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="3429160811076349561">A próbafunkciók ki vannak kapcsolva</translation>
 <translation id="3440975416244667276">Nyomva tartással további releváns információkhoz juthat</translation>
 <translation id="3443221991560634068">Az aktuális oldal újratöltése</translation>
-<translation id="3451542610083122179">A Privacy Sandbox nevű kezdeményezés célja a nyílt internet megőrzése, hogy mindenki jobban védve legyen a nyomkövetési módszerektől.
-
-A webhelyek manapság többféle technológiára (pl. cookie-kra) támaszkodnak az olyan fontos szolgáltatások biztosítása során, mint a releváns hirdetések megjelenítése, illetve a webhely teljesítményének mérése.
-
-A Privacy Sandbox úgy segít a nyílt internet megőrzésében, hogy jobb módszereket kínál ezeknek a szolgáltatásoknak a végrehajtására – és közben nem omlanak össze a webhelyek, valamint az Ön mozgását sem követik feleslegesen az interneten.
-
-A Privacy Sandbox még mindig aktív fejlesztés alatt áll, és csak egyes régiókban áll rendelkezésre. A webhelyek egyelőre kipróbálhatják a Privacy Sandbox funkcióit, miközben továbbra is használhatják a jelenlegi webes technológiákat (pl. a cookie-kat). <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 ütemezett letöltés}other{# ütemezett letöltés}}</translation>
 <translation id="3478363558367712427">Kiválaszthatja keresőmotorját</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /> a javasolt tartalomról</translation>

@@ -703,7 +703,7 @@
 <translation id="1719312230114180055">請注意：相比安全性較強的密碼或 PIN，指紋識別的安全性較低。</translation>
 <translation id="1720318856472900922">TLS WWW 伺服器驗證</translation>
 <translation id="1720941539803966190">閂教學課程</translation>
-<translation id="172123215662733643">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜尋圖片</translation>
+<translation id="172123215662733643">使用「<ph name="VISUAL_SEARCH_PROVIDER" />」搜尋圖片</translation>
 <translation id="1721312023322545264">您必須獲得<ph name="NAME" />授權，才能瀏覽此網頁</translation>
 <translation id="1722460139690167654">您的 <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> 由 <ph name="END_LINK" /><ph name="ENROLLMENT_DOMAIN" /> 管理</translation>
 <translation id="1723824996674794290">新視窗(&amp;N)</translation>
@@ -1068,7 +1068,6 @@
 <translation id="2108349519800154983">{COUNT,plural, =1{電話號碼}other{# 個電話號碼}}</translation>
 <translation id="211144231511833662">清除類型</translation>
 <translation id="2111670510994270194">在右側新增分頁</translation>
-<translation id="2111810003053064883">廣告客戶無需追蹤您的網站瀏覽記錄，就能瞭解廣告成效。</translation>
 <translation id="2112554630428445878"><ph name="USERNAME" />，歡迎使用！</translation>
 <translation id="21133533946938348">固定分頁</translation>
 <translation id="2113479184312716848">開啟檔案(&amp;F)…</translation>
@@ -1280,7 +1279,7 @@
     如果之後您不想子女使用 Voice Match，只需在「Google 助理」設定中移除即可。如要查看或刪除子女設定 Voice Match 時的錄音，請從子女的帳戶前往 <ph name="VOICE_MATCH_SETTINGS_URL" />。
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
-<translation id="2307630946657910723">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜尋頁面上的部分內容</translation>
+<translation id="2307630946657910723">使用「<ph name="VISUAL_SEARCH_PROVIDER" />」搜尋頁面上的部分內容</translation>
 <translation id="230927227160767054">這個網頁想要安裝服務處理常式。</translation>
 <translation id="2309620859903500144">系統已封鎖此網站存取您的動作或光線感應器。</translation>
 <translation id="2312219318583366810">網頁網址</translation>
@@ -1846,7 +1845,7 @@
 <translation id="289695669188700754">金鑰識別碼：<ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">當您關閉所有無痕式視窗時，系統將會移除此自訂設定</translation>
 <translation id="2897878306272793870">您確定要開啟 <ph name="TAB_COUNT" /> 分頁嗎？</translation>
-<translation id="2900477968385519153">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜尋螢幕畫面</translation>
+<translation id="2900477968385519153">使用「<ph name="VISUAL_SEARCH_PROVIDER" />」搜尋螢幕畫面</translation>
 <translation id="290105521672621980">檔案使用的功能不受支援</translation>
 <translation id="2902127500170292085">「<ph name="EXTENSION_NAME" />」無法與此打印機通訊。請確定已插上打印機，然後再試一次。</translation>
 <translation id="2902312830803030883">更多操作</translation>
@@ -2153,7 +2152,6 @@
 <translation id="3238192140106069382">正在連線及驗證</translation>
 <translation id="3239373508713281971">已移除 <ph name="APP_NAME" /> 的時間限制</translation>
 <translation id="3241680850019875542">請選取要封裝的擴充功能根目錄。如要更新擴充功能，請一併選取要重複使用的私密金鑰。</translation>
-<translation id="3242905690080165035">Privacy Sandbox 仍在開發階段，目前開放地區有限。現在網站可以嘗試使用 Privacy Sandbox，亦能繼續使用第三方 Cookie 等現有的網絡技術。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="3244294424315804309">繼續保持靜音</translation>
 <translation id="3246107497225150582">{0,plural, =1{請在 1 天內更新裝置}other{請在 # 天內更新裝置}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - 網絡錯誤</translation>
@@ -2739,6 +2737,7 @@
 <translation id="3842552989725514455">Serif 字型</translation>
 <translation id="3843464315703645664">已於內部加入許可名單</translation>
 <translation id="3844888638014364087">插入咗 Emoji</translation>
+<translation id="384513009320852920">請確保藍牙裝置在附近，並且已處於配對模式。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">獲取開發網站、Android 應用程式及其他平台的工具。安裝 Linux 時會下載 <ph name="DOWNLOAD_SIZE" /> 數據。</translation>
 <translation id="3847319713229060696">可為所有網絡使用者提供更完善的安全防護</translation>
 <translation id="3848547754896969219">在無痕式視窗中開啟書籤(&amp;I)</translation>
@@ -2958,7 +2957,7 @@
 <translation id="4066207411788646768">請檢查您的連線，以查看網絡中的可用打印機</translation>
 <translation id="4068776064906523561">已儲存的指紋</translation>
 <translation id="407173827865827707">僅在點擊時</translation>
-<translation id="4072701974556190758">密碼會儲存在你的 Google 帳戶 (<ph name="ACCOUNT" />) 中，因此你不必記住密碼。</translation>
+<translation id="4072701974556190758">密碼將會儲存在您的 Google 帳戶 (<ph name="ACCOUNT" />) 中，您無需記住密碼。</translation>
 <translation id="4074900173531346617">電郵簽名者憑證</translation>
 <translation id="407520071244661467">縮放比例</translation>
 <translation id="407543464472585404"><ph name="NAME" />的設定檔已連結至 <ph name="EMAIL" /></translation>
@@ -3080,7 +3079,7 @@
 <translation id="4220648711404560261">啟用時發生錯誤。</translation>
 <translation id="4225020013797061859">請按下要為「<ph name="ACTION" />」動作指派的按鈕裝置或按鍵</translation>
 <translation id="4225397296022057997">在所有網站上</translation>
-<translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{已封鎖這個擴充功能}other{已封鎖部分擴充功能}}</translation>
+<translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{不允許這個擴充程式}other{不允許部分擴充程式}}</translation>
 <translation id="4231095370974836764">在 <ph name="DEVICE_TYPE" /> 上透過 Google Play 安裝應用程式和遊戲。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">設定 Kerberos</translation>
 <translation id="4235965441080806197">取消登入</translation>
@@ -3251,7 +3250,7 @@
 <translation id="4415748029120993980">SECG 橢圓曲線 secp384r1 (亦稱為 NIST P-384)</translation>
 <translation id="4416450511678320850">沒有與此內容相關的應用程式</translation>
 <translation id="4416582610654027550">輸入有效的網址</translation>
-<translation id="4417162649853416189">在圖片上拖曳游標以使用 <ph name="VISUAL_SEARCH_PROVIDER" />的搜尋功能</translation>
+<translation id="4417162649853416189">在圖片上拖曳以使用「<ph name="VISUAL_SEARCH_PROVIDER" />」的搜尋功能</translation>
 <translation id="4419409365248380979">永遠允許 <ph name="HOST" /> 設定 Coockie</translation>
 <translation id="4421932782753506458">長毛貓</translation>
 <translation id="4423376891418188461">還原設定</translation>
@@ -3365,7 +3364,6 @@
 <translation id="4541662893742891060">無法連線至此設定檔。如需技術支援，請聯絡您的流動網絡供應商。</translation>
 <translation id="4541706525461326392">正在移除設定檔。這項操作可能需時數分鐘。</translation>
 <translation id="4542520061254486227">讀取您在 <ph name="WEBSITE_1" /> 和 <ph name="WEBSITE_2" /> 上的資料</translation>
-<translation id="454331522350252598">廣告客戶能夠在數千位使用者擁有類似興趣時學習 (類似演唱會中的群眾)，並為群眾 (而非單一使用者) 選取廣告。</translation>
 <translation id="4543778593405494224">憑證管理員</translation>
 <translation id="4544174279960331769">預設藍色圖片</translation>
 <translation id="4545028762441890696">如要重新啟用擴充程式，請接受新權限：</translation>
@@ -3379,7 +3377,7 @@
 <translation id="4551763574344810652">按下 <ph name="MODIFIER_KEY_DESCRIPTION" /> 即可復原</translation>
 <translation id="4553526521109675518">您需要重新啟動 Chromebook 才能變更裝置語言。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553898717331438468">重新設定</translation>
-<translation id="4554491709904933912">在圖片上拖曳游標以使用 <ph name="VISUAL_SEARCH_PROVIDER" />的搜尋功能</translation>
+<translation id="4554491709904933912">在圖片上拖曳以使用「<ph name="VISUAL_SEARCH_PROVIDER" />」的搜尋功能</translation>
 <translation id="4554591392113183336">外部擴充功能與現有擴充功能的版本相同或較低。</translation>
 <translation id="4555769855065597957">陰影</translation>
 <translation id="4555863373929230635">如要將密碼儲存至 Google 帳戶，請登入並開啟同步功能。</translation>
@@ -3416,7 +3414,6 @@
 <translation id="4582563038311694664">重設所有設定</translation>
 <translation id="4585793705637313973">編輯頁面</translation>
 <translation id="4586275095964870617"><ph name="URL" /> 無法在替代瀏覽器中開啟。請聯絡您的系統管理員。</translation>
-<translation id="4587645918878093912">現今很多網站都會依賴第三方 Cookie 等眾多技術來提供重要服務，例如顯示相關廣告及衡量網站成效。</translation>
 <translation id="4589713469967853491">記錄已成功寫入「下載」目錄。</translation>
 <translation id="4590324241397107707">數據庫儲存空間</translation>
 <translation id="4592891116925567110">觸控筆繪圖應用程式</translation>
@@ -4154,7 +4151,7 @@
 <translation id="5427278936122846523">一律翻譯</translation>
 <translation id="5427459444770871191">順時針旋轉(&amp;C)</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (有可用的更新)</translation>
-<translation id="5429373054983029602">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜尋螢幕畫面</translation>
+<translation id="5429373054983029602">使用「<ph name="VISUAL_SEARCH_PROVIDER" />」搜尋螢幕畫面</translation>
 <translation id="542948651837270806">需要安裝信任平台模組韌體的更新。請參閱 <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5430931332414098647">即時網絡共享</translation>
 <translation id="5431318178759467895">顏色</translation>
@@ -4221,7 +4218,7 @@
 <translation id="5494920125229734069">全部選取</translation>
 <translation id="5495466433285976480">這樣會在下次重新啟動時移除所有本機使用者、檔案、數據和其他設定。所有使用者都必須重新登入。</translation>
 <translation id="5495597166260341369">保持螢幕開啟</translation>
-<translation id="549580971452855947">拖曳游標以使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜尋圖片</translation>
+<translation id="549580971452855947">拖曳以使用「<ph name="VISUAL_SEARCH_PROVIDER" />」搜尋圖片</translation>
 <translation id="5496587651328244253">管理</translation>
 <translation id="5496730470963166430">不允許傳送彈出式視窗或使用重新導向</translation>
 <translation id="5497251278400702716">此檔案</translation>
@@ -4331,7 +4328,7 @@
 <translation id="5604884720628869833"><ph name="DEVICE_COUNT" /> 個裝置入面嘅第 <ph name="DEVICE_INDEX" /> 個，<ph name="DEVICE_NAME" />，鍵盤</translation>
 <translation id="5605623530403479164">其他搜尋引擎</translation>
 <translation id="5605758115928394442">已將通知傳送至您的手機，以確認您的身分。</translation>
-<translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{已封鎖這個擴充功能}other{已封鎖這些擴充功能}}</translation>
+<translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{已封鎖這個擴充程式}other{已封鎖這些擴充程式}}</translation>
 <translation id="560834977503641186">Wi-Fi Sync，了解詳情</translation>
 <translation id="5608580678041221894">輕按以下按鍵即可調整或移動裁剪區域</translation>
 <translation id="5609231933459083978">這似乎是無效的應用程式。</translation>
@@ -4928,7 +4925,6 @@
 <translation id="6271348838875430303">復原咗更正內容</translation>
 <translation id="6272643420381259437">下載外掛程式時發生錯誤 (<ph name="ERROR" />)</translation>
 <translation id="6273677812470008672">品質</translation>
-<translation id="6275846828483490454">Privacy Sandbox 是一項進行中的計劃，目的是保護開放網絡，防止有心人透過追蹤機制取得您的資料。</translation>
 <translation id="6276210637549544171">Proxy <ph name="PROXY_SERVER" /> 要求您提供使用者名稱和密碼。</translation>
 <translation id="6277105963844135994">網絡逾時</translation>
 <translation id="6277518330158259200">擷取螢幕畫面(&amp;A)</translation>
@@ -5078,7 +5074,7 @@
 <translation id="6434325376267409267">您需要先更新裝置，才能使用 <ph name="APP_NAME" />。</translation>
 <translation id="6436164536244065364">在網上商店中檢視</translation>
 <translation id="6436610005579237680">如要取得更貼近您需要的回覆，請讓「Google 助理」在您問問題時存取包含畫面上資料的螢幕截圖，包括正在播放歌曲或影片的相關資料。</translation>
-<translation id="6436778875248895551">系統管理員已封鎖「<ph name="EXTENSION_NAME" />」擴充功能</translation>
+<translation id="6436778875248895551">管理員已封鎖「<ph name="EXTENSION_NAME" />」擴充程式</translation>
 <translation id="6438234780621650381">重設設定</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - 正在播放音訊</translation>
 <translation id="6442187272350399447">太棒了</translation>
@@ -5225,12 +5221,12 @@
 <translation id="6593881952206664229">系統可能不會播放受版權保護的媒體</translation>
 <translation id="6594011207075825276">正在尋找序列裝置…</translation>
 <translation id="6595187330192059106">一律禁止 <ph name="HOST" /> 全權控制 MIDI 裝置。</translation>
-<translation id="6595792813574514527">拖曳游標以使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜尋圖片</translation>
+<translation id="6595792813574514527">拖曳以使用「<ph name="VISUAL_SEARCH_PROVIDER" />」搜尋圖片</translation>
 <translation id="6596325263575161958">加密選項</translation>
 <translation id="6596816719288285829">IP 地址</translation>
 <translation id="6597017209724497268">樣本數目</translation>
 <translation id="6597148444736186483">如要登出此裝置上的主要帳戶，請按一下螢幕上的時間。當畫面顯示選單時，按一下 [登出]。</translation>
-<translation id="6597331566371766302">系統管理員已封鎖下列擴充功能：</translation>
+<translation id="6597331566371766302">管理員已封鎖以下擴充程式：</translation>
 <translation id="6601395831301182804">係咪要啟動 Chrome 作業系統內置嘅螢幕閱讀器 ChromeVox？要嘅話請㩒空格鍵。</translation>
 <translation id="6601612474695404578">有些網站會使用第三方 Cookie 載入頁面。如果網站無法正常運作，您可嘗試允許 Cookie。</translation>
 <translation id="6602937173026466876">存取打印機</translation>
@@ -5625,7 +5621,6 @@
 <translation id="7018275672629230621">讀取及變更您的瀏覽記錄</translation>
 <translation id="7019805045859631636">快</translation>
 <translation id="7022562585984256452">首頁已設定完成。</translation>
-<translation id="7023206482239788111">Privacy Sandbox 可以在不干擾網站運作的前提下，讓網站以更好的方式提供這些服務，同時防止有心人透過跨網站追蹤機制暗中取得您的資料，因此有利於開放網絡的發展。</translation>
 <translation id="7025082428878635038">全新的手勢瀏覽功能</translation>
 <translation id="7025190659207909717">流動數據服務管理</translation>
 <translation id="7025895441903756761">安全和私隱</translation>
@@ -5744,7 +5739,7 @@
 <translation id="7170236477717446850">個人檔案相片</translation>
 <translation id="7171000599584840888">新增設定檔…</translation>
 <translation id="7171259390164035663">不要註冊</translation>
-<translation id="7171746271229206319">讀取 Chrome OS 裝置資訊和裝置資料。這項資訊可能會提供給裝置製造商。Google 以外的機構會根據另行訂定的隱私權政策處理資料</translation>
+<translation id="7171746271229206319">閱讀 Chrome 作業系統裝置資訊和裝置資料。這些資料可能會與您的裝置製造商分享。Google 以外的機構會按另行訂定的私隱權政策處理資料</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{在新群組中加入分頁}other{在新群組中加入分頁}}</translation>
 <translation id="7173114856073700355">開啟設定</translation>
 <translation id="7174199383876220879">新功能！控制音樂、影片及其他內容。</translation>
@@ -5796,12 +5791,11 @@
 <translation id="7230222852462421043">還原視窗</translation>
 <translation id="7230787553283372882">自訂文字大小</translation>
 <translation id="7232750842195536390">無法重新命名</translation>
-<translation id="723343421145275488">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜尋圖片</translation>
+<translation id="723343421145275488">使用「<ph name="VISUAL_SEARCH_PROVIDER" />」搜尋圖片</translation>
 <translation id="7234010996000898150">正在取消 Linux 還原</translation>
 <translation id="7235716375204803342">正在擷取活動…</translation>
 <translation id="7235737137505019098">安全密鑰的空間不足，無法建立帳戶。</translation>
 <translation id="7235873936132740888">網站可在您點擊特定類型的連結時處理特殊工作，例如在電子郵件用戶端建立新郵件，或在線上日曆中新增活動</translation>
-<translation id="7238640585329759787">啟用後，網站可能會使用此處顯示的私隱保護技術提供內容和服務。這些技術包括替代跨網站追蹤的選項。本服務可能會陸續新增更多試用功能。</translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> 已取消傳送</translation>
 <translation id="7240339475467890413">要連線至新熱點嗎？</translation>
 <translation id="7241389281993241388">請登入 <ph name="TOKEN_NAME" /> 以匯入用戶端憑證。</translation>
@@ -6744,7 +6738,7 @@
 <translation id="8184318863960255706">更多資訊</translation>
 <translation id="8184472985242519288">平均</translation>
 <translation id="8186609076106987817">伺服器無法找到這個檔案。</translation>
-<translation id="8186704951085064172">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜尋頁面上的部分內容</translation>
+<translation id="8186704951085064172">使用「<ph name="VISUAL_SEARCH_PROVIDER" />」搜尋頁面上的部分內容</translation>
 <translation id="8188389033983459049">檢查您的裝置設定並開啟藍牙以繼續</translation>
 <translation id="8189306097519446565">學校帳戶</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
@@ -6807,7 +6801,6 @@
 <translation id="825238165904109940">一律顯示完整網址</translation>
 <translation id="8252569384384439529">正在上載…</translation>
 <translation id="8253198102038551905">按一下 [+] 以取得網絡屬性</translation>
-<translation id="8256127899838315610">您要使用此應用程式嗎？</translation>
 <translation id="8256319818471787266">小黃</translation>
 <translation id="8257950718085972371">繼續封鎖存取相機</translation>
 <translation id="8259239505248583312">開始使用</translation>

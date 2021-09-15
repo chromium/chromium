@@ -66,6 +66,7 @@
 <translation id="133801305381959373">Дараагийн засах боломжтой текстийн талбар алга байна</translation>
 <translation id="1342835525016946179">Гарчиг</translation>
 <translation id="1346059596910821859">Зөвлөгөө</translation>
+<translation id="1354356357730355833">хуулах</translation>
 <translation id="135978014023467274">Та ChromeVox 63-н хувилбарыг шинэчилсэн байна!</translation>
 <translation id="1360699455582016846"><ph name="ROUTING_KEY_NUMBER" />маршрутын түлхүүр доорх зүйлийг дарах</translation>
 <translation id="1377925789329510816">Энэ нь сүүлийн гарчиг юм. Эхний гарчгийг хураахын тулд Search+H, эсвэл энэ хуудасны хоёрдугаар гарчигт очихын тулд Search+Shift+H-г дарна уу.</translation>
@@ -352,6 +353,7 @@
 <translation id="3286372614333682499">хөрөг зураг</translation>
 <translation id="3286390186030710347">Гулгагч</translation>
 <translation id="3300348286427369683">Их хэмжээтэй текстийн дэмжлэг. ChromeVox одоо үсрэх тушаал, брайл чиглүүлэгчийн маршрут, сонголт болон бусад хэлбэрийн их хэмжээтэй текстийн талбарыг дэмждэг боллоо.</translation>
+<translation id="3300733168898541351">болих</translation>
 <translation id="3307886118343381874">Хүснэгтийн төгсгөлд очих</translation>
 <translation id="3312997241656799641">Дараагийн хандалт хийсэн линк</translation>
 <translation id="3313245066383501820">ChromeVox засварын түлхүүр</translation>
@@ -372,6 +374,7 @@
 <translation id="3406283310380167331">Хэлбэрүүдийн жагсаалтыг харуул</translation>
 <translation id="3414400929511680526">Бага зэргийн цэнхэр туяатай цагаан</translation>
 <translation id="3418936350470374046">Доор нүд алга байна</translation>
+<translation id="3419269701801640163">буулгах</translation>
 <translation id="3435494200763325275">Tab-н навигацыг үргэлжлүүлэх</translation>
 <translation id="344800400831402066">Шаргал бор (Ирисний өнгө)</translation>
 <translation id="3457000393508828486">Хагас дарагдсан</translation>
@@ -452,6 +455,7 @@
 <translation id="4006140876663370126">Зураг</translation>
 <translation id="4021716437419160885">Доош гүйлгэх</translation>
 <translation id="4035381225449278841">Хавар</translation>
+<translation id="4038098586530338813">дахин хийх</translation>
 <translation id="4047216625641135770">Марк</translation>
 <translation id="4047910800766704982">Таны төхөөрөмж онлайн үед та төрөлхийн, хүнийхтэй адил дуу хоолой ашиглах боломжтой. Текстийг боловсруулахаар Google-д илгээнэ. Та үүнийг Тохиргоо хэсэгт хүссэн үедээ унтраах боломжтой.</translation>
 <translation id="4053520724192563562">Нимбэгний ногоон</translation>
@@ -602,11 +606,13 @@
 <translation id="5138912041966667164">Бага зэргийн нил ягаан туяатай тод хөх</translation>
 <translation id="5140016802771803559">Нил ягаан</translation>
 <translation id="5142101052131610456">Бүх хичээл</translation>
+<translation id="5152605892605507188">баруун тийш зөөх</translation>
 <translation id="5158275234811857234">Ковер</translation>
 <translation id="516076699907426116">Үргэлжлүүлэхийн тулд хүрэлтээр сонсохыг ашиглан Дараагийн хичээлийн товчлуурыг олно уу. Дараа нь үргэлжлүүлэхийн тулд хоёр товшино уу.</translation>
 <translation id="5170206230005240598">Брайл хадмалыг идэвхжүүллээ</translation>
 <translation id="5183440668879371625">Брайлийн өмнөх шугам</translation>
 <translation id="5189244881767082992">Шулуун шугам</translation>
+<translation id="5234747236692380506"><ph name="TEXT" /> гэж бич</translation>
 <translation id="5263034204789987535">Бага зэргийн ягаан туяатай цагаан</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">Төгсгөл</translation>
@@ -744,6 +750,7 @@
 <translation id="6142308968191113180">Гарчиг 4</translation>
 <translation id="6150023170003443621">Шар ногоон</translation>
 <translation id="6158882249329863701">мөр <ph name="TABLECELLROWINDEX" /> багана <ph name="TABLECELLCOLUMNINDEX" /></translation>
+<translation id="6159796324830296161">зүүн тийш зөөх</translation>
 <translation id="6164829606128959761">метр</translation>
 <translation id="6165508094623778733">Нэмэлт мэдээлэл авах</translation>
 <translation id="6166362019018438352">Брайл хадмалыг идэвхгүй болгосон</translation>
@@ -833,6 +840,7 @@
 <translation id="6910211073230771657">Устгасан</translation>
 <translation id="6910969481785184048">Асаалттай, Унтраалтай, Зогсоох</translation>
 <translation id="6919104639734799681">Хүснэгтийг жагсаалтаар харуулах</translation>
+<translation id="692135145298539227">устгах</translation>
 <translation id="6945221475159498467">Сонгох</translation>
 <translation id="6949846980769640811">Бүдэг номин ногоон</translation>
 <translation id="6951482098621102657">Дараагийн 5-р түвшний гарчиг алга байна</translation>
@@ -1126,6 +1134,7 @@
 <translation id="9077305471618729969">Тэнгисийн цайвар ногоон</translation>
 <translation id="9080299285199342830">Төгсгөл хэсэг рүү очих</translation>
 <translation id="9089864840575085222">Бичлэгийн мөчлөгийн давтамж</translation>
+<translation id="9099429023611373837">таслах</translation>
 <translation id="9108370397979208512">math</translation>
 <translation id="9108589040018540527">scbr</translation>
 <translation id="911476240645808512">{COUNT,plural, =1{хувь}other{# хувийг илэрхийлэх тэмдэгт}}</translation>

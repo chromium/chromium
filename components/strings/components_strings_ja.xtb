@@ -252,7 +252,6 @@
 <translation id="1736420071277903564">パソコン</translation>
 <translation id="1740951997222943430">有効期限（月）を正しい形式で入力してください</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode が「<ph name="SECURE_DNS_MODE_SECURE" />」の場合は、有効な文字列を指定する必要があります。</translation>
-<translation id="1743570585616704562">認識されませんでした</translation>
 <translation id="1745880797583122200">ご使用のブラウザは管理されています</translation>
 <translation id="1746113442205726301">画像の Y 軸移動</translation>
 <translation id="17513872634828108">開いているタブ</translation>
@@ -527,7 +526,6 @@
 <translation id="2713444072780614174">白</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Chrome の設定でお支払いとクレジット カードの情報を管理します</translation>
 <translation id="2721148159707890343">リクエストを正常に送信しました</translation>
-<translation id="272451190272506600">センサーをタップして支払います</translation>
 <translation id="2728127805433021124">サーバーの証明書は脆弱な署名アルゴリズムを使用して署名されています。</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />接続診断ツールを実行する<ph name="END_LINK" /></translation>
 <translation id="2738330467931008676">受け取り場所の住所を選択</translation>
@@ -638,7 +636,6 @@
       次の方法をお試しください。
       <ph name="PLATFORM_TEXT" /></translation>
 <translation id="317878711435188021">このデバイスのアクティブ状態の検出</translation>
-<translation id="3188393374551744535">アカウント残高</translation>
 <translation id="3194737229810486521"><ph name="URL" /> から、デバイスにデータを永続的に保存する許可を求められています</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" />（<ph name="SERVER_NAME" /> 上）</translation>
 <translation id="3197136577151645743">このデバイスのアクティブ状態の検出を要求できる</translation>
@@ -1018,7 +1015,6 @@
 <translation id="4363178190432472170">スマートフォンを探します</translation>
 <translation id="4367563149485757821">Number-12（封筒）</translation>
 <translation id="437040971055499437">セキュリティ イベントの発生</translation>
-<translation id="437058704415269440">アカウント残高</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948"><ph name="VALUE_TYPE" /> 値が想定されます。</translation>
 <translation id="4377125064752653719"><ph name="DOMAIN" /> にアクセスしようとしましたが、サーバーから提示された証明書は発行元により取り消されています。これは、サーバーから提示されたセキュリティ認証情報が信頼できないことを示しており、悪意のあるユーザーと通信しようとしている可能性があります。</translation>
@@ -1157,6 +1153,7 @@
           <ph name="LIST_ITEM" />雇用主や教育機関で閲覧アクティビティを追跡している場合があります<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />インターネット サービス プロバイダでウェブ トラフィックを監視していることがあります<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="483241715238664915">警告をオンにする</translation>
 <translation id="4838327282952368871">ドリーミー</translation>
 <translation id="4840250757394056958">Chrome 履歴を表示</translation>
 <translation id="484462545196658690">自動</translation>
@@ -1283,7 +1280,6 @@
 <translation id="5252000469029418751">C7（封筒）</translation>
 <translation id="5254043433801397071">印刷コンテンツの最適化</translation>
 <translation id="5254958791078852567">E1</translation>
-<translation id="5261548214279761072">お支払いの完了</translation>
 <translation id="5265446478903775694">Google でのプライバシーを管理します</translation>
 <translation id="5266128565379329178">製本（上綴じ）</translation>
 <translation id="5269225904387178860">4 穴パンチ（下）</translation>
@@ -1785,6 +1781,7 @@
 <translation id="7086090958708083563">ユーザーからアップロードがリクエストされました</translation>
 <translation id="7087282848513945231">郡</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押して、Chrome の設定ですべてのサイトに保存されている権限とデータを管理します</translation>
+<translation id="7096937462164235847">このウェブサイトの識別情報は確認されていません。</translation>
 <translation id="7108338896283013870">非表示</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> から、カメラの使用許可を求められています</translation>
 <translation id="7108819624672055576">拡張機能によって許可</translation>
@@ -2036,7 +2033,6 @@
 <translation id="793209273132572360">住所を更新しますか？</translation>
 <translation id="7932579305932748336">コーティング</translation>
 <translation id="79338296614623784">有効な電話番号を入力してください</translation>
-<translation id="7934052535022478634">お支払いの完了</translation>
 <translation id="7934414805353235750"><ph name="URL" /> から、保護されたコンテンツの再生許可を求められています。デバイスの識別情報が Google により確認されます。</translation>
 <translation id="7935031712718413217">なりすましの可能性がある URL</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
@@ -2362,6 +2358,7 @@
 <translation id="9065203028668620118">編集</translation>
 <translation id="9065745800631924235"><ph name="TEXT" /> を履歴から検索</translation>
 <translation id="9069693763241529744">拡張機能によってブロック</translation>
+<translation id="9073799351042754113">このサイトではセキュリティの警告をオフにするよう設定しています。</translation>
 <translation id="9078964945751709336">その他の情報が必要です</translation>
 <translation id="9080712759204168376">ご注文の概要</translation>
 <translation id="9089260154716455634">管理時間外のポリシー:</translation>

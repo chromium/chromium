@@ -237,10 +237,6 @@
       Chromium OS の設定<ph name="LINK_END" />を確認してください</translation>
 <translation id="761356813943268536">Chromium がカメラとマイクを使用しています。</translation>
 <translation id="7617377681829253106">進化する Chromium</translation>
-<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />インストールを開始する前に、最新のデータがバックアップされていることをご確認ください。Chromium OS をインストールすると、ハードドライブのデータはすべて上書きされます。<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google はデータの消失について一切の責任を負わず、未認定のモデルで Chromium OS が動作することも保証しませんのであらかじめご了承ください。認定モデルについて詳しくは、[TBD] をご覧ください。<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Chromium OS のインストールとデータの消去について: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />インストールの準備ができたら、[Chromium OS をインストール] をクリックすると、いくつかの簡単なステップに沿って、インストールを行っていただけます。パソコンに実際に変更を加える前に、インストールを確認するメッセージがもう一度表示されます。<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium はデフォルトのブラウザとして設定されていません</translation>
 <translation id="7689606757190482937">同期してカスタマイズした Chromium をどのデバイスでも使用できます</translation>
 <translation id="7729447699958282447">お使いのドメインでは同期を利用できないため、Chromium はデータを同期できませんでした。</translation>

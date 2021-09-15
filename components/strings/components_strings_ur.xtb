@@ -252,7 +252,6 @@
 <translation id="1736420071277903564">کمپیوٹر</translation>
 <translation id="1740951997222943430">ایک درست ماہِ اختتام درج کریں</translation>
 <translation id="1741613555002899862">‏جب DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> میں ہو، تو متعینہ اور درست اسٹرنگ ہونا چاہیے۔</translation>
-<translation id="1743570585616704562">تسلیم شدہ نہیں ہے</translation>
 <translation id="1745880797583122200">آپ کا براؤزر زیر انتظام ہے</translation>
 <translation id="1746113442205726301">‏تصویر Y شفٹ</translation>
 <translation id="17513872634828108">کھلے ٹیبز</translation>
@@ -531,7 +530,6 @@
 <translation id="2713444072780614174">سفید</translation>
 <translation id="2715612312510870559">‏<ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />، Chrome کی ترتیبات میں اپنی ادائیگیوں اور کریڈٹ کارڈ کی معلومات کا نظم کرنے کے لیے ٹیب، پھر اینٹر دبائیں</translation>
 <translation id="2721148159707890343">درخواست کامیاب رہی</translation>
-<translation id="272451190272506600">ادائیگی کرنے کے لیے سینسر کو ٹچ کریں</translation>
 <translation id="2728127805433021124">سرور کا سرٹیفیکیٹ ایک کمزور دستخط الگورتھم استعمال کر کے دستخط کیا ہوا ہے۔</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />کنیکٹوٹی کی تشخیصات چلانے کی<ph name="END_LINK" /></translation>
 <translation id="2738330467931008676">پک اپ کا پتہ منتخب کریں</translation>
@@ -643,7 +641,6 @@
     آپ ایک پراکسی سرور استعمال کر رہے ہوں گے:
     <ph name="PLATFORM_TEXT" /></translation>
 <translation id="317878711435188021">یہ سائٹ جاننا چاہتی ہے کہ فعال طور پر آپ اس آلہ کا استعمال کب کر رہے ہیں</translation>
-<translation id="3188393374551744535">اکاؤنٹ بیلنس</translation>
 <translation id="3194737229810486521"><ph name="URL" /> آپ کے آلے پر مستقل طور پر ڈیٹا اسٹور کرنا چاہتا ہے</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> پر <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">آپ اپنے آلے کا فعال طور پر استعمال کب کر رہے ہیں یہ جاننے کیلئے سائٹ پوچھ سکتی ہے</translation>
@@ -1027,7 +1024,6 @@
 <translation id="4363178190432472170">میرا فون ڈھونڈیں</translation>
 <translation id="4367563149485757821">Number-12 ‎(Envelope‎)‎</translation>
 <translation id="437040971055499437">سیکیورٹی ایونٹ ہوتا ہے</translation>
-<translation id="437058704415269440">اکاؤنٹ بیلنس</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">متوقع <ph name="VALUE_TYPE" /> قدر۔</translation>
 <translation id="4377125064752653719">آپ نے <ph name="DOMAIN" /> تک رسائی کی کوشش کی، لیکن سرور کے ذریعے پیش کردہ سرٹیفیکیٹ کو اس کے جاری کنندہ نے منسوخ کر دیا ہے۔ اس کا مطلب ہے کہ سرور کے ذریعے پیش کردہ سیکیورٹی اسنادات پر مطلق طور پر بھروسہ نہیں کیا جانا چاہیے۔ ممکن ہے کہ آپ کی مواصلت ایک حملہ آور کے ساتھ ہو رہی ہو۔</translation>
@@ -1292,7 +1288,6 @@
 <translation id="5252000469029418751">C7 ‎(Envelope‎)‎</translation>
 <translation id="5254043433801397071">پرنٹ کے مواد کو بہتر بنائیں</translation>
 <translation id="5254958791078852567">E1</translation>
-<translation id="5261548214279761072">ادائیگی مکمل ہوگئی</translation>
 <translation id="5265446478903775694">‏Google پر میری رازداری کا نظم کریں</translation>
 <translation id="5266128565379329178">اوپر باندھیں</translation>
 <translation id="5269225904387178860">نیچے مستطیل سوراخ</translation>
@@ -2044,7 +2039,6 @@
 <translation id="793209273132572360">پتہ اپ ڈیٹ کریں؟</translation>
 <translation id="7932579305932748336">کوٹ</translation>
 <translation id="79338296614623784">ایک درست فون نمبر درج کریں</translation>
-<translation id="7934052535022478634">ادائیگی مکمل ہوگئی</translation>
 <translation id="7934414805353235750">‏<ph name="URL" /> تحفظ یافتہ مواد چلانا چاہتا ہے۔ Google آپ کے آلے کی شناخت کی توثیق کرے گا۔</translation>
 <translation id="7935031712718413217">‏جھانسہ دینے والا ممکنہ URL</translation>
 <translation id="7935318582918952113">‏DOM ڈسٹلر</translation>

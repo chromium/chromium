@@ -202,11 +202,6 @@ Puudutage otsimiseks mis tahes sõna. Otsingu täpsustamiseks puudutage pikalt, 
 <translation id="2321958826496381788">Lohistage liugurit, kuni saate seda mugavalt lugeda. Lõigu topeltkoputamisel peab tekst olema vähemalt nii suur.</translation>
 <translation id="2323763861024343754">Saidi salvestusruum</translation>
 <translation id="2328985652426384049">Ei saa sisse logida</translation>
-<translation id="2336549603503100420">Kui see on lubatud, võivad saidid oma sisu ja teenuste pakkumiseks kasutada siin kuvatud privaatsust säilitavaid tehnikaid. Need hõlmavad saitidevahelise jälgimise alternatiive. Aja jooksul võidakse lisada rohkem prooviversioone.
-
-<ph name="BEGIN_LIST_ITEM1" />Reklaamijad teavad, millal tuhanded kasutajad – nad on justkui kontserdipublik — jagavad sarnast huvi, ja valivad reklaamid kogu publikule, mitte konkreetsetele inimestele.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Reklaamijad saavad reklaamide tõhusust uurida viisil, mis teie tegevusi saitidel ei jälgi.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="2337236196941929873">Eellaadib lehed, mida Chrome'i arvates võiksite külastada. Selleks võib Chrome kasutada küpsisefaile, kui need lubate, ning lehed krüpteerida ja saata Google'i kaudu, et teie isikut saitide eest varjata.</translation>
 <translation id="234265804618409743">Kaamerat ei saa avada. Midagi läks valesti.</translation>
 <translation id="2345671828921229300">Otsimiseks puudutage sõna pikalt</translation>
@@ -396,13 +391,6 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="3429160811076349561">Prooviversiooni funktsioonid on välja lülitatud</translation>
 <translation id="3440975416244667276">Asjakohasema teabe nägemiseks puudutage pikalt</translation>
 <translation id="3443221991560634068">Praeguse lehe uuesti laadimine</translation>
-<translation id="3451542610083122179">Privaatsuse liivakast on käimasolev initsiatiiv säilitada avatud veebi, mis aitab teid jälgimismehhanismide eest kaitsta.
-
-Praegu kasutavad veebisaidid mitmeid tehnoloogiaid (nt kolmandate osapoolte küpsisefailid), et pakkuda olulisi funktsioone, nagu asjakohaste reklaamide näitamine ja saidi toimivuse mõõtmine.
-
-Privaatsuse liivakast säilitab avatud veebi elujõulisuse, luues paremaid võimalusi nende teenuste pakkumiseks ilma saite rikkumata. Samas takistatakse teie salajast jälgimist veebis.
-
-Privaatsuse liivakast on endiselt arendusjärgus ja saadaval vaid valitud piirkondades. Praegu võivad saidid privaatsuse liivakasti proovida, kasutades jätkuvalt ka muid veebitehnoloogiaid, nagu kolmandate osapoolte küpsisefailid. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 allalaadimine on ajastatud}other{# allalaadimist on ajastatud}}</translation>
 <translation id="3478363558367712427">Võite valida oma otsingumootori</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /> soovitatud sisu kohta</translation>

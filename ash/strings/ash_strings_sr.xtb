@@ -410,7 +410,7 @@
 <translation id="4129129681837227511">Да бисте видели обавештења на закључаном екрану, откључајте га како бисте променили подешавање</translation>
 <translation id="4146833061457621061">Пусти музику</translation>
 <translation id="4157822100366708405">Подешавања тамне теме</translation>
-<translation id="4170634509222878053"><ph name="TITLE" /> – <ph name="DETAILS" /></translation>
+<translation id="4173958948577803258">Ч</translation>
 <translation id="4181841719683918333">Језици</translation>
 <translation id="4195877955194704651">Аутоматски кликови на дугмад</translation>
 <translation id="4197790712631116042">Искључено</translation>
@@ -749,6 +749,7 @@
 <translation id="6751052314767925245">Примењује администратор</translation>
 <translation id="6751826523481687655">Праћење учинка је укључено</translation>
 <translation id="6752912906630585008">Радна површина <ph name="REMOVED_DESK" /> је уклоњена и спојена са радном површином <ph name="RECEIVE_DESK" /></translation>
+<translation id="6754441615189976839">С</translation>
 <translation id="6757237461819837179">Медији се не репродукују</translation>
 <translation id="6777216307882431711">Напаја повезане уређаје са USB прикључком типа C</translation>
 <translation id="6790428901817661496">Пусти</translation>
@@ -769,6 +770,7 @@
 <translation id="6910714959251846841">Ово ажурирање захтева да обавите powerwash на уређају. Сазнајте више о најновијем ажурирању за: <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Нисмо успели да препознамо паметну картицу. Пробајте поново.</translation>
 <translation id="6921188888306725546">Тастерске пречице су побољшане</translation>
+<translation id="6929655271276551705">Подешавања датума</translation>
 <translation id="6945221475159498467">Изабери</translation>
 <translation id="6961121602502368900">Искључивање звука телефона није доступно на пословном профилу</translation>
 <translation id="6961840794482373852">Тастерска пречица Ctrl + стрелица нагоре је промењена. Да бисте користили тастер Page Up, притисните тастер <ph name="LAUNCHER_KEY_NAME" /> + стрелица нагоре.</translation>
@@ -786,6 +788,7 @@
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google помоћник</translation>
 <translation id="7042322267639375032">Скупите област статуса</translation>
 <translation id="7045595904618419789">Покрени лупу</translation>
+<translation id="7055381872777910864">С</translation>
 <translation id="7055910611768509537">Писаљка није коришћена дуже од недељу дана</translation>
 <translation id="7066646422045619941">Ову мрежу је онемогућио администратор.</translation>
 <translation id="7067196344162293536">Аутоматски ротирај</translation>
@@ -854,6 +857,7 @@
 <translation id="7579778809502851308">Снимање екрана</translation>
 <translation id="7590883480672980941">Подешавања уноса</translation>
 <translation id="7593891976182323525">Тастер за претрагу или Shift</translation>
+<translation id="7595633564847427181">П</translation>
 <translation id="7600875258240007829">Погледајте сва обавештења</translation>
 <translation id="7607002721634913082">Паузирано</translation>
 <translation id="7618774594543487847">Неутрално</translation>

@@ -91,6 +91,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1257553931232494454">niveis de zoom</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para xestionar a configuración de Chrome, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="1263231323834454256">Lista de lectura</translation>
+<translation id="1269096320618100013">Botón para xestionar a configuración de accesibilidade. Para personalizar as túas ferramentas de accesibilidade na configuración de Chrome OS, preme Introducir</translation>
 <translation id="1269516672602708785">Crear rapidamente un sitio novo en Google Sites</translation>
 <translation id="1270502636509132238">Método de recollida</translation>
 <translation id="1281476433249504884">Amontoador 1</translation>
@@ -251,7 +252,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1736420071277903564">Ordenador</translation>
 <translation id="1740951997222943430">Introduce un mes de caducidade válido</translation>
 <translation id="1741613555002899862">Debe especificarse e ser unha cadea válida cando DnsOverHttpsMode é <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
-<translation id="1743570585616704562">Non se recoñece</translation>
 <translation id="1745880797583122200">O teu navegador está xestionado</translation>
 <translation id="1746113442205726301">Desprazamento da imaxe no eixe Y</translation>
 <translation id="17513872634828108">Pestanas abertas</translation>
@@ -504,6 +504,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tab e, a continuación, Intro para borrar o historial de navegación, as cookies, a memoria caché e outros datos desde a configuración de Chrome</translation>
 <translation id="2650446666397867134">Denegouse o acceso ao ficheiro</translation>
 <translation id="2653659639078652383">Enviar</translation>
+<translation id="2659491813326907275">Personalizar as túas ferramentas de accesibilidade na configuración de Chrome OS</translation>
 <translation id="2660779039299703961">Evento</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Ningún}=1{1 contrasinal (para <ph name="DOMAIN_LIST" />)}=2{2 contrasinais (para <ph name="DOMAIN_LIST" />)}other{# contrasinais (para <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Parte superior</translation>
@@ -528,7 +529,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2713444072780614174">Branco</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tab e, a continuación, Intro para xestionar os teus métodos de pago e a información das tarxetas de crédito desde a configuración de Chrome</translation>
 <translation id="2721148159707890343">Solicitude correcta</translation>
-<translation id="272451190272506600">Toca o sensor para pagar</translation>
 <translation id="2728127805433021124">O certificado do servidor está asinado cun algoritmo de sinatura débil.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Executar diagnósticos de conectividade<ph name="END_LINK" /></translation>
 <translation id="2738330467931008676">Escoller enderezo de recollida</translation>
@@ -639,7 +639,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
       estar utilizando un servidor proxy:
       <ph name="PLATFORM_TEXT" /></translation>
 <translation id="317878711435188021">Saber se estás utilizando este dispositivo de maneira activa</translation>
-<translation id="3188393374551744535">Saldo da conta</translation>
 <translation id="3194737229810486521">O URL <ph name="URL" /> quere almacenar datos de forma permanente no teu dispositivo</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> en <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Pode pedirche permiso para saber cando estás utilizando o dispositivo de maneira activa</translation>
@@ -1023,7 +1022,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4363178190432472170">Atopar teléfono</translation>
 <translation id="4367563149485757821">Number-12 (Envelope)</translation>
 <translation id="437040971055499437">Prodúcese un evento de seguranza</translation>
-<translation id="437058704415269440">Saldo da conta</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Valor <ph name="VALUE_TYPE" /> esperado.</translation>
 <translation id="4377125064752653719">Tentaches acceder a <ph name="DOMAIN" />, pero este emisor revogou o certificado presentado polo servidor. Isto significa que as credenciais de seguranza presentadas polo servidor non son de confianza. É posible que te esteas comunicando cun hacker.</translation>
@@ -1247,6 +1245,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5115216390227830982">European-Edp</translation>
 <translation id="5115232566827194440">Omisión da sesión de convidado xestionada e restrinxida</translation>
 <translation id="5115563688576182185">(64 bits)</translation>
+<translation id="5116898824332672776"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para personalizar as túas ferramentas de accesibilidade na configuración de Chrome OS, preme Tabulador e, a continuación, Introducir.</translation>
 <translation id="5123063207673082822">Fin de semana</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Verificar a túa tarxeta</translation>
@@ -1287,7 +1286,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5252000469029418751">C7 (sobre)</translation>
 <translation id="5254043433801397071">Optimizar contido da impresión</translation>
 <translation id="5254958791078852567">E1</translation>
-<translation id="5261548214279761072">Completouse o pago</translation>
 <translation id="5265446478903775694">Xestionar privacidade en Google</translation>
 <translation id="5266128565379329178">Encadernación na parte superior</translation>
 <translation id="5269225904387178860">Catro perforacións na parte inferior</translation>
@@ -2038,7 +2036,6 @@ Detalles adicionais:
 <translation id="793209273132572360">Queres cambiar o enderezo?</translation>
 <translation id="7932579305932748336">Recubrimento</translation>
 <translation id="79338296614623784">Introduce un número de teléfono válido</translation>
-<translation id="7934052535022478634">Completouse o pago</translation>
 <translation id="7934414805353235750"><ph name="URL" /> quere reproducir contido protexido. Google verificará a identidade do teu dispositivo.</translation>
 <translation id="7935031712718413217">Posible suplantación de URL</translation>
 <translation id="7935318582918952113">Extractor de DOM</translation>

@@ -202,11 +202,6 @@ Dodirnite bilo koju reč za pretragu. Da biste precizirali pretragu, dodirnite i
 <translation id="2321958826496381788">Prevlačite klizač dok ovo ne budete mogli lako da pročitate. Kada dvaput dodirnete pasus, tekst treba da bude bar ovoliki.</translation>
 <translation id="2323763861024343754">Memorijski prostor za sajt</translation>
 <translation id="2328985652426384049">Ne mogu da se prijavim</translation>
-<translation id="2336549603503100420">Kada ih omogućite, sajtovi mogu da koriste tehnike za očuvanje privatnosti koje su prikazane ovde da bi pružali sadržaj i usluge. One obuhvataju alternative za praćenje na više sajtova. Možda će tokom vremena biti dodato još proba.
-
-<ph name="BEGIN_LIST_ITEM1" />Oglašavači mogu da saznaju kada hiljade korisnika ima slično interesovanje – poput mase na koncertu – i da izaberu oglase za masu, a ne za pojedinačnu osobu.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Oglašavači mogu da proučavaju efikasnost oglasa na način koji vas ne prati na sajtovima.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="2337236196941929873">Predučitava stranice za koje Chrome smatra da ćete ih možda posetiti. Da bi to uradio, Chrome može da koristi kolačiće, ako ih dozvolite, i da šifruje i šalje stranice preko Google-a da bi sakrio vaš identitet od sajtova.</translation>
 <translation id="234265804618409743">Ne možemo da otvorimo kameru. Nešto nije u redu.</translation>
 <translation id="2345671828921229300">Da biste pretraživali, dodirnite i zadržite reč</translation>
@@ -396,13 +391,6 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="3429160811076349561">Probne funkcije su isključene</translation>
 <translation id="3440975416244667276">Dodirnite i zadržite da biste videli relevantnije informacije</translation>
 <translation id="3443221991560634068">Ponovno učitavanje aktuelne stranice</translation>
-<translation id="3451542610083122179">Zaštićeno okruženje privatnosti je aktuelna inicijativa za očuvanje otvorenog veba koja će vam pomoći da se predostrožno zaštitite od mehanizama za praćenje.
-
-Danas se veb-sajtovi oslanjaju na mnogo tehnologija, poput kolačića trećih strana, kada su u pitanju važne usluge poput prikazivanja relevantnih oglasa i merenja učinka sajta.
-
-Zaštićeno okruženje privatnosti čuva vitalnost otvorenog veba tako što stvara bolje načine za obavljanje ovih usluga – bez narušavanja funkcija sajtova i uz sprečavanje da vas neko tajno prati širom veba.
-
-Aktivno programiranje Zaštićenog okruženja privatnosti je još uvek u toku i ono je dostupno u određenim regionima. Sajtovi za sada mogu da isprobaju Zaštićeno okruženje privatnosti, a da i dalje koriste aktuelne veb-tehnologije poput kolačića trećih strana. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{Zakazano je 1 preuzimanje}one{Zakazano je # preuzimanje}few{Zakazana su # preuzimanja}other{Zakazano je # preuzimanja}}</translation>
 <translation id="3478363558367712427">Možete da odaberete pretraživač</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /> o predloženom sadržaju</translation>

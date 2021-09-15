@@ -170,6 +170,7 @@
 ដើម្បីផ្ដល់​ការអនុញ្ញាតនេះ សូមចុច '<ph name="BUTTON_NAME" />' ខាងក្រោម។ នៅក្នុង​ផ្ទាំងចំណូលចិត្ត 'ភាពងាយស្រួល' ដែលបើក សូមធីក​ប្រអប់​នៅជិត '<ph name="SERVICE_SCRIPT_NAME" />'។
 
 ប្រសិនបើ​បានធីក '<ph name="SERVICE_SCRIPT_NAME" />' រួចហើយ សូម​ដោះធីក រួចធីកវា​ម្ដងទៀត។</translation>
+<translation id="8305209735512572429">Web Authentication Remoting Process</translation>
 <translation id="8383794970363966105">ដើម្បីប្រើ Chromoting អ្នកត្រូវបន្ថែមគណនី Google ទៅឧបករណ៍របស់អ្នក។</translation>
 <translation id="8386846956409881180">ម៉ាស៊ីនចែករំលែកត្រូវបានកំណត់រចនាសម្ព័ន្ធដោយប្រើព័ត៌មានអត្តសញ្ញាណ OAuth ដែលគ្មានសុពលភាព។</translation>
 <translation id="8397385476380433240">ផ្ដល់ការអនុញ្ញាតឱ្យ <ph name="PRODUCT_NAME" /></translation>

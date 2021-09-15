@@ -152,6 +152,7 @@
 <translation id="39823212440917567">Задания печати, хранящиеся дольше <ph name="NUMBER_OF_DAYS" /> дн., будут удалены</translation>
 <translation id="4003384961948020559">Сбой: выходной лоток заполнен</translation>
 <translation id="4034824040120875894">Принтер</translation>
+<translation id="4050980775484079270">DNS-преобразование ARC</translation>
 <translation id="409427325554347132">Сохранить данные</translation>
 <translation id="4131410914670010031">Черно-белая печать</translation>
 <translation id="4145784616224233563">Брандмауэр HTTP</translation>
@@ -162,6 +163,7 @@
 <translation id="4238516577297848345">Задания печати не выполняются</translation>
 <translation id="4244962993387259361">Для запуска проверки памяти вам нужно не менее 500 МБ незанятого пространства. Чтобы освободить место, выберите "Настройки &gt; Управление хранилищем".</translation>
 <translation id="4258281355379922695">Время ожидания HTTP</translation>
+<translation id="4271957103967917607">Перейти в полноэкранный режим</translation>
 <translation id="4289540628985791613">Обзор</translation>
 <translation id="4297501883039923494">Печать прервана: неизвестная ошибка</translation>
 <translation id="4300073214558989">Изображений: <ph name="IMAGE_COUNT" /></translation>
@@ -373,6 +375,7 @@
 <translation id="7550715992156305117">Программы диагностики</translation>
 <translation id="7561454561030345039">Этим действием управляет администратор.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7574732568136198983">Проверка ping для ARC</translation>
 <translation id="7595982850646262331">Ещё <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Узнать больше в Справочном центре</translation>
 <translation id="763165478673169849">Время последнего сброса</translation>

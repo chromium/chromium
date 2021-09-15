@@ -170,6 +170,7 @@ Baimen hori emateko, sakatu beheko "<ph name="BUTTON_NAME" />" botoia pantailare
 Baimen hori emateko, sakatu beheko "<ph name="BUTTON_NAME" />" botoia. Erabilerraztasun-eginbideen hobespen-panela irekitzen denean, markatu "<ph name="SERVICE_SCRIPT_NAME" />" elementuaren ondoan dagoen koadroa.
 
 "'<ph name="SERVICE_SCRIPT_NAME" />" dagoeneko markatuta badago, desmarka ezazu eta marka ezazu berriro.</translation>
+<translation id="8305209735512572429">Web-autentifikazioko urruneko prozesua</translation>
 <translation id="8383794970363966105">Chromoting erabili ahal izateko, Google-ko kontu bat gehitu beharko duzu gailuan.</translation>
 <translation id="8386846956409881180">Balio ez duten OAuth kredentzialekin dago konfiguratuta ostalaria.</translation>
 <translation id="8397385476380433240">Eman <ph name="PRODUCT_NAME" /> atzitzeko baimena</translation>

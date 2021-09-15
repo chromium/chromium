@@ -252,7 +252,6 @@
 <translation id="1736420071277903564">電腦</translation>
 <translation id="1740951997222943430">請輸入有效的到期月份</translation>
 <translation id="1741613555002899862">將 DnsOverHttpsMode 設定為 <ph name="SECURE_DNS_MODE_SECURE" /> 時，必須指定有效的字串。</translation>
-<translation id="1743570585616704562">無法識別</translation>
 <translation id="1745880797583122200">您的瀏覽器受管理</translation>
 <translation id="1746113442205726301">圖片 Y 軸移動</translation>
 <translation id="17513872634828108">開啟分頁</translation>
@@ -527,7 +526,6 @@
 <translation id="2713444072780614174">白色</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Chrome 設定度管理付款同信用卡資料</translation>
 <translation id="2721148159707890343">要求成功</translation>
-<translation id="272451190272506600">輕觸感應器即可付款</translation>
 <translation id="2728127805433021124">伺服器憑證以防護力較弱的簽章演算法簽署。</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />執行連線診斷<ph name="END_LINK" /></translation>
 <translation id="2738330467931008676">選擇取貨地址</translation>
@@ -638,7 +636,6 @@
       Proxy 伺服器：
       <ph name="PLATFORM_TEXT" /></translation>
 <translation id="317878711435188021">知道您是否正在使用此裝置</translation>
-<translation id="3188393374551744535">帳戶餘額</translation>
 <translation id="3194737229810486521"><ph name="URL" /> 要求在您的裝置上永久儲存數據</translation>
 <translation id="3195213714973468956">「<ph name="SERVER_NAME" />」上的 <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">可要求偵測您使用裝置的時間</translation>
@@ -1017,7 +1014,6 @@
 <translation id="4363178190432472170">搵我部手機</translation>
 <translation id="4367563149485757821">Number-12 (信封)</translation>
 <translation id="437040971055499437">發生安全性事件</translation>
-<translation id="437058704415269440">帳戶餘額</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">預期的「<ph name="VALUE_TYPE" />」值。</translation>
 <translation id="4377125064752653719">您嘗試前往 <ph name="DOMAIN" />，但是發行者已撤銷伺服器提供的憑證。在這種情況下，請勿信任伺服器提供的安全性憑證，因為您可能連接至攻擊者。</translation>
@@ -1156,6 +1152,7 @@
           <ph name="LIST_ITEM" />僱主或學校可以追蹤瀏覽活動<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />互聯網服務供應商可能會監察網絡流量<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="483241715238664915">開啟警告</translation>
 <translation id="4838327282952368871">夢幻</translation>
 <translation id="4840250757394056958">查看 Chrome 記錄</translation>
 <translation id="484462545196658690">自動</translation>
@@ -1282,7 +1279,6 @@
 <translation id="5252000469029418751">C7 (信封)</translation>
 <translation id="5254043433801397071">優化列印內容</translation>
 <translation id="5254958791078852567">E1</translation>
-<translation id="5261548214279761072">付款完成</translation>
 <translation id="5265446478903775694">管理我喺 Google 上面嘅私隱權</translation>
 <translation id="5266128565379329178">釘裝 (頂端)</translation>
 <translation id="5269225904387178860">四孔 (底部)</translation>
@@ -1784,6 +1780,7 @@
 <translation id="7086090958708083563">使用者已要求上載</translation>
 <translation id="7087282848513945231">郡</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Chrome 設定度管理所有網站嘅權限同儲存嘅資料</translation>
+<translation id="7096937462164235847">這個網站的身分未經驗證。</translation>
 <translation id="7108338896283013870">隱藏</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> 要求使用相機</translation>
 <translation id="7108819624672055576">根據擴充程式設定允許</translation>
@@ -2035,7 +2032,6 @@
 <translation id="793209273132572360">要更新地址嗎？</translation>
 <translation id="7932579305932748336">塗布</translation>
 <translation id="79338296614623784">請輸入有效的電話號碼</translation>
-<translation id="7934052535022478634">付款完成</translation>
 <translation id="7934414805353235750"><ph name="URL" /> 想播放受保護的內容。Google 將對裝置進行身分驗證。</translation>
 <translation id="7935031712718413217">潛在仿冒網址</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
@@ -2221,7 +2217,7 @@
 <translation id="8522552481199248698">Chrome 可助您保護 Google 帳戶並變更密碼。</translation>
 <translation id="8530813470445476232">清除您的瀏覽記錄、Cookie、快取以及其他 Chrome 設定</translation>
 <translation id="8533619373899488139">請前往 &lt;strong&gt;chrome://policy&lt;/strong&gt; 查看被封鎖的網址清單，以及由系統管理員強制執行的其他政策。</translation>
-<translation id="8539500321752640291">要授予 2 項權限嗎？</translation>
+<translation id="8539500321752640291">要允許 2 項權限嗎？</translation>
 <translation id="8541158209346794904">藍牙裝置</translation>
 <translation id="8542014550340843547">三釘 (底部)</translation>
 <translation id="8543181531796978784">您可以<ph name="BEGIN_ERROR_LINK" />報告偵測問題<ph name="END_ERROR_LINK" />；或如果您瞭解安全性風險，也可以<ph name="BEGIN_LINK" />瀏覽這個不安全的網站<ph name="END_LINK" />。</translation>
@@ -2360,6 +2356,7 @@
 <translation id="9065203028668620118">編輯</translation>
 <translation id="9065745800631924235">「<ph name="TEXT" />」嘅搜尋記錄</translation>
 <translation id="9069693763241529744">根據擴充程式設定封鎖</translation>
+<translation id="9073799351042754113">您已選擇關閉此網站的安全性警告。</translation>
 <translation id="9078964945751709336">必須提供更多資料</translation>
 <translation id="9080712759204168376">訂單摘要</translation>
 <translation id="9089260154716455634">停機時間政策：</translation>

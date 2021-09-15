@@ -202,11 +202,6 @@ Trykk på et ord for å søke. For å finstemme søket, trykk og hold inne for �
 <translation id="2321958826496381788">Dra glidebryteren til du kan lese dette uten problemer. Når du har dobbelttrykket på et avsnitt, bør teksten være minst like stor som dette.</translation>
 <translation id="2323763861024343754">Nettstedslagring</translation>
 <translation id="2328985652426384049">Kan ikke logge på</translation>
-<translation id="2336549603503100420">Når dette er påslått, kan nettsteder bruke de personvernbevarende teknikkene som vises her, for å levere innholdet sitt og tjenestene sine. Disse omfatter alternativer til sporing på tvers av nettsteder. Flere prøvefunksjoner kan bli lagt til over tid.
-
-<ph name="BEGIN_LIST_ITEM1" />Annonsører kan finne ut når tusenvis av brukere deler lignende interesser – som publikummet på en konsert –, og velge annonser for hele publikummet i stedet for enkeltpersoner.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Annonsører kan studere effektiviteten av annonser på en måte som ikke sporer deg på tvers av nettsteder.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="2337236196941929873">Forhåndslaster sider som Chrome tror du kanskje kommer til å besøke. For å gjøre dette kan det hende Chrome bruker informasjonskapsler (hvis du tillater informasjonskapsler) og krypterer og sender sider gjennom Google for å skjule identiteten din for nettsteder.</translation>
 <translation id="234265804618409743">Kan ikke åpne kameraet. Noe gikk galt.</translation>
 <translation id="2345671828921229300">For å søke, trykk og hold inne på et ord</translation>
@@ -396,13 +391,6 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="3429160811076349561">Prøvefunksjoner er avslått</translation>
 <translation id="3440975416244667276">Trykk og hold for mer relevant informasjon</translation>
 <translation id="3443221991560634068">Last inn den aktive siden på nytt</translation>
-<translation id="3451542610083122179">Privacy Sandbox er et pågående initiativ for å ivareta det åpne nettet og beskytte deg mot sporingsmekanismer.
-
-I dag bruker nettsteder mange teknologier, som tredjeparts informasjonskapsler, for å levere viktige tjenester, som å vise relevante annonser og måle egen ytelse.
-
-Privacy Sandbox ivaretar det åpne nettets vitalitet ved å skape bedre måter å utføre disse tjenestene på – uten at nettsteder slutter å fungere, og uten at du spores i smug overalt på nettet.
-
-Privacy Sandbox er fremdeles under aktiv utvikling og er tilgjengelig i utvalgte regioner. Inntil videre kan nettsteder prøve Privacy Sandbox samtidig som de fortsetter å bruke dagens netteknologier, som tredjeparts informasjonskapsler. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 nedlasting er planlagt}other{# nedlastinger er planlagt}}</translation>
 <translation id="3478363558367712427">Du kan velge søkemotor</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /> om foreslått innhold</translation>

@@ -410,7 +410,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="4129129681837227511">Kilit ekranınızda bildirim göstermek için cihazın kilidini açarak ayarı değiştirin</translation>
 <translation id="4146833061457621061">Müzik çal</translation>
 <translation id="4157822100366708405">Koyu Tema ayarları</translation>
-<translation id="4170634509222878053"><ph name="TITLE" /> - <ph name="DETAILS" /></translation>
+<translation id="4173958948577803258">P</translation>
 <translation id="4181841719683918333">Diller</translation>
 <translation id="4195877955194704651">Otomatik tıklamalar düğmesi</translation>
 <translation id="4197790712631116042">Kapalı</translation>
@@ -750,6 +750,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="6751052314767925245">Yöneticiniz tarafınızdan zorunlu tutuldu</translation>
 <translation id="6751826523481687655">Performans izleme açık</translation>
 <translation id="6752912906630585008">Masa <ph name="REMOVED_DESK" /> kaldırılarak Masa <ph name="RECEIVE_DESK" /> ile birleştirildi</translation>
+<translation id="6754441615189976839">C</translation>
 <translation id="6757237461819837179">Medya oynatılmıyor</translation>
 <translation id="6777216307882431711">Bağlı USB-C cihazlarına güç sağlıyor</translation>
 <translation id="6790428901817661496">Oynat</translation>
@@ -770,6 +771,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="6910714959251846841">Bu güncelleme, cihazınızda powerwash işlemi yapılmasını gerektiriyor. En yeni <ph name="SYSTEM_APP_NAME" /> güncellemesi ile ilgili daha fazla bilgi edinin.</translation>
 <translation id="6919251195245069855">Akıllı kartınız tanınamadı. Tekrar deneyin.</translation>
 <translation id="6921188888306725546">Klavye kısayolları iyileştirildi</translation>
+<translation id="6929655271276551705">Tarih ayarları</translation>
 <translation id="6945221475159498467">Seç</translation>
 <translation id="6961121602502368900">Telefonu sessize alma özelliği, iş profilinde kullanılamaz</translation>
 <translation id="6961840794482373852">Alt + Yukarı Ok klavye kısayolu değişti. Page Up tuşunu kullanmak için <ph name="LAUNCHER_KEY_NAME" /> + Yukarı Ok tuşlarına basın.</translation>
@@ -787,6 +789,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />`, Google Asistan</translation>
 <translation id="7042322267639375032">Durum alanını daralt</translation>
 <translation id="7045595904618419789">Büyüteci başlat</translation>
+<translation id="7055381872777910864">Ç</translation>
 <translation id="7055910611768509537">Ekran kalemi bir haftadan uzun süredir kullanılmamış</translation>
 <translation id="7066646422045619941">Bu ağ, yöneticiniz tarafından devre dışı bırakıldı.</translation>
 <translation id="7067196344162293536">Otomatik döndür</translation>
@@ -855,6 +858,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="7579778809502851308">Ekran görüntüsü</translation>
 <translation id="7590883480672980941">Giriş ayarları</translation>
 <translation id="7593891976182323525">Arama veya Üst Karakter</translation>
+<translation id="7595633564847427181">P</translation>
 <translation id="7600875258240007829">Tüm bildirimleri göster</translation>
 <translation id="7607002721634913082">Duraklatıldı</translation>
 <translation id="7618774594543487847">Normal</translation>

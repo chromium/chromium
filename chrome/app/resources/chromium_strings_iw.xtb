@@ -236,10 +236,6 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 בהגדרות ה-OS של Chromium<ph name="LINK_END" /></translation>
 <translation id="761356813943268536">‏Chromium משתמש במצלמה ובמיקרופון שלך.</translation>
 <translation id="7617377681829253106">‏Chromium השתפר</translation>
-<translation id="7627575518938382525">‏<ph name="BEGIN_PARAGRAPH1" />לפני שנתחיל, חשוב לוודא שיש לך גיבוי עדכני של הנתונים שלך. התקנת מערכת ההפעלה Chromium תוביל להחלפת כל הנתונים שבכונן הקשיח.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />‏Google לא נושאת באחריות לאובדן נתונים כלשהו. בנוסף, היא לא מבטיחה שמערכת ההפעלה Chromium תפעל בדגמים שאינם מאושרים. מידע נוסף לגבי דגמים מאושרים זמין ב-[TBD].<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />פרטים נוספים על התקנת מערכת ההפעלה Chromium ומחיקת נתונים: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />אם ברצונך להמשיך, עליך ללחוץ על "התקנת מערכת ההפעלה Chromium" ומשם נדריך אותך לאורך תהליך ההתקנה במספר שלבים פשוטים. תהיה לך אפשרות לאשר פעם נוספת לפני שנבצע שינויים במחשב.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">‏Chromium אינו דפדפן ברירת המחדל שלך</translation>
 <translation id="7689606757190482937">‏סנכרון והתאמה אישית של Chromium בכל המכשירים שברשותך</translation>
 <translation id="7729447699958282447">‏Chromium לא הצליח לסנכרן את הנתונים שלך מפני שסנכרון אינו זמין עבור הדומיין שלך.</translation>

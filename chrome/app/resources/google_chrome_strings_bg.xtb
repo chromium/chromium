@@ -37,7 +37,6 @@
 <translation id="174539241580958092">Google Chrome не можа да синхронизира данните ви поради грешка при влизането.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Проверете дали сте влезли в Chrome на устройството си <ph name="TARGET_DEVICE_NAME" /> и опитайте да изпратите отново.</translation>
-<translation id="1810203443153428607">При инсталирането на Chrome OS всички данни на устройството ви ще бъдат изтрити.</translation>
 <translation id="1812689907177901597">С изключването на тази функция можете да влизате в сайтовете на Google, като например Gmail, без да влизате в Chrome</translation>
 <translation id="1860536484129686729">Chrome се нуждае от разрешение за достъп до камерата ви за този сайт</translation>
 <translation id="1873233029667955273">Google Chrome не е браузърът ви по подразбиране</translation>
@@ -178,10 +177,6 @@
 <translation id="5386244825306882791">То също контролира коя страница се показва при стартиране на Chrome или при търсене от полето за всичко.</translation>
 <translation id="5394833366792865639">Споделяне на раздел в Chrome</translation>
 <translation id="5430073640787465221">Файлът с предпочитанията ви е повреден или невалиден. Google Chrome не може да възстанови настройките ви.</translation>
-<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />Преди да започнете, уверете се, че имате актуално резервно копие на данните си. При инсталирането на Chrome OS всички данни на твърдия ви диск ще бъдат изтрити.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google не носи отговорност в случай на загуба на данни и не гарантира, че Chrome OS ще работи на модели устройства, които не са сертифицирани. Моля, отворете [TBD], за да научите повече за сертифицираните модели устройства.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Научете повече за инсталирането на Chrome OS и изтриването на данните тук: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />Ако сте готови да продължите, кликнете върху „Инсталиране на Chrome OS“ и ще ви преведем през процеса на инсталиране в няколко лесни стъпки Ще имате още един шанс да потвърдите, преди да извършим промени в компютъра ви.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">Инсталиране на Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome опитва да покаже паролите.</translation>
 <translation id="5566025111015594046">Google Chrome (входящ трафик за mDNS)</translation>

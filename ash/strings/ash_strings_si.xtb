@@ -410,7 +410,7 @@
 <translation id="4129129681837227511">ඔබේ අඟුලු තිරයේ දැනුම්දීම් බැලීමට, සැකසීම් වෙනස් කිරීමට අඟුලු අරින්න</translation>
 <translation id="4146833061457621061">සංගීතය වාදනය කරන්න</translation>
 <translation id="4157822100366708405">අඳුරු තේමා සැකසීම්</translation>
-<translation id="4170634509222878053"><ph name="TITLE" /> - <ph name="DETAILS" /></translation>
+<translation id="4173958948577803258">බ්‍ර</translation>
 <translation id="4181841719683918333">භාෂා</translation>
 <translation id="4195877955194704651">ස්වයංක්‍රීය ක්ලික් බොත්තම</translation>
 <translation id="4197790712631116042">අක්‍රියයි</translation>
@@ -749,6 +749,7 @@
 <translation id="6751052314767925245">ඔබේ පරිපාලකයා විසින් බලාත්මක කෙරේ</translation>
 <translation id="6751826523481687655">කාර්ය සාධන අනුරේඛනය ක්‍රියාත්මකයි</translation>
 <translation id="6752912906630585008"><ph name="REMOVED_DESK" /> මේසය ඉවත් කර <ph name="RECEIVE_DESK" /> මේසය සමඟ ඒකාබද්ධ කෙරිණි</translation>
+<translation id="6754441615189976839">සෙ</translation>
 <translation id="6757237461819837179">මාධ්‍ය වාදනය නොවේ</translation>
 <translation id="6777216307882431711">සම්බන්ධිත USB-C උපාංග බල ගැන්වේ</translation>
 <translation id="6790428901817661496">වාදනය කරන්න</translation>
@@ -769,6 +770,7 @@
 <translation id="6910714959251846841">මෙම යාවත්කාලීන කිරීම සඳහා ඔබේ උපාංගය බල ගැන්වීම අවශ්‍යය. <ph name="SYSTEM_APP_NAME" /> යාවත්කාලීන කිරීම ගැන නවතම තොරතුරු දැන ගන්න.</translation>
 <translation id="6919251195245069855">ඔබේ ස්මාර්ට් කාඩ්පත හඳුනා ගැනීමට නොහැකි විය. නැවත උත්සාහ කරන්න.</translation>
 <translation id="6921188888306725546">යතුරුපුවරු කෙටිමං වැඩි දියුණු කර ඇත</translation>
+<translation id="6929655271276551705">දින සැකසීම්</translation>
 <translation id="6945221475159498467">තෝරන්න</translation>
 <translation id="6961121602502368900">කාර්යාල පැතිකඩෙහි දුරකථනය නිහඬ කිරීම ලබා ගත නොහැකිය</translation>
 <translation id="6961840794482373852">Alt + ඉහළට ඊතලය යතුරු පුවරු කෙටි මග වෙනස් වී ඇත. Page Up යතුර භාවිත කිරීමට, <ph name="LAUNCHER_KEY_NAME" /> යතුර + ඉහළට ඊතලය ඔබන්න.</translation>
@@ -786,6 +788,7 @@
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google සහායක</translation>
 <translation id="7042322267639375032">තත්ත්ව ප්‍රදේශය හකුළන්න</translation>
 <translation id="7045595904618419789">විශාලකය අරඹන්න</translation>
+<translation id="7055381872777910864">බ</translation>
 <translation id="7055910611768509537">සතියකට වඩා වැඩි කාලයක් තුළ පන්හිඳ භාවිත කර නැත</translation>
 <translation id="7066646422045619941">මෙම ජාලය ඔබේ පරිපාලක විසින් අබල කෙරේ.</translation>
 <translation id="7067196344162293536">ස්වයං කරකැවීම</translation>
@@ -854,6 +857,7 @@
 <translation id="7579778809502851308">තිර ග්‍රහණය</translation>
 <translation id="7590883480672980941">ආදාන සැකසීම්</translation>
 <translation id="7593891976182323525">Search හෝ Shift</translation>
+<translation id="7595633564847427181">ස</translation>
 <translation id="7600875258240007829">සියලු දැනුම්දීම් බලන්න</translation>
 <translation id="7607002721634913082">අත්හිටුවන ලදි</translation>
 <translation id="7618774594543487847">උදාසීන</translation>

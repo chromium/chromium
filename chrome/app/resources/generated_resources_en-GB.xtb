@@ -1069,7 +1069,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2108349519800154983">{COUNT,plural, =1{Phone number}other{# phone numbers}}</translation>
 <translation id="211144231511833662">Clear types</translation>
 <translation id="2111670510994270194">New tab to the right</translation>
-<translation id="2111810003053064883">Advertisers can study the effectiveness of ads in a way that does not track you across sites.</translation>
 <translation id="2112554630428445878">Welcome, <ph name="USERNAME" /></translation>
 <translation id="21133533946938348">Pin tab</translation>
 <translation id="2113479184312716848">Open &amp;File...</translation>
@@ -2154,7 +2153,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3238192140106069382">Connecting and verifying</translation>
 <translation id="3239373508713281971">Time limit removed for <ph name="APP_NAME" /></translation>
 <translation id="3241680850019875542">Select the root directory of the extension to pack. To update an extension, also select the private key file to reuse.</translation>
-<translation id="3242905690080165035">Privacy Sandbox is still in active development and is available in selected regions. For now, sites may try out Privacy Sandbox while continuing to use current web technologies like third-party cookies. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="3244294424315804309">Continue muting sound</translation>
 <translation id="3246107497225150582">{0,plural, =1{Update device within a day}other{Update device within # days}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – Network error</translation>
@@ -2740,6 +2738,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3842552989725514455">Serif font</translation>
 <translation id="3843464315703645664">Allowlisted internally</translation>
 <translation id="3844888638014364087">Emoji inserted</translation>
+<translation id="384513009320852920">Make sure that your Bluetooth device is in pairing mode and nearby. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Get tools for developing websites, Android apps and more. Installing Linux will download <ph name="DOWNLOAD_SIZE" /> of data.</translation>
 <translation id="3847319713229060696">Help improve security on the web for everyone</translation>
 <translation id="3848547754896969219">Open in &amp;Incognito window</translation>
@@ -3366,7 +3365,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4541662893742891060">Unable to connect to this profile. For technical support, please contact your operator.</translation>
 <translation id="4541706525461326392">Removing profile. This may take a few minutes.</translation>
 <translation id="4542520061254486227">Read your data on <ph name="WEBSITE_1" /> and <ph name="WEBSITE_2" /></translation>
-<translation id="454331522350252598">Advertisers can learn when thousands of users share a similar interest – like a crowd at a concert – and select ads for the crowd, rather than an individual person.</translation>
 <translation id="4543778593405494224">Certificate manager</translation>
 <translation id="4544174279960331769">Default blue avatar</translation>
 <translation id="4545028762441890696">To re-enable it, accept the new permissions:</translation>
@@ -3417,7 +3415,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4582563038311694664">Reset all settings</translation>
 <translation id="4585793705637313973">Edit page</translation>
 <translation id="4586275095964870617"><ph name="URL" /> could not be open in an alternative browser. Please contact your system administrator.</translation>
-<translation id="4587645918878093912">Today, websites rely on many technologies, such as third-party cookies, for important services like showing relevant ads and measuring a site’s performance.</translation>
 <translation id="4589713469967853491">Logs successfully written to downloads directory.</translation>
 <translation id="4590324241397107707">Database storage</translation>
 <translation id="4592891116925567110">Stylus drawing app</translation>
@@ -4929,7 +4926,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6271348838875430303">correction undone</translation>
 <translation id="6272643420381259437">There was an error (<ph name="ERROR" />) while downloading the plug-in</translation>
 <translation id="6273677812470008672">Quality</translation>
-<translation id="6275846828483490454">Privacy Sandbox is an ongoing initiative to preserve the open web that will help safeguard you from tracking mechanisms.</translation>
 <translation id="6276210637549544171">The proxy <ph name="PROXY_SERVER" /> requires a username and password.</translation>
 <translation id="6277105963844135994">Network timeout</translation>
 <translation id="6277518330158259200">T&amp;ake Screenshot</translation>
@@ -5626,7 +5622,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7018275672629230621">Read and change your browsing history</translation>
 <translation id="7019805045859631636">Fast</translation>
 <translation id="7022562585984256452">Your home page has been set.</translation>
-<translation id="7023206482239788111">Privacy Sandbox preserves the vitality of the open web by creating better ways to perform these services – without breaking sites, and while preventing you from being surreptitiously tracked across the web.</translation>
 <translation id="7025082428878635038">Introducing a new way to navigate with gestures</translation>
 <translation id="7025190659207909717">Mobile data service management</translation>
 <translation id="7025895441903756761">Security and privacy</translation>
@@ -5802,7 +5797,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7235716375204803342">Fetching activities...</translation>
 <translation id="7235737137505019098">Your security key does not have enough space for any more accounts.</translation>
 <translation id="7235873936132740888">Sites can handle special tasks when you click on certain types of links, like creating a new message in your email client or adding new events to your online calendar</translation>
-<translation id="7238640585329759787">When enabled, sites may use the privacy-preserving techniques shown here to provide their content and services. These include alternatives to cross-site tracking. More trials may be added over time.</translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> cancelled the transfer</translation>
 <translation id="7240339475467890413">Connect to new hotspot?</translation>
 <translation id="7241389281993241388">Please sign in to <ph name="TOKEN_NAME" /> to import the client certificate.</translation>
@@ -6808,7 +6802,6 @@ Press an assigned switch to remove assignment</translation>
 <translation id="825238165904109940">Always Show Full URLs</translation>
 <translation id="8252569384384439529">Uploading…</translation>
 <translation id="8253198102038551905">Click '+' to get network properties</translation>
-<translation id="8256127899838315610">Do you want to use this application?</translation>
 <translation id="8256319818471787266">Sparky</translation>
 <translation id="8257950718085972371">Continue blocking camera access</translation>
 <translation id="8259239505248583312">Let's go</translation>

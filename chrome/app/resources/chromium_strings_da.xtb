@@ -238,10 +238,6 @@ Chromium kan ikke gendanne dine præferencer.</translation>
       indstillingerne for Chromium OS<ph name="LINK_END" /></translation>
 <translation id="761356813943268536">Chromium bruger dit kamera og din mikrofon.</translation>
 <translation id="7617377681829253106">Chromium er blevet bedre</translation>
-<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Før vi går i gang, skal du sørge for, at du har en opdateret backup af dine data. Når du installerer Chromium OS, overskrives alle dataene på din harddisk.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google er ikke ansvarlig for datatab og garanterer ikke, at Chromium OS vil fungere på ikke-certificerede modeller. Gå til [TBD] for at få flere oplysninger om certificerede modeller.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Få flere oplysninger om installation af Chromium OS og rydning af data: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />Hvis du er klar til at fortsætte, skal du klikke på "Installer Chromium OS", så guider vi dig nemt igennem installationen. Inden vi foretager ændringer på din computer, vil du have mulighed for at bekræfte dette igen.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium er ikke din standardbrowser</translation>
 <translation id="7689606757190482937">Synkroniser og tilpas Chromium på alle dine enheder</translation>
 <translation id="7729447699958282447">Chromium kunne ikke synkronisere dine data, fordi synkronisering ikke er tilgængelig for dit domæne.</translation>

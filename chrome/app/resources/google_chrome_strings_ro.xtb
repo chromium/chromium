@@ -34,7 +34,6 @@
 <translation id="174539241580958092">Google Chrome nu a putut sincroniza datele din cauza unei erori la conectare.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Asigură-te că te-ai conectat la Chrome pe <ph name="TARGET_DEVICE_NAME" /> și încearcă din nou să trimiți.</translation>
-<translation id="1810203443153428607">Instalarea sistemului de operare Chrome va înlocui toate datele de pe dispozitiv.</translation>
 <translation id="1812689907177901597">Dacă dezactivezi, te poți conecta la site-uri Google ca Gmail fără a te conecta la Chrome</translation>
 <translation id="1860536484129686729">Chrome are nevoie de permisiune ca să acceseze camera foto pentru acest site</translation>
 <translation id="1873233029667955273">Google Chrome nu este browserul prestabilit</translation>
@@ -175,10 +174,6 @@
 <translation id="5386244825306882791">Stabilește și ce pagină se afișează când porniți Chrome sau când căutați din caseta polivalentă.</translation>
 <translation id="5394833366792865639">Arată o filă Chrome</translation>
 <translation id="5430073640787465221">Fișierul dvs. de preferințe este fie deteriorat, fie nevalid. Google Chrome nu poate recupera setările dvs.</translation>
-<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />Înainte de a începe, asigură-te că ai un backup actualizat al datelor. Instalarea sistemului de operare Chrome va înlocui toate datele de pe hard disk.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google nu răspunde pentru pierderea datelor și nu garantează că sistemul de operare Chrome va funcționa cu modele care nu sunt certificate. Accesează [TBD] pentru a afla mai multe despre modelele certificate.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Află mai multe despre instalarea sistemului de operare Chrome și ștergerea datelor: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />Dacă ești gata să continui, dă clic pe Instalează sistemul de operare Chrome și te vom îndruma în procesul de instalare prin câțiva pași simpli. Vei avea încă o șansă de a confirma înainte să aducem modificări computerului.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">Instalează sistemul de operare Chrome</translation>
 <translation id="556024056938947818">Google Chrome încearcă să afișeze parolele.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>

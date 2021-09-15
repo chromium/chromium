@@ -239,10 +239,6 @@
       налады Chromium OS<ph name="LINK_END" /></translation>
 <translation id="761356813943268536">Chromium выкарыстоўвае камеру і мікрафон.</translation>
 <translation id="7617377681829253106">Chromium стаў яшчэ лепшым</translation>
-<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Перад усталяваннем упэўніцеся, што вы маеце актуальную рэзервовую копію сваіх даных. Пры ўсталяванні Chromium OS усе даныя на цвёрдым дыску будуць перазапісаны.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Кампанія Google не нясе адказнасці за страту даных пры ўсталяванні і не гарантуе, што Chrome OS будзе працаваць на несертыфікаваных мадэлях прылад. Каб даведацца больш пра сертыфікаваныя мадэлі, наведайце старонку [TBD].<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Даведацца больш пра ўсталяванне Chromium OS і выдаленне даных можна на старонцы [TBD URL].<ph name="END_PARAGRAPH3" />
-<ph name="BEGIN_PARAGRAPH4" />Калі вы гатовыя працягнуць, націсніце "Усталяваць Chromium OS" і выконвайце інструкцыі на экране. Перш чым уносіць змяненні на вашым камп'ютары, мы запытаем у вас пацвярджэнне.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium не з'яўляецца стандартным браўзерам</translation>
 <translation id="7689606757190482937">Сінхранізуйце і персаналізуйце Chromium на сваіх прыладах</translation>
 <translation id="7729447699958282447">Браўзеру Chromium не ўдалося сінхранізаваць даныя: для вашага дамена сінхранізацыя недаступная.</translation>

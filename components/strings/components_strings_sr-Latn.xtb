@@ -252,7 +252,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1736420071277903564">Računar</translation>
 <translation id="1740951997222943430">Unesite važeći mesec isteka</translation>
 <translation id="1741613555002899862">Mora da se navede kao važeći niz kada je DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
-<translation id="1743570585616704562">Nije prepoznat</translation>
 <translation id="1745880797583122200">Pregledačem se upravlja</translation>
 <translation id="1746113442205726301">Pomeranje slike po Y osi</translation>
 <translation id="17513872634828108">Otvorene kartice</translation>
@@ -531,7 +530,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2713444072780614174">Bela</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste upravljali plaćanjima i informacijama o kreditnim karticama u podešavanjima Chrome-a</translation>
 <translation id="2721148159707890343">Zahtev je uspeo</translation>
-<translation id="272451190272506600">Dodirnite senzor da biste platili</translation>
 <translation id="2728127805433021124">Sertifikat servera je potpisan slabim algoritmom.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />da pokrenete dijagnostiku veze<ph name="END_LINK" /></translation>
 <translation id="2738330467931008676">Odaberite adresu preuzimanja</translation>
@@ -642,7 +640,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
           treba da koristite proksi server:
           <ph name="PLATFORM_TEXT" /></translation>
 <translation id="317878711435188021">da zna kada aktivno koristite ovaj uređaj</translation>
-<translation id="3188393374551744535">Stanje na računu</translation>
 <translation id="3194737229810486521"><ph name="URL" /> želi da trajno skladišti podatke na uređaju</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> na: <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Može da traži da zna kada aktivno koristite uređaj</translation>
@@ -1027,7 +1024,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4363178190432472170">Pronađi telefon</translation>
 <translation id="4367563149485757821">Broj-12 (koverat)</translation>
 <translation id="437040971055499437">Bezbednosni događaj se dešava</translation>
-<translation id="437058704415269440">Stanje na računu</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Očekivana vrednost je <ph name="VALUE_TYPE" />.</translation>
 <translation id="4377125064752653719">Pokušali ste da kontaktirate <ph name="DOMAIN" />, ali je izdavač opozvao sertifikat koji je server naveo. To znači da nikako ne treba imati poverenja u bezbednosne akreditive koje je server naveo. Moguće je da komunicirate sa napadačem.</translation>
@@ -1166,6 +1162,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
           <ph name="LIST_ITEM" />poslodavci ili škole mogu da prate aktivnosti pregledanja<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />internet provajderi mogu da prate saobraćaj na vebu<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="483241715238664915">Uključi upozorenja</translation>
 <translation id="4838327282952368871">Čarobno</translation>
 <translation id="4840250757394056958">Pregledajte istoriju Chrome-a</translation>
 <translation id="484462545196658690">Automatski</translation>
@@ -1292,7 +1289,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5252000469029418751">C7 (koverat)</translation>
 <translation id="5254043433801397071">Optimizujte sadržaj za štampanje</translation>
 <translation id="5254958791078852567">E1</translation>
-<translation id="5261548214279761072">Plaćanje je dovršeno</translation>
 <translation id="5265446478903775694">Upravljajte privatnošću na Google-u</translation>
 <translation id="5266128565379329178">Povez na vrhu</translation>
 <translation id="5269225904387178860">Četvorostruko bušenje na dnu</translation>
@@ -1793,6 +1789,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="7086090958708083563">Korisnik je tražio otpremanje</translation>
 <translation id="7087282848513945231">Okrug</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste upravljali dozvolama i podacima sačuvanim na različitim sajtovima u podešavanjima Chrome-a</translation>
+<translation id="7096937462164235847">Identitet ovog veb-sajta nije verifikovan.</translation>
 <translation id="7108338896283013870">Sakrij</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> želi da koristi kameru</translation>
 <translation id="7108819624672055576">Dozvoljava dodatak</translation>
@@ -2044,7 +2041,6 @@ Dodatni detalji:
 <translation id="793209273132572360">Želite da ažurirate adresu?</translation>
 <translation id="7932579305932748336">Omot</translation>
 <translation id="79338296614623784">Unesite važeći broj telefona</translation>
-<translation id="7934052535022478634">Plaćanje je dovršeno</translation>
 <translation id="7934414805353235750"><ph name="URL" /> želi da pusti zaštićeni sadržaj. Google će potvrditi identitet uređaja.</translation>
 <translation id="7935031712718413217">URL koji se možda lažno predstavlja</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
@@ -2370,6 +2366,7 @@ Dodatni detalji:
 <translation id="9065203028668620118">Izmeni</translation>
 <translation id="9065745800631924235">Pretraga <ph name="TEXT" /> iz istorije</translation>
 <translation id="9069693763241529744">Blokira dodatak</translation>
+<translation id="9073799351042754113">Odabrali ste da isključite bezbednosna upozorenja za ovaj sajt.</translation>
 <translation id="9078964945751709336">Potrebno je više informacija</translation>
 <translation id="9080712759204168376">Rezime porudžbine</translation>
 <translation id="9089260154716455634">Smernice sa vremenskim rasporedom:</translation>

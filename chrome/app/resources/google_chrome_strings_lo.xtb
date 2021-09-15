@@ -39,7 +39,6 @@
 <translation id="174539241580958092">Google Chrome ບໍ່ສາມາດຊິງຄ໌ຂໍ້ມູນຂອງທ່ານໄດ້ ເນື່ອງຈາກການລົງຊື່ເຂົ້າ​ໃຊ້ຜິດພາດ.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">ກວດໃຫ້ແນ່ໃຈວ່າທ່ານໄດ້ເຂົ້າສູ່ລະບົບ Chrome ໃນ <ph name="TARGET_DEVICE_NAME" /> ຂອງທ່ານແລ້ວລອງສົ່ງໃໝ່.</translation>
-<translation id="1810203443153428607">ການຕິດຕັ້ງ Chrome OS ຈະຂຽນທັບຂໍ້ມູນທັງໝົດຢູ່ອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="1812689907177901597">ໂດຍການປິດສິ່ງນີ້, ທ່ານສາມາດເຂົ້າສູ່ລະບົບເວັບໄຊຂອງ Google ເຊັ່ນ: Gmail ໄດ້ໂດຍບໍ່ຕ້ອງເຂົ້າສູ່ລະບົບ Chrome</translation>
 <translation id="1860536484129686729">Chrome ຕ້ອງການການອະນຸຍາດເພື່ອເຂົ້າເຖິງກ້ອງຖ່າຍຮູບຂອງທ່ານສຳລັບເວັບໄຊນີ້</translation>
 <translation id="1873233029667955273">Google Chrome ບໍ່ແມ່ນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານ</translation>
@@ -184,10 +183,6 @@
 <translation id="5430073640787465221">ໄຟລ໌ທີ່ມັກຂອງທ່ານຂັດຂ້ອງ ຫຼືໃຊ້ບໍ່ໄດ້.
 
 Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ່າໄດ້.</translation>
-<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />ກ່ອນທີ່ພວກເຮົາຈະເລີ່ມ, ກະລຸນາກວດສອບວ່າທ່ານສຳຮອງຂໍ້ມູນຫຼ້າສຸດຂອງທ່ານໄວ້ແລ້ວ. ການຕິດຕັ້ງ Chrome OS ຈະຂຽນທັບຂໍ້ມູນທັງໝົດຢູ່ຮາດໄດຣຟ໌ຂອງທ່ານ.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google ບໍ່ຮັບຜິດຊອບຕໍ່ການສູນເສຍຂໍ້ມູນໃດກໍຕາມ ແລະ ບໍ່ຮັບປະກັນວ່າ Chrome OS ຈະເຮັດວຽກໄດ້ຢູ່ຮຸ່ນທີ່ບໍ່ໄດ້ຮັບການຮັບຮອງ. ກະລຸນາເຂົ້າໄປ [TBD] ເພື່ອສຶກສາເພີ່ມເຕີມກ່ຽວກັບຮຸ່ນທີ່ໄດ້ຮັບການຮັບຮອງ.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບການຕິດຕັ້ງ Chrome OS ແລະ ການລຶບຂໍ້ມູນ: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />ຫາກທ່ານພ້ອມດຳເນີນການແລ້ວ, ໃຫ້ຄລິກໃສ່ “ຕິດຕັ້ງ Chrome OS” ແລ້ວພວກເຮົາຈະພາທ່ານເຂົ້າສູ່ການຕິດຕັ້ງໃນສອງສາມຂັ້ນຕອນງ່າຍໆ. ທ່ານຈະມີໂອກາດຢືນຢັນອີກເທື່ອໜຶ່ງກ່ອນທີ່ພວກເຮົາຈະປ່ຽນແປງຄອມພິວເຕີຂອງທ່ານ.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">ຕິດຕັ້ງ Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome ກໍາລັງພະຍາຍາມສະແດງລະຫັດຜ່ານ.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>

@@ -410,7 +410,7 @@
 <translation id="4129129681837227511">ჩაკეტილ ეკრანზე შეტყობინებების სანახავად საჭიროა განბლოკვა და პარამეტრის შეცვლა</translation>
 <translation id="4146833061457621061">მუსიკის დაკვრა</translation>
 <translation id="4157822100366708405">მუქი თემის პარამეტრები</translation>
-<translation id="4170634509222878053"><ph name="TITLE" /> — <ph name="DETAILS" /></translation>
+<translation id="4173958948577803258">ს</translation>
 <translation id="4181841719683918333">ენები</translation>
 <translation id="4195877955194704651">ავტომატური დაწკაპუნებების ღილაკი</translation>
 <translation id="4197790712631116042">გამორთვა</translation>
@@ -749,6 +749,7 @@
 <translation id="6751052314767925245">იძულებით გააქტიურებულია თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="6751826523481687655">ეფექტურობის ტრასირება ჩართულია</translation>
 <translation id="6752912906630585008">სამუშაო მაგიდა <ph name="REMOVED_DESK" /> ამოიშალა და გაერთიანდა სამუშაო მაგიდასთან <ph name="RECEIVE_DESK" /></translation>
+<translation id="6754441615189976839">შ</translation>
 <translation id="6757237461819837179">მედიაკონტენტი არ უკრავს</translation>
 <translation id="6777216307882431711">ელკვება მიეწოდება დაკავშირებულ USB-C მოწყობილობებს</translation>
 <translation id="6790428901817661496">დაკვრა</translation>
@@ -769,6 +770,7 @@
 <translation id="6910714959251846841">ეს განახლება საჭიროებს, თქვენს მოწყობილობაზე შესრულდეს Powerwash. შეიტყვეთ მეტი <ph name="SYSTEM_APP_NAME" />-ის ბოლო განახლების შესახებ.</translation>
 <translation id="6919251195245069855">თქვენი სმარტ-ბარათის ამოცნობა ვერ მოხერხდა. ცადეთ ხელახლა.</translation>
 <translation id="6921188888306725546">კლავიატურის მალსახმობები გაუმჯობესდა</translation>
+<translation id="6929655271276551705">თარიღის პარამეტრები</translation>
 <translation id="6945221475159498467">არჩევა</translation>
 <translation id="6961121602502368900">ტელეფონის ჩაჩუმება მიუწვდომელია სამსახურის პროფილში</translation>
 <translation id="6961840794482373852">კლავიატურის მალსახმობი „Alt + ზემოთ მიმართული ისარი“ შეიცვალა. Page Up კლავიშით სარგებლობისთვის დააჭირეთ კლავიშს <ph name="LAUNCHER_KEY_NAME" /> + ზემოთ მიმართულ ისარს.</translation>
@@ -786,6 +788,7 @@
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google ასისტენტი</translation>
 <translation id="7042322267639375032">სტატუსის არის ჩაკეცვა</translation>
 <translation id="7045595904618419789">გამადიდებლის გაშვება</translation>
+<translation id="7055381872777910864">ო</translation>
 <translation id="7055910611768509537">სტილუსი არ გამოგიყენებიათ ერთ კვირაზე მეტი ხნის განმავლობაში</translation>
 <translation id="7066646422045619941">ეს ქსელი გათიშულია თქვენი ადმინისტრატორის მიერ.</translation>
 <translation id="7067196344162293536">ავტომატური შეტრიალება</translation>
@@ -854,6 +857,7 @@
 <translation id="7579778809502851308">ეკრანის აღბეჭდვა</translation>
 <translation id="7590883480672980941">შეყვანის პარამეტრები</translation>
 <translation id="7593891976182323525">ძიება ან Shift</translation>
+<translation id="7595633564847427181">ო</translation>
 <translation id="7600875258240007829">ყველა შეტყობინების ნახვა</translation>
 <translation id="7607002721634913082">დაპაუზებული</translation>
 <translation id="7618774594543487847">ნეიტრალური</translation>

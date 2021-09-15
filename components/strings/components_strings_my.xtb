@@ -252,7 +252,6 @@
 <translation id="1736420071277903564">ကွန်ပျူတာ</translation>
 <translation id="1740951997222943430">မှန်ကန်သည့် ကုန်ဆုံးမည့်လကို ထည့်ပါ</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode က <ph name="SECURE_DNS_MODE_SECURE" /> ဖြစ်သောအခါ သတ်မှတ်ထားပြီး မှန်ကန်သောလိုင်း ဖြစ်ရမည်။</translation>
-<translation id="1743570585616704562">မသိပါ</translation>
 <translation id="1745880797583122200">သင်၏ဘရောင်ဇာကို စီမံခန့်ခွဲထားသည်</translation>
 <translation id="1746113442205726301">ပုံဒေါင်လိုက် အရွှေ့</translation>
 <translation id="17513872634828108">တဲဘ်များ ဖွင့်ရန်</translation>
@@ -536,7 +535,6 @@
 <translation id="2713444072780614174">အဖြူ</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Chrome ဆက်တင်များတွင် ငွေပေးချေမှုများနှင့် ခရက်ဒစ်ကတ် အချက်အလက်ကို စီမံရန် Tab နှိပ်ပြီးနောက် Enter နှိပ်ပါ</translation>
 <translation id="2721148159707890343">တောင်းဆိုချက် အောင်မြင်ပါသည်</translation>
-<translation id="272451190272506600">ငွေပေးချေရန် အာရုံခံစနစ်ကို ထိပါ</translation>
 <translation id="2728127805433021124">ဆာဗာ၏ လက်မှတ်ကို အားနည်းသည့် လက်မှတ် အယ်လ်ဂိုရီသမ်ကို သုံးပြီး ထိုးထားသည်။</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />ချိတ်ဆက်မှုဆိုင်ရာ ပြဿနာရှာဖွေမှု ပြုလုပ်ပါ<ph name="END_LINK" /></translation>
 <translation id="2738330467931008676">လာယူမည့်လိပ်စာ ရွေးရန်</translation>
@@ -644,7 +642,6 @@
 <translation id="3174168572213147020">ကျွန်း</translation>
 <translation id="3176929007561373547">ဤပရော့စီဆာဗာအလုပ်လုပ်ကြောင်း သေချာမှုရှိစေရန် သင့်ပရော့စီဆက်တင်ကို စစ်ဆေးပါ သို့မဟုတ် သင့်ကွန်ယက်စီမံခန့်ခွဲသူကို ဆက်သွယ်ပါ။ အကယ်၍သင်မယုံကြည်လျှင် ပရော့စီဆာဗာကို အသုံးပြုသင့်သည် − <ph name="PLATFORM_TEXT" /></translation>
 <translation id="317878711435188021">ဤကိရိယာသုံးနေချိန်ကို သိလိုသည်</translation>
-<translation id="3188393374551744535">အကောင့် လက်ကျန်ငွေ</translation>
 <translation id="3194737229810486521"><ph name="URL" /> သည် ဒေတာများကို သင်၏စက်တွင် အမြဲတမ်းသိုလှောင်လိုသည်</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> ရှိ <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">သင့်ကိရိယာသုံးနေချိန်ကို သိရန် ခွင့်တောင်းနိုင်သည်</translation>
@@ -1028,7 +1025,6 @@
 <translation id="4363178190432472170">ကျွန်ုပ်၏ဖုန်းကို ရှာရန်</translation>
 <translation id="4367563149485757821">နံပါတ်-၁၂ (စာအိတ်)</translation>
 <translation id="437040971055499437">လုံခြုံရေးဆိုင်ရာ ဖြစ်ရပ် ရှိသည်</translation>
-<translation id="437058704415269440">အကောင့် လက်ကျန်ငွေ</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">မျှော်လင့်ထားသည့် <ph name="VALUE_TYPE" /> တန်ဖိုး။</translation>
 <translation id="4377125064752653719"><ph name="DOMAIN" /> သို့ရောက်ရှိရန် သင်ချဉ်းကပ်ခဲ့သည်၊ သို့သော် ဆာဗာမှပြသသည့် အသိမှတ်ပြုလက်မှတ်အား ၎င်း၏လျှောက်တင်သူမှ ရုတ်သိမ်းလိုက်သည်။ ဆိုလိုသည်မှာ ဆာဗာမှ ပြသသည့် လုံခြုံရေးလျှို့ဝက် အချက်များမှာ လုံးဝမယုံကြည်သင့်ပါ။ သင်သည် တိုက်ခိုက်သူနှင့်သာ ဆက်သွယ်ပါလိမ့်မည်။</translation>
@@ -1293,7 +1289,6 @@
 <translation id="5252000469029418751">C7 (စာအိတ်)</translation>
 <translation id="5254043433801397071">ပုံနှိပ်ရန် အကြောင်းအရာကို အကောင်းဆုံးလုပ်ရန်</translation>
 <translation id="5254958791078852567">E1</translation>
-<translation id="5261548214279761072">ငွေပေးချေမှု ပြီးစီးပါပြီ</translation>
 <translation id="5265446478903775694">Google တွင် ကျွန်ုပ်၏ကန့်သတ်ဆက်တင်ကို စီမံရန်</translation>
 <translation id="5266128565379329178">ထိပ်တွင် တွဲချုပ်ရန်</translation>
 <translation id="5269225904387178860">အောက်ခြေတွင် လေးချက်ဖောက်ရန်</translation>
@@ -2046,7 +2041,6 @@
 <translation id="793209273132572360">လိပ်စာ အပ်ဒိတ်လုပ်မလား။</translation>
 <translation id="7932579305932748336">အလွှာအုပ်ရန်</translation>
 <translation id="79338296614623784">မှန်ကန်သောဖုန်းနံပါတ်ကို ထည့်ပါ</translation>
-<translation id="7934052535022478634">ငွေပေးချေမှု ပြီးစီးပါပြီ</translation>
 <translation id="7934414805353235750"><ph name="URL" /> သည် ကာကွယ်ထားသည့် အကြောင်းအရာကို ဖွင့်လိုသည်။ သင့်စက်ပစ္စည်း၏ အထောက်အထားကို Google က စိစစ်သွားပါမည်။</translation>
 <translation id="7935031712718413217">အယောင်ဆောင် URL ဖြစ်နိုင်သည်</translation>
 <translation id="7935318582918952113">DOM စစ်ထုတ်ပေးသူ</translation>

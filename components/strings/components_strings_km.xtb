@@ -253,7 +253,6 @@
 <translation id="1736420071277903564">កុំព្យូទ័រ</translation>
 <translation id="1740951997222943430">បញ្ចូលខែផុតកំណត់ឲ្យបានត្រឹមត្រូវ</translation>
 <translation id="1741613555002899862">ត្រូវតែ​បានបញ្ជាក់ និងជា​ជួរអក្សរ​ដែលត្រឹមត្រូវ​នៅពេល DnsOverHttpsMode គឺ <ph name="SECURE_DNS_MODE_SECURE" />។</translation>
-<translation id="1743570585616704562">មិន​ស្គាល់ទេ</translation>
 <translation id="1745880797583122200">កម្មវិធីរុករកតាមអ៊ីនធឺណិត​របស់អ្នកត្រូវ​បានគ្រប់គ្រង</translation>
 <translation id="1746113442205726301">ការប្ដូរ​រូបភាព Y</translation>
 <translation id="17513872634828108">បើកផ្ទាំង</translation>
@@ -534,7 +533,6 @@
 <translation id="2713444072780614174">ស</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច "Tab" រួចចុច "Enter" ដើម្បីគ្រប់គ្រងការបង់ប្រាក់ និងព័ត៌មានបណ្ណឥណទានរបស់អ្នក​នៅក្នុងការកំណត់ Chrome</translation>
 <translation id="2721148159707890343">សំណើរបានជោគជ័យ</translation>
-<translation id="272451190272506600">ប៉ះ​ឧបករណ៍​ចាប់សញ្ញា ដើម្បី​បង់ប្រាក់</translation>
 <translation id="2728127805433021124">វិញ្ញាបនប័ត្រម៉ាស៊ីនមេត្រូវបានចុះហេត្ថលេខាដោយប្រើនីតិវិធីដោះស្រាយហត្ថលេខាខ្សោយ។</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />កំពុងដំណើរការការវិភាគការតភ្ជាប់<ph name="END_LINK" /></translation>
 <translation id="2738330467931008676">ជ្រើសរើស​អាសយដ្ឋាន​ទទួល</translation>
@@ -645,7 +643,6 @@
       ប្រើម៉ាស៊ីនមេប្រូកស៊ីឬអត់៖
       <ph name="PLATFORM_TEXT" /></translation>
 <translation id="317878711435188021">ដឹងអំពីពេលវេលាដែល​អ្នកកំពុងប្រើ​ឧបករណ៍នេះយ៉ាងសកម្ម</translation>
-<translation id="3188393374551744535">សមតុល្យ​គណនី</translation>
 <translation id="3194737229810486521"><ph name="URL" /> ចង់ផ្ទុក​ទិន្នន័យ​នៅលើ​ឧបករណ៍​របស់អ្នក​ជាអចិន្ត្រៃយ៍</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> នៅលើ <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">អាចសួរដើម្បីដឹងថា នៅពេលណាដែល​អ្នកកំពុងប្រើ​ឧបករណ៍នេះ​យ៉ាងសកម្ម</translation>
@@ -898,6 +895,7 @@
 <translation id="3990250421422698716">គម្លាតរុញ</translation>
 <translation id="3996311196211510766">គេហទំព័រ <ph name="ORIGIN" /> បានស្នើសុំឱ្យ​អនុវត្ត​គោលការណ៍​ដើម
     ចំពោះ​គ្រប់សំណើ​មក​កាន់​វា ប៉ុន្តែ​គោលការណ៍នេះមិនអាច​អនុវត្ត​បាន​ទេក្នុងពេលបច្ចុប្បន្ន។</translation>
+<translation id="4010758435855888356">អនុញ្ញាត​ឱ្យចូលប្រើ​ទំហំផ្ទុក​ដែរទេ?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{ឯកសារ PDF ដែលមាន {COUNT} ទំព័រ}other{ឯកសារ PDF ដែលមាន {COUNT} ទំព័រ}}</translation>
 <translation id="4023431997072828269">អ្នកដទៃនឹង​អាចមើលឃើញ​ព័ត៌មានរបស់អ្នក ដោយសារ​ទម្រង់បែបបទនេះ​កំពុងត្រូវបាន​ដាក់បញ្ជូន ដោយប្រើ​ការតភ្ជាប់​ដែលមិនមាន​សុវត្ថិភាព។</translation>
 <translation id="4030383055268325496">បកក្រោយការបន្ថែម</translation>
@@ -1029,7 +1027,6 @@
 <translation id="4363178190432472170">រកទូរសព្ទរបស់ខ្ញុំ</translation>
 <translation id="4367563149485757821">Number-12 (ស្រោម​សំបុត្រ)</translation>
 <translation id="437040971055499437">ព្រឹត្តិការណ៍​ទាក់ទងនឹង​សុវត្ថិភាព​កើតឡើង</translation>
-<translation id="437058704415269440">សមតុល្យ​គណនី</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">តម្លៃ <ph name="VALUE_TYPE" /> បានរំពឹងទុក។</translation>
 <translation id="4377125064752653719">អ្នកបានព្យាយាមទៅកាន់ <ph name="DOMAIN" /> ប៉ុន្តែវិញ្ញាបនប័ត្រដែលម៉ាស៊ីនមេបានបង្ហាញត្រូវបានបញ្ឈប់សុពលភាពដោយអ្នកចេញផ្សាយរបស់វា។ វាមានន័យថាអត្តសញ្ញាណសម្គាល់សុវត្ថិភាពដែលម៉ាស៊ីនមេបានបង្ហាញមិនអាចជឿជាក់បានទាំងស្រុងទេ។ អ្នកប្រហែលជាអាចកំពុងទំនាក់ទំនងជាមួយអ្នកវាយប្រហារ។</translation>
@@ -1169,6 +1166,7 @@
           <ph name="LIST_ITEM" />និយោជក ឬសាលារៀន​អាចតាមដាន​សកម្មភាព​រុករក​តាមអ៊ីនធឺណិត<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />ក្រុមហ៊ុន​ផ្ដល់​សេវាកម្ម​អ៊ីនធឺណិត​អាចតាមដាន​ចរាចរណ៍បណ្ដាញ<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="483241715238664915">បើក​ការព្រមាន</translation>
 <translation id="4838327282952368871">ដូចក្ដី​សុបិន</translation>
 <translation id="4840250757394056958">មើលប្រវត្តិ Chrome របស់អ្នក</translation>
 <translation id="484462545196658690">ស្វ័យប្រវត្តិ</translation>
@@ -1295,7 +1293,6 @@
 <translation id="5252000469029418751">C7 (ស្រោម​សំបុត្រ)</translation>
 <translation id="5254043433801397071">បង្កើនប្រសិទ្ធភាព​ខ្លឹមសារបោះពុម្ព</translation>
 <translation id="5254958791078852567">E1</translation>
-<translation id="5261548214279761072">ការបង់ប្រាក់​បានបញ្ចប់​ហើយ</translation>
 <translation id="5265446478903775694">គ្រប់គ្រង​ឯកជនភាព​របស់ខ្ញុំនៅលើ Google</translation>
 <translation id="5266128565379329178">ភ្ជាប់​ខាងលើ</translation>
 <translation id="5269225904387178860">ចោះ​បួនរន្ធ​ខាងក្រោម</translation>
@@ -1734,6 +1731,7 @@
 <translation id="6884662655240309489">ទំហំ 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome បានសម្រួលទំព័រនេះ ដើម្បី​ឱ្យងាយស្រួលអានជាងមុន។ Chrome បានទាញយក​ទំព័រដើម​តាមរយៈការតភ្ជាប់ដែលគ្មានសុវត្ថិភាព។</translation>
+<translation id="6890443033788248019">អនុញ្ញាត​ឱ្យប្រើ​ទីតាំង​ដែរទេ?</translation>
 <translation id="6891596781022320156">កម្រិតគោលការណ៍មិនត្រូវបានគាំទ្រទេ។</translation>
 <translation id="6895143722905299846">លេខកាតនិម្មិត៖</translation>
 <translation id="6895330447102777224">កាតរបស់អ្នកបានបញ្ជាក់រួចហើយ</translation>
@@ -1796,6 +1794,7 @@
 <translation id="7086090958708083563">ការបង្ហោះដែលបានស្នើសុំដោយអ្នកប្រើប្រាស់</translation>
 <translation id="7087282848513945231">ប្រទេស</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច "Tab" រួចចុច "Enter" ដើម្បីគ្រប់គ្រងការអនុញ្ញាត និងទិន្នន័យដែលបានរក្សាទុកនៅលើគេហទំព័រនានានៅក្នុងការកំណត់ Chrome</translation>
+<translation id="7096937462164235847">អត្តសញ្ញាណ​របស់គេហទំព័រនេះ​មិនត្រូវបាន​ផ្ទៀងផ្ទាត់ទេ។</translation>
 <translation id="7108338896283013870">លាក់</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> ចង់ប្រើ​កាមេរ៉ា​របស់អ្នក</translation>
 <translation id="7108819624672055576">អនុញ្ញាតដោយកម្មវិធីបន្ថែម</translation>
@@ -2006,6 +2005,7 @@
 <translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">កម្មវិធីកំចាត់មេរោគ ឬ Firewall ប្រហែលជាបានរារាំងការតភ្ជាប់</translation>
 <translation id="776110834126722255">បានបញ្ឈប់</translation>
+<translation id="7761159795823346334">អនុញ្ញាត​ឱ្យប្រើ​កាមេរ៉ា​ដែរទេ?</translation>
 <translation id="7761701407923456692">វិញ្ញាបនប័ត្ររបស់ម៉ាស៊ីនមេមិនត្រូវគ្នានឹង URL នេះទេ។</translation>
 <translation id="7763386264682878361">ការបង់ប្រាក់​សម្រាប់​កម្មវិធី​ញែក​ជាក់លាក់</translation>
 <translation id="7764225426217299476">បន្ថែមអាសយដ្ឋាន</translation>
@@ -2047,7 +2047,6 @@
 <translation id="793209273132572360">ធ្វើបច្ចុប្បន្នភាព​អាសយដ្ឋាន​ដែរទេ?</translation>
 <translation id="7932579305932748336">ស្រោប</translation>
 <translation id="79338296614623784">បញ្ចូលលេខទូរសព្ទដែលត្រឹមត្រូវ</translation>
-<translation id="7934052535022478634">ការបង់ប្រាក់​បានបញ្ចប់​ហើយ</translation>
 <translation id="7934414805353235750"><ph name="URL" /> ចង់​ចាក់​ខ្លឹមសារ​ដែលមានការ​ការពារ។ អត្តសញ្ញាណរបស់​ឧបករណ៍​អ្នក​នឹង​ត្រូវ​បាន​ផ្ទៀងផ្ទាត់​ដោយ Google ។</translation>
 <translation id="7935031712718413217">អាចជា URL បញ្ឆោត</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
@@ -2234,6 +2233,7 @@
 <translation id="8522552481199248698">Chrome អាច​ជួយ​អ្នក​ក្នុងការការពារ​គណនី Google និង​ផ្លាស់ប្ដូរ​ពាក្យសម្ងាត់​របស់អ្នក​។</translation>
 <translation id="8530813470445476232">សម្អាតប្រវត្តិ​រុករក​តាមអ៊ីនធឺណិត ខូគី ឃ្លាំងផ្ទុកទិន្នន័យរបស់អ្នក និងអ្វីៗជាច្រើនទៀត​នៅក្នុង​ការកំណត់ Chrome</translation>
 <translation id="8533619373899488139">សូមចូលទៅកាន់ &lt;strong&gt;chrome://policy&lt;/strong&gt; ដើម្បីមើល​បញ្ជី URL ដែលបាន​ទប់ស្កាត់ និងគោលការណ៍​ផ្សេងទៀត ដែលបានអនុវត្ត​ដោយអ្នកគ្រប់គ្រងប្រព័ន្ធ​របស់អ្នក។</translation>
+<translation id="8539500321752640291">ផ្ដល់​ការអនុញ្ញាត 2 ដែរទេ?</translation>
 <translation id="8541158209346794904">ឧបករណ៍​ប៊្លូធូស</translation>
 <translation id="8542014550340843547">កិប​បីគ្រាប់​ខាងក្រោម</translation>
 <translation id="8543181531796978784">អ្នកអាច<ph name="BEGIN_ERROR_LINK" />រាយការណ៍អំពីបញ្ហាដែលបានរកឃើញ<ph name="END_ERROR_LINK" /> ឬប្រសិនបើអ្នកយល់ពីហានិភ័យចំពោះសុវត្ថិភាពរបស់អ្នកហើយ <ph name="BEGIN_LINK" />សូមចូលទៅកាន់គេហទំព័រគ្មានសុវត្ថិភាពនេះ<ph name="END_LINK" />។</translation>
@@ -2360,6 +2360,7 @@
 <translation id="9025348182339809926">(គ្មាន​សុពល​ភាព)</translation>
 <translation id="9030265603405983977">មួយពណ៌</translation>
 <translation id="9035022520814077154">កំហុសឆ្គងសុវត្ថិភាព</translation>
+<translation id="9036306139374661733">អនុញ្ញាត​ឱ្យប្រើ​មីក្រូហ្វូន​ដែរទេ?</translation>
 <translation id="9038649477754266430">ប្រើសេវាកម្មព្យាករណ៍ដើម្បីដំណើរការទំព័ររហ័សជាងមុន</translation>
 <translation id="9039213469156557790">ជាងនេះទៅទៀត ទំព័រនេះរាប់បញ្ចូលធនធានផ្សេងទៀតដែលគ្មានសុវត្ថិភាព។ ធនធានទាំងនេះអាចត្រូវបានមើលដោយអ្នកផ្សេងទៀតខណៈពេលឆ្លងកាត់ និងអាចត្រូវបានកែសម្រួលដោយអ្នកវាយប្រហារដើម្បីប្តូរលក្ខណៈសម្បតិ្តរបស់ទំព័រ។</translation>
 <translation id="9044359186343685026">ប្រើ Touch ID</translation>
@@ -2371,6 +2372,7 @@
 <translation id="9065203028668620118">កែប្រែ</translation>
 <translation id="9065745800631924235">ការស្វែងរក <ph name="TEXT" /> ពីប្រវត្តិ</translation>
 <translation id="9069693763241529744">ទប់ស្កាត់ដោយកម្មវិធីបន្ថែម</translation>
+<translation id="9073799351042754113">អ្នកបាន​ជ្រើសរើសបិទ​ការព្រមាន​អំពីសុវត្ថិភាព​សម្រាប់គេហទំព័រនេះ។</translation>
 <translation id="9078964945751709336">តម្រូវឲ្យមានព័ត៌មានបន្ថែម</translation>
 <translation id="9080712759204168376">សង្ខេបនៃការបញ្ជាទិញ</translation>
 <translation id="9089260154716455634">គោលការណ៍នៅក្រៅម៉ោង​ដាក់កំហិត​៖</translation>

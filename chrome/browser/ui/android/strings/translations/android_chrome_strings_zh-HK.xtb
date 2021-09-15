@@ -202,11 +202,6 @@
 <translation id="2321958826496381788">拖曳滑桿，將文字調整到您閱讀時感到舒適的大小。當您輕按兩下文字段落，文字至少應有這樣大。</translation>
 <translation id="2323763861024343754">網站儲存空間資料量</translation>
 <translation id="2328985652426384049">無法登入</translation>
-<translation id="2336549603503100420">啟用後，網站可能會使用此處顯示的私隱保護技術提供內容和服務。這些技術包括替代跨網站追蹤的選項。本服務可能會陸續新增更多試用功能。
-
-<ph name="BEGIN_LIST_ITEM1" />廣告客戶能夠在數千位使用者擁有類似興趣時學習 (類似演唱會中的群眾)，並為群眾 (而非單一使用者) 選取廣告。<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />廣告客戶無需追蹤您的網站瀏覽記錄，就能瞭解廣告成效。<ph name="END_LIST_ITEM2" /></translation>
 <translation id="2337236196941929873">預先載入 Chrome 認為您可能會瀏覽的頁面。為此，Chrome 可能會使用 Cookie (如果您允許的話)，亦可能加密網頁並透過 Google 傳送，以便向網站隱藏您的身分。</translation>
 <translation id="234265804618409743">無法開啟攝錄機。發生錯誤。</translation>
 <translation id="2345671828921229300">如要搜尋，請輕觸並按住字詞</translation>
@@ -396,13 +391,6 @@
 <translation id="3429160811076349561">試用功能已關閉</translation>
 <translation id="3440975416244667276">輕觸並按住即可查看更多相關資料</translation>
 <translation id="3443221991560634068">重新載入目前網頁</translation>
-<translation id="3451542610083122179">Privacy Sandbox 是一項進行中的計劃，目的是保護開放網絡，防止有心人透過追蹤機制取得您的資料。
-
-現今很多網站都會依賴第三方 Cookie 等眾多技術來提供重要服務，例如顯示相關廣告及衡量網站成效。
-
-Privacy Sandbox 可以在不干擾網站運作的前提下，讓網站以更好的方式提供這些服務，同時防止有心人透過跨網站追蹤機制暗中取得您的資料，因此有利於開放網絡的發展。
-
-Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可以嘗試使用 Privacy Sandbox，亦能繼續使用第三方 Cookie 等現有的網絡技術。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{已預定 1 項下載}other{已預定 # 項下載}}</translation>
 <translation id="3478363558367712427">您可以選擇搜尋引擎</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />進一步瞭解<ph name="END_LINK" />建議的內容</translation>
@@ -858,7 +846,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="6277522088822131679">列印網頁時發生問題，請再試一次。</translation>
 <translation id="6278428485366576908">主題背景</translation>
 <translation id="6292420053234093573">使用 Chrome 即表示您同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome 作業系統的《附加服務條款》<ph name="END_LINK2" />。</translation>
-<translation id="6294610283659775533">你可以在已登入相同 Google 帳戶的裝置之間傳送分頁</translation>
+<translation id="6294610283659775533">您可在已登入同一個 Google 帳戶的裝置之間傳送分頁</translation>
 <translation id="6297765934698848803">管理您裝置的機構已關閉攝錄機。</translation>
 <translation id="6301525844455696527">追上您的閱讀清單</translation>
 <translation id="6303969859164067831">登出並停用同步功能</translation>
@@ -1294,7 +1282,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="8730621377337864115">完成</translation>
 <translation id="8746155870861185046">分享突顯項目</translation>
 <translation id="8748850008226585750">內容已隱藏</translation>
-<translation id="8766529642647037772">要建立類似的醒目顯示連結嗎？</translation>
+<translation id="8766529642647037772">要建立類似的突顯連結嗎？</translation>
 <translation id="8773160212632396039">正在處理要求</translation>
 <translation id="8788265440806329501">導覽記錄閂咗</translation>
 <translation id="8788968922598763114">重新開啟最近關閉的分頁</translation>

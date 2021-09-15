@@ -410,7 +410,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="4129129681837227511">Para makakita ng mga notification sa iyong screen ng lock, i-unlock para baguhin ang setting</translation>
 <translation id="4146833061457621061">Mag-play ng musika</translation>
 <translation id="4157822100366708405">Mga Setting ng Madilim na Tema</translation>
-<translation id="4170634509222878053"><ph name="TITLE" /> - <ph name="DETAILS" /></translation>
+<translation id="4173958948577803258">H</translation>
 <translation id="4181841719683918333">Mga Wika</translation>
 <translation id="4195877955194704651">Button ng mga awtomatikong pag-click</translation>
 <translation id="4197790712631116042">Naka-off</translation>
@@ -749,6 +749,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="6751052314767925245">Ipinapatupad ng iyong administrator</translation>
 <translation id="6751826523481687655">Naka-on ang pag-trace ng performance</translation>
 <translation id="6752912906630585008">Inalis ang Desk na <ph name="REMOVED_DESK" /> at isinama sa Desk na <ph name="RECEIVE_DESK" /></translation>
+<translation id="6754441615189976839">S</translation>
 <translation id="6757237461819837179">Walang nagpe-play na media</translation>
 <translation id="6777216307882431711">Pinapagana ang mga nakakonektang USB-C device</translation>
 <translation id="6790428901817661496">I-play</translation>
@@ -769,6 +770,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="6910714959251846841">Kinakailangang i-powerwash ang iyong device para sa update na ito. Matuto pa tungkol sa pinakabagong update sa <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Hindi makilala ang iyong smart card. Subukan ulit.</translation>
 <translation id="6921188888306725546">Pinahusay ang mga keyboard shortcut</translation>
+<translation id="6929655271276551705">Mga setting ng petsa</translation>
 <translation id="6945221475159498467">Pumili</translation>
 <translation id="6961121602502368900">Hindi available ang Pag-silent ng telepono sa profile sa trabaho</translation>
 <translation id="6961840794482373852">Nagbago ang keyboard shortcut na Alt + Pataas na Arrow. Para magamit ang Page Up key, pindutin ang <ph name="LAUNCHER_KEY_NAME" /> key + Pataas na Arrow.</translation>
@@ -786,6 +788,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
 <translation id="7042322267639375032">I-collapse ang lugar ng status</translation>
 <translation id="7045595904618419789">Simulan ang magnifier</translation>
+<translation id="7055381872777910864">M</translation>
 <translation id="7055910611768509537">Hindi nagamit ang stylus sa loob ng mahigit isang linggo</translation>
 <translation id="7066646422045619941">Na-disable ng iyong administrator ang network na ito.</translation>
 <translation id="7067196344162293536">Awtomatikong pag-rotate</translation>
@@ -854,6 +857,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="7579778809502851308">Screen capture</translation>
 <translation id="7590883480672980941">Mga setting ng input</translation>
 <translation id="7593891976182323525">Search or Shift</translation>
+<translation id="7595633564847427181">L</translation>
 <translation id="7600875258240007829">Tingnan ang lahat ng notification</translation>
 <translation id="7607002721634913082">I-pause</translation>
 <translation id="7618774594543487847">Neutral</translation>

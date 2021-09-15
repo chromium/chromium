@@ -234,10 +234,6 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="7585853947355360626">Jeśli ustawienia nie widać na tej stronie, zajrzyj do <ph name="LINK_BEGIN" />ustawień systemu operacyjnego Chromium<ph name="LINK_END" /></translation>
 <translation id="761356813943268536">Chromium używa Twojej kamery i mikrofonu.</translation>
 <translation id="7617377681829253106">Przeglądarka Chromium jest jeszcze lepsza</translation>
-<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Zanim zaczniemy, zrób aktualną kopię swoich danych. Instalacja systemu operacyjnego Chromium spowoduje zastąpienie wszystkich danych na dysku twardym.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google nie ponosi odpowiedzialności za utratę danych ani nie gwarantuje, że system operacyjny Chromium będzie działać na urządzeniach bez certyfikatu. Więcej informacji o certyfikowanych modelach znajdziesz na stronie [TBD].<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Więcej informacji o instalowaniu systemu operacyjnego Chromium i wymazywaniu danych: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />Jeśli wszystko jest gotowe, kliknij „Zainstaluj system operacyjny Chromium”, aby w kilku prostych krokach przeprowadzić instalację, korzystając z naszych instrukcji. Zanim wprowadzimy jakiekolwiek zmiany na Twoim komputerze, będziesz mieć jeszcze 1 możliwość potwierdzenia instalacji.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium nie jest domyślną przeglądarką</translation>
 <translation id="7689606757190482937">Synchronizuj dane Chromium i korzystaj z własnych ustawień przeglądarki na wielu urządzeniach</translation>
 <translation id="7729447699958282447">Chromium nie może zsynchronizować danych, ponieważ synchronizacja jest niedostępna w Twojej domenie.</translation>

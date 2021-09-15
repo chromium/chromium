@@ -202,11 +202,6 @@
 <translation id="2321958826496381788">拖曳滑桿，將文字調整到適當的字體大小。當你輕觸兩下文字段落時，瀏覽器至少應呈現這樣的字體大小。</translation>
 <translation id="2323763861024343754">網站儲存資料量</translation>
 <translation id="2328985652426384049">無法登入</translation>
-<translation id="2336549603503100420">在啟用狀態下，網站可能會使用這裡顯示的隱私保護技術提供內容和服務，包括對於跨網站追蹤的替代性措施。本服務可能會陸續新增更多試用功能。
-
-<ph name="BEGIN_LIST_ITEM1" />廣告客戶只會知道有上千位使用者擁有類似興趣，也只能向鎖定演唱會的群眾一般，選擇某類群眾 (而非個人) 做為廣告投放對象。<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />廣告客戶不必追蹤你的網站瀏覽記錄，就能瞭解自身的廣告成效。<ph name="END_LIST_ITEM2" /></translation>
 <translation id="2337236196941929873">預先載入 Chrome 認為你可能造訪的網頁。為此，Chrome 可能會使用 Cookie (如果你允許的話)，也可能加密網頁並透過 Google 傳送，以便向網站隱藏你的身分。</translation>
 <translation id="234265804618409743">無法開啟攝影機，發生錯誤。</translation>
 <translation id="2345671828921229300">如要進行搜尋，請按住要查詢的字詞</translation>
@@ -396,13 +391,6 @@
 <translation id="3429160811076349561">試用功能已關閉</translation>
 <translation id="3440975416244667276">按住即可查看更多相關資訊</translation>
 <translation id="3443221991560634068">重新載入目前網頁</translation>
-<translation id="3451542610083122179">Privacy Sandbox 是一項正在進行的開放網路保護計畫，可以防止有心人士透過追蹤機制取得你的資料。
-
-現今許多網站都會依賴第三方 Cookie 等眾多技術來提供重要服務，例如顯示相關廣告及衡量網站成效。
-
-Privacy Sandbox 可以在不干擾網站運作的前提下，讓網站以更好的方式提供這些服務，同時防止有心人士透過跨網站追蹤機制暗中取得你的資料，因此有利於開放網路的發展。
-
-Privacy Sandbox 仍在開發階段，目前開放地區有限。現在網站可以嘗試使用 Privacy Sandbox，也能繼續使用第三方 Cookie 等現有的網路技術。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{已排定 1 項下載作業}other{已排定 # 項下載作業}}</translation>
 <translation id="3478363558367712427">你可以選擇搜尋引擎</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />進一步瞭解<ph name="END_LINK" />建議的內容</translation>

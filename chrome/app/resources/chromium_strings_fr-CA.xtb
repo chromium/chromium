@@ -231,10 +231,6 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="7585853947355360626">Si un paramètre ne s'affiche pas sur cette page, consultez les <ph name="LINK_BEGIN" />paramètres de Chromium OS<ph name="LINK_END" /></translation>
 <translation id="761356813943268536">Chromium utilise votre caméra et votre microphone</translation>
 <translation id="7617377681829253106">Chrome vient de s'améliorer</translation>
-<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Avant de commencer, veuillez vous assurer que vous disposez d'une sauvegarde à jour de vos données. L'installation de Chromium OS écrasera l'ensemble des données présentes sur votre disque dur.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google n'est pas responsable de toute perte de données et ne garantit pas que Chromium OS fonctionnera sur les modèles non certifiés. Veuillez visiter [TBD] pour en savoir plus à propos des modèles certifiés.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />En savoir plus à propos de l'installation de Chromium OS et de l'effacement des données : [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />Si vous êtes prêt à procéder, cliquez sur « Installer Chromium OS », et nous vous guiderons à travers l'installation en quelques étapes simples. Vous aurez encore l'occasion de la confirmer avant que nous procédions à des modifications sur votre ordinateur.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium n'est pas votre navigateur par défaut</translation>
 <translation id="7689606757190482937">Synchroniser et personnaliser Chromium sur vos appareils</translation>
 <translation id="7729447699958282447">Chromium n'a pas pu synchroniser vos données, car la synchronisation n'est pas offerte pour votre nom de domaine.</translation>

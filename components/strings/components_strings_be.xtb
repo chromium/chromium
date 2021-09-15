@@ -252,7 +252,6 @@
 <translation id="1736420071277903564">Камп'ютар</translation>
 <translation id="1740951997222943430">Увядзіце сапраўдны месяц заканчэння тэрміну дзеяння</translation>
 <translation id="1741613555002899862">Гэта значэнне павінна быць вызначана і ўяўляць сабой сапраўдны радок, калі для палітыкі DnsOverHttpsMode зададзены параметр "<ph name="SECURE_DNS_MODE_SECURE" />".</translation>
-<translation id="1743570585616704562">Не распазнана</translation>
 <translation id="1745880797583122200">Ваш браўзер знаходзіцца пад кіраваннем</translation>
 <translation id="1746113442205726301">Зрух відарыса па восі Y</translation>
 <translation id="17513872634828108">Адкрытыя ўкладкі</translation>
@@ -531,7 +530,6 @@
 <translation id="2713444072780614174">Белы</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб кіраваць плацяжамі і звесткамі крэдытных картак праз налады Chrome, націсніце Tab, затым Enter</translation>
 <translation id="2721148159707890343">Запыт выкананы</translation>
-<translation id="272451190272506600">Каб заплаціць, дакраніцеся да датчыка</translation>
 <translation id="2728127805433021124">Сертыфікат сервера падпісаны з выкарыстаннем ненадзейнага алгарытму.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Запусціць дыягностыку падключэння<ph name="END_LINK" />.</translation>
 <translation id="2738330467931008676">Выбраць адрас прыняцця</translation>
@@ -642,7 +640,6 @@
       выкарыстоўваць проксі-сервер:
       <ph name="PLATFORM_TEXT" /></translation>
 <translation id="317878711435188021">Атрымліваць інфармацыю пра тое, калі вы карыстаецеся гэтай прыладай.</translation>
-<translation id="3188393374551744535">Баланс уліковага запісу</translation>
 <translation id="3194737229810486521">Сайт <ph name="URL" /> запытвае дазволу захоўваць даныя на вашай прыладзе</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> на серверы <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Сайт можа атрымліваць інфармацыю пра тое, калі вы карыстаецеся гэтай прыладай</translation>
@@ -1026,7 +1023,6 @@
 <translation id="4363178190432472170">Знайсці мой тэлефон</translation>
 <translation id="4367563149485757821">Number-12 (канверт)</translation>
 <translation id="437040971055499437">Выяўляецца падзея бяспекі</translation>
-<translation id="437058704415269440">Баланс уліковага запісу</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Чакаецца значэнне тыпу "<ph name="VALUE_TYPE" />".</translation>
 <translation id="4377125064752653719">Вы спрабавалі перайсці на сайт <ph name="DOMAIN" />, але сервер выдаў сертыфікат, які быў адкліканы выдаўцом. Гэта азначае, што ўліковым даным бяспекі, якія выдаў сервер, нельга давяраць. Магчыма, вы абменьваецеся данымі са зламыснікам.</translation>
@@ -1291,7 +1287,6 @@
 <translation id="5252000469029418751">C7 (канверт)</translation>
 <translation id="5254043433801397071">Аптымізаваць змесціва друку</translation>
 <translation id="5254958791078852567">E1</translation>
-<translation id="5261548214279761072">Аплата завершана</translation>
 <translation id="5265446478903775694">Кіраваць прыватнасцю ў Google</translation>
 <translation id="5266128565379329178">Пераплёт зверху</translation>
 <translation id="5269225904387178860">Чатыры дзіркі знізу</translation>
@@ -2045,7 +2040,6 @@
 <translation id="793209273132572360">Абнавіць адрас?</translation>
 <translation id="7932579305932748336">Пакрыццё</translation>
 <translation id="79338296614623784">Увядзіце сапраўдны нумар тэлефона</translation>
-<translation id="7934052535022478634">Аплата завершана</translation>
 <translation id="7934414805353235750"><ph name="URL" /> запытвае дазвол на прайграванне абароненага змесціва. Google спраўдзіць ідэнтыфікатар вашай прылады.</translation>
 <translation id="7935031712718413217">Магчыма, падменены URL-адрас</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>

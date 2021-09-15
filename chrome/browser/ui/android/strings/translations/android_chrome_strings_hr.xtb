@@ -202,11 +202,6 @@ Dodirnite bilo koju riječ da biste pokrenuli pretraživanje. Ako želite preciz
 <translation id="2321958826496381788">Pomičite klizač dok ne budete mogli čitati ovaj tekst bez poteškoća. Tekst bi trebao biti barem ovoliko velik nakon što dvaput dodirnete odlomak.</translation>
 <translation id="2323763861024343754">Pohrana web-lokacije</translation>
 <translation id="2328985652426384049">Prijava nije moguća</translation>
-<translation id="2336549603503100420">Kada je Privacy Sandbox omogućen, za pružanje svog sadržaja i svojih usluga web-lokacije mogu primjenjivati ovdje prikazane tehnike kojima se čuva privatnost. Te tehnike uključuju alternative praćenju na različitim web-lokacijama. U budućnosti će se možda dodati još probnih značajki.
-
-<ph name="BEGIN_LIST_ITEM1" />Oglašivači mogu saznati kada tisuće korisnika dijele sličan interes, poput publike na koncertu, i odabrati oglase za publiku, umjesto za pojedinca.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Oglašivači mogu steći uvid u učinkovitost oglasa na način koji ne uključuje praćenje korisnika na raznim web-lokacijama.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="2337236196941929873">Predučitava stranice za koje Chrome misli da biste ih mogli posjetiti. Chrome u tu svrhu može upotrebljavati kolačiće, ako ih dopuštate, i može kriptirati i slati stranice putem Googlea kako web-lokacije ne bi saznale vaš identitet.</translation>
 <translation id="234265804618409743">Kamera se ne može otvoriti. Nešto nije u redu.</translation>
 <translation id="2345671828921229300">Za pretraživanje dodirnite i držite riječ</translation>
@@ -396,13 +391,6 @@ Dodirnite i držite bilo koju riječ da biste pokrenuli pretraživanje. Ako žel
 <translation id="3429160811076349561">Probne značajke su isključene</translation>
 <translation id="3440975416244667276">Dodirnite i držite da bi se prikazale relevantnije informacije</translation>
 <translation id="3443221991560634068">Ponovno učitavanje trenutačne stranice</translation>
-<translation id="3451542610083122179">Privacy Sandbox aktualna je inicijativa za očuvanje otvorenog weba kojom vam se želi pružiti zaštita od mehanizama za praćenje.
-
-Web-lokacije se danas oslanjaju na brojne tehnologije, kao što su kolačići trećih strana, da bi se omogućilo pružanje važnih usluga poput prikazivanja relevantnih oglasa i mjerenja izvedbe web-lokacije.
-
-Privacy Sandbox čuva vitalnost otvorenog weba pružanjem boljih načina izvođenja tih usluga bez narušavanja funkcioniranja web-lokacija, a istodobno onemogućuje da vas se tajno prati na webu.
-
-Privacy Sandbox još uvijek je u aktivnoj fazi razvoja te je dostupan u određenim regijama. Web-lokacije trenutačno mogu isprobati Privacy Sandbox dok se istovremeno još uvijek koriste aktualnim web-tehnologijama, npr. kolačićima trećih strana. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{Zakazano je jedno preuzimanje}one{Zakazano je # preuzimanje}few{Zakazana su # preuzimanja}other{Zakazano je # preuzimanja}}</translation>
 <translation id="3478363558367712427">Možete odabrati tražilicu</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /> o predloženom sadržaju</translation>

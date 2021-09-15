@@ -231,10 +231,6 @@
 <translation id="7585853947355360626">Se uma configuração não for exibida nesta página, verifique as <ph name="LINK_BEGIN" />configurações do Chromium OS<ph name="LINK_END" /></translation>
 <translation id="761356813943268536">O Chromium está usando sua câmera e seu microfone.</translation>
 <translation id="7617377681829253106">O Chromium ficou ainda melhor</translation>
-<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Antes de começarmos, confira se você tem um backup atualizado dos seus dados. A instalação do Chromium OS apagará todos os dados no seu disco rígido.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />O Google não é responsável por nenhuma perda de dados e não pode garantir que o Chromium OS funcione em modelos não certificados. Acesse [TBD] para saber mais sobre os modelos certificados.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Saiba mais sobre a instalação do Chromium OS e a exclusão de dados: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />Se estiver tudo pronto, clique em "Instalar o Chromium OS", e guiaremos você pela instalação em etapas simples. Você terá mais uma chance de confirmar a decisão antes de qualquer mudança ser feita no seu computador.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">O Chromium não é seu navegador padrão</translation>
 <translation id="7689606757190482937">Sincronize e personalize o Chromium em todos os seus dispositivos</translation>
 <translation id="7729447699958282447">O Chromium não pôde sincronizar seus dados porque a sincronização não está disponível para seu domínio.</translation>

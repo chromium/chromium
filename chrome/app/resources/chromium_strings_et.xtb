@@ -237,10 +237,6 @@ Chromium ei saa teie seadeid taastada.</translation>
       Chromium OS-i seadeid<ph name="LINK_END" /></translation>
 <translation id="761356813943268536">Chromium kasutab kaamerat ja mikrofoni.</translation>
 <translation id="7617377681829253106">Chromium muutus just paremaks</translation>
-<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Enne alustamist veenduge, et teil oleks oma andmetest ajakohane varukoopia. Chromium OS-i installimisel kirjutatakse üle kõik teie kõvakettal olevad andmed.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google ei vastuta andmekao eest ja ei garanteeri, et Chromium OS toimib sertifitseerimata mudelitel. Külastage lehte [TBD], et leida teavet sertifitseeritud mudelite kohta.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Lisateave Chromium OS-i installimise ja andmete kustutamise kohta: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />Kui olete valmis jätkama, klõpsake käsul „Installi Chromium OS” ja juhendame teid installimisel, milleks on vaja vaid paar lihtsat toimingut teha. Enne, kui teie arvutis muudatusi teeme, on teil veel üks võimalus meelt muuta.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium ei ole teie vaikebrauser</translation>
 <translation id="7689606757190482937">Sünkroonige ja isikupärastage Chromium kõigis oma seadmetes</translation>
 <translation id="7729447699958282447">Chromium ei saa teie andmeid sünkroonida, sest teie domeenil pole sünkroonimine saadaval.</translation>

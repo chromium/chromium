@@ -202,11 +202,6 @@ Toca calquera palabra para buscala. Mantena premida para seleccionar máis ou me
 <translation id="2321958826496381788">Arrastra o control desprazable ata que poidas ler con comodidade. O texto debe ter polo menos este tamaño despois de facer dobre clic nun parágrafo.</translation>
 <translation id="2323763861024343754">Almacenamento do sitio</translation>
 <translation id="2328985652426384049">Non se puido iniciar sesión</translation>
-<translation id="2336549603503100420">Ao activar esta opción, os sitios poden usar técnicas que permiten protexer a privacidade (entre as que se inclúen alternativas ao seguimento en varios sitios) para ofrecer contido e servizos. É posible que se engadan máis probas no futuro.
-
-<ph name="BEGIN_LIST_ITEM1" />Os anunciantes poden saber cando hai miles de usuarios cun interese en común (por exemplo, o público dun concerto) e seleccionar anuncios para eles en lugar de facelo para unha persoa en concreto.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Os anunciantes poden estudar a eficiencia dos anuncios sen facer un seguimento dos sitios que visitas.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="2337236196941929873">Carga previamente aquelas páxinas que Chrome considera que poderías visitar. Para facelo, o navegador pode utilizar cookies, sempre e cando permitas o seu uso, ademais de encriptar e enviar páxinas a través de Google para ocultar a túa identidade nos sitios.</translation>
 <translation id="234265804618409743">Non se puido abrir a cámara. Produciuse un erro.</translation>
 <translation id="2345671828921229300">Para realizar buscas, mantén premida unha palabra</translation>
@@ -396,13 +391,6 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="3429160811076349561">As funcións de proba están desactivadas</translation>
 <translation id="3440975416244667276">Mantén premidas as palabras para ver información relevante</translation>
 <translation id="3443221991560634068">Volver cargar a páxina actual</translation>
-<translation id="3451542610083122179">Privacy Sandbox é unha iniciativa en curso para facer que a Web siga sendo un espazo aberto e axudar a protexerte contra os mecanismos de seguimento.
-
-Actualmente úsanse moitas tecnoloxías, como as cookies de terceiros, en servizos importantes da Web (por exemplo, para mostrar anuncios relevantes ou medir o rendemento dos sitios).
-
-Privacy Sandbox fai que a Web siga sendo un espazo aberto, xa que crea mellores formas de ofrecer eses servizos sen que os sitios deixen de funcionar e sen que se realice ás agachadas un seguimento do que fas na Web.
-
-Seguimos desenvolvendo activamente esta iniciativa, que está dispoñible só nalgunhas rexións. Polo momento, os sitios poden probar Privacy Sandbox sen deixar de usar as tecnoloxías web actuais, como as cookies de terceiros. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{Hai 1 descarga programada}other{Hai # descargas programadas}}</translation>
 <translation id="3478363558367712427">Podes escoller o motor de busca</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /> acerca do contido suxerido</translation>

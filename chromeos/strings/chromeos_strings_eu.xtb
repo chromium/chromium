@@ -152,6 +152,7 @@
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> egun baino gehiagoko inprimatze-lanak kendu egingo dira</translation>
 <translation id="4003384961948020559">Hutsegitea - Irteera-erretilua beteta dago</translation>
 <translation id="4034824040120875894">Inprimagailua</translation>
+<translation id="4050980775484079270">ARCko DNS bidezko ebazpena</translation>
 <translation id="409427325554347132">Gorde probaren xehetasunak</translation>
 <translation id="4131410914670010031">Zuri-beltzez</translation>
 <translation id="4145784616224233563">HTTP protokolorako suebakia</translation>
@@ -162,6 +163,7 @@
 <translation id="4238516577297848345">Ez dago inprimatze-lanik abian</translation>
 <translation id="4244962993387259361">Gutxienez 500 MB eduki behar dituzu libre memoriaren proba bat egiteko. Tokia egiteko, joan Ezarpenak &gt; Biltegi-kudeatzailea atalera.</translation>
 <translation id="4258281355379922695">HTTP eskaeren itxarote-denbora</translation>
+<translation id="4271957103967917607">Ikusi pantaila osoan</translation>
 <translation id="4289540628985791613">Ikuspegi orokorra</translation>
 <translation id="4297501883039923494">Geldituta: errore ezezaguna</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> irudi</translation>
@@ -373,6 +375,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="7550715992156305117">Diagnostiko-errutinak</translation>
 <translation id="7561454561030345039">Administratzaileak kudeatzen du ekintza hau</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7574732568136198983">ARCko ping-a</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> geratzen dira</translation>
 <translation id="7620771111601174153">Lortu informazio gehiago laguntza-zentroan</translation>
 <translation id="763165478673169849">Azken berrezartzearen ordua</translation>

@@ -152,6 +152,7 @@
 <translation id="39823212440917567">超過 <ph name="NUMBER_OF_DAYS" /> 天前的列印工作將被移除</translation>
 <translation id="4003384961948020559">失敗 - 輸出紙匣已滿</translation>
 <translation id="4034824040120875894">打印機</translation>
+<translation id="4050980775484079270">ARC DNS 解析</translation>
 <translation id="409427325554347132">儲存測試詳細資料</translation>
 <translation id="4131410914670010031">黑白</translation>
 <translation id="4145784616224233563">HTTP 防火牆</translation>
@@ -374,7 +375,7 @@
 <translation id="7550715992156305117">日常診斷安排</translation>
 <translation id="7561454561030345039">此操作由管理員管理</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
-<translation id="7574732568136198983">ARC 連線偵測 (ping)</translation>
+<translation id="7574732568136198983">ARC 連線偵測</translation>
 <translation id="7595982850646262331">剩餘 <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">前往說明中心瞭解詳情</translation>
 <translation id="763165478673169849">上次重設時間</translation>

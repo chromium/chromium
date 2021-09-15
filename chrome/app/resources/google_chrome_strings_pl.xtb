@@ -34,7 +34,6 @@
 <translation id="174539241580958092">Google Chrome nie może zsynchronizować danych z powodu błędu podczas logowania.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Najpierw zaloguj się w Chrome na swoim urządzeniu <ph name="TARGET_DEVICE_NAME" />, a potem ponów próbę wysyłania.</translation>
-<translation id="1810203443153428607">Instalacja systemu operacyjnego Chrome spowoduje zastąpienie wszystkich danych na urządzeniu.</translation>
 <translation id="1812689907177901597">Jeśli wyłączysz tę opcję, możesz logować się na stronach Google takich jak Gmail bez logowania się w Chrome</translation>
 <translation id="1860536484129686729">Chrome potrzebuje uprawnień dostępu do aparatu na tej stronie</translation>
 <translation id="1873233029667955273">Google Chrome nie jest domyślną przeglądarką</translation>
@@ -175,9 +174,6 @@
 <translation id="5386244825306882791">Kontroluje także to, jaka strona wyświetla się po uruchomieniu Chrome lub wyszukiwaniu w omniboksie.</translation>
 <translation id="5394833366792865639">Udostępnij kartę Chrome</translation>
 <translation id="5430073640787465221">Plik ustawień jest uszkodzony lub nieprawidłowy. Google Chrome nie może odzyskać ustawień.</translation>
-<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />Zanim zaczniemy, zrób aktualną kopię swoich danych. Instalacja systemu operacyjnego Chrome spowoduje zastąpienie wszystkich danych na dysku twardym.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google nie ponosi odpowiedzialności za utratę danych ani nie gwarantuje, że system operacyjny Chrome będzie działać na urządzeniach bez certyfikatu. Więcej informacji o certyfikowanych modelach znajdziesz na stronie [TBD].<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Więcej informacji o instalowaniu systemu operacyjnego Chrome i wymazywaniu danych: [TBD URL]<ph name="END_PARAGRAPH3" /><ph name="BEGIN_PARAGRAPH4" />Jeśli wszystko jest gotowe, kliknij „Zainstaluj Chrome OS”, aby w kilku prostych krokach przeprowadzić instalację, korzystając z naszych instrukcji. Zanim wprowadzimy jakiekolwiek zmiany na Twoim komputerze, będziesz mieć jeszcze 1 możliwość potwierdzenia instalacji.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">Zainstaluj Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome próbuje pokazać hasła.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>

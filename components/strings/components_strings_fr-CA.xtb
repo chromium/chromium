@@ -252,7 +252,6 @@
 <translation id="1736420071277903564">Ordinateur</translation>
 <translation id="1740951997222943430">Entrez un mois d'expiration valide</translation>
 <translation id="1741613555002899862">Doit être indiquée et être une chaîne valide lorsque la politique DnsOverHttpsMode est définie à <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
-<translation id="1743570585616704562">Doigt non reconnu</translation>
 <translation id="1745880797583122200">Votre navigateur est géré</translation>
 <translation id="1746113442205726301">Décalage Y de l'image</translation>
 <translation id="17513872634828108">Onglets ouverts</translation>
@@ -527,7 +526,6 @@
 <translation id="2713444072780614174">Blanc</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour gérer vos données de paiement et vos cartes de crédit dans les paramètres de Chrome</translation>
 <translation id="2721148159707890343">Demande réussie</translation>
-<translation id="272451190272506600">Touchez le capteur pour payer</translation>
 <translation id="2728127805433021124">Le certificat du serveur a été signé avec un algorithme de signature faible.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />d'exécuter Connectivity Diagnostics<ph name="END_LINK" /></translation>
 <translation id="2738330467931008676">Choisir une adresse de ramassage</translation>
@@ -638,7 +636,6 @@
       ne pensez pas devoir utiliser de serveur mandataire, procédez comme suit :
       <ph name="PLATFORM_TEXT" /></translation>
 <translation id="317878711435188021">Savoir lorsque vous êtes en train d'utiliser cet appareil</translation>
-<translation id="3188393374551744535">Solde du compte</translation>
 <translation id="3194737229810486521">L'URL <ph name="URL" /> veut stocker de façon permanente des données sur votre appareil</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> sur <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Les sites peuvent demander à savoir quand vous utilisez activement cet appareil</translation>
@@ -1017,7 +1014,6 @@
 <translation id="4363178190432472170">Localiser mon téléphone</translation>
 <translation id="4367563149485757821">Enveloppe n° 12</translation>
 <translation id="437040971055499437">Un événement relatif à la sécurité se produit</translation>
-<translation id="437058704415269440">Solde du compte</translation>
 <translation id="4372516964750095882">Pli en éventail, É-U</translation>
 <translation id="4372948949327679948">Valeur <ph name="VALUE_TYPE" /> attendue.</translation>
 <translation id="4377125064752653719">Vous avez tenté d'accéder à <ph name="DOMAIN" />, mais le certificat présenté par le serveur a été révoqué par son émetteur, ce qui signifie qu'on ne peut plus faire confiance au certificat présenté par le serveur. Il est donc possible que vous communiquiez avec un pirate informatique.</translation>
@@ -1282,7 +1278,6 @@
 <translation id="5252000469029418751">Enveloppe C7</translation>
 <translation id="5254043433801397071">Optimiser le contenu d'impression</translation>
 <translation id="5254958791078852567">E</translation>
-<translation id="5261548214279761072">Paiement effectué</translation>
 <translation id="5265446478903775694">Gérez ma confidentialité sur Google</translation>
 <translation id="5266128565379329178">Reliure en haut</translation>
 <translation id="5269225904387178860">Quadruple perforation en bas</translation>
@@ -2033,7 +2028,6 @@ Détails supplémentaires :
 <translation id="793209273132572360">Mettre à jour l'adresse?</translation>
 <translation id="7932579305932748336">Revêtement</translation>
 <translation id="79338296614623784">Entrez un numéro de téléphone valide</translation>
-<translation id="7934052535022478634">Paiement effectué</translation>
 <translation id="7934414805353235750"><ph name="URL" /> veut lire du contenu protégé. L'identité de votre appareil sera vérifiée par Google.</translation>
 <translation id="7935031712718413217">Possibilité d'URL de mystification</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>

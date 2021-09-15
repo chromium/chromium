@@ -38,7 +38,6 @@
 <translation id="174539241580958092">Google Chrome non puido sincronizar os teus datos debido a un erro ao iniciar sesión.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Asegúrate de ter a sesión iniciada en Chrome no <ph name="TARGET_DEVICE_NAME" /> e proba a enviar o número de novo.</translation>
-<translation id="1810203443153428607">Ao instalar Chrome OS sobrescribiranse todos os datos que teñas no dispositivo.</translation>
 <translation id="1812689907177901597">Ao desactivar esta opción, podes iniciar sesión nos sitios de Google, como Gmail, sen iniciar sesión en Chrome</translation>
 <translation id="1860536484129686729">Chrome necesita permiso para acceder á cámara neste sitio</translation>
 <translation id="1873233029667955273">Google Chrome non é o teu navegador predeterminado</translation>
@@ -178,10 +177,6 @@
 <translation id="5430073640787465221">O teu ficheiro de preferencias está danado ou non é válido.
 
 Google Chrome non pode recuperar a túa configuración.</translation>
-<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />Antes de comezar, asegúrate de ter unha copia de seguranza actualizada dos teus datos. Ao instalar Chrome OS sobrescribiranse todos os datos que teñas na unidade de disco duro.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google non é responsable das perdas de datos nin tampouco garante que Chrome OS funcione en modelos que non estean aprobados. Visita [TBD] para obter máis información sobre os modelos aprobados.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Máis información sobre como instalar Chrome OS e o borrado de datos: [TBD URL]<ph name="END_PARAGRAPH3" />
-<ph name="BEGIN_PARAGRAPH4" />Se tes todo listo para continuar, fai clic en Instalar Chrome OS e recibirás instrucións para realizar a instalación en tan só un par de pasos sinxelos. Terás outra oportunidade de confirmar a acción antes de que fagamos cambios no ordenador.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">Instalar Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome está intentando mostrar contrasinais.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>

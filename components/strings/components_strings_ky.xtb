@@ -252,7 +252,6 @@
 <translation id="1736420071277903564">Компьютер</translation>
 <translation id="1740951997222943430">Мөөнөтү аяктоочу айды туура киргизиңиз</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> деп жана мааниси туура көрсөтүлүшү керек.</translation>
-<translation id="1743570585616704562">Таанылган жок</translation>
 <translation id="1745880797583122200">Серепчиңиз башкарылып жатат</translation>
 <translation id="1746113442205726301">Y сүрөтүн жылдыруу</translation>
 <translation id="17513872634828108">Ачык өтмөктөр</translation>
@@ -531,7 +530,6 @@
 <translation id="2713444072780614174">Ак</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome'дун жөндөөлөрүнө өтүп, төлөмдөрдү жана насыя карточкасынын маалыматын башкаруу үчүн, Tab, андан соң Enter баскычтарын басыңыз</translation>
 <translation id="2721148159707890343">Сурам аткарылды</translation>
-<translation id="272451190272506600">Төлөө үчүн сенсорду басыңыз</translation>
 <translation id="2728127805433021124">Сервердин тастыктамасына чабал колтамга алгоритми кол койгон.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Туташуу мүчүлүштүгүн аныктоону иштетиңиз<ph name="END_LINK" /></translation>
 <translation id="2738330467931008676">Алып кете турган жердин дарегин тандоо</translation>
@@ -642,7 +640,6 @@
       серверин колдонгум келбейт десеңиз
       <ph name="PLATFORM_TEXT" /></translation>
 <translation id="317878711435188021">Түзмөк активдүү колдонулуп жаткан учур</translation>
-<translation id="3188393374551744535">Аккаунттун балансы</translation>
 <translation id="3194737229810486521"><ph name="URL" /> түзмөгүңүзгө дайындарды биротоло сактаганы жатат</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> сервериндеги <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">Түзмөктү активдүү колдонуп жатканыңыз тууралуу маалыматты сурай алат</translation>
@@ -1026,7 +1023,6 @@
 <translation id="4363178190432472170">Телефонум кайда?</translation>
 <translation id="4367563149485757821">Number-12 (Конверт)</translation>
 <translation id="437040971055499437">Коопсуздук иш-чарасы аныкталды</translation>
-<translation id="437058704415269440">Аккаунттун балансы</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Күтүлгөн <ph name="VALUE_TYPE" /> мааниси.</translation>
 <translation id="4377125064752653719"><ph name="DOMAIN" /> жетүүгө аракет кылдыңыз, бирок сервердин тастыктамасын аны чыгарган жак жокко чыгарды. Демек, сервердин далдаштырма дайындарына таптакыр ишенбешиңиз керек, себеби ал зыянкеч чабуулчу болушу да мүмкүн.</translation>
@@ -1291,7 +1287,6 @@
 <translation id="5252000469029418751">C7 (Конверт)</translation>
 <translation id="5254043433801397071">Басып чыгаруу мазмунун оптималдаштыруу</translation>
 <translation id="5254958791078852567">E1</translation>
-<translation id="5261548214279761072">Төлөм аткарылды</translation>
 <translation id="5265446478903775694">Google'да купуялыгымды башкаруу</translation>
 <translation id="5266128565379329178">Жогорку жагын байлоо</translation>
 <translation id="5269225904387178860">Төмөнкү жагын төрт жолу тешүү</translation>
@@ -2044,7 +2039,6 @@
 <translation id="793209273132572360">Дарек жаңыртылсынбы?</translation>
 <translation id="7932579305932748336">Пальто</translation>
 <translation id="79338296614623784">Жарактуу телефон номерин киргизиңиз</translation>
-<translation id="7934052535022478634">Төлөм аткарылды</translation>
 <translation id="7934414805353235750"><ph name="URL" /> корголгон мазмунду ойноткону жатат. Түзмөгүңүздүн аныктыгы Google аркылуу текшерилет.</translation>
 <translation id="7935031712718413217">Бул бурмаланган URL болушу мүмкүн</translation>
 <translation id="7935318582918952113">DOM дистиллери</translation>

@@ -410,7 +410,7 @@
 <translation id="4129129681837227511">За да виждате известия на заключения екран, отключете устройството и променете настройката</translation>
 <translation id="4146833061457621061">„Play music“ („Пусни музика“)</translation>
 <translation id="4157822100366708405">Настройки за тъмната тема</translation>
-<translation id="4170634509222878053"><ph name="TITLE" /> – <ph name="DETAILS" /></translation>
+<translation id="4173958948577803258">чт</translation>
 <translation id="4181841719683918333">Езици</translation>
 <translation id="4195877955194704651">Бутон за менюто за автоматични кликвания</translation>
 <translation id="4197790712631116042">Изключено</translation>
@@ -749,6 +749,7 @@
 <translation id="6751052314767925245">Наложено от администратора ви</translation>
 <translation id="6751826523481687655">Проследяването на ефективността е включено</translation>
 <translation id="6752912906630585008">Работен кът <ph name="REMOVED_DESK" /> е премахнат и е обединен с работен кът <ph name="RECEIVE_DESK" /></translation>
+<translation id="6754441615189976839">сб</translation>
 <translation id="6757237461819837179">Не се възпроизвежда мултимедия</translation>
 <translation id="6777216307882431711">Свързаните устройства с USB-C се захранват</translation>
 <translation id="6790428901817661496">Пускане</translation>
@@ -769,6 +770,7 @@
 <translation id="6910714959251846841">Тази актуализация изисква Powerwash на устройството ви. Научете повече за най-новата актуализация на <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Смарткартата ви не бе разпозната. Опитайте отново.</translation>
 <translation id="6921188888306725546">Клавишните комбинации са подобрени</translation>
+<translation id="6929655271276551705">Настройки за дата</translation>
 <translation id="6945221475159498467">Избиране</translation>
 <translation id="6961121602502368900">Функцията за заглушаване на телефона не е налице в служебни потребителски профили</translation>
 <translation id="6961840794482373852">Клавишната комбинация Alt + стрелка нагоре се промени. За да използвате клавиша Page Up, натиснете клавиша „<ph name="LAUNCHER_KEY_NAME" />“ + стрелката нагоре.</translation>
@@ -786,6 +788,7 @@
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Асистент</translation>
 <translation id="7042322267639375032">Свиване на лентата на състоянието</translation>
 <translation id="7045595904618419789">Стартиране на лупата</translation>
+<translation id="7055381872777910864">ср</translation>
 <translation id="7055910611768509537">Писалката не е използвана от повече от една седмица</translation>
 <translation id="7066646422045619941">Тази мрежа е деактивирана от администратора ви.</translation>
 <translation id="7067196344162293536">Автоматично завъртане</translation>
@@ -854,6 +857,7 @@
 <translation id="7579778809502851308">Заснемане на екрана</translation>
 <translation id="7590883480672980941">Настройки за въвеждане</translation>
 <translation id="7593891976182323525">„търсене“ или „Shift“</translation>
+<translation id="7595633564847427181">пн</translation>
 <translation id="7600875258240007829">Преглед на всички известия</translation>
 <translation id="7607002721634913082">На пауза</translation>
 <translation id="7618774594543487847">Неутрален</translation>

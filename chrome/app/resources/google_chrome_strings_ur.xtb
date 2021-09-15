@@ -38,7 +38,6 @@
 <translation id="174539241580958092">‏Google Chrome سائن ان میں ایک خرابی ہونے کی وجہ سے آپ کے ڈیٹا کی مطابقت پذیری نہیں کر سکا۔</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">‏یقینی بنائیں کہ آپ اپنے <ph name="TARGET_DEVICE_NAME" /> پر Chrome میں سائن ان ہیں اور پھر دوبارہ بھیج کر دیکھیں۔</translation>
-<translation id="1810203443153428607">‏Chrome OS کو انسٹال کرنے سے آپ کے آلہ پر موجود تمام ڈیٹا اوور رائٹ ہو جائے گا۔</translation>
 <translation id="1812689907177901597">‏اسے آف کر کے، آپ Chrome میں سائن ان کیے بغیر Gmail جیسی Google سائٹس میں سائن ان کر سکتے ہیں</translation>
 <translation id="1860536484129686729">‏Chrome کو اس سائٹ کیلئے آپ کے کیمرے تک رسائی کی اجازت درکار ہے</translation>
 <translation id="1873233029667955273">‏Google Chrome آپ کا ڈیفالٹ براؤزر نہیں ہے</translation>
@@ -178,10 +177,6 @@
 <translation id="5430073640787465221">‏آپ کی ترجیحات کی فائل خراب یا غلط ہے۔
 
 Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاصر ہے۔</translation>
-<translation id="5449497480926255862">‏<ph name="BEGIN_PARAGRAPH1" />ہم شروع کریں اس سے پہلے براہ کرم یقینی بنائیں کہ آپ کے پاس اپنے ڈیٹا کا تازہ ترین بیک اپ ہے۔ Chrome OS کو انسٹال کرنے سے آپ کی ہارڈ ڈرائیو پر موجود تمام ڈیٹا اوور رائٹ ہو جائے گا۔<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google کسی بھی ڈیٹا سے محروم ہونے کا ذمہ دار نہیں ہے اور اس کی کوئی ضمانت نہیں دیتا ہے کہ Chrome OS غیر تصدیق شدہ ماڈلز پر کام کرے گا۔ تصدیق شدہ ماڈلز کے بارے میں مزید معلومات کیلئے براہ کرم [TBD] ملاحظہ کریں۔<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Chrome OS انسٹال کرنے اور ڈیٹا کو مٹانے کے بارے میں مزید جانیں: [TBD URL]<ph name="END_PARAGRAPH3" />
-         <ph name="BEGIN_PARAGRAPH4" />اگر آپ آگے بڑھنے کیلئے تیار ہیں تو "Chrome OS انسٹال کریں" پر کلک کریں اور ہم چند آسان اقدامات میں انسٹالیشن کے دوران آپ کی رہنمائی کریں گے۔ ہمارے ذریعے آپ کے کمپیوٹر میں کوئی تبدیلی کرنے سے پہلے آپ کو تصدیق کرنے کا ایک اور موقع ملے گا۔<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">‏Chrome OS انسٹال کریں</translation>
 <translation id="556024056938947818">‏Google Chrome پاس ورڈز دکھانے کی کوشش کر رہا ہے۔</translation>
 <translation id="5566025111015594046">‎Google Chrome (mDNS-In)‎</translation>

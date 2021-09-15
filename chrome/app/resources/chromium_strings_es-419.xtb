@@ -232,10 +232,6 @@
       configuración del Sistema operativo Chromium<ph name="LINK_END" /></translation>
 <translation id="761356813943268536">Chromium está usando tu cámara y tu micrófono.</translation>
 <translation id="7617377681829253106">Chromium mejorado</translation>
-<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Antes de comenzar, asegúrate de que tienes una copia de seguridad actualizada de tus datos. Cuando instales Chromium OS, se reemplazarán todos los datos de tu disco duro.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google no se hace responsable ante cualquier pérdida de datos y no garantiza que Chromium OS funcione en modelos que no están certificados. Para obtener más información sobre los modelos certificados, visita [TBD].<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Obtén más información sobre la instalación de Chromium OS y el borrado de datos: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />Si tienes todo listo para continuar, haz clic en "Instalar Chromium OS", y te guiaremos con unos simples pasos durante la instalación. Deberás volver a confirmar la acción antes de que hagamos cambios en tu computadora.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium no es el navegador predeterminado</translation>
 <translation id="7689606757190482937">Sincroniza y personaliza Chromium en todos tus dispositivos</translation>
 <translation id="7729447699958282447">Chromium no pudo sincronizar los datos porque la sincronización no está disponible para el dominio.</translation>

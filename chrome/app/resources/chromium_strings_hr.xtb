@@ -238,10 +238,6 @@ Chromium ne može oporaviti vaše postavke.</translation>
       postavke OS-a Chromium<ph name="LINK_END" /></translation>
 <translation id="761356813943268536">Chromium upotrebljava vašu kameru i mikrofon.</translation>
 <translation id="7617377681829253106">Chromium je upravo postao bolji</translation>
-<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Prije nego što započnemo, provjerite imate li ažuriranu sigurnosnu kopiju podataka. Instaliranjem OS-a Chromium prebrisat će se svi podaci na tvrdom disku.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google ne odgovara ni za kakav gubitak podataka te ne jamči da će OS Chromium funkcionirati na necertificiranim modelima. Posjetite [TBD] i saznajte više o certificiranim modelima.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Saznajte više o instaliranju OS-a Chromium i brisanju podataka: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />Ako ste spremni nastaviti, kliknite Instaliraj OS Chromium i vodit ćemo vas kroz instalaciju u samo nekoliko jednostavnih koraka. Moći ćete još jednom potvrditi prije nego što na bilo koji način izmijenimo vaše računalo.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium nije vaš zadani preglednik</translation>
 <translation id="7689606757190482937">Sinkronizirajte Chromium kako bi bio prilagođen vama na svim vašim uređajima</translation>
 <translation id="7729447699958282447">Chromium nije mogao sinkronizirati vaše podatke jer sinkronizacija nije dostupna za vašu domenu.</translation>

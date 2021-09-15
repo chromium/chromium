@@ -240,10 +240,6 @@ Chromium haiwezi kufufua mipangilio yako.</translation>
       mipangilio ya mfumo wa uendeshaji wa Chromium<ph name="LINK_END" /></translation>
 <translation id="761356813943268536">Chromium inatumia kamera na maikrofoni yako.</translation>
 <translation id="7617377681829253106">Chromium imeboreshwa</translation>
-<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Kabla hatujaanza, tafadhali hakikisha kwamba una hifadhi ya nakala iliyosasishwa ya data yako. Hatua ya kusakinisha Chromium OS itafuta data yote iliyo kwenye diski yako kuu.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google haiwajibikii data yoyote unayopoteza na haitoi hakikisho kwamba Chromium OS itafanya kazi kwenye miundo ambayo haijathibitishwa. Tafadhali tembelea [TBD] ili upate maelezo zaidi kuhusu miundo iliyothibitishwa.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Pata maelezo zaidi kuhusu kusakinisha Chromium OS na ufutaji wa data: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />Ikiwa uko tayari kuendelea, bofya “Sakinisha Chromium OS” na tutakuelekeza kwenye mchakato wa kusakinisha kwa hatua chache rahisi. Utakuwa na nafasi nyingine ya kuthibitisha kabla hatujafanya mabadiliko yoyote kwenye kompyuta yako.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium si kivinjari chako chaguomsingi</translation>
 <translation id="7689606757190482937">Sawazisha na uweke mapendeleo kwenye Chromium katika vifaa vyako vyote</translation>
 <translation id="7729447699958282447">Chromium haikuweza kusawazisha data yako kwa sababu Usawazishaji haupatikani kwa kikoa chako.</translation>

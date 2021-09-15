@@ -252,7 +252,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1736420071277903564">Computadora</translation>
 <translation id="1740951997222943430">Ingresa una fecha de vencimiento válida</translation>
 <translation id="1741613555002899862">Esta política debe especificarse y tener una string válida, cuando DnsOverHttpsMode es <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
-<translation id="1743570585616704562">No se reconoció</translation>
 <translation id="1745880797583122200">Tu navegador está administrado</translation>
 <translation id="1746113442205726301">Cambio del eje Y de la imagen</translation>
 <translation id="17513872634828108">Pestañas abiertas</translation>
@@ -527,7 +526,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2713444072780614174">Blanco</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />: presiona Tab y, luego, Intro para administrar tus datos de pago y de tarjetas de crédito en la configuración de Chrome</translation>
 <translation id="2721148159707890343">Solicitud correcta</translation>
-<translation id="272451190272506600">Sensor táctil para pagar</translation>
 <translation id="2728127805433021124">El certificado del servidor está firmado con un algoritmo de firma no seguro.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Ejecución del Diagnóstico de conectividad<ph name="END_LINK" /></translation>
 <translation id="2738330467931008676">Elegir dirección de retiro</translation>
@@ -639,7 +637,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
           que no necesitas usar un servidor proxy:
           <ph name="PLATFORM_TEXT" /></translation>
 <translation id="317878711435188021">Saber en qué momento estás usando activamente este dispositivo</translation>
-<translation id="3188393374551744535">Saldo de cuenta</translation>
 <translation id="3194737229810486521"><ph name="URL" /> desea almacenar datos de forma permanente en el dispositivo</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> en <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Puede solicitar permiso para saber en qué momento estás usando activamente este dispositivo</translation>
@@ -1019,7 +1016,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4363178190432472170">Encuentra mi teléfono</translation>
 <translation id="4367563149485757821">Number-12 (Envelope)</translation>
 <translation id="437040971055499437">Se produjo un evento de seguridad</translation>
-<translation id="437058704415269440">Saldo de cuenta</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Valor <ph name="VALUE_TYPE" /> esperado.</translation>
 <translation id="4377125064752653719">Intentaste acceder a <ph name="DOMAIN" />, pero el emisor anuló el certificado que presentó el servidor. Esto significa que no se debe confiar en absoluto en las credenciales de seguridad que presentó el servidor. Te puedes estar comunicando con un atacante.</translation>
@@ -1158,6 +1154,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
           <ph name="LIST_ITEM" />Los empleadores o instituciones educativas pueden rastrear tu actividad de navegación.<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Los proveedores de servicios de Internet pueden supervisar el tráfico web.<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="483241715238664915">Activar advertencias</translation>
 <translation id="4838327282952368871">Dreamy</translation>
 <translation id="4840250757394056958">Ver tu historial de Chrome</translation>
 <translation id="484462545196658690">Automático</translation>
@@ -1284,7 +1281,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5252000469029418751">C7 (Envelope)</translation>
 <translation id="5254043433801397071">Optimizar el contenido de impresión</translation>
 <translation id="5254958791078852567">E1</translation>
-<translation id="5261548214279761072">Se completó el pago</translation>
 <translation id="5265446478903775694">Administrar mi privacidad en Google</translation>
 <translation id="5266128565379329178">Encuadernado en la parte superior</translation>
 <translation id="5269225904387178860">Perforación cuádruple en la parte inferior</translation>
@@ -1786,6 +1782,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="7086090958708083563">Carga solicitada por el usuario</translation>
 <translation id="7087282848513945231">Condado</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />: presiona Tab y, luego, Intro para administrar en la configuración de Chrome los permisos y datos almacenados en los sitios</translation>
+<translation id="7096937462164235847">No se verificó la identidad de este sitio web.</translation>
 <translation id="7108338896283013870">Ocultar</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> desea usar tu cámara</translation>
 <translation id="7108819624672055576">Permitido por una extensión</translation>
@@ -2037,7 +2034,6 @@ Detalles adicionales:
 <translation id="793209273132572360">¿Quieres actualizar la dirección?</translation>
 <translation id="7932579305932748336">Recubrimiento</translation>
 <translation id="79338296614623784">Ingresa un número de teléfono válido</translation>
-<translation id="7934052535022478634">Se completó el pago</translation>
 <translation id="7934414805353235750"><ph name="URL" /> desea reproducir contenido protegido. Google verificará la identidad de tu dispositivo.</translation>
 <translation id="7935031712718413217">Es posible que la identidad de la URL sea falsa</translation>
 <translation id="7935318582918952113">Filtro de DOM</translation>
@@ -2363,6 +2359,7 @@ Detalles adicionales:
 <translation id="9065203028668620118">Editar</translation>
 <translation id="9065745800631924235">Búsqueda de <ph name="TEXT" /> desde el historial</translation>
 <translation id="9069693763241529744">Bloqueado por una extensión</translation>
+<translation id="9073799351042754113">Elegiste desactivar las advertencias de seguridad para este sitio.</translation>
 <translation id="9078964945751709336">Se requiere más información</translation>
 <translation id="9080712759204168376">Resumen del pedido</translation>
 <translation id="9089260154716455634">Política fuera de horario:</translation>

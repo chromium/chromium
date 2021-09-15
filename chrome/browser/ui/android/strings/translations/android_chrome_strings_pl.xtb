@@ -202,11 +202,6 @@ Aby coś wyszukać, dotknij dowolnego słowa. Aby doprecyzować wyszukiwanie, na
 <translation id="2321958826496381788">Przeciągaj suwak, by umożliwić wygodne czytanie. Gdy dwukrotnie klikniesz akapit, tekst powiększy się co najmniej do tej wielkości.</translation>
 <translation id="2323763861024343754">Dane witryn:</translation>
 <translation id="2328985652426384049">Nie można się zalogować</translation>
-<translation id="2336549603503100420">Gdy włączysz tę funkcję, witryny będą mogły dostarczać swoje treści i usługi, używając wymienionych tu technik chroniących prywatność. Obejmują one rozwiązania alternatywne dla śledzenia w witrynach. Z czasem może pojawić się więcej wersji próbnych.
-
-<ph name="BEGIN_LIST_ITEM1" />Gdy tysiące użytkowników – tak jak tłum na koncercie – mają podobne zainteresowania, reklamodawcy mogą się o tym dowiedzieć i wybrać reklamy skierowane do tego tłumu, a nie do pojedynczych osób.<ph name="END_LIST_ITEM1" />
-
-<ph name="BEGIN_LIST_ITEM2" />Reklamodawcy mogą analizować skuteczność reklam, stosując metody niewymagające śledzenia Cię w witrynach.<ph name="END_LIST_ITEM2" /></translation>
 <translation id="2337236196941929873">Wstępnie wczytuje strony, które możesz chcieć odwiedzić według Chrome. Chrome może w tym celu wykorzystywać pliki cookie, jeśli wyrażasz zgodę na ich używanie, oraz szyfrować i wysyłać strony za pośrednictwem Google, aby ukryć przed witrynami Twoją tożsamość.</translation>
 <translation id="234265804618409743">Nie udało się otworzyć aparatu. Coś poszło nie tak.</translation>
 <translation id="2345671828921229300">Aby wyszukać, naciśnij i przytrzymaj słowo</translation>
@@ -396,13 +391,6 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="3429160811076349561">Funkcje próbne są wyłączone</translation>
 <translation id="3440975416244667276">Naciśnij i przytrzymaj słowo, aby wyświetlić więcej informacji na jego temat</translation>
 <translation id="3443221991560634068">Ponownie załaduj bieżącą stronę</translation>
-<translation id="3451542610083122179">Piaskownica prywatności to inicjatywa, która pomaga chronić Cię przed mechanizmami śledzącymi.
-
-W przypadku ważnych usług, na przykład wyświetlania trafnych reklam czy pomiaru wydajności strony, witryny polegają dziś na wielu technologiach, takich jak pliki cookie innych firm.
-
-Piaskownica prywatności zachowuje najważniejsze funkcje otwartej sieci, tworząc lepsze metody świadczenia tych usług – nie uszkadzając stron i jednocześnie chroniąc użytkownika przed ukradkowym śledzeniem w witrynach.
-
-Prace nad rozwojem Piaskownicy prywatności wciąż trwają. Jest ona dostępna w wybranych regionach. Teraz witryny mogą ją wypróbować, korzystając nadal z obecnie stosowanych technologii sieciowych takich jak pliki cookie innych firm. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{Zaplanowano pobranie 1 pliku}few{Zaplanowano pobranie # plików}many{Zaplanowano pobranie # plików}other{Zaplanowano pobranie # pliku}}</translation>
 <translation id="3478363558367712427">Możesz wybrać wyszukiwarkę</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Dowiedz się więcej<ph name="END_LINK" /> o proponowanej treści</translation>

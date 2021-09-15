@@ -252,7 +252,6 @@
 <translation id="1736420071277903564">Υπολογιστής</translation>
 <translation id="1740951997222943430">Εισαγάγετε έναν έγκυρο μήνα λήξης</translation>
 <translation id="1741613555002899862">Θα πρέπει να καθοριστεί μια έγκυρη συμβολοσειρά όταν η πολιτική DnsOverHttpsMode είναι <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
-<translation id="1743570585616704562">Δεν αναγνωρίστηκε</translation>
 <translation id="1745880797583122200">Το πρόγραμμα περιήγησής σας είναι διαχειριζόμενο</translation>
 <translation id="1746113442205726301">Μετατόπιση εικόνας στον άξονα Y</translation>
 <translation id="17513872634828108">Ανοικτές καρτέλες</translation>
@@ -531,7 +530,6 @@
 <translation id="2713444072780614174">Λευκό</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab και έπειτα Enter για να διαχειριστείτε τα στοιχεία πληρωμών και πιστωτικών καρτών στις ρυθμίσεις του Chrome.</translation>
 <translation id="2721148159707890343">Το αίτημα ήταν επιτυχές</translation>
-<translation id="272451190272506600">Αγγίξτε τον αισθητήρα για την πληρωμή</translation>
 <translation id="2728127805433021124">Το πιστοποιητικό του διακομιστή είναι υπογεγραμμένο με έναν αδύναμο αλγόριθμο υπογραφής.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Να εκτελέσετε τα Διαγνωστικά στοιχεία συνδεσιμότητας<ph name="END_LINK" /></translation>
 <translation id="2738330467931008676">Επιλογή διεύθυνσης παραλαβής</translation>
@@ -642,7 +640,6 @@
       απαιτείται η χρήση διακομιστή μεσολάβησης:
       <ph name="PLATFORM_TEXT" /></translation>
 <translation id="317878711435188021">Να γνωρίζει πότε χρησιμοποιείτε ενεργά αυτήν τη συσκευή</translation>
-<translation id="3188393374551744535">Υπόλοιπο λογαριασμού</translation>
 <translation id="3194737229810486521">Ο ιστότοπος <ph name="URL" /> θέλει να αποθηκεύσει μόνιμα δεδομένα στη συσκευή σας</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> στο <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Μπορεί να ζητά να γνωρίζει πότε χρησιμοποιείτε ενεργά αυτήν τη συσκευή.</translation>
@@ -1029,7 +1026,6 @@
 <translation id="4363178190432472170">Εύρεση του τηλεφώνου μου</translation>
 <translation id="4367563149485757821">Number-12 (Φάκελος)</translation>
 <translation id="437040971055499437">Παρουσιάζεται συμβάν ασφαλείας</translation>
-<translation id="437058704415269440">Υπόλοιπο λογαριασμού</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Αναμενόμενη τιμή <ph name="VALUE_TYPE" />.</translation>
 <translation id="4377125064752653719">Προσπαθήσατε να μεταβείτε στον τομέα <ph name="DOMAIN" />, όμως το πιστοποιητικό που παρουσιάστηκε από το διακομιστή ανακλήθηκε από τον εκδότη του. Αυτό σημαίνει ότι τα διαπιστευτήρια ασφαλείας που παρουσιάστηκαν από το διακομιστή δεν πρέπει σε καμία περίπτωση να θεωρηθούν αξιόπιστα. Ενδέχεται να επικοινωνείτε με κάποιον εισβολέα.</translation>
@@ -1295,7 +1291,6 @@
 <translation id="5252000469029418751">C7 (Φάκελος)</translation>
 <translation id="5254043433801397071">Βελτιστοποίηση περιεχομένου εκτύπωσης</translation>
 <translation id="5254958791078852567">E1</translation>
-<translation id="5261548214279761072">Η πληρωμή ολοκληρώθηκε</translation>
 <translation id="5265446478903775694">Διαχείριση του απορρήτου μου στο Google</translation>
 <translation id="5266128565379329178">Βιβλιοδεσία στο επάνω μέρος</translation>
 <translation id="5269225904387178860">Τετραπλό τρύπημα στο κάτω μέρος</translation>
@@ -2049,7 +2044,6 @@
 <translation id="793209273132572360">Ενημέρωση διεύθυνσης;</translation>
 <translation id="7932579305932748336">Επικάλυψη</translation>
 <translation id="79338296614623784">Εισαγάγετε έναν έγκυρο αριθμό τηλεφώνου</translation>
-<translation id="7934052535022478634">Η πληρωμή ολοκληρώθηκε</translation>
 <translation id="7934414805353235750">Το <ph name="URL" /> θέλει να κάνει αναπαραγωγή προστατευόμενου περιεχομένου. η ταυτότητα της συσκευής σας θα επικυρωθεί από την Google.</translation>
 <translation id="7935031712718413217">Πιθανή πλαστογράφηση URL</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>

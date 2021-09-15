@@ -34,6 +34,7 @@
 <translation id="2343156876103232566">Чтобы отправить номер на телефон Android, войдите в Chromium на обоих устройствах.</translation>
 <translation id="2347108572062610441">Расширение изменило стартовую страницу Chromium.</translation>
 <translation id="2396765026452590966">Расширение "<ph name="EXTENSION_NAME" />" изменило стартовую страницу Chromium.</translation>
+<translation id="2401032172288869980">Браузер Chromium запрашивает доступ к камере и микрофону для этого сайта.</translation>
 <translation id="2483889755041906834">В Chromium</translation>
 <translation id="2485422356828889247">Удалить</translation>
 <translation id="2535480412977113886">Не удалось выполнить синхронизацию, так как учетные данные устарели.</translation>
@@ -149,6 +150,7 @@
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5854740544000584380">Chromium OS, как и <ph name="BEGIN_LINK_LINUX_OSS" />среда разработки Linux<ph name="END_LINK_LINUX_OSS" />, работает благодаря дополнительному <ph name="BEGIN_LINK_CROS_OSS" />программному обеспечению с открытым исходным кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="5862307444128926510">Добро пожаловать в Chromium</translation>
+<translation id="5883558403894052917">Браузер Chromium обнаружил, что эти объекты содержат вредоносное ПО:</translation>
 <translation id="5895138241574237353">Перезапустить</translation>
 <translation id="5903106910045431592">"<ph name="PAGE_TITLE" />" – вход в сеть</translation>
 <translation id="5987687638152509985">Чтобы начать синхронизацию, обновите Chromium</translation>
@@ -166,6 +168,7 @@
 <translation id="6183079672144801177">Убедитесь, что вы вошли в Chromium на устройстве <ph name="TARGET_DEVICE_NAME" />, и попробуйте повторить отправку.</translation>
 <translation id="6212496753309875659">На этом компьютере установлена актуальная версия Chromium. Если программа не работает, удалите Chromium и повторите попытку.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium перезапускается}=1{Chromium перезапустится через 1 секунду}one{Chromium перезапустится через # секунду}few{Chromium перезапустится через # секунды}many{Chromium перезапустится через # секунд}other{Chromium перезапустится через # секунды}}</translation>
+<translation id="6241367896540709610">Для скачивания файлов браузеру Chromium требуется доступ к хранилищу.</translation>
 <translation id="6248213926982192922">Назначить Chromium браузером по умолчанию</translation>
 <translation id="6266342355635466082">Не удалось проверить наличие обновлений в Chromium. Проверьте подключение к Интернету.</translation>
 <translation id="6268381023930128611">Выйти из Chromium?</translation>
@@ -186,7 +189,9 @@
 <translation id="6570579332384693436">Для проверки правописания Chromium отправляет введенный вами текст в Google.</translation>
 <translation id="6598877126913850652">Открыть настройки уведомлений Chromium</translation>
 <translation id="6613594504749178791">Изменения вступят в силу при следующем входе в Chromium.</translation>
+<translation id="665732753414869868">Для создания 3D-карты места, в котором вы находитесь, браузеру Chromium требуется доступ к камере.</translation>
 <translation id="6676384891291319759">Доступ в Интернет</translation>
+<translation id="6709350901466051922">Браузер Chromium запрашивает доступ к микрофону для этого сайта.</translation>
 <translation id="6717134281241384636">Ваш профиль не может использоваться, поскольку он от более новой версии Chromium.
 
 Некоторые возможности могут быть недоступны. Укажите другой каталог профиля либо используйте более новую версию Chromium.</translation>
@@ -198,6 +203,7 @@
 <translation id="6847869444787758381">Chromium сообщит вам, если возникнет проблема с безопасностью ваших паролей.</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (скопирована в Chromium)</translation>
+<translation id="6873893289264747459">Браузер Chromium обнаружил, что расширение "<ph name="EXTENSION_NAME" />" содержит вредоносное ПО.</translation>
 <translation id="6893813176749746474">Chromium был обновлен, однако вы не использовали его в течение последних 30 дней.</translation>
 <translation id="691026815377248078">Чтобы продолжить подключение, предоставьте браузеру Chromium доступ к Bluetooth. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">Открыть ссылку в режиме инкогнито браузера Chromium</translation>
@@ -205,6 +211,7 @@
 <translation id="6990124437352146030">Для этого сайта Chromium запрашивает доступ к микрофону.</translation>
 <translation id="705851970750939768">Обновить Chromium</translation>
 <translation id="7067091210845072982">Если у изображения нет понятного описания, Chromium попытается его найти. Для создания описаний изображения отправляются в Google.</translation>
+<translation id="718435575166326686">Браузер Chromium запрашивает доступ к камере для этого сайта.</translation>
 <translation id="7196312274710523067">Не удалось запустить Chromium. Повторите попытку.</translation>
 <translation id="7197677400338048821">Не удается проверить пароли в Chromium. Повторите попытку через 24 часа.</translation>
 <translation id="7223968959479464213">Диспетчер задач – Chromium</translation>
@@ -225,10 +232,6 @@
 <translation id="7585853947355360626">Если нужного параметра нет на этой странице, откройте <ph name="LINK_BEGIN" />настройки Chromium OS<ph name="LINK_END" />.</translation>
 <translation id="761356813943268536">Chromium использует камеру и микрофон.</translation>
 <translation id="7617377681829253106">Chromium становится все лучше</translation>
-<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Перед началом установки убедитесь, что для всех данных созданы резервные копии. При установке Chromium OS все данные на жестком диске будут перезаписаны.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Компания Google не несет ответственности за потерю данных при установке ОС и не гарантирует, что Chromium OS будет работать на несертифицированных устройствах. Узнать, какие модели сертифицированы, можно на сайте [TBD].<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Подробнее об установке Chromium OS и удалении данных с устройства: [TBD URL].<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />Если все готово, нажмите "Установить Chromium OS" и следуйте инструкциям на экране. У вас будет возможность подтвердить установку перед тем, как она начнется.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium не является браузером по умолчанию.</translation>
 <translation id="7689606757190482937">Синхронизируйте данные Chromium на всех устройствах</translation>
 <translation id="7729447699958282447">Chromium не удалось синхронизировать данные, поскольку служба Sync недоступна для вашего домена.</translation>
@@ -243,6 +246,7 @@
 <translation id="7975919845073681630">Это дополнительная установка Chromium. Его нельзя сделать браузером по умолчанию.</translation>
 <translation id="8013436988911883588">Когда вы предоставите доступ Chromium, веб-сайты также смогут запрашивать у вас доступ.</translation>
 <translation id="8045118833343856403">Со следующими аккаунтами не выполнен вход ни в один профиль Chromium. Чтобы использовать аккаунт в другом профиле, сначала удалите этот профиль.</translation>
+<translation id="8105840573057009683">Браузер Chromium запрашивает доступ к данным о местоположении для этого сайта.</translation>
 <translation id="81770708095080097">Chromium заблокировал этот файл как опасный.</translation>
 <translation id="8248265253516264921">Если у изображения нет понятного описания, Chromium попытается его найти. Для создания описаний изображения отправляются в Google. Эту функцию можно отключить в настройках в любое время.</translation>
 <translation id="8266560134891435528">Не удается запустить проверку паролей в Chromium, поскольку вы не вошли в аккаунт.</translation>

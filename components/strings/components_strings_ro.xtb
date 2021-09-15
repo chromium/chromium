@@ -252,7 +252,6 @@
 <translation id="1736420071277903564">Computer</translation>
 <translation id="1740951997222943430">Introdu o lună de expirare validă</translation>
 <translation id="1741613555002899862">Trebuie specificată și trebuie să fie un șir valid când DnsOverHttpsMode este <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
-<translation id="1743570585616704562">Nu este recunoscută</translation>
 <translation id="1745880797583122200">Browserul tău este gestionat</translation>
 <translation id="1746113442205726301">Deplasarea poziției Y a imaginii</translation>
 <translation id="17513872634828108">File deschise</translation>
@@ -531,7 +530,6 @@
 <translation id="2713444072780614174">Alb</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a gestiona informațiile despre plăți și carduri de credit în setările Chrome</translation>
 <translation id="2721148159707890343">Solicitarea a reușit</translation>
-<translation id="272451190272506600">Atinge senzorul pentru a plăti</translation>
 <translation id="2728127805433021124">Certificatul serverului este semnat utilizând un algoritm de semnătură slab.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />să rulezi Diagnostice conectivitate<ph name="END_LINK" />;</translation>
 <translation id="2738330467931008676">Alege adresa de preluare</translation>
@@ -642,7 +640,6 @@
       să folosești un server proxy:
       <ph name="PLATFORM_TEXT" /></translation>
 <translation id="317878711435188021">să afle când folosești activ dispozitivul</translation>
-<translation id="3188393374551744535">Soldul contului</translation>
 <translation id="3194737229810486521"><ph name="URL" /> dorește să stocheze permanent date pe dispozitiv</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> pe <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Poate solicita permisiunea de a afla când folosești activ dispozitivul</translation>
@@ -1027,7 +1024,6 @@
 <translation id="4363178190432472170">Găsește-mi telefonul</translation>
 <translation id="4367563149485757821">Number-12 (Plic)</translation>
 <translation id="437040971055499437">Are loc un eveniment de securitate</translation>
-<translation id="437058704415269440">Soldul contului</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Se aștepta valoarea <ph name="VALUE_TYPE" />.</translation>
 <translation id="4377125064752653719">Ați încercat să accesați <ph name="DOMAIN" />, dar certificatul furnizat de server a fost revocat de emitentul său. Aceasta înseamnă că acreditările de securitate furnizate de server nu sunt deloc de încredere. Este posibil să comunicați cu un atacator.</translation>
@@ -1166,6 +1162,7 @@
           <ph name="LIST_ITEM" />angajatorii sau școlile pot să urmărească activitatea de navigare;<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />furnizorii de servicii de internet pot monitoriza traficul pe web.<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="483241715238664915">Activează avertizările</translation>
 <translation id="4838327282952368871">Visare</translation>
 <translation id="4840250757394056958">Vezi istoricul Chrome</translation>
 <translation id="484462545196658690">Automat</translation>
@@ -1292,7 +1289,6 @@
 <translation id="5252000469029418751">C7 (Plic)</translation>
 <translation id="5254043433801397071">Optimizează conținutul printării</translation>
 <translation id="5254958791078852567">E1</translation>
-<translation id="5261548214279761072">Plată efectuată</translation>
 <translation id="5265446478903775694">Gestionează confidențialitatea pe Google</translation>
 <translation id="5266128565379329178">Legare în partea de sus</translation>
 <translation id="5269225904387178860">Perforare cvadruplă în partea de jos</translation>
@@ -1794,6 +1790,7 @@
 <translation id="7086090958708083563">Utilizatorul a solicitat încărcarea</translation>
 <translation id="7087282848513945231">Comitat</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a gestiona permisiunile și datele stocate pe toate site-urile din setările Chrome</translation>
+<translation id="7096937462164235847">Identitatea site-ului nu este confirmată.</translation>
 <translation id="7108338896283013870">Ascunde</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> dorește să utilizeze camera foto</translation>
 <translation id="7108819624672055576">Permisă de o extensie</translation>
@@ -2045,7 +2042,6 @@ Detalii suplimentare:
 <translation id="793209273132572360">Actualizezi adresa?</translation>
 <translation id="7932579305932748336">Acoperire</translation>
 <translation id="79338296614623784">Introdu un număr de telefon valid</translation>
-<translation id="7934052535022478634">Plată efectuată</translation>
 <translation id="7934414805353235750"><ph name="URL" /> vrea să redea conținut protejat. Google va verifica identitatea dispozitivului tău.</translation>
 <translation id="7935031712718413217">Posibilă adresă URL care falsifică adresa expeditorului</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
@@ -2371,6 +2367,7 @@ Detalii suplimentare:
 <translation id="9065203028668620118">Editează</translation>
 <translation id="9065745800631924235">Căutare <ph name="TEXT" /> în istoric</translation>
 <translation id="9069693763241529744">Blocată de o extensie</translation>
+<translation id="9073799351042754113">Ai ales să dezactivezi avertismentele de securitate pentru acest site.</translation>
 <translation id="9078964945751709336">Sunt necesare mai multe informații</translation>
 <translation id="9080712759204168376">Rezumatul comenzii</translation>
 <translation id="9089260154716455634">Politica privind intervalele de inactivitate:</translation>

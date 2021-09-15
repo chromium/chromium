@@ -253,7 +253,6 @@
 <translation id="1736420071277903564">कंप्यूटर</translation>
 <translation id="1740951997222943430">खत्म होने का मान्य महीना डालें</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> होने पर, नीति तय हाेनी चाहिए. साथ ही, इसकी एक मान्य स्ट्रिंग भी होनी चाहिए.</translation>
-<translation id="1743570585616704562">उंगली की पहचान नहीं हो सकी</translation>
 <translation id="1745880797583122200">आपका ब्राउज़र प्रबंधित है</translation>
 <translation id="1746113442205726301">इमेज Y शिफ़्ट</translation>
 <translation id="17513872634828108">टैब खोलें</translation>
@@ -532,7 +531,6 @@
 <translation id="2713444072780614174">सफ़ेद</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग में पैसे चुकाने से जुड़ी जानकारी और क्रेडिट कार्ड की जानकारी प्रबंधित करने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="2721148159707890343">अनुरोध कामयाब रहा</translation>
-<translation id="272451190272506600">पैसे चुकाने के लिए सेंसर को छूएं</translation>
 <translation id="2728127805433021124">सर्वर का प्रमाणपत्र कमज़ोर एल्गोरिद्म का उपयोग करके हस्ताक्षरित किया गया है.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />नेटवर्क कनेक्टिविटी चलाकर देखें<ph name="END_LINK" /></translation>
 <translation id="2738330467931008676">पिकअप का पता चुनें</translation>
@@ -642,7 +640,6 @@
       अपनी प्रॉक्सी सेटिंग जांचें या अपने नेटवर्क एडमिन से संपर्क करें. अगर आपको नहीं लगता       कि आपको किसी प्रॉक्सी सर्वर का उपयोग करना चाहिए:
       <ph name="PLATFORM_TEXT" /></translation>
 <translation id="317878711435188021">जानना चाहती है कि आप इस डिवाइस का इस्तेमाल कब करते हैं</translation>
-<translation id="3188393374551744535">खाते में बाकी बैलेंस</translation>
 <translation id="3194737229810486521"><ph name="URL" /> आपके डिवाइस पर हमेशा के लिए डेटा संग्रहीत करना चाहता है</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> पर <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">साइट, यह जानकारी मांग सकती है कि आप इस डिवाइस का इस्तेमाल कब करते हैं</translation>
@@ -1027,7 +1024,6 @@
 <translation id="4363178190432472170">मेरा फ़ोन ढूंढें</translation>
 <translation id="4367563149485757821">संख्या-12 (एन्वेलप)</translation>
 <translation id="437040971055499437">सुरक्षा से जुड़ी गतिविधि होती है</translation>
-<translation id="437058704415269440">खाते में बाकी बैलेंस</translation>
 <translation id="4372516964750095882">फ़ैनफ़ोल्ड-यूएस</translation>
 <translation id="4372948949327679948">अपेक्षित <ph name="VALUE_TYPE" /> मान.</translation>
 <translation id="4377125064752653719">आपने <ph name="DOMAIN" /> तक पहुंचने की कोशिश की, लेकिन सर्वर से मिले प्रमाणपत्र को उसके जारीकर्ता ने रद्द कर दिया है. इसका मतलब है कि सर्वर से मिली सुरक्षा प्रमाणिकता पर पूरी तरह भरोसा नहीं करना चाहिए. हो सकता है कि आप किसी हमलावर से बातचीत कर रहे हों.</translation>
@@ -1166,6 +1162,7 @@
           <ph name="LIST_ITEM" />नौकरी देने वाली कंपनियां या स्कूल, ब्राउज़िंग गतिविधि को ट्रैक कर सकते हैं<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />इंटरनेट सेवा देने वाली कंपनियां, वेब ट्रैफ़िक की निगरानी कर सकती हैं<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="483241715238664915">सुरक्षा चेतावनियां चालू करें</translation>
 <translation id="4838327282952368871">ख्वाब जैसा</translation>
 <translation id="4840250757394056958">अपना 'Chrome इतिहास' देखें</translation>
 <translation id="484462545196658690">ऑटो</translation>
@@ -1292,7 +1289,6 @@
 <translation id="5252000469029418751">सी7 (एन्वेलप)</translation>
 <translation id="5254043433801397071">प्रिंट सामग्री को ऑप्टिमाइज़ करें</translation>
 <translation id="5254958791078852567">ई1</translation>
-<translation id="5261548214279761072">भुगतान पूरा हुआ</translation>
 <translation id="5265446478903775694">Google पर अपनी निजता मैनेज करें</translation>
 <translation id="5266128565379329178">सबसे ऊपर बाइंड</translation>
 <translation id="5269225904387178860">नीचे की ओर क्वाड पंच</translation>
@@ -1794,6 +1790,7 @@
 <translation id="7086090958708083563">उपयोगकर्ता ने अपलोड का अनुरोध किया</translation>
 <translation id="7087282848513945231">काउंटी</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग में अलग-अलग साइटों पर सेव डेटा और अनुमतियां मैनेज करने के लिए, पहले Tab और फिर Enter दबाएं</translation>
+<translation id="7096937462164235847">इस वेबसाइट की पहचान की पुष्टि नहीं हुई है.</translation>
 <translation id="7108338896283013870">छुपाएं</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> आपके कैमरे का उपयोग करना चाहता है</translation>
 <translation id="7108819624672055576">किसी एक्सटेंशन ने अनुमति दी है</translation>
@@ -2045,7 +2042,6 @@
 <translation id="793209273132572360">क्या आप पता अपडेट करना चाहते हैं?</translation>
 <translation id="7932579305932748336">कोट</translation>
 <translation id="79338296614623784">मान्य फ़ोन नंबर डालें</translation>
-<translation id="7934052535022478634">पैसे भेज दिए गए</translation>
 <translation id="7934414805353235750"><ph name="URL" /> सुरक्षित सामग्री चलाना चाहता है. Google आपके डिवाइस की पहचान की पुष्टि करेगा.</translation>
 <translation id="7935031712718413217">झूठे नाम से भेजा गया यूआरएल हो सकता है</translation>
 <translation id="7935318582918952113">DOM डिस्टिलर</translation>
@@ -2371,6 +2367,7 @@
 <translation id="9065203028668620118">बदलाव करें</translation>
 <translation id="9065745800631924235"><ph name="TEXT" /> इतिहास में खोजें</translation>
 <translation id="9069693763241529744">किसी एक्सटेंशन से अवरोधित है</translation>
+<translation id="9073799351042754113">आपने इस साइट के लिए, सुरक्षा चेतावनियां बंद करने का विकल्प चुना है.</translation>
 <translation id="9078964945751709336">ज़्यादा जानकारी की आवश्यकता है</translation>
 <translation id="9080712759204168376">ऑर्डर की जानकारी</translation>
 <translation id="9089260154716455634">बंद रहने के समय के लिए नीति:</translation>

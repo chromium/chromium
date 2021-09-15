@@ -240,10 +240,6 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
       Chromium OS 설정<ph name="LINK_END" />을 확인해 보세요.</translation>
 <translation id="761356813943268536">Chromium이 카메라와 마이크를 사용 중입니다.</translation>
 <translation id="7617377681829253106">더욱 업그레이드된 Chromium</translation>
-<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />시작하기 전에 최신 상태의 데이터를 백업했는지 확인하세요. Chromium OS를 설치하면 하드 드라이브에 있는 모든 데이터를 덮어쓰게 됩니다.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google은 데이터 손실에 대한 책임을 지지 않으며, Chromium OS가 인증되지 않은 모델에서 작동할 것이라고 보장하지 않습니다. 인증된 모델에 관해 자세히 알아보려면 [TBD] 페이지로 이동하세요.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Chromium OS 설치 및 데이터 삭제에 관해 자세히 알아보세요. [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />진행할 준비가 되었다면 'Chromium OS 설치'를 클릭하세요. 몇 가지 간단한 단계로 구성된 설치 과정을 안내해 드리겠습니다. 컴퓨터가 변경되기 전에 한 번 더 확인할 기회가 제공됩니다.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium이 기본 브라우저로 설정되어 있지 않습니다</translation>
 <translation id="7689606757190482937">모든 기기에서 Chromium을 동기화하고 맞춤설정하세요.</translation>
 <translation id="7729447699958282447">도메인에서 동기화를 사용할 수 없어 Chromium에서 데이터를 동기화하지 못했습니다.</translation>

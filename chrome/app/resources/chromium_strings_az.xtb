@@ -235,10 +235,6 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
       Chromium OS ayarlarına<ph name="LINK_END" /> baxın</translation>
 <translation id="761356813943268536">Chromium kameranızı və mikrofonunuzu işlədir.</translation>
 <translation id="7617377681829253106">Chromium daha da keyfiyyətli oldu</translation>
-<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />İşə başlamazdan əvvəl, datanızın güncəl yedəyinin olduğuna əmin olun. Chromium OS'i quraşdırdıqda sərt diskinizdəki bütün data əvəzlənəcəkdir.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google, hər hansı bir data itkisinə görə məsuliyyət daşımır və Chromium OS'in sertifikatsız modellərdə işləyəcəyinə zəmanət vermir. Sertifikatlı modellər haqqında ətraflı məlumat üçün [TBD] bölməsini ziyarət edin.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Chromium OS'in quraşdırılması və datanın silinməsi haqqında ətraflı məlumat: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />Davam etməyə hazırsınızsa, “Chromium OS'i quraşdırın” seçiminə toxunun və quraşdırma zamanı sizi bir neçə asan addımla yönləndirəcəyik. Kompüterinizdə hər hansı bir dəyişiklik etmədən əvvəl təsdiqləmək üçün əlavə bir şansınız olacaq.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium defolt brauzeriniz deyil</translation>
 <translation id="7689606757190482937">Chromium'u cihazlarda sinxronizasiya edin və fərdiləşdirin</translation>
 <translation id="7729447699958282447">Chomium datanızı sinxronizasiya edə bilmədi, çünki sinxronizasiya domeniniz üçün əlçatan deyil.</translation>

@@ -236,10 +236,6 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
       Chromium brauzeri sozlamalarini<ph name="LINK_END" /> tekshiring.</translation>
 <translation id="761356813943268536">Chromium kamera va mikrofoningizdan foydalanmoqda.</translation>
 <translation id="7617377681829253106">Chromium ancha yaxshilanmoqda</translation>
-<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Boshlashdan avval barcha maʼlumotlaringiz zaxiralanganini tekshiring. Chromium OS oʻrnatilganda diskdagi barcha maʼlumotlaringiz tozalanadi va ustidan tizim fayllari yoziladi.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google har qanday axborot yoʻqotishlar uchun javobgar emas va Chromium OS tekshirilmagan modellarda ishlashiga kafolat bermaydi. Ishonchli modellar roʻyxati bilan [TBD] saytida tanishish mumkin.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Chrome OS oʻrnatilishi va axborotlar tozalanishi haqida batafsil: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />Davom etishga tayyor boʻlsangiz ”Chromium OS tizimini oʻrnatish” tugmasini bosing va keyingi qadamlar bilan tanishing. Kompyuterga oʻzgartirishlar kiritilishidan avval tasdiqlash uchun yana bir imkoningiz bor.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium standart brauzer sifatida tayinlanmagan</translation>
 <translation id="7689606757190482937">Chromiumni barcha qurilmalaringizda sinxronlang va o‘zingizga moslab oling</translation>
 <translation id="7729447699958282447">Chromium domeningizda Sync xizmati yo‘qligi sababli ma’lumotlaringizni sinxronlay olmadi.</translation>

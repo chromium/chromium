@@ -170,6 +170,7 @@
 Рұқсат беру үшін төмендегі "<ph name="BUTTON_NAME" />" түймесін басыңыз. "Арнайы мүмкіндіктер" параметрлері панелін ашыңыз және "<ph name="SERVICE_SCRIPT_NAME" />" ұяшығын белгілеңіз.
 
 "<ph name="SERVICE_SCRIPT_NAME" />" ұяшығы белгіленіп тұрса, белгісін алып, қайта белгілеңіз.</translation>
+<translation id="8305209735512572429">Желі аутентификациясын қашықтан басқару процесі</translation>
 <translation id="8383794970363966105">Chromoting пайдалану үшін құрылғыңызға Google аккаунтын қосуыңыз қажет.</translation>
 <translation id="8386846956409881180">Хост жарамсыз OAuth есептік деректерімен реттелген.</translation>
 <translation id="8397385476380433240"><ph name="PRODUCT_NAME" /> қызметіне рұқсат беру</translation>

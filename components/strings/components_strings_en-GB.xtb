@@ -252,7 +252,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1736420071277903564">Computer</translation>
 <translation id="1740951997222943430">Enter a valid expiry month</translation>
 <translation id="1741613555002899862">Must be specified and a valid string when DnsOverHttpsMode is <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
-<translation id="1743570585616704562">Not recognised</translation>
 <translation id="1745880797583122200">Your browser is managed</translation>
 <translation id="1746113442205726301">Image Y shift</translation>
 <translation id="17513872634828108">Open tabs</translation>
@@ -530,7 +529,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2713444072780614174">White</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, press tab, then enter to manage your payments and credit card info in Chrome settings</translation>
 <translation id="2721148159707890343">Request succeeded</translation>
-<translation id="272451190272506600">Touch sensor to pay</translation>
 <translation id="2728127805433021124">Server's certificate is signed using a weak signature algorithm.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Running Connectivity Diagnostics<ph name="END_LINK" /></translation>
 <translation id="2738330467931008676">Choose pickup address</translation>
@@ -641,7 +639,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
       be using a proxy server:
       <ph name="PLATFORM_TEXT" /></translation>
 <translation id="317878711435188021">Know when you're actively using this device</translation>
-<translation id="3188393374551744535">Account balance</translation>
 <translation id="3194737229810486521"><ph name="URL" /> wants to permanently store data on your device</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> on <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Can ask to know when you're actively using this device</translation>
@@ -1026,7 +1023,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4363178190432472170">Find my phone</translation>
 <translation id="4367563149485757821">Number-12 (Envelope)</translation>
 <translation id="437040971055499437">Security event occurs</translation>
-<translation id="437058704415269440">Account balance</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">Expected <ph name="VALUE_TYPE" /> value.</translation>
 <translation id="4377125064752653719">You attempted to reach <ph name="DOMAIN" />, but the certificate that the server presented has been revoked by its issuer. This means that the security credentials the server presented absolutely should not be trusted. You may be communicating with an attacker.</translation>
@@ -1165,6 +1161,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
           <ph name="LIST_ITEM" />Employers or schools can track browsing activity<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Internet service providers may monitor web traffic<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="483241715238664915">Turn on warnings</translation>
 <translation id="4838327282952368871">Dreamy</translation>
 <translation id="4840250757394056958">View your Chrome history</translation>
 <translation id="484462545196658690">Auto</translation>
@@ -1291,7 +1288,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5252000469029418751">C7 (Envelope)</translation>
 <translation id="5254043433801397071">Optimise print content</translation>
 <translation id="5254958791078852567">E1</translation>
-<translation id="5261548214279761072">Payment complete</translation>
 <translation id="5265446478903775694">Manage my privacy on Google</translation>
 <translation id="5266128565379329178">Bind top</translation>
 <translation id="5269225904387178860">Quad punch bottom</translation>
@@ -1793,6 +1789,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="7086090958708083563">Upload requested by user</translation>
 <translation id="7087282848513945231">County</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, press Tab then Enter to manage permissions and data stored across sites in Chrome settings</translation>
+<translation id="7096937462164235847">The identity of this website hasn't been verified.</translation>
 <translation id="7108338896283013870">Hide</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> wants to use your camera</translation>
 <translation id="7108819624672055576">Allowed by an extension</translation>
@@ -2044,7 +2041,6 @@ Additional details:
 <translation id="793209273132572360">Update address?</translation>
 <translation id="7932579305932748336">Coat</translation>
 <translation id="79338296614623784">Enter a valid phone number</translation>
-<translation id="7934052535022478634">Payment complete</translation>
 <translation id="7934414805353235750"><ph name="URL" /> wants to play protected content. Your device’s identity will be verified by Google.</translation>
 <translation id="7935031712718413217">Possible spoofing URL</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
@@ -2369,6 +2365,7 @@ Additional details:
 <translation id="9065203028668620118">Edit</translation>
 <translation id="9065745800631924235"><ph name="TEXT" /> search from history</translation>
 <translation id="9069693763241529744">Blocked by an extension</translation>
+<translation id="9073799351042754113">You have chosen to turn off security warnings for this site.</translation>
 <translation id="9078964945751709336">More information required</translation>
 <translation id="9080712759204168376">Order Summary</translation>
 <translation id="9089260154716455634">Off-hours policy:</translation>

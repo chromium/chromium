@@ -235,10 +235,6 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
       Chromium OS ayarlarınıza<ph name="LINK_END" /> bakın</translation>
 <translation id="761356813943268536">Chromium kameranızı ve mikrofonunuzu kullanıyor.</translation>
 <translation id="7617377681829253106">Chromium daha da iyi bir hale geldi</translation>
-<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Lütfen başlamadan önce verilerinizin güncel bir yedeğinin bulunduğundan emin olun. Chromium OS yüklenirken sabit diskinizdeki tüm verilerin üzerine yazılacak.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google, hiçbir veri kaybından sorumlu değildir ve Chromium OS'in sertifikasız cihazlarda çalışmasını garanti etmez. Sertifikalı modeller hakkında daha fazla bilgi almak için lütfen [TBD] adresini ziyaret edin.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Chromium OS'i yükleme ve verilerin silinmesi hakkında daha fazla bilgi edinin: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />Hazırsanız devam etmek için "Chromium OS'i yükle"yi tıklayın. Birkaç kolay adımla yüklemeyi tamamlamanız için size yol göstereceğiz. Bilgisayarınızda herhangi bir değişiklik yapmamızdan önce onay vermek için bir şansınız daha olacak.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium varsayılan tarayıcınız değil</translation>
 <translation id="7689606757190482937">Chromium'u cihazlarınız arasında senkronize edin ve kişiselleştirin</translation>
 <translation id="7729447699958282447">Senkronizasyon alan adınızda kullanılamadığından Chromium, verilerinizi senkronize edemedi.</translation>

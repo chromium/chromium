@@ -252,7 +252,6 @@
 <translation id="1736420071277903564">कम्प्युटर</translation>
 <translation id="1740951997222943430">म्याद सकिने मान्य महिना प्रविष्टि गर्नुहोस्</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> हुँदा नीति अनिवार्य रूपमा तोकिएको हुनका साथै उक्त नीति एउटा मान्य स्ट्रिङ हुनु पर्छ।</translation>
-<translation id="1743570585616704562">पहिचान भएन</translation>
 <translation id="1745880797583122200">तपाईंको ब्राउजर व्यवस्थित छ</translation>
 <translation id="1746113442205726301">छविको Y सिफ्ट</translation>
 <translation id="17513872634828108">खुला ट्याबहरू</translation>
@@ -531,7 +530,6 @@
 <translation id="2713444072780614174">सेतो</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome का सेटिङमा गई आफ्ना भुक्तानी तथा क्रेडिट कार्डसम्बन्धी जानकारी व्यवस्थित गर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="2721148159707890343">अनुरोध सफल भयो</translation>
-<translation id="272451190272506600">भुक्तानी गर्न सेन्सरमा छुनुहोस्</translation>
 <translation id="2728127805433021124">सर्भरको प्रमाणपत्र एक कमजोर हस्ताक्षर अल्गोरिदम प्रयोग गर्दै हस्ताक्षर गरिएको छ।</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />जडान सम्बन्धी निदान चलाएर हेर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="2738330467931008676">पिकअप गर्ने ठेगाना छनौट गर्नुहोस्</translation>
@@ -639,7 +637,6 @@
 <translation id="3174168572213147020">टापु</translation>
 <translation id="3176929007561373547">प्रोक्सी सर्भरले काम गरिरहेको निश्चित गर्न तपाईंको प्रोक्सी सेटिङहरू जाँच्नुहोस् वा तपाईंको नेटवर्क प्रशासकलाई सम्पर्क गर्नुहोस्। यदि तपाईंलाई तपाईंले प्रोक्सी सर्भर प्रयोग गर्नु पर्दछ भन्ने विश्वास छैन भने: <ph name="PLATFORM_TEXT" /></translation>
 <translation id="317878711435188021">तपाईं यो डिभाइस चलाउँदै हुनुहुन्छ कि हुनुहुन्छ भन्ने कुराको जानकारी</translation>
-<translation id="3188393374551744535">खाताको मौज्दात रकम</translation>
 <translation id="3194737229810486521"><ph name="URL" /> तपाईंको डिभाइसमा स्थायी रूपमा डेटा भण्डारण गर्न चाहन्छ</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> मा <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">तपाईं यो डिभाइस चलाउँदै हुनुहुन्छ कि हुनुहुन्न भन्ने कुराको जानकारी माग्न सक्छ</translation>
@@ -892,6 +889,7 @@
 <translation id="3990250421422698716">जग अफसेट</translation>
 <translation id="3996311196211510766">यो साइट <ph name="ORIGIN" /> ले यसलाई गरिने सबै अनुरोधहरूमा मूल नीति
     लागू गर्न अनुरोध गरेको छ। तर अहिले यो नीति लागू गर्न सकिँदैन।</translation>
+<translation id="4010758435855888356">भण्डारण प्रयोग गर्ने अनुमति दिने हो?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} पृष्ठ भएको PDF कागजात}other{{COUNT} पृष्ठहरू भएको PDF कागजात}}</translation>
 <translation id="4023431997072828269">असुरक्षित इन्टरनेट प्रयोग गरेर यो फारम पेस गरिँदै गरेका हुनाले अरूले तपाईंको जानकारी देख्न सक्ने छन्।</translation>
 <translation id="4030383055268325496">थप्ने कार्यलाई &amp;पूर्ववत गर्नुहोस्</translation>
@@ -1022,7 +1020,6 @@
 <translation id="4363178190432472170">मेरो फोन भेट्टाऊ</translation>
 <translation id="4367563149485757821">Number-12 (Envelope)</translation>
 <translation id="437040971055499437">सुरक्षासम्बन्धी घटना हुँदा</translation>
-<translation id="437058704415269440">खाताको मौज्दात रकम</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">अपेक्षित <ph name="VALUE_TYPE" /> मूल्य।</translation>
 <translation id="4377125064752653719">तपाइँले <ph name="DOMAIN" /> मा पुग्ने पर्यास गर्नुभयो, तर सर्भरले प्रस्तुत गरेको प्रमाणपत्र त्यसको जारीकर्ताद्वारा रिभोक गरिएको छ। यसको अर्थ सर्भरले प्रस्तुत गरेको सुरक्षा पत्यारपत्रहरू विश्वास गरिनुहुन्न। तपाइँ एक आक्रमणकर्ता सँग सञ्चार गरिरहनुभएको हुन सक्छ।</translation>
@@ -1287,7 +1284,6 @@
 <translation id="5252000469029418751">C7 (Envelope)</translation>
 <translation id="5254043433801397071">छाप्ने सामग्री अनुकूलन गर्नुहोस्</translation>
 <translation id="5254958791078852567">E1</translation>
-<translation id="5261548214279761072">भुक्तानी गर्ने कार्य पूरा भयो</translation>
 <translation id="5265446478903775694">Google मा गोपनीयतासम्बन्धी आफ्ना सेटिङ मिलाउनुहोस्</translation>
 <translation id="5266128565379329178">सिरानको बाइन्ड</translation>
 <translation id="5269225904387178860">फेदमा चार प्वाल</translation>
@@ -1726,6 +1722,7 @@
 <translation id="6884662655240309489">आकार १</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome ले यो पृष्ठ पढ्न अझ सजिलो बनाउन यसलाई सरलीकृत गर्‍यो। Chrome ले एउटा असुरक्षित इन्टरनेटमार्फत मूल पृष्ठ पुनः प्राप्त गर्‍यो।</translation>
+<translation id="6890443033788248019">लोकेसन प्रयोग गर्ने अनुमति दिने हो?</translation>
 <translation id="6891596781022320156">नीति तह समर्थित छैन।</translation>
 <translation id="6895143722905299846">भर्चुअल कार्ड नम्बर:</translation>
 <translation id="6895330447102777224">तपाईंको कार्डको पुष्टि भयो</translation>
@@ -1997,6 +1994,7 @@
 <translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">फायरवाल वा एन्टिभाइरस सफ्टवेयरले जडानमाथि रोक लगाएको हुनसक्छ।</translation>
 <translation id="776110834126722255">चल्तीबाट हटाइएको</translation>
+<translation id="7761159795823346334">क्यामेरा प्रयोग गर्ने अनुमति दिने हो?</translation>
 <translation id="7761701407923456692">सर्भर प्रमाणपत्रहरू युआरएलसँग मिल्दैन।</translation>
 <translation id="7763386264682878361">भुक्तानी म्यानिफेस्ट पार्सर</translation>
 <translation id="7764225426217299476">ठेगाना थप्नुहोस्</translation>
@@ -2038,7 +2036,6 @@
 <translation id="793209273132572360">ठेगाना बदल्ने हो?</translation>
 <translation id="7932579305932748336">कोट</translation>
 <translation id="79338296614623784">मान्य फोन नम्बर प्रविष्टि गर्नुहोस्</translation>
-<translation id="7934052535022478634">भुक्तानी गर्ने कार्य पूरा भयो</translation>
 <translation id="7934414805353235750"><ph name="URL" /> संरक्षित गरिएको सामग्री प्ले गर्न चाहन्छ। Google ले तपाईंको डिभाइसको पहिचान प्रमाणित गर्ने छ।</translation>
 <translation id="7935031712718413217">सम्भावित स्पुफिङ URL</translation>
 <translation id="7935318582918952113">DOM डिस्टिलर</translation>
@@ -2224,6 +2221,7 @@
 <translation id="8522552481199248698">Chrome ले तपाईंलाई आफ्नो Google खाता सुरक्षित गर्न र आफ्नो पासवर्ड बदल्न मद्दत गर्न सक्छ।</translation>
 <translation id="8530813470445476232">Chrome का सेटिङमा गई आफ्नो ब्राउजिङ इतिहास, कुकी, क्यास र अन्य डेटा मेटाउनुहोस्</translation>
 <translation id="8533619373899488139">ब्लक गरिएका URL र तपाईंको प्रणालीका एड्मिनले लागू गर्नुभएका अन्य नीतिहरूको सूची हेर्न &lt;strong&gt;chrome://policy&lt;/strong&gt; मा जानुहोस्।</translation>
+<translation id="8539500321752640291">२ वटै अनुमति दिने हो?</translation>
 <translation id="8541158209346794904">ब्लुटुथ यन्त्र</translation>
 <translation id="8542014550340843547">फेदमा तीन स्टिच</translation>
 <translation id="8543181531796978784">तपाईं <ph name="BEGIN_ERROR_LINK" />एक पत्ता लगाउने समस्या रिपोर्ट गर्न<ph name="END_ERROR_LINK" /> सक्नुहुन्छ, यदि तपाईं आफ्नो सुरक्षाको जोखिम बुझ्नुहुन्छ भने, <ph name="BEGIN_LINK" />असुरक्षित साइटको भ्रमण गर्नुहोस्<ph name="END_LINK" />।</translation>
@@ -2350,6 +2348,7 @@
 <translation id="9025348182339809926">(अमान्य)</translation>
 <translation id="9030265603405983977">श्यामश्वेत</translation>
 <translation id="9035022520814077154">सुरक्षा त्रुटी</translation>
+<translation id="9036306139374661733">माइक्रोफोन प्रयोग गर्ने अनुमति दिने हो?</translation>
 <translation id="9038649477754266430">पृष्ठहरूलाई अझ छिटो लोड गर्नका लागि पूर्वानुमान सेवा प्रयोग गर्नुहोस्</translation>
 <translation id="9039213469156557790">यसबाहेक, यस पृष्ठले सुरक्षित नभएका अन्य संसाधनहरू समावेश गर्छ। यी स्रोतहरू ट्रान्जिटमा भएको बेला अन्यले हेर्न सक्छन्, र पृष्ठको व्यवहार परिवर्तन गर्न कुनै आक्रमणकारीद्वारा परिमार्जन गर्न सकिन्छ।</translation>
 <translation id="9044359186343685026">Touch ID प्रयोग गर्नुहोस्</translation>

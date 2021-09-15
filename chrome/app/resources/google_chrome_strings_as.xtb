@@ -39,7 +39,6 @@
 <translation id="174539241580958092">ছাইন ইন কৰোঁতে কিবা আসোঁৱাহ হোৱাৰ কাৰণে Chromeএ আপোনাৰ ডেটা ছিংক কৰিব নোৱাৰিলে।</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">আপোনাৰ <ph name="TARGET_DEVICE_NAME" />ত Chromeত আপুনি ছাইন ইন হৈ থকাটো নিশ্চিত কৰক আৰু তাৰ পাছত পুনৰ পঠিয়াবলৈ চেষ্টা কৰক।</translation>
-<translation id="1810203443153428607">Chrome OS ইনষ্টল কৰাটোৱে আপোনাৰ ডিভাইচটোত থকা আটাইবোৰ ডেটা অভাৰৰাইট কৰিব।</translation>
 <translation id="1812689907177901597">আপুনি এইটো অফ কৰি বিভিন্ন Google ছাইট যেনে Gmailত Chromeত ছাইন ইন নকৰাকৈ ছাইন ইন কৰিব পাৰে</translation>
 <translation id="1860536484129686729">এই ছাইটটোৰ বাবে Chromeক আপোনাৰ কেমেৰা এক্সেছ কৰাৰ অনুমতিৰ প্ৰয়োজন</translation>
 <translation id="1873233029667955273">Google Chrome আপোনাৰ ডিফ'ল্ট ব্ৰাউজাৰ নহয়</translation>
@@ -179,10 +178,6 @@
 <translation id="5430073640787465221">আপোনাৰ পচন্দৰ ফাইলটো ব্যৱহাৰযোগ্য নহয় বা অমান্য।
 
 Google Chromeএ আপোনাৰ ছেটিংসমূহ পুনৰুদ্ধাৰ কৰিবলৈ সক্ষম নহ'ল।</translation>
-<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />আমি আৰম্ভ কৰাৰ পূৰ্বে, অনুগ্ৰহ কৰি আপোনাৰ ডেটাৰ বাবে এটা আপ-টু-ডে’ট বেকআপ থকাটো নিশ্চিত কৰক। Chrome OS ইনষ্টল কৰাটোৱে আপোনাৰ হাৰ্ড ড্ৰাইভত থকা আটাইবোৰ ডেটা অভাৰৰাইট কৰিব।<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />কোনো ডেটা হেৰুওৱা ঘটনাৰ বাবে Google দায়বদ্ধ নহয় আৰু Chrome OSএ প্ৰমাণপত্ৰ নথকা মডেলত কাম কৰিব বুলি কোনো নিশ্চিতি প্ৰদান নকৰে। প্ৰমাণপত্ৰ থকা মডেলৰ বিষয়ে অধিক জানিবলৈ অনুগ্ৰহ কৰি [TBD] চাওক।<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Chrome OS ইনষ্টল কৰা আৰু ডেটা মচাৰ বিষয়ে অধিক জানক: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />যদি আপুনি আগবাঢ়িবলৈ সাজু, “Chrome OS ইনষ্টল কৰক”ত ক্লিক কৰক আৰু কেইটামান সহজ পদক্ষেপৰ জৰিয়তে ইনষ্টল কৰাৰ সমগ্ৰ প্ৰক্ৰিয়াটোত আমি আপোনাক নিৰ্দেশনা দিম। আমি আপোনাৰ কম্পিউটাৰটোত যিকোনো সালসলনি কৰাৰ পূৰ্বে নিশ্চিত কৰিবলৈ আপোনাৰ ওচৰত অন্য এটা সুযোগ থাকিব।<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">Chrome OS ইনষ্টল কৰক</translation>
 <translation id="556024056938947818">Google Chromeএ পাছৱর্ডসমূহ দেখুৱাবলৈ চেষ্টা কৰি আছে।</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>

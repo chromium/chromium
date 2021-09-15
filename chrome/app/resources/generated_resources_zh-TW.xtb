@@ -1057,7 +1057,6 @@
 <translation id="2108349519800154983">{COUNT,plural, =1{電話號碼}other{# 組電話號碼}}</translation>
 <translation id="211144231511833662">取消勾選類型</translation>
 <translation id="2111670510994270194">在右側新增分頁</translation>
-<translation id="2111810003053064883">廣告客戶不必追蹤你的網站瀏覽記錄，就能瞭解自身的廣告成效。</translation>
 <translation id="2112554630428445878"><ph name="USERNAME" />，歡迎使用！</translation>
 <translation id="21133533946938348">固定分頁</translation>
 <translation id="2113479184312716848">開啟檔案(&amp;F)...</translation>
@@ -2139,7 +2138,6 @@
 <translation id="3238192140106069382">正在連線及驗證</translation>
 <translation id="3239373508713281971">已解除「<ph name="APP_NAME" />」的時間限制</translation>
 <translation id="3241680850019875542">請選取要封裝的擴充功能根目錄。如要更新擴充功能，請一併選取要重複使用的秘密金鑰。</translation>
-<translation id="3242905690080165035">Privacy Sandbox 仍在開發階段，目前開放地區有限。現在網站可以嘗試使用 Privacy Sandbox，也能繼續使用第三方 Cookie 等現有的網路技術。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="3244294424315804309">繼續維持靜音</translation>
 <translation id="3246107497225150582">{0,plural, =1{請在 1 天內更新裝置}other{請在 # 天內更新裝置}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - 網路錯誤</translation>
@@ -3349,7 +3347,6 @@
 <translation id="4541662893742891060">無法連線至這個設定檔。如需技術支援，請與你的電信業者聯絡。</translation>
 <translation id="4541706525461326392">正在移除設定檔。請稍候片刻。</translation>
 <translation id="4542520061254486227">讀取你在 <ph name="WEBSITE_1" /> 和 <ph name="WEBSITE_2" /> 上產生的資料</translation>
-<translation id="454331522350252598">廣告客戶只會知道有上千位使用者擁有類似興趣，也只能向鎖定演唱會的群眾一般，選擇某類群眾 (而非個人) 做為廣告投放對象。</translation>
 <translation id="4543778593405494224">憑證管理員</translation>
 <translation id="4544174279960331769">預設的藍色顯示圖片</translation>
 <translation id="4545028762441890696">如要重新啟用這個擴充功能，請接受新權限：</translation>
@@ -3400,7 +3397,6 @@
 <translation id="4582563038311694664">重設所有設定</translation>
 <translation id="4585793705637313973">編輯頁面</translation>
 <translation id="4586275095964870617">無法在替代瀏覽器中開啟 <ph name="URL" />。請與你的系統管理員聯絡。</translation>
-<translation id="4587645918878093912">現今許多網站都會依賴第三方 Cookie 等眾多技術來提供重要服務，例如顯示相關廣告及衡量網站成效。</translation>
 <translation id="4589713469967853491">記錄已成功寫入「下載」目錄。</translation>
 <translation id="4590324241397107707">資料庫儲存空間</translation>
 <translation id="4592891116925567110">觸控筆繪圖應用程式</translation>
@@ -4912,7 +4908,6 @@
 <translation id="6271348838875430303">已復原更正內容</translation>
 <translation id="6272643420381259437">下載外掛程式時發生錯誤 (<ph name="ERROR" />)</translation>
 <translation id="6273677812470008672">品質</translation>
-<translation id="6275846828483490454">Privacy Sandbox 是一項正在進行的開放網路保護計畫，可以防止有心人士透過追蹤機制取得你的資料。</translation>
 <translation id="6276210637549544171">Proxy <ph name="PROXY_SERVER" /> 要求你提供使用者名稱和密碼。</translation>
 <translation id="6277105963844135994">網路逾時</translation>
 <translation id="6277518330158259200">擷取螢幕畫面(&amp;A)</translation>
@@ -5609,7 +5604,6 @@
 <translation id="7018275672629230621">讀取及變更你的瀏覽記錄</translation>
 <translation id="7019805045859631636">快</translation>
 <translation id="7022562585984256452">首頁已設定完成。</translation>
-<translation id="7023206482239788111">Privacy Sandbox 可以在不干擾網站運作的前提下，讓網站以更好的方式提供這些服務，同時防止有心人士透過跨網站追蹤機制暗中取得你的資料，因此有利於開放網路的發展。</translation>
 <translation id="7025082428878635038">全新的手勢瀏覽功能正式登場</translation>
 <translation id="7025190659207909717">行動數據服務管理</translation>
 <translation id="7025895441903756761">安全性與隱私權</translation>
@@ -5785,7 +5779,6 @@
 <translation id="7235716375204803342">正在擷取活動...</translation>
 <translation id="7235737137505019098">安全金鑰的空間不足，無法建立帳戶。</translation>
 <translation id="7235873936132740888">網站可以在你點選特定類型的連結時處理特殊工作，例如在你的電子郵件用戶端建立新郵件，或在線上日曆中新增活動</translation>
-<translation id="7238640585329759787">在啟用狀態下，網站可能會使用這裡顯示的隱私保護技術提供內容和服務，包括對於跨網站追蹤的替代性措施。本服務可能會陸續新增更多試用功能。</translation>
 <translation id="7239108166256782787">「<ph name="DEVICE_NAME" />」已取消傳輸作業</translation>
 <translation id="7240339475467890413">確定要連線至新的無線基地台嗎？</translation>
 <translation id="7241389281993241388">登入 <ph name="TOKEN_NAME" /> 即可匯入用戶端憑證。</translation>
@@ -6791,7 +6784,6 @@
 <translation id="825238165904109940">一律顯示完整網址</translation>
 <translation id="8252569384384439529">上傳中...</translation>
 <translation id="8253198102038551905">按一下 [+] 即可查看網路屬性</translation>
-<translation id="8256127899838315610">是否要使用這個應用程式？</translation>
 <translation id="8256319818471787266">小黃</translation>
 <translation id="8257950718085972371">繼續封鎖存取攝影機</translation>
 <translation id="8259239505248583312">開始使用</translation>
