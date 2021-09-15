@@ -885,6 +885,7 @@ TEST_F(CollectUserDataActionTest, UserDataCompleteContact) {
 
   options.required_contact_data_pieces.push_back(
       MakeRequiredDataPiece(autofill::ServerFieldType::EMAIL_ADDRESS));
+  options.request_payer_email = true;
   EXPECT_FALSE(CollectUserDataAction::IsUserDataComplete(user_data, user_model_,
                                                          options));
 
@@ -898,6 +899,7 @@ TEST_F(CollectUserDataActionTest, UserDataCompleteContact) {
 
   options.required_contact_data_pieces.push_back(
       MakeRequiredDataPiece(autofill::ServerFieldType::NAME_FULL));
+  options.request_payer_name = true;
   EXPECT_FALSE(CollectUserDataAction::IsUserDataComplete(user_data, user_model_,
                                                          options));
 
@@ -910,6 +912,7 @@ TEST_F(CollectUserDataActionTest, UserDataCompleteContact) {
 
   options.required_contact_data_pieces.push_back(MakeRequiredDataPiece(
       autofill::ServerFieldType::PHONE_HOME_WHOLE_NUMBER));
+  options.request_payer_phone = true;
   EXPECT_FALSE(CollectUserDataAction::IsUserDataComplete(user_data, user_model_,
                                                          options));
 
@@ -1936,6 +1939,8 @@ TEST_F(CollectUserDataActionTest, AttachesCreditCardsWithAddress) {
   ActionProto action_proto;
   auto* user_data = action_proto.mutable_collect_user_data();
   user_data->set_request_terms_and_conditions(false);
+  user_data->set_request_payment_method(true);
+  user_data->set_billing_address_name("BILLING");
   user_data->add_supported_basic_card_networks("visa");
 
   EXPECT_CALL(
@@ -1971,20 +1976,17 @@ TEST_F(CollectUserDataActionTest, AttachesCreditCardsWithoutAddress) {
             EXPECT_EQ(user_data_.available_payment_instruments_[0]
                           ->billing_address.get(),
                       nullptr);
-
-            std::move(collect_user_data_options->confirm_callback)
-                .Run(&user_data_, &user_model_);
+            // Do not run callback, the data is not complete.
           }));
 
   ActionProto action_proto;
   auto* user_data = action_proto.mutable_collect_user_data();
+  user_data->set_request_payment_method(true);
+  user_data->set_billing_address_name("BILLING");
   user_data->set_request_terms_and_conditions(false);
   user_data->add_supported_basic_card_networks("visa");
 
   EXPECT_CALL(mock_personal_data_manager_, GetProfileByGUID(_)).Times(0);
-  EXPECT_CALL(
-      callback_,
-      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
   CollectUserDataAction action(&mock_action_delegate_, action_proto);
   action.ProcessAction(callback_.Get());
 }
@@ -2011,18 +2013,15 @@ TEST_F(CollectUserDataActionTest, AttachesCreditCardsForEmptyNetworksList) {
                 user_data_.available_payment_instruments_[0]->card->Compare(
                     card),
                 0);
-
-            std::move(collect_user_data_options->confirm_callback)
-                .Run(&user_data_, &user_model_);
+            // Don't run callback, the data is not complete.
           }));
 
   ActionProto action_proto;
   auto* user_data = action_proto.mutable_collect_user_data();
   user_data->set_request_terms_and_conditions(false);
+  user_data->set_request_payment_method(true);
+  user_data->set_billing_address_name("BILLING");
 
-  EXPECT_CALL(
-      callback_,
-      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
   CollectUserDataAction action(&mock_action_delegate_, action_proto);
   action.ProcessAction(callback_.Get());
 }
@@ -2135,28 +2134,15 @@ TEST_F(CollectUserDataActionTest, ResetsCardAndAddressIfNoLongerInList) {
   ON_CALL(mock_personal_data_manager_, ShouldSuggestServerCards)
       .WillByDefault(Return(true));
 
-  autofill::AutofillProfile billing_address;
-  autofill::test::SetProfileInfo(&billing_address, "Adam", "", "West",
-                                 "adam.west@gmail.com", "", "Baker Street 221b",
-                                 "", "London", "", "WC2N 5DU", "UK", "+44");
-
-  ON_CALL(mock_personal_data_manager_, GetProfileByGUID("GUID"))
-      .WillByDefault(Return(&billing_address));
-
-  autofill::CreditCard card_with_address;
-  autofill::test::SetCreditCardInfo(&card_with_address, "Adam West",
-                                    "4111111111111111", "1", "2050",
-                                    /* billing_address_id= */ "GUID");
-
+  // Do not return any cards, one will be default selected.
   ON_CALL(mock_personal_data_manager_, GetCreditCards())
-      .WillByDefault(
-          Return(std::vector<autofill::CreditCard*>({&card_with_address})));
+      .WillByDefault(Return(std::vector<autofill::CreditCard*>({})));
 
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
           Invoke([=](CollectUserDataOptions* collect_user_data_options) {
             ExpectSelectedCardMatches(nullptr);
-            ExpectSelectedProfileMatches("billing_address", nullptr);
+            ExpectSelectedProfileMatches("BILLING", nullptr);
 
             // Do not call the callback. We're only interested in the state.
           }));
@@ -2164,8 +2150,9 @@ TEST_F(CollectUserDataActionTest, ResetsCardAndAddressIfNoLongerInList) {
   ActionProto action_proto;
   auto* collect_user_data = action_proto.mutable_collect_user_data();
   collect_user_data->set_request_terms_and_conditions(false);
+  collect_user_data->set_request_payment_method(true);
+  collect_user_data->set_billing_address_name("BILLING");
   collect_user_data->add_supported_basic_card_networks("visa");
-  collect_user_data->set_billing_address_name("billing_address");
 
   // Set previous user data.
   autofill::CreditCard selected_card;
