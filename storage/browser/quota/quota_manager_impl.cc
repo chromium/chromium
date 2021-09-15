@@ -443,46 +443,54 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
   base::WeakPtrFactory<UsageAndQuotaInfoGatherer> weak_factory_{this};
 };
 
-class QuotaManagerImpl::EvictionRoundInfoHelper : public QuotaTask {
+class QuotaManagerImpl::EvictionRoundInfoHelper {
  public:
+  // `callback` is called when the helper successfully retrieves quota settings
+  // and capacity data. `completion_closure` is called after data has been
+  // retrieved and `callback` has been run and to clean up itself and delete
+  // this EvictionRoundInfoHelper instance.
   EvictionRoundInfoHelper(QuotaManagerImpl* manager,
-                          EvictionRoundInfoCallback callback)
-      : QuotaTask(manager), callback_(std::move(callback)) {}
+                          EvictionRoundInfoCallback callback,
+                          base::OnceClosure completion_closure)
+      : manager_(manager),
+        callback_(std::move(callback)),
+        completion_closure_(std::move(completion_closure)) {
+    DCHECK(manager_);
+    DCHECK(callback_);
+    DCHECK(completion_closure_);
+  }
 
- protected:
-  void Run() override {
+  void Run() {
+#if DCHECK_IS_ON()
+    DCHECK(!run_called_) << __func__ << " already called";
+    run_called_ = true;
+#endif  // DCHECK_IS_ON()
+
     // Gather 2 pieces of info before deciding if we need to get GlobalUsage:
     // settings and device_storage_capacity.
     base::RepeatingClosure barrier = base::BarrierClosure(
         2, base::BindOnce(&EvictionRoundInfoHelper::OnBarrierComplete,
                           weak_factory_.GetWeakPtr()));
 
-    manager()->GetQuotaSettings(
+    manager_->GetQuotaSettings(
         base::BindOnce(&EvictionRoundInfoHelper::OnGotSettings,
                        weak_factory_.GetWeakPtr(), barrier));
-    manager()->GetStorageCapacity(
+    manager_->GetStorageCapacity(
         base::BindOnce(&EvictionRoundInfoHelper::OnGotCapacity,
                        weak_factory_.GetWeakPtr(), barrier));
   }
 
-  void Aborted() override {
-    weak_factory_.InvalidateWeakPtrs();
-    std::move(callback_).Run(blink::mojom::QuotaStatusCode::kErrorAbort,
-                             QuotaSettings(), 0, 0, 0, false);
-    DeleteSoon();
-  }
-
-  void Completed() override {
-    weak_factory_.InvalidateWeakPtrs();
+ private:
+  void Completed() {
+#if DCHECK_IS_ON()
+    DCHECK(!completed_called_) << __func__ << " already called";
+    completed_called_ = true;
+#endif  // DCHECK_IS_ON()
     std::move(callback_).Run(blink::mojom::QuotaStatusCode::kOk, settings_,
                              available_space_, total_space_, global_usage_,
                              global_usage_is_complete_);
-    DeleteSoon();
-  }
-
- private:
-  QuotaManagerImpl* manager() const {
-    return static_cast<QuotaManagerImpl*>(observer());
+    // May delete `this`.
+    std::move(completion_closure_).Run();
   }
 
   void OnGotSettings(base::OnceClosure barrier_closure,
@@ -506,28 +514,38 @@ class QuotaManagerImpl::EvictionRoundInfoHelper : public QuotaTask {
         available_space_ > settings_.should_remain_available) {
       DCHECK(!global_usage_is_complete_);
       global_usage_ =
-          manager()->GetUsageTracker(StorageType::kTemporary)->GetCachedUsage();
-      CallCompleted();
+          manager_->GetUsageTracker(StorageType::kTemporary)->GetCachedUsage();
+      // `this` may be deleted during this Complete() call.
+      Completed();
       return;
     }
-    manager()->GetGlobalUsage(
+    manager_->GetGlobalUsage(
         StorageType::kTemporary,
         base::BindOnce(&EvictionRoundInfoHelper::OnGotGlobalUsage,
                        weak_factory_.GetWeakPtr()));
   }
 
   void OnGotGlobalUsage(int64_t usage, int64_t unlimited_usage) {
-    global_usage_ = std::max(INT64_C(0), usage - unlimited_usage);
+    global_usage_ = std::max(int64_t{0}, usage - unlimited_usage);
     global_usage_is_complete_ = true;
-    CallCompleted();
+    // `this` may be deleted during this Complete() call.
+    Completed();
   }
 
+  QuotaManagerImpl* const manager_;
   EvictionRoundInfoCallback callback_;
+  base::OnceClosure completion_closure_;
   QuotaSettings settings_;
   int64_t available_space_ = 0;
   int64_t total_space_ = 0;
   int64_t global_usage_ = 0;
   bool global_usage_is_complete_ = false;
+
+#if DCHECK_IS_ON()
+  bool run_called_ = false;
+  bool completed_called_ = false;
+#endif  // DCHECK_IS_ON()
+
   base::WeakPtrFactory<EvictionRoundInfoHelper> weak_factory_{this};
 };
 
@@ -559,11 +577,6 @@ class QuotaManagerImpl::GetUsageInfoTask : public QuotaTask {
 
   void Completed() override {
     std::move(callback_).Run(std::move(entries_));
-    DeleteSoon();
-  }
-
-  void Aborted() override {
-    std::move(callback_).Run(UsageInfoEntries());
     DeleteSoon();
   }
 
@@ -1929,7 +1942,7 @@ void QuotaManagerImpl::DidDumpBucketTableForHistogram(
         now - std::max(info.last_accessed, info.last_modified);
     UMA_HISTOGRAM_COUNTS_1000("Quota.AgeOfOriginInDays", age.InDays());
 
-    int64_t kilobytes = std::max(it->second / INT64_C(1024), INT64_C(1));
+    int64_t kilobytes = std::max(it->second / int64_t{1024}, int64_t{1});
     base::Histogram::FactoryGet(
         "Quota.AgeOfDataInDays", 1, 1000, 50,
         base::HistogramBase::kUmaTargetedHistogramFlag)->
@@ -2021,9 +2034,18 @@ void QuotaManagerImpl::GetEvictionRoundInfo(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(io_thread_->BelongsToCurrentThread());
   EnsureDatabaseOpened();
-  EvictionRoundInfoHelper* helper =
-      new EvictionRoundInfoHelper(this, std::move(callback));
-  helper->Start();
+
+  DCHECK(!eviction_helper_);
+  eviction_helper_ = std::make_unique<EvictionRoundInfoHelper>(
+      this, std::move(callback),
+      base::BindOnce(&QuotaManagerImpl::DidGetEvictionRoundInfo,
+                     weak_factory_.GetWeakPtr()));
+  eviction_helper_->Run();
+}
+
+void QuotaManagerImpl::DidGetEvictionRoundInfo() {
+  DCHECK(eviction_helper_);
+  eviction_helper_.reset();
 }
 
 void QuotaManagerImpl::GetLRUBucket(StorageType type,
@@ -2150,7 +2172,7 @@ void QuotaManagerImpl::ContinueIncognitoGetStorageCapacity(
       GetUsageTracker(StorageType::kTemporary)->GetCachedUsage();
   current_usage += GetUsageTracker(StorageType::kPersistent)->GetCachedUsage();
   int64_t available_space =
-      std::max(INT64_C(0), settings.pool_size - current_usage);
+      std::max(int64_t{0}, settings.pool_size - current_usage);
   DidGetStorageCapacity(std::make_tuple(settings.pool_size, available_space));
 }
 

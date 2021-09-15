@@ -532,6 +532,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
                        StatusCallback callback) override;
   void GetEvictionRoundInfo(EvictionRoundInfoCallback callback) override;
 
+  void DidGetEvictionRoundInfo();
+
   void GetLRUBucket(blink::mojom::StorageType type, GetBucketCallback callback);
 
   void DidGetPersistentHostQuota(const std::string& host,
@@ -685,6 +687,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // reported values. The default value points to
   // QuotaManagerImpl::GetVolumeInfo.
   GetVolumeInfoFn get_volume_info_fn_;
+
+  std::unique_ptr<EvictionRoundInfoHelper> eviction_helper_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
