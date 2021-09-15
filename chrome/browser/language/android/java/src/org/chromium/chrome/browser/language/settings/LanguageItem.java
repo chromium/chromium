@@ -115,7 +115,7 @@ public class LanguageItem {
      * @return True if this language item represents the system default.
      */
     public boolean isSystemDefault() {
-        return AppLocaleUtils.isDefaultSystemLanguage(mCode);
+        return AppLocaleUtils.isFollowSystemLanguage(mCode);
     }
 
     /**
@@ -149,14 +149,13 @@ public class LanguageItem {
      * Create a LanguageItem representing the system default language.
      * @return LanguageItem
      */
-    public static LanguageItem makeSystemDefaultLanguageItem() {
+    public static LanguageItem makeFollowSystemLanguageItem() {
         String displayName = ContextUtils.getApplicationContext().getResources().getString(
                 R.string.default_lang_subtitle);
         String nativeName =
                 GlobalAppLocaleController.getInstance().getOriginalSystemLocale().getDisplayName(
                         Locale.getDefault());
-        return new LanguageItem(AppLocaleUtils.SYSTEM_LANGUAGE_VALUE, displayName, nativeName,
-                true /*supportTranslate*/);
+        return new LanguageItem(AppLocaleUtils.APP_LOCALE_USE_SYSTEM_LANGUAGE, displayName,
+                nativeName, true /*supportTranslate*/);
     }
-
 }

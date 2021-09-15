@@ -71,11 +71,11 @@ public class AppLocaleUtilsTest {
 
     @Test
     @SmallTest
-    public void testIsDefaultSystemLanguage() {
-        Assert.assertTrue(AppLocaleUtils.isDefaultSystemLanguage(null));
-        Assert.assertTrue(
-                AppLocaleUtils.isDefaultSystemLanguage(AppLocaleUtils.SYSTEM_LANGUAGE_VALUE));
-        Assert.assertFalse(AppLocaleUtils.isDefaultSystemLanguage("en"));
+    public void testIsFollowSystemLanguage() {
+        Assert.assertTrue(AppLocaleUtils.isFollowSystemLanguage(null));
+        Assert.assertTrue(AppLocaleUtils.isFollowSystemLanguage(
+                AppLocaleUtils.APP_LOCALE_USE_SYSTEM_LANGUAGE));
+        Assert.assertFalse(AppLocaleUtils.isFollowSystemLanguage("en"));
     }
 
     @Test
@@ -92,7 +92,7 @@ public class AppLocaleUtilsTest {
         // Base languages that have UI translations.
         List<String> avaliableBaseLanguages =
                 Arrays.asList("af-ZA", "en", "en-US", "en-non-a-language", "fr-CA", "fr-FR",
-                        "zu-ZA", AppLocaleUtils.SYSTEM_LANGUAGE_VALUE);
+                        "zu-ZA", AppLocaleUtils.APP_LOCALE_USE_SYSTEM_LANGUAGE);
         for (String language : avaliableBaseLanguages) {
             Assert.assertTrue(String.format("Language %s", language),
                     AppLocaleUtils.isSupportedUiLanguage(language));
@@ -111,8 +111,8 @@ public class AppLocaleUtilsTest {
         }
 
         // Languages that have an exact matching UI language.
-        List<String> avaliableExactLanguages = Arrays.asList(
-                "en-US", "pt-BR", "fr", "fr-CA", "zh-CN", AppLocaleUtils.SYSTEM_LANGUAGE_VALUE);
+        List<String> avaliableExactLanguages = Arrays.asList("en-US", "pt-BR", "fr", "fr-CA",
+                "zh-CN", AppLocaleUtils.APP_LOCALE_USE_SYSTEM_LANGUAGE);
         for (String language : avaliableExactLanguages) {
             Assert.assertTrue(String.format("Language %s", language),
                     AppLocaleUtils.isAvailableExactUiLanguage(language));

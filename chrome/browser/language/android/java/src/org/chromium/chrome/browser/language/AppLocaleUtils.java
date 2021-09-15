@@ -26,7 +26,7 @@ public class AppLocaleUtils {
     private AppLocaleUtils(){};
 
     // Value of AppLocale preference when the system language is used.
-    public static final String SYSTEM_LANGUAGE_VALUE = null;
+    public static final String APP_LOCALE_USE_SYSTEM_LANGUAGE = null;
 
     /**
      * Return true if languageName is the same as the current application override
@@ -38,13 +38,14 @@ public class AppLocaleUtils {
     }
 
     /**
-     * The |ApplocaleUtils.SYSTEM_LANGUAGE_VALUE| constant acts as a signal that no app override
-     * language is set and when this is the case the app UI language tracks the device language.
+     * The |ApplocaleUtils.APP_LOCALE_USE_SYSTEM_LANGUAGE| constant acts as a signal that no app
+     * override language is set and when this is the case the app UI language tracks the device
+     * language.
      * @param overrideLanguage String to compare to the default system language value.
      * @return Whether or not |overrideLanguage| is the default system language.
      */
-    public static boolean isDefaultSystemLanguage(String overrideLanguage) {
-        return TextUtils.equals(overrideLanguage, SYSTEM_LANGUAGE_VALUE);
+    public static boolean isFollowSystemLanguage(String overrideLanguage) {
+        return TextUtils.equals(overrideLanguage, APP_LOCALE_USE_SYSTEM_LANGUAGE);
     }
 
     /**
@@ -53,7 +54,7 @@ public class AppLocaleUtils {
      */
     public static String getAppLanguagePref() {
         return SharedPreferencesManager.getInstance().readString(
-                ChromePreferenceKeys.APPLICATION_OVERRIDE_LANGUAGE, SYSTEM_LANGUAGE_VALUE);
+                ChromePreferenceKeys.APPLICATION_OVERRIDE_LANGUAGE, APP_LOCALE_USE_SYSTEM_LANGUAGE);
     }
 
     /**
@@ -66,7 +67,7 @@ public class AppLocaleUtils {
     @SuppressWarnings("DefaultSharedPreferencesCheck")
     protected static String getAppLanguagePrefStartUp(Context base) {
         return PreferenceManager.getDefaultSharedPreferences(base).getString(
-                ChromePreferenceKeys.APPLICATION_OVERRIDE_LANGUAGE, SYSTEM_LANGUAGE_VALUE);
+                ChromePreferenceKeys.APPLICATION_OVERRIDE_LANGUAGE, APP_LOCALE_USE_SYSTEM_LANGUAGE);
     }
 
     /**
@@ -100,7 +101,7 @@ public class AppLocaleUtils {
         // If this is not a bundle build or the default system language is being used the language
         // split should not be installed. Instead indicate that the listener completed successfully
         // since the language resources will already be present.
-        if (!BundleUtils.isBundle() || isDefaultSystemLanguage(languageName)) {
+        if (!BundleUtils.isBundle() || isFollowSystemLanguage(languageName)) {
             wrappedListener.onComplete(true);
         } else {
             LanguageSplitInstaller.getInstance().installLanguage(languageName, wrappedListener);
@@ -114,7 +115,7 @@ public class AppLocaleUtils {
      * @return Whether or not |languageCode| has multiple UI language variants.
      */
     public static boolean hasMultipleUiLanguageVariants(String languageCode) {
-        if (isDefaultSystemLanguage(languageCode)) {
+        if (isFollowSystemLanguage(languageCode)) {
             return false;
         }
         String baseLanguage = LocaleUtils.toLanguage(languageCode);
@@ -153,7 +154,7 @@ public class AppLocaleUtils {
     private static boolean isAvailableUiLanguage(
             String potentialUiLanguage, Comparator<String> comparator) {
         // The default system language is always an available UI language.
-        if (isDefaultSystemLanguage(potentialUiLanguage)) return true;
+        if (isFollowSystemLanguage(potentialUiLanguage)) return true;
         return Arrays.binarySearch(
                        ResourceBundle.getAvailableLocales(), potentialUiLanguage, comparator)
                 >= 0;

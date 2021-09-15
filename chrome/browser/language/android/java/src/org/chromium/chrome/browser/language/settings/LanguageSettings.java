@@ -264,7 +264,7 @@ public class LanguageSettings extends PreferenceFragmentCompat
             LanguagesManager.recordAction(
                     LanguagesManager.LanguageSettingsActionType.CHANGE_CHROME_LANGUAGE);
             mAppLanguageDelegate.startLanguageSplitDownload(code);
-            if (AppLocaleUtils.isDefaultSystemLanguage(code)) {
+            if (AppLocaleUtils.isFollowSystemLanguage(code)) {
                 // Get the actual default system language to set as target language.
                 code = GlobalAppLocaleController.getInstance()
                                .getOriginalSystemLocale()

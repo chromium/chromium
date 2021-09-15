@@ -112,18 +112,18 @@ public class LanguagesManagerTest {
         Assert.assertFalse(containsLanguage(items, "sw"));
 
         // Check that the first language is the system default language.
-        Assert.assertEquals(items.get(0).getCode(), AppLocaleUtils.SYSTEM_LANGUAGE_VALUE);
+        Assert.assertTrue(AppLocaleUtils.isFollowSystemLanguage(items.get(0).getCode()));
         // Check that the second language is "en-US" from the Accept-Languages.
         Assert.assertEquals(items.get(1).getCode(), "en-US");
 
         // Set UI Language to system default.
-        AppLocaleUtils.setAppLanguagePref(AppLocaleUtils.SYSTEM_LANGUAGE_VALUE);
+        AppLocaleUtils.setAppLanguagePref(AppLocaleUtils.APP_LOCALE_USE_SYSTEM_LANGUAGE);
 
         items = LanguagesManager.getInstance().getPotentialLanguages(
                 LanguagesManager.LanguageListType.UI_LANGUAGES);
 
         // Check that system default is not on the list and that German is.
-        Assert.assertFalse(containsLanguage(items, AppLocaleUtils.SYSTEM_LANGUAGE_VALUE));
+        Assert.assertFalse(containsLanguage(items, AppLocaleUtils.APP_LOCALE_USE_SYSTEM_LANGUAGE));
         // Check that the fist languages are from the Accept-Languages.
         Assert.assertEquals(items.get(0).getCode(), "sw");
         Assert.assertEquals(items.get(1).getCode(), "en-US");

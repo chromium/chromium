@@ -221,7 +221,7 @@ public class LanguagesManager {
 
         // Add the system default language if an override language is set.
         if (!currentUiLanguage.isSystemDefault()) {
-            results.add(LanguageItem.makeSystemDefaultLanguageItem());
+            results.add(LanguageItem.makeFollowSystemLanguageItem());
         }
 
         // Filter for UI languages that are not the current UI language.
@@ -311,8 +311,8 @@ public class LanguagesManager {
      * @return LanguageItem or null if none found
      */
     public LanguageItem getLanguageItem(String localeCode) {
-        if (AppLocaleUtils.isDefaultSystemLanguage(localeCode)) {
-            return LanguageItem.makeSystemDefaultLanguageItem();
+        if (AppLocaleUtils.isFollowSystemLanguage(localeCode)) {
+            return LanguageItem.makeFollowSystemLanguageItem();
         }
         LanguageItem result = mLanguagesMap.get(localeCode);
         if (result != null) return result;

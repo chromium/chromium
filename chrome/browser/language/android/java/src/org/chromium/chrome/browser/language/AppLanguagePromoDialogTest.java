@@ -25,7 +25,7 @@ import java.util.LinkedHashSet;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class AppLanguagePromoDialogTest {
-    static final LanguageItem FOLLOW_SYSTEM = LanguageItem.makeSystemDefaultLanguageItem();
+    static final LanguageItem FOLLOW_SYSTEM = LanguageItem.makeFollowSystemLanguageItem();
     static final LanguageItem LANG_AF = new LanguageItem("af", "Afrikaans", "Afrikaans", true);
     static final LanguageItem LANG_AZ = new LanguageItem("az", "Azerbaijani", "azərbaycan", true);
     static final LanguageItem LANG_EN_GB =

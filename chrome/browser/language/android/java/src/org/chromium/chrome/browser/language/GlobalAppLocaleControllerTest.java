@@ -60,7 +60,7 @@ public class GlobalAppLocaleControllerTest {
 
         Assert.assertEquals(GlobalAppLocaleController.OverrideLanguageStatus.NO_OVERRIDE,
                 GlobalAppLocaleController.getOverrideVsSystemLanguageStatus(
-                        AppLocaleUtils.SYSTEM_LANGUAGE_VALUE, "en-US"));
+                        AppLocaleUtils.APP_LOCALE_USE_SYSTEM_LANGUAGE, "en-US"));
 
         Assert.assertEquals(GlobalAppLocaleController.OverrideLanguageStatus.EXACT_MATCH,
                 GlobalAppLocaleController.getOverrideVsSystemLanguageStatus("en-US", "en-US"));

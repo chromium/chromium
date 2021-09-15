@@ -127,10 +127,9 @@ public class GlobalAppLocaleController {
      * language is set report it as the empty string.
      */
     public void recordOverrideLanguageMetrics() {
-        // The Default System Language value means no override language is set and the app UI
-        // language tracks the system UI language.
+        // When following the system language there is no override so Chrome tracks the System UI.
         String histogramLanguage =
-                AppLocaleUtils.isDefaultSystemLanguage(mOverrideLanguage) ? "" : mOverrideLanguage;
+                AppLocaleUtils.isFollowSystemLanguage(mOverrideLanguage) ? "" : mOverrideLanguage;
         AndroidLanguageMetricsBridge.reportAppOverrideLanguage(histogramLanguage);
 
         int status = getOverrideVsSystemLanguageStatus(
@@ -147,9 +146,8 @@ public class GlobalAppLocaleController {
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static @OverrideLanguageStatus int getOverrideVsSystemLanguageStatus(
             String overrideLanguage, String systemLanguage) {
-        // The Default System Language value means no override language is set and the app UI
-        // language tracks the system UI language.
-        if (AppLocaleUtils.isDefaultSystemLanguage(overrideLanguage)) {
+        // When following the system language there is no override so Chrome tracks the System UI.
+        if (AppLocaleUtils.isFollowSystemLanguage(overrideLanguage)) {
             return OverrideLanguageStatus.NO_OVERRIDE;
         }
         if (TextUtils.equals(overrideLanguage, systemLanguage)) {

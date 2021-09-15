@@ -386,10 +386,10 @@ public class AppLanguagePromoDialog {
         // current override language is added to the top of the list.
         LinkedHashSet<LanguageItem> topLanguages = new LinkedHashSet<>();
         if (currentOverrideLanguage.isSystemDefault()) {
-            topLanguages.add(LanguageItem.makeSystemDefaultLanguageItem());
+            topLanguages.add(LanguageItem.makeFollowSystemLanguageItem());
         } else if (!isOverrideLanguageOriginalSystemLanguage(
                            currentOverrideLanguage, originalSystemLocale)) {
-            topLanguages.add(LanguageItem.makeSystemDefaultLanguageItem());
+            topLanguages.add(LanguageItem.makeFollowSystemLanguageItem());
             topLanguages.add(currentOverrideLanguage);
         } else {
             // The current override language can only be the original system language if it has
