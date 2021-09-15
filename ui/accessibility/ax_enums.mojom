@@ -951,7 +951,7 @@ enum InputEventType {
   kInsertText = 1,
   kInsertLineBreak = 2,
   kInsertParagraph = 3,
-  kInsertOrderedList= 4,
+  kInsertOrderedList = 4,
   kInsertUnorderedList = 5,
   kInsertHorizontalRule = 6,
   kInsertFromPaste = 7,

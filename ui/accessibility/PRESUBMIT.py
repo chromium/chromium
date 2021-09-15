@@ -191,7 +191,7 @@ def CheckAXEnumsOrdinals(input_api, output_api):
     for enum_value in ax_enums[enum_name]:
       m = re.search("([\w]+) = ([\d]+)", enum_value)
       if not m:
-        break
+        continue
 
       enums_with_ordinal_values.setdefault(enum_name, [])
       enums_with_ordinal_values[enum_name].append(m.groups(1))
