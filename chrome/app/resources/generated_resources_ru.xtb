@@ -2101,6 +2101,7 @@
 <translation id="3183143381919926261">Мобильные сети</translation>
 <translation id="3183944777708523606">Расположение мониторов</translation>
 <translation id="3184536091884214176">Настройте принтеры CUPS. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
+<translation id="3185014249447200271">{NUM_APPS,plural, =1{Это приложение заблокировано}one{Некоторые приложения заблокированы}few{Некоторые приложения заблокированы}many{Некоторые приложения заблокированы}other{Некоторые приложения заблокированы}}</translation>
 <translation id="3188257591659621405">Мои файлы</translation>
 <translation id="3188465121994729530">Скользящее среднее</translation>
 <translation id="3189187154924005138">Большой курсор</translation>
@@ -3061,6 +3062,7 @@
 <translation id="4220648711404560261">При активации произошла ошибка.</translation>
 <translation id="4225020013797061859">Назначьте переключатель или клавишу для действия "<ph name="ACTION" />".</translation>
 <translation id="4225397296022057997">На всех сайтах</translation>
+<translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Это расширение запрещено}one{Некоторые расширения запрещены}few{Некоторые расширения запрещены}many{Некоторые расширения запрещены}other{Некоторые расширения запрещены}}</translation>
 <translation id="4231095370974836764">Устанавливайте приложения и игры из Google Play на устройство <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Настройка Kerberos</translation>
 <translation id="4235965441080806197">Отменить вход</translation>
@@ -4307,6 +4309,7 @@
 <translation id="5604884720628869833">Устройство <ph name="DEVICE_INDEX" /> из <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, клавиатура</translation>
 <translation id="5605623530403479164">Другие поисковые системы</translation>
 <translation id="5605758115928394442">На ваш телефон отправлено уведомление для подтверждения личности.</translation>
+<translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Это расширение заблокировано}one{Эти расширения заблокированы}few{Эти расширения заблокированы}many{Эти расширения заблокированы}other{Эти расширения заблокированы}}</translation>
 <translation id="560834977503641186">Узнать больше о функции "Синхронизация Wi-Fi"</translation>
 <translation id="5608580678041221894">Чтобы двигать рамку кадрирования, нажимайте на следующие кнопки</translation>
 <translation id="5609231933459083978">Неизвестное название приложения</translation>
@@ -5053,6 +5056,7 @@
 <translation id="6434325376267409267">Чтобы использовать <ph name="APP_NAME" />, установите на устройство обновление системы.</translation>
 <translation id="6436164536244065364">Просмотреть в Интернет-магазине</translation>
 <translation id="6436610005579237680">Чтобы получать более точные ответы, предоставьте Google Ассистенту доступ к содержимому экрана, в том числе к сведениям о воспроизводимых композициях и видеороликах.</translation>
+<translation id="6436778875248895551">Администратор заблокировал расширение "<ph name="EXTENSION_NAME" />".</translation>
 <translation id="6438234780621650381">Сброс настроек</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" />: воспроизводится аудио</translation>
 <translation id="6442187272350399447">Супер</translation>
@@ -5204,6 +5208,7 @@
 <translation id="6596816719288285829">IP-адрес</translation>
 <translation id="6597017209724497268">Примеры</translation>
 <translation id="6597148444736186483">Чтобы выйти из основного аккаунта на этом устройстве, нажмите на время в правой нижней части экрана. В появившемся меню выберите "Выйти".</translation>
+<translation id="6597331566371766302">Администратор заблокировал следующие расширения:</translation>
 <translation id="6601395831301182804">Включить встроенный в Chrome OS инструмент ChromeVox для озвучивания данных с экрана? Если да, нажмите Пробел.</translation>
 <translation id="6601612474695404578">Некоторые сайты используют сторонние файлы cookie для загрузки своих страниц. Если сайт не работает, разрешите файлы cookie.</translation>
 <translation id="6602937173026466876">Доступ к принтерам</translation>
@@ -5337,6 +5342,7 @@
 <translation id="6757101664402245801">URL скопирован</translation>
 <translation id="6758056191028427665">Расскажите, как у вас дела.</translation>
 <translation id="6759193508432371551">Сброс настроек</translation>
+<translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6762833852331690540">Включено</translation>
 <translation id="676560328519657314">Ваши способы оплаты в Google Pay</translation>
 <translation id="6767566652486411142">Выбрать другой язык…</translation>
@@ -6216,6 +6222,7 @@
 <translation id="7691698019618282776">Обновить Crostini</translation>
 <translation id="7696063401938172191">На устройстве <ph name="PHONE_NAME" />:</translation>
 <translation id="7697166915480294040">Во время демонстрации экрана содержимое уведомлений скрыто.</translation>
+<translation id="7698507637739331665">Некоторые объекты заблокированы</translation>
 <translation id="7701040980221191251">Нет</translation>
 <translation id="7701869757853594372">USER-дескрипторы</translation>
 <translation id="7702574632857388784">Удалить файл "<ph name="FILE_NAME" />" из списка</translation>
@@ -6394,6 +6401,7 @@
 <translation id="7861215335140947162">&amp;Загрузки</translation>
 <translation id="7861846108263890455">Язык аккаунта Google</translation>
 <translation id="7864539943188674973">Отключить Bluetooth</translation>
+<translation id="7865127013871431856">Параметры перевода</translation>
 <translation id="7866230141401327032">Искать часть страницы с помощью Google Объектива</translation>
 <translation id="7869143217755017858">Отключить тёмную тему</translation>
 <translation id="786957569166715433">Подключено устройство: <ph name="DEVICE_NAME" /></translation>

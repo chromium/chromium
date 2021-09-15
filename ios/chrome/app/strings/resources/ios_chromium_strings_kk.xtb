@@ -43,7 +43,7 @@
 <translation id="4555020257205549924">Бұл функция қосылған кезде, Chromium басқа тілдерде жазылған беттерді Google Translate арқылы аударуды ұсынады. <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Енді кез келген уақытта хабарлардағы, құжаттардағы және басқа қолданбалардағы сілтемелерді түртіп, Chromium браузерін пайдалана аласыз.</translation>
 <translation id="4681781466797808448">Chromium сканерін іске қосу</translation>
-<translation id="4736424910885271643">Есептік жазбаңызды <ph name="HOSTED_DOMAIN" /> басқарады, сондықтан Chromium деректеріңіз бұл құрылғыдан өшіріледі</translation>
+<translation id="4736424910885271643">Аккаунтыңызды <ph name="HOSTED_DOMAIN" /> басқарады, сондықтан Chromium деректеріңіз бұл құрылғыдан өшіріледі</translation>
 <translation id="4806326830773390517">Google-ға қолданыс статистикасы мен жаңылыс туралы есептер жіберу арқылы Chromium-ді жақсартуға көмектесіңіз.</translation>
 <translation id="4828317641996116749">Chromium барлық құпия сөзді тексере алмады. Кейінірек қайталап көріңіз.</translation>
 <translation id="4985291216379576555">Офлайн, Chromium жаңа нұсқалардың бар-жоғын тексере алмайды.</translation>
@@ -63,7 +63,7 @@
 1. Параметрлерді ашыңыз.
 2. "Әдепкі браузер қолданбасы" түймесін түртіңіз.
 3. Chromium браузерін таңдаңыз.</translation>
-<translation id="6155422572367400359">Осы сайтқа, Google есептік жазбаңызға және Chromium браузеріне кіріңіз. Синхрондауды кейінірек қосуыңызға болады.</translation>
+<translation id="6155422572367400359">Осы сайтқа, Google аккаунтыңызға және Chromium браузеріне кіріңіз. Синхрондауды кейінірек қосуыңызға болады.</translation>
 <translation id="6268381023930128611">Chromium жүйесінен шығасыз ба?</translation>
 <translation id="632825460376924298">Chromium-ге кіруге рұқсат ету</translation>
 <translation id="6337530241089703714">Chromium деректері осы құрылғыдан өшірілсін бе әлде сақталсын ба?</translation>
@@ -99,7 +99,7 @@
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Барлық құқықтар қорғалған.</translation>
 <translation id="8663480472502753423">Chromium-дi жаңартып тұрады.</translation>
 <translation id="8776843108004031667">Бұл аккаунт және кез келген сақталмаған дерек Chromium браузерінен өшіріледі.</translation>
-<translation id="894437814105052438">Сіз аккаунттан шыққанда, Chromium жаңа деректерді Google есептік жазбаңызбен синхрондамайды. Бұған дейін синхрондалған деректер есептік жазбаңызда қалады.</translation>
+<translation id="894437814105052438">Сіз аккаунттан шыққанда, Chromium жаңа деректерді Google есептік жазбаңызбен синхрондамайды. Бұған дейін синхрондалған деректер аккаунтыңызда қалады.</translation>
 <translation id="9022552996538154597">Chromium жүйесіне кіру</translation>
 <translation id="9089354809943900324">Chromium ескірген</translation>
 <translation id="9110075932708282655">Chromium-ді әдепкі браузер ретінде пайдалану</translation>

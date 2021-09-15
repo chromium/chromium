@@ -357,6 +357,7 @@
 <translation id="4619564267100705184">Подтвердить личность</translation>
 <translation id="4619615317237390068">Вкладки с других устройств</translation>
 <translation id="4620246317052452550">Прочитанные</translation>
+<translation id="4620888520263267479">Предпросмотр ссылок</translation>
 <translation id="4630540211544979320">Переводить страницы</translation>
 <translation id="4634124774493850572">Использовать пароль</translation>
 <translation id="4636930964841734540">Информация</translation>
@@ -662,6 +663,7 @@
 <translation id="7336264872878993241">Скачивается: <ph name="PERCENT" />%</translation>
 <translation id="7340958967809483333">Параметры рекомендаций</translation>
 <translation id="7346909386216857016">ОК</translation>
+<translation id="7347393021726115275">Вы можете входить только с аккаунтами, одобренными администратором. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="734758817008927353">Параметры сохранения карты</translation>
 <translation id="7348502496356775519">Закладка</translation>
 <translation id="7353432112255316844">Подтвердить личность</translation>
