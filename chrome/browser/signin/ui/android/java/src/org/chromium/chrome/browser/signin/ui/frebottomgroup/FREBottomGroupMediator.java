@@ -87,7 +87,7 @@ class FREBottomGroupMediator implements AccountsChangeObserver, ProfileDataCache
     }
 
     @Override
-    public void onAccountSelected(String accountName, boolean isDefaultAccount) {
+    public void onAccountSelected(String accountName) {
         setSelectedAccountName(accountName);
         if (mDialogCoordinator != null) mDialogCoordinator.dismissDialog();
     }

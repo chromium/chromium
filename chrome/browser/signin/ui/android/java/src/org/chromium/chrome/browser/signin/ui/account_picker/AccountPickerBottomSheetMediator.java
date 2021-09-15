@@ -64,13 +64,12 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
      * Notifies that the user has selected an account.
      *
      * @param accountName The email of the selected account.
-     * @param isDefaultAccount Whether the selected account is the first in the account list.
      *
      * TODO(https://crbug.com/1115965): Use CoreAccountInfo instead of account's email
      * as the first argument of the method.
      */
     @Override
-    public void onAccountSelected(String accountName, boolean isDefaultAccount) {
+    public void onAccountSelected(String accountName) {
         // Clicking on one account in the account list when the account list is expanded
         // will collapse it to the selected account
         mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.COLLAPSED_ACCOUNT_LIST);
@@ -88,7 +87,7 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
             mAddedAccountName = accountName;
             SigninMetricsUtils.logAccountConsistencyPromoAction(
                     AccountConsistencyPromoAction.ADD_ACCOUNT_COMPLETED);
-            onAccountSelected(accountName, false);
+            onAccountSelected(accountName);
         });
     }
 

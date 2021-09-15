@@ -62,6 +62,6 @@ public class FREBottomGroupCoordinator {
     }
 
     public void onAccountSelected(String accountName) {
-        mMediator.onAccountSelected(accountName, false);
+        mMediator.onAccountSelected(accountName);
     }
 }

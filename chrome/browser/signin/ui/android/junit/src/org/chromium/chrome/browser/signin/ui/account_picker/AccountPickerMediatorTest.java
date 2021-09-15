@@ -102,7 +102,7 @@ public class AccountPickerMediatorTest {
         Assert.assertNotNull("Profile avatar should not be null!", profileData.getImage());
 
         model.get(ExistingAccountRowProperties.ON_CLICK_LISTENER).onResult(profileData);
-        verify(mListenerMock).onAccountSelected(accountEmail, position == 0);
+        verify(mListenerMock).onAccountSelected(accountEmail);
     }
 
     private void checkItemForAddAccountRow(int position) {

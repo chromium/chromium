@@ -103,7 +103,6 @@ public abstract class SyncConsentFragmentBase
 
     private final ProfileDataCache.Observer mProfileDataCacheObserver;
     private @Nullable String mSelectedAccountName;
-    private boolean mIsDefaultAccountSelected;
     private ProfileDataCache mProfileDataCache;
     private boolean mDestroyed;
     private boolean mIsSigninInProgress;
@@ -181,12 +180,11 @@ public abstract class SyncConsentFragmentBase
     /**
      * The sign-in was accepted.
      * @param accountName The name of the account
-     * @param isDefaultAccount Whether selected account is a default one (first of all accounts)
      * @param settingsClicked Whether the user requested to see their sync settings
      * @param callback The callback invoke when sign-in process is finished or aborted
      */
-    protected abstract void onSigninAccepted(String accountName, boolean isDefaultAccount,
-            boolean settingsClicked, Runnable callback);
+    protected abstract void onSigninAccepted(
+            String accountName, boolean settingsClicked, Runnable callback);
 
     @Override
     public void onAttach(Context context) {
@@ -477,8 +475,8 @@ public abstract class SyncConsentFragmentBase
                         // Don't start sign-in if this fragment has been destroyed.
                         if (mDestroyed) return;
                         SyncUserDataWiper.wipeSyncUserDataIfRequired(wipeData).then((Void v) -> {
-                            onSigninAccepted(mSelectedAccountName, mIsDefaultAccountSelected,
-                                    settingsClicked, () -> mIsSigninInProgress = false);
+                            onSigninAccepted(mSelectedAccountName, settingsClicked,
+                                    () -> mIsSigninInProgress = false);
                         });
                     }
 
@@ -491,8 +489,8 @@ public abstract class SyncConsentFragmentBase
     }
 
     @Override
-    public void onAccountSelected(String accountName, boolean isDefaultAccount) {
-        selectAccount(accountName, isDefaultAccount);
+    public void onAccountSelected(String accountName) {
+        selectAccount(accountName);
         mAccountPickerDialogCoordinator.dismissDialog();
     }
 
@@ -546,9 +544,8 @@ public abstract class SyncConsentFragmentBase
         mView.stopAnimations();
     }
 
-    private void selectAccount(String accountName, boolean isDefaultAccount) {
+    private void selectAccount(String accountName) {
         mSelectedAccountName = accountName;
-        mIsDefaultAccountSelected = isDefaultAccount;
         updateProfileData(mSelectedAccountName);
     }
 
@@ -564,13 +561,12 @@ public abstract class SyncConsentFragmentBase
         setHasAccounts(true);
         final String defaultAccount = accounts.get(0).name;
         if (mIsSignedInWithoutSync) {
-            mIsDefaultAccountSelected = defaultAccount.equals(mSelectedAccountName);
             return;
         }
 
         if (mSelectedAccountName != null
                 && AccountUtils.findAccountByName(accounts, mSelectedAccountName) != null) {
-            selectAccount(mSelectedAccountName, mSelectedAccountName.equals(defaultAccount));
+            selectAccount(mSelectedAccountName);
             return;
         }
 
@@ -587,7 +583,7 @@ public abstract class SyncConsentFragmentBase
             return;
         }
 
-        selectAccount(defaultAccount, true);
+        selectAccount(defaultAccount);
         // Show account picker to user to confirm the account selection
         mAccountPickerDialogCoordinator =
                 new AccountPickerDialogCoordinator(requireContext(), this, mModalDialogManager);

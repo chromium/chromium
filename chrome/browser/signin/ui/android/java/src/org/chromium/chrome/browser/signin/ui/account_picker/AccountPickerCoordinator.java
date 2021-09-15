@@ -22,20 +22,15 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
  */
 @MainThread
 public class AccountPickerCoordinator {
-    /**
-     * Listener for account picker.
-     */
+    /** Listener for account picker. */
     public interface Listener {
         /**
          * Notifies that the user has selected an account.
          * @param accountName The email of the selected account.
-         * @param isDefaultAccount Whether the selected account is the first in the account list.
          */
-        void onAccountSelected(String accountName, boolean isDefaultAccount);
+        void onAccountSelected(String accountName);
 
-        /**
-         * Notifies when the user clicked the "add account" button.
-         */
+        /** Notifies when the user clicked the "add account" button. */
         void addAccount();
     }
 

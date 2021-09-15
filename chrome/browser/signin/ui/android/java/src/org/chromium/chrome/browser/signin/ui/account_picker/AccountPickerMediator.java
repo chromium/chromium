@@ -91,14 +91,12 @@ class AccountPickerMediator implements AccountsChangeObserver, ProfileDataCache.
         mListModel.clear();
 
         // Add an "existing account" row for each account
-        if (accounts.size() > 0) {
-            DisplayableProfileData profileData =
-                    mProfileDataCache.getProfileDataOrDefault(accounts.get(0).name);
-            mListModel.add(createExistingAccountRowItem(profileData, true));
-            for (int i = 1; i < accounts.size(); ++i) {
-                profileData = mProfileDataCache.getProfileDataOrDefault(accounts.get(i).name);
-                mListModel.add(createExistingAccountRowItem(profileData, false));
-            }
+        final Callback<DisplayableProfileData> callback = profileData
+                -> mAccountPickerListener.onAccountSelected(profileData.getAccountEmail());
+        for (Account account : accounts) {
+            PropertyModel model = ExistingAccountRowProperties.createModel(
+                    mProfileDataCache.getProfileDataOrDefault(account.name), callback);
+            mListModel.add(new MVCListAdapter.ListItem(ItemType.EXISTING_ACCOUNT_ROW, model));
         }
 
         // Add an "add account" row
@@ -107,13 +105,4 @@ class AccountPickerMediator implements AccountsChangeObserver, ProfileDataCache.
         mListModel.add(new MVCListAdapter.ListItem(ItemType.ADD_ACCOUNT_ROW, model));
     }
 
-    private MVCListAdapter.ListItem createExistingAccountRowItem(
-            DisplayableProfileData profileData, boolean isDefaultAccount) {
-        Callback<DisplayableProfileData> profileDataCallback = profileData1
-                -> mAccountPickerListener.onAccountSelected(
-                        profileData1.getAccountEmail(), isDefaultAccount);
-        PropertyModel model =
-                ExistingAccountRowProperties.createModel(profileData, profileDataCallback);
-        return new MVCListAdapter.ListItem(ItemType.EXISTING_ACCOUNT_ROW, model);
-    }
 }

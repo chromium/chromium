@@ -113,14 +113,14 @@ public class AccountPickerDialogTest extends DummyUiChromeActivityTestCase {
     public void testSelectDefaultAccount() {
         onView(withText(mAccountName1)).check(matches(isDisplayed()));
         onView(withText(mFullName1)).perform(click());
-        verify(mListenerMock).onAccountSelected(mAccountName1, true);
+        verify(mListenerMock).onAccountSelected(mAccountName1);
     }
 
     @Test
     @MediumTest
     public void testSelectNonDefaultAccount() {
         onView(withText(mAccountName2)).perform(click());
-        verify(mListenerMock).onAccountSelected(mAccountName2, false);
+        verify(mListenerMock).onAccountSelected(mAccountName2);
     }
 
     @Test
