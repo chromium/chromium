@@ -260,13 +260,15 @@ void MetricsReporter::RecordEngagement(const StreamType& stream_type,
       (scroll_distance_dp > kMinScrollThresholdDp || interacted)) {
     ReportEngagementTypeHistogram(stream_type,
                                   FeedEngagementType::kFeedEngaged);
-    // Unretained is safe because MetricsReporter outlives `FeedStream`.
-    delegate_->SubscribedWebFeedCount(base::BindOnce(
-        &MetricsReporter::ReportSubscriptionCountAtEngagementTime,
-        base::Unretained(this)));
+
     data.engaged_reported = true;
     if (!combined_stats_.engaged_reported) {
       ReportCombinedEngagementTypeHistogram(FeedEngagementType::kFeedEngaged);
+      // Unretained is safe because MetricsReporter outlives `FeedStream`.
+      delegate_->SubscribedWebFeedCount(base::BindOnce(
+          &MetricsReporter::ReportSubscriptionCountAtEngagementTime,
+          base::Unretained(this)));
+
       combined_stats_.engaged_reported = true;
     }
   }
