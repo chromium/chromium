@@ -424,10 +424,7 @@ void NGInlineLayoutAlgorithm::CreateLine(
     PlaceRelativePositionedItems(line_box);
 
   // Apply any relative positioned offsets to any boxes (and their children).
-  Vector<LogicalOffset, 32> oof_relative_offsets(
-      box_states_->NumBoxFragments());
-  box_states_->ApplyRelativePositioning(ConstraintSpace(), line_box,
-                                        &oof_relative_offsets);
+  box_states_->ApplyRelativePositioning(ConstraintSpace(), line_box);
 
   // Create box fragments if needed. After this point forward, |line_box| is a
   // tree structure.
@@ -436,8 +433,7 @@ void NGInlineLayoutAlgorithm::CreateLine(
   // creating a "hole" in the array.
   if (box_states_->HasBoxFragments()) {
     box_states_->CreateBoxFragments(ConstraintSpace(), line_box,
-                                    line_info->IsBlockInInline(),
-                                    &oof_relative_offsets);
+                                    line_info->IsBlockInInline());
   }
 
   // Update item index of the box states in the context.

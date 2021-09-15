@@ -57,7 +57,8 @@ void NGLineBoxFragmentBuilder::PropagateChildrenData(
           child.Offset() -
               ComputeRelativeOffsetForInline(*ConstraintSpace(),
                                              child.PhysicalFragment()->Style()),
-          /* reltaive_offset */ LogicalOffset());
+          ComputeRelativeOffsetForOOFInInline(
+              *ConstraintSpace(), child.PhysicalFragment()->Style()));
 
       // Skip over any children, the information should have already been
       // propagated into this layout result.
@@ -75,8 +76,7 @@ void NGLineBoxFragmentBuilder::PropagateChildrenData(
   }
 
   DCHECK(oof_positioned_descendants_.IsEmpty());
-  MoveOutOfFlowDescendantCandidatesToDescendants(
-      /* relative_offset */ LogicalOffset());
+  MoveOutOfFlowDescendantCandidatesToDescendants();
 }
 
 scoped_refptr<const NGLayoutResult>

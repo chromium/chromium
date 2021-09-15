@@ -269,8 +269,8 @@ void NGContainerFragmentBuilder::TransferOutOfFlowCandidates(
   oof_positioned_candidates_.clear();
 }
 
-void NGContainerFragmentBuilder::MoveOutOfFlowDescendantCandidatesToDescendants(
-    LogicalOffset relative_offset) {
+void NGContainerFragmentBuilder::
+    MoveOutOfFlowDescendantCandidatesToDescendants() {
   DCHECK(oof_positioned_descendants_.IsEmpty());
   std::swap(oof_positioned_candidates_, oof_positioned_descendants_);
 
@@ -287,7 +287,8 @@ void NGContainerFragmentBuilder::MoveOutOfFlowDescendantCandidatesToDescendants(
     if (!candidate.inline_container.container &&
         IsInlineContainerForNode(candidate.Node(), layout_object_)) {
       candidate.inline_container = NGInlineContainer<LogicalOffset>(
-          To<LayoutInline>(layout_object_), relative_offset);
+          To<LayoutInline>(layout_object_),
+          /* relative_offset */ LogicalOffset());
     }
 
     // Ensure that the inline_container is a continuation root.
