@@ -187,15 +187,10 @@ class ChromeServiceWorkerTest : public InProcessBrowserTest {
     msg.encoded_message = msg.owned_encoded_message;
 
     GURL url = embedded_test_server()->GetURL("/scope/");
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&content::ServiceWorkerContext::
-                           StartServiceWorkerAndDispatchMessage,
-                       base::Unretained(GetServiceWorkerContext()), url,
-                       blink::StorageKey(url::Origin::Create(url)),
-                       std::move(msg),
-                       base::BindRepeating(&ExpectResultAndRun<bool>, true,
-                                           run_loop.QuitClosure())));
+    GetServiceWorkerContext()->StartServiceWorkerAndDispatchMessage(
+        url, blink::StorageKey(url::Origin::Create(url)), std::move(msg),
+        base::BindRepeating(&ExpectResultAndRun<bool>, true,
+                            run_loop.QuitClosure()));
     run_loop.Run();
   }
 

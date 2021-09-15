@@ -60,11 +60,9 @@ class StoragePartitionImpl;
 // refcounted. The core object is what is used internally by service worker
 // classes.
 //
-// All the methods are expected to be called on the UI thread.
-// Some of the methods are exceptionally allowed to be called on any threads,
-// but it's now discouraged.
-// TODO(https://crbug.com/1161153): Disallow methods to be called on any
-// threads.
+// All the methods called on the UI thread.
+// TODO(https://crbug.com/1161153): Require all references to be on the UI
+// thread and remove RefCountedThreadSafe.
 class CONTENT_EXPORT ServiceWorkerContextWrapper
     : public ServiceWorkerContext,
       public ServiceWorkerContextCoreObserver,
@@ -90,8 +88,8 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
 
   explicit ServiceWorkerContextWrapper(BrowserContext* browser_context);
 
-  // Init and Shutdown are for use on the UI thread when the profile,
-  // storagepartition is being setup and torn down.
+  // Init and Shutdown called when the StoragePartition is being setup and torn
+  // down.
   void Init(const base::FilePath& user_data_directory,
             storage::QuotaManagerProxy* quota_manager_proxy,
             storage::SpecialStoragePolicy* special_storage_policy,
@@ -102,7 +100,6 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   // leaves the system in a disabled state until it's done.
   void DeleteAndStartOver();
 
-  // The StoragePartition should only be used on the UI thread.
   // Can be null before/during init and during/after shutdown (and in tests).
   StoragePartitionImpl* storage_partition() const;
 
@@ -254,6 +251,9 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   // Similar to FindReadyRegistrationForScope, but in the case no waiting or
   // active worker is found (i.e., there is only an installing worker),
   // `callback` is called without waiting for the worker to reach active.
+  //
+  // Not guaranteed to call the callback asynchronously.
+  // TODO(falken): Should it?
   void FindRegistrationForScope(const GURL& scope,
                                 const blink::StorageKey& key,
                                 FindRegistrationCallback callback);
@@ -295,10 +295,6 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
 
   void GetAllRegistrations(GetRegistrationsInfosCallback callback);
 
-  // These can be called from any thread, and the callback is called on that
-  // thread.
-  // TODO(https://crbug.com/1161153): Make these methods called only on the UI
-  // thread.
   void GetRegistrationUserData(int64_t registration_id,
                                const std::vector<std::string>& keys,
                                GetUserDataCallback callback);
@@ -410,6 +406,9 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
 
   // If `include_installing_version` is true, `callback` is called if there is
   // an installing version with no waiting or active version.
+  //
+  // Not guaranteed to call the callback asynchronously.
+  // TODO(falken): Should it?
   void FindRegistrationForScopeImpl(const GURL& scope,
                                     const blink::StorageKey& key,
                                     bool include_installing_version,
@@ -522,8 +521,7 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
       base::ObserverListThreadSafe<ServiceWorkerContextCoreObserver>;
   const scoped_refptr<ServiceWorkerContextObserverList> core_observer_list_;
 
-  // Observers which live outside content's implementation boundary. Observer
-  // methods will always be dispatched on the UI thread.
+  // Observers which live outside content's implementation boundary.
   base::ObserverList<ServiceWorkerContextObserver, true>::Unchecked
       observer_list_;
 
@@ -542,7 +540,7 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
       running_service_workers_;
 
   // A set of origins that have at least one registration. See
-  // HasRegistrationForOrigin() for details. Must be accessed on the UI thread.
+  // HasRegistrationForOrigin() for details.
   // TODO(http://crbug.com/824858): This can be removed when service workers are
   // fully converted to running on the UI thread.
   std::set<url::Origin> registered_origins_;
@@ -564,9 +562,6 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
 
   // A loader factory used to register a service worker. Used for tests.
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory_for_test_;
-
-  // Temporary for moving context core to the UI thread.
-  scoped_refptr<base::TaskRunner> core_thread_task_runner_;
 
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerContextWrapper);
 };
