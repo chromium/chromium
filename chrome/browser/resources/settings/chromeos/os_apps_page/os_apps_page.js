@@ -26,6 +26,7 @@ import './app_management_page/uninstall_button.js';
 
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 
 import {DropdownMenuOptionList} from '../../controls/settings_dropdown_menu.js';
 import {loadTimeData} from '../../i18n_setup.js';
@@ -39,6 +40,28 @@ import {AppManagementEntryPoint, AppManagementEntryPointsHistogramName, AppManag
 import {AppManagementStoreClient} from './app_management_page/store_client.js';
 import {alphabeticalSort, convertOptionalBoolToBool, createPermission, getAppIcon, getPermission, getPermissionValueBool, getSelectedApp, openAppDetailPage, openMainPage, permissionTypeHandle, recordAppManagementUserAction, toggleOptionalBool} from './app_management_page/util.js';
 import {getAppNotificationProvider} from './app_notifications_page/mojo_interface_provider.js';
+
+/**
+ * @param {!chromeos.settings.appNotification.mojom.App} app
+ * @return {boolean}
+ */
+export function isAppInstalled(app) {
+  switch (app.readiness) {
+    case apps.mojom.Readiness.kReady:
+    case apps.mojom.Readiness.kDisabledByBlocklist:
+    case apps.mojom.Readiness.kDisabledByPolicy:
+    case apps.mojom.Readiness.kDisabledByUser:
+    case apps.mojom.Readiness.kTerminated:
+      return true;
+    case apps.mojom.Readiness.kUninstalledByUser:
+    case apps.mojom.Readiness.kUninstalledByMigration:
+    case apps.mojom.Readiness.kRemoved:
+    case apps.mojom.Readiness.kUnknown:
+      return false;
+  }
+  assertNotReached();
+  return false;
+}
 
 Polymer({
   _template: html`{__html_template__}`,
@@ -142,10 +165,13 @@ Polymer({
      */
     app_: Object,
 
-    /** @private */
-    numAppsWithNotifications_: {
-      type: Number,
-      value: 0,
+    /**
+     * @type {!Array<!Object>}
+     * @private
+     */
+    appsWithNotifications_: {
+      type: Array,
+      value: [],
     },
 
     /**
@@ -196,7 +222,7 @@ Polymer({
         this.appNotificationsObserverReceiver_.$.bindNewPipeAndPassRemote());
 
     this.mojoInterfaceProvider_.getApps().then((result) => {
-      this.numAppsWithNotifications_ = result.apps.length;
+      this.appsWithNotifications_ = result.apps;
     });
   },
 
@@ -274,9 +300,24 @@ Polymer({
         isKeyboardAction);
   },
 
-  /** Override chromeos.settings.appNotification.onNotificationAppListChanged */
-  onNotificationAppListChanged(apps) {
-    this.numAppsWithNotifications_ = apps.length;
+  /** Override chromeos.settings.appNotification.onNotificationAppChanged */
+  onNotificationAppChanged(updatedApp) {
+    const foundIdx = this.appsWithNotifications_.findIndex(app => {
+      return app.id === updatedApp.id;
+    });
+    if (isAppInstalled(updatedApp)) {
+      if (foundIdx !== -1) {
+        this.splice('appsWithNotifications_', foundIdx, updatedApp);
+        return;
+      }
+      this.push('appsWithNotifications_', updatedApp);
+      return;
+    }
+
+    // Cannot have an app that is uninstalled prior to being installed.
+    assert(foundIdx !== -1);
+    // Uninstalled app found, remove it from the list.
+    this.splice('appsWithNotifications_', foundIdx, 1);
   },
 
   /** Override chromeos.settings.appNotification.onQuietModeChanged */
@@ -287,7 +328,7 @@ Polymer({
    * @protected
    */
   getAppListCountDescription_() {
-    return this.i18n('appNotificationsCountDescription',
-        this.numAppsWithNotifications_);
+    return this.i18n(
+        'appNotificationsCountDescription', this.appsWithNotifications_.length);
   }
 });

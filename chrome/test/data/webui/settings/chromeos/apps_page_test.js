@@ -211,10 +211,17 @@ suite('AppsPageTests', function() {
    * @param {string} id
    * @param {string} title
    * @param {!apps.mojom.Permission} permission
+   * @param {?apps.mojom.Readiness} readiness
    * @return {!chromeos.settings.appNotification.mojom.App}
    */
-  function createApp(id, title, permission) {
-    return {id: id, title: title, notificationPermission: permission};
+  function createApp(
+      id, title, permission, readiness = apps.mojom.Readiness.kReady) {
+    return {
+      id: id,
+      title: title,
+      notificationPermission: permission,
+      readiness: readiness
+    };
   }
 
   /**
@@ -225,8 +232,8 @@ suite('AppsPageTests', function() {
   }
 
   /** @param {!Array<!chromeos.settings.appNotification.mojom.App>} */
-  function simulateNotificationAppListChanged(apps) {
-    mojoApi_.getObserverRemote().onNotificationAppListChanged(apps);
+  function simulateNotificationAppChanged(app) {
+    mojoApi_.getObserverRemote().onNotificationAppChanged(app);
   }
 
   setup(async () => {
@@ -308,12 +315,19 @@ suite('AppsPageTests', function() {
           /**value=*/ 1, /**is_managed=*/ false);
       const app1 = createApp('1', 'App1', permission1);
       const app2 = createApp('2', 'App2', permission2);
-      const expectedApps = [app1, app2];
 
-      simulateNotificationAppListChanged(expectedApps);
+      simulateNotificationAppChanged(app1);
+      simulateNotificationAppChanged(app2);
       await flushTasks();
 
       assertEquals('2 apps', rowLink.subLabel);
+
+      // Simulate an uninstalled app.
+      const app3 = createApp(
+          '2', 'App2', permission2, apps.mojom.Readiness.kUninstalledByUser);
+      simulateNotificationAppChanged(app3);
+      await flushTasks();
+      assertEquals('1 apps', rowLink.subLabel);
     });
   });
 

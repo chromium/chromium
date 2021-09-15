@@ -12,6 +12,7 @@ import '/app-management/image.mojom-lite.js';
 import '/app-management/types.mojom-lite.js';
 import '/os_apps_page/app_notification_handler.mojom-lite.js';
 
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Route, RouteObserverBehavior, RouteObserverBehaviorInterface, Router} from '../../../router.js';
@@ -19,6 +20,7 @@ import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../../deep_link
 import {recordSettingChange} from '../../metrics_recorder.m.js';
 import {routes} from '../../os_route.m.js';
 
+import {isAppInstalled} from '../os_apps_page.js';
 import {getAppNotificationProvider} from './mojo_interface_provider.js';
 
 /**
@@ -103,6 +105,9 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
     super.connectedCallback();
     this.startObservingAppNotifications_();
     this.mojoInterfaceProvider_.notifyPageReady();
+    this.mojoInterfaceProvider_.getApps().then((result) => {
+      this.appList_ = result.apps;
+    });
   }
 
   /** @override */
@@ -142,9 +147,24 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
     this.isDndEnabled_ = enabled;
   }
 
-  /** Override chromeos.settings.appNotification.onNotificationAppListChanged */
-  onNotificationAppListChanged(apps) {
-    this.appList_ = apps;
+  /** Override chromeos.settings.appNotification.onNotificationAppChanged */
+  onNotificationAppChanged(updatedApp) {
+    const foundIdx = this.appList_.findIndex(app => {
+      return app.id === updatedApp.id;
+    });
+    if (isAppInstalled(updatedApp)) {
+      if (foundIdx !== -1) {
+        this.splice('appList_', foundIdx, updatedApp);
+        return;
+      }
+      this.push('appList_', updatedApp);
+      return;
+    }
+
+    // Cannot have an app that is uninstalled prior to being installed.
+    assert(foundIdx !== -1);
+    // Uninstalled app found, remove it from the list.
+    this.splice('appList_', foundIdx, 1);
   }
 
   /** @private */

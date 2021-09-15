@@ -57,14 +57,13 @@ class AppNotificationHandler
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
 
-  void UpdateAppList();
-  void NotifyListChanged();
+  std::vector<app_notification::mojom::AppPtr> GetAppList();
+  void NotifyAppChanged(app_notification::mojom::AppPtr app);
 
   mojo::RemoteSet<app_notification::mojom::AppNotificationsObserver>
       observer_list_;
 
   apps::AppServiceProxyChromeOs* app_service_proxy_;
-  std::vector<app_notification::mojom::AppPtr> apps_;
 
   mojo::Receiver<app_notification::mojom::AppNotificationsHandler> receiver_{
       this};

@@ -50,9 +50,8 @@ class AppNotificationHandlerTestObserver
   AppNotificationHandlerTestObserver() {}
   ~AppNotificationHandlerTestObserver() override {}
 
-  void OnNotificationAppListChanged(
-      std::vector<app_notification::mojom::AppPtr> apps) override {
-    apps_ = std::move(apps);
+  void OnNotificationAppChanged(app_notification::mojom::AppPtr app) override {
+    recently_updated_app_ = std::move(app);
     app_list_changed_++;
   }
 
@@ -67,6 +66,10 @@ class AppNotificationHandlerTestObserver
   }
 
   const std::vector<app_notification::mojom::AppPtr>& apps() { return apps_; }
+  const app_notification::mojom::AppPtr& recently_updated_app() {
+    return recently_updated_app_;
+  }
+
   bool is_quiet_mode() { return is_quiet_mode_; }
 
   int app_list_changed() { return app_list_changed_; }
@@ -74,6 +77,7 @@ class AppNotificationHandlerTestObserver
 
  private:
   std::vector<app_notification::mojom::AppPtr> apps_;
+  app_notification::mojom::AppPtr recently_updated_app_;
   bool is_quiet_mode_ = false;
 
   int app_list_changed_ = 0;
@@ -208,6 +212,9 @@ TEST_F(AppNotificationHandlerTest, TestAppListUpdated) {
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(observer()->app_list_changed(), 1);
+  EXPECT_EQ("arcAppWithNotifications", observer()->recently_updated_app()->id);
+  EXPECT_EQ(1,
+            observer()->recently_updated_app()->notification_permission->value);
 
   CreateAndStoreFakeApp(
       "webAppWithNotifications", apps::mojom::AppType::kWeb,
@@ -217,9 +224,9 @@ TEST_F(AppNotificationHandlerTest, TestAppListUpdated) {
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(observer()->app_list_changed(), 2);
-
-  EXPECT_EQ(observer()->apps()[0]->notification_permission->value, 1);
-  EXPECT_EQ(observer()->apps()[1]->notification_permission->value, 1);
+  EXPECT_EQ("webAppWithNotifications", observer()->recently_updated_app()->id);
+  EXPECT_EQ(1,
+            observer()->recently_updated_app()->notification_permission->value);
 
   CreateAndStoreFakeApp("arcAppWithCamera", apps::mojom::AppType::kArc,
                         static_cast<std::uint32_t>(
@@ -246,11 +253,6 @@ TEST_F(AppNotificationHandlerTest, TestAppListUpdated) {
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(observer()->app_list_changed(), 2);
-  EXPECT_TRUE(CheckIfFakeAppInList("arcAppWithNotifications"));
-  EXPECT_TRUE(CheckIfFakeAppInList("webAppWithNotifications"));
-  EXPECT_FALSE(CheckIfFakeAppInList("arcAppWithCamera"));
-  EXPECT_FALSE(CheckIfFakeAppInList("webAppWithGeolocation"));
-  EXPECT_FALSE(CheckIfFakeAppInList("pluginVmAppWithPrinting"));
 
   CreateAndStoreFakeApp(
       "arcAppWithNotifications", apps::mojom::AppType::kArc,
@@ -260,6 +262,9 @@ TEST_F(AppNotificationHandlerTest, TestAppListUpdated) {
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(observer()->app_list_changed(), 3);
+  EXPECT_EQ("arcAppWithNotifications", observer()->recently_updated_app()->id);
+  EXPECT_EQ(0,
+            observer()->recently_updated_app()->notification_permission->value);
 
   CreateAndStoreFakeApp(
       "webAppWithNotifications", apps::mojom::AppType::kWeb,
@@ -269,15 +274,15 @@ TEST_F(AppNotificationHandlerTest, TestAppListUpdated) {
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(observer()->app_list_changed(), 4);
-  EXPECT_EQ(observer()->apps()[0]->notification_permission->value, 0);
-  EXPECT_EQ(observer()->apps()[1]->notification_permission->value, 0);
+  EXPECT_EQ("webAppWithNotifications", observer()->recently_updated_app()->id);
+  EXPECT_EQ(0,
+            observer()->recently_updated_app()->notification_permission->value);
 }
 
 TEST_F(AppNotificationHandlerTest, TestNotifyPageReady) {
   NotifyPageReady();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(observer()->quiet_mode_changed(), 1);
-  EXPECT_EQ(observer()->app_list_changed(), 1);
 }
 
 }  // namespace settings

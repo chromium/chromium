@@ -41,6 +41,11 @@ class FakeAppNotificationHandler {
       this.appNotificationObserverRemote_ = null;
     }
 
+    this.apps_ = [];
+    this.isQuietModeEnabled_ = false;
+    this.lastUpdatedAppId_ = -1;
+    this.lastUpdatedAppPermission_ = {};
+
     this.resolverMap_.set('addObserver', new PromiseResolver());
     this.resolverMap_.set('setQuietMode', new PromiseResolver());
     this.resolverMap_.set('setNotificationPermission', new PromiseResolver());
@@ -210,9 +215,9 @@ suite('AppNotificationsSubpageTests', function() {
     mojoApi_.getObserverRemote().onQuietModeChanged(enable);
   }
 
-  /** @param {!Array<!chromeos.settings.appNotification.mojom.App>} */
-  function simulateNotificationAppListChanged(apps) {
-    mojoApi_.getObserverRemote().onNotificationAppListChanged(apps);
+  /** @param {!chromeos.settings.appNotification.mojom.App} */
+  function simulateNotificationAppChanged(app) {
+    mojoApi_.getObserverRemote().onNotificationAppChanged(app);
   }
 
   /**
@@ -235,10 +240,17 @@ suite('AppNotificationsSubpageTests', function() {
    * @param {string} id
    * @param {string} title
    * @param {!apps.mojom.Permission} permission
+   * @param {?apps.mojom.Readiness} readiness
    * @return {!chromeos.settings.appNotification.mojom.App}
    */
-  function createApp(id, title, permission) {
-    return {id: id, title: title, notificationPermission: permission};
+  function createApp(
+      id, title, permission, readiness = apps.mojom.Readiness.kReady) {
+    return {
+      id: id,
+      title: title,
+      notificationPermission: permission,
+      readiness: readiness
+    };
   }
 
   test('loadAppListAndClickToggle', async () => {
@@ -250,10 +262,10 @@ suite('AppNotificationsSubpageTests', function() {
         /**value=*/ 1, /**is_managed=*/ false);
     const app1 = createApp('1', 'App1', permission1);
     const app2 = createApp('2', 'App2', permission2);
-    const expectedApps = [app1, app2];
 
     await initializeObserver;
-    simulateNotificationAppListChanged(expectedApps);
+    simulateNotificationAppChanged(app1);
+    simulateNotificationAppChanged(app2);
     await flushTasks();
 
     // Expect 2 apps to be loaded.
@@ -285,6 +297,40 @@ suite('AppNotificationsSubpageTests', function() {
     assertEquals(1, lastUpdatedPermission.value);
   });
 
+  test('RemovedApp', async () => {
+    const permission1 = createPermission(
+        /**id=*/ 1, /**value_type=*/ 0,
+        /**value=*/ 0, /**is_managed=*/ false);
+    const permission2 = createPermission(
+        /**id=*/ 2, /**value_type=*/ 0,
+        /**value=*/ 1, /**is_managed=*/ false);
+    const app1 = createApp('1', 'App1', permission1);
+    const app2 = createApp('2', 'App2', permission2);
+
+    await initializeObserver;
+    simulateNotificationAppChanged(app1);
+    simulateNotificationAppChanged(app2);
+    await flushTasks();
+
+    // Expect 2 apps to be loaded.
+    let appRowList =
+        page.$.appNotificationsList.querySelectorAll('app-notification-row');
+    assertEquals(2, appRowList.length);
+
+    const app3 = createApp(
+        '1', 'App1', permission1, apps.mojom.Readiness.kUninstalledByUser);
+    simulateNotificationAppChanged(app3);
+
+    await flushTasks();
+    // Expect only 1 app to be shown now.
+    appRowList =
+        page.$.appNotificationsList.querySelectorAll('app-notification-row');
+    assertEquals(1, appRowList.length);
+
+    const appRow1 = appRowList[0];
+    assertEquals('App2', appRow1.$.appTitle.textContent.trim());
+  });
+
   // TODO(crbug/1240175): Ensure that CrToggle is disabled correctly and
   // CrPolicyIndicator is hidden correctly.
   test('Each app-notification-row displays correctly', async () => {
@@ -296,10 +342,10 @@ suite('AppNotificationsSubpageTests', function() {
         /**value=*/ 1, /**is_managed=*/ false);
     const app1 = createApp('1', 'Chrome', permission1);
     const app2 = createApp('2', 'Files', permission2);
-    const expectedApps = [app1, app2];
 
     await initializeObserver;
-    simulateNotificationAppListChanged(expectedApps);
+    simulateNotificationAppChanged(app1);
+    simulateNotificationAppChanged(app2);
     await flushTasks();
 
     const chromeRow = page.$.appNotificationsList.children[0];
@@ -385,7 +431,6 @@ suite('AppNotificationsSubpageTests', function() {
         })
         .then(() => {
           assertTrue(dndToggle.checked);
-          assertTrue(mojoApi_.getCurrentQuietModeState());
         });
   });
 });

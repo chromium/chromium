@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/os_apps_page/app_notification_handler.h"
 
-#include <algorithm>
+#include <utility>
 
 #include "ash/public/cpp/message_center_ash.h"
 #include "base/logging.h"
@@ -36,6 +36,7 @@ app_notification::mojom::AppPtr CreateAppPtr(const apps::AppUpdate& update) {
   app->id = update.AppId();
   app->title = update.Name();
   app->notification_permission = std::move(permission_copy);
+  app->readiness = update.Readiness();
 
   return app;
 }
@@ -50,9 +51,8 @@ std::vector<app_notification::mojom::AppPtr> Clone(
 }
 
 bool ShouldIncludeApp(const apps::AppUpdate& update) {
-  // Only apps that are installed and can be shown in management are supported.
-  if (update.ShowInManagement() != apps::mojom::OptionalBool::kTrue ||
-      !apps_util::IsInstalled(update.Readiness())) {
+  // Only apps that can be shown in management are supported.
+  if (update.ShowInManagement() != apps::mojom::OptionalBool::kTrue) {
     return false;
   }
 
@@ -129,42 +129,33 @@ void AppNotificationHandler::SetNotificationPermission(
 }
 
 void AppNotificationHandler::GetApps(GetAppsCallback callback) {
-  UpdateAppList();
-  std::move(callback).Run(Clone(apps_));
+  std::move(callback).Run(GetAppList());
 }
 
 void AppNotificationHandler::OnAppUpdate(const apps::AppUpdate& update) {
-  auto it = std::find_if(
-      apps_.begin(), apps_.end(),
-      [&update](const auto& app) { return app->id == update.AppId(); });
-
   if (ShouldIncludeApp(update)) {
-    if (it != apps_.end())
-      *it = CreateAppPtr(update);
-    else
-      apps_.push_back(CreateAppPtr(update));
-  } else {
-    if (it != apps_.end())
-      apps_.erase(it);
-    else
-      return;
+    // Uninstalled apps are allowed to be sent as an update.
+    NotifyAppChanged(CreateAppPtr(update));
   }
-
-  NotifyListChanged();
 }
 
-void AppNotificationHandler::UpdateAppList() {
-  apps_.clear();
+std::vector<app_notification::mojom::AppPtr>
+AppNotificationHandler::GetAppList() {
+  std::vector<app_notification::mojom::AppPtr> apps;
   app_service_proxy_->AppRegistryCache().ForEachApp(
-      [this](const apps::AppUpdate& update) {
-        if (ShouldIncludeApp(update))
-          apps_.push_back(CreateAppPtr(update));
+      [&apps](const apps::AppUpdate& update) {
+        if (ShouldIncludeApp(update) &&
+            apps_util::IsInstalled(update.Readiness())) {
+          apps.push_back(CreateAppPtr(update));
+        }
       });
+  return apps;
 }
 
-void AppNotificationHandler::NotifyListChanged() {
+void AppNotificationHandler::NotifyAppChanged(
+    app_notification::mojom::AppPtr app) {
   for (const auto& observer : observer_list_) {
-    observer->OnNotificationAppListChanged(Clone(apps_));
+    observer->OnNotificationAppChanged(app.Clone());
   }
 }
 
@@ -175,8 +166,6 @@ void AppNotificationHandler::OnAppRegistryCacheWillBeDestroyed(
 
 void AppNotificationHandler::NotifyPageReady() {
   OnQuietModeChanged(ash::MessageCenterAsh::Get()->IsQuietMode());
-  UpdateAppList();
-  NotifyListChanged();
 }
 
 }  // namespace settings

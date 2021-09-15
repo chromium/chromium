@@ -18,6 +18,9 @@ struct App {
   // this field may be null when this struct is used to signal updates.
   string? title;
 
+  // Whether an app is ready to launch, i.e. installed.
+  apps.mojom.Readiness readiness;
+
   // Contains the current permission state of the App's notification.
   apps.mojom.Permission notification_permission;
 };
@@ -46,9 +49,9 @@ interface AppNotificationsHandler {
 // Observer interface that sends remote updates to the App notifications
 // subpage in OSSettings.
 interface AppNotificationsObserver {
-  // Notifies clients when apps are added, removed, or notification permission
-  // changes.
-  OnNotificationAppListChanged(array<App> apps);
+  // Notifies clients when an app has been added, removed, or its notification
+  // permission changed.
+  OnNotificationAppChanged(App app);
   // Notifies client when the DoNotDisturb (QuietMode) state changes.
   OnQuietModeChanged(bool enabled);
 };

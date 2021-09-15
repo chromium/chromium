@@ -19,7 +19,7 @@
           on-click="onClickAppNotifications_"
           role-description="$i18n{subpageArrowRoleDescription}"
           sub-label=
-              "[[getAppListCountDescription_(numAppsWithNotifications_)]]">
+              "[[getAppListCountDescription_(appsWithNotifications_.*)]]">
       </cr-link-row>
     </template>
     <template is="dom-if" if="[[showAndroidApps]]">
