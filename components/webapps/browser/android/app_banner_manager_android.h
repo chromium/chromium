@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/webapps/browser/android/add_to_homescreen_installer.h"
 #include "components/webapps/browser/android/installable/installable_ambient_badge_infobar_delegate.h"
+#include "components/webapps/browser/android/installable/installable_ambient_badge_message_controller.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "url/gurl.h"
 
@@ -177,6 +178,9 @@ class AppBannerManagerAndroid
 
   // The Java-side AppBannerManager.
   base::android::ScopedJavaGlobalRef<jobject> java_banner_manager_;
+
+  // Message controller for the ambient badge.
+  InstallableAmbientBadgeMessageController message_controller_;
 
   // App package name for a native app banner.
   std::string native_app_package_;

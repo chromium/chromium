@@ -3821,6 +3821,11 @@
     "expiry_milestone": 97
   },
   {
+    "name": "messages-for-android-pwa-install",
+    "owners": [ "pavely", "lazzzis" ],
+    "expiry_milestone": 101
+  },
+  {
     "name": "messages-for-android-reader-mode",
     "owners": [ "pavely", "lazzzis" ],
     "expiry_milestone": 99

@@ -3178,6 +3178,10 @@ const char kMessagesForAndroidPopupBlockedName[] = "Popup Blocked Messages UI";
 const char kMessagesForAndroidPopupBlockedDescription[] =
     "When enabled, popup blocked prompt will use the new Messages UI.";
 
+const char kMessagesForAndroidPWAInstallName[] = "PWA Installation Messages UI";
+const char kMessagesForAndroidPWAInstallDescription[] =
+    "When enabled, PWA Installation prompt will use the new Messages UI.";
+
 const char kMessagesForAndroidReaderModeName[] = "Reader Mode Messages UI";
 const char kMessagesForAndroidReaderModeDescription[] =
     "When enabled, reader mode prompt will use the new Messages UI.";
