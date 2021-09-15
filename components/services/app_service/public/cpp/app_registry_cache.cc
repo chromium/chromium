@@ -170,14 +170,15 @@ void AppRegistryCache::OnAppTypeInitialized() {
     return;
   }
 
-  for (auto app_type : in_progress_initialized_app_types_) {
+  auto in_progress_initialized_app_types = in_progress_initialized_app_types_;
+  in_progress_initialized_app_types_.clear();
+
+  for (auto app_type : in_progress_initialized_app_types) {
     for (auto& obs : observers_) {
       obs.OnAppTypeInitialized(app_type);
     }
     initialized_app_types_.insert(app_type);
   }
-
-  in_progress_initialized_app_types_.clear();
 }
 
 }  // namespace apps
