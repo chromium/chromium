@@ -393,9 +393,9 @@ void BindPrintManagement(
     mojo::PendingReceiver<
         ash::printing::printing_manager::mojom::PrintingMetadataProvider>
         receiver) {
-  chromeos::printing::print_management::PrintingManager* handler =
-      chromeos::printing::print_management::PrintingManagerFactory::
-          GetForProfile(profile);
+  ash::printing::print_management::PrintingManager* handler =
+      ash::printing::print_management::PrintingManagerFactory::GetForProfile(
+          profile);
   if (handler)
     handler->BindInterface(std::move(receiver));
 }

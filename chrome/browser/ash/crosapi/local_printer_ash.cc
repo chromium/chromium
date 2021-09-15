@@ -361,7 +361,7 @@ void LocalPrinterAsh::CancelPrintJob(const std::string& printer_id,
                                      CancelPrintJobCallback callback) {
   Profile* profile = GetProfile();
   DCHECK(profile);
-  chromeos::printing::print_management::PrintingManagerFactory::GetForProfile(
+  ash::printing::print_management::PrintingManagerFactory::GetForProfile(
       profile)
       ->CancelPrintJob(
           chromeos::CupsPrintJob::CreateUniqueId(printer_id, job_id),

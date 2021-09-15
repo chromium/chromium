@@ -18,13 +18,11 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 
-namespace chromeos {
+namespace ash {
 namespace printing {
 namespace print_management {
 
-using ::ash::printing::printing_manager::mojom::PrintingMetadataProvider;
-using ::ash::printing::printing_manager::mojom::PrintJobInfoPtr;
-using ::ash::printing::printing_manager::mojom::PrintJobsObserver;
+using ::chromeos::CupsPrintJob;
 using ::chromeos::printing::proto::PrintJobInfo;
 using ::history::DeletionInfo;
 using ::history::HistoryService;
@@ -32,7 +30,7 @@ using ::history::HistoryService;
 PrintingManager::PrintingManager(
     PrintJobHistoryService* print_job_history_service,
     HistoryService* history_service,
-    CupsPrintJobManager* cups_print_job_manager,
+    chromeos::CupsPrintJobManager* cups_print_job_manager,
     PrefService* pref_service)
     : print_job_history_service_(print_job_history_service),
       history_service_(history_service),
@@ -90,7 +88,7 @@ void PrintingManager::CancelPrintJob(const std::string& id,
 }
 
 void PrintingManager::ObservePrintJobs(
-    mojo::PendingRemote<PrintJobsObserver> observer,
+    mojo::PendingRemote<printing_manager::mojom::PrintJobsObserver> observer,
     ObservePrintJobsCallback callback) {
   print_job_observers_.Add(std::move(observer));
   std::move(callback).Run();
@@ -156,7 +154,7 @@ void PrintingManager::OnPrintJobsRetrieved(
     GetPrintJobsCallback callback,
     bool success,
     std::vector<PrintJobInfo> print_job_info_protos) {
-  std::vector<PrintJobInfoPtr> print_job_infos;
+  std::vector<printing_manager::mojom::PrintJobInfoPtr> print_job_infos;
   print_job_infos.reserve(print_job_info_protos.size() +
                           active_print_jobs_.size());
 
@@ -203,7 +201,8 @@ void PrintingManager::NotifyPrintJobObservers(base::WeakPtr<CupsPrintJob> job) {
 }
 
 void PrintingManager::BindInterface(
-    mojo::PendingReceiver<PrintingMetadataProvider> pending_receiver) {
+    mojo::PendingReceiver<printing_manager::mojom::PrintingMetadataProvider>
+        pending_receiver) {
   receiver_.Bind(std::move(pending_receiver));
 }
 
@@ -218,4 +217,4 @@ void PrintingManager::Shutdown() {
 
 }  // namespace print_management
 }  // namespace printing
-}  // namespace chromeos
+}  // namespace ash

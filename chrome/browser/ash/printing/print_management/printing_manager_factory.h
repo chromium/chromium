@@ -14,7 +14,7 @@ class PrefRegistrySyncable;
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 namespace printing {
 namespace print_management {
 
@@ -49,6 +49,6 @@ class PrintingManagerFactory : public BrowserContextKeyedServiceFactory {
 
 }  // namespace print_management
 }  // namespace printing
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_PRINT_MANAGEMENT_PRINTING_MANAGER_FACTORY_H_

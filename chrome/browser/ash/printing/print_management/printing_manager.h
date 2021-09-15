@@ -8,8 +8,6 @@
 #include "ash/webui/print_management/mojom/printing_manager.mojom.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-// TODO(https://crbug.com/1164001): remove and use forward declaration.
-#include "chrome/browser/ash/printing/history/print_job_history_service.h"
 #include "chrome/browser/chromeos/printing/cups_print_job_manager.h"
 #include "chrome/browser/chromeos/printing/history/print_job_info.pb.h"
 #include "components/history/core/browser/history_service.h"
@@ -22,21 +20,27 @@
 
 class PrefService;
 
-namespace chromeos {
+namespace history {
 class DeletionInfo;
 class HistoryService;
+}  // namespace history
+
+namespace ash {
+
+class PrintJobHistoryService;
+
 namespace printing {
 namespace print_management {
 
 class PrintingManager
-    : public ash::printing::printing_manager::mojom::PrintingMetadataProvider,
+    : public printing_manager::mojom::PrintingMetadataProvider,
       public KeyedService,
       public history::HistoryServiceObserver,
-      public CupsPrintJobManager::Observer {
+      public chromeos::CupsPrintJobManager::Observer {
  public:
   PrintingManager(PrintJobHistoryService* print_job_history_service,
                   history::HistoryService* history_service,
-                  CupsPrintJobManager* cups_print_job_manager,
+                  chromeos::CupsPrintJobManager* cups_print_job_manager,
                   PrefService* pref_service);
 
   ~PrintingManager() override;
@@ -50,8 +54,7 @@ class PrintingManager
       GetPrintJobHistoryExpirationPeriodCallback callback) override;
   void DeleteAllPrintJobs(DeleteAllPrintJobsCallback callback) override;
   void ObservePrintJobs(
-      mojo::PendingRemote<
-          ash::printing::printing_manager::mojom::PrintJobsObserver> observer,
+      mojo::PendingRemote<printing_manager::mojom::PrintJobsObserver> observer,
       ObservePrintJobsCallback callback) override;
   void CancelPrintJob(const std::string& id,
                       CancelPrintJobCallback callback) override;
@@ -59,8 +62,7 @@ class PrintingManager
       GetDeletePrintJobHistoryAllowedByPolicyCallback callback) override;
 
   void BindInterface(
-      mojo::PendingReceiver<
-          ash::printing::printing_manager::mojom::PrintingMetadataProvider>
+      mojo::PendingReceiver<printing_manager::mojom::PrintingMetadataProvider>
           pending_receiver);
 
  private:
@@ -72,14 +74,14 @@ class PrintingManager
                      const history::DeletionInfo& deletion_info) override;
 
   // CupsPrintJobManager::Observer impls
-  void OnPrintJobCreated(base::WeakPtr<CupsPrintJob> job) override;
-  void OnPrintJobStarted(base::WeakPtr<CupsPrintJob> job) override;
-  void OnPrintJobUpdated(base::WeakPtr<CupsPrintJob> job) override;
-  void OnPrintJobSuspended(base::WeakPtr<CupsPrintJob> job) override;
-  void OnPrintJobResumed(base::WeakPtr<CupsPrintJob> job) override;
-  void OnPrintJobDone(base::WeakPtr<CupsPrintJob> job) override;
-  void OnPrintJobError(base::WeakPtr<CupsPrintJob> job) override;
-  void OnPrintJobCancelled(base::WeakPtr<CupsPrintJob> job) override;
+  void OnPrintJobCreated(base::WeakPtr<chromeos::CupsPrintJob> job) override;
+  void OnPrintJobStarted(base::WeakPtr<chromeos::CupsPrintJob> job) override;
+  void OnPrintJobUpdated(base::WeakPtr<chromeos::CupsPrintJob> job) override;
+  void OnPrintJobSuspended(base::WeakPtr<chromeos::CupsPrintJob> job) override;
+  void OnPrintJobResumed(base::WeakPtr<chromeos::CupsPrintJob> job) override;
+  void OnPrintJobDone(base::WeakPtr<chromeos::CupsPrintJob> job) override;
+  void OnPrintJobError(base::WeakPtr<chromeos::CupsPrintJob> job) override;
+  void OnPrintJobCancelled(base::WeakPtr<chromeos::CupsPrintJob> job) override;
 
   // PrintJobHistoryObserver
   void OnPrintJobsRetrieved(GetPrintJobsCallback callback,
@@ -95,28 +97,28 @@ class PrintingManager
   bool IsHistoryDeletionAllowedByPolicy();
 
   // Stores |job| to local cache and notifies observers of an update to |job|.
-  void UpdatePrintJob(base::WeakPtr<CupsPrintJob> job);
+  void UpdatePrintJob(base::WeakPtr<chromeos::CupsPrintJob> job);
 
   // Removes |job| from the local cache and notifies observers of an update to
   // |job|.
-  void RemoveAndUpdatePrintJob(base::WeakPtr<CupsPrintJob> job);
+  void RemoveAndUpdatePrintJob(base::WeakPtr<chromeos::CupsPrintJob> job);
 
   // Notifies all observers in |print_job_observers_| of an update to a print
   // job.
-  void NotifyPrintJobObservers(base::WeakPtr<CupsPrintJob> job);
+  void NotifyPrintJobObservers(base::WeakPtr<chromeos::CupsPrintJob> job);
 
   // Local cache that stores all ongoing print jobs.
-  std::map<std::string, base::WeakPtr<CupsPrintJob>> active_print_jobs_;
+  std::map<std::string, base::WeakPtr<chromeos::CupsPrintJob>>
+      active_print_jobs_;
 
   // Set of PrintJobsObserver mojom::remotes, each remote is bound to a
   // renderer process receiver. Automatically handles removing disconnected
   // receivers.
-  mojo::RemoteSet<ash::printing::printing_manager::mojom::PrintJobsObserver>
+  mojo::RemoteSet<printing_manager::mojom::PrintJobsObserver>
       print_job_observers_;
 
-  mojo::Receiver<
-      ash::printing::printing_manager::mojom::PrintingMetadataProvider>
-      receiver_{this};
+  mojo::Receiver<printing_manager::mojom::PrintingMetadataProvider> receiver_{
+      this};
 
   // Policy-controlled pref that determines whether print job history can be
   // deleted.
@@ -124,7 +126,7 @@ class PrintingManager
 
   // Not owned, this is the intermediate layer to interact with the print
   // job local database.
-  chromeos::PrintJobHistoryService* print_job_history_service_;
+  PrintJobHistoryService* print_job_history_service_;
 
   // Not owned, this provides the necessary observers to observe when browser
   // history has been cleared.
@@ -132,7 +134,7 @@ class PrintingManager
 
   // Not owned, this provides the necessary observers to observe when an
   // ongoing print job has been updated.
-  CupsPrintJobManager* cups_print_job_manager_;
+  chromeos::CupsPrintJobManager* cups_print_job_manager_;
 
   IntegerPrefMember print_job_history_expiration_period_;
 
@@ -145,6 +147,6 @@ class PrintingManager
 
 }  // namespace print_management
 }  // namespace printing
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_PRINT_MANAGEMENT_PRINTING_MANAGER_H_

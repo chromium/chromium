@@ -13,12 +13,16 @@
 #include "chrome/browser/chromeos/printing/printer_error_codes.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 namespace printing {
 namespace print_management {
 namespace {
 
-namespace mojom = ::ash::printing::printing_manager::mojom;
+namespace mojom = printing_manager::mojom;
+namespace proto = ::chromeos::printing::proto;
+
+using ::chromeos::CupsPrintJob;
+using ::chromeos::PrinterErrorCode;
 
 mojom::PrintJobCompletionStatus PrintJobStatusProtoToMojom(
     proto::PrintJobInfo_PrintJobStatus print_job_status_proto) {
@@ -172,4 +176,4 @@ mojom::PrintJobInfoPtr CupsPrintJobToMojom(const CupsPrintJob& job) {
 
 }  // namespace print_management
 }  // namespace printing
-}  // namespace chromeos
+}  // namespace ash

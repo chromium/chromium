@@ -12,20 +12,24 @@ class CupsPrintJob;
 namespace printing {
 namespace proto {
 class PrintJobInfo;
-}  //  namespace proto
+}  // namespace proto
+}  // namespace printing
+}  // namespace chromeos
 
+namespace ash {
+namespace printing {
 namespace print_management {
 
 // Converts proto::PrintJobInfo into mojom::PrintJobInfoPtr.
-ash::printing::printing_manager::mojom::PrintJobInfoPtr PrintJobProtoToMojom(
-    const proto::PrintJobInfo& print_job_info_proto);
+printing_manager::mojom::PrintJobInfoPtr PrintJobProtoToMojom(
+    const chromeos::printing::proto::PrintJobInfo& print_job_info_proto);
 
 // Convert CupsPrintJob into mojom::PrintJobInfoPtr.
-ash::printing::printing_manager::mojom::PrintJobInfoPtr CupsPrintJobToMojom(
-    const CupsPrintJob& job);
+printing_manager::mojom::PrintJobInfoPtr CupsPrintJobToMojom(
+    const chromeos::CupsPrintJob& job);
 
 }  // namespace print_management
 }  // namespace printing
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_PRINT_MANAGEMENT_PRINT_JOB_INFO_MOJOM_CONVERSIONS_H_

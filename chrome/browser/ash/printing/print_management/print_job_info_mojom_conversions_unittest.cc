@@ -16,12 +16,11 @@
 #include "chromeos/printing/printer_configuration.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
-namespace proto = printing::proto;
-namespace mojom = ::ash::printing::printing_manager::mojom;
-
+namespace ash {
 namespace {
+
+namespace proto = ::chromeos::printing::proto;
+namespace mojom = printing::printing_manager::mojom;
 
 constexpr char kName[] = "name";
 constexpr char16_t kName16[] = u"name";
@@ -46,10 +45,9 @@ proto::PrintJobInfo CreatePrintJobInfoProto() {
 
   print_job_info.set_id(kId);
   print_job_info.set_title(kTitle);
-  print_job_info.set_status(
-      printing::proto::PrintJobInfo_PrintJobStatus_PRINTED);
+  print_job_info.set_status(proto::PrintJobInfo_PrintJobStatus_PRINTED);
   print_job_info.set_printer_error_code(
-      printing::proto::PrintJobInfo_PrinterErrorCode_NO_ERROR);
+      proto::PrintJobInfo_PrinterErrorCode_NO_ERROR);
   print_job_info.set_creation_time(
       static_cast<int64_t>(base::Time::UnixEpoch().ToJsTime()));
   print_job_info.set_number_of_pages(kPagesNumber);
@@ -58,17 +56,17 @@ proto::PrintJobInfo CreatePrintJobInfoProto() {
   return print_job_info;
 }
 
-std::unique_ptr<CupsPrintJob> CreateCupsPrintJob() {
-  Printer printer;
+std::unique_ptr<chromeos::CupsPrintJob> CreateCupsPrintJob() {
+  chromeos::Printer printer;
   printer.set_display_name(kName);
   printer.SetUri(kUri);
   printer.set_id(kPrinterId);
 
-  auto cups_print_job = std::make_unique<CupsPrintJob>(
+  auto cups_print_job = std::make_unique<chromeos::CupsPrintJob>(
       printer, /*job_id=*/0, kTitle, kPagesNumber,
       ::printing::PrintJob::Source::PRINT_PREVIEW, kId, proto::PrintSettings());
   cups_print_job->set_printed_page_number(kPrintedPageNumber);
-  cups_print_job->set_state(CupsPrintJob::State::STATE_STARTED);
+  cups_print_job->set_state(chromeos::CupsPrintJob::State::STATE_STARTED);
   return cups_print_job;
 }
 
@@ -113,4 +111,4 @@ TEST(PrintJobInfoMojomConversionsTest, CupsPrintJobToMojom) {
             print_job_mojo->printer_error_code);
 }
 
-}  // namespace chromeos
+}  // namespace ash

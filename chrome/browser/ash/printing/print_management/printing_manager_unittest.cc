@@ -25,12 +25,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 namespace printing {
 namespace print_management {
 namespace {
 
-using ::ash::printing::printing_manager::mojom::PrintJobInfoPtr;
+using printing_manager::mojom::PrintJobInfoPtr;
 
 constexpr char kTitle[] = "title";
 const int kPagesNumber = 3;
@@ -88,7 +88,8 @@ class PrintingManagerTest : public ::testing::Test {
     test_prefs_.registry()->RegisterBooleanPref(
         prefs::kDeletePrintJobHistoryAllowed, true);
 
-    print_job_manager_ = std::make_unique<TestCupsPrintJobManager>(&profile_);
+    print_job_manager_ =
+        std::make_unique<chromeos::TestCupsPrintJobManager>(&profile_);
     auto print_job_database = std::make_unique<TestPrintJobDatabase>();
     print_job_history_service_ = std::make_unique<PrintJobHistoryServiceImpl>(
         std::move(print_job_database), print_job_manager_.get(), &test_prefs_);
@@ -129,11 +130,11 @@ class PrintingManagerTest : public ::testing::Test {
     print_job_manager_->CancelPrintJob(print_job.get());
   }
 
-  std::unique_ptr<CupsPrintJob> CreateOngoingPrintJob(int id) {
-    auto print_job = std::make_unique<CupsPrintJob>(
+  std::unique_ptr<chromeos::CupsPrintJob> CreateOngoingPrintJob(int id) {
+    auto print_job = std::make_unique<chromeos::CupsPrintJob>(
         chromeos::Printer(), id, kTitle, kPagesNumber,
         ::printing::PrintJob::Source::PRINT_PREVIEW,
-        /*source_id=*/"", printing::proto::PrintSettings());
+        /*source_id=*/"", chromeos::printing::proto::PrintSettings());
     print_job_manager_->CreatePrintJob(print_job.get());
     return print_job;
   }
@@ -144,7 +145,7 @@ class PrintingManagerTest : public ::testing::Test {
   // as we have to ensure that those services are destructed before this
   // is destructed.
   TestingPrefServiceSimple test_prefs_;
-  std::unique_ptr<TestCupsPrintJobManager> print_job_manager_;
+  std::unique_ptr<chromeos::TestCupsPrintJobManager> print_job_manager_;
   std::unique_ptr<history::HistoryService> local_history_;
   std::unique_ptr<PrintingManager> printing_manager_;
   std::vector<PrintJobInfoPtr> entries_;
@@ -304,4 +305,4 @@ TEST_F(PrintingManagerTest, PolicyPreventsDeletingBrowserHistoryDeletingJobs) {
 
 }  // namespace print_management
 }  // namespace printing
-}  // namespace chromeos
+}  // namespace ash

@@ -100,7 +100,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   policy::PolicyCertServiceFactory::GetInstance();
   policy::UserCloudPolicyTokenForwarderFactory::GetInstance();
   policy::UserNetworkConfigurationUpdaterFactory::GetInstance();
-  printing::print_management::PrintingManagerFactory::GetInstance();
+  ash::printing::print_management::PrintingManagerFactory::GetInstance();
   ash::PrintJobHistoryServiceFactory::GetInstance();
   secure_channel::NearbyConnectorFactory::GetInstance();
   smb_client::SmbServiceFactory::GetInstance();

@@ -12,7 +12,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace printing {
 namespace print_management {
 
@@ -78,4 +78,4 @@ TEST(PrintingManagerFactoryTest, LockScreenProfileNoService) {
 
 }  // namespace print_management
 }  // namespace printing
-}  // namespace chromeos
+}  // namespace ash

@@ -15,7 +15,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
-namespace chromeos {
+namespace ash {
 namespace printing {
 namespace print_management {
 
@@ -37,7 +37,7 @@ PrintingManagerFactory::PrintingManagerFactory()
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(PrintJobHistoryServiceFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
-  DependsOn(CupsPrintJobManagerFactory::GetInstance());
+  DependsOn(chromeos::CupsPrintJobManagerFactory::GetInstance());
 }
 
 PrintingManagerFactory::~PrintingManagerFactory() = default;
@@ -57,7 +57,7 @@ KeyedService* PrintingManagerFactory::BuildInstanceFor(
       PrintJobHistoryServiceFactory::GetForBrowserContext(context),
       HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS),
-      CupsPrintJobManagerFactory::GetForBrowserContext(context),
+      chromeos::CupsPrintJobManagerFactory::GetForBrowserContext(context),
       profile->GetPrefs());
 }
 
@@ -86,4 +86,4 @@ bool PrintingManagerFactory::ServiceIsNULLWhileTesting() const {
 
 }  // namespace print_management
 }  // namespace printing
-}  // namespace chromeos
+}  // namespace ash
