@@ -133,6 +133,11 @@ class ProfilePickerDiceSignInProvider
   // sign-in flow.
   std::unique_ptr<content::WebContents> contents_;
 
+  // Because of ProfileOAuth2TokenService intricacies, the sign in should not
+  // finish before both the notification gets called.
+  // TODO(crbug.com/1249488): Remove this if the bug gets resolved.
+  bool refresh_token_updated_ = false;
+
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
