@@ -128,20 +128,12 @@ function domCookieTest(cookie, expectedValue, name) {
   }, name);
 }
 
-// Returns two arrays of control characters along with their ASCII codes. The
-// TERMINATING_CTLS should result in termination of the cookie string. The
-// remaining CTLS should result in rejection of the cookie. Control characters
-// are defined by RFC 5234 to be %x00-1F / %x7F.
+// Returns an array of control characters along with their ASCII codes. Control
+// characters are defined by RFC 5234 to be %x00-1F / %x7F.
 function getCtlCharacters() {
-  const termCtlCodes = [0x00 /* NUL */, 0x0A /* LF */, 0x0D /* CR */];
   const ctlCodes = [...Array(0x20).keys()]
-                       .filter(i => termCtlCodes.indexOf(i) === -1)
                        .concat([0x7F]);
-  return {
-    TERMINATING_CTLS:
-        termCtlCodes.map(i => ({code: i, chr: String.fromCharCode(i)})),
-    CTLS: ctlCodes.map(i => ({code: i, chr: String.fromCharCode(i)}))
-  };
+  return ctlCodes.map(i => ({ code: i, chr: String.fromCharCode(i) }))
 }
 
 // Returns a cookie string with name set to "t" * nameLength and value

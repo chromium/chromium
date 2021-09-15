@@ -4328,6 +4328,14 @@ crbug.com/990439 http/tests/cookies/same-site/popup-cross-site-post.https.html [
 crbug.com/1162205 [ Win ] virtual/schemeful-same-site/external/wpt/cookies/attributes/path-redirect.html [ Crash Pass ]
 crbug.com/1162205 [ Win ] external/wpt/cookies/attributes/path-redirect.html [ Crash Pass ]
 
+# Temporarily disable failing cookie control character tests until we implement
+# the latest spec changes. Specifically, 0x00, 0x0d and 0x0a should cause
+# cookie rejection instead of truncation, and the tab character should be
+# treated as a valid character.
+crbug.com/1233602 external/wpt/cookies/attributes/attributes-ctl.sub.html [ Failure ]
+crbug.com/1233602 external/wpt/cookies/name/name-ctl.html [ Failure ]
+crbug.com/1233602 external/wpt/cookies/value/value-ctl.html [ Failure ]
+
 # The virtual tests run with Schemeful Same-Site disabled. These should fail to ensure the disabled feature code paths work.
 crbug.com/1127348 virtual/schemeful-same-site/external/wpt/cookies/schemeful-same-site/schemeful-websockets.sub.tentative.html [ Failure ]
 crbug.com/1127348 virtual/schemeful-same-site/external/wpt/cookies/schemeful-same-site/schemeful-iframe-subresource.tentative.html [ Failure ]
