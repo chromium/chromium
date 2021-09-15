@@ -9,7 +9,9 @@
 
 #include "base/containers/span.h"
 #include "url/gurl.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
+#include "v8/include/v8-isolate.h"
+#include "v8/include/v8-locker.h"
 
 namespace shared_storage_worklet {
 

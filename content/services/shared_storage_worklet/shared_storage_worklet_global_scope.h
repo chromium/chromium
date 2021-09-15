@@ -8,7 +8,8 @@
 #include "content/services/shared_storage_worklet/public/mojom/shared_storage_worklet_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
+#include "v8/include/v8-persistent-handle.h"
 
 namespace gin {
 class IsolateHolder;

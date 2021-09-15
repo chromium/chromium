@@ -10,6 +10,9 @@
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "v8/include/v8-forward.h"
+#include "v8/include/v8-persistent-handle.h"
+#include "v8/include/v8-promise.h"
 
 namespace shared_storage_worklet {
 

@@ -7,6 +7,9 @@
 #include "content/services/shared_storage_worklet/worklet_v8_helper.h"
 #include "gin/arguments.h"
 #include "gin/dictionary.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-primitive.h"
+#include "v8/include/v8-promise.h"
 
 namespace shared_storage_worklet {
 

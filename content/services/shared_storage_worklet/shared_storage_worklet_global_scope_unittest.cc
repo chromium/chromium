@@ -11,6 +11,8 @@
 #include "gin/dictionary.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-value-serializer.h"
 
 namespace shared_storage_worklet {
 

@@ -19,6 +19,10 @@
 #include "gin/public/isolate_holder.h"
 #include "gin/v8_initializer.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-function.h"
+#include "v8/include/v8-initialization.h"
+#include "v8/include/v8-object.h"
 
 namespace shared_storage_worklet {
 

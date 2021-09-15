@@ -7,6 +7,11 @@
 #include "content/services/shared_storage_worklet/worklet_v8_helper.h"
 #include "gin/arguments.h"
 #include "gin/function_template.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-function.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-promise.h"
+#include "v8/include/v8-value-serializer.h"
 
 namespace shared_storage_worklet {
 
