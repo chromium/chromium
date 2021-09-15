@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_mediator.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_view_controller.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_view_controller_delegate.h"
+#include "ios/chrome/browser/ui/settings/sync/utils/sync_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -104,6 +105,10 @@
   return self.unifiedConsentViewController.isScrolledToBottom;
 }
 
+- (BOOL)hasManagedSyncDataType {
+  return HasManagedSyncDataType(self.browser->GetBrowserState());
+}
+
 #pragma mark - Private
 
 // Opens the identity chooser dialog with an animation from |point|.
@@ -126,6 +131,10 @@
 }
 
 #pragma mark - UnifiedConsentViewControllerDelegate
+
+- (BOOL)unifiedConsentCoordinatorHasManagedSyncDataType {
+  return self.hasManagedSyncDataType;
+}
 
 - (void)unifiedConsentViewControllerViewDidAppear:
     (UnifiedConsentViewController*)controller {

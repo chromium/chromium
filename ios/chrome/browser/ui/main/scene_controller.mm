@@ -2745,6 +2745,14 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
             // Case only for first run.
             NOTREACHED();
             break;
+          case SigninCompletionActionShowManagedLearnMore:
+            id<ApplicationCommands> dispatcher = HandlerForProtocol(
+                strongSelf.mainInterface.browser->GetCommandDispatcher(),
+                ApplicationCommands);
+            OpenNewTabCommand* command = [OpenNewTabCommand
+                commandWithURLFromChrome:GURL(kChromeUIManagementURL)];
+            [dispatcher closeSettingsUIAndOpenURL:command];
+            break;
         }
       };
 

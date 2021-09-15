@@ -58,14 +58,16 @@ extern NSString* const kWebSigninContinueAsButtonAccessibilityIdentifier;
 // consistency sheet.
 extern NSString* const kWebSigninSkipButtonAccessibilityIdentifier;
 
-// Action that is required to do to complete the sign-in. This action is in
-// charge of the SigninCoordinator's owner.
+// Action that is required to do to complete the sign-in, or instead of sign-in.
+// This action is in charge of the SigninCoordinator's owner.
 typedef NS_ENUM(NSUInteger, SigninCompletionAction) {
   // No action needed.
   SigninCompletionActionNone,
   // The advanced settings sign-in view is needed to finish the sign-in.
   // This case is only used for the first run sign-in.
   SigninCompletionActionShowAdvancedSettingsSignin,
+  // The user tapped the manager, learn more, link and sign-in was cancelled.
+  SigninCompletionActionShowManagedLearnMore,
 };
 
 // Intent for TrustedVaultReauthenticationCoordinator to display either

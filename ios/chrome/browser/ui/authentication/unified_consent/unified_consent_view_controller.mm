@@ -169,8 +169,11 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
   [container addSubview:self.identityButtonControl];
 
   // Sync title and subtitle.
+  int stringId = self.delegate.unifiedConsentCoordinatorHasManagedSyncDataType
+                     ? IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_MANAGED_TITLE
+                     : IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_TITLE;
   UILabel* syncTitleLabel =
-      [self addLabelWithStringId:IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_TITLE
+      [self addLabelWithStringId:stringId
                        fontStyle:kAuthenticationTextFontStyle
                        textColor:[UIColor colorNamed:kTextPrimaryColor]
                       parentView:container];
@@ -199,7 +202,10 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
   self.syncSettingsTextView.translatesAutoresizingMaskIntoConstraints = NO;
   [container addSubview:self.syncSettingsTextView];
 
-  self.openSettingsStringId = IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SETTINGS;
+  self.openSettingsStringId =
+      self.delegate.unifiedConsentCoordinatorHasManagedSyncDataType
+          ? IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_MANAGED_SETTINGS
+          : IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SETTINGS;
 
   // Layouts
   NSDictionary* views = @{

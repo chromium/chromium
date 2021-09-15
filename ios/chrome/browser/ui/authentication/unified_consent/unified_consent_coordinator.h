@@ -62,6 +62,8 @@
 @property(nonatomic, readonly) BOOL settingsLinkWasTapped;
 // If YES, the UI elements are disabled.
 @property(nonatomic, assign, getter=isUIDisabled) BOOL uiDisabled;
+// Returns true if there are policies disabling Sync for at least one data type.
+@property(nonatomic, readonly) BOOL hasManagedSyncDataType;
 
 // List of string ids used for the user consent. The string ids order matches
 // the way they appear on the screen.
