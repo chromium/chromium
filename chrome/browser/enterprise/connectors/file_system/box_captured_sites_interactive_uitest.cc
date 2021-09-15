@@ -207,7 +207,7 @@ bool GetWPRCaptureDir(base::FilePath* capture_dir) {
                      .AppendASCII("enterprise")
                      .AppendASCII("connectors")
                      .AppendASCII("file_system")
-                     .AppendASCII("captures");
+                     .AppendASCII("captured_sites");
   return true;
 }
 
@@ -1202,7 +1202,7 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
   ASSERT_NO_FATAL_FAILURE(
       SetCloudFSCPolicy(GetAllAllowedTestPolicy("797972721")));
   ASSERT_NO_FATAL_FAILURE(
-      StartWprUsingFSCCaptureDir("box.com.large_download.wpr"));
+      StartWprUsingFSCCaptureDir("box.com.large.download.wpr"));
 
   StartDownloadByNavigatingToEmbeddedServerUrl(
       "/enterprise/connectors/file_system/downloads/cipd/"
@@ -1316,7 +1316,7 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
   download_item_observer.WaitForSignInConfirmationDialog();
   ASSERT_NO_FATAL_FAILURE(
       download_item_observer.sign_in_observer()->CancelBoxSignInConfirmation());
-  EXPECT_FALSE(
+  EXPECT_TRUE(
       download_item_observer.upload_observer()->WaitForUploadCompletion());
   EXPECT_TRUE(
       download_item_observer.upload_observer()->WaitForTmpFileDeletion());
@@ -1352,7 +1352,7 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest, ExitSignInDialog) {
       download_item_observer.sign_in_observer()->SubmitInvalidSignInCredentials(
           GetBoxAccountUserName(), GetBoxAccountPassword()));
   download_item_observer.sign_in_observer()->CloseSignInWidget();
-  EXPECT_FALSE(
+  EXPECT_TRUE(
       download_item_observer.upload_observer()->WaitForUploadCompletion());
   EXPECT_TRUE(
       download_item_observer.upload_observer()->WaitForTmpFileDeletion());
@@ -1592,7 +1592,7 @@ IN_PROC_BROWSER_TEST_F(BoxCapturedSitesInteractiveTest,
   EXPECT_EQ(kLogin, login_val);
 
   download_item_observer.sign_in_observer()->CloseSignInWidget();
-  EXPECT_FALSE(
+  EXPECT_TRUE(
       download_item_observer.upload_observer()->WaitForUploadCompletion());
   EXPECT_TRUE(
       download_item_observer.upload_observer()->WaitForTmpFileDeletion());
