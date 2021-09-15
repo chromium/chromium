@@ -4,6 +4,7 @@
 
 import {CommandHandlerRemote} from 'chrome://resources/js/browser_command/browser_command.mojom-webui.js';
 import {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser_command_proxy.js';
+import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 import {WhatsNewAppElement} from 'chrome://whats-new/whats_new_app.js';
 import {WhatsNewProxyImpl} from 'chrome://whats-new/whats_new_proxy.js';
 
@@ -48,13 +49,13 @@ suite('WhatsNewAppTest', function() {
     const whatsNewApp = document.createElement('whats-new-app');
     document.body.appendChild(whatsNewApp);
     const isAuto = await proxy.whenCalled('initialize');
-    assertTrue(isAuto);
+    assertEquals(!isChromeOS, isAuto);
     await flushTasks();
 
     const iframe = whatsNewApp.shadowRoot.querySelector('#content');
     assertTrue(!!iframe);
-    // iframe has latest=true URL query parameter.
-    assertEquals(whatsNewURL + '?latest=true', iframe.src);
+    // iframe has latest=true URL query parameter except on CrOS
+    assertEquals(whatsNewURL + (isChromeOS ? '' : '?latest=true'), iframe.src);
     const errorPage =
         whatsNewApp.shadowRoot.querySelector('whats-new-error-page');
     assertFalse(!!errorPage);

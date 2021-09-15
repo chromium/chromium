@@ -8,6 +8,7 @@ import './strings.m.js';
 
 import {ClickInfo, Command} from 'chrome://resources/js/browser_command/browser_command.mojom-webui.js';
 import {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser_command_proxy.js';
+import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -45,7 +46,7 @@ export class WhatsNewAppElement extends PolymerElement {
     super.connectedCallback();
 
     const queryParams = new URLSearchParams(window.location.search);
-    const isAutoOpen = queryParams.has('auto');
+    const isAutoOpen = queryParams.has('auto') && !isChromeOS;
     WhatsNewProxyImpl.getInstance().initialize(isAutoOpen).then(url => {
       if (!url) {
         this.showErrorPage_ = true;
