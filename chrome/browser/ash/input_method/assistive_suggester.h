@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_ASSISTIVE_SUGGESTER_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_ASSISTIVE_SUGGESTER_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
+#include "chrome/browser/ash/input_method/assistive_suggester_blocklist.h"
 #include "chrome/browser/ash/input_method/emoji_suggester.h"
 #include "chrome/browser/ash/input_method/input_method_engine.h"
 #include "chrome/browser/ash/input_method/input_method_engine_base.h"
@@ -25,7 +27,10 @@ namespace input_method {
 // dismiss the suggestion according to the user action.
 class AssistiveSuggester : public SuggestionsSource {
  public:
-  AssistiveSuggester(InputMethodEngine* engine, Profile* profile);
+  AssistiveSuggester(InputMethodEngine* engine,
+                     Profile* profile,
+                     std::unique_ptr<AssistiveSuggesterBlocklist> blocklist);
+  ~AssistiveSuggester() override;
 
   bool IsAssistiveFeatureEnabled();
 
@@ -103,6 +108,7 @@ class AssistiveSuggester : public SuggestionsSource {
   PersonalInfoSuggester personal_info_suggester_;
   EmojiSuggester emoji_suggester_;
   MultiWordSuggester multi_word_suggester_;
+  std::unique_ptr<AssistiveSuggesterBlocklist> blocklist_;
 
   // ID of the focused text field, 0 if none is focused.
   int context_id_ = -1;

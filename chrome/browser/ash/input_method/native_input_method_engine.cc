@@ -18,6 +18,7 @@
 #include "base/strings/utf_offset_string_conversions.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/input_method/assistive_suggester_client_filter.h"
 #include "chrome/browser/ash/input_method/autocorrect_manager.h"
 #include "chrome/browser/ash/input_method/grammar_service_client.h"
 #include "chrome/browser/ash/input_method/suggestions_service_client.h"
@@ -517,7 +518,8 @@ void NativeInputMethodEngine::Initialize(
     Profile* profile) {
   // TODO(crbug/1141231): refactor the mix of unique and raw ptr here.
   std::unique_ptr<AssistiveSuggester> assistive_suggester =
-      std::make_unique<AssistiveSuggester>(this, profile);
+      std::make_unique<AssistiveSuggester>(
+          this, profile, std::make_unique<AssistiveSuggesterClientFilter>());
   assistive_suggester_ = assistive_suggester.get();
   std::unique_ptr<AutocorrectManager> autocorrect_manager =
       std::make_unique<AutocorrectManager>(this);

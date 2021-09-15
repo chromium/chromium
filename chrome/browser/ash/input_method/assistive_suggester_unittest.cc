@@ -8,6 +8,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/input_method/assistive_suggester_client_filter.h"
 #include "chrome/browser/ash/input_method/personal_info_suggester.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -31,8 +32,9 @@ class AssistiveSuggesterTest : public testing::Test {
 
   void SetUp() override {
     engine_ = std::make_unique<InputMethodEngine>();
-    assistive_suggester_ =
-        std::make_unique<AssistiveSuggester>(engine_.get(), profile_.get());
+    assistive_suggester_ = std::make_unique<AssistiveSuggester>(
+        engine_.get(), profile_.get(),
+        std::make_unique<AssistiveSuggesterClientFilter>());
     histogram_tester_.ExpectUniqueSample(
         "InputMethod.Assistive.UserPref.PersonalInfo", true, 1);
     histogram_tester_.ExpectUniqueSample("InputMethod.Assistive.UserPref.Emoji",

@@ -35,116 +35,6 @@ using ::chromeos::ime::TextSuggestionType;
 
 const char kMaxTextBeforeCursorLength = 50;
 
-const char* kAllowedDomainsForPersonalInfoSuggester[] = {
-    "discord.com",      "messenger.com",       "web.whatsapp.com",
-    "web.skype.com",    "duo.google.com",      "hangouts.google.com",
-    "chat.google.com",  "messages.google.com", "web.telegram.org",
-    "voice.google.com",
-};
-
-const char* kAllowedDomainsForEmojiSuggester[] = {
-    "discord.com",      "messenger.com",       "web.whatsapp.com",
-    "web.skype.com",    "duo.google.com",      "hangouts.google.com",
-    "chat.google.com",  "messages.google.com", "web.telegram.org",
-    "voice.google.com",
-};
-
-const char* kAllowedDomainsForMultiWordSuggester[] = {
-    "discord.com",      "messenger.com",       "web.whatsapp.com",
-    "web.skype.com",    "duo.google.com",      "hangouts.google.com",
-    "chat.google.com",  "messages.google.com", "web.telegram.org",
-    "voice.google.com",
-};
-
-const char* kTestUrls[] = {
-    "e14s-test",
-    "simple_textarea.html",
-    "test_page.html",
-};
-
-// For some internal websites, we do not want to reveal their urls in plain
-// text. See map between url and hash code in
-// https://docs.google.com/spreadsheets/d/1VELTWiHrUTEyX4HQI5PL_jDVFreM-lRhThVOurUuOk4/edit#gid=0
-const uint32_t kHashedInternalUrls[] = {
-    1845308025U,
-    153302869U,
-};
-
-// For ARC++ apps, use arc package name. For system apps, use app ID.
-const char* kAllowedAppsForPersonalInfoSuggester[] = {
-    "com.discord",
-    "com.facebook.orca",
-    "com.whatsapp",
-    "com.skype.raider",
-    "com.google.android.apps.tachyon",
-    "com.google.android.talk",
-    "org.telegram.messenger",
-    "com.enflick.android.TextNow",
-    "com.facebook.mlite",
-    "com.viber.voip",
-    "com.skype.m2",
-    "com.imo.android.imoim",
-    "com.google.android.apps.googlevoice",
-    "com.playstation.mobilemessenger",
-    "kik.android",
-    "com.link.messages.sms",
-    "jp.naver.line.android",
-    "com.skype.m2",
-    "co.happybits.marcopolo",
-    "com.imo.android.imous",
-    "mmfbcljfglbokpmkimbfghdkjmjhdgbg",  // System text
-};
-
-// For ARC++ apps, use arc package name. For system apps, use app ID.
-const char* kAllowedAppsForEmojiSuggester[] = {
-    "com.discord",
-    "com.facebook.orca",
-    "com.whatsapp",
-    "com.skype.raider",
-    "com.google.android.apps.tachyon",
-    "com.google.android.talk",
-    "org.telegram.messenger",
-    "com.enflick.android.TextNow",
-    "com.facebook.mlite",
-    "com.viber.voip",
-    "com.skype.m2",
-    "com.imo.android.imoim",
-    "com.google.android.apps.googlevoice",
-    "com.playstation.mobilemessenger",
-    "kik.android",
-    "com.link.messages.sms",
-    "jp.naver.line.android",
-    "com.skype.m2",
-    "co.happybits.marcopolo",
-    "com.imo.android.imous",
-    "mmfbcljfglbokpmkimbfghdkjmjhdgbg",  // System text
-};
-
-// For ARC++ apps, use arc package name. For system apps, use app ID.
-const char* kAllowedAppsForMultiWordSuggester[] = {
-    "com.discord",
-    "com.facebook.orca",
-    "com.whatsapp",
-    "com.skype.raider",
-    "com.google.android.apps.tachyon",
-    "com.google.android.talk",
-    "org.telegram.messenger",
-    "com.enflick.android.TextNow",
-    "com.facebook.mlite",
-    "com.viber.voip",
-    "com.skype.m2",
-    "com.imo.android.imoim",
-    "com.google.android.apps.googlevoice",
-    "com.playstation.mobilemessenger",
-    "kik.android",
-    "com.link.messages.sms",
-    "jp.naver.line.android",
-    "com.skype.m2",
-    "co.happybits.marcopolo",
-    "com.imo.android.imous",
-    "mmfbcljfglbokpmkimbfghdkjmjhdgbg",  // System text
-};
-
 void RecordAssistiveMatch(AssistiveType type) {
   base::UmaHistogramEnumeration("InputMethod.Assistive.Match", type);
 
@@ -202,87 +92,6 @@ void RecordAssistiveSuccess(AssistiveType type) {
   base::UmaHistogramEnumeration("InputMethod.Assistive.Success", type);
 }
 
-bool IsTestUrl(GURL url) {
-  std::string filename = url.ExtractFileName();
-  for (const char* test_url : kTestUrls) {
-    if (base::CompareCaseInsensitiveASCII(filename, test_url) == 0) {
-      return true;
-    }
-  }
-  return false;
-}
-
-bool IsInternalWebsite(GURL url) {
-  std::string host = url.host();
-  for (const size_t hash_code : kHashedInternalUrls) {
-    if (hash_code == base::PersistentHash(host)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-template <size_t N>
-bool IsAllowedUrl(const char* (&allowedDomains)[N]) {
-  Browser* browser = chrome::FindLastActive();
-  if (browser && browser->window() && browser->window()->IsActive() &&
-      browser->tab_strip_model() &&
-      browser->tab_strip_model()->GetActiveWebContents()) {
-    GURL url = browser->tab_strip_model()
-                   ->GetActiveWebContents()
-                   ->GetLastCommittedURL();
-    if (IsTestUrl(url) || IsInternalWebsite(url))
-      return true;
-    for (size_t i = 0; i < N; i++) {
-      if (url.DomainIs(allowedDomains[i])) {
-        return true;
-      }
-    }
-  }
-  return false;
-}
-
-template <size_t N>
-bool IsAllowedApp(const char* (&allowedApps)[N]) {
-  // WMHelper is not available in Chrome on Linux.
-  if (!exo::WMHelper::HasInstance())
-    return false;
-
-  auto* wm_helper = exo::WMHelper::GetInstance();
-  auto* window = wm_helper ? wm_helper->GetActiveWindow() : nullptr;
-  if (!window)
-    return false;
-
-  // TODO(crbug/1094113): improve to cover more scenarios such as chat heads.
-  const std::string* arc_package_name =
-      window->GetProperty(ash::kArcPackageNameKey);
-  if (arc_package_name && std::find(allowedApps, allowedApps + N,
-                                    *arc_package_name) != allowedApps + N) {
-    return true;
-  }
-  const std::string* app_id = window->GetProperty(ash::kAppIDKey);
-  if (app_id &&
-      std::find(allowedApps, allowedApps + N, *app_id) != allowedApps + N) {
-    return true;
-  }
-  return false;
-}
-
-bool IsAllowedUrlOrAppForPersonalInfoSuggestion() {
-  return IsAllowedUrl(kAllowedDomainsForPersonalInfoSuggester) ||
-         IsAllowedApp(kAllowedAppsForPersonalInfoSuggester);
-}
-
-bool IsAllowedUrlOrAppForEmojiSuggestion() {
-  return IsAllowedUrl(kAllowedDomainsForEmojiSuggester) ||
-         IsAllowedApp(kAllowedAppsForEmojiSuggester);
-}
-
-bool IsAllowedUrlOrAppForMultiWordSuggestion() {
-  return IsAllowedUrl(kAllowedDomainsForMultiWordSuggester) ||
-         IsAllowedApp(kAllowedAppsForMultiWordSuggester);
-}
-
 bool IsTopResultMultiWord(const std::vector<TextSuggestion>& suggestions) {
   if (suggestions.empty())
     return false;
@@ -310,12 +119,15 @@ void RecordSuggestionsMatch(const std::vector<TextSuggestion>& suggestions) {
 
 }  // namespace
 
-AssistiveSuggester::AssistiveSuggester(InputMethodEngine* engine,
-                                       Profile* profile)
+AssistiveSuggester::AssistiveSuggester(
+    InputMethodEngine* engine,
+    Profile* profile,
+    std::unique_ptr<AssistiveSuggesterBlocklist> blocklist)
     : profile_(profile),
       personal_info_suggester_(engine, profile),
       emoji_suggester_(engine, profile),
-      multi_word_suggester_(engine) {
+      multi_word_suggester_(engine),
+      blocklist_(std::move(blocklist)) {
   RecordAssistiveUserPrefForPersonalInfo(
       profile_->GetPrefs()->GetBoolean(prefs::kAssistPersonalInfoEnabled));
   RecordAssistiveUserPrefForEmoji(
@@ -323,6 +135,8 @@ AssistiveSuggester::AssistiveSuggester(InputMethodEngine* engine,
   RecordAssistiveUserPrefForMultiWord(
       profile_->GetPrefs()->GetBoolean(prefs::kAssistPredictiveWritingEnabled));
 }
+
+AssistiveSuggester::~AssistiveSuggester() = default;
 
 bool AssistiveSuggester::IsAssistiveFeatureEnabled() {
   return IsAssistPersonalInfoEnabled() || IsEmojiSuggestAdditionEnabled() ||
@@ -359,7 +173,7 @@ DisabledReason AssistiveSuggester::GetDisabledReasonForPersonalInfo() {
   if (!profile_->GetPrefs()->GetBoolean(prefs::kAssistPersonalInfoEnabled)) {
     return DisabledReason::kUserSettingsOff;
   }
-  if (!IsAllowedUrlOrAppForPersonalInfoSuggestion()) {
+  if (!blocklist_->IsPersonalInfoSuggestionAllowed()) {
     return DisabledReason::kUrlOrAppNotAllowed;
   }
   return DisabledReason::kNone;
@@ -376,7 +190,7 @@ DisabledReason AssistiveSuggester::GetDisabledReasonForEmoji() {
   if (!profile_->GetPrefs()->GetBoolean(prefs::kEmojiSuggestionEnabled)) {
     return DisabledReason::kUserSettingsOff;
   }
-  if (!IsAllowedUrlOrAppForEmojiSuggestion()) {
+  if (!blocklist_->IsEmojiSuggestionAllowed()) {
     return DisabledReason::kUrlOrAppNotAllowed;
   }
   return DisabledReason::kNone;
@@ -390,7 +204,7 @@ DisabledReason AssistiveSuggester::GetDisabledReasonForMultiWord() {
           prefs::kAssistPredictiveWritingEnabled)) {
     return DisabledReason::kUserSettingsOff;
   }
-  if (!IsAllowedUrlOrAppForMultiWordSuggestion()) {
+  if (!blocklist_->IsMultiWordSuggestionAllowed()) {
     return DisabledReason::kUrlOrAppNotAllowed;
   }
   return DisabledReason::kNone;
@@ -468,7 +282,7 @@ void AssistiveSuggester::OnExternalSuggestionsUpdated(
 
   RecordSuggestionsMatch(suggestions);
 
-  if (!IsAllowedUrlOrAppForMultiWordSuggestion() &&
+  if (!blocklist_->IsMultiWordSuggestionAllowed() &&
       !IsExpandedMultiWordSuggestEnabled()) {
     RecordAssistiveDisabledReasonForMultiWord(GetDisabledReasonForMultiWord());
     return;
@@ -491,7 +305,7 @@ void AssistiveSuggester::RecordAssistiveMatchMetricsForAction(
   RecordAssistiveMatch(action);
   if (!IsActionEnabled(action)) {
     RecordAssistiveDisabled(action);
-  } else if (!IsAllowedUrlOrAppForEmojiSuggestion()) {
+  } else if (!blocklist_->IsEmojiSuggestionAllowed()) {
     RecordAssistiveNotAllowed(action);
   }
 }
@@ -567,7 +381,7 @@ bool AssistiveSuggester::Suggest(const std::u16string& text,
       return current_suggester_->Suggest(text, cursor_pos, anchor_pos);
     }
     if (IsAssistPersonalInfoEnabled() &&
-        IsAllowedUrlOrAppForPersonalInfoSuggestion() &&
+        blocklist_->IsPersonalInfoSuggestionAllowed() &&
         personal_info_suggester_.Suggest(text, cursor_pos, anchor_pos)) {
       current_suggester_ = &personal_info_suggester_;
       if (personal_info_suggester_.IsFirstShown()) {
@@ -575,7 +389,7 @@ bool AssistiveSuggester::Suggest(const std::u16string& text,
       }
       return true;
     } else if (IsEmojiSuggestAdditionEnabled() &&
-               IsAllowedUrlOrAppForEmojiSuggestion() &&
+               blocklist_->IsEmojiSuggestionAllowed() &&
                emoji_suggester_.Suggest(text, cursor_pos, anchor_pos)) {
       current_suggester_ = &emoji_suggester_;
       RecordAssistiveCoverage(current_suggester_->GetProposeActionType());
