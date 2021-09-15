@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.test.smoke;
 
-import static org.junit.Assert.assertTrue;
-
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -23,15 +21,12 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.TestFileUtil;
 import org.chromium.chrome.test.pagecontroller.rules.ChromeUiApplicationTestRule;
 import org.chromium.chrome.test.pagecontroller.utils.IUi2Locator;
+import org.chromium.chrome.test.pagecontroller.utils.NonInstrumentedCrashDetector;
 import org.chromium.chrome.test.pagecontroller.utils.Ui2Locators;
 
-import java.io.File;
 import java.util.concurrent.Callable;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Smoke Test for Chrome Android.
@@ -44,7 +39,6 @@ public class ChromeSmokeTest {
 
     public static final long TIMEOUT_MS = 20000L;
     public static final long UI_CHECK_INTERVAL = 1000L;
-    private File mDumpDirectory;
     private String mPackageName;
 
     private static Runnable toNotSatisfiedRunnable(
@@ -63,29 +57,15 @@ public class ChromeSmokeTest {
     }
 
     private String computeTimeoutFailureMessage() {
-        File[] dumpFiles = mDumpDirectory.listFiles();
-        if (dumpFiles != null && dumpFiles.length > 0) {
-            return mPackageName + " should not have crashed. Check logcat.";
-        }
-        return mPackageName + " should have loaded";
-    }
-
-    private File readBreakpadDumpFromCommandLine() throws Exception {
-        String commandLine = new String(TestFileUtil.readUtf8File(
-                "/data/local/tmp/chrome-command-line", Integer.MAX_VALUE));
-        Matcher matcher =
-                Pattern.compile("breakpad-dump-location=['\"]?([^'\"\\s]*)").matcher(commandLine);
-        assertTrue(matcher.find());
-        return new File(matcher.group(1));
+        return NonInstrumentedCrashDetector.checkDidChromeCrash()
+                ? mPackageName + " should not have crashed. Check logcat."
+                : mPackageName + " should have loaded";
     }
 
     @Before
     public void setUp() throws Exception {
         mPackageName = InstrumentationRegistry.getArguments().getString(
                 ChromeUiApplicationTestRule.PACKAGE_NAME_ARG, "org.chromium.chrome");
-        mDumpDirectory = readBreakpadDumpFromCommandLine();
-        File[] dumpFiles = mDumpDirectory.listFiles();
-        assertTrue(dumpFiles == null || dumpFiles.length == 0);
     }
 
     @Test

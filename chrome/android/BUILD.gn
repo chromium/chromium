@@ -3178,6 +3178,11 @@ _bundle_smoke_test_extra_args = [
   # Make extra args be passed through to the bundle under test (see below).
   "--use-apk-under-test-flags-file",
 
+  # Enable breakpad dumps in order to detect Chrome crashes (because the
+  # test intentionally does not set <instrumentation android:targetPackage> to
+  # the bundle under test.)
+  "--enable-breakpad-dump",
+
   # Chrome crashes at startup if strict mode is turned on.
   "--strict-mode=off",
 

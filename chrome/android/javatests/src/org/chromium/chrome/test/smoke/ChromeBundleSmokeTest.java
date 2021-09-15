@@ -23,6 +23,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.chrome.test.pagecontroller.rules.ChromeUiApplicationTestRule;
 import org.chromium.chrome.test.pagecontroller.rules.ChromeUiAutomatorTestRule;
 import org.chromium.chrome.test.pagecontroller.utils.IUi2Locator;
+import org.chromium.chrome.test.pagecontroller.utils.NonInstrumentedCrashDetector;
 import org.chromium.chrome.test.pagecontroller.utils.Ui2Locators;
 import org.chromium.chrome.test.pagecontroller.utils.UiAutomatorUtils;
 import org.chromium.chrome.test.pagecontroller.utils.UiLocatorHelper;
@@ -47,7 +48,15 @@ public class ChromeBundleSmokeTest {
         mPackageName = InstrumentationRegistry.getArguments().getString(
                 ChromeUiApplicationTestRule.PACKAGE_NAME_ARG);
         Assert.assertNotNull("Must specify bundle under test", mPackageName);
-        mChromeUiRule.launchIntoNewTabPageOnFirstRun();
+        try {
+            mChromeUiRule.launchIntoNewTabPageOnFirstRun();
+        } catch (Exception e) {
+            if (NonInstrumentedCrashDetector.checkDidChromeCrash()) {
+                throw new RuntimeException(mPackageName + " should not have crashed.");
+            } else {
+                throw e;
+            }
+        }
     }
 
     private void runTestActivity(int testCase) {
