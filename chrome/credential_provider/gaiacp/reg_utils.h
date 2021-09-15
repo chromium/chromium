@@ -209,6 +209,12 @@ HRESULT GetSidFromKey(const wchar_t* key,
                       wchar_t* sid,
                       ULONG length);
 
+// Returns the SID corresponding to given domain user from the user properties.
+HRESULT GetSidFromDomainAccountInfo(const std::wstring& domain,
+                                    const std::wstring& username,
+                                    wchar_t* sid,
+                                    ULONG length);
+
 // Gets the gaia id associated with the given SID.  If none exists, returns
 // HRESULT_FROM_WIN32(ERROR_NONE_MAPPED).
 HRESULT GetIdFromSid(const wchar_t* sid, std::wstring* id);
