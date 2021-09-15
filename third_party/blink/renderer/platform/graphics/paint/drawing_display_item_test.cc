@@ -8,6 +8,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
@@ -165,6 +166,40 @@ TEST_F(DrawingDisplayItemTest, NonSolidColorOval) {
   EXPECT_EQ(IntRect(5, 6, 10, 10), item.VisualRect());
   // Not solid color if the drawing does not fully cover the visual rect.
   EXPECT_FALSE(item.IsSolidColor());
+}
+
+// This test ensures that DrawingDisplayItem::RectKnownToBeOpaque() doesn't
+// cover any antialiased pixels around the corners.
+TEST_F(DrawingDisplayItemTest, OpaqueRectForDrawRRect) {
+  constexpr float kRadiusStep = 0.1;
+  constexpr int kSize = 100;
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(kSize, kSize);
+  PaintFlags flags;
+  flags.setAntiAlias(true);
+  flags.setColor(SK_ColorWHITE);
+  for (float r = kRadiusStep; r < kSize / 2; r += kRadiusStep) {
+    PaintRecorder recorder;
+    recorder.beginRecording(kSize, kSize)
+        ->drawRRect(SkRRect::MakeRectXY(SkRect::MakeWH(kSize, kSize), r, r),
+                    flags);
+    DrawingDisplayItem item(
+        client_.Id(), DisplayItem::Type::kDocumentBackground,
+        IntRect(0, 0, kSize, kSize), recorder.finishRecordingAsPicture(),
+        RasterEffectOutset::kNone);
+
+    auto rect = item.RectKnownToBeOpaque();
+    bitmap.eraseColor(SK_ColorBLACK);
+    SkiaPaintCanvas(bitmap).drawPicture(item.GetPaintRecord());
+    for (int y = rect.Y(); y < rect.MaxY(); ++y) {
+      for (int x = rect.X(); x < rect.MaxX(); ++x) {
+        SkColor pixel = bitmap.getColor(x, y);
+        EXPECT_EQ(SK_ColorWHITE, pixel)
+            << " radius=" << r << " x=" << x << " y=" << y
+            << " non-white pixel=" << std::hex << pixel;
+      }
+    }
+  }
 }
 
 }  // namespace

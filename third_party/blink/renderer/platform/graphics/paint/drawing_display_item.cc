@@ -187,6 +187,25 @@ IntRect DrawingDisplayItem::CalculateRectKnownToBeOpaqueForRecord(
           op_opaque_rect =
               EnclosedIntRect(static_cast<const cc::DrawRectOp*>(op)->rect);
           break;
+        case cc::PaintOpType::DrawRRect: {
+          const SkRRect& rrect = static_cast<const cc::DrawRRectOp*>(op)->rrect;
+          SkVector top_left = rrect.radii(SkRRect::kUpperLeft_Corner);
+          SkVector top_right = rrect.radii(SkRRect::kUpperRight_Corner);
+          SkVector bottom_left = rrect.radii(SkRRect::kLowerLeft_Corner);
+          SkVector bottom_right = rrect.radii(SkRRect::kLowerRight_Corner);
+          // Get a bounding rect that does not intersect with the rounding clip.
+          // When a rect has rounded corner with radius r, then the largest rect
+          // that can be inscribed inside it has an inset of |((2 - sqrt(2)) /
+          // 2) * radius|.
+          FloatRect contained = rrect.rect();
+          contained.Expand(FloatRectOutsets(
+              -std::max(top_left.y(), top_right.y()) * 0.3f,
+              -std::max(top_right.x(), bottom_right.x()) * 0.3f,
+              -std::max(bottom_left.y(), bottom_right.y()) * 0.3f,
+              -std::max(top_left.x(), bottom_left.x()) * 0.3f));
+          op_opaque_rect = EnclosedIntRect(contained);
+          break;
+        }
         case cc::PaintOpType::DrawIRect:
           op_opaque_rect =
               IntRect(static_cast<const cc::DrawIRectOp*>(op)->rect);

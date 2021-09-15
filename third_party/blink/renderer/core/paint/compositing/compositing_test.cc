@@ -2154,6 +2154,24 @@ TEST_P(CompositingSimTest, ContentsOpaqueForTextWithPartialBackground) {
   EXPECT_TRUE(cc_layer->contents_opaque_for_text());
 }
 
+TEST_P(CompositingSimTest, ContentsOpaqueForTextWithBorderRadiusAndPadding) {
+  // This test works only with the new text opaque algorithm.
+  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    return;
+
+  InitializeWithHTML(R"HTML(
+      <!DOCTYPE html>
+      <div id="target" style="will-change: transform; border-radius: 5px;
+                              padding: 10px; background: blue">
+        TEXT
+      </div>
+  )HTML");
+  Compositor().BeginFrame();
+  auto* cc_layer = CcLayerByDOMElementId("target");
+  EXPECT_FALSE(cc_layer->contents_opaque());
+  EXPECT_TRUE(cc_layer->contents_opaque_for_text());
+}
+
 TEST_P(CompositingSimTest, FullCompositingUpdateReasons) {
   InitializeWithHTML(R"HTML(
       <!DOCTYPE html>

@@ -10,6 +10,7 @@
       "name": "LayoutNGTextControlSingleLine INPUT id='root'",
       "position": [-1, -1],
       "bounds": [67, 24],
+      "contentsOpaqueForText": true,
       "backgroundColor": "#FFFFFF",
       "invalidations": [
         [0, 0, 67, 24]
