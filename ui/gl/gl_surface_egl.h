@@ -5,6 +5,8 @@
 #ifndef UI_GL_GL_SURFACE_EGL_H_
 #define UI_GL_GL_SURFACE_EGL_H_
 
+#include "build/build_config.h"
+
 #if defined(OS_WIN)
 #include <windows.h>
 #endif
@@ -20,7 +22,6 @@
 #include "base/containers/queue.h"
 #include "base/macros.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/vsync_provider.h"
 #include "ui/gl/egl_timestamps.h"
@@ -128,6 +129,7 @@ class GL_EXPORT GLSurfaceEGL : public GLSurface {
   static bool IsANGLEFeatureControlSupported();
   static bool IsANGLEPowerPreferenceSupported();
   static bool IsANGLEExternalContextAndSurfaceSupported();
+  static bool IsEGLQueryDeviceSupported();
 
  protected:
   ~GLSurfaceEGL() override;

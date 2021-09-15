@@ -2623,6 +2623,11 @@ EGL_FUNCTIONS = [
   'versions': [{ 'name': 'eglQueryDebugKHR',
                  'client_extensions': ['EGL_KHR_debug'], }],
   'arguments': 'EGLint attribute, EGLAttrib* value', },
+{
+  'return_type': 'EGLBoolean',
+  'versions': [{ 'name': 'eglQueryDeviceAttribEXT',
+                 'client_extensions': ['EGL_EXT_device_query'], }],
+  'arguments': 'EGLDeviceEXT device, EGLint attribute, EGLAttrib* value' },
 { 'return_type': 'EGLBoolean',
   'known_as': 'eglQueryDevicesEXT',
   'versions': [{ 'name': 'eglQueryDevicesEXT',
@@ -2637,6 +2642,11 @@ EGL_FUNCTIONS = [
 { 'return_type': 'EGLBoolean',
   'versions': [{ 'name': 'eglQueryDisplayAttribANGLE',
                  'client_extensions': ['EGL_ANGLE_feature_control'] }],
+  'arguments': 'EGLDisplay dpy, EGLint attribute, EGLAttrib* value' },
+{
+  'return_type': 'EGLBoolean',
+  'versions': [{ 'name': 'eglQueryDisplayAttribEXT',
+                 'client_extensions': ['EGL_EXT_device_query'], }],
   'arguments': 'EGLDisplay dpy, EGLint attribute, EGLAttrib* value' },
 { 'return_type': 'EGLBoolean',
   'versions': [{ 'name': 'eglQueryStreamKHR',
