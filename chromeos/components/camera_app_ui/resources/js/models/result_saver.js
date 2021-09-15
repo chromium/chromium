@@ -3,7 +3,11 @@
 // found in the LICENSE file.
 
 // eslint-disable-next-line no-unused-vars
+import {Resolution} from '../type.js';
+
+// eslint-disable-next-line no-unused-vars
 import {VideoSaver} from './video_saver.js';
+
 
 /**
  * Handles captured result photos and video.
@@ -29,11 +33,10 @@ export class ResultSaver {
 
   /**
    * Returns a gif saver to save captured result gif.
-   * @param {number} width
-   * @param {number} height
+   * @param {!Resolution} resolution
    * @return {!Promise<!VideoSaver>}
    */
-  async startSaveGIF(width, height) {}
+  async startSaveGif(resolution) {}
 
   /**
    * Saves captured video result.
@@ -49,5 +52,5 @@ export class ResultSaver {
    *     saved.
    * @return {!Promise}
    */
-  async finishSaveGIF(gifVideo) {}
+  async finishSaveGif(gifVideo) {}
 }

@@ -234,9 +234,9 @@ export class GalleryButton {
   /**
    * @override
    */
-  async startSaveGIF(width, height) {
+  async startSaveGif(resolution) {
     const file = await filesystem.createVideoFile(VideoType.GIF);
-    return VideoSaver.createForGIFFile(file, width, height);
+    return VideoSaver.createForGifFile(file, resolution);
   }
 
   /**
@@ -254,7 +254,7 @@ export class GalleryButton {
   /**
    * @override
    */
-  async finishSaveGIF(gifVideo) {
+  async finishSaveGif(gifVideo) {
     const file = await gifVideo.endWrite();
     assert(file !== null);
     // TODO(b:191950622): Update gif thumbnail to gallery button cover.

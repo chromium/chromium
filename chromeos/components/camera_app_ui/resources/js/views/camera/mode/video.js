@@ -61,14 +61,10 @@ let avc1Parameters = null;
 const MINIMUM_VIDEO_DURATION_IN_MILLISECONDS = 500;
 
 /**
- * The width of the generated gif file.
+ * The resolution of the generated gif file.
+ * TODO(b:191950622): Rotate the scaled size according to input orientation.
  */
-export const GIF_FRAME_WIDTH = 640;
-
-/**
- * The height of the generated gif file.
- */
-export const GIF_FRAME_HEIGHT = 360;
+export const GIF_RESOLUTION = new Resolution(640, 360);
 
 /**
  * Maximum recording time for GIF animation mode.
@@ -167,12 +163,11 @@ export class VideoHandler {
 
   /**
    * Creates VideoSaver to save video capture result.
-   * @param {number} width
-   * @param {number} height
+   * @param {!Resolution} resolution
    * @return {!Promise<!VideoSaver>}
    * @abstract
    */
-  createGIFSaver(width, height) {}
+  createGifSaver(resolution) {}
 
   /**
    * Handles the result video.
@@ -188,7 +183,7 @@ export class VideoHandler {
    * @return {!Promise}
    * @abstract
    */
-  handleResultGIF(gifSaver) {}
+  handleResultGif(gifSaver) {}
 
   /**
    * Handles the result video snapshot.
@@ -299,7 +294,7 @@ export class Video extends ModeBase {
     /**
      * Whether the user press the stop button while recording GIF.
      */
-    this.isRecordingGIF_ = false;
+    this.isRecordingGif_ = false;
   }
 
   /**
@@ -466,8 +461,8 @@ export class Video extends ModeBase {
 
 
     if (state.get(state.State.ENABLE_GIF_RECORDING)) {
-      const gifSaver = await this.captureGIF_();
-      await this.handler_.handleResultGIF(gifSaver);
+      const gifSaver = await this.captureGif_();
+      await this.handler_.handleResultGif(gifSaver);
     } else {
       this.recordTime_.start({resume: false});
       let /** ?VideoSaver */ videoSaver = null;
@@ -525,7 +520,7 @@ export class Video extends ModeBase {
    */
   stop_() {
     if (state.get(state.State.ENABLE_GIF_RECORDING)) {
-      this.isRecordingGIF_ = false;
+      this.isRecordingGif_ = false;
     } else {
       sound.cancel(dom.get('#sound-rec-start', HTMLAudioElement));
 
@@ -544,15 +539,15 @@ export class Video extends ModeBase {
    * @return {!Promise<!VideoSaver>} Saves recorded video.
    * @private
    */
-  async captureGIF_() {
-    const gifSaver =
-        await this.handler_.createGIFSaver(GIF_FRAME_WIDTH, GIF_FRAME_HEIGHT);
+  async captureGif_() {
+    const gifSaver = await this.handler_.createGifSaver(GIF_RESOLUTION);
 
     const video = this.handler_.getPreviewVideo();
-    const canvas = new OffscreenCanvas(GIF_FRAME_WIDTH, GIF_FRAME_HEIGHT);
+    const canvas =
+        new OffscreenCanvas(GIF_RESOLUTION.width, GIF_RESOLUTION.height);
     const context = assertInstanceof(
         canvas.getContext('2d'), OffscreenCanvasRenderingContext2D);
-    this.isRecordingGIF_ = true;
+    this.isRecordingGif_ = true;
 
     await new Promise((resolve) => {
       let encodedFrames = 0;
@@ -561,15 +556,18 @@ export class Video extends ModeBase {
         if (start === 0.0) {
           start = now;
         }
-        if (!this.isRecordingGIF_ || now - start > MAX_GIF_DURATION_MS) {
+        if (!this.isRecordingGif_ || now - start > MAX_GIF_DURATION_MS) {
           resolve();
           return;
         }
         encodedFrames++;
         if (encodedFrames % GRAB_GIF_FRAME_RATIO === 0) {
-          context.drawImage(video, 0, 0, GIF_FRAME_WIDTH, GIF_FRAME_HEIGHT);
+          context.drawImage(
+              video, 0, 0, GIF_RESOLUTION.width, GIF_RESOLUTION.height);
           gifSaver.write(new Blob([
-            context.getImageData(0, 0, GIF_FRAME_WIDTH, GIF_FRAME_HEIGHT).data,
+            context
+                .getImageData(0, 0, GIF_RESOLUTION.width, GIF_RESOLUTION.height)
+                .data,
           ]));
         }
         video.requestVideoFrameCallback(updateCanvas);

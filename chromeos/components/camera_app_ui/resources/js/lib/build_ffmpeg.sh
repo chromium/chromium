@@ -49,15 +49,21 @@ do_configure() {
     --enable-avformat
     --enable-ffmpeg
     --enable-swresample
+    --enable-swscale
     --enable-protocol=file
     --enable-protocol=pipe
     --enable-demuxer=matroska
+    --enable-demuxer=rawvideo
+    --enable-muxer=gif
     --enable-muxer=mov
     --enable-muxer=mp4
     --enable-parser=h264
     --enable-decoder=pcm_f32le
+    --enable-decoder=rawvideo
     --enable-encoder=aac
+    --enable-encoder=gif
     --enable-filter=aresample
+    --enable-filter=scale
     --enable-bsf=extract_extradata
   )
 

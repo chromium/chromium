@@ -4,20 +4,23 @@
 
 import {Intent} from '../intent.js';  // eslint-disable-line no-unused-vars
 import * as Comlink from '../lib/comlink.js';
+import {Resolution} from '../type.js';  // eslint-disable-line no-unused-vars
 // eslint-disable-next-line no-unused-vars
 import {VideoProcessorHelperInterface} from '../untrusted_helper_interfaces.js';
 import * as util from '../util.js';
 
 import {AsyncWriter} from './async_writer.js';
+import {
+  createGifArgs,
+  createMp4Args,
+} from './ffmpeg/video_processor_args.js';
 import {createPrivateTempVideoFile} from './file_system.js';
 // eslint-disable-next-line no-unused-vars
 import {FileAccessEntry} from './file_system_access_entry.js';
 // eslint-disable-next-line no-unused-vars
-import {GIFVideoProcessor} from './gif_video_processor.js';
-// eslint-disable-next-line no-unused-vars
 import {VideoProcessor} from './video_processor_interface.js';
 
-const Mp4VideoProcessor = (async () => {
+const FFMpegVideoProcessor = (async () => {
   const workerChannel = new MessageChannel();
   const videoProcessorHelper = /** @type {!VideoProcessorHelperInterface} */ (
       await util.createUntrustedJSModule(
@@ -34,19 +37,18 @@ const Mp4VideoProcessor = (async () => {
  */
 async function createVideoProcessor(output, videoRotation) {
   // Comlink proxies all calls asynchronously, including constructors.
-  return new (await Mp4VideoProcessor)(
-      Comlink.proxy(output),
-      {seekable: output.seekable(), rotate: videoRotation});
+  return new (await FFMpegVideoProcessor)(
+      Comlink.proxy(output), createMp4Args(videoRotation, output.seekable()));
 }
 
 /**
  * @param {!AsyncWriter} output
- * @param {number} width
- * @param {number} height
- * @return {!VideoProcessor}
+ * @param {!Resolution} resolution
+ * @return {!Promise<!VideoProcessor>}
  */
-function createGIFVideoProcessor(output, width, height) {
-  return new GIFVideoProcessor(output, width, height);
+async function createGifVideoProcessor(output, resolution) {
+  return new (await FFMpegVideoProcessor)(
+      Comlink.proxy(output), createGifArgs(resolution));
 }
 
 /**
@@ -122,13 +124,12 @@ export class VideoSaver {
   /**
    * Creates video saver for the given file.
    * @param {!FileAccessEntry} file
-   * @param {number} width
-   * @param {number} height
+   * @param {!Resolution} resolution
    * @return {!Promise<!VideoSaver>}
    */
-  static async createForGIFFile(file, width, height) {
+  static async createForGifFile(file, resolution) {
     const writer = await file.getWriter();
-    const processor = createGIFVideoProcessor(writer, width, height);
+    const processor = await createGifVideoProcessor(writer, resolution);
     return new VideoSaver(file, processor);
   }
 

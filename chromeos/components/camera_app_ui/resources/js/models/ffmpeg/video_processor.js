@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AsyncJobQueue} from '../async_job_queue.js';
-import {assert, assertNotReached} from '../chrome_util.js';
-import * as Comlink from '../lib/comlink.js';
-import runFFmpeg from '../lib/ffmpeg.js';
-import {WaitableEvent} from '../waitable_event.js';
+import {AsyncJobQueue} from '../../async_job_queue.js';
+import {assert, assertNotReached} from '../../chrome_util.js';
+import * as Comlink from '../../lib/comlink.js';
+import runFFmpeg from '../../lib/ffmpeg.js';
+import {WaitableEvent} from '../../waitable_event.js';
+// eslint-disable-next-line no-unused-vars
+import {AsyncWriter} from '../async_writer.js';
+// eslint-disable-next-line no-unused-vars
+import {VideoProcessor} from '../video_processor_interface.js';
 
 // eslint-disable-next-line no-unused-vars
-import {AsyncWriter} from './async_writer.js';
-// eslint-disable-next-line no-unused-vars
-import {VideoProcessor} from './video_processor_interface.js';
+import {VideoProcessorArgs} from './video_processor_args.js';
 
 /**
  * A file stream in Emscripten.
@@ -263,47 +265,38 @@ class OutputDevice {
 }
 
 /**
- * A video processor that can remux mkv to mp4.
+ * A ffmpeg-based video processor that can process input and output data
+ * incrementally.
  * @implements {VideoProcessor}
  */
-class Mp4VideoProcessor {
+class FFMpegVideoProcessor {
   /**
-   * @param {!AsyncWriter} output The output writer of mp4.
-   * @param {{seekable: boolean, rotate: number}} opts
+   * @param {!AsyncWriter} output The output writer.
+   * @param {!VideoProcessorArgs} processorArgs
    */
-  constructor(output, {seekable, rotate}) {
+  constructor(output, processorArgs) {
     this.output_ = output;
     this.inputDevice_ = new InputDevice();
     this.outputDevice_ = new OutputDevice(output);
     this.jobQueue_ = new AsyncJobQueue();
 
+    const outputFile = `/output.${processorArgs.outputExtension}`;
     const args = [
       // Make the procssing pipeline start earlier by shorten the initial
       // analyze durtaion from the default 5s to 1s. This reduce the
       // stop-capture lantency significantly for short videos.
       '-analyzeduration', '1M',
-      // mkv input from stdin
-      '-f', 'matroska', '-i', 'pipe:0',
-      // rotate the video by metadata
-      '-metadata:s:v', `rotate=${rotate}`,
-      // transcode audio to aac and copy the video
-      '-c:a', 'aac', '-c:v', 'copy',
+      // input from stdin
+      ...processorArgs.decoderArgs, '-i', 'pipe:0',
+      // arguments for output format encoder
+      ...processorArgs.encoderArgs,
       // show error log only
       '-hide_banner', '-loglevel', 'error',
       // do not ask anything
-      '-nostdin', '-y'  // eslint-disable-line comma-dangle
+      '-nostdin', '-y',
+      // output to file
+      outputFile  // eslint-disable-line comma-dangle
     ];
-
-    // TODO(crbug.com/1140852): Remove non-seekable code path once the Android
-    // camera intent helper support seek operation.
-    if (!seekable) {
-      // Mark unseekable.
-      args.push('-seekable', '0');
-      // Produce a fragmented MP4.
-      args.push('-movflags', 'frag_keyframe', '-frag_duration', '100000');
-    }
-
-    args.push('/output.mp4');
 
     const config = {
       arguments: args,
@@ -326,7 +319,7 @@ class Mp4VideoProcessor {
 
         const output = fs.makedev(80, 1);
         fs.registerDevice(output, this.outputDevice_.getFileOps());
-        fs.mkdev('/output.mp4', output);
+        fs.mkdev(outputFile, output);
 
         fs.symlink('/dev/tty1', '/dev/stdout');
         fs.symlink('/dev/tty1', '/dev/stderr');
@@ -405,8 +398,8 @@ class Mp4VideoProcessor {
    * @param {!MessagePort} endPoint
    */
   static exposeVideoProcessor(endPoint) {
-    Comlink.expose(Mp4VideoProcessor, endPoint);
+    Comlink.expose(FFMpegVideoProcessor, endPoint);
   }
 }
 
-Comlink.expose(Mp4VideoProcessor);
+Comlink.expose(FFMpegVideoProcessor);

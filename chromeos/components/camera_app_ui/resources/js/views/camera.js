@@ -803,8 +803,8 @@ export class Camera extends View {
   /**
    * @override
    */
-  createGIFSaver(width, height) {
-    return this.resultSaver_.startSaveGIF(width, height);
+  createGifSaver(resolution) {
+    return this.resultSaver_.startSaveGif(resolution);
   }
 
   /**
@@ -868,8 +868,8 @@ export class Camera extends View {
   /**
    * @override
    */
-  async handleResultGIF(gifSaver) {
-    await this.resultSaver_.finishSaveGIF(gifSaver);
+  async handleResultGif(gifSaver) {
+    await this.resultSaver_.finishSaveGif(gifSaver);
   }
 
   /**

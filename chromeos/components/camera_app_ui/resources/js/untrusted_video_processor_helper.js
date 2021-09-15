@@ -12,8 +12,8 @@ import {VideoProcessorHelperInterface} from './untrusted_helper_interfaces.js';
  */
 const mp4VideoProcessorURL = (() => {
   const staticUrlPolicy = trustedTypes.createPolicy(
-      'mp4-js-static',
-      {createScriptURL: () => '/js/models/mp4_video_processor.js'});
+      'video-processor-js-static',
+      {createScriptURL: () => '/js/models/ffmpeg/video_processor.js'});
   // TODO(crbug.com/980846): Remove the empty string if
   // https://github.com/w3c/webappsec-trusted-types/issues/278 gets fixed.
   return staticUrlPolicy.createScriptURL('');
