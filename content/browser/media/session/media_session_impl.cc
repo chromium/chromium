@@ -1244,8 +1244,9 @@ void MediaSessionImpl::GetMediaImageBitmap(
     return;
   }
 
+  const gfx::Size preferred_size(desired_size_px, desired_size_px);
   web_contents()->DownloadImage(
-      image.src, false /* is_favicon */, desired_size_px /* preferred_size */,
+      image.src, false /* is_favicon */, preferred_size,
       desired_size_px /* max_bitmap_size */, false /* bypass_cache */,
       base::BindOnce(&MediaSessionImpl::OnImageDownloadComplete,
                      base::Unretained(this),

@@ -1068,15 +1068,15 @@ class WebContents : public PageNavigator,
   // is the only result. A |max_bitmap_size| of 0 means unlimited.
   // For vector images, |preferred_size| will serve as a viewport into which
   // the image will be rendered. This would usually be the dimensions of the
-  // square where the bitmap will be rendered. If |preferred_size| is 0, any
-  // existing intrinsic dimensions of the image will be used. If
+  // rectangle where the bitmap will be rendered. If |preferred_size| is empty,
+  // any existing intrinsic dimensions of the image will be used. If
   // |max_bitmap_size| is non-zero it will also impose an upper bound on the
-  // preferred size.
+  // longest edge of |preferred_size| (|preferred_size| will be scaled down).
   // If |bypass_cache| is true, |url| is requested from the server even if it
   // is present in the browser cache.
   virtual int DownloadImage(const GURL& url,
                             bool is_favicon,
-                            uint32_t preferred_size,
+                            const gfx::Size& preferred_size,
                             uint32_t max_bitmap_size,
                             bool bypass_cache,
                             ImageDownloadCallback callback) = 0;
@@ -1087,7 +1087,7 @@ class WebContents : public PageNavigator,
       const GlobalRenderFrameHostId& initiator_frame_routing_id,
       const GURL& url,
       bool is_favicon,
-      uint32_t preferred_size,
+      const gfx::Size& preferred_size,
       uint32_t max_bitmap_size,
       bool bypass_cache,
       ImageDownloadCallback callback) = 0;

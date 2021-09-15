@@ -290,6 +290,7 @@ _CONFIG = [
             'gfx::RRectF',
             'gfx::ScaleToCeiledSize',
             'gfx::ScaleToEnclosingRectSafe',
+            'gfx::ScaleToFlooredSize',
             'gfx::ScaleVector2d',
             'gfx::Size',
             'gfx::SizeF',

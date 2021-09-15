@@ -770,7 +770,7 @@ int WebContentsAndroid::DownloadImage(
     jint max_bitmap_size,
     jboolean bypass_cache,
     const base::android::JavaParamRef<jobject>& jcallback) {
-  const uint32_t preferred_size = 0;
+  const gfx::Size preferred_size;
   return web_contents_->DownloadImage(
       *url::GURLAndroid::ToNativeGURL(env, jurl), is_fav_icon, preferred_size,
       max_bitmap_size, bypass_cache,

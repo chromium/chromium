@@ -99,9 +99,10 @@ int ContentFaviconDriver::DownloadImage(const GURL& url,
   bool bypass_cache = (bypass_cache_page_url_ == GetActiveURL());
   bypass_cache_page_url_ = GURL();
 
-  return web_contents()->DownloadImage(
-      url, true, /*preferred_size=*/max_image_size,
-      /*max_bitmap_size=*/max_image_size, bypass_cache, std::move(callback));
+  const gfx::Size preferred_size(max_image_size, max_image_size);
+  return web_contents()->DownloadImage(url, true, preferred_size,
+                                       /*max_bitmap_size=*/max_image_size,
+                                       bypass_cache, std::move(callback));
 }
 
 void ContentFaviconDriver::DownloadManifest(const GURL& url,

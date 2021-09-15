@@ -34,10 +34,11 @@ bool ManifestIconDownloader::Download(
   if (!web_contents || !icon_url.is_valid())
     return false;
 
+  const gfx::Size preferred_size(ideal_icon_size_in_px, ideal_icon_size_in_px);
   web_contents->DownloadImageInFrame(
       initiator_frame_routing_id, icon_url,
       false,                    // is_favicon
-      ideal_icon_size_in_px,    // preferred_size
+      preferred_size,           // preferred_size
       maximum_icon_size_in_px,  // max_bitmap_size - 0 means no maximum size.
       false,                    // bypass_cache
       base::BindOnce(&ManifestIconDownloader::OnIconFetched,

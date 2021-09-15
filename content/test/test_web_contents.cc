@@ -102,7 +102,7 @@ TestRenderFrameHost* TestWebContents::GetSpeculativePrimaryMainFrame() {
 
 int TestWebContents::DownloadImage(const GURL& url,
                                    bool is_favicon,
-                                   uint32_t preferred_size,
+                                   const gfx::Size& preferred_size,
                                    uint32_t max_bitmap_size,
                                    bool bypass_cache,
                                    ImageDownloadCallback callback) {

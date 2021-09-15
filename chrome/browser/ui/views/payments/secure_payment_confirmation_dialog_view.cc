@@ -12,6 +12,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/payments/content/payment_ui_observer.h"
 #include "components/payments/content/secure_payment_confirmation_model.h"
+#include "components/payments/core/sizes.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
@@ -332,7 +333,8 @@ std::unique_ptr<views::View> SecurePaymentConfirmationDialogView::CreateRowView(
     columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER,
                        views::GridLayout::kFixedSize,
                        views::GridLayout::ColumnSize::kFixed,
-                       kInstrumentIconWidth, kInstrumentIconWidth);
+                       kSecurePaymentConfirmationInstrumentIconWidthPx,
+                       kSecurePaymentConfirmationInstrumentIconWidthPx);
     columns->AddPaddingColumn(views::GridLayout::kFixedSize,
                               ChromeLayoutProvider::Get()->GetDistanceMetric(
                                   views::DISTANCE_RELATED_LABEL_HORIZONTAL));

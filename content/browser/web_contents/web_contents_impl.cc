@@ -5076,7 +5076,7 @@ void WebContentsImpl::DidEndColorChooser() {
 int WebContentsImpl::DownloadImage(
     const GURL& url,
     bool is_favicon,
-    uint32_t preferred_size,
+    const gfx::Size& preferred_size,
     uint32_t max_bitmap_size,
     bool bypass_cache,
     WebContents::ImageDownloadCallback callback) {
@@ -5091,7 +5091,7 @@ int WebContentsImpl::DownloadImageInFrame(
     const GlobalRenderFrameHostId& initiator_frame_routing_id,
     const GURL& url,
     bool is_favicon,
-    uint32_t preferred_size,
+    const gfx::Size& preferred_size,
     uint32_t max_bitmap_size,
     bool bypass_cache,
     WebContents::ImageDownloadCallback callback) {

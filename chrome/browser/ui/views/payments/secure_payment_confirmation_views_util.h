@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-
 class SkBitmap;
 
 namespace views {
@@ -41,10 +40,6 @@ constexpr int kBodyInsets = 8;
 
 // Extra inset between the body content and the dialog buttons.
 constexpr int kBodyExtraInset = 16;
-
-// Size of the instrument icon.
-constexpr int kInstrumentIconWidth = 32;
-constexpr int kInstrumentIconHeight = 20;
 
 // Height of each payment information row.
 constexpr int kPaymentInfoRowHeight = 48;

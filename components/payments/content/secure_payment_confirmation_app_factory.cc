@@ -22,6 +22,7 @@
 #include "components/payments/core/method_strings.h"
 #include "components/payments/core/native_error_strings.h"
 #include "components/payments/core/secure_payment_confirmation_instrument.h"
+#include "components/payments/core/sizes.h"
 #include "components/webauthn/core/browser/internal_authenticator.h"
 #include "components/webdata/common/web_data_results.h"
 #include "components/webdata/common/web_data_service_base.h"
@@ -251,13 +252,15 @@ void SecurePaymentConfirmationAppFactory::OnWebDataServiceRequestDone(
   // file, so the server that hosts the image cannot detect presence of the
   // instrument on file.
   auto* request_ptr = request.get();
+  gfx::Size preferred_size(kSecurePaymentConfirmationInstrumentIconWidthPx,
+                           kSecurePaymentConfirmationInstrumentIconHeightPx);
   request_ptr->pending_icon_download_request_id =
       request_ptr->web_contents()->DownloadImageInFrame(
           request_ptr->delegate->GetInitiatorRenderFrameHostId(),
           request_ptr->mojo_request->instrument->icon,  // source URL
           false,                                        // is_favicon
-          0,                                            // no preferred size
-          0,                                            // no max size
+          preferred_size,
+          0,      // no max size
           false,  // normal cache policy (a.k.a. do not bypass cache)
           base::BindOnce(&SecurePaymentConfirmationAppFactory::DidDownloadIcon,
                          weak_ptr_factory_.GetWeakPtr(), std::move(instrument),
@@ -272,8 +275,7 @@ void SecurePaymentConfirmationAppFactory::OnAppIcon(
   if (!request->delegate || !request->web_contents())
     return;
 
-  if (!request->delegate->GetSpec() || !request->authenticator ||
-      !instrument) {
+  if (!request->delegate->GetSpec() || !request->authenticator || !instrument) {
     request->delegate->OnDoneCreatingPaymentApps();
     return;
   }

@@ -109,7 +109,8 @@ namespace content {
     statement;                  \
   }
 
-void ResizeWebContentsView(Shell* shell, const gfx::Size& size,
+void ResizeWebContentsView(Shell* shell,
+                           const gfx::Size& size,
                            bool set_start_page) {
   // Resizing the web content directly, independent of the Shell window,
   // requires the RenderWidgetHostView to exist. So we do a navigation
@@ -180,8 +181,7 @@ class NavigateOnCommitObserver : public WebContentsObserver {
       : WebContentsObserver(shell->web_contents()),
         shell_(shell),
         url_(url),
-        done_(false) {
-  }
+        done_(false) {}
 
   // WebContentsObserver:
   void NavigationEntryCommitted(
@@ -225,8 +225,7 @@ class RenderViewSizeObserver : public WebContentsObserver {
   RenderViewSizeObserver(Shell* shell, const gfx::Size& wcv_new_size)
       : WebContentsObserver(shell->web_contents()),
         shell_(shell),
-        wcv_new_size_(wcv_new_size) {
-  }
+        wcv_new_size_(wcv_new_size) {}
 
   // WebContentsObserver:
   void RenderFrameCreated(RenderFrameHost* rfh) override {
@@ -249,16 +248,15 @@ class RenderViewSizeObserver : public WebContentsObserver {
 class LoadingStateChangedDelegate : public WebContentsDelegate {
  public:
   LoadingStateChangedDelegate()
-      : loadingStateChangedCount_(0)
-      , loadingStateToDifferentDocumentCount_(0) {
-  }
+      : loadingStateChangedCount_(0),
+        loadingStateToDifferentDocumentCount_(0) {}
 
   // WebContentsDelegate:
   void LoadingStateChanged(WebContents* contents,
                            bool to_different_document) override {
-      loadingStateChangedCount_++;
-      if (to_different_document)
-        loadingStateToDifferentDocumentCount_++;
+    loadingStateChangedCount_++;
+    if (to_different_document)
+      loadingStateToDifferentDocumentCount_++;
   }
 
   int loadingStateChangedCount() const { return loadingStateChangedCount_; }
@@ -430,8 +428,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
 }
 
 // Crashes under ThreadSanitizer, http://crbug.com/356758.
-#if defined(OS_WIN) || defined(OS_ANDROID) \
-    || defined(THREAD_SANITIZER)
+#if defined(OS_WIN) || defined(OS_ANDROID) || defined(THREAD_SANITIZER)
 #define MAYBE_GetSizeForNewRenderView DISABLED_GetSizeForNewRenderView
 #else
 #define MAYBE_GetSizeForNewRenderView DISABLED_GetSizeForNewRenderView
@@ -456,8 +453,11 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
   EXPECT_EQ(shell()->web_contents()->GetContainerBounds().size(),
-            shell()->web_contents()->GetRenderWidgetHostView()->GetViewBounds().
-                size());
+            shell()
+                ->web_contents()
+                ->GetRenderWidgetHostView()
+                ->GetViewBounds()
+                .size());
 
   // When a size is set, RenderWidgetHostView and WebContentsView honor this
   // size.
@@ -467,9 +467,11 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   delegate->set_size_insets(size_insets);
   EXPECT_TRUE(NavigateToURL(shell(), https_server.GetURL("/")));
   size.Enlarge(size_insets.width(), size_insets.height());
-  EXPECT_EQ(size,
-            shell()->web_contents()->GetRenderWidgetHostView()->GetViewBounds().
-                size());
+  EXPECT_EQ(size, shell()
+                      ->web_contents()
+                      ->GetRenderWidgetHostView()
+                      ->GetViewBounds()
+                      .size());
   // The web_contents size is set by the embedder, and should not depend on the
   // rwhv size. The behavior is correct on OSX, but incorrect on other
   // platforms.
@@ -478,8 +480,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   exp_wcv_size.Enlarge(size_insets.width(), size_insets.height());
 #endif
 
-  EXPECT_EQ(exp_wcv_size,
-            shell()->web_contents()->GetContainerBounds().size());
+  EXPECT_EQ(exp_wcv_size, shell()->web_contents()->GetContainerBounds().size());
 
   // If WebContentsView is resized after RenderWidgetHostView is created but
   // before pending navigation entry is committed, both RenderWidgetHostView and
@@ -502,8 +503,11 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
 #if !defined(OS_MAC)
   new_size.Enlarge(size_insets.width(), size_insets.height());
 #endif
-  gfx::Size actual_size = shell()->web_contents()->GetRenderWidgetHostView()->
-      GetViewBounds().size();
+  gfx::Size actual_size = shell()
+                              ->web_contents()
+                              ->GetRenderWidgetHostView()
+                              ->GetViewBounds()
+                              .size();
 
   EXPECT_EQ(new_size, actual_size);
   EXPECT_EQ(new_size, shell()->web_contents()->GetContainerBounds().size());
@@ -556,9 +560,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, OpenURLSubframe) {
   // Make sure the NavigationEntry ends up with the FrameTreeNode ID.
   NavigationController* controller = &shell()->web_contents()->GetController();
   EXPECT_TRUE(controller->GetPendingEntry());
-  EXPECT_EQ(frame_tree_node_id,
-            NavigationEntryImpl::FromNavigationEntry(
-                controller->GetPendingEntry())->frame_tree_node_id());
+  EXPECT_EQ(frame_tree_node_id, NavigationEntryImpl::FromNavigationEntry(
+                                    controller->GetPendingEntry())
+                                    ->frame_tree_node_id());
 }
 
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, OpenURLNonExistentSubframe) {
@@ -596,7 +600,6 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
 
   EXPECT_TRUE(content::ExecuteScript(shell(), kJSCodeForAppendingFrame));
 }
-
 
 // Test that creation of new RenderFrameHost objects sends the correct object
 // to the WebContentObservers. See http://crbug.com/347339.
@@ -969,8 +972,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, LoadProgress) {
 
   const std::vector<double>& progresses = delegate->progresses;
   // All updates should be in order ...
-  if (std::adjacent_find(progresses.begin(),
-                         progresses.end(),
+  if (std::adjacent_find(progresses.begin(), progresses.end(),
                          std::greater<double>()) != progresses.end()) {
     ADD_FAILURE() << "Progress values should be in order: "
                   << ::testing::PrintToString(progresses);
@@ -991,8 +993,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, LoadProgressWithFrames) {
 
   const std::vector<double>& progresses = delegate->progresses;
   // All updates should be in order ...
-  if (std::adjacent_find(progresses.begin(),
-                         progresses.end(),
+  if (std::adjacent_find(progresses.begin(), progresses.end(),
                          std::greater<double>()) != progresses.end()) {
     ADD_FAILURE() << "Progress values should be in order: "
                   << ::testing::PrintToString(progresses);
@@ -1143,8 +1144,8 @@ class MockPageScaleObserver : public WebContentsObserver {
       : WebContentsObserver(shell->web_contents()),
         got_page_scale_update_(false) {
     // Once OnPageScaleFactorChanged is called, quit the run loop.
-    ON_CALL(*this, OnPageScaleFactorChanged(::testing::_)).WillByDefault(
-        ::testing::InvokeWithoutArgs(
+    ON_CALL(*this, OnPageScaleFactorChanged(::testing::_))
+        .WillByDefault(::testing::InvokeWithoutArgs(
             this, &MockPageScaleObserver::GotPageScaleUpdate));
   }
 
@@ -1288,7 +1289,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, NewNamedWindow) {
 
     EXPECT_EQ("new_window",
               static_cast<WebContentsImpl*>(new_shell->web_contents())
-                  ->GetFrameTree()->root()->frame_name());
+                  ->GetFrameTree()
+                  ->root()
+                  ->frame_name());
 
     EXPECT_EQ(true, EvalJs(new_shell, "window.name == 'new_window';"));
   }
@@ -1302,9 +1305,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, NewNamedWindow) {
     Shell* new_shell = new_shell_observer.GetShell();
     EXPECT_TRUE(WaitForLoadStop(new_shell->web_contents()));
 
-    EXPECT_EQ("foo",
-              static_cast<WebContentsImpl*>(new_shell->web_contents())
-                  ->GetFrameTree()->root()->frame_name());
+    EXPECT_EQ("foo", static_cast<WebContentsImpl*>(new_shell->web_contents())
+                         ->GetFrameTree()
+                         ->root()
+                         ->frame_name());
   }
 }
 
@@ -1732,8 +1736,7 @@ class TestWCDelegateForDialogsAndFullscreen : public JavaScriptDialogManager,
     return true;
   }
 
-  void CancelDialogs(WebContents* web_contents,
-                     bool reset_state) override {}
+  void CancelDialogs(WebContents* web_contents, bool reset_state) override {}
 
  private:
   WebContentsImpl* web_contents_;
@@ -2115,12 +2118,12 @@ namespace {
 
 class DownloadImageObserver {
  public:
-  MOCK_METHOD5(OnFinishDownloadImage, void(
-      int id,
-      int status_code,
-      const GURL& image_url,
-      const std::vector<SkBitmap>& bitmap,
-      const std::vector<gfx::Size>& sizes));
+  MOCK_METHOD5(OnFinishDownloadImage,
+               void(int id,
+                    int status_code,
+                    const GURL& image_url,
+                    const std::vector<SkBitmap>& bitmap,
+                    const std::vector<gfx::Size>& sizes));
   ~DownloadImageObserver() = default;
 };
 
@@ -2134,8 +2137,7 @@ void DownloadImageTestInternal(Shell* shell,
 
   // Set up everything.
   DownloadImageObserver download_image_observer;
-  scoped_refptr<MessageLoopRunner> loop_runner =
-      new MessageLoopRunner();
+  scoped_refptr<MessageLoopRunner> loop_runner = new MessageLoopRunner();
 
   // Set up expectation and stub.
   EXPECT_CALL(download_image_observer,
@@ -2147,7 +2149,7 @@ void DownloadImageTestInternal(Shell* shell,
 
   shell->LoadURL(GURL("about:blank"));
   shell->web_contents()->DownloadImage(
-      image_url, false, 0, 1024, false,
+      image_url, false, gfx::Size(), 1024, false,
       base::BindOnce(&DownloadImageObserver::OnFinishDownloadImage,
                      base::Unretained(&download_image_observer)));
 
@@ -2168,7 +2170,8 @@ void ExpectNoValidImageCallback(base::OnceClosure quit_closure,
 }
 
 void ExpectSingleValidImageCallback(base::OnceClosure quit_closure,
-                                    int expected_size,
+                                    int expected_width,
+                                    int expected_height,
                                     int id,
                                     int status_code,
                                     const GURL& image_url,
@@ -2176,18 +2179,17 @@ void ExpectSingleValidImageCallback(base::OnceClosure quit_closure,
                                     const std::vector<gfx::Size>& sizes) {
   EXPECT_EQ(200, status_code);
   ASSERT_EQ(bitmap.size(), 1u);
-  EXPECT_EQ(bitmap[0].width(), expected_size);
-  EXPECT_EQ(bitmap[0].height(), expected_size);
+  EXPECT_EQ(bitmap[0].width(), expected_width);
+  EXPECT_EQ(bitmap[0].height(), expected_height);
   ASSERT_EQ(sizes.size(), 1u);
-  EXPECT_EQ(sizes[0].width(), expected_size);
-  EXPECT_EQ(sizes[0].height(), expected_size);
+  EXPECT_EQ(sizes[0].width(), expected_width);
+  EXPECT_EQ(sizes[0].height(), expected_height);
   std::move(quit_closure).Run();
 }
 
 }  // anonymous namespace
 
-IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
-                       DownloadImage_HttpImage) {
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, DownloadImage_HttpImage) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL kImageUrl = embedded_test_server()->GetURL("/single_face.jpg");
   DownloadImageTestInternal(shell(), kImageUrl, 200, 1);
@@ -2208,8 +2210,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
                        DISABLED_DownloadImage_Allow_FileImage) {
   shell()->LoadURL(GetTestUrl("", "simple_page.html"));
 
-  const GURL kImageUrl =
-      GetTestUrl("", "image.jpg");
+  const GURL kImageUrl = GetTestUrl("", "image.jpg");
   DownloadImageTestInternal(shell(), kImageUrl, 0, 0);
 }
 
@@ -2219,7 +2220,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, DownloadImage_NoValidImage) {
   shell()->LoadURL(GURL("about:blank"));
   base::RunLoop run_loop;
   shell()->web_contents()->DownloadImage(
-      kImageUrl, false, 0, 2, false,
+      kImageUrl, false, gfx::Size(), 2, false,
       base::BindOnce(&ExpectNoValidImageCallback, run_loop.QuitClosure()));
 
   run_loop.Run();
@@ -2252,9 +2253,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   shell()->LoadURL(GURL("about:blank"));
   base::RunLoop run_loop;
   shell()->web_contents()->DownloadImage(
-      kImageUrl, false, 30, 1024, false,
+      kImageUrl, false, gfx::Size(30, 30), 1024, false,
       base::BindOnce(&ExpectSingleValidImageCallback, run_loop.QuitClosure(),
-                     30));
+                     30, 30));
 
   run_loop.Run();
 }
@@ -2266,9 +2267,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   shell()->LoadURL(GURL("about:blank"));
   base::RunLoop run_loop;
   shell()->web_contents()->DownloadImage(
-      kImageUrl, false, 0, 1024, false,
+      kImageUrl, false, gfx::Size(), 1024, false,
       base::BindOnce(&ExpectSingleValidImageCallback, run_loop.QuitClosure(),
-                     90));
+                     90, 90));
 
   run_loop.Run();
 }
@@ -2280,9 +2281,37 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   shell()->LoadURL(GURL("about:blank"));
   base::RunLoop run_loop;
   shell()->web_contents()->DownloadImage(
-      kImageUrl, false, 60, 30, false,
+      kImageUrl, false, gfx::Size(60, 60), 30, false,
       base::BindOnce(&ExpectSingleValidImageCallback, run_loop.QuitClosure(),
-                     30));
+                     30, 30));
+
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       DownloadImage_PreferredWidthClampedByMaxSize) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL kImageUrl = embedded_test_server()->GetURL("/rgb.svg");
+  shell()->LoadURL(GURL("about:blank"));
+  base::RunLoop run_loop;
+  shell()->web_contents()->DownloadImage(
+      kImageUrl, false, gfx::Size(60, 30), 30, false,
+      base::BindOnce(&ExpectSingleValidImageCallback, run_loop.QuitClosure(),
+                     30, 15));
+
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       DownloadImage_PreferredHeightClampedByMaxSize) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL kImageUrl = embedded_test_server()->GetURL("/rgb.svg");
+  shell()->LoadURL(GURL("about:blank"));
+  base::RunLoop run_loop;
+  shell()->web_contents()->DownloadImage(
+      kImageUrl, false, gfx::Size(30, 60), 30, false,
+      base::BindOnce(&ExpectSingleValidImageCallback, run_loop.QuitClosure(),
+                     15, 30));
 
   run_loop.Run();
 }
@@ -2318,7 +2347,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   base::RunLoop run_loop;
   std::vector<gfx::Size> expected_sizes{{16, 16}, {32, 32}};
   shell()->web_contents()->DownloadImage(
-      kImageUrl, false, 0, 0, false,
+      kImageUrl, false, gfx::Size(), 0, false,
       base::BindOnce(&ExpectTwoValidImageCallback, run_loop.QuitClosure(),
                      expected_sizes));
 

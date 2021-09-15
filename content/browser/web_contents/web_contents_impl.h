@@ -503,7 +503,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 #endif
   int DownloadImage(const GURL& url,
                     bool is_favicon,
-                    uint32_t preferred_size,
+                    const gfx::Size& preferred_size,
                     uint32_t max_bitmap_size,
                     bool bypass_cache,
                     ImageDownloadCallback callback) override;
@@ -511,7 +511,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       const GlobalRenderFrameHostId& initiator_frame_routing_id,
       const GURL& url,
       bool is_favicon,
-      uint32_t preferred_size,
+      const gfx::Size& preferred_size,
       uint32_t max_bitmap_size,
       bool bypass_cache,
       WebContents::ImageDownloadCallback callback) override;

@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/payments/core/sizes.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -143,7 +144,8 @@ CreateSecurePaymentConfirmationInstrumentIconView(const SkBitmap& bitmap) {
       std::make_unique<views::ImageView>();
   icon_view->SetImage(image);
   icon_view->SetImageSize(
-      gfx::Size(kInstrumentIconWidth, kInstrumentIconHeight));
+      gfx::Size(kSecurePaymentConfirmationInstrumentIconWidthPx,
+                kSecurePaymentConfirmationInstrumentIconHeightPx));
   icon_view->SetPaintToLayer();
   icon_view->layer()->SetFillsBoundsOpaquely(false);
 

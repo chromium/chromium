@@ -49,7 +49,7 @@ class ImageDownloaderImpl final : public GarbageCollected<ImageDownloaderImpl>,
   // image. When done, |callback| will be called.
   void DownloadImage(const KURL& url,
                      bool is_favicon,
-                     uint32_t preferred_size,
+                     const gfx::Size& preferred_size,
                      uint32_t max_bitmap_size,
                      bool bypass_cache,
                      DownloadImageCallback callback) override;

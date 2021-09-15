@@ -313,7 +313,7 @@ class FakeImageDownloader : public blink::mojom::ImageDownloader {
 
   void DownloadImage(const GURL& url,
                      bool is_favicon,
-                     uint32_t preferred_size,
+                     const gfx::Size& preferred_size,
                      uint32_t max_bitmap_size,
                      bool bypass_cache,
                      DownloadImageCallback callback) override {
@@ -2868,7 +2868,7 @@ TEST_F(WebContentsImplTest, BadDownloadImageResponseFromRenderer) {
   contents->DownloadImage(
       kImageUrl,
       /*is_favicon=*/true,
-      /*preferred_size=*/16,
+      /*preferred_size=*/gfx::Size(16, 16),
       /*max_bitmap_size=*/32,
       /*bypass_cache=*/false,
       base::BindLambdaForTesting([&](int id, int http_status_code,

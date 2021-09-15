@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/views/payments/test_secure_payment_confirmation_payment_request_delegate.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/core/browser/test_event_waiter.h"
+#include "components/payments/core/sizes.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/test/browser_test.h"
@@ -20,12 +21,10 @@
 namespace payments {
 namespace {
 
-constexpr int kInstrumentIconWidth = 32;
-constexpr int kInstrumentIconHeight = 20;
-
 const SkBitmap CreateInstrumentIcon(SkColor color) {
   SkBitmap bitmap;
-  bitmap.allocN32Pixels(kInstrumentIconWidth, kInstrumentIconHeight);
+  bitmap.allocN32Pixels(kSecurePaymentConfirmationInstrumentIconWidthPx,
+                        kSecurePaymentConfirmationInstrumentIconHeightPx);
   bitmap.eraseColor(color);
   return bitmap;
 }
