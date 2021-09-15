@@ -132,14 +132,13 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, OmniboxPasteAndGo) {
 }
 
 // This test is flaky on MacOS with ASAN or DBG. https://crbug.com/1173317
-#if defined(OS_MAC)
-#if defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
+#if defined(OS_MAC) && (defined(ADDRESS_SANITIZER) || !defined(NDEBUG))
 #define MAYBE_AnchorLinkClick DISABLED_AnchorLinkClick
 #else
 #define MAYBE_AnchorLinkClick AnchorLinkClick
-#endif  // ADDRESS_SANITIZER || !NDEBUG
-#endif  // OS_MAC
-IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, AnchorLinkClick) {
+#endif  // OS_MAC && (ADDRESS_SANITIZER || !NDEBUG)
+IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
+                       MAYBE_AnchorLinkClick) {
   WaitForTestSystemAppInstall();
 
   GURL kInitiatingChromeUrl = GURL(chrome::kChromeUIAboutURL);
