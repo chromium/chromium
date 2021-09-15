@@ -213,6 +213,17 @@ crbug.com/v8/7581 external/wpt/wasm/jsapi/table/constructor-reftypes.tentative.a
 crbug.com/v8/7581 external/wpt/wasm/jsapi/table/set-reftypes.tentative.any.html [ Failure Pass ]
 crbug.com/v8/7581 external/wpt/wasm/jsapi/table/set-reftypes.tentative.any.worker.html [ Failure Pass ]
 
+# These tests block fixes done in V8. The tests run on the V8 bots as well.
+crbug.com/v8/12227 external/wpt/wasm/jsapi/exception/type.tentative.any.html [ Failure Pass ]
+crbug.com/v8/12227 external/wpt/wasm/jsapi/exception/toString.tentative.any.html [ Failure Pass ]
+crbug.com/v8/12227 external/wpt/wasm/jsapi/memory/constructor-types.tentative.any.html [ Failure Pass ]
+crbug.com/v8/12227 external/wpt/wasm/jsapi/memory/type.tentative.any.html [ Failure Pass ]
+crbug.com/v8/12227 external/wpt/wasm/jsapi/memory/types.tentative.any.html [ Failure Pass ]
+crbug.com/v8/12227 external/wpt/wasm/jsapi/prototypes.any.html [ Failure Pass ]
+crbug.com/v8/12227 external/wpt/wasm/jsapi/table/type.tentative.any.html [ Failure Pass ]
+crbug.com/v8/12227 external/wpt/wasm/jsapi/table/constructor-types.tentative.any.html [ Failure Pass ]
+crbug.com/v8/12227 external/wpt/wasm/jsapi/table/grow-reftypes.tentative.any.html [ Failure Pass ]
+
 # Sheriff on 2020-09-03
 crbug.com/1124352 media/picture-in-picture/clear-after-request.html [ Crash Pass ]
 crbug.com/1124352 media/picture-in-picture/controls/picture-in-picture-button.html [ Crash Pass ]
