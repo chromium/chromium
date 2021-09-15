@@ -862,6 +862,10 @@ void ToolbarView::ZoomChangedForActiveTab(bool can_show_bubble) {
       can_show_bubble);
 }
 
+ReadLaterToolbarButton* ToolbarView::GetSidePanelButton() {
+  return read_later_button_;
+}
+
 AvatarToolbarButton* ToolbarView::GetAvatarToolbarButton() {
   if (toolbar_account_icon_container_ &&
       toolbar_account_icon_container_->avatar_button()) {

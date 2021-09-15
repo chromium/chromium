@@ -235,6 +235,10 @@ void WebAppFrameToolbarView::ZoomChangedForActiveTab(bool can_show_bubble) {
       can_show_bubble);
 }
 
+ReadLaterToolbarButton* WebAppFrameToolbarView::GetSidePanelButton() {
+  return nullptr;
+}
+
 AvatarToolbarButton* WebAppFrameToolbarView::GetAvatarToolbarButton() {
   return nullptr;
 }
