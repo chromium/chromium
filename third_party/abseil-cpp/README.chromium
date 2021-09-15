@@ -9,9 +9,10 @@ Security Critical: yes
 
 Description:
 This directory contains the source code of Abseil for C++. This can be used by
-Chromium, subject to the guidance at https://chromium-cpp.appspot.com/; it can
-be used without restriction by Chromium's dependencies, except that objects
-compiled into Chromium itself cannot use anything relying on
+Chromium, subject to the guidance at
+https://chromium.googlesource.com/chromium/src/+/main/styleguide/c++/c++11.md;
+it can be used without restriction by Chromium's dependencies, except that
+objects compiled into Chromium itself cannot use anything relying on
 absl::base_internal::FastTypeId (see https://crbug.com/1096380).
 
 How to update Abseil:
