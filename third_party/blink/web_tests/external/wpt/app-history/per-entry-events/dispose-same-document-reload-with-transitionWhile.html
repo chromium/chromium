@@ -12,6 +12,6 @@ promise_test(async (t) => {
 
   appHistory.addEventListener("navigate", e => e.transitionWhile(Promise.resolve()));
 
-  await appHistory.reload();
+  await appHistory.reload().finished;
 }, "dispose events are not fired when doing a same-document reload using appHistory.reload() and transitionWhile()");
 </script>

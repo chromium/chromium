@@ -52,7 +52,7 @@ promise_test(async (t) => {
     assert_equals(location.hash, "#fork", "location.hash is updated during dispose for entry 3");
   }));
 
-  await appHistory.goTo(entry1.key);
+  await appHistory.goTo(entry1.key).committed;
 
   appHistory.addEventListener("navigate", e => {
     e.transitionWhile(Promise.resolve());

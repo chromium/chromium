@@ -5,7 +5,7 @@
 async_test(t => {
   let events = [];
   function finish() {
-    assert_array_equals(events, ["onnavigate", "onnavigateerror", "promiserejected"]);
+    assert_array_equals(events, ["onnavigate", "committed promisefulfilled", "onnavigateerror", "finished promiserejected"]);
     t.done();
   }
 
@@ -17,10 +17,16 @@ async_test(t => {
   appHistory.onnavigateerror = () => events.push("onnavigateerror");
   window.onhashchange = () => events.push("onhashchange");
   window.onpopstate = () => events.push("onpopstate");
-  appHistory.navigate("#1").then(
-      () => events.push("promisefulfilled"),
+  const result = appHistory.navigate("#1");
+
+  result.committed.then(
+      () => events.push("committed promisefulfilled"),
+      () => events.push("committed promiserejected"));
+
+  result.finished.then(
+      () => events.push("finished promisefulfilled"),
       () => {
-        events.push("promiserejected");
+        events.push("finished promiserejected");
         t.step_timeout(finish, 0);
       });
 }, "navigate() event ordering for same-document navigation");

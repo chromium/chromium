@@ -5,5 +5,5 @@ interface AppHistoryTransition {
   readonly attribute AppHistoryEntry from;
   //[CallWith=ScriptState, RaisesException] readonly attribute Promise<void> finished;
 
-  // Promise<undefined> rollback(optional AppHistoryNavigationOptions options = {});
+  // AppHistoryResult rollback(optional AppHistoryNavigationOptions options = {});
 };

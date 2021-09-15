@@ -21,22 +21,19 @@ promise_test(async (t) => {
   entry3.addEventListener("dispose", t.step_func(e => {
     ++dispose3Called;
 
-    // This navigation will cancel the navigation to #fork that is still
-    // "ongoing" (even though the URL/current entry has already been updated).
-    // That is, it will cause the promise to reject (and navigateerror to fire).
-    spoonPromise = appHistory.navigate("#spoon");
+    spoonPromise = appHistory.navigate("#spoon").committed;
   }));
 
-  await appHistory.goTo(entry1.key);
+  await appHistory.goTo(entry1.key).committed;
 
-  const forkPromise = appHistory.navigate("#fork");
+  const forkPromise = appHistory.navigate("#fork").committed;
   assert_equals(dispose3Called, 1, "dispose for entry 3 must happen exactly once (first check)")
 
   // The navigation to #fork will *not* be finished by the time the navigation
-  // to #spoon kicks off, so this promise will get rejected.
-  await promise_rejects_dom(t, "AbortError", forkPromise);
-
-  await spoonPromise;
+  // to #spoon kicks off, so the finished promise will reject. But, the
+  // committed promise should still fulfill, since as we see below, #fork ends
+  // up in the history list.
+  await Promise.all([forkPromise, spoonPromise]);
 
   assert_equals(dispose3Called, 1, "dispose for entry 3 must happen exactly once (final check)");
 

@@ -15,12 +15,12 @@
   readonly attribute boolean canGoBack;
   readonly attribute boolean canGoForward;
 
-  [CallWith=ScriptState, RaisesException] Promise<void> navigate(USVString url, optional AppHistoryNavigateOptions options = {});
-  [CallWith=ScriptState, RaisesException] Promise<void> reload(optional AppHistoryReloadOptions options = {});
+  [CallWith=ScriptState] AppHistoryResult navigate(USVString url, optional AppHistoryNavigateOptions options = {});
+  [CallWith=ScriptState] AppHistoryResult reload(optional AppHistoryReloadOptions options = {});
 
-  [CallWith=ScriptState, RaisesException] Promise<void> goTo(DOMString key, optional AppHistoryNavigationOptions options = {});
-  [CallWith=ScriptState, RaisesException] Promise<void> back(optional AppHistoryNavigationOptions options = {});
-  [CallWith=ScriptState, RaisesException] Promise<void> forward(optional AppHistoryNavigationOptions options = {});
+  [CallWith=ScriptState] AppHistoryResult goTo(DOMString key, optional AppHistoryNavigationOptions options = {});
+  [CallWith=ScriptState] AppHistoryResult back(optional AppHistoryNavigationOptions options = {});
+  [CallWith=ScriptState] AppHistoryResult forward(optional AppHistoryNavigationOptions options = {});
 
   attribute EventHandler onnavigate;
   attribute EventHandler onnavigatesuccess;
