@@ -17,9 +17,8 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_shortcut_mac.h"
-#include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "net/base/filename_util.h"
@@ -52,14 +51,13 @@ void OnProtocolHandlerDialogCompleted(apps::AppLaunchParams params,
                                       Profile* profile,
                                       bool allowed,
                                       bool remember_user_choice) {
+  if (remember_user_choice) {
+    PersistProtocolHandlersUserChoice(
+        profile, params.app_id, params.protocol_handler_launch_url.value(),
+        allowed);
+  }
+
   if (allowed) {
-    if (remember_user_choice) {
-      web_app::WebAppProvider* provider =
-          web_app::WebAppProvider::GetForWebApps(profile);
-      provider->sync_bridge().AddApprovedLaunchProtocol(
-          params.app_id,
-          params.protocol_handler_launch_url.value().scheme());
-    }
     LaunchAppWithParams(profile, std::move(params));
   } else {
     CancelAppLaunch(profile, params.app_id);
@@ -220,11 +218,16 @@ void WebAppShimManagerDelegate::LaunchApp(
     GURL protocol_url = params.protocol_handler_launch_url.value();
 
     // Protocol handlers should prompt the user before launching the app,
-    // unless the user has granted permission to this protocol scheme
+    // unless the user has granted or denied permission to this protocol scheme
     // previously.
-    if (!WebAppProvider::GetForWebApps(profile)
-             ->registrar()
-             .IsApprovedLaunchProtocol(app_id, protocol_url.scheme())) {
+    web_app::WebAppRegistrar& registrar =
+        WebAppProvider::GetForWebApps(profile)->registrar();
+    if (registrar.IsDisallowedLaunchProtocol(app_id, protocol_url.scheme())) {
+      CancelAppLaunch(profile, app_id);
+      return;
+    }
+
+    if (!registrar.IsApprovedLaunchProtocol(app_id, protocol_url.scheme())) {
       auto launch_callback = base::BindOnce(&OnProtocolHandlerDialogCompleted,
                                             std::move(params), profile);
 

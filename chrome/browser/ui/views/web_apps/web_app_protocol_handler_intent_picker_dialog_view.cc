@@ -149,8 +149,9 @@ void WebAppProtocolHandlerIntentPickerView::OnAccepted() {
 }
 
 void WebAppProtocolHandlerIntentPickerView::OnCanceled() {
-  // TODO: crbug.com/1243336 - Add support for remembering user choice.
-  RunCloseCallback(/*allowed=*/false, /*remember_user_choice=*/false);
+  RunCloseCallback(
+      /*allowed=*/false,
+      /*remember_user_choice=*/remember_selection_checkbox_->GetChecked());
 }
 
 void WebAppProtocolHandlerIntentPickerView::OnClosed() {

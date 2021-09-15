@@ -51,7 +51,14 @@ class AppRegistrarObserver : public base::CheckedObserver {
 
   virtual void OnAppRegistrarDestroyed() {}
 
+  // Called after remembering the user choice to always launch an app via
+  // a given protocol.
   virtual void OnWebAppApprovedProtocolsChanged() {}
+
+  // Called after remembering the user choice to never launch an app via
+  // a given protocol.
+  virtual void OnWebAppDisallowedProtocolsChanged() {}
+
   virtual void OnWebAppLocallyInstalledStateChanged(const AppId& app_id,
                                                     bool is_locally_installed) {
   }

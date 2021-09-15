@@ -108,6 +108,11 @@ std::u16string GetFileTypeAssociationsHandledByWebAppsForDisplay(
     const GURL& url,
     bool* found_multiple = nullptr);
 
+void PersistProtocolHandlersUserChoice(Profile* profile,
+                                       const AppId& app_id,
+                                       const GURL& protocol_url,
+                                       bool allowed);
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 // Enables System Web Apps so we can test SWA features in Lacros, even we don't
 // have actual SWAs in Lacros.

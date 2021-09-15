@@ -2721,6 +2721,93 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppProtocolHandlingTest,
             web_contents->GetVisibleURL());
 }
 
+IN_PROC_BROWSER_TEST_F(
+    StartupBrowserWebAppProtocolHandlingTest,
+    WebAppLaunch_WebAppIsLaunchedWithDiallowedProtocolUrlPref) {
+  if (!AreProtocolHandlersSupported())
+    return;
+
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "WebAppProtocolHandlerIntentPickerView");
+
+  // Register web app as a protocol handler that should handle the launch.
+  apps::ProtocolHandlerInfo protocol_handler;
+  const std::string handler_url = std::string(kStartUrl) + "/testing=%s";
+  protocol_handler.url = GURL(handler_url);
+  protocol_handler.protocol = "web+test";
+  web_app::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
+
+  WebAppProtocolHandlerIntentPickerView::SetDefaultRememberSelectionForTesting(
+      true);
+  // Launch the browser via a command line with a handled protocol URL param.
+  SetUpCommandlineAndStart("web+test://parameterString", app_id);
+
+  // The waiter will get the dialog when it shows up and accepts it.
+  waiter.WaitIfNeededAndGet()->CloseWithReason(
+      views::Widget::ClosedReason::kCancelButtonClicked);
+
+  WebAppProtocolHandlerIntentPickerView::SetDefaultRememberSelectionForTesting(
+      false);
+
+  // Check that we added this protocol to web app's approved_launch_protocols
+  // on accept.
+  web_app::WebAppRegistrar& registrar = provider()->registrar();
+  EXPECT_TRUE(registrar.IsDisallowedLaunchProtocol(app_id, "web+test"));
+
+  // Check the no app window is created.
+  ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    StartupBrowserWebAppProtocolHandlingTest,
+    WebAppLaunch_WebAppIsLaunchedWithDisallowedOnceProtocol) {
+  if (!AreProtocolHandlersSupported())
+    return;
+
+  // Register web app as a protocol handler that should handle the launch.
+  apps::ProtocolHandlerInfo protocol_handler;
+  const std::string handler_url = std::string(kStartUrl) + "/testing=%s";
+  protocol_handler.url = GURL(handler_url);
+  protocol_handler.protocol = "web+test";
+  web_app::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
+
+  {
+    views::NamedWidgetShownWaiter waiter(
+        views::test::AnyWidgetTestPasskey{},
+        "WebAppProtocolHandlerIntentPickerView");
+
+    // Launch the browser via a command line with a handled protocol URL param.
+    SetUpCommandlineAndStart("web+test://parameterString", app_id);
+
+    // The waiter will get the dialog when it shows up and cancels it.
+    waiter.WaitIfNeededAndGet()->CloseWithReason(
+        views::Widget::ClosedReason::kCancelButtonClicked);
+  }
+
+  // Check that we did not add this protocol to web app's
+  // approved_launch_protocols on accept.
+  web_app::WebAppRegistrar& registrar = provider()->registrar();
+  EXPECT_FALSE(registrar.IsDisallowedLaunchProtocol(app_id, "web+test"));
+
+  // Check the no app window is created.
+  ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
+
+  {
+    views::NamedWidgetShownWaiter waiter(
+        views::test::AnyWidgetTestPasskey{},
+        "WebAppProtocolHandlerIntentPickerView");
+
+    // Launch the browser via a command line with a handled protocol URL param.
+    SetUpCommandlineAndStart("web+test://parameterString", app_id);
+
+    // The waiter will get the dialog when it shows up and accepts it.
+    waiter.WaitIfNeededAndGet()->CloseWithReason(
+        views::Widget::ClosedReason::kCancelButtonClicked);
+  }
+  // There should be only 1 browser window opened at the moment.
+  ASSERT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
+}
+
 #endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
 
 // These tests are not applicable to Chrome OS as neither initial preferences

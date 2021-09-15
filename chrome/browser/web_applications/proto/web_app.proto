@@ -230,4 +230,8 @@ message WebAppProto {
   // Time the app is updated.
   // ms since the Unix epoch. See sync/base/time.h.
   optional int64 manifest_update_time = 39;
+
+  // A list of disallowed launch protocols. The user has elected to never
+  // allow these protocols be launched in the web app.
+  repeated string disallowed_launch_protocols = 40;
 }

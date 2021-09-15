@@ -378,6 +378,15 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
   }
   app->SetApprovedLaunchProtocols(std::move(approved_launch_protocols));
 
+  const int num_disallowed_launch_protocols = random.next_uint(8);
+  std::vector<std::string> disallowed_launch_protocols(
+      num_disallowed_launch_protocols);
+  for (int i = 0; i < num_disallowed_launch_protocols; ++i) {
+    disallowed_launch_protocols[i] =
+        "web+disallowed_" + seed_str + "_" + base::NumberToString(i);
+  }
+  app->SetDisallowedLaunchProtocols(std::move(disallowed_launch_protocols));
+
   app->SetStorageIsolated(random.next_bool());
 
   app->SetFileHandlerPermissionBlocked(false);

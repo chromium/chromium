@@ -118,6 +118,15 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
   void RemoveApprovedLaunchProtocol(const AppId& app_id,
                                     const std::string& protocol_scheme);
 
+  // These methods are used by web apps to add or remove disallowed
+  // protocol schemes based on user preference or withdrawal of that preference.
+  // Disallowed protocol schemes will never allow web apps to handle launches
+  // from urls that start with that scheme.
+  void AddDisallowedLaunchProtocol(const AppId& app_id,
+                                   const std::string& protocol_scheme);
+  void RemoveDisallowedLaunchProtocol(const AppId& app_id,
+                                      const std::string& protocol_scheme);
+
   // An access to read-only registry. Does an upcast to read-only type.
   const WebAppRegistrar& registrar() const { return *registrar_; }
 

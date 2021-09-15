@@ -83,6 +83,11 @@ void WebAppRegistrar::NotifyWebAppApprovedProtocolsChanged() {
     observer.OnWebAppApprovedProtocolsChanged();
 }
 
+void WebAppRegistrar::NotifyWebAppDisallowedProtocolsChanged() {
+  for (AppRegistrarObserver& observer : observers_)
+    observer.OnWebAppDisallowedProtocolsChanged();
+}
+
 void WebAppRegistrar::NotifyWebAppInstalled(const AppId& app_id) {
   for (AppRegistrarObserver& observer : observers_)
     observer.OnWebAppInstalled(app_id);
@@ -462,6 +467,14 @@ bool WebAppRegistrar::IsApprovedLaunchProtocol(
   const WebApp* web_app = GetAppById(app_id);
   return web_app &&
          base::Contains(web_app->approved_launch_protocols(), protocol_scheme);
+}
+
+bool WebAppRegistrar::IsDisallowedLaunchProtocol(
+    const AppId& app_id,
+    std::string protocol_scheme) const {
+  const WebApp* web_app = GetAppById(app_id);
+  return web_app && base::Contains(web_app->disallowed_launch_protocols(),
+                                   protocol_scheme);
 }
 
 int WebAppRegistrar::CountUserInstalledApps() const {

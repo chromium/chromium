@@ -372,6 +372,34 @@ void WebAppSyncBridge::RemoveApprovedLaunchProtocol(
   registrar_->NotifyWebAppApprovedProtocolsChanged();
 }
 
+void WebAppSyncBridge::AddDisallowedLaunchProtocol(
+    const AppId& app_id,
+    const std::string& protocol_scheme) {
+  ScopedRegistryUpdate update(this);
+  web_app::WebApp* app_to_update = update->UpdateApp(app_id);
+  base::flat_set<std::string> protocol_handlers(
+      app_to_update->disallowed_launch_protocols());
+
+  DCHECK(!base::Contains(protocol_handlers, protocol_scheme));
+  protocol_handlers.insert(protocol_scheme);
+  app_to_update->SetDisallowedLaunchProtocols(std::move(protocol_handlers));
+  // Notify observers that the list of disallowed protocols was updated.
+  registrar_->NotifyWebAppDisallowedProtocolsChanged();
+}
+
+void WebAppSyncBridge::RemoveDisallowedLaunchProtocol(
+    const AppId& app_id,
+    const std::string& protocol_scheme) {
+  ScopedRegistryUpdate update(this);
+  web_app::WebApp* app_to_update = update->UpdateApp(app_id);
+  base::flat_set<std::string> protocol_handlers(
+      app_to_update->disallowed_launch_protocols());
+  protocol_handlers.erase(protocol_scheme);
+  app_to_update->SetDisallowedLaunchProtocols(std::move(protocol_handlers));
+  // Notify observers that the list of disallowed protocols was updated.
+  registrar_->NotifyWebAppDisallowedProtocolsChanged();
+}
+
 void WebAppSyncBridge::CheckRegistryUpdateData(
     const RegistryUpdateData& update_data) const {
 #if DCHECK_IS_ON()

@@ -254,6 +254,11 @@ void WebApp::SetApprovedLaunchProtocols(
   approved_launch_protocols_ = std::move(approved_launch_protocols);
 }
 
+void WebApp::SetDisallowedLaunchProtocols(
+    base::flat_set<std::string> disallowed_launch_protocols) {
+  disallowed_launch_protocols_ = std::move(disallowed_launch_protocols);
+}
+
 void WebApp::SetUrlHandlers(apps::UrlHandlers url_handlers) {
   url_handlers_ = std::move(url_handlers);
 }
@@ -404,6 +409,7 @@ bool WebApp::operator==(const WebApp& other) const {
         app.additional_search_terms_,
         app.protocol_handlers_,
         app.approved_launch_protocols_,
+        app.disallowed_launch_protocols_,
         app.url_handlers_,
         app.note_taking_new_note_url_,
         app.last_badging_time_,
@@ -469,6 +475,9 @@ base::Value WebApp::AsDebugValue() const {
 
   root.SetKey("approved_launch_protocols",
               ConvertList(approved_launch_protocols_));
+
+  root.SetKey("disallowed_launch_protocols",
+              ConvertList(disallowed_launch_protocols_));
 
   root.SetStringKey("background_color", ColorToString(background_color_));
 

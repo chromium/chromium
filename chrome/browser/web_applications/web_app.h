@@ -153,6 +153,10 @@ class WebApp {
     return approved_launch_protocols_;
   }
 
+  const base::flat_set<std::string>& disallowed_launch_protocols() const {
+    return disallowed_launch_protocols_;
+  }
+
   // URL within scope to launch for a "new note" action. Valid iff this is
   // considered a note-taking app.
   const GURL& note_taking_new_note_url() const {
@@ -269,6 +273,8 @@ class WebApp {
       std::vector<apps::ProtocolHandlerInfo> protocol_handlers);
   void SetApprovedLaunchProtocols(
       base::flat_set<std::string> approved_launch_protocols);
+  void SetDisallowedLaunchProtocols(
+      base::flat_set<std::string> disallowed_launch_protocols);
   void SetUrlHandlers(apps::UrlHandlers url_handlers);
   void SetNoteTakingNewNoteUrl(const GURL& note_taking_new_note_url);
   void SetLastBadgingTime(const base::Time& time);
@@ -334,6 +340,7 @@ class WebApp {
   std::vector<std::string> additional_search_terms_;
   std::vector<apps::ProtocolHandlerInfo> protocol_handlers_;
   base::flat_set<std::string> approved_launch_protocols_;
+  base::flat_set<std::string> disallowed_launch_protocols_;
   apps::UrlHandlers url_handlers_;
   GURL note_taking_new_note_url_;
   base::Time last_badging_time_;

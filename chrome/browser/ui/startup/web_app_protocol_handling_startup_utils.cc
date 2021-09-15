@@ -31,6 +31,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -76,17 +77,13 @@ void OnProtocolHandlerDialogCompleted(
     web_app::startup::FinalizeWebAppLaunchCallback app_launched_callback,
     bool allowed,
     bool remember_user_choice) {
-  // Allow the process to exit without opening a browser.
-  if (!allowed)
-    return;
-
   if (remember_user_choice) {
-    web_app::WebAppProvider* const provider =
-        web_app::WebAppProvider::GetForWebApps(profile);
-    DCHECK(provider);
-    provider->sync_bridge().AddApprovedLaunchProtocol(app_id,
-                                                      protocol_url.scheme());
+    web_app::PersistProtocolHandlersUserChoice(profile, app_id, protocol_url,
+                                               allowed);
   }
+
+  if (!allowed)
+    return;  // Allow the process to exit without opening a browser.
 
   LaunchApp(profile, app_id, command_line, cur_dir, protocol_url,
             base::BindOnce(&OnProtocolHandlerAppLaunched, std::move(keep_alive),
@@ -118,11 +115,23 @@ void OnWebAppSystemReadyMaybeLaunchProtocolHandler(
     std::vector<std::unique_ptr<ScopedProfileKeepAlive>> profile_keep_alives,
     web_app::startup::FinalizeWebAppLaunchCallback app_launched_callback,
     web_app::startup::StartupLaunchAfterProtocolCallback startup_callback) {
+  // Check if the user has already disallowed this app to launch the protocol.
+  // This check takes priority over checking if the protocol is handled
+  // by the application. Do not run |startup_callback|, as that will launch the
+  // app to its normal start page.
+  web_app::WebAppRegistrar& registrar = provider->registrar();
+  if (registrar.IsDisallowedLaunchProtocol(app_id, protocol_url.scheme()))
+    return;
+
   web_app::OsIntegrationManager& os_integration_manager =
       provider->os_integration_manager();
   const std::vector<ProtocolHandler> handlers =
       os_integration_manager.GetHandlersForProtocol(protocol_url.scheme());
 
+  // TODO(https://crbug.com/1249907): This code should be simplified such that
+  // it only checks if the protocol is associated with the app_id.
+  // |GetHandlersForProtocol| will return a list of all apps that can handle
+  // the protocol, which is unnecessary here.
   if (!base::Contains(handlers, true, [](const auto& handler) {
         return handler.web_app_id().has_value();
       })) {
@@ -133,7 +142,6 @@ void OnWebAppSystemReadyMaybeLaunchProtocolHandler(
   }
 
   // Check if we have permission to launch the app directly.
-  web_app::WebAppRegistrar& registrar = provider->registrar();
   if (registrar.IsApprovedLaunchProtocol(app_id, protocol_url.scheme())) {
     LaunchApp(
         profile, app_id, command_line, cur_dir, protocol_url,

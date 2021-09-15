@@ -165,6 +165,7 @@ TEST(WebAppTest, EmptyAppAsDebugValue) {
       "system_web_app_data": null
    },
    "description": "",
+   "disallowed_launch_protocols": [  ],
    "display_mode": "",
    "display_override": [  ],
    "downloaded_icon_sizes": {
@@ -233,6 +234,7 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
       "system_web_app_data": null
    },
    "description": "Description1234",
+   "disallowed_launch_protocols": [ "web+disallowed_1234_0", "web+disallowed_1234_1", "web+disallowed_1234_2", "web+disallowed_1234_3" ],
    "display_mode": "fullscreen",
    "display_override": [  ],
    "downloaded_icon_sizes": {
@@ -366,7 +368,7 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
    "is_from_sync_and_pending_installation": false,
    "is_generated_icon": false,
    "is_locally_installed": true,
-   "is_storage_isolated": false,
+   "is_storage_isolated": true,
    "is_uninstalling": false,
    "last_badging_time": "1970-01-12 14:48:29.918 UTC",
    "last_launch_time": "1970-01-02 16:03:30.110 UTC",
@@ -376,7 +378,7 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
    },
    "launch_query_params": "3248422070",
    "manifest_id": null,
-   "manifest_update_time": "1970-01-21 01:09:01.170 UTC",
+   "manifest_update_time": "1970-01-21 02:27:34.037 UTC",
    "manifest_url": "https://example.com/manifest1234.json",
    "note_taking_new_note_url": "",
    "protocol_handlers": [ {

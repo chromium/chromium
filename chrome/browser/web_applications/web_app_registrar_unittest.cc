@@ -946,4 +946,24 @@ TEST_F(WebAppRegistrarTest, ApprovedLaunchProtocols) {
             registrar().IsApprovedLaunchProtocol(app_id, protocol_scheme));
 }
 
+TEST_F(WebAppRegistrarTest, DisallowedLaunchProtocols) {
+  controller().Init();
+
+  auto web_app = test::CreateWebApp();
+  const AppId app_id = web_app->app_id();
+  RegisterApp(std::move(web_app));
+  const std::string protocol_scheme = "test";
+
+  EXPECT_EQ(false,
+            registrar().IsDisallowedLaunchProtocol(app_id, protocol_scheme));
+
+  sync_bridge().AddDisallowedLaunchProtocol(app_id, protocol_scheme);
+  EXPECT_EQ(true,
+            registrar().IsDisallowedLaunchProtocol(app_id, protocol_scheme));
+
+  sync_bridge().RemoveDisallowedLaunchProtocol(app_id, protocol_scheme);
+  EXPECT_EQ(false,
+            registrar().IsDisallowedLaunchProtocol(app_id, protocol_scheme));
+}
+
 }  // namespace web_app

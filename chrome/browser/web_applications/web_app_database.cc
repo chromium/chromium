@@ -438,6 +438,12 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     local_data->add_approved_launch_protocols(approved_launch_protocols);
   }
 
+  for (const auto& disallowed_launch_protocols :
+       web_app.disallowed_launch_protocols()) {
+    DCHECK(!disallowed_launch_protocols.empty());
+    local_data->add_disallowed_launch_protocols(disallowed_launch_protocols);
+  }
+
   for (const auto& url_handler : web_app.url_handlers()) {
     WebAppUrlHandlerProto* url_handler_proto = local_data->add_url_handlers();
     url_handler_proto->set_origin(url_handler.origin.Serialize());
@@ -868,6 +874,18 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     approved_launch_protocols.push_back(approved_launch_protocol);
   }
   web_app->SetApprovedLaunchProtocols(std::move(approved_launch_protocols));
+
+  std::vector<std::string> disallowed_launch_protocols;
+  for (const std::string& disallowed_launch_protocol :
+       local_data.disallowed_launch_protocols()) {
+    if (disallowed_launch_protocol.empty()) {
+      DLOG(ERROR)
+          << "WebApp DisallowedLaunchProtocols proto action parse error";
+      return nullptr;
+    }
+    disallowed_launch_protocols.push_back(disallowed_launch_protocol);
+  }
+  web_app->SetDisallowedLaunchProtocols(std::move(disallowed_launch_protocols));
 
   std::vector<apps::UrlHandlerInfo> url_handlers;
   for (const auto& url_handler_proto : local_data.url_handlers()) {

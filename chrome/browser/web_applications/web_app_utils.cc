@@ -10,8 +10,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/site_engagement/content/site_engagement_service.h"
@@ -257,5 +258,23 @@ void EnableSystemWebAppsInLacrosForTesting() {
   g_enable_system_web_apps_in_lacros_for_testing = true;
 }
 #endif
+
+void PersistProtocolHandlersUserChoice(Profile* profile,
+                                       const AppId& app_id,
+                                       const GURL& protocol_url,
+                                       bool allowed) {
+  web_app::WebAppProvider* const provider =
+      web_app::WebAppProvider::GetForWebApps(profile);
+  DCHECK(provider);
+
+  if (allowed) {
+    provider->sync_bridge().AddApprovedLaunchProtocol(app_id,
+                                                      protocol_url.scheme());
+
+  } else {
+    provider->sync_bridge().AddDisallowedLaunchProtocol(app_id,
+                                                        protocol_url.scheme());
+  }
+}
 
 }  // namespace web_app
