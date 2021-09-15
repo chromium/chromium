@@ -176,14 +176,12 @@ void ChromeSetting::HandleFunction(const std::string& method_name,
   parse_result.arguments_list->Insert(
       parse_result.arguments_list->GetList().begin(), base::Value(pref_name_));
 
-  // We don't currently support promise based requests through the
-  // ChromeSetting functions that come through this hook.
-  DCHECK_NE(binding::AsyncResponseType::kPromise, parse_result.async_type);
-
-  request_handler_->StartRequest(context, full_name,
-                                 std::move(parse_result.arguments_list),
-                                 parse_result.async_type, parse_result.callback,
-                                 v8::Local<v8::Function>());
+  v8::Local<v8::Promise> promise = request_handler_->StartRequest(
+      context, full_name, std::move(parse_result.arguments_list),
+      parse_result.async_type, parse_result.callback,
+      v8::Local<v8::Function>());
+  if (!promise.IsEmpty())
+    arguments->Return(promise);
 }
 
 }  // namespace extensions

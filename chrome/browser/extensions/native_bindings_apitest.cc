@@ -303,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, PromiseBasedAPI) {
            "background": {
              "service_worker": "background.js"
            },
-           "permissions": ["tabs", "storage", "contentSettings"]
+           "permissions": ["tabs", "storage", "contentSettings", "privacy"]
          })");
   constexpr char kBackgroundJs[] =
       R"(let tabIdExample;
@@ -373,6 +373,23 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, PromiseBasedAPI) {
                }
                chrome.test.succeed();
              },
+             async function chromeSettingCustomTypesWithPromises() {
+               // Short alias for ease of calling.
+               let doNotTrack = chrome.privacy.websites.doNotTrackEnabled;
+               await doNotTrack.set({value: true});
+               {
+                 const {value} = await doNotTrack.get({});
+                 chrome.test.assertEq(true, value);
+               }
+               await doNotTrack.clear({});
+               {
+                 const {value} = await doNotTrack.get({});
+                 // false is the default value for the setting.
+                 chrome.test.assertEq(false, value);
+               }
+               chrome.test.succeed();
+             },
+
 
              function createNewTabCallback() {
                chrome.tabs.create({url: googleUrl}, (tab) => {
@@ -430,7 +447,7 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, MV2PromisesNotSupported) {
            "background": {
              "scripts": ["background.js"]
            },
-           "permissions": ["tabs", "storage", "contentSettings"]
+           "permissions": ["tabs", "storage", "contentSettings", "privacy"]
          })");
   constexpr char kBackgroundJs[] =
       R"(let tabIdGooge;
@@ -471,6 +488,17 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, MV2PromisesNotSupported) {
                                         chrome.contentSettings.cookies,
                                         [{primaryUrl: exampleUrl}],
                                         expectedError);
+               chrome.test.succeed();
+             },
+             function chromeSettingPromise() {
+               let expectedError = 'Error in invocation of types' +
+                   '.ChromeSetting.get(object details, function callback): ' +
+                   'No matching signature.';
+               chrome.test.assertThrows(
+                   chrome.privacy.websites.doNotTrackEnabled.get,
+                   chrome.privacy.websites.doNotTrackEnabled,
+                   [{}],
+                   expectedError);
                chrome.test.succeed();
              },
              function createNewTabCallback() {
