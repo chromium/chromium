@@ -755,7 +755,18 @@ public class FeedSurfaceMediator
 
     private void setHeaderIndicatorState(boolean suggestionsVisible) {
         boolean isSignedIn = isSignedIn();
-        mSectionHeaderModel.set(SectionHeaderListProperties.IS_TAB_MODE_KEY, isSignedIn);
+        boolean isTabMode = isSignedIn && FeedFeatures.isWebFeedUIEnabled();
+        // If we're in tab mode now, make sure webfeed tab is set up.
+        if (isTabMode) {
+            setUpWebFeedTab();
+        }
+        mSectionHeaderModel.set(SectionHeaderListProperties.IS_TAB_MODE_KEY, isTabMode);
+
+        // If not in tab mode, make sure we are on the for-you feed.
+        if (!isTabMode) {
+            mSectionHeaderModel.set(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY,
+                    getTabIdForSection(SectionType.FOR_YOU_FEED));
+        }
 
         boolean isGoogleSearchEngine =
                 TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle();
@@ -866,7 +877,7 @@ public class FeedSurfaceMediator
         ModelList itemList = new ModelList();
         int iconId = 0;
         if (isSignedIn()) {
-            if (FeedFeatures.isWebFeedUIEnabled()) {
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)) {
                 itemList.add(buildMenuListItem(
                         R.string.ntp_manage_feed, R.id.ntp_feed_header_menu_item_manage, iconId));
             } else {
