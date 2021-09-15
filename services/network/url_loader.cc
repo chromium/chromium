@@ -56,6 +56,7 @@
 #include "services/network/data_pipe_element_reader.h"
 #include "services/network/origin_policy/origin_policy_constants.h"
 #include "services/network/origin_policy/origin_policy_manager.h"
+#include "services/network/private_network_access_check.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/corb/orb_impl.h"
@@ -1002,29 +1003,8 @@ void URLLoader::ResumeReadingBodyFromNet() {
   }
 }
 
-// static.
-bool URLLoader::PrivateNetworkAccessCheckResultIsAllowed(
-    PrivateNetworkAccessCheckResult result) {
-  switch (result) {
-    case PrivateNetworkAccessCheckResult::kAllowedMissingClientSecurityState:
-    case PrivateNetworkAccessCheckResult::kAllowedNoLessPublic:
-    case PrivateNetworkAccessCheckResult::kAllowedByPolicyAllow:
-    case PrivateNetworkAccessCheckResult::kAllowedByPolicyWarn:
-      return true;
-    case PrivateNetworkAccessCheckResult::kBlockedByLoadOption:
-    case PrivateNetworkAccessCheckResult::kBlockedByPolicyBlock:
-      return false;
-  }
-}
-
-URLLoader::PrivateNetworkAccessCheckResult URLLoader::PrivateNetworkAccessCheck(
+PrivateNetworkAccessCheckResult URLLoader::PrivateNetworkAccessCheck(
     mojom::IPAddressSpace resource_address_space) const {
-  if (options_ & mojom::kURLLoadOptionBlockLocalRequest &&
-      IsLessPublicAddressSpace(resource_address_space,
-                               network::mojom::IPAddressSpace::kPublic)) {
-    return PrivateNetworkAccessCheckResult::kBlockedByLoadOption;
-  }
-
   // Depending on the type of URL request, we source the client security state
   // from either the URLRequest's trusted params (for navigations, which share
   // a factory) or the URLLoaderFactory's params. We prefer the factory params
@@ -1035,28 +1015,27 @@ URLLoader::PrivateNetworkAccessCheckResult URLLoader::PrivateNetworkAccessCheck(
           ? factory_params_->client_security_state
           : request_client_security_state_;
 
-  if (!security_state)
-    return PrivateNetworkAccessCheckResult::kAllowedMissingClientSecurityState;
-
-  if (!IsLessPublicAddressSpace(resource_address_space,
-                                security_state->ip_address_space)) {
-    // Resource is no less public than the initiator.
-    return PrivateNetworkAccessCheckResult::kAllowedNoLessPublic;
-  }
+  // Fully-qualify function name to disambiguate it, otherwise it resolves to
+  // `URLLoader::PrivateNetworkAccessCheck()` and fails to compile.
+  PrivateNetworkAccessCheckResult result = network::PrivateNetworkAccessCheck(
+      security_state.get(), options_, resource_address_space);
 
   bool is_warning = false;
-  // We use a switch statement to force this code to be amended when values are
-  // added to the PrivateNetworkRequestPolicy enum.
-  switch (security_state->private_network_request_policy) {
-    case mojom::PrivateNetworkRequestPolicy::kAllow:
-      return PrivateNetworkAccessCheckResult::kAllowedByPolicyAllow;
-    case mojom::PrivateNetworkRequestPolicy::kWarn:
+  switch (result) {
+    case PrivateNetworkAccessCheckResult::kAllowedByPolicyWarn:
       is_warning = true;
       break;
-    case mojom::PrivateNetworkRequestPolicy::kBlock:
+    case PrivateNetworkAccessCheckResult::kBlockedByPolicyBlock:
       is_warning = false;
       break;
+    default:
+      // Do not report anything to DevTools in these cases.
+      return result;
   }
+
+  // If `security_state` was nullptr, then `result` should have been
+  // `kAllowedMissingClientSecurityState`.
+  DCHECK(security_state);
 
   if (auto* devtools_observer = GetDevToolsObserver()) {
     devtools_observer->OnPrivateNetworkRequest(
@@ -1064,10 +1043,7 @@ URLLoader::PrivateNetworkAccessCheckResult URLLoader::PrivateNetworkAccessCheck(
         resource_address_space, security_state->Clone());
   }
 
-  if (is_warning)
-    return PrivateNetworkAccessCheckResult::kAllowedByPolicyWarn;
-
-  return PrivateNetworkAccessCheckResult::kBlockedByPolicyBlock;
+  return result;
 }
 
 int URLLoader::OnConnected(net::URLRequest* url_request,
@@ -1082,11 +1058,8 @@ int URLLoader::OnConnected(net::URLRequest* url_request,
   // this request should be blocked per Private Network Access.
   mojom::IPAddressSpace resource_address_space =
       IPEndPointToIPAddressSpace(info.endpoint);
-  PrivateNetworkAccessCheckResult result =
-      PrivateNetworkAccessCheck(resource_address_space);
-  base::UmaHistogramEnumeration("Security.PrivateNetworkAccess.CheckResult",
-                                result);
-  if (!PrivateNetworkAccessCheckResultIsAllowed(result)) {
+  if (!PrivateNetworkAccessCheckResultIsAllowed(
+          PrivateNetworkAccessCheck(resource_address_space))) {
     // Remember the CORS error so we can annotate the URLLoaderCompletionStatus
     // with it later, then fail the request with the same net error code as
     // other CORS errors.

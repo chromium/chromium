@@ -40,6 +40,7 @@
 #include "extensions/common/extension_builder.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/cpp/private_network_access_check_result.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
@@ -601,7 +602,8 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   base_histogram_tester.ExpectBucketCount(
-      "Security.PrivateNetworkAccess.CheckResult", 5, 1);
+      "Security.PrivateNetworkAccess.CheckResult",
+      network::PrivateNetworkAccessCheckResult::kBlockedByPolicyBlock, 1);
 
   EXPECT_THAT(
       feature_histogram_tester.GetNonZeroCounts(AllAddressSpaceFeatures()),
