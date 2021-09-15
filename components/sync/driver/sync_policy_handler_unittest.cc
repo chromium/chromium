@@ -101,7 +101,8 @@ TEST(SyncPolicyHandlerTest, SyncTypesListDisabled) {
 class SyncPolicyHandlerOsTest : public testing::Test {
  public:
   SyncPolicyHandlerOsTest() {
-    feature_list_.InitAndEnableFeature(chromeos::features::kSplitSettingsSync);
+    feature_list_.InitAndEnableFeature(
+        chromeos::features::kSyncSettingsCategorization);
   }
 
   base::test::ScopedFeatureList feature_list_;
