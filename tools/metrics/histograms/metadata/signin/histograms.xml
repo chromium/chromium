@@ -1431,16 +1431,37 @@ kept as long as profile signout is possible -->
   </summary>
 </histogram>
 
-<histogram base="true" name="Signin.SyncErrorInfoBar"
-    enum="SyncErrorInfoBarAction" expires_after="2021-12-12">
-<!-- Name completed by histogram_suffixes name="SyncErrorInfoBarType" -->
-
+<histogram name="Signin.SyncError{PromptUI}{SyncErrorReason}"
+    enum="SyncErrorPromptUIAction" expires_after="2022-03-12">
   <owner>triploblastic@chromium.org</owner>
   <owner>bsazonov@chromium.org</owner>
   <summary>
-    Records various UI and user action events related to the sync error infobar.
-    Android only.
+    Records various UI and user action events related to the sync error
+    {PromptUI}. Android only.
   </summary>
+  <token key="PromptUI">
+    <variant name="InfoBar" summary="infobar ui"/>
+    <variant name="Message" summary="message ui"/>
+  </token>
+  <token key="SyncErrorReason">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+    <variant name=".AuthError" summary="Auth error."/>
+    <variant name=".ClientOutOfDate" summary="Client out of date."/>
+    <variant name=".PassphraseRequired" summary="Passphrase required."/>
+    <variant name=".SyncSetupIncomplete" summary="Sync setup incomplete."/>
+    <variant name=".TrustedVaultKeyRequiredForEverything"
+        summary="Trusted vault keys required for everything."/>
+    <variant name=".TrustedVaultKeyRequiredForPasswords"
+        summary="Trusted vault keys required for passwords."/>
+    <variant name=".TrustedVaultRecoverabilityDegradedForEverything"
+        summary="Trusted vault recoverability degraded for everything."/>
+    <variant name=".TrustedVaultRecoverabilityDegradedForPasswords"
+        summary="Trusted vault recoverability degraded for passwords."/>
+  </token>
 </histogram>
 
 <histogram name="Signin.SyncFirstSetupCompleteSource"

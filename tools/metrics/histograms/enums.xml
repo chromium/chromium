@@ -80472,12 +80472,6 @@ would be helpful to identify which type is being sent.
   <int value="22" label="SYNCER_OK"/>
 </enum>
 
-<enum name="SyncErrorInfoBarAction">
-  <int value="0" label="Shown"/>
-  <int value="1" label="Dismissed"/>
-  <int value="2" label="Button clicked"/>
-</enum>
-
 <enum name="SyncErrorInfobarTypes">
   <summary>Possible errors that can trigger a sync error infobar.</summary>
   <int value="1" label="Sign in needs update"/>
@@ -80487,6 +80481,12 @@ would be helpful to identify which type is being sent.
   <int value="5" label="Sync settings not confirmed"/>
   <int value="6" label="Sync needs trusted vault key"/>
   <int value="7" label="Sync trusted vault recoverability degraded"/>
+</enum>
+
+<enum name="SyncErrorPromptUIAction">
+  <int value="0" label="Shown"/>
+  <int value="1" label="Dismissed"/>
+  <int value="2" label="Button clicked"/>
 </enum>
 
 <!-- This must be kept current with

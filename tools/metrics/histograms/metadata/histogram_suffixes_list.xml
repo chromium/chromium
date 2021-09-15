@@ -17449,22 +17449,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Sync.ConfigureTime_Subsequent"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="SyncErrorInfoBarType" separator=".">
-  <suffix name="AuthError" label="Auth error."/>
-  <suffix name="ClientOutOfDate" label="Client out of date."/>
-  <suffix name="PassphraseRequired" label="Passphrase required."/>
-  <suffix name="SyncSetupIncomplete" label="Sync setup incomplete."/>
-  <suffix name="TrustedVaultKeyRequiredForEverything"
-      label="Trusted vault keys required for everything."/>
-  <suffix name="TrustedVaultKeyRequiredForPasswords"
-      label="Trusted vault keys required for passwords."/>
-  <suffix name="TrustedVaultRecoverabilityDegradedForEverything"
-      label="Trusted vault recoverability degraded for everything."/>
-  <suffix name="TrustedVaultRecoverabilityDegradedForPasswords"
-      label="Trusted vault recoverability degraded for passwords."/>
-  <affected-histogram name="Signin.SyncErrorInfoBar"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="SyncFaviconRequestOrigin" separator=".">
   <suffix name="HISTORY" label="Request made by chrome://history."/>
   <suffix name="RECENTLY_CLOSED_TABS"
