@@ -65,9 +65,10 @@ void CalculateAndSetWidgetBounds(views::Widget* widget,
         display::Screen::GetScreen()->GetCursorScreenPoint());
   }
 
-  const gfx::Rect widget_bounds =
+  gfx::Rect widget_bounds =
       gfx::Rect(caret_bounds.x(), caret_bounds.y(), bubble_size.width(),
                 bubble_size.height());
+  widget_bounds.AdjustToFit(display.work_area());
 
   std::unique_ptr<ui::ScopedLayerAnimationSettings> settings;
   if (widget->GetWindowBoundsInScreen().size() != gfx::Size()) {
