@@ -799,22 +799,30 @@ struct ClusterVisit {
   // visit among all the duplicates will list the worse duplicate visit IDs in
   // its vector. The worse duplicates will have an empty vector here.
   std::vector<VisitID> duplicate_visit_ids;
+
+  // The normalized URL for the visit (i.e. a SRP URL normalized based on the
+  // user's default search provider).
+  GURL normalized_url;
 };
 
-// A cluster of `ScoredAnnotatedVisit`s with associated `keywords`.
+// A cluster of `ClusterVisit`s with associated metadata (i.e. `keywords` and
+// `should_show_on_prominent_ui_surfaces`).
 struct Cluster {
   Cluster();
   Cluster(int64_t cluster_id,
           const std::vector<ClusterVisit>& visits,
-          const std::vector<std::u16string>& keywords);
+          const std::vector<std::u16string>& keywords,
+          bool should_show_on_prominent_ui_surfaces = true);
   Cluster(const Cluster&);
   Cluster& operator=(const Cluster&);
   ~Cluster();
 
-  int64_t cluster_id;
+  int64_t cluster_id = 0;
   std::vector<ClusterVisit> visits;
   // TODO(manukh): retrieve and persist `keywords`.
   std::vector<std::u16string> keywords;
+  // Whether the cluster should be shown prominently on UI surfaces.
+  bool should_show_on_prominent_ui_surfaces = true;
 };
 
 // A minimal representation of `Cluster` used when retrieving them from

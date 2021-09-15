@@ -410,8 +410,13 @@ ClusterVisit::ClusterVisit(const ClusterVisit&) = default;
 Cluster::Cluster() = default;
 Cluster::Cluster(int64_t cluster_id,
                  const std::vector<ClusterVisit>& visits,
-                 const std::vector<std::u16string>& keywords)
-    : cluster_id(cluster_id), visits(visits), keywords(keywords) {}
+                 const std::vector<std::u16string>& keywords,
+                 bool should_show_on_prominent_ui_surfaces)
+    : cluster_id(cluster_id),
+      visits(visits),
+      keywords(keywords),
+      should_show_on_prominent_ui_surfaces(
+          should_show_on_prominent_ui_surfaces) {}
 Cluster::Cluster(const Cluster&) = default;
 Cluster& Cluster::operator=(const Cluster&) = default;
 Cluster::~Cluster() = default;
