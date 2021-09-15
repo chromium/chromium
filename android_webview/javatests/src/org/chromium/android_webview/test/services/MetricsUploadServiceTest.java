@@ -18,6 +18,7 @@ import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.common.services.IMetricsUploadService;
 import org.chromium.android_webview.services.MetricsUploadService;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
+import org.chromium.android_webview.test.MetricsTestPlatformServiceBridge;
 import org.chromium.base.ContextUtils;
 import org.chromium.components.metrics.ChromeUserMetricsExtensionProtos.ChromeUserMetricsExtension;
 
@@ -27,36 +28,19 @@ import org.chromium.components.metrics.ChromeUserMetricsExtensionProtos.ChromeUs
  */
 @RunWith(AwJUnit4ClassRunner.class)
 public class MetricsUploadServiceTest {
-    private static final long TEST_CLIENT_ID = 123456789L;
-
-    private TestPlatformServiceBridge mPlatformServiceBridge;
-
-    private static class TestPlatformServiceBridge extends PlatformServiceBridge {
-        private byte[] mMetricsLogData;
-
-        @Override
-        public void logMetrics(byte[] data) {
-            mMetricsLogData = data;
-        }
-
-        public byte[] getLoggedMetricsData() {
-            return mMetricsLogData;
-        }
-    }
+    private MetricsTestPlatformServiceBridge mPlatformServiceBridge;
 
     @Before
     public void setUp() {
-        mPlatformServiceBridge = new TestPlatformServiceBridge();
+        mPlatformServiceBridge = new MetricsTestPlatformServiceBridge();
         PlatformServiceBridge.injectInstance(mPlatformServiceBridge);
     }
 
     @MediumTest
     @Test
     public void testLogUnchagned() throws Throwable {
-        byte[] expectedData = ChromeUserMetricsExtension.newBuilder()
-                                      .setClientId(TEST_CLIENT_ID)
-                                      .build()
-                                      .toByteArray();
+        ChromeUserMetricsExtension metricsLog =
+                ChromeUserMetricsExtension.newBuilder().setClientId(123456789L).build();
 
         Intent intent =
                 new Intent(ContextUtils.getApplicationContext(), MetricsUploadService.class);
@@ -64,12 +48,10 @@ public class MetricsUploadServiceTest {
                         new ServiceConnectionHelper(intent, Context.BIND_AUTO_CREATE)) {
             IMetricsUploadService service =
                     IMetricsUploadService.Stub.asInterface(helper.getBinder());
-            service.uploadMetricsLog(expectedData);
+            service.uploadMetricsLog(metricsLog.toByteArray());
 
-            byte[] receivedData = mPlatformServiceBridge.getLoggedMetricsData();
-            Assert.assertNotNull("received byte data is null", receivedData);
-            Assert.assertArrayEquals("received byte data is different from the expected data",
-                    expectedData, receivedData);
+            ChromeUserMetricsExtension receivedLog = mPlatformServiceBridge.waitForNextMetricsLog();
+            Assert.assertEquals(metricsLog, receivedLog);
         }
     }
 }
