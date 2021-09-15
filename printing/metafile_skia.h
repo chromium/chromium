@@ -55,6 +55,7 @@ class COMPONENT_EXPORT(PRINTING) MetafileSkia : public Metafile {
 
   uint32_t GetDataSize() const override;
   bool GetData(void* dst_buffer, uint32_t dst_buffer_size) const override;
+  mojom::MetafileDataType GetDataType() const override;
 
   gfx::Rect GetPageBounds(unsigned int page_number) const override;
   unsigned int GetPageCount() const override;

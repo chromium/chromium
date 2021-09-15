@@ -265,6 +265,10 @@ bool MetafileSkia::GetData(void* dst_buffer, uint32_t dst_buffer_size) const {
                             base::checked_cast<size_t>(dst_buffer_size));
 }
 
+mojom::MetafileDataType MetafileSkia::GetDataType() const {
+  return mojom::MetafileDataType::kPDF;
+}
+
 gfx::Rect MetafileSkia::GetPageBounds(unsigned int page_number) const {
   if (page_number < data_->pages.size()) {
     SkSize size = data_->pages[page_number].size;

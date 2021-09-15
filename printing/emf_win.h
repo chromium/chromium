@@ -68,6 +68,7 @@ class COMPONENT_EXPORT(PRINTING) Emf : public Metafile {
 
   uint32_t GetDataSize() const override;
   bool GetData(void* buffer, uint32_t size) const override;
+  mojom::MetafileDataType GetDataType() const override;
 
   // Should be passed to Playback to keep the exact same size.
   gfx::Rect GetPageBounds(unsigned int page_number) const override;
