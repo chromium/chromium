@@ -38,12 +38,13 @@ class OsInstallScreenView {
   virtual void Unbind() = 0;
 
   virtual void ShowStep(const char* step) = 0;
-  virtual void StartInstall() = 0;
+  virtual void SetStatus(OsInstallClient::Status status) = 0;
+  virtual void SetServiceLogs(const std::string& service_log) = 0;
+  virtual void UpdateCountdownStringWithTime(int64_t time_left) = 0;
 };
 
 class OsInstallScreenHandler : public BaseScreenHandler,
-                               public OsInstallScreenView,
-                               public OsInstallClient::Observer {
+                               public OsInstallScreenView {
  public:
   using TView = OsInstallScreenView;
 
@@ -63,13 +64,9 @@ class OsInstallScreenHandler : public BaseScreenHandler,
   void Bind(ash::OsInstallScreen* screen) override;
   void Unbind() override;
   void ShowStep(const char* step) override;
-  void StartInstall() override;
-
-  // OsInstallClient::Observer:
-  void StatusChanged(OsInstallClient::Status status,
-                     const std::string& service_log) override;
-
-  void OsInstallStarted(absl::optional<OsInstallClient::Status> status);
+  void SetStatus(OsInstallClient::Status status) override;
+  void SetServiceLogs(const std::string& service_log) override;
+  void UpdateCountdownStringWithTime(int64_t time_left) override;
 
   ash::OsInstallScreen* screen_ = nullptr;
 

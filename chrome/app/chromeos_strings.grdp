@@ -1098,6 +1098,12 @@
   <message name="IDS_OS_INSTALL_SCREEN_SUCCESS_TITLE" desc="Title of the success page of the OS install screen">
     Installation complete
   </message>
+  <message name="IDS_OS_INSTALL_SCREEN_SUCCESS_SUBTITLE" translateable="false" desc="Subtitle of the success page of the OS install screen">
+    Installation is completed! Please remove the USB and click Restart to boot into the installed OS. Otherwise, your device will shut down in <ph name="TIME_LEFT">$1<ex>60 seconds</ex></ph>.
+  </message>
+  <message name="IDS_OS_INSTALL_SCREEN_RESTART_BUTTON" translateable="false" desc="Text of the restart button on the OS install screen">
+    Restart
+  </message>
   <message name="IDS_OS_INSTALL_SCREEN_SEND_FEEDBACK" desc="Text of the send feedback button on the OS install screen">
     Send feedback
   </message>

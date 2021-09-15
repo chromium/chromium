@@ -3,14 +3,18 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_switches.h"
+#include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/chromeos/login/os_install_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
+#include "chrome/grit/generated_resources.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/strings/grit/ui_strings.h"
 
 namespace ash {
 namespace {
@@ -27,8 +31,8 @@ const test::UIPath kOsInstallConfirmCloseButton = {"os-install",
                                                    "closeConfirmDialogButton"};
 const test::UIPath kOsInstallErrorShutdownButton = {
     "os-install", "osInstallErrorShutdownButton"};
-const test::UIPath kOsInstallSuccessShutdownButton = {
-    "os-install", "osInstallSuccessShutdownButton"};
+const test::UIPath kOsInstallSuccessRestartButton = {
+    "os-install", "osInstallSuccessRestartButton"};
 
 const test::UIPath kOsInstallDialogIntro = {"os-install",
                                             "osInstallDialogIntro"};
@@ -41,6 +45,14 @@ const test::UIPath kOsInstallDialogError = {"os-install",
 const test::UIPath kOsInstallDialogSuccess = {"os-install",
                                               "osInstallDialogSuccess"};
 
+const test::UIPath kOsInstallDialogSuccessSubtitile = {
+    "os-install", "osInstallDialogSuccessSubtitile"};
+
+std::string GetExpectedCountdownMessage(int time_left) {
+  return l10n_util::GetStringFUTF8(
+      IDS_OS_INSTALL_SCREEN_SUCCESS_SUBTITLE,
+      l10n_util::GetPluralStringFUTF16(IDS_TIME_LONG_SECS, time_left));
+}
 }  // namespace
 
 class OsInstallScreenTest : public OobeBaseTest, OsInstallClient::Observer {
@@ -95,6 +107,12 @@ class OsInstallScreenTest : public OobeBaseTest, OsInstallClient::Observer {
   }
 
   absl::optional<OsInstallClient::Status> GetStatus() const { return status_; }
+
+  void SetTickClockForTesting(const base::TickClock* tick_clock) {
+    WizardController::default_controller()
+        ->GetScreen<OsInstallScreen>()
+        ->set_tick_clock_for_testing(tick_clock);
+  }
 
  private:
   // OsInstallClient::Observer override:
@@ -185,8 +203,28 @@ IN_PROC_BROWSER_TEST_F(OsInstallScreenTest, OsInstallGenericError) {
 }
 
 // Check that a successful install shows the success step and clicking
-// the shutdown button powers off.
-IN_PROC_BROWSER_TEST_F(OsInstallScreenTest, OsInstallSuccess) {
+// the restart button restarts the computer.
+IN_PROC_BROWSER_TEST_F(OsInstallScreenTest, OsInstallSuccessRestartClicked) {
+  auto* ti = OsInstallClient::Get()->GetTestInterface();
+
+  AdvanceToOsInstallScreen();
+  AdvanceThroughIntroStep();
+  ConfirmInstallation();
+
+  ti->UpdateStatus(OsInstallClient::Status::Succeeded);
+  test::OobeJS().ExpectVisiblePath(kOsInstallDialogSuccess);
+
+  auto* power_manager_client = chromeos::FakePowerManagerClient::Get();
+  EXPECT_EQ(power_manager_client->num_request_restart_calls(), 0);
+  test::OobeJS().TapOnPath(kOsInstallSuccessRestartButton);
+  EXPECT_EQ(power_manager_client->num_request_restart_calls(), 1);
+}
+
+// Check that a successful install shows the success step and countdown timer,
+// which will shut down the computer automatically after 60 seconds.
+IN_PROC_BROWSER_TEST_F(OsInstallScreenTest, OsInstallSuccessAutoShutdown) {
+  base::ScopedMockTimeMessageLoopTaskRunner mocked_task_runner;
+  SetTickClockForTesting(mocked_task_runner->GetMockTickClock());
   auto* ti = OsInstallClient::Get()->GetTestInterface();
 
   AdvanceToOsInstallScreen();
@@ -198,7 +236,11 @@ IN_PROC_BROWSER_TEST_F(OsInstallScreenTest, OsInstallSuccess) {
 
   auto* power_manager_client = chromeos::FakePowerManagerClient::Get();
   EXPECT_EQ(power_manager_client->num_request_shutdown_calls(), 0);
-  test::OobeJS().TapOnPath(kOsInstallSuccessShutdownButton);
+  mocked_task_runner->FastForwardBy(base::TimeDelta::FromSeconds(20));
+  EXPECT_EQ(power_manager_client->num_request_shutdown_calls(), 0);
+  test::OobeJS().ExpectElementText(GetExpectedCountdownMessage(40),
+                                   kOsInstallDialogSuccessSubtitile);
+  mocked_task_runner->FastForwardBy(base::TimeDelta::FromSeconds(41));
   EXPECT_EQ(power_manager_client->num_request_shutdown_calls(), 1);
 }
 

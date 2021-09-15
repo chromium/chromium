@@ -28,7 +28,18 @@ Polymer({
   EXTERNAL_API: [
     'showStep',
     'setServiceLogs',
+    'updateCountdownString',
   ],
+
+  properties: {
+    /**
+     * Success step subtitile message.
+     */
+    osInstallDialogSuccessSubtitile_: {
+      type: String,
+      value: '',
+    }
+  },
 
   UI_STEPS: UIState,
 
@@ -79,8 +90,8 @@ Polymer({
     this.userActed('os-install-error-shutdown');
   },
 
-  onSuccessShutdownButtonPressed_() {
-    this.userActed('os-install-success-shutdown');
+  onSuccessRestartButtonPressed_() {
+    this.userActed('os-install-success-restart');
   },
 
   onCloseConfirmDialogButtonPressed_() {
@@ -179,6 +190,13 @@ Polymer({
                            '<body><div id="logsContainer">' + serviceLogs +
                            '</div>' +
                            '</body>');
+  },
+
+  /**
+   * @param {string} timeLeftMessage Countdown message on success step.
+   */
+  updateCountdownString(timeLeftMessage) {
+    this.osInstallDialogSuccessSubtitile_ = timeLeftMessage;
   },
 });
 })();

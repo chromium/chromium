@@ -13,9 +13,9 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/strings/grit/ui_strings.h"
 
 namespace chromeos {
-
 namespace {
 constexpr const char kInProgressStep[] = "in-progress";
 constexpr const char kFailedStep[] = "failed";
@@ -34,7 +34,6 @@ OsInstallScreenHandler::OsInstallScreenHandler(
 }
 
 OsInstallScreenHandler::~OsInstallScreenHandler() {
-  OsInstallClient::Get()->RemoveObserver(this);
   if (screen_)
     screen_->OnViewDestroyed(this);
 }
@@ -78,6 +77,9 @@ void OsInstallScreenHandler::DeclareLocalizedValues(
 
   builder->Add("osInstallDialogSuccessTitle",
                IDS_OS_INSTALL_SCREEN_SUCCESS_TITLE);
+  builder->Add("osInstallDialogSuccessRestartButton",
+               IDS_OS_INSTALL_SCREEN_RESTART_BUTTON);
+
   builder->Add("osInstallDialogSendFeedback",
                IDS_OS_INSTALL_SCREEN_SEND_FEEDBACK);
   builder->Add("osInstallDialogShutdownButton",
@@ -104,17 +106,7 @@ void OsInstallScreenHandler::ShowStep(const char* step) {
   CallJS("login.OsInstallScreen.showStep", std::string(step));
 }
 
-void OsInstallScreenHandler::StartInstall() {
-  ShowStep(kInProgressStep);
-
-  OsInstallClient* const os_install_client = OsInstallClient::Get();
-
-  os_install_client->AddObserver(this);
-  os_install_client->StartOsInstall();
-}
-
-void OsInstallScreenHandler::StatusChanged(OsInstallClient::Status status,
-                                           const std::string& service_log) {
+void OsInstallScreenHandler::SetStatus(OsInstallClient::Status status) {
   switch (status) {
     case OsInstallClient::Status::InProgress:
       ShowStep(kInProgressStep);
@@ -129,16 +121,17 @@ void OsInstallScreenHandler::StatusChanged(OsInstallClient::Status status,
       ShowStep(kNoDestinationDeviceFoundStep);
       break;
   }
+}
+
+void OsInstallScreenHandler::SetServiceLogs(const std::string& service_log) {
   CallJS("login.OsInstallScreen.setServiceLogs", service_log);
 }
 
-void OsInstallScreenHandler::OsInstallStarted(
-    absl::optional<OsInstallClient::Status> status) {
-  if (!status) {
-    status = OsInstallClient::Status::Failed;
-  }
-
-  StatusChanged(*status, /*service_log=*/"");
+void OsInstallScreenHandler::UpdateCountdownStringWithTime(int64_t time_left) {
+  CallJS("login.OsInstallScreen.updateCountdownString",
+         l10n_util::GetStringFUTF16(
+             IDS_OS_INSTALL_SCREEN_SUCCESS_SUBTITLE,
+             l10n_util::GetPluralStringFUTF16(IDS_TIME_LONG_SECS, time_left)));
 }
 
 }  // namespace chromeos
