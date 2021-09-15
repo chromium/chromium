@@ -1810,10 +1810,6 @@
     "script": "//testing/scripts/run_performance_tests.py",
     "type": "script",
   },
-  "traffic_annotation_auditor_unittests": {
-    "label": "//tools/traffic_annotation/auditor:traffic_annotation_auditor_unittests",
-    "type": "console_test_launcher",
-  },
   "trichrome_chrome_bundle_smoke_test": {
     "label": "//chrome/android:trichrome_chrome_bundle_smoke_test",
     "type": "console_test_launcher",

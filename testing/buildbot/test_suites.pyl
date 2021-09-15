@@ -1005,7 +1005,6 @@
     },
 
     'chromium_gtests_for_win_and_linux_only': {
-      'traffic_annotation_auditor_unittests': {},
     },
 
     'chromium_junit_tests': {

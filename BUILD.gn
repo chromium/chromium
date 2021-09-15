@@ -343,11 +343,8 @@ group("gn_all") {
     deps += [ "//chrome/browser/browser_switcher/bho:browser_switcher_dlls" ]
   }
 
-  if (is_win || is_linux || is_chromeos) {
-    deps += [
-      "//tools/traffic_annotation/auditor:traffic_annotation_auditor",
-      "//tools/traffic_annotation/auditor:traffic_annotation_auditor_unittests",
-    ]
+  if (is_win || is_linux) {
+    deps += [ "//tools/traffic_annotation/auditor:traffic_annotation_auditor" ]
   }
 
   if (is_mac) {
