@@ -201,7 +201,7 @@ bool IsSigninForcedByPolicy() {
   if ([self isForcedSignInRequiredByPolicy]) {
     // Prompt to sign in if required by policy.
     ShowSigninCommand* command = [[ShowSigninCommand alloc]
-        initWithOperation:AUTHENTICATION_OPERATION_SIGNIN
+        initWithOperation:AUTHENTICATION_OPERATION_FORCED_SIGNIN
                  identity:nil
               accessPoint:signin_metrics::AccessPoint::
                               ACCESS_POINT_FORCED_SIGNIN

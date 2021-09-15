@@ -25,6 +25,10 @@ enum AuthenticationOperation {
   // Operation to add a secondary account. The user is presented with the
   // SSOAUth sin-in page.
   AUTHENTICATION_OPERATION_ADD_ACCOUNT,
+
+  // Operation to start a forced sign-in operation. The user is presented with
+  // the sign-in page with information about the policy and cannot dimiss it.
+  AUTHENTICATION_OPERATION_FORCED_SIGNIN,
 };
 
 // A command to perform a sign in operation.
