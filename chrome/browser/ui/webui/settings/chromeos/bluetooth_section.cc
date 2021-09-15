@@ -181,7 +181,6 @@ void BluetoothSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"bluetoothDeviceListPaired", IDS_SETTINGS_BLUETOOTH_DEVICE_LIST_PAIRED},
       {"bluetoothDeviceListUnpaired",
        IDS_SETTINGS_BLUETOOTH_DEVICE_LIST_UNPAIRED},
-      {"bluetoothPairNewDevice", IDS_SETTINGS_BLUETOOTH_PAIR_NEW_DEVICES},
       {"bluetoothConnect", IDS_SETTINGS_BLUETOOTH_CONNECT},
       {"bluetoothDisconnect", IDS_SETTINGS_BLUETOOTH_DISCONNECT},
       {"bluetoothDeviceDetailConnected",

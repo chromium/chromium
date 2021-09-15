@@ -2073,9 +2073,6 @@ Press an assigned switch to remove assignment
   <message name="IDS_SETTINGS_BLUETOOTH_NO_DEVICES" desc="Message displayed when there are no paired Bluetooth devices scan.">
     No paired devices
   </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_PAIR_NEW_DEVICES" desc="Message displayed describing how to pair a new Bluetooth device.">
-    Pair new device
-  </message>
   <message name="IDS_SETTINGS_BLUETOOTH_NO_DEVICES_FOUND" desc="Message displayed when no Bluetooth devices are found after a scan.">
     No Bluetooth devices found
   </message>
@@ -2177,78 +2174,6 @@ Press an assigned switch to remove assignment
   </message>
   <message name="IDS_SETTINGS_BLUETOOTH_MANAGED" desc="Tooltip description for icon notifying user that the Bluetooth device is managed by an enterprise policy and may have restricted functionality.">
     Your administrator has blocked some functionality for this device
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_PAIR" desc="Label for the settings button to pair a previously paired Bluetooth device.">
-    Pair
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_ENTER_KEY" desc="Bluetooth pairing dialog: Text for enter key when pairing keyboard devices." >
-    enter
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_ACCEPT_PASSKEY" desc="Bluetooth pairing dialog: Text for button to accept pairing code.">
-    Accept
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_REJECT_PASSKEY" desc="Bluetooth pairing dialog: Text for button to reject pairing a device.">
-    Reject
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_REQUEST_PINCODE" desc="Bluetooth pairing message typically displayed when the external Bluetooth 2.0 and older device has no display or means of input.">
-    Please enter the PIN for "<ph name="DEVICE_NAME">$1<ex>Nexus S</ex></ph>":
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_DISPLAY_PINCODE" desc="Bluetooth pairing message typically displayed when pairing a Bluetooth 2.0 and older wireless keyboard.">
-    Please enter this PIN code on "<ph name="DEVICE_NAME">$1<ex>Nexus S</ex></ph>":
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_REQUEST_PASSKEY" desc="Bluetooth pairing message typically displayed when the external Bluetooth 2.1 and later device has no display or means of input, and does not support SSP.">
-    Please enter the passkey for "<ph name="DEVICE_NAME">$1<ex>Nexus S</ex></ph>":
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_DISPLAY_PASSKEY" desc="Bluetooth pairing message typically displayed when pairing a Bluetooth 2.1 and later wireless keyboard.">
-    Please enter this passkey on "<ph name="DEVICE_NAME">$1<ex>Nexus S</ex></ph>":
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_CONFIRM_PASSKEY" desc="Bluetooth pairing message typically shown when pairing with a device that has a display.">
-    Please confirm this passkey is shown on "<ph name="DEVICE_NAME">$1<ex>Nexus S</ex></ph>":
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_START_CONNECTING">
-    Connecting to "<ph name="DEVICE_NAME">$1<ex>Nexus S</ex></ph>"
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_CONNECT_IN_PROGRESS">
-    Connection to "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>" still in progress
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_CONNECT_FAILED">
-    Failed to connect to "<ph name="DEVICE_NAME">$1<ex>Nexus S</ex></ph>".
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_CONNECT_AUTH_FAILED">
-    Authentication failed while connecting to "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_CONNECT_AUTH_CANCELED">
-    Authentication canceled while connecting to "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_CONNECT_AUTH_REJECTED">
-    Authentication code rejected while connecting to "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_CONNECT_AUTH_TIMEOUT">
-    Authentication timeout while connecting to "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_CONNECT_UNSUPPORTED_DEVICE">
-    Unsupported Bluetooth device: "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_CONNECT_ATTRIBUTE_LENGTH_INVALID">
-    Write operation exceeds the maximum length of the attribute to: "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_CONNECT_CONNECTION_CONGESTED">
-    Connection is congested to remote device: "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_CONNECT_INSUFFICIENT_ENCRYPTION">
-    Insufficient encryption for a given operation on: "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_CONNECT_OFFSET_INVALID">
-    Read or write operation was requested with an invalid offset on: "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_CONNECT_READ_NOT_PERMITTED">
-    Read operation is not permitted on: "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_CONNECT_REQUEST_NOT_SUPPORTED">
-    The given request is not supported to: "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_CONNECT_WRITE_NOT_PERMITTED">
-    Write operation is not permitted on: "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
   </message>
 
   <!-- Parental Controls -->
