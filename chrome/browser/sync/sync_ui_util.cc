@@ -203,7 +203,7 @@ bool HasUserOptedInToSync(const syncer::SyncUserSettings* settings) {
   if (settings->IsFirstSetupComplete())
     return true;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::features::IsSplitSettingsSyncEnabled() &&
+  if (chromeos::features::IsSyncConsentOptionalEnabled() &&
       settings->IsOsSyncFeatureEnabled()) {
     return true;
   }

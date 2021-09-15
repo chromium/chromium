@@ -386,7 +386,11 @@ TEST(SyncUIUtilTest, ShouldShowSyncPassphraseError_NotUsingPassphrase) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST(SyncUIUtilTest, ShouldShowSyncPassphraseError_OsSyncEnabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(chromeos::features::kSplitSettingsSync);
+  // SyncConsentOptional requires SyncSettingsCategorization.
+  feature_list.InitWithFeatures(
+      {chromeos::features::kSyncSettingsCategorization,
+       chromeos::features::kSyncConsentOptional},
+      {});
   syncer::TestSyncService service;
   service.SetPassphraseRequiredForPreferredDataTypes(true);
   service.SetFirstSetupComplete(false);

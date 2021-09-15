@@ -117,7 +117,11 @@ TEST_F(SyncErrorNotifierTest, NotificationShownWhenBrowserSyncEnabled) {
 
 TEST_F(SyncErrorNotifierTest, NotificationShownWhenOsSyncEnabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(chromeos::features::kSplitSettingsSync);
+  // SyncConsentOptional requires SyncSettingsCategorization.
+  feature_list.InitWithFeatures(
+      {chromeos::features::kSyncSettingsCategorization,
+       chromeos::features::kSyncConsentOptional},
+      {});
   service_.SetPassphraseRequiredForPreferredDataTypes(true);
   service_.GetUserSettings()->SetOsSyncFeatureEnabled(true);
   service_.SetFirstSetupComplete(false);
