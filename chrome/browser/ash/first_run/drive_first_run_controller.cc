@@ -213,9 +213,6 @@ void DriveWebContentsManager::RunCompletionCallback(
 
 void DriveWebContentsManager::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   if (navigation_handle->IsInPrimaryMainFrame() &&
       navigation_handle->IsErrorPage()) {
     LOG(WARNING) << "Failed to load WebContents to enable offline mode.";
