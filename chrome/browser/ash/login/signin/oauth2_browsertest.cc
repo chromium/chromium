@@ -1,5 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
+
 // found in the LICENSE file.
 
 #include <map>
@@ -16,6 +15,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
+#include "build/build_config.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/signin/oauth2_login_manager.h"
 #include "chrome/browser/ash/login/signin/oauth2_login_manager_factory.h"
@@ -565,7 +565,13 @@ IN_PROC_BROWSER_TEST_F(OAuth2Test, PRE_MergeSession) {
 // MergeSession test is attempting to merge session for an existing profile
 // that was generated in PRE_PRE_MergeSession test. This attempt should fail
 // since FakeGaia instance isn't configured to return relevant tokens/cookies.
-IN_PROC_BROWSER_TEST_F(OAuth2Test, MergeSession) {
+// TODO(crbug.com/1249863): Test is flaky on Linux
+#if defined(OS_LINUX)
+#define MAYBE_MergeSession DISABLED_MergeSession
+#else
+#define MAYBE_MergeSession MergeSession
+#endif
+IN_PROC_BROWSER_TEST_F(OAuth2Test, MAYBE_MergeSession) {
   SimulateNetworkOnline();
 
   EXPECT_EQ(1, LoginScreenTestApi::GetUsersCount());
