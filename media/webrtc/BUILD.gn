@@ -33,6 +33,7 @@ source_set("unit_tests") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//build:chromecast_buildflags",
     "//media:test_support",
     "//media/webrtc",
     "//testing/gmock",
