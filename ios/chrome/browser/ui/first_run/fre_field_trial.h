@@ -16,14 +16,6 @@ class FeatureList;
 
 namespace fre_field_trial {
 
-// Returns true if the user is in the group that will be shown the First Run
-// Modal.
-bool IsInFirstRunModalGroup();
-
-// Returns true if the user is in the group that will have the location prompt
-// removed from First Run.
-bool IsInRemoveFirstRunPromptGroup();
-
 // Registers the local state pref used to manage grouping for this field trial.
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 

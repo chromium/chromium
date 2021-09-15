@@ -91,7 +91,6 @@
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/first_run/location_permissions_commands.h"
 #import "ios/chrome/browser/ui/first_run/location_permissions_coordinator.h"
-#import "ios/chrome/browser/ui/first_run/location_permissions_field_trial.h"
 #import "ios/chrome/browser/ui/first_run/orientation_limiting_navigation_controller.h"
 #include "ios/chrome/browser/ui/history/history_coordinator.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
@@ -161,18 +160,6 @@ enum class EnterTabSwitcherSnapshotResult {
   kPageNotLoadingAndSnapshotSucceeded = 3,
   // kMaxValue should share the value of the highest enumerator.
   kMaxValue = kPageNotLoadingAndSnapshotSucceeded,
-};
-
-// Histogram enum values for showing the experiment arms of the location
-// permissions experiment. These values are persisted to logs. Entries should
-// not be renumbered and numeric values should never be reused.
-enum class LocationPermissionsUI {
-  // The First Run native location prompt was not shown.
-  kFirstRunPromptNotShown = 0,
-  // The First Run location permissions modal was shown.
-  kFirstRunModal = 1,
-  // kMaxValue should share the value of the highest enumerator.
-  kMaxValue = kFirstRunModal,
 };
 
 // Used to update the current BVC mode if a new tab is added while the tab
@@ -1157,11 +1144,6 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   return base::SysUTF16ToNSString(formattedTitle);
 }
 
-- (void)logLocationPermissionsExperimentForGroupShown:
-    (LocationPermissionsUI)experimentGroup {
-  UMA_HISTOGRAM_ENUMERATION("IOS.LocationPermissionsUI", experimentGroup);
-}
-
 // If users request to open tab or search and Chrome is not opened in the mode
 // they expected, show a toast to clarify that the expected mode is not
 // available.
@@ -1522,8 +1504,6 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
 - (void)showLocationPermissionsFromViewController:
     (UIViewController*)baseViewController {
-  [self logLocationPermissionsExperimentForGroupShown:LocationPermissionsUI::
-                                                          kFirstRunModal];
   self.locationPermissionsCoordinator = [[LocationPermissionsCoordinator alloc]
       initWithBaseViewController:baseViewController
                          browser:self.mainInterface.browser];

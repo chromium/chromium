@@ -643,7 +643,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.LocationPermissionsUI" enum="LocationPermissionsIOSUI"
-    expires_after="2021-12-05">
+    expires_after="M96">
+  <obsolete>
+    Deprecated 09/2021 as it is launched
+  </obsolete>
   <owner>thegreenfrog@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>

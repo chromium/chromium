@@ -9,8 +9,6 @@ source_set("field_trial") {
     "fre_field_trial.h",
     "ios_first_run_field_trials.cc",
     "ios_first_run_field_trials.h",
-    "location_permissions_field_trial.cc",
-    "location_permissions_field_trial.h",
   ]
   deps = [
     "//base",

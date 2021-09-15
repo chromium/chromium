@@ -47008,6 +47008,9 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 </enum>
 
 <enum name="LocationPermissionsIOSUI">
+  <obsolete>
+    Removed in September 2021
+  </obsolete>
   <int value="0" label="First Run Location Prompt Not Shown"/>
   <int value="1" label="First Run Location Permissions Modal Shown"/>
 </enum>
