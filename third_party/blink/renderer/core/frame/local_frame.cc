@@ -3007,7 +3007,9 @@ void LocalFrame::PostMessageEvent(
         message.user_activation->was_active);
   }
 
-  if (RuntimeEnabledFeatures::CapabilityDelegationPaymentRequestEnabled() &&
+  if (GetDocument() &&
+      RuntimeEnabledFeatures::CapabilityDelegationPaymentRequestEnabled(
+          GetDocument()->GetExecutionContext()) &&
       message.delegate_payment_request) {
     UseCounter::Count(GetDocument(),
                       WebFeature::kCapabilityDelegationOfPaymentRequest);
