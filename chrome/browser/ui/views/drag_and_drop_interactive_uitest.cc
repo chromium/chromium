@@ -1264,7 +1264,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_DragImageBetweenFrames) {
   // (dragstart event handler in image_source.html is asking for "copy" only).
   state.expected_dom_event_data.set_expected_effect_allowed("copy");
   state.expected_dom_event_data.set_expected_mime_types(
-      "text/html,text/plain,text/uri-list");
+      "Files,text/html,text/plain,text/uri-list");
   state.expected_dom_event_data.set_expected_page_position("(55, 50)");
 
   // Start the drag in the left frame.
@@ -1478,7 +1478,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
   // (dragstart event handler in image_source.html is asking for "copy" only).
   state.expected_dom_event_data.set_expected_effect_allowed("copy");
   state.expected_dom_event_data.set_expected_mime_types(
-      "text/html,text/plain,text/uri-list");
+      "Files,text/html,text/plain,text/uri-list");
   state.expected_dom_event_data.set_expected_client_position("(155, 150)");
   state.expected_dom_event_data.set_expected_page_position("(155, 150)");
 
@@ -1725,7 +1725,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_CrossTabDrag) {
   // (dragstart event handler in image_source.html is asking for "copy" only).
   state.expected_dom_event_data.set_expected_effect_allowed("copy");
   state.expected_dom_event_data.set_expected_mime_types(
-      "text/html,text/plain,text/uri-list");
+      "Files,text/html,text/plain,text/uri-list");
   state.expected_dom_event_data.set_expected_page_position("(55, 50)");
 
   // Make the first tab active, then start the drag in the left frame.

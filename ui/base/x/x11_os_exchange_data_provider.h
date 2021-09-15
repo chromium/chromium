@@ -30,9 +30,10 @@ class OSExchangeDataProviderX11Test;
 class COMPONENT_EXPORT(UI_BASE_X) XOSExchangeDataProvider
     : public OSExchangeDataProvider {
  public:
-  // |x_window| is the window the cursor is over, and |selection| is the set of
-  // data being offered.
+  // |x_window| is the window the cursor is over, |source_window| is the window
+  // where the drag started, and |selection| is the set of data being offered.
   XOSExchangeDataProvider(x11::Window x_window,
+                          x11::Window source_window,
                           const SelectionFormatMap& selection);
 
   // Creates a Provider for sending drag information. This creates its own,
@@ -142,6 +143,7 @@ class COMPONENT_EXPORT(UI_BASE_X) XOSExchangeDataProvider
   const bool own_window_;
 
   x11::Window x_window_;
+  x11::Window source_window_;
 
   // A representation of data. This is either passed to us from the other
   // process, or built up through a sequence of Set*() calls. It can be passed

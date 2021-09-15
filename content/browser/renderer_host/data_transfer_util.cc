@@ -79,7 +79,6 @@ blink::mojom::DragDataPtr DropDataToDragData(
     int child_id) {
   // These fields are currently unused when dragging into Blink.
   DCHECK(drop_data.download_metadata.empty());
-  DCHECK(drop_data.file_contents.empty());
   DCHECK(drop_data.file_contents_content_disposition.empty());
 
   std::vector<blink::mojom::DragItemPtr> items;
@@ -118,7 +117,16 @@ blink::mojom::DragDataPtr DropDataToDragData(
     item->file_system_id = file_system_file.filesystem_id;
     items.push_back(blink::mojom::DragItem::NewFileSystemFile(std::move(item)));
   }
-  for (const std::pair<std::u16string, std::u16string> data :
+  if (drop_data.file_contents_source_url.is_valid()) {
+    blink::mojom::DragItemBinaryPtr item = blink::mojom::DragItemBinary::New();
+    item->data = mojo_base::BigBuffer(
+        base::as_bytes(base::make_span(drop_data.file_contents)));
+    item->source_url = drop_data.file_contents_source_url;
+    item->filename_extension =
+        base::FilePath(drop_data.file_contents_filename_extension);
+    items.push_back(blink::mojom::DragItem::NewBinary(std::move(item)));
+  }
+  for (const std::pair<const std::u16string, std::u16string>& data :
        drop_data.custom_data) {
     blink::mojom::DragItemStringPtr item = blink::mojom::DragItemString::New();
     item->string_type = base::UTF16ToUTF8(data.first);
@@ -179,6 +187,14 @@ blink::mojom::DragDataPtr DropMetaDataToDragData(
       item->url = meta_data_item.file_system_url;
       items.push_back(
           blink::mojom::DragItem::NewFileSystemFile(std::move(item)));
+      continue;
+    }
+
+    if (meta_data_item.kind == DropData::Kind::BINARY) {
+      blink::mojom::DragItemBinaryPtr item =
+          blink::mojom::DragItemBinary::New();
+      item->source_url = meta_data_item.file_contents_url;
+      items.push_back(blink::mojom::DragItem::NewBinary(std::move(item)));
       continue;
     }
   }

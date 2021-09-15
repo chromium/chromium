@@ -155,8 +155,26 @@ bool StructTraits<
     blink::mojom::DragItemBinaryDataView,
     blink::WebDragData::Item>::Read(blink::mojom::DragItemBinaryDataView data,
                                     blink::WebDragData::Item* out) {
-  // storage_type == kBinary should not happen when dragging into Blink.
-  NOTREACHED();
+  mojo_base::BigBufferView file_contents;
+  blink::KURL source_url;
+  base::FilePath filename_extension;
+  String content_disposition;
+  if (!data.ReadData(&file_contents) || !data.ReadSourceUrl(&source_url) ||
+      !data.ReadFilenameExtension(&filename_extension) ||
+      !data.ReadContentDisposition(&content_disposition)) {
+    return false;
+  }
+  blink::WebDragData::Item item;
+  item.storage_type = blink::WebDragData::Item::kStorageTypeBinaryData;
+  item.binary_data =
+      blink::WebData(reinterpret_cast<const char*>(file_contents.data().data()),
+                     file_contents.data().size());
+  item.binary_data_source_url = source_url;
+  item.binary_data_filename_extension =
+      blink::FilePathToWebString(filename_extension);
+  item.binary_data_content_disposition = content_disposition;
+
+  *out = std::move(item);
   return true;
 }
 

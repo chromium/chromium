@@ -152,11 +152,19 @@ File* DataObjectItem::GetAsFile() const {
   if (source_ == DataSource::kInternalSource) {
     if (file_)
       return file_.Get();
+
+    // If this file is not backed by |file_| then it must be a |shared_buffer_|.
     DCHECK(shared_buffer_);
-    // TODO: This code is currently impossible--we never populate
-    // |shared_buffer_| when dragging in. At some point though, we may need to
-    // support correctly converting a shared buffer into a file.
-    return nullptr;
+    auto data = std::make_unique<BlobData>();
+    data->SetContentType(type_);
+    for (const auto& span : *shared_buffer_)
+      data->AppendBytes(span.data(), span.size());
+    const uint64_t length = data->length();
+    auto blob = BlobDataHandle::Create(std::move(data), length);
+    return MakeGarbageCollected<File>(
+        DecodeURLEscapeSequences(base_url_.LastPathComponent(),
+                                 DecodeURLMode::kUTF8OrIsomorphic),
+        base::Time::Now(), std::move(blob));
   }
 
   DCHECK_EQ(source_, DataSource::kClipboardSource);

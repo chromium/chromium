@@ -73,6 +73,7 @@
 #include "ui/aura/window_tree_host_observer.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/custom_data_helper.h"
+#include "ui/base/clipboard/file_info.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
@@ -308,6 +309,17 @@ bool ShouldIncludeVirtualFiles(const DropData& drop_data) {
 // Utility to fill a DropData object from ui::OSExchangeData.
 void PrepareDropData(DropData* drop_data, const ui::OSExchangeData& data) {
   drop_data->did_originate_from_renderer = data.DidOriginateFromRenderer();
+
+  base::FilePath filename;
+  std::string file_contents;
+  data.GetFileContents(&filename, &file_contents);
+  if (!filename.empty()) {
+    drop_data->file_contents = std::move(file_contents);
+    drop_data->file_contents_source_url = GURL(ui::FilePathToFileURL(filename));
+    base::FilePath::StringType extension = filename.Extension();
+    if (!extension.empty())
+      drop_data->file_contents_filename_extension = extension.substr(1);
+  }
 
   std::u16string plain_text;
   data.GetString(&plain_text);

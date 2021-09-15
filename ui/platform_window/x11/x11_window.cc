@@ -1451,7 +1451,7 @@ int X11Window::UpdateDrag(const gfx::Point& screen_point) {
 
   auto data = std::make_unique<OSExchangeData>(
       std::make_unique<XOSExchangeDataProvider>(
-          drag_drop_client_->xwindow(),
+          drag_drop_client_->xwindow(), target_current_context->source_window(),
           target_current_context->fetched_targets()));
   int suggested_operations = target_current_context->GetDragOperation();
   // KDE-based file browsers such as Dolphin change the drag operation depending

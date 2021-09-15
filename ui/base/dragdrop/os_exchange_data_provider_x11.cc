@@ -18,8 +18,9 @@ namespace ui {
 
 OSExchangeDataProviderX11::OSExchangeDataProviderX11(
     x11::Window x_window,
+    x11::Window source_window,
     const SelectionFormatMap& selection)
-    : XOSExchangeDataProvider(x_window, selection) {}
+    : XOSExchangeDataProvider(x_window, source_window, selection) {}
 
 OSExchangeDataProviderX11::OSExchangeDataProviderX11() {
   x11::Connection::Get()->AddEventObserver(this);

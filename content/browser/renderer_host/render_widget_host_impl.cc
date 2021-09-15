@@ -261,6 +261,11 @@ std::vector<DropData::Metadata> DropDataToMetaData(const DropData& drop_data) {
     }
   }
 
+  if (drop_data.file_contents_source_url.is_valid()) {
+    metadata.push_back(DropData::Metadata::CreateForBinary(
+        drop_data.file_contents_source_url));
+  }
+
   for (const auto& custom_data_item : drop_data.custom_data) {
     metadata.push_back(DropData::Metadata::CreateForMimeType(
         DropData::Kind::STRING, custom_data_item.first));

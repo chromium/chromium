@@ -46,7 +46,8 @@ struct CONTENT_EXPORT DropData {
     STRING = 0,
     FILENAME,
     FILESYSTEMFILE,
-    LAST = FILESYSTEMFILE
+    BINARY,
+    LAST = BINARY
   };
 
   struct Metadata {
@@ -55,6 +56,7 @@ struct CONTENT_EXPORT DropData {
                                       const std::u16string& mime_type);
     static Metadata CreateForFilePath(const base::FilePath& filename);
     static Metadata CreateForFileSystemUrl(const GURL& file_system_url);
+    static Metadata CreateForBinary(const GURL& file_contents_url);
     Metadata(const Metadata& other);
     ~Metadata();
 
@@ -62,6 +64,7 @@ struct CONTENT_EXPORT DropData {
     std::u16string mime_type;
     base::FilePath filename;
     GURL file_system_url;
+    GURL file_contents_url;
   };
 
   DropData();

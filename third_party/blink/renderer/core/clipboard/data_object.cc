@@ -332,7 +332,10 @@ DataObject* DataObject::Create(WebDragData data) {
                                  item.file_system_access_entry);
         break;
       case WebDragData::Item::kStorageTypeBinaryData:
-        // This should never happen when dragging in.
+        data_object->AddSharedBuffer(item.binary_data,
+                                     item.binary_data_source_url,
+                                     item.binary_data_filename_extension,
+                                     item.binary_data_content_disposition);
         break;
       case WebDragData::Item::kStorageTypeFileSystemFile: {
         // TODO(http://crbug.com/429077): The file system URL may refer a user
