@@ -273,7 +273,9 @@ void InternalPopupMenu::WriteDocument(SharedBuffer* data) {
   float scale_factor = chrome_client_->WindowToViewportScalar(
       owner_element.GetDocument().GetFrame(), 1.f);
   PagePopupClient::AddString(
-      "<!DOCTYPE html><head><meta charset='UTF-8'><style>\n", data);
+      "<!DOCTYPE html><head><meta charset='UTF-8'><meta name='color-scheme' "
+      "content='light dark'><style>\n",
+      data);
 
   LayoutObject* owner_layout = owner_element.GetLayoutObject();
 
