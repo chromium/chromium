@@ -139,4 +139,12 @@ Polymer({
         return true;
     }
   },
+
+  /**
+   * @protected
+   * @return {boolean}
+   */
+  isNetworkDisabled_() {
+    return this.network.state === NetworkState.kDisabled;
+  },
 });

@@ -41,6 +41,15 @@ export function networkTroubleshootingTestSuite() {
     return flushTasks();
   }
 
+  /**
+   * @param {boolean} disabled
+   * @return {!Promise}
+   */
+  function changeDisabledState(disabled) {
+    networkTroubleshootingElement.disabled = disabled;
+    return flushTasks();
+  }
+
   test('CorrectNetworkTypeDisplayedInMessage', () => {
     return initializeNetworkTroubleshooting(loadTimeData.getString('wifiLabel'))
         .then(() => {
@@ -48,6 +57,23 @@ export function networkTroubleshootingTestSuite() {
               networkTroubleshootingElement.shadowRoot.querySelector(
                   '#troubleConnectingText'),
               loadTimeData.getString('wifiLabel'));
+        });
+  });
+
+  test('CorrectLinkTextBasedOnDisabledState', () => {
+    let linkId = '#troubleConnectingLinkText';
+    return initializeNetworkTroubleshooting(loadTimeData.getString('wifiLabel'))
+        .then(() => changeDisabledState(false))
+        .then(() => {
+          dx_utils.assertElementContainsText(
+              networkTroubleshootingElement.shadowRoot.querySelector(linkId),
+              loadTimeData.getString('troubleConnecting'));
+        })
+        .then(() => changeDisabledState(true))
+        .then(() => {
+          dx_utils.assertElementContainsText(
+              networkTroubleshootingElement.shadowRoot.querySelector(linkId),
+              loadTimeData.getString('reconnectLinkText'));
         });
   });
 }

@@ -4,7 +4,9 @@
     <!-- TODO(michaelcheco): Add localized strings. -->
   <template is="dom-if" if="[[showTroubleConnectingState_]]">
     <network-troubleshooting id="networkTroubleshooting"
-        slot="left-panel" network-type="[[networkType_]]">
+        slot="left-panel"
+        network-type="[[networkType_]]"
+        disabled="[[isNetworkDisabled_(network.state)]]">
     </network-troubleshooting>
   </template>
   <div id="cardTitle" slot="title">

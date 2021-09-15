@@ -30,14 +30,17 @@ export class NetworkTroubleshootingElement extends
 
   static get properties() {
     return {
-      networkType: {type: String, value: ''},
+      networkType: {type: String, value: ''}, disabled: {type: Boolean},
     }
   }
 
   /** @protected */
   onTroubleConnectingClicked_() {
-    // TODO(michaelcheco): Add correct URL.
-    window.open('https://support.google.com/chromebook?p=diagnostics_');
+    let url = this.disabled ?
+        'chrome://os-settings/' :
+        'https://support.google.com/chromebook?p=diagnostics_';
+    // TODO(michaelcheco): Add correct support URL.
+    window.open(url);
   }
 
   /**
@@ -45,7 +48,17 @@ export class NetworkTroubleshootingElement extends
    * @return {string}
    */
   computeTroubleConnectingText_() {
-    return loadTimeData.getStringF('troubleshootingText', this.networkType);
+    let stringId = this.disabled ? 'disabledText' : 'troubleshootingText';
+    return loadTimeData.getStringF(stringId, this.networkType);
+  }
+
+  /**
+   * @protected
+   * @return {string}
+   */
+  computeLinkText_() {
+    return loadTimeData.getString(
+        this.disabled ? 'reconnectLinkText' : 'troubleConnecting');
   }
 }
 
