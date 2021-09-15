@@ -53,6 +53,7 @@ class ReadLaterSidePanelWebView : public views::WebView,
     contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
     contents_wrapper_->ReloadWebContents();
     SetWebContents(contents_wrapper_->web_contents());
+    set_allow_accelerators(true);
 
     if (base::FeatureList::IsEnabled(features::kSidePanelDragAndDrop)) {
       extensions::BookmarkManagerPrivateDragEventRouter::CreateForWebContents(
