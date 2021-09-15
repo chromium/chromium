@@ -336,8 +336,8 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
         accept_entry_proto->add_file_extensions(file_extension);
     }
 
-    for (const apps::IconInfo& icon_info : file_handler.icons) {
-      *(file_handler_proto->add_icon_infos()) =
+    for (const apps::IconInfo& icon_info : file_handler.downloaded_icons) {
+      *(file_handler_proto->add_downloaded_icons()) =
           AppIconInfoToSyncProto(icon_info);
     }
   }
@@ -711,12 +711,12 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
 
     if (WebAppFileHandlerManager::IconsEnabled()) {
       absl::optional<std::vector<apps::IconInfo>> parsed_icon_infos =
-          ParseAppIconInfos("WebApp", file_handler_proto.icon_infos());
+          ParseAppIconInfos("WebApp", file_handler_proto.downloaded_icons());
       if (!parsed_icon_infos) {
         // ParseAppIconInfos() reports any errors.
         return nullptr;
       }
-      file_handler.icons = std::move(parsed_icon_infos.value());
+      file_handler.downloaded_icons = std::move(parsed_icon_infos.value());
     }
 
     file_handlers.push_back(std::move(file_handler));

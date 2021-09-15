@@ -38,8 +38,8 @@ base::Value FileHandler::AsDebugValue() const {
     accept_json.Append(entry.AsDebugValue());
   root.SetStringKey("action", action.spec());
   base::Value& icons_json =
-      *root.SetKey("icons", base::Value(base::Value::Type::LIST));
-  for (const IconInfo& entry : icons)
+      *root.SetKey("downloaded_icons", base::Value(base::Value::Type::LIST));
+  for (const IconInfo& entry : downloaded_icons)
     icons_json.Append(entry.AsDebugValue());
   root.SetStringKey("name", display_name);
 

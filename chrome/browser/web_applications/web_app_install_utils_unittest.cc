@@ -897,25 +897,27 @@ TEST_P(FileHandlersFromManifestTest, Basic) {
               MakeExtension(i));
 
     if (WebAppFileHandlerManager::IconsEnabled()) {
-      ASSERT_EQ(file_handlers[i].icons.size(), 3U);
+      ASSERT_EQ(file_handlers[i].downloaded_icons.size(), 3U);
 
       // The manifest-specified `sizes` are ignored.
-      EXPECT_FALSE(file_handlers[i].icons[0].square_size_px);
-      EXPECT_EQ(MakeImageUrl(i), file_handlers[i].icons[0].url);
+      EXPECT_FALSE(file_handlers[i].downloaded_icons[0].square_size_px);
+      EXPECT_EQ(MakeImageUrl(i), file_handlers[i].downloaded_icons[0].url);
       EXPECT_EQ(apps::IconInfo::Purpose::kAny,
-                file_handlers[i].icons[0].purpose);
+                file_handlers[i].downloaded_icons[0].purpose);
 
-      EXPECT_FALSE(file_handlers[i].icons[1].square_size_px);
-      EXPECT_EQ(MakeImageUrlForSecondImage(i), file_handlers[i].icons[1].url);
+      EXPECT_FALSE(file_handlers[i].downloaded_icons[1].square_size_px);
+      EXPECT_EQ(MakeImageUrlForSecondImage(i),
+                file_handlers[i].downloaded_icons[1].url);
       EXPECT_EQ(apps::IconInfo::Purpose::kAny,
-                file_handlers[i].icons[1].purpose);
+                file_handlers[i].downloaded_icons[1].purpose);
 
-      EXPECT_FALSE(file_handlers[i].icons[2].square_size_px);
-      EXPECT_EQ(MakeImageUrlForSecondImage(i), file_handlers[i].icons[2].url);
+      EXPECT_FALSE(file_handlers[i].downloaded_icons[2].square_size_px);
+      EXPECT_EQ(MakeImageUrlForSecondImage(i),
+                file_handlers[i].downloaded_icons[2].url);
       EXPECT_EQ(apps::IconInfo::Purpose::kMaskable,
-                file_handlers[i].icons[2].purpose);
+                file_handlers[i].downloaded_icons[2].purpose);
     } else {
-      EXPECT_TRUE(file_handlers[i].icons.empty());
+      EXPECT_TRUE(file_handlers[i].downloaded_icons.empty());
     }
   }
 }
@@ -986,10 +988,11 @@ TEST_P(FileHandlersFromManifestTest, PopulateFileHandlerIcons) {
 
   const size_t num_expectations =
       sizeof(expectations) / sizeof(expectations[0]);
-  ASSERT_EQ(num_expectations, web_app_info.file_handlers[0].icons.size());
+  ASSERT_EQ(num_expectations,
+            web_app_info.file_handlers[0].downloaded_icons.size());
 
   for (size_t i = 0; i < num_expectations; ++i) {
-    const auto& icon = web_app_info.file_handlers[0].icons[i];
+    const auto& icon = web_app_info.file_handlers[0].downloaded_icons[i];
     EXPECT_EQ(expectations[i].expected_url, icon.url);
     EXPECT_EQ(expectations[i].expected_size, icon.square_size_px);
     EXPECT_EQ(expectations[i].expected_purpose, icon.purpose);

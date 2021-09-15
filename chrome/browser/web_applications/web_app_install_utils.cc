@@ -266,13 +266,13 @@ void PopulateFileHandlingIcons(WebApplicationInfo* web_app_info,
   // purpose and set the size based on what is found in `icons_map`.
   for (auto& file_handler : web_app_info->file_handlers) {
     if (!WebAppFileHandlerManager::IconsEnabled()) {
-      DCHECK(file_handler.icons.empty());
+      DCHECK(file_handler.downloaded_icons.empty());
       continue;
     }
 
     std::vector<apps::IconInfo> manifest_icons;
 
-    for (const auto& icon_info_without_size : file_handler.icons) {
+    for (const auto& icon_info_without_size : file_handler.downloaded_icons) {
       const GURL& src = icon_info_without_size.url;
       // Only store bitmaps for this URL if it's the first time we've seen it.
       bool bitmaps_already_saved_for_url =
@@ -296,7 +296,7 @@ void PopulateFileHandlingIcons(WebApplicationInfo* web_app_info,
           other_icon_bitmaps[src].push_back(bitmap);
       }
     }
-    file_handler.icons = std::move(manifest_icons);
+    file_handler.downloaded_icons = std::move(manifest_icons);
   }
 }
 
@@ -331,8 +331,9 @@ apps::FileHandlers CreateFileHandlersFromManifest(
           icon_info.url = image_resource.src;
           icon_info.purpose =
               ManifestPurposeToIconInfoPurpose(manifest_purpose);
-          // The sizes are not filled in until images are actually downloaded.
-          web_app_file_handler.icons.push_back(std::move(icon_info));
+          web_app_file_handler.downloaded_icons.push_back(std::move(icon_info));
+          // The list will be pruned and the sizes will be filled in when images
+          // are actually downloaded.
         }
       }
     }
@@ -480,7 +481,7 @@ std::vector<GURL> GetValidIconUrlsToDownload(
 
   // File handling icons.
   for (const auto& file_handler : web_app_info.file_handlers) {
-    for (const auto& icon : file_handler.icons) {
+    for (const auto& icon : file_handler.downloaded_icons) {
       if (!icon.url.is_valid())
         continue;
       web_app_info_icon_urls.push_back(icon.url);

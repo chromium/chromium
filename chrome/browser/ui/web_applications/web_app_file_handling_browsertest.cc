@@ -1201,10 +1201,11 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingIconBrowserTest, Basic) {
 
   ASSERT_EQ(1U, web_app->file_handlers().size());
   if (WebAppFileHandlerManager::IconsEnabled()) {
-    ASSERT_EQ(1U, web_app->file_handlers()[0].icons.size());
-    EXPECT_EQ(20, web_app->file_handlers()[0].icons[0].square_size_px);
+    ASSERT_EQ(1U, web_app->file_handlers()[0].downloaded_icons.size());
+    EXPECT_EQ(20,
+              web_app->file_handlers()[0].downloaded_icons[0].square_size_px);
   } else {
-    EXPECT_TRUE(web_app->file_handlers()[0].icons.empty());
+    EXPECT_TRUE(web_app->file_handlers()[0].downloaded_icons.empty());
   }
 }
 

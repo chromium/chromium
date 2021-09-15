@@ -55,9 +55,9 @@ struct FileHandler {
   Accept accept;
 
   // The icons defined for this file handler, to be used as file type
-  // association icons in OS surfaces. The sizes in `icons`, when present,
-  // represent the actual size of a bitmap that was downloaded.
-  std::vector<IconInfo> icons;
+  // association icons in OS surfaces. The sizes in `downloaded_icons`, when
+  // present, represent the actual size of a bitmap that was downloaded.
+  std::vector<IconInfo> downloaded_icons;
 };
 using FileHandlers = std::vector<FileHandler>;
 

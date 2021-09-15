@@ -266,7 +266,7 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
          "mime_type": "application/13087720410+bar"
       } ],
       "action": "https://example.com/open-13087720410",
-      "icons": [ {
+      "downloaded_icons": [ {
          "purpose": "kAny",
          "square_size_px": 16,
          "url": "https://example.com/image.png"
@@ -285,7 +285,7 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
          "mime_type": "application/13087720411+bar"
       } ],
       "action": "https://example.com/open-13087720411",
-      "icons": [ {
+      "downloaded_icons": [ {
          "purpose": "kAny",
          "square_size_px": 16,
          "url": "https://example.com/image.png"
@@ -304,7 +304,7 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
          "mime_type": "application/13087720412+bar"
       } ],
       "action": "https://example.com/open-13087720412",
-      "icons": [ {
+      "downloaded_icons": [ {
          "purpose": "kAny",
          "square_size_px": 16,
          "url": "https://example.com/image.png"
@@ -323,7 +323,7 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
          "mime_type": "application/13087720413+bar"
       } ],
       "action": "https://example.com/open-13087720413",
-      "icons": [ {
+      "downloaded_icons": [ {
          "purpose": "kAny",
          "square_size_px": 16,
          "url": "https://example.com/image.png"
@@ -342,7 +342,7 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
          "mime_type": "application/13087720414+bar"
       } ],
       "action": "https://example.com/open-13087720414",
-      "icons": [ {
+      "downloaded_icons": [ {
          "purpose": "kAny",
          "square_size_px": 16,
          "url": "https://example.com/image.png"
