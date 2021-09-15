@@ -355,6 +355,10 @@
     "label": "//chromecast/base:cast_base_unittests",
     "type": "console_test_launcher",
   },
+  "cast_cast_core_unittests": {
+    "label": "//chromecast/cast_core:cast_cast_core_unittests",
+    "type": "console_test_launcher",
+  },
   "cast_crash_unittests": {
     "label": "//chromecast/crash:cast_crash_unittests",
     "type": "console_test_launcher",

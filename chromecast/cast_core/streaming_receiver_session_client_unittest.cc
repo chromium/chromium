@@ -197,7 +197,7 @@ TEST_F(StreamingReceiverSessionClientTest, OnSingleValidMessageWithCodecs) {
   EXPECT_EQ(limit.max_channels, 456);
 
   auto video_codecs = session_constraints_.video_codecs;
-  EXPECT_EQ(video_codecs.size(), size_t{2});
+  EXPECT_EQ(video_codecs.size(), size_t{3});
   EXPECT_NE(std::find(video_codecs.begin(), video_codecs.end(),
                       openscreen::cast::VideoCodec::kVp9),
             video_codecs.end());

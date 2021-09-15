@@ -474,6 +474,7 @@
     'cast_audio_specific_chromium_gtests': {
       'cast_audio_backend_unittests': {},
       'cast_base_unittests': {},
+      'cast_cast_core_unittests': {},
       'cast_crash_unittests': {},
       'cast_media_unittests': {},
       'cast_shell_browsertests': {

@@ -233,6 +233,23 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
+        "test": "cast_cast_core_unittests",
+        "test_id_prefix": "ninja://chromecast/cast_core:cast_cast_core_unittests/"
+      },
+      {
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
         "test": "cast_crash_unittests",
         "test_id_prefix": "ninja://chromecast/crash:cast_crash_unittests/"
       },
@@ -1105,6 +1122,23 @@
         },
         "test": "cast_base_unittests",
         "test_id_prefix": "ninja://chromecast/base:cast_base_unittests/"
+      },
+      {
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "cast_cast_core_unittests",
+        "test_id_prefix": "ninja://chromecast/cast_core:cast_cast_core_unittests/"
       },
       {
         "merge": {
