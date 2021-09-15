@@ -513,13 +513,12 @@ class LocalDeviceInstrumentationTestRun(
         # Feature flags won't work in instrumentation tests unless the activity
         # is restarted.
         # Tests with identical features are grouped to minimize restarts.
-        if 'Batch$SplitByFeature' in annotations:
-          if 'Features$EnableFeatures' in annotations:
-            batch_name += '|enabled:' + ','.join(
-                sorted(annotations['Features$EnableFeatures']['value']))
-          if 'Features$DisableFeatures' in annotations:
-            batch_name += '|disabled:' + ','.join(
-                sorted(annotations['Features$DisableFeatures']['value']))
+        if 'Features$EnableFeatures' in annotations:
+          batch_name += '|enabled:' + ','.join(
+              sorted(annotations['Features$EnableFeatures']['value']))
+        if 'Features$DisableFeatures' in annotations:
+          batch_name += '|disabled:' + ','.join(
+              sorted(annotations['Features$DisableFeatures']['value']))
 
         if not batch_name in batched_tests:
           batched_tests[batch_name] = []
