@@ -16,6 +16,24 @@ namespace bluetooth_config {
 // received, it finds the device in BluetoothAdapter's list of devices.
 class DevicePairingHandlerImpl : public DevicePairingHandler {
  public:
+  class Factory {
+   public:
+    static std::unique_ptr<DevicePairingHandler> Create(
+        mojo::PendingReceiver<mojom::DevicePairingHandler> pending_receiver,
+        AdapterStateController* adapter_state_controller,
+        scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
+        base::OnceClosure finished_pairing_callback);
+    static void SetFactoryForTesting(Factory* test_factory);
+
+   protected:
+    virtual ~Factory();
+    virtual std::unique_ptr<DevicePairingHandler> CreateInstance(
+        mojo::PendingReceiver<mojom::DevicePairingHandler> pending_receiver,
+        AdapterStateController* adapter_state_controller,
+        scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
+        base::OnceClosure finished_pairing_callback) = 0;
+  };
+
   DevicePairingHandlerImpl(
       mojo::PendingReceiver<mojom::DevicePairingHandler> pending_receiver,
       AdapterStateController* adapter_state_controller,

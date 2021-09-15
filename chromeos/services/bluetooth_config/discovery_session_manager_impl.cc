@@ -4,6 +4,7 @@
 
 #include "chromeos/services/bluetooth_config/discovery_session_manager_impl.h"
 
+#include "chromeos/services/bluetooth_config/device_pairing_handler_impl.h"
 #include "device/bluetooth/bluetooth_discovery_session.h"
 
 namespace chromeos {
@@ -31,6 +32,16 @@ bool DiscoverySessionManagerImpl::IsDiscoverySessionActive() const {
 
 void DiscoverySessionManagerImpl::OnHasAtLeastOneDiscoveryClientChanged() {
   UpdateDiscoveryState();
+}
+
+std::unique_ptr<DevicePairingHandler>
+DiscoverySessionManagerImpl::CreateDevicePairingHandler(
+    AdapterStateController* adapter_state_controller,
+    mojo::PendingReceiver<mojom::DevicePairingHandler> receiver,
+    base::OnceClosure finished_pairing_callback) {
+  return DevicePairingHandlerImpl::Factory::Create(
+      std::move(receiver), adapter_state_controller, bluetooth_adapter_,
+      std::move(finished_pairing_callback));
 }
 
 void DiscoverySessionManagerImpl::AdapterDiscoveringChanged(

@@ -4,6 +4,8 @@
 
 #include "chromeos/services/bluetooth_config/fake_discovery_session_manager.h"
 
+#include "chromeos/services/bluetooth_config/fake_device_pairing_handler.h"
+
 namespace chromeos {
 namespace bluetooth_config {
 
@@ -28,6 +30,16 @@ void FakeDiscoverySessionManager::SetIsDiscoverySessionActive(bool is_active) {
 
 bool FakeDiscoverySessionManager::IsDiscoverySessionActive() const {
   return is_discovery_session_active_;
+}
+
+std::unique_ptr<DevicePairingHandler>
+FakeDiscoverySessionManager::CreateDevicePairingHandler(
+    AdapterStateController* adapter_state_controller,
+    mojo::PendingReceiver<mojom::DevicePairingHandler> receiver,
+    base::OnceClosure finished_pairing_callback) {
+  return std::make_unique<FakeDevicePairingHandler>(
+      std::move(receiver), adapter_state_controller,
+      std::move(finished_pairing_callback));
 }
 
 }  // namespace bluetooth_config

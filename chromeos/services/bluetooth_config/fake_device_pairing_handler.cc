@@ -16,12 +16,12 @@ FakeDevicePairingHandler::FakeDevicePairingHandler(
                            std::move(finished_pairing_callback)) {}
 
 FakeDevicePairingHandler::~FakeDevicePairingHandler() {
-  if (current_pairing_device_id().empty())
-    return;
-
   // If we have a pairing attempt and this class is destroyed, cancel the
   // pairing.
-  CancelPairing(mojom::PairingResult::kNonAuthFailure);
+  if (!current_pairing_device_id().empty())
+    CancelPairing(mojom::PairingResult::kNonAuthFailure);
+
+  NotifyFinished();
 }
 
 void FakeDevicePairingHandler::SetDeviceList(

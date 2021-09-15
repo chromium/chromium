@@ -44,15 +44,18 @@ void DiscoverySessionManager::StartDiscovery(
   // If discovery is already active, notify the delegate that discovery has
   // started and of the current discovered devices list.
   if (IsDiscoverySessionActive()) {
-    delegates_.Get(id)->OnBluetoothDiscoveryStarted();
+    delegates_.Get(id)->OnBluetoothDiscoveryStarted(
+        RegisterNewDevicePairingHandler(id));
     delegates_.Get(id)->OnDiscoveredDevicesListChanged(
         device_cache_->GetUnpairedDevices());
   }
 }
 
 void DiscoverySessionManager::NotifyDiscoveryStarted() {
-  for (auto& delegate : delegates_)
-    delegate->OnBluetoothDiscoveryStarted();
+  for (auto it = delegates_.begin(); it != delegates_.end(); ++it) {
+    (*it)->OnBluetoothDiscoveryStarted(
+        RegisterNewDevicePairingHandler(it.id()));
+  }
 }
 
 void DiscoverySessionManager::NotifyDiscoveryStoppedAndClearActiveClients() {
@@ -62,9 +65,10 @@ void DiscoverySessionManager::NotifyDiscoveryStoppedAndClearActiveClients() {
   for (auto& delegate : delegates_)
     delegate->OnBluetoothDiscoveryStopped();
 
-  // Since discovery has stopped, disconnect all delegates since they are no
-  // longer actionable.
+  // Since discovery has stopped, disconnect all delegates and handlers since
+  // they are no longer actionable.
   delegates_.Clear();
+  id_to_pairing_handler_map_.clear();
 
   // The number of clients has decreased from >0 to 0.
   OnHasAtLeastOneDiscoveryClientChanged();
@@ -94,6 +98,29 @@ void DiscoverySessionManager::OnUnpairedDevicesListChanged() {
   NotifyDiscoveredDevicesListChanged();
 }
 
+mojo::PendingRemote<mojom::DevicePairingHandler>
+DiscoverySessionManager::RegisterNewDevicePairingHandler(
+    mojo::RemoteSetElementId id) {
+  mojo::PendingRemote<mojom::DevicePairingHandler> remote;
+  id_to_pairing_handler_map_[id] = CreateDevicePairingHandler(
+      adapter_state_controller_, remote.InitWithNewPipeAndPassReceiver(),
+      base::BindOnce(&DiscoverySessionManager::OnPairingFinished,
+                     weak_ptr_factory_.GetWeakPtr(), id));
+  return remote;
+}
+
+void DiscoverySessionManager::OnPairingFinished(mojo::RemoteSetElementId id) {
+  // This can be called when we delete a handler such as if it is disconnected
+  // or discovery stops. At this point, delegates_ won't contain |id| anymore.
+  if (!delegates_.Contains(id))
+    return;
+
+  delegates_.Remove(id);
+
+  // Manually call the disconnect handler since it's not automatically called.
+  OnDelegateDisconnected(id);
+}
+
 bool DiscoverySessionManager::IsBluetoothEnabled() const {
   return adapter_state_controller_->GetAdapterState() ==
          mojom::BluetoothSystemState::kEnabled;
@@ -101,6 +128,8 @@ bool DiscoverySessionManager::IsBluetoothEnabled() const {
 
 void DiscoverySessionManager::OnDelegateDisconnected(
     mojo::RemoteSetElementId id) {
+  id_to_pairing_handler_map_.erase(id);
+
   // If the disconnected client was the last one, the number of clients has
   // decreased from 1 to 0.
   if (!HasAtLeastOneDiscoveryClient())

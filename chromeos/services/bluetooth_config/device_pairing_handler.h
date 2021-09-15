@@ -42,8 +42,13 @@ class DevicePairingHandler : public mojom::DevicePairingHandler,
       const std::string& device_id) const = 0;
 
   // Cancels the pairing attempt occurring with the device with identifier
-  // |current_pairing_device_id_| if it exists, then invokes FinishPairing().
+  // |current_pairing_device_id_| if it exists, then calls
+  // FinishCurrentPairingRequest().
   void CancelPairing(mojom::PairingResult result);
+
+  // Calls the finished_pairing_callback_ to indicate that this class should no
+  // longer handle pairing requests. This is called at most once.
+  void NotifyFinished();
 
   const std::string& current_pairing_device_id() const {
     return current_pairing_device_id_;
@@ -83,11 +88,9 @@ class DevicePairingHandler : public mojom::DevicePairingHandler,
   void OnRequestPasskey(const std::string& passkey);
   void OnConfirmPairing(bool confirmed);
 
-  // Invokes |pair_device_callback_| with |result|, resets
-  // this class' state to be ready for another pairing request, and calls
-  // InvokeFinishedPairingCallback() if result is kSuccess.
-  void FinishPairing(mojom::PairingResult result);
-  void InvokeFinishedPairingCallback();
+  // Invokes |pair_device_callback_| with |result| and resets
+  // this class' state to be ready for another pairing request.
+  void FinishCurrentPairingRequest(mojom::PairingResult result);
 
   void OnDelegateDisconnect();
 
@@ -109,9 +112,11 @@ class DevicePairingHandler : public mojom::DevicePairingHandler,
   // finished.
   PairDeviceCallback pair_device_callback_;
 
-  // Callback that is invoked if either:
+  // Callback invoked that indicates this class should no longer handle any more
+  // pairing attempts. This is the case if:
   // 1) The delegate disconnects
   // 2) Pairing is successful
+  // 3) The handler is deleted
   // If pairing is unsuccessful, this callback won't be invoked because this
   // handler can still be reused for another pairing attempt.
   base::OnceClosure finished_pairing_callback_;

@@ -193,10 +193,9 @@ interface DevicePairingHandler {
 // discovery session.
 interface BluetoothDiscoveryDelegate {
   // Invoked when discovery has started.
-  //
-  // TODO(khorimoto): Add parameter which allows the client to attempt to pair a
-  // device.
-  OnBluetoothDiscoveryStarted();
+  // |handler| can be used to initiate pairing to a discovered device.
+  OnBluetoothDiscoveryStarted(
+      pending_remote<DevicePairingHandler> handler);
 
   // Invoked when discovery has stopped. This can occur for a variety of
   // reasons, including:

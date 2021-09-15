@@ -33,7 +33,9 @@ bool FakeBluetoothDiscoveryDelegate::IsMojoPipeConnected() const {
   return receiver_.is_bound();
 }
 
-void FakeBluetoothDiscoveryDelegate::OnBluetoothDiscoveryStarted() {
+void FakeBluetoothDiscoveryDelegate::OnBluetoothDiscoveryStarted(
+    mojo::PendingRemote<mojom::DevicePairingHandler> handler) {
+  pairing_handler_.Bind(std::move(handler));
   ++num_start_callbacks_;
 }
 

@@ -304,8 +304,8 @@ TEST_F(DevicePairingHandlerImplTest, DestroyHandlerBeforeConnectFinishes) {
   // CancelPairing() should be called since we had an active pairing.
   EXPECT_EQ(num_cancel_pairing_calls(), 1u);
 
-  // Destroying the handler shouldn't call OnPairingAttemptFinished();
-  EXPECT_EQ(num_pairing_attempt_finished_calls(), 0u);
+  // Destroying the handler should call OnPairingAttemptFinished();
+  EXPECT_EQ(num_pairing_attempt_finished_calls(), 1u);
 }
 
 TEST_F(DevicePairingHandlerImplTest, DestroyHandlerAfterConnectFinishes) {

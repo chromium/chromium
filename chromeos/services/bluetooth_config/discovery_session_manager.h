@@ -5,9 +5,11 @@
 #ifndef CHROMEOS_SERVICES_BLUETOOTH_CONFIG_DISCOVERY_SESSION_MANAGER_H_
 #define CHROMEOS_SERVICES_BLUETOOTH_CONFIG_DISCOVERY_SESSION_MANAGER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chromeos/services/bluetooth_config/adapter_state_controller.h"
 #include "chromeos/services/bluetooth_config/device_cache.h"
+#include "chromeos/services/bluetooth_config/device_pairing_handler.h"
 #include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -55,6 +57,13 @@ class DiscoverySessionManager : public AdapterStateController::Observer,
   // start or stop a discovery session.
   virtual void OnHasAtLeastOneDiscoveryClientChanged() {}
 
+  // Derived classes must override this to provide a concrete implementation of
+  // DevicePairingHandler.
+  virtual std::unique_ptr<DevicePairingHandler> CreateDevicePairingHandler(
+      AdapterStateController* adapter_state_controller,
+      mojo::PendingReceiver<mojom::DevicePairingHandler> receiver,
+      base::OnceClosure finished_pairing_callback) = 0;
+
  private:
   friend class DiscoverySessionManagerImplTest;
 
@@ -64,11 +73,21 @@ class DiscoverySessionManager : public AdapterStateController::Observer,
   // DeviceCache::Observer:
   void OnUnpairedDevicesListChanged() override;
 
+  // Creates a new DevicePairingHandler for |id| and inserts it into
+  // |id_to_pairing_handler_map_|. Returns the remote connected to the handler.
+  mojo::PendingRemote<mojom::DevicePairingHandler>
+  RegisterNewDevicePairingHandler(mojo::RemoteSetElementId id);
+  void OnPairingFinished(mojo::RemoteSetElementId id);
+
   bool IsBluetoothEnabled() const;
   void OnDelegateDisconnected(mojo::RemoteSetElementId id);
 
   // Flushes queued Mojo messages in unit tests.
   void FlushForTesting();
+
+  base::flat_map<mojo::RemoteSetElementId,
+                 std::unique_ptr<DevicePairingHandler>>
+      id_to_pairing_handler_map_;
 
   AdapterStateController* adapter_state_controller_;
   DeviceCache* device_cache_;
@@ -80,6 +99,8 @@ class DiscoverySessionManager : public AdapterStateController::Observer,
       device_cache_observation_{this};
 
   mojo::RemoteSet<mojom::BluetoothDiscoveryDelegate> delegates_;
+
+  base::WeakPtrFactory<DiscoverySessionManager> weak_ptr_factory_{this};
 };
 
 }  // namespace bluetooth_config
