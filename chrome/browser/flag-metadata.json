@@ -4388,11 +4388,6 @@
     "expiry_milestone": 105
   },
   {
-    "name": "page-info-discoverability",
-    "owners": [ "eokoyomon", "dullweber" ],
-    "expiry_milestone": 95
-  },
-  {
     "name": "page-info-history",
     "owners": [ "eokoyomon", "dullweber" ],
     "expiry_milestone": 95

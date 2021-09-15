@@ -3214,12 +3214,6 @@ const char kOfflinePagesLivePageSharingDescription[] =
     "Enables to share current loaded page as offline page by saving as MHTML "
     "first.";
 
-const char kPageInfoDiscoverabilityName[] = "Page info discoverability";
-const char kPageInfoDiscoverabilityDescription[] =
-    "Improve discoverability of permission controls in the page info bubble. "
-    "After a permission decision is made, the page info icon in the address "
-    "bar will show a brief animation.";
-
 const char kPageInfoHistoryName[] = "Page info history";
 const char kPageInfoHistoryDescription[] =
     "Enable a history sub page to the page info menu, and a button to forget "

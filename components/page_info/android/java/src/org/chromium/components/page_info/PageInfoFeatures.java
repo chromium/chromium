@@ -17,14 +17,11 @@ import org.chromium.base.annotations.NativeMethods;
 @JNINamespace("page_info")
 @MainDex
 public class PageInfoFeatures extends Features {
-    public static final String PAGE_INFO_DISCOVERABILITY_NAME = "PageInfoDiscoverability";
     public static final String PAGE_INFO_HISTORY_NAME = "PageInfoHistory";
 
     // This list must be kept in sync with kFeaturesExposedToJava in page_info_features.cc.
-    public static final PageInfoFeatures PAGE_INFO_DISCOVERABILITY =
-            new PageInfoFeatures(0, PAGE_INFO_DISCOVERABILITY_NAME);
     public static final PageInfoFeatures PAGE_INFO_HISTORY =
-            new PageInfoFeatures(1, PAGE_INFO_HISTORY_NAME);
+            new PageInfoFeatures(0, PAGE_INFO_HISTORY_NAME);
 
     private final int mOrdinal;
 

@@ -1841,9 +1841,6 @@ extern const char kOfflineIndicatorV2Description[];
 extern const char kOfflinePagesLivePageSharingName[];
 extern const char kOfflinePagesLivePageSharingDescription[];
 
-extern const char kPageInfoDiscoverabilityName[];
-extern const char kPageInfoDiscoverabilityDescription[];
-
 extern const char kPageInfoHistoryName[];
 extern const char kPageInfoHistoryDescription[];
 
