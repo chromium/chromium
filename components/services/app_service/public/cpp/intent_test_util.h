@@ -19,7 +19,8 @@ apps::mojom::IntentFilterPtr CreateSchemeAndHostOnlyFilter(
     const std::string& scheme,
     const std::string& host);
 
-// Create intent filter for send action.
+// Create intent filter for send action. Matches against intents that have
+// files.
 apps::mojom::IntentFilterPtr CreateIntentFilterForSend(
     const std::string& mime_types,
     const std::string& activity_label = "");
@@ -28,13 +29,15 @@ apps::mojom::IntentFilterPtr CreateIntentFilterForSendMultiple(
     const std::string& mime_types,
     const std::string& activity_label = "");
 
-apps::mojom::IntentFilterPtr CreateMimeTypeIntentFilterForView(
+apps::mojom::IntentFilterPtr CreateFileFilterForView(
     const std::string& mime_type,
-    const std::string& activity_label);
-
-apps::mojom::IntentFilterPtr CreateFileExtensionIntentFilterForView(
     const std::string& file_extension,
     const std::string& activity_label);
+
+// Matches against intent.mime_type only, and not the mime type of files in the
+// intent.
+apps::mojom::IntentFilterPtr CreateIntentFilterForMimeType(
+    const std::string& mime_type);
 
 // Add a condition value to the |intent_filter|. If the |condition_type|
 // exists, add the condition value to the existing condition, otherwise

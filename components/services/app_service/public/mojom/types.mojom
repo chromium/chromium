@@ -306,8 +306,8 @@ enum ConditionType {
   kHost,           // Matches the URL host (e.g. www.google.com).
   kPattern,        // Matches the URL pattern (e.g. /abc/*).
   kAction,         // Matches the action type (e.g. view, send).
-  kMimeType,       // Matches the data mime type (e.g. image/jpeg).
-  kFileExtension,  // Matches the file extension of all files.
+  kMimeType,       // Matches the top-level mime type (e.g. text/plain).
+  kFile,           // Matches against all files.
 };
 
 // The pattern match type for intent filter pattern condition.

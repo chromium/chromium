@@ -257,41 +257,27 @@ TEST_F(IntentUtilsTest, CreateWebAppIntentFilters_FileHandlers) {
   std::vector<IntentFilterPtr> filters =
       apps_util::CreateWebAppIntentFilters(*web_app.get());
 
-  ASSERT_EQ(filters.size(), 3);
+  ASSERT_EQ(filters.size(), 2);
   // 1st filter is URL filter.
 
-  // Mime type filter - View action
-  const IntentFilterPtr& mime_filter = filters[1];
-  ASSERT_EQ(mime_filter->conditions.size(), 2);
-  const Condition& view_cond = *mime_filter->conditions[0];
+  // File filter - View action
+  const IntentFilterPtr& file_filter = filters[1];
+  ASSERT_EQ(file_filter->conditions.size(), 2);
+  const Condition& view_cond = *file_filter->conditions[0];
   EXPECT_EQ(view_cond.condition_type, ConditionType::kAction);
   ASSERT_EQ(view_cond.condition_values.size(), 1);
   EXPECT_EQ(view_cond.condition_values[0]->value, apps_util::kIntentActionView);
 
-  // Mime type filter - mime type match
-  const Condition& mime_cond = *mime_filter->conditions[1];
-  EXPECT_EQ(mime_cond.condition_type, ConditionType::kMimeType);
-  ASSERT_EQ(mime_cond.condition_values.size(), 1);
-  EXPECT_EQ(mime_cond.condition_values[0]->match_type,
+  // File filter - mime & file extension match
+  const Condition& file_cond = *file_filter->conditions[1];
+  EXPECT_EQ(file_cond.condition_type, ConditionType::kFile);
+  ASSERT_EQ(file_cond.condition_values.size(), 2);
+  EXPECT_EQ(file_cond.condition_values[0]->match_type,
             PatternMatchType::kMimeType);
-  EXPECT_EQ(mime_cond.condition_values[0]->value, "text/plain");
-
-  // File extension filter - View action
-  const IntentFilterPtr& file_ext_filter = filters[2];
-  ASSERT_EQ(file_ext_filter->conditions.size(), 2);
-  const Condition& view_cond2 = *file_ext_filter->conditions[0];
-  EXPECT_EQ(view_cond2.condition_type, ConditionType::kAction);
-  ASSERT_EQ(view_cond2.condition_values.size(), 1);
-  EXPECT_EQ(view_cond2.condition_values[0]->value,
-            apps_util::kIntentActionView);
-
-  // File extension filter - file extension match
-  const Condition& file_ext_cond = *file_ext_filter->conditions[1];
-  EXPECT_EQ(file_ext_cond.condition_type, ConditionType::kFileExtension);
-  ASSERT_EQ(file_ext_cond.condition_values.size(), 1);
-  EXPECT_EQ(file_ext_cond.condition_values[0]->match_type,
+  EXPECT_EQ(file_cond.condition_values[0]->value, "text/plain");
+  EXPECT_EQ(file_cond.condition_values[1]->match_type,
             PatternMatchType::kFileExtension);
-  EXPECT_EQ(file_ext_cond.condition_values[0]->value, ".txt");
+  EXPECT_EQ(file_cond.condition_values[1]->value, ".txt");
 }
 
 TEST_F(IntentUtilsTest, CreateWebAppIntentFilters_NoteTakingApp) {

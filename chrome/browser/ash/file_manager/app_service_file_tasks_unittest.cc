@@ -115,13 +115,9 @@ class AppServiceFileTasksTest : public testing::Test {
                      const std::string& mime_type,
                      const std::string& file_extension,
                      const std::string& activity_label) {
-    auto mime_filter =
-        apps_util::CreateMimeTypeIntentFilterForView(mime_type, activity_label);
-    auto file_ext_filter = apps_util::CreateFileExtensionIntentFilterForView(
-        file_extension, activity_label);
     std::vector<apps::mojom::IntentFilterPtr> filters;
-    filters.push_back(std::move(mime_filter));
-    filters.push_back(std::move(file_ext_filter));
+    filters.push_back(apps_util::CreateFileFilterForView(
+        mime_type, file_extension, activity_label));
     AddFakeAppWithIntentFilters(app_id, std::move(filters),
                                 apps::mojom::AppType::kWeb);
   }
@@ -281,6 +277,29 @@ TEST_F(AppServiceFileTasksTestEnabled,
   ASSERT_EQ(1U, tasks.size());
   EXPECT_EQ(kAppIdTextWild, tasks[0].task_descriptor.app_id);
   EXPECT_EQ(kActivityLabelTextWild, tasks[0].task_title);
+}
+
+// An edge case where we have one file that matches the mime type but not the
+// file extension, and another file that matches the file extension but not the
+// mime type. This should still match the handler.
+TEST_F(AppServiceFileTasksTestEnabled,
+       FindAppServiceWebFileTasksAllFilesMatchEither) {
+  AddTextApp();
+
+  // First check that each file alone matches the text app.
+  std::vector<FullTaskDescriptor> tasksFoo =
+      FindAppServiceTasks({{"foo.txt", "text/plane"}});
+  ASSERT_EQ(1U, tasksFoo.size());
+  std::vector<FullTaskDescriptor> tasksBar =
+      FindAppServiceTasks({{"bar.text", kMimeTypeText}});
+  ASSERT_EQ(1U, tasksFoo.size());
+
+  // Now check that both together match.
+  std::vector<FullTaskDescriptor> tasksBoth = FindAppServiceTasks(
+      {{"foo.txt", "text/plane"}, {"bar.text", kMimeTypeText}});
+  ASSERT_EQ(1U, tasksBoth.size());
+  EXPECT_EQ(kAppIdText, tasksBoth[0].task_descriptor.app_id);
+  EXPECT_EQ(kActivityLabelText, tasksBoth[0].task_title);
 }
 
 }  // namespace file_tasks

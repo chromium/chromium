@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 4
+// Next MinVersion: 5
 
 module crosapi.mojom;
 
@@ -154,8 +154,9 @@ enum ConditionType {
   kHost,              // Matches the URL host (e.g. www.google.com).
   kPattern,           // Matches the URL pattern (e.g. /abc/*).
   kAction,            // Matches the action type (e.g. view, send).
-  kMimeType,          // Matches the data mime type (e.g. image/jpeg).
-  [MinVersion=1] kFileExtension  // Matches the file extension of all files.
+  kMimeType,          // Matches the top-level mime type (e.g. text/plain).
+  [MinVersion=1] kFileExtension,  // Deprecated.
+  [MinVersion=4] kFile            // Matches against all files.
 };
 
 // The pattern match type for intent filter pattern condition.

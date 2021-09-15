@@ -86,7 +86,7 @@ void CheckShareFileFilter(const IntentFilterPtr& intent_filter,
 
   if (!filter_types.empty()) {
     const Condition& condition = *intent_filter->conditions[1];
-    EXPECT_EQ(condition.condition_type, ConditionType::kMimeType);
+    EXPECT_EQ(condition.condition_type, ConditionType::kFile);
     ASSERT_EQ(condition.condition_values.size(), filter_types.size());
 
     for (unsigned i = 0; i < filter_types.size(); ++i) {

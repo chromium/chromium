@@ -403,8 +403,8 @@ EnumTraits<crosapi::mojom::ConditionType, apps::mojom::ConditionType>::ToMojom(
       return crosapi::mojom::ConditionType::kAction;
     case apps::mojom::ConditionType::kMimeType:
       return crosapi::mojom::ConditionType::kMimeType;
-    case apps::mojom::ConditionType::kFileExtension:
-      return crosapi::mojom::ConditionType::kFileExtension;
+    case apps::mojom::ConditionType::kFile:
+      return crosapi::mojom::ConditionType::kFile;
   }
 
   NOTREACHED();
@@ -449,7 +449,8 @@ bool EnumTraits<crosapi::mojom::ConditionType, apps::mojom::ConditionType>::
       *output = apps::mojom::ConditionType::kMimeType;
       return true;
     case crosapi::mojom::ConditionType::kFileExtension:
-      *output = apps::mojom::ConditionType::kFileExtension;
+    case crosapi::mojom::ConditionType::kFile:
+      *output = apps::mojom::ConditionType::kFile;
       return true;
   }
 
