@@ -61,8 +61,8 @@ declare_args() {
 
 assert(!is_ios, "Chromium/iOS shouldn't use anything in //chrome")
 
-if (enable_resource_allowlist_generation) {
-  chrome_resource_whitelist = "$target_gen_dir/chrome_resource_whitelist.txt"
+if (is_win && enable_resource_allowlist_generation) {
+  _chrome_resource_allowlist = "$target_gen_dir/chrome_resource_allowlist.txt"
 }
 
 if (is_win) {
@@ -1559,8 +1559,8 @@ if (!is_android) {
     }
 
     if (enable_resource_allowlist_generation) {
-      repack_allowlist = chrome_resource_whitelist
-      deps = [ "//chrome:resource_whitelist" ]
+      repack_allowlist = _chrome_resource_allowlist
+      deps = [ ":resource_allowlist" ]
     }
 
     if (is_chrome_branded && !is_mac) {
@@ -1696,18 +1696,13 @@ if (is_android) {
   }
 }
 
-if (enable_resource_allowlist_generation) {
-  generate_resource_allowlist("resource_whitelist") {
-    if (is_android) {
-      deps = [ "//chrome/android:libchrome" ]
-      inputs = [ "$root_out_dir/lib.unstripped/libchrome$shlib_extension" ]
-    } else if (is_win) {
-      deps = [ ":chrome_dll" ]
-      inputs = [ "$root_out_dir/chrome.dll.pdb" ]
-    } else {
-      assert(false, "unsupported platform for whitelist generation")
-    }
-    output = chrome_resource_whitelist
+# Android also supports this, but uses
+# //chrome/android:${_variant}_resource_allowlist.
+if (is_win && enable_resource_allowlist_generation) {
+  generate_resource_allowlist("resource_allowlist") {
+    deps = [ ":chrome_dll" ]
+    inputs = [ "$root_out_dir/chrome.dll.pdb" ]
+    output = _chrome_resource_allowlist
   }
 }
 
