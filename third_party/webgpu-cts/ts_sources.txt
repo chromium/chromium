@@ -238,6 +238,7 @@ src/webgpu/idl/constants/flags.spec.ts
 src/webgpu/shader/types.ts
 src/webgpu/shader/execution/robust_access.spec.ts
 src/webgpu/shader/execution/robust_access_vertex.spec.ts
+src/webgpu/shader/execution/zero_init.spec.ts
 src/webgpu/shader/execution/builtin/builtin.ts
 src/webgpu/shader/execution/builtin/abs.spec.ts
 src/webgpu/shader/execution/builtin/logical_built_in_functions.spec.ts

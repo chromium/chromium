@@ -42,6 +42,13 @@ crbug.com/dawn/1046 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:shader,executi
 crbug.com/dawn/1046 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access_vertex:vertex_buffer_access:indexed=true;indirect=false;drawCallTestParameter="baseVertex";type="float32x4";* [ Slow Crash ]
 crbug.com/dawn/1046 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access_vertex:vertex_buffer_access:indexed=true;indirect=false;drawCallTestParameter="vertexCountInIndexBuffer";type="float32x4";* [ Slow Crash ]
 
+# New tests crash on every build for Linux/Intel
+# These tests are still slow even though they are already splitted down to the batch__ level
+crbug.com/dawn/1111 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,zero_init:compute,zero_init:* [ Crash Slow ]
+[ Win ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,zero_init:compute,zero_init:* [ Slow ]
+# Device lost failures for certain batches on Mac AMD
+crbug.com/dawn/1116 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,zero_init:compute,zero_init:* [ Failure Slow ]
+
 ###
 ### Untriaged failures. Please prefer to triage thoroughly and file a bug!
 ###
@@ -74,6 +81,9 @@ crbug.com/dawn/1002 wpt_internal/webgpu/cts.html?worker=1&q=webgpu:api,validatio
 
 # Dawn implements validation of the limit at createShaderModule time, while the CTS checks at createRenderPipeline time.
 crbug.com/dawn/986 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:vertex_shader_input_location_limit:* [ Failure ]
+
+# Dawn implementation for destinationOffset needs update
+crbug.com/dawn/940 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding,queries,resolveQuerySet:destination_offset_alignment:* [ Failure ]
 
 # These tests aren't working on CQ, unclear whether the test or harness (or Chrome) is broken.
 # Mac: mostly works
@@ -321,6 +331,17 @@ crbug.com/dawn/812 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_
 crbug.com/dawn/812 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:subresources_and_binding_types_combination_for_aspect:format="depth24plus-stencil8";aspect1="depth-only";type1="render-target";* [ Failure ]
 crbug.com/dawn/812 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:subresources_and_binding_types_combination_for_aspect:format="depth24plus-stencil8";aspect1="stencil-only";type1="render-target";* [ Failure ]
 
+# Adapter limits change failures
+crbug.com/dawn/1112 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,adapter,requestDevice_limits:supported_limits:limit="maxTextureArrayLayers";* [ Failure ]
+crbug.com/dawn/1112 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,adapter,requestDevice_limits:supported_limits:limit="maxStorageBuffersPerShaderStage";* [ Failure ]
+# Linux crash conflict with expectation of crbug.com/dawn/1064
+crbug.com/dawn/1112 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,adapter,requestDevice_limits:worse_than_default:limit="maxTextureArrayLayers";* [ Failure ]
+crbug.com/dawn/1112 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,adapter,requestDevice_limits:worse_than_default:limit="maxTextureArrayLayers";* [ Failure ]
+crbug.com/dawn/1112 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,adapter,requestDevice_limits:worse_than_default:limit="maxStorageBuffersPerShaderStage";* [ Failure ]
+crbug.com/dawn/1112 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,adapter,requestDevice_limits:worse_than_default:limit="maxStorageBuffersPerShaderStage";* [ Failure ]
+crbug.com/dawn/1112 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:texture_size,2d_texture,compressed_format:* [ Failure ]
+crbug.com/dawn/1112 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:texture_size,2d_texture,uncompressed_format:* [ Failure ]
+
 ###
 ### Mac (Metal) specific
 ###
@@ -405,7 +426,8 @@ crbug.com/1236130 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:web_platform,c
 crbug.com/1236130 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:web_platform,canvas,readbackFromWebGPUCanvas:onscreenCanvas,uploadToWebGL:* [ Crash ]
 
 # Error from debug layer
-crbug.com/dawn/1064 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,adapter,requestDevice_limits:worse_than_default:* [ Crash ]
+# Failure is for crbug.com/dawn/1112
+crbug.com/dawn/1064 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,adapter,requestDevice_limits:worse_than_default:* [ Crash Failure ]
 
 # Null-deref on Intel; failure on NVIDIA.
 crbug.com/1237592 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:web_platform,external_texture,video:importExternalTexture,* [ Failure Crash ]
