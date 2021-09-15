@@ -36,6 +36,7 @@ struct WebUIImpression {
   SourceType source_type;
   int64 priority;
   array<int64> dedup_keys;
+  bool reportable;
 };
 
 // Mojo interface for the conversion internals WebUI to communicate with the

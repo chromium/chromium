@@ -310,6 +310,7 @@ class Source {
     this.sourceType = SourceTypeToText(mojo.sourceType);
     this.priority = mojo.priority;
     this.dedupKeys = mojo.dedupKeys.join(', ');
+    this.status = mojo.reportable ? 'reportable' : 'unreportable';
   }
 }
 
@@ -328,6 +329,7 @@ class SourceTableModel extends TableModel {
       new Column('Source Type', (e) => e.sourceType),
       new Column('Priority', (e) => e.priority),
       new Column('Dedup Keys', (e) => e.dedupKeys, /*compare=*/ null),
+      new Column('Status', (e) => e.status),
     ];
 
     this.emptyRowText = 'No active sources.';

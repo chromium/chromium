@@ -51,7 +51,9 @@ void ForwardImpressionsToWebUI(
         impression.impression_time().ToJsTime(),
         impression.expiry_time().ToJsTime(),
         SourceTypeToMojoType(impression.source_type()), impression.priority(),
-        impression.dedup_keys()));
+        impression.dedup_keys(),
+        /*reportable=*/impression.attribution_logic() ==
+            StorableImpression::AttributionLogic::kTruthfully));
   }
 
   std::move(web_ui_callback).Run(std::move(web_ui_impressions));

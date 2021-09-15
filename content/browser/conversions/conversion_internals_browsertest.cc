@@ -186,6 +186,7 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
   manager.SetActiveImpressionsForWebUI(
       {ImpressionBuilder(base::Time::Now())
            .SetData(std::numeric_limits<uint64_t>::max())
+           .SetAttributionLogic(StorableImpression::AttributionLogic::kNever)
            .Build(),
        ImpressionBuilder(base::Time::Now())
            .SetSourceType(StorableImpression::SourceType::kEvent)
@@ -204,7 +205,9 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
           table.children[0].children[7].innerText === "0" &&
           table.children[1].children[7].innerText === $2 &&
           table.children[0].children[8].innerText === "" &&
-          table.children[1].children[8].innerText === "13, 17") {
+          table.children[1].children[8].innerText === "13, 17" &&
+          table.children[0].children[9].innerText === "unreportable" &&
+          table.children[1].children[9].innerText === "reportable") {
         document.title = $3;
       }
     });
