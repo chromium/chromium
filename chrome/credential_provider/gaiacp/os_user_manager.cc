@@ -31,8 +31,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
+#include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
 #include "chrome/credential_provider/gaiacp/logging.h"
+#include "chrome/credential_provider/gaiacp/reg_utils.h"
 
 namespace credential_provider {
 
@@ -549,7 +551,21 @@ HRESULT OSUserManager::GetUserSID(const wchar_t* domain,
   if (!::LookupAccountName(nullptr, username_with_domain.c_str(), sid_buffer,
                            &sid_length, user_domain_buffer, &domain_length,
                            &use)) {
-    return HRESULT_FROM_WIN32(::GetLastError());
+    HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
+
+    LOGFN(VERBOSE) << "LookupAccountName failed with hr=" << putHR(hr);
+
+    wchar_t sid_buffer_temp[256];
+    if (FAILED(GetSidFromDomainAccountInfo(domain, username, sid_buffer_temp,
+                                           base::size(sid_buffer_temp)))) {
+      LOGFN(ERROR) << "GetSidFromDomainAccountInfo failed";
+
+      return hr;
+    }
+
+    ::ConvertStringSidToSid(sid_buffer_temp, sid);
+
+    return S_OK;
   }
 
   // Check that the domain of the user found with LookupAccountName matches what
@@ -604,12 +620,39 @@ HRESULT OSUserManager::FindUserBySID(const wchar_t* sid,
   return hr;
 }
 
+HRESULT OSUserManager::FindUserBySidWithFallback(const wchar_t* sid,
+                                                 wchar_t* username,
+                                                 DWORD username_length,
+                                                 wchar_t* domain,
+                                                 DWORD domain_length) {
+  HRESULT hr = OSUserManager::Get()->FindUserBySID(
+      sid, username, username_length, domain, domain_length);
+
+  if (FAILED(hr)) {
+    // Although FindUserBySID is failed, we can still obtain the domain and
+    // username from the user properties. This is especially needed if an AD
+    // workstation can't reach domain controller to login an account which
+    // previously logged in on the same device.
+    if (SUCCEEDED(GetUserProperty(sid, base::UTF8ToWide(kKeyDomain), domain,
+                                  &domain_length)) &&
+        SUCCEEDED(GetUserProperty(sid, base::UTF8ToWide(kKeyUsername), username,
+                                  &username_length))) {
+      LOGFN(VERBOSE) << "Obtained domain: " << domain
+                     << " and user: " << username << " from registry!";
+      hr = S_OK;
+    } else {
+      hr = E_FAIL;
+    }
+  }
+  return hr;
+}
+
 bool OSUserManager::IsUserDomainJoined(const std::wstring& sid) {
   wchar_t username[kWindowsUsernameBufferLength];
   wchar_t domain[kWindowsDomainBufferLength];
 
-  HRESULT hr = FindUserBySID(sid.c_str(), username, base::size(username),
-                             domain, base::size(domain));
+  HRESULT hr = FindUserBySidWithFallback(
+      sid.c_str(), username, base::size(username), domain, base::size(domain));
 
   if (FAILED(hr)) {
     LOGFN(ERROR) << "IsUserDomainJoined sid=" << sid << " hr=" << putHR(hr);

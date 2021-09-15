@@ -505,7 +505,7 @@ HRESULT MakeUsernameForAccount(const base::Value& result,
     LOGFN(VERBOSE) << "Found existing SID created in GCPW registry entry = "
                    << sid;
 
-    HRESULT hr = FindUserBySidWithRegistryFallback(
+    hr = OSUserManager::Get()->FindUserBySidWithFallback(
         sid, username, username_length, domain, domain_length);
     if (FAILED(hr)) {
       *error_text =
@@ -521,7 +521,7 @@ HRESULT MakeUsernameForAccount(const base::Value& result,
                                         error_text);
 
     if (SUCCEEDED(hr)) {
-      HRESULT hr = OSUserManager::Get()->FindUserBySID(
+      hr = OSUserManager::Get()->FindUserBySidWithFallback(
           sid, username, username_length, domain, domain_length);
       if (FAILED(hr)) {
         *error_text =
@@ -2354,7 +2354,6 @@ HRESULT CGaiaCredentialBase::ValidateOrCreateUser(const base::Value& result,
       result, &gaia_id, found_username, base::size(found_username),
       found_domain, base::size(found_domain), found_sid, base::size(found_sid),
       &is_consumer_account, error_text);
-
   if (FAILED(hr)) {
     LOGFN(ERROR) << "MakeUsernameForAccount hr=" << putHR(hr);
     return hr;
