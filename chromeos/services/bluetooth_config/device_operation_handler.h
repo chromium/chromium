@@ -1,0 +1,87 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROMEOS_SERVICES_BLUETOOTH_CONFIG_DEVICE_OPERATION_HANDLER_H_
+#define CHROMEOS_SERVICES_BLUETOOTH_CONFIG_DEVICE_OPERATION_HANDLER_H_
+
+#include "base/containers/queue.h"
+#include "base/scoped_observation.h"
+#include "chromeos/services/bluetooth_config/adapter_state_controller.h"
+
+namespace chromeos {
+namespace bluetooth_config {
+
+// Manages device-specific operations, such as connecting or disconnecting to a
+// device. Operations are performed sequentially, queueing requests that occur
+// simultaneously.
+//
+// This class uses AdapterStateController to ensure that operations can only be
+// initiated when Bluetooth is enabled.
+class DeviceOperationHandler : public AdapterStateController::Observer {
+ public:
+  using OperationCallback = base::OnceCallback<void(bool)>;
+
+  ~DeviceOperationHandler() override;
+
+  // Initiates a connection to the device with ID |device_id|.
+  void Connect(const std::string& device_id, OperationCallback callback);
+
+ protected:
+  explicit DeviceOperationHandler(
+      AdapterStateController* adapter_state_controller);
+
+  // Invokes |current_operation_.callback| with the result of the operation.
+  void HandleFinishedOperation(bool success);
+
+  // Implementation-specific method that attempts to connect to device_id.
+  virtual void PerformConnect(const std::string& device_id) = 0;
+
+ private:
+  enum class Operation {
+    // TODO(gordonseto): Add kDisconnect and kForget.
+    kConnect
+  };
+
+  struct PendingOperation {
+    PendingOperation(Operation operation_,
+                     const std::string& device_id_,
+                     OperationCallback callback_);
+    PendingOperation(PendingOperation&& other);
+    PendingOperation& operator=(PendingOperation other);
+    ~PendingOperation();
+
+    Operation operation;
+    std::string device_id;
+    OperationCallback callback;
+  };
+
+  // AdapterStateController::Observer:
+  void OnAdapterStateChanged() override;
+
+  // Adds an operation to the queue.
+  void EnqueueOperation(Operation operation,
+                        const std::string& device_id,
+                        OperationCallback callback);
+  void ProcessQueue();
+
+  // Attempts to perform the operation at the front of the queue.
+  void PerformNextOperation();
+
+  bool IsBluetoothEnabled() const;
+
+  absl::optional<PendingOperation> current_operation_;
+
+  base::queue<PendingOperation> queue_;
+
+  AdapterStateController* adapter_state_controller_;
+
+  base::ScopedObservation<AdapterStateController,
+                          AdapterStateController::Observer>
+      adapter_state_controller_observation_{this};
+};
+
+}  // namespace bluetooth_config
+}  // namespace chromeos
+
+#endif  // CHROMEOS_SERVICES_BLUETOOTH_CONFIG_DEVICE_OPERATION_HANDLER_H_

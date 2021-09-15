@@ -6,7 +6,6 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "chromeos/services/bluetooth_config/adapter_state_controller.h"
 #include "components/device_event_log/device_event_log.h"
 
 namespace chromeos {
