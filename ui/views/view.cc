@@ -1249,9 +1249,15 @@ const ui::NativeTheme* View::GetNativeTheme() const {
   if (widget)
     return widget->GetNativeTheme();
 
-  // Crash dump here to ensure we catch fallthrough to the global NativeTheme
-  // instance on all Chromium builds (crbug.com/1056756).
-  base::debug::DumpWithoutCrashing();
+  static bool has_crashed_reported = false;
+  // Crash on debug builds and dump without crashing on release builds to ensure
+  // we catch fallthrough to the global NativeTheme instance on all Chromium
+  // builds (crbug.com/1056756).
+  if (!has_crashed_reported) {
+    DCHECK(false);
+    base::debug::DumpWithoutCrashing();
+    has_crashed_reported = true;
+  }
 
   return ui::NativeTheme::GetInstanceForNativeUi();
 }
