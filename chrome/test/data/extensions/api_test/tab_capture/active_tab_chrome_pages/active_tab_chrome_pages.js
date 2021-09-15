@@ -7,7 +7,7 @@ var afterTabOpened = function() {
     chrome.test.assertTrue(!!stream);
     stream.getVideoTracks()[0].stop();
     stream.getAudioTracks()[0].stop();
-    chrome.test.succeed();
+    chrome.test.notifyPass();
   });
 };
 

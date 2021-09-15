@@ -163,7 +163,7 @@ void ActiveTabPermissionGranter::GrantIfRequested(const Extension* extension) {
   const PermissionsData* permissions_data = extension->permissions_data();
 
   // TODO(crbug.com/698985): This should be GetLastCommittedURL().
-  GURL url = web_contents()->GetVisibleURL();
+  const GURL& url = web_contents()->GetVisibleURL();
 
   // If the extension requested the host permission to |url| but had it
   // withheld, we grant it active tab-style permissions, even if it doesn't have
