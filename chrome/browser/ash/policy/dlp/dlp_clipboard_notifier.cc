@@ -251,7 +251,6 @@ void DlpClipboardNotifier::ShowToast(const std::string& id,
 }
 
 void DlpClipboardNotifier::OnClipboardDataChanged() {
-  CloseWidget(widget_.get(), views::Widget::ClosedReason::kUnspecified);
   ResetUserWarnSelection();
 }
 
