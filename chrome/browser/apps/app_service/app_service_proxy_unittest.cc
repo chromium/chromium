@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"

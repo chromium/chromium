@@ -8,6 +8,7 @@
 
 #include "components/sessions/core/tab_restore_service.h"
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"

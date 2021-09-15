@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task_runner_util.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/common/pref_names.h"

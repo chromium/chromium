@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/services/speech/soda/proto/soda_api.pb.h"
 #include "chrome/services/speech/soda/soda_client.h"
 #include "components/soda/constants.h"

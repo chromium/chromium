@@ -5,6 +5,7 @@
 #include "chrome/browser/ssl/https_first_mode_settings_tracker.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"

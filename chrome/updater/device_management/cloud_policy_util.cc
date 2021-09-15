@@ -10,6 +10,7 @@
 #include "chrome/updater/device_management/cloud_policy_util.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 #if defined(OS_WIN)
 #include <Windows.h>  // For GetComputerNameW()

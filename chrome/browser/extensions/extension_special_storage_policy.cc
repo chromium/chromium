@@ -19,6 +19,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/task_traits.h"
 #include "base/thread_annotations.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"

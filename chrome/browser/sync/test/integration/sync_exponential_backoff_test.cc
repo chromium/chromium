@@ -4,6 +4,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/retry_verifier.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"

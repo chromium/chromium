@@ -4,6 +4,7 @@
 
 #include "chrome/browser/policy/messaging_layer/util/heartbeat_event_factory.h"
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/messaging_layer/util/heartbeat_event.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"

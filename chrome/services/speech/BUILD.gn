@@ -39,6 +39,7 @@ source_set("lib") {
   deps = [
     ":buildflags",
     "//base",
+    "//build:chromeos_buildflags",
     "//chrome/services/speech/soda",
     "//chrome/services/speech/soda:soda_api_proto",
     "//components/soda:constants",

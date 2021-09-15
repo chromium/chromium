@@ -4,6 +4,7 @@
 
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/version_info/version_info.h"

@@ -5,6 +5,8 @@
 #include "chrome/browser/task_manager/task_manager_interface.h"
 
 #include "base/bind.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/task_manager/sampling/task_manager_impl.h"
 #include "chrome/common/chrome_switches.h"

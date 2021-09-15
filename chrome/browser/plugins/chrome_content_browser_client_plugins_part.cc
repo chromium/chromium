@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/no_destructor.h"
 #include "base/task/post_task.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/plugins/plugin_info_host_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_host/pepper/chrome_browser_pepper_host_factory.h"
