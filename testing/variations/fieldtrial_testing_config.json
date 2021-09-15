@@ -5891,13 +5891,13 @@
             ],
             "experiments": [
                 {
-                    "name": "Segmentation_AutoNoWait_20210811",
+                    "name": "Segmentation_AutoNoWait_20210907",
                     "params": {
                         "default_segment": "new-tab",
                         "disable_ui": "false",
                         "ignore_segmentation_results": "false",
                         "min_version_adaptive": "3",
-                        "segment_selection_ttl_days": "14",
+                        "segment_selection_ttl_days": "1",
                         "show_ui_only_after_ready": "false"
                     },
                     "enable_features": [
@@ -5909,13 +5909,13 @@
                     ]
                 },
                 {
-                    "name": "Segmentation_Auto_20210811",
+                    "name": "Segmentation_Auto_20210907",
                     "params": {
                         "default_segment": "new-tab",
                         "disable_ui": "false",
                         "ignore_segmentation_results": "false",
                         "min_version_adaptive": "3",
-                        "segment_selection_ttl_days": "14",
+                        "segment_selection_ttl_days": "1",
                         "show_ui_only_after_ready": "true"
                     },
                     "enable_features": [
@@ -5927,13 +5927,13 @@
                     ]
                 },
                 {
-                    "name": "Segmentation_Default_Segment_20210811",
+                    "name": "Segmentation_Default_Segment_20210907",
                     "params": {
                         "default_segment": "new-tab",
                         "disable_ui": "false",
                         "ignore_segmentation_results": "true",
                         "min_version_adaptive": "3",
-                        "segment_selection_ttl_days": "14",
+                        "segment_selection_ttl_days": "1",
                         "show_ui_only_after_ready": "true"
                     },
                     "enable_features": [
@@ -5945,14 +5945,7 @@
                     ]
                 },
                 {
-                    "name": "Segmentation_Control_20210811",
-                    "params": {
-                        "default_segment": "new-tab",
-                        "disable_ui": "false",
-                        "ignore_segmentation_results": "false",
-                        "segment_selection_ttl_days": "14",
-                        "show_ui_only_after_ready": "true"
-                    },
+                    "name": "Segmentation_Control_20210907",
                     "disable_features": [
                         "AdaptiveButtonInTopToolbar",
                         "AdaptiveButtonInTopToolbarCustomizationV2",
@@ -5960,7 +5953,7 @@
                     ]
                 },
                 {
-                    "name": "Adaptive_AlwaysNewTab_20210730",
+                    "name": "Adaptive_AlwaysNewTab_20210812",
                     "params": {
                         "mode": "always-new-tab"
                     },
@@ -5972,7 +5965,7 @@
                     ]
                 },
                 {
-                    "name": "Adaptive_AlwaysShare_20210730",
+                    "name": "Adaptive_AlwaysShare_20210812",
                     "params": {
                         "mode": "always-share"
                     },
@@ -5984,7 +5977,7 @@
                     ]
                 },
                 {
-                    "name": "Adaptive_AlwaysVoice_20210730",
+                    "name": "Adaptive_AlwaysVoice_20210812",
                     "params": {
                         "mode": "always-voice"
                     },
@@ -5996,7 +5989,7 @@
                     ]
                 },
                 {
-                    "name": "Adaptive_Control_20210730",
+                    "name": "Adaptive_Control_20210812",
                     "params": {
                         "mode": "always-none"
                     },
