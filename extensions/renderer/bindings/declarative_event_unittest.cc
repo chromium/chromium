@@ -203,14 +203,12 @@ TEST_F(DeclarativeEventWithSchemaTest, TestAllMethods) {
       kDeclarativeAPIName, context, nullptr);
   ASSERT_FALSE(api.IsEmpty());
 
-  v8::Local<v8::Value> declarative_event =
-      GetPropertyFromObject(api, context, "declarativeEvent");
-  ASSERT_FALSE(declarative_event.IsEmpty());
-  ASSERT_TRUE(declarative_event->IsObject());
-  v8::Local<v8::Value> add_rules = GetPropertyFromObject(
-      declarative_event.As<v8::Object>(), context, "addRules");
-  ASSERT_FALSE(add_rules.IsEmpty());
-  ASSERT_TRUE(add_rules->IsFunction());
+  v8::Local<v8::Object> declarative_event;
+  ASSERT_TRUE(GetPropertyFromObjectAs(api, context, "declarativeEvent",
+                                      &declarative_event));
+  v8::Local<v8::Function> add_rules;
+  ASSERT_TRUE(GetPropertyFromObjectAs(declarative_event, context, "addRules",
+                                      &add_rules));
 
   v8::Local<v8::Value> args[] = {api};
 

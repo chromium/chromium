@@ -239,10 +239,9 @@ TEST_F(APIRequestHandlerTest, CustomCallbackArguments) {
                                    std::string());
 
   EXPECT_TRUE(did_run_js());
-  v8::Local<v8::Value> result =
-      GetPropertyFromObject(context->Global(), context, "result");
-  ASSERT_FALSE(result.IsEmpty());
-  ASSERT_TRUE(result->IsArray());
+  v8::Local<v8::Array> result;
+  ASSERT_TRUE(
+      GetPropertyFromObjectAs(context->Global(), context, "result", &result));
   ArgumentList args;
   ASSERT_TRUE(gin::Converter<ArgumentList>::FromV8(isolate(), result, &args));
   ASSERT_EQ(5u, args.size());
@@ -295,10 +294,9 @@ TEST_F(APIRequestHandlerTest, CustomCallbackPromiseBased) {
                                    std::string());
 
   EXPECT_TRUE(did_run_js());
-  v8::Local<v8::Value> result =
-      GetPropertyFromObject(context->Global(), context, "result");
-  ASSERT_FALSE(result.IsEmpty());
-  ASSERT_TRUE(result->IsArray());
+  v8::Local<v8::Array> result;
+  ASSERT_TRUE(
+      GetPropertyFromObjectAs(context->Global(), context, "result", &result));
   ArgumentList args;
   ASSERT_TRUE(gin::Converter<ArgumentList>::FromV8(isolate(), result, &args));
   ASSERT_EQ(5u, args.size());
@@ -346,10 +344,9 @@ TEST_F(APIRequestHandlerTest, CustomCallbackArgumentsWithEmptyCallback) {
                                    std::string());
 
   EXPECT_TRUE(did_run_js());
-  v8::Local<v8::Value> result =
-      GetPropertyFromObject(context->Global(), context, "result");
-  ASSERT_FALSE(result.IsEmpty());
-  ASSERT_TRUE(result->IsArray());
+  v8::Local<v8::Array> result;
+  ASSERT_TRUE(
+      GetPropertyFromObjectAs(context->Global(), context, "result", &result));
   ArgumentList args;
   ASSERT_TRUE(gin::Converter<ArgumentList>::FromV8(isolate(), result, &args));
   ASSERT_EQ(3u, args.size());

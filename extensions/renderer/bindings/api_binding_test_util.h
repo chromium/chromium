@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/strings/string_piece.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "v8/include/v8.h"
 
 namespace base {
@@ -124,6 +125,72 @@ std::unique_ptr<base::Value> GetBaseValuePropertyFromObject(
 std::string GetStringPropertyFromObject(v8::Local<v8::Object> object,
                                         v8::Local<v8::Context> context,
                                         base::StringPiece key);
+
+// A utility to determine if a V8 value is a certain type.
+template <typename T>
+struct ValueTypeChecker {};
+
+template <>
+struct ValueTypeChecker<v8::Function> {
+  static bool IsType(v8::Local<v8::Value> value);
+};
+
+template <>
+struct ValueTypeChecker<v8::Object> {
+  static bool IsType(v8::Local<v8::Value> value);
+};
+
+template <>
+struct ValueTypeChecker<v8::Promise> {
+  static bool IsType(v8::Local<v8::Value> value);
+};
+
+template <>
+struct ValueTypeChecker<v8::Array> {
+  static bool IsType(v8::Local<v8::Value> value);
+};
+
+// Attempts to convert `value` to the expected type `T`, and populate `out`
+// with the result. Returns true on success; adds test failures and returns
+// false on error. (We do both so that it fits well into an EXPECT_TRUE() but
+// also prints out more detailed failure information).
+template <typename T>
+bool GetValueAs(v8::Local<v8::Value> value, v8::Local<T>* out) {
+  if (value.IsEmpty()) {
+    ADD_FAILURE() << "Value is empty.";
+    return false;
+  }
+
+  if (!ValueTypeChecker<T>::IsType(value)) {
+    // TODO(devlin): Move the code to print out the type of a v8::Value from
+    // argument_spec.cc into a common place, so we can print out
+    // "Failed to convert value. Actual type <some type>".
+    ADD_FAILURE() << "Value is incorrect type.";
+    return false;
+  }
+
+  *out = value.As<T>();
+  return true;
+}
+
+// Returns true if the given `value` is both non-empty and is the expected
+// type `T`.
+template <typename T>
+bool V8ValueIs(v8::Local<v8::Value> value) {
+  return !value.IsEmpty() && ValueTypeChecker<T>::IsType(value);
+}
+
+// Like GetPropertyFromObject(), but attempts to convert the value to the
+// expected type `T`. Returns true and populates `out` on success; adds
+// test failures and returns false on failure.
+template <typename T>
+bool GetPropertyFromObjectAs(v8::Local<v8::Object> object,
+                             v8::Local<v8::Context> context,
+                             base::StringPiece key,
+                             v8::Local<T>* out) {
+  v8::Local<v8::Value> value = GetPropertyFromObject(object, context, key);
+  return GetValueAs(value, out);
+}
 
 }  // extensions
 

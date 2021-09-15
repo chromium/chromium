@@ -471,22 +471,19 @@ TEST_F(APIBindingsSystemTest, TestCustomEvent) {
   v8::Local<v8::Object> api =
       bindings_system()->CreateAPIInstance(kAlphaAPIName, context, nullptr);
 
-  v8::Local<v8::Value> event =
-      GetPropertyFromObject(api, context, "alphaEvent");
-  ASSERT_TRUE(event->IsObject());
-  EXPECT_EQ(
-      "\"alpha.alphaEvent\"",
-      GetStringPropertyFromObject(event.As<v8::Object>(), context, "name"));
+  v8::Local<v8::Object> event;
+  ASSERT_TRUE(GetPropertyFromObjectAs(api, context, "alphaEvent", &event));
+  EXPECT_EQ("\"alpha.alphaEvent\"",
+            GetStringPropertyFromObject(event, context, "name"));
   v8::Local<v8::Value> event2 =
       GetPropertyFromObject(api, context, "alphaEvent");
   EXPECT_EQ(event, event2);
 
-  v8::Local<v8::Value> other_event =
-      GetPropertyFromObject(api, context, "alphaOtherEvent");
-  ASSERT_TRUE(other_event->IsObject());
+  v8::Local<v8::Object> other_event;
+  ASSERT_TRUE(
+      GetPropertyFromObjectAs(api, context, "alphaOtherEvent", &other_event));
   EXPECT_EQ("\"alpha.alphaOtherEvent\"",
-            GetStringPropertyFromObject(other_event.As<v8::Object>(), context,
-                                        "name"));
+            GetStringPropertyFromObject(other_event, context, "name"));
   EXPECT_NE(event, other_event);
 }
 
