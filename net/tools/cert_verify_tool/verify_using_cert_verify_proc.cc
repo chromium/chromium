@@ -119,10 +119,6 @@ bool VerifyUsingCertVerifyProc(
     const std::vector<CertInput>& root_der_certs,
     net::CRLSet* crl_set,
     const base::FilePath& dump_path) {
-  std::cout
-      << "NOTE: CertVerifyProc always uses OS trust settings (--roots are in "
-         "addition).\n";
-
   std::vector<base::StringPiece> der_cert_chain;
   der_cert_chain.push_back(target_der_cert.der_cert);
   for (const auto& cert : intermediate_der_certs)
