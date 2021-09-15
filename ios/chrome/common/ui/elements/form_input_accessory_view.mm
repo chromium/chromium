@@ -2,19 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_view.h"
+#import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 
 #import <QuartzCore/QuartzCore.h>
 
 #include "base/check.h"
 #include "base/i18n/rtl.h"
-#import "ios/chrome/browser/autofill/form_input_navigator.h"
-#import "ios/chrome/browser/ui/image_util/image_util.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/elements/form_input_accessory_view_text_data.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -51,8 +47,7 @@ NSString* const kFormInputAccessoryViewAccessibilityID =
 @interface FormInputAccessoryView ()
 
 // The navigation delegate if any.
-@property(nonatomic, nullable, weak) id<FormInputAccessoryViewDelegate>
-    delegate;
+@property(nonatomic, weak) id<FormInputAccessoryViewDelegate> delegate;
 
 // Gradient layer to disolve the leading view's end.
 @property(nonatomic, strong) CAGradientLayer* gradientLayer;
@@ -233,6 +228,9 @@ NSString* const kFormInputAccessoryViewAccessibilityID =
 
 // Returns a view that shows navigation buttons.
 - (UIView*)viewForNavigationButtons {
+  FormInputAccessoryViewTextData* textData =
+      [self.delegate textDataforFormInputAccessoryView:self];
+
   UIButton* previousButton = [UIButton buttonWithType:UIButtonTypeSystem];
   [previousButton setImage:[UIImage imageNamed:@"mf_arrow_up"]
                   forState:UIControlStateNormal];
@@ -240,9 +238,8 @@ NSString* const kFormInputAccessoryViewAccessibilityID =
                      action:@selector(previousButtonTapped)
            forControlEvents:UIControlEventTouchUpInside];
   previousButton.enabled = NO;
-  NSString* previousButtonAccessibilityLabel =
-      l10n_util::GetNSString(IDS_IOS_AUTOFILL_ACCNAME_PREVIOUS_FIELD);
-  [previousButton setAccessibilityLabel:previousButtonAccessibilityLabel];
+  [previousButton
+      setAccessibilityLabel:textData.previousButtonAccessibilityLabel];
 
   UIButton* nextButton = [UIButton buttonWithType:UIButtonTypeSystem];
   [nextButton setImage:[UIImage imageNamed:@"mf_arrow_down"]
@@ -251,21 +248,17 @@ NSString* const kFormInputAccessoryViewAccessibilityID =
                  action:@selector(nextButtonTapped)
        forControlEvents:UIControlEventTouchUpInside];
   nextButton.enabled = NO;
-  NSString* nextButtonAccessibilityLabel =
-      l10n_util::GetNSString(IDS_IOS_AUTOFILL_ACCNAME_NEXT_FIELD);
-  [nextButton setAccessibilityLabel:nextButtonAccessibilityLabel];
+  [nextButton setAccessibilityLabel:textData.nextButtonAccessibilityLabel];
 
   UIButton* closeButton = [UIButton buttonWithType:UIButtonTypeSystem];
-  NSString* title = l10n_util::GetNSString(IDS_IOS_AUTOFILL_INPUT_BAR_DONE);
-  [closeButton setTitle:title forState:UIControlStateNormal];
+  [closeButton setTitle:textData.closeButtonTitle
+               forState:UIControlStateNormal];
   [closeButton addTarget:self
                   action:@selector(closeButtonTapped)
         forControlEvents:UIControlEventTouchUpInside];
   closeButton.contentEdgeInsets = UIEdgeInsetsMake(
       0, ManualFillCloseButtonLeftInset, 0, ManualFillCloseButtonRightInset);
-  NSString* closeButtonAccessibilityLabel =
-      l10n_util::GetNSString(IDS_IOS_AUTOFILL_ACCNAME_HIDE_KEYBOARD);
-  [closeButton setAccessibilityLabel:closeButtonAccessibilityLabel];
+  [closeButton setAccessibilityLabel:textData.closeButtonAccessibilityLabel];
 
   self.nextButton = nextButton;
   self.previousButton = previousButton;

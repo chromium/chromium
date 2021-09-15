@@ -18,6 +18,9 @@ typedef NS_ENUM(NSInteger, NewPasswordTableCellType) {
 
 @protocol NewPasswordTableCellDelegate
 
+// Alerts the delegate when the text field in this cell starts editing.
+- (void)textFieldDidBeginEditingInCell:(NewPasswordTableCell*)cell;
+
 // Alerts the delegate every time the text field changes in this cell.
 - (void)textFieldDidChangeInCell:(NewPasswordTableCell*)cell;
 

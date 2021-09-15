@@ -7,8 +7,9 @@
 #include "base/check.h"
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/autofill/cells/autofill_edit_item.h"
-#import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_view.h"
+#import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_chromium_text_data.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_edit_table_view_controller+protected.h"
+#import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -116,6 +117,11 @@
 - (void)formInputAccessoryViewDidTapCloseButton:
     (FormInputAccessoryView*)sender {
   [[_currentEditingCell textField] resignFirstResponder];
+}
+
+- (FormInputAccessoryViewTextData*)textDataforFormInputAccessoryView:
+    (FormInputAccessoryView*)sender {
+  return ChromiumAccessoryViewTextData();
 }
 
 #pragma mark - Helper methods

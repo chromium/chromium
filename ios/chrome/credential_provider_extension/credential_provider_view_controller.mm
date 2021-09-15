@@ -7,6 +7,7 @@
 #import <Foundation/Foundation.h>
 
 #include "base/check.h"
+#include "base/command_line.h"
 #include "ios/chrome/common/app_group/app_group_constants.h"
 #include "ios/chrome/common/app_group/app_group_metrics.h"
 #import "ios/chrome/common/crash_report/crash_helper.h"
@@ -286,6 +287,14 @@
 // Starts the credential list feature.
 - (void)showCredentialListForServiceIdentifiers:
     (NSArray<ASCredentialServiceIdentifier*>*)serviceIdentifiers {
+  // Views in the password creation flow (FormInputAccessoryView) use
+  // base::i18n::IsRTL(), which checks some values from the command line.
+  // Initialize the command line for the process running this extension here
+  // before that.
+  if (IsPasswordCreationEnabled() &&
+      !base::CommandLine::InitializedForCurrentProcess()) {
+    base::CommandLine::Init(0, nullptr);
+  }
   self.listCoordinator = [[CredentialListCoordinator alloc]
       initWithBaseViewController:self
                  credentialStore:self.credentialStore

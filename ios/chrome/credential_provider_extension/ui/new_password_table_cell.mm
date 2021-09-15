@@ -159,6 +159,7 @@ const CGFloat kButtonSpacing = 8;
   self.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   self.textField.hidden = YES;
   self.textField.placeholder = @"";
+  self.textField.inputAccessoryView = nil;
   self.hidePasswordButton.hidden = YES;
   self.passwordHidden = NO;
 }
@@ -202,6 +203,10 @@ const CGFloat kButtonSpacing = 8;
 
 - (BOOL)textFieldShouldReturn:(UITextField*)textField {
   return [self.delegate textFieldShouldReturnInCell:self];
+}
+
+- (void)textFieldDidBeginEditing:(UITextField*)textField {
+  [self.delegate textFieldDidBeginEditingInCell:self];
 }
 
 #pragma mark - Accessors

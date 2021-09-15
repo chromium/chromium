@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_AUTOFILL_FORM_INPUT_ACCESSORY_FORM_INPUT_ACCESSORY_VIEW_H_
-#define IOS_CHROME_BROWSER_UI_AUTOFILL_FORM_INPUT_ACCESSORY_FORM_INPUT_ACCESSORY_VIEW_H_
+#ifndef IOS_CHROME_COMMON_UI_ELEMENTS_FORM_INPUT_ACCESSORY_VIEW_H_
+#define IOS_CHROME_COMMON_UI_ELEMENTS_FORM_INPUT_ACCESSORY_VIEW_H_
 
 #import <UIKit/UIKit.h>
 
 @class FormInputAccessoryView;
+@class FormInputAccessoryViewTextData;
 
 // Informs the receiver of actions in the accessory view.
 @protocol FormInputAccessoryViewDelegate
@@ -15,6 +16,8 @@
 - (void)formInputAccessoryViewDidTapPreviousButton:
     (FormInputAccessoryView*)sender;
 - (void)formInputAccessoryViewDidTapCloseButton:(FormInputAccessoryView*)sender;
+- (FormInputAccessoryViewTextData*)textDataforFormInputAccessoryView:
+    (FormInputAccessoryView*)sender;
 @end
 
 extern NSString* const kFormInputAccessoryViewAccessibilityID;
@@ -47,4 +50,4 @@ extern NSString* const kFormInputAccessoryViewAccessibilityID;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_FORM_INPUT_ACCESSORY_FORM_INPUT_ACCESSORY_VIEW_H_
+#endif  // IOS_CHROME_COMMON_UI_ELEMENTS_FORM_INPUT_ACCESSORY_VIEW_H_

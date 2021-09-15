@@ -42,7 +42,7 @@ source_set("autofill") {
     "//ios/chrome/browser/ui/autofill",
     "//ios/chrome/browser/ui/autofill:autofill_ui_type",
     "//ios/chrome/browser/ui/autofill/cells",
-    "//ios/chrome/browser/ui/autofill/form_input_accessory:form_input_accessory_ui",
+    "//ios/chrome/browser/ui/autofill/form_input_accessory:form_input_accessory",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/qr_scanner",
@@ -57,6 +57,7 @@ source_set("autofill") {
     "//ios/chrome/browser/ui/table_view/cells:cells_constants",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements:form_input_accessory",
     "//ui/base",
   ]
 }
