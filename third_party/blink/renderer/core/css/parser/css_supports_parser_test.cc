@@ -194,6 +194,7 @@ TEST_F(CSSSupportsParserTest, ConsumeSupportsInParens) {
   // <supports-feature>
   EXPECT_EQ(Result::kSupported, ConsumeSupportsInParens("(color:red)"));
   EXPECT_EQ(Result::kUnsupported, ConsumeSupportsInParens("(color:asdf)"));
+  EXPECT_EQ(Result::kParseFailure, ConsumeSupportsInParens("(color]asdf)"));
 
   // <general-enclosed>
   EXPECT_EQ(Result::kUnsupported, ConsumeSupportsInParens("asdf(1)"));
