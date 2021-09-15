@@ -187,13 +187,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest, DISABLED_CloseAndReload) {
   ASSERT_EQ(crash_count_before, GetTerminatedExtensionCount());
 }
 
-// Flaky. crbug.com/846172
+// TODO(crbug.com/846172): Flaky.
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
 #define MAYBE_ReloadIndependently DISABLED_ReloadIndependently
 #else
 #define MAYBE_ReloadIndependently ReloadIndependently
 #endif
-IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest, ReloadIndependently) {
+IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest, MAYBE_ReloadIndependently) {
   const size_t count_before = GetEnabledExtensionCount();
   LoadTestExtension();
   CrashExtension(first_extension_id_);
