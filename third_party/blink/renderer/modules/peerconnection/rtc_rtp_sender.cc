@@ -784,8 +784,7 @@ RTCRtpCapabilities* RTCRtpSender::getCapabilities(ScriptState* state,
         modes.push_back("L1T3");
         codec->setScalabilityModes(modes);
       }
-    } else if (rtc_codec.mime_type() == "video/AV1" ||
-               rtc_codec.mime_type() == "video/AV1X") {
+    } else if (rtc_codec.mime_type() == "video/AV1") {
       Vector<String> modes;
       modes.push_back("L1T2");
       modes.push_back("L1T3");

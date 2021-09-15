@@ -61,9 +61,9 @@ absl::optional<webrtc::SdpVideoFormat> VdcToWebRtcFormat(
     const media::VideoDecoderConfig& config) {
   switch (config.codec()) {
     case media::VideoCodec::kAV1:
-      return webrtc::SdpVideoFormat("AV1X");
+      return webrtc::SdpVideoFormat(cricket::kAv1CodecName);
     case media::VideoCodec::kVP8:
-      return webrtc::SdpVideoFormat("VP8");
+      return webrtc::SdpVideoFormat(cricket::kVp8CodecName);
     case media::VideoCodec::kVP9: {
       webrtc::VP9Profile vp9_profile;
       switch (config.profile()) {
@@ -81,8 +81,8 @@ absl::optional<webrtc::SdpVideoFormat> VdcToWebRtcFormat(
           return absl::nullopt;
       }
       return webrtc::SdpVideoFormat(
-          "VP9", {{webrtc::kVP9FmtpProfileId,
-                   webrtc::VP9ProfileToString(vp9_profile)}});
+          cricket::kVp9CodecName, {{webrtc::kVP9FmtpProfileId,
+                                    webrtc::VP9ProfileToString(vp9_profile)}});
     }
     case media::VideoCodec::kH264: {
       webrtc::H264Profile h264_profile;
@@ -109,7 +109,7 @@ absl::optional<webrtc::SdpVideoFormat> VdcToWebRtcFormat(
       const webrtc::H264ProfileLevelId profile_level_id(
           h264_profile, h264_level.value_or(webrtc::H264Level::kLevel1));
 
-      webrtc::SdpVideoFormat format("H264");
+      webrtc::SdpVideoFormat format(cricket::kH264CodecName);
       format.parameters = {
           {cricket::kH264FmtpProfileLevelId,
            *webrtc::H264ProfileLevelIdToString(profile_level_id)},
