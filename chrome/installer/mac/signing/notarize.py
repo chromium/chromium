@@ -105,7 +105,8 @@ def wait_for_results(uuids, config):
                 if config.notary_asc_provider is not None:
                     command.extend(
                         ['--asc-provider', config.notary_asc_provider])
-                output = commands.run_command_output(command)
+                output = commands.run_command_output(
+                    command, stderr=subprocess.STDOUT)
             except subprocess.CalledProcessError as e:
                 # A notarization request might report as "not found" immediately
                 # after submission, which causes altool to exit non-zero. Check
@@ -123,6 +124,11 @@ def wait_for_results(uuids, config):
                 # problems will eventually fall through to the "no results"
                 # timeout.
                 if e.returncode == 13:
+                    logger.warning(e.output)
+                    continue
+                # And other times the command exits with code 1 and no further
+                # output.
+                if e.returncode == 1:
                     logger.warning(e.output)
                     continue
                 raise e
