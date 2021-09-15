@@ -60,10 +60,7 @@ class TimerTest : public testing::Test {
   // to the delay in seconds till the next pending delayed task is scheduled to
   // fire.
   bool TimeTillNextDelayedTask(base::TimeDelta* time) const {
-    base::sequence_manager::LazyNow lazy_now =
-        platform_->GetMainThreadScheduler()
-            ->real_time_domain()
-            ->CreateLazyNow();
+    base::sequence_manager::LazyNow lazy_now(platform_->NowTicks());
     absl::optional<base::TimeDelta> delay = platform_->GetMainThreadScheduler()
                                                 ->GetActiveTimeDomain()
                                                 ->DelayTillNextTask(&lazy_now);
