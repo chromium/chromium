@@ -26,6 +26,7 @@ polymer_element_files = [
   "onboarding_verify_rsu_page.js",
   "onboarding_wp_disable_complete_page.js",
   "reimaging_calibration_page.js",
+  "reimaging_calibration_setup_page.js",
   "reimaging_device_information_page.js",
   "reimaging_firmware_update_page.js",
   "reimaging_provisioning_page.js",
@@ -77,6 +78,7 @@ js_type_check("closure_compile_module") {
     ":onboarding_wait_for_manual_wp_disable_page",
     ":onboarding_wp_disable_complete_page",
     ":reimaging_calibration_page",
+    ":reimaging_calibration_setup_page",
     ":reimaging_device_information_page",
     ":reimaging_firmware_update_page",
     ":reimaging_provisioning_page",
@@ -105,6 +107,8 @@ js_library("shimless_rma") {
     ":onboarding_verify_rsu_page",
     ":onboarding_wait_for_manual_wp_disable_page",
     ":onboarding_wp_disable_complete_page",
+    ":reimaging_calibration_page",
+    ":reimaging_calibration_setup_page",
     ":reimaging_device_information_page",
     ":reimaging_firmware_update_page",
     ":reimaging_provisioning_page",
@@ -254,6 +258,17 @@ js_library("onboarding_wp_disable_complete_page") {
 }
 
 js_library("reimaging_calibration_page") {
+  deps = [
+    ":base_page",
+    ":icons",
+    ":mojo_interface_provider",
+    ":shimless_rma_types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert.m",
+  ]
+}
+
+js_library("reimaging_calibration_setup_page") {
   deps = [
     ":base_page",
     ":icons",

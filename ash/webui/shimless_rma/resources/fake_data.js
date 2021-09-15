@@ -93,6 +93,12 @@ export const fakeStates = [
     canGoBack: true,
     error: RmadErrorCode.kOk
   },
+  {
+    state: RmaState.kSetupCalibration,
+    canCancel: true,
+    canGoBack: true,
+    error: RmadErrorCode.kOk
+  },
   // TODO(gavindodd): RmaState.kSetupCalibration
   // TODO(gavindodd): RmaState.kRunCalibration
   {

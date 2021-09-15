@@ -13,6 +13,7 @@ import './onboarding_wait_for_manual_wp_disable_page.js';
 import './onboarding_verify_rsu_page.js';
 import './onboarding_wp_disable_complete_page.js';
 import './reimaging_calibration_page.js';
+import './reimaging_calibration_setup_page.js';
 import './reimaging_device_information_page.js';
 import './reimaging_firmware_update_page.js';
 import './reimaging_provisioning_page.js';
@@ -136,7 +137,12 @@ const StateComponentMapping = {
     buttonCancel: ButtonState.HIDDEN,
     buttonBack: ButtonState.HIDDEN,
   },
-  // TODO(gavindodd): kSetupCalibration
+  [RmaState.kSetupCalibration]: {
+    componentIs: 'reimaging-calibration-setup-page',
+    buttonNext: ButtonState.VISIBLE,
+    buttonCancel: ButtonState.HIDDEN,
+    buttonBack: ButtonState.VISIBLE,
+  },
   // TODO(gavindodd): kRunCalibration
   [RmaState.kProvisionDevice]: {
     componentIs: 'reimaging-provisioning-page',

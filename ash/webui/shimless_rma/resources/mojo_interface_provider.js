@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 
 import {fakeChromeVersion, fakeComponents, fakeDeviceRegions, fakeDeviceSkus, fakeRsuChallengeQrCode, fakeStates} from './fake_data.js';
 import {FakeShimlessRmaService} from './fake_shimless_rma_service.js'
-import {NetworkConfigServiceInterface, RmadErrorCode, ShimlessRmaService, ShimlessRmaServiceInterface} from './shimless_rma_types.js';
+import {CalibrationSetupInstruction, NetworkConfigServiceInterface, RmadErrorCode, ShimlessRmaService, ShimlessRmaServiceInterface} from './shimless_rma_types.js';
 
 /**
  * @fileoverview
@@ -63,6 +63,9 @@ function setupFakeShimlessRmaService_() {
   service.setGetOriginalRegionResult(1);
   service.setGetSkuListResult(fakeDeviceSkus);
   service.setGetOriginalSkuResult(1);
+
+  service.setGetCalibrationSetupInstructionsResult(
+      CalibrationSetupInstruction.kCalibrationInstructionPlaceLidOnFlatSurface);
 
   // Set the fake service.
   setShimlessRmaServiceForTesting(service);
