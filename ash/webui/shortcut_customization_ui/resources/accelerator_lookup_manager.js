@@ -116,7 +116,8 @@ export class AcceleratorLookupManager {
           this.acceleratorLookup_.set(id, []);
         }
         accelInfos.forEach((info) => {
-          this.acceleratorLookup_.get(id).push(info);
+          this.acceleratorLookup_.get(id).push(
+              /** @type {!AcceleratorInfo} */(Object.assign({}, info)));
           const accelKeys = info.accelerator;
           this.reverseAcceleratorLookup_.set(JSON.stringify(accelKeys), id);
         });
@@ -137,7 +138,7 @@ export class AcceleratorLookupManager {
       }
       this.acceleratorLayoutLookup_.get(entry.category)
           .get(entry.sub_category)
-          .push(entry);
+          .push(/** @type {!LayoutInfo} */(Object.assign({}, entry)));
 
       // Add the entry to the AcceleratorNameLookup.
       const uuid = `${entry.source}-${entry.action}`;
