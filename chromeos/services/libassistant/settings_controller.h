@@ -77,6 +77,7 @@ class SettingsController : public AssistantClientObserver,
   assistant_client::AssistantManagerInternal* assistant_manager_internal_ =
       nullptr;
   assistant_client::AssistantManager* assistant_manager_ = nullptr;
+  AssistantClient* assistant_client_ = nullptr;
 
   absl::optional<bool> hotword_enabled_;
   absl::optional<bool> spoken_feedback_enabled_;

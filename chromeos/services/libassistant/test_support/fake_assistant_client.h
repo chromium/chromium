@@ -63,6 +63,18 @@ class FakeAssistantClient : public AssistantClient {
       GrpcServicesObserver<OnDeviceStateEventRequest>* observer) override;
   void RegisterActionModule(
       assistant_client::ActionModule* action_module) override;
+  void UpdateAssistantSettings(
+      const ::assistant::ui::SettingsUiUpdate& settings,
+      const std::string& user_id,
+      base::OnceCallback<void(
+          const ::assistant::api::UpdateAssistantSettingsResponse&)> on_done)
+      override;
+  void GetAssistantSettings(
+      const ::assistant::ui::SettingsUiSelector& selector,
+      const std::string& user_id,
+      base::OnceCallback<
+          void(const ::assistant::api::GetAssistantSettingsResponse&)> on_done)
+      override;
 };
 
 }  // namespace libassistant

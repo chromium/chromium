@@ -72,5 +72,17 @@ void FakeAssistantClient::AddDeviceStateEventObserver(
 void FakeAssistantClient::RegisterActionModule(
     assistant_client::ActionModule* action_module) {}
 
+void FakeAssistantClient::UpdateAssistantSettings(
+    const ::assistant::ui::SettingsUiUpdate& settings,
+    const std::string& user_id,
+    base::OnceCallback<void(
+        const ::assistant::api::UpdateAssistantSettingsResponse&)> on_done) {}
+
+void FakeAssistantClient::GetAssistantSettings(
+    const ::assistant::ui::SettingsUiSelector& selector,
+    const std::string& user_id,
+    base::OnceCallback<
+        void(const ::assistant::api::GetAssistantSettingsResponse&)> on_done) {}
+
 }  // namespace libassistant
 }  // namespace chromeos

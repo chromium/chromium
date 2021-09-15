@@ -15,18 +15,27 @@ namespace assistant {
 namespace api {
 class CancelSpeakerIdEnrollmentRequest;
 class GetSpeakerIdEnrollmentInfoRequest;
+class GetAssistantSettingsResponse;
 class Interaction;
 class OnAssistantDisplayEventRequest;
 class OnDeviceStateEventRequest;
 class OnDisplayRequestRequest;
 class OnSpeakerIdEnrollmentEventRequest;
 class StartSpeakerIdEnrollmentRequest;
+class UpdateAssistantSettingsResponse;
 class VoicelessOptions;
 
 namespace events {
 class SpeakerIdEnrollmentEvent;
 }  // namespace events
 }  // namespace api
+}  // namespace assistant
+
+namespace assistant {
+namespace ui {
+class SettingsUiSelector;
+class SettingsUiUpdate;
+}  // namespace ui
 }  // namespace assistant
 
 namespace assistant_client {
@@ -126,6 +135,19 @@ class AssistantClient {
   // Conversation methods.
   virtual void RegisterActionModule(
       assistant_client::ActionModule* action_module) = 0;
+
+  // Settings-related functionality:
+  virtual void UpdateAssistantSettings(
+      const ::assistant::ui::SettingsUiUpdate& settings,
+      const std::string& user_id,
+      base::OnceCallback<
+          void(const ::assistant::api::UpdateAssistantSettingsResponse&)>
+          on_done) = 0;
+  virtual void GetAssistantSettings(
+      const ::assistant::ui::SettingsUiSelector& selector,
+      const std::string& user_id,
+      base::OnceCallback<void(
+          const ::assistant::api::GetAssistantSettingsResponse&)> on_done) = 0;
 
   // Will not return nullptr.
   assistant_client::AssistantManager* assistant_manager() {

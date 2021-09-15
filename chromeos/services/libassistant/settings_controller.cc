@@ -8,12 +8,16 @@
 #include <memory>
 
 #include "base/callback_helpers.h"
+#include "base/sequence_checker.h"
 #include "chromeos/assistant/internal/internal_util.h"
+#include "chromeos/assistant/internal/proto/shared/proto/settings_ui.pb.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/config_settings_interface.pb.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/assistant/public/proto/assistant_device_settings_ui.pb.h"
 #include "chromeos/services/assistant/public/proto/settings_ui.pb.h"
 #include "chromeos/services/libassistant/callback_utils.h"
 #include "chromeos/services/libassistant/grpc/assistant_client.h"
+#include "chromeos/services/libassistant/grpc/utils/settings_utils.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
 #include "libassistant/shared/public/assistant_manager.h"
 #include "third_party/icu/source/common/unicode/locid.h"
@@ -128,23 +132,21 @@ class GetSettingsResponseWaiter : public AbortableTask {
       delete;
   ~GetSettingsResponseWaiter() override { DCHECK(!callback_); }
 
-  void SendRequest(
-      assistant_client::AssistantManagerInternal* assistant_manager_internal,
-      const std::string& selector) {
-    if (!assistant_manager_internal) {
+  void SendRequest(AssistantClient* assistant_client,
+                   const std::string& selector) {
+    if (!assistant_client) {
       VLOG(1) << "Assistant: 'get settings' request while Libassistant is not "
                  "running.";
       Abort();
       return;
     }
 
-    std::string serialized_proto =
-        assistant::SerializeGetSettingsUiRequest(selector);
-    assistant_manager_internal->SendGetSettingsUiRequest(
-        serialized_proto, /*user_id=*/std::string(),
-        ToStdFunction(BindToCurrentSequence(
-            base::BindOnce(&GetSettingsResponseWaiter::OnResponse,
-                           weak_factory_.GetWeakPtr()))));
+    ::assistant::ui::SettingsUiSelector selector_proto;
+    selector_proto.ParseFromString(selector);
+    assistant_client->GetAssistantSettings(
+        selector_proto, /*user_id=*/std::string(),
+        base::BindOnce(&GetSettingsResponseWaiter::OnResponse,
+                       weak_factory_.GetWeakPtr()));
   }
 
   // AbortableTask implementation:
@@ -155,11 +157,19 @@ class GetSettingsResponseWaiter : public AbortableTask {
   }
 
  private:
-  void OnResponse(const assistant_client::VoicelessResponse& response) {
-    std::string result =
-        assistant::UnwrapGetSettingsUiResponse(response, include_header_);
-    std::move(callback_).Run(result);
+  void OnResponse(
+      const ::assistant::api::GetAssistantSettingsResponse& response) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    // |settings_ui| is either a serialized proto message of |SettingsUi|
+    // or |GetSettingsUiResponse| upon success, or an empty string otherwise.
+    std::string settings_ui =
+        UnwrapGetAssistantSettingsResponse(response, include_header_);
+    std::move(callback_).Run(settings_ui);
   }
+
+  // Ensures all callbacks are called on the current sequence.
+  SEQUENCE_CHECKER(sequence_checker_);
 
   SettingsController::GetSettingsCallback callback_;
   // Whether to include header in response. If this is true, a serialized proto
@@ -184,23 +194,21 @@ class UpdateSettingsResponseWaiter : public AbortableTask {
       delete;
   ~UpdateSettingsResponseWaiter() override = default;
 
-  void SendRequest(
-      assistant_client::AssistantManagerInternal* assistant_manager_internal,
-      const std::string& settings) {
-    if (!assistant_manager_internal) {
+  void SendRequest(AssistantClient* assistant_client,
+                   const std::string& settings) {
+    if (!assistant_client) {
       VLOG(1) << "Assistant: 'update settings' request while Libassistant is "
                  "not running.";
       Abort();
       return;
     }
 
-    std::string serialized_proto =
-        assistant::SerializeUpdateSettingsUiRequest(settings);
-    assistant_manager_internal->SendUpdateSettingsUiRequest(
-        serialized_proto, /*user_id=*/std::string(),
-        ToStdFunction(BindToCurrentSequence(
-            base::BindOnce(&UpdateSettingsResponseWaiter::OnResponse,
-                           weak_factory_.GetWeakPtr()))));
+    ::assistant::ui::SettingsUiUpdate update;
+    update.ParseFromString(settings);
+    assistant_client->UpdateAssistantSettings(
+        update, /*user_id=*/std::string(),
+        base::BindOnce(&UpdateSettingsResponseWaiter::OnResponse,
+                       weak_factory_.GetWeakPtr()));
   }
 
   // AbortableTask implementation:
@@ -208,10 +216,18 @@ class UpdateSettingsResponseWaiter : public AbortableTask {
   void Abort() override { std::move(callback_).Run(std::string()); }
 
  private:
-  void OnResponse(const assistant_client::VoicelessResponse& response) {
-    std::string result = assistant::UnwrapUpdateSettingsUiResponse(response);
-    std::move(callback_).Run(result);
+  void OnResponse(
+      const ::assistant::api::UpdateAssistantSettingsResponse& response) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    // |update_result| is either a serialized proto message of
+    // |SettingsUiUpdateResult| or an empty string.
+    std::string update_result = UnwrapUpdateAssistantSettingsResponse(response);
+    std::move(callback_).Run(update_result);
   }
+
+  // Ensures all callbacks are called on the current sequence.
+  SEQUENCE_CHECKER(sequence_checker_);
 
   SettingsController::UpdateSettingsCallback callback_;
   base::WeakPtrFactory<UpdateSettingsResponseWaiter> weak_factory_{this};
@@ -264,14 +280,14 @@ void SettingsController::GetSettings(const std::string& selector,
   auto* waiter =
       pending_response_waiters_.Add(std::make_unique<GetSettingsResponseWaiter>(
           std::move(callback), include_header));
-  waiter->SendRequest(assistant_manager_internal_, selector);
+  waiter->SendRequest(assistant_client_, selector);
 }
 
 void SettingsController::UpdateSettings(const std::string& settings,
                                         UpdateSettingsCallback callback) {
   auto* waiter = pending_response_waiters_.Add(
       std::make_unique<UpdateSettingsResponseWaiter>(std::move(callback)));
-  waiter->SendRequest(assistant_manager_internal_, settings);
+  waiter->SendRequest(assistant_client_, settings);
 }
 
 void SettingsController::UpdateListeningEnabled(
@@ -328,6 +344,7 @@ void SettingsController::UpdateDeviceSettings(
 
 void SettingsController::OnAssistantClientCreated(
     AssistantClient* assistant_client) {
+  assistant_client_ = assistant_client;
   assistant_manager_ = assistant_client->assistant_manager();
   assistant_manager_internal_ = assistant_client->assistant_manager_internal();
 

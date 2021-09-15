@@ -115,6 +115,8 @@ source_set("internal") {
     "util.h",
   ]
 
+  public_deps = [ "//chromeos/assistant/internal/proto:assistant" ]
+
   deps = [
     ":audio",
     ":callback_utils",

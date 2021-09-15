@@ -30,6 +30,32 @@ std::vector<mojom::AuthenticationTokenPtr> ToVector(
   return result;
 }
 
+class AssistantClientMock : public FakeAssistantClient {
+ public:
+  AssistantClientMock(
+      std::unique_ptr<assistant::FakeAssistantManager> assistant_manager,
+      assistant::FakeAssistantManagerInternal* assistant_manager_internal)
+      : FakeAssistantClient(std::move(assistant_manager),
+                            assistant_manager_internal) {}
+  ~AssistantClientMock() override = default;
+
+  // FakeAssistantClient:
+  MOCK_METHOD(
+      void,
+      UpdateAssistantSettings,
+      (const ::assistant::ui::SettingsUiUpdate& settings,
+       const std::string& user_id,
+       base::OnceCallback<void(
+           const ::assistant::api::UpdateAssistantSettingsResponse&)> on_done));
+  MOCK_METHOD(
+      void,
+      GetAssistantSettings,
+      (const ::assistant::ui::SettingsUiSelector& selector,
+       const std::string& user_id,
+       base::OnceCallback<void(
+           const ::assistant::api::GetAssistantSettingsResponse&)> on_done));
+};
+
 class AssistantManagerInternalMock
     : public assistant::FakeAssistantManagerInternal {
  public:
@@ -45,11 +71,6 @@ class AssistantManagerInternalMock
               SetOptions,
               (const assistant_client::InternalOptions& options,
                assistant_client::SuccessCallbackInternal on_done));
-  MOCK_METHOD(void,
-              SendUpdateSettingsUiRequest,
-              (const std::string& s3_request_update_settings_ui_request_proto,
-               const std::string& user_id,
-               assistant_client::VoicelessResponseCallback on_done));
 };
 
 class AssistantManagerMock : public assistant::FakeAssistantManager {
@@ -104,7 +125,7 @@ class AssistantSettingsControllerTest : public testing::Test {
     auto assistant_manager = std::make_unique<AssistantManagerMock>();
     assistant_manager_internal_ =
         std::make_unique<testing::StrictMock<AssistantManagerInternalMock>>();
-    assistant_client_ = std::make_unique<FakeAssistantClient>(
+    assistant_client_ = std::make_unique<AssistantClientMock>(
         std::move(assistant_manager), assistant_manager_internal_.get());
   }
 
@@ -117,12 +138,14 @@ class AssistantSettingsControllerTest : public testing::Test {
         assistant_client_->assistant_manager());
   }
 
+  AssistantClientMock& assistant_client_mock() { return *assistant_client_; }
+
  private:
   base::test::SingleThreadTaskEnvironment environment_;
 
   SettingsController controller_;
   std::unique_ptr<AssistantManagerInternalMock> assistant_manager_internal_;
-  std::unique_ptr<FakeAssistantClient> assistant_client_;
+  std::unique_ptr<AssistantClientMock> assistant_client_;
 };
 
 TEST_F(AssistantSettingsControllerTest,
@@ -162,8 +185,7 @@ TEST_F(AssistantSettingsControllerTest,
   // We test this by ensuring they are not applied when Libassistant starts.
   EXPECT_NO_CALLS(assistant_manager_internal_mock(), SetLocaleOverride);
   EXPECT_NO_CALLS(assistant_manager_internal_mock(), SetOptions);
-  EXPECT_NO_CALLS(assistant_manager_internal_mock(),
-                  SendUpdateSettingsUiRequest);
+  EXPECT_NO_CALLS(assistant_client_mock(), UpdateAssistantSettings);
   EXPECT_NO_CALLS(assistant_manager_mock(), SetAuthTokens);
   CreateAndStartLibassistant();
 }
@@ -272,8 +294,7 @@ TEST_F(AssistantSettingsControllerTest,
   IGNORE_CALLS(assistant_manager_internal_mock(), SetLocaleOverride);
   CreateAndStartLibassistant();
 
-  EXPECT_NO_CALLS(assistant_manager_internal_mock(),
-                  SendUpdateSettingsUiRequest);
+  EXPECT_NO_CALLS(assistant_client_mock(), UpdateAssistantSettings);
 
   controller().SetHotwordEnabled(true);
 }
@@ -283,8 +304,7 @@ TEST_F(AssistantSettingsControllerTest,
   IGNORE_CALLS(assistant_manager_internal_mock(), SetLocaleOverride);
   CreateAndStartLibassistant();
 
-  EXPECT_NO_CALLS(assistant_manager_internal_mock(),
-                  SendUpdateSettingsUiRequest);
+  EXPECT_NO_CALLS(assistant_client_mock(), UpdateAssistantSettings);
 
   controller().SetLocale("locale");
 }
@@ -295,7 +315,7 @@ TEST_F(AssistantSettingsControllerTest,
   CreateAndStartLibassistant();
   controller().SetHotwordEnabled(true);
 
-  EXPECT_CALL(assistant_manager_internal_mock(), SendUpdateSettingsUiRequest);
+  EXPECT_CALL(assistant_client_mock(), UpdateAssistantSettings);
 
   controller().SetLocale("locale");
 }
@@ -306,7 +326,7 @@ TEST_F(AssistantSettingsControllerTest,
   CreateAndStartLibassistant();
   controller().SetLocale("locale");
 
-  EXPECT_CALL(assistant_manager_internal_mock(), SendUpdateSettingsUiRequest);
+  EXPECT_CALL(assistant_client_mock(), UpdateAssistantSettings);
 
   controller().SetHotwordEnabled(true);
 }
@@ -319,7 +339,7 @@ TEST_F(AssistantSettingsControllerTest,
   controller().SetLocale("locale");
   controller().SetHotwordEnabled(true);
 
-  EXPECT_CALL(assistant_manager_internal_mock(), SendUpdateSettingsUiRequest);
+  EXPECT_CALL(assistant_client_mock(), UpdateAssistantSettings);
 
   StartLibassistant();
 }
@@ -405,13 +425,36 @@ TEST_F(AssistantSettingsControllerTest,
 
 TEST_F(AssistantSettingsControllerTest,
        UpdateSettingsShouldCallCallbackIfLibassistantIsStopped) {
-  IGNORE_CALLS(assistant_manager_internal_mock(), SendUpdateSettingsUiRequest);
+  IGNORE_CALLS(assistant_client_mock(), UpdateAssistantSettings);
   CreateAndStartLibassistant();
 
   base::MockCallback<SettingsController::UpdateSettingsCallback> callback;
   controller().UpdateSettings("selector", callback.Get());
 
   EXPECT_CALL(callback, Run(std::string{}));
+  DestroyLibassistant();
+}
+
+TEST_F(AssistantSettingsControllerTest,
+       ShouldInvokeGetAssistantSettingsWhenGetSettingsCalled) {
+  CreateAndStartLibassistant();
+
+  EXPECT_CALL(assistant_client_mock(), GetAssistantSettings);
+
+  controller().GetSettings("selector", /*include_header=*/false,
+                           base::DoNothing());
+
+  DestroyLibassistant();
+}
+
+TEST_F(AssistantSettingsControllerTest,
+       ShouldInvokeUpdateAssistantSettingsWhenUpdateSettingsCalled) {
+  CreateAndStartLibassistant();
+
+  EXPECT_CALL(assistant_client_mock(), UpdateAssistantSettings);
+
+  controller().UpdateSettings("selector", base::DoNothing());
+
   DestroyLibassistant();
 }
 
