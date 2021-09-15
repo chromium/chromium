@@ -18,6 +18,7 @@
 
 namespace web {
 
+class JavaScriptFeature;
 class WebClient;
 class WebState;
 
@@ -67,8 +68,16 @@ class WebTestWithWebState : public WebTest, public base::TaskObserver {
   std::unique_ptr<base::Value> CallJavaScriptFunction(
       const std::string& function,
       const std::vector<base::Value>& parameters);
+  std::unique_ptr<base::Value> CallJavaScriptFunctionForFeature(
+      const std::string& function,
+      const std::vector<base::Value>& parameters,
+      JavaScriptFeature* feature);
   // Synchronously executes JavaScript and returns result as id.
   id ExecuteJavaScript(NSString* script);
+  // Synchronously executes JavaScript in the content world associated with
+  // |feature| and returns the result as id.
+  id ExecuteJavaScriptForFeature(NSString* script, JavaScriptFeature* feature)
+      API_AVAILABLE(ios(14.0));
 #if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
   // Synchronously executes |script| in |content_world| and returns result.
   id ExecuteJavaScript(WKContentWorld* content_world, NSString* script)

@@ -66,6 +66,7 @@ source_set("util") {
     "//ios/net",
     "//ios/web/find_in_page",
     "//ios/web/js_messaging",
+    "//ios/web/js_messaging:java_script_feature",
     "//ios/web/public:public",
     "//ios/web/public/js_messaging",
     "//ios/web/web_state:web_state_impl_header",

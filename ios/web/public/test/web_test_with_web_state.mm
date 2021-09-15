@@ -10,6 +10,7 @@
 #include "base/task/current_thread.h"
 #import "base/test/ios/wait_util.h"
 #include "ios/web/common/features.h"
+#import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/navigation/crw_wk_navigation_states.h"
 #import "ios/web/navigation/navigation_manager_impl.h"
 #import "ios/web/navigation/wk_navigation_util.h"
@@ -213,6 +214,25 @@ std::unique_ptr<base::Value> WebTestWithWebState::CallJavaScriptFunction(
     const std::string& function,
     const std::vector<base::Value>& parameters) {
   return web::test::CallJavaScriptFunction(web_state(), function, parameters);
+}
+
+std::unique_ptr<base::Value>
+WebTestWithWebState::CallJavaScriptFunctionForFeature(
+    const std::string& function,
+    const std::vector<base::Value>& parameters,
+    JavaScriptFeature* feature) {
+  return web::test::CallJavaScriptFunctionForFeature(web_state(), function,
+                                                     parameters, feature);
+}
+
+id WebTestWithWebState::ExecuteJavaScriptForFeature(
+    NSString* script,
+    JavaScriptFeature* feature) {
+  JavaScriptFeatureManager* feature_manager =
+      JavaScriptFeatureManager::FromBrowserState(GetBrowserState());
+  JavaScriptContentWorld* world =
+      feature_manager->GetContentWorldForFeature(feature);
+  return ExecuteJavaScript(world->GetWKContentWorld(), script);
 }
 
 id WebTestWithWebState::ExecuteJavaScript(NSString* script) {

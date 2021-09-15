@@ -11,6 +11,8 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "ios/web/js_messaging/java_script_feature_manager.h"
+#import "ios/web/js_messaging/web_frame_impl.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
@@ -75,12 +77,34 @@ std::unique_ptr<base::Value> CallJavaScriptFunction(
     web::WebState* web_state,
     const std::string& function,
     const std::vector<base::Value>& parameters) {
+  return CallJavaScriptFunctionForFeature(web_state, function, parameters,
+                                          /*feature=*/nullptr);
+}
+
+std::unique_ptr<base::Value> CallJavaScriptFunctionForFeature(
+    web::WebState* web_state,
+    const std::string& function,
+    const std::vector<base::Value>& parameters,
+    JavaScriptFeature* feature) {
   if (!web_state) {
     DLOG(ERROR) << "JavaScript can not be called on a null WebState.";
     return nullptr;
   }
 
-  WebFrame* frame = GetMainFrame(web_state);
+  JavaScriptContentWorld* world = nullptr;
+  if (feature) {
+    JavaScriptFeatureManager* feature_manager =
+        JavaScriptFeatureManager::FromBrowserState(
+            web_state->GetBrowserState());
+    world = feature_manager->GetContentWorldForFeature(feature);
+    if (!world) {
+      DLOG(ERROR) << "JavaScript can not be called in a null content world."
+                  << "JavaScriptFeature does not appear to be configured.";
+      return nullptr;
+    }
+  }
+
+  WebFrameImpl* frame = static_cast<WebFrameImpl*>(GetMainFrame(web_state));
   if (!frame) {
     DLOG(ERROR) << "JavaScript can not be called on a null WebFrame.";
     return nullptr;
@@ -88,8 +112,8 @@ std::unique_ptr<base::Value> CallJavaScriptFunction(
 
   __block std::unique_ptr<base::Value> result;
   __block bool did_finish = false;
-  bool function_call_successful = frame->CallJavaScriptFunction(
-      function, parameters, base::BindOnce(^(const base::Value* value) {
+  bool function_call_successful = frame->CallJavaScriptFunctionInContentWorld(
+      function, parameters, world, base::BindOnce(^(const base::Value* value) {
         if (value)
           result = value->CreateDeepCopy();
         did_finish = true;
