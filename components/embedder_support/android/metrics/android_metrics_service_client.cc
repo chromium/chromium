@@ -11,6 +11,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/base_paths_android.h"
+#include "base/debug/leak_annotations.h"
 #include "base/files/file_util.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/field_trial_params.h"
@@ -251,6 +252,32 @@ void AndroidMetricsServiceClient::Initialize(
       pref_service_, this, std::wstring(), user_data_dir,
       base::BindRepeating(&StoreClientInfo),
       base::BindRepeating(&LoadClientInfo));
+
+  // Instantiate the FieldTrialList to support field trials. If an instance
+  // already exists, this is likely a test scenario with a ScopedFeatureList, so
+  // use the existing instance to apply any overrides.
+  if (!base::FieldTrialList::GetInstance()) {
+    // Creates the FieldTrialList using the low entropy provider. The low
+    // entropy provider is used instead of the default provider because the
+    // default provider needs to know if UMA is enabled and querying GMS to
+    // determine whether UMA is enabled is slow.
+    //
+    // Both entropy providers guarantee permanent consistency, which is the main
+    // requirement. The difference is that the low entropy provider has fewer
+    // unique experiment combinations. This is better for privacy (since
+    // experiment state doesn't identify users), but also means fewer
+    // combinations are tested in the wild.
+    //
+    // This is intentionally leaked since it needs to live for the duration of
+    // the browser process and there's no benefit in cleaning it up at exit.
+    //
+    // TODO(crbug/1246410): This is not intended to be the final state.
+    // crrev.com/c/3137621 moves this to the MetricsStateManager.
+    base::FieldTrialList* leaked_field_trial_list = new base::FieldTrialList(
+        metrics_state_manager_->CreateLowEntropyProvider());
+    ANNOTATE_LEAKING_OBJECT_PTR(leaked_field_trial_list);
+    ignore_result(leaked_field_trial_list);
+  }
 
   init_finished_ = true;
 

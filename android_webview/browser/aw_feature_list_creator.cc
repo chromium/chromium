@@ -165,19 +165,9 @@ std::unique_ptr<PrefService> AwFeatureListCreator::CreatePrefService() {
 }
 
 void AwFeatureListCreator::SetUpFieldTrials() {
-  auto* metrics_client = AwMetricsServiceClient::GetInstance();
-
-  // Chrome uses the default entropy provider here (rather than low entropy
-  // provider). The default provider needs to know whether UMA is enabled, but
-  // WebView determines UMA by querying GMS, which is very slow. So WebView
-  // always uses the low entropy provider. Both providers guarantee permanent
-  // consistency, which is the main requirement. The difference is that the low
-  // entropy provider has fewer unique experiment combinations. This is better
-  // for privacy (since experiment state doesn't identify users), but also means
-  // fewer combinations tested in the wild.
-  DCHECK(!field_trial_list_);
-  field_trial_list_ = std::make_unique<base::FieldTrialList>(
-      metrics_client->CreateLowEntropyProvider());
+  // The FieldTrialList should have been instantiated in
+  // AndroidMetricsServiceClient::Initialize().
+  DCHECK(base::FieldTrialList::GetInstance());
 
   // Convert the AwVariationsSeed proto to a SeedResponse object.
   std::unique_ptr<AwVariationsSeed> seed_proto = TakeSeed();
@@ -227,6 +217,7 @@ void AwFeatureListCreator::SetUpFieldTrials() {
   std::vector<std::string> variation_ids =
       aw_feature_entries::RegisterEnabledFeatureEntries(feature_list.get());
 
+  auto* metrics_client = AwMetricsServiceClient::GetInstance();
   // Populate FieldTrialList. Since |low_entropy_provider| is null, it will fall
   // back to the provider we previously gave to FieldTrialList, which is a low
   // entropy provider. The X-Client-Data header is not reported on WebView, so

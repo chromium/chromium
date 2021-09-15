@@ -18,10 +18,8 @@
 
 namespace android_webview {
 
-// Used by WebView to set up field trials based on the stored variations
-// seed data. Once created this object must exist for the lifetime of the
-// process as it contains the FieldTrialList that can be queried for the state
-// of experiments.
+// Used by WebView to set up field trials based on the stored variations seed
+// data.
 class AwFeatureListCreator {
  public:
   AwFeatureListCreator();
@@ -58,10 +56,6 @@ class AwFeatureListCreator {
   // If TakePrefService() is called, the caller will take the ownership
   // of this variable. Stop using this variable afterwards.
   std::unique_ptr<PrefService> local_state_;
-
-  // A/B testing infrastructure for the entire application. empty until
-  // |SetupFieldTrials()| is called.
-  std::unique_ptr<base::FieldTrialList> field_trial_list_;
 
   // Performs set up for any WebView specific field trials.
   std::unique_ptr<AwFieldTrials> aw_field_trials_;
