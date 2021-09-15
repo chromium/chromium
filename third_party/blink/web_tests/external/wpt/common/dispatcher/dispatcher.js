@@ -1,7 +1,6 @@
 // Define an universal message passing API. It works cross-origin and across
 // browsing context groups.
-const dispatcher_path =
-  "/html/cross-origin-embedder-policy/credentialless/resources/dispatcher.py";
+const dispatcher_path = "/common/dispatcher/dispatcher.py";
 const dispatcher_url = new URL(dispatcher_path, location.href).href;
 
 // Return a promise, limiting the number of concurrent accesses to a shared
@@ -78,6 +77,11 @@ const receive = async function(uuid) {
 // Returns an URL. When called, the server sends toward the `uuid` queue the
 // request headers. Useful for determining if something was requested with
 // Cookies.
-const showRequestHeaders= function(origin, uuid) {
+const showRequestHeaders = function(origin, uuid) {
   return origin + dispatcher_path + `?uuid=${uuid}&show-headers`;
+}
+
+// Same as above, except for the response is cacheable.
+const cacheableShowRequestHeaders = function(origin, uuid) {
+  return origin + dispatcher_path + `?uuid=${uuid}&cacheable&show-headers`;
 }

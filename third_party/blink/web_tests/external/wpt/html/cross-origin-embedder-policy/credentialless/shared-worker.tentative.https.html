@@ -4,8 +4,8 @@
 <script src=/resources/testharnessreport.js></script>
 <script src="/common/get-host-info.sub.js"></script>
 <script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
 <script src="./resources/common.js"></script>
-<script src="./resources/dispatcher.js"></script>
 <script>
 
 const same_origin = get_host_info().HTTPS_ORIGIN;
@@ -55,7 +55,7 @@ promise_test(async test => {
       const worker_error_1 = token();
       const worker_error_2 = token();
 
-      const w_worker_src_1 = same_origin + executor_js_path +
+      const w_worker_src_1 = same_origin + executor_worker_path +
         coep_for_worker + `&uuid=${worker_token_1}`;
       send(w_control_token, `
         let worker = new SharedWorker("${w_worker_src_1}", {});
@@ -64,7 +64,7 @@ promise_test(async test => {
         }
       `);
 
-      const w_worker_src_2 = same_origin + executor_js_path +
+      const w_worker_src_2 = same_origin + executor_worker_path +
         coep_for_worker + `&uuid=${worker_token_2}`;
       send(w_credentialless_token, `
         let worker = new SharedWorker("${w_worker_src_2}", {});

@@ -9,8 +9,12 @@ def main(request, response):
     response.headers.set(b"Access-Control-Allow-Credentials", b"true")
     response.headers.set(b'Access-Control-Allow-Methods', b'OPTIONS, GET, POST')
     response.headers.set(b'Access-Control-Allow-Headers', b'Content-Type')
-    response.headers.set(b'Cache-Control', b'no-cache, no-store, must-revalidate')
     response.headers.set(b"Access-Control-Allow-Origin", request.headers.get(b"origin") or '*')
+
+    if b"cacheable" in request.GET:
+        response.headers.set(b"Cache-Control", b"max-age=31536000")
+    else:
+        response.headers.set(b'Cache-Control', b'no-cache, no-store, must-revalidate')
 
     # CORS preflight
     if request.method == u'OPTIONS':
@@ -22,7 +26,7 @@ def main(request, response):
     # The stash is accessed concurrently by many clients. A lock is used to
     # avoid unterleaved read/write from different clients.
     with stash.lock:
-        queue = stash.take(uuid, '/coep-credentialless') or [];
+        queue = stash.take(uuid, '/common/dispatcher') or [];
 
         # Push into the |uuid| queue, the requested headers.
         if b"show-headers" in request.GET:
@@ -45,5 +49,5 @@ def main(request, response):
             else:
                 ret = queue.pop(0)
 
-        stash.put(uuid, queue, '/coep-credentialless')
+        stash.put(uuid, queue, '/common/dispatcher')
     return ret;

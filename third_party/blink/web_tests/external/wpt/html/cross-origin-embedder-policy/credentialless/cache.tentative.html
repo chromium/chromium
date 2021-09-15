@@ -2,8 +2,8 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
 <script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
 <script src="./resources/common.js"></script>
-<script src="./resources/dispatcher.js"></script>
 <script>
 
 // With COEP:credentialless, requesting a resource without credentials MUST NOT
@@ -24,8 +24,6 @@ const cookie_key = "coep_cache_key";
 const cookie_value = "coep_cache_value";
 const same_origin = get_host_info().HTTPS_ORIGIN;
 const cross_origin = get_host_info().HTTPS_REMOTE_ORIGIN;
-const cacheable_response_path =
-  "/html/cross-origin-embedder-policy/credentialless/resources/cacheable-response.py";
 
 const GetCookie = (response) => {
  return parseCookies(JSON.parse(response))[cookie_key];
@@ -49,8 +47,7 @@ const this_token = token();
 
 // A request toward a "cross-origin" cacheable response.
 const request_token = token();
-const request_url = cross_origin + cacheable_response_path +
-  `?uuid=${request_token}`;
+const request_url = cacheableShowRequestHeaders(cross_origin, request_token);
 
 promise_setup(async test => {
   await setCookie(cross_origin, cookie_key, cookie_value + cookie_same_site_none);

@@ -161,7 +161,6 @@ SET TIMEOUT: html/browsers/history/the-location-interface/*
 SET TIMEOUT: html/browsers/history/the-session-history-of-browsing-contexts/*
 SET TIMEOUT: html/browsers/offline/*
 SET TIMEOUT: html/browsers/the-window-object/*
-SET TIMEOUT: html/cross-origin-embedder-policy/credentialless/resources/dispatcher.js
 SET TIMEOUT: html/editing/dnd/*
 SET TIMEOUT: html/semantics/embedded-content/the-iframe-element/*
 SET TIMEOUT: html/semantics/embedded-content/the-img-element/*
@@ -303,6 +302,7 @@ GENERATE_TESTS: shadow-dom/untriaged/shadow-trees/upper-boundary-encapsulation/w
 
 # Intentional use of setTimeout
 SET TIMEOUT: common/security-features/resources/common.sub.js
+SET TIMEOUT: common/dispatcher/dispatcher.js
 SET TIMEOUT: css/css-fonts/font-display/font-display.html
 SET TIMEOUT: css/css-fonts/font-display/font-display-change.html
 SET TIMEOUT: css/css-fonts/font-display/font-display-change-ref.html
@@ -316,7 +316,6 @@ SET TIMEOUT: html/browsers/windows/auxiliary-browsing-contexts/resources/close-o
 SET TIMEOUT: html/cross-origin-embedder-policy/resources/reporting-worker.js
 SET TIMEOUT: html/cross-origin-opener-policy/navigate-to-aboutblank.https.html
 SET TIMEOUT: html/cross-origin-opener-policy/navigate-top-to-aboutblank.https.html
-SET TIMEOUT: html/cross-origin-opener-policy/resources/dispatcher.js
 SET TIMEOUT: html/dom/documents/dom-tree-accessors/Document.currentScript.html
 SET TIMEOUT: html/webappapis/timers/*
 SET TIMEOUT: orientation-event/resources/orientation-event-helpers.js

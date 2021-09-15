@@ -1,7 +1,3 @@
-const directory = "/html/cross-origin-opener-policy";
-const executor_path = directory + "/resources/executor.html?pipe=";
-const coep_header = '|header(Cross-Origin-Embedder-Policy,require-corp)';
-
 const same_origin = get_host_info().HTTPS_ORIGIN;
 const cross_origin = get_host_info().HTTPS_REMOTE_ORIGIN;
 

@@ -1,7 +1,6 @@
-const directory = '/html/cross-origin-embedder-policy/credentialless';
-const executor_path = directory + '/resources/executor.html?pipe=';
-const executor_js_path = directory + '/resources/executor.js?pipe=';
-const sw_executor_js_path = directory + '/resources/sw_executor.js?pipe=';
+const executor_path = '/common/dispatcher/executor.html?pipe=';
+const executor_worker_path = '/common/dispatcher/executor-worker.js?pipe=';
+const executor_service_worker_path = '/common/dispatcher/executor-service-worker.js?pipe=';
 
 // COEP
 const coep_none =
@@ -108,21 +107,21 @@ const environments = {
 
   dedicated_worker: headers => {
     const tok = token();
-    const url = window.origin + executor_js_path + headers + `&uuid=${tok}`;
+    const url = window.origin + executor_worker_path + headers + `&uuid=${tok}`;
     const context = new Worker(url);
     return [tok, new Promise(resolve => context.onerror = resolve)];
   },
 
   shared_worker: headers => {
     const tok = token();
-    const url = window.origin + executor_js_path + headers + `&uuid=${tok}`;
+    const url = window.origin + executor_worker_path + headers + `&uuid=${tok}`;
     const context = new SharedWorker(url);
     return [tok, new Promise(resolve => context.onerror = resolve)];
   },
 
   service_worker: headers => {
     const tok = token();
-    const url = window.origin + executor_js_path + headers + `&uuid=${tok}`;
+    const url = window.origin + executor_worker_path + headers + `&uuid=${tok}`;
     const scope = url; // Generate a one-time scope for service worker.
     const error = new Promise(resolve => {
       navigator.serviceWorker.register(url, {scope: scope})
