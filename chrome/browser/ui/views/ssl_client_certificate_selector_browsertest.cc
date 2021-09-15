@@ -346,8 +346,14 @@ IN_PROC_BROWSER_TEST_F(SSLClientCertificateSelectorMultiProfileTest, Escape) {
   EXPECT_CALL(*auth_requestor_, CancelCertificateSelection());
 }
 
+// TODO(crbug.com/1249869): Test is flaky on Linux.
+#if defined(OS_LINUX)
+#define MAYBE_SelectDefault DISABLED_SelectDefault
+#else
+#define MAYBE_SelectDefault SelectDefault
+#endif
 IN_PROC_BROWSER_TEST_F(SSLClientCertificateSelectorMultiProfileTest,
-                       SelectDefault) {
+                       MAYBE_SelectDefault) {
   EXPECT_CALL(*auth_requestor_1_,
               CertificateSelected(cert_identity_1_->certificate(),
                                   cert_identity_1_->ssl_private_key()));
