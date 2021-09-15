@@ -148,13 +148,13 @@ CSSSupportsParser::Result CSSSupportsParser::ConsumeSupportsInParens(
   // ( <supports-condition> )
   if (IsEnclosedSupportsCondition(first_token, stream.Peek())) {
     Result result = ConsumeSupportsCondition(stream);
-    return guard.AtEndOfBlock() ? result : Result::kParseFailure;
+    return stream.AtEnd() ? result : Result::kParseFailure;
   }
 
   // <supports-feature>
   if (IsSupportsFeature(first_token, stream.Peek())) {
     Result result = ConsumeSupportsFeature(first_token, stream);
-    return guard.AtEndOfBlock() ? result : Result::kParseFailure;
+    return stream.AtEnd() ? result : Result::kParseFailure;
   }
 
   // <general-enclosed>

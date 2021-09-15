@@ -53,10 +53,6 @@ StringView CSSTokenizer::StringRangeAt(wtf_size_t start,
   return input_.RangeAt(start, length);
 }
 
-wtf_size_t CSSTokenizer::BlockStackDepth() const {
-  return block_stack_.size();
-}
-
 CSSParserToken CSSTokenizer::TokenizeSingle() {
   while (true) {
     prev_offset_ = input_.Offset();
