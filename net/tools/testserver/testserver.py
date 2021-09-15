@@ -86,21 +86,6 @@ class WebSocketOptions:
         'test:test').decode()
 
 
-class RecordingSSLSessionCache(object):
-  """RecordingSSLSessionCache acts as a TLS session cache and maintains a log of
-  lookups and inserts in order to test session cache behaviours."""
-
-  def __init__(self):
-    self.log = []
-
-  def __getitem__(self, sessionID):
-    self.log.append(('lookup', sessionID))
-    raise KeyError()
-
-  def __setitem__(self, sessionID, session):
-    self.log.append(('insert', sessionID))
-
-
 class HTTPServer(testserver_base.ClientRestrictingServerMixIn,
                  testserver_base.BrokenPipeHandlerMixIn,
                  testserver_base.StoppableHTTPServer):
@@ -127,9 +112,8 @@ class HTTPSServer(tlslite.api.TLSSocketServerMixIn,
   def __init__(self, server_address, request_hander_class, pem_cert_and_key,
                ssl_client_auth, ssl_client_cas, ssl_client_cert_types,
                ssl_bulk_ciphers, ssl_key_exchanges, alpn_protocols,
-               npn_protocols, record_resume_info, tls_intolerant,
-               tls_intolerance_type, signed_cert_timestamps,
-               fallback_scsv_enabled, ocsp_response,
+               npn_protocols, tls_intolerant, tls_intolerance_type,
+               signed_cert_timestamps, fallback_scsv_enabled, ocsp_response,
                alert_after_handshake, disable_channel_id, disable_ems,
                simulate_tls13_downgrade, simulate_tls12_downgrade,
                tls_max_version):
@@ -187,12 +171,7 @@ class HTTPSServer(tlslite.api.TLSSocketServerMixIn,
       self.ssl_handshake_settings.maxVersion = (3, tls_max_version)
     self.ssl_handshake_settings.alpnProtos=alpn_protocols;
 
-    if record_resume_info:
-      # If record_resume_info is true then we'll replace the session cache with
-      # an object that records the lookups and inserts that it sees.
-      self.session_cache = RecordingSSLSessionCache()
-    else:
-      self.session_cache = tlslite.api.SessionCache()
+    self.session_cache = tlslite.api.SessionCache()
     testserver_base.StoppableHTTPServer.__init__(self,
                                                  server_address,
                                                  request_hander_class)
@@ -266,7 +245,6 @@ class TestPageHandler(testserver_base.BasePageHandler):
       self.ServerRedirectHandler,
       self.CrossSiteRedirectHandler,
       self.ClientRedirectHandler,
-      self.GetSSLSessionCacheHandler,
       self.SSLManySmallRecords,
       self.GetChannelID,
       self.GetClientCert,
@@ -1332,26 +1310,6 @@ class TestPageHandler(testserver_base.BasePageHandler):
 
     return True
 
-  def GetSSLSessionCacheHandler(self):
-    """Send a reply containing a log of the session cache operations."""
-
-    if not self._ShouldHandleRequest('/ssl-session-cache'):
-      return False
-
-    self.send_response(200)
-    self.send_header('Content-Type', 'text/plain')
-    self.end_headers()
-    try:
-      log = self.server.session_cache.log
-    except AttributeError:
-      self.wfile.write('Pass --https-record-resume in order to use' +
-                       ' this request')
-      return True
-
-    for (action, sessionID) in log:
-      self.wfile.write('%s\t%s\n' % (action, bytes(sessionID).encode('hex')))
-    return True
-
   def SSLManySmallRecords(self):
     """Sends a reply consisting of a variety of small writes. These will be
     translated into a series of small SSL records when used over an HTTPS
@@ -1706,7 +1664,6 @@ class ServerRunner(testserver_base.TestServerRunner):
                              self.options.ssl_key_exchange,
                              self.options.alpn_protocols,
                              self.options.npn_protocols,
-                             self.options.record_resume,
                              self.options.tls_intolerant,
                              self.options.tls_intolerance_type,
                              self.options.signed_cert_timestamps_tls_ext.decode(
@@ -1842,12 +1799,6 @@ class ServerRunner(testserver_base.TestServerRunner):
                                   'will be enabled. This causes the server to '
                                   'reject fallback connections from compatible '
                                   'clients (e.g. Chrome).')
-    self.option_parser.add_option('--https-record-resume',
-                                  dest='record_resume', const=True,
-                                  default=False, action='store_const',
-                                  help='Record resumption cache events rather '
-                                  'than resuming as normal. Allows the use of '
-                                  'the /ssl-session-cache request')
     self.option_parser.add_option('--ssl-client-auth', action='store_true',
                                   help='Require SSL client auth on every '
                                   'connection.')

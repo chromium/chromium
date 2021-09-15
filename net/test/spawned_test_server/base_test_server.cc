@@ -501,8 +501,6 @@ bool BaseTestServer::GenerateArguments(base::DictionaryValue* arguments) const {
       arguments->SetKey("ssl-bulk-cipher",
                         base::Value(std::move(bulk_cipher_values)));
     }
-    if (ssl_options_.record_resume)
-      arguments->SetKey("https-record-resume", base::Value());
     if (ssl_options_.tls_intolerant != SSLOptions::TLS_INTOLERANT_NONE) {
       arguments->SetIntKey("tls-intolerant", ssl_options_.tls_intolerant);
       arguments->SetKey(

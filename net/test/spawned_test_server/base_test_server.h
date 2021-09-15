@@ -178,11 +178,6 @@ class BaseTestServer {
     // ciphers are acceptable.
     int bulk_ciphers = BULK_CIPHER_ANY;
 
-    // If true, pass the --https-record-resume argument to testserver.py which
-    // causes it to log session cache actions and echo the log on
-    // /ssl-session-cache.
-    bool record_resume = false;
-
     // If not TLS_INTOLERANT_NONE, the server will abort any handshake that
     // negotiates an intolerant TLS version in order to test version fallback.
     TLSIntolerantLevel tls_intolerant = TLS_INTOLERANT_NONE;

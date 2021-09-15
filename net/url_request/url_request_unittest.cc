@@ -10194,14 +10194,12 @@ TEST_F(HTTPSRequestTest, ClientAuthFailSigningRetry) {
 }
 
 TEST_F(HTTPSRequestTest, ResumeTest) {
-  // Test that we attempt a session resume when making two connections to the
+  // Test that we attempt resume sessions when making two connections to the
   // same host.
-  SpawnedTestServer::SSLOptions ssl_options;
-  ssl_options.record_resume = true;
-  SpawnedTestServer test_server(
-      SpawnedTestServer::TYPE_HTTPS, ssl_options,
-      base::FilePath(FILE_PATH_LITERAL("net/data/ssl")));
+  EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTPS);
+  RegisterDefaultHandlers(&test_server);
   ASSERT_TRUE(test_server.Start());
+  const auto url = test_server.GetURL("/");
 
   default_context_.http_transaction_factory()
       ->GetSession()
@@ -10210,8 +10208,7 @@ TEST_F(HTTPSRequestTest, ResumeTest) {
   {
     TestDelegate d;
     std::unique_ptr<URLRequest> r(default_context_.CreateRequest(
-        test_server.GetURL("ssl-session-cache"), DEFAULT_PRIORITY, &d,
-        TRAFFIC_ANNOTATION_FOR_TESTS));
+        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
 
     r->Start();
     EXPECT_TRUE(r->is_pending());
@@ -10219,6 +10216,7 @@ TEST_F(HTTPSRequestTest, ResumeTest) {
     d.RunUntilComplete();
 
     EXPECT_EQ(1, d.response_started_count());
+    EXPECT_EQ(SSLInfo::HANDSHAKE_FULL, r->ssl_info().handshake_type);
   }
 
   reinterpret_cast<HttpCache*>(default_context_.http_transaction_factory())
@@ -10227,55 +10225,25 @@ TEST_F(HTTPSRequestTest, ResumeTest) {
   {
     TestDelegate d;
     std::unique_ptr<URLRequest> r(default_context_.CreateRequest(
-        test_server.GetURL("ssl-session-cache"), DEFAULT_PRIORITY, &d,
-        TRAFFIC_ANNOTATION_FOR_TESTS));
+        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
 
     r->Start();
     EXPECT_TRUE(r->is_pending());
 
     d.RunUntilComplete();
 
-    // The response will look like;
-    //   lookup uvw (TLS 1.3's compatibility session ID)
-    //   insert abc
-    //   lookup abc
-    //   insert xyz
-    //
-    // With a newline at the end which makes the split think that there are
-    // four lines.
-
     EXPECT_EQ(1, d.response_started_count());
-    std::vector<std::string> lines = base::SplitString(
-        d.data_received(), "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-    ASSERT_EQ(5u, lines.size()) << d.data_received();
-
-    std::string session_id;
-
-    for (size_t i = 0; i < 3; i++) {
-      std::vector<std::string> parts = base::SplitString(
-          lines[i], "\t", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-      ASSERT_EQ(2u, parts.size());
-      if (i % 2 == 1) {
-        EXPECT_EQ("insert", parts[0]);
-        session_id = parts[1];
-      } else {
-        EXPECT_EQ("lookup", parts[0]);
-        if (i != 0)
-          EXPECT_EQ(session_id, parts[1]);
-      }
-    }
+    EXPECT_EQ(SSLInfo::HANDSHAKE_RESUME, r->ssl_info().handshake_type);
   }
 }
 
+// Test that sessions aren't resumed across HttpNetworkSessions.
 TEST_F(HTTPSRequestTest, SSLSessionCacheShardTest) {
-  // Test that sessions aren't resumed when the value of ssl_session_cache_shard
-  // differs.
-  SpawnedTestServer::SSLOptions ssl_options;
-  ssl_options.record_resume = true;
-  SpawnedTestServer test_server(
-      SpawnedTestServer::TYPE_HTTPS, ssl_options,
-      base::FilePath(FILE_PATH_LITERAL("net/data/ssl")));
+  // Start a server.
+  EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTPS);
+  RegisterDefaultHandlers(&test_server);
   ASSERT_TRUE(test_server.Start());
+  const auto url = test_server.GetURL("/");
 
   default_context_.http_transaction_factory()
       ->GetSession()
@@ -10284,8 +10252,7 @@ TEST_F(HTTPSRequestTest, SSLSessionCacheShardTest) {
   {
     TestDelegate d;
     std::unique_ptr<URLRequest> r(default_context_.CreateRequest(
-        test_server.GetURL("/"), DEFAULT_PRIORITY, &d,
-        TRAFFIC_ANNOTATION_FOR_TESTS));
+        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
 
     r->Start();
     EXPECT_TRUE(r->is_pending());
@@ -10295,7 +10262,7 @@ TEST_F(HTTPSRequestTest, SSLSessionCacheShardTest) {
     EXPECT_EQ(1, d.response_started_count());
   }
 
-  // Now create a new HttpCache with a different ssl_session_cache_shard value.
+  // Now create a new HttpNetworkSession.
   HttpNetworkSessionContext session_context;
   session_context.host_resolver = default_context_.host_resolver();
   session_context.cert_verifier = default_context_.cert_verifier();
@@ -10322,8 +10289,7 @@ TEST_F(HTTPSRequestTest, SSLSessionCacheShardTest) {
   {
     TestDelegate d;
     std::unique_ptr<URLRequest> r(default_context_.CreateRequest(
-        test_server.GetURL("ssl-session-cache"), DEFAULT_PRIORITY, &d,
-        TRAFFIC_ANNOTATION_FOR_TESTS));
+        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
 
     r->Start();
     EXPECT_TRUE(r->is_pending());
@@ -10487,12 +10453,10 @@ class HTTPSSessionTest : public TestWithTaskEnvironment {
 // Tests that session resumption is not attempted if an invalid certificate
 // is presented.
 TEST_F(HTTPSSessionTest, DontResumeSessionsForInvalidCertificates) {
-  SpawnedTestServer::SSLOptions ssl_options;
-  ssl_options.record_resume = true;
-  SpawnedTestServer test_server(
-      SpawnedTestServer::TYPE_HTTPS, ssl_options,
-      base::FilePath(FILE_PATH_LITERAL("net/data/ssl")));
+  EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTPS);
+  RegisterDefaultHandlers(&test_server);
   ASSERT_TRUE(test_server.Start());
+  const auto url = test_server.GetURL("/");
 
   default_context_.http_transaction_factory()
       ->GetSession()
@@ -10503,8 +10467,7 @@ TEST_F(HTTPSSessionTest, DontResumeSessionsForInvalidCertificates) {
   {
     TestDelegate d;
     std::unique_ptr<URLRequest> r(default_context_.CreateRequest(
-        test_server.GetURL("/"), DEFAULT_PRIORITY, &d,
-        TRAFFIC_ANNOTATION_FOR_TESTS));
+        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
 
     r->Start();
     EXPECT_TRUE(r->is_pending());
@@ -10523,8 +10486,7 @@ TEST_F(HTTPSSessionTest, DontResumeSessionsForInvalidCertificates) {
   {
     TestDelegate d;
     std::unique_ptr<URLRequest> r(default_context_.CreateRequest(
-        test_server.GetURL("ssl-session-cache"), DEFAULT_PRIORITY, &d,
-        TRAFFIC_ANNOTATION_FOR_TESTS));
+        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
 
     r->Start();
     EXPECT_TRUE(r->is_pending());
