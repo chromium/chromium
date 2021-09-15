@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals} from 'chrome://test/chai_assert.js';
 import {mockUtilVisitURL} from '../../../../common/js/mock_util.js';
 import {Banner} from '../../../../externs/banner.js';
@@ -12,7 +13,7 @@ import {EducationalBanner} from './educational_banner.js';
 let educationalBanner;
 
 export function setUp() {
-  const html = `<educational-banner>
+  const htmlTemplate = `<educational-banner>
       <span slot="title">Banner title</span>
       <span slot="subtitle">Subtitle</span>
       <button slot="extra-button" href="http://test.com">
@@ -23,7 +24,7 @@ export function setUp() {
       </button>
     </educational-banner>
     `;
-  document.body.innerHTML = html;
+  document.body.innerHTML = htmlTemplate;
   educationalBanner = /** @type{!EducationalBanner} */ (
       document.body.querySelector('educational-banner'));
 }
@@ -46,7 +47,7 @@ export async function testDismissHandlerEmitsEvent(done) {
  * supplied.
  */
 export async function testDefaultDismissButtonEmitsEvent(done) {
-  const html = `<educational-banner>
+  const htmlTemplate = `<educational-banner>
       <span slot="title">Banner title text</span>
       <span slot="subtitle">Banner subtitle text</span>
       <button slot="extra-button" href="http://test.com">
@@ -54,7 +55,7 @@ export async function testDefaultDismissButtonEmitsEvent(done) {
       </button>
     </educational-banner>
     `;
-  document.body.innerHTML = html;
+  document.body.innerHTML = htmlTemplate;
   educationalBanner = /** @type{!EducationalBanner} */ (
       document.body.querySelector('educational-banner'));
 
@@ -95,21 +96,53 @@ export function testEducationalBannerDefaults() {
  * banner emits a DISMISS_FOREVER event.
  */
 export async function testDismissBannerWhenClickedAttributeWorks(done) {
-  const html = `<educational-banner>
+  const htmlTemplate = `<educational-banner>
       <span slot="title">Banner title</span>
       <span slot="subtitle">Subtitle</span>
       <button slot="extra-button" href="http://test.com" dismiss-banner-when-clicked>
-        Test Banner
+        Test Button
       </button>
     </educational-banner>
     `;
-  document.body.innerHTML = html;
+  document.body.innerHTML = htmlTemplate;
   educationalBanner = /** @type{!EducationalBanner} */ (
       document.body.querySelector('educational-banner'));
-  const handler = () => {
+  const handler = (event) => {
+    assertEquals(event.detail.banner.constructor, EducationalBanner);
     done();
   };
   educationalBanner.addEventListener(
       Banner.Event.BANNER_DISMISSED_FOREVER, handler);
   educationalBanner.querySelector('[slot="extra-button"]').click();
+}
+
+/**
+ * Test that when the custom attribute to dismiss a banner emits a
+ * DISMISS_FOREVER event, the banner instance attached is the correct instance.
+ */
+export async function testDismissWhenClickedAttributeWorksComponents(done) {
+  const bannerTagName = 'test-educational-banner-dismiss-attribute';
+
+  const htmlTemplate = html`<educational-banner>
+    <button slot="extra-button" href="http://test.com" dismiss-banner-when-clicked>
+      Test Button
+    </button>
+  </educational-banner>`;
+
+  class TestEducationalBanner extends EducationalBanner {
+    getTemplate() {
+      return htmlTemplate.content.cloneNode(true);
+    }
+  }
+
+  customElements.define(bannerTagName, TestEducationalBanner);
+
+  document.body.innerHTML = `<${bannerTagName} />`;
+  const banner = document.body.querySelector(bannerTagName);
+  const handler = (event) => {
+    assertEquals(event.detail.banner.constructor, TestEducationalBanner);
+    done();
+  };
+  banner.addEventListener(Banner.Event.BANNER_DISMISSED_FOREVER, handler);
+  banner.shadowRoot.querySelector('[slot="extra-button"]').click();
 }

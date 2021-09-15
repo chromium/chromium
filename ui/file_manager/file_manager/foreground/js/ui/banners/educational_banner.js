@@ -68,6 +68,23 @@ export class EducationalBanner extends Banner {
   }
 
   /**
+   * Get the concrete banner instance.
+   * @returns {!EducationalBanner}
+   * @private
+   */
+  getBannerInstance_() {
+    const parent = this.getRootNode() && this.getRootNode().host;
+    let bannerInstance = this;
+    // In the case the educational-banner web component is not the root node
+    // (e.g. it is contained within another web component) prefer the outer
+    // component.
+    if (parent && parent instanceof EducationalBanner) {
+      bannerInstance = parent;
+    }
+    return bannerInstance;
+  }
+
+  /**
    * Called when the web component is connected to the DOM. This will be called
    * for both the inner warning-banner component and the concrete
    * implementations that extend from it.
@@ -98,9 +115,12 @@ export class EducationalBanner extends Banner {
       extraButton.addEventListener('click', (e) => {
         util.visitURL(extraButton.getAttribute('href'));
         if (extraButton.hasAttribute('dismiss-banner-when-clicked')) {
-          this.dispatchEvent(new CustomEvent(
-              Banner.Event.BANNER_DISMISSED_FOREVER,
-              {bubbles: true, composed: true, detail: {banner: this}}));
+          this.dispatchEvent(
+              new CustomEvent(Banner.Event.BANNER_DISMISSED_FOREVER, {
+                bubbles: true,
+                composed: true,
+                detail: {banner: this.getBannerInstance_()}
+              }));
         }
         e.preventDefault();
       });
@@ -133,16 +153,11 @@ export class EducationalBanner extends Banner {
    * @private
    */
   onDismissClickHandler_(event) {
-    const parent = this.getRootNode() && this.getRootNode().host;
-    let bannerInstance = this;
-    // In the case the warning-banner web component is not the root node (e.g.
-    // it is contained within another web component) prefer the outer component.
-    if (parent && parent instanceof EducationalBanner) {
-      bannerInstance = parent;
-    }
-    this.dispatchEvent(new CustomEvent(
-        Banner.Event.BANNER_DISMISSED_FOREVER,
-        {bubbles: true, composed: true, detail: {banner: bannerInstance}}));
+    this.dispatchEvent(new CustomEvent(Banner.Event.BANNER_DISMISSED_FOREVER, {
+      bubbles: true,
+      composed: true,
+      detail: {banner: this.getBannerInstance_()}
+    }));
   }
 }
 
