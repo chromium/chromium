@@ -136,6 +136,16 @@ struct TestCase {
     return *this;
   }
 
+  TestCase& EnableBannersFramework() {
+    options.enable_banners_framework = true;
+    return *this;
+  }
+
+  TestCase& DisableBannersFramework() {
+    options.enable_banners_framework = false;
+    return *this;
+  }
+
   std::string GetFullName() const {
     std::string full_name = name;
 
@@ -168,6 +178,9 @@ struct TestCase {
 
     if (options.enable_trash)
       full_name += "_Trash";
+
+    if (options.enable_banners_framework)
+      full_name += "_BannersFramework";
 
     return full_name;
   }
@@ -1244,6 +1257,12 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     AndroidPhotos, /* android_photos.js */
     FilesAppBrowserTest,
     ::testing::Values(
-        TestCase("androidPhotosBanner").EnablePhotosDocumentsProvider()));
+        // TODO(crbug.com/1228128): Remove disabled test when framework is live.
+        TestCase("androidPhotosBanner")
+            .EnablePhotosDocumentsProvider()
+            .EnableBannersFramework(),
+        TestCase("androidPhotosBanner")
+            .EnablePhotosDocumentsProvider()
+            .DisableBannersFramework()));
 
 }  // namespace file_manager

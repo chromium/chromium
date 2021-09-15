@@ -1733,6 +1733,12 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(chromeos::features::kFilesTrash);
   }
 
+  if (options.enable_banners_framework) {
+    enabled_features.push_back(chromeos::features::kFilesBannerFramework);
+  } else {
+    disabled_features.push_back(chromeos::features::kFilesBannerFramework);
+  }
+
   if (command_line->HasSwitch(switches::kDevtoolsCodeCoverage) &&
       options.guest_mode != IN_INCOGNITO) {
     devtools_code_coverage_dir_ =
@@ -2730,6 +2736,11 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
 
   if (name == "isTrashEnabled") {
     *output = options.enable_trash ? "true" : "false";
+    return;
+  }
+
+  if (name == "isBannersFrameworkEnabled") {
+    *output = options.enable_banners_framework ? "true" : "false";
     return;
   }
 

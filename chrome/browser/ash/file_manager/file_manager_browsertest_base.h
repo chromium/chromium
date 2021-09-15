@@ -107,6 +107,9 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
 
     // Whether test should run Files app UI as JS modules.
     bool enable_js_modules = true;
+
+    // Whether test should run with the new Banners framework feature.
+    bool enable_banners_framework = false;
   };
 
  protected:
