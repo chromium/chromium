@@ -21,8 +21,8 @@ namespace {
 
 // If the priority class is not NORMAL_PRIORITY_CLASS, then the function makes:
 // - the priority class of the process NORMAL_PRIORITY_CLASS
+// - the process memory priority MEMORY_PRIORITY_NORMAL
 // - the current thread priority THREAD_PRIORITY_NORMAL
-// - the thread memory priority MEMORY_PRIORITY_NORMAL
 void FixExecutionPriorities() {
   const HANDLE process = ::GetCurrentProcess();
   const DWORD priority_class = ::GetPriorityClass(process);
@@ -30,18 +30,17 @@ void FixExecutionPriorities() {
     return;
   ::SetPriorityClass(process, NORMAL_PRIORITY_CLASS);
 
-  const HANDLE thread = ::GetCurrentThread();
-  ::SetThreadPriority(thread, THREAD_PRIORITY_NORMAL);
-
-  static const auto set_thread_information_fn =
-      reinterpret_cast<decltype(&::SetThreadInformation)>(::GetProcAddress(
-          ::GetModuleHandle(L"Kernel32.dll"), "SetThreadInformation"));
-  if (!set_thread_information_fn)
+  static const auto set_process_information_fn =
+      reinterpret_cast<decltype(&::SetProcessInformation)>(::GetProcAddress(
+          ::GetModuleHandle(L"Kernel32.dll"), "SetProcessInformation"));
+  if (!set_process_information_fn)
     return;
   MEMORY_PRIORITY_INFORMATION memory_priority = {};
   memory_priority.MemoryPriority = MEMORY_PRIORITY_NORMAL;
-  set_thread_information_fn(thread, ThreadMemoryPriority, &memory_priority,
-                            sizeof(memory_priority));
+  set_process_information_fn(process, ProcessMemoryPriority, &memory_priority,
+                             sizeof(memory_priority));
+
+  ::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_NORMAL);
 }
 
 }  // namespace
