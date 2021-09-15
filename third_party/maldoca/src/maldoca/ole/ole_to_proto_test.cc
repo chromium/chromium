@@ -14,19 +14,18 @@
 
 #include "maldoca/ole/ole_to_proto.h"
 
+#include "gmock/gmock.h"
+#include "gtest/gtest.h"
 #include "absl/status/statusor.h"
 #include "absl/strings/escaping.h"
 #include "absl/strings/string_view.h"
-#include "gmock/gmock.h"
-#include "gtest/gtest.h"
 #include "maldoca/base/file.h"
-#include "maldoca/base/get_runfiles_dir.h"
+#include "maldoca/base/testing/test_utils.h"
 #include "maldoca/base/status.h"
 #include "maldoca/base/testing/protocol-buffer-matchers.h"
 #include "maldoca/base/testing/status_matchers.h"
 
 namespace {
-
 using ::maldoca::ole::OleFile;
 using ::maldoca::ole::OleToProtoSettings;
 using ::maldoca::testing::EqualsProto;
@@ -37,9 +36,7 @@ using ::testing::SizeIs;
 using ::testing::StrEq;
 
 std::string TestFilename(absl::string_view filename) {
-  return maldoca::file::JoinPath(
-      maldoca::GetRunfilesDir(),
-      absl::StrCat("maldoca/ole/testdata/ole/", filename));
+  return maldoca::testing::OleTestFilename(filename, "ole/");
 }
 
 std::string GetTestContent(absl::string_view filename) {
@@ -309,3 +306,12 @@ TEST(OleToProtoTest, StatusPayload) {
   LOG(INFO) << "StatusPayload_status" << status_or.status();
 }
 }  // namespace
+
+int main(int argc, char **argv) {
+  ::testing::InitGoogleTest(&argc, argv);
+#ifdef MALDOCA_CHROME
+  // mini_chromium needs InitLogging
+  maldoca::InitLogging();
+#endif
+  return RUN_ALL_TESTS();
+}

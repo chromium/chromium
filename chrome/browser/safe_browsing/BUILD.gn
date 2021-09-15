@@ -1,6 +1,5 @@
 # Copyright 2014 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
 
 import("//components/safe_browsing/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -295,6 +294,13 @@ static_library("safe_browsing") {
           "incident_reporting/platform_state_store_win.cc",
         ]
       }
+
+      if (is_linux || is_win) {
+        sources += [
+          "download_protection/document_analysis_service.cc",
+          "download_protection/document_analysis_service.h",
+        ]
+      }
       deps += [
         ":advanced_protection",
         ":verdict_cache_manager_factory",
@@ -334,8 +340,12 @@ static_library("safe_browsing") {
           "//chrome/browser/safe_browsing/incident_reporting:state_store_data_proto",
           "//chrome/common:version_header",
         ]
-      } else if (is_linux) {
-        deps += [ "//chrome/common/safe_browsing:document_analyzer_results" ]
+      }
+      if (is_linux || is_win) {
+        deps += [
+          "//chrome/common/safe_browsing:document_analyzer_results",
+          "//chrome/services/file_util/public/mojom",
+        ]
       }
     } else if (safe_browsing_mode == 2) {
       if (is_android) {

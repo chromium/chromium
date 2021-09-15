@@ -19,6 +19,7 @@
 #ifndef MALDOCA_BASE_FILE_H_
 #define MALDOCA_BASE_FILE_H_
 
+#include <algorithm>
 #include <cstdio>
 #include <memory>
 #include <string>

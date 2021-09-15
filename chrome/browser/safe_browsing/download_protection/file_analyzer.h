@@ -11,11 +11,14 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/common/safe_browsing/binary_feature_extractor.h"
-#include "chrome/common/safe_browsing/document_analyzer_results.h"
 #include "chrome/services/file_util/public/cpp/sandboxed_rar_analyzer.h"
 #include "chrome/services/file_util/public/cpp/sandboxed_zip_analyzer.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
+
+#if defined(OS_LINUX) || defined(OS_WIN)
+#include "chrome/services/file_util/public/cpp/sandboxed_document_analyzer.h"
+#endif
 
 #if defined(OS_MAC)
 #include "chrome/common/safe_browsing/disk_image_type_sniffer_mac.h"
@@ -80,7 +83,7 @@ class FileAnalyzer {
     // For archive files, the number of contained directories.
     int directory_count = 0;
 
-    // For office documents, the features and metadata extracted from the file
+    // For office documents, the features and metadata extracted from the file.
     ClientDownloadRequest::DocumentSummary document_summary;
   };
 
@@ -108,7 +111,7 @@ class FileAnalyzer {
       const safe_browsing::ArchiveAnalyzerResults& archive_results);
 #endif
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_WIN)
   void StartExtractDocumentFeatures();
   void OnDocumentAnalysisFinished(
       const DocumentAnalyzerResults& document_results);
@@ -129,7 +132,8 @@ class FileAnalyzer {
   scoped_refptr<SandboxedDMGAnalyzer> dmg_analyzer_;
 #endif
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_WIN)
+  scoped_refptr<SandboxedDocumentAnalyzer> document_analyzer_;
   base::TimeTicks document_analysis_start_time_;
 #endif
 

@@ -57,6 +57,18 @@ cc_library(
     }),
 )
 
+cc_library(
+    name = "test_utils",
+    testonly = 1,
+    hdrs = ["test_utils.h"],
+    copts = DEFAULT_MALDOCA_COPTS,
+    deps = [
+        "//maldoca/base:get_runfiles_dir",
+        "//maldoca/base:file",
+        "@com_google_absl//absl/strings",
+    ],
+)
+
 cc_test(
     name = "status_matchers_test",
     size = "small",

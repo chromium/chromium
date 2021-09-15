@@ -24,8 +24,8 @@
 namespace {
 
 using absl::OkStatus;
-using maldoca::testing::IsOkAndHolds;
-using maldoca::testing::StatusIs;
+using ::maldoca::testing::IsOkAndHolds;
+using ::maldoca::testing::StatusIs;
 using testing::_;
 using testing::Not;
 

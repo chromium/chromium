@@ -3709,6 +3709,18 @@ if (!is_android && !is_fuchsia) {
         "//components/safe_browsing/content/browser:safe_browsing_blocking_page",
         "//components/safe_browsing/core/common/fbs:client_model",
       ]
+
+      if (is_win || is_linux) {
+        sources += [
+          "../browser/safe_browsing/download_protection/file_analyzer_browsertest.cc",
+        ]
+
+        deps += [
+          "//chrome/services/file_util:file_util",
+          "//chrome/services/file_util/public/cpp:cpp"
+        ]
+      }
+
     }
 
     if (enable_captive_portal_detection) {

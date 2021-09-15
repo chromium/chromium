@@ -23,6 +23,7 @@
 #include "google/protobuf/message.h"  // nogncheck
 #endif
 #include "maldoca/base/digest.h"
+#include "maldoca/base/encoding_error.h"
 #include "maldoca/base/status.h"
 #include "maldoca/base/status_macros.h"
 #include "maldoca/service/proto/doc_type.pb.h"
@@ -301,7 +302,16 @@ absl::Status DocProcessor::ProcessDoc(absl::string_view file_name,
     }
   }
 
-  MALDOCA_RETURN_IF_ERROR(current_document_pipeline->Process(doc));
+  absl::Status status = current_document_pipeline->Process(doc);
+  if (!status.ok()) {
+    std::string failed_encoding = ::maldoca::GetFailedEncoding();
+    if (!failed_encoding.empty()) {
+      return maldoca::UnimplementedError(failed_encoding,
+                                         MaldocaErrorCode::MISSING_ENCODING);
+    } else {
+      return status;
+    }
+  }
 
   response->set_allocated_parsed_document(
       current_document_pipeline->ReleaseParsedDocument());

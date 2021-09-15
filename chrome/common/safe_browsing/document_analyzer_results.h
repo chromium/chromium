@@ -2,13 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// This file contains the document analyzer analysis implementation for download
-// protection, which runs in a sandboxed utility process.
+// This file contains the result type of the document analysis that takes place
+// in document_analyzer.cc
+
 #ifndef CHROME_COMMON_SAFE_BROWSING_DOCUMENT_ANALYZER_RESULTS_H_
 #define CHROME_COMMON_SAFE_BROWSING_DOCUMENT_ANALYZER_RESULTS_H_
-#include <string>
+
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
+
 namespace safe_browsing {
+
 struct DocumentAnalyzerResults {
   bool success{false};
   ClientDownloadRequest::DocumentProcessingInfo::MaldocaErrorType error_code;
@@ -18,5 +21,7 @@ struct DocumentAnalyzerResults {
   DocumentAnalyzerResults(const DocumentAnalyzerResults& other);
   ~DocumentAnalyzerResults();
 };
+
 }  // namespace safe_browsing
+
 #endif  // CHROME_COMMON_SAFE_BROWSING_DOCUMENT_ANALYZER_RESULTS_H_

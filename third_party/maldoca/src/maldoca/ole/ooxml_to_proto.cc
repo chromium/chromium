@@ -32,7 +32,7 @@
 
 namespace maldoca {
 
-using maldoca::ooxml::OoxmlToProtoSettings;
+using ::maldoca::ooxml::OoxmlToProtoSettings;
 using utils::XmlCharDeleter;
 using utils::XmlDocDeleter;
 

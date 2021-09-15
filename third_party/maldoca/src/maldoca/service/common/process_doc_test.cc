@@ -21,11 +21,11 @@
 #include "gtest/gtest.h"
 #include "maldoca/base/digest.h"
 #include "maldoca/base/file.h"
-#include "maldoca/base/get_runfiles_dir.h"
 #include "maldoca/base/logging.h"
 #include "maldoca/base/parse_text_proto.h"
 #include "maldoca/base/testing/protocol-buffer-matchers.h"
 #include "maldoca/base/testing/status_matchers.h"
+#include "maldoca/base/testing/test_utils.h"
 #include "maldoca/service/common/utils.h"
 #include "maldoca/service/proto/maldoca_service.pb.h"
 
@@ -34,13 +34,9 @@ namespace {
 
 using ::maldoca::ParseTextOrDie;
 using ::maldoca::testing::EqualsProto;
+using ::maldoca::testing::ServiceTestFilename;
 using ::maldoca::testing::proto::IgnoringRepeatedFieldOrdering;
 using ::testing::Test;
-
-std::string TestFilename(absl::string_view filename) {
-  return file::JoinPath(GetRunfilesDir(),
-                        absl::StrCat("maldoca/service/testdata/", filename));
-}
 
 class ProcessDocTest : public Test {
  protected:
@@ -165,14 +161,14 @@ class ProcessDocTest : public Test {
     } else {
       request.set_doc_type(::maldoca::utils::InferDocTypeByName(test_file));
     }
-    MALDOCA_ASSERT_OK(file::GetContents(TestFilename(test_file),
+    MALDOCA_ASSERT_OK(file::GetContents(ServiceTestFilename(test_file),
                                         request.mutable_doc_content()));
     ProcessDocumentResponse response;
     MALDOCA_ASSERT_OK(processor->ProcessDoc(&request, &response));
 
     ProcessDocumentResponse expected_response;
     MALDOCA_ASSERT_OK(file::GetTextProto(
-        TestFilename(expected_response_file_name), &expected_response));
+        ServiceTestFilename(expected_response_file_name), &expected_response));
 
 #ifdef MALDOCA_CHROME
     // remove features from the expected since not doing any extraction
@@ -222,7 +218,7 @@ TEST_F(ProcessDocTest, DisableMagician) {
   std::string test_file(
       "ffc835c9a950beda17fa79dd0acf28d1df3835232877b5fdd512b3df2ffb2431.doc");
   request.set_file_name(test_file);
-  MALDOCA_ASSERT_OK(file::GetContents(TestFilename(test_file),
+  MALDOCA_ASSERT_OK(file::GetContents(ServiceTestFilename(test_file),
                                       request.mutable_doc_content()));
   ProcessDocumentResponse response;
   // Magician is disabled and the doc_type is not set so should fail
@@ -378,3 +374,12 @@ TEST_F(ProcessDocTest, HandlerOrdering) {
 
 }  // namespace
 }  // namespace maldoca
+
+int main(int argc, char **argv) {
+  ::testing::InitGoogleTest(&argc, argv);
+#ifdef MALDOCA_CHROME
+  // mini_chromium needs InitLogging
+  maldoca::InitLogging();
+#endif
+  return RUN_ALL_TESTS();
+}

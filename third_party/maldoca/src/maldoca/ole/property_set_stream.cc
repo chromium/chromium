@@ -20,15 +20,15 @@
 #include "maldoca/ole/dir.h"
 #include "maldoca/ole/oss_utils.h"
 
-using maldoca::OLEPropertySetStream;
-using maldoca::StatusOr;
-using maldoca::ole::Dictionary;
-using maldoca::ole::DictionaryEntry;
-using maldoca::ole::Property;
-using maldoca::ole::PropertySet;
-using maldoca::ole::PropertySetStream;
-using maldoca::ole::VtValue;
-using maldoca::ole::VtVector;
+using ::maldoca::OLEPropertySetStream;
+using ::maldoca::StatusOr;
+using ::maldoca::ole::Dictionary;
+using ::maldoca::ole::DictionaryEntry;
+using ::maldoca::ole::Property;
+using ::maldoca::ole::PropertySet;
+using ::maldoca::ole::PropertySetStream;
+using ::maldoca::ole::VtValue;
+using ::maldoca::ole::VtVector;
 
 // use default Latin1 code page (1252) if nothing else is defined in the
 // PropertySetStream
@@ -117,7 +117,7 @@ void OLEPropertySetStream::ConsumePaddingBytes(uint32_t size, uint32_t padd_to,
 
 bool OLEPropertySetStream::UnicodeStringReader(absl::string_view *stream,
                                                std::string *output) {
-  uint32_t size;
+  uint32_t size = 0;
   if (!LittleEndianReader::ConsumeUInt32(stream, &size)) {
     return false;
   }
@@ -264,7 +264,7 @@ bool OLEPropertySetStream::VtValueReader(absl::string_view *stream,
         return false;
       }
       value->set_str(str);
-      DLOG(INFO) << "value: " << str << " " << str.length();
+      DLOG(INFO) << "value length: " << str.length() << ", value: " << str;
     } break;
 
     case kVtLpwstr: {
@@ -273,7 +273,7 @@ bool OLEPropertySetStream::VtValueReader(absl::string_view *stream,
         return false;
       }
       value->set_str(str);
-      DLOG(INFO) << "value: " << str << " " << str.length();
+      DLOG(INFO) << "value length: " << str.length() << ", value: " << str;
     } break;
 
     case kVtI2: {

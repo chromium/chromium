@@ -17,6 +17,8 @@
 
 #include "maldoca/ole/dir.h"
 
+#include <iostream>
+
 #include "absl/container/flat_hash_set.h"
 #include "absl/strings/escaping.h"
 #include "absl/strings/str_cat.h"
@@ -279,23 +281,23 @@ static bool BuildDirectoryTreeElement(
       [dir_entries, sector_index] { (*dir_entries)[sector_index] = nullptr; });
 #endif
 
-(*dir_entries)[sector_index] = child.get();
-if (!OLEDirectoryEntry::ReadDirectoryEntryFromStream(
-        input, sector_index, sector_size, child.get())) {
-  return false;
-}
-if (!(BuildDirectoryTree(input, sector_size, parent, child.get(),
-                         dir_entries))) {
-  return false;
-}
-if (!parent->AddChild(child.get())) {
-  LOG(ERROR) << "Can not add node " << child->Name() << " to parent "
-             << parent->Name();
-  return false;
-}
-// Only release the child now - we can return above with an error
-// without triggering a memory leak.
-child.release();
+  (*dir_entries)[sector_index] = child.get();
+  if (!OLEDirectoryEntry::ReadDirectoryEntryFromStream(
+          input, sector_index, sector_size, child.get())) {
+    return false;
+  }
+  if (!(BuildDirectoryTree(input, sector_size, parent, child.get(),
+                           dir_entries))) {
+    return false;
+  }
+  if (!parent->AddChild(child.get())) {
+    LOG(ERROR) << "Can not add node " << child->Name() << " to parent "
+               << parent->Name();
+    return false;
+  }
+  // Only release the child now - we can return above with an error
+  // without triggering a memory leak.
+  child.release();
 
 #ifdef MALDOCA_IN_CHROMIUM
   cleanup.Release();

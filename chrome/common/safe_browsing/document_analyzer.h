@@ -5,8 +5,6 @@
 #ifndef CHROME_COMMON_SAFE_BROWSING_DOCUMENT_ANALYZER_H_
 #define CHROME_COMMON_SAFE_BROWSING_DOCUMENT_ANALYZER_H_
 
-#include <string>
-
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 
@@ -14,7 +12,7 @@ namespace safe_browsing {
 struct DocumentAnalyzerResults;
 
 namespace document_analyzer {
-void AnalyzeDocument(const std::string& office_file,
+void AnalyzeDocument(base::File office_file,
                      const base::FilePath& file_path,
                      DocumentAnalyzerResults* results);
 
