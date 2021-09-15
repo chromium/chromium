@@ -9,6 +9,7 @@ import {DeviceInfoUpdater} from '../../device/device_info_updater.js';
 import * as dom from '../../dom.js';
 import {sendBarcodeEnabledEvent} from '../../metrics.js';
 import {BarcodeScanner} from '../../models/barcode.js';
+import {ChromeHelper} from '../../mojo/chrome_helper.js';
 import * as state from '../../state.js';
 import {Mode} from '../../type.js';
 
@@ -118,11 +119,14 @@ export class ScanOptions {
      */
     this.onChange = () => {};
 
-    const updateShowScanMode = () => {
+    const updateShowScanMode = async () => {
+      const isPlatformSupport =
+          await ChromeHelper.getInstance().isDocumentModeSupported();
       state.set(
           state.State.SHOW_SCAN_MODE,
-          this.docModeDevices_.length > 0 ||
-              state.get(state.State.ENABLE_DOCUMENT_MODE_ON_ALL_CAMERAS));
+          isPlatformSupport &&
+              (this.docModeDevices_.length > 0 ||
+               state.get(state.State.ENABLE_DOCUMENT_MODE_ON_ALL_CAMERAS)));
     };
     state.addObserver(state.State.ENABLE_DOCUMENT_MODE_ON_ALL_CAMERAS, () => {
       this.doReconfigure_();
