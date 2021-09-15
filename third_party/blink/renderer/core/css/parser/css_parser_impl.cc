@@ -382,7 +382,7 @@ bool CSSParserImpl::ConsumeSupportsDeclaration(CSSParserTokenStream& stream) {
   // successfully parse the range, so we can temporarily remove the observer.
   CSSParserObserver* observer_copy = observer_;
   observer_ = nullptr;
-  CSSParserTokenStream::RangeBoundary range_boundary(
+  CSSParserTokenStream::Boundary boundary(
       stream, CSSParserTokenType::kRightParenthesisToken);
   ConsumeDeclaration(stream, StyleRule::kStyle);
   observer_ = observer_copy;
@@ -1255,9 +1255,10 @@ void CSSParserImpl::ConsumeDeclarationList(CSSParserTokenStream& stream,
         stream.UncheckedConsume();
         break;
       case kIdentToken: {
-        CSSParserTokenStream::RangeBoundary range_boundary(stream,
-                                                           kSemicolonToken);
-        ConsumeDeclaration(stream, rule_type);
+        {
+          CSSParserTokenStream::Boundary boundary(stream, kSemicolonToken);
+          ConsumeDeclaration(stream, rule_type);
+        }
 
         if (!stream.AtEnd())
           stream.UncheckedConsume();  // kSemicolonToken
@@ -1290,7 +1291,7 @@ void CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
   if (stream.Peek().GetType() != kColonToken) {
     // Parse error.
     // Consume the remainder of the declaration for recovery before returning.
-    stream.ConsumeUntilPeekedBoundary();
+    stream.ConsumeUntilPeekedTypeIs<>();
     return;
   }
   stream.UncheckedConsume();  // kColonToken
@@ -1372,7 +1373,7 @@ void CSSParserImpl::ConsumeDeclarationValue(
 CSSTokenizedValue CSSParserImpl::ConsumeValue(CSSParserTokenStream& stream) {
   stream.EnsureLookAhead();
   wtf_size_t value_start_offset = stream.LookAheadOffset();
-  CSSParserTokenRange range = stream.ConsumeUntilPeekedBoundary();
+  CSSParserTokenRange range = stream.ConsumeUntilPeekedTypeIs<>();
   wtf_size_t value_end_offset = stream.LookAheadOffset();
 
   return {range, stream.StringRangeAt(value_start_offset,
