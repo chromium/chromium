@@ -27,4 +27,17 @@ TEST_F(LayoutNGFieldsetTest, AddChildWhitespaceCrash) {
   // Passes if no crash in LayoutNGFieldset::AddChild().
 }
 
+TEST_F(LayoutNGFieldsetTest, AddChildAnonymousInlineCrash) {
+  SetBodyInnerHTML(R"HTML(
+<fieldset>
+<span id="a">A</span> <span style="display:contents; hyphens:auto">&#x20;
+<legend>B</legend></span></fieldset>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  GetElementById("a")->nextSibling()->remove();
+  UpdateAllLifecyclePhasesForTest();
+
+  // Passes if no crash in LayoutNGFieldset::AddChild().
+}
+
 }  // namespace blink
