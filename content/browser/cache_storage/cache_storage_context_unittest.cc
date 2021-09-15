@@ -80,8 +80,7 @@ class CacheStorageContextTest : public testing::Test {
   mojo::PendingReceiver<storage::mojom::BlobStorageContext> blob_receiver_;
 };
 
-// TODO(crbug.com/124282): Disabled due to flake.
-TEST_F(CacheStorageContextTest, DISABLED_DefaultBucketCreatedOnAddReceiver) {
+TEST_F(CacheStorageContextTest, DefaultBucketCreatedOnAddReceiver) {
   mojo::Remote<blink::mojom::CacheStorage> example_remote;
   AddReceiver(
       example_remote.BindNewPipeAndPassReceiver(),
