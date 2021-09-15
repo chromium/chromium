@@ -234,7 +234,7 @@ TestSystemWebAppInstallation::TestSystemWebAppInstallation(
   UnittestingSystemAppDelegate* delegate_ptr = delegate.get();
   system_app_delegates_.emplace(type_.value(), std::move(delegate));
 
-  test_web_app_provider_creator_ = std::make_unique<TestWebAppProviderCreator>(
+  fake_web_app_provider_creator_ = std::make_unique<FakeWebAppProviderCreator>(
       base::BindRepeating(&TestSystemWebAppInstallation::CreateWebAppProvider,
                           // base::Unretained is safe here. This callback is
                           // called at TestingProfile::Init, which is at test
@@ -245,8 +245,8 @@ TestSystemWebAppInstallation::TestSystemWebAppInstallation(
 }
 
 TestSystemWebAppInstallation::TestSystemWebAppInstallation() {
-  test_web_app_provider_creator_ = std::make_unique<
-      TestWebAppProviderCreator>(base::BindRepeating(
+  fake_web_app_provider_creator_ = std::make_unique<
+      FakeWebAppProviderCreator>(base::BindRepeating(
       &TestSystemWebAppInstallation::CreateWebAppProviderWithNoSystemWebApps,
       // base::Unretained is safe here. This callback is called
       // at TestingProfile::Init, which is at test startup.
@@ -665,7 +665,7 @@ TestSystemWebAppInstallation::CreateWebAppProvider(
                          profile);
   }
 
-  auto provider = std::make_unique<TestWebAppProvider>(profile);
+  auto provider = std::make_unique<FakeWebAppProvider>(profile);
   auto system_web_app_manager = std::make_unique<SystemWebAppManager>(profile);
 
   system_web_app_manager->SetSystemAppsForTesting(
@@ -686,7 +686,7 @@ std::unique_ptr<KeyedService>
 TestSystemWebAppInstallation::CreateWebAppProviderWithNoSystemWebApps(
     Profile* profile) {
   profile_ = profile;
-  auto provider = std::make_unique<TestWebAppProvider>(profile);
+  auto provider = std::make_unique<FakeWebAppProvider>(profile);
   auto system_web_app_manager = std::make_unique<SystemWebAppManager>(profile);
   system_web_app_manager->SetSystemAppsForTesting({});
   system_web_app_manager->SetUpdatePolicyForTesting(update_policy_);

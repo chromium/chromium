@@ -63,7 +63,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/web_applications/test/test_web_app_provider.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -2009,8 +2009,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
 class StartupBrowserWebAppUrlHandlingTest : public InProcessBrowserTest {
  protected:
   StartupBrowserWebAppUrlHandlingTest()
-      : test_web_app_provider_creator_(base::BindRepeating(
-            &StartupBrowserWebAppUrlHandlingTest::CreateTestWebAppProvider)) {
+      : fake_web_app_provider_creator_(base::BindRepeating(
+            &StartupBrowserWebAppUrlHandlingTest::CreateFakeWebAppProvider)) {
     scoped_feature_list_.InitAndEnableFeature(
         blink::features::kWebAppEnableUrlHandlers);
   }
@@ -2040,9 +2040,9 @@ class StartupBrowserWebAppUrlHandlingTest : public InProcessBrowserTest {
   }
 
  private:
-  static std::unique_ptr<KeyedService> CreateTestWebAppProvider(
+  static std::unique_ptr<KeyedService> CreateFakeWebAppProvider(
       Profile* profile) {
-    auto provider = std::make_unique<web_app::TestWebAppProvider>(profile);
+    auto provider = std::make_unique<web_app::FakeWebAppProvider>(profile);
     provider->Start();
     auto association_manager =
         std::make_unique<web_app::FakeWebAppOriginAssociationManager>();
@@ -2054,7 +2054,7 @@ class StartupBrowserWebAppUrlHandlingTest : public InProcessBrowserTest {
     return provider;
   }
 
-  web_app::TestWebAppProviderCreator test_web_app_provider_creator_;
+  web_app::FakeWebAppProviderCreator fake_web_app_provider_creator_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

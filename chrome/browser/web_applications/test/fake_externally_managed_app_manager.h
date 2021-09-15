@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_EXTERNALLY_MANAGED_APP_MANAGER_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_EXTERNALLY_MANAGED_APP_MANAGER_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_FAKE_EXTERNALLY_MANAGED_APP_MANAGER_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_TEST_FAKE_EXTERNALLY_MANAGED_APP_MANAGER_H_
 
 #include <vector>
 
@@ -12,10 +12,10 @@
 
 namespace web_app {
 
-class TestExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
+class FakeExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
  public:
-  explicit TestExternallyManagedAppManager(Profile* profile);
-  ~TestExternallyManagedAppManager() override;
+  explicit FakeExternallyManagedAppManager(Profile* profile);
+  ~FakeExternallyManagedAppManager() override;
 
   void InstallNow(ExternalInstallOptions install_options,
                   OnceInstallCallback callback) override;
@@ -66,4 +66,4 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_EXTERNALLY_MANAGED_APP_MANAGER_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_TEST_FAKE_EXTERNALLY_MANAGED_APP_MANAGER_H_

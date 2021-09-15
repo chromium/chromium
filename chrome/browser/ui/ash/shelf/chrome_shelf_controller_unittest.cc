@@ -92,7 +92,7 @@
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
-#include "chrome/browser/web_applications/test/test_web_app_provider.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
@@ -467,7 +467,7 @@ class ChromeShelfControllerTest : public BrowserWithTestWindowTest {
     auto system_web_app_manager =
         std::make_unique<web_app::TestSystemWebAppManager>(profile);
 
-    auto* provider = web_app::TestWebAppProvider::Get(profile);
+    auto* provider = web_app::FakeWebAppProvider::Get(profile);
     provider->SetSystemWebAppManager(std::move(system_web_app_manager));
     provider->SetRunSubsystemStartupTasks(true);
     provider->Start();

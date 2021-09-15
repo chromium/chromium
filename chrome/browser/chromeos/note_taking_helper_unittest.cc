@@ -25,7 +25,7 @@
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
-#include "chrome/browser/web_applications/test/test_web_app_provider.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_application_info.h"
@@ -288,8 +288,8 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
   }
 
   void InitWebAppProvider() {
-    auto* provider = web_app::TestWebAppProvider::Get(profile());
-    // TestWebAppProvider should not wait for a test extension system, that is
+    auto* provider = web_app::FakeWebAppProvider::Get(profile());
+    // FakeWebAppProvider should not wait for a test extension system, that is
     // never started, to be ready.
     provider->SkipAwaitingExtensionSystem();
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());

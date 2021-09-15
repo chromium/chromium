@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_WEB_APP_PROVIDER_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_WEB_APP_PROVIDER_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_FAKE_WEB_APP_PROVIDER_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_TEST_FAKE_WEB_APP_PROVIDER_H_
 
 #include <memory>
 
@@ -30,27 +30,27 @@ class WebAppInstallManager;
 class WebAppPolicyManager;
 class WebAppIconManager;
 
-class TestWebAppProvider : public WebAppProvider {
+class FakeWebAppProvider : public WebAppProvider {
  public:
   // Used by the TestingProfile in unit tests.
   // Builds a stub WebAppProvider which will not fire subsystem startup tasks.
-  // Use TestWebAppProvider::Get() to replace subsystems.
+  // Use FakeWebAppProvider::Get() to replace subsystems.
   static std::unique_ptr<KeyedService> BuildDefault(
       content::BrowserContext* context);
 
-  // Gets a TestWebAppProvider that can have its subsystems set. This should
+  // Gets a FakeWebAppProvider that can have its subsystems set. This should
   // only be called once during SetUp(), and clients must call Start() before
   // using the subsystems.
-  static TestWebAppProvider* Get(Profile* profile);
+  static FakeWebAppProvider* Get(Profile* profile);
 
-  explicit TestWebAppProvider(Profile* profile);
-  ~TestWebAppProvider() override;
+  explicit FakeWebAppProvider(Profile* profile);
+  ~FakeWebAppProvider() override;
 
   // |run_subsystem_startup_tasks| is true by default as browser test clients
-  // will generally want to construct their TestWebAppProvider to behave as it
+  // will generally want to construct their FakeWebAppProvider to behave as it
   // would in a production browser.
   //
-  // |run_subsystem_startup_tasks| is false by default for TestWebAppProvider
+  // |run_subsystem_startup_tasks| is false by default for FakeWebAppProvider
   // if it's a part of TestingProfile (see BuildDefault() method above).
   void SetRunSubsystemStartupTasks(bool run_subsystem_startup_tasks);
 
@@ -85,25 +85,25 @@ class TestWebAppProvider : public WebAppProvider {
   // WebAppProvider:
   void StartImpl() override;
 
-  // If true, when Start()ed the TestWebAppProvider will call
+  // If true, when Start()ed the FakeWebAppProvider will call
   // WebAppProvider::StartImpl() and fire startup tasks like a real
   // WebAppProvider.
   bool run_subsystem_startup_tasks_ = true;
 };
 
 // Used in BrowserTests to ensure that the WebAppProvider that is create on
-// profile startup is the TestWebAppProvider. Hooks into the
+// profile startup is the FakeWebAppProvider. Hooks into the
 // BrowserContextKeyedService initialization pipeline.
-class TestWebAppProviderCreator {
+class FakeWebAppProviderCreator {
  public:
   using OnceCreateWebAppProviderCallback =
       base::OnceCallback<std::unique_ptr<KeyedService>(Profile* profile)>;
   using CreateWebAppProviderCallback =
       base::RepeatingCallback<std::unique_ptr<KeyedService>(Profile* profile)>;
 
-  explicit TestWebAppProviderCreator(OnceCreateWebAppProviderCallback callback);
-  explicit TestWebAppProviderCreator(CreateWebAppProviderCallback callback);
-  ~TestWebAppProviderCreator();
+  explicit FakeWebAppProviderCreator(OnceCreateWebAppProviderCallback callback);
+  explicit FakeWebAppProviderCreator(CreateWebAppProviderCallback callback);
+  ~FakeWebAppProviderCreator();
 
  private:
   void OnWillCreateBrowserContextServices(content::BrowserContext* context);
@@ -117,4 +117,4 @@ class TestWebAppProviderCreator {
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_WEB_APP_PROVIDER_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_TEST_FAKE_WEB_APP_PROVIDER_H_

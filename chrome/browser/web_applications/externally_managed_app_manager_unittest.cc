@@ -12,8 +12,8 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
-#include "chrome/browser/web_applications/test/test_externally_managed_app_manager.h"
-#include "chrome/browser/web_applications/test/test_web_app_registry_controller.h"
+#include "chrome/browser/web_applications/test/fake_externally_managed_app_manager.h"
+#include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -28,14 +28,14 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
 
-    test_registry_controller_ =
-        std::make_unique<TestWebAppRegistryController>();
+    fake_registry_controller_ =
+        std::make_unique<FakeWebAppRegistryController>();
     controller().SetUp(profile());
 
     externally_installed_app_prefs_ =
         std::make_unique<ExternallyInstalledWebAppPrefs>(profile()->GetPrefs());
     externally_managed_app_manager_ =
-        std::make_unique<TestExternallyManagedAppManager>(profile());
+        std::make_unique<FakeExternallyManagedAppManager>(profile());
 
     externally_managed_app_manager().SetSubsystems(&app_registrar(), nullptr,
                                                    nullptr, nullptr, nullptr);
@@ -121,8 +121,8 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
     deduped_uninstall_count_ = 0;
   }
 
-  TestWebAppRegistryController& controller() {
-    return *test_registry_controller_;
+  FakeWebAppRegistryController& controller() {
+    return *fake_registry_controller_;
   }
 
   web_app::WebAppRegistrar& app_registrar() { return controller().registrar(); }
@@ -131,7 +131,7 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
     return *externally_installed_app_prefs_;
   }
 
-  TestExternallyManagedAppManager& externally_managed_app_manager() {
+  FakeExternallyManagedAppManager& externally_managed_app_manager() {
     return *externally_managed_app_manager_;
   }
 
@@ -139,10 +139,10 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
   int deduped_install_count_ = 0;
   int deduped_uninstall_count_ = 0;
 
-  std::unique_ptr<TestWebAppRegistryController> test_registry_controller_;
+  std::unique_ptr<FakeWebAppRegistryController> fake_registry_controller_;
   std::unique_ptr<ExternallyInstalledWebAppPrefs>
       externally_installed_app_prefs_;
-  std::unique_ptr<TestExternallyManagedAppManager>
+  std::unique_ptr<FakeExternallyManagedAppManager>
       externally_managed_app_manager_;
 };
 

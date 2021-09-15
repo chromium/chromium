@@ -12,7 +12,7 @@
 #include "base/test/bind.h"
 #include "chrome/browser/badging/badge_manager_delegate.h"
 #include "chrome/browser/badging/test_badge_manager_delegate.h"
-#include "chrome/browser/web_applications/test/test_web_app_registry_controller.h"
+#include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -60,8 +60,8 @@ class BadgeManagerUnittest : public ::testing::Test {
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
 
-    test_registry_controller_ =
-        std::make_unique<web_app::TestWebAppRegistryController>();
+    fake_registry_controller_ =
+        std::make_unique<web_app::FakeWebAppRegistryController>();
     controller().SetUp(profile());
     controller().Init();
 
@@ -83,8 +83,8 @@ class BadgeManagerUnittest : public ::testing::Test {
 
   Profile* profile() const { return profile_.get(); }
 
-  web_app::TestWebAppRegistryController& controller() {
-    return *test_registry_controller_;
+  web_app::FakeWebAppRegistryController& controller() {
+    return *fake_registry_controller_;
   }
 
  private:
@@ -92,8 +92,8 @@ class BadgeManagerUnittest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<BadgeManager> badge_manager_;
-  std::unique_ptr<web_app::TestWebAppRegistryController>
-      test_registry_controller_;
+  std::unique_ptr<web_app::FakeWebAppRegistryController>
+      fake_registry_controller_;
 
   DISALLOW_COPY_AND_ASSIGN(BadgeManagerUnittest);
 };
@@ -192,12 +192,12 @@ TEST_F(BadgeManagerUnittest, ClearBadgeForBadgedApp) {
 
 TEST_F(BadgeManagerUnittest, BadgingMultipleProfiles) {
   std::unique_ptr<Profile> other_profile = std::make_unique<TestingProfile>();
-  auto test_registry_controller =
-      std::make_unique<web_app::TestWebAppRegistryController>();
-  test_registry_controller->SetUp(other_profile.get());
-  test_registry_controller->Init();
+  auto fake_registry_controller =
+      std::make_unique<web_app::FakeWebAppRegistryController>();
+  fake_registry_controller->SetUp(other_profile.get());
+  fake_registry_controller->Init();
   auto other_badge_manager = std::make_unique<TestBadgeManager>(
-      other_profile.get(), &test_registry_controller->sync_bridge());
+      other_profile.get(), &fake_registry_controller->sync_bridge());
 
   auto owned_other_delegate = std::make_unique<TestBadgeManagerDelegate>(
       other_profile.get(), other_badge_manager.get());
@@ -207,7 +207,7 @@ TEST_F(BadgeManagerUnittest, BadgingMultipleProfiles) {
   std::vector<web_app::AppId> updated_apps;
   std::vector<web_app::AppId> other_updated_apps;
   web_app::WebAppTestRegistryObserverAdapter other_observer(
-      &test_registry_controller->registrar());
+      &fake_registry_controller->registrar());
   other_observer.SetWebAppLastBadgingTimeChangedDelegate(
       base::BindLambdaForTesting(
           [&other_updated_apps](const web_app::AppId& app_id,

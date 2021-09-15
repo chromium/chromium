@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/test/test_web_app_provider.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 
 #include <utility>
 
@@ -24,9 +24,9 @@
 namespace web_app {
 
 // static
-std::unique_ptr<KeyedService> TestWebAppProvider::BuildDefault(
+std::unique_ptr<KeyedService> FakeWebAppProvider::BuildDefault(
     content::BrowserContext* context) {
-  auto provider = std::make_unique<TestWebAppProvider>(
+  auto provider = std::make_unique<FakeWebAppProvider>(
       Profile::FromBrowserContext(context));
 
   // Do not call default production StartImpl if in TestingProfile.
@@ -39,10 +39,10 @@ std::unique_ptr<KeyedService> TestWebAppProvider::BuildDefault(
 }
 
 // static
-TestWebAppProvider* TestWebAppProvider::Get(Profile* profile) {
+FakeWebAppProvider* FakeWebAppProvider::Get(Profile* profile) {
   CHECK(profile->AsTestingProfile());
   auto* test_provider =
-      static_cast<TestWebAppProvider*>(WebAppProvider::GetForTest(profile));
+      static_cast<FakeWebAppProvider*>(WebAppProvider::GetForTest(profile));
   CHECK(!test_provider->started_);
 
   // Disconnect so that clients are forced to call Start() before accessing any
@@ -52,119 +52,119 @@ TestWebAppProvider* TestWebAppProvider::Get(Profile* profile) {
   return test_provider;
 }
 
-TestWebAppProvider::TestWebAppProvider(Profile* profile)
+FakeWebAppProvider::FakeWebAppProvider(Profile* profile)
     : WebAppProvider(profile) {}
 
-TestWebAppProvider::~TestWebAppProvider() = default;
+FakeWebAppProvider::~FakeWebAppProvider() = default;
 
-void TestWebAppProvider::SetRunSubsystemStartupTasks(
+void FakeWebAppProvider::SetRunSubsystemStartupTasks(
     bool run_subsystem_startup_tasks) {
   run_subsystem_startup_tasks_ = run_subsystem_startup_tasks;
 }
 
-void TestWebAppProvider::SetRegistrar(
+void FakeWebAppProvider::SetRegistrar(
     std::unique_ptr<WebAppRegistrar> registrar) {
   CheckNotStarted();
   registrar_ = std::move(registrar);
 }
 
-void TestWebAppProvider::SetSyncBridge(
+void FakeWebAppProvider::SetSyncBridge(
     std::unique_ptr<WebAppSyncBridge> sync_bridge) {
   CheckNotStarted();
   sync_bridge_ = std::move(sync_bridge);
 }
 
-void TestWebAppProvider::SetInstallManager(
+void FakeWebAppProvider::SetInstallManager(
     std::unique_ptr<WebAppInstallManager> install_manager) {
   CheckNotStarted();
   install_manager_ = std::move(install_manager);
 }
 
-void TestWebAppProvider::SetInstallFinalizer(
+void FakeWebAppProvider::SetInstallFinalizer(
     std::unique_ptr<WebAppInstallFinalizer> install_finalizer) {
   CheckNotStarted();
   install_finalizer_ = std::move(install_finalizer);
 }
 
-void TestWebAppProvider::SetExternallyManagedAppManager(
+void FakeWebAppProvider::SetExternallyManagedAppManager(
     std::unique_ptr<ExternallyManagedAppManager>
         externally_managed_app_manager) {
   CheckNotStarted();
   externally_managed_app_manager_ = std::move(externally_managed_app_manager);
 }
 
-void TestWebAppProvider::SetWebAppUiManager(
+void FakeWebAppProvider::SetWebAppUiManager(
     std::unique_ptr<WebAppUiManager> ui_manager) {
   CheckNotStarted();
   ui_manager_ = std::move(ui_manager);
 }
 
-void TestWebAppProvider::SetSystemWebAppManager(
+void FakeWebAppProvider::SetSystemWebAppManager(
     std::unique_ptr<SystemWebAppManager> system_web_app_manager) {
   CheckNotStarted();
   system_web_app_manager_ = std::move(system_web_app_manager);
 }
 
-void TestWebAppProvider::SetWebAppPolicyManager(
+void FakeWebAppProvider::SetWebAppPolicyManager(
     std::unique_ptr<WebAppPolicyManager> web_app_policy_manager) {
   CheckNotStarted();
   web_app_policy_manager_ = std::move(web_app_policy_manager);
 }
 
-void TestWebAppProvider::SetOsIntegrationManager(
+void FakeWebAppProvider::SetOsIntegrationManager(
     std::unique_ptr<OsIntegrationManager> os_integration_manager) {
   CheckNotStarted();
   os_integration_manager_ = std::move(os_integration_manager);
 }
 
-void TestWebAppProvider::SkipAwaitingExtensionSystem() {
+void FakeWebAppProvider::SkipAwaitingExtensionSystem() {
   CheckNotStarted();
   skip_awaiting_extension_system_ = true;
 }
 
-WebAppRegistrarMutable& TestWebAppProvider::GetRegistrarMutable() const {
+WebAppRegistrarMutable& FakeWebAppProvider::GetRegistrarMutable() const {
   DCHECK(registrar_);
   return *static_cast<WebAppRegistrarMutable*>(registrar_.get());
 }
 
-WebAppIconManager& TestWebAppProvider::GetIconManager() const {
+WebAppIconManager& FakeWebAppProvider::GetIconManager() const {
   DCHECK(icon_manager_);
   return *icon_manager_;
 }
 
-void TestWebAppProvider::CheckNotStarted() const {
+void FakeWebAppProvider::CheckNotStarted() const {
   CHECK(!started_) << "Attempted to set a WebAppProvider subsystem after "
                       "Start() was called.";
 }
 
-void TestWebAppProvider::StartImpl() {
+void FakeWebAppProvider::StartImpl() {
   if (run_subsystem_startup_tasks_)
     WebAppProvider::StartImpl();
   else
     on_registry_ready_.Signal();
 }
 
-TestWebAppProviderCreator::TestWebAppProviderCreator(
+FakeWebAppProviderCreator::FakeWebAppProviderCreator(
     CreateWebAppProviderCallback callback)
     : callback_(std::move(callback)) {
   create_services_subscription_ =
       BrowserContextDependencyManager::GetInstance()
           ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-              &TestWebAppProviderCreator::OnWillCreateBrowserContextServices,
+              &FakeWebAppProviderCreator::OnWillCreateBrowserContextServices,
               base::Unretained(this)));
 }
 
-TestWebAppProviderCreator::~TestWebAppProviderCreator() = default;
+FakeWebAppProviderCreator::~FakeWebAppProviderCreator() = default;
 
-void TestWebAppProviderCreator::OnWillCreateBrowserContextServices(
+void FakeWebAppProviderCreator::OnWillCreateBrowserContextServices(
     content::BrowserContext* context) {
   WebAppProviderFactory::GetInstance()->SetTestingFactory(
       context,
-      base::BindRepeating(&TestWebAppProviderCreator::CreateWebAppProvider,
+      base::BindRepeating(&FakeWebAppProviderCreator::CreateWebAppProvider,
                           base::Unretained(this)));
 }
 
-std::unique_ptr<KeyedService> TestWebAppProviderCreator::CreateWebAppProvider(
+std::unique_ptr<KeyedService> FakeWebAppProviderCreator::CreateWebAppProvider(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
   if (!AreWebAppsEnabled(profile) || !callback_)

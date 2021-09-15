@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_INSTALL_FINALIZER_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_INSTALL_FINALIZER_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_FAKE_INSTALL_FINALIZER_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_TEST_FAKE_INSTALL_FINALIZER_H_
 
 #include <map>
 #include <memory>
@@ -16,15 +16,15 @@ struct WebApplicationInfo;
 
 namespace web_app {
 
-class TestInstallFinalizer final : public WebAppInstallFinalizer {
+class FakeInstallFinalizer final : public WebAppInstallFinalizer {
  public:
   // Returns what would be the AppId if an app is installed with |url|.
   static AppId GetAppIdForUrl(const GURL& url);
 
-  TestInstallFinalizer();
-  TestInstallFinalizer(const TestInstallFinalizer&) = delete;
-  TestInstallFinalizer& operator=(const TestInstallFinalizer&) = delete;
-  ~TestInstallFinalizer() override;
+  FakeInstallFinalizer();
+  FakeInstallFinalizer(const FakeInstallFinalizer&) = delete;
+  FakeInstallFinalizer& operator=(const FakeInstallFinalizer&) = delete;
+  ~FakeInstallFinalizer() override;
 
   // WebAppInstallFinalizer:
   void FinalizeInstall(const WebApplicationInfo& web_app_info,
@@ -102,4 +102,4 @@ class TestInstallFinalizer final : public WebAppInstallFinalizer {
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_INSTALL_FINALIZER_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_TEST_FAKE_INSTALL_FINALIZER_H_

@@ -11,9 +11,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
+#include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
+#include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
-#include "chrome/browser/web_applications/test/test_web_app_registry_controller.h"
-#include "chrome/browser/web_applications/test/test_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
@@ -48,22 +48,22 @@ class WebAppInstallFinalizerUnitTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
 
-    test_registry_controller_ =
-        std::make_unique<TestWebAppRegistryController>();
-    test_registry_controller_->SetUp(profile());
+    fake_registry_controller_ =
+        std::make_unique<FakeWebAppRegistryController>();
+    fake_registry_controller_->SetUp(profile());
     auto file_utils = std::make_unique<TestFileUtils>();
     icon_manager_ = std::make_unique<WebAppIconManager>(profile(), registrar(),
                                                         std::move(file_utils));
     policy_manager_ = std::make_unique<WebAppPolicyManager>(profile());
-    ui_manager_ = std::make_unique<TestWebAppUiManager>();
+    ui_manager_ = std::make_unique<FakeWebAppUiManager>();
     finalizer_ = std::make_unique<WebAppInstallFinalizer>(
         profile(), icon_manager_.get(), policy_manager_.get());
 
     finalizer_->SetSubsystems(
         &registrar(), ui_manager_.get(),
-        &test_registry_controller_->sync_bridge(),
-        &test_registry_controller_->os_integration_manager());
-    test_registry_controller_->Init();
+        &fake_registry_controller_->sync_bridge(),
+        &fake_registry_controller_->os_integration_manager());
+    fake_registry_controller_->Init();
     finalizer_->Start();
   }
 
@@ -72,7 +72,7 @@ class WebAppInstallFinalizerUnitTest : public WebAppTest {
     ui_manager_.reset();
     policy_manager_.reset();
     icon_manager_.reset();
-    test_registry_controller_.reset();
+    fake_registry_controller_.reset();
     WebAppTest::TearDown();
   }
 
@@ -96,11 +96,11 @@ class WebAppInstallFinalizerUnitTest : public WebAppTest {
 
   WebAppInstallFinalizer& finalizer() { return *finalizer_.get(); }
   WebAppRegistrar& registrar() {
-    return test_registry_controller_->registrar();
+    return fake_registry_controller_->registrar();
   }
 
  private:
-  std::unique_ptr<TestWebAppRegistryController> test_registry_controller_;
+  std::unique_ptr<FakeWebAppRegistryController> fake_registry_controller_;
   std::unique_ptr<WebAppIconManager> icon_manager_;
   std::unique_ptr<WebAppPolicyManager> policy_manager_;
   std::unique_ptr<WebAppUiManager> ui_manager_;

@@ -17,8 +17,8 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
-#include "chrome/browser/web_applications/test/test_os_integration_manager.h"
-#include "chrome/browser/web_applications/test/test_web_app_provider.h"
+#include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -39,9 +39,9 @@
 namespace web_app {
 namespace {
 
-std::unique_ptr<KeyedService> CreateTestWebAppProvider(Profile* profile) {
-  auto provider = std::make_unique<TestWebAppProvider>(profile);
-  provider->SetOsIntegrationManager(std::make_unique<TestOsIntegrationManager>(
+std::unique_ptr<KeyedService> CreateFakeWebAppProvider(Profile* profile) {
+  auto provider = std::make_unique<FakeWebAppProvider>(profile);
+  provider->SetOsIntegrationManager(std::make_unique<FakeOsIntegrationManager>(
       profile, nullptr, nullptr, nullptr, nullptr));
   provider->Start();
   DCHECK(provider);
@@ -52,8 +52,8 @@ class TwoClientWebAppsBMOSyncTest : public SyncTest {
  public:
   TwoClientWebAppsBMOSyncTest()
       : SyncTest(TWO_CLIENT),
-        test_web_app_provider_creator_(
-            base::BindRepeating(&CreateTestWebAppProvider)) {
+        fake_web_app_provider_creator_(
+            base::BindRepeating(&CreateFakeWebAppProvider)) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Disable WebAppsCrosapi, so that Web Apps get synced in the Ash browser.
     scoped_feature_list_.InitAndDisableFeature(features::kWebAppsCrosapi);
@@ -165,8 +165,8 @@ class TwoClientWebAppsBMOSyncTest : public SyncTest {
     return WebAppProvider::GetForTest(profile)->registrar();
   }
 
-  TestOsIntegrationManager& GetOsIntegrationManager(Profile* profile) {
-    return reinterpret_cast<TestOsIntegrationManager&>(
+  FakeOsIntegrationManager& GetOsIntegrationManager(Profile* profile) {
+    return reinterpret_cast<FakeOsIntegrationManager&>(
         WebAppProvider::GetForTest(profile)->os_integration_manager());
   }
 
@@ -189,7 +189,7 @@ class TwoClientWebAppsBMOSyncTest : public SyncTest {
   }
 
  private:
-  TestWebAppProviderCreator test_web_app_provider_creator_;
+  FakeWebAppProviderCreator fake_web_app_provider_creator_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(TwoClientWebAppsBMOSyncTest);

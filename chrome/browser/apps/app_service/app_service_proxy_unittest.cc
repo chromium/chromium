@@ -9,7 +9,7 @@
 #include "base/callback.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/web_applications/test/test_web_app_provider.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
@@ -249,7 +249,7 @@ TEST_F(AppServiceProxyTest, PreferredAppsUpdatedOnUninstall) {
   TestingProfile profile;
   auto* proxy = AppServiceProxyFactory::GetForProfile(&profile);
 
-  auto* const provider = web_app::TestWebAppProvider::Get(&profile);
+  auto* const provider = web_app::FakeWebAppProvider::Get(&profile);
   provider->SkipAwaitingExtensionSystem();
   web_app::test::AwaitStartWebAppProviderAndSubsystems(&profile);
 

@@ -21,9 +21,9 @@
 #include "chrome/browser/web_applications/externally_managed_app_install_task.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/externally_managed_app_registration_task.h"
-#include "chrome/browser/web_applications/test/test_install_finalizer.h"
-#include "chrome/browser/web_applications/test/test_web_app_registry_controller.h"
-#include "chrome/browser/web_applications/test/test_web_app_ui_manager.h"
+#include "chrome/browser/web_applications/test/fake_install_finalizer.h"
+#include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
+#include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
 #include "chrome/browser/web_applications/test/web_app_registration_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
@@ -89,7 +89,7 @@ ExternalInstallOptions GetInstallOptionsWithWebAppInfo(
 }
 
 std::string GenerateFakeAppId(const GURL& url) {
-  return TestInstallFinalizer::GetAppIdForUrl(url);
+  return FakeInstallFinalizer::GetAppIdForUrl(url);
 }
 
 // Class to delay completion of TestExternallyManagedAppInstallTasks.
@@ -137,22 +137,22 @@ class TestExternallyManagedAppInstallTaskManager {
   bool should_save_requests_ = false;
 };
 
-class TestExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
+class FakeExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
  public:
   struct TestTaskResult {
     InstallResultCode code;
     bool did_install_placeholder;
   };
 
-  TestExternallyManagedAppManager(
+  FakeExternallyManagedAppManager(
       Profile* profile,
-      TestWebAppRegistryController& test_registry_controller,
+      FakeWebAppRegistryController& fake_registry_controller,
       TestExternallyManagedAppInstallTaskManager& test_install_task_manager)
       : ExternallyManagedAppManagerImpl(profile),
-        test_registry_controller_(test_registry_controller),
+        fake_registry_controller_(fake_registry_controller),
         test_install_task_manager_(test_install_task_manager) {}
 
-  ~TestExternallyManagedAppManager() override {
+  ~FakeExternallyManagedAppManager() override {
     DCHECK(next_installation_task_results_.empty());
     DCHECK(next_installation_launch_urls_.empty());
     DCHECK(!preempt_registration_callback_);
@@ -256,8 +256,8 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
     run_loop.Run();
   }
 
-  TestWebAppRegistryController& controller() {
-    return test_registry_controller_;
+  FakeWebAppRegistryController& controller() {
+    return fake_registry_controller_;
   }
 
  private:
@@ -265,7 +265,7 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
       : public ExternallyManagedAppInstallTask {
    public:
     TestExternallyManagedAppInstallTask(
-        TestExternallyManagedAppManager* externally_managed_app_manager_impl,
+        FakeExternallyManagedAppManager* externally_managed_app_manager_impl,
         Profile* profile,
         TestWebAppUrlLoader* test_url_loader,
         TestExternallyManagedAppInstallTaskManager& test_install_task_manager,
@@ -330,12 +330,12 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
    protected:
     WebAppRegistrar& registrar() { return controller().registrar(); }
 
-    TestWebAppRegistryController& controller() {
+    FakeWebAppRegistryController& controller() {
       return externally_managed_app_manager_impl_->controller();
     }
 
    private:
-    TestExternallyManagedAppManager* externally_managed_app_manager_impl_;
+    FakeExternallyManagedAppManager* externally_managed_app_manager_impl_;
     ExternallyInstalledWebAppPrefs externally_installed_app_prefs_;
     TestExternallyManagedAppInstallTaskManager& test_install_task_manager_;
   };
@@ -345,7 +345,7 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
    public:
     TestExternallyManagedAppRegistrationTask(
         const GURL& install_url,
-        TestExternallyManagedAppManager* externally_managed_app_manager_impl)
+        FakeExternallyManagedAppManager* externally_managed_app_manager_impl)
         : ExternallyManagedAppRegistrationTaskBase(install_url),
           externally_managed_app_manager_impl_(
               externally_managed_app_manager_impl) {
@@ -368,13 +368,13 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
           install_url, RegistrationResultCode::kSuccess);
     }
 
-    TestExternallyManagedAppManager* const externally_managed_app_manager_impl_;
+    FakeExternallyManagedAppManager* const externally_managed_app_manager_impl_;
 
     base::WeakPtrFactory<TestExternallyManagedAppRegistrationTask>
         weak_ptr_factory_{this};
   };
 
-  TestWebAppRegistryController& test_registry_controller_;
+  FakeWebAppRegistryController& fake_registry_controller_;
   TestWebAppUrlLoader test_url_loader_;
   TestExternallyManagedAppInstallTaskManager& test_install_task_manager_;
 
@@ -404,17 +404,17 @@ class ExternallyManagedAppManagerImplTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
 
-    test_registry_controller_ =
-        std::make_unique<TestWebAppRegistryController>();
-    test_registry_controller_->SetUp(profile());
+    fake_registry_controller_ =
+        std::make_unique<FakeWebAppRegistryController>();
+    fake_registry_controller_->SetUp(profile());
 
     externally_managed_app_manager_impl_ =
-        std::make_unique<TestExternallyManagedAppManager>(
+        std::make_unique<FakeExternallyManagedAppManager>(
             profile(), controller(), test_install_task_manager_);
 
-    install_finalizer_ = std::make_unique<TestInstallFinalizer>();
+    install_finalizer_ = std::make_unique<FakeInstallFinalizer>();
 
-    ui_manager_ = std::make_unique<TestWebAppUiManager>();
+    ui_manager_ = std::make_unique<FakeWebAppUiManager>();
 
     externally_managed_app_manager_impl().SetSubsystems(
         &registrar(), &controller().os_integration_manager(), &ui_manager(),
@@ -524,30 +524,30 @@ class ExternallyManagedAppManagerImplTest : public WebAppTest {
     return install_finalizer_->uninstall_external_web_app_urls().back();
   }
 
-  TestExternallyManagedAppManager& externally_managed_app_manager_impl() {
+  FakeExternallyManagedAppManager& externally_managed_app_manager_impl() {
     return *externally_managed_app_manager_impl_;
   }
 
   WebAppRegistrar& registrar() { return controller().registrar(); }
 
-  TestWebAppRegistryController& controller() {
-    return *test_registry_controller_;
+  FakeWebAppRegistryController& controller() {
+    return *fake_registry_controller_;
   }
 
-  TestWebAppUiManager& ui_manager() { return *ui_manager_; }
+  FakeWebAppUiManager& ui_manager() { return *ui_manager_; }
 
   TestExternallyManagedAppInstallTaskManager& install_task_manager() {
     return test_install_task_manager_;
   }
 
-  TestInstallFinalizer& install_finalizer() { return *install_finalizer_; }
+  FakeInstallFinalizer& install_finalizer() { return *install_finalizer_; }
 
  private:
-  std::unique_ptr<TestWebAppRegistryController> test_registry_controller_;
-  std::unique_ptr<TestExternallyManagedAppManager>
+  std::unique_ptr<FakeWebAppRegistryController> fake_registry_controller_;
+  std::unique_ptr<FakeExternallyManagedAppManager>
       externally_managed_app_manager_impl_;
-  std::unique_ptr<TestInstallFinalizer> install_finalizer_;
-  std::unique_ptr<TestWebAppUiManager> ui_manager_;
+  std::unique_ptr<FakeInstallFinalizer> install_finalizer_;
+  std::unique_ptr<FakeWebAppUiManager> ui_manager_;
 
   TestExternallyManagedAppInstallTaskManager test_install_task_manager_;
 };

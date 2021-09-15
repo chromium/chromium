@@ -369,7 +369,7 @@ ScopedOsHooksSuppress OsIntegrationManager::ScopedSuppressOsHooksForTesting() {
 #endif
 }
 
-TestOsIntegrationManager* OsIntegrationManager::AsTestOsIntegrationManager() {
+FakeOsIntegrationManager* OsIntegrationManager::AsTestOsIntegrationManager() {
   return nullptr;
 }
 

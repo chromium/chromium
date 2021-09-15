@@ -20,8 +20,8 @@
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_utils.h"
-#include "chrome/browser/web_applications/test/test_os_integration_manager.h"
-#include "chrome/browser/web_applications/test/test_web_app_provider.h"
+#include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -130,8 +130,8 @@ class PreinstalledAppsMigrationBrowserTest
     : public PreinstalledAppsBrowserTest {
  public:
   PreinstalledAppsMigrationBrowserTest()
-      : test_web_app_provider_creator_(base::BindRepeating(
-            &PreinstalledAppsMigrationBrowserTest::CreateTestWebAppProvider,
+      : fake_web_app_provider_creator_(base::BindRepeating(
+            &PreinstalledAppsMigrationBrowserTest::CreateFakeWebAppProvider,
             base::Unretained(this))) {
     // Skip migration on startup because we override the configs used, and need
     // to do that a little later (because we need the embedded test server up
@@ -258,16 +258,16 @@ class PreinstalledAppsMigrationBrowserTest
 
  protected:
   web_app::TestShortcutManager* shortcut_manager_;
-  web_app::TestOsIntegrationManager* os_integration_manager_;
+  web_app::FakeOsIntegrationManager* os_integration_manager_;
 
  private:
-  std::unique_ptr<KeyedService> CreateTestWebAppProvider(Profile* profile) {
-    auto provider = std::make_unique<web_app::TestWebAppProvider>(profile);
+  std::unique_ptr<KeyedService> CreateFakeWebAppProvider(Profile* profile) {
+    auto provider = std::make_unique<web_app::FakeWebAppProvider>(profile);
     auto shortcut_manager =
         std::make_unique<web_app::TestShortcutManager>(profile);
     shortcut_manager_ = shortcut_manager.get();
     auto os_integration_manager =
-        std::make_unique<web_app::TestOsIntegrationManager>(
+        std::make_unique<web_app::FakeOsIntegrationManager>(
             profile, std::move(shortcut_manager), nullptr, nullptr, nullptr);
     os_integration_manager_ = os_integration_manager.get();
     provider->SetOsIntegrationManager(std::move(os_integration_manager));
@@ -275,7 +275,7 @@ class PreinstalledAppsMigrationBrowserTest
     return provider;
   }
 
-  web_app::TestWebAppProviderCreator test_web_app_provider_creator_;
+  web_app::FakeWebAppProviderCreator fake_web_app_provider_creator_;
   std::vector<base::Value> app_configs_;
   std::map<GURL, web_app::ExternallyManagedAppManager::InstallResult>
       install_results_;

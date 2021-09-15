@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_WEB_APP_UI_MANAGER_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_WEB_APP_UI_MANAGER_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_FAKE_WEB_APP_UI_MANAGER_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_TEST_FAKE_WEB_APP_UI_MANAGER_H_
 
 #include <map>
 
@@ -11,12 +11,12 @@
 
 namespace web_app {
 
-class TestWebAppUiManager : public WebAppUiManager {
+class FakeWebAppUiManager : public WebAppUiManager {
  public:
-  TestWebAppUiManager();
-  TestWebAppUiManager(const TestWebAppUiManager&) = delete;
-  TestWebAppUiManager& operator=(const TestWebAppUiManager&) = delete;
-  ~TestWebAppUiManager() override;
+  FakeWebAppUiManager();
+  FakeWebAppUiManager(const FakeWebAppUiManager&) = delete;
+  FakeWebAppUiManager& operator=(const FakeWebAppUiManager&) = delete;
+  ~FakeWebAppUiManager() override;
 
   void SetSubsystems(WebAppSyncBridge* sync_bridge,
                      OsIntegrationManager* os_integration_manager) override;
@@ -61,9 +61,8 @@ class TestWebAppUiManager : public WebAppUiManager {
  private:
   std::map<AppId, size_t> app_id_to_num_windows_map_;
   std::map<AppId, AppId> uninstall_and_replace_map_;
-
 };
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_WEB_APP_UI_MANAGER_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_TEST_FAKE_WEB_APP_UI_MANAGER_H_

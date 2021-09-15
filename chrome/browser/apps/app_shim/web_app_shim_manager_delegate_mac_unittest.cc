@@ -11,7 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/test/test_web_app_provider.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -90,9 +90,9 @@ class WebAppShimManagerDelegateTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
 
-    auto* provider = web_app::TestWebAppProvider::Get(profile());
+    auto* provider = web_app::FakeWebAppProvider::Get(profile());
 
-    // TestWebAppProvider should not wait for a test extension system, that is
+    // FakeWebAppProvider should not wait for a test extension system, that is
     // never started, to be ready.
     provider->SkipAwaitingExtensionSystem();
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());

@@ -14,8 +14,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
-#include "chrome/browser/web_applications/test/test_web_app_database_factory.h"
-#include "chrome/browser/web_applications/test/test_web_app_registry_controller.h"
+#include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
+#include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
 #include "chrome/browser/web_applications/test/web_app_sync_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
@@ -176,7 +176,7 @@ bool RemoveEntityDataAppFromAppsList(const std::string& storage_key,
 
 void RunCallbacksOnInstall(
     const std::vector<WebApp*>& apps,
-    TestWebAppRegistryController::RepeatingInstallCallback callback,
+    FakeWebAppRegistryController::RepeatingInstallCallback callback,
     InstallResultCode code) {
   for (WebApp* app : apps)
     callback.Run(app->app_id(), code);
@@ -184,7 +184,7 @@ void RunCallbacksOnInstall(
 
 void RunCallbacksOnUninstall(
     const std::vector<std::unique_ptr<WebApp>>& apps,
-    TestWebAppRegistryController::RepeatingUninstallCallback callback,
+    FakeWebAppRegistryController::RepeatingUninstallCallback callback,
     bool uninstalled) {
   for (const std::unique_ptr<WebApp>& app : apps)
     callback.Run(app->app_id(), uninstalled);
@@ -197,13 +197,13 @@ class WebAppSyncBridgeTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
 
-    test_registry_controller_ =
-        std::make_unique<TestWebAppRegistryController>();
-    test_registry_controller_->SetUp(profile());
+    fake_registry_controller_ =
+        std::make_unique<FakeWebAppRegistryController>();
+    fake_registry_controller_->SetUp(profile());
   }
 
   void TearDown() override {
-    test_registry_controller_.reset();
+    fake_registry_controller_.reset();
 
     WebAppTest::TearDown();
   }
@@ -234,14 +234,14 @@ class WebAppSyncBridgeTest : public WebAppTest {
   void SetSyncInstallDelegateFailureIfCalled() {
     controller().SetInstallWebAppsAfterSyncDelegate(base::BindLambdaForTesting(
         [&](std::vector<WebApp*> apps_to_install,
-            TestWebAppRegistryController::RepeatingInstallCallback callback) {
+            FakeWebAppRegistryController::RepeatingInstallCallback callback) {
           ADD_FAILURE();
         }));
 
     controller().SetUninstallFromSyncAfterRegistryUpdateDelegate(
         base::BindLambdaForTesting(
             [&](std::vector<std::unique_ptr<WebApp>> apps_to_uninstall,
-                TestWebAppRegistryController::RepeatingUninstallCallback
+                FakeWebAppRegistryController::RepeatingUninstallCallback
                     callback) { ADD_FAILURE(); }));
   }
 
@@ -257,13 +257,13 @@ class WebAppSyncBridgeTest : public WebAppTest {
   }
 
  protected:
-  TestWebAppRegistryController& controller() {
-    return *test_registry_controller_;
+  FakeWebAppRegistryController& controller() {
+    return *fake_registry_controller_;
   }
   syncer::MockModelTypeChangeProcessor& processor() {
     return controller().processor();
   }
-  TestWebAppDatabaseFactory& database_factory() {
+  FakeWebAppDatabaseFactory& database_factory() {
     return controller().database_factory();
   }
   WebAppSyncBridge& sync_bridge() { return controller().sync_bridge(); }
@@ -273,7 +273,7 @@ class WebAppSyncBridgeTest : public WebAppTest {
   }
 
  private:
-  std::unique_ptr<TestWebAppRegistryController> test_registry_controller_;
+  std::unique_ptr<FakeWebAppRegistryController> fake_registry_controller_;
 };
 
 // Tests that the WebAppSyncBridge correctly reports data from the
@@ -447,7 +447,7 @@ TEST_F(WebAppSyncBridgeTest, MergeSyncData_LocalSetLessThanServerSet) {
   // This is called after apps are installed from sync in MergeSyncData() below.
   controller().SetInstallWebAppsAfterSyncDelegate(base::BindLambdaForTesting(
       [&](std::vector<WebApp*> apps_to_install,
-          TestWebAppRegistryController::RepeatingInstallCallback callback) {
+          FakeWebAppRegistryController::RepeatingInstallCallback callback) {
         for (WebApp* app_to_install : apps_to_install) {
           // The app must be registered.
           EXPECT_TRUE(registrar().GetAppById(app_to_install->app_id()));
@@ -556,7 +556,7 @@ TEST_F(WebAppSyncBridgeTest, ApplySyncChanges_AddUpdateDelete) {
 
   controller().SetInstallWebAppsAfterSyncDelegate(base::BindLambdaForTesting(
       [&](std::vector<WebApp*> apps_to_install,
-          TestWebAppRegistryController::RepeatingInstallCallback callback) {
+          FakeWebAppRegistryController::RepeatingInstallCallback callback) {
         for (WebApp* app_to_install : apps_to_install) {
           // The app must be registered.
           EXPECT_TRUE(registrar().GetAppById(app_to_install->app_id()));
@@ -581,7 +581,7 @@ TEST_F(WebAppSyncBridgeTest, ApplySyncChanges_AddUpdateDelete) {
   controller().SetUninstallFromSyncAfterRegistryUpdateDelegate(
       base::BindLambdaForTesting(
           [&](std::vector<std::unique_ptr<WebApp>> apps_to_uninstall,
-              TestWebAppRegistryController::RepeatingUninstallCallback
+              FakeWebAppRegistryController::RepeatingUninstallCallback
                   callback) {
             EXPECT_EQ(5ul,
                       sync_bridge().GetAppsInSyncUninstallForTest().size());
@@ -1070,7 +1070,7 @@ TEST_F(WebAppSyncBridgeTest, InstallAppsFromSyncAndPendingInstallation) {
   base::RunLoop run_loop;
   controller().SetInstallWebAppsAfterSyncDelegate(base::BindLambdaForTesting(
       [&](std::vector<WebApp*> apps_to_install,
-          TestWebAppRegistryController::RepeatingInstallCallback callback) {
+          FakeWebAppRegistryController::RepeatingInstallCallback callback) {
         for (WebApp* app_to_install : apps_to_install) {
           // The app must be registered.
           EXPECT_TRUE(registrar().GetAppById(app_to_install->app_id()));

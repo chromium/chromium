@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_DATA_RETRIEVER_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_DATA_RETRIEVER_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_FAKE_DATA_RETRIEVER_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_TEST_FAKE_DATA_RETRIEVER_H_
 
 #include <memory>
 
@@ -20,12 +20,12 @@ namespace web_app {
 
 // All WebAppDataRetriever operations are async, so this class posts tasks
 // when running callbacks to simulate async behavior in tests as well.
-class TestDataRetriever : public WebAppDataRetriever {
+class FakeDataRetriever : public WebAppDataRetriever {
  public:
-  TestDataRetriever();
-  TestDataRetriever(const TestDataRetriever&) = delete;
-  TestDataRetriever& operator=(const TestDataRetriever&) = delete;
-  ~TestDataRetriever() override;
+  FakeDataRetriever();
+  FakeDataRetriever(const FakeDataRetriever&) = delete;
+  FakeDataRetriever& operator=(const FakeDataRetriever&) = delete;
+  ~FakeDataRetriever() override;
 
   // WebAppDataRetriever:
   void GetWebApplicationInfo(content::WebContents* web_contents,
@@ -81,10 +81,9 @@ class TestDataRetriever : public WebAppDataRetriever {
 
   base::OnceClosure destruction_callback_;
 
-  base::WeakPtrFactory<TestDataRetriever> weak_ptr_factory_{this};
-
+  base::WeakPtrFactory<FakeDataRetriever> weak_ptr_factory_{this};
 };
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_DATA_RETRIEVER_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_TEST_FAKE_DATA_RETRIEVER_H_

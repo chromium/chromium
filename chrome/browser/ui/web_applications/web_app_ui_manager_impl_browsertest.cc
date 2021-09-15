@@ -14,8 +14,8 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/web_applications/test/test_os_integration_manager.h"
-#include "chrome/browser/web_applications/test/test_web_app_provider.h"
+#include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -40,8 +40,8 @@ namespace web_app {
 class WebAppUiManagerImplBrowserTest : public InProcessBrowserTest {
  public:
   WebAppUiManagerImplBrowserTest()
-      : test_web_app_provider_creator_(base::BindRepeating(
-            &WebAppUiManagerImplBrowserTest::CreateTestWebAppProvider,
+      : fake_web_app_provider_creator_(base::BindRepeating(
+            &WebAppUiManagerImplBrowserTest::CreateFakeWebAppProvider,
             base::Unretained(this))) {}
 
  protected:
@@ -68,14 +68,14 @@ class WebAppUiManagerImplBrowserTest : public InProcessBrowserTest {
   }
 
   TestShortcutManager* shortcut_manager_;
-  TestOsIntegrationManager* os_integration_manager_;
+  FakeOsIntegrationManager* os_integration_manager_;
 
  private:
-  std::unique_ptr<KeyedService> CreateTestWebAppProvider(Profile* profile) {
-    auto provider = std::make_unique<TestWebAppProvider>(profile);
+  std::unique_ptr<KeyedService> CreateFakeWebAppProvider(Profile* profile) {
+    auto provider = std::make_unique<FakeWebAppProvider>(profile);
     auto shortcut_manager = std::make_unique<TestShortcutManager>(profile);
     shortcut_manager_ = shortcut_manager.get();
-    auto os_integration_manager = std::make_unique<TestOsIntegrationManager>(
+    auto os_integration_manager = std::make_unique<FakeOsIntegrationManager>(
         profile, std::move(shortcut_manager), nullptr, nullptr, nullptr);
     os_integration_manager_ = os_integration_manager.get();
     provider->SetOsIntegrationManager(std::move(os_integration_manager));
@@ -84,7 +84,7 @@ class WebAppUiManagerImplBrowserTest : public InProcessBrowserTest {
     return provider;
   }
 
-  TestWebAppProviderCreator test_web_app_provider_creator_;
+  FakeWebAppProviderCreator fake_web_app_provider_creator_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest,

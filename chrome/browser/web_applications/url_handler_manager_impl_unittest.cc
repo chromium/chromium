@@ -12,7 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/test/fake_web_app_origin_association_manager.h"
-#include "chrome/browser/web_applications/test/test_web_app_registry_controller.h"
+#include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/url_handler_prefs.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -46,14 +46,14 @@ class UrlHandlerManagerImplTest : public WebAppTest {
  protected:
   void SetUp() override {
     WebAppTest::SetUp();
-    test_registry_controller_ =
-        std::make_unique<TestWebAppRegistryController>();
-    test_registry_controller_->SetUp(profile());
+    fake_registry_controller_ =
+        std::make_unique<FakeWebAppRegistryController>();
+    fake_registry_controller_->SetUp(profile());
 
     auto url_handler_manager =
         std::make_unique<UrlHandlerManagerImpl>(profile());
     url_handler_manager_ = url_handler_manager.get();
-    url_handler_manager->SetSubsystems(&test_registry_controller_->registrar());
+    url_handler_manager->SetSubsystems(&fake_registry_controller_->registrar());
 
     auto association_manager =
         std::make_unique<FakeWebAppOriginAssociationManager>();
@@ -67,19 +67,19 @@ class UrlHandlerManagerImplTest : public WebAppTest {
     url_handler_manager->SetAssociationManagerForTesting(
         std::move(association_manager));
 
-    test_os_integration_manager().SetUrlHandlerManager(
+    fake_os_integration_manager().SetUrlHandlerManager(
         std::move(url_handler_manager));
-    test_registry_controller_->Init();
+    fake_registry_controller_->Init();
   }
 
   void TearDown() override { WebAppTest::TearDown(); }
 
-  TestOsIntegrationManager& test_os_integration_manager() {
-    return test_registry_controller_->os_integration_manager();
+  FakeOsIntegrationManager& fake_os_integration_manager() {
+    return fake_registry_controller_->os_integration_manager();
   }
 
-  TestWebAppRegistryController& controller() {
-    return *test_registry_controller_;
+  FakeWebAppRegistryController& controller() {
+    return *fake_registry_controller_;
   }
 
   UrlHandlerManagerImpl& url_handler_manager() { return *url_handler_manager_; }
@@ -142,7 +142,7 @@ class UrlHandlerManagerImplTest : public WebAppTest {
 
  private:
   base::test::ScopedFeatureList features_;
-  std::unique_ptr<TestWebAppRegistryController> test_registry_controller_;
+  std::unique_ptr<FakeWebAppRegistryController> fake_registry_controller_;
   UrlHandlerManagerImpl* url_handler_manager_;
   ScopedTestingLocalState local_state_;
 };

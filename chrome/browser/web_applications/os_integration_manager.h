@@ -34,7 +34,7 @@ namespace web_app {
 
 class WebAppRegistrar;
 class WebAppIconManager;
-class TestOsIntegrationManager;
+class FakeOsIntegrationManager;
 class WebAppUiManager;
 
 // OsHooksErrors contains the result of all Os hook deployments.
@@ -165,7 +165,7 @@ class OsIntegrationManager {
 
   static ScopedOsHooksSuppress ScopedSuppressOsHooksForTesting();
 
-  virtual TestOsIntegrationManager* AsTestOsIntegrationManager();
+  virtual FakeOsIntegrationManager* AsTestOsIntegrationManager();
 
   void set_url_handler_manager(
       std::unique_ptr<UrlHandlerManager> url_handler_manager) {

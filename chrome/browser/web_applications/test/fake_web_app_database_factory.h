@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_WEB_APP_DATABASE_FACTORY_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_WEB_APP_DATABASE_FACTORY_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_FAKE_WEB_APP_DATABASE_FACTORY_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_TEST_FAKE_WEB_APP_DATABASE_FACTORY_H_
 
 #include <memory>
 #include <set>
@@ -24,13 +24,13 @@ class WebAppProto;
 // Requires base::MessageLoop message_loop_ in test fixture. Reason:
 // InMemoryStore needs a SequencedTaskRunner.
 // MessageLoop ctor calls MessageLoop::SetThreadTaskRunnerHandle().
-class TestWebAppDatabaseFactory : public AbstractWebAppDatabaseFactory {
+class FakeWebAppDatabaseFactory : public AbstractWebAppDatabaseFactory {
  public:
-  TestWebAppDatabaseFactory();
-  TestWebAppDatabaseFactory(const TestWebAppDatabaseFactory&) = delete;
-  TestWebAppDatabaseFactory& operator=(const TestWebAppDatabaseFactory&) =
+  FakeWebAppDatabaseFactory();
+  FakeWebAppDatabaseFactory(const FakeWebAppDatabaseFactory&) = delete;
+  FakeWebAppDatabaseFactory& operator=(const FakeWebAppDatabaseFactory&) =
       delete;
-  ~TestWebAppDatabaseFactory() override;
+  ~FakeWebAppDatabaseFactory() override;
 
   // AbstractWebAppDatabaseFactory interface implementation.
   syncer::OnceModelTypeStoreFactory GetStoreFactory() override;
@@ -46,9 +46,8 @@ class TestWebAppDatabaseFactory : public AbstractWebAppDatabaseFactory {
 
  private:
   std::unique_ptr<syncer::ModelTypeStore> store_;
-
 };
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_WEB_APP_DATABASE_FACTORY_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_TEST_FAKE_WEB_APP_DATABASE_FACTORY_H_

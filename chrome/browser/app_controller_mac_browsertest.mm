@@ -58,7 +58,7 @@
 #include "chrome/browser/ui/webui/welcome/helpers.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_origin_association_manager.h"
-#include "chrome/browser/web_applications/test/test_web_app_provider.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/url_handler_manager.h"
 #include "chrome/browser/web_applications/url_handler_manager_impl.h"
@@ -1070,8 +1070,8 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
 class StartupWebAppUrlHandlingBrowserTest : public InProcessBrowserTest {
  protected:
   StartupWebAppUrlHandlingBrowserTest()
-      : test_web_app_provider_creator_(base::BindRepeating(
-            &StartupWebAppUrlHandlingBrowserTest::CreateTestWebAppProvider)) {
+      : fake_web_app_provider_creator_(base::BindRepeating(
+            &StartupWebAppUrlHandlingBrowserTest::CreateFakeWebAppProvider)) {
     scoped_feature_list_.InitAndEnableFeature(
         blink::features::kWebAppEnableUrlHandlers);
   }
@@ -1097,9 +1097,9 @@ class StartupWebAppUrlHandlingBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  static std::unique_ptr<KeyedService> CreateTestWebAppProvider(
+  static std::unique_ptr<KeyedService> CreateFakeWebAppProvider(
       Profile* profile) {
-    auto provider = std::make_unique<web_app::TestWebAppProvider>(profile);
+    auto provider = std::make_unique<web_app::FakeWebAppProvider>(profile);
     provider->Start();
     auto association_manager =
         std::make_unique<web_app::FakeWebAppOriginAssociationManager>();
@@ -1111,7 +1111,7 @@ class StartupWebAppUrlHandlingBrowserTest : public InProcessBrowserTest {
     return provider;
   }
 
-  web_app::TestWebAppProviderCreator test_web_app_provider_creator_;
+  web_app::FakeWebAppProviderCreator fake_web_app_provider_creator_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

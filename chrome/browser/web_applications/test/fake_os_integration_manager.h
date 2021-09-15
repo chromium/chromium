@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_OS_INTEGRATION_MANAGER_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_OS_INTEGRATION_MANAGER_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_FAKE_OS_INTEGRATION_MANAGER_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_TEST_FAKE_OS_INTEGRATION_MANAGER_H_
 
 #include <map>
 
@@ -18,15 +18,15 @@ class WebAppFileHandlerManager;
 class WebAppProtocolHandlerManager;
 class UrlHandlerManager;
 
-class TestOsIntegrationManager : public OsIntegrationManager {
+class FakeOsIntegrationManager : public OsIntegrationManager {
  public:
-  TestOsIntegrationManager(
+  FakeOsIntegrationManager(
       Profile* profile,
       std::unique_ptr<WebAppShortcutManager> shortcut_manager,
       std::unique_ptr<WebAppFileHandlerManager> file_handler_manager,
       std::unique_ptr<WebAppProtocolHandlerManager> protocol_handler_manager,
       std::unique_ptr<UrlHandlerManager> url_handler_manager);
-  ~TestOsIntegrationManager() override;
+  ~FakeOsIntegrationManager() override;
 
   // OsIntegrationManager:
   void InstallOsHooks(const AppId& app_id,
@@ -90,7 +90,7 @@ class TestOsIntegrationManager : public OsIntegrationManager {
   void SetUrlHandlerManager(
       std::unique_ptr<UrlHandlerManager> url_handler_manager);
 
-  TestOsIntegrationManager* AsTestOsIntegrationManager() override;
+  FakeOsIntegrationManager* AsTestOsIntegrationManager() override;
 
  private:
   size_t num_create_shortcuts_calls_ = 0;
@@ -128,4 +128,4 @@ class TestShortcutManager : public WebAppShortcutManager {
 };
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_OS_INTEGRATION_MANAGER_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_TEST_FAKE_OS_INTEGRATION_MANAGER_H_

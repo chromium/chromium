@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
-#include "chrome/browser/web_applications/test/test_os_integration_manager.h"
+#include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/with_crosapi_param.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -33,7 +33,7 @@ class PreinstalledWebAppsBrowserTest : public InProcessBrowserTest,
     PreinstalledWebAppManager::SetConfigDirForTesting(&empty_path_);
     WebAppProvider::SetOsIntegrationManagerFactoryForTesting(
         [](Profile* profile) -> std::unique_ptr<OsIntegrationManager> {
-          return std::make_unique<TestOsIntegrationManager>(
+          return std::make_unique<FakeOsIntegrationManager>(
               profile, nullptr, nullptr, nullptr, nullptr);
         });
   }
@@ -162,15 +162,15 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
   // done via the |WebApps| publishing live our current app state to the app
   // service rather than writing shortcut files as the case on all other desktop
   // platforms.
-  auto* test_os_integration_manager =
+  auto* fake_os_integration_manager =
       provider.os_integration_manager().AsTestOsIntegrationManager();
-  EXPECT_EQ(test_os_integration_manager->num_create_shortcuts_calls(), 0u);
-  EXPECT_EQ(test_os_integration_manager->num_create_file_handlers_calls(), 0u);
-  EXPECT_EQ(test_os_integration_manager->num_register_run_on_os_login_calls(),
+  EXPECT_EQ(fake_os_integration_manager->num_create_shortcuts_calls(), 0u);
+  EXPECT_EQ(fake_os_integration_manager->num_create_file_handlers_calls(), 0u);
+  EXPECT_EQ(fake_os_integration_manager->num_register_run_on_os_login_calls(),
             0u);
   EXPECT_EQ(
-      test_os_integration_manager->num_add_app_to_quick_launch_bar_calls(), 0u);
-  EXPECT_FALSE(test_os_integration_manager->did_add_to_desktop());
+      fake_os_integration_manager->num_add_app_to_quick_launch_bar_calls(), 0u);
+  EXPECT_FALSE(fake_os_integration_manager->did_add_to_desktop());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

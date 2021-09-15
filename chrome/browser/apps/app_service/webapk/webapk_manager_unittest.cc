@@ -20,7 +20,7 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
-#include "chrome/browser/web_applications/test/test_web_app_provider.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/arc/mojom/app.mojom.h"
@@ -78,7 +78,7 @@ class WebApkManagerTest : public testing::Test {
 
     arc_test_.SetUp(&profile_);
 
-    auto* const provider = web_app::TestWebAppProvider::Get(&profile_);
+    auto* const provider = web_app::FakeWebAppProvider::Get(&profile_);
     provider->SkipAwaitingExtensionSystem();
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
   }

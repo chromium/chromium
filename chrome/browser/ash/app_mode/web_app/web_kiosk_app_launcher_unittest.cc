@@ -13,7 +13,7 @@
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/crosapi/fake_browser_manager.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/web_applications/test/test_data_retriever.h"
+#include "chrome/browser/web_applications/test/fake_data_retriever.h"
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
 #include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/common/chrome_features.h"
@@ -58,7 +58,7 @@ const char16_t kAppTitle[] = u"app";
 
 std::unique_ptr<web_app::WebAppDataRetriever> CreateDataRetrieverWithData(
     const GURL& url) {
-  auto data_retriever = std::make_unique<web_app::TestDataRetriever>();
+  auto data_retriever = std::make_unique<web_app::FakeDataRetriever>();
   auto info = std::make_unique<WebApplicationInfo>();
   info->start_url = url;
   info->title = kAppTitle;

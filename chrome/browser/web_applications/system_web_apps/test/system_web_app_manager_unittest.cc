@@ -27,12 +27,12 @@
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
-#include "chrome/browser/web_applications/test/test_data_retriever.h"
-#include "chrome/browser/web_applications/test/test_externally_managed_app_manager.h"
+#include "chrome/browser/web_applications/test/fake_data_retriever.h"
+#include "chrome/browser/web_applications/test/fake_externally_managed_app_manager.h"
+#include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
+#include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
+#include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
-#include "chrome/browser/web_applications/test/test_web_app_database_factory.h"
-#include "chrome/browser/web_applications/test/test_web_app_registry_controller.h"
-#include "chrome/browser/web_applications/test/test_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
@@ -135,8 +135,8 @@ class SystemWebAppManagerTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
 
-    test_registry_controller_ =
-        std::make_unique<TestWebAppRegistryController>();
+    fake_registry_controller_ =
+        std::make_unique<FakeWebAppRegistryController>();
 
     controller().SetUp(profile());
 
@@ -148,11 +148,11 @@ class SystemWebAppManagerTest : public WebAppTest {
     install_finalizer_ = std::make_unique<WebAppInstallFinalizer>(
         profile(), &icon_manager(), web_app_policy_manager_.get());
     install_manager_ = std::make_unique<WebAppInstallManager>(profile());
-    test_externally_managed_app_manager_impl_ =
-        std::make_unique<TestExternallyManagedAppManager>(profile());
+    fake_externally_managed_app_manager_impl_ =
+        std::make_unique<FakeExternallyManagedAppManager>(profile());
     test_system_web_app_manager_ =
         std::make_unique<TestSystemWebAppManager>(profile());
-    test_ui_manager_ = std::make_unique<TestWebAppUiManager>();
+    test_ui_manager_ = std::make_unique<FakeWebAppUiManager>();
 
     install_finalizer().SetSubsystems(&controller().registrar(), &ui_manager(),
                                       &controller().sync_bridge(),
@@ -186,18 +186,18 @@ class SystemWebAppManagerTest : public WebAppTest {
     // The reverse order of creation:
     test_ui_manager_.reset();
     test_system_web_app_manager_.reset();
-    test_externally_managed_app_manager_impl_.reset();
+    fake_externally_managed_app_manager_impl_.reset();
     install_manager_.reset();
     install_finalizer_.reset();
     web_app_policy_manager_.reset();
     icon_manager_.reset();
     externally_installed_app_prefs_.reset();
-    test_registry_controller_.reset();
+    fake_registry_controller_.reset();
   }
 
  protected:
-  TestWebAppRegistryController& controller() {
-    return *test_registry_controller_;
+  FakeWebAppRegistryController& controller() {
+    return *fake_registry_controller_;
   }
 
   ExternallyInstalledWebAppPrefs& externally_installed_app_prefs() {
@@ -210,15 +210,15 @@ class SystemWebAppManagerTest : public WebAppTest {
 
   WebAppInstallManager& install_manager() { return *install_manager_; }
 
-  TestExternallyManagedAppManager& externally_managed_app_manager() {
-    return *test_externally_managed_app_manager_impl_;
+  FakeExternallyManagedAppManager& externally_managed_app_manager() {
+    return *fake_externally_managed_app_manager_impl_;
   }
 
   TestSystemWebAppManager& system_web_app_manager() {
     return *test_system_web_app_manager_;
   }
 
-  TestWebAppUiManager& ui_manager() { return *test_ui_manager_; }
+  FakeWebAppUiManager& ui_manager() { return *test_ui_manager_; }
 
   WebAppPolicyManager& web_app_policy_manager() {
     return *web_app_policy_manager_;
@@ -269,17 +269,17 @@ class SystemWebAppManagerTest : public WebAppTest {
   }
 
  private:
-  std::unique_ptr<TestWebAppRegistryController> test_registry_controller_;
+  std::unique_ptr<FakeWebAppRegistryController> fake_registry_controller_;
   std::unique_ptr<ExternallyInstalledWebAppPrefs>
       externally_installed_app_prefs_;
   std::unique_ptr<WebAppIconManager> icon_manager_;
   std::unique_ptr<WebAppPolicyManager> web_app_policy_manager_;
   std::unique_ptr<WebAppInstallFinalizer> install_finalizer_;
   std::unique_ptr<WebAppInstallManager> install_manager_;
-  std::unique_ptr<TestExternallyManagedAppManager>
-      test_externally_managed_app_manager_impl_;
+  std::unique_ptr<FakeExternallyManagedAppManager>
+      fake_externally_managed_app_manager_impl_;
   std::unique_ptr<TestSystemWebAppManager> test_system_web_app_manager_;
-  std::unique_ptr<TestWebAppUiManager> test_ui_manager_;
+  std::unique_ptr<FakeWebAppUiManager> test_ui_manager_;
 };
 
 // Test that System Apps do install with the feature enabled.

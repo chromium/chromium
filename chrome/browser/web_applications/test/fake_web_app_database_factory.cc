@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/test/test_web_app_database_factory.h"
+#include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -16,19 +16,19 @@
 
 namespace web_app {
 
-TestWebAppDatabaseFactory::TestWebAppDatabaseFactory() {
+FakeWebAppDatabaseFactory::FakeWebAppDatabaseFactory() {
   // InMemoryStore must be created after message_loop_.
   store_ = syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest();
 }
 
-TestWebAppDatabaseFactory::~TestWebAppDatabaseFactory() {}
+FakeWebAppDatabaseFactory::~FakeWebAppDatabaseFactory() {}
 
-syncer::OnceModelTypeStoreFactory TestWebAppDatabaseFactory::GetStoreFactory() {
+syncer::OnceModelTypeStoreFactory FakeWebAppDatabaseFactory::GetStoreFactory() {
   return syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(
       store_.get());
 }
 
-Registry TestWebAppDatabaseFactory::ReadRegistry() const {
+Registry FakeWebAppDatabaseFactory::ReadRegistry() const {
   Registry registry;
   base::RunLoop run_loop;
 
@@ -51,7 +51,7 @@ Registry TestWebAppDatabaseFactory::ReadRegistry() const {
   return registry;
 }
 
-std::set<AppId> TestWebAppDatabaseFactory::ReadAllAppIds() const {
+std::set<AppId> FakeWebAppDatabaseFactory::ReadAllAppIds() const {
   std::set<AppId> app_ids;
 
   Registry registry = ReadRegistry();
@@ -61,7 +61,7 @@ std::set<AppId> TestWebAppDatabaseFactory::ReadAllAppIds() const {
   return app_ids;
 }
 
-void TestWebAppDatabaseFactory::WriteProtos(
+void FakeWebAppDatabaseFactory::WriteProtos(
     const std::vector<std::unique_ptr<WebAppProto>>& protos) {
   base::RunLoop run_loop;
 
@@ -87,7 +87,7 @@ void TestWebAppDatabaseFactory::WriteProtos(
   run_loop.Run();
 }
 
-void TestWebAppDatabaseFactory::WriteRegistry(const Registry& registry) {
+void FakeWebAppDatabaseFactory::WriteRegistry(const Registry& registry) {
   std::vector<std::unique_ptr<WebAppProto>> protos;
   for (const Registry::value_type& kv : registry) {
     const WebApp* app = kv.second.get();

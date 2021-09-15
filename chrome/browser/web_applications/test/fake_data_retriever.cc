@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/test/test_data_retriever.h"
+#include "chrome/browser/web_applications/test/fake_data_retriever.h"
 
 #include <utility>
 
@@ -15,14 +15,14 @@
 
 namespace web_app {
 
-TestDataRetriever::TestDataRetriever() = default;
+FakeDataRetriever::FakeDataRetriever() = default;
 
-TestDataRetriever::~TestDataRetriever() {
+FakeDataRetriever::~FakeDataRetriever() {
   if (destruction_callback_)
     std::move(destruction_callback_).Run();
 }
 
-void TestDataRetriever::GetWebApplicationInfo(
+void FakeDataRetriever::GetWebApplicationInfo(
     content::WebContents* web_contents,
     GetWebApplicationInfoCallback callback) {
   DCHECK(web_contents);
@@ -32,7 +32,7 @@ void TestDataRetriever::GetWebApplicationInfo(
   ScheduleCompletionCallback();
 }
 
-void TestDataRetriever::CheckInstallabilityAndRetrieveManifest(
+void FakeDataRetriever::CheckInstallabilityAndRetrieveManifest(
     content::WebContents* web_contents,
     bool bypass_service_worker_check,
     CheckInstallabilityCallback callback) {
@@ -42,7 +42,7 @@ void TestDataRetriever::CheckInstallabilityAndRetrieveManifest(
   ScheduleCompletionCallback();
 }
 
-void TestDataRetriever::GetIcons(content::WebContents* web_contents,
+void FakeDataRetriever::GetIcons(content::WebContents* web_contents,
                                  const std::vector<GURL>& icon_urls,
                                  bool skip_page_favicons,
                                  WebAppIconDownloader::Histogram histogram,
@@ -59,16 +59,16 @@ void TestDataRetriever::GetIcons(content::WebContents* web_contents,
   icons_map_.clear();
 }
 
-void TestDataRetriever::SetRendererWebApplicationInfo(
+void FakeDataRetriever::SetRendererWebApplicationInfo(
     std::unique_ptr<WebApplicationInfo> web_app_info) {
   web_app_info_ = std::move(web_app_info);
 }
 
-void TestDataRetriever::SetEmptyRendererWebApplicationInfo() {
+void FakeDataRetriever::SetEmptyRendererWebApplicationInfo() {
   SetRendererWebApplicationInfo(std::make_unique<WebApplicationInfo>());
 }
 
-void TestDataRetriever::SetManifest(blink::mojom::ManifestPtr manifest,
+void FakeDataRetriever::SetManifest(blink::mojom::ManifestPtr manifest,
                                     bool is_installable,
                                     GURL manifest_url) {
   manifest_ = std::move(manifest);
@@ -76,22 +76,22 @@ void TestDataRetriever::SetManifest(blink::mojom::ManifestPtr manifest,
   manifest_url_ = manifest_url;
 }
 
-void TestDataRetriever::SetIcons(IconsMap icons_map) {
+void FakeDataRetriever::SetIcons(IconsMap icons_map) {
   DCHECK(!get_icons_delegate_);
   icons_map_ = std::move(icons_map);
 }
 
-void TestDataRetriever::SetGetIconsDelegate(
+void FakeDataRetriever::SetGetIconsDelegate(
     GetIconsDelegate get_icons_delegate) {
   DCHECK(icons_map_.empty());
   get_icons_delegate_ = std::move(get_icons_delegate);
 }
 
-void TestDataRetriever::SetDestructionCallback(base::OnceClosure callback) {
+void FakeDataRetriever::SetDestructionCallback(base::OnceClosure callback) {
   destruction_callback_ = std::move(callback);
 }
 
-void TestDataRetriever::BuildDefaultDataToRetrieve(const GURL& url,
+void FakeDataRetriever::BuildDefaultDataToRetrieve(const GURL& url,
                                                    const GURL& scope) {
   SetEmptyRendererWebApplicationInfo();
 
@@ -106,14 +106,14 @@ void TestDataRetriever::BuildDefaultDataToRetrieve(const GURL& url,
   SetIcons(IconsMap{});
 }
 
-void TestDataRetriever::ScheduleCompletionCallback() {
+void FakeDataRetriever::ScheduleCompletionCallback() {
   // If |this| DataRetriever destroyed, the completion callback gets cancelled.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&TestDataRetriever::CallCompletionCallback,
+      FROM_HERE, base::BindOnce(&FakeDataRetriever::CallCompletionCallback,
                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
-void TestDataRetriever::CallCompletionCallback() {
+void FakeDataRetriever::CallCompletionCallback() {
   std::move(completion_callback_).Run();
 }
 

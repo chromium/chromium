@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/test/test_os_integration_manager.h"
+#include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 
 #include "base/containers/contains.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/web_applications/test/fake_url_handler_manager.h"
+#include "chrome/browser/web_applications/test/fake_web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_protocol_handler_manager.h"
-#include "chrome/browser/web_applications/test/test_web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/url_handler_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_file_handler_manager.h"
@@ -17,7 +17,8 @@
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 
 namespace web_app {
-TestOsIntegrationManager::TestOsIntegrationManager(
+
+FakeOsIntegrationManager::FakeOsIntegrationManager(
     Profile* profile,
     std::unique_ptr<WebAppShortcutManager> shortcut_manager,
     std::unique_ptr<WebAppFileHandlerManager> file_handler_manager,
@@ -33,7 +34,7 @@ TestOsIntegrationManager::TestOsIntegrationManager(
   }
   if (!this->file_handler_manager()) {
     set_file_handler_manager(
-        std::make_unique<TestWebAppFileHandlerManager>(profile));
+        std::make_unique<FakeWebAppFileHandlerManager>(profile));
   }
   if (!this->protocol_handler_manager()) {
     set_protocol_handler_manager(
@@ -44,15 +45,15 @@ TestOsIntegrationManager::TestOsIntegrationManager(
   }
 }
 
-TestOsIntegrationManager::~TestOsIntegrationManager() = default;
+FakeOsIntegrationManager::~FakeOsIntegrationManager() = default;
 
-void TestOsIntegrationManager::SetNextCreateShortcutsResult(const AppId& app_id,
+void FakeOsIntegrationManager::SetNextCreateShortcutsResult(const AppId& app_id,
                                                             bool success) {
   DCHECK(!base::Contains(next_create_shortcut_results_, app_id));
   next_create_shortcut_results_[app_id] = success;
 }
 
-void TestOsIntegrationManager::InstallOsHooks(
+void FakeOsIntegrationManager::InstallOsHooks(
     const AppId& app_id,
     InstallOsHooksCallback callback,
     std::unique_ptr<WebApplicationInfo> web_app_info,
@@ -95,7 +96,7 @@ void TestOsIntegrationManager::InstallOsHooks(
       base::BindOnce(std::move(callback), std::move(os_hooks_errors)));
 }
 
-void TestOsIntegrationManager::UninstallOsHooks(
+void FakeOsIntegrationManager::UninstallOsHooks(
     const AppId& app_id,
     const OsHooksOptions& os_hooks,
     UninstallOsHooksCallback callback) {
@@ -104,7 +105,7 @@ void TestOsIntegrationManager::UninstallOsHooks(
       FROM_HERE, base::BindOnce(std::move(callback), os_hooks_errors));
 }
 
-void TestOsIntegrationManager::UninstallAllOsHooks(
+void FakeOsIntegrationManager::UninstallAllOsHooks(
     const AppId& app_id,
     UninstallOsHooksCallback callback) {
   OsHooksOptions os_hooks;
@@ -112,7 +113,7 @@ void TestOsIntegrationManager::UninstallAllOsHooks(
   UninstallOsHooks(app_id, os_hooks, std::move(callback));
 }
 
-void TestOsIntegrationManager::UpdateOsHooks(
+void FakeOsIntegrationManager::UpdateOsHooks(
     const AppId& app_id,
     base::StringPiece old_name,
     FileHandlerUpdateAction file_handlers_need_os_update,
@@ -121,23 +122,23 @@ void TestOsIntegrationManager::UpdateOsHooks(
     ++num_update_file_handlers_calls_;
 }
 
-void TestOsIntegrationManager::SetFileHandlerManager(
+void FakeOsIntegrationManager::SetFileHandlerManager(
     std::unique_ptr<WebAppFileHandlerManager> file_handler_manager) {
   set_file_handler_manager(std::move(file_handler_manager));
 }
 
-void TestOsIntegrationManager::SetProtocolHandlerManager(
+void FakeOsIntegrationManager::SetProtocolHandlerManager(
     std::unique_ptr<WebAppProtocolHandlerManager> protocol_handler_manager) {
   set_protocol_handler_manager(std::move(protocol_handler_manager));
 }
 
-void TestOsIntegrationManager::SetUrlHandlerManager(
+void FakeOsIntegrationManager::SetUrlHandlerManager(
     std::unique_ptr<UrlHandlerManager> url_handler_manager) {
   set_url_handler_manager(std::move(url_handler_manager));
 }
 
-TestOsIntegrationManager*
-TestOsIntegrationManager::AsTestOsIntegrationManager() {
+FakeOsIntegrationManager*
+FakeOsIntegrationManager::AsTestOsIntegrationManager() {
   return this;
 }
 

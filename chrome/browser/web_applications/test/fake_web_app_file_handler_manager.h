@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_WEB_APP_FILE_HANDLER_MANAGER_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_WEB_APP_FILE_HANDLER_MANAGER_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_FAKE_WEB_APP_FILE_HANDLER_MANAGER_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_TEST_FAKE_WEB_APP_FILE_HANDLER_MANAGER_H_
 
 #include <map>
 #include <string>
@@ -18,13 +18,13 @@ class Profile;
 
 namespace web_app {
 
-class TestWebAppFileHandlerManager : public WebAppFileHandlerManager {
+class FakeWebAppFileHandlerManager : public WebAppFileHandlerManager {
  public:
-  explicit TestWebAppFileHandlerManager(Profile* profile);
-  TestWebAppFileHandlerManager(const TestWebAppFileHandlerManager&) = delete;
-  TestWebAppFileHandlerManager& operator=(const TestWebAppFileHandlerManager&) =
+  explicit FakeWebAppFileHandlerManager(Profile* profile);
+  FakeWebAppFileHandlerManager(const FakeWebAppFileHandlerManager&) = delete;
+  FakeWebAppFileHandlerManager& operator=(const FakeWebAppFileHandlerManager&) =
       delete;
-  ~TestWebAppFileHandlerManager() override;
+  ~FakeWebAppFileHandlerManager() override;
 
   const apps::FileHandlers* GetAllFileHandlers(const AppId& app_id) override;
 
@@ -47,4 +47,4 @@ class TestWebAppFileHandlerManager : public WebAppFileHandlerManager {
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_WEB_APP_FILE_HANDLER_MANAGER_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_TEST_FAKE_WEB_APP_FILE_HANDLER_MANAGER_H_

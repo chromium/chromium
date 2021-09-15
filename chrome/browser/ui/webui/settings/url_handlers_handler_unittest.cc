@@ -11,7 +11,7 @@
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/web_applications/test/test_web_app_registry_controller.h"
+#include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
 #include "chrome/browser/web_applications/url_handler_prefs.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -67,9 +67,9 @@ class UrlHandlersHandlerTest : public testing::Test {
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
 
-    test_registry_controller_ =
-        std::make_unique<web_app::TestWebAppRegistryController>();
-    test_registry_controller_->SetUp(profile_.get());
+    fake_registry_controller_ =
+        std::make_unique<web_app::FakeWebAppRegistryController>();
+    fake_registry_controller_->SetUp(profile_.get());
 
     handler_ = std::make_unique<TestUrlHandlersHandler>(
         local_state(), profile(), &test_app_registrar());
@@ -106,8 +106,8 @@ class UrlHandlersHandlerTest : public testing::Test {
     handler_.reset();
   }
 
-  web_app::TestWebAppRegistryController& controller() {
-    return *test_registry_controller_;
+  web_app::FakeWebAppRegistryController& controller() {
+    return *fake_registry_controller_;
   }
 
   web_app::WebAppRegistrar& registrar() { return controller().registrar(); }
@@ -209,8 +209,8 @@ class UrlHandlersHandlerTest : public testing::Test {
   ScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestingProfile> profile_;
   content::TestWebUI web_ui_;
-  std::unique_ptr<web_app::TestWebAppRegistryController>
-      test_registry_controller_;
+  std::unique_ptr<web_app::FakeWebAppRegistryController>
+      fake_registry_controller_;
   std::unique_ptr<TestUrlHandlersHandler> handler_;
   base::Time time_1_;
   const GURL app_url_ = GURL("https://app.com");

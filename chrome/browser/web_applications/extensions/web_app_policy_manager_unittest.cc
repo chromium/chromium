@@ -19,8 +19,8 @@
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager_observer.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
-#include "chrome/browser/web_applications/test/test_externally_managed_app_manager.h"
-#include "chrome/browser/web_applications/test/test_web_app_registry_controller.h"
+#include "chrome/browser/web_applications/test/fake_externally_managed_app_manager.h"
+#include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -240,12 +240,12 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
-    test_registry_controller_ =
-        std::make_unique<TestWebAppRegistryController>();
+    fake_registry_controller_ =
+        std::make_unique<FakeWebAppRegistryController>();
     externally_installed_app_prefs_ =
         std::make_unique<ExternallyInstalledWebAppPrefs>(profile()->GetPrefs());
-    test_externally_managed_app_manager_ =
-        std::make_unique<TestExternallyManagedAppManager>(profile());
+    fake_externally_managed_app_manager_ =
+        std::make_unique<FakeExternallyManagedAppManager>(profile());
     test_system_app_manager_ =
         std::make_unique<web_app::TestSystemWebAppManager>(profile());
     web_app_policy_manager_ = std::make_unique<WebAppPolicyManager>(profile());
@@ -298,9 +298,9 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness {
   void TearDown() override {
     web_app_policy_manager_.reset();
     test_system_app_manager_.reset();
-    test_externally_managed_app_manager_.reset();
+    fake_externally_managed_app_manager_.reset();
     externally_installed_app_prefs_.reset();
-    test_registry_controller_.reset();
+    fake_registry_controller_.reset();
 
     ChromeRenderViewHostTestHarness::TearDown();
   }
@@ -330,8 +330,8 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness {
   }
 
  protected:
-  TestExternallyManagedAppManager& externally_managed_app_manager() {
-    return *test_externally_managed_app_manager_;
+  FakeExternallyManagedAppManager& externally_managed_app_manager() {
+    return *fake_externally_managed_app_manager_;
   }
 
   TestSystemWebAppManager& system_app_manager() {
@@ -346,8 +346,8 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness {
     return *externally_installed_app_prefs_;
   }
 
-  TestWebAppRegistryController& controller() {
-    return *test_registry_controller_;
+  FakeWebAppRegistryController& controller() {
+    return *fake_registry_controller_;
   }
 
   void SetWebAppSettingsDictPref(const base::StringPiece pref) {
@@ -385,11 +385,11 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness {
   InstallResultCode install_result_code_ =
       InstallResultCode::kSuccessNewInstall;
 
-  std::unique_ptr<TestWebAppRegistryController> test_registry_controller_;
+  std::unique_ptr<FakeWebAppRegistryController> fake_registry_controller_;
   std::unique_ptr<ExternallyInstalledWebAppPrefs>
       externally_installed_app_prefs_;
-  std::unique_ptr<TestExternallyManagedAppManager>
-      test_externally_managed_app_manager_;
+  std::unique_ptr<FakeExternallyManagedAppManager>
+      fake_externally_managed_app_manager_;
   std::unique_ptr<TestSystemWebAppManager> test_system_app_manager_;
   std::unique_ptr<WebAppPolicyManager> web_app_policy_manager_;
 };

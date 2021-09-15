@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/test/test_web_app_file_handler_manager.h"
+#include "chrome/browser/web_applications/test/fake_web_app_file_handler_manager.h"
 #include "base/containers/contains.h"
 
 namespace web_app {
 
-TestWebAppFileHandlerManager::TestWebAppFileHandlerManager(Profile* profile)
+FakeWebAppFileHandlerManager::FakeWebAppFileHandlerManager(Profile* profile)
     : WebAppFileHandlerManager(profile) {
   WebAppFileHandlerManager::DisableOsIntegrationForTesting();
 }
 
-TestWebAppFileHandlerManager::~TestWebAppFileHandlerManager() = default;
+FakeWebAppFileHandlerManager::~FakeWebAppFileHandlerManager() = default;
 
-const apps::FileHandlers* TestWebAppFileHandlerManager::GetAllFileHandlers(
+const apps::FileHandlers* FakeWebAppFileHandlerManager::GetAllFileHandlers(
     const AppId& app_id) {
   if (!base::Contains(file_handlers_, app_id))
     return nullptr;
@@ -22,7 +22,7 @@ const apps::FileHandlers* TestWebAppFileHandlerManager::GetAllFileHandlers(
   return &file_handlers_[app_id];
 }
 
-void TestWebAppFileHandlerManager::InstallFileHandler(const AppId& app_id,
+void FakeWebAppFileHandlerManager::InstallFileHandler(const AppId& app_id,
                                                       const GURL& action,
                                                       const AcceptMap& accept,
                                                       bool enable) {

@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/profile_test_helper.h"
-#include "chrome/browser/web_applications/test/test_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 
@@ -32,7 +32,7 @@ class SystemWebAppBrowserTestBase : public InProcessBrowserTest {
   // Performs common initialization for testing SystemWebAppManager features.
   // If true, |install_mock| installs a WebUIController that serves a mock
   // System PWA, and ensures the WebAppProvider associated with the startup
-  // profile is a TestWebAppProviderCreator.
+  // profile is a FakeWebAppProviderCreator.
   explicit SystemWebAppBrowserTestBase(bool install_mock = true);
   SystemWebAppBrowserTestBase(const SystemWebAppBrowserTestBase&) = delete;
   SystemWebAppBrowserTestBase& operator=(const SystemWebAppBrowserTestBase&) =

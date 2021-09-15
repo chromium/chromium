@@ -50,7 +50,7 @@
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if !defined(OS_ANDROID)
-#include "chrome/browser/web_applications/test/test_web_app_provider.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -417,8 +417,8 @@ class PlatformNotificationServiceTest_WebAppNotificationIconAndTitle
 
 TEST_F(PlatformNotificationServiceTest_WebAppNotificationIconAndTitle,
        FindWebAppIconAndTitle_NoApp) {
-  web_app::TestWebAppProvider* provider =
-      web_app::TestWebAppProvider::Get(&profile_);
+  web_app::FakeWebAppProvider* provider =
+      web_app::FakeWebAppProvider::Get(&profile_);
   provider->Start();
 
   const GURL web_app_url{"https://example.org/"};
@@ -427,8 +427,8 @@ TEST_F(PlatformNotificationServiceTest_WebAppNotificationIconAndTitle,
 
 TEST_F(PlatformNotificationServiceTest_WebAppNotificationIconAndTitle,
        FindWebAppIconAndTitle) {
-  web_app::TestWebAppProvider* provider =
-      web_app::TestWebAppProvider::Get(&profile_);
+  web_app::FakeWebAppProvider* provider =
+      web_app::FakeWebAppProvider::Get(&profile_);
   web_app::WebAppIconManager& icon_manager = provider->GetIconManager();
 
   std::unique_ptr<web_app::WebApp> web_app = web_app::test::CreateWebApp();

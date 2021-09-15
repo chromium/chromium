@@ -10,8 +10,8 @@
 
 #include "base/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/web_applications/test/test_web_app_file_handler_manager.h"
-#include "chrome/browser/web_applications/test/test_web_app_registry_controller.h"
+#include "chrome/browser/web_applications/test/fake_web_app_file_handler_manager.h"
+#include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
@@ -119,30 +119,30 @@ class WebAppFileHandlerManagerTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
 
-    test_registry_controller_ =
-        std::make_unique<TestWebAppRegistryController>();
-    test_registry_controller_->SetUp(profile());
+    fake_registry_controller_ =
+        std::make_unique<FakeWebAppRegistryController>();
+    fake_registry_controller_->SetUp(profile());
 
     file_handler_manager_ =
-        std::make_unique<TestWebAppFileHandlerManager>(profile());
+        std::make_unique<FakeWebAppFileHandlerManager>(profile());
     file_handler_manager_->SetSubsystems(&app_registrar());
 
     controller().Init();
   }
 
-  TestWebAppFileHandlerManager& file_handler_manager() {
+  FakeWebAppFileHandlerManager& file_handler_manager() {
     return *file_handler_manager_.get();
   }
 
-  TestWebAppRegistryController& controller() {
-    return *test_registry_controller_;
+  FakeWebAppRegistryController& controller() {
+    return *fake_registry_controller_;
   }
 
   WebAppRegistrar& app_registrar() { return controller().registrar(); }
 
  private:
-  std::unique_ptr<TestWebAppRegistryController> test_registry_controller_;
-  std::unique_ptr<TestWebAppFileHandlerManager> file_handler_manager_;
+  std::unique_ptr<FakeWebAppRegistryController> fake_registry_controller_;
+  std::unique_ptr<FakeWebAppFileHandlerManager> file_handler_manager_;
 
   base::test::ScopedFeatureList features_;
 };

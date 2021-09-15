@@ -20,11 +20,11 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
-#include "chrome/browser/web_applications/test/test_data_retriever.h"
+#include "chrome/browser/web_applications/test/fake_data_retriever.h"
+#include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
+#include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
+#include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
-#include "chrome/browser/web_applications/test/test_web_app_database_factory.h"
-#include "chrome/browser/web_applications/test/test_web_app_registry_controller.h"
-#include "chrome/browser/web_applications/test/test_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_sync_test_utils.h"
@@ -116,7 +116,7 @@ IconsMap ConvertWebAppIconsToIconsMap(const WebApp& app) {
 
 std::unique_ptr<WebAppDataRetriever> ConvertWebAppToDataRetriever(
     const WebApp& app) {
-  auto data_retriever = std::make_unique<TestDataRetriever>();
+  auto data_retriever = std::make_unique<FakeDataRetriever>();
 
   data_retriever->SetRendererWebApplicationInfo(
       ConvertWebAppToRendererWebApplicationInfo(app));
@@ -128,7 +128,7 @@ std::unique_ptr<WebAppDataRetriever> ConvertWebAppToDataRetriever(
 }
 
 std::unique_ptr<WebAppDataRetriever> CreateEmptyDataRetriever() {
-  auto data_retriever = std::make_unique<TestDataRetriever>();
+  auto data_retriever = std::make_unique<FakeDataRetriever>();
   return std::unique_ptr<WebAppDataRetriever>(std::move(data_retriever));
 }
 
@@ -171,9 +171,9 @@ class WebAppInstallManagerTest
     externally_installed_app_prefs_ =
         std::make_unique<ExternallyInstalledWebAppPrefs>(profile()->GetPrefs());
 
-    test_registry_controller_ =
-        std::make_unique<TestWebAppRegistryController>();
-    test_registry_controller_->SetUp(profile());
+    fake_registry_controller_ =
+        std::make_unique<FakeWebAppRegistryController>();
+    fake_registry_controller_->SetUp(profile());
 
     auto file_utils = std::make_unique<TestFileUtils>();
     file_utils_ = file_utils.get();
@@ -196,12 +196,12 @@ class WebAppInstallManagerTest
     test_url_loader_ = test_url_loader.get();
     install_manager_->SetUrlLoaderForTesting(std::move(test_url_loader));
 
-    ui_manager_ = std::make_unique<TestWebAppUiManager>();
+    ui_manager_ = std::make_unique<FakeWebAppUiManager>();
 
     install_finalizer_->SetSubsystems(
         &registrar(), ui_manager_.get(),
-        &test_registry_controller_->sync_bridge(),
-        &test_registry_controller_->os_integration_manager());
+        &fake_registry_controller_->sync_bridge(),
+        &fake_registry_controller_->os_integration_manager());
   }
 
   void TearDown() override {
@@ -218,8 +218,8 @@ class WebAppInstallManagerTest
     DCHECK(file_utils_);
     return *file_utils_;
   }
-  TestWebAppRegistryController& controller() {
-    return *test_registry_controller_;
+  FakeWebAppRegistryController& controller() {
+    return *fake_registry_controller_;
   }
   ExternallyInstalledWebAppPrefs& externally_installed_app_prefs() {
     return *externally_installed_app_prefs_;
@@ -354,7 +354,7 @@ class WebAppInstallManagerTest
   int GetNumFullyInstalledApps() const {
     int num_apps = 0;
 
-    for (const WebApp& app : test_registry_controller_->registrar().GetApps()) {
+    for (const WebApp& app : fake_registry_controller_->registrar().GetApps()) {
       ALLOW_UNUSED_LOCAL(app);
       ++num_apps;
     }
@@ -394,7 +394,7 @@ class WebAppInstallManagerTest
   void UseDefaultDataRetriever(const GURL& start_url) {
     install_manager().SetDataRetrieverFactoryForTesting(
         base::BindLambdaForTesting([start_url]() {
-          auto data_retriever = std::make_unique<TestDataRetriever>();
+          auto data_retriever = std::make_unique<FakeDataRetriever>();
           data_retriever->BuildDefaultDataToRetrieve(start_url, start_url);
           return std::unique_ptr<WebAppDataRetriever>(
               std::move(data_retriever));
@@ -408,7 +408,7 @@ class WebAppInstallManagerTest
     install_finalizer_.reset();
     policy_manager_.reset();
     icon_manager_.reset();
-    test_registry_controller_.reset();
+    fake_registry_controller_.reset();
     externally_installed_app_prefs_.reset();
 
     test_url_loader_ = nullptr;
@@ -428,12 +428,12 @@ class WebAppInstallManagerTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  std::unique_ptr<TestWebAppRegistryController> test_registry_controller_;
+  std::unique_ptr<FakeWebAppRegistryController> fake_registry_controller_;
   std::unique_ptr<WebAppIconManager> icon_manager_;
   std::unique_ptr<WebAppPolicyManager> policy_manager_;
   std::unique_ptr<WebAppInstallManager> install_manager_;
   std::unique_ptr<WebAppInstallFinalizer> install_finalizer_;
-  std::unique_ptr<TestWebAppUiManager> ui_manager_;
+  std::unique_ptr<FakeWebAppUiManager> ui_manager_;
   std::unique_ptr<ExternallyInstalledWebAppPrefs>
       externally_installed_app_prefs_;
 
@@ -472,7 +472,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
   }
 
   // 1 InstallTask == 1 DataRetriever, their lifetime matches.
-  base::flat_set<TestDataRetriever*> task_data_retrievers;
+  base::flat_set<FakeDataRetriever*> task_data_retrievers;
 
   base::RunLoop app1_installed_run_loop;
   base::RunLoop app2_installed_run_loop;
@@ -494,14 +494,14 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
 
   install_manager().SetDataRetrieverFactoryForTesting(
       base::BindLambdaForTesting([&]() {
-        auto data_retriever = std::make_unique<TestDataRetriever>();
+        auto data_retriever = std::make_unique<FakeDataRetriever>();
         task_index++;
 
         GURL start_url = task_index == 1 ? url1 : url2;
         data_retriever->BuildDefaultDataToRetrieve(start_url,
                                                    /*scope=*/start_url);
 
-        TestDataRetriever* data_retriever_ptr = data_retriever.get();
+        FakeDataRetriever* data_retriever_ptr = data_retriever.get();
         task_data_retrievers.insert(data_retriever_ptr);
 
         event_order.push_back(task_index == 1 ? Event::Task1_Queued
@@ -612,7 +612,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
 
   install_manager().SetDataRetrieverFactoryForTesting(
       base::BindLambdaForTesting([&]() {
-        auto data_retriever = std::make_unique<TestDataRetriever>();
+        auto data_retriever = std::make_unique<FakeDataRetriever>();
         data_retriever->BuildDefaultDataToRetrieve(start_url,
                                                    /*scope=*/start_url);
 
@@ -1138,7 +1138,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
     // `SyncInstallDelegate::InstallWebAppsAfterSync()` must not be called.
     controller().SetInstallWebAppsAfterSyncDelegate(base::BindLambdaForTesting(
         [&](std::vector<WebApp*> apps_to_install,
-            TestWebAppRegistryController::RepeatingInstallCallback callback) {
+            FakeWebAppRegistryController::RepeatingInstallCallback callback) {
           ADD_FAILURE();
         }));
 
