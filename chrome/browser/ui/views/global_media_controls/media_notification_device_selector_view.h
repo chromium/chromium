@@ -116,7 +116,7 @@ class MediaNotificationDeviceSelectorView
   void HideDevices();
   void RemoveDevicesOfType(DeviceEntryUIType type);
   void StartCastSession(CastDeviceEntryView* entry);
-  void DoStartCastSession(const media_router::UIMediaSink& sink);
+  void DoStartCastSession(media_router::UIMediaSink sink);
   void RecordStartCastingMetrics(media_router::SinkIconType sink_icon_type);
   void RecordStopCastingMetrics();
   void RecordCastDeviceCountAfterDelay();

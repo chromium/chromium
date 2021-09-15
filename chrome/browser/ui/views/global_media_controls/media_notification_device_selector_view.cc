@@ -512,7 +512,7 @@ void MediaNotificationDeviceSelectorView::StartCastSession(
   }
 }
 void MediaNotificationDeviceSelectorView::DoStartCastSession(
-    const media_router::UIMediaSink& sink) {
+    media_router::UIMediaSink sink) {
   DCHECK(base::Contains(sink.cast_modes,
                         media_router::MediaCastMode::PRESENTATION));
   cast_controller_->StartCasting(sink.id,
