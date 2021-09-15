@@ -16,17 +16,16 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/views/message_view.h"
+#include "ui/message_center/views/notification_input_container.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_observer.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 
 namespace views {
-class ImageButton;
 class Label;
 class ProgressBar;
 class RadioButton;
-class Textfield;
 }  // namespace views
 
 namespace message_center {
@@ -110,49 +109,6 @@ class LargeImageView : public views::View {
   gfx::Size max_size_;
   gfx::Size min_size_;
   gfx::ImageSkia image_;
-};
-
-class NotificationInputDelegate {
- public:
-  virtual void OnNotificationInputSubmit(size_t index,
-                                         const std::u16string& text) = 0;
-  virtual ~NotificationInputDelegate() = default;
-};
-
-class NotificationInputContainer : public views::View,
-                                   public views::TextfieldController {
- public:
-  explicit NotificationInputContainer(NotificationInputDelegate* delegate);
-  NotificationInputContainer(const NotificationInputContainer&) = delete;
-  NotificationInputContainer& operator=(const NotificationInputContainer&) =
-      delete;
-  ~NotificationInputContainer() override;
-
-  void AnimateBackground(const ui::Event& event);
-
-  // views::View:
-  void AddLayerBeneathView(ui::Layer* layer) override;
-  void RemoveLayerBeneathView(ui::Layer* layer) override;
-  void OnThemeChanged() override;
-  void Layout() override;
-
-  // Overridden from views::TextfieldController:
-  bool HandleKeyEvent(views::Textfield* sender,
-                      const ui::KeyEvent& key_event) override;
-  void OnAfterUserAction(views::Textfield* sender) override;
-
-  views::Textfield* textfield() const { return textfield_; }
-  views::ImageButton* button() const { return button_; }
-
- private:
-  void UpdateButtonImage();
-
-  NotificationInputDelegate* const delegate_;
-
-  views::InkDropContainerView* const ink_drop_container_;
-
-  views::Textfield* const textfield_;
-  views::ImageButton* const button_;
 };
 
 // View that displays all current types of notification (web, basic, image, and
@@ -253,6 +209,11 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   static std::unique_ptr<views::Label> GenerateTitleView(
       const std::u16string& title);
 
+  // Generate a view that shows the inline reply textfield and send message
+  // button.
+  virtual std::unique_ptr<NotificationInputContainer>
+  GenerateNotificationInputContainer();
+
   void CreateOrUpdateViews(const Notification& notification);
 
   virtual void UpdateViewForExpandedState(bool expanded);
@@ -338,7 +299,9 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   void ToggleInlineSettings(const ui::Event& event);
   void UpdateHeaderViewBackgroundColor();
   SkColor GetNotificationHeaderViewBackgroundColor() const;
-  void UpdateActionButtonsRowBackground();
+
+  // Update the background that shows behind the `actions_row_`.
+  virtual void UpdateActionButtonsRowBackground();
 
   // Returns the list of children which need to have their layers created or
   // destroyed when the ink drop is visible.

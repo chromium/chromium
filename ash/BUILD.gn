@@ -1099,6 +1099,8 @@ component("ash") {
     "system/message_center/ash_message_center_lock_screen_controller.h",
     "system/message_center/ash_message_popup_collection.cc",
     "system/message_center/ash_message_popup_collection.h",
+    "system/message_center/ash_notification_input_container.cc",
+    "system/message_center/ash_notification_input_container.h",
     "system/message_center/ash_notification_view.cc",
     "system/message_center/ash_notification_view.h",
     "system/message_center/fullscreen_notification_blocker.cc",

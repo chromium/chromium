@@ -7,6 +7,8 @@
 
 #include "ash/ash_export.h"
 #include "base/timer/timer.h"
+#include "ui/message_center/views/notification_input_container.h"
+#include "ui/message_center/views/notification_view.h"
 #include "ui/message_center/views/notification_view_base.h"
 #include "ui/views/controls/button/image_button.h"
 
@@ -41,11 +43,15 @@ class ASH_EXPORT AshNotificationView
   void RemoveGroupNotification(const std::string& notification_id) override;
   void CreateOrUpdateTitleView(
       const message_center::Notification& notification) override;
+
+  // message_center::NotificationViewBase:
   void UpdateViewForExpandedState(bool expanded) override;
   void SetExpandButtonEnabled(bool enabled) override;
   void UpdateCornerRadius(int top_radius, int bottom_radius) override;
   void SetDrawBackgroundAsActive(bool active) override;
   void OnThemeChanged() override;
+  std::unique_ptr<message_center::NotificationInputContainer>
+  GenerateNotificationInputContainer() override;
 
  private:
   friend class AshNotificationViewTest;
@@ -112,6 +118,9 @@ class ASH_EXPORT AshNotificationView
 
   // Update the background color with rounded corner.
   void UpdateBackground(int top_radius, int bottom_radius);
+
+  // message_center::NotificationViewBase:
+  void UpdateActionButtonsRowBackground() override;
 
   ExpandButton* expand_button_ = nullptr;
   views::View* left_content_ = nullptr;

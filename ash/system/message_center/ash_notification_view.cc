@@ -11,6 +11,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/message_center/ash_notification_input_container.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "base/check.h"
@@ -335,6 +336,11 @@ void AshNotificationView::OnThemeChanged() {
   UpdateBackground(top_radius_, bottom_radius_);
 }
 
+std::unique_ptr<message_center::NotificationInputContainer>
+AshNotificationView::GenerateNotificationInputContainer() {
+  return std::make_unique<AshNotificationInputContainer>(this);
+}
+
 void AshNotificationView::UpdateBackground(int top_radius, int bottom_radius) {
   SkColor background_color;
   if (shown_in_popup_) {
@@ -358,6 +364,9 @@ void AshNotificationView::UpdateBackground(int top_radius, int bottom_radius) {
   SetBackground(views::CreateBackgroundFromPainter(
       std::make_unique<message_center::NotificationBackgroundPainter>(
           top_radius_, bottom_radius_, background_color_)));
+}
+void AshNotificationView::UpdateActionButtonsRowBackground() {
+  // No background.
 }
 
 }  // namespace ash

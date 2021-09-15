@@ -42,6 +42,7 @@
 #include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/message_center/views/notification_header_view.h"
 #include "ui/message_center/views/notification_view.h"
+#include "ui/message_center/views/notification_view_util.h"
 #include "ui/message_center/views/padded_button.h"
 #include "ui/message_center/views/proportional_image_view.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -86,14 +87,10 @@ constexpr gfx::Insets kLargeImageContainerPadding(0, 16, 16, 16);
 constexpr int kLargeImageMaxHeight = 218;
 constexpr gfx::Insets kLeftContentPadding(2, 4, 0, 4);
 constexpr gfx::Insets kLeftContentPaddingWithIcon(2, 4, 0, 12);
-constexpr gfx::Insets kInputTextfieldPadding(16, 16, 16, 0);
-constexpr gfx::Insets kInputReplyButtonPadding(0, 14, 0, 14);
 constexpr gfx::Insets kSettingsRowPadding(8, 0, 0, 0);
 constexpr gfx::Insets kSettingsRadioButtonPadding(14, 18, 14, 18);
 constexpr gfx::Insets kSettingsButtonRowPadding(8);
 
-// The icon size of inline reply input field.
-constexpr int kInputReplyButtonSize = 20;
 
 // Max number of lines for title_view_.
 constexpr int kMaxLinesForTitleView = 1;
@@ -124,9 +121,6 @@ constexpr size_t kMessageCharacterLimit =
 // However, it is not preferable that we completely omit the title, so
 // the ratio of the message width is limited to this value.
 constexpr double kProgressNotificationMessageRatio = 0.7;
-
-// This key/property allows tagging the textfield with its index.
-DEFINE_UI_CLASS_PROPERTY_KEY(int, kTextfieldIndexKey, 0U)
 
 class ClickActivator : public ui::EventHandler {
  public:
@@ -167,25 +161,6 @@ std::unique_ptr<views::View> CreateItemView(const NotificationItem& item) {
   message->SetCollapseWhenHidden(true);
   message->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   return view;
-}
-
-std::unique_ptr<ui::Event> ConvertToBoundedLocatedEvent(const ui::Event& event,
-                                                        views::View* target) {
-  // In case the animation is triggered from keyboard operation.
-  if (!event.IsLocatedEvent() || !event.target())
-    return nullptr;
-
-  // Convert the point of |event| from the coordinate system of its target to
-  // that of the passed in |target| and create a new LocatedEvent.
-  std::unique_ptr<ui::Event> cloned_event = ui::Event::Clone(event);
-  ui::LocatedEvent* located_event = cloned_event->AsLocatedEvent();
-  event.target()->ConvertEventToTarget(target, located_event);
-
-  // Use default animation if location is out of bounds.
-  if (!target->HitTestPoint(located_event->location()))
-    return nullptr;
-
-  return cloned_event;
 }
 
 }  // anonymous namespace
@@ -347,129 +322,6 @@ END_METADATA
 
 // NotificationInputContainer ////////////////////////////////////////////////
 
-NotificationInputContainer::NotificationInputContainer(
-    NotificationInputDelegate* delegate)
-    : delegate_(delegate),
-      ink_drop_container_(new views::InkDropContainerView()),
-      textfield_(new views::Textfield()),
-      button_(new views::ImageButton(base::BindRepeating(
-          [](NotificationInputContainer* container) {
-            container->delegate_->OnNotificationInputSubmit(
-                container->textfield_->GetProperty(kTextfieldIndexKey),
-                container->textfield_->GetText());
-          },
-          base::Unretained(this)))) {
-  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 0));
-
-  views::InkDrop::Install(this, std::make_unique<views::InkDropHost>(this));
-  views::InkDrop::Get(this)->SetMode(
-      views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
-  views::InkDrop::Get(this)->SetVisibleOpacity(1);
-  views::InkDrop::Get(this)->SetBaseColorCallback(base::BindRepeating(
-      [](views::View* host) {
-        return host->GetNativeTheme()->GetSystemColor(
-            ui::NativeTheme::kColorId_NotificationInkDropBase);
-      },
-      this));
-
-  AddChildView(ink_drop_container_);
-
-  textfield_->set_controller(this);
-  textfield_->SetBorder(views::CreateEmptyBorder(kInputTextfieldPadding));
-  AddChildView(textfield_);
-  layout->SetFlexForView(textfield_, 1);
-
-  button_->SetBorder(views::CreateEmptyBorder(kInputReplyButtonPadding));
-  button_->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
-  button_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-  OnAfterUserAction(textfield_);
-  AddChildView(button_);
-
-  views::InstallRectHighlightPathGenerator(this);
-}
-
-NotificationInputContainer::~NotificationInputContainer() {
-  // TODO(pbos): Revisit explicit removal of InkDrop for classes that override
-  // Add/RemoveLayerBeneathView(). This is done so that the InkDrop doesn't
-  // access the non-override versions in ~View.
-  views::InkDrop::Remove(this);
-}
-
-void NotificationInputContainer::AnimateBackground(const ui::Event& event) {
-  std::unique_ptr<ui::Event> located_event =
-      ConvertToBoundedLocatedEvent(event, this);
-  views::InkDrop::Get(this)->AnimateToState(
-      views::InkDropState::ACTION_PENDING,
-      ui::LocatedEvent::FromIfValid(located_event.get()));
-}
-
-void NotificationInputContainer::AddLayerBeneathView(ui::Layer* layer) {
-  // When a ink drop layer is added it is stacked between the textfield/button
-  // and the parent (|this|). Since the ink drop is opaque, we have to paint the
-  // textfield/button on their own layers in otherwise they remain painted on
-  // |this|'s layer which would be covered by the ink drop.
-  textfield_->SetPaintToLayer();
-  textfield_->layer()->SetFillsBoundsOpaquely(false);
-  button_->SetPaintToLayer();
-  button_->layer()->SetFillsBoundsOpaquely(false);
-  ink_drop_container_->AddLayerBeneathView(layer);
-}
-
-void NotificationInputContainer::RemoveLayerBeneathView(ui::Layer* layer) {
-  ink_drop_container_->RemoveLayerBeneathView(layer);
-  textfield_->DestroyLayer();
-  button_->DestroyLayer();
-}
-
-void NotificationInputContainer::OnThemeChanged() {
-  View::OnThemeChanged();
-  auto* theme = GetNativeTheme();
-  SetBackground(views::CreateSolidBackground(theme->GetSystemColor(
-      ui::NativeTheme::kColorId_NotificationActionsRowBackground)));
-  textfield_->SetTextColor(
-      theme->GetSystemColor(ui::NativeTheme::kColorId_NotificationColor));
-  textfield_->SetBackgroundColor(SK_ColorTRANSPARENT);
-  textfield_->set_placeholder_text_color(theme->GetSystemColor(
-      ui::NativeTheme::kColorId_NotificationPlaceholderColor));
-  UpdateButtonImage();
-}
-
-void NotificationInputContainer::Layout() {
-  View::Layout();
-  // The animation is needed to run inside of the border.
-  ink_drop_container_->SetBoundsRect(GetLocalBounds());
-}
-
-bool NotificationInputContainer::HandleKeyEvent(views::Textfield* sender,
-                                                const ui::KeyEvent& event) {
-  if (event.type() == ui::ET_KEY_PRESSED &&
-      event.key_code() == ui::VKEY_RETURN) {
-    delegate_->OnNotificationInputSubmit(
-        textfield_->GetProperty(kTextfieldIndexKey), textfield_->GetText());
-    textfield_->SetText(std::u16string());
-    return true;
-  }
-  return event.type() == ui::ET_KEY_RELEASED;
-}
-
-void NotificationInputContainer::OnAfterUserAction(views::Textfield* sender) {
-  DCHECK_EQ(sender, textfield_);
-  UpdateButtonImage();
-}
-
-void NotificationInputContainer::UpdateButtonImage() {
-  if (!GetWidget())
-    return;
-  auto icon_color_id =
-      textfield_->GetText().empty()
-          ? ui::NativeTheme::kColorId_NotificationPlaceholderColor
-          : ui::NativeTheme::kColorId_NotificationColor;
-  button_->SetImage(
-      views::Button::STATE_NORMAL,
-      gfx::CreateVectorIcon(kNotificationInlineReplyIcon, kInputReplyButtonSize,
-                            GetNativeTheme()->GetSystemColor(icon_color_id)));
-}
 
 // InlineSettingsRadioButton ///////////////////////////////////////////////////
 
@@ -881,7 +733,8 @@ std::unique_ptr<views::View> NotificationViewBase::CreateActionsRow() {
 
   // |inline_reply_| is a container for an inline textfield.
   DCHECK(!inline_reply_);
-  auto inline_reply = std::make_unique<NotificationInputContainer>(this);
+  auto inline_reply = GenerateNotificationInputContainer();
+  inline_reply->Init();
   inline_reply->SetVisible(false);
   inline_reply->SetID(kInlineReply);
   inline_reply_ = actions_row->AddChildView(std::move(inline_reply));
@@ -902,6 +755,11 @@ std::unique_ptr<views::Label> NotificationViewBase::GenerateTitleView(
   title_view->SetMaxLines(kMaxLinesForTitleView);
   title_view->SetAllowCharacterBreak(true);
   return title_view;
+}
+
+std::unique_ptr<NotificationInputContainer>
+NotificationViewBase::GenerateNotificationInputContainer() {
+  return std::make_unique<NotificationInputContainer>(this);
 }
 
 void NotificationViewBase::CreateOrUpdateContextTitleView(
@@ -1154,8 +1012,7 @@ void NotificationViewBase::CreateOrUpdateActionButtonViews(
 
   // Hide inline reply field if it doesn't exist anymore.
   if (inline_reply_->GetVisible()) {
-    const size_t index =
-        inline_reply_->textfield()->GetProperty(kTextfieldIndexKey);
+    const size_t index = inline_reply_->GetTextfieldIndex();
     if (index >= buttons.size() || !buttons[index].placeholder.has_value()) {
       action_buttons_row_->SetVisible(true);
       inline_reply_->SetVisible(false);
@@ -1292,8 +1149,7 @@ void NotificationViewBase::ActionButtonPressed(size_t index,
   const absl::optional<std::u16string>& placeholder =
       action_buttons_[index]->placeholder();
   if (placeholder) {
-    inline_reply_->textfield()->SetProperty(kTextfieldIndexKey,
-                                            static_cast<int>(index));
+    inline_reply_->SetTextfieldIndex(static_cast<int>(index));
     inline_reply_->textfield()->SetPlaceholderText(
         placeholder->empty()
             ? l10n_util::GetStringUTF16(
@@ -1532,7 +1388,7 @@ void NotificationViewBase::AddBackgroundAnimation(const ui::Event& event) {
   views::InkDrop::Get(this)->SetMode(
       views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
   std::unique_ptr<ui::Event> located_event =
-      ConvertToBoundedLocatedEvent(event, this);
+      notification_view_util::ConvertToBoundedLocatedEvent(event, this);
   views::InkDrop::Get(this)->AnimateToState(
       views::InkDropState::ACTION_PENDING,
       ui::LocatedEvent::FromIfValid(located_event.get()));
