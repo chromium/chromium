@@ -710,9 +710,16 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("driveLinkToDirectory"),
         TestCase("driveLinkOpenFileThroughLinkedDirectory").MediaSwa(),
         TestCase("driveLinkOpenFileThroughTransitiveLink").MediaSwa(),
-        TestCase("driveWelcomeBanner"),
-        TestCase("driveOfflineInfoBanner").EnableDriveDssPin(),
-        TestCase("driveOfflineInfoBannerWithoutFlag"),
+        TestCase("driveWelcomeBanner").EnableBannersFramework(),
+        TestCase("driveWelcomeBanner").DisableBannersFramework(),
+        TestCase("driveOfflineInfoBanner")
+            .EnableDriveDssPin()
+            .EnableBannersFramework(),
+        TestCase("driveOfflineInfoBanner")
+            .EnableDriveDssPin()
+            .DisableBannersFramework(),
+        TestCase("driveOfflineInfoBannerWithoutFlag").EnableBannersFramework(),
+        TestCase("driveOfflineInfoBannerWithoutFlag").DisableBannersFramework(),
         TestCase("driveEnableDocsOfflineDialog"),
         TestCase("driveEnableDocsOfflineDialogWithoutWindow"),
         TestCase("driveEnableDocsOfflineDialogMultipleWindows"),
