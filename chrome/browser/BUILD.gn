@@ -4897,9 +4897,9 @@ static_library("browser") {
     sources += [
       "apps/app_service/browser_app_instance.cc",
       "apps/app_service/browser_app_instance.h",
+      "apps/app_service/browser_app_instance_map.h",
       "apps/app_service/browser_app_instance_observer.cc",
       "apps/app_service/browser_app_instance_observer.h",
-      "apps/app_service/browser_app_instance_set.h",
       "apps/app_service/browser_app_instance_tracker.cc",
       "apps/app_service/browser_app_instance_tracker.h",
     ]

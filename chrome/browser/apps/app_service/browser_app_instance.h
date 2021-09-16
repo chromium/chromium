@@ -7,11 +7,7 @@
 
 #include <string>
 
-#include "base/process/process_handle.h"
 #include "base/unguessable_token.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
-class Browser;
 
 namespace aura {
 class Window;
@@ -23,32 +19,64 @@ class WebContents;
 
 namespace apps {
 
-typedef base::UnguessableToken BrowserAppInstanceId;
-
-// An instance of a browser-based app. Can represent either of:
-// - apps running inside Browser->WebContents (in a tab or in a window),
-// - Chrome browser instances (a single browser window). In this case the app ID
-//   will be set to |extension_misc::kChromeAppId|.
+// An instance of an app running in WebContents, either a tab or a window (PWA,
+// SWA, hosted app, packaged v1 app).
 struct BrowserAppInstance {
   enum class Type {
     kAppTab,
     kAppWindow,
-    kChromeWindow,
   };
 
+  BrowserAppInstance(base::UnguessableToken id,
+                     Type type,
+                     std::string app_id,
+                     aura::Window* window,
+                     std::string title,
+                     bool is_browser_active,
+                     bool is_web_contents_active);
   ~BrowserAppInstance();
   BrowserAppInstance(const BrowserAppInstance&) = delete;
   BrowserAppInstance& operator=(const BrowserAppInstance&) = delete;
+  BrowserAppInstance(BrowserAppInstance&&);
+  BrowserAppInstance& operator=(BrowserAppInstance&&);
 
-  BrowserAppInstanceId id;
+  // Updates mutable attributes and returns true if any were updated.
+  bool MaybeUpdate(aura::Window* window,
+                   std::string title,
+                   bool is_browser_active,
+                   bool is_web_contents_active);
+
+  // Immutable attributes.
+  base::UnguessableToken id;
   Type type;
   std::string app_id;
+
+  // Mutable attributes.
   aura::Window* window;
-  // Set for apps of type kAppTab or kAppWindow, nil for kChromeWindow.
-  absl::optional<std::string> title;
+  std::string title;
   bool is_browser_active;
-  // Set for apps of type kAppTab or kAppWindow, nil for kChromeWindow.
-  absl::optional<bool> is_web_contents_active;
+  bool is_web_contents_active;
+};
+
+// An instance representing a single Chrome browser window.
+struct BrowserWindowInstance {
+  BrowserWindowInstance(base::UnguessableToken id,
+                        aura::Window* window,
+                        bool is_active);
+  ~BrowserWindowInstance();
+  BrowserWindowInstance(const BrowserWindowInstance&) = delete;
+  BrowserWindowInstance& operator=(const BrowserWindowInstance&) = delete;
+  BrowserWindowInstance(BrowserWindowInstance&&);
+  BrowserWindowInstance& operator=(BrowserWindowInstance&&);
+
+  bool MaybeUpdate(bool is_active);
+
+  // Immutable attributes.
+  base::UnguessableToken id;
+  aura::Window* window;
+
+  // Mutable attributes.
+  bool is_active;
 };
 
 }  // namespace apps

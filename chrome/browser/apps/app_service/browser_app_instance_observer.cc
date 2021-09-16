@@ -6,6 +6,15 @@
 
 namespace apps {
 
+BrowserAppInstanceObserver::~BrowserAppInstanceObserver() = default;
+
+void BrowserAppInstanceObserver::OnBrowserWindowAdded(
+    const BrowserWindowInstance& instance) {}
+void BrowserAppInstanceObserver::OnBrowserWindowUpdated(
+    const BrowserWindowInstance& instance) {}
+void BrowserAppInstanceObserver::OnBrowserWindowRemoved(
+    const BrowserWindowInstance& instance) {}
+
 void BrowserAppInstanceObserver::OnBrowserAppAdded(
     const BrowserAppInstance& instance) {}
 void BrowserAppInstanceObserver::OnBrowserAppUpdated(

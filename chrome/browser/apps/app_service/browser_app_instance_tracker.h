@@ -12,8 +12,9 @@
 #include "base/check.h"
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/apps/app_service/browser_app_instance.h"
-#include "chrome/browser/apps/app_service/browser_app_instance_set.h"
+#include "chrome/browser/apps/app_service/browser_app_instance_map.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -35,8 +36,8 @@ namespace apps {
 class BrowserAppInstanceObserver;
 
 // BrowserAppInstanceTracker monitors changes to Browsers, TabStripModels and
-// browsers' native windows to maintain a list of running apps and notify its
-// registered observers of any changes:
+// browsers' native window activation to maintain a list of running apps and
+// notify its registered observers of any changes:
 // - apps running in WebContents (web apps, hosted apps, V1 packaged apps)
 // - browser instances (registered with app ID |extension_misc::kChromeAppId|).
 class BrowserAppInstanceTracker : public TabStripModelObserver,
@@ -64,35 +65,39 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
   std::set<const BrowserAppInstance*> GetAppInstancesByAppId(
       const std::string& app_id) const;
 
+  // Get all instances by app ID. Returns a set of unowned pointers.
+  std::set<const BrowserWindowInstance*> GetBrowserWindowInstances() const;
+
   // Checks if at least one instance of the app is running.
   bool IsAppRunning(const std::string& app_id) const;
+
+  // Checks if at least one instance of the app is running.
+  bool IsBrowserRunning() const;
 
   // Get app instance running in a |contents|. Returns null if no app is found.
   const BrowserAppInstance* GetAppInstance(
       content::WebContents* contents) const;
 
   // Get app instance running in a |contents|. Returns null if no app is found.
-  const BrowserAppInstance* GetAppInstanceById(BrowserAppInstanceId id) const;
+  const BrowserAppInstance* GetAppInstanceById(base::UnguessableToken id) const;
 
   // Get Chrome instance running in |browser|. Returns null if not found.
-  const BrowserAppInstance* GetChromeInstance(Browser* browser) const;
+  const BrowserWindowInstance* GetWindowInstance(Browser* browser) const;
 
   // Activate the given instance within its tabstrip. If the instance lives in
   // its own window, this will have no effect.
-  void ActivateTabInstance(BrowserAppInstanceId id);
+  void ActivateTabInstance(base::UnguessableToken id);
 
   // Stop all running instances of an app. The app's associated windows/tabs
   // will be closed.
   void StopInstancesOfApp(const std::string& app_id);
 
   void AddObserver(BrowserAppInstanceObserver* observer) {
-    app_instances_.AddObserver(observer);
-    chrome_instances_.AddObserver(observer);
+    observers_.AddObserver(observer);
   }
 
   void RemoveObserver(BrowserAppInstanceObserver* observer) {
-    app_instances_.RemoveObserver(observer);
-    chrome_instances_.RemoveObserver(observer);
+    observers_.RemoveObserver(observer);
   }
 
   // TabStripModelObserver overrides:
@@ -162,18 +167,18 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
   void RemoveAppInstanceIfExists(content::WebContents* contents);
 
   // Creates an app instance for a Chrome browser window.
-  void CreateChromeInstance(Browser* browser);
+  void CreateWindowInstance(Browser* browser);
 
   // Updates the browser instance with the new attributes and notifies
   // observers, if it was updated.
-  void MaybeUpdateChromeInstance(BrowserAppInstance& instance,
+  void MaybeUpdateWindowInstance(BrowserWindowInstance& instance,
                                  Browser* browser);
 
   // Removes the browser instance, if it exists, and notifies observers.
-  void RemoveChromeInstanceIfExists(Browser* browser);
+  void RemoveWindowInstanceIfExists(Browser* browser);
 
   // Virtual to override in tests.
-  virtual BrowserAppInstanceId GenerateId() const;
+  virtual base::UnguessableToken GenerateId() const;
 
   bool IsBrowserTracked(Browser* browser) const;
   bool IsActivationClientTracked(wm::ActivationClient* client) const;
@@ -201,10 +206,13 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
 #endif
 
   // A set of all apps running in either tabs or windows.
-  BrowserAppInstanceSet<content::WebContents*> app_instances_;
+  BrowserAppInstanceMap<content::WebContents*, BrowserAppInstance>
+      app_instances_;
 
-  // Chrome browser window "apps".
-  BrowserAppInstanceSet<Browser*> chrome_instances_;
+  // Chrome browser windows.
+  BrowserAppInstanceMap<Browser*, BrowserWindowInstance> window_instances_;
+
+  base::ObserverList<BrowserAppInstanceObserver, true>::Unchecked observers_;
 };
 
 }  // namespace apps
