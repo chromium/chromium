@@ -58,6 +58,7 @@ class VIEWS_EXPORT AnimationBuilder {
         ui::LayerAnimationSequence* sequence) override;
 
    protected:
+    void OnAttachedToSequence(ui::LayerAnimationSequence* sequence) override;
     void OnDetachedFromSequence(ui::LayerAnimationSequence* sequence) override;
     bool RequiresNotificationWhenAnimatorDestroyed() const override;
 
@@ -70,6 +71,8 @@ class VIEWS_EXPORT AnimationBuilder {
     base::OnceClosure on_aborted_;
     base::OnceClosure on_scheduled_;
 
+    bool attached_to_sequence_ = false;
+
     AnimationAbortHandle* abort_handle_ = nullptr;
   };
 
@@ -77,32 +80,36 @@ class VIEWS_EXPORT AnimationBuilder {
   ~AnimationBuilder();
 
   // Options for the whole animation
-
   AnimationBuilder& SetPreemptionStrategy(
       ui::LayerAnimator::PreemptionStrategy preemption_strategy);
   // Registers |callback| to be called when the animation starts.
+  // Must use before creating a sequence block.
   AnimationBuilder& OnStarted(base::OnceClosure callback);
   // Registers |callback| to be called when the animation ends. Not called if
   // animation is aborted.
+  // Must use before creating a sequence block.
   AnimationBuilder& OnEnded(base::OnceClosure callback);
   // Registers |callback| to be called when a sequence repetition ends and will
   // repeat. Not called if sequence is aborted.
+  // Must use before creating a sequence block.
   AnimationBuilder& OnWillRepeat(base::RepeatingClosure callback);
   // Registers |callback| to be called if animation is aborted for any reason.
   // Should never do anything that may cause another animation to be started.
+  // Must use before creating a sequence block.
   AnimationBuilder& OnAborted(base::OnceClosure callback);
   // Registers |callback| to be called when the animation is scheduled.
+  // Must use before creating a sequence block.
   AnimationBuilder& OnScheduled(base::OnceClosure callback);
+
+  // Returns a handle that can be destroyed later to abort all running
+  // animations. Must use before creating a sequence block.
+  // Caveat: ALL properties will be aborted, including those not initiated
+  // by the builder.
+  std::unique_ptr<AnimationAbortHandle> GetAbortHandle();
 
   // Creates a new sequence (that optionally repeats).
   AnimationSequenceBlock Once();
   AnimationSequenceBlock Repeatedly();
-
-  // Returns a handle that can be destroyed later to abort all running
-  // animations.
-  // Caveat: ALL properties will be aborted, including those not initiated
-  // by the builder.
-  std::unique_ptr<AnimationAbortHandle> GetAbortHandle();
 
   // Adds an animation element `element` for `key` at `start` to `values`.
   void AddLayerAnimationElement(

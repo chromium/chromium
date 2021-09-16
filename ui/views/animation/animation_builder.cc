@@ -30,6 +30,9 @@ namespace views {
 AnimationBuilder::Observer::Observer() = default;
 
 AnimationBuilder::Observer::~Observer() {
+  DCHECK(attached_to_sequence_)
+      << "You must register callbacks and get abort handle before "
+      << "creating a sequence block.";
   if (abort_handle_)
     abort_handle_->OnObserverDeleted();
   base::RepeatingClosure& on_observer_deleted =
@@ -126,6 +129,12 @@ void AnimationBuilder::Observer::OnLayerAnimationScheduled(
     ui::LayerAnimationSequence* sequence) {
   if (on_scheduled_)
     std::move(on_scheduled_).Run();
+}
+
+void AnimationBuilder::Observer::OnAttachedToSequence(
+    ui::LayerAnimationSequence* sequence) {
+  ui::LayerAnimationObserver::OnAttachedToSequence(sequence);
+  attached_to_sequence_ = true;
 }
 
 void AnimationBuilder::Observer::OnDetachedFromSequence(

@@ -176,6 +176,7 @@ void AnimationExample::CreateExampleView(View* container) {
   {
     gfx::RoundedCornersF rounded_corners(12.0f, 12.0f, 12.0f, 12.0f);
     AnimationBuilder b;
+    abort_handle_ = b.GetAbortHandle();
     for (auto* view : squares_container->children()) {
       // Property setting calls on the builder would be replaced with
       // view->SetOpacity(..) after animation integration with view::View class
@@ -189,8 +190,6 @@ void AnimationExample::CreateExampleView(View* container) {
           .SetDuration(base::TimeDelta::FromSeconds(2))
           .SetOpacity(view, 0.9f, gfx::Tween::EASE_OUT_3);
     }
-
-    abort_handle_ = b.GetAbortHandle();
   }
 
   container->AddChildView(std::make_unique<MdTextButton>(
