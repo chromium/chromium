@@ -65,6 +65,7 @@ class CC_PAINT_EXPORT ClientImageTransferCacheEntry final
 
   static uint32_t GetNextId() { return s_next_id_.GetNext(); }
   bool IsYuv() const { return !!yuv_pixmaps_; }
+  bool IsValid() const { return size_ > 0; }
 
  private:
   const bool needs_mips_ = false;
