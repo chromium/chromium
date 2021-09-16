@@ -84,7 +84,7 @@ suite(print_preview_app_test.suiteName, function() {
     setNativeLayerCrosInstance();
     // </if>
     cloudPrintInterface = new CloudPrintInterfaceStub();
-    CloudPrintInterfaceImpl.instance_ = cloudPrintInterface;
+    CloudPrintInterfaceImpl.setInstance(cloudPrintInterface);
     pluginProxy = new TestPluginProxy();
     PluginProxyImpl.instance_ = pluginProxy;
   });

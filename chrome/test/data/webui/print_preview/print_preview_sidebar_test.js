@@ -45,7 +45,7 @@ suite(print_preview_sidebar_test.suiteName, function() {
     // </if>
     nativeLayer.setLocalDestinationCapabilities(getCddTemplate('FooDevice'));
     cloudPrintInterface = new CloudPrintInterfaceStub();
-    CloudPrintInterfaceImpl.instance_ = cloudPrintInterface;
+    CloudPrintInterfaceImpl.setInstance(cloudPrintInterface);
 
     document.body.innerHTML = '';
     model = document.createElement('print-preview-model');

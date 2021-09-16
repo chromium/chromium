@@ -7,7 +7,7 @@ import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js
 
 import {Cdd} from './data/cdd.js';
 import {PrinterType} from './data/destination_match.js';
-import {LocalDestinationInfo, PrivetPrinterDescription} from './data/local_parsers.js';
+import {LocalDestinationInfo} from './data/local_parsers.js';
 import {MeasurementSystemUnitType} from './data/measurement_system.js';
 
 /**
@@ -136,8 +136,7 @@ export let NativeInitialSettings;
 
 /**
  * @typedef {{
- *   printer:(PrivetPrinterDescription |
- *            LocalDestinationInfo |
+ *   printer:(LocalDestinationInfo |
  *            undefined),
  *   capabilities: ?Cdd,
  * }}

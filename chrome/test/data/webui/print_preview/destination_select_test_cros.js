@@ -156,7 +156,7 @@ suite(printer_status_test_cros.suiteName, function() {
     // Stub out native layer.
     NativeLayerImpl.instance_ = new NativeLayerStub();
     nativeLayerCros = new NativeLayerCrosStub();
-    NativeLayerCrosImpl.instance_ = nativeLayerCros;
+    NativeLayerCrosImpl.setInstance(nativeLayerCros);
     setNativeLayerPrinterStatusMap();
 
     destinationSelect =

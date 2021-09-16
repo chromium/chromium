@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 
 import {CloudPrintInterface, CloudPrintInterfaceErrorEventDetail, CloudPrintInterfaceEventType} from './cloud_print_interface.js';
@@ -554,9 +553,20 @@ export class CloudPrintInterfaceImpl {
           {detail: errorEventDetail}));
     }
   }
+
+  /** @return {!CloudPrintInterface} */
+  static getInstance() {
+    return instance || (instance = new CloudPrintInterfaceImpl());
+  }
+
+  /** @param {!CloudPrintInterface} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(CloudPrintInterfaceImpl);
+/** @type {?CloudPrintInterface} */
+let instance = null;
 
 /**
  * Content type header value for a URL encoded HTTP request.

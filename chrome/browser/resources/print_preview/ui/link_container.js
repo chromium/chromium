@@ -11,7 +11,7 @@ import './throbber_css.js';
 import {isWindows} from 'chrome://resources/js/cr.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Destination, DestinationOrigin} from '../data/destination.js';
+import {Destination, DestinationOrigin, GooglePromotedDestinationId} from '../data/destination.js';
 
 /** @polymer */
 export class PrintPreviewLinkContainerElement extends PolymerElement {
@@ -73,7 +73,7 @@ export class PrintPreviewLinkContainerElement extends PolymerElement {
     }
     return !!this.destination &&
         this.destination.origin === DestinationOrigin.LOCAL &&
-        this.destination.id !== Destination.GooglePromotedId.SAVE_AS_PDF;
+        this.destination.id !== GooglePromotedDestinationId.SAVE_AS_PDF;
   }
 
   /**

@@ -5,33 +5,30 @@
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/** @enum {number} */
-export const State = {
-  NOT_READY: 0,
-  READY: 1,
-  HIDDEN: 2,
-  PRINTING: 3,
-  SYSTEM_DIALOG: 4,
-  ERROR: 5,
-  FATAL_ERROR: 6,
-  CLOSING: 7,
-};
+export enum State {
+  NOT_READY = 0,
+  READY = 1,
+  HIDDEN = 2,
+  PRINTING = 3,
+  SYSTEM_DIALOG = 4,
+  ERROR = 5,
+  FATAL_ERROR = 6,
+  CLOSING = 7,
+}
 
-/** @enum {number} */
-export const Error = {
-  NONE: 0,
-  INVALID_TICKET: 1,
-  INVALID_PRINTER: 2,
-  UNSUPPORTED_PRINTER: 3,
-  NO_DESTINATIONS: 4,
-  NO_PLUGIN: 5,
-  PREVIEW_FAILED: 6,
-  PRINT_FAILED: 7,
-  CLOUD_PRINT_ERROR: 8,
-};
+export enum Error {
+  NONE = 0,
+  INVALID_TICKET = 1,
+  INVALID_PRINTER = 2,
+  UNSUPPORTED_PRINTER = 3,
+  NO_DESTINATIONS = 4,
+  NO_PLUGIN = 5,
+  PREVIEW_FAILED = 6,
+  PRINT_FAILED = 7,
+  CLOUD_PRINT_ERROR = 8,
+}
 
 
-/** @polymer */
 class PrintPreviewStateElement extends PolymerElement {
   static get is() {
     return 'print-preview-state';
@@ -39,14 +36,12 @@ class PrintPreviewStateElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {!State} */
       state: {
         type: Number,
         notify: true,
         value: State.NOT_READY,
       },
 
-      /** @type {!Error} */
       error: {
         type: Number,
         notify: true,
@@ -55,8 +50,10 @@ class PrintPreviewStateElement extends PolymerElement {
     };
   }
 
-  /** @param {State} newState The state to transition to. */
-  transitTo(newState) {
+  state: State;
+  error: Error;
+
+  transitTo(newState: State) {
     switch (newState) {
       case (State.NOT_READY):
         assert(

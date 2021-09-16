@@ -43,14 +43,14 @@ export type VendorCapability = {
   range_cap?: RangeCapability,
 };
 
-type ColorOption = {
+export type ColorOption = {
   type?: string,
   vendor_id?: string,
   custom_display_name?: string,
   is_default?: boolean,
 };
 
-type ColorCapability = {
+export type ColorCapability = {
   option: ColorOption[],
   reset_to_default?: boolean,
 };
@@ -59,7 +59,7 @@ type CollateCapability = {
   default?: boolean
 };
 
-type CopiesCapability = {
+export type CopiesCapability = {
   default?: number,
   max?: number
 };

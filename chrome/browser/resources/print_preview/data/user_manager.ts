@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CloudPrintInterface, CloudPrintInterfaceErrorEventDetail, CloudPrintInterfaceEventType} from '../cloud_print_interface.js';
@@ -13,19 +13,14 @@ import {CloudPrintInterfaceImpl} from '../cloud_print_interface_impl.js';
 import {Destination, DestinationOrigin} from './destination.js';
 import {DestinationStore} from './destination_store.js';
 
-/**
- * @typedef {{ activeUser: string,
- *             users: (!Array<string> | undefined) }}
- */
-let UpdateUsersPayload;
+type UpdateUsersPayload = {
+  activeUser: string,
+  users?: string[],
+};
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {WebUIListenerBehaviorInterface}
- */
 const PrintPreviewUserManagerElementBase =
-    mixinBehaviors([WebUIListenerBehavior], PolymerElement);
+    mixinBehaviors([WebUIListenerBehavior], PolymerElement) as
+    {new (): PolymerElement & WebUIListenerBehavior};
 
 /** @polymer */
 class PrintPreviewUserManagerElement extends
@@ -46,10 +41,8 @@ class PrintPreviewUserManagerElement extends
         observer: 'onCloudPrintDisabledChanged_',
       },
 
-      /** @type {?DestinationStore} */
       destinationStore: Object,
 
-      /** @type {!Array<string>} */
       users: {
         type: Array,
         notify: true,
@@ -60,20 +53,15 @@ class PrintPreviewUserManagerElement extends
     };
   }
 
-  constructor() {
-    super();
+  activeUser: string;
+  cloudPrintDisabled: boolean;
+  destinationStore: DestinationStore;
+  users: string[];
 
-    /** @private {?CloudPrintInterface} */
-    this.cloudPrintInterface_ = null;
+  private cloudPrintInterface_: CloudPrintInterface|null = null;
+  private initialized_: boolean = false;
+  private tracker_: EventTracker = new EventTracker();
 
-    /** @private {boolean} */
-    this.initialized_ = false;
-
-    /** @private {!EventTracker} */
-    this.tracker_ = new EventTracker();
-  }
-
-  /** @override */
   disconnectedCallback() {
     super.disconnectedCallback();
 
@@ -95,39 +83,38 @@ class PrintPreviewUserManagerElement extends
     });
   }
 
-  /** @private */
-  onCloudPrintDisabledChanged_() {
+  private onCloudPrintDisabledChanged_() {
     if (this.cloudPrintDisabled) {
       return;
     }
 
     this.cloudPrintInterface_ = CloudPrintInterfaceImpl.getInstance();
     this.tracker_.add(
-        this.cloudPrintInterface_.getEventTarget(),
+        this.cloudPrintInterface_!.getEventTarget(),
         CloudPrintInterfaceEventType.UPDATE_USERS,
-        this.onCloudPrintUpdateUsers_.bind(this));
+        (e: CustomEvent<UpdateUsersPayload>) =>
+            this.onCloudPrintUpdateUsers_(e));
     [CloudPrintInterfaceEventType.SEARCH_FAILED,
      CloudPrintInterfaceEventType.PRINTER_FAILED,
     ].forEach(eventType => {
       this.tracker_.add(
-          this.cloudPrintInterface_.getEventTarget(), eventType,
-          this.checkCloudPrintStatus_.bind(this));
+          this.cloudPrintInterface_!.getEventTarget(), eventType,
+          (e: CustomEvent<CloudPrintInterfaceErrorEventDetail>) =>
+              this.checkCloudPrintStatus_(e));
     });
     if (this.users.length > 0) {
-      this.cloudPrintInterface_.setUsers(this.users);
+      this.cloudPrintInterface_!.setUsers(this.users);
     }
   }
 
   /**
    * Updates the cloud print status to NOT_SIGNED_IN if there is an
    * authentication error.
-   * @param {!CustomEvent<!CloudPrintInterfaceErrorEventDetail>}
-   *     event Contains the error status
-   * @private
    */
-  checkCloudPrintStatus_(event) {
+  private checkCloudPrintStatus_(
+      event: CustomEvent<CloudPrintInterfaceErrorEventDetail>) {
     if (event.detail.status !== 403 ||
-        this.cloudPrintInterface_.areCookieDestinationsDisabled()) {
+        this.cloudPrintInterface_!.areCookieDestinationsDisabled()) {
       return;
     }
 
@@ -139,35 +126,28 @@ class PrintPreviewUserManagerElement extends
   }
 
   /**
-   * @param {!CustomEvent<!UpdateUsersPayload>} e Event containing the new
-   *     active user and users.
-   * @private
+   * @param e Event containing the new active user and users.
    */
-  onCloudPrintUpdateUsers_(e) {
+  private onCloudPrintUpdateUsers_(e: CustomEvent<UpdateUsersPayload>) {
     this.updateActiveUser(e.detail.activeUser);
     if (e.detail.users) {
       this.updateUsers_(e.detail.users);
     }
   }
 
-  /**
-   * @param {!Array<string>} users The full list of signed in users.
-   * @private
-   */
-  updateUsers_(users) {
+  private updateUsers_(users: string[]) {
     const updateActiveUser = (users.length > 0 && this.users.length === 0) ||
         !users.includes(this.activeUser);
     this.users = users;
-    if (this.cloudPrintInterface_) {
-      this.cloudPrintInterface_.setUsers(users);
+    if (this.cloudPrintInterface_!) {
+      this.cloudPrintInterface_!.setUsers(users);
     }
     if (updateActiveUser) {
       this.updateActiveUser(this.users[0] || '');
     }
   }
 
-  /** @param {string} user The new active user. */
-  updateActiveUser(user) {
+  updateActiveUser(user: string) {
     if (user === this.activeUser) {
       return;
     }

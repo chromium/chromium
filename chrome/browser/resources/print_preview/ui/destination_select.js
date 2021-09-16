@@ -24,7 +24,7 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_be
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {Base, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Destination, DestinationOrigin, PDF_DESTINATION_KEY, RecentDestination} from '../data/destination.js';
+import {Destination, DestinationOrigin, GooglePromotedDestinationId, PDF_DESTINATION_KEY, RecentDestination} from '../data/destination.js';
 import {getSelectDropdownBackground} from '../print_preview_utils.js';
 
 import {SelectBehavior, SelectBehaviorInterface} from './select_behavior.js';
@@ -121,10 +121,10 @@ export class PrintPreviewDestinationSelectElement extends
 
     // Check for the Docs or Save as PDF ids first.
     const keyParams = this.selectedValue.split('/');
-    if (keyParams[0] === Destination.GooglePromotedId.DOCS) {
+    if (keyParams[0] === GooglePromotedDestinationId.DOCS) {
       return 'print-preview:save-to-drive';
     }
-    if (keyParams[0] === Destination.GooglePromotedId.SAVE_AS_PDF) {
+    if (keyParams[0] === GooglePromotedDestinationId.SAVE_AS_PDF) {
       return 'cr:insert-drive-file';
     }
 

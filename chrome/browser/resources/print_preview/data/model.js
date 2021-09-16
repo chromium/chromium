@@ -9,7 +9,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {BackgroundGraphicsModeRestriction, ColorModeRestriction, DuplexModeRestriction, PinModeRestriction, Policies} from '../native_layer.js';
 import {Cdd, CddCapabilities, VendorCapability} from './cdd.js';
-import {Destination, DestinationOrigin, DestinationType, RecentDestination} from './destination.js';
+import {Destination, DestinationOrigin, DestinationType, GooglePromotedDestinationId, RecentDestination} from './destination.js';
 import {getPrinterTypeForDestination, PrinterType} from './destination_match.js';
 import {DocumentSettings} from './document_info.js';
 import {CustomMarginsOrientation, Margins, MarginsSetting, MarginsType} from './margins.js';
@@ -954,7 +954,7 @@ export class PrintPreviewModelElement extends PolymerElement {
       }
     } else if (
         !this.settings.color.available &&
-        (this.destination.id === Destination.GooglePromotedId.DOCS ||
+        (this.destination.id === GooglePromotedDestinationId.DOCS ||
          this.destination.type === DestinationType.MOBILE)) {
       this.setSettingPath_('color.unavailableValue', true);
     } else if (
@@ -1074,7 +1074,7 @@ export class PrintPreviewModelElement extends PolymerElement {
     // Remove Cloud Print Drive destination. The Chrome OS version will always
     // be shown in the dropdown and is still supported.
     recentDestinations = recentDestinations.filter(d => {
-      return d.id !== Destination.GooglePromotedId.DOCS;
+      return d.id !== GooglePromotedDestinationId.DOCS;
     });
     // </if>
 
@@ -1570,7 +1570,7 @@ export class PrintPreviewModelElement extends PolymerElement {
       shouldPrintBackgrounds: this.getSettingValue('cssBackground'),
       shouldPrintSelectionOnly: false,  // only used in print preview
       previewModifiable: this.documentSettings.isModifiable,
-      printToGoogleDrive: destination.id === Destination.GooglePromotedId.DOCS,
+      printToGoogleDrive: destination.id === GooglePromotedDestinationId.DOCS,
       printerType: getPrinterTypeForDestination(destination),
       rasterizePDF: this.getSettingValue('rasterize'),
       scaleFactor:
@@ -1589,7 +1589,7 @@ export class PrintPreviewModelElement extends PolymerElement {
     };
     // <if expr="chromeos or lacros">
     ticket.printToGoogleDrive = ticket.printToGoogleDrive ||
-        destination.id === Destination.GooglePromotedId.SAVE_TO_DRIVE_CROS;
+        destination.id === GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS;
     // </if>
 
     // Set 'cloudPrintID' only if the destination is not local.

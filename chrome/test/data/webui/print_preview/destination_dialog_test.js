@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationStore, DestinationType, LocalDestinationInfo, makeRecentDestination, NativeLayerImpl, PrintPreviewDestinationDialogElement, RecentDestination} from 'chrome://print/print_preview.js';
+import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationStore, DestinationType, GooglePromotedDestinationId, makeRecentDestination, NativeLayerImpl, PrintPreviewDestinationDialogElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
@@ -105,7 +105,7 @@ suite(destination_dialog_test.suiteName, function() {
     assertEquals(6, printerItems.length);
     // Save as PDF shows up first.
     assertEquals(
-        Destination.GooglePromotedId.SAVE_AS_PDF,
+        GooglePromotedDestinationId.SAVE_AS_PDF,
         getDisplayedName(printerItems[0]));
     assertEquals(
         'rgb(32, 33, 36)',
@@ -199,7 +199,7 @@ suite(destination_dialog_test.suiteName, function() {
     assertEquals(numPrinters, printerItems.length);
 
     const drivePrinter = Array.from(printerItems).find(item => {
-      return item.destination.id === Destination.GooglePromotedId.DOCS;
+      return item.destination.id === GooglePromotedDestinationId.DOCS;
     });
     assertEquals(!!drivePrinter, account !== '');
     if (drivePrinter) {

@@ -176,6 +176,17 @@ export class NativeLayerCrosImpl {
   getPrintServersConfig() {
     return sendWithPromise('getPrintServersConfig');
   }
+
+  /** @return {!NativeLayerCros} */
+  static getInstance() {
+    return instance || (instance = new NativeLayerCrosImpl());
+  }
+
+  /** @param {!NativeLayerCros} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(NativeLayerCrosImpl);
+/** @type {?NativeLayerCros} */
+let instance = null;

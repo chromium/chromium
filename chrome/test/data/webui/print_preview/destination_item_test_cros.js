@@ -56,7 +56,7 @@ suite(destination_item_test_cros.suiteName, function() {
 
     // Stub out native layer.
     nativeLayerCros = new NativeLayerCrosStub();
-    NativeLayerCrosImpl.instance_ = nativeLayerCros;
+    NativeLayerCrosImpl.setInstance(nativeLayerCros);
     setNativeLayerPrinterStatusMap();
 
     listItem = /** @type {!PrintPreviewDestinationListItemElement} */ (

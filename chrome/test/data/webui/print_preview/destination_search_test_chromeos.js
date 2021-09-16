@@ -50,7 +50,7 @@ suite(destination_search_test_chromeos.suiteName, function() {
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.instance_ = nativeLayer;
     nativeLayerCros = new NativeLayerCrosStub();
-    NativeLayerCrosImpl.instance_ = nativeLayerCros;
+    NativeLayerCrosImpl.setInstance(nativeLayerCros);
     destinationStore = createDestinationStore();
     nativeLayer.setLocalDestinationCapabilities(
         getCddTemplate('FooDevice', 'FooName'));

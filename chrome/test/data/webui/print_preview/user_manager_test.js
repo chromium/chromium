@@ -46,7 +46,7 @@ suite('UserManagerTest', function() {
     setNativeLayerCrosInstance();
     // </if>
     cloudPrintInterface = new CloudPrintInterfaceStub();
-    CloudPrintInterfaceImpl.instance_ = cloudPrintInterface;
+    CloudPrintInterfaceImpl.setInstance(cloudPrintInterface);
     cloudPrintInterface.setPrinter(
         getCloudDestination('FooCloud', 'FooCloudName', account1));
 

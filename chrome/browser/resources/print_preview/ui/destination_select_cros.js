@@ -19,7 +19,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {Base, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CloudOrigins, Destination, DestinationOrigin, PDF_DESTINATION_KEY, RecentDestination, SAVE_TO_DRIVE_CROS_DESTINATION_KEY} from '../data/destination.js';
+import {CloudOrigins, Destination, DestinationOrigin, GooglePromotedDestinationId, PDF_DESTINATION_KEY, RecentDestination, SAVE_TO_DRIVE_CROS_DESTINATION_KEY} from '../data/destination.js';
 import {ERROR_STRING_KEY_MAP, getPrinterStatusIcon, PrinterStatusReason} from '../data/printer_status_cros.js';
 
 import {SelectBehavior, SelectBehaviorInterface} from './select_behavior.js';
@@ -137,15 +137,15 @@ export class PrintPreviewDestinationSelectCrosElement extends
 
     // Check for the Docs or Save as PDF ids first.
     const keyParams = this.selectedValue.split('/');
-    if (keyParams[0] === Destination.GooglePromotedId.SAVE_TO_DRIVE_CROS) {
+    if (keyParams[0] === GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS) {
       return 'print-preview:save-to-drive';
     }
 
-    if (keyParams[0] === Destination.GooglePromotedId.DOCS) {
+    if (keyParams[0] === GooglePromotedDestinationId.DOCS) {
       return 'print-preview:save-to-drive';
     }
 
-    if (keyParams[0] === Destination.GooglePromotedId.SAVE_AS_PDF) {
+    if (keyParams[0] === GooglePromotedDestinationId.SAVE_AS_PDF) {
       return 'cr:insert-drive-file';
     }
 

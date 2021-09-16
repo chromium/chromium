@@ -30,7 +30,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {beforeNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Destination} from '../data/destination.js';
+import {Destination, GooglePromotedDestinationId} from '../data/destination.js';
 import {DestinationStore} from '../data/destination_store.js';
 import {PrintServerStore} from '../data/print_server_store.js';
 import {Metrics, MetricsContext} from '../metrics.js';
@@ -257,9 +257,9 @@ export class PrintPreviewDestinationDialogCrosElement extends
     return this.destinationStore.destinations(this.activeUser)
         .filter(
             destination =>
-                destination.id !== Destination.GooglePromotedId.DOCS &&
+                destination.id !== GooglePromotedDestinationId.DOCS &&
                 destination.id !==
-                    Destination.GooglePromotedId.SAVE_TO_DRIVE_CROS);
+                    GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS);
   }
 
   /** @private */

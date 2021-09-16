@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, NativeLayer, NativeLayerImpl, PluginProxyImpl, PrintPreviewAppElement} from 'chrome://print/print_preview.js';
+import {Destination, GooglePromotedDestinationId, NativeLayer, NativeLayerImpl, PluginProxyImpl, PrintPreviewAppElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {NativeLayerStub} from 'chrome://test/print_preview/native_layer_stub.js';
 import {getDefaultInitialSettings} from 'chrome://test/print_preview/print_preview_test_utils.js';
@@ -165,7 +165,7 @@ suite(print_button_test.suiteName, function() {
               const driveDestination =
                   destinationSettings.destinationStore_.destinations().find(
                       d => d.id ===
-                          Destination.GooglePromotedId.SAVE_TO_DRIVE_CROS);
+                          GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS);
               assertTrue(!!driveDestination);
               destinationSettings.destinationStore_.selectDestination(
                   driveDestination);
@@ -178,7 +178,7 @@ suite(print_button_test.suiteName, function() {
 
               // Verify that the printer name is correct.
               assertEquals(
-                  Destination.GooglePromotedId.SAVE_TO_DRIVE_CROS,
+                  GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS,
                   JSON.parse(printTicket).deviceName);
               return nativeLayer.whenCalled('dialogClose');
             });

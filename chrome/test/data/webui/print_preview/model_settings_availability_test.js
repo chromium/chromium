@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, DuplexType, Margins, MarginsType, PrintPreviewModelElement, Size} from 'chrome://print/print_preview.js';
+import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, DuplexType, GooglePromotedDestinationId, Margins, MarginsType, PrintPreviewModelElement, Size} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isChromeOS, isLacros, isLinux} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -230,10 +230,10 @@ suite('ModelSettingsAvailabilityTest', function() {
     model.set(
         'destination',
         getCloudDestination(
-            Destination.GooglePromotedId.DOCS,
-            Destination.GooglePromotedId.DOCS, 'foo@chromium.org'));
+            GooglePromotedDestinationId.DOCS, GooglePromotedDestinationId.DOCS,
+            'foo@chromium.org'));
     const capabilities =
-        getCddTemplate(Destination.GooglePromotedId.DOCS).capabilities;
+        getCddTemplate(GooglePromotedDestinationId.DOCS).capabilities;
     delete capabilities.printer.color;
     model.set('destination.capabilities', capabilities);
     assertFalse(model.settings.color.available);

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {CloudOrigins, Destination, DestinationOrigin, RecentDestination} from './destination.js';
+import {CloudOrigins, Destination, DestinationOrigin, GooglePromotedDestinationId, RecentDestination} from './destination.js';
 
 /**
  * Printer types for capabilities and printer list requests.
@@ -42,12 +42,12 @@ export const originToType = function(origin) {
  */
 export function getPrinterTypeForDestination(destination) {
   // <if expr="chromeos or lacros">
-  if (destination.id === Destination.GooglePromotedId.SAVE_TO_DRIVE_CROS) {
+  if (destination.id === GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS) {
     return PrinterType.PDF_PRINTER;
   }
   // </if>
 
-  if (destination.id === Destination.GooglePromotedId.SAVE_AS_PDF) {
+  if (destination.id === GooglePromotedDestinationId.SAVE_AS_PDF) {
     return PrinterType.PDF_PRINTER;
   }
   return originToType(destination.origin);
@@ -128,13 +128,13 @@ export class DestinationMatch {
    */
   isVirtualDestination_(destination) {
     // <if expr="chromeos or lacros">
-    if (destination.id === Destination.GooglePromotedId.SAVE_TO_DRIVE_CROS) {
+    if (destination.id === GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS) {
       return true;
     }
     // </if>
 
-    return destination.id === Destination.GooglePromotedId.DOCS ||
-        destination.id === Destination.GooglePromotedId.SAVE_AS_PDF;
+    return destination.id === GooglePromotedDestinationId.DOCS ||
+        destination.id === GooglePromotedDestinationId.SAVE_AS_PDF;
   }
 
   /**

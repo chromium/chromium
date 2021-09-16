@@ -32,7 +32,7 @@ import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://re
 import {beforeNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CloudPrintInterfaceImpl} from '../cloud_print_interface_impl.js';
-import {CloudOrigins, createDestinationKey, createRecentDestinationKey, Destination, DestinationOrigin, makeRecentDestination, RecentDestination} from '../data/destination.js';
+import {CloudOrigins, createDestinationKey, createRecentDestinationKey, Destination, DestinationOrigin, GooglePromotedDestinationId, makeRecentDestination, RecentDestination} from '../data/destination.js';
 // <if expr="chromeos or lacros">
 import {SAVE_TO_DRIVE_CROS_DESTINATION_KEY} from '../data/destination.js';
 // </if>
@@ -417,12 +417,12 @@ export class PrintPreviewDestinationSettingsElement extends
    */
   destinationIsDriveOrPdf_(destination) {
     // <if expr="chromeos or lacros">
-    if (destination.id === Destination.GooglePromotedId.SAVE_TO_DRIVE_CROS) {
+    if (destination.id === GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS) {
       return true;
     }
     // </if>
 
-    return destination.id === Destination.GooglePromotedId.SAVE_AS_PDF;
+    return destination.id === GooglePromotedDestinationId.SAVE_AS_PDF;
   }
 
   /** @private */

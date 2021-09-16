@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CapabilitiesResponse, Destination, LocalDestinationInfo, NativeInitialSettings, NativeLayer, PrinterType, ProvisionalDestinationInfo} from 'chrome://print/print_preview.js';
+import {CapabilitiesResponse, Destination, GooglePromotedDestinationId, NativeInitialSettings, NativeLayer, PrinterType} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
@@ -155,8 +155,8 @@ export class NativeLayerStub extends TestBrowserProxy {
         this.multipleCapabilitiesPromise_ = null;
       }
     }
-    if (printerId === Destination.GooglePromotedId.SAVE_AS_PDF ||
-        printerId === Destination.GooglePromotedId.SAVE_TO_DRIVE_CROS) {
+    if (printerId === GooglePromotedDestinationId.SAVE_AS_PDF ||
+        printerId === GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS) {
       return Promise.resolve(getPdfPrinter());
     }
     if (type !== PrinterType.LOCAL_PRINTER) {

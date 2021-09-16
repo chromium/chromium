@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CapabilitiesResponse, DEFAULT_MAX_COPIES, Destination, DestinationCertificateStatus, DestinationConnectionStatus, DestinationOrigin, DestinationStore, DestinationType, LocalDestinationInfo, MeasurementSystemUnitType, NativeInitialSettings, SelectOption} from 'chrome://print/print_preview.js';
+import {CapabilitiesResponse, DEFAULT_MAX_COPIES, Destination, DestinationCertificateStatus, DestinationConnectionStatus, DestinationOrigin, DestinationStore, DestinationType, GooglePromotedDestinationId, MeasurementSystemUnitType, NativeInitialSettings, SelectOption} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isChromeOS, isLacros} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -41,7 +41,7 @@ export function getDefaultInitialSettings(isPdf = false) {
 /**
  * @param {string} printerId
  * @param {string=} opt_printerName Defaults to an empty string.
- * @return {!{printer: !LocalDestinationInfo, capabilities: !Cdd}}
+ * @return {!{printer: !capabilities: !Cdd}}
  */
 export function getCddTemplate(printerId, opt_printerName) {
   const template = {
@@ -353,7 +353,7 @@ export function getGoogleDriveDestination(account) {
           'Save to Drive CrOS', DestinationType.LOCAL, DestinationOrigin.LOCAL,
           'Save to Google Drive', DestinationConnectionStatus.ONLINE) :
       getCloudDestination(
-          Destination.GooglePromotedId.DOCS, Destination.GooglePromotedId.DOCS,
+          GooglePromotedDestinationId.DOCS, GooglePromotedDestinationId.DOCS,
           account);
 }
 
@@ -373,7 +373,7 @@ export function getCloudDestination(id, name, account) {
 /** @return {!Destination} The Save as PDF destination. */
 export function getSaveAsPdfDestination() {
   return new Destination(
-      Destination.GooglePromotedId.SAVE_AS_PDF, DestinationType.LOCAL,
+      GooglePromotedDestinationId.SAVE_AS_PDF, DestinationType.LOCAL,
       DestinationOrigin.LOCAL, loadTimeData.getString('printToPDF'),
       DestinationConnectionStatus.ONLINE);
 }

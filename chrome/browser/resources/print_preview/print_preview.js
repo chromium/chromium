@@ -5,13 +5,12 @@
 export {PluralStringProxyImpl as PrintPreviewPluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 export {CloudPrintInterface, CloudPrintInterfaceEventType} from './cloud_print_interface.js';
 export {CloudPrintInterfaceImpl} from './cloud_print_interface_impl.js';
-export {ColorMode, createDestinationKey, Destination, DestinationCertificateStatus, DestinationConnectionStatus, DestinationOrigin, DestinationType, makeRecentDestination, RecentDestination} from './data/destination.js';
+export {ColorMode, createDestinationKey, Destination, DestinationCertificateStatus, DestinationConnectionStatus, DestinationOrigin, DestinationType, GooglePromotedDestinationId, makeRecentDestination} from './data/destination.js';
 // <if expr="chromeos or lacros">
 export {SAVE_TO_DRIVE_CROS_DESTINATION_KEY} from './data/destination.js';
 // </if>
 export {PrinterType} from './data/destination_match.js';
 export {DestinationErrorType, DestinationStore} from './data/destination_store.js';
-export {LocalDestinationInfo, ProvisionalDestinationInfo} from './data/local_parsers.js';
 export {CustomMarginsOrientation, Margins, MarginsType} from './data/margins.js';
 export {MeasurementSystem, MeasurementSystemUnitType} from './data/measurement_system.js';
 export {DuplexMode, DuplexType, getInstance, PrintPreviewModelElement, whenReady} from './data/model.js';

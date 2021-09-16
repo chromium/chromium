@@ -11,7 +11,7 @@ import {TestBrowserProxy} from '../test_browser_proxy.js';
 /** @return {!NativeLayerCrosStub} */
 export function setNativeLayerCrosInstance() {
   const instance = new NativeLayerCrosStub();
-  NativeLayerCrosImpl.instance_ = instance;
+  NativeLayerCrosImpl.setInstance(instance);
   return instance;
 }
 

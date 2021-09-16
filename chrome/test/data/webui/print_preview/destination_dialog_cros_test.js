@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationStore, DestinationType, LocalDestinationInfo, makeRecentDestination, NativeLayerImpl, PrintPreviewDestinationDialogCrosElement, PrintPreviewSearchBoxElement, RecentDestination} from 'chrome://print/print_preview.js';
+import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationStore, DestinationType, GooglePromotedDestinationId, makeRecentDestination, NativeLayerImpl, PrintPreviewDestinationDialogCrosElement, PrintPreviewSearchBoxElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -113,7 +113,7 @@ suite(destination_dialog_cros_test.suiteName, function() {
     assertEquals(6, printerItems.length);
     // Save as PDF shows up first.
     assertEquals(
-        Destination.GooglePromotedId.SAVE_AS_PDF,
+        GooglePromotedDestinationId.SAVE_AS_PDF,
         getDisplayedName(printerItems[0]));
     assertEquals(
         'rgb(32, 33, 36)',
@@ -212,11 +212,11 @@ suite(destination_dialog_cros_test.suiteName, function() {
         const user1 = 'foo@chromium.org';
         const user2 = 'bar@chromium.org';
         const driveDestination1 = getCloudDestination(
-            Destination.GooglePromotedId.DOCS,
-            Destination.GooglePromotedId.DOCS, user1);
+            GooglePromotedDestinationId.DOCS, GooglePromotedDestinationId.DOCS,
+            user1);
         const driveDestination2 = getCloudDestination(
-            Destination.GooglePromotedId.DOCS,
-            Destination.GooglePromotedId.DOCS, user2);
+            GooglePromotedDestinationId.DOCS, GooglePromotedDestinationId.DOCS,
+            user2);
         cloudPrintInterface.setPrinter(driveDestination1);
         cloudPrintInterface.setPrinter(driveDestination2);
         let userSelect = null;

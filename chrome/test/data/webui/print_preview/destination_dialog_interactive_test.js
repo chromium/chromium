@@ -48,7 +48,7 @@ suite(destination_dialog_interactive_test.suiteName, function() {
     const recentDestinations = [makeRecentDestination(destinations[4])];
     nativeLayer.setLocalDestinations(localDestinations);
     const cloudPrintInterface = new CloudPrintInterfaceStub();
-    CloudPrintInterfaceImpl.instance_ = cloudPrintInterface;
+    CloudPrintInterfaceImpl.setInstance(cloudPrintInterface);
     cloudPrintInterface.configure();
 
     const model = document.createElement('print-preview-model');

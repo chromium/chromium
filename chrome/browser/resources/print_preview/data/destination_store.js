@@ -16,9 +16,9 @@ import {NativeLayerCros, NativeLayerCrosImpl, PrinterSetupResponse} from '../nat
 
 // </if>
 import {Cdd} from './cdd.js';
-import {CloudOrigins, createDestinationKey, createRecentDestinationKey, Destination, DestinationConnectionStatus, DestinationOrigin, DestinationProvisionalType, DestinationType, RecentDestination} from './destination.js';
+import {CloudOrigins, createDestinationKey, createRecentDestinationKey, Destination, DestinationConnectionStatus, DestinationOrigin, DestinationProvisionalType, DestinationType, GooglePromotedDestinationId, RecentDestination} from './destination.js';
 import {DestinationMatch, getPrinterTypeForDestination, originToType, PrinterType} from './destination_match.js';
-import {LocalDestinationInfo, parseDestination, parseExtensionDestination, PrivetPrinterDescription, ProvisionalDestinationInfo} from './local_parsers.js';
+import {LocalDestinationInfo, parseDestination, parseExtensionDestination, ProvisionalDestinationInfo} from './local_parsers.js';
 
 /**
  * Printer search statuses used by the destination store.
@@ -536,12 +536,12 @@ export class DestinationStore extends EventTarget {
    */
   isDestinationLocal_(destinationId) {
     // <if expr="chromeos or lacros">
-    if (destinationId === Destination.GooglePromotedId.SAVE_TO_DRIVE_CROS) {
+    if (destinationId === GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS) {
       return true;
     }
     // </if>
 
-    return destinationId === Destination.GooglePromotedId.SAVE_AS_PDF;
+    return destinationId === GooglePromotedDestinationId.SAVE_AS_PDF;
   }
 
   /** Removes all events being tracked from the tracker. */
@@ -787,8 +787,7 @@ export class DestinationStore extends EventTarget {
     // Save as PDF should always exist if it is enabled.
     if (this.pdfPrinterEnabled_) {
       const saveToPdfKey = createDestinationKey(
-          Destination.GooglePromotedId.SAVE_AS_PDF, DestinationOrigin.LOCAL,
-          '');
+          GooglePromotedDestinationId.SAVE_AS_PDF, DestinationOrigin.LOCAL, '');
       this.selectDestination(assert(this.destinationMap_.get(saveToPdfKey)));
       return true;
     }
@@ -1028,7 +1027,7 @@ export class DestinationStore extends EventTarget {
     // capabilities back with other local printers.
     if (this.pdfPrinterEnabled_) {
       this.insertDestination_(new Destination(
-          Destination.GooglePromotedId.SAVE_AS_PDF, DestinationType.LOCAL,
+          GooglePromotedDestinationId.SAVE_AS_PDF, DestinationType.LOCAL,
           DestinationOrigin.LOCAL, loadTimeData.getString('printToPDF'),
           DestinationConnectionStatus.ONLINE));
     }
@@ -1044,7 +1043,7 @@ export class DestinationStore extends EventTarget {
    */
   createLocalDrivePrintDestination_() {
     this.insertDestination_(new Destination(
-        Destination.GooglePromotedId.SAVE_TO_DRIVE_CROS, DestinationType.LOCAL,
+        GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS, DestinationType.LOCAL,
         DestinationOrigin.LOCAL, loadTimeData.getString('printToGoogleDrive'),
         DestinationConnectionStatus.ONLINE));
   }
@@ -1209,7 +1208,6 @@ export class DestinationStore extends EventTarget {
    * from the native layer.
    * @param {!PrinterType} type The type of printer(s) added.
    * @param {!Array<!LocalDestinationInfo |
-   *                !PrivetPrinterDescription |
    *                !ProvisionalDestinationInfo>} printers
    *     Information about the printers that have been retrieved.
    */
