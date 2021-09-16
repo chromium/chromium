@@ -22,6 +22,7 @@ template("extract_symbols") {
     dump_syms_binary =
         get_label_info(dump_syms_label, "root_out_dir") + "/" + "dump_syms"
 
+    pool = "//build/toolchain:link_pool($default_toolchain)"
     script = "//build/linux/dump_app_syms.py"
     inputs = [
       invoker.binary,
