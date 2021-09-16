@@ -7,7 +7,9 @@
 #include <utility>
 
 #include "ash/public/cpp/app_types_util.h"
+#include "base/files/file_util.h"
 #include "base/memory/singleton.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/nearby_share/nearby_share_session_impl.h"
 #include "chrome/browser/profiles/profile.h"
@@ -42,6 +44,16 @@ class ArcNearbyShareBridgeFactory
   ~ArcNearbyShareBridgeFactory() override = default;
 };
 
+void DeleteArcNearbyShareCachePath(const Profile* profile) {
+  DCHECK(profile);
+  base::FilePath file_path =
+      arc::NearbyShareSessionImpl::GetUserCacheFilePath(profile);
+  if (base::PathExists(file_path)) {
+    DVLOG(1) << "Deleting path: " << file_path;
+    base::DeletePathRecursively(file_path);
+  }
+}
+
 }  // namespace
 
 // static
@@ -65,6 +77,11 @@ ArcNearbyShareBridge::ArcNearbyShareBridge(
       profile_(Profile::FromBrowserContext(browser_context)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   arc_bridge_service_->nearby_share()->SetHost(this);
+
+  // On startup, delete the ARC Nearby Share cache path.
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&DeleteArcNearbyShareCachePath, profile_));
 }
 
 ArcNearbyShareBridge::~ArcNearbyShareBridge() {

@@ -45,6 +45,9 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
   NearbyShareSessionImpl& operator=(const NearbyShareSessionImpl&) = delete;
   ~NearbyShareSessionImpl() override;
 
+  // Gets the temporary path to use for file preparation.
+  static base::FilePath GetUserCacheFilePath(const Profile* profile);
+
   // Called when Nearby Share is closed.
   void OnNearbyShareClosed(views::Widget::ClosedReason reason);
 

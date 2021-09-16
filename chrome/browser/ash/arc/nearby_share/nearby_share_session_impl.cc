@@ -103,6 +103,15 @@ NearbyShareSessionImpl::NearbyShareSessionImpl(
 
 NearbyShareSessionImpl::~NearbyShareSessionImpl() = default;
 
+// static
+base::FilePath NearbyShareSessionImpl::GetUserCacheFilePath(
+    const Profile* profile) {
+  DCHECK(profile);
+  base::FilePath cache_base_path;
+  chrome::GetUserCacheDirectory(profile->GetPath(), &cache_base_path);
+  return cache_base_path.Append(kArcNearbyShareDirname);
+}
+
 // TODO(b/197588898): Currently OnNearbyShareClosed() is called just before the
 // Nearby Share bubble is actually closed. This is not an issue functionally.
 void NearbyShareSessionImpl::OnNearbyShareClosed(
@@ -160,10 +169,8 @@ void NearbyShareSessionImpl::OnArcWindowFound(aura::Window* const arc_window) {
   DVLOG(1) << __func__;
   if (share_info_->files.has_value()) {
     // File sharing.
-    base::FilePath cache_base_path;
-    chrome::GetUserCacheDirectory(profile_->GetPath(), &cache_base_path);
-    base::FilePath arc_nearby_share_directory =
-        cache_base_path.Append(kArcNearbyShareDirname);
+    const base::FilePath arc_nearby_share_directory =
+        GetUserCacheFilePath(profile_);
 
     file_handler_ = base::MakeRefCounted<ShareInfoFileHandler>(
         profile_, share_info_.get(), arc_nearby_share_directory,
