@@ -6,6 +6,7 @@
 
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/time/calendar_utils.h"
+#include "ash/system/time/calendar_view_controller.h"
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -57,14 +58,14 @@ class CalendarDateCellView : public views::LabelButton {
     views::View::OnThemeChanged();
 
     // Gray-out the date that is not in the current month.
-    SetEnabledTextColors(grayed_out_ ? calendar_utils::GetPrimaryTextColor()
-                                     : calendar_utils::GetSecondaryTextColor());
+    SetEnabledTextColors(grayed_out_ ? calendar_utils::GetSecondaryTextColor()
+                                     : calendar_utils::GetPrimaryTextColor());
   }
 
   // Draws the background for 'today'. If today is a grayed out date, which is
   // shown in its previous/next month, we won't draw this background.
   void OnPaintBackground(gfx::Canvas* canvas) override {
-    if (!calendar_utils::IsToday(date_) || grayed_out_)
+    if (grayed_out_ || !calendar_utils::IsToday(date_))
       return;
 
     const AshColorProvider* color_provider = AshColorProvider::Get();
@@ -99,7 +100,10 @@ class CalendarDateCellView : public views::LabelButton {
   const bool grayed_out_;
 };
 
-CalendarMonthView::CalendarMonthView(const base::Time first_day_of_month) {
+CalendarMonthView::CalendarMonthView(
+    const base::Time first_day_of_month,
+    CalendarViewController* calendar_view_controller)
+    : calendar_view_controller_(calendar_view_controller) {
   GridLayout* layout = SetLayoutManager(std::make_unique<GridLayout>());
   views::ColumnSet* column_set = layout->AddColumnSet(0);
 
@@ -120,15 +124,31 @@ CalendarMonthView::CalendarMonthView(const base::Time first_day_of_month) {
       calendar_utils::GetExploded(current_date);
 
   int column_set_id = 0;
+  int row_number = 0;
+  bool get_to_today = false;
   // Gray-out dates in the first row, which are from the previous month, and the
   // non-gray-out dates of the current month.
   while (current_date_exploded.month == start_of_row_exploded.month ||
          current_date_exploded.month == first_day_of_month_exploded.month) {
+    bool is_in_current_month =
+        current_date_exploded.month == first_day_of_month_exploded.month;
+    if (!get_to_today) {
+      // Count a row when a new row starts.
+      if (column_set_id == 0)
+        row_number++;
+      // If this row has today, stop counting and subtract 1 from the row
+      // number.
+      if (is_in_current_month &&
+          calendar_utils::IsToday(current_date_exploded)) {
+        get_to_today = true;
+        row_number--;
+      }
+    }
+
     // Next column set id is generated.
-    column_set_id = AddDateCellToLayout(
-        current_date_exploded, column_set_id,
-        /*is_in_current_month=*/current_date_exploded.month ==
-            first_day_of_month_exploded.month);
+    column_set_id =
+        AddDateCellToLayout(current_date_exploded, column_set_id,
+                            /*is_in_current_month=*/is_in_current_month);
     current_date += base::TimeDelta::FromDays(1);
     current_date.LocalExplode(&current_date_exploded);
   }
@@ -155,6 +175,16 @@ CalendarMonthView::CalendarMonthView(const base::Time first_day_of_month) {
     current_date += base::TimeDelta::FromDays(1);
     current_date.LocalExplode(&current_date_exploded);
   }
+
+  // If today is in this month view, use the height of the first cell row to
+  // calculate today's row height. This position will be used to calculate
+  // today's position in the scroll view.
+  if (get_to_today) {
+    calendar_view_controller_->update_today_row_top_height(
+        row_number * children()[0]->GetPreferredSize().height());
+    calendar_view_controller_->update_today_row_bottom_height(
+        (row_number + 1) * children()[0]->GetPreferredSize().height());
+  }
 }
 
 CalendarMonthView::~CalendarMonthView() = default;
@@ -169,7 +199,7 @@ int CalendarMonthView::AddDateCellToLayout(
 
   layout_manager->AddView(std::make_unique<CalendarDateCellView>(
       current_date_exploded,
-      /*is_grayed_out_date=*/is_in_current_month));
+      /*is_grayed_out_date=*/!is_in_current_month));
 
   return (column_set_id + 1) % calendar_utils::kDateInOneWeek;
 }

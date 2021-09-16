@@ -10,10 +10,13 @@
 
 namespace ash {
 
+class CalendarViewController;
+
 //  Container for `CalendarDateCellView` for a single month.
 class ASH_EXPORT CalendarMonthView : public views::View {
  public:
-  explicit CalendarMonthView(base::Time first_day_of_month);
+  CalendarMonthView(base::Time first_day_of_month,
+                    CalendarViewController* calendar_view_controller);
   CalendarMonthView(const CalendarMonthView& other) = delete;
   CalendarMonthView& operator=(const CalendarMonthView& other) = delete;
   ~CalendarMonthView() override;
@@ -24,6 +27,9 @@ class ASH_EXPORT CalendarMonthView : public views::View {
   int AddDateCellToLayout(base::Time::Exploded current_date_exploded,
                           int column_set_id,
                           bool is_in_current_month);
+
+  // Owned by `UnifiedCalendarViewController`.
+  CalendarViewController* const calendar_view_controller_;
 };
 
 }  // namespace ash

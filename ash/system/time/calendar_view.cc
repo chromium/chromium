@@ -181,19 +181,10 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
 
   scoped_scroll_view_observer_.Observe(scroll_view_);
   scoped_calendar_view_controller_observer_.Observe(calendar_view_controller_);
+  scoped_view_observer_.Observe(scroll_view_);
 }
 
 CalendarView::~CalendarView() = default;
-
-void CalendarView::Init() {
-  // `Layout` the view first then auto scroll to `PositionOfToday`, otherwise
-  // the auto scroll won't work.
-  Layout();
-
-  base::AutoReset<bool> is_resetting_scrolling(&is_resetting_scroll_, true);
-  scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
-                                 PositionOfToday());
-}
 
 void CalendarView::CreateExtraTitleRowButtons() {
   DCHECK(!reset_to_today_button_);
@@ -236,11 +227,16 @@ void CalendarView::SetMonthViews() {
   next_month_ = AddMonth(calendar_view_controller_->GetNextMonthFirstDay());
 }
 
-int CalendarView::PositionOfToday() {
+int CalendarView::PositionOfCurrentMonth() {
   return kContentVerticalPadding +
          previous_label_->GetPreferredSize().height() +
          previous_month_->GetPreferredSize().height() +
          current_label_->GetPreferredSize().height();
+}
+
+int CalendarView::PositionOfToday() {
+  return PositionOfCurrentMonth() +
+         calendar_view_controller_->today_row_top_height();
 }
 
 void CalendarView::ResetToToday() {
@@ -264,10 +260,26 @@ void CalendarView::ResetToToday() {
   }
 
   SetMonthViews();
+  ScrollToToday();
+}
 
-  base::AutoReset<bool> is_resetting_scrolling(&is_resetting_scroll_, true);
-  scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
-                                 PositionOfToday());
+void CalendarView::ScrollToToday() {
+  {
+    base::AutoReset<bool> is_resetting_scrolling(&is_resetting_scroll_, true);
+    scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
+                                   PositionOfCurrentMonth());
+  }
+
+  // If the screen does not have enough height which makes today's cell not in
+  // the visible rect, we auto scroll to today's row instead of scrolling to the
+  // first row of the current month.
+  if (PositionOfCurrentMonth() +
+          calendar_view_controller_->today_row_bottom_height() >
+      scroll_view_->GetVisibleRect().bottom()) {
+    base::AutoReset<bool> is_resetting_scrolling(&is_resetting_scroll_, true);
+    scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
+                                   PositionOfToday());
+  }
 }
 
 void CalendarView::OnThemeChanged() {
@@ -275,6 +287,16 @@ void CalendarView::OnThemeChanged() {
 
   header_->SetEnabledColor(calendar_utils::GetPrimaryTextColor());
   header_year_->SetEnabledColor(calendar_utils::GetSecondaryTextColor());
+}
+
+void CalendarView::OnViewBoundsChanged(views::View* observed_view) {
+  // Initializes the view to auto scroll to `PositionOfToday` or the first row
+  // of today's month. This init needs to be done after the view is drawn
+  // (bounds has changed), otherwise we cannot get the bounds of each view.
+  // After the first time auto scroll, the view is drawn and we don't need to
+  // observe it anymore.
+  scoped_view_observer_.Reset();
+  ScrollToToday();
 }
 
 views::Label* CalendarView::AddLabelWithId(std::u16string label_string,
@@ -291,7 +313,8 @@ views::Label* CalendarView::AddLabelWithId(std::u16string label_string,
 
 CalendarMonthView* CalendarView::AddMonth(base::Time month_first_date,
                                           bool add_at_front) {
-  auto month = std::make_unique<CalendarMonthView>(month_first_date);
+  auto month = std::make_unique<CalendarMonthView>(month_first_date,
+                                                   calendar_view_controller_);
   month->SetBorder(views::CreateEmptyBorder(kMonthVerticalPadding, 0,
                                             kMonthVerticalPadding, 0));
   if (add_at_front) {
@@ -394,7 +417,7 @@ void CalendarView::ScrollUpOneMonthAndAutoScroll() {
   base::AutoReset<bool> is_resetting_scrolling(&is_resetting_scroll_, true);
   ScrollUpOneMonth();
   scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
-                                 PositionOfToday());
+                                 PositionOfCurrentMonth());
 }
 
 void CalendarView::ScrollDownOneMonthAndAutoScroll() {
@@ -404,7 +427,7 @@ void CalendarView::ScrollDownOneMonthAndAutoScroll() {
   base::AutoReset<bool> is_resetting_scrolling(&is_resetting_scroll_, true);
   ScrollDownOneMonth();
   scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
-                                 PositionOfToday());
+                                 PositionOfCurrentMonth());
 }
 
 BEGIN_METADATA(CalendarView, views::View)

@@ -23,9 +23,10 @@ namespace ash {
 class CalendarMonthView;
 
 // This view displays a scrollable calendar.
-class ASH_EXPORT CalendarView : public TrayDetailedView,
-                                views::ScrollView::Observer,
-                                CalendarViewController::Observer {
+class ASH_EXPORT CalendarView : public CalendarViewController::Observer,
+                                public TrayDetailedView,
+                                public views::ScrollView::Observer,
+                                public views::ViewObserver {
  public:
   METADATA_HEADER(CalendarView);
 
@@ -42,6 +43,9 @@ class ASH_EXPORT CalendarView : public TrayDetailedView,
   // CalendarViewController::Observer:
   void OnMonthChanged(const base::Time::Exploded current_month) override;
 
+  // views::ViewObserver:
+  void OnViewBoundsChanged(views::View* observed_view) override;
+
   // views::View:
   void OnThemeChanged() override;
 
@@ -50,16 +54,16 @@ class ASH_EXPORT CalendarView : public TrayDetailedView,
   views::Button* CreateInfoButton(views::Button::PressedCallback callback,
                                   int info_accessible_name_id) override;
 
-  // Inits the views and auto scroll to the current date.
-  void Init();
-
  private:
   friend class CalendarViewTest;
 
   // Assigns month views and labels based on the current date on screen.
   void SetMonthViews();
 
-  // Returns the today's month position.
+  // Returns the current month first row position.
+  int PositionOfCurrentMonth();
+
+  // Returns the today's row position.
   int PositionOfToday();
 
   // Adds a month label.
@@ -86,6 +90,10 @@ class ASH_EXPORT CalendarView : public TrayDetailedView,
 
   // Back to the landing view.
   void ResetToToday();
+
+  // Auto scrolls to today. If the view is big enough we scroll to the first row
+  // of today's month, otherwise we scroll to the position of today's row.
+  void ScrollToToday();
 
   // Unowned.
   UnifiedSystemTrayController* controller_;
@@ -122,6 +130,8 @@ class ASH_EXPORT CalendarView : public TrayDetailedView,
   base::ScopedObservation<CalendarViewController,
                           CalendarViewController::Observer>
       scoped_calendar_view_controller_observer_{this};
+  base::ScopedObservation<views::View, views::ViewObserver>
+      scoped_view_observer_{this};
 };
 
 }  // namespace ash
