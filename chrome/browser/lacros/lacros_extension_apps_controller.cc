@@ -176,7 +176,7 @@ void LacrosExtensionAppsController::Launch(
     return;
   }
 
-  apps::mojom::IntentPtr intent;
+  apps::mojom::IntentPtr intent = apps::mojom::Intent::New();
   if (launch_params->intent) {
     intent = std::move(launch_params->intent.value());
   }

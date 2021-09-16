@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/callback_helpers.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -58,6 +59,13 @@ void StandaloneBrowserExtensionApps::LoadIcon(const std::string& app_id,
                                               int32_t size_hint_in_dip,
                                               bool allow_placeholder_icon,
                                               LoadIconCallback callback) {
+  // It is possible that Lacros is briefly unavailable, for example if it shuts
+  // down for an update.
+  if (!controller_.is_bound()) {
+    std::move(callback).Run(apps::mojom::IconValue::New());
+    return;
+  }
+
   controller_->LoadIcon(app_id, std::move(icon_key), std::move(icon_type),
                         size_hint_in_dip, std::move(callback));
 }
@@ -67,8 +75,15 @@ void StandaloneBrowserExtensionApps::Launch(
     int32_t event_flags,
     apps::mojom::LaunchSource launch_source,
     apps::mojom::WindowInfoPtr window_info) {
-  // TODO(https://crbug.com/1225848): Implement.
-  NOTIMPLEMENTED();
+  // It is possible that Lacros is briefly unavailable, for example if it shuts
+  // down for an update.
+  if (!controller_.is_bound())
+    return;
+
+  crosapi::mojom::LaunchParamsPtr params = crosapi::mojom::LaunchParams::New();
+  params->app_id = app_id;
+  params->launch_source = launch_source;
+  controller_->Launch(std::move(params), /*callback=*/base::DoNothing());
 }
 
 void StandaloneBrowserExtensionApps::GetMenuModel(

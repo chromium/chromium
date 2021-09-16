@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_ASH_SHELF_STANDALONE_BROWSER_EXTENSION_APP_SHELF_ITEM_CONTROLLER_H_
 
 #include <memory>
-#include <set>
+#include <vector>
 
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
@@ -91,16 +91,24 @@ class StandaloneBrowserExtensionAppShelfItemController
   // this has not occurred yet.
   bool ItemAddedToShelf();
 
-  // The set of windows associated with the shelf item. This can be the empty
-  // set if the item is pinned and there are no running instances. Otherwise,
+  // The vector of windows associated with the shelf item. This can be the empty
+  // vector if the item is pinned and there are no running instances. Otherwise,
   // there should be exactly one window per instance.
-  std::set<aura::Window*> windows_;
+  // In order to preserve order that menu items show up, we use a vector instead
+  // of a set. The order of the windows in the vector is simply the order in
+  // which they were tracked by this file.
+  std::vector<aura::Window*> windows_;
+
+  // The list of windows that was last shown via a context menu. Windows as they
+  // are destroyed are removed from this list. The existing API only returns a
+  // command_id as metadata, so there is no way to accurately record the item
+  // that was selected, in case windows are destroyed in between.
+  std::vector<aura::Window*> context_menu_windows_;
 
   // This member lets the IconLoader know that we still need the icon.
   std::unique_ptr<apps::IconLoader::Releaser> icon_loader_releaser_;
 
-  // Temporary storage for the icon if it's loaded before the item is added to
-  // the shelf.
+  // Stores the icon.
   absl::optional<gfx::ImageSkia> icon_;
 
   // Observes the shelf model for item additions in order to set initial state

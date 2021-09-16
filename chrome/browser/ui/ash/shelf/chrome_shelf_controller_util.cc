@@ -172,3 +172,19 @@ void UnpinAppWithIDFromShelf(const std::string& app_id) {
   auto* shelf_controller = ChromeShelfController::instance();
   shelf_controller->shelf_model()->UnpinAppWithID(app_id);
 }
+
+apps::mojom::LaunchSource ShelfLaunchSourceToAppsLaunchSource(
+    ash::ShelfLaunchSource source) {
+  switch (source) {
+    case ash::LAUNCH_FROM_UNKNOWN:
+      return apps::mojom::LaunchSource::kUnknown;
+    case ash::LAUNCH_FROM_APP_LIST:
+      return apps::mojom::LaunchSource::kFromAppListGrid;
+    case ash::LAUNCH_FROM_APP_LIST_SEARCH:
+      return apps::mojom::LaunchSource::kFromAppListQuery;
+    case ash::LAUNCH_FROM_APP_LIST_RECOMMENDATION:
+      return apps::mojom::LaunchSource::kFromAppListRecommendation;
+    case ash::LAUNCH_FROM_SHELF:
+      return apps::mojom::LaunchSource::kFromShelf;
+  }
+}

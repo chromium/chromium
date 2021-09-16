@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/app_list/internal_app/internal_app_metadata.h"
 #include "chrome/browser/ui/ash/shelf/arc_app_shelf_id.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/app_launch_params.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow.h"
@@ -36,21 +37,6 @@
 #include "net/base/url_util.h"
 
 namespace {
-
-apps::mojom::LaunchSource ConvertLaunchSource(ash::ShelfLaunchSource source) {
-  switch (source) {
-    case ash::LAUNCH_FROM_UNKNOWN:
-      return apps::mojom::LaunchSource::kUnknown;
-    case ash::LAUNCH_FROM_APP_LIST:
-      return apps::mojom::LaunchSource::kFromAppListGrid;
-    case ash::LAUNCH_FROM_APP_LIST_SEARCH:
-      return apps::mojom::LaunchSource::kFromAppListQuery;
-    case ash::LAUNCH_FROM_APP_LIST_RECOMMENDATION:
-      return apps::mojom::LaunchSource::kFromAppListRecommendation;
-    case ash::LAUNCH_FROM_SHELF:
-      return apps::mojom::LaunchSource::kFromShelf;
-  }
-}
 
 std::string GetSourceFromAppListSource(ash::ShelfLaunchSource source) {
   switch (source) {
@@ -163,7 +149,8 @@ void ShelfControllerHelper::LaunchApp(const ash::ShelfID& id,
   // Launch apps with AppServiceProxy.Launch.
   if (proxy->AppRegistryCache().GetAppType(app_id) !=
       apps::mojom::AppType::kUnknown) {
-    proxy->Launch(app_id, event_flags, ConvertLaunchSource(source),
+    proxy->Launch(app_id, event_flags,
+                  ShelfLaunchSourceToAppsLaunchSource(source),
                   apps::MakeWindowInfo(display_id));
     return;
   }

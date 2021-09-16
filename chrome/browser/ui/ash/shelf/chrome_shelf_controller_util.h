@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_UI_ASH_SHELF_CHROME_SHELF_CONTROLLER_UTIL_H_
 #define CHROME_BROWSER_UI_ASH_SHELF_CHROME_SHELF_CONTROLLER_UTIL_H_
 
-#include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
-
 #include <string>
+
+#include "ash/public/cpp/shelf_types.h"
+#include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 
 class Browser;
 
@@ -45,5 +47,8 @@ void PinAppWithIDToShelf(const std::string& app_id);
 
 // Unpins an app from the shelf, if it is in the shelf. Otherwise does nothing.
 void UnpinAppWithIDFromShelf(const std::string& app_id);
+
+apps::mojom::LaunchSource ShelfLaunchSourceToAppsLaunchSource(
+    ash::ShelfLaunchSource source);
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_CHROME_SHELF_CONTROLLER_UTIL_H_
