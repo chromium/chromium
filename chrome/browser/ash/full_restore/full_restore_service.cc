@@ -316,8 +316,8 @@ bool FullRestoreService::CanBeInited() {
   DCHECK(user_manager->GetActiveUser());
 
   // For non-primary user, wait for `OnTransitionedToNewActiveUser`.
-  if (ProfileHelper::Get()->GetUserByProfile(profile_) !=
-      user_manager->GetPrimaryUser()) {
+  auto* user = ProfileHelper::Get()->GetUserByProfile(profile_);
+  if (user != user_manager->GetPrimaryUser()) {
     VLOG(1) << "Can't init full restore service for non_primary user."
             << profile_->GetPath();
     return false;
@@ -340,7 +340,7 @@ bool FullRestoreService::CanBeInited() {
   const auto& last_session_active_account_id =
       user_manager->GetLastSessionActiveAccountId();
   if (last_session_active_account_id.is_valid() &&
-      AccountId::FromUserEmail(profile_->GetProfileUserName()) !=
+      AccountId::FromUserEmail(user->GetAccountId().GetUserEmail()) !=
           last_session_active_account_id) {
     VLOG(1) << "Can't init full restore service for non-active primary user."
             << profile_->GetPath();
