@@ -84,6 +84,19 @@ void SodaInstaller::Init(PrefService* profile_prefs,
     soda_installer_initialized_ = true;
     global_prefs->SetTime(prefs::kSodaScheduledDeletionTime, base::Time::Now());
     SodaInstaller::GetInstance()->InstallSoda(global_prefs);
+
+    if (global_prefs->GetList(prefs::kSodaRegisteredLanguagePacks)
+            ->GetList()
+            .empty()) {
+      // TODO(crbug.com/1200667): Register the default language used by
+      // Dictation on ChromeOS.
+      // TODO(crbug.com/1165437): Register the default language used by
+      // Projector on ChromeOS.
+      RegisterLanguage(
+          profile_prefs->GetString(prefs::kLiveCaptionLanguageCode),
+          global_prefs);
+    }
+
     for (const auto& language :
          global_prefs->GetList(prefs::kSodaRegisteredLanguagePacks)
              ->GetList()) {
@@ -196,7 +209,7 @@ void SodaInstaller::RegisterRegisteredLanguagePackPref(
     PrefRegistrySimple* registry) {
   // TODO: Default to one of the user's languages.
   base::Value::ListStorage default_languages;
-  default_languages.push_back(base::Value("en-US"));
+  default_languages.push_back(base::Value(kUsEnglishLocale));
   registry->RegisterListPref(prefs::kSodaRegisteredLanguagePacks,
                              base::Value(std::move(default_languages)));
 }

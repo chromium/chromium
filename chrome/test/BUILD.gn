@@ -4945,6 +4945,10 @@ test("unit_tests") {
     }
   }
 
+  if (is_win || is_mac || is_linux) {
+    sources += [ "../browser/accessibility/soda_installer_impl_unittest.cc" ]
+  }
+
   if (is_linux || is_chromeos) {
     sources +=
         [ "../browser/policy/browser_dm_token_storage_linux_unittest.cc" ]
