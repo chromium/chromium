@@ -13,6 +13,7 @@ import androidx.browser.trusted.sharing.ShareData;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras.ShortcutItem;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.components.webapps.WebApkDistributor;
+import org.chromium.device.mojom.ScreenOrientationLockType;
 
 import java.util.List;
 import java.util.Map;
@@ -83,7 +84,7 @@ public class WebappInfo {
         return getWebApkExtras().webApkPackageName;
     }
 
-    public int orientation() {
+    public @ScreenOrientationLockType.EnumType int orientation() {
         return getWebappExtras().orientation;
     }
 

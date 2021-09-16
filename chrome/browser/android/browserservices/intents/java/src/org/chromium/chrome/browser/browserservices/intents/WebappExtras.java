@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.browserservices.intents;
 import androidx.annotation.NonNull;
 
 import org.chromium.components.webapps.ShortcutSource;
+import org.chromium.device.mojom.ScreenOrientationLockType;
 
 /**
  * Stores webapp specific information on behalf of {@link BrowserServicesIntentDataProvider}.
@@ -45,7 +46,7 @@ public class WebappExtras {
     /**
      * The screen orientation to lock the webapp to.
      */
-    public final int orientation;
+    public final @ScreenOrientationLockType.EnumType int orientation;
 
     /**
      * If the webapp was launched from the home screen or the app list: source where the webapp was
