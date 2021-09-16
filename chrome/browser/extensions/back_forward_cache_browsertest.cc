@@ -452,7 +452,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
   content::TitleWatcher title_watcher(
       browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
 
-  content::RenderFrameHost* child = primary_rfh->GetFramesInSubtree().at(1);
+  content::RenderFrameHost* child = ChildFrameAt(primary_rfh, 0);
 
   std::string action = base::StringPrintf(
       R"HTML(
@@ -952,11 +952,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
       ui_test_utils::NavigateToURL(browser(), url_a);
   content::RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
 
-  ASSERT_EQ(2u, rfh_a->GetFramesInSubtree().size());
+  content::RenderFrameHost* iframe = ChildFrameAt(rfh_a, 0);
+  ASSERT_TRUE(iframe);
 
   // Cache the iframe's frame tree node id to send it a message later.
-  int iframe_frame_tree_node_id =
-      rfh_a->GetFramesInSubtree()[1]->GetFrameTreeNodeId();
+  int iframe_frame_tree_node_id = iframe->GetFrameTreeNodeId();
 
   // 2) Navigate to B.
   content::RenderFrameHost* rfh_b =

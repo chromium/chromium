@@ -96,7 +96,8 @@ void PageLoadMetricsTestWaiter::AddMinimumAggregateCpuTimeExpectation(
   expected_minimum_aggregate_cpu_time_ = minimum;
 }
 
-void PageLoadMetricsTestWaiter::AddMemoryUpdateExpectation(int routing_id) {
+void PageLoadMetricsTestWaiter::AddMemoryUpdateExpectation(
+    content::GlobalRenderFrameHostId routing_id) {
   expected_.memory_update_frame_ids_.insert(routing_id);
 }
 
@@ -243,8 +244,7 @@ void PageLoadMetricsTestWaiter::OnDidFinishSubFrameNavigation(
 void PageLoadMetricsTestWaiter::OnV8MemoryChanged(
     const std::vector<MemoryUpdate>& memory_updates) {
   for (const auto& update : memory_updates)
-    observed_.memory_update_frame_ids_.insert(
-        update.routing_id.frame_routing_id);
+    observed_.memory_update_frame_ids_.insert(update.routing_id);
 
   if (ExpectationsSatisfied() && run_loop_)
     run_loop_->Quit();

@@ -373,7 +373,7 @@ void PrerenderTestHelper::NavigatePrimaryPage(const GURL& gurl) {
   RenderFrameHostImpl* prerendered_render_frame_host =
       prerender_host->GetPrerenderedMainFrameHost();
   std::vector<RenderFrameHost*> frames =
-      prerendered_render_frame_host->GetFramesInSubtree();
+      CollectAllRenderFrameHosts(prerendered_render_frame_host);
   for (auto* frame : frames) {
     auto* rfhi = static_cast<RenderFrameHostImpl*>(frame);
     // All the subframes should be in LifecycleStateImpl::kPrerendering state

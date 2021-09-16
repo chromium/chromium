@@ -4446,9 +4446,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
       a_site_instance->GetSiteInfo().storage_partition_config().is_default());
 
   // Verify that the iframe uses the default StoragePartition.
-  EXPECT_EQ(2UL, rfh->GetFramesInSubtree().size());
+  EXPECT_EQ(1UL, rfh->child_count());
   SiteInstanceImpl* b_site_instance = static_cast<SiteInstanceImpl*>(
-      rfh->GetFramesInSubtree()[1]->GetSiteInstance());
+      rfh->child_at(0)->current_frame_host()->GetSiteInstance());
   if (AreDefaultSiteInstancesEnabled()) {
     EXPECT_TRUE(b_site_instance->IsDefaultSiteInstance());
   } else {

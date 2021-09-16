@@ -2323,18 +2323,23 @@ class AdsMemoryMeasurementBrowserTest
         web_contents);
   }
 
-  std::unordered_set<int> GetFrameRoutingIds() {
+  std::unordered_set<content::GlobalRenderFrameHostId,
+                     content::GlobalRenderFrameHostIdHasher>
+  GetFrameRoutingIds() {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    std::unordered_set<int> frame_routing_ids = {
-        web_contents->GetMainFrame()->GetGlobalId().frame_routing_id};
+    std::unordered_set<content::GlobalRenderFrameHostId,
+                       content::GlobalRenderFrameHostIdHasher>
+        frame_routing_ids;
 
-    std::vector<content::RenderFrameHost*> children =
-        web_contents->GetMainFrame()->GetFramesInSubtree();
-
-    for (auto* child : children) {
-      frame_routing_ids.insert(child->GetGlobalId().frame_routing_id);
-    }
+    web_contents->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
+        [](std::unordered_set<content::GlobalRenderFrameHostId,
+                              content::GlobalRenderFrameHostIdHasher>*
+               frame_routing_ids,
+           content::RenderFrameHost* frame) {
+          frame_routing_ids->insert(frame->GetGlobalId());
+        },
+        &frame_routing_ids));
 
     return frame_routing_ids;
   }
@@ -2373,20 +2378,18 @@ IN_PROC_BROWSER_TEST_F(AdsMemoryMeasurementBrowserTest,
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
-  int main_frame_routing_id = browser()
-                                  ->tab_strip_model()
-                                  ->GetActiveWebContents()
-                                  ->GetMainFrame()
-                                  ->GetGlobalId()
-                                  .frame_routing_id;
-  waiter->AddMemoryUpdateExpectation(main_frame_routing_id);
+  waiter->AddMemoryUpdateExpectation(browser()
+                                         ->tab_strip_model()
+                                         ->GetActiveWebContents()
+                                         ->GetMainFrame()
+                                         ->GetGlobalId());
 
   // Navigate to the main URL.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
 
   // Add any additional frame routing IDs and wait until we get positive
   // memory measurements for each frame.
-  for (int id : GetFrameRoutingIds())
+  for (content::GlobalRenderFrameHostId id : GetFrameRoutingIds())
     waiter->AddMemoryUpdateExpectation(id);
   waiter->Wait();
 

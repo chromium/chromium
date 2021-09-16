@@ -108,13 +108,9 @@ std::string ToString(const testing::TestParamInfo<BackForwardCacheType>& info) {
   }
 }
 
-RenderFrameHost* FindRenderFrameHost(RenderFrameHost& root, const GURL& url) {
-  std::vector<RenderFrameHost*> rfhs = root.GetFramesInSubtree();
-  for (auto* rfh : rfhs) {
-    if (rfh->GetLastCommittedURL() == url)
-      return rfh;
-  }
-  return nullptr;
+RenderFrameHost* FindRenderFrameHost(Page& page, const GURL& url) {
+  return content::FrameMatchingPredicate(
+      page, base::BindRepeating(&content::FrameHasSourceUrl, url));
 }
 
 // Example class which inherits the RenderDocumentHostUserData, all the data is
@@ -286,24 +282,22 @@ class PrerenderBrowserTest : public ContentBrowserTest {
     // The activated page should no longer be in the prerendering state.
     RenderFrameHostImpl* navigated_render_frame_host = current_frame_host();
     // The new page shouldn't be in the prerendering state.
-    std::vector<RenderFrameHost*> frames =
-        navigated_render_frame_host->GetFramesInSubtree();
-    for (auto* frame : frames) {
-      auto* rfhi = static_cast<RenderFrameHostImpl*>(frame);
-      // All the subframes should be transitioned to LifecycleStateImpl::kActive
-      // state after activation.
-      EXPECT_EQ(rfhi->lifecycle_state(),
-                RenderFrameHostImpl::LifecycleStateImpl::kActive);
-      EXPECT_FALSE(rfhi->frame_tree()->is_prerendering());
+    navigated_render_frame_host->ForEachRenderFrameHost(
+        base::BindRepeating([](content::RenderFrameHostImpl* rfhi) {
+          // All the subframes should be transitioned to
+          // LifecycleStateImpl::kActive state after activation.
+          EXPECT_EQ(rfhi->lifecycle_state(),
+                    RenderFrameHostImpl::LifecycleStateImpl::kActive);
+          EXPECT_FALSE(rfhi->frame_tree()->is_prerendering());
 
-      // Check that each document can use a deferred Mojo interface. Choose
-      // WebLocks API as the feature is enabled by default and does not require
-      // permission.
-      const std::string kMojoScript = R"(
-          navigator.locks.request('hi', {mode:'shared'}, () => {});
-      )";
-      EXPECT_TRUE(ExecJs(rfhi, kMojoScript));
-    }
+          // Check that each document can use a deferred Mojo interface. Choose
+          // WebLocks API as the feature is enabled by default and does not
+          // require permission.
+          const std::string kMojoScript = R"(
+            navigator.locks.request('hi', {mode:'shared'}, () => {});
+          )";
+          EXPECT_TRUE(ExecJs(rfhi, kMojoScript));
+        }));
   }
 
   test::PrerenderTestHelper* prerender_helper() {
@@ -1175,8 +1169,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
             EvalJs(prerender_frame_host, kOnprerenderingchangeObservedScript));
   EXPECT_NE(0, EvalJs(prerender_frame_host, kActivationStartScript));
 
-  RenderFrameHost* same_origin_render_frame_host =
-      FindRenderFrameHost(*prerender_frame_host, kSameOriginSubframeUrl);
+  RenderFrameHost* same_origin_render_frame_host = FindRenderFrameHost(
+      prerender_frame_host->GetPage(), kSameOriginSubframeUrl);
   DCHECK(same_origin_render_frame_host);
   EXPECT_EQ(true, EvalJs(same_origin_render_frame_host,
                          kInitialDocumentPrerenderingScript));
@@ -1186,8 +1180,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                          kOnprerenderingchangeObservedScript));
   EXPECT_NE(0, EvalJs(same_origin_render_frame_host, kActivationStartScript));
 
-  RenderFrameHost* cross_origin_render_frame_host =
-      FindRenderFrameHost(*prerender_frame_host, kCrossOriginSubframeUrl);
+  RenderFrameHost* cross_origin_render_frame_host = FindRenderFrameHost(
+      prerender_frame_host->GetPage(), kCrossOriginSubframeUrl);
   DCHECK(cross_origin_render_frame_host);
   EXPECT_EQ(false, EvalJs(cross_origin_render_frame_host,
                           kInitialDocumentPrerenderingScript));
@@ -1255,8 +1249,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   EXPECT_EQ(true,
             EvalJs(prerender_frame_host, kOnprerenderingchangeObservedScript));
 
-  RenderFrameHost* cross_origin_render_frame_host =
-      FindRenderFrameHost(*prerender_frame_host, kCrossOriginSubframeUrl);
+  RenderFrameHost* cross_origin_render_frame_host = FindRenderFrameHost(
+      prerender_frame_host->GetPage(), kCrossOriginSubframeUrl);
   DCHECK(cross_origin_render_frame_host);
   EXPECT_EQ(false, EvalJs(cross_origin_render_frame_host,
                           kInitialDocumentPrerenderingScript));
@@ -1803,7 +1797,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MojoCapabilityControl) {
   RenderFrameHost* prerendered_render_frame_host =
       GetPrerenderedMainFrameHost(host_id);
   std::vector<RenderFrameHost*> frames =
-      prerendered_render_frame_host->GetFramesInSubtree();
+      CollectAllRenderFrameHosts(prerendered_render_frame_host);
 
   // A barrier closure to wait until a deferred interface is granted on all
   // frames.
@@ -3298,9 +3292,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
   // Start a prerender.
   int prerender_host_id = AddPrerender(kPrerenderingUrl);
-  RenderFrameHost* prerender_frame_host =
+  RenderFrameHostImpl* prerender_frame_host =
       GetPrerenderedMainFrameHost(prerender_host_id);
-  EXPECT_EQ(prerender_frame_host->GetFramesInSubtree().size(), 1u);
+  EXPECT_EQ(0u, prerender_frame_host->child_count());
 
   // Verify and clear all expectations on the mock observer before setting new
   // ones.
@@ -3340,10 +3334,10 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
   // Start a prerender.
   int prerender_host_id = AddPrerender(kPrerenderingUrl);
-  RenderFrameHost* prerender_main_frame_host =
+  RenderFrameHostImpl* prerender_main_frame_host =
       GetPrerenderedMainFrameHost(prerender_host_id);
   RenderFrameHost* child_frame = ChildFrameAt(prerender_main_frame_host, 0);
-  EXPECT_EQ(prerender_main_frame_host->GetFramesInSubtree().size(), 2u);
+  EXPECT_EQ(1u, prerender_main_frame_host->child_count());
 
   // Verify and clear all expectations on the mock observer before setting new
   // ones.
@@ -3383,10 +3377,10 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
   // Start a prerender.
   int prerender_host_id = AddPrerender(kPrerenderingUrl);
-  RenderFrameHost* prerender_main_frame_host =
+  RenderFrameHostImpl* prerender_main_frame_host =
       GetPrerenderedMainFrameHost(prerender_host_id);
   RenderFrameHost* child_frame = ChildFrameAt(prerender_main_frame_host, 0);
-  EXPECT_EQ(prerender_main_frame_host->GetFramesInSubtree().size(), 2u);
+  EXPECT_EQ(prerender_main_frame_host->child_count(), 1u);
   ASSERT_NE(prerender_host_id, RenderFrameHost::kNoFrameTreeNodeId);
 
   // Verify and clear all expectations on the mock observer before setting new
@@ -3429,9 +3423,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // Start a prerender.
   int prerender_host_id = AddPrerender(kPrerenderingUrl);
-  RenderFrameHost* prerender_frame_host =
+  RenderFrameHostImpl* prerender_frame_host =
       GetPrerenderedMainFrameHost(prerender_host_id);
-  EXPECT_EQ(prerender_frame_host->GetFramesInSubtree().size(), 2u);
+  EXPECT_EQ(prerender_frame_host->child_count(), 1u);
   ASSERT_NE(prerender_host_id, RenderFrameHost::kNoFrameTreeNodeId);
 
   // Verify and clear all expectations on the mock observer before setting new
@@ -4431,8 +4425,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, FrameOwnerPropertiesDisplayNone) {
   EXPECT_TRUE(ExecJs(prerender_frame_host, "loaded;"));
 
   // The iframe is at "/empty.html". It should be display none.
-  RenderFrameHost* iframe_host =
-      FindRenderFrameHost(*prerender_frame_host, GetUrl("/empty.html"));
+  RenderFrameHost* iframe_host = FindRenderFrameHost(
+      prerender_frame_host->GetPage(), GetUrl("/empty.html"));
   EXPECT_FALSE(prerender_frame_host->IsFrameDisplayNone());
   EXPECT_TRUE(iframe_host->IsFrameDisplayNone());
 

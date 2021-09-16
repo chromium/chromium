@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/scoped_observation.h"
+#include "build/build_config.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -152,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerApiTest, BrowserProcessSecurityLevel) {
   content::RenderFrameHost* main_frame =
       browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
   std::vector<content::RenderFrameHost*> subframes =
-      main_frame->GetFramesInSubtree();
+      CollectAllRenderFrameHosts(main_frame);
   ASSERT_EQ(3u, subframes.size());
 
   // Main frame has extension privilege.
