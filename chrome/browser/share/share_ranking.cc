@@ -457,7 +457,9 @@ void ShareRanking::OnRankGetRecentDone(
     std::unique_ptr<PendingRankCall> pending,
     std::vector<ShareHistory::Target> history) {
   pending->recent_history = history;
-  GetRanking(pending->type,
+  // Grab the type out of pending before std::move()ing from it.
+  std::string type = pending->type;
+  GetRanking(type,
              base::BindOnce(&ShareRanking::OnRankGetOldRankingDone,
                             weak_factory_.GetWeakPtr(), std::move(pending)));
 }
