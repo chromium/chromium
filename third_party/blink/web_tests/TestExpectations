@@ -6910,3 +6910,6 @@ crbug.com/1249673 external/wpt/webidl/ecmascript-binding/window-named-properties
 crbug.com/1249673 external/wpt/webidl/ecmascript-binding/es-exceptions/DOMException-custom-bindings.any.html [ Failure ]
 crbug.com/1249673 external/wpt/webidl/ecmascript-binding/es-exceptions/DOMException-custom-bindings.any.worker.html [ Failure ]
 crbug.com/1249673 external/wpt/webidl/ecmascript-binding/legacy-platform-object/OwnPropertyKeys.html [ Failure ]
+
+# Sheriff 2021-09-15
+crbug.com/1250066 [ Win ] external/wpt/css/mediaqueries/test_media_queries.html [ Failure ]
