@@ -178,6 +178,7 @@
 <meta name=variant content='?q=webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,compressed,array:format="bc7-rgba-unorm-srgb";*'>
 <meta name=variant content='?q=webgpu:api,operation,command_buffer,copyTextureToTexture:zero_sized:*'>
 <meta name=variant content='?q=webgpu:api,operation,command_buffer,copyTextureToTexture:copy_depth_stencil:*'>
+<meta name=variant content='?q=webgpu:api,operation,command_buffer,copyTextureToTexture:copy_multisampled_color:*'>
 <meta name=variant content='?q=webgpu:api,operation,command_buffer,image_copy:rowsPerImage_and_bytesPerRow:initMethod="WriteTexture";checkMethod="FullCopyT2B";format="r8unorm";*'>
 <meta name=variant content='?q=webgpu:api,operation,command_buffer,image_copy:rowsPerImage_and_bytesPerRow:initMethod="WriteTexture";checkMethod="FullCopyT2B";format="r8uint";*'>
 <meta name=variant content='?q=webgpu:api,operation,command_buffer,image_copy:rowsPerImage_and_bytesPerRow:initMethod="WriteTexture";checkMethod="FullCopyT2B";format="r8sint";*'>
@@ -1596,6 +1597,9 @@
 <meta name=variant content='?q=webgpu:api,validation,error_scope:if_no_error_scope_handles_an_error_it_fires_an_uncapturederror_event:*'>
 <meta name=variant content='?q=webgpu:api,validation,error_scope:push,popping_sibling_error_scopes_must_be_balanced:*'>
 <meta name=variant content='?q=webgpu:api,validation,error_scope:push,popping_nested_error_scopes_must_be_balanced:*'>
+<meta name=variant content='?q=webgpu:api,validation,image_copy,buffer_related:valid:*'>
+<meta name=variant content='?q=webgpu:api,validation,image_copy,buffer_related:usage:*'>
+<meta name=variant content='?q=webgpu:api,validation,image_copy,buffer_related:bytes_per_row_alignment:*'>
 <meta name=variant content='?q=webgpu:api,validation,image_copy,layout_related:bound_on_rows_per_image:*'>
 <meta name=variant content='?q=webgpu:api,validation,image_copy,layout_related:copy_end_overflows_u64:*'>
 <meta name=variant content='?q=webgpu:api,validation,image_copy,layout_related:required_bytes_in_copy:method="WriteTexture";format="r8unorm";*'>

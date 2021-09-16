@@ -214,6 +214,7 @@ src/webgpu/api/validation/encoding/queries/general.spec.ts
 src/webgpu/api/validation/encoding/queries/pipeline_statistics.spec.ts
 src/webgpu/api/validation/encoding/queries/resolveQuerySet.spec.ts
 src/webgpu/api/validation/image_copy/image_copy.ts
+src/webgpu/api/validation/image_copy/buffer_related.spec.ts
 src/webgpu/api/validation/image_copy/layout_related.spec.ts
 src/webgpu/api/validation/image_copy/texture_related.spec.ts
 src/webgpu/api/validation/initialization/requestDevice.spec.ts

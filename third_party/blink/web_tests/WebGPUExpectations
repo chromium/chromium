@@ -288,6 +288,9 @@ wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createView:mip_levels:viewD
 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,image_copy:rowsPerImage_and_bytesPerRow_copy_with_stencil_aspect:stencilFormat="stencil8";* [ Failure ]
 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,image_copy:offsets_and_sizes_copy_with_stencil_aspect:stencilFormat="stencil8";* [ Failure ]
 
+crbug.com/dawn/570 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,image_copy,buffer_related:bytes_per_row_alignment:format="depth16unorm";* [ Failure ]
+crbug.com/dawn/666 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,image_copy,buffer_related:bytes_per_row_alignment:format="stencil8";* [ Failure ]
+
 # maxArrayLayoutCount limit should be 256 instead of 2048
 crbug.com/dawn/685 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:texture_size,2d_texture,compressed_format:size=[4,4,2047];* [ Failure ]
 crbug.com/dawn/685 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:texture_size,2d_texture,compressed_format:size=[4,4,2048];* [ Failure ]
