@@ -14,6 +14,7 @@
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
 #include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/controls/separator.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
@@ -46,6 +47,7 @@ class ASH_EXPORT AppListAssistantMainStage
 
   // views::View:
   void ChildPreferredSizeChanged(views::View* child) override;
+  void OnThemeChanged() override;
 
   // views::ViewObserver:
   void OnViewPreferredSizeChanged(views::View* view) override;
@@ -83,7 +85,7 @@ class ASH_EXPORT AppListAssistantMainStage
 
   // Owned by view hierarchy.
   AssistantProgressIndicator* progress_indicator_;
-  views::View* horizontal_separator_;
+  views::Separator* horizontal_separator_;
   AssistantQueryView* query_view_;
   UiElementContainerView* ui_element_container_;
   AssistantZeroStateView* zero_state_view_;

@@ -34,6 +34,7 @@ enum AssistantViewID {
   kUiElementContainer,
   kZeroStateView,
   kOnboardingView,
+  kHorizontalSeparator,
 
   // UIs in OptInView
   kOptInViewStyledLabel,
