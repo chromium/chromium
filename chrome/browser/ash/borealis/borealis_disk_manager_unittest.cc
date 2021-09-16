@@ -290,6 +290,7 @@ TEST_F(BorealisDiskManagerTest, GetDiskInfoSucceedsAndReturnsResponse) {
             // 2GB of expandable space less 1GB of headroom is 1GB of expandable
             // space.
             EXPECT_EQ(response_or_error.Value().expandable_bytes, 1 * kGiB);
+            EXPECT_EQ(response_or_error.Value().disk_size, 20 * kGiB);
           }));
   disk_manager_->GetDiskInfo(callback_factory.BindOnce());
   run_loop()->RunUntilIdle();
