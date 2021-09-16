@@ -1295,6 +1295,10 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     { key::kPrintRasterizePdfDpi,
       prefs::kPrintRasterizePdfDpi,
       base::Value::Type::INTEGER },
+
+  { key::kPrintPdfAsImageDefault,
+    prefs::kPrintPdfAsImageDefault,
+    base::Value::Type::BOOLEAN },
 #endif  // BUILDFLAGS(ENABLE_PRINT_PREVIEW)
 
 #if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
@@ -2116,6 +2120,10 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       std::make_unique<PrintingBackgroundGraphicsDefaultPolicyHandler>());
   handlers->AddHandler(
       std::make_unique<PrintingPaperSizeDefaultPolicyHandler>());
+#endif
+
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+  handlers->AddHandler(std::make_unique<PrintPdfAsImageDefaultPolicyHandler>());
 #endif
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)

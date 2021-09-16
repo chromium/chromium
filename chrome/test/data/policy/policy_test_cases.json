@@ -687,6 +687,25 @@
       }
     ]
   },
+  "PrintPdfAsImageDefault": {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PrintPdfAsImageDefault": true
+        },
+        "prefs": {
+          "printing.print_pdf_as_image_default": {}
+        }
+      }
+    ]
+  },
   "PrinterTypeDenyList": {
     "os": [
       "win",

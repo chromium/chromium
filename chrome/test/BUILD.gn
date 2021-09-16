@@ -6351,7 +6351,6 @@ test("unit_tests") {
       "../browser/nearby_sharing/webrtc_signaling_messenger_unittest.cc",
       "../browser/notifications/chrome_ash_message_center_client_unittest.cc",
       "../browser/notifications/web_page_notifier_controller_unittest.cc",
-      "../browser/policy/printing_restrictions_policy_handler_unittest.cc",
       "../browser/speech/tts_chromeos_unittest.cc",
       "../browser/speech/tts_controller_delegate_impl_unittest.cc",
       "../browser/sync/sync_error_notifier_ash_unittest.cc",
@@ -7211,6 +7210,7 @@ test("unit_tests") {
 
   if (enable_basic_printing) {
     sources += [
+      "../browser/policy/printing_restrictions_policy_handler_unittest.cc",
       "../browser/printing/print_job_unittest.cc",
       "../browser/printing/print_test_utils.cc",
       "../browser/printing/print_test_utils.h",

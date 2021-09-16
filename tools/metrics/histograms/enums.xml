@@ -26349,6 +26349,7 @@ Called by update_document_policy_enum.py.-->
   <int value="893" label="BrowserLegacyExtensionPointsBlocked"/>
   <int value="894" label="DeviceRestrictedManagedGuestSessionEnabled"/>
   <int value="895" label="PrintPostScriptMode"/>
+  <int value="896" label="PrintPdfAsImageDefault"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

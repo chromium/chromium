@@ -1377,6 +1377,10 @@ const char kPrintPdfAsImageAvailability[] =
 // An integer resolution to use for DPI when rasterizing PDFs with "Print to
 // image".
 const char kPrintRasterizePdfDpi[] = "printing.rasterize_pdf_dpi";
+
+// Boolean controlling whether the "Print as image" option should default to set
+// in Print Preview when printing a PDF.
+const char kPrintPdfAsImageDefault[] = "printing.print_pdf_as_image_default";
 #endif
 
 #if defined(OS_WIN) && BUILDFLAG(ENABLE_PRINTING)

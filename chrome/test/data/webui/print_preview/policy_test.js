@@ -28,8 +28,19 @@ policy_tests.TestNames = {
   ColorPolicy: 'color policy',
   DuplexPolicy: 'duplex policy',
   PinPolicy: 'pin policy',
-  PrintPdfAsImageAvailability: 'print as image available for PDF policy'
+  PrintPdfAsImageAvailability: 'print as image available for PDF policy',
+  PrintPdfAsImageDefault: 'print as image option default for PDF policy'
 };
+
+/**
+ * @typedef {{
+ *   settingName: string,
+ *   serializedSettingName: string,
+ *   allowedMode: *,
+ *   defaultMode: *,
+ * }}
+ */
+let AllowedDefaultModePolicySetup;
 
 class PolicyTestPluralStringProxy extends TestPluralStringProxy {
   /** override */
@@ -82,35 +93,40 @@ suite(policy_tests.suiteName, function() {
   /**
    * Sets up the Print Preview app, and loads initial settings with the given
    * policy.
-   * @param {string} settingName Name of the setting to set up.
-   * @param {string} serializedSettingName Name of the serialized setting.
-   * @param {*} allowedMode Allowed value for the given setting.
-   * @param {*} defaultMode Default value for the given setting.
+   * @param {!Array<!AllowedDefaultModePolicySetup>} policies Policies to set
+   *     up.
    * @param {boolean} isPdf If settings are for previewing a PDF.
    * @return {!Promise} A Promise that resolves once initial settings are done
    *     loading.
    */
-  function doAllowedDefaultModePolicySetup(
-      settingName, serializedSettingName, allowedMode, defaultMode,
-      isPdf = false) {
+  function doAllowedDefaultModePoliciesSetup(policies, isPdf = false) {
     const initialSettings = getDefaultInitialSettings(isPdf);
+    const appState = {version: 2};
+    let setSerializedAppState = false;
 
-    if (allowedMode !== undefined || defaultMode !== undefined) {
-      const policy = {};
-      if (allowedMode !== undefined) {
-        policy.allowedMode = allowedMode;
+    initialSettings.policies = {};
+
+    policies.forEach(setup => {
+      if (setup.allowedMode !== undefined || setup.defaultMode !== undefined) {
+        const policy = {};
+        if (setup.allowedMode !== undefined) {
+          policy.allowedMode = setup.allowedMode;
+        }
+        if (setup.defaultMode !== undefined) {
+          policy.defaultMode = setup.defaultMode;
+        }
+        initialSettings.policies[setup.settingName] = policy;
       }
-      if (defaultMode !== undefined) {
-        policy.defaultMode = defaultMode;
+      if (setup.defaultMode !== undefined &&
+          setup.serializedSettingName !== undefined) {
+        // We want to make sure sticky settings get overridden.
+        appState[setup.serializedSettingName] = !setup.defaultMode;
+        setSerializedAppState = true;
       }
-      initialSettings.policies = {[settingName]: policy};
-    }
-    if (defaultMode !== undefined && serializedSettingName !== undefined) {
-      // We want to make sure sticky settings get overridden.
-      initialSettings.serializedAppStateStr = JSON.stringify({
-        version: 2,
-        [serializedSettingName]: !defaultMode,
-      });
+    });
+
+    if (setSerializedAppState) {
+      initialSettings.serializedAppStateStr = JSON.stringify(appState);
     }
     return loadInitialSettings(initialSettings);
   }
@@ -187,9 +203,12 @@ suite(policy_tests.suiteName, function() {
       }
     ];
     for (const subtestParams of tests) {
-      await doAllowedDefaultModePolicySetup(
-          'headerFooter', 'isHeaderFooterEnabled', subtestParams.allowedMode,
-          subtestParams.defaultMode);
+      await doAllowedDefaultModePoliciesSetup([{
+        settingName: 'headerFooter',
+        serializedSettingName: 'isHeaderFooterEnabled',
+        allowedMode: subtestParams.allowedMode,
+        defaultMode: subtestParams.defaultMode
+      }]);
       toggleMoreSettings();
       const checkbox = getCheckbox('headerFooter');
       assertEquals(subtestParams.expectedDisabled, checkbox.disabled);
@@ -239,9 +258,12 @@ suite(policy_tests.suiteName, function() {
       }
     ];
     for (const subtestParams of tests) {
-      await doAllowedDefaultModePolicySetup(
-          'cssBackground', 'isCssBackgroundEnabled', subtestParams.allowedMode,
-          subtestParams.defaultMode);
+      await doAllowedDefaultModePoliciesSetup([{
+        settingName: 'cssBackground',
+        serializedSettingName: 'isCssBackgroundEnabled',
+        allowedMode: subtestParams.allowedMode,
+        defaultMode: subtestParams.defaultMode
+      }]);
       toggleMoreSettings();
       const checkbox = getCheckbox('cssBackground');
       assertEquals(subtestParams.expectedDisabled, checkbox.disabled);
@@ -269,9 +291,12 @@ suite(policy_tests.suiteName, function() {
       }
     ];
     for (const subtestParams of tests) {
-      await doAllowedDefaultModePolicySetup(
-          'mediaSize', /*serializedSettingName=*/ undefined,
-          /*allowedMode=*/ undefined, subtestParams.defaultMode);
+      await doAllowedDefaultModePoliciesSetup([{
+        settingName: 'mediaSize',
+        serializedSettingName: undefined,
+        allowedMode: undefined,
+        defaultMode: subtestParams.defaultMode
+      }]);
       toggleMoreSettings();
       const mediaSettingsSelect =
           page.shadowRoot.querySelector('print-preview-sidebar')
@@ -417,9 +442,12 @@ suite(policy_tests.suiteName, function() {
       },
     ];
     for (const subtestParams of tests) {
-      await doAllowedDefaultModePolicySetup(
-          'color', 'isColorEnabled', subtestParams.allowedMode,
-          subtestParams.defaultMode);
+      await doAllowedDefaultModePoliciesSetup([{
+        settingName: 'color',
+        serializedSettingName: 'isColorEnabled',
+        allowedMode: subtestParams.allowedMode,
+        defaultMode: subtestParams.defaultMode
+      }]);
       const colorSettingsSelect =
           page.shadowRoot.querySelector('print-preview-sidebar')
               .shadowRoot.querySelector('print-preview-color-settings')
@@ -543,9 +571,12 @@ suite(policy_tests.suiteName, function() {
       },
     ];
     for (const subtestParams of tests) {
-      await doAllowedDefaultModePolicySetup(
-          'duplex', 'isDuplexEnabled', subtestParams.allowedMode,
-          subtestParams.defaultMode);
+      await doAllowedDefaultModePoliciesSetup([{
+        settingName: 'duplex',
+        serializedSettingName: 'isDuplexEnabled',
+        allowedMode: subtestParams.allowedMode,
+        defaultMode: subtestParams.defaultMode
+      }]);
       toggleMoreSettings();
       const duplexSettingsSection =
           page.shadowRoot.querySelector('print-preview-sidebar')
@@ -722,10 +753,14 @@ suite(policy_tests.suiteName, function() {
       },
     ];
     for (const subtestParams of tests) {
-      await doAllowedDefaultModePolicySetup(
-          'printPdfAsImageAvailability', 'isRasterizeEnabled',
-          subtestParams.allowedMode,
-          /*defaultMode=*/ undefined, /*isPdf=*/ subtestParams.isPdf);
+      await doAllowedDefaultModePoliciesSetup(
+          [{
+            settingName: 'printPdfAsImageAvailability',
+            serializedSettingName: 'isRasterizeEnabled',
+            allowedMode: subtestParams.allowedMode,
+            defaultMode: undefined
+          }],
+          /*isPdf=*/ subtestParams.isPdf);
       toggleMoreSettings();
       const checkbox = getCheckbox('rasterize');
       expectEquals(
@@ -733,4 +768,80 @@ suite(policy_tests.suiteName, function() {
     }
   });
   // </if>
+
+  // Tests different scenarios of PDF "Print as image" option default policy.
+  // Default only has an effect when the "Print as image" option is available.
+  // The policy controls if it defaults to set.Test behavior varies by platform
+  // since the option's availability is policy controlled for Windows and macOS
+  // but is always available for Linux and ChromeOS.
+  test(assert(policy_tests.TestNames.PrintPdfAsImageDefault), async () => {
+    const tests = [
+      // <if expr="is_linux or chromeos">
+      {
+        // `availableAllowedMode` is irrelevant, option is always present.
+        // No policy for default of "Print as image" option.
+        availableAllowedMode: undefined,
+        selectedDefaultMode: undefined,
+        expectedChecked: false,
+      },
+      {
+        // `availableAllowedMode` is irrelevant, option is always present.
+        // Explicitly default "Print as image" to unset for PDF content.
+        availableAllowedMode: undefined,
+        selectedDefaultMode: false,
+        expectedChecked: false,
+      },
+      {
+        // `availableAllowedMode` is irrelevant, option is always present.
+        // Explicitly default "Print as image" to set for PDF content.
+        availableAllowedMode: undefined,
+        selectedDefaultMode: true,
+        expectedChecked: true,
+      },
+      // </if>
+      {
+        // Explicitly enable "Print as image" option for PDF content.
+        // No policy for default of "Print as image" option.
+        availableAllowedMode: true,
+        selectedDefaultMode: undefined,
+        expectedChecked: false,
+      },
+      {
+        // Explicitly enable "Print as image" option for PDF content.
+        // Explicitly default "Print as image" to unset.
+        availableAllowedMode: true,
+        selectedDefaultMode: false,
+        expectedChecked: false,
+      },
+      {
+        // Explicitly enable "Print as image" option for PDF content.
+        // Explicitly default "Print as image" to set.
+        availableAllowedMode: true,
+        selectedDefaultMode: true,
+        expectedChecked: true,
+      },
+    ];
+    for (const subtestParams of tests) {
+      await doAllowedDefaultModePoliciesSetup(
+          [
+            {
+              settingName: 'printPdfAsImageAvailability',
+              serializedSettingName: 'isRasterizeEnabled',
+              allowedMode: subtestParams.availableAllowedMode,
+              defaultMode: undefined,
+            },
+            {
+              settingName: 'printPdfAsImage',
+              serializedSettingName: undefined,
+              allowedMode: undefined,
+              defaultMode: subtestParams.selectedDefaultMode,
+            }
+          ],
+          /*isPdf=*/ true);
+      toggleMoreSettings();
+      const checkbox = getCheckbox('rasterize');
+      assertFalse(checkbox.parentNode.parentNode.hidden);
+      expectEquals(subtestParams.expectedChecked, checkbox.checked);
+    }
+  });
 });

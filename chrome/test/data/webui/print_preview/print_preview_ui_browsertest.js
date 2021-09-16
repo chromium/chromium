@@ -255,6 +255,10 @@ TEST_F('PrintPreviewPolicyTest', 'PrintPdfAsImageAvailability', function() {
 });
 GEN('#endif');
 
+TEST_F('PrintPreviewPolicyTest', 'PrintPdfAsImageDefault', function() {
+  this.runMochaTest(policy_tests.TestNames.PrintPdfAsImageDefault);
+});
+
 // eslint-disable-next-line no-var
 var PrintPreviewSettingsSelectTest = class extends PrintPreviewTest {
   /** @override */
