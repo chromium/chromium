@@ -145,7 +145,7 @@ LayoutUnit ComputeFloatAncestorInlineEndSize(
   return inline_end_size;
 }
 
-// See NGLineBreaker::SplitTextByGlyphs().
+// See NGLineBreaker::SplitTextIntoSegments().
 void CollectCharIndex(void* context,
                       unsigned char_index,
                       Glyph,
@@ -954,7 +954,7 @@ void NGLineBreaker::HandleText(const NGInlineItem& item,
   }
 
   if (is_svg_text_) {
-    SplitTextIntoSegements(item, line_info);
+    SplitTextIntoSegments(item, line_info);
     return;
   }
 
@@ -989,8 +989,8 @@ void NGLineBreaker::HandleText(const NGInlineItem& item,
 // Split in PrepareLayout() or after producing NGFragmentItem would need
 // additional memory overhead. So we split in NGLineBreaker while it converts
 // NGInlineItems to NGInlineItemResults.
-void NGLineBreaker::SplitTextIntoSegements(const NGInlineItem& item,
-                                           NGLineInfo* line_info) {
+void NGLineBreaker::SplitTextIntoSegments(const NGInlineItem& item,
+                                          NGLineInfo* line_info) {
   DCHECK(RuntimeEnabledFeatures::SVGTextNGEnabled());
   DCHECK(is_svg_text_);
   DCHECK_EQ(offset_, item.StartOffset());
