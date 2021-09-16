@@ -149,16 +149,12 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTest,
   // In scope, the toolbar should not be visible.
   EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
 
-  // Because the first part of the url is on a different origin (settings vs.
-  // foo) a toolbar would normally be shown. However, because settings is a
-  // SystemWebApp and foo is served via chrome:// it is okay not to show the
-  // toolbar.
-  GURL out_of_scope_chrome_page(content::kChromeUIScheme +
-                                std::string("://foo"));
+  // Out of scope chrome:// URL.
+  GURL out_of_scope_chrome_page("chrome://foo");
   content::NavigateToURLBlockUntilNavigationsComplete(
       app_browser->tab_strip_model()->GetActiveWebContents(),
       out_of_scope_chrome_page, 1);
-  EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
+  EXPECT_TRUE(app_browser->app_controller()->ShouldShowCustomTabBar());
 
   // Even though the url is secure it is not being served over chrome:// so a
   // toolbar should be shown.
@@ -167,6 +163,13 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTest,
       app_browser->tab_strip_model()->GetActiveWebContents(), off_scheme_page,
       1);
   EXPECT_TRUE(app_browser->app_controller()->ShouldShowCustomTabBar());
+
+  // URL has been added to be within scope for the SWA.
+  GURL in_scope_for_swa_page("http://example.com/in-scope");
+  content::NavigateToURLBlockUntilNavigationsComplete(
+      app_browser->tab_strip_model()->GetActiveWebContents(),
+      in_scope_for_swa_page, 1);
+  EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
 }
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTest, LaunchMetricsWork) {

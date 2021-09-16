@@ -129,4 +129,8 @@ bool SystemWebAppDelegate::HasTitlebarTerminalSelectNewTabButton() const {
 }
 #endif
 
+bool SystemWebAppDelegate::IsUrlInSystemAppScope(const GURL& url) const {
+  return false;
+}
+
 }  // namespace web_app

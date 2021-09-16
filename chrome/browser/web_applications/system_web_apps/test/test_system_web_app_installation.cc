@@ -161,6 +161,10 @@ gfx::Rect UnittestingSystemAppDelegate::GetDefaultBounds(
 bool UnittestingSystemAppDelegate::IsAppEnabled() const {
   return true;
 }
+bool UnittestingSystemAppDelegate::IsUrlInSystemAppScope(
+    const GURL& url) const {
+  return url == url_in_system_app_scope_;
+}
 
 void UnittestingSystemAppDelegate::SetAppIdsToUninstallAndReplace(
     const std::vector<AppId>& ids) {
@@ -220,6 +224,9 @@ void UnittestingSystemAppDelegate::SetTimerInfo(
 void UnittestingSystemAppDelegate::SetDefaultBounds(
     base::RepeatingCallback<gfx::Rect(Browser*)> lambda) {
   get_default_bounds_ = std::move(lambda);
+}
+void UnittestingSystemAppDelegate::SetUrlInSystemAppScope(const GURL& url) {
+  url_in_system_app_scope_ = url;
 }
 
 TestSystemWebAppInstallation::TestSystemWebAppInstallation(
@@ -305,11 +312,15 @@ TestSystemWebAppInstallation::SetUpTabbedMultiWindowApp() {
 // static
 std::unique_ptr<TestSystemWebAppInstallation>
 TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp() {
-  return base::WrapUnique(new TestSystemWebAppInstallation(
+  std::unique_ptr<UnittestingSystemAppDelegate> delegate =
       std::make_unique<UnittestingSystemAppDelegate>(
           SystemAppType::SETTINGS, "OSSettings",
           GURL("chrome://test-system-app/pwa.html"),
-          base::BindRepeating(&GenerateWebApplicationInfoForTestApp))));
+          base::BindRepeating(&GenerateWebApplicationInfoForTestApp));
+  delegate->SetUrlInSystemAppScope(GURL("http://example.com/in-scope"));
+
+  return base::WrapUnique(
+      new TestSystemWebAppInstallation(std::move(delegate)));
 }
 
 // static

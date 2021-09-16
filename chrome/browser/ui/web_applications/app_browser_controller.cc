@@ -131,15 +131,6 @@ bool AppBrowserController::ShouldShowCustomTabBar() const {
       start_url_scheme == content::kChromeUIScheme ||
       start_url_scheme == content::kChromeUIUntrustedScheme;
 
-  // The current page must be secure for us to hide the toolbar. However,
-  // chrome:// launch URL apps can hide the toolbar,
-  // if the current WebContents URLs are the same as the launch scheme.
-  //
-  // Note that the launch scheme may be insecure, but as long as the current
-  // page's scheme is secure, we can hide the toolbar.
-  base::StringPiece secure_page_scheme =
-      is_internal_start_url_scheme ? start_url_scheme : url::kHttpsScheme;
-
   auto should_show_toolbar_for_url = [&](const GURL& url) -> bool {
     // If the url is unset, it doesn't give a signal as to whether the toolbar
     // should be shown or not. In lieu of more information, do not show the
@@ -147,26 +138,17 @@ bool AppBrowserController::ShouldShowCustomTabBar() const {
     if (url.is_empty())
       return false;
 
+    // Show toolbar when not using 'https', unless this is an internal app,
+    // or origin is secure (e.g. localhost).
+    if (!is_internal_start_url_scheme && !url.SchemeIs(url::kHttpsScheme) &&
+        !webapps::InstallableManager::IsOriginConsideredSecure(url)) {
+      return true;
+    }
+
     // Page URLs that are not within scope
     // (https://www.w3.org/TR/appmanifest/#dfn-within-scope) of the app
     // corresponding to |start_url| show the toolbar.
-    bool out_of_scope = !IsUrlInAppScope(url);
-
-    if (url.scheme_piece() != secure_page_scheme) {
-      // Some origins are (such as localhost) are considered secure even when
-      // served over non-secure schemes. However, in order to hide the toolbar,
-      // the 'considered secure' origin must also be in the app's scope.
-      return out_of_scope ||
-             !webapps::InstallableManager::IsOriginConsideredSecure(url);
-    }
-
-    if (system_app()) {
-      DCHECK(url.scheme_piece() == content::kChromeUIScheme ||
-             url.scheme_piece() == content::kChromeUIUntrustedScheme);
-      return false;
-    }
-
-    return out_of_scope;
+    return !IsUrlInAppScope(url);
   };
 
   GURL visible_url = web_contents->GetVisibleURL();
