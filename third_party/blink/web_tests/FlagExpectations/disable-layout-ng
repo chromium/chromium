@@ -518,6 +518,7 @@ crbug.com/591099 external/wpt/css/css-writing-modes/sizing-orthog-vlr-in-htb-001
 crbug.com/591099 external/wpt/css/css-writing-modes/sizing-orthog-vlr-in-htb-004.xht [ Failure ]
 crbug.com/591099 external/wpt/css/css-writing-modes/sizing-orthog-vrl-in-htb-001.xht [ Failure ]
 crbug.com/591099 external/wpt/css/css-writing-modes/sizing-orthog-vrl-in-htb-004.xht [ Failure ]
+crbug.com/591099 external/wpt/css/css-writing-modes/text-shadow-orientation-upright-001.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-writing-modes/two-levels-of-orthogonal-flows-percentage.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-writing-modes/vertical-alignment-003.xht [ Failure ]
 crbug.com/591099 external/wpt/css/css-writing-modes/vertical-alignment-009.xht [ Failure ]

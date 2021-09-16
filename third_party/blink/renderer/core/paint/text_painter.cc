@@ -68,7 +68,7 @@ void TextPainter::PaintDecorationsExceptLineThrough(
     bool* has_line_through_decoration) {
   GraphicsContext& context = paint_info.context;
   GraphicsContextStateSaver state_saver(context);
-  UpdateGraphicsContext(context, text_style, horizontal_, state_saver);
+  UpdateGraphicsContext(context, text_style, state_saver);
 
   if (combined_text_)
     context.ConcatCTM(Rotation(text_frame_rect_, kClockwise));
@@ -153,7 +153,7 @@ void TextPainter::PaintDecorationsOnlyLineThrough(
     const TextPaintStyle& text_style) {
   GraphicsContext& context = paint_info.context;
   GraphicsContextStateSaver state_saver(context);
-  UpdateGraphicsContext(context, text_style, horizontal_, state_saver);
+  UpdateGraphicsContext(context, text_style, state_saver);
 
   if (combined_text_)
     context.ConcatCTM(Rotation(text_frame_rect_, kClockwise));

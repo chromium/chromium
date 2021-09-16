@@ -53,7 +53,6 @@ class CORE_EXPORT TextPainterBase {
   enum ShadowMode { kBothShadowsAndTextProper, kShadowsOnly, kTextProperOnly };
   static void UpdateGraphicsContext(GraphicsContext&,
                                     const TextPaintStyle&,
-                                    bool horizontal,
                                     GraphicsContextStateSaver&,
                                     ShadowMode = kBothShadowsAndTextProper);
   static sk_sp<SkDrawLooper> CreateDrawLooper(
@@ -61,7 +60,6 @@ class CORE_EXPORT TextPainterBase {
       DrawLooperBuilder::ShadowAlphaMode,
       const Color& current_color,
       mojom::blink::ColorScheme color_scheme,
-      bool is_horizontal = true,
       ShadowMode = kBothShadowsAndTextProper);
 
   void PaintDecorationUnderOrOverLine(GraphicsContext&,
@@ -88,7 +86,7 @@ class CORE_EXPORT TextPainterBase {
  protected:
   void UpdateGraphicsContext(const TextPaintStyle& style,
                              GraphicsContextStateSaver& saver) {
-    UpdateGraphicsContext(graphics_context_, style, horizontal_, saver);
+    UpdateGraphicsContext(graphics_context_, style, saver);
   }
   void DecorationsStripeIntercepts(
       float upper,

@@ -176,7 +176,7 @@ void NGTextPainter::Paint(unsigned start_offset,
                           DOMNodeId node_id,
                           ShadowMode shadow_mode) {
   GraphicsContextStateSaver state_saver(graphics_context_, false);
-  UpdateGraphicsContext(graphics_context_, text_style, horizontal_, state_saver,
+  UpdateGraphicsContext(graphics_context_, text_style, state_saver,
                         shadow_mode);
   // TODO(layout-dev): Handle combine text here or elsewhere.
   PaintInternal<kPaintText>(start_offset, end_offset, length, node_id);
