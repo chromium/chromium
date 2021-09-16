@@ -211,9 +211,9 @@ void DroppedFrameCounter::OnEndFrame(const viz::BeginFrameArgs& args,
   if (!args.interval.is_zero())
     total_frames_in_window_ = kSlidingWindowInterval / args.interval;
 
-  if (is_dropped) {
-    if (fcp_received_)
-      ++total_smoothness_dropped_;
+  // Don't measure smoothness for frames that start before FCP is received.
+  if (is_dropped && fcp_received_ && args.frame_time >= time_fcp_received_) {
+    ++total_smoothness_dropped_;
     ReportFrames();
   }
   auto iter = scroll_start_per_frame_.find(args.frame_id);
@@ -435,6 +435,7 @@ void DroppedFrameCounter::UpdateMaxPercentDroppedFrame(
 }
 
 void DroppedFrameCounter::OnFcpReceived() {
+  DCHECK(!fcp_received_);
   fcp_received_ = true;
   time_fcp_received_ = base::TimeTicks::Now();
 }

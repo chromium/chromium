@@ -91,6 +91,11 @@ class CC_EXPORT DroppedFrameCounter {
     total_counter_ = total_counter;
   }
 
+  void SetTimeFcpReceivedForTesting(base::TimeTicks time_fcp_received) {
+    DCHECK(fcp_received_);
+    time_fcp_received_ = time_fcp_received;
+  }
+
   double sliding_window_max_percent_dropped() const {
     return sliding_window_max_percent_dropped_;
   }

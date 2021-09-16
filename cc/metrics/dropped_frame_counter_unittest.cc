@@ -284,13 +284,15 @@ class DroppedFrameCounterTest : public testing::Test {
     return frame_states;
   }
 
-  void SimulatePendingFrame(int repeat) {
+  std::vector<viz::BeginFrameArgs> SimulatePendingFrame(int repeat) {
+    std::vector<viz::BeginFrameArgs> args(repeat);
     for (int i = 0; i < repeat; i++) {
-      viz::BeginFrameArgs args_ = SimulateBeginFrameArgs();
-      dropped_frame_counter_.OnBeginFrame(args_, /*is_scroll_active=*/false);
+      args[i] = SimulateBeginFrameArgs();
+      dropped_frame_counter_.OnBeginFrame(args[i], /*is_scroll_active=*/false);
       sequence_number_++;
       frame_time_ += interval_;
     }
+    return args;
   }
 
   void AdvancetimeByIntervals(int interval_count) {
@@ -723,6 +725,23 @@ TEST_F(DroppedFrameCounterTest, MovingSmoothnessRatings) {
   SimulateFrameSequence({true}, kFps);
   SimulateFrameSequence({false}, kFps);
   EXPECT_TRUE(CheckSmoothnessBuckets({3, 3, 6, 13, 25, 25, 25}));
+}
+
+TEST_F(DroppedFrameCounterTest, FramesInFlightWhenFcpReceived) {
+  // Start five frames in flight.
+  std::vector<viz::BeginFrameArgs> pending_frames = SimulatePendingFrame(5);
+
+  // Set that FCP was received after the third frame starts, but before it ends.
+  base::TimeTicks time_fcp_sent =
+      pending_frames[2].frame_time + pending_frames[2].interval / 2;
+  dropped_frame_counter_.SetTimeFcpReceivedForTesting(time_fcp_sent);
+
+  // End each of the frames as dropped. The first three should not count for
+  // smoothness, only the last two.
+  for (const auto& frame : pending_frames) {
+    dropped_frame_counter_.OnEndFrame(frame, true);
+  }
+  EXPECT_EQ(dropped_frame_counter_.total_smoothness_dropped(), 2u);
 }
 
 }  // namespace
