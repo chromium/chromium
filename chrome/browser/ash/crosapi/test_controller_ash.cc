@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/crosapi/test_controller_ash.h"
 
+#include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/window_properties.h"
@@ -11,6 +12,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/callback_helpers.h"
 #include "base/task/post_task.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/crosapi/window_util.h"
@@ -143,6 +145,43 @@ void TestControllerAsh::GetWindowPositionInScreen(
     return;
   }
   std::move(cb).Run(window->GetBoundsInScreen().origin());
+}
+
+void TestControllerAsh::PinOrUnpinItemInShelf(
+    const std::string& item_id,
+    bool pin,
+    PinOrUnpinItemInShelfCallback callback) {
+  int item_index = ash::ShelfModel::Get()->ItemIndexByAppID(item_id);
+  if (item_index == -1) {
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+
+  if (pin) {
+    ash::ShelfModel::Get()->PinExistingItemWithID(item_id);
+  } else {
+    ash::ShelfModel::Get()->UnpinAppWithID(item_id);
+  }
+  std::move(callback).Run(/*success=*/true);
+}
+
+void TestControllerAsh::SelectItemInShelf(const std::string& item_id,
+                                          SelectItemInShelfCallback callback) {
+  ash::ShelfItemDelegate* delegate =
+      ash::ShelfModel::Get()->GetShelfItemDelegate(ash::ShelfID(item_id));
+  if (!delegate) {
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+
+  auto mouse_event = std::make_unique<ui::MouseEvent>(
+      ui::ET_MOUSE_PRESSED, gfx::PointF(), gfx::PointF(), ui::EventTimeForNow(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  delegate->ItemSelected(std::move(mouse_event), display::kInvalidDisplayId,
+                         ash::LAUNCH_FROM_SHELF,
+                         /*callback=*/base::DoNothing(),
+                         /*filter_predicate=*/base::NullCallback());
+  std::move(callback).Run(/*success=*/true);
 }
 
 void TestControllerAsh::SendTouchEvent(const std::string& window_id,

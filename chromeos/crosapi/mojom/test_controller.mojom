@@ -30,8 +30,8 @@ enum OptionalBoolean {
 // This interface is implemented by Ash-Chrome.
 // This interface provides tests a mechanism to mutate or query ash.
 // In the future, this interface may merge with an automation or a11y interface.
-// Next version: 6
-// Next method id: 10
+// Next version: 7
+// Next method id: 13
 [Stable, Uuid="1f93f9d7-e466-466c-a675-c21b48cf30d3"]
 interface TestController {
   // Clicks the middle of the window. Assumes that the window exists and is
@@ -86,6 +86,16 @@ interface TestController {
   // not exist.
   [MinVersion=3]
   GetWindowPositionInScreen@8(string window_id) => (gfx.mojom.Point? position);
+
+  // Pins or unpins an item to the shelf. This assumes the item is already in
+  // the shelf. Returns |false| on any error.
+  [MinVersion=6]
+  PinOrUnpinItemInShelf@11(string item_id, bool pin) => (bool success);
+
+  // Simulates a user left-clicking an item in the shelf. This assumes the item
+  // is already in the shelf. Returns |false| on any error.
+  [MinVersion=6]
+  SelectItemInShelf@12(string item_id) => (bool success);
 
   // Creates a touch event and dispatches it to the window with |window_id|.
   // Returns immediately if the window does not exist. The |pointer_id|

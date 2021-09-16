@@ -37,6 +37,11 @@ class TestControllerAsh : public mojom::TestController {
       GetMinimizeOnBackKeyWindowPropertyCallback cb) override;
   void GetWindowPositionInScreen(const std::string& window_id,
                                  GetWindowPositionInScreenCallback cb) override;
+  void PinOrUnpinItemInShelf(const std::string& item_id,
+                             bool pin,
+                             PinOrUnpinItemInShelfCallback cb) override;
+  void SelectItemInShelf(const std::string& item_id,
+                         SelectItemInShelfCallback cb) override;
   void SendTouchEvent(const std::string& window_id,
                       mojom::TouchEventType type,
                       uint8_t pointer_id,
