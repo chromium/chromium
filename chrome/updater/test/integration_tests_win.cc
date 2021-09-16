@@ -4,6 +4,7 @@
 
 #include <wrl/client.h>
 
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -15,13 +16,17 @@
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/version.h"
 #include "base/win/registry.h"
+#include "base/win/scoped_bstr.h"
 #include "chrome/updater/app/server/win/updater_idl.h"
 #include "chrome/updater/app/server/win/updater_internal_idl.h"
 #include "chrome/updater/app/server/win/updater_legacy_idl.h"
@@ -419,6 +424,198 @@ void ExpectInterfacesRegistered(UpdaterScope scope) {
       nullptr, CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&updater_internal_server)));
   Microsoft::WRL::ComPtr<IUpdaterInternal> updater_internal;
   EXPECT_HRESULT_SUCCEEDED(updater_internal_server.As(&updater_internal));
+}
+
+HRESULT InitializeBundle(UpdaterScope scope,
+                         Microsoft::WRL::ComPtr<IAppBundleWeb>& bundle_web) {
+  Microsoft::WRL::ComPtr<IGoogleUpdate3Web> update3web;
+  EXPECT_HRESULT_SUCCEEDED(::CoCreateInstance(
+      scope == UpdaterScope::kSystem ? __uuidof(GoogleUpdate3WebSystemClass)
+                                     : __uuidof(GoogleUpdate3WebUserClass),
+      nullptr, CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&update3web)));
+
+  Microsoft::WRL::ComPtr<IAppBundleWeb> bundle;
+  Microsoft::WRL::ComPtr<IDispatch> dispatch;
+  EXPECT_HRESULT_SUCCEEDED(update3web->createAppBundleWeb(&dispatch));
+  EXPECT_HRESULT_SUCCEEDED(dispatch.As(&bundle));
+
+  EXPECT_HRESULT_SUCCEEDED(bundle->initialize());
+
+  bundle_web = bundle;
+  return S_OK;
+}
+
+HRESULT DoLoopUntilDone(Microsoft::WRL::ComPtr<IAppBundleWeb> bundle) {
+  bool done = false;
+  static const base::TimeDelta kExpirationTimeout =
+      base::TimeDelta::FromMinutes(1);
+  base::ElapsedTimer timer;
+
+  EXPECT_TRUE(timer.Elapsed() < kExpirationTimeout);
+
+  while (!done && (timer.Elapsed() < kExpirationTimeout)) {
+    EXPECT_TRUE(bundle);
+
+    Microsoft::WRL::ComPtr<IDispatch> app_dispatch;
+    EXPECT_HRESULT_SUCCEEDED(bundle->get_appWeb(0, &app_dispatch));
+    Microsoft::WRL::ComPtr<IAppWeb> app;
+    EXPECT_HRESULT_SUCCEEDED(app_dispatch.As(&app));
+
+    Microsoft::WRL::ComPtr<IDispatch> state_dispatch;
+    EXPECT_HRESULT_SUCCEEDED(app->get_currentState(&state_dispatch));
+    Microsoft::WRL::ComPtr<ICurrentState> state;
+    EXPECT_HRESULT_SUCCEEDED(state_dispatch.As(&state));
+
+    std::wstring stateDescription;
+    std::wstring extraData;
+
+    LONG state_value = 0;
+    EXPECT_HRESULT_SUCCEEDED(state->get_stateValue(&state_value));
+
+    switch (state_value) {
+      case STATE_INIT:
+        stateDescription = L"Initializating...";
+        break;
+
+      case STATE_WAITING_TO_CHECK_FOR_UPDATE:
+      case STATE_CHECKING_FOR_UPDATE: {
+        stateDescription = L"Checking for update...";
+        break;
+      }
+
+      case STATE_UPDATE_AVAILABLE: {
+        stateDescription = L"Update available!";
+        EXPECT_HRESULT_SUCCEEDED(bundle->download());
+        break;
+      }
+
+      case STATE_WAITING_TO_DOWNLOAD:
+      case STATE_RETRYING_DOWNLOAD:
+        stateDescription = L"Contacting server...";
+        break;
+
+      case STATE_DOWNLOADING: {
+        stateDescription = L"Downloading...";
+
+        ULONG bytes_downloaded = 0;
+        EXPECT_HRESULT_SUCCEEDED(state->get_bytesDownloaded(&bytes_downloaded));
+
+        ULONG total_bytes_to_download = 0;
+        EXPECT_HRESULT_SUCCEEDED(
+            state->get_totalBytesToDownload(&total_bytes_to_download));
+
+        LONG download_time_remaining_ms = 0;
+        EXPECT_HRESULT_SUCCEEDED(
+            state->get_downloadTimeRemainingMs(&download_time_remaining_ms));
+
+        extraData = base::StringPrintf(
+            L"[Bytes downloaded][%d][Bytes total][%d][Time remaining][%d]",
+            bytes_downloaded, total_bytes_to_download,
+            download_time_remaining_ms);
+        break;
+      }
+
+      case STATE_DOWNLOAD_COMPLETE:
+      case STATE_EXTRACTING:
+      case STATE_APPLYING_DIFFERENTIAL_PATCH:
+      case STATE_READY_TO_INSTALL: {
+        stateDescription = L"Download completed!";
+        ULONG bytes_downloaded = 0;
+        EXPECT_HRESULT_SUCCEEDED(state->get_bytesDownloaded(&bytes_downloaded));
+
+        ULONG total_bytes_to_download = 0;
+        EXPECT_HRESULT_SUCCEEDED(
+            state->get_totalBytesToDownload(&total_bytes_to_download));
+
+        extraData =
+            base::StringPrintf(L"[Bytes downloaded][%d][Bytes total][%d]",
+                               bytes_downloaded, total_bytes_to_download);
+
+        EXPECT_HRESULT_SUCCEEDED(bundle->install());
+
+        break;
+      }
+
+      case STATE_WAITING_TO_INSTALL:
+      case STATE_INSTALLING: {
+        stateDescription = L"Installing...";
+
+        LONG install_progress = 0;
+        state->get_installProgress(&install_progress);
+        LONG install_time_remaining_ms = 0;
+        state->get_installTimeRemainingMs(&install_time_remaining_ms);
+
+        extraData =
+            base::StringPrintf(L"[Install Progress][%d][Time remaining][%d]",
+                               install_progress, install_time_remaining_ms);
+        break;
+      }
+
+      case STATE_INSTALL_COMPLETE:
+        stateDescription = L"Done!";
+        done = true;
+        break;
+
+      case STATE_PAUSED:
+        stateDescription = L"Paused...";
+        break;
+
+      case STATE_NO_UPDATE:
+        stateDescription = L"No update available!";
+        done = true;
+        break;
+
+      case STATE_ERROR: {
+        stateDescription = L"Error!";
+
+        LONG error_code = 0;
+        EXPECT_HRESULT_SUCCEEDED(state->get_errorCode(&error_code));
+
+        base::win::ScopedBstr completion_message;
+        EXPECT_HRESULT_SUCCEEDED(
+            state->get_completionMessage(completion_message.Receive()));
+
+        LONG installer_result_code = 0;
+        EXPECT_HRESULT_SUCCEEDED(
+            state->get_installerResultCode(&installer_result_code));
+
+        extraData = base::StringPrintf(
+            L"[errorCode][%d][completionMessage][%ls][installerResultCode][%d]",
+            error_code, completion_message.Get(), installer_result_code);
+        done = true;
+        break;
+      }
+
+      default:
+        stateDescription = L"Unhandled state...";
+        break;
+    }
+
+    // TODO(1245992): Remove this logging once we get some confidence that the
+    // code is working correctly and no further debugging is needed.
+    LOG(ERROR) << base::StringPrintf(L"[State][%d][%ls][%ls]\n", state_value,
+                                     stateDescription.c_str(),
+                                     extraData.c_str());
+    ::Sleep(100);
+  }
+
+  EXPECT_TRUE(done);
+
+  return S_OK;
+}
+
+HRESULT DoUpdate(UpdaterScope scope, const base::win::ScopedBstr& appid) {
+  Microsoft::WRL::ComPtr<IAppBundleWeb> bundle;
+  EXPECT_HRESULT_SUCCEEDED(InitializeBundle(scope, bundle));
+  EXPECT_HRESULT_SUCCEEDED(bundle->createInstalledApp(appid.Get()));
+  EXPECT_HRESULT_SUCCEEDED(bundle->checkForUpdate());
+  return DoLoopUntilDone(bundle);
+}
+
+void ExpectLegacyUpdate3WebSucceeds(UpdaterScope scope,
+                                    const std::string& app_id) {
+  EXPECT_HRESULT_SUCCEEDED(
+      DoUpdate(scope, base::win::ScopedBstr(base::UTF8ToWide(app_id).c_str())));
 }
 
 int RunVPythonCommand(const base::CommandLine& command_line) {

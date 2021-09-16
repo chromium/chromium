@@ -131,6 +131,11 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::ExpectInterfacesRegistered(kUpdaterScope);
   }
 
+  void ExpectLegacyUpdate3WebSucceeds(
+      const std::string& app_id) const override {
+    updater::test::ExpectLegacyUpdate3WebSucceeds(kUpdaterScope, app_id);
+  }
+
   void SetUpTestService() const override {}
 
   void TearDownTestService() const override {}

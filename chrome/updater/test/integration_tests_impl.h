@@ -139,6 +139,8 @@ void WaitForServerExit(UpdaterScope scope);
 
 #if defined(OS_WIN)
 void ExpectInterfacesRegistered(UpdaterScope scope);
+void ExpectLegacyUpdate3WebSucceeds(UpdaterScope scope,
+                                    const std::string& app_id);
 void RunTestServiceCommand(const std::string& sub_command);
 #endif  // OS_WIN
 

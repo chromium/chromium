@@ -194,6 +194,9 @@ void AppTestHelper::FirstTaskRun() {
 #if defined(OS_WIN)
     {"expect_interfaces_registered",
      WithSystemScope(Wrap(&ExpectInterfacesRegistered))},
+    {"expect_legacy_update3web_succeeds",
+     WithSwitch("app_id",
+                WithSystemScope(Wrap(&ExpectLegacyUpdate3WebSucceeds)))},
 #endif  // OS_WIN
     {"expect_version_active",
      WithSwitch("version", Wrap(&ExpectVersionActive))},

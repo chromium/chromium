@@ -145,6 +145,11 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("expect_interfaces_registered");
   }
 
+  void ExpectLegacyUpdate3WebSucceeds(
+      const std::string& app_id) const override {
+    RunCommand("expect_legacy_update3web_succeeds", {Param("app_id", app_id)});
+  }
+
   void SetUpTestService() const override {
     updater::test::RunTestServiceCommand("setup");
   }

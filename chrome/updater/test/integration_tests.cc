@@ -214,6 +214,11 @@ class IntegrationTest : public ::testing::Test {
   void ExpectInterfacesRegistered() {
     test_commands_->ExpectInterfacesRegistered();
   }
+
+  void ExpectLegacyUpdate3WebSucceeds(const std::string& app_id) {
+    test_commands_->ExpectLegacyUpdate3WebSucceeds(app_id);
+  }
+
 #endif  // OS_WIN
 
   void SetupFakeUpdaterHigherVersion() {
@@ -453,6 +458,25 @@ TEST_F(IntegrationTest, MultipleUpdateAllsMultipleNetRequests) {
   Uninstall();
   Clean();
 }
+
+#if defined(OS_WIN)
+TEST_F(IntegrationTest, LegacyUpdate3Web) {
+  ScopedServer test_server(test_commands_);
+  Install();
+
+  const char kAppId[] = "test1";
+  RegisterApp(kAppId);
+
+  ExpectNoUpdateSequence(&test_server, kAppId);
+  ExpectLegacyUpdate3WebSucceeds(kAppId);
+
+  ExpectUpdateSequence(&test_server, kAppId, base::Version("0.1"),
+                       base::Version("0.2"));
+  ExpectLegacyUpdate3WebSucceeds(kAppId);
+
+  Uninstall();
+}
+#endif  // OS_WIN
 
 TEST_F(IntegrationTest, UnregisterUninstalledApp) {
   Install();
