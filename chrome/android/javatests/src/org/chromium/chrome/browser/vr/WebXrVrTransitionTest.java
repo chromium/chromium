@@ -347,9 +347,11 @@ public class WebXrVrTransitionTest {
      */
     @Test
     @MediumTest
-            @CommandLineFlags.Add({"enable-features=WebXR"})
-            @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
-            public void testConsentDialogIsDismissedWhenPageNavigatesAwayInMainFrame() {
+    @CommandLineFlags.Add({"enable-features=WebXR"})
+    // TODO(crbug.com/1250492): Re-enable this test on all activity types once
+    // WAA/CCT versions no longer fail consistently.
+    // @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
+    public void testConsentDialogIsDismissedWhenPageNavigatesAwayInMainFrame() {
         mWebXrVrTestFramework.setPermissionPromptAction(
                 WebXrVrTestFramework.PERMISSION_PROMPT_ACTION_DO_NOTHING);
         mWebXrVrTestFramework.loadFileAndAwaitInitialization(
