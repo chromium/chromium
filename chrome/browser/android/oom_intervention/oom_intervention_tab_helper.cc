@@ -13,6 +13,7 @@
 #include "chrome/browser/android/oom_intervention/oom_intervention_decider.h"
 #include "chrome/browser/ui/android/infobars/near_oom_reduction_infobar.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
+#include "components/messages/android/messages_feature.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
@@ -60,7 +61,11 @@ void OomInterventionTabHelper::OnHighMemoryUsage() {
   if (config->is_renderer_pause_enabled() ||
       config->is_navigate_ads_enabled() ||
       config->is_purge_v8_memory_enabled()) {
-    NearOomReductionInfoBar::Show(web_contents(), this);
+    if (messages::IsNearOomReductionMessagesUiEnabled()) {
+      near_oom_reduction_message_delegate_.ShowMessage(web_contents(), this);
+    } else {
+      NearOomReductionInfoBar::Show(web_contents(), this);
+    }
     intervention_state_ = InterventionState::UI_SHOWN;
   }
   if (!last_navigation_timestamp_.is_null()) {

@@ -6523,6 +6523,14 @@ Keep your key file in a safe place. You will need it to create new versions of y
         No
       </message>
 
+      <!-- OOM Intervention -->
+      <message name="IDS_NEAR_OOM_REDUCTION_MESSAGE_TITLE" desc="The title of the message asking if the user wants to show the original content of a page using too much memory.">
+         Show original content?
+      </message>
+      <message name="IDS_NEAR_OOM_REDUCTION_MESSAGE_DESCRIPTION" desc="The description of the message stating that the browser removed some content on the page using too much memory.">
+         To save memory, Chrome removed some content
+      </message>
+
       <!-- Password Manager -->
       <if expr="use_titlecase">
         <message name="IDS_PASSWORD_MANAGER_CANCEL_BUTTON" desc="Label for the 'dismiss' button in the Manage Password bubble/Update Password infobar. These UIs ask the user if they wish to perform some action with saved passwords, e.g. updating or deleting them; the button dismisses the UI without taking the suggested action.">

@@ -41,6 +41,8 @@ DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_SAFETYTIP_SHIELD,
 DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_SAVE_PASSWORD,
                     R.drawable.ic_vpn_key_blue)
 DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_TRANSLATE, R.drawable.infobar_translate)
+DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_MOBILE_FRIENDLY,
+                    R.drawable.infobar_mobile_friendly)
 LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY_WITH_DIVIDER,
                  R.drawable.google_pay_with_divider)
 

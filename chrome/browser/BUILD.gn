@@ -2831,6 +2831,8 @@ static_library("browser") {
       "android/omnibox/omnibox_prerender.h",
       "android/oom_intervention/near_oom_monitor.cc",
       "android/oom_intervention/near_oom_monitor.h",
+      "android/oom_intervention/near_oom_reduction_message_delegate.cc",
+      "android/oom_intervention/near_oom_reduction_message_delegate.h",
       "android/oom_intervention/oom_intervention_config.cc",
       "android/oom_intervention/oom_intervention_config.h",
       "android/oom_intervention/oom_intervention_decider.cc",
