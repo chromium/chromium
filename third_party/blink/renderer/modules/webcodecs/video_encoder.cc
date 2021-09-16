@@ -138,9 +138,9 @@ bool IsAcceleratedConfigurationSupported(
       continue;
     }
 
-    if (options.scalability_mode &&
+    if (options.scalability_mode.has_value() &&
         !base::Contains(supported_profile.scalability_modes,
-                        options.scalability_mode)) {
+                        options.scalability_mode.value())) {
       continue;
     }
 
