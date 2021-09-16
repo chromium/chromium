@@ -6,12 +6,14 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_FAKE_DISPLAY_ITEM_CLIENT_H_
 
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_client.h"
+#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
 // A simple DisplayItemClient implementation suitable for use in unit tests.
-class FakeDisplayItemClient : public DisplayItemClient {
+class FakeDisplayItemClient : public GarbageCollected<FakeDisplayItemClient>,
+                              public DisplayItemClient {
  public:
   explicit FakeDisplayItemClient(const String& name = "FakeDisplayItemClient")
       : name_(name) {}
@@ -20,6 +22,7 @@ class FakeDisplayItemClient : public DisplayItemClient {
 
   // This simulates a paint without needing a PaintController.
   using DisplayItemClient::Validate;
+  void Trace(Visitor* visitor) const {}
 
  private:
   String name_;

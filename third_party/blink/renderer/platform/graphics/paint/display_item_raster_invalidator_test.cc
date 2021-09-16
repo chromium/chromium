@@ -329,10 +329,10 @@ TEST_P(DisplayItemRasterInvalidatorTest, NewItemInMiddle) {
 
 TEST_P(DisplayItemRasterInvalidatorTest, Incremental) {
   IntRect initial_rect(100, 100, 100, 100);
-  std::unique_ptr<FakeDisplayItemClient> clients[6];
+  Persistent<FakeDisplayItemClient> clients[6];
   for (size_t i = 0; i < base::size(clients); i++) {
     clients[i] =
-        std::make_unique<FakeDisplayItemClient>(String::Format("%zu", i));
+        MakeGarbageCollected<FakeDisplayItemClient>(String::Format("%zu", i));
   }
   GraphicsContext context(GetPaintController());
 

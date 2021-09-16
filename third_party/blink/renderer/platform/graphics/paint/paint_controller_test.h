@@ -50,8 +50,9 @@ class PaintControllerTestBase : public testing::Test {
 
  protected:
   PaintControllerTestBase()
-      : root_paint_property_client_("root"),
-        root_paint_chunk_id_(root_paint_property_client_.Id(),
+      : root_paint_property_client_(
+            MakeGarbageCollected<FakeDisplayItemClient>("root")),
+        root_paint_chunk_id_(root_paint_property_client_->Id(),
                              DisplayItem::kUninitializedType),
         paint_controller_(std::make_unique<PaintController>()) {}
 
@@ -62,9 +63,9 @@ class PaintControllerTestBase : public testing::Test {
   void InitRootChunk() { InitRootChunk(GetPaintController()); }
   void InitRootChunk(PaintController& paint_controller) {
     paint_controller.UpdateCurrentPaintChunkProperties(
-        root_paint_chunk_id_, root_paint_property_client_,
+        root_paint_chunk_id_, *root_paint_property_client_,
         DefaultPaintChunkProperties());
-    paint_controller.RecordDebugInfo(root_paint_property_client_);
+    paint_controller.RecordDebugInfo(*root_paint_property_client_);
   }
   const PaintChunk::Id DefaultRootChunkId() const {
     return root_paint_chunk_id_;
@@ -108,7 +109,7 @@ class PaintControllerTestBase : public testing::Test {
   }
 
  private:
-  FakeDisplayItemClient root_paint_property_client_;
+  Persistent<FakeDisplayItemClient> root_paint_property_client_;
   PaintChunk::Id root_paint_chunk_id_;
   std::unique_ptr<PaintController> paint_controller_;
 };

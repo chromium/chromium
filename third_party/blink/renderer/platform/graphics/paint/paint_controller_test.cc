@@ -1965,7 +1965,7 @@ TEST_P(PaintControllerTest, DeletedClientInUnderInvalidatedSubsequence) {
     return;
 
   FakeDisplayItemClient container("container");
-  auto content = std::make_unique<FakeDisplayItemClient>("content");
+  auto* content = MakeGarbageCollected<FakeDisplayItemClient>("content");
   GraphicsContext context(GetPaintController());
 
   {

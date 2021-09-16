@@ -23,7 +23,8 @@ using testing::_;
 
 class DrawingDisplayItemTest : public testing::Test {
  protected:
-  FakeDisplayItemClient client_;
+  Persistent<FakeDisplayItemClient> client_ =
+      MakeGarbageCollected<FakeDisplayItemClient>();
 };
 
 static sk_sp<PaintRecord> CreateRectRecord(const FloatRect& record_bounds) {
@@ -50,23 +51,23 @@ static sk_sp<PaintRecord> CreateRectRecordWithTranslate(
 
 TEST_F(DrawingDisplayItemTest, DrawsContent) {
   FloatRect record_bounds(5.5, 6.6, 7.7, 8.8);
-  DrawingDisplayItem item(client_.Id(), DisplayItem::Type::kDocumentBackground,
+  DrawingDisplayItem item(client_->Id(), DisplayItem::Type::kDocumentBackground,
                           EnclosingIntRect(record_bounds),
                           CreateRectRecord(record_bounds),
-                          client_.VisualRectOutsetForRasterEffects());
+                          client_->VisualRectOutsetForRasterEffects());
   EXPECT_EQ(EnclosingIntRect(record_bounds), item.VisualRect());
   EXPECT_TRUE(item.DrawsContent());
 }
 
 TEST_F(DrawingDisplayItemTest, NullPaintRecord) {
-  DrawingDisplayItem item(client_.Id(), DisplayItem::Type::kDocumentBackground,
+  DrawingDisplayItem item(client_->Id(), DisplayItem::Type::kDocumentBackground,
                           IntRect(), nullptr,
-                          client_.VisualRectOutsetForRasterEffects());
+                          client_->VisualRectOutsetForRasterEffects());
   EXPECT_FALSE(item.DrawsContent());
 }
 
 TEST_F(DrawingDisplayItemTest, EmptyPaintRecord) {
-  DrawingDisplayItem item(client_.Id(), DisplayItem::Type::kDocumentBackground,
+  DrawingDisplayItem item(client_->Id(), DisplayItem::Type::kDocumentBackground,
                           IntRect(), sk_make_sp<PaintRecord>(),
                           RasterEffectOutset::kNone);
   EXPECT_FALSE(item.DrawsContent());
@@ -76,28 +77,28 @@ TEST_F(DrawingDisplayItemTest, EqualsForUnderInvalidation) {
   ScopedPaintUnderInvalidationCheckingForTest under_invalidation_checking(true);
 
   FloatRect bounds1(100.1, 100.2, 100.3, 100.4);
-  DrawingDisplayItem item1(client_.Id(), DisplayItem::kDocumentBackground,
+  DrawingDisplayItem item1(client_->Id(), DisplayItem::kDocumentBackground,
                            EnclosingIntRect(bounds1), CreateRectRecord(bounds1),
-                           client_.VisualRectOutsetForRasterEffects());
-  DrawingDisplayItem translated(client_.Id(), DisplayItem::kDocumentBackground,
+                           client_->VisualRectOutsetForRasterEffects());
+  DrawingDisplayItem translated(client_->Id(), DisplayItem::kDocumentBackground,
                                 EnclosingIntRect(bounds1),
                                 CreateRectRecordWithTranslate(bounds1, 10, 20),
-                                client_.VisualRectOutsetForRasterEffects());
+                                client_->VisualRectOutsetForRasterEffects());
   // This item contains a DrawingRecord that is different from but visually
   // equivalent to item1's.
   DrawingDisplayItem zero_translated(
-      client_.Id(), DisplayItem::kDocumentBackground, EnclosingIntRect(bounds1),
-      CreateRectRecordWithTranslate(bounds1, 0, 0),
-      client_.VisualRectOutsetForRasterEffects());
+      client_->Id(), DisplayItem::kDocumentBackground,
+      EnclosingIntRect(bounds1), CreateRectRecordWithTranslate(bounds1, 0, 0),
+      client_->VisualRectOutsetForRasterEffects());
 
   FloatRect bounds2(100.5, 100.6, 100.7, 100.8);
-  DrawingDisplayItem item2(client_.Id(), DisplayItem::kDocumentBackground,
+  DrawingDisplayItem item2(client_->Id(), DisplayItem::kDocumentBackground,
                            EnclosingIntRect(bounds1), CreateRectRecord(bounds2),
-                           client_.VisualRectOutsetForRasterEffects());
+                           client_->VisualRectOutsetForRasterEffects());
 
-  DrawingDisplayItem empty_item(client_.Id(), DisplayItem::kDocumentBackground,
+  DrawingDisplayItem empty_item(client_->Id(), DisplayItem::kDocumentBackground,
                                 IntRect(), nullptr,
-                                client_.VisualRectOutsetForRasterEffects());
+                                client_->VisualRectOutsetForRasterEffects());
 
   EXPECT_TRUE(item1.EqualsForUnderInvalidation(item1));
   EXPECT_FALSE(item1.EqualsForUnderInvalidation(item2));
@@ -132,20 +133,20 @@ TEST_F(DrawingDisplayItemTest, EqualsForUnderInvalidation) {
 
 TEST_F(DrawingDisplayItemTest, SolidColorRect) {
   FloatRect record_bounds(5, 6, 10, 10);
-  DrawingDisplayItem item(client_.Id(), DisplayItem::Type::kDocumentBackground,
+  DrawingDisplayItem item(client_->Id(), DisplayItem::Type::kDocumentBackground,
                           EnclosingIntRect(record_bounds),
                           CreateRectRecord(record_bounds),
-                          client_.VisualRectOutsetForRasterEffects());
+                          client_->VisualRectOutsetForRasterEffects());
   EXPECT_EQ(IntRect(5, 6, 10, 10), item.VisualRect());
   EXPECT_TRUE(item.IsSolidColor());
 }
 
 TEST_F(DrawingDisplayItemTest, NonSolidColorSnappedRect) {
   FloatRect record_bounds(5.1, 6.9, 10, 10);
-  DrawingDisplayItem item(client_.Id(), DisplayItem::Type::kDocumentBackground,
+  DrawingDisplayItem item(client_->Id(), DisplayItem::Type::kDocumentBackground,
                           EnclosingIntRect(record_bounds),
                           CreateRectRecord(record_bounds),
-                          client_.VisualRectOutsetForRasterEffects());
+                          client_->VisualRectOutsetForRasterEffects());
   EXPECT_EQ(IntRect(5, 6, 11, 11), item.VisualRect());
   // Not solid color if the drawing does not fully cover the visual rect.
   EXPECT_FALSE(item.IsSolidColor());
@@ -159,10 +160,10 @@ TEST_F(DrawingDisplayItemTest, NonSolidColorOval) {
       recorder.beginRecording(record_bounds.Width(), record_bounds.Height());
   canvas->drawOval(record_bounds, PaintFlags());
 
-  DrawingDisplayItem item(client_.Id(), DisplayItem::Type::kDocumentBackground,
+  DrawingDisplayItem item(client_->Id(), DisplayItem::Type::kDocumentBackground,
                           EnclosingIntRect(record_bounds),
                           recorder.finishRecordingAsPicture(),
-                          client_.VisualRectOutsetForRasterEffects());
+                          client_->VisualRectOutsetForRasterEffects());
   EXPECT_EQ(IntRect(5, 6, 10, 10), item.VisualRect());
   // Not solid color if the drawing does not fully cover the visual rect.
   EXPECT_FALSE(item.IsSolidColor());
@@ -184,7 +185,7 @@ TEST_F(DrawingDisplayItemTest, OpaqueRectForDrawRRect) {
         ->drawRRect(SkRRect::MakeRectXY(SkRect::MakeWH(kSize, kSize), r, r),
                     flags);
     DrawingDisplayItem item(
-        client_.Id(), DisplayItem::Type::kDocumentBackground,
+        client_->Id(), DisplayItem::Type::kDocumentBackground,
         IntRect(0, 0, kSize, kSize), recorder.finishRecordingAsPicture(),
         RasterEffectOutset::kNone);
 

@@ -150,9 +150,10 @@ class PaintRecordMatcher
   } while (false)
 
 const DisplayItemClient& DefaultClient() {
-  DEFINE_STATIC_LOCAL(FakeDisplayItemClient, fake_client,
-                      ("FakeDisplayItemClient"));
-  return fake_client;
+  DEFINE_STATIC_LOCAL(
+      Persistent<FakeDisplayItemClient>, fake_client,
+      (MakeGarbageCollected<FakeDisplayItemClient>("FakeDisplayItemClient")));
+  return *fake_client;
 }
 
 PaintChunk::Id DefaultId() {

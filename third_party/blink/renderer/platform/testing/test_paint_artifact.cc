@@ -18,9 +18,10 @@
 namespace blink {
 
 static DisplayItemClient& StaticDummyClient() {
-  DEFINE_STATIC_LOCAL(FakeDisplayItemClient, client, ());
-  client.Validate();
-  return client;
+  DEFINE_STATIC_LOCAL(Persistent<FakeDisplayItemClient>, client,
+                      (MakeGarbageCollected<FakeDisplayItemClient>()));
+  client->Validate();
+  return *client;
 }
 
 TestPaintArtifact& TestPaintArtifact::Chunk(int id) {
@@ -176,7 +177,7 @@ scoped_refptr<PaintArtifact> TestPaintArtifact::Build() {
 }
 
 FakeDisplayItemClient& TestPaintArtifact::NewClient() {
-  clients_.push_back(std::make_unique<FakeDisplayItemClient>());
+  clients_.push_back(MakeGarbageCollected<FakeDisplayItemClient>());
   return *clients_.back();
 }
 
