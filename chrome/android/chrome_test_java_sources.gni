@@ -508,6 +508,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/share/ShareUrlTest.java",
   "javatests/src/org/chromium/chrome/browser/signin/IdentityManagerIntegrationTest.java",
   "javatests/src/org/chromium/chrome/browser/signin/SigninCheckerTest.java",
+  "javatests/src/org/chromium/chrome/browser/signin/SigninFirstRunFragmentRenderTest.java",
   "javatests/src/org/chromium/chrome/browser/signin/SigninFirstRunFragmentTest.java",
   "javatests/src/org/chromium/chrome/browser/signin/SigninHeaderTest.java",
   "javatests/src/org/chromium/chrome/browser/signin/SigninSignoutIntegrationTest.java",

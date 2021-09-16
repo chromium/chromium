@@ -86,7 +86,7 @@ public class SigninFirstRunFragmentTest {
             return mFirstRunPageDelegate;
         }
 
-        private void setPageDelegate(FirstRunPageDelegate delegate) {
+        void setPageDelegate(FirstRunPageDelegate delegate) {
             mFirstRunPageDelegate = delegate;
         }
 
