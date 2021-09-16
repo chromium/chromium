@@ -326,6 +326,9 @@
       <message desc="Label for expert mode option: enable expert mode." name="IDS_EXPERT_ENABLE_EXPERT_MODE">
         Enable expert mode
       </message>
+      <message desc="Label for expert mode option: enable GIF recording." name="IDS_EXPERT_ENABLE_GIF_ENCODING">
+        Enable GIF recording
+      </message>
       <message desc="Label for snackbar message when a link is copied" name="IDS_SNACKBAR_LINK_COPIED">
         Link copied
       </message>
@@ -463,6 +466,18 @@
       </message>
       <message desc="Label for spoken feedback to read out for scan QR code option." name="IDS_SCAN_QRCODE_OPTION">
         Scan QR Code
+      </message>
+      <message desc="Label for recording normal type video option." name="IDS_LABEL_RECORD_NORMAL_VIDEO_OPTION">
+        Normal
+      </message>
+      <message desc="Label for spoken feedback to read out for recording normal type video." name="IDS_RECORD_NORMAL_VIDEO_OPTION">
+        Record normal video
+      </message>
+      <message desc="Label for recording GIF type video option." name="IDS_LABEL_RECORD_GIF_VIDEO_OPTION">
+        GIF
+      </message>
+      <message desc="Label for spoken feedback to read out for recording GIF type video." name="IDS_RECORD_GIF_VIDEO_OPTION">
+        Record GIF video
       </message>
       <message desc="Label for the confirm button to confirm with the reviewed photo or video." name="IDS_CONFIRM_REVIEW_BUTTON">
         Confirm

@@ -208,6 +208,39 @@ export class VideoHandler {
 }
 
 /**
+ * @enum {string}
+ */
+const RecordType = {
+  NORMAL: 'normal',
+  GIF: 'gif',
+};
+
+const recordTypeValues = new Set(Object.values(RecordType));
+
+/**
+ * @param {!HTMLInputElement} el
+ * @return {!RecordType}
+ */
+function getRecordTypeFromElement(el) {
+  const s = el.dataset['recordtype'];
+  assert(recordTypeValues.has(s), `No such recordtype: ${s}`);
+  return /** @type {!RecordType} */ (s);
+}
+
+/**
+ * @param {!RecordType} type
+ * @return {!HTMLInputElement}
+ */
+function getElemetFromRecordType(type) {
+  return dom.get(`input[data-recordtype=${type}]`, HTMLInputElement);
+}
+
+/**
+ * @type {!Array<!HTMLInputElement>}
+ */
+const recordTypeInputs = [...recordTypeValues].map(getElemetFromRecordType);
+
+/**
  * Video mode capture controller.
  */
 export class Video extends ModeBase {
@@ -272,6 +305,13 @@ export class Video extends ModeBase {
     this.recordTime_ = new RecordTime();
 
     /**
+     * Record type of ongoing recording.
+     * @type {!RecordType}
+     * @private
+     */
+    this.recordingType_ = RecordType.NORMAL;
+
+    /**
      * Queueing all taking video snapshot jobs requested in a single recording.
      * @type {!AsyncJobQueue}
      * @private
@@ -288,11 +328,15 @@ export class Video extends ModeBase {
 
     /**
      * Whether current recording ever paused/resumed before it ended.
+     * @type {boolean}
+     * @private
      */
     this.everPaused_ = false;
 
     /**
      * Whether the user press the stop button while recording GIF.
+     * @type {boolean}
+     * @private
      */
     this.isRecordingGif_ = false;
   }
@@ -305,6 +349,20 @@ export class Video extends ModeBase {
     if (this.captureStream_ !== null) {
       await this.captureStream_.close();
     }
+  }
+
+  /**
+   * @return {!RecordType} Returns record type of checked radio buttons in
+   *     record type option groups.
+   */
+  getToggledRecordOption_() {
+    if (!state.get(state.State.EXPERT) ||
+        !state.get(state.State.ENABLE_GIF_RECORDING)) {
+      return RecordType.NORMAL;
+    }
+    const checkedEl = assertInstanceof(
+        recordTypeInputs.find(({checked}) => checked), HTMLInputElement);
+    return getRecordTypeFromElement(checkedEl);
   }
 
   /**
@@ -459,8 +517,8 @@ export class Video extends ModeBase {
       throw e;
     }
 
-
-    if (state.get(state.State.ENABLE_GIF_RECORDING)) {
+    this.recordingType_ = this.getToggledRecordOption_();
+    if (this.recordingType_ === RecordType.GIF) {
       const gifSaver = await this.captureGif_();
       await this.handler_.handleResultGif(gifSaver);
     } else {
@@ -519,7 +577,7 @@ export class Video extends ModeBase {
    * @override
    */
   stop_() {
-    if (state.get(state.State.ENABLE_GIF_RECORDING)) {
+    if (this.recordingType_ === RecordType.GIF) {
       this.isRecordingGif_ = false;
     } else {
       sound.cancel(dom.get('#sound-rec-start', HTMLAudioElement));

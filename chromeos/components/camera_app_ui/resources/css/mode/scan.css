@@ -24,45 +24,6 @@ body:is(:not(.show-scan-mode), :not(.scan), :not(.streaming)) #scan-modes-group 
   border-radius: 50%;
 }
 
-#scan-modes-group {
-  background-color: rgba(var(--grey-900-rgb), 0.8);
-  border-radius: var(--border-radius-rounded-with-short-side);
-  bottom: calc(var(--bottom-line) * 2 + 8px);
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25), 0 1px 2px rgba(0, 0, 0, 0.3);
-  color: white;
-  display: flex;
-  left: 50%;
-  position: absolute;
-  transform: translateX(-50%);
-}
-
-.scan-mode-item {
-  border-radius: var(--border-radius-rounded-with-short-side);
-  pointer-events: auto;
-  position: relative;
-}
-
-.scan-mode-item > input {
-  height: 100%;
-  position: absolute;
-  width: 100%;
-  z-index: 1;
-}
-
-.scan-mode-item > div.label {
-  border-radius: var(--border-radius-rounded-with-short-side);
-  font: 14px/20px var(--default-font-family);
-  line-height: 20px;
-  padding: 6px 16px;
-  z-index: 0;
-}
-
-.scan-mode-item input:checked + div.label {
-  background: white;
-  box-shadow: 0 2px 3px rgba(var(--grey-900-rgb), 0.3);
-  color: var(--grey-900);
-}
-
 /* The container of scan box for layout and positioning. */
 .barcode-scan-box {
   --border-distance: 8px;

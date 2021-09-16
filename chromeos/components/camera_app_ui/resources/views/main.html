@@ -13,10 +13,12 @@
     <link rel="stylesheet" href="/css/flash.css">
     <link rel="stylesheet" href="/css/focus_ring.css">
     <link rel="stylesheet" href="/css/inkdrop.css">
+    <link rel="stylesheet" href="/css/mode/mode.css">
+    <link rel="stylesheet" href="/css/mode/scan.css">
+    <link rel="stylesheet" href="/css/mode/video.css">
     <link rel="stylesheet" href="/css/new_feature_toast.css">
     <link rel="stylesheet" href="/css/ptz_panel.css">
     <link rel="stylesheet" href="/css/review_document.css">
-    <link rel="stylesheet" href="/css/scan.css">
     <script type="module" src="/js/init.js"></script>
   </head>
   <body class="sound mirror mic grid-3x3 view-splash">
@@ -187,19 +189,34 @@
           </div>
         </div>
       </div>
-      <div id="scan-modes-group">
-        <div id="scan-document-option" class="scan-mode-item">
+      <div id="scan-modes-group" class="mode-subgroup">
+        <div id="scan-document-option" class="item">
           <input id="scan-document" type="radio" tabindex="0"
                  name="scan-type" data-scantype="document"
                  i18n-aria="scan_document_option">
           <div class="label" i18n-text="label_scan_document_option"
                aria-hidden="true"></div>
         </div>
-        <div class="scan-mode-item">
+        <div class="item">
           <input id="scan-barcode" type="radio" tabindex="0"
                  name="scan-type" data-scantype="barcode"
                  i18n-aria="scan_qrcode_option">
           <div class="label" i18n-text="label_scan_qrcode_option"
+               aria-hidden="true"></div>
+        </div>
+      </div>
+      <div id="record-types-group" class="mode-subgroup">
+        <div class="item">
+          <input type="radio" tabindex="0" name="record-type"
+                 data-recordtype="normal" i18n-aria="record_normal_video_option"
+                 checked>
+          <div class="label" i18n-text="label_record_normal_video_option"
+               aria-hidden="true"></div>
+        </div>
+        <div class="item">
+          <input type="radio" tabindex="0" name="record-type"
+                 data-recordtype="gif" i18n-aria="record_gif_video_option">
+          <div class="label" i18n-text="label_record_gif_video_option"
                aria-hidden="true"></div>
         </div>
       </div>
@@ -538,17 +555,16 @@
           <span i18n-text="expert_multistream_recording"></span>
         </label>
         <label class="menu-item inkdrop">
+          <input id="expert-enable-gif-recording" class="icon" type="checkbox"
+                 tabindex="0" data-state="enable-gif-recording"
+                 data-key="enable-gif-recording">
+          <span i18n-text="expert_enable_gif_encoding"></span>
+        </label>
+        <label class="menu-item inkdrop">
           <input id="expert-enable-expert-mode" class="icon" type="checkbox"
                  tabindex="0" data-state="expert"
                  data-key="expert">
           <span i18n-text="expert_enable_expert_mode"></span>
-        </label>
-        <label class="menu-item inkdrop">
-          <input id="expert-enable-gif-recording" class="icon" type="checkbox"
-                 tabindex="0" data-state="enable-gif-recording"
-                 data-key="enable-gif-recording">
-          <!-- TODO(b:191950622): Handle i18n translation of the text here.-->
-          <span>Enable GIF Recording</span>
         </label>
       </div>
       <div id="spinner" class="centered-overlay"></div>

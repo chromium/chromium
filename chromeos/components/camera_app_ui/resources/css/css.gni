@@ -9,8 +9,10 @@ css_files = [
   "focus_ring.css",
   "inkdrop.css",
   "main.css",
+  "mode/mode.css",
+  "mode/scan.css",
+  "mode/video.css",
   "new_feature_toast.css",
   "ptz_panel.css",
   "review_document.css",
-  "scan.css",
 ]
