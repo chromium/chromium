@@ -100,11 +100,11 @@ bool CompareContactDetails(
 // - EMPTY_VALUE_EXPRESSION_RESULT, if the result is an empty string.
 // - ACTION_APPLIED otherwise.
 ClientStatus GetFormattedClientValue(const AutofillValue& autofill_value,
-                                     const UserData* user_data,
+                                     const UserData& user_data,
                                      std::string* out_value);
 ClientStatus GetFormattedClientValue(
     const AutofillValueRegexp& autofill_value_regexp,
-    const UserData* user_data,
+    const UserData& user_data,
     std::string* out_value);
 
 // Get a password manager value from the |UserData|. Returns the user name

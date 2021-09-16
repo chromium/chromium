@@ -34,7 +34,7 @@ template <typename T>
 ClientStatus ExtractDataAndFormatClientValue(
     const T& client_value,
     const ValueExpression& value_expression,
-    const UserData* user_data,
+    const UserData& user_data,
     bool quote_meta,
     const std::string& locale,
     std::string* out_value) {
@@ -53,7 +53,7 @@ ClientStatus ExtractDataAndFormatClientValue(
       return ClientStatus(INVALID_ACTION);
     }
     const autofill::AutofillProfile* address =
-        user_data->selected_address(profile.identifier());
+        user_data.selected_address(profile.identifier());
     if (address == nullptr) {
       VLOG(1) << "Requested unknown address '" << profile.identifier() << "'";
       return ClientStatus(PRECONDITION_FAILED);
@@ -64,7 +64,7 @@ ClientStatus ExtractDataAndFormatClientValue(
     data.insert(address_map.begin(), address_map.end());
   }
 
-  const autofill::CreditCard* card = user_data->selected_card();
+  const autofill::CreditCard* card = user_data.selected_card();
   if (card != nullptr) {
     auto card_map =
         field_formatter::CreateAutofillMappings(*card, localeOrDefault);
@@ -73,10 +73,10 @@ ClientStatus ExtractDataAndFormatClientValue(
 
   for (const auto& chunk : value_expression.chunk()) {
     if (!chunk.has_memory_key() ||
-        !user_data->HasAdditionalValue(chunk.memory_key())) {
+        !user_data.HasAdditionalValue(chunk.memory_key())) {
       continue;
     }
-    const ValueProto* value = user_data->GetAdditionalValue(chunk.memory_key());
+    const ValueProto* value = user_data.GetAdditionalValue(chunk.memory_key());
     if (value->strings().values().size() == 1) {
       data.emplace(field_formatter::Key(chunk.memory_key()),
                    value->strings().values(0));
@@ -529,7 +529,7 @@ bool CompareContactDetails(
 }
 
 ClientStatus GetFormattedClientValue(const AutofillValue& autofill_value,
-                                     const UserData* user_data,
+                                     const UserData& user_data,
                                      std::string* out_value) {
   return ExtractDataAndFormatClientValue(
       autofill_value, autofill_value.value_expression(), user_data,
@@ -538,7 +538,7 @@ ClientStatus GetFormattedClientValue(const AutofillValue& autofill_value,
 
 ClientStatus GetFormattedClientValue(
     const AutofillValueRegexp& autofill_value_regexp,
-    const UserData* user_data,
+    const UserData& user_data,
     std::string* out_value) {
   return ExtractDataAndFormatClientValue(
       autofill_value_regexp,
@@ -618,7 +618,7 @@ void ResolveTextValue(const TextValue& text_value,
       break;
     case TextValue::kAutofillValue: {
       status = GetFormattedClientValue(text_value.autofill_value(),
-                                       action_delegate->GetUserData(), &value);
+                                       *action_delegate->GetUserData(), &value);
       break;
     }
     case TextValue::kPasswordManagerValue: {

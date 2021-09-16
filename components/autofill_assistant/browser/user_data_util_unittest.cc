@@ -984,7 +984,7 @@ TEST_F(UserDataUtilTextValueTest, RequestEmptyAutofillValue) {
   AutofillValue autofill_value;
 
   std::string result;
-  EXPECT_EQ(GetFormattedClientValue(autofill_value, &user_data_, &result)
+  EXPECT_EQ(GetFormattedClientValue(autofill_value, user_data_, &result)
                 .proto_status(),
             INVALID_ACTION);
   EXPECT_EQ(result, "");
@@ -995,9 +995,9 @@ TEST_F(UserDataUtilTextValueTest, ValueExpressionResultIsEmpty) {
   client_value.mutable_value_expression()->add_chunk()->set_text("");
 
   std::string result;
-  EXPECT_EQ(GetFormattedClientValue(client_value, &user_data_, &result)
-                .proto_status(),
-            EMPTY_VALUE_EXPRESSION_RESULT);
+  EXPECT_EQ(
+      GetFormattedClientValue(client_value, user_data_, &result).proto_status(),
+      EMPTY_VALUE_EXPRESSION_RESULT);
   EXPECT_EQ(result, "");
 }
 
@@ -1007,7 +1007,7 @@ TEST_F(UserDataUtilTextValueTest, RequestDataFromUnknownProfile) {
   autofill_value.mutable_value_expression()->add_chunk()->set_text("text");
 
   std::string result;
-  EXPECT_EQ(GetFormattedClientValue(autofill_value, &user_data_, &result)
+  EXPECT_EQ(GetFormattedClientValue(autofill_value, user_data_, &result)
                 .proto_status(),
             PRECONDITION_FAILED);
   EXPECT_EQ(result, "");
@@ -1029,7 +1029,7 @@ TEST_F(UserDataUtilTextValueTest, RequestUnknownDataFromKnownProfile) {
       static_cast<int>(autofill::ServerFieldType::NAME_MIDDLE));
 
   std::string result;
-  EXPECT_EQ(GetFormattedClientValue(autofill_value, &user_data_, &result)
+  EXPECT_EQ(GetFormattedClientValue(autofill_value, user_data_, &result)
                 .proto_status(),
             AUTOFILL_INFO_NOT_AVAILABLE);
   EXPECT_EQ(result, "");
@@ -1051,7 +1051,7 @@ TEST_F(UserDataUtilTextValueTest, RequestKnownDataFromKnownProfile) {
 
   std::string result;
   EXPECT_TRUE(
-      GetFormattedClientValue(autofill_value, &user_data_, &result).ok());
+      GetFormattedClientValue(autofill_value, user_data_, &result).ok());
   EXPECT_EQ(result, "John");
 }
 
@@ -1075,7 +1075,7 @@ TEST_F(UserDataUtilTextValueTest, EscapeDataFromProfile) {
 
   std::string result;
   EXPECT_TRUE(
-      GetFormattedClientValue(autofill_value, &user_data_, &result).ok());
+      GetFormattedClientValue(autofill_value, user_data_, &result).ok());
   EXPECT_EQ(result, "^Jo\\.h\\*n$");
 }
 
@@ -1095,14 +1095,14 @@ TEST_F(UserDataUtilTextValueTest, RequestLocalizedProfileData) {
 
   std::string result_default;
   EXPECT_TRUE(
-      GetFormattedClientValue(autofill_value, &user_data_, &result_default)
+      GetFormattedClientValue(autofill_value, user_data_, &result_default)
           .ok());
   EXPECT_EQ(result_default, "Switzerland");
 
   autofill_value.set_locale("de-CH");
   std::string result_localized;
   EXPECT_TRUE(
-      GetFormattedClientValue(autofill_value, &user_data_, &result_localized)
+      GetFormattedClientValue(autofill_value, user_data_, &result_localized)
           .ok());
   EXPECT_EQ(result_localized, "Schweiz");
 }
@@ -1113,7 +1113,7 @@ TEST_F(UserDataUtilTextValueTest, RequestDataFromUnknownCreditCard) {
       static_cast<int>(autofill::ServerFieldType::CREDIT_CARD_NAME_FULL));
 
   std::string result;
-  EXPECT_EQ(GetFormattedClientValue(autofill_value, &user_data_, &result)
+  EXPECT_EQ(GetFormattedClientValue(autofill_value, user_data_, &result)
                 .proto_status(),
             AUTOFILL_INFO_NOT_AVAILABLE);
   EXPECT_EQ(result, "");
@@ -1132,7 +1132,7 @@ TEST_F(UserDataUtilTextValueTest, RequestUnknownDataFromKnownCreditCard) {
       static_cast<int>(AutofillFormatProto::CREDIT_CARD_VERIFICATION_CODE));
 
   std::string result;
-  EXPECT_EQ(GetFormattedClientValue(autofill_value, &user_data_, &result)
+  EXPECT_EQ(GetFormattedClientValue(autofill_value, user_data_, &result)
                 .proto_status(),
             AUTOFILL_INFO_NOT_AVAILABLE);
   EXPECT_EQ(result, "");
@@ -1152,7 +1152,7 @@ TEST_F(UserDataUtilTextValueTest, RequestDataFromKnownCreditCard) {
 
   std::string result;
   EXPECT_TRUE(
-      GetFormattedClientValue(autofill_value, &user_data_, &result).ok());
+      GetFormattedClientValue(autofill_value, user_data_, &result).ok());
   EXPECT_EQ(result, "John Doe");
 }
 
@@ -1161,9 +1161,9 @@ TEST_F(UserDataUtilTextValueTest, RequestUnknownMemoryKey) {
   client_value.mutable_value_expression()->add_chunk()->set_memory_key("_val0");
 
   std::string result;
-  EXPECT_EQ(GetFormattedClientValue(client_value, &user_data_, &result)
-                .proto_status(),
-            CLIENT_MEMORY_KEY_NOT_AVAILABLE);
+  EXPECT_EQ(
+      GetFormattedClientValue(client_value, user_data_, &result).proto_status(),
+      CLIENT_MEMORY_KEY_NOT_AVAILABLE);
   EXPECT_EQ(result, "");
 }
 
@@ -1174,7 +1174,7 @@ TEST_F(UserDataUtilTextValueTest, RequestKnownMemoryKey) {
 
   AutofillValue client_value;
   client_value.mutable_value_expression()->add_chunk()->set_memory_key("key");
-  EXPECT_TRUE(GetFormattedClientValue(client_value, &user_data_, &result).ok());
+  EXPECT_TRUE(GetFormattedClientValue(client_value, user_data_, &result).ok());
   EXPECT_EQ(result, "Hello...");
 
   AutofillValueRegexp client_value_regexp;
@@ -1183,7 +1183,7 @@ TEST_F(UserDataUtilTextValueTest, RequestKnownMemoryKey) {
       ->add_chunk()
       ->set_memory_key("key");
   EXPECT_TRUE(
-      GetFormattedClientValue(client_value_regexp, &user_data_, &result).ok());
+      GetFormattedClientValue(client_value_regexp, user_data_, &result).ok());
   EXPECT_EQ(result, "Hello\\.\\.\\.");
 }
 
@@ -1194,9 +1194,9 @@ TEST_F(UserDataUtilTextValueTest, RequestEmptyKnownMemoryKey) {
   client_value.mutable_value_expression()->add_chunk()->set_memory_key("key");
 
   std::string result;
-  EXPECT_EQ(GetFormattedClientValue(client_value, &user_data_, &result)
-                .proto_status(),
-            EMPTY_VALUE_EXPRESSION_RESULT);
+  EXPECT_EQ(
+      GetFormattedClientValue(client_value, user_data_, &result).proto_status(),
+      EMPTY_VALUE_EXPRESSION_RESULT);
   EXPECT_EQ(result, "");
 }
 
@@ -1222,7 +1222,7 @@ TEST_F(UserDataUtilTextValueTest,
       base::NumberToString(expMonthKey));
 
   std::string result;
-  EXPECT_TRUE(GetFormattedClientValue(client_value, &user_data_, &result).ok());
+  EXPECT_TRUE(GetFormattedClientValue(client_value, user_data_, &result).ok());
   EXPECT_EQ(result, "01 January");
 }
 

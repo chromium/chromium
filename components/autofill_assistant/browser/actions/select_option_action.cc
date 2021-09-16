@@ -55,7 +55,7 @@ void SelectOptionAction::InternalProcessAction(ProcessActionCallback callback) {
       break;
     case SelectOptionProto::kAutofillRegexpValue: {
       ClientStatus autofill_status = user_data::GetFormattedClientValue(
-          select_option.autofill_regexp_value(), delegate_->GetUserData(),
+          select_option.autofill_regexp_value(), *delegate_->GetUserData(),
           &value_);
       if (!autofill_status.ok()) {
         EndAction(autofill_status);

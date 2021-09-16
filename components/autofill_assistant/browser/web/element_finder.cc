@@ -91,7 +91,7 @@ ClientStatus MoveAutofillValueRegexpToTextFilter(
       autofill_value_regexp.value_expression_re2().case_sensitive());
   std::string re2;
   ClientStatus re2_status = user_data::GetFormattedClientValue(
-      autofill_value_regexp, user_data, &re2);
+      autofill_value_regexp, *user_data, &re2);
   text_filter.set_re2(re2);
   // Assigning text_filter will clear autofill_value_regexp.
   *value->mutable_text_filter() = text_filter;
