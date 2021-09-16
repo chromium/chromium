@@ -595,6 +595,8 @@ def main():
       '-DLLVM_ENABLE_DIA_SDK=OFF',
       # See crbug.com/1205046: don't build scudo (and others we don't need).
       '-DCOMPILER_RT_SANITIZERS_TO_BUILD=asan;dfsan;msan;hwasan;tsan;cfi',
+      # The default value differs per platform, force it off everywhere.
+      '-DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=OFF',
   ]
 
   if args.gcc_toolchain:
