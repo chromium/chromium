@@ -346,12 +346,6 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     return is_fragmentation_context_root_;
   }
 
-  // Returns true if we have a descendant within this formatting context, which
-  // is potentially above our block-start edge.
-  bool MayHaveDescendantAboveBlockStart() const {
-    return may_have_descendant_above_block_start_;
-  }
-
 #if DCHECK_IS_ON()
   void CheckSameForSimplifiedLayout(const NGPhysicalBoxFragment&,
                                     bool check_same_block_size) const;

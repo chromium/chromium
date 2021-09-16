@@ -141,7 +141,10 @@ void NGBoxFragmentBuilder::AddChild(
   if (!relative_offset) {
     relative_offset = LogicalOffset();
     if (box_type_ != NGPhysicalBoxFragment::NGBoxType::kInlineBox) {
-      if (child.IsCSSBox()) {
+      if (child.IsLineBox()) {
+        if (UNLIKELY(child.MayHaveDescendantAboveBlockStart()))
+          may_have_descendant_above_block_start_ = true;
+      } else if (child.IsCSSBox()) {
         // Apply the relative position offset.
         const auto& box_child = To<NGPhysicalBoxFragment>(child);
         if (box_child.Style().GetPosition() == EPosition::kRelative) {

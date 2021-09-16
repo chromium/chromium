@@ -378,13 +378,6 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     inflow_bounds_ = inflow_bounds;
   }
 
-  void SetMayHaveDescendantAboveBlockStart(bool b) {
-#if DCHECK_IS_ON()
-    is_may_have_descendant_above_block_start_explicitly_set_ = true;
-#endif
-    may_have_descendant_above_block_start_ = b;
-  }
-
   void SetEarlyBreak(const NGEarlyBreak* breakpoint) {
     early_break_ = breakpoint;
   }
@@ -598,7 +591,6 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   NGFragmentItemsBuilder* items_builder_ = nullptr;
 
   NGPhysicalFragment::NGBoxType box_type_;
-  bool may_have_descendant_above_block_start_ = false;
   bool is_fieldset_container_ = false;
   bool is_table_ng_part_ = false;
   bool is_initial_block_size_indefinite_ = false;
@@ -668,7 +660,6 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   bool needs_inflow_bounds_explicitly_set_ = false;
   bool needs_may_have_descendant_above_block_start_explicitly_set_ = false;
   bool is_inflow_bounds_explicitly_set_ = false;
-  bool is_may_have_descendant_above_block_start_explicitly_set_ = false;
 #endif
 
   friend class NGBlockBreakToken;

@@ -613,8 +613,9 @@ void NGInlineLayoutAlgorithm::PlaceBlockInInline(
   DCHECK(!layout_object->IsInline());
   DCHECK(item_result->layout_result);
   const NGLayoutResult& result = *item_result->layout_result;
-  NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
-                         To<NGPhysicalBoxFragment>(result.PhysicalFragment()));
+  const auto& box_fragment =
+      To<NGPhysicalBoxFragment>(result.PhysicalFragment());
+  NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(), box_fragment);
 
   // Setup |container_builder_|. Set it up here instead of in |CreateLine|,
   // because there should be only one block-in-inline, and we need data from the
@@ -633,6 +634,8 @@ void NGInlineLayoutAlgorithm::PlaceBlockInInline(
   exclusion_space_ = result.ExclusionSpace();
   container_builder_.SetAdjoiningObjectTypes(result.AdjoiningObjectTypes());
   lines_until_clamp_ = result.LinesUntilClamp();
+  if (UNLIKELY(box_fragment.MayHaveDescendantAboveBlockStart()))
+    container_builder_.SetMayHaveDescendantAboveBlockStart(true);
 
   line_box->AddChild(std::move(item_result->layout_result),
                      /* offset */ LogicalOffset(), item_result->inline_size,

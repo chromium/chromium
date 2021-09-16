@@ -333,8 +333,6 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
   }
 
   is_first_for_node_ = builder->is_first_for_node_;
-  may_have_descendant_above_block_start_ =
-      builder->may_have_descendant_above_block_start_;
   is_fieldset_container_ = builder->is_fieldset_container_;
   is_table_ng_part_ = builder->is_table_ng_part_;
   is_legacy_layout_root_ = builder->is_legacy_layout_root_;

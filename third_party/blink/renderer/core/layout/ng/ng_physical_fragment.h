@@ -237,6 +237,12 @@ class CORE_EXPORT NGPhysicalFragment
   // |LayoutNGBlockFlow::UpdateBlockLayout()| and crbug.com/788590
   bool IsPlacedByLayoutNG() const;
 
+  // Returns true if we have a descendant within this formatting context, which
+  // is potentially above our block-start edge.
+  bool MayHaveDescendantAboveBlockStart() const {
+    return may_have_descendant_above_block_start_;
+  }
+
   // The accessors in this class shouldn't be used by layout code directly,
   // instead should be accessed by the NGFragmentBase classes. These accessors
   // exist for paint, hit-testing, etc.
