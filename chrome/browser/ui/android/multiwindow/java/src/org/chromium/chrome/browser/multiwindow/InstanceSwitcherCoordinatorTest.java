@@ -10,6 +10,7 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -123,7 +124,7 @@ public class InstanceSwitcherCoordinatorTest extends DummyUiChromeActivityTestCa
         // Verify that we have only [cancel] button.
         onView(withId(org.chromium.components.browser_ui.modaldialog.R.id.positive_button))
                 .check(matches(withEffectiveVisibility(GONE)));
-        onView(withText("Cancel")).check(matches(withEffectiveVisibility(VISIBLE)));
+        onView(withText(R.string.cancel)).check(matches(withEffectiveVisibility(VISIBLE)));
 
         final int itemIndex = 2; // Index of the instance entry to close
         final int closeWindowMenuIndex = 0; // Index of the item 'Close Window' in 3-dot menu.
@@ -132,10 +133,34 @@ public class InstanceSwitcherCoordinatorTest extends DummyUiChromeActivityTestCa
                 () -> coordinator.clickMoreMenuItemForTesting(itemIndex, closeWindowMenuIndex));
 
         // Verify that we have both [cancel] [close] buttons now.
-        onView(withText("Close")).check(matches(withEffectiveVisibility(VISIBLE)));
-        onView(withText("Cancel")).check(matches(withEffectiveVisibility(VISIBLE)));
+        onView(withText(R.string.close)).check(matches(withEffectiveVisibility(VISIBLE)));
+        onView(withText(R.string.cancel)).check(matches(withEffectiveVisibility(VISIBLE)));
 
-        onView(withText("Close")).perform(click());
+        onView(withText(R.string.close)).perform(click());
         itemClickCallbackHelper.waitForCallback(itemClickCount);
+    }
+
+    @Test
+    @SmallTest
+    @SuppressWarnings("unchecked")
+    public void testMaxNumberOfWindows() throws Exception {
+        InstanceInfo[] instances = new InstanceInfo[] {
+                new InstanceInfo(0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
+                new InstanceInfo(1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false),
+                new InstanceInfo(2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 1, 1, false),
+                new InstanceInfo(3, 60, InstanceInfo.Type.OTHER, "url3", "title3", 1, 1, false),
+                new InstanceInfo(4, 61, InstanceInfo.Type.OTHER, "url4", "title4", 1, 1, false)};
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            InstanceSwitcherCoordinator.showDialog(getActivity(), mModalDialogManager, mIconBridge,
+                    null, null, null, false, Arrays.asList(instances));
+        });
+
+        // Verify that we show a info message that users can have up to 5 windows when there are
+        // already maximum number of windows.
+        onData(anything())
+                .atPosition(5)
+                .onChildView(withText(R.string.max_number_of_windows))
+                .check(matches(isDisplayed()));
     }
 }
