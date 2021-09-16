@@ -1707,13 +1707,13 @@ Try tapping the mic to ask me anything.
         Default connection
       </message>
       <message name="IDS_NETWORK_DIAGNOSTICS_ARC_HTTP" desc="Label for Network diagnostics `ARC HTTP` test. This test ensures that the device's http requests inside ARC have an acceptable amount of latency">
-        ARC HTTP
+        (Android) HTTP Latency
       </message>
       <message name="IDS_NETWORK_DIAGNOSTICS_ARC_PING" desc="Label for Network diagnostics `ARC PING` test. This test ensures that there is a connection to the network gateway inside ARC.">
-        ARC Ping
+        (Android) Gateway can be Pinged
       </message>
       <message name="IDS_NETWORK_DIAGNOSTICS_ARC_DNS_RESOLUTION" desc="Label for Network diagnostics `ARC DNS resolution` test. This test ensures that the Domain Name Server (DNS) can resolve network requests inside ARC.">
-        ARC DNS resolution
+        (Android) DNS resolution
       </message>
 
       <!-- Personalization App -->
