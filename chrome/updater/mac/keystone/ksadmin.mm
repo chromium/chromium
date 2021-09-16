@@ -552,7 +552,7 @@ int KSAdminAppMain(int argc, char* argv[]) {
   base::AtExitManager exit_manager;
 
   base::CommandLine::Init(argc, argv);
-  updater::InitLogging(GetUpdaterScope(), FILE_PATH_LITERAL("updater.log"));
+  updater::InitLogging(GetUpdaterScope(), FILE_PATH_LITERAL("ks_admin.log"));
 
   base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
   return MakeKSAdminApp(argc, argv)->Run();
