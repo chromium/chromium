@@ -34,6 +34,7 @@
 <translation id="1499900233129743732">Этим аккаунтом управляет <ph name="MANAGER" />. Администратор может отслеживать действия пользователя, а также удаленно изменять настройки.</translation>
 <translation id="150962533380566081">Неверный PUK-код.</translation>
 <translation id="1510238584712386396">Панель запуска</translation>
+<translation id="155865706765934889">Сенсорная панель</translation>
 <translation id="1600964289716072707">Положите другую страницу в сканер и нажмите "Сканировать".</translation>
 <translation id="1621067168122174824">Запустить проверку зарядки</translation>
 <translation id="1639239467298939599">Загрузка</translation>
@@ -45,6 +46,7 @@
 <translation id="1706391837335750954">Наличие DNS-резолвера</translation>
 <translation id="1715359911173058521">Отсутствует связь со сканером. Проверьте подключение по сети или через USB-порт и повторите попытку.</translation>
 <translation id="1717874160321062422">Под управлением <ph name="FIRST_MANAGER" /> и <ph name="SECOND_MANAGER" /></translation>
+<translation id="1726100011689679555">Серверы имен</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Отмена сканирования</translation>
@@ -391,11 +393,13 @@
 <translation id="7805768142964895445">Состояние</translation>
 <translation id="7819857487979277519">PSK (WPA или RSN)</translation>
 <translation id="7835501727204647447">Установить CloudReady</translation>
+<translation id="7846634333498149051">Клавиатура</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Тип провайдера</translation>
 <translation id="7895471513946376273">Инструменты для рисования и веб-дизайна</translation>
 <translation id="7936303884198020182">Не найдены серверы доменных имен.</translation>
 <translation id="7960831585769876809">Температура</translation>
+<translation id="7978412674231730200">Закрытый ключ</translation>
 <translation id="7994702968232966508">Метод EAP</translation>
 <translation id="8020238979854764615">Произошла ошибка. Выберите другие изображения и повторите попытку.</translation>
 <translation id="802154636333426148">Ошибка скачивания</translation>
@@ -450,6 +454,7 @@
 <translation id="8818152010000655963">Обои</translation>
 <translation id="8834539327799336565">Текущие подключения</translation>
 <translation id="8845001906332463065">Справка</translation>
+<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">Глобальный уникальный идентификатор</translation>
 <translation id="8881098542468797602">Проверка пройдена</translation>
 <translation id="8898840733695078011">Уровень сигнала</translation>

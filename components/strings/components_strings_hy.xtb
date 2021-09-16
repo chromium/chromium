@@ -1162,6 +1162,7 @@
           <ph name="LIST_ITEM" />Գործատուները և ուսումնական հաստատությունները կարող են հետագծել գործողությունները դիտարկիչում<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Ինտերնետ պրովայդերները կարող են հետևել վեբ թրաֆիկին<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="483241715238664915">Միացնել զգուշացումները</translation>
 <translation id="4838327282952368871">Երազային</translation>
 <translation id="4840250757394056958">Դիտել Chrome-ի պատմությունը</translation>
 <translation id="484462545196658690">Ավտոմատ</translation>
@@ -1789,6 +1790,7 @@
 <translation id="7086090958708083563">Օգտատերը վերբեռնման հայտ է ուղարկել</translation>
 <translation id="7087282848513945231">Կոմսություն</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Թույլտվությունները և կայքերում պահված տվյալները Chrome-ի կարգավորումներում կառավարելու համար սեղմեք Tab, ապա՝ Enter։</translation>
+<translation id="7096937462164235847">Այս կայքի իսկությունը ստուգված չէ։</translation>
 <translation id="7108338896283013870">Թաքցնել</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> կայքն ուզում է օգտագործել ձեր տեսախցիկը</translation>
 <translation id="7108819624672055576">Թույլատրվել է ընդլայնման կողմից</translation>
@@ -2364,6 +2366,7 @@
 <translation id="9065203028668620118">Փոփոխել</translation>
 <translation id="9065745800631924235">«<ph name="TEXT" />» որոնման հարցում՝ պատմությունից</translation>
 <translation id="9069693763241529744">Արգելափակվել է ընդլայնման կողմից</translation>
+<translation id="9073799351042754113">Դուք անջատել եք անվտանգության զգուշացումներն այս կայքի համար։</translation>
 <translation id="9078964945751709336">Անհրաժեշտ են այլ տեղեկություններ</translation>
 <translation id="9080712759204168376">Պատվերի ամփոփագիրը</translation>
 <translation id="9089260154716455634">Ոչ աշխատանքային ժամանակին վերաբերող կանոն՝</translation>

@@ -34,6 +34,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> upravlja ovim korisnikom i može daljinski da upravlja podešavanjima i nadgleda aktivnosti korisnika.</translation>
 <translation id="150962533380566081">Nevažeći PUK.</translation>
 <translation id="1510238584712386396">Pokretač</translation>
+<translation id="155865706765934889">Dodirna tabla</translation>
 <translation id="1600964289716072707">Postavite drugu stranicu na skener i izaberite Skeniraj da biste dodali stranicu.</translation>
 <translation id="1621067168122174824">Pokreni test punjenja</translation>
 <translation id="1639239467298939599">Učitavanje</translation>
@@ -45,6 +46,7 @@
 <translation id="1706391837335750954">Prisutan je DNS razrešivač</translation>
 <translation id="1715359911173058521">Došlo je do problema u komunikaciji sa skenerom. Proverite mrežnu ili USB vezu i probajte ponovo.</translation>
 <translation id="1717874160321062422">Upravljaju <ph name="FIRST_MANAGER" /> i <ph name="SECOND_MANAGER" /></translation>
+<translation id="1726100011689679555">Serveri imena</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Otkazuje se skeniranje</translation>
@@ -391,11 +393,13 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7819857487979277519">PSK (WPA ili RSN)</translation>
 <translation id="7835501727204647447">Instaliraj CloudReady</translation>
+<translation id="7846634333498149051">Tastatura</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tip dobavljača</translation>
 <translation id="7895471513946376273">Otkrijte alatke za crtanje i dizajn</translation>
 <translation id="7936303884198020182">Nije pronađen nijedan server za imena</translation>
 <translation id="7960831585769876809">Temperatura</translation>
+<translation id="7978412674231730200">Privatni ključ</translation>
 <translation id="7994702968232966508">EAP metod</translation>
 <translation id="8020238979854764615">Došlo je do greške. Probajte ponovo tako što ćete odabrati druge slike.</translation>
 <translation id="802154636333426148">Preuzimanje nije uspelo</translation>
@@ -450,6 +454,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="8818152010000655963">Pozadina</translation>
 <translation id="8834539327799336565">Trenutno povezani</translation>
 <translation id="8845001906332463065">Zatražite pomoć</translation>
+<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Test je uspeo</translation>
 <translation id="8898840733695078011">Jačina signala</translation>

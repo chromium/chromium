@@ -332,7 +332,6 @@
 <translation id="1354045473509304750"><ph name="HOST" /> weiterhin erlauben, meine Kamera zu verwenden und zu bewegen</translation>
 <translation id="1355088139103479645">Alle Daten löschen?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> ist blockiert</translation>
-<translation id="1356178530321889280">Klicken Sie mit der rechten Maustaste und wählen Sie „Mit Google Lens auf einem Teil der Seite suchen“, um in einem beliebigen Bereich der Website zu suchen und mehr über die visuellen Inhalte zu erfahren, die Sie beim Surfen und Einkaufen im Internet sehen.</translation>
 <translation id="1358741672408003399">Rechtschreibung und Grammatik</translation>
 <translation id="1359923111303110318">Ihr Gerät kann mit Smart Lock entsperrt werden. Drücken Sie zum Entsperren die Eingabetaste.</translation>
 <translation id="1361164813881551742">Manuell hinzufügen</translation>
@@ -2720,6 +2719,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3842552989725514455">Schriftart Serif</translation>
 <translation id="3843464315703645664">Intern auf der Zulassungsliste</translation>
 <translation id="3844888638014364087">Emoji eingefügt</translation>
+<translation id="384513009320852920">Auf dem Bluetooth-Gerät muss der Kopplungsmodus aktiviert sein und es muss sich in der Nähe befinden <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Entwicklertools für Websites, Android-Apps und mehr – für die Installation von Linux werden <ph name="DOWNLOAD_SIZE" /> an Daten heruntergeladen.</translation>
 <translation id="3847319713229060696">Dabei helfen, das Web für alle sicherer zu machen</translation>
 <translation id="3848547754896969219">In &amp;Inkognitofenster öffnen</translation>
@@ -3232,7 +3232,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4415748029120993980">Elliptische SECG-Kurve secp384r1 (NIST P-384)</translation>
 <translation id="4416450511678320850">Für diesen Inhalt sind keine Apps verfügbar</translation>
 <translation id="4416582610654027550">Geben Sie eine gültige URL ein</translation>
-<translation id="4417162649853416189">Zum Suchen mit <ph name="VISUAL_SEARCH_PROVIDER" /> über Bilder ziehen</translation>
+<translation id="4417162649853416189">Zum Suchen mit <ph name="VISUAL_SEARCH_PROVIDER" /> Maus über Bilder ziehen</translation>
 <translation id="4419409365248380979"><ph name="HOST" /> darf immer Cookies setzen</translation>
 <translation id="4421932782753506458">Miez</translation>
 <translation id="4423376891418188461">Einstellungen wiederherstellen</translation>
@@ -3358,7 +3358,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4551763574344810652">"<ph name="MODIFIER_KEY_DESCRIPTION" />" drücken, um Aktion rückgängig zu machen</translation>
 <translation id="4553526521109675518">Sie müssen Ihr Chromebook neu starten, um die Gerätesprache zu ändern. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4553898717331438468">Einrichtung noch einmal beginnen</translation>
-<translation id="4554491709904933912">Zum Suchen mit <ph name="VISUAL_SEARCH_PROVIDER" /> über Bilder ziehen</translation>
+<translation id="4554491709904933912">Zum Suchen mit <ph name="VISUAL_SEARCH_PROVIDER" /> Maus über Bilder ziehen</translation>
 <translation id="4554591392113183336">Die Version der externen Erweiterung ist identisch mit der vorhandenen Version oder niedriger als diese.</translation>
 <translation id="4555769855065597957">Schatten</translation>
 <translation id="4555863373929230635">Melden Sie sich an und aktivieren Sie die Synchronisierung, um Passwörter in Ihrem Google-Konto zu speichern.</translation>
@@ -4197,7 +4197,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5494920125229734069">Alle auswählen</translation>
 <translation id="5495466433285976480">Dadurch werden beim nächsten Neustart alle lokalen Nutzer, Dateien, Daten und anderen Einstellungen entfernt und alle Nutzer müssen sich erneut anmelden.</translation>
 <translation id="5495597166260341369">Display bleibt aktiv</translation>
-<translation id="549580971452855947">Zum Suchen in Bildern mit <ph name="VISUAL_SEARCH_PROVIDER" /> ziehen</translation>
+<translation id="549580971452855947">Zum Suchen in Bildern mit <ph name="VISUAL_SEARCH_PROVIDER" /> Maus ziehen</translation>
 <translation id="5496587651328244253">Organisieren</translation>
 <translation id="5496730470963166430">Dürfen keine Pop-ups senden oder Weiterleitungen verwenden</translation>
 <translation id="5497251278400702716">Diese Datei</translation>
@@ -5200,7 +5200,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6593881952206664229">Urheberrechtlich geschützte Medien werden möglicherweise nicht wiedergegeben</translation>
 <translation id="6594011207075825276">Serielle Geräte werden gesucht…</translation>
 <translation id="6595187330192059106"><ph name="HOST" /> keine vollständige Kontrolle über MIDI-Geräte gewähren.</translation>
-<translation id="6595792813574514527">Zum Suchen in Bildern mit <ph name="VISUAL_SEARCH_PROVIDER" /> ziehen</translation>
+<translation id="6595792813574514527">Zum Suchen in Bildern mit <ph name="VISUAL_SEARCH_PROVIDER" /> Maus ziehen</translation>
 <translation id="6596325263575161958">Verschlüsselungsoptionen</translation>
 <translation id="6596816719288285829">IP-Adresse</translation>
 <translation id="6597017209724497268">Proben</translation>

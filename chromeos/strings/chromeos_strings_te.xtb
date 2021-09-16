@@ -34,6 +34,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" />, ఈ యూజర్‌ను మేనేజ్ చేస్తుంది, ఇంకా అది సెట్టింగ్‌లను రిమోట్‌గా మేనేజ్ చేయవచ్చు, యూజర్ యాక్టివిటీని మానిటర్ చేయవచ్చు.</translation>
 <translation id="150962533380566081">PUK చెల్లదు.</translation>
 <translation id="1510238584712386396">లాంచర్</translation>
+<translation id="155865706765934889">టచ్‌ప్యాడ్</translation>
 <translation id="1600964289716072707">పేజీని జోడించడానికి, స్కానర్‌పై మరొక పేజీని పెట్టి, 'స్కాన్ చేయండి' ఆప్షన్‌ను ఎంచుకోండి.</translation>
 <translation id="1621067168122174824">ఛార్జ్ పరీక్షను రన్ చేయండి</translation>
 <translation id="1639239467298939599">లోడ్ అవుతోంది</translation>
@@ -45,6 +46,7 @@
 <translation id="1706391837335750954">DNS రిసాల్వర్ అందుబాటులో ఉంది</translation>
 <translation id="1715359911173058521">స్కానర్‌తో కమ్యూనికేట్ చేయడంలో ఎదో సమస్య ఉంది. నెట్‌వర్క్ లేదా USB కనెక్షన్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" />, అలాగే <ph name="SECOND_MANAGER" /> ద్వారా మేనేజ్ చేయబడుతుంది</translation>
+<translation id="1726100011689679555">పేరు సర్వర్‌లు</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">స్కానింగ్ రద్దు అవుతోంది</translation>
@@ -390,11 +392,13 @@
 <translation id="7805768142964895445">స్థితి</translation>
 <translation id="7819857487979277519">PSK (WPA లేదా RSN)</translation>
 <translation id="7835501727204647447">CloudReadyని ఇన్‌స్టాల్ చేయండి</translation>
+<translation id="7846634333498149051">కీబోర్డ్</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">ప్రదాత రకం</translation>
 <translation id="7895471513946376273">డ్రాయింగ్, డిజైన్ టూల్స్‌ను డిస్కవర్ చేయండి</translation>
 <translation id="7936303884198020182">పేరుతో సర్వర్‌లు కనుగొనబడలేదు</translation>
 <translation id="7960831585769876809">ఉష్ణోగ్రత</translation>
+<translation id="7978412674231730200">వ్యక్తిగత కీ</translation>
 <translation id="7994702968232966508">EAP పద్ధతి</translation>
 <translation id="8020238979854764615">ఎర్రర్ ఏర్పడింది. ఇతర ఇమేజ్‌లను ఎంచుకోవడం ద్వారా దయచేసి మళ్లీ ట్రై చేయండి.</translation>
 <translation id="802154636333426148">డౌన్‌లోడ్ విఫలమైంది</translation>
@@ -449,6 +453,7 @@
 <translation id="8818152010000655963">వాల్‌పేపర్</translation>
 <translation id="8834539327799336565">ప్రస్తుతం కనెక్ట్ చేయబడింది</translation>
 <translation id="8845001906332463065">సహాయం పొందండి</translation>
+<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">పరీక్ష విజయవంతమైంది</translation>
 <translation id="8898840733695078011">సిగ్నల్ సామర్థ్యం</translation>

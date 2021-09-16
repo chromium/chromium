@@ -332,7 +332,6 @@
 <translation id="1354045473509304750">Permitir que <ph name="HOST" /> siga usando y moviendo tu cámara</translation>
 <translation id="1355088139103479645">¿Eliminar todos los datos?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> está bloqueado</translation>
-<translation id="1356178530321889280">Haz clic derecho y selecciona "Buscar parte de la página con Google Lens" para buscar cualquier parte del sitio y consultar más información sobre el contenido visual que ves mientras navegas y compras en la Web.</translation>
 <translation id="1358741672408003399">Ortografía y gramática</translation>
 <translation id="1359923111303110318">Tu dispositivo se puede desbloquear con Smart Lock. Pulsa Intro para desbloquearlo.</translation>
 <translation id="1361164813881551742">Añadir manualmente</translation>
@@ -1138,7 +1137,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2179416702468739594">Buscando perfiles disponibles. Es posible que tu red móvil se desconecte durante unos minutos.</translation>
 <translation id="2180620921879609685">Bloquear contenido en cualquier página</translation>
 <translation id="2182058453334755893">Se ha copiado en tu portapapeles</translation>
-<translation id="2183027945672030611">Dispositivo <ph name="DEVICE_INDEX" /> de <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, mando, <ph name="BATTERY_PERCENTAGE" /> % de batería restante</translation>
+<translation id="2183027945672030611">Dispositivo <ph name="DEVICE_INDEX" /> de <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, mando de juegos, <ph name="BATTERY_PERCENTAGE" /> % de batería restante</translation>
 <translation id="2184515124301515068">Permitir que Chrome elija cuándo los sitios pueden reproducir sonidos (recomendado)</translation>
 <translation id="2186711480981247270">Página compartida desde otro dispositivo</translation>
 <translation id="2187675480456493911">La red está sincronizada con otros dispositivos de tu cuenta. Los ajustes modificados por otros usuarios no se sincronizarán. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
@@ -2892,7 +2891,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4002329649066944389">Gestionar excepciones específicas del sitio web</translation>
 <translation id="4002440992267487163">Configuración del PIN</translation>
 <translation id="4005817994523282006">Método de detección de zona horaria</translation>
-<translation id="400645326027787740">Dispositivo <ph name="DEVICE_INDEX" /> de <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, mando</translation>
+<translation id="400645326027787740">Dispositivo <ph name="DEVICE_INDEX" /> de <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, mando de juegos</translation>
 <translation id="4007856537951125667">Ocultar accesos directos</translation>
 <translation id="4008291085758151621">La información del sitio web no está disponible en RV</translation>
 <translation id="4010917659463429001">Para ver los marcadores en todos tus dispositivos, <ph name="GET_IOS_APP_LINK" />.</translation>
@@ -2942,7 +2941,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4066207411788646768">Comprueba la conexión a Internet para ver las impresoras disponibles de tu red</translation>
 <translation id="4068776064906523561">Huellas digitales guardadas</translation>
 <translation id="407173827865827707">Al hacer clic</translation>
-<translation id="4072701974556190758">La contraseña se guardará en tu cuenta de Google, <ph name="ACCOUNT" />. No te hará falta recordarla.</translation>
+<translation id="4072701974556190758">La contraseña se guardará en tu cuenta de Google (<ph name="ACCOUNT" />). No te hará falta recordarla.</translation>
 <translation id="4074900173531346617">Certificado de firma de correo electrónico</translation>
 <translation id="407520071244661467">Escala</translation>
 <translation id="407543464472585404">El perfil de <ph name="NAME" /> está vinculado a <ph name="EMAIL" /></translation>
@@ -6401,7 +6400,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7861215335140947162">&amp;Descargas</translation>
 <translation id="7861846108263890455">Idioma de la cuenta de Google</translation>
 <translation id="7864539943188674973">Inhabilitar Bluetooth</translation>
-<translation id="7865127013871431856">Opciones de traducción</translation>
+<translation id="7865127013871431856">Opciones del Traductor</translation>
 <translation id="7869143217755017858">Inhabilitar modo oscuro</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" />: vinculado</translation>
 <translation id="7870730066603611552">Revisar opciones de sincronización después de la configuración</translation>

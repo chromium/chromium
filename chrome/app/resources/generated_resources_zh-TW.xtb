@@ -332,7 +332,6 @@
 <translation id="1354045473509304750">繼續允許 <ph name="HOST" /> 使用及調整攝影機</translation>
 <translation id="1355088139103479645">要刪除所有資料嗎？</translation>
 <translation id="1355466263109342573">「<ph name="PLUGIN_NAME" />」遭到封鎖</translation>
-<translation id="1356178530321889280">在網站上瀏覽及購物時，先按一下滑鼠右鍵再選取 [使用 Google 智慧鏡頭搜尋頁面上的部分內容] 即可搜尋網站的任意區域，進一步瞭解你看到的圖像內容。</translation>
 <translation id="1358741672408003399">拼字與文法</translation>
 <translation id="1359923111303110318">可透過 Smart Lock 解鎖裝置。按下 Enter 鍵即可解鎖。</translation>
 <translation id="1361164813881551742">手動新增</translation>
@@ -2723,6 +2722,7 @@
 <translation id="3842552989725514455">Serif 字型</translation>
 <translation id="3843464315703645664">已加入內部許可清單</translation>
 <translation id="3844888638014364087">已插入表情符號</translation>
+<translation id="384513009320852920">請確認你的藍牙裝置放在附近，且處於配對模式。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">取得網站開發工具、Android 應用程式等等。安裝 Linux 將下載 <ph name="DOWNLOAD_SIZE" /> 的資料。</translation>
 <translation id="3847319713229060696">協助我們改善所有人的網路安全性</translation>
 <translation id="3848547754896969219">在無痕式視窗中開啟(&amp;I)</translation>

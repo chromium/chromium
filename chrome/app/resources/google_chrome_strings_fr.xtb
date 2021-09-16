@@ -114,7 +114,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="3582972582564653026">Synchroniser et personnaliser Chrome sur vos appareils</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{À la demande de votre administrateur, vous devez relancer Chrome pour installer une mise à jour}=1{À la demande de votre administrateur, vous devez relancer Chrome pour installer une mise à jour. Sachez que la fenêtre de navigation privée ne sera pas rouverte.}one{À la demande de votre administrateur, vous devez relancer Chrome pour installer une mise à jour. Sachez que la fenêtre de navigation privée (#) ne sera pas rouverte.}other{À la demande de votre administrateur, vous devez relancer Chrome pour installer une mise à jour. Sachez que les # fenêtres de navigation privée ne seront pas rouvertes.}}</translation>
 <translation id="3622797965165704966">Il est désormais plus facile d'utiliser Chrome avec votre compte Google et sur des ordinateurs partagés.</translation>
-<translation id="3673813398384385993">Chrome a détecté que <ph name="EXTENSION_NAME" /> contenait un logiciel malveillant</translation>
+<translation id="3673813398384385993">Chrome a détecté que <ph name="EXTENSION_NAME" /> contient un logiciel malveillant</translation>
 <translation id="3718181793972440140">Cette action aura pour effet de supprimer 1 élément de cet appareil. Pour récupérer vos données ultérieurement, connectez-vous à Chrome en tant que <ph name="USER_EMAIL" />.</translation>
 <translation id="3735758079232443276">L'extension <ph name="EXTENSION_NAME" /> a modifié la page qui s'affiche lorsque vous démarrez Chrome.</translation>
 <translation id="3779473566290487688">Vous devez disposer de macOS X 10.11 ou d'une version ultérieure pour recevoir les futures mises à jour de Google Chrome. Or, c'est la version macOS X 10.10 qui est installée sur cet ordinateur.</translation>
@@ -212,7 +212,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6291549208091401781">Google Chrome est déjà installé pour tous les utilisateurs de votre ordinateur.</translation>
 <translation id="6368958679917195344">Google Chrome OS fonctionne grâce à d'autres <ph name="BEGIN_LINK_CROS_OSS" />logiciels Open Source<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6418662306461808273">Passer au profil Chrome existant ?</translation>
-<translation id="6506909944137591434">Chrome a besoin de l'autorisation d'accéder à la caméra afin de créer un plan 3D de votre environnement</translation>
+<translation id="6506909944137591434">Pour créer un plan 3D de votre environnement, Chrome a besoin de l'autorisation d'accéder à la caméra</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome pour les développeurs</translation>
 <translation id="6568793831116033768">Système Chrome OS</translation>
 <translation id="6676384891291319759">Accéder à Internet</translation>

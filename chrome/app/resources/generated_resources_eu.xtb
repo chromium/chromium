@@ -332,7 +332,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1354045473509304750">Ez kendu kamera erabili eta mugitzeko baimena <ph name="HOST" /> ostalariari</translation>
 <translation id="1355088139103479645">Datu guztiak ezabatu nahi dituzu?</translation>
 <translation id="1355466263109342573">Blokeatuta dago <ph name="PLUGIN_NAME" /></translation>
-<translation id="1356178530321889280">Webguneko edozein eremutan bilatzeko eta nabigatu bitartean ikusten duzun ikusizko edukiari buruzko informazio gehiago lortzeko, egin klik eskuineko botoiarekin eta hautatu "Bilatu orriaren zati bat Google Lens-ekin".</translation>
 <translation id="1358741672408003399">Ortografia eta gramatika</translation>
 <translation id="1359923111303110318">Gailua Smart Lock bidez desblokea daiteke. Desblokeatzeko, sakatu Sartu.</translation>
 <translation id="1361164813881551742">Gehitu eskuz</translation>
@@ -5723,7 +5722,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea eginbid
 <translation id="7170236477717446850">Profileko argazkia</translation>
 <translation id="7171000599584840888">Gehitu profil bat…</translation>
 <translation id="7171259390164035663">Ez erregistratu</translation>
-<translation id="7171746271229206319">Chrome OS-eko gailuei buruzko informazioa eta datuak irakurtzea. Baliteke informazio hori gailuaren fabrikatzailearekin partekatzea. Google ez beste erakundeek euren pribatutasun-gidalerroei jarraikiz kudeatuko dituzte datuak.</translation>
+<translation id="7171746271229206319">Chrome OS-eko gailuei buruzko informazioa eta datuak irakurri. Baliteke informazio hori gailuaren fabrikatzailearekin partekatzea. Google ez beste erakundeek euren pribatutasun-gidalerroei jarraikiz kudeatuko dituzte datuak.</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Gehitu fitxa talde berrian}other{Gehitu fitxak talde berrian}}</translation>
 <translation id="7173114856073700355">Ireki Ezarpenak</translation>
 <translation id="7174199383876220879">Berria! Kontrolatu musika, bideoak eta beste.</translation>

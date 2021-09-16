@@ -1162,6 +1162,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
           <ph name="LIST_ITEM" />Arbejdspladser og skoler kan spore browseraktivitet<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Internetudbydere kan spore webtrafik<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="483241715238664915">Aktivér advarsler</translation>
 <translation id="4838327282952368871">Drømmende</translation>
 <translation id="4840250757394056958">Se din Chrome-historik</translation>
 <translation id="484462545196658690">Automatisk</translation>
@@ -1789,6 +1790,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="7086090958708083563">Brugeren anmodede om upload</translation>
 <translation id="7087282848513945231">Amt/region</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Tab-tasten efterfulgt af Enter for at administrere tilladelser og data, der gemmes på websites, i Chrome-indstillingerne</translation>
+<translation id="7096937462164235847">Dette websites identitet er ikke bekræftet.</translation>
 <translation id="7108338896283013870">Skjul</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> anmoder om at bruge dit kamera</translation>
 <translation id="7108819624672055576">Tilladt med en udvidelse</translation>
@@ -2365,6 +2367,7 @@ Yderligere oplysninger:
 <translation id="9065203028668620118">Rediger</translation>
 <translation id="9065745800631924235">Søgningen <ph name="TEXT" /> i historikken</translation>
 <translation id="9069693763241529744">Blokeret af en udvidelse</translation>
+<translation id="9073799351042754113">Du har valgt at deaktivere sikkerhedsadvarsler for dette website.</translation>
 <translation id="9078964945751709336">Flere oplysninger kræves</translation>
 <translation id="9080712759204168376">Bestillingsoversigt</translation>
 <translation id="9089260154716455634">Politik uden for åbningstiden:</translation>

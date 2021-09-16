@@ -34,6 +34,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> این کاربر را مدیریت می‌کند و می‌تواند ازراه‌دور تنظیمات را مدیریت کند و بر فعالیت کاربر نظارت داشته باشد.</translation>
 <translation id="150962533380566081">‏PUK نامعتبر.</translation>
 <translation id="1510238584712386396">راه‌انداز</translation>
+<translation id="155865706765934889">صفحه لمسی</translation>
 <translation id="1600964289716072707">صفحه دیگری را روی اسکنر قرار دهید و «اسکن» را انتخاب کنید تا صفحه اضافه شود.</translation>
 <translation id="1621067168122174824">اجرای آزمایش شارژ</translation>
 <translation id="1639239467298939599">بارگیری</translation>
@@ -45,6 +46,7 @@
 <translation id="1706391837335750954">موجود بودن رافع ساناد</translation>
 <translation id="1715359911173058521">‏مشکلی در برقراری ارتباط با اسکنر وجود دارد. اتصال USB یا شبکه را بررسی کنید و دوباره امتحان کنید.</translation>
 <translation id="1717874160321062422">تحت مدیریت <ph name="FIRST_MANAGER" /> و <ph name="SECOND_MANAGER" /></translation>
+<translation id="1726100011689679555">سرورهای نام</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">درحال لغو اسکن کردن</translation>
@@ -391,11 +393,13 @@
 <translation id="7805768142964895445">وضعیت</translation>
 <translation id="7819857487979277519">‏PSK (WPA یا RSN)</translation>
 <translation id="7835501727204647447">‏نصب CloudReady</translation>
+<translation id="7846634333498149051">صفحه‌کلید</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">نوع ارائه‌دهنده</translation>
 <translation id="7895471513946376273">کاوش ابزارهای ترسیم و طراحی</translation>
 <translation id="7936303884198020182">سرور نام دامنه پیدا نشد</translation>
 <translation id="7960831585769876809">دما</translation>
+<translation id="7978412674231730200">کلید خصوصی</translation>
 <translation id="7994702968232966508">‏روش EAP</translation>
 <translation id="8020238979854764615">خطایی وجود داشت. لطفاً تصاویر دیگری انتخاب کنید و دوباره امتحان کنید.</translation>
 <translation id="802154636333426148">بارگیری نشد</translation>
@@ -450,6 +454,7 @@
 <translation id="8818152010000655963">کاغذ دیواری</translation>
 <translation id="8834539327799336565">درحال‌حاضر متصل</translation>
 <translation id="8845001906332463065">دریافت راهنمایی</translation>
+<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">شناسه منحصربه‌فرد جهانی</translation>
 <translation id="8881098542468797602">آزمایش موفق بود</translation>
 <translation id="8898840733695078011">قدرت سیگنال</translation>

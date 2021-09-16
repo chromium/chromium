@@ -34,6 +34,7 @@
 <translation id="1499900233129743732">Seda kasutajat haldab domeen <ph name="MANAGER" />, mis võib eemalt hallata seadeid ja jälgida kasutaja tegevusi.</translation>
 <translation id="150962533380566081">Vale PUK-kood.</translation>
 <translation id="1510238584712386396">Käivitaja</translation>
+<translation id="155865706765934889">Puuteplaat</translation>
 <translation id="1600964289716072707">Asetage skannerile veel üks leht ja valige käsk Skanni, et leht lisada.</translation>
 <translation id="1621067168122174824">Käita laadimistest</translation>
 <translation id="1639239467298939599">Laadimine</translation>
@@ -45,6 +46,7 @@
 <translation id="1706391837335750954">DNS-lahendaja on olemas</translation>
 <translation id="1715359911173058521">Skanneriga ühenduse loomisel on probleeme. Kontrollige võrgu- või USB-ühendust ja proovige uuesti.</translation>
 <translation id="1717874160321062422">Seadet haldab <ph name="FIRST_MANAGER" /> ja <ph name="SECOND_MANAGER" /></translation>
+<translation id="1726100011689679555">Nimeserverid</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Skannimise tühistamine</translation>
@@ -152,6 +154,7 @@
 <translation id="39823212440917567">Prinditööd, mis on vanemad kui <ph name="NUMBER_OF_DAYS" /> päeva, eemaldatakse</translation>
 <translation id="4003384961948020559">Ebaõnnestus – väljastusala on täis</translation>
 <translation id="4034824040120875894">Printer</translation>
+<translation id="4050980775484079270">ARC DNS-i eraldusvõime</translation>
 <translation id="409427325554347132">Salvesta testi üksikasjad</translation>
 <translation id="4131410914670010031">Mustvalge</translation>
 <translation id="4145784616224233563">HTTP tulemüür</translation>
@@ -390,11 +393,13 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="7805768142964895445">Olek</translation>
 <translation id="7819857487979277519">PSK (WPA või RSN)</translation>
 <translation id="7835501727204647447">Installi CloudReady</translation>
+<translation id="7846634333498149051">Klaviatuur</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Teenusepakkuja tüüp</translation>
 <translation id="7895471513946376273">Avastage joonistus- ja kujundustööriistu</translation>
 <translation id="7936303884198020182">Ei leitud ühtegi nimeserverit</translation>
 <translation id="7960831585769876809">Temperatuur</translation>
+<translation id="7978412674231730200">Privaatvõti</translation>
 <translation id="7994702968232966508">EAP meetod</translation>
 <translation id="8020238979854764615">Esines viga. Proovige uuesti, valides muud pildid.</translation>
 <translation id="802154636333426148">Allalaadimine ebaõnnestus</translation>
@@ -449,6 +454,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="8818152010000655963">Taustapilt</translation>
 <translation id="8834539327799336565">Praegu ühendatud</translation>
 <translation id="8845001906332463065">Otsige abi</translation>
+<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Test õnnestus</translation>
 <translation id="8898840733695078011">Signaali tugevus</translation>

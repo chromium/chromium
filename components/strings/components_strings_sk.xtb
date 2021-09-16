@@ -1149,6 +1149,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
           <ph name="LIST_ITEM" />zamestnanci alebo školy môžu sledovať aktivitu prehliadania;<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />poskytovatelia internetu môžu monitorovať webovú premávku.<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="483241715238664915">Zapnúť upozornenia</translation>
 <translation id="4838327282952368871">Rozprávkové</translation>
 <translation id="4840250757394056958">Zobraziť históriu Chromu</translation>
 <translation id="484462545196658690">Automaticky</translation>
@@ -1775,6 +1776,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7086090958708083563">O nahranie požiadal používateľ</translation>
 <translation id="7087282848513945231">Okres</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, postupným stlačením klávesov Tab a Enter môžete v nastaveniach Chromu spravovať povolenia a údaje uložené na rôznych weboch</translation>
+<translation id="7096937462164235847">Identita tohto webu nie je overená.</translation>
 <translation id="7108338896283013870">Skryť</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> chce použiť váš fotoaparát</translation>
 <translation id="7108819624672055576">Povolené rozšírením</translation>
@@ -2351,6 +2353,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="9065203028668620118">Upraviť</translation>
 <translation id="9065745800631924235">Vyhľadávanie <ph name="TEXT" /> z histórie</translation>
 <translation id="9069693763241529744">Blokované rozšírením</translation>
+<translation id="9073799351042754113">Pre tento web ste sa rozhodli vypnúť bezpečnostné upozornenia.</translation>
 <translation id="9078964945751709336">Treba zadať ďalšie informácie</translation>
 <translation id="9080712759204168376">Súhrn objednávky</translation>
 <translation id="9089260154716455634">Pravidlo intervalov nečinnosti:</translation>

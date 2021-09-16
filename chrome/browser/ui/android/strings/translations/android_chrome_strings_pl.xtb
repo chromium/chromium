@@ -179,7 +179,7 @@ Aby coś wyszukać, dotknij dowolnego słowa. Aby doprecyzować wyszukiwanie, na
 <translation id="2156074688469523661">Pozostałe strony (<ph name="NUMBER_OF_SITES" />)</translation>
 <translation id="2157851137955077194">Jeśli chcesz udostępnić coś z telefonu na innym urządzeniu, w ustawieniach Chrome na obu urządzeniach włącz synchronizację</translation>
 <translation id="2158408438301413340">Przeglądarce Chrome nie udało się sprawdzić wszystkich haseł</translation>
-<translation id="2169830938017475061">Przed chwilą</translation>
+<translation id="2169830938017475061">Teraz</translation>
 <translation id="2172688499998841696">Opisy do obrazów są wyłączone</translation>
 <translation id="2172905120685242547">Zamknąć okno?</translation>
 <translation id="2175927920773552910">Kod QR</translation>
@@ -1319,7 +1319,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="8970887620466824814">Coś poszło nie tak.</translation>
 <translation id="8972098258593396643">Czy pobrać do folderu domyślnego?</translation>
 <translation id="8987641763863173640">Zarządzaj ustawieniami podglądu wideo</translation>
-<translation id="8988028529677883095">Używaj telefonu jako klucza bezpieczeństwa</translation>
 <translation id="8993760627012879038">Otwórz nową kartę w trybie incognito</translation>
 <translation id="8996847606757455498">Wybierz innego dostawcę</translation>
 <translation id="8998729206196772491">Logujesz się na konto, którym zarządza <ph name="MANAGED_DOMAIN" />, i przekazujesz jego administratorowi kontrolę nad Twoimi danymi Chrome. Zostaną one trwale przypisane do tego konta. Gdy się wylogujesz, znikną one z tego urządzenia, ale pozostaną zapisane na Twoim koncie Google.</translation>

@@ -34,6 +34,7 @@
 <translation id="1499900233129743732">Pinapamahalaan ng <ph name="MANAGER" /> ang user na ito at puwede nitong pamahalaan ang mga setting at subaybayan ang aktibidad ng user sa remote na paraan.</translation>
 <translation id="150962533380566081">Di-wasto ang PUK.</translation>
 <translation id="1510238584712386396">Launcher</translation>
+<translation id="155865706765934889">Touchpad</translation>
 <translation id="1600964289716072707">Maglagay ng isa pang page sa scanner at piliin ang I-scan para idagdag ang page.</translation>
 <translation id="1621067168122174824">Patakbuhin ang pagsusuri sa Pag-charge</translation>
 <translation id="1639239467298939599">Naglo-load</translation>
@@ -45,6 +46,7 @@
 <translation id="1706391837335750954">May DNS Resolver</translation>
 <translation id="1715359911173058521">May isyu sa pagkonekta sa scanner. Suriin ang koneksyon ng network o USB at subukan ulit.</translation>
 <translation id="1717874160321062422">Pinapamahalaan ng <ph name="FIRST_MANAGER" /> at <ph name="SECOND_MANAGER" /></translation>
+<translation id="1726100011689679555">Mga name server</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Kinakansela ang pag-scan</translation>
@@ -391,11 +393,13 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="7805768142964895445">Katayuan</translation>
 <translation id="7819857487979277519">PSK (WPA o RSN)</translation>
 <translation id="7835501727204647447">I-install ang CloudReady</translation>
+<translation id="7846634333498149051">Keyboard</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Uri ng provider</translation>
 <translation id="7895471513946376273">Tumuklas ng mga tool sa pagguhit at pagdidisenyo</translation>
 <translation id="7936303884198020182">Walang nakitang name server</translation>
 <translation id="7960831585769876809">Temperatura</translation>
+<translation id="7978412674231730200">Private na key</translation>
 <translation id="7994702968232966508">Pamamaraang EAP</translation>
 <translation id="8020238979854764615">Nagka-error. Pakisubukan ulit sa pamamagitan ng pagpili ng iba pang larawan.</translation>
 <translation id="802154636333426148">Hindi na-download</translation>
@@ -450,6 +454,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="8818152010000655963">Wallpaper</translation>
 <translation id="8834539327799336565">Kasalukuyang nakakonekta</translation>
 <translation id="8845001906332463065">Humingi ng tulong</translation>
+<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Nagtagumpay ang pagsusuri</translation>
 <translation id="8898840733695078011">Lakas ng signal</translation>

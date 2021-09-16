@@ -34,6 +34,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> ले यो डिभाइस व्यवस्थापन गर्छ र यसले टाढैबाट सेटिङ व्यवस्थापन गर्न र प्रयोगकर्ताले गर्ने क्रियाकलाप निगरानी गर्न सक्छ।</translation>
 <translation id="150962533380566081">अमान्य PUK।</translation>
 <translation id="1510238584712386396">लन्चर</translation>
+<translation id="155865706765934889">टचप्याड</translation>
 <translation id="1600964289716072707">स्क्यानरमा अर्को पेज राख्नुहोस् र पेज थप्न "स्क्यान गर्नुहोस्" विकल्प चयन गर्नुहोस्।</translation>
 <translation id="1621067168122174824">ब्याट्रीको चार्जसम्बन्धी परीक्षण गर्नुहोस्</translation>
 <translation id="1639239467298939599">लोड गर्दै</translation>
@@ -45,6 +46,7 @@
 <translation id="1706391837335750954">DNS रिजल्भर प्रिजेन्ट</translation>
 <translation id="1715359911173058521">स्क्यानरसँग कनेक्ट गर्ने क्रममा कुनै समस्या आयो। नेटवर्क वा USB कनेक्सन जाँच्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> र <ph name="SECOND_MANAGER" /> ले व्यवस्थापन गरेका</translation>
+<translation id="1726100011689679555">नामका सर्भरहरू</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">स्क्यान गर्ने कार्य रद्द गरिँदै छ</translation>
@@ -152,6 +154,7 @@
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> दिनभन्दा पहिलेका प्रिन्टसम्बन्धी कार्यहरू हटाइने छ</translation>
 <translation id="4003384961948020559">प्रिन्ट गर्न सकिएन - ट्रे भरियो</translation>
 <translation id="4034824040120875894">प्रिन्टर</translation>
+<translation id="4050980775484079270">ARC DNS रिजोल्युसन</translation>
 <translation id="409427325554347132">जाँचसम्बन्धी विवरण सेभ गर्नुहोस्</translation>
 <translation id="4131410914670010031">कालो र सेतो</translation>
 <translation id="4145784616224233563">HTTP फायरवाल</translation>
@@ -389,11 +392,13 @@
 <translation id="7805768142964895445">स्थिति</translation>
 <translation id="7819857487979277519">PSK (WPA वा RSN)</translation>
 <translation id="7835501727204647447">CloudReady इन्स्टल गर्नुहोस्</translation>
+<translation id="7846634333498149051">किबोर्ड</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">प्रदायकको प्रकार</translation>
 <translation id="7895471513946376273">रेखाचित्र र डिजाइनसम्बन्धी संयन्त्रहरू खोज्नुहोस्</translation>
 <translation id="7936303884198020182">कुनै पनि डोमेन नेम सर्भर फेला परेन</translation>
 <translation id="7960831585769876809">तापक्रम</translation>
+<translation id="7978412674231730200">निजी कुञ्जी</translation>
 <translation id="7994702968232966508">EAP विधि</translation>
 <translation id="8020238979854764615">कुनै त्रुटि भयो। कृपया अन्य फोटोहरू छनौट गरी फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="802154636333426148">डाउनलोड गर्न सकिएन</translation>
@@ -448,6 +453,7 @@
 <translation id="8818152010000655963">वालपेपर</translation>
 <translation id="8834539327799336565">हाल कनेक्ट गरिएका डिभाइस</translation>
 <translation id="8845001906332463065">मद्दत प्राप्त गर्नुहोस्</translation>
+<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">परीक्षण सफल भयो</translation>
 <translation id="8898840733695078011">सिग्नलको क्षमता</translation>

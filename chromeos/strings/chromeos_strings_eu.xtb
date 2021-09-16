@@ -34,6 +34,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> domeinuak kudeatzen du erabiltzaile hau, eta baliteke urrunetik haren ezarpenak kudeatzea eta jarduerak gainbegiratzea.</translation>
 <translation id="150962533380566081">PUK kodeak ez du balio.</translation>
 <translation id="1510238584712386396">Abiarazlea</translation>
+<translation id="155865706765934889">Ukipen-teklatua</translation>
 <translation id="1600964289716072707">Kokatu beste orri bat eskanerrean eta hautatu "Eskaneatu" orri hori gehitzeko.</translation>
 <translation id="1621067168122174824">Abiarazi kargatzeko prozesuaren proba</translation>
 <translation id="1639239467298939599">Kargatzen</translation>
@@ -45,6 +46,7 @@
 <translation id="1706391837335750954">DNS bidezko ebazlea badago</translation>
 <translation id="1715359911173058521">Arazo bat izan da eskanerrarekin komunikatzean. Egiaztatu sarea edo USB bidezko konexioa behar bezala funtzionatzen ari direla eta saiatu berriro.</translation>
 <translation id="1717874160321062422">Kudeatzaileak: <ph name="FIRST_MANAGER" /> eta <ph name="SECOND_MANAGER" /></translation>
+<translation id="1726100011689679555">Izen-zerbitzariak</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Eskaneatzeko prozesua bertan behera uzten</translation>
@@ -391,11 +393,13 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="7805768142964895445">Egoera</translation>
 <translation id="7819857487979277519">PSK (WPA edo RSN)</translation>
 <translation id="7835501727204647447">Instalatu CloudReady</translation>
+<translation id="7846634333498149051">Teklatua</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Hornitzaile mota</translation>
 <translation id="7895471513946376273">Ezagutu marrazketa- eta diseinu-tresnak</translation>
 <translation id="7936303884198020182">Ez da aurkitu izenen zerbitzaririk</translation>
 <translation id="7960831585769876809">Tenperatura</translation>
+<translation id="7978412674231730200">Gako pribatua</translation>
 <translation id="7994702968232966508">EAP metodoa</translation>
 <translation id="8020238979854764615">Errore bat gertatu da. Saiatu berriro beste irudi batzuk aukeratuta.</translation>
 <translation id="802154636333426148">Ezin izan da deskargatu</translation>
@@ -450,6 +454,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="8818152010000655963">Horma-papera</translation>
 <translation id="8834539327799336565">Konektatuta daudenak</translation>
 <translation id="8845001906332463065">Lortu laguntza</translation>
+<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUIDa</translation>
 <translation id="8881098542468797602">Gainditu da proba</translation>
 <translation id="8898840733695078011">Seinalearen indarra</translation>

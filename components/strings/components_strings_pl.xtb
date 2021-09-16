@@ -1153,6 +1153,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
           <ph name="LIST_ITEM" />Pracodawcy lub szkolni administratorzy mogą sprawdzać Twoją aktywność związaną z przeglądaniem.<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Dostawcy usług internetowych mogą monitorować ruch w sieci.<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="483241715238664915">Włącz ostrzeżenia</translation>
 <translation id="4838327282952368871">Uroczy</translation>
 <translation id="4840250757394056958">Wyświetl historię Chrome</translation>
 <translation id="484462545196658690">Automatycznie</translation>
@@ -1780,6 +1781,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="7086090958708083563">Użytkownik poprosił o przesłanie</translation>
 <translation id="7087282848513945231">Hrabstwo</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby zarządzać uprawnieniami i danymi zapisanymi dla różnych witryn w ustawieniach Chrome, naciśnij Tab, a potem Enter</translation>
+<translation id="7096937462164235847">Tożsamość tej strony nie została zweryfikowana.</translation>
 <translation id="7108338896283013870">Ukryj</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> chce korzystać z kamery</translation>
 <translation id="7108819624672055576">Dozwolone przez rozszerzenie</translation>
@@ -2355,6 +2357,7 @@ Dodatkowe informacje:
 <translation id="9065203028668620118">Edytuj</translation>
 <translation id="9065745800631924235">Wyszukiwanie ciągu <ph name="TEXT" /> w historii</translation>
 <translation id="9069693763241529744">Zablokowane przez rozszerzenie</translation>
+<translation id="9073799351042754113">Ostrzeżenia dotyczące zabezpieczeń tej strony zostały wyłączone.</translation>
 <translation id="9078964945751709336">Potrzebujemy więcej informacji</translation>
 <translation id="9080712759204168376">Podsumowanie zamówienia</translation>
 <translation id="9089260154716455634">Zasada „po godzinach”:</translation>

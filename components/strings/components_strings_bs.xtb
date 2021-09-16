@@ -1162,7 +1162,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
           <ph name="LIST_ITEM" />poslodavci ili škole mogu pratiti aktivnost pregledanja<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />pružaoci internet usluga mogu pratiti saobraćaj na internetu<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
-<translation id="483241715238664915">Uključite upozorenja</translation>
+<translation id="483241715238664915">Uključi upozorenja</translation>
 <translation id="4838327282952368871">Sanjivo</translation>
 <translation id="4840250757394056958">Pregledajte historiju Chromea</translation>
 <translation id="484462545196658690">Automatski</translation>
@@ -1790,7 +1790,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="7086090958708083563">Otpremanje je zatražio korisnik</translation>
 <translation id="7087282848513945231">Okrug</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da upravljate odobrenjima i podacima pohranjenim na svim web lokacijama u postavkama Chromea</translation>
-<translation id="7096937462164235847">Identitet te web-lokacije nije potvrđen.</translation>
+<translation id="7096937462164235847">Potvrđivanje identiteta ove web lokacije nije uspjelo.</translation>
 <translation id="7108338896283013870">Sakrij</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> želi koristiti vašu kameru</translation>
 <translation id="7108819624672055576">Dozvoljava ekstenzija</translation>
@@ -2366,7 +2366,7 @@ Dodatni detalji:
 <translation id="9065203028668620118">Uredi</translation>
 <translation id="9065745800631924235">Pretraživanje <ph name="TEXT" /> iz historije</translation>
 <translation id="9069693763241529744">Blokirala ekstenzija</translation>
-<translation id="9073799351042754113">Odlučili ste isključiti sigurnosna upozorenja za tu web-lokaciju.</translation>
+<translation id="9073799351042754113">Odabrali ste da isključite sigurnosna upozorenja za ovu web lokaciju.</translation>
 <translation id="9078964945751709336">Potrebno je više informacija</translation>
 <translation id="9080712759204168376">Sažetak narudžbe</translation>
 <translation id="9089260154716455634">Pravilo za period van radnog vremena:</translation>

@@ -287,7 +287,7 @@
 <translation id="3549797760399244642">Accéder à drive.google.com…</translation>
 <translation id="3553048479571901246">Pour ouvrir des fichiers avec <ph name="APP_NAME" />, copiez-les d'abord dans le dossier "Fichiers Windows".</translation>
 <translation id="3556731189587832921">Anglais (États-Unis) avec clavier international (PC)</translation>
-<translation id="3567221313191587603">Sélectionnez un fichier, puis activez/désactivez <ph name="OFFLINE_CHECKBOX_NAME" /> pour l'accès à vos fichiers hors connexion.</translation>
+<translation id="3567221313191587603">Sélectionnez un fichier, puis activez/désactivez <ph name="OFFLINE_CHECKBOX_NAME" /> pour qu'il soit accessible ou non hors connexion.</translation>
 <translation id="357479282490346887">Lituanien</translation>
 <translation id="3592251141500063301">Impossible de mettre <ph name="FILE_NAME" /> à disposition hors connexion</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>

@@ -34,6 +34,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> mengurus pengguna ini dan mungkin mengurus tetapan dan memantau aktiviti pengguna dari jauh.</translation>
 <translation id="150962533380566081">PUK tidak sah.</translation>
 <translation id="1510238584712386396">Pelancar</translation>
+<translation id="155865706765934889">Pad sentuh</translation>
 <translation id="1600964289716072707">Letakkan halaman lain di atas pengimbas dan pilih Imbas untuk menambah halaman.</translation>
 <translation id="1621067168122174824">Jalankan Ujian cas</translation>
 <translation id="1639239467298939599">Memuatkan</translation>
@@ -45,6 +46,7 @@
 <translation id="1706391837335750954">Pelerai DNS Ada</translation>
 <translation id="1715359911173058521">Terdapat isu semasa berkomunikasi dengan pengimbas. Semak rangkaian atau sambungan USB dan cuba lagi.</translation>
 <translation id="1717874160321062422">Diurus oleh <ph name="FIRST_MANAGER" /> dan <ph name="SECOND_MANAGER" /></translation>
+<translation id="1726100011689679555">Pelayan nama</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Membatalkan pengimbasan</translation>
@@ -152,6 +154,7 @@
 <translation id="39823212440917567">Tugas cetak yang melebihi <ph name="NUMBER_OF_DAYS" /> hari akan dialih keluar</translation>
 <translation id="4003384961948020559">Gagal - Output penuh</translation>
 <translation id="4034824040120875894">Pencetak</translation>
+<translation id="4050980775484079270">Peleraian DNS ARC</translation>
 <translation id="409427325554347132">Simpan butiran ujian</translation>
 <translation id="4131410914670010031">Hitam putih</translation>
 <translation id="4145784616224233563">Tembok Api HTTP</translation>
@@ -390,11 +393,13 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="7805768142964895445">Status</translation>
 <translation id="7819857487979277519">PSK (WPA atau RSN)</translation>
 <translation id="7835501727204647447">Pasang CloudReady</translation>
+<translation id="7846634333498149051">Papan kekunci</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Jenis penyedia</translation>
 <translation id="7895471513946376273">Temukan alatan lukisan dan reka bentuk</translation>
 <translation id="7936303884198020182">Pelayan tanpa nama ditemukan</translation>
 <translation id="7960831585769876809">Suhu</translation>
+<translation id="7978412674231730200">Kunci persendirian</translation>
 <translation id="7994702968232966508">Kaedah EAP</translation>
 <translation id="8020238979854764615">Terdapat ralat. Sila cuba lagi dengan memilih imej lain.</translation>
 <translation id="802154636333426148">Muat turun gagal</translation>
@@ -449,6 +454,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="8818152010000655963">Kertas dinding</translation>
 <translation id="8834539327799336565">Tersambung pada masa ini</translation>
 <translation id="8845001906332463065">Dapatkan bantuan</translation>
+<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Ujian berjaya</translation>
 <translation id="8898840733695078011">Kekuatan isyarat</translation>

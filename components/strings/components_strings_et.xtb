@@ -1161,6 +1161,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
           <ph name="LIST_ITEM" />Tööandjad või koolid saavad teie sirvimistegevust jälgida.<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Interneti teenusepakkujad võivad veebiliiklust jälgida.<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="483241715238664915">Lülita hoiatused sisse</translation>
 <translation id="4838327282952368871">Unistav</translation>
 <translation id="4840250757394056958">Chrome’i ajaloo vaatamine</translation>
 <translation id="484462545196658690">Automaatne</translation>
@@ -1788,6 +1789,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="7086090958708083563">Kasutaja taotles üleslaadimist</translation>
 <translation id="7087282848513945231">Maakond</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, vajutage Chrome'i seadetes lubade ja mitmel saidil talletatud andmete haldamiseks tabulaatorit ja seejärel sisestusklahvi</translation>
+<translation id="7096937462164235847">Selle veebisaidi identiteet on kinnitamata.</translation>
 <translation id="7108338896283013870">Peida</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> soovib kasutada teie kaamerat</translation>
 <translation id="7108819624672055576">Lubas laiendus</translation>
@@ -2363,6 +2365,7 @@ Lisateave:
 <translation id="9065203028668620118">Muuda</translation>
 <translation id="9065745800631924235">Otsing <ph name="TEXT" /> ajaloost</translation>
 <translation id="9069693763241529744">Blokeeris laiendus</translation>
+<translation id="9073799351042754113">Lülitasite turvahoiatused selle saidi puhul välja.</translation>
 <translation id="9078964945751709336">Vaja on rohkem teavet</translation>
 <translation id="9080712759204168376">Tellimuse kokkuvõte</translation>
 <translation id="9089260154716455634">Eemalolekuaegade eeskirjad:</translation>

@@ -1164,6 +1164,7 @@
           <ph name="LIST_ITEM" />Οι εργοδότες ή τα εκπαιδευτικά ιδρύματα μπορούν να παρακολουθούν τη δραστηριότητα περιήγησης.<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Οι πάροχοι υπηρεσιών διαδικτύου μπορούν να παρακολουθούν την επισκεψιμότητα στον ιστό.<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="483241715238664915">Ενεργοποίηση ειδοποιήσεων</translation>
 <translation id="4838327282952368871">Ονειρικό</translation>
 <translation id="4840250757394056958">Προβολή του ιστορικού Chrome</translation>
 <translation id="484462545196658690">Αυτόματα</translation>
@@ -1793,6 +1794,7 @@
 <translation id="7086090958708083563">Ζητήθηκε μεταφόρτωση από έναν χρήστη.</translation>
 <translation id="7087282848513945231">Κομητεία</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab και μετά Enter για να διαχειριστείτε τις άδειες και τα δεδομένα που έχουν αποθηκευτεί σε ιστοτόπους από τις ρυθμίσεις του Chrome</translation>
+<translation id="7096937462164235847">Η ταυτότητα αυτού του ιστοτόπου δεν έχει επαληθευτεί.</translation>
 <translation id="7108338896283013870">Απόκρυψη</translation>
 <translation id="7108634116785509031">Ο ιστότοπος <ph name="HOST" /> επιθυμεί να χρησιμοποιήσει την κάμερα σας</translation>
 <translation id="7108819624672055576">Επιτρέπεται από μια επέκταση</translation>
@@ -2371,6 +2373,7 @@
 <translation id="9065203028668620118">Επεξεργασία</translation>
 <translation id="9065745800631924235">Αναζήτηση <ph name="TEXT" /> από το ιστορικό</translation>
 <translation id="9069693763241529744">Αποκλείστηκε από μια επέκταση</translation>
+<translation id="9073799351042754113">Έχετε επιλέξει να απενεργοποιήσετε τις ειδοποιήσεις ασφάλειας για αυτόν τον ιστότοπο.</translation>
 <translation id="9078964945751709336">Απαιτούνται περισσότερες πληροφορίες</translation>
 <translation id="9080712759204168376">Σύνοψη παραγγελίας</translation>
 <translation id="9089260154716455634">Πολιτική ελεύθερου χρόνου:</translation>

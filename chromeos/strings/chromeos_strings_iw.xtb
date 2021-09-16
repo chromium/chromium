@@ -34,6 +34,7 @@
 <translation id="1499900233129743732">המשתמש הזה מנוהל על ידי <ph name="MANAGER" />. הדומיין הזה עשוי לנהל מרחוק את ההגדרות ולעקוב אחר פעילות המשתמש.</translation>
 <translation id="150962533380566081">‏PUK לא חוקי.</translation>
 <translation id="1510238584712386396">מרכז האפליקציות</translation>
+<translation id="155865706765934889">לוח מגע</translation>
 <translation id="1600964289716072707">כדי להוסיף דף, ממקמים מסמך נוסף על הסורק ובוחרים באפשרות 'סריקה'.</translation>
 <translation id="1621067168122174824">הפעלה של בדיקת טעינה</translation>
 <translation id="1639239467298939599">בטעינה</translation>
@@ -45,6 +46,7 @@
 <translation id="1706391837335750954">‏מקודד DNS נוכח</translation>
 <translation id="1715359911173058521">‏יש בעיה בתקשורת עם הסורק. יש לבדוק את הרשת או את חיבור ה-USB ולנסות שוב.</translation>
 <translation id="1717874160321062422">מנוהל על ידי <ph name="FIRST_MANAGER" /> ועל ידי <ph name="SECOND_MANAGER" /></translation>
+<translation id="1726100011689679555">שרתי שמות</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">הסריקה מתבטלת</translation>
@@ -391,11 +393,13 @@
 <translation id="7805768142964895445">סטטוס</translation>
 <translation id="7819857487979277519">‏PSK ‏(WPA או RSN)</translation>
 <translation id="7835501727204647447">‏התקנה של CloudReady</translation>
+<translation id="7846634333498149051">מקלדת</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">סוג ספק</translation>
 <translation id="7895471513946376273">רוצה להכיר את הכלים לשרטוט ולעיצוב?</translation>
 <translation id="7936303884198020182">לא נמצאו שרתי שמות</translation>
 <translation id="7960831585769876809">טמפרטורה</translation>
+<translation id="7978412674231730200">מפתח פרטי</translation>
 <translation id="7994702968232966508">‏שיטת EAP</translation>
 <translation id="8020238979854764615">אירעה שגיאה. יש לנסות שוב על-ידי בחירת תמונות אחרות.</translation>
 <translation id="802154636333426148">ההורדה נכשלה</translation>
@@ -450,6 +454,7 @@
 <translation id="8818152010000655963">טפט</translation>
 <translation id="8834539327799336565">מחובר עכשיו</translation>
 <translation id="8845001906332463065">קבלת עזרה</translation>
+<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">הבדיקה הושלמה בהצלחה</translation>
 <translation id="8898840733695078011">עוצמת אות</translation>

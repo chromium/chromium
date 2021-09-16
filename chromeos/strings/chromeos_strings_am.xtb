@@ -34,6 +34,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> እኚህን ተጠቃሚ ያስተዳድራል ኣና በርቀት ቅንብሮችን ሊያስተዳድር እና የተጠቃሚ እንቅስቃሴን ሊቆጣጠር ይችላል።</translation>
 <translation id="150962533380566081">ልክ ያልኾነ PUK።</translation>
 <translation id="1510238584712386396">ማስጀመሪያ</translation>
+<translation id="155865706765934889">ተችፓድ</translation>
 <translation id="1600964289716072707">በመቃኛው ላይ ሌላ ገጽ ያስቀምጡ እና ገጽ ለማከል ቃኝን ይምረጡ።</translation>
 <translation id="1621067168122174824">የባትሪ መሙላት ሙከራን አሂድ</translation>
 <translation id="1639239467298939599">በመጫን ላይ</translation>
@@ -45,6 +46,7 @@
 <translation id="1706391837335750954">የዲኤንኤስ መፍትሔ ሰጪ አለ</translation>
 <translation id="1715359911173058521">ከቃኚው ጋር የሚገናኝ አንድ ችግር አለ። የአውታረ መረብ ወይም የዩኤስቢ ግንኙነትን ይፈትሹ እና እንደገና ይሞክሩ።</translation>
 <translation id="1717874160321062422">በ <ph name="FIRST_MANAGER" /> እና <ph name="SECOND_MANAGER" /> የሚተዳደር</translation>
+<translation id="1726100011689679555">የስም አገልጋዩች</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">መቃኘትን በመሰረዝ ላይ</translation>
@@ -391,11 +393,13 @@
 <translation id="7805768142964895445">ሁኔታ</translation>
 <translation id="7819857487979277519">PSK (WPA ወይም RSN)</translation>
 <translation id="7835501727204647447">CloudReadyን ጫን</translation>
+<translation id="7846634333498149051">የቁልፍ ሰሌዳ</translation>
 <translation id="7881066108824108340">ዲኤንኤስ</translation>
 <translation id="7882358943899516840">የአቅራቢ አይነት</translation>
 <translation id="7895471513946376273">የስዕል እና የንድፍ መሣሪያዎችን ያግኙ</translation>
 <translation id="7936303884198020182">ምንም የስም አገልጋዮች አልተገኙም</translation>
 <translation id="7960831585769876809">የሙቀት መጠን</translation>
+<translation id="7978412674231730200">የግል ቁልፍ</translation>
 <translation id="7994702968232966508">የEAP ስልት</translation>
 <translation id="8020238979854764615">ስህተት ነበር። እባክዎ ሌሎች ምስሎችን በመምረጥ እንደገና ይሞክሩ።</translation>
 <translation id="802154636333426148">ማውረድ አልተሳካም</translation>
@@ -450,6 +454,7 @@
 <translation id="8818152010000655963">ልጣፍ</translation>
 <translation id="8834539327799336565">አሁን ላይ ተገናኝቷል</translation>
 <translation id="8845001906332463065">እገዛ ያግኙ</translation>
+<translation id="8847988622838149491">ዩ ኤስ ቢ</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">ሙከራ ተሳክቷል</translation>
 <translation id="8898840733695078011">የሲግናል ጥንካሬ</translation>

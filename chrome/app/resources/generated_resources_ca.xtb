@@ -332,7 +332,6 @@
 <translation id="1354045473509304750">Continua permetent que <ph name="HOST" /> utilitzi i mogui la càmera</translation>
 <translation id="1355088139103479645">Vols suprimir totes les dades?</translation>
 <translation id="1355466263109342573">El connector <ph name="PLUGIN_NAME" /> està bloquejat</translation>
-<translation id="1356178530321889280">Fes clic amb el botó dret i selecciona Cerca una part de la pàgina amb Google Lens per fer cerques en alguna zona del lloc web i obtenir més informació sobre el contingut visual que es mostra en navegar i comprar al web.</translation>
 <translation id="1358741672408003399">Ortografia i gramàtica</translation>
 <translation id="1359923111303110318">El dispositiu es pot desbloquejar amb Smart Lock. Prem Retorn per desbloquejar-lo.</translation>
 <translation id="1361164813881551742">Afegeix manualment</translation>
@@ -2722,6 +2721,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3842552989725514455">Tipus de lletra Serif</translation>
 <translation id="3843464315703645664">Inclòs internament a la llista de permesos</translation>
 <translation id="3844888638014364087">S'ha inserit l'emoji</translation>
+<translation id="384513009320852920">Comprova que el dispositiu Bluetooth es trobi a prop i en mode de vinculació. <ph name="BEGIN_LINK_LEARN_MORE" />Més informació<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Obtén eines per desenvolupar llocs web i aplicacions d'Android, entre d'altres. En instal·lar Linux, es baixaran <ph name="DOWNLOAD_SIZE" /> de dades.</translation>
 <translation id="3847319713229060696">Ajuda a millorar la seguretat al web per a tothom</translation>
 <translation id="3848547754896969219">Obre en una finestra d'&amp;incògnit</translation>

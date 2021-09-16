@@ -1159,6 +1159,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
           <ph name="LIST_ITEM" />Punëdhënësit ose shkollat mund të monitorojnë aktivitetin e shfletimit<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Ofruesit e shërbimit të internetit mund të monitorojnë trafikun e uebit<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="483241715238664915">Aktivizo paralajmërimet</translation>
 <translation id="4838327282952368871">Si në ëndërr</translation>
 <translation id="4840250757394056958">Shiko historikun tënd të Chrome</translation>
 <translation id="484462545196658690">Automatike</translation>
@@ -1785,6 +1786,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7086090958708083563">Përditësimi u kërkua nga përdoruesi</translation>
 <translation id="7087282848513945231">Konteja</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp "Tab" dhe më pas "Enter" për të menaxhuar lejet dhe të dhënat e ruajtura nëpër sajte te cilësimet e Chrome</translation>
+<translation id="7096937462164235847">Identiteti i këtij sajti uebi nuk është i verifikuar.</translation>
 <translation id="7108338896283013870">Fshih</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> kërkon të përdorë kamerën</translation>
 <translation id="7108819624672055576">Lejuar nga një shtesë</translation>
@@ -2360,6 +2362,7 @@ Detaje shtesë:
 <translation id="9065203028668620118">Redakto</translation>
 <translation id="9065745800631924235">Kërkimi <ph name="TEXT" /> nga historiku</translation>
 <translation id="9069693763241529744">Bllokuar nga një shtesë</translation>
+<translation id="9073799351042754113">Ke zgjedhur t'i çaktivizosh paralajmërimet e sigurisë për këtë sajt.</translation>
 <translation id="9078964945751709336">Kërkohet më shumë informacion</translation>
 <translation id="9080712759204168376">Përmbledhja e porosisë</translation>
 <translation id="9089260154716455634">Politika për jashtë orarit:</translation>

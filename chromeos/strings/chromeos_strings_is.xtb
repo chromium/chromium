@@ -34,6 +34,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> hefur umsjón með þessum notanda og getur stjórnað stillingum og skoðað notendavirkni með fjartengingu.</translation>
 <translation id="150962533380566081">Ógilt PUK-númer.</translation>
 <translation id="1510238584712386396">Ræsiforrit</translation>
+<translation id="155865706765934889">Snertiflötur</translation>
 <translation id="1600964289716072707">Settu aðra síðu á skannann og veldu „Skanna“ til að bæta síðu við.</translation>
 <translation id="1621067168122174824">Keyra hleðslupróf</translation>
 <translation id="1639239467298939599">Hleður</translation>
@@ -45,6 +46,7 @@
 <translation id="1706391837335750954">DNS-úrlausn til staðar</translation>
 <translation id="1715359911173058521">Villa kom upp við að ná sambandi við skannann. Athugaðu net- eða USB-tenginguna og reyndu aftur.</translation>
 <translation id="1717874160321062422">Í umsjón <ph name="FIRST_MANAGER" /> og <ph name="SECOND_MANAGER" /></translation>
+<translation id="1726100011689679555">Nafnaþjónar</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Hættir við að skanna</translation>
@@ -152,6 +154,7 @@
 <translation id="39823212440917567">Prentverk sem eru eldri en <ph name="NUMBER_OF_DAYS" /> verða fjarlægð</translation>
 <translation id="4003384961948020559">Mistókst – úttakið er fullt</translation>
 <translation id="4034824040120875894">Prentari</translation>
+<translation id="4050980775484079270">ARC DNS-lausn</translation>
 <translation id="409427325554347132">Vista niðurstöður prófunar</translation>
 <translation id="4131410914670010031">Svarthvítt</translation>
 <translation id="4145784616224233563">HTTP-eldveggur</translation>
@@ -390,11 +393,13 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="7805768142964895445">Staða</translation>
 <translation id="7819857487979277519">PSK (WPA eða RSN)</translation>
 <translation id="7835501727204647447">Setja upp CloudReady</translation>
+<translation id="7846634333498149051">Lyklaborð</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Gerð veitu</translation>
 <translation id="7895471513946376273">Skoðaðu teikni- og hönnunarverkfæri</translation>
 <translation id="7936303884198020182">Engir nafnaþjónar fundust</translation>
 <translation id="7960831585769876809">Hitastig</translation>
+<translation id="7978412674231730200">Einkalykill</translation>
 <translation id="7994702968232966508">EAP-aðferð</translation>
 <translation id="8020238979854764615">Villa kom upp. Reyndu aftur með því að velja aðrar myndir.</translation>
 <translation id="802154636333426148">Niðurhal mistókst</translation>
@@ -449,6 +454,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="8818152010000655963">Veggfóður</translation>
 <translation id="8834539327799336565">Tengt núna</translation>
 <translation id="8845001906332463065">Fá hjálp</translation>
+<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID-kenni</translation>
 <translation id="8881098542468797602">Próf tókst</translation>
 <translation id="8898840733695078011">Sendistyrkur</translation>

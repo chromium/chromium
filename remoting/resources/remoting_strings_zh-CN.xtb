@@ -170,6 +170,7 @@
 要授予此权限，请先点击下面的“<ph name="BUTTON_NAME" />”，然后在随即打开的“无障碍”偏好设置窗格中勾选“<ph name="SERVICE_SCRIPT_NAME" />”旁边的复选框。
 
 如果“<ph name="SERVICE_SCRIPT_NAME" />”已处于选中状态，请先取消选中，然后再次勾选。</translation>
+<translation id="8305209735512572429">网络身份验证远程处理</translation>
 <translation id="8383794970363966105">要使用Chrome远程访问，您需要先为自己的设备添加一个Google帐号。</translation>
 <translation id="8386846956409881180">为主机指定的 OAuth 凭据无效。</translation>
 <translation id="8397385476380433240">向 <ph name="PRODUCT_NAME" />授予权限</translation>

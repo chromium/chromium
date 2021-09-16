@@ -334,7 +334,6 @@
 <translation id="1354045473509304750">Hyväksy edelleen, että <ph name="HOST" /> voi käyttää ja liikuttaa kameraasi</translation>
 <translation id="1355088139103479645">Poistetaanko kaikki data?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> on estetty</translation>
-<translation id="1356178530321889280">Hae miltä tahansa sivuston alueelta klikkaamalla kakkospainikkeella ja valitsemalla "Hae sivun osasta Google Lensillä". Näin saat lisätietoja kuvasisällöstä, jota näet selatessasi ja shoppaillessasi internetissä.</translation>
 <translation id="1358741672408003399">Oikeinkirjoitus ja kielioppi</translation>
 <translation id="1359923111303110318">Voit avata laitteen Smart Lockilla. Avaa painamalla Enter.</translation>
 <translation id="1361164813881551742">Lisää manuaalisesti</translation>
@@ -2737,6 +2736,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="3842552989725514455">Serif-fontti</translation>
 <translation id="3843464315703645664">Sallittu sisäisesti</translation>
 <translation id="3844888638014364087">Emoji lisätty</translation>
+<translation id="384513009320852920">Varmista, että Bluetooth-laitteesi on parinmuodostustilassa ja lähellä. <ph name="BEGIN_LINK_LEARN_MORE" />Lue lisää<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Saat verkkosivustojen kehittämistyökaluja, Android-sovelluksia ja paljon muuta. Linuxin asennus lataa <ph name="DOWNLOAD_SIZE" /> dataa.</translation>
 <translation id="3847319713229060696">Auta lisäämään verkon turvallisuutta kaikille</translation>
 <translation id="3848547754896969219">Avaa &amp;incognito-ikkunassa</translation>

@@ -34,6 +34,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> gestionează acest utilizator și poate să gestioneze de la distanță setările și să monitorizeze activitatea utilizatorului.</translation>
 <translation id="150962533380566081">PUK nevalid.</translation>
 <translation id="1510238584712386396">Lansator</translation>
+<translation id="155865706765934889">Touchpad</translation>
 <translation id="1600964289716072707">Așază altă pagină pe scaner și selectează Scanează ca să o adaugi.</translation>
 <translation id="1621067168122174824">Rulează testul Încărcare</translation>
 <translation id="1639239467298939599">Se încarcă</translation>
@@ -45,6 +46,7 @@
 <translation id="1706391837335750954">Rezolvitor DNS prezent</translation>
 <translation id="1715359911173058521">Există o problemă de comunicare cu scanerul. Verifică-ți conexiunea USB sau la rețea și încearcă din nou.</translation>
 <translation id="1717874160321062422">Gestionat de <ph name="FIRST_MANAGER" /> și de <ph name="SECOND_MANAGER" /></translation>
+<translation id="1726100011689679555">Servere de nume</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Se anulează scanarea</translation>
@@ -391,11 +393,13 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7805768142964895445">Stare</translation>
 <translation id="7819857487979277519">PSK (WPA sau RSN)</translation>
 <translation id="7835501727204647447">Instalează CloudReady</translation>
+<translation id="7846634333498149051">Tastatură</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tip furnizor</translation>
 <translation id="7895471513946376273">Descoperă instrumente de desenare și design</translation>
 <translation id="7936303884198020182">Nu s-au găsit servere de nume</translation>
 <translation id="7960831585769876809">Temperatură</translation>
+<translation id="7978412674231730200">Cheie privată</translation>
 <translation id="7994702968232966508">Metodă EAP</translation>
 <translation id="8020238979854764615">A apărut o eroare. Încearcă din nou alegând alte imagini.</translation>
 <translation id="802154636333426148">Descărcarea nu a reușit</translation>
@@ -450,6 +454,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="8818152010000655963">Imaginea de fundal</translation>
 <translation id="8834539327799336565">Conectat</translation>
 <translation id="8845001906332463065">Obține ajutor</translation>
+<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Testul a reușit</translation>
 <translation id="8898840733695078011">Puterea semnalului</translation>

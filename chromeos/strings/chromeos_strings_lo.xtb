@@ -34,6 +34,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> ຈັດການຜູ້ໃຊ້ນີ້ ແລະ ອາດຈະຈັດການການຕັ້ງຄ່າ ແລະ ຕິດຕາມເບິ່ງການເຄື່ອນໄຫວຂອງຜູ້ໃຊ້ຈາກທາງໄກໄດ້.</translation>
 <translation id="150962533380566081">PUK ທີ່ຖືກຕ້ອງ.</translation>
 <translation id="1510238584712386396">ຕົວ​ເປີດ​ໃຊ້</translation>
+<translation id="155865706765934889">ແຜ່ນສໍາຜັດ</translation>
 <translation id="1600964289716072707">ວາງໜ້າອື່ນໃສ່ເຄື່ອງສະແກນແລ້ວເລືອກສະແກນເພື່ອເພີ່ມໜ້າ.</translation>
 <translation id="1621067168122174824">ເອີ້ນໃຊ້ການທົດສອບການສາກ</translation>
 <translation id="1639239467298939599">ກໍາລັງໂຫຼດ</translation>
@@ -45,6 +46,7 @@
 <translation id="1706391837335750954">ມີ DNS Resolver</translation>
 <translation id="1715359911173058521">ເກີດບັນຫາຂຶ້ນໃນການຕິດຕໍ່ສື່ສານກັບເຄື່ອງສະແກນ. ກະລຸນາກວດສອບເຄືອຂ່າຍ ຫຼື ການເຊື່ອມຕໍ່ USB ແລ້ວລອງໃໝ່.</translation>
 <translation id="1717874160321062422">ຈັດການໂດຍ <ph name="FIRST_MANAGER" /> ແລະ <ph name="SECOND_MANAGER" /></translation>
+<translation id="1726100011689679555">ຕັ້ງຊື່ເຊີບເວີ</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">ກຳລັງຍົກເລີກການສະແກນ</translation>
@@ -392,11 +394,13 @@
 <translation id="7805768142964895445">ສະ​ຖາ​ນະ​</translation>
 <translation id="7819857487979277519">PSK (WPA ຫຼື RSN)</translation>
 <translation id="7835501727204647447">ຕິດຕັ້ງ CloudReady</translation>
+<translation id="7846634333498149051">ແປ້ນພິມ</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">ປະ​ເພດ​ຜູ້ໃຫ້​ບໍ​ລິ​ການ​</translation>
 <translation id="7895471513946376273">ຄົ້ນພົບເຄື່ອງມືການແຕ້ມ ແລະ ການອອກແບບຕ່າງໆ</translation>
 <translation id="7936303884198020182">ບໍ່ພົບເຊີບເວີຊື່</translation>
 <translation id="7960831585769876809">ອຸນຫະພູມ</translation>
+<translation id="7978412674231730200">ປຸ່ມສ່ວນຕົວ</translation>
 <translation id="7994702968232966508">ວິທີການ EAP</translation>
 <translation id="8020238979854764615">ເກີດຄວາມຜິດພາດຂຶ້ນ. ກະລຸນາລອງໃໝ່ໂດຍການເລືອກຮູບອື່ນ.</translation>
 <translation id="802154636333426148">ການດາວໂຫຼດບໍ່ສຳເລັດ</translation>
@@ -451,6 +455,7 @@
 <translation id="8818152010000655963">ພາບພື້ນຫຼັງ</translation>
 <translation id="8834539327799336565">ຕອນນີ້ເຊື່ອມຕໍ່ແລ້ວ</translation>
 <translation id="8845001906332463065">ຂໍການຊ່ວຍເຫຼືອ</translation>
+<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">ສຳເລັດການທົດສອບແລ້ວ</translation>
 <translation id="8898840733695078011">ຄວາມແຮງສັນຍານ</translation>

@@ -34,6 +34,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> gestiona aquest usuari i és possible que gestioni les opcions de configuració i monitori l'activitat de l'usuari de manera remota.</translation>
 <translation id="150962533380566081">El PUK no és vàlid.</translation>
 <translation id="1510238584712386396">Menú d'aplicacions</translation>
+<translation id="155865706765934889">Ratolí tàctil</translation>
 <translation id="1600964289716072707">Col·loca una altra pàgina a l'escàner i selecciona Escaneja per afegir la pàgina.</translation>
 <translation id="1621067168122174824">Executa la prova de càrrega</translation>
 <translation id="1639239467298939599">S'està carregant</translation>
@@ -45,6 +46,7 @@
 <translation id="1706391837335750954">Solucionador de DNS present</translation>
 <translation id="1715359911173058521">S'ha produït un problema en establir la comunicació amb l'escàner. Comprova la xarxa o la connexió USB i torna-ho a provar.</translation>
 <translation id="1717874160321062422">Gestionat per <ph name="FIRST_MANAGER" /> i <ph name="SECOND_MANAGER" /></translation>
+<translation id="1726100011689679555">Servidors de noms</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">S'està cancel·lant l'escaneig</translation>
@@ -152,6 +154,7 @@
 <translation id="39823212440917567">Se suprimiran les tasques d'impressió amb una antiguitat superior a <ph name="NUMBER_OF_DAYS" /> dies</translation>
 <translation id="4003384961948020559">Error: safata de sortida plena</translation>
 <translation id="4034824040120875894">Impressora</translation>
+<translation id="4050980775484079270">Resolució de DNS d'ARC</translation>
 <translation id="409427325554347132">Desa els detalls de la prova</translation>
 <translation id="4131410914670010031">Blanc i negre</translation>
 <translation id="4145784616224233563">Tallafoc HTTP</translation>
@@ -390,11 +393,13 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7805768142964895445">Estat</translation>
 <translation id="7819857487979277519">PSK (WPA o RSN)</translation>
 <translation id="7835501727204647447">Instal·la CloudReady</translation>
+<translation id="7846634333498149051">Teclat</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tipus de proveïdor</translation>
 <translation id="7895471513946376273">Descobreix les eines de dibuix i disseny</translation>
 <translation id="7936303884198020182">No s'han trobat servidors de noms</translation>
 <translation id="7960831585769876809">Temperatura</translation>
+<translation id="7978412674231730200">Clau privada</translation>
 <translation id="7994702968232966508">Mètode EAP</translation>
 <translation id="8020238979854764615">S'ha produït un error. Torna-ho a provar triant altres imatges.</translation>
 <translation id="802154636333426148">Error de baixada</translation>
@@ -449,6 +454,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8818152010000655963">Fons de pantalla</translation>
 <translation id="8834539327799336565">Connectats actualment</translation>
 <translation id="8845001906332463065">Obteniu ajuda</translation>
+<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">La prova s'ha superat</translation>
 <translation id="8898840733695078011">Intensitat del senyal</translation>

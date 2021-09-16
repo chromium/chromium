@@ -34,6 +34,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> gestiona a este usuario y es posible que gestione sus ajustes y supervise su actividad de forma remota.</translation>
 <translation id="150962533380566081">El PUK no es válido.</translation>
 <translation id="1510238584712386396">Menú de aplicaciones</translation>
+<translation id="155865706765934889">Panel táctil</translation>
 <translation id="1600964289716072707">Coloca otra página en el escáner y selecciona Escanear para añadirla.</translation>
 <translation id="1621067168122174824">Realizar prueba de carga</translation>
 <translation id="1639239467298939599">Cargando</translation>
@@ -45,6 +46,7 @@
 <translation id="1706391837335750954">Resolución de DNS presente</translation>
 <translation id="1715359911173058521">No se puede conectar con el escáner. Comprueba la red o la conexión USB y vuelve a intentarlo.</translation>
 <translation id="1717874160321062422">Gestionado por <ph name="FIRST_MANAGER" /> y <ph name="SECOND_MANAGER" /></translation>
+<translation id="1726100011689679555">Servidores de nombres</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Cancelando análisis</translation>
@@ -390,11 +392,13 @@
 <translation id="7805768142964895445">Estado</translation>
 <translation id="7819857487979277519">PSK (WPA o RSN)</translation>
 <translation id="7835501727204647447">Instalar CloudReady</translation>
+<translation id="7846634333498149051">Teclado</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tipo de proveedor</translation>
 <translation id="7895471513946376273">Descubre herramientas de dibujo y diseño</translation>
 <translation id="7936303884198020182">No se han encontrado servidores de nombres</translation>
 <translation id="7960831585769876809">Temperatura</translation>
+<translation id="7978412674231730200">Clave privada</translation>
 <translation id="7994702968232966508">Método EAP</translation>
 <translation id="8020238979854764615">Se ha producido un error. Selecciona otras imágenes e inténtalo de nuevo.</translation>
 <translation id="802154636333426148">No se ha podido descargar el archivo</translation>
@@ -449,6 +453,7 @@
 <translation id="8818152010000655963">Fondo de pantalla</translation>
 <translation id="8834539327799336565">Conectados ahora</translation>
 <translation id="8845001906332463065">Obtener ayuda</translation>
+<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Prueba completada correctamente</translation>
 <translation id="8898840733695078011">Intensidad de la señal</translation>

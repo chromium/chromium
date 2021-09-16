@@ -334,7 +334,6 @@
 <translation id="1354045473509304750">Թույլատրել <ph name="HOST" /> կայքին օգտագործել և տեղաշարժել տեսախցիկը</translation>
 <translation id="1355088139103479645">Ջնջե՞լ բոլոր տվյալները</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> փլագինն արգելափակված է</translation>
-<translation id="1356178530321889280">Սեղմեք մկնիկի աջ կոճակը և ընտրեք «Որոնել էջի հատվածում Google Տեսապակու միջոցով», եթե ուզում եք ավելին իմանալ էջի վիզուալ բովանդակության մասին, որը տեսնում եք կայք այցելելիս և գնումներ կատարելիս։</translation>
 <translation id="1358741672408003399">Ուղղագրություն և քերականություն</translation>
 <translation id="1359923111303110318">Ձեր սարքը կարող է ապակողպվել Smart Lock-ի միջոցով։ Սեղմեք Enter՝ ապակողպելու համար։</translation>
 <translation id="1361164813881551742">Ավելացնել ձեռքով</translation>
@@ -2724,6 +2723,7 @@
 <translation id="3842552989725514455">Serif տառատեսակ</translation>
 <translation id="3843464315703645664">Թույլատրված է ներքին օգտագործման համար</translation>
 <translation id="3844888638014364087">Զմայլիկը զետեղվեց</translation>
+<translation id="384513009320852920">Համոզվեք, որ ձեր Bluetooth սարքը մոտակայքում է և զուգակցման ռեժիմում։ <ph name="BEGIN_LINK_LEARN_MORE" />Իմանալ ավելին<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Ստացեք գործիքներ, որոնցով կարող եք մշակել կայքեր, Android հավելվածներ և այլն: Linux-ի տեղադրման դեպքում կներբեռնվեն <ph name="DOWNLOAD_SIZE" /> ծավալով տվյալներ:</translation>
 <translation id="3847319713229060696">Օգնեք բարելավել համացանցից օգտվողների անվտանգությունը</translation>
 <translation id="3848547754896969219">Բացել &amp;ինկոգնիտո պատուհանում</translation>

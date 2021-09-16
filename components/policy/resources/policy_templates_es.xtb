@@ -336,7 +336,7 @@
 
       Si se le asigna el valor "fast", <ph name="PRODUCT_NAME" /> evita la rasterización si es posible. Reducir la cantidad de rasterización puede ayudar a reducir los tamaños de los trabajos de impresión y aumentar la velocidad de impresión.
 
-      Si no se le asigna ningún valor a esta política, <ph name="PRODUCT_NAME" /> tendrá activado el modo completo.</translation>
+      Si no se le asigna ningún valor a esta política, <ph name="PRODUCT_NAME" /> tendrá activado el modo "full".</translation>
 <translation id="1456822151187621582">Windows (clientes de <ph name="PRODUCT_OS_NAME" />):</translation>
 <translation id="1464848559468748897">Controla el comportamiento del usuario en una sesión de varios perfiles en dispositivos <ph name="PRODUCT_OS_NAME" />.
 
@@ -1150,7 +1150,7 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 
       Si se le asigna el valor "tls1.2" a esta política, el usuario no podrá omitir este error.
 
-      A partir de la versión 91, ya no se le pueden asignar los valores "tls1" o "tls1.1" a esta política. Ya no es posible eliminar la advertencia TLS 1.0/1.1.</translation>
+      A partir de la versión 91, ya no se le pueden asignar los valores "tls1" o "tls1.1" a esta política. Ya no es posible ocultar la advertencia TLS 1.0/1.1.</translation>
 <translation id="2364639863953745682">Modo de la experiencia de incorporación del Asistente</translation>
 <translation id="2384233438419344179">Si se habilita esta política, los elementos de sitios web que no pertenezcan al dominio que aparece en la barra de direcciones del navegador no podrán establecer cookies. Si se inhabilita esta política, estos elementos podrán establecer cookies y los usuarios no podrán cambiar esta opción.
 
@@ -1834,9 +1834,9 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="3118552207903834734">Permitir al usuario configurar el nombre de host de su dispositivo</translation>
 <translation id="3122082892722698079">Permite controlar el uso de las excepciones de contenido no seguro</translation>
 <translation id="3128072319047570212">Configuración del generador de claves</translation>
-<translation id="3135820765957090754">Si se habilita esta opción, los usuarios podrán sincronizar las configuraciones de la red Wi‑Fi en sus dispositivos <ph name="PRODUCT_OS_NAME" /> y en un teléfono Android conectado. Para poder sincronizar las configuraciones de la red Wi‑Fi, los usuarios deben aceptar explícitamente esta función completando un proceso de configuración.
+<translation id="3135820765957090754">Si se habilita esta opción, los usuarios podrán sincronizar los ajustes de la red Wi‑Fi entre sus dispositivos <ph name="PRODUCT_OS_NAME" /> y un teléfono Android conectado. Para poder sincronizar los ajustes de la red Wi‑Fi, los usuarios deben aceptar explícitamente esta función completando un proceso de configuración.
 
-      Si se inhabilita esta opción, los usuarios no podrán sincronizar las configuraciones de la red Wi‑Fi.
+      Si se inhabilita esta opción, los usuarios no podrán sincronizar los ajustes de la red Wi‑Fi.
 
       Esta función depende de que se habilite el tipo de datos <ph name="WIFI_CONFIGURATIONS_DATATYPE_NAME" /> en <ph name="CHROME_SYNC_NAME" />. Si se inhabilita <ph name="WIFI_CONFIGURATIONS_DATATYPE_NAME" /> en la política <ph name="SYNC_TYPES_LIST_DISABLED_POLICY_NAME" /> o se inhabilita <ph name="CHROME_SYNC_NAME" /> en la política <ph name="SYNC_DISABLED_POLICY_NAME" />, no se habilitará esta función.
 
@@ -3399,13 +3399,13 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="5220594484746830711">Solo permitir que las ventanas emergentes abiertas con <ph name="BLANK_PAGE_NAME" /> como objetivo interactúen con la página que ha abierto la ventana emergente si esa página ha aceptado dicha interacción</translation>
 <translation id="5227124062673546005">Controla el modo en que <ph name="PRODUCT_NAME" /> imprime en <ph name="MS_WIN_NAME" />.
 
-      Al imprimir en una impresora PostScript en <ph name="MS_WIN_NAME" />, pueden afectar al rendimiento de impresión diferentes métodos de generación de PostScript.
+      Al imprimir en una impresora PostScript en <ph name="MS_WIN_NAME" />, diferentes métodos de generación de PostScript pueden afectar al rendimiento de impresión.
 
-      Si se le asigna el valor predeterminado a esta política, <ph name="PRODUCT_NAME" /> usará un conjunto de opciones predeterminadas al generar el PostScript. En particular, el texto se renderizará siempre con fuentes Tipo 3.
+      Si se le asigna el valor "default" a esta política, <ph name="PRODUCT_NAME" /> usará un conjunto de opciones predeterminadas al generar el PostScript. En particular, el texto se renderizará siempre con fuentes Tipo 3.
 
       Si se le asigna el valor "Type42" a esta política, <ph name="PRODUCT_NAME" /> renderizará el texto con fuentes Tipo 42 si es posible. De esta manera, debería aumentar la velocidad de impresión de algunas impresoras PostScript.
 
-      Si no se le asigna ningún valor a esta política, <ph name="PRODUCT_NAME" /> tendrá activado el modo predeterminado.</translation>
+      Si no se le asigna ningún valor a esta política, <ph name="PRODUCT_NAME" /> tendrá activado el modo "default".</translation>
 <translation id="5227647876065695164">Esta política especifica el comportamiento del cambio a una versión inferior en los dispositivos registrados. Cambiar a una versión inferior significa cambiar a un canal más estable, por ejemplo, de beta a estable.
 
       El valor de esta política afecta a los cambios a versiones inferiores iniciados por el usuario o el administrador.
@@ -5296,20 +5296,6 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7477231245051133709">Habilita la función de accesibilidad de audio en mono</translation>
 <translation id="7477239290070847560">Destinos de protocolo zeroconf (mDNS y DNS‑SD)</translation>
 <translation id="7485481791539008776">Reglas para la selección de la impresora predeterminada</translation>
-<translation id="7493995861907758679">Este ajuste permite que los dispositivos seleccionen una versión concreta de <ph name="PRODUCT_OS_NAME" /> como objetivo de actualización.
-
-      Si no se le asigna ningún valor, los dispositivos se actualizarán en función de otros ajustes o instalarán la última versión.
-
-      Si se le asigna un valor, los dispositivos se actualizarán a la versión seleccionada.
-
-      El formato exacto del valor de esta política se corresponde con la información de implementación del servicio de actualizaciones y podría cambiar. El valor de la política no se procesa en el dispositivo.
-
-      Si se combina con <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" />, el servicio de actualizaciones comprobará esta política primero.
-      A diferencia de <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> (que podría permitir pequeñas actualizaciones), los dispositivos permanecerán en la versión seleccionada hasta que se modifique el valor de esta política.
-
-      Si se combina con <ph name="DEVICE_ROLLBACK_TO_TARGET_VERSION_POLICY_NAME" />, podrá restablecerse una versión anterior concreta del dispositivo.
-
-      Advertencia: No se recomienda configurar las restricciones de versiones, ya que podrían impedir que los usuarios reciban actualizaciones de software y mejoras de seguridad. Limitar las actualizaciones a una versión concreta puede poner en riesgo a los usuarios.</translation>
 <translation id="7506745375479451616">Esta política controla el comando que se utilizará para abrir las URL al cambiar de <ph name="IE_PRODUCT_NAME" /> a <ph name="PRODUCT_NAME" />. A esta política se le puede asignar la ruta de un archivo ejecutable o el valor <ph name="PRODUCT_NAME_PLACEHOLDER" /> para detectar automáticamente la ubicación de <ph name="PRODUCT_NAME" />.
 
       Si no se asigna ningún valor a esta política, <ph name="IE_PRODUCT_NAME" /> detectará automáticamente la ruta ejecutable de <ph name="PRODUCT_NAME" /> al iniciar <ph name="PRODUCT_NAME" /> desde Internet Explorer.
@@ -6484,9 +6470,9 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 <translation id="8951350807133946005">Establecer directorio de caché de disco</translation>
 <translation id="8955719471735800169">Volver al principio</translation>
 <translation id="8959992920425111821">Configuración predeterminada</translation>
-<translation id="8967125680876068695">Las aplicaciones de Chrome no están disponibles en Windows, Mac y Linux.
+<translation id="8967125680876068695">Las aplicaciones de Chrome ya no están disponibles en Windows, Mac y Linux.
       Si se habilita esta política, <ph name="PRODUCT_NAME" /> seguirá permitiendo que se ejecuten aplicaciones de Chrome en esas plataformas hasta la fecha límite en la que se eliminará la compatibilidad con todas las plataformas (junio del 2022).
-      Si esta política se inhabilita o no se establece, es posible que, en función del estado del lanzamiento de la desactivación, no se puedan ejecutar aplicaciones de Chrome.
+      Si esta política se inhabilita o no se establece, es posible que no se puedan ejecutar aplicaciones de Chrome, según la fase de desactivación en que se encuentren.
       En cualquiera de estos casos, las aplicaciones de Chrome cuya instalación sea forzada mediante una política seguirán estando permitidas.</translation>
 <translation id="8970205333161758602">Eliminar el mensaje de desactivación de <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8974216995125236948">Configuración de ventanas emergentes</translation>
@@ -6620,7 +6606,7 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 
       - <ph name="FALLBACK_APP_NAME_LABEL" />
       A partir de la versión 90 de <ph name="PRODUCT_NAME" />,
-      te permite anular el nombre de la aplicación si no es una
+      te permite cambiar el nombre de la aplicación si no es una
       aplicación web progresiva (PWA), o el nombre de la aplicación instalada
       temporalmente si es una PWA, pero se requiere autenticación para que la
       instalación pueda completarse. Si se proporcionan tanto
@@ -6630,12 +6616,12 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 
       - <ph name="OVERRIDE_APP_NAME_LABEL" />
       A partir de la versión 96
-      de <ph name="PRODUCT_NAME" />, podrás anular permanentemente el nombre de todas las aplicaciones webs y PWAs.
+      de <ph name="PRODUCT_NAME" />, podrás cambiar permanentemente el nombre de todas las aplicaciones web y PWAs.
 
       - <ph name="CUSTOM_ICON_LABEL" />
       A partir de la versión 96
-      de <ph name="PRODUCT_NAME" />, podrás anular el icono de las aplicaciones instaladas. Los
-      iconos deben ser cuadrados, con un tamaño máximo de 1 MB, y deben tener uno de los
+      de <ph name="PRODUCT_NAME" />, podrás cambiar el icono de las aplicaciones instaladas. Los
+      iconos deben ser cuadrados, con un tamaño máximo de 1 MB y deben tener uno de los
       siguientes formatos: .jpeg, .png, .gif, .webp o .ico. El valor de hash debe ser el hash SHA256
       del archivo de icono.
 

@@ -410,6 +410,7 @@
 <translation id="4129129681837227511">Για να βλέπετε ειδοποιήσεις στην οθόνη κλειδώματος, ξεκλειδώστε τη συσκευή για να αλλάξετε τη ρύθμιση</translation>
 <translation id="4146833061457621061">Αναπαραγωγή μουσικής</translation>
 <translation id="4157822100366708405">Ρυθμίσεις σκούρου θέματος</translation>
+<translation id="4173958948577803258">Πε</translation>
 <translation id="4181841719683918333">Γλώσσες</translation>
 <translation id="4195877955194704651">Κουμπί αυτόματων κλικ</translation>
 <translation id="4197790712631116042">Ανενεργό</translation>
@@ -748,6 +749,7 @@
 <translation id="6751052314767925245">Επιβάλλεται από τον διαχειριστή σας</translation>
 <translation id="6751826523481687655">Η παρακολούθηση απόδοσης έχει ενεργοποιηθεί</translation>
 <translation id="6752912906630585008">Η επιφάνεια εργασίας <ph name="REMOVED_DESK" /> καταργήθηκε και συγχωνεύτηκε με την επιφάνεια εργασίας <ph name="RECEIVE_DESK" />.</translation>
+<translation id="6754441615189976839">Σ</translation>
 <translation id="6757237461819837179">Καμία αναπαραγωγή μέσων</translation>
 <translation id="6777216307882431711">Ενεργοποίηση συνδεδεμένων συσκευών USB-C</translation>
 <translation id="6790428901817661496">Αναπαραγωγή</translation>
@@ -768,6 +770,7 @@
 <translation id="6910714959251846841">Αυτή η ενημέρωση απαιτεί την εκτέλεση powerwash στη συσκευή σας. Μάθετε περισσότερα σχετικά με την πιο πρόσφατη ενημέρωση της εφαρμογής <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Δεν ήταν δυνατή η αναγνώριση της έξυπνης κάρτας σας. Επανάληψη.</translation>
 <translation id="6921188888306725546">Οι συντομεύσεις πληκτρολογίου έχουν βελτιωθεί</translation>
+<translation id="6929655271276551705">Ρυθμίσεις ημερομηνίας</translation>
 <translation id="6945221475159498467">Επιλογή</translation>
 <translation id="6961121602502368900">Η Σίγαση τηλεφώνου δεν είναι διαθέσιμη στο προφίλ εργασίας</translation>
 <translation id="6961840794482373852">Η συντόμευση πληκτρολογίου Alt + Επάνω βέλος άλλαξε. Για να χρησιμοποιήσετε το πλήκτρο Page Up, πατήστε το πλήκτρο <ph name="LAUNCHER_KEY_NAME" /> + Επάνω βέλος.</translation>
@@ -785,6 +788,7 @@
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Βοηθός Google</translation>
 <translation id="7042322267639375032">Σύμπτυξη περιοχής κατάστασης</translation>
 <translation id="7045595904618419789">Έναρξη μεγέθυνσης</translation>
+<translation id="7055381872777910864">Τε</translation>
 <translation id="7055910611768509537">Η γραφίδα δεν χρησιμοποιήθηκε για περισσότερο από μία εβδομάδα.</translation>
 <translation id="7066646422045619941">Το δίκτυο αυτό έχει απενεργοποιηθεί από το διαχειριστή σας.</translation>
 <translation id="7067196344162293536">Αυτόματη περιστροφή</translation>
@@ -853,6 +857,7 @@
 <translation id="7579778809502851308">Λήψη οθόνης</translation>
 <translation id="7590883480672980941">Ρυθμίσεις εισαγωγής</translation>
 <translation id="7593891976182323525">Search ή Shift</translation>
+<translation id="7595633564847427181">Δ</translation>
 <translation id="7600875258240007829">Δείτε όλες τις ειδοποιήσεις</translation>
 <translation id="7607002721634913082">Έγινε παύση</translation>
 <translation id="7618774594543487847">Ουδέτερο</translation>

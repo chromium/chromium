@@ -1152,6 +1152,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
           <ph name="LIST_ITEM" />Perusahaan atau sekolah dapat melacak aktivitas penjelajahan<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Internet service provider dapat memantau traffic web<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="483241715238664915">Aktifkan peringatan</translation>
 <translation id="4838327282952368871">Sangat Indah</translation>
 <translation id="4840250757394056958">Lihat histori Chrome Anda</translation>
 <translation id="484462545196658690">Otomatis</translation>
@@ -1779,6 +1780,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7086090958708083563">Upload yang diminta oleh pengguna</translation>
 <translation id="7087282848513945231">County</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk mengelola izin dan data yang disimpan di seluruh situs di setelan Chrome</translation>
+<translation id="7096937462164235847">Identitas situs ini tidak terverifikasi.</translation>
 <translation id="7108338896283013870">Sembunyikan</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> ingin menggunakan kamera Anda</translation>
 <translation id="7108819624672055576">Diizinkan oleh ekstensi</translation>
@@ -2350,6 +2352,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="9065203028668620118">Edit</translation>
 <translation id="9065745800631924235">penelusuran <ph name="TEXT" /> dari histori</translation>
 <translation id="9069693763241529744">Diblokir oleh ekstensi</translation>
+<translation id="9073799351042754113">Anda telah memilih untuk menonaktifkan peringatan keamanan untuk situs ini.</translation>
 <translation id="9078964945751709336">Dibutuhkan informasi lebih lanjut</translation>
 <translation id="9080712759204168376">Ringkasan Pesanan</translation>
 <translation id="9089260154716455634">Kebijakan Waktu Nonaktif:</translation>

@@ -3402,9 +3402,9 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
       Saat mencetak dengan printer PostScript di <ph name="MS_WIN_NAME" />, metode pembuatan PostScript yang berbeda dapat memengaruhi performa pencetakan.
 
-      Jika kebijakan ini disetel ke Default, <ph name="PRODUCT_NAME" /> akan menggunakan sekumpulan opsi default saat membuat PostScript. Khusus untuk teks, teks akan selalu dirender menggunakan font Jenis 3.
+      Jika kebijakan ini disetel ke Default, <ph name="PRODUCT_NAME" /> akan menggunakan sekumpulan opsi default saat membuat PostScript. Khusus untuk teks, teks akan selalu dirender menggunakan font Type 3.
 
-      Jika kebijakan ini disetel ke Type42, <ph name="PRODUCT_NAME" /> akan merender teks menggunakan font Jenis 42 ketika memungkinkan. Tindakan ini dapat meningkatkan kecepatan pencetakan untuk beberapa printer PostScript.
+      Jika kebijakan ini disetel ke Type42, <ph name="PRODUCT_NAME" /> akan merender teks menggunakan font Type 42 jika memungkinkan. Tindakan ini dapat meningkatkan kecepatan pencetakan untuk beberapa printer PostScript.
 
       Jika kebijakan ini tidak disetel, <ph name="PRODUCT_NAME" /> akan berada dalam mode Default.</translation>
 <translation id="5227647876065695164">Kebijakan ini akan menentukan perilaku downgrade saluran rilis di perangkat yang terdaftar. Yang kami maksud downgrade saluran rilis adalah mengubah ke saluran yang lebih stabil, misalnya dari beta ke stabil.
@@ -5296,20 +5296,6 @@ Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Googl
 <translation id="7477231245051133709">Mengaktifkan fitur aksesibilitas audio mono</translation>
 <translation id="7477239290070847560">Tujuan protokol berbasis Zeroconf (mDNS + DNS-SD)</translation>
 <translation id="7485481791539008776">Aturan pemilihan printer default</translation>
-<translation id="7493995861907758679">Setelan ini memungkinkan perangkat memilih untuk mengupdate <ph name="PRODUCT_OS_NAME" /> ke versi target tertentu.
-
-      Jika kebijakan tidak disetel, perangkat akan diupdate sesuai dengan setelan lain atau ke versi terbaru yang tersedia.
-
-      Jika kebijakan disetel, perangkat akan diupdate ke versi yang dipilih.
-
-      Format yang tepat dari nilai kebijakan ini adalah detail implementasi layanan update dan dapat berubah. Nilai kebijakan ini tidak diproses di perangkat.
-
-      Jika digunakan bersama dengan <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" />, kebijakan ini akan diperiksa terlebih dahulu oleh layanan update.
-      Tidak seperti <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> (yang memungkinkan update minor), perangkat akan tetap menggunakan versi yang dipilih hingga nilai kebijakan ini diubah.
-
-      Jika digunakan bersama dengan <ph name="DEVICE_ROLLBACK_TO_TARGET_VERSION_POLICY_NAME" />, versi perangkat dapat dikembalikan ke versi tertentu yang sebelumnya.
-
-      Peringatan: Sebaiknya jangan mengonfigurasi batasan versi karena dapat mencegah pengguna menerima update software dan perbaikan keamanan penting. Membatasi update ke versi tertentu dapat membahayakan pengguna.</translation>
 <translation id="7506745375479451616">Kebijakan ini mengontrol perintah yang akan digunakan untuk membuka URL di <ph name="PRODUCT_NAME" /> saat beralih dari <ph name="IE_PRODUCT_NAME" />. Kebijakan ini dapat disetel ke jalur file yang dapat dijalankan atau <ph name="PRODUCT_NAME_PLACEHOLDER" /> untuk otomatis mendeteksi lokasi dari <ph name="PRODUCT_NAME" />.
 
       Tidak menyetel kebijakan berarti <ph name="IE_PRODUCT_NAME" /> otomatis mendeteksi jalur yang dapat dijalankan milik <ph name="PRODUCT_NAME" /> saat meluncurkan <ph name="PRODUCT_NAME" /> dari Internet Explorer.

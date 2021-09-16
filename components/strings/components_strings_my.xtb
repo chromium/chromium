@@ -1163,6 +1163,7 @@
           <ph name="LIST_ITEM" />အလုပ်ရှင် (သို့) ကျောင်းများက ကြည့်ရှုခြင်းများကို ခြေရာခံနိုင်သည်<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />အင်တာနက်ဝန်ဆောင်မှုပေးသူများက ကွန်ရက်ဒေတာစီးဆင်းမှုကို စောင့်ကြည့်နေနိုင်သည်<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="483241715238664915">သတိပေးချက်များ ဖွင့်ရန်</translation>
 <translation id="4838327282952368871">အိပ်မက်ဆန်ဆန်</translation>
 <translation id="4840250757394056958">သင့် ‘Chrome မှတ်တမ်း’ ကို ကြည့်ရန်</translation>
 <translation id="484462545196658690">အော်တို</translation>
@@ -1789,6 +1790,7 @@
 <translation id="7086090958708083563">အသုံးပြုသူက အပ်လုဒ်လုပ်ရန် တောင်းဆိုထားသည်</translation>
 <translation id="7087282848513945231">ကောင်တီ</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Chrome ဆက်တင်များတွင် ဝဘ်ဆိုက်အားလုံးရှိ ခွင့်ပြုချက်များနှင့် သိမ်းထားသောဒေတာများကို စီမံရန် Enter နှိပ်ပါ</translation>
+<translation id="7096937462164235847">ဤဝဘ်ဆိုက်၏ အထောက်အထားကို စိစစ်မထားပါ။</translation>
 <translation id="7108338896283013870">ဝှက်ထားရန်</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> သည် သင်၏ကင်မရာကို အသုံးပြုလိုသည်</translation>
 <translation id="7108819624672055576">နောက်ဆက်တွဲတစ်ခုက ခွင့်ပြုထားခြင်းဖြစ်သည်</translation>
@@ -2366,6 +2368,7 @@
 <translation id="9065203028668620118">ပြင်ဆင်ရန်</translation>
 <translation id="9065745800631924235">မှတ်တမ်းမှ <ph name="TEXT" /> ရှာဖွေမှု</translation>
 <translation id="9069693763241529744">နောက်ဆက်တွဲတစ်ခုက ပိတ်ဆို့ထားခြင်းဖြစ်သည်</translation>
+<translation id="9073799351042754113">ဤဝဘ်ဆိုက်အတွက် လုံခြုံရေးသတိပေးချက်များကို ပိတ်ရန် သင်ရွေးချယ်ထားပါသည်။</translation>
 <translation id="9078964945751709336">နောက်ထပ် အချက်အလက်များ လိုအပ်ပါသည်</translation>
 <translation id="9080712759204168376">မှာယူမှု စုစုပေါင်း</translation>
 <translation id="9089260154716455634">နားချိန် မူဝါဒ−</translation>

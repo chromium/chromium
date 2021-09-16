@@ -34,6 +34,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> inamdhibiti mtumiaji huyu na huenda ikadhibiti mipangilio na kufuatilia shughuli za mtumiaji kwa mbali.</translation>
 <translation id="150962533380566081">PUK si sahihi.</translation>
 <translation id="1510238584712386396">Kizindua</translation>
+<translation id="155865706765934889">Touchpad</translation>
 <translation id="1600964289716072707">Weka ukurasa mwingine kwenye kichanganuzi kisha uchague "Changanua" ili uongeze ukurasa.</translation>
 <translation id="1621067168122174824">Tekeleza jaribio la Kuchaji</translation>
 <translation id="1639239467298939599">Inapakia</translation>
@@ -45,6 +46,7 @@
 <translation id="1706391837335750954">Kisuluhishaji cha DNS Kinapatikana</translation>
 <translation id="1715359911173058521">Hitilafu ya kuwasiliana na kichanganuzi imetokea. Kagua muunganisho wa mtandao au USB kisha ujaribu tena.</translation>
 <translation id="1717874160321062422">Inadhibitiwa na <ph name="FIRST_MANAGER" /> na <ph name="SECOND_MANAGER" /></translation>
+<translation id="1726100011689679555">Seva za majina</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Inaghairi uchanganuzi</translation>
@@ -152,6 +154,7 @@
 <translation id="39823212440917567">Kazi za kuchapisha zilizohifadhiwa kwa zaidi ya siku <ph name="NUMBER_OF_DAYS" /> zitaondolewa</translation>
 <translation id="4003384961948020559">Haijakamilika - Sehemu ya kutoa karatasi imejaa</translation>
 <translation id="4034824040120875894">Printa</translation>
+<translation id="4050980775484079270">Usuluhishaji wa DNS kwenye ARC</translation>
 <translation id="409427325554347132">Hifadhi maelezo ya jaribio</translation>
 <translation id="4131410914670010031">Nyeusi na nyeupe</translation>
 <translation id="4145784616224233563">Kinga mtandao ya HTTP</translation>
@@ -389,11 +392,13 @@
 <translation id="7805768142964895445">Hali</translation>
 <translation id="7819857487979277519">PSK (WPA au RSN)</translation>
 <translation id="7835501727204647447">Sakinisha CloudReady</translation>
+<translation id="7846634333498149051">Kibodi</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Aina ya mtoa huduma</translation>
 <translation id="7895471513946376273">Gundua zana za kuchora na kusanifu</translation>
 <translation id="7936303884198020182">Hakuna seva za majina zilizopatikana</translation>
 <translation id="7960831585769876809">Halijoto</translation>
+<translation id="7978412674231730200">Ufunguo binafsi</translation>
 <translation id="7994702968232966508">Mbinu ya EAP</translation>
 <translation id="8020238979854764615">Hitilafu fulani imetokea. Tafadhali jaribu tena kwa kuchagua picha zingine.</translation>
 <translation id="802154636333426148">Haikuweza kupakua</translation>
@@ -448,6 +453,7 @@
 <translation id="8818152010000655963">Mandhari</translation>
 <translation id="8834539327799336565">Vilivyounganishwa kwa sasa</translation>
 <translation id="8845001906332463065">Pata usaidizi</translation>
+<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Jaribio limefaulu</translation>
 <translation id="8898840733695078011">Uthabiti wa mawimbi</translation>

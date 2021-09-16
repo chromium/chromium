@@ -1163,6 +1163,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
           <ph name="LIST_ITEM" />Työnantajat tai koulut voivat seurata selaustoimintaa<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Internetpalveluntarjoajat voivat valvoa verkkoliikennettä<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="483241715238664915">Laita varoitukset päälle</translation>
 <translation id="4838327282952368871">Unenomainen</translation>
 <translation id="4840250757394056958">Tarkista Chrome-historiasi</translation>
 <translation id="484462545196658690">Automaattinen</translation>
@@ -1790,6 +1791,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="7086090958708083563">Käyttäjä pyysi lataamista</translation>
 <translation id="7087282848513945231">Piirikunta</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, paina sarkainta ja Enter, niin voit ylläpitää sivustoille tallennettuja lupia ja dataa Chromen asetuksista</translation>
+<translation id="7096937462164235847">Tämän sivuston identiteettiä ei ole vahvistettu.</translation>
 <translation id="7108338896283013870">Piilota</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> haluaa käyttää kameraasi.</translation>
 <translation id="7108819624672055576">Laajennuksen sallima</translation>
@@ -2366,6 +2368,7 @@ Lisätietoja:
 <translation id="9065203028668620118">Muokkaa</translation>
 <translation id="9065745800631924235">Historiasta löydetty haku <ph name="TEXT" /></translation>
 <translation id="9069693763241529744">Laajennuksen estämä</translation>
+<translation id="9073799351042754113">Olet laittanut turvallisuusvaroitukset pois päältä sivustolla.</translation>
 <translation id="9078964945751709336">Lisätietoja tarvitaan</translation>
 <translation id="9080712759204168376">Tilauksen yhteenveto</translation>
 <translation id="9089260154716455634">Ei-aktiivisen ajan käytäntö:</translation>

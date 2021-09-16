@@ -334,7 +334,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1354045473509304750">Nadal zezwalaj witrynie <ph name="HOST" /> na używanie kamery i poruszanie nią</translation>
 <translation id="1355088139103479645">Usunąć wszystkie dane?</translation>
 <translation id="1355466263109342573">Wtyczka <ph name="PLUGIN_NAME" /> jest zablokowana</translation>
-<translation id="1356178530321889280">Kliknij prawym przyciskiem myszy i wybierz „Przeszukaj część strony Obiektywem Google”, aby przeszukać dowolny obszar witryny i dowiedzieć się więcej o treściach wizualnych, które wyświetlają się, gdy przeglądasz internet i robisz w nim zakupy.</translation>
 <translation id="1358741672408003399">Pisownia i gramatyka</translation>
 <translation id="1359923111303110318">Twoje urządzenie można odblokować, używając funkcji Smart Lock. Aby to zrobić, naciśnij Enter.</translation>
 <translation id="1361164813881551742">Dodaj ręcznie</translation>
@@ -2720,6 +2719,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3842552989725514455">Czcionka szeryfowa</translation>
 <translation id="3843464315703645664">Dozwolone wewnętrznie</translation>
 <translation id="3844888638014364087">Wstawiono emotikon</translation>
+<translation id="384513009320852920">Sprawdź czy urządzenie Bluetooth znajduje się w pobliżu i ma włączony tryb parowania. <ph name="BEGIN_LINK_LEARN_MORE" />Więcej informacji<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Pobierz narzędzia do tworzenia stron internetowych, aplikacji na Androida itp. Instalacja Linuksa spowoduje pobranie <ph name="DOWNLOAD_SIZE" /> danych.</translation>
 <translation id="3847319713229060696">Pomóż poprawić bezpieczeństwo wszystkich użytkowników internetu</translation>
 <translation id="3848547754896969219">Otwórz w oknie &amp;incognito</translation>

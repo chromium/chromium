@@ -410,6 +410,7 @@
 <translation id="4129129681837227511">如要在鎖定畫面上查看通知，請將裝置解鎖並修改相關設定</translation>
 <translation id="4146833061457621061">播放音樂</translation>
 <translation id="4157822100366708405">深色主題設定</translation>
+<translation id="4173958948577803258">四</translation>
 <translation id="4181841719683918333">語言</translation>
 <translation id="4195877955194704651">自動點擊按鈕</translation>
 <translation id="4197790712631116042">關閉</translation>
@@ -748,6 +749,7 @@
 <translation id="6751052314767925245">由系統管理員強制執行</translation>
 <translation id="6751826523481687655">效能追蹤已啟用</translation>
 <translation id="6752912906630585008">已移除桌面 <ph name="REMOVED_DESK" />，並與桌面 <ph name="RECEIVE_DESK" /> 合併</translation>
+<translation id="6754441615189976839">六</translation>
 <translation id="6757237461819837179">目前未播放任何媒體</translation>
 <translation id="6777216307882431711">為連接的 USB-C 裝置供電</translation>
 <translation id="6790428901817661496">播放</translation>
@@ -768,6 +770,7 @@
 <translation id="6910714959251846841">必須對你的裝置執行 Powerwash 才能安裝這項更新。進一步瞭解最新的 <ph name="SYSTEM_APP_NAME" />更新內容。</translation>
 <translation id="6919251195245069855">無法辨識你的智慧型卡片，請再試一次。</translation>
 <translation id="6921188888306725546">我們已改善鍵盤快速鍵功能</translation>
+<translation id="6929655271276551705">日期設定</translation>
 <translation id="6945221475159498467">選取</translation>
 <translation id="6961121602502368900">工作資料夾不支援將手機設為靜音</translation>
 <translation id="6961840794482373852">「Alt + 向上鍵」的鍵盤快速鍵已變更。如要使用 Page Up 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + 向上鍵。</translation>
@@ -785,6 +788,7 @@
 <translation id="703425375924687388"><ph name="QUERY_NAME" />，Google 助理</translation>
 <translation id="7042322267639375032">收合狀態區</translation>
 <translation id="7045595904618419789">啟用放大鏡</translation>
+<translation id="7055381872777910864">三</translation>
 <translation id="7055910611768509537">已超過一週未使用觸控筆</translation>
 <translation id="7066646422045619941">您的管理員已停用這個網路。</translation>
 <translation id="7067196344162293536">自動旋轉</translation>
@@ -853,6 +857,7 @@
 <translation id="7579778809502851308">擷取螢幕畫面</translation>
 <translation id="7590883480672980941">輸入法設定</translation>
 <translation id="7593891976182323525">搜尋鍵或 Shift 鍵</translation>
+<translation id="7595633564847427181">一</translation>
 <translation id="7600875258240007829">查看所有通知</translation>
 <translation id="7607002721634913082">已暫停</translation>
 <translation id="7618774594543487847">中間色</translation>

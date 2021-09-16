@@ -34,6 +34,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> จัดการผู้ใช้รายนี้อยู่และอาจจัดการการตั้งค่าและตรวจสอบกิจกรรมของผู้ใช้จากระยะไกล</translation>
 <translation id="150962533380566081">PUK ไม่ถูกต้อง</translation>
 <translation id="1510238584712386396">ตัวเรียกใช้งาน</translation>
+<translation id="155865706765934889">ทัชแพด</translation>
 <translation id="1600964289716072707">วางอีกหน้าบนสแกนเนอร์และเลือก "สแกนเพื่อเพิ่มหน้า"</translation>
 <translation id="1621067168122174824">ทดสอบการชาร์จแบตเตอรี่</translation>
 <translation id="1639239467298939599">กำลังโหลด</translation>
@@ -45,6 +46,7 @@
 <translation id="1706391837335750954">มีรีโซลเวอร์ DNS</translation>
 <translation id="1715359911173058521">เกิดปัญหาในการสื่อสารกับเครื่องสแกน ตรวจสอบการเชื่อมต่อเครือข่ายหรือ USB แล้วลองอีกครั้ง</translation>
 <translation id="1717874160321062422">จัดการโดย <ph name="FIRST_MANAGER" /> และ <ph name="SECOND_MANAGER" /></translation>
+<translation id="1726100011689679555">เซิร์ฟเวอร์ชื่อ</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">กำลังยกเลิกการสแกน</translation>
@@ -391,11 +393,13 @@
 <translation id="7805768142964895445">สถานะ</translation>
 <translation id="7819857487979277519">PSK (WPA หรือ RSN)</translation>
 <translation id="7835501727204647447">ติดตั้ง CloudReady</translation>
+<translation id="7846634333498149051">แป้นพิมพ์</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">ประเภทผู้ให้บริการ</translation>
 <translation id="7895471513946376273">สำรวจเครื่องมือสำหรับการวาดภาพและการออกแบบ</translation>
 <translation id="7936303884198020182">ไม่พบเนมเซิร์ฟเวอร์</translation>
 <translation id="7960831585769876809">อุณหภูมิ</translation>
+<translation id="7978412674231730200">กุญแจส่วนตัว</translation>
 <translation id="7994702968232966508">วิธีการ EAP</translation>
 <translation id="8020238979854764615">เกิดข้อผิดพลาด โปรดเลือกรูปอื่นเพื่อลองอีกครั้ง</translation>
 <translation id="802154636333426148">การดาวน์โหลดล้มเหลว</translation>
@@ -450,6 +454,7 @@
 <translation id="8818152010000655963">วอลเปเปอร์</translation>
 <translation id="8834539327799336565">เชื่อมต่ออยู่</translation>
 <translation id="8845001906332463065">ขอความช่วยเหลือ</translation>
+<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">การทดสอบสำเร็จ</translation>
 <translation id="8898840733695078011">ความแรงสัญญาณ</translation>

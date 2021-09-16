@@ -332,7 +332,6 @@
 <translation id="1354045473509304750">อนุญาตให้ <ph name="HOST" /> ใช้และเคลื่อนย้ายกล้องของคุณต่อไป</translation>
 <translation id="1355088139103479645">ลบข้อมูลทั้งหมดใช่ไหม</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> ถูกบล็อก</translation>
-<translation id="1356178530321889280">คลิกขวาแล้วเลือก "ค้นหาบางส่วนของหน้าด้วย Google Lens" เพื่อค้นหาภูมิภาคของเว็บไซต์หากต้องการดูข้อมูลเพิ่มเติมเกี่ยวกับเนื้อหาภาพที่คุณเห็นขณะเรียกดูและเลือกซื้อในเว็บ</translation>
 <translation id="1358741672408003399">ตัวสะกดและไวยากรณ์</translation>
 <translation id="1359923111303110318">อุปกรณ์ปลดล็อกได้ด้วย Smart Lock กด Enter เพื่อปลดล็อก</translation>
 <translation id="1361164813881551742">เพิ่มด้วยตนเอง</translation>
@@ -5983,7 +5982,7 @@
 <translation id="7458168200501453431">ใช้โปรแกรมตรวจตัวสะกดแบบเดียวกับ Google Search ข้อความที่คุณพิมพ์ในเบราว์เซอร์จะส่งไปยัง Google</translation>
 <translation id="7458715171471938198">คืนค่าแอปไหม</translation>
 <translation id="7460045493116006516">ธีมที่คุณติดตั้งอยู่ตอนนี้</translation>
-<translation id="7461924472993315131">ตรึง</translation>
+<translation id="7461924472993315131">ปักหมุด</translation>
 <translation id="746216226901520237">โทรศัพท์จะปลดล็อก <ph name="DEVICE_TYPE" /> ของคุณในครั้งถัดไป คุณปิด Smart Lock ได้ในการตั้งค่า</translation>
 <translation id="7464637891177137294">บันทึกไว้ในบัญชี Google ของคุณ <ph name="ACCOUNT" /></translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{มีแท็บที่เปิดอยู่ # แท็บ กดเพื่อสลับแนวแท็บ}other{มีแท็บที่เปิดอยู่ # แท็บ กดเพื่อสลับแนวแท็บ}}</translation>
@@ -6400,7 +6399,7 @@
 <translation id="7861215335140947162">&amp;ดาวน์โหลด</translation>
 <translation id="7861846108263890455">ภาษาของบัญชี Google</translation>
 <translation id="7864539943188674973">ปิดใช้งานบลูทูธ</translation>
-<translation id="7865127013871431856">ตัวเลือกการแปลภาษา</translation>
+<translation id="7865127013871431856">ตัวเลือกแปลภาษา</translation>
 <translation id="7869143217755017858">ปิดใช้โหมดมืด</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - จับคู่แล้ว</translation>
 <translation id="7870730066603611552">ตรวจสอบตัวเลือกการซิงค์หลังการตั้งค่า</translation>

@@ -334,7 +334,6 @@
 <translation id="1354045473509304750">Luba hostil <ph name="HOST" /> ka edaspidi minu kaamerat kasutada ja liigutada</translation>
 <translation id="1355088139103479645">Kas kustutada kõik andmed?</translation>
 <translation id="1355466263109342573">Pistikprogramm <ph name="PLUGIN_NAME" /> on blokeeritud</translation>
-<translation id="1356178530321889280">Tehke paremklikk ning valige käsk „Otsi Google'i Lensiga lehe piiratud osas“, et otsida saidi konkreetset piirkonda ja saada lisateavet visuaalse sisu kohta, mida sirvimisel ja veebis osteldes näete.</translation>
 <translation id="1358741672408003399">Õigekiri ja grammatika</translation>
 <translation id="1359923111303110318">Teie seadme saab avada funktsiooniga Smart Lock. Avamiseks vajutage sisestusklahvi.</translation>
 <translation id="1361164813881551742">Käsitsi lisamine</translation>
@@ -2729,6 +2728,7 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="3842552989725514455">Seriifidega font</translation>
 <translation id="3843464315703645664">Sisemiselt lubamisloendisse lisatud</translation>
 <translation id="3844888638014364087">Emotikon on sisestatud</translation>
+<translation id="384513009320852920">Veenduge, et teie Bluetooth-seade oleks sidumisrežiimis ja läheduses. <ph name="BEGIN_LINK_LEARN_MORE" />Lisateave<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Hankige tööriistad veebisaitide, Androidi rakenduste ja muu arendamiseks. Linuxi installimisel laaditakse alla <ph name="DOWNLOAD_SIZE" /> ulatuses andmeid.</translation>
 <translation id="3847319713229060696">Aidake veebi kõigi jaoks turvalisemaks muuta</translation>
 <translation id="3848547754896969219">Ava &amp;inkognito aknas</translation>

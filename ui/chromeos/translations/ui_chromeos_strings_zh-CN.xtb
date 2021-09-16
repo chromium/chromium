@@ -287,6 +287,7 @@
 <translation id="3549797760399244642">转到 drive.google.com...</translation>
 <translation id="3553048479571901246">如需使用 <ph name="APP_NAME" /> 打开文件，请先将文件复制到“Windows 文件”文件夹。</translation>
 <translation id="3556731189587832921">英语（美国）国际 PC 键盘</translation>
+<translation id="3567221313191587603">如果想在离线状态下使用您的文件，请先选择相应文件，然后将“<ph name="OFFLINE_CHECKBOX_NAME" />”所对应的切换开关上的滑块滑至开启位置。</translation>
 <translation id="357479282490346887">立陶宛语</translation>
 <translation id="3592251141500063301">无法将文件“<ph name="FILE_NAME" />”设为“可离线使用”</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -397,6 +398,7 @@
 <translation id="4642769377300286600">正在安装移动网络配置文件，第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），网络名称为“<ph name="NETWORK_NAME" />”，网络服务提供商为“<ph name="NETWORK_PROVIDER_NAME" />”</translation>
 <translation id="4646813851450205600">捷克语 Qwerty 键盘</translation>
 <translation id="4656293982926141856">此计算机</translation>
+<translation id="4656777537938206294">将文件设为“可离线使用”</translation>
 <translation id="4669606053856530811">“<ph name="SOURCE_NAME" />”的成员将不再能够访问这些内容（除非与他们共享了这些内容）。</translation>
 <translation id="4690246192099372265">瑞典语</translation>
 <translation id="4693155481716051732">寿司</translation>

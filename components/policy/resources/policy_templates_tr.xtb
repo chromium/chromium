@@ -5238,20 +5238,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="7477231245051133709">Mono ses erişilebilirlik özelliklerini etkinleştir</translation>
 <translation id="7477239290070847560">Zeroconf tabanlı (mDNS + DNS-SD) protokol hedefleri</translation>
 <translation id="7485481791539008776">Varsayılan yazıcı seçimi için kurallar</translation>
-<translation id="7493995861907758679">Bu ayar, cihazların güncelleme yapacakları belirli bir <ph name="PRODUCT_OS_NAME" /> hedef sürümünü seçmesine olanak tanır.
-
-      Ayarlanmadığında cihazlar diğer ayarlara veya mevcut en son sürüme göre güncellenir.
-
-      Ayarlandığında cihazlar seçili bir sürüme güncellenir.
-
-      Bu politika değerinin tam biçimi, güncelleme hizmetinin uygulanma ayrıntıları olup değişebilir. Politika değeri cihazda işlenmez.
-
-      <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> ile birlikte kullanılırsa bu politika önce güncelleme hizmeti tarafından kontrol edilir.
-      Küçük güncellemelere izin verebilen<ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> politikasının aksine bu politikanın değeri değiştirilene kadar cihazlar seçili sürümde kalır.
-
-      <ph name="DEVICE_ROLLBACK_TO_TARGET_VERSION_POLICY_NAME" /> ile birlikte kullanılırsa cihaz sürümü belirli bir eski sürüme döndürülebilir.
-
-      Uyarı: Kullanıcıların yazılım güncellemelerini ve kritik güvenlik düzeltmelerini almasını engelleyebileceği için sürüm kısıtlamalarının yapılandırılması önerilmez. Güncellemelerin belirli bir sürümle kısıtlanması kullanıcıları riske atabilir.</translation>
 <translation id="7506745375479451616">Bu politika, <ph name="IE_PRODUCT_NAME" /> tarayıcısından geçiş yaparken <ph name="PRODUCT_NAME" /> içindeki açık URL'lerin kullanılmasına yönelik komutu kontrol eder. Bu politika, yürütülebilir dosya yolu olarak veya <ph name="PRODUCT_NAME" /> tarayıcısının konumunu otomatik olarak algılamak için <ph name="PRODUCT_NAME_PLACEHOLDER" /> değerine ayarlanabilir.
 
       Bu politika ayarlanmadan bırakılırsa <ph name="IE_PRODUCT_NAME" />, Internet Explorer'dan <ph name="PRODUCT_NAME" /> tarayıcısını açarken <ph name="PRODUCT_NAME" /> tarayıcısının kendi yürütülebilir yolunu otomatik olarak algılar.

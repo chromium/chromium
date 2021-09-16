@@ -170,6 +170,7 @@ Se a caixa que hai a carón de <ph name="SERVICE_SCRIPT_NAME" /> xa está selecc
 Para conceder este permiso, fai clic no botón <ph name="BUTTON_NAME" />, situado abaixo. No panel de preferencias Accesibilidade, marca a caixa situada xunto a <ph name="SERVICE_SCRIPT_NAME" />.
 
 Se a caixa que hai a carón de <ph name="SERVICE_SCRIPT_NAME" /> xa está seleccionada, desmárcaa e márcaa de novo.</translation>
+<translation id="8305209735512572429">Proceso remoto de Web Authentication</translation>
 <translation id="8383794970363966105">Para usar Chromoting, precisarás engadir unha conta de Google ao teu dispositivo.</translation>
 <translation id="8386846956409881180">O host está configurado con credenciais de OAuth non válidas.</translation>
 <translation id="8397385476380433240">Conceder permiso ao <ph name="PRODUCT_NAME" /></translation>

@@ -34,6 +34,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> энэ хэрэглэгчийг удирддаг бөгөөд алсаас тохиргоог удирдаж, хэрэглэгчийн үйл ажиллагааг хянаж болзошгүй.</translation>
 <translation id="150962533380566081">PUK буруу байна.</translation>
 <translation id="1510238584712386396">Launcher</translation>
+<translation id="155865706765934889">Мэдрэгч самбар</translation>
 <translation id="1600964289716072707">Хуудас нэмэхийн тулд сканнер дээр өөр хуудас байрлуулж, Скан хийхийг сонгоно уу.</translation>
 <translation id="1621067168122174824">Цэнэглэх туршилтыг ажиллуулах</translation>
 <translation id="1639239467298939599">Ачаалж байна</translation>
@@ -45,6 +46,7 @@
 <translation id="1706391837335750954">DNS тайлагчийг үзүүлэх</translation>
 <translation id="1715359911173058521">Сканнертай холбогдоход асуудал гарлаа. Сүлжээ эсвэл USB холболтыг шалгаад, дахин оролдоно уу.</translation>
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> болон <ph name="SECOND_MANAGER" />-р удирддаг</translation>
+<translation id="1726100011689679555">Нэрийн сервер</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Хромэ</translation>
 <translation id="1792647875738159689">Скан хийхийг цуцалж байна</translation>
@@ -391,11 +393,13 @@
 <translation id="7805768142964895445">Байр байдал</translation>
 <translation id="7819857487979277519">PSK (WPA эсвэл RSN)</translation>
 <translation id="7835501727204647447">CloudReady-г суулгах</translation>
+<translation id="7846634333498149051">Гар</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Нийлүүлэгчийн төрөл</translation>
 <translation id="7895471513946376273">Дүрс болон дизайны хэрэгсэлтэй танилцаарай</translation>
 <translation id="7936303884198020182">DNS олдсонгүй</translation>
 <translation id="7960831585769876809">Температур</translation>
+<translation id="7978412674231730200">Хувийн түлхүүр</translation>
 <translation id="7994702968232966508">EAP арга</translation>
 <translation id="8020238979854764615">Алдаа гарлаа. Өөр зураг сонгож, дахин оролдоно уу.</translation>
 <translation id="802154636333426148">Татаж чадсангүй</translation>
@@ -450,6 +454,7 @@
 <translation id="8818152010000655963">Дэлгэцийн зураг</translation>
 <translation id="8834539327799336565">Одоогоор холбогдсон</translation>
 <translation id="8845001906332463065">Тусламж авах</translation>
+<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Туршилт амжилттай боллоо</translation>
 <translation id="8898840733695078011">Дохионы хүч</translation>

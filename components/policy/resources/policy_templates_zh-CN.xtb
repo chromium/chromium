@@ -326,6 +326,15 @@
 
       如果您通过其他方式（例如，通过组合键）开启无障碍功能，无障碍选项会一直显示在系统任务栏菜单中。</translation>
 <translation id="1449777485284610883">允许安装和更新不在 Chrome 网上应用店托管的扩展程序</translation>
+<translation id="1451113827539677573">控制 <ph name="PRODUCT_NAME" /> 在 <ph name="MS_WIN_NAME" /> 上的打印方式。
+
+      当在 <ph name="MS_WIN_NAME" /> 上通过非 PostScript 打印机进行打印时，有时需要将打印任务光栅化才能正确打印。
+
+      当此政策设为 Full 时，<ph name="PRODUCT_NAME" /> 将在必要时进行整页光栅化。
+
+      当此政策设为 Fast 时，<ph name="PRODUCT_NAME" /> 会尽量避免执行光栅化。减少光栅化操作有助于缩小打印任务的规模并提高打印速度。
+
+      如果您未设置此政策，<ph name="PRODUCT_NAME" /> 将处于 Full 模式。</translation>
 <translation id="1456822151187621582">Windows（<ph name="PRODUCT_OS_NAME" />客户端）：</translation>
 <translation id="1464848559468748897">控制<ph name="PRODUCT_OS_NAME" />设备上多个人资料会话中的用户行为。
 
@@ -1115,6 +1124,13 @@
 <translation id="2355876547176311490">禁止远程访问主机使用中继服务器</translation>
 <translation id="2358176879566587521">此政策已被移除。它与这个版本的 <ph name="PRODUCT_NAME" /> 不兼容。如需了解详情，请访问 https://support.google.com/chrome/a/answer/7643500</translation>
 <translation id="2362469626417133796">重新启动时间范围</translation>
+<translation id="2363928351203698966">如果此政策设为有效值，<ph name="PRODUCT_NAME" /> 将不会使用低于指定版本的 SSL/TLS 版本。无法识别的值都会被忽略。
+
+      如果此政策未设置，<ph name="PRODUCT_NAME" /> 将会针对 TLS 1.0 和 TLS 1.1 显示错误，但用户可以自行绕过。
+
+      如果此政策设为“tls1.2”，用户将无法绕过该错误。
+
+      自 91 版起，您已无法再将此政策设为“tls1”或“tls1.1”。我们不再支持禁止显示 TLS 1.0/1.1 警告的功能。</translation>
 <translation id="2364639863953745682">Google 助理新手入门体验的模式</translation>
 <translation id="2384233438419344179">如果此政策已启用，系统会阻止来自浏览器地址栏所含网域之外的网页元素设置 Cookie。如果此政策已停用，系统会允许这些元素设置 Cookie，并会阻止用户更改此设置。
 
@@ -1797,6 +1813,7 @@
 <translation id="3146711617256415776">不允许在使用“随选朗读”功能时使用增强型网络文字转语音的语音</translation>
 <translation id="3152425128389603870">使“统一桌面”功能可供用户使用，并使其在默认情况下处于启用状态</translation>
 <translation id="3159375329008977062">允许用户通过界面导出/导入 Crostini 容器</translation>
+<translation id="3164531087779621747">打印 PostScript 模式</translation>
 <translation id="3165808775394012744">将这些政策列于此处是为了方便您移除它们。</translation>
 <translation id="3166210414652928099">允许用户使用来源不受信任的 Android 应用</translation>
 <translation id="316778957754360075">此设置从 <ph name="PRODUCT_NAME" />版本 29 起开始弃用。我们建议您将托管 CRX 软件包的网站包含在 ExtensionInstallSources 中，然后将上述软件包的直接下载链接放在某网页上，从而建立一个由企业托管的扩展程序/应用包。相关网页的启动器可使用 ExtensionInstallForcelist 政策创建。</translation>
@@ -3328,6 +3345,15 @@
 <translation id="5213038356678567351">始终不应触发浏览器切换的网站。</translation>
 <translation id="5219844027738217407">对于 Android 应用，此政策仅会影响麦克风。当此政策设为 true 时，系统会针对所有 Android 应用（无一例外）将麦克风设为静音。</translation>
 <translation id="5220594484746830711">允许以 <ph name="BLANK_PAGE_NAME" /> 为目标打开的弹出式窗口与打开窗口的网页互动，但前提是这些网页已明确接受此类互动</translation>
+<translation id="5227124062673546005">控制 <ph name="PRODUCT_NAME" /> 在 <ph name="MS_WIN_NAME" /> 上的打印方式。
+
+      当在 <ph name="MS_WIN_NAME" /> 上通过 PostScript 打印机进行打印时，打印性能可能会因 PostScript 生成方法而异。
+
+      当此政策设为 Default 时，<ph name="PRODUCT_NAME" /> 将会使用一组默认选项生成 PostScript。尤其需要说明的是，系统将始终使用 Type 3 字体呈现文本。
+
+      当此政策设为 Type42 时，<ph name="PRODUCT_NAME" /> 将尽可能使用 Type 42 字体呈现文本。对于某些 PostScript 打印机而言，这样做应该会提高打印速度。
+
+      如果您未设置此政策，<ph name="PRODUCT_NAME" /> 将处于 Default 模式。</translation>
 <translation id="5227647876065695164">此政策旨在指定已注册设备上的版本降级行为。我们推出版本降级功能的初衷是让您能够切换到更稳定的版本，例如从 Beta 版切换到稳定版。
 
       此政策的值不仅会影响用户启动的版本降级，还会影响管理员启动的版本降级。
@@ -4269,6 +4295,7 @@
       启用此政策还会开启通知功能，在 SAML 密码即将到期时向 SAML 用户发送提醒，以便他们能够在会话期间更改密码，立即处理密码到期问题。不过，除非 SAML 身份提供商在 SAML 登录流程中将密码到期信息发送给设备，否则系统不会显示此类通知。
 
       如果停用或不设置此政策，用户将无法在 chrome://password-change 上更改 SAML 密码，当 SAML 密码即将到期时，系统也不会显示任何通知。</translation>
+<translation id="6457477291648119596">Type42</translation>
 <translation id="6458361632497500815">如果此政策已启用或未设置，系统会允许所有用户使用 <ph name="PRODUCT_CROSTINI_NAME" />，前提是 <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" />、<ph name="CROSTINI_ALLOWED_POLICY_NAME" /> 和 <ph name="DEVICE_UNAFFILIATED_CROSTINI_ALLOWED_POLICY_NAME" /> 这 3 项政策均已启用。如果此政策已停用，意味着独立用户无法使用 <ph name="PRODUCT_CROSTINI_NAME" />。如果将此政策的状态改为已停用，此政策将开始应用于新启动的 <ph name="PRODUCT_CROSTINI_NAME" /> 容器，而非应用于已在运行的容器。</translation>
 <translation id="6464074037294098618">自动填充地址信息</translation>
 <translation id="6467613372414922590">允许使用用户级本地消息传递主机（安装时没有管理员权限）</translation>
@@ -5177,20 +5204,6 @@
 <translation id="7477231245051133709">启用“单声道音频”无障碍功能</translation>
 <translation id="7477239290070847560">基于 Zeroconf (mDNS + DNS-SD) 的协议目的地</translation>
 <translation id="7485481791539008776">默认打印机选择规则</translation>
-<translation id="7493995861907758679">此设置允许设备选择要更新到的特定 <ph name="PRODUCT_OS_NAME" />目标版本。
-
-      如果此政策未设置，设备将会按照其他设置进行更新，或更新到最新的可用版本。
-
-      如果此政策已设置，设备将会更新到所选版本。
-
-      此政策的值的确切格式是相应更新服务的实现细节，未必会一成不变。此政策的值不是在设备上处理的。
-
-      如果此政策与 <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> 搭配使用，相应更新服务会先查看此政策。
-      与可能会允许进行次要更新的 <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> 不同，采用此政策的设备会保持在所选版本上，直到此政策的值改变为止。
-
-      如果此政策与 <ph name="DEVICE_ROLLBACK_TO_TARGET_VERSION_POLICY_NAME" /> 搭配使用，设备版本可还原到特定的旧版本。
-
-      警告：最好不要配置版本限制，因为这些限制可能会妨碍用户接收软件更新以及重要的安全性修补程序。将所能更新到的版本限制为特定版本可能会将用户置于风险之中。</translation>
 <translation id="7506745375479451616">此政策旨在控制从 <ph name="IE_PRODUCT_NAME" /> 切换至 <ph name="PRODUCT_NAME" /> 时应使用哪个命令打开网址。此政策可设为一个可执行文件路径，也可设为 <ph name="PRODUCT_NAME_PLACEHOLDER" /> 以自动检测 <ph name="PRODUCT_NAME" /> 的位置。
 
       如果您不设置此政策，当从 Internet Explorer 中启动 <ph name="PRODUCT_NAME" /> 时，<ph name="IE_PRODUCT_NAME" /> 将会自动检测 <ph name="PRODUCT_NAME" /> 自有的可执行文件路径。

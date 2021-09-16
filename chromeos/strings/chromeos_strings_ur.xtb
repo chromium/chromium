@@ -34,6 +34,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> اس صارف کا نظم کرتا ہے اور دور سے ترتیبات کا نظم اور صارف کی سرگرمی کو مانیٹر کر سکتا ہے۔</translation>
 <translation id="150962533380566081">‏غلط PUK۔</translation>
 <translation id="1510238584712386396">لانچر</translation>
+<translation id="155865706765934889">ٹچ پیڈ</translation>
 <translation id="1600964289716072707">اسکینر پر کوئی دوسرا صفحہ رکھیں اور صفحہ شامل کرنے کیلئے 'اسکین کریں' منتخب کریں۔</translation>
 <translation id="1621067168122174824">چارج ٹیسٹ چلائیں</translation>
 <translation id="1639239467298939599">لوڈ ہو رہی ہے</translation>
@@ -45,6 +46,7 @@
 <translation id="1706391837335750954">‏DNS ریزولور دستیاب ہے</translation>
 <translation id="1715359911173058521">‏اسکینر کے ساتھ مواصلت کرنے میں ایک مسئلہ در پیش ہے۔ نیٹ ورک یا USB کنکشن چیک کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> اور <ph name="SECOND_MANAGER" /> کے زیر انتظام ہے</translation>
+<translation id="1726100011689679555">نام سرورز</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">اسکین کا عمل منسوخ کیا جا رہا ہے</translation>
@@ -152,6 +154,7 @@
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> دن سے پرانی پرنٹ جابز کو ہٹا دیا جائے گا</translation>
 <translation id="4003384961948020559">ناکام ہو گیا - آؤٹ پٹ مکمل</translation>
 <translation id="4034824040120875894">پرنٹر</translation>
+<translation id="4050980775484079270">‏ARC DNS ریزولیوشن</translation>
 <translation id="409427325554347132">ٹیسٹ کی تفصیلات محفوظ کریں</translation>
 <translation id="4131410914670010031">سیاہ اور سفید</translation>
 <translation id="4145784616224233563">‏HTTP فائروال</translation>
@@ -162,6 +165,7 @@
 <translation id="4238516577297848345">کوئی پرنٹ جاب پیشرفت میں نہیں</translation>
 <translation id="4244962993387259361">‏میموری ٹیسٹ چلانے کیلئے آپ کے پاس کم از کم MB‏ 500 خالی ہونا ضروری ہے۔ اسپیس خالی کرنے کیلئے ترتیبات &gt; اسٹوریج مینیجمنٹ پر جائیں۔</translation>
 <translation id="4258281355379922695">‏HTTPS کی درخواستوں میں تاخیر</translation>
+<translation id="4271957103967917607">فُل اسکرین میں دیکھیں</translation>
 <translation id="4289540628985791613">عمومی جائزہ</translation>
 <translation id="4297501883039923494">رک گیا - نامعلوم خرابی</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> تصاویر</translation>
@@ -372,6 +376,7 @@
 <translation id="7550715992156305117">ڈائیگناسٹک روٹینز</translation>
 <translation id="7561454561030345039">یہ کارروائی آپ کے منتظم کے زیر انتظام ہے</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7574732568136198983">ARC Ping</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> باقی</translation>
 <translation id="7620771111601174153">مرکز امداد میں مزید جانیں</translation>
 <translation id="763165478673169849">آخری ری سیٹ کرنے کا وقت</translation>
@@ -387,11 +392,13 @@
 <translation id="7805768142964895445">صورتحال</translation>
 <translation id="7819857487979277519">‏‫‫PSK‎‏ (WPA یا RSN)‏</translation>
 <translation id="7835501727204647447">‏CloudReady انسٹال کریں</translation>
+<translation id="7846634333498149051">کی بورڈ</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">فراہم کنندہ کی قسم</translation>
 <translation id="7895471513946376273">ڈرائنگ اور ڈیزائن کے ٹولز دریافت کریں</translation>
 <translation id="7936303884198020182">کوئی نام سرور نہیں ملا</translation>
 <translation id="7960831585769876809">درجہ حرارت</translation>
+<translation id="7978412674231730200">نجی کلید</translation>
 <translation id="7994702968232966508">‏EAP طریقہ</translation>
 <translation id="8020238979854764615">ایک خرابی پیش آ گئی۔ براہ کرم دوسری تصاویر منتخب کرکے دوبارہ کوشش کریں۔</translation>
 <translation id="802154636333426148">ڈاؤن لوڈ ناکام ہوگیا</translation>
@@ -446,6 +453,7 @@
 <translation id="8818152010000655963">وال پیپر</translation>
 <translation id="8834539327799336565">فی الحال منسلک ہے</translation>
 <translation id="8845001906332463065">مدد حاصل کریں</translation>
+<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">ٹیسٹ کامیاب ہو گیا</translation>
 <translation id="8898840733695078011">سگنل کی مضبوطی</translation>

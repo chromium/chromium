@@ -328,7 +328,7 @@
 
       Si activas las funciones de accesibilidad por otros medios (por ejemplo, mediante una combinación de teclas), se mostrarán siempre las opciones de accesibilidad en el menú de la bandeja de entrada.</translation>
 <translation id="1449777485284610883">Permitir la instalación y las actualizaciones de extensiones que no están alojadas en Chrome Web Store</translation>
-<translation id="1451113827539677573">Controla la forma en que <ph name="PRODUCT_NAME" /> realiza trabajo de impresión en <ph name="MS_WIN_NAME" />.
+<translation id="1451113827539677573">Controla la forma en que <ph name="PRODUCT_NAME" /> realiza trabajos de impresión en <ph name="MS_WIN_NAME" />.
 
       A veces, cuando se usa una impresora que no es PostScript en <ph name="MS_WIN_NAME" />, deben rasterizarse los trabajos de impresión para imprimirlos correctamente.
 
@@ -3385,7 +3385,7 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
 <translation id="5213038356678567351">Sitios web que nunca deben abrirse en otro navegador</translation>
 <translation id="5219844027738217407">Para las apps de Android, esta política solo afecta al micrófono. Cuando esta política se establece como falsa, se silencia el micrófono para todas las apps de Android, sin excepciones.</translation>
 <translation id="5220594484746830711">Solo permitir que se abran ventanas emergentes destinadas a <ph name="BLANK_PAGE_NAME" /> para interactuar con la página que abrió la ventana emergente si esta página habilita esta interacción de forma explícita</translation>
-<translation id="5227124062673546005">Controla la forma en que <ph name="PRODUCT_NAME" /> realiza trabajo de impresión en <ph name="MS_WIN_NAME" />.
+<translation id="5227124062673546005">Controla la forma en que <ph name="PRODUCT_NAME" /> realiza trabajos de impresión en <ph name="MS_WIN_NAME" />.
 
       Cuando se usa una impresora que es PostScript en <ph name="MS_WIN_NAME" />, los diferentes métodos de generación de PostScript pueden afectar el rendimiento de los trabajos de impresión.
 
@@ -5278,20 +5278,6 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7477231245051133709">Habilita la función de accesibilidad de audio mono</translation>
 <translation id="7477239290070847560">Destinos de los protocolos basados en la no configuración (mDNS y DNS-SD)</translation>
 <translation id="7485481791539008776">Normas de selección de la impresora predeterminada</translation>
-<translation id="7493995861907758679">Esta configuración permite que los dispositivos seleccionen una versión de destino específica de <ph name="PRODUCT_OS_NAME" /> para realizar la actualización.
-
-      Si no estableces esta configuración, los dispositivos se actualizarán según otros parámetros de configuración o a la última versión disponible.
-
-      Si la estableces, los dispositivos se actualizarán a la versión seleccionada.
-
-      El formato exacto del valor de esta política es la información de una implementación del servicio de actualización. Este formato puede cambiar. El valor de la política no se procesa en el dispositivo.
-
-      El servicio de actualización verificará primero esta política si la utilizas junto con <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" />.
-      A diferencia de <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> (que es posible que admita actualizaciones menores), los dispositivos seguirán teniendo la versión seleccionada hasta que se cambie el valor de esta política.
-
-      Si la utilizas junto a <ph name="DEVICE_ROLLBACK_TO_TARGET_VERSION_POLICY_NAME" />, podrá revertirse la versión del dispositivo a una versión anterior específica.
-
-      Advertencia: No se recomienda configurar restricciones a una versión, dado que es posible que esta acción impida que los usuarios reciban actualizaciones de software y correcciones críticas de seguridad. Si restringes las actualizaciones a una versión específica, es posible que los usuarios queden expuestos a riesgos.</translation>
 <translation id="7506745375479451616">Esta política controla el comando que se usará en las URL abiertas en <ph name="PRODUCT_NAME" /> cuando te cambias de <ph name="IE_PRODUCT_NAME" />. Puedes establecer esta política como una ruta de archivos ejecutable o <ph name="PRODUCT_NAME_PLACEHOLDER" /> para que detecte la ubicación de <ph name="PRODUCT_NAME" /> de forma automática.
 
       Si no estableces la política, <ph name="IE_PRODUCT_NAME" /> detectará la propia ruta ejecutable de <ph name="PRODUCT_NAME" /> de forma automática cuando se ejecuta <ph name="PRODUCT_NAME" /> desde Internet Explorer.

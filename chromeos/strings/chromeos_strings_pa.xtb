@@ -34,6 +34,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> ਇਸ ਵਰਤੋਂਕਾਰ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਦਾ ਹੈ ਅਤੇ ਦੂਰ-ਦਰਾਡੇ ਤੋਂ ਸੈਟਿੰਗਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਅਤੇ ਵਰਤੋਂਕਾਰ ਸਰਗਰਮੀ ਦੀ ਨਿਗਰਾਨੀ ਕਰ ਸਕਦਾ ਹੈ।</translation>
 <translation id="150962533380566081">ਅਵੈਧ PUK।</translation>
 <translation id="1510238584712386396">ਲੌਂਚਰ</translation>
+<translation id="155865706765934889">ਟਚਪੈਡ</translation>
 <translation id="1600964289716072707">ਹੋਰ ਪੰਨੇ ਨੂੰ ਸਕੈਨਰ 'ਤੇ ਰੱਖੋ ਅਤੇ ਸ਼ਾਮਲ ਕਰਨ ਲਈ ਸਕੈਨ ਕਰੋ ਚੁਣੋ</translation>
 <translation id="1621067168122174824">ਚਾਰਜ ਟੈਸਟ ਚਲਾਓ</translation>
 <translation id="1639239467298939599">ਲੋਡ ਕਰ ਰਿਹਾ ਹੈ</translation>
@@ -45,6 +46,7 @@
 <translation id="1706391837335750954">DNS ਰਿਜ਼ੌਲਵਰਵ ਮੌਜੂਦ ਹੈ</translation>
 <translation id="1715359911173058521">ਸਕੈਨਰ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਵੇਲੇ ਕੋਈ ਸਮੱਸਿਆ ਆਈ। ਨੈੱਟਵਰਕ ਜਾਂ USB ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰਕੇ ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> ਅਤੇ <ph name="SECOND_MANAGER" /> ਵੱਲੋਂ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
+<translation id="1726100011689679555">ਨਾਮ ਸਰਵਰ</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">ਸਕੈਨਿੰਗ ਰੱਦ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
@@ -162,6 +164,7 @@
 <translation id="4238516577297848345">ਕੋਈ ਪ੍ਰਿੰਟ ਜੌਬ ਪ੍ਰਕਿਰਿਆ-ਅਧੀਨ ਨਹੀਂ ਹੈ</translation>
 <translation id="4244962993387259361">ਮੈਮੋਰੀ ਟੈਸਟ ਚਲਾਉਣ ਲਈ ਤੁਹਾਨੂੰ ਘੱਟੋ-ਘੱਟ 500 MB ਖਾਲੀ ਜਗ੍ਹਾ ਦੀ ਲੋੜ ਹੈ। ਜਗ੍ਹਾ ਖਾਲੀ ਕਰਨ ਲਈ, ਸੈਟਿੰਗਾਂ &gt; ਸਟੋਰੇਜ ਪ੍ਰਬੰਧਨ 'ਤੇ ਜਾਓ।</translation>
 <translation id="4258281355379922695">HTTP ਵਿਲੰਬਤਾ</translation>
+<translation id="4271957103967917607">ਪੂਰੀ ਸਕ੍ਰੀਨ ਦੇਖੋ</translation>
 <translation id="4289540628985791613">ਓਵਰਵਿਊ</translation>
 <translation id="4297501883039923494">ਬੰਦ ਹੋ ਗਿਆ - ਅਗਿਆਤ ਗੜਬੜ</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ਚਿੱਤਰ</translation>
@@ -372,6 +375,7 @@
 <translation id="7550715992156305117">ਤਸ਼ਖੀਸ ਸੰਬੰਧੀ ਨਿਯਮਬੱਧ ਕੰਮ</translation>
 <translation id="7561454561030345039">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਇਸ ਕਾਰਵਾਈ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਦਾ ਹੈ</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7574732568136198983">ARC ਪਿੰਗ</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> ਬਾਕੀ</translation>
 <translation id="7620771111601174153">ਮਦਦ ਕੇਂਦਰ ਵਿੱਚ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="763165478673169849">ਪਿਛਲੀ ਵਾਰ ਰੀਸੈੱਟ ਕਰਨ ਦਾ ਸਮਾਂ</translation>
@@ -387,11 +391,13 @@
 <translation id="7805768142964895445">ਸਥਿਤੀ</translation>
 <translation id="7819857487979277519">PSK (WPA ਜਾਂ RSN)</translation>
 <translation id="7835501727204647447">CloudReady ਨੂੰ ਸਥਾਪਤ ਕਰੋ</translation>
+<translation id="7846634333498149051">ਕੀ-ਬੋਰਡ</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">ਪ੍ਰਦਾਨਕ ਕਿਸਮ</translation>
 <translation id="7895471513946376273">ਚਿੱਤਰਕਾਰੀ ਅਤੇ ਡਿਜ਼ਾਈਨ ਸੰਬੰਧੀ ਟੂਲ ਲੱਭੋ</translation>
 <translation id="7936303884198020182">ਕੋਈ ਨਾਮ ਸਰਵਰ ਨਹੀਂ ਮਿਲਿਆ</translation>
 <translation id="7960831585769876809">ਤਾਪਮਾਨ</translation>
+<translation id="7978412674231730200">ਨਿੱਜੀ ਕੁੰਜੀ</translation>
 <translation id="7994702968232966508">EAP ਵਿਧੀ</translation>
 <translation id="8020238979854764615">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। ਕਿਰਪਾ ਕਰਕੇ ਹੋਰ ਚਿੱਤਰਾਂ ਦੀ ਚੋਣ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="802154636333426148">ਡਾਊਨਲੋਡ ਅਸਫਲ ਰਿਹਾ</translation>
@@ -446,6 +452,7 @@
 <translation id="8818152010000655963">ਵਾਲਪੇਪਰ</translation>
 <translation id="8834539327799336565">ਇਸ ਵੇਲੇ ਕਨੈਕਟ ਹੈ</translation>
 <translation id="8845001906332463065">ਮਦਦ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
+<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">ਟੈਸਟ ਸਫਲ ਰਿਹਾ</translation>
 <translation id="8898840733695078011">ਸਿਗਨਲ ਸ਼ਕਤੀ</translation>

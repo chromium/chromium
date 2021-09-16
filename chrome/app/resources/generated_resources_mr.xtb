@@ -334,7 +334,6 @@
 <translation id="1354045473509304750"><ph name="HOST" /> ला तुमचा कॅमेरा वापरण्याची आणि हलवण्याची अनुमती देणे सुरू ठेवा</translation>
 <translation id="1355088139103479645">सर्व डेटा हटवायचा का?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> अवरोधित केले आहे</translation>
-<translation id="1356178530321889280">तुम्ही वेबवर ब्राउझ किंवा खरेदी करत असताना तुम्हाला त्यावर दिसत असलेल्या व्हिज्युअल आशयाबद्दल अधिक जाणून घेण्यासाठी साइटचा कोणताही भाग शोधण्याकरिता राइट क्लिक करा आणि “पेजचा भाग Google Lens वापरून शोधा” हे निवडा.</translation>
 <translation id="1358741672408003399">शुद्धलेखन आणि व्याकरण</translation>
 <translation id="1359923111303110318">तुमचे डिव्हाइस Smart Lock वापरून अनलॉक केले जाऊ शकते. अनलॉक करण्यासाठी Enter दाबा.</translation>
 <translation id="1361164813881551742">व्यक्तिचलितपणे जोडा</translation>
@@ -2737,6 +2736,7 @@
 <translation id="3842552989725514455">Serif font</translation>
 <translation id="3843464315703645664">अंतर्गतरीत्या अनुमती दिलेली सूची</translation>
 <translation id="3844888638014364087">इमोजी घातली</translation>
+<translation id="384513009320852920">तुमचे ब्लूटूथ डिव्‍हाइस हे पेअरिंग मोडमध्ये आणि जवळपास असल्याची खात्री करा. <ph name="BEGIN_LINK_LEARN_MORE" />अधिक जाणून घ्या<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">वेबसाइट, Android ॲप्स आणि बरेच काही विकसित करण्यासाठी टूल मिळवा. Linux इंस्टॉल केल्याने <ph name="DOWNLOAD_SIZE" /> डेटा डाउनलोड केला जाईल.</translation>
 <translation id="3847319713229060696">वेबवरील प्रत्येकासाठी सुरक्षिततेत सुधारणा करण्यात मदत करा</translation>
 <translation id="3848547754896969219">गुप्त विंडोमध्ये उघडा</translation>

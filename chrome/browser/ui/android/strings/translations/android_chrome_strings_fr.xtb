@@ -996,7 +996,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7077143737582773186">Carte SD</translation>
 <translation id="7080806333218412752">Il envoie des URL à la navigation sécurisée pour les vérifier. Il transmet également un petit échantillon de pages, de téléchargements, d'informations système et de l'activité des extensions afin d'identifier de nouvelles menaces. De même, pour vous protéger dans l'ensemble des applications Google, il associe temporairement ces données à votre compte Google lorsque vous êtes connecté.</translation>
 <translation id="7088681679121566888">Chrome est à jour</translation>
-<translation id="7093803425429738190">Ajouter une émoticône</translation>
+<translation id="7093803425429738190">Ajouter une émotion</translation>
 <translation id="7106762743910369165">Votre navigateur est géré par votre organisation</translation>
 <translation id="7121362699166175603">Efface l'historique et les saisies semi-automatiques dans la barre d'adresse. Votre compte Google conserve peut-être d'autres formes d'historique de navigation sur la page <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7138678301420049075">Autre</translation>
@@ -1282,7 +1282,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8730621377337864115">OK</translation>
 <translation id="8746155870861185046">Partager le texte en surbrillance</translation>
 <translation id="8748850008226585750">Contenu masqué</translation>
-<translation id="8766529642647037772">Créer un lien mis en surbrillance comme celui-ci ?</translation>
+<translation id="8766529642647037772">Créer un lien en surbrillance comme celui-ci ?</translation>
 <translation id="8773160212632396039">Traitement de la requête…</translation>
 <translation id="8788265440806329501">Historique de navigation fermé</translation>
 <translation id="8788968922598763114">Rouvrir le dernier onglet fermé</translation>
@@ -1319,7 +1319,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8970887620466824814">Un problème est survenu</translation>
 <translation id="8972098258593396643">Télécharger dans le dossier par défaut ?</translation>
 <translation id="8987641763863173640">Gérez les paramètres de l'aperçu vidéo</translation>
-<translation id="8988028529677883095">Utiliser un téléphone comme clé de sécurité</translation>
 <translation id="8993760627012879038">Ouvrir un nouvel onglet en mode navigation privée</translation>
 <translation id="8996847606757455498">Sélectionner un autre fournisseur</translation>
 <translation id="8998729206196772491">Vous vous connectez avec un compte géré par <ph name="MANAGED_DOMAIN" />, ce qui permettra à son administrateur de contrôler vos données Chrome. Celles-ci seront définitivement associées à ce compte. Si vous vous déconnectez de Chrome, vos données seront supprimées de cet appareil, mais elles seront conservées dans votre compte Google.</translation>

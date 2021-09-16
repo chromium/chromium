@@ -66,6 +66,7 @@
 <translation id="133801305381959373">沒有下一個可編輯的文字欄位</translation>
 <translation id="1342835525016946179">文章</translation>
 <translation id="1346059596910821859">訣竅</translation>
+<translation id="1354356357730355833">複製</translation>
 <translation id="135978014023467274">你已更新至 ChromeVox 63！</translation>
 <translation id="1360699455582016846">按一下路由機碼 <ph name="ROUTING_KEY_NUMBER" /> 底下的項目</translation>
 <translation id="1377925789329510816">這是最後一個標題。按下搜尋鍵 + H 鍵可跳到第一個標題，按下搜尋鍵 + Shift 鍵 + H 鍵則可前往本頁的第二個標題。</translation>
@@ -373,6 +374,7 @@
 <translation id="3406283310380167331">顯示表單清單</translation>
 <translation id="3414400929511680526">愛麗絲藍</translation>
 <translation id="3418936350470374046">下方沒有儲存格</translation>
+<translation id="3419269701801640163">貼上</translation>
 <translation id="3435494200763325275">Tab 鍵導覽 (續)</translation>
 <translation id="344800400831402066">秘魯色</translation>
 <translation id="3457000393508828486">部分已按下</translation>
@@ -453,6 +455,7 @@
 <translation id="4006140876663370126">圖片</translation>
 <translation id="4021716437419160885">向下捲動</translation>
 <translation id="4035381225449278841">春季</translation>
+<translation id="4038098586530338813">重做</translation>
 <translation id="4047216625641135770">標記</translation>
 <translation id="4047910800766704982">裝置連上網路後，你可以使用自然的人聲語音。系統會將文字傳送給 Google 進行處理。你隨時可以前往「設定」頁面關閉這項功能。</translation>
 <translation id="4053520724192563562">萊姆綠</translation>
@@ -603,11 +606,13 @@
 <translation id="5138912041966667164">中岩藍</translation>
 <translation id="5140016802771803559">麗貝卡紫</translation>
 <translation id="5142101052131610456">所有課程</translation>
+<translation id="5152605892605507188">向右移</translation>
 <translation id="5158275234811857234">封面</translation>
 <translation id="516076699907426116">請透過輕觸探索的方式找到 [下一門課] 按鈕，然後輕觸兩下即可繼續。</translation>
 <translation id="5170206230005240598">點字字幕已啟用</translation>
 <translation id="5183440668879371625">上一行點字</translation>
 <translation id="5189244881767082992">行</translation>
+<translation id="5234747236692380506">輸入「<ph name="TEXT" />」</translation>
 <translation id="5263034204789987535">玉米絲色</translation>
 <translation id="5263344797180442561">第 2 階</translation>
 <translation id="528468243742722775">結束</translation>
@@ -745,6 +750,7 @@
 <translation id="6142308968191113180">標題 4</translation>
 <translation id="6150023170003443621">黃綠</translation>
 <translation id="6158882249329863701">第 <ph name="TABLECELLROWINDEX" /> 列，第 <ph name="TABLECELLCOLUMNINDEX" /> 欄</translation>
+<translation id="6159796324830296161">向左移</translation>
 <translation id="6164829606128959761">計量器</translation>
 <translation id="6165508094623778733">瞭解詳情</translation>
 <translation id="6166362019018438352">點字字幕已停用</translation>
@@ -1128,6 +1134,7 @@
 <translation id="9077305471618729969">淺海綠</translation>
 <translation id="9080299285199342830">跳至結尾</translation>
 <translation id="9089864840575085222">循環輸入語音回應</translation>
+<translation id="9099429023611373837">剪下</translation>
 <translation id="9108370397979208512">數學</translation>
 <translation id="9108589040018540527">scbr</translation>
 <translation id="911476240645808512">{COUNT,plural, =1{百分比符號}other{# 個百分比符號}}</translation>

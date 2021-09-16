@@ -170,7 +170,7 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 Klicken Sie zum Erteilen dieser Berechtigung auf "<ph name="BUTTON_NAME" />" unten, um die Einstellungen für die Bedienungshilfen zu öffnen. Klicken Sie dort das Kästchen neben "<ph name="SERVICE_SCRIPT_NAME" />" an.
 
 Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, entfernen Sie ihn und klicken Sie noch einmal auf das Kästchen.</translation>
-<translation id="8305209735512572429">Remoting-Prozess für die Web-Authentifizierung</translation>
+<translation id="8305209735512572429">Remoting-Prozess für die Web Authentication App</translation>
 <translation id="8383794970363966105">Wenn Sie Chromoting verwenden möchten, fügen Sie ein Google-Konto zu Ihrem Gerät hinzu.</translation>
 <translation id="8386846956409881180">Der Host wurde mit ungültigen OAuth-Anmeldedaten konfiguriert.</translation>
 <translation id="8397385476380433240">Berechtigung für <ph name="PRODUCT_NAME" /> gewähren</translation>

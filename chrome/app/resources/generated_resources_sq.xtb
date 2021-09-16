@@ -332,7 +332,6 @@
 <translation id="1354045473509304750">Vazhdo të lejosh që <ph name="HOST" /> të përdorë dhe të lëvizë kamerën tënde</translation>
 <translation id="1355088139103479645">Të fshihen të gjitha të dhënat?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> është bllokuar</translation>
-<translation id="1356178530321889280">Kliko me butonin djathtas dhe zgjidh “Kërko pjesë të faqes me 'Lenten e Google'" për të kërkuar për zonat e sajtit për të mësuar më shumë për përmbajtjen vizuale që shikon kur shfleton dhe blen në ueb.</translation>
 <translation id="1358741672408003399">Drejtshkrimi dhe gramatika</translation>
 <translation id="1359923111303110318">Pajisja jote mund të shkyçet me Smart Lock. Shtyp "Enter" për ta shkyçur.</translation>
 <translation id="1361164813881551742">Shto manualisht</translation>
@@ -2720,6 +2719,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3842552989725514455">Shkrimi serif</translation>
 <translation id="3843464315703645664">Lista e lejimeve në nivel të brendshëm</translation>
 <translation id="3844888638014364087">Emoji u fut</translation>
+<translation id="384513009320852920">Sigurohu që pajisja jote me Bluetooth të jetë në modalitet çiftimi dhe në afërsi. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Merr vegla për zhvillimin e faqeve të internetit, aplikacioneve për Android dhe shumë të tjera. Instalimi i Linux do të shkarkojë <ph name="DOWNLOAD_SIZE" /> të dhëna.</translation>
 <translation id="3847319713229060696">Ndihmo në përmirësimin e sigurisë për të gjithë</translation>
 <translation id="3848547754896969219">Hape në &amp;dritare "të fshehtë"</translation>

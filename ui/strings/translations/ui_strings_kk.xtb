@@ -22,7 +22,7 @@
 <translation id="1414271762428216854"><ph name="APP_NAME" />, орнатылған қолданба</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> бөлісу мүмкін емес</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> және <ph name="SECOND_ITEM_TITLE" /> өзара ауыстырылды.</translation>
-<translation id="1498028757988366001">Оны бұған дейін іздегенсіз. Тарихтан "<ph name="QUERY" />" сұрауын жойып тастасаңыз, ол барлық құрылғыңыздағы есептік жазбаңыздан өшіп қалады.</translation>
+<translation id="1498028757988366001">Оны бұған дейін іздегенсіз. Тарихтан "<ph name="QUERY" />" сұрауын жойып тастасаңыз, ол барлық құрылғыңыздағы аккаунтыңыздан өшіп қалады.</translation>
 <translation id="1510238584712386396">Іске қосу құрылғысы</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 минут және }other{# минут және }}</translation>
 <translation id="1643823602425662293">Хабарландыру</translation>

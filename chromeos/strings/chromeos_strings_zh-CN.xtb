@@ -34,6 +34,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> 负责管理此用户，而且可能会远程管理设置并监控用户活动。</translation>
 <translation id="150962533380566081">PUK 无效。</translation>
 <translation id="1510238584712386396">启动器</translation>
+<translation id="155865706765934889">触控板</translation>
 <translation id="1600964289716072707">将另一个网页放置在扫描仪上，然后选择“扫描”即可添加网页。</translation>
 <translation id="1621067168122174824">运行充电测试</translation>
 <translation id="1639239467298939599">正在加载</translation>
@@ -45,6 +46,7 @@
 <translation id="1706391837335750954">存在 DNS 解析器</translation>
 <translation id="1715359911173058521">与扫描仪通信时出问题了。请检查网络或 USB 连接，然后重试。</translation>
 <translation id="1717874160321062422">由 <ph name="FIRST_MANAGER" /> 和 <ph name="SECOND_MANAGER" /> 管理</translation>
+<translation id="1726100011689679555">域名服务器</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">正在取消扫描</translation>
@@ -152,6 +154,7 @@
 <translation id="39823212440917567">系统会自动移除存在时长已超过 <ph name="NUMBER_OF_DAYS" /> 天的打印任务</translation>
 <translation id="4003384961948020559">失败 - 出纸盘已满</translation>
 <translation id="4034824040120875894">打印机</translation>
+<translation id="4050980775484079270">ARC DNS 解析</translation>
 <translation id="409427325554347132">保存测试详细信息</translation>
 <translation id="4131410914670010031">黑白色</translation>
 <translation id="4145784616224233563">HTTP 防火墙</translation>
@@ -162,6 +165,7 @@
 <translation id="4238516577297848345">没有正在进行的打印任务</translation>
 <translation id="4244962993387259361">您需要有至少 500 MB 的可用空间才能运行内存测试。若要释放空间，请依次转到“设置”&gt;“存储空间管理”。</translation>
 <translation id="4258281355379922695">HTTP 延迟时间</translation>
+<translation id="4271957103967917607">全屏查看</translation>
 <translation id="4289540628985791613">概述</translation>
 <translation id="4297501883039923494">已停止 - 未知错误</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> 张图片</translation>
@@ -373,6 +377,7 @@
 <translation id="7550715992156305117">诊断例程</translation>
 <translation id="7561454561030345039">此操作由您的管理员管理</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7574732568136198983">ARC Ping</translation>
 <translation id="7595982850646262331">电池续航时间还剩 <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">在帮助中心内了解详情</translation>
 <translation id="763165478673169849">上次重置时间</translation>
@@ -388,11 +393,13 @@
 <translation id="7805768142964895445">状态</translation>
 <translation id="7819857487979277519">PSK（WPA 或 RSN）</translation>
 <translation id="7835501727204647447">安装 CloudReady</translation>
+<translation id="7846634333498149051">键盘</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">提供商类型</translation>
 <translation id="7895471513946376273">探索绘图和设计工具</translation>
 <translation id="7936303884198020182">找不到任何域名服务器</translation>
 <translation id="7960831585769876809">温度</translation>
+<translation id="7978412674231730200">私有密钥</translation>
 <translation id="7994702968232966508">EAP 方法</translation>
 <translation id="8020238979854764615">出错了。请另选图片以重试。</translation>
 <translation id="802154636333426148">下载失败</translation>
@@ -447,6 +454,7 @@
 <translation id="8818152010000655963">壁纸</translation>
 <translation id="8834539327799336565">目前已连接</translation>
 <translation id="8845001906332463065">获取帮助</translation>
+<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">测试成功</translation>
 <translation id="8898840733695078011">信号强度</translation>

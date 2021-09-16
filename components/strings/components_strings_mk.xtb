@@ -1162,6 +1162,7 @@
           <ph name="LIST_ITEM" />работодавачите или училиштата може да ја следат вашата активност од прелистувањето<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />интернет-операторите можеби го следат интернет-сообраќајот<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="483241715238664915">Вклучи опомени</translation>
 <translation id="4838327282952368871">Нереален</translation>
 <translation id="4840250757394056958">Прикажи ја историјата на Chrome</translation>
 <translation id="484462545196658690">Автоматски</translation>
@@ -1789,6 +1790,7 @@
 <translation id="7086090958708083563">Побарано е прикачување од корисникот</translation>
 <translation id="7087282848513945231">Округ</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, па Enter за да управувате со дозволите и податоците коишто се складираат на сајтовите во поставките за Chrome</translation>
+<translation id="7096937462164235847">Идентитетот на веб-страницава не е потврден.</translation>
 <translation id="7108338896283013870">Сокриј</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> сака да ја користи вашата камера</translation>
 <translation id="7108819624672055576">Дозволено од екстензија</translation>
@@ -2364,6 +2366,7 @@
 <translation id="9065203028668620118">Измени</translation>
 <translation id="9065745800631924235">Пребарување „<ph name="TEXT" />“ од историјата</translation>
 <translation id="9069693763241529744">Блокирано од екстензија</translation>
+<translation id="9073799351042754113">Избравте да ги исклучите безбедносните опомени за сајтов.</translation>
 <translation id="9078964945751709336">Потребни се повеќе информации</translation>
 <translation id="9080712759204168376">Краток преглед на нарачка</translation>
 <translation id="9089260154716455634">Политика за неработно време</translation>

@@ -1153,6 +1153,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
           <ph name="LIST_ITEM" />Les empreses o els centres educatius poden fer el seguiment de l'activitat de navegació.<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Els proveïdors d'Internet poden monitorar el trànsit web.<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="483241715238664915">Activa els advertiments</translation>
 <translation id="4838327282952368871">Somiadora</translation>
 <translation id="4840250757394056958">Mostra l'historial de Chrome</translation>
 <translation id="484462545196658690">Automàtic</translation>
@@ -1780,6 +1781,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="7086090958708083563">Pujada sol·licitada per l'usuari</translation>
 <translation id="7087282848513945231">Comtat</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, prem Tab i després Retorn per gestionar els permisos i les dades emmagatzemades als llocs web des de la configuració de Chrome</translation>
+<translation id="7096937462164235847">La identitat d'aquest lloc web no s'ha verificat.</translation>
 <translation id="7108338896283013870">Amaga</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> vol utilitzar la càmera</translation>
 <translation id="7108819624672055576">Permès per una extensió</translation>
@@ -2355,6 +2357,7 @@ Detalls addicionals:
 <translation id="9065203028668620118">Edita</translation>
 <translation id="9065745800631924235">Cerca de <ph name="TEXT" /> des de l'historial</translation>
 <translation id="9069693763241529744">Bloquejat per una extensió</translation>
+<translation id="9073799351042754113">Has decidit desactivar els advertiments de seguretat per a aquest lloc web.</translation>
 <translation id="9078964945751709336">Necessitem més informació</translation>
 <translation id="9080712759204168376">Resum de la comanda</translation>
 <translation id="9089260154716455634">Política fora de l'horari:</translation>

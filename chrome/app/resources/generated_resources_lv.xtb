@@ -334,7 +334,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1354045473509304750">Lapa <ph name="HOST" /> drīkst arī turpmāk izmantot un kustināt jūsu kameru</translation>
 <translation id="1355088139103479645">Vai dzēst visus datus?</translation>
 <translation id="1355466263109342573">Spraudnis <ph name="PLUGIN_NAME" /> ir bloķēts</translation>
-<translation id="1356178530321889280">Noklikšķiniet ar peles labo pogu un atlasiet “Meklēt lapas daļā, izmantojot Google Lens”, lai veiktu meklēšanu jebkurā vietnes daļā un uzzinātu vairāk par vizuālo saturu, ko redzat, kad pārlūkojat tīmekli un iepērkaties tīmeklī.</translation>
 <translation id="1358741672408003399">Pareizrakstība un gramatika</translation>
 <translation id="1359923111303110318">Jūsu ierīci var atbloķēt, izmantojot Smart Lock. Lai atbloķētu, nospiediet taustiņu Enter.</translation>
 <translation id="1361164813881551742">Pievienot manuāli</translation>
@@ -2725,6 +2724,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3842552989725514455">Serif fonts</translation>
 <translation id="3843464315703645664">Iekšējā atļaušanas sarakstā</translation>
 <translation id="3844888638014364087">Emocijzīme ievietota</translation>
+<translation id="384513009320852920">Jūsu Bluetooth ierīcē ir jābūt aktivizētam režīmam savienošanai pārī, un tai ir jāatrodas tuvumā. <ph name="BEGIN_LINK_LEARN_MORE" />Uzziniet vairāk<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="3846116211488856547">Iegūstiet vietņu, Android lietotņu izstrādes rīkus un citus rīkus. Instalējot Linux, tiks lejupielādēts šāds datu apjoms: <ph name="DOWNLOAD_SIZE" />.</translation>
 <translation id="3847319713229060696">Palīdzēt uzlabot drošību tīmeklī visiem lietotājiem</translation>
 <translation id="3848547754896969219">Atvērt &amp;inkognito režīma logā</translation>

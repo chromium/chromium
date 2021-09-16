@@ -330,7 +330,6 @@
 <translation id="1354045473509304750"><ph name="HOST" /> hostuna kameranızı istifadə etmək və hərəkət etdirmək icazəsi verməyə davam edin</translation>
 <translation id="1355088139103479645">Bütün data silinsin?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> blok edilib</translation>
-<translation id="1356178530321889280">Vebə axtarış və alış-veriş edərkən gördüyünüz vizual məzmun haqqında ətraflı məlumat əldə etmək üçün saytın istənilən bölgəsində axtarış etmək üçün sağ düymə ilə toxunun və "Google Linza ilə səhifənin bir hissəsini axtarın" seçin.</translation>
 <translation id="1358741672408003399">Orfoqrafiya və Qrammatika</translation>
 <translation id="1359923111303110318">Cihazınız Smart Lock ilə kiliddən çıxarıla bilər. Kiliddən çıxarmaq üçün Enter düyməsinə basın.</translation>
 <translation id="1361164813881551742">Mexaniki Əlavə Edin</translation>
@@ -2721,6 +2720,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3842552989725514455">Serif şrifti</translation>
 <translation id="3843464315703645664">Daxili icazə verilənlər siyahısındadır</translation>
 <translation id="3844888638014364087">Emoji daxil edildi</translation>
+<translation id="384513009320852920">Bluetooth cihazınızın birləşmə rejimində və yaxınlıqda olduğuna əmin olun. <ph name="BEGIN_LINK_LEARN_MORE" />Ətraflı məlumat<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Veb sayt, Android tətbiqləri və sairəni təkmilləşdirmək üçün alətlər əldə edin. Linux'un quraşdırılması ilə <ph name="DOWNLOAD_SIZE" /> data endiriləcək.</translation>
 <translation id="3847319713229060696">Vebdə hər kəsin güvənliyini artırmağa yardım edin</translation>
 <translation id="3848547754896969219">&amp;Anonim pəncərədə açın</translation>

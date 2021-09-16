@@ -1151,6 +1151,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
           <ph name="LIST_ITEM" />Arbeitgeber und Bildungseinrichtungen können Browseraktivitäten erfassen<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Internetanbieter behalten ggf. den Web-Traffic im Blick<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="483241715238664915">Warnmeldungen aktivieren</translation>
 <translation id="4838327282952368871">Träumerisch</translation>
 <translation id="4840250757394056958">Chrome-Verlauf anzeigen</translation>
 <translation id="484462545196658690">Auto</translation>
@@ -1778,6 +1779,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="7086090958708083563">Upload vom Nutzer angefordert</translation>
 <translation id="7087282848513945231">Landkreis</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücken Sie die Tabulatortaste und dann die Eingabetaste, um Berechtigungen und gespeicherte Daten von Websites in den Chrome-Einstellungen zu verwalten</translation>
+<translation id="7096937462164235847">Die Identität dieser Website konnte nicht überprüft werden.</translation>
 <translation id="7108338896283013870">Ausblenden</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> möchte Ihre Kamera verwenden</translation>
 <translation id="7108819624672055576">Von einer Erweiterung zugelassen</translation>
@@ -2355,6 +2357,7 @@ Weitere Details:
 <translation id="9065203028668620118">Bearbeiten</translation>
 <translation id="9065745800631924235">"<ph name="TEXT" />" im Verlauf suchen</translation>
 <translation id="9069693763241529744">Von einer Erweiterung blockiert</translation>
+<translation id="9073799351042754113">Sie haben die Sicherheitswarnungen für diese Website deaktiviert.</translation>
 <translation id="9078964945751709336">Weitere Informationen erforderlich</translation>
 <translation id="9080712759204168376">Bestellübersicht</translation>
 <translation id="9089260154716455634">Richtlinie für Abwesenheitszeiten:</translation>

@@ -34,6 +34,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> bu foydalanuvchi faoliyatini masofadan kuzatishi va boshqarishi mumkin.</translation>
 <translation id="150962533380566081">PUK kod xato.</translation>
 <translation id="1510238584712386396">Ishga tushirish paneli</translation>
+<translation id="155865706765934889">Sensorli panel</translation>
 <translation id="1600964289716072707">Sahifa kiritish uchun boshqa sahifani skanerga joylash va Skanerlash tugmasini bosing.</translation>
 <translation id="1621067168122174824">Quvvatlanishini tekshirish</translation>
 <translation id="1639239467298939599">Yuklanmoqda</translation>
@@ -45,6 +46,7 @@
 <translation id="1706391837335750954">DNS vositasi mavjud</translation>
 <translation id="1715359911173058521">Skaner bilan aloqada muammo bor. Tarmoq yoki USB aloqasini tekshirib, qaytadan urining.</translation>
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> va <ph name="SECOND_MANAGER" /> tomonidan boshqariladi</translation>
+<translation id="1726100011689679555">Nom serverlari (NS)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Skanerlash bekor qilinmoqda</translation>
@@ -391,11 +393,13 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="7805768142964895445">Holat</translation>
 <translation id="7819857487979277519">PSK (WPA yoki RSN)</translation>
 <translation id="7835501727204647447">CloudReady oʻrnatish</translation>
+<translation id="7846634333498149051">Klaviatura</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Ta’minot turi</translation>
 <translation id="7895471513946376273">Chizmachilik va dizayn vositalari bilan tanishing</translation>
 <translation id="7936303884198020182">Nom serverlari topilmadi</translation>
 <translation id="7960831585769876809">Harorat</translation>
+<translation id="7978412674231730200">Xususiy kalit</translation>
 <translation id="7994702968232966508">EAP usuli</translation>
 <translation id="8020238979854764615">Xatolik yuz berdi. Boshqa rasmlarni tanlash orqali qaytadan urining.</translation>
 <translation id="802154636333426148">Yuklab olib bo‘lmadi</translation>
@@ -450,6 +454,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="8818152010000655963">Fon rasmi</translation>
 <translation id="8834539327799336565">Hozirda ulangan</translation>
 <translation id="8845001906332463065">Yordam</translation>
+<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Tekshiruv yakunlandi</translation>
 <translation id="8898840733695078011">Signal darajasi</translation>

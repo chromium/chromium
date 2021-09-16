@@ -334,7 +334,6 @@
 <translation id="1354045473509304750">Fortsett å tillate <ph name="HOST" /> å bruke og bevege kameraet ditt</translation>
 <translation id="1355088139103479645">Vil du slette alle dataene?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> er blokkert</translation>
-<translation id="1356178530321889280">Høyreklikk og velg «Bruk Google Lens til å søke på en del av siden» for å søke i en valgfri region på nettstedet og finne ut mer om det visuelle innholdet du ser mens du surfer og handler på nettet.</translation>
 <translation id="1358741672408003399">Stavekontroll og grammatikk</translation>
 <translation id="1359923111303110318">Enheten kan låses opp med Smart Lock. Trykk på Enter for å låse opp.</translation>
 <translation id="1361164813881551742">Legg til manuelt</translation>
@@ -2732,6 +2731,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3842552989725514455">Med seriffer</translation>
 <translation id="3843464315703645664">Står på intern godkjenningsliste</translation>
 <translation id="3844888638014364087">Emojien ble satt inn</translation>
+<translation id="384513009320852920">Sørg for at Bluetooth-enheten din er i tilkoblingsmodus og i nærheten. <ph name="BEGIN_LINK_LEARN_MORE" />Finn ut mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Skaff deg verktøy for å utvikle nettsteder, Android-apper med mer. Linux laster ned <ph name="DOWNLOAD_SIZE" /> med data.</translation>
 <translation id="3847319713229060696">Bidra til å gjøre nettet sikrere for alle</translation>
 <translation id="3848547754896969219">Åpne i &amp;inkognitovindu</translation>

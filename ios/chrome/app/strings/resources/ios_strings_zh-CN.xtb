@@ -357,6 +357,7 @@
 <translation id="4619564267100705184">请验证是您本人在操作</translation>
 <translation id="4619615317237390068">从其他设备打开的标签页</translation>
 <translation id="4620246317052452550">您浏览过的网页</translation>
+<translation id="4620888520263267479">显示链接预览</translation>
 <translation id="4630540211544979320">翻译网页</translation>
 <translation id="4634124774493850572">使用密码</translation>
 <translation id="4636930964841734540">信息</translation>
@@ -662,6 +663,7 @@
 <translation id="7336264872878993241">已下载<ph name="PERCENT" />%</translation>
 <translation id="7340958967809483333">“探索”功能的选项</translation>
 <translation id="7346909386216857016">知道了</translation>
+<translation id="7347393021726115275">您只能使用已获管理员批准的帐号登录。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="734758817008927353">卡片信息保存选项</translation>
 <translation id="7348502496356775519">添加书签</translation>
 <translation id="7353432112255316844">请验证是您本人在操作</translation>

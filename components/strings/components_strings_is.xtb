@@ -1162,6 +1162,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
           <ph name="LIST_ITEM" />Starfsfólk eða skólar geta rakið vafranotkun<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Netþjónustur kunna að fylgjast með netumferð<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="483241715238664915">Kveikja á viðvörunum</translation>
 <translation id="4838327282952368871">Draumkennt</translation>
 <translation id="4840250757394056958">Skoða Chrome ferilinn þinn</translation>
 <translation id="484462545196658690">Sjálfvirkt</translation>
@@ -1789,6 +1790,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7086090958708083563">Notandi bað um sendingu</translation>
 <translation id="7087282848513945231">Sýsla</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á dálkalykilinn (Tab) og svo „Enter“ til að opna stillingar Chrome og stjórna heimildum og gögnum sem eru geymd á vefsvæðum</translation>
+<translation id="7096937462164235847">Auðkenni þessa vefsvæðis er óstaðfest.</translation>
 <translation id="7108338896283013870">Fela</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> vill fá að nota myndavélina</translation>
 <translation id="7108819624672055576">Leyft af viðbót</translation>
@@ -2364,6 +2366,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="9065203028668620118">Breyta</translation>
 <translation id="9065745800631924235"><ph name="TEXT" /> í leitarferli</translation>
 <translation id="9069693763241529744">Útilokað af viðbót</translation>
+<translation id="9073799351042754113">Þú valdir að slökkva á öryggisviðvörunum fyrir þetta vefsvæði.</translation>
 <translation id="9078964945751709336">Frekari upplýsinga er krafist</translation>
 <translation id="9080712759204168376">Yfirlit pöntunar</translation>
 <translation id="9089260154716455634">Regla um hvíldartíma:</translation>

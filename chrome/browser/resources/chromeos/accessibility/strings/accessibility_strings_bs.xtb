@@ -353,7 +353,7 @@
 <translation id="3286372614333682499">uspravno</translation>
 <translation id="3286390186030710347">Klizač</translation>
 <translation id="3300348286427369683">Podrška za obogaćeni tekst. ChromeVox sada podržava polja s obogaćenim tekstom, uključujući komande za skok, upravljanje kursorom za Braillevo pismo, odabir i još mnogo toga.</translation>
-<translation id="3300733168898541351">poništi</translation>
+<translation id="3300733168898541351">opozovi</translation>
 <translation id="3307886118343381874">Odlazak na kraj tabele</translation>
 <translation id="3312997241656799641">Sljedeća posjećena veza</translation>
 <translation id="3313245066383501820">Modifikacijska tipka za ChromeVox</translation>
@@ -606,13 +606,13 @@
 <translation id="5138912041966667164">Srednja sivoplava</translation>
 <translation id="5140016802771803559">Ljubičasta</translation>
 <translation id="5142101052131610456">Sve lekcije</translation>
-<translation id="5152605892605507188">premjesti udesno</translation>
+<translation id="5152605892605507188">pomjeri udesno</translation>
 <translation id="5158275234811857234">Naslovnica</translation>
 <translation id="516076699907426116">Da nastavite, istražujte dodirom da pronađete dugme Sljedeća lekcija. Zatim dvaput dodirnite da nastavite.</translation>
 <translation id="5170206230005240598">Titlovi na Braillevom pismu su omogućeni</translation>
 <translation id="5183440668879371625">Prethodni redak brajice</translation>
 <translation id="5189244881767082992">Red</translation>
-<translation id="5234747236692380506">unesite <ph name="TEXT" /></translation>
+<translation id="5234747236692380506">napiši <ph name="TEXT" /></translation>
 <translation id="5263034204789987535">Boja kukuruzne svile</translation>
 <translation id="5263344797180442561">n2</translation>
 <translation id="528468243742722775">Prekid</translation>
@@ -750,7 +750,7 @@
 <translation id="6142308968191113180">Naslov 4</translation>
 <translation id="6150023170003443621">Žutozelena</translation>
 <translation id="6158882249329863701">red <ph name="TABLECELLROWINDEX" /> kolona <ph name="TABLECELLCOLUMNINDEX" /></translation>
-<translation id="6159796324830296161">premjesti ulijevo</translation>
+<translation id="6159796324830296161">pomjeri ulijevo</translation>
 <translation id="6164829606128959761">metar</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6166362019018438352">Titlovi na Braillevom pismu su onemogućeni</translation>

@@ -892,7 +892,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3990250421422698716">Agrupar</translation>
 <translation id="3996311196211510766">El sitio web <ph name="ORIGIN" /> ha solicitado que se aplique una política de origen
     a todas las solicitudes que reciba, pero esta política no se puede aplicar actualmente.</translation>
-<translation id="4010758435855888356">¿Permitir acceso al espacio de almacenamiento?</translation>
+<translation id="4010758435855888356">¿Permitir espacio de almacenamiento?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Documento PDF que contiene {COUNT} página}other{Documento PDF que contiene {COUNT} páginas}}</translation>
 <translation id="4023431997072828269">Se está usando una conexión no segura para enviar este formulario, por lo que otros usuarios podrán ver tu información.</translation>
 <translation id="4030383055268325496">&amp;Deshacer acción de añadir</translation>
@@ -1727,7 +1727,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6884662655240309489">Tamaño 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome ha simplificado esta página para facilitar su lectura y ha recuperado la página original mediante una conexión no segura.</translation>
-<translation id="6890443033788248019">¿Permitir acceso a la ubicación?</translation>
+<translation id="6890443033788248019">¿Permitir ubicación?</translation>
 <translation id="6891596781022320156">No se admite el nivel de la política.</translation>
 <translation id="6895143722905299846">Número virtual:</translation>
 <translation id="6895330447102777224">Tu tarjeta se ha confirmado</translation>

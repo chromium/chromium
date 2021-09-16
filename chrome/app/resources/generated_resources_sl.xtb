@@ -337,7 +337,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1354045473509304750">Še naprej dovoli, da gostitelj <ph name="HOST" /> uporablja in premika kamero</translation>
 <translation id="1355088139103479645">Želite izbrisati vse podatke?</translation>
 <translation id="1355466263109342573">Vtičnik <ph name="PLUGIN_NAME" /> je blokiran</translation>
-<translation id="1356178530321889280">Kliknite z desnim gumbom in izberite »Išči del strani z Googlom Lens«, da poiščete poljubno območje spletnega mesta in tako odkrijete več o vizualni vsebini, ki jo vidite med brskanjem in nakupovanjem v spletu.</translation>
 <translation id="1358741672408003399">Črkovanje in slovnica</translation>
 <translation id="1359923111303110318">Napravo je mogoče odkleniti s funkcijo Smart Lock. Pritisnite Enter, če želite odkleniti.</translation>
 <translation id="1361164813881551742">Ročno dodajanje</translation>
@@ -2741,6 +2740,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3842552989725514455">Serifna pisava</translation>
 <translation id="3843464315703645664">Interno na seznamu dovoljenih</translation>
 <translation id="3844888638014364087">Vstavljen je emodži</translation>
+<translation id="384513009320852920">Naprava Bluetooth mora biti v načinu za seznanjanje in v bližini. <ph name="BEGIN_LINK_LEARN_MORE" />Več o tem<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Prenesite orodja za razvoj spletnih mest, aplikacij za Android in drugega. Ob namestitvi Linuxa bo prenesenih <ph name="DOWNLOAD_SIZE" /> podatkov.</translation>
 <translation id="3847319713229060696">Pomagajte izboljšati varnost v spletu za vse</translation>
 <translation id="3848547754896969219">Odpiranje v &amp;anonimnem oknu</translation>

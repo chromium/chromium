@@ -1161,6 +1161,7 @@
           <ph name="LIST_ITEM" />नियोक्ते किंवा शाळा ब्राउझिंग अ‍ॅक्टिव्हिटी ट्रॅक करू शकतात<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />इंटरनेट सेवा पुरवठादार वेब ट्रॅफिकचे निरीक्षण करू शकतात<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="483241715238664915">चेतावण्या सुरू करा</translation>
 <translation id="4838327282952368871">स्वप्नवत</translation>
 <translation id="4840250757394056958">तुमचा Chrome इतिहास पहा</translation>
 <translation id="484462545196658690">ऑटो</translation>
@@ -1789,6 +1790,7 @@
 <translation id="7086090958708083563">वापरकर्त्याने अपलोडची विनंती केली आहे</translation>
 <translation id="7087282848513945231">परगणा</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome सेटिंग्जमध्ये परवानग्या आणि सर्व साइटवर स्टोअर केलेला डेटा व्यवस्थापित करण्यासाठी टॅब व त्यानंतर एंटर दाबा</translation>
+<translation id="7096937462164235847">या वेबसाइटच्या ओळखीची पडताळणी केलेली नाही.</translation>
 <translation id="7108338896283013870">लपवा</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> ला तुमचा कॅमेरा वापरायचा आहे</translation>
 <translation id="7108819624672055576">एका एक्स्टेंशनने परवानगी दिलेले</translation>
@@ -2364,6 +2366,7 @@
 <translation id="9065203028668620118">संपादन</translation>
 <translation id="9065745800631924235">इतिहासामधून <ph name="TEXT" /> शोध</translation>
 <translation id="9069693763241529744">एक एक्स्टेंशनने ब्लॉक केलेले</translation>
+<translation id="9073799351042754113">तुम्ही या साइटसाठी सुरक्षा चेतावण्या बंद करणे निवडले आहे.</translation>
 <translation id="9078964945751709336">अधिक माहिती आवश्यक आहे</translation>
 <translation id="9080712759204168376">मागणी सारांश</translation>
 <translation id="9089260154716455634">कामाच्या तासानंतरचे धोरण:</translation>

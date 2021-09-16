@@ -334,7 +334,6 @@
 <translation id="1354045473509304750">Tiếp tục cho phép <ph name="HOST" /> sử dụng và di chuyển máy ảnh của bạn</translation>
 <translation id="1355088139103479645">Xóa tất cả dữ liệu?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> đã bị chặn</translation>
-<translation id="1356178530321889280">Hãy nhấp chuột phải và chọn “Tìm kiếm trên một phần của trang bằng Google Ống kính” để tìm kiếm trên mọi vùng của trang web. Thao tác này nhằm giúp bạn tìm hiểu thêm về nội dung hình ảnh mà bạn thấy khi đang duyệt web và mua sắm trên trang web đó.</translation>
 <translation id="1358741672408003399">Chính tả và Ngữ pháp</translation>
 <translation id="1359923111303110318">Bạn có thể mở khóa thiết bị của mình bằng Smart Lock. Hãy nhấn phím Enter để mở khóa.</translation>
 <translation id="1361164813881551742">Thêm thủ công</translation>
@@ -2738,6 +2737,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3842552989725514455">Phông chữ Serif</translation>
 <translation id="3843464315703645664">Đã cho phép trong nội bộ</translation>
 <translation id="3844888638014364087">Đã chèn biểu tượng cảm xúc</translation>
+<translation id="384513009320852920">Hãy đảm bảo thiết bị Bluetooth của bạn đang ở gần và đã bật chế độ ghép nối. <ph name="BEGIN_LINK_LEARN_MORE" />Tìm hiểu thêm<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Tải các công cụ phát triển trang web, ứng dụng Android, v.v. Việc cài đặt Linux sẽ tải <ph name="DOWNLOAD_SIZE" /> dữ liệu xuống.</translation>
 <translation id="3847319713229060696">Giúp tăng cường bảo mật cho mọi người trên web</translation>
 <translation id="3848547754896969219">Mở trong cửa sổ Ẩ&amp;n danh</translation>

@@ -336,7 +336,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1354045473509304750">I dalje dozvoli da <ph name="HOST" /> koristi i pomjera kameru</translation>
 <translation id="1355088139103479645">Izbrisati sve podatke?</translation>
 <translation id="1355466263109342573">Dodatak <ph name="PLUGIN_NAME" /> je blokiran</translation>
-<translation id="1356178530321889280">Kliknite desnim klikom i odaberite "Pretraži dio stranice pomoću Google Objektiva" da pretražite bilo koji dio web lokacije kako biste saznali više o prikazanom vizuelnom sadržaju dok pretražujete i kupujete na webu.</translation>
 <translation id="1358741672408003399">Provjera pravopisa i gramatika</translation>
 <translation id="1359923111303110318">Vaš uređaj se može otključati pomoću Smart Locka. Pritisnite Enter da ga otključate.</translation>
 <translation id="1361164813881551742">Dodaj ručno</translation>
@@ -2736,7 +2735,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3842552989725514455">Serifni font</translation>
 <translation id="3843464315703645664">Stavljeno na internu listu dozvoljenih</translation>
 <translation id="3844888638014364087">Emoji sličica je umetnuta</translation>
-<translation id="384513009320852920">Provjerite je li vaš Bluetooth uređaj u načinu uparivanja i u blizini. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="384513009320852920">Provjerite je li Bluetooth uređaj u načinu rada za uparivanje i u blizini. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Preuzmite alate za programiranje web lokacija, aplikacija za Android i još mnogo toga. Instalacija Linuxa će preuzeti <ph name="DOWNLOAD_SIZE" /> podataka.</translation>
 <translation id="3847319713229060696">Pomozite nam da poboljšamo sigurnost na webu za sve</translation>
 <translation id="3848547754896969219">Otvori u &amp;anonimnom prozoru</translation>

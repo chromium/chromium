@@ -1161,6 +1161,7 @@
           <ph name="LIST_ITEM" />Жумуш берүүчүлөр же мектептер көрүлгөн вебсайттарга көз сала алат<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Интернет кызматын жабдуучулар веб трафикти көзөмөлдөй алат<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="483241715238664915">Эскертүүлөрдү күйгүзүү</translation>
 <translation id="4838327282952368871">Кыялкеч</translation>
 <translation id="4840250757394056958">Chrome'до көрүлгөн вебсайттарды көрүү</translation>
 <translation id="484462545196658690">Авто</translation>
@@ -1788,6 +1789,7 @@
 <translation id="7086090958708083563">Колдонуучу тарабынан жүктөп берүү суралды</translation>
 <translation id="7087282848513945231">Округ</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome жөндөөлөрүнөн уруксаттарды жана сакталган маалыматтарды башкаруу үчүн Tab, андан соң Enter баскычын басыңыз</translation>
+<translation id="7096937462164235847">Бул сайттын аныктыгы ырасталган жок.</translation>
 <translation id="7108338896283013870">Жашыруу</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> камераңызды колдонгону жатат</translation>
 <translation id="7108819624672055576">Кеңейтүү тарабынан уруксат берилген</translation>
@@ -2363,6 +2365,7 @@
 <translation id="9065203028668620118">Түзөтүү</translation>
 <translation id="9065745800631924235">Таржымалдан <ph name="TEXT" /> сурамын издөө</translation>
 <translation id="9069693763241529744">Кеңейтүү тарабынан бөгөттөлгөн</translation>
+<translation id="9073799351042754113">Бул сайт үчүн коопсуздук эскертүүлөрүн өчүрүүнү тандагансыз.</translation>
 <translation id="9078964945751709336">Көбүрөөк маалымат талап кылынат</translation>
 <translation id="9080712759204168376">Буйрутма тууралуу маалымат</translation>
 <translation id="9089260154716455634">Саясат иштебей турган убакыт:</translation>

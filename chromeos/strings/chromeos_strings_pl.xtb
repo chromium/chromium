@@ -34,6 +34,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> zarządza tym użytkownikiem i może zdalnie monitorować jego aktywność oraz zarządzać ustawieniami.</translation>
 <translation id="150962533380566081">Nieprawidłowy PUK.</translation>
 <translation id="1510238584712386396">Menu z aplikacjami</translation>
+<translation id="155865706765934889">Touchpad</translation>
 <translation id="1600964289716072707">Umieść następną stronę na skanerze i kliknij Skanuj, aby ją dodać.</translation>
 <translation id="1621067168122174824">Przeprowadź test ładowania</translation>
 <translation id="1639239467298939599">Wczytuję</translation>
@@ -45,6 +46,7 @@
 <translation id="1706391837335750954">Resolver DNS – obecność</translation>
 <translation id="1715359911173058521">Wystąpił problem z komunikacją ze skanerem. Sprawdź połączenie sieciowe lub połączenie USB i spróbuj ponownie.</translation>
 <translation id="1717874160321062422">Zarządzane przez <ph name="FIRST_MANAGER" /> i <ph name="SECOND_MANAGER" /></translation>
+<translation id="1726100011689679555">Serwery nazw</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Anuluję skanowanie</translation>
@@ -152,6 +154,7 @@
 <translation id="39823212440917567">Zadania drukowania starsze niż <ph name="NUMBER_OF_DAYS" /> dni zostaną usunięte</translation>
 <translation id="4003384961948020559">Niepowodzenie – odbiornik papieru jest pełny</translation>
 <translation id="4034824040120875894">Drukarka</translation>
+<translation id="4050980775484079270">Rozpoznawanie nazw DNS ARC</translation>
 <translation id="409427325554347132">Zapisz szczegóły testu</translation>
 <translation id="4131410914670010031">Czarno-biały</translation>
 <translation id="4145784616224233563">Zapora sieciowa HTTP</translation>
@@ -390,11 +393,13 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7805768142964895445">Stan</translation>
 <translation id="7819857487979277519">Klucz wstępny (WPA lub RSN)</translation>
 <translation id="7835501727204647447">Zainstaluj CloudReady</translation>
+<translation id="7846634333498149051">Klawiatura</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Typ dostawcy</translation>
 <translation id="7895471513946376273">Odkryj narzędzia do rysowania i projektowania</translation>
 <translation id="7936303884198020182">Nie znaleziono serwerów nazw</translation>
 <translation id="7960831585769876809">Temperatura</translation>
+<translation id="7978412674231730200">Klucz prywatny</translation>
 <translation id="7994702968232966508">Metoda EAP</translation>
 <translation id="8020238979854764615">Wystąpił błąd. Wybierz inne obrazy i spróbuj jeszcze raz.</translation>
 <translation id="802154636333426148">Nie udało się pobrać</translation>
@@ -449,6 +454,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8818152010000655963">Tapeta</translation>
 <translation id="8834539327799336565">Obecnie połączone</translation>
 <translation id="8845001906332463065">Uzyskaj pomoc</translation>
+<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Test zakończył się powodzeniem</translation>
 <translation id="8898840733695078011">Siła sygnału</translation>

@@ -1162,6 +1162,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
           <ph name="LIST_ITEM" />delodajalci ali šole lahko spremljajo vaše brskanje;<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />ponudniki internetnih storitev morda spremljajo spletni promet.<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="483241715238664915">Vklopi opozorila</translation>
 <translation id="4838327282952368871">Zasanjano</translation>
 <translation id="4840250757394056958">Ogled zgodovine v Chromu</translation>
 <translation id="484462545196658690">Samodejno</translation>
@@ -1789,6 +1790,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="7086090958708083563">Nalaganje je zahteval uporabnik</translation>
 <translation id="7087282848513945231">Okrožje</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Enter, če želite upravljati dovoljenja in podatke, shranjene na spletnih mestih v Chromovih nastavitvah.</translation>
+<translation id="7096937462164235847">Identiteta tega spletnega mesta ni potrjena.</translation>
 <translation id="7108338896283013870">Skrij</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> želi uporabljati kamero</translation>
 <translation id="7108819624672055576">Omogoča razširitev</translation>
@@ -2364,6 +2366,7 @@ Dodatne podrobnosti:
 <translation id="9065203028668620118">Uredi</translation>
 <translation id="9065745800631924235">Iskanje poizvedbe <ph name="TEXT" /> iz zgodovine</translation>
 <translation id="9069693763241529744">Blokirala razširitev</translation>
+<translation id="9073799351042754113">Izklopili ste varnostna opozorila za to spletno mesto.</translation>
 <translation id="9078964945751709336">Vnesti morate več podatkov</translation>
 <translation id="9080712759204168376">Povzetek naročila</translation>
 <translation id="9089260154716455634">Pravilnik za nedejavnost:</translation>

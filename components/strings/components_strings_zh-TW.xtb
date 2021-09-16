@@ -1153,6 +1153,7 @@
           <ph name="LIST_ITEM" />雇主或學校可以追蹤瀏覽活動<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />網際網路服務供應商可能會監控網路流量<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="483241715238664915">開啟警告</translation>
 <translation id="4838327282952368871">夢幻</translation>
 <translation id="4840250757394056958">查看 Chrome 歷史記錄</translation>
 <translation id="484462545196658690">自動</translation>
@@ -1780,6 +1781,7 @@
 <translation id="7086090958708083563">使用者要求上傳</translation>
 <translation id="7087282848513945231">郡/縣</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可在 Chrome 設定中管理各網站的權限及儲存的資料</translation>
+<translation id="7096937462164235847">這個網站的身分未經過驗證。</translation>
 <translation id="7108338896283013870">隱藏</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> 要求使用攝影機</translation>
 <translation id="7108819624672055576">依據擴充功能設定允許</translation>
@@ -2355,6 +2357,7 @@
 <translation id="9065203028668620118">編輯</translation>
 <translation id="9065745800631924235">「<ph name="TEXT" />」的搜尋記錄</translation>
 <translation id="9069693763241529744">依據擴充功能設定封鎖</translation>
+<translation id="9073799351042754113">你已選擇關閉這個網站的安全性警告。</translation>
 <translation id="9078964945751709336">請提供詳細資訊</translation>
 <translation id="9080712759204168376">訂單摘要</translation>
 <translation id="9089260154716455634">停機時間政策：</translation>

@@ -5247,20 +5247,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7477231245051133709">Attiva la funzione di accessibilità di audio in formato mono</translation>
 <translation id="7477239290070847560">Destinazioni protocolli (mDNS e DNS-SD) basate su configurazione automatica</translation>
 <translation id="7485481791539008776">Regole di selezione della stampante predefinita</translation>
-<translation id="7493995861907758679">Questa impostazione consente ai dispositivi di selezionare una versione di destinazione specifica di <ph name="PRODUCT_OS_NAME" /> per l'aggiornamento.
-
-      Se non viene configurata, i dispositivi eseguiranno l'aggiornamento in base ad altre impostazioni o all'ultima versione disponibile.
-
-      Se viene configurata, l'aggiornamento verrà eseguito a una versione selezionata.
-
-      Il formato esatto di questo valore del criterio corrisponde ai dettagli di implementazione del servizio di aggiornamento e potrebbe variare. Il valore del criterio non viene elaborato sul dispositivo.
-
-      Se utilizzato insieme a <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" />, questo criterio verrà prima esaminato da un servizio di aggiornamento.
-      A differenza di<ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> (che potrebbe consentire aggiornamenti minori), i dispositivi manterranno la versione selezionata finché il valore di questo criterio non verrà modificato.
-
-      Se utilizzato insieme a <ph name="DEVICE_ROLLBACK_TO_TARGET_VERSION_POLICY_NAME" />, la versione del dispositivo può essere ripristinata a una versione precedente specifica.
-
-      Avviso: è sconsigliato configurare delle limitazioni della versione, poiché potrebbero impedire agli utenti di ricevere aggiornamenti software e correzioni critiche per la sicurezza. Gli aggiornamenti con limitazioni a una versione specifica potrebbero esporre gli utenti a dei rischi.</translation>
 <translation id="7506745375479451616">Questo criterio consente di stabilire il comando da usare per aprire gli URL in <ph name="PRODUCT_NAME" /> anziché in <ph name="IE_PRODUCT_NAME" />. Per questo criterio è possibile impostare un percorso file eseguibile o un valore <ph name="PRODUCT_NAME_PLACEHOLDER" /> per rilevare automaticamente la posizione di <ph name="PRODUCT_NAME" />.
 
       Se il criterio non viene impostato, <ph name="IE_PRODUCT_NAME" /> rileva automaticamente il percorso eseguibile di <ph name="PRODUCT_NAME" /> all'avvio di <ph name="PRODUCT_NAME" /> da Internet Explorer.

@@ -1163,6 +1163,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
           <ph name="LIST_ITEM" />darbdaviai ar mokyklos gali stebėti naršymo veiklą;<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />interneto paslaugų teikėjai galistebėti žiniatinklio srautą.<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="483241715238664915">Įjungti įspėjimus</translation>
 <translation id="4838327282952368871">Svajinga</translation>
 <translation id="4840250757394056958">Peržiūrėti „Chrome“ istoriją</translation>
 <translation id="484462545196658690">Automatiškai</translation>
@@ -1790,6 +1791,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="7086090958708083563">Naudotojo pateikta įkėlimo užklausa</translation>
 <translation id="7087282848513945231">Apskritis</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />; paspauskite tabuliavimo klavišą, tada „Enter“, jei norite tvarkyti leidimus ir svetainėse saugomus duomenis „Chrome“ nustatymuose</translation>
+<translation id="7096937462164235847">Šios svetainės tapatybė nepatvirtinta.</translation>
 <translation id="7108338896283013870">Slėpti</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> nori naudoti fotoaparatą</translation>
 <translation id="7108819624672055576">Leidžiama pagal plėtinį</translation>
@@ -2366,6 +2368,7 @@ Papildoma išsami informacija:
 <translation id="9065203028668620118">Redaguoti</translation>
 <translation id="9065745800631924235">„<ph name="TEXT" />“ paieška istorijoje</translation>
 <translation id="9069693763241529744">Užblokuota pagal plėtinį</translation>
+<translation id="9073799351042754113">Pasirinkote išjungti šios svetainės saugos įspėjimus.</translation>
 <translation id="9078964945751709336">Būtina pateikti daugiau informacijos</translation>
 <translation id="9080712759204168376">Užsakymų suvestinė</translation>
 <translation id="9089260154716455634">Nenaudojimo valandų politika:</translation>

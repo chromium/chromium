@@ -1161,6 +1161,7 @@
 <ph name="LIST_ITEM" />работадаўцы і навучальныя ўстановы могуць адсочваць дзеянні ў браўзеры;<ph name="END_LIST_ITEM" />
 <ph name="LIST_ITEM" />інтэрнэт-правайдары могуць адсочваць інтэрнэт-трафік.<ph name="END_LIST_ITEM" />
 <ph name="END_LIST" /></translation>
+<translation id="483241715238664915">Уключыць папярэджанні</translation>
 <translation id="4838327282952368871">Летуценны</translation>
 <translation id="4840250757394056958">Праглядзець гісторыю Chrome</translation>
 <translation id="484462545196658690">Аўтаматычна</translation>
@@ -1788,6 +1789,7 @@
 <translation id="7086090958708083563">Запампоўка запытана карыстальнікам</translation>
 <translation id="7087282848513945231">Акруга</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб кіраваць дазволамі і данымі, якія захоўваюцца на сайтах, праз налады Chrome, націсніце Tab, затым Enter</translation>
+<translation id="7096937462164235847">Сапраўднасць гэтага вэб-сайта не спраўджана.</translation>
 <translation id="7108338896283013870">Схаваць</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> запытвае доступ да камеры</translation>
 <translation id="7108819624672055576">Дазволена пашырэннем</translation>
@@ -2364,6 +2366,7 @@
 <translation id="9065203028668620118">Змяніць</translation>
 <translation id="9065745800631924235"><ph name="TEXT" />: пошук у гісторыі</translation>
 <translation id="9069693763241529744">Заблакіравана пашырэннем</translation>
+<translation id="9073799351042754113">Вы выключылі папярэджанні сістэмы бяспекі для гэтага сайта.</translation>
 <translation id="9078964945751709336">Патрабуецца дадатковая інфармацыя</translation>
 <translation id="9080712759204168376">Звесткі пра заказ</translation>
 <translation id="9089260154716455634">Палітыка для нерабочага часу:</translation>

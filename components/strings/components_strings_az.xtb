@@ -1157,6 +1157,7 @@
           <ph name="LIST_ITEM" />İşəgötürənlər və ya məktəblər axtarış fəaliyyətini izləyə bilir<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />İnternet xidmət təminatçıları veb trafikini izləyə bilər<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="483241715238664915">Xəbərdarlıqları aktiv edin</translation>
 <translation id="4838327282952368871">Xəyali</translation>
 <translation id="4840250757394056958">Chrome tarixçənizə baxın</translation>
 <translation id="484462545196658690">Avtomatik</translation>
@@ -1784,6 +1785,7 @@
 <translation id="7086090958708083563">Yükləmə istifadəçi tərəfindən tələb edildi</translation>
 <translation id="7087282848513945231">Ölkə</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ayarlarında saytlarda saxlanılan icazələri və datanı idarə etmək üçün Tab, sonra Enter düyməsinə basın</translation>
+<translation id="7096937462164235847">Bu veb saytın kimliyi doğrulanmayıb.</translation>
 <translation id="7108338896283013870">Gizlədin</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> kameranızı istifadə etmək istəyir</translation>
 <translation id="7108819624672055576">Artırma tərəfindən icazə verildi</translation>
@@ -2359,6 +2361,7 @@
 <translation id="9065203028668620118">Düzəliş edin</translation>
 <translation id="9065745800631924235">Tarixçədən <ph name="TEXT" /> axtarışı</translation>
 <translation id="9069693763241529744">Artırma tərəfindən blok edildi</translation>
+<translation id="9073799351042754113">Bu sayt üçün təhlükəsizlik xəbərdarlıqlarını deaktiv etməyi seçdiniz.</translation>
 <translation id="9078964945751709336">Ətraflı məlumat tələb olunur</translation>
 <translation id="9080712759204168376">Sifariş Xülasəsi</translation>
 <translation id="9089260154716455634">Qeyri-iş saatları siyasəti:</translation>

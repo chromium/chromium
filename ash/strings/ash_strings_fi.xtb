@@ -410,6 +410,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="4129129681837227511">Jos haluat nähdä ilmoituksia lukitusnäytöllä, avaa lukitus muuttaaksesi asetusta</translation>
 <translation id="4146833061457621061">Soita musiikkia</translation>
 <translation id="4157822100366708405">Tumman teeman asetukset</translation>
+<translation id="4173958948577803258">To</translation>
 <translation id="4181841719683918333">Kielet</translation>
 <translation id="4195877955194704651">Automaattinen klikkaus ‑painike</translation>
 <translation id="4197790712631116042">Poissa päältä</translation>
@@ -748,6 +749,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="6751052314767925245">Järjestelmänvalvojan käyttämä</translation>
 <translation id="6751826523481687655">Tehokkuuden seuranta on käytössä</translation>
 <translation id="6752912906630585008">Työpöytä <ph name="REMOVED_DESK" /> poistettu ja yhdistetty työpöytään <ph name="RECEIVE_DESK" /></translation>
+<translation id="6754441615189976839">La</translation>
 <translation id="6757237461819837179">Mediaa ei toisteta</translation>
 <translation id="6777216307882431711">Toimii yhdistettyjen USB-C-laitteiden virtalähteenä</translation>
 <translation id="6790428901817661496">Toista</translation>
@@ -768,6 +770,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="6910714959251846841">Tämän päivityksen asennus edellyttää laitteen powerwashia. Lue lisää uusimmasta <ph name="SYSTEM_APP_NAME" /> ‑päivityksestä.</translation>
 <translation id="6919251195245069855">Älykorttia ei tunnistettu. Yritä uudelleen.</translation>
 <translation id="6921188888306725546">Pikanäppäimiä on parannettu</translation>
+<translation id="6929655271276551705">Päivämääräasetukset</translation>
 <translation id="6945221475159498467">Valitse</translation>
 <translation id="6961121602502368900">Puhelimen hiljentäminen ei ole käytettävissä työprofiililla</translation>
 <translation id="6961840794482373852">Pikanäppäinyhdistelmä Alt + ylänuoli on muuttunut. Jos haluat käyttää Page Up ‑näppäintä, paina <ph name="LAUNCHER_KEY_NAME" /> + ylänuoli.</translation>
@@ -785,6 +788,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
 <translation id="7042322267639375032">Tiivistä tila-alue</translation>
 <translation id="7045595904618419789">Käynnistä suurennus</translation>
+<translation id="7055381872777910864">Ke</translation>
 <translation id="7055910611768509537">Näyttökynää ei ole käytetty yli viikkoon</translation>
 <translation id="7066646422045619941">Järjestelmänvalvoja on poistanut tämän verkon käytöstä.</translation>
 <translation id="7067196344162293536">Autom.kierto</translation>
@@ -853,6 +857,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="7579778809502851308">Kuvakaappaus</translation>
 <translation id="7590883480672980941">Syöttöasetukset</translation>
 <translation id="7593891976182323525">Haku tai Shift</translation>
+<translation id="7595633564847427181">Ma</translation>
 <translation id="7600875258240007829">Näytä kaikki ilmoitukset</translation>
 <translation id="7607002721634913082">Keskeytetty</translation>
 <translation id="7618774594543487847">Neutraali</translation>

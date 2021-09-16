@@ -34,6 +34,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> bestuur hierdie gebruiker en kan oor 'n afstand instellings bestuur en gebruikeraktiwiteit monitor.</translation>
 <translation id="150962533380566081">Ongeldige PUK.</translation>
 <translation id="1510238584712386396">Lanseerder</translation>
+<translation id="155865706765934889">Raakpaneel</translation>
 <translation id="1600964289716072707">Plaas 'n ander bladsy op die skandeerder en kies Skandeer om bladsy by te voeg.</translation>
 <translation id="1621067168122174824">Laat loop laaitoets</translation>
 <translation id="1639239467298939599">Laai tans</translation>
@@ -45,6 +46,7 @@
 <translation id="1706391837335750954">DNS-ontbinder is teenwoordig</translation>
 <translation id="1715359911173058521">Kan nie met die skandeerder kommunikeer nie. Gaan die netwerk of USB-verbinding na en probeer weer.</translation>
 <translation id="1717874160321062422">Bestuur deur <ph name="FIRST_MANAGER" /> en <ph name="SECOND_MANAGER" /></translation>
+<translation id="1726100011689679555">Naambedieners</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Kanselleer skandering</translation>
@@ -391,11 +393,13 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7819857487979277519">PSK (WPA of RSN)</translation>
 <translation id="7835501727204647447">Installeer CloudReady</translation>
+<translation id="7846634333498149051">Sleutelbord</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Verskaffertipe</translation>
 <translation id="7895471513946376273">Ontdek teken- en ontwerpnutsgoed</translation>
 <translation id="7936303884198020182">Geen naambedieners gekry nie</translation>
 <translation id="7960831585769876809">Temperatuur</translation>
+<translation id="7978412674231730200">Private sleutel</translation>
 <translation id="7994702968232966508">EAP-metode</translation>
 <translation id="8020238979854764615">Iets was fout. Probeer weer deur ander prente te kies.</translation>
 <translation id="802154636333426148">Kon nie aflaai nie</translation>
@@ -450,6 +454,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="8818152010000655963">Muurpapier</translation>
 <translation id="8834539327799336565">Tans gekoppel</translation>
 <translation id="8845001906332463065">Kry hulp</translation>
+<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Toets was suksesvol</translation>
 <translation id="8898840733695078011">Seinsterkte</translation>

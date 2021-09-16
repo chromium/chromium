@@ -1159,6 +1159,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
           <ph name="LIST_ITEM" />Datori di lavoro o scuole possono monitorare l'attività di navigazione<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />I provider di servizi Internet possono monitorare il traffico web<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="483241715238664915">Attiva gli avvisi</translation>
 <translation id="4838327282952368871">Surreale</translation>
 <translation id="4840250757394056958">Visualizza la tua cronologia di Chrome</translation>
 <translation id="484462545196658690">Automatico</translation>
@@ -1785,6 +1786,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="7086090958708083563">Caricamento richiesto dall'utente</translation>
 <translation id="7087282848513945231">Contea</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per gestire le autorizzazioni e i dati memorizzati sui siti nelle impostazioni di Chrome</translation>
+<translation id="7096937462164235847">L'identità di questo sito web non è stata verificata.</translation>
 <translation id="7108338896283013870">Nascondi</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> vuole usare la fotocamera</translation>
 <translation id="7108819624672055576">Consentita da un'estensione</translation>
@@ -2361,6 +2363,7 @@ Ulteriori dettagli:
 <translation id="9065203028668620118">Modifica</translation>
 <translation id="9065745800631924235">Ricerca di <ph name="TEXT" /> nella cronologia</translation>
 <translation id="9069693763241529744">Bloccata da un'estensione</translation>
+<translation id="9073799351042754113">Hai deciso di disattivare gli avvisi di sicurezza per questo sito.</translation>
 <translation id="9078964945751709336">Sono necessarie maggiori informazioni</translation>
 <translation id="9080712759204168376">Riepilogo dell'ordine</translation>
 <translation id="9089260154716455634">Criterio Orari di disattivazione:</translation>

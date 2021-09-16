@@ -34,6 +34,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> xestiona este usuario, e pode axustar a súa configuración e supervisar a súa actividade de forma remota.</translation>
 <translation id="150962533380566081">O PUK non é válido.</translation>
 <translation id="1510238584712386396">Menú de aplicacións</translation>
+<translation id="155865706765934889">Panel táctil</translation>
 <translation id="1600964289716072707">Se queres engadir outra páxina, colócaa no escáner e selecciona Escanear.</translation>
 <translation id="1621067168122174824">Realizar proba de carga</translation>
 <translation id="1639239467298939599">Cargando</translation>
@@ -45,6 +46,7 @@
 <translation id="1706391837335750954">Presenza do solucionador de DNS</translation>
 <translation id="1715359911173058521">Produciuse un erro ao establecer comunicación co escáner. Comproba a conexión USB ou de rede e téntao de novo.</translation>
 <translation id="1717874160321062422">Dispositivo xestionado por <ph name="FIRST_MANAGER" /> e por <ph name="SECOND_MANAGER" /></translation>
+<translation id="1726100011689679555">Servidores de nomes</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Cancelando escaneo</translation>
@@ -152,6 +154,7 @@
 <translation id="39823212440917567">Quitaranse os traballos de impresión de máis de <ph name="NUMBER_OF_DAYS" /> días</translation>
 <translation id="4003384961948020559">Produciuse un erro: a saída da impresora está chea</translation>
 <translation id="4034824040120875894">Impresora</translation>
+<translation id="4050980775484079270">Resolución de DNS de ARC</translation>
 <translation id="409427325554347132">Gardar detalles da proba</translation>
 <translation id="4131410914670010031">Branco e negro</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
@@ -162,6 +165,7 @@
 <translation id="4238516577297848345">Non hai ningunha tarefa de impresión en curso</translation>
 <translation id="4244962993387259361">Como mínimo, precísanse 500 MB de espazo para executar unha proba de memoria. Se queres liberar espazo, vai a Configuración &gt; Xestión do almacenamento.</translation>
 <translation id="4258281355379922695">Latencia de HTTP</translation>
+<translation id="4271957103967917607">Ver pantalla completa</translation>
 <translation id="4289540628985791613">Visión xeral</translation>
 <translation id="4297501883039923494">Detívose (produciuse un erro descoñecido)</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imaxes</translation>
@@ -373,6 +377,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="7550715992156305117">Rutinas de diagnóstico</translation>
 <translation id="7561454561030345039">O teu administrador xestiona esta acción</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7574732568136198983">Ping ARC</translation>
 <translation id="7595982850646262331">Tempo restante: <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Máis información no Centro de axuda</translation>
 <translation id="763165478673169849">Última hora de restablecemento</translation>
@@ -388,11 +393,13 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="7805768142964895445">Estado</translation>
 <translation id="7819857487979277519">PSK (WPA ou RSN)</translation>
 <translation id="7835501727204647447">Instalar CloudReady</translation>
+<translation id="7846634333498149051">Teclado</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tipo de fornecedor</translation>
 <translation id="7895471513946376273">Descubre as ferramentas de debuxo e deseño</translation>
 <translation id="7936303884198020182">Non se atoparon servidores de nomes</translation>
 <translation id="7960831585769876809">Temperatura</translation>
+<translation id="7978412674231730200">Clave privada</translation>
 <translation id="7994702968232966508">Método EAP</translation>
 <translation id="8020238979854764615">Produciuse un erro. Téntao de novo escollendo outras imaxes.</translation>
 <translation id="802154636333426148">Produciuse un erro na descarga</translation>
@@ -447,6 +454,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8818152010000655963">Fondo de pantalla</translation>
 <translation id="8834539327799336565">Dispositivos conectados actualmente</translation>
 <translation id="8845001906332463065">Obter axuda</translation>
+<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Superouse a proba</translation>
 <translation id="8898840733695078011">Intensidade do sinal</translation>

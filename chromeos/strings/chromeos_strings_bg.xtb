@@ -34,6 +34,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> управлява този потребител и може отдалечено да контролира настройките и да наблюдава потребителската активност.</translation>
 <translation id="150962533380566081">Невалиден PUK код.</translation>
 <translation id="1510238584712386396">Стартов панел</translation>
+<translation id="155865706765934889">Сензорен панел</translation>
 <translation id="1600964289716072707">Поставете друга страница върху скенера и изберете „Сканиране“, за да добавите страница.</translation>
 <translation id="1621067168122174824">Стартиране на тест на зареждането</translation>
 <translation id="1639239467298939599">Зарежда се</translation>
@@ -45,6 +46,7 @@
 <translation id="1706391837335750954">Налице е DNS резолвер</translation>
 <translation id="1715359911173058521">Има проблем с установяването на връзка със скенера. Проверете връзката с USB или мрежата и опитайте отново.</translation>
 <translation id="1717874160321062422">Управлява се от <ph name="FIRST_MANAGER" /> и <ph name="SECOND_MANAGER" /></translation>
+<translation id="1726100011689679555">Сървъри за имена</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Сканирането се отменя</translation>
@@ -391,11 +393,13 @@
 <translation id="7805768142964895445">Състояние</translation>
 <translation id="7819857487979277519">PSK (WPA или RSN)</translation>
 <translation id="7835501727204647447">Инсталиране на CloudReady</translation>
+<translation id="7846634333498149051">Клавиатура</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Тип на доставчика</translation>
 <translation id="7895471513946376273">Открийте инструменти за рисуване и дизайн</translation>
 <translation id="7936303884198020182">Не са намерени сървъри за имена</translation>
 <translation id="7960831585769876809">Температура</translation>
+<translation id="7978412674231730200">Личен ключ</translation>
 <translation id="7994702968232966508">Метод с EAP</translation>
 <translation id="8020238979854764615">Възникна грешка. Моля, опитайте отново, като изберете други изображения.</translation>
 <translation id="802154636333426148">Изтеглянето не бе успешно</translation>
@@ -450,6 +454,7 @@
 <translation id="8818152010000655963">Тапет</translation>
 <translation id="8834539327799336565">Свързани сега</translation>
 <translation id="8845001906332463065">Получете помощ</translation>
+<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Тестът бе успешен</translation>
 <translation id="8898840733695078011">Сила на сигнала</translation>

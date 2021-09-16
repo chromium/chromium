@@ -170,7 +170,7 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' sudah dicentang, hapus centangnya, lalu
 Untuk memberikan izin ini, klik '<ph name="BUTTON_NAME" />' di bawah. Di panel preferensi 'Aksesibilitas' yang terbuka, centang kotak di samping '<ph name="SERVICE_SCRIPT_NAME" />'.
 
 Jika '<ph name="SERVICE_SCRIPT_NAME" />' sudah dicentang, hapus centangnya, lalu centang kembali.</translation>
-<translation id="8305209735512572429">Proses Jarak Jauh Autentikasi Web</translation>
+<translation id="8305209735512572429">Web Authentication Remoting Process</translation>
 <translation id="8383794970363966105">Untuk menggunakan Chromoting, Anda perlu menambahkan Akun Google ke perangkat.</translation>
 <translation id="8386846956409881180">Host dikonfigurasi dengan kredensial OAuth yang tidak valid.</translation>
 <translation id="8397385476380433240">Beri izin ke <ph name="PRODUCT_NAME" /></translation>

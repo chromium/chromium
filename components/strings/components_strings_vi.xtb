@@ -1162,6 +1162,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
           <ph name="LIST_ITEM" />Người quản lý doanh nghiệp hoặc trường học có thể theo dõi hoạt động duyệt web<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Nhà cung cấp dịch vụ Internet có thể giám sát lưu lượng truy cập web<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="483241715238664915">Bật cảnh báo</translation>
 <translation id="4838327282952368871">Mơ mộng</translation>
 <translation id="4840250757394056958">Xem nhật ký Chrome của bạn</translation>
 <translation id="484462545196658690">Tự động</translation>
@@ -1789,6 +1790,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="7086090958708083563">Người dùng yêu cầu tải lên</translation>
 <translation id="7087282848513945231">Hạt</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, hãy nhấn Tab rồi nhấn Enter để quản lý quyền và dữ liệu lưu trữ trên các trang web trong phần Cài đặt của Chrome</translation>
+<translation id="7096937462164235847">Danh tính của trang web này chưa được xác minh.</translation>
 <translation id="7108338896283013870">Ẩn</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> muốn sử dụng máy ảnh của bạn</translation>
 <translation id="7108819624672055576">Được một tiện ích cho phép</translation>
@@ -2365,6 +2367,7 @@ Thông tin chi tiết bổ sung:
 <translation id="9065203028668620118">Chỉnh sửa</translation>
 <translation id="9065745800631924235">Cụm từ tìm kiếm <ph name="TEXT" /> từ lịch sử</translation>
 <translation id="9069693763241529744">Bị một tiện ích chặn</translation>
+<translation id="9073799351042754113">Bạn đã chọn tắt cảnh báo bảo mật đối với trang web này.</translation>
 <translation id="9078964945751709336">Yêu cầu thêm thông tin</translation>
 <translation id="9080712759204168376">Tóm tắt đơn hàng</translation>
 <translation id="9089260154716455634">Chính sách về khoảng thời gian tắt:</translation>

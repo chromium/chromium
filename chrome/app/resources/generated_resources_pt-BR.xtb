@@ -335,7 +335,6 @@
 <translation id="1354045473509304750">Continuar permitindo que <ph name="HOST" /> use e mova sua câmera</translation>
 <translation id="1355088139103479645">Excluir todos os dados?</translation>
 <translation id="1355466263109342573">O <ph name="PLUGIN_NAME" /> está bloqueado</translation>
-<translation id="1356178530321889280">Clique com o botão direito do mouse e selecione "Pesquisar parte da página com o Google Lens" para pesquisar qualquer região do site e saber mais sobre o conteúdo visual exibido enquanto você navega e faz compras na Internet.</translation>
 <translation id="1358741672408003399">Ortografia e gramática</translation>
 <translation id="1359923111303110318">Seu dispositivo pode ser desbloqueado com o Smart Lock. Pressione "Enter" para desbloquear.</translation>
 <translation id="1361164813881551742">Adicionar manualmente</translation>
@@ -495,7 +494,7 @@
 <translation id="152234381334907219">Nunca salvas</translation>
 <translation id="1523978563989812243">Mecanismos da conversão de texto em voz</translation>
 <translation id="1524430321211440688">Teclado</translation>
-<translation id="1524563461097350801">Não, obrigado</translation>
+<translation id="1524563461097350801">Agora não</translation>
 <translation id="1525740877599838384">Usar apenas o Wi-Fi para determinar a localização</translation>
 <translation id="152629053603783244">Reiniciar Linux</translation>
 <translation id="1526335046150927198">Ativar aceleração de rolagem do touchpad</translation>
@@ -6013,7 +6012,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7470424110735398630">Permitir o acesso à área de transferência</translation>
 <translation id="747114903913869239">Erro: Não foi possível decodificar a extensão</translation>
 <translation id="7471520329163184433">Mais lenta</translation>
-<translation id="7473891865547856676">Não, obrigado</translation>
+<translation id="7473891865547856676">Agora não</translation>
 <translation id="747459581954555080">Restaurar todas</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Devolução imediata necessária}one{Devolva o <ph name="DEVICE_TYPE" /> em até {NUM_DAYS} dia}other{Devolva o <ph name="DEVICE_TYPE" /> em até {NUM_DAYS} dias}}</translation>
 <translation id="7475671414023905704">URL da senha perdida do Netscape</translation>

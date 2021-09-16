@@ -34,6 +34,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> upravlja tega uporabnika in lahko na daljavo upravlja nastavitve ter nadzira dejavnost uporabnika.</translation>
 <translation id="150962533380566081">Neveljavna koda PUK.</translation>
 <translation id="1510238584712386396">Zaganjalnik</translation>
+<translation id="155865706765934889">Sledilna ploščica</translation>
 <translation id="1600964289716072707">Novo stran postavite na optični bralnik in izberite »Optično branje«, če želite dodati stran.</translation>
 <translation id="1621067168122174824">Zaženi preizkus napolnjenosti</translation>
 <translation id="1639239467298939599">Nalaganje</translation>
@@ -45,6 +46,7 @@
 <translation id="1706391837335750954">Prisotnost razreševalnika DNS</translation>
 <translation id="1715359911173058521">Pri komuniciranju z optičnim bralnikom je prišlo do težave. Preverite omrežje ali povezavo USB in poskusite znova.</translation>
 <translation id="1717874160321062422">Napravo upravljata <ph name="FIRST_MANAGER" /> in <ph name="SECOND_MANAGER" />.</translation>
+<translation id="1726100011689679555">Imenski strežniki</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Preklic optičnega branja</translation>
@@ -152,6 +154,7 @@
 <translation id="39823212440917567">Odstranjena bodo tiskalna opravila, starejša od toliko dni: <ph name="NUMBER_OF_DAYS" /></translation>
 <translation id="4003384961948020559">Napaka – izhodni pladenj je poln</translation>
 <translation id="4034824040120875894">Tiskalnik</translation>
+<translation id="4050980775484079270">Razrešitev DNS-ja za ARC</translation>
 <translation id="409427325554347132">Shrani podrobnosti preizkusa</translation>
 <translation id="4131410914670010031">Črno-belo</translation>
 <translation id="4145784616224233563">Požarni zid HTTP</translation>
@@ -390,11 +393,13 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7805768142964895445">Stanje</translation>
 <translation id="7819857487979277519">PSK (WPA ali RSN)</translation>
 <translation id="7835501727204647447">Namesti CloudReady</translation>
+<translation id="7846634333498149051">Tipkovnica</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Vrsta ponudnika</translation>
 <translation id="7895471513946376273">Odkrijte orodja za risanje in oblikovanje</translation>
 <translation id="7936303884198020182">Najden ni bil noben imenski strežnik</translation>
 <translation id="7960831585769876809">Temperatura</translation>
+<translation id="7978412674231730200">Zasebni ključ</translation>
 <translation id="7994702968232966508">Način EAP</translation>
 <translation id="8020238979854764615">Prišlo je do napake. Poskusite znova tako, da izberete druge slike.</translation>
 <translation id="802154636333426148">Prenos ni uspel</translation>
@@ -449,6 +454,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="8818152010000655963">Ozadje</translation>
 <translation id="8834539327799336565">Trenutno povezano</translation>
 <translation id="8845001906332463065">Poiščite pomoč</translation>
+<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Preizkus je uspel</translation>
 <translation id="8898840733695078011">Moč signala</translation>

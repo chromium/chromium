@@ -334,7 +334,6 @@
 <translation id="1354045473509304750">Povolit webu <ph name="HOST" /> používat a natáčet kameru i nadále</translation>
 <translation id="1355088139103479645">Smazat všechna data?</translation>
 <translation id="1355466263109342573">Plugin <ph name="PLUGIN_NAME" /> je blokován</translation>
-<translation id="1356178530321889280">Kliknutím pravým tlačítkem myši a výběrem možnosti Prohledat část stránky pomocí Google Lens můžete vyhledat libovolnou část webu a získat tak další informace o vizuálním obsahu, který vidíte při procházení a nakupování na webu.</translation>
 <translation id="1358741672408003399">Pravopis a gramatika</translation>
 <translation id="1359923111303110318">Vaše zařízení lze odemknout pomocí funkce Smart Lock. Odemknete ho stisknutím klávesy Enter.</translation>
 <translation id="1361164813881551742">Přidat ručně</translation>
@@ -2724,6 +2723,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3842552989725514455">Patkové písmo</translation>
 <translation id="3843464315703645664">Na interním seznamu povolených</translation>
 <translation id="3844888638014364087">Byla vložena ikona emodži</translation>
+<translation id="384513009320852920">Zařízení Bluetooth musí být v režimu párování a poblíž. <ph name="BEGIN_LINK_LEARN_MORE" />Další informace<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Získejte nástroje k vývoji webů, aplikací pro Android apod. Při instalaci systému Linux se stáhne <ph name="DOWNLOAD_SIZE" /> dat.</translation>
 <translation id="3847319713229060696">Pomáhat se zlepšováním bezpečnosti internetu pro všechny</translation>
 <translation id="3848547754896969219">Otevřít v &amp;anonymním okně</translation>

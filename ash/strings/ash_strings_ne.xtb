@@ -410,6 +410,7 @@
 <translation id="4129129681837227511">आफ्नो लक स्क्रिनमा सूचनाहरू हेर्नका लागि सेटिङहरू परिवर्तन गर्न अनलक गर्नुहोस्</translation>
 <translation id="4146833061457621061">सङ्गीत प्ले गर्नुहोस्</translation>
 <translation id="4157822100366708405">अँध्यारो थिमसम्बन्धी सेटिङ</translation>
+<translation id="4173958948577803258">बिही</translation>
 <translation id="4181841719683918333">भाषाहरू</translation>
 <translation id="4195877955194704651">स्वतः क्लिक गर्ने बटन</translation>
 <translation id="4197790712631116042">अफ</translation>
@@ -748,6 +749,7 @@
 <translation id="6751052314767925245">तपाईंका प्रशासकले लागू गर्नुभएको</translation>
 <translation id="6751826523481687655">प्रदर्शन ट्रेस गरिँदै छ</translation>
 <translation id="6752912906630585008">डेस्क <ph name="REMOVED_DESK" /> हटाइयो र डेस्क <ph name="RECEIVE_DESK" /> मा गाभियो</translation>
+<translation id="6754441615189976839">शनि</translation>
 <translation id="6757237461819837179">कुनै मिडिया प्ले भइरहेको छैन</translation>
 <translation id="6777216307882431711">जडान गरिएका USB-C यन्त्रहरू चार्ज गर्दै</translation>
 <translation id="6790428901817661496">प्ले गर्नुहोस्</translation>
@@ -768,6 +770,7 @@
 <translation id="6910714959251846841">यस अद्यावधिका लागि तपाईंको यन्त्र पावरवास गर्नु पर्ने हुन्छ। <ph name="SYSTEM_APP_NAME" /> को पछिल्लो अद्यावधिकबारे थप जान्नुहोस्।</translation>
 <translation id="6919251195245069855">तपाईंको स्मार्ट कार्ड पहिचान गर्न सकिएन। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="6921188888306725546">किबोर्डका सर्टकट अझै राम्रो बनाइएका छन्</translation>
+<translation id="6929655271276551705">मितिसम्बन्धी सेटिङ</translation>
 <translation id="6945221475159498467">चयन गर्नुहोस्</translation>
 <translation id="6961121602502368900">कार्य प्रोफाइल प्रयोग गरिएका बेला फोन साइलेन्ट बनाउने सुविधा उपलब्ध हुँदैन</translation>
 <translation id="6961840794482373852">Alt + अप एरो किबोर्ड सर्टकट परिवर्तन गरिएको छ। Page Up की प्रयोग गर्न <ph name="LAUNCHER_KEY_NAME" /> की + अप एरो की थिच्नुहोस्।</translation>
@@ -785,6 +788,7 @@
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google सहायक</translation>
 <translation id="7042322267639375032">वस्तुस्थिति देखाउने क्षेत्र संक्षिप्त गर्नुहोस्</translation>
 <translation id="7045595904618419789">म्याग्निफायर अन गर्नुहोस्</translation>
+<translation id="7055381872777910864">बुध</translation>
 <translation id="7055910611768509537">स्टाइलस प्रयोग नगरेको एक हप्ताभन्दा बढी भइसकेको छ</translation>
 <translation id="7066646422045619941">यस नेटवर्कलाई तपाईंको प्रशासकद्वारा असक्षम गरिएको छ।</translation>
 <translation id="7067196344162293536">स्वतः घुमाउनुहोस्</translation>
@@ -853,6 +857,7 @@
 <translation id="7579778809502851308">स्क्रिन क्याप्चर</translation>
 <translation id="7590883480672980941">इनपुटसम्बन्धी सेटिङ</translation>
 <translation id="7593891976182323525">सिफ्टको लागि खोज्नुहोस्</translation>
+<translation id="7595633564847427181">सोम</translation>
 <translation id="7600875258240007829">सबै सूचनाहरू हेर्नुहोस्</translation>
 <translation id="7607002721634913082">रोकिएको छ</translation>
 <translation id="7618774594543487847">तटस्थ</translation>

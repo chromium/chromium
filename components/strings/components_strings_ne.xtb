@@ -1158,6 +1158,7 @@
           <ph name="LIST_ITEM" />रोजगारदाता वा विद्यालयले ब्राउजर प्रयोग गरी गरिएको क्रियाकलापसम्बन्धी विवरण हेर्न सक्छन्<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />इन्टरनेट सेवा प्रदायकहरूले वेब ट्राफिकको निरीक्षण गर्न सक्छन्<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="483241715238664915">चेतावनी देखाउने सुविधा अन गर्नुहोस्</translation>
 <translation id="4838327282952368871">स्वप्निल</translation>
 <translation id="4840250757394056958">Chrome को ब्राउजिङ इतिहास हेर्नुहोस्</translation>
 <translation id="484462545196658690">स्वतः</translation>
@@ -1785,6 +1786,7 @@
 <translation id="7086090958708083563">प्रयोगकर्ताले अनुरोध गरेको अपलोड</translation>
 <translation id="7087282848513945231">काउन्टी</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome का सेटिङमा गई अनुमति तथा विभिन्न साइटहरूमा भण्डारण गरिएका डेटा व्यवस्थापन गर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
+<translation id="7096937462164235847">यो वेबसाइटको पहिचान पुष्टि गरिएको छैन।</translation>
 <translation id="7108338896283013870">लुकाउनुहोस्</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> तपाईंको क्यामेरा प्रयोग गर्न चाहन्छ</translation>
 <translation id="7108819624672055576">कुनै विस्तारले अनुमति दिएको</translation>
@@ -2360,6 +2362,7 @@
 <translation id="9065203028668620118">सम्पादन गर्नुहोस</translation>
 <translation id="9065745800631924235">इतिहासबाट लिइएको <ph name="TEXT" /> को खोज</translation>
 <translation id="9069693763241529744">कुनै विस्तारले रोक लगाएको</translation>
+<translation id="9073799351042754113">तपाईंले यो साइटका हकमा सुरक्षासम्बन्धी चेतावनी देखाउने सुविधा अफ गर्नुभएको छ।</translation>
 <translation id="9078964945751709336">थप जानकारी आवश्यक छ</translation>
 <translation id="9080712759204168376">अर्डरको सारांश</translation>
 <translation id="9089260154716455634">निष्क्रिय समयसम्बन्धी नीति:</translation>

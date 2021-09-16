@@ -1161,6 +1161,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
           <ph name="LIST_ITEM" />Waajiri au shule zinaweza kufuatilia shughuli za kuvinjari<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Huenda watoa huduma za intaneti wakafuatilia trafiki kwenye wavuti<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="483241715238664915">Washa maonyo</translation>
 <translation id="4838327282952368871">Dreamy</translation>
 <translation id="4840250757394056958">Angalia historia yako kwenye Chrome</translation>
 <translation id="484462545196658690">Otomatiki</translation>
@@ -1788,6 +1789,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7086090958708083563">Mtumiaji ameomba kupakia</translation>
 <translation id="7087282848513945231">Jimbo</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, bonyeza 'Tab' kisha 'Enter' ili udhibiti ruhusa na data iliyohifadhiwa kwenye tovuti mbalimbali katika mipangilio ya Chrome</translation>
+<translation id="7096937462164235847">Utambulisho wa tovuti hii haujathibitishwa.</translation>
 <translation id="7108338896283013870">Ficha</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> inataka kutumia kamera yako</translation>
 <translation id="7108819624672055576">Imeruhusiwa na kiendelezi</translation>
@@ -2360,6 +2362,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="9065203028668620118">Badilisha</translation>
 <translation id="9065745800631924235"><ph name="TEXT" /> tafuta kwenye historia</translation>
 <translation id="9069693763241529744">Imezuiwa na kiendelezi</translation>
+<translation id="9073799351042754113">Umezima maonyo ya usalama kwenye tovuti hii.</translation>
 <translation id="9078964945751709336">Maelezo zaidi yanahitajika</translation>
 <translation id="9080712759204168376">Muhtasari wa Agizo</translation>
 <translation id="9089260154716455634">Sera ya Saa Zisizo za Kazi:</translation>

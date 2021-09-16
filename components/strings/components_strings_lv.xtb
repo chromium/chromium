@@ -1161,6 +1161,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
           <ph name="LIST_ITEM" />Darba devēji vai mācību iestādes var uzskaitīt pārlūkošanas darbības.<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Interneta pakalpojumu sniedzēji var uzraudzīt tīmekļa datplūsmu.<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="483241715238664915">Ieslēgt brīdinājumus</translation>
 <translation id="4838327282952368871">Mierīga</translation>
 <translation id="4840250757394056958">Skatīt Chrome vēsturi</translation>
 <translation id="484462545196658690">Autom.</translation>
@@ -1788,6 +1789,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="7086090958708083563">Augšupielādi pieprasīja lietotājs.</translation>
 <translation id="7087282848513945231">Grāfiste</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />: nospiediet tabulēšanas taustiņu un pēc tam — ievadīšanas taustiņu, lai Chrome iestatījumos pārvaldītu atļaujas un datus, kas tiek glabāti vietnēs.</translation>
+<translation id="7096937462164235847">Šīs vietnes identitāte nav verificēta.</translation>
 <translation id="7108338896283013870">Slēpt</translation>
 <translation id="7108634116785509031">Vietnē <ph name="HOST" /> tiek pieprasīta atļauja lietot jūsu kameru.</translation>
 <translation id="7108819624672055576">Atļāva paplašinājums</translation>
@@ -2364,6 +2366,7 @@ Papildu informācija:
 <translation id="9065203028668620118">Labot</translation>
 <translation id="9065745800631924235">Teksta “<ph name="TEXT" />” meklēšana no vēstures</translation>
 <translation id="9069693763241529744">Bloķēja paplašinājums</translation>
+<translation id="9073799351042754113">Jūs esat izvēlējies izslēgt drošības brīdinājumus šai vietnei.</translation>
 <translation id="9078964945751709336">Nepieciešama plašāka informācija.</translation>
 <translation id="9080712759204168376">Pasūtījuma kopsavilkums</translation>
 <translation id="9089260154716455634">Izslēgšanas stundu politika:</translation>

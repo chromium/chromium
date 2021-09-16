@@ -332,7 +332,6 @@
 <translation id="1354045473509304750">Seguir permitiendo que <ph name="HOST" /> use y mueva la cámara</translation>
 <translation id="1355088139103479645">¿Quieres borrar todos los datos?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> está bloqueado</translation>
-<translation id="1356178530321889280">Haz clic con el botón derecho y selecciona "Busca parte de la página con Google Lens" para buscar cualquier parte del sitio y obtener más información sobre el contenido visual que ves mientras navegas y realizas compras en la Web.</translation>
 <translation id="1358741672408003399">Ortografía y gramática</translation>
 <translation id="1359923111303110318">Puedes desbloquear tu dispositivo mediante Smart Lock. Presiona Intro para permitir el acceso.</translation>
 <translation id="1361164813881551742">Agregar manualmente</translation>
@@ -1828,7 +1827,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="289695669188700754">ID de clave: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Se quitará esta configuración personalizada cuando cierres todas las ventanas de incógnito</translation>
 <translation id="2897878306272793870">¿Estás seguro de que deseas abrir <ph name="TAB_COUNT" /> pestañas?</translation>
-<translation id="2900477968385519153">Hacer búsquedas en la pantalla con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="2900477968385519153">Buscar en la pantalla con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="290105521672621980">El archivo utiliza funciones no compatibles</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> no pudo comunicarse con esta impresora. Asegúrate de que la impresora esté conectada y vuelve a intentarlo.</translation>
 <translation id="2902312830803030883">Más acciones</translation>
@@ -4133,7 +4132,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="5427278936122846523">Traducir siempre</translation>
 <translation id="5427459444770871191">Girar &amp;a la derecha</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (actualización disponible)</translation>
-<translation id="5429373054983029602">Hacer búsquedas en la pantalla con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="5429373054983029602">Buscar en la pantalla con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="542948651837270806">Debe instalarse una actualización del firmware del Módulo de plataforma de confianza. Consulta <ph name="TPM_FIRMWARE_UPDATE_LINK" />.</translation>
 <translation id="5430931332414098647">Conexión instantánea mediante dispositivo móvil</translation>
 <translation id="5431318178759467895">Color</translation>

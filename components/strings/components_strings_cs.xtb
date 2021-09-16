@@ -1149,6 +1149,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
           <ph name="LIST_ITEM" />zaměstnavatel nebo škola mohou sledovat, co si prohlížíte,<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />poskytovatelé internetových služeb mohou sledovat návštěvnost webů.<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="483241715238664915">Zapnout upozornění</translation>
 <translation id="4838327282952368871">Zasněné</translation>
 <translation id="4840250757394056958">Zobrazit historii Chromu</translation>
 <translation id="484462545196658690">Automaticky</translation>
@@ -1775,6 +1776,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7086090958708083563">Uživatel požádal o nahrání</translation>
 <translation id="7087282848513945231">Okres</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím tabulátoru a poté klávesy Enter můžete spravovat oprávnění a uložená data webů v nastavení Chromu</translation>
+<translation id="7096937462164235847">Identita tohoto webu není ověřena.</translation>
 <translation id="7108338896283013870">Skrýt</translation>
 <translation id="7108634116785509031">Webová stránka <ph name="HOST" /> chce použít vaši kameru</translation>
 <translation id="7108819624672055576">Povoleno rozšířením</translation>
@@ -2350,6 +2352,7 @@ Další podrobnosti:
 <translation id="9065203028668620118">Upravit</translation>
 <translation id="9065745800631924235">vyhledávání <ph name="TEXT" /> z historie</translation>
 <translation id="9069693763241529744">Blokováno rozšířením</translation>
+<translation id="9073799351042754113">Rozhodli jste se vypnout bezpečnostní upozornění pro tento web.</translation>
 <translation id="9078964945751709336">Jsou potřeba další informace</translation>
 <translation id="9080712759204168376">Přehled objednávky</translation>
 <translation id="9089260154716455634">Zásada Off-Hours:</translation>

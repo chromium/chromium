@@ -34,6 +34,7 @@
 <translation id="1499900233129743732">இந்தப் பயனரை <ph name="MANAGER" /> நிர்வகிக்கிறது. இது தொலைநிலையிலிருந்து அமைப்புகளை நிர்வகிக்கலாம், அத்துடன் பயனர் செயல்பாட்டையும் கண்காணிக்கலாம்.</translation>
 <translation id="150962533380566081">தவறான PUK.</translation>
 <translation id="1510238584712386396">துவக்கி</translation>
+<translation id="155865706765934889">டச்பேட்</translation>
 <translation id="1600964289716072707">பக்கத்தைச் சேர்க்க, ஸ்கேனரில் வேறொரு பக்கத்தை வைத்துவிட்டு 'ஸ்கேன் செய்' என்பதைத் தேர்ந்தெடுக்கவும்.</translation>
 <translation id="1621067168122174824">சார்ஜ் சோதனையை இயக்கு</translation>
 <translation id="1639239467298939599">ஏற்றுகிறது</translation>
@@ -45,6 +46,7 @@
 <translation id="1706391837335750954">DNS ரிசால்வர் இருப்பது</translation>
 <translation id="1715359911173058521">ஸ்கேனருடன் இணைப்பதில் சிக்கல். நெட்வொர்க்/USB இணைப்பைச் சரிபார்த்து மீண்டும் முயலவும்.</translation>
 <translation id="1717874160321062422">நிர்வகிப்பது: <ph name="FIRST_MANAGER" />, <ph name="SECOND_MANAGER" /></translation>
+<translation id="1726100011689679555">பெயர் சேவையகங்கள்</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">ஸ்கேன் செய்வதை ரத்துசெய்கிறது</translation>
@@ -152,6 +154,7 @@
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> நாட்களுக்கும் மேலாக இருக்கும் பிரிண்ட்டிங் பணிகள் அகற்றப்படும்</translation>
 <translation id="4003384961948020559">பிரிண்ட் வெளியே வரும் டிரே நிரம்பி விட்டதால் அச்சிட முடியவில்லை</translation>
 <translation id="4034824040120875894">பிரிண்டர்</translation>
+<translation id="4050980775484079270">ARC DNS ரெசல்யூஷன்</translation>
 <translation id="409427325554347132">பரிசோதனை விவரங்களைச் சேமி</translation>
 <translation id="4131410914670010031">கருப்பு வெள்ளை</translation>
 <translation id="4145784616224233563">HTTP ஃபயர்வால்</translation>
@@ -390,11 +393,13 @@
 <translation id="7805768142964895445">நிலை</translation>
 <translation id="7819857487979277519">PSK (WPA அல்லது RSN)</translation>
 <translation id="7835501727204647447">CloudReadyயை நிறுவு</translation>
+<translation id="7846634333498149051">கீபோர்டு</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">வழங்குநர் வகை</translation>
 <translation id="7895471513946376273">வரைபடம் &amp; வடிவமைப்பிற்கான கருவிகளைக் கண்டறியுங்கள்</translation>
 <translation id="7936303884198020182">பெயர் சேவையகங்கள் எதுவும் இல்லை</translation>
 <translation id="7960831585769876809">வெப்பநிலை</translation>
+<translation id="7978412674231730200">தனிப்பட்ட விசை</translation>
 <translation id="7994702968232966508">EAP முறை</translation>
 <translation id="8020238979854764615">பிழை ஏற்பட்டது. வேறு படங்களைத் தேர்வுசெய்து முயலவும்.</translation>
 <translation id="802154636333426148">பதிவிறக்க முடியவில்லை</translation>
@@ -449,6 +454,7 @@
 <translation id="8818152010000655963">வால்பேப்பர்</translation>
 <translation id="8834539327799336565">தற்போது இணைக்கப்பட்டுள்ளவை</translation>
 <translation id="8845001906332463065">உதவி பெறுக</translation>
+<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">சோதனை நிறைவடைந்தது</translation>
 <translation id="8898840733695078011">சிக்னலின் வலிமை</translation>

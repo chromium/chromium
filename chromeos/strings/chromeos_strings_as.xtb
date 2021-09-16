@@ -34,6 +34,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" />এ এই ব্যৱহাৰকাৰীগৰাকীক পৰিচালনা কৰে আৰু হয়তো দূৰৰ পৰা ছেটিং পৰিচালনা কৰে আৰু ব্যৱহাৰকাৰীৰ কাৰ্যকলাপ নিৰীক্ষণ কৰে।</translation>
 <translation id="150962533380566081">অমান্য PUK।</translation>
 <translation id="1510238584712386396">লঞ্চাৰ</translation>
+<translation id="155865706765934889">টাচ্চ্‌পেড</translation>
 <translation id="1600964289716072707">অন্য এখন পৃষ্ঠা স্কেনাৰটোত ৰাখক আৰু পৃষ্ঠা যোগ কৰিবৰ বাবে স্কেন কৰক বাছনি কৰক।</translation>
 <translation id="1621067168122174824">চাৰ্জ পৰীক্ষা চলাওক</translation>
 <translation id="1639239467298939599">ল'ড কৰি থকা হৈছে</translation>
@@ -45,6 +46,7 @@
 <translation id="1706391837335750954">DNS ৰিজলভাৰ প্ৰেজেণ্ট</translation>
 <translation id="1715359911173058521">স্কেনাৰটোৰ সৈতে যোগাযোগ কৰাত এটা সমস্যা হৈছে। নেটৱৰ্কটো অথবা ইউএছবি সংযোগটো পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক।</translation>
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> আৰু <ph name="SECOND_MANAGER" />এ পৰিচালনা কৰা</translation>
+<translation id="1726100011689679555">নাম সম্পর্কীয় ছার্ভাৰ</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">স্কেন বাতিল কৰি থকা হৈছে</translation>
@@ -162,6 +164,7 @@
 <translation id="4238516577297848345">কোনো প্ৰিণ্টৰ কাম চলি থকা নাই</translation>
 <translation id="4244962993387259361">মেম’ৰী পৰীক্ষাটো চলাবলৈ আপোনাক অতি কমেও ৫০০ এমবি খালী ঠাই লাগিব। ঠাই খালী কৰিবলৈ, ছেটিং &gt; ষ্ট’ৰেজ পৰিচালনালৈ যাওক</translation>
 <translation id="4258281355379922695">HTTPৰ বিলম্বতা</translation>
+<translation id="4271957103967917607">পূৰ্ণ স্ক্ৰীনত চাওক</translation>
 <translation id="4289540628985791613">ৰূপৰেখা</translation>
 <translation id="4297501883039923494">বন্ধ হৈছে - অজ্ঞাত আসোঁৱাহ</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> খন প্ৰতিচ্ছবি</translation>
@@ -373,6 +376,7 @@
 <translation id="7550715992156305117">ডায়গন’ষ্টিক ৰুটিন</translation>
 <translation id="7561454561030345039">এই কাৰ্যটো আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7574732568136198983">এআৰচি পিং</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> বাকী</translation>
 <translation id="7620771111601174153">সহায় কেন্দ্ৰত অধিক জানক</translation>
 <translation id="763165478673169849">অন্তিমবাৰ ৰিছেট কৰাৰ সময়</translation>
@@ -388,11 +392,13 @@
 <translation id="7805768142964895445">স্থিতি</translation>
 <translation id="7819857487979277519">PSK (WPA বা RSN)</translation>
 <translation id="7835501727204647447">CloudReady ইনষ্টল কৰক</translation>
+<translation id="7846634333498149051">কীব'ৰ্ড</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">প্ৰদানকাৰীৰ ধৰণ</translation>
 <translation id="7895471513946376273">অংকন আৰু ডিজাইনৰ সঁজুলিসমূহ বিচাৰি পাওক</translation>
 <translation id="7936303884198020182">ড’মেইন নাম থকা কোনো ছাৰ্ভাৰ পোৱা নগ'ল</translation>
 <translation id="7960831585769876809">তাপমান</translation>
+<translation id="7978412674231730200">ব্যক্তিগত কী</translation>
 <translation id="7994702968232966508">ই.এ.পি. পদ্ধতি</translation>
 <translation id="8020238979854764615">কিবা আসোঁৱাহ হৈছে। অন্য প্ৰতিচ্ছবি বাছনি কৰি পুনৰ চেষ্টা কৰক।</translation>
 <translation id="802154636333426148">ডাউনল’ড কৰিব পৰা নগ’ল</translation>
@@ -447,6 +453,7 @@
 <translation id="8818152010000655963">ৱালপেপাৰ</translation>
 <translation id="8834539327799336565">বৰ্তমান সংযোজিত হৈ আছে</translation>
 <translation id="8845001906332463065">সহায় পাওক</translation>
+<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">পৰীক্ষা সফল হৈছে</translation>
 <translation id="8898840733695078011">ছিগনেলৰ ক্ষমতা</translation>

@@ -34,6 +34,7 @@
 <translation id="1499900233129743732">ဤအသုံးပြုသူကို <ph name="MANAGER" /> က စီမံခန့်ခွဲသည့်အတွက် ဆက်တင်များကို အဝေးထိန်းစီမံပြီး အသုံးပြုသူ၏လုပ်ဆောင်ချက်ကို စောင့်ကြည့်နိုင်သည်။</translation>
 <translation id="150962533380566081">PUK မမှန်ကန်ပါ။</translation>
 <translation id="1510238584712386396">Launcher</translation>
+<translation id="155865706765934889">တို့ထိရန် အပြား</translation>
 <translation id="1600964289716072707">စကင်ဖတ်စက်ပေါ်တွင် စာမျက်နှာနောက်တစ်မျက်နှာကို ထားရှိပြီး စာမျက်နှာထည့်ရန်အတွက် ‘စကင်ဖတ်ရန်’ ကို ရွေးပါ။</translation>
 <translation id="1621067168122174824">အားဝင်ရောက်မှု စစ်ဆေးရန်</translation>
 <translation id="1639239467298939599">တင်ပေးနေ</translation>
@@ -45,6 +46,7 @@
 <translation id="1706391837335750954">DNS Resolver ရှိသည်</translation>
 <translation id="1715359911173058521">စကင်ဖတ်စက်နှင့် ချိတ်ဆက်ရာတွင် ပြဿနာရှိနေသည်။ ကွန်ရက် (သို့) USB ချိတ်ဆက်မှုကို စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> နှင့် <ph name="SECOND_MANAGER" /> က စီမံခန့်ခွဲသည်</translation>
+<translation id="1726100011689679555">အမည်ဆာဗာများ</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">စကင်ဖတ်ခြင်းကို ပယ်ဖျက်နေသည်</translation>
@@ -152,6 +154,7 @@
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> ရက်အထက် ပရင့်ထုတ်ရန်ဖိုင်များကို ဖယ်ရှားပါမည်</translation>
 <translation id="4003384961948020559">မအောင်မြင်ပါ - စာရွက်ထုတ်သည့်နေရာ ပြည့်နေသည်</translation>
 <translation id="4034824040120875894">ပရင်တာ</translation>
+<translation id="4050980775484079270">ARC ဒီအန်အက်စ် (DNS) ဖြေရှင်းချက်</translation>
 <translation id="409427325554347132">စာသားအသေးစိတ် သိမ်းရန်</translation>
 <translation id="4131410914670010031">အမည်း နှင့် အဖြူ</translation>
 <translation id="4145784616224233563">HTTP Firewall</translation>
@@ -389,11 +392,13 @@
 <translation id="7805768142964895445">အခြေအနေ</translation>
 <translation id="7819857487979277519">PSK (WPA သို့မဟုတ် RSN)</translation>
 <translation id="7835501727204647447">CloudReady ထည့်သွင်းရန်</translation>
+<translation id="7846634333498149051">ကီးဘုတ်</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">ထောက်ပံ့သူအမျိုးစား</translation>
 <translation id="7895471513946376273">ပုံကားချပ်နှင့် ဒီဇိုင်းတူးလ်များကို ရှာဖွေကြည့်ရှုလိုက်ပါ</translation>
 <translation id="7936303884198020182">အမည်ဆာဗာတစ်ခုမျှ ရှာမတွေ့ပါ</translation>
 <translation id="7960831585769876809">အပူချိန်</translation>
+<translation id="7978412674231730200">ကိုယ်ပိုင် သော့</translation>
 <translation id="7994702968232966508">EAP နည်းလမ်း</translation>
 <translation id="8020238979854764615">အမှားတစ်ခု ဖြစ်သွားသည်။ အခြားပုံများကို ရွေးပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="802154636333426148">ဒေါင်းလုဒ်လုပ်မှု မအောင်မြင်ပါ</translation>
@@ -448,6 +453,7 @@
 <translation id="8818152010000655963">နောက်ခံပုံ</translation>
 <translation id="8834539327799336565">လက်ရှိ ချိတ်ဆက်ထားသည်</translation>
 <translation id="8845001906332463065">အကူအညီရယူပါ</translation>
+<translation id="8847988622838149491">USB</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">စစ်ဆေးမှု အောင်မြင်သည်</translation>
 <translation id="8898840733695078011">လိုင်းဆွဲအား</translation>

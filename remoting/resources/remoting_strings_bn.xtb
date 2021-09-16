@@ -170,6 +170,7 @@
 এই অনুমতি দিতে, নিচে '<ph name="BUTTON_NAME" />' বোতামে ক্লিক করুন। 'অ্যাক্সেসিবিলিটি' অভিরুচির প্যানেল খুলুন এবং '<ph name="SERVICE_SCRIPT_NAME" />'-এর পাশের বক্সে টিকচিহ্ন দিন।
 
 '<ph name="SERVICE_SCRIPT_NAME" />' বক্সে আগে থেকেই টিক চিহ্ন দেওয়া থাকলে, সেটি সরিয়ে আবার টিক চিহ্ন দিন।</translation>
+<translation id="8305209735512572429">ওয়েব যাচাইকরণের রিমোটিং প্রসেস</translation>
 <translation id="8383794970363966105">Chromoting ব্যবহারের জন্য, আপনাকে আপনার ডিভাইসে একটি Google অ্যাকাউন্ট যোগ করতে হবে৷</translation>
 <translation id="8386846956409881180">হোস্ট ভুল OAuth সার্টিফিকেটের সঙ্গে কনফিগার করা আছে।</translation>
 <translation id="8397385476380433240"><ph name="PRODUCT_NAME" />-কে অনুমতি দিন</translation>
