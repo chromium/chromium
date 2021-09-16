@@ -1451,7 +1451,7 @@ TEST_F(ProfileManagerTest, CleanUpEphemeralProfiles) {
 #define MAYBE_CleanUpGuestEphemeralProfile CleanUpGuestEphemeralProfile
 #endif
 // TODO(crbug.com/1203621) Disabled for flakiness.
-TEST_F(ProfileManagerGuestTest, CleanUpGuestEphemeralProfile) {
+TEST_F(ProfileManagerGuestTest, MAYBE_CleanUpGuestEphemeralProfile) {
   // Create two profiles, one of them is guest.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ProfileAttributesStorage& storage =
