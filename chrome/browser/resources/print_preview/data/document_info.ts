@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Coordinate2d} from './coordinate2d.js';
@@ -10,46 +10,34 @@ import {CustomMarginsOrientation, Margins} from './margins.js';
 import {PrintableArea} from './printable_area.js';
 import {Size} from './size.js';
 
-/**
- * @typedef {{
- *   hasCssMediaStyles: boolean,
- *   hasSelection: boolean,
- *   isModifiable: boolean,
- *   isFromArc: boolean,
- *   isScalingDisabled: boolean,
- *   fitToPageScaling: number,
- *   pageCount: number,
- *   title: string,
- * }}
- */
-export let DocumentSettings;
+export type DocumentSettings = {
+  hasCssMediaStyles: boolean,
+  hasSelection: boolean,
+  isModifiable: boolean,
+  isFromArc: boolean,
+  isScalingDisabled: boolean,
+  fitToPageScaling: number,
+  pageCount: number,
+  title: string,
+};
 
-/**
- * @typedef {{
- *   marginTop: number,
- *   marginLeft: number,
- *   marginBottom: number,
- *   marginRight: number,
- *   contentWidth: number,
- *   contentHeight: number,
- *   printableAreaX: number,
- *   printableAreaY: number,
- *   printableAreaWidth: number,
- *   printableAreaHeight: number,
- * }}
- */
-export let PageLayoutInfo;
+export type PageLayoutInfo = {
+  marginTop: number,
+  marginLeft: number,
+  marginBottom: number,
+  marginRight: number,
+  contentWidth: number,
+  contentHeight: number,
+  printableAreaX: number,
+  printableAreaY: number,
+  printableAreaWidth: number,
+  printableAreaHeight: number,
+};
 
-
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {WebUIListenerBehaviorInterface}
- */
 const PrintPreviewDocumentInfoElementBase =
-    mixinBehaviors([WebUIListenerBehavior], PolymerElement);
+    mixinBehaviors([WebUIListenerBehavior], PolymerElement) as
+    {new (): PolymerElement & WebUIListenerBehavior};
 
-/** @polymer */
 class PrintPreviewDocumentInfoElement extends
     PrintPreviewDocumentInfoElementBase {
   static get is() {
@@ -58,7 +46,6 @@ class PrintPreviewDocumentInfoElement extends
 
   static get properties() {
     return {
-      /** @type {!DocumentSettings} */
       documentSettings: {
         type: Object,
         notify: true,
@@ -81,7 +68,6 @@ class PrintPreviewDocumentInfoElement extends
         value: -1,
       },
 
-      /** @type {Margins} */
       margins: {
         type: Object,
         notify: true,
@@ -91,7 +77,6 @@ class PrintPreviewDocumentInfoElement extends
        * Size of the pages of the document in points. Actual page-related
        * information won't be set until preview generation occurs, so use
        * a default value until then.
-       * @type {!Size}
        */
       pageSize: {
         type: Object,
@@ -103,7 +88,6 @@ class PrintPreviewDocumentInfoElement extends
 
       /**
        * Printable area of the document in points.
-       * @type {!PrintableArea}
        */
       printableArea: {
         type: Object,
@@ -115,35 +99,33 @@ class PrintPreviewDocumentInfoElement extends
     };
   }
 
-  constructor() {
-    super();
-
-    /**
-     * Whether this data model has been initialized.
-     * @private {boolean}
-     */
-    this.isInitialized_ = false;
-  }
+  documentSettings: DocumentSettings;
+  inFlightRequestId: number;
+  margins: Margins;
+  pageSize: Size;
+  printableArea: PrintableArea;
+  private isInitialized_: boolean = false;
 
   /** @override */
   connectedCallback() {
     super.connectedCallback();
 
     this.addWebUIListener(
-        'page-count-ready', this.onPageCountReady_.bind(this));
+        'page-count-ready',
+        (pageCount: number, previewResponseId: number, scaling: number) =>
+            this.onPageCountReady_(pageCount, previewResponseId, scaling));
     this.addWebUIListener(
-        'page-layout-ready', this.onPageLayoutReady_.bind(this));
+        'page-layout-ready',
+        (pageLayout: PageLayoutInfo, hasCustomPageSizeStyle: boolean) =>
+            this.onPageLayoutReady_(pageLayout, hasCustomPageSizeStyle));
   }
 
   /**
    * Initializes the state of the data model.
-   * @param {boolean} isModifiable Whether the document is modifiable.
-   * @param {boolean} isFromArc Whether the document is from ARC.
-   * @param {string} title Title of the document.
-   * @param {boolean} hasSelection Whether the document has user-selected
-   *     content.
    */
-  init(isModifiable, isFromArc, title, hasSelection) {
+  init(
+      isModifiable: boolean, isFromArc: boolean, title: string,
+      hasSelection: boolean) {
     this.isInitialized_ = true;
     this.set('documentSettings.isModifiable', isModifiable);
     this.set('documentSettings.isFromArc', isFromArc);
@@ -153,10 +135,8 @@ class PrintPreviewDocumentInfoElement extends
 
   /**
    * Updates whether scaling is disabled for the document.
-   * @param {boolean} isScalingDisabled Whether scaling of the document is
-   *     prohibited.
    */
-  updateIsScalingDisabled(isScalingDisabled) {
+  updateIsScalingDisabled(isScalingDisabled: boolean) {
     if (this.isInitialized_) {
       this.set('documentSettings.isScalingDisabled', isScalingDisabled);
     }
@@ -165,13 +145,12 @@ class PrintPreviewDocumentInfoElement extends
   /**
    * Called when the page layout of the document is ready. Always occurs
    * as a result of a preview request.
-   * @param {!PageLayoutInfo} pageLayout Layout information
-   *     about the document.
-   * @param {boolean} hasCustomPageSizeStyle Whether this document has a
-   *     custom page size or style to use.
-   * @private
+   * @param pageLayout Layout information about the document.
+   * @param hasCustomPageSizeStyle Whether this document has a custom page size
+   *     or style to use.
    */
-  onPageLayoutReady_(pageLayout, hasCustomPageSizeStyle) {
+  private onPageLayoutReady_(
+      pageLayout: PageLayoutInfo, hasCustomPageSizeStyle: boolean) {
     const origin =
         new Coordinate2d(pageLayout.printableAreaX, pageLayout.printableAreaY);
     const size =
@@ -197,13 +176,12 @@ class PrintPreviewDocumentInfoElement extends
   /**
    * Called when the document page count is received from the native layer.
    * Always occurs as a result of a preview request.
-   * @param {number} pageCount The document's page count.
-   * @param {number} previewResponseId The request ID for this page count event.
-   * @param {number} fitToPageScaling The scaling required to fit the document
-   *     to page.
-   * @private
+   * @param pageCount The document's page count.
+   * @param previewResponseId The request ID for this page count event.
+   * @param fitToPageScaling The scaling required to fit the document to page.
    */
-  onPageCountReady_(pageCount, previewResponseId, fitToPageScaling) {
+  private onPageCountReady_(
+      pageCount: number, previewResponseId: number, fitToPageScaling: number) {
     if (this.inFlightRequestId !== previewResponseId || !this.isInitialized_) {
       return;
     }

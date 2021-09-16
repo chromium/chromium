@@ -5,11 +5,10 @@
 /**
  * Must be kept in sync with the C++ ScalingType enum in
  * printing/print_job_constants.h.
- * @enum {number}
  */
-export const ScalingType = {
-  DEFAULT: 0,
-  FIT_TO_PAGE: 1,
-  FIT_TO_PAPER: 2,
-  CUSTOM: 3,
-};
+export enum ScalingType {
+  DEFAULT = 0,
+  FIT_TO_PAGE = 1,
+  FIT_TO_PAPER = 2,
+  CUSTOM = 3,
+}

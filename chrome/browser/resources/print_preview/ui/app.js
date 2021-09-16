@@ -5,6 +5,7 @@
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import './print_preview_vars_css.js';
 import '../strings.m.js';
+import '../data/document_info.js';
 import './sidebar.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';

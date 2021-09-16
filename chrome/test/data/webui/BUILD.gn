@@ -556,9 +556,6 @@ group("closure_compile") {
       "settings/chromeos:closure_compile",
     ]
   }
-  if (enable_print_preview) {
-    deps += [ "print_preview:closure_compile" ]
-  }
 }
 
 js_type_check("closure_compile_local") {

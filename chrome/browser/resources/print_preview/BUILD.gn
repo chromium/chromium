@@ -5,7 +5,6 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/common/features.gni")
 import("//printing/buildflags/buildflags.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/typescript/ts_library.gni")
@@ -80,20 +79,20 @@ preprocess_if_expr("preprocess") {
     "native_layer.js",
     "print_preview.js",
     "print_preview_utils.js",
-    "data/cdd.js",
+    "data/cdd.ts",
     "data/cloud_parsers.js",
-    "data/coordinate2d.js",
+    "data/coordinate2d.ts",
     "data/destination.js",
     "data/destination_match.js",
     "data/destination_store.js",
-    "data/document_info.js",
+    "data/document_info.ts",
     "data/local_parsers.js",
-    "data/margins.js",
-    "data/measurement_system.js",
+    "data/margins.ts",
+    "data/measurement_system.ts",
     "data/model.js",
-    "data/printable_area.js",
-    "data/scaling.js",
-    "data/size.js",
+    "data/printable_area.ts",
+    "data/scaling.ts",
+    "data/size.ts",
     "data/state.js",
     "data/user_manager.js",
     "ui/highlight_utils.js",
@@ -242,20 +241,20 @@ ts_library("build_ts") {
     "native_layer.js",
     "print_preview.js",
     "print_preview_utils.js",
-    "data/cdd.js",
+    "data/cdd.ts",
     "data/cloud_parsers.js",
-    "data/coordinate2d.js",
+    "data/coordinate2d.ts",
     "data/destination.js",
     "data/destination_match.js",
     "data/destination_store.js",
-    "data/document_info.js",
+    "data/document_info.ts",
     "data/local_parsers.js",
-    "data/margins.js",
-    "data/measurement_system.js",
+    "data/margins.ts",
+    "data/measurement_system.ts",
     "data/model.js",
-    "data/printable_area.js",
-    "data/scaling.js",
-    "data/size.js",
+    "data/printable_area.ts",
+    "data/scaling.ts",
+    "data/size.ts",
     "data/state.js",
     "data/user_manager.js",
     "ui/advanced_options_settings.js",
@@ -330,101 +329,4 @@ ts_library("build_ts") {
     ":preprocess",
     ":preprocess_generated",
   ]
-}
-
-group("closure_compile") {
-  deps = [
-    ":print_preview_module_resources",
-    "data:closure_compile_module",
-    "ui:closure_compile_module",
-  ]
-}
-
-js_type_check("print_preview_module_resources") {
-  is_polymer3 = true
-  deps = [
-    ":cloud_print_interface",
-    ":cloud_print_interface_impl",
-    ":dark_mode_behavior",
-    ":metrics",
-    ":native_layer",
-    ":native_layer_cros",
-    ":print_preview",
-    ":print_preview_utils",
-  ]
-}
-
-js_library("print_preview") {
-  deps = [
-    ":cloud_print_interface",
-    ":native_layer",
-    ":native_layer_cros",
-    "data:destination",
-    "data:destination_store",
-    "data:local_parsers",
-    "data:measurement_system",
-    "ui:app",
-    "ui:settings_select",
-  ]
-
-  if (is_chromeos) {
-    deps += [ "data:print_server_store" ]
-  }
-}
-
-js_library("print_preview_utils") {
-  deps = [
-    ":dark_mode_behavior",
-    "//third_party/polymer/v3_0/components-chromium/iron-iconset-svg:iron-iconset-svg",
-    "//ui/webui/resources/js:util.m",
-  ]
-}
-
-js_library("metrics") {
-  deps = [ ":native_layer" ]
-}
-
-js_library("cloud_print_interface") {
-  deps = [
-    ":metrics",
-    ":native_layer",
-    "data:destination",
-    "data:destination_match",
-    "//ui/webui/resources/js/cr:event_target.m",
-  ]
-}
-
-js_library("cloud_print_interface_impl") {
-  deps = [
-    ":cloud_print_interface",
-    ":native_layer_cros",
-    "data:cloud_parsers",
-    "data:destination",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr:event_target.m",
-  ]
-}
-
-js_library("native_layer") {
-  deps = [
-    "data:cdd",
-    "data:destination",
-    "data:destination_match",
-    "data:measurement_system",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
-  ]
-}
-
-js_library("native_layer_cros") {
-  deps = [
-    "data:printer_status_cros",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
-  ]
-}
-
-js_library("dark_mode_behavior") {
-  deps = [ "//ui/webui/resources/js:assert.m" ]
 }
