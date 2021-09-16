@@ -27,6 +27,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/media_router/browser/media_router_metrics.h"
 #include "components/media_router/common/media_sink.h"
+#include "components/media_router/common/mojom/media_route_provider_id.mojom-shared.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -389,7 +390,7 @@ void CastDialogView::SinkPressed(size_t index) {
       if (cast_mode.value() == LOCAL_FILE)
         set_close_on_deactivate(!keep_shown_for_testing_);
       metrics_.OnStartCasting(base::Time::Now(), index, cast_mode.value(),
-                              sink.icon_type);
+                              sink.icon_type, HasCastAndDialSinks());
     }
   }
 }
@@ -459,6 +460,29 @@ void CastDialogView::OnFilePickerClosed(const ui::SelectedFileInfo* file_info) {
 #endif  // defined(OS_WIN)
     SelectSource(SourceType::kLocalFile);
   }
+}
+
+bool CastDialogView::HasCastAndDialSinks() const {
+  bool has_cast = false;
+  bool has_dial = false;
+  for (const auto* sink_button : sink_buttons_) {
+    // A sink gets disabled while we're trying to connect to it, but we consider
+    // those sinks available.
+    if (!sink_button->GetEnabled() &&
+        sink_button->sink().state != UIMediaSinkState::CONNECTING) {
+      continue;
+    }
+    if (sink_button->sink().provider == mojom::MediaRouteProviderId::CAST) {
+      has_cast = true;
+    } else if (sink_button->sink().provider ==
+               mojom::MediaRouteProviderId::DIAL) {
+      has_dial = true;
+    }
+    if (has_cast && has_dial) {
+      return true;
+    }
+  }
+  return false;
 }
 
 // static

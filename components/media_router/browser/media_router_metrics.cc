@@ -51,6 +51,15 @@ std::string GetHistogramNameForProvider(
   }
 }
 
+std::string GetUiName(UiType ui) {
+  switch (ui) {
+    case UiType::kCastDialog:
+      return "CastHarmony";
+    case UiType::kGlobalMediaControls:
+      return "GlobalMediaControls";
+  }
+}
+
 std::string GetDeviceCountHistogramName(const std::string& ui,
                                         MediaRouterDialogOpenOrigin origin,
                                         mojom::MediaRouteProviderId provider,
@@ -224,6 +233,16 @@ void MediaRouterMetrics::RecordMediaSinkTypeForCastDialog(
   UMA_HISTOGRAM_ENUMERATION(
       base::StrCat({kHistogramMediaSinkType, ".CastHarmony"}), sink_icon_type,
       SinkIconType::TOTAL_COUNT);
+}
+
+// static
+void MediaRouterMetrics::RecordMediaSinkTypeWhenCastAndDialPresent(
+    SinkIconType sink_icon_type,
+    UiType ui) {
+  UMA_HISTOGRAM_ENUMERATION(
+      base::StrCat(
+          {kHistogramMediaSinkType, ".CastAndDialPresent.", GetUiName(ui)}),
+      sink_icon_type, SinkIconType::TOTAL_COUNT);
 }
 
 // static
