@@ -371,7 +371,7 @@ class BrowserControlsContainerView extends FrameLayout {
         int width = right - left;
         int height = bottom - top;
         boolean heightChanged = height != mLastHeight;
-        if (!heightChanged && width == mLastWidth) return;
+        if (!heightChanged && width == mLastWidth && mViewResourceAdapter != null) return;
 
         int prevHeight = mLastHeight;
         mLastWidth = width;
