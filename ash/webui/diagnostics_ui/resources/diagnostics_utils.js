@@ -165,3 +165,8 @@ export function getSubnetMaskFromRoutingPrefix(prefix) {
 
   return pieces.join('.');
 }
+
+/** @return {boolean} */
+export function isNavEnabled() {
+  return loadTimeData.getBoolean('isNetworkingEnabled');
+}

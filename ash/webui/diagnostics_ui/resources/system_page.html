@@ -75,7 +75,7 @@
   <div class="overview-container">
     <overview-card id="overviewCard"></overview-card>
   </div>
-  <div class="diagnostics-cards-container">
+  <div class$="[[getCardContainerClass_(isNetworkingEnabled)]]">
     <template is="dom-if" if="[[showBatteryStatusCard_]]" restamp>
       <div class="card-width">
         <battery-status-card id="batteryStatusCard"

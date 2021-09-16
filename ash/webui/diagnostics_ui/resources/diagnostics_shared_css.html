@@ -66,6 +66,14 @@
       width: var(--content-container-width);
     }
 
+    .diagnostics-cards-container-nav {
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+      width: var(--container-max-width-nav);
+      max-width: var(--card-container-max-width);
+    }
+
     .diagnostics-chip {
       @apply --diagnostics-overview-font;
       background-color: var(--google-grey-200);
@@ -116,7 +124,63 @@
         --container-padding: 24px;
         --content-container-width: 552px;
         --chart-width: 452px;
+        --chart-width-nav: 452px;
         --data-point-container-padding: 44px;
+        --card-container-max-width: 650px;
+        }
+    }
+
+    @media (min-width: 650px) {
+      :host {
+        --chart-width-nav: 502px;
+        }
+    }
+
+    @media (min-width:769px) {
+      :host {
+        --chart-width-nav: 420px;
+        }
+    }
+
+    @media (min-width: 789px) {
+      :host {
+        --chart-width-nav: 440px;
+        }
+    }
+
+    @media (min-width: 809px) {
+      :host {
+        --chart-width-nav: 460px;
+        }
+    }
+
+    @media (min-width: 829px) {
+      :host {
+        --chart-width-nav: 480px;
+        }
+    }
+
+    @media (min-width: 849px) {
+      :host {
+        --chart-width-nav: 500px;
+        }
+    }
+
+    @media (min-width: 869px) {
+      :host {
+        --chart-width-nav: 520px;
+        }
+    }
+
+    @media (min-width: 900px) {
+      :host {
+        --chart-width-nav: 540px;
+        }
+    }
+
+    @media (min-width: 925px) {
+      :host {
+        --chart-width-nav: 560px;
         }
     }
 
@@ -134,6 +198,7 @@
         --container-padding: 160px;
         --content-container-width: 640px;
         --chart-width: 540px;
+        --chart-width-nav: 540px;
         --data-point-container-padding: 64px;
       }
     }
@@ -143,7 +208,9 @@
         --container-padding: 160px;
         --content-container-width: 680px;
         --chart-width: 580px;
+        --chart-width-nav: 620px;
         --data-point-container-padding: 64px;
+        --card-container-max-width: 720px;
       }
     }
 

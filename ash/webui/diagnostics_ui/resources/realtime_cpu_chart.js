@@ -11,6 +11,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {isNavEnabled} from './diagnostics_utils.js';
 
 /**
  * @fileoverview
@@ -165,7 +166,8 @@ Polymer({
   updateChartWidth_() {
     // parseFloat() is used to convert the string returned by
     // getComputedStyleValue() into a number ("642px" --> 642).
-    this.width_ = parseFloat(this.getComputedStyleValue('--chart-width'));
+    let chartVar = isNavEnabled() ? '--chart-width-nav' : '--chart-width';
+    this.width_ = parseFloat(this.getComputedStyleValue(chartVar));
   },
 
   /**

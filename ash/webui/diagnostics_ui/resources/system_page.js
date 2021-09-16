@@ -194,4 +194,13 @@ Polymer({
   onNavigationPageChanged({isActive}) {
     this.isActive = isActive;
   },
+
+  /**
+   * @protected
+   * @return {string}
+   */
+  getCardContainerClass_() {
+    let cardContainer = 'diagnostics-cards-container';
+    return `${cardContainer}${this.isNetworkingEnabled ? '-nav' : ''}`;
+  },
 });
