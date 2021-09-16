@@ -299,9 +299,15 @@ int TransportConnectJob::DoResolveHost() {
   HostResolver::ResolveHostParameters parameters;
   parameters.initial_priority = priority();
   parameters.secure_dns_policy = params_->secure_dns_policy();
-  request_ = host_resolver()->CreateRequest(
-      ToLegacyDestinationEndpoint(params_->destination()),
-      params_->network_isolation_key(), net_log(), parameters);
+  if (absl::holds_alternative<url::SchemeHostPort>(params_->destination())) {
+    request_ = host_resolver()->CreateRequest(
+        absl::get<url::SchemeHostPort>(params_->destination()),
+        params_->network_isolation_key(), net_log(), parameters);
+  } else {
+    request_ = host_resolver()->CreateRequest(
+        absl::get<HostPortPair>(params_->destination()),
+        params_->network_isolation_key(), net_log(), parameters);
+  }
 
   return request_->Start(base::BindOnce(&TransportConnectJob::OnIOComplete,
                                         base::Unretained(this)));
