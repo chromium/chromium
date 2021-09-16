@@ -4449,6 +4449,21 @@
             ]
         }
     ],
+    "IOSFeedPreview": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableDiscoverFeedPreview"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSMetrickitCrashReport": [
         {
             "platforms": [
