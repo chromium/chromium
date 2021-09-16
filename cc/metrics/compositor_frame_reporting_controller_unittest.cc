@@ -1085,6 +1085,34 @@ TEST_F(CompositorFrameReportingControllerTest, ReportingMissedDeadlineFrame2) {
   histogram_tester.ExpectBucketCount("CompositorLatency.Type", 2, 0);
 }
 
+// If a compositor animation takes too long and throttles draw
+TEST_F(CompositorFrameReportingControllerTest, LongCompositorAnimation) {
+  base::HistogramTester histogram_tester;
+
+  SimulatePresentCompositorFrame();
+
+  reporting_controller_.WillBeginImplFrame(args_);
+  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.DidSubmitCompositorFrame(
+      1, current_id_, last_activated_id_, {}, /*has_missing_content=*/false);
+  viz::FrameTimingDetails details = {};
+  reporting_controller_.DidPresentCompositorFrame(*current_token_, details);
+
+  IncrementCurrentId();
+  reporting_controller_.WillBeginImplFrame(args_);
+  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.DidNotProduceFrame(args_.frame_id,
+                                           FrameSkippedReason::kDrawThrottled);
+
+  IncrementCurrentId();
+  // Flushing the last no damage frame.
+  reporting_controller_.WillBeginImplFrame(args_);
+  reporting_controller_.OnFinishImplFrame(current_id_);
+
+  EXPECT_EQ(3u, dropped_counter_.total_frames());
+  EXPECT_EQ(1u, dropped_counter_.total_dropped());
+}
+
 // Testing CompositorLatency.Type metrics
 TEST_F(CompositorFrameReportingControllerTest, ReportingLatencyType) {
   base::HistogramTester histogram_tester;

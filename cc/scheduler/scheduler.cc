@@ -638,10 +638,17 @@ void Scheduler::FinishImplFrame() {
     bool has_pending_tree = state_machine_.has_pending_tree();
     bool is_waiting_on_main = state_machine_.begin_main_frame_state() !=
                               SchedulerStateMachine::BeginMainFrameState::IDLE;
-    SendDidNotProduceFrame(begin_impl_frame_tracker_.Current(),
-                           is_waiting_on_main || has_pending_tree
-                               ? FrameSkippedReason::kWaitingOnMain
-                               : FrameSkippedReason::kNoDamage);
+    bool is_draw_throttled =
+        state_machine_.needs_redraw() && state_machine_.IsDrawThrottled();
+
+    FrameSkippedReason reason = FrameSkippedReason::kNoDamage;
+
+    if (is_waiting_on_main || has_pending_tree)
+      reason = FrameSkippedReason::kWaitingOnMain;
+    else if (is_draw_throttled)
+      reason = FrameSkippedReason::kDrawThrottled;
+
+    SendDidNotProduceFrame(begin_impl_frame_tracker_.Current(), reason);
   }
 
   begin_impl_frame_tracker_.Finish();

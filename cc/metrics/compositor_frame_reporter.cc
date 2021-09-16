@@ -715,6 +715,9 @@ void CompositorFrameReporter::TerminateReporter() {
       const bool no_update_from_compositor =
           !has_partial_update_ && frame_skip_reason_.has_value() &&
           frame_skip_reason() == FrameSkippedReason::kWaitingOnMain;
+      const bool draw_is_throttled =
+          frame_skip_reason_.has_value() &&
+          frame_skip_reason() == FrameSkippedReason::kDrawThrottled;
 
       if (no_update_from_main) {
         // If this reporter was cloned, and the cloned reporter was marked as
@@ -731,6 +734,8 @@ void CompositorFrameReporter::TerminateReporter() {
       } else if (!no_update_from_compositor) {
         // If rather main thread has damage or compositor thread has partial
         // damage, then it's a dropped frame.
+        EnableReportType(FrameReportType::kDroppedFrame);
+      } else if (draw_is_throttled) {
         EnableReportType(FrameReportType::kDroppedFrame);
       }
 
