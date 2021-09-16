@@ -650,8 +650,10 @@ void Compositor::BeginMainFrameNotExpectedUntil(base::TimeTicks time) {}
 
 static void SendDamagedRectsRecursive(ui::Layer* layer) {
   layer->SendDamagedRects();
-  for (auto* child : layer->children())
-    SendDamagedRectsRecursive(child);
+  // Iterate using the size for the case of mutation during sending damaged
+  // regions. https://crbug.com/1242257.
+  for (size_t i = 0; i < layer->children().size(); ++i)
+    SendDamagedRectsRecursive(layer->children()[i]);
 }
 
 void Compositor::UpdateLayerTreeHost() {

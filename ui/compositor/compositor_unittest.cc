@@ -12,12 +12,14 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "cc/metrics/frame_sequence_tracker.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_delegate.h"
 #include "ui/compositor/test/draw_waiter_for_test.h"
 #include "ui/compositor/test/in_process_context_factory.h"
 #include "ui/compositor/test/test_context_factories.h"
@@ -354,6 +356,60 @@ TEST_F(CompositorTestWithMessageLoop, MAYBE_CreateAndReleaseOutputSurface) {
   compositor()->ScheduleDraw();
   DrawWaiterForTest::WaitForCompositingEnded(compositor());
   compositor()->SetRootLayer(nullptr);
+}
+
+class LayerDelegateThatAddsDuringUpdateVisualState : public LayerDelegate {
+ public:
+  explicit LayerDelegateThatAddsDuringUpdateVisualState(Layer* parent)
+      : parent_(parent) {}
+
+  bool update_visual_state_called() const {
+    return update_visual_state_called_;
+  }
+
+  // LayerDelegate:
+  void UpdateVisualState() override {
+    added_layers_.push_back(std::make_unique<Layer>(ui::LAYER_SOLID_COLOR));
+    parent_->Add(added_layers_.back().get());
+    update_visual_state_called_ = true;
+  }
+  void OnPaintLayer(const PaintContext& context) override {}
+  void OnDeviceScaleFactorChanged(float old_device_scale_factor,
+                                  float new_device_scale_factor) override {}
+
+ private:
+  Layer* parent_;
+  std::vector<std::unique_ptr<Layer>> added_layers_;
+  bool update_visual_state_called_ = false;
+};
+
+TEST_F(CompositorTestWithMessageLoop, AddLayerDuringUpdateVisualState) {
+  std::unique_ptr<Layer> root_layer =
+      std::make_unique<Layer>(ui::LAYER_SOLID_COLOR);
+  std::unique_ptr<Layer> child_layer =
+      std::make_unique<Layer>(ui::LAYER_TEXTURED);
+  std::unique_ptr<Layer> child_layer2 =
+      std::make_unique<Layer>(ui::LAYER_SOLID_COLOR);
+  LayerDelegateThatAddsDuringUpdateVisualState child_layer_delegate(
+      root_layer.get());
+  child_layer->set_delegate(&child_layer_delegate);
+  root_layer->Add(child_layer.get());
+  root_layer->Add(child_layer2.get());
+
+  viz::ParentLocalSurfaceIdAllocator allocator;
+  allocator.GenerateId();
+  root_layer->SetBounds(gfx::Rect(10, 10));
+  compositor()->SetRootLayer(root_layer.get());
+  compositor()->SetScaleAndSize(1.0f, gfx::Size(10, 10),
+                                allocator.GetCurrentLocalSurfaceId());
+  ASSERT_TRUE(compositor()->IsVisible());
+  compositor()->ScheduleDraw();
+  DrawWaiterForTest::WaitForCompositingEnded(compositor());
+  EXPECT_TRUE(child_layer_delegate.update_visual_state_called());
+  compositor()->SetRootLayer(nullptr);
+  child_layer2.reset();
+  child_layer.reset();
+  root_layer.reset();
 }
 
 }  // namespace ui
