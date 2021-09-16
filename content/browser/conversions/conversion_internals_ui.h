@@ -32,7 +32,7 @@ class CONTENT_EXPORT ConversionInternalsUI : public WebUIController {
   void WebUIRenderFrameCreated(RenderFrameHost* render_frame_host) override;
 
   void BindInterface(
-      mojo::PendingReceiver<::mojom::ConversionInternalsHandler> receiver);
+      mojo::PendingReceiver<mojom::ConversionInternalsHandler> receiver);
 
   void SetConversionManagerProviderForTesting(
       std::unique_ptr<ConversionManager::Provider> manager_provider);

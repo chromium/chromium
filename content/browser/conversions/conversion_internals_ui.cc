@@ -49,7 +49,7 @@ void ConversionInternalsUI::WebUIRenderFrameCreated(RenderFrameHost* rfh) {
 }
 
 void ConversionInternalsUI::BindInterface(
-    mojo::PendingReceiver<::mojom::ConversionInternalsHandler> receiver) {
+    mojo::PendingReceiver<mojom::ConversionInternalsHandler> receiver) {
   ui_handler_ = std::make_unique<ConversionInternalsHandlerImpl>(
       web_ui(), std::move(receiver));
 }

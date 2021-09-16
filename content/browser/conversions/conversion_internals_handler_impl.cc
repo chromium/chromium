@@ -28,24 +28,24 @@ namespace content {
 
 namespace {
 
-::mojom::SourceType SourceTypeToMojoType(StorableImpression::SourceType input) {
+mojom::SourceType SourceTypeToMojoType(StorableImpression::SourceType input) {
   switch (input) {
     case StorableImpression::SourceType::kNavigation:
-      return ::mojom::SourceType::kNavigation;
+      return mojom::SourceType::kNavigation;
     case StorableImpression::SourceType::kEvent:
-      return ::mojom::SourceType::kEvent;
+      return mojom::SourceType::kEvent;
   }
 }
 
 void ForwardImpressionsToWebUI(
-    ::mojom::ConversionInternalsHandler::GetActiveImpressionsCallback
+    mojom::ConversionInternalsHandler::GetActiveImpressionsCallback
         web_ui_callback,
     std::vector<StorableImpression> stored_impressions) {
-  std::vector<::mojom::WebUIImpressionPtr> web_ui_impressions;
+  std::vector<mojom::WebUIImpressionPtr> web_ui_impressions;
   web_ui_impressions.reserve(stored_impressions.size());
 
   for (const StorableImpression& impression : stored_impressions) {
-    web_ui_impressions.push_back(::mojom::WebUIImpression::New(
+    web_ui_impressions.push_back(mojom::WebUIImpression::New(
         impression.impression_data(), impression.impression_origin(),
         impression.conversion_origin(), impression.reporting_origin(),
         impression.impression_time().ToJsTime(),
@@ -59,10 +59,10 @@ void ForwardImpressionsToWebUI(
   std::move(web_ui_callback).Run(std::move(web_ui_impressions));
 }
 
-::mojom::WebUIConversionReportPtr WebUIConversionReport(
+mojom::WebUIConversionReportPtr WebUIConversionReport(
     const ConversionReport& report,
     int http_response_code) {
-  return ::mojom::WebUIConversionReport::New(
+  return mojom::WebUIConversionReport::New(
       report.impression.conversion_origin(), report.ReportURL(),
       report.report_time.ToJsTime(), report.priority,
       report.ReportBody(/*pretty_print=*/true), http_response_code,
@@ -71,11 +71,11 @@ void ForwardImpressionsToWebUI(
 }
 
 void ForwardReportsToWebUI(
-    ::mojom::ConversionInternalsHandler::GetSentAndPendingReportsCallback
+    mojom::ConversionInternalsHandler::GetSentAndPendingReportsCallback
         web_ui_callback,
-    std::vector<::mojom::WebUIConversionReportPtr> sent_reports,
+    std::vector<mojom::WebUIConversionReportPtr> sent_reports,
     std::vector<ConversionReport> stored_reports) {
-  std::vector<::mojom::WebUIConversionReportPtr> web_ui_reports;
+  std::vector<mojom::WebUIConversionReportPtr> web_ui_reports;
   web_ui_reports.reserve(stored_reports.size());
 
   for (const ConversionReport& report : stored_reports) {
@@ -90,7 +90,7 @@ void ForwardReportsToWebUI(
 
 ConversionInternalsHandlerImpl::ConversionInternalsHandlerImpl(
     WebUI* web_ui,
-    mojo::PendingReceiver<::mojom::ConversionInternalsHandler> receiver)
+    mojo::PendingReceiver<mojom::ConversionInternalsHandler> receiver)
     : web_ui_(web_ui),
       manager_provider_(std::make_unique<ConversionManagerProviderImpl>()),
       receiver_(this, std::move(receiver)) {}
@@ -98,8 +98,7 @@ ConversionInternalsHandlerImpl::ConversionInternalsHandlerImpl(
 ConversionInternalsHandlerImpl::~ConversionInternalsHandlerImpl() = default;
 
 void ConversionInternalsHandlerImpl::IsMeasurementEnabled(
-    ::mojom::ConversionInternalsHandler::IsMeasurementEnabledCallback
-        callback) {
+    mojom::ConversionInternalsHandler::IsMeasurementEnabledCallback callback) {
   content::WebContents* contents = web_ui_->GetWebContents();
   bool measurement_enabled =
       manager_provider_->GetManager(contents) &&
@@ -114,8 +113,7 @@ void ConversionInternalsHandlerImpl::IsMeasurementEnabled(
 }
 
 void ConversionInternalsHandlerImpl::GetActiveImpressions(
-    ::mojom::ConversionInternalsHandler::GetActiveImpressionsCallback
-        callback) {
+    mojom::ConversionInternalsHandler::GetActiveImpressionsCallback callback) {
   if (ConversionManager* manager =
           manager_provider_->GetManager(web_ui_->GetWebContents())) {
     manager->GetActiveImpressionsForWebUI(
@@ -126,13 +124,13 @@ void ConversionInternalsHandlerImpl::GetActiveImpressions(
 }
 
 void ConversionInternalsHandlerImpl::GetSentAndPendingReports(
-    ::mojom::ConversionInternalsHandler::GetSentAndPendingReportsCallback
+    mojom::ConversionInternalsHandler::GetSentAndPendingReportsCallback
         callback) {
   if (ConversionManager* manager =
           manager_provider_->GetManager(web_ui_->GetWebContents())) {
     const base::circular_deque<SentReportInfo>& sent_reports =
         manager->GetSentReportsForWebUI();
-    std::vector<::mojom::WebUIConversionReportPtr> web_ui_sent_reports;
+    std::vector<mojom::WebUIConversionReportPtr> web_ui_sent_reports;
     web_ui_sent_reports.reserve(sent_reports.size());
     for (const SentReportInfo& info : sent_reports) {
       web_ui_sent_reports.push_back(
@@ -149,7 +147,7 @@ void ConversionInternalsHandlerImpl::GetSentAndPendingReports(
 }
 
 void ConversionInternalsHandlerImpl::SendPendingReports(
-    ::mojom::ConversionInternalsHandler::SendPendingReportsCallback callback) {
+    mojom::ConversionInternalsHandler::SendPendingReportsCallback callback) {
   if (ConversionManager* manager =
           manager_provider_->GetManager(web_ui_->GetWebContents())) {
     manager->SendReportsForWebUI(std::move(callback));
@@ -159,7 +157,7 @@ void ConversionInternalsHandlerImpl::SendPendingReports(
 }
 
 void ConversionInternalsHandlerImpl::ClearStorage(
-    ::mojom::ConversionInternalsHandler::ClearStorageCallback callback) {
+    mojom::ConversionInternalsHandler::ClearStorageCallback callback) {
   if (ConversionManager* manager =
           manager_provider_->GetManager(web_ui_->GetWebContents())) {
     manager->ClearData(base::Time::Min(), base::Time::Max(),

@@ -18,11 +18,11 @@ class WebUI;
 // the ConversionManager to get information about stored conversion data. Owned
 // by ConversionInternalsUI.
 class ConversionInternalsHandlerImpl
-    : public ::mojom::ConversionInternalsHandler {
+    : public mojom::ConversionInternalsHandler {
  public:
   ConversionInternalsHandlerImpl(
       WebUI* web_ui,
-      mojo::PendingReceiver<::mojom::ConversionInternalsHandler> receiver);
+      mojo::PendingReceiver<mojom::ConversionInternalsHandler> receiver);
   ConversionInternalsHandlerImpl(const ConversionInternalsHandlerImpl& other) =
       delete;
   ConversionInternalsHandlerImpl& operator=(
@@ -35,18 +35,18 @@ class ConversionInternalsHandlerImpl
 
   // mojom::ConversionInternalsHandler overrides:
   void IsMeasurementEnabled(
-      ::mojom::ConversionInternalsHandler::IsMeasurementEnabledCallback
-          callback) override;
+      mojom::ConversionInternalsHandler::IsMeasurementEnabledCallback callback)
+      override;
   void GetActiveImpressions(
-      ::mojom::ConversionInternalsHandler::GetActiveImpressionsCallback
-          callback) override;
+      mojom::ConversionInternalsHandler::GetActiveImpressionsCallback callback)
+      override;
   void GetSentAndPendingReports(
-      ::mojom::ConversionInternalsHandler::GetSentAndPendingReportsCallback
+      mojom::ConversionInternalsHandler::GetSentAndPendingReportsCallback
           callback) override;
   void SendPendingReports(
-      ::mojom::ConversionInternalsHandler::SendPendingReportsCallback callback)
+      mojom::ConversionInternalsHandler::SendPendingReportsCallback callback)
       override;
-  void ClearStorage(::mojom::ConversionInternalsHandler::ClearStorageCallback
+  void ClearStorage(mojom::ConversionInternalsHandler::ClearStorageCallback
                         callback) override;
 
   void SetConversionManagerProviderForTesting(
@@ -56,7 +56,7 @@ class ConversionInternalsHandlerImpl
   WebUI* web_ui_;
   std::unique_ptr<ConversionManager::Provider> manager_provider_;
 
-  mojo::Receiver<::mojom::ConversionInternalsHandler> receiver_;
+  mojo::Receiver<mojom::ConversionInternalsHandler> receiver_;
 };
 
 }  // namespace content
