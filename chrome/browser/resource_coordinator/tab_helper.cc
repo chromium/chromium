@@ -51,8 +51,11 @@ bool ResourceCoordinatorTabHelper::IsLoaded(content::WebContents* contents) {
   return true;
 }
 
-void ResourceCoordinatorTabHelper::DidReceiveResponse() {
-  TabLoadTracker::Get()->DidReceiveResponse(web_contents());
+void ResourceCoordinatorTabHelper::PrimaryPageChanged(content::Page& page) {
+  ukm_source_id_ =
+      ukm::ConvertToSourceId(page.GetMainDocument().GetPageUkmSourceId(),
+                             ukm::SourceIdType::NAVIGATION_ID);
+  TabLoadTracker::Get()->PrimaryPageChanged(web_contents());
 }
 
 void ResourceCoordinatorTabHelper::DidStopLoading() {
@@ -68,22 +71,6 @@ void ResourceCoordinatorTabHelper::RenderProcessGone(
 
 void ResourceCoordinatorTabHelper::WebContentsDestroyed() {
   TabLoadTracker::Get()->StopTracking(web_contents());
-}
-
-void ResourceCoordinatorTabHelper::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->HasCommitted() ||
-      navigation_handle->IsSameDocument()) {
-    return;
-  }
-
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
-  if (navigation_handle->IsInPrimaryMainFrame()) {
-    ukm_source_id_ = ukm::ConvertToSourceId(
-        navigation_handle->GetNavigationId(), ukm::SourceIdType::NAVIGATION_ID);
-  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ResourceCoordinatorTabHelper)
