@@ -106,6 +106,11 @@ executable("ksadmin") {
   ]
 
   frameworks = [ "CoreFoundation.framework" ]
+
+  if (is_asan) {
+    # asan injects a dylib that we package in ../MacOS.
+    ldflags = [ "-Wl,-rpath,@executable_path/../MacOS" ]
+  }
 }
 
 executable("ksinstall") {
@@ -124,6 +129,11 @@ executable("ksinstall") {
   ]
 
   frameworks = [ "CoreFoundation.framework" ]
+
+  if (is_asan) {
+    # asan injects a dylib that we package in ../MacOS.
+    ldflags = [ "-Wl,-rpath,@executable_path/../MacOS" ]
+  }
 }
 
 bundle_data("keystone_helpers") {
@@ -137,11 +147,6 @@ bundle_data("keystone_helpers") {
     ":ksadmin",
     ":ksinstall",
   ]
-
-  if (is_asan) {
-    sources += [ "$root_out_dir/libclang_rt.asan_osx_dynamic.dylib" ]
-    public_deps += [ "//build/config/sanitizers:copy_asan_runtime" ]
-  }
 }
 
 mac_app_bundle("keystone_bundle") {
