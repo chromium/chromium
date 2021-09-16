@@ -1,4 +1,5 @@
 // META: global=window,dedicatedworker,jsshell
+// META: script=/wasm/jsapi/wasm-module-builder.js
 // META: script=assertions.js
 
 function nulls(n) {

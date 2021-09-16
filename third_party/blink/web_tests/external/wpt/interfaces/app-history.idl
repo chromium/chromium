@@ -110,5 +110,8 @@ interface AppHistoryEntry : EventTarget {
 
   any getState();
 
-  // TODO event handlers
+  attribute EventHandler onnavigateto;
+  attribute EventHandler onnavigatefrom;
+  attribute EventHandler onfinish;
+  attribute EventHandler ondispose;
 };

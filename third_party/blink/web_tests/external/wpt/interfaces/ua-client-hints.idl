@@ -9,14 +9,15 @@ dictionary NavigatorUABrandVersion {
 };
 
 dictionary UADataValues {
-  sequence<NavigatorUABrandVersion> brands;
+  FrozenArray<NavigatorUABrandVersion> brands;
   boolean mobile;
-  DOMString platform;
   DOMString architecture;
   DOMString bitness;
   DOMString model;
+  DOMString platform;
   DOMString platformVersion;
-  DOMString uaFullVersion;
+  DOMString uaFullVersion; // deprecated in favor of fullVersionList
+  FrozenArray<NavigatorUABrandVersion> fullVersionList;
 };
 
 dictionary UALowEntropyJSON {

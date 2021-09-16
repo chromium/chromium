@@ -28,7 +28,7 @@ PASS Type conversion for descriptor.element
 PASS Order of evaluation for descriptor
 FAIL initialize externref table with default value WebAssembly.Table(): Descriptor property 'element' must be a WebAssembly reference type
 PASS initialize table with a wrong element value
-FAIL initialize anyfunc table with default value WasmModuleBuilder is not defined
+PASS initialize anyfunc table with default value
 PASS initialize anyfunc table with a bad default value
 Harness: the test ran to completion.
 
