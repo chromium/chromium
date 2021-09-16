@@ -19,7 +19,6 @@
 using media::v4l2_test::Vp9Decoder;
 
 namespace {
-static const char* kDecodeDevice = "/dev/video-dec0";
 
 constexpr char kUsageMsg[] =
     "usage: v4l2_stateless_decoder\n"
@@ -58,10 +57,9 @@ uint32_t FileFourccToDriverFourcc(uint32_t header_fourcc) {
 
 // Creates the appropriate decoder for |stream|, which points to IVF data.
 // Returns nullptr on failure.
-std::unique_ptr<Vp9Decoder> CreateDecoder(const base::MemoryMappedFile& stream,
-                                          base::File& v4l_fd) {
+std::unique_ptr<Vp9Decoder> CreateDecoder(
+    const base::MemoryMappedFile& stream) {
   CHECK(stream.IsValid());
-  CHECK(v4l_fd.IsValid());
 
   // Set up video parser.
   auto ivf_parser = std::make_unique<media::IvfParser>();
@@ -87,7 +85,7 @@ std::unique_ptr<Vp9Decoder> CreateDecoder(const base::MemoryMappedFile& stream,
       << "Only VP9 is supported, got: "
       << media::FourccToString(driver_codec_fourcc);
 
-  return Vp9Decoder::Create(std::move(ivf_parser), v4l_fd);
+  return Vp9Decoder::Create(std::move(ivf_parser));
 }
 
 int main(int argc, char** argv) {
@@ -128,12 +126,7 @@ int main(int argc, char** argv) {
     return EXIT_FAILURE;
   }
 
-  auto v4l_fd = base::File(
-      base::FilePath::FromUTF8Unsafe(kDecodeDevice),
-      base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_WRITE);
-  PCHECK(v4l_fd.IsValid()) << "Failed to open " << kDecodeDevice;
-
-  const std::unique_ptr<Vp9Decoder> dec = CreateDecoder(stream, v4l_fd);
+  const std::unique_ptr<Vp9Decoder> dec = CreateDecoder(stream);
   if (!dec) {
     LOG(ERROR) << "Failed to create decoder for file: " << video_path;
     return EXIT_FAILURE;

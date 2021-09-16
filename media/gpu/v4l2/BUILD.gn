@@ -144,6 +144,8 @@ source_set("unit_test") {
 executable("v4l2_stateless_decoder") {
   testonly = true
   sources = [
+    "test/v4l2_ioctl_shim.cc",
+    "test/v4l2_ioctl_shim.h",
     "test/v4l2_stateless_decoder.cc",
     "test/vp9_decoder.cc",
     "test/vp9_decoder.h",
