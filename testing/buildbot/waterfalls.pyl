@@ -775,7 +775,7 @@
       'android-cronet-x86-dbg-10-tests': {
         'mixins': [
           '10-x86-emulator',
-          'emulator-8-cores',
+          'emulator-4-cores',
           'has_native_resultdb_integration',
           'linux-xenial-or-bionic',
           'x86-64',
