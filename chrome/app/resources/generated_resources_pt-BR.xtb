@@ -495,7 +495,7 @@
 <translation id="152234381334907219">Nunca salvas</translation>
 <translation id="1523978563989812243">Mecanismos da conversão de texto em voz</translation>
 <translation id="1524430321211440688">Teclado</translation>
-<translation id="1524563461097350801">Não, obrigado</translation>
+<translation id="1524563461097350801">Agora não</translation>
 <translation id="1525740877599838384">Usar apenas o Wi-Fi para determinar a localização</translation>
 <translation id="152629053603783244">Reiniciar Linux</translation>
 <translation id="1526335046150927198">Ativar aceleração de rolagem do touchpad</translation>
@@ -6012,7 +6012,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7470424110735398630">Permitir o acesso à área de transferência</translation>
 <translation id="747114903913869239">Erro: Não foi possível decodificar a extensão</translation>
 <translation id="7471520329163184433">Mais lenta</translation>
-<translation id="7473891865547856676">Não, obrigado</translation>
+<translation id="7473891865547856676">Agora não</translation>
 <translation id="747459581954555080">Restaurar todas</translation>
 <translation id="747507174130726364">{NUM_DAYS,plural, =1{Devolução imediata necessária}one{Devolva o <ph name="DEVICE_TYPE" /> em até {NUM_DAYS} dia}other{Devolva o <ph name="DEVICE_TYPE" /> em até {NUM_DAYS} dias}}</translation>
 <translation id="7475671414023905704">URL da senha perdida do Netscape</translation>

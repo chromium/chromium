@@ -1266,7 +1266,7 @@
 <translation id="2520551905471951523">音声処理で高い優先度を使用する</translation>
 <translation id="2521581787935130926">ブックマーク バーでアプリのショートカットを表示する</translation>
 <translation id="2522304491589804974">拡張機能インストールの許可リストを設定する</translation>
-<translation id="2529880111512635313">強制インストールするアプリと拡張機能のリストを設定します</translation>
+<translation id="2529880111512635313">自動インストールするアプリと拡張機能のリストの設定</translation>
 <translation id="253135976343875019">アイドル警告が表示されるまでの時間（AC 電源での実行時）</translation>
 <translation id="2535370400681639351">このポリシーを有効に設定した場合、gnubby 認証リクエストはリモートホスト接続でプロキシ送信されます。
 
@@ -2196,7 +2196,7 @@
 <translation id="3701121231485832347"><ph name="MS_AD_NAME" /> による管理対象の <ph name="PRODUCT_OS_NAME" /> デバイスに固有の設定を制御します。</translation>
 <translation id="3702518095257671450">リモート認証</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" />（1 行入力欄はサポートを終了し、今後削除する予定です。下の複数行入力欄を使用するようにしてください）。</translation>
-<translation id="3709266154059827597">拡張機能インストールのブラックリストを設定する</translation>
+<translation id="3709266154059827597">拡張機能インストールの拒否リストを設定する</translation>
 <translation id="3711895659073496551">停止する</translation>
 <translation id="3715569262675717862">クライアント証明書に基づく認証</translation>
 <translation id="3719826155360621982">トップページ</translation>
@@ -2881,7 +2881,7 @@
 <translation id="4615003180013429835">サイトリスト解析モード</translation>
 <translation id="4617338332148204752"><ph name="PRODUCT_FRAME_NAME" /> でのメタ タグ チェックをスキップする</translation>
 <translation id="4624417808625504735">JavaScript での JIT の使用をブロックするサイトを指定する</translation>
-<translation id="4625915093043961294">拡張機能インストールのホワイトリストを設定する</translation>
+<translation id="4625915093043961294">拡張機能インストールの許可リストを設定する</translation>
 <translation id="4632343302005518762">リストで指定したコンテンツ タイプの処理を <ph name="PRODUCT_FRAME_NAME" /> に対して許可する</translation>
 <translation id="4632566332417930481">企業ポリシーによってインストールされた拡張機能でのデベロッパー ツールの使用を禁止し、その他の状況におけるデベロッパー ツールの使用を許可する</translation>
 <translation id="4635284822166984665">デバイスの充電を開始する時間（デバイスのローカル タイムゾーン）です。</translation>

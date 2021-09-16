@@ -710,7 +710,7 @@
 <translation id="1725562816265788801">ট্যাব স্ক্রল করা</translation>
 <translation id="1727662110063605623">Parallels Desktop অথবা Linux-এর সাথে <ph name="USB_DEVICE_NAME" /> কানেক্ট করতে সেটিংস খুলুন</translation>
 <translation id="1729533290416704613">আপনি Omnibox থেকে সার্চ করলে কোন পৃষ্ঠাটি দেখানো হবে তাও এটি নিয়ন্ত্রণ করে।</translation>
-<translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />অ্যাপগুলি সরাতে, সেটিংস &gt; Google Play স্টোর &gt; Android অভিরুচি ম্যানেজ করুন &gt; অ্যাপ বা অ্যাপ্লিকেশন ম্যানেজার বিকল্পে যান। এরপর যে অ্যাপটিকে আনইনস্টল করতে চান তাতে ট্যাপ করুন (অ্যাপটি খোঁজার জন্য আপনাকে ডানদিক বা বাঁদিকে সোয়াইপ করতে হতে পারে)। এরপর আনইনস্টল করুন বা বন্ধ করুন বিকল্পে ট্যাপ করুন।<ph name="END_PARAGRAPH1" /></translation>
+<translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />অ্যাপগুলি সরাতে, সেটিংস &gt; Google Play Store &gt; Android অভিরুচি ম্যানেজ করুন &gt; অ্যাপ বা অ্যাপ্লিকেশন ম্যানেজার বিকল্পে যান। এরপর যে অ্যাপটিকে আনইনস্টল করতে চান তাতে ট্যাপ করুন (অ্যাপটি খোঁজার জন্য আপনাকে ডানদিক বা বাঁদিকে সোয়াইপ করতে হতে পারে)। এরপর আনইনস্টল করুন বা বন্ধ করুন বিকল্পে ট্যাপ করুন।<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731911755844941020">অনুরোধ পাঠানো হচ্ছে...</translation>
 <translation id="1733064249834771892">ফন্ট</translation>
 <translation id="1733383495376208985">আপনার নিজস্ব <ph name="BEGIN_LINK" />সিঙ্ক পাসফ্রেজ<ph name="END_LINK" /> দিয়ে সিঙ্ক করা ডেটা এনক্রিপ্ট করুন। এতে Google Pay-এর পেমেন্ট পদ্ধতি ও ঠিকানা অন্তর্ভুক্ত থাকে না।</translation>
@@ -1479,7 +1479,7 @@
 <translation id="250704661983564564">ডিসপ্লে সেট করা</translation>
 <translation id="2507253002925770350">টিকিট সরানো হয়েছে</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> পজ করা আছে</translation>
-<translation id="2508428939232952663">Google Play স্টোর অ্যাকাউন্ট</translation>
+<translation id="2508428939232952663">Google Play Store অ্যাকাউন্ট</translation>
 <translation id="2509495747794740764">স্কেলের মাপকে অবশ্যই ১০ থেকে ১০০ এর মধ্যের একটি সংখ্যা হতে হবে।</translation>
 <translation id="2509566264613697683">৮x</translation>
 <translation id="2510988373360790637">ব্লুটুথ ডিভাইস আনপেয়ার করুন</translation>
@@ -1658,7 +1658,7 @@
 <translation id="2712173769900027643">অনুমতি নিন</translation>
 <translation id="2713106313042589954">ক্যামেরা বন্ধ করুন</translation>
 <translation id="2713444072780614174">সাদা</translation>
-<translation id="2714393097308983682">Google Play স্টোর</translation>
+<translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2715640894224696481">"নিরাপত্তা কী"-এর অনুরোধ</translation>
 <translation id="2715751256863167692">এই আপগ্রেডটি আপনার Chromebook রিসেট করে এবং বর্তমান ব্যবহারকারীর ডেটা সরিয়ে দেয়।</translation>
 <translation id="271639966356700691">জুম বাড়াতে Ctrl+Alt+ উজ্জ্বলতা বাড়ানোর এবং জুম কমাতে Ctrl+Alt+উজ্জ্বলতা কমানোর কী প্রেস করুন।</translation>
@@ -2361,7 +2361,7 @@
 <translation id="3458451003193188688">নেটওয়ার্ক সমস্যার কারণে ভার্চুয়াল মেশিন ইনস্টল করা যায়নি। আবার চেষ্টা করুন অথবা আপনার অ্যাডমিনের সাথে যোগাযোগ করুন। সমস্যার কোড: <ph name="ERROR_CODE" />।</translation>
 <translation id="3458794975359644386">শেয়ারিং বন্ধ করা যায়নি</translation>
 <translation id="3459509316159669723">প্রিন্ট হচ্ছে</translation>
-<translation id="3459697287128633276">আপনার অ্যাকাউন্ট থেকে Google Play স্টোর অ্যাক্সেস করার জন্য অনুগ্রহ করে পরিচয় প্রদানকারীর মাধ্যমে প্রমাণীকরণ দিন।</translation>
+<translation id="3459697287128633276">আপনার অ্যাকাউন্ট থেকে Google Play Store অ্যাক্সেস করার জন্য অনুগ্রহ করে পরিচয় প্রদানকারীর মাধ্যমে প্রমাণীকরণ দিন।</translation>
 <translation id="3462311546193741693">আপনাকে অধিকাংশ সাইট থেকে সাইন-আউট করে দেয়। আপনি আপনার Google অ্যাকাউন্টে সাইন-ইন করে থাকুন যাতে আপনার সিঙ্ক হওয়া ডেটা খালি করা যায়।</translation>
 <translation id="3462413494201477527">অ্যাকাউন্ট সেট-আপ বাতিল করবেন?</translation>
 <translation id="346298925039590474">এই ডিভাইস ব্যবহারকারী সকলেই এই মোবাইল নেটওয়ার্ক ব্যবহার করতে পারবেন</translation>
@@ -2628,7 +2628,7 @@
 <translation id="3742235229730461951">কোরীয়  কীবোর্ড লেআউট</translation>
 <translation id="3742666961763734085">এই নামের কোনও প্রতিষ্ঠানের ইউনিট খুঁজে পাওয়া যাচ্ছে না। অনুগ্রহ করে আবার চেষ্টা করুন।</translation>
 <translation id="3744111561329211289">পটভূমি সিঙ্ক</translation>
-<translation id="3747077776423672805">অ্যাপগুলি সরাতে, সেটিংস &gt; Google Play স্টোর &gt; Android অভিরুচি ম্যানেজ করুন &gt; অ্যাপ বা অ্যাপ্লিকেশন ম্যানেজার বিকল্পে যান। এরপর যে অ্যাপটিকে আনইনস্টল করতে চান তাতে ট্যাপ করুন (অ্যাপটি খোঁজার জন্য আপনাকে ডানদিক বা বাঁদিকে সোয়াইপ করতে হতে পারে)। এরপর আনইনস্টল করুন বা বন্ধ করুন বিকল্পে ট্যাপ করুন।</translation>
+<translation id="3747077776423672805">অ্যাপগুলি সরাতে, সেটিংস &gt; Google Play Store &gt; Android অভিরুচি ম্যানেজ করুন &gt; অ্যাপ বা অ্যাপ্লিকেশন ম্যানেজার বিকল্পে যান। এরপর যে অ্যাপটিকে আনইনস্টল করতে চান তাতে ট্যাপ করুন (অ্যাপটি খোঁজার জন্য আপনাকে ডানদিক বা বাঁদিকে সোয়াইপ করতে হতে পারে)। এরপর আনইনস্টল করুন বা বন্ধ করুন বিকল্পে ট্যাপ করুন।</translation>
 <translation id="3747220812138541072">টাইপ করার সাথে সাথে প্রদর্শিত হবে এমন ইনলাইন লেখার সাজেশন দেখানো হবে</translation>
 <translation id="3748706263662799310">একটি বাগ রিপোর্ট করুন</translation>
 <translation id="3752253558646317685">আঙ্গুলের ছাপ সেভ করতে আপনার সন্তানকে তার আঙ্গুল তুলতে বলুন</translation>
@@ -2883,7 +2883,7 @@
 <translation id="3982375475032951137">কয়েকটি সহজ ধাপে আপনার ব্রাউজার সেট-আপ করুন</translation>
 <translation id="3983400541576569538">কিছু অ্যাপের ডেটা মুছে যেতে পারে</translation>
 <translation id="3983586614702900908">একটি অজানা বিক্রেতা থেকে ডিভাইসগুলি</translation>
-<translation id="3983764759749072418">Play স্টোর অ্যাপ্লিকেশন এই ডিভাইস অ্যাক্সেস করতে পারে।</translation>
+<translation id="3983764759749072418">Play Store অ্যাপ্লিকেশন এই ডিভাইস অ্যাক্সেস করতে পারে।</translation>
 <translation id="3983769721878416534">ক্লিক করার আগে বিলম্ব</translation>
 <translation id="3984135167056005094">ইমেল আইডি দেবেন না</translation>
 <translation id="3984159763196946143">ডেমো মোড শুরু করা যায়নি</translation>
@@ -3567,7 +3567,7 @@
 <translation id="4776594120007763294">পরে পড়ার জন্য কোনও একটি পৃষ্ঠা যোগ করতে, বোতামে ক্লিক করুন</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" />-এর জন্য পাসওয়ার্ড</translation>
 <translation id="4777458362738635055">এই ডিভাইসের অন্যান্য ব্যবহারকারীরা এই নেটওয়ার্ক ব্যবহার করতে পারবেন</translation>
-<translation id="4777825441726637019">Play স্টোর</translation>
+<translation id="4777825441726637019">Play Store</translation>
 <translation id="4777943778632837590">নেটওয়ার্ক সার্ভারের নাম কনফিগার করুন</translation>
 <translation id="4778644898150334464">অন্য পাসওয়ার্ড ব্যবহার করুন</translation>
 <translation id="4779083564647765204">জুম</translation>
@@ -5030,7 +5030,7 @@
 <translation id="6393550101331051049">নিরাপদ নয় এমন কন্টেন্ট দেখানোর অনুমতি দেওয়া হয়েছে</translation>
 <translation id="6395423953133416962"><ph name="BEGIN_LINK1" />সিস্টেমের তথ্য<ph name="END_LINK1" /> এবং <ph name="BEGIN_LINK2" />মেট্রিক্স<ph name="END_LINK2" /> পাঠান</translation>
 <translation id="6396988158856674517">মোশন সেন্সর ব্যবহার করা থেকে সাইটকে ব্লক করুন</translation>
-<translation id="6398715114293939307">Google Play স্টোর সরান</translation>
+<translation id="6398715114293939307">Google Play Store সরান</translation>
 <translation id="6398765197997659313">পূর্ণ স্ক্রীণ বন্ধ করুন</translation>
 <translation id="6399774419735315745">গুপ্তচর</translation>
 <translation id="6404511346730675251">বুকমার্ক সম্পাদনা করুন</translation>
@@ -6249,7 +6249,7 @@
 <translation id="7702907602086592255">ডোমেন</translation>
 <translation id="7704305437604973648">কার্য</translation>
 <translation id="7704317875155739195">সার্চ এবং ইউআরএলগুলি নিজে থেকে সম্পূর্ণ হতে দিন</translation>
-<translation id="7704521324619958564">Play স্টোর খুলুন</translation>
+<translation id="7704521324619958564">Play Store খুলুন</translation>
 <translation id="7705276765467986571">বুকমার্ক মডেল লোড করা যায়নি৷</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7707108266051544351">এই সাইটকে মোশন সেন্সর ব্যবহার করা থেকে ব্লক করা হয়েছে।</translation>
@@ -6659,7 +6659,7 @@
 <translation id="81020759409809034">লোকাল লোকেশন</translation>
 <translation id="8102139037507939978">System_logs.txt থেকে ব্যক্তিগতভাবে শনাক্তকরণযোগ্য তথ্য সরিয়ে দিন</translation>
 <translation id="8104088837833760645">ই-সিম প্রোফাইল ডাউনলোড করুন</translation>
-<translation id="8107015733319732394">আপনার <ph name="DEVICE_TYPE" /> এ Google Play স্টোর ইনস্টল করা হচ্ছে। এতে কয়েক মিনিট সময় লাগতে পারে।</translation>
+<translation id="8107015733319732394">আপনার <ph name="DEVICE_TYPE" /> এ Google Play Store ইনস্টল করা হচ্ছে। এতে কয়েক মিনিট সময় লাগতে পারে।</translation>
 <translation id="810728361871746125">ডিসপ্লের রেজোলিউশন</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{কোনও থার্ড-পার্টি কুকি নেই}=1{১টি থার্ড-পার্টি কুকি ব্লক করা হয়েছে}one{#টি থার্ড-পার্টি কুকি ব্লক করা হয়েছে}other{#টি থার্ড-পার্টি কুকি ব্লক করা হয়েছে}}</translation>
 <translation id="8109109153262930486">ডিফল্ট অবতার</translation>
@@ -7518,7 +7518,7 @@
 <translation id="9026731007018893674">ডাউনলোড</translation>
 <translation id="9026852570893462412">এতে কয়েক মিনিট সময় লাগতে পারে। ভার্চুয়াল মেশিন ডাউনলোড হচ্ছে।</translation>
 <translation id="9027459031423301635">নতুন ট্যাবে লিঙ্ক খুলুন</translation>
-<translation id="9030515284705930323">আপনার প্রতিষ্ঠান আপনার অ্যাকাউন্টের জন্য Google Play স্টোর চালু করেনি। আরও তথ্যের জন্য আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
+<translation id="9030515284705930323">আপনার প্রতিষ্ঠান আপনার অ্যাকাউন্টের জন্য Google Play Store চালু করেনি। আরও তথ্যের জন্য আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
 <translation id="9030754204056345429">আরও দ্রুত</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> আর কাজ করে না</translation>

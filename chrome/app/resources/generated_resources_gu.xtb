@@ -695,7 +695,7 @@
 <translation id="1725562816265788801">ટૅબ સ્ક્રોલિંગ</translation>
 <translation id="1727662110063605623"><ph name="USB_DEVICE_NAME" />ને Parallels Desktop અથવા Linux સાથે કનેક્ટ કરવા માટે સેટિંગ ખોલો</translation>
 <translation id="1729533290416704613">જ્યારે તમે ઑમ્નિબૉક્સ પરથી શોધ કરો ત્યારે કયું પૃષ્ઠ બતાવવામાં આવે તે તેનું પણ નિયંત્રણ કરે છે.</translation>
-<translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />ઍપ કાઢી નાખવા માટે, સેટિંગ &gt; Google Play સ્ટોર &gt; Android પસંદગીઓ મેનેજ કરો &gt; ઍપ અથવા ઍપ્લિકેશન મેનેજર પર જાઓ. પછી તમે અનઇન્સ્ટૉલ કરવા માગો છો તે ઍપ પર ટૅપ કરો (ઍપ શોધવા માટે તમારે જમણે અથવા ડાબે સ્વાઇપ કરવું જરૂરી હોઈ શકે છે). પછી 'અનઇન્સ્ટૉલ કરો' અથવા 'બંધ કરો' પર ટૅપ કરો.<ph name="END_PARAGRAPH1" /></translation>
+<translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />ઍપ કાઢી નાખવા માટે, સેટિંગ &gt; Google Play Store &gt; Android પસંદગીઓ મેનેજ કરો &gt; ઍપ અથવા ઍપ્લિકેશન મેનેજર પર જાઓ. પછી તમે અનઇન્સ્ટૉલ કરવા માગો છો તે ઍપ પર ટૅપ કરો (ઍપ શોધવા માટે તમારે જમણે અથવા ડાબે સ્વાઇપ કરવું જરૂરી હોઈ શકે છે). પછી 'અનઇન્સ્ટૉલ કરો' અથવા 'બંધ કરો' પર ટૅપ કરો.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731911755844941020">વિનંતિ મોકલી રહ્યું છે...</translation>
 <translation id="1733064249834771892">ફૉન્ટ</translation>
 <translation id="1733383495376208985">તમારા પોતાના <ph name="BEGIN_LINK" />સિંક પાસફ્રેઝ<ph name="END_LINK" /> વડે સિંક કરેલા ડેટાને એન્ક્રિપ્ટ કરો. આમાં Google Payની ચુકવણી પદ્ધતિઓ અને ઍડ્રેસ સામેલ હોતા નથી.</translation>
@@ -1461,7 +1461,7 @@
 <translation id="250704661983564564">ડિસ્પ્લેની ગોઠવણી</translation>
 <translation id="2507253002925770350">ટિકિટ કાઢી નાખી</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> થોભાવ્યું છે</translation>
-<translation id="2508428939232952663">Google Play સ્ટોર એકાઉન્ટ</translation>
+<translation id="2508428939232952663">Google Play Store એકાઉન્ટ</translation>
 <translation id="2509495747794740764">સ્કેલ પ્રમાણ, 10 અને 200 ની વચ્ચેની કોઈ સંખ્યા હોવી આવશ્યક છે.</translation>
 <translation id="2509566264613697683">8x</translation>
 <translation id="2510988373360790637">બ્લૂટૂથ ડિવાઇસથી છૂટા પડો</translation>
@@ -1640,7 +1640,7 @@
 <translation id="2712173769900027643">પરવાનગી માગો</translation>
 <translation id="2713106313042589954">કૅમેરા બંધ કરો</translation>
 <translation id="2713444072780614174">શ્વેત</translation>
-<translation id="2714393097308983682">Google Play સ્ટોર</translation>
+<translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2715640894224696481">સિક્યુરિટી કી માટેની વિનંતી</translation>
 <translation id="2715751256863167692">આ અપગ્રેડ તમારી Chromebookને રીસેટ કરે છે અને હાલનો વપરાશકર્તા ડેટા કાઢી નાખે છે.</translation>
 <translation id="271639966356700691">મોટું કરવા માટે, Ctrl+Alt+બ્રાઇટનેસ વધારવાની કી
@@ -2611,7 +2611,7 @@
 <translation id="3742235229730461951">કોરિયન કીબોર્ડ લેઆઉટ</translation>
 <translation id="3742666961763734085">તે નામવાળો કોઈ સંસ્થાકીય એકમ શોધી શકાયો નથી. કૃપા કરીને ફરી પ્રયત્ન કરો.</translation>
 <translation id="3744111561329211289">પૃષ્ઠભૂમિ સમન્વયન</translation>
-<translation id="3747077776423672805">ઍપને કાઢી નાખવા માટે, સેટિંગ &gt; Google Play સ્ટોર &gt; Android પસંદગીઓ મેનેજ કરો &gt; ઍપ અથવા ઍપ્લિકેશન મેનેજર પર જાઓ. પછી તમે અનઇન્સ્ટૉલ કરવા માગો છો તે ઍપ પર ટૅપ કરો (ઍપ શોધવા માટે તમારે જમણે અથવા ડાબે સ્વાઇપ કરવું જરૂરી હોય શકે છે). પછી અનઇન્સ્ટૉલ કરો અથવા બંધ કરો પર ટૅપ કરો.</translation>
+<translation id="3747077776423672805">ઍપને કાઢી નાખવા માટે, સેટિંગ &gt; Google Play Store &gt; Android પસંદગીઓ મેનેજ કરો &gt; ઍપ અથવા ઍપ્લિકેશન મેનેજર પર જાઓ. પછી તમે અનઇન્સ્ટૉલ કરવા માગો છો તે ઍપ પર ટૅપ કરો (ઍપ શોધવા માટે તમારે જમણે અથવા ડાબે સ્વાઇપ કરવું જરૂરી હોય શકે છે). પછી અનઇન્સ્ટૉલ કરો અથવા બંધ કરો પર ટૅપ કરો.</translation>
 <translation id="3747220812138541072">તમે ટાઇપ કરી રહ્યાં હો ત્યારે દેખાતા ઇનલાઇન લખવાના સૂચનો બતાવો</translation>
 <translation id="3748706263662799310">બગની જાણ કરો</translation>
 <translation id="3752253558646317685">ફિંગરપ્રિન્ટ સાચવવા માટે તમારા બાળકને તેમની આંગળી ઊંચકતા રહેવાનું જણાવો</translation>
@@ -2867,7 +2867,7 @@
 <translation id="3982375475032951137">કેટલાક સરળ પગલાંમાં તમારા બ્રાઉઝરને સેટઅપ કરો</translation>
 <translation id="3983400541576569538">કેટલીક ઍપમાંથી ડેટા ગુમાવશો</translation>
 <translation id="3983586614702900908">અજાણ્યા વિક્રેતા પાસેથી ઉપકરણો</translation>
-<translation id="3983764759749072418">Play સ્ટોર ઍપ્લિકેશનોને આ ડિવાઇસ માટે ઍક્સેસ છે.</translation>
+<translation id="3983764759749072418">Play Store ઍપ્લિકેશનોને આ ડિવાઇસ માટે ઍક્સેસ છે.</translation>
 <translation id="3983769721878416534">ક્લિક કરતાં પહેલાં વિલંબ</translation>
 <translation id="3984135167056005094">ઇમેઇલ ઍડ્રેસનો સમાવેશ કરશો નહીં</translation>
 <translation id="3984159763196946143">ડેમો મોડ શરૂ કરી શકાયો નથી</translation>
@@ -2994,7 +2994,7 @@
 <translation id="413121957363593859">ઘટકો</translation>
 <translation id="4131410914670010031">કાળો અને સફેદ</translation>
 <translation id="413193092008917129">નેટવર્કના નિદાન સંબંધિત રૂટિન</translation>
-<translation id="4132183752438206707">Google Play સ્ટોર પરથી ઍપ મેળવો</translation>
+<translation id="4132183752438206707">Google Play Store પરથી ઍપ મેળવો</translation>
 <translation id="4132364317545104286">ઇ-સિમ પ્રોફાઇલનું નામ બદલો</translation>
 <translation id="4133076602192971179">તમારો પાસવર્ડ બદલવા માટે ઍપ ખોલો</translation>
 <translation id="4136203100490971508">રાત્રિ પ્રકાશ સૂર્યોદય સમયે ઑટોમૅટિક રીતે બંધ થઈ જશે</translation>
@@ -3550,7 +3550,7 @@
 <translation id="4776594120007763294">થોડા સમય પછી વાંચી શકવા કોઈ પેજને ઉમેરવા માટે, આ બટન ક્લિક કરો</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> માટેનો પાસવર્ડ </translation>
 <translation id="4777458362738635055">આ ડિવાઇસના અન્ય વપરાશકર્તાઓ આ નેટવર્કનો ઉપયોગ કરી શકે છે</translation>
-<translation id="4777825441726637019">Play સ્ટોર</translation>
+<translation id="4777825441726637019">Play Store</translation>
 <translation id="4777943778632837590">નેટવર્કના નામ સર્વરને ગોઠવો</translation>
 <translation id="4778644898150334464">અન્ય પાસવર્ડનો ઉપયોગ કરો</translation>
 <translation id="4779083564647765204">ઝૂમ કરો</translation>
@@ -3833,7 +3833,7 @@
 <translation id="5084230410268011727">સાઇટને મોશન અને લાઇટ સેન્સરનો ઉપયોગ કરવાની મંજૂરી આપો</translation>
 <translation id="5084328598860513926">સેટઅપનો ફ્લૉ અવરોધિત થયો હતો. કૃપા કરીને ફરીથી પ્રયાસ કરો અથવા તમારા ડિવાઇસના માલિક અથવા વ્યવસ્થાપકનો સંપર્ક કરો. ભૂલનો કોડ: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">અપડેટ્સ માટે તપાસી રહ્યું છે</translation>
-<translation id="5085561329775168253">Google Play સ્ટોર પરની ઍપ વડે સર્જનાત્મક બનો, કામ કરતા રહો અને મનોરંજન મેળવતા રહો</translation>
+<translation id="5085561329775168253">Google Play Store પરની ઍપ વડે સર્જનાત્મક બનો, કામ કરતા રહો અને મનોરંજન મેળવતા રહો</translation>
 <translation id="5086082738160935172">HID</translation>
 <translation id="5086874064903147617">ડિફૉલ્ટ હોમપેજ પુનઃસ્થાપિત કરીએ?</translation>
 <translation id="5087249366037322692">તૃતીય પક્ષ દ્વારા ઉમેરાયેલ</translation>
@@ -5014,7 +5014,7 @@ USB ડિવાઇસ</translation>
 <translation id="6393550101331051049">અસુરક્ષિત કન્ટેન્ટ બતાવવાની મંજૂરી છે</translation>
 <translation id="6395423953133416962"><ph name="BEGIN_LINK1" />સિસ્ટમ માહિતી<ph name="END_LINK1" /> અને <ph name="BEGIN_LINK2" />મેટ્રિક્સ<ph name="END_LINK2" /> મોકલો</translation>
 <translation id="6396988158856674517">સાઇટને મોશન સેન્સરનો ઉપયોગ કરવાથી બ્લૉક કરો</translation>
-<translation id="6398715114293939307">Google Play સ્ટોર દૂર કરો</translation>
+<translation id="6398715114293939307">Google Play Store દૂર કરો</translation>
 <translation id="6398765197997659313">પૂર્ણ સ્ક્રીનથી બહાર નીકળો</translation>
 <translation id="6399774419735315745">જાસૂસ</translation>
 <translation id="6404511346730675251">બુકમાર્કમાં ફેરફાર કરો</translation>
@@ -6134,7 +6134,7 @@ USB ડિવાઇસ</translation>
 <translation id="761530003705945209">Google ડ્રાઇવ પર બૅકઅપ લો. તમારો ડેટા સરળતાથી પાછો મેળવો અથવા ડિવાઇસને કોઈપણ સમયે સ્વિચ કરો. તમારા બૅકઅપમાં ઍપનો ડેટા શામેલ છે. તમારું બૅકઅપ Google પર અપલોડ કરવામાં આવે છે અને તમારા Google એકાઉન્ટ પાસવર્ડનો ઉપયોગ કરીને એન્ક્રિપ્ટ કરવામાં આવે છે.</translation>
 <translation id="7615365294369022248">તમારું એકાઉન્ટ ઉમેરતી વખતે ભૂલ આવી હતી</translation>
 <translation id="7616214729753637086">ઉપકરણની નોંધણી કરી રહ્યું છે...</translation>
-<translation id="7617263010641145920">Play સ્ટોર ચાલુ કરો</translation>
+<translation id="7617263010641145920">Play Store ચાલુ કરો</translation>
 <translation id="7617366389578322136">"<ph name="DEVICE_NAME" />" થી કનેક્ટ કરી રહ્યું છે</translation>
 <translation id="7617648809369507487">ગુપચુપ મેસેજિંગનો ઉપયોગ કરો</translation>
 <translation id="7618774594543487847">ન્યૂટ્રલ</translation>
@@ -6233,7 +6233,7 @@ USB ડિવાઇસ</translation>
 <translation id="7702907602086592255">ડોમેન</translation>
 <translation id="7704305437604973648">કાર્ય</translation>
 <translation id="7704317875155739195">શોધ અને URLsને ઑટોમૅટિક રીતે પૂર્ણ કરો</translation>
-<translation id="7704521324619958564">Play સ્ટોર ખોલો</translation>
+<translation id="7704521324619958564">Play Store ખોલો</translation>
 <translation id="7705276765467986571">બુકમાર્ક મૉડેલ લોડ કરી શકાયું નથી. </translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7707108266051544351">આ સાઇટને મોશન સેન્સરનો ઉપયોગ કરવાથી બ્લૉક કરવામાં આવી છે.</translation>
@@ -6638,7 +6638,7 @@ USB ડિવાઇસ</translation>
 <translation id="81020759409809034">સ્થાનિક જગ્યા</translation>
 <translation id="8102139037507939978">system_logs.txtમાંથી વ્યક્તિગત રૂપે ઓળખી શકાય તેવી માહિતી જુદી પાડો.</translation>
 <translation id="8104088837833760645">ઇ-સિમ પ્રોફાઇલ ડાઉનલોડ કરો</translation>
-<translation id="8107015733319732394">તમારા <ph name="DEVICE_TYPE" /> પર Google Play સ્ટોર ઇન્સ્ટૉલ કરી રહ્યાં છીએ. આમાં થોડી મિનિટ લાગી શકે છે.</translation>
+<translation id="8107015733319732394">તમારા <ph name="DEVICE_TYPE" /> પર Google Play Store ઇન્સ્ટૉલ કરી રહ્યાં છીએ. આમાં થોડી મિનિટ લાગી શકે છે.</translation>
 <translation id="810728361871746125">ડિસ્પ્લેનું રિઝોલ્યુશન</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{ત્રીજા પક્ષની કોઈ કુકી નથી}=1{ત્રીજા પક્ષની 1 કુકી બ્લૉક કરવામાં આવી છે}one{ત્રીજા પક્ષની # કુકી બ્લૉક કરવામાં આવી છે}other{ત્રીજા પક્ષની # કુકી બ્લૉક કરવામાં આવી છે}}</translation>
 <translation id="8109109153262930486">ડિફૉલ્ટ અવતાર</translation>
@@ -6767,7 +6767,7 @@ USB ડિવાઇસ</translation>
 <translation id="8241040075392580210">શૅડી</translation>
 <translation id="8241806945692107836">ઉપકરણ ગોઠવણી નક્કી કરી રહ્યાં છે...</translation>
 <translation id="8241868517363889229">તમારા બુકમાર્ક્સ વાંચો અને બદલો</translation>
-<translation id="8242370300221559051">Play સ્ટોર ચાલુ કરો</translation>
+<translation id="8242370300221559051">Play Store ચાલુ કરો</translation>
 <translation id="8242426110754782860">આગળ વધો</translation>
 <translation id="8243948765190375130">મીડિયાની ક્વૉલિટીમાં ઘટાડો થઈ શકે છે</translation>
 <translation id="8244514732452879619">ટૂંક સમયમાં લાઇટ બંધ કરવામાં આવશે</translation>
@@ -7497,7 +7497,7 @@ USB ડિવાઇસ</translation>
 <translation id="9026731007018893674">ડાઉનલોડ કરો</translation>
 <translation id="9026852570893462412">આ પ્રક્રિયામાં થોડો સમય લાગી શકે છે. વર્ચ્યુઅલ મશીન ડાઉનલોડ કરી રહ્યાં છીએ.</translation>
 <translation id="9027459031423301635">લિંક નવા &amp;ટૅબમાં ખોલો</translation>
-<translation id="9030515284705930323">તમારા એકાઉન્ટ માટે તમારી સંસ્થાએ Google Play સ્ટોર ચાલુ કરેલ નથી. વધુ માહિતી માટે તમારા એડમિનનો સંપર્ક કરો.</translation>
+<translation id="9030515284705930323">તમારા એકાઉન્ટ માટે તમારી સંસ્થાએ Google Play Store ચાલુ કરેલ નથી. વધુ માહિતી માટે તમારા એડમિનનો સંપર્ક કરો.</translation>
 <translation id="9030754204056345429">વધુ ઝડપી</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" />ને હવે સપોર્ટ કરવામાં આવતું નથી</translation>
@@ -7674,7 +7674,7 @@ USB ડિવાઇસ</translation>
 <translation id="9214520840402538427">અરે! ઇન્સ્ટૉલેશન-સમયનો ચાલુ એટ્રિબ્યૂટનો સમય સમાપ્ત થયો. કૃપા કરીને તમારા સપોર્ટ પ્રતિનિધિનો સંપર્ક કરો.</translation>
 <translation id="9214695392875603905">કપકૅક</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" ઉમેરાયું</translation>
-<translation id="9215742531438648683">Google Play સ્ટોર અનઇન્સ્ટૉલ કરો</translation>
+<translation id="9215742531438648683">Google Play Store અનઇન્સ્ટૉલ કરો</translation>
 <translation id="9218430445555521422">ડિફોલ્ટ તરીકે સેટ કરો</translation>
 <translation id="9219103736887031265">છબીઓ</translation>
 <translation id="9220525904950070496">એકાઉન્ટ દૂર કરો</translation>

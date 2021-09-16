@@ -708,7 +708,7 @@
 <translation id="1725562816265788801">ట్యాబ్ స్క్రోలింగ్</translation>
 <translation id="1727662110063605623"><ph name="USB_DEVICE_NAME" />ను Parallels Desktop లేదా Linuxకు కనెక్ట్ చేయడానికి సెట్టింగ్‌లను తెరవండి</translation>
 <translation id="1729533290416704613">ఓమ్నిబాక్స్ నుండి వెతికేటప్పుడు చూపబడే పేజీని కూడా ఇది నియంత్రిస్తుంది.</translation>
-<translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />యాప్‌లను తీసివేయడానికి, సెట్టింగ్‌లు &gt; Google Play స్టోర్ &gt; Android ప్రాధాన్యతలను నిర్వహించు &gt; యాప్‌లు లేదా అప్లికేషన్ మేనేజర్‌కి వెళ్లండి. ఆ తర్వాత, మీరు అన్ఇన్‌స్టాల్ చేయాలనుకుంటున్న యాప్‌ని నొక్కండి (మీరు యాప్‌ని కనుగొనడం కోసం ఎడమ లేదా కుడి వైపునకు స్వైప్ చేయాల్సి రావచ్చు). ఆపై, అన్ఇన్‌స్టాల్ చేయి లేదా నిలిపివేయి ఎంపికను నొక్కండి.<ph name="END_PARAGRAPH1" /></translation>
+<translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />యాప్‌లను తీసివేయడానికి, సెట్టింగ్‌లు &gt; Google Play Store &gt; Android ప్రాధాన్యతలను నిర్వహించు &gt; యాప్‌లు లేదా అప్లికేషన్ మేనేజర్‌కి వెళ్లండి. ఆ తర్వాత, మీరు అన్ఇన్‌స్టాల్ చేయాలనుకుంటున్న యాప్‌ని నొక్కండి (మీరు యాప్‌ని కనుగొనడం కోసం ఎడమ లేదా కుడి వైపునకు స్వైప్ చేయాల్సి రావచ్చు). ఆపై, అన్ఇన్‌స్టాల్ చేయి లేదా నిలిపివేయి ఎంపికను నొక్కండి.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1731911755844941020">రిక్వెస్ట్‌ను పంపుతోంది...</translation>
 <translation id="1733064249834771892">ఫాంట్‌లు</translation>
 <translation id="1733383495376208985">సింక్ చేసిన డేటాను మీ స్వంత <ph name="BEGIN_LINK" />సింక్ రహస్య పదబంధం<ph name="END_LINK" />తో ఎన్‌క్రిప్ట్ చేయండి. Google Payకు చెందిన చెల్లింపు పద్ధతులు, అడ్రస్‌లు ఇందులో ఉండవు.</translation>
@@ -1477,7 +1477,7 @@
 <translation id="250704661983564564">డిస్‌ప్లే అమరిక</translation>
 <translation id="2507253002925770350">టిక్కెట్ తీసివేయబడింది</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> పాజ్ చేయబడింది</translation>
-<translation id="2508428939232952663">Google Play స్టోర్ ఖాతా</translation>
+<translation id="2508428939232952663">Google Play Store ఖాతా</translation>
 <translation id="2509495747794740764">స్కేల్ ప్రమాణం తప్పనిసరిగా 10 మరియు 200 మధ్య ఉండే సంఖ్య అయ్యి ఉండాలి.</translation>
 <translation id="2509566264613697683">8x</translation>
 <translation id="2510988373360790637">బ్లూటూత్ పరికరాన్ని విస్మరించండి</translation>
@@ -1656,7 +1656,7 @@
 <translation id="2712173769900027643">అనుమతి అడుగు</translation>
 <translation id="2713106313042589954">కెమెరాను ఆఫ్ చేయి</translation>
 <translation id="2713444072780614174">తెలుపు</translation>
-<translation id="2714393097308983682">Google Play స్టోర్</translation>
+<translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2715640894224696481">సెక్యూరిటీ కీ రిక్వెస్ట్</translation>
 <translation id="2715751256863167692">ఈ అప్‌గ్రేడ్ మీ Chromebookను రీసెట్ చేస్తుంది మరియు ప్రస్తుత వినియోగదారు డేటాను తీసివేస్తుంది.</translation>
 <translation id="271639966356700691">దగ్గరకు జూమ్ చేయడానికి Ctrl+Alt+ప్రకాశాన్ని పెంచే కీలను నొక్కండి,
@@ -2360,7 +2360,7 @@
 <translation id="3458451003193188688">నెట్‌వర్క్ ఎర్రర్ కారణంగా వర్చువల్ మెషిన్‌ను ఇన్‌స్టాల్ చేయడం సాధ్యం కాలేదు. దయచేసి మళ్ళీ ప్రయత్నించండి లేదా మీ నిర్వాహకుడిని సంప్రదించండి. ఎర్రర్ కోడ్: <ph name="ERROR_CODE" />.</translation>
 <translation id="3458794975359644386">షేరింగ్ తీసివేయడం విఫలమైంది</translation>
 <translation id="3459509316159669723">ప్రింటింగ్</translation>
-<translation id="3459697287128633276">మీ ఖాతాలో Google Play స్టోర్ యాక్సెస్‌ను ఆరంభించాలంటే, దయచేసి మీ గుర్తింపు ప్రదాతతో ప్రామాణీకరించండి.</translation>
+<translation id="3459697287128633276">మీ ఖాతాలో Google Play Store యాక్సెస్‌ను ఆరంభించాలంటే, దయచేసి మీ గుర్తింపు ప్రదాతతో ప్రామాణీకరించండి.</translation>
 <translation id="3462311546193741693">చాలా సైట్‌ల నుండి మిమ్మల్ని సైన్ అవుట్ చేస్తుంది. మీరు మీ Google ఖాతాలో అలాగే సైన్ ఇన్ చేసి ఉంటారు, కనుక మీ సమకాలీకరించిన డేటాను తీసివేయవచ్చు.</translation>
 <translation id="3462413494201477527">ఖాతా సెటప్‌ను రద్దు చేయాలా?</translation>
 <translation id="346298925039590474">ఈ మొబైల్ నెట్‌వర్క్ ఈ పరికరంలోని యూజర్‌లు అందరికీ అందుబాటులో ఉంటుంది</translation>
@@ -2498,7 +2498,7 @@
 <translation id="3609277884604412258">త్వరిత సెర్చ్</translation>
 <translation id="3610369246614755442">డాక్ ఫ్యాన్‌కు సర్వీస్ అవసరం</translation>
 <translation id="361106536627977100">ఫ్లాష్ డేటా</translation>
-<translation id="3611655097742243705">మరిన్ని యాప్‌లను కనుగొనడానికి Play స్టోర్‌ను సందర్శించండి</translation>
+<translation id="3611655097742243705">మరిన్ని యాప్‌లను కనుగొనడానికి Play Storeను సందర్శించండి</translation>
 <translation id="3611658447322220736">ఇటీవల మూసివేసిన సైట్‌లు డేటాను పంపడాన్ని, అందుకోవడాన్ని పూర్తి చేయగలవు</translation>
 <translation id="3612673635130633812">&lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt; ద్వారా డౌన్‌లోడ్ చేయబడింది</translation>
 <translation id="3613134908380545408"><ph name="FOLDER_NAME" />ని చూపు</translation>
@@ -2618,7 +2618,7 @@
 <translation id="3732530910372558017">పిన్ గరిష్టంగా 63 అక్షరాలు మించకూడదు</translation>
 <translation id="3732857534841813090">Google Assistant సంబంధిత సమాచారం</translation>
 <translation id="3733127536501031542">దశ-పైకితో SSL సర్వర్</translation>
-<translation id="3733296813637058299">మేము మీ కోసం ఆ యాప్‌లు ఇన్‌స్టాల్ చేస్తాము. మీరు Play స్టోర్‌లో మీ <ph name="DEVICE_TYPE" /> కోసం మరిన్ని యాప్‌లను కనుగొనవచ్చు.</translation>
+<translation id="3733296813637058299">మేము మీ కోసం ఆ యాప్‌లు ఇన్‌స్టాల్ చేస్తాము. మీరు Play Storeలో మీ <ph name="DEVICE_TYPE" /> కోసం మరిన్ని యాప్‌లను కనుగొనవచ్చు.</translation>
 <translation id="3735740477244556633">దీని ద్వారా క్రమీకరించు</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> డేటా 24 గంటలలో తొలగించబడుతుంది</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -2627,7 +2627,7 @@
 <translation id="3742235229730461951">కొరియన్ కీబోర్డ్ లేఅవుట్</translation>
 <translation id="3742666961763734085">ఈ పేరుతో సంస్థాగత యూనిట్ కనుగొనబడలేదు. దయచేసి మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="3744111561329211289">బ్యాక్‌గ్రౌండ్ సింక్</translation>
-<translation id="3747077776423672805">యాప్‌లను తీసివేయడం కోసం, సెట్టింగ్‌లు &gt; Google Play స్టోర్ &gt; Android ప్రాధాన్యతలను నిర్వహించు &gt; యాప్‌లు లేదా అప్లికేషన్ మేనేజర్‌లోకి వెళ్లండి. ఆపై, మీరు అన్ఇన్‌స్టాల్ చేయాలనుకుంటున్న యాప్‌ని నొక్కండి (మీరు యాప్‌ని కనుగొనడం కోసం ఎడమ లేదా కుడి వైపునకు స్వైప్ చేయాల్సి రావచ్చు). ఆపై, అన్ఇన్‌స్టాల్ చేయి లేదా నిలిపివేయిని ఎంచుకోండి.</translation>
+<translation id="3747077776423672805">యాప్‌లను తీసివేయడం కోసం, సెట్టింగ్‌లు &gt; Google Play Store &gt; Android ప్రాధాన్యతలను నిర్వహించు &gt; యాప్‌లు లేదా అప్లికేషన్ మేనేజర్‌లోకి వెళ్లండి. ఆపై, మీరు అన్ఇన్‌స్టాల్ చేయాలనుకుంటున్న యాప్‌ని నొక్కండి (మీరు యాప్‌ని కనుగొనడం కోసం ఎడమ లేదా కుడి వైపునకు స్వైప్ చేయాల్సి రావచ్చు). ఆపై, అన్ఇన్‌స్టాల్ చేయి లేదా నిలిపివేయిని ఎంచుకోండి.</translation>
 <translation id="3747220812138541072">మీరు టైప్ చేస్తున్నప్పుడు కనిపించే ఇన్‌లైన్ వ్రాత సూచనలను చూడండి</translation>
 <translation id="3748706263662799310">ఒక బగ్‌ను రిపోర్ట్ చేయండి</translation>
 <translation id="3752253558646317685">వేలిముద్రను సేవ్ చేయడానికి మీ చిన్నారి వారి వేలును పైకి ఎత్తుతూ ఉండేలా చేయండి</translation>
@@ -2883,7 +2883,7 @@
 <translation id="3982375475032951137">సులువైన కొద్ది దశలతో మీ బ్రౌజర్‌ని సెటప్ చేయండి</translation>
 <translation id="3983400541576569538">కొన్ని యాప్‌ల డేటాని కోల్పోవచ్చు</translation>
 <translation id="3983586614702900908">తెలియని విక్రేత అందించిన పరికరాలు</translation>
-<translation id="3983764759749072418">Play స్టోర్ అప్లికేషన్‌లు ఈ పరికరానికి యాక్సెస్‌ను కలిగి ఉన్నాయి.</translation>
+<translation id="3983764759749072418">Play Store అప్లికేషన్‌లు ఈ పరికరానికి యాక్సెస్‌ను కలిగి ఉన్నాయి.</translation>
 <translation id="3983769721878416534">క్లిక్ చర్యను అమలు చేసే ముందు వేచి ఉండాల్సిన జాప్యం</translation>
 <translation id="3984135167056005094">ఇమెయిల్ అడ్రస్‌ని జోడించవద్దు</translation>
 <translation id="3984159763196946143">డెమో మోడ్‌ను ప్రారంభించలేకపోయాము</translation>
@@ -3010,7 +3010,7 @@
 <translation id="413121957363593859">భాగాలు</translation>
 <translation id="4131410914670010031">నలుపు మరియు తెలుపు</translation>
 <translation id="413193092008917129">నెట్‌వర్క్ సమస్య విశ్లేషణకు సంబంధించిన కమాండ్ రొటీన్‌లు</translation>
-<translation id="4132183752438206707">Google Play స్టోర్‌లో యాప్‌లను కనుగొనండి</translation>
+<translation id="4132183752438206707">Google Play Storeలో యాప్‌లను కనుగొనండి</translation>
 <translation id="4132364317545104286">eSIM ప్రొఫైల్‌కు పేరుమార్చండి</translation>
 <translation id="4133076602192971179">మీ పాస్‌వర్డ్‌ను మార్చడానికి యాప్‌ను తెరవండి</translation>
 <translation id="4136203100490971508">సూర్యోదయ సమయానికి రాత్రి కాంతి ఆటోమేటిక్‌గా ఆఫ్ అవుతుంది</translation>
@@ -3567,7 +3567,7 @@
 <translation id="4776594120007763294">'తర్వాత చదవండి' మెనూకు పేజీని జోడించడానికి, బటన్‌ను క్లిక్ చేయండి</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> కోసం పాస్‌వర్డ్</translation>
 <translation id="4777458362738635055">ఈ పరికరాన్ని వాడే ఇతర యూజర్‌లు ఈ నెట్‌వర్క్‌ను ఉపయోగించగలరు</translation>
-<translation id="4777825441726637019">Play స్టోర్</translation>
+<translation id="4777825441726637019">Play Store</translation>
 <translation id="4777943778632837590">నెట్‌వర్క్ పేరు సర్వర్‌లను కాన్ఫిగర్ చేయడం</translation>
 <translation id="4778644898150334464">వేరే పాస్‌వర్డ్‌ను ఉపయోగించండి</translation>
 <translation id="4779083564647765204">జూమ్ చేయి</translation>
@@ -3850,7 +3850,7 @@
 <translation id="5084230410268011727">చలనం మరియు కాంతి సర్దుబాటు సెన్సార్‌లను ఉపయోగించడానికి సైట్‌లను అనుమతించు</translation>
 <translation id="5084328598860513926">కేటాయింపు విధానానికి అంతరాయం ఏర్పడింది. దయచేసి మళ్లీ ట్రై చేయండి లేదా మీ పరికర ఓనర్‌ను లేదా అడ్మినిస్ట్రేట‌ర్‌ను సంప్రదించండి. ఎర్రర్ కోడ్: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">అప్‌డేట్‌ల కోసం తనిఖీ చేయడం</translation>
-<translation id="5085561329775168253">Google Play స్టోర్‌లో క్రియేటివ్‌గా ఉండే, పని సామర్థ్యాన్ని పెంచే, అలాగే వినోదాన్ని అందించే యాప్‌లను పొందండి</translation>
+<translation id="5085561329775168253">Google Play Storeలో క్రియేటివ్‌గా ఉండే, పని సామర్థ్యాన్ని పెంచే, అలాగే వినోదాన్ని అందించే యాప్‌లను పొందండి</translation>
 <translation id="5086082738160935172">HID</translation>
 <translation id="5086874064903147617">డిఫాల్ట్ హోమ్ పేజీని పునరుద్ధరించాలా?</translation>
 <translation id="5087249366037322692">మూడవ పక్షం ద్వారా జోడించబడింది</translation>
@@ -3981,7 +3981,7 @@
 <translation id="5230516054153933099">విండో</translation>
 <translation id="5233019165164992427">NaCl డీబగ్ పోర్ట్</translation>
 <translation id="5233231016133573565">ప్రాసెస్ ID</translation>
-<translation id="5233638681132016545">కొత్త‌ టాబ్</translation>
+<translation id="5233638681132016545">కొత్త‌ ట్యాబ్</translation>
 <translation id="5233736638227740678">&amp;అతికించు</translation>
 <translation id="5234764350956374838">తొలగించు</translation>
 <translation id="5235050375939235066">యాప్‌ను అన్‌ఇన్‌స్టాల్ చేయాలా?</translation>
@@ -4241,7 +4241,7 @@
 <translation id="5510775624736435856">Google నుండి చిత్ర వివరణలను పొందండి</translation>
 <translation id="5511379779384092781">అతి చిన్నది</translation>
 <translation id="5511823366942919280">మీరు ఖచ్చితంగా ఈ పరికరాన్ని "షార్క్"గా సెటప్ చేయాలని అనుకుంటున్నారా?</translation>
-<translation id="5517304475148761050">Play స్టోర్‌ను యాక్సెస్ చేయగలిగేలా ఈ యాప్‌ను అనుమతించాలి</translation>
+<translation id="5517304475148761050">Play Storeను యాక్సెస్ చేయగలిగేలా ఈ యాప్‌ను అనుమతించాలి</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">క్లిప్‌బోర్డ్‌కు కాపీ చేసిన వచనం, చిత్రాలను సైట్ చూడాలన్నప్పుడు, అందుకు అనుమతి అడగాలి</translation>
 <translation id="5518584115117143805">ఇమెయిల్ గుప్తీకరణ సర్టిఫికెట్</translation>
@@ -5029,7 +5029,7 @@
 <translation id="6393550101331051049">సురక్షితం కాని కంటెంట్‌ను చూపడానికి అనుమతించబడింది</translation>
 <translation id="6395423953133416962"><ph name="BEGIN_LINK1" />సిస్టమ్ సమాచారం<ph name="END_LINK1" /> మరియు <ph name="BEGIN_LINK2" />గణాంకాలు<ph name="END_LINK2" /> పంపు</translation>
 <translation id="6396988158856674517">మోషన్ సెన్సార్‌లను ఉపయోగించకుండా సైట్‌లను బ్లాక్ చేయి</translation>
-<translation id="6398715114293939307">Google Play స్టోర్‌ని తీసివేయండి</translation>
+<translation id="6398715114293939307">Google Play Storeను తీసివేయండి</translation>
 <translation id="6398765197997659313">పూర్తి స్క్రీన్ నుండి నిష్క్రమించు</translation>
 <translation id="6399774419735315745">గూఢచారి</translation>
 <translation id="6404511346730675251">బుక్‌మార్క్‌ను సవరించు</translation>
@@ -6149,7 +6149,7 @@
 <translation id="761530003705945209">Google డిస్క్‌లో బ్యాకప్ చేయండి. సులభంగా మీ డేటాను పునరుద్ధరించండి లేదా ఎప్పుడైనా పరికరాన్ని స్విచ్ చేయండి. మీ బ్యాకప్‌లో యాప్ డేటా కూడా ఉంటుంది. మీ బ్యాకప్‌లు Googleకు అప్‌లోడ్ చేయబడతాయి, మీ Google ఖాతా పాస్‌వర్డ్‌ను ఉపయోగించి ఎన్‌క్రిప్ట్ చేయబడతాయి.</translation>
 <translation id="7615365294369022248">ఖాతాను జోడించడంలో ఎర్రర్ ఏర్పడింది</translation>
 <translation id="7616214729753637086">పరికరాన్ని నమోదు చేస్తోంది...</translation>
-<translation id="7617263010641145920">Play స్టోర్‌ను ఆన్ చేయండి</translation>
+<translation id="7617263010641145920">Play Storeను ఆన్ చేయండి</translation>
 <translation id="7617366389578322136">"<ph name="DEVICE_NAME" />"కు కనెక్ట్ చేస్తోంది</translation>
 <translation id="7617648809369507487">నిశ్శబ్ద మెసేజింగ్‌ను ఉపయోగించండి</translation>
 <translation id="7618774594543487847">తటస్థం</translation>
@@ -6161,7 +6161,7 @@
 <translation id="7624337243375417909">caps lock ఆఫ్‌లో ఉంది</translation>
 <translation id="7625568159987162309">వేర్వేరు సైట్‌లకు సంబంధించిన అనుమతులను, అవి నిల్వ చేసిన డేటాను చూడండి</translation>
 <translation id="7628201176665550262">రిఫ్రెష్ రేటు</translation>
-<translation id="7629827748548208700">టాబ్: <ph name="TAB_NAME" /></translation>
+<translation id="7629827748548208700">ట్యాబ్: <ph name="TAB_NAME" /></translation>
 <translation id="7631014249255418691">Linux యాప్‌లు, ఫైళ్లు విజయవంతంగా బ్యాకప్ చేయబడ్డాయి</translation>
 <translation id="7631205654593498032">మీరు మీ పరికరాలను కనెక్ట్ చేసినప్పుడు, మీ <ph name="DEVICE_TYPE" /> ఈ కింది వాటిని చేయవచ్చని అంగీకరిస్తున్నారు:</translation>
 <translation id="7631887513477658702">&amp;ఎల్లప్పుడూ ఈ రకం ఫైళ్ళను తెరువు</translation>
@@ -6248,7 +6248,7 @@
 <translation id="7702907602086592255">డొమైన్</translation>
 <translation id="7704305437604973648">విధి</translation>
 <translation id="7704317875155739195">ఆటో-ఫిల్ సెర్చ్‌లు, URLలు</translation>
-<translation id="7704521324619958564">Play స్టోర్‌ను తెరువు</translation>
+<translation id="7704521324619958564">Play Storeను తెరువు</translation>
 <translation id="7705276765467986571">బుక్‌మార్క్ నమూనాను లోడ్ చేయడం సాధ్యం కాలేదు.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7707108266051544351">చలన సెన్సార్‌లను ఉపయోగించనీయకుండా ఈ సైట్ బ్లాక్ చేయబడింది.</translation>
@@ -6655,7 +6655,7 @@
 <translation id="81020759409809034">స్థానిక లొకేషన్</translation>
 <translation id="8102139037507939978">system_logs.txt నుండి వ్యక్తిగతంగా గుర్తించగలిగే సమాచారాన్ని తొలగించండి.</translation>
 <translation id="8104088837833760645">eSIM ప్రొఫైల్‌ను డౌన్‌లోడ్ చేయండి</translation>
-<translation id="8107015733319732394">మీ <ph name="DEVICE_TYPE" />లో Google Play స్టోర్‌ని ఇన్‌స్టాల్ చేస్తోంది. ఇందుకు కొన్ని నిమిషాలు పట్టవచ్చు.</translation>
+<translation id="8107015733319732394">మీ <ph name="DEVICE_TYPE" />లో Google Play Storeను ఇన్‌స్టాల్ చేస్తోంది. ఇందుకు కొన్ని నిమిషాలు పట్టవచ్చు.</translation>
 <translation id="810728361871746125">డిస్‌ప్లే రిజల్యూషన్</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{మూడవ పక్షం కుక్కీలు లేవు}=1{మూడవ పక్షానికి సంబంధించిన 1 కుక్కీ బ్లాక్ చేయబడింది}other{మూడవ పక్షానికి సంబంధించిన # కుక్కీలు బ్లాక్ చేయబడ్డాయి}}</translation>
 <translation id="8109109153262930486">ఆటోమేటిక్‌గా సెట్ చేసి ఉన్న అవతార్</translation>
@@ -6784,7 +6784,7 @@
 <translation id="8241040075392580210">షేడీ</translation>
 <translation id="8241806945692107836">పరికర కాన్ఫిగరేషన్‌ను గుర్తిస్తోంది...</translation>
 <translation id="8241868517363889229">మీ బుక్‌మార్క్‌లను చదవడం మరియు మార్చడం</translation>
-<translation id="8242370300221559051">Play స్టోర్‌ను ఎనేబుల్ చేయండి</translation>
+<translation id="8242370300221559051">Play Storeను ఎనేబుల్ చేయండి</translation>
 <translation id="8242426110754782860">కొనసాగు</translation>
 <translation id="8243948765190375130">మీడియా క్వాలిటీ తగ్గవచ్చు</translation>
 <translation id="8244514732452879619">నిద్రించాల్సిన సమయం అవుతోంది</translation>
@@ -7513,7 +7513,7 @@
 <translation id="9026731007018893674">డౌన్‌లోడ్</translation>
 <translation id="9026852570893462412">ఈ ప్రాసెస్‌కు కొన్ని నిమిషాలు పట్టవచ్చు. మర్చువల్ మెషీన్ డౌన్‌లోడ్ అవుతోంది.</translation>
 <translation id="9027459031423301635">లింక్‌ను కొత్త &amp;టాబ్‌లో తెరువు</translation>
-<translation id="9030515284705930323">మీ సంస్థ మీ ఖాతా కోసం Google Play స్టోర్‌ను ప్రారంభించలేదు. మరింత సమాచారం కోసం మీ నిర్వాహకులను సంప్రదించండి.</translation>
+<translation id="9030515284705930323">మీ సంస్థ మీ ఖాతా కోసం Google Play Storeను ప్రారంభించలేదు. మరింత సమాచారం కోసం మీ నిర్వాహకులను సంప్రదించండి.</translation>
 <translation id="9030754204056345429">చాలా వేగంగా</translation>
 <translation id="9030785788945687215">Gmail</translation>
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" />కు ఇకపై సపోర్ట్ లేదు</translation>
@@ -7690,7 +7690,7 @@
 <translation id="9214520840402538427">అయ్యో!  ఇన‌స్ట‌లేష‌న్-సమయ లక్షణాల ప్రారంభ సమయం ముగిసింది.  దయచేసి మీ మద్దతు ప్రతినిధిని సంప్రదించండి.</translation>
 <translation id="9214695392875603905">కప్ కేక్</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" జోడించబడింది</translation>
-<translation id="9215742531438648683">Google Play స్టోర్‌ను అన్ఇన్‌స్టాల్ చేయండి</translation>
+<translation id="9215742531438648683">Google Play Storeను అన్ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="9218430445555521422">ఆటోమేటిక్ ఆప్షన్‌లా సెట్ చేయండి</translation>
 <translation id="9219103736887031265">ఇమేజ్‌లు</translation>
 <translation id="9220525904950070496">ఖాతాను తీసివేయండి</translation>
