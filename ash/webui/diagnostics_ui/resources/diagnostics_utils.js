@@ -121,10 +121,15 @@ export function getRoutinesByNetworkType(type) {
     RoutineType.kHttpsFirewall,
     RoutineType.kHttpsLatency,
     RoutineType.kLanConnectivity,
-    RoutineType.kArcHttp,
-    RoutineType.kArcPing,
-    RoutineType.kArcDnsResolution
   ];
+
+  if (loadTimeData.getBoolean('enableArcNetworkDiagnostics')) {
+    networkRoutines = networkRoutines.concat([
+      RoutineType.kArcHttp,
+      RoutineType.kArcPing,
+      RoutineType.kArcDnsResolution
+    ]);
+  }
 
   // Add wifi-only routines to common networking routine array.
   if (type === NetworkType.kWiFi) {

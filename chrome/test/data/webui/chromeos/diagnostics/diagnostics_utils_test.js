@@ -4,6 +4,7 @@
 
 import {NetworkType, RoutineType} from 'chrome://diagnostics/diagnostics_types.js';
 import {convertKibToGibDecimalString, getRoutinesByNetworkType, getSubnetMaskFromRoutingPrefix} from 'chrome://diagnostics/diagnostics_utils.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertArrayEquals, assertEquals} from '../../chai_assert.js';
 
@@ -57,6 +58,8 @@ export function diagnosticsUtilsTestSuite() {
   });
 
   test('GetRoutinesByNetworkType', () => {
+    loadTimeData.overrideValues({enableArcNetworkDiagnostics: true});
+
     /** @type {!Array<!RoutineType>} */
     const expectedRoutinesWifi = [
       RoutineType.kCaptivePortal,

@@ -254,6 +254,8 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
                      features::IsInputInDiagnosticsAppEnabled());
   source->AddBoolean("isNetworkingEnabled",
                      features::IsNetworkingInDiagnosticsAppEnabled());
+  source->AddBoolean("enableArcNetworkDiagnostics",
+                     features::IsArcNetworkDiagnosticsButtonEnabled());
 }
 
 void SetUpPluralStringHandler(content::WebUI* web_ui) {
