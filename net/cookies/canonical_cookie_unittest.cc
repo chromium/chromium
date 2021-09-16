@@ -4729,4 +4729,49 @@ TEST(CanonicalCookieTest, IsSetPermittedInContext_RedirectDowngradeWarning) {
   }
 }
 
+TEST(CanonicalCookieTest, TestIsCanonicalWithInvalidSizeHistograms) {
+  base::HistogramTester histograms;
+  const char kFromStorageWithValidLengthHistogram[] =
+      "Cookie.FromStorageWithValidLength";
+  const base::HistogramBase::Sample kInValid = 0;
+  const base::HistogramBase::Sample kValid = 1;
+
+  base::Time two_hours_ago = base::Time::Now() - base::TimeDelta::FromHours(2);
+  base::Time one_hour_ago = base::Time::Now() - base::TimeDelta::FromHours(1);
+  base::Time one_hour_from_now =
+      base::Time::Now() + base::TimeDelta::FromHours(1);
+
+  // Test a cookie that is canonical and valid size
+  EXPECT_TRUE(CanonicalCookie::FromStorage(
+      "A", "B", "www.foo.com", "/bar", two_hours_ago, one_hour_from_now,
+      one_hour_ago, false /*secure*/, false /*httponly*/,
+      CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
+      false /*same_party*/, absl::nullopt /*partition_key*/,
+      CookieSourceScheme::kSecure, 87));
+
+  histograms.ExpectBucketCount(kFromStorageWithValidLengthHistogram, kInValid,
+                               0);
+  histograms.ExpectBucketCount(kFromStorageWithValidLengthHistogram, kValid, 1);
+
+  // Test loading a couple of cookies which are canonical but with an invalid
+  // size
+  const std::string kCookieBig(4096, 'a');
+  EXPECT_TRUE(CanonicalCookie::FromStorage(
+      kCookieBig, "B", "www.foo.com", "/bar", two_hours_ago, one_hour_from_now,
+      one_hour_ago, false /*secure*/, false /*httponly*/,
+      CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
+      false /*same_party*/, absl::nullopt /*partition_key*/,
+      CookieSourceScheme::kSecure, 87));
+  EXPECT_TRUE(CanonicalCookie::FromStorage(
+      "A", kCookieBig, "www.foo.com", "/bar", two_hours_ago, one_hour_from_now,
+      one_hour_ago, false /*secure*/, false /*httponly*/,
+      CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
+      false /*same_party*/, absl::nullopt /*partition_key*/,
+      CookieSourceScheme::kSecure, 87));
+
+  histograms.ExpectBucketCount(kFromStorageWithValidLengthHistogram, kInValid,
+                               2);
+  histograms.ExpectBucketCount(kFromStorageWithValidLengthHistogram, kValid, 1);
+}
+
 }  // namespace net

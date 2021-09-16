@@ -247,6 +247,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Cookie.FromStorageWithValidLength" enum="BooleanValid"
+    expires_after="2022-03-11">
+  <owner>bingler@chromium.org</owner>
+  <owner>awillia@chromium.org</owner>
+  <summary>
+    If a canonical cookie has a valid name+value length. Logged whenever a
+    cookie is created FromStorage and if this cookie IsCanonical.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.HeaderLength" units="bytes" expires_after="2020-09-13">
   <owner>mkwst@chromium.org</owner>
   <summary>

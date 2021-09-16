@@ -755,8 +755,17 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::FromStorage(
       std::move(name), std::move(value), std::move(domain), std::move(path),
       creation, expiration, last_access, secure, httponly, same_site, priority,
       same_party, partition_key, source_scheme, source_port));
-  if (!cc->IsCanonical())
+
+  if (cc->IsCanonical()) {
+    // This will help capture the number of times a cookie is canonical but does
+    // not have a valid name+value size length
+    bool valid_cookie_name_value_pair =
+        ParsedCookie::IsValidCookieNameValuePair(cc->Name(), cc->Value());
+    UMA_HISTOGRAM_BOOLEAN("Cookie.FromStorageWithValidLength",
+                          valid_cookie_name_value_pair);
+  } else {
     return nullptr;
+  }
   return cc;
 }
 
