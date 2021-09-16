@@ -26,7 +26,7 @@ namespace {
 
 class SyncEventListener final : public NativeEventListener {
  public:
-  SyncEventListener(base::OnceClosure invocation_callback)
+  explicit SyncEventListener(base::OnceClosure invocation_callback)
       : invocation_callback_(std::move(invocation_callback)) {}
   void Invoke(ExecutionContext*, Event*) override {
     DCHECK(invocation_callback_);
