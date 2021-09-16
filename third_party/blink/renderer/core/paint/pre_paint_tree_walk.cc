@@ -1007,13 +1007,20 @@ void PrePaintTreeWalk::WalkLayoutObjectChildren(
       // text, or if we had to insert a break in a block before we got to any
       // inline content. Make sure that we visit such objects once.
 
+      is_first_for_node = parent_fragment->IsFirstForNode();
+      is_last_for_node = !parent_fragment->BreakToken();
+
+      // If the parent block fragment isn't an inline formatting context
+      // (e.g. because there are only resumed floats), there isn't a lot we need
+      // to do with this child. Only enter the inline when at the last parent
+      // fragment, to clear the paint flags.
+      if (!parent_fragment->HasItems() && !is_last_for_node)
+        continue;
+
       // Inlines will pass their containing block fragment (and its incoming
       // break token).
       box_fragment = parent_fragment;
       is_inside_fragment_child = true;
-
-      is_first_for_node = parent_fragment->IsFirstForNode();
-      is_last_for_node = !parent_fragment->BreakToken();
     } else if (child_box && child_box->PhysicalFragmentCount()) {
       // Figure out which fragment the child may be found inside. The fragment
       // tree follows the structure of containing blocks closely, while here
