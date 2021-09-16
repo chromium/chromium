@@ -5870,7 +5870,10 @@ void RenderFrameHostImpl::EnterFullscreen(
     }
   }
 
-  if (!IsActive() || !delegate_->CanEnterFullscreenMode()) {
+  // Frames (possibly a subframe) that are not active nor belonging to a primary
+  // page should not enter fullscreen.
+  if (!IsActive() || !GetPage().IsPrimary() ||
+      !delegate_->CanEnterFullscreenMode()) {
     std::move(callback).Run(/*granted=*/false);
     return;
   }
