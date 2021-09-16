@@ -31,6 +31,19 @@ class ASH_EXPORT AshNotificationView
   AshNotificationView& operator=(const AshNotificationView&) = delete;
   ~AshNotificationView() override;
 
+  // Create a view containing the title and message for the notification in a
+  // single line. This is used when a grouped child notification is in a
+  // collapsed parent notification.
+  std::unique_ptr<views::View> CreateCollapsedSummaryView(
+      const message_center::Notification& notification);
+
+  // Update the counter shown for hidden grouped child notifications when the
+  // parent notification is collapsed.
+  void UpdateCollapsedCountView();
+
+  // Update the expanded state for grouped child notification.
+  void SetGroupedChildExpanded(bool expanded);
+
   // Toggle the expand state of the notification.
   void ToggleExpand();
 
@@ -46,6 +59,8 @@ class ASH_EXPORT AshNotificationView
 
   // message_center::NotificationViewBase:
   void UpdateViewForExpandedState(bool expanded) override;
+  void UpdateWithNotification(
+      const message_center::Notification& notification) override;
   void SetExpandButtonEnabled(bool enabled) override;
   void UpdateCornerRadius(int top_radius, int bottom_radius) override;
   void SetDrawBackgroundAsActive(bool active) override;
@@ -122,9 +137,14 @@ class ASH_EXPORT AshNotificationView
   // message_center::NotificationViewBase:
   void UpdateActionButtonsRowBackground() override;
 
+  // Owned by views hierarchy.
   ExpandButton* expand_button_ = nullptr;
   views::View* left_content_ = nullptr;
   views::View* grouped_notifications_container_ = nullptr;
+  views::View* collapsed_summary_view_ = nullptr;
+  views::Label* collapsed_count_view_ = nullptr;
+  views::View* control_buttons_view_ = nullptr;
+  views::View* main_view_ = nullptr;
 
   // These views below are dynamically created inside view hierarchy.
   NotificationTitleRow* title_row_ = nullptr;
@@ -141,8 +161,11 @@ class ASH_EXPORT AshNotificationView
 
   // Cached background color to avoid unnecessary update.
   SkColor background_color_ = SK_ColorTRANSPARENT;
-  // Used to disable the background color for grouped notification views.
-  bool show_background_color_ = true;
+  // Whether the notification associated with this view is a parent or child
+  // in a grouped notification. Used to update visibility of UI elements
+  // specific to each type of notification.
+  bool is_grouped_parent_view_ = false;
+  bool is_grouped_child_view_ = false;
   // Whether this view is shown in a notification popup.
   bool shown_in_popup_ = false;
 };

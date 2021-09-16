@@ -12,6 +12,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/message_center/ash_notification_input_container.h"
+#include "ash/system/message_center/message_center_style.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "base/check.h"
@@ -157,18 +158,32 @@ AshNotificationView::AshNotificationView(
     const message_center::Notification& notification,
     bool shown_in_popup)
     : NotificationViewBase(notification), shown_in_popup_(shown_in_popup) {
+  // TODO(crbug/1232197): fix views and layout to match spec.
   // Instantiate view instances and define layout and view hierarchy.
   auto* layout_manager = SetLayoutManager(std::make_unique<views::BoxLayout>(
       Orientation::kVertical, gfx::Insets(), 0));
   layout_manager->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kEnd);
 
-  // TODO(crbug/1232197): fix views and layout to match spec.
+  control_buttons_view_ = AddChildView(CreateControlButtonsView());
 
-  // Main view contains all the views besides control buttons.
-  auto main_view = std::make_unique<views::View>();
-  main_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      Orientation::kHorizontal, gfx::Insets(), 0));
+  // Header left content contains header row and left content.
+  auto header_left_content = std::make_unique<views::View>();
+  header_left_content->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      Orientation::kVertical, gfx::Insets(), 0));
+  header_left_content->AddChildView(CreateHeaderRow());
+  left_content_ = header_left_content->AddChildView(CreateLeftContentView());
+
+  auto content_row = CreateContentRow();
+  auto* header_left_content_ptr =
+      content_row->AddChildView(std::move(header_left_content));
+  static_cast<views::BoxLayout*>(content_row->GetLayoutManager())
+      ->SetFlexForView(header_left_content_ptr, 1);
+  content_row->AddChildView(CreateRightContentView());
+
+  expand_button_ = content_row->AddChildView(
+      std::make_unique<ExpandButton>(base::BindRepeating(
+          &AshNotificationView::ToggleExpand, base::Unretained(this))));
 
   // TODO(crbug/1241990): add an icon view here.
   auto icon_view = std::make_unique<views::View>();
@@ -177,48 +192,37 @@ AshNotificationView::AshNotificationView(
   auto main_right_view = std::make_unique<views::View>();
   main_right_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       Orientation::kVertical, gfx::Insets(), 0));
-
-  auto content_row = CreateContentRow();
-
-  // Header left content contains header row and left content.
-  auto header_left_content = std::make_unique<views::View>();
-  header_left_content->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      Orientation::kVertical, gfx::Insets(), 0));
-
-  auto expand_button = std::make_unique<ExpandButton>(base::BindRepeating(
-      &AshNotificationView::ToggleExpand, base::Unretained(this)));
-
-  auto* header_row = header_left_content->AddChildView(CreateHeaderRow());
-  left_content_ = header_left_content->AddChildView(CreateLeftContentView());
-
-  auto* header_left_content_ptr =
-      content_row->AddChildView(std::move(header_left_content));
-  static_cast<views::BoxLayout*>(content_row->GetLayoutManager())
-      ->SetFlexForView(header_left_content_ptr, 1);
-  content_row->AddChildView(CreateRightContentView());
-  expand_button_ = content_row->AddChildView(std::move(expand_button));
-
   main_right_view->AddChildView(std::move(content_row));
   main_right_view->AddChildView(CreateInlineSettingsView());
   main_right_view->AddChildView(CreateImageContainerView());
   main_right_view->AddChildView(CreateActionsRow());
 
+  // Main view contains all the views besides control buttons.
+  auto main_view = std::make_unique<views::View>();
+  main_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      Orientation::kHorizontal, gfx::Insets(), 0));
   main_view->AddChildView(std::move(icon_view));
   main_view->AddChildView(std::move(main_right_view));
+  main_view_ = AddChildView(std::move(main_view));
 
-  AddChildView(CreateControlButtonsView());
-  AddChildView(std::move(main_view));
+  collapsed_summary_view_ =
+      AddChildView(CreateCollapsedSummaryView(notification));
 
-  if (notification.group_child()) {
-    header_row->SetVisible(false);
-    show_background_color_ = false;
-  }
-
+  auto grouped_notifications_container = std::make_unique<views::View>();
+  grouped_notifications_container->SetLayoutManager(
+      std::make_unique<views::BoxLayout>(
+          Orientation::kVertical,
+          message_center_style::kGroupedNotificationContainerInsets,
+          /*between_child_spacing=*/0));
   grouped_notifications_container_ =
-      AddChildView(std::make_unique<views::View>());
-  grouped_notifications_container_->SetLayoutManager(
-      std::make_unique<views::BoxLayout>(Orientation::kVertical, gfx::Insets(),
-                                         0));
+      AddChildView(std::move(grouped_notifications_container));
+
+  auto collapsed_count_view = std::make_unique<views::Label>();
+  collapsed_count_view->SetFontList(views::Label::GetDefaultFontList().Derive(
+      1, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
+  collapsed_count_view->SetBorder(views::CreateEmptyBorder(
+      message_center_style::kGroupedCollapsedCountViewInsets));
+  collapsed_count_view_ = AddChildView(std::move(collapsed_count_view));
 
   if (shown_in_popup_ && !notification.group_child()) {
     layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
@@ -262,13 +266,21 @@ void AshNotificationView::ToggleExpand() {
 void AshNotificationView::AddGroupNotification(
     const message_center::Notification& notification,
     bool newest_first) {
-  grouped_notifications_container_->AddChildViewAt(
+  auto notification_view =
       std::make_unique<AshNotificationView>(notification,
-                                            /*shown_in_popup=*/false),
+                                            /*shown_in_popup=*/false);
+  notification_view->SetVisible(
+      total_grouped_notifications_ <
+          message_center_style::kMaxGroupedNotificationsInCollapsedState ||
+      IsExpanded());
+  notification_view->SetGroupedChildExpanded(IsExpanded());
+  grouped_notifications_container_->AddChildViewAt(
+      std::move(notification_view),
       newest_first ? 0 : grouped_notifications_container_->children().size());
 
   total_grouped_notifications_++;
   left_content_->SetVisible(false);
+  UpdateCollapsedCountView();
   PreferredSizeChanged();
 }
 
@@ -276,13 +288,20 @@ void AshNotificationView::PopulateGroupNotifications(
     const std::vector<const message_center::Notification*>& notifications) {
   DCHECK(total_grouped_notifications_ == 0);
   for (auto* notification : notifications) {
-    grouped_notifications_container_->AddChildViewAt(
+    auto notification_view =
         std::make_unique<AshNotificationView>(*notification,
-                                              /*shown_in_popup=*/false),
-        0);
+                                              /*shown_in_popup=*/false);
+    notification_view->SetVisible(
+        total_grouped_notifications_ <
+            message_center_style::kMaxGroupedNotificationsInCollapsedState ||
+        IsExpanded());
+    notification_view->SetGroupedChildExpanded(IsExpanded());
+    grouped_notifications_container_->AddChildViewAt(
+        std::move(notification_view), 0);
   }
   total_grouped_notifications_ = notifications.size();
   left_content_->SetVisible(total_grouped_notifications_ == 0);
+  UpdateCollapsedCountView();
 }
 
 void AshNotificationView::RemoveGroupNotification(
@@ -301,21 +320,92 @@ void AshNotificationView::RemoveGroupNotification(
 
   total_grouped_notifications_--;
   left_content_->SetVisible(total_grouped_notifications_ == 0);
+  UpdateCollapsedCountView();
   PreferredSizeChanged();
 }
 
+std::unique_ptr<views::View> AshNotificationView::CreateCollapsedSummaryView(
+    const message_center::Notification& notification) {
+  auto collapsed_summary_view = std::make_unique<views::View>();
+  collapsed_summary_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal,
+      message_center_style::kGroupedCollapsedSummaryInsets,
+      message_center_style::kGroupedCollapsedSummaryLabelSpacing));
+  collapsed_summary_view->SetVisible(false);
+
+  auto title_label = std::make_unique<views::Label>(
+      notification.title(), views::style::CONTEXT_DIALOG_BODY_TEXT);
+  title_label->SetMaximumWidthSingleLine(
+      message_center_style::kGroupedCollapsedSummaryTitleLength);
+
+  auto content_label = std::make_unique<views::Label>(
+      notification.message(), views::style::CONTEXT_DIALOG_BODY_TEXT,
+      views::style::STYLE_SECONDARY);
+  content_label->SetMaximumWidthSingleLine(
+      message_center_style::kGroupedCollapsedSummaryMessageLength);
+
+  collapsed_summary_view->AddChildView(std::move(title_label));
+  collapsed_summary_view->AddChildView(std::move(content_label));
+
+  return collapsed_summary_view;
+}
+
+void AshNotificationView::UpdateCollapsedCountView() {
+  collapsed_count_view_->SetVisible(
+      is_grouped_parent_view_ && !IsExpanded() &&
+      total_grouped_notifications_ >
+          message_center_style::kMaxGroupedNotificationsInCollapsedState);
+  collapsed_count_view_->SetText(l10n_util::GetStringFUTF16Int(
+      IDS_ASH_MESSAGE_CENTER_HIDDEN_NOTIFICATION_COUNT_LABEL,
+      total_grouped_notifications_ -
+          message_center_style::kMaxGroupedNotificationsInCollapsedState));
+}
+
+void AshNotificationView::SetGroupedChildExpanded(bool expanded) {
+  collapsed_summary_view_->SetVisible(!expanded);
+  main_view_->SetVisible(expanded);
+  control_buttons_view_->SetVisible(expanded);
+}
+
 void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
-  header_row()->SetVisible(expanded);
+  bool is_single_expanded_notification =
+      !is_grouped_child_view_ && !is_grouped_parent_view_ && expanded;
+  header_row()->SetVisible(is_grouped_parent_view_ ||
+                           (is_single_expanded_notification));
 
   // TODO(crbug/1243889): call SizeToFit() `title_view_` to fit the space after
   // the padding and spacing are done.
   if (title_row_)
-    title_row_->UpdateVisibility(IsExpandable() && !expanded);
+    title_row_->UpdateVisibility(is_grouped_child_view_ ||
+                                 (IsExpandable() && !expanded));
 
   expand_button_->SetVisible(IsExpandable());
   expand_button_->SetExpanded(expanded);
 
+  int notification_count = 0;
+  for (auto* child : grouped_notifications_container_->children()) {
+    auto* notification_view = static_cast<AshNotificationView*>(child);
+    notification_view->SetGroupedChildExpanded(expanded);
+    notification_count++;
+    if (notification_count >
+        message_center_style::kMaxGroupedNotificationsInCollapsedState) {
+      notification_view->SetVisible(expanded);
+    }
+  }
+
+  UpdateCollapsedCountView();
+
   NotificationViewBase::UpdateViewForExpandedState(expanded);
+}
+
+void AshNotificationView::UpdateWithNotification(
+    const message_center::Notification& notification) {
+  is_grouped_child_view_ = notification.group_child();
+  is_grouped_parent_view_ = notification.group_parent();
+  grouped_notifications_container_->SetVisible(is_grouped_parent_view_);
+  header_row()->SetVisible(!is_grouped_child_view_);
+  UpdateCollapsedCountView();
+  NotificationViewBase::UpdateWithNotification(notification);
 }
 
 void AshNotificationView::SetExpandButtonEnabled(bool enabled) {
@@ -356,7 +446,7 @@ void AshNotificationView::UpdateBackground(int top_radius, int bottom_radius) {
     return;
   }
 
-  if (show_background_color_)
+  if (!is_grouped_child_view_)
     background_color_ = background_color;
   top_radius_ = top_radius;
   bottom_radius_ = bottom_radius;

@@ -4,6 +4,7 @@
 
 #include "ash/system/message_center/ash_notification_view.h"
 
+#include "ash/system/message_center/message_center_style.h"
 #include "ash/test/ash_test_base.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -84,6 +85,23 @@ class AshNotificationViewTest : public AshTestBase, public views::ViewObserver {
   }
 
  protected:
+  AshNotificationView* GetFirstGroupedChildNotificationView() {
+    if (!notification_view_->grouped_notifications_container_->children()
+             .size()) {
+      return nullptr;
+    }
+
+    return static_cast<AshNotificationView*>(
+        notification_view_->grouped_notifications_container_->children()
+            .front());
+  }
+  views::View* GetCollapsedSummaryViewForNotificationView(
+      AshNotificationView* view) {
+    return view->collapsed_summary_view_;
+  }
+  views::View* GetMainViewForNotificationView(AshNotificationView* view) {
+    return view->main_view_;
+  }
   AshNotificationView* notification_view() { return notification_view_.get(); }
   NotificationHeaderView* header_row() {
     return notification_view_->header_row();
@@ -100,6 +118,9 @@ class AshNotificationViewTest : public AshTestBase, public views::ViewObserver {
     return notification_view_->title_row_->timestamp_in_collapsed_view_;
   }
   views::Label* message_view() { return notification_view_->message_view(); }
+  views::Label* collapsed_count_view() {
+    return notification_view_->collapsed_count_view_;
+  }
   views::View* expand_button() { return notification_view_->expand_button_; }
 
  private:
@@ -203,6 +224,73 @@ TEST_F(AshNotificationViewTest, ExpandCollapseBehavior) {
   EXPECT_TRUE(header_row()->GetVisible());
   EXPECT_FALSE(timestamp_in_collapsed_view()->GetVisible());
   EXPECT_FALSE(title_row_divider()->GetVisible());
+}
+
+TEST_F(AshNotificationViewTest, GroupedNotificationStartsCollapsed) {
+  auto notification = CreateTestNotification();
+  notification->SetGroupParent();
+  notification_view()->UpdateWithNotification(*notification.get());
+  for (int i = 0;
+       i < message_center_style::kMaxGroupedNotificationsInCollapsedState;
+       i++) {
+    auto group_child = CreateTestNotification();
+    group_child->SetGroupChild();
+    notification_view()->AddGroupNotification(*group_child.get(),
+                                              /*newest_first=*/false);
+  }
+  // Grouped notification should start collapsed.
+  EXPECT_FALSE(notification_view()->IsExpanded());
+  EXPECT_TRUE(header_row()->GetVisible());
+  EXPECT_FALSE(collapsed_count_view()->GetVisible());
+}
+
+TEST_F(AshNotificationViewTest, GroupedNotificationCounterVisibility) {
+  auto notification = CreateTestNotification();
+  notification->SetGroupParent();
+  notification_view()->UpdateWithNotification(*notification.get());
+  for (int i = 0;
+       i < message_center_style::kMaxGroupedNotificationsInCollapsedState + 1;
+       i++) {
+    auto group_child = CreateTestNotification();
+    group_child->SetGroupChild();
+    notification_view()->AddGroupNotification(*group_child.get(),
+                                              /*newest_first=*/false);
+  }
+
+  EXPECT_TRUE(collapsed_count_view()->GetVisible());
+
+  auto* child_view = GetFirstGroupedChildNotificationView();
+  EXPECT_TRUE(
+      GetCollapsedSummaryViewForNotificationView(child_view)->GetVisible());
+  EXPECT_FALSE(GetMainViewForNotificationView(child_view)->GetVisible());
+}
+
+TEST_F(AshNotificationViewTest, GroupedNotificationExpandState) {
+  auto notification = CreateTestNotification();
+  notification->SetGroupParent();
+  notification_view()->UpdateWithNotification(*notification.get());
+  for (int i = 0;
+       i < message_center_style::kMaxGroupedNotificationsInCollapsedState + 1;
+       i++) {
+    auto group_child = CreateTestNotification();
+    group_child->SetGroupChild();
+    notification_view()->AddGroupNotification(*group_child.get(),
+                                              /*newest_first=*/false);
+  }
+
+  auto* child_view = GetFirstGroupedChildNotificationView();
+  EXPECT_TRUE(
+      GetCollapsedSummaryViewForNotificationView(child_view)->GetVisible());
+  EXPECT_FALSE(GetMainViewForNotificationView(child_view)->GetVisible());
+
+  // Expanding the parent notification should make the counter invisible and
+  // the child notifications should now have the main view visible instead of
+  // the summary.
+  notification_view()->SetExpanded(true);
+  EXPECT_FALSE(collapsed_count_view()->GetVisible());
+  EXPECT_FALSE(
+      GetCollapsedSummaryViewForNotificationView(child_view)->GetVisible());
+  EXPECT_TRUE(GetMainViewForNotificationView(child_view)->GetVisible());
 }
 
 TEST_F(AshNotificationViewTest, ExpandButtonVisibility) {

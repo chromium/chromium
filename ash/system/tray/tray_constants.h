@@ -27,7 +27,7 @@ extern const float kTrayItemCornerRadius;
 constexpr int kTrayImageItemPadding = 3;
 
 // The width of the tray menu.
-extern const int kTrayMenuWidth;
+constexpr int kTrayMenuWidth = 360;
 
 extern const int kTrayPopupAutoCloseDelayInSeconds;
 extern const int kTrayPopupAutoCloseDelayInSecondsWithSpokenFeedback;
