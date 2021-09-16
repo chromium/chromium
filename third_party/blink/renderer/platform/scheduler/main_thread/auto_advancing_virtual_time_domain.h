@@ -68,8 +68,8 @@ class PLATFORM_EXPORT AutoAdvancingVirtualTimeDomain
   // TimeDomain implementation:
   base::sequence_manager::LazyNow CreateLazyNow() const override;
   base::TimeTicks Now() const override;
-  absl::optional<base::TimeDelta> DelayTillNextTask(
-      base::sequence_manager::LazyNow* lazy_now) override;
+  base::TimeTicks GetNextDelayedTaskTime(
+      base::sequence_manager::LazyNow* lazy_now) const override;
   bool MaybeFastForwardToNextTask(bool quit_when_idle_requested) override;
 
  protected:

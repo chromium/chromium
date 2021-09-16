@@ -151,11 +151,11 @@ void TimeDomain::MoveReadyDelayedTasksToWorkQueues(LazyNow* lazy_now) {
   }
 }
 
-absl::optional<TimeTicks> TimeDomain::NextScheduledRunTime() const {
+absl::optional<DelayedWakeUp> TimeDomain::GetNextDelayedWakeUp() const {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   if (delayed_wake_up_queue_.empty())
     return absl::nullopt;
-  return delayed_wake_up_queue_.Min().wake_up.time;
+  return delayed_wake_up_queue_.Min().wake_up;
 }
 
 Value TimeDomain::AsValue() const {

@@ -225,10 +225,10 @@ void ThreadControllerImpl::DoWork(WorkType work_type) {
   work_deduplicator_.WillCheckForMoreWork();
 
   LazyNow lazy_now(time_source_);
-  TimeDelta delay_till_next_task = sequence_->DelayTillNextTask(&lazy_now);
+  TimeTicks next_task_time = sequence_->GetNextTaskTime(&lazy_now);
   // The OnSystemIdle callback allows the TimeDomains to advance virtual time
   // in which case we now have immediate word to do.
-  if (delay_till_next_task <= TimeDelta() || sequence_->OnSystemIdle()) {
+  if (next_task_time.is_null() || sequence_->OnSystemIdle()) {
     // The next task needs to run immediately, post a continuation if
     // another thread didn't get there first.
     if (work_deduplicator_.DidCheckForMoreWork(
@@ -252,24 +252,23 @@ void ThreadControllerImpl::DoWork(WorkType work_type) {
   main_sequence_only().run_level_tracker.OnIdle();
 
   // Any future work?
-  if (delay_till_next_task == TimeDelta::Max()) {
+  if (next_task_time.is_max()) {
     main_sequence_only().next_delayed_do_work = TimeTicks::Max();
     cancelable_delayed_do_work_closure_.Cancel();
     return;
   }
 
   // Already requested next delay?
-  TimeTicks next_task_at = lazy_now.Now() + delay_till_next_task;
-  if (next_task_at == main_sequence_only().next_delayed_do_work)
+  if (next_task_time == main_sequence_only().next_delayed_do_work)
     return;
 
   // Schedule a callback after |delay_till_next_task| and cancel any previous
   // callback.
-  main_sequence_only().next_delayed_do_work = next_task_at;
+  main_sequence_only().next_delayed_do_work = next_task_time;
   cancelable_delayed_do_work_closure_.Reset(delayed_do_work_closure_);
   task_runner_->PostDelayedTask(FROM_HERE,
                                 cancelable_delayed_do_work_closure_.callback(),
-                                delay_till_next_task);
+                                next_task_time - lazy_now.Now());
 }
 
 void ThreadControllerImpl::AddNestingObserver(

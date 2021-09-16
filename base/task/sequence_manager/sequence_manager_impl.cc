@@ -684,9 +684,8 @@ void SequenceManagerImpl::DidRunTask() {
     CleanUpQueues();
 }
 
-TimeDelta SequenceManagerImpl::DelayTillNextTask(
-    LazyNow* lazy_now,
-    SelectTaskOption option) const {
+TimeTicks SequenceManagerImpl::GetNextTaskTime(LazyNow* lazy_now,
+                                               SelectTaskOption option) const {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
 
   if (auto priority =
@@ -695,8 +694,8 @@ TimeDelta SequenceManagerImpl::DelayTillNextTask(
     // work to be done. However we may want to yield to native work if it is
     // more important.
     if (UNLIKELY(!ShouldRunTaskOfPriority(*priority)))
-      return GetDelayTillNextDelayedTask(lazy_now, option);
-    return TimeDelta();
+      return GetNextDelayedTaskTimeImpl(lazy_now, option);
+    return TimeTicks();
   }
 
   // There may be some incoming immediate work which we haven't accounted for.
@@ -707,35 +706,33 @@ TimeDelta SequenceManagerImpl::DelayTillNextTask(
   if (auto priority =
           main_thread_only().selector.GetHighestPendingPriority(option)) {
     if (UNLIKELY(!ShouldRunTaskOfPriority(*priority)))
-      return GetDelayTillNextDelayedTask(lazy_now, option);
-    return TimeDelta();
+      return GetNextDelayedTaskTimeImpl(lazy_now, option);
+    return TimeTicks();
   }
 
   // Otherwise we need to find the shortest delay, if any.  NB we don't need to
   // call MoveReadyDelayedTasksToWorkQueues because it's assumed
   // DelayTillNextTask will return TimeDelta>() if the delayed task is due to
   // run now.
-  return GetDelayTillNextDelayedTask(lazy_now, option);
+  return GetNextDelayedTaskTimeImpl(lazy_now, option);
 }
 
-TimeDelta SequenceManagerImpl::GetDelayTillNextDelayedTask(
+TimeTicks SequenceManagerImpl::GetNextDelayedTaskTimeImpl(
     LazyNow* lazy_now,
     SelectTaskOption option) const {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
 
   if (option == SelectTaskOption::kSkipDelayedTask)
-    return TimeDelta::Max();
+    return TimeTicks::Max();
 
-  TimeDelta delay_till_next_task = TimeDelta::Max();
+  TimeTicks next_task_time = TimeTicks::Max();
   for (TimeDomain* time_domain : main_thread_only().time_domains) {
-    absl::optional<TimeDelta> delay = time_domain->DelayTillNextTask(lazy_now);
-    if (!delay)
-      continue;
+    TimeTicks time = time_domain->GetNextDelayedTaskTime(lazy_now);
 
-    if (*delay < delay_till_next_task)
-      delay_till_next_task = *delay;
+    if (time < next_task_time)
+      next_task_time = time;
   }
-  return delay_till_next_task;
+  return next_task_time;
 }
 
 bool SequenceManagerImpl::HasPendingHighResolutionTasks() {

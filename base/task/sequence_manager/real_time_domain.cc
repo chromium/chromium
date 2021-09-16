@@ -26,21 +26,22 @@ TimeTicks RealTimeDomain::Now() const {
   return tick_clock_->NowTicks();
 }
 
-absl::optional<TimeDelta> RealTimeDomain::DelayTillNextTask(LazyNow* lazy_now) {
-  absl::optional<TimeTicks> next_run_time = NextScheduledRunTime();
-  if (!next_run_time)
-    return absl::nullopt;
+base::TimeTicks RealTimeDomain::GetNextDelayedTaskTime(
+    sequence_manager::LazyNow* lazy_now) const {
+  absl::optional<DelayedWakeUp> wake_up = GetNextDelayedWakeUp();
+  if (!wake_up)
+    return TimeTicks::Max();
 
   TimeTicks now = lazy_now->Now();
-  if (now >= next_run_time) {
+  if (now >= wake_up->time) {
     // Overdue work needs to be run immediately.
-    return TimeDelta();
+    return TimeTicks();
   }
 
-  TimeDelta delay = *next_run_time - now;
+  TimeDelta delay = wake_up->time - now;
   TRACE_EVENT1("sequence_manager", "RealTimeDomain::DelayTillNextTask",
                "delay_ms", delay.InMillisecondsF());
-  return delay;
+  return wake_up->time;
 }
 
 bool RealTimeDomain::MaybeFastForwardToNextTask(bool quit_when_idle_requested) {

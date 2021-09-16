@@ -132,7 +132,7 @@ class BASE_EXPORT SequenceManagerImpl
   Task* SelectNextTask(
       SelectTaskOption option = SelectTaskOption::kDefault) override;
   void DidRunTask() override;
-  TimeDelta DelayTillNextTask(
+  TimeTicks GetNextTaskTime(
       LazyNow* lazy_now,
       SelectTaskOption option = SelectTaskOption::kDefault) const override;
   bool HasPendingHighResolutionTasks() override;
@@ -392,8 +392,8 @@ class BASE_EXPORT SequenceManagerImpl
   bool ShouldRunTaskOfPriority(TaskQueue::QueuePriority priority) const;
 
   // Ignores any immediate work.
-  TimeDelta GetDelayTillNextDelayedTask(LazyNow* lazy_now,
-                                        SelectTaskOption option) const;
+  TimeTicks GetNextDelayedTaskTimeImpl(LazyNow* lazy_now,
+                                       SelectTaskOption option) const;
 
 #if DCHECK_IS_ON()
   void LogTaskDebugInfo(const internal::WorkQueue* work_queue) const;

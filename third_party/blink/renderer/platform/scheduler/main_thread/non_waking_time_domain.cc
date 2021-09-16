@@ -20,10 +20,10 @@ base::TimeTicks NonWakingTimeDomain::Now() const {
   return tick_clock_->NowTicks();
 }
 
-absl::optional<base::TimeDelta> NonWakingTimeDomain::DelayTillNextTask(
-    base::sequence_manager::LazyNow* lazy_now) {
+base::TimeTicks NonWakingTimeDomain::GetNextDelayedTaskTime(
+    base::sequence_manager::LazyNow* lazy_now) const {
   // NonWakingTimeDomain should never generate wakeups on its own.
-  return absl::nullopt;
+  return base::TimeTicks::Max();
 }
 
 bool NonWakingTimeDomain::MaybeFastForwardToNextTask(

@@ -197,8 +197,8 @@ TEST_F(AutoAdvancingVirtualTimeDomainTest,
       initial_time + base::TimeDelta::FromMilliseconds(100));
 
   // Task at t+10ms should be run immediately.
-  EXPECT_EQ(base::TimeDelta(),
-            auto_advancing_time_domain_->DelayTillNextTask(nullptr));
+  EXPECT_TRUE(
+      auto_advancing_time_domain_->GetNextDelayedTaskTime(nullptr).is_null());
 }
 
 }  // namespace auto_advancing_virtual_time_domain_unittest

@@ -31,10 +31,11 @@ class SequencedTaskSource {
   // from SelectNextTask() has been completed.
   virtual void DidRunTask() = 0;
 
-  // Returns the delay till the next task or TimeDelta::Max()
-  // if there are no tasks left. |option| allows control on which kind of tasks
-  // can be selected.
-  virtual TimeDelta DelayTillNextTask(
+  // Returns the ready time for the next pending task, is_null() if the next
+  // task can run immediately, or is_max() if there are no more immediate or
+  // delayed tasks. |option| allows control on which kind of tasks can be
+  // selected.
+  virtual TimeTicks GetNextTaskTime(
       LazyNow* lazy_now,
       SelectTaskOption option = SelectTaskOption::kDefault) const = 0;
 

@@ -26,8 +26,9 @@ void MockTimeDomain::SetNowTicks(TimeTicks now_ticks) {
   now_ticks_ = now_ticks;
 }
 
-absl::optional<TimeDelta> MockTimeDomain::DelayTillNextTask(LazyNow* lazy_now) {
-  return absl::nullopt;
+TimeTicks MockTimeDomain::GetNextDelayedTaskTime(
+    sequence_manager::LazyNow* lazy_now) const {
+  return TimeTicks::Max();
 }
 
 bool MockTimeDomain::MaybeFastForwardToNextTask(bool quit_when_idle_requested) {

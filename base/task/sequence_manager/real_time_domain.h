@@ -23,7 +23,8 @@ class BASE_EXPORT RealTimeDomain : public TimeDomain {
   // TimeDomain implementation:
   LazyNow CreateLazyNow() const override;
   TimeTicks Now() const override;
-  absl::optional<TimeDelta> DelayTillNextTask(LazyNow* lazy_now) override;
+  base::TimeTicks GetNextDelayedTaskTime(
+      sequence_manager::LazyNow* lazy_now) const override;
   bool MaybeFastForwardToNextTask(bool quit_when_idle_requested) override;
 
  protected:

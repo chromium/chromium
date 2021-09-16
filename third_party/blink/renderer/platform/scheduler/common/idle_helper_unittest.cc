@@ -236,8 +236,7 @@ class BaseIdleHelperTest : public testing::Test {
 
  protected:
   static base::TimeDelta maximum_idle_period_duration() {
-    return base::TimeDelta::FromMilliseconds(
-        IdleHelper::kMaximumIdlePeriodMillis);
+    return IdleHelper::kMaximumIdlePeriod;
   }
 
   static base::TimeDelta retry_enable_long_idle_period_delay() {
@@ -662,8 +661,9 @@ TEST_F(IdleHelperTest, TestLongIdlePeriodPaused) {
   // There shouldn't be any delayed tasks posted by the idle helper when paused.
   base::sequence_manager::LazyNow lazy_now_1(
       test_task_runner_->GetMockTickClock());
-  EXPECT_FALSE(
-      scheduler_helper_->real_time_domain()->DelayTillNextTask(&lazy_now_1));
+  EXPECT_TRUE(scheduler_helper_->real_time_domain()
+                  ->GetNextDelayedTaskTime(&lazy_now_1)
+                  .is_max());
 
   // Posting a task should transition us to the an active state.
   g_max_idle_task_reposts = 2;
@@ -685,8 +685,9 @@ TEST_F(IdleHelperTest, TestLongIdlePeriodPaused) {
   CheckIdlePeriodStateIs("in_long_idle_period_paused");
   base::sequence_manager::LazyNow lazy_now_2(
       test_task_runner_->GetMockTickClock());
-  EXPECT_FALSE(
-      scheduler_helper_->real_time_domain()->DelayTillNextTask(&lazy_now_2));
+  EXPECT_TRUE(scheduler_helper_->real_time_domain()
+                  ->GetNextDelayedTaskTime(&lazy_now_2)
+                  .is_max());
 
   idle_helper_->EndIdlePeriod();
   CheckIdlePeriodStateIs("not_in_idle_period");

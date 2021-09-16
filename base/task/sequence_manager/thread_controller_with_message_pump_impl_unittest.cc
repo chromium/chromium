@@ -127,19 +127,19 @@ class FakeSequencedTaskSource : public internal::SequencedTaskSource {
 
   void DidRunTask() override { running_stack_.pop_back(); }
 
-  TimeDelta DelayTillNextTask(LazyNow* lazy_now,
-                              SelectTaskOption option) const override {
+  TimeTicks GetNextTaskTime(LazyNow* lazy_now,
+                            SelectTaskOption option) const override {
     if (tasks_.empty())
-      return TimeDelta::Max();
+      return TimeTicks::Max();
     if (option == SequencedTaskSource::SelectTaskOption::kSkipDelayedTask &&
         !tasks_.front().delayed_run_time.is_null()) {
-      return TimeDelta::Max();
+      return TimeTicks::Max();
     }
     if (tasks_.front().delayed_run_time.is_null())
-      return TimeDelta();
+      return TimeTicks();
     if (lazy_now->Now() > tasks_.front().delayed_run_time)
-      return TimeDelta();
-    return tasks_.front().delayed_run_time - lazy_now->Now();
+      return TimeTicks();
+    return tasks_.front().delayed_run_time;
   }
 
   void AddTask(Location posted_from,

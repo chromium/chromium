@@ -61,12 +61,12 @@ class TimerTest : public testing::Test {
   // fire.
   bool TimeTillNextDelayedTask(base::TimeDelta* time) const {
     base::sequence_manager::LazyNow lazy_now(platform_->NowTicks());
-    absl::optional<base::TimeDelta> delay = platform_->GetMainThreadScheduler()
-                                                ->GetActiveTimeDomain()
-                                                ->DelayTillNextTask(&lazy_now);
-    if (!delay)
+    base::TimeTicks next_task_time = platform_->GetMainThreadScheduler()
+                                         ->GetActiveTimeDomain()
+                                         ->GetNextDelayedTaskTime(&lazy_now);
+    if (next_task_time.is_max())
       return false;
-    *time = *delay;
+    *time = next_task_time - lazy_now.Now();
     return true;
   }
 

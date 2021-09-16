@@ -257,7 +257,7 @@ ThreadControllerWithMessagePumpImpl::DoWork() {
 
   work_deduplicator_.OnWorkStarted();
   LazyNow continuation_lazy_now(time_source_);
-  TimeDelta delay_till_next_task = DoWorkImpl(&continuation_lazy_now);
+  TimeTicks next_task_time = DoWorkImpl(&continuation_lazy_now);
 
   // If we are yielding after DoWorkImpl (a work batch) set the flag boolean.
   // This will inform the MessagePump to schedule a new continuation based on
@@ -270,8 +270,8 @@ ThreadControllerWithMessagePumpImpl::DoWork() {
   }
   // Schedule a continuation.
   WorkDeduplicator::NextTask next_task =
-      delay_till_next_task.is_zero() ? WorkDeduplicator::NextTask::kIsImmediate
-                                     : WorkDeduplicator::NextTask::kIsDelayed;
+      next_task_time.is_null() ? WorkDeduplicator::NextTask::kIsImmediate
+                               : WorkDeduplicator::NextTask::kIsDelayed;
   if (work_deduplicator_.DidCheckForMoreWork(next_task) ==
       ShouldScheduleWork::kScheduleImmediate) {
     // Need to run new work immediately, but due to the contract of DoWork
@@ -281,18 +281,15 @@ ThreadControllerWithMessagePumpImpl::DoWork() {
 
   // While the math below would saturate when |delay_till_next_task.is_max()|;
   // special-casing here avoids unnecessarily sampling Now() when out of work.
-  if (delay_till_next_task.is_max()) {
+  if (next_task_time.is_max()) {
     main_thread_only().next_delayed_do_work = TimeTicks::Max();
     next_work_info.delayed_run_time = TimeTicks::Max();
     return next_work_info;
   }
 
-  // The MessagePump will schedule the delay on our behalf, so we need to update
-  // |main_thread_only().next_delayed_do_work|.
-  // TODO(gab, alexclarke): Replace DelayTillNextTask() with NextTaskTime() to
-  // avoid converting back-and-forth between TimeTicks and TimeDelta.
-  main_thread_only().next_delayed_do_work =
-      continuation_lazy_now.Now() + delay_till_next_task;
+  // The MessagePump will schedule the wake up on our behalf, so we need to
+  // update |main_thread_only().next_delayed_do_work|.
+  main_thread_only().next_delayed_do_work = next_task_time;
 
   // Don't request a run time past |main_thread_only().quit_runloop_after|.
   if (main_thread_only().next_delayed_do_work >
@@ -312,7 +309,7 @@ ThreadControllerWithMessagePumpImpl::DoWork() {
   return next_work_info;
 }
 
-TimeDelta ThreadControllerWithMessagePumpImpl::DoWorkImpl(
+TimeTicks ThreadControllerWithMessagePumpImpl::DoWorkImpl(
     LazyNow* continuation_lazy_now) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("sequence_manager"),
                "ThreadControllerImpl::DoWork");
@@ -322,8 +319,8 @@ TimeDelta ThreadControllerWithMessagePumpImpl::DoWorkImpl(
     // helps spot nested loops that intentionally starve application tasks.
     TRACE_EVENT0("base", "ThreadController: application tasks disallowed");
     if (main_thread_only().quit_runloop_after == TimeTicks::Max())
-      return TimeDelta::Max();
-    return main_thread_only().quit_runloop_after - continuation_lazy_now->Now();
+      return TimeTicks::Max();
+    return main_thread_only().quit_runloop_after;
   }
 
   DCHECK(main_thread_only().task_source);
@@ -371,7 +368,7 @@ TimeDelta ThreadControllerWithMessagePumpImpl::DoWorkImpl(
   }
 
   if (main_thread_only().quit_pending)
-    return TimeDelta::Max();
+    return TimeTicks::Max();
 
   work_deduplicator_.WillCheckForMoreWork();
 
@@ -381,10 +378,8 @@ TimeDelta ThreadControllerWithMessagePumpImpl::DoWorkImpl(
       power_monitor_.IsProcessInPowerSuspendState()
           ? SequencedTaskSource::SelectTaskOption::kSkipDelayedTask
           : SequencedTaskSource::SelectTaskOption::kDefault;
-  TimeDelta do_work_delay = main_thread_only().task_source->DelayTillNextTask(
-      continuation_lazy_now, select_task_option);
-  DCHECK_GE(do_work_delay, TimeDelta());
-  return do_work_delay;
+  return main_thread_only().task_source->GetNextTaskTime(continuation_lazy_now,
+                                                         select_task_option);
 }
 
 bool ThreadControllerWithMessagePumpImpl::DoIdleWork() {

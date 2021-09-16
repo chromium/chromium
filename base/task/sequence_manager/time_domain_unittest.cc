@@ -44,15 +44,15 @@ class TestTimeDomain : public TimeDomain {
   ~TestTimeDomain() override = default;
 
   using TimeDomain::MoveReadyDelayedTasksToWorkQueues;
-  using TimeDomain::NextScheduledRunTime;
   using TimeDomain::SetNextWakeUpForQueue;
   using TimeDomain::UnregisterQueue;
 
   LazyNow CreateLazyNow() const override { return LazyNow(now_); }
   TimeTicks Now() const override { return now_; }
 
-  absl::optional<TimeDelta> DelayTillNextTask(LazyNow* lazy_now) override {
-    return absl::optional<TimeDelta>();
+  base::TimeTicks GetNextDelayedTaskTime(
+      sequence_manager::LazyNow* lazy_now) const override {
+    return TimeTicks();
   }
 
   bool MaybeFastForwardToNextTask(bool quit_when_idle_requested) override {
@@ -65,6 +65,12 @@ class TestTimeDomain : public TimeDomain {
     if (delayed_wake_up_queue_.empty())
       return nullptr;
     return delayed_wake_up_queue_.Min().queue;
+  }
+
+  TimeTicks NextScheduledRunTime() const {
+    if (delayed_wake_up_queue_.empty())
+      return TimeTicks::Max();
+    return delayed_wake_up_queue_.Min().wake_up.time;
   }
 
   MOCK_METHOD2(SetNextDelayedDoWork,
@@ -246,7 +252,7 @@ TEST_F(TimeDomainTest, MoveReadyDelayedTasksToWorkQueues) {
   time_domain_->SetNow(delayed_runtime);
   LazyNow lazy_now_2(time_domain_->CreateLazyNow());
   time_domain_->MoveReadyDelayedTasksToWorkQueues(&lazy_now_2);
-  ASSERT_FALSE(time_domain_->NextScheduledRunTime());
+  ASSERT_TRUE(time_domain_->NextScheduledRunTime().is_max());
 }
 
 TEST_F(TimeDomainTest, CancelDelayedWork) {

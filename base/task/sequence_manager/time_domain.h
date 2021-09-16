@@ -48,14 +48,11 @@ class BASE_EXPORT TimeDomain {
   // TODO(alexclarke): Make this main thread only.
   virtual TimeTicks Now() const = 0;
 
-  // Computes the delay until the time when TimeDomain needs to wake up some
-  // TaskQueue on the main thread. Specific time domains (e.g. virtual or
-  // throttled) may return TimeDelta() if TaskQueues have any delayed tasks they
-  // deem eligible to run. It's also allowed to advance time domains's internal
-  // clock when this method is called.
-  // Can be called from main thread only.
-  // NOTE: |lazy_now| and the return value are in the SequenceManager's time.
-  virtual absl::optional<TimeDelta> DelayTillNextTask(LazyNow* lazy_now) = 0;
+  // Returns the ready time for the next pending delayed task, is_null() if the
+  // next task can run immediately, or is_max() if there are no more delayed
+  // tasks. Can be called from main thread only. NOTE: |lazy_now| and the return
+  // value are in the SequenceManager's time.
+  virtual TimeTicks GetNextDelayedTaskTime(LazyNow* lazy_now) const = 0;
 
   Value AsValue() const;
 
@@ -76,8 +73,11 @@ class BASE_EXPORT TimeDomain {
 
   SequenceManager* sequence_manager() const;
 
-  // Returns the earliest scheduled wake up in the TimeDomain's time.
-  absl::optional<TimeTicks> NextScheduledRunTime() const;
+  // Returns a DelayedWakeUp for the next pending delayed task (pending delayed
+  // tasks that are ripe may be ignored if they have already been moved to a
+  // ready queue). If there are no such tasks (immediate tasks don't count) or
+  // queues are disabled it returns nullopt.
+  absl::optional<DelayedWakeUp> GetNextDelayedWakeUp() const;
 
   size_t NumberOfScheduledWakeUps() const {
     return delayed_wake_up_queue_.size();

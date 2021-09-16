@@ -85,7 +85,8 @@ class PLATFORM_EXPORT IdleHelper : public base::TaskObserver,
   };
 
   // The maximum length of an idle period.
-  static const int kMaximumIdlePeriodMillis = 50;
+  static constexpr base::TimeDelta kMaximumIdlePeriod =
+      base::TimeDelta::FromMilliseconds(50);
 
   // |helper| and |delegate| are not owned by IdleHelper object and must
   // outlive it.

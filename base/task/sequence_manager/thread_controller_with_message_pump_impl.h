@@ -147,9 +147,10 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   friend class DoWorkScope;
   friend class RunScope;
 
-  // Returns the delay till the next task. If there's no delay TimeDelta::Max()
-  // will be returned.
-  TimeDelta DoWorkImpl(LazyNow* continuation_lazy_now);
+  // Returns the ready time for the next pending task, is_null() if the next
+  // task can run immediately, or is_max() if there are no more immediate or
+  // delayed tasks.
+  TimeTicks DoWorkImpl(LazyNow* continuation_lazy_now);
 
   void InitializeThreadTaskRunnerHandle()
       EXCLUSIVE_LOCKS_REQUIRED(task_runner_lock_);
