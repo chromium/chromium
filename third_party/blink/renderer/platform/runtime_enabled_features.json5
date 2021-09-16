@@ -553,7 +553,7 @@
       // elements have any containment applied.
       // https://drafts.csswg.org/css-contain-2/#contain-property
       name: "CSSContainedBodyPropagation",
-      status: "test",
+      status: "stable",
     },
     {
       // https://drafts.csswg.org/css-contain-3/#container-queries
