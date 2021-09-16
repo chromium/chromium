@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "build/build_config.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"

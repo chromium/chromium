@@ -6,6 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"

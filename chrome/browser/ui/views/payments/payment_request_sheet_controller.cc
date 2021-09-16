@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
 #include "components/payments/content/payment_request.h"

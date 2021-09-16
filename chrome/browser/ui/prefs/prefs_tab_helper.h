@@ -8,6 +8,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
 #include "chrome/browser/font_pref_change_notifier.h"
 #include "chrome/browser/themes/theme_service_observer.h"
 #include "content/public/browser/web_contents_user_data.h"

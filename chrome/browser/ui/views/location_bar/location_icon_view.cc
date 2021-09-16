@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 
 #include "base/bind.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
