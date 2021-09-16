@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <script src="../../../resources/js-test.js"></script>
 <style>
-:autofill { text-decoration: underline }
+:-webkit-autofill { text-decoration: underline }
 input + div { color: pink }
 </style>
 <input id="text" type="text"></input>
@@ -12,7 +12,7 @@ input + div { color: pink }
     <div></div>
 </div>
 <script>
-description("Use descendant invalidation set for :autofill pseudo class.")
+description("Use descendant invalidation set for :-webkit-autofill pseudo class.")
 
 shouldBeDefined(window.internals);
 shouldBe("getComputedStyle(text, '').textDecorationLine", "'none'");

@@ -179,6 +179,7 @@ void HTMLFormControlElement::SetAutofillState(WebAutofillState autofill_state) {
 
   autofill_state_ = autofill_state;
   PseudoStateChanged(CSSSelector::kPseudoAutofill);
+  PseudoStateChanged(CSSSelector::kPseudoWebKitAutofill);
   PseudoStateChanged(CSSSelector::kPseudoAutofillSelected);
   PseudoStateChanged(CSSSelector::kPseudoAutofillPreviewed);
 }
@@ -190,6 +191,7 @@ void HTMLFormControlElement::SetPreventHighlightingOfAutofilledFields(
 
   prevent_highlighting_of_autofilled_fields_ = prevent_highlighting;
   PseudoStateChanged(CSSSelector::kPseudoAutofill);
+  PseudoStateChanged(CSSSelector::kPseudoWebKitAutofill);
   PseudoStateChanged(CSSSelector::kPseudoAutofillSelected);
   PseudoStateChanged(CSSSelector::kPseudoAutofillPreviewed);
 }

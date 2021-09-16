@@ -271,6 +271,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoAnyLink:
     case kPseudoWebkitAnyLink:
     case kPseudoAutofill:
+    case kPseudoWebKitAutofill:
     case kPseudoAutofillPreviewed:
     case kPseudoAutofillSelected:
     case kPseudoHover:
@@ -385,7 +386,7 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"-internal-video-persistent-ancestor",
      CSSSelector::kPseudoVideoPersistentAncestor},
     {"-webkit-any-link", CSSSelector::kPseudoWebkitAnyLink},
-    {"-webkit-autofill", CSSSelector::kPseudoAutofill},
+    {"-webkit-autofill", CSSSelector::kPseudoWebKitAutofill},
     {"-webkit-drag", CSSSelector::kPseudoDrag},
     {"-webkit-full-page-media", CSSSelector::kPseudoFullPageMedia},
     {"-webkit-full-screen", CSSSelector::kPseudoFullScreen},
@@ -400,6 +401,7 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"active", CSSSelector::kPseudoActive},
     {"after", CSSSelector::kPseudoAfter},
     {"any-link", CSSSelector::kPseudoAnyLink},
+    {"autofill", CSSSelector::kPseudoAutofill},
     {"backdrop", CSSSelector::kPseudoBackdrop},
     {"before", CSSSelector::kPseudoBefore},
     {"checked", CSSSelector::kPseudoChecked},
@@ -515,6 +517,10 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(const AtomicString& name,
                        name.length()) < 0;
       });
   if (match == pseudo_type_map_end || match->string != name.GetString())
+    return CSSSelector::kPseudoUnknown;
+
+  if (match->type == CSSSelector::kPseudoAutofill &&
+      !RuntimeEnabledFeatures::CSSPseudoAutofillEnabled())
     return CSSSelector::kPseudoUnknown;
 
   if (match->type == CSSSelector::kPseudoDir &&
@@ -746,6 +752,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoVertical:
     case kPseudoVisited:
     case kPseudoWebkitAnyLink:
+    case kPseudoWebKitAutofill:
     case kPseudoWindowInactive:
     case kPseudoXrOverlay:
       if (match_ != kPseudoClass)

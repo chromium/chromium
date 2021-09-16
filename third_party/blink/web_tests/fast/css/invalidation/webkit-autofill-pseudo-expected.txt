@@ -1,4 +1,4 @@
-Use descendant invalidation set for :autofill pseudo class.
+Use descendant invalidation set for :-webkit-autofill pseudo class.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 

@@ -46,6 +46,7 @@ PASS setThenReadSelectorText('a > b') is 'a > b'
 
 
 PASS setThenReadSelectorText(':active') is ':active'
+PASS setThenReadSelectorText(':autofill') is ':autofill'
 PASS setThenReadSelectorText(':checked') is ':checked'
 PASS setThenReadSelectorText(':disabled') is ':disabled'
 PASS setThenReadSelectorText(':empty') is ':empty'
