@@ -71,6 +71,7 @@ using base::SysUTF8ToNSString;
   passwordForm.username_value = SysNSStringToUTF16(username);
   passwordForm.password_value = SysNSStringToUTF16(password);
   passwordForm.in_store = password_manager::PasswordForm::Store::kProfileStore;
+  passwordForm.type = password_manager::PasswordForm::Type::kManuallyAdded;
 
   for (const auto& form : _manager->GetAllCredentials()) {
     if (form.signon_realm == passwordForm.signon_realm &&
