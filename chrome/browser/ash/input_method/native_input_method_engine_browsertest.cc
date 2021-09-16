@@ -38,7 +38,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/ime_engine_handler_interface.h"
-#include "ui/base/ime/ash/input_method_chromeos.h"
+#include "ui/base/ime/ash/input_method_ash.h"
 #include "ui/base/ime/ash/mock_ime_input_context_handler.h"
 #include "ui/base/ime/dummy_text_input_client.h"
 #include "ui/base/ime/input_method_delegate.h"
@@ -255,7 +255,7 @@ class NativeInputMethodEngineTest : public InProcessBrowserTest,
   TestObserver* observer_;
 
  private:
-  ui::InputMethodChromeOS input_method_;
+  ui::InputMethodAsh input_method_;
   base::test::ScopedFeatureList feature_list_;
 };
 

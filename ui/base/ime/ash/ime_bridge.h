@@ -52,7 +52,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) IMEBridge {
   virtual IMEEngineHandlerInterface* GetCurrentEngineHandler() const = 0;
 
   // Updates the current input context.
-  // This is called from InputMethodChromeOS.
+  // This is called from `InputMethodAsh`.
   virtual void SetCurrentInputContext(
       const IMEEngineHandlerInterface::InputContext& input_context) = 0;
 

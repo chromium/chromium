@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/base/ime/ash/input_method_chromeos.h"
+#include "ui/base/ime/ash/input_method_ash.h"
 
 #include <stddef.h>
 
@@ -38,15 +38,14 @@ ui::IMEEngineHandlerInterface* GetEngine() {
   return bridge ? bridge->GetCurrentEngineHandler() : nullptr;
 }
 
-// InputMethodChromeOS implementation -----------------------------------------
-InputMethodChromeOS::InputMethodChromeOS(
-    internal::InputMethodDelegate* delegate)
+// InputMethodAsh implementation -----------------------------------------
+InputMethodAsh::InputMethodAsh(internal::InputMethodDelegate* delegate)
     : InputMethodBase(delegate),
       typing_session_manager_(base::DefaultClock::GetInstance()) {
   ResetContext();
 }
 
-InputMethodChromeOS::~InputMethodChromeOS() {
+InputMethodAsh::~InputMethodAsh() {
   ConfirmCompositionText(/* reset_engine */ true, /* keep_selection */ false);
   // We are dead, so we need to ask the client to stop relying on us.
   OnInputMethodChanged();
@@ -58,19 +57,18 @@ InputMethodChromeOS::~InputMethodChromeOS() {
   typing_session_manager_.EndAndRecordSession();
 }
 
-InputMethodChromeOS::PendingSetCompositionRange::PendingSetCompositionRange(
+InputMethodAsh::PendingSetCompositionRange::PendingSetCompositionRange(
     const gfx::Range& range,
     const std::vector<ui::ImeTextSpan>& text_spans)
     : range(range), text_spans(text_spans) {}
 
-InputMethodChromeOS::PendingSetCompositionRange::PendingSetCompositionRange(
+InputMethodAsh::PendingSetCompositionRange::PendingSetCompositionRange(
     const PendingSetCompositionRange& other) = default;
 
-InputMethodChromeOS::PendingSetCompositionRange::~PendingSetCompositionRange() =
+InputMethodAsh::PendingSetCompositionRange::~PendingSetCompositionRange() =
     default;
 
-ui::EventDispatchDetails InputMethodChromeOS::DispatchKeyEvent(
-    ui::KeyEvent* event) {
+ui::EventDispatchDetails InputMethodAsh::DispatchKeyEvent(ui::KeyEvent* event) {
   DCHECK(!(event->flags() & ui::EF_IS_SYNTHESIZED));
 
   // For OS_CHROMEOS build of Chrome running on Linux, the IME keyboard cannot
@@ -144,15 +142,14 @@ ui::EventDispatchDetails InputMethodChromeOS::DispatchKeyEvent(
 
   handling_key_event_ = true;
   GetEngine()->ProcessKeyEvent(
-      *event, base::BindOnce(&InputMethodChromeOS::ProcessKeyEventDone,
+      *event, base::BindOnce(&InputMethodAsh::ProcessKeyEventDone,
                              weak_ptr_factory_.GetWeakPtr(),
                              // Pass the ownership of the new copied event.
                              base::Owned(new ui::KeyEvent(*event))));
   return ui::EventDispatchDetails();
 }
 
-void InputMethodChromeOS::ProcessKeyEventDone(ui::KeyEvent* event,
-                                              bool is_handled) {
+void InputMethodAsh::ProcessKeyEventDone(ui::KeyEvent* event, bool is_handled) {
   DCHECK(event);
   if (event->type() == ET_KEY_PRESSED) {
     if (is_handled) {
@@ -172,8 +169,7 @@ void InputMethodChromeOS::ProcessKeyEventDone(ui::KeyEvent* event,
   handling_key_event_ = false;
 }
 
-void InputMethodChromeOS::OnTextInputTypeChanged(
-    const TextInputClient* client) {
+void InputMethodAsh::OnTextInputTypeChanged(const TextInputClient* client) {
   if (!IsTextInputClientFocused(client))
     return;
 
@@ -196,7 +192,7 @@ void InputMethodChromeOS::OnTextInputTypeChanged(
   InputMethodBase::OnTextInputTypeChanged(client);
 }
 
-void InputMethodChromeOS::OnCaretBoundsChanged(const TextInputClient* client) {
+void InputMethodAsh::OnCaretBoundsChanged(const TextInputClient* client) {
   if (IsTextInputTypeNone() || !IsTextInputClientFocused(client))
     return;
 
@@ -275,17 +271,17 @@ void InputMethodChromeOS::OnCaretBoundsChanged(const TextInputClient* client) {
   }
 }
 
-void InputMethodChromeOS::CancelComposition(const TextInputClient* client) {
+void InputMethodAsh::CancelComposition(const TextInputClient* client) {
   if (!IsPasswordOrNoneInputFieldFocused() && IsTextInputClientFocused(client))
     ResetContext();
 }
 
-bool InputMethodChromeOS::IsCandidatePopupOpen() const {
+bool InputMethodAsh::IsCandidatePopupOpen() const {
   // TODO(yukishiino): Implement this method.
   return false;
 }
 
-VirtualKeyboardController* InputMethodChromeOS::GetVirtualKeyboardController() {
+VirtualKeyboardController* InputMethodAsh::GetVirtualKeyboardController() {
   chromeos::input_method::InputMethodManager* manager =
       chromeos::input_method::InputMethodManager::Get();
   if (manager) {
@@ -295,7 +291,7 @@ VirtualKeyboardController* InputMethodChromeOS::GetVirtualKeyboardController() {
   return InputMethodBase::GetVirtualKeyboardController();
 }
 
-void InputMethodChromeOS::OnFocus() {
+void InputMethodAsh::OnFocus() {
   ui::IMEBridge* bridge = ui::IMEBridge::Get();
   if (bridge) {
     bridge->SetInputContextHandler(this);
@@ -303,15 +299,14 @@ void InputMethodChromeOS::OnFocus() {
   }
 }
 
-void InputMethodChromeOS::OnBlur() {
+void InputMethodAsh::OnBlur() {
   if (ui::IMEBridge::Get() &&
       ui::IMEBridge::Get()->GetInputContextHandler() == this)
     ui::IMEBridge::Get()->SetInputContextHandler(nullptr);
 }
 
-void InputMethodChromeOS::OnWillChangeFocusedClient(
-    TextInputClient* focused_before,
-    TextInputClient* focused) {
+void InputMethodAsh::OnWillChangeFocusedClient(TextInputClient* focused_before,
+                                               TextInputClient* focused) {
   ConfirmCompositionText(/* reset_engine */ true, /* keep_selection */ false);
 
   // Remove any autocorrect range in the unfocused TextInputClient.
@@ -324,9 +319,8 @@ void InputMethodChromeOS::OnWillChangeFocusedClient(
     GetEngine()->FocusOut();
 }
 
-void InputMethodChromeOS::OnDidChangeFocusedClient(
-    TextInputClient* focused_before,
-    TextInputClient* focused) {
+void InputMethodAsh::OnDidChangeFocusedClient(TextInputClient* focused_before,
+                                              TextInputClient* focused) {
   // Force to update the input type since client's TextInputStateChanged()
   // function might not be called if text input types before the client loses
   // focus and after it acquires focus again are the same.
@@ -342,7 +336,7 @@ void InputMethodChromeOS::OnDidChangeFocusedClient(
   OnCaretBoundsChanged(GetTextInputClient());
 }
 
-bool InputMethodChromeOS::SetCompositionRange(
+bool InputMethodAsh::SetCompositionRange(
     uint32_t before,
     uint32_t after,
     const std::vector<ui::ImeTextSpan>& text_spans) {
@@ -369,7 +363,7 @@ bool InputMethodChromeOS::SetCompositionRange(
                            text_spans);
 }
 
-bool InputMethodChromeOS::SetComposingRange(
+bool InputMethodAsh::SetComposingRange(
     uint32_t start,
     uint32_t end,
     const std::vector<ui::ImeTextSpan>& text_spans) {
@@ -403,19 +397,19 @@ bool InputMethodChromeOS::SetComposingRange(
   }
 }
 
-gfx::Range InputMethodChromeOS::GetAutocorrectRange() {
+gfx::Range InputMethodAsh::GetAutocorrectRange() {
   if (IsTextInputTypeNone())
     return gfx::Range();
   return GetTextInputClient()->GetAutocorrectRange();
 }
 
-gfx::Rect InputMethodChromeOS::GetAutocorrectCharacterBounds() {
+gfx::Rect InputMethodAsh::GetAutocorrectCharacterBounds() {
   if (IsTextInputTypeNone())
     return gfx::Rect();
   return GetTextInputClient()->GetAutocorrectCharacterBounds();
 }
 
-bool InputMethodChromeOS::SetAutocorrectRange(const gfx::Range& range) {
+bool InputMethodAsh::SetAutocorrectRange(const gfx::Range& range) {
   if (IsTextInputTypeNone())
     return false;
 
@@ -429,27 +423,27 @@ bool InputMethodChromeOS::SetAutocorrectRange(const gfx::Range& range) {
   }
 }
 
-absl::optional<GrammarFragment> InputMethodChromeOS::GetGrammarFragment(
+absl::optional<GrammarFragment> InputMethodAsh::GetGrammarFragment(
     const gfx::Range& range) {
   if (IsTextInputTypeNone())
     return absl::nullopt;
   return GetTextInputClient()->GetGrammarFragment(range);
 }
 
-bool InputMethodChromeOS::ClearGrammarFragments(const gfx::Range& range) {
+bool InputMethodAsh::ClearGrammarFragments(const gfx::Range& range) {
   if (IsTextInputTypeNone())
     return false;
   return GetTextInputClient()->ClearGrammarFragments(range);
 }
 
-bool InputMethodChromeOS::AddGrammarFragments(
+bool InputMethodAsh::AddGrammarFragments(
     const std::vector<GrammarFragment>& fragments) {
   if (IsTextInputTypeNone())
     return false;
   return GetTextInputClient()->AddGrammarFragments(fragments);
 }
 
-bool InputMethodChromeOS::SetSelectionRange(uint32_t start, uint32_t end) {
+bool InputMethodAsh::SetSelectionRange(uint32_t start, uint32_t end) {
   if (IsTextInputTypeNone())
     return false;
   typing_session_manager_.Heartbeat();
@@ -457,8 +451,8 @@ bool InputMethodChromeOS::SetSelectionRange(uint32_t start, uint32_t end) {
       gfx::Range(start, end));
 }
 
-void InputMethodChromeOS::ConfirmCompositionText(bool reset_engine,
-                                                 bool keep_selection) {
+void InputMethodAsh::ConfirmCompositionText(bool reset_engine,
+                                            bool keep_selection) {
   TextInputClient* client = GetTextInputClient();
   if (client && client->HasCompositionText()) {
     const uint32_t characters_committed =
@@ -469,7 +463,7 @@ void InputMethodChromeOS::ConfirmCompositionText(bool reset_engine,
   ResetContext(reset_engine);
 }
 
-void InputMethodChromeOS::ResetContext(bool reset_engine) {
+void InputMethodAsh::ResetContext(bool reset_engine) {
   if (IsPasswordOrNoneInputFieldFocused() || !GetTextInputClient())
     return;
 
@@ -486,7 +480,7 @@ void InputMethodChromeOS::ResetContext(bool reset_engine) {
   character_composer_.Reset();
 }
 
-void InputMethodChromeOS::UpdateContextFocusState() {
+void InputMethodAsh::UpdateContextFocusState() {
   ResetContext();
   OnInputMethodChanged();
 
@@ -509,7 +503,7 @@ void InputMethodChromeOS::UpdateContextFocusState() {
   ui::IMEBridge::Get()->SetCurrentInputContext(context);
 }
 
-ui::EventDispatchDetails InputMethodChromeOS::ProcessKeyEventPostIME(
+ui::EventDispatchDetails InputMethodAsh::ProcessKeyEventPostIME(
     ui::KeyEvent* event,
     bool handled,
     bool stopped_propagation) {
@@ -553,7 +547,7 @@ ui::EventDispatchDetails InputMethodChromeOS::ProcessKeyEventPostIME(
   return dispatch_details;
 }
 
-ui::EventDispatchDetails InputMethodChromeOS::ProcessFilteredKeyPressEvent(
+ui::EventDispatchDetails InputMethodAsh::ProcessFilteredKeyPressEvent(
     ui::KeyEvent* event) {
   if (NeedInsertChar())
     return DispatchKeyEventPostIME(event);
@@ -568,7 +562,7 @@ ui::EventDispatchDetails InputMethodChromeOS::ProcessFilteredKeyPressEvent(
   return dispatch_details;
 }
 
-ui::EventDispatchDetails InputMethodChromeOS::ProcessUnfilteredKeyPressEvent(
+ui::EventDispatchDetails InputMethodAsh::ProcessUnfilteredKeyPressEvent(
     ui::KeyEvent* event) {
   TextInputClient* prev_client = GetTextInputClient();
   ui::EventDispatchDetails details = DispatchKeyEventPostIME(event);
@@ -598,9 +592,8 @@ ui::EventDispatchDetails InputMethodChromeOS::ProcessUnfilteredKeyPressEvent(
   return details;
 }
 
-void InputMethodChromeOS::MaybeProcessPendingInputMethodResult(
-    ui::KeyEvent* event,
-    bool handled) {
+void InputMethodAsh::MaybeProcessPendingInputMethodResult(ui::KeyEvent* event,
+                                                          bool handled) {
   TextInputClient* client = GetTextInputClient();
   DCHECK(client);
 
@@ -667,18 +660,18 @@ void InputMethodChromeOS::MaybeProcessPendingInputMethodResult(
   composition_changed_ = false;
 }
 
-bool InputMethodChromeOS::NeedInsertChar() const {
+bool InputMethodAsh::NeedInsertChar() const {
   return GetTextInputClient() &&
          (IsTextInputTypeNone() || (!composing_text_ && pending_commit_ &&
                                     pending_commit_->text.length() == 1 &&
                                     pending_commit_->cursor == 1));
 }
 
-bool InputMethodChromeOS::HasInputMethodResult() const {
+bool InputMethodAsh::HasInputMethodResult() const {
   return pending_commit_ || composition_changed_;
 }
 
-void InputMethodChromeOS::CommitText(
+void InputMethodAsh::CommitText(
     const std::u16string& text,
     TextInputClient::InsertTextCursorBehavior cursor_behavior) {
   // We need to receive input method result even if the text input type is
@@ -715,9 +708,9 @@ void InputMethodChromeOS::CommitText(
   }
 }
 
-void InputMethodChromeOS::UpdateCompositionText(const CompositionText& text,
-                                                uint32_t cursor_pos,
-                                                bool visible) {
+void InputMethodAsh::UpdateCompositionText(const CompositionText& text,
+                                           uint32_t cursor_pos,
+                                           bool visible) {
   if (IsTextInputTypeNone())
     return;
 
@@ -759,7 +752,7 @@ void InputMethodChromeOS::UpdateCompositionText(const CompositionText& text,
   }
 }
 
-void InputMethodChromeOS::HidePreeditText() {
+void InputMethodAsh::HidePreeditText() {
   if (IsTextInputTypeNone())
     return;
 
@@ -778,32 +771,32 @@ void InputMethodChromeOS::HidePreeditText() {
   }
 }
 
-bool InputMethodChromeOS::CanComposeInline() const {
+bool InputMethodAsh::CanComposeInline() const {
   TextInputClient* client = GetTextInputClient();
   return client ? client->CanComposeInline() : true;
 }
 
-bool InputMethodChromeOS::GetClientShouldDoLearning() const {
+bool InputMethodAsh::GetClientShouldDoLearning() const {
   TextInputClient* client = GetTextInputClient();
   return client && client->ShouldDoLearning();
 }
 
-int InputMethodChromeOS::GetTextInputFlags() const {
+int InputMethodAsh::GetTextInputFlags() const {
   TextInputClient* client = GetTextInputClient();
   return client ? client->GetTextInputFlags() : 0;
 }
 
-TextInputMode InputMethodChromeOS::GetTextInputMode() const {
+TextInputMode InputMethodAsh::GetTextInputMode() const {
   TextInputClient* client = GetTextInputClient();
   return client ? client->GetTextInputMode() : TEXT_INPUT_MODE_DEFAULT;
 }
 
-void InputMethodChromeOS::SendKeyEvent(KeyEvent* event) {
+void InputMethodAsh::SendKeyEvent(KeyEvent* event) {
   ui::EventDispatchDetails details = DispatchKeyEvent(event);
   DCHECK(!details.dispatcher_destroyed);
 }
 
-SurroundingTextInfo InputMethodChromeOS::GetSurroundingTextInfo() {
+SurroundingTextInfo InputMethodAsh::GetSurroundingTextInfo() {
   gfx::Range text_range;
   SurroundingTextInfo info;
   TextInputClient* client = GetTextInputClient();
@@ -819,8 +812,7 @@ SurroundingTextInfo InputMethodChromeOS::GetSurroundingTextInfo() {
   return info;
 }
 
-void InputMethodChromeOS::DeleteSurroundingText(int32_t offset,
-                                                uint32_t length) {
+void InputMethodAsh::DeleteSurroundingText(int32_t offset, uint32_t length) {
   if (!GetTextInputClient())
     return;
 
@@ -831,7 +823,7 @@ void InputMethodChromeOS::DeleteSurroundingText(int32_t offset,
   GetTextInputClient()->ExtendSelectionAndDelete(before, length - before);
 }
 
-bool InputMethodChromeOS::ExecuteCharacterComposer(const ui::KeyEvent& event) {
+bool InputMethodAsh::ExecuteCharacterComposer(const ui::KeyEvent& event) {
   if (!character_composer_.FilterKeyPress(event))
     return false;
 
@@ -847,7 +839,7 @@ bool InputMethodChromeOS::ExecuteCharacterComposer(const ui::KeyEvent& event) {
   return true;
 }
 
-CompositionText InputMethodChromeOS::ExtractCompositionText(
+CompositionText InputMethodAsh::ExtractCompositionText(
     const CompositionText& text,
     uint32_t cursor_position) const {
   CompositionText composition;
@@ -870,8 +862,7 @@ CompositionText InputMethodChromeOS::ExtractCompositionText(
   // Make sure we can convert the value of |char_length| as well.
   char16_offsets.push_back(length);
 
-  size_t cursor_offset =
-      char16_offsets[std::min(char_length, cursor_position)];
+  size_t cursor_offset = char16_offsets[std::min(char_length, cursor_position)];
 
   composition.selection = gfx::Range(cursor_offset);
 
@@ -925,27 +916,27 @@ CompositionText InputMethodChromeOS::ExtractCompositionText(
   return composition;
 }
 
-bool InputMethodChromeOS::IsPasswordOrNoneInputFieldFocused() {
+bool InputMethodAsh::IsPasswordOrNoneInputFieldFocused() {
   TextInputType type = GetTextInputType();
   return type == TEXT_INPUT_TYPE_NONE || type == TEXT_INPUT_TYPE_PASSWORD;
 }
 
-TextInputClient::FocusReason InputMethodChromeOS::GetClientFocusReason() const {
+TextInputClient::FocusReason InputMethodAsh::GetClientFocusReason() const {
   TextInputClient* client = GetTextInputClient();
   return client ? client->GetFocusReason() : TextInputClient::FOCUS_REASON_NONE;
 }
 
-bool InputMethodChromeOS::HasCompositionText() {
+bool InputMethodAsh::HasCompositionText() {
   TextInputClient* client = GetTextInputClient();
   return client && client->HasCompositionText();
 }
 
-ukm::SourceId InputMethodChromeOS::GetClientSourceForMetrics() {
+ukm::SourceId InputMethodAsh::GetClientSourceForMetrics() {
   TextInputClient* client = GetTextInputClient();
   return client ? client->GetClientSourceForMetrics() : ukm::kInvalidSourceId;
 }
 
-InputMethod* InputMethodChromeOS::GetInputMethod() {
+InputMethod* InputMethodAsh::GetInputMethod() {
   return this;
 }
 

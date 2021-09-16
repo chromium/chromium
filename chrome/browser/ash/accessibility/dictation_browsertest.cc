@@ -387,7 +387,7 @@ IN_PROC_BROWSER_TEST_P(DictationTest, SwitchInputContext) {
   EXPECT_EQ(kFirstSpeechResult16, input_context_handler_->last_commit_text());
 
   // Simulate a remote app instantiating a new IMEInputContextHandler, like
-  // the keyboard shortcut viewer app creating a second InputMethodChromeOS.
+  // the keyboard shortcut viewer app creating a second `InputMethodAsh`.
   ui::MockIMEInputContextHandler input_context_handler2;
   ui::IMEBridge::Get()->SetInputContextHandler(&input_context_handler2);
 

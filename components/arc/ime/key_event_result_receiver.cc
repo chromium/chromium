@@ -38,7 +38,7 @@ KeyEventResultReceiver::KeyEventResultReceiver() = default;
 KeyEventResultReceiver::~KeyEventResultReceiver() = default;
 
 void KeyEventResultReceiver::DispatchKeyEventPostIME(ui::KeyEvent* event) {
-  // This method is called by |ui::InputMethodChromeOS| when IME finishes
+  // This method is called by `ui::InputMethodAsh` when IME finishes
   // handling a key event coming from |ArcImeService::SendKeyEvent()|. If the
   // key event seems not to be consumed by IME, it's sent back to ARC to give it
   // to the focused View in ARC side.

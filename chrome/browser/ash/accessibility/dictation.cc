@@ -172,7 +172,7 @@ std::string GetSupportedLocale(const std::string& lang_or_locale) {
 
 // Returns the current input context. This may change during the session, even
 // if the IME engine does not change, because remote mojo applications have
-// their own instance of InputMethodChromeOS. See comment on InputMethodBridge.
+// their own instance of `InputMethodAsh`. See comment on `InputMethodBridge`.
 ui::IMEInputContextHandlerInterface* GetInputContext() {
   return ui::IMEBridge::Get()->GetInputContextHandler();
 }

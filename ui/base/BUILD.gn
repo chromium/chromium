@@ -1047,7 +1047,7 @@ test("ui_base_unittests") {
         "dragdrop/os_exchange_data_provider_non_backed_unittest.cc",
         "ime/ash/extension_ime_util_unittest.cc",
         "ime/ash/ime_keyboard_unittest.cc",
-        "ime/ash/input_method_chromeos_unittest.cc",
+        "ime/ash/input_method_ash_unittest.cc",
         "ime/ash/input_method_descriptor_unittest.cc",
         "ime/ash/input_method_util_unittest.cc",
         "ime/ash/typing_session_manager_unittest.cc",

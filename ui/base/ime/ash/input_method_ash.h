@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_BASE_IME_ASH_INPUT_METHOD_CHROMEOS_H_
-#define UI_BASE_IME_ASH_INPUT_METHOD_CHROMEOS_H_
+#ifndef UI_BASE_IME_ASH_INPUT_METHOD_ASH_H_
+#define UI_BASE_IME_ASH_INPUT_METHOD_ASH_H_
 
 #include <stdint.h>
 
@@ -24,15 +24,13 @@
 
 namespace ui {
 
-class TestableInputMethodChromeOS;
-
-// A ui::InputMethod implementation for ChromeOS.
-class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodChromeOS
+// A `ui::InputMethod` implementation for Ash.
+class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodAsh
     : public InputMethodBase,
       public IMEInputContextHandlerInterface {
  public:
-  explicit InputMethodChromeOS(internal::InputMethodDelegate* delegate);
-  ~InputMethodChromeOS() override;
+  explicit InputMethodAsh(internal::InputMethodDelegate* delegate);
+  ~InputMethodAsh() override;
 
   // Overridden from InputMethod:
   ui::EventDispatchDetails DispatchKeyEvent(ui::KeyEvent* event) override;
@@ -98,8 +96,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodChromeOS
   void ResetContext(bool reset_engine = true);
 
  private:
-  class PendingKeyEvent;
-  friend TestableInputMethodChromeOS;
+  friend class TestableInputMethodAsh;
 
   // Representings a pending SetCompositionRange operation.
   struct PendingSetCompositionRange {
@@ -212,11 +209,11 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodChromeOS
   TypingSessionManager typing_session_manager_;
 
   // Used for making callbacks.
-  base::WeakPtrFactory<InputMethodChromeOS> weak_ptr_factory_{this};
+  base::WeakPtrFactory<InputMethodAsh> weak_ptr_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(InputMethodChromeOS);
+  DISALLOW_COPY_AND_ASSIGN(InputMethodAsh);
 };
 
 }  // namespace ui
 
-#endif  // UI_BASE_IME_ASH_INPUT_METHOD_CHROMEOS_H_
+#endif  // UI_BASE_IME_ASH_INPUT_METHOD_ASH_H_

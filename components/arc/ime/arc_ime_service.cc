@@ -694,7 +694,7 @@ void ArcImeService::OnDispatchingKeyEventPostIME(ui::KeyEvent* event) {
 
   // Do not forward the key event from virtual keyboard if it's sent via
   // InsertChar(). By the special logic in
-  // ui::InputMethodChromeOS::DispatchKeyEvent, both of InsertChar() and
+  // `ui::InputMethodAsh::DispatchKeyEvent`, both of InsertChar() and
   // DispatchKeyEventPostIME() are called for a key event injected by the
   // virtual keyboard. The below logic stops key event propagation through
   // DispatchKeyEventPostIME() to prevent from inputting two characters.

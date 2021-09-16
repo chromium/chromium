@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/base/ime/ash/input_method_chromeos.h"
+#include "ui/base/ime/ash/input_method_ash.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -55,13 +55,10 @@ uint32_t GetOffsetInUTF16(const std::u16string& utf16_string,
 
 }  // namespace
 
-
-class TestableInputMethodChromeOS : public InputMethodChromeOS {
+class TestableInputMethodAsh : public InputMethodAsh {
  public:
-  explicit TestableInputMethodChromeOS(internal::InputMethodDelegate* delegate)
-      : InputMethodChromeOS(delegate),
-        process_key_event_post_ime_call_count_(0) {
-  }
+  explicit TestableInputMethodAsh(internal::InputMethodDelegate* delegate)
+      : InputMethodAsh(delegate), process_key_event_post_ime_call_count_(0) {}
 
   struct ProcessKeyEventPostIMEArgs {
     ProcessKeyEventPostIMEArgs()
@@ -71,14 +68,13 @@ class TestableInputMethodChromeOS : public InputMethodChromeOS {
     bool handled;
   };
 
-  // Overridden from InputMethodChromeOS:
+  // Overridden from InputMethodAsh:
   ui::EventDispatchDetails ProcessKeyEventPostIME(
       ui::KeyEvent* key_event,
       bool handled,
       bool stopped_propagation) override {
-    ui::EventDispatchDetails details =
-        InputMethodChromeOS::ProcessKeyEventPostIME(key_event, handled,
-                                                    stopped_propagation);
+    ui::EventDispatchDetails details = InputMethodAsh::ProcessKeyEventPostIME(
+        key_event, handled, stopped_propagation);
     process_key_event_post_ime_args_.event = *key_event;
     process_key_event_post_ime_args_.handled = handled;
     ++process_key_event_post_ime_call_count_;
@@ -87,13 +83,11 @@ class TestableInputMethodChromeOS : public InputMethodChromeOS {
   void CommitText(
       const std::u16string& text,
       TextInputClient::InsertTextCursorBehavior cursor_behavior) override {
-    InputMethodChromeOS::CommitText(text, cursor_behavior);
+    InputMethodAsh::CommitText(text, cursor_behavior);
     text_committed_ = text;
   }
 
-  void ResetCallCount() {
-    process_key_event_post_ime_call_count_ = 0;
-  }
+  void ResetCallCount() { process_key_event_post_ime_call_count_ = 0; }
 
   const ProcessKeyEventPostIMEArgs& process_key_event_post_ime_args() const {
     return process_key_event_post_ime_args_;
@@ -106,8 +100,8 @@ class TestableInputMethodChromeOS : public InputMethodChromeOS {
   const std::u16string& text_committed() const { return text_committed_; }
 
   // Change access rights for testing.
-  using InputMethodChromeOS::ExtractCompositionText;
-  using InputMethodChromeOS::ResetContext;
+  using InputMethodAsh::ExtractCompositionText;
+  using InputMethodAsh::ResetContext;
 
  private:
   ProcessKeyEventPostIMEArgs process_key_event_post_ime_args_;
@@ -206,32 +200,31 @@ class NiceMockIMEEngine : public chromeos::MockIMEEngineHandler {
                void(const std::u16string&, uint32_t, uint32_t, uint32_t));
 };
 
-class InputMethodChromeOSTest : public internal::InputMethodDelegate,
-                                public testing::Test,
-                                public DummyTextInputClient {
+class InputMethodAshTest : public internal::InputMethodDelegate,
+                           public testing::Test,
+                           public DummyTextInputClient {
  public:
-  InputMethodChromeOSTest()
+  InputMethodAshTest()
       : dispatched_key_event_(ui::ET_UNKNOWN, ui::VKEY_UNKNOWN, ui::EF_NONE),
         stop_propagation_post_ime_(false) {
     ResetFlags();
   }
 
-  ~InputMethodChromeOSTest() override = default;
+  ~InputMethodAshTest() override = default;
 
   void SetUp() override {
     IMEBridge::Initialize();
 
     mock_ime_engine_handler_ =
         std::make_unique<chromeos::MockIMEEngineHandler>();
-    IMEBridge::Get()->SetCurrentEngineHandler(
-        mock_ime_engine_handler_.get());
+    IMEBridge::Get()->SetCurrentEngineHandler(mock_ime_engine_handler_.get());
 
     mock_ime_candidate_window_handler_ =
         std::make_unique<chromeos::MockIMECandidateWindowHandler>();
     IMEBridge::Get()->SetCandidateWindowHandler(
         mock_ime_candidate_window_handler_.get());
 
-    ime_ = std::make_unique<TestableInputMethodChromeOS>(this);
+    ime_ = std::make_unique<TestableInputMethodAsh>(this);
     ime_->SetFocusedTextInputClient(this);
 
     // InputMethodManager owns and delete it in InputMethodManager::Shutdown().
@@ -330,13 +323,11 @@ class InputMethodChromeOSTest : public internal::InputMethodDelegate,
     return false;
   }
 
-  bool HasNativeEvent() const {
-    return dispatched_key_event_.HasNativeEvent();
-  }
+  bool HasNativeEvent() const { return dispatched_key_event_.HasNativeEvent(); }
 
   void ResetFlags() {
-    dispatched_key_event_ = ui::KeyEvent(ui::ET_UNKNOWN, ui::VKEY_UNKNOWN,
-                                         ui::EF_NONE);
+    dispatched_key_event_ =
+        ui::KeyEvent(ui::ET_UNKNOWN, ui::VKEY_UNKNOWN, ui::EF_NONE);
 
     composition_text_ = CompositionText();
     confirmed_text_ = CompositionText();
@@ -352,7 +343,7 @@ class InputMethodChromeOSTest : public internal::InputMethodDelegate,
   }
 
  protected:
-  std::unique_ptr<TestableInputMethodChromeOS> ime_;
+  std::unique_ptr<TestableInputMethodAsh> ime_;
 
   // Copy of the dispatched key event.
   ui::KeyEvent dispatched_key_event_;
@@ -385,13 +376,13 @@ class InputMethodChromeOSTest : public internal::InputMethodDelegate,
 
   base::test::TaskEnvironment task_environment_;
 
-  DISALLOW_COPY_AND_ASSIGN(InputMethodChromeOSTest);
+  DISALLOW_COPY_AND_ASSIGN(InputMethodAshTest);
 };
 
 // Tests public APIs in ui::InputMethod first.
 
-TEST_F(InputMethodChromeOSTest, GetInputTextType) {
-  InputMethodChromeOS ime(this);
+TEST_F(InputMethodAshTest, GetInputTextType) {
+  InputMethodAsh ime(this);
   FakeTextInputClient fake_text_input_client(TEXT_INPUT_TYPE_TEXT);
   ime.SetFocusedTextInputClient(&fake_text_input_client);
 
@@ -400,8 +391,8 @@ TEST_F(InputMethodChromeOSTest, GetInputTextType) {
   ime.SetFocusedTextInputClient(nullptr);
 }
 
-TEST_F(InputMethodChromeOSTest, OnTextInputTypeChangedChangesInputType) {
-  InputMethodChromeOS ime(this);
+TEST_F(InputMethodAshTest, OnTextInputTypeChangedChangesInputType) {
+  InputMethodAsh ime(this);
   FakeTextInputClient fake_text_input_client(TEXT_INPUT_TYPE_TEXT);
   ime.SetFocusedTextInputClient(&fake_text_input_client);
   fake_text_input_client.set_text_input_type(TEXT_INPUT_TYPE_PASSWORD);
@@ -413,13 +404,13 @@ TEST_F(InputMethodChromeOSTest, OnTextInputTypeChangedChangesInputType) {
   ime.SetFocusedTextInputClient(nullptr);
 }
 
-TEST_F(InputMethodChromeOSTest, GetTextInputClient) {
+TEST_F(InputMethodAshTest, GetTextInputClient) {
   EXPECT_EQ(this, ime_->GetTextInputClient());
   ime_->SetFocusedTextInputClient(nullptr);
   EXPECT_EQ(nullptr, ime_->GetTextInputClient());
 }
 
-TEST_F(InputMethodChromeOSTest, GetInputTextType_WithoutFocusedClient) {
+TEST_F(InputMethodAshTest, GetInputTextType_WithoutFocusedClient) {
   EXPECT_EQ(TEXT_INPUT_TYPE_NONE, ime_->GetTextInputType());
   ime_->SetFocusedTextInputClient(nullptr);
   input_type_ = TEXT_INPUT_TYPE_PASSWORD;
@@ -433,8 +424,7 @@ TEST_F(InputMethodChromeOSTest, GetInputTextType_WithoutFocusedClient) {
   EXPECT_EQ(TEXT_INPUT_TYPE_PASSWORD, ime_->GetTextInputType());
 }
 
-TEST_F(InputMethodChromeOSTest,
-       OnWillChangeFocusedClientClearAutocorrectRange) {
+TEST_F(InputMethodAshTest, OnWillChangeFocusedClientClearAutocorrectRange) {
   input_type_ = TEXT_INPUT_TYPE_TEXT;
   ime_->SetFocusedTextInputClient(this);
   ime_->CommitText(
@@ -449,7 +439,7 @@ TEST_F(InputMethodChromeOSTest,
 
 // Confirm that IBusClient::FocusIn is called on "connected" if input_type_ is
 // TEXT.
-TEST_F(InputMethodChromeOSTest, FocusIn_Text) {
+TEST_F(InputMethodAshTest, FocusIn_Text) {
   // A context shouldn't be created since the daemon is not running.
   EXPECT_EQ(0U, on_input_method_changed_call_count_);
   // Click a text input form.
@@ -457,18 +447,17 @@ TEST_F(InputMethodChromeOSTest, FocusIn_Text) {
   ime_->OnTextInputTypeChanged(this);
   // Since a form has focus, IBusClient::FocusIn() should be called.
   EXPECT_EQ(1, mock_ime_engine_handler_->focus_in_call_count());
-  EXPECT_EQ(
-      1,
-      mock_ime_candidate_window_handler_->set_cursor_bounds_call_count());
+  EXPECT_EQ(1,
+            mock_ime_candidate_window_handler_->set_cursor_bounds_call_count());
   // ui::TextInputClient::OnInputMethodChanged() should be called when
-  // ui::InputMethodChromeOS connects/disconnects to/from ibus-daemon and the
+  // ui::InputMethodAsh connects/disconnects to/from ibus-daemon and the
   // current text input type is not NONE.
   EXPECT_EQ(1U, on_input_method_changed_call_count_);
 }
 
 // Confirm that InputMethodEngine::FocusIn is called on "connected" even if
 // input_type_ is PASSWORD.
-TEST_F(InputMethodChromeOSTest, FocusIn_Password) {
+TEST_F(InputMethodAshTest, FocusIn_Password) {
   EXPECT_EQ(0U, on_input_method_changed_call_count_);
   input_type_ = TEXT_INPUT_TYPE_PASSWORD;
   ime_->OnTextInputTypeChanged(this);
@@ -478,7 +467,7 @@ TEST_F(InputMethodChromeOSTest, FocusIn_Password) {
 }
 
 // Confirm that IBusClient::FocusOut is called as expected.
-TEST_F(InputMethodChromeOSTest, FocusOut_None) {
+TEST_F(InputMethodAshTest, FocusOut_None) {
   input_type_ = TEXT_INPUT_TYPE_TEXT;
   ime_->OnTextInputTypeChanged(this);
   EXPECT_EQ(1, mock_ime_engine_handler_->focus_in_call_count());
@@ -490,7 +479,7 @@ TEST_F(InputMethodChromeOSTest, FocusOut_None) {
 }
 
 // Confirm that IBusClient::FocusOut is called as expected.
-TEST_F(InputMethodChromeOSTest, FocusOut_Password) {
+TEST_F(InputMethodAshTest, FocusOut_Password) {
   input_type_ = TEXT_INPUT_TYPE_TEXT;
   ime_->OnTextInputTypeChanged(this);
   EXPECT_EQ(1, mock_ime_engine_handler_->focus_in_call_count());
@@ -502,7 +491,7 @@ TEST_F(InputMethodChromeOSTest, FocusOut_Password) {
 }
 
 // FocusIn/FocusOut scenario test
-TEST_F(InputMethodChromeOSTest, Focus_Scenario) {
+TEST_F(InputMethodAshTest, Focus_Scenario) {
   // Confirm that both FocusIn and FocusOut are NOT called.
   EXPECT_EQ(0, mock_ime_engine_handler_->focus_in_call_count());
   EXPECT_EQ(0, mock_ime_engine_handler_->focus_out_call_count());
@@ -555,32 +544,28 @@ TEST_F(InputMethodChromeOSTest, Focus_Scenario) {
 }
 
 // Test if the new |caret_bounds_| is correctly sent to ibus-daemon.
-TEST_F(InputMethodChromeOSTest, OnCaretBoundsChanged) {
+TEST_F(InputMethodAshTest, OnCaretBoundsChanged) {
   input_type_ = TEXT_INPUT_TYPE_TEXT;
   ime_->OnTextInputTypeChanged(this);
-  EXPECT_EQ(
-      1,
-      mock_ime_candidate_window_handler_->set_cursor_bounds_call_count());
+  EXPECT_EQ(1,
+            mock_ime_candidate_window_handler_->set_cursor_bounds_call_count());
   caret_bounds_ = gfx::Rect(1, 2, 3, 4);
   ime_->OnCaretBoundsChanged(this);
-  EXPECT_EQ(
-      2,
-      mock_ime_candidate_window_handler_->set_cursor_bounds_call_count());
+  EXPECT_EQ(2,
+            mock_ime_candidate_window_handler_->set_cursor_bounds_call_count());
   caret_bounds_ = gfx::Rect(0, 2, 3, 4);
   ime_->OnCaretBoundsChanged(this);
-  EXPECT_EQ(
-      3,
-      mock_ime_candidate_window_handler_->set_cursor_bounds_call_count());
+  EXPECT_EQ(3,
+            mock_ime_candidate_window_handler_->set_cursor_bounds_call_count());
   caret_bounds_ = gfx::Rect(0, 2, 3, 4);  // unchanged
   ime_->OnCaretBoundsChanged(this);
-  // Current InputMethodChromeOS implementation performs the IPC
+  // Current InputMethodAsh implementation performs the IPC
   // regardless of the bounds are changed or not.
-  EXPECT_EQ(
-      4,
-      mock_ime_candidate_window_handler_->set_cursor_bounds_call_count());
+  EXPECT_EQ(4,
+            mock_ime_candidate_window_handler_->set_cursor_bounds_call_count());
 }
 
-TEST_F(InputMethodChromeOSTest, ExtractCompositionTextTest_NoAttribute) {
+TEST_F(InputMethodAshTest, ExtractCompositionTextTest_NoAttribute) {
   const std::u16string kSampleAsciiText = u"Sample Text";
   const uint32_t kCursorPos = 2UL;
 
@@ -603,7 +588,7 @@ TEST_F(InputMethodChromeOSTest, ExtractCompositionTextTest_NoAttribute) {
             composition_text.ime_text_spans[0].thickness);
 }
 
-TEST_F(InputMethodChromeOSTest, ExtractCompositionTextTest_SingleUnderline) {
+TEST_F(InputMethodAshTest, ExtractCompositionTextTest_SingleUnderline) {
   const uint32_t kCursorPos = 2UL;
 
   // Set up chromeos composition text with one underline attribute.
@@ -635,7 +620,7 @@ TEST_F(InputMethodChromeOSTest, ExtractCompositionTextTest_SingleUnderline) {
             composition_text2.ime_text_spans[0].background_color);
 }
 
-TEST_F(InputMethodChromeOSTest, ExtractCompositionTextTest_DoubleUnderline) {
+TEST_F(InputMethodAshTest, ExtractCompositionTextTest_DoubleUnderline) {
   const uint32_t kCursorPos = 2UL;
 
   // Set up chromeos composition text with one underline attribute.
@@ -667,7 +652,7 @@ TEST_F(InputMethodChromeOSTest, ExtractCompositionTextTest_DoubleUnderline) {
             composition_text2.ime_text_spans[0].background_color);
 }
 
-TEST_F(InputMethodChromeOSTest, ExtractCompositionTextTest_ErrorUnderline) {
+TEST_F(InputMethodAshTest, ExtractCompositionTextTest_ErrorUnderline) {
   const uint32_t kCursorPos = 2UL;
 
   // Set up chromeos composition text with one underline attribute.
@@ -696,7 +681,7 @@ TEST_F(InputMethodChromeOSTest, ExtractCompositionTextTest_ErrorUnderline) {
             composition_text2.ime_text_spans[0].thickness);
 }
 
-TEST_F(InputMethodChromeOSTest, ExtractCompositionTextTest_Selection) {
+TEST_F(InputMethodAshTest, ExtractCompositionTextTest_Selection) {
   const uint32_t kCursorPos = 2UL;
 
   // Set up chromeos composition text with one underline attribute.
@@ -723,7 +708,7 @@ TEST_F(InputMethodChromeOSTest, ExtractCompositionTextTest_Selection) {
             composition_text2.ime_text_spans[0].background_color);
 }
 
-TEST_F(InputMethodChromeOSTest,
+TEST_F(InputMethodAshTest,
        ExtractCompositionTextTest_SelectionStartWithCursor) {
   const uint32_t kCursorPos = 1UL;
 
@@ -755,8 +740,7 @@ TEST_F(InputMethodChromeOSTest,
             composition_text2.ime_text_spans[0].background_color);
 }
 
-TEST_F(InputMethodChromeOSTest,
-       ExtractCompositionTextTest_SelectionEndWithCursor) {
+TEST_F(InputMethodAshTest, ExtractCompositionTextTest_SelectionEndWithCursor) {
   const uint32_t kCursorPos = 4UL;
 
   // Set up chromeos composition text with one underline attribute.
@@ -787,7 +771,7 @@ TEST_F(InputMethodChromeOSTest,
             composition_text2.ime_text_spans[0].background_color);
 }
 
-TEST_F(InputMethodChromeOSTest, SurroundingText_NoSelectionTest) {
+TEST_F(InputMethodAshTest, SurroundingText_NoSelectionTest) {
   // Click a text input form.
   input_type_ = TEXT_INPUT_TYPE_TEXT;
   ime_->OnTextInputTypeChanged(this);
@@ -800,21 +784,17 @@ TEST_F(InputMethodChromeOSTest, SurroundingText_NoSelectionTest) {
   // Set the verifier for SetSurroundingText mock call.
   SetSurroundingTextVerifier verifier(UTF16ToUTF8(surrounding_text_), 3, 3);
 
-
   ime_->OnCaretBoundsChanged(this);
 
   // Check the call count.
-  EXPECT_EQ(1,
-            mock_ime_engine_handler_->set_surrounding_text_call_count());
+  EXPECT_EQ(1, mock_ime_engine_handler_->set_surrounding_text_call_count());
   EXPECT_EQ(surrounding_text_,
             mock_ime_engine_handler_->last_set_surrounding_text());
-  EXPECT_EQ(3U,
-            mock_ime_engine_handler_->last_set_surrounding_cursor_pos());
-  EXPECT_EQ(3U,
-            mock_ime_engine_handler_->last_set_surrounding_anchor_pos());
+  EXPECT_EQ(3U, mock_ime_engine_handler_->last_set_surrounding_cursor_pos());
+  EXPECT_EQ(3U, mock_ime_engine_handler_->last_set_surrounding_anchor_pos());
 }
 
-TEST_F(InputMethodChromeOSTest, SurroundingText_SelectionTest) {
+TEST_F(InputMethodAshTest, SurroundingText_SelectionTest) {
   // Click a text input form.
   input_type_ = TEXT_INPUT_TYPE_TEXT;
   ime_->OnTextInputTypeChanged(this);
@@ -830,17 +810,14 @@ TEST_F(InputMethodChromeOSTest, SurroundingText_SelectionTest) {
   ime_->OnCaretBoundsChanged(this);
 
   // Check the call count.
-  EXPECT_EQ(1,
-            mock_ime_engine_handler_->set_surrounding_text_call_count());
+  EXPECT_EQ(1, mock_ime_engine_handler_->set_surrounding_text_call_count());
   EXPECT_EQ(surrounding_text_,
             mock_ime_engine_handler_->last_set_surrounding_text());
-  EXPECT_EQ(2U,
-            mock_ime_engine_handler_->last_set_surrounding_cursor_pos());
-  EXPECT_EQ(5U,
-            mock_ime_engine_handler_->last_set_surrounding_anchor_pos());
+  EXPECT_EQ(2U, mock_ime_engine_handler_->last_set_surrounding_cursor_pos());
+  EXPECT_EQ(5U, mock_ime_engine_handler_->last_set_surrounding_anchor_pos());
 }
 
-TEST_F(InputMethodChromeOSTest, SurroundingText_PartialText) {
+TEST_F(InputMethodAshTest, SurroundingText_PartialText) {
   // Click a text input form.
   input_type_ = TEXT_INPUT_TYPE_TEXT;
   ime_->OnTextInputTypeChanged(this);
@@ -853,18 +830,15 @@ TEST_F(InputMethodChromeOSTest, SurroundingText_PartialText) {
   ime_->OnCaretBoundsChanged(this);
 
   // Check the call count.
-  EXPECT_EQ(1,
-            mock_ime_engine_handler_->set_surrounding_text_call_count());
+  EXPECT_EQ(1, mock_ime_engine_handler_->set_surrounding_text_call_count());
   // Set the verifier for SetSurroundingText mock call.
   // Here (2, 4) is selection range in expected surrounding text coordinates.
   EXPECT_EQ(u"fghij", mock_ime_engine_handler_->last_set_surrounding_text());
-  EXPECT_EQ(2U,
-            mock_ime_engine_handler_->last_set_surrounding_cursor_pos());
-  EXPECT_EQ(4U,
-            mock_ime_engine_handler_->last_set_surrounding_anchor_pos());
+  EXPECT_EQ(2U, mock_ime_engine_handler_->last_set_surrounding_cursor_pos());
+  EXPECT_EQ(4U, mock_ime_engine_handler_->last_set_surrounding_anchor_pos());
 }
 
-TEST_F(InputMethodChromeOSTest, SurroundingText_BecomeEmptyText) {
+TEST_F(InputMethodAshTest, SurroundingText_BecomeEmptyText) {
   // Click a text input form.
   input_type_ = TEXT_INPUT_TYPE_TEXT;
   ime_->OnTextInputTypeChanged(this);
@@ -879,16 +853,14 @@ TEST_F(InputMethodChromeOSTest, SurroundingText_BecomeEmptyText) {
   ime_->OnCaretBoundsChanged(this);
 
   // Check the call count.
-  EXPECT_EQ(0,
-            mock_ime_engine_handler_->set_surrounding_text_call_count());
+  EXPECT_EQ(0, mock_ime_engine_handler_->set_surrounding_text_call_count());
 
   // Should not be called twice with same condition.
   ime_->OnCaretBoundsChanged(this);
-  EXPECT_EQ(0,
-            mock_ime_engine_handler_->set_surrounding_text_call_count());
+  EXPECT_EQ(0, mock_ime_engine_handler_->set_surrounding_text_call_count());
 }
 
-TEST_F(InputMethodChromeOSTest, SurroundingText_EventOrder) {
+TEST_F(InputMethodAshTest, SurroundingText_EventOrder) {
   ::testing::NiceMock<NiceMockIMEEngine> mock_engine;
   IMEBridge::Get()->SetCurrentEngineHandler(&mock_engine);
 
@@ -925,7 +897,7 @@ TEST_F(InputMethodChromeOSTest, SurroundingText_EventOrder) {
   IMEBridge::Get()->SetCurrentEngineHandler(nullptr);
 }
 
-TEST_F(InputMethodChromeOSTest, SetCompositionRange_InvalidRange) {
+TEST_F(InputMethodAshTest, SetCompositionRange_InvalidRange) {
   // Focus on a text field.
   input_type_ = TEXT_INPUT_TYPE_TEXT;
   ime_->OnTextInputTypeChanged(this);
@@ -939,11 +911,11 @@ TEST_F(InputMethodChromeOSTest, SetCompositionRange_InvalidRange) {
   EXPECT_EQ(0U, composition_text_.text.length());
 }
 
-TEST_F(InputMethodChromeOSTest,
+TEST_F(InputMethodAshTest,
        SetCompositionRangeWithSelectedTextAccountsForSelection) {
   FakeTextInputClient fake_text_input_client(TEXT_INPUT_TYPE_TEXT);
   fake_text_input_client.SetTextAndSelection(u"01234", gfx::Range(1, 4));
-  InputMethodChromeOS ime(this);
+  InputMethodAsh ime(this);
   ime.SetFocusedTextInputClient(&fake_text_input_client);
 
   // before/after are relative to the selection start/end, respectively.
@@ -956,7 +928,7 @@ TEST_F(InputMethodChromeOSTest,
                                   /*start_offset=*/0, /*end_offset=*/5)));
 }
 
-TEST_F(InputMethodChromeOSTest, ConfirmCompositionText_NoComposition) {
+TEST_F(InputMethodAshTest, ConfirmCompositionText_NoComposition) {
   // Focus on a text field.
   input_type_ = TEXT_INPUT_TYPE_TEXT;
   ime_->OnTextInputTypeChanged(this);
@@ -968,7 +940,7 @@ TEST_F(InputMethodChromeOSTest, ConfirmCompositionText_NoComposition) {
   EXPECT_TRUE(composition_text_.text.empty());
 }
 
-TEST_F(InputMethodChromeOSTest, ConfirmCompositionText_SetComposition) {
+TEST_F(InputMethodAshTest, ConfirmCompositionText_SetComposition) {
   // Focus on a text field.
   input_type_ = TEXT_INPUT_TYPE_TEXT;
   ime_->OnTextInputTypeChanged(this);
@@ -983,7 +955,7 @@ TEST_F(InputMethodChromeOSTest, ConfirmCompositionText_SetComposition) {
   EXPECT_TRUE(composition_text_.text.empty());
 }
 
-TEST_F(InputMethodChromeOSTest, ConfirmCompositionText_SetCompositionRange) {
+TEST_F(InputMethodAshTest, ConfirmCompositionText_SetCompositionRange) {
   // Focus on a text field.
   input_type_ = TEXT_INPUT_TYPE_TEXT;
   ime_->OnTextInputTypeChanged(this);
@@ -1001,15 +973,15 @@ TEST_F(InputMethodChromeOSTest, ConfirmCompositionText_SetCompositionRange) {
   EXPECT_TRUE(composition_text_.text.empty());
 }
 
-class InputMethodChromeOSKeyEventTest : public InputMethodChromeOSTest {
+class InputMethodAshKeyEventTest : public InputMethodAshTest {
  public:
-  InputMethodChromeOSKeyEventTest() = default;
-  ~InputMethodChromeOSKeyEventTest() override = default;
+  InputMethodAshKeyEventTest() = default;
+  ~InputMethodAshKeyEventTest() override = default;
 
-  DISALLOW_COPY_AND_ASSIGN(InputMethodChromeOSKeyEventTest);
+  DISALLOW_COPY_AND_ASSIGN(InputMethodAshKeyEventTest);
 };
 
-TEST_F(InputMethodChromeOSKeyEventTest, KeyEventDelayResponseTest) {
+TEST_F(InputMethodAshKeyEventTest, KeyEventDelayResponseTest) {
   const int kFlags = ui::EF_SHIFT_DOWN;
   ui::KeyEvent event(ui::ET_KEY_PRESSED, ui::VKEY_A, kFlags);
 
@@ -1047,7 +1019,7 @@ TEST_F(InputMethodChromeOSKeyEventTest, KeyEventDelayResponseTest) {
   EXPECT_EQ(L'A', inserted_char_);
 }
 
-TEST_F(InputMethodChromeOSKeyEventTest, MultiKeyEventDelayResponseTest) {
+TEST_F(InputMethodAshKeyEventTest, MultiKeyEventDelayResponseTest) {
   ui::ScopedKeyboardLayout keyboard_layout(ui::KEYBOARD_LAYOUT_ENGLISH_US);
 
   // Preparation
@@ -1077,8 +1049,7 @@ TEST_F(InputMethodChromeOSKeyEventTest, MultiKeyEventDelayResponseTest) {
   EXPECT_EQ(kFlags, key_event2->flags());
 
   // Check before state.
-  EXPECT_EQ(2,
-            mock_ime_engine_handler_->process_key_event_call_count());
+  EXPECT_EQ(2, mock_ime_engine_handler_->process_key_event_call_count());
   EXPECT_EQ(0, ime_->process_key_event_post_ime_call_count());
 
   CompositionText comp;
@@ -1114,7 +1085,7 @@ TEST_F(InputMethodChromeOSKeyEventTest, MultiKeyEventDelayResponseTest) {
   EXPECT_EQ(L'C', inserted_char_);
 }
 
-TEST_F(InputMethodChromeOSKeyEventTest, StopPropagationTest) {
+TEST_F(InputMethodAshKeyEventTest, StopPropagationTest) {
   // Preparation
   input_type_ = TEXT_INPUT_TYPE_TEXT;
   ime_->OnTextInputTypeChanged(this);
@@ -1141,15 +1112,14 @@ TEST_F(InputMethodChromeOSKeyEventTest, StopPropagationTest) {
   EXPECT_EQ(L'A', inserted_char_);
 }
 
-TEST_F(InputMethodChromeOSKeyEventTest, DeadKeyPressTest) {
+TEST_F(InputMethodAshKeyEventTest, DeadKeyPressTest) {
   // Preparation.
   input_type_ = TEXT_INPUT_TYPE_TEXT;
   ime_->OnTextInputTypeChanged(this);
 
   ui::KeyEvent eventA(ET_KEY_PRESSED,
-                      VKEY_OEM_4, // '['
-                      DomCode::BRACKET_LEFT,
-                      0,
+                      VKEY_OEM_4,  // '['
+                      DomCode::BRACKET_LEFT, 0,
                       DomKey::DeadKeyFromCombiningCharacter('^'),
                       EventTimeForNow());
   ime_->ProcessKeyEventPostIME(&eventA, true, true);
@@ -1164,7 +1134,7 @@ TEST_F(InputMethodChromeOSKeyEventTest, DeadKeyPressTest) {
   EXPECT_EQ(eventA.time_stamp(), key_event.time_stamp());
 }
 
-TEST_F(InputMethodChromeOSKeyEventTest, JP106KeyTest) {
+TEST_F(InputMethodAshKeyEventTest, JP106KeyTest) {
   ui::KeyEvent eventConvert(ET_KEY_PRESSED, VKEY_CONVERT, EF_NONE);
   ime_->DispatchKeyEvent(&eventConvert);
   EXPECT_FALSE(input_method_manager_->state()->is_jp_kbd());
@@ -1186,7 +1156,7 @@ TEST_F(InputMethodChromeOSKeyEventTest, JP106KeyTest) {
   EXPECT_FALSE(input_method_manager_->state()->is_jp_ime());
 }
 
-TEST_F(InputMethodChromeOSKeyEventTest, SetAutocorrectRangeRunsAfterKeyEvent) {
+TEST_F(InputMethodAshKeyEventTest, SetAutocorrectRangeRunsAfterKeyEvent) {
   input_type_ = TEXT_INPUT_TYPE_TEXT;
   ime_->OnTextInputTypeChanged(this);
   ime_->CommitText(
@@ -1201,8 +1171,7 @@ TEST_F(InputMethodChromeOSKeyEventTest, SetAutocorrectRangeRunsAfterKeyEvent) {
   EXPECT_EQ(gfx::Range(0, 1), GetAutocorrectRange());
 }
 
-TEST_F(InputMethodChromeOSKeyEventTest,
-       SetAutocorrectRangeRunsAfterCommitText) {
+TEST_F(InputMethodAshKeyEventTest, SetAutocorrectRangeRunsAfterCommitText) {
   input_type_ = TEXT_INPUT_TYPE_TEXT;
   ime_->OnTextInputTypeChanged(this);
   ui::KeyEvent event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
@@ -1218,10 +1187,10 @@ TEST_F(InputMethodChromeOSKeyEventTest,
   EXPECT_EQ(gfx::Range(0, 1), GetAutocorrectRange());
 }
 
-TEST_F(InputMethodChromeOSKeyEventTest,
+TEST_F(InputMethodAshKeyEventTest,
        MultipleCommitTextsWhileHandlingKeyEventCoalescesIntoOne) {
   FakeTextInputClient fake_text_input_client(TEXT_INPUT_TYPE_TEXT);
-  InputMethodChromeOS ime(this);
+  InputMethodAsh ime(this);
   ime.SetFocusedTextInputClient(&fake_text_input_client);
 
   ui::KeyEvent event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
@@ -1239,10 +1208,10 @@ TEST_F(InputMethodChromeOSKeyEventTest,
   EXPECT_EQ(fake_text_input_client.selection(), gfx::Range(5, 5));
 }
 
-TEST_F(InputMethodChromeOSKeyEventTest,
+TEST_F(InputMethodAshKeyEventTest,
        MultipleCommitTextsWhileHandlingKeyEventCoalescesByCaretBehavior) {
   FakeTextInputClient fake_text_input_client(TEXT_INPUT_TYPE_TEXT);
-  InputMethodChromeOS ime(this);
+  InputMethodAsh ime(this);
   ime.SetFocusedTextInputClient(&fake_text_input_client);
 
   ui::KeyEvent event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
@@ -1264,9 +1233,9 @@ TEST_F(InputMethodChromeOSKeyEventTest,
   EXPECT_EQ(fake_text_input_client.selection(), gfx::Range(3, 3));
 }
 
-TEST_F(InputMethodChromeOSKeyEventTest, CommitTextEmptyRunsAfterKeyEvent) {
+TEST_F(InputMethodAshKeyEventTest, CommitTextEmptyRunsAfterKeyEvent) {
   FakeTextInputClient fake_text_input_client(TEXT_INPUT_TYPE_TEXT);
-  InputMethodChromeOS ime(this);
+  InputMethodAsh ime(this);
   ime.SetFocusedTextInputClient(&fake_text_input_client);
   ui::CompositionText composition;
   composition.text = u"hello";
@@ -1284,10 +1253,10 @@ TEST_F(InputMethodChromeOSKeyEventTest, CommitTextEmptyRunsAfterKeyEvent) {
   EXPECT_EQ(fake_text_input_client.selection(), gfx::Range(0, 0));
 }
 
-TEST_F(InputMethodChromeOSTest, CommitTextReplacesSelection) {
+TEST_F(InputMethodAshTest, CommitTextReplacesSelection) {
   FakeTextInputClient fake_text_input_client(TEXT_INPUT_TYPE_TEXT);
   fake_text_input_client.SetTextAndSelection(u"hello", gfx::Range(0, 5));
-  InputMethodChromeOS ime(this);
+  InputMethodAsh ime(this);
   ime.SetFocusedTextInputClient(&fake_text_input_client);
 
   ime.CommitText(
@@ -1296,10 +1265,10 @@ TEST_F(InputMethodChromeOSTest, CommitTextReplacesSelection) {
   EXPECT_EQ(fake_text_input_client.text(), u"");
 }
 
-TEST_F(InputMethodChromeOSTest, ResetsEngineWithComposition) {
+TEST_F(InputMethodAshTest, ResetsEngineWithComposition) {
   FakeTextInputClient fake_text_input_client(TEXT_INPUT_TYPE_TEXT);
   fake_text_input_client.SetTextAndSelection(u"hello ", gfx::Range(6, 6));
-  InputMethodChromeOS ime(this);
+  InputMethodAsh ime(this);
   ime.SetFocusedTextInputClient(&fake_text_input_client);
 
   ui::CompositionText composition;
@@ -1310,9 +1279,9 @@ TEST_F(InputMethodChromeOSTest, ResetsEngineWithComposition) {
   EXPECT_EQ(mock_ime_engine_handler_->reset_call_count(), 1);
 }
 
-TEST_F(InputMethodChromeOSTest, DoesNotResetEngineWithNoComposition) {
+TEST_F(InputMethodAshTest, DoesNotResetEngineWithNoComposition) {
   FakeTextInputClient fake_text_input_client(TEXT_INPUT_TYPE_TEXT);
-  InputMethodChromeOS ime(this);
+  InputMethodAsh ime(this);
   ime.SetFocusedTextInputClient(&fake_text_input_client);
 
   ime.CommitText(
@@ -1323,9 +1292,9 @@ TEST_F(InputMethodChromeOSTest, DoesNotResetEngineWithNoComposition) {
   EXPECT_EQ(mock_ime_engine_handler_->reset_call_count(), 0);
 }
 
-TEST_F(InputMethodChromeOSTest, CommitTextThenKeyEventOnlyInsertsOnce) {
+TEST_F(InputMethodAshTest, CommitTextThenKeyEventOnlyInsertsOnce) {
   FakeTextInputClient fake_text_input_client(TEXT_INPUT_TYPE_TEXT);
-  InputMethodChromeOS ime(this);
+  InputMethodAsh ime(this);
   ime.SetFocusedTextInputClient(&fake_text_input_client);
 
   ime.CommitText(
@@ -1338,7 +1307,7 @@ TEST_F(InputMethodChromeOSTest, CommitTextThenKeyEventOnlyInsertsOnce) {
   EXPECT_EQ(fake_text_input_client.text(), u"a");
 }
 
-TEST_F(InputMethodChromeOSTest, AddsAndClearsGrammarFragments) {
+TEST_F(InputMethodAshTest, AddsAndClearsGrammarFragments) {
   input_type_ = TEXT_INPUT_TYPE_TEXT;
   std::vector<GrammarFragment> fragments;
   fragments.emplace_back(gfx::Range(0, 1), "fake");
@@ -1349,7 +1318,7 @@ TEST_F(InputMethodChromeOSTest, AddsAndClearsGrammarFragments) {
   EXPECT_EQ(get_grammar_fragments().size(), 0u);
 }
 
-TEST_F(InputMethodChromeOSTest, GetsGrammarFragments) {
+TEST_F(InputMethodAshTest, GetsGrammarFragments) {
   input_type_ = TEXT_INPUT_TYPE_TEXT;
   GrammarFragment fragment(gfx::Range(0, 5), "fake");
   ime_->AddGrammarFragments({fragment});

@@ -52,7 +52,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/base/dragdrop/os_exchange_data_provider_non_backed.h"
-#include "ui/base/ime/ash/input_method_chromeos.h"
+#include "ui/base/ime/ash/input_method_ash.h"
 #else
 #include "ui/base/dragdrop/os_exchange_data_provider_x11.h"
 #include "ui/base/ime/linux/input_method_auralinux.h"
@@ -139,7 +139,7 @@ class OzonePlatformX11 : public OzonePlatform,
       internal::InputMethodDelegate* delegate,
       gfx::AcceleratedWidget) override {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    return std::make_unique<InputMethodChromeOS>(delegate);
+    return std::make_unique<InputMethodAsh>(delegate);
 #else
     // This method is used by upper layer components (e.g: GtkUi) to determine
     // if the LinuxInputMethodContextFactory instance is provided by the Ozone

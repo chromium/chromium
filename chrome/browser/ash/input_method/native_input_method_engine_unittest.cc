@@ -26,7 +26,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/ime_bridge.h"
-#include "ui/base/ime/ash/input_method_chromeos.h"
+#include "ui/base/ime/ash/input_method_ash.h"
 #include "ui/base/ime/ash/mock_ime_input_context_handler.h"
 #include "ui/base/ime/ash/mock_input_method_manager.h"
 #include "ui/base/ime/fake_text_input_client.h"
@@ -570,7 +570,7 @@ TEST_F(NativeInputMethodEngineWithRenderViewHostTest,
   fake_text_input_client.set_source_id(
       ukm::GetSourceIdForWebContentsDocument(web_contents()));
 
-  ui::InputMethodChromeOS ime(nullptr);
+  ui::InputMethodAsh ime(nullptr);
   ime.SetFocusedTextInputClient(&fake_text_input_client);
   ui::IMEBridge::Get()->SetInputContextHandler(&ime);
 
@@ -614,7 +614,7 @@ TEST_F(NativeInputMethodEngineWithRenderViewHostTest,
   fake_text_input_client.set_source_id(
       ukm::GetSourceIdForWebContentsDocument(web_contents()));
 
-  ui::InputMethodChromeOS ime(nullptr);
+  ui::InputMethodAsh ime(nullptr);
   ime.SetFocusedTextInputClient(&fake_text_input_client);
   ui::IMEBridge::Get()->SetInputContextHandler(&ime);
 
