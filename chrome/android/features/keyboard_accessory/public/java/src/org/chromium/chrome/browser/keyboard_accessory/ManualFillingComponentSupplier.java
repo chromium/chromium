@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.keyboard_accessory;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.UnownedUserDataSupplier;
@@ -22,6 +24,7 @@ public class ManualFillingComponentSupplier
      * Return {@link ManualFillingComponent} supplier associated with the given {@link
      * WindowAndroid}.
      */
+    @Nullable
     public static ObservableSupplier<ManualFillingComponent> from(WindowAndroid windowAndroid) {
         return KEY.retrieveDataFromHost(windowAndroid.getUnownedUserDataHost());
     }

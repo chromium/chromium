@@ -56,7 +56,8 @@ public class AutofillPopupBridge implements AutofillDelegate, DialogInterface.On
             Supplier<ManualFillingComponent> manualFillingComponentSupplier =
                     ManualFillingComponentSupplier.from(windowAndroid);
             // Could be null if this ctor is called as the activity is being destroyed.
-            if (manualFillingComponentSupplier.hasValue()) {
+            if (manualFillingComponentSupplier != null
+                    && manualFillingComponentSupplier.hasValue()) {
                 manualFillingComponentSupplier.get().notifyPopupAvailable(mAutofillPopup);
             }
 
