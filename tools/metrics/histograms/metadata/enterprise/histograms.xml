@@ -1759,7 +1759,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.PolicyUpdatePeriod.Device" units="days"
-    expires_after="M95">
+    expires_after="2022-10-01">
   <owner>rbock@google.com</owner>
   <owner>igorcov@chromium.org</owner>
   <summary>
@@ -1768,7 +1768,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.PolicyUpdatePeriod.MachineLevelUser" units="days"
-    expires_after="M95">
+    expires_after="2022-10-01">
   <owner>zmin@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -1778,7 +1778,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.PolicyUpdatePeriod.User" units="days"
-    expires_after="M95">
+    expires_after="2022-10-01">
   <owner>rbock@google.com</owner>
   <owner>igorcov@chromium.org</owner>
   <summary>
@@ -2423,7 +2423,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="EnterpriseCheck.IsLocalMachine" enum="Boolean"
-    expires_after="2021-11-01">
+    expires_after="2022-10-01">
   <owner>rogerta@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
@@ -2434,7 +2434,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="EnterpriseCheck.IsLocalUser" enum="Boolean"
-    expires_after="2021-11-01">
+    expires_after="2022-10-01">
   <owner>pastarmovj@chromium.org</owner>
   <owner>rogerta@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
@@ -2446,7 +2446,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="EnterpriseCheck.IsManaged2" enum="BooleanEnabled"
-    expires_after="2022-01-02">
+    expires_after="2022-10-01">
   <owner>rogerta@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
