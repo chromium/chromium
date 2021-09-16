@@ -189,7 +189,7 @@ class PasswordDetailsTableViewControllerTest
   }
 
   void SetFederatedPassword() {
-    set_credential_type(CredentialTypeFederation);
+    SetCredentialType(CredentialTypeFederation);
     auto form = password_manager::PasswordForm();
     form.username_value = u"test@egmail.com";
     form.url = GURL(u"http://www.example.com/");
@@ -204,7 +204,7 @@ class PasswordDetailsTableViewControllerTest
   }
 
   void SetBlockedOrigin() {
-    set_credential_type(CredentialTypeBlocked);
+    SetCredentialType(CredentialTypeBlocked);
     auto form = password_manager::PasswordForm();
     form.url = GURL("http://www.example.com/");
     form.blocked_by_user = true;
@@ -238,7 +238,8 @@ class PasswordDetailsTableViewControllerTest
   FakeSnackbarImplementation* snack_bar() {
     return (FakeSnackbarImplementation*)snack_bar_;
   }
-  void set_credential_type(CredentialType credentialType) {
+
+  void SetCredentialType(CredentialType credentialType) {
     credential_type_ = credentialType;
   }
 
@@ -583,4 +584,22 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestSectionsInEdit) {
   EXPECT_EQ(2, NumberOfSections());
   EXPECT_EQ(1, NumberOfItemsInSection(0));
   EXPECT_EQ(2, NumberOfItemsInSection(1));
+}
+
+// Tests the layout of the view controller when adding a new credential.
+TEST_F(PasswordDetailsTableViewControllerTest, TestSectionsInAdd) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kSupportForAddPasswordsInSettings);
+  SetCredentialType(CredentialTypeNew);
+  PasswordDetailsTableViewController* passwords_controller =
+      static_cast<PasswordDetailsTableViewController*>(controller());
+  [passwords_controller loadModel];
+
+  EXPECT_EQ(2, NumberOfSections());
+  EXPECT_EQ(1, NumberOfItemsInSection(0));
+  EXPECT_EQ(2, NumberOfItemsInSection(1));
+  // TODO(crbug.com/1226006): Use i18n string.
+  CheckSectionFooter(
+      @"Make sure you're saving your current password for this site", 1);
 }

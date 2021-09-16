@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item_delegate.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
@@ -64,6 +65,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeFederation,
   ItemTypeChangePasswordButton,
   ItemTypeChangePasswordRecommendation,
+  ItemTypeFooter
 };
 
 typedef NS_ENUM(NSInteger, ReauthenticationReason) {
@@ -250,6 +252,11 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
       }
     }
   }
+
+  if (self.credentialType == CredentialTypeNew) {
+    [model setFooter:[self footerItem]
+        forSectionWithIdentifier:SectionIdentifierPassword];
+  }
 }
 
 - (BOOL)showCancelDuringEditing {
@@ -379,6 +386,14 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   return item;
 }
 
+- (TableViewLinkHeaderFooterItem*)footerItem {
+  TableViewLinkHeaderFooterItem* item =
+      [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeFooter];
+  // TODO(crbug.com/1226006): Use i18n string.
+  item.text = @"Make sure you're saving your current password for this site";
+  return item;
+}
+
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView
@@ -396,6 +411,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
                                   atIndexPath:indexPath];
       break;
     case ItemTypeChangePasswordRecommendation:
+    case ItemTypeFooter:
       break;
     case ItemTypeUsername: {
       if (base::FeatureList::IsEnabled(
@@ -513,6 +529,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
     case ItemTypeWebsite:
     case ItemTypeFederation:
     case ItemTypeChangePasswordButton:
+    case ItemTypeFooter:
       break;
     case ItemTypeChangePasswordRecommendation:
       cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -527,6 +544,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   switch (itemType) {
     case ItemTypeWebsite:
     case ItemTypeFederation:
+    case ItemTypeFooter:
       return NO;
     case ItemTypeUsername:
       return base::FeatureList::IsEnabled(
@@ -745,6 +763,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
     case ItemTypeFederation:
     case ItemTypeChangePasswordButton:
     case ItemTypeChangePasswordRecommendation:
+    case ItemTypeFooter:
       return NO;
   }
 }
@@ -867,6 +886,9 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
       return;
     case ItemTypePassword:
       [self attemptToShowPasswordFor:ReauthenticationReasonCopy];
+      return;
+    case ItemTypeFooter:
+      NOTREACHED();
       return;
   }
   [self showToast:message forSuccess:YES];
