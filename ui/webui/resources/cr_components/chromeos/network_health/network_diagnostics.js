@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import 'chrome://resources/js/load_time_data.m.js';
+// clang-format on
+
 /**
  * @fileoverview Polymer element for interacting with Network Diagnostics.
  */
@@ -38,6 +42,14 @@ Polymer({
   ],
 
   properties: {
+    /** @private */
+    areArcNetworkingRoutinesEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('enableArcNetworkDiagnostics');
+      }
+    },
+
     /**
      * List of Diagnostics Routines
      * @private {!Array<!Routine>}
@@ -145,8 +157,10 @@ Polymer({
                     /*stun_server_hostname=*/ null),
               },
             ]
-          },
-          {
+          }
+        ];
+        if (this.areArcNetworkingRoutinesEnabled_) {
+          routineGroups.push({
             group: RoutineGroup.ARC,
             routines: [
               {
@@ -165,8 +179,8 @@ Polymer({
                 func: () => this.networkDiagnostics_.runArcDnsResolution(),
               },
             ]
-          },
-        ];
+          });
+        }
         const routines = [];
 
         for (const group of routineGroups) {

@@ -11,6 +11,7 @@ source_set("network_diagnostics_resource_provider") {
   ]
 
   deps = [
+    "//ash/constants",
     "//chromeos/strings/",
     "//content/public/browser",
     "//ui/base",
