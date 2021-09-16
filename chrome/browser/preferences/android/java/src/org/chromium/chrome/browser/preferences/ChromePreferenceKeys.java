@@ -911,6 +911,10 @@ public final class ChromePreferenceKeys {
 
     public static final String SURVEY_DATE_LAST_ROLLED = "last_rolled_for_chrome_survey_key";
 
+    // The UI used to be an infobar in the past.
+    public static final String SYNC_ERROR_PROMPT_SHOWN_AT_TIME =
+            "sync_error_infobar_shown_shown_at_time";
+
     public static final String TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF =
             "ChromeTabbedActivity.BackgroundTimeMs";
 

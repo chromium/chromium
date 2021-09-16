@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.infobar;
 
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SYNC_ERROR_PROMPT_SHOWN_AT_TIME;
+
 import androidx.test.filters.LargeTest;
 
 import org.junit.Assert;
@@ -12,19 +14,22 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.infobar.InfoBarContainer.InfoBarContainerObserver;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.sync.FakeSyncServiceImpl;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
+import org.chromium.chrome.browser.sync.ui.SyncErrorPromptUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.infobars.InfoBar;
@@ -38,6 +43,7 @@ import java.util.concurrent.TimeoutException;
  * Test suite for the SyncErrorInfoBar.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@DisableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class SyncErrorInfoBarTest {
     private static class SyncErrorInfoBarContainerObserver implements InfoBarContainerObserver {
@@ -88,7 +94,7 @@ public class SyncErrorInfoBarTest {
 
     @Before
     public void setUp() {
-        deleteSyncErrorInfoBarShowTimePref();
+        SyncErrorPromptUtils.resetLastShownTime();
         mFakeSyncServiceImpl = (FakeSyncServiceImpl) mSyncTestRule.getSyncService();
         mInfoBarObserver = new SyncErrorInfoBarContainerObserver();
         mInfoBarContainer = mSyncTestRule.getInfoBarContainer();
@@ -103,7 +109,7 @@ public class SyncErrorInfoBarTest {
         mInfoBarObserver.waitUntilInfoBarAppears(false);
 
         // Resolving the error should not show the infobar again.
-        deleteSyncErrorInfoBarShowTimePref();
+        SyncErrorPromptUtils.resetLastShownTime();
         mFakeSyncServiceImpl.setAuthError(GoogleServiceAuthError.State.NONE);
         mInfoBarObserver.waitUntilInfoBarDisappears();
     }
@@ -115,7 +121,7 @@ public class SyncErrorInfoBarTest {
         mInfoBarObserver.waitUntilInfoBarAppears(false);
 
         // Resolving the error should not show the infobar again.
-        deleteSyncErrorInfoBarShowTimePref();
+        SyncErrorPromptUtils.resetLastShownTime();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mFakeSyncServiceImpl.setFirstSetupComplete(SyncFirstSetupCompleteSource.BASIC_FLOW);
         });
@@ -129,7 +135,7 @@ public class SyncErrorInfoBarTest {
         mInfoBarObserver.waitUntilInfoBarAppears(false);
 
         // Resolving the error should not show the infobar again.
-        deleteSyncErrorInfoBarShowTimePref();
+        SyncErrorPromptUtils.resetLastShownTime();
         mFakeSyncServiceImpl.setPassphraseRequiredForPreferredDataTypes(false);
         mInfoBarObserver.waitUntilInfoBarDisappears();
     }
@@ -151,7 +157,7 @@ public class SyncErrorInfoBarTest {
         mInfoBarObserver.waitUntilInfoBarAppears(false);
 
         // Resolving the error should not show the infobar again.
-        deleteSyncErrorInfoBarShowTimePref();
+        SyncErrorPromptUtils.resetLastShownTime();
         mFakeSyncServiceImpl.setTrustedVaultKeyRequiredForPreferredDataTypes(false);
         mInfoBarObserver.waitUntilInfoBarDisappears();
     }
@@ -163,7 +169,7 @@ public class SyncErrorInfoBarTest {
         mInfoBarObserver.waitUntilInfoBarAppears(false);
 
         // Resolving the error should not show the infobar again.
-        deleteSyncErrorInfoBarShowTimePref();
+        SyncErrorPromptUtils.resetLastShownTime();
         mFakeSyncServiceImpl.setTrustedVaultRecoverabilityDegraded(false);
         mInfoBarObserver.waitUntilInfoBarDisappears();
     }
@@ -206,12 +212,8 @@ public class SyncErrorInfoBarTest {
         mInfoBarObserver.waitUntilInfoBarDisappears();
 
         // Override the time of last seen infobar to minimum required time before current time.
-        ContextUtils.getAppSharedPreferences()
-                .edit()
-                .putLong(SyncErrorInfoBar.PREF_SYNC_ERROR_INFOBAR_SHOWN_AT_TIME,
-                        System.currentTimeMillis()
-                                - SyncErrorInfoBar.MINIMAL_DURATION_BETWEEN_INFOBARS_MS)
-                .apply();
+        SharedPreferencesManager.getInstance().writeLong(SYNC_ERROR_PROMPT_SHOWN_AT_TIME,
+                System.currentTimeMillis() - SyncErrorPromptUtils.MINIMAL_DURATION_BETWEEN_UI_MS);
         mSyncTestRule.loadUrl(UrlConstants.CHROME_BLANK_URL);
         mInfoBarObserver.waitUntilInfoBarAppears(true);
     }
@@ -288,12 +290,5 @@ public class SyncErrorInfoBarTest {
         mFakeSyncServiceImpl.setEngineInitialized(true);
         mFakeSyncServiceImpl.setTrustedVaultRecoverabilityDegraded(true);
         mSyncTestRule.loadUrl(UrlConstants.CHROME_BLANK_URL);
-    }
-
-    private void deleteSyncErrorInfoBarShowTimePref() {
-        ContextUtils.getAppSharedPreferences()
-                .edit()
-                .remove(SyncErrorInfoBar.PREF_SYNC_ERROR_INFOBAR_SHOWN_AT_TIME)
-                .apply();
     }
 }
