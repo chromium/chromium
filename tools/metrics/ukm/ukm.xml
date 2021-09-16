@@ -9872,11 +9872,17 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="Net">
+    <obsolete>
+      Deprecated as of 09/2021.
+    </obsolete>
     <summary>
       Measure of memory allocated by network sockets and caches.
     </summary>
   </metric>
   <metric name="Net.UrlRequestContext">
+    <obsolete>
+      Deprecated as of 09/2021.
+    </obsolete>
     <summary>
       Measure of memory allocated by all network requests.
     </summary>
