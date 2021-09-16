@@ -40,6 +40,13 @@ enum AshTextContext {
   // A month label that appears in the Calendar view.
   CONTEXT_CALENDAR_LABEL,
 
+  // Title and details text label used in search result view. Usually 14 pt.
+  CONTEXT_SEARCH_RESULT_VIEW,
+
+  // Details text label used for inline answer search result view. Usually 12pt.
+  // Used when productivity launcher is enabled.
+  CONTEXT_SEARCH_RESULT_VIEW_INLINE_ANSWER_DETAILS,
+
   ASH_TEXT_CONTEXT_END
 };
 
@@ -52,6 +59,12 @@ enum AshTextStyle {
 
   // Text styling specifically for the Chrome OS sharesheet.
   STYLE_SHARESHEET,
+
+  // Text styling for classic launcher's search result view.
+  STYLE_CLASSIC_LAUNCHER,
+
+  // Text styling for productivity launcher's search result view.
+  STYLE_PRODUCTIVITY_LAUNCHER,
 
   ASH_TEXT_STYLE_END
 };

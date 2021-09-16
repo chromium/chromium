@@ -41,6 +41,7 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/image_model_utils.h"
+#include "ui/views/style/typography.h"
 
 namespace ash {
 
@@ -144,7 +145,9 @@ SearchResultView::SearchResultView(SearchResultListView* list_view,
   details_label_->SetDisplayedOnBackgroundColor(SK_ColorTRANSPARENT);
   details_label_->SetVisible(false);
 
-  separator_label_ = AddChildView(std::make_unique<views::Label>());
+  separator_label_ = AddChildView(std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(IDS_ASH_SEARCH_RESULT_SEPARATOR),
+      CONTEXT_SEARCH_RESULT_VIEW, STYLE_PRODUCTIVITY_LAUNCHER));
   separator_label_->SetBackgroundColor(SK_ColorTRANSPARENT);
   separator_label_->SetVisible(false);
   separator_label_->SetText(
@@ -213,6 +216,17 @@ void SearchResultView::UpdateDetailsText() {
 void SearchResultView::StyleTitleLabel() {
   title_label_->ClearStyleRanges();
   views::StyledLabel::RangeStyleInfo title_style;
+
+  switch (view_type_) {
+    case SearchResultViewType::kClassic:
+      title_label_->SetTextContext(CONTEXT_SEARCH_RESULT_VIEW);
+      title_label_->SetDefaultTextStyle(STYLE_CLASSIC_LAUNCHER);
+      break;
+    case SearchResultViewType::kInlineAnswer:
+    case SearchResultViewType::kDefault:
+      title_label_->SetTextContext(CONTEXT_SEARCH_RESULT_VIEW);
+      title_label_->SetDefaultTextStyle(STYLE_PRODUCTIVITY_LAUNCHER);
+  }
   title_style.override_color =
       AppListColorProvider::Get()->GetSearchBoxTextColor(
           kDeprecatedSearchBoxTextDefaultColor);
@@ -243,6 +257,20 @@ void SearchResultView::StyleTitleLabel() {
 void SearchResultView::StyleDetailsLabel() {
   details_label_->ClearStyleRanges();
   views::StyledLabel::RangeStyleInfo details_style;
+  switch (view_type_) {
+    case SearchResultViewType::kClassic:
+      details_label_->SetTextContext(CONTEXT_SEARCH_RESULT_VIEW);
+      details_label_->SetDefaultTextStyle(STYLE_CLASSIC_LAUNCHER);
+      break;
+    case SearchResultViewType::kInlineAnswer:
+      details_label_->SetTextContext(
+          CONTEXT_SEARCH_RESULT_VIEW_INLINE_ANSWER_DETAILS);
+      details_label_->SetDefaultTextStyle(STYLE_PRODUCTIVITY_LAUNCHER);
+      break;
+    case SearchResultViewType::kDefault:
+      details_label_->SetTextContext(CONTEXT_SEARCH_RESULT_VIEW);
+      details_label_->SetDefaultTextStyle(STYLE_PRODUCTIVITY_LAUNCHER);
+  }
   details_style.override_color =
       AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
           kDeprecatedSearchBoxTextDefaultColor);
