@@ -197,6 +197,10 @@ crbug.com/1085222 [ linux intel-0x5912 ] deqp/functional/gles3/shadermatrix/add_
 crbug.com/1085222 [ catalina intel-0xa2e ] deqp/functional/gles3/shaderoperator/binary_operator_* [ RetryOnFailure ]
 crbug.com/1085222 [ catalina intel-0xa2e ] deqp/functional/gles3/shaderoperator/unary_operator_* [ RetryOnFailure ]
 
+# Temporary suppression while we wait for a spec update.
+# TODO(jmadill): Remove when possible.
+crbug.com/angleproject/6358 conformance/programs/program-test.html [ Failure ]
+
 ####################
 # Win failures     #
 ####################
