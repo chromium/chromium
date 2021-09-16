@@ -12,6 +12,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/browser/extensions/external_testing_loader.h"
@@ -60,7 +61,8 @@ constexpr char kWebAppPath[] = "/web_apps/basic.html";
 
 namespace web_app {
 
-class PreinstalledWebAppMigrationBrowserTest : public InProcessBrowserTest {
+class PreinstalledWebAppMigrationBrowserTest
+    : public extensions::ExtensionBrowserTest {
  public:
   PreinstalledWebAppMigrationBrowserTest() {
     PreinstalledWebAppManager::SkipStartupForTesting();
@@ -69,8 +71,6 @@ class PreinstalledWebAppMigrationBrowserTest : public InProcessBrowserTest {
         extensions::ExtensionService::DisableExternalUpdatesForTesting();
   }
   ~PreinstalledWebAppMigrationBrowserTest() override = default;
-
-  Profile* profile() { return browser()->profile(); }
 
   extensions::ExtensionService& extension_service() {
     return *extensions::ExtensionSystem::Get(profile())->extension_service();
@@ -84,20 +84,20 @@ class PreinstalledWebAppMigrationBrowserTest : public InProcessBrowserTest {
     return GenerateAppId(/*manifest_id=*/absl::nullopt, GetWebAppUrl());
   }
 
-  // InProcessBrowserTest:
+  // extensions::ExtensionBrowserTest:
   void SetUp() override {
     embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
         &PreinstalledWebAppMigrationBrowserTest::RequestHandlerOverride,
         base::Unretained(this)));
     ASSERT_TRUE(embedded_test_server()->Start());
 
-    InProcessBrowserTest::SetUp();
+    extensions::ExtensionBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
     SetUpExtensionTestExternalProvider();
 
-    InProcessBrowserTest::SetUpOnMainThread();
+    extensions::ExtensionBrowserTest::SetUpOnMainThread();
     os_hooks_suppress_ =
         OsIntegrationManager::ScopedSuppressOsHooksForTesting();
   }
@@ -202,7 +202,8 @@ class PreinstalledWebAppMigrationBrowserTest : public InProcessBrowserTest {
             "feature_name": "$2",
             "uninstall_and_replace": ["$3"]
           })",
-          {GetWebAppUrl().spec(), kMigrationFlag, kExtensionId}, nullptr);
+          {GetWebAppUrl().spec(), kMigrationFlag, uninstall_and_replace_},
+          nullptr);
       app_configs.push_back(*base::JSONReader::Read(app_config_string));
     }
     PreinstalledWebAppManager::SetConfigsForTesting(&app_configs);
@@ -232,7 +233,8 @@ class PreinstalledWebAppMigrationBrowserTest : public InProcessBrowserTest {
         ->FlushMojoCallsForTesting();
   }
 
- private:
+ protected:
+  const char* uninstall_and_replace_ = kExtensionId;
   base::test::ScopedFeatureList features_;
   absl::optional<base::AutoReset<bool>> disable_external_extensions_scope_;
   std::unique_ptr<extensions::ExtensionCacheFake> test_extension_cache_;
@@ -479,6 +481,44 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
                   .GetAppUserDisplayMode(web_app_id),
               DisplayMode::kBrowser);
   }
+}
+
+static constexpr char kPlatformAppId[] = "dgbbhfbocdphnnabneckobeifilidpmj";
+
+class PreinstalledWebAppMigratePlatformAppBrowserTest
+    : public PreinstalledWebAppMigrationBrowserTest {
+ public:
+  PreinstalledWebAppMigratePlatformAppBrowserTest() {
+    uninstall_and_replace_ = kPlatformAppId;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigratePlatformAppBrowserTest,
+                       MigratePlatformAppPreferences) {
+  // Install platform app to migrate.
+  ASSERT_EQ(InstallExtension(
+                test_data_dir_.AppendASCII("platform_apps/app_window_2"), 1)
+                ->id(),
+            kPlatformAppId);
+
+  // Migrate extension app to web app.
+  {
+    base::AutoReset<bool> testing_scope =
+        SetPreinstalledAppInstallFeatureAlwaysEnabledForTesting();
+    extensions::TestExtensionRegistryObserver uninstall_observer(
+        extensions::ExtensionRegistry::Get(profile()));
+
+    SyncExternalWebApps(/*expect_install=*/true, /*expect_uninstall=*/false);
+    EXPECT_TRUE(IsWebAppInstalled());
+
+    uninstall_observer.WaitForExtensionUninstalled();
+  }
+
+  // Platform apps run in an app window so we must migrate as standalone.
+  EXPECT_EQ(
+      WebAppProvider::GetForTest(profile())->registrar().GetAppUserDisplayMode(
+          GetWebAppId()),
+      DisplayMode::kStandalone);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
