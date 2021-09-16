@@ -21,6 +21,10 @@ class VIEWS_EXPORT RadioButton : public Checkbox {
 
   explicit RadioButton(const std::u16string& label = std::u16string(),
                        int group_id = 0);
+
+  RadioButton(const RadioButton&) = delete;
+  RadioButton& operator=(const RadioButton&) = delete;
+
   ~RadioButton() override;
 
   // Overridden from View:
@@ -44,8 +48,6 @@ class VIEWS_EXPORT RadioButton : public Checkbox {
 
  private:
   void GetViewsInGroupFromParent(int group, Views* views);
-
-  DISALLOW_COPY_AND_ASSIGN(RadioButton);
 };
 
 }  // namespace views

@@ -18,6 +18,10 @@ namespace examples {
 class VIEWS_EXAMPLES_EXPORT AxExample : public ExampleBase {
  public:
   AxExample();
+
+  AxExample(const AxExample&) = delete;
+  AxExample& operator=(const AxExample&) = delete;
+
   ~AxExample() override;
 
   // ExampleBase:
@@ -25,8 +29,6 @@ class VIEWS_EXAMPLES_EXPORT AxExample : public ExampleBase {
 
  private:
   Button* announce_button_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(AxExample);
 };
 
 }  // namespace examples

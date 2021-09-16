@@ -124,6 +124,10 @@ const int kMaxHeight = 100;
 class FixedView : public View {
  public:
   FixedView() = default;
+
+  FixedView(const FixedView&) = delete;
+  FixedView& operator=(const FixedView&) = delete;
+
   ~FixedView() override = default;
 
   void Layout() override {
@@ -132,14 +136,15 @@ class FixedView : public View {
   }
 
   void SetFocus() { Focus(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FixedView);
 };
 
 class CustomView : public View {
  public:
   CustomView() = default;
+
+  CustomView(const CustomView&) = delete;
+  CustomView& operator=(const CustomView&) = delete;
+
   ~CustomView() override = default;
 
   const gfx::Point last_location() const { return last_location_; }
@@ -162,8 +167,6 @@ class CustomView : public View {
 
  private:
   gfx::Point last_location_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomView);
 };
 
 void CheckScrollbarVisibility(const ScrollView* scroll_view,
@@ -191,30 +194,32 @@ ui::MouseEvent TestLeftMouseAt(const gfx::Point& location, ui::EventType type) {
 class VerticalResizingView : public View {
  public:
   VerticalResizingView() = default;
+
+  VerticalResizingView(const VerticalResizingView&) = delete;
+  VerticalResizingView& operator=(const VerticalResizingView&) = delete;
+
   ~VerticalResizingView() override = default;
   void Layout() override {
     int width = 10000;
     int height = parent()->height();
     SetBounds(x(), y(), width, height);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VerticalResizingView);
 };
 
 // Same as VerticalResizingView, but horizontal instead.
 class HorizontalResizingView : public View {
  public:
   HorizontalResizingView() = default;
+
+  HorizontalResizingView(const HorizontalResizingView&) = delete;
+  HorizontalResizingView& operator=(const HorizontalResizingView&) = delete;
+
   ~HorizontalResizingView() override = default;
   void Layout() override {
     int height = 10000;
     int width = parent()->width();
     SetBounds(x(), y(), width, height);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HorizontalResizingView);
 };
 
 class TestScrollBarThumb : public BaseScrollBarThumb {

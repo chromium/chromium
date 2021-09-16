@@ -81,6 +81,9 @@ class VIEWS_EXPORT Label : public View,
   // Construct a Label with the given |font| description.
   Label(const std::u16string& text, const CustomFont& font);
 
+  Label(const Label&) = delete;
+  Label& operator=(const Label&) = delete;
+
   ~Label() override;
 
   static const gfx::FontList& GetDefaultFontList();
@@ -485,8 +488,6 @@ class VIEWS_EXPORT Label : public View,
   // Context menu related members.
   ui::SimpleMenuModel context_menu_contents_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(Label);
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Label, View)

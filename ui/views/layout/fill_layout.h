@@ -23,6 +23,10 @@ namespace views {
 class VIEWS_EXPORT FillLayout : public LayoutManagerBase {
  public:
   FillLayout();
+
+  FillLayout(const FillLayout&) = delete;
+  FillLayout& operator=(const FillLayout&) = delete;
+
   ~FillLayout() override;
 
   bool include_hidden_views() const { return include_hidden_views_; }
@@ -54,8 +58,6 @@ class VIEWS_EXPORT FillLayout : public LayoutManagerBase {
   //
   // Off by default for backwards-compatibility with legacy uses of FillLayout.
   bool minimum_size_enabled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FillLayout);
 };
 
 }  // namespace views

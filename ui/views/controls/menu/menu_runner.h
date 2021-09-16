@@ -121,6 +121,10 @@ class VIEWS_EXPORT MenuRunner {
 
   // Creates a runner for a custom-created toolkit-views menu.
   MenuRunner(MenuItemView* menu, int32_t run_types);
+
+  MenuRunner(const MenuRunner&) = delete;
+  MenuRunner& operator=(const MenuRunner&) = delete;
+
   ~MenuRunner();
 
   // Runs the menu. MenuDelegate::OnMenuClosed will be notified of the results.
@@ -163,8 +167,6 @@ class VIEWS_EXPORT MenuRunner {
   // An implementation of RunMenuAt. This is usually NULL and ignored. If this
   // is not NULL, this implementation will be used.
   std::unique_ptr<MenuRunnerHandler> runner_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuRunner);
 };
 
 }  // namespace views

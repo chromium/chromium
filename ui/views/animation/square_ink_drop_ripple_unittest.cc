@@ -37,6 +37,12 @@ gfx::Point TransformPoint(const gfx::Transform& transform,
 class SquareInkDropRippleCalculateTransformsTest : public WidgetTest {
  public:
   SquareInkDropRippleCalculateTransformsTest();
+
+  SquareInkDropRippleCalculateTransformsTest(
+      const SquareInkDropRippleCalculateTransformsTest&) = delete;
+  SquareInkDropRippleCalculateTransformsTest& operator=(
+      const SquareInkDropRippleCalculateTransformsTest&) = delete;
+
   ~SquareInkDropRippleCalculateTransformsTest() override;
 
  protected:
@@ -82,9 +88,6 @@ class SquareInkDropRippleCalculateTransformsTest : public WidgetTest {
   // The gfx::Transforms collection that is populated via the
   // Calculate*Transforms() calls.
   SquareInkDropRippleTestApi::InkDropTransforms transforms_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SquareInkDropRippleCalculateTransformsTest);
 };
 
 SquareInkDropRippleCalculateTransformsTest::

@@ -104,6 +104,10 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   static constexpr int kVisibleArrowBuffer = 12;
 
   BubbleBorder(Arrow arrow, Shadow shadow, SkColor color);
+
+  BubbleBorder(const BubbleBorder&) = delete;
+  BubbleBorder& operator=(const BubbleBorder&) = delete;
+
   ~BubbleBorder() override;
 
   static bool has_arrow(Arrow a) { return a < NONE; }
@@ -250,8 +254,6 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   bool use_theme_background_color_;
   bool avoid_shadow_overlap_ = false;
   absl::optional<gfx::Insets> insets_;
-
-  DISALLOW_COPY_AND_ASSIGN(BubbleBorder);
 };
 
 // A Background that clips itself to the specified BubbleBorder and uses

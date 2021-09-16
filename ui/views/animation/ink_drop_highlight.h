@@ -64,6 +64,9 @@ class VIEWS_EXPORT InkDropHighlight {
   // |base_color| with alpha will also want to call set_visible_opacity(1.f);.
   InkDropHighlight(const gfx::SizeF& size, SkColor base_color);
 
+  InkDropHighlight(const InkDropHighlight&) = delete;
+  InkDropHighlight& operator=(const InkDropHighlight&) = delete;
+
   virtual ~InkDropHighlight();
 
   void set_observer(InkDropHighlightObserver* observer) {
@@ -134,8 +137,6 @@ class VIEWS_EXPORT InkDropHighlight {
   std::unique_ptr<AnimationAbortHandle> animation_abort_handle_;
 
   InkDropHighlightObserver* observer_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(InkDropHighlight);
 };
 
 // Returns a human readable string for |animation_type|.  Useful for logging.

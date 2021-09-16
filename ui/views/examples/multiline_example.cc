@@ -43,15 +43,16 @@ gfx::Range ClampRange(gfx::Range range, uint32_t max) {
 class PreferredSizeLabel : public Label {
  public:
   PreferredSizeLabel() = default;
+
+  PreferredSizeLabel(const PreferredSizeLabel&) = delete;
+  PreferredSizeLabel& operator=(const PreferredSizeLabel&) = delete;
+
   ~PreferredSizeLabel() override = default;
 
   // Label:
   gfx::Size CalculatePreferredSize() const override {
     return gfx::Size(50, Label::CalculatePreferredSize().height());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PreferredSizeLabel);
 };
 
 }  // namespace

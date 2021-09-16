@@ -16,6 +16,10 @@ namespace examples {
 class VIEWS_EXAMPLES_EXPORT ProgressBarExample : public ExampleBase {
  public:
   ProgressBarExample();
+
+  ProgressBarExample(const ProgressBarExample&) = delete;
+  ProgressBarExample& operator=(const ProgressBarExample&) = delete;
+
   ~ProgressBarExample() override;
 
   // ExampleBase:
@@ -26,8 +30,6 @@ class VIEWS_EXAMPLES_EXPORT ProgressBarExample : public ExampleBase {
 
   ProgressBar* progress_bar_ = nullptr;
   double current_percent_ = 0.0;
-
-  DISALLOW_COPY_AND_ASSIGN(ProgressBarExample);
 };
 
 }  // namespace examples

@@ -26,6 +26,10 @@ class VIEWS_EXPORT WindowEventFilterLinux {
  public:
   WindowEventFilterLinux(DesktopWindowTreeHostLinux* desktop_window_tree_host,
                          ui::WmMoveResizeHandler* handler);
+
+  WindowEventFilterLinux(const WindowEventFilterLinux&) = delete;
+  WindowEventFilterLinux& operator=(const WindowEventFilterLinux&) = delete;
+
   ~WindowEventFilterLinux();
 
   void HandleLocatedEventWithHitTest(int hit_test, ui::LocatedEvent* event);
@@ -64,8 +68,6 @@ class VIEWS_EXPORT WindowEventFilterLinux {
   // initial click. Acting on a double click should only occur for matching
   // components.
   int click_component_ = HTNOWHERE;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowEventFilterLinux);
 };
 
 }  // namespace views

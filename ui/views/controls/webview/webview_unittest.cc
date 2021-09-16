@@ -49,6 +49,11 @@ class WebViewTestWebContentsObserver : public content::WebContentsObserver {
     content::WebContentsObserver::Observe(web_contents);
   }
 
+  WebViewTestWebContentsObserver(const WebViewTestWebContentsObserver&) =
+      delete;
+  WebViewTestWebContentsObserver& operator=(
+      const WebViewTestWebContentsObserver&) = delete;
+
   ~WebViewTestWebContentsObserver() override {
     if (web_contents_)
       content::WebContentsObserver::Observe(nullptr);
@@ -98,14 +103,18 @@ class WebViewTestWebContentsObserver : public content::WebContentsObserver {
   int32_t hidden_count_;
   // Set to true if the view containing the webcontents has a valid root window.
   bool valid_root_while_shown_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewTestWebContentsObserver);
 };
 
 // Fakes the fullscreen browser state reported to WebContents and WebView.
 class WebViewTestWebContentsDelegate : public content::WebContentsDelegate {
  public:
   WebViewTestWebContentsDelegate() = default;
+
+  WebViewTestWebContentsDelegate(const WebViewTestWebContentsDelegate&) =
+      delete;
+  WebViewTestWebContentsDelegate& operator=(
+      const WebViewTestWebContentsDelegate&) = delete;
+
   ~WebViewTestWebContentsDelegate() override = default;
 
   void set_is_fullscreened(bool fs) { is_fullscreened_ = fs; }
@@ -118,8 +127,6 @@ class WebViewTestWebContentsDelegate : public content::WebContentsDelegate {
 
  private:
   bool is_fullscreened_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewTestWebContentsDelegate);
 };
 
 }  // namespace
@@ -130,6 +137,9 @@ class WebViewUnitTest : public views::test::WidgetTest {
   WebViewUnitTest()
       : views::test::WidgetTest(std::unique_ptr<base::test::TaskEnvironment>(
             std::make_unique<content::BrowserTaskEnvironment>())) {}
+
+  WebViewUnitTest(const WebViewUnitTest&) = delete;
+  WebViewUnitTest& operator=(const WebViewUnitTest&) = delete;
 
   ~WebViewUnitTest() override = default;
 
@@ -207,8 +217,6 @@ class WebViewUnitTest : public views::test::WidgetTest {
 
   Widget* top_level_widget_ = nullptr;
   WebView* web_view_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewUnitTest);
 };
 
 // Tests that attaching and detaching a WebContents to a WebView makes the

@@ -25,6 +25,10 @@ namespace test {
 class TestMenuDelegate : public MenuDelegate {
  public:
   TestMenuDelegate();
+
+  TestMenuDelegate(const TestMenuDelegate&) = delete;
+  TestMenuDelegate& operator=(const TestMenuDelegate&) = delete;
+
   ~TestMenuDelegate() override;
 
   int show_context_menu_count() { return show_context_menu_count_; }
@@ -82,8 +86,6 @@ class TestMenuDelegate : public MenuDelegate {
   MenuItemView* will_hide_menu_ = nullptr;
 
   bool is_drop_performed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMenuDelegate);
 };
 
 // Test api which caches the currently active MenuController. Can be used to
@@ -94,6 +96,10 @@ class TestMenuDelegate : public MenuDelegate {
 class MenuControllerTestApi {
  public:
   MenuControllerTestApi();
+
+  MenuControllerTestApi(const MenuControllerTestApi&) = delete;
+  MenuControllerTestApi& operator=(const MenuControllerTestApi&) = delete;
+
   ~MenuControllerTestApi();
 
   MenuController* controller() { return controller_.get(); }
@@ -108,8 +114,6 @@ class MenuControllerTestApi {
 
  private:
   base::WeakPtr<MenuController> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuControllerTestApi);
 };
 
 // On platforms which have menu closure animations, these functions are

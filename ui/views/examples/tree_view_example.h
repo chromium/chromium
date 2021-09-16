@@ -33,6 +33,10 @@ class VIEWS_EXAMPLES_EXPORT TreeViewExample
       public ui::SimpleMenuModel::Delegate {
  public:
   TreeViewExample();
+
+  TreeViewExample(const TreeViewExample&) = delete;
+  TreeViewExample& operator=(const TreeViewExample&) = delete;
+
   ~TreeViewExample() override;
 
   // ExampleBase:
@@ -77,8 +81,6 @@ class VIEWS_EXAMPLES_EXPORT TreeViewExample
 
   std::unique_ptr<ui::SimpleMenuModel> context_menu_model_;
   std::unique_ptr<MenuRunner> context_menu_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(TreeViewExample);
 };
 
 }  // namespace examples

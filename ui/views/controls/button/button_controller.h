@@ -19,6 +19,10 @@ class VIEWS_EXPORT ButtonController {
  public:
   ButtonController(Button* button,
                    std::unique_ptr<ButtonControllerDelegate> delegate);
+
+  ButtonController(const ButtonController&) = delete;
+  ButtonController& operator=(const ButtonController&) = delete;
+
   virtual ~ButtonController();
 
   // An enum describing the events on which a button should notify its listener.
@@ -65,8 +69,6 @@ class VIEWS_EXPORT ButtonController {
 
   // The event on which the button's listener should be notified.
   NotifyAction notify_action_ = NotifyAction::kOnRelease;
-
-  DISALLOW_COPY_AND_ASSIGN(ButtonController);
 };
 
 }  // namespace views

@@ -52,6 +52,11 @@ using views::test::WaitForMenuClosureAnimation;
 class TestContextMenuController : public ContextMenuController {
  public:
   TestContextMenuController() = default;
+
+  TestContextMenuController(const TestContextMenuController&) = delete;
+  TestContextMenuController& operator=(const TestContextMenuController&) =
+      delete;
+
   ~TestContextMenuController() override = default;
 
   // ContextMenuController:
@@ -65,8 +70,6 @@ class TestContextMenuController : public ContextMenuController {
 
  private:
   bool opened_menu_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestContextMenuController);
 };
 
 class EditableComboboxTest : public ViewsTestBase {

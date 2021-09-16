@@ -79,6 +79,9 @@ class VIEWS_EXPORT ViewsDelegate {
     CLOSE_MENU,
   };
 
+  ViewsDelegate(const ViewsDelegate&) = delete;
+  ViewsDelegate& operator=(const ViewsDelegate&) = delete;
+
   virtual ~ViewsDelegate();
 
   // Returns the ViewsDelegate instance.  This should never return non-null
@@ -201,8 +204,6 @@ class VIEWS_EXPORT ViewsDelegate {
 #endif
 
   NativeWidgetFactory native_widget_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewsDelegate);
 };
 
 }  // namespace views

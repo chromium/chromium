@@ -17,6 +17,10 @@ namespace examples {
 class VIEWS_EXAMPLES_EXPORT ToggleButtonExample : public ExampleBase {
  public:
   ToggleButtonExample();
+
+  ToggleButtonExample(const ToggleButtonExample&) = delete;
+  ToggleButtonExample& operator=(const ToggleButtonExample&) = delete;
+
   ~ToggleButtonExample() override;
 
   // ExampleBase:
@@ -25,8 +29,6 @@ class VIEWS_EXAMPLES_EXPORT ToggleButtonExample : public ExampleBase {
  private:
   int count_1_ = 0;
   int count_2_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ToggleButtonExample);
 };
 
 }  // namespace examples

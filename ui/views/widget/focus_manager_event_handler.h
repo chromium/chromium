@@ -22,6 +22,10 @@ class Widget;
 class FocusManagerEventHandler : public ui::EventHandler {
  public:
   FocusManagerEventHandler(Widget* widget, aura::Window* window);
+
+  FocusManagerEventHandler(const FocusManagerEventHandler&) = delete;
+  FocusManagerEventHandler& operator=(const FocusManagerEventHandler&) = delete;
+
   ~FocusManagerEventHandler() override;
 
   // Implementation of ui::EventHandler:
@@ -33,8 +37,6 @@ class FocusManagerEventHandler : public ui::EventHandler {
 
   // |window_| is the event target that is associated with this class.
   aura::Window* window_;
-
-  DISALLOW_COPY_AND_ASSIGN(FocusManagerEventHandler);
 };
 
 }  // namespace views

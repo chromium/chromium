@@ -31,6 +31,10 @@ class InfoBubbleFrame : public BubbleFrameView {
  public:
   explicit InfoBubbleFrame(const gfx::Insets& content_margins)
       : BubbleFrameView(gfx::Insets(), content_margins) {}
+
+  InfoBubbleFrame(const InfoBubbleFrame&) = delete;
+  InfoBubbleFrame& operator=(const InfoBubbleFrame&) = delete;
+
   ~InfoBubbleFrame() override = default;
 
   gfx::Rect GetAvailableScreenBounds(const gfx::Rect& rect) const override {
@@ -44,8 +48,6 @@ class InfoBubbleFrame : public BubbleFrameView {
  private:
   // Bounds that this frame should try to keep bubbles within (screen coords).
   gfx::Rect available_bounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(InfoBubbleFrame);
 };
 
 InfoBubble::InfoBubble(View* anchor,

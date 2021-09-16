@@ -23,6 +23,10 @@ namespace test {
 class TestEventObserver : public ui::EventObserver {
  public:
   TestEventObserver() = default;
+
+  TestEventObserver(const TestEventObserver&) = delete;
+  TestEventObserver& operator=(const TestEventObserver&) = delete;
+
   ~TestEventObserver() override = default;
 
   // ui::EventObserver:
@@ -32,8 +36,6 @@ class TestEventObserver : public ui::EventObserver {
 
  private:
   size_t observed_event_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestEventObserver);
 };
 
 class EventMonitorTest : public WidgetTest {

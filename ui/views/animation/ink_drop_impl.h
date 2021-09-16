@@ -53,6 +53,10 @@ class VIEWS_EXPORT InkDropImpl : public InkDrop,
   InkDropImpl(InkDropHost* ink_drop_host,
               const gfx::Size& host_size,
               AutoHighlightMode auto_highlight_mode);
+
+  InkDropImpl(const InkDropImpl&) = delete;
+  InkDropImpl& operator=(const InkDropImpl&) = delete;
+
   ~InkDropImpl() override;
 
   const absl::optional<base::TimeDelta>& hover_highlight_fade_duration() const {
@@ -98,6 +102,9 @@ class VIEWS_EXPORT InkDropImpl : public InkDrop,
   // anywhere else may be a sign that a new state should exist.
   class HighlightState {
    public:
+    HighlightState(const HighlightState&) = delete;
+    HighlightState& operator=(const HighlightState&) = delete;
+
     virtual ~HighlightState() = default;
 
     // Called when |this| becomes the current state. Allows subclasses to
@@ -148,8 +155,6 @@ class VIEWS_EXPORT InkDropImpl : public InkDrop,
    private:
     // Used by |this| to create the new states to transition to.
     HighlightStateFactory* const state_factory_;
-
-    DISALLOW_COPY_AND_ASSIGN(HighlightState);
   };
 
   // Creates the different HighlightStates instances. A factory is used to make
@@ -306,8 +311,6 @@ class VIEWS_EXPORT InkDropImpl : public InkDrop,
 
   // Used to fail DCHECKS to catch unexpected behavior during tear down.
   bool destroying_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(InkDropImpl);
 };
 
 }  // namespace views

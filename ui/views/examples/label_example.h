@@ -22,6 +22,10 @@ class VIEWS_EXAMPLES_EXPORT LabelExample : public ExampleBase,
                                            public TextfieldController {
  public:
   LabelExample();
+
+  LabelExample(const LabelExample&) = delete;
+  LabelExample& operator=(const LabelExample&) = delete;
+
   ~LabelExample() override;
 
   // ExampleBase:
@@ -56,8 +60,6 @@ class VIEWS_EXAMPLES_EXPORT LabelExample : public ExampleBase,
   Checkbox* shadows_ = nullptr;
   Checkbox* selectable_ = nullptr;
   Label* custom_label_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(LabelExample);
 };
 
 }  // namespace examples

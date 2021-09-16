@@ -19,6 +19,10 @@ namespace examples {
 class VIEWS_EXAMPLES_EXPORT TextExample : public ExampleBase {
  public:
   TextExample();
+
+  TextExample(const TextExample&) = delete;
+  TextExample& operator=(const TextExample&) = delete;
+
   ~TextExample() override;
 
   // ExampleBase:
@@ -75,8 +79,6 @@ class VIEWS_EXAMPLES_EXPORT TextExample : public ExampleBase {
 
   // Check box to enable/disable underline style.
   Checkbox* underline_checkbox_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextExample);
 };
 
 }  // namespace examples

@@ -16,6 +16,10 @@ class ScopedTestWidget {
  public:
   explicit ScopedTestWidget(internal::NativeWidgetPrivate* native_widget)
       : native_widget_(native_widget) {}
+
+  ScopedTestWidget(const ScopedTestWidget&) = delete;
+  ScopedTestWidget& operator=(const ScopedTestWidget&) = delete;
+
   ~ScopedTestWidget() {
     // |CloseNow| deletes both |native_widget_| and its associated
     // |Widget|.
@@ -27,12 +31,15 @@ class ScopedTestWidget {
 
  private:
   internal::NativeWidgetPrivate* native_widget_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedTestWidget);
 };
 
 class NativeWidgetTest : public ViewsTestBase {
  public:
   NativeWidgetTest() = default;
+
+  NativeWidgetTest(const NativeWidgetTest&) = delete;
+  NativeWidgetTest& operator=(const NativeWidgetTest&) = delete;
+
   ~NativeWidgetTest() override = default;
 
   internal::NativeWidgetPrivate* CreateNativeWidgetOfType(
@@ -52,9 +59,6 @@ class NativeWidgetTest : public ViewsTestBase {
   internal::NativeWidgetPrivate* CreateNativeSubWidget() {
     return CreateNativeWidgetOfType(Widget::InitParams::TYPE_CONTROL);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NativeWidgetTest);
 };
 
 TEST_F(NativeWidgetTest, CreateNativeWidget) {

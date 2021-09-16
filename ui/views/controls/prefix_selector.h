@@ -32,6 +32,10 @@ class View;
 class VIEWS_EXPORT PrefixSelector : public ui::TextInputClient {
  public:
   PrefixSelector(PrefixDelegate* delegate, View* host_view);
+
+  PrefixSelector(const PrefixSelector&) = delete;
+  PrefixSelector& operator=(const PrefixSelector&) = delete;
+
   ~PrefixSelector() override;
 
   // Invoked from the view when it loses focus.
@@ -125,8 +129,6 @@ class VIEWS_EXPORT PrefixSelector : public ui::TextInputClient {
   // TickClock used for getting the time of the current keystroke, used for
   // continuing or restarting selections.
   const base::TickClock* tick_clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefixSelector);
 };
 
 }  // namespace views

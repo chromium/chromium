@@ -43,6 +43,10 @@ class WEBVIEW_EXPORT WebView : public View,
   METADATA_HEADER(WebView);
 
   explicit WebView(content::BrowserContext* browser_context = nullptr);
+
+  WebView(const WebView&) = delete;
+  WebView& operator=(const WebView&) = delete;
+
   ~WebView() override;
 
   // This creates a WebContents if |kBrowserContext| has been set and there is
@@ -108,10 +112,13 @@ class WEBVIEW_EXPORT WebView : public View,
   class WEBVIEW_EXPORT ScopedWebContentsCreatorForTesting {
    public:
     explicit ScopedWebContentsCreatorForTesting(WebContentsCreator creator);
-    ~ScopedWebContentsCreatorForTesting();
 
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ScopedWebContentsCreatorForTesting);
+    ScopedWebContentsCreatorForTesting(
+        const ScopedWebContentsCreatorForTesting&) = delete;
+    ScopedWebContentsCreatorForTesting& operator=(
+        const ScopedWebContentsCreatorForTesting&) = delete;
+
+    ~ScopedWebContentsCreatorForTesting();
   };
 
  protected:
@@ -192,8 +199,6 @@ class WEBVIEW_EXPORT WebView : public View,
   // Empty if auto resize is not enabled.
   gfx::Size min_size_;
   gfx::Size max_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebView);
 };
 
 }  // namespace views

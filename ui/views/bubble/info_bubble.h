@@ -25,6 +25,10 @@ class VIEWS_EXPORT InfoBubble : public BubbleDialogDelegateView {
   InfoBubble(View* anchor,
              BubbleBorder::Arrow arrow,
              const std::u16string& message);
+
+  InfoBubble(const InfoBubble&) = delete;
+  InfoBubble& operator=(const InfoBubble&) = delete;
+
   ~InfoBubble() override;
 
   // Shows the bubble.
@@ -55,8 +59,6 @@ class VIEWS_EXPORT InfoBubble : public BubbleDialogDelegateView {
 
   // The width this bubble prefers to be. Default is 0 (no preference).
   int preferred_width_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(InfoBubble);
 };
 
 }  // namespace views

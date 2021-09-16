@@ -60,6 +60,10 @@ class VIEWS_EXPORT SquareInkDropRipple : public InkDropRipple {
                       const gfx::Point& center_point,
                       SkColor color,
                       float visible_opacity);
+
+  SquareInkDropRipple(const SquareInkDropRipple&) = delete;
+  SquareInkDropRipple& operator=(const SquareInkDropRipple&) = delete;
+
   ~SquareInkDropRipple() override;
 
   void set_activated_shape(ActivatedShape shape) { activated_shape_ = shape; }
@@ -203,8 +207,6 @@ class VIEWS_EXPORT SquareInkDropRipple : public InkDropRipple {
 
   // ui::Layers for all of the painted shape layers that compose the ink drop.
   std::unique_ptr<ui::Layer> painted_layers_[PAINTED_SHAPE_COUNT];
-
-  DISALLOW_COPY_AND_ASSIGN(SquareInkDropRipple);
 };
 
 }  // namespace views

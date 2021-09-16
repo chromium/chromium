@@ -48,6 +48,10 @@ NativeWidgetAura* Init(aura::Window* parent, Widget* widget) {
 class TestFocusRules : public wm::BaseFocusRules {
  public:
   TestFocusRules() = default;
+
+  TestFocusRules(const TestFocusRules&) = delete;
+  TestFocusRules& operator=(const TestFocusRules&) = delete;
+
   ~TestFocusRules() override = default;
 
   void set_can_activate(bool can_activate) { can_activate_ = can_activate; }
@@ -63,13 +67,15 @@ class TestFocusRules : public wm::BaseFocusRules {
 
  private:
   bool can_activate_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFocusRules);
 };
 
 class NativeWidgetAuraTest : public ViewsTestBase {
  public:
   NativeWidgetAuraTest() = default;
+
+  NativeWidgetAuraTest(const NativeWidgetAuraTest&) = delete;
+  NativeWidgetAuraTest& operator=(const NativeWidgetAuraTest&) = delete;
+
   ~NativeWidgetAuraTest() override = default;
 
   TestFocusRules* test_focus_rules() { return test_focus_rules_; }
@@ -87,8 +93,6 @@ class NativeWidgetAuraTest : public ViewsTestBase {
  private:
   std::unique_ptr<wm::FocusController> focus_controller_;
   TestFocusRules* test_focus_rules_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeWidgetAuraTest);
 };
 
 TEST_F(NativeWidgetAuraTest, CenterWindowLargeParent) {
@@ -263,6 +267,10 @@ class TestWindowObserver : public aura::WindowObserver {
   explicit TestWindowObserver(gfx::NativeWindow window) : window_(window) {
     window_->AddObserver(this);
   }
+
+  TestWindowObserver(const TestWindowObserver&) = delete;
+  TestWindowObserver& operator=(const TestWindowObserver&) = delete;
+
   ~TestWindowObserver() override { window_->RemoveObserver(this); }
 
   // aura::WindowObserver:
@@ -283,8 +291,6 @@ class TestWindowObserver : public aura::WindowObserver {
   gfx::NativeWindow window_;
   int count_ = 0;
   ui::WindowShowState state_ = ui::WindowShowState::SHOW_STATE_DEFAULT;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWindowObserver);
 };
 
 // Tests that window transitions from normal to minimized and back do not
@@ -324,6 +330,10 @@ TEST_F(NativeWidgetAuraTest, ToggleState) {
 class TestLayoutManagerBase : public aura::LayoutManager {
  public:
   TestLayoutManagerBase() = default;
+
+  TestLayoutManagerBase(const TestLayoutManagerBase&) = delete;
+  TestLayoutManagerBase& operator=(const TestLayoutManagerBase&) = delete;
+
   ~TestLayoutManagerBase() override = default;
 
   // aura::LayoutManager:
@@ -335,15 +345,16 @@ class TestLayoutManagerBase : public aura::LayoutManager {
                                       bool visible) override {}
   void SetChildBounds(aura::Window* child,
                       const gfx::Rect& requested_bounds) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestLayoutManagerBase);
 };
 
 // Used by ShowMaximizedDoesntBounceAround. See it for details.
 class MaximizeLayoutManager : public TestLayoutManagerBase {
  public:
   MaximizeLayoutManager() = default;
+
+  MaximizeLayoutManager(const MaximizeLayoutManager&) = delete;
+  MaximizeLayoutManager& operator=(const MaximizeLayoutManager&) = delete;
+
   ~MaximizeLayoutManager() override = default;
 
  private:
@@ -352,8 +363,6 @@ class MaximizeLayoutManager : public TestLayoutManagerBase {
     // This simulates what happens when adding a maximized window.
     SetChildBoundsDirect(child, gfx::Rect(0, 0, 300, 300));
   }
-
-  DISALLOW_COPY_AND_ASSIGN(MaximizeLayoutManager);
 };
 
 // This simulates BrowserView, which creates a custom RootView so that
@@ -405,6 +414,11 @@ TEST_F(NativeWidgetAuraTest, ShowMaximizedDoesntBounceAround) {
 class PropertyTestLayoutManager : public TestLayoutManagerBase {
  public:
   PropertyTestLayoutManager() = default;
+
+  PropertyTestLayoutManager(const PropertyTestLayoutManager&) = delete;
+  PropertyTestLayoutManager& operator=(const PropertyTestLayoutManager&) =
+      delete;
+
   ~PropertyTestLayoutManager() override = default;
 
   bool added() const { return added_; }
@@ -420,8 +434,6 @@ class PropertyTestLayoutManager : public TestLayoutManagerBase {
   }
 
   bool added_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PropertyTestLayoutManager);
 };
 
 // Verifies the resize behavior when added to the layout manager.
@@ -669,6 +681,10 @@ TEST_F(NativeWidgetAuraTest, NoCrashOnThemeAfterClose) {
 class MoveTestWidgetDelegate : public WidgetDelegateView {
  public:
   MoveTestWidgetDelegate() = default;
+
+  MoveTestWidgetDelegate(const MoveTestWidgetDelegate&) = delete;
+  MoveTestWidgetDelegate& operator=(const MoveTestWidgetDelegate&) = delete;
+
   ~MoveTestWidgetDelegate() override = default;
 
   void ClearGotMove() { got_move_ = false; }
@@ -679,8 +695,6 @@ class MoveTestWidgetDelegate : public WidgetDelegateView {
 
  private:
   bool got_move_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MoveTestWidgetDelegate);
 };
 
 // This test simulates what happens when a window is normally maximized. That

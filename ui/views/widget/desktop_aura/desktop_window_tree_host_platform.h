@@ -34,6 +34,11 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   DesktopWindowTreeHostPlatform(
       internal::NativeWidgetDelegate* native_widget_delegate,
       DesktopNativeWidgetAura* desktop_native_widget_aura);
+
+  DesktopWindowTreeHostPlatform(const DesktopWindowTreeHostPlatform&) = delete;
+  DesktopWindowTreeHostPlatform& operator=(
+      const DesktopWindowTreeHostPlatform&) = delete;
+
   ~DesktopWindowTreeHostPlatform() override;
 
   // A way of converting a |widget| into the content_window()
@@ -199,8 +204,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
 
   base::WeakPtrFactory<DesktopWindowTreeHostPlatform> close_widget_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopWindowTreeHostPlatform);
 };
 
 }  // namespace views

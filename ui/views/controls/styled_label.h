@@ -99,6 +99,10 @@ class VIEWS_EXPORT StyledLabel : public View {
   };
 
   StyledLabel();
+
+  StyledLabel(const StyledLabel&) = delete;
+  StyledLabel& operator=(const StyledLabel&) = delete;
+
   ~StyledLabel() override;
 
   // Sets the text to be displayed, and clears any previous styling.  Trailing
@@ -248,8 +252,6 @@ class VIEWS_EXPORT StyledLabel : public View {
   // The horizontal alignment. This value is flipped for RTL. The default
   // behavior is to align left in LTR UI and right in RTL UI.
   gfx::HorizontalAlignment horizontal_alignment_ = gfx::ALIGN_LEFT;
-
-  DISALLOW_COPY_AND_ASSIGN(StyledLabel);
 };
 
 }  // namespace views

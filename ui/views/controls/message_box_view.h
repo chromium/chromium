@@ -43,6 +43,9 @@ class VIEWS_EXPORT MessageBoxView : public View {
   explicit MessageBoxView(const std::u16string& message = std::u16string(),
                           bool detect_directionality = false);
 
+  MessageBoxView(const MessageBoxView&) = delete;
+  MessageBoxView& operator=(const MessageBoxView&) = delete;
+
   ~MessageBoxView() override;
 
   // Returns the visible prompt field, returns nullptr otherwise.
@@ -116,8 +119,6 @@ class VIEWS_EXPORT MessageBoxView : public View {
 
   // Maximum width of the message label.
   int message_width_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageBoxView);
 };
 
 }  // namespace views

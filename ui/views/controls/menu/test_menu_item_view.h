@@ -17,6 +17,10 @@ class TestMenuItemView : public MenuItemView {
  public:
   TestMenuItemView();
   explicit TestMenuItemView(MenuDelegate* delegate);
+
+  TestMenuItemView(const TestMenuItemView&) = delete;
+  TestMenuItemView& operator=(const TestMenuItemView&) = delete;
+
   ~TestMenuItemView() override;
 
   using MenuItemView::AddEmptyMenus;
@@ -24,9 +28,6 @@ class TestMenuItemView : public MenuItemView {
   void set_has_mnemonics(bool has_mnemonics) { has_mnemonics_ = has_mnemonics; }
 
   bool show_mnemonics() { return show_mnemonics_; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestMenuItemView);
 };
 
 }  // namespace views

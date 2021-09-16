@@ -36,6 +36,10 @@ constexpr float kOverlayOpacity = 0.8f;
 class CocoaScrollBarThumb : public BaseScrollBarThumb {
  public:
   explicit CocoaScrollBarThumb(CocoaScrollBar* scroll_bar);
+
+  CocoaScrollBarThumb(const CocoaScrollBarThumb&) = delete;
+  CocoaScrollBarThumb& operator=(const CocoaScrollBarThumb&) = delete;
+
   ~CocoaScrollBarThumb() override;
 
   // Returns true if the thumb is in hovered state.
@@ -58,8 +62,6 @@ class CocoaScrollBarThumb : public BaseScrollBarThumb {
  private:
   // The CocoaScrollBar that owns us.
   CocoaScrollBar* cocoa_scroll_bar_;  // weak.
-
-  DISALLOW_COPY_AND_ASSIGN(CocoaScrollBarThumb);
 };
 
 CocoaScrollBarThumb::CocoaScrollBarThumb(CocoaScrollBar* scroll_bar)

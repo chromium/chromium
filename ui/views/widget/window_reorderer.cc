@@ -67,6 +67,10 @@ void GetOrderOfViewsWithLayers(
 class WindowReorderer::AssociationObserver : public aura::WindowObserver {
  public:
   explicit AssociationObserver(WindowReorderer* reorderer);
+
+  AssociationObserver(const AssociationObserver&) = delete;
+  AssociationObserver& operator=(const AssociationObserver&) = delete;
+
   ~AssociationObserver() override;
 
   // Start/stop observing changes in the kHostViewKey property on |window|.
@@ -84,8 +88,6 @@ class WindowReorderer::AssociationObserver : public aura::WindowObserver {
   WindowReorderer* reorderer_;
 
   std::set<aura::Window*> windows_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssociationObserver);
 };
 
 WindowReorderer::AssociationObserver::AssociationObserver(

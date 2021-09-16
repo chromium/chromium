@@ -18,13 +18,14 @@ namespace examples {
 class VIEWS_EXAMPLES_EXPORT ButtonStickerSheet : public ExampleBase {
  public:
   ButtonStickerSheet();
+
+  ButtonStickerSheet(const ButtonStickerSheet&) = delete;
+  ButtonStickerSheet& operator=(const ButtonStickerSheet&) = delete;
+
   ~ButtonStickerSheet() override;
 
   // ExampleBase:
   void CreateExampleView(View* container) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ButtonStickerSheet);
 };
 
 }  // namespace examples

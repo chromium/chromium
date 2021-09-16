@@ -50,6 +50,10 @@ class VIEWS_EXPORT TooltipController
  public:
   TooltipController(std::unique_ptr<Tooltip> tooltip,
                     wm::ActivationClient* activation_client);
+
+  TooltipController(const TooltipController&) = delete;
+  TooltipController& operator=(const TooltipController&) = delete;
+
   ~TooltipController() override;
 
   // Overridden from wm::TooltipClient.
@@ -172,8 +176,6 @@ class VIEWS_EXPORT TooltipController
   // tooltip state (its text, position, id, etc.) and to modify it when asked
   // by the TooltipController or the show/hide timers.
   std::unique_ptr<TooltipStateManager> state_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(TooltipController);
 };
 
 }  // namespace corewm

@@ -65,10 +65,11 @@ std::string AccessibilityViewAsString(const AXVirtualView& view) {
 class TestNode : public TreeNode<TestNode> {
  public:
   TestNode() = default;
-  ~TestNode() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestNode);
+  TestNode(const TestNode&) = delete;
+  TestNode& operator=(const TestNode&) = delete;
+
+  ~TestNode() override = default;
 };
 
 // Creates the following structure:

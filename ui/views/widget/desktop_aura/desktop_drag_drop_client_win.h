@@ -36,6 +36,10 @@ class VIEWS_EXPORT DesktopDragDropClientWin
   DesktopDragDropClientWin(aura::Window* root_window,
                            HWND window,
                            DesktopWindowTreeHostWin* desktop_host);
+
+  DesktopDragDropClientWin(const DesktopDragDropClientWin&) = delete;
+  DesktopDragDropClientWin& operator=(const DesktopDragDropClientWin&) = delete;
+
   ~DesktopDragDropClientWin() override;
 
   // Overridden from aura::client::DragDropClient:
@@ -66,8 +70,6 @@ class VIEWS_EXPORT DesktopDragDropClientWin
   DesktopWindowTreeHostWin* desktop_host_ = nullptr;
 
   base::WeakPtrFactory<DesktopDragDropClientWin> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopDragDropClientWin);
 };
 
 }  // namespace views

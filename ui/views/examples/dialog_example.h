@@ -28,6 +28,10 @@ class VIEWS_EXAMPLES_EXPORT DialogExample : public ExampleBase,
                                             public TextfieldController {
  public:
   DialogExample();
+
+  DialogExample(const DialogExample&) = delete;
+  DialogExample& operator=(const DialogExample&) = delete;
+
   ~DialogExample() override;
 
   // ExampleBase:
@@ -84,8 +88,6 @@ class VIEWS_EXAMPLES_EXPORT DialogExample : public ExampleBase,
   Checkbox* persistent_bubble_;
   LabelButton* show_;
   ui::SimpleComboboxModel mode_model_;
-
-  DISALLOW_COPY_AND_ASSIGN(DialogExample);
 };
 
 }  // namespace examples

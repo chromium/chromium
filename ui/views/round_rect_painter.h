@@ -23,6 +23,10 @@ class VIEWS_EXPORT RoundRectPainter : public Painter {
   enum { kBorderWidth = 1 };
 
   RoundRectPainter(SkColor border_color, int corner_radius);
+
+  RoundRectPainter(const RoundRectPainter&) = delete;
+  RoundRectPainter& operator=(const RoundRectPainter&) = delete;
+
   ~RoundRectPainter() override;
 
   // Painter:
@@ -32,8 +36,6 @@ class VIEWS_EXPORT RoundRectPainter : public Painter {
  private:
   const SkColor border_color_;
   const int corner_radius_;
-
-  DISALLOW_COPY_AND_ASSIGN(RoundRectPainter);
 };
 
 }  // namespace views

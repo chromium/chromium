@@ -95,6 +95,11 @@ bool ShouldIgnoreScreenBoundsForMenus() {
 class TestMenuControllerDelegate : public internal::MenuControllerDelegate {
  public:
   TestMenuControllerDelegate();
+
+  TestMenuControllerDelegate(const TestMenuControllerDelegate&) = delete;
+  TestMenuControllerDelegate& operator=(const TestMenuControllerDelegate&) =
+      delete;
+
   ~TestMenuControllerDelegate() override = default;
 
   int on_menu_closed_called() { return on_menu_closed_called_; }
@@ -131,8 +136,6 @@ class TestMenuControllerDelegate : public internal::MenuControllerDelegate {
 
   // Optional callback triggered during OnMenuClosed
   base::RepeatingClosure on_menu_closed_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMenuControllerDelegate);
 };
 
 TestMenuControllerDelegate::TestMenuControllerDelegate() = default;
@@ -153,11 +156,12 @@ void TestMenuControllerDelegate::SiblingMenuCreated(MenuItemView* menu) {}
 class SubmenuViewShown : public SubmenuView {
  public:
   using SubmenuView::SubmenuView;
+
+  SubmenuViewShown(const SubmenuViewShown&) = delete;
+  SubmenuViewShown& operator=(const SubmenuViewShown&) = delete;
+
   ~SubmenuViewShown() override = default;
   bool IsShowing() const override { return true; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SubmenuViewShown);
 };
 
 class TestEventHandler : public ui::EventHandler {
@@ -207,6 +211,10 @@ class TestDragDropClient : public aura::client::DragDropClient {
   explicit TestDragDropClient(base::RepeatingClosure callback)
       : start_drag_and_drop_callback_(std::move(callback)),
         drag_in_progress_(false) {}
+
+  TestDragDropClient(const TestDragDropClient&) = delete;
+  TestDragDropClient& operator=(const TestDragDropClient&) = delete;
+
   ~TestDragDropClient() override = default;
 
   // aura::client::DragDropClient:
@@ -226,8 +234,6 @@ class TestDragDropClient : public aura::client::DragDropClient {
  private:
   base::RepeatingClosure start_drag_and_drop_callback_;
   bool drag_in_progress_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDragDropClient);
 };
 
 DragOperation TestDragDropClient::StartDragAndDrop(
@@ -280,6 +286,10 @@ class TestMenuItemViewShown : public MenuItemView {
       : MenuItemView(delegate) {
     submenu_ = new SubmenuViewShown(this);
   }
+
+  TestMenuItemViewShown(const TestMenuItemViewShown&) = delete;
+  TestMenuItemViewShown& operator=(const TestMenuItemViewShown&) = delete;
+
   ~TestMenuItemViewShown() override = default;
 
   void SetController(MenuController* controller) { set_controller(controller); }
@@ -292,9 +302,6 @@ class TestMenuItemViewShown : public MenuItemView {
   MenuItemView::MenuPosition ActualMenuPosition() {
     return actual_menu_position();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestMenuItemViewShown);
 };
 
 class TestMenuItemViewNotShown : public MenuItemView {
@@ -303,12 +310,13 @@ class TestMenuItemViewNotShown : public MenuItemView {
       : MenuItemView(delegate) {
     submenu_ = new SubmenuView(this);
   }
+
+  TestMenuItemViewNotShown(const TestMenuItemViewNotShown&) = delete;
+  TestMenuItemViewNotShown& operator=(const TestMenuItemViewNotShown&) = delete;
+
   ~TestMenuItemViewNotShown() override = default;
 
   void SetController(MenuController* controller) { set_controller(controller); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestMenuItemViewNotShown);
 };
 
 struct MenuBoundsOptions {
@@ -325,6 +333,9 @@ class MenuControllerTest : public ViewsTestBase,
                            public testing::WithParamInterface<bool> {
  public:
   MenuControllerTest() = default;
+
+  MenuControllerTest(const MenuControllerTest&) = delete;
+  MenuControllerTest& operator=(const MenuControllerTest&) = delete;
 
   ~MenuControllerTest() override = default;
 
@@ -907,8 +918,6 @@ class MenuControllerTest : public ViewsTestBase,
   std::unique_ptr<TestMenuControllerDelegate> menu_controller_delegate_;
   std::unique_ptr<TestMenuDelegate> menu_delegate_;
   MenuController* menu_controller_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuControllerTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(All, MenuControllerTest, testing::Bool());

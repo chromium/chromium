@@ -30,6 +30,10 @@ class VIEWS_EXPORT RepeatController {
  public:
   explicit RepeatController(base::RepeatingClosure callback,
                             const base::TickClock* tick_clock = nullptr);
+
+  RepeatController(const RepeatController&) = delete;
+  RepeatController& operator=(const RepeatController&) = delete;
+
   virtual ~RepeatController();
 
   // Start repeating.
@@ -63,8 +67,6 @@ class VIEWS_EXPORT RepeatController {
   base::OneShotTimer timer_;
 
   base::RepeatingClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(RepeatController);
 };
 
 }  // namespace views

@@ -23,6 +23,9 @@ class TestToggleButton : public ToggleButton {
  public:
   explicit TestToggleButton(int* counter) : counter_(counter) {}
 
+  TestToggleButton(const TestToggleButton&) = delete;
+  TestToggleButton& operator=(const TestToggleButton&) = delete;
+
   ~TestToggleButton() override {
     // TODO(pbos): Revisit explicit removal of InkDrop for classes that override
     // Add/RemoveLayerBeneathView(). This is done so that the InkDrop doesn't
@@ -44,13 +47,15 @@ class TestToggleButton : public ToggleButton {
 
  private:
   int* const counter_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestToggleButton);
 };
 
 class ToggleButtonTest : public ViewsTestBase {
  public:
   ToggleButtonTest() = default;
+
+  ToggleButtonTest(const ToggleButtonTest&) = delete;
+  ToggleButtonTest& operator=(const ToggleButtonTest&) = delete;
+
   ~ToggleButtonTest() override = default;
 
   void SetUp() override {
@@ -84,8 +89,6 @@ class ToggleButtonTest : public ViewsTestBase {
   std::unique_ptr<Widget> widget_;
   TestToggleButton* button_ = nullptr;
   int counter_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ToggleButtonTest);
 };
 
 // Starts ink drop animation on a ToggleButton and destroys the button.

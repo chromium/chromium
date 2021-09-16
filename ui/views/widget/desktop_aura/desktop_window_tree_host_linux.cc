@@ -48,6 +48,11 @@ class SwapWithNewSizeObserverHelper : public ui::CompositorObserver {
       : compositor_(compositor), callback_(callback) {
     compositor_->AddObserver(this);
   }
+
+  SwapWithNewSizeObserverHelper(const SwapWithNewSizeObserverHelper&) = delete;
+  SwapWithNewSizeObserverHelper& operator=(
+      const SwapWithNewSizeObserverHelper&) = delete;
+
   ~SwapWithNewSizeObserverHelper() override {
     if (compositor_)
       compositor_->RemoveObserver(this);
@@ -68,8 +73,6 @@ class SwapWithNewSizeObserverHelper : public ui::CompositorObserver {
 
   ui::Compositor* compositor_;
   const HelperCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(SwapWithNewSizeObserverHelper);
 };
 
 }  // namespace

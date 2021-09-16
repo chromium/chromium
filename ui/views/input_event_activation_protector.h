@@ -20,6 +20,11 @@ namespace views {
 class VIEWS_EXPORT InputEventActivationProtector {
  public:
   InputEventActivationProtector() = default;
+
+  InputEventActivationProtector(const InputEventActivationProtector&) = delete;
+  InputEventActivationProtector& operator=(
+      const InputEventActivationProtector&) = delete;
+
   ~InputEventActivationProtector() = default;
 
   // Updates the state of the protector based off of visibility changes. This
@@ -40,8 +45,6 @@ class VIEWS_EXPORT InputEventActivationProtector {
   base::TimeTicks last_event_timestamp_;
   // Number of repeated UI events with short intervals.
   size_t repeated_event_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(InputEventActivationProtector);
 };
 
 }  // namespace views

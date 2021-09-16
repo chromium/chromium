@@ -23,6 +23,10 @@ class VIEWS_EXPORT Separator : public View {
   static constexpr int kThickness = 1;
 
   Separator();
+
+  Separator(const Separator&) = delete;
+  Separator& operator=(const Separator&) = delete;
+
   ~Separator() override;
 
   SkColor GetColor() const;
@@ -38,8 +42,6 @@ class VIEWS_EXPORT Separator : public View {
  private:
   int preferred_height_ = kThickness;
   absl::optional<SkColor> overridden_color_;
-
-  DISALLOW_COPY_AND_ASSIGN(Separator);
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Separator, View)

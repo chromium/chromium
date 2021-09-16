@@ -26,6 +26,10 @@ enum InkDropType { INK_DROP_STUB, INK_DROP_IMPL };
 class InkDropTest : public testing::TestWithParam<testing::tuple<InkDropType>> {
  public:
   InkDropTest();
+
+  InkDropTest(const InkDropTest&) = delete;
+  InkDropTest& operator=(const InkDropTest&) = delete;
+
   ~InkDropTest() override;
 
  protected:
@@ -43,8 +47,6 @@ class InkDropTest : public testing::TestWithParam<testing::tuple<InkDropType>> {
 
   // Required by base::Timer's.
   std::unique_ptr<base::ThreadTaskRunnerHandle> thread_task_runner_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(InkDropTest);
 };
 
 InkDropTest::InkDropTest() : ink_drop_(nullptr) {

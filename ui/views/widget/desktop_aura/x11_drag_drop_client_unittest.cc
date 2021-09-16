@@ -55,6 +55,11 @@ class TestDragDropClient;
 class ClientMessageEventCollector {
  public:
   ClientMessageEventCollector(x11::Window window, TestDragDropClient* client);
+
+  ClientMessageEventCollector(const ClientMessageEventCollector&) = delete;
+  ClientMessageEventCollector& operator=(const ClientMessageEventCollector&) =
+      delete;
+
   virtual ~ClientMessageEventCollector();
 
   // Returns true if |events_| is non-empty.
@@ -74,8 +79,6 @@ class ClientMessageEventCollector {
   TestDragDropClient* client_;
 
   std::vector<x11::ClientMessageEvent> events_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientMessageEventCollector);
 };
 
 // An implementation of ui::X11MoveLoop where RunMoveLoop() always starts the
@@ -112,6 +115,10 @@ class SimpleTestDragDropClient : public aura::client::DragDropClient,
                                  public ui::X11MoveLoopDelegate {
  public:
   explicit SimpleTestDragDropClient(aura::Window*);
+
+  SimpleTestDragDropClient(const SimpleTestDragDropClient&) = delete;
+  SimpleTestDragDropClient& operator=(const SimpleTestDragDropClient&) = delete;
+
   ~SimpleTestDragDropClient() override;
 
   // Sets |window| as the topmost window for all mouse positions.
@@ -163,8 +170,6 @@ class SimpleTestDragDropClient : public aura::client::DragDropClient,
   TestMoveLoop* loop_ = nullptr;
 
   base::OnceClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleTestDragDropClient);
 };
 
 // Implementation of XDragDropClient which works with a fake
@@ -177,6 +182,10 @@ class TestDragDropClient : public SimpleTestDragDropClient {
   static constexpr int kMouseMoveY = 200;
 
   explicit TestDragDropClient(aura::Window* window);
+
+  TestDragDropClient(const TestDragDropClient&) = delete;
+  TestDragDropClient& operator=(const TestDragDropClient&) = delete;
+
   ~TestDragDropClient() override;
 
   // Returns the x11::Window of the window which initiated the drag.
@@ -220,8 +229,6 @@ class TestDragDropClient : public SimpleTestDragDropClient {
   // Map of x11::Windows to the collector which intercepts
   // x11::ClientMessageEvents for that window.
   std::map<x11::Window, ClientMessageEventCollector*> collectors_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDragDropClient);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -461,6 +468,10 @@ void TestDragDropClient::SendXClientEvent(
 class X11DragDropClientTest : public ViewsTestBase {
  public:
   X11DragDropClientTest() = default;
+
+  X11DragDropClientTest(const X11DragDropClientTest&) = delete;
+  X11DragDropClientTest& operator=(const X11DragDropClientTest&) = delete;
+
   ~X11DragDropClientTest() override = default;
 
   DragOperation StartDragAndDrop() {
@@ -512,8 +523,6 @@ class X11DragDropClientTest : public ViewsTestBase {
 
   // The widget used to initiate drags.
   std::unique_ptr<Widget> widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(X11DragDropClientTest);
 };
 
 namespace {

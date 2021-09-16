@@ -555,14 +555,15 @@ class ScopedTestPaintWidget {
     widget_->GetRootView()->SetBounds(0, 0, 25, 26);
   }
 
+  ScopedTestPaintWidget(const ScopedTestPaintWidget&) = delete;
+  ScopedTestPaintWidget& operator=(const ScopedTestPaintWidget&) = delete;
+
   ~ScopedTestPaintWidget() { widget_->CloseNow(); }
 
   Widget* operator->() { return widget_; }
 
  private:
   Widget* widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedTestPaintWidget);
 };
 
 }  // namespace
@@ -2106,6 +2107,10 @@ class ViewPaintOptimizationTest : public ViewsTestBase {
  public:
   ViewPaintOptimizationTest() = default;
 
+  ViewPaintOptimizationTest(const ViewPaintOptimizationTest&) = delete;
+  ViewPaintOptimizationTest& operator=(const ViewPaintOptimizationTest&) =
+      delete;
+
   ~ViewPaintOptimizationTest() override = default;
 
   void SetUp() override {
@@ -2116,8 +2121,6 @@ class ViewPaintOptimizationTest : public ViewsTestBase {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewPaintOptimizationTest);
 };
 
 // Tests that only Views where SchedulePaint was invoked get repainted.
@@ -2423,6 +2426,11 @@ TEST_F(ViewTest, ViewInHiddenWidgetWithAccelerator) {
 class ToplevelWidgetObserverView : public View {
  public:
   ToplevelWidgetObserverView() = default;
+
+  ToplevelWidgetObserverView(const ToplevelWidgetObserverView&) = delete;
+  ToplevelWidgetObserverView& operator=(const ToplevelWidgetObserverView&) =
+      delete;
+
   ~ToplevelWidgetObserverView() override = default;
 
   // View overrides:
@@ -2442,8 +2450,6 @@ class ToplevelWidgetObserverView : public View {
 
  private:
   Widget* toplevel_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ToplevelWidgetObserverView);
 };
 
 // Test that
@@ -2497,6 +2503,10 @@ TEST_F(ViewTest, NativeViewHierarchyChanged) {
 class TransformPaintView : public TestView {
  public:
   TransformPaintView() = default;
+
+  TransformPaintView(const TransformPaintView&) = delete;
+  TransformPaintView& operator=(const TransformPaintView&) = delete;
+
   ~TransformPaintView() override = default;
 
   void ClearScheduledPaintRect() { scheduled_paint_rect_ = gfx::Rect(); }
@@ -2511,8 +2521,6 @@ class TransformPaintView : public TestView {
 
  private:
   gfx::Rect scheduled_paint_rect_;
-
-  DISALLOW_COPY_AND_ASSIGN(TransformPaintView);
 };
 
 TEST_F(ViewTest, TransformPaint) {
@@ -2731,6 +2739,10 @@ TEST_F(ViewTest, TransformVisibleBound) {
 class VisibleBoundsView : public View {
  public:
   VisibleBoundsView() = default;
+
+  VisibleBoundsView(const VisibleBoundsView&) = delete;
+  VisibleBoundsView& operator=(const VisibleBoundsView&) = delete;
+
   ~VisibleBoundsView() override = default;
 
   bool received_notification() const { return received_notification_; }
@@ -2746,8 +2758,6 @@ class VisibleBoundsView : public View {
   void OnVisibleBoundsChanged() override { received_notification_ = true; }
 
   bool received_notification_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(VisibleBoundsView);
 };
 
 TEST_F(ViewTest, OnVisibleBoundsChanged) {
@@ -3150,6 +3160,10 @@ TEST_F(ViewTest, ConvertRectWithTransform) {
 class ObserverView : public View {
  public:
   ObserverView();
+
+  ObserverView(const ObserverView&) = delete;
+  ObserverView& operator=(const ObserverView&) = delete;
+
   ~ObserverView() override;
 
   void ResetTestState();
@@ -3174,8 +3188,6 @@ class ObserverView : public View {
   bool has_remove_details_ = false;
   ViewHierarchyChangedDetails add_details_;
   ViewHierarchyChangedDetails remove_details_;
-
-  DISALLOW_COPY_AND_ASSIGN(ObserverView);
 };
 
 ObserverView::ObserverView() = default;
@@ -3337,6 +3349,10 @@ TEST_F(ViewTest, ViewHierarchyChanged) {
 class WidgetObserverView : public View {
  public:
   WidgetObserverView();
+
+  WidgetObserverView(const WidgetObserverView&) = delete;
+  WidgetObserverView& operator=(const WidgetObserverView&) = delete;
+
   ~WidgetObserverView() override;
 
   void ResetTestState();
@@ -3350,8 +3366,6 @@ class WidgetObserverView : public View {
 
   int added_to_widget_count_ = 0;
   int removed_from_widget_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(WidgetObserverView);
 };
 
 WidgetObserverView::WidgetObserverView() {
@@ -3762,12 +3776,13 @@ TEST_F(ViewTest, UseMirroredLayoutEnableMirroring) {
 class ActiveWidget : public Widget {
  public:
   ActiveWidget() = default;
+
+  ActiveWidget(const ActiveWidget&) = delete;
+  ActiveWidget& operator=(const ActiveWidget&) = delete;
+
   ~ActiveWidget() override = default;
 
   bool IsActive() const override { return true; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ActiveWidget);
 };
 
 TEST_F(ViewTest, AdvanceFocusIfNecessaryForUnfocusableView) {
@@ -3850,6 +3865,10 @@ class TestingLayerViewObserver : public ViewObserver {
   explicit TestingLayerViewObserver(View* view) : view_(view) {
     view_->AddObserver(this);
   }
+
+  TestingLayerViewObserver(const TestingLayerViewObserver&) = delete;
+  TestingLayerViewObserver& operator=(const TestingLayerViewObserver&) = delete;
+
   ~TestingLayerViewObserver() override { view_->RemoveObserver(this); }
 
   gfx::Rect GetLastLayerBoundsAndReset() {
@@ -3866,8 +3885,6 @@ class TestingLayerViewObserver : public ViewObserver {
 
   gfx::Rect last_layer_bounds_;
   View* view_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingLayerViewObserver);
 };
 
 }  // namespace
@@ -4936,6 +4953,9 @@ class ViewLayerPixelCanvasTest : public ViewLayerTest {
  public:
   ViewLayerPixelCanvasTest() = default;
 
+  ViewLayerPixelCanvasTest(const ViewLayerPixelCanvasTest&) = delete;
+  ViewLayerPixelCanvasTest& operator=(const ViewLayerPixelCanvasTest&) = delete;
+
   ~ViewLayerPixelCanvasTest() override = default;
 
   void SetUpPixelCanvas() override {
@@ -4960,8 +4980,6 @@ class ViewLayerPixelCanvasTest : public ViewLayerTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewLayerPixelCanvasTest);
 };
 
 TEST_F(ViewLayerPixelCanvasTest, SnapLayerToPixel) {
@@ -5163,6 +5181,10 @@ TEST_F(ViewTest, ScopedTargetHandlerReceivesEvents) {
 class WidgetWithCustomTheme : public Widget {
  public:
   explicit WidgetWithCustomTheme(ui::NativeTheme* theme) : theme_(theme) {}
+
+  WidgetWithCustomTheme(const WidgetWithCustomTheme&) = delete;
+  WidgetWithCustomTheme& operator=(const WidgetWithCustomTheme&) = delete;
+
   ~WidgetWithCustomTheme() override = default;
 
   // Widget:
@@ -5170,14 +5192,18 @@ class WidgetWithCustomTheme : public Widget {
 
  private:
   ui::NativeTheme* theme_;
-
-  DISALLOW_COPY_AND_ASSIGN(WidgetWithCustomTheme);
 };
 
 // See comment above test for details.
 class ViewThatAddsViewInOnThemeChanged : public View {
  public:
   ViewThatAddsViewInOnThemeChanged() { SetPaintToLayer(); }
+
+  ViewThatAddsViewInOnThemeChanged(const ViewThatAddsViewInOnThemeChanged&) =
+      delete;
+  ViewThatAddsViewInOnThemeChanged& operator=(
+      const ViewThatAddsViewInOnThemeChanged&) = delete;
+
   ~ViewThatAddsViewInOnThemeChanged() override = default;
 
   bool on_native_theme_changed_called() const {
@@ -5193,8 +5219,6 @@ class ViewThatAddsViewInOnThemeChanged : public View {
 
  private:
   bool on_native_theme_changed_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewThatAddsViewInOnThemeChanged);
 };
 
 // Creates and adds a new child view to |parent| that has a layer.
@@ -5292,6 +5316,10 @@ class OrderableView : public View {
   static constexpr int VIEW_ID_RAISED = 1000;
 
   OrderableView() = default;
+
+  OrderableView(const OrderableView&) = delete;
+  OrderableView& operator=(const OrderableView&) = delete;
+
   ~OrderableView() override = default;
 
   View::Views GetChildrenInZOrder() override {
@@ -5301,9 +5329,6 @@ class OrderableView : public View {
         [](const View* child) { return child->GetID() != VIEW_ID_RAISED; });
     return children_in_z_order;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OrderableView);
 };
 
 TEST_F(ViewTest, ChildViewZOrderChanged) {
@@ -5610,6 +5635,9 @@ class ViewObserverTest : public ViewTest, public ViewObserver {
  public:
   ViewObserverTest() = default;
 
+  ViewObserverTest(const ViewObserverTest&) = delete;
+  ViewObserverTest& operator=(const ViewObserverTest&) = delete;
+
   ~ViewObserverTest() override = default;
 
   // ViewObserver:
@@ -5684,8 +5712,6 @@ class ViewObserverTest : public ViewTest, public ViewObserver {
   View* view_visibility_changed_starting_ = nullptr;
   View* view_bounds_changed_ = nullptr;
   View* view_reordered_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewObserverTest);
 };
 
 TEST_F(ViewObserverTest, ViewParentChanged) {

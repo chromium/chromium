@@ -54,6 +54,9 @@ class VIEWS_EXPORT FocusRing : public View, public ViewObserver {
   // Removes the FocusRing, if present, from `host`.
   static void Remove(View* host);
 
+  FocusRing(const FocusRing&) = delete;
+  FocusRing& operator=(const FocusRing&) = delete;
+
   ~FocusRing() override;
 
   // Sets the HighlightPathGenerator to draw this FocusRing around.
@@ -134,8 +137,6 @@ class VIEWS_EXPORT FocusRing : public View, public ViewObserver {
   float halo_inset_ = kDefaultHaloInset;
 
   base::ScopedObservation<View, ViewObserver> view_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FocusRing);
 };
 
 VIEWS_EXPORT SkPath

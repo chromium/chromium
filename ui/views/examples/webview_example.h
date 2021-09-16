@@ -22,6 +22,10 @@ namespace examples {
 class WebViewExample : public ExampleBase, public content::WebContentsDelegate {
  public:
   explicit WebViewExample(content::BrowserContext* browser_context);
+
+  WebViewExample(const WebViewExample&) = delete;
+  WebViewExample& operator=(const WebViewExample&) = delete;
+
   ~WebViewExample() override;
 
   // ExampleBase:
@@ -36,8 +40,6 @@ class WebViewExample : public ExampleBase, public content::WebContentsDelegate {
   WebView* webview_;
   content::BrowserContext* browser_context_;
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewExample);
 };
 
 }  // namespace examples

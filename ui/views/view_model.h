@@ -32,6 +32,9 @@ class VIEWS_EXPORT ViewModelBase {
   };
   using Entries = std::vector<Entry>;
 
+  ViewModelBase(const ViewModelBase&) = delete;
+  ViewModelBase& operator=(const ViewModelBase&) = delete;
+
   ~ViewModelBase();
 
   const Entries& entries() const { return entries_; }
@@ -99,8 +102,6 @@ class VIEWS_EXPORT ViewModelBase {
 #endif
 
   Entries entries_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewModelBase);
 };
 
 // ViewModelT is used to track an 'interesting' set of a views. Often times

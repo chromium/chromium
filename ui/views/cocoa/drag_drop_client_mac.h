@@ -39,6 +39,10 @@ class VIEWS_EXPORT DragDropClientMac : public remote_cocoa::DragDropClient {
  public:
   DragDropClientMac(remote_cocoa::NativeWidgetNSWindowBridge* bridge,
                     View* root_view);
+
+  DragDropClientMac(const DragDropClientMac&) = delete;
+  DragDropClientMac& operator=(const DragDropClientMac&) = delete;
+
   ~DragDropClientMac() override;
 
   // Initiates a drag and drop session. Returns the drag operation that was
@@ -80,8 +84,6 @@ class VIEWS_EXPORT DragDropClientMac : public remote_cocoa::DragDropClient {
 
   // Whether |this| is the source of current dragging session.
   bool is_drag_source_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DragDropClientMac);
 };
 
 }  // namespace views

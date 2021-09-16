@@ -59,6 +59,9 @@ class Edit {
     kReplace,
   };
 
+  Edit(const Edit&) = delete;
+  Edit& operator=(const Edit&) = delete;
+
   virtual ~Edit() = default;
 
   // Revert the change made by this edit in |model|.
@@ -195,8 +198,6 @@ class Edit {
   std::u16string new_text_;
   // The index of |new_text_|
   size_t new_text_start_;
-
-  DISALLOW_COPY_AND_ASSIGN(Edit);
 };
 
 // Insert text at a given position. Assumes 1) no previous selection and 2) the

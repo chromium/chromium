@@ -17,6 +17,10 @@ namespace test {
 class TestLayoutManager : public LayoutManager {
  public:
   TestLayoutManager();
+
+  TestLayoutManager(const TestLayoutManager&) = delete;
+  TestLayoutManager& operator=(const TestLayoutManager&) = delete;
+
   ~TestLayoutManager() override;
 
   void SetPreferredSize(const gfx::Size& size) { preferred_size_ = size; }
@@ -42,8 +46,6 @@ class TestLayoutManager : public LayoutManager {
 
   // The number of calls to InvalidateLayout().
   int invalidate_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLayoutManager);
 };
 
 }  // namespace test

@@ -40,6 +40,10 @@ class VIEWS_EXPORT ImageView : public View {
 
   ImageView();
   explicit ImageView(const ui::ImageModel& image_model);
+
+  ImageView(const ImageView&) = delete;
+  ImageView& operator=(const ImageView&) = delete;
+
   ~ImageView() override;
 
   // Set the image that should be displayed.
@@ -151,8 +155,6 @@ class VIEWS_EXPORT ImageView : public View {
 
   // The requested image size.
   absl::optional<gfx::Size> image_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageView);
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, ImageView, View)

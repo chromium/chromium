@@ -28,6 +28,10 @@ class InkDropRippleTestApi
       public ui::test::MultiLayerAnimatorTestControllerDelegate {
  public:
   explicit InkDropRippleTestApi(InkDropRipple* ink_drop_ripple);
+
+  InkDropRippleTestApi(const InkDropRippleTestApi&) = delete;
+  InkDropRippleTestApi& operator=(const InkDropRippleTestApi&) = delete;
+
   ~InkDropRippleTestApi() override;
 
   // Gets the opacity of the ink drop.
@@ -46,8 +50,6 @@ class InkDropRippleTestApi
  private:
   // The InkDropedRipple to provide internal access to.
   InkDropRipple* ink_drop_ripple_;
-
-  DISALLOW_COPY_AND_ASSIGN(InkDropRippleTestApi);
 };
 
 }  // namespace test

@@ -50,6 +50,11 @@ class NativeViewHostWindowObserver : public aura::WindowObserver {
   };
 
   NativeViewHostWindowObserver() = default;
+
+  NativeViewHostWindowObserver(const NativeViewHostWindowObserver&) = delete;
+  NativeViewHostWindowObserver& operator=(const NativeViewHostWindowObserver&) =
+      delete;
+
   ~NativeViewHostWindowObserver() override = default;
 
   const std::vector<EventDetails>& events() const { return events_; }
@@ -86,8 +91,6 @@ class NativeViewHostWindowObserver : public aura::WindowObserver {
  private:
   std::vector<EventDetails> events_;
   gfx::Rect bounds_at_visibility_changed_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeViewHostWindowObserver);
 };
 
 class NativeViewHostAuraTest : public test::NativeViewHostTestBase {
@@ -449,6 +452,9 @@ class TestFocusChangeListener : public FocusChangeListener {
     focus_manager_->AddFocusChangeListener(this);
   }
 
+  TestFocusChangeListener(const TestFocusChangeListener&) = delete;
+  TestFocusChangeListener& operator=(const TestFocusChangeListener&) = delete;
+
   ~TestFocusChangeListener() override {
     focus_manager_->RemoveFocusChangeListener(this);
   }
@@ -464,8 +470,6 @@ class TestFocusChangeListener : public FocusChangeListener {
 
   FocusManager* focus_manager_;
   int did_change_focus_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFocusChangeListener);
 };
 
 }  // namespace

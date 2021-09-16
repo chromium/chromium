@@ -28,6 +28,10 @@ class VIEWS_EXPORT SlideOutController : public ui::EventHandler {
 
   SlideOutController(ui::EventTarget* target,
                      SlideOutControllerDelegate* delegate);
+
+  SlideOutController(const SlideOutController&) = delete;
+  SlideOutController& operator=(const SlideOutController&) = delete;
+
   ~SlideOutController() override;
 
   void set_update_opacity(bool update_opacity) {
@@ -111,8 +115,6 @@ class VIEWS_EXPORT SlideOutController : public ui::EventHandler {
   float opacity_ = 1.0;
 
   base::WeakPtrFactory<SlideOutController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SlideOutController);
 };
 
 }  // namespace views

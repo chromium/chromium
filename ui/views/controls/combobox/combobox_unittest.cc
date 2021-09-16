@@ -53,6 +53,10 @@ using TestCombobox = Combobox;
 class TestComboboxModel : public ui::ComboboxModel {
  public:
   TestComboboxModel() = default;
+
+  TestComboboxModel(const TestComboboxModel&) = delete;
+  TestComboboxModel& operator=(const TestComboboxModel&) = delete;
+
   ~TestComboboxModel() override = default;
 
   enum { kItemCount = 10 };
@@ -106,8 +110,6 @@ class TestComboboxModel : public ui::ComboboxModel {
   base::ObserverList<ui::ComboboxModelObserver> observers_;
   std::set<int> separators_;
   int item_count_ = kItemCount;
-
-  DISALLOW_COPY_AND_ASSIGN(TestComboboxModel);
 };
 
 // A combobox model which refers to a vector.
@@ -115,6 +117,10 @@ class VectorComboboxModel : public ui::ComboboxModel {
  public:
   explicit VectorComboboxModel(std::vector<std::string>* values)
       : values_(values) {}
+
+  VectorComboboxModel(const VectorComboboxModel&) = delete;
+  VectorComboboxModel& operator=(const VectorComboboxModel&) = delete;
+
   ~VectorComboboxModel() override = default;
 
   void set_default_index(int default_index) { default_index_ = default_index; }
@@ -144,8 +150,6 @@ class VectorComboboxModel : public ui::ComboboxModel {
   base::ObserverList<ui::ComboboxModelObserver> observers_;
   int default_index_ = 0;
   std::vector<std::string>* const values_;
-
-  DISALLOW_COPY_AND_ASSIGN(VectorComboboxModel);
 };
 
 class EvilListener {
@@ -154,6 +158,10 @@ class EvilListener {
     combobox_->SetCallback(base::BindRepeating(&EvilListener::OnPerformAction,
                                                base::Unretained(this)));
   }
+
+  EvilListener(const EvilListener&) = delete;
+  EvilListener& operator=(const EvilListener&) = delete;
+
   ~EvilListener() = default;
 
   TestCombobox* combobox() { return combobox_.get(); }
@@ -164,13 +172,15 @@ class EvilListener {
   TestComboboxModel model_;
   std::unique_ptr<TestCombobox> combobox_ =
       std::make_unique<TestCombobox>(&model_);
-
-  DISALLOW_COPY_AND_ASSIGN(EvilListener);
 };
 
 class TestComboboxListener {
  public:
   explicit TestComboboxListener(Combobox* combobox) : combobox_(combobox) {}
+
+  TestComboboxListener(const TestComboboxListener&) = delete;
+  TestComboboxListener& operator=(const TestComboboxListener&) = delete;
+
   ~TestComboboxListener() = default;
 
   void OnPerformAction() {
@@ -188,9 +198,6 @@ class TestComboboxListener {
   Combobox* combobox_;
   int perform_action_index_ = -1;
   int actions_performed_ = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestComboboxListener);
 };
 
 }  // namespace

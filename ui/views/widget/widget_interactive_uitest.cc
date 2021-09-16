@@ -67,6 +67,9 @@ class ExitLoopOnRelease : public View {
     DCHECK(quit_closure_);
   }
 
+  ExitLoopOnRelease(const ExitLoopOnRelease&) = delete;
+  ExitLoopOnRelease& operator=(const ExitLoopOnRelease&) = delete;
+
   ~ExitLoopOnRelease() override = default;
 
  private:
@@ -77,14 +80,16 @@ class ExitLoopOnRelease : public View {
   }
 
   base::OnceClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExitLoopOnRelease);
 };
 
 // A view that does a capture on ui::ET_GESTURE_TAP_DOWN events.
 class GestureCaptureView : public View {
  public:
   GestureCaptureView() = default;
+
+  GestureCaptureView(const GestureCaptureView&) = delete;
+  GestureCaptureView& operator=(const GestureCaptureView&) = delete;
+
   ~GestureCaptureView() override = default;
 
  private:
@@ -95,14 +100,16 @@ class GestureCaptureView : public View {
       event->StopPropagation();
     }
   }
-
-  DISALLOW_COPY_AND_ASSIGN(GestureCaptureView);
 };
 
 // A view that always processes all mouse events.
 class MouseView : public View {
  public:
   MouseView() = default;
+
+  MouseView(const MouseView&) = delete;
+  MouseView& operator=(const MouseView&) = delete;
+
   ~MouseView() override = default;
 
   bool OnMousePressed(const ui::MouseEvent& event) override {
@@ -135,8 +142,6 @@ class MouseView : public View {
   int exited_ = 0;
 
   int pressed_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MouseView);
 };
 
 // A View that shows a different widget, sets capture on that widget, and
@@ -146,6 +151,10 @@ class NestedLoopCaptureView : public View {
   explicit NestedLoopCaptureView(Widget* widget)
       : run_loop_(base::RunLoop::Type::kNestableTasksAllowed),
         widget_(widget) {}
+
+  NestedLoopCaptureView(const NestedLoopCaptureView&) = delete;
+  NestedLoopCaptureView& operator=(const NestedLoopCaptureView&) = delete;
+
   ~NestedLoopCaptureView() override = default;
 
   base::OnceClosure GetQuitClosure() { return run_loop_.QuitClosure(); }
@@ -165,8 +174,6 @@ class NestedLoopCaptureView : public View {
   base::RunLoop run_loop_;
 
   Widget* widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(NestedLoopCaptureView);
 };
 
 ui::WindowShowState GetWidgetShowState(const Widget* widget) {
@@ -395,6 +402,9 @@ class TouchEventHandler : public ui::EventHandler {
     widget_->GetNativeWindow()->GetHost()->window()->AddPreTargetHandler(this);
   }
 
+  TouchEventHandler(const TouchEventHandler&) = delete;
+  TouchEventHandler& operator=(const TouchEventHandler&) = delete;
+
   ~TouchEventHandler() override {
     widget_->GetNativeWindow()->GetHost()->window()->RemovePreTargetHandler(
         this);
@@ -430,7 +440,6 @@ class TouchEventHandler : public ui::EventHandler {
 
   Widget* widget_;
   base::OnceClosure quit_closure_;
-  DISALLOW_COPY_AND_ASSIGN(TouchEventHandler);
 };
 
 // TODO(dtapuska): Disabled due to it being flaky crbug.com/817531
@@ -670,6 +679,9 @@ class WidgetActivationTest : public Widget {
  public:
   WidgetActivationTest() = default;
 
+  WidgetActivationTest(const WidgetActivationTest&) = delete;
+  WidgetActivationTest& operator=(const WidgetActivationTest&) = delete;
+
   ~WidgetActivationTest() override = default;
 
   bool OnNativeWidgetActivationChanged(bool active) override {
@@ -681,8 +693,6 @@ class WidgetActivationTest : public Widget {
 
  private:
   bool active_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(WidgetActivationTest);
 };
 
 // Tests whether the widget only becomes active when the underlying window
@@ -1356,6 +1366,10 @@ class CaptureLostTrackingWidget : public Widget {
 class WidgetCaptureTest : public DesktopWidgetTestInteractive {
  public:
   WidgetCaptureTest() = default;
+
+  WidgetCaptureTest(const WidgetCaptureTest&) = delete;
+  WidgetCaptureTest& operator=(const WidgetCaptureTest&) = delete;
+
   ~WidgetCaptureTest() override = default;
 
   // Verifies Widget::SetCapture() results in updating native capture along with
@@ -1404,9 +1418,6 @@ class WidgetCaptureTest : public DesktopWidgetTestInteractive {
     params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     widget->Init(std::move(params));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WidgetCaptureTest);
 };
 
 // See description in TestCapture().
@@ -1795,6 +1806,11 @@ namespace {
 class CaptureOnActivationObserver : public WidgetObserver {
  public:
   CaptureOnActivationObserver() = default;
+
+  CaptureOnActivationObserver(const CaptureOnActivationObserver&) = delete;
+  CaptureOnActivationObserver& operator=(const CaptureOnActivationObserver&) =
+      delete;
+
   ~CaptureOnActivationObserver() override = default;
 
   // WidgetObserver:
@@ -1809,8 +1825,6 @@ class CaptureOnActivationObserver : public WidgetObserver {
 
  private:
   bool activation_observed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CaptureOnActivationObserver);
 };
 
 }  // namespace
@@ -1857,6 +1871,10 @@ namespace {
 class MouseEventTrackingWidget : public Widget {
  public:
   MouseEventTrackingWidget() = default;
+
+  MouseEventTrackingWidget(const MouseEventTrackingWidget&) = delete;
+  MouseEventTrackingWidget& operator=(const MouseEventTrackingWidget&) = delete;
+
   ~MouseEventTrackingWidget() override = default;
 
   bool GetAndClearGotMouseEvent() {
@@ -1873,8 +1891,6 @@ class MouseEventTrackingWidget : public Widget {
 
  private:
   bool got_mouse_event_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MouseEventTrackingWidget);
 };
 
 }  // namespace

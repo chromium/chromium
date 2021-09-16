@@ -25,6 +25,10 @@ class VIEWS_EXPORT FocusableBorder : public Border {
   static constexpr float kCornerRadiusDp = 2.f;
 
   FocusableBorder();
+
+  FocusableBorder(const FocusableBorder&) = delete;
+  FocusableBorder& operator=(const FocusableBorder&) = delete;
+
   ~FocusableBorder() override;
 
   // Sets the insets of the border.
@@ -47,8 +51,6 @@ class VIEWS_EXPORT FocusableBorder : public Border {
   gfx::Insets insets_;
 
   absl::optional<ui::ColorId> override_color_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(FocusableBorder);
 };
 
 }  // namespace views

@@ -98,6 +98,10 @@ class TestBubbleFrameView : public BubbleFrameView {
     params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     widget_->Init(std::move(params));
   }
+
+  TestBubbleFrameView(const TestBubbleFrameView&) = delete;
+  TestBubbleFrameView& operator=(const TestBubbleFrameView&) = delete;
+
   ~TestBubbleFrameView() override = default;
 
   void SetAvailableAnchorWindowBounds(gfx::Rect bounds) {
@@ -139,8 +143,6 @@ class TestBubbleFrameView : public BubbleFrameView {
 
   std::unique_ptr<TestBubbleFrameViewWidgetDelegate> widget_delegate_;
   std::unique_ptr<Widget> widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestBubbleFrameView);
 };
 
 }  // namespace
@@ -918,6 +920,11 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
     SetAnchorRect(gfx::Rect());
     DialogDelegate::SetButtons(ui::DIALOG_BUTTON_OK);
   }
+
+  TestBubbleDialogDelegateView(const TestBubbleDialogDelegateView&) = delete;
+  TestBubbleDialogDelegateView& operator=(const TestBubbleDialogDelegateView&) =
+      delete;
+
   ~TestBubbleDialogDelegateView() override = default;
 
   void ChangeTitle(const std::u16string& title) {
@@ -951,8 +958,6 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
  private:
   std::u16string title_;
   bool should_show_close_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestBubbleDialogDelegateView);
 };
 
 class TestAnchor {

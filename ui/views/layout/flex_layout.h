@@ -74,6 +74,10 @@ class View;
 class VIEWS_EXPORT FlexLayout : public LayoutManagerBase {
  public:
   FlexLayout();
+
+  FlexLayout(const FlexLayout&) = delete;
+  FlexLayout& operator=(const FlexLayout&) = delete;
+
   ~FlexLayout() override;
 
   // Note: setters provide a Builder-style interface, so you can type:
@@ -379,8 +383,6 @@ class VIEWS_EXPORT FlexLayout : public LayoutManagerBase {
   // Default properties for any views that don't have them explicitly set for
   // this layout.
   PropertyHandler layout_defaults_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FlexLayout);
 };
 
 }  // namespace views

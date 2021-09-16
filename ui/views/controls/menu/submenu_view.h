@@ -57,6 +57,10 @@ class VIEWS_EXPORT SubmenuView : public View,
 
   // Creates a SubmenuView for the specified menu item.
   explicit SubmenuView(MenuItemView* parent);
+
+  SubmenuView(const SubmenuView&) = delete;
+  SubmenuView& operator=(const SubmenuView&) = delete;
+
   ~SubmenuView() override;
 
   // Returns true if the submenu has at least one empty menu item.
@@ -236,8 +240,6 @@ class VIEWS_EXPORT SubmenuView : public View,
   float roundoff_error_;
 
   PrefixSelector prefix_selector_;
-
-  DISALLOW_COPY_AND_ASSIGN(SubmenuView);
 };
 
 }  // namespace views

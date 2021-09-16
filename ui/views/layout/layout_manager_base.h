@@ -31,6 +31,9 @@ class View;
 // CalculateProposedLayout(). Used in interpolating and animating layouts.
 class VIEWS_EXPORT LayoutManagerBase : public LayoutManager {
  public:
+  LayoutManagerBase(const LayoutManagerBase&) = delete;
+  LayoutManagerBase& operator=(const LayoutManagerBase&) = delete;
+
   ~LayoutManagerBase() override;
 
   View* host_view() { return host_view_; }
@@ -229,8 +232,6 @@ class VIEWS_EXPORT LayoutManagerBase : public LayoutManager {
   mutable absl::optional<gfx::Size> cached_height_for_width_;
   mutable absl::optional<gfx::Size> cached_layout_size_;
   mutable ProposedLayout cached_layout_;
-
-  DISALLOW_COPY_AND_ASSIGN(LayoutManagerBase);
 };
 
 }  // namespace views

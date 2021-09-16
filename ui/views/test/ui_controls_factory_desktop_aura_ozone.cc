@@ -44,6 +44,10 @@ class UIControlsDesktopOzone : public UIControlsAura {
     DCHECK(ozone_ui_controls_test_helper_)
         << "The test suite cannot be run without OzoneUIControlsTestHelper.";
   }
+
+  UIControlsDesktopOzone(const UIControlsDesktopOzone&) = delete;
+  UIControlsDesktopOzone& operator=(const UIControlsDesktopOzone&) = delete;
+
   ~UIControlsDesktopOzone() override = default;
 
   bool SendKeyPress(gfx::NativeWindow window,
@@ -165,8 +169,6 @@ class UIControlsDesktopOzone : public UIControlsAura {
   }
 
   std::unique_ptr<ui::OzoneUIControlsTestHelper> ozone_ui_controls_test_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(UIControlsDesktopOzone);
 };
 
 }  // namespace

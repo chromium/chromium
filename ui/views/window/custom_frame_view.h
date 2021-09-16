@@ -36,6 +36,10 @@ class Widget;
 class VIEWS_EXPORT CustomFrameView : public NonClientFrameView {
  public:
   explicit CustomFrameView(Widget* frame);
+
+  CustomFrameView(const CustomFrameView&) = delete;
+  CustomFrameView& operator=(const CustomFrameView&) = delete;
+
   ~CustomFrameView() override;
 
   // Overridden from NonClientFrameView:
@@ -160,8 +164,6 @@ class VIEWS_EXPORT CustomFrameView : public NonClientFrameView {
       frame_->RegisterPaintAsActiveChangedCallback(
           base::BindRepeating(&CustomFrameView::SchedulePaint,
                               base::Unretained(this)));
-
-  DISALLOW_COPY_AND_ASSIGN(CustomFrameView);
 };
 
 }  // namespace views

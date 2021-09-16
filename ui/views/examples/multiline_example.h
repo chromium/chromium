@@ -21,6 +21,10 @@ class VIEWS_EXAMPLES_EXPORT MultilineExample : public ExampleBase,
                                                public TextfieldController {
  public:
   MultilineExample();
+
+  MultilineExample(const MultilineExample&) = delete;
+  MultilineExample& operator=(const MultilineExample&) = delete;
+
   ~MultilineExample() override;
 
   // ExampleBase:
@@ -42,8 +46,6 @@ class VIEWS_EXAMPLES_EXPORT MultilineExample : public ExampleBase,
 
   // Checkbox to toggle text elision in |render_text_view_|.
   Checkbox* elision_checkbox_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MultilineExample);
 };
 
 }  // namespace examples

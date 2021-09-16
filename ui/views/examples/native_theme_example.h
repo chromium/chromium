@@ -14,13 +14,14 @@ namespace examples {
 class VIEWS_EXAMPLES_EXPORT NativeThemeExample : public ExampleBase {
  public:
   NativeThemeExample();
+
+  NativeThemeExample(const NativeThemeExample&) = delete;
+  NativeThemeExample& operator=(const NativeThemeExample&) = delete;
+
   ~NativeThemeExample() override;
 
   // ExampleBase:
   void CreateExampleView(View* container) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NativeThemeExample);
 };
 
 }  // namespace examples

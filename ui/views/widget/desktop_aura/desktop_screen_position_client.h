@@ -17,15 +17,17 @@ class VIEWS_EXPORT DesktopScreenPositionClient
     : public wm::DefaultScreenPositionClient {
  public:
   using DefaultScreenPositionClient::DefaultScreenPositionClient;
+
+  DesktopScreenPositionClient(const DesktopScreenPositionClient&) = delete;
+  DesktopScreenPositionClient& operator=(const DesktopScreenPositionClient&) =
+      delete;
+
   ~DesktopScreenPositionClient() override;
 
   // aura::client::DefaultScreenPositionClient:
   void SetBounds(aura::Window* window,
                  const gfx::Rect& bounds,
                  const display::Display& display) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DesktopScreenPositionClient);
 };
 
 }  // namespace views

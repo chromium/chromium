@@ -33,6 +33,10 @@ using RootViewTest = ViewsTestBase;
 class DeleteOnKeyEventView : public View {
  public:
   explicit DeleteOnKeyEventView(bool* set_on_key) : set_on_key_(set_on_key) {}
+
+  DeleteOnKeyEventView(const DeleteOnKeyEventView&) = delete;
+  DeleteOnKeyEventView& operator=(const DeleteOnKeyEventView&) = delete;
+
   ~DeleteOnKeyEventView() override = default;
 
   bool OnKeyPressed(const ui::KeyEvent& event) override {
@@ -44,8 +48,6 @@ class DeleteOnKeyEventView : public View {
  private:
   // Set to true in OnKeyPressed().
   bool* set_on_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeleteOnKeyEventView);
 };
 
 // Verifies deleting a View in OnKeyPressed() doesn't crash and that the
@@ -85,6 +87,11 @@ TEST_F(RootViewTest, DeleteViewDuringKeyEventDispatch) {
 class TestContextMenuController : public ContextMenuController {
  public:
   TestContextMenuController() = default;
+
+  TestContextMenuController(const TestContextMenuController&) = delete;
+  TestContextMenuController& operator=(const TestContextMenuController&) =
+      delete;
+
   ~TestContextMenuController() override = default;
 
   int show_context_menu_calls() const { return show_context_menu_calls_; }
@@ -110,8 +117,6 @@ class TestContextMenuController : public ContextMenuController {
   int show_context_menu_calls_ = 0;
   View* menu_source_view_ = nullptr;
   ui::MenuSourceType menu_source_type_ = ui::MENU_SOURCE_NONE;
-
-  DISALLOW_COPY_AND_ASSIGN(TestContextMenuController);
 };
 
 // Tests that context menus are shown for certain key events (Shift+F10
@@ -174,12 +179,12 @@ class GestureHandlingView : public View {
  public:
   GestureHandlingView() = default;
 
+  GestureHandlingView(const GestureHandlingView&) = delete;
+  GestureHandlingView& operator=(const GestureHandlingView&) = delete;
+
   ~GestureHandlingView() override = default;
 
   void OnGestureEvent(ui::GestureEvent* event) override { event->SetHandled(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GestureHandlingView);
 };
 
 // View which handles all mouse events.
@@ -413,6 +418,9 @@ class DeleteViewOnEvent : public View {
   DeleteViewOnEvent(ui::EventType delete_event_type, bool* was_destroyed)
       : delete_event_type_(delete_event_type), was_destroyed_(was_destroyed) {}
 
+  DeleteViewOnEvent(const DeleteViewOnEvent&) = delete;
+  DeleteViewOnEvent& operator=(const DeleteViewOnEvent&) = delete;
+
   ~DeleteViewOnEvent() override { *was_destroyed_ = true; }
 
   void OnEvent(ui::Event* event) override {
@@ -426,8 +434,6 @@ class DeleteViewOnEvent : public View {
 
   // Tracks whether the view was destroyed.
   bool* was_destroyed_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeleteViewOnEvent);
 };
 
 // View class which remove itself when it gets an event of type
@@ -703,14 +709,15 @@ class DeleteWidgetOnMouseExit : public View {
  public:
   explicit DeleteWidgetOnMouseExit(Widget* widget) : widget_(widget) {}
 
+  DeleteWidgetOnMouseExit(const DeleteWidgetOnMouseExit&) = delete;
+  DeleteWidgetOnMouseExit& operator=(const DeleteWidgetOnMouseExit&) = delete;
+
   ~DeleteWidgetOnMouseExit() override = default;
 
   void OnMouseExited(const ui::MouseEvent& event) override { delete widget_; }
 
  private:
   Widget* widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeleteWidgetOnMouseExit);
 };
 
 }  // namespace
@@ -800,6 +807,11 @@ class RootViewTestDialogDelegate : public DialogDelegateView {
     // Ensure that buttons don't influence the layout.
     DialogDelegate::SetButtons(ui::DIALOG_BUTTON_NONE);
   }
+
+  RootViewTestDialogDelegate(const RootViewTestDialogDelegate&) = delete;
+  RootViewTestDialogDelegate& operator=(const RootViewTestDialogDelegate&) =
+      delete;
+
   ~RootViewTestDialogDelegate() override = default;
 
   int layout_count() const { return layout_count_; }
@@ -815,8 +827,6 @@ class RootViewTestDialogDelegate : public DialogDelegateView {
   const gfx::Size preferred_size_ = gfx::Size(111, 111);
 
   int layout_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(RootViewTestDialogDelegate);
 };
 }  // namespace
 

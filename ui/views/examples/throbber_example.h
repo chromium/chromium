@@ -14,13 +14,14 @@ namespace examples {
 class VIEWS_EXAMPLES_EXPORT ThrobberExample : public ExampleBase {
  public:
   ThrobberExample();
+
+  ThrobberExample(const ThrobberExample&) = delete;
+  ThrobberExample& operator=(const ThrobberExample&) = delete;
+
   ~ThrobberExample() override;
 
   // ExampleBase:
   void CreateExampleView(View* container) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ThrobberExample);
 };
 
 }  // namespace examples

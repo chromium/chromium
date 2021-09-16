@@ -21,6 +21,10 @@ namespace views {
 class VIEWS_EXPORT MenuCocoaWatcherMac {
  public:
   explicit MenuCocoaWatcherMac(base::OnceClosure callback);
+
+  MenuCocoaWatcherMac(const MenuCocoaWatcherMac&) = delete;
+  MenuCocoaWatcherMac& operator=(const MenuCocoaWatcherMac&) = delete;
+
   ~MenuCocoaWatcherMac();
 
  private:
@@ -33,8 +37,6 @@ class VIEWS_EXPORT MenuCocoaWatcherMac {
   id observer_token_other_menu_;
   id observer_token_new_window_focus_;
   id observer_token_app_change_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuCocoaWatcherMac);
 };
 
 }  // namespace views

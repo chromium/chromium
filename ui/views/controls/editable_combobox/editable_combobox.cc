@@ -145,6 +145,10 @@ class EditableCombobox::EditableComboboxMenuModel
     observation_.Observe(combobox_model_);
   }
 
+  EditableComboboxMenuModel(const EditableComboboxMenuModel&) = delete;
+  EditableComboboxMenuModel& operator=(const EditableComboboxMenuModel&) =
+      delete;
+
   ~EditableComboboxMenuModel() override = default;
 
   void UpdateItemsShown() {
@@ -273,8 +277,6 @@ class EditableCombobox::EditableComboboxMenuModel
 
   base::ScopedObservation<ui::ComboboxModel, ui::ComboboxModelObserver>
       observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EditableComboboxMenuModel);
 };
 
 // This class adds itself as the pre-target handler for the RootView of the
@@ -287,6 +289,11 @@ class EditableCombobox::EditableComboboxPreTargetHandler
       : owner_(owner), root_view_(root_view) {
     root_view_->AddPreTargetHandler(this);
   }
+
+  EditableComboboxPreTargetHandler(const EditableComboboxPreTargetHandler&) =
+      delete;
+  EditableComboboxPreTargetHandler& operator=(
+      const EditableComboboxPreTargetHandler&) = delete;
 
   ~EditableComboboxPreTargetHandler() override { StopObserving(); }
 
@@ -319,8 +326,6 @@ class EditableCombobox::EditableComboboxPreTargetHandler
 
   EditableCombobox* owner_;
   View* root_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(EditableComboboxPreTargetHandler);
 };
 
 EditableCombobox::EditableCombobox()

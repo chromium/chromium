@@ -91,6 +91,10 @@ class MenuRunnerCocoaTest : public ViewsTestBase,
   static constexpr int kWindowOffset = 100;
 
   MenuRunnerCocoaTest() = default;
+
+  MenuRunnerCocoaTest(const MenuRunnerCocoaTest&) = delete;
+  MenuRunnerCocoaTest& operator=(const MenuRunnerCocoaTest&) = delete;
+
   ~MenuRunnerCocoaTest() override = default;
 
   void SetUp() override {
@@ -297,8 +301,6 @@ class MenuRunnerCocoaTest : public ViewsTestBase,
   }
 
   base::RepeatingClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuRunnerCocoaTest);
 };
 
 // Crashes frequently, https://crbug.com/1073069

@@ -27,6 +27,11 @@ class SquareInkDropRippleTestApi : public InkDropRippleTestApi {
   using PaintedShape = SquareInkDropRipple::PaintedShape;
 
   explicit SquareInkDropRippleTestApi(SquareInkDropRipple* ink_drop_ripple);
+
+  SquareInkDropRippleTestApi(const SquareInkDropRippleTestApi&) = delete;
+  SquareInkDropRippleTestApi& operator=(const SquareInkDropRippleTestApi&) =
+      delete;
+
   ~SquareInkDropRippleTestApi() override;
 
   // Wrapper functions to the wrapped InkDropRipple:
@@ -53,8 +58,6 @@ class SquareInkDropRippleTestApi : public InkDropRippleTestApi {
     return static_cast<SquareInkDropRipple*>(
         InkDropRippleTestApi::ink_drop_ripple());
   }
-
-  DISALLOW_COPY_AND_ASSIGN(SquareInkDropRippleTestApi);
 };
 
 }  // namespace test

@@ -33,6 +33,12 @@ class TestSelectionControllerDelegate : public SelectionControllerDelegate {
  public:
   explicit TestSelectionControllerDelegate(gfx::RenderText* render_text)
       : render_text_(render_text) {}
+
+  TestSelectionControllerDelegate(const TestSelectionControllerDelegate&) =
+      delete;
+  TestSelectionControllerDelegate& operator=(
+      const TestSelectionControllerDelegate&) = delete;
+
   ~TestSelectionControllerDelegate() override = default;
 
   gfx::RenderText* GetRenderTextForSelectionController() override {
@@ -58,8 +64,6 @@ class TestSelectionControllerDelegate : public SelectionControllerDelegate {
 
  private:
   gfx::RenderText* render_text_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSelectionControllerDelegate);
 };
 
 class SelectionControllerTest : public ::testing::Test {
@@ -72,6 +76,10 @@ class SelectionControllerTest : public ::testing::Test {
   }
 
   SelectionControllerTest() = default;
+
+  SelectionControllerTest(const SelectionControllerTest&) = delete;
+  SelectionControllerTest& operator=(const SelectionControllerTest&) = delete;
+
   ~SelectionControllerTest() override = default;
 
   void SetText(const std::string& text) {
@@ -143,8 +151,6 @@ class SelectionControllerTest : public ::testing::Test {
   int mouse_flags_ = 0;
   gfx::Point mouse_location_;
   base::TimeTicks last_event_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(SelectionControllerTest);
 };
 
 TEST_F(SelectionControllerTest, ClickAndDragToSelect) {

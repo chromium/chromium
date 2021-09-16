@@ -42,6 +42,11 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
   DesktopWindowTreeHostLinux(
       internal::NativeWidgetDelegate* native_widget_delegate,
       DesktopNativeWidgetAura* desktop_native_widget_aura);
+
+  DesktopWindowTreeHostLinux(const DesktopWindowTreeHostLinux&) = delete;
+  DesktopWindowTreeHostLinux& operator=(const DesktopWindowTreeHostLinux&) =
+      delete;
+
   ~DesktopWindowTreeHostLinux() override;
 
   // Get all open top-level windows. This includes windows that may not be
@@ -146,8 +151,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
 
   // The display and the native X window hosting the root window.
   base::WeakPtrFactory<DesktopWindowTreeHostLinux> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopWindowTreeHostLinux);
 };
 
 }  // namespace views

@@ -22,6 +22,10 @@ namespace test {
 class NativeViewHostTestBase : public ViewsTestBase {
  public:
   NativeViewHostTestBase();
+
+  NativeViewHostTestBase(const NativeViewHostTestBase&) = delete;
+  NativeViewHostTestBase& operator=(const NativeViewHostTestBase&) = delete;
+
   ~NativeViewHostTestBase() override;
 
   // testing::Test:
@@ -61,8 +65,6 @@ class NativeViewHostTestBase : public ViewsTestBase {
   std::unique_ptr<Widget> toplevel_;
   std::unique_ptr<NativeViewHost> host_;
   int host_destroyed_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeViewHostTestBase);
 };
 
 }  // namespace test

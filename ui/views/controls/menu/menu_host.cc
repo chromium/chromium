@@ -58,6 +58,10 @@ class PreMenuEventDispatchHandler : public ui::EventHandler,
     window_->AddObserver(this);
   }
 
+  PreMenuEventDispatchHandler(const PreMenuEventDispatchHandler&) = delete;
+  PreMenuEventDispatchHandler& operator=(const PreMenuEventDispatchHandler&) =
+      delete;
+
   ~PreMenuEventDispatchHandler() override { StopObserving(); }
 
   // ui::EventHandler overrides.
@@ -83,8 +87,6 @@ class PreMenuEventDispatchHandler : public ui::EventHandler,
   MenuController* menu_controller_;
   SubmenuView* submenu_;
   aura::Window* window_;
-
-  DISALLOW_COPY_AND_ASSIGN(PreMenuEventDispatchHandler);
 };
 #endif  // USE_AURA
 

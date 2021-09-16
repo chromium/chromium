@@ -19,6 +19,10 @@ class EventMonitorMac : public EventMonitor {
   EventMonitorMac(ui::EventObserver* event_observer,
                   gfx::NativeWindow target_window,
                   const std::set<ui::EventType>& types);
+
+  EventMonitorMac(const EventMonitorMac&) = delete;
+  EventMonitorMac& operator=(const EventMonitorMac&) = delete;
+
   ~EventMonitorMac() override;
 
   // EventMonitor:
@@ -28,8 +32,6 @@ class EventMonitorMac : public EventMonitor {
   id monitor_;
   ui::WeakPtrNSObjectFactory<EventMonitorMac> factory_;
   const std::set<ui::EventType> types_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventMonitorMac);
 };
 
 }  // namespace views

@@ -54,6 +54,10 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   DesktopWindowTreeHostWin(
       internal::NativeWidgetDelegate* native_widget_delegate,
       DesktopNativeWidgetAura* desktop_native_widget_aura);
+
+  DesktopWindowTreeHostWin(const DesktopWindowTreeHostWin&) = delete;
+  DesktopWindowTreeHostWin& operator=(const DesktopWindowTreeHostWin&) = delete;
+
   ~DesktopWindowTreeHostWin() override;
 
   // A way of converting an HWND into a content window.
@@ -352,8 +356,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   // The z-order level of the window; the window exhibits "always on top"
   // behavior if > 0.
   ui::ZOrderLevel z_order_ = ui::ZOrderLevel::kNormal;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopWindowTreeHostWin);
 };
 
 }  // namespace views

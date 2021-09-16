@@ -25,6 +25,10 @@ using AccessiblePaneViewTest = ViewsTestBase;
 class TestBarView : public AccessiblePaneView {
  public:
   TestBarView();
+
+  TestBarView(const TestBarView&) = delete;
+  TestBarView& operator=(const TestBarView&) = delete;
+
   ~TestBarView() override;
 
   LabelButton* child_button() const { return child_button_; }
@@ -41,8 +45,6 @@ class TestBarView : public AccessiblePaneView {
   LabelButton* second_child_button_;
   LabelButton* third_child_button_;
   std::unique_ptr<LabelButton> not_child_button_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestBarView);
 };
 
 TestBarView::TestBarView() {

@@ -20,6 +20,10 @@ namespace test {
 class SliderTestApi {
  public:
   explicit SliderTestApi(Slider* slider);
+
+  SliderTestApi(const SliderTestApi&) = delete;
+  SliderTestApi& operator=(const SliderTestApi&) = delete;
+
   virtual ~SliderTestApi();
 
   // Set the SliderListener on the Slider.
@@ -29,8 +33,6 @@ class SliderTestApi {
 
  private:
   Slider* slider_;
-
-  DISALLOW_COPY_AND_ASSIGN(SliderTestApi);
 };
 
 }  // namespace test

@@ -62,6 +62,9 @@ class ViewsTestBase : public PlatformTest {
   explicit ViewsTestBase(
       std::unique_ptr<base::test::TaskEnvironment> task_environment);
 
+  ViewsTestBase(const ViewsTestBase&) = delete;
+  ViewsTestBase& operator=(const ViewsTestBase&) = delete;
+
   ~ViewsTestBase() override;
 
   // testing::Test:
@@ -164,8 +167,6 @@ class ViewsTestBase : public PlatformTest {
 #if defined(OS_WIN)
   ui::ScopedOleInitializer ole_initializer_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ViewsTestBase);
 };
 
 class ViewsTestBaseWithNativeWidgetType
@@ -173,13 +174,16 @@ class ViewsTestBaseWithNativeWidgetType
       public testing::WithParamInterface<ViewsTestBase::NativeWidgetType> {
  public:
   using ViewsTestBase::ViewsTestBase;
+
+  ViewsTestBaseWithNativeWidgetType(const ViewsTestBaseWithNativeWidgetType&) =
+      delete;
+  ViewsTestBaseWithNativeWidgetType& operator=(
+      const ViewsTestBaseWithNativeWidgetType&) = delete;
+
   ~ViewsTestBaseWithNativeWidgetType() override = default;
 
   // ViewsTestBase:
   void SetUp() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ViewsTestBaseWithNativeWidgetType);
 };
 
 // A helper that makes it easier to declare basic views tests that want to test
@@ -191,13 +195,16 @@ class ViewsTestBaseWithNativeWidgetType
 class ViewsTestWithDesktopNativeWidget : public ViewsTestBase {
  public:
   using ViewsTestBase::ViewsTestBase;
+
+  ViewsTestWithDesktopNativeWidget(const ViewsTestWithDesktopNativeWidget&) =
+      delete;
+  ViewsTestWithDesktopNativeWidget& operator=(
+      const ViewsTestWithDesktopNativeWidget&) = delete;
+
   ~ViewsTestWithDesktopNativeWidget() override = default;
 
   // ViewsTestBase:
   void SetUp() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ViewsTestWithDesktopNativeWidget);
 };
 
 }  // namespace views

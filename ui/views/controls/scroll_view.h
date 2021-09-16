@@ -97,6 +97,9 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   // enabling by default this for all platforms.
   explicit ScrollView(ScrollWithLayers scroll_with_layers);
 
+  ScrollView(const ScrollView&) = delete;
+  ScrollView& operator=(const ScrollView&) = delete;
+
   ~ScrollView() override;
 
   // Creates a ScrollView with a theme specific border.
@@ -379,8 +382,6 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   ui::LayerType layer_type_ = ui::LAYER_TEXTURED;
 
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScrollView);
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, ScrollView, View)
@@ -427,6 +428,11 @@ class VariableRowHeightScrollHelper {
   // Creates a new VariableRowHeightScrollHelper. Controller is
   // NOT deleted by this VariableRowHeightScrollHelper.
   explicit VariableRowHeightScrollHelper(Controller* controller);
+
+  VariableRowHeightScrollHelper(const VariableRowHeightScrollHelper&) = delete;
+  VariableRowHeightScrollHelper& operator=(
+      const VariableRowHeightScrollHelper&) = delete;
+
   virtual ~VariableRowHeightScrollHelper();
 
   // Delegate the View methods of the same name to these. The scroll amount is
@@ -446,8 +452,6 @@ class VariableRowHeightScrollHelper {
 
  private:
   Controller* controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(VariableRowHeightScrollHelper);
 };
 
 // FixedRowHeightScrollHelper is intended for views that contain fixed height

@@ -24,6 +24,11 @@ class TestInkDropAnimationObserverHelper {
 
         last_animation_ended_context_() {}
 
+  TestInkDropAnimationObserverHelper(
+      const TestInkDropAnimationObserverHelper&) = delete;
+  TestInkDropAnimationObserverHelper& operator=(
+      const TestInkDropAnimationObserverHelper&) = delete;
+
   virtual ~TestInkDropAnimationObserverHelper() = default;
 
   int last_animation_started_ordinal() const {
@@ -184,8 +189,6 @@ class TestInkDropAnimationObserverHelper {
 
   InkDropAnimationEndedReason last_animation_ended_reason_ =
       InkDropAnimationEndedReason::SUCCESS;
-
-  DISALLOW_COPY_AND_ASSIGN(TestInkDropAnimationObserverHelper);
 };
 
 }  // namespace test

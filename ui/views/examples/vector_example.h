@@ -14,13 +14,14 @@ namespace examples {
 class VIEWS_EXAMPLES_EXPORT VectorExample : public ExampleBase {
  public:
   VectorExample();
+
+  VectorExample(const VectorExample&) = delete;
+  VectorExample& operator=(const VectorExample&) = delete;
+
   ~VectorExample() override;
 
   // ExampleBase:
   void CreateExampleView(View* container) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VectorExample);
 };
 
 }  // namespace examples

@@ -2115,14 +2115,18 @@ class RemoveFocusChangeListenerDelegate : public WidgetDelegate {
         },
         base::Unretained(widget), base::Unretained(this)));
   }
+
+  RemoveFocusChangeListenerDelegate(const RemoveFocusChangeListenerDelegate&) =
+      delete;
+  RemoveFocusChangeListenerDelegate& operator=(
+      const RemoveFocusChangeListenerDelegate&) = delete;
+
   ~RemoveFocusChangeListenerDelegate() override = default;
 
   void SetFocusChangeListener(FocusChangeListener* listener);
 
  private:
   FocusChangeListener* listener_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoveFocusChangeListenerDelegate);
 };
 
 void RemoveFocusChangeListenerDelegate::SetFocusChangeListener(

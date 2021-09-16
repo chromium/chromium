@@ -36,6 +36,10 @@ namespace {
 class TestSliderListener : public views::SliderListener {
  public:
   TestSliderListener();
+
+  TestSliderListener(const TestSliderListener&) = delete;
+  TestSliderListener& operator=(const TestSliderListener&) = delete;
+
   ~TestSliderListener() override;
 
   int last_event_epoch() { return last_event_epoch_; }
@@ -72,8 +76,6 @@ class TestSliderListener : public views::SliderListener {
   views::Slider* last_drag_started_sender_ = nullptr;
   // The sender from the last SliderDragEnded call.
   views::Slider* last_drag_ended_sender_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSliderListener);
 };
 
 TestSliderListener::TestSliderListener() = default;
@@ -125,6 +127,10 @@ class SliderTest : public views::ViewsTestBase,
                    public testing::WithParamInterface<TestSliderType> {
  public:
   SliderTest() = default;
+
+  SliderTest(const SliderTest&) = delete;
+  SliderTest& operator=(const SliderTest&) = delete;
+
   ~SliderTest() override = default;
 
  protected:
@@ -171,8 +177,6 @@ class SliderTest : public views::ViewsTestBase,
   views::UniqueWidgetPtr widget_;
   // An event generator.
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
-
-  DISALLOW_COPY_AND_ASSIGN(SliderTest);
 };
 
 void SliderTest::ClickAt(int x, int y) {

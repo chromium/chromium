@@ -36,6 +36,10 @@ namespace views {
 class VIEWS_EXPORT DesktopCaptureClient : public aura::client::CaptureClient {
  public:
   explicit DesktopCaptureClient(aura::Window* root);
+
+  DesktopCaptureClient(const DesktopCaptureClient&) = delete;
+  DesktopCaptureClient& operator=(const DesktopCaptureClient&) = delete;
+
   ~DesktopCaptureClient() override;
 
   // Exactly the same as GetGlobalCaptureWindow() but static.
@@ -63,8 +67,6 @@ class VIEWS_EXPORT DesktopCaptureClient : public aura::client::CaptureClient {
   base::ObserverList<aura::client::CaptureClientObserver>::Unchecked observers_;
 
   base::WeakPtrFactory<DesktopCaptureClient> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopCaptureClient);
 };
 
 }  // namespace views

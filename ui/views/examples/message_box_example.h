@@ -18,6 +18,10 @@ namespace examples {
 class VIEWS_EXAMPLES_EXPORT MessageBoxExample : public ExampleBase {
  public:
   MessageBoxExample();
+
+  MessageBoxExample(const MessageBoxExample&) = delete;
+  MessageBoxExample& operator=(const MessageBoxExample&) = delete;
+
   ~MessageBoxExample() override;
 
   // ExampleBase:
@@ -28,8 +32,6 @@ class VIEWS_EXAMPLES_EXPORT MessageBoxExample : public ExampleBase {
 
   // The MessageBoxView to be tested.
   MessageBoxView* message_box_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageBoxExample);
 };
 
 }  // namespace examples

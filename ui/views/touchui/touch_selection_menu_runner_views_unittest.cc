@@ -27,6 +27,12 @@ class TouchSelectionMenuRunnerViewsTest : public ViewsTestBase,
                                           public ui::TouchSelectionMenuClient {
  public:
   TouchSelectionMenuRunnerViewsTest() = default;
+
+  TouchSelectionMenuRunnerViewsTest(const TouchSelectionMenuRunnerViewsTest&) =
+      delete;
+  TouchSelectionMenuRunnerViewsTest& operator=(
+      const TouchSelectionMenuRunnerViewsTest&) = delete;
+
   ~TouchSelectionMenuRunnerViewsTest() override = default;
 
  protected:
@@ -63,8 +69,6 @@ class TouchSelectionMenuRunnerViewsTest : public ViewsTestBase,
   bool no_command_available_ = false;
 
   int last_executed_command_id_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchSelectionMenuRunnerViewsTest);
 };
 
 // Tests that the default touch selection menu runner is installed and opening

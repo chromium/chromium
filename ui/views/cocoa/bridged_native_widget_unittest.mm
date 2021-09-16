@@ -431,6 +431,10 @@ class BridgedNativeWidgetTest : public BridgedNativeWidgetTestBase,
       base::RepeatingCallback<bool(Textfield*, const ui::KeyEvent& key_event)>;
 
   BridgedNativeWidgetTest();
+
+  BridgedNativeWidgetTest(const BridgedNativeWidgetTest&) = delete;
+  BridgedNativeWidgetTest& operator=(const BridgedNativeWidgetTest&) = delete;
+
   ~BridgedNativeWidgetTest() override;
 
   // Install a textfield with input type |text_input_type| in the view hierarchy
@@ -510,9 +514,6 @@ class BridgedNativeWidgetTest : public BridgedNativeWidgetTestBase,
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BridgedNativeWidgetTest);
 };
 
 // Class that counts occurrences of a VKEY_RETURN accelerator, marking them

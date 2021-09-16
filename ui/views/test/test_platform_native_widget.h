@@ -32,6 +32,9 @@ class TestPlatformNativeWidget : public PlatformNativeWidget {
         mock_capture_(mock_capture),
         destroyed_(destroyed) {}
 
+  TestPlatformNativeWidget(const TestPlatformNativeWidget&) = delete;
+  TestPlatformNativeWidget& operator=(const TestPlatformNativeWidget&) = delete;
+
   ~TestPlatformNativeWidget() override {
     if (destroyed_)
       *destroyed_ = true;
@@ -63,8 +66,6 @@ class TestPlatformNativeWidget : public PlatformNativeWidget {
   bool mouse_capture_;
   const bool mock_capture_;
   bool* destroyed_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPlatformNativeWidget);
 };
 
 }  // namespace test

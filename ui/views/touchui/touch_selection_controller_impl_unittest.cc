@@ -70,6 +70,11 @@ class TouchSelectionControllerImplTest : public ViewsTestBase {
     ui::TouchEditingControllerFactory::SetInstance(views_tsc_factory_.get());
   }
 
+  TouchSelectionControllerImplTest(const TouchSelectionControllerImplTest&) =
+      delete;
+  TouchSelectionControllerImplTest& operator=(
+      const TouchSelectionControllerImplTest&) = delete;
+
   ~TouchSelectionControllerImplTest() override {
     ui::TouchEditingControllerFactory::SetInstance(nullptr);
   }
@@ -315,9 +320,6 @@ class TouchSelectionControllerImplTest : public ViewsTestBase {
   std::unique_ptr<TextfieldTestApi> textfield_test_api_;
   std::unique_ptr<ViewsTouchEditingControllerFactory> views_tsc_factory_;
   std::unique_ptr<aura::test::TestCursorClient> test_cursor_client_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TouchSelectionControllerImplTest);
 };
 
 // Tests that the selection handles are placed appropriately when selection in
@@ -658,6 +660,9 @@ class TestTouchEditable : public ui::TouchEditable {
     cursor_bound_.set_type(gfx::SelectionBound::Type::CENTER);
   }
 
+  TestTouchEditable(const TestTouchEditable&) = delete;
+  TestTouchEditable& operator=(const TestTouchEditable&) = delete;
+
   ~TestTouchEditable() override = default;
 
  private:
@@ -708,8 +713,6 @@ class TestTouchEditable : public ui::TouchEditable {
 
   // Cursor position inside the client view.
   gfx::SelectionBound cursor_bound_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTouchEditable);
 };
 
 // Tests if the touch editing handle is shown or hidden properly according to

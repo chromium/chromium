@@ -84,6 +84,9 @@ class VectorIconGallery : public View, public TextfieldController {
     color_input_->set_controller(this);
   }
 
+  VectorIconGallery(const VectorIconGallery&) = delete;
+  VectorIconGallery& operator=(const VectorIconGallery&) = delete;
+
   ~VectorIconGallery() override = default;
 
   // TextfieldController implementation.
@@ -147,8 +150,6 @@ class VectorIconGallery : public View, public TextfieldController {
   Textfield* file_chooser_;
   Button* file_go_button_;
   std::string contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(VectorIconGallery);
 };
 
 }  // namespace

@@ -79,6 +79,10 @@ TooltipController* GetController(Widget* widget) {
 class TooltipControllerTest : public ViewsTestBase {
  public:
   TooltipControllerTest() = default;
+
+  TooltipControllerTest(const TooltipControllerTest&) = delete;
+  TooltipControllerTest& operator=(const TooltipControllerTest&) = delete;
+
   ~TooltipControllerTest() override = default;
 
   void SetUp() override {
@@ -168,8 +172,6 @@ class TooltipControllerTest : public ViewsTestBase {
 #if defined(OS_WIN)
   ui::ScopedOleInitializer ole_initializer_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(TooltipControllerTest);
 };
 
 TEST_F(TooltipControllerTest, ViewTooltip) {
@@ -942,6 +944,10 @@ namespace {
 class TestTooltip : public Tooltip {
  public:
   TestTooltip() = default;
+
+  TestTooltip(const TestTooltip&) = delete;
+  TestTooltip& operator=(const TestTooltip&) = delete;
+
   ~TestTooltip() override = default;
 
   const std::u16string& tooltip_text() const { return tooltip_text_; }
@@ -963,8 +969,6 @@ class TestTooltip : public Tooltip {
   bool is_visible_ = false;
   std::u16string tooltip_text_;
   TooltipPosition position_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTooltip);
 };
 
 }  // namespace
@@ -973,6 +977,10 @@ class TestTooltip : public Tooltip {
 class TooltipControllerTest2 : public aura::test::AuraTestBase {
  public:
   TooltipControllerTest2() : test_tooltip_(new TestTooltip) {}
+
+  TooltipControllerTest2(const TooltipControllerTest2&) = delete;
+  TooltipControllerTest2& operator=(const TooltipControllerTest2&) = delete;
+
   ~TooltipControllerTest2() override = default;
 
   void SetUp() override {
@@ -1007,8 +1015,6 @@ class TooltipControllerTest2 : public aura::test::AuraTestBase {
   // Needed to make sure the DeviceDataManager is cleaned up between test runs.
   std::unique_ptr<base::ShadowingAtExitManager> at_exit_manager_;
   std::unique_ptr<TooltipController> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(TooltipControllerTest2);
 };
 
 TEST_F(TooltipControllerTest2, VerifyLeadingTrailingWhitespaceStripped) {
@@ -1050,6 +1056,10 @@ TEST_F(TooltipControllerTest2, CloseOnCancelMode) {
 class TooltipControllerTest3 : public ViewsTestBase {
  public:
   TooltipControllerTest3() = default;
+
+  TooltipControllerTest3(const TooltipControllerTest3&) = delete;
+  TooltipControllerTest3& operator=(const TooltipControllerTest3&) = delete;
+
   ~TooltipControllerTest3() override = default;
 
   void SetUp() override {
@@ -1110,8 +1120,6 @@ class TooltipControllerTest3 : public ViewsTestBase {
 #endif
 
   aura::Window* GetRootWindow() { return GetWindow()->GetRootWindow(); }
-
-  DISALLOW_COPY_AND_ASSIGN(TooltipControllerTest3);
 };
 
 TEST_F(TooltipControllerTest3, TooltipPositionChangesOnTwoViewsWithSameLabel) {
@@ -1224,9 +1232,11 @@ TEST_F(TooltipControllerTest3, TooltipPositionChangesOnTwoViewsWithSameLabel) {
 class TooltipStateManagerTest : public TooltipControllerTest {
  public:
   TooltipStateManagerTest() = default;
-  ~TooltipStateManagerTest() override = default;
 
-  DISALLOW_COPY_AND_ASSIGN(TooltipStateManagerTest);
+  TooltipStateManagerTest(const TooltipStateManagerTest&) = delete;
+  TooltipStateManagerTest& operator=(const TooltipStateManagerTest&) = delete;
+
+  ~TooltipStateManagerTest() override = default;
 };
 
 TEST_F(TooltipStateManagerTest, ShowAndHideTooltip) {

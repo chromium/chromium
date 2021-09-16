@@ -27,6 +27,9 @@ class OwnedDelegate : public gfx::AnimationDelegate {
  public:
   OwnedDelegate() = default;
 
+  OwnedDelegate(const OwnedDelegate&) = delete;
+  OwnedDelegate& operator=(const OwnedDelegate&) = delete;
+
   ~OwnedDelegate() override { deleted_ = true; }
 
   static bool GetAndClearDeleted() {
@@ -49,8 +52,6 @@ class OwnedDelegate : public gfx::AnimationDelegate {
  private:
   static bool deleted_;
   static bool canceled_;
-
-  DISALLOW_COPY_AND_ASSIGN(OwnedDelegate);
 };
 
 // static

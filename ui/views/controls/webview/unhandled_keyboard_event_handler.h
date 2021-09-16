@@ -21,6 +21,11 @@ class FocusManager;
 class WEBVIEW_EXPORT UnhandledKeyboardEventHandler {
  public:
   UnhandledKeyboardEventHandler();
+
+  UnhandledKeyboardEventHandler(const UnhandledKeyboardEventHandler&) = delete;
+  UnhandledKeyboardEventHandler& operator=(
+      const UnhandledKeyboardEventHandler&) = delete;
+
   ~UnhandledKeyboardEventHandler();
 
   bool HandleKeyboardEvent(const content::NativeWebKeyboardEvent& event,
@@ -38,8 +43,6 @@ class WEBVIEW_EXPORT UnhandledKeyboardEventHandler {
   // such as a beep if DefWindowProc() has no default handling for the given
   // Char.)
   bool ignore_next_char_event_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(UnhandledKeyboardEventHandler);
 };
 
 }  // namespace views

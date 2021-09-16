@@ -38,6 +38,9 @@ class TestInkDropRipple : public SquareInkDropRipple {
                             color,
                             visible_opacity) {}
 
+  TestInkDropRipple(const TestInkDropRipple&) = delete;
+  TestInkDropRipple& operator=(const TestInkDropRipple&) = delete;
+
   ~TestInkDropRipple() override = default;
 
   test::InkDropRippleTestApi* GetTestApi() override {
@@ -48,8 +51,6 @@ class TestInkDropRipple : public SquareInkDropRipple {
 
  private:
   std::unique_ptr<test::InkDropRippleTestApi> test_api_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestInkDropRipple);
 };
 
 // Test specific subclass of InkDropHighlight that returns a test api from
@@ -62,6 +63,9 @@ class TestInkDropHighlight : public InkDropHighlight {
                        SkColor color)
       : InkDropHighlight(size, corner_radius, center_point, color) {}
 
+  TestInkDropHighlight(const TestInkDropHighlight&) = delete;
+  TestInkDropHighlight& operator=(const TestInkDropHighlight&) = delete;
+
   ~TestInkDropHighlight() override = default;
 
   test::InkDropHighlightTestApi* GetTestApi() override {
@@ -72,8 +76,6 @@ class TestInkDropHighlight : public InkDropHighlight {
 
  private:
   std::unique_ptr<test::InkDropHighlightTestApi> test_api_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestInkDropHighlight);
 };
 
 }  // namespace

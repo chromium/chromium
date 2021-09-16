@@ -61,6 +61,10 @@ class VIEWS_EXPORT FloodFillInkDropRipple : public InkDropRipple {
                          const gfx::Point& center_point,
                          SkColor color,
                          float visible_opacity);
+
+  FloodFillInkDropRipple(const FloodFillInkDropRipple&) = delete;
+  FloodFillInkDropRipple& operator=(const FloodFillInkDropRipple&) = delete;
+
   ~FloodFillInkDropRipple() override;
 
   // InkDropRipple:
@@ -167,8 +171,6 @@ class VIEWS_EXPORT FloodFillInkDropRipple : public InkDropRipple {
 
   // The current ink drop state.
   InkDropState ink_drop_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(FloodFillInkDropRipple);
 };
 
 }  // namespace views

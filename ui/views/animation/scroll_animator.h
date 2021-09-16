@@ -33,6 +33,10 @@ class VIEWS_EXPORT ScrollAnimator : public gfx::AnimationDelegate {
  public:
   // The ScrollAnimator does not own the delegate. Uses default acceleration.
   explicit ScrollAnimator(ScrollDelegate* delegate);
+
+  ScrollAnimator(const ScrollAnimator&) = delete;
+  ScrollAnimator& operator=(const ScrollAnimator&) = delete;
+
   ~ScrollAnimator() override;
 
   // Use this if you would prefer different acceleration than the default.
@@ -58,8 +62,6 @@ class VIEWS_EXPORT ScrollAnimator : public gfx::AnimationDelegate {
   float acceleration_;
 
   std::unique_ptr<gfx::SlideAnimation> animation_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScrollAnimator);
 };
 
 }  // namespace views

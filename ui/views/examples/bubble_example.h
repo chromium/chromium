@@ -21,6 +21,10 @@ namespace examples {
 class VIEWS_EXAMPLES_EXPORT BubbleExample : public ExampleBase {
  public:
   BubbleExample();
+
+  BubbleExample(const BubbleExample&) = delete;
+  BubbleExample& operator=(const BubbleExample&) = delete;
+
   ~BubbleExample() override;
 
   // ExampleBase:
@@ -36,8 +40,6 @@ class VIEWS_EXAMPLES_EXPORT BubbleExample : public ExampleBase {
   Button* standard_shadow_;
   Button* no_shadow_;
   Button* persistent_;
-
-  DISALLOW_COPY_AND_ASSIGN(BubbleExample);
 };
 
 }  // namespace examples

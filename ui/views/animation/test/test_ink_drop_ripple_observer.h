@@ -22,6 +22,11 @@ class TestInkDropRippleObserver
       public TestInkDropAnimationObserverHelper<InkDropState> {
  public:
   TestInkDropRippleObserver();
+
+  TestInkDropRippleObserver(const TestInkDropRippleObserver&) = delete;
+  TestInkDropRippleObserver& operator=(const TestInkDropRippleObserver&) =
+      delete;
+
   ~TestInkDropRippleObserver() override;
 
   void set_ink_drop_ripple(InkDropRipple* ink_drop_ripple) {
@@ -57,8 +62,6 @@ class TestInkDropRippleObserver
 
   // An InkDropRipple to spy info from when notifications are handled.
   InkDropRipple* ink_drop_ripple_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestInkDropRippleObserver);
 };
 
 }  // namespace test

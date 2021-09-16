@@ -16,6 +16,10 @@ namespace views {
 class VIEWS_EXPORT InkDropStub : public InkDrop {
  public:
   InkDropStub();
+
+  InkDropStub(const InkDropStub&) = delete;
+  InkDropStub& operator=(const InkDropStub&) = delete;
+
   ~InkDropStub() override;
 
   // InkDrop:
@@ -32,9 +36,6 @@ class VIEWS_EXPORT InkDropStub : public InkDrop {
   bool IsHighlightFadingInOrVisible() const override;
   void SetShowHighlightOnHover(bool show_highlight_on_hover) override;
   void SetShowHighlightOnFocus(bool show_highlight_on_focus) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InkDropStub);
 };
 
 }  // namespace views

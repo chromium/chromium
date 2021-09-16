@@ -125,11 +125,14 @@ class ScopedChildrenLock {
  public:
   explicit ScopedChildrenLock(const View* view)
       : reset_(&view->iterating_, true) {}
+
+  ScopedChildrenLock(const ScopedChildrenLock&) = delete;
+  ScopedChildrenLock& operator=(const ScopedChildrenLock&) = delete;
+
   ~ScopedChildrenLock() = default;
 
  private:
   base::AutoReset<bool> reset_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedChildrenLock);
 };
 #else
 class ScopedChildrenLock {

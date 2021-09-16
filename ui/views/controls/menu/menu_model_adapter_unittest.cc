@@ -29,6 +29,9 @@ class MenuModelBase : public ui::MenuModel {
   explicit MenuModelBase(int command_id_base)
       : command_id_base_(command_id_base), last_activation_(-1) {}
 
+  MenuModelBase(const MenuModelBase&) = delete;
+  MenuModelBase& operator=(const MenuModelBase&) = delete;
+
   ~MenuModelBase() override = default;
 
   // ui::MenuModel implementation:
@@ -141,8 +144,6 @@ class MenuModelBase : public ui::MenuModel {
  private:
   int command_id_base_;
   int last_activation_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuModelBase);
 };
 
 class SubmenuModel : public MenuModelBase {
@@ -153,10 +154,10 @@ class SubmenuModel : public MenuModelBase {
     items_[1].alerted = true;
   }
 
-  ~SubmenuModel() override = default;
+  SubmenuModel(const SubmenuModel&) = delete;
+  SubmenuModel& operator=(const SubmenuModel&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SubmenuModel);
+  ~SubmenuModel() override = default;
 };
 
 class ActionableSubmenuModel : public MenuModelBase {
@@ -166,10 +167,11 @@ class ActionableSubmenuModel : public MenuModelBase {
     items_.emplace_back(TYPE_COMMAND, "actionable submenu item 1", nullptr);
     items_[1].new_feature = true;
   }
-  ~ActionableSubmenuModel() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ActionableSubmenuModel);
+  ActionableSubmenuModel(const ActionableSubmenuModel&) = delete;
+  ActionableSubmenuModel& operator=(const ActionableSubmenuModel&) = delete;
+
+  ~ActionableSubmenuModel() override = default;
 };
 
 class RootModel : public MenuModelBase {
@@ -187,13 +189,14 @@ class RootModel : public MenuModelBase {
                         actionable_submenu_model_.get());
   }
 
+  RootModel(const RootModel&) = delete;
+  RootModel& operator=(const RootModel&) = delete;
+
   ~RootModel() override = default;
 
  private:
   std::unique_ptr<MenuModel> submenu_model_;
   std::unique_ptr<MenuModel> actionable_submenu_model_;
-
-  DISALLOW_COPY_AND_ASSIGN(RootModel);
 };
 
 void CheckSubmenu(const RootModel& model,

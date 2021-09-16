@@ -36,6 +36,11 @@ const char* kAlignments[] = {"Left", "Center", "Right", "Head"};
 class ExamplePreferredSizeLabel : public Label {
  public:
   ExamplePreferredSizeLabel() { SetBorder(CreateSolidBorder(1, SK_ColorGRAY)); }
+
+  ExamplePreferredSizeLabel(const ExamplePreferredSizeLabel&) = delete;
+  ExamplePreferredSizeLabel& operator=(const ExamplePreferredSizeLabel&) =
+      delete;
+
   ~ExamplePreferredSizeLabel() override = default;
 
   // Label:
@@ -44,9 +49,6 @@ class ExamplePreferredSizeLabel : public Label {
   }
 
   static const char* kElideBehaviors[];
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExamplePreferredSizeLabel);
 };
 
 // static

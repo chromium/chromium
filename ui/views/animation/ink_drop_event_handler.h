@@ -42,6 +42,10 @@ class VIEWS_EXPORT InkDropEventHandler : public ui::EventHandler,
   };
 
   InkDropEventHandler(View* host_view, Delegate* delegate);
+
+  InkDropEventHandler(const InkDropEventHandler&) = delete;
+  InkDropEventHandler& operator=(const InkDropEventHandler&) = delete;
+
   ~InkDropEventHandler() override;
 
   void AnimateToState(InkDropState state, const ui::LocatedEvent* event);
@@ -76,8 +80,6 @@ class VIEWS_EXPORT InkDropEventHandler : public ui::EventHandler,
   std::unique_ptr<ui::LocatedEvent> last_ripple_triggering_event_;
 
   base::ScopedObservation<View, ViewObserver> observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InkDropEventHandler);
 };
 
 }  // namespace views

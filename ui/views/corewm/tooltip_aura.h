@@ -39,6 +39,10 @@ class VIEWS_EXPORT TooltipAura : public Tooltip, public WidgetObserver {
   static constexpr int kCursorOffsetY = 15;
 
   TooltipAura() = default;
+
+  TooltipAura(const TooltipAura&) = delete;
+  TooltipAura& operator=(const TooltipAura&) = delete;
+
   ~TooltipAura() override;
 
  private:
@@ -81,8 +85,6 @@ class VIEWS_EXPORT TooltipAura : public Tooltip, public WidgetObserver {
   // The window we're showing the tooltip for. Never NULL and valid while
   // showing.
   aura::Window* tooltip_window_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TooltipAura);
 };
 
 }  // namespace corewm

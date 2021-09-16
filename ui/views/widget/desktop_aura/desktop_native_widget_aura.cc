@@ -209,6 +209,12 @@ class DesktopNativeWidgetAuraWindowParentingClient
       : root_window_(root_window) {
     aura::client::SetWindowParentingClient(root_window_, this);
   }
+
+  DesktopNativeWidgetAuraWindowParentingClient(
+      const DesktopNativeWidgetAuraWindowParentingClient&) = delete;
+  DesktopNativeWidgetAuraWindowParentingClient& operator=(
+      const DesktopNativeWidgetAuraWindowParentingClient&) = delete;
+
   ~DesktopNativeWidgetAuraWindowParentingClient() override {
     aura::client::SetWindowParentingClient(root_window_, nullptr);
   }
@@ -236,8 +242,6 @@ class DesktopNativeWidgetAuraWindowParentingClient
 
  private:
   aura::Window* root_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopNativeWidgetAuraWindowParentingClient);
 };
 
 }  // namespace
@@ -246,6 +250,11 @@ class RootWindowDestructionObserver : public aura::WindowObserver {
  public:
   explicit RootWindowDestructionObserver(DesktopNativeWidgetAura* parent)
       : parent_(parent) {}
+
+  RootWindowDestructionObserver(const RootWindowDestructionObserver&) = delete;
+  RootWindowDestructionObserver& operator=(
+      const RootWindowDestructionObserver&) = delete;
+
   ~RootWindowDestructionObserver() override = default;
 
  private:
@@ -257,8 +266,6 @@ class RootWindowDestructionObserver : public aura::WindowObserver {
   }
 
   DesktopNativeWidgetAura* parent_;
-
-  DISALLOW_COPY_AND_ASSIGN(RootWindowDestructionObserver);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -113,6 +113,10 @@ class ActivationWaiter : public ui::X11PropertyChangeWaiter {
 class MouseMoveCounterHandler : public ui::EventHandler {
  public:
   MouseMoveCounterHandler() = default;
+
+  MouseMoveCounterHandler(const MouseMoveCounterHandler&) = delete;
+  MouseMoveCounterHandler& operator=(const MouseMoveCounterHandler&) = delete;
+
   ~MouseMoveCounterHandler() override = default;
 
   // ui::EventHandler:
@@ -125,8 +129,6 @@ class MouseMoveCounterHandler : public ui::EventHandler {
 
  private:
   int count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MouseMoveCounterHandler);
 };
 
 // A fake handler, which just stores the hittest and pointer location values.
@@ -135,6 +137,10 @@ class FakeWmMoveResizeHandler : public ui::WmMoveResizeHandler {
   using SetBoundsCallback = base::RepeatingCallback<void(gfx::Rect)>;
   explicit FakeWmMoveResizeHandler(ui::PlatformWindow* window)
       : platform_window_(window), hittest_(-1) {}
+
+  FakeWmMoveResizeHandler(const FakeWmMoveResizeHandler&) = delete;
+  FakeWmMoveResizeHandler& operator=(const FakeWmMoveResizeHandler&) = delete;
+
   ~FakeWmMoveResizeHandler() override = default;
 
   void Reset() {
@@ -163,8 +169,6 @@ class FakeWmMoveResizeHandler : public ui::WmMoveResizeHandler {
 
   int hittest_ = -1;
   gfx::Point pointer_location_in_px_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeWmMoveResizeHandler);
 };
 
 void SetExpectationBasedOnHittestValue(
@@ -191,6 +195,11 @@ class HitTestNonClientFrameView : public NativeFrameView {
  public:
   explicit HitTestNonClientFrameView(Widget* widget)
       : NativeFrameView(widget) {}
+
+  HitTestNonClientFrameView(const HitTestNonClientFrameView&) = delete;
+  HitTestNonClientFrameView& operator=(const HitTestNonClientFrameView&) =
+      delete;
+
   ~HitTestNonClientFrameView() override = default;
 
   void set_hit_test_result(int component) { hit_test_result_ = component; }
@@ -202,8 +211,6 @@ class HitTestNonClientFrameView : public NativeFrameView {
 
  private:
   int hit_test_result_ = HTNOWHERE;
-
-  DISALLOW_COPY_AND_ASSIGN(HitTestNonClientFrameView);
 };
 
 // This is used to return HitTestNonClientFrameView on create call.
@@ -213,6 +220,10 @@ class HitTestWidgetDelegate : public WidgetDelegate {
     SetCanResize(true);
     SetOwnedByWidget(true);
   }
+
+  HitTestWidgetDelegate(const HitTestWidgetDelegate&) = delete;
+  HitTestWidgetDelegate& operator=(const HitTestWidgetDelegate&) = delete;
+
   ~HitTestWidgetDelegate() override = default;
 
   HitTestNonClientFrameView* frame_view() { return frame_view_; }
@@ -228,8 +239,6 @@ class HitTestWidgetDelegate : public WidgetDelegate {
 
  private:
   HitTestNonClientFrameView* frame_view_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(HitTestWidgetDelegate);
 };
 
 // Test host that can intercept calls to the real host.
@@ -240,6 +249,12 @@ class TestDesktopWindowTreeHostLinux : public DesktopWindowTreeHostLinux {
       DesktopNativeWidgetAura* desktop_native_widget_aura)
       : DesktopWindowTreeHostLinux(native_widget_delegate,
                                    desktop_native_widget_aura) {}
+
+  TestDesktopWindowTreeHostLinux(const TestDesktopWindowTreeHostLinux&) =
+      delete;
+  TestDesktopWindowTreeHostLinux& operator=(
+      const TestDesktopWindowTreeHostLinux&) = delete;
+
   ~TestDesktopWindowTreeHostLinux() override = default;
 
   // PlatformWindowDelegate:
@@ -259,8 +274,6 @@ class TestDesktopWindowTreeHostLinux : public DesktopWindowTreeHostLinux {
 
  private:
   bool called_maximize_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDesktopWindowTreeHostLinux);
 };
 
 }  // namespace
@@ -269,6 +282,12 @@ class DesktopWindowTreeHostLinuxTest
     : public test::DesktopWidgetTestInteractive {
  public:
   DesktopWindowTreeHostLinuxTest() = default;
+
+  DesktopWindowTreeHostLinuxTest(const DesktopWindowTreeHostLinuxTest&) =
+      delete;
+  DesktopWindowTreeHostLinuxTest& operator=(
+      const DesktopWindowTreeHostLinuxTest&) = delete;
+
   ~DesktopWindowTreeHostLinuxTest() override = default;
 
  protected:
@@ -331,9 +350,6 @@ class DesktopWindowTreeHostLinuxTest
 
   HitTestWidgetDelegate* delegate_ = nullptr;
   TestDesktopWindowTreeHostLinux* host_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DesktopWindowTreeHostLinuxTest);
 };
 
 TEST_F(DesktopWindowTreeHostLinuxTest, HitTest) {

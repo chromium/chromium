@@ -41,6 +41,11 @@ TEST_F(ImageButtonFactoryTest, SetImageFromVectorIcon) {
 class ImageButtonFactoryWidgetTest : public ViewsTestBase {
  public:
   ImageButtonFactoryWidgetTest() = default;
+
+  ImageButtonFactoryWidgetTest(const ImageButtonFactoryWidgetTest&) = delete;
+  ImageButtonFactoryWidgetTest& operator=(const ImageButtonFactoryWidgetTest&) =
+      delete;
+
   ~ImageButtonFactoryWidgetTest() override = default;
 
   void SetUp() override {
@@ -74,8 +79,6 @@ class ImageButtonFactoryWidgetTest : public ViewsTestBase {
  private:
   std::unique_ptr<Widget> widget_;
   ImageButton* button_ = nullptr;  // owned by |widget_|.
-
-  DISALLOW_COPY_AND_ASSIGN(ImageButtonFactoryWidgetTest);
 };
 
 TEST_F(ImageButtonFactoryWidgetTest, CreateVectorImageButtonWithNativeTheme) {

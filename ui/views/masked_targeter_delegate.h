@@ -25,6 +25,10 @@ class View;
 class VIEWS_EXPORT MaskedTargeterDelegate : public ViewTargeterDelegate {
  public:
   MaskedTargeterDelegate() = default;
+
+  MaskedTargeterDelegate(const MaskedTargeterDelegate&) = delete;
+  MaskedTargeterDelegate& operator=(const MaskedTargeterDelegate&) = delete;
+
   ~MaskedTargeterDelegate() override = default;
 
   // Sets the hit-test mask for the view which implements this interface,
@@ -35,9 +39,6 @@ class VIEWS_EXPORT MaskedTargeterDelegate : public ViewTargeterDelegate {
   // ViewTargeterDelegate:
   bool DoesIntersectRect(const View* target,
                          const gfx::Rect& rect) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MaskedTargeterDelegate);
 };
 
 }  // namespace views

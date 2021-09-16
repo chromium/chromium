@@ -359,6 +359,11 @@ TEST_F(MenuItemViewLayoutTest, ContainerLayoutPassesTrueWidth) {
 class MenuItemViewPaintUnitTest : public ViewsTestBase {
  public:
   MenuItemViewPaintUnitTest() = default;
+
+  MenuItemViewPaintUnitTest(const MenuItemViewPaintUnitTest&) = delete;
+  MenuItemViewPaintUnitTest& operator=(const MenuItemViewPaintUnitTest&) =
+      delete;
+
   ~MenuItemViewPaintUnitTest() override = default;
 
   MenuItemView* menu_item_view() { return menu_item_view_; }
@@ -392,8 +397,6 @@ class MenuItemViewPaintUnitTest : public ViewsTestBase {
   std::unique_ptr<test::TestMenuDelegate> menu_delegate_;
   std::unique_ptr<MenuRunner> menu_runner_;
   std::unique_ptr<Widget> widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuItemViewPaintUnitTest);
 };
 
 // Provides assertion coverage for painting, secondary label, minor text and

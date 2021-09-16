@@ -38,6 +38,10 @@ using ui_controls::UP;
 class UIControlsDesktopX11 : public UIControlsAura {
  public:
   UIControlsDesktopX11() = default;
+
+  UIControlsDesktopX11(const UIControlsDesktopX11&) = delete;
+  UIControlsDesktopX11& operator=(const UIControlsDesktopX11&) = delete;
+
   ~UIControlsDesktopX11() override = default;
 
   bool SendKeyPress(gfx::NativeWindow window,
@@ -156,8 +160,6 @@ class UIControlsDesktopX11 : public UIControlsAura {
   }
 
   ui::X11UIControlsTestHelper x11_ui_controls_test_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(UIControlsDesktopX11);
 };
 
 }  // namespace

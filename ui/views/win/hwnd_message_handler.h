@@ -89,6 +89,10 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   // See WindowImpl for details on |debugging_id|.
   HWNDMessageHandler(HWNDMessageHandlerDelegate* delegate,
                      const std::string& debugging_id);
+
+  HWNDMessageHandler(const HWNDMessageHandler&) = delete;
+  HWNDMessageHandler& operator=(const HWNDMessageHandler&) = delete;
+
   ~HWNDMessageHandler() override;
 
   void Init(HWND parent, const gfx::Rect& bounds);
@@ -830,8 +834,6 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
 
   // The factory used to lookup appbar autohide edges.
   base::WeakPtrFactory<HWNDMessageHandler> autohide_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HWNDMessageHandler);
 };
 
 }  // namespace views

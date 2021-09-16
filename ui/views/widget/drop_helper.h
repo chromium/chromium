@@ -39,6 +39,10 @@ class VIEWS_EXPORT DropHelper {
                               ui::mojom::DragOperation& output_drag_op)>;
 
   explicit DropHelper(View* root_view);
+
+  DropHelper(const DropHelper&) = delete;
+  DropHelper& operator=(const DropHelper&) = delete;
+
   ~DropHelper();
 
   // Sets a callback that is run any time a drag enters |view|.  Only exposed
@@ -121,8 +125,6 @@ class VIEWS_EXPORT DropHelper {
 
   // The deepest view under the current drop coordinate.
   View* deepest_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(DropHelper);
 };
 
 }  // namespace views

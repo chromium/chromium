@@ -109,6 +109,10 @@ class VIEWS_EXPORT TableView : public views::View,
             const std::vector<ui::TableColumn>& columns,
             TableTypes table_type,
             bool single_selection);
+
+  TableView(const TableView&) = delete;
+  TableView& operator=(const TableView&) = delete;
+
   ~TableView() override;
 
   // Returns a new ScrollView that contains the given |table|.
@@ -523,8 +527,6 @@ class VIEWS_EXPORT TableView : public views::View,
 
   // Weak pointer factory, enables using PostTask safely.
   base::WeakPtrFactory<TableView> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(TableView);
 };
 
 }  // namespace views

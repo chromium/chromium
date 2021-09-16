@@ -14,6 +14,10 @@ namespace examples {
 class ExampleComboboxModel : public ui::ComboboxModel {
  public:
   ExampleComboboxModel(const char* const* strings, int count);
+
+  ExampleComboboxModel(const ExampleComboboxModel&) = delete;
+  ExampleComboboxModel& operator=(const ExampleComboboxModel&) = delete;
+
   ~ExampleComboboxModel() override;
 
   // ui::ComboboxModel:
@@ -23,8 +27,6 @@ class ExampleComboboxModel : public ui::ComboboxModel {
  private:
   const char* const* const strings_;
   const int count_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExampleComboboxModel);
 };
 
 }  // namespace examples

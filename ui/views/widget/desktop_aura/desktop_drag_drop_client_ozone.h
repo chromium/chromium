@@ -41,6 +41,11 @@ class VIEWS_EXPORT DesktopDragDropClientOzone
  public:
   DesktopDragDropClientOzone(aura::Window* root_window,
                              ui::WmDragHandler* drag_handler);
+
+  DesktopDragDropClientOzone(const DesktopDragDropClientOzone&) = delete;
+  DesktopDragDropClientOzone& operator=(const DesktopDragDropClientOzone&) =
+      delete;
+
   ~DesktopDragDropClientOzone() override;
 
  private:
@@ -148,8 +153,6 @@ class VIEWS_EXPORT DesktopDragDropClientOzone
   std::unique_ptr<DragContext> drag_context_;
 
   base::WeakPtrFactory<DesktopDragDropClientOzone> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopDragDropClientOzone);
 };
 
 }  // namespace views

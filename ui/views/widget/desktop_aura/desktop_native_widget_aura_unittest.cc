@@ -381,6 +381,10 @@ class DesktopAuraTopLevelWindowTest : public aura::WindowObserver {
  public:
   DesktopAuraTopLevelWindowTest() = default;
 
+  DesktopAuraTopLevelWindowTest(const DesktopAuraTopLevelWindowTest&) = delete;
+  DesktopAuraTopLevelWindowTest& operator=(
+      const DesktopAuraTopLevelWindowTest&) = delete;
+
   ~DesktopAuraTopLevelWindowTest() override {
     EXPECT_TRUE(owner_destroyed_);
     EXPECT_TRUE(owned_window_destroyed_);
@@ -466,8 +470,6 @@ class DesktopAuraTopLevelWindowTest : public aura::WindowObserver {
   // This flag controls whether we need to wait for the destruction to complete
   // before finishing the test. Defaults to true.
   bool use_async_mode_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopAuraTopLevelWindowTest);
 };
 
 using DesktopAuraWidgetTest = DesktopWidgetTest;

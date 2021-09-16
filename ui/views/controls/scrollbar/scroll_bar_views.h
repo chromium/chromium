@@ -25,6 +25,10 @@ class VIEWS_EXPORT ScrollBarViews : public ScrollBar {
 
   // Creates new scrollbar, either horizontal or vertical.
   explicit ScrollBarViews(bool horizontal = true);
+
+  ScrollBarViews(const ScrollBarViews&) = delete;
+  ScrollBarViews& operator=(const ScrollBarViews&) = delete;
+
   ~ScrollBarViews() override;
 
   static int GetVerticalScrollBarWidth(const ui::NativeTheme* theme);
@@ -48,8 +52,6 @@ class VIEWS_EXPORT ScrollBarViews : public ScrollBar {
   ui::NativeTheme::ExtraParams params_;
   ui::NativeTheme::Part part_;
   ui::NativeTheme::State state_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScrollBarViews);
 };
 
 }  // namespace views

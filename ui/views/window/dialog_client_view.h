@@ -37,6 +37,10 @@ class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
   METADATA_HEADER(DialogClientView);
 
   DialogClientView(Widget* widget, View* contents_view);
+
+  DialogClientView(const DialogClientView&) = delete;
+  DialogClientView& operator=(const DialogClientView&) = delete;
+
   ~DialogClientView() override;
 
   // Accessors in case the user wishes to adjust these buttons.
@@ -129,8 +133,6 @@ class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
   bool adding_or_removing_views_ = false;
 
   InputEventActivationProtector input_protector_;
-
-  DISALLOW_COPY_AND_ASSIGN(DialogClientView);
 };
 
 }  // namespace views

@@ -20,6 +20,10 @@ namespace views {
 class CustomFrameViewTest : public ViewsTestBase {
  public:
   CustomFrameViewTest() = default;
+
+  CustomFrameViewTest(const CustomFrameViewTest&) = delete;
+  CustomFrameViewTest& operator=(const CustomFrameViewTest&) = delete;
+
   ~CustomFrameViewTest() override = default;
 
   CustomFrameView* custom_frame_view() { return custom_frame_view_; }
@@ -65,8 +69,6 @@ class CustomFrameViewTest : public ViewsTestBase {
 
   // Owned by |widget_|
   CustomFrameView* custom_frame_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomFrameViewTest);
 };
 
 void CustomFrameViewTest::SetUp() {

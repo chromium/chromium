@@ -28,6 +28,10 @@ namespace examples {
 class VIEWS_EXAMPLES_EXPORT ButtonExample : public ExampleBase {
  public:
   ButtonExample();
+
+  ButtonExample(const ButtonExample&) = delete;
+  ButtonExample& operator=(const ButtonExample&) = delete;
+
   ~ButtonExample() override;
 
   // ExampleBase:
@@ -48,8 +52,6 @@ class VIEWS_EXAMPLES_EXPORT ButtonExample : public ExampleBase {
 
   // The number of times the buttons are pressed.
   int count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ButtonExample);
 };
 
 }  // namespace examples

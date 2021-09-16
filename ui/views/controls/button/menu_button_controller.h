@@ -31,12 +31,13 @@ class VIEWS_EXPORT MenuButtonController : public ButtonController {
                 bool is_sibling_menu_show,
                 const ui::LocatedEvent* event);
 
+    PressedLock(const PressedLock&) = delete;
+    PressedLock& operator=(const PressedLock&) = delete;
+
     ~PressedLock();
 
    private:
     base::WeakPtr<MenuButtonController> menu_button_controller_;
-
-    DISALLOW_COPY_AND_ASSIGN(PressedLock);
   };
 
   MenuButtonController(Button* button,

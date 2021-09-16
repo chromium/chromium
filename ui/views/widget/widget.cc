@@ -114,10 +114,11 @@ class DefaultWidgetDelegate : public WidgetDelegate {
     SetOwnedByWidget(true);
     SetFocusTraversesOut(true);
   }
-  ~DefaultWidgetDelegate() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DefaultWidgetDelegate);
+  DefaultWidgetDelegate(const DefaultWidgetDelegate&) = delete;
+  DefaultWidgetDelegate& operator=(const DefaultWidgetDelegate&) = delete;
+
+  ~DefaultWidgetDelegate() override = default;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

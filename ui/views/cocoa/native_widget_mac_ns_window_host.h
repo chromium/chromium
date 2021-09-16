@@ -75,6 +75,11 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
 
   // Creates one side of the bridge. |owner| must not be NULL.
   explicit NativeWidgetMacNSWindowHost(NativeWidgetMac* owner);
+
+  NativeWidgetMacNSWindowHost(const NativeWidgetMacNSWindowHost&) = delete;
+  NativeWidgetMacNSWindowHost& operator=(const NativeWidgetMacNSWindowHost&) =
+      delete;
+
   ~NativeWidgetMacNSWindowHost() override;
 
   // The NativeWidgetMac that owns |this|.
@@ -484,7 +489,6 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
 
   mojo::AssociatedReceiver<remote_cocoa::mojom::NativeWidgetNSWindowHost>
       remote_ns_window_host_receiver_{this};
-  DISALLOW_COPY_AND_ASSIGN(NativeWidgetMacNSWindowHost);
 };
 
 }  // namespace views

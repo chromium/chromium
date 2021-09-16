@@ -37,6 +37,10 @@ class VIEWS_EXPORT InkDropRipple {
   static const float kHiddenOpacity;
 
   InkDropRipple();
+
+  InkDropRipple(const InkDropRipple&) = delete;
+  InkDropRipple& operator=(const InkDropRipple&) = delete;
+
   virtual ~InkDropRipple();
 
   // In the event that an animation is in progress for ink drop state 's1' and
@@ -119,8 +123,6 @@ class VIEWS_EXPORT InkDropRipple {
   InkDropRippleObserver* observer_ = nullptr;
 
   std::unique_ptr<ui::CallbackLayerAnimationObserver> animation_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(InkDropRipple);
 };
 
 }  // namespace views

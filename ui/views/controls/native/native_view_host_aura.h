@@ -29,6 +29,10 @@ class NativeViewHostAura : public NativeViewHostWrapper,
                            public aura::WindowObserver {
  public:
   explicit NativeViewHostAura(NativeViewHost* host);
+
+  NativeViewHostAura(const NativeViewHostAura&) = delete;
+  NativeViewHostAura& operator=(const NativeViewHostAura&) = delete;
+
   ~NativeViewHostAura() override;
 
   // Overridden from NativeViewHostWrapper:
@@ -117,8 +121,6 @@ class NativeViewHostAura : public NativeViewHostWrapper,
 
   // The top insets to exclude the underlying native view from the target.
   int top_inset_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeViewHostAura);
 };
 
 }  // namespace views

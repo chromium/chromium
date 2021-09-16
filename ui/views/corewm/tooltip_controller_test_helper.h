@@ -28,6 +28,11 @@ namespace test {
 class TooltipControllerTestHelper {
  public:
   explicit TooltipControllerTestHelper(TooltipController* controller);
+
+  TooltipControllerTestHelper(const TooltipControllerTestHelper&) = delete;
+  TooltipControllerTestHelper& operator=(const TooltipControllerTestHelper&) =
+      delete;
+
   ~TooltipControllerTestHelper();
 
   TooltipController* controller() { return controller_; }
@@ -51,14 +56,16 @@ class TooltipControllerTestHelper {
 
  private:
   TooltipController* controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(TooltipControllerTestHelper);
 };
 
 // Trivial View subclass that lets you set the tooltip text.
 class TooltipTestView : public views::View {
  public:
   TooltipTestView();
+
+  TooltipTestView(const TooltipTestView&) = delete;
+  TooltipTestView& operator=(const TooltipTestView&) = delete;
+
   ~TooltipTestView() override;
 
   void set_tooltip_text(std::u16string tooltip_text) {
@@ -70,8 +77,6 @@ class TooltipTestView : public views::View {
 
  private:
   std::u16string tooltip_text_;
-
-  DISALLOW_COPY_AND_ASSIGN(TooltipTestView);
 };
 
 }  // namespace test

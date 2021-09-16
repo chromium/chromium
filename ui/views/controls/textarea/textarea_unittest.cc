@@ -32,6 +32,10 @@ namespace {
 class TextareaTest : public test::TextfieldTest {
  public:
   TextareaTest() = default;
+
+  TextareaTest(const TextareaTest&) = delete;
+  TextareaTest& operator=(const TextareaTest&) = delete;
+
   ~TextareaTest() override = default;
 
   // TextfieldTest:
@@ -74,9 +78,6 @@ class TextareaTest : public test::TextfieldTest {
   }
 
   Textarea* textarea_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TextareaTest);
 };
 
 }  // namespace

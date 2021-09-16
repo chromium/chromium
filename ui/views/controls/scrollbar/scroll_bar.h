@@ -94,6 +94,9 @@ class VIEWS_EXPORT ScrollBar : public View,
     kNextPage,
   };
 
+  ScrollBar(const ScrollBar&) = delete;
+  ScrollBar& operator=(const ScrollBar&) = delete;
+
   ~ScrollBar() override;
 
   // Returns whether this scrollbar is horizontal.
@@ -292,8 +295,6 @@ class VIEWS_EXPORT ScrollBar : public View,
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   std::unique_ptr<MenuRunner> menu_runner_;
   std::unique_ptr<ScrollAnimator> scroll_animator_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScrollBar);
 };
 
 }  // namespace views

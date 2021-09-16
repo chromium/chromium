@@ -114,6 +114,10 @@ class VIEWS_EXPORT GridLayout : public LayoutManager {
   };
 
   GridLayout();
+
+  GridLayout(const GridLayout&) = delete;
+  GridLayout& operator=(const GridLayout&) = delete;
+
   ~GridLayout() override;
 
   // See class description for what this does.
@@ -298,8 +302,6 @@ class VIEWS_EXPORT GridLayout : public LayoutManager {
   gfx::Size minimum_size_;
 
   bool honors_min_width_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(GridLayout);
 };
 
 // ColumnSet is used to define a set of columns. GridLayout may have any
@@ -307,6 +309,9 @@ class VIEWS_EXPORT GridLayout : public LayoutManager {
 // use the AddColumnSet method of GridLayout.
 class VIEWS_EXPORT ColumnSet {
  public:
+  ColumnSet(const ColumnSet&) = delete;
+  ColumnSet& operator=(const ColumnSet&) = delete;
+
   ~ColumnSet();
 
   // Adds a column for padding. When adding views, padding columns are
@@ -433,8 +438,6 @@ class VIEWS_EXPORT ColumnSet {
 #if DCHECK_IS_ON()
   SizeCalculationType last_calculation_type_ = SizeCalculationType::kPreferred;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ColumnSet);
 };
 
 }  // namespace views

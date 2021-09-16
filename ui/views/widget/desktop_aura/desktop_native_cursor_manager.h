@@ -31,6 +31,11 @@ namespace views {
 class VIEWS_EXPORT DesktopNativeCursorManager : public wm::NativeCursorManager {
  public:
   DesktopNativeCursorManager();
+
+  DesktopNativeCursorManager(const DesktopNativeCursorManager&) = delete;
+  DesktopNativeCursorManager& operator=(const DesktopNativeCursorManager&) =
+      delete;
+
   ~DesktopNativeCursorManager() override;
 
   // Adds |host| to the set |hosts_|.
@@ -58,8 +63,6 @@ class VIEWS_EXPORT DesktopNativeCursorManager : public wm::NativeCursorManager {
   Hosts hosts_;
 
   ui::CursorLoader cursor_loader_;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopNativeCursorManager);
 };
 
 }  // namespace views

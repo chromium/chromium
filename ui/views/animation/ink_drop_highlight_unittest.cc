@@ -26,6 +26,10 @@ namespace test {
 class InkDropHighlightTest : public testing::Test {
  public:
   InkDropHighlightTest();
+
+  InkDropHighlightTest(const InkDropHighlightTest&) = delete;
+  InkDropHighlightTest& operator=(const InkDropHighlightTest&) = delete;
+
   ~InkDropHighlightTest() override;
 
  protected:
@@ -55,8 +59,6 @@ class InkDropHighlightTest : public testing::Test {
 
   std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
       animation_mode_reset_;
-
-  DISALLOW_COPY_AND_ASSIGN(InkDropHighlightTest);
 };
 
 InkDropHighlightTest::InkDropHighlightTest()

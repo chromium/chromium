@@ -58,6 +58,12 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
       : public ButtonControllerDelegate {
    public:
     explicit DefaultButtonControllerDelegate(Button* button);
+
+    DefaultButtonControllerDelegate(const DefaultButtonControllerDelegate&) =
+        delete;
+    DefaultButtonControllerDelegate& operator=(
+        const DefaultButtonControllerDelegate&) = delete;
+
     ~DefaultButtonControllerDelegate() override;
 
     // views::ButtonControllerDelegate:
@@ -70,9 +76,6 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
     InkDrop* GetInkDrop() override;
     int GetDragOperations(const gfx::Point& press_pt) override;
     bool InDrag() override;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(DefaultButtonControllerDelegate);
   };
 
   // PressedCallback wraps a one-arg callback type with multiple constructors to

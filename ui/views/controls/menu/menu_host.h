@@ -58,6 +58,10 @@ class MenuHost : public Widget, public WidgetObserver {
   };
 
   explicit MenuHost(SubmenuView* submenu);
+
+  MenuHost(const MenuHost&) = delete;
+  MenuHost& operator=(const MenuHost&) = delete;
+
   ~MenuHost() override;
 
   // Initializes and shows the MenuHost.
@@ -119,8 +123,6 @@ class MenuHost : public Widget, public WidgetObserver {
   // Handles raw touch events at the moment.
   std::unique_ptr<internal::PreMenuEventDispatchHandler> pre_dispatch_handler_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(MenuHost);
 };
 
 }  // namespace views

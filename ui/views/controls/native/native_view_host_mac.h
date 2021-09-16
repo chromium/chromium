@@ -32,6 +32,10 @@ class NativeViewHostMac : public NativeViewHostWrapper,
                           public ui::ViewsHostableView::Host {
  public:
   explicit NativeViewHostMac(NativeViewHost* host);
+
+  NativeViewHostMac(const NativeViewHostMac&) = delete;
+  NativeViewHostMac& operator=(const NativeViewHostMac&) = delete;
+
   ~NativeViewHostMac() override;
 
   // ViewsHostableView::Host:
@@ -77,8 +81,6 @@ class NativeViewHostMac : public NativeViewHostWrapper,
   // the corresponding ViewsHostableView interface (which is implemeted only
   // by WebContents and tests).
   ui::ViewsHostableView* native_view_hostable_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeViewHostMac);
 };
 
 }  // namespace views

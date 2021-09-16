@@ -64,6 +64,10 @@ class WidgetTest : public ViewsTestBase {
   WidgetTest();
   explicit WidgetTest(
       std::unique_ptr<base::test::TaskEnvironment> task_environment);
+
+  WidgetTest(const WidgetTest&) = delete;
+  WidgetTest& operator=(const WidgetTest&) = delete;
+
   ~WidgetTest() override;
 
   // Create Widgets with |native_widget| in InitParams set to an instance of
@@ -126,33 +130,33 @@ class WidgetTest : public ViewsTestBase {
   // activate a window owned by the app shortly after app startup, if there is
   // one. See https://crbug.com/998868 for details.
   static void WaitForSystemAppActivation();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WidgetTest);
 };
 
 class DesktopWidgetTest : public WidgetTest {
  public:
   DesktopWidgetTest();
+
+  DesktopWidgetTest(const DesktopWidgetTest&) = delete;
+  DesktopWidgetTest& operator=(const DesktopWidgetTest&) = delete;
+
   ~DesktopWidgetTest() override;
 
   // WidgetTest:
   void SetUp() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DesktopWidgetTest);
 };
 
 class DesktopWidgetTestInteractive : public DesktopWidgetTest {
  public:
   DesktopWidgetTestInteractive();
+
+  DesktopWidgetTestInteractive(const DesktopWidgetTestInteractive&) = delete;
+  DesktopWidgetTestInteractive& operator=(const DesktopWidgetTestInteractive&) =
+      delete;
+
   ~DesktopWidgetTestInteractive() override;
 
   // DesktopWidgetTest
   void SetUp() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DesktopWidgetTestInteractive);
 };
 
 // A helper WidgetDelegate for tests that require hooks into WidgetDelegate
@@ -162,6 +166,11 @@ class TestDesktopWidgetDelegate : public WidgetDelegate {
  public:
   TestDesktopWidgetDelegate();
   explicit TestDesktopWidgetDelegate(Widget* widget);
+
+  TestDesktopWidgetDelegate(const TestDesktopWidgetDelegate&) = delete;
+  TestDesktopWidgetDelegate& operator=(const TestDesktopWidgetDelegate&) =
+      delete;
+
   ~TestDesktopWidgetDelegate() override;
 
   // Initialize the Widget, adding some meaningful default InitParams.
@@ -199,8 +208,6 @@ class TestDesktopWidgetDelegate : public WidgetDelegate {
   gfx::Rect initial_bounds_ = gfx::Rect(100, 100, 200, 200);
   bool can_close_ = true;
   Widget::ClosedReason last_closed_reason_ = Widget::ClosedReason::kUnspecified;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDesktopWidgetDelegate);
 };
 
 // Testing widget delegate that creates a widget with a single view, which is
@@ -208,6 +215,12 @@ class TestDesktopWidgetDelegate : public WidgetDelegate {
 class TestInitialFocusWidgetDelegate : public TestDesktopWidgetDelegate {
  public:
   explicit TestInitialFocusWidgetDelegate(gfx::NativeWindow context);
+
+  TestInitialFocusWidgetDelegate(const TestInitialFocusWidgetDelegate&) =
+      delete;
+  TestInitialFocusWidgetDelegate& operator=(
+      const TestInitialFocusWidgetDelegate&) = delete;
+
   ~TestInitialFocusWidgetDelegate() override;
 
   View* view() { return view_; }
@@ -217,8 +230,6 @@ class TestInitialFocusWidgetDelegate : public TestDesktopWidgetDelegate {
 
  private:
   View* view_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestInitialFocusWidgetDelegate);
 };
 
 // Use in tests to wait until a Widget's activation change to a particular
@@ -226,6 +237,10 @@ class TestInitialFocusWidgetDelegate : public TestDesktopWidgetDelegate {
 class WidgetActivationWaiter : public WidgetObserver {
  public:
   WidgetActivationWaiter(Widget* widget, bool active);
+
+  WidgetActivationWaiter(const WidgetActivationWaiter&) = delete;
+  WidgetActivationWaiter& operator=(const WidgetActivationWaiter&) = delete;
+
   ~WidgetActivationWaiter() override;
 
   // Returns when the active status matches that supplied to the constructor. If
@@ -240,14 +255,16 @@ class WidgetActivationWaiter : public WidgetObserver {
   base::RunLoop run_loop_;
   bool observed_;
   bool active_;
-
-  DISALLOW_COPY_AND_ASSIGN(WidgetActivationWaiter);
 };
 
 // Use in tests to wait for a widget to be destroyed.
 class WidgetDestroyedWaiter : public WidgetObserver {
  public:
   explicit WidgetDestroyedWaiter(Widget* widget);
+
+  WidgetDestroyedWaiter(const WidgetDestroyedWaiter&) = delete;
+  WidgetDestroyedWaiter& operator=(const WidgetDestroyedWaiter&) = delete;
+
   ~WidgetDestroyedWaiter() override;
 
   // Wait for the widget to be destroyed, or return immediately if it was
@@ -260,8 +277,6 @@ class WidgetDestroyedWaiter : public WidgetObserver {
 
   Widget* widget_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(WidgetDestroyedWaiter);
 };
 
 // Helper class to wait for a Widget to become visible. This will add a failure

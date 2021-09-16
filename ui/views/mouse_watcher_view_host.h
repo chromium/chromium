@@ -20,6 +20,10 @@ class VIEWS_EXPORT MouseWatcherViewHost : public MouseWatcherHost {
   // the y coordinate is between the origin of the view and height of the view
   // plus 10.
   MouseWatcherViewHost(View* view, const gfx::Insets& hot_zone_insets);
+
+  MouseWatcherViewHost(const MouseWatcherViewHost&) = delete;
+  MouseWatcherViewHost& operator=(const MouseWatcherViewHost&) = delete;
+
   ~MouseWatcherViewHost() override;
 
   // MouseWatcherHost.
@@ -33,8 +37,6 @@ class VIEWS_EXPORT MouseWatcherViewHost : public MouseWatcherHost {
   View* view_;
   // Insets added to the bounds of the view.
   const gfx::Insets hot_zone_insets_;
-
-  DISALLOW_COPY_AND_ASSIGN(MouseWatcherViewHost);
 };
 
 }  // namespace views

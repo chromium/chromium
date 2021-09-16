@@ -41,6 +41,10 @@ namespace test {
 class MenuRunnerTest : public ViewsTestBase {
  public:
   MenuRunnerTest() = default;
+
+  MenuRunnerTest(const MenuRunnerTest&) = delete;
+  MenuRunnerTest& operator=(const MenuRunnerTest&) = delete;
+
   ~MenuRunnerTest() override = default;
 
   // Initializes the delegates and views needed for a menu. It does not create
@@ -95,8 +99,6 @@ class MenuRunnerTest : public ViewsTestBase {
   std::unique_ptr<TestMenuDelegate> menu_delegate_;
   std::unique_ptr<MenuRunner> menu_runner_;
   std::unique_ptr<Widget> owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuRunnerTest);
 };
 
 // Tests that MenuRunner is still running after the call to RunMenuAt when
@@ -324,6 +326,10 @@ class MenuLauncherEventHandler : public ui::EventHandler {
  public:
   MenuLauncherEventHandler(MenuRunner* runner, Widget* owner)
       : runner_(runner), owner_(owner) {}
+
+  MenuLauncherEventHandler(const MenuLauncherEventHandler&) = delete;
+  MenuLauncherEventHandler& operator=(const MenuLauncherEventHandler&) = delete;
+
   ~MenuLauncherEventHandler() override = default;
 
  private:
@@ -339,8 +345,6 @@ class MenuLauncherEventHandler : public ui::EventHandler {
 
   MenuRunner* runner_;
   Widget* owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuLauncherEventHandler);
 };
 
 }  // namespace
@@ -459,12 +463,13 @@ TEST_F(MenuRunnerWidgetTest, ClearsMouseHandlerOnRun) {
 class MenuRunnerImplTest : public MenuRunnerTest {
  public:
   MenuRunnerImplTest() = default;
+
+  MenuRunnerImplTest(const MenuRunnerImplTest&) = delete;
+  MenuRunnerImplTest& operator=(const MenuRunnerImplTest&) = delete;
+
   ~MenuRunnerImplTest() override = default;
 
   void SetUp() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MenuRunnerImplTest);
 };
 
 void MenuRunnerImplTest::SetUp() {
@@ -550,6 +555,11 @@ TEST_F(MenuRunnerImplTest, MenuRunnerDestroyedWithNoActiveController) {
 class MenuRunnerDestructionTest : public MenuRunnerTest {
  public:
   MenuRunnerDestructionTest() = default;
+
+  MenuRunnerDestructionTest(const MenuRunnerDestructionTest&) = delete;
+  MenuRunnerDestructionTest& operator=(const MenuRunnerDestructionTest&) =
+      delete;
+
   ~MenuRunnerDestructionTest() override = default;
 
   ReleaseRefTestViewsDelegate* test_views_delegate() {
@@ -565,8 +575,6 @@ class MenuRunnerDestructionTest : public MenuRunnerTest {
  private:
   // Not owned
   ReleaseRefTestViewsDelegate* test_views_delegate_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuRunnerDestructionTest);
 };
 
 base::WeakPtr<internal::MenuRunnerImpl>

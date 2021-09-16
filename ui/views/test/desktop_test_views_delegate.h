@@ -16,14 +16,15 @@ namespace views {
 class DesktopTestViewsDelegate : public TestViewsDelegate {
  public:
   DesktopTestViewsDelegate();
+
+  DesktopTestViewsDelegate(const DesktopTestViewsDelegate&) = delete;
+  DesktopTestViewsDelegate& operator=(const DesktopTestViewsDelegate&) = delete;
+
   ~DesktopTestViewsDelegate() override;
 
   // Overridden from ViewsDelegate:
   void OnBeforeWidgetInit(Widget::InitParams* params,
                           internal::NativeWidgetDelegate* delegate) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DesktopTestViewsDelegate);
 };
 
 }  // namespace views

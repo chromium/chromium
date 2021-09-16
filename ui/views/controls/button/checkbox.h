@@ -30,6 +30,10 @@ class VIEWS_EXPORT Checkbox : public LabelButton {
   explicit Checkbox(const std::u16string& label = std::u16string(),
                     PressedCallback callback = PressedCallback(),
                     int button_context = style::CONTEXT_BUTTON);
+
+  Checkbox(const Checkbox&) = delete;
+  Checkbox& operator=(const Checkbox&) = delete;
+
   ~Checkbox() override;
 
   // Sets/Gets whether or not the checkbox is checked.
@@ -80,8 +84,6 @@ class VIEWS_EXPORT Checkbox : public LabelButton {
 
   // True if the checkbox is checked.
   bool checked_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(Checkbox);
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Checkbox, LabelButton)

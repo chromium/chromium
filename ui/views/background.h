@@ -45,6 +45,10 @@ class View;
 class VIEWS_EXPORT Background {
  public:
   Background();
+
+  Background(const Background&) = delete;
+  Background& operator=(const Background&) = delete;
+
   virtual ~Background();
 
   // Render the background for the provided view
@@ -62,8 +66,6 @@ class VIEWS_EXPORT Background {
 
  private:
   SkColor color_ = gfx::kPlaceholderColor;
-
-  DISALLOW_COPY_AND_ASSIGN(Background);
 };
 
 // Creates a background that fills the canvas in the specified color.

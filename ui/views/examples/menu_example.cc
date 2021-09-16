@@ -64,6 +64,10 @@ class ExampleMenuModel : public ui::SimpleMenuModel,
 class ExampleMenuButton : public MenuButton {
  public:
   explicit ExampleMenuButton(const std::u16string& test);
+
+  ExampleMenuButton(const ExampleMenuButton&) = delete;
+  ExampleMenuButton& operator=(const ExampleMenuButton&) = delete;
+
   ~ExampleMenuButton() override;
 
  private:
@@ -73,8 +77,6 @@ class ExampleMenuButton : public MenuButton {
 
   std::unique_ptr<ExampleMenuModel> menu_model_;
   std::unique_ptr<MenuRunner> menu_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExampleMenuButton);
 };
 
 // ExampleMenuModel ---------------------------------------------------------

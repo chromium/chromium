@@ -35,6 +35,10 @@ class VIEWS_EXPORT NativeViewHost : public View {
   METADATA_HEADER(NativeViewHost);
 
   NativeViewHost();
+
+  NativeViewHost(const NativeViewHost&) = delete;
+  NativeViewHost& operator=(const NativeViewHost&) = delete;
+
   ~NativeViewHost() override;
 
   // Attach a gfx::NativeView to this View. Its bounds will be kept in sync
@@ -139,8 +143,6 @@ class VIEWS_EXPORT NativeViewHost : public View {
   // True if the native view is being resized using the fast method described
   // in the setter/accessor above.
   bool fast_resize_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeViewHost);
 };
 
 }  // namespace views

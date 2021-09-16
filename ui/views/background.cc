@@ -102,6 +102,10 @@ class ThemedSolidBackground : public SolidBackground, public ViewObserver {
     if (view->GetWidget())
       OnViewThemeChanged(view);
   }
+
+  ThemedSolidBackground(const ThemedSolidBackground&) = delete;
+  ThemedSolidBackground& operator=(const ThemedSolidBackground&) = delete;
+
   ~ThemedSolidBackground() override = default;
 
   // ViewObserver:
@@ -117,8 +121,6 @@ class ThemedSolidBackground : public SolidBackground, public ViewObserver {
  private:
   base::ScopedObservation<View, ViewObserver> observation_{this};
   ui::NativeTheme::ColorId color_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThemedSolidBackground);
 };
 
 class BackgroundPainter : public Background {
@@ -128,6 +130,9 @@ class BackgroundPainter : public Background {
     DCHECK(painter_);
   }
 
+  BackgroundPainter(const BackgroundPainter&) = delete;
+  BackgroundPainter& operator=(const BackgroundPainter&) = delete;
+
   ~BackgroundPainter() override = default;
 
   void Paint(gfx::Canvas* canvas, View* view) const override {
@@ -136,8 +141,6 @@ class BackgroundPainter : public Background {
 
  private:
   std::unique_ptr<Painter> painter_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundPainter);
 };
 
 Background::Background() = default;

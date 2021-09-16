@@ -27,6 +27,10 @@ class VIEWS_EXPORT CocoaScrollBar : public ScrollBar,
   METADATA_HEADER(CocoaScrollBar);
 
   explicit CocoaScrollBar(bool horizontal);
+
+  CocoaScrollBar(const CocoaScrollBar&) = delete;
+  CocoaScrollBar& operator=(const CocoaScrollBar&) = delete;
+
   ~CocoaScrollBar() override;
 
   // ScrollBar:
@@ -127,8 +131,6 @@ class VIEWS_EXPORT CocoaScrollBar : public ScrollBar,
 
   // The bridge for NSScroller.
   base::scoped_nsobject<ViewsScrollbarBridge> bridge_;
-
-  DISALLOW_COPY_AND_ASSIGN(CocoaScrollBar);
 };
 
 }  // namespace views

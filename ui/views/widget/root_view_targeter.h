@@ -26,6 +26,10 @@ class VIEWS_EXPORT RootViewTargeter : public ViewTargeter {
  public:
   RootViewTargeter(ViewTargeterDelegate* delegate,
                    internal::RootView* root_view);
+
+  RootViewTargeter(const RootViewTargeter&) = delete;
+  RootViewTargeter& operator=(const RootViewTargeter&) = delete;
+
   ~RootViewTargeter() override;
 
  private:
@@ -38,8 +42,6 @@ class VIEWS_EXPORT RootViewTargeter : public ViewTargeter {
 
   // A pointer to the RootView on which |this| is installed.
   internal::RootView* root_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(RootViewTargeter);
 };
 
 }  // namespace views

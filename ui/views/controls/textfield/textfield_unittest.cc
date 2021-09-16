@@ -147,6 +147,10 @@ class TextfieldFocuser : public View {
 class MockInputMethod : public ui::InputMethodBase {
  public:
   MockInputMethod();
+
+  MockInputMethod(const MockInputMethod&) = delete;
+  MockInputMethod& operator=(const MockInputMethod&) = delete;
+
   ~MockInputMethod() override;
 
   // InputMethod:
@@ -203,8 +207,6 @@ class MockInputMethod : public ui::InputMethodBase {
   bool cancel_composition_called_ = false;
 
   int count_show_virtual_keyboard_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MockInputMethod);
 };
 
 MockInputMethod::MockInputMethod() : ui::InputMethodBase(nullptr) {}
@@ -327,6 +329,10 @@ void MockInputMethod::ClearComposition() {
 class TestTextfield : public views::Textfield {
  public:
   TestTextfield() = default;
+
+  TestTextfield(const TestTextfield&) = delete;
+  TestTextfield& operator=(const TestTextfield&) = delete;
+
   ~TestTextfield() override = default;
 
   // ui::TextInputClient:
@@ -384,8 +390,6 @@ class TestTextfield : public views::Textfield {
   int accessibility_selection_fired_count_ = 0;
 
   base::WeakPtrFactory<TestTextfield> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestTextfield);
 };
 
 TextfieldTest::TextfieldTest() {
@@ -1579,6 +1583,10 @@ TEST_F(TextfieldTest, OnKeyPressBinding) {
   class TestDelegate : public ui::TextEditKeyBindingsDelegateAuraLinux {
    public:
     TestDelegate() = default;
+
+    TestDelegate(const TestDelegate&) = delete;
+    TestDelegate& operator=(const TestDelegate&) = delete;
+
     ~TestDelegate() override = default;
 
     bool MatchEvent(
@@ -1586,9 +1594,6 @@ TEST_F(TextfieldTest, OnKeyPressBinding) {
         std::vector<ui::TextEditCommandAuraLinux>* commands) override {
       return false;
     }
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(TestDelegate);
   };
 
   TestDelegate delegate;

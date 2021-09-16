@@ -24,6 +24,10 @@ class VIEWS_EXPORT TouchSelectionMenuRunnerViews
   class VIEWS_EXPORT TestApi {
    public:
     explicit TestApi(TouchSelectionMenuRunnerViews* menu_runner);
+
+    TestApi(const TestApi&) = delete;
+    TestApi& operator=(const TestApi&) = delete;
+
     ~TestApi();
 
     gfx::Rect GetAnchorRect() const;
@@ -35,8 +39,6 @@ class VIEWS_EXPORT TouchSelectionMenuRunnerViews
 
    private:
     TouchSelectionMenuRunnerViews* menu_runner_;
-
-    DISALLOW_COPY_AND_ASSIGN(TestApi);
   };
 
   TouchSelectionMenuRunnerViews();

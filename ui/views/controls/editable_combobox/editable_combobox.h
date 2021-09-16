@@ -77,6 +77,9 @@ class VIEWS_EXPORT EditableCombobox
                             int text_style = kDefaultTextStyle,
                             bool display_arrow = true);
 
+  EditableCombobox(const EditableCombobox&) = delete;
+  EditableCombobox& operator=(const EditableCombobox&) = delete;
+
   ~EditableCombobox() override;
 
   void SetModel(std::unique_ptr<ui::ComboboxModel> model);
@@ -191,8 +194,6 @@ class VIEWS_EXPORT EditableCombobox
   bool dropdown_blocked_for_animation_ = false;
 
   base::ScopedObservation<View, ViewObserver> observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EditableCombobox);
 };
 
 }  // namespace views

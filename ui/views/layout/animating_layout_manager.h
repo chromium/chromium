@@ -115,6 +115,10 @@ class VIEWS_EXPORT AnimatingLayoutManager : public LayoutManagerBase {
   };
 
   AnimatingLayoutManager();
+
+  AnimatingLayoutManager(const AnimatingLayoutManager&) = delete;
+  AnimatingLayoutManager& operator=(const AnimatingLayoutManager&) = delete;
+
   ~AnimatingLayoutManager() override;
 
   BoundsAnimationMode bounds_animation_mode() const {
@@ -358,8 +362,6 @@ class VIEWS_EXPORT AnimatingLayoutManager : public LayoutManagerBase {
   bool run_queued_actions_is_pending_ = false;
 
   base::WeakPtrFactory<AnimatingLayoutManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AnimatingLayoutManager);
 };
 
 }  // namespace views

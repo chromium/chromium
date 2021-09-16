@@ -47,6 +47,10 @@ class View;
 class VIEWS_EXPORT BoundsAnimator : public AnimationDelegateViews {
  public:
   explicit BoundsAnimator(View* view, bool use_transforms = false);
+
+  BoundsAnimator(const BoundsAnimator&) = delete;
+  BoundsAnimator& operator=(const BoundsAnimator&) = delete;
+
   ~BoundsAnimator() override;
 
   // Starts animating |view| from its current bounds to |target|. If there is
@@ -197,8 +201,6 @@ class VIEWS_EXPORT BoundsAnimator : public AnimationDelegateViews {
   base::TimeDelta animation_duration_ = base::TimeDelta::FromMilliseconds(200);
 
   gfx::Tween::Type tween_type_ = gfx::Tween::EASE_OUT;
-
-  DISALLOW_COPY_AND_ASSIGN(BoundsAnimator);
 };
 
 }  // namespace views

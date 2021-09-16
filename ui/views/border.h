@@ -45,6 +45,10 @@ class VIEWS_EXPORT Border {
  public:
   Border();
   explicit Border(SkColor color);
+
+  Border(const Border&) = delete;
+  Border& operator=(const Border&) = delete;
+
   virtual ~Border();
 
   // Renders the border for the specified view.
@@ -68,8 +72,6 @@ class VIEWS_EXPORT Border {
 
  private:
   SkColor color_ = gfx::kPlaceholderColor;
-
-  DISALLOW_COPY_AND_ASSIGN(Border);
 };
 
 // Convenience for creating a scoped_ptr with no Border.

@@ -135,6 +135,10 @@ enum class Emphasis {
 class VIEWS_EXPORT LayoutProvider {
  public:
   LayoutProvider();
+
+  LayoutProvider(const LayoutProvider&) = delete;
+  LayoutProvider& operator=(const LayoutProvider&) = delete;
+
   virtual ~LayoutProvider();
 
   // This should never return nullptr.
@@ -186,8 +190,6 @@ class VIEWS_EXPORT LayoutProvider {
 
  private:
   TypographyProvider typography_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(LayoutProvider);
 };
 
 }  // namespace views

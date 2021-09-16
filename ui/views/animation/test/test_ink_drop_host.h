@@ -17,6 +17,10 @@ class TestInkDropHost : public View {
  public:
   explicit TestInkDropHost(InkDropImpl::AutoHighlightMode auto_highlight_mode =
                                InkDropImpl::AutoHighlightMode::NONE);
+
+  TestInkDropHost(const TestInkDropHost&) = delete;
+  TestInkDropHost& operator=(const TestInkDropHost&) = delete;
+
   ~TestInkDropHost() override;
 
   int num_ink_drop_layers_added() const { return num_ink_drop_layers_added_; }
@@ -61,8 +65,6 @@ class TestInkDropHost : public View {
   // When true, the InkDropRipple/InkDropHighlight instances will have their
   // timers disabled after creation.
   bool disable_timers_for_test_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestInkDropHost);
 };
 
 }  // namespace views

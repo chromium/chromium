@@ -38,6 +38,10 @@ class VIEWS_EXPORT Link : public Label {
   explicit Link(const std::u16string& title = std::u16string(),
                 int text_context = style::CONTEXT_LABEL,
                 int text_style = style::STYLE_LINK);
+
+  Link(const Link&) = delete;
+  Link& operator=(const Link&) = delete;
+
   ~Link() override;
 
   // Allow providing callbacks that expect either zero or one args, since many
@@ -101,8 +105,6 @@ class VIEWS_EXPORT Link : public Label {
   // Whether the link text should use underline style regardless of enabled or
   // focused state.
   bool force_underline_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(Link);
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Link, Label)

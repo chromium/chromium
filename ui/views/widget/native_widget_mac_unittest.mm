@@ -252,10 +252,11 @@ class WidgetChangeObserver : public TestWidgetObserver {
 class SimpleBubbleView : public BubbleDialogDelegateView {
  public:
   SimpleBubbleView() = default;
-  ~SimpleBubbleView() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SimpleBubbleView);
+  SimpleBubbleView(const SimpleBubbleView&) = delete;
+  SimpleBubbleView& operator=(const SimpleBubbleView&) = delete;
+
+  ~SimpleBubbleView() override = default;
 };
 
 class CustomTooltipView : public View {
@@ -1051,6 +1052,9 @@ class ScopedSwizzleWaiter {
     instance_ = this;
   }
 
+  ScopedSwizzleWaiter(const ScopedSwizzleWaiter&) = delete;
+  ScopedSwizzleWaiter& operator=(const ScopedSwizzleWaiter&) = delete;
+
   ~ScopedSwizzleWaiter() { instance_ = nullptr; }
 
   static void OriginalSetWindowStateForEnd(id receiver, SEL method) {
@@ -1085,8 +1089,6 @@ class ScopedSwizzleWaiter {
   base::mac::ScopedObjCClassSwizzler swizzler_;
   base::RunLoop* run_loop_ = nullptr;
   bool method_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSwizzleWaiter);
 };
 
 ScopedSwizzleWaiter* ScopedSwizzleWaiter::instance_ = nullptr;
@@ -1609,6 +1611,9 @@ class ParentCloseMonitor : public WidgetObserver {
     EXPECT_TRUE([parent_nswindow_ delegate]);
   }
 
+  ParentCloseMonitor(const ParentCloseMonitor&) = delete;
+  ParentCloseMonitor& operator=(const ParentCloseMonitor&) = delete;
+
   ~ParentCloseMonitor() override {
     EXPECT_TRUE(child_closed_);  // Otherwise the observer wasn't removed.
   }
@@ -1640,8 +1645,6 @@ class ParentCloseMonitor : public WidgetObserver {
  private:
   base::scoped_nsobject<NSWindow> parent_nswindow_;
   bool child_closed_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ParentCloseMonitor);
 };
 
 // Ensures when a parent window is destroyed, and triggers its child windows to

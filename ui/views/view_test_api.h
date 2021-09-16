@@ -12,14 +12,16 @@ namespace views {
 class VIEWS_EXPORT ViewTestApi {
  public:
   explicit ViewTestApi(View* view) : view_(view) {}
+
+  ViewTestApi(const ViewTestApi&) = delete;
+  ViewTestApi& operator=(const ViewTestApi&) = delete;
+
   ~ViewTestApi() = default;
 
   bool needs_layout() { return view_->needs_layout(); }
 
  private:
   View* view_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewTestApi);
 };
 
 }  // namespace views

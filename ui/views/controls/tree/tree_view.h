@@ -63,6 +63,10 @@ class VIEWS_EXPORT TreeView : public View,
   METADATA_HEADER(TreeView);
 
   TreeView();
+
+  TreeView(const TreeView&) = delete;
+  TreeView& operator=(const TreeView&) = delete;
+
   ~TreeView() override;
 
   // Returns a new ScrollView that contains the given |tree|.
@@ -237,6 +241,10 @@ class VIEWS_EXPORT TreeView : public View,
   class InternalNode : public ui::TreeNode<InternalNode> {
    public:
     InternalNode();
+
+    InternalNode(const InternalNode&) = delete;
+    InternalNode& operator=(const InternalNode&) = delete;
+
     ~InternalNode() override;
 
     // Resets the state from |node|.
@@ -293,8 +301,6 @@ class VIEWS_EXPORT TreeView : public View,
     bool is_expanded_ = false;
 
     int text_width_ = 0;
-
-    DISALLOW_COPY_AND_ASSIGN(InternalNode);
   };
 
   // Used by GetInternalNodeForModelNode.
@@ -519,8 +525,6 @@ class VIEWS_EXPORT TreeView : public View,
 
   // The current drawing provider for this TreeView.
   std::unique_ptr<TreeViewDrawingProvider> drawing_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(TreeView);
 };
 
 }  // namespace views

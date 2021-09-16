@@ -34,6 +34,10 @@ class TestDialog : public DialogDelegateView {
     DialogDelegate::set_draggable(true);
     AddChildView(input_);
   }
+
+  TestDialog(const TestDialog&) = delete;
+  TestDialog& operator=(const TestDialog&) = delete;
+
   ~TestDialog() override = default;
 
   void Init() {
@@ -77,13 +81,15 @@ class TestDialog : public DialogDelegateView {
   std::u16string title_;
   bool show_close_button_ = true;
   bool should_handle_escape_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDialog);
 };
 
 class DialogTest : public ViewsTestBase {
  public:
   DialogTest() = default;
+
+  DialogTest(const DialogTest&) = delete;
+  DialogTest& operator=(const DialogTest&) = delete;
+
   ~DialogTest() override = default;
 
   void SetUp() override {
@@ -145,8 +151,6 @@ class DialogTest : public ViewsTestBase {
  private:
   std::unique_ptr<views::Widget> parent_widget_;
   TestDialog* dialog_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(DialogTest);
 };
 
 }  // namespace
@@ -372,10 +376,11 @@ class InitialFocusTestDialog : public DialogDelegateView {
   InitialFocusTestDialog() {
     DialogDelegate::SetButtons(ui::DIALOG_BUTTON_OK);
   }
-  ~InitialFocusTestDialog() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(InitialFocusTestDialog);
+  InitialFocusTestDialog(const InitialFocusTestDialog&) = delete;
+  InitialFocusTestDialog& operator=(const InitialFocusTestDialog&) = delete;
+
+  ~InitialFocusTestDialog() override = default;
 };
 
 // If the Widget can't be activated while the initial focus View is requesting
