@@ -42,6 +42,7 @@ testcase.androidPhotosBanner = async () => {
   let photosBannerTextQuery = '.photos-welcome-message';
   let photosBannerDismissButton = '#photos-welcome-dismiss';
   if (isBannersFrameworkEnabled) {
+    await remoteCall.isolateBannerForTesting(appId, 'photos-welcome-banner');
     photosBannerHiddenQuery = '#banners > photos-welcome-banner[hidden]';
     photosBannerShownQuery = '#banners > photos-welcome-banner:not([hidden])';
     photosBannerTextQuery = [

@@ -1259,3 +1259,28 @@ test.util.sync.progressCenterNeverNotifyCompleted = () => {
 test.util.async.waitForBackgroundReady = callback => {
   window.background.ready(callback);
 };
+
+/**
+ * Isolates a specific banner to be shown. Useful when testing functionality of
+ * a banner in isolation.
+ *
+ * @param {Window} contentWindow Window to be tested.
+ * @param {string} bannerTagName Tag name of the banner to isolate.
+ * @param {function(boolean)} callback Callback function to be called with a
+ *    boolean indicating success or failure.
+ * @suppress {missingProperties} banners is only defined for foreground
+ *    Window so it isn't visible in the background.
+ */
+test.util.async.isolateBannerForTesting =
+    async (contentWindow, bannerTagName, callback) => {
+  try {
+    await contentWindow.fileManager.ui_.banners.isolateBannerForTesting(
+        bannerTagName);
+    callback(true);
+    return;
+  } catch (e) {
+    console.error(`Error isolating banner with tagName ${
+        bannerTagName} for testing: ${e}`);
+  }
+  callback(false);
+};

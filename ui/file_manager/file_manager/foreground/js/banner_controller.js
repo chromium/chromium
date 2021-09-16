@@ -162,6 +162,13 @@ export class BannerController extends EventTarget {
     this.disableBanners_ = false;
 
     /**
+     * A single banner to isolate and test it's functionality. Denoted by it's
+     * tagName (in uppercase).
+     * @private {?string}
+     */
+    this.isolatedBannerForTesting_ = null;
+
+    /**
      * setInterval handle that keeps track of the total time a banner has
      * been shown for.
      * @private {?number|undefined}
@@ -306,6 +313,14 @@ export class BannerController extends EventTarget {
   shouldShowBanner_(banner) {
     if (banner.hasAttribute(_BANNER_FORCE_SHOW_ATTRIBUTE)) {
       return true;
+    }
+
+    // If a banner has been isolated to be shown for testing, all other banners
+    // should not show. The isolated baner should still ensure it should be
+    // displayed.
+    if (this.isolatedBannerForTesting_ &&
+        this.isolatedBannerForTesting_ !== banner.tagName) {
+      return false;
     }
 
     // Check if the banner should be shown on this particular volume type.
@@ -505,6 +520,17 @@ export class BannerController extends EventTarget {
    */
   disableBannersForTesting() {
     this.disableBanners_ = true;
+  }
+
+  /**
+   * Isolates a banner from the priority list for testing. Used to test
+   * functionality of a specific banner in integration tests.
+   * @param {string} bannerTagName Banner tagName to isolate.
+   */
+  async isolateBannerForTesting(bannerTagName) {
+    const tagName = bannerTagName.toUpperCase();
+    this.isolatedBannerForTesting_ = tagName;
+    await this.reconcile();
   }
 
   /**
