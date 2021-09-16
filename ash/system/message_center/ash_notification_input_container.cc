@@ -5,11 +5,14 @@
 #include "ash/system/message_center/ash_notification_input_container.h"
 
 #include "ash/public/cpp/style/color_provider.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/rrect_f.h"
 #include "ui/message_center/vector_icons.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/textfield/textfield.h"
 
 namespace ash {
@@ -31,6 +34,28 @@ constexpr gfx::Insets kInsideBorderInsets(6, 16, 14, 16);
 
 // Corner radius of the grey background of the textfield.
 constexpr int kTextfieldBackgroundCornerRadius = 24;
+
+// Inline reply textfield's highlight path generator. Draws a highlight path
+// that is flush with the rounded background.
+class TextfieldHighlightPathGenerator : public views::HighlightPathGenerator {
+ public:
+  explicit TextfieldHighlightPathGenerator(views::Textfield* textfield)
+      : textfield_(textfield) {}
+  TextfieldHighlightPathGenerator(const TextfieldHighlightPathGenerator&) =
+      delete;
+  TextfieldHighlightPathGenerator& operator=(
+      const TextfieldHighlightPathGenerator&) = delete;
+
+  // views::HighlightPathGenerator:
+  absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
+    return gfx::RRectF(gfx::RectF(textfield_->GetLocalBounds()),
+                       kTextfieldBackgroundCornerRadius);
+  }
+
+ private:
+  // Owned by the view hierarchy.
+  const views::Textfield* const textfield_;
+};
 
 }  // namespace
 
@@ -62,6 +87,11 @@ void AshNotificationInputContainer::SetTextfieldBackground() {
           ash::AshColorProvider::ControlsLayerType::
               kControlBackgroundColorInactive),
       kTextfieldBackgroundCornerRadius));
+
+  views::FocusRing::Install(textfield());
+  views::HighlightPathGenerator::Install(
+      textfield(),
+      std::make_unique<TextfieldHighlightPathGenerator>(textfield()));
 }
 
 void AshNotificationInputContainer::UpdateButtonImage() {
