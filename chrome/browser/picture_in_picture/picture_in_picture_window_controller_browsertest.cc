@@ -998,7 +998,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   SetUpWindowController(active_web_contents);
 
   std::vector<content::RenderFrameHost*> render_frame_hosts =
-      active_web_contents->GetAllFrames();
+      CollectAllRenderFrameHosts(active_web_contents);
   ASSERT_EQ(2u, render_frame_hosts.size());
 
   content::RenderFrameHost* iframe =
@@ -1020,7 +1020,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   // Picture-in-Picture.
   ASSERT_TRUE(ExecJs(active_web_contents, "removeFrame();"));
 
-  EXPECT_EQ(1u, active_web_contents->GetAllFrames().size());
+  EXPECT_EQ(1u, CollectAllRenderFrameHosts(active_web_contents).size());
   EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
 
   base::RunLoop().RunUntilIdle();
@@ -1066,7 +1066,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   SetUpWindowController(active_web_contents);
 
   std::vector<content::RenderFrameHost*> render_frame_hosts =
-      active_web_contents->GetAllFrames();
+      CollectAllRenderFrameHosts(active_web_contents);
   ASSERT_EQ(2u, render_frame_hosts.size());
 
   content::RenderFrameHost* iframe =
@@ -1079,7 +1079,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
   ASSERT_TRUE(ExecJs(active_web_contents, "removeFrame();"));
 
-  EXPECT_EQ(1u, active_web_contents->GetAllFrames().size());
+  EXPECT_EQ(1u, CollectAllRenderFrameHosts(active_web_contents).size());
   EXPECT_FALSE(window_controller()->GetWindowForTesting()->IsVisible());
 }
 
@@ -1100,7 +1100,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   SetUpWindowController(active_web_contents);
 
   std::vector<content::RenderFrameHost*> render_frame_hosts =
-      active_web_contents->GetAllFrames();
+      CollectAllRenderFrameHosts(active_web_contents);
   ASSERT_EQ(2u, render_frame_hosts.size());
 
   content::RenderFrameHost* iframe =
@@ -1113,7 +1113,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
   ASSERT_TRUE(ExecJs(active_web_contents, "removeFrame();"));
 
-  EXPECT_EQ(1u, active_web_contents->GetAllFrames().size());
+  EXPECT_EQ(1u, CollectAllRenderFrameHosts(active_web_contents).size());
   EXPECT_FALSE(window_controller()->GetWindowForTesting()->IsVisible());
 }
 
@@ -1316,7 +1316,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   SetUpWindowController(active_web_contents);
 
   std::vector<content::RenderFrameHost*> render_frame_hosts =
-      active_web_contents->GetAllFrames();
+      CollectAllRenderFrameHosts(active_web_contents);
   ASSERT_EQ(2u, render_frame_hosts.size());
 
   content::RenderFrameHost* iframe =
@@ -1331,7 +1331,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   ASSERT_EQ(true, EvalJs(iframe, "enterPictureInPicture();"));
   EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
 
-  EXPECT_EQ(2u, active_web_contents->GetAllFrames().size());
+  EXPECT_EQ(2u, CollectAllRenderFrameHosts(active_web_contents).size());
 
   // Open a new tab in the browser.
   AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED);

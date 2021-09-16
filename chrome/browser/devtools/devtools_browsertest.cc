@@ -1027,7 +1027,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   SwitchToExtensionPanel(window_, extension, "iframe_panel");
   EXPECT_TRUE(content::WaitForLoadStop(main_web_contents()));
 
-  std::vector<RenderFrameHost*> rfhs = main_web_contents()->GetAllFrames();
+  std::vector<RenderFrameHost*> rfhs =
+      CollectAllRenderFrameHosts(main_web_contents());
   EXPECT_EQ(7U, rfhs.size());
 
   // This test creates a page with the following frame tree:
@@ -1160,7 +1161,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   SwitchToPanel(window_, "iframe_pane");
   web_manager.WaitForNavigationFinished();
 
-  std::vector<RenderFrameHost*> rfhs = main_web_contents()->GetAllFrames();
+  std::vector<RenderFrameHost*> rfhs =
+      CollectAllRenderFrameHosts(main_web_contents());
   EXPECT_EQ(4U, rfhs.size());
 
   RenderFrameHost* main_devtools_rfh = main_web_contents()->GetMainFrame();
@@ -1219,7 +1221,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
       break;
   }
 
-  std::vector<RenderFrameHost*> rfhs = main_web_contents()->GetAllFrames();
+  std::vector<RenderFrameHost*> rfhs =
+      CollectAllRenderFrameHosts(main_web_contents());
   EXPECT_EQ(3U, rfhs.size());
 
   RenderFrameHost* main_devtools_rfh = main_web_contents()->GetMainFrame();
@@ -1283,7 +1286,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   SwitchToExtensionPanel(window_, devtools_extension, "iframe_panel");
   non_devtools_manager.WaitForNavigationFinished();
 
-  std::vector<RenderFrameHost*> rfhs = main_web_contents()->GetAllFrames();
+  std::vector<RenderFrameHost*> rfhs =
+      CollectAllRenderFrameHosts(main_web_contents());
   EXPECT_EQ(4U, rfhs.size());
 
   RenderFrameHost* main_devtools_rfh = main_web_contents()->GetMainFrame();
@@ -1353,7 +1357,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   SwitchToExtensionPanel(window_, devtools_a_extension, "iframe_panel");
   extension_b_manager.WaitForNavigationFinished();
 
-  std::vector<RenderFrameHost*> rfhs = main_web_contents()->GetAllFrames();
+  std::vector<RenderFrameHost*> rfhs =
+      CollectAllRenderFrameHosts(main_web_contents());
   EXPECT_EQ(5U, rfhs.size());
 
   RenderFrameHost* main_devtools_rfh = main_web_contents()->GetMainFrame();
@@ -1432,7 +1437,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, DevToolsExtensionInItself) {
   SwitchToExtensionPanel(window_, extension, "iframe_panel");
   test_page_manager.WaitForNavigationFinished();
 
-  std::vector<RenderFrameHost*> rfhs = main_web_contents()->GetAllFrames();
+  std::vector<RenderFrameHost*> rfhs =
+      CollectAllRenderFrameHosts(main_web_contents());
   EXPECT_EQ(4U, rfhs.size());
 
   RenderFrameHost* main_devtools_rfh = main_web_contents()->GetMainFrame();
@@ -1491,7 +1497,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_DevtoolsInDevTools) {
   ASSERT_TRUE(content::ExecuteScript(main_devtools_rfh, javascript));
   manager.WaitForNavigationFinished();
 
-  std::vector<RenderFrameHost*> rfhs = main_web_contents()->GetAllFrames();
+  std::vector<RenderFrameHost*> rfhs =
+      CollectAllRenderFrameHosts(main_web_contents());
   EXPECT_EQ(2U, rfhs.size());
   RenderFrameHost* devtools_iframe_rfh = ChildFrameAt(main_devtools_rfh, 0);
   EXPECT_TRUE(main_devtools_rfh->GetLastCommittedURL().SchemeIs(
@@ -2545,7 +2552,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessDevToolsTest, InspectElement) {
   navigation_manager_iframe.WaitForNavigationFinished();
   EXPECT_TRUE(content::WaitForLoadStop(tab));
 
-  std::vector<RenderFrameHost*> frames = GetInspectedTab()->GetAllFrames();
+  std::vector<RenderFrameHost*> frames =
+      CollectAllRenderFrameHosts(GetInspectedTab());
   ASSERT_EQ(2u, frames.size());
   ASSERT_NE(frames[0]->GetProcess(), frames[1]->GetProcess());
   RenderFrameHost* frame_host = frames[0]->GetParent() ? frames[0] : frames[1];
@@ -2697,7 +2705,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessDevToolsTest,
   navigation_manager_iframe.WaitForNavigationFinished();
   EXPECT_TRUE(content::WaitForLoadStop(tab));
 
-  for (auto* frame : GetInspectedTab()->GetAllFrames()) {
+  for (auto* frame : CollectAllRenderFrameHosts(GetInspectedTab())) {
     content::WaitForHitTestData(frame);
   }
   DevToolsWindow* window =

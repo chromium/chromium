@@ -441,8 +441,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
   LoadIFrame(sub_url);
 
-  content::RenderFrameHost* main_document = web_contents()->GetAllFrames()[0];
-  content::RenderFrameHost* sub_document = web_contents()->GetAllFrames()[1];
+  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+  content::RenderFrameHost* sub_document = ChildFrameAt(main_document, 0);
 
   EXPECT_EQ(true, content::ExecJs(main_document, R"(
     received_memory = undefined;
@@ -484,8 +484,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
   LoadIFrame(sub_url);
 
-  content::RenderFrameHost* main_document = web_contents()->GetAllFrames()[0];
-  content::RenderFrameHost* sub_document = web_contents()->GetAllFrames()[1];
+  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+  content::RenderFrameHost* sub_document = ChildFrameAt(main_document, 0);
 
   EXPECT_EQ(true, content::ExecJs(main_document, R"(
     addEventListener("message", event => {
@@ -522,8 +522,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
   LoadIFrame(sub_url);
 
-  content::RenderFrameHost* main_document = web_contents()->GetAllFrames()[0];
-  content::RenderFrameHost* sub_document = web_contents()->GetAllFrames()[1];
+  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+  content::RenderFrameHost* sub_document = ChildFrameAt(main_document, 0);
 
   EXPECT_EQ(true, content::ExecJs(main_document, R"(
     received_memory = undefined;
@@ -561,8 +561,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
   LoadIFrame(sub_url);
 
-  content::RenderFrameHost* main_document = web_contents()->GetAllFrames()[0];
-  content::RenderFrameHost* sub_document = web_contents()->GetAllFrames()[1];
+  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+  content::RenderFrameHost* sub_document = ChildFrameAt(main_document, 0);
 
   EXPECT_EQ(true, content::ExecJs(main_document, R"(
     document.domain = "a.com";
@@ -602,8 +602,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
   LoadIFrame(sub_url);
 
-  content::RenderFrameHost* main_document = web_contents()->GetAllFrames()[0];
-  content::RenderFrameHost* sub_document = web_contents()->GetAllFrames()[1];
+  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+  content::RenderFrameHost* sub_document = ChildFrameAt(main_document, 0);
 
   EXPECT_EQ(true, content::ExecJs(main_document, R"(
     document.domain = "a.com";
@@ -645,8 +645,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
   LoadIFrame(url);
 
-  content::RenderFrameHost* main_document = web_contents()->GetAllFrames()[0];
-  content::RenderFrameHost* sub_document = web_contents()->GetAllFrames()[1];
+  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+  content::RenderFrameHost* sub_document = ChildFrameAt(main_document, 0);
 
   EXPECT_EQ(true, content::ExecJs(main_document, R"(
     addEventListener("message", event => {
@@ -683,8 +683,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
   LoadIFrame(sub_url);
 
-  content::RenderFrameHost* main_document = web_contents()->GetAllFrames()[0];
-  content::RenderFrameHost* sub_document = web_contents()->GetAllFrames()[1];
+  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+  content::RenderFrameHost* sub_document = ChildFrameAt(main_document, 0);
 
   EXPECT_EQ(true, content::ExecJs(main_document, R"(
     received_module = undefined;
@@ -726,8 +726,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
   LoadIFrame(sub_url);
 
-  content::RenderFrameHost* main_document = web_contents()->GetAllFrames()[0];
-  content::RenderFrameHost* sub_document = web_contents()->GetAllFrames()[1];
+  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+  content::RenderFrameHost* sub_document = ChildFrameAt(main_document, 0);
 
   EXPECT_EQ(true, content::ExecJs(main_document, R"(
     received_module = undefined;
@@ -770,8 +770,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
   LoadIFrame(sub_url);
 
-  content::RenderFrameHost* main_document = web_contents()->GetAllFrames()[0];
-  content::RenderFrameHost* sub_document = web_contents()->GetAllFrames()[1];
+  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+  content::RenderFrameHost* sub_document = ChildFrameAt(main_document, 0);
 
   EXPECT_EQ(true, content::ExecJs(main_document, R"(
     received_module = undefined;
@@ -809,8 +809,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
   LoadIFrame(sub_url);
 
-  content::RenderFrameHost* main_document = web_contents()->GetAllFrames()[0];
-  content::RenderFrameHost* sub_document = web_contents()->GetAllFrames()[1];
+  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+  content::RenderFrameHost* sub_document = ChildFrameAt(main_document, 0);
 
   EXPECT_EQ(true, content::ExecJs(main_document, R"(
     received_module = undefined;
@@ -848,8 +848,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
   LoadIFrame(sub_url);
 
-  content::RenderFrameHost* main_document = web_contents()->GetAllFrames()[0];
-  content::RenderFrameHost* sub_document = web_contents()->GetAllFrames()[1];
+  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+  content::RenderFrameHost* sub_document = ChildFrameAt(main_document, 0);
 
   EXPECT_EQ(true, content::ExecJs(main_document, R"(
     document.domain = "a.com";
@@ -894,8 +894,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
   LoadIFrame(sub_url);
 
-  content::RenderFrameHost* main_document = web_contents()->GetAllFrames()[0];
-  content::RenderFrameHost* sub_document = web_contents()->GetAllFrames()[1];
+  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+  content::RenderFrameHost* sub_document = ChildFrameAt(main_document, 0);
 
   EXPECT_EQ(true, content::ExecJs(main_document, R"(
     document.domain = "a.com";
@@ -935,8 +935,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
   LoadIFrame(sub_url);
 
-  content::RenderFrameHost* main_document = web_contents()->GetAllFrames()[0];
-  content::RenderFrameHost* sub_document = web_contents()->GetAllFrames()[1];
+  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+  content::RenderFrameHost* sub_document = ChildFrameAt(main_document, 0);
 
   EXPECT_EQ(true, content::ExecJs(main_document, R"(
     document.domain = "a.com";
