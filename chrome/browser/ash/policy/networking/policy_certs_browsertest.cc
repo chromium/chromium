@@ -734,12 +734,11 @@ class PolicyProvidedCertsPublicSessionTest
     ash::LoginOrLockScreenVisibleWaiter().Wait();
 
     // Login into the public session.
-    chromeos::ExistingUserController* controller =
-        chromeos::ExistingUserController::current_controller();
+    auto* controller = ash::ExistingUserController::current_controller();
     ASSERT_TRUE(controller);
     chromeos::UserContext user_context(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
                                        device_local_account_id_);
-    controller->Login(user_context, chromeos::SigninSpecifics());
+    controller->Login(user_context, ash::SigninSpecifics());
   }
 };
 
@@ -897,8 +896,7 @@ class PolicyProvidedCertsForSigninExtensionTest
   }
 
   void SetUpOnMainThread() override {
-    chromeos::StartupUtils::MarkOobeCompleted();  // Pretend that OOBE was
-                                                  // complete.
+    ash::StartupUtils::MarkOobeCompleted();  // Pretend that OOBE was complete.
 
     SigninProfileExtensionsPolicyTestBase::SetUpOnMainThread();
 
@@ -999,7 +997,7 @@ IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsForSigninExtensionTest,
 
   // Not active in the StoragePartition used for the webview hosting GAIA.
   content::StoragePartition* signin_frame_partition =
-      chromeos::login::GetSigninPartition();
+      ash::login::GetSigninPartition();
   EXPECT_NE(signin_profile_default_partition, signin_frame_partition);
 
   EXPECT_EQ(net::ERR_CERT_AUTHORITY_INVALID,

@@ -14,10 +14,6 @@
 #include "components/user_manager/user.h"
 #include "net/base/backoff_entry.h"
 
-namespace chromeos {
-class ExistingUserControllerForcedOnlineAuthTest;
-}
-
 namespace ash {
 
 // Helper class to handle PasswordSyncTokenLoginChecker objects for all users
@@ -45,7 +41,7 @@ class PasswordSyncTokenCheckersCollection
   void OnInvalidSyncToken(const AccountId& account_id) override;
 
  private:
-  friend class chromeos::ExistingUserControllerForcedOnlineAuthTest;
+  friend class ExistingUserControllerForcedOnlineAuthTest;
   friend class PasswordSyncTokenLoginCheckerTest;
 
   std::unordered_map<std::string,

@@ -179,15 +179,14 @@ bool IsOobeComplete() {
       g_browser_process->platform_part()->browser_policy_connector_ash();
 
   // Oobe is completed and we have a user or we are enterprise enrolled.
-  return chromeos::StartupUtils::IsOobeCompleted() &&
+  return StartupUtils::IsOobeCompleted() &&
          (!user_manager::UserManager::Get()->GetUsers().empty() ||
           connector->IsDeviceEnterpriseManaged());
 }
 
 // Returns true if signin (not oobe) should be displayed.
-bool ShouldShowSigninScreen(chromeos::OobeScreenId first_screen) {
-  return (first_screen == chromeos::OobeScreen::SCREEN_UNKNOWN &&
-          IsOobeComplete());
+bool ShouldShowSigninScreen(OobeScreenId first_screen) {
+  return (first_screen == OobeScreen::SCREEN_UNKNOWN && IsOobeComplete());
 }
 
 void MaybeShowDeviceDisabledScreen() {
@@ -222,7 +221,7 @@ void MaybeShutdownLoginDisplayHostWebUI() {
 // OnLanguageSwitchedCallback()
 // (if locale was updated).
 void ShowLoginWizardFinish(
-    chromeos::OobeScreenId first_screen,
+    OobeScreenId first_screen,
     const StartupCustomizationDocument* startup_manifest) {
   TRACE_EVENT0("chromeos", "ShowLoginWizard::ShowLoginWizardFinish");
 
@@ -287,11 +286,11 @@ void ShowLoginWizardFinish(
 
 struct ShowLoginWizardSwitchLanguageCallbackData {
   explicit ShowLoginWizardSwitchLanguageCallbackData(
-      chromeos::OobeScreenId first_screen,
+      OobeScreenId first_screen,
       const StartupCustomizationDocument* startup_manifest)
       : first_screen(first_screen), startup_manifest(startup_manifest) {}
 
-  const chromeos::OobeScreenId first_screen;
+  const OobeScreenId first_screen;
   const StartupCustomizationDocument* const startup_manifest;
 
   // lock UI while resource bundle is being reloaded.

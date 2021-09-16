@@ -6,9 +6,9 @@
 
 #include "chromeos/login/auth/user_context.h"
 
-namespace chromeos {
+namespace ash {
 
 WizardContext::WizardContext() = default;
 WizardContext::~WizardContext() = default;
 
-}  // namespace chromeos
+}  // namespace ash

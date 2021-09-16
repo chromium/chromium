@@ -23,7 +23,7 @@ class OnboardingUserActivityCounterTest : public ::testing::Test {
  public:
   void SetUp() override {
     OnboardingUserActivityCounter::RegisterProfilePrefs(prefs_.registry());
-    prefs_.registry()->RegisterTimePref(chromeos::prefs::kOobeOnboardingTime,
+    prefs_.registry()->RegisterTimePref(prefs::kOobeOnboardingTime,
                                         base::Time());
   }
 
@@ -33,7 +33,7 @@ class OnboardingUserActivityCounterTest : public ::testing::Test {
     base::TimeDelta required_activity_time = pref_activity_time * 2;
 
     // Mark for start.
-    prefs_.SetTimeDelta(chromeos::prefs::kActivityTimeAfterOnboarding,
+    prefs_.SetTimeDelta(prefs::kActivityTimeAfterOnboarding,
                         pref_activity_time);
 
     session_manager_.SetSessionState(
@@ -63,18 +63,18 @@ TEST_F(OnboardingUserActivityCounterTest, NoShouldStart) {
 }
 
 TEST_F(OnboardingUserActivityCounterTest, ShouldStart) {
-  prefs_.SetTimeDelta(chromeos::prefs::kActivityTimeAfterOnboarding,
+  prefs_.SetTimeDelta(prefs::kActivityTimeAfterOnboarding,
                       base::TimeDelta::FromMinutes(10));
   EXPECT_TRUE(OnboardingUserActivityCounter::ShouldStart(&prefs_));
 }
 
 // Do not start the counter if the onboarding happened too early in the past.
 TEST_F(OnboardingUserActivityCounterTest, ExpiredAfterOnboarding) {
-  prefs_.SetTimeDelta(chromeos::prefs::kActivityTimeAfterOnboarding,
+  prefs_.SetTimeDelta(prefs::kActivityTimeAfterOnboarding,
                       base::TimeDelta::FromMinutes(10));
 
   base::Time now = base::Time::Now();
-  prefs_.SetTime(chromeos::prefs::kOobeOnboardingTime,
+  prefs_.SetTime(prefs::kOobeOnboardingTime,
                  now - base::TimeDelta::FromDays(2));
   EXPECT_FALSE(OnboardingUserActivityCounter::ShouldStart(&prefs_));
 }
@@ -99,13 +99,13 @@ TEST_F(OnboardingUserActivityCounterTest, LockScreen) {
   SetUpCounter();
   session_manager_.SetSessionState(session_manager::SessionState::ACTIVE);
   base::TimeDelta pref_activity_time =
-      prefs_.GetTimeDelta(chromeos::prefs::kActivityTimeAfterOnboarding);
+      prefs_.GetTimeDelta(prefs::kActivityTimeAfterOnboarding);
   env_.FastForwardBy(activity_time_left_ / 2);
 
   session_manager_.SetSessionState(session_manager::SessionState::LOCKED);
 
   // Prefs should be updated on the screen lock.
-  EXPECT_EQ(prefs_.GetTimeDelta(chromeos::prefs::kActivityTimeAfterOnboarding),
+  EXPECT_EQ(prefs_.GetTimeDelta(prefs::kActivityTimeAfterOnboarding),
             pref_activity_time + activity_time_left_ / 2);
 
   // Locked state should not be taken into account.
@@ -122,13 +122,13 @@ TEST_F(OnboardingUserActivityCounterTest, UpdatePrefsOnShutdown) {
   SetUpCounter();
   session_manager_.SetSessionState(session_manager::SessionState::ACTIVE);
   base::TimeDelta pref_activity_time =
-      prefs_.GetTimeDelta(chromeos::prefs::kActivityTimeAfterOnboarding);
+      prefs_.GetTimeDelta(prefs::kActivityTimeAfterOnboarding);
   env_.FastForwardBy(activity_time_left_ / 2);
   counter_.reset();
 
   EXPECT_FALSE(callback_called_);
 
-  EXPECT_EQ(prefs_.GetTimeDelta(chromeos::prefs::kActivityTimeAfterOnboarding),
+  EXPECT_EQ(prefs_.GetTimeDelta(prefs::kActivityTimeAfterOnboarding),
             pref_activity_time + activity_time_left_ / 2);
 }
 
@@ -138,7 +138,7 @@ TEST_F(OnboardingUserActivityCounterTest,
   session_manager_.SetSessionState(session_manager::SessionState::LOCKED);
 
   base::Time now = base::Time::Now();
-  prefs_.SetTime(chromeos::prefs::kOobeOnboardingTime,
+  prefs_.SetTime(prefs::kOobeOnboardingTime,
                  now - base::TimeDelta::FromDays(2));
 
   session_manager_.SetSessionState(session_manager::SessionState::ACTIVE);

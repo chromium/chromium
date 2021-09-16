@@ -280,7 +280,7 @@ void DeviceCloudPolicyStoreAsh::CheckDMToken() {
     // be started, policy hasn't been read yet.  To work around this, once the
     // need for recovery is detected upon policy load, a flag is stored in prefs
     // which is accessed by LoginDisplayHostWebUI early during (next) boot.
-    chromeos::StartupUtils::MarkEnrollmentRecoveryRequired();
+    ash::StartupUtils::MarkEnrollmentRecoveryRequired();
   }
 }
 

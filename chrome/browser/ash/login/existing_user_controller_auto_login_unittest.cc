@@ -25,14 +25,13 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::AnyNumber;
-using testing::Return;
-using testing::ReturnNull;
-using testing::_;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
+
+using ::testing::_;
+using ::testing::AnyNumber;
+using ::testing::Return;
+using ::testing::ReturnNull;
 
 // These values are only used to test the configuration.  They don't
 // delay the test.
@@ -264,4 +263,4 @@ TEST_F(ExistingUserControllerAutoLoginTest, ConfigureAutoLogin) {
   EXPECT_EQ(auto_login_delay(), kAutoLoginDelay2);
 }
 
-}  // namespace chromeos
+}  // namespace ash

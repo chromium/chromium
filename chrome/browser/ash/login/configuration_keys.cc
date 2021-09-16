@@ -6,7 +6,7 @@
 
 #include "base/logging.h"
 
-namespace chromeos {
+namespace ash {
 namespace configuration {
 
 // Configuration keys that are used to automate OOBE screens go here.
@@ -184,4 +184,4 @@ void FilterConfiguration(const base::Value& configuration,
 }
 
 }  // namespace configuration
-}  // namespace chromeos
+}  // namespace ash

@@ -150,7 +150,7 @@ class UserAddingFinishObserver : public ash::UserAddingScreen::Observer {
 
 }  // namespace
 
-class NSSContextChromeOSBrowserTest : public chromeos::LoginManagerTest {
+class NSSContextChromeOSBrowserTest : public ash::LoginManagerTest {
  public:
   NSSContextChromeOSBrowserTest() : LoginManagerTest() {
     login_mixin_.AppendRegularUsers(2);

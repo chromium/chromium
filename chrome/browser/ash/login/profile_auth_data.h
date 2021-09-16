@@ -12,7 +12,7 @@ namespace content {
 class StoragePartition;
 }
 
-namespace chromeos {
+namespace ash {
 
 // Helper class that transfers authentication-related data from a BrowserContext
 // used for authentication to the user's actual BrowserContext.
@@ -42,12 +42,6 @@ class ProfileAuthData {
   DISALLOW_IMPLICIT_CONSTRUCTORS(ProfileAuthData);
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::ProfileAuthData;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_PROFILE_AUTH_DATA_H_

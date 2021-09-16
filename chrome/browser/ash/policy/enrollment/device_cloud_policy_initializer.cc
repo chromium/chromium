@@ -108,7 +108,7 @@ EnrollmentConfig DeviceCloudPolicyInitializer::GetPrescribedEnrollmentConfig()
   // If OOBE is done and we are not enrolled, make sure we only try interactive
   // enrollment.
   const bool oobe_complete =
-      local_state_->GetBoolean(chromeos::prefs::kOobeComplete);
+      local_state_->GetBoolean(ash::prefs::kOobeComplete);
   if (oobe_complete &&
       config.auth_mechanism == EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE)
     config.auth_mechanism = EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE;

@@ -35,7 +35,7 @@ class NetworkContext;
 class SharedURLLoaderFactory;
 }
 
-namespace chromeos {
+namespace ash {
 
 // Returns bounds of the screen to use for login wizard.
 // The rect is centered within the default monitor and sized accordingly if
@@ -116,14 +116,13 @@ base::TimeDelta TimeToOnlineSignIn(base::Time last_online_signin,
                                    base::TimeDelta offline_signin_limit);
 
 }  // namespace login
-
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace ash {
-namespace login = ::chromeos::login;
-using ::chromeos::CalculateScreenBounds;
-using ::chromeos::GetCurrentUserImageSize;
-}  // namespace ash
+namespace chromeos {
+namespace login {
+using ::ash::login::NetworkStateHelper;
+}
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_HELPER_H_

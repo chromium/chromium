@@ -17,22 +17,13 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-// TODO(https://crbug.com/1164001): move KioskAppType to forward declaration
-// when moved to chrome/browser/ash/.
-#include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/screen_manager.h"
 #include "chrome/browser/ash/login/screens/active_directory_login_screen.h"
 #include "chrome/browser/ash/login/screens/arc_terms_of_service_screen.h"
 #include "chrome/browser/ash/login/screens/assistant_optin_flow_screen.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/consolidated_consent_screen.h"
 #include "chrome/browser/ash/login/screens/demo_preferences_screen.h"
 #include "chrome/browser/ash/login/screens/demo_setup_screen.h"
@@ -40,8 +31,6 @@
 #include "chrome/browser/ash/login/screens/enable_adb_sideloading_screen.h"
 #include "chrome/browser/ash/login/screens/enable_debugging_screen.h"
 #include "chrome/browser/ash/login/screens/eula_screen.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/screens/family_link_notice_screen.h"
 #include "chrome/browser/ash/login/screens/fingerprint_setup_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_password_changed_screen.h"
@@ -79,7 +68,14 @@
 class PrefService;
 
 namespace ash {
+class BaseScreen;
+class DemoSetupController;
 class ErrorScreen;
+enum class KioskAppType;
+
+namespace login {
+class NetworkStateHelper;
+}
 
 // Class that manages control flow between wizard screens. Wizard controller
 // interacts with screen controllers to move the user between screens.
@@ -152,7 +148,7 @@ class WizardController {
 
   // Returns `true` if accelerator `action` was handled by current screen
   // or WizardController itself.
-  bool HandleAccelerator(ash::LoginAcceleratorAction action);
+  bool HandleAccelerator(LoginAcceleratorAction action);
 
   // Starts Demo Mode setup flow. The flow starts from network screen and reuses
   // some of regular OOBE screens. It consists of the following screens:

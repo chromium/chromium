@@ -149,7 +149,7 @@ TEST_P(DeviceCloudPolicyInitializerTest,
 
   // If OOBE is complete, we may re-enroll to the domain configured in install
   // attributes. This is only enforced after detecting enrollment loss.
-  local_state_.SetBoolean(chromeos::prefs::kOobeComplete, true);
+  local_state_.SetBoolean(ash::prefs::kOobeComplete, true);
   EnrollmentConfig config =
       device_cloud_policy_initializer_.GetPrescribedEnrollmentConfig();
   EXPECT_EQ(EnrollmentConfig::MODE_NONE, config.mode);

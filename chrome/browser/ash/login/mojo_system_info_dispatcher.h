@@ -7,7 +7,7 @@
 
 #include "chrome/browser/ash/login/version_info_updater.h"
 
-namespace chromeos {
+namespace ash {
 
 // Fetches system information and sends it over the login_screen mojo.
 class MojoSystemInfoDispatcher : public VersionInfoUpdater::Delegate {
@@ -43,12 +43,6 @@ class MojoSystemInfoDispatcher : public VersionInfoUpdater::Delegate {
   DISALLOW_COPY_AND_ASSIGN(MojoSystemInfoDispatcher);
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::MojoSystemInfoDispatcher;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_MOJO_SYSTEM_INFO_DISPATCHER_H_

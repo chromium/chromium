@@ -10,6 +10,7 @@
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/login_screen_model.h"
 #include "base/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_service.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/hats_unlock_survey_trigger.h"
@@ -46,7 +47,7 @@ LoginScreenClientImpl::Delegate::~Delegate() = default;
 LoginScreenClientImpl::ParentAccessDelegate::~ParentAccessDelegate() = default;
 
 LoginScreenClientImpl::LoginScreenClientImpl()
-    : auth_recorder_(std::make_unique<chromeos::LoginAuthRecorder>()),
+    : auth_recorder_(std::make_unique<ash::LoginAuthRecorder>()),
       unlock_survey_trigger_(std::make_unique<ash::HatsUnlockSurveyTrigger>()) {
   // Register this object as the client interface implementation.
   ash::LoginScreen::Get()->SetClient(this);
@@ -96,7 +97,7 @@ void LoginScreenClientImpl::RemoveLoginScreenShownObserver(
   login_screen_shown_observers_.RemoveObserver(observer);
 }
 
-chromeos::LoginAuthRecorder* LoginScreenClientImpl::auth_recorder() {
+ash::LoginAuthRecorder* LoginScreenClientImpl::auth_recorder() {
   return auth_recorder_.get();
 }
 
@@ -108,10 +109,9 @@ void LoginScreenClientImpl::AuthenticateUserWithPasswordOrPin(
   if (delegate_) {
     delegate_->HandleAuthenticateUserWithPasswordOrPin(
         account_id, password, authenticated_by_pin, std::move(callback));
-    chromeos::LoginAuthRecorder::AuthMethod auth_method =
-        authenticated_by_pin
-            ? chromeos::LoginAuthRecorder::AuthMethod::kPin
-            : chromeos::LoginAuthRecorder::AuthMethod::kPassword;
+    auto auth_method = authenticated_by_pin
+                           ? ash::LoginAuthRecorder::AuthMethod::kPin
+                           : ash::LoginAuthRecorder::AuthMethod::kPassword;
     auth_recorder_->RecordAuthMethod(auth_method);
     unlock_survey_trigger_->ShowSurveyIfSelected(account_id, auth_method);
   } else {
@@ -125,9 +125,9 @@ void LoginScreenClientImpl::AuthenticateUserWithEasyUnlock(
   if (delegate_) {
     delegate_->HandleAuthenticateUserWithEasyUnlock(account_id);
     auth_recorder_->RecordAuthMethod(
-        chromeos::LoginAuthRecorder::AuthMethod::kSmartlock);
+        ash::LoginAuthRecorder::AuthMethod::kSmartlock);
     unlock_survey_trigger_->ShowSurveyIfSelected(
-        account_id, chromeos::LoginAuthRecorder::AuthMethod::kSmartlock);
+        account_id, ash::LoginAuthRecorder::AuthMethod::kSmartlock);
   }
 }
 
@@ -138,10 +138,9 @@ void LoginScreenClientImpl::AuthenticateUserWithChallengeResponse(
     delegate_->HandleAuthenticateUserWithChallengeResponse(account_id,
                                                            std::move(callback));
     auth_recorder_->RecordAuthMethod(
-        chromeos::LoginAuthRecorder::AuthMethod::kChallengeResponse);
+        ash::LoginAuthRecorder::AuthMethod::kChallengeResponse);
     unlock_survey_trigger_->ShowSurveyIfSelected(
-        account_id,
-        chromeos::LoginAuthRecorder::AuthMethod::kChallengeResponse);
+        account_id, ash::LoginAuthRecorder::AuthMethod::kChallengeResponse);
   }
 }
 
@@ -250,17 +249,15 @@ void LoginScreenClientImpl::HandleAccelerator(
 
 void LoginScreenClientImpl::ShowAccountAccessHelpApp(
     gfx::NativeWindow parent_window) {
-  scoped_refptr<chromeos::HelpAppLauncher>(
-      new chromeos::HelpAppLauncher(parent_window))
-      ->ShowHelpTopic(chromeos::HelpAppLauncher::HELP_CANT_ACCESS_ACCOUNT);
+  base::MakeRefCounted<ash::HelpAppLauncher>(parent_window)
+      ->ShowHelpTopic(ash::HelpAppLauncher::HELP_CANT_ACCESS_ACCOUNT);
 }
 
 void LoginScreenClientImpl::ShowParentAccessHelpApp() {
   // Don't pass in a parent window so that the size of the help dialog is not
   // bounded by its parent window.
-  scoped_refptr<chromeos::HelpAppLauncher>(
-      new chromeos::HelpAppLauncher(/*parent_window=*/nullptr))
-      ->ShowHelpTopic(chromeos::HelpAppLauncher::HELP_PARENT_ACCESS_CODE);
+  base::MakeRefCounted<ash::HelpAppLauncher>(/*parent_window=*/nullptr)
+      ->ShowHelpTopic(ash::HelpAppLauncher::HELP_PARENT_ACCESS_CODE);
 }
 
 void LoginScreenClientImpl::ShowLockScreenNotificationSettings() {
@@ -302,14 +299,13 @@ void LoginScreenClientImpl::LoginAsGuest() {
     ash::LoginDisplayHost::default_host()->GetExistingUserController()->Login(
         chromeos::UserContext(user_manager::USER_TYPE_GUEST,
                               user_manager::GuestAccountId()),
-        chromeos::SigninSpecifics());
+        ash::SigninSpecifics());
   }
 }
 
 void LoginScreenClientImpl::OnMaxIncorrectPasswordAttempted(
     const AccountId& account_id) {
-  RecordReauthReason(account_id,
-                     chromeos::ReauthReason::INCORRECT_PASSWORD_ENTERED);
+  RecordReauthReason(account_id, ash::ReauthReason::INCORRECT_PASSWORD_ENTERED);
 }
 
 void LoginScreenClientImpl::SetPublicSessionKeyboardLayout(

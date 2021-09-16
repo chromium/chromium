@@ -650,15 +650,14 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
     auto* host = ash::LoginDisplayHost::default_host();
     ASSERT_TRUE(host);
     host->StartSignInScreen();
-    chromeos::ExistingUserController* controller =
-        chromeos::ExistingUserController::current_controller();
+    auto* controller = ash::ExistingUserController::current_controller();
     ASSERT_TRUE(controller);
 
     chromeos::UserContext user_context(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
                                        account_id_1_);
     user_context.SetPublicSessionLocale(locale);
     user_context.SetPublicSessionInputMethod(input_method);
-    controller->Login(user_context, chromeos::SigninSpecifics());
+    controller->Login(user_context, ash::SigninSpecifics());
   }
 
   void WaitForSessionStart() {

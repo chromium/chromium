@@ -174,7 +174,7 @@ void VersionUpdaterCros::CheckForUpdate(StatusCallback callback,
 
   // Make sure that libcros is loaded and OOBE is complete.
   if (!ash::WizardController::default_controller() ||
-      chromeos::StartupUtils::IsDeviceRegistered()) {
+      ash::StartupUtils::IsDeviceRegistered()) {
     update_engine_client->RequestUpdateCheck(base::BindOnce(
         &VersionUpdaterCros::OnUpdateCheck, weak_ptr_factory_.GetWeakPtr()));
   }

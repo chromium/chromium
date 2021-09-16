@@ -93,7 +93,7 @@ constexpr char kCrostiniAvailableDiskError[] = "Crostini.AvailableDiskError";
 void RecordTimeFromDeviceSetupToInstallMetric() {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&chromeos::StartupUtils::GetTimeSinceOobeFlagFileCreation),
+      base::BindOnce(&ash::StartupUtils::GetTimeSinceOobeFlagFileCreation),
       base::BindOnce([](base::TimeDelta time_from_device_setup) {
         if (time_from_device_setup.is_zero())
           return;

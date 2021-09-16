@@ -19,6 +19,8 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
+namespace ash {
+namespace enterprise_user_session_metrics {
 namespace {
 
 // Returns true if the device is enterprise managed, false otherwise.
@@ -38,9 +40,6 @@ int GetMinutesToReport(base::TimeDelta duration,
 }
 
 }  // namespace
-
-namespace chromeos {
-namespace enterprise_user_session_metrics {
 
 void RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kLastSessionType, 0);
@@ -137,4 +136,4 @@ void RecordStoredSessionLength() {
 }
 
 }  // namespace enterprise_user_session_metrics
-}  // namespace chromeos
+}  // namespace ash

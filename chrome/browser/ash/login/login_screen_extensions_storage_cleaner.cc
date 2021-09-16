@@ -15,8 +15,7 @@
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/pref_names.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 const char kPersistentDataKeyPrefix[] = "persistent_data_";
@@ -84,4 +83,4 @@ void LoginScreenExtensionsStorageCleaner::
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

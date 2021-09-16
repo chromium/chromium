@@ -68,9 +68,8 @@ bool MinimumVersionPolicyHandlerDelegateImpl::IsLoginSessionState() const {
 }
 
 bool MinimumVersionPolicyHandlerDelegateImpl::IsLoginInProgress() const {
-  using chromeos::ExistingUserController;
-  const ExistingUserController* existing_user_controller =
-      ExistingUserController::current_controller();
+  const auto* existing_user_controller =
+      ash::ExistingUserController::current_controller();
   return existing_user_controller &&
          existing_user_controller->IsSigninInProgress();
 }

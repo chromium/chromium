@@ -221,7 +221,7 @@ constexpr const char kResetScreenExitReason[] = "Cancel";
 constexpr char kLegacyUpdateScreenName[] = "update";
 
 // Stores the list of all screens that should be shown when resuming OOBE.
-const chromeos::StaticOobeScreenId kResumableOobeScreens[] = {
+const StaticOobeScreenId kResumableOobeScreens[] = {
     chromeos::WelcomeView::kScreenId,
     chromeos::NetworkScreenView::kScreenId,
     chromeos::UpdateView::kScreenId,
@@ -230,7 +230,7 @@ const chromeos::StaticOobeScreenId kResumableOobeScreens[] = {
     chromeos::AutoEnrollmentCheckScreenView::kScreenId,
 };
 
-const chromeos::StaticOobeScreenId kResumablePostLoginScreens[] = {
+const StaticOobeScreenId kResumablePostLoginScreens[] = {
     chromeos::TermsOfServiceScreenView::kScreenId,
     chromeos::SyncConsentScreenView::kScreenId,
     chromeos::FingerprintSetupScreenView::kScreenId,
@@ -242,7 +242,7 @@ const chromeos::StaticOobeScreenId kResumablePostLoginScreens[] = {
     chromeos::MultiDeviceSetupScreenView::kScreenId,
 };
 
-const chromeos::StaticOobeScreenId kScreensWithHiddenStatusArea[] = {
+const StaticOobeScreenId kScreensWithHiddenStatusArea[] = {
     chromeos::EnableAdbSideloadingScreenView::kScreenId,
     chromeos::EnableDebuggingScreenView::kScreenId,
     chromeos::KioskAutolaunchScreenView::kScreenId,
@@ -265,7 +265,7 @@ bool CanShowHIDDetectionScreen() {
   }
 }
 
-bool IsResumableOobeScreen(chromeos::OobeScreenId screen_id) {
+bool IsResumableOobeScreen(OobeScreenId screen_id) {
   for (const auto& resumable_screen : kResumableOobeScreens) {
     if (screen_id == resumable_screen)
       return true;
@@ -273,7 +273,7 @@ bool IsResumableOobeScreen(chromeos::OobeScreenId screen_id) {
   return false;
 }
 
-bool IsResumablePostLoginScreen(chromeos::OobeScreenId screen_id) {
+bool IsResumablePostLoginScreen(OobeScreenId screen_id) {
   for (const auto& resumable_screen : kResumablePostLoginScreens) {
     if (screen_id == resumable_screen)
       return true;
@@ -281,7 +281,7 @@ bool IsResumablePostLoginScreen(chromeos::OobeScreenId screen_id) {
   return false;
 }
 
-bool ShouldHideStatusArea(chromeos::OobeScreenId screen_id) {
+bool ShouldHideStatusArea(OobeScreenId screen_id) {
   for (const auto& s : kScreensWithHiddenStatusArea) {
     if (screen_id == s)
       return true;
@@ -290,7 +290,7 @@ bool ShouldHideStatusArea(chromeos::OobeScreenId screen_id) {
 }
 
 struct Entry {
-  chromeos::StaticOobeScreenId screen;
+  StaticOobeScreenId screen;
   const char* uma_name;
 };
 
@@ -300,12 +300,12 @@ constexpr const Entry kLegacyUmaOobeScreenNames[] = {
     {chromeos::ArcTermsOfServiceScreenView::kScreenId, "arc_tos"},
     {chromeos::EnrollmentScreenView::kScreenId, "enroll"},
     {chromeos::WelcomeView::kScreenId, "network"},
-    {chromeos::OobeScreen::SCREEN_CREATE_SUPERVISED_USER_FLOW_DEPRECATED,
+    {OobeScreen::SCREEN_CREATE_SUPERVISED_USER_FLOW_DEPRECATED,
      "supervised-user-creation-flow"},
     {chromeos::TermsOfServiceScreenView::kScreenId, "tos"}};
 
 void RecordUMAHistogramForOOBEStepShownStatus(
-    chromeos::OobeScreenId screen,
+    OobeScreenId screen,
     WizardController::ScreenShownStatus status) {
   std::string screen_name = screen.name;
   screen_name[0] = std::toupper(screen_name[0]);
@@ -313,7 +313,7 @@ void RecordUMAHistogramForOOBEStepShownStatus(
   base::UmaHistogramEnumeration(histogram_name, status);
 }
 
-void RecordUMAHistogramForOOBEStepCompletionTime(chromeos::OobeScreenId screen,
+void RecordUMAHistogramForOOBEStepCompletionTime(OobeScreenId screen,
                                                  const std::string& exit_reason,
                                                  base::TimeDelta step_time) {
   // Fetch screen name; make sure to use initial UMA name if the name has
@@ -366,10 +366,10 @@ GetSharedURLLoaderFactoryForTesting() {
   return *loader;
 }
 
-chromeos::OobeScreenId PrefToScreenId(const std::string& pref_value) {
+OobeScreenId PrefToScreenId(const std::string& pref_value) {
   if (pref_value == kLegacyUpdateScreenName)
     return chromeos::UpdateView::kScreenId;
-  return chromeos::OobeScreenId(pref_value);
+  return OobeScreenId(pref_value);
 }
 
 }  // namespace
@@ -1934,9 +1934,9 @@ void WizardController::OnHIDScreenNecessityCheck(bool screen_needed) {
 
 void WizardController::UpdateOobeConfiguration() {
   wizard_context_->configuration = base::Value(base::Value::Type::DICTIONARY);
-  chromeos::configuration::FilterConfiguration(
+  configuration::FilterConfiguration(
       OobeConfiguration::Get()->GetConfiguration(),
-      chromeos::configuration::ConfigurationHandlerSide::HANDLER_CPP,
+      configuration::ConfigurationHandlerSide::HANDLER_CPP,
       wizard_context_->configuration);
   auto* requisition_value = wizard_context_->configuration.FindKeyOfType(
       configuration::kDeviceRequisition, base::Value::Type::STRING);
@@ -1948,7 +1948,7 @@ void WizardController::UpdateOobeConfiguration() {
   }
 
   auto* network_config_value = wizard_context_->configuration.FindKeyOfType(
-      chromeos::configuration::kNetworkConfig, base::Value::Type::STRING);
+      configuration::kNetworkConfig, base::Value::Type::STRING);
   if (network_config_value) {
     std::string network_config = network_config_value->GetString();
     auto rollback_network_config = std::make_unique<mojo::Remote<

@@ -360,10 +360,9 @@ void CoreOobeHandler::SetDialogPaddingMode(
 
 void CoreOobeHandler::OnOobeConfigurationChanged() {
   base::Value configuration(base::Value::Type::DICTIONARY);
-  chromeos::configuration::FilterConfiguration(
+  configuration::FilterConfiguration(
       OobeConfiguration::Get()->GetConfiguration(),
-      chromeos::configuration::ConfigurationHandlerSide::HANDLER_JS,
-      configuration);
+      configuration::ConfigurationHandlerSide::HANDLER_JS, configuration);
   CallJS("cr.ui.Oobe.updateOobeConfiguration", configuration);
 }
 

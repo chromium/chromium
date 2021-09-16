@@ -24,7 +24,7 @@ using user_manager::UserManager;
 
 namespace {
 
-class SystemMenuModelBuilderMultiUserTest : public chromeos::LoginManagerTest {
+class SystemMenuModelBuilderMultiUserTest : public ash::LoginManagerTest {
  public:
   SystemMenuModelBuilderMultiUserTest() : LoginManagerTest() {
     login_mixin_.AppendRegularUsers(2);

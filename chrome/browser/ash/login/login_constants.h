@@ -7,8 +7,7 @@
 
 #include "base/time/time.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace constants {
 
 // This constant value comes from the policy definitions of the offline signin
@@ -42,23 +41,6 @@ const int kDefaultSamlPasswordExpirationAdvanceWarningDays = 14;
 // Online reauthentication on the lock screen.
 const bool kDefaultLockScreenReauthenticationEnabled = false;
 
-}  // namespace constants
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-namespace constants {
-using ::chromeos::constants::kDefaultGaiaLockScreenOfflineSigninTimeLimitDays;
-using ::chromeos::constants::kDefaultGaiaOfflineSigninTimeLimitDays;
-using ::chromeos::constants::kDefaultLockScreenReauthenticationEnabled;
-using ::chromeos::constants::kDefaultSAMLOfflineSigninTimeLimit;
-using ::chromeos::constants::kDefaultSamlPasswordExpirationAdvanceWarningDays;
-using ::chromeos::constants::kDefaultSamlInSessionPasswordChangeEnabled;
-using ::chromeos::constants::kDefaultSamlLockScreenOfflineSigninTimeLimitDays;
-using ::chromeos::constants::kLockScreenOfflineSigninTimeLimitDaysMatchLogin;
-using ::chromeos::constants::kOfflineSigninTimeLimitNotSet;
 }  // namespace constants
 }  // namespace ash
 

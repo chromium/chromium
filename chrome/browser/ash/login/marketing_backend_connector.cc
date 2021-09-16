@@ -27,9 +27,9 @@
 #include "net/http/http_status_code.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
+
 // The scope that will be used to access the ChromebookEmailService API.
 const char kChromebookOAuth2Scope[] =
     "https://www.googleapis.com/auth/chromebook.email";
@@ -69,6 +69,7 @@ std::unique_ptr<network::ResourceRequest> GetResourceRequest() {
   resource_request->method = "POST";
   return resource_request;
 }
+
 }  // namespace
 
 // static
@@ -256,4 +257,4 @@ ScopedRequestCallbackSetter::~ScopedRequestCallbackSetter() {
   MarketingBackendConnector::request_finished_for_tests_ = nullptr;
 }
 
-}  // namespace chromeos
+}  // namespace ash

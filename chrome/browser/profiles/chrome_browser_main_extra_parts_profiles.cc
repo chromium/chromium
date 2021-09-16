@@ -247,7 +247,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   extensions::EnsureBrowserContextKeyedServiceFactoriesBuilt();
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::login::SecurityTokenSessionControllerFactory::GetInstance();
+  ash::login::SecurityTokenSessionControllerFactory::GetInstance();
   chromeos::EnsureBrowserContextKeyedServiceFactoriesBuilt();
 #endif
 

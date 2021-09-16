@@ -19,6 +19,7 @@
 #include "third_party/re2/src/re2/re2.h"
 #include "third_party/zlib/zlib.h"
 
+namespace ash {
 namespace {
 
 unsigned CalculateCRC32(const std::string& data) {
@@ -142,8 +143,6 @@ bool IsCorrectHWIDv3(const std::string& hwid) {
 
 }  // anonymous namespace
 
-namespace chromeos {
-
 bool IsHWIDCorrect(const std::string& hwid) {
   return IsCorrectHWIDv2(hwid) || IsCorrectExceptionalHWID(hwid) ||
          IsCorrectHWIDv3(hwid);
@@ -151,7 +150,7 @@ bool IsHWIDCorrect(const std::string& hwid) {
 
 bool IsMachineHWIDCorrect() {
   base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
-  if (cmd_line->HasSwitch(chromeos::switches::kForceHWIDCheckFailureForTest))
+  if (cmd_line->HasSwitch(switches::kForceHWIDCheckFailureForTest))
     return false;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (cmd_line->HasSwitch(::switches::kTestType))
@@ -169,7 +168,7 @@ bool IsMachineHWIDCorrect() {
     LOG(ERROR) << "Couldn't get machine statistic 'hardware_class'.";
     return false;
   }
-  if (!chromeos::IsHWIDCorrect(hwid)) {
+  if (!IsHWIDCorrect(hwid)) {
     LOG(ERROR) << "Machine has malformed HWID '" << hwid << "'. ";
     return false;
   }
@@ -177,4 +176,4 @@ bool IsMachineHWIDCorrect() {
   return true;
 }
 
-}  // namespace chromeos
+}  // namespace ash

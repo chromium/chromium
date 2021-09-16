@@ -934,9 +934,9 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithPWAInBrowser) {
   EXPECT_FALSE(iter != app_id_to_launch_list.end());
 }
 
-class DesksClientMultiProfileTest : public chromeos::LoginManagerTest {
+class DesksClientMultiProfileTest : public ash::LoginManagerTest {
  public:
-  DesksClientMultiProfileTest() : chromeos::LoginManagerTest() {
+  DesksClientMultiProfileTest() : ash::LoginManagerTest() {
     login_mixin_.AppendRegularUsers(2);
     account_id1_ = login_mixin_.users()[0].account_id;
     account_id2_ = login_mixin_.users()[1].account_id;
@@ -948,7 +948,7 @@ class DesksClientMultiProfileTest : public chromeos::LoginManagerTest {
   ~DesksClientMultiProfileTest() override = default;
 
   void SetUpOnMainThread() override {
-    chromeos::LoginManagerTest::SetUpOnMainThread();
+    ash::LoginManagerTest::SetUpOnMainThread();
 
     LoginUser(account_id1_);
     ::full_restore::SetActiveProfilePath(

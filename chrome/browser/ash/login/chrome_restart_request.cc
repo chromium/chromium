@@ -63,11 +63,10 @@
 #include "ui/wm/core/wm_core_switches.h"
 #include "url/gurl.h"
 
-using content::BrowserThread;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
+
+using ::content::BrowserThread;
 
 // Increase logging level for Guest mode to avoid INFO messages in logs.
 const char kGuestModeLoggingLevel[] = "1";
@@ -161,16 +160,16 @@ void DeriveCommandLine(const GURL& start_url,
     ::switches::kDisableWebRtcHWDecoding,
     ::switches::kDisableWebRtcHWEncoding,
     ::switches::kOzonePlatform,
-    ash::switches::kAshClearFastInkBuffer,
-    ash::switches::kAshEnablePaletteOnAllDisplays,
-    ash::switches::kAshEnableTabletMode,
-    ash::switches::kAshEnableWaylandServer,
-    ash::switches::kAshForceEnableStylusTools,
-    ash::switches::kAshTouchHud,
-    ash::switches::kAuraLegacyPowerButton,
-    ash::switches::kEnableDimShelf,
-    ash::switches::kSupportsClamshellAutoRotation,
-    ash::switches::kShowTaps,
+    switches::kAshClearFastInkBuffer,
+    switches::kAshEnablePaletteOnAllDisplays,
+    switches::kAshEnableTabletMode,
+    switches::kAshEnableWaylandServer,
+    switches::kAshForceEnableStylusTools,
+    switches::kAshTouchHud,
+    switches::kAuraLegacyPowerButton,
+    switches::kEnableDimShelf,
+    switches::kSupportsClamshellAutoRotation,
+    switches::kShowTaps,
     blink::switches::kBlinkSettings,
     blink::switches::kDarkModeSettings,
     blink::switches::kDisableLowResTiling,
@@ -185,10 +184,10 @@ void DeriveCommandLine(const GURL& start_url,
     blink::switches::kEnableRasterSideDarkModeForImages,
     blink::switches::kEnableZeroCopy,
     blink::switches::kGpuRasterizationMSAASampleCount,
-    chromeos::switches::kDefaultWallpaperLarge,
-    chromeos::switches::kDefaultWallpaperSmall,
-    chromeos::switches::kGuestWallpaperLarge,
-    chromeos::switches::kGuestWallpaperSmall,
+    switches::kDefaultWallpaperLarge,
+    switches::kDefaultWallpaperSmall,
+    switches::kGuestWallpaperLarge,
+    switches::kGuestWallpaperSmall,
     // Please keep these in alphabetical order. Non-UI Compositor switches
     // here should also be added to
     // content/browser/renderer_host/render_process_host_impl.cc.
@@ -208,25 +207,25 @@ void DeriveCommandLine(const GURL& start_url,
     cc::switches::kSlowDownRasterScaleFactor,
     cc::switches::kUIEnableLayerLists,
     cc::switches::kUIShowFPSCounter,
-    chromeos::switches::kArcAvailability,
-    chromeos::switches::kArcAvailable,
-    chromeos::switches::kArcScale,
+    switches::kArcAvailability,
+    switches::kArcAvailable,
+    switches::kArcScale,
     chromeos::switches::kDbusStub,
-    chromeos::switches::kDisableArcDataWipe,
-    chromeos::switches::kDisableArcOptInVerification,
-    chromeos::switches::kDisableLoginAnimations,
-    chromeos::switches::kEnableArc,
-    chromeos::switches::kEnterpriseDisableArc,
-    chromeos::switches::kEnterpriseEnableForcedReEnrollment,
-    chromeos::switches::kFormFactor,
-    chromeos::switches::kHasChromeOSKeyboard,
-    chromeos::switches::kLacrosChromeAdditionalArgs,
-    chromeos::switches::kLacrosChromeAdditionalEnv,
-    chromeos::switches::kLacrosChromePath,
-    chromeos::switches::kLoginProfile,
-    chromeos::switches::kNaturalScrollDefault,
-    chromeos::switches::kRlzPingDelay,
-    chromeos::switches::kSystemInDevMode,
+    switches::kDisableArcDataWipe,
+    switches::kDisableArcOptInVerification,
+    switches::kDisableLoginAnimations,
+    switches::kEnableArc,
+    switches::kEnterpriseDisableArc,
+    switches::kEnterpriseEnableForcedReEnrollment,
+    switches::kFormFactor,
+    switches::kHasChromeOSKeyboard,
+    switches::kLacrosChromeAdditionalArgs,
+    switches::kLacrosChromeAdditionalEnv,
+    switches::kLacrosChromePath,
+    switches::kLoginProfile,
+    switches::kNaturalScrollDefault,
+    switches::kRlzPingDelay,
+    switches::kSystemInDevMode,
     policy::switches::kDeviceManagementUrl,
     wm::switches::kWindowAnimationsDisabled,
   };
@@ -246,9 +245,9 @@ void DeriveCommandLine(const GURL& start_url,
 // current session.
 void DeriveEnabledFeatures(base::CommandLine* out_command_line) {
   std::vector<const base::Feature*> kForwardEnabledFeatures{
-      &ash::features::kAutoNightLight,
-      &chromeos::features::kLacrosPrimary,
-      &chromeos::features::kLacrosSupport,
+      &features::kAutoNightLight,
+      &features::kLacrosPrimary,
+      &features::kLacrosSupport,
       &::features::kPluginVm,
   };
 
@@ -415,4 +414,4 @@ void RestartChrome(const base::CommandLine& command_line,
   (new ChromeRestartRequest(command_line.argv(), reason))->Start();
 }
 
-}  // namespace chromeos
+}  // namespace ash

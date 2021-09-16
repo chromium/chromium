@@ -11,7 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/certificate_provider/security_token_pin_dialog_host.h"
 
-namespace chromeos {
+namespace ash {
 
 // The Ash Login/Lock screen implementation of the security token PIN dialog
 // host. It displays the PIN request embedded into the user pod.
@@ -62,12 +62,6 @@ class SecurityTokenPinDialogHostImpl final : public SecurityTokenPinDialogHost {
   base::WeakPtrFactory<SecurityTokenPinDialogHostImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::SecurityTokenPinDialogHostImpl;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SECURITY_TOKEN_PIN_DIALOG_HOST_IMPL_H_

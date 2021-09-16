@@ -2934,8 +2934,8 @@ base::OnceClosure ChromeContentBrowserClient::SelectClientCertificate(
 
     content::StoragePartition* storage_partition =
         profile->GetStoragePartition(web_contents->GetSiteInstance());
-    chromeos::login::SigninPartitionManager* signin_partition_manager =
-        chromeos::login::SigninPartitionManager::Factory::GetForBrowserContext(
+    auto* signin_partition_manager =
+        ash::login::SigninPartitionManager::Factory::GetForBrowserContext(
             profile);
 
     // On the sign-in profile, only allow client certs in the context of the

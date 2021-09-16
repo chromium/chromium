@@ -72,7 +72,7 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientEnterpriseTest, TrayEnterprise) {
       browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
 }
 
-class SystemTrayClientClockTest : public chromeos::LoginManagerTest {
+class SystemTrayClientClockTest : public ash::LoginManagerTest {
  public:
   SystemTrayClientClockTest() : LoginManagerTest() {
     // Use consumer emails to avoid having to fake a policy fetch.
@@ -202,8 +202,7 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientClockUnknownPrefTest, SwitchToDefault) {
   EXPECT_TRUE(tray_test_api->Is24HourClock());
 }
 
-class SystemTrayClientEnterpriseAccountTest
-    : public chromeos::LoginManagerTest {
+class SystemTrayClientEnterpriseAccountTest : public ash::LoginManagerTest {
  protected:
   SystemTrayClientEnterpriseAccountTest() : LoginManagerTest() {
     scoped_feature_list_.InitAndEnableFeature(

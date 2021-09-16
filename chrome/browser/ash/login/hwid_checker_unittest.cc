@@ -13,7 +13,7 @@
 #include "content/public/common/content_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 TEST(HWIDCheckerTest, EmptyHWID) {
   EXPECT_FALSE(IsHWIDCorrect(""));
@@ -275,4 +275,5 @@ TEST(MachineHWIDCheckerTest, NonGoogleBuild) {
 }
 
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-}  // namespace chromeos
+
+}  // namespace ash

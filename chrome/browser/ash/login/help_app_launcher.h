@@ -12,7 +12,7 @@
 class GURL;
 class Profile;
 
-namespace chromeos {
+namespace ash {
 
 // Provides help content during OOBE / login.
 // Based on connectivity state (offline/online) shows help topic dialog
@@ -71,12 +71,12 @@ class HelpAppLauncher : public base::RefCountedThreadSafe<HelpAppLauncher> {
   DISALLOW_COPY_AND_ASSIGN(HelpAppLauncher);
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when //ch/br/ash/login is moved to
-// ash
-namespace ash {
-using ::chromeos::HelpAppLauncher;
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::HelpAppLauncher;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_HELP_APP_LAUNCHER_H_
