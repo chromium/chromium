@@ -555,6 +555,7 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
                StorageQueueTest* self) {
               const auto status = self->set_mock_uploader_expectations_.Call(
                   reason, uploader.get());
+              LOG(ERROR) << "Upload reason=" << reason << " " << status;
               if (!status.ok()) {
                 std::move(start_uploader_cb).Run(status);
                 return;

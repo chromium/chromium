@@ -241,6 +241,43 @@ absl::optional<std::string> StorageQueue::GetLastRecordDigest() const {
   return last_record_digest_;
 }
 
+Status StorageQueue::SetGenerationId(const base::FilePath& full_name) {
+  // Data file should have generation id as an extension too.
+  // For backwards compatibility we allow it to not be included.
+  // TODO(b/195786943): Encapsulate file naming assumptions in objects.
+  const auto generation_extension =
+      full_name.RemoveFinalExtension().FinalExtension();
+  if (generation_extension.empty()) {
+    // Backwards compatibility case - extension is absent.
+    return Status::StatusOK();
+  }
+
+  int64_t file_generation_id = 0;
+  const bool success =
+      base::StringToInt64(generation_extension.substr(1), &file_generation_id);
+  if (!success || file_generation_id <= 0) {
+    return Status(error::DATA_LOSS,
+                  base::StrCat({"Data file generation corrupt: '",
+                                full_name.MaybeAsASCII()}));
+  }
+
+  // Found valid generation [1, int64_max] in the data file name.
+  if (generation_id_ > 0) {
+    // Generation was already set, data file must match.
+    if (file_generation_id != generation_id_) {
+      return Status(error::DATA_LOSS,
+                    base::StrCat({"Data file generation does not match: '",
+                                  full_name.MaybeAsASCII(), "', expected=",
+                                  base::NumberToString(generation_id_)}));
+    }
+  } else {
+    // No generation set in the queue. Use the one from this file and expect
+    // all other files to match.
+    generation_id_ = file_generation_id;
+  }
+  return Status::StatusOK();
+}
+
 StatusOr<int64_t> StorageQueue::AddDataFile(
     const base::FilePath& full_name,
     const base::FileEnumerator::FileInfo& file_info) {
@@ -251,38 +288,16 @@ StatusOr<int64_t> StorageQueue::AddDataFile(
                                 full_name.MaybeAsASCII(), "'"}));
   }
   int64_t file_sequencing_id = 0;
-  bool success = base::StringToInt64(extension.substr(1), &file_sequencing_id);
+  const bool success =
+      base::StringToInt64(extension.substr(1), &file_sequencing_id);
   if (!success) {
     return Status(error::INTERNAL,
                   base::StrCat({"File extension does not parse: '",
                                 full_name.MaybeAsASCII(), "'"}));
   }
-  // Data file should have generation id as an extension too.
-  // For backwards compatibility we allow it to not be included.
-  // TODO(b/195786943): Encapsulate file naming assumptions in objects.
-  const auto generation_extension =
-      full_name.RemoveFinalExtension().FinalExtension();
-  if (!generation_extension.empty()) {
-    int64_t file_generation_id = 0;
-    success = base::StringToInt64(generation_extension.substr(1),
-                                  &file_generation_id);
-    if (success && file_generation_id > 0) {
-      // Found valid generation [1, int64_max] in the data file name.
-      if (generation_id_ > 0) {
-        // Generation was already set, data file must match.
-        if (file_generation_id != generation_id_) {
-          return Status(error::DATA_LOSS,
-                        base::StrCat({"Data file generation does not match: '",
-                                      full_name.MaybeAsASCII(), "', expected=",
-                                      base::NumberToString(generation_id_)}));
-        }
-      } else {
-        // No generation set in the queue. Use the one from this file and expect
-        // all other files to match.
-        generation_id_ = file_generation_id;
-      }
-    }
-  }
+
+  RETURN_IF_ERROR(SetGenerationId(full_name));
+
   auto file_or_status = SingleFile::Create(full_name, file_info.GetSize());
   if (!file_or_status.ok()) {
     return file_or_status.status();

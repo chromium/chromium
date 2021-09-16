@@ -818,6 +818,7 @@ class StorageTest
                StorageTest* self) {
               const auto status = self->set_mock_uploader_expectations_.Call(
                   reason, uploader.get());
+              LOG(ERROR) << "Upload reason=" << reason << " " << status;
               if (!status.ok()) {
                 std::move(start_uploader_cb).Run(status);
                 return;
@@ -1011,9 +1012,14 @@ TEST_P(StorageTest, WriteIntoNewStorageAndUploadWithKeyUpdate) {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::KEY_DELIVERY), NotNull()))
-        .WillRepeatedly(WithArg<1>(Invoke([](TestUploader* test_uploader) {
+        // Called once with empty queue.
+        .WillOnce(WithArg<1>(Invoke([](TestUploader* test_uploader) {
           TestUploader::SetEmpty uploader(test_uploader);
           return Status::StatusOK();
+        })))
+        // Can be called later again, reject it.
+        .WillRepeatedly(WithArg<1>(Invoke([](TestUploader* test_uploader) {
+          return Status(error::CANCELLED, "Repeated key delivery rejected");
         })));
     EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::MANUAL), NotNull()))
