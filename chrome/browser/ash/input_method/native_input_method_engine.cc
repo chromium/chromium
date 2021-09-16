@@ -1008,6 +1008,10 @@ void NativeInputMethodEngine::ImeObserver::DisplaySuggestions(
 
 void NativeInputMethodEngine::ImeObserver::UpdateCandidatesWindow(
     chromeos::ime::mojom::CandidatesWindowPtr window) {
+  if (!GetCandidateWindowHandler()) {
+    return;
+  }
+
   ui::CandidateWindow candidate_window;
   if (!window) {
     GetCandidateWindowHandler()->UpdateLookupTable(candidate_window,
