@@ -16,6 +16,7 @@ svg {
 <svg viewBox="0 0 22 28" font-family="Ahem" font-size="0.125" fill="blue">
   <text y="2.438"><a xlink:href="#">ABCDEFGH</a></text>
   <text y="4.698" x="7.571"><a xlink:href="#">ABCDEFGH</a></text>
+  <text y="1" x="0" transform="scale(10)"><a xlink:href="#">Link#3</a></text>
 </svg>
 <script>
 test(function() {
@@ -56,5 +57,7 @@ test(function() {
   ].forEach(function(point) {
     assert_equals(document.elementFromPoint(point.x, point.y), links[1], point.x + ',' + point.y);
   });
+
+  assert_equals(document.elementFromPoint(1, 330), links[2], '1,330');
 });
 </script>

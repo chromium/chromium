@@ -28,7 +28,7 @@ const HitTestLocation* InverseTransformLocationIfNeeded(
     // Without it, HitTestLocation would have 1x1 bounding box, and it would
     // be mapped to NxN screen pixels if scaling factor is N.
     storage.emplace(transformed_point,
-                    PhysicalRect::FastAndLossyFromFloatRect(
+                    PhysicalRect::EnclosingRect(
                         inverse.MapRect(FloatRect(location.BoundingBox()))));
   }
   return &*storage;
