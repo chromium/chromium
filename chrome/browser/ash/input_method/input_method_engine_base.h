@@ -226,6 +226,9 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
       const std::string& component_id,
       ui::IMEEngineHandlerInterface::KeyEventDoneCallback callback);
 
+  // Resolves all the pending key event callbacks as not handled.
+  void CancelPendingKeyEvents();
+
   virtual void OnInputMethodOptionsChanged();
 
   int GetContextIdForTesting() const { return context_id_; }

@@ -548,6 +548,7 @@ InputImeAPI::InputImeAPI(content::BrowserContext* context)
   event_router->RegisterObserver(this, input_ime::OnFocus::kEventName);
   event_router->RegisterObserver(
       this, api::input_method_private::OnFocus::kEventName);
+  event_router->RegisterObserver(this, input_ime::OnKeyEvent::kEventName);
 }
 
 InputImeAPI::~InputImeAPI() = default;

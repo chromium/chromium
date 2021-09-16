@@ -554,6 +554,13 @@ std::string InputMethodEngineBase::AddPendingKeyEvent(
   return request_id;
 }
 
+void InputMethodEngineBase::CancelPendingKeyEvents() {
+  for (auto& event : pending_key_events_) {
+    std::move(event.second.callback).Run(false);
+  }
+  pending_key_events_.clear();
+}
+
 InputMethodEngineBase::PendingKeyEvent::PendingKeyEvent(
     const std::string& component_id,
     ui::IMEEngineHandlerInterface::KeyEventDoneCallback callback)

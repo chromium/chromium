@@ -1088,6 +1088,13 @@ void InputImeAPI::OnExtensionUnloaded(content::BrowserContext* browser_context,
 void InputImeAPI::OnListenerAdded(const EventListenerInfo& details) {
   if (!details.browser_context)
     return;
+
+  // Other listeners may trigger this function, but only reactivate the IME
+  // on focus event.
+  if (details.event_name != input_ime::OnFocus::kEventName &&
+      details.event_name != input_method_private::OnFocus::kEventName)
+    return;
+
   std::string error;
   InputMethodEngine* engine =
       GetEngineIfActive(Profile::FromBrowserContext(details.browser_context),
@@ -1095,6 +1102,23 @@ void InputImeAPI::OnListenerAdded(const EventListenerInfo& details) {
   // Notifies the IME extension for IME ready with onActivate/onFocus events.
   if (engine)
     engine->Enable(engine->GetActiveComponentId());
+}
+
+void InputImeAPI::OnListenerRemoved(const EventListenerInfo& details) {
+  if (!details.browser_context)
+    return;
+
+  // If a key event listener was removed, cancel all the pending key events
+  // because they might've been dropped by the IME.
+  if (details.event_name != input_ime::OnKeyEvent::kEventName)
+    return;
+
+  std::string error;
+  InputMethodEngine* engine =
+      GetEngineIfActive(Profile::FromBrowserContext(details.browser_context),
+                        details.extension_id, &error);
+  if (engine)
+    engine->CancelPendingKeyEvents();
 }
 
 }  // namespace extensions
