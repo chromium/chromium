@@ -49,6 +49,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Scanning.MultiPageScan.ToolbarAction"
+    enum="ScanMultiPageToolbarAction" expires_after="2022-09-03">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records when a user clicks an action on the action toolbar in a multi-page
+    scan session.
+  </summary>
+</histogram>
+
 <histogram name="Scanning.NumCompletedScansInSession" units="scans"
     expires_after="2022-06-15">
   <owner>gavinwill@chromium.org</owner>

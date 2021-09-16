@@ -319,6 +319,9 @@ void ScanService::RemovePage(uint32_t page_index) {
     return;
   }
 
+  base::UmaHistogramEnumeration(
+      "Scanning.MultiPageScan.ToolbarAction",
+      scanning::ScanMultiPageToolbarAction::kRemovePage);
   if (scanned_images_.size() == 1) {
     ClearScanState();
     multi_page_controller_receiver_.reset();
@@ -350,6 +353,9 @@ void ScanService::RescanPage(const base::UnguessableToken& scanner_id,
       SendScanRequest(scanner_id, std::move(settings), page_index,
                       base::BindOnce(&ScanService::OnMultiPageScanPageCompleted,
                                      weak_ptr_factory_.GetWeakPtr())));
+  base::UmaHistogramEnumeration(
+      "Scanning.MultiPageScan.ToolbarAction",
+      scanning::ScanMultiPageToolbarAction::kRescanPage);
 }
 
 void ScanService::CompleteMultiPageScan() {

@@ -973,6 +973,9 @@ TEST_F(ScanServiceTest, MultiPageScanRemoveWithTwoPages) {
   histogram_tester.ExpectUniqueSample("Scanning.NumPagesScanned", 1, 1);
   histogram_tester.ExpectUniqueSample("Scanning.MultiPageScan.NumPagesScanned",
                                       1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Scanning.MultiPageScan.ToolbarAction",
+      scanning::ScanMultiPageToolbarAction::kRemovePage, 1);
 }
 
 // Test that a page can be removed from a multi-page scan with three scanned
@@ -1024,6 +1027,9 @@ TEST_F(ScanServiceTest, MultiPageScanRemoveWithThreePages) {
   histogram_tester.ExpectUniqueSample("Scanning.NumPagesScanned", 2, 1);
   histogram_tester.ExpectUniqueSample("Scanning.MultiPageScan.NumPagesScanned",
                                       2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Scanning.MultiPageScan.ToolbarAction",
+      scanning::ScanMultiPageToolbarAction::kRemovePage, 1);
 }
 
 // Test that if there's only one page available, the page is removed and the
@@ -1066,6 +1072,9 @@ TEST_F(ScanServiceTest, MultiPageScanRemoveLastPage) {
   histogram_tester.ExpectUniqueSample("Scanning.NumPagesScanned", 1, 1);
   histogram_tester.ExpectUniqueSample("Scanning.MultiPageScan.NumPagesScanned",
                                       1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Scanning.MultiPageScan.ToolbarAction",
+      scanning::ScanMultiPageToolbarAction::kRemovePage, 1);
 }
 
 // Test that a page can be rescanned and replaced from a multi-page scan with
@@ -1109,6 +1118,9 @@ TEST_F(ScanServiceTest, MultiPageScanRescanWithOnePage) {
   histogram_tester.ExpectUniqueSample("Scanning.NumPagesScanned", 1, 1);
   histogram_tester.ExpectUniqueSample("Scanning.MultiPageScan.NumPagesScanned",
                                       1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Scanning.MultiPageScan.ToolbarAction",
+      scanning::ScanMultiPageToolbarAction::kRescanPage, 1);
 }
 
 // Test that a page can be rescanned and replaced from a multi-page scan with
@@ -1166,6 +1178,9 @@ TEST_F(ScanServiceTest, MultiPageScanRescanWithThreePages) {
   histogram_tester.ExpectUniqueSample("Scanning.NumPagesScanned", 3, 1);
   histogram_tester.ExpectUniqueSample("Scanning.MultiPageScan.NumPagesScanned",
                                       3, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Scanning.MultiPageScan.ToolbarAction",
+      scanning::ScanMultiPageToolbarAction::kRescanPage, 1);
 }
 
 }  // namespace ash

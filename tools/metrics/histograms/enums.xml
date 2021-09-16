@@ -73987,6 +73987,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="4" label="Default"/>
 </enum>
 
+<enum name="ScanMultiPageToolbarAction">
+  <int value="0" label="Remove page"/>
+  <int value="1" label="Rescan page"/>
+</enum>
+
 <enum name="ScheduledNavigationType">
   <obsolete>
     Deprecated August 2018
