@@ -459,7 +459,7 @@ crbug.com/767352 external/wpt/css/css-backgrounds/border-image-width-008.html [ 
 # Reflection / mask ordering issue
 crbug.com/767318 compositing/reflections/nested-reflection-mask-change.html [ Failure ]
 # Incorrect scrollbar invalidation.
-crbug.com/887000 virtual/prefer_compositing_to_lcd_text/scrollbars/hidden-scrollbars-invisible.html [ Failure ]
+crbug.com/887000 virtual/prefer_compositing_to_lcd_text/scrollbars/hidden-scrollbars-invisible.html [ Failure Timeout ]
 crbug.com/887000 [ Mac10.14 ] scrollbars/hidden-scrollbars-invisible.html [ Failure ]
 crbug.com/887000 [ Mac10.15 ] scrollbars/hidden-scrollbars-invisible.html [ Failure ]
 crbug.com/887000 [ Mac11.0 ] scrollbars/hidden-scrollbars-invisible.html [ Failure ]
@@ -2776,9 +2776,7 @@ crbug.com/626703 [ Linux ] wpt_internal/webcodecs/basic_video_encoding.https.any
 crbug.com/626703 [ Mac11.0 ] wpt_internal/webcodecs/basic_video_encoding.https.any.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/cookies/attributes/domain.sub.html [ Failure ]
 crbug.com/626703 [ Win ] external/wpt/cookies/attributes/domain.sub.html [ Failure ]
-crbug.com/626703 [ Mac10.15 ] external/wpt/css/mediaqueries/test_media_queries.html [ Failure ]
-crbug.com/626703 [ Mac11-arm64 ] external/wpt/css/mediaqueries/test_media_queries.html [ Failure ]
-crbug.com/626703 [ Mac11.0 ] external/wpt/css/mediaqueries/test_media_queries.html [ Failure ]
+crbug.com/626703 [ Mac ] external/wpt/css/mediaqueries/test_media_queries.html [ Failure ]
 crbug.com/626703 external/wpt/html/syntax/speculative-parsing/generated/document-write/link-rel-alternate-stylesheet.tentative.sub.html [ Failure ]
 crbug.com/626703 external/wpt/html/syntax/speculative-parsing/generated/document-write/link-rel-stylesheet-nomatch-media.tentative.sub.html [ Failure ]
 crbug.com/626703 [ Win ] external/wpt/html/syntax/speculative-parsing/generated/document-write/link-rel-stylesheet-disabled.tentative.sub.html [ Failure ]
@@ -6069,10 +6067,6 @@ crbug.com/1196989 external/wpt/webtransport/quic/* [ Skip ]
 
 # WebTransport tests should eventually run when the WebTransport WPT server is added.
 crbug.com/1201569 external/wpt/webtransport/* [ Skip ]
-crbug.com/1201569 external/wpt/webtransport/idlharness.any.html [ Pass ]
-crbug.com/1201569 external/wpt/webtransport/idlharness.any.serviceworker.html [ Pass ]
-crbug.com/1201569 external/wpt/webtransport/idlharness.any.sharedworker.html [ Pass ]
-crbug.com/1201569 external/wpt/webtransport/idlharness.any.worker.html [ Pass ]
 
 crbug.com/1194958 fast/events/mouse-event-buttons-attribute.html [ Failure Pass ]
 
@@ -6571,7 +6565,7 @@ crbug.com/1201406 [ Mac11.0 ] http/tests/inspector-protocol/webauthn/webauthn-pr
 crbug.com/1201406 [ Mac11.0 ] http/tests/inspector-protocol/webauthn/webauthn-remove-credential.js [ Crash Timeout ]
 crbug.com/1201406 [ Mac11.0 ] http/tests/inspector-protocol/webauthn/webauthn-set-aps.js [ Crash Timeout ]
 crbug.com/1201406 [ Mac11.0 ] http/tests/inspector-protocol/webauthn/webauthn-user-verification.js [ Crash Timeout ]
-crbug.com/1201406 [ Mac11.0 ] plugins/focus-change-4-change-focus-and-blur.html [ Timeout ]
+crbug.com/1201406 [ Mac11.0 ] plugins/focus-change-4-change-focus-and-blur.html [ Failure Timeout ]
 crbug.com/1201406 [ Mac11.0 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/iframe-navigation/parent-no-1-no-same-2-yes-port.sub.https.html [ Timeout ]
 crbug.com/1201406 [ Mac11.0 ] virtual/synchronous_html_parser/http/tests/inspector-protocol/webauthn/webauthn-clear-credentials.js [ Crash Timeout ]
 crbug.com/1201406 [ Mac11.0 ] virtual/synchronous_html_parser/http/tests/inspector-protocol/webauthn/webauthn-get-credentials.js [ Crash ]
@@ -6824,7 +6818,7 @@ crbug.com/webrtc/12951 external/wpt/webrtc-stats/supported-stats.html [ Failure 
 # Sheriff 2021-09-03
 crbug.com/1246238 http/tests/devtools/security/mixed-content-sidebar.js [ Failure Pass ]
 crbug.com/1246238 http/tests/devtools/security/interstitial-sidebar.js [ Failure Pass ]
-crbug.com/1246351 http/tests/misc/scroll-cross-origin-iframes-scrollbar.html [ Failure Pass ]
+crbug.com/1246351 http/tests/misc/scroll-cross-origin-iframes-scrollbar.html [ Failure Pass Timeout ]
 
 # Sheriff 2021-09-06
 # All of these suffer from the same problem of of a
@@ -6880,7 +6874,8 @@ crbug.com/1249071 virtual/composite-clip-path-animation/external/wpt/css/css-mas
 crbug.com/1233826 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/valid-image-before-load.https.html [ Crash Failure Pass ]
 crbug.com/1233826 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/valid-image-after-load.https.html [ Crash Failure Pass ]
 crbug.com/1247758 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-shadow-part4.html [ Crash Pass ]
-crbug.com/1247758 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-color-over-pattern.html [ Crash Pass ]
+crbug.com/1247758 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-color-over-pattern.html [ Crash Pass Timeout ]
+crbug.com/1247758 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-pattern-over-image.html [ Pass Timeout ]
 
 # Sheriff 2021-09-10
 crbug.com/1248437 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/one-custom-property-animation-half-opaque.https.html [ Failure Pass ]
@@ -6921,3 +6916,47 @@ crbug.com/1249176 [ Mac11-arm64 ] http/tests/inspector-protocol/page/consecutive
 
 # Sheriff 2021-09-15
 crbug.com/1250066 [ Win ] external/wpt/css/mediaqueries/test_media_queries.html [ Failure ]
+
+# Sheriff 2021-09-16
+crbug.com/1250457 [ Mac ] virtual/scroll-unification/plugins/plugin-map-data-to-src.html [ Failure ]
+crbug.com/1250457 [ Mac ] virtual/coep-for-shared-worker/external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Failure ]
+crbug.com/1250457 [ Mac ] storage/websql/open-database-set-empty-version.html [ Timeout ]
+crbug.com/1250457 [ Mac ] virtual/not-plz-service-worker/external/wpt/html/cross-origin-embedder-policy/credentialless/iframe-coep-credentialless.tentative.https.html?9-last [ Timeout ]
+crbug.com/1250457 [ Mac ] virtual/not-plz-service-worker/external/wpt/service-workers/cache-storage/serviceworker/cache-matchAll.https.html [ Skip Timeout ]
+crbug.com/1250457 [ Mac ] virtual/not-plz-service-worker/external/wpt/service-workers/service-worker/import-scripts-updated-flag.https.html [ Timeout ]
+crbug.com/1250457 [ Mac ] virtual/not-plz-service-worker/external/wpt/service-workers/service-worker/invalid-header.https.html [ Timeout ]
+crbug.com/1250457 [ Mac ] virtual/not-plz-service-worker/external/wpt/service-workers/service-worker/multipart-image.https.html [ Timeout ]
+crbug.com/1250457 [ Mac ] virtual/not-plz-service-worker/external/wpt/service-workers/service-worker/no-dynamic-import-in-module.any.serviceworker-module.html [ Timeout ]
+crbug.com/1250457 [ Mac ] virtual/not-plz-service-worker/external/wpt/service-workers/service-worker/redirected-response.https.html [ Timeout ]
+crbug.com/1250457 [ Mac ] virtual/not-plz-service-worker/external/wpt/service-workers/service-worker/update-no-cache-request-headers.https.html [ Timeout ]
+crbug.com/1250457 [ Mac ] virtual/not-plz-service-worker/http/tests/devtools/console/console-format-performance.js [ Skip Timeout ]
+crbug.com/1250457 [ Mac ] virtual/not-plz-service-worker/http/tests/devtools/console/console-log-syntax-error.js [ Skip Timeout ]
+crbug.com/1250457 [ Mac ] virtual/not-plz-service-worker/http/tests/devtools/console/console-preserve-log.js [ Skip Timeout ]
+crbug.com/1250457 [ Mac ] virtual/not-plz-service-worker/http/tests/devtools/console/console-top-level-await.js [ Skip Timeout ]
+crbug.com/1250457 [ Mac ] virtual/not-plz-service-worker/http/tests/devtools/console/viewport-testing/console-stick-to-bottom-expand-object.js [ Skip Timeout ]
+crbug.com/1250457 [ Mac ] virtual/not-plz-service-worker/http/tests/inspector-protocol/access-inspected-object.js [ Timeout ]
+crbug.com/1250457 [ Mac ] virtual/not-plz-service-worker/http/tests/inspector-protocol/ping-redirect.js [ Timeout ]
+crbug.com/1250457 [ Mac ] virtual/not-plz-service-worker/http/tests/inspector-protocol/accessibility/accessibility-nameSources-img-figure.js [ Timeout ]
+crbug.com/1250457 [ Mac ] virtual/not-plz-service-worker/http/tests/inspector-protocol/background-services/background-services-events.js [ Timeout ]
+crbug.com/1250457 [ Mac ] virtual/not-plz-service-worker/http/tests/inspector-protocol/browser/cancel-download.js [ Timeout ]
+crbug.com/1250457 [ Mac ] virtual/not-plz-service-worker/http/tests/inspector-protocol/cpu-profiler/console-profileEnd-parameterless-crash.js [ Timeout ]
+crbug.com/1250457 [ Mac ] virtual/not-plz-service-worker/http/tests/inspector-protocol/fetch/fetch-samesite-cookies.js [ Timeout ]
+crbug.com/1250457 [ Mac ] virtual/not-plz-service-worker/http/tests/inspector-protocol/network/disable-cache-media-resource.js [ Timeout ]
+crbug.com/1250457 [ Mac ] virtual/not-plz-service-worker/http/tests/inspector-protocol/network/interception-not-handled.js [ Timeout ]
+crbug.com/1250457 [ Mac ] virtual/not-plz-service-worker/http/tests/inspector-protocol/network/set-accepted-encodings-multisession.js [ Timeout ]
+crbug.com/1250457 [ Mac ] virtual/not-plz-service-worker/http/tests/inspector-protocol/network/cross-origin-isolation/coep-load-error-reporting-worker.js [ Timeout ]
+crbug.com/1250457 [ Mac ] virtual/not-plz-service-worker/http/tests/inspector-protocol/page/iframe-srcdoc.js [ Timeout ]
+crbug.com/1250457 [ Mac ] virtual/not-plz-service-worker/http/tests/inspector-protocol/storage/quota-withdraw.js [ Timeout ]
+crbug.com/1250457 [ Mac ] virtual/not-plz-service-worker/http/tests/inspector-protocol/target/target-setAutoAttach-flatten-only.js [ Timeout ]
+crbug.com/1250457 [ Mac ] virtual/not-plz-service-worker/http/tests/serviceworker/csp-fetch-from-installed-service-worker-default.html [ Timeout ]
+crbug.com/1250457 [ Mac ] virtual/not-site-per-process/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/1-iframe/parent-no-child-yes-same.sub.https.html [ Timeout ]
+crbug.com/1250457 [ Mac ] virtual/plz-dedicated-worker-cors-rfc1918/http/tests/security/cors-rfc1918/external-to-internal-xhr.php [ Timeout ]
+crbug.com/1250457 [ Mac ] virtual/portals/http/tests/devtools/portals/portals-console.js [ Skip Timeout ]
+crbug.com/1250457 [ Mac ] virtual/prefer_compositing_to_lcd_text/scrollbars/custom-scrollbar-inactive-pseudo.html [ Timeout ]
+crbug.com/1250457 [ Mac ] virtual/prerender/wpt_internal/prerender/csp-prefetch-src-allow.html [ Skip Timeout ]
+crbug.com/1250457 [ Mac ] virtual/reporting-api/external/wpt/content-security-policy/reporting-api/reporting-api-report-to-only-sends-reports-to-first-endpoint.https.sub.html [ Timeout ]
+crbug.com/1250457 [ Mac ] virtual/scalefactor200/css3/filters/filter-animation-multi-hw.html [ Timeout ]
+crbug.com/1250457 [ Mac ] virtual/scroll-unification/fast/events/space-scroll-textinput-canceled.html [ Timeout ]
+crbug.com/1250457 [ Mac ] virtual/shared_array_buffer_on_desktop/fast/css/text-overflow-ellipsis-bidi.html [ Timeout ]
+crbug.com/1250457 [ Mac ] virtual/shared_array_buffer_on_desktop/storage/indexeddb/keypath-arrays.html [ Timeout ]
+crbug.com/1250457 [ Mac ] external/wpt/html/syntax/speculative-parsing/generated/document-write/meta-viewport-link-stylesheet-media.tentative.sub.html [ Failure ]
