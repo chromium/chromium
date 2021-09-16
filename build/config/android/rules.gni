@@ -4567,10 +4567,6 @@ if (enable_java_templates) {
     _enable_multidex =
         !defined(invoker.enable_multidex) || invoker.enable_multidex
 
-    if (!_proguard_enabled && defined(invoker.min_sdk_version)) {
-      not_needed(invoker, [ "min_sdk_version" ])
-    }
-
     # Prevent "unused variable".
     not_needed([ "_enable_multidex" ])
 
@@ -4710,11 +4706,7 @@ if (enable_java_templates) {
     if (_proguard_enabled) {
       # If this Bundle uses a static library, the static library APK will
       # create the synchronized dex file path.
-      if (_uses_static_library_synchronized_proguard) {
-        if (defined(invoker.min_sdk_version)) {
-          not_needed(invoker, [ "min_sdk_version" ])
-        }
-      } else {
+      if (!_uses_static_library_synchronized_proguard) {
         dex(_dex_target) {
           forward_variables_from(invoker,
                                  [
@@ -4876,6 +4868,16 @@ if (enable_java_templates) {
           invoker.compress_shared_libraries) {
         args += [ "--compress-shared-libraries" ]
       }
+      _min_sdk_version = default_min_sdk_version
+      if (defined(invoker.min_sdk_version)) {
+        _min_sdk_version = invoker.min_sdk_version
+      }
+
+      # Android P+ support loading from stored dex.
+      if (_min_sdk_version < 27) {
+        args += [ "--compress-dex" ]
+      }
+
       if (treat_warnings_as_errors) {
         args += [ "--warnings-as-errors" ]
       }
