@@ -27,7 +27,7 @@ nacl_arm_glibc_rev = revisions[1]
 pnacl_newlib_rev = revisions[2]
 saigo_newlib_rev = revisions[3]
 
-use_saigo = false
+use_saigo = true
 
 if (host_os == "win") {
   toolsuffix = ".exe"
