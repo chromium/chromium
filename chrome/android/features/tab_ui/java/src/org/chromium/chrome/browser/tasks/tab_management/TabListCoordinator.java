@@ -78,7 +78,6 @@ public class TabListCoordinator
     private final TabListModel mModel;
     private final @UiType int mItemType;
     private final ViewGroup mRootView;
-    private final TabModelSelector mTabModelSelector;
 
     private boolean mIsInitialized;
     private ViewTreeObserver.OnGlobalLayoutListener mGlobalLayoutListener;
@@ -123,7 +122,6 @@ public class TabListCoordinator
         mModel = new TabListModel();
         mAdapter = new SimpleRecyclerViewAdapter(mModel);
         mRootView = rootView;
-        mTabModelSelector = tabModelSelector;
         RecyclerView.RecyclerListener recyclerListener = null;
         if (mMode == TabListMode.GRID || mMode == TabListMode.CAROUSEL) {
             mAdapter.registerType(UiType.SELECTABLE, parent -> {
@@ -231,6 +229,9 @@ public class TabListCoordinator
         mRecyclerView.setHasFixedSize(true);
         if (recyclerListener != null) mRecyclerView.setRecyclerListener(recyclerListener);
 
+        // TODO (https://crbug.com/1048632): Use the current profile (i.e., regular profile or
+        // incognito profile) instead of always using regular profile. It works correctly now, but
+        // it is not safe.
         TabListFaviconProvider tabListFaviconProvider =
                 new TabListFaviconProvider(mContext, mMode == TabListMode.STRIP);
 
@@ -280,7 +281,7 @@ public class TabListCoordinator
 
         mIsInitialized = true;
 
-        Profile profile = mTabModelSelector.getCurrentModel().getProfile();
+        Profile profile = Profile.getLastUsedRegularProfile();
         mMediator.initWithNative(profile);
         if (dynamicResourceLoader != null) {
             mRecyclerView.createDynamicView(dynamicResourceLoader);
