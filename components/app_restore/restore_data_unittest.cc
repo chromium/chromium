@@ -19,7 +19,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace full_restore {
+namespace app_restore {
 
 namespace {
 
@@ -731,4 +731,4 @@ TEST_F(RestoreDataTest, HasBrowser) {
   EXPECT_TRUE(restore_data().HasBrowser());
 }
 
-}  // namespace full_restore
+}  // namespace app_restore

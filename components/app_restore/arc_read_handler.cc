@@ -90,7 +90,7 @@ bool ArcReadHandler::HasRestoreData(int32_t window_id) {
   return base::Contains(window_id_to_app_id_, window_id);
 }
 
-std::unique_ptr<AppLaunchInfo> ArcReadHandler::GetArcAppLaunchInfo(
+std::unique_ptr<app_restore::AppLaunchInfo> ArcReadHandler::GetArcAppLaunchInfo(
     const std::string& app_id,
     int32_t session_id) {
   int32_t restore_window_id = GetArcRestoreWindowIdForSessionId(session_id);
@@ -101,7 +101,7 @@ std::unique_ptr<AppLaunchInfo> ArcReadHandler::GetArcAppLaunchInfo(
       profile_path_, app_id, restore_window_id);
 }
 
-std::unique_ptr<WindowInfo> ArcReadHandler::GetWindowInfo(
+std::unique_ptr<app_restore::WindowInfo> ArcReadHandler::GetWindowInfo(
     int32_t restore_window_id) {
   if (restore_window_id == 0 || restore_window_id == kParentToHiddenContainer)
     return nullptr;
@@ -206,7 +206,8 @@ void ArcReadHandler::UpdateWindowCandidates(int32_t task_id,
     // When the window was created, there was not any window info due to there
     // being no task. Apply properties to the window now that there is window
     // info.
-    std::unique_ptr<WindowInfo> window_info = GetWindowInfo(restore_window_id);
+    std::unique_ptr<app_restore::WindowInfo> window_info =
+        GetWindowInfo(restore_window_id);
     if (window_info) {
       FullRestoreReadHandler::GetInstance()->ApplyProperties(window_info.get(),
                                                              *window_it);

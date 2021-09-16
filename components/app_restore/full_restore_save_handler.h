@@ -24,7 +24,13 @@
 
 namespace apps {
 class AppRegistryCache;
-}
+}  // namespace apps
+
+namespace app_restore {
+struct AppLaunchInfo;
+class RestoreData;
+struct WindowInfo;
+}  // namespace app_restore
 
 namespace ash {
 namespace full_restore {
@@ -39,10 +45,7 @@ class SequencedTaskRunner;
 
 namespace full_restore {
 
-struct AppLaunchInfo;
 class FullRestoreFileHandler;
-class RestoreData;
-struct WindowInfo;
 
 // FullRestoreSaveHandler is responsible for writing both the app launch
 // information and the app window information to disk. FullRestoreSaveHandler
@@ -54,15 +57,14 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreSaveHandler
     : public aura::EnvObserver,
       public aura::WindowObserver {
  public:
-  using AppLaunchInfoPtr = std::unique_ptr<AppLaunchInfo>;
+  using AppLaunchInfoPtr = std::unique_ptr<app_restore::AppLaunchInfo>;
 
   static FullRestoreSaveHandler* GetInstance();
 
   FullRestoreSaveHandler();
-  ~FullRestoreSaveHandler() override;
-
   FullRestoreSaveHandler(const FullRestoreSaveHandler&) = delete;
   FullRestoreSaveHandler& operator=(const FullRestoreSaveHandler&) = delete;
+  ~FullRestoreSaveHandler() override;
 
   void SetPrimaryProfilePath(const base::FilePath& profile_path);
 
@@ -84,11 +86,12 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreSaveHandler
   void OnWindowDestroyed(aura::Window* window) override;
 
   // Saves |app_launch_info| to the full restore file in |profile_path|.
-  void SaveAppLaunchInfo(const base::FilePath& profile_path,
-                         std::unique_ptr<AppLaunchInfo> app_launch_info);
+  void SaveAppLaunchInfo(
+      const base::FilePath& profile_path,
+      std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info);
 
   // Saves |window_info| to |profile_path_to_restore_data_|.
-  void SaveWindowInfo(const WindowInfo& window_info);
+  void SaveWindowInfo(const app_restore::WindowInfo& window_info);
 
   // Invoked when the task is created for an ARC app.
   void OnTaskCreated(const std::string& app_id,
@@ -129,7 +132,7 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreSaveHandler
   void ModifyWindowInfo(const base::FilePath& profile_path,
                         const std::string& app_id,
                         int32_t window_id,
-                        const WindowInfo& window_info);
+                        const app_restore::WindowInfo& window_info);
 
   // Saves |primary_color| and |status_bar_color| to |profile_path| for |app_id|
   // and |window_id|.
@@ -161,7 +164,8 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreSaveHandler
 
   // Returns the RestoreData that associates with |profile_path|. Returns
   // nullptr if there is no such RestoreData.
-  const RestoreData* GetRestoreData(const base::FilePath& profile_path);
+  const app_restore::RestoreData* GetRestoreData(
+      const base::FilePath& profile_path);
 
   // Returns the full restore app id for |window| that can be used to look up
   // the window's associated AppRestoreData.
@@ -196,7 +200,8 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreSaveHandler
       const base::FilePath& profile_path);
 
   // Saves |window_info| to |profile_path_to_file_handler_|.
-  void ModifyWindowInfo(int window_id, const WindowInfo& window_info);
+  void ModifyWindowInfo(int window_id,
+                        const app_restore::WindowInfo& window_info);
 
   // Removes AppRestoreData for |window_id|.
   void RemoveAppRestoreData(int window_id);
@@ -214,7 +219,8 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreSaveHandler
   std::set<base::FilePath> pending_save_profile_paths_;
 
   // The restore data for each user's profile. The key is the profile path.
-  std::map<base::FilePath, RestoreData> profile_path_to_restore_data_;
+  std::map<base::FilePath, app_restore::RestoreData>
+      profile_path_to_restore_data_;
 
   // The file handler for each user's profile to write the restore data to the
   // full restore file for each user. The key is the profile path.

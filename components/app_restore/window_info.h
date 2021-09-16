@@ -11,7 +11,7 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace full_restore {
+namespace app_restore {
 
 // This struct is the parameter for the interface SaveWindowInfo, to save the
 // window information.
@@ -69,6 +69,6 @@ struct COMPONENT_EXPORT(APP_RESTORE) WindowInfo {
   std::string ToString() const;
 };
 
-}  // namespace full_restore
+}  // namespace app_restore
 
 #endif  // COMPONENTS_APP_RESTORE_WINDOW_INFO_H_

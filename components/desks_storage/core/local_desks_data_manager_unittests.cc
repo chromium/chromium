@@ -107,7 +107,7 @@ std::unique_ptr<ash::DeskTemplate> MakeTestDeskTemplate(int index) {
       std::make_unique<ash::DeskTemplate>(template_uuid, template_name,
                                           base::Time::Now());
   desk_template->set_desk_restore_data(
-      std::make_unique<full_restore::RestoreData>());
+      std::make_unique<app_restore::RestoreData>());
   return desk_template;
 }
 
@@ -158,23 +158,23 @@ class LocalDeskDataManagerTest : public testing::Test {
         task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
         data_manager_(std::unique_ptr<LocalDeskDataManager>()) {
     sample_desk_template_one_->set_desk_restore_data(
-        std::make_unique<full_restore::RestoreData>());
+        std::make_unique<app_restore::RestoreData>());
     sample_desk_template_one_duplicate_->set_desk_restore_data(
-        std::make_unique<full_restore::RestoreData>());
+        std::make_unique<app_restore::RestoreData>());
     sample_desk_template_one_duplicate_two_->set_desk_restore_data(
-        std::make_unique<full_restore::RestoreData>());
+        std::make_unique<app_restore::RestoreData>());
     duplicate_pattern_matching_named_desk_->set_desk_restore_data(
-        std::make_unique<full_restore::RestoreData>());
+        std::make_unique<app_restore::RestoreData>());
     duplicate_pattern_matching_named_desk_two_->set_desk_restore_data(
-        std::make_unique<full_restore::RestoreData>());
+        std::make_unique<app_restore::RestoreData>());
     duplicate_pattern_matching_named_desk_three_->set_desk_restore_data(
-        std::make_unique<full_restore::RestoreData>());
+        std::make_unique<app_restore::RestoreData>());
     sample_desk_template_two_->set_desk_restore_data(
-        std::make_unique<full_restore::RestoreData>());
+        std::make_unique<app_restore::RestoreData>());
     sample_desk_template_three_->set_desk_restore_data(
-        std::make_unique<full_restore::RestoreData>());
+        std::make_unique<app_restore::RestoreData>());
     modified_sample_desk_template_one_->set_desk_restore_data(
-        std::make_unique<full_restore::RestoreData>());
+        std::make_unique<app_restore::RestoreData>());
   }
 
   LocalDeskDataManagerTest(const LocalDeskDataManagerTest&) = delete;

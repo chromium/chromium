@@ -182,7 +182,7 @@ void DesksClient::MaybeCreateAppLaunchHandler() {
 
 void DesksClient::RecordWindowAndTabCountHistogram(
     ash::DeskTemplate* desk_template) {
-  const full_restore::RestoreData* restore_data =
+  const app_restore::RestoreData* restore_data =
       desk_template->desk_restore_data();
   DCHECK(restore_data);
 
@@ -254,7 +254,7 @@ void DesksClient::OnCreateAndActivateNewDesk(
   }
 
   DCHECK(desk_template);
-  const full_restore::RestoreData* restore_data =
+  const app_restore::RestoreData* restore_data =
       desk_template->desk_restore_data();
   if (!restore_data) {
     std::move(callback).Run(std::string(kMissingTemplateDataError));

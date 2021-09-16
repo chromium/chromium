@@ -72,7 +72,7 @@ content::WebContents* BrowserAppLauncher::LaunchAppWithParams(
 
     // If the restore id is available, save the launch parameters to the full
     // restore file for the system web apps.
-    auto launch_info = std::make_unique<full_restore::AppLaunchInfo>(
+    auto launch_info = std::make_unique<app_restore::AppLaunchInfo>(
         params_for_restore.app_id, session_id, params_for_restore.container,
         params_for_restore.disposition, params_for_restore.display_id,
         std::move(params_for_restore.launch_files),
@@ -100,7 +100,7 @@ content::WebContents* BrowserAppLauncher::LaunchAppWithParams(
         params.app_id, params.container, params.disposition, params.source,
         params.display_id, params.launch_files, params.intent);
 
-    auto launch_info = std::make_unique<full_restore::AppLaunchInfo>(
+    auto launch_info = std::make_unique<app_restore::AppLaunchInfo>(
         params_for_restore.app_id, params_for_restore.container,
         params_for_restore.disposition, params_for_restore.display_id,
         std::move(params_for_restore.launch_files),

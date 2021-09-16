@@ -12,9 +12,9 @@
 #include "components/exo/client_controlled_shell_surface.h"
 #include "components/exo/wm_helper.h"
 
-namespace full_restore {
+namespace app_restore {
 struct AppRestoreData;
-}  // namespace full_restore
+}  // namespace app_restore
 
 namespace ash {
 namespace full_restore {
@@ -66,7 +66,7 @@ class ArcWindowHandler : public exo::WMHelper::LifetimeManager::Observer {
 
   void LaunchArcGhostWindow(const std::string& app_id,
                             int32_t session_id,
-                            ::full_restore::AppRestoreData* restore_data);
+                            app_restore::AppRestoreData* restore_data);
 
   void CloseWindow(int session_id);
 

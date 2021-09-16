@@ -74,7 +74,7 @@ constexpr AppType kSupportedAppTypes[3] = {
 constexpr base::TimeDelta kAllowActivationDelay =
     base::TimeDelta::FromSeconds(2);
 
-full_restore::WindowInfo* GetWindowInfo(aura::Window* window) {
+app_restore::WindowInfo* GetWindowInfo(aura::Window* window) {
   return window->GetProperty(full_restore::kWindowInfoKey);
 }
 
@@ -83,7 +83,7 @@ full_restore::WindowInfo* GetWindowInfo(aura::Window* window) {
 // window is visible to handle the case where the display a window is restored
 // to is drastically smaller than the pre-restore display.
 void MaybeRestoreOutOfBoundsWindows(aura::Window* window) {
-  full_restore::WindowInfo* window_info = GetWindowInfo(window);
+  app_restore::WindowInfo* window_info = GetWindowInfo(window);
   if (!window_info)
     return;
 
@@ -331,7 +331,7 @@ void FullRestoreController::OnARCTaskReadyForUnparentedWindow(
   DCHECK(window);
   DCHECK(window->GetProperty(full_restore::kParentToHiddenContainerKey));
 
-  full_restore::WindowInfo* window_info = GetWindowInfo(window);
+  app_restore::WindowInfo* window_info = GetWindowInfo(window);
   if (window_info) {
     const int desk_id = window_info->desk_id
                             ? int{*window_info->desk_id}
@@ -488,7 +488,7 @@ void FullRestoreController::SaveWindowImpl(
     mru_windows =
         Shell::Get()->mru_window_tracker()->BuildMruWindowList(kAllDesks);
   }
-  std::unique_ptr<full_restore::WindowInfo> window_info =
+  std::unique_ptr<app_restore::WindowInfo> window_info =
       BuildWindowInfo(window, activation_index, mru_windows);
   full_restore::SaveWindowInfo(*window_info);
 
@@ -498,7 +498,7 @@ void FullRestoreController::SaveWindowImpl(
 
 void FullRestoreController::RestoreStateTypeAndClearLaunchedKey(
     aura::Window* window) {
-  full_restore::WindowInfo* window_info = GetWindowInfo(window);
+  app_restore::WindowInfo* window_info = GetWindowInfo(window);
   if (window_info) {
     // Snap the window if necessary.
     auto state_type = window_info->window_state_type;

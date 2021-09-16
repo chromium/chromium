@@ -779,12 +779,12 @@ content::WebContents* ExtensionAppsChromeOs::LaunchImpl(
 
   auto* web_contents = ExtensionAppsBase::LaunchImpl(std::move(params));
 
-  std::unique_ptr<full_restore::AppLaunchInfo> launch_info;
+  std::unique_ptr<app_restore::AppLaunchInfo> launch_info;
   int session_id = GetSessionIdForRestoreFromWebContents(web_contents);
   if (!SessionID::IsValidValue(session_id)) {
     // Save all launch information for platform apps, which can launch via
     // event, e.g. file app.
-    launch_info = std::make_unique<full_restore::AppLaunchInfo>(
+    launch_info = std::make_unique<app_restore::AppLaunchInfo>(
         params_for_restore.app_id, params_for_restore.container,
         params_for_restore.disposition, params_for_restore.display_id,
         std::move(params_for_restore.launch_files),

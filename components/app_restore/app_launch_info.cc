@@ -6,7 +6,7 @@
 
 #include <utility>
 
-namespace full_restore {
+namespace app_restore {
 
 AppLaunchInfo::AppLaunchInfo(const std::string& app_id,
                              int32_t window_id,
@@ -66,4 +66,4 @@ AppLaunchInfo::AppLaunchInfo(const std::string& app_id,
 
 AppLaunchInfo::~AppLaunchInfo() = default;
 
-}  // namespace full_restore
+}  // namespace app_restore

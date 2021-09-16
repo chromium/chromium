@@ -333,7 +333,7 @@ base::FilePath ChromeShellDelegate::GetPrimaryUserDownloadsFolder() const {
   return base::FilePath();
 }
 
-std::unique_ptr<::full_restore::AppLaunchInfo>
+std::unique_ptr<app_restore::AppLaunchInfo>
 ChromeShellDelegate::GetAppLaunchDataForDeskTemplate(
     aura::Window* window) const {
   const user_manager::User* active_user =
@@ -349,7 +349,7 @@ ChromeShellDelegate::GetAppLaunchDataForDeskTemplate(
 
   // Get |full_restore_data| from FullRestoreSaveHandler which contains all
   // restoring information for all apps running on the device.
-  const full_restore::RestoreData* full_restore_data =
+  const app_restore::RestoreData* full_restore_data =
       full_restore::FullRestoreSaveHandler::GetInstance()->GetRestoreData(
           user_profile->GetPath());
   DCHECK(full_restore_data);
@@ -358,8 +358,8 @@ ChromeShellDelegate::GetAppLaunchDataForDeskTemplate(
   DCHECK(!app_id.empty());
 
   const int32_t window_id = window->GetProperty(full_restore::kWindowIdKey);
-  std::unique_ptr<full_restore::AppLaunchInfo> app_launch_info =
-      std::make_unique<full_restore::AppLaunchInfo>(app_id, window_id);
+  std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info =
+      std::make_unique<app_restore::AppLaunchInfo>(app_id, window_id);
   auto* tab_strip_model = GetTabstripModelForWindowIfAny(window);
   if (tab_strip_model) {
     app_launch_info->urls = GetURLsIfApplicable(tab_strip_model);
@@ -372,7 +372,7 @@ ChromeShellDelegate::GetAppLaunchDataForDeskTemplate(
 
   // Read all other relevant app launching information from
   // |app_restore_data| to |app_launch_info|.
-  const full_restore::AppRestoreData* app_restore_data =
+  const app_restore::AppRestoreData* app_restore_data =
       full_restore_data->GetAppRestoreData(app_id, window_id);
   if (app_restore_data) {
     app_launch_info->app_type_browser = app_restore_data->app_type_browser;

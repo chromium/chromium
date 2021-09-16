@@ -36,7 +36,7 @@ class ASH_EXPORT FullRestoreController
       public aura::WindowObserver {
  public:
   using SaveWindowCallback =
-      base::RepeatingCallback<void(const full_restore::WindowInfo&)>;
+      base::RepeatingCallback<void(const app_restore::WindowInfo&)>;
 
   FullRestoreController();
   FullRestoreController(const FullRestoreController&) = delete;

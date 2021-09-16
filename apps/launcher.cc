@@ -479,7 +479,7 @@ void LaunchPlatformAppWithFileHandler(
     const std::string& handler_id,
     const std::vector<base::FilePath>& entry_paths) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  auto launch_info = std::make_unique<full_restore::AppLaunchInfo>(
+  auto launch_info = std::make_unique<app_restore::AppLaunchInfo>(
       app->id(), handler_id, entry_paths);
   full_restore::SaveAppLaunchInfo(context->GetPath(), std::move(launch_info));
 #endif

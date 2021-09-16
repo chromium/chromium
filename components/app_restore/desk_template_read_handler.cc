@@ -8,7 +8,7 @@
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_info.h"
 
-namespace full_restore {
+namespace app_restore {
 
 // static
 DeskTemplateReadHandler* DeskTemplateReadHandler::GetInstance() {
@@ -38,4 +38,4 @@ int32_t DeskTemplateReadHandler::FetchRestoreWindowId(
   return delegate_->FetchRestoreWindowId(app_id);
 }
 
-}  // namespace full_restore
+}  // namespace app_restore

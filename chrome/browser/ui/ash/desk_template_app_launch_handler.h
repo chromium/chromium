@@ -17,16 +17,16 @@ namespace apps {
 enum class AppTypeName;
 }  // namespace apps
 
-namespace full_restore {
+namespace app_restore {
 class RestoreData;
 struct WindowInfo;
-}  // namespace full_restore
+}  // namespace app_restore
 
 // The DeskTemplateAppLaunchHandler class is passed in the desk template restore
 // data and profile, and will launch apps and web pages based on the template.
 class DeskTemplateAppLaunchHandler
     : public ash::AppLaunchHandler,
-      public full_restore::DeskTemplateReadHandler::Delegate {
+      public app_restore::DeskTemplateReadHandler::Delegate {
  public:
   explicit DeskTemplateAppLaunchHandler(Profile* profile);
   DeskTemplateAppLaunchHandler(const DeskTemplateAppLaunchHandler&) = delete;
@@ -35,10 +35,10 @@ class DeskTemplateAppLaunchHandler
   ~DeskTemplateAppLaunchHandler() override;
 
   void SetRestoreDataAndLaunch(
-      std::unique_ptr<full_restore::RestoreData> restore_data);
+      std::unique_ptr<app_restore::RestoreData> restore_data);
 
   // full_restore::DeskTemplateReadHandler::Delegate:
-  std::unique_ptr<full_restore::WindowInfo> GetWindowInfo(
+  std::unique_ptr<app_restore::WindowInfo> GetWindowInfo(
       int restore_window_id) override;
   int32_t FetchRestoreWindowId(const std::string& app_id) override;
   bool IsFullRestoreRunning() const override;
@@ -65,7 +65,7 @@ class DeskTemplateAppLaunchHandler
   // A copy of `restore_data_` from when it was set. `restore_data_` has entries
   // removed before launching, but we need to reference the data during launch,
   // which is async, so keep a copy around.
-  std::unique_ptr<full_restore::RestoreData> restore_data_clone_;
+  std::unique_ptr<app_restore::RestoreData> restore_data_clone_;
 
   base::WeakPtrFactory<DeskTemplateAppLaunchHandler> weak_ptr_factory_{this};
 };

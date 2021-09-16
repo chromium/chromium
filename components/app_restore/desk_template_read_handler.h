@@ -10,7 +10,8 @@
 
 #include "base/component_export.h"
 
-namespace full_restore {
+namespace app_restore {
+
 class RestoreData;
 struct WindowInfo;
 
@@ -62,6 +63,6 @@ class COMPONENT_EXPORT(APP_RESTORE) DeskTemplateReadHandler {
   Delegate* delegate_ = nullptr;
 };
 
-}  // namespace full_restore
+}  // namespace app_restore
 
 #endif  // COMPONENTS_APP_RESTORE_DESK_TEMPLATE_READ_HANDLER_H_

@@ -30,7 +30,7 @@ FullRestoreFileHandler::FullRestoreFileHandler(const base::FilePath& path)
       file_path_(path.Append(kFullRestoreDataDirname)) {}
 
 void FullRestoreFileHandler::WriteToFile(
-    std::unique_ptr<RestoreData> restore_data) {
+    std::unique_ptr<app_restore::RestoreData> restore_data) {
   if (!restore_data)
     return;
 
@@ -41,9 +41,10 @@ void FullRestoreFileHandler::WriteToFile(
   WriteDataBlocking(json_string);
 }
 
-std::unique_ptr<RestoreData> FullRestoreFileHandler::ReadFromFile() {
+std::unique_ptr<app_restore::RestoreData>
+FullRestoreFileHandler::ReadFromFile() {
   if (!base::PathExists(file_path_))
-    return std::make_unique<RestoreData>();
+    return std::make_unique<app_restore::RestoreData>();
 
   std::string full_restore_data;
   if (!ReadDataBlocking(full_restore_data) || full_restore_data.empty())
@@ -63,7 +64,8 @@ std::unique_ptr<RestoreData> FullRestoreFileHandler::ReadFromFile() {
     return nullptr;
   }
 
-  return std::make_unique<RestoreData>(std::move(full_restore_value));
+  return std::make_unique<app_restore::RestoreData>(
+      std::move(full_restore_value));
 }
 
 FullRestoreFileHandler::~FullRestoreFileHandler() = default;

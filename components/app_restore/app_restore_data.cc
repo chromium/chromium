@@ -12,7 +12,7 @@
 #include "components/app_restore/window_info.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 
-namespace full_restore {
+namespace app_restore {
 
 namespace {
 
@@ -612,4 +612,4 @@ apps::mojom::WindowInfoPtr AppRestoreData::GetAppWindowInfo() const {
   return window_info;
 }
 
-}  // namespace full_restore
+}  // namespace app_restore

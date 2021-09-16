@@ -148,7 +148,7 @@ class MockDeskTemplateAppLaunchHandler : public DeskTemplateAppLaunchHandler {
               LaunchSystemWebAppOrChromeApp,
               (apps::mojom::AppType,
                const std::string&,
-               const ::full_restore::RestoreData::LaunchList&),
+               const app_restore::RestoreData::LaunchList&),
               (override));
 };
 
@@ -273,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureBrowserUrlsTest) {
 
   std::unique_ptr<ash::DeskTemplate> desk_template =
       CaptureActiveDeskAndSaveTemplate();
-  const full_restore::RestoreData* restore_data =
+  const app_restore::RestoreData* restore_data =
       desk_template->desk_restore_data();
   const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
   EXPECT_EQ(app_id_to_launch_list.size(), 1u);
@@ -305,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureIncognitoBrowserTest) {
   std::unique_ptr<ash::DeskTemplate> desk_template =
       CaptureActiveDeskAndSaveTemplate();
   ASSERT_TRUE(desk_template);
-  const full_restore::RestoreData* restore_data =
+  const app_restore::RestoreData* restore_data =
       desk_template->desk_restore_data();
   const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
   EXPECT_EQ(app_id_to_launch_list.size(), 1u);
@@ -353,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureActiveDeskAsTemplateTest) {
       desk_template->template_name(),
       desks_controller->GetDeskName(desks_controller->GetActiveDeskIndex()));
 
-  const full_restore::RestoreData* restore_data =
+  const app_restore::RestoreData* restore_data =
       desk_template->desk_restore_data();
   const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
   EXPECT_EQ(app_id_to_launch_list.size(), 2u);
@@ -569,7 +569,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithChromeApp) {
   const std::string extension_id = extension->id();
   ::full_restore::SaveAppLaunchInfo(
       profile()->GetPath(),
-      std::make_unique<::full_restore::AppLaunchInfo>(
+      std::make_unique<app_restore::AppLaunchInfo>(
           extension_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
           WindowOpenDisposition::NEW_WINDOW, display::kDefaultDisplayId,
           std::vector<base::FilePath>{}, nullptr));
@@ -719,7 +719,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
       CaptureActiveDeskAndSaveTemplate();
   ASSERT_TRUE(desk_template);
 
-  const full_restore::RestoreData* restore_data =
+  const app_restore::RestoreData* restore_data =
       desk_template->desk_restore_data();
   const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
   EXPECT_EQ(app_id_to_launch_list.size(), 2u);
@@ -868,7 +868,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithPWA) {
       CaptureActiveDeskAndSaveTemplate();
 
   // Find |pwa_browser| window's app restore data.
-  const full_restore::RestoreData* restore_data =
+  const app_restore::RestoreData* restore_data =
       desk_template->desk_restore_data();
   const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
   EXPECT_EQ(app_id_to_launch_list.size(), 1u);
@@ -917,7 +917,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithPWAInBrowser) {
       CaptureActiveDeskAndSaveTemplate();
 
   // Test that |pwa_browser| restore data can be found.
-  const full_restore::RestoreData* restore_data =
+  const app_restore::RestoreData* restore_data =
       desk_template->desk_restore_data();
   const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
   EXPECT_EQ(app_id_to_launch_list.size(), 1u);
@@ -970,7 +970,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientMultiProfileTest, MultiProfileTest) {
   // Capture the active desk, which contains the browser windows.
   std::unique_ptr<ash::DeskTemplate> desk_template =
       CaptureActiveDeskAndSaveTemplate();
-  const full_restore::RestoreData* restore_data =
+  const app_restore::RestoreData* restore_data =
       desk_template->desk_restore_data();
   const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
   EXPECT_EQ(app_id_to_launch_list.size(), 1u);

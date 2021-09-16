@@ -138,8 +138,8 @@ std::string GetAppId(const sync_pb::WorkspaceDeskSpecifics_App& app) {
   }
 }
 
-// Convert App proto to |full_restore::AppLaunchInfo|.
-std::unique_ptr<full_restore::AppLaunchInfo> ConvertToAppLaunchInfo(
+// Convert App proto to |app_restore::AppLaunchInfo|.
+std::unique_ptr<app_restore::AppLaunchInfo> ConvertToAppLaunchInfo(
     const sync_pb::WorkspaceDeskSpecifics_App& app) {
   const int32_t window_id = app.window_id();
   const std::string app_id = GetAppId(app);
@@ -147,8 +147,8 @@ std::unique_ptr<full_restore::AppLaunchInfo> ConvertToAppLaunchInfo(
   if (app_id.empty())
     return nullptr;
 
-  std::unique_ptr<full_restore::AppLaunchInfo> app_launch_info =
-      std::make_unique<full_restore::AppLaunchInfo>(app_id, window_id);
+  std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info =
+      std::make_unique<app_restore::AppLaunchInfo>(app_id, window_id);
 
   if (app.has_display_id())
     app_launch_info->display_id = app.display_id();
@@ -184,7 +184,7 @@ std::unique_ptr<full_restore::AppLaunchInfo> ConvertToAppLaunchInfo(
 }
 
 // Convert Sync proto WindowState |state| to ui::WindowShowState used by
-// the full_restore::WindowInfo struct.
+// the app_restore::WindowInfo struct.
 ui::WindowShowState ToUiWindowState(WindowState state) {
   switch (state) {
     case WindowState::WorkspaceDeskSpecifics_WindowState_UNKNOWN_WINDOW_STATE:
@@ -207,7 +207,7 @@ ui::WindowShowState ToUiWindowState(WindowState state) {
 }
 
 // Convert Sync proto WindowState |state| to chromeos::WindowStateType used by
-// the full_restore::WindowInfo struct.
+// the app_restore::WindowInfo struct.
 chromeos::WindowStateType ToChromeOsWindowState(WindowState state) {
   switch (state) {
     case WindowState::WorkspaceDeskSpecifics_WindowState_UNKNOWN_WINDOW_STATE:
@@ -291,9 +291,8 @@ void FillBrowserAppTabs(BrowserAppWindow* out_browser_app_window,
 
 // Fill |out_browser_app_window| with urls and tab information from
 // |app_restore_data|.
-void FillBrowserAppWindow(
-    BrowserAppWindow* out_browser_app_window,
-    const full_restore::AppRestoreData* app_restore_data) {
+void FillBrowserAppWindow(BrowserAppWindow* out_browser_app_window,
+                          const app_restore::AppRestoreData* app_restore_data) {
   if (app_restore_data->urls.has_value())
     FillBrowserAppTabs(out_browser_app_window, app_restore_data->urls.value());
 
@@ -313,7 +312,7 @@ void FillWindowBound(WindowBound* out_window_bound, const gfx::Rect& bound) {
 
 // Fill |out_app| with information from |window_info|.
 void FillAppWithWindowInfo(WorkspaceDeskSpecifics_App* out_app,
-                           const full_restore::WindowInfo* window_info) {
+                           const app_restore::WindowInfo* window_info) {
   if (window_info->activation_index.has_value())
     out_app->set_z_index(window_info->activation_index.value());
 
@@ -337,9 +336,8 @@ void FillAppWithWindowInfo(WorkspaceDeskSpecifics_App* out_app,
 }
 
 //  Fill |out_app| with |display_id| from |app_restore_data|.
-void FillAppWithDisplayId(
-    WorkspaceDeskSpecifics_App* out_app,
-    const full_restore::AppRestoreData* app_restore_data) {
+void FillAppWithDisplayId(WorkspaceDeskSpecifics_App* out_app,
+                          const app_restore::AppRestoreData* app_restore_data) {
   if (app_restore_data->display_id.has_value())
     out_app->set_display_id(app_restore_data->display_id.value());
 }
@@ -348,7 +346,7 @@ void FillAppWithDisplayId(
 void FillApp(WorkspaceDeskSpecifics_App* out_app,
              const std::string& app_id,
              const apps::mojom::AppType app_type,
-             const full_restore::AppRestoreData* app_restore_data) {
+             const app_restore::AppRestoreData* app_restore_data) {
   FillAppWithWindowInfo(out_app, app_restore_data->GetWindowInfo().get());
 
   // AppRestoreData.GetWindowInfo does not include |display_id| in the returned
@@ -400,7 +398,7 @@ void FillApp(WorkspaceDeskSpecifics_App* out_app,
 }
 
 // Fill |out_window_info| with information from Sync proto |app|.
-void FillWindowInfoFromProto(full_restore::WindowInfo* out_window_info,
+void FillWindowInfoFromProto(app_restore::WindowInfo* out_window_info,
                              sync_pb::WorkspaceDeskSpecifics_App& app) {
   if (app.has_window_state() &&
       sync_pb::WorkspaceDeskSpecifics_WindowState_IsValid(app.window_state())) {
@@ -427,14 +425,14 @@ void FillWindowInfoFromProto(full_restore::WindowInfo* out_window_info,
   }
 }
 
-// Convert a desk template to |full_restore::RestoreData|.
-std::unique_ptr<full_restore::RestoreData> ConvertToRestoreData(
+// Convert a desk template to |app_restore::RestoreData|.
+std::unique_ptr<app_restore::RestoreData> ConvertToRestoreData(
     const sync_pb::WorkspaceDeskSpecifics& entry_proto) {
-  std::unique_ptr<full_restore::RestoreData> restore_data =
-      std::make_unique<full_restore::RestoreData>();
+  std::unique_ptr<app_restore::RestoreData> restore_data =
+      std::make_unique<app_restore::RestoreData>();
 
   for (auto app_proto : entry_proto.desk().apps()) {
-    std::unique_ptr<full_restore::AppLaunchInfo> app_launch_info =
+    std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info =
         ConvertToAppLaunchInfo(app_proto);
     if (!app_launch_info) {
       // Skip unsupported app.
@@ -444,7 +442,7 @@ std::unique_ptr<full_restore::RestoreData> ConvertToRestoreData(
     const std::string app_id = app_launch_info->app_id;
     restore_data->AddAppLaunchInfo(std::move(app_launch_info));
 
-    full_restore::WindowInfo app_window_info;
+    app_restore::WindowInfo app_window_info;
     FillWindowInfoFromProto(&app_window_info, app_proto);
 
     restore_data->ModifyWindowInfo(app_id, app_proto.window_id(),
@@ -459,7 +457,7 @@ std::unique_ptr<full_restore::RestoreData> ConvertToRestoreData(
 void FillWorkspaceDeskSpecifics(
     sync_pb::WorkspaceDeskSpecifics* out_entry_proto,
     apps::AppRegistryCache* apps_cache,
-    const full_restore::RestoreData* restore_data) {
+    const app_restore::RestoreData* restore_data) {
   DCHECK(apps_cache);
 
   for (auto const& app_id_to_launch_list :
@@ -468,7 +466,7 @@ void FillWorkspaceDeskSpecifics(
 
     for (auto const& window_id_to_launch_info : app_id_to_launch_list.second) {
       const int window_id = window_id_to_launch_info.first;
-      const full_restore::AppRestoreData* app_restore_data =
+      const app_restore::AppRestoreData* app_restore_data =
           window_id_to_launch_info.second.get();
       const apps::mojom::AppType app_type = apps_cache->GetAppType(app_id);
 

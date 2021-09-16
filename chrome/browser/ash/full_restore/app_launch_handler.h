@@ -57,10 +57,10 @@ class AppLaunchHandler : public apps::AppRegistryCache::Observer {
   virtual base::WeakPtr<AppLaunchHandler> GetWeakPtrAppLaunchHandler() = 0;
 
   void set_restore_data(
-      std::unique_ptr<::full_restore::RestoreData> restore_data) {
+      std::unique_ptr<app_restore::RestoreData> restore_data) {
     restore_data_ = std::move(restore_data);
   }
-  ::full_restore::RestoreData* restore_data() { return restore_data_.get(); }
+  app_restore::RestoreData* restore_data() { return restore_data_.get(); }
 
  private:
   void LaunchApp(apps::mojom::AppType app_type, const std::string& app_id);
@@ -68,12 +68,12 @@ class AppLaunchHandler : public apps::AppRegistryCache::Observer {
   virtual void LaunchSystemWebAppOrChromeApp(
       apps::mojom::AppType app_type,
       const std::string& app_id,
-      const ::full_restore::RestoreData::LaunchList& launch_list);
+      const app_restore::RestoreData::LaunchList& launch_list);
 
   virtual void RecordRestoredAppLaunch(apps::AppTypeName app_type_name) = 0;
 
   Profile* const profile_;
-  std::unique_ptr<::full_restore::RestoreData> restore_data_;
+  std::unique_ptr<app_restore::RestoreData> restore_data_;
 };
 
 }  // namespace ash

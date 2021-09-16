@@ -165,7 +165,7 @@ void CreateAndSaveWindowInfo(int desk_id,
   window->Init(ui::LAYER_NOT_DRAWN);
   window->SetProperty(::full_restore::kWindowIdKey, window_id);
 
-  ::full_restore::WindowInfo window_info;
+  app_restore::WindowInfo window_info;
   window_info.window = window.get();
   window_info.desk_id = desk_id;
   window_info.current_bounds = current_bounds;
@@ -187,7 +187,7 @@ void CreateAndSaveWindowInfo(int desk_id,
 }
 
 void SaveWindowInfo(aura::Window* window) {
-  ::full_restore::WindowInfo window_info;
+  app_restore::WindowInfo window_info;
   window_info.window = window;
   window_info.activation_index = kActivationIndex;
   window_info.desk_id = kDeskId;
@@ -200,7 +200,7 @@ void SaveWindowInfo(
     aura::Window* window,
     uint32_t activation_index,
     chromeos::WindowStateType window_state_type = kWindowStateType) {
-  ::full_restore::WindowInfo window_info;
+  app_restore::WindowInfo window_info;
   window_info.window = window;
   window_info.activation_index = activation_index;
   window_info.desk_id = kDeskId;
@@ -359,13 +359,13 @@ class FullRestoreAppLaunchHandlerBrowserTest
   void SaveChromeAppLaunchInfo(const std::string& app_id) {
     ::full_restore::SaveAppLaunchInfo(
         profile()->GetPath(),
-        std::make_unique<::full_restore::AppLaunchInfo>(
+        std::make_unique<app_restore::AppLaunchInfo>(
             app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
             WindowOpenDisposition::NEW_WINDOW, display::kDefaultDisplayId,
             std::vector<base::FilePath>{}, nullptr));
   }
 
-  std::unique_ptr<::full_restore::WindowInfo> GetWindowInfo(
+  std::unique_ptr<app_restore::WindowInfo> GetWindowInfo(
       int32_t restore_window_id) {
     return ::full_restore::FullRestoreReadHandler::GetInstance()->GetWindowInfo(
         restore_window_id);
@@ -405,7 +405,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
                        NotLaunchBrowser) {
   // Add app launch info.
   ::full_restore::SaveAppLaunchInfo(
-      profile()->GetPath(), std::make_unique<::full_restore::AppLaunchInfo>(
+      profile()->GetPath(), std::make_unique<app_restore::AppLaunchInfo>(
                                 extension_misc::kChromeAppId, kWindowId1));
 
   WaitForAppLaunchInfoSaved();
@@ -426,7 +426,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   // Add app launch info.
   ::full_restore::SaveAppLaunchInfo(
       profile()->GetPath(),
-      std::make_unique<::full_restore::AppLaunchInfo>(
+      std::make_unique<app_restore::AppLaunchInfo>(
           kAppId, kWindowId2,
           apps::mojom::LaunchContainer::kLaunchContainerWindow,
           WindowOpenDisposition::NEW_WINDOW, display::kDefaultDisplayId,
@@ -455,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   // Add app launch info.
   ::full_restore::SaveAppLaunchInfo(
       profile()->GetPath(),
-      std::make_unique<::full_restore::AppLaunchInfo>(
+      std::make_unique<app_restore::AppLaunchInfo>(
           kAppId, kWindowId2,
           apps::mojom::LaunchContainer::kLaunchContainerWindow,
           WindowOpenDisposition::NEW_WINDOW, display::kDefaultDisplayId,
@@ -493,7 +493,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   // Add app launch info.
   ::full_restore::SaveAppLaunchInfo(
       profile()->GetPath(),
-      std::make_unique<::full_restore::AppLaunchInfo>(
+      std::make_unique<app_restore::AppLaunchInfo>(
           kAppId, kWindowId2,
           apps::mojom::LaunchContainer::kLaunchContainerWindow,
           WindowOpenDisposition::NEW_WINDOW, display::kDefaultDisplayId,
@@ -516,7 +516,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
                        FirstRunFullRestore) {
   // Add app launch infos.
   ::full_restore::SaveAppLaunchInfo(
-      profile()->GetPath(), std::make_unique<::full_restore::AppLaunchInfo>(
+      profile()->GetPath(), std::make_unique<app_restore::AppLaunchInfo>(
                                 extension_misc::kChromeAppId, kWindowId1));
 
   WaitForAppLaunchInfoSaved();
@@ -537,11 +537,11 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
 IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest, NotRestore) {
   // Add app launch infos.
   ::full_restore::SaveAppLaunchInfo(
-      profile()->GetPath(), std::make_unique<::full_restore::AppLaunchInfo>(
+      profile()->GetPath(), std::make_unique<app_restore::AppLaunchInfo>(
                                 extension_misc::kChromeAppId, kWindowId1));
   ::full_restore::SaveAppLaunchInfo(
       profile()->GetPath(),
-      std::make_unique<::full_restore::AppLaunchInfo>(
+      std::make_unique<app_restore::AppLaunchInfo>(
           kAppId, kWindowId2,
           apps::mojom::LaunchContainer::kLaunchContainerWindow,
           WindowOpenDisposition::NEW_WINDOW, display::kDefaultDisplayId,
@@ -571,10 +571,10 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
 
   // Add the chrome browser launch info.
   ::full_restore::SaveAppLaunchInfo(
-      profile()->GetPath(), std::make_unique<::full_restore::AppLaunchInfo>(
+      profile()->GetPath(), std::make_unique<app_restore::AppLaunchInfo>(
                                 extension_misc::kChromeAppId, kWindowId1));
 
-  auto app_launch_info = std::make_unique<::full_restore::AppLaunchInfo>(
+  auto app_launch_info = std::make_unique<app_restore::AppLaunchInfo>(
       extension_misc::kChromeAppId, kWindowId2);
   app_launch_info->app_type_browser = true;
   ::full_restore::SaveAppLaunchInfo(profile()->GetPath(),
@@ -602,10 +602,10 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
 
   // Add the chrome browser launch info.
   ::full_restore::SaveAppLaunchInfo(
-      profile()->GetPath(), std::make_unique<::full_restore::AppLaunchInfo>(
+      profile()->GetPath(), std::make_unique<app_restore::AppLaunchInfo>(
                                 extension_misc::kChromeAppId, kWindowId1));
 
-  auto app_launch_info = std::make_unique<::full_restore::AppLaunchInfo>(
+  auto app_launch_info = std::make_unique<app_restore::AppLaunchInfo>(
       extension_misc::kChromeAppId, kWindowId2);
   app_launch_info->app_type_browser = true;
   ::full_restore::SaveAppLaunchInfo(profile()->GetPath(),
@@ -655,10 +655,10 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
 
   // Add the chrome browser launch info.
   ::full_restore::SaveAppLaunchInfo(
-      profile()->GetPath(), std::make_unique<::full_restore::AppLaunchInfo>(
+      profile()->GetPath(), std::make_unique<app_restore::AppLaunchInfo>(
                                 extension_misc::kChromeAppId, kWindowId1));
 
-  auto app_launch_info = std::make_unique<::full_restore::AppLaunchInfo>(
+  auto app_launch_info = std::make_unique<app_restore::AppLaunchInfo>(
       extension_misc::kChromeAppId, kWindowId2);
   app_launch_info->app_type_browser = true;
   ::full_restore::SaveAppLaunchInfo(profile()->GetPath(),
@@ -715,7 +715,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   // Add app launch info, but no browser launch info.
   ::full_restore::SaveAppLaunchInfo(
       profile()->GetPath(),
-      std::make_unique<::full_restore::AppLaunchInfo>(
+      std::make_unique<app_restore::AppLaunchInfo>(
           kAppId, kWindowId2,
           apps::mojom::LaunchContainer::kLaunchContainerWindow,
           WindowOpenDisposition::NEW_WINDOW, display::kDefaultDisplayId,
@@ -745,10 +745,10 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
 
   // Add the chrome browser launch info.
   ::full_restore::SaveAppLaunchInfo(
-      profile()->GetPath(), std::make_unique<::full_restore::AppLaunchInfo>(
+      profile()->GetPath(), std::make_unique<app_restore::AppLaunchInfo>(
                                 extension_misc::kChromeAppId, kWindowId1));
 
-  auto app_launch_info = std::make_unique<::full_restore::AppLaunchInfo>(
+  auto app_launch_info = std::make_unique<app_restore::AppLaunchInfo>(
       extension_misc::kChromeAppId, kWindowId2);
   app_launch_info->app_type_browser = true;
   ::full_restore::SaveAppLaunchInfo(profile()->GetPath(),
@@ -780,11 +780,11 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
 
   // Add app launch infos.
   ::full_restore::SaveAppLaunchInfo(
-      profile()->GetPath(), std::make_unique<::full_restore::AppLaunchInfo>(
+      profile()->GetPath(), std::make_unique<app_restore::AppLaunchInfo>(
                                 extension_misc::kChromeAppId, kWindowId1));
   ::full_restore::SaveAppLaunchInfo(
       profile()->GetPath(),
-      std::make_unique<::full_restore::AppLaunchInfo>(
+      std::make_unique<app_restore::AppLaunchInfo>(
           kAppId, kWindowId2,
           apps::mojom::LaunchContainer::kLaunchContainerWindow,
           WindowOpenDisposition::NEW_WINDOW, display::kDefaultDisplayId,
@@ -813,11 +813,11 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
 
   // Add app launch infos.
   ::full_restore::SaveAppLaunchInfo(
-      profile()->GetPath(), std::make_unique<::full_restore::AppLaunchInfo>(
+      profile()->GetPath(), std::make_unique<app_restore::AppLaunchInfo>(
                                 extension_misc::kChromeAppId, kWindowId1));
   ::full_restore::SaveAppLaunchInfo(
       profile()->GetPath(),
-      std::make_unique<::full_restore::AppLaunchInfo>(
+      std::make_unique<app_restore::AppLaunchInfo>(
           kAppId, kWindowId2,
           apps::mojom::LaunchContainer::kLaunchContainerWindow,
           WindowOpenDisposition::NEW_WINDOW, display::kDefaultDisplayId,
@@ -847,7 +847,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   size_t count = BrowserList::GetInstance()->size();
 
   ::full_restore::SaveAppLaunchInfo(
-      profile()->GetPath(), std::make_unique<::full_restore::AppLaunchInfo>(
+      profile()->GetPath(), std::make_unique<app_restore::AppLaunchInfo>(
                                 extension_misc::kChromeAppId, kWindowId1));
 
   CreateAndSaveWindowInfo(kDeskId, kCurrentBounds, kWindowStateType);
@@ -905,7 +905,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   // Create Full Restore launch data before launching any browser, simulating
   // Full Restore data being saved prior to restart.
   ::full_restore::SaveAppLaunchInfo(
-      profile()->GetPath(), std::make_unique<::full_restore::AppLaunchInfo>(
+      profile()->GetPath(), std::make_unique<app_restore::AppLaunchInfo>(
                                 extension_misc::kChromeAppId, kRestoreId));
   CreateAndSaveWindowInfo(kDeskId, kCurrentBounds,
                           chromeos::WindowStateType::kNormal,
@@ -1249,7 +1249,7 @@ class FullRestoreAppLaunchHandlerArcAppBrowserTest
 
   void SaveAppLaunchInfo(const std::string& app_id, int32_t session_id) {
     ::full_restore::SaveAppLaunchInfo(
-        profile()->GetPath(), std::make_unique<::full_restore::AppLaunchInfo>(
+        profile()->GetPath(), std::make_unique<app_restore::AppLaunchInfo>(
                                   app_id, ui::EventFlags::EF_NONE, session_id,
                                   display::kDefaultDisplayId));
   }

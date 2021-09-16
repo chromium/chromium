@@ -851,13 +851,13 @@ std::unique_ptr<DeskTemplate> DesksController::CaptureActiveDeskAsTemplate()
   desk_template->set_template_name(active_desk_->name());
 
   // Construct |restore_data| for |desk_template|.
-  std::unique_ptr<full_restore::RestoreData> restore_data =
-      std::make_unique<full_restore::RestoreData>();
+  std::unique_ptr<app_restore::RestoreData> restore_data =
+      std::make_unique<app_restore::RestoreData>();
   auto* shell = Shell::Get();
   auto mru_windows =
       shell->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
   for (auto* window : mru_windows) {
-    std::unique_ptr<::full_restore::AppLaunchInfo> app_launch_info =
+    std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info =
         shell->shell_delegate()->GetAppLaunchDataForDeskTemplate(window);
     if (!app_launch_info)
       continue;
@@ -868,7 +868,7 @@ std::unique_ptr<DeskTemplate> DesksController::CaptureActiveDeskAsTemplate()
     const int32_t window_id = window->GetProperty(full_restore::kWindowIdKey);
     restore_data->AddAppLaunchInfo(std::move(app_launch_info));
 
-    std::unique_ptr<full_restore::WindowInfo> window_info = BuildWindowInfo(
+    std::unique_ptr<app_restore::WindowInfo> window_info = BuildWindowInfo(
         window, /*activation_index=*/absl::nullopt, mru_windows);
     // Clear WindowInfo's |desk_id| as a window in template will always launch
     // to a newly created desk.

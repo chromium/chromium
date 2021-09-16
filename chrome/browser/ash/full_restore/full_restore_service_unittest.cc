@@ -254,7 +254,7 @@ class FullRestoreServiceTestHavingFullRestoreFile
   void CreateRestoreData(Profile* profile) {
     // Add app launch infos.
     ::full_restore::SaveAppLaunchInfo(
-        profile->GetPath(), std::make_unique<::full_restore::AppLaunchInfo>(
+        profile->GetPath(), std::make_unique<app_restore::AppLaunchInfo>(
                                 extension_misc::kChromeAppId, kWindowId));
 
     ::full_restore::FullRestoreSaveHandler* save_handler =

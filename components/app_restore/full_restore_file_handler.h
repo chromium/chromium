@@ -12,13 +12,13 @@
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/sequenced_task_runner_helpers.h"
 
-namespace {
 class SequencedTaskRunner;
+
+namespace app_restore {
+class RestoreData;
 }
 
 namespace full_restore {
-
-class RestoreData;
 
 // FullRestoreFileHandler is the backend used by FullRestoreSaveHandler and
 // RestoreHandler. It reads and writes RestoreData from and to disk.
@@ -42,11 +42,11 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreFileHandler
 
   // Writes |restore_data| to the full restore file. This method must be invoked
   // on a background task runner |owning_task_runner|.
-  void WriteToFile(std::unique_ptr<RestoreData> restore_data);
+  void WriteToFile(std::unique_ptr<app_restore::RestoreData> restore_data);
 
   // Reads |restore_data| to the full restore file. This method must be invoked
   // on a background task runner |owning_task_runner|.
-  std::unique_ptr<RestoreData> ReadFromFile();
+  std::unique_ptr<app_restore::RestoreData> ReadFromFile();
 
  private:
   friend class base::RefCountedDeleteOnSequence<FullRestoreFileHandler>;

@@ -73,7 +73,7 @@ void ArcWindowHandler::OnDestroyed() {
 void ArcWindowHandler::LaunchArcGhostWindow(
     const std::string& app_id,
     int32_t session_id,
-    ::full_restore::AppRestoreData* restore_data) {
+    app_restore::AppRestoreData* restore_data) {
   DCHECK(restore_data);
   DCHECK(restore_data->current_bounds.has_value());
   DCHECK(restore_data->display_id.has_value());

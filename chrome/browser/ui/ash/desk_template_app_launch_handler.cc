@@ -36,15 +36,15 @@ constexpr base::TimeDelta kClearRestoreDataDuration =
 
 DeskTemplateAppLaunchHandler::DeskTemplateAppLaunchHandler(Profile* profile)
     : ash::AppLaunchHandler(profile) {
-  full_restore::DeskTemplateReadHandler::GetInstance()->SetDelegate(this);
+  app_restore::DeskTemplateReadHandler::GetInstance()->SetDelegate(this);
 }
 
 DeskTemplateAppLaunchHandler::~DeskTemplateAppLaunchHandler() {
-  full_restore::DeskTemplateReadHandler::GetInstance()->SetDelegate(nullptr);
+  app_restore::DeskTemplateReadHandler::GetInstance()->SetDelegate(nullptr);
 }
 
 void DeskTemplateAppLaunchHandler::SetRestoreDataAndLaunch(
-    std::unique_ptr<full_restore::RestoreData> new_restore_data) {
+    std::unique_ptr<app_restore::RestoreData> new_restore_data) {
   // Another desk template is underway.
   // TODO(sammiequon): Checking for `restore_data_clone_` is temporary. We will
   // want to use a better check of whether a desk template is underway. Perhaps
@@ -70,17 +70,17 @@ void DeskTemplateAppLaunchHandler::SetRestoreDataAndLaunch(
       kClearRestoreDataDuration);
 }
 
-std::unique_ptr<full_restore::WindowInfo>
+std::unique_ptr<app_restore::WindowInfo>
 DeskTemplateAppLaunchHandler::GetWindowInfo(int restore_window_id) {
   if (!restore_data_clone_)
     return nullptr;
 
   // Try to find the window info associated with `restore_window_id`.
-  const full_restore::RestoreData::AppIdToLaunchList& launch_list =
+  const app_restore::RestoreData::AppIdToLaunchList& launch_list =
       restore_data_clone_->app_id_to_launch_list();
   for (const auto& it : launch_list) {
     const std::string& app_id = it.first;
-    const full_restore::AppRestoreData* app_restore_data =
+    const app_restore::AppRestoreData* app_restore_data =
         restore_data_clone_->GetAppRestoreData(app_id, restore_window_id);
     if (app_restore_data)
       return app_restore_data->GetWindowInfo();
@@ -190,7 +190,7 @@ void DeskTemplateAppLaunchHandler::LaunchBrowsers() {
       continue;
 
     for (const auto& window_iter : iter.second) {
-      const std::unique_ptr<full_restore::AppRestoreData>& app_restore_data =
+      const std::unique_ptr<app_restore::AppRestoreData>& app_restore_data =
           window_iter.second;
 
       absl::optional<std::vector<GURL>> urls = app_restore_data->urls;

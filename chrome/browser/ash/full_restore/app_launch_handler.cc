@@ -184,7 +184,7 @@ void AppLaunchHandler::LaunchApp(apps::mojom::AppType app_type,
 void AppLaunchHandler::LaunchSystemWebAppOrChromeApp(
     apps::mojom::AppType app_type,
     const std::string& app_id,
-    const ::full_restore::RestoreData::LaunchList& launch_list) {
+    const app_restore::RestoreData::LaunchList& launch_list) {
   auto* launcher = apps::AppServiceProxyFactory::GetForProfile(profile_)
                        ->BrowserAppLauncher();
   if (!launcher)

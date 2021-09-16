@@ -14,7 +14,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
-namespace full_restore {
+namespace app_restore {
 
 // This class is the parameter for the interface SaveAppLaunchInfo, to save the
 // app launch information.
@@ -72,6 +72,6 @@ struct COMPONENT_EXPORT(APP_RESTORE) AppLaunchInfo {
   absl::optional<std::string> app_name;
 };
 
-}  // namespace full_restore
+}  // namespace app_restore
 
 #endif  // COMPONENTS_APP_RESTORE_APP_LAUNCH_INFO_H_

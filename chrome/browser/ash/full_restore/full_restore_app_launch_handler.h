@@ -113,7 +113,7 @@ class FullRestoreAppLaunchHandler : public AppLaunchHandler,
   friend class ArcAppLaunchHandler;
 
   void OnGetRestoreData(
-      std::unique_ptr<::full_restore::RestoreData> restore_data);
+      std::unique_ptr<::app_restore::RestoreData> restore_data);
 
   void MaybePostRestore();
 

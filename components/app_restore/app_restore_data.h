@@ -20,7 +20,7 @@ namespace base {
 class Value;
 }
 
-namespace full_restore {
+namespace app_restore {
 
 struct AppLaunchInfo;
 struct WindowInfo;
@@ -108,6 +108,6 @@ struct COMPONENT_EXPORT(APP_RESTORE) AppRestoreData {
   absl::optional<uint32_t> status_bar_color;
 };
 
-}  // namespace full_restore
+}  // namespace app_restore
 
 #endif  // COMPONENTS_APP_RESTORE_APP_RESTORE_DATA_H_

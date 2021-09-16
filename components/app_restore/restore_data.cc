@@ -12,7 +12,7 @@
 #include "components/app_restore/window_info.h"
 #include "extensions/common/constants.h"
 
-namespace full_restore {
+namespace app_restore {
 
 RestoreData::RestoreData() = default;
 
@@ -255,4 +255,4 @@ AppRestoreData* RestoreData::GetAppRestoreDataMutable(const std::string& app_id,
   return const_cast<AppRestoreData*>(GetAppRestoreData(app_id, window_id));
 }
 
-}  // namespace full_restore
+}  // namespace app_restore

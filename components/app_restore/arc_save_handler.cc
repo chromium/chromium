@@ -66,7 +66,8 @@ void ArcSaveHandler::SaveAppLaunchInfo(AppLaunchInfoPtr app_launch_info) {
   MaybeStartCheckTimer();
 }
 
-void ArcSaveHandler::ModifyWindowInfo(const WindowInfo& window_info) {
+void ArcSaveHandler::ModifyWindowInfo(
+    const app_restore::WindowInfo& window_info) {
   aura::Window* window = window_info.window;
 
   int32_t task_id = window->GetProperty(::full_restore::kWindowIdKey);

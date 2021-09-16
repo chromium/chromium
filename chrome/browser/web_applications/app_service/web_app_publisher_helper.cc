@@ -570,8 +570,8 @@ content::WebContents* WebAppPublisherHelper::LaunchAppWithParams(
     const WebApp* web_app = GetWebApp(params_for_restore.app_id);
     const bool is_system_web_app = web_app && web_app->IsSystemApp();
     if (is_system_web_app) {
-      std::unique_ptr<full_restore::AppLaunchInfo> launch_info =
-          std::make_unique<full_restore::AppLaunchInfo>(
+      std::unique_ptr<app_restore::AppLaunchInfo> launch_info =
+          std::make_unique<app_restore::AppLaunchInfo>(
               params_for_restore.app_id, session_id,
               params_for_restore.container, params_for_restore.disposition,
               params_for_restore.display_id,

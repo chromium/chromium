@@ -15,7 +15,7 @@ namespace base {
 class Value;
 }
 
-namespace full_restore {
+namespace app_restore {
 
 struct AppLaunchInfo;
 struct WindowInfo;
@@ -38,11 +38,9 @@ class COMPONENT_EXPORT(APP_RESTORE) RestoreData {
 
   RestoreData();
   explicit RestoreData(std::unique_ptr<base::Value> restore_data_value);
-
-  ~RestoreData();
-
   RestoreData(const RestoreData&) = delete;
   RestoreData& operator=(const RestoreData&) = delete;
+  ~RestoreData();
 
   std::unique_ptr<RestoreData> Clone() const;
 
@@ -192,6 +190,6 @@ class COMPONENT_EXPORT(APP_RESTORE) RestoreData {
   std::map<std::string, int> chrome_app_id_to_current_window_id_;
 };
 
-}  // namespace full_restore
+}  // namespace app_restore
 
 #endif  // COMPONENTS_APP_RESTORE_RESTORE_DATA_H_

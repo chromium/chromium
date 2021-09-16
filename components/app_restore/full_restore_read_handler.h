@@ -23,6 +23,12 @@
 #include "ui/aura/window_observer.h"
 #include "ui/views/widget/widget.h"
 
+namespace app_restore {
+struct AppLaunchInfo;
+class RestoreData;
+struct WindowInfo;
+}  // namespace app_restore
+
 namespace ash {
 namespace full_restore {
 class FullRestoreAppLaunchHandlerBrowserTest;
@@ -33,10 +39,7 @@ class FullRestoreServiceTestHavingFullRestoreFile;
 
 namespace full_restore {
 
-struct AppLaunchInfo;
 class FullRestoreFileHandler;
-class RestoreData;
-struct WindowInfo;
 
 // FullRestoreSaveHandler is responsible for reading |RestoreData| from the full
 // restore data file. RestoreHandler runs on the main thread and creates
@@ -48,7 +51,8 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreReadHandler
  public:
   // The callback function to get the restore data when the reading operation is
   // done.
-  using Callback = base::OnceCallback<void(std::unique_ptr<RestoreData>)>;
+  using Callback =
+      base::OnceCallback<void(std::unique_ptr<app_restore::RestoreData>)>;
 
   static FullRestoreReadHandler* GetInstance();
 
@@ -111,12 +115,13 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreReadHandler
   bool HasWindowInfo(int32_t restore_window_id);
 
   // Gets the window information for |window|.
-  std::unique_ptr<WindowInfo> GetWindowInfo(aura::Window* window);
+  std::unique_ptr<app_restore::WindowInfo> GetWindowInfo(aura::Window* window);
 
   // Gets the ARC app launch information from the full restore file for `app_id`
   // and `session_id`.
-  std::unique_ptr<AppLaunchInfo> GetArcAppLaunchInfo(const std::string& app_id,
-                                                     int32_t session_id);
+  std::unique_ptr<app_restore::AppLaunchInfo> GetArcAppLaunchInfo(
+      const std::string& app_id,
+      int32_t session_id);
 
   // Fetches the restore id for the window from RestoreData for the given
   // |app_id|. |app_id| should be a Chrome app id.
@@ -145,7 +150,7 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreReadHandler
   // is called from `GetWindowInfo()` when a full restore window is created, or
   // from `arc_read_handler_` when a task is ready for a full restore window
   // that has already been created.
-  void ApplyProperties(WindowInfo* window_info,
+  void ApplyProperties(app_restore::WindowInfo* window_info,
                        ui::PropertyHandler* property_handler);
 
   void AddChromeBrowserLaunchInfoForTesting(const base::FilePath& profile_path);
@@ -160,26 +165,28 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreReadHandler
 
   // Gets the app launch information from `profile_path` for `app_id` and
   // `restore_window_id`.
-  std::unique_ptr<AppLaunchInfo> GetAppLaunchInfo(
+  std::unique_ptr<app_restore::AppLaunchInfo> GetAppLaunchInfo(
       const base::FilePath& profile_path,
       const std::string& app_id,
       int32_t restore_window_id);
 
   // Gets the window information from `profile_path` for `app_id` and
   // `restore_window_id`.
-  std::unique_ptr<WindowInfo> GetWindowInfo(const base::FilePath& profile_path,
-                                            const std::string& app_id,
-                                            int32_t restore_window_id);
+  std::unique_ptr<app_restore::WindowInfo> GetWindowInfo(
+      const base::FilePath& profile_path,
+      const std::string& app_id,
+      int32_t restore_window_id);
 
   // Gets the window information for |restore_window_id| for browser windows and
   // Chrome app windows only. This interface can't be used for ARC app windows.
-  std::unique_ptr<WindowInfo> GetWindowInfo(int32_t restore_window_id);
+  std::unique_ptr<app_restore::WindowInfo> GetWindowInfo(
+      int32_t restore_window_id);
 
   // Invoked when reading the restore data from |profile_path| is finished, and
   // calls |callback| to notify that the reading operation is done.
   void OnGetRestoreData(const base::FilePath& profile_path,
                         Callback callback,
-                        std::unique_ptr<RestoreData>);
+                        std::unique_ptr<app_restore::RestoreData>);
 
   // Removes AppRestoreData for |restore_window_id|.
   void RemoveAppRestoreData(int32_t restore_window_id);
@@ -188,13 +195,13 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreReadHandler
   // initialized.
   void OnWidgetInitialized(views::WidgetDelegate* delegate);
 
-  RestoreData* GetRestoreData(const base::FilePath& profile_path);
+  app_restore::RestoreData* GetRestoreData(const base::FilePath& profile_path);
 
   // The current active user profile path.
   base::FilePath active_profile_path_;
 
   // The restore data read from the full restore files.
-  std::map<base::FilePath, std::unique_ptr<RestoreData>>
+  std::map<base::FilePath, std::unique_ptr<app_restore::RestoreData>>
       profile_path_to_restore_data_;
 
   // The map from the window id to the full restore file path and the

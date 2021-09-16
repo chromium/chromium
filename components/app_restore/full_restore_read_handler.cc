@@ -195,7 +195,7 @@ bool FullRestoreReadHandler::HasWindowInfo(int32_t restore_window_id) {
   return true;
 }
 
-std::unique_ptr<WindowInfo> FullRestoreReadHandler::GetWindowInfo(
+std::unique_ptr<app_restore::WindowInfo> FullRestoreReadHandler::GetWindowInfo(
     aura::Window* window) {
   if (!window)
     return nullptr;
@@ -213,9 +213,9 @@ std::unique_ptr<WindowInfo> FullRestoreReadHandler::GetWindowInfo(
   return GetWindowInfo(restore_window_id);
 }
 
-std::unique_ptr<AppLaunchInfo> FullRestoreReadHandler::GetArcAppLaunchInfo(
-    const std::string& app_id,
-    int32_t session_id) {
+std::unique_ptr<app_restore::AppLaunchInfo>
+FullRestoreReadHandler::GetArcAppLaunchInfo(const std::string& app_id,
+                                            int32_t session_id) {
   return arc_read_handler_
              ? arc_read_handler_->GetArcAppLaunchInfo(app_id, session_id)
              : nullptr;
@@ -254,7 +254,7 @@ void FullRestoreReadHandler::ModifyWidgetParams(
   const bool is_arc_app =
       out_params->init_properties_container.GetProperty(
           aura::client::kAppType) == static_cast<int>(ash::AppType::ARC_APP);
-  std::unique_ptr<WindowInfo> window_info;
+  std::unique_ptr<app_restore::WindowInfo> window_info;
   if (is_arc_app) {
     window_info = arc_read_handler_
                       ? arc_read_handler_->GetWindowInfo(restore_window_id)
@@ -263,8 +263,9 @@ void FullRestoreReadHandler::ModifyWidgetParams(
     // `DeskTemplateReadHandler::GetWindowInfo()` will return nullptr if full
     // restore is running.
     // TODO(sammiequon): Separate full restore and desk templates logic.
-    window_info = DeskTemplateReadHandler::GetInstance()->GetWindowInfo(
-        restore_window_id);
+    window_info =
+        app_restore::DeskTemplateReadHandler::GetInstance()->GetWindowInfo(
+            restore_window_id);
     if (!window_info &&
         base::Contains(should_check_restore_data_, active_profile_path_)) {
       window_info = GetWindowInfo(restore_window_id);
@@ -312,14 +313,14 @@ void FullRestoreReadHandler::SetArcSessionIdForWindowId(int32_t arc_session_id,
 }
 
 void FullRestoreReadHandler::ApplyProperties(
-    WindowInfo* window_info,
+    app_restore::WindowInfo* window_info,
     ui::PropertyHandler* property_handler) {
   DCHECK(window_info);
   DCHECK(property_handler);
 
   // Create a clone so `property_handler` can have complete ownership of a copy
   // of WindowInfo.
-  WindowInfo* window_info_clone = window_info->Clone();
+  app_restore::WindowInfo* window_info_clone = window_info->Clone();
   property_handler->SetProperty(kWindowInfoKey, window_info_clone);
 
   if (window_info->activation_index) {
@@ -343,14 +344,14 @@ void FullRestoreReadHandler::ApplyProperties(
 void FullRestoreReadHandler::AddChromeBrowserLaunchInfoForTesting(
     const base::FilePath& profile_path) {
   auto session_id = SessionID::NewUnique();
-  auto app_launch_info = std::make_unique<AppLaunchInfo>(
+  auto app_launch_info = std::make_unique<app_restore::AppLaunchInfo>(
       extension_misc::kChromeAppId, session_id.id());
   app_launch_info->app_type_browser = true;
 
   if (profile_path_to_restore_data_.find(profile_path) ==
       profile_path_to_restore_data_.end()) {
     profile_path_to_restore_data_[profile_path] =
-        std::make_unique<RestoreData>();
+        std::make_unique<app_restore::RestoreData>();
   }
 
   profile_path_to_restore_data_[profile_path]->AddAppLaunchInfo(
@@ -359,10 +360,10 @@ void FullRestoreReadHandler::AddChromeBrowserLaunchInfoForTesting(
       std::make_pair(profile_path, extension_misc::kChromeAppId);
 }
 
-std::unique_ptr<AppLaunchInfo> FullRestoreReadHandler::GetAppLaunchInfo(
-    const base::FilePath& profile_path,
-    const std::string& app_id,
-    int32_t restore_window_id) {
+std::unique_ptr<app_restore::AppLaunchInfo>
+FullRestoreReadHandler::GetAppLaunchInfo(const base::FilePath& profile_path,
+                                         const std::string& app_id,
+                                         int32_t restore_window_id) {
   auto* restore_data = GetRestoreData(profile_path);
   if (!restore_data)
     return nullptr;
@@ -370,7 +371,7 @@ std::unique_ptr<AppLaunchInfo> FullRestoreReadHandler::GetAppLaunchInfo(
   return restore_data->GetAppLaunchInfo(app_id, restore_window_id);
 }
 
-std::unique_ptr<WindowInfo> FullRestoreReadHandler::GetWindowInfo(
+std::unique_ptr<app_restore::WindowInfo> FullRestoreReadHandler::GetWindowInfo(
     const base::FilePath& profile_path,
     const std::string& app_id,
     int32_t restore_window_id) {
@@ -381,7 +382,7 @@ std::unique_ptr<WindowInfo> FullRestoreReadHandler::GetWindowInfo(
   return restore_data->GetWindowInfo(app_id, restore_window_id);
 }
 
-std::unique_ptr<WindowInfo> FullRestoreReadHandler::GetWindowInfo(
+std::unique_ptr<app_restore::WindowInfo> FullRestoreReadHandler::GetWindowInfo(
     int32_t restore_window_id) {
   if (!SessionID::IsValidValue(restore_window_id))
     return nullptr;
@@ -398,7 +399,7 @@ std::unique_ptr<WindowInfo> FullRestoreReadHandler::GetWindowInfo(
 void FullRestoreReadHandler::OnGetRestoreData(
     const base::FilePath& profile_path,
     Callback callback,
-    std::unique_ptr<RestoreData> restore_data) {
+    std::unique_ptr<app_restore::RestoreData> restore_data) {
   if (restore_data) {
     profile_path_to_restore_data_[profile_path] = restore_data->Clone();
 
@@ -450,7 +451,7 @@ void FullRestoreReadHandler::OnWidgetInitialized(
   FullRestoreInfo::GetInstance()->OnWidgetInitialized(delegate->GetWidget());
 }
 
-RestoreData* FullRestoreReadHandler::GetRestoreData(
+app_restore::RestoreData* FullRestoreReadHandler::GetRestoreData(
     const base::FilePath& profile_path) {
   auto it = profile_path_to_restore_data_.find(profile_path);
   if (it == profile_path_to_restore_data_.end() || !it->second) {

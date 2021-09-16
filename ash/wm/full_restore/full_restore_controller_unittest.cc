@@ -58,7 +58,7 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
   // Struct which is the data in our fake full restore file.
   struct WindowInfo {
     int call_count = 0;
-    std::unique_ptr<full_restore::WindowInfo> info;
+    std::unique_ptr<app_restore::WindowInfo> info;
   };
 
   FullRestoreControllerTest() = default;
@@ -94,7 +94,7 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
   }
 
   // Returns window info for `window`.
-  full_restore::WindowInfo* GetWindowInfo(aura::Window* window) const {
+  app_restore::WindowInfo* GetWindowInfo(aura::Window* window) const {
     const int32_t restore_window_id =
         window->GetProperty(full_restore::kRestoreWindowIdKey);
     if (!base::Contains(fake_full_restore_file_, restore_window_id))
@@ -104,7 +104,7 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
 
   // Returns the stored activation index for |window|.
   int GetActivationIndex(aura::Window* window) const {
-    full_restore::WindowInfo* window_info = GetWindowInfo(window);
+    app_restore::WindowInfo* window_info = GetWindowInfo(window);
     if (!window_info)
       return -1;
     absl::optional<int32_t> activation_index = window_info->activation_index;
@@ -146,7 +146,7 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
     if (!fake_full_restore_file_.contains(restore_window_id))
       return nullptr;
 
-    full_restore::WindowInfo* info =
+    app_restore::WindowInfo* info =
         fake_full_restore_file_[restore_window_id].info.get();
     DCHECK(info);
     DCHECK(info->current_bounds);
@@ -154,7 +154,7 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
     DCHECK(info->activation_index);
     DCHECK(info->display_id);
 
-    full_restore::WindowInfo* info_clone = info->Clone();
+    app_restore::WindowInfo* info_clone = info->Clone();
 
     aura::Window* context = Shell::GetRootWindowForDisplayId(*info->display_id);
     // The display may have been disconnected.
@@ -215,7 +215,7 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
                           int64_t display_id,
                           int32_t desk_id) {
     DCHECK(!fake_full_restore_file_.contains(restore_window_id));
-    auto window_info = std::make_unique<full_restore::WindowInfo>();
+    auto window_info = std::make_unique<app_restore::WindowInfo>();
     window_info->current_bounds = bounds;
     window_info->window_state_type = window_state_type;
     window_info->activation_index = activation_index;
@@ -302,7 +302,7 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
  private:
   // Called when FullRestoreController saves a window to the file. Immediately
   // writes to our fake file |fake_full_restore_file_|.
-  void OnSaveWindow(const full_restore::WindowInfo& window_info) {
+  void OnSaveWindow(const app_restore::WindowInfo& window_info) {
     aura::Window* window = window_info.window;
     DCHECK(window);
 
@@ -312,7 +312,7 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
       fake_full_restore_file_[restore_window_id].call_count++;
     } else {
       fake_full_restore_file_[restore_window_id].info =
-          std::make_unique<full_restore::WindowInfo>();
+          std::make_unique<app_restore::WindowInfo>();
     }
 
     CopyWindowInfo(window_info,
@@ -322,7 +322,7 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
   // Callback function that is run when FullRestoreController tries to read
   // window data from the file. Immediately reads from our fake file
   // `fake_full_restore_file_`.
-  std::unique_ptr<full_restore::WindowInfo> OnGetWindowInfo(
+  std::unique_ptr<app_restore::WindowInfo> OnGetWindowInfo(
       aura::Window* window) {
     DCHECK(window);
     const int32_t restore_window_id =
@@ -330,7 +330,7 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
     if (!fake_full_restore_file_.contains(restore_window_id))
       return nullptr;
 
-    auto window_info = std::make_unique<full_restore::WindowInfo>();
+    auto window_info = std::make_unique<app_restore::WindowInfo>();
     CopyWindowInfo(*fake_full_restore_file_[restore_window_id].info,
                    window_info.get());
     return window_info;
@@ -338,8 +338,8 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
 
   // Copies the info from `src` to `out_dst` since `fullrestore::WindowInfo`
   // copy constructor is deleted.
-  void CopyWindowInfo(const full_restore::WindowInfo& src,
-                      full_restore::WindowInfo* out_dst) {
+  void CopyWindowInfo(const app_restore::WindowInfo& src,
+                      app_restore::WindowInfo* out_dst) {
     out_dst->window = src.window;
     out_dst->activation_index = src.activation_index;
     out_dst->desk_id = src.desk_id;
@@ -810,8 +810,8 @@ TEST_F(FullRestoreControllerTest, TabletSplitviewWindow) {
   split_view_controller->SnapWindow(window1.get(), SplitViewController::LEFT);
   split_view_controller->SnapWindow(window2.get(), SplitViewController::RIGHT);
 
-  full_restore::WindowInfo* window1_info = GetWindowInfo(window1.get());
-  full_restore::WindowInfo* window2_info = GetWindowInfo(window2.get());
+  app_restore::WindowInfo* window1_info = GetWindowInfo(window1.get());
+  app_restore::WindowInfo* window2_info = GetWindowInfo(window2.get());
   ASSERT_TRUE(window1_info);
   ASSERT_TRUE(window2_info);
   ASSERT_TRUE(window1_info->window_state_type);
@@ -945,7 +945,7 @@ TEST_F(FullRestoreControllerTest, TabletToClamshell) {
             window->GetBoundsInScreen());
 
   // Check that the values in the fake file can be restored in clamshell mode.
-  full_restore::WindowInfo* window_info = GetWindowInfo(window);
+  app_restore::WindowInfo* window_info = GetWindowInfo(window);
   ASSERT_TRUE(window_info);
   ASSERT_TRUE(window_info->activation_index);
   ASSERT_TRUE(window_info->current_bounds);

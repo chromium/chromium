@@ -17,10 +17,12 @@ namespace aura {
 class Window;
 }
 
-namespace full_restore {
-
+namespace app_restore {
 struct AppLaunchInfo;
 struct WindowInfo;
+}  // namespace app_restore
+
+namespace full_restore {
 
 // ArcReadHandler is a helper class for FullRestoreReadHandler to handle ARC app
 // windows special cases, e.g. ARC task creation, ARC session id, etc.
@@ -55,11 +57,13 @@ class COMPONENT_EXPORT(APP_RESTORE) ArcReadHandler {
 
   // Gets the ARC app launch information from the full restore file for `app_id`
   // and `session_id`.
-  std::unique_ptr<AppLaunchInfo> GetArcAppLaunchInfo(const std::string& app_id,
-                                                     int32_t session_id);
+  std::unique_ptr<app_restore::AppLaunchInfo> GetArcAppLaunchInfo(
+      const std::string& app_id,
+      int32_t session_id);
 
   // Gets the window information for |restore_window_id|.
-  std::unique_ptr<WindowInfo> GetWindowInfo(int32_t restore_window_id);
+  std::unique_ptr<app_restore::WindowInfo> GetWindowInfo(
+      int32_t restore_window_id);
 
   // Returns the restore window id for the ARC app's |task_id|.
   int32_t GetArcRestoreWindowIdForTaskId(int32_t task_id);

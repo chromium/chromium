@@ -16,7 +16,7 @@
 
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(APP_RESTORE), int32_t*)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(APP_RESTORE),
-                                       full_restore::WindowInfo*)
+                                       app_restore::WindowInfo*)
 
 namespace full_restore {
 
@@ -30,10 +30,13 @@ DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(int32_t, kActivationIndexKey, nullptr)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kParentToHiddenContainerKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kLaunchedFromFullRestoreKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kRealArcTaskWindow, true)
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(WindowInfo, kWindowInfoKey, nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(app_restore::WindowInfo,
+                                   kWindowInfoKey,
+                                   nullptr)
 
-void SaveAppLaunchInfo(const base::FilePath& profile_path,
-                       std::unique_ptr<AppLaunchInfo> app_launch_info) {
+void SaveAppLaunchInfo(
+    const base::FilePath& profile_path,
+    std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info) {
   if (!full_restore::features::IsFullRestoreEnabled() || !app_launch_info)
     return;
 
@@ -41,15 +44,16 @@ void SaveAppLaunchInfo(const base::FilePath& profile_path,
       profile_path, std::move(app_launch_info));
 }
 
-void SaveWindowInfo(const WindowInfo& window_info) {
+void SaveWindowInfo(const app_restore::WindowInfo& window_info) {
   if (!full_restore::features::IsFullRestoreEnabled())
     return;
 
   FullRestoreSaveHandler::GetInstance()->SaveWindowInfo(window_info);
 }
 
-std::unique_ptr<AppLaunchInfo> GetArcAppLaunchInfo(const std::string& app_id,
-                                                   int32_t session_id) {
+std::unique_ptr<app_restore::AppLaunchInfo> GetArcAppLaunchInfo(
+    const std::string& app_id,
+    int32_t session_id) {
   if (!full_restore::features::IsFullRestoreEnabled())
     return nullptr;
 
@@ -57,7 +61,7 @@ std::unique_ptr<AppLaunchInfo> GetArcAppLaunchInfo(const std::string& app_id,
                                                                     session_id);
 }
 
-std::unique_ptr<WindowInfo> GetWindowInfo(aura::Window* window) {
+std::unique_ptr<app_restore::WindowInfo> GetWindowInfo(aura::Window* window) {
   if (!full_restore::features::IsFullRestoreEnabled())
     return nullptr;
 
@@ -72,7 +76,8 @@ int32_t FetchRestoreWindowId(const std::string& app_id) {
   // restore is running.
   // TODO(sammiequon): Separate full restore and desk templates logic.
   const int32_t desk_template_restore_window_id =
-      DeskTemplateReadHandler::GetInstance()->FetchRestoreWindowId(app_id);
+      app_restore::DeskTemplateReadHandler::GetInstance()->FetchRestoreWindowId(
+          app_id);
   if (desk_template_restore_window_id > 0)
     return desk_template_restore_window_id;
 

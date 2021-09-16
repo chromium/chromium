@@ -179,7 +179,7 @@ FullRestoreAppLaunchHandler::GetWeakPtrAppLaunchHandler() {
 }
 
 void FullRestoreAppLaunchHandler::OnGetRestoreData(
-    std::unique_ptr<::full_restore::RestoreData> restore_data) {
+    std::unique_ptr<app_restore::RestoreData> restore_data) {
   set_restore_data(std::move(restore_data));
   LogRestoreData();
 

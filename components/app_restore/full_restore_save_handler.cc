@@ -139,7 +139,7 @@ void FullRestoreSaveHandler::OnWindowInitialized(aura::Window* window) {
     if (it->second.empty())
       app_id_to_app_launch_infos_.erase(it);
   } else {
-    app_launch_info = std::make_unique<AppLaunchInfo>(
+    app_launch_info = std::make_unique<app_restore::AppLaunchInfo>(
         extension_misc::kChromeAppId, window_id);
 
     // If the window is an app type browser window, set `app_type_browser` as
@@ -211,7 +211,7 @@ void FullRestoreSaveHandler::SaveAppLaunchInfo(
   }
 
   const int window_id = app_launch_info->window_id.value();
-  std::unique_ptr<WindowInfo> window_info;
+  std::unique_ptr<app_restore::WindowInfo> window_info;
 
   if (app_id != extension_misc::kChromeAppId) {
     // For browser windows, it could have been saved as
@@ -238,7 +238,8 @@ void FullRestoreSaveHandler::SaveAppLaunchInfo(
   }
 }
 
-void FullRestoreSaveHandler::SaveWindowInfo(const WindowInfo& window_info) {
+void FullRestoreSaveHandler::SaveWindowInfo(
+    const app_restore::WindowInfo& window_info) {
   if (!window_info.window)
     return;
 
@@ -353,7 +354,7 @@ void FullRestoreSaveHandler::ModifyWindowInfo(
     const base::FilePath& profile_path,
     const std::string& app_id,
     int32_t window_id,
-    const WindowInfo& window_info) {
+    const app_restore::WindowInfo& window_info) {
   auto it = profile_path_to_restore_data_.find(profile_path);
   if (it == profile_path_to_restore_data_.end())
     return;
@@ -440,7 +441,7 @@ int32_t FullRestoreSaveHandler::GetArcSessionId() {
   return arc_save_handler_->GetArcSessionId();
 }
 
-const RestoreData* FullRestoreSaveHandler::GetRestoreData(
+const app_restore::RestoreData* FullRestoreSaveHandler::GetRestoreData(
     const base::FilePath& profile_path) {
   auto it = profile_path_to_restore_data_.find(profile_path);
   if (it == profile_path_to_restore_data_.end())
@@ -539,8 +540,9 @@ base::SequencedTaskRunner* FullRestoreSaveHandler::BackendTaskRunner(
   return GetFileHandler(profile_path)->owning_task_runner();
 }
 
-void FullRestoreSaveHandler::ModifyWindowInfo(int window_id,
-                                              const WindowInfo& window_info) {
+void FullRestoreSaveHandler::ModifyWindowInfo(
+    int window_id,
+    const app_restore::WindowInfo& window_info) {
   auto it = window_id_to_app_restore_info_.find(window_id);
   if (it == window_id_to_app_restore_info_.end())
     return;

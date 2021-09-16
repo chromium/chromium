@@ -13,6 +13,11 @@
 
 class AccountId;
 
+namespace app_restore {
+struct AppLaunchInfo;
+struct WindowInfo;
+}  // namespace app_restore
+
 namespace aura {
 class Window;
 }
@@ -22,9 +27,6 @@ class FilePath;
 }
 
 namespace full_restore {
-
-struct AppLaunchInfo;
-struct WindowInfo;
 
 // For ARC session id, 1 ~ 1000000000 is used as the window id for all new app
 // launching. 1000000001 - INT_MAX is used as the session id for all restored
@@ -92,26 +94,28 @@ COMPONENT_EXPORT(APP_RESTORE)
 extern const ui::ClassProperty<bool>* const kRealArcTaskWindow;
 
 COMPONENT_EXPORT(APP_RESTORE)
-extern const ui::ClassProperty<WindowInfo*>* const kWindowInfoKey;
+extern const ui::ClassProperty<app_restore::WindowInfo*>* const kWindowInfoKey;
 
 // Saves the app launch parameters to the full restore file.
 COMPONENT_EXPORT(APP_RESTORE)
-void SaveAppLaunchInfo(const base::FilePath& profile_path,
-                       std::unique_ptr<AppLaunchInfo> app_launch_info);
+void SaveAppLaunchInfo(
+    const base::FilePath& profile_path,
+    std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info);
 
 // Saves the window information to the full restore file.
 COMPONENT_EXPORT(APP_RESTORE)
-void SaveWindowInfo(const WindowInfo& window_info);
+void SaveWindowInfo(const app_restore::WindowInfo& window_info);
 
 // Gets the ARC app launch information from the full restore file for `app_id`
 // and `session_id`.
 COMPONENT_EXPORT(APP_RESTORE)
-std::unique_ptr<AppLaunchInfo> GetArcAppLaunchInfo(const std::string& app_id,
-                                                   int32_t session_id);
+std::unique_ptr<app_restore::AppLaunchInfo> GetArcAppLaunchInfo(
+    const std::string& app_id,
+    int32_t session_id);
 
 // Gets the window information from the full restore file for |window|.
 COMPONENT_EXPORT(APP_RESTORE)
-std::unique_ptr<WindowInfo> GetWindowInfo(aura::Window* window);
+std::unique_ptr<app_restore::WindowInfo> GetWindowInfo(aura::Window* window);
 
 // Fetches the restore window id from the restore data for the given |app_id|.
 // |app_id| should be a Chrome app id.

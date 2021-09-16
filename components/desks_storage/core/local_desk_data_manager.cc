@@ -92,7 +92,7 @@ std::unique_ptr<ash::DeskTemplate> ConvertValueToDeskTemplate(
   DCHECK(restore_data_value_ptr);
 
   desk_template->set_desk_restore_data(
-      std::make_unique<full_restore::RestoreData>(
+      std::make_unique<app_restore::RestoreData>(
           std::move(restore_data_value_ptr)));
   return desk_template;
 }

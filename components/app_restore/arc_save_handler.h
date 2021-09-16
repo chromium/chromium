@@ -15,20 +15,22 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 
+namespace app_restore {
+struct AppLaunchInfo;
+struct WindowInfo;
+}  // namespace app_restore
+
 namespace aura {
 class Window;
 }
 
 namespace full_restore {
 
-struct AppLaunchInfo;
-struct WindowInfo;
-
 // ArcSaveHandler is a helper class for FullRestoreSaveHandler to handle ARC app
 // windows special cases, e.g. ARC task creation, ARC session id, etc.
 class COMPONENT_EXPORT(APP_RESTORE) ArcSaveHandler {
  public:
-  using AppLaunchInfoPtr = std::unique_ptr<AppLaunchInfo>;
+  using AppLaunchInfoPtr = std::unique_ptr<app_restore::AppLaunchInfo>;
   using SessionIdMap =
       std::map<int32_t, std::pair<AppLaunchInfoPtr, base::TimeTicks>>;
 
@@ -42,7 +44,7 @@ class COMPONENT_EXPORT(APP_RESTORE) ArcSaveHandler {
   void SaveAppLaunchInfo(AppLaunchInfoPtr app_launch_info);
 
   // Saves |window_info|.
-  void ModifyWindowInfo(const WindowInfo& window_info);
+  void ModifyWindowInfo(const app_restore::WindowInfo& window_info);
 
   // Invoked when |window| is initialized.
   void OnWindowInitialized(aura::Window* window);

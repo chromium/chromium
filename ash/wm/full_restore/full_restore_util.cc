@@ -17,13 +17,11 @@
 
 namespace ash {
 
-std::unique_ptr<::full_restore::WindowInfo> BuildWindowInfo(
+std::unique_ptr<app_restore::WindowInfo> BuildWindowInfo(
     aura::Window* window,
     absl::optional<int> activation_index,
     const std::vector<aura::Window*>& mru_windows) {
-  std::unique_ptr<::full_restore::WindowInfo> window_info =
-      std::make_unique<::full_restore::WindowInfo>();
-
+  auto window_info = std::make_unique<app_restore::WindowInfo>();
   int window_activation_index = -1;
   if (activation_index) {
     window_activation_index = *activation_index;
@@ -84,7 +82,7 @@ std::unique_ptr<::full_restore::WindowInfo> BuildWindowInfo(
   if (IsArcWindow(window)) {
     views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
     if (widget) {
-      auto extra = full_restore::WindowInfo::ArcExtraInfo();
+      auto extra = app_restore::WindowInfo::ArcExtraInfo();
       extra.maximum_size = widget->GetMaximumSize();
       extra.minimum_size = widget->GetMinimumSize();
       extra.title = window->GetTitle();

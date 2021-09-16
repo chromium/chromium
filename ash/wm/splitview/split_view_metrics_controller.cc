@@ -407,7 +407,7 @@ void SplitViewMetricsController::OnWindowInitialized(aura::Window* window) {
   if (!activation_index)
     return;
 
-  std::unique_ptr<full_restore::WindowInfo> window_info =
+  std::unique_ptr<app_restore::WindowInfo> window_info =
       full_restore::GetWindowInfo(window);
   if (!window_info)
     return;

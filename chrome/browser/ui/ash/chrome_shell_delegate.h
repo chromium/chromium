@@ -53,8 +53,8 @@ class ChromeShellDelegate : public ash::ShellDelegate {
   bool IsLoggingRedirectDisabled() const override;
   base::FilePath GetPrimaryUserDownloadsFolder() const override;
   void OpenFeedbackPageForPersistentDesksBar() override;
-  std::unique_ptr<::full_restore::AppLaunchInfo>
-  GetAppLaunchDataForDeskTemplate(aura::Window* window) const override;
+  std::unique_ptr<app_restore::AppLaunchInfo> GetAppLaunchDataForDeskTemplate(
+      aura::Window* window) const override;
 
   static void SetDisableLoggingRedirectForTesting(bool value);
   static void ResetDisableLoggingRedirectForTesting();

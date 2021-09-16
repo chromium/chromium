@@ -5,7 +5,6 @@
 #ifndef ASH_WM_FULL_RESTORE_FULL_RESTORE_UTIL_H_
 #define ASH_WM_FULL_RESTORE_FULL_RESTORE_UTIL_H_
 
-#include "ash/ash_export.h"
 #include "components/app_restore/window_info.h"
 
 namespace aura {
@@ -18,7 +17,7 @@ namespace ash {
 // which is used to set |WindowInfo.activation_index| if it has value.
 // Otherwise, |WindowInfo.activation_index| will be calculated from
 // |mru_windows|.
-ASH_EXPORT std::unique_ptr<::full_restore::WindowInfo> BuildWindowInfo(
+std::unique_ptr<app_restore::WindowInfo> BuildWindowInfo(
     aura::Window* window,
     absl::optional<int> activation_index,
     const std::vector<aura::Window*>& mru_windows);

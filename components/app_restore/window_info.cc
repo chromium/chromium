@@ -6,7 +6,7 @@
 
 #include "base/strings/stringprintf.h"
 
-namespace full_restore {
+namespace app_restore {
 
 namespace {
 
@@ -79,4 +79,4 @@ std::string WindowInfo::ToString() const {
          ToPrefixedString(display_id, "Display id");
 }
 
-}  // namespace full_restore
+}  // namespace app_restore

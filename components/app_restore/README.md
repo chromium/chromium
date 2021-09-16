@@ -1,4 +1,4 @@
-The full_restore component contains code necessary for collecting app launching
+The app_restore component contains code necessary for collecting app launching
 information, app window information, and writing to the data storage. It
 provides:
 
