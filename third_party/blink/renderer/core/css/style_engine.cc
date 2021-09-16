@@ -2302,7 +2302,7 @@ void StyleEngine::UpdateStyleAndLayoutTree() {
 
   UpdateViewportStyle();
 
-  if (Element* document_element = GetDocument().documentElement()) {
+  if (GetDocument().documentElement()) {
     NthIndexCache nth_index_cache(GetDocument());
     if (NeedsStyleRecalc()) {
       TRACE_EVENT0("blink,blink_style", "Document::recalcStyle");
