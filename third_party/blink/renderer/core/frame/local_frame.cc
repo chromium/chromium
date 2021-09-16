@@ -1511,7 +1511,7 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
       !IsMainFrame() && ad_tracker_ &&
       ad_tracker_->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop);
   if (IsMainFrame()) {
-    text_fragment_handler_ = MakeGarbageCollected<TextFragmentHandler>(this);
+    CreateTextFragmentHandler();
   }
 
   Initialize();
@@ -3118,14 +3118,14 @@ void LocalFrame::ExtractSmartClipDataInternal(const gfx::Rect& rect_in_viewport,
                                  View()->ViewportToFrame(end_point));
 }
 
+void LocalFrame::CreateTextFragmentHandler() {
+  text_fragment_handler_ = MakeGarbageCollected<TextFragmentHandler>(this);
+}
+
 void LocalFrame::BindTextFragmentReceiver(
     mojo::PendingReceiver<mojom::blink::TextFragmentReceiver> receiver) {
-  if (IsDetached())
+  if (IsDetached() || !text_fragment_handler_)
     return;
-
-  if (!text_fragment_handler_) {
-    text_fragment_handler_ = MakeGarbageCollected<TextFragmentHandler>(this);
-  }
 
   text_fragment_handler_->BindTextFragmentReceiver(std::move(receiver));
 }

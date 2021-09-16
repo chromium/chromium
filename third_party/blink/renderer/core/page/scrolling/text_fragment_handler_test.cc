@@ -808,6 +808,9 @@ TEST_P(TextFragmentHandlerTest,
   EXPECT_EQ(1u, child_frame->GetDocument()->Markers().Markers().size());
   EXPECT_FALSE(HasTextFragmentHandler(child_frame));
 
+  child_frame->CreateTextFragmentHandler();
+  GetTextFragmentHandler().StartPreemptiveGenerationIfNeeded();
+
   mojo::Remote<mojom::blink::TextFragmentReceiver> remote;
   EXPECT_FALSE(remote.is_bound());
   child_frame->BindTextFragmentReceiver(remote.BindNewPipeAndPassReceiver());
@@ -898,6 +901,7 @@ TEST_P(TextFragmentHandlerTest,
   EXPECT_TRUE(HasTextFragmentHandler(GetDocument().GetFrame()));
   EXPECT_FALSE(remote.is_bound());
 
+  GetTextFragmentHandler().StartPreemptiveGenerationIfNeeded();
   GetDocument().GetFrame()->BindTextFragmentReceiver(
       remote.BindNewPipeAndPassReceiver());
 
