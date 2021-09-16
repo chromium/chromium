@@ -205,6 +205,14 @@ void ChromeTranslateClient::GetTranslateLanguages(
   *source = translate::TranslateDownloadManager::GetLanguageCode(
       GetLanguageState().source_language());
 
+  // If the page is translated, always return the current target language. This
+  // ensures that reshowing the UI on a translated page maintains the correct
+  // target language that the page is currently translated into.
+  if (GetLanguageState().IsPageTranslated()) {
+    *target = GetLanguageState().current_language();
+    return;
+  }
+
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   std::unique_ptr<translate::TranslatePrefs> translate_prefs =
