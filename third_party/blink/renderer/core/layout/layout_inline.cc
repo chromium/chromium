@@ -575,15 +575,13 @@ void LayoutInline::SplitInlines(LayoutBlockFlow* from_block,
   // nest to a much greater depth (see bugzilla bug 13430) but for now we have a
   // limit. This *will* result in incorrect rendering, but the alternative is to
   // hang forever.
-  const unsigned kCMaxSplitDepth = 200;
   Vector<LayoutInline*> inlines_to_clone;
   LayoutInline* top_most_inline = this;
   for (LayoutObject* o = this; o != from_block; o = o->Parent()) {
     if (o->IsLayoutNGInsideListMarker())
       continue;
     top_most_inline = To<LayoutInline>(o);
-    if (inlines_to_clone.size() < kCMaxSplitDepth)
-      inlines_to_clone.push_back(top_most_inline);
+    inlines_to_clone.push_back(top_most_inline);
     // Keep walking up the chain to ensure |topMostInline| is a child of
     // |fromBlock|, to avoid assertion failure when |fromBlock|'s children are
     // moved to |toBlock| below.
