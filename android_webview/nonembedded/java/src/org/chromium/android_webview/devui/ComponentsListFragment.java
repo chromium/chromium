@@ -174,7 +174,7 @@ public class ComponentsListFragment extends DevUiBaseFragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.options_menu_refresh) {
+        if (item.getItemId() == R.id.options_menu_update) {
             MainActivity.logMenuSelection(MainActivity.MenuChoice.COMPONENTS_UPDATE);
             Intent intent = new Intent();
             intent.setClassName(mContext.getPackageName(), sComponentUpdateServiceName);

@@ -83,16 +83,21 @@ public class ComponentsListFragmentUpdateButtonTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     public void testUiPopulated() throws Throwable {
-        CallbackHelper helper = getComponentInfoLoadedListener();
-        int componentInfoListLoadInitCount = helper.getCallCount();
+        CallbackHelper componentInfoLoadedHelper = getComponentInfoLoadedListener();
+        int componentInfoListLoadInitCount = componentInfoLoadedHelper.getCallCount();
         launchComponentsFragment();
-        helper.waitForCallback(componentInfoListLoadInitCount, 1);
+        componentInfoLoadedHelper.waitForCallback(componentInfoListLoadInitCount, 1);
+        componentInfoListLoadInitCount = componentInfoLoadedHelper.getCallCount();
 
         onView(withId(R.id.components_summary_textview)).check(matches(withText("Components (0)")));
+        CallbackHelper serviceStoppedHelper =
+                MockAwComponentUpdateService.getServiceFinishedCallbackHelper();
+        int serviceStoppedCount = serviceStoppedHelper.getCallCount();
+        onView(withId(R.id.options_menu_update)).perform(click());
 
-        componentInfoListLoadInitCount = helper.getCallCount();
-        onView(withId(R.id.options_menu_refresh)).perform(click());
-        helper.waitForCallback(componentInfoListLoadInitCount, 1);
+        serviceStoppedHelper.waitForCallback(serviceStoppedCount, 1);
+        MockAwComponentUpdateService.sendResultReceiverCallback();
+        componentInfoLoadedHelper.waitForCallback(componentInfoListLoadInitCount, 1);
 
         onView(withId(R.id.components_summary_textview)).check(matches(withText("Components (2)")));
 
@@ -117,5 +122,30 @@ public class ComponentsListFragmentUpdateButtonTest {
                 .onChildView(withId(android.R.id.text2))
                 .check(matches(withText(
                         "Version: " + MockAwComponentUpdateService.MOCK_COMPONENT_B_VERSION)));
+    }
+
+    /**
+     * Test that no crash happens if {@code MockAwComponentUpdateService.sFinishCallback}
+     * is received when {@code ComponentsListFragment} is not visible to the user.
+     */
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testUpdateCallbackReceived_fragmentNotVisible() throws Throwable {
+        CallbackHelper componentInfoLoadedHelper = getComponentInfoLoadedListener();
+        int componentInfoListLoadInitCount = componentInfoLoadedHelper.getCallCount();
+        launchComponentsFragment();
+        componentInfoLoadedHelper.waitForCallback(componentInfoListLoadInitCount, 1);
+
+        onView(withId(R.id.components_summary_textview)).check(matches(withText("Components (0)")));
+        CallbackHelper serviceStoppedHelper =
+                MockAwComponentUpdateService.getServiceFinishedCallbackHelper();
+        int serviceStoppedCount = serviceStoppedHelper.getCallCount();
+
+        onView(withId(R.id.options_menu_update)).perform(click());
+        onView(withId(R.id.navigation_home)).perform(click());
+        serviceStoppedHelper.waitForCallback(serviceStoppedCount, 1);
+        MockAwComponentUpdateService.sendResultReceiverCallback();
+        onView(withId(R.id.fragment_home)).check(matches(isDisplayed()));
     }
 }
