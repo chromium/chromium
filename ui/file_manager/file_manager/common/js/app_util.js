@@ -175,8 +175,13 @@ appUtil.AppCache.cleanup_ = map => {
  * @return {!Promise<!VolumeManager>}.
  */
 appUtil.getVolumeManager = async () => {
-  const backgroundWindow =
-      new Promise(resolve => chrome.runtime.getBackgroundPage(resolve));
+  const backgroundWindow = new Promise(resolve => {
+    if (window.isSWA) {
+      resolve(window);
+    } else {
+      chrome.runtime.getBackgroundPage(resolve);
+    }
+  });
 
   /** @type {!BackgroundBase} */
   const backgroundPage = (await backgroundWindow).background;
