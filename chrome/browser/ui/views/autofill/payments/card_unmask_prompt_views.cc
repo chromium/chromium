@@ -27,6 +27,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_utils.h"
@@ -144,9 +145,9 @@ void CardUnmaskPromptViews::GotVerificationResult(
 
       // The label of the overlay will now show the error in red.
       auto error_label = std::make_unique<views::Label>(error_message);
-      views::SetCascadingNativeThemeColor(
-          error_label.get(), views::kCascadingLabelEnabledColor,
-          ui::NativeTheme::kColorId_AlertSeverityHigh);
+      views::SetCascadingColorProviderColor(error_label.get(),
+                                            views::kCascadingLabelEnabledColor,
+                                            ui::kColorAlertHighSeverity);
       error_label->SetMultiLine(true);
 
       // Replace the throbber with a warning icon. Since this is a permanent

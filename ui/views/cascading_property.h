@@ -10,7 +10,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/class_property.h"
-#include "ui/native_theme/native_theme.h"
+#include "ui/color/color_id.h"
 #include "ui/views/view.h"
 #include "ui/views/views_export.h"
 
@@ -66,10 +66,10 @@ VIEWS_EXPORT void SetCascadingThemeProviderColor(
     const ui::ClassProperty<CascadingProperty<SkColor>*>* property_key,
     int color_id);
 
-VIEWS_EXPORT void SetCascadingNativeThemeColor(
+VIEWS_EXPORT void SetCascadingColorProviderColor(
     View* view,
     const ui::ClassProperty<CascadingProperty<SkColor>*>* property_key,
-    ui::NativeTheme::ColorId color_id);
+    ui::ColorId color_id);
 
 VIEWS_EXPORT extern const ui::ClassProperty<CascadingProperty<SkColor>*>* const
     kCascadingBackgroundColor;

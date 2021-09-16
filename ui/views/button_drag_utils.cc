@@ -8,6 +8,8 @@
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/canvas_painter.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/canvas.h"
@@ -52,13 +54,11 @@ void SetDragImage(const GURL& url,
       views::Button::PressedCallback(),
       title.empty() ? base::UTF8ToUTF16(url.spec()) : title);
   button.SetTextSubpixelRenderingEnabled(false);
-  const ui::NativeTheme* theme = widget.GetNativeTheme();
-  button.SetTextColor(
-      views::Button::STATE_NORMAL,
-      theme->GetSystemColor(ui::NativeTheme::kColorId_TextfieldDefaultColor));
+  const ui::ColorProvider* color_provider = widget.GetColorProvider();
+  button.SetTextColor(views::Button::STATE_NORMAL,
+                      color_provider->GetColor(ui::kColorTextfieldForeground));
 
-  SkColor bg_color = theme->GetSystemColor(
-      ui::NativeTheme::kColorId_TextfieldDefaultBackground);
+  SkColor bg_color = color_provider->GetColor(ui::kColorTextfieldBackground);
   if (widget.IsTranslucentWindowOpacitySupported()) {
     button.SetTextShadows(gfx::ShadowValues(
         10, gfx::ShadowValue(gfx::Vector2d(0, 0), 2.0f, bg_color)));

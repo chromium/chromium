@@ -15,6 +15,8 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/compositor.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -340,30 +342,28 @@ gfx::Rect DesktopWindowTreeHostLinux::GetGuessedFullScreenSizeInPx() const {
 void DesktopWindowTreeHostLinux::AddAdditionalInitProperties(
     const Widget::InitParams& params,
     ui::PlatformWindowInitProperties* properties) {
+  const views::LinuxUI* linux_ui = views::LinuxUI::instance();
+  properties->prefer_dark_theme = linux_ui && linux_ui->PreferDarkTheme();
+
   // Set the background color on startup to make the initial flickering
   // happening between the XWindow is mapped and the first expose event
   // is completely handled less annoying. If possible, we use the content
   // window's background color, otherwise we fallback to white.
-  absl::optional<int> background_color;
-  const views::LinuxUI* linux_ui = views::LinuxUI::instance();
-  if (linux_ui && GetContentWindow()) {
-    ui::NativeTheme::ColorId target_color;
-    switch (properties->type) {
-      case ui::PlatformWindowType::kBubble:
-        target_color = ui::NativeTheme::kColorId_BubbleBackground;
-        break;
-      case ui::PlatformWindowType::kTooltip:
-        target_color = ui::NativeTheme::kColorId_TooltipBackground;
-        break;
-      default:
-        target_color = ui::NativeTheme::kColorId_WindowBackground;
-        break;
-    }
-    ui::NativeTheme* theme = linux_ui->GetNativeTheme(GetContentWindow());
-    background_color = theme->GetSystemColor(target_color);
+  ui::ColorId target_color;
+  switch (properties->type) {
+    case ui::PlatformWindowType::kBubble:
+      target_color = ui::kColorBubbleBackground;
+      break;
+    case ui::PlatformWindowType::kTooltip:
+      target_color = ui::kColorTooltipBackground;
+      break;
+    default:
+      target_color = ui::kColorWindowBackground;
+      break;
   }
-  properties->prefer_dark_theme = linux_ui && linux_ui->PreferDarkTheme();
-  properties->background_color = background_color;
+  properties->background_color =
+      GetWidget()->GetColorProvider()->GetColor(target_color);
+
   properties->icon = ViewsDelegate::GetInstance()->GetDefaultWindowIcon();
 
   properties->wm_class_name = params.wm_class_name;

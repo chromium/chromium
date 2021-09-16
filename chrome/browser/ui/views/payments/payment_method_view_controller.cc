@@ -25,9 +25,9 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/border.h"
 #include "ui/views/cascading_property.h"
 #include "ui/views/controls/button/label_button.h"
@@ -129,9 +129,8 @@ class PaymentMethodListItem : public PaymentRequestItemList::Item {
       views::Label* const label =
           card_info_container->AddChildView(std::make_unique<views::Label>(
               missing_info, CONTEXT_DIALOG_BODY_TEXT_SMALL));
-      views::SetCascadingNativeThemeColor(
-          label, views::kCascadingLabelEnabledColor,
-          ui::NativeTheme::kColorId_LinkEnabled);
+      views::SetCascadingColorProviderColor(
+          label, views::kCascadingLabelEnabledColor, ui::kColorLinkForeground);
     }
 
     *accessible_content = l10n_util::GetStringFUTF16(

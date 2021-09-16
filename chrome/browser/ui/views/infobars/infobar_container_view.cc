@@ -53,7 +53,7 @@ void ContentShadow::OnPaint(gfx::Canvas* canvas) {
   container_bounds.Inset(-views::BubbleBorder::kShadowBlur, 0);
 
   views::BubbleBorder::DrawBorderAndShadow(gfx::RectFToSkRect(container_bounds),
-                                           canvas, GetNativeTheme());
+                                           canvas, GetColorProvider());
 }
 
 BEGIN_METADATA(ContentShadow, views::View)

@@ -9,9 +9,10 @@
 
 #include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font_list.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/combobox/combobox.h"
@@ -49,8 +50,8 @@ class TextExample::TextExampleView : public View {
   void OnPaint(gfx::Canvas* canvas) override {
     View::OnPaint(canvas);
     const gfx::Rect bounds = GetContentsBounds();
-    const SkColor color = GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_TextfieldDefaultColor);
+    const SkColor color =
+        GetColorProvider()->GetColor(ui::kColorTextfieldForeground);
     canvas->DrawStringRectWithFlags(text_, font_list_, color, bounds, flags_);
   }
 
@@ -87,8 +88,7 @@ class TextExample::TextExampleView : public View {
   void OnThemeChanged() override {
     View::OnThemeChanged();
     SetBorder(CreateSolidBorder(
-        1, GetNativeTheme()->GetSystemColor(
-               ui::NativeTheme::kColorId_UnfocusedBorderColor)));
+        1, GetColorProvider()->GetColor(ui::kColorFocusableBorderUnfocused)));
   }
 
  private:

@@ -18,6 +18,8 @@
 #include "ui/base/default_style.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/display/screen.h"
@@ -25,7 +27,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/layout/layout_provider.h"
@@ -810,8 +811,8 @@ void BubbleDialogDelegate::UpdateColorsFromTheme() {
   View* const contents_view = GetContentsView();
   DCHECK(contents_view);
   if (!color_explicitly_set()) {
-    set_color_internal(contents_view->GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_BubbleBackground));
+    set_color_internal(contents_view->GetColorProvider()->GetColor(
+        ui::kColorBubbleBackground));
   }
   BubbleFrameView* frame_view = GetBubbleFrameView();
   if (frame_view)

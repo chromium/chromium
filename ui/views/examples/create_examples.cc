@@ -15,6 +15,7 @@
 #include "ui/views/examples/button_sticker_sheet.h"
 #include "ui/views/examples/checkbox_example.h"
 #include "ui/views/examples/colored_dialog_example.h"
+#include "ui/views/examples/colors_example.h"
 #include "ui/views/examples/combobox_example.h"
 #include "ui/views/examples/dialog_example.h"
 #include "ui/views/examples/fade_animation.h"
@@ -25,7 +26,6 @@
 #include "ui/views/examples/menu_example.h"
 #include "ui/views/examples/message_box_example.h"
 #include "ui/views/examples/multiline_example.h"
-#include "ui/views/examples/native_theme_example.h"
 #include "ui/views/examples/notification_example.h"
 #include "ui/views/examples/progress_bar_example.h"
 #include "ui/views/examples/radio_button_example.h"
@@ -56,6 +56,7 @@ ExampleVector CreateExamples(ExampleVector extra_examples) {
   examples.push_back(std::make_unique<ButtonStickerSheet>());
   examples.push_back(std::make_unique<CheckboxExample>());
   examples.push_back(std::make_unique<ColoredDialogExample>());
+  examples.push_back(std::make_unique<ColorsExample>());
   examples.push_back(std::make_unique<ComboboxExample>());
   examples.push_back(std::make_unique<DialogExample>());
   examples.push_back(std::make_unique<FadeAnimationExample>());
@@ -66,7 +67,6 @@ ExampleVector CreateExamples(ExampleVector extra_examples) {
   examples.push_back(std::make_unique<MenuExample>());
   examples.push_back(std::make_unique<MessageBoxExample>());
   examples.push_back(std::make_unique<MultilineExample>());
-  examples.push_back(std::make_unique<NativeThemeExample>());
   examples.push_back(std::make_unique<NotificationExample>());
   examples.push_back(std::make_unique<ProgressBarExample>());
   examples.push_back(std::make_unique<RadioButtonExample>());

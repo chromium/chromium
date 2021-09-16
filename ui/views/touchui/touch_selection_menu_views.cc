@@ -13,6 +13,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/pointer/touch_editing_controller.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
@@ -168,8 +170,7 @@ void TouchSelectionMenuViews::OnPaint(gfx::Canvas* canvas) {
     const View* child = *i;
     int x = child->bounds().right() + kSpacingBetweenButtons / 2;
     canvas->FillRect(gfx::Rect(x, 0, 1, child->height()),
-                     GetNativeTheme()->GetSystemColor(
-                         ui::NativeTheme::kColorId_SeparatorColor));
+                     GetColorProvider()->GetColor(ui::kColorSeparator));
   }
 }
 

@@ -23,7 +23,7 @@ class Canvas;
 }
 
 namespace ui {
-class NativeTheme;
+class ColorProvider;
 }
 
 namespace views {
@@ -146,11 +146,11 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   static gfx::Insets GetBorderAndShadowInsets(
       absl::optional<int> shadow_elevation = absl::nullopt);
 
-  // Draws a border and shadow outside the |rect| on |canvas|. |theme| is passed
-  // into GetBorderAndShadowFlags to obtain the shadow color.
+  // Draws a border and shadow outside the |rect| on |canvas|. |color_provider|
+  // is passed into GetBorderAndShadowFlags to obtain the shadow color.
   static void DrawBorderAndShadow(SkRect rect,
                                   gfx::Canvas* canvas,
-                                  const ui::NativeTheme* theme);
+                                  const ui::ColorProvider* color_provider);
 
   // Set the corner radius, enables Material Design.
   void SetCornerRadius(int radius);
@@ -170,7 +170,7 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   SkColor background_color() const { return background_color_; }
 
   // If true, the background color should be determined by the host's
-  // NativeTheme.
+  // ColorProvider.
   void set_use_theme_background_color(bool use_theme_background_color) {
     use_theme_background_color_ = use_theme_background_color;
   }

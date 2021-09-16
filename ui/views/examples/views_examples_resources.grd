@@ -158,7 +158,7 @@
 
       <!-- native theme example -->
       <message translateable="false" name="IDS_THEME_SELECT_LABEL">
-        Native Theme Colors
+        Colors
       </message>
 
       <!-- notification example -->

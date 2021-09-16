@@ -16,6 +16,8 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/font_list.h"
@@ -424,9 +426,8 @@ void CustomFrameView::PaintRestoredClientEdge(gfx::Canvas* canvas) {
 }
 
 SkColor CustomFrameView::GetFrameColor() const {
-  return GetNativeTheme()->GetSystemColor(
-      frame_->IsActive() ? ui::NativeTheme::kColorId_CustomFrameActiveColor
-                         : ui::NativeTheme::kColorId_CustomFrameInactiveColor);
+  return GetColorProvider()->GetColor(
+      frame_->IsActive() ? ui::kColorFrameActive : ui::kColorFrameInactive);
 }
 
 gfx::ImageSkia CustomFrameView::GetFrameImage() const {

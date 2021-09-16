@@ -15,6 +15,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/display/display.h"
@@ -23,7 +25,6 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/skia_util.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -474,8 +475,8 @@ void BubbleFrameView::OnThemeChanged() {
   UpdateWindowIcon();
 
   if (bubble_border_ && bubble_border_->use_theme_background_color()) {
-    bubble_border_->set_background_color(GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_DialogBackground));
+    bubble_border_->set_background_color(
+        GetColorProvider()->GetColor(ui::kColorDialogBackground));
     UpdateClientViewBackground();
     SchedulePaint();
   }

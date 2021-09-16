@@ -12,6 +12,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -37,8 +39,7 @@ class LayoutPanel : public View {
   void OnThemeChanged() override {
     View::OnThemeChanged();
     SetBorder(CreateSolidBorder(
-        1, GetNativeTheme()->GetSystemColor(
-               ui::NativeTheme::kColorId_UnfocusedBorderColor)));
+        1, GetColorProvider()->GetColor(ui::kColorFocusableBorderUnfocused)));
   }
 };
 
@@ -134,9 +135,9 @@ int LayoutExampleBase::ChildPanel::GetFlex() const {
 void LayoutExampleBase::ChildPanel::OnThemeChanged() {
   View::OnThemeChanged();
   SetBorder(CreateSolidBorder(
-      1, GetNativeTheme()->GetSystemColor(
-             selected_ ? ui::NativeTheme::kColorId_FocusedBorderColor
-                       : ui::NativeTheme::kColorId_UnfocusedBorderColor)));
+      1, GetColorProvider()->GetColor(
+             selected_ ? ui::kColorFocusableBorderFocused
+                       : ui::kColorFocusableBorderUnfocused)));
 }
 
 void LayoutExampleBase::ChildPanel::ContentsChanged(

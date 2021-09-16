@@ -10,6 +10,8 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/bubble/info_bubble.h"
@@ -112,9 +114,8 @@ void TooltipIcon::RemoveObserver(Observer* observer) {
 void TooltipIcon::SetDrawAsHovered(bool hovered) {
   SetImage(gfx::CreateVectorIcon(
       vector_icons::kInfoOutlineIcon, tooltip_icon_size_,
-      GetNativeTheme()->GetSystemColor(
-          hovered ? ui::NativeTheme::kColorId_TooltipIconHovered
-                  : ui::NativeTheme::kColorId_TooltipIcon)));
+      GetColorProvider()->GetColor(hovered ? ui::kColorHelpIconActive
+                                           : ui::kColorHelpIconInactive)));
 }
 
 void TooltipIcon::ShowBubble() {

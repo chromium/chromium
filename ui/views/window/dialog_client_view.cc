@@ -12,6 +12,8 @@
 #include "build/build_config.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -219,8 +221,8 @@ void DialogClientView::OnThemeChanged() {
   const DialogDelegate* dialog = GetDialogDelegate();
 
   if (dialog && !dialog->use_custom_frame()) {
-    SetBackground(views::CreateSolidBackground(GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_DialogBackground)));
+    SetBackground(views::CreateSolidBackground(
+        GetColorProvider()->GetColor(ui::kColorDialogBackground)));
   }
 }
 
