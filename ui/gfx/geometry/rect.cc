@@ -120,8 +120,8 @@ void Rect::Inset(int left, int top, int right, int bottom) {
   set_height(base::ClampSub(height(), base::ClampAdd(top, bottom)));
 }
 
-void Rect::Offset(int horizontal, int vertical) {
-  origin_ += Vector2d(horizontal, vertical);
+void Rect::Offset(const Vector2d& distance) {
+  origin_ += distance;
   // Ensure that width and height remain valid.
   set_width(width());
   set_height(height());

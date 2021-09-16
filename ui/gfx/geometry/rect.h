@@ -138,8 +138,10 @@ class GEOMETRY_EXPORT Rect {
   void Inset(int left, int top, int right, int bottom);
 
   // Move the rectangle by a horizontal and vertical distance.
-  void Offset(int horizontal, int vertical);
-  void Offset(const Vector2d& distance) { Offset(distance.x(), distance.y()); }
+  void Offset(int horizontal, int vertical) {
+    Offset(Vector2d(horizontal, vertical));
+  }
+  void Offset(const Vector2d& distance);
   void operator+=(const Vector2d& offset);
   void operator-=(const Vector2d& offset);
 

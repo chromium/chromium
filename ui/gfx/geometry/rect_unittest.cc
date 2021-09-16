@@ -897,6 +897,9 @@ TEST(RectTest, Offset) {
   i -= Vector2d(1, -1);
   EXPECT_EQ(Rect(1, 2, 3, 4), i);
 
+  i.Offset(2, -2);
+  EXPECT_EQ(Rect(3, 0, 3, 4), i);
+
   RectF f(1.1f, 2.2f, 3.3f, 4.4f);
   EXPECT_EQ(RectF(2.2f, 1.1f, 3.3f, 4.4f), (f + Vector2dF(1.1f, -1.1f)));
   EXPECT_EQ(RectF(2.2f, 1.1f, 3.3f, 4.4f), (Vector2dF(1.1f, -1.1f) + f));
