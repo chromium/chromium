@@ -299,6 +299,9 @@ class CORE_EXPORT NGLineBreaker {
   // True if the resultant line contains a RubyRun with inline-end overhang.
   bool maybe_have_end_overhang_ = false;
 
+  // True if ShouldCreateNewSvgSegment() should be called.
+  bool needs_svg_segmentation_ = false;
+
   const NGInlineItemsData& items_data_;
 
   // The text content of this node. This is same as |items_data_.text_content|
