@@ -89,7 +89,6 @@ js_type_check("closure_compile") {
     ":privacy_sandbox_test",
 
     #":protocol_handlers_tests",
-    ":recent_site_permissions_test",
 
     #":reset_page_test",
     #":reset_profile_banner_test",
@@ -129,7 +128,6 @@ js_type_check("closure_compile") {
     ":site_list_tests",
 
     #":site_list_tests_cros",
-    ":site_settings_page_test",
 
     #":startup_urls_page_test",
     #":sync_account_control_test",
@@ -227,19 +225,6 @@ js_library("privacy_sandbox_test") {
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
-js_library("recent_site_permissions_test") {
-  deps = [
-    ":test_site_settings_prefs_browser_proxy",
-    "..:chai_assert",
-    "..:test_util",
-    "//chrome/browser/resources/settings:lazy_load",
-    "//chrome/browser/resources/settings:settings",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
 js_library("safety_check_chrome_cleaner_test") {
   deps = [
     ":test_metrics_browser_proxy",
@@ -316,19 +301,6 @@ js_library("site_list_tests") {
     "..:test_util",
     "//chrome/browser/resources/settings:lazy_load",
     "//ui/webui/resources/js:cr.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("site_settings_page_test") {
-  deps = [
-    ":test_site_settings_prefs_browser_proxy",
-    ":test_util",
-    "..:chai_assert",
-    "//chrome/browser/resources/settings:lazy_load",
-    "//ui/webui/resources/cr_elements/cr_link_row:cr_link_row",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

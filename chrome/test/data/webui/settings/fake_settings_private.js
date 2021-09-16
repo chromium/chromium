@@ -8,11 +8,13 @@ import {FakeChromeEvent} from '../fake_chrome_event.m.js';
 // clang-format on
 
 /** @fileoverview Fake implementation of chrome.settingsPrivate for testing. */
-  /**
-   * @typedef {Array<{key: string,
-   *               type: chrome.settingsPrivate.PrefType,
-   *               values: !Array<*>}>}
-   */
+/**
+ * @typedef {{
+ *   key: string,
+ *   type: chrome.settingsPrivate.PrefType,
+ *   values: !Array<*>
+ * }}
+ */
 export let FakeSettingsPrivatePref;
 
 /**

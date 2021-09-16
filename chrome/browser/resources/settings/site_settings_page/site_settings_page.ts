@@ -28,15 +28,11 @@ import {CategoryListItem} from './site_settings_list.js';
 
 const Id = ContentSettingsTypes;
 
-/**
- * @type {?Map<!ContentSettingsTypes, !CategoryListItem>}
- */
-let categoryItemMap = null;
+let categoryItemMap: Map<ContentSettingsTypes, CategoryListItem>|null = null;
 
-/**
- * @return {!Map<!ContentSettingsTypes, !CategoryListItem>}
- */
-function getCategoryItemMap() {
+type FocusConfig = Map<string, (string|(() => void))>;
+
+function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
   if (categoryItemMap !== null) {
     return categoryItemMap;
   }
@@ -321,15 +317,12 @@ function getCategoryItemMap() {
   return categoryItemMap;
 }
 
-/**
- * @param {!Array<!ContentSettingsTypes>} orderedIdList
- * @return {!Array<!CategoryListItem>}
- */
-function buildItemListFromIds(orderedIdList) {
+function buildItemListFromIds(orderedIdList: Array<ContentSettingsTypes>):
+    Array<CategoryListItem> {
   const map = getCategoryItemMap();
   const orderedList = [];
   for (const id of orderedIdList) {
-    const item = map.get(id);
+    const item = map.get(id)!;
     if (item.shouldShow === undefined || item.shouldShow()) {
       orderedList.push(item);
     }
@@ -337,7 +330,6 @@ function buildItemListFromIds(orderedIdList) {
   return orderedList;
 }
 
-/** @polymer */
 export class SettingsSiteSettingsPageElement extends PolymerElement {
   static get is() {
     return 'settings-site-settings-page';
@@ -357,15 +349,6 @@ export class SettingsSiteSettingsPageElement extends PolymerElement {
         notify: true,
       },
 
-      /**
-       * @private {{
-       *   all: (!Array<!CategoryListItem>|undefined),
-       *   permissionsBasic: (!Array<!CategoryListItem>|undefined),
-       *   permissionsAdvanced: (!Array<!CategoryListItem>|undefined),
-       *   contentBasic: (!Array<!CategoryListItem>|undefined),
-       *   contentAdvanced: (!Array<!CategoryListItem>|undefined)
-       * }}
-       */
       lists_: {
         type: Object,
         value: function() {
@@ -415,47 +398,45 @@ export class SettingsSiteSettingsPageElement extends PolymerElement {
         }
       },
 
-      /** @type {!Map<string, (string|Function)>} */
       focusConfig: {
         type: Object,
         observer: 'focusConfigChanged_',
       },
 
-      /** @private */
       permissionsExpanded_: Boolean,
-
-      /** @private */
       contentExpanded_: Boolean,
-
-      /* @private */
       noRecentSitePermissions_: Boolean,
     };
   }
 
-  /**
-   * @param {!Map<string, string>} newConfig
-   * @param {?Map<string, string>} oldConfig
-   * @private
-   */
-  focusConfigChanged_(newConfig, oldConfig) {
+  focusConfig: FocusConfig;
+  private permissionsExpanded_: boolean;
+  private contentExpanded_: boolean;
+  private noRecentSitePermissions_: boolean;
+
+  private lists_: {
+    all: Array<CategoryListItem>,
+    permissionsBasic: Array<CategoryListItem>,
+    permissionsAdvanced: Array<CategoryListItem>,
+    contentBasic: Array<CategoryListItem>,
+    contentAdvanced: Array<CategoryListItem>,
+  };
+
+  private focusConfigChanged_(_newConfig: FocusConfig, oldConfig: FocusConfig) {
     // focusConfig is set only once on the parent, so this observer should
     // only fire once.
     assert(!oldConfig);
     this.focusConfig.set(routes.SITE_SETTINGS_ALL.path, () => {
-      focusWithoutInk(assert(this.shadowRoot.querySelector('#allSites')));
+      focusWithoutInk(assert(this.shadowRoot!.querySelector('#allSites')!));
     });
   }
 
-  /** @private */
-  onSiteSettingsAllClick_() {
+  private onSiteSettingsAllClick_() {
     Router.getInstance().navigateTo(routes.SITE_SETTINGS_ALL);
   }
 
-  /**
-   * @return {string} Class for the all site settings link
-   * @private
-   */
-  getClassForSiteSettingsAllLink_() {
+  /** @return Class for the all site settings link */
+  private getClassForSiteSettingsAllLink_(): string {
     return this.noRecentSitePermissions_ ? '' : 'hr';
   }
 }

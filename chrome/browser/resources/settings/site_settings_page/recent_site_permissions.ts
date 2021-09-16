@@ -7,31 +7,45 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import '../settings_shared_css.js';
 
+import {CrTooltipIconElement} from 'chrome://resources/cr_elements/policy/cr_tooltip_icon.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {routes} from '../route.js';
-import {Route, RouteObserverMixin, Router} from '../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 import {AllSitesAction2, ContentSetting, ContentSettingsTypes, SiteSettingSource} from '../site_settings/constants.js';
 import {SiteSettingsMixin, SiteSettingsMixinInterface} from '../site_settings/site_settings_mixin.js';
 import {RawSiteException, RecentSitePermissions} from '../site_settings/site_settings_prefs_browser_proxy.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {SiteSettingsMixinInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const SettingsRecentSitePermissionsElementBase = mixinBehaviors(
-    [WebUIListenerBehavior, I18nBehavior],
-    SiteSettingsMixin(RouteObserverMixin(PolymerElement)));
+type FocusConfig = Map<string, (string|(() => void))>;
 
-/** @polymer */
+/** Event interface for dom-repeat. */
+interface RepeaterEvent extends CustomEvent {
+  model: {
+    item: RecentSitePermissions,
+    index: number,
+  };
+}
+
+export interface SettingsRecentSitePermissionsElement {
+  $: {
+    tooltip: PaperTooltipElement,
+  };
+}
+
+const SettingsRecentSitePermissionsElementBase =
+    mixinBehaviors(
+        [WebUIListenerBehavior, I18nBehavior],
+        SiteSettingsMixin(RouteObserverMixin(PolymerElement))) as {
+      new (): PolymerElement & I18nBehavior & WebUIListenerBehavior &
+      SiteSettingsMixinInterface & RouteObserverMixinInterface
+    };
+
 export class SettingsRecentSitePermissionsElement extends
     SettingsRecentSitePermissionsElementBase {
   static get is() {
@@ -44,35 +58,35 @@ export class SettingsRecentSitePermissionsElement extends
 
   static get properties() {
     return {
-      /** @type boolean */
       noRecentPermissions: {
         type: Boolean,
         computed: 'computeNoRecentPermissions_(recentSitePermissionsList_)',
         notify: true,
       },
 
-      /**
-       * @private {boolean}
-       */
       shouldFocusAfterPopulation_: Boolean,
 
       /**
        * List of recent site permissions grouped by source.
-       * @type {!Array<RecentSitePermissions>}
-       * @private
        */
       recentSitePermissionsList_: {
         type: Array,
         value: () => [],
       },
 
-      /** @type {!Map<string, (string|Function)>} */
       focusConfig: {
         type: Object,
         observer: 'focusConfigChanged_',
       },
     };
   }
+
+  noRecentPermissions: boolean;
+  private shouldFocusAfterPopulation_: boolean;
+  private recentSitePermissionsList_: Array<RecentSitePermissions>;
+  focusConfig: FocusConfig;
+  private lastSelected_: {origin: string, incognito: boolean, index: number}|
+      null;
 
   constructor() {
     super();
@@ -82,17 +96,11 @@ export class SettingsRecentSitePermissionsElement extends
      * origin and incognito bit associated with the link that sent the user
      * there, as well as the index in recent permission list for that entry.
      * This allows for an intelligent re-focus upon a back navigation.
-     * @private {!{origin: string, incognito: boolean, index: number}|null}
      */
     this.lastSelected_ = null;
   }
 
-  /**
-   * @param {!Map<string, string>} newConfig
-   * @param {?Map<string, string>} oldConfig
-   * @private
-   */
-  focusConfigChanged_(newConfig, oldConfig) {
+  private focusConfigChanged_(_newConfig: FocusConfig, oldConfig: FocusConfig) {
     // focusConfig is set only once on the parent, so this observer should
     // only fire once.
     assert(!oldConfig);
@@ -108,31 +116,28 @@ export class SettingsRecentSitePermissionsElement extends
   /**
    * Reload the site recent site permission list whenever the user navigates
    * to the site settings page.
-   * @param {!Route} currentRoute
-   * @protected
    */
-  currentRouteChanged(currentRoute) {
+  currentRouteChanged(currentRoute: Route) {
     if (currentRoute.path === routes.SITE_SETTINGS.path) {
       this.populateList_();
     }
   }
 
-  /** @override */
   ready() {
     super.ready();
 
     this.addWebUIListener(
-        'onIncognitoStatusChanged', this.onIncognitoStatusChanged_.bind(this));
+        'onIncognitoStatusChanged',
+        (hasIncognito: boolean) =>
+            this.onIncognitoStatusChanged_(hasIncognito));
     this.browserProxy.updateIncognitoStatus();
   }
 
   /**
    * Perform internationalization for the given content settings type.
-   * @param {string} contentSettingsType
-   * @return {string} The localised content setting type string
-   * @private
    */
-  getI18nContentTypeString_(contentSettingsType) {
+  private getI18nContentTypeString_(contentSettingsType: ContentSettingsTypes):
+      string {
     switch (contentSettingsType) {
       case ContentSettingsTypes.COOKIES:
         return this.i18n('siteSettingsCookiesMidSentence');
@@ -204,36 +209,29 @@ export class SettingsRecentSitePermissionsElement extends
   }
 
   /**
-   * Returns a user-friendly name for the origin a set of recent permissions
-   * is associated with.
-   * @param {!RecentSitePermissions} recentSitePermissions
-   * @return {string} The user-friendly name.
-   * @private
+   * @return a user-friendly name for the origin a set of recent permissions
+   *     is associated with.
    */
-  getDisplayName_(recentSitePermissions) {
+  private getDisplayName_(recentSitePermissions: RecentSitePermissions):
+      string {
     const url = this.toUrl(recentSitePermissions.origin);
     return url.host;
   }
 
   /**
-   * Returns the site scheme for the origin of a set of recent permissions.
-   * @param {!RecentSitePermissions} recentSitePermissions
-   * @return {string} The site scheme.
-   * @private
+   * @return the site scheme for the origin of a set of recent permissions.
    */
-  getSiteScheme_({origin}) {
+  private getSiteScheme_({origin}: RecentSitePermissions): string {
     const url = this.toUrl(origin);
     const scheme = url.protocol.slice(0, -1);
     return scheme === 'https' ? '' : scheme;
   }
 
   /**
-   * Returns the display text which describes the set of recent permissions.
-   * @param {!RecentSitePermissions} recentSitePermissions
-   * @return {string} The display string for set of site permissions.
-   * @private
+   * @return the display text which describes the set of recent permissions.
    */
-  getPermissionsText_({recentPermissions}) {
+  private getPermissionsText_({recentPermissions}: RecentSitePermissions):
+      string {
     // Recently changed permisisons for a site are grouped into three buckets,
     // each described by a single sentence.
     const groupSentences = [
@@ -270,14 +268,11 @@ export class SettingsRecentSitePermissionsElement extends
   }
 
   /**
-   * Returns the display sentence which groups the provided |exceptions|
-   * together and applies the appropriate description based on |setting|.
-   * @param {string} setting
-   * @param {!Array<!RawSiteException>} exceptions
-   * @return {string} The display sentence.
-   * @private
+   * @return the display sentence which groups the provided |exceptions|
+   *    together and applies the appropriate description based on |setting|.
    */
-  getPermissionGroupText_(setting, exceptions) {
+  private getPermissionGroupText_(
+      setting: string, exceptions: Array<RawSiteException>): string {
     const typeStrings = exceptions.map(
         exception => this.getI18nContentTypeString_(exception.type));
 
@@ -297,22 +292,17 @@ export class SettingsRecentSitePermissionsElement extends
   }
 
   /**
-   * Returns the correct class to apply depending on this recent site
-   * permissions entry based on the index.
-   * @param {number} index
-   * @return {string} The CSS class corresponding to the provided index
-   * @private
+   * @return the correct CSS class to apply depending on this recent site
+   *     permissions entry based on the index.
    */
-  getClassForIndex_(index) {
+  private getClassForIndex_(index: number): string {
     return index === 0 ? 'first' : '';
   }
 
   /**
-   * Returns true if there are no recent site permissions to display
-   * @return {boolean}
-   * @private
+   * @return true if there are no recent site permissions to display
    */
-  computeNoRecentPermissions_() {
+  private computeNoRecentPermissions_(): boolean {
     return this.recentSitePermissionsList_.length === 0;
   }
 
@@ -320,10 +310,8 @@ export class SettingsRecentSitePermissionsElement extends
    * Called for when incognito is enabled or disabled. Only called on change
    * (opening N incognito windows only fires one message). Another message is
    * sent when the *last* incognito window closes.
-   * @param {boolean} hasIncognito
-   * @private
    */
-  onIncognitoStatusChanged_(hasIncognito) {
+  private onIncognitoStatusChanged_(hasIncognito: boolean) {
     // We're only interested in the case where we transition out of incognito
     // and we are currently displaying an incognito entry.
     if (hasIncognito === false &&
@@ -334,10 +322,8 @@ export class SettingsRecentSitePermissionsElement extends
 
   /**
    * A handler for selecting a recent site permissions entry.
-   * @param {!{model: !{item: !RecentSitePermissions, index: number}}} e
-   * @private
    */
-  onRecentSitePermissionClick_(e) {
+  private onRecentSitePermissionClick_(e: RepeaterEvent) {
     const origin = this.recentSitePermissionsList_[e.model.index].origin;
     Router.getInstance().navigateTo(
         routes.SITE_SETTINGS_SITE_DETAILS, new URLSearchParams({site: origin}));
@@ -349,19 +335,15 @@ export class SettingsRecentSitePermissionsElement extends
     };
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onShowIncognitoTooltip_(e) {
+  private onShowIncognitoTooltip_(e: Event) {
     e.stopPropagation();
 
-    const target = e.target;
+    const target = e.target!;
     const tooltip = this.$.tooltip;
     tooltip.target = target;
-    /** @type {{updatePosition: Function}} */ (tooltip).updatePosition();
+    tooltip.updatePosition();
     const hide = () => {
-      /** @type {{hide: Function}} */ (tooltip).hide();
+      tooltip.hide();
       target.removeEventListener('mouseleave', hide);
       target.removeEventListener('blur', hide);
       target.removeEventListener('click', hide);
@@ -381,40 +363,38 @@ export class SettingsRecentSitePermissionsElement extends
    * be found the index where it used to be is focused. This may result in
    * focusing another link arrow, or an incognito information icon. If the
    * recent permission list is empty, focus is lost.
-   * @private
    */
-  focusLastSelected_() {
+  private focusLastSelected_() {
     if (this.noRecentPermissions) {
       return;
     }
     const currentIndex =
         this.recentSitePermissionsList_.findIndex((permissions) => {
-          return permissions.origin === this.lastSelected_.origin &&
-              permissions.incognito === this.lastSelected_.incognito;
+          return permissions.origin === this.lastSelected_!.origin &&
+              permissions.incognito === this.lastSelected_!.incognito;
         });
 
     const fallbackIndex = Math.min(
-        this.lastSelected_.index, this.recentSitePermissionsList_.length - 1);
+        this.lastSelected_!.index, this.recentSitePermissionsList_.length - 1);
 
     const index = currentIndex > -1 ? currentIndex : fallbackIndex;
 
     if (this.recentSitePermissionsList_[index].incognito) {
       focusWithoutInk(assert(
-          /** @type {{getFocusableElement: Function}} */ (
-              this.shadowRoot.querySelector(`#incognitoInfoIcon_${index}`))
+          (this.shadowRoot!.querySelector(`#incognitoInfoIcon_${index}`) as
+           CrTooltipIconElement)
               .getFocusableElement()));
     } else {
       focusWithoutInk(
-          assert(this.shadowRoot.querySelector(`#siteEntryButton_${index}`)));
+          assert(this.shadowRoot!.querySelector(`#siteEntryButton_${index}`)!));
     }
   }
 
   /**
    * Retrieve the list of recently changed permissions and implicitly trigger
    * the update of the display list.
-   * @private
    */
-  async populateList_() {
+  private async populateList_() {
     this.recentSitePermissionsList_ =
         await this.browserProxy.getRecentSitePermissions(3);
   }
@@ -422,9 +402,8 @@ export class SettingsRecentSitePermissionsElement extends
   /**
    * Called when the dom-repeat DOM has changed. This allows updating the
    * focused element after the elements have been adjusted.
-   * @private
    */
-  onDomChange_() {
+  private onDomChange_() {
     if (this.shouldFocusAfterPopulation_) {
       this.focusLastSelected_();
       this.shouldFocusAfterPopulation_ = false;

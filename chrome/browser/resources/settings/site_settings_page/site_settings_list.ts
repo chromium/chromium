@@ -9,8 +9,8 @@ import '../settings_shared_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin, BaseMixinInterface} from '../base_mixin.js';
@@ -20,27 +20,29 @@ import {Route, Router} from '../router.js';
 import {ContentSetting, ContentSettingsTypes, NotificationSetting} from '../site_settings/constants.js';
 import {SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl} from '../site_settings/site_settings_prefs_browser_proxy.js';
 
-/**
- * @typedef{{
- *   route: !Route,
- *   id: ContentSettingsTypes,
- *   label: string,
- *   icon: (string|undefined),
- *   enabledLabel: (string|undefined),
- *   disabledLabel: (string|undefined),
- *   otherLabel: (string|undefined),
- *   shouldShow: function():boolean,
- * }}
- */
-export let CategoryListItem;
+export type CategoryListItem = {
+  route: Route,
+  id: ContentSettingsTypes,
+  label: string,
+  icon?: string,
+  enabledLabel?: string,
+  disabledLabel?: string,
+  otherLabel?: string,
+  shouldShow?: () => boolean,
+};
 
-/**
- * @param {string} setting Value from ContentSetting.
- * @param {string} enabled Non-block label ('feature X not allowed').
- * @param {string} disabled Block label (likely just, 'Blocked').
- * @param {?string} other Tristate value (maybe, 'session only').
- */
-export function defaultSettingLabel(setting, enabled, disabled, other) {
+type FocusConfig = Map<string, (string|(() => void))>;
+
+/** Event interface for dom-repeat. */
+interface RepeaterEvent extends CustomEvent {
+  model: {
+    index: number,
+  };
+}
+
+export function defaultSettingLabel(
+    setting: string, enabled: string, disabled: string,
+    other?: string): string {
   if (setting === ContentSetting.BLOCK) {
     return disabled;
   }
@@ -52,19 +54,14 @@ export function defaultSettingLabel(setting, enabled, disabled, other) {
 }
 
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {BaseMixinInterface}
- * @implements {I18nBehaviorInterface}
- * @implements {PrefsBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const SettingsSiteSettingsListElementBase = mixinBehaviors(
-    [WebUIListenerBehavior, I18nBehavior, PrefsBehavior],
-    BaseMixin(PolymerElement));
+const SettingsSiteSettingsListElementBase =
+    mixinBehaviors(
+        [WebUIListenerBehavior, I18nBehavior, PrefsBehavior],
+        BaseMixin(PolymerElement)) as {
+      new (): PolymerElement & BaseMixinInterface & I18nBehavior &
+      PrefsBehaviorInterface & WebUIListenerBehavior
+    };
 
-/** @polymer */
 class SettingsSiteSettingsListElement extends
     SettingsSiteSettingsListElementBase {
   static get is() {
@@ -77,10 +74,8 @@ class SettingsSiteSettingsListElement extends
 
   static get properties() {
     return {
-      /** @type {!Array<!CategoryListItem>} */
       categoryList: Array,
 
-      /** @type {!Map<string, (string|Function)>} */
       focusConfig: {
         type: Object,
         observer: 'focusConfigChanged_',
@@ -97,19 +92,12 @@ class SettingsSiteSettingsListElement extends
     ];
   }
 
-  constructor() {
-    super();
+  categoryList: Array<CategoryListItem>;
+  focusConfig: FocusConfig;
+  private browserProxy_: SiteSettingsPrefsBrowserProxy =
+      SiteSettingsPrefsBrowserProxyImpl.getInstance();
 
-    /** @private {!SiteSettingsPrefsBrowserProxy} */
-    this.browserProxy_ = SiteSettingsPrefsBrowserProxyImpl.getInstance();
-  }
-
-  /**
-   * @param {!Map<string, string>} newConfig
-   * @param {?Map<string, string>} oldConfig
-   * @private
-   */
-  focusConfigChanged_(newConfig, oldConfig) {
+  private focusConfigChanged_(_newConfig: FocusConfig, oldConfig: FocusConfig) {
     // focusConfig is set only once on the parent, so this observer should
     // only fire once.
     assert(!oldConfig);
@@ -119,12 +107,11 @@ class SettingsSiteSettingsListElement extends
     // elements residing in this element's Shadow DOM.
     for (const item of this.categoryList) {
       this.focusConfig.set(item.route.path, () => microTask.run(() => {
-        focusWithoutInk(assert(this.shadowRoot.querySelector(`#${item.id}`)));
+        focusWithoutInk(assert(this.shadowRoot!.querySelector(`#${item.id}`)!));
       }));
     }
   }
 
-  /** @override */
   ready() {
     super.ready();
 
@@ -137,7 +124,8 @@ class SettingsSiteSettingsListElement extends
 
     this.addWebUIListener(
         'contentSettingCategoryChanged',
-        this.refreshDefaultValueLabel_.bind(this));
+        (category: ContentSettingsTypes) =>
+            this.refreshDefaultValueLabel_(category));
 
     const hasProtocolHandlers = this.categoryList.some(item => {
       return item.id === ContentSettingsTypes.PROTOCOL_HANDLERS;
@@ -145,7 +133,7 @@ class SettingsSiteSettingsListElement extends
 
     if (hasProtocolHandlers) {
       // The protocol handlers have a separate enabled/disabled notifier.
-      this.addWebUIListener('setHandlersEnabled', enabled => {
+      this.addWebUIListener('setHandlersEnabled', (enabled: boolean) => {
         this.updateDefaultValueLabel_(
             ContentSettingsTypes.PROTOCOL_HANDLERS,
             enabled ? ContentSetting.ALLOW : ContentSetting.BLOCK);
@@ -159,21 +147,19 @@ class SettingsSiteSettingsListElement extends
     if (hasCookies) {
       // The cookies sub-label is provided by an update from C++.
       this.browserProxy_.getCookieSettingDescription().then(
-          this.updateCookiesLabel_.bind(this));
+          (label: string) => this.updateCookiesLabel_(label));
       this.addWebUIListener(
           'cookieSettingDescriptionChanged',
-          this.updateCookiesLabel_.bind(this));
+          (label: string) => this.updateCookiesLabel_(label));
     }
   }
 
   /**
-   * @param {!ContentSettingsTypes} category The category to refresh
-   *     (fetch current value + update UI)
-   * @return {!Promise<void>} A promise firing after the label has been
-   *     updated.
-   * @private
+   * @param category The category to refresh (fetch current value + update UI)
+   * @return A promise firing after the label has been updated.
    */
-  refreshDefaultValueLabel_(category) {
+  private refreshDefaultValueLabel_(category: ContentSettingsTypes):
+      Promise<void> {
     // Default labels are not applicable to ZOOM_LEVELS, PDF or
     // PROTECTED_CONTENT
     if (category === ContentSettingsTypes.ZOOM_LEVELS ||
@@ -203,48 +189,42 @@ class SettingsSiteSettingsListElement extends
   /**
    * Updates the DOM for the given |category| to display a label that
    * corresponds to the given |setting|.
-   * @param {!ContentSettingsTypes} category
-   * @param {!ContentSetting} setting
-   * @private
    */
-  updateDefaultValueLabel_(category, setting) {
-    const element = this.shadowRoot.querySelector(`#${category}`);
+  private updateDefaultValueLabel_(
+      category: ContentSettingsTypes, setting: ContentSetting) {
+    const element = this.shadowRoot!.querySelector<HTMLElement>(`#${category}`);
     if (!element) {
       // |category| is not part of this list.
       return;
     }
 
     const index =
-        this.shadowRoot.querySelector('dom-repeat').indexForElement(element);
-    const dataItem = this.categoryList[index];
+        this.shadowRoot!.querySelector('dom-repeat')!.indexForElement(element);
+    const dataItem = this.categoryList[index!];
     this.set(
         `categoryList.${index}.subLabel`,
         defaultSettingLabel(
             setting,
             dataItem.enabledLabel ? this.i18n(dataItem.enabledLabel) : '',
             dataItem.disabledLabel ? this.i18n(dataItem.disabledLabel) : '',
-            dataItem.otherLabel ? this.i18n(dataItem.otherLabel) : null));
+            dataItem.otherLabel ? this.i18n(dataItem.otherLabel) : undefined));
   }
 
   /**
    * Update the cookies link row label when the cookies setting description
    * changes.
-   * @param {string} label
-   * @private
    */
-  updateCookiesLabel_(label) {
-    const index =
-        this.shadowRoot.querySelector('dom-repeat')
-            .indexForElement(this.shadowRoot.querySelector('#cookies'));
+  private updateCookiesLabel_(label: string) {
+    const index = this.shadowRoot!.querySelector('dom-repeat')!.indexForElement(
+        this.shadowRoot!.querySelector('#cookies')!);
     this.set(`categoryList.${index}.subLabel`, label);
   }
 
   /**
    * Update the notifications link row label when the notifications setting
    * description changes.
-   * @private
    */
-  updateNotificationsLabel_() {
+  private updateNotificationsLabel_() {
     const state = this.getPref('generated.notification').value;
     const index = this.categoryList.map(e => e.id).indexOf(
         ContentSettingsTypes.NOTIFICATIONS);
@@ -262,11 +242,7 @@ class SettingsSiteSettingsListElement extends
     this.set(`categoryList.${index}.subLabel`, this.i18n(label));
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onClick_(event) {
+  private onClick_(event: RepeaterEvent) {
     Router.getInstance().navigateTo(this.categoryList[event.model.index].route);
   }
 }

@@ -11,3 +11,15 @@ index a9f1aa64c5b8..a202c7fb06ba 100644
  export {PolymerElement} from './polymer-element.js';
 -export {Base} from './polymer-legacy.js';
  export {gestures};
+diff --git a/components-chromium/paper-tooltip/paper-tooltip.d.ts b/components-chromium/paper-tooltip/paper-tooltip.d.ts
+index ed159e50ca1dd..16ad384413340 100644
+--- a/components-chromium/paper-tooltip/paper-tooltip.d.ts
++++ b/components-chromium/paper-tooltip/paper-tooltip.d.ts
+@@ -126,7 +126,7 @@ interface PaperTooltipElement extends LegacyElementMixin, HTMLElement {
+    * either the element given by the `for` attribute, or the immediate parent
+    * of the tooltip.
+    */
+-  readonly target: any;
++  target: any;
+   attached(): void;
+   detached(): void;

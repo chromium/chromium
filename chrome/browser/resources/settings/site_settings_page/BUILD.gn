@@ -2,68 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/html_to_js.gni")
-import("../settings.gni")
-
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags = settings_closure_flags
-  deps = [
-    ":recent_site_permissions",
-    ":site_settings_list",
-    ":site_settings_page",
-  ]
-}
-
-js_library("recent_site_permissions") {
-  deps = [
-    "..:route",
-    "..:router",
-    "../people_page:sync_browser_proxy",
-    "../prefs:prefs_behavior",
-    "../site_settings:constants",
-    "../site_settings:site_settings_mixin",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-  ]
-}
-
-js_library("site_settings_list") {
-  deps = [
-    "..:base_mixin",
-    "..:router",
-    "../site_settings:constants",
-    "../site_settings:site_settings_prefs_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
-  ]
-}
-
-js_library("site_settings_page") {
-  deps = [
-    ":recent_site_permissions",
-    ":site_settings_list",
-    "..:route",
-    "..:router",
-    "../site_settings:constants",
-    "../site_settings:site_settings_prefs_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
-  ]
-}
 
 html_to_js("web_components") {
   js_files = [
-    "recent_site_permissions.js",
-    "site_settings_list.js",
-    "site_settings_page.js",
+    "recent_site_permissions.ts",
+    "site_settings_list.ts",
+    "site_settings_page.ts",
   ]
 }
