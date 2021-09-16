@@ -267,6 +267,7 @@
 <translation id="1276994519141842946">無法解除安裝「<ph name="APP_NAME" />」</translation>
 <translation id="1277020343994096713">新設定的 PIN 碼不能與目前的 PIN 碼相同</translation>
 <translation id="1278859221870828664">檢查 Google Play 應用程式和服務</translation>
+<translation id="1279024913354609713">不允許</translation>
 <translation id="127946606521051357">附近的裝置正在分享資料</translation>
 <translation id="1280965841156951489">編輯檔案</translation>
 <translation id="1282465000333679776">分享系統音訊</translation>
@@ -2194,6 +2195,7 @@
 <translation id="33022249435934718">GDI 控制代碼</translation>
 <translation id="3302388252085547855">輸入理由...</translation>
 <translation id="3303260552072730022">某個擴充功能啟用了全螢幕。</translation>
+<translation id="3303795387212510132">要允許應用程式開啟「<ph name="PROTOCOL_SCHEME" />」連結嗎？</translation>
 <translation id="3303818374450886607">份數</translation>
 <translation id="3303855915957856445">找不到相符的搜尋結果</translation>
 <translation id="3304212451103136496">現折 <ph name="DISCOUNT_AMOUNT" /></translation>
@@ -2271,6 +2273,7 @@
 <translation id="339178315942519818">在 <ph name="DEVICE_TYPE" /> 上查看即時通訊應用程式的通知</translation>
 <translation id="3393554941209044235">Chrome 文件分析</translation>
 <translation id="3394850431319394743">允許使用 ID 來播放受保護的內容</translation>
+<translation id="3396744558790608201">在網站上瀏覽及購物時，先按一下滑鼠右鍵再選取 [使用 Google 智慧鏡頭搜尋圖片] 即可搜尋網站的任意區域，進一步瞭解你看到的圖像內容。</translation>
 <translation id="3396800784455899911">點選 [接受並繼續] 按鈕即表示您同意上述的 Google 服務處理程序。</translation>
 <translation id="339722927132407568">畫面凍結</translation>
 <translation id="3399432415385675819">通知功能會遭到停用</translation>
@@ -3181,6 +3184,7 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" /> 正在共用視窗。</translation>
 <translation id="4364830672918311045">顯示通知</translation>
 <translation id="4366138410738374926">已開始列印</translation>
+<translation id="4369121877634339065">在任一圖片上拖曳游標即可搜尋</translation>
 <translation id="4370975561335139969">您所輸入的電子郵件和密碼不相符</translation>
 <translation id="4371452868325715552">無法連上伺服器。請檢查網路連線，然後再試一次。如果問題仍然無法解決，請嘗試重新啟動 Chromebook。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="4373966964907728675">正在投放桌面</translation>
@@ -5769,6 +5773,10 @@
 <translation id="7222204278952406003">Chrome 是你的預設瀏覽器</translation>
 <translation id="7222232353993864120">電子郵件地址</translation>
 <translation id="7225179976675429563">找不到網路類型</translation>
+<translation id="7226485026248318204">這裡會顯示 Google 相簿的回憶集錦。你必須登入才能看到這些內容。
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        歡迎前往 <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> 管理回憶集錦中顯示的內容。</translation>
 <translation id="7228479291753472782">控制可指定網站能否使用地理位置、麥克風、攝影機等功能的設定。</translation>
 <translation id="7228523857728654909">螢幕鎖定和登入</translation>
 <translation id="7230222852462421043">還原視窗 (&amp;R)</translation>
@@ -6198,6 +6206,7 @@
 <translation id="767147716926917172">自動將診斷資料和使用資料傳送給 Google</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" /> (在「<ph name="PAGE_TITLE" />」中)。</translation>
 <translation id="7674416868315480713">停用所有在 Linux 中轉接的連接埠</translation>
+<translation id="7674537509496907005"><ph name="APP_COUNT" /> 個應用程式</translation>
 <translation id="7674542105240814168">已拒絕提供位置資訊存取權</translation>
 <translation id="7676119992609591770">找到 <ph name="NUM" /> 個與「<ph name="SEARCH_TEXT" />」相符的分頁</translation>
 <translation id="7676867886086876795">將你的語音資料傳送給 Google，讓你在任何文字欄位中使用語音輸入功能。</translation>

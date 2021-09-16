@@ -269,6 +269,7 @@
 <translation id="1276994519141842946"><ph name="APP_NAME" /> 앱을 제거할 수 없음</translation>
 <translation id="1277020343994096713">현재 PIN과 다른 PIN을 새로 만들어 주세요.</translation>
 <translation id="1278859221870828664">Google Play 앱 및 서비스 검토</translation>
+<translation id="1279024913354609713">허용 안함</translation>
 <translation id="127946606521051357">근처 기기가 공유 시도 중</translation>
 <translation id="1280965841156951489">파일 수정</translation>
 <translation id="1282465000333679776">시스템 오디오 공유</translation>
@@ -2209,6 +2210,7 @@
 <translation id="33022249435934718">GDI 처리</translation>
 <translation id="3302388252085547855">이유 입력...</translation>
 <translation id="3303260552072730022">확장 프로그램이 전체 화면을 실행합니다.</translation>
+<translation id="3303795387212510132">앱에서 <ph name="PROTOCOL_SCHEME" /> 링크를 열도록 허용하시겠습니까?</translation>
 <translation id="3303818374450886607">매수</translation>
 <translation id="3303855915957856445">검색결과 없음</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> 할인</translation>
@@ -2286,6 +2288,7 @@
 <translation id="339178315942519818"><ph name="DEVICE_TYPE" />에서 채팅 앱 알림을 확인합니다.</translation>
 <translation id="3393554941209044235">Chrome 문서 분석</translation>
 <translation id="3394850431319394743">보호된 콘텐츠를 재생하기 위해 식별자를 사용하도록 허용됨</translation>
+<translation id="3396744558790608201">마우스 오른쪽 버튼으로 클릭한 다음 ‘Google 렌즈로 이미지 검색’을 선택하여 사이트의 원하는 부분을 검색하세요. 웹 탐색 및 쇼핑 중에 보게 되는 시각 콘텐츠에 관해 자세히 알아볼 수 있습니다.</translation>
 <translation id="3396800784455899911">'동의 및 계속' 버튼을 클릭하면 이러한 Google 서비스와 관련하여 위에 설명된 처리 방식에 동의하는 것으로 간주됩니다.</translation>
 <translation id="339722927132407568">정지됨</translation>
 <translation id="3399432415385675819">알림이 사용 중지됩니다.</translation>
@@ -3195,6 +3198,7 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" />이(가) 창을 공유합니다.</translation>
 <translation id="4364830672918311045">알림 표시</translation>
 <translation id="4366138410738374926">인쇄 시작됨</translation>
+<translation id="4369121877634339065">검색할 이미지를 드래그하세요.</translation>
 <translation id="4370975561335139969">입력한 이메일과 비밀번호가 일치하지 않습니다.</translation>
 <translation id="4371452868325715552">서버에 연결할 수 없습니다. 네트워크 연결을 확인한 다음 다시 시도해 주세요. 문제가 해결되지 않는 경우 Chromebook을 다시 시작해 보세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
 <translation id="4373966964907728675">바탕화면 전송</translation>
@@ -5783,6 +5787,10 @@
 <translation id="7222204278952406003">Chrome이 기본 브라우저로 설정되어 있습니다.</translation>
 <translation id="7222232353993864120">이메일 주소</translation>
 <translation id="7225179976675429563">네트워크 유형이 없습니다.</translation>
+<translation id="7226485026248318204">Google 포토에 담긴 내 추억이 여기 표시됩니다. 로그인한 경우에만 내 추억이 표시됩니다.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />에서 추억에 표시될 사진을 관리하세요.</translation>
 <translation id="7228479291753472782">웹사이트에서 위치정보, 마이크, 카메라 등과 같은 기능을 사용할 수 있도록 할지 여부를 지정하는 설정을 조작합니다.</translation>
 <translation id="7228523857728654909">화면 잠금 및 로그인</translation>
 <translation id="7230222852462421043">창 복원(&amp;R)</translation>
@@ -6212,6 +6220,7 @@
 <translation id="767147716926917172">진단 및 사용 데이터를 Google에 자동으로 전송</translation>
 <translation id="7672520070349703697"><ph name="PAGE_TITLE" />에 포함된 <ph name="HUNG_IFRAME_URL" /></translation>
 <translation id="7674416868315480713">Linux에서 전달되는 모든 포트 비활성화</translation>
+<translation id="7674537509496907005">앱 <ph name="APP_COUNT" />개</translation>
 <translation id="7674542105240814168">위치 액세스 거부됨</translation>
 <translation id="7676119992609591770">'<ph name="SEARCH_TEXT" />' 검색결과로 탭 <ph name="NUM" />개 찾음</translation>
 <translation id="7676867886086876795">모든 텍스트 입력란에서 음성기록 기능을 지원하기 위해 Google에 음성이 전송됩니다.</translation>

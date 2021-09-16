@@ -526,6 +526,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6189413832092199491">Unread</translation>
 <translation id="6196207969502475924">Voice Search</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Close {COUNT} tab}other{Close {COUNT} tabs}}</translation>
+<translation id="6207754106943147310"><ph name="BEGIN_LINK" />See what you can sync<ph name="END_LINK" />.</translation>
 <translation id="6219688215832490856">Never translate</translation>
 <translation id="6223816392543092032">Get your bookmarks, history, passwords and other settings on all your devices.</translation>
 <translation id="6232329973559504466">Incognito search</translation>
@@ -724,6 +725,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 
 Sites can use cookies to see your browsing activity across different sites, for example, to personalise ads.</translation>
 <translation id="7971521879845308059">Block Pop-ups</translation>
+<translation id="797413074872316787">To sync and personalise across devices, turn on sync.</translation>
 <translation id="7982789257301363584">Network</translation>
 <translation id="7993619969781047893">Features on some sites may break</translation>
 <translation id="800361585186029508">Opens the inputted URLs in Google Chrome.</translation>
@@ -740,6 +742,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8076014560081431679">Saved site settings will not be deleted and may reflect your browsing habits. <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">This setting is managed; double-tap for more information</translation>
 <translation id="8080028325999236607">Close All Tabs</translation>
+<translation id="8103864314410529527">Your organisation limits what you can sync. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Turn Off</translation>
 <translation id="8114753159095730575">File download is available. Options available near bottom of screen.</translation>
 <translation id="8156478151976189188">Password Sync isn't working</translation>

@@ -267,6 +267,7 @@
 <translation id="1276994519141842946"><ph name="APP_NAME" /> oʻrnatilmadi</translation>
 <translation id="1277020343994096713">Hozirgidan farqli yangi PIN kod yarating</translation>
 <translation id="1278859221870828664">Google Play ilova va xizmatlarini tekshirish</translation>
+<translation id="1279024913354609713">Ruxsat berilmasin</translation>
 <translation id="127946606521051357">Yaqin-atrofdagi qurilma fayl yubormoqda</translation>
 <translation id="1280965841156951489">Fayllarni tahrirlash</translation>
 <translation id="1282465000333679776">Tizim audiosini ulashish</translation>
@@ -2196,6 +2197,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="33022249435934718">GDI-deskriptorlar</translation>
 <translation id="3302388252085547855">Tekislang...</translation>
 <translation id="3303260552072730022">Noma’lum kengaytma to‘liq ekran rejimini yoqib qo‘ydi.</translation>
+<translation id="3303795387212510132">Ilovaga <ph name="PROTOCOL_SCHEME" /> havolalarini ochishga ruxsat berilsinmi?</translation>
 <translation id="3303818374450886607">Nusxalar</translation>
 <translation id="3303855915957856445">Qidiruv hech qanday natija bermadi</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> chegirma</translation>
@@ -2273,6 +2275,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="339178315942519818">Chat ilovalari bildirishnomalarini <ph name="DEVICE_TYPE" /> qurilmangizda koʻrish</translation>
 <translation id="3393554941209044235">Chrome hujjatlar tahlili</translation>
 <translation id="3394850431319394743">Himoyalangan kontentni ijro etish uchun identifikatorlardan foydalanishga ruxsat berilgan saytlar</translation>
+<translation id="3396744558790608201">Sahifalarni kezish va xarid qilish vaqtida aks etgan vizual kontent haqida batafsil axborot olish uchun oʻng klikni bosib, “Rasmlarni Google Lens yordamida qidirish” bandini tanlang.</translation>
 <translation id="3396800784455899911">“Roziman va davom etish” tugmasini bosish orqali siz yuqorida keltirilgan Google xizmatlari shartlariga rozilik bildirgan hisoblanasiz.</translation>
 <translation id="339722927132407568">Qotib qolishlar bilan</translation>
 <translation id="3399432415385675819">Bildirishnomalar kelmay qoladi</translation>
@@ -3184,6 +3187,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4364567974334641491">“<ph name="APP_NAME" />” ilovasi oynaga kirish uchun ruxsat berdi.</translation>
 <translation id="4364830672918311045">Bildirishnomalarni ko‘rsatish</translation>
 <translation id="4366138410738374926">Chop etish boshlangan</translation>
+<translation id="4369121877634339065">Qidirish uchun istalgan rasmni tortib tashlang</translation>
 <translation id="4370975561335139969">Siz kiritgan e-pochta va parol mos kelmadi</translation>
 <translation id="4371452868325715552">Serverga ulana olmadi. Tarmoq aloqasini tekshiring va qaytadan urining. Muammo qaytarilaversa, Chromebook qurilmangizni qayta ishga tushiring. Xatolik kodi: <ph name="ERROR_CODE" />.</translation>
 <translation id="4373966964907728675">Ish stoli translatsiya qilinmoqda</translation>
@@ -5774,6 +5778,10 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
 <translation id="7222204278952406003">Chrome – qurilmangizdagi asosiy brauzer</translation>
 <translation id="7222232353993864120">Email manzili:</translation>
 <translation id="7225179976675429563">Tarmoq turi ko‘rsatilmagan</translation>
+<translation id="7226485026248318204">Google Photos xizmatidagi Xotiralaringiz shu yerda chiqadi. Ular faqat hisobga kirganingizda koʻrinadi.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Xotiralarda qaysi rasmlar chiqishini <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> sahifasi orqali boshqarish mumkin.</translation>
 <translation id="7228479291753472782">Saytlarning geo-ma’lumotlar, mikrofon, kamera va boshqa funksiyalarga ruxsat boshqaruvi sozlamalarni o‘zgartirish</translation>
 <translation id="7228523857728654909">Ekran qulfi va kirish</translation>
 <translation id="7230222852462421043">Oynani tiklash</translation>
@@ -6203,6 +6211,7 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
 <translation id="767147716926917172">Google serverlariga diagnostika va foydalanish statistikasini avtomatik yuborish</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, <ph name="PAGE_TITLE" /> sahifasida.</translation>
 <translation id="7674416868315480713">Linuxdagi barcha yoʻnaltirilgan portlarni yopish</translation>
+<translation id="7674537509496907005"><ph name="APP_COUNT" /> ta ilova</translation>
 <translation id="7674542105240814168">Joylashuv axborotiga ruxsat rad etildi</translation>
 <translation id="7676119992609591770"><ph name="NUM" /> ta varaqda “<ph name="SEARCH_TEXT" />” topildi</translation>
 <translation id="7676867886086876795">Diktovka istalgan matn maydonida ishlatilishi uchun ovozingiz Google serverlariga yuboriladi.</translation>

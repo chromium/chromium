@@ -51,6 +51,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">მიმდინარეობს სკანირების გაუქმება</translation>
 <translation id="1851218745569890714">ვიდეოკონფერენცია</translation>
+<translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">აპარატურის ვერსია</translation>
 <translation id="1905710495812624430">გადაჭარბებულია მცდელობათა მაქსიმალური რაოდენობა.</translation>
 <translation id="1908234395526491708">წარუმატებელი UDP მოთხოვნები</translation>
@@ -78,6 +79,7 @@
 <translation id="2364498172489649528">გავლილია</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">გამოხმაურების ანგარიშის გაგზავნა</translation>
+<translation id="240334320630038121"><ph name="CONNECTION_TYPE" /> სენსორული პანელი</translation>
 <translation id="2407209115954268704">SIM-ბარათის ჩაკეტვის სტატუსი</translation>
 <translation id="2418150275289244458">გახსნა პარამეტრებში</translation>
 <translation id="2446553403094072641">მოლივლივე წერტილის სიზუსტე</translation>
@@ -101,6 +103,7 @@
 <translation id="3008341117444806826">განახლება</translation>
 <translation id="3009958530611748826">აირჩიეთ საქაღალდე, რომელშიც უნდა შეინახოს</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> მა</translation>
+<translation id="3056720590588772262">საბოლოო წერტილი</translation>
 <translation id="3069085583900247081">ტესტი წარუმატებლად დასრულდა</translation>
 <translation id="3083667275341675831">კავშირის დიაგნოსტიკა</translation>
 <translation id="3091839911843451378">ვერ მოხერხდა — შეწყვიტა მუშაობა</translation>
@@ -121,8 +124,10 @@
 <translation id="3328783797891415197">ტესტი გაშვებულია</translation>
 <translation id="3368922792935385530">დაკავშირებული</translation>
 <translation id="3369013195428705271">ნამდვილად გსურთ ბეჭდვის ისტორიის მთლიანად გასუფთავება? ბეჭდვის მიმდინარე დავალებები არ წაიშლება.</translation>
+<translation id="3412146654386081914"><ph name="CONNECTION_TYPE" /> სენსორული ეკრანი</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">უსაფრთხოება</translation>
+<translation id="3440478087746699229">შიდა</translation>
 <translation id="3456078764689556234">ამობეჭდილი გვერდი <ph name="PRINTED_PAGES" /> / <ph name="TOTAL_PAGES" />-დან.</translation>
 <translation id="345898999683440380">სკანირდება გვერდი <ph name="PAGE_NUM" />. დასრულებულია <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">ბეჭდვა</translation>
@@ -130,6 +135,7 @@
 <translation id="3527036260304016759">ვერ მოხერხდა — უცნობი შეცდომა</translation>
 <translation id="3532980081107202182">დარჩენილია დაახლოებით <ph name="MIN_REMAINING" /> წუთი</translation>
 <translation id="3540383942695635079">MAC მისამართი</translation>
+<translation id="3565064564551103223">დაშვებული IP-ები</translation>
 <translation id="357889014807611375">ლიმიტირებული Wi-Fi</translation>
 <translation id="3582041541988388905"><ph name="NETWORK_NAME" />-კავშირი ვერ მოიძებნა</translation>
 <translation id="3595596368722241419">ბატარეა სავსეა</translation>
@@ -309,6 +315,7 @@
 <translation id="6302401976930124515">ტესტი „<ph name="TEST_NAME" />“ გაუქმდა</translation>
 <translation id="6325525973963619867">ვერ შესრულდა</translation>
 <translation id="636850387210749493">ორგანიზაციის რეგისტრაცია</translation>
+<translation id="6379086450106841622">სენსორული ეკრანი</translation>
 <translation id="6388847657025262518">სკანერის დოკუმენტების მიმწოდი გაიჭედა. შეამოწმეთ მიმწოდი და ცადეთ ხელახლა.</translation>
 <translation id="641081527798843608">თემის თანხვედრა</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -343,6 +350,7 @@
 <translation id="6977381486153291903">მიკროპროგრამის ვერსია</translation>
 <translation id="6982876849933694860">ახალი კავშირის დასაყენებლად გადადით <ph name="BEGIN_LINK" />პარამეტრებზე<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> მართავს ამ მოწყობილობას და აქვს წვდომა მომხმარებლების ნებისმიერ აქტივობაზე, მათ შორის, მონახულებულ ვებგვერდებზე, პაროლებსა და ელფოსტაზე.</translation>
+<translation id="7039041976777695848"><ph name="CONNECTION_TYPE" /> კლავიატურა</translation>
 <translation id="7040230719604914234">ოპერატორი</translation>
 <translation id="7059230779847288458">იტენება, სრულ დატენამდე დარჩენილია <ph name="TIME_VALUE" /></translation>
 <translation id="708426984172631313">შეწყვეტილია</translation>
@@ -387,6 +395,7 @@
 <translation id="7701040980221191251">არცერთი</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">ციკლების რაოდენობა</translation>
+<translation id="7747039790905080783">წინასწარ გაზიარებული გასაღები</translation>
 <translation id="7762130827864645708">პაროლი წარმატებით შეიცვალა. ამიერიდან გამოიყენეთ ახალი პაროლი.</translation>
 <translation id="7763470514545477072">დომენის სუფიქსის დამთხვევა</translation>
 <translation id="7769672763586021400">მოდელის ID</translation>
@@ -396,8 +405,10 @@
 <translation id="7846634333498149051">კლავიატურა</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">პროვაიდერის ტიპი</translation>
+<translation id="7882501334836096755">საჯარო გასაღები</translation>
 <translation id="7895471513946376273">აღმოაჩინეთ ხატვისა და დიზაინის ხელსაწყოები</translation>
 <translation id="7936303884198020182">სახელების სერვერი ვერ მოიძებნა</translation>
+<translation id="7943235353293548836">კავშირის მუდმივი შენარჩუნების ინტერვალი</translation>
 <translation id="7960831585769876809">ტემპერატურა</translation>
 <translation id="7978412674231730200">პირადი გასაღები</translation>
 <translation id="7994702968232966508">EAP მეთოდი</translation>
@@ -447,6 +458,7 @@
 <translation id="8726019395068607495">გაჩერდა — პრინტერის კარი ღიაა</translation>
 <translation id="8730621377337864115">მზადაა</translation>
 <translation id="8747900814994928677">დაადასტურეთ ცვლილება</translation>
+<translation id="8764414543112028321">WireGuard</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">ნაგულისხმევი</translation>
 <translation id="8798441408945964110">პროვაიდერის სახელი</translation>
@@ -462,7 +474,9 @@
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />-ის <ph name="DEVICE_TYPE" /></translation>
 <translation id="8919837981463578619">ვერ მოხერხდა — პრინტერს კალათა აკლია</translation>
 <translation id="8928727111548978589">ვერ მოხერხდა — ქაღალდი გაუთავდა</translation>
+<translation id="8930521118335213258">მსგავსი</translation>
 <translation id="8930622219860340959">უსადენო</translation>
+<translation id="8936793075252196307">კლიენტის IP მისამართი</translation>
 <translation id="8968751544471797276">დატენის სიჩქარე</translation>
 <translation id="8970109610781093811">ხელახლა გაშვება</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{სკანირება}=1{გვერდის {NUMBER_OF_PAGES} სკანირება}other{გვერდის {NUMBER_OF_PAGES} სკანირება}}</translation>
@@ -478,6 +492,7 @@
 <translation id="9137526406337347448">Google სერვისები</translation>
 <translation id="9149391708638971077">მეხსიერების ტესტის გაშვება</translation>
 <translation id="9173638680043580060">დარჩენილია ერთ წუთზე ნაკლები</translation>
+<translation id="917720651393141712">შემოწმება</translation>
 <translation id="9190063653747922532">L2TP/IPsec + წინასწარ გაზიარებული გასაღები</translation>
 <translation id="9211490828691860325">ყველა სამუშაო მაგიდა</translation>
 <translation id="939519157834106403">SSID</translation>

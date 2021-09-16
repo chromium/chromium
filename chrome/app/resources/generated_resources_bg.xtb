@@ -269,6 +269,7 @@
 <translation id="1276994519141842946">Деинсталирането на <ph name="APP_NAME" /> не бе успешно</translation>
 <translation id="1277020343994096713">Създайте нов ПИН код, различен от текущия</translation>
 <translation id="1278859221870828664">Прегледайте приложенията и услугите в Google Play</translation>
+<translation id="1279024913354609713">Без разрешаване</translation>
 <translation id="127946606521051357">Устройство в близост споделя</translation>
 <translation id="1280965841156951489">Редактиране на файловете</translation>
 <translation id="1282465000333679776">Споделяне на системния звук</translation>
@@ -2205,6 +2206,7 @@
 <translation id="33022249435934718">Манипулатори за GDI обекти</translation>
 <translation id="3302388252085547855">Въведете обосновка…</translation>
 <translation id="3303260552072730022">Разширение задейства цял екран.</translation>
+<translation id="3303795387212510132">Да се разреши ли на приложението да отваря връзки от типа <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303818374450886607">Копия</translation>
 <translation id="3303855915957856445">Няма намерени резултати от търсенето</translation>
 <translation id="3304212451103136496">Отстъпка от <ph name="DISCOUNT_AMOUNT" /></translation>
@@ -2282,6 +2284,7 @@
 <translation id="339178315942519818">Преглеждайте на устройството си <ph name="DEVICE_TYPE" /> известията от приложенията си за чат</translation>
 <translation id="3393554941209044235">Анализ на документа в Chrome</translation>
 <translation id="3394850431319394743">Разрешено е използването на идентификатори с цел възпроизвеждане на защитено съдържание</translation>
+<translation id="3396744558790608201">Кликнете с десния бутон на мишката и изберете опцията за търсене на изображения с Google Обектив, за да търсите в която и да е област на сайта и така да научите повече за визуалното съдържание, което виждате, докато сърфирате и пазарувате в мрежата.</translation>
 <translation id="3396800784455899911">С кликването си върху бутона „Приемам и продължавам“ приемате описаното по-горе обработване за тези услуги на Google.</translation>
 <translation id="339722927132407568">Блокира</translation>
 <translation id="3399432415385675819">Известията ще бъдат деактивирани</translation>
@@ -3194,6 +3197,7 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" /> споделя прозорец.</translation>
 <translation id="4364830672918311045">Показване на известия</translation>
 <translation id="4366138410738374926">Отпечатването стартира</translation>
+<translation id="4369121877634339065">Плъзгане върху което и да е изображение с цел търсене</translation>
 <translation id="4370975561335139969">Въведените имейл адрес и парола не съвпадат</translation>
 <translation id="4371452868325715552">Не бе установена връзка със сървъра. Моля, проверете връзката си с мрежата и опитайте отново. Ако продължавате да имате проблеми, рестартирайте своя Chromebook. Код на грешката: <ph name="ERROR_CODE" />.</translation>
 <translation id="4373966964907728675">Предава се работният плот</translation>
@@ -5784,6 +5788,10 @@
 <translation id="7222204278952406003">Chrome е браузърът ви по подразбиране</translation>
 <translation id="7222232353993864120">Имейл адрес</translation>
 <translation id="7225179976675429563">Липсва типът мрежа</translation>
+<translation id="7226485026248318204">Спомените ви от Google Снимки се показват тук. Те са видими само когато сте влезли в профила си.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        На адрес <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> можете да управлявате това, което виждате в спомените си.</translation>
 <translation id="7228479291753472782">Управление на настройките, които посочват дали уебсайтовете могат да използват функции като геолокация, микрофон, камера и др.</translation>
 <translation id="7228523857728654909">Заключване на екрана и влизане в профила</translation>
 <translation id="7230222852462421043">Възстановяване на &amp;прозореца</translation>
@@ -6213,6 +6221,7 @@
 <translation id="767147716926917172">Автоматично изпраща до Google данни за диагностиката и употребата</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, в страницата „<ph name="PAGE_TITLE" />“.</translation>
 <translation id="7674416868315480713">Деактивиране на всички портове, пренасочвани към Linux</translation>
+<translation id="7674537509496907005"><ph name="APP_COUNT" /> приложения</translation>
 <translation id="7674542105240814168">Достъпът до местоположението е отказан</translation>
 <translation id="7676119992609591770">Беше открит <ph name="NUM" /> раздел за „<ph name="SEARCH_TEXT" />“</translation>
 <translation id="7676867886086876795">Изпращане на гласа ви до Google, за да можете да диктувате във всяко текстово поле.</translation>

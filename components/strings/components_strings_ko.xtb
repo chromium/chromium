@@ -1781,7 +1781,7 @@
 <translation id="7086090958708083563">사용자가 요청한 업로드</translation>
 <translation id="7087282848513945231">카운티</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Chrome 설정에서 여러 사이트의 권한 및 저장된 데이터 관리</translation>
-<translation id="7096937462164235847">이 웹사이트의 ID는 확인되지 않았습니다.</translation>
+<translation id="7096937462164235847">인증된 웹사이트가 아닙니다.</translation>
 <translation id="7108338896283013870">숨기기</translation>
 <translation id="7108634116785509031"><ph name="HOST" />에서 카메라에 액세스하려고 합니다</translation>
 <translation id="7108819624672055576">확장 프로그램에서 허용</translation>

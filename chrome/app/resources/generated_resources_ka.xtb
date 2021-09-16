@@ -267,6 +267,7 @@
 <translation id="1276994519141842946"><ph name="APP_NAME" />-ის დეინსტალაცია ვერ მოხერხდა</translation>
 <translation id="1277020343994096713">შექმენით ამჟამინდელისგან განსხვავებული PIN-კოდი</translation>
 <translation id="1278859221870828664">გადახედეთ Google Play აპებსა და სერვისებს</translation>
+<translation id="1279024913354609713">აკრძალვა</translation>
 <translation id="127946606521051357">ახლომდებარე მოწყობილობა კონტენტს აზიარებს</translation>
 <translation id="1280965841156951489">ფაილების რედაქტირება</translation>
 <translation id="1282465000333679776">სისტემის აუდიოს გაზიარება</translation>
@@ -2194,6 +2195,7 @@
 <translation id="33022249435934718">GDI მარკერები</translation>
 <translation id="3302388252085547855">შეიყვანეთ გამამართლებელი გარემოება...</translation>
 <translation id="3303260552072730022">სრული ეკრანით გამოწვეული გაფართოება.</translation>
+<translation id="3303795387212510132">აძლევს უფლებას აპს, გახსნას <ph name="PROTOCOL_SCHEME" /> ბმულები?</translation>
 <translation id="3303818374450886607">ასლები</translation>
 <translation id="3303855915957856445">ძიების შედეგები ვერ მოიძებნა</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" />-იანი ფასდაკლება</translation>
@@ -2271,6 +2273,7 @@
 <translation id="339178315942519818">იხილეთ თქვენი ჩეთის აპების შეტყობინებები თქვენს <ph name="DEVICE_TYPE" />-ზე</translation>
 <translation id="3393554941209044235">Chrome-ის მიერ დოკუმენტების ანალიზი</translation>
 <translation id="3394850431319394743">ნებადართულია, გამოიყენოს იდენტიფიკატორები დაცული კონტენტის დასაკრავად</translation>
+<translation id="3396744558790608201">ვების დათვალიერებისას ან მისი მეშვეობით რაიმეს შეძენისას თქვენთვის ხილული ვიზუალური კონტენტი შესახებ დამატებითი ინფორმაცია რომ მიიღოთ, გამოიყენეთ მარჯვენა დაწკაპუნება საიტის ნებისმიერ რეგიონში და აირჩიეთ „სურათების ძიება Google Lens-ით“.</translation>
 <translation id="3396800784455899911">ღილაკზე „დათანხმება და გაგრძელება“ დაწკაპუნებით თქვენ ეთანხმებით მოცემული Google სერვისებისთვის მონაცემების ზემოაღნიშნული წესით დამუშავებას.</translation>
 <translation id="339722927132407568">იჭედება</translation>
 <translation id="3399432415385675819">შეტყობინებები გაითიშება</translation>
@@ -3182,6 +3185,7 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" /> ფანჯარას აზიარებს.</translation>
 <translation id="4364830672918311045">შეტყობინებების ჩვენება</translation>
 <translation id="4366138410738374926">ბეჭდვა დაიწყო</translation>
+<translation id="4369121877634339065">ძიებისთვის ჩავლებით გადაიტანეთ ნებისმიერ სურათზე</translation>
 <translation id="4370975561335139969">თქვენ მიერ შეყვანილი ელფოსტა და პაროლი არ ემთხვევა</translation>
 <translation id="4371452868325715552">სერვერთან დაკავშირება ვერ მოხერხდა. შეამოწმეთ ქსელთან კავშირი და ხელახლა ცადეთ. თუ პრობლემა არ მოგვარდება, ცადეთ Chromebook-ის გადატვირთვა. შეცდომის კოდი: <ph name="ERROR_CODE" />.</translation>
 <translation id="4373966964907728675">დესკტოპის ტრანსლირება</translation>
@@ -5770,6 +5774,10 @@
 <translation id="7222204278952406003">Chrome თქვენი ნაგულისხმევი ბრაუზერია</translation>
 <translation id="7222232353993864120">ელფოსტის მისამართი</translation>
 <translation id="7225179976675429563">ქსელის ტიპი არ არის მითითებული</translation>
+<translation id="7226485026248318204">აქ ნაჩვენებია თქვენი მოგონებები Google Photos-იდან. ისინი ჩანს მხოლოდ მაშინ, როცა სისტემაში შესული ხართ.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        მოგონების სახით გამოსაჩენი კონტენტის მართვა შეგიძლიათ მისამართზე <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.</translation>
 <translation id="7228479291753472782">იმ პარამეტრების მართვა, რომლებიც განსაზღვრავს, შეუძლია თუ არა ვებსაიტებს ისეთ ფუნქციების გამოყენება, როგორიცაა გეოლოკაცია, მიკროფონი, კამერა, და ა.შ.</translation>
 <translation id="7228523857728654909">ეკრანის დაბლოკვა და სისტემაში შესვლა</translation>
 <translation id="7230222852462421043">ფანჯრის &amp;აღდგენა</translation>
@@ -6199,6 +6207,7 @@
 <translation id="767147716926917172">დიაგნოსტიკური და გამოყენების მონაცემების Google-ისთვის ავტომატურად გაგზავნა</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, <ph name="PAGE_TITLE" />-ზე.</translation>
 <translation id="7674416868315480713">Linux-ში ყველა პორტის გადამისამართების დეაქტივაცია</translation>
+<translation id="7674537509496907005"><ph name="APP_COUNT" /> აპი</translation>
 <translation id="7674542105240814168">მდებარეობაზე წვდომა უარყოფილია</translation>
 <translation id="7676119992609591770">მოთხოვნაზე „<ph name="SEARCH_TEXT" />“ მოიძებნა <ph name="NUM" /> ჩანართი</translation>
 <translation id="7676867886086876795">ნებისმიერი ტექსტური ველის კარნახით შესავსებად თქვენი ხმა გაიგზავნება Google-ში.</translation>

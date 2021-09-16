@@ -269,6 +269,7 @@
 <translation id="1276994519141842946"><ph name="APP_NAME" />-г суулгаж чадсангүй</translation>
 <translation id="1277020343994096713">Таны одоогийн ПИН-с өөр шинэ ПИН үүсгэнэ үү</translation>
 <translation id="1278859221870828664">Google Play-н аппууд болон үйлчилгээнүүдийг үнэлнэ үү</translation>
+<translation id="1279024913354609713">Бүү зөвшөөр</translation>
 <translation id="127946606521051357">Ойролцоо байгаа төхөөрөмж хуваалцаж байна</translation>
 <translation id="1280965841156951489">Файлуудыг засах</translation>
 <translation id="1282465000333679776">Системийн аудиог хуваалцах</translation>
@@ -2205,6 +2206,7 @@
 <translation id="33022249435934718">GDI зохицуулалт</translation>
 <translation id="3302388252085547855">Үндэслэл оруулах...</translation>
 <translation id="3303260552072730022">Аль нэг өргөтгөл нь дэлгэцийг томосгох үйлдлийг идэвхжүүлсэн байна.</translation>
+<translation id="3303795387212510132">Аппуудыг <ph name="PROTOCOL_SCHEME" />-н холбоосыг нээхийг зөвшөөрөх үү?</translation>
 <translation id="3303818374450886607">Хуулбарууд</translation>
 <translation id="3303855915957856445">Хайлтын илэрц олдсонгүй</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> хямдралтай</translation>
@@ -2282,6 +2284,7 @@
 <translation id="339178315942519818"><ph name="DEVICE_TYPE" /> дээрх чатны аппуудынхаа мэдэгдлийг харах</translation>
 <translation id="3393554941209044235">Chrome-н документын задлан шинжилгээ</translation>
 <translation id="3394850431319394743">Хамгаалагдсан контентыг тоглуулахын тулд таниулбар ашиглахыг зөвшөөрсөн</translation>
+<translation id="3396744558790608201">Та веб дээр үзэх болон дэлгүүр хэсэх үедээ харах визуал контентынхоо талаар нэмэлт мэдээлэл авахын тулд сайтын дурын хэсгийг хайх бол баруун талыг товшиж, “Google Дурангаар зураг хайх”-ыг сонгоно уу.</translation>
 <translation id="3396800784455899911">"Зөвшөөрөөд үргэлжлүүлэх" товчлуурыг товшсоноор та Google-н эдгээр үйлчилгээг дээр дурдсан байдлаар боловсруулахыг зөвшөөрч байна.</translation>
 <translation id="339722927132407568">Царцдаг</translation>
 <translation id="3399432415385675819">Мэдэгдлийг идэвхгүй болгоно</translation>
@@ -3192,6 +3195,7 @@
 <translation id="4364567974334641491"><ph name="APP_NAME" /> цонх хуваалцаж байна.</translation>
 <translation id="4364830672918311045">Дэлгэцийн мэдэгдэл</translation>
 <translation id="4366138410738374926">Хэвлэж эхэлсэн</translation>
+<translation id="4369121877634339065">Хайхын тулд дурын зургийг чирч авчирна уу</translation>
 <translation id="4370975561335139969">Таны оруулсан имэйл болон нууц үг таарахгүй байна</translation>
 <translation id="4371452868325715552">Сервертэй холбогдож чадсангүй. Сүлжээний холболтоо шалгаад, дахин оролдоно уу. Хэрэв асуудалтай хэвээр байвал та Chromebook-ээ дахин эхлүүлж үзнэ үү. Алдааны код: <ph name="ERROR_CODE" />.</translation>
 <translation id="4373966964907728675">Компьютерийг каст хийж байна</translation>
@@ -5781,6 +5785,10 @@
 <translation id="7222204278952406003">Chrome таны өгөгдмөл хөтөч боллоо</translation>
 <translation id="7222232353993864120">И-мэйл хаяг</translation>
 <translation id="7225179976675429563">Сүлжээний төрөл алга байна</translation>
+<translation id="7226485026248318204">Таны Google Зургийн дурсамжуудыг энд харуулна. Тэдгээр нь зөвхөн таныг нэвтэрсэн үед харагдана.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Дурсамжууддаа юу харахаа <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> дээр удирдана уу.</translation>
 <translation id="7228479291753472782">Гео байршил, микрофон, камер зэрэг онцлог ашиглах боломжтой веб хуудасны тохиргоог тодорхойлдог.</translation>
 <translation id="7228523857728654909">Дэлгэцийн түгжээ болон нэвтрэлт</translation>
 <translation id="7230222852462421043">&amp;Цонхыг сэргээх</translation>
@@ -6210,6 +6218,7 @@
 <translation id="767147716926917172">Оношилгоо болон ашиглалтын өгөгдлийг Google-д автоматаар илгээдэг</translation>
 <translation id="7672520070349703697"><ph name="PAGE_TITLE" />-н <ph name="HUNG_IFRAME_URL" />.</translation>
 <translation id="7674416868315480713">Linux-д шилжүүлж буй бүх портыг идэвхгүй болгох</translation>
+<translation id="7674537509496907005"><ph name="APP_COUNT" /> апп</translation>
 <translation id="7674542105240814168">Байршилд хандахыг зөвшөөрөөгүй</translation>
 <translation id="7676119992609591770">'<ph name="SEARCH_TEXT" />'-н <ph name="NUM" /> таб оллоо</translation>
 <translation id="7676867886086876795">Диктафоныг текстийн дурын талбарт зөвшөөрөхийн тулд дуу хоолойгоо Google-д илгээнэ үү.</translation>

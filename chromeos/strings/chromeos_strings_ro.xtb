@@ -51,6 +51,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Se anulează scanarea</translation>
 <translation id="1851218745569890714">Conferințe video</translation>
+<translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Versiune hardware</translation>
 <translation id="1905710495812624430">Ai depășit numărul maxim de încercări permise.</translation>
 <translation id="1908234395526491708">Erori de solicitare UDP</translation>
@@ -78,6 +79,7 @@
 <translation id="2364498172489649528">Reușită</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Trimite un raport de feedback</translation>
+<translation id="240334320630038121">Touchpad <ph name="CONNECTION_TYPE" /></translation>
 <translation id="2407209115954268704">Stare blocare card SIM</translation>
 <translation id="2418150275289244458">Deschide în setări</translation>
 <translation id="2446553403094072641">Precizia virgulei mobile</translation>
@@ -101,6 +103,7 @@
 <translation id="3008341117444806826">ACTUALIZEAZĂ</translation>
 <translation id="3009958530611748826">Selectează un dosar în care să salvezi</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
+<translation id="3056720590588772262">Punct final</translation>
 <translation id="3069085583900247081">Testul nu a reușit</translation>
 <translation id="3083667275341675831">Diagnosticare pentru conectivitate</translation>
 <translation id="3091839911843451378">Nereușită – Oprită</translation>
@@ -121,8 +124,10 @@
 <translation id="3328783797891415197">Se rulează testul</translation>
 <translation id="3368922792935385530">Conectat</translation>
 <translation id="3369013195428705271">Sigur vrei să ștergi tot istoricul printărilor? Sarcinile de printare în curs nu vor fi șterse.</translation>
+<translation id="3412146654386081914">Ecran tactil <ph name="CONNECTION_TYPE" /></translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Securitate</translation>
+<translation id="3440478087746699229">Internă</translation>
 <translation id="3456078764689556234">S-a printat pagina <ph name="PRINTED_PAGES" /> din <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Se scanează pagina <ph name="PAGE_NUM" />. Progres: <ph name="PERCENTAGE_VALUE" /> %.</translation>
 <translation id="3459509316159669723">Printare</translation>
@@ -130,6 +135,7 @@
 <translation id="3527036260304016759">Nereușită – Eroare necunoscută</translation>
 <translation id="3532980081107202182">Au mai rămas aproximativ <ph name="MIN_REMAINING" /> minute</translation>
 <translation id="3540383942695635079">Adresa MAC</translation>
+<translation id="3565064564551103223">Adrese IP permise</translation>
 <translation id="357889014807611375">Wi-Fi contorizat</translation>
 <translation id="3582041541988388905">Nu a fost detectată nicio conexiune <ph name="NETWORK_NAME" /></translation>
 <translation id="3595596368722241419">Baterie încărcată</translation>
@@ -309,6 +315,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6302401976930124515">Testul <ph name="TEST_NAME" /> a fost anulat</translation>
 <translation id="6325525973963619867">Eșuat</translation>
 <translation id="636850387210749493">Înscriere pentru întreprindere</translation>
+<translation id="6379086450106841622">Ecran tactil</translation>
 <translation id="6388847657025262518">Alimentatorul de documente al scanerului este blocat. Verifică alimentatorul și încearcă din nou.</translation>
 <translation id="641081527798843608">Potrivirea subiectului</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -343,6 +350,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6977381486153291903">Versiune firmware</translation>
 <translation id="6982876849933694860">Pentru a configura o conexiune nouă, accesează <ph name="BEGIN_LINK" />Setări<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gestionează acest dispozitiv și are acces la toată activitatea utilizatorului, inclusiv la paginile web accesate, parole și e-mail.</translation>
+<translation id="7039041976777695848">Tastatură <ph name="CONNECTION_TYPE" /></translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7059230779847288458">Se încarcă, <ph name="TIME_VALUE" /> până la încărcarea completă</translation>
 <translation id="708426984172631313">OPRIT</translation>
@@ -387,6 +395,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7701040980221191251">Niciuna</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Numărul de cicluri</translation>
+<translation id="7747039790905080783">Cheie predistribuită</translation>
 <translation id="7762130827864645708">Parola a fost schimbată. Folosește noua parolă de acum înainte.</translation>
 <translation id="7763470514545477072">Potrivire a sufixului de domeniu</translation>
 <translation id="7769672763586021400">ID-ul modelului</translation>
@@ -396,8 +405,10 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7846634333498149051">Tastatură</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tip furnizor</translation>
+<translation id="7882501334836096755">Cheie publică</translation>
 <translation id="7895471513946376273">Descoperă instrumente de desenare și design</translation>
 <translation id="7936303884198020182">Nu s-au găsit servere de nume</translation>
+<translation id="7943235353293548836">Interval keep-alive persistent</translation>
 <translation id="7960831585769876809">Temperatură</translation>
 <translation id="7978412674231730200">Cheie privată</translation>
 <translation id="7994702968232966508">Metodă EAP</translation>
@@ -447,6 +458,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="8726019395068607495">Oprită – Ușă deschisă</translation>
 <translation id="8730621377337864115">Terminat</translation>
 <translation id="8747900814994928677">Confirmă schimbarea</translation>
+<translation id="8764414543112028321">WireGuard</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Prestabilit</translation>
 <translation id="8798441408945964110">Numele furnizorului</translation>
@@ -462,7 +474,9 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> utilizatorului <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">Nereușită – Tavă lipsă</translation>
 <translation id="8928727111548978589">Nereușită – Hârtie epuizată</translation>
+<translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Wireless</translation>
+<translation id="8936793075252196307">Adresa IP a clientului</translation>
 <translation id="8968751544471797276">Rata de încărcare</translation>
 <translation id="8970109610781093811">Rulați din nou</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Scanează}=1{Scanează {NUMBER_OF_PAGES} pagină}few{Scanează {NUMBER_OF_PAGES} pagini}other{Scanează {NUMBER_OF_PAGES} de pagini}}</translation>
@@ -478,6 +492,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9149391708638971077">Rulează testul Memorie</translation>
 <translation id="9173638680043580060">A rămas mai puțin de un minut</translation>
+<translation id="917720651393141712">Testează</translation>
 <translation id="9190063653747922532">L2TP/IPSec + cheia predistribuită</translation>
 <translation id="9211490828691860325">Toate desktopurile</translation>
 <translation id="939519157834106403">SSID</translation>

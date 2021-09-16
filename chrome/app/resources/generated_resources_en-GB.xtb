@@ -269,6 +269,7 @@
 <translation id="1276994519141842946">Couldn't uninstall <ph name="APP_NAME" /></translation>
 <translation id="1277020343994096713">Create a new PIN that's different from your current PIN</translation>
 <translation id="1278859221870828664">Review Google Play apps and services</translation>
+<translation id="1279024913354609713">Don't allow</translation>
 <translation id="127946606521051357">Device nearby is sharing</translation>
 <translation id="1280965841156951489">Edit files</translation>
 <translation id="1282465000333679776">Share system audio</translation>
@@ -2209,6 +2210,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="33022249435934718">GDI Handles</translation>
 <translation id="3302388252085547855">Enter justification…</translation>
 <translation id="3303260552072730022">An extension triggered full screen.</translation>
+<translation id="3303795387212510132">Allow app to open <ph name="PROTOCOL_SCHEME" /> links?</translation>
 <translation id="3303818374450886607">Copies</translation>
 <translation id="3303855915957856445">No search results found</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> off</translation>
@@ -2286,6 +2288,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="339178315942519818">View notifications from your chat apps on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="3393554941209044235">Chrome document analysis</translation>
 <translation id="3394850431319394743">Allowed to use identifiers to play protected content</translation>
+<translation id="3396744558790608201">Right-click and select 'Search images with Google Lens' to search any region of the site to learn more about the visual content that you see while you browse and shop on the web.</translation>
 <translation id="3396800784455899911">By clicking the 'Accept and continue' button, you agree to the processing described above for these Google services.</translation>
 <translation id="339722927132407568">Freezes</translation>
 <translation id="3399432415385675819">Notifications will be disabled</translation>
@@ -3197,6 +3200,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> is sharing a window.</translation>
 <translation id="4364830672918311045">Display notifications</translation>
 <translation id="4366138410738374926">Printing started</translation>
+<translation id="4369121877634339065">Drag over any image to search</translation>
 <translation id="4370975561335139969">The email and password that you entered don't match.</translation>
 <translation id="4371452868325715552">Couldn’t connect with the server. Please check your network connection and try again. If you're still having trouble, try restarting your Chromebook. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="4373966964907728675">Casting desktop</translation>
@@ -5786,6 +5790,10 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7222204278952406003">Chrome is your default browser</translation>
 <translation id="7222232353993864120">Email Address</translation>
 <translation id="7225179976675429563">Network type missing</translation>
+<translation id="7226485026248318204">Your memories from Google Photos are shown here. They are visible only when you’re signed in.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Manage what you see in your memories at <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.</translation>
 <translation id="7228479291753472782">Manipulate settings that specify whether websites can use features such as geo-location, microphone, camera, etc.</translation>
 <translation id="7228523857728654909">Screen lock and sign-in</translation>
 <translation id="7230222852462421043">&amp;Restore window</translation>
@@ -6215,6 +6223,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="767147716926917172">Automatically sends diagnostic and usage data to Google</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, in <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">Deactivate all ports being forwarded in Linux</translation>
+<translation id="7674537509496907005"><ph name="APP_COUNT" /> apps</translation>
 <translation id="7674542105240814168">Location access denied</translation>
 <translation id="7676119992609591770">Found <ph name="NUM" /> tab for '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="7676867886086876795">Send your voice to Google to allow dictation into any text field.</translation>

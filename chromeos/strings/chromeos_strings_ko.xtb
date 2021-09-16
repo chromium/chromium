@@ -51,6 +51,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">스캔 취소 중</translation>
 <translation id="1851218745569890714">화상 회의</translation>
+<translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">하드웨어 버전</translation>
 <translation id="1905710495812624430">허용되는 최대 시도 횟수를 초과했습니다.</translation>
 <translation id="1908234395526491708">UDP 요청 실패</translation>
@@ -78,6 +79,7 @@
 <translation id="2364498172489649528">통과</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">의견 보고서 보내기</translation>
+<translation id="240334320630038121"><ph name="CONNECTION_TYPE" /> 터치패드</translation>
 <translation id="2407209115954268704">SIM 잠금 상태</translation>
 <translation id="2418150275289244458">설정에서 열기</translation>
 <translation id="2446553403094072641">부동 소수점 정확성</translation>
@@ -101,6 +103,7 @@
 <translation id="3008341117444806826">새로고침</translation>
 <translation id="3009958530611748826">저장 폴더 선택</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
+<translation id="3056720590588772262">엔드포인트</translation>
 <translation id="3069085583900247081">테스트 실패</translation>
 <translation id="3083667275341675831">연결 진단</translation>
 <translation id="3091839911843451378">실패 - 중지됨</translation>
@@ -121,8 +124,10 @@
 <translation id="3328783797891415197">테스트 실행 중</translation>
 <translation id="3368922792935385530">연결됨</translation>
 <translation id="3369013195428705271">모든 인쇄 기록을 삭제하시겠습니까? 진행 중인 인쇄 작업은 삭제되지 않습니다.</translation>
+<translation id="3412146654386081914"><ph name="CONNECTION_TYPE" /> 터치스크린</translation>
 <translation id="3434107140712555581">배터리 <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">보안</translation>
+<translation id="3440478087746699229">내부</translation>
 <translation id="3456078764689556234">인쇄된 페이지 <ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" />페이지를 스캔 중입니다. <ph name="PERCENTAGE_VALUE" />% 완료되었습니다.</translation>
 <translation id="3459509316159669723">인쇄</translation>
@@ -130,6 +135,7 @@
 <translation id="3527036260304016759">실패 - 알 수 없는 오류</translation>
 <translation id="3532980081107202182">약 <ph name="MIN_REMAINING" />분 남음</translation>
 <translation id="3540383942695635079">MAC 주소</translation>
+<translation id="3565064564551103223">허용된 IP</translation>
 <translation id="357889014807611375">전송량 제한이 있는 Wi-Fi</translation>
 <translation id="3582041541988388905"><ph name="NETWORK_NAME" /> 연결이 감지되지 않음</translation>
 <translation id="3595596368722241419">배터리 충전 완료</translation>
@@ -309,6 +315,7 @@
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> 테스트가 취소됨</translation>
 <translation id="6325525973963619867">실패</translation>
 <translation id="636850387210749493">엔터프라이즈 등록</translation>
+<translation id="6379086450106841622">터치스크린</translation>
 <translation id="6388847657025262518">스캐너의 급지대에 용지가 걸렸습니다. 급지대를 확인한 후 다시 시도해 보세요.</translation>
 <translation id="641081527798843608">주제 일치</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -343,6 +350,7 @@
 <translation id="6977381486153291903">펌웨어 버전</translation>
 <translation id="6982876849933694860">새 연결을 설정하려면 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />으로 이동하세요.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" />에서 이 기기를 관리하고 방문한 웹페이지, 비밀번호, 이메일을 비롯한 모든 사용자 활동에 액세스합니다.</translation>
+<translation id="7039041976777695848"><ph name="CONNECTION_TYPE" /> 키보드</translation>
 <translation id="7040230719604914234">운영자</translation>
 <translation id="7059230779847288458">충전 중, 완료까지 <ph name="TIME_VALUE" /> 남음</translation>
 <translation id="708426984172631313">중지됨</translation>
@@ -387,6 +395,7 @@
 <translation id="7701040980221191251">없음</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">사이클 수</translation>
+<translation id="7747039790905080783">사전 공유 키</translation>
 <translation id="7762130827864645708">비밀번호가 변경되었습니다. 지금부터 새로운 비밀번호를 사용해 주세요.</translation>
 <translation id="7763470514545477072">도메인 서픽스 일치</translation>
 <translation id="7769672763586021400">모델 ID</translation>
@@ -396,8 +405,10 @@
 <translation id="7846634333498149051">키보드</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">공급자 유형</translation>
+<translation id="7882501334836096755">공개 키</translation>
 <translation id="7895471513946376273">그림 및 디자인 도구 살펴보기</translation>
 <translation id="7936303884198020182">네임서버를 찾을 수 없습니다.</translation>
+<translation id="7943235353293548836">영구 연결 유지 간격</translation>
 <translation id="7960831585769876809">온도</translation>
 <translation id="7978412674231730200">비공개 키</translation>
 <translation id="7994702968232966508">EAP 방식</translation>
@@ -447,6 +458,7 @@
 <translation id="8726019395068607495">중지됨 - 덮개 열림</translation>
 <translation id="8730621377337864115">완료</translation>
 <translation id="8747900814994928677">변경사항 확인</translation>
+<translation id="8764414543112028321">WireGuard</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">기본값</translation>
 <translation id="8798441408945964110">공급자 이름</translation>
@@ -462,7 +474,9 @@
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />님의 <ph name="DEVICE_TYPE" /></translation>
 <translation id="8919837981463578619">실패 - 트레이 없음</translation>
 <translation id="8928727111548978589">실패 - 용지 없음</translation>
+<translation id="8930521118335213258">동종</translation>
 <translation id="8930622219860340959">무선</translation>
+<translation id="8936793075252196307">클라이언트 IP 주소</translation>
 <translation id="8968751544471797276">충전 속도</translation>
 <translation id="8970109610781093811">다시 실행</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{스캔}=1{{NUMBER_OF_PAGES}페이지 스캔}other{{NUMBER_OF_PAGES}페이지 스캔}}</translation>
@@ -478,6 +492,7 @@
 <translation id="9137526406337347448">Google 서비스</translation>
 <translation id="9149391708638971077">메모리 테스트 실행</translation>
 <translation id="9173638680043580060">1분 미만 남음</translation>
+<translation id="917720651393141712">테스트</translation>
 <translation id="9190063653747922532">L2TP/IPSec + 사전 공유 키</translation>
 <translation id="9211490828691860325">모든 데스크</translation>
 <translation id="939519157834106403">SSID</translation>

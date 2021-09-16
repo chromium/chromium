@@ -268,6 +268,7 @@
 <translation id="1276994519141842946">Nu s-a putut dezinstala <ph name="APP_NAME" /></translation>
 <translation id="1277020343994096713">Creează un nou cod PIN, diferit de cel actual</translation>
 <translation id="1278859221870828664">Examinează aplicațiile și serviciile Google Play</translation>
+<translation id="1279024913354609713">Nu permite</translation>
 <translation id="127946606521051357">Un dispozitiv din apropiere distribuie</translation>
 <translation id="1280965841156951489">Editează fișierele</translation>
 <translation id="1282465000333679776">Trimite conținutul audio de pe sistem</translation>
@@ -2195,6 +2196,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="33022249435934718">Ghidaje GDI</translation>
 <translation id="3302388252085547855">Introdu justificarea...</translation>
 <translation id="3303260552072730022">O extensie a activat modul Ecran complet.</translation>
+<translation id="3303795387212510132">Permiți aplicației să deschidă linkuri <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303818374450886607">Copii</translation>
 <translation id="3303855915957856445">Nu s-au găsit rezultate de căutare</translation>
 <translation id="3304212451103136496">Reducere de <ph name="DISCOUNT_AMOUNT" /></translation>
@@ -2272,6 +2274,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="339178315942519818">Vezi notificările din aplicațiile de chat pe <ph name="DEVICE_TYPE" /></translation>
 <translation id="3393554941209044235">Analiza documentelor Chrome</translation>
 <translation id="3394850431319394743">Au permisiunea de a folosi identificatori pentru a reda conținut protejat</translation>
+<translation id="3396744558790608201">Dă clic dreapta și selectează „Caută imagini cu Google Lens” ca să cauți în orice regiune a site-ului și să afli mai multe despre conținutul vizual pe care îl vezi când navighezi și faci cumpărături pe web.</translation>
 <translation id="3396800784455899911">Dacă dai clic pe butonul „Acceptă și continuă” înseamnă că ești de acord cu procesarea descrisă mai sus pentru aceste servicii Google.</translation>
 <translation id="339722927132407568">Înghețări</translation>
 <translation id="3399432415385675819">Notificările vor fi dezactivate</translation>
@@ -3183,6 +3186,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> trimite conținutul unei ferestre.</translation>
 <translation id="4364830672918311045">Afișează notificările</translation>
 <translation id="4366138410738374926">A început printarea</translation>
+<translation id="4369121877634339065">Trage aici orice imagine pentru a căuta</translation>
 <translation id="4370975561335139969">Adresa de e-mail și parola pe care le-ai introdus nu se potrivesc</translation>
 <translation id="4371452868325715552">Nu s-a putut conecta la server. Verifică starea conexiunii la rețea și încearcă din nou. Dacă ai în continuare probleme, repornește Chromebookul. Cod de eroare: <ph name="ERROR_CODE" />.</translation>
 <translation id="4373966964907728675">Se proiectează desktopul</translation>
@@ -5771,6 +5775,10 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7222204278952406003">Chrome este browserul prestabilit</translation>
 <translation id="7222232353993864120">Adresa de e-mail</translation>
 <translation id="7225179976675429563">Lipsește tipul de rețea</translation>
+<translation id="7226485026248318204">Amintirile tale din Google Foto apar aici. Acestea sunt vizibile numai dacă te conectezi.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Gestionează ceea ce vezi în amintiri la <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" />.</translation>
 <translation id="7228479291753472782">Controlează setările care precizează dacă site-urile pot utiliza funcții, cum ar fi localizarea geografică, microfonul, camera foto etc.</translation>
 <translation id="7228523857728654909">Blocarea ecranului și conectarea</translation>
 <translation id="7230222852462421043">&amp;Restabilește fereastra</translation>
@@ -6200,6 +6208,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="767147716926917172">Trimite automat date de diagnosticare și de utilizare la Google</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" />, în <ph name="PAGE_TITLE" />.</translation>
 <translation id="7674416868315480713">Dezactivează toate porturile care se redirecționează în Linux</translation>
+<translation id="7674537509496907005"><ph name="APP_COUNT" /> aplicații</translation>
 <translation id="7674542105240814168">Accesul la locație a fost refuzat</translation>
 <translation id="7676119992609591770">S-a găsit <ph name="NUM" /> filă pentru „<ph name="SEARCH_TEXT" />”</translation>
 <translation id="7676867886086876795">Trimite-ți vocea la Google pentru a permite dictarea în orice câmp de text.</translation>
