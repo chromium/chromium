@@ -18,7 +18,8 @@ class DeviceOAuth2TokenService;
 namespace policy {
 
 // Remote command that would start Chrome Remote Desktop host and return auth
-// code. This command is usable only for devices running Kiosk sessions.
+// code. This command is usable only for devices running Kiosk sessions, for
+// Affiliated Users and for Managed Guest Sessions.
 class DeviceCommandStartCRDSessionJob : public RemoteCommandJob {
  public:
   enum ResultCode {
@@ -145,9 +146,9 @@ class DeviceCommandStartCRDSessionJob : public RemoteCommandJob {
   // Defines whether connection attempt to active user should succeed or fail.
   base::TimeDelta idleness_cutoff_;
 
-  // Defines if CRD session should be terminated upon any input event from local
-  // user.
-  bool terminate_upon_input_ = false;
+  // True if the admin has confirmed that they want to start the CRD session,
+  // while a user is currently using the device.
+  bool acked_user_presence_ = false;
 
   // Fake OAuth token that will be used once the next time we need to fetch an
   // oauth token.

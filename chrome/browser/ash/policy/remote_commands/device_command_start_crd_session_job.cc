@@ -47,7 +47,13 @@ constexpr char kTachyonOAuth2Scope[] =
 const char kIdlenessCutoffFieldName[] = "idlenessCutoffSec";
 
 // Regulates if remote session should be terminated upon any local input event.
-const char kTerminateUponInputFieldName[] = "terminateUponInput";
+// TODO(b/199824492): Remove the flag.
+[[deprecated("Please, use ackedUserPresence flag")]] const char
+    kTerminateUponInputFieldName[] = "terminateUponInput";
+
+// True if the admin has confirmed that they want to start the CRD session
+// while a user is currently using the device.
+const char kAckedUserPresenceFieldName[] = "ackedUserPresence";
 
 // Result payload fields:
 
@@ -243,8 +249,13 @@ bool DeviceCommandStartCRDSessionJob::ParseCommandPayload(
   idleness_cutoff_ = base::TimeDelta::FromSeconds(
       root->FindIntKey(kIdlenessCutoffFieldName).value_or(0));
 
-  terminate_upon_input_ =
-      root->FindBoolKey(kTerminateUponInputFieldName).value_or(false);
+  if (root->FindBoolKey(kAckedUserPresenceFieldName).has_value()) {
+    acked_user_presence_ =
+        root->FindBoolKey(kAckedUserPresenceFieldName).value();
+  } else if (root->FindBoolKey(kTerminateUponInputFieldName).has_value()) {
+    acked_user_presence_ =
+        !root->FindBoolKey(kTerminateUponInputFieldName).value();
+  }
 
   return true;
 }
@@ -463,7 +474,7 @@ bool DeviceCommandStartCRDSessionJob::ShouldTerminateUponInput() const {
       //      user input.
       return false;
     case UserType::kAutoLaunchedKiosk:
-      return terminate_upon_input_;
+      return !acked_user_presence_;
     case UserType::kNoUser:
     case UserType::kNonAutoLaunchedKiosk:
     case UserType::kOther:
