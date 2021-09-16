@@ -1,4 +1,4 @@
-Tests that elements panel updates dom tree structure upon distribution in shadow dom.
+Tests that elements panel updates dom tree structure when shadow dom slots are reassigned.
 
 
 Running: createHost1

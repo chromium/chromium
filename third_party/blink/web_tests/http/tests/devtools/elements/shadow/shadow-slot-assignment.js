@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 (async function() {
-  TestRunner.addResult(`Tests that elements panel updates dom tree structure upon distribution in shadow dom.\n`);
+  TestRunner.addResult(`Tests that elements panel updates dom tree structure when shadow dom slots are reassigned.\n`);
   await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.evaluateInPagePromise(`
@@ -67,10 +67,10 @@
       }
 
       // In order for the elements tree to reflect the changes made during this test,
-      // there needs to be a step that ensures that Shadow DOM distributions are updated.
-      // Forcing a style recalc ensures that Shadow DOM distributions are updated, and that
+      // there needs to be a step that ensures that Shadow DOM slot assignments are updated.
+      // Forcing a style recalc ensures that slot assignments are updated, and that
       // the relevant DevTools CDP events are sent to the front end.
-      function updateDistributionIfNeeded() {
+      function updateSlotAssignmentsIfNeeded() {
         getComputedStyle(document.documentElement).left;
       }
   `);
@@ -145,7 +145,7 @@
     TestRunner.evaluateInPage(code, ElementsTestRunner.expandElementsTree.bind(ElementsTestRunner, callback));
 
     function callback() {
-      TestRunner.evaluateInPage('updateDistributionIfNeeded()', ElementsTestRunner.expandElementsTree.bind(ElementsTestRunner, dump));
+      TestRunner.evaluateInPage('updateSlotAssignmentsIfNeeded()', ElementsTestRunner.expandElementsTree.bind(ElementsTestRunner, dump));
     }
 
     function dump() {

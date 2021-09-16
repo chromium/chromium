@@ -1157,11 +1157,6 @@ bool Node::IsClosedShadowHiddenFrom(const Node& other) const {
   return true;
 }
 
-void Node::UpdateDistributionForUnknownReasons() {
-  if (isConnected())
-    GetDocument().GetSlotAssignmentEngine().RecalcSlotAssignments();
-}
-
 void Node::SetIsLink(bool is_link) {
   SetFlag(is_link && !SVGImage::IsInSVGImage(To<Element>(this)), kIsLinkFlag);
 }
@@ -3266,7 +3261,7 @@ void Node::CheckSlotChange(SlotChangeType slot_change_type) {
     // Checking for fallback content if the node is in a shadow tree.
     if (auto* parent_slot = DynamicTo<HTMLSlotElement>(parentElement())) {
       // The parent_slot's assigned nodes might not be calculated because they
-      // are lazy evaluated later at UpdateDistribution() so we have to check it
+      // are lazy evaluated later in RecalcAssignment(), so we have to check
       // here. Also, parent_slot may have already been removed, if this was the
       // removal of nested slots, e.g.
       //   <slot name=parent-slot><slot name=this-slot>fallback</slot></slot>.

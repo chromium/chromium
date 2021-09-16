@@ -72,6 +72,7 @@
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -2266,7 +2267,13 @@ HeapVector<Member<CSSStyleDeclaration>> InspectorCSSAgent::MatchingStyles(
     element = element->parentElement();
   StyleResolver& style_resolver = element->GetDocument().GetStyleResolver();
 
-  element->UpdateDistributionForUnknownReasons();
+  // TODO(masonf,futhark): We need to update slot assignments here, so that
+  // the flat tree is up to date for the call to PseudoCSSRulesForElement().
+  // Eventually, RecalcSlotAssignments() should be called directly in
+  // PseudoCSSRulesForElement(), but there are a number of sites within
+  // inspector code that traverse the tree and call PseudoCSSRulesForElement()
+  // for each element.
+  element->GetDocument().GetSlotAssignmentEngine().RecalcSlotAssignments();
 
   // This ensures that active stylesheets are up-to-date, such that
   // the subsequent collection of matching rules actually match against

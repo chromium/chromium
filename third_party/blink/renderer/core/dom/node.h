@@ -574,14 +574,6 @@ class CORE_EXPORT Node : public EventTarget {
   // MarkAncestorsWithChildNeedsStyleInvalidation
   void SetNeedsStyleInvalidation();
 
-  // Please don't use this function.
-  // Background: When we investigated the usage of (old) UpdateDistribution,
-  // some caller's intents were unclear. Thus, we had to introduce this function
-  // for the sake of safety. If we can figure out the intent of each caller, we
-  // can replace that with calling UpdateDistributionForFlatTreeTraversal (or
-  // just RecalcSlotAssignments()) on a case-by-case basis.
-  void UpdateDistributionForUnknownReasons();
-
   void SetIsLink(bool f);
 
   bool HasEventTargetData() const { return GetFlag(kHasEventTargetDataFlag); }
@@ -761,7 +753,7 @@ class CORE_EXPORT Node : public EventTarget {
   // Notification of document structure changes (see container_node.h for more
   // notification methods)
   //
-  // At first, Blinkt notifies the node that it has been inserted into the
+  // At first, Blink notifies the node that it has been inserted into the
   // document. This is called during document parsing, and also when a node is
   // added through the DOM methods insertBefore(), appendChild() or
   // replaceChild(). The call happens _after_ the node has been added to the
@@ -770,12 +762,12 @@ class CORE_EXPORT Node : public EventTarget {
   //
   // Blink notifies this callback regardless if the subtree of the node is a
   // document tree or a floating subtree.  Implementation can determine the type
-  // of subtree by seeing insertion_point->isConnected().  For a performance
-  // reason, notifications are delivered only to ContainerNode subclasses if the
-  // insertion_point is out of document.
+  // of subtree by seeing insertion_point->isConnected().  For performance
+  // reasons, notifications are delivered only to ContainerNode subclasses if
+  // the insertion_point is not in a document tree.
   //
-  // There are another callback named DidNotifySubtreeInsertionsToDocument(),
-  // which is called after all the descendant is notified, if this node was
+  // There is another callback, DidNotifySubtreeInsertionsToDocument(),
+  // which is called after all the descendants are notified, if this node was
   // inserted into the document tree. Only a few subclasses actually need
   // this. To utilize this, the node should return
   // kInsertionShouldCallDidNotifySubtreeInsertions from InsertedInto().

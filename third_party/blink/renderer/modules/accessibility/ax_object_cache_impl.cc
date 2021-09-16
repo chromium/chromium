@@ -2064,7 +2064,7 @@ void AXObjectCacheImpl::ChildrenChanged(const LayoutObject* layout_object) {
   //           \
   //           text
 
-  // TODO(aleventhal) Why is this needed for shadow-distribution.js test?
+  // TODO(aleventhal) Why is this needed for shadow-slot-assignment.js test?
   if (GetDocument().IsFlatTreeTraversalForbidden())
     return;
 

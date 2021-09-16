@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment.h"
+#include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_recalc_forbidden_scope.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
@@ -1893,7 +1894,9 @@ void HTMLElement::OnFormAttrChanged(const AttributeModificationParams& params) {
 
 void HTMLElement::OnInertAttrChanged(
     const AttributeModificationParams& params) {
-  UpdateDistributionForUnknownReasons();
+  // The |PropagateInertToChildFrames()| function might need to walk the flat
+  // tree to check for inert parent elements. So update slot assignments here.
+  GetDocument().GetSlotAssignmentEngine().RecalcSlotAssignments();
   if (GetDocument().GetFrame()) {
     GetDocument().GetFrame()->SetIsInert(GetDocument().LocalOwner() &&
                                          GetDocument().LocalOwner()->IsInert());
