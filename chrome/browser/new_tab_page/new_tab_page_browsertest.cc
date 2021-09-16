@@ -191,7 +191,13 @@ class NewTabPageTest : public InProcessBrowserTest,
   base::OnceClosure lazy_load_quit_closure_;
 };
 
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, LandingPagePixelTest) {
+// TODO(crbug.com/1250156): NewTabPageTest.LandingPagePixelTest is flaky
+#if defined(OS_WIN)
+#define MAYBE_LandingPagePixelTest DISABLED_LandingPagePixelTest
+#else
+#define MAYBE_LandingPagePixelTest LandingPagePixelTest
+#endif
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, MAYBE_LandingPagePixelTest) {
   WaitForLazyLoad();
   WaitForNetworkLoad();
   WaitForAnimationFrame();
