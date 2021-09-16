@@ -6408,7 +6408,6 @@ crbug.com/1210658 [ Win ] virtual/jxl-enabled/images/jxl/jxl-images.html [ Failu
 
 # Temporarily disabled to unblock https://crrev.com/c/3099011
 crbug.com/1199701 http/tests/devtools/console/console-big-array.js [ Skip ]
-crbug.com/1199701 http/tests/devtools/sources/debugger-ui/watch-expressions-preserve-expansion.js [ Skip ]
 
 # Sheriff 2021-5-19
 # Flaky on Webkit Linux Leak
