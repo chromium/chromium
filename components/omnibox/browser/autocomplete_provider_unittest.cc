@@ -902,46 +902,6 @@ TEST_F(AutocompleteProviderTest, UpdateAssistedQueryStats) {
   }
 
   {
-    // This test confirms that we record the count of ZeroSuggest matches that
-    // originate from the suggest server and are annotated with appropriate
-    // metadata. The number of these matches is reported via AQS as a
-    // NUM_ZERO_PREFIX_SHOWN.
-    AssistedQueryStatsTestData test_data[] = {
-        // Only the following subtypes should be counted:
-        // - SUBTYPE_ZERO_PREFIX (362)
-        // - SUBTYPE_ZERO_PREFIX_LOCAL_HISTORY (450)
-        // - SUBTYPE_ZERO_PREFIX_LOCAL_FREQUENT_URL (451)
-        {AutocompleteMatchType::SEARCH_SUGGEST,
-         "chrome.0.0i362j0i450j5i361j5i451j5j0i19i362j0i7i13i362i450i451...5",
-         {362}},
-        {AutocompleteMatchType::SEARCH_SUGGEST,
-         "chrome.1.0i362j0i450j5i361j5i451j5j0i19i362j0i7i13i362i450i451...5",
-         {450}},
-        // Ignored because of not matching subtypes.
-        {AutocompleteMatchType::NAVSUGGEST,
-         "chrome.2.0i362j0i450j5i361j5i451j5j0i19i362j0i7i13i362i450i451...5",
-         {361}},
-        // Local most visited URL.
-        {AutocompleteMatchType::NAVSUGGEST,
-         "chrome.3.0i362j0i450j5i361j5i451j5j0i19i362j0i7i13i362i450i451...5",
-         {451}},
-        // Ignored because of no reported subtypes.
-        {AutocompleteMatchType::NAVSUGGEST,
-         "chrome.4.0i362j0i450j5i361j5i451j5j0i19i362j0i7i13i362i450i451...5",
-         {}},
-        {AutocompleteMatchType::SEARCH_SUGGEST,
-         "chrome.5.0i362j0i450j5i361j5i451j5j0i19i362j0i7i13i362i450i451...5",
-         {19, 362}},
-        // Counted once, despite reporting all  subtypes.
-        {AutocompleteMatchType::SEARCH_SUGGEST,
-         "chrome.6.0i362j0i450j5i361j5i451j5j0i19i362j0i7i13i362i450i451...5",
-         {7, 13, 362, 450, 451}},
-    };
-    SCOPED_TRACE("Num Zero Suggest Shown reports");
-    RunAssistedQueryStatsTest(test_data, base::size(test_data));
-  }
-
-  {
     AssistedQueryStatsTestData test_data[] = {
         {AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
          "chrome..69i57j69i58j5l2j0l3j69i59"},

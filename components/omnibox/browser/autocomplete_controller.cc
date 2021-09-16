@@ -901,22 +901,12 @@ void AutocompleteController::UpdateAssistedQueryStats(
   // Build the impressions string (the AQS part after ".").
   std::string autocompletions;
   int count = 0;
-  int num_zero_prefix_shown = 0;
   size_t last_type = std::u16string::npos;
   base::flat_set<int> last_subtypes = {};
   for (const auto& match : *result) {
     auto subtypes = match.subtypes;
     size_t type = std::u16string::npos;
     GetMatchTypeAndExtendSubtypes(match, &type, &subtypes);
-
-    // Count any suggestions that constitute zero-prefix suggestions.
-    if (match.subtypes.contains(/*SUBTYPE_ZERO_PREFIX_LOCAL_HISTORY=*/450) ||
-        match.subtypes.contains(
-            /*SUBTYPE_ZERO_PREFIX_LOCAL_FREQUENT_URLS=*/451) ||
-        match.subtypes.contains(/*SUBTYPE_ZERO_PREFIX=*/362)) {
-      ++num_zero_prefix_shown;
-    }
-
     if (last_type != std::u16string::npos &&
         (type != last_type || subtypes != last_subtypes)) {
       AppendAvailableAutocompletion(last_type, last_subtypes, count,
@@ -945,14 +935,6 @@ void AutocompleteController::UpdateAssistedQueryStats(
         base::StringPrintf("chrome.%s.%s",
                            selected_index.c_str(),
                            autocompletions.c_str());
-
-    if (num_zero_prefix_shown > 0) {
-      // Note: 1st skipped parameter: EXPERIMENT_STATS.
-      // Note: 2nd skipped parameter: SINGLE_SEARCHBOX_CONTENT.
-      match->search_terms_args->assisted_query_stats +=
-          base::StringPrintf("...%d", num_zero_prefix_shown);
-    }
-
     match->destination_url = GURL(template_url->url_ref().ReplaceSearchTerms(
         *match->search_terms_args, template_url_service_->search_terms_data()));
   }
