@@ -36,7 +36,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Offline.Measurements.IsAirplaneModeEnabled"
-    enum="BooleanEnabled" expires_after="M95">
+    enum="BooleanEnabled" expires_after="M100">
   <owner>curranmax@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -52,7 +52,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Offline.Measurements.IsRoaming" enum="Boolean"
-    expires_after="M95">
+    expires_after="M100">
   <owner>curranmax@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -69,7 +69,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Offline.Measurements.MeasurementInterval" units="minutes"
-    expires_after="M95">
+    expires_after="M100">
   <owner>curranmax@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -80,7 +80,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Offline.Measurements.TimeBetweenChecks" units="minutes"
-    expires_after="M95">
+    expires_after="M100">
   <owner>curranmax@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -91,7 +91,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Offline.Measurements.UserState"
-    enum="OfflineMeasurementsUserState" expires_after="M95">
+    enum="OfflineMeasurementsUserState" expires_after="M100">
   <owner>curranmax@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
