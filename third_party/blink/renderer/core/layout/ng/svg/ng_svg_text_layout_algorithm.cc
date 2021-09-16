@@ -37,7 +37,7 @@ void NGSvgTextLayoutAlgorithm::Layout(
   // "CSS_positions", and "resolved" is the number of addressable characters.
 
   // 1. Setup
-  if (!Setup(items.size()))
+  if (!Setup(ifc_text_content.length()))
     return;
 
   // 2. Set flags and assign initial positions
