@@ -56,7 +56,11 @@ Polymer({
      * The object URLs of the scanned images.
      * @type {!Array<string>}
      */
-    objectUrls: Array,
+    objectUrls: {
+      type: Array,
+      observer: 'onObjectUrlsChange_',
+    },
+
 
     /** @type {number} */
     pageNumber: {
@@ -552,5 +556,17 @@ Polymer({
     this.style.setProperty(
         '--multi-page-scan-progress-height',
         this.$$('#previewDiv').offsetHeight + 'px');
+  },
+
+  /** @private */
+  onObjectUrlsChange_() {
+    if (!this.multiPageScanChecked) {
+      return;
+    }
+
+    // Set to -1 when no pages exist after a scan is saved.
+    if (this.objectUrls.length === 0) {
+      this.currentPageInView_ = -1;
+    }
   },
 });
