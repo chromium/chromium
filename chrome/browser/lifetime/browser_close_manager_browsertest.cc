@@ -524,12 +524,6 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
 // Test that tabs that are slow to respond are not closed prematurely.
 // Regression for crbug.com/365052 caused some of tabs to be closed even if
 // user chose to cancel browser close.
-// Flaky on ChromeOS ASan. https://crbug.com/805457
-#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(ADDRESS_SANITIZER)
-#define MAYBE_TestUnloadMultipleSlowTabs DISABLED_TestUnloadMultipleSlowTabs
-#else
-#define MAYBE_TestUnloadMultipleSlowTabs TestUnloadMultipleSlowTabs
-#endif
 IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
                        TestUnloadMultipleSlowTabs) {
   const int kTabCount = 5;
