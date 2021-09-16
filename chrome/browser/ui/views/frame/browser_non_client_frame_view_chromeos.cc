@@ -258,6 +258,15 @@ BrowserNonClientFrameViewChromeOS::GetTabSearchBubbleHost() {
   return tab_search_bubble_host_;
 }
 
+void BrowserNonClientFrameViewChromeOS::UpdateMinimumSize() {
+  gfx::Size current_min_size = GetMinimumSize();
+  if (last_minimum_size_ == current_min_size)
+    return;
+
+  last_minimum_size_ = current_min_size;
+  GetWidget()->OnSizeConstraintsChanged();
+}
+
 gfx::Rect BrowserNonClientFrameViewChromeOS::GetBoundsForClientView() const {
   // The ClientView must be flush with the top edge of the widget so that the
   // web contents can take up the entire screen in immersive fullscreen (with

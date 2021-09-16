@@ -61,6 +61,7 @@ class BrowserNonClientFrameViewChromeOS
   bool CanUserExitFullscreen() const override;
   SkColor GetCaptionColor(BrowserFrameActiveState active_state) const override;
   TabSearchBubbleHost* GetTabSearchBubbleHost() override;
+  void UpdateMinimumSize() override;
 
   // views::NonClientFrameView:
   gfx::Rect GetBoundsForClientView() const override;
@@ -231,6 +232,8 @@ class BrowserNonClientFrameViewChromeOS
       window_observation_{this};
 
   absl::optional<display::ScopedDisplayObserver> display_observer_;
+
+  gfx::Size last_minimum_size_;
 
   base::WeakPtrFactory<BrowserNonClientFrameViewChromeOS> weak_ptr_factory_{
       this};
