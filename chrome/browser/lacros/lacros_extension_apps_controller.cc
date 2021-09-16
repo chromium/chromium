@@ -95,8 +95,9 @@ void LacrosExtensionAppsController::UnpauseApp(const std::string& app_id) {
 void LacrosExtensionAppsController::GetMenuModel(
     const std::string& app_id,
     GetMenuModelCallback callback) {
-  // TODO(https://crbug.com/1225848): Implement.
-  NOTIMPLEMENTED();
+  // The current implementation of chrome apps menu models never uses the
+  // AppService GetMenuModel method.
+  NOTREACHED();
 }
 
 void LacrosExtensionAppsController::LoadIcon(const std::string& app_id,

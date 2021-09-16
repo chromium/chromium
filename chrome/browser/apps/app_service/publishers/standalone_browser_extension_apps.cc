@@ -91,8 +91,9 @@ void StandaloneBrowserExtensionApps::GetMenuModel(
     apps::mojom::MenuType menu_type,
     int64_t display_id,
     GetMenuModelCallback callback) {
-  // TODO(https://crbug.com/1225848): Implement.
-  NOTIMPLEMENTED();
+  // The current implementation of chrome apps menu models never uses the
+  // AppService GetMenuModel method. We always returns an empty array here.
+  std::move(callback).Run(mojom::MenuItems::New());
 }
 
 void StandaloneBrowserExtensionApps::OnApps(
