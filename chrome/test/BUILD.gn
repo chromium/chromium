@@ -4047,7 +4047,10 @@ if (is_chromeos_lacros) {
       "//ui/platform_window",
     ]
 
-    data = [ "data/media/" ]
+    data = [
+      "data/media/",
+      "data/extensions/platform_apps/minimal/",
+    ]
 
     data_deps = [
       "//build/lacros:lacros_version_metadata",
