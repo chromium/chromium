@@ -706,6 +706,8 @@ class CORE_EXPORT LocalFrame final : public Frame,
   void BindTextFragmentReceiver(
       mojo::PendingReceiver<mojom::blink::TextFragmentReceiver> receiver);
 
+  void CreateTextFragmentHandler();
+
 #if defined(OS_MAC)
   void ResetTextInputHostForTesting();
   void RebindTextInputHostForTesting();
