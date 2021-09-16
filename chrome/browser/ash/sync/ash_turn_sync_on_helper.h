@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_SYNC_TURN_SYNC_ON_HELPER_H_
-#define CHROME_BROWSER_ASH_SYNC_TURN_SYNC_ON_HELPER_H_
+#ifndef CHROME_BROWSER_ASH_SYNC_ASH_TURN_SYNC_ON_HELPER_H_
+#define CHROME_BROWSER_ASH_SYNC_ASH_TURN_SYNC_ON_HELPER_H_
 
 #include <memory>
 
@@ -31,9 +31,9 @@ class SyncService;
 // immediately when the first browser window opens. Long-term the browser will
 // open a page similar to chrome://welcome on first run. Once this browser
 // first-run flow is implemented the BrowserListObserver can be removed.
-class TurnSyncOnHelper : public SyncStartupTracker::Observer,
-                         public LoginUIService::Observer,
-                         public BrowserListObserver {
+class AshTurnSyncOnHelper : public SyncStartupTracker::Observer,
+                            public LoginUIService::Observer,
+                            public BrowserListObserver {
  public:
   // Delegate to stub out the UI for testing.
   class Delegate {
@@ -43,13 +43,13 @@ class TurnSyncOnHelper : public SyncStartupTracker::Observer,
     virtual void ShowSyncSettings(Profile* profile, Browser* browser) = 0;
   };
   // Uses the production delegate with real UI.
-  explicit TurnSyncOnHelper(Profile* profile);
+  explicit AshTurnSyncOnHelper(Profile* profile);
   // Exposed for testing.
-  TurnSyncOnHelper(Profile* profile, std::unique_ptr<Delegate> delegate);
-  ~TurnSyncOnHelper() override;
+  AshTurnSyncOnHelper(Profile* profile, std::unique_ptr<Delegate> delegate);
+  ~AshTurnSyncOnHelper() override;
 
-  TurnSyncOnHelper(const TurnSyncOnHelper&) = delete;
-  TurnSyncOnHelper& operator=(const TurnSyncOnHelper&) = delete;
+  AshTurnSyncOnHelper(const AshTurnSyncOnHelper&) = delete;
+  AshTurnSyncOnHelper& operator=(const AshTurnSyncOnHelper&) = delete;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
@@ -92,4 +92,4 @@ class TurnSyncOnHelper : public SyncStartupTracker::Observer,
       scoped_login_ui_service_observation_{this};
 };
 
-#endif  // CHROME_BROWSER_ASH_SYNC_TURN_SYNC_ON_HELPER_H_
+#endif  // CHROME_BROWSER_ASH_SYNC_ASH_TURN_SYNC_ON_HELPER_H_

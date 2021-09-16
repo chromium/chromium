@@ -35,8 +35,8 @@
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/ash/sync/ash_turn_sync_on_helper.h"
 #include "chrome/browser/ash/sync/split_settings_sync_field_trial.h"
-#include "chrome/browser/ash/sync/turn_sync_on_helper.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
 #include "chrome/browser/ash/system/timezone_resolver_manager.h"
 #include "chrome/browser/ash/system/timezone_util.h"
@@ -151,7 +151,7 @@ void Preferences::RegisterPrefs(PrefRegistrySimple* registry) {
 void Preferences::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   // Some classes register their own prefs.
-  TurnSyncOnHelper::RegisterProfilePrefs(registry);
+  AshTurnSyncOnHelper::RegisterProfilePrefs(registry);
   ash::input_method::InputMethodSyncer::RegisterProfilePrefs(registry);
   crosapi::browser_util::RegisterProfilePrefs(registry);
 

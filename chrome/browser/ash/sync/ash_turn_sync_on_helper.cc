@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/sync/turn_sync_on_helper.h"
+#include "chrome/browser/ash/sync/ash_turn_sync_on_helper.h"
 
 #include <utility>
 
@@ -59,7 +59,7 @@ Browser* EnsureBrowser(Browser* browser, Profile* profile) {
 }
 
 // Production delegate with real UI.
-class DelegateImpl : public TurnSyncOnHelper::Delegate {
+class DelegateImpl : public AshTurnSyncOnHelper::Delegate {
  public:
   DelegateImpl() = default;
   ~DelegateImpl() override = default;
@@ -77,11 +77,11 @@ class DelegateImpl : public TurnSyncOnHelper::Delegate {
 
 }  // namespace
 
-TurnSyncOnHelper::TurnSyncOnHelper(Profile* profile)
-    : TurnSyncOnHelper(profile, std::make_unique<DelegateImpl>()) {}
+AshTurnSyncOnHelper::AshTurnSyncOnHelper(Profile* profile)
+    : AshTurnSyncOnHelper(profile, std::make_unique<DelegateImpl>()) {}
 
-TurnSyncOnHelper::TurnSyncOnHelper(Profile* profile,
-                                   std::unique_ptr<Delegate> delegate)
+AshTurnSyncOnHelper::AshTurnSyncOnHelper(Profile* profile,
+                                         std::unique_ptr<Delegate> delegate)
     : profile_(profile),
       identity_manager_(IdentityManagerFactory::GetForProfile(profile)),
       delegate_(std::move(delegate)) {
@@ -91,16 +91,16 @@ TurnSyncOnHelper::TurnSyncOnHelper(Profile* profile,
   Init();
 }
 
-TurnSyncOnHelper::~TurnSyncOnHelper() {
+AshTurnSyncOnHelper::~AshTurnSyncOnHelper() {
   BrowserList::RemoveObserver(this);
 }
 
 // static
-void TurnSyncOnHelper::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+void AshTurnSyncOnHelper::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kSyncFirstRunCompleted, false);
 }
 
-void TurnSyncOnHelper::Init() {
+void AshTurnSyncOnHelper::Init() {
   // Skipping first-run.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(switches::kForceFirstRun) &&
@@ -120,7 +120,7 @@ void TurnSyncOnHelper::Init() {
   BrowserList::AddObserver(this);
 }
 
-void TurnSyncOnHelper::OnBrowserSetLastActive(Browser* browser) {
+void AshTurnSyncOnHelper::OnBrowserSetLastActive(Browser* browser) {
   // Tabbed browser window (not an app).
   if (!browser->is_type_normal())
     return;
@@ -138,7 +138,7 @@ void TurnSyncOnHelper::OnBrowserSetLastActive(Browser* browser) {
   StartFlow();
 }
 
-void TurnSyncOnHelper::StartFlow() {
+void AshTurnSyncOnHelper::StartFlow() {
   syncer::SyncService* sync_service = GetSyncService();
   // Abort if sync not allowed. Check here instead of in Init() just in case
   // enterprise policy was updated before the first window opened.
@@ -159,26 +159,26 @@ void TurnSyncOnHelper::StartFlow() {
   ShowSyncConfirmationUI();
 }
 
-void TurnSyncOnHelper::SyncStartupCompleted() {
+void AshTurnSyncOnHelper::SyncStartupCompleted() {
   DCHECK(sync_startup_tracker_);
   sync_startup_tracker_.reset();
   ShowSyncConfirmationUI();
 }
 
-void TurnSyncOnHelper::SyncStartupFailed() {
+void AshTurnSyncOnHelper::SyncStartupFailed() {
   DCHECK(sync_startup_tracker_);
   sync_startup_tracker_.reset();
   ShowSyncConfirmationUI();
 }
 
-void TurnSyncOnHelper::ShowSyncConfirmationUI() {
+void AshTurnSyncOnHelper::ShowSyncConfirmationUI() {
   // Register as an observer so OnSyncConfirmationUIClosed() will be called.
   scoped_login_ui_service_observation_.Observe(
       LoginUIServiceFactory::GetForProfile(profile_));
   delegate_->ShowSyncConfirmation(profile_, browser_);
 }
 
-void TurnSyncOnHelper::OnSyncConfirmationUIClosed(
+void AshTurnSyncOnHelper::OnSyncConfirmationUIClosed(
     LoginUIService::SyncConfirmationUIClosedResult result) {
   FinishSyncSetup(result);
   // This method can be called if the browser is closed from the shelf menu
@@ -186,7 +186,7 @@ void TurnSyncOnHelper::OnSyncConfirmationUIClosed(
   browser_ = nullptr;
 }
 
-void TurnSyncOnHelper::FinishSyncSetup(
+void AshTurnSyncOnHelper::FinishSyncSetup(
     LoginUIService::SyncConfirmationUIClosedResult result) {
   unified_consent::UnifiedConsentService* consent_service =
       UnifiedConsentServiceFactory::GetForProfile(profile_);
@@ -220,7 +220,7 @@ void TurnSyncOnHelper::FinishSyncSetup(
   profile_->GetPrefs()->SetBoolean(kSyncFirstRunCompleted, true);
 }
 
-syncer::SyncService* TurnSyncOnHelper::GetSyncService() {
+syncer::SyncService* AshTurnSyncOnHelper::GetSyncService() {
   return SyncServiceFactory::IsSyncAllowed(profile_)
              ? SyncServiceFactory::GetForProfile(profile_)
              : nullptr;

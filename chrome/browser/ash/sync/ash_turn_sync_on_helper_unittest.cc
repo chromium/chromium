@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/sync/turn_sync_on_helper.h"
+#include "chrome/browser/ash/sync/ash_turn_sync_on_helper.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
@@ -24,7 +24,7 @@ namespace {
 
 const char kSyncFirstRunCompleted[] = "sync.first_run_completed";
 
-class TestDelegate : public TurnSyncOnHelper::Delegate {
+class TestDelegate : public AshTurnSyncOnHelper::Delegate {
  public:
   TestDelegate() = default;
   ~TestDelegate() override = default;
@@ -46,14 +46,14 @@ std::unique_ptr<KeyedService> BuildTestSyncService(
   return std::make_unique<syncer::TestSyncService>();
 }
 
-class TurnSyncOnHelperTest : public BrowserWithTestWindowTest {
+class AshTurnSyncOnHelperTest : public BrowserWithTestWindowTest {
  public:
-  TurnSyncOnHelperTest() {
+  AshTurnSyncOnHelperTest() {
     feature_list_.InitWithFeatures({chromeos::features::kSyncConsentOptional,
                                     chromeos::features::kUseBrowserSyncConsent},
                                    {});
   }
-  ~TurnSyncOnHelperTest() override = default;
+  ~AshTurnSyncOnHelperTest() override = default;
 
   // testing::Test:
   void SetUp() override {
@@ -96,13 +96,13 @@ class TurnSyncOnHelperTest : public BrowserWithTestWindowTest {
   syncer::TestSyncService* sync_service_ = nullptr;
 };
 
-TEST_F(TurnSyncOnHelperTest, UserAcceptsDefaults) {
+TEST_F(AshTurnSyncOnHelperTest, UserAcceptsDefaults) {
   identity_test_env()->MakePrimaryAccountAvailable(
       "user@gmail.com", signin::ConsentLevel::kSignin);
 
   auto test_delegate = std::make_unique<TestDelegate>();
   TestDelegate* delegate = test_delegate.get();
-  TurnSyncOnHelper helper(profile(), std::move(test_delegate));
+  AshTurnSyncOnHelper helper(profile(), std::move(test_delegate));
 
   // Simulate the first browser window becoming active.
   BrowserList::SetLastActive(browser());
@@ -120,13 +120,13 @@ TEST_F(TurnSyncOnHelperTest, UserAcceptsDefaults) {
   EXPECT_EQ(0, delegate->show_sync_settings_count_);
 }
 
-TEST_F(TurnSyncOnHelperTest, UserClicksSettings) {
+TEST_F(AshTurnSyncOnHelperTest, UserClicksSettings) {
   identity_test_env()->MakePrimaryAccountAvailable(
       "user@gmail.com", signin::ConsentLevel::kSignin);
 
   auto test_delegate = std::make_unique<TestDelegate>();
   TestDelegate* delegate = test_delegate.get();
-  TurnSyncOnHelper helper(profile(), std::move(test_delegate));
+  AshTurnSyncOnHelper helper(profile(), std::move(test_delegate));
 
   // Simulate the first browser window becoming active.
   BrowserList::SetLastActive(browser());
@@ -140,13 +140,13 @@ TEST_F(TurnSyncOnHelperTest, UserClicksSettings) {
   EXPECT_EQ(1, delegate->show_sync_settings_count_);
 }
 
-TEST_F(TurnSyncOnHelperTest, UserClicksCancel) {
+TEST_F(AshTurnSyncOnHelperTest, UserClicksCancel) {
   identity_test_env()->MakePrimaryAccountAvailable(
       "user@gmail.com", signin::ConsentLevel::kSignin);
 
   auto test_delegate = std::make_unique<TestDelegate>();
   TestDelegate* delegate = test_delegate.get();
-  TurnSyncOnHelper helper(profile(), std::move(test_delegate));
+  AshTurnSyncOnHelper helper(profile(), std::move(test_delegate));
 
   // Simulate the first browser window becoming active.
   BrowserList::SetLastActive(browser());
@@ -160,13 +160,13 @@ TEST_F(TurnSyncOnHelperTest, UserClicksCancel) {
   EXPECT_EQ(0, delegate->show_sync_settings_count_);
 }
 
-TEST_F(TurnSyncOnHelperTest, UserClosesUI) {
+TEST_F(AshTurnSyncOnHelperTest, UserClosesUI) {
   identity_test_env()->MakePrimaryAccountAvailable(
       "user@gmail.com", signin::ConsentLevel::kSignin);
 
   auto test_delegate = std::make_unique<TestDelegate>();
   TestDelegate* delegate = test_delegate.get();
-  TurnSyncOnHelper helper(profile(), std::move(test_delegate));
+  AshTurnSyncOnHelper helper(profile(), std::move(test_delegate));
 
   // Simulate the first browser window becoming active.
   BrowserList::SetLastActive(browser());
@@ -180,7 +180,7 @@ TEST_F(TurnSyncOnHelperTest, UserClosesUI) {
   EXPECT_EQ(0, delegate->show_sync_settings_count_);
 }
 
-TEST_F(TurnSyncOnHelperTest, UserPreviouslyDeclinedSync) {
+TEST_F(AshTurnSyncOnHelperTest, UserPreviouslyDeclinedSync) {
   identity_test_env()->MakePrimaryAccountAvailable(
       "user@gmail.com", signin::ConsentLevel::kSignin);
   ASSERT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
@@ -190,7 +190,7 @@ TEST_F(TurnSyncOnHelperTest, UserPreviouslyDeclinedSync) {
 
   auto test_delegate = std::make_unique<TestDelegate>();
   TestDelegate* delegate = test_delegate.get();
-  TurnSyncOnHelper helper(profile(), std::move(test_delegate));
+  AshTurnSyncOnHelper helper(profile(), std::move(test_delegate));
 
   // Simulate the first browser window becoming active.
   BrowserList::SetLastActive(browser());
@@ -199,14 +199,14 @@ TEST_F(TurnSyncOnHelperTest, UserPreviouslyDeclinedSync) {
   EXPECT_EQ(0, delegate->show_sync_confirmation_count_);
 }
 
-TEST_F(TurnSyncOnHelperTest, UserPreviouslyAcceptedSync) {
+TEST_F(AshTurnSyncOnHelperTest, UserPreviouslyAcceptedSync) {
   identity_test_env()->MakePrimaryAccountAvailable("user@gmail.com",
                                                    ConsentLevel::kSync);
   ASSERT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
 
   auto test_delegate = std::make_unique<TestDelegate>();
   TestDelegate* delegate = test_delegate.get();
-  TurnSyncOnHelper helper(profile(), std::move(test_delegate));
+  AshTurnSyncOnHelper helper(profile(), std::move(test_delegate));
 
   // Simulate the first browser window becoming active.
   BrowserList::SetLastActive(browser());
@@ -215,7 +215,7 @@ TEST_F(TurnSyncOnHelperTest, UserPreviouslyAcceptedSync) {
   EXPECT_EQ(0, delegate->show_sync_confirmation_count_);
 }
 
-TEST_F(TurnSyncOnHelperTest, UrlKeyedMetricsConsent) {
+TEST_F(AshTurnSyncOnHelperTest, UrlKeyedMetricsConsent) {
   identity_test_env()->MakePrimaryAccountAvailable(
       "user@gmail.com", signin::ConsentLevel::kSignin);
 
@@ -226,7 +226,7 @@ TEST_F(TurnSyncOnHelperTest, UrlKeyedMetricsConsent) {
   ASSERT_FALSE(consent_helper->IsEnabled());
 
   // Simulate user consenting to sync.
-  TurnSyncOnHelper helper(profile(), std::make_unique<TestDelegate>());
+  AshTurnSyncOnHelper helper(profile(), std::make_unique<TestDelegate>());
   BrowserList::SetLastActive(browser());
   helper.OnSyncConfirmationUIClosed(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
 
