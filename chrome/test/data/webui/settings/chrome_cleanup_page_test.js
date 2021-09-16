@@ -6,66 +6,8 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CHROME_CLEANUP_DEFAULT_ITEMS_TO_SHOW, ChromeCleanupIdleReason,ChromeCleanupProxyImpl} from 'chrome://settings/lazy_load.js';
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
+import {TestChromeCleanupProxy} from './test_chrome_cleanup_proxy.js';
 // clang-format on
-
-/** @implements {ChromeCleanupProxy} */
-class TestChromeCleanupProxy extends TestBrowserProxy {
-  constructor() {
-    super([
-      'registerChromeCleanerObserver',
-      'restartComputer',
-      'startCleanup',
-      'startScanning',
-      'notifyShowDetails',
-      'notifyLearnMoreClicked',
-      'getMoreItemsPluralString',
-      'getItemsToRemovePluralString',
-    ]);
-  }
-
-  /** @override */
-  registerChromeCleanerObserver() {
-    this.methodCalled('registerChromeCleanerObserver');
-  }
-
-  /** @override */
-  restartComputer() {
-    this.methodCalled('restartComputer');
-  }
-
-  /** @override */
-  startCleanup(logsUploadEnabled) {
-    this.methodCalled('startCleanup', logsUploadEnabled);
-  }
-
-  /** @override */
-  startScanning(logsUploadEnabled) {
-    this.methodCalled('startScanning', logsUploadEnabled);
-  }
-
-  /** @override */
-  notifyShowDetails(enabled) {
-    this.methodCalled('notifyShowDetails', enabled);
-  }
-
-  /** @override */
-  notifyLearnMoreClicked() {
-    this.methodCalled('notifyLearnMoreClicked');
-  }
-
-  /** @override */
-  getMoreItemsPluralString(numHiddenItems) {
-    this.methodCalled('getMoreItemsPluralString', numHiddenItems);
-    return Promise.resolve('');
-  }
-
-  /** @override */
-  getItemsToRemovePluralString(numItems) {
-    this.methodCalled('getItemsToRemovePluralString', numItems);
-    return Promise.resolve('');
-  }
-}
 
 let chromeCleanupPage = null;
 
