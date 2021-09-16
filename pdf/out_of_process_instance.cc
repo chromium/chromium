@@ -530,8 +530,9 @@ bool OutOfProcessInstance::HandleInputEvent(const pp::InputEvent& event) {
 }
 
 void OutOfProcessInstance::DidChangeView(const pp::View& view) {
-  UpdateGeometryOnViewChanged(RectFromPPRect(view.GetRect()),
-                              view.GetDeviceScale());
+  const gfx::Rect new_plugin_rect = gfx::ScaleToEnclosingRectSafe(
+      RectFromPPRect(view.GetRect()), view.GetDeviceScale());
+  UpdateGeometryOnPluginRectChanged(new_plugin_rect, view.GetDeviceScale());
 
   if (IsPrintPreview() && !stop_scrolling()) {
     set_scroll_position(PointFromPPPoint(view.GetScrollOffset()));

@@ -357,19 +357,12 @@ void PdfViewWebPlugin::UpdateAllLifecyclePhases(
     blink::DocumentUpdateReason reason) {}
 
 void PdfViewWebPlugin::Paint(cc::PaintCanvas* canvas, const gfx::Rect& rect) {
-  // The scale level used to convert DIPs to CSS pixels.
-  float inverse_scale = 1.0f / (device_scale() * viewport_to_dip_scale_);
-
-  // `rect` is in CSS pixels, and the plugin rect is in DIPs. The plugin rect
-  // needs to be converted into CSS pixels before calculating the rect area to
-  // be invalidated.
-  gfx::Rect plugin_rect_in_css_pixels =
-      gfx::ScaleToEnclosingRectSafe(plugin_rect(), inverse_scale);
-
   // Clip the intersection of the paint rect and the plugin rect, so that
   // painting outside the plugin or the paint rect area can be avoided.
+  // Note: `rect` is in CSS pixels. We need to use `css_plugin_rect_`
+  // to calculate the intersection.
   SkRect invalidate_rect =
-      gfx::RectToSkRect(gfx::IntersectRects(plugin_rect_in_css_pixels, rect));
+      gfx::RectToSkRect(gfx::IntersectRects(css_plugin_rect_, rect));
   cc::PaintCanvasAutoRestore auto_restore(canvas, /*save=*/true);
   canvas->clipRect(invalidate_rect);
 
@@ -382,8 +375,8 @@ void PdfViewWebPlugin::Paint(cc::PaintCanvas* canvas, const gfx::Rect& rect) {
     return;
   }
 
-  if (inverse_scale != 1.0f)
-    canvas->scale(inverse_scale, inverse_scale);
+  if (device_to_css_scale_ != 1.0f)
+    canvas->scale(device_to_css_scale_, device_to_css_scale_);
 
   canvas->drawImage(snapshot_, plugin_rect().x(), plugin_rect().y());
 }
@@ -392,16 +385,7 @@ void PdfViewWebPlugin::UpdateGeometry(const gfx::Rect& window_rect,
                                       const gfx::Rect& clip_rect,
                                       const gfx::Rect& unobscured_rect,
                                       bool is_visible) {
-  float device_scale = container_wrapper_->DeviceScaleFactor();
-  viewport_to_dip_scale_ =
-      client_->IsUseZoomForDSFEnabled() ? 1.0f / device_scale : 1.0f;
-
-  // Note that `window_rect` is in viewport coordinates. It needs to be
-  // converted to DIPs before getting passed into
-  // PdfViewPluginBase::UpdateGeometryOnViewChanged().
-  OnViewportChanged(
-      gfx::ScaleToEnclosingRectSafe(window_rect, viewport_to_dip_scale_),
-      device_scale);
+  OnViewportChanged(window_rect, container_wrapper_->DeviceScaleFactor());
 }
 
 void PdfViewWebPlugin::UpdateFocus(bool focused,
@@ -882,9 +866,27 @@ void PdfViewWebPlugin::UserMetricsRecordAction(const std::string& action) {
   client_->RecordComputedAction(action);
 }
 
-void PdfViewWebPlugin::OnViewportChanged(const gfx::Rect& view_rect,
-                                         float new_device_scale) {
-  UpdateGeometryOnViewChanged(view_rect, new_device_scale);
+void PdfViewWebPlugin::OnViewportChanged(
+    const gfx::Rect& plugin_rect_in_css_pixel,
+    float new_device_scale) {
+  css_plugin_rect_ = plugin_rect_in_css_pixel;
+  float css_to_device_pixel_scale;
+  if (client_->IsUseZoomForDSFEnabled()) {
+    viewport_to_dip_scale_ = 1.0f / new_device_scale;
+    device_to_css_scale_ = 1.0f;
+    css_to_device_pixel_scale = 1.0f;
+  } else {
+    viewport_to_dip_scale_ = 1.0f;
+    device_to_css_scale_ = 1.0f / new_device_scale;
+    css_to_device_pixel_scale = new_device_scale;
+  }
+
+  // `plugin_rect_in_css_pixel` needs to be converted to device pixels before
+  // getting passed into PdfViewPluginBase::UpdateGeometryOnPluginRectChanged().
+  UpdateGeometryOnPluginRectChanged(
+      gfx::ScaleToEnclosingRectSafe(plugin_rect_in_css_pixel,
+                                    css_to_device_pixel_scale),
+      new_device_scale);
 
   if (IsPrintPreview() && !stop_scrolling()) {
     DCHECK_EQ(new_device_scale, device_scale());

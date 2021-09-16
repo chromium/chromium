@@ -286,7 +286,8 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   bool InitializeCommon(std::unique_ptr<ContainerWrapper> container_wrapper,
                         std::unique_ptr<PDFiumEngine> engine);
 
-  void OnViewportChanged(const gfx::Rect& view_rect, float new_device_scale);
+  void OnViewportChanged(const gfx::Rect& plugin_rect_in_css_pixel,
+                         float new_device_scale);
 
   // Invalidates the entire web plugin container and schedules a paint of the
   // page in it.
@@ -342,6 +343,12 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   // The viewport coordinates to DIP (device-independent pixel) ratio.
   float viewport_to_dip_scale_ = 1.0f;
+
+  // The device pixel to CSS pixel ratio.
+  float device_to_css_scale_ = 1.0f;
+
+  // The plugin rect in CSS pixels.
+  gfx::Rect css_plugin_rect_;
 
   // May be null in unit tests.
   std::unique_ptr<PdfAccessibilityDataHandler> const

@@ -237,11 +237,11 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Returns the plugin-specific image data buffer.
   virtual Image GetPluginImageData() const;
 
-  // Updates the geometry of the plugin and its image data if the view's
-  // size or scale has changed. `new_view_rect` must be in CSS pixels (without
-  // device scale applied).
-  void UpdateGeometryOnViewChanged(const gfx::Rect& new_view_rect,
-                                   float new_device_scale);
+  // Updates the geometry of the plugin and its image data if the plugin rect
+  // or the device scale has changed. `new_plugin_rect` must be in device
+  // pixels (with the device scale applied).
+  void UpdateGeometryOnPluginRectChanged(const gfx::Rect& new_plugin_rect,
+                                         float new_device_scale);
 
   // A helper of OnGeometryChanged() which updates the available area and
   // the background parts, and notifies the PDF engine of geometry changes.

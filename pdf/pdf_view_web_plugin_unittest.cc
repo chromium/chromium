@@ -292,7 +292,7 @@ class PdfViewWebPluginTest : public PdfViewWebPluginWithoutInitializeTest {
                                const gfx::Rect& window_rect,
                                const gfx::Rect& paint_rect) {
     EXPECT_CALL(*client_ptr_, IsUseZoomForDSFEnabled)
-        .WillOnce(Return(use_zoom_for_dsf));
+        .WillRepeatedly(Return(use_zoom_for_dsf));
     UpdatePluginGeometry(device_scale, window_rect);
     canvas_.DrawColor(kDefaultColor);
 
@@ -315,7 +315,7 @@ class PdfViewWebPluginTest : public PdfViewWebPluginWithoutInitializeTest {
                           const gfx::Rect& window_rect,
                           const gfx::Rect& paint_rect) {
     EXPECT_CALL(*client_ptr_, IsUseZoomForDSFEnabled)
-        .WillOnce(Return(use_zoom_for_dsf));
+        .WillRepeatedly(Return(use_zoom_for_dsf));
     UpdatePluginGeometry(device_scale, window_rect);
     canvas_.DrawColor(kDefaultColor);
 
@@ -397,7 +397,7 @@ TEST_F(PdfViewWebPluginTest,
   static constexpr UpdateGeometryParams kUpdateGeometryParams[] = {
       {1.0f, gfx::Rect(3, 4, 5, 6), gfx::Rect(3, 4, 5, 6)},
       {2.0f, gfx::Rect(4, 4, 12, 12), gfx::Rect(4, 4, 12, 12)},
-      {2.0f, gfx::Rect(5, 6, 7, 8), gfx::Rect(4, 6, 8, 8)},
+      {2.0f, gfx::Rect(5, 6, 7, 8), gfx::Rect(5, 6, 7, 8)},
   };
 
   for (const auto& params : kUpdateGeometryParams) {

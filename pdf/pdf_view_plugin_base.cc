@@ -797,12 +797,10 @@ void PdfViewPluginBase::PrintEnd() {
   engine_->PrintEnd();
 }
 
-void PdfViewPluginBase::UpdateGeometryOnViewChanged(
-    const gfx::Rect& new_view_rect,
+void PdfViewPluginBase::UpdateGeometryOnPluginRectChanged(
+    const gfx::Rect& new_plugin_rect,
     float new_device_scale) {
   DCHECK_GT(new_device_scale, 0.0f);
-  const gfx::Rect new_plugin_rect =
-      gfx::ScaleToEnclosingRectSafe(new_view_rect, new_device_scale);
 
   if (new_device_scale == device_scale_ && new_plugin_rect == plugin_rect_)
     return;
@@ -810,7 +808,13 @@ void PdfViewPluginBase::UpdateGeometryOnViewChanged(
   const float old_device_scale = device_scale_;
   device_scale_ = new_device_scale;
   plugin_rect_ = new_plugin_rect;
-  plugin_dip_size_ = new_view_rect.size();
+  // TODO(crbug.com/1250173): For the Pepper-free plugin, `plugin_dip_size_` is
+  // calculated from the `window_rect` in PdfViewWebPlugin::UpdateGeometry().
+  // We should try to avoid the downscaling during this calculation process and
+  // maybe migrate off `plugin_dip_size_`.
+  plugin_dip_size_ =
+      gfx::ScaleToEnclosingRectSafe(new_plugin_rect, 1.0f / new_device_scale)
+          .size();
 
   paint_manager_.SetSize(plugin_rect_.size(), device_scale_);
 
