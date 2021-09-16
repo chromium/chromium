@@ -4,6 +4,7 @@
 
 #include "ui/views/animation/animation_delegate_views.h"
 
+#include <memory>
 #include <utility>
 
 #include "ui/gfx/animation/animation_container.h"
@@ -34,11 +35,11 @@ void AnimationDelegateViews::AnimationContainerWasSet(
 
   container_ = container;
   container_->set_observer(this);
-  UpdateAnimationRunner();
+  UpdateAnimationRunner(FROM_HERE);
 }
 
 void AnimationDelegateViews::OnViewAddedToWidget(View* observed_view) {
-  UpdateAnimationRunner();
+  UpdateAnimationRunner(FROM_HERE);
 }
 
 void AnimationDelegateViews::OnViewRemovedFromWidget(View* observed_view) {
@@ -49,7 +50,7 @@ void AnimationDelegateViews::OnViewIsDeleting(View* observed_view) {
   DCHECK(scoped_observation_.IsObservingSource(view_));
   scoped_observation_.Reset();
   view_ = nullptr;
-  UpdateAnimationRunner();
+  UpdateAnimationRunner(FROM_HERE);
 }
 
 void AnimationDelegateViews::AnimationContainerShuttingDown(
@@ -63,7 +64,8 @@ base::TimeDelta AnimationDelegateViews::GetAnimationDurationForReporting()
   return base::TimeDelta();
 }
 
-void AnimationDelegateViews::UpdateAnimationRunner() {
+void AnimationDelegateViews::UpdateAnimationRunner(
+    const base::Location& location) {
   if (!view_ || !view_->GetWidget() || !view_->GetWidget()->GetCompositor()) {
     ClearAnimationRunner();
     return;
@@ -73,7 +75,7 @@ void AnimationDelegateViews::UpdateAnimationRunner() {
     return;
 
   auto compositor_animation_runner =
-      std::make_unique<CompositorAnimationRunner>(view_->GetWidget());
+      std::make_unique<CompositorAnimationRunner>(view_->GetWidget(), location);
   compositor_animation_runner_ = compositor_animation_runner.get();
   container_->SetAnimationRunner(std::move(compositor_animation_runner));
 }

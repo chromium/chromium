@@ -19,6 +19,7 @@ component("compositor") {
     "closure_animation_observer.h",
     "compositor.cc",
     "compositor.h",
+    "compositor_animation_observer.cc",
     "compositor_animation_observer.h",
     "compositor_export.h",
     "compositor_lock.cc",
