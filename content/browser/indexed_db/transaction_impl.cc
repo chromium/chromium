@@ -58,9 +58,11 @@ void TransactionImpl::CreateObjectStore(int64_t object_store_id,
   }
 
   if (!transaction_->IsAcceptingRequests()) {
-    mojo::ReportBadMessage(
-        "CreateObjectStore was called after committing or aborting the "
-        "transaction");
+    // TODO(https://crbug.com/1249908): If the transaction was already committed
+    // (or is in the process of being committed) we should kill the renderer.
+    // This branch however also includes cases where the browser process aborted
+    // the transaction, as currently we don't distinguish that state from the
+    // transaction having been committed. So for now simply ignore the request.
     return;
   }
 
@@ -87,9 +89,11 @@ void TransactionImpl::DeleteObjectStore(int64_t object_store_id) {
   }
 
   if (!transaction_->IsAcceptingRequests()) {
-    mojo::ReportBadMessage(
-        "DeleteObjectStore was called after committing or aborting the "
-        "transaction");
+    // TODO(https://crbug.com/1249908): If the transaction was already committed
+    // (or is in the process of being committed) we should kill the renderer.
+    // This branch however also includes cases where the browser process aborted
+    // the transaction, as currently we don't distinguish that state from the
+    // transaction having been committed. So for now simply ignore the request.
     return;
   }
 
@@ -126,8 +130,11 @@ void TransactionImpl::Put(
   }
 
   if (!transaction_->IsAcceptingRequests()) {
-    mojo::ReportBadMessage(
-        "Put was called after committing or aborting the transaction");
+    // TODO(https://crbug.com/1249908): If the transaction was already committed
+    // (or is in the process of being committed) we should kill the renderer.
+    // This branch however also includes cases where the browser process aborted
+    // the transaction, as currently we don't distinguish that state from the
+    // transaction having been committed. So for now simply ignore the request.
     return;
   }
 
@@ -191,8 +198,11 @@ void TransactionImpl::PutAll(int64_t object_store_id,
   }
 
   if (!transaction_->IsAcceptingRequests()) {
-    mojo::ReportBadMessage(
-        "PutAll was called after committing or aborting the transaction");
+    // TODO(https://crbug.com/1249908): If the transaction was already committed
+    // (or is in the process of being committed) we should kill the renderer.
+    // This branch however also includes cases where the browser process aborted
+    // the transaction, as currently we don't distinguish that state from the
+    // transaction having been committed. So for now simply ignore the request.
     return;
   }
 
@@ -295,8 +305,11 @@ void TransactionImpl::Commit(int64_t num_errors_handled) {
     return;
 
   if (!transaction_->IsAcceptingRequests()) {
-    // This really shouldn't be happening, but seems to be happening anyway. So
-    // rather than killing the renderer, simply ignore the request.
+    // TODO(https://crbug.com/1249908): If the transaction was already committed
+    // (or is in the process of being committed) we should kill the renderer.
+    // This branch however also includes cases where the browser process aborted
+    // the transaction, as currently we don't distinguish that state from the
+    // transaction having been committed. So for now simply ignore the request.
     return;
   }
 
