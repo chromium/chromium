@@ -355,7 +355,8 @@ export class Video extends ModeBase {
    *     record type option groups.
    */
   getToggledRecordOption_() {
-    if (!state.get(state.State.EXPERT) ||
+    if (state.get(state.State.SHOULD_HANDLE_INTENT_RESULT) ||
+        !state.get(state.State.EXPERT) ||
         !state.get(state.State.ENABLE_GIF_RECORDING)) {
       return RecordType.NORMAL;
     }
