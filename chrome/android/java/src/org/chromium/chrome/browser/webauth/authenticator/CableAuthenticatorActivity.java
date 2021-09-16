@@ -37,6 +37,7 @@ public class CableAuthenticatorActivity extends ChromeBaseAppCompatActivity {
             "android.hardware.usb.action.USB_ACCESSORY_ATTACHED";
     static final String SERVER_LINK_EXTRA =
             "org.chromium.chrome.browser.webauth.authenticator.ServerLink";
+    static final String QR_EXTRA = "org.chromium.chrome.browser.webauth.authenticator.QR";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +69,10 @@ public class CableAuthenticatorActivity extends ChromeBaseAppCompatActivity {
             // is untrusted.
             arguments = new Bundle();
             arguments.putParcelable(UsbManager.EXTRA_ACCESSORY, accessory);
+        } else if (intent.getAction() != null && intent.getAction().equals(Intent.ACTION_VIEW)
+                && intent.getData() != null) {
+            arguments = new Bundle();
+            arguments.putParcelable(QR_EXTRA, intent.getData());
         } else if (intent.hasExtra(SERVER_LINK_EXTRA)) {
             // This Intent comes from GMSCore when it's triggering a server-linked connection.
             final String serverLinkBase64 = intent.getStringExtra(SERVER_LINK_EXTRA);

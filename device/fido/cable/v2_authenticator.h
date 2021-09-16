@@ -61,6 +61,7 @@ class Platform {
     SERVER_LINK_NOT_ON_CURVE = 109,
     NO_SCREENLOCK = 110,
     NO_BLUETOOTH_PERMISSION = 111,
+    QR_URI_ERROR = 112,
   };
 
   using MakeCredentialCallback =

@@ -347,6 +347,7 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
         case Error::SERVER_LINK_NOT_ON_CURVE:
         case Error::NO_SCREENLOCK:
         case Error::NO_BLUETOOTH_PERMISSION:
+        case Error::QR_URI_ERROR:
           result = CableV2MobileResult::kInternalError;
           break;
       }
@@ -519,12 +520,12 @@ static jlong JNI_CableAuthenticator_StartQR(
     JNIEnv* env,
     const JavaParamRef<jobject>& cable_authenticator,
     const JavaParamRef<jstring>& authenticator_name,
-    const JavaParamRef<jstring>& qr_url,
+    const JavaParamRef<jstring>& qr_uri,
     jboolean link) {
   RecordEvent(CableV2MobileEvent::kQRRead);
 
   GlobalData& global_data = GetGlobalData();
-  const std::string& qr_string = ConvertJavaStringToUTF8(qr_url);
+  const std::string& qr_string = ConvertJavaStringToUTF8(qr_uri);
   absl::optional<device::cablev2::qr::Components> decoded_qr(
       device::cablev2::qr::Parse(qr_string));
   if (!decoded_qr) {
@@ -651,6 +652,19 @@ static int JNI_CableAuthenticator_ValidateServerLinkData(
     RecordResult(CableV2MobileResult::kInvalidServerLink);
     return static_cast<int>(device::cablev2::authenticator::Platform::Error::
                                 SERVER_LINK_NOT_ON_CURVE);
+  }
+
+  return 0;
+}
+
+static int JNI_CableAuthenticator_ValidateQRURI(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& qr_uri) {
+  const std::string& qr_string = ConvertJavaStringToUTF8(qr_uri);
+  if (!device::cablev2::qr::Parse(qr_string)) {
+    RecordResult(CableV2MobileResult::kInvalidQR);
+    return static_cast<int>(
+        device::cablev2::authenticator::Platform::Error::QR_URI_ERROR);
   }
 
   return 0;

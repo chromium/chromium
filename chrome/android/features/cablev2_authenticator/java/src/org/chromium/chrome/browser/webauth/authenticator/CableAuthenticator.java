@@ -74,6 +74,11 @@ class CableAuthenticator {
     // mServerLinkData contains the information passed from GMS Core in the event that
     // this is a SERVER_LINK connection.
     private final byte[] mServerLinkData;
+    // mQRURI contains the contents of a QR code ("FIDO:/234"...), or null if
+    // this is not a QR transaction.
+    private final String mQRURI;
+    // mLinkQR stores whether a QR transaction should send linking information.
+    private boolean mLinkQR;
 
     // mHandle is the opaque ID returned by the native code to ensure that
     // |stop| doesn't apply to a transaction that this instance didn't create.
@@ -94,11 +99,12 @@ class CableAuthenticator {
 
     public CableAuthenticator(Context context, CableAuthenticatorUI ui, long networkContext,
             long registration, byte[] secret, boolean isFcmNotification, UsbAccessory accessory,
-            byte[] serverLink, byte[] fcmEvent) {
+            byte[] serverLink, byte[] fcmEvent, String qrURI) {
         mContext = context;
         mUi = ui;
         mFCMEvent = fcmEvent;
         mServerLinkData = serverLink;
+        mQRURI = qrURI;
 
         // networkContext can only be used from the UI thread, therefore all
         // short-lived work is done on that thread.
@@ -113,7 +119,7 @@ class CableAuthenticator {
                     this, new USBHandler(context, mTaskRunner, accessory));
         }
 
-        // Otherwise wait for |onQRCode| or |onBluetoothReady|.
+        // Otherwise wait for |onBluetoothReady|.
     }
 
     // Calls from native code.
@@ -426,17 +432,8 @@ class CableAuthenticator {
 
     // Calls from UI.
 
-    /**
-     * Called to indicate that a QR code was scanned by the user.
-     *
-     * @param value contents of the QR code, which will be a valid caBLE
-     *              URL, i.e. "fido://"...
-     */
-    void onQRCode(String value, boolean link) {
-        assert mTaskRunner.belongsToCurrentThread();
-        mHandle = CableAuthenticatorJni.get().startQR(this, getName(), value, link);
-        // TODO: show the user an error if that returned zero.
-        // that indicates that the QR code was invalid.
+    void setQRLinking(boolean link) {
+        mLinkQR = link;
     }
 
     /**
@@ -446,6 +443,8 @@ class CableAuthenticator {
         assert mTaskRunner.belongsToCurrentThread();
         if (mServerLinkData != null) {
             mHandle = CableAuthenticatorJni.get().startServerLink(this, mServerLinkData);
+        } else if (mQRURI != null) {
+            mHandle = CableAuthenticatorJni.get().startQR(this, getName(), mQRURI, mLinkQR);
         } else {
             mHandle = CableAuthenticatorJni.get().startCloudMessage(this, mFCMEvent);
         }
@@ -478,6 +477,14 @@ class CableAuthenticator {
         return CableAuthenticatorJni.get().validateServerLinkData(serverLinkData);
     }
 
+    /**
+     * validateQRURI returns zero if |uri| is a valid FIDO QR code or else an error value from
+     * cablev2::authenticator::Platform::Error.
+     */
+    static int validateQRURI(String uri) {
+        return CableAuthenticatorJni.get().validateQRURI(uri);
+    }
+
     @NativeMethods
     interface Natives {
         /**
@@ -496,11 +503,10 @@ class CableAuthenticator {
         /**
          * Called to instruct the C++ code to start a new transaction based on the contents of a QR
          * code. The given name will be transmitted to the peer in order to identify this device, it
-         * should be human-meaningful. The qrUrl must be a caBLE URL, i.e. starting with
-         * "fido://c1/". Returns an opaque value that can be passed to |stop| to cancel this
-         * transaction.
+         * should be human-meaningful. The qrURI must be a fido: URI. Returns an opaque value that
+         * can be passed to |stop| to cancel this transaction.
          */
-        long startQR(CableAuthenticator cableAuthenticator, String authenticatorName, String qrUrl,
+        long startQR(CableAuthenticator cableAuthenticator, String authenticatorName, String qrURI,
                 boolean link);
 
         /**
@@ -535,6 +541,12 @@ class CableAuthenticator {
          * |startServerLink| or else an error value from cablev2::authenticator::Platform::Error.
          */
         int validateServerLinkData(byte[] serverLinkData);
+
+        /**
+         * validateQRURI returns zero if |qrURI| is a valid fido: URI or else an error value from
+         * cablev2::authenticator::Platform::Error.
+         */
+        int validateQRURI(String qrURI);
 
         /**
          * onActivityStop is called when onStop() is called on the Activity. This is done
